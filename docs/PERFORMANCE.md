@@ -1,10 +1,28 @@
 # Performance findings
 
-**Package 11 includes measured normal-timing station and compound-climax runs; the representative Phase 1 performance gate remains OPEN.** Both bounded samples remain below 16.667 ms per frame on the available i7-14700F/RTX 5080 at 1440p, quality 2 and cap 120. Natural ten-wave play, physical response, Station 2 docking, full-run memory stability and lower-end scalability remain unverified.
+**Current package: 13. The representative Phase 1 performance gate remains OPEN.** Its normal-timing Wave 10 capture passed on the available i7-14700F/RTX 5080 at 2560x1440, DX12/SM6, quality 2, VSync off and cap 120. This is a seeded Tier V fixture with enlarged durability and scripted controls; it is not natural balance, physical response, clean-PC or lower-end acceptance.
 
-The later station/sky Editor run is visual evidence only: the new sky was resident at 8192x4096 / 43,712 KiB BC7, 40 MiB above the previous 2K panorama residency. Its screenshot timing does not inherit Package 11 benchmarks. Character geometry/material optimization is active; no reduced-mesh frame-cost claim exists yet.
+## Package 13 Wave 10
 
-## Package 11 station and endgame measurements
+Source `a628c7faa3d6c160ded22981bd3c230cb0cbf203` and game SHA256 `a07be4cf56e7c0c099d63953c566fe480a4a3bb144680f772b4a56f80eb73c21` are bound by the [package audit](validation/2026-09-13-windows-gameplay-fairness-package.json). Capture `755fd7116a074090bbfafb9c128128b4` / PID106548 exited 0 at 15:26:31 UTC, preserving source, all archive bytes and production saves. [Independent performance audit](validation/2026-09-13-gameplay-fairness-performance.json) retains exact sampling, timing and composition evidence.
+
+All 15,619 CSV frames, including the initial unmarked seed frame, are retained below; startup/focus wait before CSV is not measured. No in-game screenshot readback, build, asset rendering or index workload overlapped. The owner editor and other desktop apps remained open. No sample was removed for being slow.
+
+| Counter | Mean ms | p99 ms | Maximum ms |
+| --- | ---: | ---: | ---: |
+| FrameTime | 8.338382 | 8.5174 | 8.9063 |
+| GPUTime | 2.720338 | 3.5521 | 4.6695 |
+| GameThreadTime | 1.834523 | 2.7658 | 8.6768 |
+| RenderThreadTime | 3.372188 | 4.4498 | 11.4776 |
+| RHIThreadTime | 2.344024 | 3.2914 | 12.0072 |
+
+Mean frame rate was 119.927 FPS; zero captured frames exceeded 16.667, 33.333 or 50 ms. All 15,618 marked fixture frames stayed foreground. The climax lasted 40.006196 seconds, including 38.280000 seconds of simultaneous gravity/asteroid/enemy presence, followed by 5.006182 seconds of approach. Peak threats were 23 against the cap of 24. This capped result does not measure uncapped headroom. CPU/GPU pipeline times must not be added together. Natural full-run RAM/VRAM, Station 2 docking, startup loading and representative hardware remain open.
+
+## Package 12 preceding station and climax measurements
+
+The [Package 12 audit](validation/2026-09-13-gameplay-quality-performance.json) retains source `3536bf9` and game `77501fdb` identity. The Station 5 sample has 16,869 marked frames: 119.943 FPS, p99/max 8.4871/8.7949 ms. Wave 10 has 15,616 marked frames: 119.921 FPS, p99/max 8.54/9.6356 ms. Both had zero marked frames above 16.667 ms and all marked frames foreground. Station 5 covered full wormhole/climax/approach/docking/exit/idle; it remains the latest measured Station 1 transition. These are historical Package 12 results, not Package 13 Station 1 measurements. The current 8K sky had already been included; it adds 40 MiB resident texture cost over the previous 2K panorama. HeroAlpha optimization remains paused/unadopted.
+
+## Historical Package 11 station and endgame measurements
 
 Source `6912684223f4a93f4010cd12201aee7fb42395f3` and inner executable `10b9b664c9a9d7480d96412999dd9da0b33215bc423eaae77a395fde8c9ed32c` are bound by the [package audit](validation/2026-09-13-windows-integrated-presentation-package.json). The raw fixture records are under `Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf` (Station 5) and `9461b70d07454d738f22a1c87c91b793` (Wave 10).
 
@@ -21,7 +39,7 @@ These are scripted fixtures with Tier V stats and enlarged durability, normal si
 
 Source 691 integration has 24 clean Unreal tests and new editor-game visual captures. `CaptureEndgame.ps1 -CaptureVisuals` records the normal viewport/HUD, pose request metadata and ListTextures, but screenshot readbacks perturb frame time. The [Station 5 visual receipt](validation/2026-09-13-integrated-station-visuals.json) binds 12 images on the pre-camera DLL 12b8; only the first exit image samples inside the 0.18-second live-pose blend. Its CSV and generated performance.json must not support FPS, hitch or smooth-transition claims. The [newer Wave 10 visual audit](validation/2026-09-13-integrated-endgame-visuals.json) verified a normal process close and four images on fd6c66. Its Compound residency snapshot reports hero 1K versus 2K maximum, rocks 2K and sky 2048x1024. The subsequent component-only hero residency correction compiled in 8.54 seconds and was subsequently confirmed at full 2K in the separate Package 11 readback. Neither visual capture establishes performance.
 
-The +2-degree camera/manual-aim correction passed source/actor tests on DLL fd6c66; later warning wording and hero-residency source are separate from that run. Those synthetic tests do not measure physical input latency, gameplay rendering or uncapped headroom. The Package 11 scenarios above are the current source-bound benchmarks. Earlier Package 10 measurements below remain historical.
+The +2-degree camera/manual-aim correction passed source/actor tests on DLL fd6c66; later warning wording and hero-residency source are separate from that run. Those synthetic tests do not measure physical input latency, gameplay rendering or uncapped headroom. The Package 11 scenarios above are historical source-bound benchmarks. Earlier Package 10 measurements below remain historical.
 
 ## Historical Package 10 rendered Station 5 and Wave 10 (2026-09-13)
 

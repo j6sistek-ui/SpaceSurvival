@@ -2,7 +2,7 @@
 
 [PLANS]
 - 2026-09-13T15:15Z [USER] Continue full Phase1 against GAME_SCOPE/IMPLEMENT; owner prioritizes gameplay strength and can clean hero externally. All19 PLAYTEST_TOMORROW checks stay unchecked; physical feel/audio/retry deferred to owner. Sensitivity remains a dial. Never auto-merge PR3.
-- 2026-09-13T15:15Z [CODE] Final gameplay follow-up is source-frozen/tested37PASS; commit/push then Package13 next. Independently audit archive, brief native settings check, reconcile current docs/PR. Package12 receipts remain immutable historical evidence after archive replacement.
+- 2026-09-13T15:15Z [CODE] Final gameplay follow-up source a628c7f is frozen/tested37PASS and Package13 audited; native settings and finalWave10 audits passed. Final documentation/PR reconciliation and clean-head verification next. Package12 receipts remain immutable historical evidence after archive replacement.
 
 [DECISIONS]
 - 2026-09-13T15:15Z [CODE] Actual repo C:/Users/j6sis/SpaceSurvival; branch codex/phase1-implementation. Threadcwd Acornaut unrelated. Existing UE/VS/Blender/Docker authorized; no host installs. Root owns integration/UE/GPU scheduling.
@@ -24,4 +24,8 @@
 - 2026-09-13T15:15Z [TOOL] UE5.8.2 EpicGames2,MSVC14.51.36257/SDK10.0.26100;i714700F/RTX5080/47.72GiBRAM16GiBVRAM. Nonpreferredcompiler/Character.hC4996/MotionVectorSimulation warnings known. Requirefresh cleanUEreport;exit0aloneinsufficient. Use UTF8 explicit on filepatches.
 
 [OUTCOMES]
+- 2026-09-13T15:34Z [TOOL] Supersedes pendingPackage13/native state: sourcea628c7faa3d6c160ded22981bd3c230cb0cbf203 pushed/CI34765202939PASS. Package13 BuildCookRun78.34s/native22.86;120assets/2184rows/7archivefiles/CRT+noticesPASS;gamea07be4cf56e7c0c099d63953c566fe480a4a3bb144680f772b4a56f80eb73c21. Package receipt d9dd380d4381eb6aa14540ca628c4c98678ea7ace5c6228c466e3f08500cceee.
+- 2026-09-13T15:34Z [TOOL] Package13Wave10 GUID755fd7116a074090bbfafb9c128128b4/PID106548 exit0 15:26:31,15618FGframes,119.927FPS,p99/max8.5174/8.9063ms,zero>16.667,peak23,compound38.28s.169inputs/archive/prodsavespreserved;independentreceipt8d67330c2e71b3e0bffd36ecfa62a378efad2c97fe76d946688b814955521891. Station1benchmark remainsP12;noP13Station1rerun.
+- 2026-09-13T15:34Z [TOOL] NativeMenu13 GUID1300c6fc8e6a421dbc72104713e6c5db/PID105000:1920x1080,controllerdial1.0→1.2click→1.4Return retainsrow/mouse1.0. NormalAltF4/window+processabsent/shutdownlog15:23:19;monitorstart-timeguardfailed,exitcodeUNCONFIRMED,noforcekill. Source/prodsavesunchanged;no physical/relaunch/persistenceclaim. Receipt native-settings-focus.json.
+- 2026-09-13T15:34Z [TOOL] Independent scope review retains PARTIAL: physical KBM/controller comfort/parity;natural two-block fairness/economy/services;near-alpha visuals/animation/VFX/audio;representative full-run performance/resources/clean-PC;retryappeal. All19ownerboxesunchanged. Hero experimentspaused. Required docs reconciled, PR3 staysdraft/unmerged.
 - 2026-09-13T15:15Z [TOOL] PARTIAL. Gameplay code,clean37suite,priorPackage12/nativeperformance exist; finalPackage13/nativeUI/docs/PR work stillpending. Graphics and natural/physical/listening/retry/representative60FPS acceptance open. No claim onlyhumanworkremains. All19ownercheckboxes preserved byteexact.

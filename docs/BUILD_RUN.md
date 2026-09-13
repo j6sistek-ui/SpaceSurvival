@@ -1,8 +1,8 @@
 # Build and run
 
-**Current archive: Package 12, source `3536bf9139b3b98ae046b6a253662b5abc20402d`.** The build and independent artifact audit passed; the [package receipt](validation/2026-09-13-windows-gameplay-quality-package.json) binds the executable, 120 project packages and matching 35-test Editor source. The normal-timing Station 5 fixture `ee3505b9b6f44c9abffc425497c212bc` passed at 2026-09-13 15:01:29 UTC; the normal-timing Wave 10 fixture also passed at 15:04:34 UTC, with independent performance audit underway. These scripted checks do not establish natural gameplay or physical-input acceptance. Phase 1 remains PARTIAL; see [current state](PROJECT_STATE.md) and the [hands-on checks](PLAYTEST_TOMORROW.md).
+**Current archive: Package 13, source `a628c7faa3d6c160ded22981bd3c230cb0cbf203`.** BuildCookRun and independent artifact audit passed; the [package receipt](validation/2026-09-13-windows-gameplay-fairness-package.json) binds the executable, all 120 project assets and matching 37-test source. Its normal-timing Wave 10 fixture passed at 2026-09-13 15:26:31 UTC. A [native settings check](validation/2026-09-13-native-settings-focus.json) verified selection stays on the controller dial while adjusting 1.0→1.2→1.4, with mouse sensitivity unchanged. These are bounded checks, not physical-input or natural gameplay acceptance. **Phase 1 remains PARTIAL.**
 
-Package 12 includes the industrial station shell, 8K NASA sky, HUD improvements and [gameplay repairs](GAMEPLAY_QUALITY.md), including the final pickup first-frame/lifetime correction. Root `THIRD_PARTY.md` is verified byte-exact beside the launcher; existing engine notices remain intact. HeroAlpha experiments are paused and unadopted after the owner prioritized gameplay and external hero cleanup; the current packaged character remains provisional.
+Package 13 includes the industrial station shell, 8K NASA sky, HUD improvements and [gameplay repairs](GAMEPLAY_QUALITY.md), including synchronized projectile contact, successful-spawn Director charging and subtitle-independent contract results. `THIRD_PARTY.md` is byte-exact beside the launcher. HeroAlpha experiments are paused and unadopted; the current character remains provisional. See [current state](PROJECT_STATE.md) and the [hands-on checks](PLAYTEST_TOMORROW.md).
 
 ## Tooling and repository
 
@@ -44,7 +44,7 @@ Each target accepts `-EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'`. Close pr
 - **Editor** invokes UnrealBuildTool for SpaceSurvivalEditor, Win64 Development.
 - **Content** imports canonical sources and authors the tuning asset and Survival map. Inspect `Saved/Validation/ContentImport.json`; the successful status is `IMPORTED_NOT_GAMEPLAY_VALIDATED` with no errors. Existing authored assets are preserved, and partial/wrong-type imports are rejected. Read [CONTENT_PIPELINE.md](CONTENT_PIPELINE.md) before deliberate reimport.
 - **Validate** starts a fresh rendering-enabled editor process and checks persisted assets, map/GameMode, fixed rosters/selections, backdrop collision, mesh material usage and compiled field shader statistics. NullRHI cannot supply those shader statistics and is not used for this target. The latest full rendering-enabled readback passed through 13:44:39 UTC in `.agent/local/SkyStation-Validate.log`, with all 120 content files unchanged. The prior 110-asset Package 11 source run remains historical.
-- **Test** remains NullRHI and runs the SpaceSurvival automation prefix into Artifacts/UnrealTests/index.json/index.html. It requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every state Success; process exit 0 alone is insufficient. The latest 35-test gameplay result passed at 14:50:03 UTC and is retained in `.agent/local/GameplayQuality-tests4.json`; the prior 24-test Package 11 source result remains in `.agent/local/ChaseAim-tests.json`. Earlier authored-exit contact failures and their correction remain in [VALIDATION.md](VALIDATION.md). Shortened/assisted fixtures do not establish rendering, balance, physical input or performance.
+- **Test** remains NullRHI and runs the SpaceSurvival automation prefix into Artifacts/UnrealTests/index.json/index.html. It requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every state Success; process exit 0 alone is insufficient. The latest 37-test gameplay result passed at 15:12:50 UTC and is retained in `.agent/local/GameplayFollowup-tests.json`; the prior 24-test Package 11 source result remains in `.agent/local/ChaseAim-tests.json`. Earlier authored-exit contact failures and their correction remain in [VALIDATION.md](VALIDATION.md). Shortened/assisted fixtures do not establish rendering, balance, physical input or performance.
 
 `Scripts/ValidateScene.py`, executed by the editor Python runner, checks saved background collision and skeletal/instanced-material usage. Its `--repair` option intentionally changes those owned assets; omit it for readback validation. Results go to `Saved/Validation/SceneValidation.json`. The latest repair/readback is recorded in [VALIDATION.md](VALIDATION.md).
 
@@ -64,16 +64,16 @@ This runs the project through the installed editor executable. It is not a packa
 ./Scripts/Build.ps1 -Target Package
 ```
 
-The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Package 12 succeeded in 77.56 seconds, exit 0, with a 21.99-second native build.
+The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Package 13 succeeded in 78.34 seconds, exit 0, with a 22.86-second native build.
 
-Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`. **Verified identity: Package 12, source `3536bf9139b3b98ae046b6a253662b5abc20402d`.** Later packaging replaces this shared path; compare the [retained receipt](validation/2026-09-13-windows-gameplay-quality-package.json) before relying on a historical hash.
+Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`. **Verified identity: Package 13, source `a628c7faa3d6c160ded22981bd3c230cb0cbf203`.** Later packaging replaces this shared path; compare the [retained receipt](validation/2026-09-13-windows-gameplay-fairness-package.json) before relying on a historical hash.
 
 | Artifact | Size | SHA-256 |
 | --- | --- | --- |
 | `Artifacts/Windows/SpaceSurvival.exe` launcher | 171,520 bytes | `619ac0779dceabf638639193efdea0733e3b4626dea623c07062f160f5abccf8` |
-| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` game | 332,654,080 bytes | `77501fdbcfa9b4a91e7eed227693a0a01cd4a0af741eecf2c7d6b56ee9bf1d37` |
+| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` game | 332,669,952 bytes | `a07be4cf56e7c0c099d63953c566fe480a4a3bb144680f772b4a56f80eb73c21` |
 
-The receipt also binds all five .pak/.utoc/.ucas containers, all 120 project packages plus Engine Cube, 2,184 index rows, prerequisite provenance and copied acknowledgements. Package 12 Station 5 passed its normal-timing scripted fixture; Wave 10 also passed at 15:04:34 UTC; independent performance audit is underway. Exact measurements and their limits belong in [PERFORMANCE.md](PERFORMANCE.md); earlier package results remain historical.
+The receipt also binds all five .pak/.utoc/.ucas containers, all 120 project packages plus Engine Cube, 2,184 index rows, prerequisite provenance and copied acknowledgements. Package 13 Wave 10 passed its normal-timing fixture. Package 12 separately retains the preceding Station 1 transition benchmark; that earlier capture does not establish a new Package 13 Station 1 measurement. Exact measurements and their limits belong in [PERFORMANCE.md](PERFORMANCE.md); earlier package results remain historical.
 
 Keep the entire archive directory together; the launcher alone is not the game. Launch from the repository root:
 
@@ -82,6 +82,8 @@ Keep the entire archive directory together; the launcher alone is not the game. 
 ```
 
 ## Historical package checks
+
+Package 12/source3536 passed both normal-timing Station 5 and Wave 10 fixtures before the three follow-up fixes. Its [artifact](validation/2026-09-13-windows-gameplay-quality-package.json) and [performance](validation/2026-09-13-gameplay-quality-performance.json) receipts are immutable; the shared archive now contains Package 13.
 
 Package 11/source `6912684223f4a93f4010cd12201aee7fb42395f3` is historical. It built in 87.75 seconds, audited 110 project packages and exercised Station 5/Wave 10 scripted fixtures. Its inner executable was `10b9b664c9a9d7480d96412999dd9da0b33215bc423eaae77a395fde8c9ed32c`; that identity does not describe the current shared archive. See its [retained package receipt](validation/2026-09-13-windows-integrated-presentation-package.json).
 
@@ -103,14 +105,14 @@ The first package attempt encountered global Live Coding from another editor. Th
 
 ## Runtime prerequisite boundary
 
-Package 7 bundled runtime 14.50.35719.0 for compiler 14.51.36257. Package 12 retains the correction introduced in Package 8: it replaces the x64 installer under `Engine/Extras/Redist/en-us` with Microsoft-signed **14.51.36247.0**, 18,731,856 bytes, SHA-256 `843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C`. Independent inspection verified source/destination equality and Valid Microsoft signatures. The game still has no app-local CRT; no installer or clean-PC launch was run. Microsoft requires matching runtime major and equal-or-newer minor; see [DLL redistribution guidance](https://learn.microsoft.com/en-us/cpp/windows/determining-which-dlls-to-redistribute?view=msvc-170), checked 2026-09-13.
+Package 7 bundled runtime 14.50.35719.0 for compiler 14.51.36257. Package 13 retains the correction introduced in Package 8: it replaces the x64 installer under `Engine/Extras/Redist/en-us` with Microsoft-signed **14.51.36247.0**, 18,731,856 bytes, SHA-256 `843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C`. Independent inspection verified source/destination equality and Valid Microsoft signatures. The game still has no app-local CRT; no installer or clean-PC launch was run. Microsoft requires matching runtime major and equal-or-newer minor; see [DLL redistribution guidance](https://learn.microsoft.com/en-us/cpp/windows/determining-which-dlls-to-redistribute?view=msvc-170), checked 2026-09-13.
 
 The implemented packaging correction retains unique UAT logs under Artifacts/BuildLogs, then invokes `Scripts/BundlePrerequisites.ps1`. The helper binds to the game link response file and matching built/archive executable, corroborates the selected toolchain from the log, checks a compatible Microsoft-signed x64 runtime from that VS installation, copies only into the archive and writes `Artifacts/Windows/Prerequisites.json` with provenance. Missing compatibility fails clearly; no host installation or Engine modification occurs. ARM64 is outside this Windows x64 target.
 
-Package 12 independently verified the copy/receipt path, compatible runtime and Microsoft signatures. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing the archive, use its matching retained UAT log:
+Package 13 independently verified the copy/receipt path, compatible runtime and Microsoft signatures. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing the archive, use its matching retained UAT log:
 
 ```powershell
-./Scripts/BundlePrerequisites.ps1 -BuildLog "./Artifacts/BuildLogs/WindowsPackage-81b47317aea04ab98cbf28b8780c6aac.log" -DryRun
+./Scripts/BundlePrerequisites.ps1 -BuildLog "./Artifacts/BuildLogs/WindowsPackage-bbe5c66ccd604a518d096ef1a8834121.log" -DryRun
 ```
 
 The dry run binds the current built/archive executable and link response file; use a UAT log from that matching build. A historical log can be rejected after newer builds replace those files. Preserve the prerequisite receipt with the package and separately validate clean-PC startup.

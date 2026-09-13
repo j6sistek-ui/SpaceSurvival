@@ -1,0 +1,97 @@
+{
+  "title": "PARTIAL - Package13 native settings selection check",
+  "recorded_utc": "2026-09-13T15:25:23.866553+00:00",
+  "source_commit": "a628c7faa3d6c160ded22981bd3c230cb0cbf203",
+  "package_receipt": {
+    "path": "docs/validation/2026-09-13-windows-gameplay-fairness-package.json",
+    "bytes": 44472,
+    "sha256": "d9dd380d4381eb6aa14540ca628c4c98678ea7ace5c6228c466e3f08500cceee"
+  },
+  "game_sha256": "a07be4cf56e7c0c099d63953c566fe480a4a3bb144680f772b4a56f80eb73c21",
+  "profile_token": "1300c6fc8e6a421dbc72104713e6c5db",
+  "process_id": 105000,
+  "started_utc": "2026-09-13T15:21:04.4963147Z",
+  "requested_resolution": [
+    1920,
+    1080
+  ],
+  "no_seed_or_gameplay_fixture": true,
+  "observations": [
+    "Normal game shell appeared over the hangar with Continue disabled on this new profile.",
+    "Opened Settings and Flight / Walk Controls through native clicks; mouse and controller sensitivity initially1.0.",
+    "Clicked controller sensitivity:1.2 and controller row remained selected.",
+    "Pressed Return:controller sensitivity1.4 and same row remained selected; mouse sensitivity remained1.0.",
+    "Closed the targeted owned game using Alt+F4; fresh window inventory and process read confirmed disappearance; log records engine shutdown and log close at15:23:19UTC."
+  ],
+  "process_exit_code": null,
+  "process_monitor_limit": "Read-only exit observer rejected its start-time identity comparison before acquiring a handle; no exit code was captured. Native window/process disappearance and normal shutdown log were observed; do not claim measured exit0. No process was force-terminated.",
+  "source_unchanged": true,
+  "production_before": [
+    {
+      "directory": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames",
+      "files": [
+        {
+          "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86",
+          "name": "SS_Account_v1.sav"
+        },
+        {
+          "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27",
+          "name": "SS_Suspend_v1.sav"
+        }
+      ],
+      "exists": true
+    },
+    {
+      "directory": "C:\\Users\\j6sis\\AppData\\Local\\SpaceSurvival\\Saved\\SaveGames",
+      "files": [],
+      "exists": false
+    }
+  ],
+  "production_after": [
+    {
+      "directory": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames",
+      "exists": true,
+      "files": [
+        {
+          "name": "SS_Account_v1.sav",
+          "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+        },
+        {
+          "name": "SS_Suspend_v1.sav",
+          "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+        }
+      ]
+    },
+    {
+      "directory": "C:\\Users\\j6sis\\AppData\\Local\\SpaceSurvival\\Saved\\SaveGames",
+      "exists": false,
+      "files": []
+    }
+  ],
+  "production_preserved": true,
+  "isolated_save_files": [
+    {
+      "path": "C:/Users/j6sis/SpaceSurvival/Artifacts/GameplayMenu/1300c6fc8e6a421dbc72104713e6c5db/User/Saved/SaveGames/SS_Settings_v1.sav",
+      "bytes": 2161,
+      "sha256": "8fb9e900f1c62f9aeffe69d317c33fa849ff3100c885775ef77b5a3992bbe5ec"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "C:/Users/j6sis/SpaceSurvival/Artifacts/GameplayMenu/1300c6fc8e6a421dbc72104713e6c5db/Menu.log",
+      "bytes": 101029,
+      "sha256": "958c8c896100537d8ec15c769e669f7d1c56fdc1c800cd53476ea5175024fb5d"
+    },
+    {
+      "path": ".agent/local/GameplayMenu13-Run.json",
+      "bytes": 1661,
+      "sha256": "dec0f8b02d263f01d85fa234fd6e860ba87af5aa04d5e932d7aabf54c54250d6"
+    }
+  ],
+  "limits": [
+    "Native mouse/keyboard menu selection only, not physical controller input, steering feel or comfort.",
+    "No relaunch/readback was performed; this check does not establish settings persistence beyond its session.",
+    "No natural run, station service, listening, graphics acceptance or performance measurement.",
+    "All19 owner hands-on items remain unchecked; screenshots were observed in the computer-use tool and were not saved as local image evidence."
+  ]
+}
