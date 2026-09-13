@@ -1,4 +1,5 @@
 #include "SSGameInstance.h"
+#include "SSLocalSave.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameUserSettings.h"
 #include "HAL/IConsoleManager.h"
@@ -55,19 +56,19 @@ bool USSGameInstance::WriteDomain(const FString &Slot, const std::string &Payloa
     auto *Record = Cast<USSStoredData>(UGameplayStatics::CreateSaveGameObject(USSStoredData::StaticClass()));
     Record->Valid = Valid;
     Record->Payload = UTF8_TO_TCHAR(Payload.c_str());
-    if (!UGameplayStatics::SaveGameToSlot(Record, Slot, 0))
+    TArray<uint8> Bytes;
+    if (!UGameplayStatics::SaveGameToMemory(Record, Bytes))
     {
-        LastSaveError = TEXT("Save failed. Check free disk space and folder access, then retry.");
+        LastSaveError = TEXT("Save serialization failed. The previous save was not replaced.");
         return false;
     }
-    auto *Verify = Cast<USSStoredData>(UGameplayStatics::LoadGameFromSlot(Slot, 0));
-    if (!Verify || Verify->Valid != Valid || Verify->Payload != Record->Payload)
+    const auto *Verify = Cast<USSStoredData>(UGameplayStatics::LoadGameFromMemory(Bytes));
+    if (!Verify || Verify->Version != Record->Version || Verify->Valid != Valid || Verify->Payload != Record->Payload)
     {
-        LastSaveError = TEXT("Save verification failed. The game has not confirmed this action.");
+        LastSaveError = TEXT("Save serialization verification failed. The previous save was not replaced.");
         return false;
     }
-    LastSaveError.Empty();
-    return true;
+    return SSLocalSave::Write(Slot, Bytes, LastSaveError);
 }
 bool USSGameInstance::PersistAccount()
 {

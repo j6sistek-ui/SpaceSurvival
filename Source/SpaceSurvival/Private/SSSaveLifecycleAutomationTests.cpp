@@ -16,6 +16,10 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
+#if WITH_DEV_AUTOMATION_TESTS && PLATFORM_WINDOWS
+#include "Windows/WindowsHWrapper.h"
+#endif
+
 #if WITH_DEV_AUTOMATION_TESTS
 namespace
 {
@@ -119,6 +123,13 @@ struct FSSLifecycleIsolation
         Object->SetBoolField(TEXT("success"), true);
         Object->SetBoolField(TEXT("genericBackendVerified"), true);
         Object->SetBoolField(TEXT("gameInstanceInitialized"), Instance != nullptr);
+        if (Phase == TEXT("ResumeDeath"))
+        {
+            Object->SetBoolField(TEXT("lockedSuspensionRejectedAndPreserved"), true);
+            Object->SetBoolField(TEXT("lockedAccountRejectedAndPreserved"), true);
+            Object->SetBoolField(TEXT("replacementRetriesSucceeded"), true);
+            Object->SetBoolField(TEXT("failedReplacementStagingCleaned"), true);
+        }
         if (Instance)
         {
             const auto &Session = Instance->Session;
@@ -164,6 +175,46 @@ struct FSSLifecycleInstance
             Instance->RemoveFromRoot();
     }
 };
+
+// A real Windows sharing violation exercises the production replacement path. UE OpenRead(false)
+// may still permit deletion when file.allowdeleteopenfiles is enabled in editor, so deny both
+// write and delete sharing explicitly. Only the already verified GUID profile reaches this helper.
+struct FSSLifecycleSaveLock
+{
+#if PLATFORM_WINDOWS
+    HANDLE Handle = INVALID_HANDLE_VALUE;
+#endif
+
+    bool Open(const FString &Path)
+    {
+#if PLATFORM_WINDOWS
+        if (FPlatformFileManager::Get().GetPlatformFile().IsSymlink(*Path) != ESymlinkResult::NonSymlink)
+            return false;
+        FString Native = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*Path);
+        Native.ReplaceInline(TEXT("/"), TEXT("\\"));
+        Handle =
+            CreateFileW(*Native, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        return Handle != INVALID_HANDLE_VALUE;
+#else
+        return false;
+#endif
+    }
+
+    ~FSSLifecycleSaveLock()
+    {
+#if PLATFORM_WINDOWS
+        if (Handle != INVALID_HANDLE_VALUE)
+            CloseHandle(Handle);
+#endif
+    }
+};
+
+bool CheckNoStagingFiles(FAutomationTestBase &Test, const FSSLifecycleIsolation &Isolation)
+{
+    TArray<FString> Files;
+    IFileManager::Get().FindFiles(Files, *(Isolation.Saved / TEXT("SaveGames/*.tmp")), true, false);
+    return Test.TestTrue(TEXT("Failed replacement cleans its isolated temporary file"), Files.IsEmpty());
+}
 
 bool CheckConsumed(FAutomationTestBase &Test, USSGameInstance *Instance)
 {
@@ -254,9 +305,36 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
         TestEqual(TEXT("Fresh Init restores input and settings"),
                   FString(UTF8_TO_TCHAR(SS::EncodeSettings(Session.settings).c_str())),
                   Previous->GetStringField(TEXT("settingsPayload")));
-        if (!TestTrue(TEXT("Second process sees the saved station run"), Instance->HasSuspendedRun()) ||
-            !TestTrue(TEXT("Real ResumeRun restores and consumes the suspension"), Instance->ResumeRun()))
+        if (!TestTrue(TEXT("Second process sees the saved station run"), Instance->HasSuspendedRun()))
             return false;
+        const FString SuspendPath = Isolation.Saved / TEXT("SaveGames/SS_Suspend_v1.sav");
+        TArray<uint8> SuspendBefore;
+        if (!TestTrue(TEXT("Read isolated suspension before its failed replacement"),
+                      FFileHelper::LoadFileToArray(SuspendBefore, *SuspendPath)))
+            return false;
+        const auto RunBeforeResume = SS::EncodeRun(Session.run);
+        {
+            FSSLifecycleSaveLock Lock;
+            if (!TestTrue(TEXT("Acquire actual Windows suspension lock without write/delete sharing"),
+                          Lock.Open(SuspendPath)) ||
+                !TestFalse(TEXT("Resume rejects a real suspension replacement failure"), Instance->ResumeRun()))
+                return false;
+            TestTrue(TEXT("Resume failure reports the replacement error"),
+                     Instance->LastSaveError.Contains(TEXT("Save replacement failed")));
+            TestTrue(TEXT("Failed resume never exposes or mutates the candidate run"),
+                     !Session.run.active && SS::EncodeRun(Session.run) == RunBeforeResume);
+            TArray<uint8> SuspendAfter;
+            TestTrue(TEXT("Failed resume preserves every byte of the previous checkpoint"),
+                     FFileHelper::LoadFileToArray(SuspendAfter, *SuspendPath) && SuspendAfter == SuspendBefore);
+            TestTrue(TEXT("Unconsumed checkpoint remains available after rejected replacement"),
+                     Instance->HasSuspendedRun());
+            if (!CheckNoStagingFiles(*this, Isolation))
+                return false;
+        }
+        if (!TestTrue(TEXT("Resume retry after releasing the lock restores and consumes the suspension"),
+                      Instance->ResumeRun()))
+            return false;
+        TestTrue(TEXT("Successful resume retry clears the storage error"), Instance->LastSaveError.IsEmpty());
         TestEqual(TEXT("Every suspended run field survived process restart"),
                   FString(UTF8_TO_TCHAR(SS::EncodeRun(Session.run).c_str())),
                   Previous->GetStringField(TEXT("runPayload")));
@@ -273,9 +351,33 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
         TestEqual(TEXT("Five completed waves and 100 kills award XP once"), Session.account.xp, std::int64_t(475));
         TestTrue(TEXT("Death unlocks both starting sidegrades"),
                  Session.account.HeavyCannonUnlocked() && Session.account.AgileShipUnlocked());
-        if (!TestTrue(TEXT("Real PersistDeath durably saves progression and invalidation"), Instance->PersistDeath()))
-            return false;
         const auto AccountAfterDeath = SS::EncodeAccount(Session.account);
+        const FString AccountPath = Isolation.Saved / TEXT("SaveGames/SS_Account_v1.sav");
+        TArray<uint8> AccountBefore;
+        if (!TestTrue(TEXT("Read isolated account before its failed replacement"),
+                      FFileHelper::LoadFileToArray(AccountBefore, *AccountPath)))
+            return false;
+        {
+            FSSLifecycleSaveLock Lock;
+            if (!TestTrue(TEXT("Acquire actual Windows account lock without write/delete sharing"),
+                          Lock.Open(AccountPath)) ||
+                !TestFalse(TEXT("Death persistence rejects a real account replacement failure"),
+                           Instance->PersistDeath()))
+                return false;
+            TestTrue(TEXT("Death save failure reports the replacement error"),
+                     Instance->LastSaveError.Contains(TEXT("Save replacement failed")));
+            TArray<uint8> AccountAfter;
+            TestTrue(TEXT("Failed death save preserves every byte of the previous account"),
+                     FFileHelper::LoadFileToArray(AccountAfter, *AccountPath) && AccountAfter == AccountBefore);
+            TestTrue(TEXT("Failed save retains the awarded in-memory account for a retry"),
+                     SS::EncodeAccount(Session.account) == AccountAfterDeath && Session.account.runs == 1);
+            if (!CheckConsumed(*this, Instance) || !CheckNoStagingFiles(*this, Isolation))
+                return false;
+        }
+        if (!TestTrue(TEXT("Death save retry after releasing the lock persists progression and invalidation"),
+                      Instance->PersistDeath()))
+            return false;
+        TestTrue(TEXT("Successful death save retry clears the storage error"), Instance->LastSaveError.IsEmpty());
         Session.EndRun();
         TestTrue(TEXT("PersistDeath retry succeeds"), Instance->PersistDeath());
         TestTrue(TEXT("Death and persistence retry cannot duplicate account XP/history"),

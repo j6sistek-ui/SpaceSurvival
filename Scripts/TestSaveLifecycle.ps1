@@ -1,7 +1,8 @@
 <##
 Runs one read-only engine preflight followed by three fresh Unreal processes using the real
-USSGameInstance storage methods. Every invocation creates a new GUID directory under
-Artifacts/SaveLifecycle; nothing is deleted, backed up, or replaced in production storage.
+USSGameInstance storage methods, including real Windows locked-file replacement failures
+and retries for suspension consumption and death progression. Every invocation creates a
+new GUID directory under Artifacts/SaveLifecycle; production storage is never modified.
 
 UE 5.8 source contract, checked when authored:
   Core/Private/Misc/Paths.cpp: UserDir -> ProjectUserDir -> ProjectSavedDir (User/Saved).
@@ -135,6 +136,18 @@ try {
             -not $processIds.Add([int]$receipt.processId)) {
             throw "Lifecycle $phase receipt failed path, backend, token, or distinct-process verification."
         }
+        if ($phase -eq 'ResumeDeath') {
+            foreach ($check in @('lockedSuspensionRejectedAndPreserved', 'lockedAccountRejectedAndPreserved',
+                'replacementRetriesSucceeded', 'failedReplacementStagingCleaned')) {
+                if ($null -eq $receipt.PSObject.Properties[$check] -or $receipt.$check -ne $true) {
+                    throw "Lifecycle ResumeDeath did not verify its actual filesystem fault check: $check."
+                }
+            }
+        }
+        $temporarySaves = @(if (Test-Path -LiteralPath $saveGames) {
+            Get-ChildItem -LiteralPath $saveGames -Filter '*.tmp' -File -Force
+        })
+        if ($temporarySaves.Count -ne 0) { throw "Lifecycle $phase leaked an isolated staging file." }
         $actualSaves = @(if (Test-Path -LiteralPath $saveGames) {
             Get-ChildItem -LiteralPath $saveGames -Filter '*.sav' -File -Force
         })
@@ -174,7 +187,7 @@ try {
         productionSaveHashesUnchanged = $productionUnchanged
         processReceipts = $receipts
         isolatedSaveFiles = $isolatedFiles
-        limitation = 'Storage lifecycle only; station UI, quit interaction and subjective gameplay are separate gates.'
+        limitation = 'Storage lifecycle and actual Windows locked-destination failure/retry only. No forced process termination, disk-full/short-write, staged-readback fault, hardware-loss, station UI or subjective gameplay claim.'
     } | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Encoding utf8
     if (-not $productionUnchanged) {
         throw "Production save metadata changed during the harness; nothing was backed up or replaced. Inspect $runRoot."
