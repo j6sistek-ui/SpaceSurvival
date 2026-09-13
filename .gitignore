@@ -11,3 +11,4 @@ Artifacts/
 BuildOutput/
 __pycache__/
 .agent/local/
+Build/Windows/FileOpenOrder/

@@ -78,6 +78,7 @@ public:
     TObjectPtr<UCameraComponent> Camera;
 
 private:
+    TWeakObjectPtr<ASSStation> RecoveryHub;
     FVector ExitStart = FVector::ZeroVector, ExitEnd = FVector::ZeroVector;
     float ExitElapsed = 0.f;
     bool Disembarking = false;

@@ -185,6 +185,8 @@ public:
     bool Purchase(Upgrade upgrade, double discount = 1.0);
     int UpgradePrice(Upgrade upgrade, double discount = 1.0) const;
     bool Repair();
+    int DepotShieldRepairPrice() const;
+    bool RepairShieldAtDepot();
     bool EquipUtility(Utility utility);
     bool ReplaceWeapon(Weapon weapon);
     bool AcceptContract(Contract contract);

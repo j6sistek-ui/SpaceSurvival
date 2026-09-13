@@ -429,6 +429,29 @@ bool Session::Repair()
     return true;
 }
 
+int Session::DepotShieldRepairPrice() const
+{
+    // Shield-only depot service costs 60% of station full service, rounded up.
+    // Bound integer tuning before multiplication; even invalid zero/negative tuning
+    // cannot turn the moving depot into a free shield source.
+    return (std::clamp(tuning.repairPrice, 1, MaxCounter) * 3 + 4) / 5;
+}
+
+bool Session::RepairShieldAtDepot()
+{
+    // The adapter must also authorize the current depot and live proximity.
+    if (!IsFlying() || !run.depotSeen)
+        return false;
+    const double capacity = Stats().maxShield;
+    const int price = DepotShieldRepairPrice();
+    if (!Finite(capacity, 0.0, 1000000.0) || capacity <= 0.0 || !Finite(run.shield, 0.0, capacity) ||
+        run.shield >= capacity || run.credits < price)
+        return false;
+    run.credits -= price;
+    run.shield = capacity;
+    return true;
+}
+
 bool Session::EquipUtility(Utility utility)
 {
     if (!run.active || !EnumIn(utility, 2))

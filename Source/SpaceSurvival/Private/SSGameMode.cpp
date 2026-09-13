@@ -6,13 +6,18 @@
 #include "SSWorldActors.h"
 #include "SSPhase1Data.h"
 #include "Components/AudioComponent.h"
+#include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EngineUtils.h"
 #include "Sound/SoundBase.h"
+#include "Sound/SoundAttenuation.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "ProfilingDebugging/CsvProfiler.h"
+
+CSV_DEFINE_CATEGORY(SpaceSurvival, true);
 
 namespace
 {
@@ -20,6 +25,20 @@ const TCHAR *UpgradeNames[] = {TEXT("Hull"), TEXT("Shield"), TEXT("Engine"), TEX
 FString WeaponName(SS::Weapon W)
 {
     return W == SS::Weapon::RapidLaser ? TEXT("Rapid Laser") : TEXT("Heavy Cannon");
+}
+FString ProgressionMilestone(const SS::Account &Account)
+{
+    if (!Account.HeavyCannonUnlocked())
+        return FString::Printf(TEXT("Next unlock: Heavy Cannon at 150 XP / %lld XP to go"),
+                               (long long)(150 - Account.xp));
+    if (!Account.AgileShipUnlocked())
+        return FString::Printf(TEXT("Next unlock: Acorn Swift at 450 XP / %lld XP to go"),
+                               (long long)(450 - Account.xp));
+    if (Account.level >= 1000)
+        return TEXT("All Phase 1 starting options unlocked. Account level cap reached.");
+    const int64 NextXP = 450LL + (Account.level - 2LL) * 600LL;
+    return FString::Printf(TEXT("Next account level: %lld XP / %lld XP to go. All Phase 1 starting options unlocked."),
+                           (long long)NextXP, (long long)(NextXP - Account.xp));
 }
 } // namespace
 ASSGameMode::ASSGameMode()
@@ -29,9 +48,13 @@ ASSGameMode::ASSGameMode()
     PlayerControllerClass = ASSPlayerController::StaticClass();
     HUDClass = ASSHUD::StaticClass();
     Director = CreateDefaultSubobject<USSSurvivalDirectorComponent>(TEXT("SurvivalDirector"));
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("AudioRoot"));
     MusicBase = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicBase"));
     MusicPressure = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicPressure"));
     MusicClimax = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicClimax"));
+    MusicBase->SetupAttachment(RootComponent);
+    MusicPressure->SetupAttachment(RootComponent);
+    MusicClimax->SetupAttachment(RootComponent);
 }
 void ASSGameMode::BeginPlay()
 {
@@ -63,6 +86,12 @@ void ASSGameMode::BeginPlay()
     MusicPressure->SetSound(
         LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/MusicPressure.MusicPressure")));
     MusicClimax->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/MusicClimax.MusicClimax")));
+    AlarmSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Alarm.Alarm"));
+    AlarmAttenuation = NewObject<USoundAttenuation>(this);
+    AlarmAttenuation->Attenuation.bAttenuate = true;
+    AlarmAttenuation->Attenuation.bSpatialize = true;
+    AlarmAttenuation->Attenuation.AttenuationShapeExtents = FVector(800.f, 0, 0);
+    AlarmAttenuation->Attenuation.FalloffDistance = 2400.f;
     MusicBase->Play();
     MusicPressure->Play();
     MusicClimax->Play();
@@ -88,8 +117,87 @@ void ASSGameMode::Announce(const FString &Message)
     Announcement = Message;
     AnnouncementSeconds = 7.f;
 }
+void ASSGameMode::React(const FString &Message)
+{
+    if (ReactionCooldown > 0.f)
+        return;
+    PilotReaction = TEXT("Acornaut: ") + Message;
+    PilotReactionSeconds = 4.f;
+    ReactionCooldown = 18.f;
+}
+void ASSGameMode::WarnThreat(const FString &Message, FVector Position, float Duration)
+{
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || !GI->Session.IsFlying() || !Ship)
+        return;
+    ThreatWarning = Message;
+    ThreatPosition = Position;
+    ThreatWarningSeconds = FMath::Clamp(Duration, .25f, 6.f);
+    if (AlarmCooldown <= 0.f && AlarmSound)
+    {
+        // Project the distant threat onto a nearby bearing so urgency stays audible
+        // while stereo placement still communicates its direction.
+        const FVector Bearing = (Position - Ship->GetActorLocation()).GetSafeNormal();
+        const FVector SoundPosition = Ship->GetActorLocation() + Bearing * 650.f;
+        UGameplayStatics::PlaySoundAtLocation(
+            this, AlarmSound, SoundPosition,
+            float(GI->Session.settings.masterVolume * GI->Session.settings.effectsVolume) * .65f, 1.f, 0.f,
+            AlarmAttenuation);
+        AlarmCooldown = 6.f;
+    }
+}
+void ASSGameMode::UpdateThreatFeedback(float Dt)
+{
+    AlarmCooldown = FMath::Max(0.f, AlarmCooldown - Dt);
+    ReactionCooldown = FMath::Max(0.f, ReactionCooldown - Dt);
+    ThreatWarningSeconds = FMath::Max(0.f, ThreatWarningSeconds - Dt);
+    PilotReactionSeconds = FMath::Max(0.f, PilotReactionSeconds - Dt);
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || !Ship || !GI->Session.IsFlying())
+        return;
+    const auto &S = GI->Session;
+    const float HullFraction = float(S.run.hull / FMath::Max(1.0, S.Stats().maxHull));
+    if (HullFraction > .4f)
+        LowHullAlerted = false;
+    if (HullFraction <= .25f && !LowHullAlerted)
+    {
+        LowHullAlerted = true;
+        WarnThreat(TEXT("HULL CRITICAL / FIND CLEAR SPACE"), Ship->GetActorLocation(), 5.f);
+        React(TEXT("Hull's hurting. Give me a little room."));
+    }
+    // Warn for a predicted near collision, not every visible rock or nearby enemy.
+    ASSWorldBody *UrgentBody = nullptr;
+    float Earliest = 2.5f;
+    for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
+    {
+        if (It->IsActorBeingDestroyed() || !It->IsSolidHazard())
+            continue;
+        const FVector Offset = It->GetActorLocation() - Ship->GetActorLocation();
+        const FVector RelativeVelocity = It->GetVelocity() - Ship->GetVelocity();
+        const double SpeedSquared = RelativeVelocity.SizeSquared();
+        if (SpeedSquared < 1.0)
+            continue;
+        const float Time = float(-FVector::DotProduct(Offset, RelativeVelocity) / SpeedSquared);
+        if (Time <= 0.f || Time >= Earliest)
+            continue;
+        const double Clearance = It->GetBodyRadius() + 220.f;
+        if ((Offset + RelativeVelocity * Time).SizeSquared() < Clearance * Clearance)
+        {
+            Earliest = Time;
+            UrgentBody = *It;
+        }
+    }
+    if (UrgentBody)
+        WarnThreat(TEXT("COLLISION COURSE / EVADE"), UrgentBody->GetActorLocation(), .4f);
+}
+void ASSGameMode::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
+{
+    Super::ApplyWorldOffset(InOffset, bWorldShift);
+    ThreatPosition += InOffset;
+}
 void ASSGameMode::ShowHangar()
 {
+    ThreatWarningSeconds = PilotReactionSeconds = 0.f;
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Ship)
@@ -161,6 +269,9 @@ void ASSGameMode::StartNewRun()
     }
     GI->Session = Candidate;
     DeathPersisted = false;
+    LowHullAlerted = false;
+    AlarmCooldown = 0.f;
+    ReactionCooldown = 12.f;
     PendingReward = false;
     WeaponBuffSeconds = 0;
     Director->ResetEncounter();
@@ -225,6 +336,7 @@ void ASSGameMode::EnterStation()
     }
     ClosePanel();
     Announce(TEXT("Dockmaster: Welcome aboard. Your ship is in the service bay."));
+    React(TEXT("A solid floor. I missed that."));
 }
 void ASSGameMode::Tick(float Dt)
 {
@@ -245,6 +357,25 @@ void ASSGameMode::Tick(float Dt)
                 break;
             }
     S.Tick(Dt, Danger);
+#if CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    // Sample after the domain step; avoid the threat actor scan outside an enabled capture.
+    if (FCsvProfiler::IsCapturing() && FCsvProfiler::Get()->IsCategoryEnabled(CSV_CATEGORY_INDEX(SpaceSurvival)))
+    {
+        CSV_CUSTOM_STAT(SpaceSurvival, Phase, int32(S.run.phase), ECsvCustomStatOp::Set);
+        CSV_CUSTOM_STAT(SpaceSurvival, Wave, int32(S.run.wave), ECsvCustomStatOp::Set);
+        CSV_CUSTOM_STAT(SpaceSurvival, RunActive, S.run.active ? 1 : 0, ECsvCustomStatOp::Set);
+        CSV_CUSTOM_STAT(SpaceSurvival, ActiveThreats, Director->GetActiveThreatCount(), ECsvCustomStatOp::Set);
+        CSV_CUSTOM_STAT(SpaceSurvival, Hull, float(S.run.hull), ECsvCustomStatOp::Set);
+        CSV_CUSTOM_STAT(SpaceSurvival, ShipSpeedCmPerSec, IsValid(Ship) ? float(Ship->GetVelocity().Size()) : 0.f,
+                        ECsvCustomStatOp::Set);
+        if (PreviousPhase != int32(S.run.phase))
+        {
+            CSV_EVENT_NOLOG(SpaceSurvival, TEXT("Phase %d -> %d; Wave %d; RunActive %d"), PreviousPhase,
+                            int32(S.run.phase), int32(S.run.wave), S.run.active ? 1 : 0);
+        }
+    }
+#endif
+    UpdateThreatFeedback(Dt);
     RegionTime += Dt;
     if (auto *Pawn = UGameplayStatics::GetPlayerPawn(this, 0))
     {
@@ -377,6 +508,7 @@ void ASSGameMode::NotifyEventCompleted(bool bCombat)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI || !GI->Session.run.active)
         return;
+    React(bCombat ? TEXT("Signal answered. That was worth the trouble.") : TEXT("Good salvage. Let\'s make it count."));
     ++GI->Session.run.eventsCompleted;
     GI->Session.AwardCredits(bCombat ? 100 : 70);
     GI->Session.run.pendingReward = true;
@@ -402,6 +534,7 @@ void ASSGameMode::NotifyPickup(int32 Kind, float Amount)
         S.run.hull = FMath::Min(Stats.maxHull, S.run.hull + Amount);
         break;
     case 2:
+        React(TEXT("Shield charge. Just what we needed."));
         S.run.shield = FMath::Min(Stats.maxShield, S.run.shield + Amount);
         break;
     case 3:
@@ -528,6 +661,11 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                                       S.account.lastWave, S.account.lastScore, S.account.lastXP, S.account.level,
                                       DeathPersisted ? TEXT("Your next launch starts fresh. Your unlocks remain.")
                                                      : TEXT("Progression save failed. Retry before continuing."));
+        if (S.account.xp - S.account.lastXP < 150 && S.account.HeavyCannonUnlocked())
+            PanelDetail += TEXT("\nNEW STARTING WEAPON: HEAVY CANNON / select it at the hangar loadout.");
+        if (S.account.xp - S.account.lastXP < 450 && S.account.AgileShipUnlocked())
+            PanelDetail += TEXT("\nNEW SHIP: ACORN SWIFT / select it at the hangar ship bay.");
+        PanelDetail += TEXT("\n") + ProgressionMilestone(S.account);
         AddEntry(TEXT("Launch another run"), 3, DeathPersisted);
         AddEntry(TEXT("Review ship and weapon in hangar"), 4, DeathPersisted);
         if (!DeathPersisted)
@@ -576,6 +714,7 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                                       S.account.bestScore, S.account.runs, S.account.lastWave, S.account.lastScore,
                                       S.account.HeavyCannonUnlocked() ? TEXT("Unlocked") : TEXT("Level 2"),
                                       S.account.AgileShipUnlocked() ? TEXT("Unlocked") : TEXT("Level 3"));
+        PanelDetail += TEXT("\n") + ProgressionMilestone(S.account);
         AddEntry(TEXT("Recent journeys"), 28, !S.account.history.empty());
         break;
     case ESSPanel::History:
@@ -622,6 +761,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                                      FMath::Min(5, S.run.tiers[I] + 1), Price),
                      100 + I, S.run.tiers[I] < 5 && S.run.credits >= Price);
         }
+        if (Panel == ESSPanel::Depot)
+        {
+            const int ShieldPrice = S.DepotShieldRepairPrice();
+            AddEntry(FString::Printf(TEXT("Shield recharge only / %d credits"), ShieldPrice), 105,
+                     S.IsFlying() && IsValid(ActiveBeacon) && ActiveBeacon->IsDepot() &&
+                         ActiveBeacon->IsPlayerInRange() && S.run.shield < S.Stats().maxShield &&
+                         S.run.credits >= ShieldPrice);
+        }
         break;
     case ESSPanel::Repair:
         PanelTitle = TEXT("REPAIR BAY");
@@ -632,10 +779,13 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     case ESSPanel::Contracts:
         PanelTitle = TEXT("CONTRACT BOARD");
         PanelDetail = TEXT("One active contract. Reward at the next station; failure forfeits reward only.");
-        AddEntry(TEXT("Pressure contract / reduced shield capacity until next station / +150 credits"), 41,
-                 S.run.contract == SS::Contract::None && S.run.wave < 10);
-        AddEntry(TEXT("Hunter contract / destroy 6 enemies before next station / +150 credits"), 42,
-                 S.run.contract == SS::Contract::None && S.run.wave < 10);
+        PanelDetail += TEXT("\nPressure terms: shield capacity -35%; hazard pressure +0.15 until the next station.");
+        AddEntry(
+            FString::Printf(TEXT("Pressure contract / accept disclosed terms / +%d credits"), S.tuning.contractReward),
+            41, S.run.contract == SS::Contract::None && S.run.wave < 10);
+        AddEntry(FString::Printf(TEXT("Hunter / destroy %d enemies before next station / +%d credits"),
+                                 S.tuning.objectiveTarget, S.tuning.contractReward),
+                 42, S.run.contract == SS::Contract::None && S.run.wave < 10);
         break;
     case ESSPanel::Save:
         PanelTitle = TEXT("SUSPEND RUN");
@@ -800,11 +950,12 @@ void ASSGameMode::ActivateEntry(int32 Index)
             S.settings.effectsVolume = S.settings.effectsVolume >= .99 ? 0 : S.settings.effectsVolume + .1;
             break;
         case 22:
-            S.settings.mouseSensitivity = S.settings.mouseSensitivity >= 2.9 ? .3 : S.settings.mouseSensitivity + .2;
+            S.settings.mouseSensitivity =
+                S.settings.mouseSensitivity >= 2.9 ? .3 : FMath::Min(2.9, S.settings.mouseSensitivity + .2);
             break;
         case 23:
             S.settings.controllerSensitivity =
-                S.settings.controllerSensitivity >= 2.9 ? .3 : S.settings.controllerSensitivity + .2;
+                S.settings.controllerSensitivity >= 2.9 ? .3 : FMath::Min(2.9, S.settings.controllerSensitivity + .2);
             break;
         case 24:
             S.settings.invertPitch = !S.settings.invertPitch;
@@ -852,6 +1003,20 @@ void ASSGameMode::ActivateEntry(int32 Index)
         }
         const bool Ok = S.Purchase(SS::Upgrade(I), Depot ? ActiveBeacon->GetDiscount() : 1.f);
         Announce(Ok ? TEXT("Upgrade installed.") : TEXT("Upgrade unavailable."));
+        OpenPanel(Current);
+        return;
+    }
+    if (A == 105)
+    {
+        if (Current != ESSPanel::Depot || !S.IsFlying() || !IsValid(ActiveBeacon) || !ActiveBeacon->IsDepot() ||
+            !ActiveBeacon->IsPlayerInRange())
+        {
+            Announce(TEXT("Depot shield service is out of range."));
+            ClosePanel();
+            return;
+        }
+        Announce(S.RepairShieldAtDepot() ? TEXT("Shield recharged. Hull and subsystem repairs require a station.")
+                                         : TEXT("Shield service unavailable."));
         OpenPanel(Current);
         return;
     }
@@ -961,7 +1126,10 @@ void ASSPlayerController::PlayerTick(float Dt)
         else
             GM->OpenPanel(ESSPanel::Main);
     }
-    if (GM->IsMenuOpen())
+    const bool MenuInput = GM->IsMenuOpen();
+    const bool LiveFlightMenu =
+        MenuInput && GI->Session.IsFlying() && (GM->Panel == ESSPanel::Depot || GM->Panel == ESSPanel::Reward);
+    if (MenuInput)
     {
         if (Pressed(EKeys::Up) || Pressed(EKeys::Gamepad_DPad_Up))
             GM->SelectedEntry = FMath::Max(0, GM->SelectedEntry - 1);
@@ -978,9 +1146,14 @@ void ASSPlayerController::PlayerTick(float Dt)
                 if (GetMousePosition(X, Y))
                     GM->ActivateEntry(HUD->MenuIndexAt(FVector2D(X, Y)));
             }
-        if (auto *ShipPawn = Cast<ASSShip>(GetPawn()))
-            ShipPawn->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0, false, false);
-        return;
+        if (!LiveFlightMenu || !GI->Session.IsFlying())
+        {
+            if (auto *ShipPawn = Cast<ASSShip>(GetPawn()))
+                ShipPawn->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0, false, false);
+            return;
+        }
+        // Live offers retain flight control. Menu clicks, confirm and navigation
+        // stay consumed for this frame even when selecting a reward closes it.
     }
     float MouseX = 0, MouseY = 0;
     GetInputMouseDelta(MouseX, MouseY);
@@ -1004,8 +1177,9 @@ void ASSPlayerController::PlayerTick(float Dt)
             BrakeLatch = !BrakeLatch;
         FVector2D Strafe(float(Down(EKeys::D)) - float(Down(EKeys::A)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftX),
                          float(Down(EKeys::R)) - float(Down(EKeys::F)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftY));
-        const float Throttle = float(Down(EKeys::W) || Down(EKeys::Gamepad_DPad_Up)) -
-                               float(Down(EKeys::S) || Down(EKeys::Gamepad_DPad_Down));
+        const float Throttle = float(Down(EKeys::W) || (!MenuInput && Down(EKeys::Gamepad_DPad_Up))) -
+                               float(Down(EKeys::S) || (!MenuInput && Down(EKeys::Gamepad_DPad_Down)));
+        const bool FireHeld = (!MenuInput && Down(EKeys::LeftMouseButton)) || Down(EKeys::Gamepad_RightShoulder);
         const uint32 Before = GI->Session.account.tutorialFlags;
         if (!Look.IsNearlyZero())
             GI->Session.account.tutorialFlags |= 1u;
@@ -1017,7 +1191,7 @@ void ASSPlayerController::PlayerTick(float Dt)
             GI->Session.account.tutorialFlags |= 8u;
         if (Pressed(EKeys::Q) || Pressed(EKeys::Gamepad_LeftShoulder))
             GI->Session.account.tutorialFlags |= 16u;
-        if (Down(EKeys::LeftMouseButton) || Down(EKeys::Gamepad_RightShoulder))
+        if (FireHeld)
             GI->Session.account.tutorialFlags |= 32u;
         if (Before != GI->Session.account.tutorialFlags)
             GI->PersistAccount();
@@ -1025,7 +1199,7 @@ void ASSPlayerController::PlayerTick(float Dt)
                                  GI->Session.settings.toggleBrake ? BrakeLatch : Brake);
         if (Pressed(EKeys::Q) || Pressed(EKeys::Gamepad_LeftShoulder))
             ShipPawn->RequestDodge();
-        if (Down(EKeys::LeftMouseButton) || Down(EKeys::Gamepad_RightShoulder))
+        if (FireHeld)
             ShipPawn->Fire();
     }
     else if (auto *WalkPawn = Cast<ASSWalker>(GetPawn()))
@@ -1033,6 +1207,6 @@ void ASSPlayerController::PlayerTick(float Dt)
             FVector2D(float(Down(EKeys::D)) - float(Down(EKeys::A)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftX),
                       float(Down(EKeys::W)) - float(Down(EKeys::S)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftY)),
             Look, Down(EKeys::LeftShift) || Down(EKeys::Gamepad_FaceButton_Left), Dt);
-    if (Pressed(EKeys::E) || Pressed(EKeys::Gamepad_FaceButton_Bottom))
+    if (!MenuInput && (Pressed(EKeys::E) || Pressed(EKeys::Gamepad_FaceButton_Bottom)))
         GM->Interact();
 }

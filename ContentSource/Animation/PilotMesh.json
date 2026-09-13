@@ -1,0 +1,27 @@
+{
+  "status": "DERIVED_MESH_REQUIRES_UNREAL_FIT_REVIEW",
+  "source_glb_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "derivative_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665",
+  "vertices": 202507,
+  "tail_vertices_changed": 140186,
+  "tail_max_vertex_drift_cm_17_samples": 0.0,
+  "mask_blender_m": {
+    "whole_connected_fur_islands": true,
+    "min_y_greater_than": -0.04,
+    "max_y_greater_than": 0.1,
+    "max_z_greater_than": -0.1
+  },
+  "target_tail_translation_m": [
+    0,
+    0,
+    0.12
+  ],
+  "joint": "Pelvis",
+  "shared_skeleton_unchanged": true,
+  "unchanged_accessor_hashes": {
+    "TEXCOORD_0": "41f98246a9b81e72891ca8ea23f10f0faf85dd0b5db2c168b17d8c46ee9e7b15",
+    "indices": "eabd72a6c5fe3957bd53e05ea2389b88058aa8defcfeb2a1ad10347fb49d8dd7"
+  },
+  "body_vertices_unchanged": 62321,
+  "notes": "Pilot-only derivative, source/walking mesh unchanged. Tail curl copied rigidly from original rest shape. Only selected tail position/normal/weights/joints changed; no texture, UV, triangle or material change. Intended for A_Pilot only."
+}

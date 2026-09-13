@@ -15,6 +15,7 @@
 #include "Engine/StaticMesh.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
+#include "Animation/AnimSequence.h"
 
 ASSShip::ASSShip()
 {
@@ -32,8 +33,9 @@ ASSShip::ASSShip()
     Pilot = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("AcornautPilot"));
     Pilot->SetupAttachment(HullMesh);
     Pilot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    Pilot->SetRelativeLocation(FVector(15, 0, 50));
-    Pilot->SetRelativeScale3D(FVector(.7f));
+    Pilot->SetRelativeLocation(FVector(-15, 0, 72));
+    Pilot->SetRelativeRotation(FRotator(0, -90, 0));
+    Pilot->SetRelativeScale3D(FVector(1.5f));
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ChaseBoom"));
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 650.f;
@@ -45,6 +47,7 @@ ASSShip::ASSShip()
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ChaseCamera"));
     Camera->SetupAttachment(CameraBoom);
     Camera->FieldOfView = 80.f;
+    Camera->SetRelativeRotation(FRotator(-10, 0, 0));
     EngineAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineAudio"));
     EngineAudio->SetupAttachment(RootComponent);
 }
@@ -61,7 +64,9 @@ void ASSShip::BeginPlay()
         LoadObject<UStaticMesh>(nullptr, Agile ? TEXT("/Game/SpaceSurvival/Meshes/SM_AgileShip.SM_AgileShip")
                                                : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShip.SM_AcornShip")));
     Pilot->SetSkeletalMesh(
-        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_Acornaut.SK_Acornaut")));
+        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautPilot.SK_AcornautPilot")));
+    Pilot->PlayAnimation(LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Pilot.A_Pilot")),
+                         true);
     EngineAudio->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Engine.Engine")));
     EngineAudio->Play();
     Velocity = GetActorForwardVector() * Tuning->CruiseSpeed;

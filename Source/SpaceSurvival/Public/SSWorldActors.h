@@ -296,7 +296,7 @@ private:
     ASSShip *FindShip() const;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
     ASSWorldBody *SpawnHazard(ESSWorldKind Kind, float Radius);
-    void SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective = nullptr);
+    ASSEnemy *SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective = nullptr);
     void SpawnWreckagePassage();
     void OfferEncounter(ESSEncounterKind Kind);
     void CleanTrackedActors();
@@ -307,6 +307,8 @@ private:
     bool bSalvageOffered = false;
     bool bDistressOffered = false;
     bool bCompoundGravitySpawned = false;
+    bool bCompoundAsteroidSpawned = false;
+    bool bCompoundEnemySpawned = false;
     float Pressure = 0.f;
     float AvailableBudget = 0.f;
     float SpawnCooldown = 0.f;

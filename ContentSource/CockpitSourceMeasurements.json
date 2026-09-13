@@ -1,0 +1,213 @@
+{
+  "status": "SOURCE_EVALUATED_NOT_GAMEPLAY",
+  "blender": "5.1.2",
+  "source_glb_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "vertex_count": 202507,
+  "samples": [
+    {
+      "seconds": 0.0,
+      "min_vertex_z_cm": -63.16577,
+      "max_vertex_z_cm": 44.1195,
+      "foot_socket_z_cm": {
+        "L_Foot": -58.25697,
+        "R_Foot": -42.50833
+      }
+    },
+    {
+      "seconds": 0.154167,
+      "min_vertex_z_cm": -63.43266,
+      "max_vertex_z_cm": 43.53931,
+      "foot_socket_z_cm": {
+        "L_Foot": -58.47861,
+        "R_Foot": -43.44015
+      }
+    },
+    {
+      "seconds": 0.308333,
+      "min_vertex_z_cm": -62.9024,
+      "max_vertex_z_cm": 44.11023,
+      "foot_socket_z_cm": {
+        "L_Foot": -58.0879,
+        "R_Foot": -57.98174
+      }
+    },
+    {
+      "seconds": 0.4625,
+      "min_vertex_z_cm": -65.78408,
+      "max_vertex_z_cm": 43.70565,
+      "foot_socket_z_cm": {
+        "L_Foot": -55.6051,
+        "R_Foot": -60.10789
+      }
+    },
+    {
+      "seconds": 0.616667,
+      "min_vertex_z_cm": -64.51684,
+      "max_vertex_z_cm": 44.85903,
+      "foot_socket_z_cm": {
+        "L_Foot": -44.56816,
+        "R_Foot": -59.40696
+      }
+    },
+    {
+      "seconds": 0.770833,
+      "min_vertex_z_cm": -64.26676,
+      "max_vertex_z_cm": 45.65572,
+      "foot_socket_z_cm": {
+        "L_Foot": -41.98762,
+        "R_Foot": -59.33483
+      }
+    },
+    {
+      "seconds": 0.925,
+      "min_vertex_z_cm": -63.67443,
+      "max_vertex_z_cm": 44.7228,
+      "foot_socket_z_cm": {
+        "L_Foot": -56.12627,
+        "R_Foot": -58.80242
+      }
+    },
+    {
+      "seconds": 1.079167,
+      "min_vertex_z_cm": -64.45911,
+      "max_vertex_z_cm": 43.19028,
+      "foot_socket_z_cm": {
+        "L_Foot": -58.91551,
+        "R_Foot": -55.81138
+      }
+    },
+    {
+      "seconds": 1.233333,
+      "min_vertex_z_cm": -63.29294,
+      "max_vertex_z_cm": 42.75308,
+      "foot_socket_z_cm": {
+        "L_Foot": -58.31228,
+        "R_Foot": -43.03288
+      }
+    },
+    {
+      "seconds": 1.3875,
+      "min_vertex_z_cm": -63.46906,
+      "max_vertex_z_cm": 42.57739,
+      "foot_socket_z_cm": {
+        "L_Foot": -58.48697,
+        "R_Foot": -44.80616
+      }
+    },
+    {
+      "seconds": 1.541667,
+      "min_vertex_z_cm": -63.39467,
+      "max_vertex_z_cm": 43.46814,
+      "foot_socket_z_cm": {
+        "L_Foot": -57.85713,
+        "R_Foot": -58.38236
+      }
+    },
+    {
+      "seconds": 1.695833,
+      "min_vertex_z_cm": -65.8906,
+      "max_vertex_z_cm": 43.40644,
+      "foot_socket_z_cm": {
+        "L_Foot": -54.8552,
+        "R_Foot": -60.24269
+      }
+    },
+    {
+      "seconds": 1.85,
+      "min_vertex_z_cm": -64.67819,
+      "max_vertex_z_cm": 44.83482,
+      "foot_socket_z_cm": {
+        "L_Foot": -42.56431,
+        "R_Foot": -59.55786
+      }
+    },
+    {
+      "seconds": 2.004167,
+      "min_vertex_z_cm": -65.0354,
+      "max_vertex_z_cm": 45.59518,
+      "foot_socket_z_cm": {
+        "L_Foot": -43.70435,
+        "R_Foot": -59.95833
+      }
+    },
+    {
+      "seconds": 2.158333,
+      "min_vertex_z_cm": -64.23746,
+      "max_vertex_z_cm": 45.09497,
+      "foot_socket_z_cm": {
+        "L_Foot": -57.29531,
+        "R_Foot": -59.27017
+      }
+    },
+    {
+      "seconds": 2.3125,
+      "min_vertex_z_cm": -64.07447,
+      "max_vertex_z_cm": 44.40908,
+      "foot_socket_z_cm": {
+        "L_Foot": -58.50185,
+        "R_Foot": -56.80538
+      }
+    },
+    {
+      "seconds": 2.466667,
+      "min_vertex_z_cm": -63.15452,
+      "max_vertex_z_cm": 44.24401,
+      "foot_socket_z_cm": {
+        "L_Foot": -58.23742,
+        "R_Foot": -45.312
+      }
+    }
+  ],
+  "tail_skinning_audit": {
+    "selection": "Unposed mesh coordinates: Blender Y > 0.08m and Z > 0.10m; upper rear curl region, not a production repair mask.",
+    "vertices": 93810,
+    "weight_fractions": {
+      "R_Middle1": 0.592584,
+      "Spine1": 0.11301,
+      "R_Middle3": 0.102586,
+      "R_Middle2": 0.077313,
+      "R_Foot": 0.068795,
+      "Pelvis": 0.019524,
+      "Spine3": 0.017891,
+      "Spine2": 0.001854,
+      "R_Hip": 0.001092,
+      "L_Hip": 0.000988,
+      "R_Wrist": 0.000869,
+      "R_Collar": 0.000856,
+      "R_Pinky3": 0.000577,
+      "L_Knee": 0.000502,
+      "R_Shoulder": 0.000452,
+      "L_Middle2": 0.000324,
+      "L_Ring1": 0.000242,
+      "R_Knee": 0.000236,
+      "L_Pinky1": 0.000209,
+      "Neck": 2.3e-05,
+      "L_Middle3": 2e-05,
+      "L_Ring3": 1.9e-05,
+      "L_Wrist": 1.6e-05,
+      "L_Index1": 1e-05,
+      "L_Foot": 8e-06
+    },
+    "finding": "Upper rear curl has dominant right middle finger skin influences; these drive tail deformation when hands are posed.",
+    "proposed_derivative": "Pilot-only duplicate skeletal mesh, existing 52-bone skeleton/A_Pilot. Reweight a visually verified rear-tail mask to Pelvis, with rigid bind-space compensation to preserve original upright curl in seated pose. Geometry shape/UVs/materials remain source-derived. Simple reweight without compensation rotates curl rearward. No derivative mesh has been written or imported; repair mask and cockpit clearance remain unverified."
+  },
+  "walker_fit": {
+    "mesh_scale": 1.0,
+    "mesh_origin_above_floor_cm": 65,
+    "capsule_half_height_cm": 88,
+    "proposed_relative_z_cm": -23,
+    "method": "88 + relative_z + source_min_z = sole above floor. Source socket positions cross-checked against fresh Unreal A_Walk at 0/.6/1.2/1.8 seconds.",
+    "limits": "17 source samples bound sampled skin deformation only; no IK, collision, locomotion control or full-cycle runtime foot contact validation."
+  },
+  "pilot_fit": {
+    "best_seat_contact_candidate_cm": [
+      -27,
+      0,
+      72
+    ],
+    "scale": 1.5,
+    "yaw_degrees": -90,
+    "status": "BODY_FIT_ONLY_TAIL_OCCLUSION_UNRESOLVED",
+    "limitations": "The seated body/head fit the ship while its hull remains dominant. Rear/side PNGs reveal tail/hull/backrest intersections. Raising to [-15,0,87] reveals more tail but loses thigh/seat contact. No tail-named bone is present in the 52-bone imported skeleton. Offset alone did not meet full silhouette requirements; upper rear curl source finger weights are quantified in tail_skinning_audit."
+  }
+}

@@ -14,6 +14,7 @@ private:
     TArray<FBox2D> MenuBounds;
     float Scale = 1.f;
     void Text(const FString &Value, float X, float Y, float Size = 1.f, FLinearColor Color = FLinearColor::White);
-    float Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color);
+    float Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color,
+                    bool Render = true);
     void Meter(const FString &Name, double Value, double Maximum, float X, float Y, FLinearColor Color);
 };

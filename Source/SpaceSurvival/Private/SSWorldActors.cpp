@@ -73,6 +73,29 @@ bool HasThreatCapacity(const UObject *Context, int32 Additional = 1)
            Mode->Director->GetActiveThreatCount() + Additional <= Mode->Director->MaximumActiveThreats;
 }
 
+// Shared admission rule for point spawns and an event's traversable approach.
+// Weather may overlap solids; distinct environmental envelopes remain separated.
+bool HasSpatialClearance(const UObject *Context, FVector Start, FVector End, float Radius, bool bField = false)
+{
+    for (TActorIterator<ASSWorldBody> It(Context->GetWorld()); It; ++It)
+    {
+        if (It->IsActorBeingDestroyed() || (!It->IsSolidHazard() && !It->IsEnemy() && !It->IsEnvironmentalField()))
+            continue;
+        if (bField && It->IsEnvironmentalField())
+        {
+            if (FVector::DistSquared(End, It->GetActorLocation()) <
+                FMath::Square(Radius + It->GetBodyRadius() + 1800.f))
+                return false;
+            continue;
+        }
+        if (bField || It->IsEnvironmentalField())
+            continue;
+        if (FMath::PointDistToSegment(It->GetActorLocation(), Start, End) < Radius + It->GetBodyRadius() + 420.f)
+            return false;
+    }
+    return true;
+}
+
 bool SelectContent(const UObject *Context, const TArray<ESSWorldKind> &Candidates, int32 Wave, FRandomStream &Random,
                    bool bEnemy, ESSWorldKind &Selected)
 {
@@ -357,6 +380,14 @@ void ASSWorldBody::Tick(float DeltaSeconds)
                 Announce(this, Kind == ESSWorldKind::ElectricalStorm
                                    ? TEXT("ELECTRICAL STORM · Pulsing rings warn before discharge")
                                    : TEXT("GRAVITY ANOMALY · Counter the pull; boost across its edge"));
+                if (auto *Mode = GameMode(this))
+                {
+                    Mode->WarnThreat(Kind == ESSWorldKind::ElectricalStorm ? TEXT("ELECTRICAL FIELD / WATCH THE PULSE")
+                                                                           : TEXT("GRAVITY FIELD / COUNTER THE PULL"),
+                                     GetActorLocation(), 4.f);
+                    Mode->React(Kind == ESSWorldKind::ElectricalStorm ? TEXT("Static on the hull. Keep us clear.")
+                                                                      : TEXT("That pull is getting personal."));
+                }
             }
             const bool bReady = Age >= TelegraphSeconds;
             if (DynamicMaterial)
@@ -861,9 +892,66 @@ bool ASSEncounterBeacon::TryAccept()
         Announce(this, TEXT("SIGNAL ON HOLD · Clear nearby threats before accepting"));
         return false;
     }
+    const FVector Forward = Ship->GetActorForwardVector();
+    const FVector Right = Ship->GetActorRightVector();
+    const FVector Up = Ship->GetActorUpVector();
+    const FVector ShipOrigin = Ship->GetActorLocation();
+    const float Lead =
+        FMath::Max(Definition.ObjectiveLeadDistance,
+                   static_cast<float>(Ship->GetVelocity().Size()) *
+                       FMath::Max(Content(this)->MinimumReactionSeconds, Definition.ObjectiveLeadSeconds));
+    const FVector2D RouteOffsets[] = {FVector2D(0, 0),     FVector2D(1400, 0),    FVector2D(-1400, 0),
+                                      FVector2D(2800, 0),  FVector2D(-2800, 0),   FVector2D(0, 1200),
+                                      FVector2D(0, -1200), FVector2D(1400, 1200), FVector2D(-1400, -1200)};
+    FVector Origin = ShipOrigin;
+    bool bRouteClear = false;
+    for (const FVector2D Offset : RouteOffsets)
+    {
+        const FVector CandidateOrigin = ShipOrigin + Right * Offset.X + Up * Offset.Y;
+        FVector PreviousCache = ShipOrigin;
+        bool bClear = true;
+        for (int32 Index = 0; Index < ObjectiveCount && bClear; ++Index)
+        {
+            if (EncounterKind == ESSEncounterKind::SalvageCache)
+            {
+                const FVector Centre =
+                    CandidateOrigin + Forward * (Lead + Index * Definition.CacheSpacing) +
+                    Right * (Index % 2 ? -Definition.CacheLateralOffset : Definition.CacheLateralOffset);
+                bClear = HasSpatialClearance(this, PreviousCache, Centre, ShipRadius);
+                for (int32 Side : {-1, 1})
+                {
+                    const FVector DebrisPosition = Centre + Right * Side * Definition.DebrisHalfSpacing + Up * 100.f;
+                    bClear =
+                        bClear && HasSpatialClearance(this, DebrisPosition, DebrisPosition, Definition.DebrisRadius);
+                }
+                PreviousCache = Centre;
+            }
+            else
+            {
+                const ESSWorldKind EnemyKind = Index % 2 ? ESSWorldKind::Flanker : ESSWorldKind::Pursuer;
+                const FVector Position =
+                    CandidateOrigin + Forward * Lead +
+                    Right * (Index - .5f * (ObjectiveCount - 1)) * 2.f * Definition.DebrisHalfSpacing;
+                bClear = HasSpatialClearance(this, Position, Position, Content(this)->Enemy(EnemyKind).Radius);
+            }
+        }
+        if (bClear)
+        {
+            Origin = CandidateOrigin;
+            bRouteClear = true;
+            break;
+        }
+    }
+    if (!bRouteClear)
+    {
+        Announce(this, TEXT("SIGNAL ON HOLD / Objective route obstructed; move into clear space and retry"));
+        return false;
+    }
     bAccepted = true;
     ObjectiveRemaining = ObjectiveCount;
     ObjectiveSeconds = FMath::Max(3.f, Definition.ObjectiveDuration);
+    // Offer age must not shorten the objective window granted on acceptance.
+    LifetimeSeconds = FMath::Max(LifetimeSeconds, Age + ObjectiveSeconds + 5.f);
     if (USSGameInstance *Instance = GetGameInstance<USSGameInstance>())
     {
         if (EncounterKind == ESSEncounterKind::SalvageCache)
@@ -871,14 +959,6 @@ bool ASSEncounterBeacon::TryAccept()
         else
             Instance->Session.run.distressEventAccepted = true;
     }
-    const FVector Forward = Ship->GetActorForwardVector();
-    const FVector Right = Ship->GetActorRightVector();
-    const FVector Up = Ship->GetActorUpVector();
-    const FVector Origin = Ship->GetActorLocation();
-    const float Lead =
-        FMath::Max(Definition.ObjectiveLeadDistance,
-                   static_cast<float>(Ship->GetVelocity().Size()) *
-                       FMath::Max(Content(this)->MinimumReactionSeconds, Definition.ObjectiveLeadSeconds));
     if (EncounterKind == ESSEncounterKind::SalvageCache)
     {
         Announce(this, FString::Printf(TEXT("SALVAGE ACCEPTED · Collect %d marked caches through the wreckage"),
@@ -984,7 +1064,7 @@ void USSSurvivalDirectorComponent::Configure(int32 InWave, bool bInClimax)
     WaveAge = 0.f;
     AvailableBudget = 1.f;
     SpawnCooldown = .75f;
-    bCompoundGravitySpawned = false;
+    bCompoundGravitySpawned = bCompoundAsteroidSpawned = bCompoundEnemySpawned = false;
     SafeLane = FVector2D(Random.RandRange(-1, 1) * 950.f, Random.RandRange(-1, 1) * 750.f);
     if (USSGameInstance *Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
     {
@@ -1038,33 +1118,7 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
             continue;
         const FVector Candidate = Ship->GetActorLocation() + Forward * (Lead + Random.FRandRange(0.f, 5500.f)) +
                                   Right * Offset.X + Up * Offset.Y;
-        bool bClear = true;
-        for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
-        {
-            if (It->IsActorBeingDestroyed() || (!It->IsSolidHazard() && !It->IsEnemy() && !It->IsEnvironmentalField()))
-                continue;
-            if (bField && It->IsEnvironmentalField())
-            {
-                if (FVector::DistSquared(Candidate, It->GetActorLocation()) <
-                    FMath::Square(Radius + It->GetBodyRadius() + 1800.f))
-                {
-                    bClear = false;
-                    break;
-                }
-                continue;
-            }
-            // Fields may overlap physical hazards by design. Distinct fields must
-            // have separated envelopes; a distant old field cannot starve a climax.
-            if (bField || It->IsEnvironmentalField())
-                continue;
-            if (FVector::DistSquared(Candidate, It->GetActorLocation()) <
-                FMath::Square(Radius + It->GetBodyRadius() + 420.f))
-            {
-                bClear = false;
-                break;
-            }
-        }
-        if (bClear)
+        if (HasSpatialClearance(this, Candidate, Candidate, Radius, bField))
         {
             Location = Candidate;
             return true;
@@ -1102,10 +1156,10 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     return Body;
 }
 
-void USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective)
+ASSEnemy *USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective)
 {
     if (GetActiveThreatCount() >= MaximumActiveThreats)
-        return;
+        return nullptr;
     int32 EnemyCount = 0;
     for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
         ++EnemyCount;
@@ -1113,10 +1167,10 @@ void USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBea
     const auto Definition = Content(this)->Enemy(Kind);
     if (EnemyCount >=
         (bClimax ? DirectorData.ClimaxEnemyCap : (Wave < 6 ? DirectorData.EarlyEnemyCap : DirectorData.LateEnemyCap)))
-        return;
+        return nullptr;
     FVector Location;
     if (!FindSafeSpawn(Definition.Radius, Location))
-        return;
+        return nullptr;
     if (ASSEnemy *Enemy = GetWorld()->SpawnActor<ASSEnemy>(Location, FRotator::ZeroRotator))
     {
         Enemy->Configure(Kind, Definition.Radius,
@@ -1125,7 +1179,9 @@ void USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBea
         if (ASSShip *Ship = FindShip())
             Enemy->SetLinearVelocity(Ship->GetVelocity());
         Spawned.Add(Enemy);
+        return Enemy;
     }
+    return nullptr;
 }
 
 void USSSurvivalDirectorComponent::SpawnWreckagePassage()
@@ -1238,10 +1294,34 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
     SpawnCooldown = Random.FRandRange(FMath::Max(.1f, DirectorData.SpawnIntervalMin),
                                       FMath::Max(DirectorData.SpawnIntervalMin, DirectorData.SpawnIntervalMax));
 
-    if (bClimax && Wave == 10 && !bCompoundGravitySpawned)
+    if (bClimax && Wave == 10 && (!bCompoundGravitySpawned || !bCompoundAsteroidSpawned || !bCompoundEnemySpawned))
     {
-        if (SpawnHazard(ESSWorldKind::GravityAnomaly, Gravity.ClimaxRadius))
-            bCompoundGravitySpawned = true;
+        // Establish each required component before random composition resumes.
+        // Existing capacity, telegraph, safe-lane and budget rules still apply;
+        // a blocked admission retries without consuming its cost.
+        const ESSWorldKind Required = !bCompoundGravitySpawned    ? ESSWorldKind::GravityAnomaly
+                                      : !bCompoundAsteroidSpawned ? ESSWorldKind::MediumAsteroid
+                                                                  : ESSWorldKind::Pursuer;
+        const bool bEnemy = Required == ESSWorldKind::Pursuer;
+        const float Cost =
+            FMath::Max(.1f, bEnemy ? Data->Enemy(Required).PressureCost : Data->Hazard(Required).PressureCost);
+        if (AvailableBudget >= Cost)
+        {
+            const bool SpawnedRequired =
+                bEnemy ? SpawnEnemy(Required) != nullptr
+                       : SpawnHazard(Required,
+                                     Required == ESSWorldKind::GravityAnomaly ? Gravity.ClimaxRadius : -1.f) != nullptr;
+            if (SpawnedRequired)
+            {
+                AvailableBudget -= Cost;
+                if (Required == ESSWorldKind::GravityAnomaly)
+                    bCompoundGravitySpawned = true;
+                else if (Required == ESSWorldKind::MediumAsteroid)
+                    bCompoundAsteroidSpawned = true;
+                else
+                    bCompoundEnemySpawned = true;
+            }
+        }
         return;
     }
     const float Roll = Random.FRand();
@@ -1253,11 +1333,8 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
         if (SelectContent(this, {ESSWorldKind::Pursuer, ESSWorldKind::Flanker}, Wave, Random, true, Selected))
         {
             const float Cost = FMath::Max(.1f, Data->Enemy(Selected).PressureCost);
-            if (AvailableBudget >= Cost)
-            {
-                SpawnEnemy(Selected);
+            if (AvailableBudget >= Cost && SpawnEnemy(Selected))
                 AvailableBudget -= Cost;
-            }
         }
     }
     else if (Wave >= FMath::Min(Storm.MinimumWave, Gravity.MinimumWave) && !bClimax &&

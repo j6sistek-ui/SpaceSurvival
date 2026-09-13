@@ -106,7 +106,11 @@ class Author:
         for name, (rgb, metal, rough, emission) in self.mesh_manifest["palette"].items():
             path = f"{BASE}/Materials/{name}"
             if self.library.does_asset_exist(path):
-                self.existing_authored(path, u.Material)
+                material = self.existing_authored(path, u.Material)
+                if name in ("M_Hull", "M_Gold", "M_Cyan") and not material.get_editor_property("used_with_instanced_static_meshes"):
+                    material.set_editor_property("used_with_instanced_static_meshes", True)
+                    edit.recompile_material(material)
+                    self.save(material)
                 continue
             material = self.tools.create_asset(name, BASE + "/Materials", u.Material, u.MaterialFactoryNew())
             if not material:
@@ -114,6 +118,9 @@ class Author:
             if name in ("M_Space", "M_Star", "M_StarWarm"):
                 material.set_editor_property("shading_model", u.MaterialShadingModel.MSM_UNLIT)
                 material.set_editor_property("two_sided", True)
+
+            if name in ("M_Hull", "M_Gold", "M_Cyan"):
+                material.set_editor_property("used_with_instanced_static_meshes", True)
 
             def vector(parameter, color, x, y):
                 node = edit.create_material_expression(material, u.MaterialExpressionVectorParameter, x, y)
@@ -206,6 +213,17 @@ class Author:
             raise RuntimeError(f"{name}: imported material groups differ from source")
         self.save(mesh)
 
+    def hero_materials(self, mesh):
+        for slot in mesh.get_editor_property("materials"):
+            material = slot.get_editor_property("material_interface")
+            if not material:
+                raise RuntimeError("Acornaut skeletal material is missing")
+            base = material.get_base_material()
+            if not base.get_editor_property("used_with_skeletal_mesh"):
+                base.set_editor_property("used_with_skeletal_mesh", True)
+                self.u.MaterialEditingLibrary.recompile_material(base)
+                self.save(base)
+
     def hero(self):
         u = self.u
         destination = BASE + "/Character"
@@ -218,6 +236,7 @@ class Author:
                 raise RuntimeError("Existing character and walk animation do not share a skeleton")
             if walk.get_editor_property("sequence_length") <= 0:
                 raise RuntimeError("Existing walk animation has no duration")
+            self.hero_materials(mesh)
             return
         if self.library.does_asset_exist(target_mesh) or self.library.does_asset_exist(target_walk):
             raise RuntimeError("Partial character import exists; reconcile canonical mesh and animation before rerun")
@@ -269,6 +288,7 @@ class Author:
             raise RuntimeError("Imported walk animation has no duration")
         for obj in imported:
             self.save(obj)
+        self.hero_materials(mesh)
 
     def sound(self, item):
         u = self.u
@@ -337,6 +357,21 @@ class Author:
         if clip.get_editor_property("skeleton") != skeleton or abs(clip.get_editor_property("sequence_length")-4.0) > .01:
             raise RuntimeError("Pilot animation skeleton or duration differs from source contract")
 
+    def pilot_mesh(self):
+        path = BASE + "/Character/SK_AcornautPilot"
+        source = ROOT / "ContentSource/Animation/PilotMesh.glb"
+        manifest = json.loads(source.with_suffix(".json").read_text(encoding="utf-8"))
+        if hashlib.sha256(source.read_bytes()).hexdigest() != manifest["derivative_sha256"]:
+            raise RuntimeError("Pilot mesh derivative differs from its reviewed manifest")
+        if not self.library.does_asset_exist(path):
+            source_module("ss_pilot_mesh_import", ROOT / "ContentSource/ImportPilotMesh.py").main()
+        mesh = self.existing_authored(path, self.u.SkeletalMesh)
+        original = self.required(BASE + "/Character/SK_Acornaut", self.u.SkeletalMesh)
+        if mesh.get_editor_property("skeleton") != original.get_editor_property("skeleton"):
+            raise RuntimeError("Pilot derivative does not share the original skeleton")
+        if self.library.get_metadata_tag(mesh, "SSPilotMeshSourceSHA256") != manifest["derivative_sha256"]:
+            raise RuntimeError("Pilot derivative requires a deliberate reviewed reimport")
+
     def data_asset(self):
         u = self.u
         path = BASE + "/Data/DA_Phase1"
@@ -385,6 +420,8 @@ class Author:
             component = actor.get_component_by_class(u.StaticMeshComponent)
             component.set_mobility(u.ComponentMobility.MOVABLE)
             component.set_static_mesh(self.required(mesh_path, u.StaticMesh))
+            actor.set_actor_enable_collision(False)
+            component.set_collision_profile_name("NoCollision")
             component.set_collision_enabled(u.CollisionEnabled.NO_COLLISION)
             component.set_editor_property("cast_shadow", False)
             actor.set_actor_scale3d(u.Vector(scale, scale, scale))
@@ -400,6 +437,7 @@ class Author:
             component.set_mobility(u.ComponentMobility.MOVABLE)
             component.set_light_color(color)
             component.set_intensity(intensity)
+            component.set_editor_property("forward_shading_priority", 2 if label == "SpaceKey" else 1)
         post = actors.spawn_actor_from_class(u.PostProcessVolume, u.Vector(0, 0, 0))
         post.set_actor_label("ReadableSpaceExposure")
         post.set_editor_property("unbound", True)
@@ -420,10 +458,12 @@ class Author:
         for directory in ("Materials", "Meshes", "Character", "Audio", "Maps", "Data", "Authoring"):
             self.library.make_directory(BASE + "/" + directory)
         self.stage("Materials", self.palette)
+        self.stage("Cinematic space material", lambda: source_module("ss_space_material", ROOT / "Scripts/AuthorSpaceMaterial.py").author())
         for item in self.mesh_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.static_mesh(asset))
         self.stage("Preserved Acornaut import", self.hero)
         self.stage("Authored pilot animation", self.pilot)
+        self.stage("Reviewed pilot mesh", self.pilot_mesh)
         for item in self.audio_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.sound(asset))
         if not assets_only:

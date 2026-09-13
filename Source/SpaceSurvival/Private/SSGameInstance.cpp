@@ -33,8 +33,17 @@ void USSGameInstance::Init()
         SS::DecodeSettings(Payload, Session.settings, Error);
     ApplySettings();
 }
+void USSGameInstance::OnStart()
+{
+    Super::OnStart();
+    // Init runs before GameEngine is initialized, when UE skips scalability.
+    // Reapply after startup so the first frame uses our loaded/default quality.
+    ApplySettings();
+}
 bool USSGameInstance::ReadDomain(const FString &Slot, std::string &Payload) const
 {
+    if (!UGameplayStatics::DoesSaveGameExist(Slot, 0))
+        return false;
     const auto *Record = Cast<USSStoredData>(UGameplayStatics::LoadGameFromSlot(Slot, 0));
     if (!Record || Record->Version != 1 || !Record->Valid)
         return false;
@@ -123,7 +132,8 @@ void USSGameInstance::ApplySettings()
     {
         Settings->SetOverallScalabilityLevel(Session.settings.quality);
         Settings->SetFrameRateLimit(Session.settings.frameLimit);
-        Settings->ApplySettings(false);
+        // Graphics changes must not override the startup window/resolution request.
+        Settings->ApplyNonResolutionSettings();
     }
     if (auto *CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("r.MotionBlurQuality")))
         CVar->Set(Session.settings.motionBlur ? 3 : 0, ECVF_SetByGameSetting);

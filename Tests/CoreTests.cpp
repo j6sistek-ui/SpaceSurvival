@@ -237,6 +237,78 @@ void UpgradeTiersAndRepair()
     CHECK(s.UpgradePrice(SS::Upgrade::Hull, -1.0) == -1);
 }
 
+void DepotShieldService()
+{
+    auto s = Fresh("depot-shield");
+    s.AwardCredits(100);
+    s.ApplyDamage(70.0);
+    s.run.criticalSeconds = 8.0;
+    s.run.interferenceSeconds = 3.0;
+    s.run.thermalSeconds = 1.0;
+    s.run.brakeHeat = 80.0;
+    s.run.boost = 45.0;
+    CHECK(s.DepotShieldRepairPrice() == 21);
+    const auto withoutDepot = SS::EncodeRun(s.run);
+    CHECK(!s.RepairShieldAtDepot());
+    CHECK(SS::EncodeRun(s.run) == withoutDepot);
+    s.run.depotSeen = true;
+    s.run.credits = 20;
+    const auto unaffordable = SS::EncodeRun(s.run);
+    CHECK(!s.RepairShieldAtDepot());
+    CHECK(SS::EncodeRun(s.run) == unaffordable);
+
+    s.run.credits = 21;
+    const double hull = s.run.hull;
+    CHECK(s.RepairShieldAtDepot());
+    CHECK(s.run.credits == 0 && s.run.totalCreditsEarned == 100);
+    CHECK(Near(s.run.shield, s.Stats().maxShield) && Near(s.run.hull, hull));
+    CHECK(s.run.criticalSeconds == 8.0 && s.run.interferenceSeconds == 3.0 && s.run.thermalSeconds == 1.0 &&
+          s.run.brakeHeat == 80.0 && s.run.boost == 45.0);
+    s.run.credits = 50;
+    const auto alreadyFull = SS::EncodeRun(s.run);
+    CHECK(!s.RepairShieldAtDepot());
+    CHECK(SS::EncodeRun(s.run) == alreadyFull);
+
+    auto limited = s;
+    limited.run.tiers[1] = 2;
+    limited.run.contract = SS::Contract::Pressure;
+    limited.run.shield = 0.0;
+    CHECK(limited.RepairShieldAtDepot());
+    CHECK(Near(limited.run.shield, 58.5)); // Tier II capacity honors the active shield handicap.
+    CHECK(limited.run.credits == 29 && limited.run.contract == SS::Contract::Pressure);
+
+    for (auto phase : {SS::Phase::Hangar, SS::Phase::Docking, SS::Phase::Station, SS::Phase::Dead})
+    {
+        auto blocked = s;
+        blocked.run.phase = phase;
+        blocked.run.shield = 0.0;
+        const auto before = SS::EncodeRun(blocked.run);
+        CHECK(!blocked.RepairShieldAtDepot());
+        CHECK(SS::EncodeRun(blocked.run) == before);
+    }
+    auto inactive = s;
+    inactive.run.active = false;
+    inactive.run.shield = 0.0;
+    CHECK(!inactive.RepairShieldAtDepot());
+    CHECK(inactive.run.shield == 0.0 && inactive.run.credits == 50);
+    auto malformed = s;
+    malformed.run.shield = -1.0;
+    CHECK(!malformed.RepairShieldAtDepot());
+    malformed.run.shield = 0.0;
+    malformed.tuning.baseShield = std::numeric_limits<double>::quiet_NaN();
+    CHECK(!malformed.RepairShieldAtDepot());
+    CHECK(malformed.run.shield == 0.0 && malformed.run.credits == 50);
+
+    s.tuning.repairPrice = 36;
+    CHECK(s.DepotShieldRepairPrice() == 22);
+    s.tuning.repairPrice = 0;
+    CHECK(s.DepotShieldRepairPrice() == 1);
+    s.tuning.repairPrice = -100;
+    CHECK(s.DepotShieldRepairPrice() == 1);
+    s.tuning.repairPrice = std::numeric_limits<int>::max();
+    CHECK(s.DepotShieldRepairPrice() == 60000000);
+}
+
 void Contracts()
 {
     auto objective = Fresh("objective");
@@ -577,6 +649,7 @@ int main()
     FlightMetersAndUtilities();
     WaveLifecycleAndEconomy();
     UpgradeTiersAndRepair();
+    DepotShieldService();
     Contracts();
     DeathProgressionReset();
     SerializationAndValidation();

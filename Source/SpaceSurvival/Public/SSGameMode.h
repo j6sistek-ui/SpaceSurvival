@@ -46,6 +46,7 @@ public:
     ASSGameMode();
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     ASSShip *GetPlayerShip() const
     {
         return Ship;
@@ -54,6 +55,8 @@ public:
     void NotifyEventCompleted(bool bCombat);
     void NotifyPickup(int32 Kind, float Amount);
     void Announce(const FString &Message);
+    void WarnThreat(const FString &Message, FVector Position, float Duration = 4.f);
+    void React(const FString &Message);
     void Interact();
     void OpenPanel(ESSPanel Panel);
     void ClosePanel();
@@ -67,6 +70,9 @@ public:
     }
     bool InHangar() const;
     FString PanelTitle, PanelDetail, Announcement;
+    FString ThreatWarning, PilotReaction;
+    FVector ThreatPosition = FVector::ZeroVector;
+    float ThreatWarningSeconds = 0.f, PilotReactionSeconds = 0.f;
     TArray<FSSMenuEntry> Entries;
     int32 SelectedEntry = 0;
     ESSPanel Panel = ESSPanel::None;
@@ -98,11 +104,18 @@ private:
     TObjectPtr<AActor> SpaceBackdrop;
     UPROPERTY()
     TObjectPtr<AActor> SpaceStars;
+    UPROPERTY()
+    TObjectPtr<class USoundBase> AlarmSound;
+    UPROPERTY()
+    TObjectPtr<class USoundAttenuation> AlarmAttenuation;
     int32 PreviousPhase = -1, PreviousWave = -1;
     int32 SelectedShip = 0, SelectedWeapon = 0;
     int32 HistoryPage = 0;
     bool PendingReward = false, RewardCombat = false, DeathPersisted = false;
     float RegionTime = 0.f;
+    float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
+    bool LowHullAlerted = false;
+    void UpdateThreatFeedback(float DeltaSeconds);
     void EnterStation();
     void SpawnFlight(FVector Location, FRotator Rotation);
     void AddEntry(const FString &Label, int32 Action, bool Enabled = true);

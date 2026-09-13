@@ -2,6 +2,7 @@
 import hashlib
 import json
 import math
+import runpy
 from pathlib import Path
 
 import unreal as u
@@ -14,7 +15,7 @@ def main():
     library = u.EditorAssetLibrary
     record = {"status": "PERSISTED_ASSETS_VALIDATED_NOT_GAMEPLAY", "engine": u.SystemLibrary.get_engine_version(),
               "meshes": [], "audio": [], "materials": [], "errors": [],
-              "limits": ["No gameplay classes or map validation", "No rendered visual approval", "No audio listening", "No player input or performance verification"]}
+              "limits": ["No gameplay simulation or input validation", "No rendered visual approval", "No audio listening", "No player input or performance verification"]}
 
     def required(path, cls):
         obj = library.load_asset(path)
@@ -34,6 +35,8 @@ def main():
 
     def validate_material(name):
         material = required(f"{BASE}/Materials/{name}", u.Material)
+        if name in ("M_Hull", "M_Gold", "M_Cyan"):
+            assert material.get_editor_property("used_with_instanced_static_meshes"), f"{name}: missing station batch usage"
         record["materials"].append(material.get_path_name())
 
     def validate_mesh(item):
@@ -67,6 +70,10 @@ def main():
         pilot = required(BASE + "/Character/A_Pilot", u.AnimSequence)
         assert pilot.get_editor_property("skeleton") == skeleton, "Pilot skeleton mismatch"
         assert abs(pilot.get_editor_property("sequence_length")-4.0) < .01, "Pilot duration mismatch"
+        pilot_mesh = required(BASE + "/Character/SK_AcornautPilot", u.SkeletalMesh)
+        assert pilot_mesh.get_editor_property("skeleton") == skeleton, "Pilot mesh skeleton mismatch"
+        pilot_manifest = json.loads((ROOT / "ContentSource/Animation/PilotMesh.json").read_text(encoding="utf-8"))
+        assert library.get_metadata_tag(pilot_mesh, "SSPilotMeshSourceSHA256") == pilot_manifest["derivative_sha256"], "Pilot derivative source mismatch"
         source_hash = hashlib.sha256((ROOT / "model-rigged.glb").read_bytes()).hexdigest()
         assert source_hash == "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91", "Changed supplied GLB"
         record["hero"] = {"mesh": hero.get_path_name(), "animation": walk.get_path_name(), "skeleton": skeleton.get_path_name(),
@@ -90,6 +97,16 @@ def main():
     for item in meshes["assets"]:
         checked(item["name"], lambda item=item: validate_mesh(item))
     checked("Preserved hero", validate_hero)
+    def validate_scene():
+        runpy.run_path(str(ROOT / "Scripts/ValidateScene.py"), run_name="__main__")
+        data = required(BASE + "/Data/DA_Phase1", u.SSPhase1Data)
+        world = required(BASE + "/Maps/Survival", u.World)
+        assert world.get_world_settings().get_editor_property("default_game_mode") == u.SSGameMode.static_class(), "Gameplay map class mismatch"
+        assert len(data.get_editor_property("hazards")) == 6, "Phase 1 hazard variants mismatch"
+        assert len(data.get_editor_property("enemies")) == 2, "Phase 1 enemy roster mismatch"
+        assert len(data.get_editor_property("encounters")) == 3, "Phase 1 encounter roster mismatch"
+        record["scene"] = {"map": world.get_path_name(), "data": data.get_path_name(), "collision_and_skeletal_material_flags": "validated"}
+    checked("Persistent gameplay scene", validate_scene)
     for item in sounds["assets"]:
         checked(item["name"], lambda item=item: validate_sound(item))
     if record["errors"]:

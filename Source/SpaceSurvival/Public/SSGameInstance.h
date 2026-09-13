@@ -27,6 +27,7 @@ public:
     FString LastSaveError;
     bool AccountStorageBlocked = false;
     virtual void Init() override;
+    virtual void OnStart() override;
     bool HasSuspendedRun() const;
     bool SuspendRun();
     bool ResumeRun();
