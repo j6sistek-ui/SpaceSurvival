@@ -60,16 +60,16 @@ This runs the project through the installed editor executable. It is not a packa
 ./Scripts/Build.ps1 -Target Package
 ```
 
-The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore and archive enabled. Package 5 succeeded in **67.06 seconds, exit 0**, recorded in `.agent/local/WindowsPackage5.log`. The corresponding editor rebuild succeeded in 6.91 seconds. This package includes the GameInstance OnStart settings correction, mesh distance fields for Lumen and backed/wrapped encounter labels.
+The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore and archive enabled. Package 6 succeeded in **63.57 seconds, exit 0**, recorded in `.agent/local/WindowsPackage6.log`. The corresponding editor rebuild succeeded in 7.20 seconds. This package adds the staged Windows save writer to the prior settings, Lumen and encounter-label corrections.
 
 Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`.
 
-**Recorded artifact identity: package 5, source `1ff473f2d37aa4c8e717fea75664eb2dd29dfa31`.** Both executable hashes below were read from the produced archive after the successful build. Keep this identity with the final source/receipt; a later package can replace the shared output path.
+**Recorded artifact identity: package 6, source `92e41240eb8ccb31cac381911dcb4fa9c8b4ad13`.** Both executable hashes below were read from the produced archive after the successful build. Keep this identity with the final source/receipt; a later package can replace the shared output path.
 
 | Artifact | Size | SHA-256 |
 | --- | --- | --- |
 | `Artifacts/Windows/SpaceSurvival.exe` — launcher | 171,520 bytes | `619AC0779DCEABF638639193EFDEA0733E3B4626DEA623C07062F160F5ABCCF8` |
-| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` — game | 332,301,312 bytes | `43BC795AC6AE647A59B43FFF5D138F1C8CCCBDC05737EF532CFE399AAB41A45D` |
+| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` — game | 332,309,504 bytes | `7862912E1432C954F3D81395C6379CBF1F39A982AE3AD4F3852012021AA14F4C` |
 
 Keep the entire archive directory together; the launcher alone is not the game. Launch from the repository root:
 
@@ -77,7 +77,9 @@ Keep the entire archive directory together; the launcher alone is not the game. 
 & './Artifacts/Windows/SpaceSurvival.exe' -windowed -ResX=1280 -ResY=720
 ```
 
-**Package 5 smoke observed:** fresh native menu and New Run/Wave 1 rendered. In Wave 2, the long Salvage Cache offer and E/A prompt remained readable inside the backed/wrapped panel; native E accepted it and changed the label to three remaining objectives. This verifies the label and acceptance transition, not completing its objectives. Evidence directory: `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; `Saved/Logs/PackagedLabels.log`. The separate package 4 profile `57579fdb25bd449ba907598454c4fed4` records startup settings and performance. Earlier package 3 smoke exercised neutral-controls Wave 4 death/results, a fresh-run restart and retained account data after relaunch; that evidence remains tied to its earlier snapshot. Active piloting, natural ten-wave play, offline coverage and packaged station Save & Quit/Continue remain separate gates. The finalized package 4 Waves 1–3 capture held approximately 119.96 FPS at 1440p with zero gameplay frames over 16.667 ms; this is limited early-flight evidence. See [PERFORMANCE.md](PERFORMANCE.md).
+**Package 6 smoke observed:** native Settings/Controls saved mouse 1.2, then replaced the same file with controller 1.2; after a normal process close/relaunch both values displayed 1.2. New Run displayed Wave 1, zero credits, full starting meters and Rapid Laser. Both isolated launches closed normally with no remaining staging files. The [package 6 receipt](validation/2026-09-13-windows-save-package.json) binds the executable, source, content, logs and save hashes. Profile: `Artifacts/PackageSmoke/f6233b51c944457b9f25edfa8cba285b`.
+
+**Earlier package 5 smoke observed:** fresh native menu and New Run/Wave 1 rendered. In Wave 2, the long Salvage Cache offer and E/A prompt remained readable inside the backed/wrapped panel; native E accepted it and changed the label to three remaining objectives. This verifies the label and acceptance transition, not completing its objectives. Evidence directory: `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; `Saved/Logs/PackagedLabels.log`. The separate package 4 profile `57579fdb25bd449ba907598454c4fed4` records startup settings and performance. Earlier package 3 smoke exercised neutral-controls Wave 4 death/results, a fresh-run restart and retained account data after relaunch; that evidence remains tied to its earlier snapshot. Active piloting, natural ten-wave play, offline coverage and packaged station Save & Quit/Continue remain separate gates. The finalized package 4 Waves 1–3 capture held approximately 119.96 FPS at 1440p with zero gameplay frames over 16.667 ms; this is limited early-flight evidence. See [PERFORMANCE.md](PERFORMANCE.md).
 
 GameInstance reapplies settings in OnStart after engine initialization. Package 4's fresh log shows all 11 scalability groups at quality 2 on frame 0, correcting the package 3 mismatch between session quality 2 and effective quality 3.
 
@@ -102,13 +104,13 @@ The first package attempt encountered global Live Coding from another editor. Th
 
 Banking follows steering/lateral movement. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
 
-A native menu click changed mouse sensitivity from 1.0 to 1.2 and created a settings file. Readback of that preference after UI relaunch remains unverified.
+A native menu click changed mouse sensitivity from 1.0 to 1.2. Relaunching package 5 with that isolated QA profile at 1280x720 displayed mouse 1.2 and controller 1.0 in Controls. This verifies preference persistence, not comfortable steering response.
 
 Normal shell/settings menus pause flight. Depot/reward panels remain live. Their menu controls are consumed separately from flight controls; this recent behavior needs actual input verification.
 
 ## Local saves
 
-Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 2 and reads version 1; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested.
+Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 2 and reads version 1; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
 
 Save & Quit is available at stations. Continue consumes the suspension before exposing restored play; death persists XP/run identity and invalidates suspension. Unreadable account data is protected from overwrite and requires a known-good backup for recovery. Use isolated test profiles for failure tests and preserve existing personal saves.
 
@@ -118,6 +120,6 @@ The dedicated lifecycle harness runs preflight plus three fresh Unreal processes
 ./Scripts/TestSaveLifecycle.ps1 -EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'
 ```
 
-Use `-PreflightOnly` for the backend/path guard without GameInstance Init or save writes. The normal harness creates a GUID directory under `Artifacts/SaveLifecycle`, verifies the generic SaveGame backend and absence of reparse paths before writes, and checks owner production save hashes before/after. Its successful receipt verifies station fixture persistence, settings, resumed death, 475 XP/both unlocks and fresh-run reset. It does not click station UI or test the packaged executable. See [VALIDATION.md](VALIDATION.md) for the exact token and limits.
+Use `-PreflightOnly` for the backend/path guard without GameInstance Init or save writes. The normal harness creates a GUID directory under `Artifacts/SaveLifecycle`, verifies the generic SaveGame backend and absence of reparse paths before writes, and checks owner production save hashes before/after. Its successful receipt verifies station fixture persistence, settings, resumed death, 475 XP/both unlocks and fresh-run reset, plus actual locked-suspension/account failures that preserve bytes and succeed after releasing the locks. It does not click station UI or test the packaged executable. See [VALIDATION.md](VALIDATION.md) for the exact token and limits.
 
 Station 2 is the current live slice boundary. Services/suspension are available; further launch is disabled. Its explicit abandonment action gives no death XP. This boundary remains an unresolved scope issue.

@@ -6,22 +6,23 @@
 
 | Evidence | Result | Boundary / location |
 | --- | --- | --- |
-| Editor builds | HUD-label rebuild: success, 6.91 seconds. Settings: 44.82 seconds. Earlier journey builds: 26.38 and 6.37 seconds | `.agent/local/EditorLabelsBuild.log`, `EditorSettingsBuild.log`, `EditorJourneyBuild3.log`, `EditorJourneyBuild4.log`; HUD-label package and native label/acceptance smoke passed |
+| Editor builds | Staged-save writer and lock tests: success, 7.20 seconds. HUD labels: 6.91 seconds. Settings: 44.82 seconds | `.agent/local/EditorSaveBuild.log`, `EditorLabelsBuild.log`, `EditorSettingsBuild.log`; save-writer lock lifecycle and full regression suite passed |
 | Portable domain checks | 404 strict GCC 14 C++17 assertions and 404 ASan/UBSan assertions passed locally and in CI | CI run `34741749101`, core job `103682494677`: two PASS 404 results; includes paid depot shield service. These do not run Unreal adapters |
 | Source CI | Both jobs succeeded for source head `1ff473f2d37aa4c8e717fea75664eb2dd29dfa31`; source job `103682494581` passed all steps | PR merge ref `b81c7a54236f2a79eccc822fe3c2c88368177359`, base `0cf0ca6c17fe1febe6aa5c3640189152dcefaf96`; receipt `docs/validation/2026-09-13-source-ci.json` |
 | Structural/Python checks | 20 structural checks and Python syntax passed | Source shape/syntax, not execution of every script |
 | Source assets | 26 OBJ and 10 WAV formats validated; original GLB hash preserved | Source integrity, not quality approval |
 | Gameplay content | Survival map and Phase 1 Data Asset authored; import receipt has no errors | `Saved/Validation/ContentImport.json`: `IMPORTED_NOT_GAMEPLAY_VALIDATED` |
 | Persisted validation | Full fresh-editor Validate target passed, including latest material usage flags | `.agent/local/PersistedValidation2.log`; saved map/class/rosters, backgrounds NoCollision, hero skeletal and station instanced-material usage |
-| Unreal automation | 12 succeeded; 0 succeeded with warnings; 0 failed; 0 not run | `.agent/local/JourneyFlightAutomation2.log`, `Artifacts/UnrealTests/index.json`; report created 2026-09-13 05:30:57 |
-| Fresh-process storage lifecycle | Preflight plus three fresh Unreal processes succeeded; owner save hashes unchanged | `Artifacts/SaveLifecycle/6636199c7dc44237a67439999a1f9e6e/result.json`; exact scope below |
+| Unreal automation | 12 succeeded; 0 succeeded with warnings; 0 failed; 0 not run | `.agent/local/SaveRegressionAutomation.log`, `Artifacts/UnrealTests/index.json`; report created 2026-09-13 06:18:45, duration 2.512 seconds, after staged-save correction |
+| Fresh-process storage lifecycle | Preflight plus three fresh Unreal processes passed, including real locked-file replacement failures/retries; owner save hashes unchanged | `Artifacts/SaveLifecycle/7ce1831d0fac419dacb90d47a1d17eec/result.json`; exact scope below |
 | Pilot derivative | Imported, preview-fitted and wired into actual game; original walking mesh/source retained | `ContentSource/PilotMeshFitReview.json`; preview fit and limited smoke, not animation/art acceptance |
 | Editor-game smoke | Shell, visible pilot and New Run flight observed; backdrop/material defects found and repaired | Limited observation, not a complete controls or natural gameplay pass |
-| Windows package | Package 5 BuildCookRun succeeded in 67.06 seconds, exit 0; 59/59 project packages and runtime Cube verified | `.agent/local/WindowsPackage5.log`; archive `Artifacts/Windows`. Current identity in [BUILD_RUN.md](BUILD_RUN.md); performance remains tied to package 4 |
-| Current package 5 smoke | Native New Run rendered; Wave 2 Salvage Cache label at 21 m wrapped inside dark backing near the right edge, with legible E/A prompt. Native E accepted it; text changed to 3 OBJECTIVES REMAIN, prompt disappeared and flight continued | `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; label/acceptance smoke only, not objective completion or human feel |
+| Windows package | Package 6 BuildCookRun succeeded in 63.57 seconds, exit 0; 59/59 project packages and runtime Cube verified | `.agent/local/WindowsPackage6.log`; source `92e4124`; [package 6 receipt](validation/2026-09-13-windows-save-package.json). Performance remains tied to package 4 |
+| Package 6 save smoke | Native settings first write, existing-file replacement, process close/relaunch readback of mouse/controller 1.2, and New Run baseline passed | Isolated profile `f6233b51c944457b9f25edfa8cba285b`; launchers 25896/61868; both closed normally, no staging files remain. No station lifecycle/feel claim |
+| Earlier package 5 smoke | Native New Run rendered; Wave 2 Salvage Cache label at 21 m wrapped inside dark backing near the right edge, with legible E/A prompt. Native E accepted it; text changed to 3 OBJECTIVES REMAIN, prompt disappeared and flight continued | `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; label/acceptance smoke only, not objective completion or human feel |
 | Earlier package 4 smoke | Fresh native menu/New Run at Wave 1 rendered; all 11 scalability groups applied at quality 2 on frame 0 after Game Engine Initialized | `Artifacts/PackageSmoke/57579fdb25bd449ba907598454c4fed4/Saved/Logs/PackagedFinal.log`; startup correction verified |
 | Earlier package 3 smoke | Neutral-controls Wave 4 death/results, another fresh run and account retention after relaunch observed | `Artifacts/PackageSmoke/f1721585eb9544fbb8eb02181a06e528`; launch PID 23348. No full ten-wave or active-piloting claim |
-| Settings UI smoke | Mouse sensitivity changed from 1.0 to 1.2 by native click; settings file created | UI value/write observed; sensitivity readback after UI relaunch remains open |
+| Settings UI smoke | Mouse sensitivity changed from 1.0 to 1.2 by native click; settings file created | Package 5 native Controls readback after relaunch at 1280x720: mouse 1.2/controller 1.0; feel unverified |
 | Early-flight performance | Package 4 Waves 1–3: approximately 119.96 FPS, p99 9.119 ms, maximum 10.898 ms; zero active-flight frames above 16.667 ms | 14,530 frames after five-second warmup, 120 FPS cap; representative gate remains open. [Finalized analysis](PERFORMANCE.md), [receipt](validation/2026-09-13-final-performance.json) |
 | Encounter-label readability repair | Contrast backing and bounded wrapping compiled in 6.91 seconds | Actual glow washed out the prior label; package 5 Salvage Cache backing/wrapping and native acceptance are now observed. Busiest-scene readability still requires acceptance |
 
@@ -60,18 +61,20 @@ Flight fixtures call gameplay methods directly; they do not exercise physical mo
 
 ## Fresh-process GameInstance save lifecycle
 
-`Scripts/TestSaveLifecycle.ps1` passed with result token `6636199c7dc44237a67439999a1f9e6e`.
+`Scripts/TestSaveLifecycle.ps1` passed the staged-save writer and real Windows failure/retry cases with result token `7ce1831d0fac419dacb90d47a1d17eec`. The earlier token `6636199c7dc44237a67439999a1f9e6e` remains a historical baseline. See [replacement receipt](validation/2026-09-13-save-replacement.json).
 
 | Process phase | Observed result |
 | --- | --- |
-| Preflight, PID 21936 | Verified generic SaveGame backend and isolated directory before GameInstance Init or save writes |
-| Suspend, PID 79976 | Real Init and station suspension persisted a fixture Wave 5 build, meters, credits, utility, contract, pending reward, temporary buff and settings |
-| ResumeDeath, PID 18120 | Fresh Init restored/consumed the station suspension, launched Wave 6, persisted death once, awarded 475 XP / level 3 / one history entry and invalidated the dead checkpoint |
-| FreshStart, PID 47644 | Another fresh Init retained account/settings and both early unlocks; new Swift/Heavy Cannon run had baseline tiers, zero credits and no utility |
+| Preflight, PID 23588 | Verified generic SaveGame backend and isolated directory before GameInstance Init or save writes |
+| Suspend, PID 70016 | Real Init and station suspension persisted a fixture Wave 5 build, meters, credits, utility, contract, pending reward, temporary buff and settings |
+| ResumeDeath, PID 34336 | Fresh Init restored/consumed the station suspension, launched Wave 6, persisted death once, awarded 475 XP / level 3 / one history entry and invalidated the dead checkpoint |
+| FreshStart, PID 51120 | Another fresh Init retained account/settings and both early unlocks; new Swift/Heavy Cannon run had baseline tiers, zero credits and no utility |
 
 The storage fixture deliberately seeds station state, 100 kills and 1,200 earned credits; it does not earn those through natural play. The harness uses a GUID `UserDir`, checks the generic backend and rejects reparse paths before writes. The receipt records `productionSaveHashesUnchanged: true` and hashes the three isolated save files. It runs preflight plus **three separate fresh Unreal processes**, not an in-memory reset.
 
-This closes the exercised GameInstance storage lifecycle gate. It does **not** validate station menu selection, UI quit/relaunch, packaged save behavior, corrupt-account recovery, interrupted writes or subjective gameplay.
+ResumeDeath additionally held real Windows read handles denying both write and delete sharing on the isolated suspension/account destinations. Each attempted replacement failed with feedback, preserved every previous byte, cleaned its staging file, and retained the correct in-memory state. Releasing the handles allowed both retries; FreshStart verified exactly 475 XP and one completed run. Owner production-save hashes remained unchanged.
+
+This closes the exercised GameInstance lifecycle and locked-destination failure/retry cases. It does **not** validate station menu selection, UI quit/relaunch, packaged lifecycle, corrupt-account recovery, forced process interruption, disk-full/short writes, staged-readback faults or hardware loss.
 
 ## Acceptance gate matrix
 
@@ -89,7 +92,7 @@ This closes the exercised GameInstance storage lifecycle gate. It does **not** v
 | Waves 6–10 / Wave 10 | Automated escalation route and required compound admission | Natural compound pressure/readability, arrival and services |
 | Station 2/restart boundary | Services/suspension exist; further launch disabled | Resolve successful-slice/retry behavior; abandonment currently gives no XP/history |
 | Death/account/unlocks/hangar | Actor death/reset, actual fresh-process storage and package 3 death/results/restart/account retention passed | Natural progression to both unlocks, complete loadout/UI route and repeatability |
-| Save/settings | Actual fresh-process lifecycle/settings and package 4 startup scalability passed; native sensitivity value/write observed | UI sensitivity readback after relaunch, packaged station lifecycle, real failure/interruption recovery |
+| Save/settings | Actual fresh-process lifecycle and real locked-destination failures/retries passed; package 4 startup quality and package 5 sensitivity relaunch readback passed | Packaged station lifecycle, interruption/corrupt-data recovery and physical sensitivity feel |
 | Shell/accessibility/tutorial | Rendered packaged menu/launch/results and package 5 event-label/native-acceptance smoke; compiled controls/settings | Both-input navigation, every preference, text at all scales, learned prompts and actual audio response |
 | Hybrid visuals/audio | Imported assets, fitted pilot and limited rendered smoke | **Owner rejected graphics**; major art replacement, animation/VFX/audio polish and listening/readability acceptance |
 | Performance | Package 4 early-flight CPU/GPU/frame times measured; synthetic cross-rate movement agreement | Both climaxes/stations/full-run measurements, process RAM/VRAM and representative 60 FPS/higher-refresh scalability acceptance |

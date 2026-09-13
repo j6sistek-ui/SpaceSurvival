@@ -256,5 +256,21 @@
     "source_commit": "1464c1df365b89492f27bfe418400dd338b098d3"
   },
   "package_number": 5,
-  "source_commit": "1ff473f2d37aa4c8e717fea75664eb2dd29dfa31"
+  "source_commit": "1ff473f2d37aa4c8e717fea75664eb2dd29dfa31",
+  "settings_relaunch_readback": {
+    "package_number": 5,
+    "profile": "Artifacts/PackageSmoke/f1721585eb9544fbb8eb02181a06e528",
+    "launcher_pid": 55704,
+    "resolution": [
+      1280,
+      720
+    ],
+    "observed_mouse_sensitivity": 1.2,
+    "observed_controller_sensitivity": 1.0,
+    "observed_via": "Native Settings > Controls screen after actual packaged relaunch",
+    "log": "Artifacts/PackageSmoke/f1721585eb9544fbb8eb02181a06e528/Saved/Logs/PackagedSettingsReadback.log",
+    "log_sha256": "f7e70b012a635e02ec9ee683cb84e7189193e19ff5b93e2e8242b004d514c1c6",
+    "shutdown": "Graceful, observed log exit06:10:44Z; no owned game process remains",
+    "limit": "Preference persistence only; no physical-device or feel acceptance"
+  }
 }

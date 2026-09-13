@@ -1,0 +1,155 @@
+{
+  "status": "REAL_WINDOWS_REPLACEMENT_FAILURE_AND_RETRY_PASSED",
+  "date_utc": "2026-09-13T06:19:24.950546+00:00",
+  "raw_receipt": "Artifacts/SaveLifecycle/7ce1831d0fac419dacb90d47a1d17eec/result.json",
+  "raw_receipt_sha256": "4a406d56196cc55d9463950d2fd9283ea4455cccfc0ca152b4a6daa4ae5ae2e4",
+  "success": true,
+  "production_save_hashes_unchanged": true,
+  "isolated_save_files": [
+    {
+      "name": "SS_Account_v1.sav",
+      "bytes": 2226,
+      "sha256": "91B18E856D930FA7326148E31DBA14D5F4492F0755E98FE6D78D0B94A706CCB5"
+    },
+    {
+      "name": "SS_Settings_v1.sav",
+      "bytes": 2167,
+      "sha256": "BB04ACFD853C7BACCB34F241F7E57ED1285EA862D24DB3CC639E5C8AFFD1133B"
+    },
+    {
+      "name": "SS_Suspend_v1.sav",
+      "bytes": 1989,
+      "sha256": "E6BF94483FB6427ED31C120FA576AF5FD40D4E9B9016CEE28BA4C2ADAE8F0CEA"
+    }
+  ],
+  "processes": [
+    {
+      "phase": "Preflight",
+      "processId": 23588,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": false
+    },
+    {
+      "phase": "Suspend",
+      "processId": 70016,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "xp": 0,
+      "level": 1,
+      "completedRuns": 0
+    },
+    {
+      "phase": "ResumeDeath",
+      "processId": 34336,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "xp": 475,
+      "level": 3,
+      "completedRuns": 1,
+      "lockedSuspensionRejectedAndPreserved": true,
+      "lockedAccountRejectedAndPreserved": true,
+      "replacementRetriesSucceeded": true,
+      "failedReplacementStagingCleaned": true
+    },
+    {
+      "phase": "FreshStart",
+      "processId": 51120,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "xp": 475,
+      "level": 3,
+      "completedRuns": 1
+    }
+  ],
+  "limits": [
+    "Storage lifecycle and actual Windows locked-destination failure/retry only. No forced process termination, disk-full/short-write, staged-readback fault, hardware-loss, station UI or subjective gameplay claim.",
+    "Station state and 100 kills are fixtures, not naturally earned.",
+    "Windows generic local backend only; no atomic multi-slot transaction or universal hardware-loss guarantee."
+  ],
+  "source_sha256_lf": {
+    "Source/SpaceSurvival/Private/SSLocalSave.cpp": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402",
+    "Source/SpaceSurvival/Private/SSLocalSave.h": "21946dc7697636bddb4ad0ca24b0269b5fd3160491ce1b92b85d0787f3b52bff",
+    "Source/SpaceSurvival/Private/SSGameInstance.cpp": "9783e8874f2f4cf20bf33b66318793dc3a74c9cbf1387cea095b7077d91349bb",
+    "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp": "f645e2b30bf74392f74e75d4c9026d2143b1338e1547d099ca0b5a05516ba0b0",
+    "Scripts/TestSaveLifecycle.ps1": "387f2a951c56628ccfcb5a8e82114f36e4f7508173ee9d6cf9ae52a1bbe4217a"
+  },
+  "editor_build": {
+    "log": ".agent/local/EditorSaveBuild.log",
+    "sha256": "a559386d977b249cfc94dbfa5c7ed94be516951eaae173c6f3752d5c9e0af4d0",
+    "result": "Succeeded",
+    "seconds": 7.2
+  },
+  "unreal_regression": {
+    "succeeded": 12,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "totalDuration": 2.5118777751922607,
+    "reportCreatedOn": "2026.09.13-06.18.45",
+    "report_sha256": "816a50d10ac255906b0247989e61b0be3049f8169c304fdf4b87eebc1f499cfd",
+    "log": ".agent/local/SaveRegressionAutomation.log",
+    "log_sha256": "fc3d594bb0d6ab385054d39ba4ffa9e30589b5371c7c1651f3b34c9d7ed025b6",
+    "tests": [
+      {
+        "fullTestPath": "SpaceSurvival.Flight.BoostBrakeMovement",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Flight.FrameRateTrajectories",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Flight.ManualWeaponImpacts",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.LateEventAcceptance",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.StationWalkerRecovery",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Save.PayloadRoundTrip",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+        "state": "Success"
+      }
+    ]
+  },
+  "source_commit": "92e41240eb8ccb31cac381911dcb4fa9c8b4ad13",
+  "source_ci": {
+    "source_commit": "92e41240eb8ccb31cac381911dcb4fa9c8b4ad13",
+    "run_id": 34742525061,
+    "core_job": 103684528744,
+    "source_job": 103684528869,
+    "both_jobs": "success"
+  }
+}

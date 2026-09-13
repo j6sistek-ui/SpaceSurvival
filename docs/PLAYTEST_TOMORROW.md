@@ -20,7 +20,7 @@ Package 5 built successfully. Confirm its executable hashes in [BUILD_RUN.md](BU
    Observation / screenshot / issue: ______________________________________
 
 2. [ ] **Set a comfortable mouse steering dial before judging flight.**\
-   Open **Settings → Controls → Mouse sensitivity**. The dial is adjustable from 0.3–2.9 in 0.2 steps, with an upper clamp and wrap to 0.3. A lead smoke click changed 1.0 to 1.2 and created a settings file; preference readback after UI relaunch still needs checking. Record the actual displayed value above. Launch a run, make small horizontal/vertical corrections, and adjust again if too slow or too sharp.\
+   Open **Settings → Controls → Mouse sensitivity**. The dial is adjustable from 0.3–2.9 in 0.2 steps, with an upper clamp and wrap to 0.3. The lead verified a change from 1.0 to 1.2 and a later packaged relaunch displaying mouse 1.2/controller 1.0. Your preferred values and their feel still need checking. Record the actual displayed value above. Launch a run, make small horizontal/vertical corrections, and adjust again if too slow or too sharp.\
    Expected: a visible change in response and usable fine corrections. Sensitivity is a preference to tune, not a fixed value the tester must accept.\
    Observation / preferred value: _________________________________________
 
