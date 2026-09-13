@@ -1,0 +1,13 @@
+{
+  "status": "GENERATED_CANDIDATE_RUNTIME_REVIEW_PENDING",
+  "generated_utc": "2026-09-13",
+  "tool": "built-in image_gen",
+  "purpose": "Direction-stable distant panorama for Hybrid visual target; no gameplay changes",
+  "prompt": "Use case: stylized-concept. Asset type: original environment texture for SpaceSurvival, a commercial-quality 3D space survival game, Hybrid realistic cinematic space with readable gameplay silhouettes. Generate a seamless horizontally wrapping 360-degree equirectangular deep-space panorama, 2:1 aspect ratio, ideally 3840x1920. Only very distant celestial environment: sculpted layered interstellar dust, fine filamentary muted blue-grey nebula and a restrained warm amber luminous region, many tiny natural stars of varied brightness and fine scale. Convincing enormous depth and material richness resembling cinematic astrophotography. Wide irregular quiet dark regions dominate, with dark charcoal/indigo background that still has visible depth; avoid flat pure black and avoid large white blown-out regions. Nebula structure concentrated away from the central horizontal navigation band, sparse across centre so small ships/hazards remain legible. Subtle star clusters, no large decorative stars. Entire image is distant sky, no foreground, no terrain or horizon, no planet, no ship, no spacecraft, no astronaut, no gameplay objects, no text, no logos, no frame, no HUD, no watermark. Equirectangular latitude-longitude mapping: coherent horizontal left/right wrap, unobtrusive dark poles, no fisheye, no perspective horizon. Texture only, not a screenshot or mockup.",
+  "source": "OpenAI generated original bitmap",
+  "image": "SpacePanorama-v1.png",
+  "width": 1774,
+  "height": 887,
+  "bytes": 2125038,
+  "sha256": "2ae245359fbac353bffdd579fc884ee8b8db0633c6deaadca73681e232f783a1"
+}

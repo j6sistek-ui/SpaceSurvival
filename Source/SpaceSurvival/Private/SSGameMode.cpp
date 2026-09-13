@@ -14,8 +14,19 @@
 #include "Sound/SoundAttenuation.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "ProfilingDebugging/CsvProfiler.h"
+#if WITH_DEV_AUTOMATION_TESTS
+#include "HAL/PlatformFileManager.h"
+#include "Misc/CommandLine.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Guid.h"
+#include "Misc/Parse.h"
+#include "Misc/Paths.h"
+#include "PlatformFeatures.h"
+#endif
 
 CSV_DEFINE_CATEGORY(SpaceSurvival, true);
 
@@ -282,6 +293,8 @@ void ASSGameMode::StartNewRun()
 }
 void ASSGameMode::LaunchFromHub()
 {
+    if (Walker && Walker->IsDisembarking())
+        return;
     if (InHangar())
     {
         StartNewRun();
@@ -323,17 +336,27 @@ void ASSGameMode::EnterStation()
     Hub->SetBayShip(int32(GetGameInstance<USSGameInstance>()->Session.run.ship));
     Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator::ZeroRotator);
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    const bool AutoCamera = PC->bAutoManageActiveCameraTarget;
+    if (Ship)
+        PC->bAutoManageActiveCameraTarget = false;
     PC->Possess(Walker);
     PC->SetControlRotation(Hub->GetActorRotation());
     if (Ship)
     {
+        // This is the same target used by SetDockingTarget/FinishDocking. Match the visible component
+        // before FinishDocking hides the old pilot; its small idle-pose variation is reviewed separately.
+        Ship->SetActorLocation(Hub->DockPosition());
+        Ship->SetActorRotation(Hub->GetActorRotation());
+        const FVector Exit = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
+        const bool ExitStarted =
+            Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit, Hub->GetActorRotation());
+        ensureMsgf(ExitStarted, TEXT("Required authored disembark assets are unavailable."));
         Ship->FinishDocking();
         Hub->ShowBayShip(false);
-        const FVector Exit = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
-        Walker->BeginDisembark(Ship->GetActorLocation() + FVector(0, 0, 100), Exit, Hub->GetActorRotation());
-        PC->SetViewTarget(Ship);
-        PC->SetViewTargetWithBlend(Walker, .9f);
+        // Keep the outgoing camera's last view while blending, rather than snapping on possession.
+        PC->SetViewTargetWithBlend(Walker, ASSWalker::DisembarkDuration, VTBlend_Cubic, 0.f, true);
     }
+    PC->bAutoManageActiveCameraTarget = AutoCamera;
     ClosePanel();
     Announce(TEXT("Dockmaster: Welcome aboard. Your ship is in the service bay."));
     React(TEXT("A solid floor. I missed that."));
@@ -558,6 +581,8 @@ void ASSGameMode::Interact()
         return;
     if (Walker && Hub)
     {
+        if (Walker->IsDisembarking())
+            return;
         FString Label;
         const auto Service = Hub->NearestService(Walker->GetActorLocation(), Label);
         if (Service != ESSPanel::None)
@@ -619,6 +644,8 @@ void ASSGameMode::ClosePanel()
 }
 void ASSGameMode::OpenPanel(ESSPanel NewPanel)
 {
+    if (Walker && Walker->IsDisembarking())
+        return;
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
@@ -1119,6 +1146,72 @@ void ASSGameMode::ActivateEntry(int32 Index)
     }
 }
 
+void ASSPlayerController::SSReviewExit()
+{
+#if WITH_DEV_AUTOMATION_TESTS
+    // Explicitly enabled review fixture only. Never initialize, consume or write a save here.
+    auto Normalize = [](FString Path)
+    {
+        Path = FPaths::ConvertRelativePathToFull(Path);
+        FPaths::NormalizeDirectoryName(Path);
+        FPaths::CollapseRelativeDirectories(Path);
+        return Path;
+    };
+    const FString User = Normalize(FPaths::ProjectUserDir());
+    const FString Root = FPaths::GetPath(User);
+    const FString Token = FPaths::GetCleanFilename(Root);
+    const FString Saved = Normalize(FPaths::ProjectSavedDir());
+    FString UserArgument, Marker;
+    FGuid Guid;
+    auto &Features = IPlatformFeaturesModule::Get();
+    if (!PLATFORM_WINDOWS || !FParse::Param(FCommandLine::Get(), TEXT("SSReviewExit")) ||
+        !FPaths::ShouldSaveToUserDir() || !FGuid::ParseExact(Token, EGuidFormats::Digits, Guid) ||
+        !User.Equals(Root / TEXT("User"), ESearchCase::IgnoreCase) ||
+        !Saved.Equals(User / TEXT("Saved"), ESearchCase::IgnoreCase) ||
+        !FPaths::GetCleanFilename(FPaths::GetPath(Root)).Equals(TEXT("SaveLifecycle"), ESearchCase::IgnoreCase) ||
+        !FPaths::GetCleanFilename(FPaths::GetPath(FPaths::GetPath(Root)))
+             .Equals(TEXT("Artifacts"), ESearchCase::IgnoreCase) ||
+        !FParse::Value(FCommandLine::Get(), TEXT("UserDir="), UserArgument) ||
+        !Normalize(UserArgument).Equals(User, ESearchCase::IgnoreCase) ||
+        Features.GetSaveGameSystem() != Features.IPlatformFeaturesModule::GetSaveGameSystem())
+        return;
+    auto &Files = FPlatformFileManager::Get().GetPlatformFile();
+    for (FString Path = Saved / TEXT("SaveGames"); !Path.IsEmpty();)
+    {
+        if (Files.IsSymlink(*Path) != ESymlinkResult::NonSymlink)
+            return;
+        const FString Parent = FPaths::GetPath(Path);
+        if (Parent == Path)
+            break;
+        Path = Parent;
+    }
+    const FString MarkerPath = Root / TEXT(".ss-save-lifecycle");
+    if (Files.IsSymlink(*MarkerPath) != ESymlinkResult::NonSymlink ||
+        !FFileHelper::LoadFileToString(Marker, *MarkerPath) || Marker.TrimStartAndEnd() != Token)
+        return;
+    auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GM || !GI || this != GetWorld()->GetFirstPlayerController() || !GI->Session.run.active ||
+        GI->Session.run.xpAwarded || GI->Session.run.phase != SS::Phase::Station || GM->IsMenuOpen() ||
+        !IsValid(GM->Hub) || !IsValid(GM->Walker) || GetPawn() != GM->Walker || GM->Walker->IsDisembarking())
+        return;
+    if (!IsValid(GM->Ship))
+        GM->Ship = GetWorld()->SpawnActor<ASSShip>(GM->Hub->DockPosition(), GM->Hub->GetActorRotation());
+    if (!IsValid(GM->Ship))
+        return;
+    GM->Ship->SetActorLocationAndRotation(GM->Hub->DockPosition(), GM->Hub->GetActorRotation());
+    GM->Ship->SetDockingTarget(GM->Hub->DockPosition(), GM->Hub->GetActorRotation());
+    GM->Ship->Pilot->SetVisibility(true);
+    SetViewTarget(GM->Ship);
+    if (PlayerCameraManager)
+        PlayerCameraManager->UpdateCamera(0.f);
+    UE_LOG(LogTemp, Display,
+           TEXT("REVIEW_FIXTURE_NOT_NATURAL_GAMEPLAY: SSReviewExit at Wave %d; no save APIs invoked."),
+           GI->Session.run.wave);
+    GM->EnterStation();
+#endif
+}
+
 ASSPlayerController::ASSPlayerController()
 {
     PrimaryActorTick.bTickEvenWhenPaused = true;
@@ -1136,6 +1229,8 @@ void ASSPlayerController::PlayerTick(float Dt)
         LastInputPawn = GetPawn();
         BoostLatch = BrakeLatch = false;
     }
+    if (auto *WalkPawn = Cast<ASSWalker>(GetPawn()); WalkPawn && WalkPawn->IsDisembarking())
+        return;
     const auto Pressed = [this](FKey K) { return WasInputKeyJustPressed(K); };
     const auto Down = [this](FKey K) { return IsInputKeyDown(K); };
     if (Pressed(EKeys::Escape) || Pressed(EKeys::Gamepad_Special_Right))

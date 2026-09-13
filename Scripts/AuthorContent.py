@@ -304,26 +304,32 @@ class Author:
         sound.set_editor_property("looping", item["loop"])
         self.save(sound)
 
-    def pilot(self):
+    def animation_clip(self, name, seconds, actor_owned_motion=False):
         u = self.u
-        path = BASE + "/Character/A_Pilot"
+        path = BASE + "/Character/A_" + name
+        source = ROOT / "ContentSource/Animation" / (name + ".glb")
+        manifest = json.loads(source.with_suffix(".json").read_text(encoding="utf-8"))
+        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        if digest != manifest["animation_sha256"]:
+            raise RuntimeError(f"{name} animation source differs from its manifest")
+        format_tag = "SS" + name + "SourceFormat"
+        hash_tag = "SS" + name + "SourceSHA256"
         mesh = self.required(BASE + "/Character/SK_Acornaut", u.SkeletalMesh)
         skeleton = mesh.get_editor_property("skeleton")
         if self.library.does_asset_exist(path):
             clip = self.existing_authored(path, u.AnimSequence)
-            if self.library.get_metadata_tag(clip,"SSPilotSourceFormat") != "OriginalGLTFBasis1":
-                raise RuntimeError("Existing pilot clip needs deliberate reimport with original glTF joint basis")
+            if self.library.get_metadata_tag(clip,format_tag) != "OriginalGLTFBasis1":
+                raise RuntimeError(f"Existing {name} clip needs deliberate reimport with original glTF joint basis")
+            stored_hash = self.library.get_metadata_tag(clip, hash_tag)
+            if (stored_hash or actor_owned_motion) and stored_hash != digest:
+                raise RuntimeError(f"Existing {name} clip differs from its source; deliberate reimport required")
         else:
-            source = ROOT / "ContentSource/Animation/Pilot.glb"
-            manifest = json.loads(source.with_suffix(".json").read_text(encoding="utf-8"))
-            if hashlib.sha256(source.read_bytes()).hexdigest() != manifest["animation_sha256"]:
-                raise RuntimeError("Pilot animation source hash differs from authoring manifest")
-            pipeline_path = BASE + "/Authoring/P_PilotImport"
+            pipeline_path = BASE + "/Authoring/P_" + name + "Import"
             if not self.library.does_asset_exist(pipeline_path):
                 if not self.library.duplicate_asset("/Interchange/Pipelines/DefaultAssetsPipeline",pipeline_path):
-                    raise RuntimeError("Cannot create pilot animation import pipeline")
+                    raise RuntimeError(f"Cannot create {name} animation import pipeline")
             pipeline = self.required(pipeline_path)
-            pipeline.set_editor_property("asset_name","A_Pilot")
+            pipeline.set_editor_property("asset_name","A_" + name)
             pipeline.set_editor_property("use_source_name_for_asset",False)
             pipeline.set_editor_property("asset_type_sub_folders",False)
             pipeline.set_editor_property("scene_name_sub_folder",False)
@@ -346,16 +352,28 @@ class Author:
             imported = manager.import_asset(BASE+"/Character",manager.create_source_data(str(source)),params)
             clips = [obj for obj in imported if isinstance(obj,u.AnimSequence)]
             if len(clips) != 1 or len(imported) != 1:
-                raise RuntimeError("Pilot source must import exactly one animation and no replacement mesh/skeleton")
+                raise RuntimeError(f"{name} source must import exactly one animation and no replacement mesh/skeleton")
             clip = clips[0]
             if clip.get_path_name().split(".")[0] != path:
                 if not self.library.rename_asset(clip.get_path_name(),path):
-                    raise RuntimeError("Cannot name pilot animation A_Pilot")
+                    raise RuntimeError(f"Cannot name {name} animation")
                 clip = self.required(path,u.AnimSequence)
-            self.library.set_metadata_tag(clip,"SSPilotSourceFormat","OriginalGLTFBasis1")
+            self.library.set_metadata_tag(clip,format_tag,"OriginalGLTFBasis1")
+            self.library.set_metadata_tag(clip, hash_tag, digest)
+            if actor_owned_motion:
+                clip.set_editor_property("enable_root_motion", False)
+                clip.set_editor_property("force_root_lock", False)
             self.save(clip)
-        if clip.get_editor_property("skeleton") != skeleton or abs(clip.get_editor_property("sequence_length")-4.0) > .01:
-            raise RuntimeError("Pilot animation skeleton or duration differs from source contract")
+        if clip.get_editor_property("skeleton") != skeleton or abs(clip.get_editor_property("sequence_length")-seconds) > .01:
+            raise RuntimeError(f"{name} animation skeleton or duration differs from source contract")
+        if actor_owned_motion and (clip.get_editor_property("enable_root_motion") or clip.get_editor_property("force_root_lock")):
+            raise RuntimeError(f"{name} must preserve the local pelvis track without root motion extraction")
+
+    def pilot(self):
+        self.animation_clip("Pilot", 4.0)
+
+    def disembark(self):
+        self.animation_clip("Disembark", 2.4, actor_owned_motion=True)
 
     def pilot_mesh(self):
         path = BASE + "/Character/SK_AcornautPilot"
@@ -458,11 +476,12 @@ class Author:
         for directory in ("Materials", "Meshes", "Character", "Audio", "Maps", "Data", "Authoring"):
             self.library.make_directory(BASE + "/" + directory)
         self.stage("Materials", self.palette)
-        self.stage("Cinematic space material", lambda: source_module("ss_space_material", ROOT / "Scripts/AuthorSpaceMaterial.py").author())
+        self.stage("Cinematic space material", lambda: source_module("ss_space_panorama", ROOT / "Scripts/AuthorSpacePanorama.py").author())
         for item in self.mesh_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.static_mesh(asset))
         self.stage("Preserved Acornaut import", self.hero)
         self.stage("Authored pilot animation", self.pilot)
+        self.stage("Authored disembark animation", self.disembark)
         self.stage("Reviewed pilot mesh", self.pilot_mesh)
         for item in self.audio_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.sound(asset))

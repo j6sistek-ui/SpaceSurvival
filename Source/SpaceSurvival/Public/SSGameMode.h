@@ -86,6 +86,7 @@ public:
     TObjectPtr<ASSEncounterBeacon> ActiveBeacon;
 
 private:
+    friend class ASSPlayerController;
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
     UPROPERTY()
@@ -128,6 +129,8 @@ class SPACESURVIVAL_API ASSPlayerController : public APlayerController
 public:
     ASSPlayerController();
     virtual void PlayerTick(float DeltaSeconds) override;
+    UFUNCTION(Exec)
+    void SSReviewExit();
 
 private:
     bool BoostLatch = false, BrakeLatch = false;

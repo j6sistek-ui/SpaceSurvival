@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimSequence.h"
+#include "Animation/AnimSingleNodeInstance.h"
 #include "Sound/SoundBase.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/SkeletalMesh.h"
@@ -274,27 +275,87 @@ ASSWalker::ASSWalker()
     Boom->bUsePawnControlRotation = true;
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("WalkCamera"));
     Camera->SetupAttachment(Boom);
-    GetMesh()->SetRelativeLocation(FVector(0, 0, -23));
+    // Measured boot sole at the authored walk handoff is -62.90269494 cm, below the ankle bone.
+    // Fit it to the deck plates (2.75 cm above collision), including UE's normal walking floor gap.
+    const float WalkingFloorGap =
+        (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
+    GetMesh()->SetRelativeLocation(FVector(
+        0, 0, 62.90269494f * 1.5f - GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - WalkingFloorGap + 2.75f));
     GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+    GetMesh()->SetRelativeScale3D(FVector(1.5f));
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 void ASSWalker::BeginPlay()
 {
     Super::BeginPlay();
     GetMesh()->SetSkeletalMesh(
-        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_Acornaut.SK_Acornaut")));
-    GetMesh()->PlayAnimation(LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Walk.A_Walk")),
-                             true);
+        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautPilot.SK_AcornautPilot")));
+    WalkAnimation = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Walk.A_Walk"));
+    StartWalkingAnimation();
 }
-void ASSWalker::BeginDisembark(FVector Start, FVector End, FRotator Facing)
+void ASSWalker::StartWalkingAnimation()
 {
-    ExitStart = Start;
+    GetMesh()->PlayAnimation(WalkAnimation, true);
+    if (auto *Animation = GetMesh()->GetSingleNodeInstance())
+    {
+        Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+        // A_Disembark ends at this exact authored A_Walk pose.
+        Animation->SetPosition(.308333333f, false);
+    }
+    GetMesh()->GlobalAnimRateScale = 0.f;
+    GetMesh()->TickAnimation(0.f, false);
+    GetMesh()->RefreshBoneTransforms();
+    GetMesh()->SetComponentTickEnabled(true);
+}
+void ASSWalker::SampleExitPose(float Seconds)
+{
+    if (auto *Animation = GetMesh()->GetSingleNodeInstance())
+        Animation->SetPosition(Seconds, false);
+    GetMesh()->TickAnimation(0.f, false);
+    GetMesh()->RefreshBoneTransforms();
+}
+bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing)
+{
+    auto *ExitAnimation =
+        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Disembark.A_Disembark"));
+    if (!ExitAnimation || !WalkAnimation || !GetMesh()->GetSkeletalMeshAsset())
+        return false;
+    // Component local transform * actor transform = the actual seated pilot component transform.
+    // This preserves yaw, local mesh offset and the constant 1.5 mesh scale without interpolated shrinking.
+    const FTransform StartTransform = GetMesh()->GetRelativeTransform().Inverse() * PilotWorldTransform;
+    ExitStart = StartTransform.GetLocation();
+    ExitStartRotation = StartTransform.GetRotation();
+    ExitEndRotation = Facing.Quaternion();
     ExitEnd = End;
-    ExitElapsed = 0;
+    FHitResult Floor;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDisembarkFloor), false, this);
+    if (GetWorld()->LineTraceSingleByObjectType(Floor, End + FVector(0, 0, 300), End - FVector(0, 0, 600),
+                                                FCollisionObjectQueryParams(ECC_WorldStatic), Query) &&
+        Floor.ImpactNormal.Z > .5f)
+    {
+        // Begin the planted stage at the height MOVE_Walking will retain, avoiding a completion snap.
+        const float WalkingFloorGap =
+            (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
+        ExitEnd.Z = Floor.ImpactPoint.Z + GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + WalkingFloorGap;
+    }
+    ExitElapsed = 0.0;
     Disembarking = true;
+    GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->DisableMovement();
+    ConsumeMovementInputVector();
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    SetActorLocation(Start);
-    SetActorRotation(Facing);
+    SetActorTransform(StartTransform, false, nullptr, ETeleportType::TeleportPhysics);
+    GetMesh()->PlayAnimation(ExitAnimation, false);
+    if (auto *Animation = GetMesh()->GetSingleNodeInstance())
+    {
+        Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+        Animation->SetPlaying(false);
+    }
+    // Only this actor clock advances the clip; component ticks cannot advance it a second time.
+    GetMesh()->SetComponentTickEnabled(false);
+    GetMesh()->GlobalAnimRateScale = 0.f;
+    SampleExitPose(0.f);
+    return true;
 }
 void ASSWalker::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 {
@@ -307,15 +368,26 @@ void ASSWalker::Tick(float Dt)
     Super::Tick(Dt);
     if (Disembarking)
     {
-        ExitElapsed += Dt;
-        const float Alpha = FMath::Clamp(ExitElapsed / 1.4f, 0.f, 1.f), Ease = Alpha * Alpha * (3.f - 2.f * Alpha);
-        SetActorLocation(FMath::Lerp(ExitStart, ExitEnd, Ease) + FVector(0, 0, FMath::Sin(Alpha * PI) * 35.f));
-        GetMesh()->GlobalAnimRateScale = .7f;
-        if (Alpha >= 1.f)
+        if (!FMath::IsFinite(Dt) || Dt <= 0.f)
+            return;
+        ExitElapsed = FMath::Min(ExitElapsed + double(Dt), double(DisembarkDuration));
+        // Brace/rise happens in the authored pose. Travel starts after the rise and ends at deck contact.
+        const float Travel = FMath::Clamp(float((ExitElapsed - .82) / (1.6 - .82)), 0.f, 1.f);
+        const float Ease = Travel * Travel * (3.f - 2.f * Travel);
+        const FVector Position = FMath::Lerp(ExitStart, ExitEnd, Ease) +
+                                 FVector(0, 0, Travel > 0.f && Travel < 1.f ? FMath::Sin(Travel * PI) * 125.f : 0.f);
+        SetActorLocationAndRotation(Position, FQuat::Slerp(ExitStartRotation, ExitEndRotation, Ease), false, nullptr,
+                                    ETeleportType::TeleportPhysics);
+        SampleExitPose(float(ExitElapsed));
+        // From 1.6 through 2.4 the actor is fixed, preserving the clip's planted ankles.
+        if (ExitElapsed >= double(DisembarkDuration))
         {
             Disembarking = false;
+            GetCharacterMovement()->StopMovementImmediately();
+            ConsumeMovementInputVector();
             GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+            StartWalkingAnimation();
         }
     }
     else

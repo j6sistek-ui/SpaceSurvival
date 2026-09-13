@@ -7,6 +7,7 @@
 #include "SSWorldActors.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/Level.h"
 #include "Engine/StaticMeshActor.h"
@@ -222,8 +223,21 @@ bool CheckStation(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
         ++WorldBodies;
     Test.TestEqual(TEXT("Station transition tears down hazards, enemies, projectiles and event actors"), WorldBodies,
                    0);
-    for (int32 Index = 0; Index < 32; ++Index)
+    Test.TestTrue(TEXT("Station starts the authored exit before allowing services"), Walker->IsDisembarking());
+    const int32 ArrivalWave = Fixture.Instance->Session.run.wave;
+    Walker->SetActorLocation(Hub->GetActorTransform().TransformPosition(FVector(200, -800, 100)));
+    Fixture.Mode->Interact();
+    Test.TestTrue(TEXT("Early console interaction cannot interrupt the authored exit"), !Fixture.Mode->IsMenuOpen());
+    Fixture.Mode->OpenPanel(ESSPanel::Main);
+    Test.TestTrue(TEXT("Shell cannot pause or skip the authored exit"), !Fixture.Mode->IsMenuOpen());
+    Fixture.Mode->LaunchFromHub();
+    Test.TestEqual(TEXT("Early departure leaves the station wave unchanged"), Fixture.Instance->Session.run.wave,
+                   ArrivalWave);
+    for (int32 Index = 0; Index < 60 && Walker->IsDisembarking(); ++Index)
         Fixture.Step();
+    Test.TestTrue(TEXT("Authored exit completes with possession, collision and walking restored"),
+                  !Walker->IsDisembarking() && Fixture.Controller->GetPawn() == Walker &&
+                      Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
     Test.TestTrue(TEXT("Disembark leaves the walker above the station floor"),
                   Hub->GetActorTransform().InverseTransformPosition(Walker->GetActorLocation()).Z > 0.f);
     Walker->SetActorLocation(Hub->GetActorTransform().TransformPosition(FVector(200, -800, 100)));

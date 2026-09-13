@@ -8,6 +8,7 @@ class UStaticMeshComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class UAudioComponent;
+class UAnimSequence;
 
 UCLASS()
 class SPACESURVIVAL_API ASSStation : public AActor
@@ -70,7 +71,12 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
-    void BeginDisembark(FVector Start, FVector End, FRotator Facing);
+    static constexpr float DisembarkDuration = 2.4f;
+    bool BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing);
+    bool IsDisembarking() const
+    {
+        return Disembarking;
+    }
     void Move(FVector2D Direction, FVector2D Look, bool Run, float DeltaSeconds);
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USpringArmComponent> Boom;
@@ -80,6 +86,11 @@ public:
 private:
     TWeakObjectPtr<ASSStation> RecoveryHub;
     FVector ExitStart = FVector::ZeroVector, ExitEnd = FVector::ZeroVector;
-    float ExitElapsed = 0.f;
+    FQuat ExitStartRotation = FQuat::Identity, ExitEndRotation = FQuat::Identity;
+    double ExitElapsed = 0.0;
     bool Disembarking = false;
+    UPROPERTY()
+    TObjectPtr<UAnimSequence> WalkAnimation;
+    void SampleExitPose(float Seconds);
+    void StartWalkingAnimation();
 };

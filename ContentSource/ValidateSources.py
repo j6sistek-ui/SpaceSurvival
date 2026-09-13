@@ -84,6 +84,28 @@ def validate():
     assert pilot_bytes[28+pilot_json_size:28+pilot_json_size+len(original_binary)] == original_binary, "Pilot transport changed original binary mesh/skin data"
     assert len(pilot_document["animations"])==1 and len(pilot_document["animations"][0]["channels"])==156
     results["pilot_animation"] = {"valid_binary_header_and_hash": True, "seconds": pilot["seconds"], "bones": pilot["bones"]}
+    exit_manifest = json.loads((ROOT / "Animation/Disembark.json").read_text(encoding="utf-8"))
+    exit_bytes = (ROOT / "Animation/Disembark.glb").read_bytes()
+    assert exit_bytes.startswith(b"glTF") and hashlib.sha256(exit_bytes).hexdigest() == exit_manifest["animation_sha256"]
+    assert exit_manifest["seconds"] == 2.4 and exit_manifest["frames"] == 73 and not exit_manifest["loop"]
+    exit_json_size = struct.unpack_from("<I", exit_bytes, 12)[0]
+    exit_document = json.loads(exit_bytes[20:20+exit_json_size])
+    for field in ("nodes", "skins", "meshes", "images", "materials", "scenes"):
+        assert exit_document[field] == original_document[field], f"Exit transport changed original {field}"
+    assert exit_bytes[28+exit_json_size:28+exit_json_size+len(original_binary)] == original_binary
+    assert len(exit_document["animations"]) == 1 and len(exit_document["animations"][0]["channels"]) == 156
+    results["disembark_animation"] = {"valid_binary_header_and_hash": True, "seconds": 2.4, "bones": 52,
+                                      "original_geometry_skin_materials_preserved": True}
+    panorama = ROOT / "Textures/SpacePanorama-v1.png"
+    panorama_manifest = json.loads(panorama.with_suffix(".json").read_text(encoding="utf-8"))
+    panorama_bytes = panorama.read_bytes()
+    assert panorama_bytes[:8] == bytes([137,80,78,71,13,10,26,10]), "Panorama is not PNG"
+    assert panorama_bytes[12:16] == b"IHDR", "Panorama is missing dimensions"
+    width, height = struct.unpack_from(">II", panorama_bytes, 16)
+    assert (width, height) == (1774, 887), "Panorama dimensions changed"
+    assert hashlib.sha256(panorama_bytes).hexdigest() == panorama_manifest["sha256"]
+    results["space_panorama"] = {"source_sha256": panorama_manifest["sha256"], "width": width,
+                                 "height": height, "runtime_visual_approval": False}
     (ROOT / "source_validation.json").write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
     print(f"Validated source formats: {len(results['meshes'])} meshes, {len(results['audio'])} WAVs, unchanged GLB. Unreal validation remains open.")
     return results

@@ -36,10 +36,28 @@ try {
     } elseif ($Target -eq 'Validate') {
         Invoke-ContentPython "$root\Scripts\ValidateContent.py" -NoRendering
     } elseif ($Target -eq 'Test') {
+        $testStarted = [DateTime]::UtcNow
         & $editor $project -unattended -NullRHI -stdout -FullStdOutLogOutput '-ExecCmds=Automation RunTests SpaceSurvival' '-TestExit=Automation Test Queue Empty' "-ReportExportPath=$root\Artifacts\UnrealTests"
+        if ($LASTEXITCODE -ne 0) { throw "Unreal automation process failed with exit code $LASTEXITCODE." }
+        $reportPath = Join-Path $root 'Artifacts\UnrealTests\index.json'
+        if (-not (Test-Path -LiteralPath $reportPath -PathType Leaf) -or
+            (Get-Item -LiteralPath $reportPath).LastWriteTimeUtc -lt $testStarted) {
+            throw 'Unreal automation produced no fresh report; process exit code alone is insufficient.'
+        }
+        $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+        if ($report.succeeded -lt 1 -or $report.failed -ne 0 -or $report.notRun -ne 0 -or
+            $report.succeededWithWarnings -ne 0 -or @($report.tests).Count -ne $report.succeeded -or
+            @($report.tests | Where-Object { $_.state -ne 'Success' }).Count -gt 0) {
+            throw "Unreal automation did not pass cleanly; inspect $reportPath."
+        }
     } else {
         if (-not (Test-Path -LiteralPath (Join-Path $root 'Content\SpaceSurvival\Maps\Survival.umap'))) { throw 'AuthorContent must finish successfully before packaging.' }
-        & $uat BuildCookRun "-project=$project" -noP4 -platform=Win64 -clientconfig=Development '-ubtargs=-NoHotReloadFromIDE' -build -cook -stage -pak -iostore -prereqs -archive "-archivedirectory=$root\Artifacts\Windows" -utf8output
+        $packageLogs = Join-Path $root 'Artifacts\BuildLogs'
+        New-Item -ItemType Directory -Path $packageLogs -Force | Out-Null
+        $packageLog = Join-Path $packageLogs ("WindowsPackage-" + [Guid]::NewGuid().ToString('N') + '.log')
+        & $uat BuildCookRun "-project=$project" -noP4 -platform=Win64 -clientconfig=Development '-ubtargs=-NoHotReloadFromIDE' -build -cook -stage -pak -iostore -prereqs -archive "-archivedirectory=$root\Artifacts\Windows" -utf8output 2>&1 | Tee-Object -FilePath $packageLog
+        if ($LASTEXITCODE -ne 0) { throw "Package failed with exit code $LASTEXITCODE; inspect $packageLog." }
+        & "$PSScriptRoot\BundlePrerequisites.ps1" -BuildLog $packageLog
     }
     if ($LASTEXITCODE -ne 0) { throw "$Target failed with exit code $LASTEXITCODE" }
 } finally { Pop-Location }

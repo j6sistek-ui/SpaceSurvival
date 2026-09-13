@@ -3,6 +3,15 @@
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "SSPhase1Data.h"
+#include "Animation/AnimSequence.h"
+#include "Animation/AnimSingleNodeInstance.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "Rendering/SkeletalMeshRenderData.h"
+#include "Rendering/SkinWeightVertexBuffer.h"
+#include "Engine/SkeletalMesh.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -63,10 +72,189 @@ bool FSSStationWalkerRecovery::RunTest(const FString &Parameters)
         TestTrue(TEXT("Recovery clears falling momentum"), Walker->GetVelocity().IsNearlyZero());
         TestTrue(TEXT("Recovery restores walking"), Walker->GetCharacterMovement()->MovementMode == MOVE_Walking);
     }
-    const FVector Exit = HubTransform.TransformPosition(FVector(650, -350, 100));
-    Walker->BeginDisembark(HubTransform.TransformPosition(FVector(850, 0, 320)), Exit, Hub->GetActorRotation());
-    Walker->Tick(1.4f);
-    TestTrue(TEXT("Normal disembark still reaches its authored exit"), Walker->GetActorLocation().Equals(Exit, .01));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSAuthoredDisembark, "SpaceSurvival.Integration.AuthoredDisembark",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
+{
+    // Real world, assets, physics queries and pawns; no GameInstance Init or save APIs.
+    FSSIsolatedTestWorld Fixture;
+    if (!TestNotNull(TEXT("Create isolated exit world"), Fixture.World))
+        return false;
+    auto *Hub = Fixture.World->SpawnActor<ASSStation>(FVector(16000, -8000, 5000), FRotator(0, 75, 0));
+    auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+    auto *Ship = Fixture.World->SpawnActor<ASSShip>();
+    auto *Controller = Fixture.World->SpawnActor<APlayerController>();
+    auto *ExitAnimation =
+        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Disembark.A_Disembark"));
+    auto *PilotAnimation = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Pilot.A_Pilot"));
+    auto *PilotMesh =
+        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautPilot.SK_AcornautPilot"));
+    if (!TestNotNull(TEXT("Create station"), Hub) || !TestNotNull(TEXT("Create walker"), Walker) ||
+        !TestNotNull(TEXT("Create ship"), Ship) || !TestNotNull(TEXT("Create local controller"), Controller) ||
+        !TestNotNull(TEXT("Load authored exit"), ExitAnimation) ||
+        !TestNotNull(TEXT("Load pilot animation"), PilotAnimation) ||
+        !TestNotNull(TEXT("Load pilot derivative"), PilotMesh))
+        return false;
+    Hub->BuildHub(false);
+    Walker->DispatchBeginPlay();
+    Controller->SetAsLocalPlayerController();
+    Fixture.World->AddController(Controller);
+    Controller->Possess(Walker);
+    Ship->SetActorLocationAndRotation(Hub->DockPosition(), Hub->GetActorRotation());
+    Ship->Pilot->SetSkeletalMesh(PilotMesh);
+    Ship->Pilot->PlayAnimation(PilotAnimation, false);
+    Ship->Pilot->GetSingleNodeInstance()->SetPosition(0.f, false);
+    Ship->Pilot->TickAnimation(0.f, false);
+    Ship->Pilot->RefreshBoneTransforms();
+    const FTransform Seated = Ship->Pilot->GetComponentTransform();
+    const FVector Pelvis = Ship->Pilot->GetSocketLocation(TEXT("Pelvis"));
+    const FVector End = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
+    TestTrue(TEXT("Exit is the authored 2.4 second clip without extracted root motion"),
+             FMath::IsNearlyEqual(ExitAnimation->GetPlayLength(), 2.4f, .001f) && !ExitAnimation->HasRootMotion());
+    if (!TestTrue(TEXT("Begin actual authored exit"), Walker->BeginDisembark(Seated, End, Hub->GetActorRotation())))
+        return false;
+    auto *Animation = Walker->GetMesh()->GetSingleNodeInstance();
+    TestTrue(TEXT("Walker uses the exact pilot derivative and constant mesh scale"),
+             Walker->GetMesh()->GetSkeletalMeshAsset() == PilotMesh &&
+                 Walker->GetMesh()->GetRelativeScale3D().Equals(FVector(1.5f), .001));
+    TestTrue(TEXT("Exit starts at the exact seated component transform and pelvis"),
+             Walker->GetMesh()->GetComponentTransform().Equals(Seated, .001) &&
+                 Walker->GetMesh()->GetSocketLocation(TEXT("Pelvis")).Equals(Pelvis, .1));
+    TestTrue(TEXT("Exit starts at zero, nonlooping, under the actor clock"),
+             Animation && Animation->GetCurrentAsset() == ExitAnimation && !Animation->IsLooping() &&
+                 !Animation->IsPlaying() && FMath::IsNearlyZero(Animation->GetCurrentTime()));
+    const FVector Start = Walker->GetActorLocation();
+    const FRotator Control = Controller->GetControlRotation();
+    Walker->Move(FVector2D(1, 1), FVector2D(1, 1), true, .1f);
+    TestTrue(TEXT("Exit blocks queued movement and camera input"),
+             Walker->GetPendingMovementInputVector().IsNearlyZero() &&
+                 Controller->GetControlRotation().Equals(Control, .001) &&
+                 Walker->GetCharacterMovement()->MovementMode == MOVE_None);
+    Walker->Tick(.4f);
+    TestTrue(TEXT("Actor stays seated through the brace"), Walker->GetActorLocation().Equals(Start, .01));
+    const FVector Offset(12000, -3000, 500);
+    if (!TestTrue(TEXT("Rebase the actual world and its physics scene during exit"),
+                  Fixture.World->SetNewWorldOrigin(FIntVector(-12000, 3000, -500))))
+        return false;
+    Walker->Tick(.4f);
+    TestTrue(TEXT("World-origin shift preserves the stationary rise"),
+             Walker->GetActorLocation().Equals(Start + Offset, .01));
+    Walker->Tick(.8f);
+    const FVector Contact = Walker->GetActorLocation();
+    FHitResult Floor;
+    const double WalkingFloorGap =
+        (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5;
+    TestTrue(TEXT("Landing capsule already has the normal walking gap above the real station floor"),
+             Fixture.World->LineTraceSingleByObjectType(Floor, Contact, Contact - FVector(0, 0, 300),
+                                                        FCollisionObjectQueryParams(ECC_WorldStatic)) &&
+                 Floor.GetActor() == Hub &&
+                 FMath::IsNearlyEqual(
+                     Contact.Z - Floor.ImpactPoint.Z,
+                     double(Walker->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()) + WalkingFloorGap, .1));
+    AddInfo(FString::Printf(
+        TEXT("EXIT_CONTACT actor=%s floorZ=%.6f capsuleGap=%.6f meshZ=%.6f"), *Contact.ToString(), Floor.ImpactPoint.Z,
+        Contact.Z - Floor.ImpactPoint.Z - Walker->GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+        Walker->GetMesh()->GetRelativeLocation().Z));
+    auto CheckVisibleSole = [this, Walker, Hub, PilotMesh](const TCHAR *Stage)
+    {
+        const auto *RenderData = PilotMesh->GetResourceForRendering();
+        const auto *Weights = Walker->GetMesh()->GetSkinWeightBuffer(0);
+        if (!TestTrue(TEXT("Imported LOD 0 retains CPU data for the sole geometry check"),
+                      RenderData && !RenderData->LODRenderData.IsEmpty() && Weights &&
+                          RenderData->LODRenderData[0].StaticVertexBuffers.PositionVertexBuffer.GetAllowCPUAccess() &&
+                          Weights->GetNeedsCPUAccess()))
+            return;
+        TArray<FMatrix44f> RefToLocal;
+        TArray<FVector3f> Vertices;
+        Walker->GetMesh()->GetCurrentRefToLocalMatrices(RefToLocal, 0);
+        USkinnedMeshComponent::ComputeSkinnedPositions(Walker->GetMesh(), Vertices, RefToLocal,
+                                                       RenderData->LODRenderData[0], *Weights);
+        if (!TestTrue(TEXT("Imported mesh supplies skinned vertices"), !Vertices.IsEmpty()))
+            return;
+        FVector Lowest(0, 0, UE_DOUBLE_BIG_NUMBER);
+        for (const FVector3f &Vertex : Vertices)
+        {
+            const FVector WorldVertex = Walker->GetMesh()->GetComponentTransform().TransformPosition(FVector(Vertex));
+            if (WorldVertex.Z < Lowest.Z)
+                Lowest = WorldVertex;
+        }
+        double PlateZ = -UE_DOUBLE_BIG_NUMBER;
+        TInlineComponentArray<UInstancedStaticMeshComponent *> Batches;
+        Hub->GetComponents(Batches);
+        for (auto *Batch : Batches)
+            if (Batch->GetFName() == TEXT("DeckPanels") && Batch->GetStaticMesh())
+                for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+                {
+                    FTransform Instance;
+                    Batch->GetInstanceTransform(Index, Instance, true);
+                    const FVector Local = Instance.InverseTransformPosition(Lowest);
+                    const FBox Bounds = Batch->GetStaticMesh()->GetBoundingBox();
+                    if (Local.X >= Bounds.Min.X && Local.X <= Bounds.Max.X && Local.Y >= Bounds.Min.Y &&
+                        Local.Y <= Bounds.Max.Y)
+                        PlateZ =
+                            FMath::Max(PlateZ, Instance.TransformPosition(FVector(Local.X, Local.Y, Bounds.Max.Z)).Z);
+                }
+        AddInfo(FString::Printf(TEXT("EXIT_SOLE %s vertices=%d soleZ=%.6f plateZ=%.6f clearance=%.6f"), Stage,
+                                Vertices.Num(), Lowest.Z, PlateZ, Lowest.Z - PlateZ));
+        TestTrue(FString::Printf(TEXT("%s visible sole meets the actual deck panel within 1 mm"), Stage),
+                 FMath::Abs(Lowest.Z - PlateZ) <= .1);
+    };
+    CheckVisibleSole(TEXT("contact"));
+    const FVector LeftFoot = Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot"));
+    const FVector RightFoot = Walker->GetMesh()->GetSocketLocation(TEXT("R_Foot"));
+    Walker->Tick(.4f);
+    TestTrue(TEXT("Actor and both feet stay planted during compression"),
+             Walker->IsDisembarking() && Walker->GetActorLocation().Equals(Contact, .01) &&
+                 Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot")).Equals(LeftFoot, .1) &&
+                 Walker->GetMesh()->GetSocketLocation(TEXT("R_Foot")).Equals(RightFoot, .1));
+    TestTrue(TEXT("Collision and movement stay disabled before clip completion"),
+             Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
+                 Walker->GetCharacterMovement()->MovementMode == MOVE_None);
+    Walker->Tick(.401f);
+    Animation = Walker->GetMesh()->GetSingleNodeInstance();
+    AddInfo(FString::Printf(TEXT("EXIT_HANDOFF actorDelta=%s leftFootDelta=%s rightFootDelta=%s floorDist=%.6f"),
+                            *(Walker->GetActorLocation() - Contact).ToString(),
+                            *(Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot")) - LeftFoot).ToString(),
+                            *(Walker->GetMesh()->GetSocketLocation(TEXT("R_Foot")) - RightFoot).ToString(),
+                            Walker->GetCharacterMovement()->CurrentFloor.FloorDist));
+    CheckVisibleSole(TEXT("walk handoff"));
+    TestTrue(TEXT("Exit completes without losing possession or moving the planted actor"),
+             !Walker->IsDisembarking() && Controller->GetPawn() == Walker &&
+                 Walker->GetActorLocation().Equals(Contact, .01));
+    TestTrue(TEXT("Completion restores collision, walking and the matching walk phase"),
+             Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
+                 Walker->GetCharacterMovement()->MovementMode == MOVE_Walking && Animation &&
+                 Animation->GetCurrentAsset() && Animation->GetCurrentAsset()->GetName() == TEXT("A_Walk") &&
+                 Animation->IsLooping() && FMath::IsNearlyEqual(Animation->GetCurrentTime(), .308333333f, .001f));
+    TestTrue(TEXT("Walk handoff preserves both foot positions"),
+             Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot")).Equals(LeftFoot, .1) &&
+                 Walker->GetMesh()->GetSocketLocation(TEXT("R_Foot")).Equals(RightFoot, .1));
+    Walker->Move(FVector2D(0, 1), FVector2D::ZeroVector, false, .1f);
+    TestFalse(TEXT("Walking input is restored after the authored exit"),
+              Walker->GetPendingMovementInputVector().IsNearlyZero());
+    for (int32 Rate : {30, 60, 144})
+    {
+        FTransform ShiftedSeat = Seated;
+        ShiftedSeat.AddToTranslation(Offset);
+        TestTrue(TEXT("Restart isolated exit for frame-rate comparison"),
+                 Walker->BeginDisembark(ShiftedSeat, End + Offset, Hub->GetActorRotation()));
+        for (int32 Frame = 0; Frame < Rate * 3; ++Frame)
+        {
+            Walker->Tick(1.f / Rate);
+            if (!TestTrue(TEXT("All exit samples preserve the full pilot mesh scale"),
+                          Walker->GetMesh()->GetComponentScale().Equals(FVector(1.5f), .001)))
+                return false;
+        }
+        AddInfo(FString::Printf(TEXT("EXIT_RATE rate=%d actorDelta=%s floorDist=%.6f"), Rate,
+                                *(Walker->GetActorLocation() - Contact).ToString(),
+                                Walker->GetCharacterMovement()->CurrentFloor.FloorDist));
+        TestTrue(TEXT("30/60/144 Hz finish at the same landing point with walking restored"),
+                 !Walker->IsDisembarking() && Walker->GetActorLocation().Equals(Contact, .1) &&
+                     Walker->GetCharacterMovement()->MovementMode == MOVE_Walking);
+    }
     return true;
 }
 

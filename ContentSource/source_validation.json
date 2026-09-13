@@ -207,5 +207,17 @@
     "valid_binary_header_and_hash": true,
     "seconds": 4,
     "bones": 52
+  },
+  "disembark_animation": {
+    "valid_binary_header_and_hash": true,
+    "seconds": 2.4,
+    "bones": 52,
+    "original_geometry_skin_materials_preserved": true
+  },
+  "space_panorama": {
+    "source_sha256": "2ae245359fbac353bffdd579fc884ee8b8db0633c6deaadca73681e232f783a1",
+    "width": 1774,
+    "height": 887,
+    "runtime_visual_approval": false
   }
 }

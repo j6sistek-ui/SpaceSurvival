@@ -39,6 +39,26 @@ def main():
             assert material.get_editor_property("used_with_instanced_static_meshes"), f"{name}: missing station batch usage"
         record["materials"].append(material.get_path_name())
 
+    def validate_panorama():
+        source = ROOT / "ContentSource/Textures/SpacePanorama-v1.png"
+        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        texture = required(BASE + "/Textures/T_SpacePanorama_v1", u.Texture2D)
+        material = required(BASE + "/Materials/M_Space", u.Material)
+        assert library.get_metadata_tag(texture, "SSPanoramaSourceSHA256") == digest
+        assert library.get_metadata_tag(material, "SSPanoramaSourceSHA256") == digest
+        assert library.get_metadata_tag(material, "SSPanoramaVersion") == "EquirectangularPanorama1"
+        assert texture.get_editor_property("srgb")
+        assert texture.get_editor_property("lod_group") == u.TextureGroup.TEXTUREGROUP_SKYBOX
+        assert texture.get_editor_property("power_of_two_mode") == u.TexturePowerOfTwoSetting.STRETCH_TO_POWER_OF_TWO
+        assert texture.get_editor_property("mip_gen_settings") == u.TextureMipGenSettings.TMGS_SIMPLE_AVERAGE
+        assert texture.get_editor_property("address_x") == u.TextureAddress.TA_WRAP
+        assert texture.get_editor_property("address_y") == u.TextureAddress.TA_CLAMP
+        assert material.get_editor_property("shading_model") == u.MaterialShadingModel.MSM_UNLIT
+        assert material.get_editor_property("two_sided")
+        record["space_panorama"] = {"texture": texture.get_path_name(), "source_sha256": digest,
+                                    "power_of_two_resampling": "StretchToPowerOfTwo", "mips": "SimpleAverage",
+                                    "runtime_seam_and_readability_approval": False}
+
     def validate_mesh(item):
         mesh = required(f"{BASE}/Meshes/{item['name']}", u.StaticMesh)
         bounds = mesh.get_bounds()
@@ -70,6 +90,19 @@ def main():
         pilot = required(BASE + "/Character/A_Pilot", u.AnimSequence)
         assert pilot.get_editor_property("skeleton") == skeleton, "Pilot skeleton mismatch"
         assert abs(pilot.get_editor_property("sequence_length")-4.0) < .01, "Pilot duration mismatch"
+        exit_clip = required(BASE + "/Character/A_Disembark", u.AnimSequence)
+        exit_source = ROOT / "ContentSource/Animation/Disembark.glb"
+        exit_manifest = json.loads(exit_source.with_suffix(".json").read_text(encoding="utf-8"))
+        exit_hash = hashlib.sha256(exit_source.read_bytes()).hexdigest()
+        assert exit_hash == exit_manifest["animation_sha256"], "Disembark source mismatch"
+        assert library.get_metadata_tag(exit_clip, "SSDisembarkSourceSHA256") == exit_hash, "Stale disembark import"
+        assert library.get_metadata_tag(exit_clip, "SSDisembarkSourceFormat") == "OriginalGLTFBasis1", "Disembark basis mismatch"
+        assert exit_clip.get_editor_property("skeleton") == skeleton, "Disembark skeleton mismatch"
+        assert abs(exit_clip.get_editor_property("sequence_length") - 2.4) < .01, "Disembark duration mismatch"
+        assert not exit_clip.get_editor_property("enable_root_motion"), "Actor owns exit travel"
+        assert not exit_clip.get_editor_property("force_root_lock"), "Exit local pelvis track must remain intact"
+        record["disembark"] = {"animation": exit_clip.get_path_name(), "seconds": 2.4,
+                                "source_sha256": exit_hash, "root_motion": False, "force_root_lock": False}
         pilot_mesh = required(BASE + "/Character/SK_AcornautPilot", u.SkeletalMesh)
         assert pilot_mesh.get_editor_property("skeleton") == skeleton, "Pilot mesh skeleton mismatch"
         pilot_manifest = json.loads((ROOT / "ContentSource/Animation/PilotMesh.json").read_text(encoding="utf-8"))
@@ -96,6 +129,7 @@ def main():
         checked(name, lambda name=name: validate_material(name))
     for item in meshes["assets"]:
         checked(item["name"], lambda item=item: validate_mesh(item))
+    checked("Space panorama", validate_panorama)
     checked("Preserved hero", validate_hero)
     def validate_scene():
         runpy.run_path(str(ROOT / "Scripts/ValidateScene.py"), run_name="__main__")

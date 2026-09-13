@@ -76,6 +76,8 @@ void ASSHUD::DrawHUD()
     const auto Stats = S.Stats();
     Scale = FMath::Clamp(float(Canvas->SizeY) / 1080.f * float(S.settings.uiScale), .65f, 1.6f);
     const float W = Canvas->SizeX, H = Canvas->SizeY, Margin = 30 * Scale;
+    const bool MenuOpen = GM->IsMenuOpen();
+    const auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0));
     if (S.run.active)
     {
         Text(FString::Printf(TEXT("WAVE %02d"), S.run.wave), Margin, Margin, 1.5f);
@@ -95,9 +97,6 @@ void ASSHUD::DrawHUD()
                                  S.run.contract == SS::Contract::Objective ? TEXT("HUNTER") : TEXT("PRESSURE"),
                                  S.run.contractProgress, S.run.contractTarget),
                  Margin, 140 * Scale, .8f);
-        if (S.run.pendingReward)
-            Text(TEXT("REWARD SECURED / E or A to choose"), W * .5f - 180 * Scale, H - 90 * Scale, .9f,
-                 FLinearColor(1, .8f, .4f));
     }
     if (auto *Ship = GM->GetPlayerShip(); Ship && S.IsFlying())
     {
@@ -123,6 +122,19 @@ void ASSHUD::DrawHUD()
                      RY - FMath::Clamp(Delta.X / 180.f, -45.f, 45.f) * Scale, .75f, FLinearColor(1, .5f, .3f));
             }
         }
+        ASSEncounterBeacon *InteractBeacon = nullptr;
+        float InteractDistance = MAX_flt;
+        if (!MenuOpen && !Walker && !S.run.pendingReward)
+            for (TActorIterator<ASSEncounterBeacon> It(GetWorld()); It; ++It)
+                if (It->IsPlayerInRange() && !It->IsResolved())
+                {
+                    const float Distance = FVector::DistSquared(Ship->GetActorLocation(), It->GetActorLocation());
+                    if (Distance < InteractDistance)
+                    {
+                        InteractDistance = Distance;
+                        InteractBeacon = *It;
+                    }
+                }
         for (TActorIterator<ASSEncounterBeacon> It(GetWorld()); It; ++It)
         {
             if (It->IsResolved())
@@ -135,7 +147,7 @@ void ASSHUD::DrawHUD()
             }
             const float Meters = FVector::Dist(Ship->GetActorLocation(), It->GetActorLocation()) / 100.f;
             const FString Label = FString::Printf(TEXT("<> %s / %.0f m"), *It->GetEncounterLabel(), Meters);
-            const bool ShowPrompt = It->IsPlayerInRange() && !It->IsAccepted();
+            const bool ShowPrompt = *It == InteractBeacon && !It->IsAccepted();
             const FLinearColor LabelColor(1, .8f, .4f);
             const float Padding = 10.f * Scale, PanelW = FMath::Min(420.f * Scale, W - 2.f * Margin);
             const float TextW = PanelW - 2.f * Padding;
@@ -204,16 +216,40 @@ void ASSHUD::DrawHUD()
         Paragraph(GM->PilotReaction, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, CaptionW - 24.f * Scale, .75f,
                   FLinearColor(.9f, .94f, 1.f));
     }
-    if (auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0)))
+    if (!MenuOpen && (!Walker || !Walker->IsDisembarking()))
     {
-        for (TActorIterator<ASSStation> It(GetWorld()); It; ++It)
+        FString InteractionHint;
+        FLinearColor HintColor = FLinearColor::White;
+        // Match Interact: walking always targets a service; pending rewards take priority only in the ship.
+        if (Walker)
         {
-            FString Label;
-            if (It->NearestService(Walker->GetActorLocation(), Label) != ESSPanel::None)
-                Text(TEXT("E / A   ") + Label, W * .5f - 200 * Scale, H - 80 * Scale, .9f);
+            for (TActorIterator<ASSStation> It(GetWorld()); It; ++It)
+            {
+                FString Label;
+                const auto Service = It->NearestService(Walker->GetActorLocation(), Label);
+                if (Service != ESSPanel::None)
+                {
+                    InteractionHint = Service == ESSPanel::Reward && S.run.pendingReward
+                                          ? TEXT("E / A   CHOOSE SECURED REWARD")
+                                          : TEXT("E / A   ") + Label;
+                    break;
+                }
+            }
+            if (InteractionHint.IsEmpty() && S.run.pendingReward)
+            {
+                InteractionHint = TEXT("REWARD SECURED / visit the Beacon Log");
+                HintColor = FLinearColor(1, .8f, .4f);
+            }
+            Text(TEXT("W A S D / left stick: walk   |   Shift / X: run   |   Esc / Menu: shell"), Margin,
+                 H - 35 * Scale, .65f);
         }
-        Text(TEXT("W A S D / left stick: walk   |   Shift / X: run   |   Esc / Menu: shell"), Margin, H - 35 * Scale,
-             .65f);
+        else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
+        {
+            InteractionHint = TEXT("REWARD SECURED / E or A to choose");
+            HintColor = FLinearColor(1, .8f, .4f);
+        }
+        if (!InteractionHint.IsEmpty())
+            Text(InteractionHint, W * .5f - 200 * Scale, H - 80 * Scale, .9f, HintColor);
     }
     const bool Dialogue =
         GM->Announcement.StartsWith(TEXT("Acornaut:")) || GM->Announcement.StartsWith(TEXT("Dockmaster:"));
