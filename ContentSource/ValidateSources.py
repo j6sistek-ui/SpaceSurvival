@@ -1,25 +1,29 @@
 """Independent source-format checks; does not claim Unreal/gameplay validation."""
 from array import array
+import argparse
 import hashlib
 import json
 import math
+import runpy
 from pathlib import Path
 import sys
 import struct
 import wave
 
 ROOT = Path(__file__).resolve().parent
+source_matches = runpy.run_path(str(ROOT.parent / "Scripts/SourceDigests.py"))["matches"]
 
 
-def validate():
+def validate(source_root=ROOT, output_path=None):
+    ROOT = Path(source_root).resolve()
     results = {"status": "SOURCE_FORMATS_VALIDATED_ONLY", "meshes": [], "audio": [],
                "unverified": ["Unreal import", "hero orientation/animation", "collision", "visual quality in gameplay", "audio mix", "performance"]}
-    mesh_manifest = json.loads((ROOT / "Meshes" / "manifest.json").read_text())
+    mesh_manifest = json.loads((ROOT / "Meshes" / "manifest.json").read_text(encoding="utf-8"))
     for item in mesh_manifest["assets"]:
         path = ROOT / "Meshes" / (item["name"] + ".obj")
-        assert hashlib.sha256(path.read_bytes()).hexdigest() == item["sha256"], path
+        assert source_matches(path, item["sha256"]), path
         vertices, normals, uv, faces, materials = [], [], [], [], set()
-        for line in path.read_text().splitlines():
+        for line in path.read_text(encoding="utf-8").splitlines():
             words = line.split()
             if not words:
                 continue
@@ -47,7 +51,7 @@ def validate():
             area_squared = sum(v*v for v in (x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]))
             assert area_squared > 1e-10, f"{path}: degenerate triangle"
         results["meshes"].append({"name": item["name"], "triangles": len(faces), "valid_indices_normals_nonzero_area": True})
-    audio_manifest = json.loads((ROOT / "Audio" / "manifest.json").read_text())
+    audio_manifest = json.loads((ROOT / "Audio" / "manifest.json").read_text(encoding="utf-8"))
     for item in audio_manifest["assets"]:
         path = ROOT / "Audio" / (item["name"] + ".wav")
         assert hashlib.sha256(path.read_bytes()).hexdigest() == item["sha256"], path
@@ -68,7 +72,7 @@ def validate():
         results["audio"].append({"name": item["name"], "peak_sample": peak, "boundary_jump": round(jump, 6), "valid_pcm": True})
     results["preserved_hero_sha256"] = hashlib.sha256((ROOT.parent / "model-rigged.glb").read_bytes()).hexdigest()
     assert results["preserved_hero_sha256"] == "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
-    pilot = json.loads((ROOT / "Animation/Pilot.json").read_text())
+    pilot = json.loads((ROOT / "Animation/Pilot.json").read_text(encoding="utf-8"))
     pilot_bytes = (ROOT / "Animation/Pilot.glb").read_bytes()
     assert pilot_bytes.startswith(b"glTF"), "Pilot source is not binary glTF"
     assert hashlib.sha256(pilot_bytes).hexdigest() == pilot["animation_sha256"], "Pilot source changed"
@@ -117,10 +121,72 @@ def validate():
     results["station_deck"] = {"license": deck_manifest["license"], "author": deck_manifest["author"],
                                "asset_url": deck_manifest["asset_url"], "source_maps": deck_manifest["maps"],
                                "runtime_visual_approval": False}
-    (ROOT / "source_validation.json").write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
+    results["reviewed_source_references"] = validate_reviewed_references(ROOT.parent)
+    if output_path is not None:
+        output = Path(output_path)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"Validated source formats: {len(results['meshes'])} meshes, {len(results['audio'])} WAVs, unchanged GLB. Unreal validation remains open.")
     return results
 
 
+def validate_reviewed_references(project_root):
+    """Verify currently used authored input references; do not rewrite receipts."""
+    references = []
+    optional_absent = []
+
+    def checked(relative, expected):
+        relative = Path(str(relative).replace("\\", "/"))
+        path = project_root / relative
+        assert source_matches(path, expected), "Reviewed input differs: " + str(relative)
+        references.append({"path":Path(relative).as_posix(), "reviewed_sha256":expected,
+                           "actual_sha256":hashlib.sha256(path.read_bytes()).hexdigest()})
+
+    for folder, name, optional in (
+        ("AcornShipCandidate", "Report.json", False),
+        ("EnemyCandidates", "SourceReport.json", False),
+        ("SwiftCandidate", "Report.json", True),
+        ("FieldCandidates/V3", "SourceReport.json", True),
+    ):
+        base = Path("ContentSource") / folder
+        report_path = project_root / base / name
+        if optional and not report_path.exists():
+            optional_absent.append((base / name).as_posix())
+            continue
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        for relative, expected in report["protected_sha256"].items():
+            checked(Path(relative), expected)
+        for item in report.get("outputs", []):
+            checked(base / item["file"], item["sha256"])
+        for item in report.get("assets", []):
+            checked(base / (item["name"] + ".obj"), item["obj_sha256"])
+            checked(base / (item["name"] + ".glb"), item["glb_sha256"])
+        for item in report.get("meshes", []):
+            for output in item["outputs"]:
+                checked(base / output["file"], output["sha256"])
+        if "palette_sha256" in report:
+            checked(base / "FieldPalette.mtl", report["palette_sha256"])
+        if "shader_sha256" in report:
+            for relative, expected in report["shader_sha256"].items():
+                checked(base / relative, expected)  # HLSL remains exact raw bytes.
+
+    tail = json.loads((project_root / "ContentSource/Animation/TailCandidateV2.json").read_text(encoding="utf-8"))
+    checked(Path("ContentSource/Animation/TailCandidateV2.glb"), tail["sha256"])
+    for relative, expected in tail["protected_sources"].items():
+        checked(Path(relative), expected)
+    checked(Path("ContentSource/TailCandidateV2Preview/RaySelection.json"), tail["ray_selection_sha256"])
+    checked(Path("ContentSource/TailCandidateV2Preview/RaySelectionResidual.json"), tail["residual_selection_sha256"])
+    rock = json.loads((project_root / "ContentSource/RockPhotographicPreview/AdoptionSource.json").read_text(encoding="utf-8"))
+    for name, row in rock["meshes"].items():
+        checked(Path("ContentSource/Meshes") / (name + ".obj"), row["obj_sha256"])
+    return {"checked":references, "optional_candidates_absent_from_tree":optional_absent,
+            "limits":"Source references only. Does not replace Unreal geometry, metadata, roster, graph or native validation."}
+
+
 if __name__ == "__main__":
-    validate()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-root", type=Path, default=ROOT)
+    parser.add_argument("--output", type=Path, default=ROOT.parent / "Saved/Validation/SourceFormats.json")
+    parser.add_argument("--check-only", action="store_true")
+    options = parser.parse_args()
+    validate(options.source_root, None if options.check_only else options.output)

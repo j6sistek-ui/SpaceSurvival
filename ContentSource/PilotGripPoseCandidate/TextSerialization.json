@@ -1,0 +1,123 @@
+{
+  "status": "TEXT_SERIALIZATION_PROVENANCE_ONLY_NO_SOURCE_OR_ASSET_REWRITE",
+  "created_utc": "2026-09-13T12:12:26.253998+00:00",
+  "purpose": "Map the seven currently observed Python byte representations to the exact LF representations stored by Git, without changing historical execution identities or broadening import digest acceptance.",
+  "policy": {
+    "gitattributes": "*.py text eol=lf",
+    "conversion": "Only CRLF byte pairs become LF; all remaining bytes are preserved.",
+    "git_filter_verification": "For every file, read-only git hash-object --path --stdin matches the canonical-LF Git blob. No object was written.",
+    "syntax_verification": "All seven UTF-8 raw and LF strings parse to identical Python ASTs; no script was executed."
+  },
+  "files": [
+    {
+      "path": "ContentSource/AcornShipGripFit/Generate.py",
+      "raw_worktree_bytes": 8702,
+      "raw_worktree_sha256": "355e82c79ddc636566b3da7b3f0224f59e6516f7e54c54c43b1fd88714cb273d",
+      "canonical_lf_bytes": 8632,
+      "canonical_lf_sha256": "720d2adc1f04eac184d95092aba15e8003192d3c3c7452083c07409568af9899",
+      "git_filtered_blob_sha1": "cbc30f10935dcdfc48ecabe272219eb0a590ea47",
+      "crlf_count": 70,
+      "bare_lf_count": 0,
+      "ast_equal": true
+    },
+    {
+      "path": "ContentSource/AcornShipGripFit/MeasureContact.py",
+      "raw_worktree_bytes": 6591,
+      "raw_worktree_sha256": "02e1d4e390f52a6c0a2e926570ad58c0447cb097937e979248bd0fff983e08f5",
+      "canonical_lf_bytes": 6590,
+      "canonical_lf_sha256": "efa62eeb3caf33e90e3e23a04d66873796652d5632ae79bc9eb25d55ec8c17a1",
+      "git_filtered_blob_sha1": "2ed685b4b3dd69fec8e07586e3feb5adf4f4adc9",
+      "crlf_count": 1,
+      "bare_lf_count": 78,
+      "ast_equal": true
+    },
+    {
+      "path": "ContentSource/AcornShipGripFit/ValidateContact.py",
+      "raw_worktree_bytes": 3607,
+      "raw_worktree_sha256": "0f4efadf287837880016506a18fdb6c36149b038e9eede5c91c23000d3a4f0f1",
+      "canonical_lf_bytes": 3569,
+      "canonical_lf_sha256": "9e4b7a52a4744e4b03c80baff93966170e3b9d6fb0f8e7879e8cada9acb58c3e",
+      "git_filtered_blob_sha1": "fff7b8759daa963b604e793313e8c1b953c7eee6",
+      "crlf_count": 38,
+      "bare_lf_count": 0,
+      "ast_equal": true
+    },
+    {
+      "path": "ContentSource/PilotGripPoseCandidate/AuthorPair.py",
+      "raw_worktree_bytes": 12545,
+      "raw_worktree_sha256": "05ee67ea08b2d7cf1d6c7e1ec39a1952af3596d7eb83fdcec30046faf43204b4",
+      "canonical_lf_bytes": 12422,
+      "canonical_lf_sha256": "a997bc73a6697883b66dfd6ad5e7305d822deb32327ee7ceef723509638dc0d5",
+      "git_filtered_blob_sha1": "343bf0be27e10393fac818a3f0d6a469bade2130",
+      "crlf_count": 123,
+      "bare_lf_count": 0,
+      "ast_equal": true,
+      "historical_review_execution_sha256": "05ee67ea08b2d7cf1d6c7e1ec39a1952af3596d7eb83fdcec30046faf43204b4"
+    },
+    {
+      "path": "ContentSource/PilotGripPoseCandidate/Diagnose.py",
+      "raw_worktree_bytes": 3968,
+      "raw_worktree_sha256": "dacedc0b7c80aefdfe5bf2b009dad7dfcced8e929e5fa32b48c00c62aae138ed",
+      "canonical_lf_bytes": 3938,
+      "canonical_lf_sha256": "38e99a30591c3db7d1e1d8fd9df2495ae6f3bfe03121596215e6107b1e34579e",
+      "git_filtered_blob_sha1": "b99de1ac03a1a92fd4cd3152bc2c5fbb7520403c",
+      "crlf_count": 30,
+      "bare_lf_count": 0,
+      "ast_equal": true
+    },
+    {
+      "path": "ContentSource/PilotGripPoseCandidate/Generate.py",
+      "raw_worktree_bytes": 6039,
+      "raw_worktree_sha256": "8634a1cb0b160400caeef84cb3103eed3138d8403b902f64f5f75c4ee53db6f5",
+      "canonical_lf_bytes": 5995,
+      "canonical_lf_sha256": "dc614cdfc36ddaa411839cf882dda3fa39322b0f8156a0f75ee31ae6fa4e07c8",
+      "git_filtered_blob_sha1": "8e12fdfafacea2fec0685ad4c889a133d4efec13",
+      "crlf_count": 44,
+      "bare_lf_count": 0,
+      "ast_equal": true,
+      "historical_review_execution_sha256": "8634a1cb0b160400caeef84cb3103eed3138d8403b902f64f5f75c4ee53db6f5"
+    },
+    {
+      "path": "ContentSource/PilotGripPoseCandidate/ValidatePair.py",
+      "raw_worktree_bytes": 3641,
+      "raw_worktree_sha256": "5feeea86492956dcf7502267296f182c68589bfc763ab67caf7479ed8a505c9a",
+      "canonical_lf_bytes": 3612,
+      "canonical_lf_sha256": "a0a95a9f9523cf56042d59f5ba37da26877ae57704395ce5d7babaf449248fea",
+      "git_filtered_blob_sha1": "a2f67fe6d598d46599eb34018db8b1d4077f75d7",
+      "crlf_count": 29,
+      "bare_lf_count": 0,
+      "ast_equal": true,
+      "historical_review_execution_sha256": "5feeea86492956dcf7502267296f182c68589bfc763ab67caf7479ed8a505c9a"
+    }
+  ],
+  "historical_receipts": {
+    "path": "ContentSource/PilotGripPoseCandidate/Review.json",
+    "sha256": "f1b235acfe559505239ab890ddfc01b2bc013f52ea2d9e661929dc7ed36f446d",
+    "unchanged": true,
+    "limit": "Review.json continues to pin the exact historical raw Generate.py, AuthorPair.py and ValidatePair.py execution hashes. Canonical checkout bytes are a different serialization, not the same raw execution artifact."
+  },
+  "standalone_guard_review": [
+    {
+      "path": "ContentSource/PilotGripPoseCandidate/ValidatePair.py",
+      "finding": "No self-script or Review.evidence_sha256 comparison. Guarded hashes are immutable original GLB binary identities; source channel payloads and convergence are compared directly. An LF serialization of this Python file does not trigger a Python digest failure."
+    },
+    {
+      "path": "ContentSource/PilotGripPoseCandidate/AuthorPair.py",
+      "finding": "No self-script or Review.evidence_sha256 comparison. Reads Generate.py by normal import, validates immutable original GLB base_sha256, and snapshots protected GLB/BLEND bytes before same-process checks. No Python-serialization hash rejection found."
+    },
+    {
+      "path": "ContentSource/AcornShipGripFit/Generate.py",
+      "finding": "No self-script digest comparison. Its protection checks compare files to their same-process starting hashes. An LF serialization does not trigger a Python digest failure."
+    },
+    {
+      "path": "Scripts/AuthorGripFit.py",
+      "finding": "Reviewed source/output guards use existing SourceDigests.matches only for Report outputs/protected paths and OBJ metadata; Report includes no Python files. No historical Python self-digest gate needs alteration."
+    }
+  ],
+  "limits": [
+    "This addendum is not an authoring/import rerun and does not replace any source, binary, image or native-validation receipt.",
+    "MeasureContact.py currently has one CRLF and 78 bare LF line endings; its exact observed-to-Git representation is recorded explicitly. SourceDigests remains unchanged and does not accept Python normalization or arbitrary mixed text.",
+    "No Python-specific import guard expansion or binary-hash weakening is required by the reviewed standalone code.",
+    "Historical compact source generators are unchanged; current routine importer readability work is recorded separately in PipelineRevision.json."
+  ]
+}

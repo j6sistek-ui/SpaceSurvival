@@ -1,0 +1,73 @@
+{
+  "status": "SOURCE_PAIR_TRANSPORT_VALIDATED_NOT_UNREAL_IMPORTED",
+  "errors": [],
+  "clips": [
+    {
+      "kind": "Pilot",
+      "file": "PilotGripFit.glb",
+      "bytes": 22456968,
+      "sha256": "7fa10daaad36a08545191d7029e19efd0e8bf97bb10711afc58fbf429118cbdd",
+      "base_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+      "original_binary_prefix_exact": 22359368,
+      "changed_rotation_tracks": [
+        "L_Index1",
+        "L_Index2",
+        "L_Index3",
+        "L_Middle1",
+        "L_Middle2",
+        "L_Middle3",
+        "L_Pinky1",
+        "L_Pinky2",
+        "L_Pinky3",
+        "L_Ring1",
+        "L_Ring2",
+        "L_Ring3",
+        "L_Thumb1",
+        "L_Thumb2",
+        "L_Thumb3",
+        "L_Wrist"
+      ],
+      "unchanged_channel_payloads": 140,
+      "exact_original_all_tracks_from_seconds": null
+    },
+    {
+      "kind": "Exit",
+      "file": "DisembarkGripFit.glb",
+      "bytes": 22350808,
+      "sha256": "8e747c569a6bb000be9d947110fd0bf919fdb7534a9ea986684c3b5f1ea496ec",
+      "base_sha256": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+      "original_binary_prefix_exact": 22259336,
+      "changed_rotation_tracks": [
+        "L_Elbow",
+        "L_Index1",
+        "L_Index2",
+        "L_Index3",
+        "L_Middle1",
+        "L_Middle2",
+        "L_Middle3",
+        "L_Pinky1",
+        "L_Pinky2",
+        "L_Pinky3",
+        "L_Ring1",
+        "L_Ring2",
+        "L_Ring3",
+        "L_Shoulder",
+        "L_Thumb1",
+        "L_Thumb2",
+        "L_Thumb3",
+        "L_Wrist",
+        "R_Elbow",
+        "R_Shoulder",
+        "R_Wrist"
+      ],
+      "unchanged_channel_payloads": 135,
+      "exact_original_all_tracks_from_seconds": 0.43333333333333335
+    }
+  ],
+  "candidate_L_rotation_t0_exact_match": true,
+  "limits": [
+    "Original mesh, skin, materials, nodes and buffer prefix unchanged; this does not assert native animation import.",
+    "Existing root/pelvis trajectory is retained. Unreal root-motion extraction remains disabled by the existing runtime and must also be checked on any new imported sequences.",
+    "Source skin/clearance rendering is separately recorded; source transport equality is not visual acceptance."
+  ]
+}

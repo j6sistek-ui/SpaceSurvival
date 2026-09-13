@@ -17,12 +17,11 @@ $uat = Join-Path $EngineRoot 'Engine\Build\BatchFiles\RunUAT.bat'
 foreach ($required in @($build,$editor,$uat)) {
     if (-not (Test-Path -LiteralPath $required)) { throw "Required Unreal tool is absent: $required. Install the full engine and Windows C++ toolchain before building. No artifact was produced." }
 }
-function Invoke-ContentPython([string]$Script, [switch]$NoRendering) {
+function Invoke-ContentPython([string]$Script) {
     $logDirectory = Join-Path $root 'Saved\Logs'
     New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
     $scriptLog = Join-Path $logDirectory (([IO.Path]::GetFileNameWithoutExtension($Script)) + '-Harness.log')
-    [string[]]$renderOptions = if ($NoRendering) { @('-NullRHI') } else { @() }
-    & $editor $project -unattended -stdout -FullStdOutLogOutput @renderOptions "-ExecutePythonScript=$Script" 2>&1 | Tee-Object -FilePath $scriptLog
+    & $editor $project -unattended -stdout -FullStdOutLogOutput "-ExecutePythonScript=$Script" 2>&1 | Tee-Object -FilePath $scriptLog
     if ($LASTEXITCODE -ne 0 -or (Select-String -LiteralPath $scriptLog -Pattern 'LogEditorPythonExecuter: Error:|LogPython: Error:|LogSavePackage: Error:' -Quiet)) {
         throw "Unreal Python/content failed; inspect $scriptLog. Editor exit code alone is insufficient."
     }
@@ -34,7 +33,7 @@ try {
     } elseif ($Target -eq 'Content') {
         Invoke-ContentPython "$root\Scripts\AuthorContent.py"
     } elseif ($Target -eq 'Validate') {
-        Invoke-ContentPython "$root\Scripts\ValidateContent.py" -NoRendering
+        Invoke-ContentPython "$root\Scripts\ValidateContent.py"
     } elseif ($Target -eq 'Test') {
         $testStarted = [DateTime]::UtcNow
         & $editor $project -unattended -NullRHI -stdout -FullStdOutLogOutput '-ExecCmds=Automation RunTests SpaceSurvival' '-TestExit=Automation Test Queue Empty' "-ReportExportPath=$root\Artifacts\UnrealTests"

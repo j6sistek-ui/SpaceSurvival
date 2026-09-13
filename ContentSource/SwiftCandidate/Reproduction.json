@@ -1,0 +1,11 @@
+{
+  "status": "FRESH_BLENDER_REBUILD_BYTE_IDENTICAL_OBJ_GLB_MTL",
+  "files": {
+    "SwiftCandidate.obj": "5aff093c056f7e49b2038a435a05fb6714d2c046be59a7fafa786658881dfe8c",
+    "SwiftCandidate.mtl": "d939dda1dd593fdc5787faec9b6765206baa165a104af7ca65017b154752a25a",
+    "SwiftCandidate.glb": "fcefcdb52e0366d0ca44d3b58fa3094645c57df5cea6c8f2367fc85a31eaad3f"
+  },
+  "limit": "Editable .blend container bytes are retained but not claimed deterministic.",
+  "blender": "5.1.2",
+  "generator_sha256": "d8dc3916bd9940764cdb5238a4a0aae9a71f74175cd330c6fb1c25a4e8c0ecf7"
+}

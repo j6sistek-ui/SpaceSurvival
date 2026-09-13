@@ -2,11 +2,15 @@
 #include "SSGameInstance.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
+#include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/GameModeBase.h"
@@ -25,7 +29,8 @@ struct FSSFlightWorld
     ASSShip *Ship = nullptr;
     APlayerController *Controller = nullptr;
 
-    bool Initialize(FAutomationTestBase &Test, SS::Weapon Weapon = SS::Weapon::RapidLaser)
+    bool Initialize(FAutomationTestBase &Test, SS::Weapon Weapon = SS::Weapon::RapidLaser,
+                    SS::Ship ShipKind = SS::Ship::Starter)
     {
         World = UWorld::CreateWorld(EWorldType::Game, false);
         if (!Test.TestNotNull(TEXT("Create isolated flight world"), World))
@@ -38,7 +43,7 @@ struct FSSFlightWorld
         Instance->AccountStorageBlocked = true;
         Instance->Session.settings.masterVolume = 0;
         Instance->Session.settings.cameraShake = false;
-        Instance->Session.account.level = 2; // In-memory eligibility for the cannon fixture.
+        Instance->Session.account.level = 3; // In-memory eligibility for both weapons and ships.
         Context.OwningGameInstance = Instance;
         World->SetGameInstance(Instance);
         GWorld = World;
@@ -65,7 +70,7 @@ struct FSSFlightWorld
         Tuning.baseAcceleration = Content->Acceleration;
         Tuning.baseWeaponDamage = Content->BaseWeaponDamage;
         if (!Test.TestTrue(TEXT("Start fresh in-memory flight"),
-                           Instance->Session.StartRun("flight-adapter-fixture", SS::Ship::Starter, Weapon)))
+                           Instance->Session.StartRun("flight-adapter-fixture", ShipKind, Weapon)))
             return false;
         World->AddController(Controller);
         Controller->Possess(Ship);
@@ -151,6 +156,77 @@ bool RecordFlight(FAutomationTestBase &Test, int32 Hertz, TArray<FSSFlightSample
     return true;
 }
 } // namespace
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSShipPresentationSelection, "SpaceSurvival.Integration.ShipPresentationSelection",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSShipPresentationSelection::RunTest(const FString &)
+{
+    // Independent expected assets: do not obtain these values from the production selection helper.
+    const TCHAR *ExpectedHullPaths[] = {TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit"),
+                                        TEXT("/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1.SM_SwiftCandidateV1")};
+    const SS::Ship Kinds[] = {SS::Ship::Starter, SS::Ship::Agile};
+    for (int32 Index = 0; Index < 2; ++Index)
+    {
+        FSSFlightWorld Fixture;
+        if (!Fixture.Initialize(*this, SS::Weapon::RapidLaser, Kinds[Index]))
+            return false;
+        const FString Label = Index == 0 ? TEXT("Starter") : TEXT("Swift");
+        TestTrue(Label + TEXT(" fixture uses its actual in-memory run selection"),
+                 Fixture.Instance->Session.run.ship == Kinds[Index]);
+        auto *Hull = Fixture.Ship->HullMesh.Get();
+        auto *Pilot = Fixture.Ship->Pilot.Get();
+        if (!TestNotNull(Label + TEXT(" has a real hull component"), Hull) ||
+            !TestNotNull(Label + TEXT(" has a real pilot component"), Pilot) ||
+            !TestNotNull(Label + TEXT(" BeginPlay loaded its authored hull"), Hull->GetStaticMesh().Get()))
+            return false;
+        TestEqual(Label + TEXT(" BeginPlay selects the exact candidate hull"), Hull->GetStaticMesh()->GetPathName(),
+                  FString(ExpectedHullPaths[Index]));
+        TestTrue(Label + TEXT(" display hull and pilot cannot add blocking collision"),
+                 Hull->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
+                     Pilot->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
+        TestTrue(Label + TEXT(" retains the authored pilot mount and constant scale"),
+                 Pilot->GetAttachParent() == Hull && Pilot->GetRelativeLocation().Equals(FVector(-15, 0, 72), .001) &&
+                     Pilot->GetRelativeRotation().Equals(FRotator(0, -90, 0), .001) &&
+                     Pilot->GetRelativeScale3D().Equals(FVector(1.5), .001));
+
+        auto *Station = Fixture.World->SpawnActor<ASSStation>();
+        if (!TestNotNull(Label + TEXT(" creates an actual station actor"), Station))
+            return false;
+        // Exercise the home hangar and station construction paths once each.
+        Station->BuildHub(Index == 0);
+        TArray<UStaticMeshComponent *> Components;
+        Station->GetComponents<UStaticMeshComponent>(Components);
+        UStaticMeshComponent *Bay = nullptr;
+        int32 BayCount = 0;
+        for (auto *Component : Components)
+        {
+            if (Component->GetRelativeLocation().Equals(FVector(850, 0, 220), .001))
+            {
+                Bay = Component;
+                ++BayCount;
+            }
+        }
+        TestEqual(Label + TEXT(" construction creates exactly one ship at the authored bay mount"), BayCount, 1);
+        if (!TestNotNull(Label + TEXT(" exposes the real bay display component"), Bay) ||
+            !TestNotNull(Label + TEXT(" bay loads its initial hull"), Bay->GetStaticMesh().Get()))
+            return false;
+        TestEqual(Label + TEXT(" BuildHub starts with the fitted starter display"), Bay->GetStaticMesh()->GetPathName(),
+                  FString(ExpectedHullPaths[0]));
+        for (int32 BayKind : {1, 0})
+        {
+            Station->SetBayShip(BayKind);
+            if (!TestNotNull(Label + TEXT(" bay switch keeps a loaded hull"), Bay->GetStaticMesh().Get()))
+                return false;
+            TestEqual(FString::Printf(TEXT("%s bay selection %d uses the exact candidate"), *Label, BayKind),
+                      Bay->GetStaticMesh()->GetPathName(), FString(ExpectedHullPaths[BayKind]));
+            TestTrue(Label + TEXT(" bay switching preserves display collision and transform"),
+                     Bay->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
+                         Bay->GetRelativeLocation().Equals(FVector(850, 0, 220), .001) &&
+                         Bay->GetRelativeScale3D().Equals(FVector(1), .001));
+        }
+    }
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSFlightFrameRates, "SpaceSurvival.Flight.FrameRateTrajectories",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -305,13 +381,18 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         // Three 10-damage laser hits or one cannon round defeat the default 24-health target.
         // Deliberately nondefault damage also verifies Fire consumes the session's weapon stat.
         Fixture.Instance->Session.tuning.baseWeaponDamage = 10;
-        Fixture.Ship->Camera->SetRelativeRotation(FRotator::ZeroRotator);
-        auto *Target = Fixture.Target(FVector(5000, 0, 0));
-        auto *Miss = Fixture.Target(FVector(5000, 1200, 0));
-        if (!TestNotNull(TEXT("Spawn on-axis weapon target"), Target) ||
+        Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
+        // Settle the actual default chase view; do not flatten its pitch or use the aiming helper.
+        Fixture.Frames(30);
+        const FVector CameraRay = Fixture.Ship->Camera->GetForwardVector();
+        const FVector TargetPosition = Fixture.Ship->Camera->GetComponentLocation() + CameraRay * 5000.f;
+        auto *Target = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation());
+        auto *Miss = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation() +
+                                    Fixture.Ship->Camera->GetRightVector() * 1200.f);
+        if (!TestNotNull(TEXT("Spawn target on the actual default camera ray"), Target) ||
             !TestNotNull(TEXT("Spawn off-axis control target"), Miss))
             return false;
-        Fixture.Frames(30);
+        TestNull(TEXT("Manual camera-ray case has no soft-assist target"), Fixture.Ship->SoftTarget);
         TestEqual(TEXT("Flight ticks alone do not fire a weapon"), Fixture.Projectiles(), 0);
         TestFalse(TEXT("Target survives without manual Fire"), Target->IsActorBeingDestroyed());
         Fixture.Ship->Fire();
@@ -328,7 +409,7 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
             TestFalse(TEXT("Two tuned laser hits leave the target alive"), Target->IsActorBeingDestroyed());
             Fixture.Frames(15);
             Fixture.Ship->Fire();
-            TestTrue(TEXT("Third manual laser hitscan defeats the on-axis target"), Target->IsActorBeingDestroyed());
+            TestTrue(TEXT("Third manual laser hitscan defeats the camera-ray target"), Target->IsActorBeingDestroyed());
         }
         else
         {
@@ -338,6 +419,55 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         }
         TestFalse(TEXT("Off-axis control target survives the shot"), Miss->IsActorBeingDestroyed());
         TestEqual(TEXT("Player weapon does not damage its source pawn"), Fixture.Instance->Session.run.shield,
+                  Fixture.Instance->Session.Stats().maxShield);
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSFlightMuzzleObstruction, "SpaceSurvival.Flight.CameraAimMuzzleObstruction",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSFlightMuzzleObstruction::RunTest(const FString &)
+{
+    for (SS::Weapon Weapon : {SS::Weapon::RapidLaser, SS::Weapon::HeavyCannon})
+    {
+        FSSFlightWorld Fixture;
+        if (!Fixture.Initialize(*this, Weapon))
+            return false;
+        const FString Label = Weapon == SS::Weapon::RapidLaser ? TEXT("Laser") : TEXT("Cannon");
+        Fixture.Instance->Session.tuning.baseWeaponDamage = 30;
+        Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
+        Fixture.Frames(30);
+        const FVector CameraOrigin = Fixture.Ship->Camera->GetComponentLocation();
+        const FVector CameraForward = Fixture.Ship->Camera->GetForwardVector();
+        const FVector TargetPosition = CameraOrigin + CameraForward * 5000.f;
+        const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
+        auto *Target = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation());
+        auto *Blocker = Fixture.Target(FMath::Lerp(Muzzle, TargetPosition, .2f) - Fixture.Ship->GetActorLocation());
+        if (!TestNotNull(Label + TEXT(" creates a camera-visible target"), Target) ||
+            !TestNotNull(Label + TEXT(" creates a real damageable muzzle obstruction"), Blocker))
+            return false;
+        Blocker->Configure(ESSWorldKind::SmallAsteroid, 60.f, 0.f);
+        // Geometry is independently checked before Fire: the elevated camera sees over the
+        // blocker, while a shot converging from the unchanged muzzle must physically hit it.
+        FCollisionQueryParams Query;
+        Query.AddIgnoredActor(Fixture.Ship);
+        FHitResult CameraHit, MuzzleHit;
+        const bool bCameraHit =
+            Fixture.World->LineTraceSingleByChannel(CameraHit, CameraOrigin, TargetPosition, ECC_Visibility, Query);
+        const bool bMuzzleHit =
+            Fixture.World->LineTraceSingleByChannel(MuzzleHit, Muzzle, TargetPosition, ECC_Visibility, Query);
+        if (!TestTrue(Label + TEXT(" camera ray reaches the target without hitting the blocker"),
+                      bCameraHit && CameraHit.GetActor() == Target) ||
+            !TestTrue(Label + TEXT(" actual muzzle path is obstructed before the target"),
+                      bMuzzleHit && MuzzleHit.GetActor() == Blocker))
+            return false;
+        TestNull(Label + TEXT(" obstruction case has no soft-assist target"), Fixture.Ship->SoftTarget);
+        Fixture.Ship->Fire();
+        Fixture.Frames(12);
+        TestTrue(Label + TEXT(" hits and destroys the real muzzle blocker"), Blocker->IsActorBeingDestroyed());
+        TestFalse(Label + TEXT(" cannot damage the camera-visible target through the blocker"),
+                  Target->IsActorBeingDestroyed());
+        TestEqual(Label + TEXT(" leaves its source pawn undamaged"), Fixture.Instance->Session.run.shield,
                   Fixture.Instance->Session.Stats().maxShield);
     }
     return true;

@@ -1,4 +1,5 @@
 #include "SSStation.h"
+#include "SSShip.h"
 #include "SSStationPoseTransition.h"
 #include "SSAudio.h"
 #include "SSGameInstance.h"
@@ -128,8 +129,7 @@ void ASSStation::BuildHub(bool bHome)
     AddMesh(FVector(-1700, -1050, 350), FVector(.5f, 7, 8), Cube, Hull, true);
     AddMesh(FVector(-1700, 1050, 350), FVector(.5f, 7, 8), Cube, Hull, true);
     AddMesh(FVector(1700, 0, 100), FVector(.3f, 28, 2), Cube, Hull, true);
-    BayShip = AddMesh(FVector(850, 0, 220), FVector(1),
-                      TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2"), nullptr);
+    BayShip = AddMesh(FVector(850, 0, 220), FVector(1), ASSShip::HullAssetPath(SS::Ship::Starter), nullptr);
     ServiceArm = AddMesh(FVector(850, 280, 150), FVector(1),
                          TEXT("/Game/SpaceSurvival/Meshes/SM_ServiceArm.SM_ServiceArm"), Hull);
     // The ship's measured underside is at deck Z153.5; its cradle stays inside its footprint.
@@ -246,8 +246,7 @@ void ASSStation::SetBayShip(int32 ShipKind)
 {
     if (BayShip)
         BayShip->SetStaticMesh(LoadObject<UStaticMesh>(
-            nullptr, ShipKind == 1 ? TEXT("/Game/SpaceSurvival/Meshes/SM_AgileShip.SM_AgileShip")
-                                   : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2")));
+            nullptr, ASSShip::HullAssetPath(ShipKind == 1 ? SS::Ship::Agile : SS::Ship::Starter)));
 }
 void ASSStation::ShowBayShip(bool Visible)
 {
@@ -293,6 +292,7 @@ ASSWalker::ASSWalker()
     GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
     GetMesh()->SetRelativeScale3D(FVector(1.5f));
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    GetMesh()->bForceMipStreaming = true;
 }
 void ASSWalker::BeginPlay()
 {
@@ -308,7 +308,7 @@ void ASSWalker::StartWalkingAnimation()
     if (auto *Animation = GetMesh()->GetSingleNodeInstance())
     {
         Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
-        // A_Disembark ends at this exact authored A_Walk pose.
+        // The paired disembark clip ends at this exact authored A_Walk pose.
         Animation->SetPosition(.308333333f, false);
     }
     GetMesh()->GlobalAnimRateScale = 0.f;
@@ -329,7 +329,7 @@ bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector En
                                const FPoseSnapshot *SourcePose)
 {
     auto *ExitAnimation =
-        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Disembark.A_Disembark"));
+        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit"));
     if (!ExitAnimation || !WalkAnimation || !GetMesh()->GetSkeletalMeshAsset())
         return false;
     // Component local transform * actor transform = the actual seated pilot component transform.

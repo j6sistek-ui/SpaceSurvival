@@ -8,6 +8,8 @@
 #include "Animation/PoseSnapshot.h"
 #include "SSStationPoseTransition.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -90,8 +92,9 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     auto *Ship = Fixture.World->SpawnActor<ASSShip>();
     auto *Controller = Fixture.World->SpawnActor<APlayerController>();
     auto *ExitAnimation =
-        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Disembark.A_Disembark"));
-    auto *PilotAnimation = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Pilot.A_Pilot"));
+        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit"));
+    auto *PilotAnimation =
+        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit"));
     if (!TestNotNull(TEXT("Create station"), Hub) || !TestNotNull(TEXT("Create walker"), Walker) ||
         !TestNotNull(TEXT("Create ship"), Ship) || !TestNotNull(TEXT("Create local controller"), Controller) ||
         !TestNotNull(TEXT("Load authored exit"), ExitAnimation) ||
@@ -311,6 +314,49 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
         TestTrue(TEXT("30/60/144 Hz finish at the same landing point with walking restored"),
                  !Walker->IsDisembarking() && Walker->GetActorLocation().Equals(Contact, .1) &&
                      Walker->GetCharacterMovement()->MovementMode == MOVE_Walking);
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSFieldPresentationSelection, "SpaceSurvival.Integration.FieldPresentationSelection",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSFieldPresentationSelection::RunTest(const FString &)
+{
+    FSSIsolatedTestWorld Fixture;
+    if (!TestNotNull(TEXT("Create isolated field world"), Fixture.World))
+        return false;
+    auto *Field = Fixture.World->SpawnActor<ASSWorldBody>();
+    if (!TestNotNull(TEXT("Create actual field actor"), Field))
+        return false;
+    const ESSWorldKind Kinds[] = {ESSWorldKind::ElectricalStorm, ESSWorldKind::GravityAnomaly,
+                                  ESSWorldKind::ElectricalStorm};
+    const TCHAR *Names[] = {TEXT("Electrical"), TEXT("Gravity"), TEXT("Electrical")};
+    for (int32 Index = 0; Index < 3; ++Index)
+    {
+        // Reuse the actor deliberately: stale component overrides must not retain
+        // the preceding family's shader when Configure installs another mesh.
+        Field->Configure(Kinds[Index], 3400.f, 7.f, 5);
+        auto *Mesh = Field->Visual->GetStaticMesh().Get();
+        auto *Material = Cast<UMaterialInstanceDynamic>(Field->Visual->GetMaterial(0));
+        if (!TestNotNull(TEXT("Load actual field mesh"), Mesh) ||
+            !TestNotNull(TEXT("Create actual field dynamic material"), Material))
+            return false;
+        TestEqual(TEXT("Configure selects the intended field geometry"), Mesh->GetName(),
+                  FString::Printf(TEXT("SM_%sFieldCandidateV3"), Names[Index]));
+        TestEqual(TEXT("Each field uses its own authored shader"), Material->Parent->GetName(),
+                  FString::Printf(TEXT("M_%sFieldCandidateV3"), Names[Index]));
+        TestTrue(TEXT("Dynamic material parent comes from the newly selected mesh"),
+                 Material->Parent == Mesh->GetMaterial(0));
+        TestTrue(TEXT("Visual adoption preserves the exact danger radius and query collision"),
+                 FMath::IsNearlyEqual(Field->GetBodyRadius(), 3400.f) &&
+                     FMath::IsNearlyEqual(Field->Collision->GetScaledSphereRadius(), 3400.f) &&
+                     Field->Visual->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
+                     Field->Collision->GetCollisionResponseToChannel(ECC_Visibility) == ECR_Ignore);
+        TestTrue(TEXT("Visual boundary fits the existing spherical radius"),
+                 FMath::IsNearlyEqual(Mesh->GetBounds().BoxExtent.GetMax() * Field->Visual->GetRelativeScale3D().X,
+                                      3400.0, .01));
+        TestTrue(TEXT("Configure resets the existing warning brightness"),
+                 FMath::IsNearlyEqual(Material->K2_GetScalarParameterValue(TEXT("Emission")), .25f));
     }
     return true;
 }

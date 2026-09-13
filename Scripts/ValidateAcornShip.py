@@ -25,7 +25,7 @@ def main():
         mesh = library.load_asset(author.MESH_PATH)
         assert isinstance(mesh, u.StaticMesh), 'Missing candidate mesh'
         assert library.get_metadata_tag(mesh, 'SSAcornCandidateVersion') == author.VERSION
-        assert library.get_metadata_tag(mesh, 'SSAcornSourceSHA256') == digest
+        assert author.source_matches(author.SOURCE / 'AcornShipCandidate.obj', library.get_metadata_tag(mesh, 'SSAcornSourceSHA256'))
         bounds = mesh.get_bounds()
         imported_bounds = [[getattr(bounds.origin, axis) - getattr(bounds.box_extent, axis) for axis in ('x', 'y', 'z')],
                            [getattr(bounds.origin, axis) + getattr(bounds.box_extent, axis) for axis in ('x', 'y', 'z')]]
@@ -51,7 +51,7 @@ def main():
             path = material.get_path_name().split('.')[0]
             assert path in expected, 'Unexpected material ' + path
             item = expected[path]
-            assert library.get_metadata_tag(material, 'SSAcornSourceSHA256') == digest
+            assert author.source_matches(author.SOURCE / 'AcornShipCandidate.obj', library.get_metadata_tag(material, 'SSAcornSourceSHA256'))
             color = u.MaterialEditingLibrary.get_material_default_vector_parameter_value(material, 'Color')
             rgb = [color.r, color.g, color.b, color.a]
             assert all(abs(a-b) < 1e-5 for a, b in zip(rgb, item['base_color'])), 'PBR color changed'

@@ -1,0 +1,593 @@
+{
+  "status": "UPPER_GRIP_FIT_CANDIDATE_SOURCE_RENDERED_NOT_UNREAL_OR_OWNER_ACCEPTANCE",
+  "changed_authored_parts": [
+    "Pilot control grip -1",
+    "Control illumination -1",
+    "Pilot control grip 1",
+    "Control illumination 1"
+  ],
+  "unchanged_authored_parts": 181,
+  "unchanged_part_fingerprints": {
+    "Pressure hull understructure": "748d4a3440bf62c1fdba8ef2afb5a894b06237b722403ee1cad7de6419e4e9fc",
+    "Seed shell plate 00": "c55190c5924e814133d35c1d2646224071f6f196417b6c279399cbb176be079f",
+    "Seed shell plate 01": "70041810acd1f2750f84c4d74b6bbfd62204657379c9521671145d3195065c96",
+    "Seed shell plate 02": "079506af807beb2e6cdd159b161c9b35910be6815d639a4ff31805ee98beca78",
+    "Seed shell plate 03": "bdc887038874a574de7594371f5c749a376afc0b72482ac04da9e41ffee06276",
+    "Seed shell plate 04": "4423aa81470a370191a53b987e6922887b4167b0ffdb1ae43146b4b554d8b8c7",
+    "Seed shell plate 05": "9491ad9d014a2d4f03b817d503f5cff29432c2790e87cd7e1b00305e3cbd11ea",
+    "Seed shell plate 06": "310c5b4825980d811776fd39e220f1492dcf56180ec729a7ea891893e8895a54",
+    "Seed shell plate 07": "73edc770e9e7646986c8088356a32f8fc8af16b56207b766633df12d3584ced8",
+    "Seed shell plate 08": "32ce14a1a5bc42d5ba3645bdc82d803c0baf015749be4e43a4c30260db695edf",
+    "Seed shell plate 09": "a62c039ef54de9413e73a2689133648604155f7d2d61f87b0813e5d698c7c743",
+    "Seed shell plate 10": "69b207a24fbc23360b7f5ac8f9c1537d637d910d05dfec30cc738a1f30e61e4e",
+    "Seed shell plate 11": "1bc0853a71988fc55a49bee156d6a8a55c6d07374fd275997e651e93b9b3cb51",
+    "Cap scale 0 00": "dd2e16cee79f03eeb7c33ec511ba8abc0904b4de21578d27eac8a10b27dbbdc4",
+    "Cap engraved lip 0 00": "d03a640c387bff4192949f085b6a4421699533007f29e62df544ec07bc096dfe",
+    "Cap scale 0 01": "d47a93e380a5fc6c486556a1341cb25007c69c6244c149e55b0a9db0412a9453",
+    "Cap engraved lip 0 01": "219913f1ccbe4af913010ac5761d8dc58edf918d9ea119bac221eb11509b0459",
+    "Cap scale 0 02": "31fd27317f58f31cf1e1e2faf10ae16bc6e6b67e31b752d2182c325a2543e64c",
+    "Cap engraved lip 0 02": "307b4be229de25fcbac9b3a7295b56f69a2aa1d0ef46712f94a50e3b3cf085bd",
+    "Cap scale 0 03": "a1e52b044070542d1323730726c26027a47e9d0e484ab772fce0b3a562d0db56",
+    "Cap engraved lip 0 03": "8569f967eb9efc189a9e88804f7c4b8872930895c8aff89467d09f26405ce9c8",
+    "Cap scale 0 04": "964c712a8cbb60ed1ed876701e9a23f0261544de0507a37b4d8b1805d3192566",
+    "Cap engraved lip 0 04": "6c894aef31998739cd72078527df46c05c1ab261fae8dba920495fdb4cb57769",
+    "Cap scale 0 05": "17a1fa71fd1ec885a531bfbe67abdb404c9f2565ee910ad08cda61275e4918d6",
+    "Cap engraved lip 0 05": "04ece4fd82ae4eb66bcf346af33460824771b3db9e0de0f35a91072825717557",
+    "Cap scale 0 06": "7744a521104db08140a031e63efdbfb372d014847368c3e23ec03a3d10a05674",
+    "Cap engraved lip 0 06": "aa5043d66ad181d0d72b8ec0bff9a334c5ceb5037b2da4e79939bbf88c9d765e",
+    "Cap scale 0 07": "1d16961d9c488cdd663e1725e13ab71b96bb70401ee58d8739f6a30c1a96530c",
+    "Cap engraved lip 0 07": "c6140de7ee0e1dd287bf5df050d6370c5375611bd1d43feaf50353e45bdcdb7b",
+    "Cap scale 0 08": "6990df1de46cf252962a26a5602865fc04e5cb6fd579aba73e9cb2717aeb0214",
+    "Cap engraved lip 0 08": "8a6efb0982cce34fdc25d6c563dd7c28ba9f3be2312ea8efc85969a0af29b8c7",
+    "Cap scale 0 09": "59843559e9ebcc5d082b643789b84313b0a8b5aa6a5e479d9315e20a32a974f8",
+    "Cap engraved lip 0 09": "570620a7b7cdf28f8353dd8ce6db0ccc8b84250991bb0650d29331662f49c668",
+    "Cap scale 0 10": "704850a0261fd44fa542d599f80662185d59c99708336c4bcef29e9540422afa",
+    "Cap engraved lip 0 10": "1280b48155961c7f41a2cf5415752a77232ae180d58258ce9951fbdfacbd2682",
+    "Cap scale 0 11": "d425e64a06f2f1e0612e7acffd699c58c936c716a1b47334c1644b2ef496f173",
+    "Cap engraved lip 0 11": "0891b11f4059d3bd21b9e4f64d88bee43c7da4db467f152e8801e21fef19cfd9",
+    "Cap scale 0 12": "14a3b536797fad6e9c34e59cb3fc8cef812d53d6186a2a8fb92e00418755a2a1",
+    "Cap engraved lip 0 12": "a0a30d7ee1ffb6b79ea67e068ff86de60d185f55ebabb813202f5444ed2ea1ed",
+    "Cap scale 0 13": "e01ab32d3319c155ffde0468031d2e72f4325bb85c08cba40c36f381ad510381",
+    "Cap engraved lip 0 13": "5d061d3be79a3a98efa17ba0c65b0081fcdea86a853d3ae3bf2b97a2325ccbca",
+    "Cap scale 1 00": "5955b68c3d3936fd7b0d44d6f8b494fd30c6a53e3b166bf89591a91474c53029",
+    "Cap engraved lip 1 00": "b37c68bb4227cbb5c1d0a0734389ec9a2953db5d17864f8660a48415854d0082",
+    "Cap scale 1 01": "cd85682811071d8ebfdfb2ab653b6109836e8ed677060a8e340a1b44e4b30ebd",
+    "Cap engraved lip 1 01": "6d84aac574b4408a9daa4445615c2112c189efc5eaaf29efa301ddb95d6c3b69",
+    "Cap scale 1 02": "0c1c9ef97b1ce8d3f3de32f4512c0ea4c959332e4ddc576c254a629638b4ae4a",
+    "Cap engraved lip 1 02": "ec962e0f4a392e3f7379e6328958d5646b1666ecdfacc02182101bf9898c1378",
+    "Cap scale 1 03": "f6804c0854d977c9df583a7092f4653cf3a2a319c6393bfa86bd036de9df79a0",
+    "Cap engraved lip 1 03": "b04d77af07549c0de248516f61dd93f9956a07b8289e76f5c7c7dd56f2d091b8",
+    "Cap scale 1 04": "c39d190bc6bc5c824029e9624c4750766ea1095712085d7a450be2c5d712ea6c",
+    "Cap engraved lip 1 04": "b66198bd32606d9dae86bc17d4be8f2d66176df69f612ad6ec7b6e0230664c4c",
+    "Cap scale 1 05": "4079982ce27b86333452234bdfc226d8893220b82561b74cb87c6f908f5e72dc",
+    "Cap engraved lip 1 05": "f885a3cb41296474497231292d3e29202cbbbf984460192d5c4622f144497649",
+    "Cap scale 1 06": "da547c78c12474a63698e030c2d26372b787bf9931e3206de7d723755b5b09f4",
+    "Cap engraved lip 1 06": "d877290a71670fe1344e7083a20503d14d4fa678f61d137cc2fcad691a906ff4",
+    "Cap scale 1 07": "95c4b8067e46c6e17363863080a377fbdbfb20e0d18880ea2df1f48bedd41d4a",
+    "Cap engraved lip 1 07": "1e2b0c1b6059e4c814d2b589d55fe730e9185c075d4505f2f10480cc4586a52c",
+    "Cap scale 1 08": "1656dd429a283af41eb8bfb2c54b1a68e64adaf30f6155fa7c1bf81e2eca6a16",
+    "Cap engraved lip 1 08": "e108b43d54cfd5536aa64702bd82c54d43eda6b733fa23fd35466b8d37330fe2",
+    "Cap scale 1 09": "ca17ded9a76c7b4dc59bbed491abaf0ee895bf58f7867b99a17e95f7ad8955bc",
+    "Cap engraved lip 1 09": "d64c8f9e4fa627eab715a784f61000ffe8cbf8f75b1afda32b9568630027a6e4",
+    "Cap scale 1 10": "3d8c4c07ec4a1c1eae700a8896d9bb65f5980459f208a458e54d5d5799e3829c",
+    "Cap engraved lip 1 10": "c52b296ab28f37fd3118c4e21e167b8a296e78932d1017b2fd867b7628bdf67f",
+    "Cap scale 1 11": "a158aeeeefa58c6d5f2d5731e823288778407412b44a7def2a9a4846da6bd593",
+    "Cap engraved lip 1 11": "d02f6334b0442349bbd3c717301fc4f0e39c4ab7c9484c6b8518847e5b3356c1",
+    "Cap scale 1 12": "e6403ed52a596dd0f023a700b048602714b37e144e5f52d58b0312ebca74a6e2",
+    "Cap engraved lip 1 12": "78d32051d5e18ac7da48354612fbd1fb541e82b22efd33b05727793b77192e68",
+    "Cap scale 1 13": "21b5a34ed87383dbb2d5192162b01333687f2300fb893a02011eea3e0d131116",
+    "Cap engraved lip 1 13": "39b678e8b7a1e4c44f92457a857ac4ed3eec2c90b04fd43f8a97e1a17c0eeae3",
+    "Cap scale 2 00": "b95031a2843ae271b68f529f4b2aa460867ee2dbfb369cab92a9826d41c001db",
+    "Cap engraved lip 2 00": "882f0bd89a44dcb362d130cce770dc56c3a37e1b08053f7fb9e4a8aadb73ad07",
+    "Cap scale 2 01": "81ba3f15d87ea1487c46454748f4ce43edb7fe04481b8f8c42e4c39bb8e736d7",
+    "Cap engraved lip 2 01": "4129166a9f69141576435eac7496aaa8a0fcef6dc464fcf866ca115fa9059751",
+    "Cap scale 2 02": "be5f55e1599952b108415087d675599ba59e3a2e814c2439c414aed968f7a660",
+    "Cap engraved lip 2 02": "ea94cf7ce0853028877007debd43a7cb241d852ec87d78383fd1d989bc30de29",
+    "Cap scale 2 03": "9eca61a05e6ffd94ba814a3a2e5efad12dc3e4a5c306127f764ff4e9346eac07",
+    "Cap engraved lip 2 03": "87d9f6138b5408632d81cfb52403c1745d0cce665bc0d95fd8b5815225d53ba1",
+    "Cap scale 2 04": "8d2be5b002222789d8f498da7c1101ce10b9132cb99f5a813463897c87d8b277",
+    "Cap engraved lip 2 04": "d51e879c104444d012892965da25cbad0ce66ca94892ccfe6e1f4eb4d193bb3c",
+    "Cap scale 2 05": "114a459f0bdbc1039dfdcdabf0ad889c5fd468cb80dcdd55ad7dc9e04614e8a0",
+    "Cap engraved lip 2 05": "7b89e9d79e555f606f1f07f617e91369d6081b7c8cccca5276b508f8615ae78a",
+    "Cap scale 2 06": "b7955231f1d9be69d3571a7a74e31bba8e01111b2bfcfec63e63c8bc706d36f2",
+    "Cap engraved lip 2 06": "234fad87876f340850d9836532a403c8adf9c3b84a8df3b81067c2cad1d728dc",
+    "Cap scale 2 07": "24cbcfab6bf4a87e2a2dacee6a780428aea770a9ef7dda600521ea51cbd0af34",
+    "Cap engraved lip 2 07": "cd5772f3ff1c4119a0b20305eb4922d694b44aa958f272e99e41410d280c8e6f",
+    "Cap scale 2 08": "dceb2c267db724f502f0e8ddb9975b217ec51605f3a45051585da636c6458584",
+    "Cap engraved lip 2 08": "8b68a61b59d2a8a70b6fdb98a6aa3c91e00f503236f5bd570aa018c3267bcb22",
+    "Cap scale 2 09": "750d729eda895fd8f1e29c16f8098e8c1f9cdd3b7b203cfc3c35388de6ad466b",
+    "Cap engraved lip 2 09": "ff1d15840348535885e89246dd2d746a0a989335adbaddcbf0fa20ea0ffc59e0",
+    "Cap scale 2 10": "bfef861ddc58ba523ae8ea25ef1ac1a434020d38edc7578618dd43478d1dc31b",
+    "Cap engraved lip 2 10": "b78dfe64aa91b8e2b1cab57fde89cf8841cd635e7255a7377cccbf0b6a4a6ec5",
+    "Cap scale 2 11": "2272c31424afa8cc4f006d0e18135eb9a249f6828fd27f3a12bbdcaf901594b2",
+    "Cap engraved lip 2 11": "44d57291896400bb6c255675e62368fc0f0104cf9767bbfd898baeb20d8d37ba",
+    "Cap scale 2 12": "74151059ba761e31fc09b80aaad83deaa9dd742d3da9dadbb951784bb080585c",
+    "Cap engraved lip 2 12": "2aedb4f7b08eae45cebf4bc1ec4c3f61845b2fe98a9392beac8f4bb7128f3e00",
+    "Cap scale 2 13": "ba663a5a9eb50109e9ef9a20131d555436c41c448a5de3194f7740194a558f43",
+    "Cap engraved lip 2 13": "3ff3252fbe56d1c15b3d8dec3eccb8dbebc96b825604ca37b350d602893f610c",
+    "Cap compression collar": "14e807b52daf2e57ef5eb78633917efca36a8b938863ba618f705ff7f8df06bf",
+    "Aft cap service seal": "8e777ea80f31590443313139703546b1d3cf9ea0a57d9c1e34a59c42805ead3e",
+    "Swept stabilizer -1": "f124c050cfbf8d0c40bb5010cf8720d1d8edd70ca778e165263005fc78521cd3",
+    "Stabilizer ceramic inlay -1": "1b3823b19bb6a26c0d507e6c4a2d8d3a7fed8823ffaa0587a439a3aa27b82b96",
+    "Stabilizer navigation slit -1": "74e16a58d9f68aaeb5414311e5da1bd738b0882125138f8c1ae79e8c6dbc1d82",
+    "Thruster ceramic fairing -1": "1122097fcb479e0b90b8cad29a999a5ab720a8d41c06c58ef70dc41f897acccc",
+    "Thruster exposed neck -1": "5a27cfe0c77d223aeb6952eee8b90aee7c5e40929da8eb35b5a68e6bfc761b3c",
+    "Machined nozzle shroud -1": "3295cba5e8fa6f03fcc746d484d3892bc14a0c40b0b6209d6cb93d1b1fc1e84e",
+    "Nozzle retention ring -1": "00317ac4fffd8c7f89ed578f361eb074e2d2df428c9824da4f7ad9013b5ae16f",
+    "Recessed ion aperture -1": "f490dc3c6a94d4e1e517beb1bd3ec8a49ca79ba7070e72c1d22e8fe2479dccc7",
+    "Nozzle dark recessed center -1": "55e55e58cb914653d0df567a44b7cd41332874628426fb3a52fea7fa8dcfdcc1",
+    "Nozzle radiator tooth -1 0": "f2925838bf6947d099b7e41124b4829b30c632a10ae5e966733b509e7ffd7937",
+    "Nozzle radiator tooth -1 1": "cee4c209483a14506713fe812cb2bd231422d4f01adaf6ae6b43cebd97e82633",
+    "Nozzle radiator tooth -1 2": "07450cd927e030272a9f49d5f71a6a2090ccaa89d2a921758d56112eda8c530d",
+    "Nozzle radiator tooth -1 3": "0c1eb375d9cb2985f2065c5ee1863d125d956efd12288f22abdd349307c41487",
+    "Nozzle radiator tooth -1 4": "13e8fe3b0d570bcaaf4b4e4d379babc91ed8db364ec1066edc256be3d31cb833",
+    "Nozzle radiator tooth -1 5": "8a1db1084c28193c72e89ed55189a12020fc7e0885a2361c4ead227d68197a20",
+    "Nozzle radiator tooth -1 6": "6a7ebd72e5788252acc630fc47c2f6c655e6ca1f2e80b9f46e65f1f29f32b0e5",
+    "Nozzle radiator tooth -1 7": "c576422140182fda4f7e7eeab3d90b8497a0fc29c8e158a01cc96df3c8298800",
+    "Nozzle radiator tooth -1 8": "ee8eebc13be0f28ce10b84eff4fc4d23008570b325476b7d18e39723fc6a0534",
+    "Nozzle radiator tooth -1 9": "14ef62c3cbbce20b3f7d5d5bfcbcd1816a399c7d8f3f35b315db12b0d441a52f",
+    "Nozzle radiator tooth -1 10": "9fd3950971ec228d850a9184acda5653415d553148043386dbe4363c72c755c6",
+    "Nozzle radiator tooth -1 11": "1be2b8327841b77483cee51f79052ab985294c85db7dcfb7897adc653c81f61e",
+    "Forward navigation slit -1": "ea81dcfbe9a204a57d8ab25ffeeb1fec33d7bcab8d5ec9f09006bd2ae7e24103",
+    "Forward emitter barrel -1": "2e486a20b4afc82cd62d85b662ebba5d34a5b63bf6649284b9ca53a5c91d8070",
+    "Emitter muzzle trim -1": "6b8072280a2c64a91de8b0befad48c9de4bb39d215607ada364690dec62e13a6",
+    "Shoulder vent blade -1 0": "4853b72608a7487a5bf1d3e181ead9d6d6d1b288c13cde9e273b65840a91abe3",
+    "Shoulder vent blade -1 1": "c099bb3a0a48db3c4210f1adaa46415adb0c3d8c17c229d29d1ea9fedfde755a",
+    "Shoulder vent blade -1 2": "5241696736d92cd52b1096a84afd64ebe28cecf2d89c22b6ec2ca4d6bea9ebed",
+    "Shoulder vent blade -1 3": "caa4b2492515de97f4e3a4f6efbb44ba5c4fef818888b1688cdc50778957d988",
+    "Shoulder vent blade -1 4": "6dafdd9c259104777b31204030378723eed152ee3c6b3fd65fadbc5f89511608",
+    "Swept stabilizer 1": "fa9789978e1fac7f7f88e3416d4ddde6e8f8d50f49b2e474bddcd1da2b7f6143",
+    "Stabilizer ceramic inlay 1": "8e0431d57ca1facdd3a48a7b4367820e01e168ede34927aa66fdc3204d3b40fd",
+    "Stabilizer navigation slit 1": "c5d253d9e0e3247f943d705a41511f2c13a6dd5e249373223089dcc53acde14d",
+    "Thruster ceramic fairing 1": "0d3f6f6f671c22c3133e3530301f6420042987e351b7912f209e1c6f40f78926",
+    "Thruster exposed neck 1": "c45d03e0a6a8a0aa76de0743965f1bdfe33c6d3851980f5d8c87f04821836963",
+    "Machined nozzle shroud 1": "868227339d01eca87e9ecb306e1fa7980bd9255b26faa221bbfc455913329d32",
+    "Nozzle retention ring 1": "8b89f06d11a43320ec75d4d280e3edc4c156c457044d9f2e47966e4a41ae61b8",
+    "Recessed ion aperture 1": "b6581c854b8dd61cad54d17b74eb40f73fbe4293cc62126ec34b21ef38159b2b",
+    "Nozzle dark recessed center 1": "6175946d643bb467b9638a33b55e4783353b8664cf7319705f3319315645ea90",
+    "Nozzle radiator tooth 1 0": "a61f2241d8c60b33e75a2957e56931be4081888b1644a2c1ac66f47379d694a7",
+    "Nozzle radiator tooth 1 1": "8c26bac1f30e5964eb8cd584df0eb7593a003c42c4e107ca21c01d3fccd2e110",
+    "Nozzle radiator tooth 1 2": "634e3c4ec86b05037479f495aeae07d01fdecdc924f30551073d4beca9d0300c",
+    "Nozzle radiator tooth 1 3": "cfca4b5434171a997e6b8a5eb5d0dbe752091419440c81391074393e57d47e69",
+    "Nozzle radiator tooth 1 4": "33e4dd9bc3e45f918dd6d6ad5c49cd72fcfac3b210df0532aba4ca9fa6d2c0e5",
+    "Nozzle radiator tooth 1 5": "4b1e6c113c0b477702a1c0cac7e1f0e88709b2468dda9c0a8dfbd35c8cd1219c",
+    "Nozzle radiator tooth 1 6": "8b64b48a32b422a797fc3597dcfd6429778e21145e9288a9deb12fe08c69334e",
+    "Nozzle radiator tooth 1 7": "4221a98092cc2ddeb7b69adcdb08c7e7cbf48b1ed6d15bbcc62a043299408ec2",
+    "Nozzle radiator tooth 1 8": "f4c3e49be1ca3a7ee502b4961aa6a6cffdd423d238305726fb34d2e46fabfd72",
+    "Nozzle radiator tooth 1 9": "b28137f2e029364c822eb25de331e379eb4a1e69d9f4b18a66ca793ea28c93d0",
+    "Nozzle radiator tooth 1 10": "cc07708c914c07a7272d0f4a2953fb4c64ec091492bb3a6315df176880d254cf",
+    "Nozzle radiator tooth 1 11": "ba9a5bce80ab7ff84a5a4c9aafd8849499148d09653f4577b372752ec41fb262",
+    "Forward navigation slit 1": "a14626b044b57fea1aeaa4885b6c2e409dacb3832a9d78679cfdb21b622918ef",
+    "Forward emitter barrel 1": "d70506d45664f7cb2029144d32e01e64691327b83bfb6d8843ae97c4e16e92ec",
+    "Emitter muzzle trim 1": "c7b7cc7fd2d3bb73a9acf4ddb24fcbf02cb069899646d3b685436696476d270e",
+    "Shoulder vent blade 1 0": "bb5575efcad85899a115546e723a4c59eac2082eb728ec3fd69de542dd8f2fee",
+    "Shoulder vent blade 1 1": "5f9e8a03780f9a7b4db51125bb8a916431bacceb5d913b8b77d6df6eecb66459",
+    "Shoulder vent blade 1 2": "e628dbed45434b89d4b580f5f91b1e3c132982c0544aad05878d33384b1ac3b9",
+    "Shoulder vent blade 1 3": "03814268608cb0dafa99a36f5479eb8a64eb0becf245ca0746d9f9162d60b45d",
+    "Shoulder vent blade 1 4": "2a05a11ad61a7ec2952883fa6ef5c26bdf1a6a59f40f71b284b1443c47c52467",
+    "Cockpit continuous raised coaming": "4ceea135a41e4f2cf0acd69054d124a07b49f9e30f2d2e447fd6869a783170e8",
+    "Pilot footwell": "390c8235f6e4ee567de31c69c8aad5cfc4c025dbf74b9e87c6ce969cddf01993",
+    "Seat plinth": "26182a3e878a91905926a0cd86deea51da3346bb57993647af57d252d342d464",
+    "Seat cushion": "76b91253aa3339daa1af6874884d9a78c02b41422bf131d20ad9150386ce775a",
+    "Seat back": "16f51e77c9f765d3df6593c208a63d71be2c3d2122e08a741254e4492b6ddc16",
+    "Seat structural brace -1": "6362611913d5f8d6e19bdd5f2f2adf73aac043f138fb1ad7626621f3cf12ee7a",
+    "Arm console -1": "d7dc52e9dda5f03bccf56f6d30dbc5b95eaa43e6768145773697ac2c421aa634",
+    "Seat structural brace 1": "4d731458a91071be046c0bafa73d24ac3fc6c520bf6c869716b8e9cd786b0561",
+    "Arm console 1": "531652857843fef9d0e5521c0009032658da841b64ad7c69fa53d002e10727f1",
+    "Forward instrument deck": "beb4282e74f15d122c0d92204653a1e9a20fa9bc79b071c47fbca24c0ff582c1",
+    "Instrument glass -0.15": "efeb714f52c531a8473aaa0d8bf9c739942fb062d508ae4a37e62f7b5e97b7fb",
+    "Instrument line -0.15": "90bc3b49bf283430f149f95ec278ba67624ce08d1ed6884d8e554f8c6c1983e0",
+    "Instrument glass 0": "def3370fbd84b1521df992091089bc9d6e19f35349f24dba89f0917590bbbdb6",
+    "Instrument line 0": "8cb84897f9c6285e8ee79e087e5de2a09b0880c4d96f30eed54aee1778680872",
+    "Instrument glass 0.15": "b24e2bdc84368a5250e241df27a6011127d117c5565cce385c6b37a62adcb84b",
+    "Instrument line 0.15": "916a8439ef7e4cdc72f27836dfe9b9d4263eb6c66c88ab7a5a627e3ae3f191da",
+    "Curved low windscreen": "02b7b4189acc8a4521b5aa8e426cae553ba5f0c881134278648aa5ecbae4ca96",
+    "Windscreen top trim": "dfa98b67b9ef61d851729a9430a9ed91c94b22d516630731b36801d493e07c01",
+    "Windscreen edge 0": "6b848d6a7f042615f9311d355d76da107f32e507b4e7b015879216b6eb7c7d9d",
+    "Windscreen edge 24": "930c2e33b65ac15dfde1d8354760b9857fcbd364c66a5a1ce4f1410ef6419053",
+    "Flush access cap -1 0.05": "2f551c6e8473d497e33d0452c9a0202687fa17c44873e112586b49f1515a6ca0",
+    "Flush access cap -1 0.8": "8308516d4c9499e4b7772865fb1f00c075eb574b0b9c2dbf216a36bb0ff05c57",
+    "Flush access cap 1 0.05": "1a5726897d66ca48c2e4ad140fb5d4e5bc9f44d9848358b68f41ba793b7dc316",
+    "Flush access cap 1 0.8": "24ee75b5b3b063affe978827dc9c4a8899a058f28e02f5bc849eb85257a7ec91"
+  },
+  "bounds_cm": [
+    [
+      -244.79999542236328,
+      -142.78430938720703,
+      -65.37753939628601
+    ],
+    [
+      209.99999046325684,
+      142.78430938720703,
+      97.8000819683075
+    ]
+  ],
+  "triangles": 135038,
+  "materials": [
+    {
+      "name": "AC01_WarmCeramic",
+      "base_color": [
+        0.699999988079071,
+        0.6200000047683716,
+        0.46000000834465027,
+        1.0
+      ],
+      "metallic": 0.1599999964237213,
+      "roughness": 0.25
+    },
+    {
+      "name": "AC01_IvoryPanels",
+      "base_color": [
+        0.8700000047683716,
+        0.8600000143051147,
+        0.7799999713897705,
+        1.0
+      ],
+      "metallic": 0.05999999865889549,
+      "roughness": 0.23999999463558197
+    },
+    {
+      "name": "AC01_BurnishedBronze",
+      "base_color": [
+        0.3400000035762787,
+        0.14499999582767487,
+        0.04500000178813934,
+        1.0
+      ],
+      "metallic": 0.8199999928474426,
+      "roughness": 0.27000001072883606
+    },
+    {
+      "name": "AC01_ChampagneEdges",
+      "base_color": [
+        0.6800000071525574,
+        0.38999998569488525,
+        0.12999999523162842,
+        1.0
+      ],
+      "metallic": 0.8500000238418579,
+      "roughness": 0.20999999344348907
+    },
+    {
+      "name": "AC01_GraphiteStructure",
+      "base_color": [
+        0.017999999225139618,
+        0.027000000700354576,
+        0.03200000151991844,
+        1.0
+      ],
+      "metallic": 0.7200000286102295,
+      "roughness": 0.2800000011920929
+    },
+    {
+      "name": "AC01_CockpitPadding",
+      "base_color": [
+        0.008999999612569809,
+        0.014000000432133675,
+        0.01600000075995922,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.550000011920929
+    },
+    {
+      "name": "AC01_MachinedTitanium",
+      "base_color": [
+        0.23000000417232513,
+        0.27000001072883606,
+        0.30000001192092896,
+        1.0
+      ],
+      "metallic": 0.9200000166893005,
+      "roughness": 0.2199999988079071
+    },
+    {
+      "name": "AC01_IonAndNav",
+      "base_color": [
+        0.014999999664723873,
+        0.4000000059604645,
+        0.5799999833106995,
+        1.0
+      ],
+      "metallic": 0.18000000715255737,
+      "roughness": 0.20000000298023224
+    },
+    {
+      "name": "AC01_Windscreen",
+      "base_color": [
+        0.3799999952316284,
+        0.6700000166893005,
+        0.7200000286102295,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.06499999761581421
+    }
+  ],
+  "pilot_transform": {
+    "position_cm": [
+      -15,
+      0,
+      72
+    ],
+    "unreal_yaw_degrees": -90,
+    "blender_z_rotation_degrees": 90,
+    "scale": 1.5,
+    "source": "Existing PilotMesh.glb plus A_Pilot0s,loaded only for previews"
+  },
+  "grips": [
+    {
+      "side": "R",
+      "old_base_cm": [
+        12.0,
+        -24.5,
+        77.0
+      ],
+      "old_tip_cm": [
+        13.500000953674316,
+        -23.5,
+        90.0
+      ],
+      "preserved_join70_cm": [
+        13.050000190734863,
+        -23.80000114440918,
+        86.0999984741211
+      ],
+      "new_tip_cm": [
+        16.217012405395508,
+        -19.822158813476562,
+        92.10489654541016
+      ],
+      "tip_up_normal": [
+        -0.14310932159423828,
+        -0.4912795424461365,
+        0.8591647744178772
+      ],
+      "radius_cm": 1.8,
+      "ring_translation_cm": [
+        2.7170121669769287,
+        3.6778404712677,
+        2.1049022674560547
+      ],
+      "centerline_cm": [
+        [
+          12.0,
+          -24.5,
+          77.0
+        ],
+        [
+          13.050000190734863,
+          -23.80000114440918,
+          86.0999984741211
+        ],
+        [
+          13.267141342163086,
+          -23.532360076904297,
+          86.83416748046875
+        ],
+        [
+          13.694945335388184,
+          -22.92994499206543,
+          87.55183410644531
+        ],
+        [
+          14.25515079498291,
+          -22.122079849243164,
+          88.25437927246094
+        ],
+        [
+          14.869490623474121,
+          -21.23809051513672,
+          88.94322204589844
+        ],
+        [
+          15.459698677062988,
+          -20.407304763793945,
+          89.61974334716797
+        ],
+        [
+          15.947508811950684,
+          -19.75904083251953,
+          90.28534698486328
+        ],
+        [
+          16.254657745361328,
+          -19.422630310058594,
+          90.9414291381836
+        ],
+        [
+          16.30287742614746,
+          -19.52739143371582,
+          91.58940124511719
+        ],
+        [
+          16.217012405395508,
+          -19.822158813476562,
+          92.10489654541016
+        ]
+      ]
+    },
+    {
+      "side": "L",
+      "old_base_cm": [
+        12.0,
+        24.5,
+        77.0
+      ],
+      "old_tip_cm": [
+        13.500000953674316,
+        23.5,
+        90.0
+      ],
+      "preserved_join70_cm": [
+        13.050000190734863,
+        23.80000114440918,
+        86.0999984741211
+      ],
+      "new_tip_cm": [
+        20.360597610473633,
+        22.082233428955078,
+        90.93354034423828
+      ],
+      "tip_up_normal": [
+        0.14894065260887146,
+        -0.36786898970603943,
+        0.9178720712661743
+      ],
+      "radius_cm": 1.8,
+      "ring_translation_cm": [
+        6.860597610473633,
+        -1.4177665710449219,
+        0.933539867401123
+      ],
+      "centerline_cm": [
+        [
+          12.0,
+          24.5,
+          77.0
+        ],
+        [
+          13.050000190734863,
+          23.80000114440918,
+          86.0999984741211
+        ],
+        [
+          13.41369915008545,
+          23.72209930419922,
+          86.77751159667969
+        ],
+        [
+          14.232860565185547,
+          23.605260848999023,
+          87.34678649902344
+        ],
+        [
+          15.356752395629883,
+          23.453350067138672,
+          87.84164428710938
+        ],
+        [
+          16.63463020324707,
+          23.270235061645508,
+          88.2958984375
+        ],
+        [
+          17.915756225585938,
+          23.059770584106445,
+          88.74333190917969
+        ],
+        [
+          19.04939079284668,
+          22.825828552246094,
+          89.21775817871094
+        ],
+        [
+          19.884798049926758,
+          22.572269439697266,
+          89.75298309326172
+        ],
+        [
+          20.2712345123291,
+          22.302955627441406,
+          90.3828125
+        ],
+        [
+          20.360597610473633,
+          22.082233428955078,
+          90.93354034423828
+        ]
+      ]
+    }
+  ],
+  "blender_surface_checks": [
+    {
+      "side": "R",
+      "blender_under_glove_ray_hit_cm": [
+        16.217012405395508,
+        -19.822160720825195,
+        92.18824005126953
+      ],
+      "evaluated_polygon_index": 2168,
+      "grip_tip_cm": [
+        16.217012405395508,
+        -19.822158813476562,
+        92.10489654541016
+      ]
+    },
+    {
+      "side": "L",
+      "blender_under_glove_ray_hit_cm": [
+        20.360599517822266,
+        22.082231521606445,
+        90.7831802368164
+      ],
+      "evaluated_polygon_index": 188942,
+      "grip_tip_cm": [
+        20.360597610473633,
+        22.082233428955078,
+        90.93354034423828
+      ]
+    }
+  ],
+  "protected_sha256": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource\\Animation\\Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource\\Animation\\TailCandidateV2.glb": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+    "ContentSource\\Animation\\Disembark.glb": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+    "ContentSource\\AcornShipCandidate\\AcornShipCandidate.blend": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c",
+    "ContentSource\\AcornShipCandidate\\AcornShipCandidate.obj": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+    "ContentSource\\AcornShipCandidate\\AcornShipCandidate.glb": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e"
+  },
+  "outputs": [
+    {
+      "file": "AcornShipGripFit.blend",
+      "bytes": 677601,
+      "sha256": "bcd8d19b6408e7f4133d9fb34e7cdd705b2695cfbe7324bb5e754fd14648acb9"
+    },
+    {
+      "file": "AcornShipGripFit.glb",
+      "bytes": 3478608,
+      "sha256": "2881a950c1224f8de452e0795fd58e7397b0c76e9c23f2e7c3d63b7bc0552426"
+    },
+    {
+      "file": "AcornShipGripFit.mtl",
+      "bytes": 880,
+      "sha256": "374485c5af6cd34ea7ff14dfa098e4438eb7f57603b270cd065ef7bd0637d732"
+    },
+    {
+      "file": "AcornShipGripFit.obj",
+      "bytes": 10821024,
+      "sha256": "b2dd058d556c4cd43b0bc08263db77f15e53e6e300d630070f16de1cc632c4db"
+    },
+    {
+      "file": "AfterCockpit.png",
+      "bytes": 2101208,
+      "sha256": "74da21b284df394e92c588431bd3138193b2c40a389fc4b42f480dd7eb470779"
+    },
+    {
+      "file": "BeforeCockpit.png",
+      "bytes": 2102769,
+      "sha256": "21c8268bb64069ada46797d4bf779ccf796bf42350a30bce7b7f772afbaf5e53"
+    },
+    {
+      "file": "LeftContact.png",
+      "bytes": 2116433,
+      "sha256": "a986e0a4eaad1b635d6046cfb623bcc294befe92e59a2ac4398c4482046127d0"
+    },
+    {
+      "file": "PilotPeak.png",
+      "bytes": 2099939,
+      "sha256": "80983081737caaa111d869a17da7cb1eddc7b502e39bd69f75e6e0cd178dba0f"
+    },
+    {
+      "file": "RightContact.png",
+      "bytes": 2051001,
+      "sha256": "b70a6b01a328c1e00c76a2e92ecaa9deb1b854344b2e5788b576f25237389c81"
+    }
+  ],
+  "limits": [
+    "Four parts changed, no main hull/nacelle/rig/material edits.",
+    "Static grips cannot exactly follow breathing; quantitative contact and exit clearance remain review conditions.",
+    "Source renders do not establish native appearance or grasp animation."
+  ]
+}

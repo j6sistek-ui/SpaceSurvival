@@ -1,0 +1,21 @@
+{
+  "status": "FIELD_CANDIDATES_IMPORTED_NOT_ADOPTED_FRESH_VALIDATION_PENDING",
+  "version": "FieldCandidate2",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "limits": [
+    "Candidate import only; no Data Asset selection or gameplay references changed.",
+    "Fresh validation, rendered readability and actual material/render cost remain pending."
+  ],
+  "meshes": [
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV2.SM_ElectricalFieldCandidateV2",
+      "source_key": "d2759e83cc4daaad8b6976889c462110c6fcf89cf270fdb3628ecc1ea0a354b3"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_GravityFieldCandidateV2.SM_GravityFieldCandidateV2",
+      "source_key": "c84af1d21041534bb8abf8c4685b33dbdbee6f72f5c8da97b5ccd1454e54d48c"
+    }
+  ],
+  "protected_source_config_content_files_unchanged": 141
+}

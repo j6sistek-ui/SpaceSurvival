@@ -1,0 +1,476 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-13T10:58:02.063359+00:00",
+  "status": "FIELD_V2_IMPORTED_VALIDATED_RENDERED_NOT_ADOPTED",
+  "reason": "Separate additive candidate after V1 native opaque-cage rejection. V1 original assets/source/receipt remain unchanged.",
+  "reference_head_at_receipt": "0eeab8d646a07fa49cc1bb1ca8dcfd9f2a9f65d3",
+  "identity_limit": "Reference HEAD read at receipt time, not launch binding. Candidate source/assets and exact raw logs/reports/images are bound independently. No historical package is rebound.",
+  "scripts": [
+    {
+      "path": "ContentSource/FieldCandidates/V2/Generate.py",
+      "bytes": 14457,
+      "sha256": "15315a7c9059f92a20086fc737fec32b2c44bf338cf97d77300c51495bba5e90",
+      "sha256_lf": "15315a7c9059f92a20086fc737fec32b2c44bf338cf97d77300c51495bba5e90"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/CheckSource.py",
+      "bytes": 4193,
+      "sha256": "f3da9c76b856439b76dc6fc2364917ec63512d00567f322701547bacbb3713c5",
+      "sha256_lf": "f3da9c76b856439b76dc6fc2364917ec63512d00567f322701547bacbb3713c5"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/ElectricalField.hlsl",
+      "bytes": 974,
+      "sha256": "e4aa9f5f902493297c6a17a8c1449de85b3e5929ed9fedb263d88a1bd55e5fa0",
+      "sha256_lf": "e4aa9f5f902493297c6a17a8c1449de85b3e5929ed9fedb263d88a1bd55e5fa0"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/GravityField.hlsl",
+      "bytes": 908,
+      "sha256": "cb5d3bddc7b5b752e90cb731382463eb9729cab80c183c3ea31473cb904523e6",
+      "sha256_lf": "cb5d3bddc7b5b752e90cb731382463eb9729cab80c183c3ea31473cb904523e6"
+    },
+    {
+      "path": "Scripts/AuthorFieldCandidatesV2.py",
+      "bytes": 11905,
+      "sha256": "197a214cc43836ad5d506192082519f4b535a2dde78053cd061358cbc07f3cc3",
+      "sha256_lf": "197a214cc43836ad5d506192082519f4b535a2dde78053cd061358cbc07f3cc3"
+    },
+    {
+      "path": "Scripts/ValidateFieldCandidatesV2.py",
+      "bytes": 10692,
+      "sha256": "eedc6f62278bf9eca85a6d515028312513f43f27dcfbcfca9ab088df060c5a36",
+      "sha256_lf": "eedc6f62278bf9eca85a6d515028312513f43f27dcfbcfca9ab088df060c5a36"
+    },
+    {
+      "path": "Scripts/PreviewFieldCandidatesV2.py",
+      "bytes": 10059,
+      "sha256": "f5fd525a2bfb22f3aeb591900bf9aa799d43c404e13d847db5659cdf6e34db6a",
+      "sha256_lf": "f5fd525a2bfb22f3aeb591900bf9aa799d43c404e13d847db5659cdf6e34db6a"
+    }
+  ],
+  "source_report": {
+    "path": "ContentSource/FieldCandidates/V2/SourceReport.json",
+    "bytes": 14144,
+    "sha256": "1d40f9b5ee014879336fd00fcb5c44acc96b6024d5d17597c024962b4af083f8"
+  },
+  "pre_import_source_validation": {
+    "path": "ContentSource/FieldCandidates/V2/SourceValidation.json",
+    "bytes": 3033,
+    "sha256": "e0657cc651f3c59629445c659ced1a370c3c0737da52c12895bd3f6566a53615"
+  },
+  "editable_source_and_exports": [
+    {
+      "path": "ContentSource/FieldCandidates/V2/FieldPalette.mtl",
+      "bytes": 127,
+      "sha256": "22e53bac024ab269559b8a7bcd5fe5dbb49aea143186badb09c4042714345edf"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/SM_ElectricalFieldCandidateV2.blend",
+      "bytes": 162224,
+      "sha256": "17d8904d6c8b3106a1e319da3a94679e0ddd8439940bcb0256a81e1fca7fdf74"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/SM_ElectricalFieldCandidateV2.obj",
+      "bytes": 309732,
+      "sha256": "b9424d04a91bfd9e660f383114ed74e2c0e97bdc01ff56f6e713c73af4fcbfb9"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/SM_GravityFieldCandidateV2.blend",
+      "bytes": 195682,
+      "sha256": "28d48b3b80cdd224eb04172773dfd505d752f95ec62269ca7ee690ac9fc2de37"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/SM_GravityFieldCandidateV2.obj",
+      "bytes": 466909,
+      "sha256": "9c8af800f10c3a21345f06d213bef178779e912bf8b34f5259ddac09118ee1ca"
+    }
+  ],
+  "candidate_packages": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_ElectricalFieldCandidateV2.uasset",
+      "bytes": 14102,
+      "sha256": "4ed67381325118326c5e633ed43d7fac2059e9ca2999af5f58da72b3bc32e8d1"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_GravityFieldCandidateV2.uasset",
+      "bytes": 14925,
+      "sha256": "985e39ae9ac8e66c3686867eeeab6c82810751d4c72e16f085ff14aee789af3d"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_ElectricalFieldCandidateV2.uasset",
+      "bytes": 96875,
+      "sha256": "b945ee2dd61860050292b187ca18259f4a05286df75c0feb57fb038a60be9952"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_GravityFieldCandidateV2.uasset",
+      "bytes": 147844,
+      "sha256": "b480942bd8aa06ad05a05df170d46ab67597bd339dbaecf09ebe0edfd003e078"
+    }
+  ],
+  "geometry_and_material_statistics": [
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV2.SM_ElectricalFieldCandidateV2",
+      "triangles": 3168,
+      "render_vertices": 2466,
+      "material_sections": 1,
+      "uv_channels": 1,
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "bounds_extent_cm": [
+        100.0,
+        100.0,
+        100.0
+      ],
+      "material": "/Game/SpaceSurvival/Materials/M_ElectricalFieldCandidateV2.M_ElectricalFieldCandidateV2",
+      "source_key": "d2759e83cc4daaad8b6976889c462110c6fcf89cf270fdb3628ecc1ea0a354b3",
+      "shader_sha256": "e4aa9f5f902493297c6a17a8c1449de85b3e5929ed9fedb263d88a1bd55e5fa0",
+      "simple_collision_count": 0,
+      "collision_profile": "NoCollision",
+      "additive_edge_opacity": true,
+      "no_mask_WPO_refraction": true,
+      "depth_test_enabled": true,
+      "material_statistics": {
+        "num_vertex_shader_instructions": 278,
+        "num_pixel_shader_instructions": 208,
+        "num_samplers": 1,
+        "num_vertex_texture_samples": 3,
+        "num_pixel_texture_samples": 0,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 2,
+        "num_interpolator_scalars": 0
+      },
+      "statistics_limit": "Editor compiled shader estimates; not measured frame time",
+      "built_fbx_sha256": "ac3e4d43566ecef94304e285939b6f8b7be508bb86264d11d58879cec2549e7d",
+      "built_arrays_sha256": "ab19de46872efd3cb87a550186351a5e1386ed5be865966bece0a429f9fa180a",
+      "built_max_radius_cm": 100.00000248605532,
+      "built_uv_roles": [
+        0,
+        1,
+        2
+      ],
+      "built_normals_finite_unit": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_GravityFieldCandidateV2.SM_GravityFieldCandidateV2",
+      "triangles": 4740,
+      "render_vertices": 3600,
+      "material_sections": 1,
+      "uv_channels": 1,
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "bounds_extent_cm": [
+        100.0,
+        100.0,
+        100.0
+      ],
+      "material": "/Game/SpaceSurvival/Materials/M_GravityFieldCandidateV2.M_GravityFieldCandidateV2",
+      "source_key": "c84af1d21041534bb8abf8c4685b33dbdbee6f72f5c8da97b5ccd1454e54d48c",
+      "shader_sha256": "cb5d3bddc7b5b752e90cb731382463eb9729cab80c183c3ea31473cb904523e6",
+      "simple_collision_count": 0,
+      "collision_profile": "NoCollision",
+      "additive_edge_opacity": true,
+      "no_mask_WPO_refraction": true,
+      "depth_test_enabled": true,
+      "material_statistics": {
+        "num_vertex_shader_instructions": 278,
+        "num_pixel_shader_instructions": 206,
+        "num_samplers": 1,
+        "num_vertex_texture_samples": 3,
+        "num_pixel_texture_samples": 0,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 2,
+        "num_interpolator_scalars": 0
+      },
+      "statistics_limit": "Editor compiled shader estimates; not measured frame time",
+      "built_fbx_sha256": "bb5d2bfdd3f1de438296de8d71b93723080ab306f881b560409f7d07883e44f9",
+      "built_arrays_sha256": "2868e9f25a4fe3b7802eb2883d0299c008399db69451e6263cb2e03314110436",
+      "built_max_radius_cm": 100.00000248605532,
+      "built_uv_roles": [
+        0,
+        1
+      ],
+      "built_normals_finite_unit": true
+    }
+  ],
+  "reports": [
+    {
+      "path": "ContentSource/FieldCandidates/V2/UnrealImport.json",
+      "bytes": 874,
+      "sha256": "098ea42d4fcd17bbdf435e586087b80076cf76e104a19cb28ca461941849d415"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/UnrealPersisted.json",
+      "bytes": 4767,
+      "sha256": "26559e46240b03737b87a8605fc43dab3f450646771bff7c063f3d2461c6e866"
+    },
+    {
+      "path": "ContentSource/FieldCandidates/V2/UnrealPreview.json",
+      "bytes": 4387,
+      "sha256": "19124a91a26aa8a0007324acd7f8fe7cc39557ef8dd3c3ad35c146b2498d7517"
+    }
+  ],
+  "raw_logs": [
+    {
+      "path": ".agent/local/FieldCandidatesV2Import.log",
+      "bytes": 280548,
+      "sha256": "5a8ac20fae62e2609fcf1db1109ee8a75192565b73a113583d4323abf063f1d5"
+    },
+    {
+      "path": ".agent/local/FieldCandidatesV2Validate.log",
+      "bytes": 267855,
+      "sha256": "b2835d0ceceea312e7a2956fbc5e7b6fca14dc50c361090c4bfc232280733bbd"
+    },
+    {
+      "path": ".agent/local/FieldCandidatesV2Preview.log",
+      "bytes": 275122,
+      "sha256": "559f84e177b416b13d6efcaf20d2b9ec7931e8b5325abfc63beff568524a9947"
+    }
+  ],
+  "process_results": [
+    {
+      "phase": "Import",
+      "exit_code": 0,
+      "actual_report_errors": [],
+      "preserved_source_config_content_files": 141,
+      "warning": "Two missing smoothing-group warnings from OBJ/FBX bridge; built normals validated finite/unit."
+    },
+    {
+      "phase": "FreshValidation",
+      "exit_code": 0,
+      "actual_report_errors": [],
+      "preserved_source_config_content_files": 141
+    },
+    {
+      "phase": "NativePreview",
+      "exit_code": 0,
+      "actual_report_errors": [],
+      "owned_pid": 84268,
+      "owned_pid_confirmed_gone": true,
+      "preserved_source_config_content_files": 145
+    }
+  ],
+  "preview": {
+    "status": "NATIVE_FIELD_CANDIDATE_SCALAR_SAMPLES_CAPTURED_NOT_ADOPTED",
+    "errors": [],
+    "images": [
+      {
+        "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealElectricalWarning.png",
+        "sha256": "b3ae95036ea8c374f982da9227d2555407f9b779da7fc355f393c3f5e2d13e10",
+        "kind": "Electrical",
+        "emission": 0.35,
+        "camera_cm": [
+          8000,
+          -6500,
+          5000
+        ],
+        "target_cm": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealElectricalCharged.png",
+        "sha256": "60d73a07e5a12cf8e4949e53e71445f299a06198b0158f1b88cb7b6eee207785",
+        "kind": "Electrical",
+        "emission": 2.05,
+        "camera_cm": [
+          8000,
+          -6500,
+          5000
+        ],
+        "target_cm": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealElectricalDischarge.png",
+        "sha256": "1eeb56d810ae4b81a3099842aa14528cba0acf027dda81a3e290f42a59b7e86b",
+        "kind": "Electrical",
+        "emission": 2.8,
+        "camera_cm": [
+          8000,
+          -6500,
+          5000
+        ],
+        "target_cm": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealElectricalEdge.png",
+        "sha256": "8c6cb06dbd7d2b30f687a66b2e90a2bf8933c0fa5f360c7ec2f538d0e6d9be9b",
+        "kind": "Electrical",
+        "emission": 2.8,
+        "camera_cm": [
+          0,
+          -9000,
+          200
+        ],
+        "target_cm": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealGravityWarning.png",
+        "sha256": "fecce8c1f689130eb7145f04fa06d8019f532235a9b5286ef86e46a36ce60344",
+        "kind": "Gravity",
+        "emission": 0.35,
+        "camera_cm": [
+          8000,
+          -6500,
+          5000
+        ],
+        "target_cm": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealGravityActive.png",
+        "sha256": "823448a4385936fc86f4fb7a250270d9c7dd89fa993e43df1f45decb467d6eea",
+        "kind": "Gravity",
+        "emission": 1.1,
+        "camera_cm": [
+          8000,
+          -6500,
+          5000
+        ],
+        "target_cm": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealGravityEdge.png",
+        "sha256": "8804c3473b21bd0b13d6174a8d85497156cc2356a8fef785600134ebd1c77b2b",
+        "kind": "Gravity",
+        "emission": 1.1,
+        "camera_cm": [
+          0,
+          -9000,
+          200
+        ],
+        "target_cm": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealGravityInside.png",
+        "sha256": "d62ce54a30467b09681242ba9bc7e0c6042774500da93309aec1ceb6194598c5",
+        "kind": "Gravity",
+        "emission": 1.1,
+        "camera_cm": [
+          -500,
+          -2200,
+          100
+        ],
+        "target_cm": [
+          1800,
+          1000,
+          250
+        ]
+      }
+    ],
+    "engine": "5.8.2-56702186+++UE5+Release-5.8",
+    "process_id": 84268,
+    "run_directory": "ContentSource\\FieldCandidates\\V2\\Native\\20daf98c0a824b0dacb42708075db0ff",
+    "source_report_sha256": "1d40f9b5ee014879336fd00fcb5c44acc96b6024d5d17597c024962b4af083f8",
+    "persisted_receipt_sha256": "26559e46240b03737b87a8605fc43dab3f450646771bff7c063f3d2461c6e866",
+    "method": "Unsaved stock static-mesh actors; actual ship/rocks/sky; fixed scalar samples, no gameplay or actor clocks.",
+    "field_radius_cm": 3400,
+    "ship_scale": 1,
+    "asteroid_radii_cm": [
+      480,
+      260,
+      650
+    ],
+    "exposure_min_max": 1,
+    "bloom": 0.35,
+    "no_collision_on_preview_meshes": true,
+    "field_and_background_shadows": false,
+    "ship_and_rock_shadows": true,
+    "limits": [
+      "Material samples use existing numerical Emission values, not live pulse/force integration.",
+      "No GI Init, play session, save calls, Data Asset edits or runtime adoption.",
+      "Captures are material/geometry inspection; no physical controls, natural fairness, frame-time or owner art acceptance.",
+      "Static ship mesh is a scale reference; pilot animation/contact is outside this preview."
+    ],
+    "protected_files_unchanged": 145
+  },
+  "environment": {
+    "engine": "5.8.2-56702186+++UE5+Release-5.8",
+    "rhi": "D3D12",
+    "shader_model": "SM6",
+    "logged_quality_groups": {
+      "ViewDistanceQuality": "3",
+      "AntiAliasingQuality": "3",
+      "ShadowQuality": "3",
+      "GlobalIlluminationQuality": "3",
+      "ReflectionQuality": "3",
+      "PostProcessQuality": "3",
+      "TextureQuality": "3",
+      "EffectsQuality": "3",
+      "FoliageQuality": "3",
+      "ShadingQuality": "3",
+      "LandscapeQuality": "3"
+    },
+    "screenshots_px": [
+      1600,
+      1000
+    ],
+    "exposure": 1,
+    "bloom": 0.35,
+    "field_radius_cm": 3400
+  },
+  "v1_comparison": {
+    "v1_receipt": {
+      "path": "ContentSource/FieldCandidates/CandidateReceipt.json",
+      "bytes": 16495,
+      "sha256": "04c8158b71643e43415c8b841d5fa0c0f3dffa4c382feefdd99b80462cd915bf"
+    },
+    "v1_source_report": {
+      "path": "ContentSource/FieldCandidates/SourceReport.json",
+      "bytes": 12605,
+      "sha256": "3845e4eae22cb4b0c1ba881c5c375362a62b03891db333500f3a4ab6696875bd"
+    },
+    "width_ratio": 0.3,
+    "same_scene_and_camera_sample_definitions": true,
+    "pixel_identity_not_expected": "Material Time is live decorative motion and high-resolution captures occur in separate processes.",
+    "observed_by_integration_agent": [
+      "All eight V2 PNGs directly inspected.",
+      "Thinner additive strands occupy visibly less screen area in the matched interior view; ship and rock remain visible.",
+      "Electrical branching remains distinct from curved gravity strands; warning versus charged/discharge luminance differs.",
+      "Outside lines show visible subpixel dashed aliasing; boundary is very faint and is not proven sufficiently readable at gameplay distance.",
+      "Near-camera gravity curves retain visible polygon corners despite increased samples; edge views crop the sphere vertically."
+    ]
+  },
+  "limits": [
+    "Material samples use existing numerical Emission values, not live pulse/force integration.",
+    "No GI Init, play session, save calls, Data Asset edits or runtime adoption.",
+    "Captures are material/geometry inspection; no physical controls, natural fairness, frame-time or owner art acceptance.",
+    "Static ship mesh is a scale reference; pilot animation/contact is outside this preview.",
+    "No HUD, live pulse/force clock, audio or gameplay actor integration in these static previews.",
+    "Shader statistics208/206pixel and278vertex instructions,1sampler,0pixel/3reported vertex samples are not frame-time measurements.",
+    "No temporal anti-aliasing, multiple-resolution/distance readability matrix, packaged performance or owner art approval.",
+    "No Source/Config/DA/runtime adoption changes. V1 remains unselected and preserved.",
+    "Fresh validation proves asset/parameter/geometry contracts, not acceptability of faint warnings."
+  ]
+}

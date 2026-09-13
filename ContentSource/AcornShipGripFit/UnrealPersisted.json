@@ -1,0 +1,79 @@
+{
+  "mesh": "/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit",
+  "bounds_cm": [
+    [
+      -244.79998779296875,
+      -142.78431701660156,
+      -65.3775405883789
+    ],
+    [
+      209.99998474121094,
+      142.78431701660156,
+      97.80007934570312
+    ]
+  ],
+  "triangles": 134622,
+  "vertices": 79448,
+  "material_sections": 9,
+  "collision_enabled": "NoCollision",
+  "slots": [
+    {
+      "slot": "AC01_GraphiteStructure",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.M_AcornV2_GraphiteStructure"
+    },
+    {
+      "slot": "AC01_WarmCeramic",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.M_AcornV2_WarmCeramic"
+    },
+    {
+      "slot": "AC01_IvoryPanels",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.M_AcornV2_IvoryPanels"
+    },
+    {
+      "slot": "AC01_BurnishedBronze",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.M_AcornV2_BurnishedBronze"
+    },
+    {
+      "slot": "AC01_ChampagneEdges",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.M_AcornV2_ChampagneEdges"
+    },
+    {
+      "slot": "AC01_MachinedTitanium",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.M_AcornV2_MachinedTitanium"
+    },
+    {
+      "slot": "AC01_IonAndNav",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav.M_AcornV2_IonAndNav"
+    },
+    {
+      "slot": "AC01_CockpitPadding",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.M_AcornV2_CockpitPadding"
+    },
+    {
+      "slot": "AC01_Windscreen",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen.M_AcornV2_Windscreen"
+    }
+  ],
+  "status": "GRIP_FRESH_PERSISTED_VALIDATED_NOT_ADOPTED",
+  "errors": [],
+  "package": {
+    "file": "Content\\SpaceSurvival\\Meshes\\SM_AcornShipGripFit.uasset",
+    "bytes": 1901173,
+    "sha256": "ea9823aab8c742deed6513c54c985fc9ecd913b8f0d0f20c42090a97dda73d30"
+  },
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "protected_existing_files_unchanged": 148,
+  "validation_origin": "AuthorGripFit.checked_source and validate executed inside ValidatePilotGripFit in fresh UE85900, before the paired preview.",
+  "execution": {
+    "owned_pid": 85900,
+    "exit_code": 0,
+    "log_path": ".agent/local/PilotGripPreview4.log",
+    "log_sha256": "fe465080c3ac4c4d7ffa6ca85a173285ed068416b6d3e16ffc86fef9ae73d512",
+    "scripts_sha256": {
+      "Scripts/AuthorGripFit.py": "bb2dad3a6796532f94025ef86f600d8148aee0c049f5442897ea526e946332fc",
+      "Scripts/AuthorPilotGripFit.py": "7d293eb5672f236f9c6bd01d4cf4838bb3876fe2565cf19e3f696258edf42c2e",
+      "Scripts/ValidatePilotGripFit.py": "1eb231615cfcc49110c9379259cdc7318ff58a89d809bc89c4a957bbf467b4b8"
+    },
+    "note": "These hashes identify the executed revisions before subsequent readability-only cleanup of the pair importer/validator."
+  }
+}

@@ -3,6 +3,11 @@
 #include "SSGameInstance.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "Animation/AnimSingleNodeInstance.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "UnrealClient.h"
 #include "Kismet/GameplayStatics.h"
 #include "SSWorldActors.h"
 #include "EngineUtils.h"
@@ -129,6 +134,7 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     Soak->Root = Root;
     Soak->Token = Token;
     ReadScenario(Soak->Station5);
+    Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
     Soak->StartedAt = FPlatformTime::Seconds();
     InMode->bAutomatedSoakInput = true;
     // Prevent incidental account writes. No save APIs are called by the fixture.
@@ -142,6 +148,46 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
            TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY: token=%s process=%u; normal time; base durability "
                 "50000; Tier V; scripted input."),
            *Token, FPlatformProcess::GetCurrentProcessId());
+#endif
+}
+void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    if (!CaptureVisuals || VisualNames.Contains(Name) || FScreenshotRequest::IsScreenshotRequested())
+        return;
+    const FString Path = Root / (FString(Name) + TEXT(".png"));
+    if (FPlatformFileManager::Get().GetPlatformFile().IsSymlink(*Path) != ESymlinkResult::NonSymlink ||
+        IFileManager::Get().FileExists(*Path))
+    {
+        Stop(TEXT("Visual fixture refuses an existing or redirected screenshot path."));
+        return;
+    }
+    auto Row = MakeShared<FJsonObject>();
+    Row->SetStringField(TEXT("name"), Name);
+    Row->SetNumberField(TEXT("requestStageSeconds"), StageSeconds);
+    Row->SetNumberField(TEXT("requestFrame"), double(GFrameCounter));
+    if (auto *GM = Mode.Get())
+    {
+        auto *Mesh = IsValid(GM->Walker) && UGameplayStatics::GetPlayerPawn(this, 0) == GM->Walker
+                         ? GM->Walker->GetMesh()
+                         : GM->Ship->Pilot.Get();
+        if (auto *Animation = Mesh->GetSingleNodeInstance())
+        {
+            Row->SetStringField(TEXT("animation"), GetPathNameSafe(Animation->GetCurrentAsset()));
+            Row->SetNumberField(TEXT("animationSeconds"), Animation->GetCurrentTime());
+        }
+        Row->SetStringField(TEXT("hull"), GetPathNameSafe(GM->Ship->HullMesh->GetStaticMesh()));
+        Row->SetStringField(TEXT("pilotTransform"), Mesh->GetComponentTransform().ToHumanReadableString());
+        Row->SetStringField(TEXT("leftWrist"), Mesh->GetSocketTransform(TEXT("L_Wrist")).ToHumanReadableString());
+        Row->SetStringField(TEXT("rightWrist"), Mesh->GetSocketTransform(TEXT("R_Wrist")).ToHumanReadableString());
+    }
+    VisualNames.Add(Name);
+    VisualRecords.Add(MakeShared<FJsonValueObject>(Row));
+    // Normal viewport + HUD, no camera/pose override. Screenshot is fulfilled at
+    // frame end; the recorded sample is the request, not a claim of exact render time.
+    FScreenshotRequest::RequestScreenshot(Path, true, false, false, FIntRect(), true);
+    UE_LOG(LogTemp, Display, TEXT("SOAK_VISUAL_REQUEST %s stageSeconds=%.6f frame=%llu"), Name, StageSeconds,
+           GFrameCounter);
 #endif
 }
 void ASSWave10Soak::Stop(const FString &Error)
@@ -303,6 +349,40 @@ void ASSWave10Soak::Tick(float Dt)
         else
             StationIdleSeconds += Dt;
     }
+    if (CaptureVisuals)
+    {
+        if (S.run.phase == SS::Phase::Flight && FlightSeconds >= 15)
+            CaptureVisual(TEXT("Flight"), FlightSeconds);
+        if (S.run.phase == SS::Phase::Climax && ClimaxSeconds >= 5)
+            CaptureVisual(TEXT("Climax"), ClimaxSeconds);
+        if (!Station5 && CompoundSeconds >= 4 && S.run.phase == SS::Phase::Climax && Kinds[5] > 0 &&
+            Kinds[0] + Kinds[1] + Kinds[2] > 0 && Kinds[6] + Kinds[7] > 0)
+            CaptureVisual(TEXT("Compound"), ClimaxSeconds);
+        if (S.run.phase == SS::Phase::Approach && ApproachSeconds >= 1)
+            CaptureVisual(TEXT("Approach"), ApproachSeconds);
+        if (Station5)
+        {
+            if (S.run.phase == SS::Phase::Docking && DockingSeconds >= 1)
+                CaptureVisual(TEXT("Docking"), DockingSeconds);
+            if (Exiting)
+            {
+                const float Times[] = {0.f, .1f, .27f, .82f, 1.2f, 1.65f, 2.35f};
+                for (int32 Index = 0; Index < UE_ARRAY_COUNT(Times); ++Index)
+                    if (ExitSeconds >= Times[Index])
+                        CaptureVisual(*FString::Printf(TEXT("Exit%d"), Index), ExitSeconds);
+            }
+            if (StationIdleSeconds >= 2)
+                CaptureVisual(TEXT("StationIdle"), StationIdleSeconds);
+        }
+        const TCHAR *TextureStage = Station5 ? TEXT("StationIdle") : TEXT("Compound");
+        if (VisualNames.Contains(TextureStage) && !VisualNames.Contains(TEXT("TexturesLogged")))
+        {
+            VisualNames.Add(TEXT("TexturesLogged"));
+            UE_LOG(LogTemp, Display, TEXT("SOAK_VISUAL_TEXTURE_RESIDENCY_BEGIN"));
+            GEngine->Exec(GetWorld(), TEXT("ListTextures"));
+            UE_LOG(LogTemp, Display, TEXT("SOAK_VISUAL_TEXTURE_RESIDENCY_END"));
+        }
+    }
     // Applied after normal simulation for the next engine frame; never relocate the ship or force docking.
     if (Station5 && S.run.phase == SS::Phase::Approach && IsValid(GM->Hub))
     {
@@ -353,6 +433,16 @@ void ASSWave10Soak::WriteResultAndExit()
         SetActorTickEnabled(false);
         return;
     }
+    if (CaptureVisuals)
+    {
+        const int32 Expected = Station5 ? 12 : 4;
+        if (VisualRecords.Num() != Expected)
+            Failure = TEXT("Visual fixture did not request every required scene stage.");
+        for (const auto &Row : VisualRecords)
+            if (IFileManager::Get().FileSize(
+                    *(Root / (Row->AsObject()->GetStringField(TEXT("name")) + TEXT(".png")))) <= 0)
+                Failure = TEXT("Visual fixture screenshot was not written.");
+    }
     const bool SlotsUntouched = NoSaveSlots();
     const FString Csv = CaptureResult.Get();
     const bool Success = Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && AllFramesForeground;
@@ -360,6 +450,11 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetStringField(TEXT("evidenceType"), Station5 ? TEXT("RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY")
                                                           : TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY"));
     Result->SetBoolField(TEXT("success"), Success);
+    Result->SetBoolField(TEXT("visualCaptureEnabled"), CaptureVisuals);
+    Result->SetArrayField(TEXT("visualRequests"), VisualRecords);
+    Result->SetStringField(TEXT("visualCaptureLimit"),
+                           TEXT("Normal viewport screenshots are fulfilled after each recorded request. Image readback "
+                                "and ListTextures perturb timings; visual captures are not performance evidence."));
     Result->SetStringField(TEXT("failure"), Failure);
     Result->SetStringField(TEXT("token"), Token);
     Result->SetNumberField(TEXT("processId"), FPlatformProcess::GetCurrentProcessId());

@@ -17,6 +17,8 @@ class SPACESURVIVAL_API ASSShip : public APawn
     GENERATED_BODY()
 public:
     ASSShip();
+    // Flight and every station bay share the same reviewed hull selection.
+    static const TCHAR *HullAssetPath(SS::Ship Kind);
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;

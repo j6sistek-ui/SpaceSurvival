@@ -215,7 +215,7 @@ struct FSSHazardDefinition
             SelectionWeight = .15f;
             break;
         case ESSWorldKind::ElectricalStorm:
-            MeshName = TEXT("SM_StormRing");
+            MeshName = TEXT("SM_ElectricalFieldCandidateV3");
             Radius = 3400.f;
             ClimaxRadius = Radius;
             MinimumWave = 4;
@@ -226,7 +226,7 @@ struct FSSHazardDefinition
             SelectionWeight = .55f;
             break;
         case ESSWorldKind::GravityAnomaly:
-            MeshName = TEXT("SM_GravityRing");
+            MeshName = TEXT("SM_GravityFieldCandidateV3");
             Radius = 3400.f;
             ClimaxRadius = 4300.f;
             MinimumWave = 6;

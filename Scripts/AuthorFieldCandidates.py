@@ -4,11 +4,13 @@ selects meshes in the Data Asset and never edits the shared emissive or wormhole
 """
 import hashlib
 import json
+import runpy
 from pathlib import Path
 
 import unreal as u
 
 ROOT = Path(__file__).resolve().parents[1]
+source_matches = runpy.run_path(str(ROOT / "Scripts/SourceDigests.py"))["matches"]
 SOURCE = ROOT / "ContentSource/FieldCandidates"
 BASE = "/Game/SpaceSurvival"
 VERSION = "FieldCandidate1"
@@ -40,21 +42,21 @@ def source_report():
     if report["version"] != VERSION or {m["name"] for m in report["meshes"]} != set(KINDS):
         raise RuntimeError("Unexpected field candidate source set/version")
     assert sha(SOURCE/"Generate.py") == report["generator_sha256"], "Generator changed after source receipt"
-    assert sha(SOURCE/"FieldPalette.mtl") == report["palette_sha256"], "Candidate palette changed"
+    assert source_matches(SOURCE/"FieldPalette.mtl", report["palette_sha256"]), "Candidate palette changed"
     for name,digest in report["protected_sha256"].items():
-        assert sha(ROOT/name) == digest, "Protected field/runtime input changed; review before import: "+name
+        assert source_matches(ROOT/name, digest), "Protected field/runtime input changed; review before import: "+name
     for name,digest in report["shader_sha256"].items():
         assert sha(SOURCE/name) == digest, "Candidate shader changed after source receipt"
     for item in report["meshes"]:
         assert item["material"] == KINDS[item["name"]][0]
         assert 0 < item["triangles"] <= 5000 and item["material_sections"] == 1
         for output in item["outputs"]:
-            assert sha(SOURCE/output["file"]) == output["sha256"], "Candidate bytes changed: "+output["file"]
+            assert source_matches(SOURCE/output["file"], output["sha256"]), "Candidate bytes changed: "+output["file"]
     return report
 
 
 def source_key(item):
-    payload = {"version": VERSION, "mesh": sha(SOURCE/(item["name"]+".obj")),
+    payload = {"version": VERSION, "mesh": next(output["sha256"] for output in item["outputs"] if output["file"] == item["name"]+".obj"),
                "shader": sha(SOURCE/KINDS[item["name"]][1]), "tint": item["tint"],
                "material": item["material"], "uv": "Role4Longitudinal_Strand2Circumference"}
     return hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()

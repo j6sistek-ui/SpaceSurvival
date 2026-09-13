@@ -5,9 +5,11 @@ scale: RepeatLocalCm is expressed before that scale so the pattern rotates and
 translates with each rock. It is not a fixed world-space texel density promise.
 """
 import hashlib,json,sys,re
+import runpy
 from pathlib import Path
 import unreal as u
 ROOT=Path(__file__).resolve().parents[1]
+source_matches = runpy.run_path(str(ROOT / "Scripts/SourceDigests.py"))["matches"]
 SOURCE=ROOT/'ContentSource/ThirdParty/PolyHaven/RockFace'
 BASE='/Game/SpaceSurvival'
 MATERIAL=BASE+'/Materials/M_RockPhotographic'
@@ -160,7 +162,7 @@ def adopt(material):
     assert set(source['meshes'])==set(ROCK_MESHES)
     baseline_path=ROOT/'ContentSource/RockPhotographicPreview/AdoptionBaseline.json';before={};meshes={}
     for name in ROCK_MESHES:
-        assert digest(ROOT/'ContentSource/Meshes'/(name+'.obj'))==source['meshes'][name]['obj_sha256'],'Authored asteroid source changed; deliberate review required'
+        assert source_matches(ROOT/'ContentSource/Meshes'/(name+'.obj'),source['meshes'][name]['obj_sha256']),'Authored asteroid source changed; deliberate review required'
         mesh=LIB.load_asset(BASE+'/Meshes/'+name);assert isinstance(mesh,u.StaticMesh)
         slots=list(mesh.get_editor_property('static_materials'));assert len(slots)==1,'Unexpected material section layout'
         assert slots[0].get_editor_property('material_interface').get_path_name().split('.')[0] in (BASE+'/Materials/M_Rock',MATERIAL),'Unexpected original material'

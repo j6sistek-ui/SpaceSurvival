@@ -1,0 +1,34 @@
+{
+  "status": "BLENDER_SOURCE_SWIFT_REVIEW_NOT_UNREAL",
+  "images": [
+    {
+      "file": "Hero.png",
+      "sha256": "2dd5f3317b397c1db77242b28cd3dbfb9b0dbcc4b7b6c799f6083a322e411211"
+    },
+    {
+      "file": "Chase.png",
+      "sha256": "d30cac09ac97eaf32d77bc1e3f81a53c67a719cd1f9cf9451ebe1fdd08b9f95e"
+    },
+    {
+      "file": "Top.png",
+      "sha256": "a4fa74f5ff6a60617208079dca268892d0e5b8a1322328a4a7f04adef30ae509"
+    },
+    {
+      "file": "Cockpit.png",
+      "sha256": "c84179ca11daebaf894c7f87a18e08a3b1ed31758b40bf8fd2e33aaab24c84cf"
+    }
+  ],
+  "generator_sha256": "d8dc3916bd9940764cdb5238a4a0aae9a71f74175cd330c6fb1c25a4e8c0ecf7",
+  "renderer": "Cycles CPU8 / 32 samples / 1440x1050 / AgX",
+  "protected_sha256": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource/Animation/Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource/Animation/TailCandidateV2.glb": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+    "ContentSource/Animation/Disembark.glb": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+    "ContentSource/AcornShipCandidate/AcornShipCandidate.blend": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c",
+    "ContentSource/AcornShipCandidate/AcornShipCandidate.obj": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+    "ContentSource/AcornShipCandidate/AcornShipCandidate.glb": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e",
+    "ContentSource/Meshes/SM_AgileShip.obj": "2d8bb73ac2a35d25cf62f1108d412beaa3fcfa797da922aed9e59ea3ebfce54c",
+    "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset": "9c29554cd017c56d26f691f3b05b39e993f768188b8f02fdef5901b370518c07"
+  }
+}

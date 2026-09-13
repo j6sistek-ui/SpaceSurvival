@@ -1,0 +1,155 @@
+{
+  "status": "SOURCE_AND_NATIVE_PAIRED_CANDIDATE_VERIFIED_PENDING_RUNTIME_INTEGRATION",
+  "utc": "2026-09-13T11:31:18.776753+00:00",
+  "clips": [
+    {
+      "kind": "Pilot",
+      "file": "PilotGripFit.glb",
+      "bytes": 22456968,
+      "sha256": "7fa10daaad36a08545191d7029e19efd0e8bf97bb10711afc58fbf429118cbdd",
+      "base_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+      "original_binary_prefix_exact": 22359368,
+      "changed_rotation_tracks": [
+        "L_Index1",
+        "L_Index2",
+        "L_Index3",
+        "L_Middle1",
+        "L_Middle2",
+        "L_Middle3",
+        "L_Pinky1",
+        "L_Pinky2",
+        "L_Pinky3",
+        "L_Ring1",
+        "L_Ring2",
+        "L_Ring3",
+        "L_Thumb1",
+        "L_Thumb2",
+        "L_Thumb3",
+        "L_Wrist"
+      ],
+      "unchanged_channel_payloads": 140,
+      "exact_original_all_tracks_from_seconds": null
+    },
+    {
+      "kind": "Exit",
+      "file": "DisembarkGripFit.glb",
+      "bytes": 22350808,
+      "sha256": "8e747c569a6bb000be9d947110fd0bf919fdb7534a9ea986684c3b5f1ea496ec",
+      "base_sha256": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+      "original_binary_prefix_exact": 22259336,
+      "changed_rotation_tracks": [
+        "L_Elbow",
+        "L_Index1",
+        "L_Index2",
+        "L_Index3",
+        "L_Middle1",
+        "L_Middle2",
+        "L_Middle3",
+        "L_Pinky1",
+        "L_Pinky2",
+        "L_Pinky3",
+        "L_Ring1",
+        "L_Ring2",
+        "L_Ring3",
+        "L_Shoulder",
+        "L_Thumb1",
+        "L_Thumb2",
+        "L_Thumb3",
+        "L_Wrist",
+        "R_Elbow",
+        "R_Shoulder",
+        "R_Wrist"
+      ],
+      "unchanged_channel_payloads": 135,
+      "exact_original_all_tracks_from_seconds": 0.43333333333333335
+    }
+  ],
+  "current_review_images": [
+    "ClosureNear.png",
+    "ClosureFar.png",
+    "ClosureOverview.png",
+    "ArmNaturalRetract.png",
+    "ArmNaturalOverview.png"
+  ],
+  "exported_release_sampling_hz": 60,
+  "exported_release_checked_interval_seconds": [
+    0,
+    0.43333333333333335
+  ],
+  "zero_grip_triangle_crossings_interval_seconds": [
+    0.05,
+    0.43333333333333335
+  ],
+  "initial_crossing_pairs": [
+    {
+      "seconds": 0.0,
+      "L": 78,
+      "R": 26
+    },
+    {
+      "seconds": 0.016666666666666666,
+      "L": 43,
+      "R": 0
+    },
+    {
+      "seconds": 0.03333333333333333,
+      "L": 52,
+      "R": 0
+    }
+  ],
+  "limits": [
+    "Initial seated Pilot contact is not penetration-free; geometric grip fit was based on the original upturned hand.",
+    "New separate clips are imported and freshly validated; runtime adoption, cooking and owner approval are not established by this candidate receipt.",
+    "Live-phase snapshot blend is lead-owned and not included in these source-only checks.",
+    "Cuff torsion, thin claw silhouette and existing fur fragments remain visual limitations.",
+    "Clearance checks cover non-coplanar triangle crossings at sampled times; they are not continuous collision, whole-ship clearance, self-contact, or performance certification.",
+    "Native stills show brisk/high/backward release, with the far hand partly occluded behind the torso during retraction; natural movement review remains open.",
+    "Original stale-pose four-view attempt is preserved in InitialNativeStalePose and is not new-animation evidence.",
+    "Swift original grips clear the sampled new Exit from1/60s onward; no geometry transplant is justified by the source collision comparison. This does not establish a perfect visual grasp."
+  ],
+  "evidence_sha256": {
+    "Generate.py": "8634a1cb0b160400caeef84cb3103eed3138d8403b902f64f5f75c4ee53db6f5",
+    "AuthorPair.py": "05ee67ea08b2d7cf1d6c7e1ec39a1952af3596d7eb83fdcec30046faf43204b4",
+    "ValidatePair.py": "5feeea86492956dcf7502267296f182c68589bfc763ab67caf7479ed8a505c9a",
+    "PilotRotations.json": "8062fa0a8ca3ba552066207d1d4a4544f1bec2bdc51eb16e04aa4c4cbb2287db",
+    "ExitRotations.json": "2a5da3ae79acd6c99cbaeb96a4377b89ef066f4e0d3f8a2a13eaae2998e4ba31",
+    "SourcePairValidation.json": "29ffa90ac7ad6bbf16ee2fecf3552277e0c31454b0ce644302849cdde7169f20",
+    "PairedRelease.json": "b3cc8f917fad5d566ad0808aff1d146cfd1f43864b940add9b5af6f8c2e6a7b8",
+    "ClosureNear.png": "48cb3e047d13cf1ff8041fde6b4ba22ae70a175a4f80edc208d9cca983725555",
+    "ClosureFar.png": "5eff15dcba270644345b86e0318b67bd22d16a68b08bafd71cabbd89970066b3",
+    "ClosureOverview.png": "f7224c9f79a1e5e41cda4e9565694c399088fefe3eb2606624bc2d1140e0d3b5",
+    "ArmNaturalRetract.png": "1060ddbfcda74aae6c49c5b75ec8d3de6195dee90227eac218861b273d13ef2d",
+    "ArmNaturalOverview.png": "4d8cd74fe46538912056805ab64c84e0774c9257efb7947d587a0e2305745337",
+    "UnrealPairImport.json": "2dc68c83cc2d1155ed746fc0c04c43a327c1ed584e15a8cb4a4554e4103c323f",
+    "UnrealPairPersisted.json": "2c0bf9879c0d4cd33f9d7517f930fc4ed98c7f7a28d0d01d09dd71f1b304088b",
+    "UnrealPairPreview.json": "bbfee84e1614bf31d7f0c0dcec8fe065f9b1f97ddf304fd447822bd2be38c3a1",
+    "MatchedResidency.json": "0b337c761a954b79042753ff8677c322b5aef43cfc66b1ba5cde08a99f8e5161",
+    "PipelineRevision.json": "b2d7f38600e566bdeba1cd246ef2d73dc72d6b730802fc007681232b7d074189",
+    "SwiftGripClearance.json": "54a6ae692f8642fefc581f122b8bf302412d9d5fe932ed6fb27c2fa4643304c5",
+    "UnrealResidentBefore.png": "f44b17f752b95189d9a2d6fc665c56606ddd1e718e9e0f4e5871313c71d67d3b",
+    "UnrealResidentAfter.png": "e28fd31b7529c21c8f72860dd30c975fcd6f5e15acfaf552a193805f721c7dc6",
+    "UnrealReleaseLift.png": "0a252428233f9b06114197f5d33caed95668218909b6ee3fe55cbebb07530588",
+    "UnrealReleaseRetract.png": "3e473f7f4b4b845e668599dce2bc2e35cca17a9ea50f81015c037bfa91872bce"
+  },
+  "current_native_images": [
+    "UnrealResidentBefore.png",
+    "UnrealResidentAfter.png",
+    "UnrealReleaseLift.png",
+    "UnrealReleaseRetract.png"
+  ],
+  "native_summary": {
+    "engine": "5.8.2-56702186+++UE5+Release-5.8",
+    "owned_pid": 85900,
+    "exit_code": 0,
+    "protected_files_unchanged": 148,
+    "bone_comparisons": 36,
+    "maximum_position_error_cm": 0.0027290062516364486,
+    "maximum_rotation_error_degrees": 0.007671223820935398,
+    "left_wrist_difference_from_original_degrees": 170.25626543058104,
+    "hero_texture_current_dimensions": [
+      2048,
+      2048
+    ],
+    "hero_texture_current_kib": 2752
+  }
+}

@@ -1,0 +1,23 @@
+# Separate upper-grip fit candidate
+
+`SM_AcornShipGripFit` is imported for review only. Runtime still selects `SM_AcornShipV2`. The candidate preserves the supplied character, existing pilot/disembark animations, material assets, cockpit anchor, seat, footwell and main ship. Exactly four authored parts change: the upper portion of each grip and its existing light. Evaluated fingerprints of the other 181 parts are identical. The lower 70% centerline and radius of each grip remain unchanged.
+
+Actual skinned hand triangle measurements drove the final positions; bone-midpoint proxies were insufficient. The final terminal-ring radius is 1.8 cm. `Report.json` and `ContactValidation.json` contain the final selected patches/tips. Earlier provisional fields in `ContactMeasurement.json` document intermediate contact analysis, not a different final mesh specification.
+
+The saved mesh has 134,622 triangles, 79,448 vertices, one LOD and nine existing material sections. Display collision is disabled. Its complete bounds agree with the reference within 0.03 cm. The import and native preview preserved every preexisting file in Source, Config and Content (128 files). `UnrealImport.json` binds the new package hash. UnrealPersisted.json now binds a fresh-editor reload from UE85900; bounds, nine materials, one LOD and disabled collision pass again.
+
+The source and native views show improved control proximity, but the anatomical left hand remains visibly upturned/open. This is an animation issue; the mesh candidate does not close it. At Pilot frame zero, signed terminal-ring vertical gaps span -0.114 to +0.233 cm for R and -0.039 to +0.090 cm for L. Across 121 samples, breathing produces R -0.629 to +0.779 cm and L -0.542 to +0.617 cm. Negative means potential penetration against the sampled underside. These are 64-point ring rays, not a complete solid-intersection or grasp proof.
+
+The first six Unreal images are stock actors in an unsaved studio, not gameplay. Before has visibly lower character texture residency than After, so the pair is not a matched visual A/B despite identical camera, lights, mount and pose. Preserve these images as initial evidence; the later paired comparison in ../PilotGripPoseCandidate forces only the hero texture resident and proves full resolution before each capture. That later comparison intentionally changes both grip geometry and Pilot pose.
+
+Disembark rays around 0.23-0.30 s put hands below the grip-tip XY during the move toward the brace pose. That is a clearance flag, not proof of exact solid intersection; full upper-grip geometry must be checked before adoption. A new Pilot wrist pose would also require an explicit transition into the unchanged Disembark start. No automatic clip substitution is approved.
+
+The candidate has no owner art acceptance or performance acceptance. Existing tail fragments, ship shadow faceting, and the open hand are visible limitations rather than completed polish.
+
+The old UnrealPilotPeak and UnrealExitRelease images are additionally invalid as requested-time evidence: the preview component retained its initial Pilot0. The corrected helper explicitly updates the live sequence/time and verifies nine component-space bone transforms against independent compressed animation evaluation. The unchanged source Blender samples and the original mesh import remain separate valid evidence.
+
+UnrealPairedPreview.json records the successful combined grip/pose comparison, with images in ../PilotGripPoseCandidate. It binds all36 native bone checks, exact package/source identities, 148 unchanged existing files, and full hero residency. The first stale-pose attempt remains in that folder's InitialNativeStalePose directory. The new left-palm-down animation visibly improves the seated presentation; its sampled release lifts clear from0.05s, while initial seated intersections remain. Exact grasp and natural live-phase transition quality are not certified.
+
+The old signed-gap measurements above describe the original Pilot orientation only. They must not be relabeled as contact proof for A_PilotGripFit. Likewise, Swift retains its original cockpit geometry: source comparison found fewer seated crossing pairs and zero sampled release crossings from1/60s onward, so no collision-driven grip transplant is indicated.
+
+Routine importer/reload paths are Saved/Validation/GripFitImport.json and GripFitPersisted.json; the final review copies here are UnrealImport.json, UnrealPersisted.json and UnrealPairedPreview.json. Existing material/mesh/animation assets remain preserved. Candidate adoption and integrated gameplay verification belong to the lead.

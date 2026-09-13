@@ -12,6 +12,7 @@ param(
     [ValidateRange(160, 600)][int]$TimeoutSeconds = 240,
     [ValidateRange(640, 7680)][int]$Width = 2560,
     [ValidateRange(480, 4320)][int]$Height = 1440,
+    [switch]$CaptureVisuals,
     [switch]$NoSound
 )
 Set-StrictMode -Version Latest
@@ -102,6 +103,7 @@ if ($Editor) { $arguments += @((Join-Path $repoRoot 'SpaceSurvival.uproject'), '
 $arguments += @('-SSWave10Soak', "-SSSoakScenario=$Scenario", '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$runRoot", '-windowed', "-ResX=$Width", "-ResY=$Height",
     '-NoSplash', '-NoLiveCoding', '-csvGpuStats', "-abslog=$logPath", '-unattended')
 if ($NoSound) { $arguments += '-nosound' }
+if ($CaptureVisuals) { $arguments += '-SSSoakVisuals' }
 $process = $null
 $success = $false
 $failure = $null
@@ -125,7 +127,8 @@ try {
     Assert-NoReparsePath $fixturePath
     $fixture = Get-Content -LiteralPath $fixturePath -Raw | ConvertFrom-Json
     if (-not $fixture.success -or $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $Scenario -or
-        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or -not $fixture.noSaveSlotsWritten -or -not $fixture.allFixtureFramesForeground -or
+        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or
+        ($CaptureVisuals -and (-not $fixture.visualCaptureEnabled -or @($fixture.visualRequests).Count -ne $(if ($Scenario -eq 'Station5') { 12 } else { 4 }))) -or -not $fixture.noSaveSlotsWritten -or -not $fixture.allFixtureFramesForeground -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine [IO.Path]::GetFullPath($savedRoot).TrimEnd('\', '/') -or
         -not $fixture.sawBreathing -or -not $fixture.sawClimax -or -not $fixture.sawApproach -or
         $fixture.climaxSimulationSeconds -lt 39.5) {
@@ -144,8 +147,9 @@ try {
     Assert-NoReparsePath $csv
     if ([IO.Path]::GetFullPath($fixture.csv) -ine [IO.Path]::GetFullPath($csv)) { throw 'Fixture returned an unexpected CSV path.' }
     $output = Join-Path $runRoot 'performance.json'
+    $captureNote = if ($CaptureVisuals) { 'Screenshot readbacks and ListTextures perturb timing: this run is visual evidence only, not a performance finding.' } else { 'No automated screenshot readback.' }
     & $python -B (Join-Path $repoRoot 'Scripts/AnalyzePerformance.py') $csv --log $logPath --output $output `
-        --context-note "Explicit seeded $Scenario fixture with enlarged durability and scripted controls; no natural progression/feel claim."
+        --context-note "Explicit seeded $Scenario fixture with enlarged durability and scripted controls; no natural progression/feel claim." --context-note $captureNote
     if ($LASTEXITCODE -ne 0) { throw 'Completed CSV analysis failed.' }
     $analysis = Get-Content -LiteralPath $output -Raw | ConvertFrom-Json
     if ($Scenario -eq 'Station5') {
@@ -188,6 +192,7 @@ try {
         sourceSnapshot = $sourceBefore; sourceUnchanged = $sourceUnchanged
         productionBefore = $productionBefore; productionAfter = $productionAfter; productionPreserved = $productionPreserved
         noTestSaveSlotsWritten = $noSlots; requestedResolution = @($Width, $Height); audioDisabled = [bool]$NoSound
+        visualCaptureEnabled = [bool]$CaptureVisuals; suitableForPerformanceFinding = -not [bool]$CaptureVisuals
         fixture = $fixture; analysisPath = $(if ($null -ne $analysis) { 'performance.json' } else { $null })
         evidenceFiles = @(Get-ChildItem -LiteralPath $runRoot -File | Sort-Object Name | ForEach-Object { FileIdentity $_.FullName })
         limits = 'Seeded Tier V starter/RapidLaser/OverdriveCooling; base durability 50000; normal timers/caps/budgets/spatial admission; scripted input. Exact bytes/process are recorded, but separate build provenance must bind compiled source. No physical input, natural balance, full ten-wave run, natural station interactions, final art, clean-machine or representative FPS acceptance.'

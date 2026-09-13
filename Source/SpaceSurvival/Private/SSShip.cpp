@@ -34,6 +34,8 @@ ASSShip::ASSShip()
     Pilot = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("AcornautPilot"));
     Pilot->SetupAttachment(HullMesh);
     Pilot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    // The player is always close to this single shared hero texture.
+    Pilot->bForceMipStreaming = true;
     Pilot->SetRelativeLocation(FVector(-15, 0, 72));
     Pilot->SetRelativeRotation(FRotator(0, -90, 0));
     Pilot->SetRelativeScale3D(FVector(1.5f));
@@ -48,10 +50,16 @@ ASSShip::ASSShip()
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ChaseCamera"));
     Camera->SetupAttachment(CameraBoom);
     Camera->FieldOfView = 80.f;
-    Camera->SetRelativeRotation(FRotator(-10, 0, 0));
+    // Keep the prominent ship below the center sightline without widening the chase.
+    Camera->SetRelativeRotation(FRotator(2, 0, 0));
     EngineAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineAudio"));
     EngineAudio->SetAutoActivate(false);
     EngineAudio->SetupAttachment(RootComponent);
+}
+const TCHAR *ASSShip::HullAssetPath(SS::Ship Kind)
+{
+    return Kind == SS::Ship::Agile ? TEXT("/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1.SM_SwiftCandidateV1")
+                                   : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit");
 }
 void ASSShip::UpdateEngineMix()
 {
@@ -67,14 +75,12 @@ void ASSShip::BeginPlay()
     if (!Tuning)
         Tuning = NewObject<USSPhase1Data>(this);
     auto *GI = GetGameInstance<USSGameInstance>();
-    const bool Agile = GI && GI->Session.run.ship == SS::Ship::Agile;
     HullMesh->SetStaticMesh(
-        LoadObject<UStaticMesh>(nullptr, Agile ? TEXT("/Game/SpaceSurvival/Meshes/SM_AgileShip.SM_AgileShip")
-                                               : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2")));
+        LoadObject<UStaticMesh>(nullptr, HullAssetPath(GI ? GI->Session.run.ship : SS::Ship::Starter)));
     Pilot->SetSkeletalMesh(
         LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
-    Pilot->PlayAnimation(LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Pilot.A_Pilot")),
-                         true);
+    Pilot->PlayAnimation(
+        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit")), true);
     EngineAudio->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Engine.Engine")));
     UpdateEngineMix();
     EngineAudio->Play();
@@ -196,14 +202,15 @@ void ASSShip::Tick(float Dt)
         const FVector Delta = It->GetActorLocation() - GetActorLocation();
         if (Delta.SizeSquared() > FMath::Square(Tuning->WeaponRange))
             continue;
-        const float Dot = FVector::DotProduct(Aim, Delta.GetSafeNormal());
+        const FVector SightOrigin = Camera ? Camera->GetComponentLocation() : GetActorLocation();
+        const float Dot = FVector::DotProduct(Aim, (It->GetActorLocation() - SightOrigin).GetSafeNormal());
         if (Dot <= Best)
             continue;
         FHitResult Hit;
         FCollisionQueryParams Params;
         Params.AddIgnoredActor(this);
-        GetWorld()->LineTraceSingleByChannel(Hit, GetActorLocation() + Aim * 230.f, It->GetActorLocation(),
-                                             ECC_Visibility, Params);
+        GetWorld()->LineTraceSingleByChannel(Hit, GetActorLocation() + GetActorForwardVector() * 240.f,
+                                             It->GetActorLocation(), ECC_Visibility, Params);
         if (!Hit.bBlockingHit || Hit.GetActor() == *It)
         {
             Best = Dot;
@@ -245,11 +252,23 @@ void ASSShip::Fire()
     auto &S = GI->Session;
     const bool Cannon = S.run.weapon == SS::Weapon::HeavyCannon;
     FireCooldown = Cannon ? Tuning->CannonInterval : Tuning->LaserInterval;
-    FVector Direction = AimDirection();
-    if (IsValid(SoftTarget))
-        Direction = FMath::Lerp(Direction, (SoftTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal(), .42f)
-                        .GetSafeNormal();
     const FVector Start = GetActorLocation() + GetActorForwardVector() * 240.f;
+    const FVector Sight = AimDirection();
+    const FVector SightOrigin = Camera ? Camera->GetComponentLocation() : Start;
+    FVector AimPoint = SightOrigin + Sight * Tuning->WeaponRange;
+    FCollisionQueryParams SightQuery(SCENE_QUERY_STAT(SSManualAim), false, this);
+    FHitResult SightHit;
+    // Resolve the visible reticle point, then converge from the real muzzle.
+    // Camera obstructions behind the muzzle must never reverse a shot.
+    if (GetWorld()->LineTraceSingleByChannel(SightHit, SightOrigin, AimPoint, ECC_Visibility, SightQuery) &&
+        FVector::DotProduct(SightHit.ImpactPoint - Start, Sight) > 1.f)
+        AimPoint = SightHit.ImpactPoint;
+    FVector Direction = (AimPoint - Start).GetSafeNormal();
+    if (IsValid(SoftTarget))
+        Direction =
+            FMath::Lerp(Direction, (SoftTarget->GetActorLocation() - Start).GetSafeNormal(), .42f).GetSafeNormal();
+    // The existing muzzle trace/projectile sweep still handles nearby cover;
+    // selecting a visible aim point never permits shooting through an obstacle.
     const float Damage = float(S.Stats().weaponDamage);
     if (Cannon)
     {

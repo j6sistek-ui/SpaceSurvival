@@ -387,7 +387,7 @@ void ASSGameMode::EnterStation()
     PC->bAutoManageActiveCameraTarget = AutoCamera;
     ClosePanel();
     Announce(TEXT("Dockmaster: Welcome aboard. Your ship is in the service bay."));
-    React(TEXT("A solid floor. I missed that."));
+    React(TEXT("Docked. Easy on the way down."));
 }
 void ASSGameMode::Tick(float Dt)
 {

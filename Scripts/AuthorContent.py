@@ -49,13 +49,14 @@ def generate_sources():
 def read_sources():
     """Import checked-in sources; editor Python must not rewrite source content."""
     verify_hero()
+    matches = source_module("ss_source_digests", ROOT / "Scripts/SourceDigests.py").matches
     manifests = []
     for directory, extension in (("Meshes", ".obj"), ("Audio", ".wav")):
         folder = ROOT / "ContentSource" / directory
         manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
         for item in manifest["assets"]:
             path = folder / (item["name"] + extension)
-            if hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]:
+            if not matches(path, item["sha256"]):
                 raise RuntimeError(f"Source differs from its manifest: {path}; regenerate and review before importing")
         manifests.append(manifest)
     return tuple(manifests)
@@ -410,6 +411,7 @@ class Author:
             if not asset.has_valid_contract_tuning():
                 raise RuntimeError("DA_Phase1 contract magnitudes require valid bounded values")
             source_module("ss_enemy_candidates", ROOT / "Scripts/AuthorEnemyCandidates.py").roster(asset, migrate=True)
+            source_module("ss_field_v3", ROOT / "Scripts/AuthorFieldCandidatesV3.py").roster(asset, migrate=True)
             # Persist added tuning fields without resetting designer-authored values.
             self.save(asset)
             return
@@ -499,12 +501,16 @@ class Author:
             self.stage(item["name"], lambda asset=item: self.static_mesh(asset))
         self.stage("Photographic asteroid surfaces", lambda: source_module("ss_rock_photographic", ROOT / "Scripts/AuthorRockPhotographic.py").main(adopt_existing_meshes=True))
         self.stage("Authored enemy candidates", lambda: source_module("ss_enemy_candidates", ROOT / "Scripts/AuthorEnemyCandidates.py").main())
+        self.stage("Electrical and gravity fields", lambda: source_module("ss_field_v3", ROOT / "Scripts/AuthorFieldCandidatesV3.py").main())
         self.stage("Authored Acorn ship", lambda: source_module("ss_acorn_ship", ROOT / "Scripts/AuthorAcornShip.py").main())
+        self.stage("Fitted starter grips", lambda: source_module("ss_grip_fit", ROOT / "Scripts/AuthorGripFit.py").main())
+        self.stage("Swift hull", lambda: source_module("ss_swift", ROOT / "Scripts/AuthorSwiftCandidate.py").main())
         self.stage("Preserved Acornaut import", self.hero)
         self.stage("Authored pilot animation", self.pilot)
         self.stage("Authored disembark animation", self.disembark)
         self.stage("Reviewed pilot mesh", self.pilot_mesh)
         self.stage("Reviewed tail repair", lambda: source_module("ss_tail_repair", ROOT / "Scripts/AuthorTailRepair.py").main())
+        self.stage("Paired pilot and release", lambda: source_module("ss_pilot_grip_fit", ROOT / "Scripts/AuthorPilotGripFit.py").main())
         for item in self.audio_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.sound(asset))
         if not assets_only:

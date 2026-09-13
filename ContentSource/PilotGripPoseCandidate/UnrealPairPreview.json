@@ -1,0 +1,725 @@
+{
+  "status": "SEPARATE_GRIP_FIT_NATIVE_PREVIEWED_NOT_ADOPTED",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "errors": [],
+  "clips": [
+    {
+      "path": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "seconds": 4.0,
+      "skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+      "root_motion": false,
+      "force_root_lock": false,
+      "source_sha256": "7fa10daaad36a08545191d7029e19efd0e8bf97bb10711afc58fbf429118cbdd",
+      "package_sha256": "5184434996865dd8831ec50f50722d73fa24f9feef7953d22e38c2c8342c8a45",
+      "package_bytes": 386697
+    },
+    {
+      "path": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "seconds": 2.4000000953674316,
+      "skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+      "root_motion": false,
+      "force_root_lock": false,
+      "source_sha256": "8e747c569a6bb000be9d947110fd0bf919fdb7534a9ea986684c3b5f1ea496ec",
+      "package_sha256": "13192da7a3001faaa885229bf714f2a2d1331361c91e3faf4ceb08aa681c53fc",
+      "package_bytes": 454726
+    }
+  ],
+  "limits": [
+    "New candidate clips only; runtime selection unchanged",
+    "Native rendered combined pose review is separate",
+    "Initial seated skin/grip intersections and existing fur/claw limitations remain"
+  ],
+  "protected_existing_files_unchanged": 148,
+  "grip": {
+    "mesh": "/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit",
+    "bounds_cm": [
+      [
+        -244.79998779296875,
+        -142.78431701660156,
+        -65.3775405883789
+      ],
+      [
+        209.99998474121094,
+        142.78431701660156,
+        97.80007934570312
+      ]
+    ],
+    "triangles": 134622,
+    "vertices": 79448,
+    "material_sections": 9,
+    "collision_enabled": "NoCollision",
+    "slots": [
+      {
+        "slot": "AC01_GraphiteStructure",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.M_AcornV2_GraphiteStructure"
+      },
+      {
+        "slot": "AC01_WarmCeramic",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.M_AcornV2_WarmCeramic"
+      },
+      {
+        "slot": "AC01_IvoryPanels",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.M_AcornV2_IvoryPanels"
+      },
+      {
+        "slot": "AC01_BurnishedBronze",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.M_AcornV2_BurnishedBronze"
+      },
+      {
+        "slot": "AC01_ChampagneEdges",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.M_AcornV2_ChampagneEdges"
+      },
+      {
+        "slot": "AC01_MachinedTitanium",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.M_AcornV2_MachinedTitanium"
+      },
+      {
+        "slot": "AC01_IonAndNav",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav.M_AcornV2_IonAndNav"
+      },
+      {
+        "slot": "AC01_CockpitPadding",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.M_AcornV2_CockpitPadding"
+      },
+      {
+        "slot": "AC01_Windscreen",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen.M_AcornV2_Windscreen"
+      }
+    ]
+  },
+  "comparison": "Before is original grip/Pilot; After is candidate grip/Pilot. Same camera, lighting, mesh mount and forced hero texture residency; both geometry and pose intentionally change.",
+  "hero_material_used_texture_paths": [
+    "/InterchangeAssets/gltf/Textures/T_Generic_N.T_Generic_N",
+    "/InterchangeAssets/gltf/Textures/T_White_srgb.T_White_srgb",
+    "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0",
+    "/InterchangeAssets/gltf/Textures/T_White_Linear.T_White_Linear"
+  ],
+  "temporary_hero_residency": {
+    "texture_paths": [
+      "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0"
+    ],
+    "seconds": 120,
+    "wait_before_each_capture_seconds": 10,
+    "asset_streaming_flags_saved": false,
+    "proof": "Hero ListTextures lines before each screenshot are bound in MatchedResidency.json"
+  },
+  "images": [
+    {
+      "file": "UnrealResidentBefore.png",
+      "sha256": "f44b17f752b95189d9a2d6fc665c56606ddd1e718e9e0f4e5871313c71d67d3b",
+      "clip": "Pilot",
+      "seconds": 0
+    },
+    {
+      "file": "UnrealResidentAfter.png",
+      "sha256": "e28fd31b7529c21c8f72860dd30c975fcd6f5e15acfaf552a193805f721c7dc6",
+      "clip": "PilotGripFit",
+      "seconds": 0
+    },
+    {
+      "file": "UnrealReleaseLift.png",
+      "sha256": "0a252428233f9b06114197f5d33caed95668218909b6ee3fe55cbebb07530588",
+      "clip": "DisembarkGripFit",
+      "seconds": 0.1
+    },
+    {
+      "file": "UnrealReleaseRetract.png",
+      "sha256": "3e473f7f4b4b845e668599dce2bc2e35cca17a9ea50f81015c037bfa91872bce",
+      "clip": "DisembarkGripFit",
+      "seconds": 0.26666666666666666
+    }
+  ],
+  "pose_checks": [
+    {
+      "case": "UnrealResidentBefore",
+      "active_asset": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "seconds": 0,
+      "independent_evaluation": "Compressed, same mesh, component space",
+      "bones": {
+        "Pelvis": {
+          "component_cm": [
+            -3.0850060284137726e-07,
+            1.7156710327981277e-06,
+            1.5043040093587479e-06
+          ],
+          "quaternion_xyzw": [
+            0.41633698632248606,
+            0.040628864980450125,
+            0.11034846280318139,
+            0.9015741932349695
+          ],
+          "expected_position_error_cm": 4.235164736271502e-22,
+          "expected_rotation_error_degrees": 1.7075472925031877e-06
+        },
+        "Spine3": {
+          "component_cm": [
+            -3.9604292793408524e-07,
+            0.6628474130976089,
+            19.274236282593495
+          ],
+          "quaternion_xyzw": [
+            0.29595941297632605,
+            0.02638985590295312,
+            0.0658664220435653,
+            0.9525613974035004
+          ],
+          "expected_position_error_cm": 0.0006769394872671718,
+          "expected_rotation_error_degrees": 0.005034504766059151
+        },
+        "L_Elbow": {
+          "component_cm": [
+            14.054824032522845,
+            7.026615720022258,
+            13.092695786134849
+          ],
+          "quaternion_xyzw": [
+            0.1556871443919823,
+            0.5720858592060112,
+            0.20253530404496345,
+            0.7793963904092737
+          ],
+          "expected_position_error_cm": 0.0004097294967847889,
+          "expected_rotation_error_degrees": 0.00767121583914446
+        },
+        "L_Wrist": {
+          "component_cm": [
+            14.054818334711195,
+            18.6282860772166,
+            14.8329338953363
+          ],
+          "quaternion_xyzw": [
+            -0.06311672861065537,
+            0.9595907914338069,
+            0.2590339322479567,
+            0.09001785105794659
+          ],
+          "expected_position_error_cm": 0.0018680728337919744,
+          "expected_rotation_error_degrees": 0.007671223820935398
+        },
+        "L_Middle1": {
+          "component_cm": [
+            14.054817814573653,
+            25.852520892406364,
+            14.11050676533755
+          ],
+          "quaternion_xyzw": [
+            -0.06311672861065537,
+            0.9595907914338069,
+            0.2590339322479567,
+            0.09001785105794659
+          ],
+          "expected_position_error_cm": 0.0027290062516364486,
+          "expected_rotation_error_degrees": 0.007671223820935398
+        },
+        "R_Elbow": {
+          "component_cm": [
+            -13.54810749136848,
+            5.148865938425833,
+            14.093700466756008
+          ],
+          "quaternion_xyzw": [
+            0.7016908215713042,
+            -0.11768780695100367,
+            -0.5436897161157438,
+            0.4451753178329117
+          ],
+          "expected_position_error_cm": 0.0006950742156521253,
+          "expected_rotation_error_degrees": 0.006433429561925549
+        },
+        "R_Wrist": {
+          "component_cm": [
+            -13.54810907406198,
+            16.091549963860746,
+            15.735107934271221
+          ],
+          "quaternion_xyzw": [
+            0.6929042317207879,
+            -0.0758195567584154,
+            -0.29575665895546505,
+            0.6531945492423247
+          ],
+          "expected_position_error_cm": 0.001844637927034364,
+          "expected_rotation_error_degrees": 0.006434023470931732
+        },
+        "L_Ankle": {
+          "component_cm": [
+            7.478272979154292,
+            20.815940768354814,
+            -22.30121193219805
+          ],
+          "quaternion_xyzw": [
+            0.8964020355505958,
+            0.023064167895312293,
+            -0.06220498328783497,
+            0.43824875912454797
+          ],
+          "expected_position_error_cm": 7.0813044429721195e-06,
+          "expected_rotation_error_degrees": 4.7382514414327536e-05
+        },
+        "R_Ankle": {
+          "component_cm": [
+            -8.07745996965329,
+            17.849651835025018,
+            -22.154168897439433
+          ],
+          "quaternion_xyzw": [
+            0.8648894234214932,
+            0.008397669195692459,
+            -0.17999526318636233,
+            0.4685055705497959
+          ],
+          "expected_position_error_cm": 1.4017242093230252e-05,
+          "expected_rotation_error_degrees": 5.915117333884393e-06
+        }
+      }
+    },
+    {
+      "case": "UnrealResidentAfter",
+      "active_asset": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "seconds": 0,
+      "independent_evaluation": "Compressed, same mesh, component space",
+      "bones": {
+        "Pelvis": {
+          "component_cm": [
+            -3.0850060284137726e-07,
+            1.7156710327981277e-06,
+            1.5043040093587479e-06
+          ],
+          "quaternion_xyzw": [
+            0.41633698347432246,
+            0.040628865364338046,
+            0.11034846306695734,
+            0.9015741945006353
+          ],
+          "expected_position_error_cm": 4.235164736271502e-22,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "Spine3": {
+          "component_cm": [
+            0.00012760406979380373,
+            0.6621867111884092,
+            19.274298756438448
+          ],
+          "quaternion_xyzw": [
+            0.2960010747325723,
+            0.026394605687147993,
+            0.06586419357669415,
+            0.9525484746469728
+          ],
+          "expected_position_error_cm": 1.1289920539707529e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Elbow": {
+          "component_cm": [
+            14.05485462076697,
+            7.026459408421904,
+            13.093074161056999
+          ],
+          "quaternion_xyzw": [
+            0.155751622985836,
+            0.5720895967607628,
+            0.20254022760728335,
+            0.7793794848571372
+          ],
+          "expected_position_error_cm": 2.5691412879861815e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Wrist": {
+          "component_cm": [
+            14.055611529636503,
+            18.627940723455314,
+            14.834591807988488
+          ],
+          "quaternion_xyzw": [
+            -0.3465487442605773,
+            -0.17699035139303432,
+            -0.07568500050708599,
+            0.9180687142384443
+          ],
+          "expected_position_error_cm": 4.08033170706332e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Middle1": {
+          "component_cm": [
+            14.055984245488805,
+            25.85225786806246,
+            14.112962056912389
+          ],
+          "quaternion_xyzw": [
+            -0.4966520222905206,
+            -0.12534536236692137,
+            -0.03580731439936202,
+            0.858104390574566
+          ],
+          "expected_position_error_cm": 4.495852361729634e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Elbow": {
+          "component_cm": [
+            -13.548056276432622,
+            5.1486776038062345,
+            14.094368870431149
+          ],
+          "quaternion_xyzw": [
+            0.7017217956152388,
+            -0.11767893671663604,
+            -0.5436893025016907,
+            0.4451293427274734
+          ],
+          "expected_position_error_cm": 1.6090980009645172e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Wrist": {
+          "component_cm": [
+            -13.547789176432836,
+            16.091197710869764,
+            15.73689011079737
+          ],
+          "quaternion_xyzw": [
+            0.6929417995785276,
+            -0.07582702215092024,
+            -0.29575738182113137,
+            0.6531535012590117
+          ],
+          "expected_position_error_cm": 5.11943489371367e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Ankle": {
+          "component_cm": [
+            7.478272095287302,
+            20.815947626255966,
+            -22.301209731566917
+          ],
+          "quaternion_xyzw": [
+            0.8964020410147209,
+            0.02306442328380065,
+            -0.0622046591061865,
+            0.4382487805216485
+          ],
+          "expected_position_error_cm": 2.3382514583713332e-07,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Ankle": {
+          "component_cm": [
+            -8.077452618123502,
+            17.849646608803386,
+            -22.154178977155738
+          ],
+          "quaternion_xyzw": [
+            0.8648894476940934,
+            0.008397663904986141,
+            -0.17999526216194733,
+            0.4685055262295177
+          ],
+          "expected_position_error_cm": 7.787681334253464e-07,
+          "expected_rotation_error_degrees": 0.0
+        }
+      }
+    },
+    {
+      "case": "UnrealReleaseLift",
+      "active_asset": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "seconds": 0.1,
+      "independent_evaluation": "Compressed, same mesh, component space",
+      "bones": {
+        "Pelvis": {
+          "component_cm": [
+            -5.878974889128585e-07,
+            3.210152272004053e-06,
+            0.0001678466796875
+          ],
+          "quaternion_xyzw": [
+            0.4163460567748034,
+            0.04062841218599825,
+            0.11034727452409848,
+            0.9015701703896488
+          ],
+          "expected_position_error_cm": 8.470329472543003e-22,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "Spine3": {
+          "component_cm": [
+            0.00011329120309611085,
+            0.662327823857215,
+            19.274436621231416
+          ],
+          "quaternion_xyzw": [
+            0.295978940312252,
+            0.026392978462827427,
+            0.06586551205106356,
+            0.9525553064792348
+          ],
+          "expected_position_error_cm": 5.756303795864313e-07,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Elbow": {
+          "component_cm": [
+            21.302979166316195,
+            5.917824794454392,
+            18.10810987554587
+          ],
+          "quaternion_xyzw": [
+            0.15782969898207017,
+            0.0988972874935659,
+            0.3168352998081374,
+            0.9300131748750297
+          ],
+          "expected_position_error_cm": 6.548367786804213e-07,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Wrist": {
+          "component_cm": [
+            18.665690377077084,
+            16.666606516504118,
+            21.99856644572339
+          ],
+          "quaternion_xyzw": [
+            -0.14072732529099743,
+            -0.5714621432341723,
+            -0.2692062025601879,
+            0.762335135796437
+          ],
+          "expected_position_error_cm": 5.468046995555487e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Middle1": {
+          "component_cm": [
+            18.51630038273008,
+            23.770229139138724,
+            23.491126698176476
+          ],
+          "quaternion_xyzw": [
+            -0.2576047816779081,
+            -0.5210979167109647,
+            -0.2907838036101994,
+            0.7599615235090232
+          ],
+          "expected_position_error_cm": 4.625357838603104e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Elbow": {
+          "component_cm": [
+            -20.774577841659934,
+            6.014440043255862,
+            19.871744389156078
+          ],
+          "quaternion_xyzw": [
+            0.4089845972497873,
+            0.12353597661820717,
+            -0.8108342994955426,
+            0.4000227499217863
+          ],
+          "expected_position_error_cm": 3.158930653292195e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Wrist": {
+          "component_cm": [
+            -18.666481422219093,
+            16.665997282142918,
+            22.00173975603824
+          ],
+          "quaternion_xyzw": [
+            0.5260557656493785,
+            0.2383895577605819,
+            -0.5850072799830437,
+            0.5693875943016337
+          ],
+          "expected_position_error_cm": 7.386609604650349e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Ankle": {
+          "component_cm": [
+            7.478306158961205,
+            20.814015158477304,
+            -22.30253656887116
+          ],
+          "quaternion_xyzw": [
+            0.8963801455335274,
+            0.02306604713281396,
+            -0.06218491775433421,
+            0.43829627897901036
+          ],
+          "expected_position_error_cm": 3.627884795406546e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Ankle": {
+          "component_cm": [
+            -8.077941458190288,
+            17.848251887887457,
+            -22.156554782929934
+          ],
+          "quaternion_xyzw": [
+            0.8649260780409997,
+            0.008391350586355317,
+            -0.17999102514510315,
+            0.46843963925693444
+          ],
+          "expected_position_error_cm": 3.874679211759143e-06,
+          "expected_rotation_error_degrees": 0.0
+        }
+      }
+    },
+    {
+      "case": "UnrealReleaseRetract",
+      "active_asset": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "seconds": 0.26666666666666666,
+      "independent_evaluation": "Compressed, same mesh, component space",
+      "bones": {
+        "Pelvis": {
+          "component_cm": [
+            -5.878974889128585e-07,
+            0.4431740641593934,
+            0.14772987365722656
+          ],
+          "quaternion_xyzw": [
+            0.4163460567748034,
+            0.04062841218599825,
+            0.11034727452409848,
+            0.9015701703896488
+          ],
+          "expected_position_error_cm": 1.1102230246251565e-16,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "Spine3": {
+          "component_cm": [
+            0.00011329120309625887,
+            1.1054986778643363,
+            19.421998648208955
+          ],
+          "quaternion_xyzw": [
+            0.295978940312252,
+            0.026392978462827427,
+            0.06586551205106356,
+            0.9525553064792348
+          ],
+          "expected_position_error_cm": 5.756303795864283e-07,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Elbow": {
+          "component_cm": [
+            20.7738371047858,
+            8.941212476404214,
+            19.48044847760204
+          ],
+          "quaternion_xyzw": [
+            0.28663490775512046,
+            0.07205300471833409,
+            -0.9508135341603983,
+            0.09274921791954571
+          ],
+          "expected_position_error_cm": 1.2547188579348113e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Wrist": {
+          "component_cm": [
+            19.43313004876407,
+            -2.3239688114908503,
+            16.492899627566807
+          ],
+          "quaternion_xyzw": [
+            -0.48637980137858294,
+            0.487988551547611,
+            -0.7008234753927289,
+            -0.1847926370498913
+          ],
+          "expected_position_error_cm": 7.839176624037997e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Middle1": {
+          "component_cm": [
+            17.47194234437292,
+            -8.60563351573661,
+            13.425989264677469
+          ],
+          "quaternion_xyzw": [
+            -0.48637980137858294,
+            0.487988551547611,
+            -0.7008234753927289,
+            -0.1847926370498913
+          ],
+          "expected_position_error_cm": 1.2293212171018548e-05,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Elbow": {
+          "component_cm": [
+            -21.139879458248064,
+            7.091165629046171,
+            22.04977962829213
+          ],
+          "quaternion_xyzw": [
+            -0.2535400917482291,
+            -0.5610231459784809,
+            -0.6885440112378738,
+            -0.38324612997546026
+          ],
+          "expected_position_error_cm": 3.3105875623941567e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Wrist": {
+          "component_cm": [
+            -19.43059293790087,
+            -2.323218663543772,
+            16.492412412363223
+          ],
+          "quaternion_xyzw": [
+            -0.14835036593498077,
+            -0.4642336879816779,
+            -0.8609563722419051,
+            -0.14571676967990355
+          ],
+          "expected_position_error_cm": 2.5649052261183698e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "L_Ankle": {
+          "component_cm": [
+            7.478306158961205,
+            21.257186012484425,
+            -22.154974541893623
+          ],
+          "quaternion_xyzw": [
+            0.8963801455335274,
+            0.02306604713281396,
+            -0.06218491775433421,
+            0.43829627897901036
+          ],
+          "expected_position_error_cm": 3.627884795406546e-06,
+          "expected_rotation_error_degrees": 0.0
+        },
+        "R_Ankle": {
+          "component_cm": [
+            -8.07794145819029,
+            18.29142274189458,
+            -22.008992755952395
+          ],
+          "quaternion_xyzw": [
+            0.8649260780409997,
+            0.008391350586355317,
+            -0.17999102514510315,
+            0.46843963925693444
+          ],
+          "expected_position_error_cm": 3.874679211801778e-06,
+          "expected_rotation_error_degrees": 0.0
+        }
+      }
+    }
+  ],
+  "existing_protected_files_unchanged": 148,
+  "execution": {
+    "owned_pid": 85900,
+    "exit_code": 0,
+    "log_path": ".agent/local/PilotGripPreview4.log",
+    "log_sha256": "fe465080c3ac4c4d7ffa6ca85a173285ed068416b6d3e16ffc86fef9ae73d512",
+    "scripts_sha256": {
+      "Scripts/AuthorGripFit.py": "bb2dad3a6796532f94025ef86f600d8148aee0c049f5442897ea526e946332fc",
+      "Scripts/AuthorPilotGripFit.py": "7d293eb5672f236f9c6bd01d4cf4838bb3876fe2565cf19e3f696258edf42c2e",
+      "Scripts/ValidatePilotGripFit.py": "1eb231615cfcc49110c9379259cdc7318ff58a89d809bc89c4a957bbf467b4b8"
+    },
+    "note": "These hashes identify the executed revisions before subsequent readability-only cleanup of the pair importer/validator."
+  },
+  "visual_review": [
+    "Actual repaired left palm is down and curled around the upper control region; initial contact intersections remain, so this is not exact grasp certification.",
+    "Release samples visibly lift the hands and retract them, consistent with native socket assertions. Hands rise briskly; the far hand becomes partly occluded behind the torso in the retract view.",
+    "Four stock-actor stills do not validate live-phase snapshot blending, gameplay actor travel, continuous clearance, perceptual motion quality or owner art acceptance."
+  ],
+  "residency_receipt_sha256": "0b337c761a954b79042753ff8677c322b5aef43cfc66b1ba5cde08a99f8e5161"
+}

@@ -1,0 +1,384 @@
+{
+  "status": "HISTORICAL_CAPTURE_INTEGRITY_VERIFIED_VISUAL_CHECKPOINT_COVERAGE_PARTIAL",
+  "audited_utc": "2026-09-13T12:10:08.076007+00:00",
+  "capture_root": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30",
+  "evidence_type": "RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY",
+  "scenario": "Station5",
+  "process": {
+    "id": 83868,
+    "mode": "UncookedEditorGame",
+    "exit": 0,
+    "started_utc": "2026-09-13T11:49:32.7569541Z",
+    "finished_utc": "2026-09-13T11:52:23.9434511Z",
+    "normal_shutdown_log_timestamp": "2026.09.13-11.52.21:247"
+  },
+  "source_and_binary_binding": {
+    "captured_head": "2e4ad847ec4424ca11f50f7e60d96776921e4793",
+    "captured_dirty_entries": 22,
+    "captured_source_content_files": 155,
+    "source_before_equals_result_snapshot": true,
+    "captured_source_sha256": "5f915e73b1f977581d9f0ca611a9496bca3e703b9a7059a4358930727dd5bb0a",
+    "capture_wrapper_source_unchanged": true,
+    "capture_wrapper_artifacts_unchanged": true,
+    "artifacts": [
+      {
+        "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+        "bytes": 512952,
+        "sha256": "6F9C95C131F37CBDC384ADE02FCF6ED828BAA366B25234D0D85E212244CAC9AA"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+        "bytes": 1590272,
+        "sha256": "12B8F44BE44F056361F9334D6BD9B76114ADE0ED8C4A335C2E5F5A6D387DFDD2"
+      }
+    ],
+    "independent_initial_postcapture_check": "All 155 current source/content files and both current artifacts matched the capture snapshot on the initial read-only pass, before later root changes.",
+    "postcapture_changes": "Root subsequently changed SSFlightAutomationTests.cpp, SSGameMode.cpp and SSShip.cpp, rebuilt DLL fd6c66a33b225b453745a0df96a2d1c0fcca4d5875ae0034641942d512ea1e57, and ran a separate 24-test suite. These later sources/binary are outside this historical capture. Current-file mismatch is expected; this receipt makes no current-binary claim.",
+    "limits": [
+      "Uncooked dirty worktree fixture; not a clean-commit or packaged-build validation.",
+      "HEAD alone does not establish compilation. The exact captured DLL matches the lead-provided historical tested hash; raw automation JSON does not embed a DLL hash."
+    ],
+    "historical_build": {
+      "path": ".agent/local/VisualIntegrationEditor3.log",
+      "sha256": "1dbc546b563bda8893654a467f141271a4779e1c5a034dc0ebf35f25bea69d88",
+      "result": "Succeeded",
+      "execution_seconds": 5.51
+    },
+    "historical_tests": {
+      "path": ".agent/local/VisualIntegration-tests.json",
+      "sha256": "956a915f014bf41376eea1e716ff3bbd80c3d9d2c166d9995b97905e4761d9fa",
+      "created": "2026.09.13-11.44.31",
+      "succeeded": 23,
+      "warnings": 0,
+      "failed": 0,
+      "not_run": 0,
+      "tested_dll_sha256_from_lead": "12b8f44be44f056361f9334d6bd9b76114ade0ed8c4a335c2e5f5a6d387dfdd2"
+    }
+  },
+  "isolation": {
+    "token": "5b79fefe839d498880e876405b982b30",
+    "evidence_files_hash_verified": 19,
+    "production_before_equals_after": true,
+    "production_files_currently_rechecked": 2,
+    "production_save_records": [
+      {
+        "directory": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames",
+        "exists": true,
+        "files": [
+          {
+            "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Account_v1.sav",
+            "bytes": 2233,
+            "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+          },
+          {
+            "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Suspend_v1.sav",
+            "bytes": 1989,
+            "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+          }
+        ]
+      },
+      {
+        "directory": "C:\\Users\\j6sis\\AppData\\Local\\SpaceSurvival\\Saved\\SaveGames",
+        "exists": false,
+        "files": []
+      }
+    ],
+    "fixture_save_directory_empty": true,
+    "fixture_marked_frames": 16358,
+    "all_marked_frames_foreground": true,
+    "foreground_limit": "CSV application-foreground counter; not physical-input or user-attention evidence."
+  },
+  "simulation_stage_coverage": {
+    "Flight": {
+      "marked_frames": 7131,
+      "simulation_seconds": 59.9205761
+    },
+    "Breathing": {
+      "marked_frames": 694,
+      "simulation_seconds": 5.7906252
+    },
+    "Wormhole": {
+      "marked_frames": 959,
+      "simulation_seconds": 8.0045434
+    },
+    "Climax": {
+      "marked_frames": 4765,
+      "simulation_seconds": 40.0047294
+    },
+    "Approach": {
+      "marked_frames": 742,
+      "simulation_seconds": 6.5093632
+    },
+    "Docking": {
+      "marked_frames": 320,
+      "simulation_seconds": 3.0047225
+    },
+    "AuthoredExit": {
+      "marked_frames": 30,
+      "simulation_seconds": 2.3509878
+    },
+    "StationIdle": {
+      "marked_frames": 1717,
+      "simulation_seconds": 15.0004268
+    }
+  },
+  "simulation_duration_limit": "Ordinary configured phase durations exercised; AuthoredExit stage samples total 2.3509878 s before the 2.4 s clip handoff. Screenshot stalls perturb real timing; no performance inference.",
+  "visual_requests": [
+    {
+      "name": "Flight",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Flight.png",
+      "bytes": 2419776,
+      "sha256": "2d0210ce8300d359c0d6005b4f01828f5797a48b495837da311247b5fbe8293b",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 2860,
+      "request_stage_seconds": 15.004066467285156,
+      "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "animation_seconds": 3.0124316215515137,
+      "request_log_timestamp": "2026.09.13-11.50.14:656",
+      "screenshot_trace_timestamp": "2026.09.13-11.50.15:022"
+    },
+    {
+      "name": "Climax",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Climax.png",
+      "bytes": 2706344,
+      "sha256": "4550b9ded45b4744a7ff4fdfdcc900c8f409f1f5f92cc0078af31b0a0e70df7d",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 10446,
+      "request_stage_seconds": 5.00408411026001,
+      "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "animation_seconds": 2.728313684463501,
+      "request_log_timestamp": "2026.09.13-11.51.18:554",
+      "screenshot_trace_timestamp": "2026.09.13-11.51.18:584"
+    },
+    {
+      "name": "Approach",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Approach.png",
+      "bytes": 2920336,
+      "sha256": "2289170be7b3142b484ce14009db9c1dc1ccd524832121f90278930abbf47a26",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 14730,
+      "request_stage_seconds": 1.0018601417541504,
+      "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "animation_seconds": 2.730888605117798,
+      "request_log_timestamp": "2026.09.13-11.51.54:557",
+      "screenshot_trace_timestamp": "2026.09.13-11.51.54:589"
+    },
+    {
+      "name": "Docking",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Docking.png",
+      "bytes": 4850226,
+      "sha256": "83764544f79a1ad10ad563a9d277304a10c68229bf307b3637c6acf0e134c118",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15473,
+      "request_stage_seconds": 1.0002541542053223,
+      "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "animation_seconds": 1.238655686378479,
+      "request_log_timestamp": "2026.09.13-11.52.01:065",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.01:097"
+    },
+    {
+      "name": "Exit0",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Exit0.png",
+      "bytes": 4883895,
+      "sha256": "e3aece2518cc2a45980994f4f4d92ebfc561137cccc3a3cc96fbfa68ef51dc4c",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15674,
+      "request_stage_seconds": 0.008333399891853333,
+      "animation": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "animation_seconds": 0.008333399891853333,
+      "request_log_timestamp": "2026.09.13-11.52.03:090",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.03:126",
+      "nominal_trigger_seconds": 0,
+      "trigger_lateness_seconds": 0.008333399891853333
+    },
+    {
+      "name": "Exit1",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Exit1.png",
+      "bytes": 4580028,
+      "sha256": "e53d68f84feee8ca4fbb56c0d2898146bb42091f6ec0954875376ff1b7a115ff",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15675,
+      "request_stage_seconds": 0.408333420753479,
+      "animation": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "animation_seconds": 0.408333420753479,
+      "request_log_timestamp": "2026.09.13-11.52.03:478",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.03:514",
+      "nominal_trigger_seconds": 0.1,
+      "trigger_lateness_seconds": 0.308333420753479
+    },
+    {
+      "name": "Exit2",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Exit2.png",
+      "bytes": 4341983,
+      "sha256": "9818f277e6e990c7894cb656e743c12afecdf6354d1cb5d58dd3420c9cec519f",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15676,
+      "request_stage_seconds": 0.7938718199729919,
+      "animation": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "animation_seconds": 0.7938718199729919,
+      "request_log_timestamp": "2026.09.13-11.52.03:863",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.03:899",
+      "nominal_trigger_seconds": 0.27,
+      "trigger_lateness_seconds": 0.5238718199729919
+    },
+    {
+      "name": "Exit3",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Exit3.png",
+      "bytes": 4226441,
+      "sha256": "ef4ba858a88ee16d44364aa8833adba3b3de29564b634ca1cef4b64e762be1db",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15677,
+      "request_stage_seconds": 1.1506638526916504,
+      "animation": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "animation_seconds": 1.1506638526916504,
+      "request_log_timestamp": "2026.09.13-11.52.04:220",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.04:252",
+      "nominal_trigger_seconds": 0.82,
+      "trigger_lateness_seconds": 0.33066385269165044
+    },
+    {
+      "name": "Exit4",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Exit4.png",
+      "bytes": 4625604,
+      "sha256": "b8cdb7e966df678f26cbfc57a618de702d37621a2ed951c40574c72d72a6355f",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15678,
+      "request_stage_seconds": 1.486674189567566,
+      "animation": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "animation_seconds": 1.486674189567566,
+      "request_log_timestamp": "2026.09.13-11.52.04:556",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.04:587",
+      "nominal_trigger_seconds": 1.2,
+      "trigger_lateness_seconds": 0.28667418956756596
+    },
+    {
+      "name": "Exit5",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Exit5.png",
+      "bytes": 4847566,
+      "sha256": "d2c7f5b599f408275ab8a12b62eb0e3e2e0cf7a2a56c24738cbdf59e7c32ae33",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15679,
+      "request_stage_seconds": 1.8222869634628296,
+      "animation": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "animation_seconds": 1.8222869634628296,
+      "request_log_timestamp": "2026.09.13-11.52.04:892",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.04:925",
+      "nominal_trigger_seconds": 1.65,
+      "trigger_lateness_seconds": 0.17228696346282968
+    },
+    {
+      "name": "Exit6",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/Exit6.png",
+      "bytes": 4738163,
+      "sha256": "17c91a062b670fcbefec786b42aa30bf9f1b539327e1815c7ebf7cceb0d0e89e",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15703,
+      "request_stage_seconds": 2.3509879112243652,
+      "animation": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "animation_seconds": 2.3509879112243652,
+      "request_log_timestamp": "2026.09.13-11.52.05:420",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.05:452",
+      "nominal_trigger_seconds": 2.35,
+      "trigger_lateness_seconds": 0.0009879112243651456
+    },
+    {
+      "name": "StationIdle",
+      "path": "Artifacts/EndgameSoak/5b79fefe839d498880e876405b982b30/StationIdle.png",
+      "bytes": 5261180,
+      "sha256": "b3b4d9b86aefe70ad0527fc0c5f776f8548a91ddbfedc7f4822f285b33d46f5f",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "mode": "RGBA",
+      "request_frame": 15903,
+      "request_stage_seconds": 2.001849412918091,
+      "animation": "/Game/SpaceSurvival/Character/A_Walk.A_Walk",
+      "animation_seconds": 0.3083333373069763,
+      "request_log_timestamp": "2026.09.13-11.52.07:423",
+      "screenshot_trace_timestamp": "2026.09.13-11.52.07:457"
+    }
+  ],
+  "request_render_binding_limit": "Each request has a same-named native screenshot trace and verified PNG. Request-frame animation/socket metadata precedes viewport rendering/readback; it is not a pixel-level proof of the exact rendered bone pose or continuous motion.",
+  "texture_residency": {
+    "station_idle_blocks": 1,
+    "hero_texture": "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0",
+    "maximum_and_current_dimensions": [
+      2048,
+      2048
+    ],
+    "current_kib": 2752,
+    "timestamp": "2026.09.13-11.52.07:423",
+    "limit": "Single post-exit ListTextures observation; earlier screenshots have no per-image residency proof."
+  },
+  "visual_observations": [
+    "Independently viewed Docking, Exit0 through Exit6, and StationIdle native PNGs. Docking and early exit retain the rear ship composition; later views follow the character toward the deck. Stills cannot prove camera-cut continuity or smoothness.",
+    "Exit0 through Exit2 largely hide palms, cuffs and upper-body release behind the curled tail and seat. The live-pose blend and physical grasp cannot be visually accepted from these angles.",
+    "Exit3 at 1.150664 s visibly shows the airborne character left of the ship; Exit4 at 1.486674 s shows descent. Exit5 and Exit6 show the landed region; the subtitle obscures part of the lower body.",
+    "StationIdle shows the character beside the ship and reports A_Walk at 0.308333 s. The walking/running/shell footer is present there and absent during Exit0 through Exit6; this is a visible prompt gate, not a physical-input or service-interaction test.",
+    "Precise visible-sole contact cannot be measured from these perspective stills. Separate historical AuthoredDisembark CPU-skinned checks report 203227 vertices with contact clearance -0.016462 cm and walk-handoff clearance -0.012915 cm; those are separate regression evidence.",
+    "The historical arrival subtitle says A solid floor. I missed that. while seated and airborne and obscures lower-body action. Root subsequently changed it to Docked. Easy on the way down.; that correction is unseen here.",
+    "The segmented curled-tail band and coarse rear silhouette remain conspicuous. Green CSV profiling text appears in the images and Exit0 contains an editor animation-preparation notification. These are diagnostic uncooked captures, not clean presentation images."
+  ],
+  "coverage_limits": [
+    "All 12 named image files exist, but nominal exit checkpoints are not evenly captured. Actual Exit times are 0.008333, 0.408333, 0.793872, 1.150664, 1.486674, 1.822287 and 2.350988 s because screenshot readbacks delay later requests.",
+    "Only Exit0 samples inside the initial 0.18 s live-pose blend. The intended 0.10 and 0.27 s early checkpoints were overshot; no full blend, finger-release or natural-motion acceptance.",
+    "Seeded end of Wave4; starter/RapidLaser, Tier V, OverdriveCooling, base durability50000. Normal Wave5, 8s wormhole,40s climax, ordinary bounded steering to port, actual docking and2.4s exit,15s stationary hub. No forced docking/teleport, menu purchases, physical input, natural progression/balance or representative FPS acceptance.",
+    "The capture does not establish controller/keyboard feel, natural ten-wave balance, service interactions, owner art approval, continuous animation quality or replay appeal."
+  ],
+  "performance_finding": false,
+  "performance_exclusion": "Normal viewport screenshot readbacks materially perturb frame timing. No FPS, frame-time baseline or representative performance claim is made from this capture.",
+  "receipt_hashes": {
+    "result.json": "b504cc2162e369817307681e3abacf55275bd684ea096e9638efd4104a04cee9",
+    "fixture.json": "68d9767fd2a24b2a7a6caa7aeb8b66c89425d474c0c82a12c7cc890256b5367e",
+    "source-before.json": "5f915e73b1f977581d9f0ca611a9496bca3e703b9a7059a4358930727dd5bb0a",
+    "production-before.json": "d11e4f7c34188ba5d03cf5b2d86d82f3599a6853bec72c73b81f7d4b2186979f",
+    "Rendered.log": "c308cf58d91a323a6b3738f707a0aa6ad892e0f606b42a588843149c1fbc95df",
+    "Endgame.csv": "98cff3f441203b00eef98772d4773a535f7f792698ab70fdd8b1f7ecd4c244c9",
+    "performance.json": "9435415ab84245736a80798905da89a71b6854e34d8ccf4417af8244823b5111"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "status": "FAILED_NATIVE_PREVIEW",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "errors": [
+    "AnimSingleNodeInstance: Failed to find property 'current_asset' for attribute 'current_asset' on 'AnimSingleNodeInstance'"
+  ],
+  "clips": [
+    {
+      "path": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "seconds": 4.0,
+      "skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+      "root_motion": false,
+      "force_root_lock": false,
+      "source_sha256": "7fa10daaad36a08545191d7029e19efd0e8bf97bb10711afc58fbf429118cbdd",
+      "package_sha256": "5184434996865dd8831ec50f50722d73fa24f9feef7953d22e38c2c8342c8a45",
+      "package_bytes": 386697
+    },
+    {
+      "path": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "seconds": 2.4000000953674316,
+      "skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+      "root_motion": false,
+      "force_root_lock": false,
+      "source_sha256": "8e747c569a6bb000be9d947110fd0bf919fdb7534a9ea986684c3b5f1ea496ec",
+      "package_sha256": "13192da7a3001faaa885229bf714f2a2d1331361c91e3faf4ceb08aa681c53fc",
+      "package_bytes": 454726
+    }
+  ],
+  "limits": [
+    "New candidate clips only; runtime selection unchanged",
+    "Native rendered combined pose review is separate",
+    "Initial seated skin/grip intersections and existing fur/claw limitations remain"
+  ],
+  "protected_existing_files_unchanged": 148,
+  "grip": {
+    "mesh": "/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit",
+    "bounds_cm": [
+      [
+        -244.79998779296875,
+        -142.78431701660156,
+        -65.3775405883789
+      ],
+      [
+        209.99998474121094,
+        142.78431701660156,
+        97.80007934570312
+      ]
+    ],
+    "triangles": 134622,
+    "vertices": 79448,
+    "material_sections": 9,
+    "collision_enabled": "NoCollision",
+    "slots": [
+      {
+        "slot": "AC01_GraphiteStructure",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.M_AcornV2_GraphiteStructure"
+      },
+      {
+        "slot": "AC01_WarmCeramic",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.M_AcornV2_WarmCeramic"
+      },
+      {
+        "slot": "AC01_IvoryPanels",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.M_AcornV2_IvoryPanels"
+      },
+      {
+        "slot": "AC01_BurnishedBronze",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.M_AcornV2_BurnishedBronze"
+      },
+      {
+        "slot": "AC01_ChampagneEdges",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.M_AcornV2_ChampagneEdges"
+      },
+      {
+        "slot": "AC01_MachinedTitanium",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.M_AcornV2_MachinedTitanium"
+      },
+      {
+        "slot": "AC01_IonAndNav",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav.M_AcornV2_IonAndNav"
+      },
+      {
+        "slot": "AC01_CockpitPadding",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.M_AcornV2_CockpitPadding"
+      },
+      {
+        "slot": "AC01_Windscreen",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen.M_AcornV2_Windscreen"
+      }
+    ]
+  },
+  "comparison": "Before is original grip/Pilot; After is candidate grip/Pilot. Same camera, lighting, mesh mount and forced hero texture residency; both geometry and pose intentionally change.",
+  "hero_material_used_texture_paths": [
+    "/InterchangeAssets/gltf/Textures/T_Generic_N.T_Generic_N",
+    "/InterchangeAssets/gltf/Textures/T_White_srgb.T_White_srgb",
+    "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0",
+    "/InterchangeAssets/gltf/Textures/T_White_Linear.T_White_Linear"
+  ],
+  "temporary_hero_residency": {
+    "texture_paths": [
+      "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0"
+    ],
+    "seconds": 120,
+    "wait_before_each_capture_seconds": 10,
+    "asset_streaming_flags_saved": false,
+    "proof": "Hero ListTextures lines before each screenshot are bound in MatchedResidency.json"
+  },
+  "images": [],
+  "existing_protected_files_unchanged": 148
+}

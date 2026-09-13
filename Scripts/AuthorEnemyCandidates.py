@@ -5,11 +5,13 @@ Use a fresh UnrealEditor-Cmd process, then ValidateEnemyCandidates.py separately
 import hashlib
 import json
 import math
+import runpy
 from pathlib import Path
 
 import unreal as u
 
 ROOT = Path(__file__).resolve().parents[1]
+source_matches = runpy.run_path(str(ROOT / "Scripts/SourceDigests.py"))["matches"]
 SOURCE = ROOT / "ContentSource/EnemyCandidates"
 OUTPUT = ROOT / "Saved/Validation/EnemyCandidates"
 BASE = "/Game/SpaceSurvival"
@@ -50,7 +52,7 @@ def checked_source():
     assert set(item["name"] for item in report["materials"]) == set(MATERIALS)
     for item in report["assets"]:
         assert 8000 <= item["triangles"] <= 20000 and len(item["materials"]) == 4 and item["uv_layers"] == 1
-        assert sha(SOURCE / (item["name"] + ".obj")) == item["obj_sha256"]
+        assert source_matches(SOURCE / (item["name"] + ".obj"), item["obj_sha256"])
         assert sha(SOURCE / (item["name"] + ".glb")) == item["glb_sha256"]
         match = next(row for row in checked["assets"] if row["name"] == item["name"])
         assert match["obj_sha256"] == item["obj_sha256"] and match["glb_sha256"] == item["glb_sha256"]
@@ -59,20 +61,9 @@ def checked_source():
         assert all(math.isfinite(v) for v in item["base_color"] + [item["metallic"], item["roughness"], item["emission"]])
         assert len(item["base_color"]) == 4 and all(0 <= v <= 1 for v in item["base_color"])
         assert 0 <= item["metallic"] <= 1 and 0 <= item["roughness"] <= 1 and 0 <= item["emission"] <= 3
-    # The original execution receipts retain raw CRLF OBJ hashes. Git now stores
-    # OBJ as LF; accept that exact newline-only representation on fresh checkouts.
-    normalized_obj = {
-        "ContentSource/Meshes/SM_Pursuer.obj": "4769934d6a4afbbeb08ccba4225b5892552eb298b805e9f9baf2bdd82b5e7b2a",
-        "ContentSource/Meshes/SM_Flanker.obj": "df6c6756ed0d48fb90e0954b82d30e18af9af06ba647117873ae328c26179999",
-    }
     for path, digest in report["protected_sha256"].items():
         relative = path.replace("\\", "/")
-        content = (ROOT / relative).read_bytes()
-        if relative in normalized_obj:
-            actual = hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
-            assert actual == normalized_obj[relative], "Protected OBJ geometry changed: " + relative
-        else:
-            assert hashlib.sha256(content).hexdigest() == digest, "Protected original changed: " + relative
+        assert source_matches(ROOT / relative, digest), "Protected original changed: " + relative
     return report
 
 

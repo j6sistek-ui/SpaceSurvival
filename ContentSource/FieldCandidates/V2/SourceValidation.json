@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-13T10:49:10.753004+00:00",
+  "status": "V2_CPU_SOURCE_READY_UNIMPORTED_UNRENDERED",
+  "reason": "Lead rejected V1 opaque cage after native interior review; preserve V1 evidence and test a separate thinner additive candidate.",
+  "source_report_sha256": "1d40f9b5ee014879336fd00fcb5c44acc96b6024d5d17597c024962b4af083f8",
+  "source_checks": {
+    "meshes": [
+      {
+        "name": "SM_ElectricalFieldCandidateV2",
+        "triangles": 3168,
+        "roles": [
+          0,
+          1,
+          2
+        ],
+        "minimum_area_cm2": 0.0011696399760088242,
+        "radius_cm": 100,
+        "sections": 1
+      },
+      {
+        "name": "SM_GravityFieldCandidateV2",
+        "triangles": 4740,
+        "roles": [
+          0,
+          1
+        ],
+        "minimum_area_cm2": 0.002024999966141825,
+        "radius_cm": 100,
+        "sections": 1
+      }
+    ],
+    "protected_hashes": 16,
+    "limits": "Actual OBJ geometry/UV/normal/provenance checks only; Unreal import/rendering is outside this source check."
+  },
+  "python_ast_files": 5,
+  "author_allowlist_matches_generated_assets": true,
+  "originals_preserved_count": 16,
+  "historical_runtime_git": {
+    "base": "ccfc91400ca10168dba7471fa5a2f3c888a32d6e",
+    "sha256": {
+      "Source/SpaceSurvival/Private/SSWorldActors.cpp": "5a905c659ab07b430f82f6661799938784d0a7aff45734d1a71505875e696c6c",
+      "Source/SpaceSurvival/Public/SSContentTypes.h": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141"
+    }
+  },
+  "blender_generation_exit_code": 0,
+  "blender_generation_seconds": 2.1413027,
+  "blender_warning": "Material.use_nodes deprecation for Blender6.0; no generation failure.",
+  "script_sha256": {
+    "ContentSource/FieldCandidates/V2/Generate.py": "15315a7c9059f92a20086fc737fec32b2c44bf338cf97d77300c51495bba5e90",
+    "ContentSource/FieldCandidates/V2/CheckSource.py": "f3da9c76b856439b76dc6fc2364917ec63512d00567f322701547bacbb3713c5",
+    "Scripts/AuthorFieldCandidatesV2.py": "197a214cc43836ad5d506192082519f4b535a2dde78053cd061358cbc07f3cc3",
+    "Scripts/ValidateFieldCandidatesV2.py": "eedc6f62278bf9eca85a6d515028312513f43f27dcfbcfca9ab088df060c5a36",
+    "Scripts/PreviewFieldCandidatesV2.py": "f5fd525a2bfb22f3aeb591900bf9aa799d43c404e13d847db5659cdf6e34db6a"
+  },
+  "shader_sha256": {
+    "ElectricalField.hlsl": "e4aa9f5f902493297c6a17a8c1449de85b3e5929ed9fedb263d88a1bd55e5fa0",
+    "GravityField.hlsl": "cb5d3bddc7b5b752e90cb731382463eb9729cab80c183c3ea31473cb904523e6"
+  },
+  "limits": [
+    "No V2 Content assets/import/compile/native render exists yet.",
+    "No actual V2 material cost or readability measurements.",
+    "Additive overlap, thin-line aliasing, boundary visibility and busy-wave readability require fresh engine validation.",
+    "No Source/Config/DA/runtime refs changed. V1 preserved.",
+    "No independent pulse/force clock, no WPO/refraction/depth-test disable/global bloom changes."
+  ]
+}

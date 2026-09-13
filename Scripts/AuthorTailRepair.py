@@ -1,8 +1,10 @@
 """Import the separately reviewed tail-only v2 repair; original content untouched."""
 import hashlib,json
+import runpy
 from pathlib import Path
 import unreal as u
 ROOT=Path(__file__).resolve().parents[1]
+source_matches = runpy.run_path(str(ROOT / "Scripts/SourceDigests.py"))["matches"]
 BASE='/Game/SpaceSurvival/Character'
 TARGET=BASE+'/SK_AcornautTailV2'
 LIB=u.EditorAssetLibrary
@@ -16,8 +18,8 @@ def verify_source():
     source=ROOT/'ContentSource/Animation/TailCandidateV2.glb';manifest=json.loads(source.with_suffix('.json').read_text(encoding='utf-8'))
     assert digest(source)==manifest['sha256'],'Tail source differs from reviewed manifest'
     for name,expected in manifest['protected_sources'].items():assert digest(ROOT/name)==expected,'Protected character source changed: '+name
-    assert digest(ROOT/'ContentSource/TailCandidateV2Preview/RaySelection.json')==manifest['ray_selection_sha256']
-    assert digest(ROOT/'ContentSource/TailCandidateV2Preview/RaySelectionResidual.json')==manifest['residual_selection_sha256']
+    assert source_matches(ROOT/'ContentSource/TailCandidateV2Preview/RaySelection.json',manifest['ray_selection_sha256'])
+    assert source_matches(ROOT/'ContentSource/TailCandidateV2Preview/RaySelectionResidual.json',manifest['residual_selection_sha256'])
     return source,manifest
 
 

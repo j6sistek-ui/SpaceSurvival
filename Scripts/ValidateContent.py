@@ -29,8 +29,9 @@ def main():
         except Exception as error:
             record["errors"].append(f"{label}: {error}")
 
-    meshes = json.loads((ROOT / "ContentSource/Meshes/manifest.json").read_text())
-    sounds = json.loads((ROOT / "ContentSource/Audio/manifest.json").read_text())
+    checked("Portable source integrity", lambda: runpy.run_path(str(ROOT / "ContentSource/ValidateSources.py"))["validate"](output_path=None))
+    meshes = json.loads((ROOT / "ContentSource/Meshes/manifest.json").read_text(encoding="utf-8"))
+    sounds = json.loads((ROOT / "ContentSource/Audio/manifest.json").read_text(encoding="utf-8"))
     mesh_tools = u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 
     def validate_material(name):
@@ -143,9 +144,13 @@ def main():
     checked("Space panorama", validate_panorama)
     checked("Photographic asteroid surfaces", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateRockPhotographic.py"))["main"](verify_adoption=True))
     checked("Enemy meshes and selection", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateEnemyCandidates.py"))["main"](verify_adoption=True))
+    checked("Field meshes and selection", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateFieldCandidatesV3.py"))["main"](verify_adoption=True))
     checked("Authored Acorn ship", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateAcornShip.py"), run_name="__main__"))
     checked("Preserved hero", validate_hero)
     checked("Reviewed tail repair", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateTailRepair.py"), run_name="__main__"))
+    checked("Fitted starter grips", lambda: runpy.run_path(str(ROOT / "Scripts/AuthorGripFit.py"))["main"](validate_only=True))
+    checked("Swift hull", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateSwiftCandidate.py"))["main"]())
+    checked("Paired pilot and release", lambda: runpy.run_path(str(ROOT / "Scripts/ValidatePilotGripFit.py"))["main"]())
     def validate_scene():
         runpy.run_path(str(ROOT / "Scripts/ValidateScene.py"), run_name="__main__")
         data = required(BASE + "/Data/DA_Phase1", u.SSPhase1Data)

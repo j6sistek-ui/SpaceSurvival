@@ -1,0 +1,57 @@
+{
+  "status": "SEPARATE_GRIP_FRESH_RELOAD_AND_NATIVE_PAIR_VERIFIED_PENDING_RUNTIME",
+  "source_parts_changed": [
+    "Pilot control grip -1",
+    "Control illumination -1",
+    "Pilot control grip 1",
+    "Control illumination 1"
+  ],
+  "other_parts_unchanged": 181,
+  "native_package": {
+    "file": "Content\\SpaceSurvival\\Meshes\\SM_AcornShipGripFit.uasset",
+    "bytes": 1901173,
+    "sha256": "ea9823aab8c742deed6513c54c985fc9ecd913b8f0d0f20c42090a97dda73d30"
+  },
+  "original_assets_unchanged_during_import_and_preview": 128,
+  "source_fingerprint_scope": "Evaluated geometry, triangle material IDs, corner normals, world matrices and material names for each unchanged authored part.",
+  "limits": [
+    "First native Before/After images have different character texture residency; not a matched visual A/B.",
+    "Anatomical L_Wrist remains visibly palm-up/open. Fixed grip fit is not a grasp animation.",
+    "Terminal-ring ray sampling is not full cap/solid-mesh intersection validation.",
+    "Static grip vs breathing produces sub-centimetre gap and penetration envelopes.",
+    "New paired Exit sampled clearance is recorded separately in PilotGripPoseCandidate; old native requested-time images are invalid because the initial pose persisted.",
+    "Fresh editor reload passed in UE85900 and the combined native pose comparison has independent socket assertions.",
+    "Candidate is unselected by runtime and has no performance or owner art acceptance."
+  ],
+  "contact_cm": {
+    "R": {
+      "pilot0": [
+        -0.113528819,
+        0.233360322
+      ],
+      "full121": [
+        -0.629245,
+        0.778741
+      ]
+    },
+    "L": {
+      "pilot0": [
+        -0.038959,
+        0.090408
+      ],
+      "full121": [
+        -0.542455,
+        0.616642
+      ]
+    }
+  },
+  "evidence_sha256": {
+    "Report.json": "05ab307122936420a5d6b0c33214e8a289e67d5ade8091b3b4a99e71bebc5cfc",
+    "ContactMeasurement.json": "acdee97274ca51167671a2027ab240892bed6a5cd34087d6142fa826cc7bf4dd",
+    "ContactValidation.json": "a4893a2f49732ee44b55e86ac56693b012ec95d4715f89cf945ddc3fa12769b1",
+    "UnrealImport.json": "f2fa464d2ba6c915b7be3f23151b7e45a95604a12d1b08e0b5ca1626b985cd44",
+    "UnrealPreview.json": "180bacd37b746c0bae2b4816b1152d79a44f0ad80b5d1b36fe458b65fbd1c6b6",
+    "UnrealPersisted.json": "6870839b921bf86eb5da10d807d0d02667af739e07e7c0c8fb7e210fd3e85249",
+    "UnrealPairedPreview.json": "bbfee84e1614bf31d7f0c0dcec8fe065f9b1f97ddf304fd447822bd2be38c3a1"
+  }
+}

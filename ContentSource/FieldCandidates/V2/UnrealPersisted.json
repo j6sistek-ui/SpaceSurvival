@@ -1,0 +1,124 @@
+{
+  "status": "FIELD_CANDIDATES_PERSISTED_CONTRACT_VERIFIED_NOT_VISUAL_ACCEPTANCE",
+  "errors": [],
+  "meshes": [
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV2.SM_ElectricalFieldCandidateV2",
+      "triangles": 3168,
+      "render_vertices": 2466,
+      "material_sections": 1,
+      "uv_channels": 1,
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "bounds_extent_cm": [
+        100.0,
+        100.0,
+        100.0
+      ],
+      "material": "/Game/SpaceSurvival/Materials/M_ElectricalFieldCandidateV2.M_ElectricalFieldCandidateV2",
+      "source_key": "d2759e83cc4daaad8b6976889c462110c6fcf89cf270fdb3628ecc1ea0a354b3",
+      "shader_sha256": "e4aa9f5f902493297c6a17a8c1449de85b3e5929ed9fedb263d88a1bd55e5fa0",
+      "simple_collision_count": 0,
+      "collision_profile": "NoCollision",
+      "additive_edge_opacity": true,
+      "no_mask_WPO_refraction": true,
+      "depth_test_enabled": true,
+      "material_statistics": {
+        "num_vertex_shader_instructions": 278,
+        "num_pixel_shader_instructions": 208,
+        "num_samplers": 1,
+        "num_vertex_texture_samples": 3,
+        "num_pixel_texture_samples": 0,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 2,
+        "num_interpolator_scalars": 0
+      },
+      "statistics_limit": "Editor compiled shader estimates; not measured frame time",
+      "built_fbx_sha256": "ac3e4d43566ecef94304e285939b6f8b7be508bb86264d11d58879cec2549e7d",
+      "built_arrays_sha256": "ab19de46872efd3cb87a550186351a5e1386ed5be865966bece0a429f9fa180a",
+      "built_max_radius_cm": 100.00000248605532,
+      "built_uv_roles": [
+        0,
+        1,
+        2
+      ],
+      "built_normals_finite_unit": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_GravityFieldCandidateV2.SM_GravityFieldCandidateV2",
+      "triangles": 4740,
+      "render_vertices": 3600,
+      "material_sections": 1,
+      "uv_channels": 1,
+      "bounds_origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "bounds_extent_cm": [
+        100.0,
+        100.0,
+        100.0
+      ],
+      "material": "/Game/SpaceSurvival/Materials/M_GravityFieldCandidateV2.M_GravityFieldCandidateV2",
+      "source_key": "c84af1d21041534bb8abf8c4685b33dbdbee6f72f5c8da97b5ccd1454e54d48c",
+      "shader_sha256": "cb5d3bddc7b5b752e90cb731382463eb9729cab80c183c3ea31473cb904523e6",
+      "simple_collision_count": 0,
+      "collision_profile": "NoCollision",
+      "additive_edge_opacity": true,
+      "no_mask_WPO_refraction": true,
+      "depth_test_enabled": true,
+      "material_statistics": {
+        "num_vertex_shader_instructions": 278,
+        "num_pixel_shader_instructions": 206,
+        "num_samplers": 1,
+        "num_vertex_texture_samples": 3,
+        "num_pixel_texture_samples": 0,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 2,
+        "num_interpolator_scalars": 0
+      },
+      "statistics_limit": "Editor compiled shader estimates; not measured frame time",
+      "built_fbx_sha256": "bb5d2bfdd3f1de438296de8d71b93723080ab306f881b560409f7d07883e44f9",
+      "built_arrays_sha256": "2868e9f25a4fe3b7802eb2883d0299c008399db69451e6263cb2e03314110436",
+      "built_max_radius_cm": 100.00000248605532,
+      "built_uv_roles": [
+        0,
+        1
+      ],
+      "built_normals_finite_unit": true
+    }
+  ],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "limits": [
+    "Persisted geometry/material contract, not rendered readability or performance.",
+    "Compiled material statistics are estimates; actual frame cost and warning/flash appearance require rendered inspection.",
+    "No runtime Data Asset or original wormhole/emissive references are changed."
+  ],
+  "candidate_packages": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_ElectricalFieldCandidateV2.uasset",
+      "bytes": 14102,
+      "sha256": "4ed67381325118326c5e633ed43d7fac2059e9ca2999af5f58da72b3bc32e8d1"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_GravityFieldCandidateV2.uasset",
+      "bytes": 14925,
+      "sha256": "985e39ae9ac8e66c3686867eeeab6c82810751d4c72e16f085ff14aee789af3d"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_ElectricalFieldCandidateV2.uasset",
+      "bytes": 96875,
+      "sha256": "b945ee2dd61860050292b187ca18259f4a05286df75c0feb57fb038a60be9952"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_GravityFieldCandidateV2.uasset",
+      "bytes": 147844,
+      "sha256": "b480942bd8aa06ad05a05df170d46ab67597bd339dbaecf09ebe0edfd003e078"
+    }
+  ],
+  "protected_source_config_content_files_unchanged": 141
+}

@@ -1,0 +1,3 @@
+# Failed native pose validation attempt
+
+These four images and the original automated receipt are preserved from UE62576 (exit0). Image review found all cases displayed original Pilot0 despite requested different clips/times. The receipt checked package loading and texture residency, but lacked live pose assertions. It must not be treated as new-Pilot or release proof. OverrideAnimationData alone does not replace CurrentAsset on an already initialized SingleNode instance. The corrected helper must set the live animation/time and compare actual component bone transforms to independent compressed sequence evaluation before each screenshot.

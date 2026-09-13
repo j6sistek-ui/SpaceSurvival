@@ -208,10 +208,10 @@ void ASSWorldBody::UpdateVisual()
         Asset = TEXT("SM_Wreckage");
         break;
     case ESSWorldKind::ElectricalStorm:
-        Asset = TEXT("SM_StormRing");
+        Asset = TEXT("SM_ElectricalFieldCandidateV3");
         break;
     case ESSWorldKind::GravityAnomaly:
-        Asset = TEXT("SM_GravityRing");
+        Asset = TEXT("SM_GravityFieldCandidateV3");
         break;
     case ESSWorldKind::Pursuer:
         Asset = TEXT("SM_PursuerCandidateV1");
@@ -272,7 +272,15 @@ void ASSWorldBody::UpdateVisual()
                                         Kind == ESSWorldKind::Pickup
                                     ? TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive")
                                     : TEXT("/Game/SpaceSurvival/Materials/M_Hazard.M_Hazard");
-    UMaterialInterface *Material = LoadObject<UMaterialInterface>(nullptr, MaterialPath);
+    // Field meshes carry distinct electrical/gravity shaders. Read the asset
+    // slot, not the component override left by an earlier Configure/BeginPlay.
+    // The existing pulse/force clocks continue to own every Emission update.
+    UMaterialInterface *Material = nullptr;
+    if (IsEnvironmentalField() && Visual->GetStaticMesh() &&
+        Visual->GetStaticMesh()->GetPathName().StartsWith(TEXT("/Game/")))
+        Material = Visual->GetStaticMesh()->GetMaterial(0);
+    if (!Material)
+        Material = LoadObject<UMaterialInterface>(nullptr, MaterialPath);
     if (!Material)
         Material =
             LoadObject<UMaterialInterface>(nullptr, TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
@@ -478,7 +486,7 @@ void ASSWorldBody::Tick(float DeltaSeconds)
             {
                 bWarningIssued = true;
                 Announce(this, Kind == ESSWorldKind::ElectricalStorm
-                                   ? TEXT("ELECTRICAL STORM · Rings charge before discharge")
+                                   ? TEXT("ELECTRICAL STORM · Field charges before discharge")
                                    : TEXT("GRAVITY ANOMALY · Counter the pull; boost across its edge"));
                 if (auto *Mode = GameMode(this))
                 {

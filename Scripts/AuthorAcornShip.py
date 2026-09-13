@@ -6,11 +6,13 @@ ValidateAcornShip.py. This does not select the candidate in gameplay.
 """
 import hashlib
 import json
+import runpy
 from pathlib import Path
 
 import unreal as u
 
 ROOT = Path(__file__).resolve().parents[1]
+source_matches = runpy.run_path(str(ROOT / "Scripts/SourceDigests.py"))["matches"]
 SOURCE = ROOT / 'ContentSource/AcornShipCandidate'
 BASE = '/Game/SpaceSurvival'
 MESH_PATH = BASE + '/Meshes/SM_AcornShipV2'
@@ -36,9 +38,9 @@ def owned_content(path):
 def source_report():
     report = json.loads((SOURCE / 'Report.json').read_text(encoding='utf-8'))
     for item in report['outputs']:
-        assert sha(SOURCE / item['file']) == item['sha256'], 'Changed candidate source: ' + item['file']
+        assert source_matches(SOURCE / item['file'], item['sha256']), 'Changed candidate source: ' + item['file']
     for path, digest in report['protected_sha256'].items():
-        assert sha(ROOT / path) == digest, 'Protected source changed: ' + path
+        assert source_matches(ROOT / path, digest), 'Protected source changed: ' + path
     return report
 
 
@@ -91,7 +93,7 @@ def material(item, digest):
     path = material_path(item['name'])
     result = LIBRARY.load_asset(path)
     if result:
-        if LIBRARY.get_metadata_tag(result, 'SSAcornSourceSHA256') != digest:
+        if not source_matches(SOURCE / 'AcornShipCandidate.obj', LIBRARY.get_metadata_tag(result, 'SSAcornSourceSHA256')):
             raise RuntimeError('Existing candidate needs deliberate reviewed reimport: ' + path)
         repair_microdetail(result, item, digest)
         return result
@@ -151,7 +153,8 @@ def material(item, digest):
 
 def import_mesh(report, materials, digest):
     mesh = LIBRARY.load_asset(MESH_PATH)
-    if mesh and LIBRARY.get_metadata_tag(mesh, 'SSAcornSourceSHA256') != digest:
+    changed = not bool(mesh)
+    if mesh and not source_matches(SOURCE / 'AcornShipCandidate.obj', LIBRARY.get_metadata_tag(mesh, 'SSAcornSourceSHA256')):
         raise RuntimeError('Existing mesh requires deliberate reviewed reimport')
     if not mesh:
         options = u.FbxImportUI()
@@ -185,20 +188,32 @@ def import_mesh(report, materials, digest):
             name = str(slot.get_editor_property('material_slot_name'))
         if name not in materials:
             raise RuntimeError('Unknown imported material group: ' + name)
-        mesh.set_material(index, materials[name])
+        if mesh.get_material(index) != materials[name]:
+            mesh.set_material(index, materials[name])
+            changed = True
         seen.add(name)
     assert seen == set(materials), 'Material groups lost during import'
     editor = u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
-    editor.remove_collisions(mesh)
+    # Rebuilding an already empty BodySetup changes its GUID and dirties the
+    # binary on every authoring run. Only repair actual collision state.
+    if editor.get_simple_collision_count(mesh) > 0:
+        editor.remove_collisions(mesh)
+        changed = True
     for lod in range(editor.get_lod_count(mesh)):
         for section in range(mesh.get_num_sections(lod)):
-            editor.enable_section_collision(mesh, False, lod, section)
+            if editor.is_section_collision_enabled(mesh, lod, section):
+                editor.enable_section_collision(mesh, False, lod, section)
+                changed = True
     body = mesh.get_editor_property('body_setup')
     instance = body.get_editor_property('default_instance')
-    instance.set_editor_property('collision_profile_name', 'NoCollision')
-    instance.set_editor_property('collision_enabled', u.CollisionEnabled.NO_COLLISION)
-    body.set_editor_property('default_instance', instance)
-    save(mesh, digest)
+    if (str(instance.get_editor_property('collision_profile_name')) != 'NoCollision' or
+            instance.get_editor_property('collision_enabled') != u.CollisionEnabled.NO_COLLISION):
+        instance.set_editor_property('collision_profile_name', 'NoCollision')
+        instance.set_editor_property('collision_enabled', u.CollisionEnabled.NO_COLLISION)
+        body.set_editor_property('default_instance', instance)
+        changed = True
+    if changed:
+        save(mesh, digest)
     return mesh
 
 
