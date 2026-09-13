@@ -1,8 +1,6 @@
 # Build and run
 
-Current package9/source4178 completed BuildCookRun74.18s, exact78project-assets/EngineCube audit, signed compatible CRT bundle, native Station1 full2K deck residency and the full rendered Wave10 fixture. Game SHA `af8431a544ccebcda1b6b46a15523abfe576f172c37514eac5029219370b3cd7`. See [package9 receipt](validation/2026-09-13-windows-visual-package.json), [endgame performance](validation/2026-09-13-endgame-performance.json), and [current project state](PROJECT_STATE.md). Package8/earlier sections below retain historical evidence. Subsequent source work is not included in package9. **PARTIAL**, with natural player experience/final art/clean-PC/full-run acceptance open.
-
-**Historical Package 8 evidence:** its build includes all 62 project packages and the required Engine Cube; source 442ff06 has 13 passing Unreal tests and CI-verified 524 strict/524 sanitizer assertions. Guarded native exit/service/departure and compatible-runtime bundling passed. Natural play, physical input, final art/audio, representative performance and clean-PC startup remain open; see [PROJECT_STATE.md](PROJECT_STATE.md).
+**Current archive: Package 11, source `6912684223f4a93f4010cd12201aee7fb42395f3`.** The package and normal-timing station/endgame fixtures passed with the boundaries in [current state](PROJECT_STATE.md) and the [package receipt](validation/2026-09-13-windows-integrated-presentation-package.json). Phase 1 remains PARTIAL; see the physical playtest and presentation gaps before treating the build as accepted.
 
 ## Tooling and repository
 
@@ -23,10 +21,12 @@ The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomp
 python Scripts/CheckProject.py
 python -m compileall -q Scripts ContentSource
 python ContentSource/ValidateSources.py
+python Tests/TestSourceDigests.py
+python Scripts/TestFreshCheckout.py
 git diff --check
 ```
 
-Portable tests compile the domain and its tests under strict C++17 and ASan/UBSan. They do not compile Unreal adapters or exercise input, rendering or gameplay. Formatting without `-Check` changes source files. Capture the actual result and source revision; a listed command is not a pass record.
+Portable tests compile the domain and its tests under strict C++17 and ASan/UBSan. They do not compile Unreal adapters or exercise input, rendering or gameplay. Formatting without `-Check` changes source files. Capture the actual result and source revision; a listed command is not a pass record. Source-format validation writes its routine receipt to Saved/Validation rather than mutating historical source receipts. Fresh-checkout checks use an immutable Git export: uncommitted candidates are not included. The current implementation accepts only exact or complete uniform LF/CRLF forms for UTF-8 OBJ/MTL/JSON; original GLB/binary hashes remain exact.
 
 ## Unreal build, content and automation
 
@@ -41,8 +41,8 @@ Each target accepts `-EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'`. Close pr
 
 - **Editor** invokes UnrealBuildTool for SpaceSurvivalEditor, Win64 Development.
 - **Content** imports canonical sources and authors the tuning asset and Survival map. Inspect `Saved/Validation/ContentImport.json`; the successful status is `IMPORTED_NOT_GAMEPLAY_VALIDATED` with no errors. Existing authored assets are preserved, and partial/wrong-type imports are rejected. Read [CONTENT_PIPELINE.md](CONTENT_PIPELINE.md) before deliberate reimport.
-- **Validate** starts a fresh editor process and checks persisted assets, the real map/GameMode class, fixed tuning rosters, backdrop collision and skeletal/instanced material usage. The complete target passed in `.agent/local/PersistedValidation2.log`.
-- **Test** runs the SpaceSurvival automation prefix under NullRHI and writes Artifacts/UnrealTests/index.json/index.html. The wrapper now requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every test state Success; Unreal exit 0 alone is insufficient. Package 7 has a historical clean 12-test suite. The first 13-test exit run exposed an AuthoredDisembark contact/handoff failure; after correction the full 13-test suite passed at 07:11:25 UTC in 2.263 seconds. See the [authored-exit receipt](validation/2026-09-13-authored-exit.json). Shortened/assisted NullRHI fixtures do not establish graphics, natural balance, physical input or performance.
+- **Validate** starts a fresh rendering-enabled editor process and checks persisted assets, map/GameMode, fixed rosters/selections, backdrop collision, mesh material usage and compiled field shader statistics. NullRHI cannot supply those shader statistics and is not used for this target. The full rendering-enabled readback passed at 11:48:03 UTC in `.agent/local/VisualIntegrationValidate2.log`; the preceding no-change content rerun preserved all 110 asset files byte-for-byte.
+- **Test** remains NullRHI and runs the SpaceSurvival automation prefix into Artifacts/UnrealTests/index.json/index.html. It requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every state Success; process exit 0 alone is insufficient. The current 24-test result passed at 12:00:54 UTC and is retained in `.agent/local/ChaseAim-tests.json`. Earlier authored-exit contact failures and their correction remain in [VALIDATION.md](VALIDATION.md). Shortened/assisted fixtures do not establish rendering, balance, physical input or performance.
 
 `Scripts/ValidateScene.py`, executed by the editor Python runner, checks saved background collision and skeletal/instanced-material usage. Its `--repair` option intentionally changes those owned assets; omit it for readback validation. Results go to `Saved/Validation/SceneValidation.json`. The latest repair/readback is recorded in [VALIDATION.md](VALIDATION.md).
 
@@ -62,22 +62,26 @@ This runs the project through the installed editor executable. It is not a packa
 ./Scripts/Build.ps1 -Target Package
 ```
 
-The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Package 8 succeeded in **86.44 seconds, exit 0**, recorded in `.agent/local/WindowsPackage8.log`, after authored-exit builds of 18.64/5.73 seconds. It includes the authored exit, panorama v1, shared interaction priority and compatible-runtime packaging.
+The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Package 11 succeeded in 87.75 seconds, exit 0, with a 29.09-second native build.
 
-Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`.
-
-**Last verified artifact identity: package 8, source `442ff06aa88e64569155f099b2fd38a56450d11e`.** The hashes below identify that produced archive. Its UnrealPak index contains all 62 project packages plus Engine Cube. Later starless-sky, ship and storage-test work is excluded; the shared archive path may be replaced by future packaging.
+Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`. **Verified identity: Package 11, source `6912684223f4a93f4010cd12201aee7fb42395f3`.** Later packaging replaces this shared path; compare the [retained receipt](validation/2026-09-13-windows-integrated-presentation-package.json) before relying on a historical hash.
 
 | Artifact | Size | SHA-256 |
 | --- | --- | --- |
-| `Artifacts/Windows/SpaceSurvival.exe` — launcher | 171,520 bytes | `619AC0779DCEABF638639193EFDEA0733E3B4626DEA623C07062F160F5ABCCF8` |
-| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` — game | 332,347,392 bytes | `E4116495C67707C5AE1314FCC2E79931B0DE795A8FAC83C9E62A74949CECFF8B` |
+| `Artifacts/Windows/SpaceSurvival.exe` launcher | 171,520 bytes | `619ac0779dceabf638639193efdea0733e3b4626dea623c07062f160f5abccf8` |
+| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` game | 332,566,528 bytes | `10b9b664c9a9d7480d96412999dd9da0b33215bc423eaae77a395fde8c9ed32c` |
+
+The receipt also binds all five .pak/.utoc/.ucas containers, all 110 project packages plus Engine Cube, 2,171 index rows and prerequisite provenance. The Package 11 Station 5/Wave 10 measurements and their scripted-input limits are in [PERFORMANCE.md](PERFORMANCE.md).
 
 Keep the entire archive directory together; the launcher alone is not the game. Launch from the repository root:
 
 ```powershell
 & './Artifacts/Windows/SpaceSurvival.exe' -windowed -ResX=1280 -ResY=720
 ```
+
+## Historical package checks
+
+Package 9/source 4178 built in 74.18 seconds and audited all 78 project packages/Engine Cube. Native Station 1 showed full 2K deck residency; its full Wave 10 fixture has a separate [package](validation/2026-09-13-windows-visual-package.json) and [performance](validation/2026-09-13-endgame-performance.json) identity. Package 8/source 442ff06 built in 86.44 seconds with 62 project packages plus Cube; its 13-test/524-domain-assertion results remain historical.
 
 **Package 8 exit smoke:** Package 8's guarded SSReviewExit replay visibly reached seated, airborne, landing and full standing poses, suppressed interaction prompts during exit, then allowed service E and departure into Wave 6. It used a prepared station profile and Slomo 0.1, restored to 1 afterward; it does not establish natural docking/camera feel. Neutral Wave 7 death then displayed score 11,800, 510 XP, level 3 and both unlocks from the seeded 100-kill fixture. The owned launch closed normally and production-save hashes remained unchanged. See [VALIDATION.md](VALIDATION.md) and the [package 8 receipt](validation/2026-09-13-windows-exit-package.json) for exact fixture limits and audit provenance. Panorama v1 residency was observed at 2048×1024/12 mips; seams, poles and flight readability remain unaccepted.
 
@@ -95,11 +99,11 @@ The first package attempt encountered global Live Coding from another editor. Th
 
 ## Runtime prerequisite boundary
 
-Package 7 bundled runtime 14.50.35719.0 for compiler 14.51.36257. Package 8 replaces the x64 installer under `Engine/Extras/Redist/en-us` with Microsoft-signed **14.51.36247.0**, 18,731,856 bytes, SHA-256 `843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C`. Independent inspection verified source/destination equality and Valid Microsoft signatures. The game still has no app-local CRT; no installer or clean-PC launch was run. Microsoft requires matching runtime major and equal-or-newer minor; see [DLL redistribution guidance](https://learn.microsoft.com/en-us/cpp/windows/determining-which-dlls-to-redistribute?view=msvc-170), checked 2026-09-13.
+Package 7 bundled runtime 14.50.35719.0 for compiler 14.51.36257. Packages 8 through 10 replace the x64 installer under `Engine/Extras/Redist/en-us` with Microsoft-signed **14.51.36247.0**, 18,731,856 bytes, SHA-256 `843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C`. Independent inspection verified source/destination equality and Valid Microsoft signatures. The game still has no app-local CRT; no installer or clean-PC launch was run. Microsoft requires matching runtime major and equal-or-newer minor; see [DLL redistribution guidance](https://learn.microsoft.com/en-us/cpp/windows/determining-which-dlls-to-redistribute?view=msvc-170), checked 2026-09-13.
 
 The implemented packaging correction retains unique UAT logs under Artifacts/BuildLogs, then invokes `Scripts/BundlePrerequisites.ps1`. The helper binds to the game link response file and matching built/archive executable, corroborates the selected toolchain from the log, checks a compatible Microsoft-signed x64 runtime from that VS installation, copies only into the archive and writes `Artifacts/Windows/Prerequisites.json` with provenance. Missing compatibility fails clearly; no host installation or Engine modification occurs. ARM64 is outside this Windows x64 target.
 
-Package 8 exercised the copy/receipt path successfully. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing the archive, use its matching retained UAT log:
+Packages 8 through 10 exercised the copy/receipt path successfully. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing the archive, use its matching retained UAT log:
 
 ```powershell
 ./Scripts/BundlePrerequisites.ps1 -BuildLog "./Artifacts/BuildLogs/WindowsPackage-b5ba16e6aba94998beddf035bf05017a.log" -DryRun
@@ -144,4 +148,26 @@ Use `-PreflightOnly` for the backend/path guard without GameInstance Init or sav
 
 For guarded prepared-station UI QA, `TestSaveLifecycle.ps1 -PreparePackagedStation 5` (or 10) runs isolated preflight/preparation and leaves a suspension in its reported GUID UserDir. Fixtures seed build/kills/contract state and mute audio; use fresh ordinary runs for gameplay acceptance. Package 7 consumed them through actual station UI, as recorded in [VALIDATION.md](VALIDATION.md).
 
-Station 2 is a live slice boundary. Its departure panel shows live statistics and services/save/discard without death XP/history. Native summary/save/relaunch passed; discard and completion/retry acceptance remain open. No Wave 11 or victory award exists.
+Station 2 is a live slice boundary. Its departure panel shows live statistics and services/save/discard without death XP/history. Native summary/save/relaunch and the five-process actual discard failure/retry/reload harness passed. Native discard usability and completion/retry acceptance remain open. No Wave 11 or victory award exists.
+
+
+## Additional isolated QA modes
+
+```powershell
+./Scripts/TestSaveLifecycle.ps1 -StorageFaults
+./Scripts/TestSaveLifecycle.ps1 -CorruptAccount
+./Scripts/TestSaveLifecycle.ps1 -Station2Discard
+```
+
+These are explicit fresh-GUID fault tests against real Windows files/processes, not production saves. The wrapper rejects unsafe/reparse paths, binds the generic backend and checks production hashes before/after. It restores test-owned ACLs/copies and cleans only owned processes/files. The successful eight/four/five-process receipts and precise interruption/domain-corruption limits are in [VALIDATION.md](VALIDATION.md). They do not prove disk-full, short-write, arbitrary malformed-binary or hardware-loss behavior.
+
+For a normal-frame scripted benchmark, use `CaptureEndgame.ps1` without visual readbacks. The following current-source example deliberately requests diagnostic screenshots instead:
+
+```powershell
+./Scripts/CaptureEndgame.ps1 -Editor -Scenario Station5 -CaptureVisuals
+./Scripts/CaptureEndgame.ps1 -Editor -Scenario Wave10 -CaptureVisuals
+```
+
+`-Editor` uses the installed editor's uncooked game mode and current project DLL; omitting it selects the current packaged inner executable. Each launch owns a fresh GUID under Artifacts/EndgameSoak, records exact source/artifact/production-save identities, waits for foreground and requires complete fixture output. Keep the window foreground. Station 5 defaults to 330 seconds timeout, Wave 10 to 240 seconds; cleanup only terminates the owned process. No build, install or package occurs in this wrapper.
+
+`-CaptureVisuals` captures the normal viewport/HUD, pose request metadata and ListTextures without camera/pose overrides. Current source expects 12 Station 5 or 4 Wave 10 images. Readback delays can skip early exit checkpoints; requested times are not proof of rendered poses. These runs are excluded from performance findings even when a CSV/performance.json is produced. Package 11 includes this switch and has a separate visual/residency receipt; Package 10 predates it. See [ENDGAME_CAPTURE.md](ENDGAME_CAPTURE.md) for fixture guards and [PERFORMANCE.md](PERFORMANCE.md) for benchmark limits.

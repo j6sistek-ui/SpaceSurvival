@@ -1,0 +1,474 @@
+{
+  "status": "FRESH_GIT_EXPORTED_SOURCE_FORMATS_AND_REVIEWED_REFERENCES_PASS_NOT_UNREAL",
+  "recorded_utc": "2026-09-13T12:22:31.826887+00:00",
+  "source_commit": "6912684223f4a93f4010cd12201aee7fb42395f3",
+  "archive_command": [
+    "git",
+    "archive",
+    "--format=tar",
+    "6912684223f4a93f4010cd12201aee7fb42395f3",
+    "--",
+    "ContentSource",
+    "Content",
+    "model-rigged.glb"
+  ],
+  "archive_sha256": "b0887cd9638c7a21bef6950ba1b9dd22efb1aec0f9215fb941ad0992150e0e4d",
+  "archive_bytes": 932577280,
+  "exported_files": 677,
+  "exported_bytes": 932020928,
+  "source_manifest_sha256": "a46633c3915d3892381ff98cb23272902582b13db87070192b12cec77e1a50aa",
+  "implementation_files": {
+    "Scripts/TestFreshCheckout.py": {
+      "bytes": 7330,
+      "sha256": "76bcc8b71eb1d6c8b76c0f60dd5ed5052f66e11be93a58a075e120a2a123008f"
+    },
+    "Scripts/SourceDigests.py": {
+      "bytes": 1536,
+      "sha256": "d8f16d950c6ba75ad28bad22122f635c70deb47ee26ef68413704d9cad72d4be"
+    },
+    "ContentSource/ValidateSources.py": {
+      "bytes": 12406,
+      "sha256": "665f8d49c25d25ccc7bf44bde0357d61ce260f7cc5b0bdea1a2a841fd0b2d2c6"
+    }
+  },
+  "committed_author_pipeline_sha256": "e06c7c0211c277667adcb0ba8c625cf64f96fd49fc368dbfcaa726b03b7cc169",
+  "required_candidate_reports": [
+    "ContentSource/SwiftCandidate/Report.json",
+    "ContentSource/FieldCandidates/V3/SourceReport.json"
+  ],
+  "first_git_mesh": {
+    "bytes": 569500,
+    "sha256": "2347c3c6a2c4fc7c7543bcb41ec37f883c3ae609fddc93863384b6391574294b"
+  },
+  "first_git_mesh_has_lf_and_no_cr": true,
+  "mesh_count": 26,
+  "audio_count": 16,
+  "preserved_hero_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "reviewed_source_references": {
+    "checked": [
+      {
+        "path": "model-rigged.glb",
+        "reviewed_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+        "actual_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+      },
+      {
+        "path": "ContentSource/Animation/Pilot.glb",
+        "reviewed_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+        "actual_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976"
+      },
+      {
+        "path": "ContentSource/Animation/PilotMesh.glb",
+        "reviewed_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665",
+        "actual_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_AcornShip.obj",
+        "reviewed_sha256": "0a2e57f9845d992bfb67a3055f90fbb3db5c7ef9651a3ed476e6b9dc647ad008",
+        "actual_sha256": "2347c3c6a2c4fc7c7543bcb41ec37f883c3ae609fddc93863384b6391574294b"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.blend",
+        "reviewed_sha256": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c",
+        "actual_sha256": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.glb",
+        "reviewed_sha256": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e",
+        "actual_sha256": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.mtl",
+        "reviewed_sha256": "374485c5af6cd34ea7ff14dfa098e4438eb7f57603b270cd065ef7bd0637d732",
+        "actual_sha256": "b014d3a61143e0bf0e68e7b0fad35d695bcf3f9e37b4935166bff2d61552445d"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+        "reviewed_sha256": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+        "actual_sha256": "9ad907799e9d777c817b8f9f169eb0799776dbdce0ada185b9720afd82039d9f"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/Chase.png",
+        "reviewed_sha256": "e6ca67d4cff1fe7c52eb239afcd2cda44632f4fb589c4300bfa2482bf3fead4f",
+        "actual_sha256": "e6ca67d4cff1fe7c52eb239afcd2cda44632f4fb589c4300bfa2482bf3fead4f"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/Cockpit.png",
+        "reviewed_sha256": "c24be8cc9a112d55bf588c85c942c500d603d1aef56b753ffcd19a0c2b3be223",
+        "actual_sha256": "c24be8cc9a112d55bf588c85c942c500d603d1aef56b753ffcd19a0c2b3be223"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/EngineDetail.png",
+        "reviewed_sha256": "67852b07c0d8de498bcf4bc61e7be66fb668bdb57188d8eee5d77ae1ff950112",
+        "actual_sha256": "67852b07c0d8de498bcf4bc61e7be66fb668bdb57188d8eee5d77ae1ff950112"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/Hero.png",
+        "reviewed_sha256": "93a64097ec30f781deea864ab99c42a5c376685621553bf7c70355ebf835c71a",
+        "actual_sha256": "93a64097ec30f781deea864ab99c42a5c376685621553bf7c70355ebf835c71a"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/Side.png",
+        "reviewed_sha256": "08f87215ede12c3df58164ce04334544c06323dc935c6ba4613efd99bf3b5472",
+        "actual_sha256": "08f87215ede12c3df58164ce04334544c06323dc935c6ba4613efd99bf3b5472"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_Pursuer.obj",
+        "reviewed_sha256": "fbde4d3b6b09352439692602ea0e706cae09c1d200256f851baa5d0eaacbcb31",
+        "actual_sha256": "4769934d6a4afbbeb08ccba4225b5892552eb298b805e9f9baf2bdd82b5e7b2a"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_Flanker.obj",
+        "reviewed_sha256": "895f812e9cbbf836f258cdedf65f87ecdc848282913b6d964fa4ca0102c2c24e",
+        "actual_sha256": "df6c6756ed0d48fb90e0954b82d30e18af9af06ba647117873ae328c26179999"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_Pursuer.uasset",
+        "reviewed_sha256": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18",
+        "actual_sha256": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_Flanker.uasset",
+        "reviewed_sha256": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5",
+        "actual_sha256": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5"
+      },
+      {
+        "path": "ContentSource/GenerateGeometry.py",
+        "reviewed_sha256": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00",
+        "actual_sha256": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00"
+      },
+      {
+        "path": "model-rigged.glb",
+        "reviewed_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+        "actual_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+      },
+      {
+        "path": "ContentSource/EnemyCandidates/Pursuer.obj",
+        "reviewed_sha256": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d",
+        "actual_sha256": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d"
+      },
+      {
+        "path": "ContentSource/EnemyCandidates/Pursuer.glb",
+        "reviewed_sha256": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc",
+        "actual_sha256": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc"
+      },
+      {
+        "path": "ContentSource/EnemyCandidates/Flanker.obj",
+        "reviewed_sha256": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba",
+        "actual_sha256": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba"
+      },
+      {
+        "path": "ContentSource/EnemyCandidates/Flanker.glb",
+        "reviewed_sha256": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682",
+        "actual_sha256": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682"
+      },
+      {
+        "path": "model-rigged.glb",
+        "reviewed_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+        "actual_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+      },
+      {
+        "path": "ContentSource/Animation/Pilot.glb",
+        "reviewed_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+        "actual_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976"
+      },
+      {
+        "path": "ContentSource/Animation/TailCandidateV2.glb",
+        "reviewed_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+        "actual_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345"
+      },
+      {
+        "path": "ContentSource/Animation/Disembark.glb",
+        "reviewed_sha256": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+        "actual_sha256": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.blend",
+        "reviewed_sha256": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c",
+        "actual_sha256": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+        "reviewed_sha256": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+        "actual_sha256": "9ad907799e9d777c817b8f9f169eb0799776dbdce0ada185b9720afd82039d9f"
+      },
+      {
+        "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.glb",
+        "reviewed_sha256": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e",
+        "actual_sha256": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_AgileShip.obj",
+        "reviewed_sha256": "2d8bb73ac2a35d25cf62f1108d412beaa3fcfa797da922aed9e59ea3ebfce54c",
+        "actual_sha256": "45e58394a1c91470f2ce2b4373174ed3c3d2135542a3b03c6a26b4887bef214f"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset",
+        "reviewed_sha256": "9c29554cd017c56d26f691f3b05b39e993f768188b8f02fdef5901b370518c07",
+        "actual_sha256": "9c29554cd017c56d26f691f3b05b39e993f768188b8f02fdef5901b370518c07"
+      },
+      {
+        "path": "ContentSource/SwiftCandidate/SwiftCandidate.blend",
+        "reviewed_sha256": "147ca048c7383737fb6babe4fe24cced312bd6760b9a3f1d36ee2ff4dcee69f5",
+        "actual_sha256": "147ca048c7383737fb6babe4fe24cced312bd6760b9a3f1d36ee2ff4dcee69f5"
+      },
+      {
+        "path": "ContentSource/SwiftCandidate/SwiftCandidate.glb",
+        "reviewed_sha256": "fcefcdb52e0366d0ca44d3b58fa3094645c57df5cea6c8f2367fc85a31eaad3f",
+        "actual_sha256": "fcefcdb52e0366d0ca44d3b58fa3094645c57df5cea6c8f2367fc85a31eaad3f"
+      },
+      {
+        "path": "ContentSource/SwiftCandidate/SwiftCandidate.mtl",
+        "reviewed_sha256": "d939dda1dd593fdc5787faec9b6765206baa165a104af7ca65017b154752a25a",
+        "actual_sha256": "d939dda1dd593fdc5787faec9b6765206baa165a104af7ca65017b154752a25a"
+      },
+      {
+        "path": "ContentSource/SwiftCandidate/SwiftCandidate.obj",
+        "reviewed_sha256": "5aff093c056f7e49b2038a435a05fb6714d2c046be59a7fafa786658881dfe8c",
+        "actual_sha256": "5aff093c056f7e49b2038a435a05fb6714d2c046be59a7fafa786658881dfe8c"
+      },
+      {
+        "path": "model-rigged.glb",
+        "reviewed_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+        "actual_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/Generate.py",
+        "reviewed_sha256": "15315a7c9059f92a20086fc737fec32b2c44bf338cf97d77300c51495bba5e90",
+        "actual_sha256": "15315a7c9059f92a20086fc737fec32b2c44bf338cf97d77300c51495bba5e90"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/CheckSource.py",
+        "reviewed_sha256": "f3da9c76b856439b76dc6fc2364917ec63512d00567f322701547bacbb3713c5",
+        "actual_sha256": "f3da9c76b856439b76dc6fc2364917ec63512d00567f322701547bacbb3713c5"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/ElectricalField.hlsl",
+        "reviewed_sha256": "e4aa9f5f902493297c6a17a8c1449de85b3e5929ed9fedb263d88a1bd55e5fa0",
+        "actual_sha256": "e4aa9f5f902493297c6a17a8c1449de85b3e5929ed9fedb263d88a1bd55e5fa0"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/GravityField.hlsl",
+        "reviewed_sha256": "cb5d3bddc7b5b752e90cb731382463eb9729cab80c183c3ea31473cb904523e6",
+        "actual_sha256": "cb5d3bddc7b5b752e90cb731382463eb9729cab80c183c3ea31473cb904523e6"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/SourceReport.json",
+        "reviewed_sha256": "1d40f9b5ee014879336fd00fcb5c44acc96b6024d5d17597c024962b4af083f8",
+        "actual_sha256": "1d40f9b5ee014879336fd00fcb5c44acc96b6024d5d17597c024962b4af083f8"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/SourceValidation.json",
+        "reviewed_sha256": "e0657cc651f3c59629445c659ced1a370c3c0737da52c12895bd3f6566a53615",
+        "actual_sha256": "ddf636b557ce80c8bbac0b0e69802b1aa319535d6d2087c970b0970da19b1261"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/CandidateReceipt.json",
+        "reviewed_sha256": "a644de7a842b475f3f627c54d6d4e8c55b1aed52402f2cc525b593f9202c783f",
+        "actual_sha256": "1b1c433648b20ea2a0212ecb3575544ab57be7f6884a7083876f48e7d5d0bdd3"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/UnrealImport.json",
+        "reviewed_sha256": "098ea42d4fcd17bbdf435e586087b80076cf76e104a19cb28ca461941849d415",
+        "actual_sha256": "38278dad373fe3c83151c134444997a4ccc8d22b05eacc346b587b55d8c9bda2"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/UnrealPersisted.json",
+        "reviewed_sha256": "26559e46240b03737b87a8605fc43dab3f450646771bff7c063f3d2461c6e866",
+        "actual_sha256": "4125a58020a1991ef2a9ef3713564a326e9571d6c88df7a84df8983fc35bf4a3"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V2/UnrealPreview.json",
+        "reviewed_sha256": "19124a91a26aa8a0007324acd7f8fe7cc39557ef8dd3c3ad35c146b2498d7517",
+        "actual_sha256": "36abe8bd3a66b981197f20d1c691c5f5e772424819e6ccd2b4ef7c23c9efa96b"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV2.uasset",
+        "reviewed_sha256": "b945ee2dd61860050292b187ca18259f4a05286df75c0feb57fb038a60be9952",
+        "actual_sha256": "b945ee2dd61860050292b187ca18259f4a05286df75c0feb57fb038a60be9952"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidateV2.uasset",
+        "reviewed_sha256": "b480942bd8aa06ad05a05df170d46ab67597bd339dbaecf09ebe0edfd003e078",
+        "actual_sha256": "b480942bd8aa06ad05a05df170d46ab67597bd339dbaecf09ebe0edfd003e078"
+      },
+      {
+        "path": "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidateV2.uasset",
+        "reviewed_sha256": "4ed67381325118326c5e633ed43d7fac2059e9ca2999af5f58da72b3bc32e8d1",
+        "actual_sha256": "4ed67381325118326c5e633ed43d7fac2059e9ca2999af5f58da72b3bc32e8d1"
+      },
+      {
+        "path": "Content/SpaceSurvival/Materials/M_GravityFieldCandidateV2.uasset",
+        "reviewed_sha256": "985e39ae9ac8e66c3686867eeeab6c82810751d4c72e16f085ff14aee789af3d",
+        "actual_sha256": "985e39ae9ac8e66c3686867eeeab6c82810751d4c72e16f085ff14aee789af3d"
+      },
+      {
+        "path": "ContentSource/GenerateGeometry.py",
+        "reviewed_sha256": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00",
+        "actual_sha256": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_StormRing.obj",
+        "reviewed_sha256": "a1d4dd374bb65613de96326deb0641d4aada693214dd48a89bb185c134eaec3b",
+        "actual_sha256": "87da3fb729011d163df8fb08b54da2b8847dd19345cf9bd835b6563e890b60a4"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_GravityRing.obj",
+        "reviewed_sha256": "d680e1fb894480daa062f3efbf4d79785e6444497fb7e45cbaa02a973e2546ef",
+        "actual_sha256": "9a67f5c93848b06d8d27f45b55260c345a60816b22dd81104e9af547e12111b7"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_StormRing.uasset",
+        "reviewed_sha256": "c026dcf829142da52e97e0f60d78113d2f2a274e8b70fccdd2da43ea27d07faa",
+        "actual_sha256": "c026dcf829142da52e97e0f60d78113d2f2a274e8b70fccdd2da43ea27d07faa"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_GravityRing.uasset",
+        "reviewed_sha256": "e99e6e833d10e672de06ea00484a76be6132e309a23ccb3f0aebab4dde761a1a",
+        "actual_sha256": "e99e6e833d10e672de06ea00484a76be6132e309a23ccb3f0aebab4dde761a1a"
+      },
+      {
+        "path": "Content/SpaceSurvival/Materials/M_Emissive.uasset",
+        "reviewed_sha256": "1c09844a3166fb49ae81b17d4fa643843cfbf6f29d1f1444fd2dadd4f7445227",
+        "actual_sha256": "1c09844a3166fb49ae81b17d4fa643843cfbf6f29d1f1444fd2dadd4f7445227"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/Generate.py",
+        "reviewed_sha256": "52ca98d237a5000b0e389a8360c09c05127faab6edb8c75c5ade7bd7e4859a15",
+        "actual_sha256": "52ca98d237a5000b0e389a8360c09c05127faab6edb8c75c5ade7bd7e4859a15"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/ElectricalField.hlsl",
+        "reviewed_sha256": "d17ea7975fc50d21107a0e52559735b9e77ef01c23049fb43a8abec709762031",
+        "actual_sha256": "d17ea7975fc50d21107a0e52559735b9e77ef01c23049fb43a8abec709762031"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/GravityField.hlsl",
+        "reviewed_sha256": "c075829d9b2697a6b7de86b244294c89159f0446d5706a717322474f5908a8b7",
+        "actual_sha256": "c075829d9b2697a6b7de86b244294c89159f0446d5706a717322474f5908a8b7"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/SourceReport.json",
+        "reviewed_sha256": "3845e4eae22cb4b0c1ba881c5c375362a62b03891db333500f3a4ab6696875bd",
+        "actual_sha256": "3845e4eae22cb4b0c1ba881c5c375362a62b03891db333500f3a4ab6696875bd"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/CandidateReceipt.json",
+        "reviewed_sha256": "04c8158b71643e43415c8b841d5fa0c0f3dffa4c382feefdd99b80462cd915bf",
+        "actual_sha256": "9b0edc90b17b149c7af3cb884d56eaabce015aab0a4c4dc7ec060702bec6b982"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidate.uasset",
+        "reviewed_sha256": "a33acaf9156fdf34fed1f867ec15a5b7379ab8cea3dc43d9eac811eb5f240c9f",
+        "actual_sha256": "a33acaf9156fdf34fed1f867ec15a5b7379ab8cea3dc43d9eac811eb5f240c9f"
+      },
+      {
+        "path": "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidate.uasset",
+        "reviewed_sha256": "e24aef39319f1e1fb5881df01a3f62c01f31ec7fe9a0c931a14ab5f0610e933c",
+        "actual_sha256": "e24aef39319f1e1fb5881df01a3f62c01f31ec7fe9a0c931a14ab5f0610e933c"
+      },
+      {
+        "path": "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidate.uasset",
+        "reviewed_sha256": "cc55b4ded82b618c52c5adae608d119fa1c2bebc3b0dfd16964b09765f66fb31",
+        "actual_sha256": "cc55b4ded82b618c52c5adae608d119fa1c2bebc3b0dfd16964b09765f66fb31"
+      },
+      {
+        "path": "Content/SpaceSurvival/Materials/M_GravityFieldCandidate.uasset",
+        "reviewed_sha256": "774d46cd0dbfee0b9f07db8be54c306bc507da98e2186816c29888c4bd4dcee0",
+        "actual_sha256": "774d46cd0dbfee0b9f07db8be54c306bc507da98e2186816c29888c4bd4dcee0"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V3/SM_ElectricalFieldCandidateV3.obj",
+        "reviewed_sha256": "4407f836f648b9e7aab3384cb8fc95d1e21d51476b54d7ead586aa1a1a40ccf0",
+        "actual_sha256": "4407f836f648b9e7aab3384cb8fc95d1e21d51476b54d7ead586aa1a1a40ccf0"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V3/SM_ElectricalFieldCandidateV3.blend",
+        "reviewed_sha256": "b21c9d9ffbe5416e29e894b02beb21aea4ad2f1a9d00bcaf7770ffbf5df4aa1f",
+        "actual_sha256": "b21c9d9ffbe5416e29e894b02beb21aea4ad2f1a9d00bcaf7770ffbf5df4aa1f"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V3/SM_GravityFieldCandidateV3.obj",
+        "reviewed_sha256": "54b71ccead502256166deea83e2421d64f6d8b6425826f4683e756bb54471ca3",
+        "actual_sha256": "54b71ccead502256166deea83e2421d64f6d8b6425826f4683e756bb54471ca3"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V3/SM_GravityFieldCandidateV3.blend",
+        "reviewed_sha256": "0e47fa79fb0d6a2e6fe270a504642b9853b01d4615b39c1bab9a43be3a12ec7b",
+        "actual_sha256": "0e47fa79fb0d6a2e6fe270a504642b9853b01d4615b39c1bab9a43be3a12ec7b"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V3/FieldPalette.mtl",
+        "reviewed_sha256": "aafe9b7dab22a00e2cc2dc8518337840c13d258f970d791c45b22ca931bc4d79",
+        "actual_sha256": "aafe9b7dab22a00e2cc2dc8518337840c13d258f970d791c45b22ca931bc4d79"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V3/ElectricalField.hlsl",
+        "reviewed_sha256": "d154420eaa52d1a165adc8016b441b0b0461ea574797820408a63c26464942d4",
+        "actual_sha256": "d154420eaa52d1a165adc8016b441b0b0461ea574797820408a63c26464942d4"
+      },
+      {
+        "path": "ContentSource/FieldCandidates/V3/GravityField.hlsl",
+        "reviewed_sha256": "3dd61a963368db944aaf6d7802286f516642462dc6b0022227b2f19bdd1ac819",
+        "actual_sha256": "3dd61a963368db944aaf6d7802286f516642462dc6b0022227b2f19bdd1ac819"
+      },
+      {
+        "path": "ContentSource/Animation/TailCandidateV2.glb",
+        "reviewed_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+        "actual_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345"
+      },
+      {
+        "path": "model-rigged.glb",
+        "reviewed_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+        "actual_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+      },
+      {
+        "path": "ContentSource/Animation/TailCandidate.glb",
+        "reviewed_sha256": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00",
+        "actual_sha256": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00"
+      },
+      {
+        "path": "ContentSource/Animation/Pilot.glb",
+        "reviewed_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+        "actual_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976"
+      },
+      {
+        "path": "ContentSource/Animation/PilotMesh.glb",
+        "reviewed_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665",
+        "actual_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665"
+      },
+      {
+        "path": "ContentSource/TailCandidateV2Preview/RaySelection.json",
+        "reviewed_sha256": "0d0ef01887b5b5bb28f2c6dc46383604b2f04f47b2e1fa19bc4c2581db506abd",
+        "actual_sha256": "d2828898ad0dc4454aba9cb2ef0acc76de7cbd22346ba48eee4cdd12161ee450"
+      },
+      {
+        "path": "ContentSource/TailCandidateV2Preview/RaySelectionResidual.json",
+        "reviewed_sha256": "94ecbf8e2fa940f677f31de94907c698536b578c107fed859a458882cd26f6da",
+        "actual_sha256": "ffd69a5ee206e8ed9a1bce328cf8826e5b4d59653f2e753b14c41355e017e93c"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_AsteroidSmall.obj",
+        "reviewed_sha256": "c5933bac0466b6b30ffa28390c1ab52e1d91973709babb1f22f43538d0b15360",
+        "actual_sha256": "f283420ebcf9b733b77e36c0d7e2a13a14219e516c7c122a8bb34c6d3ba07825"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_AsteroidMedium.obj",
+        "reviewed_sha256": "8671b91c7cc019c2cf66b409c2ded959b3e9ebee9ceb947d4eebc8b8e525f032",
+        "actual_sha256": "a4a0823dcfca45a10e5791c86576521b28b69e2be64d2f18b08d4ea1fc3deebf"
+      },
+      {
+        "path": "ContentSource/Meshes/SM_AsteroidMassive.obj",
+        "reviewed_sha256": "73bcc6e68bd03d54ccae1b1ef0cbf1b76cffacdb4c0dc74094ef190d4ea251dc",
+        "actual_sha256": "3df1743993ab1229f8765fe01cbd4740af079cb1fcf03e4c2cc32ddf54bf8331"
+      }
+    ],
+    "optional_candidates_absent_from_tree": [],
+    "limits": "Source references only. Does not replace Unreal geometry, metadata, roster, graph or native validation."
+  },
+  "all_exported_bytes_unchanged": true,
+  "limits": [
+    "Current validator/helper implementation is identified independently of the exported asset commit.",
+    "This runs portable source format/reference checks; it does not run Unreal authoring, metadata, geometry, shader, native rendering or gameplay tests.",
+    "No source regeneration, working-tree asset normalization or historical receipt rewrite."
+  ]
+}

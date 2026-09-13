@@ -1,12 +1,31 @@
 # Performance findings
 
-**Early flight and both rendered climax fixtures are measured; the representative Phase 1 performance gate remains OPEN.** Package 10 now includes the normal Wave 5 wormhole/climax/Station 1 transition and a separate full Wave 10 climax/approach sample. Neither capped, seeded scenario exceeded 16.667 ms per frame. Natural ten-wave play, physical response, Station 2 docking, full-run memory stability and lower-end scalability remain unmeasured. Later [combat-cue changes](COMBAT_CUES.md) are outside these Package 10 results.
+**Package 11 includes measured normal-timing station and compound-climax runs; the representative Phase 1 performance gate remains OPEN.** Both bounded samples remain below 16.667 ms per frame on the available i7-14700F/RTX 5080 at 1440p, quality 2 and cap 120. Natural ten-wave play, physical response, Station 2 docking, full-run memory stability and lower-end scalability remain unverified.
 
-## Package 10 rendered Station 5 and Wave 10 (2026-09-13)
+## Package 11 station and endgame measurements
+
+Source `6912684223f4a93f4010cd12201aee7fb42395f3` and inner executable `10b9b664c9a9d7480d96412999dd9da0b33215bc423eaae77a395fde8c9ed32c` are bound by the [package audit](validation/2026-09-13-windows-integrated-presentation-package.json). The raw fixture records are under `Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf` (Station 5) and `9461b70d07454d738f22a1c87c91b793` (Wave 10).
+
+| Captured workload | Marked frames | Mean ms | p99 ms | Maximum ms | Frames above 16.667 ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Station 5 and arrival | 16,867 | 8.338488 | 8.5476 | 8.8939 | 0 |
+| Wave 10 compound and approach | 15,618 | 8.337841 | 8.5134 | 9.9738 | 0 |
+
+Station 5 used an 8.007362-second wormhole, 40.002631-second climax, 6.512440-second approach, 3.001230-second docking, 2.393800-second sampled exit stage and 15.007807-second hub idle. Wave 10 used a 40.003666-second climax, 38.278336 seconds of concurrent gravity/asteroid/enemy actor presence and 5.003929-second approach. Both peaked at 23 active threats against the cap of 24; all marked frames were foreground and the station contained no active threats.
+
+These are scripted fixtures with Tier V stats and enlarged durability, normal simulation timers and audio enabled. No automated screenshot readback was used. CPU-only Blender rendering overlapped part of Wave 10 until 12:26:53 UTC; no Blender process remained during Station 5. The owner editor and desktop applications stayed open. The lead saw startup and Station 5 combat, not the full transition or live Wave 10 climax. Source, archive and production saves remained unchanged. The [independent combined receipt](validation/2026-09-13-integrated-presentation-performance.json) binds these results. This is not a clean-machine, natural-balance or minimum-spec acceptance result.
+
+## Current visual runs are not performance measurements
+
+Source 691 integration has 24 clean Unreal tests and new editor-game visual captures. `CaptureEndgame.ps1 -CaptureVisuals` records the normal viewport/HUD, pose request metadata and ListTextures, but screenshot readbacks perturb frame time. The [Station 5 visual receipt](validation/2026-09-13-integrated-station-visuals.json) binds 12 images on the pre-camera DLL 12b8; only the first exit image samples inside the 0.18-second live-pose blend. Its CSV and generated performance.json must not support FPS, hitch or smooth-transition claims. The [newer Wave 10 visual audit](validation/2026-09-13-integrated-endgame-visuals.json) verified a normal process close and four images on fd6c66. Its Compound residency snapshot reports hero 1K versus 2K maximum, rocks 2K and sky 2048x1024. The subsequent component-only hero residency correction compiled in 8.54 seconds and requires separate packaged readback. Neither visual capture establishes performance.
+
+The +2-degree camera/manual-aim correction passed source/actor tests on DLL fd6c66; later warning wording and hero-residency source are separate from that run. Those synthetic tests do not measure physical input latency, gameplay rendering or uncapped headroom. The Package 11 scenarios above are the current source-bound benchmarks. Earlier Package 10 measurements below remain historical.
+
+## Historical Package 10 rendered Station 5 and Wave 10 (2026-09-13)
 
 Both independent receipts bind source `0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80` and game SHA-256 `4dde20dc8776827419ee7e3fa58ebdca9cdd6aac203db0754ab57f8d51fd7498`. Package 10 built in 45.06 seconds, with all 88 project packages/Engine Cube and seven archive artifacts verified. See the [package receipt](validation/2026-09-13-windows-audio-economy-package.json), [Station 5 receipt](validation/2026-09-13-station-transition-performance.json) and [Wave 10 receipt](validation/2026-09-13-audio-rock-endgame-performance.json).
 
-The Windows Development captures ran at 2560x1440, D3D12/SM6, all 11 quality groups2, VSync off and cap 120 on the i7-14700F/RTX 5080 PC (driver 616.92), with the owner's editor and desktop apps open. Audio was enabled and the renderer device initialized; nobody performed a listening assessment. Both fixtures seed a starter/Rapid Laser with five Tier V paths, Cooling and base hull/shield 50000, then use scripted existing control APIs. Normal world delta, budgets, caps, damage and transitions remain active; fixed timestep/frame rate/time dilation are rejected. These are not natural survival or controlled hardware-comparison benchmarks.
+The Windows Development captures ran at 2560x1440, D3D12/SM6, all 11 quality groups 2, VSync off and cap 120 on the i7-14700F/RTX 5080 PC (driver 616.92), with the owner's editor and desktop apps open. Audio was enabled and the renderer device initialized; nobody performed a listening assessment. Both fixtures seed a starter/Rapid Laser with five Tier V paths, Cooling and base hull/shield 50000, then use scripted existing control APIs. Normal world delta, budgets, caps, damage and transitions remain active; fixed timestep/frame rate/time dilation are rejected. These are not natural survival or controlled hardware-comparison benchmarks.
 
 All captured frames are retained below, including one unmarked seed frame per run. Capture begins after the required two focused seconds; startup/focus wait and CSV drain are outside these samples. There is no additional warmup trimming or removal of slow frames. Every marked fixture frame was foreground. Nearest-rank percentiles and middle-pair median are used; CPU/GPU pipeline counters must not be added together.
 
@@ -15,7 +34,7 @@ All captured frames are retained below, including one unmarked seed frame per ru
 | Station 5 | 16,872 / 16,871 | 140.648611 | 8.336215 | 8.4610 | 8.8284 | 0 / 0 / 0 |
 | Wave 10 | 15,768 / 15,767 | 131.473918 | 8.338021 | 8.5187 | 8.8226 | 0 / 0 / 0 |
 
-Marked-frame sums are140.640279 seconds for Station 5 and 131.465585 seconds for Wave 10; these differ from native callback wall durations and the all-frame sums above. Peak active threats were23 in each run. Counts include telegraphs/offscreen actors. Both owned processes exited0, wrote no save slots, and preserved production save hashes, all 131 source snapshot entries and all seven artifacts. Those stability checks belong to the capture interval; later source edits do not inherit them.
+Marked-frame sums are 140.640279 seconds for Station 5 and 131.465585 seconds for Wave 10; these differ from native callback wall durations and the all-frame sums above. Peak active threats were 23 in each run. Counts include telegraphs/offscreen actors. Both owned processes exited 0, wrote no save slots, and preserved production save hashes, all 131 source snapshot entries and all seven artifacts. Those stability checks belong to the capture interval; later source edits do not inherit them.
 
 | Scenario / counter | Mean ms | Median ms | p95 ms | p99 ms | Maximum ms |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -53,11 +72,11 @@ The lead visually observed Flight only in Station 5, and Wave 9 plus the Wave 10
 
 Source `4178ff443d34a7611a7353bac784091ec25ba0fa`, package 9, game SHA `af8431a544ccebcda1b6b46a15523abfe576f172c37514eac5029219370b3cd7`. The guarded fixture ran normal engine frames with audio enabled at 2560x1440, DX12/SM6, all quality groups 2, VSync off and cap 120 on the same i7-14700F/RTX 5080 machine. Owner editor and desktop apps stayed open.
 
-The fresh GUID profile used a seeded Tier V starter/Rapid Laser/Overdrive Cooling build with base hull/shield 50000 and scripted strafe, boost, brake, dodge and firing. It covered normal Wave 9, breathing, all **40.007 seconds of Wave 10 climax**, then **5.006 seconds of approach**. Gravity, asteroids and enemies existed together for **23.719 seconds**. Peak threats23, below cap24; kind counts include warning/offscreen actors.
+The fresh GUID profile used a seeded Tier V starter/Rapid Laser/Overdrive Cooling build with base hull/shield 50000 and scripted strafe, boost, brake, dodge and firing. It covered normal Wave 9, breathing, all **40.007 seconds of Wave 10 climax**, then **5.006 seconds of approach**. Gravity, asteroids and enemies existed together for **23.719 seconds**. Peak threats 23, below cap 24; kind counts include warning/offscreen actors.
 
-All **15,770 frames** stayed foreground over **131.482 seconds** of recorded frame time. Mean **8.337 ms** (~119.94 FPS), median 8.334, p95 8.341, p99 **8.505**, maximum **8.818**; zero frames exceeded 16.667/33.333/50ms. GPU mean 2.765/p99 3.650/max 4.431ms; game thread mean 1.784/max 6.961ms. Simulation delta mean 8.337/max 8.807ms came from normal actor updates, with fixed step and time dilation rejected. This is a capped fixture measurement, not uncapped headroom or representative 60FPS acceptance.
+All **15,770 frames** stayed foreground over **131.482 seconds** of recorded frame time. Mean **8.337 ms** (~119.94 FPS), median 8.334, p95 8.341, p99 **8.505**, maximum **8.818**; zero frames exceeded 16.667/33.333/50 ms. GPU mean 2.765/p99 3.650/max 4.431 ms; game thread mean 1.784/max 6.961 ms. Simulation delta mean 8.337/max 8.807 ms came from normal actor updates, with fixed step and time dilation rejected. This is a capped fixture measurement, not uncapped headroom or representative 60 FPS acceptance.
 
-The process exited0; source, all seven binary/container artifacts and production saves remained identical; no test save slots were written. Capture began after foreground warmup, so it does not measure startup loading. That historical run did not measure Wave 5 or station transitions; Package 10 later measured the Station 5 fixture above. Natural piloting, balance, Station 2 transition and full-run memory/leak tests remain open. See the [complete performance receipt](validation/2026-09-13-endgame-performance.json), [package binding](validation/2026-09-13-windows-visual-package.json) and [reproduction harness](ENDGAME_CAPTURE.md). Later source/content changes are excluded.
+The process exited 0; source, all seven binary/container artifacts and production saves remained identical; no test save slots were written. Capture began after foreground warmup, so it does not measure startup loading. That historical run did not measure Wave 5 or station transitions; Package 10 later measured the Station 5 fixture above. Natural piloting, balance, Station 2 transition and full-run memory/leak tests remain open. See the [complete performance receipt](validation/2026-09-13-endgame-performance.json), [package binding](validation/2026-09-13-windows-visual-package.json) and [reproduction harness](ENDGAME_CAPTURE.md). Later source/content changes are excluded.
 
 ## Historical package 4 configuration and identity
 
@@ -69,7 +88,7 @@ The process exited0; source, all seven binary/container artifacts and production
 
 The complete capture contains 18,000 frames over 152.2925 seconds. Active-flight counters identify 15,131 gameplay frames over 126.126 seconds. Excluding frames starting within the first five seconds of active flight leaves **14,530 frames over 121.122 seconds**, spanning Waves 1–3 and up to **24 active threats**.
 
-## Corrected-settings gameplay result
+## Historical Package 4 corrected-settings gameplay result
 
 All values below are milliseconds. Percentiles use nearest rank; the median averages the middle pair. Raw startup and gameplay remain in the receipt; warmup exclusion is explicit.
 
@@ -85,7 +104,7 @@ Raw and warmup-trimmed gameplay each had **zero frames above 16.667, 33.333 or 5
 
 The separate [baseline receipt](validation/2026-09-13-packaged-performance.json) records level 3, 12,001 trimmed frames, mean 8.335 ms, p99 9.035 ms and maximum 11.353 ms, with up to 21 threats. Its GPU mean was 2.802 ms versus 2.659 ms in the corrected level-2 capture. These different compositions and durations are not a controlled A/B optimization result.
 
-## Hitches, warnings and remaining measurement
+## Historical startup hitches and remaining measurement
 
 The corrected capture includes a **2,174.921 ms startup frame** and two startup frames over 50 ms. The earlier capture's maximum startup frame was 2,336.641 ms. These were before active flight; they are retained separately rather than hidden inside a steady-state average. Asset loading, shader/PSO initialization and startup UI warrant an Insights trace before assigning a cause or claiming a hitch fix.
 
