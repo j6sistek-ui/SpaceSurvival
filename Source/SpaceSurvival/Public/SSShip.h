@@ -30,6 +30,7 @@ public:
     void RequestDodge();
     void Fire();
     void ReceiveDamage(float Amount, SS::DamageType Type = SS::DamageType::Kinetic);
+    void ReceiveImpact(float Amount, FVector AwayFromContact);
     void AddExternalForce(FVector Force);
     void SetDockingTarget(FVector Target, FRotator Rotation);
     void FinishDocking();

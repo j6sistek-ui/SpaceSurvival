@@ -474,8 +474,10 @@ void ASSWorldBody::Tick(float DeltaSeconds)
             const float SweptDistance = (PreviousRelative + RelativePath * ClosestTime).Size();
             if (SweptDistance < BodyRadius + ShipRadius && ShipContactRemaining <= 0.f)
             {
-                Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Kinetic);
-                Ship->AddExternalForce(Offset.GetSafeNormal() * FMath::Min(1400.f, CollisionDamage * 20.f));
+                FVector ContactNormal = (PreviousRelative + RelativePath * ClosestTime).GetSafeNormal();
+                if (ContactNormal.IsNearlyZero())
+                    ContactNormal = PreviousRelative.GetSafeNormal();
+                Ship->ReceiveImpact(CollisionDamage, ContactNormal);
                 ShipContactRemaining = 1.1f;
             }
         }
@@ -565,19 +567,37 @@ void ASSWorldBody::OnDefeated()
     const auto Definition = Content(this)->Hazard(Kind);
     if (Kind == ESSWorldKind::MediumAsteroid)
     {
-        // Fragment count is bounded. Fragments preserve collision and can worsen the line.
+        // Keep fragments dangerous, but admit no new body inside the player's reaction path.
+        const ASSShip *Ship = FindShip();
+        const ASSGameMode *Mode = GameMode(this);
+        const float Reaction =
+            Mode && Mode->Director ? Mode->Director->MinimumReactionSeconds : Content(this)->MinimumReactionSeconds;
+        const float ReactionSeconds = FMath::IsFinite(Reaction) ? FMath::Max(0.f, Reaction) : 3.5f;
+        const float Clearance = ShipRadius + FMath::Max(10.f, Definition.FragmentRadius);
         for (int32 Index = 0; Index < FMath::Clamp(Definition.FragmentCount, 0, 3); ++Index)
         {
             if (!HasThreatCapacity(this))
                 break;
-            const FVector Direction = LocalRandom.VRand();
-            if (ASSWorldBody *Fragment = GetWorld()->SpawnActor<ASSWorldBody>(
-                    GetActorLocation() + Direction * (BodyRadius + 80.f), FRotator::ZeroRotator))
+            for (int32 Attempt = 0; Attempt < 16; ++Attempt)
             {
-                Fragment->Configure(ESSWorldKind::SmallAsteroid, Definition.FragmentRadius,
-                                    CollisionDamage * Definition.FragmentDamageFraction, Wave);
-                Fragment->SetLinearVelocity(LinearVelocity + Direction * Definition.FragmentSpeed);
-                Fragment->LifetimeSeconds = Definition.FragmentLifetime;
+                const FVector Direction = LocalRandom.VRand();
+                const FVector Position = GetActorLocation() + Direction * (BodyRadius + 80.f);
+                const FVector Velocity = LinearVelocity + Direction * Definition.FragmentSpeed;
+                if (Ship)
+                {
+                    const FVector RelativeStart = Position - Ship->GetActorLocation();
+                    const FVector RelativeEnd = RelativeStart + (Velocity - Ship->GetVelocity()) * ReactionSeconds;
+                    if (FMath::PointDistToSegment(FVector::ZeroVector, RelativeStart, RelativeEnd) <= Clearance)
+                        continue;
+                }
+                if (ASSWorldBody *Fragment = GetWorld()->SpawnActor<ASSWorldBody>(Position, FRotator::ZeroRotator))
+                {
+                    Fragment->Configure(ESSWorldKind::SmallAsteroid, Definition.FragmentRadius,
+                                        CollisionDamage * Definition.FragmentDamageFraction, Wave);
+                    Fragment->SetLinearVelocity(Velocity);
+                    Fragment->LifetimeSeconds = Definition.FragmentLifetime;
+                }
+                break;
             }
         }
     }
@@ -719,11 +739,13 @@ ASSProjectile::ASSProjectile()
     LifetimeSeconds = 6.f;
 }
 
-void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bFromPlayer, AActor *Source)
+void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bFromPlayer, AActor *Source,
+                           float MaximumTravel)
 {
     Configure(ESSWorldKind::Projectile, bFromPlayer ? 28.f : 17.f, Damage);
     LifetimeSeconds = 6.f;
     bPlayerShot = bFromPlayer;
+    TravelRemaining = FMath::IsFinite(MaximumTravel) ? MaximumTravel : 0.f;
     SourceActor = Source;
     LinearVelocity = Direction.GetSafeNormal() * Speed;
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -734,9 +756,18 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
 
 void ASSProjectile::Tick(float DeltaSeconds)
 {
-    Age += DeltaSeconds;
+    // Clamp the final sweep, not just expiry after movement. A hitch must not let a
+    // projectile hit beyond its configured range or remaining lifetime.
+    const float FlightSeconds = FMath::Clamp(DeltaSeconds, 0.f, FMath::Max(0.f, LifetimeSeconds - Age));
+    Age += FMath::Max(0.f, DeltaSeconds);
     const FVector Start = GetActorLocation();
-    const FVector End = Start + LinearVelocity * DeltaSeconds;
+    FVector Travel = LinearVelocity * FlightSeconds;
+    if (TravelRemaining >= 0.f)
+    {
+        Travel = Travel.GetClampedToMaxSize(TravelRemaining);
+        TravelRemaining = FMath::Max(0.f, TravelRemaining - float(Travel.Size()));
+    }
+    const FVector End = Start + Travel;
     FCollisionObjectQueryParams Objects;
     Objects.AddObjectTypesToQuery(ECC_WorldDynamic);
     Objects.AddObjectTypesToQuery(ECC_WorldStatic);
@@ -776,7 +807,7 @@ void ASSProjectile::Tick(float DeltaSeconds)
         }
     }
     SetActorLocation(End);
-    if (Age > LifetimeSeconds)
+    if (Age >= LifetimeSeconds || TravelRemaining == 0.f)
         Destroy();
 }
 
@@ -906,16 +937,32 @@ FString ASSPickup::GetLabel() const
 
 void ASSPickup::Tick(float DeltaSeconds)
 {
+    if (bCollected || IsActorBeingDestroyed())
+        return;
+    ASSShip *Ship = FindShip();
+    // Capture history before the base actor advances and records this frame's ship position.
+    const FVector PreviousRelative =
+        Ship ? (bHasPreviousShipPosition ? PreviousShipPosition : Ship->GetActorLocation()) - GetActorLocation()
+             : FVector::ZeroVector;
     Super::Tick(DeltaSeconds);
+    if (IsActorBeingDestroyed())
+        return;
     Visual->AddLocalRotation(FRotator(0.f, 70.f, 20.f) * DeltaSeconds);
-    if (ASSShip *Ship = FindShip())
+    if (Ship)
     {
         const FVector ToShip = Ship->GetActorLocation() - GetActorLocation();
         const auto Definition = Content(this)->Pickup(PickupKind);
-        // A short acquisition radius rewards steering toward an item without auto-collecting a lane.
+        const float CollectionRadius = ShipRadius + Definition.CollectionPadding;
+        const bool bCrossedCollection =
+            FMath::PointDistToSegment(FVector::ZeroVector, PreviousRelative, ToShip) < CollectionRadius;
+        // Magnetism remains local and cannot overshoot its target during a long frame.
         if (ToShip.SizeSquared() < FMath::Square(Definition.AttractionRadius))
-            AddActorWorldOffset(ToShip.GetSafeNormal() * Definition.AttractionSpeed * DeltaSeconds);
-        if (!bCollected && ToShip.SizeSquared() < FMath::Square(ShipRadius + Definition.CollectionPadding))
+        {
+            const double Travel = FMath::Clamp(double(Definition.AttractionSpeed) * DeltaSeconds, 0.0, ToShip.Size());
+            AddActorWorldOffset(ToShip.GetSafeNormal() * Travel);
+        }
+        if (bCrossedCollection ||
+            FVector::DistSquared(Ship->GetActorLocation(), GetActorLocation()) < FMath::Square(CollectionRadius))
         {
             bCollected = true;
             if (ASSGameMode *Mode = GameMode(this))

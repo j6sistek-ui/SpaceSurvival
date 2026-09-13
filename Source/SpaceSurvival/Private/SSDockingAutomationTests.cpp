@@ -1,0 +1,234 @@
+#include "Misc/AutomationTest.h"
+#include "SSGameInstance.h"
+#include "SSGameMode.h"
+#include "SSPhase1Data.h"
+#include "SSShip.h"
+#include "SSStation.h"
+#include "SSWorldActors.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
+#include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/WorldSettings.h"
+#include "UObject/UnrealType.h"
+
+#if WITH_DEV_AUTOMATION_TESTS
+namespace
+{
+struct FSSDockingWorld
+{
+    UWorld *World = nullptr;
+    UWorld *PreviousWorld = GWorld;
+    USSGameInstance *Instance = nullptr;
+    ASSGameMode *Mode = nullptr;
+    ASSShip *Ship = nullptr;
+    ASSStation *Hub = nullptr;
+    APlayerController *Controller = nullptr;
+
+    bool Initialize(FAutomationTestBase &Test, int32 Wave = 5)
+    {
+        World = UWorld::CreateWorld(EWorldType::Game, false);
+        if (!Test.TestNotNull(TEXT("Create isolated docking world"), World))
+            return false;
+        auto &Context = GEngine->CreateNewWorldContext(EWorldType::Game);
+        Context.SetCurrentWorld(World);
+        Instance = NewObject<USSGameInstance>(GEngine, NAME_None, RF_Transient);
+        Instance->AddToRoot();
+        // No Init/InitializeStandalone or save APIs. Block accidental persistence as well.
+        Instance->AccountStorageBlocked = true;
+        Instance->Session.settings.masterVolume = 0;
+        Instance->Session.account.tutorialFlags = 255;
+        Context.OwningGameInstance = Instance;
+        World->SetGameInstance(Instance);
+        GWorld = World;
+        World->GetWorldSettings()->DefaultGameMode = ASSGameMode::StaticClass();
+        if (!Test.TestTrue(TEXT("Install actual docking GameMode"), World->SetGameMode(FURL())))
+            return false;
+        Mode = World->GetAuthGameMode<ASSGameMode>();
+        World->InitializeActorsForPlay(FURL());
+        Controller = World->SpawnActor<APlayerController>();
+        if (!Test.TestNotNull(TEXT("Resolve actual GameMode"), Mode) ||
+            !Test.TestNotNull(TEXT("Create input-free local controller"), Controller))
+            return false;
+        Controller->SetAsLocalPlayerController();
+        World->AddController(Controller);
+        Controller->SetActorTickEnabled(false);
+        World->BeginPlay();
+        if (!Test.TestTrue(TEXT("Start in-memory arrival fixture"), Instance->Session.StartRun("docking-fixture")))
+            return false;
+        // Seed arrival instead of waiting through five waves. All admission, collision,
+        // docking and disembark code below is the production actor path.
+        for (const TCHAR *Name : {TEXT("Ship"), TEXT("Walker"), TEXT("Hub")})
+        {
+            auto *Property = FindFProperty<FObjectPropertyBase>(ASSGameMode::StaticClass(), Name);
+            if (!Test.TestNotNull(TEXT("Resolve existing orchestration reference"), Property))
+                return false;
+            if (auto *Actor = Cast<AActor>(Property->GetObjectPropertyValue_InContainer(Mode)))
+                Actor->Destroy();
+            Property->SetObjectPropertyValue_InContainer(Mode, nullptr);
+        }
+        auto &Run = Instance->Session.run;
+        Run.wave = Wave;
+        Run.wavesCompleted = Wave;
+        Run.phase = SS::Phase::Approach;
+        Run.phaseSeconds = Run.phaseDuration = 0;
+        Ship = World->SpawnActor<ASSShip>(FVector(13000, -5000, 7200), FRotator(0, 73, 0));
+        if (!Test.TestNotNull(TEXT("Create real flight pawn"), Ship))
+            return false;
+        FindFProperty<FObjectPropertyBase>(ASSGameMode::StaticClass(), TEXT("Ship"))
+            ->SetObjectPropertyValue_InContainer(Mode, Ship);
+        Controller->Possess(Ship);
+        Mode->ClosePanel();
+        Mode->Tick(0.f); // Actual phase transition creates the translated, rotated station.
+        Hub = Cast<ASSStation>(FindFProperty<FObjectPropertyBase>(ASSGameMode::StaticClass(), TEXT("Hub"))
+                                   ->GetObjectPropertyValue_InContainer(Mode));
+        return Test.TestNotNull(TEXT("Real approach creates its physical hub"), Hub) &&
+               Test.TestTrue(TEXT("Arrival remains manually controlled outside 12 metres"),
+                             Run.phase == SS::Phase::Approach && Controller->GetPawn() == Ship);
+    }
+
+    void Place(FVector LocalPosition, FVector LocalDirection)
+    {
+        const auto Transform = Hub->GetActorTransform();
+        Ship->SetActorLocationAndRotation(Transform.TransformPosition(LocalPosition),
+                                          Transform.TransformVectorNoScale(LocalDirection).Rotation());
+    }
+
+    void Reject(FAutomationTestBase &Test, const TCHAR *Name, FVector LocalPosition, FVector LocalDirection)
+    {
+        Place(LocalPosition, LocalDirection);
+        const FVector Before = Ship->GetActorLocation();
+        Mode->Tick(0.f);
+        Test.TestTrue(FString::Printf(TEXT("%s: no assistance or teleport"), Name),
+                      Instance->Session.run.phase == SS::Phase::Approach &&
+                          Ship->GetActorLocation().Equals(Before, .001) && Controller->GetPawn() == Ship);
+    }
+
+    ~FSSDockingWorld()
+    {
+        if (World)
+        {
+            World->EndPlay(EEndPlayReason::Quit);
+            World->DestroyWorld(false);
+            GEngine->DestroyWorldContext(World);
+            GWorld = PreviousWorld;
+        }
+        if (Instance)
+            Instance->RemoveFromRoot();
+    }
+};
+} // namespace
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDockingAdmission, "SpaceSurvival.Integration.DockingAdmission",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDockingAdmission::RunTest(const FString &)
+{
+    FSSDockingWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    // The station presentation regression checks the 16 boundary/deck cubes.
+    // Service consoles and crates also collide; exercise admission physics here.
+    F.Reject(*this, TEXT("Roof dive"), FVector(0, 0, 1000), FVector(850, 0, -780));
+    F.Reject(*this, TEXT("Rear wall approach"), FVector(1850, 0, 220), FVector(-1, 0, 0));
+    F.Reject(*this, TEXT("Side entry"), FVector(350, 800, 220), FVector(500, -800, 0));
+    F.Reject(*this, TEXT("Flight body crosses lane edge"), FVector(-150, 650, 220), FVector(1000, -650, 0));
+    F.Reject(*this, TEXT("Below deck"), FVector(-150, 0, 40), FVector(1000, 0, 180));
+    F.Reject(*this, TEXT("Outside unchanged 12 metre band"), FVector(-400, 0, 220), FVector(1, 0, 0));
+    F.Reject(*this, TEXT("Facing away from dock"), FVector(-150, 0, 220), FVector(-1, 0, 0));
+    F.Reject(*this, TEXT("Aimed at dock but not inbound"), FVector(750, 550, 220), FVector(100, -550, 0));
+
+    auto *Obstacle = F.World->SpawnActor<AActor>();
+    if (!TestNotNull(TEXT("Create temporary swept-clearance obstacle"), Obstacle))
+        return false;
+    auto *Box = NewObject<UBoxComponent>(Obstacle);
+    Obstacle->SetRootComponent(Box);
+    Obstacle->AddInstanceComponent(Box);
+    Box->SetBoxExtent(FVector(30, 80, 150));
+    Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Box->SetCollisionObjectType(ECC_WorldStatic);
+    Box->SetCollisionResponseToAllChannels(ECR_Block);
+    Box->RegisterComponent();
+    Obstacle->SetActorLocationAndRotation(F.Hub->GetActorTransform().TransformPosition(FVector(350, 160, 220)),
+                                          F.Hub->GetActorRotation());
+    F.Place(FVector(-150, 0, 220), FVector(1, 0, 0));
+    FHitResult Hit;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockingRegression), false, F.Ship);
+    TestFalse(
+        TEXT("Obstacle misses the flight center line"),
+        F.World->LineTraceSingleByChannel(Hit, F.Ship->GetActorLocation(), F.Hub->DockPosition(), ECC_Pawn, Query));
+    TestTrue(TEXT("Actual flight sphere catches the offset obstacle"),
+             F.World->SweepSingleByChannel(Hit, F.Ship->GetActorLocation(), F.Hub->DockPosition(), FQuat::Identity,
+                                           ECC_Pawn, F.Ship->Collision->GetCollisionShape(), Query) &&
+                 Hit.GetActor() == Obstacle);
+    F.Reject(*this, TEXT("Swept body blocked despite clear center line"), FVector(-150, 0, 220), FVector(1, 0, 0));
+    Obstacle->SetActorEnableCollision(false);
+    Obstacle->Destroy();
+
+    F.Place(FVector(-150, 0, 220), FVector(1, 0, 0));
+    const FVector AdmissionPosition = F.Ship->GetActorLocation();
+    F.Mode->Tick(0.f);
+    TestTrue(TEXT("Centered inbound lane admits the actual rotated station"),
+             F.Instance->Session.run.phase == SS::Phase::Docking);
+    TestEqual(TEXT("Admission preserves the three second docking duration"), F.Instance->Session.run.phaseDuration,
+              3.0);
+    TestTrue(TEXT("Admission itself does not teleport the player"),
+             F.Ship->GetActorLocation().Equals(AdmissionPosition));
+    F.Ship->Tick(.05f);
+    const double RemainingDistance = FVector::Dist(F.Ship->GetActorLocation(), F.Hub->DockPosition());
+    TestTrue(TEXT("Existing assistance advances smoothly along the cleared path"),
+             RemainingDistance > 800.0 && RemainingDistance < 1000.0);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSContractArrivalFeedback, "SpaceSurvival.Integration.ContractArrivalFeedback",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSContractArrivalFeedback::RunTest(const FString &)
+{
+    for (int32 Case = 0; Case < 3; ++Case)
+    {
+        FSSDockingWorld F;
+        if (!F.Initialize(*this, 10))
+            return false;
+        auto &Session = F.Instance->Session;
+        auto &Run = Session.run;
+        Session.tuning.objectiveContractReward = 137;
+        Session.tuning.pressureContractReward = 193;
+        Run.contract = Case == 2 ? SS::Contract::Pressure : SS::Contract::Objective;
+        Run.contractAcceptedWave = 5;
+        Run.contractTarget = Case == 2 ? 5 : 6;
+        Run.contractProgress = Case == 0 ? 5 : Run.contractTarget;
+        Run.contractResolved = false;
+        Run.credits = Run.totalCreditsEarned = 300;
+        F.Place(FVector(-150, 0, 220), FVector(1, 0, 0));
+        F.Mode->Tick(0.f);
+        if (!TestTrue(TEXT("Contract arrival uses actual docking admission"), Run.phase == SS::Phase::Docking))
+            return false;
+        F.Mode->Tick(3.01f);
+        const int32 Reward = Case == 0 ? 0 : Case == 1 ? 137 : 193;
+        TestTrue(TEXT("Actual station transition settles the contract once"),
+                 Run.phase == SS::Phase::Station && Run.contract == SS::Contract::None && Run.contractResolved &&
+                     Run.credits == 300 + Reward && Run.contractsCompleted == (Case == 0 ? 0 : 1));
+        const FString Expected = Case == 0 ? TEXT("Hunter contract failed / no reward")
+                                           : FString::Printf(TEXT("%s contract complete / +%d credits"),
+                                                             Case == 1 ? TEXT("Hunter") : TEXT("Pressure"), Reward);
+        TestTrue(TEXT("Arrival names the real success, payout or failure"), F.Mode->Announcement.Contains(Expected));
+        const FString Receipt = F.Mode->Announcement;
+        auto *Walker = Cast<ASSWalker>(F.Controller->GetPawn());
+        if (!TestNotNull(TEXT("Arrival possesses the actual disembarking walker"), Walker))
+            return false;
+        for (int32 Frame = 0; Frame < 25; ++Frame)
+        {
+            Walker->Tick(.1f);
+            F.Mode->Tick(.1f);
+        }
+        TestTrue(TEXT("Outcome remains readable after disembark without paying again"),
+                 !Walker->IsDisembarking() && F.Mode->Announcement == Receipt && F.Mode->AnnouncementSeconds > 15.f &&
+                     Run.credits == 300 + Reward);
+        F.Mode->Tick(.1f);
+        TestTrue(TEXT("Repeated station ticks do not synthesize another receipt"),
+                 F.Mode->Announcement == Receipt && F.Mode->AnnouncementSeconds < 15.6f);
+    }
+    return true;
+}
+#endif

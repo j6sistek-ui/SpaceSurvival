@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "SSGameMode.h"
 #include "SSStation.generated.h"
+class ASSShip;
 class UStaticMesh;
 class UStaticMeshComponent;
 class UCameraComponent;
@@ -24,6 +25,7 @@ public:
     TSoftObjectPtr<UStaticMesh> ShellAsset;
     void SetBayShip(int32 ShipKind);
     void ShowBayShip(bool Visible);
+    bool CanAssistDocking(const ASSShip *Ship) const;
     virtual void Tick(float DeltaSeconds) override;
     ESSPanel NearestService(FVector Position, FString &Label) const;
     FVector WalkSpawn() const

@@ -411,6 +411,9 @@ void ASSGameMode::Tick(float Dt)
                 Danger = true;
                 break;
             }
+    const SS::Contract ArrivingContract = S.run.contract;
+    const int32 CreditsBeforeStep = S.run.credits;
+    const int32 ContractsBeforeStep = S.run.contractsCompleted;
     S.Tick(Dt, Danger);
 #if CSV_PROFILER && !CSV_PROFILER_MINIMAL
     // Sample after the domain step; avoid the threat actor scan outside an enabled capture.
@@ -506,7 +509,23 @@ void ASSGameMode::Tick(float Dt)
                 "STATION DETECTED  |  Approach the marked corridor. Final landing assistance engages inside 12 m."));
         }
         if (S.run.phase == SS::Phase::Station)
+        {
             EnterStation();
+            // This is an arrival notification, not a saved receipt. Resume does not
+            // synthesize a contract result after the domain has already settled it.
+            if (ArrivingContract != SS::Contract::None && S.run.contract == SS::Contract::None)
+            {
+                const TCHAR *Name = ArrivingContract == SS::Contract::Objective ? TEXT("Hunter") : TEXT("Pressure");
+                if (S.run.contractsCompleted > ContractsBeforeStep)
+                    Announce(FString::Printf(TEXT("Dockmaster: Welcome aboard. %s contract complete / +%d credits."),
+                                             Name, S.run.credits - CreditsBeforeStep));
+                else
+                    Announce(FString::Printf(TEXT("Dockmaster: Welcome aboard. %s contract failed / no reward. "
+                                                  "Your credits are unchanged."),
+                                             Name));
+                AnnouncementSeconds = 18.f; // Remains readable after the 2.4-second disembark.
+            }
+        }
         PreviousPhase = int32(S.run.phase);
         PreviousWave = S.run.wave;
     }
@@ -514,7 +533,8 @@ void ASSGameMode::Tick(float Dt)
     {
         const FVector ToDock = Hub->DockPosition() - Ship->GetActorLocation();
         if (ToDock.Size() < 1200.f &&
-            FVector::DotProduct(Ship->GetActorForwardVector(), ToDock.GetSafeNormal()) > .45f && S.BeginDocking())
+            FVector::DotProduct(Ship->GetActorForwardVector(), ToDock.GetSafeNormal()) > .45f &&
+            Hub->CanAssistDocking(Ship) && S.BeginDocking())
         {
             Ship->SetDockingTarget(Hub->DockPosition(), Hub->GetActorRotation());
             Announce(TEXT("Docking assistance engaged. Welcome to port."));
@@ -678,6 +698,10 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     if (!GI)
         return;
     auto &S = GI->Session;
+    const bool SettingsRefresh = NewPanel == Panel && (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics ||
+                                                       Panel == ESSPanel::Audio || Panel == ESSPanel::Controls);
+    const int32 SelectedAction =
+        SettingsRefresh && Entries.IsValidIndex(SelectedEntry) ? Entries[SelectedEntry].Action : INDEX_NONE;
     Panel = NewPanel;
     Entries.Empty();
     SelectedEntry = 0;
@@ -812,18 +836,52 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     case ESSPanel::Depot:
         PanelTitle = Panel == ESSPanel::Depot ? TEXT("MOBILE DEPOT / PASSING DEALS") : TEXT("CORE UPGRADES");
         PanelDetail =
-            FString::Printf(TEXT("Credits %d  |  Purchased tiers remain yours until the run ends."), S.run.credits);
+            FString::Printf(TEXT("Credits %d | Upgrades last until the run ends.\n"
+                                 "Hull/Shield add capacity only; repair separately. Engine also raises acceleration; "
+                                 "Thrusters also improve response."),
+                            S.run.credits);
         for (int I = 0; I < 5; ++I)
         {
             const bool Available =
                 Panel != ESSPanel::Depot || (IsValid(ActiveBeacon) && ActiveBeacon->GetOffers().Contains(I));
             if (!Available)
                 continue;
+            const int Tier = S.run.tiers[I];
+            if (Tier >= 5)
+            {
+                AddEntry(FString::Printf(TEXT("%s V | MAX TIER"), UpgradeNames[I]), 100 + I, false);
+                continue;
+            }
             const int Price =
                 S.UpgradePrice(SS::Upgrade(I), Panel == ESSPanel::Depot ? ActiveBeacon->GetDiscount() : 1.f);
-            AddEntry(FString::Printf(TEXT("%s %d -> %d   |   %d credits"), UpgradeNames[I], S.run.tiers[I],
-                                     FMath::Min(5, S.run.tiers[I] + 1), Price),
-                     100 + I, S.run.tiers[I] < 5 && S.run.credits >= Price);
+            // Preview the actual effective stat, including ship, contract, module and impairment modifiers.
+            SS::Session Preview = S;
+            ++Preview.run.tiers[I];
+            const auto Before = S.Stats(), After = Preview.Stats();
+            FString Benefit;
+            switch (SS::Upgrade(I))
+            {
+            case SS::Upgrade::Hull:
+                Benefit = FString::Printf(TEXT("%.0f -> %.0f max"), Before.maxHull, After.maxHull);
+                break;
+            case SS::Upgrade::Shield:
+                Benefit = FString::Printf(TEXT("%.0f -> %.0f max"), Before.maxShield, After.maxShield);
+                break;
+            case SS::Upgrade::Engine:
+                Benefit = FString::Printf(TEXT("%.1f -> %.1f m/s"), Before.speed / 100.0, After.speed / 100.0);
+                break;
+            case SS::Upgrade::Thrusters:
+                Benefit = FString::Printf(TEXT("%.1f -> %.1f m/s"), Before.maneuver / 100.0, After.maneuver / 100.0);
+                break;
+            case SS::Upgrade::Weapon:
+                Benefit = FString::Printf(TEXT("%.1f -> %.1f damage"), Before.weaponDamage, After.weaponDamage);
+                break;
+            }
+            const TCHAR *Tiers[] = {TEXT("I"), TEXT("II"), TEXT("III"), TEXT("IV"), TEXT("V")};
+            AddEntry(FString::Printf(TEXT("%s %s -> %s | %s | %d credits"), UpgradeNames[I],
+                                     Tiers[FMath::Clamp(Tier - 1, 0, 4)], Tiers[FMath::Clamp(Tier, 0, 4)], *Benefit,
+                                     Price),
+                     100 + I, Price >= 0 && S.run.credits >= Price);
         }
         if (Panel == ESSPanel::Depot)
         {
@@ -883,10 +941,16 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                                            "receiver powered. Restore its antenna to recover the cargo tip.");
         if (PendingReward)
         {
-            AddEntry(TEXT("Fit Vector Thrusters"), 46);
-            AddEntry(TEXT("Fit Overdrive Cooling"), 47);
+            AddEntry(S.run.utility == SS::Utility::VectorThrusters ? TEXT("Vector Thrusters / already fitted")
+                                                                   : TEXT("Fit Vector Thrusters"),
+                     46, S.run.utility != SS::Utility::VectorThrusters);
+            AddEntry(S.run.utility == SS::Utility::OverdriveCooling ? TEXT("Overdrive Cooling / already fitted")
+                                                                    : TEXT("Fit Overdrive Cooling"),
+                     47, S.run.utility != SS::Utility::OverdriveCooling);
             if (RewardCombat)
-                AddEntry(TEXT("Replace active weapon with Heavy Cannon"), 48);
+                AddEntry(S.run.weapon == SS::Weapon::HeavyCannon ? TEXT("Heavy Cannon / already fitted")
+                                                                 : TEXT("Replace active weapon with Heavy Cannon"),
+                         48, S.run.weapon != SS::Weapon::HeavyCannon);
         }
         else
             AddEntry(FString::Printf(TEXT("Restore the beacon / recover %d credits"),
@@ -921,6 +985,13 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     }
     if (NewPanel != ESSPanel::Launch || !S.AtSliceBoundary())
         AddEntry(TEXT("Back"), 0);
+    if (SelectedAction != INDEX_NONE)
+    {
+        const int32 Restored = Entries.IndexOfByPredicate([SelectedAction](const FSSMenuEntry &Entry)
+                                                          { return Entry.Action == SelectedAction; });
+        if (Restored != INDEX_NONE)
+            SelectedEntry = Restored;
+    }
 }
 void ASSGameMode::ActivateEntry(int32 Index)
 {
@@ -931,6 +1002,8 @@ void ASSGameMode::ActivateEntry(int32 Index)
         return;
     auto &S = GI->Session;
     const int A = Entries[Index].Action;
+    // Mouse activation and keyboard/controller activation refresh the same selected action.
+    SelectedEntry = Index;
     const ESSPanel Current = Panel;
     if (A == 0 || A == 1)
     {
@@ -1152,6 +1225,15 @@ void ASSGameMode::ActivateEntry(int32 Index)
     {
         if (!S.run.pendingReward)
             return;
+        const bool AlreadyFitted =
+            A == 48 ? S.run.weapon == SS::Weapon::HeavyCannon
+                    : S.run.utility == (A == 46 ? SS::Utility::VectorThrusters : SS::Utility::OverdriveCooling);
+        if (AlreadyFitted || (A == 48 && !S.run.rewardCombat))
+        {
+            Announce(AlreadyFitted ? TEXT("Already fitted. Choose another reward.") : TEXT("Reward unavailable."));
+            OpenPanel(Current);
+            return;
+        }
         const bool Success =
             A == 48 ? S.ReplaceWeapon(SS::Weapon::HeavyCannon)
                     : S.EquipUtility(A == 46 ? SS::Utility::VectorThrusters : SS::Utility::OverdriveCooling);

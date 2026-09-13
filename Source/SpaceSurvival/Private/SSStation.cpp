@@ -10,6 +10,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -61,6 +62,32 @@ void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Pan
     Text->SetTextRenderColor(FColor(130, 230, 245));
     Text->RegisterComponent();
     Services.Add({Position, Label, Panel});
+}
+bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
+{
+    if (!IsValid(Ship) || !Ship->Collision)
+        return false;
+    const FTransform HubTransform = GetActorTransform();
+    const float SmallestScale = HubTransform.GetScale3D().GetAbsMin();
+    if (SmallestScale <= UE_SMALL_NUMBER)
+        return false;
+    const float Radius = Ship->Collision->GetScaledSphereRadius() / SmallestScale;
+    const FVector Local = HubTransform.InverseTransformPosition(Ship->GetActorLocation());
+    // BuildHub's split wall ends at X=-1675 with a 1400 cm opening. Keep the
+    // complete flight body above the deck (-10) and below the bay beams (967.5).
+    // Admission is on the inbound side of the dock; roof/rear/side dives retain control.
+    if (Local.X < -1675.f || Local.X >= 850.f || FMath::Abs(Local.Y) > 700.f - Radius || Local.Z < -10.f + Radius ||
+        Local.Z > 967.5f - Radius ||
+        FVector::DotProduct(Ship->GetActorForwardVector(), GetActorForwardVector()) <= .45f)
+        return false;
+    FHitResult Hit;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockAdmission), false, Ship);
+    const FCollisionResponseParams Responses(Ship->Collision->GetCollisionResponseToChannels());
+    // Check the actual flight collision body, including the physical station. Do not
+    // admit a path merely because its center line misses a rib or another blocker.
+    return !GetWorld()->SweepSingleByChannel(
+        Hit, Ship->GetActorLocation(), DockPosition(), Ship->Collision->GetComponentQuat(),
+        Ship->Collision->GetCollisionObjectType(), Ship->Collision->GetCollisionShape(), Query, Responses);
 }
 void ASSStation::BuildHub(bool bHome)
 {

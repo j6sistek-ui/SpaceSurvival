@@ -138,12 +138,14 @@ class SPACESURVIVAL_API ASSProjectile : public ASSWorldBody
     GENERATED_BODY()
 public:
     ASSProjectile();
-    void Launch(FVector Direction, float Speed, float Damage, bool bFromPlayer, AActor *Source);
+    void Launch(FVector Direction, float Speed, float Damage, bool bFromPlayer, AActor *Source,
+                float MaximumTravel = -1.f);
     virtual void Tick(float DeltaSeconds) override;
     virtual void ReceiveWeaponHit(float Damage) override;
 
 private:
     bool bPlayerShot = false;
+    float TravelRemaining = -1.f;
     TWeakObjectPtr<AActor> SourceActor;
 };
 

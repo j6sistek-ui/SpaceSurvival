@@ -244,6 +244,16 @@ void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)
         this, LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Impact.Impact")), GetActorLocation(),
         float(GI->Session.settings.masterVolume * GI->Session.settings.effectsVolume));
 }
+void ASSShip::ReceiveImpact(float Amount, FVector AwayFromContact)
+{
+    ReceiveDamage(Amount, SS::DamageType::Kinetic);
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || !GI->Session.IsFlying() || !FMath::IsFinite(Amount) || Amount <= 0.f || AwayFromContact.ContainsNaN())
+        return;
+    // A contact changes velocity once, in cm/s. Gravity remains an acceleration
+    // integrated over time; treating a single impact that way weakened it at high FPS.
+    Velocity += AwayFromContact.GetSafeNormal() * FMath::Min(1400.f, Amount * 20.f);
+}
 void ASSShip::Fire()
 {
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -274,7 +284,7 @@ void ASSShip::Fire()
     {
         auto *Shot = GetWorld()->SpawnActor<ASSProjectile>(Start, Direction.Rotation());
         if (Shot)
-            Shot->Launch(Direction, 19000.f, Damage, true, this);
+            Shot->Launch(Direction, 19000.f, Damage, true, this, Tuning->WeaponRange);
     }
     else
     {
@@ -287,7 +297,7 @@ void ASSShip::Fire()
             Body->ReceiveWeaponHit(Damage);
         auto *Trace = GetWorld()->SpawnActor<ASSProjectile>(Start, Direction.Rotation());
         if (Trace)
-            Trace->Launch(Direction, 55000.f, 0.f, true, this);
+            Trace->Launch(Direction, 55000.f, 0.f, true, this, Tuning->WeaponRange);
     }
     UGameplayStatics::PlaySoundAtLocation(
         this,

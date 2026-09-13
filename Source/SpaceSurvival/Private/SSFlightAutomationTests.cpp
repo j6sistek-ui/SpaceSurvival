@@ -369,6 +369,86 @@ bool FSSFlightDodgeCollision::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSImpactFrameRates, "SpaceSurvival.Flight.ContactImpactResponse",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSImpactFrameRates::RunTest(const FString &)
+{
+    FVector ReferenceVelocity = FVector::ZeroVector;
+    FVector ReferenceTravel = FVector::ZeroVector;
+    for (int32 Hertz : {120, 30, 60, 144})
+    {
+        FSSFlightWorld Fixture;
+        if (!Fixture.Initialize(*this))
+            return false;
+        auto *Body = Fixture.Target(FVector(0, 180, 0));
+        if (!TestNotNull(TEXT("Create a real grazing asteroid contact"), Body))
+            return false;
+        Body->Configure(ESSWorldKind::SmallAsteroid, 120.f, 30.f);
+        Body->SetLinearVelocity(Fixture.Ship->GetVelocity());
+        const double Shield = Fixture.Instance->Session.run.shield;
+        const FVector Before = Fixture.Ship->GetVelocity();
+        Fixture.Step(1.f / Hertz);
+        const FString Label = FString::Printf(TEXT("%d Hz contact"), Hertz);
+        TestEqual(Label + TEXT(" routes a single 30-point impact through shield"), Fixture.Instance->Session.run.shield,
+                  Shield - 30.0);
+        const FVector Impulse = Fixture.Ship->GetVelocity() - Before;
+        TestTrue(Label + TEXT(" causes an immediate bounded outward deflection"),
+                 Impulse.Y < -450.f && Impulse.Size() <= 601.f && FMath::Abs(Impulse.X) < 1.f);
+        const FVector Origin = Fixture.Ship->GetActorLocation();
+        Fixture.Frames(Hertz / 4, 1.f / Hertz);
+        const float Remainder = .25f - float(Hertz / 4) / Hertz;
+        if (Remainder > .00001f)
+            Fixture.Step(Remainder);
+        const FVector Travel = Fixture.Ship->GetActorLocation() - Origin;
+        TestEqual(Label + TEXT(" contact cooldown prevents repeat damage during recovery"),
+                  Fixture.Instance->Session.run.shield, Shield - 30.0);
+        TestTrue(Label + TEXT(" preserves forward flight while controls recover"),
+                 Fixture.Ship->GetVelocity().X > 2000.f && Fixture.Ship->GetVelocity().Y > Impulse.Y &&
+                     Travel.Y < -40.f && Travel.Y > -150.f);
+        if (Hertz == 120)
+        {
+            ReferenceVelocity = Fixture.Ship->GetVelocity();
+            ReferenceTravel = Travel;
+        }
+        else
+        {
+            TestTrue(Label + TEXT(" recovery velocity agrees with 120 Hz within 25 cm/s"),
+                     Fixture.Ship->GetVelocity().Equals(ReferenceVelocity, 25.f));
+            TestTrue(Label + TEXT(" quarter-second recovery travel agrees within 12 cm"),
+                     Travel.Equals(ReferenceTravel, 12.f));
+        }
+        AddInfo(FString::Printf(TEXT("%s: impulse %.3f cm/s, lateral travel %.3f cm, residual %.3f cm/s"), *Label,
+                                Impulse.Size(), Travel.Y, Fixture.Ship->GetVelocity().Y));
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSImpactCrossing, "SpaceSurvival.Flight.SweptImpactDirection",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSImpactCrossing::RunTest(const FString &)
+{
+    FSSFlightWorld Fixture;
+    if (!Fixture.Initialize(*this))
+        return false;
+    auto *Body = Fixture.Target(FVector(400, 0, 0));
+    if (!TestNotNull(TEXT("Create a real asteroid across the high-speed path"), Body))
+        return false;
+    Body->Configure(ESSWorldKind::SmallAsteroid, 120.f, 30.f);
+    Body->Tick(0.f);
+    const FVector Before = Fixture.Ship->GetVelocity();
+    const double Shield = Fixture.Instance->Session.run.shield;
+    // A 100 ms crossing at 8000 cm/s ends beyond the obstacle, outside its radius.
+    Fixture.Ship->AddActorWorldOffset(FVector(800, 0, 0));
+    Body->Tick(.1f);
+    const FVector Deflection = Fixture.Ship->GetVelocity() - Before;
+    TestEqual(TEXT("Continuous crossing still applies exactly one kinetic hit"), Fixture.Instance->Session.run.shield,
+              Shield - 30.0);
+    TestTrue(TEXT("Center crossing deflects against entry rather than accelerating out the far side"),
+             Deflection.X < -599.f && FMath::Abs(Deflection.Y) < .01f && FMath::Abs(Deflection.Z) < .01f);
+    TestTrue(TEXT("Impact preserves forward momentum"), Fixture.Ship->GetVelocity().X > 1000.f);
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSFlightManualWeapons, "SpaceSurvival.Flight.ManualWeaponImpacts",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSFlightManualWeapons::RunTest(const FString &)
@@ -421,6 +501,46 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         TestEqual(TEXT("Player weapon does not damage its source pawn"), Fixture.Instance->Session.run.shield,
                   Fixture.Instance->Session.Stats().maxShield);
     }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSWeaponRange, "SpaceSurvival.Flight.CannonRangeAndHitch",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSWeaponRange::RunTest(const FString &)
+{
+    for (float Step : {1.f / 30.f, 1.f / 144.f, .35f})
+        for (bool BeyondRange : {false, true})
+        {
+            FSSFlightWorld Fixture;
+            if (!Fixture.Initialize(*this, SS::Weapon::HeavyCannon))
+                return false;
+            Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
+            Fixture.Ship->Tuning->WeaponRange = 4000.f;
+            Fixture.Frames(30);
+            const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
+            const FVector AimPoint =
+                Fixture.Ship->Camera->GetComponentLocation() + Fixture.Ship->Camera->GetForwardVector() * 4000.f;
+            const FVector Direction = (AimPoint - Muzzle).GetSafeNormal();
+            auto *Target =
+                Fixture.Target(Muzzle + Direction * (BeyondRange ? 4500.f : 3500.f) - Fixture.Ship->GetActorLocation());
+            if (!TestNotNull(TEXT("Create isolated range target"), Target))
+                return false;
+            Fixture.Ship->Fire();
+            ASSProjectile *Round = nullptr;
+            for (TActorIterator<ASSProjectile> It(Fixture.World); It; ++It)
+                Round = *It;
+            if (!TestNotNull(TEXT("Actual Heavy Cannon creates a round"), Round))
+                return false;
+            for (int32 Frame = 0; Frame < 150 && !Round->IsActorBeingDestroyed(); ++Frame)
+                Fixture.Step(Step);
+            const FString Label = FString::Printf(TEXT("Cannon dt=%.6f target=%s"), Step,
+                                                  BeyondRange ? TEXT("beyond range") : TEXT("inside range"));
+            TestTrue(Label + TEXT(" consumes or expires the round"), Round->IsActorBeingDestroyed());
+            TestEqual(Label + TEXT(" damages only an in-range target"), Target->IsActorBeingDestroyed(), !BeyondRange);
+            if (BeyondRange)
+                TestTrue(Label + TEXT(" final sweep ends at the configured 4000 cm muzzle range"),
+                         FMath::IsNearlyEqual(FVector::Distance(Muzzle, Round->GetActorLocation()), 4000.0, .1));
+        }
     return true;
 }
 

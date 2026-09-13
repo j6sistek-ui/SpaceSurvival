@@ -1,5 +1,7 @@
 # Phase 1 validation record
 
+Latest gameplay source: **35/35 Unreal tests**, zero warnings/failures/not-run at 14:39:19 UTC, Editor 12.79s. See [gameplay pass](GAMEPLAY_QUALITY.md) and [source-bound record](validation/2026-09-13-gameplay-quality.json). The prior station/sky assets are byte-identical; package/native checks remain separate.
+
 **Phase 1: PARTIAL.** The latest integrated station/sky source built in **27.70 seconds** and passed **25 Unreal tests** at **13:43:51 UTC** (2.552166 seconds, zero warnings/failures/not-run cases). Full content authoring and fresh rendering-enabled validation passed; all build-snapshot bytes stayed unchanged. The [runtime receipt](validation/2026-09-13-sky-station-runtime.json) binds DLL `01906d3f...`, source files, logs and the rendered Station 1 journey.
 
 This milestone adds the authored station shell with original collision/services and a complete fallback, the native 8K Milky Way sky, an on-foot HUD, and Settings asset acknowledgements. The [station regression receipt](validation/2026-09-13-station-shell-integration.json) retains the earlier 25-test build and resolved test-only channel-sentinel error. The latest rendered run reached docking, exit and Station 1; the sky was fully resident at 8192x4096 / 43,712 KiB and the hero at 2048x2048. Screenshot runs establish discrete appearance and residency, not performance or continuous animation quality. Current content has 120 project packages.
