@@ -368,7 +368,7 @@ Effort: S = bounded definition task; M = several coupled deliverables; L = repea
 
 ### 6.6 Mobile depot
 
-**Needs:** Beacon-marked optional merchant stop with physical parking pad, aboard-ship service menu, subset upgrades/deals and clear departure; no disembarkation.
+**Needs:** Beacon-marked optional merchant stop with suspended gravity/magnetic mooring, aboard-ship service menu, subset upgrades/deals and clear lock/release cues; no landing pad or disembarkation..
 
 **Proposed owner:** Agent + environment artist. **Source strategy:** Kitbash existing station/ship modules.
 
@@ -376,7 +376,7 @@ Effort: S = bounded definition task; M = several coupled deliverables; L = repea
 
 **Start guidance:** Start once required interfaces/reference decisions are stable; integrated acceptance requires listed predecessors.
 
-**Accept when:** Exactly one depot appears; player deliberately approaches and parks on a pad, uses quick services while aboard, then leaves; passing does not commit the player.
+**Accept when:** Exactly one depot appears; player deliberately approaches and opts into a suspended mooring, uses quick services while aboard, then releases into flight; passing does not commit the player..
 
 **Basis:** Owner depot clarification 2026-09-13; Briefing p14. **State:** Planned; quality acceptance open.
 

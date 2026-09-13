@@ -28,10 +28,14 @@ The intended wormhole experience includes temporary uncertainty about location, 
 
 ## D01 - Owner depot behavior clarification (2026-09-13)
 
-This is a direct design clarification, not an uncertain bug diagnosis. Paraphrase: the depot is a floating beacon-like stop; if the player chooses to stop, the ship parks on a physical pad. Acornaut stays aboard. A quick service menu opens and the player then departs, like a drive-through.
+Paraphrase of the corrected owner direction: the depot is a floating beacon-like stop. The player chooses to approach and park suspended in a gravity or magnetic lock, stays aboard, uses a quick service menu, and releases back into flight. The subsequent owner correction explicitly supersedes the earlier physical-pad description: no landing pad.
 
-This supersedes the planning assumption that depot shopping must remain usable during active flight. Deliberate pad parking is the localized exception to normal forward survival. Preserve exactly one depot encounter, its limited subset of upgrades/deals, and its distinction from full-service walkable stations. No on-foot depot interior is needed.
+This supersedes the planning assumption that depot shopping must remain usable during active flight. Preserve exactly one depot encounter, its limited subset of upgrades/deals, and its distinction from full-service walkable stations. No on-foot depot interior is needed. The supplied reference suggests a compact orbital structure with a broad disk and narrower tower; it is a form reference, not a final production model specification.
 
-Proposed presentation interpretation from the earlier following-marker complaint: the beacon marks the encounter location rather than persistently accompanying the ship. Actual assistance/capture behavior, incoming-hazard handling during service, and any service-time limit remain to be specified; no invulnerability, global pause, timer or teleport is implied. Do not infer these unresolved rules from the drive-through analogy.
+Proposed presentation interpretation from the earlier following-marker complaint: the beacon marks the encounter location rather than persistently accompanying the ship. Actual assistance/capture behavior, incoming-hazard handling during service, and any service-time limit remain to be specified; no invulnerability, global pause, timer or teleport is implied.
 
-WBS6.6 and the asset bill now include a ship-sized parking pad and aboard-ship menu. This records intended behavior only; the current released build has not been changed.
+WBS6.6 and the asset bill now require a suspended mooring zone, lock/release cues and aboard-ship menu. This records intended behavior only; the current released build has not been changed.
+
+## F11 - Uneven hero leg shape (2026-09-13)
+
+Owner reports one hero leg looks oddly pinched while the other looks normal. Exact pose, side and reproducibility are UNCONFIRMED. Cause is not established: inspect the neutral mesh, transforms, rig/skin weights and walking poses before attributing it to the source model or animation. Compare both legs in equivalent poses and camera views, then check the fix in motion. Track under character mesh/rig/animation quality; no repair or verification is claimed today.
