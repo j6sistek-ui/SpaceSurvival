@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-09-13T11:03:54.992599+00:00",
+  "status": "EDITOR_BUILD_AND_21_AUTOMATION_TESTS_PASS_NATIVE_VISUAL_PENDING",
+  "sourceBase": "ccfc91400ca10168dba7471fa5a2f3c888a32d6e",
+  "sourceFiles": [
+    {
+      "path": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+      "sha256LF": "23ba7043e4b4b68850c48323ef6f556b2139f3734e0741e404dbc545e2448314"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSStation.cpp",
+      "sha256LF": "a11593650411d2608b789e4904d0bd74adb805c39f8f8d1e50fa77b4495306af"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSWorldActors.cpp",
+      "sha256LF": "852603177f45b833b6389e1024989972414e552fb36d0e5f65c8d01827d4a13e"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSIntegrationAutomationTests.cpp",
+      "sha256LF": "0841331ddb9eda174a2ee1b39dafceca2651bbd93a152e0fdec4702fc41d2278"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSStationPoseTransition.cpp",
+      "sha256LF": "ba631b57b2feab22737b5c53f0a20e31f00850172e541dffa7d24c27d7767cf5"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSContentTypes.h",
+      "sha256LF": "2a29d64e6268ce9887d1d82bb896f249025d596228586d6ac8fbee679ca8bddf"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSStation.h",
+      "sha256LF": "1c107a5e73b9b4f7a4f7925da1cd2aa58622a25699e428a447d75ad07de2c46a"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSStationPoseTransition.h",
+      "sha256LF": "4001c65c61a6230d503199c494f1373fe84dd4e756f270ba7309728f1f471f56"
+    }
+  ],
+  "editorDllSha256": "ce1f1c199c5cf15adc7f97947e18022e67facb6d571dcec2589d1a313f989e12",
+  "build": {
+    "log": ".agent/local/EnemyPoseEditor.log",
+    "logSha256": "da2df4679d16f8e69b329718b7eaacf7f43f8d2703556bbb9c544f12af270dea",
+    "seconds": 28.25,
+    "result": "Succeeded",
+    "warnings": [
+      "UE Character.h C4996",
+      "Nonpreferred installed MSVC toolchain"
+    ]
+  },
+  "automation": {
+    "report": ".agent/local/EnemyPose-Initial-tests.json",
+    "reportSha256": "3651a8d4575499b5802bed6cb5d0f83e5b1092211b15c5f327cf422f2c1cec8c",
+    "reportCreatedOn": "2026.09.13-10.51.12",
+    "succeeded": 21,
+    "failed": 0,
+    "succeededWithWarnings": 0,
+    "notRun": 0,
+    "seconds": 3.7134785652160645
+  },
+  "verified": [
+    "Live pilot pose snapshot preserved across all initial walker bones at pilot time 1.137 seconds.",
+    "Proxy returns to authored exit pose at 0.4 seconds and releases source copy.",
+    "Wrong mesh and wrong bone order rejected.",
+    "Existing CPU-skinned foot contact and 30/60/144 Hz exit and walking handoff retained."
+  ],
+  "independentReview": "integration_review inspected copying, lifetime, bone mapping, clocks and fallbacks; no concrete blocker.",
+  "limits": [
+    "No rendered docking pose-blend acceptance yet.",
+    "Paired grip animation candidates were not selected or imported for this test.",
+    "Enemy mesh defaults changed; persisted DataAsset migration and rendered gameplay review still pending at this build.",
+    "Package10 excludes this source.",
+    "No physical input, listening, natural pacing, owner art acceptance or final completion."
+  ]
+}

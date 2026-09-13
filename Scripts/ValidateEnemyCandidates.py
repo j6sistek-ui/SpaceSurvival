@@ -8,6 +8,7 @@ import re
 import sys
 import time
 import traceback
+import uuid
 
 import unreal as u
 
@@ -15,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("ss_enemy_author", ROOT / "Scripts/AuthorEnemyCandidates.py")
 author = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(author)
-OUT = author.SOURCE
+OUT = author.OUTPUT
 LIB = u.EditorAssetLibrary
 EDIT = u.MaterialEditingLibrary
 
@@ -57,7 +58,7 @@ def validate():
     editor = u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
     result = {"status": "PERSISTED_SEPARATE_ENEMY_ASSETS_VERIFIED_NOT_ADOPTED", "errors": [],
               "engine": u.SystemLibrary.get_engine_version(), "meshes": [], "materials": [],
-              "source_report_sha256": author.sha(OUT / "SourceReport.json")}
+              "source_report_sha256": author.sha(author.SOURCE / "SourceReport.json")}
     for item in report["materials"]:
         material = LIB.load_asset(author.material_path(item["name"]))
         assert isinstance(material, u.Material)
@@ -122,6 +123,8 @@ def validate():
 
 
 def preview(record, protected):
+    preview_out = OUT / "Native" / uuid.uuid4().hex
+    preview_out.mkdir(parents=True)
     u.EditorLoadingAndSavingUtils.new_blank_map(False)
     actors=u.get_editor_subsystem(u.EditorActorSubsystem)
     world=u.get_editor_subsystem(u.UnrealEditorSubsystem).get_editor_world()
@@ -177,7 +180,7 @@ def preview(record, protected):
             record["errors"].append("Protected source/config/content changed: "+",".join(changed))
         record["existing_protected_files_unchanged"]=len(protected) if not changed else None
         record["status"]="NATIVE_SEPARATE_ENEMY_PREVIEWS_CAPTURED_NOT_ADOPTED" if not record["errors"] else "FAILED"
-        (OUT/"UnrealPreview.json").write_text(json.dumps(record,indent=2)+"\n",encoding="utf-8", newline="\n")
+        (preview_out/"UnrealPreview.json").write_text(json.dumps(record,indent=2)+"\n",encoding="utf-8", newline="\n")
         u.unregister_slate_post_tick_callback(state["handle"])
         u.EditorPythonScripting.set_keep_python_script_alive(False)
         u.log("ENEMY_CANDIDATE_PREVIEW_FINISHED")
@@ -188,7 +191,7 @@ def preview(record, protected):
         try:
             state["frames"]+=1
             kind,name,position=cases[state["index"]]
-            path=OUT/("Unreal"+kind+name+".png")
+            path=preview_out/("Unreal"+kind+name+".png")
             if state["task"] is None and state["frames"]>=90 and time.monotonic()-state["case_start"]>3:
                 u.AutomationLibrary.finish_loading_before_screenshot()
                 state["task"]=u.AutomationLibrary.take_high_res_screenshot(1400,1000,str(path),camera,delay=.3)
@@ -213,11 +216,18 @@ def preview(record, protected):
     state["handle"]=u.register_slate_post_tick_callback(tick)
 
 
-def main(render=False):
+def main(render=False, verify_adoption=False):
+    OUT.mkdir(parents=True, exist_ok=True)
     protected={p:author.sha(p) for directory in ("Source","Config","Content") for p in (ROOT/directory).rglob("*") if p.is_file()}
     result={"status":"FAILED","errors":[]}
     try:
         result=validate()
+        if verify_adoption:
+            data = LIB.load_asset(author.BASE + "/Data/DA_Phase1")
+            assert isinstance(data, u.SSPhase1Data)
+            result["roster"] = author.roster(data)
+            result["status"] = "PERSISTED_ENEMY_ASSETS_AND_ROSTER_VERIFIED_NOT_GAMEPLAY"
+            result["limits"][0] = "Selected in persisted DataAsset; no gameplay or owner visual acceptance from asset checks."
         assert all(author.sha(p)==d for p,d in protected.items()),"Validation changed protected files"
         result["existing_protected_files_unchanged"]=len(protected)
     except Exception as error:

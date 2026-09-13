@@ -247,7 +247,7 @@ struct FSSEnemyDefinition
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     ESSWorldKind Kind = ESSWorldKind::Pursuer;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FName MeshName = TEXT("SM_Pursuer");
+    FName MeshName = TEXT("SM_PursuerCandidateV1");
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1", ClampMax = "10"))
     int32 MinimumWave = 3;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
@@ -331,7 +331,7 @@ struct FSSEnemyDefinition
     {
         if (Kind == ESSWorldKind::Flanker)
         {
-            MeshName = TEXT("SM_Flanker");
+            MeshName = TEXT("SM_FlankerCandidateV1");
             MinimumWave = 4;
             ForwardOffset = 2100.f;
             LateralAmplitude = 1900.f;

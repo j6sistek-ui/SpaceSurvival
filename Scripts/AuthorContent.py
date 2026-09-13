@@ -409,6 +409,7 @@ class Author:
                 raise RuntimeError("DA_Phase1 utilities require exactly the two valid, bounded Phase 1 definitions")
             if not asset.has_valid_contract_tuning():
                 raise RuntimeError("DA_Phase1 contract magnitudes require valid bounded values")
+            source_module("ss_enemy_candidates", ROOT / "Scripts/AuthorEnemyCandidates.py").roster(asset, migrate=True)
             # Persist added tuning fields without resetting designer-authored values.
             self.save(asset)
             return
@@ -497,6 +498,7 @@ class Author:
         for item in self.mesh_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.static_mesh(asset))
         self.stage("Photographic asteroid surfaces", lambda: source_module("ss_rock_photographic", ROOT / "Scripts/AuthorRockPhotographic.py").main(adopt_existing_meshes=True))
+        self.stage("Authored enemy candidates", lambda: source_module("ss_enemy_candidates", ROOT / "Scripts/AuthorEnemyCandidates.py").main())
         self.stage("Authored Acorn ship", lambda: source_module("ss_acorn_ship", ROOT / "Scripts/AuthorAcornShip.py").main())
         self.stage("Preserved Acornaut import", self.hero)
         self.stage("Authored pilot animation", self.pilot)

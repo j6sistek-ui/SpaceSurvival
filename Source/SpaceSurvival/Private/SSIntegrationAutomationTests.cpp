@@ -5,6 +5,8 @@
 #include "SSPhase1Data.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimSingleNodeInstance.h"
+#include "Animation/PoseSnapshot.h"
+#include "SSStationPoseTransition.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -114,15 +116,19 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     Controller->Possess(Walker);
     Ship->SetActorLocationAndRotation(Hub->DockPosition(), Hub->GetActorRotation());
     SeatedAnimation->SetPlaying(false);
-    SeatedAnimation->SetPosition(0.f, false);
+    SeatedAnimation->SetPosition(1.137f, false);
     Ship->Pilot->TickAnimation(0.f, false);
     Ship->Pilot->RefreshBoneTransforms();
+    FPoseSnapshot SeatedPose;
+    Ship->Pilot->SnapshotPose(SeatedPose);
+    TestTrue(TEXT("Capture the actual nonzero-phase pilot pose"), SeatedPose.bIsValid);
     const FTransform Seated = Ship->Pilot->GetComponentTransform();
     const FVector Pelvis = Ship->Pilot->GetSocketLocation(TEXT("Pelvis"));
     const FVector End = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
     TestTrue(TEXT("Exit is the authored 2.4 second clip without extracted root motion"),
              FMath::IsNearlyEqual(ExitAnimation->GetPlayLength(), 2.4f, .001f) && !ExitAnimation->HasRootMotion());
-    if (!TestTrue(TEXT("Begin actual authored exit"), Walker->BeginDisembark(Seated, End, Hub->GetActorRotation())))
+    if (!TestTrue(TEXT("Begin actual authored exit"),
+                  Walker->BeginDisembark(Seated, End, Hub->GetActorRotation(), &SeatedPose)))
         return false;
     auto *Animation = Walker->GetMesh()->GetSingleNodeInstance();
     TestTrue(TEXT("Walker retains the shared runtime mesh and constant scale"),
@@ -134,6 +140,16 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     TestTrue(TEXT("Exit starts at zero, nonlooping, under the actor clock"),
              Animation && Animation->GetCurrentAsset() == ExitAnimation && !Animation->IsLooping() &&
                  !Animation->IsPlaying() && FMath::IsNearlyZero(Animation->GetCurrentTime()));
+    FPoseSnapshot ExitInitial;
+    Walker->GetMesh()->SnapshotPose(ExitInitial);
+    bool ExactInitialPose = ExitInitial.bIsValid && ExitInitial.BoneNames == SeatedPose.BoneNames &&
+                            ExitInitial.LocalTransforms.Num() == SeatedPose.LocalTransforms.Num();
+    if (ExactInitialPose)
+        for (int32 I = 0; I < ExitInitial.LocalTransforms.Num(); ++I)
+            ExactInitialPose &= ExitInitial.LocalTransforms[I].Equals(SeatedPose.LocalTransforms[I], .001);
+    TestTrue(TEXT("Every initial exit bone preserves the outgoing live pilot phase"), ExactInitialPose);
+    TestNotNull(TEXT("Live-pose handoff uses the transition instance"),
+                Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance()));
     const FVector Start = Walker->GetActorLocation();
     const FRotator Control = Controller->GetControlRotation();
     Walker->Move(FVector2D(1, 1), FVector2D(1, 1), true, .1f);
@@ -143,6 +159,35 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
                  Walker->GetCharacterMovement()->MovementMode == MOVE_None);
     Walker->Tick(.4f);
     TestTrue(TEXT("Actor stays seated through the brace"), Walker->GetActorLocation().Equals(Start, .01));
+    // A separate, unblended real walker establishes the expected clip pose after
+    // the short handoff. No copied blend formula or mock animation evaluation.
+    auto *ReferenceWalker = Fixture.World->SpawnActor<ASSWalker>();
+    if (!TestNotNull(TEXT("Create exit pose reference"), ReferenceWalker))
+        return false;
+    ReferenceWalker->DispatchBeginPlay();
+    if (!TestTrue(TEXT("Start ordinary authored reference exit"),
+                  ReferenceWalker->BeginDisembark(Seated, End, Hub->GetActorRotation())))
+        return false;
+    ReferenceWalker->Tick(.4f);
+    FPoseSnapshot BlendedBrace, ReferenceBrace;
+    Walker->GetMesh()->SnapshotPose(BlendedBrace);
+    ReferenceWalker->GetMesh()->SnapshotPose(ReferenceBrace);
+    bool PureAuthoredBrace = BlendedBrace.LocalTransforms.Num() == ReferenceBrace.LocalTransforms.Num();
+    if (PureAuthoredBrace)
+        for (int32 I = 0; I < BlendedBrace.LocalTransforms.Num(); ++I)
+            PureAuthoredBrace &= BlendedBrace.LocalTransforms[I].Equals(ReferenceBrace.LocalTransforms[I], .001);
+    TestTrue(TEXT("Blend completely releases to the actual authored brace before rise"), PureAuthoredBrace);
+    auto *Transition = Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance());
+    if (!TestNotNull(TEXT("Retain transition instance through exit"), Transition))
+        return false;
+    TestTrue(TEXT("Completed blend releases its copied pose"), !Transition->GetSourcePose().bIsValid);
+    FPoseSnapshot WrongMeshPose = SeatedPose;
+    WrongMeshPose.SkeletalMeshName = TEXT("UnrelatedMesh");
+    TestFalse(TEXT("Different mesh snapshot is rejected"), Transition->SetSourcePose(WrongMeshPose));
+    FPoseSnapshot WrongBonePose = SeatedPose;
+    WrongBonePose.BoneNames[0] = TEXT("UnrelatedBone");
+    TestFalse(TEXT("Mismatched reference bone order is rejected"), Transition->SetSourcePose(WrongBonePose));
+    ReferenceWalker->Destroy();
     const FVector Offset(12000, -3000, 500);
     if (!TestTrue(TEXT("Rebase the actual world and its physics scene during exit"),
                   Fixture.World->SetNewWorldOrigin(FIntVector(-12000, 3000, -500))))
@@ -252,7 +297,7 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
         FTransform ShiftedSeat = Seated;
         ShiftedSeat.AddToTranslation(Offset);
         TestTrue(TEXT("Restart isolated exit for frame-rate comparison"),
-                 Walker->BeginDisembark(ShiftedSeat, End + Offset, Hub->GetActorRotation()));
+                 Walker->BeginDisembark(ShiftedSeat, End + Offset, Hub->GetActorRotation(), &SeatedPose));
         for (int32 Frame = 0; Frame < Rate * 3; ++Frame)
         {
             Walker->Tick(1.f / Rate);

@@ -4,6 +4,7 @@
 #include "SSGameInstance.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "Animation/PoseSnapshot.h"
 #include "SSHUD.h"
 #include "SSWorldActors.h"
 #include "SSPhase1Data.h"
@@ -368,13 +369,15 @@ void ASSGameMode::EnterStation()
     PC->SetControlRotation(Hub->GetActorRotation());
     if (Ship)
     {
-        // This is the same target used by SetDockingTarget/FinishDocking. Match the visible component
-        // before FinishDocking hides the old pilot; its small idle-pose variation is reviewed separately.
+        // Match both the outgoing component and its actual current bone pose before
+        // hiding it. A short actor-clock blend hands this pose to the authored exit.
         Ship->SetActorLocation(Hub->DockPosition());
         Ship->SetActorRotation(Hub->GetActorRotation());
         const FVector Exit = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
+        FPoseSnapshot SeatedPose;
+        Ship->Pilot->SnapshotPose(SeatedPose);
         const bool ExitStarted =
-            Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit, Hub->GetActorRotation());
+            Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit, Hub->GetActorRotation(), &SeatedPose);
         ensureMsgf(ExitStarted, TEXT("Required authored disembark assets are unavailable."));
         Ship->FinishDocking();
         Hub->ShowBayShip(false);

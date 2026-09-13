@@ -214,10 +214,10 @@ void ASSWorldBody::UpdateVisual()
         Asset = TEXT("SM_GravityRing");
         break;
     case ESSWorldKind::Pursuer:
-        Asset = TEXT("SM_Pursuer");
+        Asset = TEXT("SM_PursuerCandidateV1");
         break;
     case ESSWorldKind::Flanker:
-        Asset = TEXT("SM_Flanker");
+        Asset = TEXT("SM_FlankerCandidateV1");
         break;
     case ESSWorldKind::Depot:
         Asset = TEXT("SM_MobileDepot");
@@ -260,7 +260,9 @@ void ASSWorldBody::UpdateVisual()
         ThreatIndicator->SetStaticMesh(Mesh(TEXT("SM_Projectile")));
         const float IndicatorExtent =
             ThreatIndicator->GetStaticMesh() ? ThreatIndicator->GetStaticMesh()->GetBounds().BoxExtent.GetMax() : 50.f;
-        ThreatIndicator->SetRelativeLocation(FVector(BodyRadius * .9f, 0.f, 0.f));
+        const FBoxSphereBounds Bounds = Visual->GetStaticMesh()->GetBounds();
+        const float MuzzleX = (Bounds.Origin.X + Bounds.BoxExtent.X) * Visual->GetRelativeScale3D().X;
+        ThreatIndicator->SetRelativeLocation(FVector(MuzzleX + BodyRadius * .025f, 0.f, 0.f));
         ThreatIndicator->SetRelativeScale3D(FVector(BodyRadius * .075f / FMath::Max(1.f, IndicatorExtent)));
         ThreatIndicator->SetCastShadow(false);
         FeedbackMesh = ThreatIndicator;

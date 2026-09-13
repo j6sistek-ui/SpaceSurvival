@@ -9,6 +9,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UAudioComponent;
 class UAnimSequence;
+struct FPoseSnapshot;
 
 UCLASS()
 class SPACESURVIVAL_API ASSStation : public AActor
@@ -72,7 +73,8 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     static constexpr float DisembarkDuration = 2.4f;
-    bool BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing);
+    bool BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing,
+                        const FPoseSnapshot *SourcePose = nullptr);
     bool IsDisembarking() const
     {
         return Disembarking;

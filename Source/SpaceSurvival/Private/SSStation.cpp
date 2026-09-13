@@ -1,4 +1,5 @@
 #include "SSStation.h"
+#include "SSStationPoseTransition.h"
 #include "SSAudio.h"
 #include "SSGameInstance.h"
 #include "Components/StaticMeshComponent.h"
@@ -317,12 +318,15 @@ void ASSWalker::StartWalkingAnimation()
 }
 void ASSWalker::SampleExitPose(float Seconds)
 {
+    if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+        Transition->SetExitTime(Seconds);
     if (auto *Animation = GetMesh()->GetSingleNodeInstance())
         Animation->SetPosition(Seconds, false);
     GetMesh()->TickAnimation(0.f, false);
     GetMesh()->RefreshBoneTransforms();
 }
-bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing)
+bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing,
+                               const FPoseSnapshot *SourcePose)
 {
     auto *ExitAnimation =
         LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Disembark.A_Disembark"));
@@ -353,7 +357,19 @@ bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector En
     ConsumeMovementInputVector();
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SetActorTransform(StartTransform, false, nullptr, ETeleportType::TeleportPhysics);
-    GetMesh()->PlayAnimation(ExitAnimation, false);
+    if (SourcePose && SourcePose->bIsValid)
+    {
+        GetMesh()->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
+        if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+        {
+            Transition->SetAnimationAsset(ExitAnimation, false, 1.f);
+            Transition->SetSourcePose(*SourcePose);
+        }
+        else
+            GetMesh()->PlayAnimation(ExitAnimation, false);
+    }
+    else
+        GetMesh()->PlayAnimation(ExitAnimation, false);
     if (auto *Animation = GetMesh()->GetSingleNodeInstance())
     {
         Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);

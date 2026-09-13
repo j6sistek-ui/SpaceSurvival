@@ -142,6 +142,7 @@ def main():
     checked("Station deck material", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateStationDeck.py"), run_name="__main__"))
     checked("Space panorama", validate_panorama)
     checked("Photographic asteroid surfaces", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateRockPhotographic.py"))["main"](verify_adoption=True))
+    checked("Enemy meshes and selection", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateEnemyCandidates.py"))["main"](verify_adoption=True))
     checked("Authored Acorn ship", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateAcornShip.py"), run_name="__main__"))
     checked("Preserved hero", validate_hero)
     checked("Reviewed tail repair", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateTailRepair.py"), run_name="__main__"))

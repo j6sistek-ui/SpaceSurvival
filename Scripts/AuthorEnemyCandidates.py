@@ -1,5 +1,5 @@
 """Author only two separate enemy meshes and four shared candidate materials.
-No existing production asset, actor class or Data Asset is selected/overwritten.
+Mesh authoring never overwrites existing assets. The optional roster migration only replaces legacy mesh selections.
 Use a fresh UnrealEditor-Cmd process, then ValidateEnemyCandidates.py separately.
 """
 import hashlib
@@ -11,6 +11,7 @@ import unreal as u
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "ContentSource/EnemyCandidates"
+OUTPUT = ROOT / "Saved/Validation/EnemyCandidates"
 BASE = "/Game/SpaceSurvival"
 VERSION = "IndustrialEnemyCandidate1"
 KINDS = ("Pursuer", "Flanker")
@@ -58,8 +59,20 @@ def checked_source():
         assert all(math.isfinite(v) for v in item["base_color"] + [item["metallic"], item["roughness"], item["emission"]])
         assert len(item["base_color"]) == 4 and all(0 <= v <= 1 for v in item["base_color"])
         assert 0 <= item["metallic"] <= 1 and 0 <= item["roughness"] <= 1 and 0 <= item["emission"] <= 3
+    # The original execution receipts retain raw CRLF OBJ hashes. Git now stores
+    # OBJ as LF; accept that exact newline-only representation on fresh checkouts.
+    normalized_obj = {
+        "ContentSource/Meshes/SM_Pursuer.obj": "4769934d6a4afbbeb08ccba4225b5892552eb298b805e9f9baf2bdd82b5e7b2a",
+        "ContentSource/Meshes/SM_Flanker.obj": "df6c6756ed0d48fb90e0954b82d30e18af9af06ba647117873ae328c26179999",
+    }
     for path, digest in report["protected_sha256"].items():
-        assert sha(ROOT / path) == digest, "Protected original changed: " + path
+        relative = path.replace("\\", "/")
+        content = (ROOT / relative).read_bytes()
+        if relative in normalized_obj:
+            actual = hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
+            assert actual == normalized_obj[relative], "Protected OBJ geometry changed: " + relative
+        else:
+            assert hashlib.sha256(content).hexdigest() == digest, "Protected original changed: " + relative
     return report
 
 
@@ -159,6 +172,39 @@ def import_mesh(item, materials):
     return mesh
 
 
+
+def roster(data, migrate=False):
+    """Replace only the two legacy names; preserve every authored tuning field."""
+    choices = {u.SSWorldKind.PURSUER: ("SM_Pursuer", "SM_PursuerCandidateV1"),
+               u.SSWorldKind.FLANKER: ("SM_Flanker", "SM_FlankerCandidateV1")}
+    entries = list(data.get_editor_property("enemies"))
+    assert len(entries) == 2 and {e.get_editor_property("kind") for e in entries} == set(choices), "Unexpected enemy roster"
+    result = []
+    replacements = []
+    for entry in entries:
+        kind = entry.get_editor_property("kind")
+        legacy, selected = choices[kind]
+        prior = str(entry.get_editor_property("mesh_name"))
+        assert prior in (legacy, selected), "Unreviewed custom enemy mesh requires deliberate integration: " + prior
+        revised = entry.copy()
+        if migrate and prior == legacy:
+            revised.set_editor_property("mesh_name", selected)
+        restored = revised.copy()
+        restored.set_editor_property("mesh_name", prior)
+        assert restored.export_text() == entry.export_text(), "Enemy presentation migration changed tuning"
+        if not migrate:
+            assert prior == selected, "Legacy enemy presentation remains selected"
+        replacements.append(revised)
+        result.append({"kind": str(kind), "mesh_before": prior,
+                       "mesh_after": str(revised.get_editor_property("mesh_name")),
+                       "all_other_fields_preserved": True,
+                       "tuning_with_prior_mesh_sha256": hashlib.sha256(entry.export_text().encode()).hexdigest()})
+    if migrate and any(r["mesh_before"] != r["mesh_after"] for r in result):
+        data.set_editor_property("enemies", replacements)
+        assert [e.export_text() for e in data.get_editor_property("enemies")] == [e.export_text() for e in replacements]
+    return result
+
+
 def main():
     record = {"status": "FAILED", "errors": [], "engine": u.SystemLibrary.get_engine_version()}
     protected = {p: sha(p) for directory in ("Source", "Config", "Content") for p in (ROOT / directory).rglob("*") if p.is_file()}
@@ -180,9 +226,10 @@ def main():
     except Exception as error:
         record["errors"].append(str(error))
         u.log_error("ENEMY_CANDIDATE_IMPORT_FAILED: " + str(error))
-    (SOURCE / "UnrealImport.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8", newline="\n")
+    OUTPUT.mkdir(parents=True, exist_ok=True)
+    (OUTPUT / "UnrealImport.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8", newline="\n")
     if record["errors"]:
-        raise RuntimeError("Enemy candidate import failed; see UnrealImport.json")
+        raise RuntimeError("Enemy candidate import failed; see Saved/Validation/EnemyCandidates/UnrealImport.json")
     u.log("ENEMY_CANDIDATE_IMPORT_OK")
 
 
