@@ -6,6 +6,10 @@
 *.ps1 text eol=lf
 *.sh text eol=lf
 *.md text eol=lf
+*.obj text eol=lf
+*.mtl text eol=lf
+*.json text eol=lf
+*.hlsl text eol=lf
 *.glb binary
 *.blend binary
 *.uasset binary

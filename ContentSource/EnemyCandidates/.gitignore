@@ -1,0 +1,4 @@
+*.log
+*-Built.fbx
+ReproductionBefore.json
+InspectGeometry.py

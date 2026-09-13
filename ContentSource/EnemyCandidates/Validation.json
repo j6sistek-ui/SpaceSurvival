@@ -1,0 +1,62 @@
+{
+  "status": "CANDIDATE_SOURCE_TOPOLOGY_NORMAL_UV_EXPORT_CHECKS_PASS_NOT_UNREAL",
+  "generator_sha256": "6c6f4dd6f503dea65a09e682386717c62402f39f5ead4b83c628c71ab04531cd",
+  "validator_sha256": "d9b881021ddb53fee482200ded4ba2709370a760ae9ae8e2d5a0bb3d1ead5e8e",
+  "assets": [
+    {
+      "name": "Pursuer",
+      "triangles": 14180,
+      "vertices": 7248,
+      "closed_components": 84,
+      "all_edges_two_incident_faces": true,
+      "all_components_outward_positive_volume": true,
+      "min_triangle_area_cm2": 0.00736052203269811,
+      "min_uv_triangle_area": 8.087849999995713e-09,
+      "min_corner_normal_dot_face_normal": 0.822354090215051,
+      "finite_unit_normals": true,
+      "four_materials": [
+        "EN_Amber",
+        "EN_Ceramic",
+        "EN_Recess",
+        "EN_Titanium"
+      ],
+      "glb_four_primitives_with_normals_uvs": true,
+      "obj_sha256": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d",
+      "glb_sha256": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc"
+    },
+    {
+      "name": "Flanker",
+      "triangles": 14840,
+      "vertices": 7586,
+      "closed_components": 88,
+      "all_edges_two_incident_faces": true,
+      "all_components_outward_positive_volume": true,
+      "min_triangle_area_cm2": 0.00014335023333170816,
+      "min_uv_triangle_area": 1.1238000000323238e-10,
+      "min_corner_normal_dot_face_normal": 0.8520717107772001,
+      "finite_unit_normals": true,
+      "four_materials": [
+        "EN_Amber",
+        "EN_Ceramic",
+        "EN_Recess",
+        "EN_Titanium"
+      ],
+      "glb_four_primitives_with_normals_uvs": true,
+      "obj_sha256": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba",
+      "glb_sha256": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682"
+    }
+  ],
+  "original_assets_preserved": true,
+  "limits": [
+    "Closed components may overlap as assembled manufactured parts; no boolean-unioned collision is implied.",
+    "UV bounds, nondegeneracy and export references checked; no texture bake or runtime lightmap tested.",
+    "Existing runtime sphere and gameplay are unchanged; studio renders and Unreal integration remain separate."
+  ],
+  "executed_generator_sha256": "b9562ac75aa8138df281793c85f9cb907c56981860234d3c7c5d4f259f773f54",
+  "post_execution_whitespace_normalization": {
+    "utc": "2026-09-13T10:45:38.707962+00:00",
+    "reason": "Lead precommit whitespace gate found blank lines at EOF. Only terminal CR/LF bytes normalized, without rebuilding geometry or rerendering.",
+    "details": "WhitespaceNormalization.json"
+  },
+  "executed_validator_sha256": "902b8bbce73f8731e1f373d51f16d9b9c332478fc0c48b0bee1755039594788f"
+}

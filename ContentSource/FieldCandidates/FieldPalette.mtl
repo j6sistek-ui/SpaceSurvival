@@ -1,0 +1,9 @@
+newmtl M_ElectricalFieldCandidate
+Kd 0.24 0.55 1.0
+d 1
+illum 0
+
+newmtl M_GravityFieldCandidate
+Kd 0.6 0.18 1.0
+d 1
+illum 0

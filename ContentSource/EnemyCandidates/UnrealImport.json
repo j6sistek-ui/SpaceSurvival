@@ -1,0 +1,55 @@
+{
+  "status": "SEPARATE_ENEMY_ASSETS_AUTHORED_FRESH_VALIDATION_PENDING",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "material_key": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+  "source_report_sha256": "13ad4d2677644e96e59b4b6082175772ffd537f0705a128df2a0f5d32e83d148",
+  "meshes": [
+    "/Game/SpaceSurvival/Meshes/SM_PursuerCandidateV1.SM_PursuerCandidateV1",
+    "/Game/SpaceSurvival/Meshes/SM_FlankerCandidateV1.SM_FlankerCandidateV1"
+  ],
+  "materials": [
+    "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Titanium.M_EnemyCandidate_Titanium",
+    "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Ceramic.M_EnemyCandidate_Ceramic",
+    "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Recess.M_EnemyCandidate_Recess",
+    "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Amber.M_EnemyCandidate_Amber"
+  ],
+  "existing_protected_files_unchanged": 129,
+  "new_content_assets": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Amber.uasset",
+      "bytes": 7714,
+      "sha256": "f44beaa457d984bbf80c274092c12ee1e3a62b4289728e5f3739ec8233117a42"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Ceramic.uasset",
+      "bytes": 6572,
+      "sha256": "51b348be4e057e6a3715ded5227a68b5742eaad1565263a17a8fc5adccd4ea17"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Recess.uasset",
+      "bytes": 6566,
+      "sha256": "91063b83184900f60bfda4bb791333a306fe2f8d8d13ca7c5f4e173320c59335"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Titanium.uasset",
+      "bytes": 6578,
+      "sha256": "a7a65c45352599da90d71fea6bf2c210aa1655aa256ad07cd288e8b7b8064864"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_FlankerCandidateV1.uasset",
+      "bytes": 403933,
+      "sha256": "3f9a1c2ed4497ef0fc2f0f746242d9fa19b216b075ba9850dbde79aa74b4c3a6"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_PursuerCandidateV1.uasset",
+      "bytes": 481277,
+      "sha256": "f487c80f91ddfce92b7110d77510574e39d3d00093752e71722844bb14f5db3b"
+    }
+  ],
+  "limits": [
+    "Separate candidate assets only; original enemy selections remain unchanged.",
+    "Radius150 gameplay sphere is unchanged; source meshes use the existing max-box-extent fit.",
+    "No native appearance, LOD/performance or owner quality acceptance from this import."
+  ]
+}

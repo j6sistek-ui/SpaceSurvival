@@ -1,0 +1,46 @@
+{
+  "status": "BLENDER_STUDIO_RENDERS_NOT_UNREAL_OR_OWNER_ACCEPTANCE",
+  "renderer": "Cycles CPU / 8 threads / 32 samples",
+  "blender": "5.1.2",
+  "generator_sha256": "6c6f4dd6f503dea65a09e682386717c62402f39f5ead4b83c628c71ab04531cd",
+  "images": [
+    {
+      "file": "Pursuer-ForwardQuarter.png",
+      "sha256": "b144d92b23925afef547429c19e5fbd61430be26e5ba0573d1ea5d319279660b"
+    },
+    {
+      "file": "Pursuer-RearQuarter.png",
+      "sha256": "4069702a98c36a6779f3f9ea8a523a33b364294d4f914e7d2137bfc30db4b5f6"
+    },
+    {
+      "file": "Pursuer-TopSilhouette.png",
+      "sha256": "401fc6ac03f1c140abc0e44a1a4022ded8b87868159f48e0f4c5d4d3c64b9773"
+    },
+    {
+      "file": "Flanker-ForwardQuarter.png",
+      "sha256": "98e20aaa508e1c4e166a14250d11e35d73c227faa1903a32ae8ad6312d8cb92b"
+    },
+    {
+      "file": "Flanker-RearQuarter.png",
+      "sha256": "2d49c4f596137dcd0f8aef36ed11b389e1499ce6067aa2f466e0b2c15271538e"
+    },
+    {
+      "file": "Flanker-TopSilhouette.png",
+      "sha256": "ce95f52ac036004e722e175164f6cfc1b9352d6f8b49e9fcaa3a7d2fcc2f3995"
+    }
+  ],
+  "protected_sha256": {
+    "ContentSource\\Meshes\\SM_Pursuer.obj": "fbde4d3b6b09352439692602ea0e706cae09c1d200256f851baa5d0eaacbcb31",
+    "ContentSource\\Meshes\\SM_Flanker.obj": "895f812e9cbbf836f258cdedf65f87ecdc848282913b6d964fa4ca0102c2c24e",
+    "Content\\SpaceSurvival\\Meshes\\SM_Pursuer.uasset": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18",
+    "Content\\SpaceSurvival\\Meshes\\SM_Flanker.uasset": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5",
+    "ContentSource\\GenerateGeometry.py": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00",
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+  },
+  "executed_generator_sha256": "b9562ac75aa8138df281793c85f9cb907c56981860234d3c7c5d4f259f773f54",
+  "post_execution_whitespace_normalization": {
+    "utc": "2026-09-13T10:45:38.707962+00:00",
+    "reason": "Lead precommit whitespace gate found blank lines at EOF. Only terminal CR/LF bytes normalized, without rebuilding geometry or rerendering.",
+    "details": "WhitespaceNormalization.json"
+  }
+}
