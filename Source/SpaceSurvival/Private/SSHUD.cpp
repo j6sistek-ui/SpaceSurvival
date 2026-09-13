@@ -5,6 +5,7 @@
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Engine/Canvas.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Engine/Engine.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
@@ -47,6 +48,132 @@ float ASSHUD::Paragraph(const FString &Value, float X, float Y, float Width, flo
         Y += LineHeight;
     }
     return Y - StartY;
+}
+void ASSHUD::Stroke(FVector2D A, FVector2D B, FLinearColor Color, float Width)
+{
+    // A dark under-stroke retains the symbol against stars, lamps and light rock.
+    DrawLine(A.X, A.Y, B.X, B.Y, FLinearColor(0.f, .008f, .015f, .8f), (Width + 2.f) * Scale);
+    DrawLine(A.X, A.Y, B.X, B.Y, Color, Width * Scale);
+}
+void ASSHUD::ThreatGlyph(FVector2D Centre, bool Flanker, bool Charging, float Size, FLinearColor Color)
+{
+    const float R = Size * Scale;
+    if (Flanker)
+    {
+        // Split wings versus one pursuit arrow: identity does not rely on color.
+        Stroke(Centre + FVector2D(-R, R * .4f), Centre + FVector2D(-R * .45f, -R * .45f), Color);
+        Stroke(Centre + FVector2D(-R * .45f, -R * .45f), Centre + FVector2D(0.f, R * .15f), Color);
+        Stroke(Centre + FVector2D(R, R * .4f), Centre + FVector2D(R * .45f, -R * .45f), Color);
+        Stroke(Centre + FVector2D(R * .45f, -R * .45f), Centre + FVector2D(0.f, R * .15f), Color);
+    }
+    else
+    {
+        Stroke(Centre + FVector2D(-R * .65f, R * .45f), Centre + FVector2D(0.f, -R * .5f), Color);
+        Stroke(Centre + FVector2D(0.f, -R * .5f), Centre + FVector2D(R * .65f, R * .45f), Color);
+    }
+    if (Charging)
+        Stroke(Centre + FVector2D(-R, R * .9f), Centre + FVector2D(R, R * .9f), FLinearColor(1.f, .94f, .7f), 2.f);
+}
+void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
+{
+    if (!PlayerOwner || !PlayerOwner->PlayerCameraManager)
+        return;
+    const float W = Canvas->SizeX, H = Canvas->SizeY;
+    const FVector2D Centre(W * .5f, H * .5f);
+    const FVector2D Radar(W - 107.f * Scale, 210.f * Scale);
+    const float RadarRadius = 63.f * Scale, RadarRange = 10000.f;
+    const FLinearColor Grid(.18f, .33f, .4f, .65f);
+    const FRotator ViewRotation = PlayerOwner->PlayerCameraManager->GetCameraRotation();
+    const FVector ViewRight = FRotationMatrix(ViewRotation).GetUnitAxis(EAxis::Y);
+    if (ShowRadar)
+    {
+        DrawRect(FLinearColor(.008f, .018f, .03f, .72f), Radar.X - 78.f * Scale, Radar.Y - 92.f * Scale, 156.f * Scale,
+                 180.f * Scale);
+        Text(TEXT("CONTACTS"), Radar.X - 44.f * Scale, Radar.Y - 85.f * Scale, .52f, FLinearColor(.65f, .83f, .9f));
+        for (int32 Ring = 1; Ring <= 2; ++Ring)
+            for (int32 Segment = 0; Segment < 32; ++Segment)
+            {
+                const float A = 2.f * PI * Segment / 32.f, B = 2.f * PI * (Segment + 1) / 32.f;
+                const float R = RadarRadius * Ring * .5f;
+                DrawLine(Radar.X + FMath::Cos(A) * R, Radar.Y + FMath::Sin(A) * R, Radar.X + FMath::Cos(B) * R,
+                         Radar.Y + FMath::Sin(B) * R, Grid, Scale);
+            }
+        DrawLine(Radar.X - RadarRadius, Radar.Y, Radar.X + RadarRadius, Radar.Y, Grid, Scale);
+        DrawLine(Radar.X, Radar.Y - RadarRadius, Radar.X, Radar.Y + RadarRadius, Grid, Scale);
+        Stroke(Radar + FVector2D(-4.f, 5.f) * Scale, Radar + FVector2D(0.f, -5.f) * Scale, FLinearColor::White);
+        Stroke(Radar + FVector2D(0.f, -5.f) * Scale, Radar + FVector2D(4.f, 5.f) * Scale, FLinearColor::White);
+        Text(TEXT("100 m"), Radar.X - 23.f * Scale, Radar.Y + 70.f * Scale, .48f, FLinearColor(.65f, .75f, .8f));
+    }
+    for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
+    {
+        if (It->IsActorBeingDestroyed())
+            continue;
+        const bool Flanker = It->GetKind() == ESSWorldKind::Flanker, Charging = It->IsChargingShot();
+        const FLinearColor Color = Flanker ? FLinearColor(1.f, .75f, .32f) : FLinearColor(1.f, .43f, .3f);
+        const FVector Position = It->GetActorLocation();
+        const FVector Local = Ship->GetActorTransform().InverseTransformPosition(Position);
+        if (ShowRadar)
+        {
+            // Radial clamp denotes a contact beyond range without warping its bearing.
+            const FVector2D Offset =
+                FVector2D(Local.Y, -Local.X).GetClampedToMaxSize(RadarRange) / RadarRange * RadarRadius;
+            ThreatGlyph(Radar + Offset, Flanker, Charging, 4.f, Color);
+        }
+        FVector2D Screen;
+        const bool InFront = PlayerOwner->ProjectWorldLocationToScreen(Position, Screen);
+        const bool OnScreen = InFront && Screen.X > 25.f * Scale && Screen.X < W - 25.f * Scale &&
+                              Screen.Y > 125.f * Scale && Screen.Y < H - 180.f * Scale;
+        if (OnScreen)
+        {
+            FVector2D Edge;
+            float Radius = 18.f * Scale;
+            if (PlayerOwner->ProjectWorldLocationToScreen(Position + ViewRight * It->GetBodyRadius(), Edge))
+                Radius = FMath::Clamp(float(FVector2D::Distance(Screen, Edge)), 18.f * Scale, 90.f * Scale);
+            const float GlyphY = FMath::Max(float(Screen.Y) - Radius - 12.f * Scale, 125.f * Scale);
+            ThreatGlyph(FVector2D(Screen.X, GlyphY), Flanker, Charging, 9.f, Color);
+            if (Charging)
+                Text(TEXT("!"), Screen.X + 12.f * Scale, GlyphY - 11.f * Scale, .55f, FLinearColor(1.f, .94f, .7f));
+        }
+        else if (Charging)
+        {
+            // An off-screen committed shot keeps a directional cue in addition to audio.
+            FVector2D Direction = InFront ? Screen - Centre : FVector2D(Local.Y, -Local.Z);
+            if (Direction.IsNearlyZero())
+                Direction = FVector2D(0.f, 1.f);
+            Direction.Normalize();
+            const FVector2D At = Centre + Direction * FMath::Min(W * .38f, H * .32f);
+            ThreatGlyph(At, Flanker, true, 8.f, Color);
+        }
+    }
+    if (IsValid(Ship->SoftTarget))
+    {
+        FVector2D Screen;
+        if (PlayerOwner->ProjectWorldLocationToScreen(Ship->SoftTarget->GetActorLocation(), Screen) &&
+            Screen.X > 70.f * Scale && Screen.X < W - 70.f * Scale && Screen.Y > 125.f * Scale &&
+            Screen.Y < H - 180.f * Scale)
+        {
+            const FLinearColor Lock(.48f, 1.f, .85f);
+            const float R = 22.f * Scale, Arm = 8.f * Scale;
+            for (int32 XSign : {-1, 1})
+                for (int32 YSign : {-1, 1})
+                {
+                    const FVector2D Corner = Screen + FVector2D(XSign * R, YSign * R);
+                    Stroke(Corner, Corner - FVector2D(XSign * Arm, 0.f), Lock, 1.5f);
+                    Stroke(Corner, Corner - FVector2D(0.f, YSign * Arm), Lock, 1.5f);
+                }
+            if (const auto *Target = Cast<ASSWorldBody>(Ship->SoftTarget))
+            {
+                const FString Label = Target->GetLabel();
+                float LabelWidth = 0.f, LabelHeight = 0.f;
+                GetTextSize(Label, LabelWidth, LabelHeight, GEngine->GetMediumFont(), .5f * Scale * 1.65f);
+                float LabelX = Screen.X + 29.f * Scale;
+                if (LabelX + LabelWidth > W - 12.f * Scale)
+                    LabelX = Screen.X - 29.f * Scale - LabelWidth;
+                LabelX = FMath::Clamp(LabelX, 12.f * Scale, FMath::Max(12.f * Scale, W - LabelWidth - 12.f * Scale));
+                Text(Label, LabelX, Screen.Y - 8.f * Scale, .5f, Lock);
+            }
+        }
+    }
 }
 void ASSHUD::Meter(const FString &Name, double Value, double Maximum, float X, float Y, FLinearColor Color)
 {
@@ -103,25 +230,7 @@ void ASSHUD::DrawHUD()
         DrawLine(W * .5f - 14 * Scale, H * .5f, W * .5f - 5 * Scale, H * .5f, FLinearColor::White, 1.3f);
         DrawLine(W * .5f + 5 * Scale, H * .5f, W * .5f + 14 * Scale, H * .5f, FLinearColor::White, 1.3f);
         DrawLine(W * .5f, H * .5f - 14 * Scale, W * .5f, H * .5f - 5 * Scale, FLinearColor::White, 1.3f);
-        if (IsValid(Ship->SoftTarget))
-        {
-            FVector2D Screen;
-            if (PlayerOwner->ProjectWorldLocationToScreen(Ship->SoftTarget->GetActorLocation(), Screen))
-                Text(TEXT("[  +  ]"), Screen.X - 26 * Scale, Screen.Y - 12 * Scale, .85f, FLinearColor(.5f, 1, .9f));
-        }
-        if (GM->Director->GetActiveThreatCount() > 3)
-        {
-            const float RX = W - 115 * Scale, RY = 180 * Scale;
-            DrawRect(FLinearColor(.015f, .025f, .04f, .8f), RX - 80 * Scale, RY - 70 * Scale, 160 * Scale, 140 * Scale);
-            Text(TEXT("THREAT RADAR"), RX - 60 * Scale, RY - 65 * Scale, .55f);
-            Text(TEXT("^"), RX - 4 * Scale, RY, .7f);
-            for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
-            {
-                FVector Delta = Ship->GetActorTransform().InverseTransformPosition(It->GetActorLocation());
-                Text(TEXT("x"), RX + FMath::Clamp(Delta.Y / 150.f, -65.f, 65.f) * Scale,
-                     RY - FMath::Clamp(Delta.X / 180.f, -45.f, 45.f) * Scale, .75f, FLinearColor(1, .5f, .3f));
-            }
-        }
+        DrawCombatCues(Ship, GM->Director && GM->Director->GetActiveThreatCount() > 3);
         ASSEncounterBeacon *InteractBeacon = nullptr;
         float InteractDistance = MAX_flt;
         if (!MenuOpen && !Walker && !S.run.pendingReward)

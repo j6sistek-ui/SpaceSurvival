@@ -251,15 +251,17 @@ void ASSWorldBody::UpdateVisual()
     UStaticMeshComponent *FeedbackMesh = Visual;
     if (bPreserveAuthoredMaterial)
     {
-        // Imported palette/material slots belong to the authored body. Combat glow
-        // is an auxiliary hollow ring and never paints over that authored surface.
+        // Preserve authored surfaces. A compact muzzle light carries the same
+        // committed-shot charge/impact pulse; HUD glyphs identify the archetype.
+        // Whole-body luminous rings obscured nearby hazards in compound scenes.
         DynamicMaterial = nullptr;
         if (!IsEnemy())
             return;
-        ThreatIndicator->SetStaticMesh(Mesh(TEXT("SM_StormRing")));
+        ThreatIndicator->SetStaticMesh(Mesh(TEXT("SM_Projectile")));
         const float IndicatorExtent =
             ThreatIndicator->GetStaticMesh() ? ThreatIndicator->GetStaticMesh()->GetBounds().BoxExtent.GetMax() : 50.f;
-        ThreatIndicator->SetRelativeScale3D(FVector(BodyRadius * 1.15f / FMath::Max(1.f, IndicatorExtent)));
+        ThreatIndicator->SetRelativeLocation(FVector(BodyRadius * .9f, 0.f, 0.f));
+        ThreatIndicator->SetRelativeScale3D(FVector(BodyRadius * .075f / FMath::Max(1.f, IndicatorExtent)));
         ThreatIndicator->SetCastShadow(false);
         FeedbackMesh = ThreatIndicator;
     }

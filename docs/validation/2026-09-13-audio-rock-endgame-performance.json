@@ -1,0 +1,853 @@
+{
+  "status": "RENDERED_ENDGAME_FIXTURE_VERIFIED_NOT_REPRESENTATIVE_60_FPS_ACCEPTANCE",
+  "project_status": "PARTIAL",
+  "recorded_utc": "2026-09-13T10:00:56.702730+00:00",
+  "scenario": "Wave10",
+  "package_number": 10,
+  "source_commit": "0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80",
+  "package_receipt": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\docs\\validation\\2026-09-13-windows-audio-economy-package.json",
+    "bytes": 72886,
+    "sha256": "2ebe23674d00842daae77efba00179c060bd6d6a7ca222add61880e8b995a271"
+  },
+  "capture": {
+    "token": "1cc455b81bd547d19f0c94a6a23f6b48",
+    "process_id": 77892,
+    "exit_code": 0,
+    "process_closed_check": "Read-only process lookup after capture found no process 77892.",
+    "started_utc": "2026-09-13T09:48:23.5512461Z",
+    "finished_utc": "2026-09-13T09:51:11.7002338Z",
+    "evidence": [
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\1cc455b81bd547d19f0c94a6a23f6b48\\result.json",
+        "bytes": 38724,
+        "sha256": "dc49d24529964653cf2417f32adf8a3eb730f1e56e31b93a696e57c50757e59a"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\1cc455b81bd547d19f0c94a6a23f6b48\\fixture.json",
+        "bytes": 1487,
+        "sha256": "c517d7ab7f9bb6343da045b60eea81a41218ebc768bc2ae54ffca96af845b461"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\1cc455b81bd547d19f0c94a6a23f6b48\\performance.json",
+        "bytes": 57001,
+        "sha256": "6861b088fefea4fb4578d43397f6cf61d4fde4f3239e592437a4275a9209557b"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\1cc455b81bd547d19f0c94a6a23f6b48\\Endgame.csv",
+        "bytes": 32630562,
+        "sha256": "b69ac87f2610ac303aff4b9b4b4e418f6af1102c4f56db6a551aea7226b5abbc"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\1cc455b81bd547d19f0c94a6a23f6b48\\Rendered.log",
+        "bytes": 107284,
+        "sha256": "b66ad66767b757ec393b0420805291b5872efa16817956323c7cede7f2dc9914"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\1cc455b81bd547d19f0c94a6a23f6b48\\source-before.json",
+        "bytes": 29786,
+        "sha256": "c95abf6efcbe109964b02654e9a05b5c47a8151d6688f8101fd000457db677ec"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\1cc455b81bd547d19f0c94a6a23f6b48\\production-before.json",
+        "bytes": 703,
+        "sha256": "d11e4f7c34188ba5d03cf5b2d86d82f3599a6853bec72c73b81f7d4b2186979f"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\1cc455b81bd547d19f0c94a6a23f6b48\\.ss-endgame-soak",
+        "bytes": 34,
+        "sha256": "ece62ad9010bb2d3ec24b54138608f1c4c9c2bb554665b45f5fe3acf00f66d5b"
+      }
+    ],
+    "fixture_result": {
+      "evidenceType": "RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY",
+      "success": true,
+      "failure": "",
+      "token": "1cc455b81bd547d19f0c94a6a23f6b48",
+      "processId": 77892,
+      "savedDir": "C:/Users/j6sis/SpaceSurvival/Artifacts/EndgameSoak/1cc455b81bd547d19f0c94a6a23f6b48/User/Saved/",
+      "csv": "C:/Users/j6sis/SpaceSurvival/Artifacts/EndgameSoak/1cc455b81bd547d19f0c94a6a23f6b48/Endgame.csv",
+      "noSaveSlotsWritten": true,
+      "allFixtureFramesForeground": true,
+      "scenario": "Wave10",
+      "sawWave9": true,
+      "sawWave5": false,
+      "sawWormhole": false,
+      "sawDocking": false,
+      "sawAuthoredExit": false,
+      "wormholeSimulationSeconds": 0,
+      "dockingSimulationSeconds": 0,
+      "exitSimulationSeconds": 0,
+      "stationIdleSimulationSeconds": 0,
+      "sawBreathing": true,
+      "sawClimax": true,
+      "sawApproach": true,
+      "fixtureFrames": 15767,
+      "climaxSimulationSeconds": 40.001767102628946,
+      "compoundActorPresenceSeconds": 23.72784909978509,
+      "approachSimulationSeconds": 5.00387429818511,
+      "peakThreats": 23,
+      "wallSeconds": 131.5332779996097,
+      "fixture": "Fixed seed 5eade000000000000000000000000010; starter/RapidLaser; five Tier V paths; OverdriveCooling; base hull/shield 50000; seeded end of Wave8; no contract/events. Normal wave timings, 40s climax, caps, budgets, spatial admission and damage. Scripted shallow strafe, boost/brake cycles, dodge/8s and fire2s/6s. Kind presence includes telegraphs/offscreen actors. No station docking or natural balance/input/feel acceptance."
+    }
+  },
+  "independent_audit": {
+    "result_and_fixture_agree": true,
+    "all_recorded_evidence_file_hashes_match": true,
+    "captured_source_files": 131,
+    "captured_source_clean": true,
+    "source_head": "0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80",
+    "capture_before_snapshot_matches_package_raw_identities": true,
+    "immutable_commit_source_files_checked_lf": 64,
+    "immutable_commit_content_assets_checked_raw": 88,
+    "all7_capture_artifacts_match_package_and_audit_readback": true,
+    "production_before_after_and_audit_readback_bytes_match": true,
+    "no_test_slot_files": true,
+    "historical_source_boundary": "The capture completed before source freeze was released. This audit compares retained source-before raw identities to the independent package receipt, then verifies all package source/config/scripts against immutable commit 0fc4f7a7 and all 88 content assets byte-for-byte against that commit. Later worktree edits are excluded; this evidence does not validate those edits.",
+    "source_artifact_after_limit": "Wrapper compares source/artifact before and after in memory and retains equality results. Source-before/artifact-before identities are retained; separate source-after/artifact-after lists are not retained. All captured artifacts were also independently reread at audit and matched the package receipt.",
+    "csv_recalculation": "Independent stdlib streaming CSV parser; exact final append-only header and metadata/footer excluded. All phase frame/GPU/game/render/RHI timing statistics, simulation intervals, kind counts and compound presence agree with performance.json.",
+    "frame_percentiles": "Nearest rank with no outlier removal. Entire marked intervals are included; phase table retains the single initial seed frame separately."
+  },
+  "environment": {
+    "metadata": {
+      "platform": "Windows",
+      "config": "Development",
+      "buildversion": "++UE5+Release-5.8-CL-56702186",
+      "engineversion": "5.8.2-56702186+++UE5+Release-5.8",
+      "enginereleaseversion": "5.8.2",
+      "os": "Windows 11 (25H2) [10.0.26200.9445] ",
+      "cpu": "GenuineIntel|Intel(R) Core(TM) i7-14700F",
+      "gpu": "NVIDIA GeForce RTX 5080",
+      "gpudriver": "616.92",
+      "deviceprofile": "Windows",
+      "targetframerate": "120",
+      "starttimestamp": "1789292936",
+      "endtimestamp": "1789293067",
+      "captureduration": "131.472858",
+      "systemresolution.resx": "2560",
+      "systemresolution.resy": "1440",
+      "verbatimrhiname": "D3D12",
+      "rhiname": "D3D12",
+      "rhifeaturelevel": "SM6",
+      "shaderplatform": "PCD3D_SM6",
+      "vsyncenabled": "0",
+      "raytracing": "0",
+      "streamingpoolsizemb": "800",
+      "csvmaxfilebytesreached": "0",
+      "HasHeaderRowAtEnd": "1",
+      "EventTimestamps": "1"
+    },
+    "quality_readback": {
+      "ViewDistanceQuality": {
+        "level": 2,
+        "log_line": 906,
+        "timestamp_utc": "2026-09-13T09:48:25.284000+00:00"
+      },
+      "AntiAliasingQuality": {
+        "level": 2,
+        "log_line": 908,
+        "timestamp_utc": "2026-09-13T09:48:25.284000+00:00"
+      },
+      "ShadowQuality": {
+        "level": 2,
+        "log_line": 914,
+        "timestamp_utc": "2026-09-13T09:48:25.284000+00:00"
+      },
+      "GlobalIlluminationQuality": {
+        "level": 2,
+        "log_line": 930,
+        "timestamp_utc": "2026-09-13T09:48:25.284000+00:00"
+      },
+      "ReflectionQuality": {
+        "level": 2,
+        "log_line": 956,
+        "timestamp_utc": "2026-09-13T09:48:25.296000+00:00"
+      },
+      "PostProcessQuality": {
+        "level": 2,
+        "log_line": 965,
+        "timestamp_utc": "2026-09-13T09:48:25.297000+00:00"
+      },
+      "TextureQuality": {
+        "level": 2,
+        "log_line": 981,
+        "timestamp_utc": "2026-09-13T09:48:25.297000+00:00"
+      },
+      "EffectsQuality": {
+        "level": 2,
+        "log_line": 985,
+        "timestamp_utc": "2026-09-13T09:48:25.297000+00:00"
+      },
+      "FoliageQuality": {
+        "level": 2,
+        "log_line": 1002,
+        "timestamp_utc": "2026-09-13T09:48:25.297000+00:00"
+      },
+      "ShadingQuality": {
+        "level": 2,
+        "log_line": 1006,
+        "timestamp_utc": "2026-09-13T09:48:25.297000+00:00"
+      },
+      "LandscapeQuality": {
+        "level": 2,
+        "log_line": 1007,
+        "timestamp_utc": "2026-09-13T09:48:25.297000+00:00"
+      }
+    },
+    "effective_frame_limit": {
+      "counter": "MaxFrameTime",
+      "meaning": "Target frame budget, NOT actual frame time or simulation delta (UE LaunchEngineLoop.cpp).",
+      "gameplay_budget_ms_unique": [
+        8.3333
+      ],
+      "fps_from_median_budget": 120.0005,
+      "note": "CSV targetframerate metadata is retained separately; it can differ from the applied runtime cap."
+    },
+    "audio_device_initialized": true,
+    "audio_disabled": false,
+    "context": "Existing owner editor and ordinary desktop environment remain present; this is not a clean-machine benchmark."
+  },
+  "all_csv_frames": {
+    "frames": 15768,
+    "wall_frame_time_sum_s": 131.473918,
+    "fps_from_frame_time_sum": 119.932532,
+    "timings": {
+      "FrameTime": {
+        "samples": 15768,
+        "mean_ms": 8.338021,
+        "median_ms": 8.3335,
+        "p95_ms": 8.3437,
+        "p99_ms": 8.5187,
+        "min_ms": 7.9218,
+        "max_ms": 8.8226,
+        "frames_above_16_667_ms": 0
+      },
+      "GPUTime": {
+        "samples": 15768,
+        "mean_ms": 2.77234,
+        "median_ms": 2.65325,
+        "p95_ms": 3.4341,
+        "p99_ms": 3.6472,
+        "min_ms": 2.2655,
+        "max_ms": 4.1336,
+        "frames_above_16_667_ms": 0
+      },
+      "GameThreadTime": {
+        "samples": 15768,
+        "mean_ms": 1.803957,
+        "median_ms": 1.7525,
+        "p95_ms": 2.2649,
+        "p99_ms": 2.7179,
+        "min_ms": 1.2762,
+        "max_ms": 7.1126,
+        "frames_above_16_667_ms": 0
+      },
+      "RenderThreadTime": {
+        "samples": 15768,
+        "mean_ms": 3.27631,
+        "median_ms": 3.20445,
+        "p95_ms": 3.8791,
+        "p99_ms": 4.3154,
+        "min_ms": 2.7337,
+        "max_ms": 8.0821,
+        "frames_above_16_667_ms": 0
+      },
+      "RHIThreadTime": {
+        "samples": 15768,
+        "mean_ms": 2.24146,
+        "median_ms": 2.18945,
+        "p95_ms": 2.8572,
+        "p99_ms": 3.2308,
+        "min_ms": 1.4374,
+        "max_ms": 4.5622,
+        "frames_above_16_667_ms": 0
+      }
+    },
+    "simulation_seconds": 131.465587,
+    "max_active_threats": 23
+  },
+  "marked_fixture_frames": {
+    "frames": 15767,
+    "wall_frame_time_sum_s": 131.465585,
+    "fps_from_frame_time_sum": 119.932528,
+    "timings": {
+      "FrameTime": {
+        "samples": 15767,
+        "mean_ms": 8.338022,
+        "median_ms": 8.3335,
+        "p95_ms": 8.3437,
+        "p99_ms": 8.5187,
+        "min_ms": 7.9218,
+        "max_ms": 8.8226,
+        "frames_above_16_667_ms": 0
+      },
+      "GPUTime": {
+        "samples": 15767,
+        "mean_ms": 2.772255,
+        "median_ms": 2.6532,
+        "p95_ms": 3.4339,
+        "p99_ms": 3.6467,
+        "min_ms": 2.2655,
+        "max_ms": 4.1336,
+        "frames_above_16_667_ms": 0
+      },
+      "GameThreadTime": {
+        "samples": 15767,
+        "mean_ms": 1.803666,
+        "median_ms": 1.7525,
+        "p95_ms": 2.2648,
+        "p99_ms": 2.7165,
+        "min_ms": 1.2762,
+        "max_ms": 7.1126,
+        "frames_above_16_667_ms": 0
+      },
+      "RenderThreadTime": {
+        "samples": 15767,
+        "mean_ms": 3.276308,
+        "median_ms": 3.2044,
+        "p95_ms": 3.8791,
+        "p99_ms": 4.3154,
+        "min_ms": 2.7337,
+        "max_ms": 8.0821,
+        "frames_above_16_667_ms": 0
+      },
+      "RHIThreadTime": {
+        "samples": 15767,
+        "mean_ms": 2.241438,
+        "median_ms": 2.1894,
+        "p95_ms": 2.8572,
+        "p99_ms": 3.2308,
+        "min_ms": 1.4374,
+        "max_ms": 4.5622,
+        "frames_above_16_667_ms": 0
+      }
+    },
+    "simulation_seconds": 131.465587,
+    "max_active_threats": 23
+  },
+  "phase_measurements": [
+    {
+      "phase": 0,
+      "wave": 1,
+      "run_active": 0,
+      "phase_name": "Hangar",
+      "first_frame_index": 0,
+      "last_frame_index": 0,
+      "frames": 1,
+      "wall_frame_time_sum_s": 0.008333,
+      "fps_from_frame_time_sum": 120.00192,
+      "timings": {
+        "FrameTime": {
+          "samples": 1,
+          "mean_ms": 8.3332,
+          "median_ms": 8.3332,
+          "p95_ms": 8.3332,
+          "p99_ms": 8.3332,
+          "min_ms": 8.3332,
+          "max_ms": 8.3332,
+          "frames_above_16_667_ms": 0
+        },
+        "GPUTime": {
+          "samples": 1,
+          "mean_ms": 4.1215,
+          "median_ms": 4.1215,
+          "p95_ms": 4.1215,
+          "p99_ms": 4.1215,
+          "min_ms": 4.1215,
+          "max_ms": 4.1215,
+          "frames_above_16_667_ms": 0
+        },
+        "GameThreadTime": {
+          "samples": 1,
+          "mean_ms": 6.3941,
+          "median_ms": 6.3941,
+          "p95_ms": 6.3941,
+          "p99_ms": 6.3941,
+          "min_ms": 6.3941,
+          "max_ms": 6.3941,
+          "frames_above_16_667_ms": 0
+        },
+        "RenderThreadTime": {
+          "samples": 1,
+          "mean_ms": 3.3206,
+          "median_ms": 3.3206,
+          "p95_ms": 3.3206,
+          "p99_ms": 3.3206,
+          "min_ms": 3.3206,
+          "max_ms": 3.3206,
+          "frames_above_16_667_ms": 0
+        },
+        "RHIThreadTime": {
+          "samples": 1,
+          "mean_ms": 2.5992,
+          "median_ms": 2.5992,
+          "p95_ms": 2.5992,
+          "p99_ms": 2.5992,
+          "min_ms": 2.5992,
+          "max_ms": 2.5992,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "simulation_seconds": 0.0,
+      "max_active_threats": 0
+    },
+    {
+      "phase": 2,
+      "wave": 8,
+      "run_active": 1,
+      "phase_name": "Breathing",
+      "first_frame_index": 1,
+      "last_frame_index": 695,
+      "frames": 695,
+      "wall_frame_time_sum_s": 5.792645,
+      "fps_from_frame_time_sum": 119.979735,
+      "timings": {
+        "FrameTime": {
+          "samples": 695,
+          "mean_ms": 8.334741,
+          "median_ms": 8.3334,
+          "p95_ms": 8.3359,
+          "p99_ms": 8.4463,
+          "min_ms": 7.9218,
+          "max_ms": 8.7581,
+          "frames_above_16_667_ms": 0
+        },
+        "GPUTime": {
+          "samples": 695,
+          "mean_ms": 2.673566,
+          "median_ms": 2.5364,
+          "p95_ms": 3.3332,
+          "p99_ms": 3.5393,
+          "min_ms": 2.2655,
+          "max_ms": 3.725,
+          "frames_above_16_667_ms": 0
+        },
+        "GameThreadTime": {
+          "samples": 695,
+          "mean_ms": 1.609987,
+          "median_ms": 1.5589,
+          "p95_ms": 1.994,
+          "p99_ms": 2.4543,
+          "min_ms": 1.2762,
+          "max_ms": 4.0622,
+          "frames_above_16_667_ms": 0
+        },
+        "RenderThreadTime": {
+          "samples": 695,
+          "mean_ms": 3.153877,
+          "median_ms": 3.0915,
+          "p95_ms": 3.6556,
+          "p99_ms": 4.154,
+          "min_ms": 2.7556,
+          "max_ms": 4.6155,
+          "frames_above_16_667_ms": 0
+        },
+        "RHIThreadTime": {
+          "samples": 695,
+          "mean_ms": 2.280894,
+          "median_ms": 2.2276,
+          "p95_ms": 2.8869,
+          "p99_ms": 3.1572,
+          "min_ms": 1.6198,
+          "max_ms": 3.4321,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "simulation_seconds": 5.792647,
+      "max_active_threats": 0
+    },
+    {
+      "phase": 1,
+      "wave": 9,
+      "run_active": 1,
+      "phase_name": "Flight",
+      "first_frame_index": 696,
+      "last_frame_index": 9321,
+      "frames": 8626,
+      "wall_frame_time_sum_s": 71.92799,
+      "fps_from_frame_time_sum": 119.925498,
+      "timings": {
+        "FrameTime": {
+          "samples": 8626,
+          "mean_ms": 8.33851,
+          "median_ms": 8.3335,
+          "p95_ms": 8.3471,
+          "p99_ms": 8.5273,
+          "min_ms": 7.9333,
+          "max_ms": 8.8226,
+          "frames_above_16_667_ms": 0
+        },
+        "GPUTime": {
+          "samples": 8626,
+          "mean_ms": 2.787375,
+          "median_ms": 2.6632,
+          "p95_ms": 3.4472,
+          "p99_ms": 3.6569,
+          "min_ms": 2.2786,
+          "max_ms": 4.1336,
+          "frames_above_16_667_ms": 0
+        },
+        "GameThreadTime": {
+          "samples": 8626,
+          "mean_ms": 1.824244,
+          "median_ms": 1.77165,
+          "p95_ms": 2.2836,
+          "p99_ms": 2.7473,
+          "min_ms": 1.3164,
+          "max_ms": 4.2132,
+          "frames_above_16_667_ms": 0
+        },
+        "RenderThreadTime": {
+          "samples": 8626,
+          "mean_ms": 3.297135,
+          "median_ms": 3.2242,
+          "p95_ms": 3.9092,
+          "p99_ms": 4.3434,
+          "min_ms": 2.7337,
+          "max_ms": 7.1486,
+          "frames_above_16_667_ms": 0
+        },
+        "RHIThreadTime": {
+          "samples": 8626,
+          "mean_ms": 2.287162,
+          "median_ms": 2.23,
+          "p95_ms": 2.9169,
+          "p99_ms": 3.2909,
+          "min_ms": 1.5006,
+          "max_ms": 4.5622,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "simulation_seconds": 71.927989,
+      "max_active_threats": 23
+    },
+    {
+      "phase": 2,
+      "wave": 9,
+      "run_active": 1,
+      "phase_name": "Breathing",
+      "first_frame_index": 9322,
+      "last_frame_index": 10369,
+      "frames": 1048,
+      "wall_frame_time_sum_s": 8.73931,
+      "fps_from_frame_time_sum": 119.917937,
+      "timings": {
+        "FrameTime": {
+          "samples": 1048,
+          "mean_ms": 8.339036,
+          "median_ms": 8.3335,
+          "p95_ms": 8.3486,
+          "p99_ms": 8.5382,
+          "min_ms": 7.9312,
+          "max_ms": 8.8159,
+          "frames_above_16_667_ms": 0
+        },
+        "GPUTime": {
+          "samples": 1048,
+          "mean_ms": 2.752765,
+          "median_ms": 2.6361,
+          "p95_ms": 3.3822,
+          "p99_ms": 3.5701,
+          "min_ms": 2.3105,
+          "max_ms": 3.7706,
+          "frames_above_16_667_ms": 0
+        },
+        "GameThreadTime": {
+          "samples": 1048,
+          "mean_ms": 1.856811,
+          "median_ms": 1.80045,
+          "p95_ms": 2.3263,
+          "p99_ms": 2.8188,
+          "min_ms": 1.4493,
+          "max_ms": 3.3105,
+          "frames_above_16_667_ms": 0
+        },
+        "RenderThreadTime": {
+          "samples": 1048,
+          "mean_ms": 3.356257,
+          "median_ms": 3.26385,
+          "p95_ms": 4.055,
+          "p99_ms": 4.5356,
+          "min_ms": 2.7829,
+          "max_ms": 6.3063,
+          "frames_above_16_667_ms": 0
+        },
+        "RHIThreadTime": {
+          "samples": 1048,
+          "mean_ms": 2.339984,
+          "median_ms": 2.2649,
+          "p95_ms": 3.062,
+          "p99_ms": 3.3783,
+          "min_ms": 1.7048,
+          "max_ms": 4.0124,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "simulation_seconds": 8.739309,
+      "max_active_threats": 22
+    },
+    {
+      "phase": 4,
+      "wave": 10,
+      "run_active": 1,
+      "phase_name": "Climax",
+      "first_frame_index": 10370,
+      "last_frame_index": 15167,
+      "frames": 4798,
+      "wall_frame_time_sum_s": 40.001766,
+      "fps_from_frame_time_sum": 119.944704,
+      "timings": {
+        "FrameTime": {
+          "samples": 4798,
+          "mean_ms": 8.337175,
+          "median_ms": 8.3335,
+          "p95_ms": 8.3408,
+          "p99_ms": 8.4917,
+          "min_ms": 7.9789,
+          "max_ms": 8.7491,
+          "frames_above_16_667_ms": 0
+        },
+        "GPUTime": {
+          "samples": 4798,
+          "mean_ms": 2.734575,
+          "median_ms": 2.59065,
+          "p95_ms": 3.3753,
+          "p99_ms": 3.5809,
+          "min_ms": 2.3015,
+          "max_ms": 3.8113,
+          "frames_above_16_667_ms": 0
+        },
+        "GameThreadTime": {
+          "samples": 4798,
+          "mean_ms": 1.776741,
+          "median_ms": 1.7279,
+          "p95_ms": 2.1852,
+          "p99_ms": 2.6138,
+          "min_ms": 1.3529,
+          "max_ms": 4.1386,
+          "frames_above_16_667_ms": 0
+        },
+        "RenderThreadTime": {
+          "samples": 4798,
+          "mean_ms": 3.220598,
+          "median_ms": 3.1602,
+          "p95_ms": 3.7415,
+          "p99_ms": 4.1429,
+          "min_ms": 2.751,
+          "max_ms": 8.0821,
+          "frames_above_16_667_ms": 0
+        },
+        "RHIThreadTime": {
+          "samples": 4798,
+          "mean_ms": 2.127759,
+          "median_ms": 2.0889,
+          "p95_ms": 2.6724,
+          "p99_ms": 2.9601,
+          "min_ms": 1.4374,
+          "max_ms": 4.4983,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "simulation_seconds": 40.001767,
+      "max_active_threats": 16
+    },
+    {
+      "phase": 5,
+      "wave": 10,
+      "run_active": 1,
+      "phase_name": "Approach",
+      "first_frame_index": 15168,
+      "last_frame_index": 15767,
+      "frames": 600,
+      "wall_frame_time_sum_s": 5.003874,
+      "fps_from_frame_time_sum": 119.907086,
+      "timings": {
+        "FrameTime": {
+          "samples": 600,
+          "mean_ms": 8.339791,
+          "median_ms": 8.3335,
+          "p95_ms": 8.339,
+          "p99_ms": 8.582,
+          "min_ms": 8.0244,
+          "max_ms": 8.7589,
+          "frames_above_16_667_ms": 0
+        },
+        "GPUTime": {
+          "samples": 600,
+          "mean_ms": 3.004553,
+          "median_ms": 2.9517,
+          "p95_ms": 3.6673,
+          "p99_ms": 3.8218,
+          "min_ms": 2.5014,
+          "max_ms": 4.0017,
+          "frames_above_16_667_ms": 0
+        },
+        "GameThreadTime": {
+          "samples": 600,
+          "mean_ms": 1.85466,
+          "median_ms": 1.76465,
+          "p95_ms": 2.377,
+          "p99_ms": 3.4926,
+          "min_ms": 1.4586,
+          "max_ms": 7.1126,
+          "frames_above_16_667_ms": 0
+        },
+        "RenderThreadTime": {
+          "samples": 600,
+          "mean_ms": 3.424543,
+          "median_ms": 3.34075,
+          "p95_ms": 4.0668,
+          "p99_ms": 4.3762,
+          "min_ms": 2.8785,
+          "max_ms": 5.7113,
+          "frames_above_16_667_ms": 0
+        },
+        "RHIThreadTime": {
+          "samples": 600,
+          "mean_ms": 2.275291,
+          "median_ms": 2.22875,
+          "p95_ms": 2.7697,
+          "p99_ms": 3.2509,
+          "min_ms": 1.6143,
+          "max_ms": 3.7597,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "simulation_seconds": 5.003874,
+      "max_active_threats": 13
+    }
+  ],
+  "simulation_delta": {
+    "samples": 15767,
+    "mean_ms": 8.338022,
+    "median_ms": 8.3334,
+    "p95_ms": 8.3378,
+    "p99_ms": 8.4955,
+    "min_ms": 8.3334,
+    "max_ms": 8.7977,
+    "frames_above_16_667_ms": 0
+  },
+  "kind_counts": {
+    "Gravity": {
+      "maximum": 1,
+      "mean": 0.405594
+    },
+    "Asteroids": {
+      "maximum": 9,
+      "mean": 4.00945
+    },
+    "Wreckage": {
+      "maximum": 16,
+      "mean": 4.093486
+    },
+    "Electrical": {
+      "maximum": 3,
+      "mean": 0.729498
+    },
+    "Pursuers": {
+      "maximum": 5,
+      "mean": 1.444536
+    },
+    "Flankers": {
+      "maximum": 4,
+      "mean": 1.807065
+    },
+    "Projectiles": {
+      "maximum": 26,
+      "mean": 19.930678
+    },
+    "Pickups": {
+      "maximum": 1,
+      "mean": 0.007421
+    }
+  },
+  "compound_presence": {
+    "frames": 2846,
+    "simulation_seconds": 23.727849,
+    "definition": "During Wave 10 Climax, simultaneous Gravity >0, Asteroids >0 and Pursuers + Flankers >0; includes active telegraphs/offscreen actors."
+  },
+  "production_save_readback": [
+    {
+      "directory": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames",
+      "exists": true,
+      "files": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Account_v1.sav",
+          "bytes": 2233,
+          "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Suspend_v1.sav",
+          "bytes": 1989,
+          "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+        }
+      ]
+    },
+    {
+      "directory": "C:\\Users\\j6sis\\AppData\\Local\\SpaceSurvival\\Saved\\SaveGames",
+      "exists": false,
+      "files": []
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival.exe",
+      "bytes": 171520,
+      "sha256": "619AC0779DCEABF638639193EFDEA0733E3B4626DEA623C07062F160F5ABCCF8"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+      "bytes": 332521984,
+      "sha256": "4DDE20DC8776827419EE7E3FA58EBDCA9CDD6AAC203DB0754AB57F8D51FD7498"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+      "bytes": 3204592,
+      "sha256": "50C983FBF45CB7BE7E94B056F5FFE6C1EE47788434736A690AC3C23F904FFE23"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+      "bytes": 782,
+      "sha256": "EA2DFB0FAA7436E05DA8D2CCB31931DF65AEE5EE965963A82C28C2AC444927B9"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+      "bytes": 11234869,
+      "sha256": "F94B0EC47F7FF9ADCF6C3EBF628052241F039886947175A1349F9286ACA244A2"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+      "bytes": 254792272,
+      "sha256": "46F70490400A134CDF5C7113F40003B2EE4E94AE82C5D2E4573B118E4A8F7CE2"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+      "bytes": 220915,
+      "sha256": "F914C1D57412E381D4507CDE909C1F717BB0E3919B0567D2872DAFD525F77F11"
+    }
+  ],
+  "timing_interpretation": {
+    "normal_runtime": "Seed ends Wave 8, then normal Session/Director Wave 9, breathing, full 40 s Wave 10 climax and at least 5 s approach. Native guard rejects fixed timestep, fixed frame rate, time dilation and any marked foreground loss. Caps, budgets, spatial admission, collision and damage paths remain normal.",
+    "controller_and_input": "Real controller possesses the runtime ship. Fixture calls existing SetFlightInput/RequestDodge/Fire methods directly. Physical keyboard/mouse/controller input is bypassed.",
+    "seed_frame": "One initial unmarked CSV seed frame is retained in all 15,768-frame statistics; all 15,767 marked frames are foreground. Startup/focus wait and final CSV drain are outside the capture."
+  },
+  "visual_observation": {
+    "lead_report": "Lead observed Wave 9 and the Wave 10 compound scene during this run, with asteroids, gravity and enemies visible together; reported screenshot at CSV frame 11489.",
+    "independent_audit": "Read-only files/source/CSV audit; no independent UI observation or visual quality assertion. The lead observation is not natural readability or final art acceptance."
+  },
+  "render_log_limit": {
+    "known_warnings": [
+      "Scalability MotionBlurQuality write ignored because explicit game setting has higher priority.",
+      "MotionVectorSimulation used on render thread without render-thread-safe flag."
+    ],
+    "interpretation": "No warning-free rendered-run claim; these logged warnings are retained in raw evidence."
+  },
+  "limits": [
+    "Seeded starter/RapidLaser, all five Tier V upgrade paths, OverdriveCooling and base hull/shield 50000; actual resulting hull140000. Optional events are pre-marked seen. This is not natural balance or a full ten-wave run.",
+    "No physical keyboard/mouse/controller response, natural wave progression, station docking, service interaction or retry-appeal acceptance.",
+    "Audio renderer device initialized with audio enabled; no listening, cue audibility, spatial perception or music-mix acceptance.",
+    "Simultaneous actor counts include active telegraphs/offscreen actors and do not establish visible contact or perceived fairness.",
+    "Capped 120 FPS 1440p DX12 quality 2 sample does not establish uncapped headroom, low-end scalability, long-session leaks or the representative 60 FPS gate.",
+    "Owner art rejection and all 19 hands-on checks remain open; later source/content changes are not covered by this package 10 capture."
+  ]
+}

@@ -1,0 +1,1186 @@
+{
+  "status": "PACKAGE_BUILD_AND_ARTIFACT_AUDIT_PASS_NATIVE_CAPTURE_PENDING",
+  "project_status": "PARTIAL",
+  "date_utc": "2026-09-13T09:45:27.474302+00:00",
+  "package_number": 10,
+  "source_commit": "0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80",
+  "engine": "5.8.2-56702186",
+  "configuration": "Win64 Development",
+  "renderer_config": "DX12 SM6 default; DX11 SM5 fallback cooked",
+  "source_scope": "Immutable commit blobs compared with current source/scripts/config using LF normalization; all Content file bytes compare exactly. Presence of cooked package exports is independently checked; cooked bytes are transformed data, not raw source-package byte equivalence.",
+  "source_sha256_lf": {
+    "Config/DefaultEngine.ini": "10eab5d62077dd180622f0f2230c9b0242555bfdfffabdb24b35f9a136db8614",
+    "Config/DefaultGame.ini": "c14845805f2760cfdb580cd413017230bf741e7b10496f2fd484728e6f3e703e",
+    "Config/DefaultInput.ini": "17a4be92f6812afeec062a4a83cf5c3648957c40859b9f0b96eab86cec601c87",
+    "Scripts/AnalyzePerformance.py": "ef11570ed4c5a4a289553970d5cb3f912e3aa4b6d0216a172adbababb4b7bca1",
+    "Scripts/AuthorAcornShip.py": "1e879b6c9be7eb1529945eda1fbf64c6abac59037d0c1f93a2b15f334bcf143a",
+    "Scripts/AuthorContent.py": "5888a1ee99ff5654a6ee7a7c4bbf2ea4817652805b37897bd1731111115b2789",
+    "Scripts/AuthorRockPhotographic.py": "071f8df31d402d7b51ef1324c464315515d9b77b56ea23dae5c426ae658ad5e6",
+    "Scripts/AuthorSpaceMaterial.py": "531d002e5c6a1d7025d655447b97a16ebf973eaa1b794ff817247a1610a5d4d8",
+    "Scripts/AuthorSpacePanorama.py": "017421d99ebca3918efff35998adf5b8e9fa9ed5f7d1f15e2140f07059113c27",
+    "Scripts/AuthorStationDeck.py": "1840c2a564cf62f4433c233c8eeb74e00abe4118d39eff30971511bb7983b07d",
+    "Scripts/AuthorTailRepair.py": "991fe37660b9ac92fb0eec9a84268549c603a13c63a2731dd02981e38c12535e",
+    "Scripts/Build.ps1": "8032be9e37023aef445c158faae29c7f4fab01a3cb76b0b46bb9b46cfe486bec",
+    "Scripts/BundlePrerequisites.ps1": "14e5e09a0a22a18efc67558f2d0dd52e8025cd33577725bcfaaf2ff5b6837bb0",
+    "Scripts/CaptureEndgame.ps1": "82921e85ada4aa04ecf20811e5f43065339855521e53c34dda93cd931a596121",
+    "Scripts/CheckProject.py": "b073b7e641b4b0ed2039c45e944bbbac9ca5ebcb3a0fed162fe23a8aa45ef501",
+    "Scripts/Format.ps1": "860195de8dfedab351a3c22c85a1cab8c7783b031e97f0d7189da2dc6582a860",
+    "Scripts/GenerateAudio.py": "0539ca1d5f28bcf7e79ffcea603c8dfd123f9edab2396254891801aec35e331f",
+    "Scripts/SaveFaultNative.cs": "0a59993e340f1c9cb05f29e0a3f9cd82b07c0fe0864d7c35222088ef5190a2b2",
+    "Scripts/TestCore.ps1": "bc1f4074b470e36abb4bd3af3347c547b4acda10107f7bb06f83975e5d3b834d",
+    "Scripts/TestSaveLifecycle.ps1": "2cef4c1e1f93ca378fba43bcb5142df888665a4fa12c00fd831d9b4c583bec23",
+    "Scripts/ValidateAcornShip.py": "c075285ce0aec392502708c16d60592af085fef5afd4965611a4cd3a258c97cf",
+    "Scripts/ValidateContent.py": "5409a270c204aca74fcce86fb4ac026479e0799ae89bd2fe1b7a15396bd7da85",
+    "Scripts/ValidateRockPhotographic.py": "6509a106457f2dc11ebe937e89ef19196cf52233008d9ae8f0459a4fbc9e937b",
+    "Scripts/ValidateScene.py": "970a99e661cf88a636302629c089004b9932b3f2da3562fbf7d1a0cfcf882a4f",
+    "Scripts/ValidateStationDeck.py": "abc87dc69a15346a74db903ff70eec13f6a550b91b581d51390ec49ee12bed5b",
+    "Scripts/ValidateTailRepair.py": "b0a66af4a4c49c7da259809f28f3b1dbcbff27db52cc972e862bb7cc7b28bb66",
+    "Source/SpaceSurvival.Target.cs": "50bc0fbca25b2aae8a58dc1d3ed93bfc24a12ac7154d949ed321a9c150c702d4",
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "e08f0526ca822a953d289d98edd2acce6a811070342d5d8dc67a7b2b5037c38c",
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "0194ea78f0717711b98623f11660f082255e91587c81764658dc4aa2669bdda6",
+    "Source/SpaceSurvival/Private/SSAdmissionAutomationTests.cpp": "a214e1da9265703c40f60d3275f1b5376a8b8a2746c1bd73ef12decf95d882f5",
+    "Source/SpaceSurvival/Private/SSAudio.cpp": "99e14fb6a56c5fdd96a3d1d12a8d883a6b2ff40fa0376461d0fe2aeb4da12545",
+    "Source/SpaceSurvival/Private/SSAudioAutomationTests.cpp": "186324711ee437f72ebcaf6ca42af840d823bcc15e4aa99a0841902ad68b349c",
+    "Source/SpaceSurvival/Private/SSAutomationTests.cpp": "459b1a731db1943b26dd0e0c18ebbcd0416db5df839207dec1b5609f99690367",
+    "Source/SpaceSurvival/Private/SSContractAutomationTests.cpp": "ff352ae2dc438d7e4e15951cbeaacfc1c622901aa358c6c6ec48efd67b03c39c",
+    "Source/SpaceSurvival/Private/SSEconomyAutomationTests.cpp": "652ef081727d20c9070fc5b895b54a5bf2124f1d8a8b8e435486c0eef3285c35",
+    "Source/SpaceSurvival/Private/SSFlightAutomationTests.cpp": "f829c14d6e2aaa8be28c30825591e2dafd12dfd5e45d4d815edfb2359ffe2b73",
+    "Source/SpaceSurvival/Private/SSGameInstance.cpp": "c089ef3ef10480b4c351b322b5e14f20675938a0dafc24fe47de75d0c3b6ce30",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "1c744d515a21f95a15fcfd132dedd63c982645cfb2b50da1f0639d4d918007ee",
+    "Source/SpaceSurvival/Private/SSHUD.cpp": "d464b292f234685bd92c82bb7230357a5d9421ee0e43d973a8e8658e61e03083",
+    "Source/SpaceSurvival/Private/SSHazardAutomationTests.cpp": "054604590bda43ac8feb7a79b4628dcafc3b4adffbece549966118d14c1a6c0f",
+    "Source/SpaceSurvival/Private/SSIntegrationAutomationTests.cpp": "0da278650047d02fb2c0db2b857a7c189bb3e4dc501e665ea765ed73fba04a0b",
+    "Source/SpaceSurvival/Private/SSJourneyAutomationTests.cpp": "7c7f6fd9dbea1dc812fbde1a7b97e1f2882180c92fb87ae7b6c6fa92ec22a0d6",
+    "Source/SpaceSurvival/Private/SSLocalSave.cpp": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402",
+    "Source/SpaceSurvival/Private/SSLocalSave.h": "21946dc7697636bddb4ad0ca24b0269b5fd3160491ce1b92b85d0787f3b52bff",
+    "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp": "9fc2cbd84d25d2fa70b9017669030cc51da58ddf87bfed8adb5034cb631fdf03",
+    "Source/SpaceSurvival/Private/SSShip.cpp": "894aa6853667829456e22bb612713391fef46709ff0ba4c15d55277308aa9429",
+    "Source/SpaceSurvival/Private/SSStation.cpp": "6eb9b9c2ddbb1027c231c0292ee938aee1011cae536d478af2da5d6470ed2dd5",
+    "Source/SpaceSurvival/Private/SSUtilityAutomationTests.cpp": "da4eb0865fe68b46bad00e1badb7e7399dc6d8639509c3d1a8c325c6b126e89f",
+    "Source/SpaceSurvival/Private/SSWave10Soak.cpp": "cb4d8af2a09b9e6b584ab70773d4c38e82c0641b3ec8b5dd2a7b9c21961f03c9",
+    "Source/SpaceSurvival/Private/SSWorldActors.cpp": "6ced7d89ffe9584958ff97929fdf0c711ff3143af12067b105dcd8d880e83951",
+    "Source/SpaceSurvival/Private/SpaceSurvival.cpp": "1e7a3ebb1bff64523a091df3e8d3d0da34cb5fa13b690218e3f314765a898a87",
+    "Source/SpaceSurvival/Public/SSAudio.h": "c1a06d39d8b4eac285e4735a9d4d4323c48e04353640339c3b15a8666d716327",
+    "Source/SpaceSurvival/Public/SSContentTypes.h": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141",
+    "Source/SpaceSurvival/Public/SSGameInstance.h": "7463a07885c3b0dded1b556b0f865d05ebd1fdcac35bbb591e05aa33bfeeaa1b",
+    "Source/SpaceSurvival/Public/SSGameMode.h": "3cf7c4c089b2e9afdebb9e014cad6e3125b81561894a3fc9133d3627ab9a92cc",
+    "Source/SpaceSurvival/Public/SSHUD.h": "4986bf93895fd063ad006393147afe2cb1af8629258b063c32a43edbe7e139dd",
+    "Source/SpaceSurvival/Public/SSPhase1Data.h": "6223974dac0b7f2ece0e77d7624981d1e0fd90743bd4b7e0881a9576fb11ed13",
+    "Source/SpaceSurvival/Public/SSShip.h": "9b68f07c36582cdaf5c2d0610b0ef35c2321b82ea4d24a7c531e5178c3a2bbcd",
+    "Source/SpaceSurvival/Public/SSStation.h": "acf2f2b805d50b68fc881e8fc7c713e85d0ed19fb75e61650bbca139bc3851f0",
+    "Source/SpaceSurvival/Public/SSWave10Soak.h": "4d372f3e49967ce281b262384ee57c270af573bc21931494ea7f5bcd994562d0",
+    "Source/SpaceSurvival/Public/SSWorldActors.h": "bb3027367c92bde83002c4ef872e6892e755023863613e704827fa7a55bc8a45",
+    "Source/SpaceSurvival/SpaceSurvival.Build.cs": "cae333d628d605a58ce51a89f1c8addfbdc54674454623de4e732ac8e6891d86",
+    "Source/SpaceSurvivalEditor.Target.cs": "51ee577956e755fa62e3d6d97e90bb93fa741b7b86740eacc1c1a572ff17b066",
+    "SpaceSurvival.uproject": "94864f0a1202f868e389560e1c917464a51db0d293d2210dcb5025531132f8e6"
+  },
+  "worktree_source_sha256_raw": {
+    "Config/DefaultEngine.ini": "78d8bc141acb3beb408d336f9ec71c31c9b270225737592da17bde02cecb16b6",
+    "Config/DefaultGame.ini": "c14845805f2760cfdb580cd413017230bf741e7b10496f2fd484728e6f3e703e",
+    "Config/DefaultInput.ini": "47f6c8282026a192c1f9a7709f5b6f82bab7288083b235e9ae1c3ea731f42f40",
+    "Scripts/AnalyzePerformance.py": "c5a2476b076c0bc55590ecfed8ace46dc2d264fd7f1fe595d3b07afed833b087",
+    "Scripts/AuthorAcornShip.py": "0b5fa2d33b99c43f4acb57681f1cdc0907f95e6d53967e7ee239c34e199f4caf",
+    "Scripts/AuthorContent.py": "5888a1ee99ff5654a6ee7a7c4bbf2ea4817652805b37897bd1731111115b2789",
+    "Scripts/AuthorRockPhotographic.py": "071f8df31d402d7b51ef1324c464315515d9b77b56ea23dae5c426ae658ad5e6",
+    "Scripts/AuthorSpaceMaterial.py": "520954c8b6ca73a72195a67fc43a479cdd4796041547567eb6a2359d433174e1",
+    "Scripts/AuthorSpacePanorama.py": "017421d99ebca3918efff35998adf5b8e9fa9ed5f7d1f15e2140f07059113c27",
+    "Scripts/AuthorStationDeck.py": "1840c2a564cf62f4433c233c8eeb74e00abe4118d39eff30971511bb7983b07d",
+    "Scripts/AuthorTailRepair.py": "a5cbaffc50befcbd5947735aaf57e608686f96a2727c314fd95a1a3c81637cb8",
+    "Scripts/Build.ps1": "8032be9e37023aef445c158faae29c7f4fab01a3cb76b0b46bb9b46cfe486bec",
+    "Scripts/BundlePrerequisites.ps1": "14e5e09a0a22a18efc67558f2d0dd52e8025cd33577725bcfaaf2ff5b6837bb0",
+    "Scripts/CaptureEndgame.ps1": "bb0ca885204575e9f7ff2e95cb2f60e0fe9c8b7fe4f70e1b9a573001dc9ee315",
+    "Scripts/CheckProject.py": "b073b7e641b4b0ed2039c45e944bbbac9ca5ebcb3a0fed162fe23a8aa45ef501",
+    "Scripts/Format.ps1": "860195de8dfedab351a3c22c85a1cab8c7783b031e97f0d7189da2dc6582a860",
+    "Scripts/GenerateAudio.py": "0539ca1d5f28bcf7e79ffcea603c8dfd123f9edab2396254891801aec35e331f",
+    "Scripts/SaveFaultNative.cs": "9e44af23f747ef025245359dd72b032f2fdaf0d7989a969841d14f2331a25995",
+    "Scripts/TestCore.ps1": "bc1f4074b470e36abb4bd3af3347c547b4acda10107f7bb06f83975e5d3b834d",
+    "Scripts/TestSaveLifecycle.ps1": "2cef4c1e1f93ca378fba43bcb5142df888665a4fa12c00fd831d9b4c583bec23",
+    "Scripts/ValidateAcornShip.py": "ec638b83534aaeee8fb0288984bd8948c89849806d095f7605c0f461535bb8f5",
+    "Scripts/ValidateContent.py": "51cc3b8563e40470b89b29cfa5107dfabca547bae1e7a14b8b794b7284607766",
+    "Scripts/ValidateRockPhotographic.py": "6509a106457f2dc11ebe937e89ef19196cf52233008d9ae8f0459a4fbc9e937b",
+    "Scripts/ValidateScene.py": "a2b9d4224b1d56c361fef9074423104c0b10a482be733c22a017630085aa0663",
+    "Scripts/ValidateStationDeck.py": "abc87dc69a15346a74db903ff70eec13f6a550b91b581d51390ec49ee12bed5b",
+    "Scripts/ValidateTailRepair.py": "7abca26076deea4babdb64655a9dc105b6e2414362fc7d07e21a48754d5af16e",
+    "Source/SpaceSurvival.Target.cs": "50bc0fbca25b2aae8a58dc1d3ed93bfc24a12ac7154d949ed321a9c150c702d4",
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "86449dba0e9dcd4b89b71c6f2e6ea946857326fde7f7fbbb4c7305ab8f6366a9",
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "b7a6915ba71b6a642a6ceee9573fffadf8bed203b4fa6355984212ee1fe1cfaa",
+    "Source/SpaceSurvival/Private/SSAdmissionAutomationTests.cpp": "c3ab7f43b497b98efedd0cd1da98c1c0453ab548b7a201724101d787e97e0bd9",
+    "Source/SpaceSurvival/Private/SSAudio.cpp": "99e14fb6a56c5fdd96a3d1d12a8d883a6b2ff40fa0376461d0fe2aeb4da12545",
+    "Source/SpaceSurvival/Private/SSAudioAutomationTests.cpp": "186324711ee437f72ebcaf6ca42af840d823bcc15e4aa99a0841902ad68b349c",
+    "Source/SpaceSurvival/Private/SSAutomationTests.cpp": "459b1a731db1943b26dd0e0c18ebbcd0416db5df839207dec1b5609f99690367",
+    "Source/SpaceSurvival/Private/SSContractAutomationTests.cpp": "f7ac940249caaf87b0fb236d9f53ed49dfc13facf3201787eb234052b41eee5b",
+    "Source/SpaceSurvival/Private/SSEconomyAutomationTests.cpp": "6d8d4bb96eb8c5e75dd187ef70b937a653c97f82fc8fbad8253e59c18785f6f6",
+    "Source/SpaceSurvival/Private/SSFlightAutomationTests.cpp": "f829c14d6e2aaa8be28c30825591e2dafd12dfd5e45d4d815edfb2359ffe2b73",
+    "Source/SpaceSurvival/Private/SSGameInstance.cpp": "c089ef3ef10480b4c351b322b5e14f20675938a0dafc24fe47de75d0c3b6ce30",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "1c744d515a21f95a15fcfd132dedd63c982645cfb2b50da1f0639d4d918007ee",
+    "Source/SpaceSurvival/Private/SSHUD.cpp": "d464b292f234685bd92c82bb7230357a5d9421ee0e43d973a8e8658e61e03083",
+    "Source/SpaceSurvival/Private/SSHazardAutomationTests.cpp": "054604590bda43ac8feb7a79b4628dcafc3b4adffbece549966118d14c1a6c0f",
+    "Source/SpaceSurvival/Private/SSIntegrationAutomationTests.cpp": "644f0a884d18ba0f06f426760c2a8cf08a71f2690d604e854828f22338193537",
+    "Source/SpaceSurvival/Private/SSJourneyAutomationTests.cpp": "7c7f6fd9dbea1dc812fbde1a7b97e1f2882180c92fb87ae7b6c6fa92ec22a0d6",
+    "Source/SpaceSurvival/Private/SSLocalSave.cpp": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402",
+    "Source/SpaceSurvival/Private/SSLocalSave.h": "21946dc7697636bddb4ad0ca24b0269b5fd3160491ce1b92b85d0787f3b52bff",
+    "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp": "9fc2cbd84d25d2fa70b9017669030cc51da58ddf87bfed8adb5034cb631fdf03",
+    "Source/SpaceSurvival/Private/SSShip.cpp": "894aa6853667829456e22bb612713391fef46709ff0ba4c15d55277308aa9429",
+    "Source/SpaceSurvival/Private/SSStation.cpp": "6eb9b9c2ddbb1027c231c0292ee938aee1011cae536d478af2da5d6470ed2dd5",
+    "Source/SpaceSurvival/Private/SSUtilityAutomationTests.cpp": "36a4fc4c1279662ea5edb2a2eeda790e7564c35c1160c4b0cf1c841adff23a1b",
+    "Source/SpaceSurvival/Private/SSWave10Soak.cpp": "0bc7f82425feb4c29b3bc8e2367b35822f3e0e6f48470a04eff65c4645ae06ac",
+    "Source/SpaceSurvival/Private/SSWorldActors.cpp": "af5ffbf10b009261b415f2c2ed58d649bcb32cd4cd3e40e223b74f8e8f0c76b5",
+    "Source/SpaceSurvival/Private/SpaceSurvival.cpp": "1e7a3ebb1bff64523a091df3e8d3d0da34cb5fa13b690218e3f314765a898a87",
+    "Source/SpaceSurvival/Public/SSAudio.h": "c1a06d39d8b4eac285e4735a9d4d4323c48e04353640339c3b15a8666d716327",
+    "Source/SpaceSurvival/Public/SSContentTypes.h": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141",
+    "Source/SpaceSurvival/Public/SSGameInstance.h": "7463a07885c3b0dded1b556b0f865d05ebd1fdcac35bbb591e05aa33bfeeaa1b",
+    "Source/SpaceSurvival/Public/SSGameMode.h": "3cf7c4c089b2e9afdebb9e014cad6e3125b81561894a3fc9133d3627ab9a92cc",
+    "Source/SpaceSurvival/Public/SSHUD.h": "4986bf93895fd063ad006393147afe2cb1af8629258b063c32a43edbe7e139dd",
+    "Source/SpaceSurvival/Public/SSPhase1Data.h": "dba26769ca2f87f3c9499c18670e1ee3e08e4b999886586616e69add821a0b9a",
+    "Source/SpaceSurvival/Public/SSShip.h": "9b68f07c36582cdaf5c2d0610b0ef35c2321b82ea4d24a7c531e5178c3a2bbcd",
+    "Source/SpaceSurvival/Public/SSStation.h": "acf2f2b805d50b68fc881e8fc7c713e85d0ed19fb75e61650bbca139bc3851f0",
+    "Source/SpaceSurvival/Public/SSWave10Soak.h": "8f2f953aaa7d663bbb60767a5ca319fe74a6986d17c17be9dfe37f51d0755dec",
+    "Source/SpaceSurvival/Public/SSWorldActors.h": "bb3027367c92bde83002c4ef872e6892e755023863613e704827fa7a55bc8a45",
+    "Source/SpaceSurvival/SpaceSurvival.Build.cs": "cae333d628d605a58ce51a89f1c8addfbdc54674454623de4e732ac8e6891d86",
+    "Source/SpaceSurvivalEditor.Target.cs": "51ee577956e755fa62e3d6d97e90bb93fa741b7b86740eacc1c1a572ff17b066",
+    "SpaceSurvival.uproject": "94864f0a1202f868e389560e1c917464a51db0d293d2210dcb5025531132f8e6"
+  },
+  "content_sha256": {
+    "Content/SpaceSurvival/Audio/Alarm.uasset": "5855f220b8880ab4837970b13bed537d9cabf466d5c5070ed2612350fbb2ad72",
+    "Content/SpaceSurvival/Audio/Cannon.uasset": "8624d1c875c3faba7133b458edca423a2b4c5ccf1c855ceccb0e6d68fbcb0088",
+    "Content/SpaceSurvival/Audio/DebrisBreak.uasset": "cb1414eb87854481c8d6183d76011e0a2d2bc04abc80eff165dad69c4e151be9",
+    "Content/SpaceSurvival/Audio/ElectricalCharge.uasset": "58a0cb3795c5834b549b8b61a4247fbf8a1fea4204188a4d373b86f0e67e619f",
+    "Content/SpaceSurvival/Audio/ElectricalDischarge.uasset": "f966f3a313e60782d37ef160e90f5cfadbc0fada11dd035697fe051a3df0537e",
+    "Content/SpaceSurvival/Audio/EnemyBreak.uasset": "18dd82fb15ab0acf81b6d9ebda03a6a245105a803557e336167463c5d9120db6",
+    "Content/SpaceSurvival/Audio/EnemyFire.uasset": "9dfe593159b7ccff2380b3f05a41b08032c4eae9f0404a5f9cf6c1611bd5112a",
+    "Content/SpaceSurvival/Audio/Engine.uasset": "7defc6c4679ed4fedd12750475e6a4ac46d5858ad830d42e6f0a25bcc0f76fcf",
+    "Content/SpaceSurvival/Audio/GravityAmbience.uasset": "f19ad14f85d9c945d4ed228fd27496ae3c9574f8511fa43eadc9a6aafb48b229",
+    "Content/SpaceSurvival/Audio/Impact.uasset": "18ad4605b349ccc2304785566693cc0632ac7aa7a623377059ac3daa76bca896",
+    "Content/SpaceSurvival/Audio/Laser.uasset": "35e9d2e6b8bf87ec1cb3ee3c39ba3bc1b32e2fec2b711fe320b0897215ff59c9",
+    "Content/SpaceSurvival/Audio/MusicBase.uasset": "d197113d6dbff2f025e80a252d098275d64d34b67a4c161cbfc44c17aea9dbf9",
+    "Content/SpaceSurvival/Audio/MusicClimax.uasset": "437ca173d341dccea84a636861bca5acb2bc4276b006017b35819abe84fdeea9",
+    "Content/SpaceSurvival/Audio/MusicPressure.uasset": "6d541f6901d789118759a06b8b5d462e687c5396bed5a4ef8f0b096bbff77e5d",
+    "Content/SpaceSurvival/Audio/Pickup.uasset": "ac132a01c8f653391ca94a48151f249ece9d45b1a800cb77b32fc442f97bbf24",
+    "Content/SpaceSurvival/Audio/Station.uasset": "92f83b540593da3dd1edb7e01e793919a8e86d6449a5e62dcd8e865d5d95ad2e",
+    "Content/SpaceSurvival/Authoring/P_AcornautImport.uasset": "2c4399a144af095f1cfee679bbbd731573f48dbf9df7fde45d20b6783c014870",
+    "Content/SpaceSurvival/Authoring/P_DisembarkImport.uasset": "943e49ef09204f0a059ddd9fdc1e163a62758f0797a4c73afd63512aad3fd0fd",
+    "Content/SpaceSurvival/Authoring/P_PilotImport.uasset": "8c6861399f4fdd0a6123515a8a30a89ffbc3e1c1bda1b474423de768f9ab88dc",
+    "Content/SpaceSurvival/Character/A_Disembark.uasset": "a17a080173b3c0fe5f9077f7afc868948d55ce4836718ed3049ec361f974dfd0",
+    "Content/SpaceSurvival/Character/A_Pilot.uasset": "de94f32c0cb14912c2fdfbefeac1966b436dc959014bff2b4821b5854cb3a8ea",
+    "Content/SpaceSurvival/Character/A_Walk.uasset": "386fe4f8921132ebee94d813dd0c454ea49e1a46970bd268bd3204f4bcacc4c7",
+    "Content/SpaceSurvival/Character/SK_Acornaut.uasset": "8cbdde1b50530235f81225e971aae5db50925ebfdaf252cfd48a9fc1fe58839b",
+    "Content/SpaceSurvival/Character/SK_AcornautPilot.uasset": "25159537f75a7d68df97e662443601b8c73623eebdd3c27591f057870b05305a",
+    "Content/SpaceSurvival/Character/SK_AcornautTailV2.uasset": "7a9e6caffe15c488bed4846912e823a60974bad402dd736d222fb3c355d67917",
+    "Content/SpaceSurvival/Character/geometry_0_PhysicsAsset.uasset": "a5c513bb9aa46d9ed2ab84026a06655bd5c95b0634b9e4d638b5ef5db1a33522",
+    "Content/SpaceSurvival/Character/geometry_0_Skeleton.uasset": "e4e69079b59b5e483253eaa57988a0d5adab27a71067eb8cfe959a0f559779d3",
+    "Content/SpaceSurvival/Character/model-rigged_material_0.uasset": "15c3bde582067296e07bbb273994b52ad5f569929121d05eb3efae4ede85e7d7",
+    "Content/SpaceSurvival/Character/model-rigged_texture_0.uasset": "38e22986efcb79c7cf10e0c577b8fd73d161f78cac59311b91901734ad90f592",
+    "Content/SpaceSurvival/Data/DA_Phase1.uasset": "6cfe3ebfb61ef1de3e58bd48f2a72e78161a5986c31b97d46c069407adcd0505",
+    "Content/SpaceSurvival/Maps/Survival.umap": "30643d64993e2b5386b975fbe765afdfc0ab134cc6159796b6ce3c92758c2324",
+    "Content/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.uasset": "0e91828d10190e0edef73490ee36659c2cbe41be172f178048dc97d70b9118c4",
+    "Content/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.uasset": "8797aa3e71ccfff42cab9cb7a76efd91e49f0d0434678235fec55a5838056859",
+    "Content/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.uasset": "24b7310f596e4da22c0d7d541a7d81e55b40d8c171b6e6f620e4cfb4c29a3969",
+    "Content/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.uasset": "4be5f2fa9f0d38878ba99648418014b4e390a18a177d0f71a4dbd5752efe9f95",
+    "Content/SpaceSurvival/Materials/M_AcornV2_IonAndNav.uasset": "a1aa26f8df23151bb7d556f0eb139455865a3e42e59173d388797c9bda669bfb",
+    "Content/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.uasset": "c33639070c924e50ae665437431f658f3e8088b9c52dccc5c4dd395416bcd3f3",
+    "Content/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.uasset": "46e4d442190b589022e7cc247692677cc0f8141d522b3de11f15440050965467",
+    "Content/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.uasset": "123c4f918c11926bb0eab7a6d691a9075e4e687dd6581f43b1f821b824202392",
+    "Content/SpaceSurvival/Materials/M_AcornV2_Windscreen.uasset": "5283fba73752f879635a345ab723b9406dda5fd27c4c331138331807fcbcef16",
+    "Content/SpaceSurvival/Materials/M_Amber.uasset": "c70e9f84119f71ca7e76bbc2dbf0531e0d6aade26be196f7bedf133f1904bf2f",
+    "Content/SpaceSurvival/Materials/M_Cyan.uasset": "8923f11bd51b70ef654fea13a1b5afdbe66e52f54b0a2d0a4e1d9e725ab15224",
+    "Content/SpaceSurvival/Materials/M_Emissive.uasset": "1c09844a3166fb49ae81b17d4fa643843cfbf6f29d1f1444fd2dadd4f7445227",
+    "Content/SpaceSurvival/Materials/M_Gold.uasset": "6df62e0c00e262f482a74836c84c937dd043bb8ce60b48e5cfc6c862642f7001",
+    "Content/SpaceSurvival/Materials/M_Hazard.uasset": "e1d1a26aa20cfd17c6e0df5959607b3bed66f3f1f402b5ac9b26b7596e290e46",
+    "Content/SpaceSurvival/Materials/M_Hull.uasset": "7d128dd99493b7876fb8d1fc10cf6879d122118e3b3e80c1339a4b7edf19bbea",
+    "Content/SpaceSurvival/Materials/M_Rock.uasset": "5b44e2035b0fe0bc0d5972f76443a1e0a502346c4fa0bafa8850772b6d633de5",
+    "Content/SpaceSurvival/Materials/M_RockPhotographic.uasset": "acb1598b5d3a5acca0991d501b6c2de374b37d3ba4eacdfcc87a3683d346bbe1",
+    "Content/SpaceSurvival/Materials/M_Space.uasset": "1352430c92730af207767497787fb0c4e333abd5d87cff0ecc33fa71582fb993",
+    "Content/SpaceSurvival/Materials/M_Star.uasset": "f599a1ac9809f0fbdd3fc34cf735d17ab76242375dfac61369e27800d6a56480",
+    "Content/SpaceSurvival/Materials/M_StarWarm.uasset": "20e068709506051028f49cacff9894f5832fb7c2b13183ba06793a1c791c0f57",
+    "Content/SpaceSurvival/Materials/M_StationDeck.uasset": "e90d895cd942329bf4af71efeff9441c1f077f2f0f3cc5b408b2510e02fd156f",
+    "Content/SpaceSurvival/Materials/M_Violet.uasset": "32f58fbe70588002f32cfe29186b0a21ba98cd18bfded30539ee16ac6777a98f",
+    "Content/SpaceSurvival/Meshes/SM_AcornShip.uasset": "e138f280422d1aa7d7106ca432167031d2bb834909a1eedd76fdbe465d481bf9",
+    "Content/SpaceSurvival/Meshes/SM_AcornShipV2.uasset": "f68356bda4b5e0efd0ce9cf5d0e6aca3365a11a392722a5e5b7a67467d3e819e",
+    "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset": "9c29554cd017c56d26f691f3b05b39e993f768188b8f02fdef5901b370518c07",
+    "Content/SpaceSurvival/Meshes/SM_Asteroid.uasset": "b0d6c0ff8918c07346c75e3e5441ee4e472e3f63690c22282456b57a40195789",
+    "Content/SpaceSurvival/Meshes/SM_AsteroidMassive.uasset": "f623615757b872582bb28becdd00323205f62b8ae639963af724592dddf09539",
+    "Content/SpaceSurvival/Meshes/SM_AsteroidMedium.uasset": "ce40e9181dc9946cbde579fe757a2f29bc89f90268a6915b32bcab39a0341837",
+    "Content/SpaceSurvival/Meshes/SM_AsteroidSmall.uasset": "1b377a123a3dd01c960f110608d3b8644f151ffb2e64ff176661378e0e4b27ef",
+    "Content/SpaceSurvival/Meshes/SM_Console.uasset": "28a087b5a5ea43eebede2392d85c059da98e77f596663518293027e80341d16e",
+    "Content/SpaceSurvival/Meshes/SM_Crate.uasset": "985dbbc5cc95737d5cbec8ca9763258b428da8bbf3d514e6b1764dfe0bbfb973",
+    "Content/SpaceSurvival/Meshes/SM_Debris.uasset": "1817b2364e92beda629c16aa0b02ffe2ec6b602dc9773ccad8ff53e9187140f5",
+    "Content/SpaceSurvival/Meshes/SM_EventBeacon.uasset": "e3546699c3719f0ee5096265710faceaefaa725a791e84c3d5c6853689563613",
+    "Content/SpaceSurvival/Meshes/SM_Flanker.uasset": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5",
+    "Content/SpaceSurvival/Meshes/SM_GravityRing.uasset": "e99e6e833d10e672de06ea00484a76be6132e309a23ccb3f0aebab4dde761a1a",
+    "Content/SpaceSurvival/Meshes/SM_MobileDepot.uasset": "700a7347aff1f471e0843c7294508cad69b4d568557abf9b9bd5ede8b826dc3a",
+    "Content/SpaceSurvival/Meshes/SM_OverdriveCooling.uasset": "43895110a7e226a595302e103dade3aa77c95304059e4cf93a6c86578dd30435",
+    "Content/SpaceSurvival/Meshes/SM_PickupBuff.uasset": "6f7212a475fb5b051da3996ff407b58c4b7e555a2938bd28fa4f4cdd272ad6cb",
+    "Content/SpaceSurvival/Meshes/SM_PickupCredit.uasset": "1a7e47f7535665a8647d7512b6eef7ac6e5db24280bb60d994b279ef936baf5c",
+    "Content/SpaceSurvival/Meshes/SM_PickupRepair.uasset": "4415f0d9fe9e585ff1dc52d2284a68e1908d71e2d3551c5407aca71089c85b03",
+    "Content/SpaceSurvival/Meshes/SM_PickupShield.uasset": "763b46adeab209e305b3555c1641084efe9958f3462ae80cf551b17e64dfc5ed",
+    "Content/SpaceSurvival/Meshes/SM_Projectile.uasset": "6c3f1c1bb301173c80abc9fa1eca6b7913f87fda6926fffcd99b89f1a5d188d5",
+    "Content/SpaceSurvival/Meshes/SM_Pursuer.uasset": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18",
+    "Content/SpaceSurvival/Meshes/SM_ServiceArm.uasset": "2bfb38fe71cabf4120e979c0bc7d92a3fce4df4f4723ea76b11ee00a2d7c89c7",
+    "Content/SpaceSurvival/Meshes/SM_Starfield.uasset": "f2ef14f61cd647d2b3539b8a5229fc36d9fc260495dc3a47b55a639c5f0dedab",
+    "Content/SpaceSurvival/Meshes/SM_StationRing.uasset": "6d9085f5c919f24be9a48683b5404e81d4e10ac68439dfb2f4bee8ef031b6144",
+    "Content/SpaceSurvival/Meshes/SM_StormRing.uasset": "c026dcf829142da52e97e0f60d78113d2f2a274e8b70fccdd2da43ea27d07faa",
+    "Content/SpaceSurvival/Meshes/SM_VectorThrusters.uasset": "89733129623abf81a4333a579549a0327bd348e4799fe74ff870475f201b77a8",
+    "Content/SpaceSurvival/Meshes/SM_Wreckage.uasset": "12491d09e5b614523764b16c9616e8c9531184c11924a7dee6fa0f2faf795306",
+    "Content/SpaceSurvival/Textures/T_RockFace_ARM.uasset": "3143926cfd5142fffbff088f3757eb746818befb30560cb3713456cc705bfaa7",
+    "Content/SpaceSurvival/Textures/T_RockFace_Color.uasset": "b64ea4e4b731dda6229bc4fb1c53e89f7a95bad17217af1a58148e1ff671905d",
+    "Content/SpaceSurvival/Textures/T_RockFace_Normal.uasset": "37bdb981270dc8d2b29cea09e41d4b364a725869706f168444079009b34a5d3d",
+    "Content/SpaceSurvival/Textures/T_SpacePanorama_starless_v2.uasset": "560de813019d4cf39512757f19a382caf042c41e88595afc617e2221426bf5ef",
+    "Content/SpaceSurvival/Textures/T_SpacePanorama_v1.uasset": "5ac2f769e9e5cd16e1ccdf37c2cfc5c2b3228360846038221de02d46d9b98280",
+    "Content/SpaceSurvival/Textures/T_StationDeck_ARM.uasset": "cb5d53d454965686ba27a117d069512dc63f7ccf3b55902b8831e4817d907737",
+    "Content/SpaceSurvival/Textures/T_StationDeck_Color.uasset": "63ad12dc7c6a89f0b1601f343b905a3c69bc86a91e287cdb1768ec58226d5623",
+    "Content/SpaceSurvival/Textures/T_StationDeck_Normal.uasset": "e2cfe37d645835e22a4b7daa350019b4afa8d209c2bd15f9277b07d96769a9d4"
+  },
+  "source_and_content_match_commit": true,
+  "source_mismatches": [],
+  "untracked_content_assets": [],
+  "artifacts": [
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival.exe",
+      "bytes": 171520,
+      "sha256": "619ac0779dceabf638639193efdea0733e3b4626dea623c07062f160f5abccf8"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+      "bytes": 332521984,
+      "sha256": "4dde20dc8776827419ee7e3fa58ebdca9cdd6aac203db0754ab57f8d51fd7498"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+      "bytes": 3204592,
+      "sha256": "50c983fbf45cb7be7e94b056f5ffe6c1ee47788434736a690ac3c23f904ffe23"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+      "bytes": 782,
+      "sha256": "ea2dfb0faa7436e05da8d2ccb31931df65aee5ee965963a82c28c2ac444927b9"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+      "bytes": 11234869,
+      "sha256": "f94b0ec47f7ff9adcf6c3ebf628052241f039886947175a1349f9286aca244a2"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+      "bytes": 254792272,
+      "sha256": "46f70490400a134cdf5c7113f40003b2ee4e94ae82c5d2e4573b118e4a8f7ce2"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+      "bytes": 220915,
+      "sha256": "f914c1d57412e381d4507cde909c1f717bb0e3919b0567d2872dafd525f77f11"
+    }
+  ],
+  "package_log": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\WindowsPackage10.log",
+    "bytes": 86932,
+    "sha256": "74b68d928a877bf85585aaadc3cbc1bac7ef913087a5383b331673868186821e",
+    "sha256_lf": "09ef69e2a55411bb51019944c5a949bf5a18f88cf0b8f098923170cf1ebac785"
+  },
+  "package_build_seconds": 45.06,
+  "package_build_exit": 0,
+  "native_build_seconds": 19.45,
+  "native_build_actions": 7,
+  "index": {
+    "path": "C:\\Users\\j6sis\\AppData\\Local\\Temp\\SpaceSurvival-Package10-Index.csv",
+    "bytes": 572398,
+    "sha256": "673800c08ab21a0f684ed78472c90017b96441378d52267f5e3e1c67221a249e",
+    "sha256_lf": "636f1f923221d79d0713ebe0f9666ec38559a29b2964e5e643fa6597765dbdb4"
+  },
+  "index_log": {
+    "path": "C:\\Users\\j6sis\\AppData\\Local\\Temp\\SpaceSurvival-Package10-Index.log",
+    "bytes": 10549,
+    "sha256": "c05adecd133629d156bd5c8dad51dcb39ce124e2243d087d1405cfa7faffca6a",
+    "sha256_lf": "41ca0c3a3edf802510c2c90a99348f9cf17e3c38de6f5efa8b94c5ea7cd91fd4"
+  },
+  "index_command_log": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\Package10IndexCommand.log",
+    "bytes": 463,
+    "sha256": "0c5fe80e5168d984b576c2819ea7633db7fa96f87b7b80ee8df5c408ad321869",
+    "sha256_lf": "a018ab59e64de9b7fef71d41783d5a7827ae132c0c9a0c7e30a4e12bb9e57816"
+  },
+  "index_exit": 0,
+  "index_exit_provenance": "Lead-observed tool exit0; retained index/command logs show selected container and normal completion. No process launched by this audit.",
+  "index_rows": 2125,
+  "project_packages": 88,
+  "expected_project_packages": 88,
+  "missing_packages": [],
+  "unexpected_project_packages": [],
+  "project_index_match_field": "Filename; project PackageName fields are blank",
+  "cooked_project_exports": {
+    "Content/SpaceSurvival/Audio/Alarm.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/Alarm.uasset",
+      "package_id": "0x829A3DE6246EF0B7",
+      "chunk_id": "b7f06e24e63d9a8200000001",
+      "chunk_hash": "0x1ddba8d829189c571a2aba9bbc68ded66e633664",
+      "uncompressed_bytes": 494,
+      "compressed_bytes": 494
+    },
+    "Content/SpaceSurvival/Audio/Cannon.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/Cannon.uasset",
+      "package_id": "0x49BA364D8AE14C27",
+      "chunk_id": "274ce18a4d36ba4900000001",
+      "chunk_hash": "0x99ce32ae269f790789a47863240390c5c85eda02",
+      "uncompressed_bytes": 494,
+      "compressed_bytes": 494
+    },
+    "Content/SpaceSurvival/Audio/DebrisBreak.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/DebrisBreak.uasset",
+      "package_id": "0x735A7283E049FC8B",
+      "chunk_id": "8bfc49e083725a7300000001",
+      "chunk_hash": "0xd8c95475c11844244684e2fdb94c1ef620bc837c",
+      "uncompressed_bytes": 502,
+      "compressed_bytes": 502
+    },
+    "Content/SpaceSurvival/Audio/ElectricalCharge.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/ElectricalCharge.uasset",
+      "package_id": "0x31AB7A35635ECE41",
+      "chunk_id": "41ce5e63357aab3100000001",
+      "chunk_hash": "0xaf673ad22ffc33991e9f2c53f0508ec396881419",
+      "uncompressed_bytes": 524,
+      "compressed_bytes": 524
+    },
+    "Content/SpaceSurvival/Audio/ElectricalDischarge.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/ElectricalDischarge.uasset",
+      "package_id": "0x58398F44F8004103",
+      "chunk_id": "034100f8448f395800000001",
+      "chunk_hash": "0xe7b73274509530f84fb4569411533b942e689eda",
+      "uncompressed_bytes": 518,
+      "compressed_bytes": 518
+    },
+    "Content/SpaceSurvival/Audio/EnemyBreak.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/EnemyBreak.uasset",
+      "package_id": "0x132D26A27F989C55",
+      "chunk_id": "559c987fa2262d1300000001",
+      "chunk_hash": "0x75874408a1b48d54ef24c91f5a587226437c1343",
+      "uncompressed_bytes": 502,
+      "compressed_bytes": 502
+    },
+    "Content/SpaceSurvival/Audio/EnemyFire.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/EnemyFire.uasset",
+      "package_id": "0x878FA8B39BCF5CA6",
+      "chunk_id": "a65ccf9bb3a88f8700000001",
+      "chunk_hash": "0xc880053fb20c77196dcfb8e500099aee3a571711",
+      "uncompressed_bytes": 502,
+      "compressed_bytes": 502
+    },
+    "Content/SpaceSurvival/Audio/Engine.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/Engine.uasset",
+      "package_id": "0x68948923A892E1C9",
+      "chunk_id": "c9e192a82389946800000001",
+      "chunk_hash": "0xf7578a2e34fd27eabe840ebdb401496830a165d8",
+      "uncompressed_bytes": 500,
+      "compressed_bytes": 500
+    },
+    "Content/SpaceSurvival/Audio/GravityAmbience.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/GravityAmbience.uasset",
+      "package_id": "0xB45247A2A98D2E7E",
+      "chunk_id": "7e2e8da9a24752b400000001",
+      "chunk_hash": "0xbf0656290e60f079ab3d8bfc8a65b1c7db61f750",
+      "uncompressed_bytes": 516,
+      "compressed_bytes": 516
+    },
+    "Content/SpaceSurvival/Audio/Impact.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/Impact.uasset",
+      "package_id": "0x6E2D169AEFEDC716",
+      "chunk_id": "16c7edef9a162d6e00000001",
+      "chunk_hash": "0xb5a0ad893d7e3b1979a4350ec737b2e92d451472",
+      "uncompressed_bytes": 494,
+      "compressed_bytes": 494
+    },
+    "Content/SpaceSurvival/Audio/Laser.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/Laser.uasset",
+      "package_id": "0x520A324A33E07BC",
+      "chunk_id": "bc073ea324a3200500000001",
+      "chunk_hash": "0x05f64d0a8fd8998f51a6e0e9d8b36bbc143b114f",
+      "uncompressed_bytes": 494,
+      "compressed_bytes": 494
+    },
+    "Content/SpaceSurvival/Audio/MusicBase.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/MusicBase.uasset",
+      "package_id": "0xF767D2294B77187A",
+      "chunk_id": "7a18774b29d267f700000001",
+      "chunk_hash": "0x094eb079496654ce3e56d9c64b205d2fafdad7fa",
+      "uncompressed_bytes": 508,
+      "compressed_bytes": 508
+    },
+    "Content/SpaceSurvival/Audio/MusicClimax.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/MusicClimax.uasset",
+      "package_id": "0x8DCE245C8057910E",
+      "chunk_id": "0e9157805c24ce8d00000001",
+      "chunk_hash": "0xacb4a8ba06102fcd0fa3d0629f8e075ab6ceb85f",
+      "uncompressed_bytes": 508,
+      "compressed_bytes": 508
+    },
+    "Content/SpaceSurvival/Audio/MusicPressure.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/MusicPressure.uasset",
+      "package_id": "0x66C53946BDC70933",
+      "chunk_id": "3309c7bd4639c56600000001",
+      "chunk_hash": "0x631ad759be40d0cff574fdb4d29f6245289a302f",
+      "uncompressed_bytes": 516,
+      "compressed_bytes": 516
+    },
+    "Content/SpaceSurvival/Audio/Pickup.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/Pickup.uasset",
+      "package_id": "0xC10933FE36615623",
+      "chunk_id": "23566136fe3309c100000001",
+      "chunk_hash": "0x8b19210837f768990c430c34df2da8e50bbf60da",
+      "uncompressed_bytes": 494,
+      "compressed_bytes": 494
+    },
+    "Content/SpaceSurvival/Audio/Station.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Audio/Station.uasset",
+      "package_id": "0xC474C2BD4D468A5D",
+      "chunk_id": "5d8a464dbdc274c400000001",
+      "chunk_hash": "0x023bc5b4d67cb448052f5d5a47ff19952f9d6bf9",
+      "uncompressed_bytes": 500,
+      "compressed_bytes": 500
+    },
+    "Content/SpaceSurvival/Authoring/P_AcornautImport.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Authoring/P_AcornautImport.uasset",
+      "package_id": "0x83D7991909906951",
+      "chunk_id": "516990091999d78300000001",
+      "chunk_hash": "0x0d16a2ef51411c7be06e5b81a55ed3286e4cea5c",
+      "uncompressed_bytes": 15590,
+      "compressed_bytes": 3798
+    },
+    "Content/SpaceSurvival/Authoring/P_DisembarkImport.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Authoring/P_DisembarkImport.uasset",
+      "package_id": "0xCB2E8E4477E0E68",
+      "chunk_id": "680e7e47e4e8b20c00000001",
+      "chunk_hash": "0x9334ced03e379eac9b842b0199728d395124bf2b",
+      "uncompressed_bytes": 15729,
+      "compressed_bytes": 3895
+    },
+    "Content/SpaceSurvival/Authoring/P_PilotImport.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Authoring/P_PilotImport.uasset",
+      "package_id": "0xE92D9813E2BD3E6E",
+      "chunk_id": "6e3ebde213982de900000001",
+      "chunk_hash": "0x0baf734599a49e52bbfeefa2257b99d0a23c4e3b",
+      "uncompressed_bytes": 15715,
+      "compressed_bytes": 3882
+    },
+    "Content/SpaceSurvival/Character/A_Disembark.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/A_Disembark.uasset",
+      "package_id": "0xEF15173A26E82846",
+      "chunk_id": "4628e8263a1715ef00000001",
+      "chunk_hash": "0xefa6dc1563384a0d1f514de0d0cc4ce3a7296db4",
+      "uncompressed_bytes": 7150,
+      "compressed_bytes": 5806
+    },
+    "Content/SpaceSurvival/Character/A_Pilot.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/A_Pilot.uasset",
+      "package_id": "0xECDA5519B51C95AE",
+      "chunk_id": "ae951cb51955daec00000001",
+      "chunk_hash": "0x05503220af67a0de2a1aa78ffe3317da32662a10",
+      "uncompressed_bytes": 2332,
+      "compressed_bytes": 1689
+    },
+    "Content/SpaceSurvival/Character/A_Walk.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/A_Walk.uasset",
+      "package_id": "0xE1C52C100B08B051",
+      "chunk_id": "51b0080b102cc5e100000001",
+      "chunk_hash": "0x2a915c3a84b54ed6bf333b47437f39886b24d5d1",
+      "uncompressed_bytes": 9187,
+      "compressed_bytes": 8676
+    },
+    "Content/SpaceSurvival/Character/SK_Acornaut.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/SK_Acornaut.uasset",
+      "package_id": "0x5BBA1B06E1668F72",
+      "chunk_id": "728f66e1061bba5b00000001",
+      "chunk_hash": "0xb0968c7de084d78d1705f5872c501b8928ccf5a3",
+      "uncompressed_bytes": 9687415,
+      "compressed_bytes": 4015939
+    },
+    "Content/SpaceSurvival/Character/SK_AcornautPilot.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/SK_AcornautPilot.uasset",
+      "package_id": "0xE263A95888E23F9B",
+      "chunk_id": "9b3fe28858a963e200000001",
+      "chunk_hash": "0xe7356bdaeb2411387102af8b16cb264a0c931aea",
+      "uncompressed_bytes": 9687322,
+      "compressed_bytes": 3733385
+    },
+    "Content/SpaceSurvival/Character/SK_AcornautTailV2.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/SK_AcornautTailV2.uasset",
+      "package_id": "0xBE568CA262E09A26",
+      "chunk_id": "269ae062a28c56be00000001",
+      "chunk_hash": "0xa0f9cdf431d8508a3d9def3b1a3d3c4296ec626e",
+      "uncompressed_bytes": 9687322,
+      "compressed_bytes": 3717018
+    },
+    "Content/SpaceSurvival/Character/geometry_0_PhysicsAsset.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/geometry_0_PhysicsAsset.uasset",
+      "package_id": "0xD8DF1996F3DCB3AB",
+      "chunk_id": "abb3dcf39619dfd800000001",
+      "chunk_hash": "0xa8d9aa224053d8b43ed47e5598139cf5b4fa926c",
+      "uncompressed_bytes": 7559,
+      "compressed_bytes": 2321
+    },
+    "Content/SpaceSurvival/Character/geometry_0_Skeleton.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/geometry_0_Skeleton.uasset",
+      "package_id": "0xB4C23B57B4BF0BFF",
+      "chunk_id": "ff0bbfb4573bc2b400000001",
+      "chunk_hash": "0x0c24348e4fc829cea3e683704b386795d8cab723",
+      "uncompressed_bytes": 7004,
+      "compressed_bytes": 1863
+    },
+    "Content/SpaceSurvival/Character/model-rigged_material_0.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/model-rigged_material_0.uasset",
+      "package_id": "0x51ECB976F13FB545",
+      "chunk_id": "45b53ff176b9ec5100000001",
+      "chunk_hash": "0xbac0afbe1088db586eea1595f182c20a51c63ed0",
+      "uncompressed_bytes": 19645,
+      "compressed_bytes": 4411
+    },
+    "Content/SpaceSurvival/Character/model-rigged_texture_0.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Character/model-rigged_texture_0.uasset",
+      "package_id": "0x6292CE35C137988D",
+      "chunk_id": "8d9837c135ce926200000001",
+      "chunk_hash": "0xe05fc6af0e3b5372b2c7446c0f5cb0576d7d0b80",
+      "uncompressed_bytes": 3793,
+      "compressed_bytes": 3243
+    },
+    "Content/SpaceSurvival/Data/DA_Phase1.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Data/DA_Phase1.uasset",
+      "package_id": "0xE371D6B4F831E345",
+      "chunk_id": "45e331f8b4d671e300000001",
+      "chunk_hash": "0x758be315c042f318b31446eb9293afa25b3c7c3f",
+      "uncompressed_bytes": 302,
+      "compressed_bytes": 302
+    },
+    "Content/SpaceSurvival/Maps/Survival.umap": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Maps/Survival.umap",
+      "package_id": "0xA90E6E30ABDC894C",
+      "chunk_id": "4c89dcab306e0ea900000001",
+      "chunk_hash": "0x0184e27d6b8a424b759667effa6e5c05510983d7",
+      "uncompressed_bytes": 7555,
+      "compressed_bytes": 2969
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.uasset",
+      "package_id": "0xD2A8CF995622AE87",
+      "chunk_id": "87ae225699cfa8d200000001",
+      "chunk_hash": "0xac8a245d8dd2efe5a343dfa20264fbe2c38a26ef",
+      "uncompressed_bytes": 11287,
+      "compressed_bytes": 2681
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.uasset",
+      "package_id": "0x963C7949A2319576",
+      "chunk_id": "769531a249793c9600000001",
+      "chunk_hash": "0x5c17107ff398e8fc7c86e5dfa9eb008dcfe1a647",
+      "uncompressed_bytes": 11287,
+      "compressed_bytes": 2676
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.uasset",
+      "package_id": "0x34C8566F1B85457F",
+      "chunk_id": "7f45851b6f56c83400000001",
+      "chunk_hash": "0xc1ea11e6efb9ab5d36ca3c18aa80e8ce62268179",
+      "uncompressed_bytes": 11093,
+      "compressed_bytes": 2624
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.uasset",
+      "package_id": "0x48452769A0D6E6A9",
+      "chunk_id": "a9e6d6a06927454800000001",
+      "chunk_hash": "0xeac65a2733ff5087e58f845a871e60961e1dc0e1",
+      "uncompressed_bytes": 11287,
+      "compressed_bytes": 2680
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_IonAndNav.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_IonAndNav.uasset",
+      "package_id": "0x9FB9DF8BCEAE4C4",
+      "chunk_id": "c4e4eabcf89dfb0900000001",
+      "chunk_hash": "0x01733b4ca48aeeedabe6720ba681e5b7e0e35066",
+      "uncompressed_bytes": 11285,
+      "compressed_bytes": 2698
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.uasset",
+      "package_id": "0xCD6372387E064D43",
+      "chunk_id": "434d067e387263cd00000001",
+      "chunk_hash": "0xade21b32b7a5b6d48b5f50aab60d35fad86f9018",
+      "uncompressed_bytes": 11279,
+      "compressed_bytes": 2680
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.uasset",
+      "package_id": "0x40AA9B49CBE0CFD8",
+      "chunk_id": "d8cfe0cb499baa4000000001",
+      "chunk_hash": "0xfd1d5d48bc2b99fb4fd5dba64ca0adf8e22a01fe",
+      "uncompressed_bytes": 11287,
+      "compressed_bytes": 2680
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.uasset",
+      "package_id": "0xF2D04EBF6102B1EF",
+      "chunk_id": "efb10261bf4ed0f200000001",
+      "chunk_hash": "0x594da0a054bd61f1a616acaf8d8755fb3f36756d",
+      "uncompressed_bytes": 11279,
+      "compressed_bytes": 2676
+    },
+    "Content/SpaceSurvival/Materials/M_AcornV2_Windscreen.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_AcornV2_Windscreen.uasset",
+      "package_id": "0xF0E4E955F133A253",
+      "chunk_id": "53a233f155e9e4f000000001",
+      "chunk_hash": "0xe593ff3ba6dfb8cfedfd77ee04381f9e67bbaee3",
+      "uncompressed_bytes": 18441,
+      "compressed_bytes": 3863
+    },
+    "Content/SpaceSurvival/Materials/M_Amber.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Amber.uasset",
+      "package_id": "0x19AA98D452EA5371",
+      "chunk_id": "7153ea52d498aa1900000001",
+      "chunk_hash": "0xc29bdf5ef64045012c54466160a3a0ae99121588",
+      "uncompressed_bytes": 11477,
+      "compressed_bytes": 2740
+    },
+    "Content/SpaceSurvival/Materials/M_Cyan.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Cyan.uasset",
+      "package_id": "0x875EA26745E40908",
+      "chunk_id": "0809e44567a25e8700000001",
+      "chunk_hash": "0x007b7893131907ad12f0ce9dbe8d6cab0970ea9d",
+      "uncompressed_bytes": 11478,
+      "compressed_bytes": 2742
+    },
+    "Content/SpaceSurvival/Materials/M_Emissive.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Emissive.uasset",
+      "package_id": "0xFBDBFF64862CF05F",
+      "chunk_id": "5ff02c8664ffdbfb00000001",
+      "chunk_hash": "0x71d1f6d6cf9f6ba02bfc9dbe19adc73a4502043e",
+      "uncompressed_bytes": 11453,
+      "compressed_bytes": 2720
+    },
+    "Content/SpaceSurvival/Materials/M_Gold.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Gold.uasset",
+      "package_id": "0x393DB763E35A154E",
+      "chunk_id": "4e155ae363b73d3900000001",
+      "chunk_hash": "0x01e26ad61eb7795e8aedcb9aefcd531dae0b5d51",
+      "uncompressed_bytes": 11478,
+      "compressed_bytes": 2740
+    },
+    "Content/SpaceSurvival/Materials/M_Hazard.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Hazard.uasset",
+      "package_id": "0x728B427D72F9916",
+      "chunk_id": "16992fd727b4280700000001",
+      "chunk_hash": "0x7d0bcc94e7b3339912d9ee0196a9e18854a33b73",
+      "uncompressed_bytes": 11485,
+      "compressed_bytes": 2739
+    },
+    "Content/SpaceSurvival/Materials/M_Hull.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Hull.uasset",
+      "package_id": "0x6E726EDC79BF6931",
+      "chunk_id": "3169bf79dc6e726e00000001",
+      "chunk_hash": "0xf3fa8b4dc6d6d19859be5b121c4461c2f9a57658",
+      "uncompressed_bytes": 11478,
+      "compressed_bytes": 2737
+    },
+    "Content/SpaceSurvival/Materials/M_Rock.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Rock.uasset",
+      "package_id": "0x7D1E87CE33E4BE31",
+      "chunk_id": "31bee433ce871e7d00000001",
+      "chunk_hash": "0xcad36822f3174b649d4315e1e7e08ad5857097f9",
+      "uncompressed_bytes": 11477,
+      "compressed_bytes": 2742
+    },
+    "Content/SpaceSurvival/Materials/M_RockPhotographic.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_RockPhotographic.uasset",
+      "package_id": "0x64763027D124F1E8",
+      "chunk_id": "e8f124d12730766400000001",
+      "chunk_hash": "0x45073abddb0e99f56dc745a53e69e6b0fe3fe186",
+      "uncompressed_bytes": 12611,
+      "compressed_bytes": 3167
+    },
+    "Content/SpaceSurvival/Materials/M_Space.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Space.uasset",
+      "package_id": "0xB84FB20D78FB40F8",
+      "chunk_id": "f840fb780db24fb800000001",
+      "chunk_hash": "0xc56b99d0a23ccef74ae6e5e90bd084a4de287cd8",
+      "uncompressed_bytes": 10240,
+      "compressed_bytes": 2757
+    },
+    "Content/SpaceSurvival/Materials/M_Star.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Star.uasset",
+      "package_id": "0x102921E2C2311007",
+      "chunk_id": "071031c2e221291000000001",
+      "chunk_hash": "0xc4460d8950c884a4b984623c7d5bf2e2c0345e72",
+      "uncompressed_bytes": 9976,
+      "compressed_bytes": 2656
+    },
+    "Content/SpaceSurvival/Materials/M_StarWarm.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_StarWarm.uasset",
+      "package_id": "0xCBACA9F41B95B5DD",
+      "chunk_id": "ddb5951bf4a9accb00000001",
+      "chunk_hash": "0x9b598f89834cd67d282b33376cd284bca4357c73",
+      "uncompressed_bytes": 9984,
+      "compressed_bytes": 2654
+    },
+    "Content/SpaceSurvival/Materials/M_StationDeck.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_StationDeck.uasset",
+      "package_id": "0xCDB9A37A6EFB7A9F",
+      "chunk_id": "9f7afb6e7aa3b9cd00000001",
+      "chunk_hash": "0x1470337d07250dca50787999a4ac893ef772e2a5",
+      "uncompressed_bytes": 12106,
+      "compressed_bytes": 2918
+    },
+    "Content/SpaceSurvival/Materials/M_Violet.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Materials/M_Violet.uasset",
+      "package_id": "0x4FB15E9174E4B7C",
+      "chunk_id": "7c4b4e17e915fb0400000001",
+      "chunk_hash": "0x06ff51dcf50ee91c4449adbde4a7f2123b0945e4",
+      "uncompressed_bytes": 11485,
+      "compressed_bytes": 2737
+    },
+    "Content/SpaceSurvival/Meshes/SM_AcornShip.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_AcornShip.uasset",
+      "package_id": "0x4292A3B6CB8F540D",
+      "chunk_id": "0d548fcbb6a3924200000001",
+      "chunk_hash": "0x67e7fcf15add02b1a22f8426dc43d865538e4cdb",
+      "uncompressed_bytes": 586107,
+      "compressed_bytes": 132071
+    },
+    "Content/SpaceSurvival/Meshes/SM_AcornShipV2.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_AcornShipV2.uasset",
+      "package_id": "0x6352612A943D53CA",
+      "chunk_id": "ca533d942a61526300000001",
+      "chunk_hash": "0x1ac4c6de8ca4f85a8a8e0c8981a3253a0148a0a3",
+      "uncompressed_bytes": 3526619,
+      "compressed_bytes": 721105
+    },
+    "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_AgileShip.uasset",
+      "package_id": "0xAF0EAB4984A5C1D5",
+      "chunk_id": "d5c1a58449ab0eaf00000001",
+      "chunk_hash": "0x72ccd26509d2480bb967b046a1876de21edd6c35",
+      "uncompressed_bytes": 591829,
+      "compressed_bytes": 133133
+    },
+    "Content/SpaceSurvival/Meshes/SM_Asteroid.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Asteroid.uasset",
+      "package_id": "0x7F30E7A573AFE603",
+      "chunk_id": "03e6af73a5e7307f00000001",
+      "chunk_hash": "0x6a1c2438b7dffd43285cea0c357aa7bcdb26ea4f",
+      "uncompressed_bytes": 77799,
+      "compressed_bytes": 27116
+    },
+    "Content/SpaceSurvival/Meshes/SM_AsteroidMassive.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_AsteroidMassive.uasset",
+      "package_id": "0xAC8BC51BABC848A8",
+      "chunk_id": "a848c8ab1bc58bac00000001",
+      "chunk_hash": "0x39b46efe3469a6ce8d8ae7f16040e23b6e10da47",
+      "uncompressed_bytes": 77891,
+      "compressed_bytes": 26790
+    },
+    "Content/SpaceSurvival/Meshes/SM_AsteroidMedium.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_AsteroidMedium.uasset",
+      "package_id": "0x45683BAAC21BA190",
+      "chunk_id": "90a11bc2aa3b684500000001",
+      "chunk_hash": "0xc65cb7fc08c37dd89afd3251a061f4a4e82fb8ed",
+      "uncompressed_bytes": 77891,
+      "compressed_bytes": 26966
+    },
+    "Content/SpaceSurvival/Meshes/SM_AsteroidSmall.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_AsteroidSmall.uasset",
+      "package_id": "0xBDBC2EB01CCB801E",
+      "chunk_id": "1e80cb1cb02ebcbd00000001",
+      "chunk_hash": "0xc6bcbda83295fa299e0fe534cc0555eaac62b7a3",
+      "uncompressed_bytes": 77891,
+      "compressed_bytes": 26891
+    },
+    "Content/SpaceSurvival/Meshes/SM_Console.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Console.uasset",
+      "package_id": "0x96ED79BAF35BFE3C",
+      "chunk_id": "3cfe5bf3ba79ed9600000001",
+      "chunk_hash": "0x9dc451639e4c4eb5194b2143c0d57474dcb7631f",
+      "uncompressed_bytes": 15363,
+      "compressed_bytes": 4279
+    },
+    "Content/SpaceSurvival/Meshes/SM_Crate.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Crate.uasset",
+      "package_id": "0x8332968D8ECBF480",
+      "chunk_id": "80f4cb8e8d96328300000001",
+      "chunk_hash": "0x2eb607cce13f402997503a3cf3554fac61642fd4",
+      "uncompressed_bytes": 16462,
+      "compressed_bytes": 4554
+    },
+    "Content/SpaceSurvival/Meshes/SM_Debris.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Debris.uasset",
+      "package_id": "0x593843394367E554",
+      "chunk_id": "54e567433943385900000001",
+      "chunk_hash": "0x3c27ef292bef9915bb84de35634aec6addf77dfe",
+      "uncompressed_bytes": 18858,
+      "compressed_bytes": 5878
+    },
+    "Content/SpaceSurvival/Meshes/SM_EventBeacon.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_EventBeacon.uasset",
+      "package_id": "0x48B50D21F916C6D5",
+      "chunk_id": "d5c616f9210db54800000001",
+      "chunk_hash": "0x71263229a9679104b9a83139bd1ab9279570878c",
+      "uncompressed_bytes": 67864,
+      "compressed_bytes": 18816
+    },
+    "Content/SpaceSurvival/Meshes/SM_Flanker.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Flanker.uasset",
+      "package_id": "0x23A5B9D31BD7A7E3",
+      "chunk_id": "e3a7d71bd3b9a52300000001",
+      "chunk_hash": "0xdc671d9b7ce0873fa659ec001abda90b1d2cf552",
+      "uncompressed_bytes": 65657,
+      "compressed_bytes": 18772
+    },
+    "Content/SpaceSurvival/Meshes/SM_GravityRing.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_GravityRing.uasset",
+      "package_id": "0xB2A263F383B246D4",
+      "chunk_id": "d446b283f363a2b200000001",
+      "chunk_hash": "0xfb251be46919d73b912d33507ebf084e83aa2358",
+      "uncompressed_bytes": 238658,
+      "compressed_bytes": 47213
+    },
+    "Content/SpaceSurvival/Meshes/SM_MobileDepot.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_MobileDepot.uasset",
+      "package_id": "0x5E2146267B81EEFB",
+      "chunk_id": "fbee817b2646215e00000001",
+      "chunk_hash": "0x9d0bfcab5c68c74672a8c47aef67f62fcfab579c",
+      "uncompressed_bytes": 75825,
+      "compressed_bytes": 19858
+    },
+    "Content/SpaceSurvival/Meshes/SM_OverdriveCooling.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_OverdriveCooling.uasset",
+      "package_id": "0xAA3A1AC556158762",
+      "chunk_id": "62871556c51a3aaa00000001",
+      "chunk_hash": "0xac72139d5c0f6460bb9268476791e7864403d49e",
+      "uncompressed_bytes": 21194,
+      "compressed_bytes": 4984
+    },
+    "Content/SpaceSurvival/Meshes/SM_PickupBuff.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_PickupBuff.uasset",
+      "package_id": "0x5C6F424C7685530A",
+      "chunk_id": "0a5385764c426f5c00000001",
+      "chunk_hash": "0xa20bb856dad490f69d5f2f058bd3a8dd66f7e665",
+      "uncompressed_bytes": 10565,
+      "compressed_bytes": 2947
+    },
+    "Content/SpaceSurvival/Meshes/SM_PickupCredit.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_PickupCredit.uasset",
+      "package_id": "0x3B822E1476E5FB77",
+      "chunk_id": "77fbe576142e823b00000001",
+      "chunk_hash": "0xd7d4fda36a7db3960a58a1bf8c9b9bc1c82d64d9",
+      "uncompressed_bytes": 67929,
+      "compressed_bytes": 18580
+    },
+    "Content/SpaceSurvival/Meshes/SM_PickupRepair.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_PickupRepair.uasset",
+      "package_id": "0x517DC566C4A1B182",
+      "chunk_id": "82b1a1c466c57d5100000001",
+      "chunk_hash": "0x7c55e85312542b7d307b6f9719f56a6d0e65fe46",
+      "uncompressed_bytes": 12435,
+      "compressed_bytes": 3248
+    },
+    "Content/SpaceSurvival/Meshes/SM_PickupShield.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_PickupShield.uasset",
+      "package_id": "0xC9749A7F0289D449",
+      "chunk_id": "49d489027f9a74c900000001",
+      "chunk_hash": "0x91bd63b347a6c18619e470ab9d86faaa49820932",
+      "uncompressed_bytes": 13832,
+      "compressed_bytes": 4025
+    },
+    "Content/SpaceSurvival/Meshes/SM_Projectile.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Projectile.uasset",
+      "package_id": "0x8423E1CCD5899A33",
+      "chunk_id": "339a89d5cce1238400000001",
+      "chunk_hash": "0x0d2103eff66eec0ab8e92eaec37b121281e0100e",
+      "uncompressed_bytes": 23561,
+      "compressed_bytes": 7078
+    },
+    "Content/SpaceSurvival/Meshes/SM_Pursuer.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Pursuer.uasset",
+      "package_id": "0xF7AAAD7363B37C59",
+      "chunk_id": "597cb36373adaaf700000001",
+      "chunk_hash": "0xe0b4f465fa6d7a9a4956b81c023596154b64827a",
+      "uncompressed_bytes": 64381,
+      "compressed_bytes": 18189
+    },
+    "Content/SpaceSurvival/Meshes/SM_ServiceArm.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_ServiceArm.uasset",
+      "package_id": "0x4452799509012971",
+      "chunk_id": "712901099579524400000001",
+      "chunk_hash": "0x031ebc2c7ef8176f9807484666458caf9136b15d",
+      "uncompressed_bytes": 16581,
+      "compressed_bytes": 4775
+    },
+    "Content/SpaceSurvival/Meshes/SM_Starfield.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Starfield.uasset",
+      "package_id": "0x6D13048EB919D8C6",
+      "chunk_id": "c6d819b98e04136d00000001",
+      "chunk_hash": "0x06087bfcc2ef69c7e520d402e5b48b1634522e44",
+      "uncompressed_bytes": 279499,
+      "compressed_bytes": 153510
+    },
+    "Content/SpaceSurvival/Meshes/SM_StationRing.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_StationRing.uasset",
+      "package_id": "0xEE23B0E96F50BF00",
+      "chunk_id": "00bf506fe9b023ee00000001",
+      "chunk_hash": "0x2ab241cf2a28a58adb92397728f92f8c61582330",
+      "uncompressed_bytes": 238400,
+      "compressed_bytes": 50522
+    },
+    "Content/SpaceSurvival/Meshes/SM_StormRing.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_StormRing.uasset",
+      "package_id": "0x488F80DA4C07B272",
+      "chunk_id": "72b2074cda808f4800000001",
+      "chunk_hash": "0xedb10e437774b839606cbacc91ec217c0d2b02c8",
+      "uncompressed_bytes": 124517,
+      "compressed_bytes": 29878
+    },
+    "Content/SpaceSurvival/Meshes/SM_VectorThrusters.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_VectorThrusters.uasset",
+      "package_id": "0xCBC7D9D3F11CC7CC",
+      "chunk_id": "ccc71cf1d3d9c7cb00000001",
+      "chunk_hash": "0x6d9216b7040bae1174d8f54e9f8de7973767a0fb",
+      "uncompressed_bytes": 58402,
+      "compressed_bytes": 16348
+    },
+    "Content/SpaceSurvival/Meshes/SM_Wreckage.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Meshes/SM_Wreckage.uasset",
+      "package_id": "0x3E1BB52C1BCA89AF",
+      "chunk_id": "af89ca1b2cb51b3e00000001",
+      "chunk_hash": "0xe2059a9fea4146203031f1a44818c6f371e5b45c",
+      "uncompressed_bytes": 18858,
+      "compressed_bytes": 5881
+    },
+    "Content/SpaceSurvival/Textures/T_RockFace_ARM.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Textures/T_RockFace_ARM.uasset",
+      "package_id": "0x53BD7FDF8B0F0A8A",
+      "chunk_id": "8a0a0f8bdf7fbd5300000001",
+      "chunk_hash": "0x5e554f7f308c28ca0cc903117f8dfd3fdcd37f9a",
+      "uncompressed_bytes": 3780,
+      "compressed_bytes": 2081
+    },
+    "Content/SpaceSurvival/Textures/T_RockFace_Color.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Textures/T_RockFace_Color.uasset",
+      "package_id": "0xD661D9E9773978FB",
+      "chunk_id": "fb783977e9d961d600000001",
+      "chunk_hash": "0x44a31b233ddd074832e0422a650bf9e431c97cdc",
+      "uncompressed_bytes": 6528,
+      "compressed_bytes": 5932
+    },
+    "Content/SpaceSurvival/Textures/T_RockFace_Normal.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Textures/T_RockFace_Normal.uasset",
+      "package_id": "0xB3E905BAD4E74D11",
+      "chunk_id": "114de7d4ba05e9b300000001",
+      "chunk_hash": "0x3e546c9c3ec4507b94668f52b70a36ada3385318",
+      "uncompressed_bytes": 6534,
+      "compressed_bytes": 5975
+    },
+    "Content/SpaceSurvival/Textures/T_SpacePanorama_starless_v2.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Textures/T_SpacePanorama_starless_v2.uasset",
+      "package_id": "0xBF3874466FEC6EAE",
+      "chunk_id": "ae6eec6f467438bf00000001",
+      "chunk_hash": "0x54b6dc7bd771deef89dad1bbdb1b2346a6a0f45e",
+      "uncompressed_bytes": 3836,
+      "compressed_bytes": 3249
+    },
+    "Content/SpaceSurvival/Textures/T_SpacePanorama_v1.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Textures/T_SpacePanorama_v1.uasset",
+      "package_id": "0x6C3DB145DD0FA181",
+      "chunk_id": "81a10fdd45b13d6c00000001",
+      "chunk_hash": "0x18c13f8b3ba26a69e2f28145661e3931cae48522",
+      "uncompressed_bytes": 11981,
+      "compressed_bytes": 6003
+    },
+    "Content/SpaceSurvival/Textures/T_StationDeck_ARM.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Textures/T_StationDeck_ARM.uasset",
+      "package_id": "0x3CFD1D8FA22DCA30",
+      "chunk_id": "30ca2da28f1dfd3c00000001",
+      "chunk_hash": "0x7f6ec741450eeea782d8b6ae339dc2cc24c30623",
+      "uncompressed_bytes": 3788,
+      "compressed_bytes": 2989
+    },
+    "Content/SpaceSurvival/Textures/T_StationDeck_Color.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Textures/T_StationDeck_Color.uasset",
+      "package_id": "0xEF5659CB7B7CD359",
+      "chunk_id": "59d37c7bcb5956ef00000001",
+      "chunk_hash": "0x309bb4cda49100ea29ac7a804df81f2230f0183c",
+      "uncompressed_bytes": 6536,
+      "compressed_bytes": 5978
+    },
+    "Content/SpaceSurvival/Textures/T_StationDeck_Normal.uasset": {
+      "filename": "../../../SpaceSurvival/Content/SpaceSurvival/Textures/T_StationDeck_Normal.uasset",
+      "package_id": "0x94A59134EA0408B1",
+      "chunk_id": "b10804ea3491a59400000001",
+      "chunk_hash": "0xf3c528723f69a109d1e24a792d71d55c48605c35",
+      "uncompressed_bytes": 6542,
+      "compressed_bytes": 5759
+    }
+  },
+  "cube_export_present": true,
+  "cube_export": {
+    "OrderInContainer": "1545",
+    "ChunkId": "71fe0432abe4de2400000001",
+    "PackageId": "0x24DEE4AB3204FE71",
+    "PackageName": "/Engine/BasicShapes/Cube",
+    "Filename": "../../../Engine/Content/BasicShapes/Cube.uasset",
+    "ContainerName": "SpaceSurvival-Windows",
+    "Offset": "208601088",
+    "OffsetOnDisk": "101695488",
+    "Size": "11271",
+    "CompressedSize": "2520",
+    "Hash": "0x39b0bf655242f327635e5bb8b670dc93288ef8b3",
+    "ChunkType": "ExportBundleData",
+    "ClassType": "",
+    "PakChunk": "SpaceSurvival",
+    "Platform": "Windows",
+    "InstallType": "Base",
+    "DeliveryType": "Installed",
+    "PartitionIndex": "0",
+    "OffsetInPartition": "101695488"
+  },
+  "prerequisites_json": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\Prerequisites.json",
+    "bytes": 1933,
+    "sha256": "ca62b9210dc799848a70da9fe865231e90358e5be1dad27c1c1e0c37de686fa4",
+    "sha256_lf": "645e24cab9806832e10de150ab76d07a2529ada627f1fe2c815e179b7bad49c3"
+  },
+  "prerequisite_record": {
+    "status": "BUNDLED_SIGNATURE_AND_BYTES_VERIFIED",
+    "dateUtc": "2026-09-13T09:38:46.8428992Z",
+    "platform": "Windows x64",
+    "toolchain": {
+      "path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.51.36231",
+      "version": "14.51.36257",
+      "family": "14.51.36231",
+      "evidence": "retained UAT log and game link response file"
+    },
+    "buildLog": {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\BuildLogs\\WindowsPackage-f22030c52ba24eac9d64b5a305116082.log",
+      "sha256": "75FFDF1DE3600F76628ADC074028C1C6FD71DF2D710F641419A2AD30F6F06E63"
+    },
+    "linkResponse": {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Intermediate\\Build\\Win64\\x64\\SpaceSurvival\\Development\\SpaceSurvival.exe.rsp",
+      "sha256": "E1968C9B9322379FCB35017228D5E0B59CC48CFC8D5D2E84BBBD64A6EE819D4D"
+    },
+    "gameExecutableSha256": "4DDE20DC8776827419EE7E3FA58EBDCA9CDD6AAC203DB0754AB57F8D51FD7498",
+    "selectedSource": {
+      "path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Redist\\MSVC\\14.51.36231\\vc_redist.x64.exe",
+      "version": "14.51.36247.0",
+      "bytes": 18731856,
+      "sha256": "843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C",
+      "signature": "Valid",
+      "signer": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "certificateThumbprint": "1D77A9B9E8FE2075D9AD15123257FB90DB0DA4A1"
+    },
+    "previousArchiveRuntime": {
+      "version": "14.50.35719.0",
+      "sha256": "C458C6841310561EF6FADEF893092ED02D840DA205AD0AE9843FB0D2579B3378"
+    },
+    "destination": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\Engine\\Extras\\Redist\\en-us\\vc_redist.x64.exe",
+    "replacementRequired": true,
+    "limits": "Bundle presence, Microsoft signature and version compatibility only. No installer execution or clean-PC launch verification; ARM64 is outside this Windows x64 target."
+  },
+  "prerequisite_hash_checks": {
+    "uat": true,
+    "rsp": true,
+    "runtime_source": true,
+    "runtime_destination": true
+  },
+  "prerequisite_signature_readback": [
+    {
+      "path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Redist\\MSVC\\14.51.36231\\vc_redist.x64.exe",
+      "bytes": 18731856,
+      "version": "14.51.36247.0",
+      "sha256": "843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C",
+      "signature": "Valid",
+      "subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "thumbprint": "1D77A9B9E8FE2075D9AD15123257FB90DB0DA4A1"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\Engine\\Extras\\Redist\\en-us\\vc_redist.x64.exe",
+      "bytes": 18731856,
+      "version": "14.51.36247.0",
+      "sha256": "843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C",
+      "signature": "Valid",
+      "subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "thumbprint": "1D77A9B9E8FE2075D9AD15123257FB90DB0DA4A1"
+    }
+  ],
+  "prerequisite_provenance": {
+    "selected_x64_link_libpath": "C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/lib/x64",
+    "retained_uat_toolchain_match": true,
+    "archived_game_matches_local_build": true,
+    "runtime_selected_from_exact_VS_family": true,
+    "app_local_vcruntime140_or_msvcp140_present": false,
+    "limits": "Microsoft signature, source/destination byte match and selected toolset family provenance verified. No installer execution or clean-PC runtime compatibility/launch test."
+  },
+  "unreal_automation_receipts": [
+    {
+      "receipt": {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\docs\\validation\\2026-09-13-audio-hooks.json",
+        "bytes": 36180,
+        "sha256": "183e1ee646e5fb1d82d27ba9fdb6360856f57ae31e142c850589e46b557a7763",
+        "sha256_lf": "20ea0e9cef9d5249063a6d0509318053c2f14989d796a691b5c11b77f9001b2c"
+      },
+      "suite": {
+        "reportCreatedOn": "2026.09.13-09.29.16",
+        "succeeded": 21,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "totalDuration": 2.3187851905822754
+      },
+      "tested_editor_dll": {
+        "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+        "bytes": 1521152,
+        "sha256": "d01c97e80433c17acee7711254a7639ab075fe8bbe22e96b2b85c92a9d4ef037"
+      },
+      "report": {
+        "path": "Artifacts/UnrealTests/index.json",
+        "bytes": 25055,
+        "sha256": "841164b90d2d0bf6544659d62e3d52c9b7b7154a60da74e1e28d610eaa972010",
+        "sha256_lf": "820cd464e99533981eee9abef4eee0e54cccc9c813ef4812f63c60b0950465a6"
+      }
+    },
+    {
+      "receipt": {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\docs\\validation\\2026-09-13-economy-tuning.json",
+        "bytes": 23717,
+        "sha256": "1c94a7fd2c8de75ec3e493eb7339e9f9b2be72cf38171b7f979d7ac14b6f5493",
+        "sha256_lf": "420b0e30289e57478aa6b6f2650a3cfef734be1b5af6c717663bd124d1b138b0"
+      },
+      "suite": {
+        "reportCreatedOn": "2026.09.13-09.29.16",
+        "succeeded": 21,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "totalDuration": 2.3187851905822754
+      },
+      "tested_editor_dll": {
+        "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+        "bytes": 1521152,
+        "sha256": "d01c97e80433c17acee7711254a7639ab075fe8bbe22e96b2b85c92a9d4ef037"
+      },
+      "report": {
+        "path": "Artifacts/UnrealTests/index.json",
+        "bytes": 25055,
+        "sha256": "841164b90d2d0bf6544659d62e3d52c9b7b7154a60da74e1e28d610eaa972010",
+        "sha256_lf": "820cd464e99533981eee9abef4eee0e54cccc9c813ef4812f63c60b0950465a6"
+      }
+    }
+  ],
+  "post_package_editor_dll": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+    "bytes": 1518592,
+    "sha256": "5a9a65180bb3af68d2277ec428e1aca1136991200bd7eddd9289bf4cb8698600"
+  },
+  "editor_binary_limit": "UAT recompiled the unity module and relinked the Editor DLL after the passing21-test run. The exact earlier tested DLL identity remains in focused receipts; the current relinked DLL is not substituted or claimed separately retested.",
+  "native_capture": {
+    "status": "PENDING",
+    "claims": []
+  },
+  "limitations": [
+    "No Package10 native gameplay, audio buffer/listening or new scenario performance claim in this receipt.",
+    "Cooked index proves all88 expected exports plus EngineCube are present; it does not independently deserialize every cooked property.",
+    "Package9/earlier native and performance receipts are historical and are not rebound to this artifact.",
+    "Owner art rejection, natural keyboard/controller, ten-wave balance/readability/listening/urge-to-retry checks remain open.",
+    "Installed MSVC nonpreferred warning and Engine Character.h C4996 warnings persist."
+  ]
+}
