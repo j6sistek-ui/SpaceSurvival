@@ -1,6 +1,6 @@
 # Build and run
 
-**Phase 1 status: PARTIAL.** The editor module and Windows Development package build; persisted content, 12 Unreal tests and the isolated fresh-process GameInstance storage lifecycle pass. A limited packaged menu/launch/death/restart smoke is recorded; natural gameplay, physical input, final art/audio and performance acceptance remain open. See [PROJECT_STATE.md](PROJECT_STATE.md) for the current evidence boundary.
+**Phase 1 status: PARTIAL.** Package 8 builds with all 62 project packages and the required Engine Cube; source 442ff06 has 13 passing Unreal tests and CI-verified 524 strict/524 sanitizer assertions. Guarded native exit/service/departure and compatible-runtime bundling passed. Natural play, physical input, final art/audio, representative performance and clean-PC startup remain open; see [PROJECT_STATE.md](PROJECT_STATE.md).
 
 ## Tooling and repository
 
@@ -40,7 +40,7 @@ Each target accepts `-EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'`. Close pr
 - **Editor** invokes UnrealBuildTool for SpaceSurvivalEditor, Win64 Development.
 - **Content** imports canonical sources and authors the tuning asset and Survival map. Inspect `Saved/Validation/ContentImport.json`; the successful status is `IMPORTED_NOT_GAMEPLAY_VALIDATED` with no errors. Existing authored assets are preserved, and partial/wrong-type imports are rejected. Read [CONTENT_PIPELINE.md](CONTENT_PIPELINE.md) before deliberate reimport.
 - **Validate** starts a fresh editor process and checks persisted assets, the real map/GameMode class, fixed tuning rosters, backdrop collision and skeletal/instanced material usage. The complete target passed in `.agent/local/PersistedValidation2.log`.
-- **Test** runs the `SpaceSurvival` Unreal automation prefix under NullRHI and writes `Artifacts/UnrealTests/index.json` and `index.html`. The latest suite has 12 successes with zero test warnings/failures: four flight adapters, accelerated ten-wave journey, death/fresh run, late event, station recovery, two admission regressions and two Save tests. NullRHI and shortened/assisted fixtures cannot establish graphics, natural balance, physical input or performance.
+- **Test** runs the SpaceSurvival automation prefix under NullRHI and writes Artifacts/UnrealTests/index.json/index.html. The wrapper now requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every test state Success; Unreal exit 0 alone is insufficient. Package 7 has a historical clean 12-test suite. The first 13-test exit run exposed an AuthoredDisembark contact/handoff failure; after correction the full 13-test suite passed at 07:11:25 UTC in 2.263 seconds. See the [authored-exit receipt](validation/2026-09-13-authored-exit.json). Shortened/assisted NullRHI fixtures do not establish graphics, natural balance, physical input or performance.
 
 `Scripts/ValidateScene.py`, executed by the editor Python runner, checks saved background collision and skeletal/instanced-material usage. Its `--repair` option intentionally changes those owned assets; omit it for readback validation. Results go to `Saved/Validation/SceneValidation.json`. The latest repair/readback is recorded in [VALIDATION.md](VALIDATION.md).
 
@@ -60,16 +60,16 @@ This runs the project through the installed editor executable. It is not a packa
 ./Scripts/Build.ps1 -Target Package
 ```
 
-The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore and archive enabled. Package 6 succeeded in **63.57 seconds, exit 0**, recorded in `.agent/local/WindowsPackage6.log`. The corresponding editor rebuild succeeded in 7.20 seconds. This package adds the staged Windows save writer to the prior settings, Lumen and encounter-label corrections.
+The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Package 8 succeeded in **86.44 seconds, exit 0**, recorded in `.agent/local/WindowsPackage8.log`, after authored-exit builds of 18.64/5.73 seconds. It includes the authored exit, panorama v1, shared interaction priority and compatible-runtime packaging.
 
 Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`.
 
-**Recorded artifact identity: package 6, source `92e41240eb8ccb31cac381911dcb4fa9c8b4ad13`.** Both executable hashes below were read from the produced archive after the successful build. Keep this identity with the final source/receipt; a later package can replace the shared output path.
+**Last verified artifact identity: package 8, source `442ff06aa88e64569155f099b2fd38a56450d11e`.** The hashes below identify that produced archive. Its UnrealPak index contains all 62 project packages plus Engine Cube. Later starless-sky, ship and storage-test work is excluded; the shared archive path may be replaced by future packaging.
 
 | Artifact | Size | SHA-256 |
 | --- | --- | --- |
 | `Artifacts/Windows/SpaceSurvival.exe` — launcher | 171,520 bytes | `619AC0779DCEABF638639193EFDEA0733E3B4626DEA623C07062F160F5ABCCF8` |
-| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` — game | 332,309,504 bytes | `7862912E1432C954F3D81395C6379CBF1F39A982AE3AD4F3852012021AA14F4C` |
+| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` — game | 332,347,392 bytes | `E4116495C67707C5AE1314FCC2E79931B0DE795A8FAC83C9E62A74949CECFF8B` |
 
 Keep the entire archive directory together; the launcher alone is not the game. Launch from the repository root:
 
@@ -77,15 +77,33 @@ Keep the entire archive directory together; the launcher alone is not the game. 
 & './Artifacts/Windows/SpaceSurvival.exe' -windowed -ResX=1280 -ResY=720
 ```
 
-**Package 6 smoke observed:** native Settings/Controls saved mouse 1.2, then replaced the same file with controller 1.2; after a normal process close/relaunch both values displayed 1.2. New Run displayed Wave 1, zero credits, full starting meters and Rapid Laser. Both isolated launches closed normally with no remaining staging files. The [package 6 receipt](validation/2026-09-13-windows-save-package.json) binds the executable, source, content, logs and save hashes. Profile: `Artifacts/PackageSmoke/f6233b51c944457b9f25edfa8cba285b`.
+**Package 8 exit smoke:** Package 8's guarded SSReviewExit replay visibly reached seated, airborne, landing and full standing poses, suppressed interaction prompts during exit, then allowed service E and departure into Wave 6. It used a prepared station profile and Slomo 0.1, restored to 1 afterward; it does not establish natural docking/camera feel. Neutral Wave 7 death then displayed score 11,800, 510 XP, level 3 and both unlocks from the seeded 100-kill fixture. The owned launch closed normally and production-save hashes remained unchanged. See [VALIDATION.md](VALIDATION.md) and the [package 8 receipt](validation/2026-09-13-windows-exit-package.json) for exact fixture limits and audit provenance. Panorama v1 residency was observed at 2048×1024/12 mips; seams, poles and flight readability remain unaccepted.
 
-**Earlier package 5 smoke observed:** fresh native menu and New Run/Wave 1 rendered. In Wave 2, the long Salvage Cache offer and E/A prompt remained readable inside the backed/wrapped panel; native E accepted it and changed the label to three remaining objectives. This verifies the label and acceptance transition, not completing its objectives. Evidence directory: `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; `Saved/Logs/PackagedLabels.log`. The separate package 4 profile `57579fdb25bd449ba907598454c4fed4` records startup settings and performance. Earlier package 3 smoke exercised neutral-controls Wave 4 death/results, a fresh-run restart and retained account data after relaunch; that evidence remains tied to its earlier snapshot. Active piloting, natural ten-wave play, offline coverage and packaged station Save & Quit/Continue remain separate gates. The finalized package 4 Waves 1–3 capture held approximately 119.96 FPS at 1440p with zero gameplay frames over 16.667 ms; this is limited early-flight evidence. See [PERFORMANCE.md](PERFORMANCE.md).
+**Historical package 7 station smoke:** Package 7 exercised actual prepared-station menus and process restarts. Station 1 Save & Quit/Continue retained 1,070 credits, Hull 145 and Hunter 0/6; departure entered Wave 6. Neutral Wave 7 death awarded 510 XP and both unlocks; a third launch retained 510 XP/highest wave 7/best score 11,800/one run, with Continue disabled. Station 2 Cooling cost exactly 150 credits (1,220 to 1,070), a repeated fitted click could not charge again, and the live summary/Save & Quit/relaunch retained Cooling and the build. The discard option was displayed, not invoked. See the [package 7 receipt](validation/2026-09-13-windows-station-package.json) and [VALIDATION.md](VALIDATION.md) for fixture/assistance limits.
+
+**Earlier package 6 smoke observed:** native Settings/Controls saved mouse 1.2, then replaced the same file with controller 1.2; after a normal process close/relaunch both values displayed 1.2. New Run displayed Wave 1, zero credits, full starting meters and Rapid Laser. Both isolated launches closed normally with no remaining staging files. The [package 6 receipt](validation/2026-09-13-windows-save-package.json) binds the executable, source, content, logs and save hashes. Profile: `Artifacts/PackageSmoke/f6233b51c944457b9f25edfa8cba285b`.
+
+**Earlier package 5 smoke observed:** fresh native menu and New Run/Wave 1 rendered. In Wave 2, the long Salvage Cache offer and E/A prompt remained readable inside the backed/wrapped panel; native E accepted it and changed the label to three remaining objectives. This verifies the label and acceptance transition, not completing its objectives. Evidence directory: `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; `Saved/Logs/PackagedLabels.log`. The separate package 4 profile `57579fdb25bd449ba907598454c4fed4` records startup settings and performance. Earlier package 3 smoke exercised neutral-controls Wave 4 death/results, a fresh-run restart and retained account data after relaunch; that evidence remains tied to its earlier snapshot. Active piloting, natural ten-wave play and offline coverage remain open; package 7 has separate prepared-station Save & Quit/Continue evidence. The finalized package 4 Waves 1–3 capture held approximately 119.96 FPS at 1440p with zero gameplay frames over 16.667 ms; this is limited early-flight evidence. See [PERFORMANCE.md](PERFORMANCE.md).
 
 GameInstance reapplies settings in OnStart after engine initialization. Package 4's fresh log shows all 11 scalability groups at quality 2 on frame 0, correcting the package 3 mismatch between session quality 2 and effective quality 3.
 
 Windows defaults use DX12/SM6 with mesh distance fields enabled for Lumen. DX11/SM5 is also cooked as a fallback; append `-d3d11` to select it. The DX11 fallback has not received a rendered acceptance pass. Both `/Game/SpaceSurvival` and `/Engine/BasicShapes` are always cooked so runtime primitive references, including the station cube floor, have packaged dependencies.
 
 The first package attempt encountered global Live Coding from another editor. The wrapper now passes `-ubtargs=-NoHotReloadFromIDE`, matching the successful editor-build pattern; it does not close unrelated owner sessions or change their Live Coding settings.
+
+## Runtime prerequisite boundary
+
+Package 7 bundled runtime 14.50.35719.0 for compiler 14.51.36257. Package 8 replaces the x64 installer under `Engine/Extras/Redist/en-us` with Microsoft-signed **14.51.36247.0**, 18,731,856 bytes, SHA-256 `843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C`. Independent inspection verified source/destination equality and Valid Microsoft signatures. The game still has no app-local CRT; no installer or clean-PC launch was run. Microsoft requires matching runtime major and equal-or-newer minor; see [DLL redistribution guidance](https://learn.microsoft.com/en-us/cpp/windows/determining-which-dlls-to-redistribute?view=msvc-170), checked 2026-09-13.
+
+The implemented packaging correction retains unique UAT logs under Artifacts/BuildLogs, then invokes `Scripts/BundlePrerequisites.ps1`. The helper binds to the game link response file and matching built/archive executable, corroborates the selected toolchain from the log, checks a compatible Microsoft-signed x64 runtime from that VS installation, copies only into the archive and writes `Artifacts/Windows/Prerequisites.json` with provenance. Missing compatibility fails clearly; no host installation or Engine modification occurs. ARM64 is outside this Windows x64 target.
+
+Package 8 exercised the copy/receipt path successfully. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing the archive, use its matching retained UAT log:
+
+```powershell
+./Scripts/BundlePrerequisites.ps1 -BuildLog "./Artifacts/BuildLogs/WindowsPackage-b5ba16e6aba94998beddf035bf05017a.log" -DryRun
+```
+
+The dry run binds the current built/archive executable and link response file; use a UAT log from that matching build. A historical log can be rejected after newer builds replace those files. Preserve the prerequisite receipt with the package and separately validate clean-PC startup.
 
 ## Controls
 
@@ -104,7 +122,7 @@ The first package attempt encountered global Live Coding from another editor. Th
 
 Banking follows steering/lateral movement. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
 
-A native menu click changed mouse sensitivity from 1.0 to 1.2. Relaunching package 5 with that isolated QA profile at 1280x720 displayed mouse 1.2 and controller 1.0 in Controls. This verifies preference persistence, not comfortable steering response.
+Package 6 native clicks saved mouse/controller sensitivity 1.2. After normal close/relaunch the isolated Controls menu displayed both 1.2. This verifies persistence, not comfortable steering response.
 
 Normal shell/settings menus pause flight. Depot/reward panels remain live. Their menu controls are consumed separately from flight controls; this recent behavior needs actual input verification.
 
@@ -122,4 +140,6 @@ The dedicated lifecycle harness runs preflight plus three fresh Unreal processes
 
 Use `-PreflightOnly` for the backend/path guard without GameInstance Init or save writes. The normal harness creates a GUID directory under `Artifacts/SaveLifecycle`, verifies the generic SaveGame backend and absence of reparse paths before writes, and checks owner production save hashes before/after. Its successful receipt verifies station fixture persistence, settings, resumed death, 475 XP/both unlocks and fresh-run reset, plus actual locked-suspension/account failures that preserve bytes and succeed after releasing the locks. It does not click station UI or test the packaged executable. See [VALIDATION.md](VALIDATION.md) for the exact token and limits.
 
-Station 2 is the current live slice boundary. Services/suspension are available; further launch is disabled. Its explicit abandonment action gives no death XP. This boundary remains an unresolved scope issue.
+For guarded prepared-station UI QA, `TestSaveLifecycle.ps1 -PreparePackagedStation 5` (or 10) runs isolated preflight/preparation and leaves a suspension in its reported GUID UserDir. Fixtures seed build/kills/contract state and mute audio; use fresh ordinary runs for gameplay acceptance. Package 7 consumed them through actual station UI, as recorded in [VALIDATION.md](VALIDATION.md).
+
+Station 2 is a live slice boundary. Its departure panel shows live statistics and services/save/discard without death XP/history. Native summary/save/relaunch passed; discard and completion/retry acceptance remain open. No Wave 11 or victory award exists.

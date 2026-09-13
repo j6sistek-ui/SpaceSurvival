@@ -1,5 +1,5 @@
 {
-  "status": "AUTHORED_EXIT_UNREAL_CONTRACT_PASSED_RENDERED_REVIEW_PENDING",
+  "status": "AUTHORED_EXIT_UNREAL_CONTRACT_AND_BOUNDED_PACKAGED_REPLAY_PASSED",
   "date_utc": "2026-09-13T07:12:22.122410+00:00",
   "base_commit": "6146e9f9111eb7d73ed29ffc7aa1b535f5dbdeff",
   "source_sha256_lf": {
@@ -165,12 +165,13 @@
     "errors": []
   },
   "limits": [
-    "No native rendered exit or panorama acceptance yet.",
+    "Package8 native slowed replay verified visible exit and post-exit service interaction. Natural docking camera, art quality and human feel remain open.",
     "Authored pose begins at Pilot time0; moving pilot idle to start has small measured source-pose reset, not a continuous pose blend.",
     "Existing pilot-tail derivative remains visibly defective; new tail candidate is separate and not imported.",
     "Native SSReviewExit requires explicit development flag and guarded isolated station profile; it replays the production transition but does not prove natural docking.",
     "No physical keyboard/controller feel, natural pacing, audio listening or owner art approval.",
-    "Prerequisite helper dry run passed; copy/signature receipt branch awaits new package.",
+    "Package8 prerequisite copy/signature/bytes verified; clean-machine install and launch remain unverified.",
     "Initial failed-test process returned0; Build.ps1 now requires a fresh all-success automation report."
-  ]
+  ],
+  "later_packaged_validation": "docs/validation/2026-09-13-windows-exit-package.json"
 }
