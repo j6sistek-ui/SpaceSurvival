@@ -56,6 +56,7 @@ public:
     void NotifyEventCompleted(bool bCombat);
     void NotifyPickup(int32 Kind, float Amount);
     void Announce(const FString &Message);
+    bool IsAnnouncementVisible() const;
     void WarnThreat(const FString &Message, FVector Position, float Duration = 4.f);
     void React(const FString &Message);
     void Interact();

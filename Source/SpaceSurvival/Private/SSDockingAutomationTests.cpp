@@ -192,6 +192,7 @@ bool FSSContractArrivalFeedback::RunTest(const FString &)
             return false;
         auto &Session = F.Instance->Session;
         auto &Run = Session.run;
+        Session.settings.subtitles = false;
         Session.tuning.objectiveContractReward = 137;
         Session.tuning.pressureContractReward = 193;
         Run.contract = Case == 2 ? SS::Contract::Pressure : SS::Contract::Objective;
@@ -213,6 +214,9 @@ bool FSSContractArrivalFeedback::RunTest(const FString &)
                                            : FString::Printf(TEXT("%s contract complete / +%d credits"),
                                                              Case == 1 ? TEXT("Hunter") : TEXT("Pressure"), Reward);
         TestTrue(TEXT("Arrival names the real success, payout or failure"), F.Mode->Announcement.Contains(Expected));
+        TestTrue(TEXT("Actual arrival result remains visible through the HUD gate with subtitles off"),
+                 F.Mode->IsAnnouncementVisible());
+        TestEqual(TEXT("Transactional notice retains its full 18-second duration"), F.Mode->AnnouncementSeconds, 18.f);
         const FString Receipt = F.Mode->Announcement;
         auto *Walker = Cast<ASSWalker>(F.Controller->GetPawn());
         if (!TestNotNull(TEXT("Arrival possesses the actual disembarking walker"), Walker))
@@ -224,10 +228,21 @@ bool FSSContractArrivalFeedback::RunTest(const FString &)
         }
         TestTrue(TEXT("Outcome remains readable after disembark without paying again"),
                  !Walker->IsDisembarking() && F.Mode->Announcement == Receipt && F.Mode->AnnouncementSeconds > 15.f &&
-                     Run.credits == 300 + Reward);
+                     F.Mode->IsAnnouncementVisible() && Run.credits == 300 + Reward);
         F.Mode->Tick(.1f);
         TestTrue(TEXT("Repeated station ticks do not synthesize another receipt"),
                  F.Mode->Announcement == Receipt && F.Mode->AnnouncementSeconds < 15.6f);
+        F.Mode->Tick(15.5f);
+        TestFalse(TEXT("Expired transaction notice disappears normally"), F.Mode->IsAnnouncementVisible());
+        TestEqual(TEXT("Notice expiry never pays the settled contract again"), Run.credits, 300 + Reward);
+        F.Mode->Announce(TEXT("Dockmaster: Your ship is in the service bay."));
+        TestFalse(TEXT("Actual Dockmaster dialogue remains suppressed with subtitles off"),
+                  F.Mode->IsAnnouncementVisible());
+        Session.settings.subtitles = true;
+        TestTrue(TEXT("Enabling subtitles reveals active Dockmaster dialogue"), F.Mode->IsAnnouncementVisible());
+        Session.settings.subtitles = false;
+        F.Mode->Announce(TEXT("Acornaut: Good to be back."));
+        TestFalse(TEXT("Actual pilot dialogue remains suppressed with subtitles off"), F.Mode->IsAnnouncementVisible());
     }
     return true;
 }

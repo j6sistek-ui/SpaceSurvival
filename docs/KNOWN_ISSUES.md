@@ -1,6 +1,6 @@
 # Known issues and limitations
 
-**Phase 1: PARTIAL.** Package 11 remains the audited archive; Package 12 is pending. Current gameplay source passed the 21.69-second Editor build and all 35 Unreal tests at 2026-09-13 14:50:03 UTC (2.892839 seconds, zero test warnings/failures/not-run cases). These are engine regressions, not a new packaged/performance or player-acceptance claim. HeroAlpha experiments are paused and unadopted after the owner prioritized gameplay and external hero cleanup. All 19 hands-on checks remain open. See [current state](PROJECT_STATE.md), [gameplay quality](GAMEPLAY_QUALITY.md) and its [receipt](validation/2026-09-13-gameplay-quality.json).
+**Phase 1: PARTIAL.** Current gameplay source passed the 33.08-second Editor build and all 37 Unreal tests at 2026-09-13 15:12:50 UTC (3.083320 seconds, zero test warnings/failures/not-run cases). Package 12 is independently audited and its two rendered fixtures passed; the three follow-up fixes are being packaged next. HeroAlpha is paused and unadopted after the owner prioritized gameplay and external hero cleanup. All 19 hands-on checks remain open. See [gameplay quality](GAMEPLAY_QUALITY.md) and [follow-up evidence](validation/2026-09-13-gameplay-fairness-followup.json).
 
 ## Open implementation and quality gaps
 
@@ -16,12 +16,14 @@
 10. **Representative performance remains open.** Package 11 and earlier normal-timing scripted fixtures retain their measured results and exact executable boundaries in [PERFORMANCE.md](PERFORMANCE.md). They use seeded state, enlarged durability and scripted input; the Package 11 Wave 10 sample also overlapped a CPU art render. Current gameplay repairs do not inherit a new-package performance claim. New `-CaptureVisuals` runs materially perturb timing and are excluded from performance claims. Natural full-run RAM/VRAM, lower-end scalability and the representative 60 FPS gate remain open. The large starter mesh has nine sections and one roughly 134k-triangle LOD; existing whole-scene timings do not isolate its cost.
 11. **Clean-PC portability remains unverified.** Package 8 replaced package 7's older runtime with Microsoft-signed x64 14.51.36247.0 for toolset 14.51; source/destination hashes, signature and provenance receipt passed independent checks. No installer or clean-PC run was performed, and there is no app-local CRT. The host's installed runtime still limits portability evidence.
 
-12. **Minor Director budget accounting remains imperfect.** The wreckage branch spends its configured cost after `SpawnWreckagePassage()` even if capacity or spatial checks create no pieces. This can temporarily reduce realized pressure. The current repair batch does not change this path.
+12. **Continuous collision has a defined approximation.** Player/shot contact now uses synchronized relative motion and first-contact ordering; ship paths are linear between sampled positions. World-cover and enemy geometry in the projectile query still use current transforms. Extreme nonlinear movement within a hitch is not reconstructed.
 
 ## Repairs and their actual verification
 
 | Issue | Current repair | Verification boundary |
 | --- | --- | --- |
+| Rejected wreckage cost pressure; subtitles hid contract settlements | Charge only a spawned passage; keep transactional results visible independently of dialogue | Actual admission and arrival tests pass in the 37-test suite |
+| Enemy projectile collision could punish a successful dodge or miss a crossing | Relative-motion first contact, clipped live interval and cover ordering | 36 actual-projectile scenarios pass across frame rates and boundary cases |
 | Impact response varied by frame rate; a crossed contact could push the wrong way | One-time velocity impulse uses the closest swept-contact normal; gravity remains continuous acceleration | Real contact/rate and crossed-contact regressions pass in the 35-test suite; natural hit feel remains open |
 | Cannon/tracer travel could exceed aiming range on a long frame | Player shots receive WeaponRange; final sweep clips remaining travel and lifetime | CannonRangeAndHitch and existing manual-hit/cover tests pass |
 | Fast pickups could be missed; destruction fragments could spawn in the reaction path | Relative swept collection, clamped attraction and once-only award; bounded fragment candidate admission | PickupSweptCollection and FragmentReactionAdmission pass; moving-world fairness remains open |

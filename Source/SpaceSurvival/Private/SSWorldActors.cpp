@@ -749,6 +749,14 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
     SourceActor = Source;
     LinearVelocity = Direction.GetSafeNormal() * Speed;
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    TrackedShip = FindShip();
+    bHasPreviousShipPosition = TrackedShip.IsValid();
+    if (TrackedShip.IsValid())
+    {
+        PreviousShipPosition = TrackedShip->GetActorLocation();
+        // Sample the ship after its movement, so both swept paths share one frame.
+        AddTickPrerequisiteActor(TrackedShip.Get());
+    }
     if (DynamicMaterial)
         DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), bPlayerShot ? FLinearColor(.3f, 1.f, 1.f)
                                                                            : FLinearColor(1.f, .2f, .05f));
@@ -756,10 +764,14 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
 
 void ASSProjectile::Tick(float DeltaSeconds)
 {
-    // Clamp the final sweep, not just expiry after movement. A hitch must not let a
-    // projectile hit beyond its configured range or remaining lifetime.
-    const float FlightSeconds = FMath::Clamp(DeltaSeconds, 0.f, FMath::Max(0.f, LifetimeSeconds - Age));
-    Age += FMath::Max(0.f, DeltaSeconds);
+    if (IsActorBeingDestroyed())
+        return;
+    // Both paths stop at the same live-time boundary, including range expiry.
+    const float FrameSeconds = FMath::Max(0.f, DeltaSeconds);
+    float FlightSeconds = FMath::Min(FrameSeconds, FMath::Max(0.f, LifetimeSeconds - Age));
+    if (TravelRemaining >= 0.f && LinearVelocity.SizeSquared() > UE_SMALL_NUMBER)
+        FlightSeconds = FMath::Min(FlightSeconds, TravelRemaining / float(LinearVelocity.Size()));
+    Age += FrameSeconds;
     const FVector Start = GetActorLocation();
     FVector Travel = LinearVelocity * FlightSeconds;
     if (TravelRemaining >= 0.f)
@@ -768,6 +780,48 @@ void ASSProjectile::Tick(float DeltaSeconds)
         TravelRemaining = FMath::Max(0.f, TravelRemaining - float(Travel.Size()));
     }
     const FVector End = Start + Travel;
+    ASSShip *Ship = FindShip();
+    if (Ship != TrackedShip.Get())
+    {
+        if (TrackedShip.IsValid())
+            RemoveTickPrerequisiteActor(TrackedShip.Get());
+        TrackedShip = Ship;
+        bHasPreviousShipPosition = Ship != nullptr;
+        if (Ship)
+        {
+            PreviousShipPosition = Ship->GetActorLocation();
+            AddTickPrerequisiteActor(Ship);
+        }
+    }
+    double ShipHitTime = 2.0;
+    if (Ship)
+    {
+        const FVector ShipStart = bHasPreviousShipPosition ? PreviousShipPosition : Ship->GetActorLocation();
+        const float LiveFraction = FrameSeconds > 0.f ? FlightSeconds / FrameSeconds : 0.f;
+        const FVector ShipTravel = (Ship->GetActorLocation() - ShipStart) * LiveFraction;
+        if (!bPlayerShot && Ship != SourceActor.Get())
+        {
+            // Solve first contact between simultaneous paths. A sweep against the
+            // ship's final position alone can reward a dodge with a false hit.
+            const FVector RelativeStart = Start - ShipStart;
+            const FVector RelativeTravel = Travel - ShipTravel;
+            const double Radius = BodyRadius + Ship->Collision->GetScaledSphereRadius();
+            const double C = RelativeStart.SizeSquared() - Radius * Radius;
+            const double A = RelativeTravel.SizeSquared();
+            const double B = FVector::DotProduct(RelativeStart, RelativeTravel);
+            const double Discriminant = B * B - A * C;
+            if (C <= 0.0)
+                ShipHitTime = 0.0;
+            else if (A > UE_SMALL_NUMBER && B < 0.0 && Discriminant >= 0.0)
+            {
+                const double Contact = (-B - FMath::Sqrt(Discriminant)) / A;
+                if (Contact >= 0.0 && Contact <= 1.0)
+                    ShipHitTime = Contact;
+            }
+        }
+        PreviousShipPosition = Ship->GetActorLocation();
+        bHasPreviousShipPosition = true;
+    }
     FCollisionObjectQueryParams Objects;
     Objects.AddObjectTypesToQuery(ECC_WorldDynamic);
     Objects.AddObjectTypesToQuery(ECC_WorldStatic);
@@ -775,36 +829,39 @@ void ASSProjectile::Tick(float DeltaSeconds)
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SpaceSurvivalProjectile), false, this);
     if (SourceActor.IsValid())
         Query.AddIgnoredActor(SourceActor.Get());
-    if (bPlayerShot)
-        if (ASSShip *Ship = FindShip())
-            Query.AddIgnoredActor(Ship);
+    if (Ship)
+        Query.AddIgnoredActor(Ship);
     TArray<FHitResult> Hits;
     GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, Objects,
                                        FCollisionShape::MakeSphere(BodyRadius), Query);
     Hits.Sort([](const FHitResult &A, const FHitResult &B) { return A.Time < B.Time; });
+    const FHitResult *WorldHit = nullptr;
     for (const FHitResult &Hit : Hits)
     {
-        if (ASSWorldBody *Body = Cast<ASSWorldBody>(Hit.GetActor()))
+        if (const ASSWorldBody *Body = Cast<ASSWorldBody>(Hit.GetActor()))
         {
             if (!Body->IsSolidHazard() && !Body->IsEnemy())
                 continue;
+        }
+        else if (!Hit.bBlockingHit)
+            continue;
+        WorldHit = &Hit;
+        break;
+    }
+    // Cover wins a simultaneous contact. Later cover cannot erase an earlier hit.
+    if (ShipHitTime <= 1.0 && (!WorldHit || ShipHitTime < WorldHit->Time))
+    {
+        Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Energy);
+        Destroy();
+        return;
+    }
+    if (WorldHit)
+    {
+        if (ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor()))
             if (bPlayerShot || Body->IsSolidHazard())
                 Body->ReceiveWeaponHit(CollisionDamage);
-            Destroy();
-            return;
-        }
-        if (ASSShip *Ship = Cast<ASSShip>(Hit.GetActor()))
-        {
-            if (!bPlayerShot)
-                Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Energy);
-            Destroy();
-            return;
-        }
-        if (Hit.bBlockingHit)
-        {
-            Destroy();
-            return;
-        }
+        Destroy();
+        return;
     }
     SetActorLocation(End);
     if (Age >= LifetimeSeconds || TravelRemaining == 0.f)
@@ -1362,20 +1419,21 @@ ASSEnemy *USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncount
     return nullptr;
 }
 
-void USSSurvivalDirectorComponent::SpawnWreckagePassage()
+bool USSSurvivalDirectorComponent::SpawnWreckagePassage()
 {
     if (GetActiveThreatCount() + 4 > MaximumActiveThreats)
-        return;
+        return false;
     ASSShip *Ship = FindShip();
     if (!Ship)
-        return;
+        return false;
     const auto Definition = Content(this)->Hazard(ESSWorldKind::Wreckage);
     FVector Centre;
     if (!FindSafeSpawn(350.f, Centre))
-        return;
+        return false;
     // Authored four-piece frame: an unobstructed 1,400 cm aperture with varied orientation.
     const FVector Axes[] = {Ship->GetActorRightVector(), -Ship->GetActorRightVector(), Ship->GetActorUpVector(),
                             -Ship->GetActorUpVector()};
+    bool SpawnedAny = false;
     for (int32 Index = 0; Index < 4; ++Index)
     {
         const FVector Position = Centre + Axes[Index] * Definition.PassageHalfSpacing;
@@ -1395,8 +1453,10 @@ void USSSurvivalDirectorComponent::SpawnWreckagePassage()
                              Definition.DamageBase + Wave * Definition.DamagePerWave, Wave);
             Chunk->SetLinearVelocity(-Ship->GetActorForwardVector() * Definition.DriftSpeedMin);
             Spawned.Add(Chunk);
+            SpawnedAny = true;
         }
     }
+    return SpawnedAny;
 }
 
 void USSSurvivalDirectorComponent::OfferEncounter(ESSEncounterKind Kind)
@@ -1532,8 +1592,8 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
              Roll < DirectorData.WreckageSelectionStart + Wreckage.SelectionWeight &&
              AvailableBudget >= Wreckage.PressureCost)
     {
-        SpawnWreckagePassage();
-        AvailableBudget -= FMath::Max(.1f, Wreckage.PressureCost);
+        if (SpawnWreckagePassage())
+            AvailableBudget -= FMath::Max(.1f, Wreckage.PressureCost);
     }
     else if (AvailableBudget >= 1.f)
     {

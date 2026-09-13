@@ -387,9 +387,7 @@ void ASSHUD::DrawHUD()
         if (!InteractionHint.IsEmpty())
             Text(InteractionHint, W * .5f - 200 * Scale, H - 80 * Scale, .9f, HintColor);
     }
-    const bool Dialogue =
-        GM->Announcement.StartsWith(TEXT("Acornaut:")) || GM->Announcement.StartsWith(TEXT("Dockmaster:"));
-    if (GM->AnnouncementSeconds > 0 && (S.settings.subtitles || !Dialogue))
+    if (GM->IsAnnouncementVisible())
     {
         DrawRect(FLinearColor(.02f, .025f, .05f, .88f), Margin, 65 * Scale, W - 2 * Margin, 48 * Scale);
         Text(GM->Announcement, Margin + 12 * Scale, 77 * Scale, .75f);

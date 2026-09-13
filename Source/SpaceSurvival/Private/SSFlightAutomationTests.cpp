@@ -592,4 +592,76 @@ bool FSSFlightMuzzleObstruction::RunTest(const FString &)
     }
     return true;
 }
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSProjectileRelativeMotion, "SpaceSurvival.Flight.ProjectileRelativeMotion",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSProjectileRelativeMotion::RunTest(const FString &)
+{
+    // The two synchronized trajectories cross at different times in case 0,
+    // and at the same time in the others. Endpoint-only world sweeps confuse them.
+    for (float Step : {1.f / 30.f, 1.f / 60.f, 1.f / 144.f, .1f})
+        for (int32 Case = 0; Case < 9; ++Case)
+        {
+            FSSFlightWorld Fixture;
+            if (!Fixture.Initialize(*this))
+                return false;
+            FVector Origin(0, 0, 7000);
+            const FVector ShipStart(0, Case == 0 ? -800.f : -400.f, 0);
+            const FVector ShipEnd(0, Case == 0 ? 0.f : 400.f, 0);
+            Fixture.Ship->SetActorLocation(Origin + ShipStart);
+            auto *Source = Fixture.World->SpawnActor<AActor>(Origin + FVector(-2000, 0, 0), FRotator::ZeroRotator);
+            auto *Shot = Fixture.World->SpawnActor<ASSProjectile>(Origin + FVector(-365, 0, 0), FRotator::ZeroRotator);
+            if (!TestNotNull(TEXT("Create real projectile"), Shot) ||
+                !TestNotNull(TEXT("Create firing source"), Source))
+                return false;
+            const bool bPlayerShot = Case == 8;
+            Shot->Launch(FVector::ForwardVector, 7300.f, 40.f, bPlayerShot, Source, Case == 6 ? 146.f : -1.f);
+            if (Case == 4 || Case == 5)
+                Shot->LifetimeSeconds = Case == 4 ? .02f : .08f;
+            ASSWorldBody *Cover = nullptr;
+            if (Case == 2 || Case == 3)
+            {
+                Cover = Fixture.World->SpawnActor<ASSWorldBody>(Origin + FVector(Case == 2 ? -230.f : 230.f, 0, 0),
+                                                                FRotator::ZeroRotator);
+                if (!TestNotNull(TEXT("Create real intervening cover"), Cover))
+                    return false;
+                Cover->Configure(ESSWorldKind::SmallAsteroid, 25.f, 0.f);
+            }
+            if (Case == 7)
+            {
+                const FVector Shift(700000, -100000, 80000);
+                Fixture.Ship->ApplyWorldOffset(Shift, true);
+                Shot->ApplyWorldOffset(Shift, true);
+                Origin += Shift;
+            }
+            const double ShieldBefore = Fixture.Instance->Session.run.shield;
+            float Elapsed = 0.f;
+            while (Elapsed < .1f - UE_SMALL_NUMBER && !Shot->IsActorBeingDestroyed())
+            {
+                const float Delta = FMath::Min(Step, .1f - Elapsed);
+                Elapsed += Delta;
+                Fixture.Ship->SetActorLocation(Origin + FMath::Lerp(ShipStart, ShipEnd, Elapsed / .1f));
+                Shot->Tick(Delta);
+            }
+            const bool bExpectedHit = Case == 1 || Case == 3 || Case == 5 || Case == 7;
+            const FString Label = FString::Printf(TEXT("Relative shot dt=%.6f case=%d"), Step, Case);
+            TestEqual(Label + TEXT(" applies damage only at synchronized contact"),
+                      Fixture.Instance->Session.run.shield, ShieldBefore - (bExpectedHit ? 54.0 : 0.0));
+            if (Cover)
+                TestEqual(Label + TEXT(" respects cover contact order"), Cover->IsActorBeingDestroyed(), Case == 2);
+            const bool bExpectedConsumed = Case != 0 && Case != 8;
+            TestEqual(Label + TEXT(" consumes exactly a hit or expired shot"), Shot->IsActorBeingDestroyed(),
+                      bExpectedConsumed);
+            if (Shot->IsActorBeingDestroyed())
+            {
+                const double ShieldAfter = Fixture.Instance->Session.run.shield;
+                Shot->Tick(.1f);
+                TestEqual(Label + TEXT(" cannot pay a second damage hit"), Fixture.Instance->Session.run.shield,
+                          ShieldAfter);
+            }
+            if (Case == 0 || Case == 8)
+                TestTrue(Label + TEXT(" preserves the unobstructed shot path"),
+                         Shot->GetActorLocation().Equals(Origin + FVector(365, 0, 0), .01f));
+        }
+    return true;
+}
 #endif

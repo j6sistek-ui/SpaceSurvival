@@ -158,6 +158,12 @@ void ASSGameMode::Announce(const FString &Message)
     Announcement = Message;
     AnnouncementSeconds = 7.f;
 }
+bool ASSGameMode::IsAnnouncementVisible() const
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    const bool Dialogue = Announcement.StartsWith(TEXT("Acornaut:")) || Announcement.StartsWith(TEXT("Dockmaster:"));
+    return GI && AnnouncementSeconds > 0.f && (GI->Session.settings.subtitles || !Dialogue);
+}
 void ASSGameMode::React(const FString &Message)
 {
     if (ReactionCooldown > 0.f)
@@ -511,18 +517,17 @@ void ASSGameMode::Tick(float Dt)
         if (S.run.phase == SS::Phase::Station)
         {
             EnterStation();
-            // This is an arrival notification, not a saved receipt. Resume does not
-            // synthesize a contract result after the domain has already settled it.
+            // Keep the transaction result separate from optional Dockmaster dialogue.
+            // This is not a saved receipt; resume does not synthesize a settled result.
             if (ArrivingContract != SS::Contract::None && S.run.contract == SS::Contract::None)
             {
                 const TCHAR *Name = ArrivingContract == SS::Contract::Objective ? TEXT("Hunter") : TEXT("Pressure");
                 if (S.run.contractsCompleted > ContractsBeforeStep)
-                    Announce(FString::Printf(TEXT("Dockmaster: Welcome aboard. %s contract complete / +%d credits."),
-                                             Name, S.run.credits - CreditsBeforeStep));
+                    Announce(FString::Printf(TEXT("%s contract complete / +%d credits."), Name,
+                                             S.run.credits - CreditsBeforeStep));
                 else
-                    Announce(FString::Printf(TEXT("Dockmaster: Welcome aboard. %s contract failed / no reward. "
-                                                  "Your credits are unchanged."),
-                                             Name));
+                    Announce(
+                        FString::Printf(TEXT("%s contract failed / no reward. Your credits are unchanged."), Name));
                 AnnouncementSeconds = 18.f; // Remains readable after the 2.4-second disembark.
             }
         }

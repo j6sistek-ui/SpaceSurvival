@@ -147,6 +147,7 @@ private:
     bool bPlayerShot = false;
     float TravelRemaining = -1.f;
     TWeakObjectPtr<AActor> SourceActor;
+    TWeakObjectPtr<ASSShip> TrackedShip;
 };
 
 /** Authored Wave 5 passage presentation. The game mode alone owns phase progression. */
@@ -311,7 +312,7 @@ private:
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
     ASSWorldBody *SpawnHazard(ESSWorldKind Kind, float Radius);
     ASSEnemy *SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective = nullptr);
-    void SpawnWreckagePassage();
+    bool SpawnWreckagePassage();
     void OfferEncounter(ESSEncounterKind Kind);
     void CleanTrackedActors();
     int32 Wave = 1;
