@@ -1,0 +1,30 @@
+name: Phase 1 source checks
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    container: gcc:14-bookworm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile strict C++ domain tests
+        run: g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic -Werror -ISource/SpaceSurvival/Domain Source/SpaceSurvival/Domain/SurvivalCore.cpp Tests/CoreTests.cpp -o /tmp/core-tests
+      - name: Run deterministic domain acceptance tests
+        run: /tmp/core-tests
+      - name: Compile and run memory / undefined behavior checks
+        run: |
+          g++ -std=c++17 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -ISource/SpaceSurvival/Domain Source/SpaceSurvival/Domain/SurvivalCore.cpp Tests/CoreTests.cpp -o /tmp/core-sanitized
+          /tmp/core-sanitized
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate source project and original asset
+        run: python3 Scripts/CheckProject.py
+      - name: Python syntax
+        run: python3 -m compileall -q Scripts
+      - name: Whitespace
+        run: git diff --check
