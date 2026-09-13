@@ -1,6 +1,6 @@
 # Owner playtest findings
 
-Recorded 2026-09-13. Paraphrased from direct owner feedback. These are player observations, not reproduced defects or verified diagnoses. Exact played build, wave, device, weapon, target identity and contract acceptance are UNCONFIRMED. Do not assume the latest itch upload was the tested build.
+Recorded 2026-09-13. Paraphrased from direct owner feedback. These are player observations, not reproduced defects or verified diagnoses. Exact played build, wave, weapon, target identity and contract acceptance are UNCONFIRMED. The follow-up identifies mouse-control discomfort and controller preference; no physical controller playtest is established. Do not assume the latest itch upload was the tested build.
 
 Current priority: appearance and controls for core mechanics. More detailed feedback will follow. Preserve the reasonably good entry-level handling baseline; this report does not request a flight redesign or immediate gameplay changes.
 
@@ -15,3 +15,13 @@ Current priority: appearance and controls for core mechanics. More detailed feed
 | F07 | Some other objects had yellow names rather than red; the player could not tell whether they were allies or enemies. | Identify actual actors and labels; establish consistent hostile/friendly/neutral/interactable cues using shape/icon/text as well as color. No affiliation is inferred from yellow alone. | 6.6,9.1 |
 
 These findings inform the short core-mechanics benchmark, especially targeting, death feedback and target identification. Event/contract/station findings remain tracked for their workflow passes; they should not pull today's planning into implementation. No fixes, new tests or owner acceptance boxes are claimed from this record.
+
+## Wormhole and input follow-up
+
+| ID | Owner observation / expectation | Follow-up when work resumes | WBS |
+| --- | --- | --- | --- |
+| F08 | Wormhole was recognizable but felt like travelling through a tube and then it was over. Arrival should feel far away and unfamiliar: different colors/space, a disruptive ejection and animation, and uncertainty about where the player emerged. Owner frames the fuller experience as a long-term intention. | Treat destination contrast, transit/ejection, ship/pilot reaction, audio and recovery as one experience. Proposed direction: anticipation/pull, transit, bounded ejection disturbance, readable recovery into an unfamiliar scene. Do not infer actual new galaxies, new hazard families or arbitrary input reversal. Preserve the scoped hostile-combat-to-station sequence; reconcile any abrupt region-change proposal with GAME_SCOPE's gradual-region rule before implementation. Duration, force and control interruption are not yet specified or approved. | 4.2,2.3,7.3,10.1-10.3 |
+| F09 | Forward play felt well supported, but movement did not feel very free. The player also felt constrained by inverse mouse input being opposite their normal expectation. | Separate the intended forward bias, actual maneuvering envelope, camera response and input inversion. Compare with preferred pitch direction and a physical controller before diagnosing the flight model or retuning base movement. | 2.1-2.3,9.2 |
+| F10 | Owner is primarily a controller player; computer controls are not intuitive for them. | Prioritize a controller-first owner comparison when testing resumes, while retaining keyboard/mouse parity. Record device/layout/sensitivity/inversion. This is preference and context, not a passed or failed controller test. | 2.1,9.2,11.1 |
+
+The intended wormhole experience includes temporary uncertainty about location, while the player must still regain understandable control and receive fair warning of the next danger. This is a proposed interpretation for review, not a new mechanic implemented today.
