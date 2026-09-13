@@ -45,7 +45,23 @@ enum class Utility
     VectorThrusters,
     OverdriveCooling
 };
-constexpr int StationUtilityPrice = 150;
+constexpr int StationUtilityPrice = 150; // Default only; purchases use the validated definition.
+struct UtilityDefinition
+{
+    Utility kind = Utility::VectorThrusters;
+    int price = StationUtilityPrice;
+    double maneuverMultiplier = 1.0, responseMultiplier = 1.0;
+    double boostEfficiency = 1.0, coolingEfficiency = 1.0;
+};
+constexpr std::array<UtilityDefinition, 2> DefaultUtilityDefinitions()
+{
+    return {{{Utility::VectorThrusters, StationUtilityPrice, 1.30, 1.12, 1.0, 1.0},
+             {Utility::OverdriveCooling, StationUtilityPrice, 1.0, 1.0, 1.35, 1.45}}};
+}
+// Canonical identity order; malformed rosters fall back together. Invalid numeric rows
+// fall back individually; finite high values clamp to safe tuning limits. False reports correction.
+bool NormalizeUtilityDefinitions(const std::array<UtilityDefinition, 2> &input,
+                                 std::array<UtilityDefinition, 2> &output);
 
 enum class Contract
 {
@@ -64,6 +80,7 @@ enum class DamageType
 
 struct Tuning
 {
+    std::array<UtilityDefinition, 2> utilities = DefaultUtilityDefinitions();
     double baseHull = 100.0;
     double baseShield = 60.0;
     double baseSpeed = 2400.0;
@@ -189,6 +206,7 @@ public:
     bool Repair();
     int DepotShieldRepairPrice() const;
     bool RepairShieldAtDepot();
+    int UtilityPrice(Utility utility) const;
     bool CanPurchaseUtility(Utility utility) const;
     bool PurchaseUtility(Utility utility);
     bool EquipUtility(Utility utility);

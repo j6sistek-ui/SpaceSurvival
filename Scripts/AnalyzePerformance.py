@@ -19,6 +19,9 @@ csv.field_size_limit(32 * 1024 * 1024)
 TIMINGS = ("FrameTime", "GPUTime", "GameThreadTime", "RenderThreadTime", "RHIThreadTime")
 STATE = tuple("SpaceSurvival/" + name for name in (
     "Phase", "Wave", "RunActive", "ActiveThreats", "Hull", "ShipSpeedCmPerSec"))
+SOAK_NAMES = ("Fixture", "SimulationDeltaMs", "Gravity", "Asteroids", "Wreckage", "Electrical",
+              "Pursuers", "Flankers", "Projectiles", "Pickups", "ApplicationForeground")
+SOAK = tuple("SpaceSurvivalSoak/" + name for name in SOAK_NAMES)
 PHASES = ("Hangar", "Flight", "Breathing", "Wormhole", "Climax", "Approach", "Docking", "Station", "Dead")
 METADATA_KEYS = (
     "platform", "config", "buildversion", "engineversion", "enginereleaseversion", "os", "cpu",
@@ -71,6 +74,10 @@ def read_capture(path):
     indices = {name: header.index(name) for name in required}
     if header.count("MaxFrameTime") == 1:
         indices["MaxFrameTime"] = header.index("MaxFrameTime")
+    if any(name in header for name in SOAK):
+        if any(header.count(name) != 1 for name in SOAK):
+            raise ValueError("Incomplete or duplicate endgame fixture counter set")
+        indices.update({name: header.index(name) for name in SOAK})
     frames, events, elapsed = [], [], 0.0
     with path.open(newline="", encoding="utf-8-sig") as stream:
         for row in csv.reader(stream):
@@ -80,7 +87,7 @@ def read_capture(path):
                 raise ValueError("Data row is wider than final header")
             frame = {"index": len(frames), "elapsed_start_s": elapsed}
             for name, index in indices.items():
-                value = float(row[index]) if index < len(row) and row[index] else None
+                value = float(row[index]) if index < len(row) and row[index] else (0.0 if name in SOAK else None)
                 if value is not None and (not math.isfinite(value) or value < 0):
                     raise ValueError(f"Invalid {name} at frame {len(frames)}")
                 if name in required and value is None:
@@ -93,6 +100,14 @@ def read_capture(path):
                     raise ValueError(f"Noninteger state {name} at frame {len(frames)}")
             if frame[STATE[0]] not in range(len(PHASES)) or frame[STATE[2]] not in (0, 1):
                 raise ValueError(f"Invalid phase/run state at frame {len(frames)}")
+            if SOAK[0] in frame:
+                for name in (SOAK[0], *SOAK[2:]):
+                    if not frame[name].is_integer():
+                        raise ValueError(f"Noninteger fixture count {name} at frame {len(frames)}")
+                if frame[SOAK[0]] not in (0, 1) or frame[SOAK[-1]] not in (0, 1):
+                    raise ValueError(f"Invalid fixture/foreground flag at frame {len(frames)}")
+                if frame[SOAK[0]] == 1 and frame[SOAK[1]] <= 0:
+                    raise ValueError(f"Nonpositive fixture simulation delta at frame {len(frames)}")
             elapsed += frame["FrameTime"] / 1000
             frames.append(frame)
             for event in re.findall(r"(?:^|;)(SpaceSurvival/Phase[^;]*)", row[0]):
@@ -185,8 +200,11 @@ def analyze(path, log_path, warmup, startup_warmup, context_notes):
             segments.append((state, []))
         segments[-1][1].append(frame)
     targets = [frame.get("MaxFrameTime") for frame in gameplay if frame.get("MaxFrameTime", 0) > 0]
+    soak_frames = [frame for frame in frames if frame.get(SOAK[0]) == 1]
     report = {
-        "schema_version": 1, "status": "EARLY_WAVE_PACKAGED_CAPTURE_ONLY_NOT_60_FPS_ACCEPTANCE",
+        "schema_version": 2,
+        "status": ("RENDERED_ENDGAME_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE" if soak_frames else
+                   "OBSERVED_PHASE_CAPTURE_ONLY_NOT_60_FPS_ACCEPTANCE"),
         "source_csv": {"path": source_path(path), "bytes": path.stat().st_size, "sha256": sha256_file(path)},
         "metadata": {key: metadata[key] for key in METADATA_KEYS if key in metadata},
         "parser": parser,
@@ -209,8 +227,22 @@ def analyze(path, log_path, warmup, startup_warmup, context_notes):
             "note": "CSV targetframerate metadata is retained separately; it can differ from the applied runtime cap.",
         },
         "simulation_delta": {
-            "available": False, "counter": None,
-            "reason": "This capture exports no simulation-delta counter. FrameTime measures wall frame duration; MaxFrameTime is the cap budget. No simulation-rate inference is made.",
+            "available": bool(soak_frames), "counter": SOAK[1] if soak_frames else None,
+            "fixture_samples": stats(frame[SOAK[1]] for frame in soak_frames),
+            "reason": ("Fixture actor DeltaSeconds from normal engine frames; excludes startup/CSV drain. This is not physical input latency." if soak_frames else
+                       "No simulation-delta counter. FrameTime is wall duration and MaxFrameTime is cap budget; no simulation-rate inference."),
+        },
+        "endgame_fixture": {
+            "observed": bool(soak_frames), "frames": len(soak_frames),
+            "foreground_frames": sum(frame[SOAK[-1]] == 1 for frame in soak_frames),
+            "all_fixture_frames_foreground": bool(soak_frames) and all(frame[SOAK[-1]] == 1 for frame in soak_frames),
+            "kind_counts": {name: {"maximum": int(max(frame[counter] for frame in soak_frames)),
+                                    "mean": round(statistics.mean(frame[counter] for frame in soak_frames), 6)}
+                            for name, counter in zip(SOAK_NAMES[2:-1], SOAK[2:-1])} if soak_frames else {},
+            "compound_presence_simulation_seconds": round(sum(frame[SOAK[1]] / 1000 for frame in soak_frames
+                if frame[STATE[0]] == 4 and frame[STATE[1]] == 10 and frame[SOAK[2]] > 0 and
+                frame[SOAK[3]] > 0 and frame[SOAK[6]] + frame[SOAK[7]] > 0), 6),
+            "limits": "Marker identifies a seeded scripted fixture with enlarged durability; counts include telegraphs/offscreen actors. It does not establish contact, visibility, natural progression, fairness or human feel.",
         },
         "groups": {
             "all_frames": summarize(frames),
@@ -226,7 +258,9 @@ def analyze(path, log_path, warmup, startup_warmup, context_notes):
         "phase_segments": [{"phase": state[0], "phase_name": PHASES[state[0]], "wave": state[1], "run_active": state[2],
                             "frames": len(group), "first_frame_index": group[0]["index"], "last_frame_index": group[-1]["index"],
                             "wall_frame_time_sum_s": round(sum(f["FrameTime"] for f in group) / 1000, 6),
-                            "max_active_threats": int(max(f[STATE[3]] for f in group))}
+                            "max_active_threats": int(max(f[STATE[3]] for f in group)),
+                            "timings": {name: stats(f[name] for f in group) for name in TIMINGS},
+                            "simulation_delta": stats(f[SOAK[1]] for f in group if f.get(SOAK[0]) == 1)}
                            for state, group in segments],
         "phase_events": events,
         "worst_gameplay_frames": [{"frame_index": frame["index"], "phase": int(frame[STATE[0]]), "wave": int(frame[STATE[1]]),
@@ -235,13 +269,14 @@ def analyze(path, log_path, warmup, startup_warmup, context_notes):
         "log_evidence": read_log(log_path, float(metadata["endtimestamp"])),
         "operator_context": context_notes,
         "limits": [
-            "Only the phases/waves listed above were captured; no Wave 5/10 climax, station-transition or full ten-wave performance acceptance follows.",
-            "A capped early-wave sample is not evidence of uncapped headroom, representative worst-case performance or a sustained 60 FPS gate pass.",
+            "Only the phases/waves listed above were captured; recorded fixture phases do not establish a natural full ten-wave run or representative performance acceptance.",
+            "A capped sample or scripted fixture is not evidence of uncapped headroom, representative worst-case performance or a sustained 60 FPS gate pass.",
             "No physical input responsiveness, controller feel, natural gameplay acceptance, final-art approval or clean-machine benchmark is established.",
             "RunActive/Phase identify simulation state, not a menu-open flag; live gameplay menus can be included. Loading/menu separation uses stated state/time filters.",
             "GPU and thread counters can reflect pipelined earlier work and must not be summed or treated as exact causal attribution for one frame.",
         ],
     }
+    report["waves"] = report["early_waves"]  # Preserve the historical key for existing receipts/tools.
     report["frame_sum_minus_metadata_duration_s"] = round(sum(f["FrameTime"] for f in frames) / 1000 - float(metadata["captureduration"]), 6)
     return report
 

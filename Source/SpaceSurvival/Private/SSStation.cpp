@@ -64,8 +64,8 @@ void ASSStation::BuildHub(bool bHome)
     const TCHAR *Hull = TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull");
     const TCHAR *Cyan = TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan");
     const TCHAR *Gold = TEXT("/Game/SpaceSurvival/Materials/M_Gold.M_Gold");
-    // Dressing shares four render batches and never alters the physical deck or approach corridor.
-    auto MakeBatch = [this, Cube](const TCHAR *Name, const TCHAR *Material)
+    // Dressing shares five render batches and never alters the physical deck or approach corridor.
+    auto MakeBatch = [this, Cube](const TCHAR *Name, const TCHAR *Material, bool ForceMips = false)
     {
         auto *Batch = NewObject<UInstancedStaticMeshComponent>(this, FName(Name));
         Batch->SetupAttachment(RootComponent);
@@ -76,6 +76,7 @@ void ASSStation::BuildHub(bool bHome)
         Batch->SetGenerateOverlapEvents(false);
         Batch->SetCanEverAffectNavigation(false);
         Batch->SetCastShadow(false);
+        Batch->bForceMipStreaming = ForceMips;
         Batch->RegisterComponent();
         Geometry.Add(Batch);
         return Batch;
@@ -84,6 +85,8 @@ void ASSStation::BuildHub(bool bHome)
                     FRotator Rotation = FRotator::ZeroRotator)
     { Batch->AddInstance(FTransform(Rotation, Position, Scale)); };
     auto *Plates = MakeBatch(TEXT("DeckPanels"), Hull);
+    auto *FloorPlates =
+        MakeBatch(TEXT("TexturedDeckPanels"), TEXT("/Game/SpaceSurvival/Materials/M_StationDeck.M_StationDeck"), true);
     auto *Structure = MakeBatch(TEXT("ServiceStructure"), Hull);
     auto *Paint = MakeBatch(TEXT("BayPaint"), Gold);
     auto *Guides = MakeBatch(TEXT("DeckGuides"), Cyan);
@@ -103,7 +106,7 @@ void ASSStation::BuildHub(bool bHome)
     {
         const float CenterX = -1375.f + X * 550.f;
         for (int Y = 0; Y < 6; ++Y)
-            Stamp(Plates, FVector(CenterX, -1125.f + Y * 450.f, -8), FVector(5.35f, 4.35f, .015f));
+            Stamp(FloorPlates, FVector(CenterX, -1125.f + Y * 450.f, -8), FVector(5.35f, 4.35f, .015f));
         for (float Side : {-1.f, 1.f})
         {
             Stamp(Plates, FVector(CenterX, Side * 1378, 205), FVector(5.2f, .12f, 2.8f));
@@ -123,8 +126,8 @@ void ASSStation::BuildHub(bool bHome)
     AddMesh(FVector(-1700, -1050, 350), FVector(.5f, 7, 8), Cube, Hull, true);
     AddMesh(FVector(-1700, 1050, 350), FVector(.5f, 7, 8), Cube, Hull, true);
     AddMesh(FVector(1700, 0, 100), FVector(.3f, 28, 2), Cube, Hull, true);
-    BayShip = AddMesh(FVector(850, 0, 220), FVector(1), TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShip.SM_AcornShip"),
-                      nullptr);
+    BayShip = AddMesh(FVector(850, 0, 220), FVector(1),
+                      TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2"), nullptr);
     ServiceArm = AddMesh(FVector(850, 280, 150), FVector(1),
                          TEXT("/Game/SpaceSurvival/Meshes/SM_ServiceArm.SM_ServiceArm"), Hull);
     // The ship's measured underside is at deck Z153.5; its cradle stays inside its footprint.
@@ -238,7 +241,7 @@ void ASSStation::SetBayShip(int32 ShipKind)
     if (BayShip)
         BayShip->SetStaticMesh(LoadObject<UStaticMesh>(
             nullptr, ShipKind == 1 ? TEXT("/Game/SpaceSurvival/Meshes/SM_AgileShip.SM_AgileShip")
-                                   : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShip.SM_AcornShip")));
+                                   : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2")));
 }
 void ASSStation::ShowBayShip(bool Visible)
 {
@@ -289,7 +292,7 @@ void ASSWalker::BeginPlay()
 {
     Super::BeginPlay();
     GetMesh()->SetSkeletalMesh(
-        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautPilot.SK_AcornautPilot")));
+        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
     WalkAnimation = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Walk.A_Walk"));
     StartWalkingAnimation();
 }

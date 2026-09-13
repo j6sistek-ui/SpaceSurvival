@@ -1,0 +1,30 @@
+{
+  "status": "SEPARATE_TAIL_CANDIDATE_REQUIRES_DEFORMATION_AND_UNREAL_REVIEW",
+  "source_glb_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "derivative_sha256": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00",
+  "vertices": 202507,
+  "tail_vertices_changed": 144133,
+  "tail_max_vertex_drift_cm_17_samples": 0.0,
+  "mask_blender_m": {
+    "whole_connected_fur_islands": true,
+    "min_y_greater_than": -0.04,
+    "max_y_greater_than": 0.1,
+    "old_max_z_greater_than": -0.1,
+    "or_island_min_z_greater_than": -0.18,
+    "reviewed_root_bridge_vertices": 303,
+    "selection_receipt": "ContentSource/TailCandidatePreview/Selection.json"
+  },
+  "target_tail_translation_m": [
+    0,
+    0,
+    0.12
+  ],
+  "joint": "Pelvis",
+  "shared_skeleton_unchanged": true,
+  "unchanged_accessor_hashes": {
+    "TEXCOORD_0": "41f98246a9b81e72891ca8ea23f10f0faf85dd0b5db2c168b17d8c46ee9e7b15",
+    "indices": "eabd72a6c5fe3957bd53e05ea2389b88058aa8defcfeb2a1ad10347fb49d8dd7"
+  },
+  "body_vertices_unchanged": 58374,
+  "notes": "Separate candidate extending the reviewed tail mask by3947 tail-base vertices. Source and existing PilotMesh stay unchanged. Tail curl copied rigidly from original rest shape. Only selected tail position/normal/weights/joints changed; no texture, UV, triangle or material change. Candidate for A_Pilot/A_Disembark/A_Walk pending sampled deformation and Unreal review. Preserves original tail topology and appearance; no new art."
+}

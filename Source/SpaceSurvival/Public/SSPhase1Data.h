@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "SSContentTypes.h"
+#include "Domain/SurvivalCore.h"
 #include "SSPhase1Data.generated.h"
 
 /** Runtime tuning entry point. Asset content is authored by Scripts/AuthorContent.py. */
@@ -12,6 +13,8 @@ class SPACESURVIVAL_API USSPhase1Data : public UDataAsset
 public:
     USSPhase1Data()
     {
+        Utilities = {FSSUtilityDefinition(ESSUtilityKind::VectorThrusters),
+                     FSSUtilityDefinition(ESSUtilityKind::OverdriveCooling)};
         Hazards = {
             FSSHazardDefinition(ESSWorldKind::SmallAsteroid),   FSSHazardDefinition(ESSWorldKind::MediumAsteroid),
             FSSHazardDefinition(ESSWorldKind::MassiveAsteroid), FSSHazardDefinition(ESSWorldKind::Wreckage),
@@ -22,6 +25,36 @@ public:
                       FSSEncounterDefinition(ESSEncounterKind::DistressCombat),
                       FSSEncounterDefinition(ESSEncounterKind::MobileDepot)};
     }
+    // The same mapping is used by GameMode and engine tests. A malformed roster cannot
+    // replace a utility identity or bypass its positive price through fallback.
+    bool ApplyUtilityTuning(SS::Tuning &DomainTuning) const
+    {
+        auto input = SS::DefaultUtilityDefinitions();
+        if (Utilities.Num() != 2)
+        {
+            DomainTuning.utilities = input;
+            return false;
+        }
+        for (int32 i = 0; i < 2; ++i)
+        {
+            const auto &entry = Utilities[i];
+            input[i] = {static_cast<SS::Utility>(entry.Kind),
+                        entry.Price,
+                        entry.ManeuverMultiplier,
+                        entry.ResponseMultiplier,
+                        entry.BoostEfficiency,
+                        entry.CoolingEfficiency};
+        }
+        return SS::NormalizeUtilityDefinitions(input, DomainTuning.utilities);
+    }
+    UFUNCTION(BlueprintPure, Category = "Content")
+    bool HasValidUtilityTuning() const
+    {
+        SS::Tuning DomainTuning;
+        return ApplyUtilityTuning(DomainTuning);
+    }
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, EditFixedSize, Category = "Content")
+    TArray<FSSUtilityDefinition> Utilities;
     // Fixed Phase 1 rosters. Identity is read-only; tune presentation and numeric content.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, EditFixedSize, Category = "Content")
     TArray<FSSHazardDefinition> Hazards;

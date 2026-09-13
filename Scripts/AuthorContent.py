@@ -400,12 +400,18 @@ class Author:
             asset = self.existing_authored(path)
             if asset.get_class() != cls:
                 raise RuntimeError("Existing DA_Phase1 has wrong class")
+            if not asset.has_valid_utility_tuning():
+                raise RuntimeError("DA_Phase1 utilities require exactly the two valid, bounded Phase 1 definitions")
+            # Persist newly added utility fields without resetting any designer-authored values.
+            self.save(asset)
             return
         factory = u.DataAssetFactory()
         factory.set_editor_property("data_asset_class", cls)
         asset = self.tools.create_asset("DA_Phase1", BASE + "/Data", cls, factory)
         if not asset:
             raise RuntimeError("Could not create Phase 1 data asset from C++ defaults")
+        if not asset.has_valid_utility_tuning():
+            raise RuntimeError("Invalid default Phase 1 utility definitions")
         self.save(asset)
 
     def world(self):
@@ -476,13 +482,16 @@ class Author:
         for directory in ("Materials", "Meshes", "Character", "Audio", "Maps", "Data", "Authoring"):
             self.library.make_directory(BASE + "/" + directory)
         self.stage("Materials", self.palette)
+        self.stage("Station deck material", lambda: source_module("ss_station_deck", ROOT / "Scripts/AuthorStationDeck.py").author())
         self.stage("Cinematic space material", lambda: source_module("ss_space_panorama", ROOT / "Scripts/AuthorSpacePanorama.py").author())
         for item in self.mesh_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.static_mesh(asset))
+        self.stage("Authored Acorn ship", lambda: source_module("ss_acorn_ship", ROOT / "Scripts/AuthorAcornShip.py").main())
         self.stage("Preserved Acornaut import", self.hero)
         self.stage("Authored pilot animation", self.pilot)
         self.stage("Authored disembark animation", self.disembark)
         self.stage("Reviewed pilot mesh", self.pilot_mesh)
+        self.stage("Reviewed tail repair", lambda: source_module("ss_tail_repair", ROOT / "Scripts/AuthorTailRepair.py").main())
         for item in self.audio_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.sound(asset))
         if not assets_only:

@@ -1,0 +1,259 @@
+{
+  "status": "PASSED_ISOLATED_DOMAIN_CORRUPTION_PROTECTION",
+  "dateUtc": "2026-09-13",
+  "baseCommit": "3df41632ef8de0a858325afd5e7149ffe7060ef9",
+  "sourceState": "Uncommitted test/utility/visual work at the combined Editor build. Test source snapshots are retained in the GUID evidence root; no claim that later worktree edits match this DLL.",
+  "sourceFiles": [
+    {
+      "path": "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp",
+      "sha256LfUtf8": "5a60fab63e5bfc26f9ed942f0d6f76c21a215113cec05ad8afecffc24955e549"
+    },
+    {
+      "path": "Scripts/TestSaveLifecycle.ps1",
+      "sha256LfUtf8": "4ac58be8e65aef434e099c99f1c496345f5cdedebe9cd4ec6fb93ec376116795"
+    }
+  ],
+  "runtimeFilesUnchangedByThisTask": [
+    {
+      "path": "Source/SpaceSurvival/Private/SSLocalSave.cpp",
+      "sha256LfUtf8": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSGameInstance.cpp",
+      "sha256LfUtf8": "9783e8874f2f4cf20bf33b66318793dc3a74c9cbf1387cea095b7077d91349bb"
+    }
+  ],
+  "gameModeGuard": {
+    "path": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+    "function": "ASSGameMode::StartNewRun",
+    "sha256LfUtf8": "4b0cfadb771c583526f987fa8ebc55b85025c3852365c91a0afa265b33869d0b",
+    "scope": "Actual existing PersistAccount admission guard invoked in the GameInstance-owned unbegun transient world. No player, station, render or BeginPlay."
+  },
+  "buildHistory": [
+    {
+      "log": ".agent/local/UtilityVisualEditorBuild.log",
+      "sha256": "2a26d63303131793d373d2d81bef62dac7e2618cb7ffe226ad0694cb88f27e87",
+      "result": "Failed (OtherCompilationError)",
+      "seconds": 1.76,
+      "cause": "UHT rejected ESSUtilityKind because it lacked a zero entry.",
+      "fix": "Lead/acceptance utility change added hidden None = 0 sentinel; utility identities remain 1 and 2. This was unrelated to the corruption test."
+    },
+    {
+      "log": ".agent/local/UtilityVisualEditorBuild2.log",
+      "sha256": "a8783282722240c2d3114604ecaa1093dd1d6abfbe382afb5a1860e673868d95",
+      "result": "Succeeded",
+      "seconds": 23.52,
+      "warnings": "Existing nonpreferred MSVC 14.51.36257 and engine Character.h C4996 warnings.",
+      "compiledModule": {
+        "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+        "bytes": 1343488,
+        "sha256": "3c6e0606cae3fbd82caf1bc48e95abebbcbdec764a488ffb1d79062260115aca"
+      }
+    }
+  ],
+  "command": "Scripts/TestSaveLifecycle.ps1 -CorruptAccount -TimeoutSeconds 120",
+  "rawEvidence": {
+    "root": "Artifacts/SaveLifecycle/497ffd64dd6d4699bc277fa7d7b70155",
+    "resultSha256": "4a90c483d47bb8868d0b54b9b06b8fe68659f6dc37486d5f1f7d17e16c8a03dd",
+    "driverLog": ".agent/local/CorruptAccountHarness2.log",
+    "driverLogSha256": "6c019d6c8d349c9274358774c6798420cb98ef7f591a150bb7e3e396aa23e7c2"
+  },
+  "processResults": [
+    {
+      "phase": "Preflight",
+      "processId": 61984,
+      "exitCode": 0,
+      "success": true,
+      "receiptSha256": "663f7685f898e53ad55fd4c811379f648ffaa07fdb9ce3a419b7f3989b80b8f1",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.00.39",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "totalDuration": 0.007946901023387909
+      },
+      "engineReportSha256": "3a06d0738d578e9f9685b34deead9bafd97222755ecd3849a9101d1da962c40a"
+    },
+    {
+      "phase": "SeedCorruptAccount",
+      "processId": 74516,
+      "exitCode": 0,
+      "success": true,
+      "receiptSha256": "2633791fb5a27e2e9e823ed19dbebc4365660c817a1549fbab6588bf465988f9",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.00.53",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "totalDuration": 0.03212440013885498
+      },
+      "engineReportSha256": "4075395d6372db94e17f37587f3cb99780966c3f32eb5cafe35c1cf86c989a8d"
+    },
+    {
+      "phase": "ProtectCorruptAccount",
+      "processId": 63228,
+      "exitCode": 0,
+      "success": true,
+      "receiptSha256": "0258de5618dc8302ecb78d5836d0ee0ea7bdf406a1bcca487f255e71e99d3676",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.01.06",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "totalDuration": 0.014207299798727036
+      },
+      "engineReportSha256": "c38f2226c1bf00ba92dad1faff42fd08882a5236568922887e21ea57b791b7c6"
+    },
+    {
+      "phase": "RecoverAccount",
+      "processId": 39664,
+      "exitCode": 0,
+      "success": true,
+      "receiptSha256": "28810ca136d1e45fefc1a4a8950216867401d685825dea8b477fc0a57d983411",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.01.21",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "totalDuration": 0.022602900862693787
+      },
+      "engineReportSha256": "5a2cf06d19e33f9cd87887b340ecca55adf1712f02cce4efd8d4c01ebaa074ec"
+    }
+  ],
+  "verifiedProtectionAndRestoration": {
+    "freshInitProtectedAccount": true,
+    "resumeBlocked": true,
+    "gameModeNewRunBlocked": true,
+    "persistAccountBlocked": true,
+    "corruptBytesPreservedBeforeRestore": true,
+    "exactOriginalFixtureCopyRestored": true,
+    "sameInstanceRemainsBlockedAfterFixtureRestore": true,
+    "freshInitRestoredAccount": true,
+    "originalCheckpointAvailable": true,
+    "validAccountPersistenceRestored": true
+  },
+  "fixture": {
+    "type": "Valid USSStoredData v1 envelope, Valid=true, invalid account domain text.",
+    "payload": "SS_ACCOUNT_INVALID_DOMAIN_FIXTURE",
+    "originalAccountCopySha256": "ab78c05b484c83636d46bc784a8d7bb9589ed6e2a26237e7de20b1639e8b9fd1",
+    "corruptAccountCopySha256": "d489f14936a87394bc06587f67731c107547b883d860aa080d7a600e71d04839",
+    "restoration": "Exact original test-owned bytes restored manually after all protection assertions; confirmed before fresh Init. Successful PersistAccount thereafter is checked by domain identity because Unreal custom-version header ordering is not stable across processes.",
+    "settingsAndSuspensionBytesUnchanged": true,
+    "checkpointConsumed": false,
+    "xpAwarded": 0,
+    "completedRuns": 0
+  },
+  "cleanup": {
+    "allFourOwnedProcessesConfirmedExited": true,
+    "exactlyThreeSaveSlots": true,
+    "remainingStagingFiles": 0,
+    "aclChanges": false,
+    "testOwnedCopiesRetainedAsEvidence": true
+  },
+  "productionSaveHashes": {
+    "unchanged": true,
+    "before": [
+      {
+        "location": "user-default",
+        "exists": false,
+        "files": []
+      },
+      {
+        "location": "project-default",
+        "exists": true,
+        "files": [
+          {
+            "name": "SS_Account_v1.sav",
+            "bytes": 2233,
+            "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+          },
+          {
+            "name": "SS_Suspend_v1.sav",
+            "bytes": 1989,
+            "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "location": "user-default",
+        "exists": false,
+        "files": []
+      },
+      {
+        "location": "project-default",
+        "exists": true,
+        "files": [
+          {
+            "name": "SS_Account_v1.sav",
+            "bytes": 2233,
+            "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+          },
+          {
+            "name": "SS_Suspend_v1.sav",
+            "bytes": 1989,
+            "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+          }
+        ]
+      }
+    ]
+  },
+  "firstHarnessAttempt": {
+    "acceptedHarnessRun": false,
+    "root": "Artifacts/SaveLifecycle/84494484bfd047709b793943133a2145",
+    "resultSha256": "0e983d3712d7afaf329e8ee4ed2b0d006022f66b54fbdb56dd8d9f3a52fa67ea",
+    "driverLog": ".agent/local/CorruptAccountHarness.log",
+    "driverLogSha256": "00d2100bac103c254abfd672095d1920ef3b637c7bf0a4c57ea6651f0e40f557",
+    "processResults": [
+      {
+        "phase": "Preflight",
+        "processId": 79952,
+        "engineSucceeded": 1,
+        "engineWarnings": 0,
+        "engineFailed": 0,
+        "reportSha256": "43b8b538c9450c0053d03a9e6f4a7f02d1586767525476743d03d9c1b1ceb2b8"
+      },
+      {
+        "phase": "SeedCorruptAccount",
+        "processId": 79288,
+        "engineSucceeded": 1,
+        "engineWarnings": 0,
+        "engineFailed": 0,
+        "reportSha256": "1840ee89c78293f542d7e3142eb0c2f68cdefecd31d2d48d5de43273749c8077"
+      },
+      {
+        "phase": "ProtectCorruptAccount",
+        "processId": 76608,
+        "engineSucceeded": 1,
+        "engineWarnings": 0,
+        "engineFailed": 0,
+        "reportSha256": "57b5a34204f6f15ce813d49a4a5d12034cbc1a4b3722844a2910bbc6eac8fcfe"
+      },
+      {
+        "phase": "RecoverAccount",
+        "processId": 9744,
+        "engineSucceeded": 1,
+        "engineWarnings": 0,
+        "engineFailed": 0,
+        "reportSha256": "76e803b268307db3ab6102fcf686090add7c92fe2d9f10ea97e11d09d54b3a7a"
+      }
+    ],
+    "productionSaveHashesUnchanged": true,
+    "diagnosisFile": "HeaderOrderDiagnostic.json",
+    "diagnosisSha256": "01c009fba99a770fda8f0c7d8344249d39ea304c04deb29da7fe1fd0dd4c666e",
+    "cause": "All four engine tests passed. Wrapper incorrectly required original complete-file byte identity after a deliberately successful PersistAccount. Both 2102-byte files had identical 94 custom-version GUID/value pairs in a different order and identical serialized object bytes.",
+    "correction": "Script retains exact-byte checks during protection/manual restoration and before the recovery process; after successful re-save it compares the account domain. No C++ or runtime writer change or rebuild.",
+    "allFourOwnedProcessesConfirmedExited": true
+  },
+  "limits": [
+    "Valid Unreal envelope with invalid account text only; not arbitrary malformed binary deserialization.",
+    "Manual restoration of a verified GUID fixture copy is test setup, not a shipped backup or automatic recovery feature.",
+    "No disk-full, short-write, hardware power-loss or cross-slot atomicity validation.",
+    "NullRHI isolated Editor processes; no packaged station UI, natural gameplay, audio, visual or performance acceptance."
+  ]
+}

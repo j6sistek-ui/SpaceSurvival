@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
+#include <iterator>
 #include <limits>
 #include <locale>
 #include <sstream>
@@ -163,6 +164,44 @@ double Session::RandomRange(double minimum, double maximum)
     return minimum + (maximum - minimum) * (static_cast<double>(run.rng) / 4294967295.0);
 }
 
+bool NormalizeUtilityDefinitions(const std::array<UtilityDefinition, 2> &input,
+                                 std::array<UtilityDefinition, 2> &output)
+{
+    auto normalized = DefaultUtilityDefinitions();
+    if ((input[0].kind != Utility::VectorThrusters && input[0].kind != Utility::OverdriveCooling) ||
+        (input[1].kind != Utility::VectorThrusters && input[1].kind != Utility::OverdriveCooling) ||
+        input[0].kind == input[1].kind)
+    {
+        output = normalized;
+        return false;
+    }
+    bool unchanged = true;
+    for (const auto &entry : input)
+    {
+        const auto index = entry.kind == Utility::VectorThrusters ? 0u : 1u;
+        const double values[] = {entry.maneuverMultiplier, entry.responseMultiplier, entry.boostEfficiency,
+                                 entry.coolingEfficiency};
+        if (entry.price < 1 || std::any_of(std::begin(values), std::end(values),
+                                           [](double value) { return !std::isfinite(value) || value < 1.0; }))
+        {
+            unchanged = false;
+            continue;
+        }
+        auto safe = entry;
+        safe.price = std::min(entry.price, MaxCounter);
+        safe.maneuverMultiplier = std::clamp(entry.maneuverMultiplier, 1.0, 3.0);
+        safe.responseMultiplier = std::clamp(entry.responseMultiplier, 1.0, 3.0);
+        safe.boostEfficiency = std::clamp(entry.boostEfficiency, 1.0, 3.0);
+        safe.coolingEfficiency = std::clamp(entry.coolingEfficiency, 1.0, 3.0);
+        unchanged = unchanged && safe.price == entry.price && safe.maneuverMultiplier == entry.maneuverMultiplier &&
+                    safe.responseMultiplier == entry.responseMultiplier &&
+                    safe.boostEfficiency == entry.boostEfficiency && safe.coolingEfficiency == entry.coolingEfficiency;
+        normalized[index] = safe;
+    }
+    output = normalized;
+    return unchanged;
+}
+
 bool Session::StartRun(const std::string &id, Ship ship, Weapon weapon)
 {
     if (run.active || !ValidId(id) || HasAwardedRun(account, id) || !EnumIn(ship, 1) || !EnumIn(weapon, 1))
@@ -233,15 +272,17 @@ EffectiveStats Session::Stats() const
                          (1.0 + tier(Upgrade::Weapon) * 0.35);
     if (run.weaponBuffSeconds > 0.0)
         stats.weaponDamage *= 1.35;
+    std::array<UtilityDefinition, 2> utilities;
+    NormalizeUtilityDefinitions(tuning.utilities, utilities);
     if (run.utility == Utility::VectorThrusters)
     {
-        stats.maneuver *= 1.30;
-        stats.response *= 1.12;
+        stats.maneuver *= utilities[0].maneuverMultiplier;
+        stats.response *= utilities[0].responseMultiplier;
     }
     if (run.utility == Utility::OverdriveCooling)
     {
-        stats.boostEfficiency = 1.35;
-        stats.coolingEfficiency = 1.45;
+        stats.boostEfficiency = utilities[1].boostEfficiency;
+        stats.coolingEfficiency = utilities[1].coolingEfficiency;
     }
     if (run.interferenceSeconds > 0.0)
         stats.response *= 0.80;
@@ -452,11 +493,20 @@ bool Session::RepairShieldAtDepot()
     return true;
 }
 
+int Session::UtilityPrice(Utility utility) const
+{
+    if (utility != Utility::VectorThrusters && utility != Utility::OverdriveCooling)
+        return 0; // No offer for None/unknown identities; purchase eligibility also rejects them.
+    std::array<UtilityDefinition, 2> utilities;
+    NormalizeUtilityDefinitions(tuning.utilities, utilities);
+    return utilities[utility == Utility::VectorThrusters ? 0u : 1u].price;
+}
+
 bool Session::CanPurchaseUtility(Utility utility) const
 {
     return run.active && run.phase == Phase::Station &&
            (utility == Utility::VectorThrusters || utility == Utility::OverdriveCooling) && utility != run.utility &&
-           run.credits >= StationUtilityPrice;
+           run.credits >= UtilityPrice(utility);
 }
 
 bool Session::PurchaseUtility(Utility utility)
@@ -464,7 +514,7 @@ bool Session::PurchaseUtility(Utility utility)
     // Recheck current state at commit; a vendor row may predate another purchase or departure.
     if (!CanPurchaseUtility(utility))
         return false;
-    run.credits -= StationUtilityPrice;
+    run.credits -= UtilityPrice(utility);
     run.utility = utility;
     return true;
 }

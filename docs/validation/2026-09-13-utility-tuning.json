@@ -1,0 +1,132 @@
+{
+  "status": "UTILITY_DATA_ASSET_DOMAIN_AND_UNREAL_AUTOMATION_PASSED_NATIVE_VENDOR_PENDING",
+  "date_utc": "2026-09-13T07:49:37.421553+00:00",
+  "base_commit": "3df41632ef8de0a858325afd5e7149ffe7060ef9",
+  "source_sha256_lf": {
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "bb5abb5e6be001797f5c20628312ac6071b921d763c093b4cabbfdad20d1b973",
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "4fcc875550ccd24f89a2d59a5b4c109cb356858d4469b7bd4e8065b15b06c65a",
+    "Tests/CoreTests.cpp": "03a4e2b5dcb9814179a395e0d5bd146bba9446f250039411fcd263eb6cbcb7d9",
+    "Source/SpaceSurvival/Public/SSContentTypes.h": "b33a57741f009c0088610cb0a7cbb0087ec5a4f73dbbd3aaa3440c6550bdb9f5",
+    "Source/SpaceSurvival/Public/SSPhase1Data.h": "80499bd7b4ece94fa9729c978064428c716ce0ab91c3961a6ebc4e26419ce8fe",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "31693f78a0913090f055432187c380b3a2f00cab40533553ec06713d7f8accb0",
+    "Source/SpaceSurvival/Private/SSUtilityAutomationTests.cpp": "da4eb0865fe68b46bad00e1badb7e7399dc6d8639509c3d1a8c325c6b126e89f",
+    "Scripts/AuthorContent.py": "59cb72b8101ac91d149880789e066f71d10652a4ed6d5b0525a1b97220559b10",
+    "Scripts/ValidateContent.py": "244db8925add9e30b6afd87eb53dfcee3ef3fed96680bae1f0373527bd4a3dea"
+  },
+  "compiled_container_input_sha256_raw": {
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "bb5abb5e6be001797f5c20628312ac6071b921d763c093b4cabbfdad20d1b973",
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "4fcc875550ccd24f89a2d59a5b4c109cb356858d4469b7bd4e8065b15b06c65a",
+    "Tests/CoreTests.cpp": "03a4e2b5dcb9814179a395e0d5bd146bba9446f250039411fcd263eb6cbcb7d9"
+  },
+  "domain": {
+    "command": "./Scripts/TestCore.ps1",
+    "strict_assertions": 593,
+    "asan_ubsan_assertions": 593,
+    "exit_code": 0,
+    "log": ".agent/local/UtilityCore.log",
+    "log_sha256": "dd76eb89e7825958ee78b290c21014b6b50937d12a46c8ee3baa2b807aab77f3",
+    "container_input_hashes_match_current_sources": true
+  },
+  "source_checks": {
+    "structural_checks": 20,
+    "authoring_validation_python_syntax": "passed",
+    "owned_cpp_format": "passed",
+    "diff_check": "passed",
+    "repository_format_attempt": "Only concurrent SSStation.cpp:126 AcornShipV2 line wrapping failed at time of check; not edited by utility task."
+  },
+  "added_unreal_test": {
+    "name": "SpaceSurvival.Content.UtilityDataAssetBridge",
+    "status": "Success in actual Unreal automation",
+    "scope": "Actual transient reflected DataAsset mapping into Session; default/custom/reordered/malformed rosters, effects, prices, replacement and codec identity. No GameInstance Init/save APIs or physical input."
+  },
+  "defaults": {
+    "VectorThrusters": {
+      "price": 150,
+      "maneuver": 1.3,
+      "response": 1.12
+    },
+    "OverdriveCooling": {
+      "price": 150,
+      "boost_efficiency": 1.35,
+      "cooling_efficiency": 1.45
+    }
+  },
+  "bounds": {
+    "price": [
+      1,
+      100000000
+    ],
+    "multipliers": [
+      1,
+      3
+    ],
+    "invalid_roster": "both defaults",
+    "invalid_numeric_row": "that utility default",
+    "finite_high_values": "clamped and invalid reported"
+  },
+  "limits": [
+    "No native vendor/feel/package verification of custom utility tuning for this source yet.",
+    "No run save schema, existing utility enum identity, one-slot policy or free reward fitting changes.",
+    "Existing utility identities still use native behavior policy; contracts/weapons/reward catalogs remain separate follow-up work.",
+    "Earlier source-check and domain logs retain their original checkpoint counts/hashes; latest engine/source results are recorded separately."
+  ],
+  "updated_utc": "2026-09-13T08:16:19.170114+00:00",
+  "initial_source_snapshot_context": "source_sha256_lf above records the original domain/source checkpoint before UHT added the hidden zero enum entry; current verified adapter hashes follow.",
+  "uht_correction": {
+    "initial_attempt": {
+      "path": ".agent/local/UtilityVisualEditorBuild.log",
+      "bytes": 1530,
+      "sha256": "2a26d63303131793d373d2d81bef62dac7e2618cb7ffe226ad0694cb88f27e87"
+    },
+    "initial_result": "failed: ESSUtilityKind did not contain a zero entry",
+    "correction": "None = 0 UMETA(Hidden); existing utility IDs remain 1/2 and validation rejects None from the fixed two-row purchasable roster",
+    "header_sha256_lf": "16529516450d488c0b075e30bb10adbb3afe7524374112afccfe95f50555eb29",
+    "successful_editor_build": {
+      "path": ".agent/local/UtilityVisualEditorBuild2.log",
+      "bytes": 6426,
+      "sha256": "a8783282722240c2d3114604ecaa1093dd1d6abfbe382afb5a1860e673868d95"
+    },
+    "successful_editor_build_seconds": 23.52,
+    "result": "Succeeded"
+  },
+  "unreal_suite": {
+    "report": {
+      "path": "Artifacts/UnrealTests/index.json",
+      "bytes": 17119,
+      "sha256": "8d41b7e30a473e91ef89e215f488d5b32d1dfe010a0ffad9563f2a423c8a3465"
+    },
+    "report_created_on": "2026.09.13-08.14.57",
+    "succeeded": 14,
+    "succeeded_with_warnings": 0,
+    "failed": 0,
+    "not_run": 0,
+    "duration_seconds": 2.185190200805664,
+    "log": {
+      "path": ".agent/local/TailUtilityAutomationFinal.log",
+      "bytes": 284063,
+      "sha256": "4e2aa4e27dcf3fd3ff3c11945509036adfcab3e4f9d36305a67f5f53e5b7370b"
+    },
+    "limits": "Automation uses transient reflected custom values and actual Session mapping. Not a native vendor custom-price interaction or natural gameplay pass."
+  },
+  "verified_adapter_source_sha256_lf": {
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "bb5abb5e6be001797f5c20628312ac6071b921d763c093b4cabbfdad20d1b973",
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "4fcc875550ccd24f89a2d59a5b4c109cb356858d4469b7bd4e8065b15b06c65a",
+    "Source/SpaceSurvival/Public/SSContentTypes.h": "16529516450d488c0b075e30bb10adbb3afe7524374112afccfe95f50555eb29",
+    "Source/SpaceSurvival/Public/SSPhase1Data.h": "80499bd7b4ece94fa9729c978064428c716ce0ab91c3961a6ebc4e26419ce8fe",
+    "Source/SpaceSurvival/Private/SSUtilityAutomationTests.cpp": "da4eb0865fe68b46bad00e1badb7e7399dc6d8639509c3d1a8c325c6b126e89f",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "c7b9000c00e4a72f0c7ea595191524b2d7c16587407f87ca9491a1d5a7b53a6c"
+  },
+  "persisted_content_checkpoint": {
+    "author_log": {
+      "path": ".agent/local/UtilityVisualContent2.log",
+      "bytes": 288534,
+      "sha256": "49369e72c8523f9a193521a719b0ef8553b382518def0bc473393878b5041431"
+    },
+    "validate_log": {
+      "path": ".agent/local/UtilityVisualValidate.log",
+      "bytes": 259562,
+      "sha256": "3dade14287cf01a8ee79571129bb8ae40b7b916863a038900bcc00b5e0026818"
+    },
+    "result": "Lead reports successful Content and fresh-process Validate; loaded persisted Data Asset also passes the subsequent actual Unreal utility test. Later visual authoring is a separate checkpoint."
+  }
+}

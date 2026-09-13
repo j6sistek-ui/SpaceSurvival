@@ -1,0 +1,1595 @@
+{
+  "status": "BLENDER_SOURCE_POSE_POP_MAGNITUDES_NOT_UNREAL_BLEND_VALIDATION",
+  "animation": "A_Pilot",
+  "source_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+  "frames": 121,
+  "sample_rate_hz": 30,
+  "mesh_scale": 1,
+  "max_legacy_body_displacement_from_start_cm": 0.896118700504303,
+  "max_refined_body_displacement_from_start_cm": 0.896118700504303,
+  "max_socket_displacement_from_start_cm": {
+    "Pelvis": 0.0,
+    "Head": 0.27082772394178756,
+    "L_Wrist": 0.2787907975568308,
+    "R_Wrist": 0.31058637938178524,
+    "L_Ankle": 0.0,
+    "R_Ankle": 0.0
+  },
+  "runtime_scale_multiplier": 1.5,
+  "notes": "A_Disembark starts at A_Pilot t0. Actual arbitrary-phase switch needs a short blend or phase-aligned handoff; measured source deltas do not establish perceptual acceptance.",
+  "samples": [
+    {
+      "seconds": 0.0,
+      "legacy_body_max_vertex_delta_cm": 0.0,
+      "refined_body_max_vertex_delta_cm": 0.0,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.0,
+        "L_Wrist": 0.0,
+        "R_Wrist": 0.0,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.03333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.04688085988163948,
+      "refined_body_max_vertex_delta_cm": 0.04688085988163948,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.014164898557129194,
+        "L_Wrist": 0.014593872134024318,
+        "R_Wrist": 0.01623215355103302,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.06666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.09365378320217133,
+      "refined_body_max_vertex_delta_cm": 0.09365378320217133,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.02830167263860961,
+        "L_Wrist": 0.02913307824362598,
+        "R_Wrist": 0.032431418658907966,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.1,
+      "legacy_body_max_vertex_delta_cm": 0.14018011093139648,
+      "refined_body_max_vertex_delta_cm": 0.14018011093139648,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.042364094045921875,
+        "L_Wrist": 0.04360364815826658,
+        "R_Wrist": 0.04854688658629874,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.13333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.18630275130271912,
+      "refined_body_max_vertex_delta_cm": 0.18630275130271912,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.05629842101023217,
+        "L_Wrist": 0.05795882936955217,
+        "R_Wrist": 0.0645165083328371,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.16666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.2319304496049881,
+      "refined_body_max_vertex_delta_cm": 0.2319304496049881,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.070087838241611,
+        "L_Wrist": 0.07214658664708128,
+        "R_Wrist": 0.08030519888134706,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.2,
+      "legacy_body_max_vertex_delta_cm": 0.2769039273262024,
+      "refined_body_max_vertex_delta_cm": 0.2769039273262024,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.08368388613698495,
+        "L_Wrist": 0.08613619579285332,
+        "R_Wrist": 0.095888181579771,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.23333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.32115423679351807,
+      "refined_body_max_vertex_delta_cm": 0.32115423679351807,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.09706027250349254,
+        "L_Wrist": 0.09989478206317028,
+        "R_Wrist": 0.1111942497983433,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.26666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.3645040690898895,
+      "refined_body_max_vertex_delta_cm": 0.3645040690898895,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.11016091557723218,
+        "L_Wrist": 0.11337540206011824,
+        "R_Wrist": 0.12620293880236735,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.3,
+      "legacy_body_max_vertex_delta_cm": 0.4068302512168884,
+      "refined_body_max_vertex_delta_cm": 0.4068302512168884,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.12295026447924717,
+        "L_Wrist": 0.12655057392708763,
+        "R_Wrist": 0.14085625377189315,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.3333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.4480718970298767,
+      "refined_body_max_vertex_delta_cm": 0.4480718970298767,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.1354124290531536,
+        "L_Wrist": 0.13937592308095298,
+        "R_Wrist": 0.15512723022654587,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.36666666666666664,
+      "legacy_body_max_vertex_delta_cm": 0.48805680871009827,
+      "refined_body_max_vertex_delta_cm": 0.48805680871009827,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.14749606896553888,
+        "L_Wrist": 0.15181595809248263,
+        "R_Wrist": 0.16896465626474158,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.4,
+      "legacy_body_max_vertex_delta_cm": 0.5267365574836731,
+      "refined_body_max_vertex_delta_cm": 0.5267365574836731,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.15918802349295752,
+        "L_Wrist": 0.16383653298871032,
+        "R_Wrist": 0.18235033470407924,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.43333333333333335,
+      "legacy_body_max_vertex_delta_cm": 0.5639442205429077,
+      "refined_body_max_vertex_delta_cm": 0.5639442205429077,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.17043170502245816,
+        "L_Wrist": 0.17541164870613643,
+        "R_Wrist": 0.19522321073550547,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.4666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.5996309518814087,
+      "refined_body_max_vertex_delta_cm": 0.5996309518814087,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.18122088060356262,
+        "L_Wrist": 0.18650579960828362,
+        "R_Wrist": 0.2075699868996224,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.5,
+      "legacy_body_max_vertex_delta_cm": 0.633665919303894,
+      "refined_body_max_vertex_delta_cm": 0.633665919303894,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.19150382135831376,
+        "L_Wrist": 0.19710048018358292,
+        "R_Wrist": 0.2193558179509955,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.5333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.6659646034240723,
+      "refined_body_max_vertex_delta_cm": 0.6659646034240723,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2012639789226585,
+        "L_Wrist": 0.2071441660557198,
+        "R_Wrist": 0.2305313613239795,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.5666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.6964367628097534,
+      "refined_body_max_vertex_delta_cm": 0.6964367628097534,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.21047545964034114,
+        "L_Wrist": 0.21661433976567923,
+        "R_Wrist": 0.2410656793085544,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.6,
+      "legacy_body_max_vertex_delta_cm": 0.7249820232391357,
+      "refined_body_max_vertex_delta_cm": 0.7249820232391357,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.21910048372024718,
+        "L_Wrist": 0.22550023360867694,
+        "R_Wrist": 0.25094982368160346,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.6333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.7515542507171631,
+      "refined_body_max_vertex_delta_cm": 0.7515542507171631,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.22713432299046069,
+        "L_Wrist": 0.2337601150243721,
+        "R_Wrist": 0.2601368492019164,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.6666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.7760670185089111,
+      "refined_body_max_vertex_delta_cm": 0.7760670185089111,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.23453967191084146,
+        "L_Wrist": 0.24137935913266326,
+        "R_Wrist": 0.26861054973370047,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.7,
+      "legacy_body_max_vertex_delta_cm": 0.7984555959701538,
+      "refined_body_max_vertex_delta_cm": 0.7984555959701538,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2413060808594799,
+        "L_Wrist": 0.2483498013050645,
+        "R_Wrist": 0.27635735004328243,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.7333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.8186365365982056,
+      "refined_body_max_vertex_delta_cm": 0.8186365365982056,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.24740089301953644,
+        "L_Wrist": 0.2546156000735025,
+        "R_Wrist": 0.2833367728802507,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.7666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.8366117477416992,
+      "refined_body_max_vertex_delta_cm": 0.8366117477416992,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.25284129414390427,
+        "L_Wrist": 0.26021076824269335,
+        "R_Wrist": 0.2895671827525773,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.8,
+      "legacy_body_max_vertex_delta_cm": 0.8522716164588928,
+      "refined_body_max_vertex_delta_cm": 0.8522716164588928,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.25756746171751016,
+        "L_Wrist": 0.2650836892757059,
+        "R_Wrist": 0.2949725441594478,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.8333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.8655900955200195,
+      "refined_body_max_vertex_delta_cm": 0.8655900955200195,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26159644629656803,
+        "L_Wrist": 0.2692128242139086,
+        "R_Wrist": 0.29958302734838466,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.8666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.8765323162078857,
+      "refined_body_max_vertex_delta_cm": 0.8765323162078857,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26490377725949393,
+        "L_Wrist": 0.27262582818203746,
+        "R_Wrist": 0.3033668004714787,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.9,
+      "legacy_body_max_vertex_delta_cm": 0.885077953338623,
+      "refined_body_max_vertex_delta_cm": 0.885077953338623,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2674848608792129,
+        "L_Wrist": 0.27528405579909415,
+        "R_Wrist": 0.306320321955052,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.9333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.8912138938903809,
+      "refined_body_max_vertex_delta_cm": 0.8912138938903809,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2693365165729272,
+        "L_Wrist": 0.27719743071445174,
+        "R_Wrist": 0.30845100165511774,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 0.9666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.8948948383331299,
+      "refined_body_max_vertex_delta_cm": 0.8948948383331299,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.27045131664712946,
+        "L_Wrist": 0.27832416803769966,
+        "R_Wrist": 0.3097073347219786,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.0,
+      "legacy_body_max_vertex_delta_cm": 0.896118700504303,
+      "refined_body_max_vertex_delta_cm": 0.896118700504303,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2708203233301469,
+        "L_Wrist": 0.2787152652001199,
+        "R_Wrist": 0.3101315486768473,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.0333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.8948948383331299,
+      "refined_body_max_vertex_delta_cm": 0.8948948383331299,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.27045131664712946,
+        "L_Wrist": 0.27832416803769966,
+        "R_Wrist": 0.3097073347219786,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.0666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.8912138938903809,
+      "refined_body_max_vertex_delta_cm": 0.8912138938903809,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2693365165729272,
+        "L_Wrist": 0.27719743071445174,
+        "R_Wrist": 0.30845100165511774,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.1,
+      "legacy_body_max_vertex_delta_cm": 0.885077953338623,
+      "refined_body_max_vertex_delta_cm": 0.885077953338623,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2674848608792129,
+        "L_Wrist": 0.27528405579909415,
+        "R_Wrist": 0.306320321955052,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.1333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.8765323162078857,
+      "refined_body_max_vertex_delta_cm": 0.8765323162078857,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26490377725949393,
+        "L_Wrist": 0.27262582818203746,
+        "R_Wrist": 0.3033668004714787,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.1666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.8655900955200195,
+      "refined_body_max_vertex_delta_cm": 0.8655900955200195,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26159644629656803,
+        "L_Wrist": 0.2692128242139086,
+        "R_Wrist": 0.29958302734838466,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.2,
+      "legacy_body_max_vertex_delta_cm": 0.8522716164588928,
+      "refined_body_max_vertex_delta_cm": 0.8522716164588928,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.25756746171751016,
+        "L_Wrist": 0.2650836892757059,
+        "R_Wrist": 0.2949725441594478,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.2333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.8366117477416992,
+      "refined_body_max_vertex_delta_cm": 0.8366117477416992,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.25284129414390427,
+        "L_Wrist": 0.26021076824269335,
+        "R_Wrist": 0.2895671827525773,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.2666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.8186365365982056,
+      "refined_body_max_vertex_delta_cm": 0.8186365365982056,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.24740089301953644,
+        "L_Wrist": 0.2546156000735025,
+        "R_Wrist": 0.2833367728802507,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.3,
+      "legacy_body_max_vertex_delta_cm": 0.7984555959701538,
+      "refined_body_max_vertex_delta_cm": 0.7984555959701538,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2413060808594799,
+        "L_Wrist": 0.2483498013050645,
+        "R_Wrist": 0.27635735004328243,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.3333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.7760670185089111,
+      "refined_body_max_vertex_delta_cm": 0.7760670185089111,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.23453967191084146,
+        "L_Wrist": 0.24137935913266326,
+        "R_Wrist": 0.26861054973370047,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.3666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.7515542507171631,
+      "refined_body_max_vertex_delta_cm": 0.7515542507171631,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.22713432299046069,
+        "L_Wrist": 0.2337601150243721,
+        "R_Wrist": 0.2601368492019164,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.4,
+      "legacy_body_max_vertex_delta_cm": 0.7249820232391357,
+      "refined_body_max_vertex_delta_cm": 0.7249820232391357,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.21910048372024718,
+        "L_Wrist": 0.22550023360867694,
+        "R_Wrist": 0.25094982368160346,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.4333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.6964367628097534,
+      "refined_body_max_vertex_delta_cm": 0.6964367628097534,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.21047545964034114,
+        "L_Wrist": 0.21661433976567923,
+        "R_Wrist": 0.2410656793085544,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.4666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.6659646034240723,
+      "refined_body_max_vertex_delta_cm": 0.6659646034240723,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2012639789226585,
+        "L_Wrist": 0.2071441660557198,
+        "R_Wrist": 0.2305313613239795,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.5,
+      "legacy_body_max_vertex_delta_cm": 0.633665919303894,
+      "refined_body_max_vertex_delta_cm": 0.633665919303894,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.19150382135831376,
+        "L_Wrist": 0.19710048018358292,
+        "R_Wrist": 0.2193558179509955,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.5333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.5996309518814087,
+      "refined_body_max_vertex_delta_cm": 0.5996309518814087,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.18122088060356262,
+        "L_Wrist": 0.18650579960828362,
+        "R_Wrist": 0.2075699868996224,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.5666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.5639442205429077,
+      "refined_body_max_vertex_delta_cm": 0.5639442205429077,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.17043170502245816,
+        "L_Wrist": 0.17541164870613643,
+        "R_Wrist": 0.19522321073550547,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.6,
+      "legacy_body_max_vertex_delta_cm": 0.5267365574836731,
+      "refined_body_max_vertex_delta_cm": 0.5267365574836731,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.15918802349295752,
+        "L_Wrist": 0.16383653298871032,
+        "R_Wrist": 0.18235033470407924,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.6333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.48805680871009827,
+      "refined_body_max_vertex_delta_cm": 0.48805680871009827,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.14749606896553888,
+        "L_Wrist": 0.15181595809248263,
+        "R_Wrist": 0.16896465626474158,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.6666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.4480718970298767,
+      "refined_body_max_vertex_delta_cm": 0.4480718970298767,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.1354124290531536,
+        "L_Wrist": 0.13937592308095298,
+        "R_Wrist": 0.15512723022654587,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.7,
+      "legacy_body_max_vertex_delta_cm": 0.4068302512168884,
+      "refined_body_max_vertex_delta_cm": 0.4068302512168884,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.12295026447924717,
+        "L_Wrist": 0.12655057392708763,
+        "R_Wrist": 0.14085625377189315,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.7333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.3645040690898895,
+      "refined_body_max_vertex_delta_cm": 0.3645040690898895,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.11016091557723218,
+        "L_Wrist": 0.11337540206011824,
+        "R_Wrist": 0.12620293880236735,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.7666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.32115423679351807,
+      "refined_body_max_vertex_delta_cm": 0.32115423679351807,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.09706027250349254,
+        "L_Wrist": 0.09989478206317028,
+        "R_Wrist": 0.1111942497983433,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.8,
+      "legacy_body_max_vertex_delta_cm": 0.2769039273262024,
+      "refined_body_max_vertex_delta_cm": 0.2769039273262024,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.08368388613698495,
+        "L_Wrist": 0.08613619579285332,
+        "R_Wrist": 0.095888181579771,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.8333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.2319304496049881,
+      "refined_body_max_vertex_delta_cm": 0.2319304496049881,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.070087838241611,
+        "L_Wrist": 0.07214658664708128,
+        "R_Wrist": 0.08030519888134706,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.8666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.18630275130271912,
+      "refined_body_max_vertex_delta_cm": 0.18630275130271912,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.05629842101023217,
+        "L_Wrist": 0.05795882936955217,
+        "R_Wrist": 0.0645165083328371,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.9,
+      "legacy_body_max_vertex_delta_cm": 0.14018011093139648,
+      "refined_body_max_vertex_delta_cm": 0.14018011093139648,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.042364094045921875,
+        "L_Wrist": 0.04360364815826658,
+        "R_Wrist": 0.04854688658629874,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.9333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.09365378320217133,
+      "refined_body_max_vertex_delta_cm": 0.09365378320217133,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.02830167263860961,
+        "L_Wrist": 0.02913307824362598,
+        "R_Wrist": 0.032431418658907966,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 1.9666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.04688085988163948,
+      "refined_body_max_vertex_delta_cm": 0.04688085988163948,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.014164898557129194,
+        "L_Wrist": 0.014593872134024318,
+        "R_Wrist": 0.01623215355103302,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.0,
+      "legacy_body_max_vertex_delta_cm": 0.0,
+      "refined_body_max_vertex_delta_cm": 0.0,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.0,
+        "L_Wrist": 0.0,
+        "R_Wrist": 0.0,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.033333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.04689415916800499,
+      "refined_body_max_vertex_delta_cm": 0.04689415916800499,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.014172552576169813,
+        "L_Wrist": 0.014579821542148026,
+        "R_Wrist": 0.016238178782895185,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.066666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.09366567432880402,
+      "refined_body_max_vertex_delta_cm": 0.09366567432880402,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.02830449316090555,
+        "L_Wrist": 0.029133357197795005,
+        "R_Wrist": 0.032449479451353715,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.1,
+      "legacy_body_max_vertex_delta_cm": 0.14019428193569183,
+      "refined_body_max_vertex_delta_cm": 0.14019428193569183,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.042371330826814387,
+        "L_Wrist": 0.04360223114069246,
+        "R_Wrist": 0.048559053680496206,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.1333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.18632210791110992,
+      "refined_body_max_vertex_delta_cm": 0.18632210791110992,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.05630704775378074,
+        "L_Wrist": 0.05795709961351254,
+        "R_Wrist": 0.06454389435082984,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.1666666666666665,
+      "legacy_body_max_vertex_delta_cm": 0.23196691274642944,
+      "refined_body_max_vertex_delta_cm": 0.23196691274642944,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.07010757253960534,
+        "L_Wrist": 0.07215818207020473,
+        "R_Wrist": 0.08035724199590384,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.2,
+      "legacy_body_max_vertex_delta_cm": 0.2769286632537842,
+      "refined_body_max_vertex_delta_cm": 0.2769286632537842,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.08369234461112365,
+        "L_Wrist": 0.08614626342837643,
+        "R_Wrist": 0.09593996766640048,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.2333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.3211487829685211,
+      "refined_body_max_vertex_delta_cm": 0.3211487829685211,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.09705704542284818,
+        "L_Wrist": 0.09990003805524425,
+        "R_Wrist": 0.11125845911566501,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.2666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.3645069897174835,
+      "refined_body_max_vertex_delta_cm": 0.3645069897174835,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.11016597616539796,
+        "L_Wrist": 0.11338421774315091,
+        "R_Wrist": 0.1262823553722262,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.3,
+      "legacy_body_max_vertex_delta_cm": 0.40682917833328247,
+      "refined_body_max_vertex_delta_cm": 0.40682917833328247,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.12295445400761695,
+        "L_Wrist": 0.12655259034938143,
+        "R_Wrist": 0.1409494342884396,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.3333333333333335,
+      "legacy_body_max_vertex_delta_cm": 0.4480779767036438,
+      "refined_body_max_vertex_delta_cm": 0.4480779767036438,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.13541895499789397,
+        "L_Wrist": 0.13938627657372835,
+        "R_Wrist": 0.15524165532255418,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.3666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.4880708158016205,
+      "refined_body_max_vertex_delta_cm": 0.4880708158016205,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.14750657647363305,
+        "L_Wrist": 0.15183362208149304,
+        "R_Wrist": 0.16910772945686992,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.4,
+      "legacy_body_max_vertex_delta_cm": 0.5267320871353149,
+      "refined_body_max_vertex_delta_cm": 0.5267320871353149,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.15918874747813638,
+        "L_Wrist": 0.16387175634723436,
+        "R_Wrist": 0.18251766926626578,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.433333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.5639413595199585,
+      "refined_body_max_vertex_delta_cm": 0.5639413595199585,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.17043371742357583,
+        "L_Wrist": 0.17543728763550717,
+        "R_Wrist": 0.19540782218363034,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.466666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.5996273756027222,
+      "refined_body_max_vertex_delta_cm": 0.5996273756027222,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.18122059879112096,
+        "L_Wrist": 0.186544294954738,
+        "R_Wrist": 0.20777675275935578,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.5,
+      "legacy_body_max_vertex_delta_cm": 0.6336751580238342,
+      "refined_body_max_vertex_delta_cm": 0.6336751580238342,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.19150878831520418,
+        "L_Wrist": 0.19713691991258483,
+        "R_Wrist": 0.21957768405256226,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.533333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.6659636497497559,
+      "refined_body_max_vertex_delta_cm": 0.6659636497497559,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.20126936536129508,
+        "L_Wrist": 0.20717826505139597,
+        "R_Wrist": 0.2307733029006225,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.566666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.6964356303215027,
+      "refined_body_max_vertex_delta_cm": 0.6964356303215027,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.21048238137415812,
+        "L_Wrist": 0.21666506108498637,
+        "R_Wrist": 0.24134680915359102,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.6,
+      "legacy_body_max_vertex_delta_cm": 0.7249777913093567,
+      "refined_body_max_vertex_delta_cm": 0.7249777913093567,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.21910680196486473,
+        "L_Wrist": 0.2255376870113299,
+        "R_Wrist": 0.25123739420395574,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.6333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.7515551447868347,
+      "refined_body_max_vertex_delta_cm": 0.7515551447868347,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2271399658136709,
+        "L_Wrist": 0.2338148094667919,
+        "R_Wrist": 0.26045043263836753,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.6666666666666665,
+      "legacy_body_max_vertex_delta_cm": 0.7760682702064514,
+      "refined_body_max_vertex_delta_cm": 0.7760682702064514,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2345501042869714,
+        "L_Wrist": 0.24143117000951594,
+        "R_Wrist": 0.26894971327987827,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.7,
+      "legacy_body_max_vertex_delta_cm": 0.7984433174133301,
+      "refined_body_max_vertex_delta_cm": 0.7984433174133301,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.24131239680665215,
+        "L_Wrist": 0.24840203844701034,
+        "R_Wrist": 0.27671386195106357,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.7333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.8186438083648682,
+      "refined_body_max_vertex_delta_cm": 0.8186438083648682,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.24741124747547122,
+        "L_Wrist": 0.254685700993682,
+        "R_Wrist": 0.2837219509161234,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.7666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.8366037011146545,
+      "refined_body_max_vertex_delta_cm": 0.8366037011146545,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.25284084661403705,
+        "L_Wrist": 0.2602730268169807,
+        "R_Wrist": 0.2899402171096007,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.8,
+      "legacy_body_max_vertex_delta_cm": 0.8522530794143677,
+      "refined_body_max_vertex_delta_cm": 0.8522530794143677,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.25757530214225494,
+        "L_Wrist": 0.2651506010884845,
+        "R_Wrist": 0.29537493033712103,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.8333333333333335,
+      "legacy_body_max_vertex_delta_cm": 0.8655911087989807,
+      "refined_body_max_vertex_delta_cm": 0.8655911087989807,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26160072573715815,
+        "L_Wrist": 0.2692895988192373,
+        "R_Wrist": 0.2999972802767914,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.8666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.8765389323234558,
+      "refined_body_max_vertex_delta_cm": 0.8765389323234558,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26491466777843853,
+        "L_Wrist": 0.27269740477179477,
+        "R_Wrist": 0.30379435493403173,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.9,
+      "legacy_body_max_vertex_delta_cm": 0.8850730061531067,
+      "refined_body_max_vertex_delta_cm": 0.8850730061531067,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26749627578550395,
+        "L_Wrist": 0.27536083684198337,
+        "R_Wrist": 0.306757100755086,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.933333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.8912081122398376,
+      "refined_body_max_vertex_delta_cm": 0.8912081122398376,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2693453392335486,
+        "L_Wrist": 0.2772774481509979,
+        "R_Wrist": 0.3088899628637046,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 2.966666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.8948796391487122,
+      "refined_body_max_vertex_delta_cm": 0.8948796391487122,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2704567498075212,
+        "L_Wrist": 0.2784107442931213,
+        "R_Wrist": 0.3101604096699171,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.0,
+      "legacy_body_max_vertex_delta_cm": 0.8961071372032166,
+      "refined_body_max_vertex_delta_cm": 0.8961071372032166,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.27082772394178756,
+        "L_Wrist": 0.2787907975568308,
+        "R_Wrist": 0.31058637938178524,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.033333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.8948796391487122,
+      "refined_body_max_vertex_delta_cm": 0.8948796391487122,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2704567498075212,
+        "L_Wrist": 0.2784107442931213,
+        "R_Wrist": 0.3101604096699171,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.066666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.8912081122398376,
+      "refined_body_max_vertex_delta_cm": 0.8912081122398376,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2693453392335486,
+        "L_Wrist": 0.2772774481509979,
+        "R_Wrist": 0.3088899628637046,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.1,
+      "legacy_body_max_vertex_delta_cm": 0.8850730061531067,
+      "refined_body_max_vertex_delta_cm": 0.8850730061531067,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26749627578550395,
+        "L_Wrist": 0.27536083684198337,
+        "R_Wrist": 0.306757100755086,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.1333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.8765389323234558,
+      "refined_body_max_vertex_delta_cm": 0.8765389323234558,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26491466777843853,
+        "L_Wrist": 0.27269740477179477,
+        "R_Wrist": 0.30379435493403173,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.1666666666666665,
+      "legacy_body_max_vertex_delta_cm": 0.8655911087989807,
+      "refined_body_max_vertex_delta_cm": 0.8655911087989807,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.26160072573715815,
+        "L_Wrist": 0.2692895988192373,
+        "R_Wrist": 0.2999972802767914,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.2,
+      "legacy_body_max_vertex_delta_cm": 0.8522530794143677,
+      "refined_body_max_vertex_delta_cm": 0.8522530794143677,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.25757530214225494,
+        "L_Wrist": 0.2651506010884845,
+        "R_Wrist": 0.29537493033712103,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.2333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.8366037011146545,
+      "refined_body_max_vertex_delta_cm": 0.8366037011146545,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.25284084661403705,
+        "L_Wrist": 0.2602730268169807,
+        "R_Wrist": 0.2899402171096007,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.2666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.8186438083648682,
+      "refined_body_max_vertex_delta_cm": 0.8186438083648682,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.24741124747547122,
+        "L_Wrist": 0.254685700993682,
+        "R_Wrist": 0.2837219509161234,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.3,
+      "legacy_body_max_vertex_delta_cm": 0.7984433174133301,
+      "refined_body_max_vertex_delta_cm": 0.7984433174133301,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.24131239680665215,
+        "L_Wrist": 0.24840203844701034,
+        "R_Wrist": 0.27671386195106357,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.3333333333333335,
+      "legacy_body_max_vertex_delta_cm": 0.7760682702064514,
+      "refined_body_max_vertex_delta_cm": 0.7760682702064514,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2345501042869714,
+        "L_Wrist": 0.24143117000951594,
+        "R_Wrist": 0.26894971327987827,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.3666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.7515551447868347,
+      "refined_body_max_vertex_delta_cm": 0.7515551447868347,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.2271399658136709,
+        "L_Wrist": 0.2338148094667919,
+        "R_Wrist": 0.26045043263836753,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.4,
+      "legacy_body_max_vertex_delta_cm": 0.7249777913093567,
+      "refined_body_max_vertex_delta_cm": 0.7249777913093567,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.21910680196486473,
+        "L_Wrist": 0.2255376870113299,
+        "R_Wrist": 0.25123739420395574,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.433333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.6964356303215027,
+      "refined_body_max_vertex_delta_cm": 0.6964356303215027,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.21048238137415812,
+        "L_Wrist": 0.21666506108498637,
+        "R_Wrist": 0.24134680915359102,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.466666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.6659636497497559,
+      "refined_body_max_vertex_delta_cm": 0.6659636497497559,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.20126936536129508,
+        "L_Wrist": 0.20717826505139597,
+        "R_Wrist": 0.2307733029006225,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.5,
+      "legacy_body_max_vertex_delta_cm": 0.6336751580238342,
+      "refined_body_max_vertex_delta_cm": 0.6336751580238342,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.19150878831520418,
+        "L_Wrist": 0.19713691991258483,
+        "R_Wrist": 0.21957768405256226,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.533333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.5996273756027222,
+      "refined_body_max_vertex_delta_cm": 0.5996273756027222,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.18122059879112096,
+        "L_Wrist": 0.186544294954738,
+        "R_Wrist": 0.20777675275935578,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.566666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.5639413595199585,
+      "refined_body_max_vertex_delta_cm": 0.5639413595199585,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.17043371742357583,
+        "L_Wrist": 0.17543728763550717,
+        "R_Wrist": 0.19540782218363034,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.6,
+      "legacy_body_max_vertex_delta_cm": 0.5267320871353149,
+      "refined_body_max_vertex_delta_cm": 0.5267320871353149,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.15918874747813638,
+        "L_Wrist": 0.16387175634723436,
+        "R_Wrist": 0.18251766926626578,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.6333333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.4880708158016205,
+      "refined_body_max_vertex_delta_cm": 0.4880708158016205,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.14750657647363305,
+        "L_Wrist": 0.15183362208149304,
+        "R_Wrist": 0.16910772945686992,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.6666666666666665,
+      "legacy_body_max_vertex_delta_cm": 0.4480779767036438,
+      "refined_body_max_vertex_delta_cm": 0.4480779767036438,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.13541895499789397,
+        "L_Wrist": 0.13938627657372835,
+        "R_Wrist": 0.15524165532255418,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.7,
+      "legacy_body_max_vertex_delta_cm": 0.40682917833328247,
+      "refined_body_max_vertex_delta_cm": 0.40682917833328247,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.12295445400761695,
+        "L_Wrist": 0.12655259034938143,
+        "R_Wrist": 0.1409494342884396,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.7333333333333334,
+      "legacy_body_max_vertex_delta_cm": 0.3645069897174835,
+      "refined_body_max_vertex_delta_cm": 0.3645069897174835,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.11016597616539796,
+        "L_Wrist": 0.11338421774315091,
+        "R_Wrist": 0.1262823553722262,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.7666666666666666,
+      "legacy_body_max_vertex_delta_cm": 0.3211487829685211,
+      "refined_body_max_vertex_delta_cm": 0.3211487829685211,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.09705704542284818,
+        "L_Wrist": 0.09990003805524425,
+        "R_Wrist": 0.11125845911566501,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.8,
+      "legacy_body_max_vertex_delta_cm": 0.2769286632537842,
+      "refined_body_max_vertex_delta_cm": 0.2769286632537842,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.08369234461112365,
+        "L_Wrist": 0.08614626342837643,
+        "R_Wrist": 0.09593996766640048,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.8333333333333335,
+      "legacy_body_max_vertex_delta_cm": 0.23196691274642944,
+      "refined_body_max_vertex_delta_cm": 0.23196691274642944,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.07010757253960534,
+        "L_Wrist": 0.07215818207020473,
+        "R_Wrist": 0.08035724199590384,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.8666666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.18632210791110992,
+      "refined_body_max_vertex_delta_cm": 0.18632210791110992,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.05630704775378074,
+        "L_Wrist": 0.05795709961351254,
+        "R_Wrist": 0.06454389435082984,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.9,
+      "legacy_body_max_vertex_delta_cm": 0.14019428193569183,
+      "refined_body_max_vertex_delta_cm": 0.14019428193569183,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.042371330826814387,
+        "L_Wrist": 0.04360223114069246,
+        "R_Wrist": 0.048559053680496206,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.933333333333333,
+      "legacy_body_max_vertex_delta_cm": 0.09366567432880402,
+      "refined_body_max_vertex_delta_cm": 0.09366567432880402,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.02830449316090555,
+        "L_Wrist": 0.029133357197795005,
+        "R_Wrist": 0.032449479451353715,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 3.966666666666667,
+      "legacy_body_max_vertex_delta_cm": 0.04689415916800499,
+      "refined_body_max_vertex_delta_cm": 0.04689415916800499,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.014172552576169813,
+        "L_Wrist": 0.014579821542148026,
+        "R_Wrist": 0.016238178782895185,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    },
+    {
+      "seconds": 4.0,
+      "legacy_body_max_vertex_delta_cm": 0.0,
+      "refined_body_max_vertex_delta_cm": 0.0,
+      "sockets_delta_cm": {
+        "Pelvis": 0.0,
+        "Head": 0.0,
+        "L_Wrist": 0.0,
+        "R_Wrist": 0.0,
+        "L_Ankle": 0.0,
+        "R_Ankle": 0.0
+      }
+    }
+  ]
+}

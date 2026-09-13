@@ -1,0 +1,49 @@
+{
+  "status": "TAIL_V2_PERSISTED_RIG_VALIDATED_NOT_RUNTIME_ACCEPTANCE",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "errors": [],
+  "source_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+  "mesh": "/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2",
+  "mesh_package_sha256": "7a9e6caffe15c488bed4846912e823a60974bad402dd736d222fb3c355d67917",
+  "mesh_package_bytes": 44370790,
+  "original_skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+  "materials": [
+    "/Game/SpaceSurvival/Character/model-rigged_material_0.model-rigged_material_0"
+  ],
+  "animations": [
+    {
+      "path": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "seconds": 4.0,
+      "same_skeleton": true,
+      "root_motion": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Character/A_Walk.A_Walk",
+      "seconds": 2.4666666984558105,
+      "same_skeleton": true,
+      "root_motion": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Character/A_Disembark.A_Disembark",
+      "seconds": 2.4000000953674316,
+      "same_skeleton": true,
+      "root_motion": false
+    }
+  ],
+  "no_new_physics_asset": true,
+  "imported_bounds_origin_cm": [
+    -2.7910404205322266,
+    9.00782585144043,
+    2.448200225830078
+  ],
+  "imported_bounds_extent_cm": [
+    34.686445236206055,
+    41.06867027282715,
+    49.70891571044922
+  ],
+  "limits": [
+    "Shared skeleton/materials and asset checks do not prove CPU-skinned body equality or frame contact",
+    "Exact269-frame source body equality is in Deformation.json; native station CPU-vertex contact test remains lead-owned",
+    "Thin residual fragments remain; provisional visual repair, not owner quality approval"
+  ]
+}

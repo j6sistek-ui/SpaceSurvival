@@ -1,0 +1,215 @@
+{
+  "status": "AUTHORED_SHIP_CANDIDATE_SOURCE_REVIEW_NOT_UNREAL_OR_OWNER_ACCEPTANCE",
+  "blender": "5.1.2",
+  "bounds_cm": [
+    [
+      -244.79999542236328,
+      -142.78430938720703,
+      -65.37753939628601
+    ],
+    [
+      209.99999046325684,
+      142.78430938720703,
+      97.8000819683075
+    ]
+  ],
+  "reference_bounds_cm": [
+    [
+      -247,
+      -145,
+      -66.516
+    ],
+    [
+      210,
+      145,
+      100
+    ]
+  ],
+  "evaluated_triangles": 134678,
+  "authored_parts": 185,
+  "pilot_transform": {
+    "position_cm": [
+      -15,
+      0,
+      72
+    ],
+    "unreal_yaw_degrees": -90,
+    "blender_z_rotation_degrees": 90,
+    "scale": 1.5,
+    "source": "Existing PilotMesh.glb plus A_Pilot0s,loaded only for previews"
+  },
+  "cockpit": {
+    "real_open_well": true,
+    "center_xy_cm": [
+      -15,
+      0
+    ],
+    "opening_half_dimensions_cm": [
+      64,
+      40
+    ],
+    "windscreen_peak_cm": 86.5
+  },
+  "materials": [
+    {
+      "name": "AC01_WarmCeramic",
+      "base_color": [
+        0.699999988079071,
+        0.6200000047683716,
+        0.46000000834465027,
+        1.0
+      ],
+      "metallic": 0.1599999964237213,
+      "roughness": 0.25
+    },
+    {
+      "name": "AC01_IvoryPanels",
+      "base_color": [
+        0.8700000047683716,
+        0.8600000143051147,
+        0.7799999713897705,
+        1.0
+      ],
+      "metallic": 0.05999999865889549,
+      "roughness": 0.23999999463558197
+    },
+    {
+      "name": "AC01_BurnishedBronze",
+      "base_color": [
+        0.3400000035762787,
+        0.14499999582767487,
+        0.04500000178813934,
+        1.0
+      ],
+      "metallic": 0.8199999928474426,
+      "roughness": 0.27000001072883606
+    },
+    {
+      "name": "AC01_ChampagneEdges",
+      "base_color": [
+        0.6800000071525574,
+        0.38999998569488525,
+        0.12999999523162842,
+        1.0
+      ],
+      "metallic": 0.8500000238418579,
+      "roughness": 0.20999999344348907
+    },
+    {
+      "name": "AC01_GraphiteStructure",
+      "base_color": [
+        0.017999999225139618,
+        0.027000000700354576,
+        0.03200000151991844,
+        1.0
+      ],
+      "metallic": 0.7200000286102295,
+      "roughness": 0.2800000011920929
+    },
+    {
+      "name": "AC01_CockpitPadding",
+      "base_color": [
+        0.008999999612569809,
+        0.014000000432133675,
+        0.01600000075995922,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.550000011920929
+    },
+    {
+      "name": "AC01_MachinedTitanium",
+      "base_color": [
+        0.23000000417232513,
+        0.27000001072883606,
+        0.30000001192092896,
+        1.0
+      ],
+      "metallic": 0.9200000166893005,
+      "roughness": 0.2199999988079071
+    },
+    {
+      "name": "AC01_IonAndNav",
+      "base_color": [
+        0.014999999664723873,
+        0.4000000059604645,
+        0.5799999833106995,
+        1.0
+      ],
+      "metallic": 0.18000000715255737,
+      "roughness": 0.20000000298023224
+    },
+    {
+      "name": "AC01_Windscreen",
+      "base_color": [
+        0.3799999952316284,
+        0.6700000166893005,
+        0.7200000286102295,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.06499999761581421
+    }
+  ],
+  "protected_sha256": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource/Animation/Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource/Animation/PilotMesh.glb": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665",
+    "ContentSource/Meshes/SM_AcornShip.obj": "0a2e57f9845d992bfb67a3055f90fbb3db5c7ef9651a3ed476e6b9dc647ad008"
+  },
+  "limits": [
+    "Separate candidate, current runtime and meshes unchanged",
+    "Source render uses existing Blender Cycles studio lighting, not gameplay or Unreal materials",
+    "Procedural micro-bump is a Blender authoring detail; glTF export retains base PBR values but will need equivalent Unreal shader setup",
+    "No collision mesh, LODs, socket integration, shader cost or runtime performance validated",
+    "Existing pilot tail defects remain visible and are not modified by this ship source",
+    "Commercial Hybrid visual quality requires owner review; no near-alpha acceptance claim"
+  ],
+  "outputs": [
+    {
+      "file": "AcornShipCandidate.blend",
+      "bytes": 679559,
+      "sha256": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c"
+    },
+    {
+      "file": "AcornShipCandidate.glb",
+      "bytes": 3470108,
+      "sha256": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e"
+    },
+    {
+      "file": "AcornShipCandidate.mtl",
+      "bytes": 880,
+      "sha256": "374485c5af6cd34ea7ff14dfa098e4438eb7f57603b270cd065ef7bd0637d732"
+    },
+    {
+      "file": "AcornShipCandidate.obj",
+      "bytes": 10791915,
+      "sha256": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7"
+    },
+    {
+      "file": "Chase.png",
+      "bytes": 2484278,
+      "sha256": "e6ca67d4cff1fe7c52eb239afcd2cda44632f4fb589c4300bfa2482bf3fead4f"
+    },
+    {
+      "file": "Cockpit.png",
+      "bytes": 2849044,
+      "sha256": "c24be8cc9a112d55bf588c85c942c500d603d1aef56b753ffcd19a0c2b3be223"
+    },
+    {
+      "file": "EngineDetail.png",
+      "bytes": 2638863,
+      "sha256": "67852b07c0d8de498bcf4bc61e7be66fb668bdb57188d8eee5d77ae1ff950112"
+    },
+    {
+      "file": "Hero.png",
+      "bytes": 2401452,
+      "sha256": "93a64097ec30f781deea864ab99c42a5c376685621553bf7c70355ebf835c71a"
+    },
+    {
+      "file": "Side.png",
+      "bytes": 2361647,
+      "sha256": "08f87215ede12c3df58164ce04334544c06323dc935c6ba4613efd99bf3b5472"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "status": "GENERATED_STARLESS_CANDIDATE_RUNTIME_REVIEW_PENDING",
+  "generated_utc": "2026-09-13",
+  "tool": "built-in image_gen",
+  "purpose": "Separate nebula background from crisp geometry stars after package8 blurred-star finding; no gameplay changes",
+  "prompt": "Use case: precise-object-edit. Asset type: starless 2:1 equirectangular deep-space sky texture for a real Unreal Engine game. Input image is the edit target. Preserve the exact large-scale blue-grey and faint warm amber dust-cloud composition, realistic wispy molecular nebula structure, deep dark negative spaces and 2:1 panoramic framing. Remove ALL discrete stars, white specks, bright dots, point lights, lens flares and star glows everywhere, replacing each only with its adjacent nebula/dark-sky texture. This must be a completely starless nebula background, because the game renders sharp stars in a separate layer. Keep delicate low-contrast gas filaments, avoid painterly blobs. Smooth continuous left-to-right wrap for a 360-degree panorama with no vertical seam, gently dark neutral poles, no horizon or landscape, no planets, ships, lettering, logos or interface. Deliver highest available resolution with exactly 2:1 aspect ratio. No changes besides removing point stars and ensuring seamless texture edges.",
+  "source": "OpenAI generated edit of project SpacePanorama-v1.png",
+  "input_sha256": "2ae245359fbac353bffdd579fc884ee8b8db0633c6deaadca73681e232f783a1",
+  "image": "SpacePanorama-starless-v2.png",
+  "width": 1774,
+  "height": 887,
+  "bytes": 1977836,
+  "sha256": "a2d2f3dd08e3c38d465eabcdeab264165bd60d163dd7ea82522084ba27659acf"
+}

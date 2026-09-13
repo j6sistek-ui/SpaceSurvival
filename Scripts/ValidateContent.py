@@ -40,14 +40,15 @@ def main():
         record["materials"].append(material.get_path_name())
 
     def validate_panorama():
-        source = ROOT / "ContentSource/Textures/SpacePanorama-v1.png"
+        source = ROOT / "ContentSource/Textures/SpacePanorama-starless-v2.png"
         digest = hashlib.sha256(source.read_bytes()).hexdigest()
-        texture = required(BASE + "/Textures/T_SpacePanorama_v1", u.Texture2D)
+        texture = required(BASE + "/Textures/T_SpacePanorama_starless_v2", u.Texture2D)
         material = required(BASE + "/Materials/M_Space", u.Material)
         assert library.get_metadata_tag(texture, "SSPanoramaSourceSHA256") == digest
         assert library.get_metadata_tag(material, "SSPanoramaSourceSHA256") == digest
-        assert library.get_metadata_tag(material, "SSPanoramaVersion") == "EquirectangularPanorama1"
+        assert library.get_metadata_tag(material, "SSPanoramaVersion") == "EquirectangularStarless3"
         assert texture.get_editor_property("srgb")
+        assert texture.get_editor_property("compression_settings") == u.TextureCompressionSettings.TC_BC7
         assert texture.get_editor_property("lod_group") == u.TextureGroup.TEXTUREGROUP_SKYBOX
         assert texture.get_editor_property("power_of_two_mode") == u.TexturePowerOfTwoSetting.STRETCH_TO_POWER_OF_TWO
         assert texture.get_editor_property("mip_gen_settings") == u.TextureMipGenSettings.TMGS_SIMPLE_AVERAGE
@@ -56,7 +57,7 @@ def main():
         assert material.get_editor_property("shading_model") == u.MaterialShadingModel.MSM_UNLIT
         assert material.get_editor_property("two_sided")
         record["space_panorama"] = {"texture": texture.get_path_name(), "source_sha256": digest,
-                                    "power_of_two_resampling": "StretchToPowerOfTwo", "mips": "SimpleAverage",
+                                    "power_of_two_resampling": "StretchToPowerOfTwo", "mips": "SimpleAverage", "compression": "BC7",
                                     "runtime_seam_and_readability_approval": False}
 
     def validate_mesh(item):
@@ -129,8 +130,11 @@ def main():
         checked(name, lambda name=name: validate_material(name))
     for item in meshes["assets"]:
         checked(item["name"], lambda item=item: validate_mesh(item))
+    checked("Station deck material", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateStationDeck.py"), run_name="__main__"))
     checked("Space panorama", validate_panorama)
+    checked("Authored Acorn ship", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateAcornShip.py"), run_name="__main__"))
     checked("Preserved hero", validate_hero)
+    checked("Reviewed tail repair", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateTailRepair.py"), run_name="__main__"))
     def validate_scene():
         runpy.run_path(str(ROOT / "Scripts/ValidateScene.py"), run_name="__main__")
         data = required(BASE + "/Data/DA_Phase1", u.SSPhase1Data)
@@ -139,6 +143,11 @@ def main():
         assert len(data.get_editor_property("hazards")) == 6, "Phase 1 hazard variants mismatch"
         assert len(data.get_editor_property("enemies")) == 2, "Phase 1 enemy roster mismatch"
         assert len(data.get_editor_property("encounters")) == 3, "Phase 1 encounter roster mismatch"
+        assert data.has_valid_utility_tuning(), "Malformed Phase 1 utility identity, price or effect tuning"
+        record["utilities"] = [{name: (str(entry.get_editor_property(name)) if name == "kind" else entry.get_editor_property(name))
+                                for name in ("kind", "price", "maneuver_multiplier", "response_multiplier",
+                                             "boost_efficiency", "cooling_efficiency")}
+                               for entry in data.get_editor_property("utilities")]
         record["scene"] = {"map": world.get_path_name(), "data": data.get_path_name(), "collision_and_skeletal_material_flags": "validated"}
     checked("Persistent gameplay scene", validate_scene)
     for item in sounds["assets"]:

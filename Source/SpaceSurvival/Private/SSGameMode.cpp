@@ -1,4 +1,5 @@
 #include "SSGameMode.h"
+#include "SSWave10Soak.h"
 #include "SSGameInstance.h"
 #include "SSShip.h"
 #include "SSStation.h"
@@ -89,6 +90,8 @@ void ASSGameMode::BeginPlay()
         T.waveSecondsGrowth = Data->WaveSecondsGrowth;
         T.waveCredits = Data->WaveCredits;
         T.upgradeBasePrice = Data->UpgradeBasePrice;
+        if (!Data->ApplyUtilityTuning(T))
+            UE_LOG(LogTemp, Warning, TEXT("Invalid utility content corrected to bounded/default definitions."));
         Director->MinimumReactionSeconds = Data->MinimumReactionSeconds;
         Director->MaximumActiveThreats = Data->MaximumActiveThreats;
         Director->BaseBudgetPerSecond = Data->BaseBudgetPerSecond;
@@ -118,6 +121,7 @@ void ASSGameMode::BeginPlay()
     }
     ShowHangar();
     OpenPanel(ESSPanel::Main);
+    ASSWave10Soak::TryStart(this);
 }
 bool ASSGameMode::InHangar() const
 {
@@ -825,13 +829,15 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         PanelTitle = TEXT("ENGINEER MICA");
         PanelDetail = TEXT(
             "Mica: I can fit one utility. Choose the capability you need. Replacing a module removes the old one.");
-        const FString Price = FString::Printf(TEXT("%d credits"), SS::StationUtilityPrice);
+        const FString VectorPrice = FString::Printf(TEXT("%d credits"), S.UtilityPrice(SS::Utility::VectorThrusters));
+        const FString CoolingPrice = FString::Printf(TEXT("%d credits"), S.UtilityPrice(SS::Utility::OverdriveCooling));
         AddEntry(FString::Printf(TEXT("Vector Thrusters / %s / stronger lateral authority"),
-                                 S.run.utility == SS::Utility::VectorThrusters ? TEXT("already fitted") : *Price),
+                                 S.run.utility == SS::Utility::VectorThrusters ? TEXT("already fitted") : *VectorPrice),
                  44, S.CanPurchaseUtility(SS::Utility::VectorThrusters));
-        AddEntry(FString::Printf(TEXT("Overdrive Cooling / %s / boost efficiency and heat control"),
-                                 S.run.utility == SS::Utility::OverdriveCooling ? TEXT("already fitted") : *Price),
-                 45, S.CanPurchaseUtility(SS::Utility::OverdriveCooling));
+        AddEntry(
+            FString::Printf(TEXT("Overdrive Cooling / %s / boost efficiency and heat control"),
+                            S.run.utility == SS::Utility::OverdriveCooling ? TEXT("already fitted") : *CoolingPrice),
+            45, S.CanPurchaseUtility(SS::Utility::OverdriveCooling));
         break;
     }
     case ESSPanel::Reward:
@@ -1224,6 +1230,8 @@ void ASSPlayerController::PlayerTick(float Dt)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GM || !GI)
         return;
+    if (GM->bAutomatedSoakInput)
+        return; // Guarded fixture owns scripted input; Super still updates the normal camera.
     if (LastInputPawn.Get() != GetPawn())
     {
         LastInputPawn = GetPawn();

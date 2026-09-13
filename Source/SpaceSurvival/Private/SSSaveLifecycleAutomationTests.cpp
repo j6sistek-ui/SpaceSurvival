@@ -1,5 +1,6 @@
 #include "Misc/AutomationTest.h"
 #include "SSGameInstance.h"
+#include "SSGameMode.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -123,12 +124,45 @@ struct FSSLifecycleIsolation
         Object->SetBoolField(TEXT("success"), true);
         Object->SetBoolField(TEXT("genericBackendVerified"), true);
         Object->SetBoolField(TEXT("gameInstanceInitialized"), Instance != nullptr);
+        if (Phase == TEXT("StageCreateDenied") || Phase == TEXT("StageReadDenied"))
+        {
+            Object->SetBoolField(TEXT("allThreeWritesRejectedAndPreserved"), true);
+            Object->SetBoolField(TEXT("nativePermissionProbeVerified"), true);
+        }
+        if (Phase == TEXT("RecoverInterrupted"))
+        {
+            Object->SetBoolField(TEXT("abandonedInvalidationIgnored"), true);
+            Object->SetBoolField(TEXT("originalCheckpointAvailable"), true);
+            Object->SetBoolField(TEXT("onlyRecordedTemporaryRemoved"), true);
+        }
         if (Phase == TEXT("ResumeDeath"))
         {
             Object->SetBoolField(TEXT("lockedSuspensionRejectedAndPreserved"), true);
             Object->SetBoolField(TEXT("lockedAccountRejectedAndPreserved"), true);
             Object->SetBoolField(TEXT("replacementRetriesSucceeded"), true);
             Object->SetBoolField(TEXT("failedReplacementStagingCleaned"), true);
+        }
+        if (Phase == TEXT("SeedCorruptAccount"))
+        {
+            Object->SetBoolField(TEXT("domainCorruptEnvelopeSeeded"), true);
+            Object->SetBoolField(TEXT("exactOriginalFixtureCopyVerified"), true);
+            Object->SetBoolField(TEXT("exactCorruptFixtureCopyVerified"), true);
+        }
+        if (Phase == TEXT("ProtectCorruptAccount"))
+        {
+            Object->SetBoolField(TEXT("freshInitProtectedAccount"), true);
+            Object->SetBoolField(TEXT("resumeBlocked"), true);
+            Object->SetBoolField(TEXT("gameModeNewRunBlocked"), true);
+            Object->SetBoolField(TEXT("persistAccountBlocked"), true);
+            Object->SetBoolField(TEXT("corruptBytesPreservedBeforeRestore"), true);
+            Object->SetBoolField(TEXT("exactOriginalFixtureCopyRestored"), true);
+            Object->SetBoolField(TEXT("sameInstanceRemainsBlockedAfterFixtureRestore"), true);
+        }
+        if (Phase == TEXT("RecoverAccount"))
+        {
+            Object->SetBoolField(TEXT("freshInitRestoredAccount"), true);
+            Object->SetBoolField(TEXT("originalCheckpointAvailable"), true);
+            Object->SetBoolField(TEXT("validAccountPersistenceRestored"), true);
         }
         if (Instance)
         {
@@ -264,6 +298,17 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
             TestFalse(TEXT("Fresh isolated slot must not exist"), UGameplayStatics::DoesSaveGameExist(Slot, 0));
         return Isolation.Receipt(Phase, *this);
     }
+    const bool FaultMode = FParse::Param(FCommandLine::Get(), TEXT("SSSaveFaults"));
+    const bool FaultPhase = Phase == TEXT("StageCreateDenied") || Phase == TEXT("StageReadDenied") ||
+                            Phase == TEXT("InterruptConsume") || Phase == TEXT("RecoverInterrupted");
+    if (FaultPhase && !TestTrue(TEXT("Storage faults require the explicit fault-mode opt-in"), FaultMode))
+        return false;
+    const bool CorruptMode = FParse::Param(FCommandLine::Get(), TEXT("SSCorruptAccount"));
+    const bool CorruptPhase = Phase == TEXT("SeedCorruptAccount") || Phase == TEXT("ProtectCorruptAccount") ||
+                              Phase == TEXT("RecoverAccount");
+    if (CorruptPhase &&
+        !TestTrue(TEXT("Domain corruption requires its separate explicit opt-in"), CorruptMode && !FaultMode))
+        return false;
     const int32 PreparedWave = Phase == TEXT("PrepareStation5") ? 5 : Phase == TEXT("PrepareStation10") ? 10 : 0;
     if (PreparedWave != 0)
     {
@@ -273,23 +318,232 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
                           RequestedWave == PreparedWave))
             return false;
     }
-    const FString Prior = (Phase == TEXT("Suspend") || PreparedWave != 0) ? TEXT("Preflight")
-                          : Phase == TEXT("ResumeDeath")                  ? TEXT("Suspend")
-                          : Phase == TEXT("FreshStart")                   ? TEXT("ResumeDeath")
-                                                                          : TEXT("");
+    const FString Prior = (Phase == TEXT("Suspend") || Phase == TEXT("SeedCorruptAccount") || PreparedWave != 0)
+                              ? TEXT("Preflight")
+                          : Phase == TEXT("ProtectCorruptAccount")     ? TEXT("SeedCorruptAccount")
+                          : Phase == TEXT("RecoverAccount")            ? TEXT("ProtectCorruptAccount")
+                          : Phase == TEXT("RecoverInterrupted")        ? TEXT("InterruptConsume")
+                          : FaultPhase || Phase == TEXT("ResumeDeath") ? TEXT("Suspend")
+                          : Phase == TEXT("FreshStart")                ? TEXT("ResumeDeath")
+                                                                       : TEXT("");
     if (!TestFalse(TEXT("Lifecycle phase is recognized"), Prior.IsEmpty()))
         return false;
     auto Previous = Isolation.Read(Prior, *this);
     if (!Previous)
         return false;
+    // These exact test-owned files are the only corruption/restoration targets. Reject a redirected
+    // leaf as well as the ancestors verified above, before Init can read any account bytes.
+    const FString AccountPath = Isolation.Saved / TEXT("SaveGames/SS_Account_v1.sav");
+    const FString OriginalCopy = Isolation.Root / TEXT("CorruptAccount.original");
+    const FString CorruptCopy = Isolation.Root / TEXT("CorruptAccount.corrupt");
+    if (CorruptPhase)
+    {
+        auto &Files = FPlatformFileManager::Get().GetPlatformFile();
+        for (const FString &Path :
+             {AccountPath, OriginalCopy, CorruptCopy, Isolation.Saved / TEXT("SaveGames/SS_Settings_v1.sav"),
+              Isolation.Saved / TEXT("SaveGames/SS_Suspend_v1.sav")})
+            if (!TestTrue(TEXT("Corruption fixture leaves cannot redirect outside the GUID profile"),
+                          Files.IsSymlink(*Path) == ESymlinkResult::NonSymlink))
+                return false;
+    }
     FSSLifecycleInstance Fixture;
     Fixture.Initialize();
     auto *Instance = Fixture.Instance;
     auto &Session = Instance->Session;
+    if (Phase == TEXT("ProtectCorruptAccount"))
+    {
+        TArray<uint8> Original, Corrupt, Actual;
+        if (!TestTrue(TEXT("Read the exact valid and corrupt test-owned byte copies"),
+                      FFileHelper::LoadFileToArray(Original, *OriginalCopy) &&
+                          FFileHelper::LoadFileToArray(Corrupt, *CorruptCopy) && Original != Corrupt &&
+                          FFileHelper::LoadFileToArray(Actual, *AccountPath) && Actual == Corrupt))
+            return false;
+        const auto *OriginalRecord = Cast<USSStoredData>(UGameplayStatics::LoadGameFromMemory(Original));
+        SS::Account Decoded;
+        std::string Error;
+        if (!TestTrue(TEXT("Restoration copy is the exact valid account from the seed process"),
+                      OriginalRecord && OriginalRecord->Version == 1 && OriginalRecord->Valid &&
+                          OriginalRecord->Payload == Previous->GetStringField(TEXT("accountPayload")) &&
+                          SS::DecodeAccount(TCHAR_TO_UTF8(*OriginalRecord->Payload), Decoded, Error)))
+            return false;
+        TestTrue(TEXT("Real fresh Init protects the domain-corrupt account with an explicit error"),
+                 Instance->AccountStorageBlocked &&
+                     Instance->LastSaveError.Contains(TEXT("Account data could not be read")) &&
+                     Instance->LastSaveError.Contains(TEXT("protected")));
+        const auto RunBefore = SS::EncodeRun(Session.run);
+        const auto AccountBefore = SS::EncodeAccount(Session.account);
+        TestFalse(TEXT("Protected account hides the existing checkpoint"), Instance->HasSuspendedRun());
+        TestFalse(TEXT("Protected account refuses ResumeRun"), Instance->ResumeRun());
+        TestFalse(TEXT("Protected account refuses direct account persistence"), Instance->PersistAccount());
+        TestTrue(TEXT("Account persistence reports overwrite protection"),
+                 Instance->LastSaveError.Contains(TEXT("protected from overwrite")));
+        // InitializeStandalone already owns a transient, initialized game world. Do not begin play,
+        // construct a station or create a player: the real New Run path must stop at PersistAccount.
+        if (!TestNotNull(TEXT("Protected GameInstance owns an isolated world"), Fixture.World) ||
+            !TestFalse(TEXT("Corruption guard fixture has not entered gameplay"), Fixture.World->HasBegunPlay()))
+            return false;
+        auto *Mode = Fixture.World->SpawnActor<ASSGameMode>();
+        if (!TestNotNull(TEXT("Spawn the real GameMode for its New Run admission guard"), Mode) ||
+            !TestTrue(TEXT("GameMode is bound to the protected isolated instance"),
+                      Mode->GetGameInstance<USSGameInstance>() == Instance))
+            return false;
+        Mode->StartNewRun();
+        TestTrue(TEXT("New Run reports the protected account and does not launch a ship"),
+                 Mode->Announcement == Instance->LastSaveError &&
+                     Mode->Announcement.Contains(TEXT("protected from overwrite")) && !Mode->GetPlayerShip());
+        TestTrue(TEXT("Rejected resume, persistence and New Run leave account and run state unchanged"),
+                 !Session.run.active && SS::EncodeRun(Session.run) == RunBefore &&
+                     SS::EncodeAccount(Session.account) == AccountBefore && Session.account.xp == 0 &&
+                     Session.account.runs == 0 && Session.account.history.empty());
+        TestTrue(TEXT("Every original corrupt byte survives Init and all rejected actions"),
+                 FFileHelper::LoadFileToArray(Actual, *AccountPath) && Actual == Corrupt);
+        CheckNoStagingFiles(*this, Isolation);
+        if (HasAnyErrors())
+            return false;
+        // Manual fixture restoration only, after protection is proven. This is not a product backup
+        // or recovery feature; the next fresh process must reload the original account normally.
+        TestTrue(TEXT("Restore only the verified original fixture bytes and read-compare them"),
+                 FFileHelper::SaveArrayToFile(Original, *AccountPath) &&
+                     FFileHelper::LoadFileToArray(Actual, *AccountPath) && Actual == Original);
+        TestTrue(TEXT("The existing instance stays blocked until a fresh Init"), Instance->AccountStorageBlocked);
+        return Isolation.Receipt(Phase, *this, Instance);
+    }
     if (!TestFalse(TEXT("Isolated account initializes without a storage error"), Instance->AccountStorageBlocked))
         return false;
     const std::string RunId = "lifecycle-" + std::string(TCHAR_TO_UTF8(*Isolation.Token));
-    if (Phase == TEXT("Suspend") || PreparedWave != 0)
+    if (FaultPhase)
+    {
+        TestEqual(TEXT("Fault process loads the original account exactly"),
+                  FString(UTF8_TO_TCHAR(SS::EncodeAccount(Session.account).c_str())),
+                  Previous->GetStringField(TEXT("accountPayload")));
+        TestEqual(TEXT("Fault process loads the original settings exactly"),
+                  FString(UTF8_TO_TCHAR(SS::EncodeSettings(Session.settings).c_str())),
+                  Previous->GetStringField(TEXT("settingsPayload")));
+        if (!TestTrue(TEXT("Fault process sees the preserved live checkpoint"), Instance->HasSuspendedRun()) ||
+            !TestFalse(TEXT("Init alone never exposes the saved run"), Session.run.active))
+            return false;
+        auto &Files = FPlatformFileManager::Get().GetPlatformFile();
+        if (Phase == TEXT("RecoverInterrupted"))
+        {
+            const FString Name = Previous->GetStringField(TEXT("stagingName"));
+            const FString Prefix = TEXT("SS_Suspend_v1.sav.");
+            FGuid StagingGuid;
+            if (!TestTrue(TEXT("Recovery names only the recorded unique sibling staging file"),
+                          Name == FPaths::GetCleanFilename(Name) && Name.StartsWith(Prefix) &&
+                              Name.EndsWith(TEXT(".tmp")) &&
+                              FGuid::ParseExact(Name.Mid(Prefix.Len(), Name.Len() - Prefix.Len() - 4),
+                                                EGuidFormats::Digits, StagingGuid)))
+                return false;
+            const FString Staging = Isolation.Saved / TEXT("SaveGames") / Name;
+            TArray<uint8> Bytes, Expected;
+            if (!TestTrue(
+                    TEXT("Abandoned staging is a real file inside the verified profile"),
+                    Files.IsSymlink(*Staging) == ESymlinkResult::NonSymlink &&
+                        FFileHelper::LoadFileToArray(Bytes, *Staging) &&
+                        FFileHelper::LoadFileToArray(Expected, *(Isolation.Root / TEXT("InterruptConsume.expected"))) &&
+                        Bytes == Expected))
+                return false;
+            const auto *Record = Cast<USSStoredData>(UGameplayStatics::LoadGameFromMemory(Bytes));
+            TestTrue(TEXT("Abandoned file contains the completed but uncommitted invalidation"),
+                     Record && Record->Version == 1 && !Record->Valid && Record->Payload.IsEmpty());
+            const auto *Live = Cast<USSStoredData>(UGameplayStatics::LoadGameFromSlot(TEXT("SS_Suspend_v1"), 0));
+            TestTrue(TEXT("Fresh Init ignores the orphan and preserves the exact original valid run"),
+                     Live && Live->Valid && Live->Payload == Previous->GetStringField(TEXT("runPayload")) &&
+                         Instance->HasSuspendedRun() && !Session.run.active);
+            if (HasAnyErrors())
+                return false;
+            TestTrue(TEXT("Remove only this harness's recorded abandoned staging file"), Files.DeleteFile(*Staging));
+            CheckNoStagingFiles(*this, Isolation);
+        }
+        else if (Phase == TEXT("InterruptConsume"))
+        {
+            // The parent owns the destination oplock until this process is confirmed terminated.
+            // A completed stage must match these bytes before the parent accepts a replacement barrier.
+            auto *Invalid = Cast<USSStoredData>(UGameplayStatics::CreateSaveGameObject(USSStoredData::StaticClass()));
+            Invalid->Valid = false;
+            Invalid->Payload.Empty();
+            TArray<uint8> Expected;
+            if (!TestTrue(TEXT("Serialize the expected real suspension invalidation"),
+                          UGameplayStatics::SaveGameToMemory(Invalid, Expected) &&
+                              FFileHelper::SaveArrayToFile(Expected,
+                                                           *(Isolation.Root / TEXT("InterruptConsume.expected")))) ||
+                !Isolation.Receipt(TEXT("InterruptConsumeReady"), *this, Instance))
+                return false;
+            AddInfo(TEXT("SAVE_FAULT_REPLACEMENT_READY: invoking the real ResumeRun; parent holds the oplock."));
+            Instance->ResumeRun();
+            AddError(TEXT(
+                "Interrupted ResumeRun returned before the parent terminated this process; no interruption pass."));
+            return false;
+        }
+        else
+        {
+            const bool ReadDenied = Phase == TEXT("StageReadDenied");
+            const FString Probe = Isolation.Saved / TEXT("SaveGames/StagingProbe.tmp");
+            const uint8 ProbeBytes[] = {0x53, 0x53, 0x01, 0x7f};
+            {
+                TUniquePtr<IFileHandle> Handle(Files.OpenWrite(*Probe));
+                if (ReadDenied)
+                {
+                    if (!TestTrue(TEXT("Real staging probe can create, write and flush under the read-denial ACL"),
+                                  Handle && Handle->Write(ProbeBytes, UE_ARRAY_COUNT(ProbeBytes)) &&
+                                      Handle->Flush(true)))
+                        return false;
+                    Handle.Reset();
+                    TUniquePtr<IFileHandle> Reader(Files.OpenRead(*Probe));
+                    TestFalse(TEXT("The new staging probe is actually denied read access"), Reader.IsValid());
+                    Reader.Reset();
+                    TestTrue(TEXT("Read-denied probe still permits cleanup"), Files.DeleteFile(*Probe));
+                }
+                else
+                    TestFalse(TEXT("The GUID directory actually denies staging-file creation"), Handle.IsValid());
+            }
+            const std::string OriginalAccount = SS::EncodeAccount(Session.account);
+            const std::string OriginalSettings = SS::EncodeSettings(Session.settings);
+            const std::string OriginalRun = SS::EncodeRun(Session.run);
+            for (const TCHAR *Slot : {TEXT("SS_Suspend_v1"), TEXT("SS_Account_v1"), TEXT("SS_Settings_v1")})
+            {
+                const FString Path = Isolation.Saved / TEXT("SaveGames") / (FString(Slot) + TEXT(".sav"));
+                TArray<uint8> Before, After;
+                if (!TestTrue(TEXT("Read the original slot before the staging fault"),
+                              FFileHelper::LoadFileToArray(Before, *Path)))
+                    return false;
+                if (ReadDenied)
+                    AddExpectedMessagePlain(TEXT("Failed to read file '") + Path + TEXT("."), ELogVerbosity::Warning,
+                                            EAutomationExpectedMessageFlags::Contains, 1);
+                bool Saved = false;
+                if (FString(Slot) == TEXT("SS_Suspend_v1"))
+                    Saved = Instance->ResumeRun();
+                else if (FString(Slot) == TEXT("SS_Account_v1"))
+                {
+                    Session.account.tutorialFlags ^= 1u;
+                    Saved = Instance->PersistAccount();
+                    Session.account.tutorialFlags ^= 1u;
+                }
+                else
+                {
+                    const double BeforeSensitivity = Session.settings.mouseSensitivity;
+                    Session.settings.mouseSensitivity = 2.1;
+                    Saved = Instance->PersistSettings();
+                    Session.settings.mouseSensitivity = BeforeSensitivity;
+                }
+                TestFalse(TEXT("Real GI persistence rejects the staging fault"), Saved);
+                TestTrue(TEXT("Staging failure is reported before destination replacement"),
+                         Instance->LastSaveError.Contains(TEXT("Save staging or verification failed")));
+                TestTrue(TEXT("Every byte of the prior live slot survives the staging failure"),
+                         FFileHelper::LoadFileToArray(After, *Path) && After == Before);
+                CheckNoStagingFiles(*this, Isolation);
+            }
+            TestTrue(TEXT("Failed staging does not expose a run, consume its checkpoint, or change account XP"),
+                     SS::EncodeRun(Session.run) == OriginalRun &&
+                         SS::EncodeAccount(Session.account) == OriginalAccount &&
+                         SS::EncodeSettings(Session.settings) == OriginalSettings && !Session.run.active &&
+                         Session.account.xp == 0 && Session.account.runs == 0 && Instance->HasSuspendedRun());
+        }
+        return Isolation.Receipt(Phase, *this, Instance);
+    }
+    if (FaultMode && Phase == TEXT("ResumeDeath") && !Isolation.Read(TEXT("RecoverInterrupted"), *this))
+        return false;
+    if (Phase == TEXT("Suspend") || Phase == TEXT("SeedCorruptAccount") || PreparedWave != 0)
     {
         TestEqual(TEXT("First process begins with fresh account XP"), Session.account.xp, std::int64_t(0));
         TestFalse(TEXT("Fresh account has no suspension"), Instance->HasSuspendedRun());
@@ -353,6 +607,61 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
                      Record && Record->Version == 1 && Record->Valid &&
                          Record->Payload == UTF8_TO_TCHAR(SS::EncodeRun(Session.run).c_str()));
         }
+        if (Phase == TEXT("SeedCorruptAccount"))
+        {
+            auto &Files = FPlatformFileManager::Get().GetPlatformFile();
+            TArray<uint8> Original, Copied, Corrupt;
+            if (!TestFalse(TEXT("Original fixture copy must not already exist"), Files.FileExists(*OriginalCopy)) ||
+                !TestFalse(TEXT("Corrupt fixture copy must not already exist"), Files.FileExists(*CorruptCopy)) ||
+                !TestTrue(TEXT("Retain and verify the exact account bytes written by real SuspendRun"),
+                          FFileHelper::LoadFileToArray(Original, *AccountPath) &&
+                              FFileHelper::SaveArrayToFile(Original, *OriginalCopy) &&
+                              FFileHelper::LoadFileToArray(Copied, *OriginalCopy) && Copied == Original))
+                return false;
+            auto *Record = Cast<USSStoredData>(UGameplayStatics::CreateSaveGameObject(USSStoredData::StaticClass()));
+            Record->Valid = true;
+            Record->Payload = TEXT("SS_ACCOUNT_INVALID_DOMAIN_FIXTURE");
+            SS::Account Decoded;
+            std::string Error;
+            if (!TestFalse(TEXT("Fixture payload is rejected by the production account domain codec"),
+                           SS::DecodeAccount(TCHAR_TO_UTF8(*Record->Payload), Decoded, Error)) ||
+                !TestTrue(TEXT("Seed domain corruption through a real valid Unreal save envelope"),
+                          Record->Version == 1 && UGameplayStatics::SaveGameToSlot(Record, TEXT("SS_Account_v1"), 0)))
+                return false;
+            const auto *Readback = Cast<USSStoredData>(UGameplayStatics::LoadGameFromSlot(TEXT("SS_Account_v1"), 0));
+            TestTrue(TEXT("Unreal envelope still loads while its domain payload remains invalid"),
+                     Readback && Readback->Version == 1 && Readback->Valid && Readback->Payload == Record->Payload);
+            TestTrue(TEXT("Retain exact corrupt bytes for cross-process preservation checks"),
+                     FFileHelper::LoadFileToArray(Corrupt, *AccountPath) && Corrupt != Original &&
+                         FFileHelper::SaveArrayToFile(Corrupt, *CorruptCopy) &&
+                         FFileHelper::LoadFileToArray(Copied, *CorruptCopy) && Copied == Corrupt);
+            AddInfo(TEXT(
+                "DOMAIN_CORRUPTION_FIXTURE_ONLY: valid Unreal envelope; invalid account text; no binary corruption."));
+        }
+    }
+    else if (Phase == TEXT("RecoverAccount"))
+    {
+        const auto Seed = Isolation.Read(TEXT("SeedCorruptAccount"), *this);
+        if (!Seed)
+            return false;
+        TArray<uint8> Original, Actual;
+        TestTrue(TEXT("Fresh Init sees exactly the manually restored fixture bytes"),
+                 FFileHelper::LoadFileToArray(Original, *OriginalCopy) &&
+                     FFileHelper::LoadFileToArray(Actual, *AccountPath) && Actual == Original);
+        TestEqual(TEXT("Fresh Init restores every original account field"),
+                  FString(UTF8_TO_TCHAR(SS::EncodeAccount(Session.account).c_str())),
+                  Seed->GetStringField(TEXT("accountPayload")));
+        TestEqual(TEXT("Settings survive account corruption and fixture restoration unchanged"),
+                  FString(UTF8_TO_TCHAR(SS::EncodeSettings(Session.settings).c_str())),
+                  Seed->GetStringField(TEXT("settingsPayload")));
+        const auto *Run = Cast<USSStoredData>(UGameplayStatics::LoadGameFromSlot(TEXT("SS_Suspend_v1"), 0));
+        TestTrue(TEXT("Fresh restored account can see the exact original unconsumed station checkpoint"),
+                 Run && Run->Version == 1 && Run->Valid && Run->Payload == Seed->GetStringField(TEXT("runPayload")) &&
+                     Instance->HasSuspendedRun() && !Session.run.active);
+        TestTrue(TEXT("Valid account persistence works again after the fresh Init"), Instance->PersistAccount());
+        TestTrue(TEXT("Protection validation awards no XP and completes no runs"),
+                 Session.account.xp == 0 && Session.account.runs == 0 && Session.account.history.empty());
+        CheckNoStagingFiles(*this, Isolation);
     }
     else if (Phase == TEXT("ResumeDeath"))
     {
@@ -409,7 +718,6 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
         TestTrue(TEXT("Death unlocks both starting sidegrades"),
                  Session.account.HeavyCannonUnlocked() && Session.account.AgileShipUnlocked());
         const auto AccountAfterDeath = SS::EncodeAccount(Session.account);
-        const FString AccountPath = Isolation.Saved / TEXT("SaveGames/SS_Account_v1.sav");
         TArray<uint8> AccountBefore;
         if (!TestTrue(TEXT("Read isolated account before its failed replacement"),
                       FFileHelper::LoadFileToArray(AccountBefore, *AccountPath)))

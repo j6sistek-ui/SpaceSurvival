@@ -1,0 +1,253 @@
+{
+  "status": "PASSED_ISOLATED_STORAGE_FAULT_VALIDATION",
+  "dateUtc": "2026-09-13",
+  "baseCommit": "3df41632ef8de0a858325afd5e7149ffe7060ef9",
+  "sourceState": "Uncommitted fault-harness changes at the successful run; hashes intentionally remain historical after later test extensions.",
+  "sourceFiles": [
+    {
+      "path": "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp",
+      "sha256LfUtf8": "d1c89d9ddce814222cec97f757c0841a48041aadd6fc59c68560002788f4b7f8"
+    },
+    {
+      "path": "Scripts/TestSaveLifecycle.ps1",
+      "sha256LfUtf8": "c3f1c19422cc1b0c58c5b3b650746b40b926df2b21574d23357a1c47a0481a70"
+    },
+    {
+      "path": "Scripts/SaveFaultNative.cs",
+      "sha256LfUtf8": "0a59993e340f1c9cb05f29e0a3f9cd82b07c0fe0864d7c35222088ef5190a2b2"
+    }
+  ],
+  "runtimeFilesUnchanged": [
+    {
+      "path": "Source/SpaceSurvival/Private/SSLocalSave.cpp",
+      "sha256LfUtf8": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSGameInstance.cpp",
+      "sha256LfUtf8": "9783e8874f2f4cf20bf33b66318793dc3a74c9cbf1387cea095b7077d91349bb"
+    }
+  ],
+  "command": "Scripts/TestSaveLifecycle.ps1 -StorageFaults -TimeoutSeconds 120",
+  "rawEvidence": {
+    "root": "Artifacts/SaveLifecycle/855cfd7fdc124eb0a1bcb97cf9c78530",
+    "resultSha256": "4c16796f5913d8ca7ed10c071637fe0a8781f089951d4f34e63a28249914f030",
+    "driverLog": ".agent/local/StorageFaultHarness2.log",
+    "driverLogSha256": "ac03c76be827d41e9fce5f1b5b394b898de806a9574996772b58bb7d4213361c",
+    "editorBuildLog": ".agent/local/EditorStorageFaultBuild.log"
+  },
+  "processResults": [
+    {
+      "phase": "Preflight",
+      "processId": 68652,
+      "success": true,
+      "receiptSha256": "adf6137587d76d03e23d50ad0dde0b6c7b175b40930584cbe3ff4134a2df43a5",
+      "engineReport": {
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "reportCreatedOn": "2026.09.13-07.36.47",
+        "sha256": "028e6171b5226db0878b1c78bbb329b362666f05944732fd7cda41556d64b397"
+      }
+    },
+    {
+      "phase": "Suspend",
+      "processId": 23320,
+      "success": true,
+      "receiptSha256": "41ac9bdaa7407f5901be8edcb4a4a3374fad57944644a08657c5a1d8e969bd55",
+      "engineReport": {
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "reportCreatedOn": "2026.09.13-07.37.00",
+        "sha256": "9d259db85112d152986af904ecb259cd8d39e6950feb4b32708821e7e7a417c3"
+      },
+      "xp": 0,
+      "completedRuns": 0
+    },
+    {
+      "phase": "StageCreateDenied",
+      "processId": 27876,
+      "success": true,
+      "receiptSha256": "9689bbebf1c5cbd0c8b508b27a15a88dbdfbdc1fecc072e0fd7c0ff4a1c1f734",
+      "engineReport": {
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "reportCreatedOn": "2026.09.13-07.37.14",
+        "sha256": "acc9362f8f68b479014c2375c9338bbe16a331b23ad34279cf1d80a2c202cf8c"
+      },
+      "xp": 0,
+      "completedRuns": 0,
+      "allThreeWritesRejectedAndPreserved": true,
+      "nativePermissionProbeVerified": true
+    },
+    {
+      "phase": "StageReadDenied",
+      "processId": 4764,
+      "success": true,
+      "receiptSha256": "7a6eebfb565103076909dc5316e6d6bf19987c27a252bc16e0d578c2d3fcd1c3",
+      "engineReport": {
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "reportCreatedOn": "2026.09.13-07.37.28",
+        "sha256": "da98a3215c8b4b8468297fdb27f039ded666b438448836df9a8349527821fdd6"
+      },
+      "xp": 0,
+      "completedRuns": 0,
+      "allThreeWritesRejectedAndPreserved": true,
+      "nativePermissionProbeVerified": true
+    },
+    {
+      "phase": "InterruptConsume",
+      "processId": 72052,
+      "success": true,
+      "receiptSha256": "5ce950365cb47f9d733f37b9ad925f7941a4e18c74f714313395ec72839d8eb0",
+      "evidenceType": "OWNED_PROCESS_TERMINATED_BEFORE_REPLACEMENT",
+      "stagingName": "SS_Suspend_v1.sav.4996EED044BDB3FA95DBC7B3790B63A9.tmp",
+      "stagingSha256": "C1FB97D2EE746F94DCDF879369551D36C2F1F247CDF2254DD591F2F935E08DBD",
+      "expectedSha256": "C1FB97D2EE746F94DCDF879369551D36C2F1F247CDF2254DD591F2F935E08DBD",
+      "acknowledgementRequired": true,
+      "originalOplockLevel": 3,
+      "newOplockLevel": 1,
+      "oplockFlags": 1,
+      "conflictingAccessMode": 0,
+      "conflictingShareMode": 0,
+      "observedBlockedMilliseconds": 250,
+      "writerExitedBeforeOplockRelease": true,
+      "previousLiveSlotBytesPreserved": true,
+      "exitCode": -1,
+      "automationCompletionExpected": false
+    },
+    {
+      "phase": "RecoverInterrupted",
+      "processId": 79296,
+      "success": true,
+      "receiptSha256": "f93ca5bbbc77e29aedbf8c248c1f2d0a59931640138cceccfbdda4ad74d1a10e",
+      "engineReport": {
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "reportCreatedOn": "2026.09.13-07.37.55",
+        "sha256": "c912876e9c6ea62f12ef752c6fd1d935cfddb97ae79211a95da3e0fbd6c84e27"
+      },
+      "xp": 0,
+      "completedRuns": 0,
+      "abandonedInvalidationIgnored": true,
+      "originalCheckpointAvailable": true,
+      "onlyRecordedTemporaryRemoved": true
+    },
+    {
+      "phase": "ResumeDeath",
+      "processId": 22608,
+      "success": true,
+      "receiptSha256": "4aa0c3419cbdb2e84d414f8c8456911a6a18c90f3ab21339d3088af0cc483f0d",
+      "engineReport": {
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "reportCreatedOn": "2026.09.13-07.38.09",
+        "sha256": "81a10f6584436131d43225631b1e7a3bb81adbe8ca0b0292bb566848e456a0de"
+      },
+      "xp": 475,
+      "completedRuns": 1,
+      "lockedSuspensionRejectedAndPreserved": true,
+      "lockedAccountRejectedAndPreserved": true,
+      "replacementRetriesSucceeded": true,
+      "failedReplacementStagingCleaned": true
+    },
+    {
+      "phase": "FreshStart",
+      "processId": 30380,
+      "success": true,
+      "receiptSha256": "4ab36eb31d25def0e031c04faadc64c58b5dcf3909c14ed83e33ab4d5a19f2db",
+      "engineReport": {
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "reportCreatedOn": "2026.09.13-07.38.22",
+        "sha256": "1839d045fb994b0a638c6b001a4d0c0e435e1944c451a6cffc97b4cbda0d0d33"
+      },
+      "xp": 475,
+      "completedRuns": 1
+    }
+  ],
+  "cleanup": {
+    "allEightOwnedProcessesExited": true,
+    "testDaclsRestoredAndComparedToOriginals": true,
+    "originalAclDescriptorsRetainedBeforeMutation": true,
+    "abandonedInvalidationRemovedOnlyAfterFreshProcessVerification": true,
+    "remainingTemporarySaves": 0
+  },
+  "cleanupRepairHistory": [
+    {
+      "root": "Artifacts/SaveLifecycle/efa45688168c4552974c381b1f190933",
+      "acceptedRun": false,
+      "outcome": "Staging-create and readback cases passed, then whole security-descriptor restoration requested unavailable audit privilege. Fixed harness to restore only DACLs through new FileSecurity/DirectorySecurity objects and .NET SetAccessControl.",
+      "productionSaveHashesUnchanged": true,
+      "repairReceiptSha256": "3d45daab4950e02e1c412dc93b8e7cd011cf18e51283dd689bb11c97e3112ad7",
+      "repair": {
+        "acceptedHarnessRun": false,
+        "reason": "Initial whole-descriptor restoration requested audit privilege; DACL repair uses a fresh sibling with the original restored parent inheritance.",
+        "repairedFiles": [
+          {
+            "name": "SS_Account_v1.sav",
+            "inheritedAccessRestored": true,
+            "bytesUnchanged": true,
+            "sha256": "B0A2DD202670F7E4436D58C38BA40EE87ADD7973524BF86D8630EDFBFE60701E"
+          },
+          {
+            "name": "SS_Settings_v1.sav",
+            "inheritedAccessRestored": true,
+            "bytesUnchanged": true,
+            "sha256": "CECFB4027FF4ABA6A7E85167F7F5CE6D66FF8039534B7276A94F104137676D74"
+          },
+          {
+            "name": "SS_Suspend_v1.sav",
+            "inheritedAccessRestored": true,
+            "bytesUnchanged": true,
+            "sha256": "106B6A3CFF9F948E7FB857B77ECE157FB73344EAFC8FE04C6B876F8DA8171902"
+          }
+        ]
+      }
+    }
+  ],
+  "productionSaveHashesUnchanged": true,
+  "productionManifests": [
+    {
+      "location": "user-default",
+      "exists": false,
+      "files": []
+    },
+    {
+      "location": "project-default",
+      "exists": true,
+      "files": [
+        {
+          "name": "SS_Account_v1.sav",
+          "bytes": 2233,
+          "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+        },
+        {
+          "name": "SS_Suspend_v1.sav",
+          "bytes": 1989,
+          "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Staging faults are actual access-denied creation/readback failures; no disk-full or partial-write validation.",
+    "Interruption terminates one owned Unreal process while the parent withholds required oplock acknowledgement at replacement; it is not hardware power loss.",
+    "Fresh-process recovery ignores an abandoned staging file and resumes the old checkpoint once, then verifies 475 XP and one history entry after normal death/persistence retries.",
+    "No runtime save writer, schema, slot names, or production save data was changed.",
+    "No natural gameplay, station UI, rendering, controller or performance acceptance."
+  ]
+}

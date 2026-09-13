@@ -10,23 +10,23 @@ import unreal as u
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "/Game/SpaceSurvival"
-VERSION = "EquirectangularPanorama1"
+VERSION = "EquirectangularStarless3"
 
 
 def author():
     library = u.EditorAssetLibrary
-    source = ROOT / "ContentSource/Textures/SpacePanorama-v1.png"
+    source = ROOT / "ContentSource/Textures/SpacePanorama-starless-v2.png"
     manifest = json.loads(source.with_suffix(".json").read_text(encoding="utf-8"))
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     if digest != manifest["sha256"]:
         raise RuntimeError("Panorama source differs from its provenance manifest")
-    texture_path = BASE + "/Textures/T_SpacePanorama_v1"
+    texture_path = BASE + "/Textures/T_SpacePanorama_starless_v2"
     library.make_directory(BASE + "/Textures")
     texture = library.load_asset(texture_path)
     if not texture:
         task = u.AssetImportTask()
         for key, value in {"filename": str(source), "destination_path": BASE + "/Textures",
-                           "destination_name": "T_SpacePanorama_v1", "automated": True,
+                           "destination_name": "T_SpacePanorama_starless_v2", "automated": True,
                            "replace_existing": False, "save": True}.items():
             task.set_editor_property(key, value)
         u.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
@@ -34,6 +34,7 @@ def author():
         if not texture or not isinstance(texture, u.Texture2D):
             raise RuntimeError("Panorama import did not produce the expected Texture2D")
         texture.set_editor_property("srgb", True)
+        texture.set_editor_property("compression_settings", u.TextureCompressionSettings.TC_BC7)
         texture.set_editor_property("lod_group", u.TextureGroup.TEXTUREGROUP_SKYBOX)
         texture.set_editor_property("power_of_two_mode", u.TexturePowerOfTwoSetting.STRETCH_TO_POWER_OF_TWO)
         texture.set_editor_property("mip_gen_settings", u.TextureMipGenSettings.TMGS_SIMPLE_AVERAGE)
@@ -55,26 +56,48 @@ def author():
     material.set_editor_property("shading_model", u.MaterialShadingModel.MSM_UNLIT)
     material.set_editor_property("two_sided", True)
     direction = edit.create_material_expression(material, u.MaterialExpressionCameraVectorWS, -900, 0)
-    uv = edit.create_material_expression(material, u.MaterialExpressionCustom, -650, 0)
-    uv.set_editor_property("description", "World direction to equirectangular UV, stable across travel")
-    uv.set_editor_property("code", "float3 d = normalize(-Direction); return float2(atan2(d.y,d.x)*0.15915494309+0.5, acos(clamp(d.z,-1.0,1.0))*0.31830988618);")
-    uv.set_editor_property("output_type", u.CustomMaterialOutputType.CMOT_FLOAT2)
-    item = u.CustomInput()
-    item.set_editor_property("input_name", "Direction")
-    uv.set_editor_property("inputs", [item])
-    sample = edit.create_material_expression(material, u.MaterialExpressionTextureSampleParameter2D, -400, 0)
-    sample.set_editor_property("parameter_name", "SpacePanorama")
-    sample.set_editor_property("texture", texture)
+    texture_object = edit.create_material_expression(material, u.MaterialExpressionTextureObjectParameter, -900, 240)
+    texture_object.set_editor_property("parameter_name", "SpacePanorama")
+    texture_object.set_editor_property("texture", texture)
+    sample = edit.create_material_expression(material, u.MaterialExpressionCustom, -600, 0)
+    sample.set_editor_property("description", "Starless nebula with continuous wrap and quiet poles; stars are separate geometry")
+    # Tilt distant nebula into the upper chase view. Blend opposite border samples
+    # only within nine degrees of the wrap; equal edge values remove a bitmap seam.
+    sample.set_editor_property("code", """
+float3 d = normalize(-Direction);
+const float tilt = 0.471238898;
+d = float3(d.x*cos(tilt)-d.z*sin(tilt), d.y, d.x*sin(tilt)+d.z*cos(tilt));
+float2 uv = float2(frac(atan2(d.y,d.x)*0.15915494309+0.2), acos(clamp(d.z,-1.0,1.0))*0.31830988618);
+float seamBlend = 0.5*(1.0-smoothstep(0.0,0.025,min(uv.x,1.0-uv.x)));
+float3 nebula = lerp(Texture2DSample(Panorama,PanoramaSampler,uv).rgb,
+                     Texture2DSample(Panorama,PanoramaSampler,float2(1.0-uv.x,uv.y)).rgb,seamBlend);
+float poleBlend = smoothstep(0.0,0.035,min(uv.y,1.0-uv.y));
+return lerp(float3(0.0001,0.00015,0.0003),nebula,poleBlend);
+""")
+    sample.set_editor_property("output_type", u.CustomMaterialOutputType.CMOT_FLOAT3)
+    inputs = []
+    for name in ("Direction", "Panorama"):
+        item = u.CustomInput()
+        item.set_editor_property("input_name", name)
+        inputs.append(item)
+    sample.set_editor_property("inputs", inputs)
     tint = edit.create_material_expression(material, u.MaterialExpressionVectorParameter, -400, 240)
     tint.set_editor_property("parameter_name", "Tint")
     tint.set_editor_property("default_value", u.LinearColor(.6, .7, 1, 1))
+    # Keep slow region tint changes subtle so the distant sky stays subordinate
+    # to ship silhouettes and hazard warnings rather than becoming saturated magenta.
+    neutral = edit.create_material_expression(material, u.MaterialExpressionConstant3Vector, -400, 420)
+    neutral.set_editor_property("constant", u.LinearColor(1, 1, 1, 1))
+    region_tint = edit.create_material_expression(material, u.MaterialExpressionLinearInterpolate, -220, 240)
+    region_tint.set_editor_property("const_alpha", 0.25)
     multiply = edit.create_material_expression(material, u.MaterialExpressionMultiply, -140, 0)
     intensity = edit.create_material_expression(material, u.MaterialExpressionScalarParameter, -140, 240)
     intensity.set_editor_property("parameter_name", "SkyIntensity")
-    intensity.set_editor_property("default_value", 2.0)
+    intensity.set_editor_property("default_value", 0.8)
     output = edit.create_material_expression(material, u.MaterialExpressionMultiply, 100, 0)
-    for src, pin, dst, input_pin in ((direction, "", uv, "Direction"), (uv, "", sample, "UVs"),
-                                    (sample, "RGB", multiply, "A"), (tint, "", multiply, "B"),
+    for src, pin, dst, input_pin in ((direction, "", sample, "Direction"), (texture_object, "", sample, "Panorama"),
+                                    (sample, "", multiply, "A"), (region_tint, "", multiply, "B"),
+                                    (neutral, "", region_tint, "A"), (tint, "", region_tint, "B"),
                                     (multiply, "", output, "A"), (intensity, "", output, "B")):
         if not edit.connect_material_expressions(src, pin, dst, input_pin):
             raise RuntimeError(f"Panorama graph connection failed: {input_pin}")

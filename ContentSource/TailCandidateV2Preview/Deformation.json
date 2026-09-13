@@ -1,0 +1,36 @@
+{
+  "status": "FRESH_SOURCE_DEFORMATION_VERIFIED_VISUAL_REVIEW_REQUIRED",
+  "v2_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+  "prior_sha256": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00",
+  "total_vertices": 202507,
+  "changed_vertices": 2631,
+  "preserved_vertices": 199876,
+  "preserved_posed_vertices_max_error_cm": 0.0,
+  "clips": [
+    {
+      "clip": "Pilot",
+      "frames": 121,
+      "preserved_vertices_max_difference_cm": 0.0,
+      "changed_tail_vertices_max_displacement_vs_prior_cm": 60.78795623779297
+    },
+    {
+      "clip": "Walk",
+      "frames": 75,
+      "preserved_vertices_max_difference_cm": 0.0,
+      "changed_tail_vertices_max_displacement_vs_prior_cm": 51.06260299682617
+    },
+    {
+      "clip": "Exit",
+      "frames": 73,
+      "preserved_vertices_max_difference_cm": 0.0,
+      "changed_tail_vertices_max_displacement_vs_prior_cm": 61.264835357666016
+    }
+  ],
+  "source_only": true,
+  "limitations": [
+    "Before is unadopted TailCandidate v1, not runtime PilotMesh",
+    "No Unreal import or runtime evaluation",
+    "Source rigid tail may still retain occluded unrepaired strips",
+    "Existing palms/controls mismatch and body material quality not changed"
+  ]
+}

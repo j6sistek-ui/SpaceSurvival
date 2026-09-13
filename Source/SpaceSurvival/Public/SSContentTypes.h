@@ -28,6 +28,55 @@ enum class ESSEncounterKind : uint8
     MobileDepot
 };
 
+UENUM(BlueprintType)
+enum class ESSUtilityKind : uint8
+{
+    None = 0 UMETA(Hidden),
+    VectorThrusters = 1,
+    OverdriveCooling = 2
+};
+
+/** Fixed Phase 1 identities; only existing prices/effect magnitudes are content. */
+USTRUCT(BlueprintType)
+struct FSSUtilityDefinition
+{
+    GENERATED_BODY()
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    ESSUtilityKind Kind = ESSUtilityKind::VectorThrusters;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1", ClampMax = "100000000"))
+    int32 Price = 150;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+              meta = (ClampMin = "1", ClampMax = "3", EditCondition = "Kind == ESSUtilityKind::VectorThrusters",
+                      EditConditionHides))
+    double ManeuverMultiplier = 1.0;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+              meta = (ClampMin = "1", ClampMax = "3", EditCondition = "Kind == ESSUtilityKind::VectorThrusters",
+                      EditConditionHides))
+    double ResponseMultiplier = 1.0;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+              meta = (ClampMin = "1", ClampMax = "3", EditCondition = "Kind == ESSUtilityKind::OverdriveCooling",
+                      EditConditionHides))
+    double BoostEfficiency = 1.0;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+              meta = (ClampMin = "1", ClampMax = "3", EditCondition = "Kind == ESSUtilityKind::OverdriveCooling",
+                      EditConditionHides))
+    double CoolingEfficiency = 1.0;
+    FSSUtilityDefinition() : FSSUtilityDefinition(ESSUtilityKind::VectorThrusters) {}
+    explicit FSSUtilityDefinition(ESSUtilityKind InKind) : Kind(InKind)
+    {
+        if (Kind == ESSUtilityKind::VectorThrusters)
+        {
+            ManeuverMultiplier = 1.30;
+            ResponseMultiplier = 1.12;
+        }
+        else if (Kind == ESSUtilityKind::OverdriveCooling)
+        {
+            BoostEfficiency = 1.35;
+            CoolingEfficiency = 1.45;
+        }
+    }
+};
+
 /** One of the six existing presentations of the four Phase 1 hazard families. */
 USTRUCT(BlueprintType)
 struct FSSHazardDefinition

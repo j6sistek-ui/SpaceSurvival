@@ -1,0 +1,204 @@
+{
+  "status": "CANDIDATE_PERSISTED_ASSETS_VERIFIED_NOT_VISUAL_ACCEPTANCE",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "errors": [],
+  "materials": [
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure",
+      "base_color": [
+        0.017999999225139618,
+        0.027000000700354576,
+        0.03200000151991844,
+        1.0
+      ],
+      "metallic": 0.7200000286102295,
+      "roughness": 0.2800000011920929,
+      "translucent": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_WarmCeramic",
+      "base_color": [
+        0.699999988079071,
+        0.6200000047683716,
+        0.46000000834465027,
+        1.0
+      ],
+      "metallic": 0.1599999964237213,
+      "roughness": 0.25,
+      "translucent": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels",
+      "base_color": [
+        0.8700000047683716,
+        0.8600000143051147,
+        0.7799999713897705,
+        1.0
+      ],
+      "metallic": 0.05999999865889549,
+      "roughness": 0.23999999463558197,
+      "translucent": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze",
+      "base_color": [
+        0.3400000035762787,
+        0.14499999582767487,
+        0.04500000178813934,
+        1.0
+      ],
+      "metallic": 0.8199999928474426,
+      "roughness": 0.27000001072883606,
+      "translucent": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges",
+      "base_color": [
+        0.6800000071525574,
+        0.38999998569488525,
+        0.12999999523162842,
+        1.0
+      ],
+      "metallic": 0.8500000238418579,
+      "roughness": 0.20999999344348907,
+      "translucent": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium",
+      "base_color": [
+        0.23000000417232513,
+        0.27000001072883606,
+        0.30000001192092896,
+        1.0
+      ],
+      "metallic": 0.9200000166893005,
+      "roughness": 0.2199999988079071,
+      "translucent": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav",
+      "base_color": [
+        0.014999999664723873,
+        0.4000000059604645,
+        0.5799999833106995,
+        1.0
+      ],
+      "metallic": 0.18000000715255737,
+      "roughness": 0.20000000298023224,
+      "translucent": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding",
+      "base_color": [
+        0.008999999612569809,
+        0.014000000432133675,
+        0.01600000075995922,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.550000011920929,
+      "translucent": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen",
+      "base_color": [
+        0.3799999952316284,
+        0.6700000166893005,
+        0.7200000286102295,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.06499999761581421,
+      "translucent": true
+    }
+  ],
+  "limits": [
+    "Persisted asset checks, not gameplay or art acceptance",
+    "LOD and actual draw/shader cost need runtime measurement",
+    "Pilot control contact and existing tail artifacts remain unresolved"
+  ],
+  "mesh": "/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2",
+  "bounds_cm": [
+    [
+      -244.79998779296875,
+      -142.78431701660156,
+      -65.3775405883789
+    ],
+    [
+      209.99998474121094,
+      142.78431701660156,
+      97.80007934570312
+    ]
+  ],
+  "lod_count": 1,
+  "material_sections": 9,
+  "lod0_vertices": 79268,
+  "lod0_triangles": 134262,
+  "simple_collision_count": 0,
+  "all_section_collision_disabled": true,
+  "collision_profile": "NoCollision",
+  "obj_sha256": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+  "pilot_transform": {
+    "position_cm": [
+      -15,
+      0,
+      72
+    ],
+    "unreal_yaw_degrees": -90,
+    "blender_z_rotation_degrees": 90,
+    "scale": 1.5,
+    "source": "Existing PilotMesh.glb plus A_Pilot0s,loaded only for previews"
+  },
+  "content_packages": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_BurnishedBronze.uasset",
+      "bytes": 13312,
+      "sha256": "d5bee92ccf1e9b6c54b85353d46734f4694f41c9e38981b8c5e281e64b24f15e"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_ChampagneEdges.uasset",
+      "bytes": 13608,
+      "sha256": "fdc75e3e3e4921892791793e34870eedc404307f939ae00ad7346db28bbc518e"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_CockpitPadding.uasset",
+      "bytes": 9472,
+      "sha256": "24b7310f596e4da22c0d7d541a7d81e55b40d8c171b6e6f620e4cfb4c29a3969"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_GraphiteStructure.uasset",
+      "bytes": 12442,
+      "sha256": "7a02849b089a192d766261f344f6522241c50678d9fa5b9f5e9e78f8b2dea4a8"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_IonAndNav.uasset",
+      "bytes": 12245,
+      "sha256": "a1aa26f8df23151bb7d556f0eb139455865a3e42e59173d388797c9bda669bfb"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_IvoryPanels.uasset",
+      "bytes": 13985,
+      "sha256": "c3c173b354eeeddde99f4ea32907c784c259bf509b83cdd983a8df11b7c360a7"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_MachinedTitanium.uasset",
+      "bytes": 13025,
+      "sha256": "e0706cfef69b5fca60cbcc7349e42380b5cb9f108487c38f4a9f66bcda75cbd7"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_WarmCeramic.uasset",
+      "bytes": 13642,
+      "sha256": "c109c3ff0ccd0f3010643a0044713e005aead08a89477c148dc9e7f7a655e8cc"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_Windscreen.uasset",
+      "bytes": 11512,
+      "sha256": "5283fba73752f879635a345ab723b9406dda5fd27c4c331138331807fcbcef16"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_AcornShipV2.uasset",
+      "bytes": 1926696,
+      "sha256": "e5c6f1c3ba431734e530f3b52207136b01d0ae92ced04065051af745017675e0"
+    }
+  ]
+}

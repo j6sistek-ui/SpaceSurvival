@@ -90,23 +90,31 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     auto *ExitAnimation =
         LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Disembark.A_Disembark"));
     auto *PilotAnimation = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Pilot.A_Pilot"));
-    auto *PilotMesh =
-        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautPilot.SK_AcornautPilot"));
     if (!TestNotNull(TEXT("Create station"), Hub) || !TestNotNull(TEXT("Create walker"), Walker) ||
         !TestNotNull(TEXT("Create ship"), Ship) || !TestNotNull(TEXT("Create local controller"), Controller) ||
         !TestNotNull(TEXT("Load authored exit"), ExitAnimation) ||
-        !TestNotNull(TEXT("Load pilot animation"), PilotAnimation) ||
-        !TestNotNull(TEXT("Load pilot derivative"), PilotMesh))
+        !TestNotNull(TEXT("Load pilot animation"), PilotAnimation))
         return false;
     Hub->BuildHub(false);
     Walker->DispatchBeginPlay();
+    Ship->DispatchBeginPlay();
+    auto *PilotMesh = Ship->Pilot->GetSkeletalMeshAsset();
+    auto *WalkerMesh = Walker->GetMesh()->GetSkeletalMeshAsset();
+    auto *SeatedAnimation = Ship->Pilot->GetSingleNodeInstance();
+    if (!TestNotNull(TEXT("Real ship BeginPlay resolves the runtime pilot mesh"), PilotMesh) ||
+        !TestNotNull(TEXT("Real walker BeginPlay resolves the runtime character mesh"), WalkerMesh) ||
+        !TestTrue(TEXT("Ship and walker use the same actual runtime mesh before geometry evaluation"),
+                  PilotMesh == WalkerMesh) ||
+        !TestTrue(TEXT("Real ship BeginPlay selects the authored pilot animation"),
+                  SeatedAnimation && SeatedAnimation->GetCurrentAsset() == PilotAnimation))
+        return false;
+    AddInfo(TEXT("EXIT_RUNTIME_MESH: ") + PilotMesh->GetPathName());
     Controller->SetAsLocalPlayerController();
     Fixture.World->AddController(Controller);
     Controller->Possess(Walker);
     Ship->SetActorLocationAndRotation(Hub->DockPosition(), Hub->GetActorRotation());
-    Ship->Pilot->SetSkeletalMesh(PilotMesh);
-    Ship->Pilot->PlayAnimation(PilotAnimation, false);
-    Ship->Pilot->GetSingleNodeInstance()->SetPosition(0.f, false);
+    SeatedAnimation->SetPlaying(false);
+    SeatedAnimation->SetPosition(0.f, false);
     Ship->Pilot->TickAnimation(0.f, false);
     Ship->Pilot->RefreshBoneTransforms();
     const FTransform Seated = Ship->Pilot->GetComponentTransform();
@@ -117,7 +125,7 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     if (!TestTrue(TEXT("Begin actual authored exit"), Walker->BeginDisembark(Seated, End, Hub->GetActorRotation())))
         return false;
     auto *Animation = Walker->GetMesh()->GetSingleNodeInstance();
-    TestTrue(TEXT("Walker uses the exact pilot derivative and constant mesh scale"),
+    TestTrue(TEXT("Walker retains the shared runtime mesh and constant scale"),
              Walker->GetMesh()->GetSkeletalMeshAsset() == PilotMesh &&
                  Walker->GetMesh()->GetRelativeScale3D().Equals(FVector(1.5f), .001));
     TestTrue(TEXT("Exit starts at the exact seated component transform and pelvis"),
@@ -185,7 +193,8 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
         TInlineComponentArray<UInstancedStaticMeshComponent *> Batches;
         Hub->GetComponents(Batches);
         for (auto *Batch : Batches)
-            if (Batch->GetFName() == TEXT("DeckPanels") && Batch->GetStaticMesh())
+            if (Batch->GetFName() == TEXT("TexturedDeckPanels") && Batch->GetStaticMesh())
+            {
                 for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
                 {
                     FTransform Instance;
@@ -197,6 +206,9 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
                         PlateZ =
                             FMath::Max(PlateZ, Instance.TransformPosition(FVector(Local.X, Local.Y, Bounds.Max.Z)).Z);
                 }
+            }
+        if (!TestTrue(TEXT("Visible sole resolves to an actual textured floor panel"), PlateZ > -UE_DOUBLE_BIG_NUMBER))
+            return;
         AddInfo(FString::Printf(TEXT("EXIT_SOLE %s vertices=%d soleZ=%.6f plateZ=%.6f clearance=%.6f"), Stage,
                                 Vertices.Num(), Lowest.Z, PlateZ, Lowest.Z - PlateZ));
         TestTrue(FString::Printf(TEXT("%s visible sole meets the actual deck panel within 1 mm"), Stage),

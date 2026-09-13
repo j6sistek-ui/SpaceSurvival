@@ -96,7 +96,7 @@ def validate():
     assert len(exit_document["animations"]) == 1 and len(exit_document["animations"][0]["channels"]) == 156
     results["disembark_animation"] = {"valid_binary_header_and_hash": True, "seconds": 2.4, "bones": 52,
                                       "original_geometry_skin_materials_preserved": True}
-    panorama = ROOT / "Textures/SpacePanorama-v1.png"
+    panorama = ROOT / "Textures/SpacePanorama-starless-v2.png"
     panorama_manifest = json.loads(panorama.with_suffix(".json").read_text(encoding="utf-8"))
     panorama_bytes = panorama.read_bytes()
     assert panorama_bytes[:8] == bytes([137,80,78,71,13,10,26,10]), "Panorama is not PNG"
@@ -106,6 +106,17 @@ def validate():
     assert hashlib.sha256(panorama_bytes).hexdigest() == panorama_manifest["sha256"]
     results["space_panorama"] = {"source_sha256": panorama_manifest["sha256"], "width": width,
                                  "height": height, "runtime_visual_approval": False}
+    deck_manifest = json.loads((ROOT / "ThirdParty/PolyHaven/MetalPlate/manifest.json").read_text(encoding="utf-8"))
+    assert deck_manifest["license"] == "CC0-1.0" and deck_manifest["physical_width_cm"] == 50
+    assert {row["kind"] for row in deck_manifest["maps"]} == {"diff", "arm", "nor_dx"}
+    for row in deck_manifest["maps"]:
+        data = (ROOT / "ThirdParty/PolyHaven/MetalPlate" / row["file"]).read_bytes()
+        assert len(data) == row["bytes"] and hashlib.sha256(data).hexdigest() == row["sha256"]
+        assert data[:8] == bytes([137,80,78,71,13,10,26,10]) and data[12:16] == b"IHDR"
+        assert struct.unpack_from(">II", data, 16) == (2048, 2048) and data[24:26] == bytes([16, 2])
+    results["station_deck"] = {"license": deck_manifest["license"], "author": deck_manifest["author"],
+                               "asset_url": deck_manifest["asset_url"], "source_maps": deck_manifest["maps"],
+                               "runtime_visual_approval": False}
     (ROOT / "source_validation.json").write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
     print(f"Validated source formats: {len(results['meshes'])} meshes, {len(results['audio'])} WAVs, unchanged GLB. Unreal validation remains open.")
     return results

@@ -1,0 +1,132 @@
+{
+  "status": "PROVISIONAL_REPAIR_IMPORTED_NATIVE_PREVIEWED_NOT_OWNER_ART_ACCEPTANCE",
+  "source_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+  "source_bytes": 31857576,
+  "mesh": "/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2",
+  "source_validation": "SourceValidation.json",
+  "deformation": "Deformation.json",
+  "native_preview": "UnrealPreview.json",
+  "native_preview_process_exit_code": 0,
+  "source_images": [
+    "SeatedRearComparison.png",
+    "SeatedOppositeComparison.png",
+    "WalkComparison.png",
+    "ExitComparison.png",
+    "ChaseComparison.png"
+  ],
+  "native_images": [
+    "UnrealSeatedRear.png",
+    "UnrealShipPilotRear.png",
+    "UnrealWalkHandoff.png",
+    "UnrealExitContact.png"
+  ],
+  "limits": [
+    "Thin residual fur fragments visibly remain below seated tail",
+    "Rigid pelvis tail without secondary motion",
+    "Existing hand/control mismatch remains",
+    "Stock floor image is not sole-contact proof; lead real station CPU-vertex test owns contact",
+    "Native ship view reveals faceted hull highlights unlike source studio smooth panels; separate ship import concern"
+  ],
+  "artifacts": [
+    {
+      "file": "ChaseComparison.png",
+      "bytes": 3208153,
+      "sha256": "4e7b37af2df9327a75f962d51f08a5d30855d5454dcaca9ce5ab74e56e786e51"
+    },
+    {
+      "file": "Component8388Review.png",
+      "bytes": 1683098,
+      "sha256": "5863d478e9be097be798454efd055ebc0af96f940b0232a371f5365c2bcc1455"
+    },
+    {
+      "file": "ExitComparison.png",
+      "bytes": 1281477,
+      "sha256": "7f5aadd8d876cdc4169eaaf0f8b7d6ce40b7ba00374f0bf8c7e8b571ca52e4a9"
+    },
+    {
+      "file": "RejectedStrapSelection.png",
+      "bytes": 1045738,
+      "sha256": "01f182eaac8f89f30421590ca5b97773cf128884ec59efb09bd041d6e7665663"
+    },
+    {
+      "file": "ResidualRestSelection.png",
+      "bytes": 1135726,
+      "sha256": "271a86f7a582b463a6922ffacccb307ece715721cb458238e2096673f4bd340c"
+    },
+    {
+      "file": "ResidualSeatedRearBefore.png",
+      "bytes": 1119128,
+      "sha256": "b34b1dd996a5528fa50d73488fb512621ab97120ebd443a7fc8939494e895ed4"
+    },
+    {
+      "file": "ResidualSeatedSelection.png",
+      "bytes": 1030158,
+      "sha256": "70972a5e8d1014163bb42b1f07e06fb9a6bbb985f5327e4bb17ef9869cdf75f2"
+    },
+    {
+      "file": "ResidualWalkSelection.png",
+      "bytes": 1053189,
+      "sha256": "0ef33193afd6382f9180d90d4f194506b2a08f4221c1ff1238c6c12dc3f05e48"
+    },
+    {
+      "file": "RestSelection.png",
+      "bytes": 1138685,
+      "sha256": "8c501d37198293d6867b38398b3b99018829f77afb58b2b3af68285b14a6640d"
+    },
+    {
+      "file": "SeatedOppositeComparison.png",
+      "bytes": 1803187,
+      "sha256": "fd3ddc5fc2614593cf51afd4f8aa611a2ad03397624884d3791747646038206b"
+    },
+    {
+      "file": "SeatedRearBefore.png",
+      "bytes": 1130121,
+      "sha256": "b66e04d0a3c2648007c576b4a0a087858b5f461bb215d9004f9e529323dbda9a"
+    },
+    {
+      "file": "SeatedRearComparison.png",
+      "bytes": 1869069,
+      "sha256": "1fc221cb8c0f956cba06319398b7686be3ef17473d70de3a5493ef4107be7d1e"
+    },
+    {
+      "file": "SeatedSelection.png",
+      "bytes": 1047278,
+      "sha256": "84dabde2f0084e1b19e7efa056f5ecadff83df73a4720ef94b144e9f248f2da6"
+    },
+    {
+      "file": "UnrealExitContact.png",
+      "bytes": 1016106,
+      "sha256": "c0690d1a3f7b418c3b19ad46d946b228b44af5bbb3109487d59794b4216ecbc2"
+    },
+    {
+      "file": "UnrealSeatedRear.png",
+      "bytes": 1114930,
+      "sha256": "8cbf219f536cb86a2eebc8cc5afd0452dacd78fba1e6d4e26abef2c0d2b11dfd"
+    },
+    {
+      "file": "UnrealShipPilotRear.png",
+      "bytes": 1450953,
+      "sha256": "0076859e9c2821af6d7775f4f9963264a0899182945b85ee27c65e462a524b20"
+    },
+    {
+      "file": "UnrealWalkHandoff.png",
+      "bytes": 1025745,
+      "sha256": "e50c20bcc7d7c6493871745c8a68c3456549c89648367a1bd876246766d79b0c"
+    },
+    {
+      "file": "V2SeatedRear.png",
+      "bytes": 1115832,
+      "sha256": "175e96b83c6eaa6db1c8df7c58bd81ba9d3f53fa8303c41209666c74788838f8"
+    },
+    {
+      "file": "WalkComparison.png",
+      "bytes": 1007378,
+      "sha256": "96205360dc39726df46cea957b421c7952e2898f455d25225401000db525e1c5"
+    },
+    {
+      "file": "WalkSelection.png",
+      "bytes": 1054809,
+      "sha256": "2dd2e6f21a9b6ca47ebb16791517142d97b2202f090add946ab2dc6cf38b5f4c"
+    }
+  ]
+}

@@ -339,6 +339,105 @@ void StationUtilityPurchases()
           event.run.totalCreditsEarned == 0);
 }
 
+void UtilityContentTuning()
+{
+    auto s = Fresh("utility-content");
+    FastTuning(s);
+    ReachStation(s, 5);
+    s.AwardCredits(1000); // Fund the fixture through the ordinary accounting path.
+    const auto baseline = s.Stats();
+    CHECK(s.UtilityPrice(SS::Utility::VectorThrusters) == 150);
+    CHECK(s.UtilityPrice(SS::Utility::OverdriveCooling) == 150);
+    CHECK(s.EquipUtility(SS::Utility::VectorThrusters));
+    CHECK(Near(s.Stats().maneuver, baseline.maneuver * 1.30));
+    CHECK(Near(s.Stats().response, baseline.response * 1.12));
+    CHECK(s.EquipUtility(SS::Utility::OverdriveCooling));
+    CHECK(Near(s.Stats().boostEfficiency, 1.35) && Near(s.Stats().coolingEfficiency, 1.45));
+    CHECK(Near(s.Stats().maneuver, baseline.maneuver) && Near(s.Stats().response, baseline.response));
+
+    // Identity lookup is independent of data row order; default policies and save identities remain fixed.
+    auto custom = SS::DefaultUtilityDefinitions();
+    custom[0].price = 217;
+    custom[0].maneuverMultiplier = 1.65;
+    custom[0].responseMultiplier = 1.28;
+    custom[1].price = 193;
+    custom[1].boostEfficiency = 1.70;
+    custom[1].coolingEfficiency = 1.90;
+    std::swap(custom[0], custom[1]);
+    s.tuning.utilities = custom;
+    CHECK(s.UtilityPrice(SS::Utility::VectorThrusters) == 217);
+    CHECK(s.UtilityPrice(SS::Utility::OverdriveCooling) == 193);
+    s.run.credits = 216;
+    const auto before = SS::EncodeRun(s.run);
+    CHECK(!s.PurchaseUtility(SS::Utility::VectorThrusters));
+    CHECK(SS::EncodeRun(s.run) == before);
+    s.run.credits = 217;
+    CHECK(s.PurchaseUtility(SS::Utility::VectorThrusters) && s.run.credits == 0);
+    CHECK(Near(s.Stats().maneuver, baseline.maneuver * 1.65));
+    CHECK(Near(s.Stats().response, baseline.response * 1.28));
+    CHECK(Near(s.Stats().maxHull, baseline.maxHull) && Near(s.Stats().weaponDamage, baseline.weaponDamage));
+    s.run.credits = 1000;
+    CHECK(!s.PurchaseUtility(SS::Utility::VectorThrusters) && s.run.credits == 1000);
+    CHECK(s.PurchaseUtility(SS::Utility::OverdriveCooling) && s.run.credits == 807);
+    CHECK(Near(s.Stats().boostEfficiency, 1.70) && Near(s.Stats().coolingEfficiency, 1.90));
+    CHECK(Near(s.Stats().maneuver, baseline.maneuver));
+    const auto paid = s.run.credits;
+    CHECK(s.EquipUtility(SS::Utility::VectorThrusters) && s.run.credits == paid);
+    std::string error;
+    SS::Run resumed;
+    CHECK(SS::DecodeRun(SS::EncodeRun(s.run), resumed, error));
+    CHECK(resumed.utility == SS::Utility::VectorThrusters);
+    CHECK(SS::NormalizeUtilityDefinitions(custom, custom)); // Safe even when input and output alias.
+    CHECK(custom[0].kind == SS::Utility::VectorThrusters && custom[0].price == 217);
+
+    for (auto kind : {SS::Utility::None, static_cast<SS::Utility>(99), SS::Utility::VectorThrusters})
+    {
+        auto malformed = SS::DefaultUtilityDefinitions();
+        malformed[0].price = 1;
+        malformed[1].kind = kind; // Missing, unknown or duplicate identity: entire roster must fall back.
+        s.tuning.utilities = malformed;
+        CHECK(s.UtilityPrice(SS::Utility::VectorThrusters) == 150);
+        CHECK(s.UtilityPrice(SS::Utility::OverdriveCooling) == 150);
+        CHECK(Near(s.Stats().maneuver, baseline.maneuver * 1.30));
+        CHECK(!SS::NormalizeUtilityDefinitions(malformed, malformed));
+    }
+    for (double value : {0.0, -1.0, std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()})
+    {
+        auto malformed = SS::DefaultUtilityDefinitions();
+        malformed[0].price = 1;
+        malformed[0].maneuverMultiplier = value;
+        s.tuning.utilities = malformed;
+        CHECK(s.UtilityPrice(SS::Utility::VectorThrusters) == 150);
+        CHECK(Near(s.Stats().maneuver, baseline.maneuver * 1.30));
+        s.run.utility = SS::Utility::None;
+        s.run.credits = 149;
+        CHECK(!s.PurchaseUtility(SS::Utility::VectorThrusters) && s.run.credits == 149);
+        s.run.utility = SS::Utility::VectorThrusters;
+    }
+    for (int price : {0, -1, std::numeric_limits<int>::min()})
+    {
+        s.tuning.utilities = SS::DefaultUtilityDefinitions();
+        s.tuning.utilities[1].price = price;
+        s.run.utility = SS::Utility::OverdriveCooling;
+        CHECK(s.UtilityPrice(SS::Utility::OverdriveCooling) == 150);
+        CHECK(Near(s.Stats().boostEfficiency, 1.35));
+    }
+    auto large = SS::DefaultUtilityDefinitions();
+    large[1].price = std::numeric_limits<int>::max();
+    large[1].boostEfficiency = 1000.0;
+    large[1].coolingEfficiency = 1000.0;
+    s.tuning.utilities = large;
+    CHECK(s.UtilityPrice(SS::Utility::OverdriveCooling) == 100000000);
+    CHECK(Near(s.Stats().boostEfficiency, 3.0) && Near(s.Stats().coolingEfficiency, 3.0));
+    CHECK(!SS::NormalizeUtilityDefinitions(large, large));
+    CHECK(large[1].price == 100000000 && Near(large[1].boostEfficiency, 3.0));
+    for (auto kind : {SS::Utility::None, static_cast<SS::Utility>(-1), static_cast<SS::Utility>(99)})
+    {
+        CHECK(s.UtilityPrice(kind) == 0);
+        CHECK(!s.PurchaseUtility(kind));
+    }
+}
+
 void DepotShieldService()
 {
     auto s = Fresh("depot-shield");
@@ -752,6 +851,7 @@ int main()
     WaveLifecycleAndEconomy();
     UpgradeTiersAndRepair();
     StationUtilityPurchases();
+    UtilityContentTuning();
     DepotShieldService();
     Contracts();
     DeathProgressionReset();

@@ -1,0 +1,260 @@
+{
+  "status": "NATIVE_UNREAL_ASSET_PREVIEW_CAPTURED_NOT_GAMEPLAY",
+  "errors": [],
+  "source_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+  "mesh_package_sha256": "7a9e6caffe15c488bed4846912e823a60974bad402dd736d222fb3c355d67917",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "samples": [
+    {
+      "name": "UnrealSeatedRear",
+      "clip": "Pilot",
+      "time": 1.0,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        -280,
+        310,
+        200
+      ],
+      "target": [
+        -15,
+        0,
+        93
+      ],
+      "fov": 50,
+      "ship": false,
+      "floor_top": -77.25,
+      "scale": 1.5,
+      "yaw": -90,
+      "bone_count": 52,
+      "max_original_vs_repaired_bone_location_difference_cm": 0.0,
+      "sampled_seconds": 1.0,
+      "sockets_world_cm": {
+        "Pelvis": [
+          -14.99999742649345,
+          4.6275090426206546e-07,
+          72.00000225645601
+        ],
+        "Head": [
+          -12.012027305074266,
+          0.06615812042856195,
+          120.81708719922385
+        ],
+        "L_Foot": [
+          33.09398570315364,
+          -11.217383905546882,
+          36.8611794770254
+        ],
+        "R_Foot": [
+          30.909641576786157,
+          12.116191105464772,
+          36.85522048019919
+        ],
+        "L_Ankle": [
+          16.223921439383936,
+          -11.21740814293095,
+          38.54818540264962
+        ],
+        "R_Ankle": [
+          11.774469913205074,
+          12.116178927185246,
+          38.768731534266394
+        ]
+      },
+      "png": "ContentSource\\TailCandidateV2Preview\\UnrealSeatedRear.png"
+    },
+    {
+      "name": "UnrealShipPilotRear",
+      "clip": "Pilot",
+      "time": 1.0,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        -820,
+        530,
+        400
+      ],
+      "target": [
+        -40,
+        0,
+        55
+      ],
+      "fov": 50,
+      "ship": true,
+      "floor_top": -77.25,
+      "scale": 1.5,
+      "yaw": -90,
+      "bone_count": 52,
+      "max_original_vs_repaired_bone_location_difference_cm": 0.0,
+      "sampled_seconds": 1.0,
+      "sockets_world_cm": {
+        "Pelvis": [
+          -14.99999742649345,
+          4.6275090426206546e-07,
+          72.00000225645601
+        ],
+        "Head": [
+          -12.012027305074266,
+          0.06615812042856195,
+          120.81708719922385
+        ],
+        "L_Foot": [
+          33.09398570315364,
+          -11.217383905546882,
+          36.8611794770254
+        ],
+        "R_Foot": [
+          30.909641576786157,
+          12.116191105464772,
+          36.85522048019919
+        ],
+        "L_Ankle": [
+          16.223921439383936,
+          -11.21740814293095,
+          38.54818540264962
+        ],
+        "R_Ankle": [
+          11.774469913205074,
+          12.116178927185246,
+          38.768731534266394
+        ]
+      },
+      "png": "ContentSource\\TailCandidateV2Preview\\UnrealShipPilotRear.png"
+    },
+    {
+      "name": "UnrealWalkHandoff",
+      "clip": "Walk",
+      "time": 0.308333333,
+      "position": [
+        0,
+        0,
+        97.10404241
+      ],
+      "camera": [
+        -340,
+        380,
+        175
+      ],
+      "target": [
+        20,
+        0,
+        100
+      ],
+      "fov": 52,
+      "ship": false,
+      "floor_top": 2.75,
+      "scale": 1.5,
+      "yaw": -90,
+      "bone_count": 52,
+      "max_original_vs_repaired_bone_location_difference_cm": 0.0,
+      "sampled_seconds": 0.3083333373069763,
+      "sockets_world_cm": {
+        "Pelvis": [
+          33.12200546264649,
+          -0.0071382746100496774,
+          80.47187745486085
+        ],
+        "Head": [
+          64.42576680237337,
+          0.23426268345096446,
+          117.54094798730694
+        ],
+        "L_Foot": [
+          9.80962725656962,
+          -7.435179330933909,
+          9.976273929455687
+        ],
+        "R_Foot": [
+          26.14985102357397,
+          7.0250206354089215,
+          10.132765572807571
+        ],
+        "L_Ankle": [
+          19.20672421774023,
+          -7.511174473910472,
+          24.087753323835273
+        ],
+        "R_Ankle": [
+          36.305510438439526,
+          10.123172745902316,
+          26.166491106768802
+        ]
+      },
+      "png": "ContentSource\\TailCandidateV2Preview\\UnrealWalkHandoff.png"
+    },
+    {
+      "name": "UnrealExitContact",
+      "clip": "Disembark",
+      "time": 1.6,
+      "position": [
+        0,
+        0,
+        97.10404241
+      ],
+      "camera": [
+        -340,
+        380,
+        175
+      ],
+      "target": [
+        20,
+        0,
+        100
+      ],
+      "fov": 52,
+      "ship": false,
+      "floor_top": 2.75,
+      "scale": 1.5,
+      "yaw": -90,
+      "bone_count": 52,
+      "max_original_vs_repaired_bone_location_difference_cm": 0.0,
+      "sampled_seconds": 1.600000023841858,
+      "sockets_world_cm": {
+        "Pelvis": [
+          33.123387336730964,
+          -0.007882178993902755,
+          80.47052705202881
+        ],
+        "Head": [
+          64.42546107927971,
+          0.23433624782714446,
+          117.54066415911902
+        ],
+        "L_Foot": [
+          9.817793566986001,
+          -7.440802046916565,
+          9.972644780281811
+        ],
+        "R_Foot": [
+          26.158037577969772,
+          7.027328256413465,
+          10.130005799435509
+        ],
+        "L_Ankle": [
+          19.21293222622294,
+          -7.514652439805641,
+          24.085439434445092
+        ],
+        "R_Ankle": [
+          36.3105190790598,
+          10.124664574975185,
+          26.16590135436617
+        ]
+      },
+      "png": "ContentSource\\TailCandidateV2Preview\\UnrealExitContact.png"
+    }
+  ],
+  "protected_content_packages_unchanged": 77,
+  "limits": [
+    "Unsaved stock actors, not native game flow",
+    "Sampled pose and bone comparisons do not establish CPU-skinned vertex equality or collision/sole contact",
+    "Floor at2.75cm models visible deck top only; lead-owned real station automation checks actual CPU-skinned sole",
+    "Thin residual fur fragments remain; no owner visual approval"
+  ]
+}

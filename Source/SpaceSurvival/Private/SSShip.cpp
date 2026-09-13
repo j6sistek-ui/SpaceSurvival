@@ -62,9 +62,9 @@ void ASSShip::BeginPlay()
     const bool Agile = GI && GI->Session.run.ship == SS::Ship::Agile;
     HullMesh->SetStaticMesh(
         LoadObject<UStaticMesh>(nullptr, Agile ? TEXT("/Game/SpaceSurvival/Meshes/SM_AgileShip.SM_AgileShip")
-                                               : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShip.SM_AcornShip")));
+                                               : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2")));
     Pilot->SetSkeletalMesh(
-        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautPilot.SK_AcornautPilot")));
+        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
     Pilot->PlayAnimation(LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Pilot.A_Pilot")),
                          true);
     EngineAudio->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Engine.Engine")));

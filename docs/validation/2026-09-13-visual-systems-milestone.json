@@ -1,0 +1,240 @@
+{
+  "status": "VERIFIED_EDITOR_AND_CONTENT_MILESTONE_PACKAGE_PENDING",
+  "dateUtc": "2026-09-13",
+  "baseCommit": "3df41632ef8de0a858325afd5e7149ffe7060ef9",
+  "sourceSha256LfUtf8": {
+    "Config/DefaultEngine.ini": "10eab5d62077dd180622f0f2230c9b0242555bfdfffabdb24b35f9a136db8614",
+    "Config/DefaultGame.ini": "c14845805f2760cfdb580cd413017230bf741e7b10496f2fd484728e6f3e703e",
+    "Config/DefaultInput.ini": "17a4be92f6812afeec062a4a83cf5c3648957c40859b9f0b96eab86cec601c87",
+    "Scripts/AnalyzePerformance.py": "a31bf0b6743e467bde2924d8cc325d1ce3f9ee78dafb9c722010ac9dc6f72fc1",
+    "Scripts/AuthorAcornShip.py": "e27a4cfd2ed55d5a2af0e02d936c178ac0cb17cec394800ad8fbce87906891f3",
+    "Scripts/AuthorContent.py": "01449217b4c58e0005f623cb373a5512e2b462b73d4bbd157d6bef84823575c4",
+    "Scripts/AuthorSpaceMaterial.py": "531d002e5c6a1d7025d655447b97a16ebf973eaa1b794ff817247a1610a5d4d8",
+    "Scripts/AuthorSpacePanorama.py": "017421d99ebca3918efff35998adf5b8e9fa9ed5f7d1f15e2140f07059113c27",
+    "Scripts/AuthorStationDeck.py": "1840c2a564cf62f4433c233c8eeb74e00abe4118d39eff30971511bb7983b07d",
+    "Scripts/AuthorTailRepair.py": "991fe37660b9ac92fb0eec9a84268549c603a13c63a2731dd02981e38c12535e",
+    "Scripts/Build.ps1": "8032be9e37023aef445c158faae29c7f4fab01a3cb76b0b46bb9b46cfe486bec",
+    "Scripts/BundlePrerequisites.ps1": "14e5e09a0a22a18efc67558f2d0dd52e8025cd33577725bcfaaf2ff5b6837bb0",
+    "Scripts/CaptureEndgame.ps1": "99cd15061abc8b089615d3c18e3fcd4c20f78aa884a5935fb6910ce663a220f8",
+    "Scripts/CheckProject.py": "b073b7e641b4b0ed2039c45e944bbbac9ca5ebcb3a0fed162fe23a8aa45ef501",
+    "Scripts/Format.ps1": "860195de8dfedab351a3c22c85a1cab8c7783b031e97f0d7189da2dc6582a860",
+    "Scripts/GenerateAudio.py": "5e6dcb77d48eb1ced65cdbc243e2a6eba1fedd8d1731f5fc35825cba546320b5",
+    "Scripts/SaveFaultNative.cs": "0a59993e340f1c9cb05f29e0a3f9cd82b07c0fe0864d7c35222088ef5190a2b2",
+    "Scripts/TestCore.ps1": "bc1f4074b470e36abb4bd3af3347c547b4acda10107f7bb06f83975e5d3b834d",
+    "Scripts/TestSaveLifecycle.ps1": "4ac58be8e65aef434e099c99f1c496345f5cdedebe9cd4ec6fb93ec376116795",
+    "Scripts/ValidateAcornShip.py": "c1e278ab296c436945f53d5aab333440f887a24da7e05072c9b924c97ce6200b",
+    "Scripts/ValidateContent.py": "418163b314566be0ee4b5644d437ca7c2107c54de836e5156ce1a447171650a0",
+    "Scripts/ValidateScene.py": "970a99e661cf88a636302629c089004b9932b3f2da3562fbf7d1a0cfcf882a4f",
+    "Scripts/ValidateStationDeck.py": "abc87dc69a15346a74db903ff70eec13f6a550b91b581d51390ec49ee12bed5b",
+    "Scripts/ValidateTailRepair.py": "b0a66af4a4c49c7da259809f28f3b1dbcbff27db52cc972e862bb7cc7b28bb66",
+    "Source/SpaceSurvival.Target.cs": "50bc0fbca25b2aae8a58dc1d3ed93bfc24a12ac7154d949ed321a9c150c702d4",
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "4fcc875550ccd24f89a2d59a5b4c109cb356858d4469b7bd4e8065b15b06c65a",
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "bb5abb5e6be001797f5c20628312ac6071b921d763c093b4cabbfdad20d1b973",
+    "Source/SpaceSurvival/Private/SSAdmissionAutomationTests.cpp": "a214e1da9265703c40f60d3275f1b5376a8b8a2746c1bd73ef12decf95d882f5",
+    "Source/SpaceSurvival/Private/SSAutomationTests.cpp": "459b1a731db1943b26dd0e0c18ebbcd0416db5df839207dec1b5609f99690367",
+    "Source/SpaceSurvival/Private/SSFlightAutomationTests.cpp": "f829c14d6e2aaa8be28c30825591e2dafd12dfd5e45d4d815edfb2359ffe2b73",
+    "Source/SpaceSurvival/Private/SSGameInstance.cpp": "9783e8874f2f4cf20bf33b66318793dc3a74c9cbf1387cea095b7077d91349bb",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "c7b9000c00e4a72f0c7ea595191524b2d7c16587407f87ca9491a1d5a7b53a6c",
+    "Source/SpaceSurvival/Private/SSHUD.cpp": "d464b292f234685bd92c82bb7230357a5d9421ee0e43d973a8e8658e61e03083",
+    "Source/SpaceSurvival/Private/SSIntegrationAutomationTests.cpp": "0da278650047d02fb2c0db2b857a7c189bb3e4dc501e665ea765ed73fba04a0b",
+    "Source/SpaceSurvival/Private/SSJourneyAutomationTests.cpp": "7c7f6fd9dbea1dc812fbde1a7b97e1f2882180c92fb87ae7b6c6fa92ec22a0d6",
+    "Source/SpaceSurvival/Private/SSLocalSave.cpp": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402",
+    "Source/SpaceSurvival/Private/SSLocalSave.h": "21946dc7697636bddb4ad0ca24b0269b5fd3160491ce1b92b85d0787f3b52bff",
+    "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp": "5a60fab63e5bfc26f9ed942f0d6f76c21a215113cec05ad8afecffc24955e549",
+    "Source/SpaceSurvival/Private/SSShip.cpp": "5c0fb41e8e0d0deab4fb23348dca7e70b8fd664353ebaef16ea58b02a49228cb",
+    "Source/SpaceSurvival/Private/SSStation.cpp": "98008f73c119b709abfd7f1099ece0f015e7f01021432f907077994df5b4b228",
+    "Source/SpaceSurvival/Private/SSUtilityAutomationTests.cpp": "da4eb0865fe68b46bad00e1badb7e7399dc6d8639509c3d1a8c325c6b126e89f",
+    "Source/SpaceSurvival/Private/SSWave10Soak.cpp": "dbf2dbbda57314d3a4ea6a9b2a30f60f4ac4cccb14f5126b75b9ad350484f54a",
+    "Source/SpaceSurvival/Private/SSWorldActors.cpp": "755f5b2eacee1b895c9134200b4abba8aaa87d1a64beb1c2bdbe10a6a8686f11",
+    "Source/SpaceSurvival/Private/SpaceSurvival.cpp": "1e7a3ebb1bff64523a091df3e8d3d0da34cb5fa13b690218e3f314765a898a87",
+    "Source/SpaceSurvival/Public/SSContentTypes.h": "16529516450d488c0b075e30bb10adbb3afe7524374112afccfe95f50555eb29",
+    "Source/SpaceSurvival/Public/SSGameInstance.h": "0b0302cdf20958d221f54ca974d5776a905bd27918905203e6313b3c49ad9790",
+    "Source/SpaceSurvival/Public/SSGameMode.h": "57862805e6a4685e80b5ad706481f520016a21f4367feb4f505346bbf7eb5707",
+    "Source/SpaceSurvival/Public/SSHUD.h": "4986bf93895fd063ad006393147afe2cb1af8629258b063c32a43edbe7e139dd",
+    "Source/SpaceSurvival/Public/SSPhase1Data.h": "80499bd7b4ece94fa9729c978064428c716ce0ab91c3961a6ebc4e26419ce8fe",
+    "Source/SpaceSurvival/Public/SSShip.h": "8d01a8a5d82702cffb9d6da76e947d07942159ca4468b61f62589669013b171b",
+    "Source/SpaceSurvival/Public/SSStation.h": "acf2f2b805d50b68fc881e8fc7c713e85d0ed19fb75e61650bbca139bc3851f0",
+    "Source/SpaceSurvival/Public/SSWave10Soak.h": "77c902681ba1beb0d2cf1420c5747e6f29ab84edbfe4ba0ba0acfd572b254248",
+    "Source/SpaceSurvival/Public/SSWorldActors.h": "c0ed2c0d7612a8ad30ce563f03c284a5b80061725f3d733263459b53ad2cf326",
+    "Source/SpaceSurvival/SpaceSurvival.Build.cs": "cae333d628d605a58ce51a89f1c8addfbdc54674454623de4e732ac8e6891d86",
+    "Source/SpaceSurvivalEditor.Target.cs": "51ee577956e755fa62e3d6d97e90bb93fa741b7b86740eacc1c1a572ff17b066",
+    "SpaceSurvival.uproject": "94864f0a1202f868e389560e1c917464a51db0d293d2210dcb5025531132f8e6",
+    "Tests/CoreTests.cpp": "03a4e2b5dcb9814179a395e0d5bd146bba9446f250039411fcd263eb6cbcb7d9",
+    "Tests/RunCore.sh": "68292fd548e208c44d94ea059b2ef9fc440e8a21b8e2d6be9d07c771b4a6a17b",
+    "Tests/TestAnalyzePerformance.py": "f7bd696434da538d863a90c96accc0116687318f673fc2f05ad4b25ea25c1373"
+  },
+  "editorBuilds": [
+    {
+      "path": ".agent/local/UtilityVisualEditorBuild2.log",
+      "bytes": 6426,
+      "sha256": "a8783282722240c2d3114604ecaa1093dd1d6abfbe382afb5a1860e673868d95"
+    },
+    {
+      "path": ".agent/local/TailSoakEditorBuild.log",
+      "bytes": 6300,
+      "sha256": "338f7cc7704acce195bc3f0689af1afb0e29f15fecebf01422d496928a48cbf7"
+    },
+    {
+      "path": ".agent/local/TailContactFinalBuild.log",
+      "bytes": 3112,
+      "sha256": "1c8e37b84af5507d2e7cd8b48e4ef3fde4fe64515354e9102d93ff32354161a2"
+    }
+  ],
+  "editorBuildResults": [
+    "Succeeded23.52s utility+save/visual core",
+    "Succeeded25.26s tail+soak",
+    "Succeeded final diagnostic-only contact rebuild"
+  ],
+  "unreal": {
+    "report": {
+      "path": "Artifacts/UnrealTests/index.json",
+      "bytes": 17119,
+      "sha256": "8d41b7e30a473e91ef89e215f488d5b32d1dfe010a0ffad9563f2a423c8a3465"
+    },
+    "log": {
+      "path": ".agent/local/TailUtilityAutomationFinal.log",
+      "bytes": 284063,
+      "sha256": "4e2aa4e27dcf3fd3ff3c11945509036adfcab3e4f9d36305a67f5f53e5b7370b"
+    },
+    "created": "2026.09.13-08.14.57",
+    "succeeded": 14,
+    "warnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "durationSeconds": 2.185190200805664,
+    "tests": [
+      {
+        "name": "SpaceSurvival.Content.UtilityDataAssetBridge",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Flight.BoostBrakeMovement",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Flight.FrameRateTrajectories",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Flight.ManualWeaponImpacts",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Integration.AuthoredDisembark",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Integration.LateEventAcceptance",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Integration.StationWalkerRecovery",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Save.PayloadRoundTrip",
+        "state": "Success"
+      },
+      {
+        "name": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+        "state": "Success"
+      }
+    ]
+  },
+  "content": {
+    "authorLog": {
+      "path": ".agent/local/VisualMilestoneContentFinal.log",
+      "bytes": 286485,
+      "sha256": "6cc79638dfe2dc2815842f07b3475da389eb936636c38361dae7b2ed14e2a20a"
+    },
+    "validateLog": {
+      "path": ".agent/local/VisualMilestoneValidateFinal.log",
+      "bytes": 259690,
+      "sha256": "6c4c77a5b2d6f1d5e44c26701337377fe0cd4c7348bfb7089910b60c90fb003f"
+    },
+    "reports": [
+      {
+        "path": "Saved/Validation/ContentImport.json",
+        "bytes": 908,
+        "sha256": "58d8e9e8046144d2657c0f6dcd5688982b9ec1b6b74813ef0db1750243aed8b1"
+      },
+      {
+        "path": "Saved/Validation/PersistedContent.json",
+        "bytes": 10864,
+        "sha256": "62eb0239a37031a202a117dfd1c61ef3995371f98659d1feb0b267099083fbe4"
+      },
+      {
+        "path": "Saved/Validation/AcornShipPersisted.json",
+        "bytes": 6241,
+        "sha256": "5c7113d9181e70ee0560852810b2a22849a30ce28e5c9a808905519752745414"
+      },
+      {
+        "path": "Saved/Validation/TailRepairPersisted.json",
+        "bytes": 1789,
+        "sha256": "445b026113c8c422edf9b6715bfc82e0d7e9fc55acd9321dee7cdd21ca9ec8e0"
+      },
+      {
+        "path": "Saved/Validation/StationDeckPersisted.json",
+        "bytes": 1323,
+        "sha256": "dcdf4f94aced187cb5db99afc2020bf80377f33a9fea1f558e0c5174b8887911"
+      }
+    ]
+  },
+  "sourceChecks": {
+    "strictDomainAssertions": 593,
+    "sanitizedDomainAssertions": 593,
+    "domainLog": {
+      "path": ".agent/local/UtilityCore.log",
+      "bytes": 2643,
+      "sha256": "dd76eb89e7825958ee78b290c21014b6b50937d12a46c8ee3baa2b807aab77f3"
+    },
+    "structuralChecks": 21,
+    "csvParserTests": 6,
+    "formatLog": {
+      "path": ".agent/local/VisualMilestoneFormat.log",
+      "bytes": 1814,
+      "sha256": "3c0b18cac728540a95c537824631bb6a75402462893453fc3b25cafa66c102bc"
+    }
+  },
+  "actualTailContact": {
+    "mesh": "/Game/SpaceSurvival/Character/SK_AcornautTailV2",
+    "skinnedVertices": 203227,
+    "contactClearanceCm": -0.016462,
+    "handoffClearanceCm": -0.012915,
+    "samePilotScale": 1.5,
+    "bodyActorHandoffDeltaCm": 0,
+    "frameRates": [
+      30,
+      60,
+      144
+    ]
+  },
+  "limits": [
+    "No natural ten-wave or physical input/feel acceptance",
+    "New floor residency flag and final repaired mesh still need native packaged visual check",
+    "Soak fixture compiled, rendered capture pending",
+    "New ship/sky/deck remain provisional; thin tail fragments, hand contact and hull faceting remain",
+    "Historical package8 and package4 performance retain separate source/artifact identities"
+  ],
+  "sourceFormattingNote": "Removed one blank EOF line from each deck Python script after validation; executable tokens and assets are unchanged."
+}

@@ -87,6 +87,8 @@ public:
 
 private:
     friend class ASSPlayerController;
+    friend class ASSWave10Soak;
+    bool bAutomatedSoakInput = false;
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
     UPROPERTY()
