@@ -46,6 +46,7 @@ bool USSGameInstance::PersistAccount()
 bool USSGameInstance::PersistSettings() { ApplySettings(); return WriteDomain(SettingsSlot,SS::EncodeSettings(Session.settings)); }
 bool USSGameInstance::HasSuspendedRun() const
 {
+    if(AccountStorageBlocked) return false;
     std::string Payload,Error; SS::Run Candidate;
     return ReadDomain(RunSlot,Payload) && SS::DecodeRun(Payload,Candidate,Error) && Candidate.active &&
         Candidate.phase==SS::Phase::Station && Candidate.id!=Session.account.lastAwardedRunId;

@@ -1,0 +1,206 @@
+{
+  "status": "SOURCE_FORMATS_VALIDATED_ONLY",
+  "meshes": [
+    {
+      "name": "SM_AcornShip",
+      "triangles": 3840,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_AgileShip",
+      "triangles": 3840,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Asteroid",
+      "triangles": 440,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_AsteroidSmall",
+      "triangles": 440,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_AsteroidMedium",
+      "triangles": 440,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_AsteroidMassive",
+      "triangles": 440,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Debris",
+      "triangles": 60,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Wreckage",
+      "triangles": 60,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Pursuer",
+      "triangles": 368,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Flanker",
+      "triangles": 368,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_PickupCredit",
+      "triangles": 396,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_PickupRepair",
+      "triangles": 24,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_PickupShield",
+      "triangles": 32,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_PickupBuff",
+      "triangles": 24,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Console",
+      "triangles": 48,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Crate",
+      "triangles": 48,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_ServiceArm",
+      "triangles": 48,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_StationRing",
+      "triangles": 1536,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_VectorThrusters",
+      "triangles": 332,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_OverdriveCooling",
+      "triangles": 96,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_StormRing",
+      "triangles": 768,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_GravityRing",
+      "triangles": 1536,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_MobileDepot",
+      "triangles": 444,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_EventBeacon",
+      "triangles": 396,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Projectile",
+      "triangles": 96,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Starfield",
+      "triangles": 1200,
+      "valid_indices_normals_nonzero_area": true
+    }
+  ],
+  "audio": [
+    {
+      "name": "Engine",
+      "peak_sample": 6394,
+      "boundary_jump": 0.004212,
+      "valid_pcm": true
+    },
+    {
+      "name": "Laser",
+      "peak_sample": 10144,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Cannon",
+      "peak_sample": 16944,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Impact",
+      "peak_sample": 12179,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Pickup",
+      "peak_sample": 7062,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Alarm",
+      "peak_sample": 6265,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Station",
+      "peak_sample": 1942,
+      "boundary_jump": 0.001282,
+      "valid_pcm": true
+    },
+    {
+      "name": "MusicBase",
+      "peak_sample": 3317,
+      "boundary_jump": 0.001984,
+      "valid_pcm": true
+    },
+    {
+      "name": "MusicPressure",
+      "peak_sample": 2270,
+      "boundary_jump": 0.001434,
+      "valid_pcm": true
+    },
+    {
+      "name": "MusicClimax",
+      "peak_sample": 3645,
+      "boundary_jump": 0.001221,
+      "valid_pcm": true
+    }
+  ],
+  "unverified": [
+    "Unreal import",
+    "hero orientation/animation",
+    "collision",
+    "visual quality in gameplay",
+    "audio mix",
+    "performance"
+  ],
+  "preserved_hero_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+}

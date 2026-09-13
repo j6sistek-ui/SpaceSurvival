@@ -10,6 +10,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "EngineUtils.h"
 #include "Sound/SoundBase.h"
+#include "Engine/StaticMeshActor.h"
+#include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 namespace
 {
@@ -43,6 +46,11 @@ void ASSGameMode::BeginPlay()
     MusicPressure->SetSound(LoadObject<USoundBase>(nullptr,TEXT("/Game/SpaceSurvival/Audio/MusicPressure.MusicPressure")));
     MusicClimax->SetSound(LoadObject<USoundBase>(nullptr,TEXT("/Game/SpaceSurvival/Audio/MusicClimax.MusicClimax")));
     MusicBase->Play(); MusicPressure->Play(); MusicClimax->Play();
+    for(TActorIterator<AStaticMeshActor> It(GetWorld());It;++It)
+    {
+        if(It->ActorHasTag(TEXT("SpaceBackdrop"))) {SpaceBackdrop=*It;SpaceMaterial=It->GetStaticMeshComponent()->CreateAndSetMaterialInstanceDynamic(0);}
+        if(It->ActorHasTag(TEXT("SpaceStars"))) SpaceStars=*It;
+    }
     ShowHangar(); OpenPanel(ESSPanel::Main);
 }
 bool ASSGameMode::InHangar() const { return IsValid(Hub) && Hub->IsHome(); }
@@ -113,8 +121,25 @@ void ASSGameMode::Tick(float Dt)
     auto* GI=GetGameInstance<USSGameInstance>(); if (!GI) return;
     auto& S=GI->Session;
     AnnouncementSeconds=FMath::Max(0.f,AnnouncementSeconds-Dt);
-    const bool Danger=Director->GetActiveThreatCount()>0 && S.IsFlying();
+    bool Danger=false;
+    if(Ship && S.IsFlying())
+        for(TActorIterator<ASSWorldBody> It(GetWorld());It;++It)
+            if((It->IsEnemy()||It->IsSolidHazard()||It->IsEnvironmentalField()) && FVector::DistSquared(It->GetActorLocation(),Ship->GetActorLocation())<FMath::Square(8000.f+It->GetBodyRadius()))
+            {Danger=true;break;}
     S.Tick(Dt,Danger);
+    RegionTime+=Dt;
+    if(auto* Pawn=UGameplayStatics::GetPlayerPawn(this,0))
+    {
+        if(SpaceBackdrop) SpaceBackdrop->SetActorLocation(Pawn->GetActorLocation());
+        if(SpaceStars) SpaceStars->SetActorLocation(Pawn->GetActorLocation());
+        if(SpaceMaterial)
+        {
+            // Long gradual visual drift, independent of wave and station cadence.
+            const uint32 RegionSeed=GetTypeHash(FString(UTF8_TO_TCHAR(S.run.id.c_str())));
+            const float Blend=.5f+.5f*FMath::Sin(RegionTime*.006f+float(RegionSeed%1000)*.01f);
+            SpaceMaterial->SetVectorParameterValue(TEXT("Tint"),FMath::Lerp(FLinearColor(.45f,.65f,1),FLinearColor(1,.35f,.8f),Blend));
+        }
+    }
     WeaponBuffSeconds=float(S.run.weaponBuffSeconds);
     PendingReward=S.run.pendingReward; RewardCombat=S.run.rewardCombat;
     const float Master=float(S.settings.masterVolume*S.settings.musicVolume);
@@ -185,13 +210,19 @@ void ASSGameMode::Tick(float Dt)
     }
     if (S.IsFlying() && S.run.wave<=3 && AnnouncementSeconds<=0)
     {
-        const uint32 Bit=1u<<(S.run.wave-1);
-        if (!(S.account.tutorialFlags&Bit))
+        const TCHAR* Prompts[]={
+            TEXT("STEER: mouse / right stick. The ship carries momentum while its hull banks."),
+            TEXT("THROTTLE: W S / D-pad up down. A D and R F / left stick weave around hazards."),
+            TEXT("BOOST: Shift / right trigger. Release to recharge the meter."),
+            TEXT("BRAKE: Space / left trigger. Partial braking builds heat; give it time to cool."),
+            TEXT("DODGE: Q / left bumper with a movement direction. Obstacles still hurt during a dodge."),
+            TEXT("FIRE: left mouse / right bumper. Aim manually; brackets provide soft targeting assistance."),
+            TEXT("PICKUPS: collect shaped rewards. Hull regenerates after damage; shield does not."),
+            TEXT("OPTIONAL SIGNALS: approach, then E / A to accept. Passing nearby does not commit you.")};
+        const int Limit=S.run.wave==1?5:S.run.wave==2?7:8;
+        for(int I=0;I<Limit;++I)
         {
-            Announce(S.run.wave==1?TEXT("FLIGHT: mouse / right stick steer. A D / left stick weave. Boost, brake and dodge remain available."):
-                S.run.wave==2?TEXT("Weapons clear small debris. Breaking medium rocks can create dangerous fragments. Shield never regenerates."):
-                TEXT("Aim manually; a bracket marks soft targeting assistance. Optional signals require an explicit interaction."));
-            S.account.tutorialFlags|=Bit; GI->PersistAccount();
+            if(!(S.account.tutorialFlags&(1u<<I))) {Announce(Prompts[I]);break;}
         }
     }
 }
@@ -219,6 +250,7 @@ void ASSGameMode::NotifyPickup(int32 Kind,float Amount)
         case 3:S.run.weaponBuffSeconds=FMath::Max(S.run.weaponBuffSeconds,12.0); break;
         default:return;
     }
+    if(!(S.account.tutorialFlags&64u)) {S.account.tutorialFlags|=64u;GI->PersistAccount();}
     UGameplayStatics::PlaySound2D(this,LoadObject<USoundBase>(nullptr,TEXT("/Game/SpaceSurvival/Audio/Pickup.Pickup")),float(S.settings.masterVolume*S.settings.effectsVolume));
 }
 void ASSGameMode::Interact()
@@ -241,7 +273,11 @@ void ASSGameMode::Interact()
         {
             ActiveBeacon=Closest;
             if (Closest->IsDepot()) OpenPanel(ESSPanel::Depot);
-            else { Closest->TryAccept(); Announce(Closest->GetEncounterLabel()); }
+            else if(Closest->TryAccept())
+            {
+                if(auto* GI=GetGameInstance<USSGameInstance>()) {GI->Session.account.tutorialFlags|=128u;GI->PersistAccount();}
+                Announce(Closest->GetEncounterLabel());
+            }
         }
     }
 }
@@ -459,6 +495,14 @@ void ASSPlayerController::PlayerTick(float Dt)
         FVector2D Strafe(float(Down(EKeys::D))-float(Down(EKeys::A))+GetInputAnalogKeyState(EKeys::Gamepad_LeftX),
             float(Down(EKeys::R))-float(Down(EKeys::F))+GetInputAnalogKeyState(EKeys::Gamepad_LeftY));
         const float Throttle=float(Down(EKeys::W)||Down(EKeys::Gamepad_DPad_Up))-float(Down(EKeys::S)||Down(EKeys::Gamepad_DPad_Down));
+        const uint32 Before=GI->Session.account.tutorialFlags;
+        if(!Look.IsNearlyZero()) GI->Session.account.tutorialFlags|=1u;
+        if(FMath::Abs(Throttle)>.1f) GI->Session.account.tutorialFlags|=2u;
+        if(Boost) GI->Session.account.tutorialFlags|=4u;
+        if(Brake) GI->Session.account.tutorialFlags|=8u;
+        if(Pressed(EKeys::Q)||Pressed(EKeys::Gamepad_LeftShoulder)) GI->Session.account.tutorialFlags|=16u;
+        if(Down(EKeys::LeftMouseButton)||Down(EKeys::Gamepad_RightShoulder)) GI->Session.account.tutorialFlags|=32u;
+        if(Before!=GI->Session.account.tutorialFlags)GI->PersistAccount();
         ShipPawn->SetFlightInput(Look,Strafe,Throttle,GI->Session.settings.toggleBoost?BoostLatch:Boost,GI->Session.settings.toggleBrake?BrakeLatch:Brake);
         if(Pressed(EKeys::Q)||Pressed(EKeys::Gamepad_LeftShoulder))ShipPawn->RequestDodge();
         if(Down(EKeys::LeftMouseButton)||Down(EKeys::Gamepad_RightShoulder))ShipPawn->Fire();

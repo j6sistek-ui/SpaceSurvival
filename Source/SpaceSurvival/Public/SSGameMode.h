@@ -45,6 +45,9 @@ private:
     UPROPERTY() TObjectPtr<class UAudioComponent> MusicBase;
     UPROPERTY() TObjectPtr<class UAudioComponent> MusicPressure;
     UPROPERTY() TObjectPtr<class UAudioComponent> MusicClimax;
+    UPROPERTY() TObjectPtr<class UMaterialInstanceDynamic> SpaceMaterial;
+    UPROPERTY() TObjectPtr<AActor> SpaceBackdrop;
+    UPROPERTY() TObjectPtr<AActor> SpaceStars;
     int32 PreviousPhase=-1, PreviousWave=-1;
     int32 SelectedShip=0,SelectedWeapon=0;
     bool PendingReward=false, RewardCombat=false, DeathPersisted=false;

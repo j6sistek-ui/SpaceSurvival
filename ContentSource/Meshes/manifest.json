@@ -1,0 +1,690 @@
+{
+  "status": "Generated provisional source meshes; Unreal aesthetic/scale/collision review pending",
+  "coordinate_system": "Centimeters; +X forward; +Z up",
+  "palette": {
+    "M_Hull": [
+      [
+        0.075,
+        0.115,
+        0.15
+      ],
+      0.75,
+      0.32,
+      0.0
+    ],
+    "M_Gold": [
+      [
+        0.48,
+        0.255,
+        0.075
+      ],
+      0.8,
+      0.28,
+      0.0
+    ],
+    "M_Rock": [
+      [
+        0.19,
+        0.16,
+        0.145
+      ],
+      0.02,
+      0.87,
+      0.0
+    ],
+    "M_Cyan": [
+      [
+        0.025,
+        0.66,
+        0.85
+      ],
+      0.1,
+      0.25,
+      3.0
+    ],
+    "M_Amber": [
+      [
+        1.0,
+        0.33,
+        0.035
+      ],
+      0.15,
+      0.3,
+      2.5
+    ],
+    "M_Violet": [
+      [
+        0.5,
+        0.14,
+        0.87
+      ],
+      0.1,
+      0.3,
+      2.7
+    ],
+    "M_Hazard": [
+      [
+        0.28,
+        0.22,
+        0.19
+      ],
+      0.15,
+      0.7,
+      0.0
+    ],
+    "M_Emissive": [
+      [
+        1.0,
+        1.0,
+        1.0
+      ],
+      0.0,
+      0.3,
+      3.0
+    ],
+    "M_Space": [
+      [
+        0.0003,
+        0.0005,
+        0.0015
+      ],
+      0.0,
+      1.0,
+      1.0
+    ],
+    "M_Star": [
+      [
+        0.55,
+        0.73,
+        1.0
+      ],
+      0.0,
+      1.0,
+      3.0
+    ],
+    "M_StarWarm": [
+      [
+        1.0,
+        0.65,
+        0.39
+      ],
+      0.0,
+      1.0,
+      2.0
+    ]
+  },
+  "assets": [
+    {
+      "name": "SM_AcornShip",
+      "vertices": 1948,
+      "triangles": 3840,
+      "bounds_cm": [
+        [
+          -247,
+          -145,
+          -66.516
+        ],
+        [
+          210.0,
+          145,
+          100.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ],
+      "sha256": "4275f38d8f6f3cf0d19ac6d39d645992b121d0e62fad3ff711d5cf02f57caf52"
+    },
+    {
+      "name": "SM_AgileShip",
+      "vertices": 1948,
+      "triangles": 3840,
+      "bounds_cm": [
+        [
+          -247,
+          -185,
+          -66.516
+        ],
+        [
+          241.5,
+          185,
+          100.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ],
+      "sha256": "ed1c6eb0c0d93e09aa68a88307fe4e1369db9773bec3633306d46b370ed031d1"
+    },
+    {
+      "name": "SM_Asteroid",
+      "vertices": 222,
+      "triangles": 440,
+      "bounds_cm": [
+        [
+          -96.645,
+          -94.109,
+          -98.768
+        ],
+        [
+          97.416,
+          92.442,
+          104
+        ]
+      ],
+      "materials": [
+        "M_Rock"
+      ],
+      "sha256": "ee2d656bb8e6f12494d7e174962023353c545fcce900dc8fb61ab381157aacac"
+    },
+    {
+      "name": "SM_AsteroidSmall",
+      "vertices": 222,
+      "triangles": 440,
+      "bounds_cm": [
+        [
+          -96.774,
+          -97.17,
+          -94.178
+        ],
+        [
+          99.747,
+          100.604,
+          104
+        ]
+      ],
+      "materials": [
+        "M_Rock"
+      ],
+      "sha256": "c5933bac0466b6b30ffa28390c1ab52e1d91973709babb1f22f43538d0b15360"
+    },
+    {
+      "name": "SM_AsteroidMedium",
+      "vertices": 222,
+      "triangles": 440,
+      "bounds_cm": [
+        [
+          -99.621,
+          -93.064,
+          -97.08
+        ],
+        [
+          94.741,
+          98.786,
+          104
+        ]
+      ],
+      "materials": [
+        "M_Rock"
+      ],
+      "sha256": "8671b91c7cc019c2cf66b409c2ded959b3e9ebee9ceb947d4eebc8b8e525f032"
+    },
+    {
+      "name": "SM_AsteroidMassive",
+      "vertices": 222,
+      "triangles": 440,
+      "bounds_cm": [
+        [
+          -101.036,
+          -95.824,
+          -99.568
+        ],
+        [
+          93.28,
+          93.097,
+          104
+        ]
+      ],
+      "materials": [
+        "M_Rock"
+      ],
+      "sha256": "73bcc6e68bd03d54ccae1b1ef0cbf1b76cffacdb4c0dc74094ef190d4ea251dc"
+    },
+    {
+      "name": "SM_Debris",
+      "vertices": 40,
+      "triangles": 60,
+      "bounds_cm": [
+        [
+          -90,
+          -57.5,
+          -12.0
+        ],
+        [
+          87.5,
+          77.5,
+          34.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Gold",
+        "M_Amber"
+      ],
+      "sha256": "9c3f6c3bde5e647f20ddda9fd244bcc423f48e6dfd8c67cea3cd2801d50dc5e4"
+    },
+    {
+      "name": "SM_Wreckage",
+      "vertices": 40,
+      "triangles": 60,
+      "bounds_cm": [
+        [
+          -90,
+          -57.5,
+          -12.0
+        ],
+        [
+          87.5,
+          77.5,
+          34.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Gold",
+        "M_Amber"
+      ],
+      "sha256": "7dbb4ac4ed0ef0ec1c317a4dfaa8da0a1436d92730c58e3148f91be63cbaf658"
+    },
+    {
+      "name": "SM_Pursuer",
+      "vertices": 198,
+      "triangles": 368,
+      "bounds_cm": [
+        [
+          -100,
+          -70,
+          -16.8
+        ],
+        [
+          110,
+          70,
+          16.8
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Amber"
+      ],
+      "sha256": "a6c0bff7497e4222841a75b51724d267b5ad86d2e18697de8e50a285b954a8d7"
+    },
+    {
+      "name": "SM_Flanker",
+      "vertices": 198,
+      "triangles": 368,
+      "bounds_cm": [
+        [
+          -100,
+          -112,
+          -16.8
+        ],
+        [
+          110,
+          112,
+          16.8
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Amber"
+      ],
+      "sha256": "80b3d73187e2316409c2f277ebb745d604dbb38508546eaa12ea97c3e2d3b40f"
+    },
+    {
+      "name": "SM_PickupCredit",
+      "vertices": 200,
+      "triangles": 396,
+      "bounds_cm": [
+        [
+          -33.0,
+          -33.0,
+          -8.0
+        ],
+        [
+          33.0,
+          33.0,
+          8.0
+        ]
+      ],
+      "materials": [
+        "M_Gold",
+        "M_Amber"
+      ],
+      "sha256": "0af114fdc52d04da92dba0de6e25f49f6d93bb9f29e4283d63a59aecf760424f"
+    },
+    {
+      "name": "SM_PickupRepair",
+      "vertices": 16,
+      "triangles": 24,
+      "bounds_cm": [
+        [
+          -25.0,
+          -25.0,
+          -8.5
+        ],
+        [
+          25.0,
+          25.0,
+          8.5
+        ]
+      ],
+      "materials": [
+        "M_Cyan"
+      ],
+      "sha256": "dc3a010d9ee12a97dcdadd1ca2c989fe0724a808e5146665752747170caa165e"
+    },
+    {
+      "name": "SM_PickupShield",
+      "vertices": 20,
+      "triangles": 32,
+      "bounds_cm": [
+        [
+          -27,
+          -27,
+          -7
+        ],
+        [
+          33,
+          27,
+          10
+        ]
+      ],
+      "materials": [
+        "M_Cyan",
+        "M_Hull"
+      ],
+      "sha256": "5f9ac1d1850c13ad7b2a5cbcaa2e769b7a74cf15bb28b927093bbbce7fb21f3c"
+    },
+    {
+      "name": "SM_PickupBuff",
+      "vertices": 16,
+      "triangles": 24,
+      "bounds_cm": [
+        [
+          -25,
+          -22,
+          -7
+        ],
+        [
+          29,
+          22,
+          7
+        ]
+      ],
+      "materials": [
+        "M_Violet"
+      ],
+      "sha256": "95cae3a0684e7ca90e75fc4256fea819678a503ff53bcad213ed9c94a8723689"
+    },
+    {
+      "name": "SM_Console",
+      "vertices": 32,
+      "triangles": 48,
+      "bounds_cm": [
+        [
+          -45.0,
+          -31.0,
+          0.0
+        ],
+        [
+          45.0,
+          31.0,
+          108.5
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ],
+      "sha256": "787b283f17c2d3ab86e36348c4b9568d16970dc23f71e55fb41208c5aeabb59e"
+    },
+    {
+      "name": "SM_Crate",
+      "vertices": 32,
+      "triangles": 48,
+      "bounds_cm": [
+        [
+          -42.5,
+          -35.5,
+          -1.0
+        ],
+        [
+          42.5,
+          34.5,
+          73.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Gold",
+        "M_Amber"
+      ],
+      "sha256": "44026fdf6e29a1ad8a9d97c2a29d9d36c303907146b08b150163b30c81510e6c"
+    },
+    {
+      "name": "SM_ServiceArm",
+      "vertices": 32,
+      "triangles": 48,
+      "bounds_cm": [
+        [
+          -37.5,
+          -37.5,
+          0.0
+        ],
+        [
+          153.0,
+          37.5,
+          211.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ],
+      "sha256": "76ef1dfe8f9d03d9f28c23ed07c372a200d87114f518e290ea26ef1663e785a2"
+    },
+    {
+      "name": "SM_StationRing",
+      "vertices": 768,
+      "triangles": 1536,
+      "bounds_cm": [
+        [
+          -6.0,
+          -106.0,
+          -106.0
+        ],
+        [
+          6.0,
+          106.0,
+          106.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Cyan"
+      ],
+      "sha256": "7ca8cd39637d4c0d068a2fd57081ea78bbd13b2799237a3ee849776461c80f5e"
+    },
+    {
+      "name": "SM_VectorThrusters",
+      "vertices": 172,
+      "triangles": 332,
+      "bounds_cm": [
+        [
+          -25,
+          -33.0,
+          -14.0
+        ],
+        [
+          28,
+          33.0,
+          14.0
+        ]
+      ],
+      "materials": [
+        "M_Cyan",
+        "M_Gold"
+      ],
+      "sha256": "302d3e1d3e08145fcbdcf44fcdfaf0d3c9e460f809546e37b834ade8a42dde28"
+    },
+    {
+      "name": "SM_OverdriveCooling",
+      "vertices": 64,
+      "triangles": 96,
+      "bounds_cm": [
+        [
+          -22.5,
+          -21.0,
+          -17.0
+        ],
+        [
+          22.5,
+          21.0,
+          17.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Violet"
+      ],
+      "sha256": "3050acc1bfaff840d700faf7285c7b262c3d6be898c49ed26bb7f4fea83d264a"
+    },
+    {
+      "name": "SM_StormRing",
+      "vertices": 384,
+      "triangles": 768,
+      "bounds_cm": [
+        [
+          -3.0,
+          -100.0,
+          -100.0
+        ],
+        [
+          3.0,
+          100.0,
+          100.0
+        ]
+      ],
+      "materials": [
+        "M_Violet"
+      ],
+      "sha256": "f26b271774c256002ff7a738874e0202906f3995792f3d7ce122476353d4faea"
+    },
+    {
+      "name": "SM_GravityRing",
+      "vertices": 768,
+      "triangles": 1536,
+      "bounds_cm": [
+        [
+          -3.0,
+          -100.0,
+          -100.0
+        ],
+        [
+          3.0,
+          100.0,
+          100.0
+        ]
+      ],
+      "materials": [
+        "M_Violet",
+        "M_Cyan"
+      ],
+      "sha256": "74709ee6038130b2439be66cfd19c11cc8c1a8ae1b1d68b6f3c9c242ead2b4f9"
+    },
+    {
+      "name": "SM_MobileDepot",
+      "vertices": 232,
+      "triangles": 444,
+      "bounds_cm": [
+        [
+          -80.0,
+          -65.5,
+          -35.0
+        ],
+        [
+          80.0,
+          65.5,
+          54.0
+        ]
+      ],
+      "materials": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ],
+      "sha256": "1bf8f41c9acd428b256d7c566932316ea4b410605a3a12211430e445fb942635"
+    },
+    {
+      "name": "SM_EventBeacon",
+      "vertices": 200,
+      "triangles": 396,
+      "bounds_cm": [
+        [
+          -38.0,
+          -38.0,
+          -27.5
+        ],
+        [
+          38.0,
+          38.0,
+          27.5
+        ]
+      ],
+      "materials": [
+        "M_Cyan",
+        "M_Gold"
+      ],
+      "sha256": "b5eeb79f6522886f32ae18702d3b951d2e23e64039fd6c4683d4f159eeacc819"
+    },
+    {
+      "name": "SM_Projectile",
+      "vertices": 50,
+      "triangles": 96,
+      "bounds_cm": [
+        [
+          -100,
+          -7.0,
+          -7.0
+        ],
+        [
+          100,
+          7.0,
+          7.0
+        ]
+      ],
+      "materials": [
+        "M_Emissive"
+      ],
+      "sha256": "83d4ea13df1a509fd7a2277a1f4a4158a2a864d76478f8c258bda599000a89c5"
+    },
+    {
+      "name": "SM_Starfield",
+      "vertices": 3600,
+      "triangles": 1200,
+      "bounds_cm": [
+        [
+          -3995880.066,
+          -3999768.64,
+          -3994801.729
+        ],
+        [
+          3996132.226,
+          3975554.888,
+          3995994.314
+        ]
+      ],
+      "materials": [
+        "M_StarWarm",
+        "M_Star"
+      ],
+      "sha256": "5f658581c4a699e724ce274855e3020327cbbb60bfdb77ba27511d60221089f5"
+    }
+  ]
+}
