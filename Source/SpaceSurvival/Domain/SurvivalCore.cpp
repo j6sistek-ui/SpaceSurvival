@@ -452,6 +452,23 @@ bool Session::RepairShieldAtDepot()
     return true;
 }
 
+bool Session::CanPurchaseUtility(Utility utility) const
+{
+    return run.active && run.phase == Phase::Station &&
+           (utility == Utility::VectorThrusters || utility == Utility::OverdriveCooling) && utility != run.utility &&
+           run.credits >= StationUtilityPrice;
+}
+
+bool Session::PurchaseUtility(Utility utility)
+{
+    // Recheck current state at commit; a vendor row may predate another purchase or departure.
+    if (!CanPurchaseUtility(utility))
+        return false;
+    run.credits -= StationUtilityPrice;
+    run.utility = utility;
+    return true;
+}
+
 bool Session::EquipUtility(Utility utility)
 {
     if (!run.active || !EnumIn(utility, 2))

@@ -794,12 +794,19 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         AddEntry(TEXT("Save & Quit"), 43);
         break;
     case ESSPanel::Vendor:
+    {
         PanelTitle = TEXT("ENGINEER MICA");
         PanelDetail = TEXT(
             "Mica: I can fit one utility. Choose the capability you need. Replacing a module removes the old one.");
-        AddEntry(TEXT("Vector Thrusters / 150 credits / stronger lateral authority"), 44, S.run.credits >= 150);
-        AddEntry(TEXT("Overdrive Cooling / 150 credits / boost efficiency and heat control"), 45, S.run.credits >= 150);
+        const FString Price = FString::Printf(TEXT("%d credits"), SS::StationUtilityPrice);
+        AddEntry(FString::Printf(TEXT("Vector Thrusters / %s / stronger lateral authority"),
+                                 S.run.utility == SS::Utility::VectorThrusters ? TEXT("already fitted") : *Price),
+                 44, S.CanPurchaseUtility(SS::Utility::VectorThrusters));
+        AddEntry(FString::Printf(TEXT("Overdrive Cooling / %s / boost efficiency and heat control"),
+                                 S.run.utility == SS::Utility::OverdriveCooling ? TEXT("already fitted") : *Price),
+                 45, S.CanPurchaseUtility(SS::Utility::OverdriveCooling));
         break;
+    }
     case ESSPanel::Reward:
         PanelTitle = PendingReward ? TEXT("SIGNAL REWARD / CHOOSE ONE") : TEXT("LOST CREW BEACON");
         PanelDetail = PendingReward ? TEXT("One deliberate reward. A module replaces the current module; a weapon "
@@ -817,19 +824,33 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             AddEntry(TEXT("Restore the beacon / recover 25 credits"), 49, !S.run.stationRewardClaimed);
         break;
     case ESSPanel::Launch:
-        PanelTitle = InHangar() ? TEXT("PREPARE FOR LAUNCH") : TEXT("DEPARTURE CONTROL");
-        PanelDetail =
-            InHangar() ? FString::Printf(TEXT("%s  |  %s"), SelectedShip ? TEXT("Acorn Swift") : TEXT("Acorn Voyager"),
-                                         *WeaponName(SS::Weapon(SelectedWeapon)))
-            : S.AtSliceBoundary() ? TEXT("You reached the Phase 1 flight boundary. This is a live station stop, not "
-                                         "the game's final wave. Save & Quit retains the run.")
-                                  : TEXT("Continue with your current ship, credits and upgrades.");
-        AddEntry(TEXT("Launch"), 50, InHangar() || !S.AtSliceBoundary());
+        if (S.AtSliceBoundary())
+        {
+            PanelTitle = TEXT("STATION 2 / FLIGHT LIMIT REACHED");
+            PanelDetail = FString::Printf(
+                TEXT("Live run: %d waves | score %d | %d kills | %d events | %d contracts.\n"
+                     "This build's flight route ends at this station. Your run remains active. "
+                     "Save & Quit preserves it; account XP is awarded on death."),
+                S.run.wavesCompleted, S.Score(), S.run.kills, S.run.eventsCompleted, S.run.contractsCompleted);
+            AddEntry(TEXT("Back to station services"), 0);
+            AddEntry(TEXT("Save & Quit / keep this run"), 43);
+            AddEntry(TEXT("Return to hangar / discard run, no XP"), 51);
+        }
+        else
+        {
+            PanelTitle = InHangar() ? TEXT("PREPARE FOR LAUNCH") : TEXT("DEPARTURE CONTROL");
+            PanelDetail = InHangar() ? FString::Printf(TEXT("%s  |  %s"),
+                                                       SelectedShip ? TEXT("Acorn Swift") : TEXT("Acorn Voyager"),
+                                                       *WeaponName(SS::Weapon(SelectedWeapon)))
+                                     : TEXT("Continue with your current ship, credits and upgrades.");
+            AddEntry(TEXT("Launch"), 50);
+        }
         break;
     default:
         break;
     }
-    AddEntry(TEXT("Back"), 0);
+    if (NewPanel != ESSPanel::Launch || !S.AtSliceBoundary())
+        AddEntry(TEXT("Back"), 0);
 }
 void ASSGameMode::ActivateEntry(int32 Index)
 {
@@ -1045,12 +1066,10 @@ void ASSGameMode::ActivateEntry(int32 Index)
     }
     if (A == 44 || A == 45)
     {
-        if (S.run.phase == SS::Phase::Station && S.run.credits >= 150 &&
-            S.EquipUtility(A == 44 ? SS::Utility::VectorThrusters : SS::Utility::OverdriveCooling))
-        {
-            S.run.credits -= 150;
-            Announce(TEXT("Module fitted."));
-        }
+        const auto Utility = A == 44 ? SS::Utility::VectorThrusters : SS::Utility::OverdriveCooling;
+        Announce(S.PurchaseUtility(Utility) ? TEXT("Module fitted.")
+                 : S.run.utility == Utility ? TEXT("Module already fitted.")
+                                            : TEXT("Module unavailable."));
         OpenPanel(Current);
         return;
     }

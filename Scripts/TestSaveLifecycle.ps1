@@ -12,14 +12,22 @@ UE 5.8 source contract, checked when authored:
 
 Build the Editor target first. Use -PreflightOnly to verify actual path/backend isolation
 without initializing USSGameInstance or writing any save-game slots.
+Use -PreparePackagedStation 5 or 10 to run only Preflight and one preparation process,
+leaving a live suspension for a later packaged Continue check. The receipt is explicitly
+PREPARED_FIXTURE_NOT_GAMEPLAY; preparation does not launch the package or consume the save.
 ##>
 param(
     [string]$EngineRoot = '',
     [ValidateRange(30, 1200)][int]$TimeoutSeconds = 300,
-    [switch]$PreflightOnly
+    [switch]$PreflightOnly,
+    [ValidateSet(5, 10)][int]$PreparePackagedStation
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$prepareStation = $PSBoundParameters.ContainsKey('PreparePackagedStation')
+if ($PreflightOnly -and $prepareStation) {
+    throw 'Choose either -PreflightOnly or -PreparePackagedStation; no files or processes were created.'
+}
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 $project = Join-Path $repoRoot 'SpaceSurvival.uproject'
 if (-not $EngineRoot) {
@@ -84,7 +92,8 @@ New-Item -ItemType Directory -Path $userRoot | Out-Null
 [IO.File]::WriteAllText((Join-Path $runRoot '.ss-save-lifecycle'), $token)
 $productionBefore | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $runRoot 'production-before.json') -Encoding utf8
 $stages = @('Preflight')
-if (-not $PreflightOnly) { $stages += @('Suspend', 'ResumeDeath', 'FreshStart') }
+if ($prepareStation) { $stages += "PrepareStation$PreparePackagedStation" }
+elseif (-not $PreflightOnly) { $stages += @('Suspend', 'ResumeDeath', 'FreshStart') }
 $receipts = @()
 $processIds = [Collections.Generic.HashSet[int]]::new()
 $completed = $false
@@ -102,6 +111,9 @@ try {
             '-ExecCmds=Automation RunTests SpaceSurvival.SaveLifecycle', '-TestExit=Automation Test Queue Empty',
             "-ReportExportPath=$reportRoot", "-abslog=$(Join-Path $phaseRoot 'Unreal.log')", '-stdout', '-FullStdOutLogOutput'
         )
+        if ($prepareStation -and $phase -ne 'Preflight') {
+            $arguments += "-SSPreparePackagedStation=$PreparePackagedStation"
+        }
         $nativeArguments = ($arguments | ForEach-Object { ConvertTo-NativeArgument $_ }) -join ' '
         $process = Start-Process -FilePath $editor -WorkingDirectory $repoRoot -ArgumentList $nativeArguments `
             -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $phaseRoot 'stdout.log') `
@@ -135,6 +147,14 @@ try {
             [IO.Path]::GetFullPath($receipt.savedDir) -ne [IO.Path]::GetFullPath($savedRoot) -or
             -not $processIds.Add([int]$receipt.processId)) {
             throw "Lifecycle $phase receipt failed path, backend, token, or distinct-process verification."
+        }
+        if ($prepareStation -and $phase -ne 'Preflight') {
+            if ($receipt.evidenceType -cne 'PREPARED_FIXTURE_NOT_GAMEPLAY' -or
+                $receipt.preparedWave -ne $PreparePackagedStation -or -not $receipt.runActive -or
+                $receipt.xpAwarded -or -not $receipt.unconsumedSuspensionVerified -or
+                $receipt.xp -ne 0 -or $receipt.completedRuns -ne 0) {
+                throw 'Prepared station receipt failed its fixture, exact-wave, live-state or unconsumed-save checks.'
+            }
         }
         if ($phase -eq 'ResumeDeath') {
             foreach ($check in @('lockedSuspensionRejectedAndPreserved', 'lockedAccountRejectedAndPreserved',
@@ -181,16 +201,26 @@ try {
     [ordered]@{
         success = $completed -and $productionUnchanged
         preflightOnly = [bool]$PreflightOnly
+        preparedStationWave = if ($prepareStation) { $PreparePackagedStation } else { $null }
+        evidenceType = if ($prepareStation) { 'PREPARED_FIXTURE_NOT_GAMEPLAY' } else { 'STORAGE_LIFECYCLE_AUTOMATION' }
         token = $token
         root = $runRoot
         savedDir = $savedRoot
+        userDir = $userRoot
         productionSaveHashesUnchanged = $productionUnchanged
         processReceipts = $receipts
         isolatedSaveFiles = $isolatedFiles
-        limitation = 'Storage lifecycle and actual Windows locked-destination failure/retry only. No forced process termination, disk-full/short-write, staged-readback fault, hardware-loss, station UI or subjective gameplay claim.'
+        limitation = if ($prepareStation) {
+            'PREPARED_FIXTURE_NOT_GAMEPLAY. Assisted station state written through real GI SuspendRun, without consuming it. No natural waves/contracts, packaged Continue, station UI, quit interaction, audio or subjective gameplay was exercised.'
+        } else {
+            'Storage lifecycle and actual Windows locked-destination failure/retry only. No forced process termination, disk-full/short-write, staged-readback fault, hardware-loss, station UI or subjective gameplay claim.'
+        }
     } | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Encoding utf8
     if (-not $productionUnchanged) {
         throw "Production save metadata changed during the harness; nothing was backed up or replaced. Inspect $runRoot."
     }
 }
 Write-Output "PASS: production save hashes unchanged. Evidence: $(Join-Path $runRoot 'result.json')"
+if ($prepareStation) {
+    Write-Output "PREPARED_FIXTURE_NOT_GAMEPLAY: Wave $PreparePackagedStation; packaged QA UserDir: $userRoot"
+}

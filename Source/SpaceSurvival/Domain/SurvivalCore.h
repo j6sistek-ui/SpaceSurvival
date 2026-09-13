@@ -45,6 +45,8 @@ enum class Utility
     VectorThrusters,
     OverdriveCooling
 };
+constexpr int StationUtilityPrice = 150;
+
 enum class Contract
 {
     None,
@@ -187,6 +189,8 @@ public:
     bool Repair();
     int DepotShieldRepairPrice() const;
     bool RepairShieldAtDepot();
+    bool CanPurchaseUtility(Utility utility) const;
+    bool PurchaseUtility(Utility utility);
     bool EquipUtility(Utility utility);
     bool ReplaceWeapon(Weapon weapon);
     bool AcceptContract(Contract contract);

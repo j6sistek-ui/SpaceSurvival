@@ -237,6 +237,108 @@ void UpgradeTiersAndRepair()
     CHECK(s.UpgradePrice(SS::Upgrade::Hull, -1.0) == -1);
 }
 
+void StationUtilityPurchases()
+{
+    auto s = Fresh("station-utilities");
+    FastTuning(s);
+    ReachStation(s, 5);
+    const auto baseline = s.Stats();
+    const int earned = s.run.totalCreditsEarned;
+    const auto account = SS::EncodeAccount(s.account);
+    auto expected = s.run;
+    CHECK(s.CanPurchaseUtility(SS::Utility::VectorThrusters));
+    CHECK(s.PurchaseUtility(SS::Utility::VectorThrusters));
+    expected.credits -= 150;
+    expected.utility = SS::Utility::VectorThrusters;
+    CHECK(SS::EncodeRun(s.run) == SS::EncodeRun(expected));
+    CHECK(s.Stats().maneuver > baseline.maneuver);
+
+    auto RejectWithoutMutation = [](SS::Session &session, SS::Utility utility)
+    {
+        const auto run = SS::EncodeRun(session.run);
+        const auto accountBefore = SS::EncodeAccount(session.account);
+        CHECK(!session.CanPurchaseUtility(utility));
+        CHECK(!session.PurchaseUtility(utility));
+        CHECK(SS::EncodeRun(session.run) == run);
+        CHECK(SS::EncodeAccount(session.account) == accountBefore);
+    };
+    // A repeated click still has enough credits; it must not charge for the same module.
+    CHECK(s.run.credits >= 150);
+    RejectWithoutMutation(s, SS::Utility::VectorThrusters);
+    CHECK(s.CanPurchaseUtility(SS::Utility::OverdriveCooling));
+    CHECK(s.PurchaseUtility(SS::Utility::OverdriveCooling));
+    expected.credits -= 150;
+    expected.utility = SS::Utility::OverdriveCooling;
+    CHECK(SS::EncodeRun(s.run) == SS::EncodeRun(expected));
+    CHECK(Near(s.Stats().maneuver, baseline.maneuver));
+    CHECK(s.Stats().boostEfficiency > baseline.boostEfficiency);
+    CHECK(s.run.totalCreditsEarned == earned && SS::EncodeAccount(s.account) == account);
+
+    auto funded = s;
+    funded.run.credits = 300;
+    RejectWithoutMutation(funded, SS::Utility::OverdriveCooling);
+    for (auto invalid :
+         {SS::Utility::None, static_cast<SS::Utility>(-1), static_cast<SS::Utility>(3), static_cast<SS::Utility>(100)})
+        RejectWithoutMutation(funded, invalid);
+    for (int balance : {-1, 0, 149})
+    {
+        auto insufficient = s;
+        insufficient.run.credits = balance;
+        RejectWithoutMutation(insufficient, SS::Utility::VectorThrusters);
+    }
+    auto exact = s;
+    exact.run.credits = 150;
+    CHECK(exact.CanPurchaseUtility(SS::Utility::VectorThrusters));
+    CHECK(exact.PurchaseUtility(SS::Utility::VectorThrusters));
+    CHECK(exact.run.credits == 0 && exact.run.utility == SS::Utility::VectorThrusters);
+    CHECK(exact.run.totalCreditsEarned == earned);
+
+    for (auto phase : {SS::Phase::Hangar, SS::Phase::Flight, SS::Phase::Breathing, SS::Phase::Wormhole,
+                       SS::Phase::Climax, SS::Phase::Approach, SS::Phase::Docking, SS::Phase::Dead})
+    {
+        auto away = s;
+        away.run.credits = 300;
+        away.run.phase = phase;
+        RejectWithoutMutation(away, SS::Utility::VectorThrusters);
+    }
+    auto inactive = s;
+    inactive.run.credits = 300;
+    inactive.run.active = false;
+    RejectWithoutMutation(inactive, SS::Utility::VectorThrusters);
+
+    // Eligibility shown earlier cannot authorize a purchase after another action changes state.
+    auto spent = s;
+    spent.run.credits = 200;
+    CHECK(spent.CanPurchaseUtility(SS::Utility::VectorThrusters));
+    CHECK(spent.Purchase(SS::Upgrade::Hull));
+    RejectWithoutMutation(spent, SS::Utility::VectorThrusters);
+    auto departed = s;
+    departed.AwardCredits(150);
+    CHECK(departed.CanPurchaseUtility(SS::Utility::VectorThrusters));
+    CHECK(departed.LaunchFromStation());
+    RejectWithoutMutation(departed, SS::Utility::VectorThrusters);
+    auto ended = s;
+    ended.AwardCredits(150);
+    CHECK(ended.CanPurchaseUtility(SS::Utility::VectorThrusters));
+    ended.EndRun();
+    RejectWithoutMutation(ended, SS::Utility::VectorThrusters);
+    auto rewarded = s;
+    rewarded.AwardCredits(150);
+    CHECK(rewarded.CanPurchaseUtility(SS::Utility::VectorThrusters));
+    const int beforeReward = rewarded.run.credits;
+    CHECK(rewarded.EquipUtility(SS::Utility::VectorThrusters));
+    RejectWithoutMutation(rewarded, SS::Utility::VectorThrusters);
+    CHECK(rewarded.run.credits == beforeReward);
+
+    // Event fitting remains free in flight, including replacing or reselecting a module.
+    auto event = Fresh("free-utility-reward");
+    CHECK(event.EquipUtility(SS::Utility::VectorThrusters));
+    CHECK(event.EquipUtility(SS::Utility::VectorThrusters));
+    CHECK(event.EquipUtility(SS::Utility::OverdriveCooling));
+    CHECK(event.run.utility == SS::Utility::OverdriveCooling && event.run.credits == 0 &&
+          event.run.totalCreditsEarned == 0);
+}
+
 void DepotShieldService()
 {
     auto s = Fresh("depot-shield");
@@ -649,6 +751,7 @@ int main()
     FlightMetersAndUtilities();
     WaveLifecycleAndEconomy();
     UpgradeTiersAndRepair();
+    StationUtilityPurchases();
     DepotShieldService();
     Contracts();
     DeathProgressionReset();

@@ -418,8 +418,53 @@ bool FSSAcceleratedJourney::RunTest(const FString &Parameters)
     TestEqual(TEXT("Exactly one depot actor was offered across both blocks"), SeenDepots.Num(), 1);
     TestEqual(TEXT("Both optional events complete through real actors"), Session.run.eventsCompleted, 2);
     TestTrue(TEXT("Combat reward replaces the active weapon"), Session.run.weapon == SS::Weapon::HeavyCannon);
+    const auto BoundaryRun = SS::EncodeRun(Session.run);
+    const auto BoundaryAccount = SS::EncodeAccount(Session.account);
+    Fixture.Mode->OpenPanel(ESSPanel::Launch);
+    TestTrue(TEXT("Station 2 shows the live run summary without declaring a victory"),
+             Fixture.Mode->PanelTitle.Contains(TEXT("STATION 2")) &&
+                 Fixture.Mode->PanelDetail.Contains(TEXT("Live run: 10 waves")));
+    TestTrue(TEXT("Boundary offers guarded suspension and disclosed abandonment directly"),
+             Fixture.Mode->Entries.ContainsByPredicate([](const FSSMenuEntry &Entry)
+                                                       { return Entry.Action == 43 && Entry.Enabled; }) &&
+                 Fixture.Mode->Entries.ContainsByPredicate(
+                     [](const FSSMenuEntry &Entry)
+                     { return Entry.Action == 51 && Entry.Enabled && Entry.Label.Contains(TEXT("no XP")); }));
+    TestFalse(TEXT("Boundary has no enabled next-wave launch"),
+              Fixture.Mode->Entries.ContainsByPredicate([](const FSSMenuEntry &Entry)
+                                                        { return Entry.Action == 50 && Entry.Enabled; }));
+    if (!Fixture.Activate(*this, 0))
+        return false;
+    TestTrue(TEXT("Returning to station services closes only the summary"),
+             Fixture.Mode->Panel == ESSPanel::None && SS::EncodeRun(Session.run) == BoundaryRun &&
+                 SS::EncodeAccount(Session.account) == BoundaryAccount);
     Fixture.Mode->LaunchFromHub();
     TestTrue(TEXT("Station 2 remains the documented live slice boundary"), Session.AtSliceBoundary());
+    TestTrue(TEXT("Blocked departure preserves run and account"),
+             SS::EncodeRun(Session.run) == BoundaryRun && SS::EncodeAccount(Session.account) == BoundaryAccount);
+
+    // Exercise the actual vendor adapter after the complete journey, keeping free event choices above intact.
+    Session.AwardCredits(300);
+    Fixture.Mode->OpenPanel(ESSPanel::Vendor);
+    TestTrue(TEXT("The event-fitted utility is visibly disabled at the vendor"),
+             Fixture.Mode->Entries.ContainsByPredicate(
+                 [](const FSSMenuEntry &Entry)
+                 { return Entry.Action == 44 && !Entry.Enabled && Entry.Label.Contains(TEXT("already fitted")); }));
+    const int BeforeModule = Session.run.credits;
+    if (!Fixture.Activate(*this, 45))
+        return false;
+    TestTrue(TEXT("Vendor replacement fits the other utility for exactly 150 credits"),
+             Session.run.utility == SS::Utility::OverdriveCooling && Session.run.credits == BeforeModule - 150);
+    const auto FittedRun = SS::EncodeRun(Session.run);
+    const int32 FittedIndex =
+        Fixture.Mode->Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry) { return Entry.Action == 45; });
+    if (!TestTrue(TEXT("The newly fitted offer remains present, labelled and disabled"),
+                  FittedIndex != INDEX_NONE && !Fixture.Mode->Entries[FittedIndex].Enabled &&
+                      Fixture.Mode->Entries[FittedIndex].Label.Contains(TEXT("already fitted"))))
+        return false;
+    Fixture.Mode->ActivateEntry(FittedIndex);
+    TestTrue(TEXT("Selecting the disabled fitted module cannot charge twice"), SS::EncodeRun(Session.run) == FittedRun);
+    Fixture.Mode->ClosePanel();
     TestTrue(TEXT("Persistence remains blocked for the entire fixture"), Fixture.Instance->AccountStorageBlocked);
     return true;
 }

@@ -140,6 +140,18 @@ struct FSSLifecycleIsolation
             Object->SetNumberField(TEXT("xp"), double(Session.account.xp));
             Object->SetNumberField(TEXT("level"), Session.account.level);
             Object->SetNumberField(TEXT("completedRuns"), Session.account.runs);
+            if (Phase == TEXT("PrepareStation5") || Phase == TEXT("PrepareStation10"))
+            {
+                Object->SetStringField(TEXT("evidenceType"), TEXT("PREPARED_FIXTURE_NOT_GAMEPLAY"));
+                Object->SetNumberField(TEXT("preparedWave"), Session.run.wave);
+                Object->SetBoolField(TEXT("runActive"), Session.run.active);
+                Object->SetBoolField(TEXT("xpAwarded"), Session.run.xpAwarded);
+                Object->SetBoolField(TEXT("unconsumedSuspensionVerified"), Instance->HasSuspendedRun());
+                Object->SetStringField(TEXT("fixtureDescription"),
+                                       TEXT("Assisted station state: 100 kills, Hull II, Vector Thrusters, pending "
+                                            "utility reward, weapon buff and explicit lifecycle settings. Objective "
+                                            "contract active at Wave 5, completed at Wave 10. No natural travel."));
+            }
         }
         FString Text;
         FJsonSerializer::Serialize(Object, TJsonWriterFactory<>::Create(&Text));
@@ -252,10 +264,19 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
             TestFalse(TEXT("Fresh isolated slot must not exist"), UGameplayStatics::DoesSaveGameExist(Slot, 0));
         return Isolation.Receipt(Phase, *this);
     }
-    const FString Prior = Phase == TEXT("Suspend")       ? TEXT("Preflight")
-                          : Phase == TEXT("ResumeDeath") ? TEXT("Suspend")
-                          : Phase == TEXT("FreshStart")  ? TEXT("ResumeDeath")
-                                                         : TEXT("");
+    const int32 PreparedWave = Phase == TEXT("PrepareStation5") ? 5 : Phase == TEXT("PrepareStation10") ? 10 : 0;
+    if (PreparedWave != 0)
+    {
+        int32 RequestedWave = 0;
+        if (!TestTrue(TEXT("Station preparation requires a matching explicit opt-in"),
+                      FParse::Value(FCommandLine::Get(), TEXT("SSPreparePackagedStation="), RequestedWave) &&
+                          RequestedWave == PreparedWave))
+            return false;
+    }
+    const FString Prior = (Phase == TEXT("Suspend") || PreparedWave != 0) ? TEXT("Preflight")
+                          : Phase == TEXT("ResumeDeath")                  ? TEXT("Suspend")
+                          : Phase == TEXT("FreshStart")                   ? TEXT("ResumeDeath")
+                                                                          : TEXT("");
     if (!TestFalse(TEXT("Lifecycle phase is recognized"), Prior.IsEmpty()))
         return false;
     auto Previous = Isolation.Read(Prior, *this);
@@ -268,7 +289,7 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
     if (!TestFalse(TEXT("Isolated account initializes without a storage error"), Instance->AccountStorageBlocked))
         return false;
     const std::string RunId = "lifecycle-" + std::string(TCHAR_TO_UTF8(*Isolation.Token));
-    if (Phase == TEXT("Suspend"))
+    if (Phase == TEXT("Suspend") || PreparedWave != 0)
     {
         TestEqual(TEXT("First process begins with fresh account XP"), Session.account.xp, std::int64_t(0));
         TestFalse(TEXT("Fresh account has no suspension"), Instance->HasSuspendedRun());
@@ -292,10 +313,46 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
         Session.settings.mouseSensitivity = 1.7;
         Session.settings.controllerSensitivity = 1.2;
         Session.settings.uiScale = 1.15;
+        if (PreparedWave == 10)
+        {
+            // Explicit fixture positioning/progress, not a traversal or contract gameplay result.
+            // Use docking completion to settle the existing contract exactly as Station 2 does.
+            Session.run.wave = Session.run.wavesCompleted = 10;
+            Session.run.phase = SS::Phase::Docking;
+            Session.run.contractProgress = Session.run.contractTarget;
+            if (!TestTrue(TEXT("Prepared Station 2 settles the fixture objective contract"), Session.CompleteDocking()))
+                return false;
+            Session.account.highestWave = 10;
+            TestTrue(TEXT("Station 2 has no unreachable active contract"),
+                     Session.run.contract == SS::Contract::None && Session.run.contractsCompleted == 1);
+        }
+        if (PreparedWave != 0)
+        {
+            SS::Run Decoded;
+            std::string Error;
+            const auto Payload = SS::EncodeRun(Session.run);
+            if (!TestTrue(TEXT("Prepared station is accepted by the strict production run codec"),
+                          SS::DecodeRun(Payload, Decoded, Error) && SS::EncodeRun(Decoded) == Payload) ||
+                !TestTrue(TEXT("Prepared fixture is the requested live station without awarded XP"),
+                          Session.run.active && Session.run.phase == SS::Phase::Station &&
+                              Session.run.wave == PreparedWave && Session.run.wavesCompleted == PreparedWave &&
+                              !Session.run.xpAwarded && Session.account.xp == 0 && Session.account.runs == 0 &&
+                              Session.account.history.empty()))
+                return false;
+            AddInfo(FString::Printf(TEXT("PREPARED_FIXTURE_NOT_GAMEPLAY: Wave %d; no resume or death is executed."),
+                                    PreparedWave));
+        }
         if (!TestTrue(TEXT("Real SuspendRun persists all three domains"), Instance->SuspendRun()))
             return false;
         TestTrue(TEXT("Written station run is available to resume"), Instance->HasSuspendedRun());
         TestEqual(TEXT("XP remains unawarded while suspended"), Session.account.xp, std::int64_t(0));
+        if (PreparedWave != 0)
+        {
+            const auto *Record = Cast<USSStoredData>(UGameplayStatics::LoadGameFromSlot(TEXT("SS_Suspend_v1"), 0));
+            TestTrue(TEXT("Preparation leaves the exact valid suspension unconsumed for packaged Continue"),
+                     Record && Record->Version == 1 && Record->Valid &&
+                         Record->Payload == UTF8_TO_TCHAR(SS::EncodeRun(Session.run).c_str()));
+        }
     }
     else if (Phase == TEXT("ResumeDeath"))
     {
