@@ -133,13 +133,23 @@ void ASSHUD::DrawHUD()
                 const FVector Local = Ship->GetActorTransform().InverseTransformPosition(It->GetActorLocation());
                 Screen = FVector2D(Local.Y < 0 ? 180 * Scale : W - 360 * Scale, H * .5f);
             }
-            Screen.X = FMath::Clamp(Screen.X, 180 * Scale, W - 360 * Scale);
-            Screen.Y = FMath::Clamp(Screen.Y, 180 * Scale, H - 210 * Scale);
             const float Meters = FVector::Dist(Ship->GetActorLocation(), It->GetActorLocation()) / 100.f;
-            Text(FString::Printf(TEXT("<> %s / %.0f m"), *It->GetEncounterLabel(), Meters), Screen.X, Screen.Y, .7f,
-                 FLinearColor(1, .8f, .4f));
-            if (It->IsPlayerInRange() && !It->IsAccepted())
-                Text(TEXT("E / A  INTERACT"), Screen.X, Screen.Y + 22 * Scale, .7f);
+            const FString Label = FString::Printf(TEXT("<> %s / %.0f m"), *It->GetEncounterLabel(), Meters);
+            const bool ShowPrompt = It->IsPlayerInRange() && !It->IsAccepted();
+            const FLinearColor LabelColor(1, .8f, .4f);
+            const float Padding = 10.f * Scale, PanelW = FMath::Min(420.f * Scale, W - 2.f * Margin);
+            const float TextW = PanelW - 2.f * Padding;
+            const float LabelH = Paragraph(Label, 0, 0, TextW, .7f, LabelColor, false);
+            const float PromptH =
+                ShowPrompt ? Paragraph(TEXT("E / A  INTERACT"), 0, 0, TextW, .7f, FLinearColor::White, false) : 0.f;
+            const float PanelH = LabelH + PromptH + 2.f * Padding;
+            Screen.X = FMath::Clamp(float(Screen.X), Margin, W - Margin - PanelW);
+            Screen.Y = FMath::Clamp(float(Screen.Y), Margin, H - Margin - PanelH);
+            DrawRect(FLinearColor(.015f, .025f, .04f, .94f), Screen.X, Screen.Y, PanelW, PanelH);
+            Paragraph(Label, Screen.X + Padding, Screen.Y + Padding, TextW, .7f, LabelColor);
+            if (ShowPrompt)
+                Paragraph(TEXT("E / A  INTERACT"), Screen.X + Padding, Screen.Y + Padding + LabelH, TextW, .7f,
+                          FLinearColor::White);
         }
         if (S.run.phase == SS::Phase::Approach)
         {
