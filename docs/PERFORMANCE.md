@@ -1,6 +1,6 @@
 # Performance findings
 
-**Early flight and both rendered climax fixtures are measured; the representative Phase 1 performance gate remains OPEN.** Package 10 now includes the normal Wave 5 wormhole/climax/Station 1 transition and a separate full Wave 10 climax/approach sample. Neither capped, seeded scenario exceeded 16.667 ms per frame. Natural ten-wave play, physical response, Station 2 docking, full-run memory stability and lower-end scalability remain unmeasured. Later uncommitted [combat-cue changes](COMBAT_CUES.md) are outside these Package 10 results.
+**Early flight and both rendered climax fixtures are measured; the representative Phase 1 performance gate remains OPEN.** Package 10 now includes the normal Wave 5 wormhole/climax/Station 1 transition and a separate full Wave 10 climax/approach sample. Neither capped, seeded scenario exceeded 16.667 ms per frame. Natural ten-wave play, physical response, Station 2 docking, full-run memory stability and lower-end scalability remain unmeasured. Later [combat-cue changes](COMBAT_CUES.md) are outside these Package 10 results.
 
 ## Package 10 rendered Station 5 and Wave 10 (2026-09-13)
 

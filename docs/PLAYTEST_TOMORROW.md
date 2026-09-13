@@ -2,7 +2,7 @@
 
 **Not yet run. No owner touch, feel, audio or replay-motivation result has been received.** The owner has already rejected the current graphics as far below acceptable. Generated spacecraft, station and secondary visuals are provisional; a substantial art replacement pass remains open. These checks do not ask the owner to accept that art. Preserve the supplied Acornaut.
 
-Work down this single list, record an observation, and resume at the first unchecked step next time. Every box starts unchecked. A defect is useful evidence; source code or an automated pass is not a hands-on result. The 13-test suite, isolated storage lifecycle and prepared-station native checks passed; the ten-wave fixture uses shortened waves and assistance, and package 8's exit replay used Slomo 0.1. Those results do not check any box below.
+Work down this single list, record an observation, and resume at the first unchecked step next time. Every box starts unchecked. A defect is useful evidence; source code or an automated pass is not a hands-on result. The 21-test suite, isolated storage lifecycle and prepared-station native checks passed. Package 10 rendered fixtures exercised normal-duration Station 1 transitions and the full Wave 10 climax using seeded durability and scripted input; earlier full-journey automation uses shortened waves and assistance. Those results do not check any box below.
 
 Session date/time: __________\
 Build/commit: __________\
@@ -12,8 +12,8 @@ Preferred mouse sensitivity: __________  Preferred controller sensitivity: _____
 
 **Package directory:** `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`\
 **Produced launcher:** `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`\
-**Lead's packaged smoke:** package 8 guarded slowed exit/prompt/service/departure verified; package 7 prepared-station save/vendor/death/account checks passed; package 4 alone supplies measured early-wave timings.\
-Package 8/source442 built successfully with 62 project packages and a compatible signed x64 runtime. Confirm its executable hashes in [BUILD_RUN.md](BUILD_RUN.md) before testing; later work may replace the shared archive. This fixture smoke does not check the owner's hands-on boxes or establish natural piloting, docking, audio or retry appeal. Start below at Step 1.
+**Lead's packaged smoke:** Package 10 contains the audio/economy/photographic-rock milestone and passed independently audited Station 1 transition and Wave 10 captures. Earlier package 7/8 save/vendor/death/exit checks retain their historical limits.\
+Package 10/source `0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80` has 88 project packages and a compatible signed x64 runtime. Confirm the current executable hashes in [BUILD_RUN.md](BUILD_RUN.md) before testing; later work may replace the shared archive. The newer combat cues and sharper font review are not in Package 10. This fixture smoke does not check the owner's hands-on boxes or establish natural piloting, docking, audio or retry appeal. Start below at Step 1.
 
 1. [ ] **Launch the recorded executable and open the home hangar.**\
    Expected: usable game window, visible Acornaut/ship and readable shell; no black view, missing assets or unwanted fullscreen switch.\

@@ -5,14 +5,36 @@
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Engine/Canvas.h"
+#include "Engine/Font.h"
+#include "CanvasItem.h"
+#include "EngineFontServices.h"
+#include "Fonts/FontMeasure.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Engine/Engine.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 
+FSlateFontInfo ASSHUD::HudFont(float Size) const
+{
+    FSlateFontInfo Font = GEngine->GetMediumFont()->GetLegacySlateFontInfo();
+    // Request glyphs at their displayed size. Scaling a cached 10pt atlas quad
+    // magnifies the bitmap and made the HUD/menu lettering visibly soft.
+    Font.Size = FMath::Clamp(FMath::RoundToFloat(Font.Size * Size * Scale * 1.65f * 4.f) * .25f, 6.f, 64.f);
+    return Font;
+}
+FVector2D ASSHUD::MeasureText(const FString &Value, float Size) const
+{
+    if (!FEngineFontServices::IsInitialized())
+        return FVector2D::ZeroVector;
+    const auto Measure = FEngineFontServices::Get().GetFontMeasure();
+    const float Dpi = Canvas ? FMath::Max(.1f, Canvas->GetDPIScale()) : 1.f;
+    return Measure.IsValid() ? FVector2D(Measure->Measure(Value, HudFont(Size), Dpi)) / Dpi : FVector2D::ZeroVector;
+}
 void ASSHUD::Text(const FString &Value, float X, float Y, float Size, FLinearColor Color)
 {
-    DrawText(Value, Color, X, Y, GEngine->GetMediumFont(), Size * Scale * 1.65f, false);
+    FCanvasTextItem Item(FVector2D(FMath::RoundToFloat(X), FMath::RoundToFloat(Y)), FText::FromString(Value),
+                         HudFont(Size), Color);
+    Canvas->DrawItem(Item);
 }
 float ASSHUD::Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color,
                         bool Render)
@@ -21,7 +43,7 @@ float ASSHUD::Paragraph(const FString &Value, float X, float Y, float Width, flo
     Value.ParseIntoArrayLines(Paragraphs, false);
     const float StartY = Y;
     float TextWidth = 0, LineHeight = 0;
-    GetTextSize(TEXT("Mg"), TextWidth, LineHeight, GEngine->GetMediumFont(), Size * Scale * 1.65f);
+    LineHeight = MeasureText(TEXT("Mg"), Size).Y;
     LineHeight = FMath::Max(LineHeight + 4 * Scale, 17 * Scale);
     for (const auto &Part : Paragraphs)
     {
@@ -31,8 +53,7 @@ float ASSHUD::Paragraph(const FString &Value, float X, float Y, float Width, flo
         for (const auto &Word : Words)
         {
             const FString Candidate = Line.IsEmpty() ? Word : Line + TEXT(" ") + Word;
-            float Height;
-            GetTextSize(Candidate, TextWidth, Height, GEngine->GetMediumFont(), Size * Scale * 1.65f);
+            TextWidth = MeasureText(Candidate, Size).X;
             if (!Line.IsEmpty() && TextWidth > Width)
             {
                 if (Render)
@@ -164,8 +185,7 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
             if (const auto *Target = Cast<ASSWorldBody>(Ship->SoftTarget))
             {
                 const FString Label = Target->GetLabel();
-                float LabelWidth = 0.f, LabelHeight = 0.f;
-                GetTextSize(Label, LabelWidth, LabelHeight, GEngine->GetMediumFont(), .5f * Scale * 1.65f);
+                const float LabelWidth = MeasureText(Label, .5f).X;
                 float LabelX = Screen.X + 29.f * Scale;
                 if (LabelX + LabelWidth > W - 12.f * Scale)
                     LabelX = Screen.X - 29.f * Scale - LabelWidth;

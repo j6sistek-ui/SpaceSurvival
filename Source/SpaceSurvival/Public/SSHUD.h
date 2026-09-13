@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "SSHUD.generated.h"
+struct FSlateFontInfo;
 UCLASS()
 class SPACESURVIVAL_API ASSHUD : public AHUD
 {
@@ -13,6 +14,8 @@ public:
 private:
     TArray<FBox2D> MenuBounds;
     float Scale = 1.f;
+    FSlateFontInfo HudFont(float Size) const;
+    FVector2D MeasureText(const FString &Value, float Size) const;
     void Text(const FString &Value, float X, float Y, float Size = 1.f, FLinearColor Color = FLinearColor::White);
     float Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color,
                     bool Render = true);

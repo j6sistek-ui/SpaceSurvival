@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-09-13T10:24:44.5365991Z",
+  "status": "bounded-native-menu-check-passed",
+  "sourceBase": "21a2572830f88be465d7a7c2ac0c229114ef5ede",
+  "sourceFiles": [
+    {
+      "path": "Source/SpaceSurvival/Private/SSHUD.cpp",
+      "sha256": "759a612bfab6c944482ee9a1136ee2bdfeb6d0f3df729640048a45817813639e"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSHUD.h",
+      "sha256": "8471eba5ac2b7c543935788478084e77130893b383352e1a5df7219ed77ea9ab"
+    }
+  ],
+  "editorDllSha256": "651cac5a57fd0b694fe548c216c4ec1aaf992914f8ac45cce1db18db11ef291e",
+  "editorBuildLog": ".agent/local/HudFontEditor.log",
+  "editorBuildSeconds": 14.58,
+  "profile": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\FontReview\\e4556ed152094a37b213f7c792de4d17",
+  "processId": 20632,
+  "processGone": true,
+  "normalShutdownLogged": true,
+  "logSha256": "a4cb2f5a7c2ea3a78ee346675d0f3551092435a87e9a01c77e1eddedaa6b1c7e",
+  "resolution": "1920x1080 client, DX12 SM6",
+  "audio": "disabled for menu-only inspection",
+  "observed": [
+    "Main menu at 100 percent scale",
+    "Settings at 100, 110 and 120 percent scale",
+    "Controls paragraph and all seven rows at 120 percent scale; no observed clipping or overlap"
+  ],
+  "input": "Native menu mouse clicks through @oai/sky; Alt+F4 normal close",
+  "productionSaveFilesUnchanged": [
+    {
+      "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86",
+      "bytes": 2233,
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Account_v1.sav"
+    },
+    {
+      "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27",
+      "bytes": 1989,
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Suspend_v1.sav"
+    }
+  ],
+  "isolatedSaveFiles": [
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\FontReview\\e4556ed152094a37b213f7c792de4d17\\User\\Saved\\SaveGames\\SS_Settings_v1.sav",
+      "sha256": "0e3ce9ddbbdbb6a5be2ba4cfbadcf83349efee5394f9d1b38034d06d790f9f86"
+    }
+  ],
+  "limits": [
+    "No physical flight or controller acceptance",
+    "Not a performance capture",
+    "Not a maximum/minimum scale or resolution matrix",
+    "Gameplay combat labels remain to be inspected in the integrated package",
+    "No screenshot payloads were retained; direct native screenshots were inspected during the task",
+    "This editor build is newer than Package 10"
+  ]
+}
