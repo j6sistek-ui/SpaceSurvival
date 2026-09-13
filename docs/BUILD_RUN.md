@@ -1,6 +1,10 @@
 # Build and run
 
-**Current archive: Package 13, source `a628c7faa3d6c160ded22981bd3c230cb0cbf203`.** BuildCookRun and independent artifact audit passed; the [package receipt](validation/2026-09-13-windows-gameplay-fairness-package.json) binds the executable, all 120 project assets and matching 37-test source. Its normal-timing Wave 10 fixture passed at 2026-09-13 15:26:31 UTC. A [native settings check](validation/2026-09-13-native-settings-focus.json) verified selection stays on the controller dial while adjusting 1.0→1.2→1.4, with mouse sensitivity unchanged. These are bounded checks, not physical-input or natural gameplay acceptance. **Phase 1 remains PARTIAL.**
+**Phase 1: PARTIAL. Current build: Package 14**, source `f4bfec8bb955a9dab23300c55b1ca81c53442504`. The [station camera fix](STATION_CAMERA.md) passed **38/38 Unreal tests** at 16:40:33 UTC, zero warnings/failures/not-run; Editor build, formatting and 23 source checks passed. Windows packaging succeeded. Two native hangar observations show the camera behind the body before and after user movement/turning; physical comfort and controller acceptance remain open. [Current receipt](validation/2026-09-13-station-camera.json).
+
+**Playtest the packaged game:** `Artifacts/Windows/SpaceSurvival.exe`. Keep its entire folder together. Do not open the `.uproject` just to play: that starts the editor and may offer a conversion copy. The authoritative project is `C:/Users/j6sis/SpaceSurvival`; the separate `SpaceSurvival 5.8` copy does not receive repository fixes.
+
+**Historical Package 13 archive, source `a628c7faa3d6c160ded22981bd3c230cb0cbf203`.** BuildCookRun and independent artifact audit passed; the [package receipt](validation/2026-09-13-windows-gameplay-fairness-package.json) binds the executable, all 120 project assets and matching 37-test source. Its normal-timing Wave 10 fixture passed at 2026-09-13 15:26:31 UTC. A [native settings check](validation/2026-09-13-native-settings-focus.json) verified selection stays on the controller dial while adjusting 1.0→1.2→1.4, with mouse sensitivity unchanged. These are bounded checks, not physical-input or natural gameplay acceptance. **Phase 1 remains PARTIAL.**
 
 Package 13 includes the industrial station shell, 8K NASA sky, HUD improvements and [gameplay repairs](GAMEPLAY_QUALITY.md), including synchronized projectile contact, successful-spawn Director charging and subtitle-independent contract results. `THIRD_PARTY.md` is byte-exact beside the launcher. HeroAlpha experiments are paused and unadopted; the current character remains provisional. See [current state](PROJECT_STATE.md) and the [hands-on checks](PLAYTEST_TOMORROW.md).
 
@@ -64,16 +68,16 @@ This runs the project through the installed editor executable. It is not a packa
 ./Scripts/Build.ps1 -Target Package
 ```
 
-The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Package 13 succeeded in 78.34 seconds, exit 0, with a 22.86-second native build.
+The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Package 14 succeeded (UAT log: 0h 2m 8s, exit 0; native build 69.48 seconds).
 
-Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`. **Verified identity: Package 13, source `a628c7faa3d6c160ded22981bd3c230cb0cbf203`.** Later packaging replaces this shared path; compare the [retained receipt](validation/2026-09-13-windows-gameplay-fairness-package.json) before relying on a historical hash.
+Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`. **Current identity: Package 14, source `f4bfec8bb955a9dab23300c55b1ca81c53442504`.** Later packaging replaces this shared path; compare the [current receipt](validation/2026-09-13-station-camera.json) before relying on a historical hash.
 
 | Artifact | Size | SHA-256 |
 | --- | --- | --- |
 | `Artifacts/Windows/SpaceSurvival.exe` launcher | 171,520 bytes | `619ac0779dceabf638639193efdea0733e3b4626dea623c07062f160f5abccf8` |
-| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` game | 332,669,952 bytes | `a07be4cf56e7c0c099d63953c566fe480a4a3bb144680f772b4a56f80eb73c21` |
+| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` game | 332,677,120 bytes | `4918a6a0906ca11622ae45928b494870fcf2c7e174df4dbf4748d932a610fb55` |
 
-The receipt also binds all five .pak/.utoc/.ucas containers, all 120 project packages plus Engine Cube, 2,184 index rows, prerequisite provenance and copied acknowledgements. Package 13 Wave 10 passed its normal-timing fixture. Package 12 separately retains the preceding Station 1 transition benchmark; that earlier capture does not establish a new Package 13 Station 1 measurement. Exact measurements and their limits belong in [PERFORMANCE.md](PERFORMANCE.md); earlier package results remain historical.
+The historical Package 13 receipt also binds all five .pak/.utoc/.ucas containers, all 120 project packages plus Engine Cube, 2,184 index rows, prerequisite provenance and copied acknowledgements. Package 13 Wave 10 passed its normal-timing fixture. Package 12 separately retains the preceding Station 1 transition benchmark; that earlier capture does not establish a new Package 13 Station 1 measurement. Exact measurements and their limits belong in [PERFORMANCE.md](PERFORMANCE.md); earlier package results remain historical.
 
 Keep the entire archive directory together; the launcher alone is not the game. Launch from the repository root:
 
@@ -109,7 +113,7 @@ Package 7 bundled runtime 14.50.35719.0 for compiler 14.51.36257. Package 13 ret
 
 The implemented packaging correction retains unique UAT logs under Artifacts/BuildLogs, then invokes `Scripts/BundlePrerequisites.ps1`. The helper binds to the game link response file and matching built/archive executable, corroborates the selected toolchain from the log, checks a compatible Microsoft-signed x64 runtime from that VS installation, copies only into the archive and writes `Artifacts/Windows/Prerequisites.json` with provenance. Missing compatibility fails clearly; no host installation or Engine modification occurs. ARM64 is outside this Windows x64 target.
 
-Package 13 independently verified the copy/receipt path, compatible runtime and Microsoft signatures. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing the archive, use its matching retained UAT log:
+Package 13 independently verified the copy/receipt path, compatible runtime and Microsoft signatures. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing an archive, use its matching retained UAT log. The following is a historical Package 13 example and must not be used against Package 14:
 
 ```powershell
 ./Scripts/BundlePrerequisites.ps1 -BuildLog "./Artifacts/BuildLogs/WindowsPackage-bbe5c66ccd604a518d096ef1a8834121.log" -DryRun

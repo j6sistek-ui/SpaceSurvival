@@ -1,6 +1,8 @@
 # Performance findings
 
-**Current package: 13. The representative Phase 1 performance gate remains OPEN.** Its normal-timing Wave 10 capture passed on the available i7-14700F/RTX 5080 at 2560x1440, DX12/SM6, quality 2, VSync off and cap 120. This is a seeded Tier V fixture with enlarged durability and scripted controls; it is not natural balance, physical response, clean-PC or lower-end acceptance.
+**Latest measured package: 13; current package: 14. The representative Phase 1 performance gate remains OPEN.** Its normal-timing Wave 10 capture passed on the available i7-14700F/RTX 5080 at 2560x1440, DX12/SM6, quality 2, VSync off and cap 120. This is a seeded Tier V fixture with enlarged durability and scripted controls; it is not natural balance, physical response, clean-PC or lower-end acceptance.
+
+Package 14 fixes station look and has no new performance measurement. The figures below belong to the preceding build.
 
 ## Package 13 Wave 10
 
