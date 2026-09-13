@@ -157,13 +157,70 @@ bool FSSPickupSweptCollection::RunTest(const FString &Parameters)
     auto *Rebased = Fixture.Pickup(FVector::ZeroVector);
     if (!TestNotNull(TEXT("Spawn origin-shift pickup"), Rebased))
         return false;
-    Rebased->Tick(0.f);
+    // Rebase the configuration-time history before this pickup's very first tick.
     const FVector Offset(1000000, -2000000, 3000000);
     Fixture.Ship->ApplyWorldOffset(Offset, true);
     Rebased->ApplyWorldOffset(Offset, true);
     Fixture.Ship->SetActorLocation(Offset + FVector(400, 0, 0));
     Rebased->Tick(.1f);
     TestEqual(TEXT("Origin rebasing preserves the same relative crossing"), Run.credits, BeforeMiss + 111);
+
+    Fixture.Ship->SetActorLocation(FVector(-500, 0, 0));
+    auto *FirstFrame = Fixture.Pickup(FVector::ZeroVector);
+    if (!TestNotNull(TEXT("Spawn pickup before the ship's first crossing"), FirstFrame))
+        return false;
+    const int32 BeforeFirstFrame = Run.credits;
+    Fixture.Ship->SetActorLocation(FVector(500, 0, 0));
+    FirstFrame->Tick(.1f);
+    TestEqual(TEXT("Configuration seeds a first-frame ship crossing without a preparatory tick"), Run.credits,
+              BeforeFirstFrame + 37);
+
+    struct FExpiryCase
+    {
+        const TCHAR *Label;
+        FVector ShipStart;
+        FVector ShipEnd;
+        FVector PickupStart;
+        FVector PickupVelocity;
+        float Lifetime;
+        bool bCollect;
+        FVector ExpectedEnd;
+    };
+    const FExpiryCase Cases[] = {
+        {TEXT("Pickup crosses before expiry"), FVector::ZeroVector, FVector::ZeroVector, FVector(-400, 0, 0),
+         FVector(8000, 0, 0), .05f, true, FVector::ZeroVector},
+        {TEXT("Ship crosses before expiry"), FVector(-500, 0, 0), FVector(500, 0, 0), FVector::ZeroVector,
+         FVector::ZeroVector, .05f, true, FVector::ZeroVector},
+        {TEXT("Pickup crosses only after expiry"), FVector::ZeroVector, FVector::ZeroVector, FVector(-800, 0, 0),
+         FVector(8000, 0, 0), .05f, false, FVector(-360, 0, 0)},
+        {TEXT("Ship crosses only after expiry"), FVector(-800, 0, 0), FVector::ZeroVector, FVector::ZeroVector,
+         FVector::ZeroVector, .05f, false, FVector(-40, 0, 0)},
+        {TEXT("Magnet would collect only after expiry"), FVector::ZeroVector, FVector::ZeroVector, FVector(270, 0, 0),
+         FVector::ZeroVector, .025f, false, FVector(250, 0, 0)},
+    };
+    for (const FExpiryCase &Case : Cases)
+    {
+        Fixture.Ship->SetActorLocation(Case.ShipStart);
+        auto *Pickup = Fixture.Pickup(Case.PickupStart);
+        if (!TestNotNull(Case.Label, Pickup))
+            return false;
+        Pickup->LifetimeSeconds = Case.Lifetime;
+        Pickup->SetLinearVelocity(Case.PickupVelocity);
+        const int32 Credits = Run.credits;
+        const int32 Salvage = Run.salvageCollected;
+        Fixture.Ship->SetActorLocation(Case.ShipEnd);
+        Pickup->Tick(.1f);
+        TestEqual(FString::Printf(TEXT("%s: only live collection pays"), Case.Label), Run.credits,
+                  Credits + (Case.bCollect ? 37 : 0));
+        TestEqual(FString::Printf(TEXT("%s: salvage follows live collection"), Case.Label), Run.salvageCollected,
+                  Salvage + (Case.bCollect ? 1 : 0));
+        TestTrue(FString::Printf(TEXT("%s: drift and magnet stop at the live endpoint"), Case.Label),
+                 Pickup->GetActorLocation().Equals(Case.ExpectedEnd, .001));
+        TestTrue(FString::Printf(TEXT("%s: final-frame pickup retires"), Case.Label), Pickup->IsActorBeingDestroyed());
+        Pickup->Tick(.1f);
+        TestEqual(FString::Printf(TEXT("%s: retirement cannot pay again"), Case.Label), Run.credits,
+                  Credits + (Case.bCollect ? 37 : 0));
+    }
     return true;
 }
 

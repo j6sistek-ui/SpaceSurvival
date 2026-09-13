@@ -1,9 +1,9 @@
 {
-  "recorded_utc": "2026-09-13T14:41:43.582435+00:00",
+  "recorded_utc": "2026-09-13T14:51:29.279943+00:00",
   "status": "PASS_AUTOMATED_GAMEPLAY_INTEGRATION_PARTIAL_PHASE1",
   "source": {
     "recorded_utc": "2026-09-13T14:38:49.447856+00:00",
-    "head_before_commit": "b8714908265c08fdae5ab5c24947fbd3331a16ac",
+    "head_before_commit": "12615bf605020bac9cd6011f7e011123c2cdf67a",
     "files": [
       {
         "path": "Config/DefaultEngine.ini",
@@ -947,8 +947,8 @@
       },
       {
         "path": "Source/SpaceSurvival/Private/SSPickupFragmentAutomationTests.cpp",
-        "bytes": 11017,
-        "sha256": "0c7ea3f5135e0d0f9cd6c3e8ef8d3e602343f6168a3be8ee51593327d33d066e"
+        "bytes": 14088,
+        "sha256": "dd959181ebcbe0866990ac446e9d7130a15ca4f6f48e1c03951c5a01f927eeb9"
       },
       {
         "path": "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp",
@@ -982,8 +982,8 @@
       },
       {
         "path": "Source/SpaceSurvival/Private/SSWorldActors.cpp",
-        "bytes": 68133,
-        "sha256": "f87ec51b4cc16ab2bdc43359f2cfd6e63d5917480cbfd7c7b45a7bee9fb667d0"
+        "bytes": 68999,
+        "sha256": "a73b121409edd8ac433aed72dd1b147c6abe4195382dc8d418cb0c78e73be355"
       },
       {
         "path": "Source/SpaceSurvival/Public/SSAudio.h",
@@ -1065,214 +1065,215 @@
         "bytes": 1891,
         "sha256": "ce0190a546efc08971d8bd153078e7ba15414b22e14858123e6038f0cb7709f1"
       }
-    ]
+    ],
+    "binding_note": "Final build inputs match the frozen prior212-file snapshot except the two approved pickup-patch identities recorded before Editor4. All212were rechecked after build/test;120Content unchanged."
   },
   "source_unchanged_after_build_and_tests": true,
   "editor_dll": {
     "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
-    "bytes": 1714176,
-    "sha256": "560666597a9ef68ce9b10b413297da1293a61226535b08236144b05cf6def035"
+    "bytes": 1712640,
+    "sha256": "964836cb9510fc1a870b073fc323893f080665351a80f61b4fac3a478c6aac4c"
   },
-  "editor_build_seconds": 12.79,
+  "editor_build_seconds": 21.69,
   "editor_build_log": {
-    "path": ".agent/local/GameplayQuality-Editor3.log",
-    "bytes": 3743,
-    "sha256": "503554905b248ac130e83bcfb145679fb832c0e949d3741f8f0ad417e45403c1"
+    "path": ".agent/local/GameplayQuality-Editor4.log",
+    "bytes": 3164,
+    "sha256": "ff5c7c08984b71ed1becc679bdb5ef290f7e2a7d3178ce7f0fa88a041f7d17e6"
   },
   "unreal_summary": {
-    "reportCreatedOn": "2026.09.13-14.39.19",
+    "reportCreatedOn": "2026.09.13-14.50.03",
     "succeeded": 35,
     "failed": 0,
     "notRun": 0,
     "succeededWithWarnings": 0,
-    "totalDuration": 2.850224256515503
+    "totalDuration": 2.892838716506958
   },
   "tests": [
     {
       "name": "SpaceSurvival.Content.ContractDataAssetBridge",
       "state": "Success",
-      "duration": 0.007982801645994186
+      "duration": 0.008386299014091492
     },
     {
       "name": "SpaceSurvival.Content.EconomyDataAssetBounds",
       "state": "Success",
-      "duration": 0.008324500173330307
+      "duration": 0.008505798876285553
     },
     {
       "name": "SpaceSurvival.Content.UtilityDataAssetBridge",
       "state": "Success",
-      "duration": 0.008322600275278091
+      "duration": 0.00700020045042038
     },
     {
       "name": "SpaceSurvival.Flight.BoostBrakeMovement",
       "state": "Success",
-      "duration": 0.38080811500549316
+      "duration": 0.3594861924648285
     },
     {
       "name": "SpaceSurvival.Flight.CameraAimMuzzleObstruction",
       "state": "Success",
-      "duration": 0.042843401432037354
+      "duration": 0.04647979885339737
     },
     {
       "name": "SpaceSurvival.Flight.CannonRangeAndHitch",
       "state": "Success",
-      "duration": 0.09273940324783325
+      "duration": 0.08543439954519272
     },
     {
       "name": "SpaceSurvival.Flight.ContactImpactResponse",
       "state": "Success",
-      "duration": 0.045068901032209396
+      "duration": 0.04227979853749275
     },
     {
       "name": "SpaceSurvival.Flight.DirectionalDodgeCollision",
       "state": "Success",
-      "duration": 0.023632202297449112
+      "duration": 0.020932301878929138
     },
     {
       "name": "SpaceSurvival.Flight.FrameRateTrajectories",
       "state": "Success",
-      "duration": 0.30948179960250854
+      "duration": 0.282954603433609
     },
     {
       "name": "SpaceSurvival.Flight.ManualWeaponImpacts",
       "state": "Success",
-      "duration": 0.040975600481033325
+      "duration": 0.03935549780726433
     },
     {
       "name": "SpaceSurvival.Flight.SweptImpactDirection",
       "state": "Success",
-      "duration": 0.010658800601959229
+      "duration": 0.009925499558448792
     },
     {
       "name": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
       "state": "Success",
-      "duration": 1.408567190170288
+      "duration": 1.4921168088912964
     },
     {
       "name": "SpaceSurvival.Integration.AudioFirstPlayMix",
       "state": "Success",
-      "duration": 0.015085700899362564
+      "duration": 0.018308598548173904
     },
     {
       "name": "SpaceSurvival.Integration.AuthoredDisembark",
       "state": "Success",
-      "duration": 0.04254570230841637
+      "duration": 0.04368340224027634
     },
     {
       "name": "SpaceSurvival.Integration.ContractArrivalFeedback",
       "state": "Success",
-      "duration": 0.03262150287628174
+      "duration": 0.03485549986362457
     },
     {
       "name": "SpaceSurvival.Integration.DockingAdmission",
       "state": "Success",
-      "duration": 0.012697800993919373
+      "duration": 0.013120699673891068
     },
     {
       "name": "SpaceSurvival.Integration.EconomyRewardBridge",
       "state": "Success",
-      "duration": 0.015974700450897217
+      "duration": 0.016240499913692474
     },
     {
       "name": "SpaceSurvival.Integration.ElectricalPulseBoundaries",
       "state": "Success",
-      "duration": 0.010661900043487549
+      "duration": 0.010034698992967606
     },
     {
       "name": "SpaceSurvival.Integration.ElectricalPulseCadence",
       "state": "Success",
-      "duration": 0.03998740017414093
+      "duration": 0.041246600449085236
     },
     {
       "name": "SpaceSurvival.Integration.FieldPresentationSelection",
       "state": "Success",
-      "duration": 0.009720299392938614
+      "duration": 0.009964600205421448
     },
     {
       "name": "SpaceSurvival.Integration.FragmentReactionAdmission",
       "state": "Success",
-      "duration": 0.019691098481416702
+      "duration": 0.020367898046970367
     },
     {
       "name": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
       "state": "Success",
-      "duration": 0.09101460129022598
+      "duration": 0.09450119733810425
     },
     {
       "name": "SpaceSurvival.Integration.LateEventAcceptance",
       "state": "Success",
-      "duration": 0.014926597476005554
+      "duration": 0.014051500707864761
     },
     {
       "name": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
       "state": "Success",
-      "duration": 0.011748101562261581
+      "duration": 0.012654799968004227
     },
     {
       "name": "SpaceSurvival.Integration.PickupSweptCollection",
       "state": "Success",
-      "duration": 0.010780297219753265
+      "duration": 0.010258499532938004
     },
     {
       "name": "SpaceSurvival.Integration.RequiredClimaxAdmission",
       "state": "Success",
-      "duration": 0.010066397488117218
+      "duration": 0.010927800089120865
     },
     {
       "name": "SpaceSurvival.Integration.ShipPresentationSelection",
       "state": "Success",
-      "duration": 0.018928300589323044
+      "duration": 0.02197840064764023
     },
     {
       "name": "SpaceSurvival.Integration.SpatialThreatAudio",
       "state": "Success",
-      "duration": 0.013738498091697693
+      "duration": 0.0160164013504982
     },
     {
       "name": "SpaceSurvival.Integration.StationPresentationCollision",
       "state": "Success",
-      "duration": 0.02563609927892685
+      "duration": 0.02331629768013954
     },
     {
       "name": "SpaceSurvival.Integration.StationWalkerRecovery",
       "state": "Success",
-      "duration": 0.009536698460578918
+      "duration": 0.009409401565790176
     },
     {
       "name": "SpaceSurvival.Menu.RewardChoiceEligibility",
       "state": "Success",
-      "duration": 0.02523830160498619
+      "duration": 0.026129398494958878
     },
     {
       "name": "SpaceSurvival.Menu.SettingsRefreshFocus",
       "state": "Success",
-      "duration": 0.01118909940123558
+      "duration": 0.011076398193836212
     },
     {
       "name": "SpaceSurvival.Menu.UpgradePreview",
       "state": "Success",
-      "duration": 0.010618500411510468
+      "duration": 0.011412099003791809
     },
     {
       "name": "SpaceSurvival.Save.PayloadRoundTrip",
       "state": "Success",
-      "duration": 0.008010100573301315
+      "duration": 0.008440200239419937
     },
     {
       "name": "SpaceSurvival.Save.PlatformDiskRoundTrip",
       "state": "Success",
-      "duration": 0.010401196777820587
+      "duration": 0.011985700577497482
     }
   ],
   "test_report": {
-    "path": ".agent/local/GameplayQuality-tests3.json",
-    "bytes": 32327,
-    "sha256": "39a27878ff705d90a70e8c4ebdef5772e78d85057676bc4bc17f213147df5e09"
+    "path": ".agent/local/GameplayQuality-tests4.json",
+    "bytes": 32330,
+    "sha256": "cd324d30d23ae1dc3106b96c4662e48c209bacc3f2341ea2780a195ddeb57a8b"
   },
   "test_log": {
-    "path": ".agent/local/GameplayQuality-Test3.log",
-    "bytes": 329288,
-    "sha256": "0d34470a4c056c1d33e7fb0adfa855e2bf462684a6628d4d8d328e0ada293750"
+    "path": ".agent/local/GameplayQuality-Test4.log",
+    "bytes": 329866,
+    "sha256": "f1d3c2e42be8f97f4c6c124a0a579d74d115ff3166dc699bc4ee1a3bedfa0bb2"
   },
   "source_structural_checks": 23,
   "source_check_log": {
@@ -1314,5 +1315,43 @@
     "HeroAlpha derivatives not adopted. Graphics remain unaccepted; all19owner playtest boxes remain unchecked.",
     "Package and rendered performance evidence will be recorded separately.",
     "Minor known Director issue: failed wreckage admission still consumes its pressure cost."
-  ]
+  ],
+  "prior_35_test_pass": {
+    "editor_dll": {
+      "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 1714176,
+      "sha256": "560666597a9ef68ce9b10b413297da1293a61226535b08236144b05cf6def035"
+    },
+    "editor_build_seconds": 12.79,
+    "editor_build_log": {
+      "path": ".agent/local/GameplayQuality-Editor3.log",
+      "bytes": 3743,
+      "sha256": "503554905b248ac130e83bcfb145679fb832c0e949d3741f8f0ad417e45403c1"
+    },
+    "unreal_summary": {
+      "reportCreatedOn": "2026.09.13-14.39.19",
+      "succeeded": 35,
+      "failed": 0,
+      "notRun": 0,
+      "succeededWithWarnings": 0,
+      "totalDuration": 2.850224256515503
+    },
+    "test_report": {
+      "path": ".agent/local/GameplayQuality-tests3.json",
+      "bytes": 32327,
+      "sha256": "39a27878ff705d90a70e8c4ebdef5772e78d85057676bc4bc17f213147df5e09"
+    },
+    "test_log": {
+      "path": ".agent/local/GameplayQuality-Test3.log",
+      "bytes": 329288,
+      "sha256": "0d34470a4c056c1d33e7fb0adfa855e2bf462684a6628d4d8d328e0ada293750"
+    }
+  },
+  "pickup_boundary_followup": {
+    "files": {
+      "Source/SpaceSurvival/Private/SSWorldActors.cpp": "a73b121409edd8ac433aed72dd1b147c6abe4195382dc8d418cb0c78e73be355",
+      "Source/SpaceSurvival/Private/SSPickupFragmentAutomationTests.cpp": "dd959181ebcbe0866990ac446e9d7130a15ca4f6f48e1c03951c5a01f927eeb9"
+    },
+    "behavior": "History seeded on configuration; relative path and magnet stop at remaining lifetime, collecting live crossings before retirement. First-frame, rebased and before/after-expiry cases passed in the existing pickup test."
+  }
 }

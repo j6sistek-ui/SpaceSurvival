@@ -918,6 +918,11 @@ void ASSPickup::ConfigurePickup(int32 InKind, float InAmount, ASSEncounterBeacon
     LifetimeSeconds = Definition.Lifetime;
     Amount = FMath::Max(0.f, InAmount);
     ObjectiveOwner = Objective;
+    // A ship can cross the pickup between configuration and its first tick.
+    ASSShip *Ship = FindShip();
+    bHasPreviousShipPosition = Ship != nullptr;
+    if (Ship)
+        PreviousShipPosition = Ship->GetActorLocation();
     const TCHAR *Fallbacks[] = {TEXT("/Engine/BasicShapes/Cylinder.Cylinder"), TEXT("/Engine/BasicShapes/Cube.Cube"),
                                 TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Engine/BasicShapes/Cone.Cone")};
     Visual->SetStaticMesh(Mesh(*Definition.MeshName.ToString(), Fallbacks[PickupKind]));
@@ -939,30 +944,41 @@ void ASSPickup::Tick(float DeltaSeconds)
 {
     if (bCollected || IsActorBeingDestroyed())
         return;
+    const float FrameSeconds = FMath::Max(0.f, DeltaSeconds);
+    const float RemainingSeconds = LifetimeSeconds > 0.f ? FMath::Max(0.f, LifetimeSeconds - Age) : FrameSeconds;
+    const float LiveSeconds = FMath::Min(FrameSeconds, RemainingSeconds);
+    const bool bExpires = LifetimeSeconds > 0.f && FrameSeconds >= RemainingSeconds;
+    if (bExpires && RemainingSeconds <= 0.f)
+    {
+        Destroy();
+        return;
+    }
     ASSShip *Ship = FindShip();
-    // Capture history before the base actor advances and records this frame's ship position.
-    const FVector PreviousRelative =
-        Ship ? (bHasPreviousShipPosition ? PreviousShipPosition : Ship->GetActorLocation()) - GetActorLocation()
+    // Preserve both moving endpoints, including only the live fraction of an expiry frame.
+    const FVector ShipStart =
+        Ship ? (bHasPreviousShipPosition ? PreviousShipPosition : Ship->GetActorLocation()) : FVector::ZeroVector;
+    const FVector ShipEnd =
+        Ship ? FMath::Lerp(ShipStart, Ship->GetActorLocation(), FrameSeconds > 0.f ? LiveSeconds / FrameSeconds : 1.f)
              : FVector::ZeroVector;
-    Super::Tick(DeltaSeconds);
+    const FVector PreviousRelative = ShipStart - GetActorLocation();
+    Super::Tick(LiveSeconds);
     if (IsActorBeingDestroyed())
         return;
-    Visual->AddLocalRotation(FRotator(0.f, 70.f, 20.f) * DeltaSeconds);
+    Visual->AddLocalRotation(FRotator(0.f, 70.f, 20.f) * LiveSeconds);
     if (Ship)
     {
-        const FVector ToShip = Ship->GetActorLocation() - GetActorLocation();
+        const FVector ToShip = ShipEnd - GetActorLocation();
         const auto Definition = Content(this)->Pickup(PickupKind);
         const float CollectionRadius = ShipRadius + Definition.CollectionPadding;
         const bool bCrossedCollection =
             FMath::PointDistToSegment(FVector::ZeroVector, PreviousRelative, ToShip) < CollectionRadius;
-        // Magnetism remains local and cannot overshoot its target during a long frame.
+        // Magnetism remains local and cannot overshoot or continue after expiry.
         if (ToShip.SizeSquared() < FMath::Square(Definition.AttractionRadius))
         {
-            const double Travel = FMath::Clamp(double(Definition.AttractionSpeed) * DeltaSeconds, 0.0, ToShip.Size());
+            const double Travel = FMath::Clamp(double(Definition.AttractionSpeed) * LiveSeconds, 0.0, ToShip.Size());
             AddActorWorldOffset(ToShip.GetSafeNormal() * Travel);
         }
-        if (bCrossedCollection ||
-            FVector::DistSquared(Ship->GetActorLocation(), GetActorLocation()) < FMath::Square(CollectionRadius))
+        if (bCrossedCollection || FVector::DistSquared(ShipEnd, GetActorLocation()) < FMath::Square(CollectionRadius))
         {
             bCollected = true;
             if (ASSGameMode *Mode = GameMode(this))
@@ -970,8 +986,11 @@ void ASSPickup::Tick(float DeltaSeconds)
             if (ObjectiveOwner.IsValid())
                 ObjectiveOwner->RegisterObjectiveProgress();
             Destroy();
+            return;
         }
     }
+    if (bExpires)
+        Destroy();
 }
 
 ASSEncounterBeacon::ASSEncounterBeacon()
