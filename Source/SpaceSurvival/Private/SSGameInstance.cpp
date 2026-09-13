@@ -127,6 +127,20 @@ bool USSGameInstance::PersistDeath()
     // occurs between these two writes. Retrying writes cannot award XP twice.
     return PersistAccount() && InvalidateSuspend();
 }
+bool USSGameInstance::DiscardSliceRun()
+{
+    if (!Session.AtSliceBoundary())
+    {
+        LastSaveError = TEXT("Only a live run at Station 2 can be discarded here.");
+        return false;
+    }
+    // BeginWave already records the highest wave in memory. Preserve that account
+    // before consuming the checkpoint or clearing the live run; this awards no XP.
+    if (!PersistAccount() || !InvalidateSuspend())
+        return false;
+    Session.run = SS::Run{};
+    return true;
+}
 void USSGameInstance::ApplySettings()
 {
     if (auto *Settings = UGameUserSettings::GetGameUserSettings())

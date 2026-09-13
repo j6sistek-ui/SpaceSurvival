@@ -6,8 +6,8 @@
 
 | Utility | Default price | Existing effect defaults |
 | --- | ---: | --- |
-| Vector Thrusters | 150 | Maneuver Ã—1.30; response Ã—1.12 |
-| Overdrive Cooling | 150 | Boost efficiency Ã—1.35; cooling efficiency Ã—1.45 |
+| Vector Thrusters | 150 | Maneuver x1.30; response x1.12 |
+| Overdrive Cooling | 150 | Boost efficiency x1.35; cooling efficiency x1.45 |
 
 Edit only the relevant numeric fields on the asset. Values are applied when GameMode initializes. Suspensions retain the utility identity and use the loaded game's tuning, as other existing tuning does; there is no per-save content snapshot. Free event fitting, one-slot replacement and rejecting a repeated fitted purchase are unchanged.
 

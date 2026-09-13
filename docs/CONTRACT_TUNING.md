@@ -1,0 +1,9 @@
+# Phase 1 contract tuning
+
+`DA_Phase1.Contracts` owns magnitudes for the two existing contract types. GameMode applies this bridge once before gameplay; the vendor terms and domain rewards read those same validated values. Pressure defaults remain shield x0.65, added pressure0.15, reward150. Hunter remains target6 enemy kills and reward150. Designers can give the two rewards different values.
+
+The native rules still allow one active contract accepted at Station1 and resolved at Station2. Difficulty progress requires the five intervening waves; the objective target is captured when accepted. Failure loses only the reward. Resolving/removing the shield handicap restores capacity without adding shield energy. No account XP is awarded here.
+
+Finite shield multiplier clamps to0.1..0.95, pressure addition0..1, objective1..1000 and each reward1..100000000. Nonfinite doubles fall back to0.65/0.15. The adapter reports corrections and GameMode logs a warning; content authoring/validation reject malformed persisted tuning. Existing save schema and contract IDs are unchanged. Active saves retain their accepted objective target; effect magnitudes and rewards follow the loaded content version, as before.
+
+Validation: combined Editor build32.22s; all17 Unreal tests passed with0 warnings/failures at08:50:18UTC. Portable checks passed641 strict and641 ASan/UBSan assertions, including custom-contract full five-wave resolution/once-only reward/serialization checks. The actual reflected Data Asset test verified persisted/default/custom/malformed mapping. [Exact receipt](validation/2026-09-13-contract-tuning.json). Fresh persisted content validation passed with all five defaults verified and errors[]. Packaging remains pending. These fixtures do not establish natural balance or player acceptance.

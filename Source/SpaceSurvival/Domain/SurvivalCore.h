@@ -110,8 +110,14 @@ struct Tuning
     int upgradePriceStep = 90;
     int repairPrice = 35;
     int objectiveTarget = 6;
-    int contractReward = 150;
+    int pressureContractReward = 150;
+    int objectiveContractReward = 150;
+    double pressureShieldMultiplier = 0.65;
+    double contractPressureAddition = 0.15;
 };
+
+// Validate only the fixed Phase 1 contract magnitudes; identity/cadence remain native rules.
+bool NormalizeContractTuning(Tuning &tuning);
 
 struct EffectiveStats
 {

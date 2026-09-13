@@ -1,0 +1,108 @@
+{
+  "status": "COMPILED_CONTRACT_DATA_ASSET_AND_DOMAIN_CHECKS_PASSED_NOT_NATURAL_BALANCE",
+  "date_utc": "2026-09-13T08:52:23.848719+00:00",
+  "source_base": "4178ff443d34a7611a7353bac784091ec25ba0fa",
+  "source_scope": "Current worktree SHA256 CRLF normalized to LF; changes after Package9. Actual tested files bound here.",
+  "source_sha256_lf": {
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "e08f0526ca822a953d289d98edd2acce6a811070342d5d8dc67a7b2b5037c38c",
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "0194ea78f0717711b98623f11660f082255e91587c81764658dc4aa2669bdda6",
+    "Source/SpaceSurvival/Public/SSContentTypes.h": "419793817e9bff36772930552d9ef262b5623a8df65346b336d7344ccc92eded",
+    "Source/SpaceSurvival/Public/SSPhase1Data.h": "fa742ba891830f5becca69344cbfa6fde31cd4259a9c35087c2cd9aa20d1f5be",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "931182e66e8e1d916408bd476f8c49d97e544da1d34b379086242ee36568de91",
+    "Source/SpaceSurvival/Private/SSContractAutomationTests.cpp": "ff352ae2dc438d7e4e15951cbeaacfc1c622901aa358c6c6ec48efd67b03c39c",
+    "Tests/CoreTests.cpp": "a7241c558e9862c58c189774d7ae39618c0e15ed4e435f6713f5d1e07cb7222d",
+    "Scripts/AuthorContent.py": "000c438f6ed121c1a5c486dde9153dc09aeda41d07af91f8368f2d458a6bd67c",
+    "Scripts/ValidateContent.py": "3c36646dddabc3466793900282b93ae2ea37cebebaef306555b88c7856c48348"
+  },
+  "editor_build": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\ContractElectricalDiscardEditor.log",
+    "bytes": 7218,
+    "sha256": "a3b03440a4b115663aeef19ebbc971b63d811a881780dbe6b822d3a8afd8a44b"
+  },
+  "editor_build_seconds": 32.22,
+  "editor_binary": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+    "bytes": 1420800,
+    "sha256": "cbc8a33691f1a2b7fafa0d2c5bcfe7e56588069ad93f391a15da4b922af4c8a5"
+  },
+  "ue_report": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\UnrealTests\\index.json",
+    "bytes": 22377,
+    "sha256": "e74a228a3a850ded022f44c971cf014f81e6ea991aed8d99692c55d137cebbe5"
+  },
+  "ue_log": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\ContractElectricalDiscardTests.log",
+    "bytes": 289435,
+    "sha256": "dca843725e897a941cf4a260130800ed9c96b2b7ab1887f0643e8fe937c31bdd"
+  },
+  "unreal": {
+    "succeeded": 17,
+    "warnings": 0,
+    "failed": 0,
+    "not_run": 0,
+    "seconds": 2.194974660873413,
+    "utc": "2026.09.13-08.50.18",
+    "contract_test": {
+      "testDisplayName": "ContractDataAssetBridge",
+      "fullTestPath": "SpaceSurvival.Content.ContractDataAssetBridge",
+      "tags": [],
+      "state": "Success",
+      "deviceInstance": [
+        "5DF4CED4447C684369E662A95FA23158"
+      ],
+      "duration": 0.008410703390836716,
+      "dateTime": "2026.09.13-08.50.16",
+      "entries": [],
+      "warnings": 0,
+      "errors": 0,
+      "artifacts": []
+    }
+  },
+  "domain_log": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\ContractCore3.log",
+    "bytes": 2422,
+    "sha256": "a2586d56fbd5e5eb9ec08e863547c746d4b994ac107a4ef6dfbe4d4c5d215a72"
+  },
+  "domain_assertions": {
+    "strict": 641,
+    "asan_ubsan": 641
+  },
+  "defaults": {
+    "pressure_shield_multiplier": 0.65,
+    "pressure_addition": 0.15,
+    "pressure_reward": 150,
+    "hunter_target": 6,
+    "hunter_reward": 150
+  },
+  "checks": [
+    "Reflected persisted/default/custom/malformed Data Asset mapping",
+    "Custom Pressure/Objective acceptance through full remaining five-wave domain journey",
+    "One contract slot, separate paid rewards, save roundtrip of accepted objective target, no duplicate reward, no Station2 newcontract",
+    "No account XP/history awarded by contract resolution",
+    "Clamped numeric content and finite fallback"
+  ],
+  "corrected_test_failures": [
+    "Initial test referred to nonexistent Pressure() instead of existing PressureMultiplier(); compile failed and test corrected.",
+    "Initial expected five-wave credits omitted existing175 escalation bonus; assertion failed and expected total corrected. No gameplay awards changed."
+  ],
+  "limits": [
+    "No natural contract balance/player acceptance, physical input or audio review.",
+    "No contract save schema migration; accepted target persists, current loaded tuning still governs effects/rewards.",
+    "Fresh persisted content validation passed; packaging of these changes pending. Package9 excludes this work."
+  ],
+  "fresh_persisted_validation": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\Validation\\PersistedContent.json",
+    "sha256": "d2436d932bf1f35bbcbe50e77717611afb817c6bea6f9674101f63390a427788",
+    "bytes": 11038,
+    "errors": [],
+    "contracts": {
+      "shield_multiplier": 0.65,
+      "pressure_addition": 0.15,
+      "pressure_reward": 150,
+      "objective_target": 6,
+      "objective_reward": 150
+    },
+    "log": ".agent/local/ContractElectricalDiscardValidate.log",
+    "limit": "Candidate4rockassets unassigned at validation; source4178 existing3asteroidmeshes unchanged. Full material adoption is later."
+  }
+}

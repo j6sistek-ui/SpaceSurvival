@@ -164,7 +164,11 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
     const auto Enemy = Content(this)->Enemy(Kind);
     Health = FMath::Max(1.f, IsEnemy() ? Enemy.Health : Hazard.Health);
     LifetimeSeconds = IsEnemy() ? Enemy.Lifetime : Hazard.Lifetime;
-    TelegraphSeconds = FMath::Max(1.f, Hazard.TelegraphSeconds);
+    TelegraphSeconds = FMath::Max(1.f, FMath::IsFinite(Hazard.TelegraphSeconds) ? Hazard.TelegraphSeconds : 3.5f);
+    FieldPulseInterval = FMath::Max(.2, FMath::IsFinite(Hazard.PulseInterval) ? double(Hazard.PulseInterval) : 1.8);
+    FieldPulseRemaining = -1.0;
+    bFieldHasDischarged = false;
+    bWarningIssued = false;
     GravityAcceleration = FMath::Max(0.f, Hazard.GravityBase + Wave * Hazard.GravityPerWave);
     bPersistentAcrossWaves = IsEnvironmentalField();
     Collision->SetSphereRadius(BodyRadius);
@@ -337,6 +341,39 @@ void ASSWorldBody::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
         PreviousShipPosition += InOffset;
 }
 
+bool ASSWorldBody::AdvanceElectricalPulse(float DeltaSeconds)
+{
+    if (!FMath::IsFinite(DeltaSeconds) || DeltaSeconds < 0.f)
+        return false;
+    if (FieldPulseRemaining < 0.0)
+    {
+        FieldPulseDuration = FMath::Max(1.0, FMath::IsFinite(TelegraphSeconds) ? double(TelegraphSeconds) : 3.5);
+        FieldPulseRemaining = FieldPulseDuration;
+    }
+    FieldPulseRemaining -= double(DeltaSeconds);
+    const bool bDischarged = FieldPulseRemaining <= 0.0;
+    if (bDischarged)
+    {
+        // Carry fractional overshoot so cadence does not drift with frame rate.
+        // A hitch can display/apply one discharge, never a burst of catch-up damage.
+        FieldPulseRemaining = FieldPulseInterval - FMath::Fmod(-FieldPulseRemaining, FieldPulseInterval);
+        FieldPulseDuration = FieldPulseInterval;
+        bFieldHasDischarged = true;
+    }
+    if (DynamicMaterial)
+    {
+        const double Charge = FMath::Clamp(1.0 - FieldPulseRemaining / FieldPulseDuration, 0.0, 1.0);
+        double Emission = .35 + 1.75 * Charge;
+        const double SinceDischarge = FieldPulseDuration - FieldPulseRemaining;
+        if (bDischarged)
+            Emission = 2.8;
+        else if (bFieldHasDischarged && SinceDischarge < .12)
+            Emission = FMath::Max(Emission, 2.8 - 2.45 * SinceDischarge / .12);
+        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), float(Emission));
+    }
+    return bDischarged;
+}
+
 void ASSWorldBody::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
@@ -348,6 +385,7 @@ void ASSWorldBody::Tick(float DeltaSeconds)
     AddActorWorldOffset(LinearVelocity * DeltaSeconds, false);
     if (IsSolidHazard())
         Visual->AddLocalRotation(FRotator(2.f, 4.f, 1.5f) * DeltaSeconds);
+    const bool bElectricalDischarge = Kind == ESSWorldKind::ElectricalStorm && AdvanceElectricalPulse(DeltaSeconds);
     ASSShip *Ship = FindShip();
     if (Ship)
     {
@@ -378,7 +416,7 @@ void ASSWorldBody::Tick(float DeltaSeconds)
             {
                 bWarningIssued = true;
                 Announce(this, Kind == ESSWorldKind::ElectricalStorm
-                                   ? TEXT("ELECTRICAL STORM · Pulsing rings warn before discharge")
+                                   ? TEXT("ELECTRICAL STORM · Rings charge before discharge")
                                    : TEXT("GRAVITY ANOMALY · Counter the pull; boost across its edge"));
                 if (auto *Mode = GameMode(this))
                 {
@@ -389,40 +427,39 @@ void ASSWorldBody::Tick(float DeltaSeconds)
                                                                       : TEXT("That pull is getting personal."));
                 }
             }
-            const bool bReady = Age >= TelegraphSeconds;
-            if (DynamicMaterial)
-                DynamicMaterial->SetScalarParameterValue(TEXT("Emission"),
-                                                         bReady ? 1.1f + .3f * FMath::Sin(Age * 4.f)
-                                                                : .25f + Age / FMath::Max(1.f, TelegraphSeconds) * .4f);
             if (Kind == ESSWorldKind::ElectricalStorm)
             {
-                FieldPulseRemaining -= DeltaSeconds;
-                if (bReady && FieldPulseRemaining <= 0.f)
-                {
-                    FieldPulseRemaining = FMath::Max(.2f, Content(this)->Hazard(Kind).PulseInterval);
-                    if (Distance < BodyRadius)
-                        Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Electrical);
-                }
+                if (bElectricalDischarge && Distance < BodyRadius)
+                    Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Electrical);
             }
-            else if (bReady)
+            else
             {
-                if (Distance < BodyRadius)
+                const bool bReady = Age >= TelegraphSeconds;
+                if (DynamicMaterial)
+                    DynamicMaterial->SetScalarParameterValue(
+                        TEXT("Emission"), bReady ? 1.1f + .3f * FMath::Sin(Age * 4.f)
+                                                 : .25f + Age / FMath::Max(1.f, TelegraphSeconds) * .4f);
+                if (bReady)
                 {
-                    // Bounded force; no teleport, control lock or singularity at the centre.
-                    const float Strength = GravityAcceleration * FMath::Clamp(1.f - Distance / BodyRadius, .15f, 1.f);
-                    Ship->AddExternalForce(-Offset.GetSafeNormal() * Strength);
-                }
-                for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
-                {
-                    ASSWorldBody *Other = *It;
-                    if (Other == this || (!Other->IsSolidHazard() && !Other->IsEnemy()))
-                        continue;
-                    const FVector ToCentre = GetActorLocation() - Other->GetActorLocation();
-                    const float Range = ToCentre.Size();
-                    if (Range < BodyRadius)
-                        Other->ApplyWorldForce(ToCentre.GetSafeNormal() * GravityAcceleration * .45f *
-                                                   (1.f - Range / BodyRadius),
-                                               DeltaSeconds);
+                    if (Distance < BodyRadius)
+                    {
+                        // Bounded force; no teleport, control lock or singularity at the centre.
+                        const float Strength =
+                            GravityAcceleration * FMath::Clamp(1.f - Distance / BodyRadius, .15f, 1.f);
+                        Ship->AddExternalForce(-Offset.GetSafeNormal() * Strength);
+                    }
+                    for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
+                    {
+                        ASSWorldBody *Other = *It;
+                        if (Other == this || (!Other->IsSolidHazard() && !Other->IsEnemy()))
+                            continue;
+                        const FVector ToCentre = GetActorLocation() - Other->GetActorLocation();
+                        const float Range = ToCentre.Size();
+                        if (Range < BodyRadius)
+                            Other->ApplyWorldForce(ToCentre.GetSafeNormal() * GravityAcceleration * .45f *
+                                                       (1.f - Range / BodyRadius),
+                                                   DeltaSeconds);
+                    }
                 }
             }
         }

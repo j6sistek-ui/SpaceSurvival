@@ -1,0 +1,327 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-09-13T08:55:11.892242+00:00",
+  "status": "EDITOR_BUILD_AND_ACTOR_TESTS_PASSED_RENDERED_READABILITY_PENDING",
+  "repository": "j6sistek-ui/SpaceSurvival",
+  "gitBaseCommit": "4178ff443d34a7611a7353bac784091ec25ba0fa",
+  "sourceIdentityNote": "The electrical changes and combined contract/discard changes were uncommitted at build time. Base commit identifies the starting revision, not the tested source by itself. Exact raw/LF hashes below identify the unchanged source handed off before the lead's build; all listed source timestamps precede the output DLL.",
+  "sourceFiles": [
+    {
+      "path": "Source/SpaceSurvival/Public/SSWorldActors.h",
+      "bytes": 10465,
+      "sha256": "2cb1d3034d203be1b778092730bd2c91824fca3e5c4bb377f0b2375275d3e5b0",
+      "lastWriteUtc": "2026-09-13T08:37:34.330475+00:00",
+      "lfSha256": "2cb1d3034d203be1b778092730bd2c91824fca3e5c4bb377f0b2375275d3e5b0"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSWorldActors.cpp",
+      "bytes": 61578,
+      "sha256": "ab8ab53e28a392211284cdabf684dd65fcbfd679c690a23b50e7080da7865455",
+      "lastWriteUtc": "2026-09-13T08:44:51.239281+00:00",
+      "lfSha256": "ab8ab53e28a392211284cdabf684dd65fcbfd679c690a23b50e7080da7865455"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSHazardAutomationTests.cpp",
+      "bytes": 12060,
+      "sha256": "054604590bda43ac8feb7a79b4628dcafc3b4adffbece549966118d14c1a6c0f",
+      "lastWriteUtc": "2026-09-13T08:44:51.240281+00:00",
+      "lfSha256": "054604590bda43ac8feb7a79b4628dcafc3b4adffbece549966118d14c1a6c0f"
+    }
+  ],
+  "dependentSourceFiles": [
+    {
+      "path": "Source/SpaceSurvival/Public/SSContentTypes.h",
+      "bytes": 19015,
+      "sha256": "53a98a144a6e81aaa1a9408028c44b5d810c8d8ed6ef53ba30b0728ab6b0f7da",
+      "lastWriteUtc": "2026-09-13T08:43:24.208195+00:00",
+      "lfSha256": "419793817e9bff36772930552d9ef262b5623a8df65346b336d7344ccc92eded"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSPhase1Data.h",
+      "bytes": 7789,
+      "sha256": "608244098b30c659de3c6fdfaf25b687694959597a5318222d44121d7e6e72de",
+      "lastWriteUtc": "2026-09-13T08:43:24.208195+00:00",
+      "lfSha256": "fa742ba891830f5becca69344cbfa6fde31cd4259a9c35087c2cd9aa20d1f5be"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSShip.cpp",
+      "bytes": 11816,
+      "sha256": "5c0fb41e8e0d0deab4fb23348dca7e70b8fd664353ebaef16ea58b02a49228cb",
+      "lastWriteUtc": "2026-09-13T08:07:27.868921+00:00",
+      "lfSha256": "5c0fb41e8e0d0deab4fb23348dca7e70b8fd664353ebaef16ea58b02a49228cb"
+    },
+    {
+      "path": "Source/SpaceSurvival/Domain/SurvivalCore.h",
+      "bytes": 8395,
+      "sha256": "b7a6915ba71b6a642a6ceee9573fffadf8bed203b4fa6355984212ee1fe1cfaa",
+      "lastWriteUtc": "2026-09-13T08:43:24.191824+00:00",
+      "lfSha256": "0194ea78f0717711b98623f11660f082255e91587c81764658dc4aa2669bdda6"
+    },
+    {
+      "path": "Source/SpaceSurvival/Domain/SurvivalCore.cpp",
+      "bytes": 37652,
+      "sha256": "86449dba0e9dcd4b89b71c6f2e6ea946857326fde7f7fbbb4c7305ab8f6366a9",
+      "lastWriteUtc": "2026-09-13T08:45:59.195813+00:00",
+      "lfSha256": "e08f0526ca822a953d289d98edd2acce6a811070342d5d8dc67a7b2b5037c38c"
+    }
+  ],
+  "build": {
+    "command": "./Scripts/Build.ps1 -Target Editor",
+    "result": "Succeeded",
+    "seconds": 32.22,
+    "log": {
+      "path": ".agent/local/ContractElectricalDiscardEditor.log",
+      "bytes": 7218,
+      "sha256": "a3b03440a4b115663aeef19ebbc971b63d811a881780dbe6b822d3a8afd8a44b",
+      "lastWriteUtc": "2026-09-13T08:49:22.971905+00:00"
+    },
+    "binary": {
+      "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 1420800,
+      "sha256": "cbc8a33691f1a2b7fafa0d2c5bcfe7e56588069ad93f391a15da4b922af4c8a5",
+      "lastWriteUtc": "2026-09-13T08:49:22.384927+00:00"
+    },
+    "knownBuildWarnings": [
+      "MSVC 14.51.36257 is newer than UE's preferred 14.50.35717.",
+      "UE Engine Character.h emits C4996 for APawn::GetMovementBase."
+    ]
+  },
+  "automation": {
+    "command": "./Scripts/Build.ps1 -Target Test",
+    "engineArguments": "-unattended -NullRHI -stdout -FullStdOutLogOutput -ExecCmds=\"Automation RunTests SpaceSurvival\" -TestExit=\"Automation Test Queue Empty\" -ReportExportPath=C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\UnrealTests",
+    "processId": 27608,
+    "exitStatus": 0,
+    "reportCreatedOn": "2026.09.13-08.50.18",
+    "succeeded": 17,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "inProcess": 0,
+    "totalDurationSeconds": 2.194974660873413,
+    "report": {
+      "path": "Artifacts/UnrealTests/index.json",
+      "bytes": 22377,
+      "sha256": "e74a228a3a850ded022f44c971cf014f81e6ea991aed8d99692c55d137cebbe5",
+      "lastWriteUtc": "2026-09-13T08:50:18.704618+00:00"
+    },
+    "log": {
+      "path": ".agent/local/ContractElectricalDiscardTests.log",
+      "bytes": 289435,
+      "sha256": "dca843725e897a941cf4a260130800ed9c96b2b7ab1887f0643e8fe937c31bdd",
+      "lastWriteUtc": "2026-09-13T08:50:18.704618+00:00"
+    },
+    "electricalTests": [
+      {
+        "testDisplayName": "ElectricalPulseBoundaries",
+        "fullTestPath": "SpaceSurvival.Integration.ElectricalPulseBoundaries",
+        "tags": [],
+        "state": "Success",
+        "deviceInstance": [
+          "5DF4CED4447C684369E662A95FA23158"
+        ],
+        "duration": 0.009359199553728104,
+        "dateTime": "2026.09.13-08.50.18",
+        "entries": [],
+        "warnings": 0,
+        "errors": 0,
+        "artifacts": []
+      },
+      {
+        "testDisplayName": "ElectricalPulseCadence",
+        "fullTestPath": "SpaceSurvival.Integration.ElectricalPulseCadence",
+        "tags": [],
+        "state": "Success",
+        "deviceInstance": [
+          "5DF4CED4447C684369E662A95FA23158"
+        ],
+        "duration": 0.03003619983792305,
+        "dateTime": "2026.09.13-08.50.18",
+        "entries": [
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=30 interval=0.200000003 pulses=40 sampledSeconds=11.333333924",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=30 interval=0.730000019 pulses=40 sampledSeconds=32.000001669",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=30 interval=1.79999995 pulses=40 sampledSeconds=73.733337179",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=30 interval=2.5999999 pulses=40 sampledSeconds=104.933338806",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=60 interval=0.200000003 pulses=40 sampledSeconds=11.316667257",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=60 interval=0.730000019 pulses=40 sampledSeconds=31.983335001",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=60 interval=1.79999995 pulses=40 sampledSeconds=73.716670511",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=60 interval=2.5999999 pulses=40 sampledSeconds=104.916672138",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=144 interval=0.200000003 pulses=40 sampledSeconds=11.305555640",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=144 interval=0.730000019 pulses=40 sampledSeconds=31.979166905",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=144 interval=1.79999995 pulses=40 sampledSeconds=73.708333883",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          },
+          {
+            "event": {
+              "type": "Info",
+              "message": "ELECTRICAL_CADENCE fps=144 interval=2.5999999 pulses=40 sampledSeconds=104.909723004",
+              "context": "",
+              "artifact": "00000000000000000000000000000000"
+            },
+            "filename": "",
+            "lineNumber": -1,
+            "timestamp": "2026.09.13-08.50.18"
+          }
+        ],
+        "warnings": 0,
+        "errors": 0,
+        "artifacts": []
+      }
+    ]
+  },
+  "cadenceCases": [
+    "ELECTRICAL_CADENCE fps=30 interval=0.200000003 pulses=40 sampledSeconds=11.333333924",
+    "ELECTRICAL_CADENCE fps=30 interval=0.730000019 pulses=40 sampledSeconds=32.000001669",
+    "ELECTRICAL_CADENCE fps=30 interval=1.79999995 pulses=40 sampledSeconds=73.733337179",
+    "ELECTRICAL_CADENCE fps=30 interval=2.5999999 pulses=40 sampledSeconds=104.933338806",
+    "ELECTRICAL_CADENCE fps=60 interval=0.200000003 pulses=40 sampledSeconds=11.316667257",
+    "ELECTRICAL_CADENCE fps=60 interval=0.730000019 pulses=40 sampledSeconds=31.983335001",
+    "ELECTRICAL_CADENCE fps=60 interval=1.79999995 pulses=40 sampledSeconds=73.716670511",
+    "ELECTRICAL_CADENCE fps=60 interval=2.5999999 pulses=40 sampledSeconds=104.916672138",
+    "ELECTRICAL_CADENCE fps=144 interval=0.200000003 pulses=40 sampledSeconds=11.305555640",
+    "ELECTRICAL_CADENCE fps=144 interval=0.730000019 pulses=40 sampledSeconds=31.979166905",
+    "ELECTRICAL_CADENCE fps=144 interval=1.79999995 pulses=40 sampledSeconds=73.708333883",
+    "ELECTRICAL_CADENCE fps=144 interval=2.5999999 pulses=40 sampledSeconds=104.909723004"
+  ],
+  "testAssetFiles": [
+    {
+      "path": "Content/SpaceSurvival/Materials/M_Emissive.uasset",
+      "bytes": 8352,
+      "sha256": "1c09844a3166fb49ae81b17d4fa643843cfbf6f29d1f1444fd2dadd4f7445227",
+      "lastWriteUtc": "2026-09-13T04:16:03.844800+00:00"
+    },
+    {
+      "path": "Content/SpaceSurvival/Meshes/SM_StormRing.uasset",
+      "bytes": 24489,
+      "sha256": "c026dcf829142da52e97e0f60d78113d2f2a274e8b70fccdd2da43ea27d07faa",
+      "lastWriteUtc": "2026-09-13T04:16:06.511378+00:00"
+    }
+  ],
+  "sourceChecks": {
+    "scopedContainerFormatter": "passed",
+    "gitDiffCheck": "passed",
+    "structuralChecks": 21,
+    "independentSourceReview": "integration_review found no concrete clock or fixture blocker; no engine execution by reviewer"
+  },
+  "verifiedBehavior": [
+    "Actual storm hits follow the authored schedule at 30/60/144 FPS across four intervals for 40 pulses each.",
+    "Actual damage and material flash share a frame; charge rises toward the next discharge.",
+    "Initial warning respects a post-Configure Director reaction override.",
+    "Reconfiguration, range changes, absent pawn, long hitch and invalid timing retain bounded behavior.",
+    "Actual ship damage preserves electrical interference and applies one configured hit per pulse."
+  ],
+  "limits": [
+    "Tests call the real actor Tick with synthetic frame steps in a transient world; they do not render a scene.",
+    "Fixture GameInstance never calls Init or BeginPlay; account storage is blocked, audio is muted, durability is enlarged and actor expiry is disabled. No production save access.",
+    "Package 9 predates this change. No updated packaged storm or human readability/listening/feel/balance acceptance is established.",
+    "The full 17-test suite is clean at the test-report level; the Editor build retains the listed toolchain/Engine-header warnings.",
+    "Historical package/performance receipts retain their own source and artifact identities."
+  ]
+}

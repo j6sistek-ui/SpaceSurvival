@@ -402,7 +402,9 @@ class Author:
                 raise RuntimeError("Existing DA_Phase1 has wrong class")
             if not asset.has_valid_utility_tuning():
                 raise RuntimeError("DA_Phase1 utilities require exactly the two valid, bounded Phase 1 definitions")
-            # Persist newly added utility fields without resetting any designer-authored values.
+            if not asset.has_valid_contract_tuning():
+                raise RuntimeError("DA_Phase1 contract magnitudes require valid bounded values")
+            # Persist added tuning fields without resetting designer-authored values.
             self.save(asset)
             return
         factory = u.DataAssetFactory()

@@ -34,6 +34,7 @@ public:
     bool PersistAccount();
     bool PersistSettings();
     bool PersistDeath();
+    bool DiscardSliceRun();
     bool InvalidateSuspend();
     void ApplySettings();
 

@@ -25,6 +25,23 @@ public:
                       FSSEncounterDefinition(ESSEncounterKind::DistressCombat),
                       FSSEncounterDefinition(ESSEncounterKind::MobileDepot)};
     }
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Content")
+    FSSContractContentTuning Contracts;
+    bool ApplyContractTuning(SS::Tuning &DomainTuning) const
+    {
+        DomainTuning.pressureShieldMultiplier = Contracts.ShieldMultiplier;
+        DomainTuning.contractPressureAddition = Contracts.PressureAddition;
+        DomainTuning.pressureContractReward = Contracts.PressureReward;
+        DomainTuning.objectiveTarget = Contracts.ObjectiveTarget;
+        DomainTuning.objectiveContractReward = Contracts.ObjectiveReward;
+        return SS::NormalizeContractTuning(DomainTuning);
+    }
+    UFUNCTION(BlueprintPure, Category = "Content")
+    bool HasValidContractTuning() const
+    {
+        SS::Tuning DomainTuning;
+        return ApplyContractTuning(DomainTuning);
+    }
     // The same mapping is used by GameMode and engine tests. A malformed roster cannot
     // replace a utility identity or bypass its positive price through fallback.
     bool ApplyUtilityTuning(SS::Tuning &DomainTuning) const

@@ -1,5 +1,7 @@
 # Phase 1 validation record
 
+Current package9/source4178 completed BuildCookRun74.18s, exact78project-assets/EngineCube audit, signed compatible CRT bundle, native Station1 full2K deck residency and the full rendered Wave10 fixture. Game SHA `af8431a544ccebcda1b6b46a15523abfe576f172c37514eac5029219370b3cd7`. See [package9 receipt](validation/2026-09-13-windows-visual-package.json), [endgame performance](validation/2026-09-13-endgame-performance.json), and [current project state](PROJECT_STATE.md). Package8/earlier sections below retain historical evidence. Subsequent source work is not included in package9. **PARTIAL**, with natural player experience/final art/clean-PC/full-run acceptance open.
+
 **Overall status: PARTIAL.** Updated 2026-09-13 UTC. [GAME_SCOPE.md](GAME_SCOPE.md) is authoritative design; [IMPLEMENT.md](../IMPLEMENT.md) is the execution contract. A Windows package and automated integration/storage evidence now exist. Natural ten-wave play, physical controller acceptance, final art/audio, representative performance acceptance and immediate desire to retry remain open. The owner explicitly rejected the current graphics.
 
 ## Executed evidence

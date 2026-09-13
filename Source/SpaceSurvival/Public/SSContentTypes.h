@@ -3,6 +3,23 @@
 #include "CoreMinimal.h"
 #include "SSContentTypes.generated.h"
 
+/** The two locked contract types expose magnitudes only, never station cadence or extra slots. */
+USTRUCT(BlueprintType)
+struct FSSContractContentTuning
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pressure", meta = (ClampMin = "0.1", ClampMax = "0.95"))
+    double ShieldMultiplier = 0.65;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pressure", meta = (ClampMin = "0", ClampMax = "1"))
+    double PressureAddition = 0.15;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pressure", meta = (ClampMin = "1", ClampMax = "100000000"))
+    int32 PressureReward = 150;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunter", meta = (ClampMin = "1", ClampMax = "1000"))
+    int32 ObjectiveTarget = 6;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunter", meta = (ClampMin = "1", ClampMax = "100000000"))
+    int32 ObjectiveReward = 150;
+};
+
 UENUM(BlueprintType)
 enum class ESSWorldKind : uint8
 {

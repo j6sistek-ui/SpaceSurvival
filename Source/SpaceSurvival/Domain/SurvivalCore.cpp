@@ -10,6 +10,29 @@
 
 namespace SS
 {
+bool NormalizeContractTuning(Tuning &tuning)
+{
+    bool valid = true;
+    auto number = [&valid](double &value, double low, double high, double fallback)
+    {
+        const double normalized = std::isfinite(value) ? std::clamp(value, low, high) : fallback;
+        valid &= std::isfinite(value) && value == normalized;
+        value = normalized;
+    };
+    auto integer = [&valid](int &value, int low, int high)
+    {
+        const int normalized = std::clamp(value, low, high);
+        valid &= value == normalized;
+        value = normalized;
+    };
+    number(tuning.pressureShieldMultiplier, 0.1, 0.95, 0.65);
+    number(tuning.contractPressureAddition, 0.0, 1.0, 0.15);
+    integer(tuning.objectiveTarget, 1, 1000);
+    integer(tuning.pressureContractReward, 1, 100000000);
+    integer(tuning.objectiveContractReward, 1, 100000000);
+    return valid;
+}
+
 namespace
 {
 constexpr int MaxCounter = 100000000;
@@ -262,8 +285,8 @@ EffectiveStats Session::Stats() const
     };
     const bool agile = run.ship == Ship::Agile;
     stats.maxHull = tuning.baseHull * (agile ? 0.88 : 1.0) * (1.0 + tier(Upgrade::Hull) * 0.45);
-    stats.maxShield =
-        tuning.baseShield * (1.0 + tier(Upgrade::Shield) * 0.50) * (run.contract == Contract::Pressure ? 0.65 : 1.0);
+    stats.maxShield = tuning.baseShield * (1.0 + tier(Upgrade::Shield) * 0.50) *
+                      (run.contract == Contract::Pressure ? tuning.pressureShieldMultiplier : 1.0);
     stats.speed = tuning.baseSpeed * (agile ? 1.12 : 1.0) * (1.0 + tier(Upgrade::Engine) * 0.13);
     stats.acceleration = tuning.baseAcceleration * (agile ? 1.10 : 1.0) * (1.0 + tier(Upgrade::Engine) * 0.22);
     stats.maneuver = tuning.baseManeuver * (agile ? 1.18 : 1.0) * (1.0 + tier(Upgrade::Thrusters) * 0.20);
@@ -295,7 +318,7 @@ double Session::DamageScale() const
 }
 double Session::PressureMultiplier() const
 {
-    return 1.0 + (run.wave - 1) * 0.13 + (run.contract == Contract::Pressure ? 0.15 : 0.0);
+    return 1.0 + (run.wave - 1) * 0.13 + (run.contract == Contract::Pressure ? tuning.contractPressureAddition : 0.0);
 }
 
 void Session::Tick(double dt, bool danger)
@@ -627,7 +650,8 @@ void Session::ResolveContract()
         return;
     if (run.contractProgress >= run.contractTarget)
     {
-        AwardCredits(std::max(0, tuning.contractReward));
+        AwardCredits(std::max(0, run.contract == Contract::Pressure ? tuning.pressureContractReward
+                                                                    : tuning.objectiveContractReward));
         ++run.contractsCompleted;
     }
     // Standard failure loses only the disclosed reward. Reduced shields are a

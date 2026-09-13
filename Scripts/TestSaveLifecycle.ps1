@@ -22,6 +22,9 @@ Use -CorruptAccount separately to verify account overwrite/resume/New Run protec
 fresh Init encounters a valid Unreal save envelope with invalid domain text. A verified
 copy of only this GUID fixture is manually restored, then a fresh Init verifies normal
 loading. This is not arbitrary binary corruption or an automatic backup/recovery feature.
+Use -Station2Discard separately for real action 51 account/checkpoint replacement failures,
+fresh-process retry and highest-wave readback without death XP or completed-run history.
+Station advancement is an explicit fixture; this does not validate natural station arrival.
 ##>
 param(
     [string]$EngineRoot = '',
@@ -29,13 +32,14 @@ param(
     [switch]$PreflightOnly,
     [ValidateSet(5, 10)][int]$PreparePackagedStation,
     [switch]$StorageFaults,
-    [switch]$CorruptAccount
+    [switch]$CorruptAccount,
+    [switch]$Station2Discard
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $prepareStation = $PSBoundParameters.ContainsKey('PreparePackagedStation')
-if (([int][bool]$PreflightOnly + [int][bool]$prepareStation + [int][bool]$StorageFaults + [int][bool]$CorruptAccount) -gt 1) {
-    throw 'Choose only one of -PreflightOnly, -PreparePackagedStation, -StorageFaults or -CorruptAccount; nothing was created.'
+if (([int][bool]$PreflightOnly + [int][bool]$prepareStation + [int][bool]$StorageFaults + [int][bool]$CorruptAccount + [int][bool]$Station2Discard) -gt 1) {
+    throw 'Choose only one of -PreflightOnly, -PreparePackagedStation, -StorageFaults, -CorruptAccount or -Station2Discard; nothing was created.'
 }
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 $project = Join-Path $repoRoot 'SpaceSurvival.uproject'
@@ -196,10 +200,12 @@ elseif ($StorageFaults) {
     $stages += @('Suspend', 'StageCreateDenied', 'StageReadDenied', 'InterruptConsume', 'RecoverInterrupted', 'ResumeDeath', 'FreshStart')
 }
 elseif ($CorruptAccount) { $stages += @('SeedCorruptAccount', 'ProtectCorruptAccount', 'RecoverAccount') }
+elseif ($Station2Discard) { $stages += @('Suspend', 'FailedDiscardStation2', 'DiscardStation2', 'FreshAfterDiscard') }
 elseif (-not $PreflightOnly) { $stages += @('Suspend', 'ResumeDeath', 'FreshStart') }
 $receipts = @()
 $corruptFixtureHashes = $null
 $corruptFixtureSlots = @()
+$discardFixtureSlots = @()
 $processIds = [Collections.Generic.HashSet[int]]::new()
 $completed = $false
 Write-Output "Lifecycle evidence directory: $runRoot"
@@ -225,6 +231,13 @@ try {
             }
             if ($StorageFaults) { $arguments += '-SSSaveFaults' }
             if ($CorruptAccount) { $arguments += '-SSCorruptAccount' }
+            if ($Station2Discard) { $arguments += '-SSStation2Discard' }
+            if ($Station2Discard -and $phase -in @('FailedDiscardStation2', 'DiscardStation2', 'FreshAfterDiscard')) {
+                if (($discardFixtureSlots | ConvertTo-Json -Compress) -cne
+                    (@(Get-IsolatedSaveManifest) | ConvertTo-Json -Compress)) {
+                    throw 'Station 2 discard fixture slots changed between the owned engine processes.'
+                }
+            }
             if ($phase -in @('ProtectCorruptAccount', 'RecoverAccount')) {
                 # Check both test copies and all three live domains before each fresh process.
                 foreach ($name in @('CorruptAccount.original', 'CorruptAccount.corrupt')) {
@@ -401,6 +414,51 @@ try {
                 }
                 $corruptFixtureSlots = $currentSlots
             }
+            if ($Station2Discard -and $phase -ne 'Preflight') {
+                if ($receipt.xp -ne 0 -or $receipt.completedRuns -ne 0) {
+                    throw 'Station 2 discard unexpectedly awarded death progression.'
+                }
+                $currentSlots = @(Get-IsolatedSaveManifest)
+                if ($phase -eq 'Suspend') {
+                    if ($receipt.highestWave -ne 5 -or -not $receipt.runActive) {
+                        throw 'Station 2 discard requires the exact live Station 1 seed.'
+                    }
+                } else {
+                    $requiredChecks = switch ($phase) {
+                        'FailedDiscardStation2' { @('accountFailurePreservedRunAndSlots',
+                            'suspendFailurePreservedRunAndCheckpoint', 'highestWavePersistedBeforeInvalidation') }
+                        'DiscardStation2' { @('freshInitRetainedHighestWave', 'olderCheckpointResumeKeptHighestWave',
+                            'actualDiscardActionReturnedToHangar') }
+                        'FreshAfterDiscard' { @('freshInitRetainedHighestWave', 'discardedCheckpointUnavailable',
+                            'noDeathProgressionAwarded') }
+                    }
+                    foreach ($check in $requiredChecks) {
+                        if ($null -eq $receipt.PSObject.Properties[$check] -or $receipt.$check -ne $true) {
+                            throw "Station 2 discard $phase did not verify its expected check: $check."
+                        }
+                    }
+                    if ($receipt.evidenceType -cne 'STATION2_DISCARD_AUTOMATION' -or $receipt.highestWave -ne 10 -or
+                        [bool]$receipt.runActive -ne ($phase -eq 'FailedDiscardStation2')) {
+                        throw 'Station 2 discard receipt failed its evidence, prestige or live-state checks.'
+                    }
+                    if ($phase -eq 'DiscardStation2') {
+                        $previousSettings = @($discardFixtureSlots | Where-Object { $_.name -eq 'SS_Settings_v1.sav' })
+                        $currentSettings = @($currentSlots | Where-Object { $_.name -eq 'SS_Settings_v1.sav' })
+                        if (($previousSettings | ConvertTo-Json -Compress) -cne ($currentSettings | ConvertTo-Json -Compress)) {
+                            throw 'Discard changed the isolated settings bytes.'
+                        }
+                        $failedReceipt = @($receipts | Where-Object { $_.phase -eq 'FailedDiscardStation2' })
+                        if ($failedReceipt.Count -ne 1 -or $receipt.accountPayload -cne $failedReceipt[0].accountPayload) {
+                            throw 'Fresh retry changed account fields instead of preserving its highest-wave record.'
+                        }
+                    }
+                    if ($phase -eq 'FreshAfterDiscard' -and
+                        ($discardFixtureSlots | ConvertTo-Json -Compress) -cne ($currentSlots | ConvertTo-Json -Compress)) {
+                        throw 'Fresh discard readback unexpectedly rewrote a save slot.'
+                    }
+                }
+                $discardFixtureSlots = $currentSlots
+            }
             if ($phase -in @('StageCreateDenied', 'StageReadDenied')) {
                 if (-not $receipt.allThreeWritesRejectedAndPreserved -or -not $receipt.nativePermissionProbeVerified -or
                     ($slotsBefore | ConvertTo-Json -Compress) -cne (@(Get-IsolatedSaveManifest) | ConvertTo-Json -Compress)) {
@@ -466,9 +524,10 @@ try {
         preflightOnly = [bool]$PreflightOnly
         storageFaults = [bool]$StorageFaults
         corruptAccount = [bool]$CorruptAccount
+        station2Discard = [bool]$Station2Discard
         testAccountCopySha256 = $corruptFixtureHashes
         preparedStationWave = if ($prepareStation) { $PreparePackagedStation } else { $null }
-        evidenceType = if ($prepareStation) { 'PREPARED_FIXTURE_NOT_GAMEPLAY' } elseif ($StorageFaults) { 'STORAGE_FAULT_AUTOMATION' } elseif ($CorruptAccount) { 'CORRUPT_ACCOUNT_PROTECTION_AUTOMATION' } else { 'STORAGE_LIFECYCLE_AUTOMATION' }
+        evidenceType = if ($prepareStation) { 'PREPARED_FIXTURE_NOT_GAMEPLAY' } elseif ($StorageFaults) { 'STORAGE_FAULT_AUTOMATION' } elseif ($CorruptAccount) { 'CORRUPT_ACCOUNT_PROTECTION_AUTOMATION' } elseif ($Station2Discard) { 'STATION2_DISCARD_AUTOMATION' } else { 'STORAGE_LIFECYCLE_AUTOMATION' }
         token = $token
         root = $runRoot
         savedDir = $savedRoot
@@ -482,6 +541,8 @@ try {
             'Real Windows staging-create/readback access denial, parent-held acknowledgement-required oplock interruption before replacement, and fresh-process recovery/once-only XP. No disk-full, short-write, hardware-loss, station UI or subjective gameplay claim.'
         } elseif ($CorruptAccount) {
             'Real fresh Init protects a valid Unreal envelope with invalid account domain text; actual GI resume/persistence and GameMode New Run are rejected without changing corrupt bytes. Exact test-owned copy restoration is manual, followed by fresh Init. No arbitrary binary corruption, automatic recovery/backup feature, hardware-loss or gameplay claim.'
+        } elseif ($Station2Discard) {
+            'Actual Station 2 action 51 under real account/suspension locks, fresh-process resume/retry preserving highest wave 10, and final fresh Init with no XP/completed-run history or Continue. Station progression is assisted fixture setup; no natural travel, physical UI, victory, performance or hardware-loss claim.'
         } else {
             'Storage lifecycle and actual Windows locked-destination failure/retry only. No forced process termination, disk-full/short-write, staged-readback fault, hardware-loss, station UI or subjective gameplay claim.'
         }

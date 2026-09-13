@@ -816,6 +816,61 @@ void PersistentRunHistory()
     CHECK(SS::DecodeAccount(SS::EncodeAccount(afterMigration.account), restored, error));
 }
 
+void ContractContentTuning()
+{
+    for (auto kind : {SS::Contract::Pressure, SS::Contract::Objective})
+    {
+        auto s = Fresh("contract-content");
+        FastTuning(s);
+        s.tuning.pressureShieldMultiplier = 0.45;
+        s.tuning.contractPressureAddition = 0.28;
+        s.tuning.pressureContractReward = 211;
+        s.tuning.objectiveTarget = 3;
+        s.tuning.objectiveContractReward = 173;
+        CHECK(SS::NormalizeContractTuning(s.tuning));
+        ReachStation(s, 5);
+        const auto full = s.Stats().maxShield;
+        const auto pressure = s.PressureMultiplier();
+        CHECK(s.AcceptContract(kind));
+        CHECK(!s.AcceptContract(kind == SS::Contract::Pressure ? SS::Contract::Objective : SS::Contract::Pressure));
+        CHECK(Near(s.Stats().maxShield, full * (kind == SS::Contract::Pressure ? 0.45 : 1.0)));
+        CHECK(Near(s.PressureMultiplier() - pressure, kind == SS::Contract::Pressure ? 0.28 : 0.0));
+        const int credits = s.run.credits;
+        CHECK(s.LaunchFromStation());
+        for (int i = 0; i < 3; ++i)
+            s.RecordKill();
+        SS::Run decoded;
+        std::string error;
+        CHECK(SS::DecodeRun(SS::EncodeRun(s.run), decoded, error));
+        CHECK(decoded.contract == kind && decoded.contractTarget == (kind == SS::Contract::Objective ? 3 : 5));
+        s.run = decoded;
+        ReachStation(s, 10);
+        CHECK(s.run.contractsCompleted == 1 && s.run.contract == SS::Contract::None);
+        CHECK(s.run.credits == credits + 5 * s.tuning.waveCredits + 175 + 3 * s.tuning.killCredits +
+                                   (kind == SS::Contract::Pressure ? 211 : 173));
+        CHECK(Near(s.Stats().maxShield, full));
+        CHECK(s.account.xp == 0 && s.account.runs == 0);
+        const int paid = s.run.credits;
+        CHECK(!s.CompleteDocking() && s.run.credits == paid);
+        CHECK(!s.AcceptContract(kind));
+    }
+    SS::Tuning t;
+    t.pressureShieldMultiplier = std::numeric_limits<double>::quiet_NaN();
+    t.contractPressureAddition = std::numeric_limits<double>::infinity();
+    t.objectiveTarget = -1;
+    t.pressureContractReward = -5;
+    t.objectiveContractReward = std::numeric_limits<int>::max();
+    CHECK(!SS::NormalizeContractTuning(t));
+    CHECK(Near(t.pressureShieldMultiplier, 0.65) && Near(t.contractPressureAddition, 0.15));
+    CHECK(t.objectiveTarget == 1 && t.pressureContractReward == 1 && t.objectiveContractReward == 100000000);
+    t.pressureShieldMultiplier = 5;
+    t.contractPressureAddition = -1;
+    t.objectiveTarget = 1001;
+    CHECK(!SS::NormalizeContractTuning(t));
+    CHECK(Near(t.pressureShieldMultiplier, 0.95) && t.contractPressureAddition == 0 && t.objectiveTarget == 1000);
+    CHECK(SS::NormalizeContractTuning(t));
+}
+
 void DeterminismAndDefensiveInputs()
 {
     auto a = Fresh("determinism");
@@ -854,6 +909,7 @@ int main()
     UtilityContentTuning();
     DepotShieldService();
     Contracts();
+    ContractContentTuning();
     DeathProgressionReset();
     SerializationAndValidation();
     PersistentRunHistory();

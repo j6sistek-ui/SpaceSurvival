@@ -1,6 +1,6 @@
 # Rendered endgame capture fixture
 
-**Editor build passed; first rendered endgame capture is pending.** This fixture adds targeted endgame measurement. It does not replace the natural ten-wave playtest or establish the representative 60 FPS gate.
+**Package9 rendered endgame capture passed with bounded fixture evidence.** This fixture adds targeted endgame measurement. It does not replace the natural ten-wave playtest or establish the representative 60 FPS gate.
 
 The explicit Development-only `-SSWave10Soak` route creates a separate `ASSWave10Soak` actor after normal map/GameMode startup. Ordinary runs do not create the actor or bypass input. The fixture requires a fresh `Artifacts/EndgameSoak/<GUID>/User` profile, matching root argument and token marker, the exact generic save backend, unredirected paths, no existing save slots or capture outputs, and an enabled renderer. It calls no save API. Account writes are blocked in the fixture instance, and the wrapper compares both production save locations before and after the owned process exits.
 
@@ -17,7 +17,7 @@ Use the repository root. The script neither builds nor installs anything:
 ./Scripts/CaptureEndgame.ps1
 ```
 
-The first command uses the installed editor with `-game`; the second uses the current packaged inner executable. They are separate captures. Default resolution is 2560Ã—1440; `-Width` and `-Height` change the explicit request. `-NoSound` is optional and recorded as a measurement limitation.
+The first command uses the installed editor with `-game`; the second uses the current packaged inner executable. They are separate captures. Default resolution is 2560x1440; `-Width` and `-Height` change the explicit request. `-NoSound` is optional and recorded as a measurement limitation.
 
 Activate the owned game window when it appears, then leave it in the foreground. The fixture waits for two focused seconds before starting CSV capture. It allows 60 seconds to obtain focus and 180 seconds for the run; the wrapper has a 240-second overall timeout and stops only the process it started. Foreground state is recorded on each fixture frame. Losing focus invalidates capture success; no global idle-throttle setting is changed. Natural keyboard/controller acceptance remains a separate hands-on test.
 
@@ -36,4 +36,4 @@ Compound coverage measures simultaneous gravity, asteroid and enemy actor presen
 
 The capture excludes natural early progression, Wave 5, physical input latency, station docking/disembark, listening/feel/retry appeal, clean-machine portability and final-art acceptance. It does not establish memory-leak behavior or worst-case load. A passed sample remains **RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY**.
 
-Source verification: six synthetic evidence-parser tests passed; parsing the existing package 4 18,000-frame CSV preserves the exact prior group/per-wave timing results and hash without inventing a fixture marker. Current source structural checks and PowerShell syntax checks passed. Synthetic rows are parser tests only. The combined editor build in `.agent/local/TailSoakEditorBuild.log` compiled `SSWave10Soak.cpp` and succeeded in 25.26 seconds. The separate 14-test suite passed; it does not run this rendered fixture. The real capture and measured results remain pending.
+Source verification: six synthetic evidence-parser tests passed; parsing the existing package 4 18,000-frame CSV preserves the exact prior group/per-wave timing results and hash without inventing a fixture marker. Current source structural checks and PowerShell syntax checks passed. Synthetic rows are parser tests only. The combined editor build in `.agent/local/TailSoakEditorBuild.log` compiled `SSWave10Soak.cpp` and succeeded in 25.26 seconds. The separate 14-test suite passed; it does not run this rendered fixture. The real package9 capture completed at source4178:15,770 foreground frames, full40.007s climax,23.719s compound presence and5.006s approach. Mean8.337ms,p998.505ms,max8.818ms at1440p/cap120 on RTX5080/i7-14700F. No save slots written; production/source/artifacts unchanged. See [exact performance](validation/2026-09-13-endgame-performance.json) and [package binding](validation/2026-09-13-windows-visual-package.json). Newer source and assets are excluded.

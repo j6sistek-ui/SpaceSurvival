@@ -74,6 +74,7 @@ protected:
     virtual void BeginPlay() override;
     virtual void OnDefeated();
     void UpdateVisual();
+    bool AdvanceElectricalPulse(float DeltaSeconds);
     ASSShip *FindShip() const;
     ESSWorldKind Kind = ESSWorldKind::SmallAsteroid;
     FVector LinearVelocity = FVector::ZeroVector;
@@ -81,7 +82,12 @@ protected:
     float Health = 24.f;
     float CollisionDamage = 18.f;
     float Age = 0.f;
-    float FieldPulseRemaining = 0.f;
+    // One gameplay clock also drives the visible charge/discharge phase.
+    // Lazy initialization observes the Director's post-Configure reaction-time override.
+    double FieldPulseRemaining = -1.0;
+    double FieldPulseDuration = 1.0;
+    double FieldPulseInterval = 1.8;
+    bool bFieldHasDischarged = false;
     float ShipContactRemaining = 0.f;
     int32 Wave = 1;
     bool bDefeated = false;

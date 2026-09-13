@@ -144,6 +144,10 @@ def main():
         assert len(data.get_editor_property("enemies")) == 2, "Phase 1 enemy roster mismatch"
         assert len(data.get_editor_property("encounters")) == 3, "Phase 1 encounter roster mismatch"
         assert data.has_valid_utility_tuning(), "Malformed Phase 1 utility identity, price or effect tuning"
+        assert data.has_valid_contract_tuning(), "Malformed Phase 1 contract magnitudes"
+        record["contracts"] = {name: data.get_editor_property("contracts").get_editor_property(name)
+                               for name in ("shield_multiplier", "pressure_addition", "pressure_reward",
+                                            "objective_target", "objective_reward")}
         record["utilities"] = [{name: (str(entry.get_editor_property(name)) if name == "kind" else entry.get_editor_property(name))
                                 for name in ("kind", "price", "maneuver_multiplier", "response_multiplier",
                                              "boost_efficiency", "cooling_efficiency")}

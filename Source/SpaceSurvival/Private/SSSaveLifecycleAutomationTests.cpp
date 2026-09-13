@@ -1,6 +1,7 @@
 #include "Misc/AutomationTest.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
+#include "SSStation.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -164,6 +165,27 @@ struct FSSLifecycleIsolation
             Object->SetBoolField(TEXT("originalCheckpointAvailable"), true);
             Object->SetBoolField(TEXT("validAccountPersistenceRestored"), true);
         }
+        if (Phase == TEXT("FailedDiscardStation2"))
+        {
+            Object->SetBoolField(TEXT("accountFailurePreservedRunAndSlots"), true);
+            Object->SetBoolField(TEXT("suspendFailurePreservedRunAndCheckpoint"), true);
+            Object->SetBoolField(TEXT("highestWavePersistedBeforeInvalidation"), true);
+        }
+        if (Phase == TEXT("DiscardStation2"))
+        {
+            Object->SetBoolField(TEXT("freshInitRetainedHighestWave"), true);
+            Object->SetBoolField(TEXT("olderCheckpointResumeKeptHighestWave"), true);
+            Object->SetBoolField(TEXT("actualDiscardActionReturnedToHangar"), true);
+        }
+        if (Phase == TEXT("FreshAfterDiscard"))
+        {
+            Object->SetBoolField(TEXT("freshInitRetainedHighestWave"), true);
+            Object->SetBoolField(TEXT("discardedCheckpointUnavailable"), true);
+            Object->SetBoolField(TEXT("noDeathProgressionAwarded"), true);
+        }
+        if (Phase == TEXT("FailedDiscardStation2") || Phase == TEXT("DiscardStation2") ||
+            Phase == TEXT("FreshAfterDiscard"))
+            Object->SetStringField(TEXT("evidenceType"), TEXT("STATION2_DISCARD_AUTOMATION"));
         if (Instance)
         {
             const auto &Session = Instance->Session;
@@ -174,6 +196,8 @@ struct FSSLifecycleIsolation
             Object->SetNumberField(TEXT("xp"), double(Session.account.xp));
             Object->SetNumberField(TEXT("level"), Session.account.level);
             Object->SetNumberField(TEXT("completedRuns"), Session.account.runs);
+            Object->SetNumberField(TEXT("highestWave"), Session.account.highestWave);
+            Object->SetBoolField(TEXT("runActive"), Session.run.active);
             if (Phase == TEXT("PrepareStation5") || Phase == TEXT("PrepareStation10"))
             {
                 Object->SetStringField(TEXT("evidenceType"), TEXT("PREPARED_FIXTURE_NOT_GAMEPLAY"));
@@ -309,6 +333,12 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
     if (CorruptPhase &&
         !TestTrue(TEXT("Domain corruption requires its separate explicit opt-in"), CorruptMode && !FaultMode))
         return false;
+    const bool DiscardMode = FParse::Param(FCommandLine::Get(), TEXT("SSStation2Discard"));
+    const bool DiscardPhase = Phase == TEXT("FailedDiscardStation2") || Phase == TEXT("DiscardStation2") ||
+                              Phase == TEXT("FreshAfterDiscard");
+    if (DiscardPhase && !TestTrue(TEXT("Station 2 discard requires its separate explicit opt-in"),
+                                  DiscardMode && !FaultMode && !CorruptMode))
+        return false;
     const int32 PreparedWave = Phase == TEXT("PrepareStation5") ? 5 : Phase == TEXT("PrepareStation10") ? 10 : 0;
     if (PreparedWave != 0)
     {
@@ -320,6 +350,9 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
     }
     const FString Prior = (Phase == TEXT("Suspend") || Phase == TEXT("SeedCorruptAccount") || PreparedWave != 0)
                               ? TEXT("Preflight")
+                          : Phase == TEXT("FailedDiscardStation2")     ? TEXT("Suspend")
+                          : Phase == TEXT("DiscardStation2")           ? TEXT("FailedDiscardStation2")
+                          : Phase == TEXT("FreshAfterDiscard")         ? TEXT("DiscardStation2")
                           : Phase == TEXT("ProtectCorruptAccount")     ? TEXT("SeedCorruptAccount")
                           : Phase == TEXT("RecoverAccount")            ? TEXT("ProtectCorruptAccount")
                           : Phase == TEXT("RecoverInterrupted")        ? TEXT("InterruptConsume")
@@ -336,13 +369,13 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
     const FString AccountPath = Isolation.Saved / TEXT("SaveGames/SS_Account_v1.sav");
     const FString OriginalCopy = Isolation.Root / TEXT("CorruptAccount.original");
     const FString CorruptCopy = Isolation.Root / TEXT("CorruptAccount.corrupt");
-    if (CorruptPhase)
+    if (CorruptPhase || DiscardPhase)
     {
         auto &Files = FPlatformFileManager::Get().GetPlatformFile();
         for (const FString &Path :
              {AccountPath, OriginalCopy, CorruptCopy, Isolation.Saved / TEXT("SaveGames/SS_Settings_v1.sav"),
               Isolation.Saved / TEXT("SaveGames/SS_Suspend_v1.sav")})
-            if (!TestTrue(TEXT("Corruption fixture leaves cannot redirect outside the GUID profile"),
+            if (!TestTrue(TEXT("Lifecycle fixture leaves cannot redirect outside the GUID profile"),
                           Files.IsSymlink(*Path) == ESymlinkResult::NonSymlink))
                 return false;
     }
@@ -411,6 +444,178 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
     if (!TestFalse(TEXT("Isolated account initializes without a storage error"), Instance->AccountStorageBlocked))
         return false;
     const std::string RunId = "lifecycle-" + std::string(TCHAR_TO_UTF8(*Isolation.Token));
+    if (DiscardPhase)
+    {
+        const auto Seed = Isolation.Read(TEXT("Suspend"), *this);
+        if (!Seed || !TestNotNull(TEXT("Discard fixture owns an isolated world"), Fixture.World) ||
+            !TestFalse(TEXT("Discard fixture does not run normal BeginPlay"), Fixture.World->HasBegunPlay()))
+            return false;
+        TestEqual(TEXT("Fresh Init restores the prior account domain"),
+                  FString(UTF8_TO_TCHAR(SS::EncodeAccount(Session.account).c_str())),
+                  Previous->GetStringField(TEXT("accountPayload")));
+        TestEqual(TEXT("Discard fixture retains settings across fresh processes"),
+                  FString(UTF8_TO_TCHAR(SS::EncodeSettings(Session.settings).c_str())),
+                  Seed->GetStringField(TEXT("settingsPayload")));
+        auto NoDeathProgression = [&]()
+        {
+            return Session.account.xp == 0 && Session.account.level == 1 && Session.account.runs == 0 &&
+                   Session.account.history.empty() && Session.account.lastAwardedRunId.empty() &&
+                   Session.account.lastXP == 0 && Session.account.lastScore == 0 && Session.account.lastWave == 0 &&
+                   Session.account.bestScore == 0;
+        };
+        if (!TestTrue(TEXT("Station discard never awards death XP, results or history"), NoDeathProgression()))
+            return false;
+        const FString SuspendPath = Isolation.Saved / TEXT("SaveGames/SS_Suspend_v1.sav");
+        const FString SettingsPath = Isolation.Saved / TEXT("SaveGames/SS_Settings_v1.sav");
+        for (const FString &Path : {AccountPath, SuspendPath, SettingsPath})
+            if (!TestTrue(TEXT("Discard fixture slot leaves cannot redirect outside its GUID profile"),
+                          FPlatformFileManager::Get().GetPlatformFile().IsSymlink(*Path) == ESymlinkResult::NonSymlink))
+                return false;
+        TArray<uint8> AccountBefore, SuspendBefore, SettingsBefore, Actual;
+        if (!TestTrue(TEXT("Read all three real slots before discard checks"),
+                      FFileHelper::LoadFileToArray(AccountBefore, *AccountPath) &&
+                          FFileHelper::LoadFileToArray(SuspendBefore, *SuspendPath) &&
+                          FFileHelper::LoadFileToArray(SettingsBefore, *SettingsPath)))
+            return false;
+        TestFalse(TEXT("An inactive session cannot discard a slice"), Instance->DiscardSliceRun());
+        if (Phase == TEXT("FreshAfterDiscard"))
+        {
+            TestEqual(TEXT("Highest wave 10 survives discard and process exit"), Session.account.highestWave, 10);
+            CheckConsumed(*this, Instance);
+            TestFalse(TEXT("Fresh process cannot resume the discarded run"), Instance->ResumeRun());
+            TestFalse(TEXT("Discarded run stays inactive after rejected resume"), Session.run.active);
+            TestTrue(TEXT("Fresh readback and rejected actions do not rewrite the account"),
+                     FFileHelper::LoadFileToArray(Actual, *AccountPath) && Actual == AccountBefore);
+            TestTrue(TEXT("Fresh readback leaves the consumed checkpoint unchanged"),
+                     FFileHelper::LoadFileToArray(Actual, *SuspendPath) && Actual == SuspendBefore);
+            TestTrue(TEXT("Fresh readback leaves settings unchanged"),
+                     FFileHelper::LoadFileToArray(Actual, *SettingsPath) && Actual == SettingsBefore);
+            CheckNoStagingFiles(*this, Isolation);
+            return Isolation.Receipt(Phase, *this, Instance);
+        }
+        const bool FailureStage = Phase == TEXT("FailedDiscardStation2");
+        TestEqual(TEXT("Fresh account reflects only the previously persisted highest wave"),
+                  Session.account.highestWave, FailureStage ? 5 : 10);
+        const auto *Checkpoint = Cast<USSStoredData>(UGameplayStatics::LoadGameFromSlot(TEXT("SS_Suspend_v1"), 0));
+        if (!TestTrue(TEXT("Existing Station 1 checkpoint survives until explicitly consumed"),
+                      Checkpoint && Checkpoint->Valid &&
+                          Checkpoint->Payload == Seed->GetStringField(TEXT("runPayload")) &&
+                          Instance->HasSuspendedRun()) ||
+            !TestTrue(TEXT("Real ResumeRun restores the prior checkpoint"), Instance->ResumeRun()))
+            return false;
+        TestEqual(TEXT("Resuming the older checkpoint never downgrades the highest-wave record"),
+                  Session.account.highestWave, FailureStage ? 5 : 10);
+        const auto StationOneRun = SS::EncodeRun(Session.run);
+        TestFalse(TEXT("Station 1 cannot use Station 2 discard"), Instance->DiscardSliceRun());
+        TestTrue(TEXT("Rejected Station 1 discard preserves the active build"),
+                 SS::EncodeRun(Session.run) == StationOneRun && Session.run.active);
+        if (FailureStage)
+        {
+            // Leave a real valid older suspension to prove both failures preserve a usable checkpoint.
+            // This fixture stays in-process after SuspendRun instead of invoking the game's Quit action.
+            if (!TestTrue(TEXT("Real SuspendRun retains the Station 1 checkpoint for failure testing"),
+                          Instance->SuspendRun()) ||
+                !TestTrue(TEXT("Read the exact renewed checkpoint before the assisted advance"),
+                          FFileHelper::LoadFileToArray(AccountBefore, *AccountPath) &&
+                              FFileHelper::LoadFileToArray(SuspendBefore, *SuspendPath) &&
+                              FFileHelper::LoadFileToArray(SettingsBefore, *SettingsPath)))
+                return false;
+        }
+        if (!TestTrue(TEXT("Fixture uses the real Station 1 departure rule"), Session.LaunchFromStation()))
+            return false;
+        // Assisted progression only: BeginWave updates the real account prestige rule; docking settles
+        // the contract. No elapsed-wave gameplay, victory, EndRun or XP award is fabricated.
+        Session.run.wave = Session.run.wavesCompleted = 9;
+        Session.run.phase = SS::Phase::Breathing;
+        Session.run.phaseSeconds = Session.run.phaseDuration = 0;
+        Session.Tick(.01, false);
+        Session.FinishWave();
+        if (!TestTrue(TEXT("Fixture uses real Wave 10 completion and docking admission"),
+                      Session.run.wave == 10 && Session.BeginDocking()))
+            return false;
+        Session.run.contractProgress = Session.run.contractTarget;
+        if (!TestTrue(TEXT("Assisted Station 2 settles the existing contract"), Session.CompleteDocking()))
+            return false;
+        SS::Run Decoded;
+        std::string Error;
+        const auto RunBefore = SS::EncodeRun(Session.run);
+        const auto AccountAtStation = SS::EncodeAccount(Session.account);
+        if (!TestTrue(TEXT("Station 2 fixture is accepted by the production run codec"),
+                      SS::DecodeRun(RunBefore, Decoded, Error) && SS::EncodeRun(Decoded) == RunBefore &&
+                          Session.AtSliceBoundary() && Session.account.highestWave == 10))
+            return false;
+        auto *Mode = Fixture.World->SpawnActor<ASSGameMode>();
+        auto *Controller = Fixture.World->SpawnActor<APlayerController>();
+        if (!TestNotNull(TEXT("Spawn the real discard menu owner"), Mode) ||
+            !TestNotNull(TEXT("Spawn the local possession target for successful hangar return"), Controller) ||
+            !TestTrue(TEXT("Discard GameMode uses only the isolated GameInstance"),
+                      Mode->GetGameInstance<USSGameInstance>() == Instance))
+            return false;
+        Controller->SetAsLocalPlayerController();
+        Fixture.World->AddController(Controller);
+        Controller->SetActorTickEnabled(false);
+        Mode->OpenPanel(ESSPanel::Launch);
+        const int32 DiscardIndex = Mode->Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry)
+                                                                    { return Entry.Action == 51 && Entry.Enabled; });
+        if (!TestTrue(TEXT("Actual Station 2 menu exposes enabled discard action 51"), DiscardIndex != INDEX_NONE))
+            return false;
+        if (FailureStage)
+        {
+            for (const FString &LockedPath : {AccountPath, SuspendPath})
+            {
+                FSSLifecycleSaveLock Lock;
+                if (!TestTrue(TEXT("Hold the real Windows destination against write/delete replacement"),
+                              Lock.Open(LockedPath)))
+                    return false;
+                Mode->ActivateEntry(DiscardIndex);
+                TestTrue(TEXT("Failed action 51 reports a storage error and retains the station menu"),
+                         Instance->LastSaveError.Contains(TEXT("Save replacement failed")) &&
+                             Mode->Announcement == Instance->LastSaveError && Mode->Panel == ESSPanel::Launch &&
+                             !Mode->InHangar());
+                TestTrue(TEXT("Either write failure preserves every live run and account field"),
+                         SS::EncodeRun(Session.run) == RunBefore && Session.run.active &&
+                             SS::EncodeAccount(Session.account) == AccountAtStation && NoDeathProgression());
+                TestTrue(TEXT("Either write failure preserves the exact valid prior suspension"),
+                         FFileHelper::LoadFileToArray(Actual, *SuspendPath) && Actual == SuspendBefore &&
+                             Instance->HasSuspendedRun());
+                TestTrue(TEXT("Discard failures do not rewrite settings"),
+                         FFileHelper::LoadFileToArray(Actual, *SettingsPath) && Actual == SettingsBefore);
+                if (LockedPath == AccountPath)
+                    TestTrue(TEXT("Account replacement failure preserves its prior bytes too"),
+                             FFileHelper::LoadFileToArray(Actual, *AccountPath) && Actual == AccountBefore);
+                else
+                {
+                    const auto *AccountRecord =
+                        Cast<USSStoredData>(UGameplayStatics::LoadGameFromSlot(TEXT("SS_Account_v1"), 0));
+                    TestTrue(TEXT("Wave 10 account is durable even when subsequent invalidation fails"),
+                             AccountRecord && AccountRecord->Valid &&
+                                 AccountRecord->Payload == UTF8_TO_TCHAR(AccountAtStation.c_str()));
+                }
+                if (!CheckNoStagingFiles(*this, Isolation))
+                    return false;
+            }
+            AddInfo(TEXT("STATION2_DISCARD_FIXTURE: account 10 persisted, valid checkpoint 5 retained after failure; "
+                         "next fresh process must preserve the higher record on resume."));
+        }
+        else
+        {
+            Mode->ActivateEntry(DiscardIndex);
+            TestTrue(TEXT("Successful action 51 clears the run only after both writes and returns to the hangar"),
+                     !Session.run.active && SS::EncodeRun(Session.run) == SS::EncodeRun(SS::Run{}) &&
+                         Mode->InHangar() && Mode->Panel == ESSPanel::Launch &&
+                         Cast<ASSWalker>(Controller->GetPawn()) != nullptr && Instance->LastSaveError.IsEmpty());
+            TestTrue(TEXT("Successful discard preserves account prestige without death progression"),
+                     Session.account.highestWave == 10 && SS::EncodeAccount(Session.account) == AccountAtStation &&
+                         NoDeathProgression());
+            CheckConsumed(*this, Instance);
+            CheckNoStagingFiles(*this, Isolation);
+            TestTrue(TEXT("Discard leaves settings bytes unchanged"),
+                     FFileHelper::LoadFileToArray(Actual, *SettingsPath) && Actual == SettingsBefore);
+            AddInfo(TEXT("STATION2_DISCARD_FIXTURE: actual action 51 succeeded after fresh Init/retry; "
+                         "no natural travel, physical UI, death or victory occurred."));
+        }
+        return Isolation.Receipt(Phase, *this, Instance);
+    }
     if (FaultPhase)
     {
         TestEqual(TEXT("Fault process loads the original account exactly"),

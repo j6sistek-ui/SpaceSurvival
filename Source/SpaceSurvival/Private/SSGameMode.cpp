@@ -90,6 +90,8 @@ void ASSGameMode::BeginPlay()
         T.waveSecondsGrowth = Data->WaveSecondsGrowth;
         T.waveCredits = Data->WaveCredits;
         T.upgradeBasePrice = Data->UpgradeBasePrice;
+        if (!Data->ApplyContractTuning(T))
+            UE_LOG(LogTemp, Warning, TEXT("Invalid contract magnitudes corrected to bounded/default values."));
         if (!Data->ApplyUtilityTuning(T))
             UE_LOG(LogTemp, Warning, TEXT("Invalid utility content corrected to bounded/default definitions."));
         Director->MinimumReactionSeconds = Data->MinimumReactionSeconds;
@@ -810,12 +812,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     case ESSPanel::Contracts:
         PanelTitle = TEXT("CONTRACT BOARD");
         PanelDetail = TEXT("One active contract. Reward at the next station; failure forfeits reward only.");
-        PanelDetail += TEXT("\nPressure terms: shield capacity -35%; hazard pressure +0.15 until the next station.");
-        AddEntry(
-            FString::Printf(TEXT("Pressure contract / accept disclosed terms / +%d credits"), S.tuning.contractReward),
-            41, S.run.contract == SS::Contract::None && S.run.wave < 10);
+        PanelDetail += FString::Printf(
+            TEXT("\nPressure terms: shield capacity -%.1f%%; hazard pressure +%.2f until the next station."),
+            (1.0 - S.tuning.pressureShieldMultiplier) * 100.0, S.tuning.contractPressureAddition);
+        AddEntry(FString::Printf(TEXT("Pressure contract / accept disclosed terms / +%d credits"),
+                                 S.tuning.pressureContractReward),
+                 41, S.run.contract == SS::Contract::None && S.run.wave < 10);
         AddEntry(FString::Printf(TEXT("Hunter / destroy %d enemies before next station / +%d credits"),
-                                 S.tuning.objectiveTarget, S.tuning.contractReward),
+                                 S.tuning.objectiveTarget, S.tuning.objectiveContractReward),
                  42, S.run.contract == SS::Contract::None && S.run.wave < 10);
         break;
     case ESSPanel::Save:
@@ -1140,12 +1144,11 @@ void ASSGameMode::ActivateEntry(int32 Index)
     }
     if (A == 51 && S.AtSliceBoundary())
     {
-        if (!GI->InvalidateSuspend())
+        if (!GI->DiscardSliceRun())
         {
             Announce(GI->LastSaveError);
             return;
         }
-        S.run = SS::Run{};
         ShowHangar();
         OpenPanel(ESSPanel::Launch);
         return;

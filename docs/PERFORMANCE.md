@@ -1,8 +1,18 @@
 # Performance findings
 
-**Measured early flight; representative Phase 1 performance gate remains OPEN.** The corrected-settings Windows Development build held approximately 119.96 FPS during a capped Waves 1–3 sample on the available PC. No recorded gameplay frame exceeded the 16.667 ms / 60 FPS budget. This does not establish either climax, station transitions, full-run stability or physical input responsiveness.
+**Measured early flight and a scripted rendered endgame; representative Phase 1 performance gate remains OPEN.** The corrected-settings Windows Development build held approximately 119.96 FPS during a capped Waves 1–3 sample on the available PC. No recorded gameplay frame exceeded the 16.667 ms / 60 FPS budget. That historical sample does not establish climaxes, station transitions, full-run stability or physical input responsiveness.
 
-## Measured configuration and identity
+## Package 9 rendered endgame (2026-09-13)
+
+Source `4178ff443d34a7611a7353bac784091ec25ba0fa`, package 9, game SHA `af8431a544ccebcda1b6b46a15523abfe576f172c37514eac5029219370b3cd7`. The guarded fixture ran normal engine frames with audio enabled at 2560x1440, DX12/SM6, all quality groups 2, VSync off and cap120 on the same i7-14700F/RTX5080 machine. Owner editor and desktop apps stayed open.
+
+The fresh GUID profile used a seeded Tier V starter/Rapid Laser/Overdrive Cooling build with base hull/shield50000 and scripted strafe, boost, brake, dodge and firing. It covered normal Wave9, breathing, all **40.007 seconds of Wave10 climax**, then **5.006 seconds of approach**. Gravity, asteroids and enemies existed together for **23.719 seconds**. Peak threats23, below cap24; kind counts include warning/offscreen actors.
+
+All **15,770 frames** stayed foreground over **131.482 seconds** of recorded frame time. Mean **8.337 ms** (~119.94 FPS), median8.334, p95 8.341, p99 **8.505**, maximum **8.818**; zero frames exceeded16.667/33.333/50ms. GPU mean2.765/p99 3.650/max4.431ms; game thread mean1.784/max6.961ms. Simulation delta mean8.337/max8.807ms came from normal actor updates, with fixed step and time dilation rejected. This is a capped fixture measurement, not uncapped headroom or representative 60FPS acceptance.
+
+The process exited0; source, all seven binary/container artifacts and production saves remained identical; no test save slots were written. Capture began after foreground warmup, so it does not measure startup loading. Natural piloting, balance, both station transitions, Wave5 and full-run memory/leak tests remain open. See the [complete performance receipt](validation/2026-09-13-endgame-performance.json), [package binding](validation/2026-09-13-windows-visual-package.json) and [reproduction harness](ENDGAME_CAPTURE.md). Later source/content changes are excluded.
+
+## Historical package 4 configuration and identity
 
 - Windows 11 25H2 build 26200.9445; Intel Core i7-14700F; NVIDIA RTX 5080, driver 616.92. The environment audit recorded approximately 47.72 GiB RAM and 16 GiB VRAM.
 - UE 5.8.2 Win64 Development, 2560×1440, DX12 / SM6, Lumen mesh distance fields, VSync off, effective 120 FPS cap.
@@ -36,7 +46,7 @@ The packaged log reports an engine `r.MotionVectorSimulation` render-thread warn
 
 This CSV exposes system free memory and selected renderer allocator counters, **not a complete process RAM/VRAM or leak measurement**. Process memory over a full run remains open. No simulation-delta counter exists in the capture. Separate Unreal flight tests compare actual pawn trajectories at 30/60/120/144 Hz; CSV wall frame time does not establish input or simulation correctness.
 
-Neither capture covers Wave 5/10, docking/stations, world-origin rebasing, sustained boost/dodge or a fully upgraded build. The subsequent encounter-label readability patch is outside this measured executable's identity; see [BUILD_RUN.md](BUILD_RUN.md) for the delivered archive.
+Neither historical package 3/4 capture covers Wave 5/10, docking/stations, world-origin rebasing, sustained boost/dodge or a fully upgraded build. The subsequent encounter-label readability patch is outside this measured executable's identity; see [BUILD_RUN.md](BUILD_RUN.md) for the delivered archive.
 
 ## Reproduce and close the gate
 
@@ -48,4 +58,4 @@ python Scripts/AnalyzePerformance.py 'path/to/completed.csv' --log 'path/to/game
 
 The analyzer uses Python's standard library, accommodates Unreal's growing header and large event field, excludes metadata rows, separates actual run phases and records exact hashes/settings. The [corrected-settings receipt](validation/2026-09-13-final-performance.json) contains per-wave timings, CPU/GPU measurements, worst frames, configuration chronology and method limits.
 
-Next capture ordinary active piloting, electrical/gravity/debris overlap, Wave 5, both station transitions and Wave 10. Record process RAM/VRAM, frame-time spikes and an Insights trace; compare quality levels and 60/120/144 caps using a controlled route. Prioritize responsive input, simulation correctness and hazard readability before visual fidelity. No representative 60 FPS or 120+ FPS acceptance is claimed yet.
+Next capture ordinary active piloting, Wave 5, both station transitions and a natural ten-wave run. Record process RAM/VRAM, frame-time spikes and an Insights trace; compare quality levels and 60/120/144 caps using a controlled route. Prioritize responsive input, simulation correctness and hazard readability before visual fidelity. No representative 60 FPS or 120+ FPS acceptance is claimed yet.
