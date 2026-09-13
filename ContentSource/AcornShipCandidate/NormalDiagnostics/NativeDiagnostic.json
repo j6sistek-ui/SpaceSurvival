@@ -1,0 +1,239 @@
+{
+  "status": "READ_ONLY_SHIP_NORMAL_RENDER_DIAGNOSTIC",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "mesh_sha256": "23c9c18be50728e5d17fa4a545bb334319e010ae25b9845ef942d0fdddae5107",
+  "geometry": {
+    "render_lod0_geometry_sha256": "5cc66bbfec97a393789843b40a6fba03bd4b257900b72f72647f723240acb15f",
+    "triangles": 134262,
+    "vertices": 79268,
+    "lods": 1,
+    "uv_channels": 1,
+    "sections": 9,
+    "bounds_origin_cm": [
+      -17.400001525878906,
+      0.0,
+      16.21126937866211
+    ],
+    "bounds_extent_cm": [
+      227.39998626708984,
+      142.78431701660156,
+      81.58880996704102
+    ],
+    "simple_collision_count": 0,
+    "section_collision": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "collision_trace": "<CollisionTraceFlag.CTF_USE_DEFAULT: 0>",
+    "collision_enabled": "<CollisionEnabled.NO_COLLISION: 0>",
+    "collision_profile": "NoCollision"
+  },
+  "graphs": [
+    {
+      "material": "M_AcornV2_GraphiteStructure",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_WarmCeramic",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_IvoryPanels",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_BurnishedBronze",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_ChampagneEdges",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_MachinedTitanium",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_IonAndNav",
+      "connections": []
+    },
+    {
+      "material": "M_AcornV2_CockpitPadding",
+      "connections": []
+    },
+    {
+      "material": "M_AcornV2_Windscreen",
+      "connections": []
+    }
+  ],
+  "images": [
+    {
+      "file": "AuthoredShadowFree.png",
+      "sha256": "786a90882376b2a61029fda73eaba61cb49cf2ce8445575ce2ee1d6a2a3456f8"
+    },
+    {
+      "file": "NeutralShadowFree.png",
+      "sha256": "4340b046aa829b969178c92e13b16ae80d7ba377cd0ba9e45774fa5e8faeeff7"
+    },
+    {
+      "file": "VertexNormalColor.png",
+      "sha256": "c452299b5742d5ea4b6294c619213c610cbfd190bd1ff05f805c5c735d261666"
+    },
+    {
+      "file": "AuthoredNoMicro.png",
+      "sha256": "eb2015405e61bc9d53773da01c4917ba2985c93709141e1b42f3eeb704d78813"
+    }
+  ],
+  "protected_packages_unchanged": true,
+  "limits": [
+    "Unsaved stock actor, transient override materials, no hero or gameplay",
+    "Directional shadows/AA disabled to isolate shading; source geometry and authored content not changed",
+    "NativeFBX export of rendered LOD0 is diagnostic, not an approved mesh replacement"
+  ]
+}

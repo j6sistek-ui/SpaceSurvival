@@ -1,0 +1,85 @@
+{
+  "status": "SOURCE_MAP_AND_PROJECTION_MATH_CHECKED_ENGINE_IMPORT_PENDING",
+  "maps": [
+    {
+      "kind": "diff",
+      "png_bits_per_channel": 16,
+      "png_color_type": 2,
+      "decoded_preview_mode": "RGB",
+      "size": [
+        2048,
+        2048
+      ],
+      "mean_rgb_8bit": [
+        96.7779791355133,
+        69.33970379829407,
+        49.247761249542236
+      ],
+      "min_rgb_8bit": [
+        32,
+        24,
+        19
+      ],
+      "max_rgb_8bit": [
+        204,
+        192,
+        180
+      ]
+    },
+    {
+      "kind": "arm",
+      "png_bits_per_channel": 16,
+      "png_color_type": 2,
+      "decoded_preview_mode": "RGB",
+      "size": [
+        2048,
+        2048
+      ],
+      "mean_rgb_8bit": [
+        247.89685702323914,
+        213.1729874610901,
+        0.0
+      ],
+      "min_rgb_8bit": [
+        77,
+        198,
+        0
+      ],
+      "max_rgb_8bit": [
+        255,
+        219,
+        0
+      ]
+    },
+    {
+      "kind": "nor_dx",
+      "png_bits_per_channel": 16,
+      "png_color_type": 2,
+      "decoded_preview_mode": "RGB",
+      "size": [
+        2048,
+        2048
+      ],
+      "mean_rgb_8bit": [
+        126.80830359458923,
+        127.70507335662842,
+        248.8654341697693
+      ],
+      "min_rgb_8bit": [
+        6,
+        4,
+        143
+      ],
+      "max_rgb_8bit": [
+        255,
+        252,
+        255
+      ]
+    }
+  ],
+  "source_metallic_channel_all_zero_8bit": true,
+  "flat_normal_preserves_10000_arbitrary_surface_normals_max_error": 3.3306690738754696e-16,
+  "double_precision_mapping_roundtrip_max_cm": 3.880629151353787e-11,
+  "normal_mapping_contract": "Signed projection bases form right-handed axes; flat maps return source surface normal, no world coordinate phase",
+  "limit": "Mathematical source audit only; native material compile and transformed captures pending"
+}

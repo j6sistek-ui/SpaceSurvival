@@ -1,0 +1,912 @@
+{
+  "recorded_utc": "2026-09-13T09:34:54.931253+00:00",
+  "project_status": "PARTIAL",
+  "source_identity": {
+    "base_commit": "a9da95e18be56fe55b230b0ad48b4fad2317360b",
+    "kind": "Formatted uncommitted final tested working-tree snapshot after fixture-only correction; not the base commit",
+    "hash_convention": "sha256 raw bytes; sha256_lf CRLF normalized to LF",
+    "sources": [
+      {
+        "path": "Source/SpaceSurvival/Public/SSAudio.h",
+        "bytes": 2326,
+        "sha256": "c1a06d39d8b4eac285e4735a9d4d4323c48e04353640339c3b15a8666d716327",
+        "sha256_lf": "c1a06d39d8b4eac285e4735a9d4d4323c48e04353640339c3b15a8666d716327"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSAudio.cpp",
+        "bytes": 9822,
+        "sha256": "99e14fb6a56c5fdd96a3d1d12a8d883a6b2ff40fa0376461d0fe2aeb4da12545",
+        "sha256_lf": "99e14fb6a56c5fdd96a3d1d12a8d883a6b2ff40fa0376461d0fe2aeb4da12545"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSAudioAutomationTests.cpp",
+        "bytes": 16682,
+        "sha256": "186324711ee437f72ebcaf6ca42af840d823bcc15e4aa99a0841902ad68b349c",
+        "sha256_lf": "186324711ee437f72ebcaf6ca42af840d823bcc15e4aa99a0841902ad68b349c"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSContentTypes.h",
+        "bytes": 20127,
+        "sha256": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141",
+        "sha256_lf": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSGameMode.h",
+        "bytes": 3984,
+        "sha256": "3cf7c4c089b2e9afdebb9e014cad6e3125b81561894a3fc9133d3627ab9a92cc",
+        "sha256_lf": "3cf7c4c089b2e9afdebb9e014cad6e3125b81561894a3fc9133d3627ab9a92cc"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+        "bytes": 58105,
+        "sha256": "1c744d515a21f95a15fcfd132dedd63c982645cfb2b50da1f0639d4d918007ee",
+        "sha256_lf": "1c744d515a21f95a15fcfd132dedd63c982645cfb2b50da1f0639d4d918007ee"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSShip.h",
+        "bytes": 2061,
+        "sha256": "9b68f07c36582cdaf5c2d0610b0ef35c2321b82ea4d24a7c531e5178c3a2bbcd",
+        "sha256_lf": "9b68f07c36582cdaf5c2d0610b0ef35c2321b82ea4d24a7c531e5178c3a2bbcd"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSShip.cpp",
+        "bytes": 12024,
+        "sha256": "894aa6853667829456e22bb612713391fef46709ff0ba4c15d55277308aa9429",
+        "sha256_lf": "894aa6853667829456e22bb612713391fef46709ff0ba4c15d55277308aa9429"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSWorldActors.h",
+        "bytes": 10662,
+        "sha256": "bb3027367c92bde83002c4ef872e6892e755023863613e704827fa7a55bc8a45",
+        "sha256_lf": "bb3027367c92bde83002c4ef872e6892e755023863613e704827fa7a55bc8a45"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSWorldActors.cpp",
+        "bytes": 66151,
+        "sha256": "af5ffbf10b009261b415f2c2ed58d649bcb32cd4cd3e40e223b74f8e8f0c76b5",
+        "sha256_lf": "6ced7d89ffe9584958ff97929fdf0c711ff3143af12067b105dcd8d880e83951"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSStation.h",
+        "bytes": 2933,
+        "sha256": "acf2f2b805d50b68fc881e8fc7c713e85d0ed19fb75e61650bbca139bc3851f0",
+        "sha256_lf": "acf2f2b805d50b68fc881e8fc7c713e85d0ed19fb75e61650bbca139bc3851f0"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSStation.cpp",
+        "bytes": 21899,
+        "sha256": "6eb9b9c2ddbb1027c231c0292ee938aee1011cae536d478af2da5d6470ed2dd5",
+        "sha256_lf": "6eb9b9c2ddbb1027c231c0292ee938aee1011cae536d478af2da5d6470ed2dd5"
+      },
+      {
+        "path": "Scripts/GenerateAudio.py",
+        "bytes": 7143,
+        "sha256": "0539ca1d5f28bcf7e79ffcea603c8dfd123f9edab2396254891801aec35e331f",
+        "sha256_lf": "0539ca1d5f28bcf7e79ffcea603c8dfd123f9edab2396254891801aec35e331f"
+      },
+      {
+        "path": "Scripts/AuthorContent.py",
+        "bytes": 31895,
+        "sha256": "5888a1ee99ff5654a6ee7a7c4bbf2ea4817652805b37897bd1731111115b2789",
+        "sha256_lf": "5888a1ee99ff5654a6ee7a7c4bbf2ea4817652805b37897bd1731111115b2789"
+      },
+      {
+        "path": "Scripts/ValidateContent.py",
+        "bytes": 13729,
+        "sha256": "51cc3b8563e40470b89b29cfa5107dfabca547bae1e7a14b8b794b7284607766",
+        "sha256_lf": "5409a270c204aca74fcce86fb4ac026479e0799ae89bd2fe1b7a15396bd7da85"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSPhase1Data.h",
+        "bytes": 11644,
+        "sha256": "dba26769ca2f87f3c9499c18670e1ee3e08e4b999886586616e69add821a0b9a",
+        "sha256_lf": "6223974dac0b7f2ece0e77d7624981d1e0fd90743bd4b7e0881a9576fb11ed13"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSEconomyAutomationTests.cpp",
+        "bytes": 15954,
+        "sha256": "6d8d4bb96eb8c5e75dd187ef70b937a653c97f82fc8fbad8253e59c18785f6f6",
+        "sha256_lf": "652ef081727d20c9070fc5b895b54a5bf2124f1d8a8b8e435486c0eef3285c35"
+      },
+      {
+        "path": "Source/SpaceSurvival/Domain/SurvivalCore.h",
+        "bytes": 8395,
+        "sha256": "b7a6915ba71b6a642a6ceee9573fffadf8bed203b4fa6355984212ee1fe1cfaa",
+        "sha256_lf": "0194ea78f0717711b98623f11660f082255e91587c81764658dc4aa2669bdda6"
+      },
+      {
+        "path": "Source/SpaceSurvival/Domain/SurvivalCore.cpp",
+        "bytes": 37652,
+        "sha256": "86449dba0e9dcd4b89b71c6f2e6ea946857326fde7f7fbbb4c7305ab8f6366a9",
+        "sha256_lf": "e08f0526ca822a953d289d98edd2acce6a811070342d5d8dc67a7b2b5037c38c"
+      },
+      {
+        "path": "Tests/CoreTests.cpp",
+        "bytes": 43282,
+        "sha256": "c853d7266af60f30330d8fe5c1de0a2fd319835556dc6741e09a49c90b698fca",
+        "sha256_lf": "64274ac354408521b0cb15e6490d8a2100a2e00a62f4c4ac2d2fc9c89914dacd"
+      },
+      {
+        "path": "ContentSource/ValidateSources.py",
+        "bytes": 8567,
+        "sha256": "6021cfe98f5fb08cf60f1186e88a6eb77d7d0ed09b93900e301f8b2e69a9e7bf",
+        "sha256_lf": "6021cfe98f5fb08cf60f1186e88a6eb77d7d0ed09b93900e301f8b2e69a9e7bf"
+      }
+    ]
+  },
+  "editor_builds": [
+    {
+      "result": "Succeeded",
+      "seconds": 21.3,
+      "log": {
+        "path": ".agent/local/AudioEconomyStationEditor.log",
+        "bytes": 5667,
+        "sha256": "d32bbd302d16d1171fe0cbc05c59e7423bfc8cdab7907757dc9a2c23336b21a1",
+        "sha256_lf": "70eeef6a7626ee8a97f9e75ed371c851b7bb9afd6fa905087dd2f11889a7cc2d"
+      }
+    },
+    {
+      "result": "Succeeded",
+      "seconds": 4.71,
+      "reason": "One test-only economy fixture correction",
+      "log": {
+        "path": ".agent/local/AudioEconomyStationEditor2.log",
+        "bytes": 2541,
+        "sha256": "09c80fc1b01588e9aa1e1b0578c8143117d2f9b8cec779350a9de1d32f0894e2",
+        "sha256_lf": "154ac82053e2298d4f9f0464326480f8d06fb92fad97af6382ebdea8f520b049"
+      }
+    }
+  ],
+  "final_tested_editor_dll": {
+    "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+    "bytes": 1521152,
+    "sha256": "d01c97e80433c17acee7711254a7639ab075fe8bbe22e96b2b85c92a9d4ef037"
+  },
+  "build_warnings": [
+    "Installed MSVC14.51 newer than preferred14.50",
+    "Engine Character.h C4996 deprecation; no project compilation error reported"
+  ],
+  "content_import": {
+    "result": "PASS",
+    "completed_utc": "2026-09-13T09:23:45Z",
+    "log": {
+      "path": ".agent/local/AudioEconomyStationContent.log",
+      "bytes": 310126,
+      "sha256": "6b9dee57d56bf649f00b95dc7565ffc0f29c5eb32b602f31fc580438168f7db3",
+      "sha256_lf": "ef3e964a2a6e13bab7a352531b6addabb51518926d679117abdc5d338f1eb8d9"
+    }
+  },
+  "content_validation": {
+    "first_attempt": {
+      "result": "FAILED",
+      "log": {
+        "path": ".agent/local/AudioEconomyStationValidate.log",
+        "bytes": 260809,
+        "sha256": "c205487e3490441bf563ccf1419922292e74f2674c7f7a135d8c19bb5ae22ce1",
+        "sha256_lf": "8911cbb73ff5c54dbbee0282f6b854e6606c6401d7f8de4260a1879ed442a928"
+      },
+      "reason": "Legacy generic material-group expectation required M_Rock on the three explicitly adopted photographic asteroids.",
+      "resolution": "Expected override narrowed to approved material path/version/section; dedicated geometry guard retained."
+    },
+    "second_attempt": {
+      "result": "PASS",
+      "completed_utc": "2026-09-13T09:26:42Z",
+      "log": {
+        "path": ".agent/local/AudioEconomyStationValidate2.log",
+        "bytes": 259910,
+        "sha256": "30d7b69a8985e9d3b6f62742aa378ac77a9224dabc0fa4fdeda2f7e7a8504163",
+        "sha256_lf": "ac6e6cfa0296546f34652c9d4e2b644accf7790426913238f47b09d61af32b9f"
+      },
+      "report": {
+        "path": "Saved/Validation/PersistedContent.json",
+        "bytes": 12422,
+        "sha256": "9424615c0d3d5833cfd25464b504dc82fe315399e5c8f3fae57265594b27e448",
+        "sha256_lf": "78082b87b15a9e351c0f94ab0db637f3d4319214b53e2a1ccfc25daf55a53261"
+      },
+      "errors": [],
+      "audio_count": 16
+    }
+  },
+  "first_suite_attempt": {
+    "result": "FAILED",
+    "report_created_on": "2026.09.13-09.27.01",
+    "observed_succeeded": 20,
+    "observed_failed": 1,
+    "observed_warnings": 0,
+    "observed_not_run": 0,
+    "observed_total_duration": 2.4279568195343018,
+    "process_id": 22092,
+    "log": {
+      "path": ".agent/local/AudioEconomyStationTests.log",
+      "bytes": 296760,
+      "sha256": "0c9e2b78f869efa8227253d7bb02bfef3e5afeab79d6b2cd2683211e011ca535",
+      "sha256_lf": "f1da1ba5224185d7643c95db46777d2faaf7eb7e8e9c28f057b6a55bcecc1348"
+    },
+    "failed_test": "SpaceSurvival.Integration.EconomyRewardBridge",
+    "failure_count": 2,
+    "failure": "Expected 'Existing codec preserves pending reward choice and earned credits' to be true.",
+    "resolution": "Fixture manually configured accepted beacons without the Director's offer-seen flag. Fixture-only correction sets that flag and exposes DecodeRun diagnostics; runtime and codec remain unchanged.",
+    "provenance_limit": "First report was read but not copied/hashed before index.json was replaced. First DLL and original failing test-source hashes were not captured. Final hashes are never represented as first-attempt hashes.",
+    "first_report_hash": null,
+    "first_dll_hash": null,
+    "first_test_source_hash": null
+  },
+  "final_suite_attempt": {
+    "reportCreatedOn": "2026.09.13-09.29.16",
+    "succeeded": 21,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "inProcess": 0,
+    "totalDuration": 2.3187851905822754,
+    "report": {
+      "path": "Artifacts/UnrealTests/index.json",
+      "bytes": 25055,
+      "sha256": "841164b90d2d0bf6544659d62e3d52c9b7b7154a60da74e1e28d610eaa972010",
+      "sha256_lf": "820cd464e99533981eee9abef4eee0e54cccc9c813ef4812f63c60b0950465a6"
+    },
+    "test_log": {
+      "path": ".agent/local/AudioEconomyStationTests2.log",
+      "bytes": 296393,
+      "sha256": "de88dd2e938227b7a5507edfa0e407e9d6d7e97c97db46dfaf7ce440846919f1",
+      "sha256_lf": "26af1e11dda8d7bb818f64471d93037ad6a97c0c6f0e9cb7ce7fa752a92015d8"
+    },
+    "process_id": 80476,
+    "tests": [
+      {
+        "path": "SpaceSurvival.Content.ContractDataAssetBridge",
+        "state": "Success",
+        "duration": 0.008303601294755936,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Content.EconomyDataAssetBounds",
+        "state": "Success",
+        "duration": 0.008210498839616776,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Content.UtilityDataAssetBridge",
+        "state": "Success",
+        "duration": 0.007583398371934891,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Flight.BoostBrakeMovement",
+        "state": "Success",
+        "duration": 0.35684409737586975,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+        "state": "Success",
+        "duration": 0.022651802748441696,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Flight.FrameRateTrajectories",
+        "state": "Success",
+        "duration": 0.2739129960536957,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "30 Hz at 1 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "30 Hz at 2 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "30 Hz at 3 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "30 Hz at 4 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "60 Hz at 1 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "60 Hz at 2 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "60 Hz at 3 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "60 Hz at 4 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "144 Hz at 1 seconds: position error 0.487 cm; velocity error 0.000 cm/s",
+          "144 Hz at 2 seconds: position error 2.778 cm; velocity error 1.648 cm/s",
+          "144 Hz at 3 seconds: position error 5.253 cm; velocity error 1.462 cm/s",
+          "144 Hz at 4 seconds: position error 4.350 cm; velocity error 0.403 cm/s"
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Flight.ManualWeaponImpacts",
+        "state": "Success",
+        "duration": 0.04957909882068634,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+        "state": "Success",
+        "duration": 1.309645175933838,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "Accelerated actor integration: 12-second waves/climaxes, shortened transitions, enlarged durability, fixture flight bootstrap, forced objective acquisition/defeat and assist-band positioning. This does not validate natural balance, fairness, flight feel, controller input, performance, or disk-backed New Run/death/restart transactions.",
+          "JOURNEY_WAVE 1",
+          "JOURNEY_WAVE 2",
+          "JOURNEY_WAVE 3",
+          "JOURNEY_WAVE 4",
+          "JOURNEY_WAVE 5",
+          "JOURNEY_STATION 1",
+          "JOURNEY_WAVE 6",
+          "JOURNEY_WAVE 7",
+          "JOURNEY_WAVE 8",
+          "JOURNEY_WAVE 9",
+          "JOURNEY_WAVE 10",
+          "JOURNEY_STATION 2"
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.AudioFirstPlayMix",
+        "state": "Success",
+        "duration": 0.015099100768566132,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "Component and phase state verified; no rendered audio buffer or listening assertion."
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.AuthoredDisembark",
+        "state": "Success",
+        "duration": 0.03930870071053505,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "EXIT_RUNTIME_MESH: /Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2",
+          "EXIT_CONTACT actor=X=28506.306 Y=-10462.735 Z=5580.150 floorZ=5490.000000 capsuleGap=2.150000 meshZ=6.954042",
+          "EXIT_SOLE contact vertices=203227 soleZ=5492.733538 plateZ=5492.750000 clearance=-0.016462",
+          "EXIT_HANDOFF actorDelta=X=0.000 Y=0.000 Z=0.000 leftFootDelta=X=-0.008 Y=-0.006 Z=0.004 rightFootDelta=X=0.000 Y=-0.009 Z=0.003 floorDist=2.150001",
+          "EXIT_SOLE walk handoff vertices=203227 soleZ=5492.737085 plateZ=5492.750000 clearance=-0.012915",
+          "EXIT_RATE rate=30 actorDelta=X=0.000 Y=0.000 Z=0.000 floorDist=2.150001",
+          "EXIT_RATE rate=60 actorDelta=X=0.000 Y=0.000 Z=0.000 floorDist=2.150001",
+          "EXIT_RATE rate=144 actorDelta=X=0.000 Y=0.000 Z=0.000 floorDist=2.150001"
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.EconomyRewardBridge",
+        "state": "Success",
+        "duration": 0.015139501541852951,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "ECONOMY_FIXTURE: actual BeginPlay/menu/actor completion paths; assisted station and objective progress, no natural balance or disk I/O."
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.ElectricalPulseBoundaries",
+        "state": "Success",
+        "duration": 0.01047699898481369,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.ElectricalPulseCadence",
+        "state": "Success",
+        "duration": 0.03967149928212166,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "ELECTRICAL_CADENCE fps=30 interval=0.200000003 pulses=40 sampledSeconds=11.333333924",
+          "ELECTRICAL_CADENCE fps=30 interval=0.730000019 pulses=40 sampledSeconds=32.000001669",
+          "ELECTRICAL_CADENCE fps=30 interval=1.79999995 pulses=40 sampledSeconds=73.733337179",
+          "ELECTRICAL_CADENCE fps=30 interval=2.5999999 pulses=40 sampledSeconds=104.933338806",
+          "ELECTRICAL_CADENCE fps=60 interval=0.200000003 pulses=40 sampledSeconds=11.316667257",
+          "ELECTRICAL_CADENCE fps=60 interval=0.730000019 pulses=40 sampledSeconds=31.983335001",
+          "ELECTRICAL_CADENCE fps=60 interval=1.79999995 pulses=40 sampledSeconds=73.716670511",
+          "ELECTRICAL_CADENCE fps=60 interval=2.5999999 pulses=40 sampledSeconds=104.916672138",
+          "ELECTRICAL_CADENCE fps=144 interval=0.200000003 pulses=40 sampledSeconds=11.305555640",
+          "ELECTRICAL_CADENCE fps=144 interval=0.730000019 pulses=40 sampledSeconds=31.979166905",
+          "ELECTRICAL_CADENCE fps=144 interval=1.79999995 pulses=40 sampledSeconds=73.708333883",
+          "ELECTRICAL_CADENCE fps=144 interval=2.5999999 pulses=40 sampledSeconds=104.909723004"
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+        "state": "Success",
+        "duration": 0.08817510306835175,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "Actor death/XP/hangar and in-memory next-run reset. Persistence is intentionally blocked; the normal restart button must remain blocked. Next flight uses explicit fixture bootstrap."
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.LateEventAcceptance",
+        "state": "Success",
+        "duration": 0.012515202164649963,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+        "state": "Success",
+        "duration": 0.011772200465202332,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+        "state": "Success",
+        "duration": 0.01061820238828659,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.SpatialThreatAudio",
+        "state": "Success",
+        "duration": 0.012016799300909042,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "Real actor hooks/component bounds verified; NullRHI does not prove renderer voice count, spatial perception or listening quality."
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.StationWalkerRecovery",
+        "state": "Success",
+        "duration": 0.00956840068101883,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Save.PayloadRoundTrip",
+        "state": "Success",
+        "duration": 0.008011102676391602,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+        "state": "Success",
+        "duration": 0.009681399911642075,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      }
+    ]
+  },
+  "package_status": "Not packaged at receipt time; historical package9 binds source4178 and does not contain these changes",
+  "scope": "Persisted initial mixes and reflected spatial cues for existing Phase1 actors",
+  "status": "PASS source preservation, content import/validation and component/actor automation; rendered audio and listening unverified",
+  "original_audio_preservation": {
+    "baseline_commit": "a9da95e18be56fe55b230b0ad48b4fad2317360b",
+    "verified_against_git_objects_and_current_files": true,
+    "count": 10,
+    "hashes": {
+      "Alarm.wav": "ee237b8f9c52863f21cf4b3b28b012a05cfb250eea2de94d47001b314ec653f3",
+      "Cannon.wav": "b8a570d93e42d662403132e4d05f388be515f543ddba508228bcf496cb2cce61",
+      "Engine.wav": "56d119e07d8252cf3336e41527d33772be9cdb5cfa993a15896d16d95970c5d2",
+      "Impact.wav": "de65402ca87f664f63d789aadb37e2dd27a5d24af601aa3ba6759e49c15b6bc7",
+      "Laser.wav": "ddb0c603d23ac98ca5475db32ab40afce6a5b4db679674c389c9fcaebe926e84",
+      "MusicBase.wav": "8d022434f7a9bfc4f45710badcd0b17e1ad966a2c46dbc60ed300f7a15d999d7",
+      "MusicClimax.wav": "6ae740fc137c13cb4cabdbbc6fb0229e650b1f53e0ecef38b426f1a0ba2037b5",
+      "MusicPressure.wav": "8c53ec88731fb0c90ba696c15433db85e112891cfeba6dbee68e6da6ab521280",
+      "Pickup.wav": "883523071118373b60ec68b9866dd6f7827b8786734a90d4b4a90a360546bb18",
+      "Station.wav": "3be5a1472247d7b4cfe228dd791978da89e36b51a1ad5a60b023f1322eae727b"
+    },
+    "generation_record": {
+      "path": ".agent/local/AudioSourceGeneration.json",
+      "bytes": 1023,
+      "sha256": "9ed0cb0f731d0d3056f668b3fe9c921460a080dcdd96522f9a35912b960b2d22",
+      "sha256_lf": "6c118e0c73f985015c80e483f48466bbfaf7be60f11cd85af9d0c40ab82e4c9f"
+    }
+  },
+  "source_manifest": {
+    "path": "ContentSource/Audio/manifest.json",
+    "bytes": 4744,
+    "sha256": "15e17aab5a2a0dc599cfb05cdfdb042d46e70555bda1ceb491e3b68ea24f78ba",
+    "sha256_lf": "b36510a35aca702fd71b890d8de2877e1fabc79ac5cd10a4cbc6b0005fd7dc7d"
+  },
+  "audio_sources": [
+    {
+      "name": "Engine",
+      "seconds": 4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -14.19,
+      "rms_dbfs": -20.65,
+      "sha256": "56d119e07d8252cf3336e41527d33772be9cdb5cfa993a15896d16d95970c5d2",
+      "source": {
+        "path": "ContentSource/Audio/Engine.wav",
+        "bytes": 256044,
+        "sha256": "56d119e07d8252cf3336e41527d33772be9cdb5cfa993a15896d16d95970c5d2"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/Engine.uasset",
+        "bytes": 62526,
+        "sha256": "7defc6c4679ed4fedd12750475e6a4ac46d5858ad830d42e6f0a25bcc0f76fcf"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "Laser",
+      "seconds": 0.25,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -10.18,
+      "rms_dbfs": -22.69,
+      "sha256": "ddb0c603d23ac98ca5475db32ab40afce6a5b4db679674c389c9fcaebe926e84",
+      "source": {
+        "path": "ContentSource/Audio/Laser.wav",
+        "bytes": 16044,
+        "sha256": "ddb0c603d23ac98ca5475db32ab40afce6a5b4db679674c389c9fcaebe926e84"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/Laser.uasset",
+        "bytes": 15312,
+        "sha256": "35e9d2e6b8bf87ec1cb3ee3c39ba3bc1b32e2fec2b711fe320b0897215ff59c9"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "Cannon",
+      "seconds": 0.7,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -5.73,
+      "rms_dbfs": -21.38,
+      "sha256": "b8a570d93e42d662403132e4d05f388be515f543ddba508228bcf496cb2cce61",
+      "source": {
+        "path": "ContentSource/Audio/Cannon.wav",
+        "bytes": 44844,
+        "sha256": "b8a570d93e42d662403132e4d05f388be515f543ddba508228bcf496cb2cce61"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/Cannon.uasset",
+        "bytes": 38953,
+        "sha256": "8624d1c875c3faba7133b458edca423a2b4c5ccf1c855ceccb0e6d68fbcb0088"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "Impact",
+      "seconds": 0.8,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -8.6,
+      "rms_dbfs": -24.24,
+      "sha256": "de65402ca87f664f63d789aadb37e2dd27a5d24af601aa3ba6759e49c15b6bc7",
+      "source": {
+        "path": "ContentSource/Audio/Impact.wav",
+        "bytes": 51244,
+        "sha256": "de65402ca87f664f63d789aadb37e2dd27a5d24af601aa3ba6759e49c15b6bc7"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/Impact.uasset",
+        "bytes": 47729,
+        "sha256": "18ad4605b349ccc2304785566693cc0632ac7aa7a623377059ac3daa76bca896"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "Pickup",
+      "seconds": 0.55,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -13.33,
+      "rms_dbfs": -26.58,
+      "sha256": "883523071118373b60ec68b9866dd6f7827b8786734a90d4b4a90a360546bb18",
+      "source": {
+        "path": "ContentSource/Audio/Pickup.wav",
+        "bytes": 35244,
+        "sha256": "883523071118373b60ec68b9866dd6f7827b8786734a90d4b4a90a360546bb18"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/Pickup.uasset",
+        "bytes": 23950,
+        "sha256": "ac132a01c8f653391ca94a48151f249ece9d45b1a800cb77b32fc442f97bbf24"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "Alarm",
+      "seconds": 0.65,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -14.37,
+      "rms_dbfs": -28.69,
+      "sha256": "ee237b8f9c52863f21cf4b3b28b012a05cfb250eea2de94d47001b314ec653f3",
+      "source": {
+        "path": "ContentSource/Audio/Alarm.wav",
+        "bytes": 41644,
+        "sha256": "ee237b8f9c52863f21cf4b3b28b012a05cfb250eea2de94d47001b314ec653f3"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/Alarm.uasset",
+        "bytes": 21554,
+        "sha256": "5855f220b8880ab4837970b13bed537d9cabf466d5c5070ed2612350fbb2ad72"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "Station",
+      "seconds": 4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -24.55,
+      "rms_dbfs": -29.14,
+      "sha256": "3be5a1472247d7b4cfe228dd791978da89e36b51a1ad5a60b023f1322eae727b",
+      "source": {
+        "path": "ContentSource/Audio/Station.wav",
+        "bytes": 256044,
+        "sha256": "3be5a1472247d7b4cfe228dd791978da89e36b51a1ad5a60b023f1322eae727b"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/Station.uasset",
+        "bytes": 35345,
+        "sha256": "92f83b540593da3dd1edb7e01e793919a8e86d6449a5e62dcd8e865d5d95ad2e"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "ElectricalCharge",
+      "seconds": 2,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -25.13,
+      "rms_dbfs": -29.65,
+      "sha256": "ee2496d74bc4718a4b153dff6c88b5b7aac6f9fa0bfd7c74ac2a615bf486cb55",
+      "source": {
+        "path": "ContentSource/Audio/ElectricalCharge.wav",
+        "bytes": 128044,
+        "sha256": "ee2496d74bc4718a4b153dff6c88b5b7aac6f9fa0bfd7c74ac2a615bf486cb55"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/ElectricalCharge.uasset",
+        "bytes": 15317,
+        "sha256": "58a0cb3795c5834b549b8b61a4247fbf8a1fea4204188a4d373b86f0e67e619f"
+      },
+      "new_in_this_change": true
+    },
+    {
+      "name": "ElectricalDischarge",
+      "seconds": 0.6,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -9.33,
+      "rms_dbfs": -27.36,
+      "sha256": "0008ce22955d5051d01a284dceb91e1d2f6b2afe6260d659ef252f4526f91149",
+      "source": {
+        "path": "ContentSource/Audio/ElectricalDischarge.wav",
+        "bytes": 38444,
+        "sha256": "0008ce22955d5051d01a284dceb91e1d2f6b2afe6260d659ef252f4526f91149"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/ElectricalDischarge.uasset",
+        "bytes": 34624,
+        "sha256": "f966f3a313e60782d37ef160e90f5cfadbc0fada11dd035697fe051a3df0537e"
+      },
+      "new_in_this_change": true
+    },
+    {
+      "name": "GravityAmbience",
+      "seconds": 4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -19.08,
+      "rms_dbfs": -25.47,
+      "sha256": "be8d9d83dd7ad5f85f3f70508fd8265e1e201ea884a870cef84248de79be3b9e",
+      "source": {
+        "path": "ContentSource/Audio/GravityAmbience.wav",
+        "bytes": 256044,
+        "sha256": "be8d9d83dd7ad5f85f3f70508fd8265e1e201ea884a870cef84248de79be3b9e"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/GravityAmbience.uasset",
+        "bytes": 32800,
+        "sha256": "f19ad14f85d9c945d4ed228fd27496ae3c9574f8511fa43eadc9a6aafb48b229"
+      },
+      "new_in_this_change": true
+    },
+    {
+      "name": "EnemyFire",
+      "seconds": 0.4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -13.8,
+      "rms_dbfs": -26.91,
+      "sha256": "1b7d0c5ce1ef98311bb696b659d4c08f19d3c9be5bc22afdb4939dc6b853c5ea",
+      "source": {
+        "path": "ContentSource/Audio/EnemyFire.wav",
+        "bytes": 25644,
+        "sha256": "1b7d0c5ce1ef98311bb696b659d4c08f19d3c9be5bc22afdb4939dc6b853c5ea"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/EnemyFire.uasset",
+        "bytes": 17392,
+        "sha256": "9dfe593159b7ccff2380b3f05a41b08032c4eae9f0404a5f9cf6c1611bd5112a"
+      },
+      "new_in_this_change": true
+    },
+    {
+      "name": "EnemyBreak",
+      "seconds": 0.9,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -8.36,
+      "rms_dbfs": -24.4,
+      "sha256": "ab217f118b62ba2ccca508d59bc3a764dc745667c94d5f2111b46c36f48d31cc",
+      "source": {
+        "path": "ContentSource/Audio/EnemyBreak.wav",
+        "bytes": 57644,
+        "sha256": "ab217f118b62ba2ccca508d59bc3a764dc745667c94d5f2111b46c36f48d31cc"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/EnemyBreak.uasset",
+        "bytes": 51656,
+        "sha256": "18dd82fb15ab0acf81b6d9ebda03a6a245105a803557e336167463c5d9120db6"
+      },
+      "new_in_this_change": true
+    },
+    {
+      "name": "DebrisBreak",
+      "seconds": 0.65,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -12.0,
+      "rms_dbfs": -28.19,
+      "sha256": "1fb888104e85455b0fbca36dfc1ddf7b9355f7cee210c2da35abd4f8c615738f",
+      "source": {
+        "path": "ContentSource/Audio/DebrisBreak.wav",
+        "bytes": 41644,
+        "sha256": "1fb888104e85455b0fbca36dfc1ddf7b9355f7cee210c2da35abd4f8c615738f"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/DebrisBreak.uasset",
+        "bytes": 36925,
+        "sha256": "cb1414eb87854481c8d6183d76011e0a2d2bc04abc80eff165dad69c4e151be9"
+      },
+      "new_in_this_change": true
+    },
+    {
+      "name": "MusicBase",
+      "seconds": 20,
+      "sample_rate": 32000,
+      "channels": 2,
+      "loop": true,
+      "peak_dbfs": -19.89,
+      "rms_dbfs": -28.79,
+      "sha256": "8d022434f7a9bfc4f45710badcd0b17e1ad966a2c46dbc60ed300f7a15d999d7",
+      "source": {
+        "path": "ContentSource/Audio/MusicBase.wav",
+        "bytes": 2560044,
+        "sha256": "8d022434f7a9bfc4f45710badcd0b17e1ad966a2c46dbc60ed300f7a15d999d7"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/MusicBase.uasset",
+        "bytes": 583493,
+        "sha256": "d197113d6dbff2f025e80a252d098275d64d34b67a4c161cbfc44c17aea9dbf9"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "MusicPressure",
+      "seconds": 20,
+      "sample_rate": 32000,
+      "channels": 2,
+      "loop": true,
+      "peak_dbfs": -23.19,
+      "rms_dbfs": -36.69,
+      "sha256": "8c53ec88731fb0c90ba696c15433db85e112891cfeba6dbee68e6da6ab521280",
+      "source": {
+        "path": "ContentSource/Audio/MusicPressure.wav",
+        "bytes": 2560044,
+        "sha256": "8c53ec88731fb0c90ba696c15433db85e112891cfeba6dbee68e6da6ab521280"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/MusicPressure.uasset",
+        "bytes": 278840,
+        "sha256": "6d541f6901d789118759a06b8b5d462e687c5396bed5a4ef8f0b096bbff77e5d"
+      },
+      "new_in_this_change": false
+    },
+    {
+      "name": "MusicClimax",
+      "seconds": 20,
+      "sample_rate": 32000,
+      "channels": 2,
+      "loop": true,
+      "peak_dbfs": -19.08,
+      "rms_dbfs": -32.67,
+      "sha256": "6ae740fc137c13cb4cabdbbc6fb0229e650b1f53e0ecef38b426f1a0ba2037b5",
+      "source": {
+        "path": "ContentSource/Audio/MusicClimax.wav",
+        "bytes": 2560044,
+        "sha256": "6ae740fc137c13cb4cabdbbc6fb0229e650b1f53e0ecef38b426f1a0ba2037b5"
+      },
+      "imported_asset": {
+        "path": "Content/SpaceSurvival/Audio/MusicClimax.uasset",
+        "bytes": 768923,
+        "sha256": "437ca173d341dccea84a636861bca5acb2bc4276b006017b35819abe84fdeea9"
+      },
+      "new_in_this_change": false
+    }
+  ],
+  "loop_virtualization": {
+    "policy": "PlayWhenSilent",
+    "validated_sources": [
+      "Engine",
+      "Station",
+      "ElectricalCharge",
+      "GravityAmbience",
+      "MusicBase",
+      "MusicPressure",
+      "MusicClimax"
+    ],
+    "evidence": "Fresh ValidateContent.validate_sound verifies the persisted SoundWave property."
+  },
+  "hooks": {
+    "default": "UseDefaultSound=true selects fixed behavior preset even for old rows",
+    "silence": "UseDefaultSound=false plus null Sound is deliberate silence",
+    "gain": "finite clamp0..1; nonfinite silent",
+    "role_validation": "loop field/nonloop one-shot required",
+    "configured_renderer_concurrency": {
+      "one_shots": 12,
+      "field_loops": 4
+    },
+    "component_caps": {
+      "one_shots": 12,
+      "field_loops": 24
+    },
+    "attenuation_cm": {
+      "inner": 650,
+      "falloff": 7500
+    },
+    "one_shot_hard_lifetime_seconds": 10.25
+  },
+  "focused_tests": [
+    {
+      "path": "SpaceSurvival.Integration.AudioFirstPlayMix",
+      "state": "Success",
+      "duration": 0.015099100768566132,
+      "warnings": 0,
+      "errors": 0,
+      "messages": [
+        "Component and phase state verified; no rendered audio buffer or listening assertion."
+      ]
+    },
+    {
+      "path": "SpaceSurvival.Integration.SpatialThreatAudio",
+      "state": "Success",
+      "duration": 0.012016799300909042,
+      "warnings": 0,
+      "errors": 0,
+      "messages": [
+        "Real actor hooks/component bounds verified; NullRHI does not prove renderer voice count, spatial perception or listening quality."
+      ]
+    }
+  ],
+  "limitations": [
+    "NullRHI component and actual actor routes do not prove rendered audio buffers, renderer concurrency or phase alignment by ear.",
+    "No listening, spatial perception, mix balance, gameplay readability or cinematic-quality acceptance.",
+    "No natural keyboard/controller, full-run balance or urge-to-retry acceptance."
+  ]
+}

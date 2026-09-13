@@ -94,6 +94,20 @@ struct FSSUtilityDefinition
     }
 };
 
+/** Old serialized rosters inherit role presets; an explicit override may deliberately be silent. */
+USTRUCT(BlueprintType)
+struct FSSAudioCueDefinition
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+    bool UseDefaultSound = true;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio",
+              meta = (EditCondition = "!UseDefaultSound", EditConditionHides))
+    TSoftObjectPtr<class USoundBase> Sound;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio", meta = (ClampMin = "0", ClampMax = "1"))
+    float Gain = .35f;
+};
+
 /** One of the six existing presentations of the four Phase 1 hazard families. */
 USTRUCT(BlueprintType)
 struct FSSHazardDefinition
@@ -157,6 +171,13 @@ struct FSSHazardDefinition
     float DestructibleRadiusLimit = 320.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "600"))
     float PassageHalfSpacing = 1150.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+    FSSAudioCueDefinition FieldLoopAudio;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+    FSSAudioCueDefinition DischargeAudio;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+    FSSAudioCueDefinition DestructionAudio;
 
     FSSHazardDefinition() = default;
     explicit FSSHazardDefinition(ESSWorldKind InKind) : Kind(InKind)
@@ -301,6 +322,10 @@ struct FSSEnemyDefinition
     float CreditDropChance = .22f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float CreditDropAmount = 15.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+    FSSAudioCueDefinition ShotAudio;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+    FSSAudioCueDefinition DestructionAudio;
     FSSEnemyDefinition() = default;
     explicit FSSEnemyDefinition(ESSWorldKind InKind) : Kind(InKind)
     {
@@ -407,6 +432,11 @@ struct FSSEncounterDefinition
     float CacheLateralOffset = 650.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float CacheCredits = 30.f;
+    // -1 identifies legacy serialized rows with no completion amount; authoring fills by Kind.
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+              meta = (ClampMin = "0", ClampMax = "100000000", EditCondition = "Kind != ESSEncounterKind::MobileDepot",
+                      EditConditionHides))
+    int32 CompletionCredits = -1;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float DebrisRadius = 300.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -424,18 +454,21 @@ struct FSSEncounterDefinition
     FSSEncounterDefinition() = default;
     explicit FSSEncounterDefinition(ESSEncounterKind InKind) : Kind(InKind)
     {
+        CompletionCredits = 70;
         if (Kind == ESSEncounterKind::DistressCombat)
         {
             OfferedWave = 7;
             OfferDelay = 10.f;
             ObjectiveDuration = 38.f;
             ObjectiveCount = 2;
+            CompletionCredits = 100;
         }
         if (Kind == ESSEncounterKind::MobileDepot)
         {
             OfferedWave = 3;
             OfferDelay = 0.f;
             BeaconRadius = 420.f;
+            CompletionCredits = 0;
         }
     }
 };

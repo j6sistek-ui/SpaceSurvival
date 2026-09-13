@@ -65,8 +65,18 @@ def main():
                 assert abs(u.MaterialEditingLibrary.get_material_default_scalar_parameter_value(material, 'Opacity') - .18) < 1e-5
             if item['name'] == 'AC01_IonAndNav':
                 assert abs(u.MaterialEditingLibrary.get_material_default_scalar_parameter_value(material, 'Emission') - 3.5) < 1e-5
+            local_microdetail_verified = item['name'] not in author.MICRO_EXCLUSIONS
+            if local_microdetail_verified:
+                assert library.get_metadata_tag(material, 'SSAcornMicrodetailVersion') == author.MICRO_VERSION
+                expressions = u.MaterialEditingLibrary.get_material_expressions(material)
+                groups = [[e for e in expressions if isinstance(e, cls)] for cls in
+                          (u.MaterialExpressionWorldPosition, u.MaterialExpressionTransformPosition, u.MaterialExpressionNoise)]
+                assert all(len(group) == 1 for group in groups), 'Missing microdetail graph node'
+                world, local, noise = [group[0] for group in groups]
+                assert u.MaterialEditingLibrary.get_inputs_for_material_expression(material, local)[0] == world, 'Local position not connected'
+                assert u.MaterialEditingLibrary.get_inputs_for_material_expression(material, noise)[0] == local, 'Noise falls back to world position'
             seen.add(path)
-            result['materials'].append({'path': path, 'base_color': rgb, 'metallic': item['metallic'], 'roughness': item['roughness'], 'translucent': glass})
+            result['materials'].append({'path': path, 'base_color': rgb, 'metallic': item['metallic'], 'roughness': item['roughness'], 'translucent': glass, 'local_microdetail_chain_verified': local_microdetail_verified})
         assert seen == set(expected)
         result.update(status='CANDIDATE_PERSISTED_ASSETS_VERIFIED_NOT_VISUAL_ACCEPTANCE', mesh=mesh.get_path_name(),
                       bounds_cm=imported_bounds, lod_count=lods, material_sections=mesh.get_num_sections(0),

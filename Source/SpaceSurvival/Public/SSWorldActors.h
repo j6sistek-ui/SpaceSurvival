@@ -12,6 +12,7 @@ class ASSEncounterBeacon;
 class USphereComponent;
 class UStaticMeshComponent;
 class UMaterialInstanceDynamic;
+class UAudioComponent;
 
 /** Common target/damage contract for weapon traces and environmental collisions. */
 UCLASS(Blueprintable)
@@ -74,6 +75,9 @@ protected:
     virtual void BeginPlay() override;
     virtual void OnDefeated();
     void UpdateVisual();
+    void ConfigureAudio();
+    void UpdateFieldAudio(bool bDischarged);
+    void PlayDestructionAudio();
     bool AdvanceElectricalPulse(float DeltaSeconds);
     ASSShip *FindShip() const;
     ESSWorldKind Kind = ESSWorldKind::SmallAsteroid;
@@ -97,6 +101,8 @@ protected:
     FRandomStream LocalRandom;
     UPROPERTY(Transient)
     TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial;
+    UPROPERTY(Transient)
+    TObjectPtr<UAudioComponent> FieldAudio;
 };
 
 /** Two archetypes share targeting and collision while retaining different approach geometry. */

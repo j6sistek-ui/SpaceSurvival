@@ -1,0 +1,213 @@
+{
+  "status": "CANDIDATE_PERSISTED_ASSETS_VERIFIED_NOT_VISUAL_ACCEPTANCE",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "errors": [],
+  "materials": [
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure",
+      "base_color": [
+        0.017999999225139618,
+        0.027000000700354576,
+        0.03200000151991844,
+        1.0
+      ],
+      "metallic": 0.7200000286102295,
+      "roughness": 0.2800000011920929,
+      "translucent": false,
+      "local_microdetail_chain_verified": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_WarmCeramic",
+      "base_color": [
+        0.699999988079071,
+        0.6200000047683716,
+        0.46000000834465027,
+        1.0
+      ],
+      "metallic": 0.1599999964237213,
+      "roughness": 0.25,
+      "translucent": false,
+      "local_microdetail_chain_verified": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels",
+      "base_color": [
+        0.8700000047683716,
+        0.8600000143051147,
+        0.7799999713897705,
+        1.0
+      ],
+      "metallic": 0.05999999865889549,
+      "roughness": 0.23999999463558197,
+      "translucent": false,
+      "local_microdetail_chain_verified": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze",
+      "base_color": [
+        0.3400000035762787,
+        0.14499999582767487,
+        0.04500000178813934,
+        1.0
+      ],
+      "metallic": 0.8199999928474426,
+      "roughness": 0.27000001072883606,
+      "translucent": false,
+      "local_microdetail_chain_verified": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges",
+      "base_color": [
+        0.6800000071525574,
+        0.38999998569488525,
+        0.12999999523162842,
+        1.0
+      ],
+      "metallic": 0.8500000238418579,
+      "roughness": 0.20999999344348907,
+      "translucent": false,
+      "local_microdetail_chain_verified": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium",
+      "base_color": [
+        0.23000000417232513,
+        0.27000001072883606,
+        0.30000001192092896,
+        1.0
+      ],
+      "metallic": 0.9200000166893005,
+      "roughness": 0.2199999988079071,
+      "translucent": false,
+      "local_microdetail_chain_verified": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav",
+      "base_color": [
+        0.014999999664723873,
+        0.4000000059604645,
+        0.5799999833106995,
+        1.0
+      ],
+      "metallic": 0.18000000715255737,
+      "roughness": 0.20000000298023224,
+      "translucent": false,
+      "local_microdetail_chain_verified": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding",
+      "base_color": [
+        0.008999999612569809,
+        0.014000000432133675,
+        0.01600000075995922,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.550000011920929,
+      "translucent": false,
+      "local_microdetail_chain_verified": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen",
+      "base_color": [
+        0.3799999952316284,
+        0.6700000166893005,
+        0.7200000286102295,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.06499999761581421,
+      "translucent": true,
+      "local_microdetail_chain_verified": false
+    }
+  ],
+  "limits": [
+    "Persisted asset checks, not gameplay or art acceptance",
+    "LOD and actual draw/shader cost need runtime measurement",
+    "Pilot control contact and existing tail artifacts remain unresolved"
+  ],
+  "mesh": "/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2",
+  "bounds_cm": [
+    [
+      -244.79998779296875,
+      -142.78431701660156,
+      -65.3775405883789
+    ],
+    [
+      209.99998474121094,
+      142.78431701660156,
+      97.80007934570312
+    ]
+  ],
+  "lod_count": 1,
+  "material_sections": 9,
+  "lod0_vertices": 79268,
+  "lod0_triangles": 134262,
+  "simple_collision_count": 0,
+  "all_section_collision_disabled": true,
+  "collision_profile": "NoCollision",
+  "obj_sha256": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+  "pilot_transform": {
+    "position_cm": [
+      -15,
+      0,
+      72
+    ],
+    "unreal_yaw_degrees": -90,
+    "blender_z_rotation_degrees": 90,
+    "scale": 1.5,
+    "source": "Existing PilotMesh.glb plus A_Pilot0s,loaded only for previews"
+  },
+  "content_packages": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_BurnishedBronze.uasset",
+      "bytes": 13580,
+      "sha256": "0e91828d10190e0edef73490ee36659c2cbe41be172f178048dc97d70b9118c4"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_ChampagneEdges.uasset",
+      "bytes": 13892,
+      "sha256": "8797aa3e71ccfff42cab9cb7a76efd91e49f0d0434678235fec55a5838056859"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_CockpitPadding.uasset",
+      "bytes": 9472,
+      "sha256": "24b7310f596e4da22c0d7d541a7d81e55b40d8c171b6e6f620e4cfb4c29a3969"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_GraphiteStructure.uasset",
+      "bytes": 12711,
+      "sha256": "4be5f2fa9f0d38878ba99648418014b4e390a18a177d0f71a4dbd5752efe9f95"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_IonAndNav.uasset",
+      "bytes": 12245,
+      "sha256": "a1aa26f8df23151bb7d556f0eb139455865a3e42e59173d388797c9bda669bfb"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_IvoryPanels.uasset",
+      "bytes": 14264,
+      "sha256": "c33639070c924e50ae665437431f658f3e8088b9c52dccc5c4dd395416bcd3f3"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_MachinedTitanium.uasset",
+      "bytes": 13305,
+      "sha256": "46e4d442190b589022e7cc247692677cc0f8141d522b3de11f15440050965467"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_WarmCeramic.uasset",
+      "bytes": 13925,
+      "sha256": "123c4f918c11926bb0eab7a6d691a9075e4e687dd6581f43b1f821b824202392"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_Windscreen.uasset",
+      "bytes": 11512,
+      "sha256": "5283fba73752f879635a345ab723b9406dda5fd27c4c331138331807fcbcef16"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_AcornShipV2.uasset",
+      "bytes": 1927128,
+      "sha256": "23c9c18be50728e5d17fa4a545bb334319e010ae25b9845ef942d0fdddae5107"
+    }
+  ]
+}

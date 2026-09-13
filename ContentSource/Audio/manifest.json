@@ -80,6 +80,66 @@
       "sha256": "3be5a1472247d7b4cfe228dd791978da89e36b51a1ad5a60b023f1322eae727b"
     },
     {
+      "name": "ElectricalCharge",
+      "seconds": 2,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -25.13,
+      "rms_dbfs": -29.65,
+      "sha256": "ee2496d74bc4718a4b153dff6c88b5b7aac6f9fa0bfd7c74ac2a615bf486cb55"
+    },
+    {
+      "name": "ElectricalDischarge",
+      "seconds": 0.6,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -9.33,
+      "rms_dbfs": -27.36,
+      "sha256": "0008ce22955d5051d01a284dceb91e1d2f6b2afe6260d659ef252f4526f91149"
+    },
+    {
+      "name": "GravityAmbience",
+      "seconds": 4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -19.08,
+      "rms_dbfs": -25.47,
+      "sha256": "be8d9d83dd7ad5f85f3f70508fd8265e1e201ea884a870cef84248de79be3b9e"
+    },
+    {
+      "name": "EnemyFire",
+      "seconds": 0.4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -13.8,
+      "rms_dbfs": -26.91,
+      "sha256": "1b7d0c5ce1ef98311bb696b659d4c08f19d3c9be5bc22afdb4939dc6b853c5ea"
+    },
+    {
+      "name": "EnemyBreak",
+      "seconds": 0.9,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -8.36,
+      "rms_dbfs": -24.4,
+      "sha256": "ab217f118b62ba2ccca508d59bc3a764dc745667c94d5f2111b46c36f48d31cc"
+    },
+    {
+      "name": "DebrisBreak",
+      "seconds": 0.65,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -12.0,
+      "rms_dbfs": -28.19,
+      "sha256": "1fb888104e85455b0fbca36dfc1ddf7b9355f7cee210c2da35abd4f8c615738f"
+    },
+    {
       "name": "MusicBase",
       "seconds": 20,
       "sample_rate": 32000,

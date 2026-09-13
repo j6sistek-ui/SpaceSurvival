@@ -98,6 +98,32 @@ def station(t, _rng):
     return 0.045 * sine(60, t) + 0.018 * sine(120, t) + 0.014 * sine(180, t) * (0.65 + 0.3 * sine(0.25, t))
 
 
+def electrical_charge(t, _rng):
+    # Two-second periodic corona; runtime pulse clock controls its envelope/pitch.
+    return (0.052 * sine(110, t) + 0.024 * sine(330, t) + 0.012 * sine(770, t)) * (0.78 + 0.22 * sine(7.5, t))
+
+
+def electrical_discharge(t, rng):
+    crackle = rng.uniform(-1, 1) * (0.14 + 0.10 * max(0, sine(53, t)))
+    return decay(t, 0.001, 0.12) * (crackle + 0.12 * sine(97, t) + 0.06 * sine(1380, t))
+
+
+def gravity_ambience(t, _rng):
+    return (0.09 * sine(27, t) + 0.036 * sine(54, t) + 0.013 * sine(81, t)) * (0.75 + 0.25 * sine(0.25, t))
+
+
+def enemy_fire(t, _rng):
+    return decay(t, 0.003, 0.09) * (0.19 * math.sin(TAU * (510 * t - 460 * t * t)) + 0.05 * sine(1020, t))
+
+
+def enemy_break(t, rng):
+    return decay(t, 0.002, 0.21) * (0.18 * rng.uniform(-1, 1) + 0.20 * sine(47, t)) + 0.035 * decay(t, 0.01, 0.32) * sine(235, t)
+
+
+def debris_break(t, rng):
+    return decay(t, 0.001, 0.13) * (0.18 * rng.uniform(-1, 1) + 0.09 * sine(141, t) + 0.035 * sine(423, t))
+
+
 def music(t, layer):
     # Frequencies quantized to loop duration ensure phase-continuous seams.
     fundamental = (73.4, 87.3, 110.0, 130.8)
@@ -133,6 +159,12 @@ def main():
         ("Cannon", 0.7, cannon, False), ("Impact", 0.8, impact, False),
         ("Pickup", 0.55, pickup, False), ("Alarm", 0.65, alarm, False),
         ("Station", 4, station, True),
+        ("ElectricalCharge", 2, electrical_charge, True),
+        ("ElectricalDischarge", 0.6, electrical_discharge, False),
+        ("GravityAmbience", 4, gravity_ambience, True),
+        ("EnemyFire", 0.4, enemy_fire, False),
+        ("EnemyBreak", 0.9, enemy_break, False),
+        ("DebrisBreak", 0.65, debris_break, False),
     ):
         result.append(write_sound(name, seconds, fn, loop=loop))
     for name, layer in (("MusicBase", "base"), ("MusicPressure", "pressure"), ("MusicClimax", "climax")):

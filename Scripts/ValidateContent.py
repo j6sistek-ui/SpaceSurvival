@@ -70,7 +70,14 @@ def main():
         assert all(abs(a-b) <= max(0.02, b*0.00001) for a,b in zip(dimensions, expected)), f"Import changed axes/scale: {dimensions} expected {expected}"
         materials = [slot.get_editor_property("material_interface") for slot in mesh.get_editor_property("static_materials")]
         assert all(materials), "Null material slot"
-        assert {m.get_name() for m in materials} == set(item["materials"]), "Lost material groups"
+        expected_materials = set(item["materials"])
+        if item["name"] in ("SM_AsteroidSmall", "SM_AsteroidMedium", "SM_AsteroidMassive"):
+            assert expected_materials == {"M_Rock"} and len(materials) == 1, "Unexpected asteroid source section layout"
+            assert library.get_metadata_tag(mesh, "SSRockSurfaceVersion") == "RockFaceLocalTriplanar1", "Unreviewed asteroid surface"
+            assert materials[0].get_path_name() == BASE + "/Materials/M_RockPhotographic.M_RockPhotographic", "Asteroid material path mismatch"
+            # ValidateRockPhotographic independently checks persisted geometry/collision/source fingerprints.
+            expected_materials = {"M_RockPhotographic"}
+        assert {m.get_name() for m in materials} == expected_materials, "Lost material groups"
         vertices = mesh_tools.get_number_verts(mesh, 0)
         assert vertices > 0 and mesh_tools.get_lod_count(mesh) >= 1, "No built geometry"
         record["meshes"].append({"name": item["name"], "dimensions_cm": dimensions, "lod0_render_vertices": vertices,
@@ -124,6 +131,8 @@ def main():
         assert abs(duration-item["seconds"]) < .001, f"Duration {duration}"
         assert channels == item["channels"] and rate == item["sample_rate"], f"Wrong format {channels}/{rate}"
         assert loop == item["loop"], "Wrong looping flag"
+        if loop:
+            assert sound.get_editor_property("virtualization_mode") == u.VirtualizationMode.PLAY_WHEN_SILENT, "Loop cannot remain phase-aligned while muted"
         record["audio"].append({"name": item["name"], "seconds": duration, "channels": channels, "sample_rate": rate, "loop": loop})
 
     for name in meshes["palette"]:
@@ -132,6 +141,7 @@ def main():
         checked(item["name"], lambda item=item: validate_mesh(item))
     checked("Station deck material", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateStationDeck.py"), run_name="__main__"))
     checked("Space panorama", validate_panorama)
+    checked("Photographic asteroid surfaces", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateRockPhotographic.py"))["main"](verify_adoption=True))
     checked("Authored Acorn ship", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateAcornShip.py"), run_name="__main__"))
     checked("Preserved hero", validate_hero)
     checked("Reviewed tail repair", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateTailRepair.py"), run_name="__main__"))
@@ -145,6 +155,12 @@ def main():
         assert len(data.get_editor_property("encounters")) == 3, "Phase 1 encounter roster mismatch"
         assert data.has_valid_utility_tuning(), "Malformed Phase 1 utility identity, price or effect tuning"
         assert data.has_valid_contract_tuning(), "Malformed Phase 1 contract magnitudes"
+        assert data.has_valid_economy_tuning(), "Malformed Phase 1 economy or encounter rewards"
+        record["economy"] = {name: data.get_editor_property("economy").get_editor_property(name)
+                             for name in ("kill_credits", "repair_price", "upgrade_price_step", "station_reward_credits")}
+        record["encounter_rewards"] = [{"kind": str(entry.get_editor_property("kind")),
+                                         "credits": entry.get_editor_property("completion_credits")}
+                                        for entry in data.get_editor_property("encounters")]
         record["contracts"] = {name: data.get_editor_property("contracts").get_editor_property(name)
                                for name in ("shield_multiplier", "pressure_addition", "pressure_reward",
                                             "objective_target", "objective_reward")}

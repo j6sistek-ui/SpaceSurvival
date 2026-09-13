@@ -1,4 +1,5 @@
 #include "SSStation.h"
+#include "SSAudio.h"
 #include "SSGameInstance.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -213,10 +214,16 @@ void ASSStation::BuildHub(bool bHome)
         Light->SetLightColor(I % 2 ? FLinearColor(.5f, .75f, 1) : FLinearColor(1, .72f, .38f));
         Light->RegisterComponent();
     }
+    if (Ambience)
+    {
+        Ambience->Stop();
+        Ambience->DestroyComponent();
+    }
     Ambience = NewObject<UAudioComponent>(this);
+    Ambience->SetAutoActivate(false);
     Ambience->SetupAttachment(RootComponent);
     Ambience->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Station.Station")));
-    Ambience->SetVolumeMultiplier(.25f);
+    Ambience->SetVolumeMultiplier(SSAudio::EffectsGain(this, .25f));
     Ambience->RegisterComponent();
     Ambience->Play();
 }
@@ -232,9 +239,7 @@ void ASSStation::Tick(float Dt)
     if (BeaconRotor)
         BeaconRotor->AddLocalRotation(FRotator(0, Dt * 24.f, 0));
     if (Ambience)
-        if (auto *GI = GetGameInstance<USSGameInstance>())
-            Ambience->SetVolumeMultiplier(
-                float(GI->Session.settings.masterVolume * GI->Session.settings.effectsVolume) * .25f);
+        Ambience->SetVolumeMultiplier(SSAudio::EffectsGain(this, .25f));
 }
 void ASSStation::SetBayShip(int32 ShipKind)
 {

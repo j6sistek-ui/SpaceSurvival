@@ -2,7 +2,7 @@
 
 Current package9/source4178 completed BuildCookRun74.18s, exact78project-assets/EngineCube audit, signed compatible CRT bundle, native Station1 full2K deck residency and the full rendered Wave10 fixture. Game SHA `af8431a544ccebcda1b6b46a15523abfe576f172c37514eac5029219370b3cd7`. See [package9 receipt](validation/2026-09-13-windows-visual-package.json), [endgame performance](validation/2026-09-13-endgame-performance.json), and [current project state](PROJECT_STATE.md). Package8/earlier sections below retain historical evidence. Subsequent source work is not included in package9. **PARTIAL**, with natural player experience/final art/clean-PC/full-run acceptance open.
 
-**Phase 1 status: PARTIAL.** Package 8 builds with all 62 project packages and the required Engine Cube; source 442ff06 has 13 passing Unreal tests and CI-verified 524 strict/524 sanitizer assertions. Guarded native exit/service/departure and compatible-runtime bundling passed. Natural play, physical input, final art/audio, representative performance and clean-PC startup remain open; see [PROJECT_STATE.md](PROJECT_STATE.md).
+**Historical Package 8 evidence:** its build includes all 62 project packages and the required Engine Cube; source 442ff06 has 13 passing Unreal tests and CI-verified 524 strict/524 sanitizer assertions. Guarded native exit/service/departure and compatible-runtime bundling passed. Natural play, physical input, final art/audio, representative performance and clean-PC startup remain open; see [PROJECT_STATE.md](PROJECT_STATE.md).
 
 ## Tooling and repository
 

@@ -1,4 +1,5 @@
 #include "SSShip.h"
+#include "SSAudio.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSPhase1Data.h"
@@ -49,7 +50,14 @@ ASSShip::ASSShip()
     Camera->FieldOfView = 80.f;
     Camera->SetRelativeRotation(FRotator(-10, 0, 0));
     EngineAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineAudio"));
+    EngineAudio->SetAutoActivate(false);
     EngineAudio->SetupAttachment(RootComponent);
+}
+void ASSShip::UpdateEngineMix()
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    EngineAudio->SetVolumeMultiplier(SSAudio::EffectsGain(this, .35f));
+    EngineAudio->SetPitchMultiplier(GI && GI->Session.run.boosting ? 1.3f : .9f + .15f * ThrottleInput);
 }
 void ASSShip::BeginPlay()
 {
@@ -68,6 +76,7 @@ void ASSShip::BeginPlay()
     Pilot->PlayAnimation(LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Pilot.A_Pilot")),
                          true);
     EngineAudio->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Engine.Engine")));
+    UpdateEngineMix();
     EngineAudio->Play();
     Velocity = GetActorForwardVector() * Tuning->CruiseSpeed;
 }
@@ -108,6 +117,7 @@ void ASSShip::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 void ASSShip::Tick(float Dt)
 {
     Super::Tick(Dt);
+    UpdateEngineMix();
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI || !Tuning)
         return;
@@ -175,8 +185,7 @@ void ASSShip::Tick(float Dt)
             FVector(0, FMath::Sin(GetWorld()->GetTimeSeconds() * 70.f) * 3.f * float(S.run.damageFeedback), 0));
     else
         Camera->SetRelativeLocation(FVector::ZeroVector);
-    EngineAudio->SetPitchMultiplier(S.run.boosting ? 1.3f : .9f + .15f * ThrottleInput);
-    EngineAudio->SetVolumeMultiplier(float(S.settings.masterVolume * S.settings.effectsVolume) * .35f);
+    UpdateEngineMix();
     SoftTarget = nullptr;
     float Best = FMath::Cos(FMath::DegreesToRadians(Tuning->SoftAimDegrees));
     const FVector Aim = AimDirection();

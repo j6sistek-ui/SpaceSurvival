@@ -1,4 +1,5 @@
 #include "SSGameMode.h"
+#include "SSAudio.h"
 #include "SSWave10Soak.h"
 #include "SSGameInstance.h"
 #include "SSShip.h"
@@ -64,9 +65,24 @@ ASSGameMode::ASSGameMode()
     MusicBase = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicBase"));
     MusicPressure = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicPressure"));
     MusicClimax = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicClimax"));
+    MusicBase->SetAutoActivate(false);
+    MusicPressure->SetAutoActivate(false);
+    MusicClimax->SetAutoActivate(false);
     MusicBase->SetupAttachment(RootComponent);
     MusicPressure->SetupAttachment(RootComponent);
     MusicClimax->SetupAttachment(RootComponent);
+}
+void ASSGameMode::UpdateMusicMix()
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    const float Master = SSAudio::MusicGain(this);
+    const bool Decompressing =
+        GI && (GI->Session.run.phase == SS::Phase::Hangar || GI->Session.run.phase == SS::Phase::Station);
+    const bool PressureActive = GI && GI->Session.IsFlying() && GI->Session.run.phase != SS::Phase::Breathing;
+    MusicBase->SetVolumeMultiplier(Master * (Decompressing ? .35f : .65f));
+    MusicPressure->SetVolumeMultiplier(Master * FMath::Clamp(Director->GetPressure() * .65f, 0.f, .65f) *
+                                       (PressureActive ? 1.f : 0.f));
+    MusicClimax->SetVolumeMultiplier(Master * (GI && GI->Session.run.phase == SS::Phase::Climax ? .75f : 0.f));
 }
 void ASSGameMode::BeginPlay()
 {
@@ -88,8 +104,8 @@ void ASSGameMode::BeginPlay()
         T.waveSecondsMin = Data->WaveSecondsMin;
         T.waveSecondsMax = Data->WaveSecondsMax;
         T.waveSecondsGrowth = Data->WaveSecondsGrowth;
-        T.waveCredits = Data->WaveCredits;
-        T.upgradeBasePrice = Data->UpgradeBasePrice;
+        if (!Data->ApplyEconomyTuning(T))
+            UE_LOG(LogTemp, Warning, TEXT("Invalid or legacy economy content corrected to bounded/default values."));
         if (!Data->ApplyContractTuning(T))
             UE_LOG(LogTemp, Warning, TEXT("Invalid contract magnitudes corrected to bounded/default values."));
         if (!Data->ApplyUtilityTuning(T))
@@ -108,6 +124,9 @@ void ASSGameMode::BeginPlay()
     AlarmAttenuation->Attenuation.bSpatialize = true;
     AlarmAttenuation->Attenuation.AttenuationShapeExtents = FVector(800.f, 0, 0);
     AlarmAttenuation->Attenuation.FalloffDistance = 2400.f;
+    UpdateMusicMix();
+    if (auto *Audio = GetWorld()->GetSubsystem<USSWorldAudioSubsystem>())
+        Audio->PreloadContent(Tuning);
     MusicBase->Play();
     MusicPressure->Play();
     MusicClimax->Play();
@@ -424,11 +443,7 @@ void ASSGameMode::Tick(float Dt)
     WeaponBuffSeconds = float(S.run.weaponBuffSeconds);
     PendingReward = S.run.pendingReward;
     RewardCombat = S.run.rewardCombat;
-    const float Master = float(S.settings.masterVolume * S.settings.musicVolume);
-    MusicBase->SetVolumeMultiplier(Master * (InHangar() ? .35f : .65f));
-    MusicPressure->SetVolumeMultiplier(Master * FMath::Clamp(Director->GetPressure() * .65f, 0.f, .65f) *
-                                       (S.IsFlying() ? 1.f : 0.f));
-    MusicClimax->SetVolumeMultiplier(Master * (S.run.phase == SS::Phase::Climax ? .75f : 0.f));
+    UpdateMusicMix();
     if (S.run.phase == SS::Phase::Dead)
     {
         if (PreviousPhase != int32(S.run.phase))
@@ -539,7 +554,7 @@ void ASSGameMode::NotifyEventCompleted(bool bCombat)
         return;
     React(bCombat ? TEXT("Signal answered. That was worth the trouble.") : TEXT("Good salvage. Let\'s make it count."));
     ++GI->Session.run.eventsCompleted;
-    GI->Session.AwardCredits(bCombat ? 100 : 70);
+    GI->Session.AwardCredits(Tuning ? Tuning->EventCompletionCredits(bCombat) : (bCombat ? 100 : 70));
     GI->Session.run.pendingReward = true;
     GI->Session.run.rewardCombat = bCombat;
     PendingReward = true;
@@ -858,7 +873,9 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                 AddEntry(TEXT("Replace active weapon with Heavy Cannon"), 48);
         }
         else
-            AddEntry(TEXT("Restore the beacon / recover 25 credits"), 49, !S.run.stationRewardClaimed);
+            AddEntry(FString::Printf(TEXT("Restore the beacon / recover %d credits"),
+                                     Tuning ? Tuning->StationRewardCredits() : 25),
+                     49, !S.run.stationRewardClaimed);
         break;
     case ESSPanel::Launch:
         if (S.AtSliceBoundary())
@@ -1131,7 +1148,7 @@ void ASSGameMode::ActivateEntry(int32 Index)
         if (!S.run.stationRewardClaimed && S.run.phase == SS::Phase::Station)
         {
             S.run.stationRewardClaimed = true;
-            S.AwardCredits(25);
+            S.AwardCredits(Tuning ? Tuning->StationRewardCredits() : 25);
             Announce(TEXT("Receiver restored. The crew's signal carries on."));
         }
         OpenPanel(Current);

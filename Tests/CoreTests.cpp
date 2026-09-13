@@ -816,6 +816,74 @@ void PersistentRunHistory()
     CHECK(SS::DecodeAccount(SS::EncodeAccount(afterMigration.account), restored, error));
 }
 
+void EconomyContentTuning()
+{
+    auto s = Fresh("economy-content");
+    FastTuning(s);
+    s.tuning.waveCredits = 83;
+    s.tuning.killCredits = 19;
+    s.tuning.upgradeBasePrice = 137;
+    s.tuning.upgradePriceStep = 63;
+    s.tuning.repairPrice = 47;
+    s.RecordKill();
+    s.RecordKill();
+    CHECK(s.run.kills == 2 && s.run.credits == 38 && s.run.totalCreditsEarned == 38);
+    ReachStation(s, 5);
+    // Native per-wave bonus is unchanged: 0 + 5 + 10 + 15 + 20.
+    CHECK(s.run.credits == 5 * 83 + 50 + 38);
+    s.RecordKill();
+    CHECK(s.run.kills == 2 && s.run.credits == 503);
+    CHECK(s.UpgradePrice(SS::Upgrade::Hull) == 137);
+    CHECK(s.Purchase(SS::Upgrade::Hull));
+    CHECK(s.UpgradePrice(SS::Upgrade::Hull) == 200);
+    CHECK(s.Purchase(SS::Upgrade::Hull));
+    CHECK(s.run.credits == 166 && s.run.totalCreditsEarned == 503);
+    CHECK(s.UpgradePrice(SS::Upgrade::Hull) == 263);
+    const auto before = SS::EncodeRun(s.run);
+    CHECK(!s.Purchase(SS::Upgrade::Hull));
+    CHECK(SS::EncodeRun(s.run) == before);
+    CHECK(s.Repair());
+    CHECK(s.run.credits == 119 && Near(s.run.hull, s.Stats().maxHull));
+    CHECK(!s.Repair());
+    CHECK(s.run.credits == 119);
+    SS::Run restored;
+    std::string error;
+    CHECK(SS::DecodeRun(SS::EncodeRun(s.run), restored, error));
+    CHECK(restored.credits == 119 && restored.totalCreditsEarned == 503 && restored.tiers[0] == 3);
+    CHECK(s.LaunchFromStation());
+    s.run.depotSeen = true;
+    s.run.hull = 40;
+    s.run.shield = 10;
+    s.run.criticalSeconds = 8;
+    CHECK(s.DepotShieldRepairPrice() == 29); // Existing ceil(47 * 60%) shield-only service.
+    CHECK(s.RepairShieldAtDepot());
+    CHECK(s.run.credits == 90 && s.run.hull == 40 && s.run.criticalSeconds == 8);
+    CHECK(Near(s.run.shield, s.Stats().maxShield));
+    CHECK(s.run.totalCreditsEarned == s.run.credits + 137 + 200 + 47 + 29);
+    CHECK(s.account.xp == 0 && s.account.runs == 0 && s.account.history.empty());
+
+    for (auto upgrade :
+         {SS::Upgrade::Hull, SS::Upgrade::Shield, SS::Upgrade::Engine, SS::Upgrade::Thrusters, SS::Upgrade::Weapon})
+    {
+        auto prices = Fresh("economy-prices");
+        prices.run.wave = prices.run.wavesCompleted = 5;
+        prices.run.phase = SS::Phase::Station;
+        prices.tuning.upgradeBasePrice = 137;
+        prices.tuning.upgradePriceStep = 63;
+        prices.AwardCredits(2000);
+        int spent = 0;
+        for (int expected : {137, 200, 263, 326})
+        {
+            CHECK(prices.UpgradePrice(upgrade) == expected);
+            CHECK(prices.UpgradePrice(upgrade, .75) == static_cast<int>(std::ceil(expected * .75)));
+            CHECK(prices.Purchase(upgrade));
+            spent += expected;
+        }
+        CHECK(prices.UpgradePrice(upgrade) == -1 && !prices.Purchase(upgrade));
+        CHECK(prices.run.credits == 2000 - spent && prices.run.totalCreditsEarned == 2000);
+    }
+}
+
 void ContractContentTuning()
 {
     for (auto kind : {SS::Contract::Pressure, SS::Contract::Objective})
@@ -909,6 +977,7 @@ int main()
     UtilityContentTuning();
     DepotShieldService();
     Contracts();
+    EconomyContentTuning();
     ContractContentTuning();
     DeathProgressionReset();
     SerializationAndValidation();

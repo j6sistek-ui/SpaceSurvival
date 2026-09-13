@@ -7,6 +7,7 @@ and rejects incomplete fixture/CSV evidence. This is not natural gameplay accept
 #>
 param(
     [switch]$Editor,
+    [ValidateSet("Wave10", "Station5")][string]$Scenario = "Wave10",
     [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
     [ValidateRange(160, 600)][int]$TimeoutSeconds = 240,
     [ValidateRange(640, 7680)][int]$Width = 2560,
@@ -15,6 +16,9 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$Scenario = if ($Scenario -ieq 'Station5') { 'Station5' } else { 'Wave10' }
+if ($Scenario -eq 'Station5' -and -not $PSBoundParameters.ContainsKey('TimeoutSeconds')) { $TimeoutSeconds = 330 }
+$evidenceType = if ($Scenario -eq 'Station5') { 'RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY' } else { 'RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY' }
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 function Assert-NoReparsePath([string]$Path) {
     $candidate = [IO.Path]::GetFullPath($Path)
@@ -95,7 +99,7 @@ $token | Set-Content -LiteralPath (Join-Path $runRoot '.ss-endgame-soak') -Encod
 $logPath = Join-Path $runRoot 'Rendered.log'
 $arguments = @()
 if ($Editor) { $arguments += @((Join-Path $repoRoot 'SpaceSurvival.uproject'), '-game') }
-$arguments += @('-SSWave10Soak', '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$runRoot", '-windowed', "-ResX=$Width", "-ResY=$Height",
+$arguments += @('-SSWave10Soak', "-SSSoakScenario=$Scenario", '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$runRoot", '-windowed', "-ResX=$Width", "-ResY=$Height",
     '-NoSplash', '-NoLiveCoding', '-csvGpuStats', "-abslog=$logPath", '-unattended')
 if ($NoSound) { $arguments += '-nosound' }
 $process = $null
@@ -110,7 +114,7 @@ Write-Output "Endgame fixture evidence: $runRoot"
 try {
     $native = ($arguments | ForEach-Object { NativeArgument $_ }) -join ' '
     $process = Start-Process -FilePath $exe -WorkingDirectory $repoRoot -ArgumentList $native -WindowStyle Normal -PassThru
-    Write-Output "Started owned rendered process $($process.Id). Normal Wave 9 and 40-second Wave 10; no natural gameplay claim."
+    Write-Output "Started owned rendered process $($process.Id). Scenario $Scenario with normal timers; no natural gameplay claim."
     $timer = [Diagnostics.Stopwatch]::StartNew()
     while (-not $process.WaitForExit(1000)) {
         if ($timer.Elapsed.TotalSeconds -ge $TimeoutSeconds) { throw 'Rendered fixture exceeded timeout.' }
@@ -120,22 +124,36 @@ try {
     $fixturePath = Join-Path $runRoot 'fixture.json'
     Assert-NoReparsePath $fixturePath
     $fixture = Get-Content -LiteralPath $fixturePath -Raw | ConvertFrom-Json
-    if (-not $fixture.success -or $fixture.evidenceType -cne 'RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY' -or
+    if (-not $fixture.success -or $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $Scenario -or
         $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or -not $fixture.noSaveSlotsWritten -or -not $fixture.allFixtureFramesForeground -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine [IO.Path]::GetFullPath($savedRoot).TrimEnd('\', '/') -or
-        -not $fixture.sawWave9 -or -not $fixture.sawBreathing -or -not $fixture.sawClimax -or -not $fixture.sawApproach -or
-        $fixture.climaxSimulationSeconds -lt 39.5 -or $fixture.compoundActorPresenceSeconds -lt 3.5 -or $fixture.approachSimulationSeconds -lt 5) {
+        -not $fixture.sawBreathing -or -not $fixture.sawClimax -or -not $fixture.sawApproach -or
+        $fixture.climaxSimulationSeconds -lt 39.5) {
         throw 'Fixture receipt did not satisfy exact process/profile/full-duration/composition checks.'
+    }
+    if ($Scenario -eq 'Station5') {
+        if (-not $fixture.sawWave5 -or -not $fixture.sawWormhole -or -not $fixture.sawDocking -or -not $fixture.sawAuthoredExit -or
+            $fixture.wormholeSimulationSeconds -lt 7.9 -or $fixture.dockingSimulationSeconds -lt 2.9 -or
+            $fixture.exitSimulationSeconds -lt 2.3 -or $fixture.stationIdleSimulationSeconds -lt 15 -or $fixture.approachSimulationSeconds -le 0) {
+            throw 'Station fixture lacks full wormhole/docking/exit/idle coverage.'
+        }
+    } elseif (-not $fixture.sawWave9 -or $fixture.compoundActorPresenceSeconds -lt 3.5 -or $fixture.approachSimulationSeconds -lt 5) {
+        throw 'Endgame fixture lacks full Wave9/compound/approach coverage.'
     }
     $csv = Join-Path $runRoot 'Endgame.csv'
     Assert-NoReparsePath $csv
     if ([IO.Path]::GetFullPath($fixture.csv) -ine [IO.Path]::GetFullPath($csv)) { throw 'Fixture returned an unexpected CSV path.' }
     $output = Join-Path $runRoot 'performance.json'
     & $python -B (Join-Path $repoRoot 'Scripts/AnalyzePerformance.py') $csv --log $logPath --output $output `
-        --context-note 'Explicit seeded endgame fixture with enlarged durability and scripted controls; no natural progression/feel claim.'
+        --context-note "Explicit seeded $Scenario fixture with enlarged durability and scripted controls; no natural progression/feel claim."
     if ($LASTEXITCODE -ne 0) { throw 'Completed CSV analysis failed.' }
     $analysis = Get-Content -LiteralPath $output -Raw | ConvertFrom-Json
-    if ($analysis.status -cne 'RENDERED_ENDGAME_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE' -or -not $analysis.endgame_fixture.observed -or -not $analysis.endgame_fixture.all_fixture_frames_foreground -or
+    if ($Scenario -eq 'Station5') {
+        if ($analysis.status -cne 'RENDERED_STATION_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE' -or -not $analysis.station_fixture.observed -or
+            -not $analysis.station_fixture.all_fixture_frames_foreground -or $analysis.station_fixture.stages.Wormhole.simulation_seconds -lt 7.9 -or
+            $analysis.station_fixture.stages.Docking.simulation_seconds -lt 2.9 -or $analysis.station_fixture.stages.AuthoredExit.simulation_seconds -lt 2.3 -or
+            $analysis.station_fixture.stages.StationIdle.simulation_seconds -lt 15) { throw 'CSV lacks station transition and foreground evidence.' }
+    } elseif ($analysis.status -cne 'RENDERED_ENDGAME_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE' -or -not $analysis.endgame_fixture.observed -or -not $analysis.endgame_fixture.all_fixture_frames_foreground -or
         $analysis.endgame_fixture.compound_presence_simulation_seconds -lt 3.5) { throw 'CSV lacks the required fixture/composition evidence.' }
     $success = $true
 } catch {
@@ -160,7 +178,7 @@ try {
     Assert-NoReparsePath $slotsRoot
     $noSlots = @(Get-ChildItem -LiteralPath $slotsRoot -File -Force).Count -eq 0
     $result = [ordered]@{
-        evidenceType = 'RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY'
+        evidenceType = $evidenceType; scenario = $Scenario
         success = ($success -and $productionPreserved -and $sourceUnchanged -and $artifactUnchanged -and $noSlots)
         failure = $failure; token = $token; mode = $(if ($Editor) { 'UncookedEditorGame' } else { 'WindowsDevelopmentPackage' })
         startedUtc = $started; finishedUtc = [DateTime]::UtcNow.ToString('o')
@@ -172,7 +190,7 @@ try {
         noTestSaveSlotsWritten = $noSlots; requestedResolution = @($Width, $Height); audioDisabled = [bool]$NoSound
         fixture = $fixture; analysisPath = $(if ($null -ne $analysis) { 'performance.json' } else { $null })
         evidenceFiles = @(Get-ChildItem -LiteralPath $runRoot -File | Sort-Object Name | ForEach-Object { FileIdentity $_.FullName })
-        limits = 'Seeded Tier V starter/RapidLaser/OverdriveCooling; base durability 50000; normal timers/caps/budgets/spatial admission; scripted input. Exact bytes/process are recorded, but separate build provenance must bind compiled source. No physical input, natural balance, full ten-wave run, station docking, final art, clean-machine or representative FPS acceptance.'
+        limits = 'Seeded Tier V starter/RapidLaser/OverdriveCooling; base durability 50000; normal timers/caps/budgets/spatial admission; scripted input. Exact bytes/process are recorded, but separate build provenance must bind compiled source. No physical input, natural balance, full ten-wave run, natural station interactions, final art, clean-machine or representative FPS acceptance.'
     }
     $result | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Encoding utf8
     Write-Output "Endgame result: $(Join-Path $runRoot 'result.json'); success=$($result.success)"

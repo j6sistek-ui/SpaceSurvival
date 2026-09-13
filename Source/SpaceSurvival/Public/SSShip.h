@@ -49,6 +49,7 @@ public:
     TObjectPtr<USSPhase1Data> Tuning;
 
 private:
+    void UpdateEngineMix();
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f;

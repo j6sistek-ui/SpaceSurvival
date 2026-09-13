@@ -1,0 +1,107 @@
+{
+  "status": "PROVISIONALLY_ADOPTED_THREE_ASTEROIDS_GEOMETRY_VERIFIED_GAMEPLAY_REVIEW_PENDING",
+  "errors": [],
+  "engine_preview_exit_code": 0,
+  "source_manifest": "ContentSource/ThirdParty/PolyHaven/RockFace/manifest.json",
+  "material": "/Game/SpaceSurvival/Materials/M_RockPhotographic",
+  "native_transform_comparisons": [
+    {
+      "file": "RockRotated.png",
+      "foreground_mean_absolute_rgb_8bit": 0.31041449308395386,
+      "foreground_p99_absolute_rgb_8bit": 2.0,
+      "foreground_fraction_pixels_over_8": 0.0,
+      "all_pixels_max_absolute_rgb_8bit": 4.0
+    },
+    {
+      "file": "RockRebased.png",
+      "foreground_mean_absolute_rgb_8bit": 0.3607155978679657,
+      "foreground_p99_absolute_rgb_8bit": 2.0,
+      "foreground_fraction_pixels_over_8": 2.4796790303463118e-05,
+      "all_pixels_max_absolute_rgb_8bit": 11.0
+    }
+  ],
+  "resident_texture_lines": [
+    "2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Textures/T_RockFace_ARM.T_RockFace_ARM, YES, NO, NO, 0, 12, NO",
+    "2048x2048 (5504 KB, 0), 2048x2048 (5504 KB), PF_BC7, TEXTUREGROUP_World, /Game/SpaceSurvival/Textures/T_RockFace_Color.T_RockFace_Color, YES, NO, NO, 0, 12, NO",
+    "2048x2048 (5504 KB, 0), 2048x2048 (5504 KB), PF_BC5, TEXTUREGROUP_WorldNormalMap, /Game/SpaceSurvival/Textures/T_RockFace_Normal.T_RockFace_Normal, YES, NO, NO, 0, 12, NO",
+    "2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Textures/T_RockFace_ARM.T_RockFace_ARM, YES, NO, NO, 1, 12, NO",
+    "2048x2048 (5504 KB, 0), 2048x2048 (5504 KB), PF_BC7, TEXTUREGROUP_World, /Game/SpaceSurvival/Textures/T_RockFace_Color.T_RockFace_Color, YES, NO, NO, 1, 12, NO",
+    "2048x2048 (5504 KB, 0), 2048x2048 (5504 KB), PF_BC5, TEXTUREGROUP_WorldNormalMap, /Game/SpaceSurvival/Textures/T_RockFace_Normal.T_RockFace_Normal, YES, NO, NO, 1, 12, NO",
+    "2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Textures/T_RockFace_ARM.T_RockFace_ARM, YES, NO, NO, 1, 12, NO",
+    "2048x2048 (5504 KB, 0), 2048x2048 (5504 KB), PF_BC7, TEXTUREGROUP_World, /Game/SpaceSurvival/Textures/T_RockFace_Color.T_RockFace_Color, YES, NO, NO, 1, 12, NO",
+    "2048x2048 (5504 KB, 0), 2048x2048 (5504 KB), PF_BC5, TEXTUREGROUP_WorldNormalMap, /Game/SpaceSurvival/Textures/T_RockFace_Normal.T_RockFace_Normal, YES, NO, NO, 1, 12, NO",
+    "2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Textures/T_RockFace_ARM.T_RockFace_ARM, YES, NO, NO, 1, 12, NO",
+    "2048x2048 (5504 KB, 0), 2048x2048 (5504 KB), PF_BC7, TEXTUREGROUP_World, /Game/SpaceSurvival/Textures/T_RockFace_Color.T_RockFace_Color, YES, NO, NO, 1, 12, NO",
+    "2048x2048 (5504 KB, 0), 2048x2048 (5504 KB), PF_BC5, TEXTUREGROUP_WorldNormalMap, /Game/SpaceSurvival/Textures/T_RockFace_Normal.T_RockFace_Normal, YES, NO, NO, 1, 12, NO"
+  ],
+  "total_full_residency_KiB": 13760,
+  "residency_policy": "Asset NeverStream unchanged; preview forces only three textures for90seconds. Runtime integration must implement bounded distance/visibility residency or tested density metadata.",
+  "shadows_disabled_for_mapping_comparison": true,
+  "source_maps_byte_identical": true,
+  "existing_asteroid_meshes_materials_unchanged": false,
+  "historical_failures": [
+    "First graph import stopped before material save because transform first pins are unnamed, corrected",
+    "Fresh validator caught source metadata key overwritten by component-mask loop variable; bounded candidate metadata repair, fresh pass",
+    "Earlier async screenshot processes returned0xC0000005 after full shutdown logging. Final preview uses Slate reentrancy guard and documented Python executor exit; exit0.",
+    "Earlier preview cases captured64x64 mips. Final all12texture observations are2048x2048."
+  ],
+  "visual_findings": [
+    "Clear stone grain and cracks replace smooth palette finish",
+    "Existing440triangle radial silhouette remains coarse; no geometry repair",
+    "Pale studio illumination is not native space-lighting acceptance",
+    "No obvious surface phase change in co-rotated or large-translated frames; pixel metrics are measured, not byte-identical claim"
+  ],
+  "limits": [
+    "Nine explicit texture reads; editor estimates448pixel instructions/6samplers/12pixel texture samples include material pass overhead; no runtime profiling",
+    "Local240cm repeat scales with actor, not a fixed physical texel density",
+    "One studio-view family; full-turn visibility and natural hazard readability still require gameplay review",
+    "No original asteroid asset assignment or gameplay edits"
+  ],
+  "images": [
+    {
+      "file": "RockPrevious.png",
+      "size": [
+        1400,
+        787
+      ],
+      "bytes": 225303,
+      "sha256": "905fc88ef3f871893df696f01519544b938d074b12d37bcdbb26440a59286fe3"
+    },
+    {
+      "file": "RockPhotographic.png",
+      "size": [
+        1400,
+        787
+      ],
+      "bytes": 409256,
+      "sha256": "2c621625ab8322dffeb9842efd7feff022b679d02377bdc8d2379ae7cc065394"
+    },
+    {
+      "file": "RockRotated.png",
+      "size": [
+        1400,
+        787
+      ],
+      "bytes": 409452,
+      "sha256": "66af86b6838f84f888131675eacc24f775484a65b3cd352538b6a59c967ef6fc"
+    },
+    {
+      "file": "RockRebased.png",
+      "size": [
+        1400,
+        787
+      ],
+      "bytes": 409613,
+      "sha256": "25e5896e1e9877c34246f0c2da81390d102ebc14ab669ff5e6662f14c7cbf7be"
+    }
+  ],
+  "existing_asteroid_geometry_collision_unchanged": true,
+  "adoption": {
+    "author_exit": 0,
+    "fresh_validator_exit": 0,
+    "fresh_adoption_verified": true,
+    "baseline": "AdoptionBaseline.json",
+    "receipt": "RockPhotographicAdoption.json",
+    "aliases_and_legacy_materials_unchanged": true
+  }
+}

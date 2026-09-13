@@ -74,6 +74,66 @@ class CaptureEvidenceTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.report(self.capture(folder, malformed=pair))
 
+    def station_capture(self, folder, mutate=None, omit=None):
+        path = Path(folder) / "station-synthetic.csv"
+        header = ["EVENTS", *analysis.TIMINGS, *analysis.STATE, *analysis.SOAK, *analysis.STAGES]
+        if omit:
+            header.remove(omit)
+        rows = []
+        for phase, stage, milliseconds in [(3, 3, 8000), (4, 4, 40000), (6, 6, 3000), (7, 7, 2400), (7, 8, 15000)]:
+            row = dict(zip(["EVENTS", *analysis.TIMINGS, *analysis.STATE],
+                           ["", milliseconds, 2, 1, 2, 1, phase, 5, 1, 4, 50000, 3500]))
+            row.update(zip(analysis.SOAK, [1, milliseconds, 0, 1, 0, 0, 1, 0, 0, 0, 1]))
+            row.update(zip(analysis.STAGES, [2, stage, phase]))
+            rows.append(row)
+        if mutate:
+            mutate(rows)
+        with path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(header)
+            writer.writerows([[row[name] for name in header] for row in rows])
+            writer.writerow(header)
+            writer.writerow(["[captureduration]", "68.4", "[endtimestamp]", "1789278726", "[HasHeaderRowAtEnd]", "1"])
+        return path
+
+    def test_station_exit_and_idle_retained_separately_from_historical_flight(self):
+        with tempfile.TemporaryDirectory(prefix="ss-csv-test-") as folder:
+            report = self.report(self.station_capture(folder))
+            self.assertEqual(report["status"], "RENDERED_STATION_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE")
+            self.assertFalse(report["endgame_fixture"]["observed"])
+            self.assertTrue(report["station_fixture"]["all_fixture_frames_foreground"])
+            self.assertEqual(report["groups"]["gameplay_all"]["frames"], 3)
+            stages = report["station_fixture"]["stages"]
+            self.assertEqual(stages["AuthoredExit"]["simulation_seconds"], 2.4)
+            self.assertEqual(stages["StationIdle"]["simulation_seconds"], 15)
+            self.assertEqual(stages["AuthoredExit"]["timings"]["FrameTime"]["max_ms"], 2400)
+            self.assertEqual(report["simulation_delta"]["fixture_samples"]["samples"], 5)
+
+    def test_station_unknown_mixed_or_phase_mismatched_scenarios_rejected(self):
+        mutations = [lambda rows: rows[0].update({analysis.STAGES[0]: 3}),
+                     lambda rows: rows[0].update({analysis.STAGES[0]: 1}),
+                     lambda rows: rows[0].update({analysis.STAGES[1]: 7}),
+                     lambda rows: rows[0].update({analysis.STAGES[1]: 3.5})]
+        for mutation in mutations:
+            with tempfile.TemporaryDirectory(prefix="ss-csv-test-") as folder:
+                with self.assertRaises(ValueError):
+                    self.report(self.station_capture(folder, mutate=mutation))
+        with tempfile.TemporaryDirectory(prefix="ss-csv-test-") as folder:
+            with self.assertRaises(ValueError):
+                self.report(self.station_capture(folder, omit=analysis.STAGES[0]))
+
+    def test_post_update_docking_phase_can_differ_from_earlier_gamemode_sample(self):
+        with tempfile.TemporaryDirectory(prefix="ss-csv-test-") as folder:
+            report = self.report(self.station_capture(folder, mutate=lambda rows: rows[2].update({analysis.STATE[0]: 5})))
+            self.assertEqual(report["station_fixture"]["phase_sample_differences"], 1)
+            self.assertEqual(report["station_fixture"]["stages"]["Docking"]["simulation_seconds"], 3)
+            self.assertEqual(report["phase_segments"][2]["phase_name"], "Approach")
+
+    def test_station_focus_loss_cannot_claim_all_foreground(self):
+        with tempfile.TemporaryDirectory(prefix="ss-csv-test-") as folder:
+            report = self.report(self.station_capture(folder, mutate=lambda rows: rows[-1].update({analysis.SOAK[-1]: 0})))
+            self.assertFalse(report["station_fixture"]["all_fixture_frames_foreground"])
+
 
 if __name__ == "__main__":
     unittest.main()

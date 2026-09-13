@@ -1,0 +1,549 @@
+{
+  "recorded_utc": "2026-09-13T09:34:54.931253+00:00",
+  "project_status": "PARTIAL",
+  "source_identity": {
+    "base_commit": "a9da95e18be56fe55b230b0ad48b4fad2317360b",
+    "kind": "Formatted uncommitted final tested working-tree snapshot after fixture-only correction; not the base commit",
+    "hash_convention": "sha256 raw bytes; sha256_lf CRLF normalized to LF",
+    "sources": [
+      {
+        "path": "Source/SpaceSurvival/Public/SSAudio.h",
+        "bytes": 2326,
+        "sha256": "c1a06d39d8b4eac285e4735a9d4d4323c48e04353640339c3b15a8666d716327",
+        "sha256_lf": "c1a06d39d8b4eac285e4735a9d4d4323c48e04353640339c3b15a8666d716327"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSAudio.cpp",
+        "bytes": 9822,
+        "sha256": "99e14fb6a56c5fdd96a3d1d12a8d883a6b2ff40fa0376461d0fe2aeb4da12545",
+        "sha256_lf": "99e14fb6a56c5fdd96a3d1d12a8d883a6b2ff40fa0376461d0fe2aeb4da12545"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSAudioAutomationTests.cpp",
+        "bytes": 16682,
+        "sha256": "186324711ee437f72ebcaf6ca42af840d823bcc15e4aa99a0841902ad68b349c",
+        "sha256_lf": "186324711ee437f72ebcaf6ca42af840d823bcc15e4aa99a0841902ad68b349c"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSContentTypes.h",
+        "bytes": 20127,
+        "sha256": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141",
+        "sha256_lf": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSGameMode.h",
+        "bytes": 3984,
+        "sha256": "3cf7c4c089b2e9afdebb9e014cad6e3125b81561894a3fc9133d3627ab9a92cc",
+        "sha256_lf": "3cf7c4c089b2e9afdebb9e014cad6e3125b81561894a3fc9133d3627ab9a92cc"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+        "bytes": 58105,
+        "sha256": "1c744d515a21f95a15fcfd132dedd63c982645cfb2b50da1f0639d4d918007ee",
+        "sha256_lf": "1c744d515a21f95a15fcfd132dedd63c982645cfb2b50da1f0639d4d918007ee"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSShip.h",
+        "bytes": 2061,
+        "sha256": "9b68f07c36582cdaf5c2d0610b0ef35c2321b82ea4d24a7c531e5178c3a2bbcd",
+        "sha256_lf": "9b68f07c36582cdaf5c2d0610b0ef35c2321b82ea4d24a7c531e5178c3a2bbcd"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSShip.cpp",
+        "bytes": 12024,
+        "sha256": "894aa6853667829456e22bb612713391fef46709ff0ba4c15d55277308aa9429",
+        "sha256_lf": "894aa6853667829456e22bb612713391fef46709ff0ba4c15d55277308aa9429"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSWorldActors.h",
+        "bytes": 10662,
+        "sha256": "bb3027367c92bde83002c4ef872e6892e755023863613e704827fa7a55bc8a45",
+        "sha256_lf": "bb3027367c92bde83002c4ef872e6892e755023863613e704827fa7a55bc8a45"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSWorldActors.cpp",
+        "bytes": 66151,
+        "sha256": "af5ffbf10b009261b415f2c2ed58d649bcb32cd4cd3e40e223b74f8e8f0c76b5",
+        "sha256_lf": "6ced7d89ffe9584958ff97929fdf0c711ff3143af12067b105dcd8d880e83951"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSStation.h",
+        "bytes": 2933,
+        "sha256": "acf2f2b805d50b68fc881e8fc7c713e85d0ed19fb75e61650bbca139bc3851f0",
+        "sha256_lf": "acf2f2b805d50b68fc881e8fc7c713e85d0ed19fb75e61650bbca139bc3851f0"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSStation.cpp",
+        "bytes": 21899,
+        "sha256": "6eb9b9c2ddbb1027c231c0292ee938aee1011cae536d478af2da5d6470ed2dd5",
+        "sha256_lf": "6eb9b9c2ddbb1027c231c0292ee938aee1011cae536d478af2da5d6470ed2dd5"
+      },
+      {
+        "path": "Scripts/GenerateAudio.py",
+        "bytes": 7143,
+        "sha256": "0539ca1d5f28bcf7e79ffcea603c8dfd123f9edab2396254891801aec35e331f",
+        "sha256_lf": "0539ca1d5f28bcf7e79ffcea603c8dfd123f9edab2396254891801aec35e331f"
+      },
+      {
+        "path": "Scripts/AuthorContent.py",
+        "bytes": 31895,
+        "sha256": "5888a1ee99ff5654a6ee7a7c4bbf2ea4817652805b37897bd1731111115b2789",
+        "sha256_lf": "5888a1ee99ff5654a6ee7a7c4bbf2ea4817652805b37897bd1731111115b2789"
+      },
+      {
+        "path": "Scripts/ValidateContent.py",
+        "bytes": 13729,
+        "sha256": "51cc3b8563e40470b89b29cfa5107dfabca547bae1e7a14b8b794b7284607766",
+        "sha256_lf": "5409a270c204aca74fcce86fb4ac026479e0799ae89bd2fe1b7a15396bd7da85"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSPhase1Data.h",
+        "bytes": 11644,
+        "sha256": "dba26769ca2f87f3c9499c18670e1ee3e08e4b999886586616e69add821a0b9a",
+        "sha256_lf": "6223974dac0b7f2ece0e77d7624981d1e0fd90743bd4b7e0881a9576fb11ed13"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSEconomyAutomationTests.cpp",
+        "bytes": 15954,
+        "sha256": "6d8d4bb96eb8c5e75dd187ef70b937a653c97f82fc8fbad8253e59c18785f6f6",
+        "sha256_lf": "652ef081727d20c9070fc5b895b54a5bf2124f1d8a8b8e435486c0eef3285c35"
+      },
+      {
+        "path": "Source/SpaceSurvival/Domain/SurvivalCore.h",
+        "bytes": 8395,
+        "sha256": "b7a6915ba71b6a642a6ceee9573fffadf8bed203b4fa6355984212ee1fe1cfaa",
+        "sha256_lf": "0194ea78f0717711b98623f11660f082255e91587c81764658dc4aa2669bdda6"
+      },
+      {
+        "path": "Source/SpaceSurvival/Domain/SurvivalCore.cpp",
+        "bytes": 37652,
+        "sha256": "86449dba0e9dcd4b89b71c6f2e6ea946857326fde7f7fbbb4c7305ab8f6366a9",
+        "sha256_lf": "e08f0526ca822a953d289d98edd2acce6a811070342d5d8dc67a7b2b5037c38c"
+      },
+      {
+        "path": "Tests/CoreTests.cpp",
+        "bytes": 43282,
+        "sha256": "c853d7266af60f30330d8fe5c1de0a2fd319835556dc6741e09a49c90b698fca",
+        "sha256_lf": "64274ac354408521b0cb15e6490d8a2100a2e00a62f4c4ac2d2fc9c89914dacd"
+      },
+      {
+        "path": "ContentSource/ValidateSources.py",
+        "bytes": 8567,
+        "sha256": "6021cfe98f5fb08cf60f1186e88a6eb77d7d0ed09b93900e301f8b2e69a9e7bf",
+        "sha256_lf": "6021cfe98f5fb08cf60f1186e88a6eb77d7d0ed09b93900e301f8b2e69a9e7bf"
+      }
+    ]
+  },
+  "editor_builds": [
+    {
+      "result": "Succeeded",
+      "seconds": 21.3,
+      "log": {
+        "path": ".agent/local/AudioEconomyStationEditor.log",
+        "bytes": 5667,
+        "sha256": "d32bbd302d16d1171fe0cbc05c59e7423bfc8cdab7907757dc9a2c23336b21a1",
+        "sha256_lf": "70eeef6a7626ee8a97f9e75ed371c851b7bb9afd6fa905087dd2f11889a7cc2d"
+      }
+    },
+    {
+      "result": "Succeeded",
+      "seconds": 4.71,
+      "reason": "One test-only economy fixture correction",
+      "log": {
+        "path": ".agent/local/AudioEconomyStationEditor2.log",
+        "bytes": 2541,
+        "sha256": "09c80fc1b01588e9aa1e1b0578c8143117d2f9b8cec779350a9de1d32f0894e2",
+        "sha256_lf": "154ac82053e2298d4f9f0464326480f8d06fb92fad97af6382ebdea8f520b049"
+      }
+    }
+  ],
+  "final_tested_editor_dll": {
+    "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+    "bytes": 1521152,
+    "sha256": "d01c97e80433c17acee7711254a7639ab075fe8bbe22e96b2b85c92a9d4ef037"
+  },
+  "build_warnings": [
+    "Installed MSVC14.51 newer than preferred14.50",
+    "Engine Character.h C4996 deprecation; no project compilation error reported"
+  ],
+  "content_import": {
+    "result": "PASS",
+    "completed_utc": "2026-09-13T09:23:45Z",
+    "log": {
+      "path": ".agent/local/AudioEconomyStationContent.log",
+      "bytes": 310126,
+      "sha256": "6b9dee57d56bf649f00b95dc7565ffc0f29c5eb32b602f31fc580438168f7db3",
+      "sha256_lf": "ef3e964a2a6e13bab7a352531b6addabb51518926d679117abdc5d338f1eb8d9"
+    }
+  },
+  "content_validation": {
+    "first_attempt": {
+      "result": "FAILED",
+      "log": {
+        "path": ".agent/local/AudioEconomyStationValidate.log",
+        "bytes": 260809,
+        "sha256": "c205487e3490441bf563ccf1419922292e74f2674c7f7a135d8c19bb5ae22ce1",
+        "sha256_lf": "8911cbb73ff5c54dbbee0282f6b854e6606c6401d7f8de4260a1879ed442a928"
+      },
+      "reason": "Legacy generic material-group expectation required M_Rock on the three explicitly adopted photographic asteroids.",
+      "resolution": "Expected override narrowed to approved material path/version/section; dedicated geometry guard retained."
+    },
+    "second_attempt": {
+      "result": "PASS",
+      "completed_utc": "2026-09-13T09:26:42Z",
+      "log": {
+        "path": ".agent/local/AudioEconomyStationValidate2.log",
+        "bytes": 259910,
+        "sha256": "30d7b69a8985e9d3b6f62742aa378ac77a9224dabc0fa4fdeda2f7e7a8504163",
+        "sha256_lf": "ac6e6cfa0296546f34652c9d4e2b644accf7790426913238f47b09d61af32b9f"
+      },
+      "report": {
+        "path": "Saved/Validation/PersistedContent.json",
+        "bytes": 12422,
+        "sha256": "9424615c0d3d5833cfd25464b504dc82fe315399e5c8f3fae57265594b27e448",
+        "sha256_lf": "78082b87b15a9e351c0f94ab0db637f3d4319214b53e2a1ccfc25daf55a53261"
+      },
+      "errors": [],
+      "audio_count": 16
+    }
+  },
+  "first_suite_attempt": {
+    "result": "FAILED",
+    "report_created_on": "2026.09.13-09.27.01",
+    "observed_succeeded": 20,
+    "observed_failed": 1,
+    "observed_warnings": 0,
+    "observed_not_run": 0,
+    "observed_total_duration": 2.4279568195343018,
+    "process_id": 22092,
+    "log": {
+      "path": ".agent/local/AudioEconomyStationTests.log",
+      "bytes": 296760,
+      "sha256": "0c9e2b78f869efa8227253d7bb02bfef3e5afeab79d6b2cd2683211e011ca535",
+      "sha256_lf": "f1da1ba5224185d7643c95db46777d2faaf7eb7e8e9c28f057b6a55bcecc1348"
+    },
+    "failed_test": "SpaceSurvival.Integration.EconomyRewardBridge",
+    "failure_count": 2,
+    "failure": "Expected 'Existing codec preserves pending reward choice and earned credits' to be true.",
+    "resolution": "Fixture manually configured accepted beacons without the Director's offer-seen flag. Fixture-only correction sets that flag and exposes DecodeRun diagnostics; runtime and codec remain unchanged.",
+    "provenance_limit": "First report was read but not copied/hashed before index.json was replaced. First DLL and original failing test-source hashes were not captured. Final hashes are never represented as first-attempt hashes.",
+    "first_report_hash": null,
+    "first_dll_hash": null,
+    "first_test_source_hash": null
+  },
+  "final_suite_attempt": {
+    "reportCreatedOn": "2026.09.13-09.29.16",
+    "succeeded": 21,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "inProcess": 0,
+    "totalDuration": 2.3187851905822754,
+    "report": {
+      "path": "Artifacts/UnrealTests/index.json",
+      "bytes": 25055,
+      "sha256": "841164b90d2d0bf6544659d62e3d52c9b7b7154a60da74e1e28d610eaa972010",
+      "sha256_lf": "820cd464e99533981eee9abef4eee0e54cccc9c813ef4812f63c60b0950465a6"
+    },
+    "test_log": {
+      "path": ".agent/local/AudioEconomyStationTests2.log",
+      "bytes": 296393,
+      "sha256": "de88dd2e938227b7a5507edfa0e407e9d6d7e97c97db46dfaf7ce440846919f1",
+      "sha256_lf": "26af1e11dda8d7bb818f64471d93037ad6a97c0c6f0e9cb7ce7fa752a92015d8"
+    },
+    "process_id": 80476,
+    "tests": [
+      {
+        "path": "SpaceSurvival.Content.ContractDataAssetBridge",
+        "state": "Success",
+        "duration": 0.008303601294755936,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Content.EconomyDataAssetBounds",
+        "state": "Success",
+        "duration": 0.008210498839616776,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Content.UtilityDataAssetBridge",
+        "state": "Success",
+        "duration": 0.007583398371934891,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Flight.BoostBrakeMovement",
+        "state": "Success",
+        "duration": 0.35684409737586975,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+        "state": "Success",
+        "duration": 0.022651802748441696,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Flight.FrameRateTrajectories",
+        "state": "Success",
+        "duration": 0.2739129960536957,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "30 Hz at 1 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "30 Hz at 2 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "30 Hz at 3 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "30 Hz at 4 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "60 Hz at 1 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "60 Hz at 2 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "60 Hz at 3 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "60 Hz at 4 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "144 Hz at 1 seconds: position error 0.487 cm; velocity error 0.000 cm/s",
+          "144 Hz at 2 seconds: position error 2.778 cm; velocity error 1.648 cm/s",
+          "144 Hz at 3 seconds: position error 5.253 cm; velocity error 1.462 cm/s",
+          "144 Hz at 4 seconds: position error 4.350 cm; velocity error 0.403 cm/s"
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Flight.ManualWeaponImpacts",
+        "state": "Success",
+        "duration": 0.04957909882068634,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+        "state": "Success",
+        "duration": 1.309645175933838,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "Accelerated actor integration: 12-second waves/climaxes, shortened transitions, enlarged durability, fixture flight bootstrap, forced objective acquisition/defeat and assist-band positioning. This does not validate natural balance, fairness, flight feel, controller input, performance, or disk-backed New Run/death/restart transactions.",
+          "JOURNEY_WAVE 1",
+          "JOURNEY_WAVE 2",
+          "JOURNEY_WAVE 3",
+          "JOURNEY_WAVE 4",
+          "JOURNEY_WAVE 5",
+          "JOURNEY_STATION 1",
+          "JOURNEY_WAVE 6",
+          "JOURNEY_WAVE 7",
+          "JOURNEY_WAVE 8",
+          "JOURNEY_WAVE 9",
+          "JOURNEY_WAVE 10",
+          "JOURNEY_STATION 2"
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.AudioFirstPlayMix",
+        "state": "Success",
+        "duration": 0.015099100768566132,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "Component and phase state verified; no rendered audio buffer or listening assertion."
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.AuthoredDisembark",
+        "state": "Success",
+        "duration": 0.03930870071053505,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "EXIT_RUNTIME_MESH: /Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2",
+          "EXIT_CONTACT actor=X=28506.306 Y=-10462.735 Z=5580.150 floorZ=5490.000000 capsuleGap=2.150000 meshZ=6.954042",
+          "EXIT_SOLE contact vertices=203227 soleZ=5492.733538 plateZ=5492.750000 clearance=-0.016462",
+          "EXIT_HANDOFF actorDelta=X=0.000 Y=0.000 Z=0.000 leftFootDelta=X=-0.008 Y=-0.006 Z=0.004 rightFootDelta=X=0.000 Y=-0.009 Z=0.003 floorDist=2.150001",
+          "EXIT_SOLE walk handoff vertices=203227 soleZ=5492.737085 plateZ=5492.750000 clearance=-0.012915",
+          "EXIT_RATE rate=30 actorDelta=X=0.000 Y=0.000 Z=0.000 floorDist=2.150001",
+          "EXIT_RATE rate=60 actorDelta=X=0.000 Y=0.000 Z=0.000 floorDist=2.150001",
+          "EXIT_RATE rate=144 actorDelta=X=0.000 Y=0.000 Z=0.000 floorDist=2.150001"
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.EconomyRewardBridge",
+        "state": "Success",
+        "duration": 0.015139501541852951,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "ECONOMY_FIXTURE: actual BeginPlay/menu/actor completion paths; assisted station and objective progress, no natural balance or disk I/O."
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.ElectricalPulseBoundaries",
+        "state": "Success",
+        "duration": 0.01047699898481369,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.ElectricalPulseCadence",
+        "state": "Success",
+        "duration": 0.03967149928212166,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "ELECTRICAL_CADENCE fps=30 interval=0.200000003 pulses=40 sampledSeconds=11.333333924",
+          "ELECTRICAL_CADENCE fps=30 interval=0.730000019 pulses=40 sampledSeconds=32.000001669",
+          "ELECTRICAL_CADENCE fps=30 interval=1.79999995 pulses=40 sampledSeconds=73.733337179",
+          "ELECTRICAL_CADENCE fps=30 interval=2.5999999 pulses=40 sampledSeconds=104.933338806",
+          "ELECTRICAL_CADENCE fps=60 interval=0.200000003 pulses=40 sampledSeconds=11.316667257",
+          "ELECTRICAL_CADENCE fps=60 interval=0.730000019 pulses=40 sampledSeconds=31.983335001",
+          "ELECTRICAL_CADENCE fps=60 interval=1.79999995 pulses=40 sampledSeconds=73.716670511",
+          "ELECTRICAL_CADENCE fps=60 interval=2.5999999 pulses=40 sampledSeconds=104.916672138",
+          "ELECTRICAL_CADENCE fps=144 interval=0.200000003 pulses=40 sampledSeconds=11.305555640",
+          "ELECTRICAL_CADENCE fps=144 interval=0.730000019 pulses=40 sampledSeconds=31.979166905",
+          "ELECTRICAL_CADENCE fps=144 interval=1.79999995 pulses=40 sampledSeconds=73.708333883",
+          "ELECTRICAL_CADENCE fps=144 interval=2.5999999 pulses=40 sampledSeconds=104.909723004"
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+        "state": "Success",
+        "duration": 0.08817510306835175,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "Actor death/XP/hangar and in-memory next-run reset. Persistence is intentionally blocked; the normal restart button must remain blocked. Next flight uses explicit fixture bootstrap."
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.LateEventAcceptance",
+        "state": "Success",
+        "duration": 0.012515202164649963,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+        "state": "Success",
+        "duration": 0.011772200465202332,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+        "state": "Success",
+        "duration": 0.01061820238828659,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Integration.SpatialThreatAudio",
+        "state": "Success",
+        "duration": 0.012016799300909042,
+        "warnings": 0,
+        "errors": 0,
+        "messages": [
+          "Real actor hooks/component bounds verified; NullRHI does not prove renderer voice count, spatial perception or listening quality."
+        ]
+      },
+      {
+        "path": "SpaceSurvival.Integration.StationWalkerRecovery",
+        "state": "Success",
+        "duration": 0.00956840068101883,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Save.PayloadRoundTrip",
+        "state": "Success",
+        "duration": 0.008011102676391602,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      },
+      {
+        "path": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+        "state": "Success",
+        "duration": 0.009681399911642075,
+        "warnings": 0,
+        "errors": 0,
+        "messages": []
+      }
+    ]
+  },
+  "package_status": "Not packaged at receipt time; historical package9 binds source4178 and does not contain these changes",
+  "scope": "Data Asset bridge for existing kill, repair, upgrade-step, station and event reward amounts",
+  "status": "PASS 744 strict plus744 sanitizer assertions and both Unreal economy tests after fixture-only correction; natural balance unverified",
+  "defaults": {
+    "kill_credits": 12,
+    "repair_price": 35,
+    "upgrade_price_step": 90,
+    "station_reward_credits": 25,
+    "salvage_completion": 70,
+    "combat_completion": 100,
+    "flat_wave_credits": 75,
+    "flat_upgrade_base_price": 130
+  },
+  "data_asset": {
+    "path": "Content/SpaceSurvival/Data/DA_Phase1.uasset",
+    "bytes": 1253,
+    "sha256": "6cfe3ebfb61ef1de3e58bd48f2a72e78161a5986c31b97d46c069407adcd0505"
+  },
+  "domain": {
+    "strict_assertions": 744,
+    "sanitizer_assertions": 744,
+    "log": {
+      "path": ".agent/local/EconomyCore.log",
+      "bytes": 2578,
+      "sha256": "0a7e48a0bfd6468f3934e1862807dbcdb0a9b77ae84173b73a484868419372a0",
+      "sha256_lf": "0b618d147269ea4b973af9573a177621c76c3b70c84c960e85ada52d6d6231c4"
+    },
+    "immutable_image_id": "sha256:662ec79d12c1220cf48be0caf7d5c4d1f04aa10f06d76ea4291d4b6edd7cbc22",
+    "compiled_source_raw_hashes": {
+      "Source/SpaceSurvival/Domain/SurvivalCore.h": "b7a6915ba71b6a642a6ceee9573fffadf8bed203b4fa6355984212ee1fe1cfaa",
+      "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "86449dba0e9dcd4b89b71c6f2e6ea946857326fde7f7fbbb4c7305ab8f6366a9",
+      "Tests/CoreTests.cpp": "c853d7266af60f30330d8fe5c1de0a2fd319835556dc6741e09a49c90b698fca"
+    },
+    "compiled_source_lf_hashes": {
+      "Source/SpaceSurvival/Domain/SurvivalCore.h": "0194ea78f0717711b98623f11660f082255e91587c81764658dc4aa2669bdda6",
+      "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "e08f0526ca822a953d289d98edd2acce6a811070342d5d8dc67a7b2b5037c38c",
+      "Tests/CoreTests.cpp": "64274ac354408521b0cb15e6490d8a2100a2e00a62f4c4ac2d2fc9c89914dacd"
+    },
+    "current_raw_and_lf_match_compiled": true,
+    "verification": "Read-only hash commands inside exact immutable image recorded in EconomyCore.log. No tests or builds rerun."
+  },
+  "focused_tests": [
+    {
+      "path": "SpaceSurvival.Content.EconomyDataAssetBounds",
+      "state": "Success",
+      "duration": 0.008210498839616776,
+      "warnings": 0,
+      "errors": 0,
+      "messages": []
+    },
+    {
+      "path": "SpaceSurvival.Integration.EconomyRewardBridge",
+      "state": "Success",
+      "duration": 0.015139501541852951,
+      "warnings": 0,
+      "errors": 0,
+      "messages": [
+        "ECONOMY_FIXTURE: actual BeginPlay/menu/actor completion paths; assisted station and objective progress, no natural balance or disk I/O."
+      ]
+    }
+  ],
+  "limitations": [
+    "Assisted station placement and objective progress do not prove natural travel or economy balance.",
+    "No save identity, five-wave cadence, reward type or one-slot policy changes.",
+    "Fixtures use no GI Init/production saves; separate lifecycle receipts cover disk transactions."
+  ]
+}

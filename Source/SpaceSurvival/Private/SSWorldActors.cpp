@@ -1,4 +1,6 @@
 #include "SSWorldActors.h"
+#include "SSAudio.h"
+#include "Components/AudioComponent.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSShip.h"
@@ -174,6 +176,21 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
     Collision->SetSphereRadius(BodyRadius);
     Collision->SetCollisionResponseToChannel(ECC_Visibility, IsEnvironmentalField() ? ECR_Ignore : ECR_Block);
     UpdateVisual();
+    // This one photographic family uses local triplanar coordinates, so mesh UV
+    // density cannot select its mips. Pin the shared three maps only for the
+    // bounded lifetime of newly admitted rocks; never disable streaming globally.
+    const bool bPhotographicAsteroid = (Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
+                                        Kind == ESSWorldKind::MassiveAsteroid) &&
+                                       Visual->GetMaterial(0) &&
+                                       Visual->GetMaterial(0)->GetPathName() ==
+                                           TEXT("/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic");
+    if (bPhotographicAsteroid)
+    {
+        const float ResidencySeconds =
+            FMath::IsFinite(LifetimeSeconds) ? FMath::Clamp(LifetimeSeconds + 5.f, 5.f, 120.f) : 35.f;
+        Visual->PrestreamTextures(ResidencySeconds, false);
+    }
+    ConfigureAudio();
 }
 
 void ASSWorldBody::UpdateVisual()
@@ -374,6 +391,46 @@ bool ASSWorldBody::AdvanceElectricalPulse(float DeltaSeconds)
     return bDischarged;
 }
 
+void ASSWorldBody::ConfigureAudio()
+{
+    if (FieldAudio)
+    {
+        FieldAudio->Stop();
+        FieldAudio->DestroyComponent();
+        FieldAudio = nullptr;
+    }
+    if (!IsEnvironmentalField())
+        return;
+    if (auto *Audio = GetWorld()->GetSubsystem<USSWorldAudioSubsystem>())
+        FieldAudio = Audio->CreateFieldLoop(
+            this, Content(this)->Hazard(Kind).FieldLoopAudio,
+            Kind == ESSWorldKind::ElectricalStorm ? TEXT("ElectricalCharge") : TEXT("GravityAmbience"), .08f);
+}
+void ASSWorldBody::UpdateFieldAudio(bool bDischarged)
+{
+    if (!IsEnvironmentalField())
+        return;
+    auto *Audio = GetWorld()->GetSubsystem<USSWorldAudioSubsystem>();
+    if (!Audio)
+        return;
+    const float Charge = Kind == ESSWorldKind::ElectricalStorm
+                             ? float(FMath::Clamp(1.0 - FieldPulseRemaining / FieldPulseDuration, 0.0, 1.0))
+                             : FMath::Clamp(Age / FMath::Max(1.f, TelegraphSeconds), 0.f, 1.f);
+    Audio->SetFieldIntensity(FieldAudio, .08f + .92f * Charge,
+                             Kind == ESSWorldKind::ElectricalStorm ? .75f + .5f * Charge : 1.f);
+    if (bDischarged)
+        Audio->PlayOneShot(Content(this)->Hazard(Kind).DischargeAudio, TEXT("ElectricalDischarge"), GetActorLocation());
+}
+void ASSWorldBody::PlayDestructionAudio()
+{
+    if (auto *Audio = GetWorld()->GetSubsystem<USSWorldAudioSubsystem>())
+    {
+        if (IsEnemy())
+            Audio->PlayOneShot(Content(this)->Enemy(Kind).DestructionAudio, TEXT("EnemyBreak"), GetActorLocation());
+        else if (IsSolidHazard())
+            Audio->PlayOneShot(Content(this)->Hazard(Kind).DestructionAudio, TEXT("DebrisBreak"), GetActorLocation());
+    }
+}
 void ASSWorldBody::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
@@ -386,6 +443,7 @@ void ASSWorldBody::Tick(float DeltaSeconds)
     if (IsSolidHazard())
         Visual->AddLocalRotation(FRotator(2.f, 4.f, 1.5f) * DeltaSeconds);
     const bool bElectricalDischarge = Kind == ESSWorldKind::ElectricalStorm && AdvanceElectricalPulse(DeltaSeconds);
+    UpdateFieldAudio(bElectricalDischarge);
     ASSShip *Ship = FindShip();
     if (Ship)
     {
@@ -491,6 +549,7 @@ void ASSWorldBody::ReceiveWeaponHit(float Damage)
 
 void ASSWorldBody::OnDefeated()
 {
+    PlayDestructionAudio();
     const auto Definition = Content(this)->Hazard(Kind);
     if (Kind == ESSWorldKind::MediumAsteroid)
     {
@@ -579,6 +638,8 @@ void ASSEnemy::Tick(float DeltaSeconds)
                 {
                     Shot->Launch(ShotDirection, Definition.ProjectileSpeed + Wave * Definition.ProjectileSpeedPerWave,
                                  Definition.ShotDamage + Wave * Definition.ShotDamagePerWave, false, this);
+                    if (auto *Audio = GetWorld()->GetSubsystem<USSWorldAudioSubsystem>())
+                        Audio->PlayOneShot(Definition.ShotAudio, TEXT("EnemyFire"), GetActorLocation());
                 }
                 ShotCooldown = FMath::Max(Definition.MinimumShotInterval,
                                           Definition.ShotInterval - Wave * Definition.ShotIntervalReductionPerWave);
@@ -613,6 +674,7 @@ void ASSEnemy::Tick(float DeltaSeconds)
                 if (Health <= 0.f)
                 {
                     bDefeated = true;
+                    PlayDestructionAudio();
                     if (ObjectiveOwner.IsValid())
                         ObjectiveOwner->RegisterObjectiveProgress();
                     Destroy();
@@ -626,6 +688,7 @@ void ASSEnemy::Tick(float DeltaSeconds)
 
 void ASSEnemy::OnDefeated()
 {
+    PlayDestructionAudio();
     if (ASSGameMode *Mode = GameMode(this))
         Mode->NotifyEnemyKilled();
     if (ObjectiveOwner.IsValid())

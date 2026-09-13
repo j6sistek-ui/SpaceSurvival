@@ -176,6 +176,42 @@
       "valid_pcm": true
     },
     {
+      "name": "ElectricalCharge",
+      "peak_sample": 1816,
+      "boundary_jump": 0.00351,
+      "valid_pcm": true
+    },
+    {
+      "name": "ElectricalDischarge",
+      "peak_sample": 11193,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "GravityAmbience",
+      "peak_sample": 3642,
+      "boundary_jump": 0.000793,
+      "valid_pcm": true
+    },
+    {
+      "name": "EnemyFire",
+      "peak_sample": 6687,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "EnemyBreak",
+      "peak_sample": 12512,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "DebrisBreak",
+      "peak_sample": 8232,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
       "name": "MusicBase",
       "peak_sample": 3317,
       "boundary_jump": 0.001984,

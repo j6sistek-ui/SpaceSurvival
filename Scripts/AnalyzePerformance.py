@@ -22,6 +22,8 @@ STATE = tuple("SpaceSurvival/" + name for name in (
 SOAK_NAMES = ("Fixture", "SimulationDeltaMs", "Gravity", "Asteroids", "Wreckage", "Electrical",
               "Pursuers", "Flankers", "Projectiles", "Pickups", "ApplicationForeground")
 SOAK = tuple("SpaceSurvivalSoak/" + name for name in SOAK_NAMES)
+STAGES = ("SpaceSurvivalSoak/Scenario", "SpaceSurvivalSoak/Stage", "SpaceSurvivalSoak/Phase")
+STAGE_NAMES = ("Waiting", "Flight", "Breathing", "Wormhole", "Climax", "Approach", "Docking", "AuthoredExit", "StationIdle")
 PHASES = ("Hangar", "Flight", "Breathing", "Wormhole", "Climax", "Approach", "Docking", "Station", "Dead")
 METADATA_KEYS = (
     "platform", "config", "buildversion", "engineversion", "enginereleaseversion", "os", "cpu",
@@ -78,6 +80,10 @@ def read_capture(path):
         if any(header.count(name) != 1 for name in SOAK):
             raise ValueError("Incomplete or duplicate endgame fixture counter set")
         indices.update({name: header.index(name) for name in SOAK})
+    if any(name in header for name in STAGES):
+        if any(header.count(name) != 1 for name in STAGES) or SOAK[0] not in indices:
+            raise ValueError("Incomplete scenario/stage fixture columns")
+        indices.update({name: header.index(name) for name in STAGES})
     frames, events, elapsed = [], [], 0.0
     with path.open(newline="", encoding="utf-8-sig") as stream:
         for row in csv.reader(stream):
@@ -87,7 +93,7 @@ def read_capture(path):
                 raise ValueError("Data row is wider than final header")
             frame = {"index": len(frames), "elapsed_start_s": elapsed}
             for name, index in indices.items():
-                value = float(row[index]) if index < len(row) and row[index] else (0.0 if name in SOAK else None)
+                value = float(row[index]) if index < len(row) and row[index] else (0.0 if name in SOAK + STAGES else None)
                 if value is not None and (not math.isfinite(value) or value < 0):
                     raise ValueError(f"Invalid {name} at frame {len(frames)}")
                 if name in required and value is None:
@@ -108,6 +114,16 @@ def read_capture(path):
                     raise ValueError(f"Invalid fixture/foreground flag at frame {len(frames)}")
                 if frame[SOAK[0]] == 1 and frame[SOAK[1]] <= 0:
                     raise ValueError(f"Nonpositive fixture simulation delta at frame {len(frames)}")
+            if STAGES[0] in frame:
+                scenario, stage, fixture_phase = (frame[name] for name in STAGES)
+                if not scenario.is_integer() or not stage.is_integer() or not fixture_phase.is_integer():
+                    raise ValueError("Noninteger fixture scenario/stage")
+                if frame[SOAK[0]] == 1:
+                    if scenario not in (1, 2) or stage not in range(1, 9):
+                        raise ValueError("Unknown fixture scenario/stage")
+                    expected_phase = 7 if stage in (7, 8) else stage
+                    if fixture_phase != expected_phase:
+                        raise ValueError("Fixture stage disagrees with its post-update phase")
             elapsed += frame["FrameTime"] / 1000
             frames.append(frame)
             for event in re.findall(r"(?:^|;)(SpaceSurvival/Phase[^;]*)", row[0]):
@@ -200,10 +216,16 @@ def analyze(path, log_path, warmup, startup_warmup, context_notes):
             segments.append((state, []))
         segments[-1][1].append(frame)
     targets = [frame.get("MaxFrameTime") for frame in gameplay if frame.get("MaxFrameTime", 0) > 0]
-    soak_frames = [frame for frame in frames if frame.get(SOAK[0]) == 1]
+    all_soak_frames = [frame for frame in frames if frame.get(SOAK[0]) == 1]
+    scenarios = {frame.get(STAGES[0], 1) for frame in all_soak_frames}
+    if len(scenarios) > 1:
+        raise ValueError("Multiple fixture scenarios in one capture")
+    station_frames = [frame for frame in all_soak_frames if frame.get(STAGES[0]) == 2]
+    soak_frames = [frame for frame in all_soak_frames if frame.get(STAGES[0], 1) == 1]
     report = {
         "schema_version": 2,
-        "status": ("RENDERED_ENDGAME_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE" if soak_frames else
+        "status": ("RENDERED_STATION_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE" if station_frames else
+                   "RENDERED_ENDGAME_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE" if soak_frames else
                    "OBSERVED_PHASE_CAPTURE_ONLY_NOT_60_FPS_ACCEPTANCE"),
         "source_csv": {"path": source_path(path), "bytes": path.stat().st_size, "sha256": sha256_file(path)},
         "metadata": {key: metadata[key] for key in METADATA_KEYS if key in metadata},
@@ -227,10 +249,20 @@ def analyze(path, log_path, warmup, startup_warmup, context_notes):
             "note": "CSV targetframerate metadata is retained separately; it can differ from the applied runtime cap.",
         },
         "simulation_delta": {
-            "available": bool(soak_frames), "counter": SOAK[1] if soak_frames else None,
-            "fixture_samples": stats(frame[SOAK[1]] for frame in soak_frames),
-            "reason": ("Fixture actor DeltaSeconds from normal engine frames; excludes startup/CSV drain. This is not physical input latency." if soak_frames else
+            "available": bool(all_soak_frames), "counter": SOAK[1] if all_soak_frames else None,
+            "fixture_samples": stats(frame[SOAK[1]] for frame in all_soak_frames),
+            "reason": ("Fixture actor DeltaSeconds from normal engine frames; excludes startup/CSV drain. This is not physical input latency." if all_soak_frames else
                        "No simulation-delta counter. FrameTime is wall duration and MaxFrameTime is cap budget; no simulation-rate inference."),
+        },
+        "station_fixture": {
+            "observed": bool(station_frames), "frames": len(station_frames),
+            "all_fixture_frames_foreground": bool(station_frames) and all(frame[SOAK[-1]] == 1 for frame in station_frames),
+            "phase_sample_differences": sum(frame[STATE[0]] != frame[STAGES[2]] for frame in station_frames),
+            "phase_sample_note": "GameMode phase is sampled after Session.Tick and before BeginDocking. Fixture phase/stage are sampled at PostUpdate; docking can differ for one frame. Historical phase groups retain their original timing point.",
+            "stages": {name: {**summarize([frame for frame in station_frames if frame[STAGES[1]] == stage]),
+                               "simulation_seconds": round(sum(frame[SOAK[1]] / 1000 for frame in station_frames if frame[STAGES[1]] == stage), 6)}
+                       for stage, name in enumerate(STAGE_NAMES) if stage > 0},
+            "limits": "Scenario2: seeded normal Wave5, scripted ordinary approach, actual docking/exit and stationary hub. Stage7 means authored exit, stage8 means stationary hub; neither establishes human interaction or feel. Historical flight-only aggregate filters are unchanged.",
         },
         "endgame_fixture": {
             "observed": bool(soak_frames), "frames": len(soak_frames),

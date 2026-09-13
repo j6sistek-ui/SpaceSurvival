@@ -302,6 +302,8 @@ class Author:
             if sound not in imported:
                 raise RuntimeError(f"{name}: import did not produce expected sound")
         sound.set_editor_property("looping", item["loop"])
+        if item["loop"]:
+            sound.set_editor_property("virtualization_mode", u.VirtualizationMode.PLAY_WHEN_SILENT)
         self.save(sound)
 
     def animation_clip(self, name, seconds, actor_owned_motion=False):
@@ -400,6 +402,9 @@ class Author:
             asset = self.existing_authored(path)
             if asset.get_class() != cls:
                 raise RuntimeError("Existing DA_Phase1 has wrong class")
+            asset.initialize_legacy_economy_defaults()
+            if not asset.has_valid_economy_tuning():
+                raise RuntimeError("DA_Phase1 economy requires valid bounded values and fixed encounter identities")
             if not asset.has_valid_utility_tuning():
                 raise RuntimeError("DA_Phase1 utilities require exactly the two valid, bounded Phase 1 definitions")
             if not asset.has_valid_contract_tuning():
@@ -412,6 +417,9 @@ class Author:
         asset = self.tools.create_asset("DA_Phase1", BASE + "/Data", cls, factory)
         if not asset:
             raise RuntimeError("Could not create Phase 1 data asset from C++ defaults")
+        asset.initialize_legacy_economy_defaults()
+        if not asset.has_valid_economy_tuning():
+            raise RuntimeError("Invalid default Phase 1 economy content")
         if not asset.has_valid_utility_tuning():
             raise RuntimeError("Invalid default Phase 1 utility definitions")
         self.save(asset)
@@ -488,6 +496,7 @@ class Author:
         self.stage("Cinematic space material", lambda: source_module("ss_space_panorama", ROOT / "Scripts/AuthorSpacePanorama.py").author())
         for item in self.mesh_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.static_mesh(asset))
+        self.stage("Photographic asteroid surfaces", lambda: source_module("ss_rock_photographic", ROOT / "Scripts/AuthorRockPhotographic.py").main(adopt_existing_meshes=True))
         self.stage("Authored Acorn ship", lambda: source_module("ss_acorn_ship", ROOT / "Scripts/AuthorAcornShip.py").main())
         self.stage("Preserved Acornaut import", self.hero)
         self.stage("Authored pilot animation", self.pilot)

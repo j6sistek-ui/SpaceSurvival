@@ -1,0 +1,118 @@
+{
+  "status": "LOCAL_MICRODETAIL_FIXED_PERSISTED_SHADOW_FACETING_UNRESOLVED",
+  "validated_utc": "2026-09-13T09:16:35Z",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "repair_process_exit_code": 0,
+  "fresh_validation_process_exit_code": 0,
+  "material_graphs_corrected": 6,
+  "geometry_and_collision_unchanged": true,
+  "mesh_package_sha256_before_and_after_repair": "23c9c18be50728e5d17fa4a545bb334319e010ae25b9845ef942d0fdddae5107",
+  "all_other_content_packages_unchanged_during_repair": true,
+  "image_dimensions": {
+    "AfterShadowEnabled.png": [
+      1600,
+      900
+    ],
+    "AfterShadowFree.png": [
+      1600,
+      900
+    ],
+    "AuthoredNoMicro.png": [
+      1600,
+      900
+    ],
+    "AuthoredShadowFree.png": [
+      1600,
+      900
+    ],
+    "BeforeShadowEnabled.png": [
+      1600,
+      900
+    ],
+    "BeforeShadowFree.png": [
+      1600,
+      900
+    ],
+    "NeutralShadowFree.png": [
+      1600,
+      900
+    ],
+    "VertexNormalColor.png": [
+      1600,
+      900
+    ]
+  },
+  "scripts": [
+    {
+      "path": "Scripts\\AuthorAcornShip.py",
+      "sha256": "0b5fa2d33b99c43f4acb57681f1cdc0907f95e6d53967e7ee239c34e199f4caf"
+    },
+    {
+      "path": "Scripts\\ValidateAcornShip.py",
+      "sha256": "ec638b83534aaeee8fb0288984bd8948c89849806d095f7605c0f461535bb8f5"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "AcornShipPersisted.json",
+      "sha256": "9aecc70f3a163b423b6679b3a5572be92fb098d023d49eb9a94030bfe793000a"
+    },
+    {
+      "file": "AfterShadowEnabled.png",
+      "sha256": "60732da426124338343c43adee1378908e38e9cf35a07a5ba59eca88de00bad0"
+    },
+    {
+      "file": "AfterShadowFree.png",
+      "sha256": "e0cf066b2c850e6d33e7af83999766a2a6d4f97c61e5d88aa6a53164bcd2ab80"
+    },
+    {
+      "file": "AuthoredNoMicro.png",
+      "sha256": "eb2015405e61bc9d53773da01c4917ba2985c93709141e1b42f3eeb704d78813"
+    },
+    {
+      "file": "AuthoredShadowFree.png",
+      "sha256": "786a90882376b2a61029fda73eaba61cb49cf2ce8445575ce2ee1d6a2a3456f8"
+    },
+    {
+      "file": "BeforeShadowEnabled.png",
+      "sha256": "2a48567fd7858359232f503e3e61bf90ae5acde0fb9b36a26de2feb69855322c"
+    },
+    {
+      "file": "BeforeShadowFree.png",
+      "sha256": "cb6bc09122b983429c456f7092f75ff5401e9834cb6593c95ebbbfb06abb5dd1"
+    },
+    {
+      "file": "MicrodetailRepair.json",
+      "sha256": "c29f807ead6247bd55d036e5ddc836d99de718af759b0fb1077e1b9ca7ca74c3"
+    },
+    {
+      "file": "NativeDiagnostic.json",
+      "sha256": "4dee6fdbcdc38c89cb04be025cf9c4909af3b051eba3b03d1533032ee1ca0caf"
+    },
+    {
+      "file": "NeutralShadowFree.png",
+      "sha256": "4340b046aa829b969178c92e13b16ae80d7ba377cd0ba9e45774fa5e8faeeff7"
+    },
+    {
+      "file": "NormalSettings.json",
+      "sha256": "1eccdaddff46208c07d32cba677d36f780e8a392b3933731a280cb0a3dedc90f"
+    },
+    {
+      "file": "VertexNormalColor.png",
+      "sha256": "c452299b5742d5ea4b6294c619213c610cbfd190bd1ff05f805c5c735d261666"
+    }
+  ],
+  "findings": [
+    "Previous material nodes used two unsupported input labels; both links were disconnected. Noise therefore defaulted to world-space sampling.",
+    "Checked first-input links now connect WorldPosition to World-to-Local TransformPosition to Noise, and persisted validation asserts both edges.",
+    "Matched shadow-enabled before/after captures retain triangular patches on the white ceramic hull. Microdetail repair does not fix that defect.",
+    "The broad patches are absent from neutral and authored shadow-free views; vertex-normal-color view is smoothly graded. This supports a shadow/render interaction but does not isolate its exact cause.",
+    "No source geometry, mesh package, normal build/import setting, collision, character, runtime code or global render setting was changed by the repair.",
+    "Anti-aliasing is disabled for diagnostic inspection. Edge noise in these images is not representative production AA quality."
+  ],
+  "remaining": [
+    "Investigate shadow bias/normal-shadow interaction under actual runtime lights without globally disabling shadows.",
+    "Validate motion/rebasing stability and final appearance in packaged gameplay.",
+    "Nine sections and one 134262-triangle LOD still require runtime cost review; owner art acceptance remains pending."
+  ]
+}

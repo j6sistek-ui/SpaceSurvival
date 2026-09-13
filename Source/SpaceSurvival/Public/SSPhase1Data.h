@@ -5,6 +5,21 @@
 #include "Domain/SurvivalCore.h"
 #include "SSPhase1Data.generated.h"
 
+/** Existing station/run magnitudes. Original flat asset properties retain their serialized names. */
+USTRUCT(BlueprintType)
+struct FSSEconomyContentTuning
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", ClampMax = "100000000"))
+    int32 KillCredits = 12;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1", ClampMax = "100000000"))
+    int32 RepairPrice = 35;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", ClampMax = "25000000"))
+    int32 UpgradePriceStep = 90;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", ClampMax = "100000000"))
+    int32 StationRewardCredits = 25;
+};
+
 /** Runtime tuning entry point. Asset content is authored by Scripts/AuthorContent.py. */
 UCLASS(BlueprintType)
 class SPACESURVIVAL_API USSPhase1Data : public UDataAsset
@@ -24,6 +39,62 @@ public:
         Encounters = {FSSEncounterDefinition(ESSEncounterKind::SalvageCache),
                       FSSEncounterDefinition(ESSEncounterKind::DistressCombat),
                       FSSEncounterDefinition(ESSEncounterKind::MobileDepot)};
+    }
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy")
+    FSSEconomyContentTuning Economy;
+    bool ApplyEconomyTuning(SS::Tuning &DomainTuning) const
+    {
+        // Leave room for the native +5-per-wave bonus and all four upgrade purchases.
+        DomainTuning.waveCredits = FMath::Clamp(WaveCredits, 0, 99999955);
+        DomainTuning.upgradeBasePrice = FMath::Clamp(UpgradeBasePrice, 1, 25000000);
+        DomainTuning.killCredits = FMath::Clamp(Economy.KillCredits, 0, 100000000);
+        DomainTuning.repairPrice = FMath::Clamp(Economy.RepairPrice, 1, 100000000);
+        DomainTuning.upgradePriceStep = FMath::Clamp(Economy.UpgradePriceStep, 0, 25000000);
+        return HasValidEconomyTuning();
+    }
+    int32 StationRewardCredits() const
+    {
+        return FMath::Clamp(Economy.StationRewardCredits, 0, 100000000);
+    }
+    int32 EventCompletionCredits(bool Combat) const
+    {
+        const auto Kind = Combat ? ESSEncounterKind::DistressCombat : ESSEncounterKind::SalvageCache;
+        const int32 Amount = Encounter(Kind).CompletionCredits;
+        // Old serialized arrays default-construct new fields before restoring their Kind.
+        // Their unset sentinel must resolve by identity, never to another encounter's reward.
+        return Amount == -1 ? FSSEncounterDefinition(Kind).CompletionCredits : FMath::Clamp(Amount, 0, 100000000);
+    }
+    UFUNCTION(BlueprintPure, Category = "Content")
+    bool HasValidEconomyTuning() const
+    {
+        if (WaveCredits < 0 || WaveCredits > 99999955 || UpgradeBasePrice < 1 || UpgradeBasePrice > 25000000 ||
+            Economy.KillCredits < 0 || Economy.KillCredits > 100000000 || Economy.RepairPrice < 1 ||
+            Economy.RepairPrice > 100000000 || Economy.UpgradePriceStep < 0 || Economy.UpgradePriceStep > 25000000 ||
+            Economy.StationRewardCredits < 0 || Economy.StationRewardCredits > 100000000 || Encounters.Num() != 3)
+            return false;
+        int32 Counts[3] = {};
+        for (const auto &Entry : Encounters)
+        {
+            const int32 Kind = static_cast<int32>(Entry.Kind);
+            if (Kind < 0 || Kind > 2 || Entry.CompletionCredits < 0 || Entry.CompletionCredits > 100000000 ||
+                (Entry.Kind == ESSEncounterKind::MobileDepot && Entry.CompletionCredits != 0))
+                return false;
+            ++Counts[Kind];
+        }
+        return Counts[0] == 1 && Counts[1] == 1 && Counts[2] == 1;
+    }
+    // Authoring migration only: fill previously absent completion fields, preserving every authored value.
+    UFUNCTION(BlueprintCallable, Category = "Content")
+    bool InitializeLegacyEconomyDefaults()
+    {
+        bool Changed = false;
+        for (auto &Entry : Encounters)
+            if (Entry.CompletionCredits == -1 && static_cast<uint8>(Entry.Kind) <= 2)
+            {
+                Entry.CompletionCredits = FSSEncounterDefinition(Entry.Kind).CompletionCredits;
+                Changed = true;
+            }
+        return Changed;
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Content")
     FSSContractContentTuning Contracts;
@@ -151,9 +222,9 @@ public:
     int32 MaximumActiveThreats = 24;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Director")
     float BaseBudgetPerSecond = 1.5f;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy", meta = (ClampMin = "0", ClampMax = "99999955"))
     int32 WaveCredits = 75;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy", meta = (ClampMin = "1", ClampMax = "25000000"))
     int32 UpgradeBasePrice = 130;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
     float LaserInterval = 0.12f;

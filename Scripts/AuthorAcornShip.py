@@ -15,6 +15,8 @@ SOURCE = ROOT / 'ContentSource/AcornShipCandidate'
 BASE = '/Game/SpaceSurvival'
 MESH_PATH = BASE + '/Meshes/SM_AcornShipV2'
 VERSION = 'AcornShipCandidate1'
+MICRO_VERSION = 'ObjectLocalPosition2'
+MICRO_EXCLUSIONS = {'AC01_Windscreen', 'AC01_IonAndNav', 'AC01_CockpitPadding'}
 LIBRARY = u.EditorAssetLibrary
 EDIT = u.MaterialEditingLibrary
 
@@ -59,12 +61,39 @@ def scalar(material, name, value, x, y):
     return expression
 
 
+
+def repair_microdetail(material, item, digest):
+    """Connect only the owned local-position chain; never rebuild mesh normals."""
+    if item['name'] in MICRO_EXCLUSIONS:
+        return
+    expressions = EDIT.get_material_expressions(material)
+    groups = [[e for e in expressions if isinstance(e, cls)] for cls in
+              (u.MaterialExpressionWorldPosition, u.MaterialExpressionTransformPosition, u.MaterialExpressionNoise)]
+    assert all(len(group) == 1 for group in groups), 'Unexpected authored microdetail graph'
+    world, local, noise = [group[0] for group in groups]
+    local_inputs = EDIT.get_inputs_for_material_expression(material, local)
+    noise_inputs = EDIT.get_inputs_for_material_expression(material, noise)
+    assert local_inputs[0] in (None, world) and noise_inputs[0] in (None, local), 'Customized microdetail input requires review'
+    changed = local_inputs[0] != world or noise_inputs[0] != local
+    if changed:
+        # UE5.8 TransformPosition's first pin is unnamed. Noise calls its first
+        # pin World Position; empty pin targets the first input consistently.
+        assert EDIT.connect_material_expressions(world, '', local, ''), 'Local transform connection failed'
+        assert EDIT.connect_material_expressions(local, '', noise, ''), 'Local noise connection failed'
+        EDIT.recompile_material(material)
+    assert EDIT.get_inputs_for_material_expression(material, local)[0] == world
+    assert EDIT.get_inputs_for_material_expression(material, noise)[0] == local
+    if changed or LIBRARY.get_metadata_tag(material, 'SSAcornMicrodetailVersion') != MICRO_VERSION:
+        LIBRARY.set_metadata_tag(material, 'SSAcornMicrodetailVersion', MICRO_VERSION)
+        save(material, digest)
+
 def material(item, digest):
     path = material_path(item['name'])
     result = LIBRARY.load_asset(path)
     if result:
         if LIBRARY.get_metadata_tag(result, 'SSAcornSourceSHA256') != digest:
             raise RuntimeError('Existing candidate needs deliberate reviewed reimport: ' + path)
+        repair_microdetail(result, item, digest)
         return result
     result = u.AssetToolsHelpers.get_asset_tools().create_asset(path.rsplit('/', 1)[1], BASE + '/Materials', u.Material, u.MaterialFactoryNew())
     if not result:
@@ -77,20 +106,20 @@ def material(item, digest):
     roughness = scalar(result, 'Roughness', item['roughness'], -800, 150)
     EDIT.connect_material_property(metallic, '', u.MaterialProperty.MP_METALLIC)
     EDIT.connect_material_property(roughness, '', u.MaterialProperty.MP_ROUGHNESS)
-    if item['name'] not in ('AC01_Windscreen', 'AC01_IonAndNav', 'AC01_CockpitPadding'):
+    if item['name'] not in MICRO_EXCLUSIONS:
         # One inexpensive 3D texture noise level, only +/-0.008 roughness.
         # Local position prevents surface detail swimming during flight/rebasing.
         world = node(result, u.MaterialExpressionWorldPosition, -1200, 300)
         local = node(result, u.MaterialExpressionTransformPosition, -1000, 300)
         local.set_editor_property('transform_source_type', u.MaterialPositionTransformSource.TRANSFORMPOSSOURCE_WORLD)
         local.set_editor_property('transform_type', u.MaterialPositionTransformSource.TRANSFORMPOSSOURCE_LOCAL)
-        EDIT.connect_material_expressions(world, '', local, 'Input')
+        assert EDIT.connect_material_expressions(world, '', local, ''), 'Local transform connection failed'
         noise = node(result, u.MaterialExpressionNoise, -750, 300)
         for key, value in {'scale': 2.0, 'quality': 1, 'levels': 1, 'turbulence': False,
                            'output_min': -1.0, 'output_max': 1.0,
                            'noise_function': u.NoiseFunction.NOISEFUNCTION_GRADIENT_TEX3D}.items():
             noise.set_editor_property(key, value)
-        EDIT.connect_material_expressions(local, '', noise, 'Position')
+        assert EDIT.connect_material_expressions(local, '', noise, ''), 'Local noise connection failed'
         amount = scalar(result, 'MicroRoughness', .008, -750, 500)
         product = node(result, u.MaterialExpressionMultiply, -470, 300)
         EDIT.connect_material_expressions(noise, '', product, 'A')
@@ -114,6 +143,8 @@ def material(item, digest):
         # No screen-space refraction: preserves pilot/hazard readability.
         LIBRARY.set_metadata_tag(result, 'SSGlassPresentation', 'TranslucentSurface18PercentNoRefraction')
     EDIT.recompile_material(result)
+    if item['name'] not in MICRO_EXCLUSIONS:
+        LIBRARY.set_metadata_tag(result, 'SSAcornMicrodetailVersion', MICRO_VERSION)
     save(result, digest)
     return result
 

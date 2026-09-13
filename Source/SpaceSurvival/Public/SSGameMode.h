@@ -88,6 +88,7 @@ public:
 private:
     friend class ASSPlayerController;
     friend class ASSWave10Soak;
+    friend class FSSAudioFirstState;
     bool bAutomatedSoakInput = false;
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
@@ -118,6 +119,7 @@ private:
     float RegionTime = 0.f;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
     bool LowHullAlerted = false;
+    void UpdateMusicMix();
     void UpdateThreatFeedback(float DeltaSeconds);
     void EnterStation();
     void SpawnFlight(FVector Location, FRotator Rotation);

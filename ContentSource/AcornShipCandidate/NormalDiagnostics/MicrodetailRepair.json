@@ -1,0 +1,306 @@
+{
+  "status": "SIX_MATERIAL_LOCAL_MICRODETAIL_REPAIR_AND_SHADOW_COMPARISON",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "mesh_sha256": "23c9c18be50728e5d17fa4a545bb334319e010ae25b9845ef942d0fdddae5107",
+  "geometry": {
+    "render_lod0_geometry_sha256": "5cc66bbfec97a393789843b40a6fba03bd4b257900b72f72647f723240acb15f",
+    "triangles": 134262,
+    "vertices": 79268,
+    "lods": 1,
+    "uv_channels": 1,
+    "sections": 9,
+    "bounds_origin_cm": [
+      -17.400001525878906,
+      0.0,
+      16.21126937866211
+    ],
+    "bounds_extent_cm": [
+      227.39998626708984,
+      142.78431701660156,
+      81.58880996704102
+    ],
+    "simple_collision_count": 0,
+    "section_collision": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "collision_trace": "<CollisionTraceFlag.CTF_USE_DEFAULT: 0>",
+    "collision_enabled": "<CollisionEnabled.NO_COLLISION: 0>",
+    "collision_profile": "NoCollision"
+  },
+  "graphs": [
+    {
+      "material": "M_AcornV2_GraphiteStructure",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_WarmCeramic",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_IvoryPanels",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_BurnishedBronze",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_ChampagneEdges",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_MachinedTitanium",
+      "connections": [
+        {
+          "node": "MaterialExpressionTransformPosition_0",
+          "class": "MaterialExpressionTransformPosition",
+          "input_names": [
+            "None"
+          ],
+          "connected_inputs": [
+            null
+          ]
+        },
+        {
+          "node": "MaterialExpressionNoise_0",
+          "class": "MaterialExpressionNoise",
+          "input_names": [
+            "World Position",
+            "FilterWidth"
+          ],
+          "connected_inputs": [
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "material": "M_AcornV2_IonAndNav",
+      "connections": []
+    },
+    {
+      "material": "M_AcornV2_CockpitPadding",
+      "connections": []
+    },
+    {
+      "material": "M_AcornV2_Windscreen",
+      "connections": []
+    }
+  ],
+  "images": [
+    {
+      "file": "BeforeShadowFree.png",
+      "sha256": "cb6bc09122b983429c456f7092f75ff5401e9834cb6593c95ebbbfb06abb5dd1"
+    },
+    {
+      "file": "BeforeShadowEnabled.png",
+      "sha256": "2a48567fd7858359232f503e3e61bf90ae5acde0fb9b36a26de2feb69855322c"
+    },
+    {
+      "file": "AfterShadowFree.png",
+      "sha256": "e0cf066b2c850e6d33e7af83999766a2a6d4f97c61e5d88aa6a53164bcd2ab80"
+    },
+    {
+      "file": "AfterShadowEnabled.png",
+      "sha256": "60732da426124338343c43adee1378908e38e9cf35a07a5ba59eca88de00bad0"
+    }
+  ],
+  "microdetail_version": "ObjectLocalPosition2",
+  "changed_materials": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_BurnishedBronze.uasset",
+      "before_sha256": "d5bee92ccf1e9b6c54b85353d46734f4694f41c9e38981b8c5e281e64b24f15e",
+      "after_sha256": "0e91828d10190e0edef73490ee36659c2cbe41be172f178048dc97d70b9118c4"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_ChampagneEdges.uasset",
+      "before_sha256": "fdc75e3e3e4921892791793e34870eedc404307f939ae00ad7346db28bbc518e",
+      "after_sha256": "8797aa3e71ccfff42cab9cb7a76efd91e49f0d0434678235fec55a5838056859"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_GraphiteStructure.uasset",
+      "before_sha256": "7a02849b089a192d766261f344f6522241c50678d9fa5b9f5e9e78f8b2dea4a8",
+      "after_sha256": "4be5f2fa9f0d38878ba99648418014b4e390a18a177d0f71a4dbd5752efe9f95"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_IvoryPanels.uasset",
+      "before_sha256": "c3c173b354eeeddde99f4ea32907c784c259bf509b83cdd983a8df11b7c360a7",
+      "after_sha256": "c33639070c924e50ae665437431f658f3e8088b9c52dccc5c4dd395416bcd3f3"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_MachinedTitanium.uasset",
+      "before_sha256": "e0706cfef69b5fca60cbcc7349e42380b5cb9f108487c38f4a9f66bcda75cbd7",
+      "after_sha256": "46e4d442190b589022e7cc247692677cc0f8141d522b3de11f15440050965467"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_AcornV2_WarmCeramic.uasset",
+      "before_sha256": "c109c3ff0ccd0f3010643a0044713e005aead08a89477c148dc9e7f7a655e8cc",
+      "after_sha256": "123c4f918c11926bb0eab7a6d691a9075e4e687dd6581f43b1f821b824202392"
+    }
+  ],
+  "all_other_packages_unchanged": true,
+  "geometry_after": {
+    "render_lod0_geometry_sha256": "5cc66bbfec97a393789843b40a6fba03bd4b257900b72f72647f723240acb15f",
+    "triangles": 134262,
+    "vertices": 79268,
+    "lods": 1,
+    "uv_channels": 1,
+    "sections": 9,
+    "bounds_origin_cm": [
+      -17.400001525878906,
+      0.0,
+      16.21126937866211
+    ],
+    "bounds_extent_cm": [
+      227.39998626708984,
+      142.78431701660156,
+      81.58880996704102
+    ],
+    "simple_collision_count": 0,
+    "section_collision": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "collision_trace": "<CollisionTraceFlag.CTF_USE_DEFAULT: 0>",
+    "collision_enabled": "<CollisionEnabled.NO_COLLISION: 0>",
+    "collision_profile": "NoCollision"
+  },
+  "limits": [
+    "Exact same camera and three directional light settings before/after; only shadow toggles differ by labeled view",
+    "Only six material graph links/metadata updated; mesh asset, collision, source geometry and normals unchanged",
+    "Shadow-enabled faceting is retained in comparison; local microdetail is not claimed to solve it",
+    "AA disabled for diagnostic; no owner art or gameplay acceptance"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "asset": "rock_face",
+  "asset_url": "https://polyhaven.com/a/rock_face",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "verified_utc": "2026-09-13T08:14:26.8195840Z",
+  "authors": {
+    "photography": "Greg Zaal",
+    "processing": "Dario Barresi"
+  },
+  "physical_width_m": 2.4,
+  "maps": [
+    {
+      "kind": "diff",
+      "file": "rock_face_diff_2k.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rock_face/rock_face_diff_2k.png",
+      "bytes": 21741133,
+      "official_md5": "d8334d2cb99c80fc63c5c7ea5c6fd97e",
+      "sha256": "7dbdf01fc89cb43c34e872615fc05f2739209de5c9c6dfc65fddb375bfca2bc9",
+      "width": 2048,
+      "height": 2048,
+      "source_unchanged": true
+    },
+    {
+      "kind": "arm",
+      "file": "rock_face_arm_2k.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rock_face/rock_face_arm_2k.png",
+      "bytes": 15033019,
+      "official_md5": "a59f79e3dc982a0d0a26ecd56fcd5ea9",
+      "sha256": "0c3e9a30d2c653e0ab04461ab3c2d897b8713244dbdc5b2674d0ea0c745c86b6",
+      "width": 2048,
+      "height": 2048,
+      "source_unchanged": true
+    },
+    {
+      "kind": "nor_dx",
+      "file": "rock_face_nor_dx_2k.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rock_face/rock_face_nor_dx_2k.png",
+      "bytes": 22682802,
+      "official_md5": "b2c7f3d8996571cfdf22e31aabc41ba5",
+      "sha256": "54db6ddca3f8974cccf64cf6d811ea7bfd144195a8fe8fa3b8287ca11477b778",
+      "width": 2048,
+      "height": 2048,
+      "source_unchanged": true
+    }
+  ]
+}
