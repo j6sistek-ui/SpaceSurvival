@@ -11,3 +11,5 @@
 *.umap binary
 *.wav binary
 *.png binary
+ContentSource/Meshes/*.obj linguist-generated=true
+ContentSource/Meshes/Palette.mtl linguist-generated=true

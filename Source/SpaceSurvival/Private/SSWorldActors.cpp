@@ -2,6 +2,7 @@
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSShip.h"
+#include "SSPhase1Data.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -15,15 +16,24 @@ namespace
 {
 constexpr float ShipRadius = 120.f;
 
-ASSGameMode* GameMode(const UObject* Context)
+ASSGameMode *GameMode(const UObject *Context)
 {
     return Cast<ASSGameMode>(UGameplayStatics::GetGameMode(Context));
 }
 
-UStaticMesh* Mesh(const TCHAR* Name, const TCHAR* Fallback = TEXT("/Engine/BasicShapes/Sphere.Sphere"))
+const USSPhase1Data *Content(const UObject *Context)
+{
+    if (const ASSGameMode *Mode = GameMode(Context))
+        if (Mode->Tuning)
+            return Mode->Tuning;
+    return GetDefault<USSPhase1Data>();
+}
+
+UStaticMesh *Mesh(const TCHAR *Name, const TCHAR *Fallback = TEXT("/Engine/BasicShapes/Sphere.Sphere"))
 {
     const FString Path = FString::Printf(TEXT("/Game/SpaceSurvival/Meshes/%s.%s"), Name, Name);
-    if (UStaticMesh* Authored = LoadObject<UStaticMesh>(nullptr, *Path)) return Authored;
+    if (UStaticMesh *Authored = LoadObject<UStaticMesh>(nullptr, *Path))
+        return Authored;
     return LoadObject<UStaticMesh>(nullptr, Fallback);
 }
 
@@ -31,28 +41,67 @@ FLinearColor BodyColor(ESSWorldKind Kind)
 {
     switch (Kind)
     {
-    case ESSWorldKind::ElectricalStorm: return FLinearColor(.24f, .55f, 1.f);
-    case ESSWorldKind::GravityAnomaly: return FLinearColor(.6f, .18f, 1.f);
-    case ESSWorldKind::Pursuer: return FLinearColor(1.f, .16f, .08f);
-    case ESSWorldKind::Flanker: return FLinearColor(1.f, .52f, .08f);
-    case ESSWorldKind::Wreckage: return FLinearColor(.22f, .36f, .43f);
-    case ESSWorldKind::Depot: return FLinearColor(.15f, 1.f, .55f);
-    case ESSWorldKind::Event: return FLinearColor(.3f, .85f, 1.f);
-    default: return FLinearColor(.35f, .26f, .2f);
+    case ESSWorldKind::ElectricalStorm:
+        return FLinearColor(.24f, .55f, 1.f);
+    case ESSWorldKind::GravityAnomaly:
+        return FLinearColor(.6f, .18f, 1.f);
+    case ESSWorldKind::Pursuer:
+        return FLinearColor(1.f, .16f, .08f);
+    case ESSWorldKind::Flanker:
+        return FLinearColor(1.f, .52f, .08f);
+    case ESSWorldKind::Wreckage:
+        return FLinearColor(.22f, .36f, .43f);
+    case ESSWorldKind::Depot:
+        return FLinearColor(.15f, 1.f, .55f);
+    case ESSWorldKind::Event:
+        return FLinearColor(.3f, .85f, 1.f);
+    default:
+        return FLinearColor(.35f, .26f, .2f);
     }
 }
 
-void Announce(const UObject* Context, const FString& Text)
+void Announce(const UObject *Context, const FString &Text)
 {
-    if (ASSGameMode* Mode = GameMode(Context)) Mode->Announce(Text);
+    if (ASSGameMode *Mode = GameMode(Context))
+        Mode->Announce(Text);
 }
 
-bool HasThreatCapacity(const UObject* Context, int32 Additional = 1)
+bool HasThreatCapacity(const UObject *Context, int32 Additional = 1)
 {
-    ASSGameMode* Mode = GameMode(Context);
-    return !Mode || !Mode->Director || Mode->Director->GetActiveThreatCount() + Additional <= Mode->Director->MaximumActiveThreats;
+    ASSGameMode *Mode = GameMode(Context);
+    return !Mode || !Mode->Director ||
+           Mode->Director->GetActiveThreatCount() + Additional <= Mode->Director->MaximumActiveThreats;
 }
+
+bool SelectContent(const UObject *Context, const TArray<ESSWorldKind> &Candidates, int32 Wave, FRandomStream &Random,
+                   bool bEnemy, ESSWorldKind &Selected)
+{
+    float Total = 0.f;
+    const auto *Data = Content(Context);
+    for (ESSWorldKind Kind : Candidates)
+    {
+        const int32 MinimumWave = bEnemy ? Data->Enemy(Kind).MinimumWave : Data->Hazard(Kind).MinimumWave;
+        if (Wave >= MinimumWave)
+            Total += FMath::Max(0.f, bEnemy ? Data->Enemy(Kind).SelectionWeight : Data->Hazard(Kind).SelectionWeight);
+    }
+    if (Total <= 0.f)
+        return false;
+    float Draw = Random.FRand() * Total;
+    for (ESSWorldKind Kind : Candidates)
+    {
+        const int32 MinimumWave = bEnemy ? Data->Enemy(Kind).MinimumWave : Data->Hazard(Kind).MinimumWave;
+        const float Weight =
+            FMath::Max(0.f, bEnemy ? Data->Enemy(Kind).SelectionWeight : Data->Hazard(Kind).SelectionWeight);
+        if (Wave < MinimumWave || Weight <= 0.f)
+            continue;
+        Selected = Kind;
+        Draw -= Weight;
+        if (Draw <= 0.f)
+            return true;
+    }
+    return true;
 }
+} // namespace
 
 ASSWorldBody::ASSWorldBody()
 {
@@ -68,6 +117,10 @@ ASSWorldBody::ASSWorldBody()
     Visual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Presentation"));
     Visual->SetupAttachment(Collision);
     Visual->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    ThreatIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ThreatIndicator"));
+    ThreatIndicator->SetupAttachment(Collision);
+    ThreatIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    ThreatIndicator->SetVisibility(false);
 }
 
 void ASSWorldBody::BeginPlay()
@@ -84,8 +137,12 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
     CollisionDamage = FMath::Max(0.f, InDamage);
     Wave = FMath::Clamp(InWave, 1, 10);
     Age = 0.f;
-    Health = Kind == ESSWorldKind::MediumAsteroid ? 90.f : (IsEnemy() ? 55.f : 24.f);
-    if (Kind == ESSWorldKind::Wreckage) Health = BodyRadius > 320.f ? 100000.f : 65.f;
+    const auto Hazard = Content(this)->Hazard(Kind);
+    const auto Enemy = Content(this)->Enemy(Kind);
+    Health = FMath::Max(1.f, IsEnemy() ? Enemy.Health : Hazard.Health);
+    LifetimeSeconds = IsEnemy() ? Enemy.Lifetime : Hazard.Lifetime;
+    TelegraphSeconds = FMath::Max(1.f, Hazard.TelegraphSeconds);
+    GravityAcceleration = FMath::Max(0.f, Hazard.GravityBase + Wave * Hazard.GravityPerWave);
     bPersistentAcrossWaves = IsEnvironmentalField();
     Collision->SetSphereRadius(BodyRadius);
     Collision->SetCollisionResponseToChannel(ECC_Visibility, IsEnvironmentalField() ? ECR_Ignore : ECR_Block);
@@ -94,109 +151,195 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
 
 void ASSWorldBody::UpdateVisual()
 {
-    const TCHAR* Asset = TEXT("SM_AsteroidSmall");
+    const TCHAR *Asset = TEXT("SM_AsteroidSmall");
     switch (Kind)
     {
-    case ESSWorldKind::MediumAsteroid: Asset = TEXT("SM_AsteroidMedium"); break;
-    case ESSWorldKind::MassiveAsteroid: Asset = TEXT("SM_AsteroidMassive"); break;
-    case ESSWorldKind::Wreckage: Asset = TEXT("SM_Wreckage"); break;
-    case ESSWorldKind::ElectricalStorm: Asset = TEXT("SM_StormRing"); break;
-    case ESSWorldKind::GravityAnomaly: Asset = TEXT("SM_GravityRing"); break;
-    case ESSWorldKind::Pursuer: Asset = TEXT("SM_Pursuer"); break;
-    case ESSWorldKind::Flanker: Asset = TEXT("SM_Flanker"); break;
-    case ESSWorldKind::Depot: Asset = TEXT("SM_MobileDepot"); break;
-    case ESSWorldKind::Event: Asset = TEXT("SM_EventBeacon"); break;
-    case ESSWorldKind::Projectile: Asset = TEXT("SM_Projectile"); break;
-    case ESSWorldKind::Pickup: Asset = TEXT("SM_PickupCredit"); break;
-    default: break;
+    case ESSWorldKind::MediumAsteroid:
+        Asset = TEXT("SM_AsteroidMedium");
+        break;
+    case ESSWorldKind::MassiveAsteroid:
+        Asset = TEXT("SM_AsteroidMassive");
+        break;
+    case ESSWorldKind::Wreckage:
+        Asset = TEXT("SM_Wreckage");
+        break;
+    case ESSWorldKind::ElectricalStorm:
+        Asset = TEXT("SM_StormRing");
+        break;
+    case ESSWorldKind::GravityAnomaly:
+        Asset = TEXT("SM_GravityRing");
+        break;
+    case ESSWorldKind::Pursuer:
+        Asset = TEXT("SM_Pursuer");
+        break;
+    case ESSWorldKind::Flanker:
+        Asset = TEXT("SM_Flanker");
+        break;
+    case ESSWorldKind::Depot:
+        Asset = TEXT("SM_MobileDepot");
+        break;
+    case ESSWorldKind::Event:
+        Asset = TEXT("SM_EventBeacon");
+        break;
+    case ESSWorldKind::Projectile:
+        Asset = TEXT("SM_Projectile");
+        break;
+    case ESSWorldKind::Pickup:
+        Asset = TEXT("SM_PickupCredit");
+        break;
+    default:
+        break;
     }
-    Visual->SetStaticMesh(Mesh(Asset));
+    FString CatalogMesh = Asset;
+    if (IsSolidHazard() || IsEnvironmentalField())
+        CatalogMesh = Content(this)->Hazard(Kind).MeshName.ToString();
+    else if (IsEnemy())
+        CatalogMesh = Content(this)->Enemy(Kind).MeshName.ToString();
+    Visual->SetStaticMesh(Mesh(*CatalogMesh));
     // Match collision to the loaded mesh rather than assuming authoring units.
     // Missing authoring remains an explicit fallback, not presentation verification.
     const float MeshExtent = Visual->GetStaticMesh() ? Visual->GetStaticMesh()->GetBounds().BoxExtent.GetMax() : 50.f;
     Visual->SetRelativeScale3D(FVector(BodyRadius / FMath::Max(1.f, MeshExtent)));
-    const TCHAR* MaterialPath = IsEnvironmentalField() || Kind == ESSWorldKind::Event || Kind == ESSWorldKind::Depot || Kind == ESSWorldKind::Projectile || Kind == ESSWorldKind::Pickup
-        ? TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive")
-        : TEXT("/Game/SpaceSurvival/Materials/M_Hazard.M_Hazard");
-    UMaterialInterface* Material = LoadObject<UMaterialInterface>(nullptr, MaterialPath);
-    if (!Material) Material = LoadObject<UMaterialInterface>(nullptr, TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
+    const bool bPreserveAuthoredMaterial = Visual->GetStaticMesh() &&
+                                           Visual->GetStaticMesh()->GetPathName().StartsWith(TEXT("/Game/")) &&
+                                           (IsSolidHazard() || IsEnemy());
+    ThreatIndicator->SetVisibility(IsEnemy());
+    UStaticMeshComponent *FeedbackMesh = Visual;
+    if (bPreserveAuthoredMaterial)
+    {
+        // Imported palette/material slots belong to the authored body. Combat glow
+        // is an auxiliary hollow ring and never paints over that authored surface.
+        DynamicMaterial = nullptr;
+        if (!IsEnemy())
+            return;
+        ThreatIndicator->SetStaticMesh(Mesh(TEXT("SM_StormRing")));
+        const float IndicatorExtent =
+            ThreatIndicator->GetStaticMesh() ? ThreatIndicator->GetStaticMesh()->GetBounds().BoxExtent.GetMax() : 50.f;
+        ThreatIndicator->SetRelativeScale3D(FVector(BodyRadius * 1.15f / FMath::Max(1.f, IndicatorExtent)));
+        ThreatIndicator->SetCastShadow(false);
+        FeedbackMesh = ThreatIndicator;
+    }
+    const TCHAR *MaterialPath = IsEnvironmentalField() || IsEnemy() || Kind == ESSWorldKind::Event ||
+                                        Kind == ESSWorldKind::Depot || Kind == ESSWorldKind::Projectile ||
+                                        Kind == ESSWorldKind::Pickup
+                                    ? TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive")
+                                    : TEXT("/Game/SpaceSurvival/Materials/M_Hazard.M_Hazard");
+    UMaterialInterface *Material = LoadObject<UMaterialInterface>(nullptr, MaterialPath);
+    if (!Material)
+        Material =
+            LoadObject<UMaterialInterface>(nullptr, TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
     if (Material)
     {
         DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
         DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), BodyColor(Kind));
         DynamicMaterial->SetVectorParameterValue(TEXT("Color"), FLinearColor::White);
         DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), IsEnvironmentalField() ? .25f : 1.f);
-        Visual->SetMaterial(0, DynamicMaterial);
+        FeedbackMesh->SetMaterial(0, DynamicMaterial);
     }
     Visual->SetCastShadow(!IsEnvironmentalField());
 }
 
-ASSShip* ASSWorldBody::FindShip() const
+ASSShip *ASSWorldBody::FindShip() const
 {
     return Cast<ASSShip>(UGameplayStatics::GetPlayerPawn(this, 0));
 }
 
-bool ASSWorldBody::IsEnemy() const { return Kind == ESSWorldKind::Pursuer || Kind == ESSWorldKind::Flanker; }
-bool ASSWorldBody::IsEnvironmentalField() const { return Kind == ESSWorldKind::ElectricalStorm || Kind == ESSWorldKind::GravityAnomaly; }
+bool ASSWorldBody::IsEnemy() const
+{
+    return Kind == ESSWorldKind::Pursuer || Kind == ESSWorldKind::Flanker;
+}
+bool ASSWorldBody::IsEnvironmentalField() const
+{
+    return Kind == ESSWorldKind::ElectricalStorm || Kind == ESSWorldKind::GravityAnomaly;
+}
 bool ASSWorldBody::IsSolidHazard() const
 {
-    return Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid || Kind == ESSWorldKind::MassiveAsteroid || Kind == ESSWorldKind::Wreckage;
+    return Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
+           Kind == ESSWorldKind::MassiveAsteroid || Kind == ESSWorldKind::Wreckage;
 }
 bool ASSWorldBody::IsWeaponTarget() const
 {
-    return IsEnemy() || Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid || (Kind == ESSWorldKind::Wreckage && BodyRadius <= 320.f);
+    if (IsEnemy())
+        return true;
+    if (!IsSolidHazard())
+        return false;
+    const auto Definition = Content(this)->Hazard(Kind);
+    return Definition.Destructible &&
+           (Kind != ESSWorldKind::Wreckage || BodyRadius <= Definition.DestructibleRadiusLimit);
 }
 
 FString ASSWorldBody::GetLabel() const
 {
     switch (Kind)
     {
-    case ESSWorldKind::SmallAsteroid: return TEXT("SMALL DEBRIS");
-    case ESSWorldKind::MediumAsteroid: return TEXT("FRACTURABLE ASTEROID");
-    case ESSWorldKind::MassiveAsteroid: return TEXT("MASSIVE BODY · EVADE");
-    case ESSWorldKind::Wreckage: return BodyRadius > 320.f ? TEXT("STRUCTURAL WRECKAGE · EVADE") : TEXT("BREAKABLE WRECKAGE");
-    case ESSWorldKind::ElectricalStorm: return TEXT("ELECTRICAL STORM");
-    case ESSWorldKind::GravityAnomaly: return TEXT("GRAVITY ANOMALY");
-    case ESSWorldKind::Pursuer: return TEXT("PURSUER");
-    case ESSWorldKind::Flanker: return TEXT("FLANKER");
-    case ESSWorldKind::Depot: return TEXT("MOBILE DEPOT · INTERACT FOR DEALS");
-    case ESSWorldKind::Event: return TEXT("OPTIONAL SIGNAL · INTERACT TO ACCEPT");
-    case ESSWorldKind::Pickup: return TEXT("PICKUP");
-    default: return TEXT("");
+    case ESSWorldKind::SmallAsteroid:
+        return TEXT("SMALL DEBRIS");
+    case ESSWorldKind::MediumAsteroid:
+        return TEXT("FRACTURABLE ASTEROID");
+    case ESSWorldKind::MassiveAsteroid:
+        return TEXT("MASSIVE BODY · EVADE");
+    case ESSWorldKind::Wreckage:
+        return IsWeaponTarget() ? TEXT("BREAKABLE WRECKAGE") : TEXT("STRUCTURAL WRECKAGE · EVADE");
+    case ESSWorldKind::ElectricalStorm:
+        return TEXT("ELECTRICAL STORM");
+    case ESSWorldKind::GravityAnomaly:
+        return TEXT("GRAVITY ANOMALY");
+    case ESSWorldKind::Pursuer:
+        return TEXT("PURSUER");
+    case ESSWorldKind::Flanker:
+        return TEXT("FLANKER");
+    case ESSWorldKind::Depot:
+        return TEXT("MOBILE DEPOT · INTERACT FOR DEALS");
+    case ESSWorldKind::Event:
+        return TEXT("OPTIONAL SIGNAL · INTERACT TO ACCEPT");
+    case ESSWorldKind::Pickup:
+        return TEXT("PICKUP");
+    default:
+        return TEXT("");
     }
 }
 
 void ASSWorldBody::ApplyWorldForce(FVector Acceleration, float DeltaSeconds)
 {
-    if (Kind == ESSWorldKind::MassiveAsteroid || IsEnvironmentalField() || Kind == ESSWorldKind::Event || Kind == ESSWorldKind::Depot) return;
+    if (Kind == ESSWorldKind::MassiveAsteroid || IsEnvironmentalField() || Kind == ESSWorldKind::Event ||
+        Kind == ESSWorldKind::Depot)
+        return;
     LinearVelocity += Acceleration.GetClampedToMaxSize(1100.f) * DeltaSeconds;
 }
 
-void ASSWorldBody::ApplyWorldOffset(const FVector& InOffset, bool bWorldShift)
+void ASSWorldBody::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 {
     Super::ApplyWorldOffset(InOffset, bWorldShift);
-    if (bHasPreviousShipPosition) PreviousShipPosition += InOffset;
+    if (bHasPreviousShipPosition)
+        PreviousShipPosition += InOffset;
 }
 
 void ASSWorldBody::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    if (bDefeated) return;
+    if (bDefeated)
+        return;
     const FVector PreviousBodyPosition = GetActorLocation();
     Age += DeltaSeconds;
     ShipContactRemaining = FMath::Max(0.f, ShipContactRemaining - DeltaSeconds);
     AddActorWorldOffset(LinearVelocity * DeltaSeconds, false);
-    if (IsSolidHazard()) Visual->AddLocalRotation(FRotator(2.f, 4.f, 1.5f) * DeltaSeconds);
-    ASSShip* Ship = FindShip();
+    if (IsSolidHazard())
+        Visual->AddLocalRotation(FRotator(2.f, 4.f, 1.5f) * DeltaSeconds);
+    ASSShip *Ship = FindShip();
     if (Ship)
     {
         const FVector Offset = Ship->GetActorLocation() - GetActorLocation();
         const float Distance = Offset.Size();
         if (IsSolidHazard() || IsEnemy())
         {
-            const FVector PreviousRelative = bHasPreviousShipPosition ? PreviousShipPosition - PreviousBodyPosition : Offset;
+            const FVector PreviousRelative =
+                bHasPreviousShipPosition ? PreviousShipPosition - PreviousBodyPosition : Offset;
             const FVector RelativePath = Offset - PreviousRelative;
-            const float ClosestTime = RelativePath.IsNearlyZero() ? 1.f : static_cast<float>(FMath::Clamp(-FVector::DotProduct(PreviousRelative, RelativePath) / RelativePath.SizeSquared(), 0.0, 1.0));
+            const float ClosestTime =
+                RelativePath.IsNearlyZero()
+                    ? 1.f
+                    : static_cast<float>(FMath::Clamp(
+                          -FVector::DotProduct(PreviousRelative, RelativePath) / RelativePath.SizeSquared(), 0.0, 1.0));
             const float SweptDistance = (PreviousRelative + RelativePath * ClosestTime).Size();
             if (SweptDistance < BodyRadius + ShipRadius && ShipContactRemaining <= 0.f)
             {
@@ -211,17 +354,23 @@ void ASSWorldBody::Tick(float DeltaSeconds)
             if (!bWarningIssued && Distance < WarningDistance)
             {
                 bWarningIssued = true;
-                Announce(this, Kind == ESSWorldKind::ElectricalStorm ? TEXT("ELECTRICAL STORM · Pulsing rings warn before discharge") : TEXT("GRAVITY ANOMALY · Counter the pull; boost across its edge"));
+                Announce(this, Kind == ESSWorldKind::ElectricalStorm
+                                   ? TEXT("ELECTRICAL STORM · Pulsing rings warn before discharge")
+                                   : TEXT("GRAVITY ANOMALY · Counter the pull; boost across its edge"));
             }
             const bool bReady = Age >= TelegraphSeconds;
-            if (DynamicMaterial) DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), bReady ? 1.1f + .3f * FMath::Sin(Age * 4.f) : .25f + Age / FMath::Max(1.f, TelegraphSeconds) * .4f);
+            if (DynamicMaterial)
+                DynamicMaterial->SetScalarParameterValue(TEXT("Emission"),
+                                                         bReady ? 1.1f + .3f * FMath::Sin(Age * 4.f)
+                                                                : .25f + Age / FMath::Max(1.f, TelegraphSeconds) * .4f);
             if (Kind == ESSWorldKind::ElectricalStorm)
             {
                 FieldPulseRemaining -= DeltaSeconds;
                 if (bReady && FieldPulseRemaining <= 0.f)
                 {
-                    FieldPulseRemaining = 1.8f;
-                    if (Distance < BodyRadius) Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Electrical);
+                    FieldPulseRemaining = FMath::Max(.2f, Content(this)->Hazard(Kind).PulseInterval);
+                    if (Distance < BodyRadius)
+                        Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Electrical);
                 }
             }
             else if (bReady)
@@ -234,27 +383,36 @@ void ASSWorldBody::Tick(float DeltaSeconds)
                 }
                 for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
                 {
-                    ASSWorldBody* Other = *It;
-                    if (Other == this || (!Other->IsSolidHazard() && !Other->IsEnemy())) continue;
+                    ASSWorldBody *Other = *It;
+                    if (Other == this || (!Other->IsSolidHazard() && !Other->IsEnemy()))
+                        continue;
                     const FVector ToCentre = GetActorLocation() - Other->GetActorLocation();
                     const float Range = ToCentre.Size();
-                    if (Range < BodyRadius) Other->ApplyWorldForce(ToCentre.GetSafeNormal() * GravityAcceleration * .45f * (1.f - Range / BodyRadius), DeltaSeconds);
+                    if (Range < BodyRadius)
+                        Other->ApplyWorldForce(ToCentre.GetSafeNormal() * GravityAcceleration * .45f *
+                                                   (1.f - Range / BodyRadius),
+                                               DeltaSeconds);
                 }
             }
         }
         // Retain hazards across wave boundaries, retire only beyond the playable vicinity.
         PreviousShipPosition = Ship->GetActorLocation();
         bHasPreviousShipPosition = true;
-        if (FVector::DotProduct(GetActorLocation() - Ship->GetActorLocation(), Ship->GetActorForwardVector()) < -16000.f) Destroy();
+        if (FVector::DotProduct(GetActorLocation() - Ship->GetActorLocation(), Ship->GetActorForwardVector()) <
+            -16000.f)
+            Destroy();
     }
-    if (LifetimeSeconds > 0.f && Age > LifetimeSeconds) Destroy();
+    if (LifetimeSeconds > 0.f && Age > LifetimeSeconds)
+        Destroy();
 }
 
 void ASSWorldBody::ReceiveWeaponHit(float Damage)
 {
-    if (!IsWeaponTarget() || bDefeated || !FMath::IsFinite(Damage) || Damage <= 0.f) return;
+    if (!IsWeaponTarget() || bDefeated || !FMath::IsFinite(Damage) || Damage <= 0.f)
+        return;
     Health -= Damage;
-    if (DynamicMaterial) DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 1.8f);
+    if (DynamicMaterial)
+        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 1.8f);
     if (Health <= 0.f)
     {
         bDefeated = true;
@@ -265,28 +423,44 @@ void ASSWorldBody::ReceiveWeaponHit(float Damage)
 
 void ASSWorldBody::OnDefeated()
 {
+    const auto Definition = Content(this)->Hazard(Kind);
     if (Kind == ESSWorldKind::MediumAsteroid)
     {
         // Fragment count is bounded. Fragments preserve collision and can worsen the line.
-        for (int32 Index = 0; Index < 3; ++Index)
+        for (int32 Index = 0; Index < FMath::Clamp(Definition.FragmentCount, 0, 3); ++Index)
         {
-            if (!HasThreatCapacity(this)) break;
+            if (!HasThreatCapacity(this))
+                break;
             const FVector Direction = LocalRandom.VRand();
-            if (ASSWorldBody* Fragment = GetWorld()->SpawnActor<ASSWorldBody>(GetActorLocation() + Direction * (BodyRadius + 80.f), FRotator::ZeroRotator))
+            if (ASSWorldBody *Fragment = GetWorld()->SpawnActor<ASSWorldBody>(
+                    GetActorLocation() + Direction * (BodyRadius + 80.f), FRotator::ZeroRotator))
             {
-                Fragment->Configure(ESSWorldKind::SmallAsteroid, 60.f, CollisionDamage * .45f, Wave);
-                Fragment->SetLinearVelocity(LinearVelocity + Direction * 210.f);
-                Fragment->LifetimeSeconds = 13.f;
+                Fragment->Configure(ESSWorldKind::SmallAsteroid, Definition.FragmentRadius,
+                                    CollisionDamage * Definition.FragmentDamageFraction, Wave);
+                Fragment->SetLinearVelocity(LinearVelocity + Direction * Definition.FragmentSpeed);
+                Fragment->LifetimeSeconds = Definition.FragmentLifetime;
             }
         }
     }
-    if (Kind == ESSWorldKind::MediumAsteroid || LocalRandom.FRand() < .3f)
+    if (LocalRandom.FRand() < FMath::Clamp(Definition.DropChance, 0.f, 1.f))
     {
-        if (ASSPickup* Pickup = GetWorld()->SpawnActor<ASSPickup>(GetActorLocation(), FRotator::ZeroRotator))
+        if (ASSPickup *Pickup = GetWorld()->SpawnActor<ASSPickup>(GetActorLocation(), FRotator::ZeroRotator))
         {
-            const float Roll = LocalRandom.FRand();
-            const int32 PickupKind = Roll < .05f ? 2 : (Roll < .20f ? 1 : (Roll < .26f ? 3 : 0));
-            Pickup->ConfigurePickup(PickupKind, PickupKind == 0 ? 25.f : (PickupKind == 3 ? 10.f : 20.f));
+            float TotalWeight = 0.f;
+            for (int32 Index = 0; Index < 4; ++Index)
+                TotalWeight += FMath::Max(0.f, Content(this)->Pickup(Index).DropWeight);
+            float Roll = LocalRandom.FRand() * TotalWeight;
+            int32 PickupKind = 0;
+            for (int32 Index = 0; Index < 4; ++Index)
+            {
+                Roll -= FMath::Max(0.f, Content(this)->Pickup(Index).DropWeight);
+                if (Roll <= 0.f)
+                {
+                    PickupKind = Index;
+                    break;
+                }
+            }
+            Pickup->ConfigurePickup(PickupKind, Content(this)->Pickup(PickupKind).Amount);
             Pickup->SetLinearVelocity(LinearVelocity * .3f);
         }
     }
@@ -298,64 +472,81 @@ ASSEnemy::ASSEnemy()
     LifetimeSeconds = 75.f;
 }
 
-void ASSEnemy::SetObjectiveOwner(ASSEncounterBeacon* InOwner) { ObjectiveOwner = InOwner; }
+void ASSEnemy::SetObjectiveOwner(ASSEncounterBeacon *InOwner)
+{
+    ObjectiveOwner = InOwner;
+}
 
 void ASSEnemy::Tick(float DeltaSeconds)
 {
-    ASSShip* Ship = FindShip();
+    ASSShip *Ship = FindShip();
     if (Ship && !bDefeated)
     {
-        SteeringPhase += DeltaSeconds * (.65f + Wave * .055f);
+        const auto Definition = Content(this)->Enemy(Kind);
+        if (Age == 0.f)
+            ShotCooldown = Definition.InitialShotDelay;
+        SteeringPhase += DeltaSeconds * (Definition.OrbitRate + Wave * Definition.OrbitRatePerWave);
         const FVector Forward = Ship->GetActorForwardVector();
         const FVector Right = Ship->GetActorRightVector();
         const FVector Up = Ship->GetActorUpVector();
-        FVector Desired = Ship->GetActorLocation() + Forward * (Kind == ESSWorldKind::Pursuer ? 1700.f : 2100.f);
-        if (Kind == ESSWorldKind::Flanker) Desired += Right * FMath::Sin(SteeringPhase) * 1900.f + Up * FMath::Cos(SteeringPhase * .65f) * 850.f;
-        else Desired += Right * FMath::Sin(SteeringPhase) * 420.f;
-        const float Response = 1.2f + Wave * .1f;
-        const FVector Catchup = ((Desired - GetActorLocation()) * Response).GetClampedToMaxSize(2800.f + Wave * 140.f);
-        LinearVelocity = FMath::VInterpTo(LinearVelocity, Ship->GetVelocity() + Catchup, DeltaSeconds, 2.5f);
+        FVector Desired = Ship->GetActorLocation() + Forward * Definition.ForwardOffset;
+        Desired += Right * FMath::Sin(SteeringPhase) * Definition.LateralAmplitude +
+                   Up * FMath::Cos(SteeringPhase * .65f) * Definition.VerticalAmplitude;
+        const float Response = Definition.Response + Wave * Definition.ResponsePerWave;
+        const FVector Catchup = ((Desired - GetActorLocation()) * Response)
+                                    .GetClampedToMaxSize(Definition.CatchupSpeed + Wave * Definition.CatchupPerWave);
+        LinearVelocity =
+            FMath::VInterpTo(LinearVelocity, Ship->GetVelocity() + Catchup, DeltaSeconds, Definition.VelocityResponse);
         SetActorRotation((Ship->GetActorLocation() - GetActorLocation()).Rotation());
         ShotCooldown -= DeltaSeconds;
         if (ShotCharge > 0.f)
         {
             ShotCharge -= DeltaSeconds;
-            if (DynamicMaterial) DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 2.8f);
+            if (DynamicMaterial)
+                DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 2.8f);
             if (ShotCharge <= 0.f)
             {
-                if (ASSProjectile* Shot = GetWorld()->SpawnActor<ASSProjectile>(GetActorLocation() + ShotDirection * (BodyRadius + 30.f), ShotDirection.Rotation()))
+                if (ASSProjectile *Shot = GetWorld()->SpawnActor<ASSProjectile>(
+                        GetActorLocation() + ShotDirection * (BodyRadius + 30.f), ShotDirection.Rotation()))
                 {
-                    Shot->Launch(ShotDirection, 5600.f + Wave * 170.f, 8.f + Wave * 1.4f, false, this);
+                    Shot->Launch(ShotDirection, Definition.ProjectileSpeed + Wave * Definition.ProjectileSpeedPerWave,
+                                 Definition.ShotDamage + Wave * Definition.ShotDamagePerWave, false, this);
                 }
-                ShotCooldown = FMath::Max(1.5f, 3.6f - Wave * .13f);
+                ShotCooldown = FMath::Max(Definition.MinimumShotInterval,
+                                          Definition.ShotInterval - Wave * Definition.ShotIntervalReductionPerWave);
             }
         }
-        else if (ShotCooldown <= 0.f && FVector::DistSquared(GetActorLocation(), Ship->GetActorLocation()) < FMath::Square(8000.f))
+        else if (ShotCooldown <= 0.f && FVector::DistSquared(GetActorLocation(), Ship->GetActorLocation()) <
+                                            FMath::Square(Definition.WeaponRange))
         {
             // Aim is committed before discharge. A deliberate dodge can invalidate it.
-            const FVector Predicted = Ship->GetActorLocation() + Ship->GetVelocity() * .2f;
-            const float Error = FMath::Max(35.f, 200.f - Wave * 12.f);
+            const FVector Predicted = Ship->GetActorLocation() + Ship->GetVelocity() * Definition.AimLeadSeconds;
+            const float Error = FMath::Max(Definition.MinimumAimError,
+                                           Definition.AimError - Wave * Definition.AimErrorReductionPerWave);
             ShotDirection = (Predicted + LocalRandom.VRand() * Error - GetActorLocation()).GetSafeNormal();
-            ShotCharge = .9f;
+            ShotCharge = FMath::Max(.3f, Definition.ShotTelegraph);
         }
-        else if (DynamicMaterial) DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 1.f);
+        else if (DynamicMaterial)
+            DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 1.f);
 
         // Enemies share the environment; they neither phase through nor ignore asteroids.
         for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
         {
-            ASSWorldBody* Obstacle = *It;
-            if (Obstacle == this || !Obstacle->IsSolidHazard()) continue;
+            ASSWorldBody *Obstacle = *It;
+            if (Obstacle == this || !Obstacle->IsSolidHazard())
+                continue;
             const FVector Separation = GetActorLocation() - Obstacle->GetActorLocation();
             const float CombinedRadius = BodyRadius + Obstacle->GetBodyRadius();
-            if (Separation.SizeSquared() < FMath::Square(CombinedRadius + 500.f))
-                LinearVelocity += Separation.GetSafeNormal() * 1000.f * DeltaSeconds;
+            if (Separation.SizeSquared() < FMath::Square(CombinedRadius + Definition.AvoidanceDistance))
+                LinearVelocity += Separation.GetSafeNormal() * Definition.AvoidanceAcceleration * DeltaSeconds;
             if (Separation.SizeSquared() < FMath::Square(CombinedRadius))
             {
-                Health -= 70.f * DeltaSeconds;
+                Health -= Definition.HazardDamagePerSecond * DeltaSeconds;
                 if (Health <= 0.f)
                 {
                     bDefeated = true;
-                    if (ObjectiveOwner.IsValid()) ObjectiveOwner->RegisterObjectiveProgress();
+                    if (ObjectiveOwner.IsValid())
+                        ObjectiveOwner->RegisterObjectiveProgress();
                     Destroy();
                     return;
                 }
@@ -367,11 +558,15 @@ void ASSEnemy::Tick(float DeltaSeconds)
 
 void ASSEnemy::OnDefeated()
 {
-    if (ASSGameMode* Mode = GameMode(this)) Mode->NotifyEnemyKilled();
-    if (ObjectiveOwner.IsValid()) ObjectiveOwner->RegisterObjectiveProgress();
+    if (ASSGameMode *Mode = GameMode(this))
+        Mode->NotifyEnemyKilled();
+    if (ObjectiveOwner.IsValid())
+        ObjectiveOwner->RegisterObjectiveProgress();
     // Credits from a kill are awarded once by the domain; physical pickups are extra risk income.
-    if (LocalRandom.FRand() < .22f)
-        if (ASSPickup* Pickup = GetWorld()->SpawnActor<ASSPickup>(GetActorLocation(), FRotator::ZeroRotator)) Pickup->ConfigurePickup(0, 15.f);
+    const auto Definition = Content(this)->Enemy(Kind);
+    if (LocalRandom.FRand() < Definition.CreditDropChance)
+        if (ASSPickup *Pickup = GetWorld()->SpawnActor<ASSPickup>(GetActorLocation(), FRotator::ZeroRotator))
+            Pickup->ConfigurePickup(0, Definition.CreditDropAmount);
 }
 
 ASSProjectile::ASSProjectile()
@@ -381,14 +576,17 @@ ASSProjectile::ASSProjectile()
     LifetimeSeconds = 6.f;
 }
 
-void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bFromPlayer, AActor* Source)
+void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bFromPlayer, AActor *Source)
 {
     Configure(ESSWorldKind::Projectile, bFromPlayer ? 28.f : 17.f, Damage);
+    LifetimeSeconds = 6.f;
     bPlayerShot = bFromPlayer;
     SourceActor = Source;
     LinearVelocity = Direction.GetSafeNormal() * Speed;
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    if (DynamicMaterial) DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), bPlayerShot ? FLinearColor(.3f, 1.f, 1.f) : FLinearColor(1.f, .2f, .05f));
+    if (DynamicMaterial)
+        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), bPlayerShot ? FLinearColor(.3f, 1.f, 1.f)
+                                                                           : FLinearColor(1.f, .2f, .05f));
 }
 
 void ASSProjectile::Tick(float DeltaSeconds)
@@ -401,33 +599,49 @@ void ASSProjectile::Tick(float DeltaSeconds)
     Objects.AddObjectTypesToQuery(ECC_WorldStatic);
     Objects.AddObjectTypesToQuery(ECC_Pawn);
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SpaceSurvivalProjectile), false, this);
-    if (SourceActor.IsValid()) Query.AddIgnoredActor(SourceActor.Get());
-    if (bPlayerShot) if (ASSShip* Ship = FindShip()) Query.AddIgnoredActor(Ship);
+    if (SourceActor.IsValid())
+        Query.AddIgnoredActor(SourceActor.Get());
+    if (bPlayerShot)
+        if (ASSShip *Ship = FindShip())
+            Query.AddIgnoredActor(Ship);
     TArray<FHitResult> Hits;
-    GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, Objects, FCollisionShape::MakeSphere(BodyRadius), Query);
-    Hits.Sort([](const FHitResult& A, const FHitResult& B) { return A.Time < B.Time; });
-    for (const FHitResult& Hit : Hits)
+    GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, Objects,
+                                       FCollisionShape::MakeSphere(BodyRadius), Query);
+    Hits.Sort([](const FHitResult &A, const FHitResult &B) { return A.Time < B.Time; });
+    for (const FHitResult &Hit : Hits)
     {
-        if (ASSWorldBody* Body = Cast<ASSWorldBody>(Hit.GetActor()))
+        if (ASSWorldBody *Body = Cast<ASSWorldBody>(Hit.GetActor()))
         {
-            if (!Body->IsSolidHazard() && !Body->IsEnemy()) continue;
-            if (bPlayerShot || Body->IsSolidHazard()) Body->ReceiveWeaponHit(CollisionDamage);
+            if (!Body->IsSolidHazard() && !Body->IsEnemy())
+                continue;
+            if (bPlayerShot || Body->IsSolidHazard())
+                Body->ReceiveWeaponHit(CollisionDamage);
             Destroy();
             return;
         }
-        if (ASSShip* Ship = Cast<ASSShip>(Hit.GetActor()))
+        if (ASSShip *Ship = Cast<ASSShip>(Hit.GetActor()))
         {
-            if (!bPlayerShot) Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Energy);
+            if (!bPlayerShot)
+                Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Energy);
             Destroy();
             return;
         }
-        if (Hit.bBlockingHit) { Destroy(); return; }
+        if (Hit.bBlockingHit)
+        {
+            Destroy();
+            return;
+        }
     }
     SetActorLocation(End);
-    if (Age > LifetimeSeconds) Destroy();
+    if (Age > LifetimeSeconds)
+        Destroy();
 }
 
-void ASSProjectile::ReceiveWeaponHit(float Damage) { if (Damage > 0.f) Destroy(); }
+void ASSProjectile::ReceiveWeaponHit(float Damage)
+{
+    if (Damage > 0.f)
+        Destroy();
+}
 
 ASSWormholePassage::ASSWormholePassage()
 {
@@ -436,16 +650,21 @@ ASSWormholePassage::ASSWormholePassage()
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     for (int32 Index = 0; Index < 5; ++Index)
     {
-        UStaticMeshComponent* Ring = CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("PassageRing%d"), Index));
+        UStaticMeshComponent *Ring =
+            CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("PassageRing%d"), Index));
         Ring->SetupAttachment(RootComponent);
         Ring->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         PassageRings.Add(Ring);
     }
 }
 
-void ASSWormholePassage::BeginPassage(ASSShip* Ship, float Duration)
+void ASSWormholePassage::BeginPassage(ASSShip *Ship, float Duration)
 {
-    if (!Ship) { Destroy(); return; }
+    if (!Ship)
+    {
+        Destroy();
+        return;
+    }
     PassageShip = Ship;
     PassageDuration = FMath::Max(1.f, Duration);
     PassageElapsed = 0.f;
@@ -454,7 +673,7 @@ void ASSWormholePassage::BeginPassage(ASSShip* Ship, float Duration)
     CourseLength = FMath::Max(10000.f, static_cast<float>(Ship->GetVelocity().Size()) * PassageDuration * 1.08f);
     SetActorLocation(EntryPoint + PassageForward * 2500.f);
     SetActorRotation(PassageForward.Rotation());
-    UStaticMesh* RingMesh = Mesh(TEXT("SM_GravityRing"));
+    UStaticMesh *RingMesh = Mesh(TEXT("SM_GravityRing"));
     Visual->SetStaticMesh(RingMesh);
     const float MeshExtent = RingMesh ? RingMesh->GetBounds().BoxExtent.GetMax() : 50.f;
     const float UnitScale = 1.f / FMath::Max(1.f, MeshExtent);
@@ -466,12 +685,13 @@ void ASSWormholePassage::BeginPassage(ASSShip* Ship, float Duration)
     }
     for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
     {
-        UStaticMeshComponent* Ring = PassageRings[Index];
+        UStaticMeshComponent *Ring = PassageRings[Index];
         Ring->SetStaticMesh(RingMesh);
         const float Alpha = float(Index + 1) / float(PassageRings.Num());
         Ring->SetRelativeLocation(FVector(CourseLength * Alpha, 0.f, 0.f));
         Ring->SetRelativeScale3D(FVector(FMath::Lerp(1700.f, 2300.f, Alpha) * UnitScale));
-        if (DynamicMaterial) Ring->SetMaterial(0, DynamicMaterial);
+        if (DynamicMaterial)
+            Ring->SetMaterial(0, DynamicMaterial);
         Ring->SetCastShadow(false);
     }
 }
@@ -481,8 +701,12 @@ void ASSWormholePassage::Tick(float DeltaSeconds)
     // Deliberately bypass the environmental-field tick: this sequence never deals
     // damage, spawns a fifth hazard family, teleports, or advances the run state.
     PassageElapsed += DeltaSeconds;
-    if (!PassageShip.IsValid()) { Destroy(); return; }
-    ASSShip* Ship = PassageShip.Get();
+    if (!PassageShip.IsValid())
+    {
+        Destroy();
+        return;
+    }
+    ASSShip *Ship = PassageShip.Get();
     const float Alpha = FMath::Clamp(PassageElapsed / PassageDuration, 0.f, 1.f);
     const FVector Relative = Ship->GetActorLocation() - EntryPoint;
     const FVector Lateral = Relative - PassageForward * FVector::DotProduct(Relative, PassageForward);
@@ -490,12 +714,16 @@ void ASSWormholePassage::Tick(float DeltaSeconds)
     Ship->AddExternalForce(PassageForward * (600.f + 1600.f * Alpha) + Centring);
     Visual->AddLocalRotation(FRotator(0.f, 0.f, 40.f * DeltaSeconds));
     for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
-        PassageRings[Index]->AddLocalRotation(FRotator(0.f, 0.f, (Index % 2 ? -1.f : 1.f) * (35.f + 20.f * Alpha) * DeltaSeconds));
-    if (DynamicMaterial) DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 1.8f + Alpha * 2.f + .3f * FMath::Sin(PassageElapsed * 8.f));
-    if (PassageElapsed >= PassageDuration) Destroy();
+        PassageRings[Index]->AddLocalRotation(
+            FRotator(0.f, 0.f, (Index % 2 ? -1.f : 1.f) * (35.f + 20.f * Alpha) * DeltaSeconds));
+    if (DynamicMaterial)
+        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"),
+                                                 1.8f + Alpha * 2.f + .3f * FMath::Sin(PassageElapsed * 8.f));
+    if (PassageElapsed >= PassageDuration)
+        Destroy();
 }
 
-void ASSWormholePassage::ApplyWorldOffset(const FVector& InOffset, bool bWorldShift)
+void ASSWormholePassage::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 {
     Super::ApplyWorldOffset(InOffset, bWorldShift);
     EntryPoint += InOffset;
@@ -508,43 +736,49 @@ ASSPickup::ASSPickup()
     LifetimeSeconds = 30.f;
 }
 
-void ASSPickup::ConfigurePickup(int32 InKind, float InAmount, ASSEncounterBeacon* Objective)
+void ASSPickup::ConfigurePickup(int32 InKind, float InAmount, ASSEncounterBeacon *Objective)
 {
-    Configure(ESSWorldKind::Pickup, 60.f, 0.f);
     PickupKind = FMath::Clamp(InKind, 0, 3);
+    const auto Definition = Content(this)->Pickup(PickupKind);
+    Configure(ESSWorldKind::Pickup, Definition.Radius, 0.f);
+    LifetimeSeconds = Definition.Lifetime;
     Amount = FMath::Max(0.f, InAmount);
     ObjectiveOwner = Objective;
-    const TCHAR* Assets[] = {TEXT("SM_PickupCredit"), TEXT("SM_PickupRepair"), TEXT("SM_PickupShield"), TEXT("SM_PickupBuff")};
-    const TCHAR* Fallbacks[] = {TEXT("/Engine/BasicShapes/Cylinder.Cylinder"), TEXT("/Engine/BasicShapes/Cube.Cube"), TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Engine/BasicShapes/Cone.Cone")};
-    Visual->SetStaticMesh(Mesh(Assets[PickupKind], Fallbacks[PickupKind]));
+    const TCHAR *Fallbacks[] = {TEXT("/Engine/BasicShapes/Cylinder.Cylinder"), TEXT("/Engine/BasicShapes/Cube.Cube"),
+                                TEXT("/Engine/BasicShapes/Sphere.Sphere"), TEXT("/Engine/BasicShapes/Cone.Cone")};
+    Visual->SetStaticMesh(Mesh(*Definition.MeshName.ToString(), Fallbacks[PickupKind]));
     const float MeshExtent = Visual->GetStaticMesh() ? Visual->GetStaticMesh()->GetBounds().BoxExtent.GetMax() : 50.f;
     Visual->SetRelativeScale3D(FVector(BodyRadius / FMath::Max(1.f, MeshExtent)));
-    const FLinearColor Colors[] = {FLinearColor(1.f, .75f, .1f), FLinearColor(.2f, 1.f, .4f), FLinearColor(.2f, .6f, 1.f), FLinearColor(1.f, .35f, .9f)};
-    if (DynamicMaterial) DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), Colors[PickupKind]);
+    if (DynamicMaterial)
+        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), Definition.Tint);
     Collision->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 }
 
 FString ASSPickup::GetLabel() const
 {
-    if (ObjectiveOwner.IsValid()) return TEXT("SALVAGE CACHE · COLLECT");
-    const TCHAR* Labels[] = {TEXT("CREDITS"), TEXT("HULL REPAIR"), TEXT("SHIELD CHARGE"), TEXT("WEAPON OVERCHARGE")};
-    return Labels[FMath::Clamp(PickupKind, 0, 3)];
+    if (ObjectiveOwner.IsValid())
+        return TEXT("SALVAGE CACHE · COLLECT");
+    return Content(this)->Pickup(PickupKind).Label;
 }
 
 void ASSPickup::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     Visual->AddLocalRotation(FRotator(0.f, 70.f, 20.f) * DeltaSeconds);
-    if (ASSShip* Ship = FindShip())
+    if (ASSShip *Ship = FindShip())
     {
         const FVector ToShip = Ship->GetActorLocation() - GetActorLocation();
+        const auto Definition = Content(this)->Pickup(PickupKind);
         // A short acquisition radius rewards steering toward an item without auto-collecting a lane.
-        if (ToShip.SizeSquared() < FMath::Square(450.f)) AddActorWorldOffset(ToShip.GetSafeNormal() * 800.f * DeltaSeconds);
-        if (!bCollected && ToShip.SizeSquared() < FMath::Square(ShipRadius + 110.f))
+        if (ToShip.SizeSquared() < FMath::Square(Definition.AttractionRadius))
+            AddActorWorldOffset(ToShip.GetSafeNormal() * Definition.AttractionSpeed * DeltaSeconds);
+        if (!bCollected && ToShip.SizeSquared() < FMath::Square(ShipRadius + Definition.CollectionPadding))
         {
             bCollected = true;
-            if (ASSGameMode* Mode = GameMode(this)) Mode->NotifyPickup(PickupKind, Amount);
-            if (ObjectiveOwner.IsValid()) ObjectiveOwner->RegisterObjectiveProgress();
+            if (ASSGameMode *Mode = GameMode(this))
+                Mode->NotifyPickup(PickupKind, Amount);
+            if (ObjectiveOwner.IsValid())
+                ObjectiveOwner->RegisterObjectiveProgress();
             Destroy();
         }
     }
@@ -560,86 +794,124 @@ ASSEncounterBeacon::ASSEncounterBeacon()
 void ASSEncounterBeacon::ConfigureEncounter(ESSEncounterKind InKind, int32 InWave)
 {
     EncounterKind = InKind;
-    Configure(IsDepot() ? ESSWorldKind::Depot : ESSWorldKind::Event, IsDepot() ? 420.f : 140.f, 0.f, InWave);
+    const auto Definition = Content(this)->Encounter(InKind);
+    Configure(IsDepot() ? ESSWorldKind::Depot : ESSWorldKind::Event, Definition.BeaconRadius, 0.f, InWave);
+    InteractionRadius = FMath::Max(100.f, Definition.InteractionRadius);
+    LifetimeSeconds = FMath::Max(1.f, Definition.Lifetime);
     Collision->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
     Offers = {0, 1, 2, 3, 4};
     FRandomStream OfferRandom(GetUniqueID() ^ InWave * 101);
-    for (int32 Index = Offers.Num() - 1; Index > 0; --Index) Offers.Swap(Index, OfferRandom.RandRange(0, Index));
+    for (int32 Index = Offers.Num() - 1; Index > 0; --Index)
+        Offers.Swap(Index, OfferRandom.RandRange(0, Index));
     Offers.SetNum(3);
-    Discount = OfferRandom.RandRange(0, 1) ? .75f : .85f;
+    Discount = FMath::Clamp(
+        OfferRandom.RandRange(0, 1) ? Definition.DepotPriceFractionA : Definition.DepotPriceFractionB, .1f, 1.f);
 }
 
 bool ASSEncounterBeacon::IsPlayerInRange() const
 {
-    const ASSShip* Ship = FindShip();
-    return Ship && FVector::DistSquared(Ship->GetActorLocation(), GetActorLocation()) <= FMath::Square(InteractionRadius);
+    const ASSShip *Ship = FindShip();
+    return Ship &&
+           FVector::DistSquared(Ship->GetActorLocation(), GetActorLocation()) <= FMath::Square(InteractionRadius);
 }
 
 FString ASSEncounterBeacon::GetEncounterLabel() const
 {
-    if (IsDepot()) return FString::Printf(TEXT("MOBILE DEPOT · %d%% OFF · THREE SYSTEM DEALS"), FMath::RoundToInt((1.f - Discount) * 100.f));
-    const TCHAR* Name = EncounterKind == ESSEncounterKind::SalvageCache ? TEXT("SALVAGE CACHE") : TEXT("DISTRESS / COMBAT");
-    if (bResolved) return FString::Printf(TEXT("%s · RESOLVED"), Name);
-    if (bAccepted) return FString::Printf(TEXT("%s · %d OBJECTIVES REMAIN"), Name, ObjectiveRemaining);
+    if (IsDepot())
+        return FString::Printf(TEXT("MOBILE DEPOT · %d%% OFF · THREE SYSTEM DEALS"),
+                               FMath::RoundToInt((1.f - Discount) * 100.f));
+    const TCHAR *Name =
+        EncounterKind == ESSEncounterKind::SalvageCache ? TEXT("SALVAGE CACHE") : TEXT("DISTRESS / COMBAT");
+    if (bResolved)
+        return FString::Printf(TEXT("%s · RESOLVED"), Name);
+    if (bAccepted)
+        return FString::Printf(TEXT("%s · %d OBJECTIVES REMAIN"), Name, ObjectiveRemaining);
     return FString::Printf(TEXT("%s · OPTIONAL · INTERACT TO ACCEPT"), Name);
 }
 
 bool ASSEncounterBeacon::TryAccept()
 {
-    if (bResolved || !IsPlayerInRange()) return false;
-    if (IsDepot()) return true; // The UI presents offers; Session owns any actual purchase.
-    if (bAccepted) return false;
-    if (USSGameInstance* Instance = GetGameInstance<USSGameInstance>())
+    if (bResolved || !IsPlayerInRange())
+        return false;
+    if (IsDepot())
+        return true; // The UI presents offers; Session owns any actual purchase.
+    if (bAccepted)
+        return false;
+    if (USSGameInstance *Instance = GetGameInstance<USSGameInstance>())
     {
         if (Instance->Session.run.pendingReward)
-        { Announce(this,TEXT("Claim your secured reward before accepting another signal.")); return false; }
+        {
+            Announce(this, TEXT("Claim your secured reward before accepting another signal."));
+            return false;
+        }
     }
     for (TActorIterator<ASSEncounterBeacon> It(GetWorld()); It; ++It)
         if (*It != this && It->IsAccepted() && !It->IsResolved())
-        { Announce(this,TEXT("Resolve the active optional signal first.")); return false; }
-    ASSShip* Ship = FindShip();
-    if (!Ship) return false;
-    if (!HasThreatCapacity(this, EncounterKind == ESSEncounterKind::SalvageCache ? 6 : 2))
+        {
+            Announce(this, TEXT("Resolve the active optional signal first."));
+            return false;
+        }
+    ASSShip *Ship = FindShip();
+    if (!Ship)
+        return false;
+    const auto Definition = Content(this)->Encounter(EncounterKind);
+    const int32 ObjectiveCount = FMath::Clamp(Definition.ObjectiveCount, 1, 3);
+    if (!HasThreatCapacity(this, EncounterKind == ESSEncounterKind::SalvageCache ? ObjectiveCount * 2 : ObjectiveCount))
     {
         Announce(this, TEXT("SIGNAL ON HOLD · Clear nearby threats before accepting"));
         return false;
     }
     bAccepted = true;
-    ObjectiveRemaining = EncounterKind == ESSEncounterKind::SalvageCache ? 3 : 2;
-    ObjectiveSeconds = EncounterKind == ESSEncounterKind::SalvageCache ? 26.f : 38.f;
-    if (USSGameInstance* Instance = GetGameInstance<USSGameInstance>())
+    ObjectiveRemaining = ObjectiveCount;
+    ObjectiveSeconds = FMath::Max(3.f, Definition.ObjectiveDuration);
+    if (USSGameInstance *Instance = GetGameInstance<USSGameInstance>())
     {
-        if (EncounterKind == ESSEncounterKind::SalvageCache) Instance->Session.run.salvageEventAccepted = true;
-        else Instance->Session.run.distressEventAccepted = true;
+        if (EncounterKind == ESSEncounterKind::SalvageCache)
+            Instance->Session.run.salvageEventAccepted = true;
+        else
+            Instance->Session.run.distressEventAccepted = true;
     }
     const FVector Forward = Ship->GetActorForwardVector();
     const FVector Right = Ship->GetActorRightVector();
     const FVector Up = Ship->GetActorUpVector();
     const FVector Origin = Ship->GetActorLocation();
-    const float Lead = FMath::Max(8000.f, static_cast<float>(Ship->GetVelocity().Size()) * 3.5f);
+    const float Lead =
+        FMath::Max(Definition.ObjectiveLeadDistance,
+                   static_cast<float>(Ship->GetVelocity().Size()) *
+                       FMath::Max(Content(this)->MinimumReactionSeconds, Definition.ObjectiveLeadSeconds));
     if (EncounterKind == ESSEncounterKind::SalvageCache)
     {
-        Announce(this, TEXT("SALVAGE ACCEPTED · Collect three marked caches through the wreckage"));
-        for (int32 Index = 0; Index < 3; ++Index)
+        Announce(this, FString::Printf(TEXT("SALVAGE ACCEPTED · Collect %d marked caches through the wreckage"),
+                                       ObjectiveCount));
+        for (int32 Index = 0; Index < ObjectiveCount; ++Index)
         {
-            const FVector Centre = Origin + Forward * (Lead + Index * 3600.f) + Right * (Index == 1 ? -650.f : 650.f);
-            if (ASSPickup* Cache = GetWorld()->SpawnActor<ASSPickup>(Centre, FRotator::ZeroRotator))
+            const FVector Centre = Origin + Forward * (Lead + Index * Definition.CacheSpacing) +
+                                   Right * (Index % 2 ? -Definition.CacheLateralOffset : Definition.CacheLateralOffset);
+            if (ASSPickup *Cache = GetWorld()->SpawnActor<ASSPickup>(Centre, FRotator::ZeroRotator))
             {
-                Cache->ConfigurePickup(0, 30.f, this);
-                Cache->LifetimeSeconds = 35.f;
+                Cache->ConfigurePickup(0, Definition.CacheCredits, this);
+                Cache->LifetimeSeconds = FMath::Max(35.f, Definition.ObjectiveDuration + 5.f);
             }
             for (int32 Side = -1; Side <= 1; Side += 2)
-                if (ASSWorldBody* Debris = GetWorld()->SpawnActor<ASSWorldBody>(Centre + Right * Side * 1100.f + Up * 100.f, FRotator::ZeroRotator))
-                    Debris->Configure(ESSWorldKind::Wreckage, 300.f, 24.f + Wave * 2.f, Wave);
+                if (ASSWorldBody *Debris = GetWorld()->SpawnActor<ASSWorldBody>(
+                        Centre + Right * Side * Definition.DebrisHalfSpacing + Up * 100.f, FRotator::ZeroRotator))
+                    Debris->Configure(ESSWorldKind::Wreckage, Definition.DebrisRadius,
+                                      Definition.DebrisDamageBase + Wave * Definition.DebrisDamagePerWave, Wave);
         }
     }
     else
     {
-        Announce(this, TEXT("DISTRESS ACCEPTED · Defeat both attackers; reward choice follows success"));
-        for (int32 Index = 0; Index < 2; ++Index)
-            if (ASSEnemy* Enemy = GetWorld()->SpawnActor<ASSEnemy>(Origin + Forward * Lead + Right * (Index == 0 ? -1100.f : 1100.f), FRotator::ZeroRotator))
+        Announce(this, FString::Printf(TEXT("DISTRESS ACCEPTED · Defeat %d attackers; reward choice follows success"),
+                                       ObjectiveCount));
+        for (int32 Index = 0; Index < ObjectiveCount; ++Index)
+            if (ASSEnemy *Enemy = GetWorld()->SpawnActor<ASSEnemy>(Origin + Forward * Lead +
+                                                                       Right * (Index - .5f * (ObjectiveCount - 1)) *
+                                                                           2.f * Definition.DebrisHalfSpacing,
+                                                                   FRotator::ZeroRotator))
             {
-                Enemy->Configure(Index == 0 ? ESSWorldKind::Pursuer : ESSWorldKind::Flanker, 150.f, 25.f, Wave);
+                const ESSWorldKind EnemyKind = Index % 2 ? ESSWorldKind::Flanker : ESSWorldKind::Pursuer;
+                const auto EnemyDefinition = Content(this)->Enemy(EnemyKind);
+                Enemy->Configure(EnemyKind, EnemyDefinition.Radius, Definition.EnemyCollisionDamage, Wave);
                 Enemy->SetObjectiveOwner(this);
                 Enemy->SetLinearVelocity(Ship->GetVelocity());
             }
@@ -649,18 +921,21 @@ bool ASSEncounterBeacon::TryAccept()
 
 void ASSEncounterBeacon::RegisterObjectiveProgress()
 {
-    if (!bAccepted || bResolved || IsDepot()) return;
+    if (!bAccepted || bResolved || IsDepot())
+        return;
     ObjectiveRemaining = FMath::Max(0, ObjectiveRemaining - 1);
     if (ObjectiveRemaining == 0)
     {
         bResolved = true;
-        if (ASSGameMode* Mode = GameMode(this)) Mode->NotifyEventCompleted(EncounterKind == ESSEncounterKind::DistressCombat);
+        if (ASSGameMode *Mode = GameMode(this))
+            Mode->NotifyEventCompleted(EncounterKind == ESSEncounterKind::DistressCombat);
     }
 }
 
 void ASSEncounterBeacon::FailObjective()
 {
-    if (bResolved || IsDepot()) return;
+    if (bResolved || IsDepot())
+        return;
     bResolved = true;
     Announce(this, TEXT("OPTIONAL SIGNAL LOST · No reward; no credit penalty"));
 }
@@ -669,9 +944,10 @@ void ASSEncounterBeacon::Tick(float DeltaSeconds)
 {
     // Track alongside the ship once reached, allowing a deliberate moving interaction.
     // No pause, invulnerability, free repairs or full station service is granted.
-    if (ASSShip* Ship = FindShip())
+    if (ASSShip *Ship = FindShip())
     {
-        if (bAccepted || IsPlayerInRange()) LinearVelocity = Ship->GetVelocity();
+        if (bAccepted || IsPlayerInRange())
+            LinearVelocity = Ship->GetVelocity();
         if (!bAnnounced)
         {
             bAnnounced = true;
@@ -683,7 +959,8 @@ void ASSEncounterBeacon::Tick(float DeltaSeconds)
     if (bAccepted && !bResolved && !IsDepot())
     {
         ObjectiveSeconds -= DeltaSeconds;
-        if (ObjectiveSeconds <= 0.f) FailObjective();
+        if (ObjectiveSeconds <= 0.f)
+            FailObjective();
     }
 }
 
@@ -694,7 +971,10 @@ USSSurvivalDirectorComponent::USSSurvivalDirectorComponent()
     Random.Initialize(0x53A9);
 }
 
-ASSShip* USSSurvivalDirectorComponent::FindShip() const { return Cast<ASSShip>(UGameplayStatics::GetPlayerPawn(this, 0)); }
+ASSShip *USSSurvivalDirectorComponent::FindShip() const
+{
+    return Cast<ASSShip>(UGameplayStatics::GetPlayerPawn(this, 0));
+}
 
 void USSSurvivalDirectorComponent::Configure(int32 InWave, bool bInClimax)
 {
@@ -706,7 +986,7 @@ void USSSurvivalDirectorComponent::Configure(int32 InWave, bool bInClimax)
     SpawnCooldown = .75f;
     bCompoundGravitySpawned = false;
     SafeLane = FVector2D(Random.RandRange(-1, 1) * 950.f, Random.RandRange(-1, 1) * 750.f);
-    if (USSGameInstance* Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
+    if (USSGameInstance *Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
     {
         bDepotOffered = Instance->Session.run.depotSeen;
         bSalvageOffered = Instance->Session.run.salvageEventSeen;
@@ -719,114 +999,167 @@ void USSSurvivalDirectorComponent::SetBreathing(bool bValue)
 {
     bBreathing = bValue;
     AvailableBudget = FMath::Min(AvailableBudget, 1.f);
-    if (bValue && Wave == 3 && !bDepotOffered) OfferEncounter(ESSEncounterKind::MobileDepot);
+    if (bValue && Wave == Content(this)->Encounter(ESSEncounterKind::MobileDepot).OfferedWave && !bDepotOffered)
+        OfferEncounter(ESSEncounterKind::MobileDepot);
 }
 
 int32 USSSurvivalDirectorComponent::GetActiveThreatCount() const
 {
     int32 Count = 0;
     for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
-        if (!It->IsActorBeingDestroyed() && (It->IsSolidHazard() || It->IsEnemy() || It->IsEnvironmentalField())) ++Count;
+        if (!It->IsActorBeingDestroyed() && (It->IsSolidHazard() || It->IsEnemy() || It->IsEnvironmentalField()))
+            ++Count;
     return Count;
 }
 
 void USSSurvivalDirectorComponent::CleanTrackedActors()
 {
-    Spawned.RemoveAll([](const TWeakObjectPtr<ASSWorldBody>& Body) { return !Body.IsValid(); });
+    Spawned.RemoveAll([](const TWeakObjectPtr<ASSWorldBody> &Body) { return !Body.IsValid(); });
 }
 
-bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector& Location, bool bField) const
+bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location, bool bField) const
 {
-    ASSShip* Ship = FindShip();
-    if (!Ship) return false;
+    ASSShip *Ship = FindShip();
+    if (!Ship)
+        return false;
     const FVector Forward = Ship->GetActorForwardVector();
     const FVector Right = Ship->GetActorRightVector();
     const FVector Up = Ship->GetActorUpVector();
     // Use closing speed, including a maximum approach drift, rather than distance alone.
-    const float ClosingSpeed = Ship->GetVelocity().Size() + 450.f;
+    float MaximumDrift = 450.f;
+    for (const auto &Hazard : Content(this)->Hazards)
+        MaximumDrift = FMath::Max(MaximumDrift, Hazard.DriftSpeedMax);
+    const float ClosingSpeed = Ship->GetVelocity().Size() + MaximumDrift;
     const float Lead = FMath::Max(9000.f, ClosingSpeed * MinimumReactionSeconds + Radius + PlayerClearanceRadius);
     for (int32 Attempt = 0; Attempt < 16; ++Attempt)
     {
         const FVector2D Offset(Random.FRandRange(-2600.f, 2600.f), Random.FRandRange(-1700.f, 1700.f));
-        if (!bField && FVector2D::Distance(Offset, SafeLane) < Radius + PlayerClearanceRadius + 320.f) continue;
-        const FVector Candidate = Ship->GetActorLocation() + Forward * (Lead + Random.FRandRange(0.f, 5500.f)) + Right * Offset.X + Up * Offset.Y;
+        if (!bField && FVector2D::Distance(Offset, SafeLane) < Radius + PlayerClearanceRadius + 320.f)
+            continue;
+        const FVector Candidate = Ship->GetActorLocation() + Forward * (Lead + Random.FRandRange(0.f, 5500.f)) +
+                                  Right * Offset.X + Up * Offset.Y;
         bool bClear = true;
         for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
         {
-            if (It->IsActorBeingDestroyed() || (!It->IsSolidHazard() && !It->IsEnemy() && !It->IsEnvironmentalField())) continue;
+            if (It->IsActorBeingDestroyed() || (!It->IsSolidHazard() && !It->IsEnemy() && !It->IsEnvironmentalField()))
+                continue;
             if (bField && It->IsEnvironmentalField())
             {
-                if (FVector::DistSquared(Candidate, It->GetActorLocation()) < FMath::Square(Radius + It->GetBodyRadius() + 1800.f)) { bClear = false; break; }
+                if (FVector::DistSquared(Candidate, It->GetActorLocation()) <
+                    FMath::Square(Radius + It->GetBodyRadius() + 1800.f))
+                {
+                    bClear = false;
+                    break;
+                }
                 continue;
             }
             // Fields may overlap physical hazards by design. Distinct fields must
             // have separated envelopes; a distant old field cannot starve a climax.
-            if (bField || It->IsEnvironmentalField()) continue;
-            if (FVector::DistSquared(Candidate, It->GetActorLocation()) < FMath::Square(Radius + It->GetBodyRadius() + 420.f)) { bClear = false; break; }
+            if (bField || It->IsEnvironmentalField())
+                continue;
+            if (FVector::DistSquared(Candidate, It->GetActorLocation()) <
+                FMath::Square(Radius + It->GetBodyRadius() + 420.f))
+            {
+                bClear = false;
+                break;
+            }
         }
-        if (bClear) { Location = Candidate; return true; }
+        if (bClear)
+        {
+            Location = Candidate;
+            return true;
+        }
     }
     return false;
 }
 
-ASSWorldBody* USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float Radius)
+ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float Radius)
 {
-    if (GetActiveThreatCount() >= MaximumActiveThreats) return nullptr;
+    if (GetActiveThreatCount() >= MaximumActiveThreats)
+        return nullptr;
+    const auto Definition = Content(this)->Hazard(Kind);
+    Radius = Radius > 0.f ? Radius : Definition.Radius;
     FVector Location;
     const bool bField = Kind == ESSWorldKind::ElectricalStorm || Kind == ESSWorldKind::GravityAnomaly;
-    if (!FindSafeSpawn(Radius, Location, bField)) return nullptr;
-    ASSWorldBody* Body = GetWorld()->SpawnActor<ASSWorldBody>(Location, FRotator::ZeroRotator);
-    if (!Body) return nullptr;
-    float Damage = Kind == ESSWorldKind::ElectricalStorm ? 6.f + Wave * .7f : 14.f + Wave * 3.f;
-    if (Kind == ESSWorldKind::MassiveAsteroid) Damage *= 2.f;
+    if (!FindSafeSpawn(Radius, Location, bField))
+        return nullptr;
+    ASSWorldBody *Body = GetWorld()->SpawnActor<ASSWorldBody>(Location, FRotator::ZeroRotator);
+    if (!Body)
+        return nullptr;
+    const float Damage = Definition.DamageBase + Wave * Definition.DamagePerWave;
     Body->Configure(Kind, Radius, Damage, Wave);
-    Body->TelegraphSeconds = MinimumReactionSeconds;
-    if (ASSShip* Ship = FindShip())
+    Body->TelegraphSeconds = FMath::Max(MinimumReactionSeconds, Definition.TelegraphSeconds);
+    if (ASSShip *Ship = FindShip())
     {
-        Body->SetLinearVelocity(bField ? Ship->GetVelocity() * (bClimax ? .65f : .3f) : -Ship->GetActorForwardVector() * Random.FRandRange(40.f, 350.f));
-        Body->GravityAcceleration = 400.f + Wave * 45.f;
+        Body->SetLinearVelocity(
+            bField
+                ? Ship->GetVelocity() * (bClimax ? Definition.ClimaxVelocityFraction : Definition.FieldVelocityFraction)
+                : -Ship->GetActorForwardVector() *
+                      Random.FRandRange(Definition.DriftSpeedMin,
+                                        FMath::Max(Definition.DriftSpeedMin, Definition.DriftSpeedMax)));
     }
     Spawned.Add(Body);
     return Body;
 }
 
-void USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon* Objective)
+void USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective)
 {
-    if (GetActiveThreatCount() >= MaximumActiveThreats) return;
+    if (GetActiveThreatCount() >= MaximumActiveThreats)
+        return;
     int32 EnemyCount = 0;
-    for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It) ++EnemyCount;
-    if (EnemyCount >= (bClimax ? 5 : (Wave < 6 ? 2 : 4))) return;
+    for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
+        ++EnemyCount;
+    const auto &DirectorData = Content(this)->DirectorContent;
+    const auto Definition = Content(this)->Enemy(Kind);
+    if (EnemyCount >=
+        (bClimax ? DirectorData.ClimaxEnemyCap : (Wave < 6 ? DirectorData.EarlyEnemyCap : DirectorData.LateEnemyCap)))
+        return;
     FVector Location;
-    if (!FindSafeSpawn(150.f, Location)) return;
-    if (ASSEnemy* Enemy = GetWorld()->SpawnActor<ASSEnemy>(Location, FRotator::ZeroRotator))
+    if (!FindSafeSpawn(Definition.Radius, Location))
+        return;
+    if (ASSEnemy *Enemy = GetWorld()->SpawnActor<ASSEnemy>(Location, FRotator::ZeroRotator))
     {
-        Enemy->Configure(Kind, 150.f, 16.f + Wave * 2.5f, Wave);
+        Enemy->Configure(Kind, Definition.Radius,
+                         Definition.CollisionDamageBase + Wave * Definition.CollisionDamagePerWave, Wave);
         Enemy->SetObjectiveOwner(Objective);
-        if (ASSShip* Ship = FindShip()) Enemy->SetLinearVelocity(Ship->GetVelocity());
+        if (ASSShip *Ship = FindShip())
+            Enemy->SetLinearVelocity(Ship->GetVelocity());
         Spawned.Add(Enemy);
     }
 }
 
 void USSSurvivalDirectorComponent::SpawnWreckagePassage()
 {
-    if (GetActiveThreatCount() + 4 > MaximumActiveThreats) return;
-    ASSShip* Ship = FindShip();
-    if (!Ship) return;
+    if (GetActiveThreatCount() + 4 > MaximumActiveThreats)
+        return;
+    ASSShip *Ship = FindShip();
+    if (!Ship)
+        return;
+    const auto Definition = Content(this)->Hazard(ESSWorldKind::Wreckage);
     FVector Centre;
-    if (!FindSafeSpawn(350.f, Centre)) return;
+    if (!FindSafeSpawn(350.f, Centre))
+        return;
     // Authored four-piece frame: an unobstructed 1,400 cm aperture with varied orientation.
-    const FVector Axes[] = {Ship->GetActorRightVector(), -Ship->GetActorRightVector(), Ship->GetActorUpVector(), -Ship->GetActorUpVector()};
+    const FVector Axes[] = {Ship->GetActorRightVector(), -Ship->GetActorRightVector(), Ship->GetActorUpVector(),
+                            -Ship->GetActorUpVector()};
     for (int32 Index = 0; Index < 4; ++Index)
     {
-        const FVector Position = Centre + Axes[Index] * 1150.f;
+        const FVector Position = Centre + Axes[Index] * Definition.PassageHalfSpacing;
         bool bClear = true;
         for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
-            if (It->IsSolidHazard() && FVector::DistSquared(Position, It->GetActorLocation()) < FMath::Square(It->GetBodyRadius() + 600.f)) { bClear = false; break; }
-        if (!bClear) continue;
-        if (ASSWorldBody* Chunk = GetWorld()->SpawnActor<ASSWorldBody>(Position, Ship->GetActorRotation()))
+            if (It->IsSolidHazard() &&
+                FVector::DistSquared(Position, It->GetActorLocation()) < FMath::Square(It->GetBodyRadius() + 600.f))
+            {
+                bClear = false;
+                break;
+            }
+        if (!bClear)
+            continue;
+        if (ASSWorldBody *Chunk = GetWorld()->SpawnActor<ASSWorldBody>(Position, Ship->GetActorRotation()))
         {
-            Chunk->Configure(ESSWorldKind::Wreckage, Index == 0 ? 290.f : 450.f, 20.f + Wave * 3.f, Wave);
-            Chunk->SetLinearVelocity(-Ship->GetActorForwardVector() * 80.f);
+            Chunk->Configure(ESSWorldKind::Wreckage, Index == 0 ? Definition.BreakableChunkRadius : Definition.Radius,
+                             Definition.DamageBase + Wave * Definition.DamagePerWave, Wave);
+            Chunk->SetLinearVelocity(-Ship->GetActorForwardVector() * Definition.DriftSpeedMin);
             Spawned.Add(Chunk);
         }
     }
@@ -834,18 +1167,25 @@ void USSSurvivalDirectorComponent::SpawnWreckagePassage()
 
 void USSSurvivalDirectorComponent::OfferEncounter(ESSEncounterKind Kind)
 {
-    ASSShip* Ship = FindShip();
-    if (!Ship) return;
-    const float Lead = FMath::Max(6500.f, static_cast<float>(Ship->GetVelocity().Size()) * 3.f);
-    const FVector Location = Ship->GetActorLocation() + Ship->GetActorForwardVector() * Lead + Ship->GetActorRightVector() * 1100.f;
-    if (ASSEncounterBeacon* Beacon = GetWorld()->SpawnActor<ASSEncounterBeacon>(Location, Ship->GetActorRotation()))
+    ASSShip *Ship = FindShip();
+    if (!Ship)
+        return;
+    const auto Definition = Content(this)->Encounter(Kind);
+    const float Lead = FMath::Max(Definition.OfferLeadDistance,
+                                  static_cast<float>(Ship->GetVelocity().Size()) * Definition.OfferLeadSeconds);
+    const FVector Location = Ship->GetActorLocation() + Ship->GetActorForwardVector() * Lead +
+                             Ship->GetActorRightVector() * Definition.OfferLateralOffset;
+    if (ASSEncounterBeacon *Beacon = GetWorld()->SpawnActor<ASSEncounterBeacon>(Location, Ship->GetActorRotation()))
     {
         Beacon->ConfigureEncounter(Kind, Wave);
         Spawned.Add(Beacon);
-        if (Kind == ESSEncounterKind::MobileDepot) bDepotOffered = true;
-        if (Kind == ESSEncounterKind::SalvageCache) bSalvageOffered = true;
-        if (Kind == ESSEncounterKind::DistressCombat) bDistressOffered = true;
-        if (USSGameInstance* Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
+        if (Kind == ESSEncounterKind::MobileDepot)
+            bDepotOffered = true;
+        if (Kind == ESSEncounterKind::SalvageCache)
+            bSalvageOffered = true;
+        if (Kind == ESSEncounterKind::DistressCombat)
+            bDistressOffered = true;
+        if (USSGameInstance *Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
         {
             Instance->Session.run.depotSeen = bDepotOffered;
             Instance->Session.run.salvageEventSeen = bSalvageOffered;
@@ -854,51 +1194,103 @@ void USSSurvivalDirectorComponent::OfferEncounter(ESSEncounterKind Kind)
     }
 }
 
-void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick TickType,
+                                                 FActorComponentTickFunction *ThisTickFunction)
 {
     Super::TickComponent(DeltaSeconds, TickType, ThisTickFunction);
-    if (!IsActive() || !FindShip()) return;
+    if (!IsActive() || !FindShip())
+        return;
     CleanTrackedActors();
     WaveAge += DeltaSeconds;
     float Modifier = 1.f;
-    if (USSGameInstance* Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance())) Modifier = static_cast<float>(Instance->Session.PressureMultiplier());
-    Pressure = bBreathing ? .08f : FMath::Clamp((.18f + Wave * .065f + (bClimax ? .18f : 0.f)) * Modifier, .1f, 1.f);
-    if (!bSalvageOffered && Wave == 2 && WaveAge > 7.f) OfferEncounter(ESSEncounterKind::SalvageCache);
-    if (!bDistressOffered && Wave == 7 && WaveAge > 10.f) OfferEncounter(ESSEncounterKind::DistressCombat);
+    if (USSGameInstance *Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
+        Modifier = static_cast<float>(Instance->Session.PressureMultiplier());
+    const auto *Data = Content(this);
+    const auto &DirectorData = Data->DirectorContent;
+    const auto Salvage = Data->Encounter(ESSEncounterKind::SalvageCache);
+    const auto Distress = Data->Encounter(ESSEncounterKind::DistressCombat);
+    const auto Depot = Data->Encounter(ESSEncounterKind::MobileDepot);
+    const auto Wreckage = Data->Hazard(ESSWorldKind::Wreckage);
+    const auto Storm = Data->Hazard(ESSWorldKind::ElectricalStorm);
+    const auto Gravity = Data->Hazard(ESSWorldKind::GravityAnomaly);
+    Pressure = bBreathing ? .08f
+                          : FMath::Clamp((DirectorData.PressureBase + Wave * DirectorData.PressurePerWave +
+                                          (bClimax ? DirectorData.ClimaxPressureBonus : 0.f)) *
+                                             Modifier,
+                                         .1f, 1.f);
+    if (!bSalvageOffered && Wave == Salvage.OfferedWave && WaveAge > Salvage.OfferDelay)
+        OfferEncounter(ESSEncounterKind::SalvageCache);
+    if (!bDistressOffered && Wave == Distress.OfferedWave && WaveAge > Distress.OfferDelay)
+        OfferEncounter(ESSEncounterKind::DistressCombat);
     if (bBreathing)
     {
-        if (Wave == 3 && !bDepotOffered) OfferEncounter(ESSEncounterKind::MobileDepot);
+        if (Wave == Depot.OfferedWave && !bDepotOffered)
+            OfferEncounter(ESSEncounterKind::MobileDepot);
         return;
     }
-    AvailableBudget = FMath::Min(10.f, AvailableBudget + DeltaSeconds * BaseBudgetPerSecond * (.65f + Wave * .13f) * Modifier);
+    AvailableBudget = FMath::Min(
+        DirectorData.BudgetCapacity,
+        AvailableBudget + DeltaSeconds * BaseBudgetPerSecond *
+                              (DirectorData.BudgetBaseMultiplier + Wave * DirectorData.BudgetGrowthPerWave) * Modifier);
     SpawnCooldown -= DeltaSeconds;
-    if (SpawnCooldown > 0.f || GetActiveThreatCount() >= MaximumActiveThreats) return;
-    SpawnCooldown = Random.FRandRange(.65f, 1.2f);
+    if (SpawnCooldown > 0.f || GetActiveThreatCount() >= MaximumActiveThreats)
+        return;
+    SpawnCooldown = Random.FRandRange(FMath::Max(.1f, DirectorData.SpawnIntervalMin),
+                                      FMath::Max(DirectorData.SpawnIntervalMin, DirectorData.SpawnIntervalMax));
 
     if (bClimax && Wave == 10 && !bCompoundGravitySpawned)
     {
-        if (SpawnHazard(ESSWorldKind::GravityAnomaly, 4300.f)) bCompoundGravitySpawned = true;
+        if (SpawnHazard(ESSWorldKind::GravityAnomaly, Gravity.ClimaxRadius))
+            bCompoundGravitySpawned = true;
         return;
     }
     const float Roll = Random.FRand();
-    if ((bClimax && Wave == 5) || (Wave >= 3 && Roll < (bClimax ? .42f : .20f)))
+    if ((bClimax && Wave == 5) || (Wave >= FMath::Min(Data->Enemy(ESSWorldKind::Pursuer).MinimumWave,
+                                                      Data->Enemy(ESSWorldKind::Flanker).MinimumWave) &&
+                                   Roll < (bClimax ? DirectorData.ClimaxEnemyChance : DirectorData.EnemyChance)))
     {
-        if (AvailableBudget >= 3.f) { SpawnEnemy(Wave >= 4 && Random.FRand() < .5f ? ESSWorldKind::Flanker : ESSWorldKind::Pursuer); AvailableBudget -= 3.f; }
+        ESSWorldKind Selected = ESSWorldKind::Pursuer;
+        if (SelectContent(this, {ESSWorldKind::Pursuer, ESSWorldKind::Flanker}, Wave, Random, true, Selected))
+        {
+            const float Cost = FMath::Max(.1f, Data->Enemy(Selected).PressureCost);
+            if (AvailableBudget >= Cost)
+            {
+                SpawnEnemy(Selected);
+                AvailableBudget -= Cost;
+            }
+        }
     }
-    else if (Wave >= 4 && !bClimax && Roll > .89f && AvailableBudget >= 5.f)
+    else if (Wave >= FMath::Min(Storm.MinimumWave, Gravity.MinimumWave) && !bClimax &&
+             Roll > 1.f - DirectorData.FieldChance &&
+             AvailableBudget >= FMath::Min(Storm.PressureCost, Gravity.PressureCost))
     {
-        if (SpawnHazard(Wave >= 6 && Random.FRand() < .45f ? ESSWorldKind::GravityAnomaly : ESSWorldKind::ElectricalStorm, 3400.f)) AvailableBudget -= 5.f;
+        ESSWorldKind Selected = ESSWorldKind::ElectricalStorm;
+        if (SelectContent(this, {ESSWorldKind::ElectricalStorm, ESSWorldKind::GravityAnomaly}, Wave, Random, false,
+                          Selected))
+        {
+            const float Cost = FMath::Max(.1f, Data->Hazard(Selected).PressureCost);
+            if (AvailableBudget >= Cost && SpawnHazard(Selected, -1.f))
+                AvailableBudget -= Cost;
+        }
     }
-    else if (Wave >= 2 && Roll > .69f && Roll < .84f && AvailableBudget >= 4.f)
+    else if (Wave >= Wreckage.MinimumWave && Roll > DirectorData.WreckageSelectionStart &&
+             Roll < DirectorData.WreckageSelectionStart + Wreckage.SelectionWeight &&
+             AvailableBudget >= Wreckage.PressureCost)
     {
         SpawnWreckagePassage();
-        AvailableBudget -= 4.f;
+        AvailableBudget -= FMath::Max(.1f, Wreckage.PressureCost);
     }
     else if (AvailableBudget >= 1.f)
     {
-        const float SizeRoll = Random.FRand();
-        const ESSWorldKind Hazard = SizeRoll < .15f ? ESSWorldKind::MassiveAsteroid : (SizeRoll < .52f ? ESSWorldKind::MediumAsteroid : ESSWorldKind::SmallAsteroid);
-        if (SpawnHazard(Hazard, Hazard == ESSWorldKind::MassiveAsteroid ? 650.f : (Hazard == ESSWorldKind::MediumAsteroid ? 240.f : 95.f))) AvailableBudget -= 1.f;
+        ESSWorldKind Selected = ESSWorldKind::SmallAsteroid;
+        if (SelectContent(this,
+                          {ESSWorldKind::MassiveAsteroid, ESSWorldKind::MediumAsteroid, ESSWorldKind::SmallAsteroid},
+                          Wave, Random, false, Selected))
+        {
+            const float Cost = FMath::Max(.1f, Data->Hazard(Selected).PressureCost);
+            if (AvailableBudget >= Cost && SpawnHazard(Selected, -1.f))
+                AvailableBudget -= Cost;
+        }
     }
 }
 
@@ -906,7 +1298,8 @@ void USSSurvivalDirectorComponent::ResetEncounter()
 {
     SetActive(false);
     // Called only for station/death transitions. Ordinary Configure never clears the universe.
-    for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It) It->Destroy();
+    for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
+        It->Destroy();
     Spawned.Empty();
     AvailableBudget = 0.f;
     Pressure = 0.f;

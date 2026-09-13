@@ -41,6 +41,11 @@ def normalize(v):
     return tuple(x / length for x in v)
 
 
+def coordinate(value):
+    # Tiny floating-point differences must not alternate signed zero by runtime.
+    return f"{0.0 if abs(value) < 0.0000005 else value:.6f}"
+
+
 class Mesh:
     def __init__(self, name):
         self.name, self.vertices, self.faces = name, [], []
@@ -111,7 +116,7 @@ class Mesh:
                     averaged[i]=tuple(old[k]+n[k] for k in range(3))
         averaged={k:normalize(v) for k,v in averaged.items()}
         lines=["# Original SpaceSurvival generated source; centimeters; X forward; Z up", "mtllib Palette.mtl", f"o {self.name}"]
-        lines += ["v " + " ".join(f"{v:.6f}" for v in p) for p in self.vertices]
+        lines += ["v " + " ".join(coordinate(v) for v in p) for p in self.vertices]
         # Per-face UVs provide valid coordinates for tangents/lightmap generation.
         lines += ["vt 0.05 0.05", "vt 0.95 0.05", "vt 0.05 0.95"]
         faces=[]
@@ -124,7 +129,7 @@ class Mesh:
             references=[]
             for i,index in enumerate(indices):
                 n=averaged[index] if smooth else face_normal
-                lines.append("vn " + " ".join(f"{v:.6f}" for v in n))
+                lines.append("vn " + " ".join(coordinate(v) for v in n))
                 references.append(f"{index+1}/{i+1}/{normal_index}")
                 normal_index+=1
             faces.append("f " + " ".join(references))

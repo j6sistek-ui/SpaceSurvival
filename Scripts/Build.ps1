@@ -1,9 +1,15 @@
 param(
-    [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
+    [string]$EngineRoot = '',
     [ValidateSet('Editor','Content','Test','Package')][string]$Target = 'Editor'
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+if (-not $EngineRoot) {
+    $EngineRoot = @('C:\Program Files\EpicGames2\UE_5.8','C:\Program Files\Epic Games\UE_5.8') |
+        Where-Object { Test-Path -LiteralPath (Join-Path $_ 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe') } |
+        Select-Object -First 1
+    if (-not $EngineRoot) { throw 'Full UE 5.8 was not found. Supply -EngineRoot with the installed engine directory.' }
+}
 $project = Join-Path $root 'SpaceSurvival.uproject'
 $build = Join-Path $EngineRoot 'Engine\Build\BatchFiles\Build.bat'
 $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
@@ -18,7 +24,7 @@ try {
     } elseif ($Target -eq 'Content') {
         & $editor $project -unattended -stdout -FullStdOutLogOutput -ExecutePythonScript="$root\Scripts\AuthorContent.py"
     } elseif ($Target -eq 'Test') {
-        & $editor $project -unattended -NullRHI -stdout -FullStdOutLogOutput '-ExecCmds=Automation RunTests SpaceSurvival;Quit' '-TestExit=Automation Test Queue Empty' "-ReportExportPath=$root\Artifacts\UnrealTests"
+        & $editor $project -unattended -NullRHI -stdout -FullStdOutLogOutput '-ExecCmds=Automation RunTests SpaceSurvival' '-TestExit=Automation Test Queue Empty' "-ReportExportPath=$root\Artifacts\UnrealTests"
     } else {
         if (-not (Test-Path -LiteralPath (Join-Path $root 'Content\SpaceSurvival\Maps\Survival.umap'))) { throw 'AuthorContent must finish successfully before packaging.' }
         & $uat BuildCookRun "-project=$project" -noP4 -platform=Win64 -clientconfig=Development -build -cook -stage -pak -iostore -archive "-archivedirectory=$root\Artifacts\Windows" -utf8output

@@ -113,3 +113,12 @@ Leave the repository with the delivery package required by `IMPLEMENT.md`, inclu
 - Phase 2 integration notes;
 - validation/test record;
 - clean, understandable Git state suitable for continued development.
+
+## Repository tooling workflow
+
+- Run `./Scripts/TestCore.ps1` from the repository root for portable domain checks. `Dockerfile` uses `gcc:14-bookworm` to build strict C++17 and ASan/UBSan test binaries; it does not install host packages.
+- Run `./Scripts/Format.ps1 -Check` to check C++ formatting, or omit `-Check` to apply it. `Tools.Dockerfile` supplies clang-format inside a container; `.clang-format` preserves Unreal generated-header include order.
+- Run `python Scripts/CheckProject.py`, `python -m compileall -q Scripts ContentSource`, and `python ContentSource/ValidateSources.py` for source/content-source checks using an existing Python runtime.
+- Unreal compilation, asset authoring, automation and Windows packaging use the owner's installed Unreal engine and Windows C++/SDK toolchain through `Scripts/Build.ps1`. The Linux container does not supply or validate these tools. Do not install host prerequisites without explicit owner instruction.
+- Keep runtime artifacts, intermediate files and raw editor logs in ignored `Artifacts`, `Intermediate` and `Saved` directories. Commit concise sanitized validation records under `docs/validation` and intended content assets under `Content`.
+- Never treat portable test passes or the assets-only authoring workbench as evidence of an integrated Unreal gameplay pass.

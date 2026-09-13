@@ -135,7 +135,7 @@
         "M_Gold",
         "M_Cyan"
       ],
-      "sha256": "4275f38d8f6f3cf0d19ac6d39d645992b121d0e62fad3ff711d5cf02f57caf52"
+      "sha256": "0a2e57f9845d992bfb67a3055f90fbb3db5c7ef9651a3ed476e6b9dc647ad008"
     },
     {
       "name": "SM_AgileShip",
@@ -158,7 +158,7 @@
         "M_Gold",
         "M_Cyan"
       ],
-      "sha256": "ed1c6eb0c0d93e09aa68a88307fe4e1369db9773bec3633306d46b370ed031d1"
+      "sha256": "2d8bb73ac2a35d25cf62f1108d412beaa3fcfa797da922aed9e59ea3ebfce54c"
     },
     {
       "name": "SM_Asteroid",
@@ -265,7 +265,7 @@
         "M_Gold",
         "M_Amber"
       ],
-      "sha256": "9c3f6c3bde5e647f20ddda9fd244bcc423f48e6dfd8c67cea3cd2801d50dc5e4"
+      "sha256": "7a17b15a93af20fffe8767d1e3dd8ca480c6c225b43d7d2bc36973154d553bda"
     },
     {
       "name": "SM_Wreckage",
@@ -288,7 +288,7 @@
         "M_Gold",
         "M_Amber"
       ],
-      "sha256": "7dbb4ac4ed0ef0ec1c317a4dfaa8da0a1436d92730c58e3148f91be63cbaf658"
+      "sha256": "c1970c7774f9956a94df32e6028f2c2d57c5f4b69c43572d5f540eaa9b4e35b2"
     },
     {
       "name": "SM_Pursuer",
@@ -310,7 +310,7 @@
         "M_Hull",
         "M_Amber"
       ],
-      "sha256": "a6c0bff7497e4222841a75b51724d267b5ad86d2e18697de8e50a285b954a8d7"
+      "sha256": "fbde4d3b6b09352439692602ea0e706cae09c1d200256f851baa5d0eaacbcb31"
     },
     {
       "name": "SM_Flanker",
@@ -332,7 +332,7 @@
         "M_Hull",
         "M_Amber"
       ],
-      "sha256": "80b3d73187e2316409c2f277ebb745d604dbb38508546eaa12ea97c3e2d3b40f"
+      "sha256": "895f812e9cbbf836f258cdedf65f87ecdc848282913b6d964fa4ca0102c2c24e"
     },
     {
       "name": "SM_PickupCredit",
@@ -354,7 +354,7 @@
         "M_Gold",
         "M_Amber"
       ],
-      "sha256": "0af114fdc52d04da92dba0de6e25f49f6d93bb9f29e4283d63a59aecf760424f"
+      "sha256": "ea4218b4fe590ecb4d651b4433c0efb70dcb151da7d8b72ee077ea8d546a2bd9"
     },
     {
       "name": "SM_PickupRepair",
@@ -375,7 +375,7 @@
       "materials": [
         "M_Cyan"
       ],
-      "sha256": "dc3a010d9ee12a97dcdadd1ca2c989fe0724a808e5146665752747170caa165e"
+      "sha256": "b671b91223b47aed108e04d4e0e1cdccb663933fe9a31b1084b82b8da14845b3"
     },
     {
       "name": "SM_PickupShield",
@@ -441,7 +441,7 @@
         "M_Gold",
         "M_Cyan"
       ],
-      "sha256": "787b283f17c2d3ab86e36348c4b9568d16970dc23f71e55fb41208c5aeabb59e"
+      "sha256": "bc5e1bc295c11d595f61d5735e88d814aaad5e6abed9910b082a071cc551f626"
     },
     {
       "name": "SM_Crate",
@@ -464,7 +464,7 @@
         "M_Gold",
         "M_Amber"
       ],
-      "sha256": "44026fdf6e29a1ad8a9d97c2a29d9d36c303907146b08b150163b30c81510e6c"
+      "sha256": "e4ec79cb9382c38048dc48e696c467e4395d80ebf146982ded6e8be03a30127e"
     },
     {
       "name": "SM_ServiceArm",
@@ -487,7 +487,7 @@
         "M_Gold",
         "M_Cyan"
       ],
-      "sha256": "76ef1dfe8f9d03d9f28c23ed07c372a200d87114f518e290ea26ef1663e785a2"
+      "sha256": "4713352e1895f03bd0a7e6625e2bf79df4af560859dc24bc4cbf63aa14a5813a"
     },
     {
       "name": "SM_StationRing",
@@ -509,7 +509,7 @@
         "M_Hull",
         "M_Cyan"
       ],
-      "sha256": "7ca8cd39637d4c0d068a2fd57081ea78bbd13b2799237a3ee849776461c80f5e"
+      "sha256": "aff8e0b92f9ea7e54a71a37b86f2adac1f946356377166f7d111bc8220952484"
     },
     {
       "name": "SM_VectorThrusters",
@@ -531,7 +531,7 @@
         "M_Cyan",
         "M_Gold"
       ],
-      "sha256": "302d3e1d3e08145fcbdcf44fcdfaf0d3c9e460f809546e37b834ade8a42dde28"
+      "sha256": "3f806d6eb229d05dcd787403fb60339578ad9c68ebae42739a461bb099f4b5fe"
     },
     {
       "name": "SM_OverdriveCooling",
@@ -553,7 +553,7 @@
         "M_Hull",
         "M_Violet"
       ],
-      "sha256": "3050acc1bfaff840d700faf7285c7b262c3d6be898c49ed26bb7f4fea83d264a"
+      "sha256": "d0bcc28df8be8868891b398e1cfb237cd45f54a810f2fa1186550fa89c1950e4"
     },
     {
       "name": "SM_StormRing",
@@ -574,7 +574,7 @@
       "materials": [
         "M_Violet"
       ],
-      "sha256": "f26b271774c256002ff7a738874e0202906f3995792f3d7ce122476353d4faea"
+      "sha256": "a1d4dd374bb65613de96326deb0641d4aada693214dd48a89bb185c134eaec3b"
     },
     {
       "name": "SM_GravityRing",
@@ -596,7 +596,7 @@
         "M_Violet",
         "M_Cyan"
       ],
-      "sha256": "74709ee6038130b2439be66cfd19c11cc8c1a8ae1b1d68b6f3c9c242ead2b4f9"
+      "sha256": "d680e1fb894480daa062f3efbf4d79785e6444497fb7e45cbaa02a973e2546ef"
     },
     {
       "name": "SM_MobileDepot",
@@ -619,7 +619,7 @@
         "M_Gold",
         "M_Cyan"
       ],
-      "sha256": "1bf8f41c9acd428b256d7c566932316ea4b410605a3a12211430e445fb942635"
+      "sha256": "9e95fa7dcf163cd9c48b59cf6b21b21fc25925d549509aa615e7e678705c3f84"
     },
     {
       "name": "SM_EventBeacon",
@@ -641,7 +641,7 @@
         "M_Cyan",
         "M_Gold"
       ],
-      "sha256": "b5eeb79f6522886f32ae18702d3b951d2e23e64039fd6c4683d4f159eeacc819"
+      "sha256": "443627e85b5a966c73cd6db6447699c16207e972d3b25de96b6e278a45c7720c"
     },
     {
       "name": "SM_Projectile",
@@ -662,7 +662,7 @@
       "materials": [
         "M_Emissive"
       ],
-      "sha256": "83d4ea13df1a509fd7a2277a1f4a4158a2a864d76478f8c258bda599000a89c5"
+      "sha256": "1dbaa487615d676b19a045ad97213c7b6b7a81f30e2eda1e97cd54cb45a9c488"
     },
     {
       "name": "SM_Starfield",

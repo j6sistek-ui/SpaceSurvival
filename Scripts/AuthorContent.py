@@ -46,6 +46,21 @@ def generate_sources():
     return geometry.main(), audio.main()
 
 
+def read_sources():
+    """Import checked-in sources; editor Python must not rewrite source content."""
+    verify_hero()
+    manifests = []
+    for directory, extension in (("Meshes", ".obj"), ("Audio", ".wav")):
+        folder = ROOT / "ContentSource" / directory
+        manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+        for item in manifest["assets"]:
+            path = folder / (item["name"] + extension)
+            if hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]:
+                raise RuntimeError(f"Source differs from its manifest: {path}; regenerate and review before importing")
+        manifests.append(manifest)
+    return tuple(manifests)
+
+
 class Author:
     def __init__(self, unreal, meshes, audio):
         self.u = unreal
@@ -224,7 +239,7 @@ class Author:
         mesh_settings = pipeline.get_editor_property("mesh_pipeline")
         mesh_settings.set_editor_property("import_skeletal_meshes", True)
         mesh_settings.set_editor_property("import_static_meshes", False)
-        mesh_settings.set_editor_property("combine_skeletal_meshes", True)
+        mesh_settings.set_editor_property("combine_skeletal_meshes_behavior", u.InterchangeCombineSkeletalMeshesBehavior.BY_SKELETON)
         mesh_settings.set_editor_property("create_physics_asset", True)
         animation = pipeline.get_editor_property("animation_pipeline")
         animation.set_editor_property("import_animations", True)
@@ -268,6 +283,59 @@ class Author:
                 raise RuntimeError(f"{name}: import did not produce expected sound")
         sound.set_editor_property("looping", item["loop"])
         self.save(sound)
+
+    def pilot(self):
+        u = self.u
+        path = BASE + "/Character/A_Pilot"
+        mesh = self.required(BASE + "/Character/SK_Acornaut", u.SkeletalMesh)
+        skeleton = mesh.get_editor_property("skeleton")
+        if self.library.does_asset_exist(path):
+            clip = self.existing_authored(path, u.AnimSequence)
+            if self.library.get_metadata_tag(clip,"SSPilotSourceFormat") != "OriginalGLTFBasis1":
+                raise RuntimeError("Existing pilot clip needs deliberate reimport with original glTF joint basis")
+        else:
+            source = ROOT / "ContentSource/Animation/Pilot.glb"
+            manifest = json.loads(source.with_suffix(".json").read_text(encoding="utf-8"))
+            if hashlib.sha256(source.read_bytes()).hexdigest() != manifest["animation_sha256"]:
+                raise RuntimeError("Pilot animation source hash differs from authoring manifest")
+            pipeline_path = BASE + "/Authoring/P_PilotImport"
+            if not self.library.does_asset_exist(pipeline_path):
+                if not self.library.duplicate_asset("/Interchange/Pipelines/DefaultAssetsPipeline",pipeline_path):
+                    raise RuntimeError("Cannot create pilot animation import pipeline")
+            pipeline = self.required(pipeline_path)
+            pipeline.set_editor_property("asset_name","A_Pilot")
+            pipeline.set_editor_property("use_source_name_for_asset",False)
+            pipeline.set_editor_property("asset_type_sub_folders",False)
+            pipeline.set_editor_property("scene_name_sub_folder",False)
+            common = pipeline.get_editor_property("common_skeletal_meshes_and_animations_properties")
+            common.set_editor_property("import_only_animations",True)
+            common.set_editor_property("skeleton",skeleton)
+            common.set_editor_property("try_auto_select_skeleton",False)
+            pipeline.get_editor_property("mesh_pipeline").set_editor_property("import_skeletal_meshes",False)
+            pipeline.get_editor_property("mesh_pipeline").set_editor_property("import_static_meshes",False)
+            pipeline.get_editor_property("mesh_pipeline").set_editor_property("create_physics_asset",False)
+            pipeline.get_editor_property("animation_pipeline").set_editor_property("import_animations",True)
+            pipeline.get_editor_property("material_pipeline").set_editor_property("import_materials",False)
+            pipeline.get_editor_property("material_pipeline").get_editor_property("texture_pipeline").set_editor_property("import_textures",False)
+            self.save(pipeline)
+            manager = u.InterchangeManager.get_interchange_manager_scripted()
+            params = u.ImportAssetParameters()
+            params.set_editor_property("is_automated",True)
+            params.set_editor_property("replace_existing",False)
+            params.set_editor_property("override_pipelines",[u.SoftObjectPath(pipeline.get_path_name())])
+            imported = manager.import_asset(BASE+"/Character",manager.create_source_data(str(source)),params)
+            clips = [obj for obj in imported if isinstance(obj,u.AnimSequence)]
+            if len(clips) != 1 or len(imported) != 1:
+                raise RuntimeError("Pilot source must import exactly one animation and no replacement mesh/skeleton")
+            clip = clips[0]
+            if clip.get_path_name().split(".")[0] != path:
+                if not self.library.rename_asset(clip.get_path_name(),path):
+                    raise RuntimeError("Cannot name pilot animation A_Pilot")
+                clip = self.required(path,u.AnimSequence)
+            self.library.set_metadata_tag(clip,"SSPilotSourceFormat","OriginalGLTFBasis1")
+            self.save(clip)
+        if clip.get_editor_property("skeleton") != skeleton or abs(clip.get_editor_property("sequence_length")-4.0) > .01:
+            raise RuntimeError("Pilot animation skeleton or duration differs from source contract")
 
     def data_asset(self):
         u = self.u
@@ -323,8 +391,8 @@ class Author:
             if material:
                 component.set_material(0, self.required(material, u.Material))
         for label, rotation, color, intensity in (
-            ("SpaceKey", u.Rotator(-35, -40, 0), u.LinearColor(0.60, 0.77, 1, 1), 3.5),
-            ("SpaceRim", u.Rotator(20, 140, 0), u.LinearColor(1, 0.52, 0.24, 1), 1.2),
+            ("SpaceKey", u.Rotator(pitch=-35, yaw=-40, roll=0), u.LinearColor(0.60, 0.77, 1, 1), 3.5),
+            ("SpaceRim", u.Rotator(pitch=20, yaw=140, roll=0), u.LinearColor(1, 0.52, 0.24, 1), 1.2),
         ):
             light = actors.spawn_actor_from_class(u.DirectionalLight, u.Vector(0, 0, 500), rotation)
             light.set_actor_label(label)
@@ -348,19 +416,22 @@ class Author:
             raise RuntimeError("Persistent Survival map save failed")
         self.created.append(MAP_PATH)
 
-    def run(self):
+    def run(self, assets_only=False):
         for directory in ("Materials", "Meshes", "Character", "Audio", "Maps", "Data", "Authoring"):
             self.library.make_directory(BASE + "/" + directory)
         self.stage("Materials", self.palette)
         for item in self.mesh_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.static_mesh(asset))
         self.stage("Preserved Acornaut import", self.hero)
+        self.stage("Authored pilot animation", self.pilot)
         for item in self.audio_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.sound(asset))
-        self.stage("Phase1 DataAsset", self.data_asset)
-        self.stage("Persistent map", self.world)
+        if not assets_only:
+            self.stage("Phase1 DataAsset", self.data_asset)
+            self.stage("Persistent map", self.world)
         self.stage("Source integrity", verify_hero)
-        record = {"status": "FAILED" if self.errors else "IMPORTED_NOT_GAMEPLAY_VALIDATED",
+        status = "ASSETS_IMPORTED_GAMEPLAY_CLASSES_PENDING" if assets_only else "IMPORTED_NOT_GAMEPLAY_VALIDATED"
+        record = {"status": "FAILED" if self.errors else status,
                   "engine": self.u.SystemLibrary.get_engine_version(),
                   "source_glb_sha256": HERO_HASH, "saved_assets": sorted(set(self.created)),
                   "errors": self.errors,
@@ -376,16 +447,18 @@ class Author:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-only", action="store_true")
+    parser.add_argument("--assets-only", action="store_true", help="Import assets without requiring compiled gameplay classes or authoring the map")
     args, _ = parser.parse_known_args()
-    meshes, audio = generate_sources()
     if args.source_only:
+        generate_sources()
         print("Source generation only. No Unreal assets imported or gameplay validation performed.")
         return
+    meshes, audio = read_sources()
     try:
         import unreal
     except ImportError as error:
         raise RuntimeError("Unreal Python API unavailable. Run this script in Unreal Editor, or pass --source-only to generate source files") from error
-    Author(unreal, meshes, audio).run()
+    Author(unreal, meshes, audio).run(assets_only=args.assets_only)
 
 
 if __name__ == "__main__":

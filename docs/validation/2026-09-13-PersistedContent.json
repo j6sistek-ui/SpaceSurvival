@@ -1,0 +1,451 @@
+{
+  "status": "PERSISTED_ASSETS_VALIDATED_NOT_GAMEPLAY",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "meshes": [
+    {
+      "name": "SM_AcornShip",
+      "dimensions_cm": [
+        457.0,
+        290.0,
+        166.51599884033203
+      ],
+      "lod0_render_vertices": 11520,
+      "material_slots": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ]
+    },
+    {
+      "name": "SM_AgileShip",
+      "dimensions_cm": [
+        488.5,
+        370.0,
+        166.51599884033203
+      ],
+      "lod0_render_vertices": 11520,
+      "material_slots": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ]
+    },
+    {
+      "name": "SM_Asteroid",
+      "dimensions_cm": [
+        194.0616455078125,
+        186.5512466430664,
+        202.76811981201172
+      ],
+      "lod0_render_vertices": 1320,
+      "material_slots": [
+        "M_Rock"
+      ]
+    },
+    {
+      "name": "SM_AsteroidSmall",
+      "dimensions_cm": [
+        196.5207977294922,
+        197.77459716796875,
+        198.17757415771484
+      ],
+      "lod0_render_vertices": 1320,
+      "material_slots": [
+        "M_Rock"
+      ]
+    },
+    {
+      "name": "SM_AsteroidMedium",
+      "dimensions_cm": [
+        194.36280059814453,
+        191.85004425048828,
+        201.07974243164062
+      ],
+      "lod0_render_vertices": 1320,
+      "material_slots": [
+        "M_Rock"
+      ]
+    },
+    {
+      "name": "SM_AsteroidMassive",
+      "dimensions_cm": [
+        194.31573486328125,
+        188.921630859375,
+        203.56837463378906
+      ],
+      "lod0_render_vertices": 1320,
+      "material_slots": [
+        "M_Rock"
+      ]
+    },
+    {
+      "name": "SM_Debris",
+      "dimensions_cm": [
+        177.5,
+        135.0,
+        46.0
+      ],
+      "lod0_render_vertices": 180,
+      "material_slots": [
+        "M_Hull",
+        "M_Gold",
+        "M_Amber"
+      ]
+    },
+    {
+      "name": "SM_Wreckage",
+      "dimensions_cm": [
+        177.5,
+        135.0,
+        46.0
+      ],
+      "lod0_render_vertices": 180,
+      "material_slots": [
+        "M_Hull",
+        "M_Gold",
+        "M_Amber"
+      ]
+    },
+    {
+      "name": "SM_Pursuer",
+      "dimensions_cm": [
+        210.0,
+        140.0,
+        33.599998474121094
+      ],
+      "lod0_render_vertices": 1104,
+      "material_slots": [
+        "M_Hull",
+        "M_Amber"
+      ]
+    },
+    {
+      "name": "SM_Flanker",
+      "dimensions_cm": [
+        210.0,
+        224.0,
+        33.599998474121094
+      ],
+      "lod0_render_vertices": 1104,
+      "material_slots": [
+        "M_Hull",
+        "M_Amber"
+      ]
+    },
+    {
+      "name": "SM_PickupCredit",
+      "dimensions_cm": [
+        66.0,
+        66.0,
+        16.0
+      ],
+      "lod0_render_vertices": 1188,
+      "material_slots": [
+        "M_Gold",
+        "M_Amber"
+      ]
+    },
+    {
+      "name": "SM_PickupRepair",
+      "dimensions_cm": [
+        50.0,
+        50.0,
+        17.0
+      ],
+      "lod0_render_vertices": 72,
+      "material_slots": [
+        "M_Cyan"
+      ]
+    },
+    {
+      "name": "SM_PickupShield",
+      "dimensions_cm": [
+        60.0,
+        54.0,
+        17.0
+      ],
+      "lod0_render_vertices": 96,
+      "material_slots": [
+        "M_Cyan",
+        "M_Hull"
+      ]
+    },
+    {
+      "name": "SM_PickupBuff",
+      "dimensions_cm": [
+        54.0,
+        44.0,
+        14.0
+      ],
+      "lod0_render_vertices": 72,
+      "material_slots": [
+        "M_Violet"
+      ]
+    },
+    {
+      "name": "SM_Console",
+      "dimensions_cm": [
+        90.0,
+        62.0,
+        108.5
+      ],
+      "lod0_render_vertices": 144,
+      "material_slots": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ]
+    },
+    {
+      "name": "SM_Crate",
+      "dimensions_cm": [
+        85.0,
+        70.0,
+        74.0
+      ],
+      "lod0_render_vertices": 144,
+      "material_slots": [
+        "M_Hull",
+        "M_Gold",
+        "M_Amber"
+      ]
+    },
+    {
+      "name": "SM_ServiceArm",
+      "dimensions_cm": [
+        190.5,
+        75.0,
+        211.0
+      ],
+      "lod0_render_vertices": 144,
+      "material_slots": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ]
+    },
+    {
+      "name": "SM_StationRing",
+      "dimensions_cm": [
+        12.0,
+        212.0,
+        212.0
+      ],
+      "lod0_render_vertices": 4608,
+      "material_slots": [
+        "M_Hull",
+        "M_Cyan"
+      ]
+    },
+    {
+      "name": "SM_VectorThrusters",
+      "dimensions_cm": [
+        53.0,
+        66.0,
+        28.0
+      ],
+      "lod0_render_vertices": 996,
+      "material_slots": [
+        "M_Cyan",
+        "M_Gold"
+      ]
+    },
+    {
+      "name": "SM_OverdriveCooling",
+      "dimensions_cm": [
+        45.0,
+        42.0,
+        34.0
+      ],
+      "lod0_render_vertices": 288,
+      "material_slots": [
+        "M_Hull",
+        "M_Violet"
+      ]
+    },
+    {
+      "name": "SM_StormRing",
+      "dimensions_cm": [
+        6.0,
+        200.0,
+        200.0
+      ],
+      "lod0_render_vertices": 2304,
+      "material_slots": [
+        "M_Violet"
+      ]
+    },
+    {
+      "name": "SM_GravityRing",
+      "dimensions_cm": [
+        6.0,
+        200.0,
+        200.0
+      ],
+      "lod0_render_vertices": 4608,
+      "material_slots": [
+        "M_Violet",
+        "M_Cyan"
+      ]
+    },
+    {
+      "name": "SM_MobileDepot",
+      "dimensions_cm": [
+        160.0,
+        131.0,
+        89.0
+      ],
+      "lod0_render_vertices": 1332,
+      "material_slots": [
+        "M_Hull",
+        "M_Gold",
+        "M_Cyan"
+      ]
+    },
+    {
+      "name": "SM_EventBeacon",
+      "dimensions_cm": [
+        76.0,
+        76.0,
+        55.0
+      ],
+      "lod0_render_vertices": 1188,
+      "material_slots": [
+        "M_Cyan",
+        "M_Gold"
+      ]
+    },
+    {
+      "name": "SM_Projectile",
+      "dimensions_cm": [
+        200.0,
+        14.0,
+        14.0
+      ],
+      "lod0_render_vertices": 288,
+      "material_slots": [
+        "M_Emissive"
+      ]
+    },
+    {
+      "name": "SM_Starfield",
+      "dimensions_cm": [
+        7992012.25,
+        7975323.75,
+        7990796.0
+      ],
+      "lod0_render_vertices": 3600,
+      "material_slots": [
+        "M_StarWarm",
+        "M_Star"
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "name": "Engine",
+      "seconds": 4.0,
+      "channels": 1,
+      "sample_rate": 32000,
+      "loop": true
+    },
+    {
+      "name": "Laser",
+      "seconds": 0.25,
+      "channels": 1,
+      "sample_rate": 32000,
+      "loop": false
+    },
+    {
+      "name": "Cannon",
+      "seconds": 0.699999988079071,
+      "channels": 1,
+      "sample_rate": 32000,
+      "loop": false
+    },
+    {
+      "name": "Impact",
+      "seconds": 0.800000011920929,
+      "channels": 1,
+      "sample_rate": 32000,
+      "loop": false
+    },
+    {
+      "name": "Pickup",
+      "seconds": 0.550000011920929,
+      "channels": 1,
+      "sample_rate": 32000,
+      "loop": false
+    },
+    {
+      "name": "Alarm",
+      "seconds": 0.6499999761581421,
+      "channels": 1,
+      "sample_rate": 32000,
+      "loop": false
+    },
+    {
+      "name": "Station",
+      "seconds": 4.0,
+      "channels": 1,
+      "sample_rate": 32000,
+      "loop": true
+    },
+    {
+      "name": "MusicBase",
+      "seconds": 20.0,
+      "channels": 2,
+      "sample_rate": 32000,
+      "loop": true
+    },
+    {
+      "name": "MusicPressure",
+      "seconds": 20.0,
+      "channels": 2,
+      "sample_rate": 32000,
+      "loop": true
+    },
+    {
+      "name": "MusicClimax",
+      "seconds": 20.0,
+      "channels": 2,
+      "sample_rate": 32000,
+      "loop": true
+    }
+  ],
+  "materials": [
+    "/Game/SpaceSurvival/Materials/M_Hull.M_Hull",
+    "/Game/SpaceSurvival/Materials/M_Gold.M_Gold",
+    "/Game/SpaceSurvival/Materials/M_Rock.M_Rock",
+    "/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan",
+    "/Game/SpaceSurvival/Materials/M_Amber.M_Amber",
+    "/Game/SpaceSurvival/Materials/M_Violet.M_Violet",
+    "/Game/SpaceSurvival/Materials/M_Hazard.M_Hazard",
+    "/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive",
+    "/Game/SpaceSurvival/Materials/M_Space.M_Space",
+    "/Game/SpaceSurvival/Materials/M_Star.M_Star",
+    "/Game/SpaceSurvival/Materials/M_StarWarm.M_StarWarm"
+  ],
+  "errors": [],
+  "limits": [
+    "No gameplay classes or map validation",
+    "No rendered visual approval",
+    "No audio listening",
+    "No player input or performance verification"
+  ],
+  "hero": {
+    "mesh": "/Game/SpaceSurvival/Character/SK_Acornaut.SK_Acornaut",
+    "animation": "/Game/SpaceSurvival/Character/A_Walk.A_Walk",
+    "skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+    "animation_seconds": 2.4666666984558105,
+    "dimensions_cm": [
+      63.993621826171875,
+      99.77645874023438,
+      92.08002853393555
+    ],
+    "materials": [
+      "/Game/SpaceSurvival/Character/model-rigged_material_0.model-rigged_material_0"
+    ],
+    "source_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+  }
+}

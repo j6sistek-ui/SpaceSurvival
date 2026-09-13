@@ -202,5 +202,10 @@
     "audio mix",
     "performance"
   ],
-  "preserved_hero_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+  "preserved_hero_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "pilot_animation": {
+    "valid_binary_header_and_hash": true,
+    "seconds": 4,
+    "bones": 52
+  }
 }

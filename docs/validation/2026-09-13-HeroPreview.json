@@ -1,0 +1,41 @@
+{
+  "status": "ASSET_PREVIEW_CAPTURED_NOT_GAMEPLAY",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "elapsed_seconds": 3.4059999999990396,
+  "animation_start_seconds": 0.0,
+  "animation_end_seconds": 0.0,
+  "hero_actor_location_cm": [
+    290,
+    0,
+    60
+  ],
+  "hero_actor_rotation_degrees": [
+    0,
+    -90,
+    0
+  ],
+  "animation_sampling": "Explicit 0.6-second OverrideAnimationData pose sample; not time-based playback",
+  "foot_socket_world_cm": {
+    "L_Foot": [
+      263.10051918029785,
+      -7.109002768993374,
+      20.38874387741089
+    ],
+    "R_Foot": [
+      261.5415120124817,
+      16.276104748249065,
+      17.270729541778564
+    ],
+    "Pelvis": [
+      298.5679307579994,
+      -0.09347051382064997,
+      49.23037946224213
+    ],
+    "Head": [
+      318.0555188655853,
+      -0.0934705138206482,
+      74.9539977312088
+    ]
+  },
+  "limits": "Unsaved stock-actor asset preview, not SpaceSurvival gameplay. No game mode, controls, collision, packaged build or performance validation."
+}

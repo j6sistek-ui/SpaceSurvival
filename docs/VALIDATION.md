@@ -1,8 +1,10 @@
 # Phase 1 validation record
 
+> Reboot checkpoint, 2026-09-13 04:35 UTC: the editor C++ build **succeeded** using MSVC14.51.36257 and Windows SDK10.0.26100.0; earlier missing-toolchain statements below are historical and superseded. Current portable tests pass372 assertions in each strict/sanitizer build. Gameplay content creation, Unreal save-test execution, package and player validation remain pending. See [PROJECT_STATE](PROJECT_STATE.md) for resume order.
+
 Recorded 2026-09-13 UTC. Overall status: **PARTIAL**.
 
-`GAME_SCOPE.md` remains the authoritative design and `../IMPLEMENT.md` remains the execution contract. The portable domain has executed test evidence. The Unreal game has not opened, compiled, imported its content, packaged, or been played in this environment. Consequently none of the Unreal gameplay acceptance gates below is closed. Source implementations and deterministic tests are not evidence of flight feel, controller operation, collision correctness, Director fairness, art quality, audio quality, or a compelling restart loop.
+`GAME_SCOPE.md` remains the authoritative design and `../IMPLEMENT.md` remains the execution contract. The portable domain has executed test evidence. The Unreal game has not opened, compiled, packaged or been played. A separate content-only UE5.8.2 workbench subsequently opened and imported art/audio assets; that does not run the gameplay module. Consequently none of the Unreal gameplay acceptance gates below is closed. Source implementations and deterministic tests are not evidence of flight feel, controller operation, collision correctness, Director fairness, art quality, audio quality or a compelling restart loop.
 
 ## Evidence and limits
 
@@ -15,7 +17,8 @@ Recorded 2026-09-13 UTC. Overall status: **PARTIAL**.
 | Content specialist's source checks, detailed in `CONTENT_PIPELINE.md` | Five Python scripts passed syntax compilation; generation matched across 39 source/manifest files | Python syntax and deterministic generation only. Source geometry preview is not a gameplay screenshot. |
 | `Scripts/CheckProject.py`; Python `compileall` for scripts/source generators | **VERIFIED SOURCE ONLY**: 19 structural checks passed; syntax compilation passed | Project/module/config/header structure and source syntax only; no UHT, Unreal compilation, engine Python API execution or rendering. |
 | Supplied hero source | Preserved SHA-256 `c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91` | The supplied `model-rigged.glb` was not replaced. Skeletal import and visible piloting remain unverified. |
-| Unreal tooling inspection | **ENVIRONMENT BLOCKED** | A directory named `UE_5.8` contains plugin material, but the inspected engine installation lacks usable editor binaries, UnrealBuildTool, Build.bat/RunUAT and the Windows C++/SDK toolchain needed for this project. A directory name is not an installed, runnable engine. |
+| Unreal tooling inspection | **WINDOWS TOOLCHAIN BLOCKED** | Initial missing-engine finding superseded: full UE5.8.2 is now at C:/Program Files/EpicGames2/UE_5.8. Fresh editor build reaches UBT but fails Win64 SDK validation (minimum10.0.19041.0). MSVC is also absent. |
+| Real assets-only authoring | **ASSET IMPORT VERIFIED / GAMEPLAY OPEN** | Content-only UE5.8.2 workbench opened, saved54 real asset files and recorded zero authoring errors with status ASSETS_IMPORTED_GAMEPLAY_CLASSES_PENDING. Gameplay map/Data Asset creation remains dependent on the compiled game module. |
 | Docker availability | Earlier daemon connection failures were superseded by the successful portable container run | Docker now supplies portable test tooling. It does not supply the licensed Unreal Windows build environment. No host system packages were installed for these checks. |
 | Unreal save automation | **UNVERIFIED UNREAL** | `SSAutomationTests.cpp` registers `SpaceSurvival.Save.PayloadRoundTrip`. It has not run; it covers memory serialization when run, not the entire disk/crash/resume transaction. |
 | Packaged Windows artifact | **NOT PRODUCED** | No executable, cooked content, stage directory or claimed package checksum is available. |
@@ -24,7 +27,7 @@ Recorded 2026-09-13 UTC. Overall status: **PARTIAL**.
 
 The recorded final test image manifest is `sha256:7d300ba9cd9bec9e2df64005aafc07449f50be0866835ac650614386bc181f3b`; its `gcc:14-bookworm` base is `sha256:5e927c284bf55a7dc796262e311a0703344f62f41f5621eb56843111b1d37e15`. These identify the domain test environment, not a Windows game package. The working tree was still being reconciled when this record was written; bind delivery claims to the lead's final commit and preserve the test outputs.
 
-The absent engine/toolchain concretely blocks executing Unreal build/package/playback checks here. Unfinished art, animation, NPC presentation, tutorial behavior and content authoring depth are implementation/quality gaps; they are not described as impossible because an engine is missing.
+The missing Windows C++ toolchain concretely blocks executing the game build/package/playback checks here; the now-present editor supports independent asset work. Unfinished art, animation, NPC presentation, tutorial behavior and content authoring depth are implementation/quality gaps; they are not described as impossible because of that build blocker.
 
 ## Reproduce the available checks
 
@@ -70,7 +73,7 @@ All abbreviated source paths are beneath `Source/SpaceSurvival/` unless a differ
 | Required criterion | Status | Source/evidence and remaining verification |
 | --- | --- | --- |
 | Unreal project opens cleanly | BLOCKED | `SpaceSurvival.uproject`, module/targets/config and content authoring script exist; open the real project and retain its log. |
-| C++ project compiles cleanly | BLOCKED | Portable Core compiles; UHT, reflected headers, Unreal adapters, generated classes and linking have not compiled. |
+| C++ project compiles | BUILD SUCCEEDED WITH ENGINE WARNINGS | UHT, reflected classes, adapters and linking succeeded140.75s; engine-header deprecations and nonpreferred compiler warning recorded. No game runtime test implied. |
 | Required maps/assets resolve | BLOCKED | Canonical `/Game/SpaceSurvival/` paths are declared; real `.uasset`/`.umap` import and packaged reference resolution remain open. |
 | Packaged Windows build succeeds | BLOCKED | `Scripts/Build.ps1 -Target Package` provides BuildCookRun routing. Run it after content import, launch the resulting executable outside Editor, and record artifact path/hash. |
 

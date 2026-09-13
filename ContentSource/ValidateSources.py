@@ -5,6 +5,7 @@ import json
 import math
 from pathlib import Path
 import sys
+import struct
 import wave
 
 ROOT = Path(__file__).resolve().parent
@@ -67,6 +68,22 @@ def validate():
         results["audio"].append({"name": item["name"], "peak_sample": peak, "boundary_jump": round(jump, 6), "valid_pcm": True})
     results["preserved_hero_sha256"] = hashlib.sha256((ROOT.parent / "model-rigged.glb").read_bytes()).hexdigest()
     assert results["preserved_hero_sha256"] == "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+    pilot = json.loads((ROOT / "Animation/Pilot.json").read_text())
+    pilot_bytes = (ROOT / "Animation/Pilot.glb").read_bytes()
+    assert pilot_bytes.startswith(b"glTF"), "Pilot source is not binary glTF"
+    assert hashlib.sha256(pilot_bytes).hexdigest() == pilot["animation_sha256"], "Pilot source changed"
+    assert pilot["source_glb_sha256"] == results["preserved_hero_sha256"] and pilot["seconds"] == 4 and pilot["bones"] == 52
+    original_bytes = (ROOT.parent / "model-rigged.glb").read_bytes()
+    original_json_size = struct.unpack_from("<I",original_bytes,12)[0]
+    pilot_json_size = struct.unpack_from("<I",pilot_bytes,12)[0]
+    original_document = json.loads(original_bytes[20:20+original_json_size])
+    pilot_document = json.loads(pilot_bytes[20:20+pilot_json_size])
+    for field in ("nodes","skins","meshes","images","materials","scenes"):
+        assert pilot_document[field] == original_document[field], f"Pilot transport changed original {field}"
+    original_binary = original_bytes[28+original_json_size:]
+    assert pilot_bytes[28+pilot_json_size:28+pilot_json_size+len(original_binary)] == original_binary, "Pilot transport changed original binary mesh/skin data"
+    assert len(pilot_document["animations"])==1 and len(pilot_document["animations"][0]["channels"])==156
+    results["pilot_animation"] = {"valid_binary_header_and_hash": True, "seconds": pilot["seconds"], "bones": pilot["bones"]}
     (ROOT / "source_validation.json").write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
     print(f"Validated source formats: {len(results['meshes'])} meshes, {len(results['audio'])} WAVs, unchanged GLB. Unreal validation remains open.")
     return results

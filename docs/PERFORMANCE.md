@@ -1,8 +1,10 @@
 # Performance findings
 
+> Reboot checkpoint, 2026-09-13 04:35 UTC: the editor C++ build **succeeded** using MSVC14.51.36257 and Windows SDK10.0.26100.0; earlier missing-toolchain statements below are historical and superseded. Current portable tests pass372 assertions in each strict/sanitizer build. Gameplay content creation, Unreal save-test execution, package and player validation remain pending. See [PROJECT_STATE](PROJECT_STATE.md) for resume order.
+
 ## Measured boundary
 
-**No Unreal CPU, GPU or frame-time measurement is available. No 60 FPS or 120 FPS claim is made.** The portable rule tests validate logic; their duration is not a game-performance benchmark. The missing editor/Windows toolchain prevents representative game execution.
+**No gameplay CPU, GPU or frame-time measurement is available. No 60 FPS or 120 FPS claim is made.** The portable rule tests validate logic; their duration is not a game-performance benchmark. A real Unreal5.8.2 editor workbench can now import/render assets, but the missing Windows C++ toolchain prevents representative game execution.
 
 The inspected machine is Windows 11 Home build 26200, Intel Core i7-14700F (20 cores/28 logical processors), approximately 47.72 GiB RAM, NVIDIA RTX 5080 with approximately 16 GiB VRAM and driver 616.92. The observed display was 2560x1440. Initial free C: space was about 175 GiB. These are environment facts, not measured game results.
 

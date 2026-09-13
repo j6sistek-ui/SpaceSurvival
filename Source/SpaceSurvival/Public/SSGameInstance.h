@@ -10,9 +10,12 @@ class SPACESURVIVAL_API USSStoredData : public USaveGame
 {
     GENERATED_BODY()
 public:
-    UPROPERTY(SaveGame) int32 Version = 1;
-    UPROPERTY(SaveGame) bool Valid = false;
-    UPROPERTY(SaveGame) FString Payload;
+    UPROPERTY(SaveGame)
+    int32 Version = 1;
+    UPROPERTY(SaveGame)
+    bool Valid = false;
+    UPROPERTY(SaveGame)
+    FString Payload;
 };
 
 UCLASS()
@@ -32,7 +35,8 @@ public:
     bool PersistDeath();
     bool InvalidateSuspend();
     void ApplySettings();
+
 private:
-    bool WriteDomain(const FString& Slot, const std::string& Payload, bool Valid = true);
-    bool ReadDomain(const FString& Slot, std::string& Payload) const;
+    bool WriteDomain(const FString &Slot, const std::string &Payload, bool Valid = true);
+    bool ReadDomain(const FString &Slot, std::string &Payload) const;
 };

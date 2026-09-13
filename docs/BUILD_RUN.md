@@ -1,8 +1,10 @@
 # Build and run
 
+> Reboot checkpoint, 2026-09-13 04:35 UTC: the editor C++ build **succeeded** using MSVC14.51.36257 and Windows SDK10.0.26100.0; earlier missing-toolchain statements below are historical and superseded. Current portable tests pass372 assertions in each strict/sanitizer build. Gameplay content creation, Unreal save-test execution, package and player validation remain pending. See [PROJECT_STATE](PROJECT_STATE.md) for resume order.
+
 ## Present delivery boundary
 
-The repository is a source implementation. No `.umap`, imported `.uasset`, Unreal executable, or packaged Windows build is claimed. The initial UE folder contained plugins only; `Scripts/Build.ps1 -Target Editor` failed before compilation because `Engine/Build/BatchFiles/Build.bat` was absent. A second discovered `C:/Program Files/EpicGames2/UE_5.8` folder contained installation metadata only at inspection.
+The repository is a source implementation with imported art/audio `.uasset` files. No gameplay `.umap`, compiled game module or packaged Windows build is claimed. Initial UE folders contained plugin/installation metadata only. Full UE5.8.2 subsequently appeared at `C:/Program Files/EpicGames2/UE_5.8`, enabling real asset import and header checks. The fresh editor build reaches UBT, but stops at missing Win64 SDK validation (minimum10.0.19041.0); MSVC remains absent.
 
 ## Tooling
 
@@ -26,7 +28,7 @@ Run `python Scripts/CheckProject.py` and `python -m compileall -q Scripts Conten
 5. Exercise the manual validation protocol. Then run `./Scripts/Build.ps1 -Target Package -EngineRoot '<engine>'`. The configured artifact location is `Artifacts/Windows`; it does not currently contain a successful package.
 6. Test the packaged executable again, including application close/relaunch. Editor success does not establish packaged behavior.
 
-The source is associated with UE5.8 because that is the engine version indicated by local Epic directories. Engine API compatibility remains unverified until UHT and the Windows compiler run.
+The source is associated with UE5.8 and asset import ran in installed5.8.2. The installed engine's `Engine/Config/Windows/Windows_SDK.json` prefers SDK10.0.22621.0 and contains exact supported/banned MSVC versions. Use that file when provisioning build tools. Runtime API compatibility remains unverified until UHT and the Windows compiler run.
 
 ## Controls
 

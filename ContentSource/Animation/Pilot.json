@@ -1,0 +1,11 @@
+{
+  "status": "AUTHORED_PILOT_SOURCE_REQUIRES_ENGINE_POSE_REVIEW",
+  "seconds": 4,
+  "fps": 30,
+  "source_glb_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "animation_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+  "bones": 52,
+  "seat_anchor": "Pelvis at source origin; +Z up, -Y forward in Blender",
+  "transport": "Original glTF nodes/mesh/inverse binds copied unchanged; only new animation channels authored. Import animations only.",
+  "notes": "Separate derived animation; source GLB unchanged. Existing Unreal skeleton and mesh must not be replaced."
+}

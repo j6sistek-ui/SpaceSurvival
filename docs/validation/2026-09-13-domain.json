@@ -1,0 +1,11 @@
+{
+  "recorded_utc": "2026-09-13T04:15:19Z",
+  "source_commit": "9d2e74a77e252c962d0e6f16fac7e0db7d3daa68",
+  "core_sha256": "4cffacd19d6bed49ff2d6fb8aed466bf7750805f6d6801bdad78f67c301b2b73",
+  "tests_sha256": "aa3a47bb030db52f7c544a187a679523ca23e6c2ee4e76198fb3c6b2e3484019",
+  "compiler": "GCC14 C++17",
+  "strict_result": "PASS 266 portable gameplay-domain assertions",
+  "sanitizer_result": "PASS 266 portable gameplay-domain assertions; no ASan/UBSan diagnostics",
+  "image_manifest": "sha256:7d300ba9cd9bec9e2df64005aafc07449f50be0866835ac650614386bc181f3b",
+  "scope": "Portable domain only. Does not establish Unreal compilation, integration, performance or gameplay quality."
+}

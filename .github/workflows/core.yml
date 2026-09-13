@@ -25,6 +25,10 @@ jobs:
       - name: Validate source project and original asset
         run: python3 Scripts/CheckProject.py
       - name: Python syntax
-        run: python3 -m compileall -q Scripts
+        run: python3 -m compileall -q Scripts ContentSource
+      - name: C++ formatting in container
+        run: |
+          docker build -f Tools.Dockerfile -t spacesurvival-format .
+          docker run --rm --entrypoint /bin/sh --mount "type=bind,source=$PWD,target=/workspace,readonly" spacesurvival-format -c "find Source Tests -type f \( -name '*.cpp' -o -name '*.h' \) -print0 | xargs -0 clang-format --dry-run --Werror"
       - name: Whitespace
         run: git diff --check

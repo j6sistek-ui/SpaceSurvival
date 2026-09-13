@@ -1,5 +1,5 @@
 # Project state
 
-The authoritative implementation handoff is [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md).
+See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for the reboot checkpoint and exact resume order.
 
-Current Phase 1 status: **PARTIAL — portable rules tested; Unreal build, content import, Windows package, integrated gameplay and performance validation remain open.**
+**PARTIAL: editor C++ build succeeded; gameplay content, Windows package, integrated gameplay and performance validation remain open.**

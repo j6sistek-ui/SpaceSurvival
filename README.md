@@ -1,5 +1,7 @@
 # SpaceSurvival
 
+> Reboot checkpoint, 2026-09-13 04:35 UTC: the editor C++ build **succeeded** using MSVC14.51.36257 and Windows SDK10.0.26100.0; earlier missing-toolchain statements below are historical and superseded. Current portable tests pass372 assertions in each strict/sanitizer build. Gameplay content creation, Unreal save-test execution, package and player validation remain pending. See [PROJECT_STATE](PROJECT_STATE.md) for resume order.
+
 Unreal Engine 5 single-player space survival for Windows PC.
 
 **Phase 1 status: PARTIAL — source implementation and portable tests, not a validated or packaged game.**
@@ -24,6 +26,6 @@ With a complete Unreal 5.8 installation and compatible Windows C++ toolchain:
 ./Scripts/Build.ps1 -EngineRoot 'C:\Program Files\Epic Games\UE_5.8' -Target Package
 ```
 
-The inspected machine has only UE plugin directories, so these Unreal steps have not succeeded. There is no packaged Windows executable yet. Generated Unreal content must be imported and validated before opening the default map successfully.
+Unreal 5.8.2 became available during implementation at `C:\Program Files\EpicGames2\UE_5.8`. Real art/audio assets were imported through a temporary content workbench. The game C++ build now stops at missing Windows SDK validation; MSVC is also absent. The gameplay map/Data Asset still require the compiled module, and there is no packaged Windows executable yet.
 
 Documentation: [build/run](docs/BUILD_RUN.md), [architecture](docs/ARCHITECTURE.md), [validation](docs/VALIDATION.md), [known issues](docs/KNOWN_ISSUES.md), [performance](docs/PERFORMANCE.md), [content pipeline](docs/CONTENT_PIPELINE.md), [Phase 2 integration](docs/PHASE2_INTEGRATION.md).

@@ -1,15 +1,18 @@
 #include "SurvivalCore.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 #include <limits>
+#include <sstream>
 #include <string>
 
 namespace
 {
 int Checks = 0;
-void Check(bool value, const char* expression, int line)
+void Check(bool value, const char *expression, int line)
 {
     ++Checks;
     if (!value)
@@ -19,16 +22,28 @@ void Check(bool value, const char* expression, int line)
     }
 }
 #define CHECK(expression) Check((expression), #expression, __LINE__)
-bool Near(double a, double b, double epsilon = 0.00001) { return std::abs(a - b) <= epsilon; }
+bool Near(double a, double b, double epsilon = 0.00001)
+{
+    return std::abs(a - b) <= epsilon;
+}
 
-SS::Session Fresh(const std::string& id = "test-run")
+std::string LegacyAccount(const SS::Account &a)
+{
+    std::ostringstream out;
+    out << "SS ACCOUNT 1 " << a.xp << ' ' << a.level << ' ' << a.highestWave << ' ' << a.runs << ' ' << a.bestScore
+        << ' ' << a.lastScore << ' ' << a.lastXP << ' ' << a.lastWave << ' ' << std::quoted(a.lastAwardedRunId) << ' '
+        << a.tutorialFlags;
+    return out.str();
+}
+
+SS::Session Fresh(const std::string &id = "test-run")
 {
     SS::Session s;
     CHECK(s.StartRun(id));
     return s;
 }
 
-void FastTuning(SS::Session& s)
+void FastTuning(SS::Session &s)
 {
     s.tuning.waveSecondsMin = s.tuning.waveSecondsMax = 1.0;
     s.tuning.waveSecondsGrowth = 0.0;
@@ -38,13 +53,15 @@ void FastTuning(SS::Session& s)
     s.run.phaseDuration = 1.0;
 }
 
-void ReachStation(SS::Session& s, int target)
+void ReachStation(SS::Session &s, int target)
 {
     int guard = 0;
     while (!(s.run.phase == SS::Phase::Station && s.run.wave == target) && guard++ < 1000)
     {
-        if (s.run.phase == SS::Phase::Approach) CHECK(s.BeginDocking());
-        else s.Tick(0.25, true);
+        if (s.run.phase == SS::Phase::Approach)
+            CHECK(s.BeginDocking());
+        else
+            s.Tick(0.25, true);
     }
     CHECK(guard < 1000);
     CHECK(s.run.wavesCompleted == target);
@@ -131,11 +148,13 @@ void FlightMetersAndUtilities()
     auto a = Fresh("frame-step");
     auto b = Fresh("frame-step");
     a.TickFlight(3.0, true, false);
-    for (int i = 0; i < 180; ++i) b.TickFlight(1.0 / 60.0, true, false);
+    for (int i = 0; i < 180; ++i)
+        b.TickFlight(1.0 / 60.0, true, false);
     CHECK(Near(a.run.boost, b.run.boost));
     a.run.hull = b.run.hull = 50.0;
     a.Tick(3.0, false);
-    for (int i = 0; i < 180; ++i) b.Tick(1.0 / 60.0, false);
+    for (int i = 0; i < 180; ++i)
+        b.Tick(1.0 / 60.0, false);
     CHECK(Near(a.run.hull, b.run.hull));
 }
 
@@ -227,7 +246,8 @@ void Contracts()
     CHECK(objective.AcceptContract(SS::Contract::Objective));
     CHECK(!objective.AcceptContract(SS::Contract::Pressure));
     CHECK(objective.LaunchFromStation());
-    for (int i = 0; i < objective.tuning.objectiveTarget; ++i) objective.RecordKill();
+    for (int i = 0; i < objective.tuning.objectiveTarget; ++i)
+        objective.RecordKill();
     CHECK(objective.run.contractProgress == objective.tuning.objectiveTarget);
     ReachStation(objective, 10);
     CHECK(objective.run.contractsCompleted == 1 && objective.run.contract == SS::Contract::None);
@@ -276,8 +296,10 @@ void DeathProgressionReset()
     CHECK(!s.StartRun("first-life"));
     CHECK(!s.StartRun("agile-locked", SS::Ship::Agile));
     CHECK(s.StartRun("second-life", SS::Ship::Starter, SS::Weapon::HeavyCannon));
-    CHECK(s.run.wave == 1 && s.run.credits == 0 && s.run.contract == SS::Contract::None && s.run.utility == SS::Utility::None);
-    for (int tier : s.run.tiers) CHECK(tier == 1);
+    CHECK(s.run.wave == 1 && s.run.credits == 0 && s.run.contract == SS::Contract::None &&
+          s.run.utility == SS::Utility::None);
+    for (int tier : s.run.tiers)
+        CHECK(tier == 1);
     CHECK(!s.run.depotSeen && !s.run.salvageEventAccepted && !s.run.distressEventAccepted);
     FastTuning(s);
     ReachStation(s, 5);
@@ -289,7 +311,8 @@ void DeathProgressionReset()
     const auto agile = s.Stats();
     s.run.ship = SS::Ship::Starter;
     const auto starter = s.Stats();
-    CHECK(agile.maxHull < starter.maxHull && agile.speed > starter.speed && agile.maneuver > starter.maneuver && agile.response > starter.response);
+    CHECK(agile.maxHull < starter.maxHull && agile.speed > starter.speed && agile.maneuver > starter.maneuver &&
+          agile.response > starter.response);
 }
 
 void SerializationAndValidation()
@@ -351,23 +374,34 @@ void SerializationAndValidation()
     SS::Run bad = s.run;
     bad.hull = -1.0;
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.phase = static_cast<SS::Phase>(99);
+    bad = s.run;
+    bad.phase = static_cast<SS::Phase>(99);
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.wave = 11;
+    bad = s.run;
+    bad.wave = 11;
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.tiers[0] = 6;
+    bad = s.run;
+    bad.tiers[0] = 6;
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.id = "path/traversal";
+    bad = s.run;
+    bad.id = "path/traversal";
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.rng = 0;
+    bad = s.run;
+    bad.rng = 0;
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.phase = SS::Phase::Flight;
+    bad = s.run;
+    bad.phase = SS::Phase::Flight;
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.phase = SS::Phase::Flight; bad.wave = 10; bad.wavesCompleted = 9;
+    bad = s.run;
+    bad.phase = SS::Phase::Flight;
+    bad.wave = 10;
+    bad.wavesCompleted = 9;
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.boosting = bad.braking = true;
+    bad = s.run;
+    bad.boosting = bad.braking = true;
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
-    bad = s.run; bad.hull = std::numeric_limits<double>::quiet_NaN();
+    bad = s.run;
+    bad.hull = std::numeric_limits<double>::quiet_NaN();
     CHECK(!SS::DecodeRun(SS::EncodeRun(bad), decoded, error));
     SS::Account badAccount = account;
     badAccount.level += 1;
@@ -375,12 +409,138 @@ void SerializationAndValidation()
     SS::Settings badSettings = settings;
     badSettings.masterVolume = 1.1;
     CHECK(!SS::DecodeSettings(SS::EncodeSettings(badSettings), settings, error));
-    badSettings = settings; badSettings.frameLimit = -1;
+    badSettings = settings;
+    badSettings.frameLimit = -1;
     CHECK(!SS::DecodeSettings(SS::EncodeSettings(badSettings), settings, error));
     auto badRng = payload.substr(0, payload.find_last_of(' ') + 1) + "-1";
     CHECK(!SS::DecodeRun(badRng, decoded, error));
-    auto badTutorial = accountPayload.substr(0, accountPayload.find_last_of(' ') + 1) + "-1";
+    const auto legacyPayload = LegacyAccount(account);
+    auto badTutorial = legacyPayload.substr(0, legacyPayload.find_last_of(' ') + 1) + "-1";
     CHECK(!SS::DecodeAccount(badTutorial, account, error));
+}
+
+void PersistentRunHistory()
+{
+    SS::Session s;
+    s.account.xp = 500;
+    s.account.level = SS::LevelForXP(s.account.xp);
+    for (int index = 1; index <= 12; ++index)
+    {
+        const std::string id = "history-" + std::to_string(index);
+        const SS::Ship ship = index % 2 ? SS::Ship::Agile : SS::Ship::Starter;
+        const SS::Weapon weapon = index % 2 ? SS::Weapon::HeavyCannon : SS::Weapon::RapidLaser;
+        CHECK(s.StartRun(id, ship, weapon));
+        s.run.wave = 1 + index % 10;
+        s.run.wavesCompleted = s.run.wave - 1;
+        s.AwardCredits(100 + index);
+        for (int kills = 0; kills < index % 3; ++kills)
+            s.RecordKill();
+        s.run.credits -= 50; // Account history reports earned credits, not balance.
+        const int expectedXP = s.XPReward(), expectedScore = s.Score();
+        const int wave = s.run.wave, kills = s.run.kills, credits = s.run.totalCreditsEarned;
+        s.EndRun();
+        CHECK(s.account.history.size() == std::min<std::size_t>(static_cast<std::size_t>(index), SS::MaxRunHistory));
+        const auto &entry = s.account.history.front();
+        CHECK(entry.id == id && entry.wave == wave && entry.score == expectedScore && entry.xp == expectedXP);
+        CHECK(entry.kills == kills && entry.credits == credits && entry.ship == ship && entry.weapon == weapon);
+        const auto once = SS::EncodeAccount(s.account);
+        s.EndRun();
+        CHECK(SS::EncodeAccount(s.account) == once);
+    }
+    CHECK(s.account.history.size() == 10);
+    CHECK(s.account.history.front().id == "history-12" && s.account.history.back().id == "history-3");
+    CHECK(s.account.runs == 12);
+    CHECK(!s.StartRun("history-7"));
+    const auto recorded = SS::EncodeAccount(s.account);
+    s.run = SS::Run{};
+    s.run.id = "history-7";
+    s.run.active = true;
+    s.run.phase = SS::Phase::Flight;
+    s.EndRun(); // Replayed older retained run is also once-only.
+    CHECK(SS::EncodeAccount(s.account) == recorded);
+    CHECK(s.StartRun("abandoned-run"));
+    s.run = SS::Run{}; // The explicit slice-abandonment adapter uses this reset.
+    CHECK(SS::EncodeAccount(s.account) == recorded);
+
+    SS::Account restored;
+    std::string error;
+    CHECK(SS::DecodeAccount(recorded, restored, error));
+    CHECK(SS::EncodeAccount(restored) == recorded);
+    CHECK(recorded.rfind("SS ACCOUNT 2 ", 0) == 0);
+    const auto unchanged = SS::EncodeAccount(restored);
+    CHECK(!SS::DecodeAccount(recorded.substr(0, recorded.size() - 2), restored, error));
+    CHECK(!SS::DecodeAccount(recorded + " trailing", restored, error));
+    CHECK(!SS::DecodeAccount(std::string(4097, 'x'), restored, error));
+    CHECK(SS::EncodeAccount(restored) == unchanged);
+
+    auto malformed = s.account;
+    malformed.history.push_back(malformed.history.back());
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].id = malformed.history[0].id;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[0].id = "different-last-run";
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].id = "../unsafe";
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].wave = 11;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].score = -1;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].xp = -1;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].kills = 100000001;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].credits = -1;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].ship = static_cast<SS::Ship>(9);
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].weapon = static_cast<SS::Weapon>(-1);
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.history[1].xp = 100000000;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    malformed = s.account;
+    malformed.runs = 1;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(malformed), restored, error));
+    CHECK(SS::EncodeAccount(restored) == unchanged);
+
+    // The legacy format did not contain per-run kills/credits/ship/weapon.
+    // Migration preserves original values and does not fabricate history records.
+    const std::string v1 = "SS ACCOUNT 1 175 2 6 1 3000 3000 175 6 \"legacy-run\" 7";
+    SS::Account migrated;
+    CHECK(SS::DecodeAccount(v1, migrated, error));
+    CHECK(migrated.xp == 175 && migrated.level == 2 && migrated.highestWave == 6 && migrated.runs == 1);
+    CHECK(migrated.lastAwardedRunId == "legacy-run" && migrated.lastScore == 3000 && migrated.lastXP == 175 &&
+          migrated.lastWave == 6);
+    CHECK(migrated.tutorialFlags == 7 && migrated.history.empty() && migrated.HeavyCannonUnlocked());
+    const auto v2 = SS::EncodeAccount(migrated);
+    CHECK(v2.rfind("SS ACCOUNT 2 ", 0) == 0);
+    CHECK(SS::DecodeAccount(v2, restored, error));
+    CHECK(SS::EncodeAccount(restored) == v2);
+    CHECK(!SS::DecodeAccount("SS ACCOUNT 3 0", restored, error));
+    CHECK(!SS::DecodeAccount(v2.substr(0, v2.find_last_of(' ') + 1) + "-1", restored, error));
+    CHECK(!SS::DecodeAccount(v2.substr(0, v2.find_last_of(' ') + 1) + "11", restored, error));
+    CHECK(!SS::DecodeAccount(v1 + " unexpected", restored, error));
+    CHECK(!SS::DecodeAccount(v1.substr(0, v1.size() / 2), restored, error));
+    CHECK(SS::EncodeAccount(restored) == v2);
+    SS::Session afterMigration;
+    afterMigration.account = migrated;
+    CHECK(!afterMigration.StartRun("legacy-run"));
+    CHECK(afterMigration.StartRun("after-migration"));
+    afterMigration.ApplyDamage(1000.0);
+    CHECK(afterMigration.account.history.size() == 1 && afterMigration.account.history[0].id == "after-migration");
+    CHECK(afterMigration.account.runs == 2 && afterMigration.account.xp == 175);
+    CHECK(SS::DecodeAccount(SS::EncodeAccount(afterMigration.account), restored, error));
 }
 
 void DeterminismAndDefensiveInputs()
@@ -388,7 +548,8 @@ void DeterminismAndDefensiveInputs()
     auto a = Fresh("determinism");
     auto b = Fresh("determinism");
     CHECK(a.run.phaseDuration == b.run.phaseDuration);
-    a.FinishWave(); b.FinishWave();
+    a.FinishWave();
+    b.FinishWave();
     CHECK(a.run.phaseDuration == b.run.phaseDuration && a.run.rng == b.run.rng);
     a.tuning.breathSecondsMin = 100.0;
     a.tuning.breathSecondsMax = 200.0;
@@ -408,7 +569,7 @@ void DeterminismAndDefensiveInputs()
     CHECK(!empty.StartRun("locked", SS::Ship::Starter, SS::Weapon::HeavyCannon));
     CHECK(!empty.Repair() && !empty.Dodge());
 }
-}
+} // namespace
 
 int main()
 {
@@ -419,7 +580,9 @@ int main()
     Contracts();
     DeathProgressionReset();
     SerializationAndValidation();
+    PersistentRunHistory();
     DeterminismAndDefensiveInputs();
-    std::cout << "PASS " << Checks << " portable gameplay-domain assertions. Unreal integration and gameplay feel are unverified.\n";
+    std::cout << "PASS " << Checks
+              << " portable gameplay-domain assertions. Unreal integration and gameplay feel are unverified.\n";
     return 0;
 }

@@ -3,18 +3,62 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 // Engine-independent, deterministic rules. Presentation and durable save transactions
 // belong to the Unreal adapter; no codec performs file I/O or consumes a save slot.
 namespace SS
 {
-enum class Phase { Hangar, Flight, Breathing, Wormhole, Climax, Approach, Docking, Station, Dead };
-enum class Upgrade { Hull, Shield, Engine, Thrusters, Weapon };
-enum class Weapon { RapidLaser, HeavyCannon };
-enum class Ship { Starter, Agile };
-enum class Utility { None, VectorThrusters, OverdriveCooling };
-enum class Contract { None, Pressure, Objective };
-enum class DamageType { Kinetic, Energy, Electrical, Gravity, Thermal };
+enum class Phase
+{
+    Hangar,
+    Flight,
+    Breathing,
+    Wormhole,
+    Climax,
+    Approach,
+    Docking,
+    Station,
+    Dead
+};
+enum class Upgrade
+{
+    Hull,
+    Shield,
+    Engine,
+    Thrusters,
+    Weapon
+};
+enum class Weapon
+{
+    RapidLaser,
+    HeavyCannon
+};
+enum class Ship
+{
+    Starter,
+    Agile
+};
+enum class Utility
+{
+    None,
+    VectorThrusters,
+    OverdriveCooling
+};
+enum class Contract
+{
+    None,
+    Pressure,
+    Objective
+};
+enum class DamageType
+{
+    Kinetic,
+    Energy,
+    Electrical,
+    Gravity,
+    Thermal
+};
 
 struct Tuning
 {
@@ -88,6 +132,16 @@ struct Run
     std::uint32_t rng = 1;
 };
 
+struct RunHistoryEntry
+{
+    std::string id;
+    int wave = 1, score = 0, xp = 0, kills = 0;
+    int credits = 0; // Total credits earned during this run, before purchases.
+    Ship ship = Ship::Starter;
+    Weapon weapon = Weapon::RapidLaser; // Active weapon at the end of the run.
+};
+constexpr std::size_t MaxRunHistory = 10;
+
 struct Account
 {
     std::int64_t xp = 0;
@@ -95,8 +149,15 @@ struct Account
     int lastScore = 0, lastXP = 0, lastWave = 0;
     std::string lastAwardedRunId;
     std::uint32_t tutorialFlags = 0;
-    bool HeavyCannonUnlocked() const { return level >= 2; }
-    bool AgileShipUnlocked() const { return level >= 3; }
+    std::vector<RunHistoryEntry> history; // Newest first, at most MaxRunHistory.
+    bool HeavyCannonUnlocked() const
+    {
+        return level >= 2;
+    }
+    bool AgileShipUnlocked() const
+    {
+        return level >= 3;
+    }
 };
 
 struct Settings
@@ -116,7 +177,7 @@ public:
     Settings settings;
     Tuning tuning;
 
-    bool StartRun(const std::string& id, Ship ship = Ship::Starter, Weapon weapon = Weapon::RapidLaser);
+    bool StartRun(const std::string &id, Ship ship = Ship::Starter, Weapon weapon = Weapon::RapidLaser);
     void Tick(double dt, bool danger);
     void TickFlight(double dt, bool boostHeld, bool brakeHeld);
     bool Dodge();
@@ -149,13 +210,15 @@ private:
 };
 
 // Strict, versioned codecs. On failure output is unchanged and error is populated.
+// Account v2 stores history and reads v1 without inventing unavailable old records.
+// The run/settings formats remain v1; the outer Unreal SaveGame wrapper is unchanged.
 // DecodeRun restores values only: adapter must durably consume the suspended slot
 // before allowing play, and invalidate it on death before presenting progression.
-std::string EncodeAccount(const Account& account);
-std::string EncodeRun(const Run& run);
-std::string EncodeSettings(const Settings& settings);
-bool DecodeAccount(const std::string& text, Account& output, std::string& error);
-bool DecodeRun(const std::string& text, Run& output, std::string& error);
-bool DecodeSettings(const std::string& text, Settings& output, std::string& error);
+std::string EncodeAccount(const Account &account);
+std::string EncodeRun(const Run &run);
+std::string EncodeSettings(const Settings &settings);
+bool DecodeAccount(const std::string &text, Account &output, std::string &error);
+bool DecodeRun(const std::string &text, Run &output, std::string &error);
+bool DecodeSettings(const std::string &text, Settings &output, std::string &error);
 int LevelForXP(std::int64_t xp);
-}
+} // namespace SS

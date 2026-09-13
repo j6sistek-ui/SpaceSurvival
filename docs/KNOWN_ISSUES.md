@@ -1,12 +1,14 @@
 # Known issues and limitations
 
+> Reboot checkpoint, 2026-09-13 04:35 UTC: the editor C++ build **succeeded** using MSVC14.51.36257 and Windows SDK10.0.26100.0; earlier missing-toolchain statements below are historical and superseded. Current portable tests pass372 assertions in each strict/sanitizer build. Gameplay content creation, Unreal save-test execution, package and player validation remain pending. See [PROJECT_STATE](PROJECT_STATE.md) for resume order.
+
 Recorded 2026-09-13. Phase 1 remains **PARTIAL**. An implemented source path is not a validated player experience.
 
 ## Environment blockers
 
-- Full Unreal Engine, UBT/UHT, Windows C++ compiler and Windows SDK are absent from the inspected locations. The `UE_5.8` name belonged to plugin/installation metadata directories. `Build.ps1 -Target Editor` stopped at missing `Build.bat`; no Unreal compiler ran.
-- No generated Unreal map/assets or Windows executable exists in this delivery. Source authoring scripts are executable Python, but their Unreal APIs and engine-version compatibility remain unverified.
-- Consequently real keyboard/mouse and controller input, flight feel, collisions, AI, complete ten-wave play, station visits, process-restart saves, music/audio mix, and frame-time performance cannot be claimed.
+- Initial inspection found only engine plugin/installation metadata. That was superseded when full UE5.8.2 appeared at `C:/Program Files/EpicGames2/UE_5.8`. The latest editor build reaches UBT but fails because the Win64 SDK is missing (minimum10.0.19041.0); MSVC is also absent. No game C++ compiler or UHT pass is claimed.
+- Assets-only authoring succeeded in real UE5.8.2, saving 54 asset files. The gameplay map and Phase1 Data Asset require the unbuilt C++ module and are not generated. No Windows executable exists. Remaining engine/runtime API compatibility still requires a real build and game startup.
+- Consequently real gameplay keyboard/mouse/controller input, flight feel, collisions, AI, complete ten-wave play, station visits, process-restart saves, music/audio mix and frame-time performance cannot be claimed. Editor detection of a controller is not gameplay input validation.
 
 Docker's initial stale runtime-socket failure was superseded by a working daemon and successful portable domain builds/tests. It is no longer an active blocker for those checks.
 
