@@ -1,0 +1,1286 @@
+{
+  "schema_version": 1,
+  "status": "EARLY_WAVE_PACKAGED_CAPTURE_ONLY_NOT_60_FPS_ACCEPTANCE",
+  "source_csv": {
+    "path": "Artifacts/PackageSmoke/f1721585eb9544fbb8eb02181a06e528/Saved/Profiling/CSV/Profile(20260913_013937).csv",
+    "bytes": 37140496,
+    "sha256": "8a54c44d524aab40ca51be72c83693c21b0fa4309b850b62196e2550eb5c2366"
+  },
+  "metadata": {
+    "platform": "Windows",
+    "config": "Development",
+    "buildversion": "++UE5+Release-5.8-CL-56702186",
+    "engineversion": "5.8.2-56702186+++UE5+Release-5.8",
+    "enginereleaseversion": "5.8.2",
+    "os": "Windows 11 (25H2) [10.0.26200.9445] ",
+    "cpu": "GenuineIntel|Intel(R) Core(TM) i7-14700F",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "gpudriver": "616.92",
+    "deviceprofile": "Windows",
+    "targetframerate": "320",
+    "starttimestamp": "1789277977",
+    "endtimestamp": "1789278130",
+    "captureduration": "152.692327",
+    "systemresolution.resx": "2560",
+    "systemresolution.resy": "1440",
+    "verbatimrhiname": "D3D12",
+    "rhiname": "D3D12",
+    "rhifeaturelevel": "SM6",
+    "shaderplatform": "PCD3D_SM6",
+    "vsyncenabled": "0",
+    "raytracing": "0",
+    "streamingpoolsizemb": "1000",
+    "csvmaxfilebytesreached": "0",
+    "HasHeaderRowAtEnd": "1",
+    "EventTimestamps": "1"
+  },
+  "parser": {
+    "header_rows_skipped": 2,
+    "initial_columns": 380,
+    "final_columns": 393,
+    "data_row_width_min": 380,
+    "data_row_width_max": 393,
+    "csv_field_size_limit_bytes": 33554432,
+    "selected_exact_columns": [
+      "FrameTime",
+      "GPUTime",
+      "GameThreadTime",
+      "RenderThreadTime",
+      "RHIThreadTime",
+      "SpaceSurvival/Phase",
+      "SpaceSurvival/Wave",
+      "SpaceSurvival/RunActive",
+      "SpaceSurvival/ActiveThreats",
+      "SpaceSurvival/Hull",
+      "SpaceSurvival/ShipSpeedCmPerSec",
+      "MaxFrameTime"
+    ],
+    "metadata_footer_excluded": true
+  },
+  "method": {
+    "counter_units": "All five timing counters are milliseconds. No similarly named exclusive scopes are substituted.",
+    "percentiles": "Nearest rank: sorted[ceil(p*n)-1]; median uses the mean of the middle pair when n is even.",
+    "thresholds": "Strictly greater than 16.667, 33.333 and 50.0 ms; denominator is all numeric samples in each group.",
+    "gameplay_filter": "RunActive == 1 and Phase in 1..6; station, hangar and dead frames excluded.",
+    "gameplay_warmup_seconds": 5.0,
+    "gameplay_warmup_filter": "Exclude frames whose start (cumulative FrameTime) is less than warmup seconds after each contiguous gameplay interval starts.",
+    "startup_warmup_seconds": 10.0,
+    "startup_filter": "Non-gameplay frames with cumulative FrameTime start below startup warmup; this is an explicit time window, not a loading detector.",
+    "zero_timing_values": "Retained and counted, including unavailable startup GPU/thread samples recorded as zero by Unreal.",
+    "frame_index": "Zero-based CSV data-row index; repeated headers and metadata are excluded."
+  },
+  "effective_frame_limit": {
+    "counter": "MaxFrameTime",
+    "meaning": "Target frame budget, NOT actual frame time or simulation delta (UE LaunchEngineLoop.cpp).",
+    "gameplay_budget_ms_unique": [
+      8.3333
+    ],
+    "fps_from_median_budget": 120.0005,
+    "note": "CSV targetframerate metadata is retained separately; it can differ from the applied runtime cap."
+  },
+  "simulation_delta": {
+    "available": false,
+    "counter": null,
+    "reason": "This capture exports no simulation-delta counter. FrameTime measures wall frame duration; MaxFrameTime is the cap budget. No simulation-rate inference is made."
+  },
+  "groups": {
+    "all_frames": {
+      "frames": 18000,
+      "first_frame_index": 0,
+      "last_frame_index": 17999,
+      "wall_frame_time_sum_s": 152.692344,
+      "fps_from_frame_time_sum": 117.884103,
+      "timings": {
+        "FrameTime": {
+          "samples": 18000,
+          "mean_ms": 8.482908,
+          "median_ms": 8.3332,
+          "p95_ms": 8.8996,
+          "p99_ms": 9.1959,
+          "min_ms": 2.5976,
+          "max_ms": 2336.6436,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.038889,
+            "33.333": 0.016667,
+            "50.0": 0.011111
+          }
+        },
+        "GPUTime": {
+          "samples": 18000,
+          "mean_ms": 3.283799,
+          "median_ms": 3.0396,
+          "p95_ms": 4.7255,
+          "p99_ms": 5.0662,
+          "min_ms": 0.0,
+          "max_ms": 17.4642,
+          "zero_samples": 10,
+          "percent_above_ms": {
+            "16.667": 0.005556,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 18000,
+          "mean_ms": 1.66269,
+          "median_ms": 1.5669,
+          "p95_ms": 2.1481,
+          "p99_ms": 2.4869,
+          "min_ms": 0.0,
+          "max_ms": 457.9476,
+          "zero_samples": 2,
+          "percent_above_ms": {
+            "16.667": 0.016667,
+            "33.333": 0.005556,
+            "50.0": 0.005556
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 18000,
+          "mean_ms": 3.341502,
+          "median_ms": 3.1947,
+          "p95_ms": 4.0153,
+          "p99_ms": 5.4134,
+          "min_ms": 0.0,
+          "max_ms": 255.8605,
+          "zero_samples": 1,
+          "percent_above_ms": {
+            "16.667": 0.033333,
+            "33.333": 0.022222,
+            "50.0": 0.016667
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 18000,
+          "mean_ms": 2.136309,
+          "median_ms": 2.0741,
+          "p95_ms": 2.7502,
+          "p99_ms": 3.4558,
+          "min_ms": 0.0,
+          "max_ms": 55.296,
+          "zero_samples": 1,
+          "percent_above_ms": {
+            "16.667": 0.016667,
+            "33.333": 0.016667,
+            "50.0": 0.016667
+          }
+        }
+      },
+      "max_active_threats": 21,
+      "hull_min": 0.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 2400.0
+    },
+    "startup_menu_or_other_non_gameplay": {
+      "frames": 5398,
+      "first_frame_index": 0,
+      "last_frame_index": 5397,
+      "wall_frame_time_sum_s": 47.659041,
+      "fps_from_frame_time_sum": 113.262874,
+      "timings": {
+        "FrameTime": {
+          "samples": 5398,
+          "mean_ms": 8.829018,
+          "median_ms": 8.3328,
+          "p95_ms": 9.0773,
+          "p99_ms": 9.3295,
+          "min_ms": 3.6096,
+          "max_ms": 2336.6436,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.129678,
+            "33.333": 0.055576,
+            "50.0": 0.037051
+          }
+        },
+        "GPUTime": {
+          "samples": 5398,
+          "mean_ms": 4.416909,
+          "median_ms": 4.3635,
+          "p95_ms": 4.9885,
+          "p99_ms": 5.2506,
+          "min_ms": 0.0,
+          "max_ms": 17.4642,
+          "zero_samples": 10,
+          "percent_above_ms": {
+            "16.667": 0.018525,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 5398,
+          "mean_ms": 1.799612,
+          "median_ms": 1.5871,
+          "p95_ms": 2.3041,
+          "p99_ms": 2.6211,
+          "min_ms": 0.0,
+          "max_ms": 457.9476,
+          "zero_samples": 2,
+          "percent_above_ms": {
+            "16.667": 0.055576,
+            "33.333": 0.018525,
+            "50.0": 0.018525
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 5398,
+          "mean_ms": 3.780921,
+          "median_ms": 3.4254,
+          "p95_ms": 4.7284,
+          "p99_ms": 7.7961,
+          "min_ms": 0.0,
+          "max_ms": 255.8605,
+          "zero_samples": 1,
+          "percent_above_ms": {
+            "16.667": 0.111152,
+            "33.333": 0.074102,
+            "50.0": 0.055576
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 5398,
+          "mean_ms": 2.421465,
+          "median_ms": 2.3002,
+          "p95_ms": 3.1237,
+          "p99_ms": 4.2715,
+          "min_ms": 0.0,
+          "max_ms": 55.296,
+          "zero_samples": 1,
+          "percent_above_ms": {
+            "16.667": 0.055576,
+            "33.333": 0.055576,
+            "50.0": 0.055576
+          }
+        }
+      },
+      "max_active_threats": 0,
+      "hull_min": 0.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 0.0
+    },
+    "startup_warmup_non_gameplay": {
+      "frames": 885,
+      "first_frame_index": 0,
+      "last_frame_index": 884,
+      "wall_frame_time_sum_s": 10.007271,
+      "fps_from_frame_time_sum": 88.435699,
+      "timings": {
+        "FrameTime": {
+          "samples": 885,
+          "mean_ms": 11.307651,
+          "median_ms": 8.3373,
+          "p95_ms": 9.1064,
+          "p99_ms": 11.1868,
+          "min_ms": 5.9523,
+          "max_ms": 2336.6436,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.564972,
+            "33.333": 0.338983,
+            "50.0": 0.225989
+          }
+        },
+        "GPUTime": {
+          "samples": 885,
+          "mean_ms": 4.336677,
+          "median_ms": 4.3398,
+          "p95_ms": 4.9337,
+          "p99_ms": 5.2154,
+          "min_ms": 0.0,
+          "max_ms": 17.4642,
+          "zero_samples": 10,
+          "percent_above_ms": {
+            "16.667": 0.112994,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 885,
+          "mean_ms": 2.341287,
+          "median_ms": 1.6866,
+          "p95_ms": 2.526,
+          "p99_ms": 3.034,
+          "min_ms": 0.0,
+          "max_ms": 457.9476,
+          "zero_samples": 2,
+          "percent_above_ms": {
+            "16.667": 0.112994,
+            "33.333": 0.112994,
+            "50.0": 0.112994
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 885,
+          "mean_ms": 5.28217,
+          "median_ms": 3.7779,
+          "p95_ms": 8.1525,
+          "p99_ms": 11.2932,
+          "min_ms": 0.0,
+          "max_ms": 255.8605,
+          "zero_samples": 1,
+          "percent_above_ms": {
+            "16.667": 0.677966,
+            "33.333": 0.451977,
+            "50.0": 0.338983
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 885,
+          "mean_ms": 2.986244,
+          "median_ms": 2.5271,
+          "p95_ms": 4.3794,
+          "p99_ms": 5.4404,
+          "min_ms": 0.0,
+          "max_ms": 55.296,
+          "zero_samples": 1,
+          "percent_above_ms": {
+            "16.667": 0.338983,
+            "33.333": 0.338983,
+            "50.0": 0.338983
+          }
+        }
+      },
+      "max_active_threats": 0,
+      "hull_min": 0.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 0.0
+    },
+    "non_gameplay_after_startup_warmup": {
+      "frames": 4513,
+      "first_frame_index": 885,
+      "last_frame_index": 5397,
+      "wall_frame_time_sum_s": 37.651771,
+      "fps_from_frame_time_sum": 119.861561,
+      "timings": {
+        "FrameTime": {
+          "samples": 4513,
+          "mean_ms": 8.342958,
+          "median_ms": 8.3315,
+          "p95_ms": 9.0733,
+          "p99_ms": 9.2804,
+          "min_ms": 3.6096,
+          "max_ms": 32.677,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.044316,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GPUTime": {
+          "samples": 4513,
+          "mean_ms": 4.432642,
+          "median_ms": 4.3742,
+          "p95_ms": 4.9936,
+          "p99_ms": 5.2522,
+          "min_ms": 3.6752,
+          "max_ms": 6.0764,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 4513,
+          "mean_ms": 1.693389,
+          "median_ms": 1.5699,
+          "p95_ms": 2.2344,
+          "p99_ms": 2.494,
+          "min_ms": 1.2583,
+          "max_ms": 26.079,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.044316,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 4513,
+          "mean_ms": 3.486525,
+          "median_ms": 3.3965,
+          "p95_ms": 4.1953,
+          "p99_ms": 4.6961,
+          "min_ms": 2.8209,
+          "max_ms": 8.9101,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 4513,
+          "mean_ms": 2.310712,
+          "median_ms": 2.2739,
+          "p95_ms": 2.8525,
+          "p99_ms": 3.0959,
+          "min_ms": 1.5345,
+          "max_ms": 10.4873,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        }
+      },
+      "max_active_threats": 0,
+      "hull_min": 100.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 0.0
+    },
+    "gameplay_all": {
+      "frames": 12602,
+      "first_frame_index": 5398,
+      "last_frame_index": 17999,
+      "wall_frame_time_sum_s": 105.033303,
+      "fps_from_frame_time_sum": 119.980993,
+      "timings": {
+        "FrameTime": {
+          "samples": 12602,
+          "mean_ms": 8.334653,
+          "median_ms": 8.33325,
+          "p95_ms": 8.7565,
+          "p99_ms": 9.0647,
+          "min_ms": 2.5976,
+          "max_ms": 11.3526,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GPUTime": {
+          "samples": 12602,
+          "mean_ms": 2.798438,
+          "median_ms": 2.58345,
+          "p95_ms": 3.5475,
+          "p99_ms": 3.6821,
+          "min_ms": 2.301,
+          "max_ms": 4.6915,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 12602,
+          "mean_ms": 1.60404,
+          "median_ms": 1.5626,
+          "p95_ms": 1.9717,
+          "p99_ms": 2.3367,
+          "min_ms": 1.2053,
+          "max_ms": 4.9454,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 12602,
+          "mean_ms": 3.153279,
+          "median_ms": 3.0778,
+          "p95_ms": 3.691,
+          "p99_ms": 4.0712,
+          "min_ms": 2.6337,
+          "max_ms": 5.7759,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 12602,
+          "mean_ms": 2.014164,
+          "median_ms": 1.97975,
+          "p95_ms": 2.5541,
+          "p99_ms": 2.8057,
+          "min_ms": 1.2907,
+          "max_ms": 3.7392,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        }
+      },
+      "max_active_threats": 21,
+      "hull_min": 83.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 2400.0
+    },
+    "gameplay_warmup_excluded": {
+      "frames": 601,
+      "first_frame_index": 5398,
+      "last_frame_index": 5998,
+      "wall_frame_time_sum_s": 5.002885,
+      "fps_from_frame_time_sum": 120.130675,
+      "timings": {
+        "FrameTime": {
+          "samples": 601,
+          "mean_ms": 8.324269,
+          "median_ms": 8.3447,
+          "p95_ms": 8.8769,
+          "p99_ms": 9.2587,
+          "min_ms": 2.5976,
+          "max_ms": 10.2703,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GPUTime": {
+          "samples": 601,
+          "mean_ms": 2.736649,
+          "median_ms": 2.5216,
+          "p95_ms": 3.4281,
+          "p99_ms": 3.6274,
+          "min_ms": 2.301,
+          "max_ms": 4.6915,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 601,
+          "mean_ms": 1.675773,
+          "median_ms": 1.5785,
+          "p95_ms": 2.2813,
+          "p99_ms": 3.1622,
+          "min_ms": 1.2445,
+          "max_ms": 4.1595,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 601,
+          "mean_ms": 3.213423,
+          "median_ms": 3.1251,
+          "p95_ms": 4.0149,
+          "p99_ms": 4.551,
+          "min_ms": 2.7258,
+          "max_ms": 5.7759,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 601,
+          "mean_ms": 2.154275,
+          "median_ms": 2.092,
+          "p95_ms": 2.8095,
+          "p99_ms": 3.3637,
+          "min_ms": 1.4667,
+          "max_ms": 3.7392,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        }
+      },
+      "max_active_threats": 5,
+      "hull_min": 100.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 2400.0
+    },
+    "gameplay_after_warmup": {
+      "frames": 12001,
+      "first_frame_index": 5999,
+      "last_frame_index": 17999,
+      "wall_frame_time_sum_s": 100.030417,
+      "fps_from_frame_time_sum": 119.973507,
+      "timings": {
+        "FrameTime": {
+          "samples": 12001,
+          "mean_ms": 8.335174,
+          "median_ms": 8.3327,
+          "p95_ms": 8.7505,
+          "p99_ms": 9.0352,
+          "min_ms": 5.4386,
+          "max_ms": 11.3526,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GPUTime": {
+          "samples": 12001,
+          "mean_ms": 2.801532,
+          "median_ms": 2.5854,
+          "p95_ms": 3.5503,
+          "p99_ms": 3.6825,
+          "min_ms": 2.3552,
+          "max_ms": 4.2665,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 12001,
+          "mean_ms": 1.600448,
+          "median_ms": 1.5623,
+          "p95_ms": 1.9587,
+          "p99_ms": 2.2896,
+          "min_ms": 1.2053,
+          "max_ms": 4.9454,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 12001,
+          "mean_ms": 3.150267,
+          "median_ms": 3.0759,
+          "p95_ms": 3.679,
+          "p99_ms": 4.0395,
+          "min_ms": 2.6337,
+          "max_ms": 5.7347,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 12001,
+          "mean_ms": 2.007148,
+          "median_ms": 1.9751,
+          "p95_ms": 2.539,
+          "p99_ms": 2.7784,
+          "min_ms": 1.2907,
+          "max_ms": 3.3119,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        }
+      },
+      "max_active_threats": 21,
+      "hull_min": 83.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 2400.0
+    }
+  },
+  "early_waves": {
+    "1": {
+      "frames": 4988,
+      "first_frame_index": 5999,
+      "last_frame_index": 10986,
+      "wall_frame_time_sum_s": 41.577457,
+      "fps_from_frame_time_sum": 119.968858,
+      "timings": {
+        "FrameTime": {
+          "samples": 4988,
+          "mean_ms": 8.335497,
+          "median_ms": 8.3348,
+          "p95_ms": 8.7499,
+          "p99_ms": 9.0647,
+          "min_ms": 5.5314,
+          "max_ms": 10.6745,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GPUTime": {
+          "samples": 4988,
+          "mean_ms": 2.785885,
+          "median_ms": 2.569,
+          "p95_ms": 3.5219,
+          "p99_ms": 3.6521,
+          "min_ms": 2.3572,
+          "max_ms": 3.9357,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 4988,
+          "mean_ms": 1.579946,
+          "median_ms": 1.54015,
+          "p95_ms": 1.9315,
+          "p99_ms": 2.2974,
+          "min_ms": 1.2459,
+          "max_ms": 4.9454,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 4988,
+          "mean_ms": 3.232656,
+          "median_ms": 3.18855,
+          "p95_ms": 3.7652,
+          "p99_ms": 4.143,
+          "min_ms": 2.6553,
+          "max_ms": 5.7347,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 4988,
+          "mean_ms": 2.002712,
+          "median_ms": 1.97455,
+          "p95_ms": 2.5275,
+          "p99_ms": 2.7993,
+          "min_ms": 1.3195,
+          "max_ms": 3.2311,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        }
+      },
+      "max_active_threats": 14,
+      "hull_min": 100.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 2400.0
+    },
+    "2": {
+      "frames": 6141,
+      "first_frame_index": 10987,
+      "last_frame_index": 17127,
+      "wall_frame_time_sum_s": 51.184948,
+      "fps_from_frame_time_sum": 119.976677,
+      "timings": {
+        "FrameTime": {
+          "samples": 6141,
+          "mean_ms": 8.334953,
+          "median_ms": 8.3306,
+          "p95_ms": 8.7547,
+          "p99_ms": 9.0339,
+          "min_ms": 5.4386,
+          "max_ms": 11.3526,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GPUTime": {
+          "samples": 6141,
+          "mean_ms": 2.817534,
+          "median_ms": 2.6003,
+          "p95_ms": 3.567,
+          "p99_ms": 3.7117,
+          "min_ms": 2.3552,
+          "max_ms": 4.2665,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 6141,
+          "mean_ms": 1.621708,
+          "median_ms": 1.5846,
+          "p95_ms": 1.9823,
+          "p99_ms": 2.2878,
+          "min_ms": 1.2053,
+          "max_ms": 4.5776,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 6141,
+          "mean_ms": 3.097196,
+          "median_ms": 3.0406,
+          "p95_ms": 3.569,
+          "p99_ms": 3.9651,
+          "min_ms": 2.6337,
+          "max_ms": 5.6688,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 6141,
+          "mean_ms": 2.017666,
+          "median_ms": 1.9821,
+          "p95_ms": 2.5552,
+          "p99_ms": 2.7768,
+          "min_ms": 1.345,
+          "max_ms": 3.3119,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        }
+      },
+      "max_active_threats": 21,
+      "hull_min": 83.0,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 2400.0
+    },
+    "3": {
+      "frames": 872,
+      "first_frame_index": 17128,
+      "last_frame_index": 17999,
+      "wall_frame_time_sum_s": 7.268013,
+      "fps_from_frame_time_sum": 119.977776,
+      "timings": {
+        "FrameTime": {
+          "samples": 872,
+          "mean_ms": 8.334877,
+          "median_ms": 8.3364,
+          "p95_ms": 8.7493,
+          "p99_ms": 9.0246,
+          "min_ms": 6.9907,
+          "max_ms": 9.7559,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GPUTime": {
+          "samples": 872,
+          "mean_ms": 2.77834,
+          "median_ms": 2.52665,
+          "p95_ms": 3.5301,
+          "p99_ms": 3.6405,
+          "min_ms": 2.388,
+          "max_ms": 3.8262,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "GameThreadTime": {
+          "samples": 872,
+          "mean_ms": 1.568004,
+          "median_ms": 1.52915,
+          "p95_ms": 1.8948,
+          "p99_ms": 2.2808,
+          "min_ms": 1.2675,
+          "max_ms": 2.6509,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RenderThreadTime": {
+          "samples": 872,
+          "mean_ms": 3.052731,
+          "median_ms": 3.0023,
+          "p95_ms": 3.4807,
+          "p99_ms": 3.7736,
+          "min_ms": 2.6759,
+          "max_ms": 4.9382,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "RHIThreadTime": {
+          "samples": 872,
+          "mean_ms": 1.958447,
+          "median_ms": 1.9159,
+          "p95_ms": 2.4886,
+          "p99_ms": 2.706,
+          "min_ms": 1.2907,
+          "max_ms": 2.9464,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        }
+      },
+      "max_active_threats": 14,
+      "hull_min": 83.2221,
+      "hull_max": 100.0,
+      "ship_speed_cm_per_s_max": 2400.0
+    }
+  },
+  "phase_segments": [
+    {
+      "phase": 0,
+      "phase_name": "Hangar",
+      "wave": 0,
+      "run_active": 0,
+      "frames": 2,
+      "first_frame_index": 0,
+      "last_frame_index": 1,
+      "wall_frame_time_sum_s": 2.578873,
+      "max_active_threats": 0
+    },
+    {
+      "phase": 0,
+      "phase_name": "Hangar",
+      "wave": 1,
+      "run_active": 0,
+      "frames": 5396,
+      "first_frame_index": 2,
+      "last_frame_index": 5397,
+      "wall_frame_time_sum_s": 45.080168,
+      "max_active_threats": 0
+    },
+    {
+      "phase": 1,
+      "phase_name": "Flight",
+      "wave": 1,
+      "run_active": 1,
+      "frames": 4553,
+      "first_frame_index": 5398,
+      "last_frame_index": 9950,
+      "wall_frame_time_sum_s": 37.945117,
+      "max_active_threats": 14
+    },
+    {
+      "phase": 2,
+      "phase_name": "Breathing",
+      "wave": 1,
+      "run_active": 1,
+      "frames": 1036,
+      "first_frame_index": 9951,
+      "last_frame_index": 10986,
+      "wall_frame_time_sum_s": 8.635225,
+      "max_active_threats": 12
+    },
+    {
+      "phase": 1,
+      "phase_name": "Flight",
+      "wave": 2,
+      "run_active": 1,
+      "frames": 5469,
+      "first_frame_index": 10987,
+      "last_frame_index": 16455,
+      "wall_frame_time_sum_s": 45.58476,
+      "max_active_threats": 21
+    },
+    {
+      "phase": 2,
+      "phase_name": "Breathing",
+      "wave": 2,
+      "run_active": 1,
+      "frames": 672,
+      "first_frame_index": 16456,
+      "last_frame_index": 17127,
+      "wall_frame_time_sum_s": 5.600188,
+      "max_active_threats": 20
+    },
+    {
+      "phase": 1,
+      "phase_name": "Flight",
+      "wave": 3,
+      "run_active": 1,
+      "frames": 872,
+      "first_frame_index": 17128,
+      "last_frame_index": 17999,
+      "wall_frame_time_sum_s": 7.268013,
+      "max_active_threats": 14
+    }
+  ],
+  "phase_events": [
+    {
+      "frame_index": 5398,
+      "event": "SpaceSurvival/Phase -1 -> 1. Wave 1. RunActive 1##47.660030"
+    },
+    {
+      "frame_index": 9951,
+      "event": "SpaceSurvival/Phase 1 -> 2. Wave 1. RunActive 1##85.611412"
+    },
+    {
+      "frame_index": 10987,
+      "event": "SpaceSurvival/Phase 2 -> 1. Wave 2. RunActive 1##94.246638"
+    },
+    {
+      "frame_index": 16456,
+      "event": "SpaceSurvival/Phase 1 -> 2. Wave 2. RunActive 1##139.831107"
+    },
+    {
+      "frame_index": 17128,
+      "event": "SpaceSurvival/Phase 2 -> 1. Wave 3. RunActive 1##145.431818"
+    }
+  ],
+  "worst_gameplay_frames": [
+    {
+      "frame_index": 13979,
+      "phase": 1,
+      "wave": 2,
+      "active_threats": 15,
+      "FrameTime": 11.3526,
+      "GPUTime": 3.521,
+      "GameThreadTime": 1.7851,
+      "RenderThreadTime": 2.812,
+      "RHIThreadTime": 2.2712
+    },
+    {
+      "frame_index": 14624,
+      "phase": 1,
+      "wave": 2,
+      "active_threats": 12,
+      "FrameTime": 11.0762,
+      "GPUTime": 2.5287,
+      "GameThreadTime": 2.7129,
+      "RenderThreadTime": 3.012,
+      "RHIThreadTime": 2.1335
+    },
+    {
+      "frame_index": 10805,
+      "phase": 2,
+      "wave": 1,
+      "active_threats": 5,
+      "FrameTime": 10.6745,
+      "GPUTime": 2.4341,
+      "GameThreadTime": 4.9454,
+      "RenderThreadTime": 3.2167,
+      "RHIThreadTime": 2.4547
+    },
+    {
+      "frame_index": 5635,
+      "phase": 1,
+      "wave": 1,
+      "active_threats": 2,
+      "FrameTime": 10.2703,
+      "GPUTime": 2.46,
+      "GameThreadTime": 4.1595,
+      "RenderThreadTime": 3.4438,
+      "RHIThreadTime": 2.5709
+    },
+    {
+      "frame_index": 10114,
+      "phase": 2,
+      "wave": 1,
+      "active_threats": 10,
+      "FrameTime": 10.2255,
+      "GPUTime": 2.7973,
+      "GameThreadTime": 2.1015,
+      "RenderThreadTime": 3.5999,
+      "RHIThreadTime": 2.0253
+    }
+  ],
+  "log_evidence": {
+    "available": true,
+    "path": "Artifacts/PackageSmoke/f1721585eb9544fbb8eb02181a06e528/Saved/Logs/PackagedSmoke.log",
+    "snapshot_bytes": 111327,
+    "snapshot_sha256": "6e220e6309d623323155f7ed7d3e5e6656d4f06dcd26f1267e9073b5a3e27748",
+    "quality_last_logged_by_capture_end": {
+      "ViewDistanceQuality": {
+        "level": 3,
+        "log_line": 443,
+        "timestamp_utc": "2026-09-13T05:39:37.930000+00:00"
+      },
+      "AntiAliasingQuality": {
+        "level": 3,
+        "log_line": 446,
+        "timestamp_utc": "2026-09-13T05:39:37.930000+00:00"
+      },
+      "ShadowQuality": {
+        "level": 3,
+        "log_line": 456,
+        "timestamp_utc": "2026-09-13T05:39:37.930000+00:00"
+      },
+      "GlobalIlluminationQuality": {
+        "level": 3,
+        "log_line": 493,
+        "timestamp_utc": "2026-09-13T05:39:37.930000+00:00"
+      },
+      "ReflectionQuality": {
+        "level": 3,
+        "log_line": 538,
+        "timestamp_utc": "2026-09-13T05:39:37.930000+00:00"
+      },
+      "PostProcessQuality": {
+        "level": 3,
+        "log_line": 549,
+        "timestamp_utc": "2026-09-13T05:39:37.930000+00:00"
+      },
+      "TextureQuality": {
+        "level": 3,
+        "log_line": 584,
+        "timestamp_utc": "2026-09-13T05:39:37.931000+00:00"
+      },
+      "EffectsQuality": {
+        "level": 3,
+        "log_line": 594,
+        "timestamp_utc": "2026-09-13T05:39:37.931000+00:00"
+      },
+      "FoliageQuality": {
+        "level": 3,
+        "log_line": 628,
+        "timestamp_utc": "2026-09-13T05:39:37.931000+00:00"
+      },
+      "ShadingQuality": {
+        "level": 3,
+        "log_line": 632,
+        "timestamp_utc": "2026-09-13T05:39:37.931000+00:00"
+      },
+      "LandscapeQuality": {
+        "level": 3,
+        "log_line": 637,
+        "timestamp_utc": "2026-09-13T05:39:37.931000+00:00"
+      }
+    },
+    "quality_logged_after_capture": {
+      "ViewDistanceQuality": {
+        "level": 2,
+        "log_line": 1047,
+        "timestamp_utc": "2026-09-13T05:44:44.038000+00:00"
+      },
+      "AntiAliasingQuality": {
+        "level": 2,
+        "log_line": 1049,
+        "timestamp_utc": "2026-09-13T05:44:44.038000+00:00"
+      },
+      "ShadowQuality": {
+        "level": 2,
+        "log_line": 1055,
+        "timestamp_utc": "2026-09-13T05:44:44.038000+00:00"
+      },
+      "GlobalIlluminationQuality": {
+        "level": 2,
+        "log_line": 1071,
+        "timestamp_utc": "2026-09-13T05:44:44.038000+00:00"
+      },
+      "ReflectionQuality": {
+        "level": 2,
+        "log_line": 1097,
+        "timestamp_utc": "2026-09-13T05:44:44.044000+00:00"
+      },
+      "PostProcessQuality": {
+        "level": 2,
+        "log_line": 1106,
+        "timestamp_utc": "2026-09-13T05:44:44.044000+00:00"
+      },
+      "TextureQuality": {
+        "level": 2,
+        "log_line": 1122,
+        "timestamp_utc": "2026-09-13T05:44:44.044000+00:00"
+      },
+      "EffectsQuality": {
+        "level": 2,
+        "log_line": 1126,
+        "timestamp_utc": "2026-09-13T05:44:44.044000+00:00"
+      },
+      "FoliageQuality": {
+        "level": 2,
+        "log_line": 1143,
+        "timestamp_utc": "2026-09-13T05:44:44.044000+00:00"
+      },
+      "ShadingQuality": {
+        "level": 2,
+        "log_line": 1147,
+        "timestamp_utc": "2026-09-13T05:44:44.044000+00:00"
+      },
+      "LandscapeQuality": {
+        "level": 2,
+        "log_line": 1148,
+        "timestamp_utc": "2026-09-13T05:44:44.044000+00:00"
+      }
+    },
+    "render_cvars_last_logged_by_capture_end": {
+      "r.DynamicGlobalIlluminationMethod": {
+        "value": 1,
+        "log_line": 401
+      },
+      "r.ReflectionMethod": {
+        "value": 1,
+        "log_line": 402
+      },
+      "r.GenerateMeshDistanceFields": {
+        "value": 1,
+        "log_line": 403
+      }
+    },
+    "pso_creation_waits_during_capture": [
+      {
+        "log_line": 996,
+        "message": "LogD3D12RHI: Waited for PSO creation for 100.000000ms"
+      },
+      {
+        "log_line": 997,
+        "message": "LogD3D12RHI: Waited for PSO creation for 200.000000ms"
+      }
+    ],
+    "boundary_note": "CSV endtimestamp has whole-second precision; log cutoff includes that UTC second."
+  },
+  "operator_context": [
+    "Captured before the OnStart scalability-application fix. Session default quality is 2, but captured log evidence shows scalability groups at 3; level 2 was applied after capture ended.",
+    "Operator reports the owner Unreal Editor and other desktop applications remained running; no background-process isolation was performed.",
+    "Development Windows package at 2560x1440, DX12 SM6, with Lumen and mesh distance fields enabled. Package identity is recorded separately by the root task; this capture predates the settings-only repack."
+  ],
+  "limits": [
+    "Only the phases/waves listed above were captured; no Wave 5/10 climax, station-transition or full ten-wave performance acceptance follows.",
+    "A capped early-wave sample is not evidence of uncapped headroom, representative worst-case performance or a sustained 60 FPS gate pass.",
+    "No physical input responsiveness, controller feel, natural gameplay acceptance, final-art approval or clean-machine benchmark is established.",
+    "RunActive/Phase identify simulation state, not a menu-open flag; live gameplay menus can be included. Loading/menu separation uses stated state/time filters.",
+    "GPU and thread counters can reflect pipelined earlier work and must not be summed or treated as exact causal attribution for one frame."
+  ],
+  "frame_sum_minus_metadata_duration_s": 1.7e-05
+}

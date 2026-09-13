@@ -1,0 +1,237 @@
+{
+  "status": "AUTOMATED_INTEGRATION_PASSED_NOT_HUMAN_ACCEPTANCE",
+  "date_utc": "2026-09-13T05:31:00Z",
+  "engine": "5.8.2-56702186",
+  "editor_build_seconds": 6.37,
+  "succeeded": 12,
+  "succeeded_with_warnings": 0,
+  "failed": 0,
+  "not_run": 0,
+  "tests": [
+    {
+      "name": "SpaceSurvival.Flight.BoostBrakeMovement",
+      "state": "Success",
+      "events": []
+    },
+    {
+      "name": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+      "state": "Success",
+      "events": []
+    },
+    {
+      "name": "SpaceSurvival.Flight.FrameRateTrajectories",
+      "state": "Success",
+      "events": [
+        {
+          "type": "Info",
+          "message": "30 Hz at 1 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "30 Hz at 2 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "30 Hz at 3 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "30 Hz at 4 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "60 Hz at 1 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "60 Hz at 2 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "60 Hz at 3 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "60 Hz at 4 seconds: position error 0.000 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "144 Hz at 1 seconds: position error 0.487 cm; velocity error 0.000 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "144 Hz at 2 seconds: position error 2.778 cm; velocity error 1.648 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "144 Hz at 3 seconds: position error 5.253 cm; velocity error 1.462 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "144 Hz at 4 seconds: position error 4.350 cm; velocity error 0.403 cm/s",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "name": "SpaceSurvival.Flight.ManualWeaponImpacts",
+      "state": "Success",
+      "events": []
+    },
+    {
+      "name": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+      "state": "Success",
+      "events": [
+        {
+          "type": "Info",
+          "message": "Accelerated actor integration: 12-second waves/climaxes, shortened transitions, enlarged durability, fixture flight bootstrap, forced objective acquisition/defeat and assist-band positioning. This does not validate natural balance, fairness, flight feel, controller input, performance, or disk-backed New Run/death/restart transactions.",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 1",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 2",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 3",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 4",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 5",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_STATION 1",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 6",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 7",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 8",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 9",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_WAVE 10",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        },
+        {
+          "type": "Info",
+          "message": "JOURNEY_STATION 2",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "name": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+      "state": "Success",
+      "events": [
+        {
+          "type": "Info",
+          "message": "Actor death/XP/hangar and in-memory next-run reset. Persistence is intentionally blocked; the normal restart button must remain blocked. Next flight uses explicit fixture bootstrap.",
+          "context": "",
+          "artifact": "00000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "name": "SpaceSurvival.Integration.LateEventAcceptance",
+      "state": "Success",
+      "events": []
+    },
+    {
+      "name": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+      "state": "Success",
+      "events": []
+    },
+    {
+      "name": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+      "state": "Success",
+      "events": []
+    },
+    {
+      "name": "SpaceSurvival.Integration.StationWalkerRecovery",
+      "state": "Success",
+      "events": []
+    },
+    {
+      "name": "SpaceSurvival.Save.PayloadRoundTrip",
+      "state": "Success",
+      "events": []
+    },
+    {
+      "name": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+      "state": "Success",
+      "events": []
+    }
+  ],
+  "limits": [
+    "Journey uses 12-second waves/climaxes, enlarged durability, fixture bootstrap, forced objective completion and assist-band positioning",
+    "Flight tests drive the real pawn directly, not physical keyboard/controller devices",
+    "No natural pacing, visual/audio acceptance, replay appeal or performance acceptance"
+  ],
+  "log_sha256": "fc055afcb579dbf014285f5076546e82e95d38815447a6608fc9ae2711ef42bd"
+}

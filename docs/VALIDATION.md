@@ -1,207 +1,128 @@
 # Phase 1 validation record
 
-> Reboot checkpoint, 2026-09-13 04:35 UTC: the editor C++ build **succeeded** using MSVC14.51.36257 and Windows SDK10.0.26100.0; earlier missing-toolchain statements below are historical and superseded. Current portable tests pass372 assertions in each strict/sanitizer build. Gameplay content creation, Unreal save-test execution, package and player validation remain pending. See [PROJECT_STATE](PROJECT_STATE.md) for resume order.
+**Overall status: PARTIAL.** Updated 2026-09-13 UTC. [GAME_SCOPE.md](GAME_SCOPE.md) is authoritative design; [IMPLEMENT.md](../IMPLEMENT.md) is the execution contract. A Windows package and automated integration/storage evidence now exist. Natural ten-wave play, physical controller acceptance, final art/audio, representative performance acceptance and immediate desire to retry remain open. The owner explicitly rejected the current graphics.
 
-Recorded 2026-09-13 UTC. Overall status: **PARTIAL**.
+## Executed evidence
 
-`GAME_SCOPE.md` remains the authoritative design and `../IMPLEMENT.md` remains the execution contract. The portable domain has executed test evidence. The Unreal game has not opened, compiled, packaged or been played. A separate content-only UE5.8.2 workbench subsequently opened and imported art/audio assets; that does not run the gameplay module. Consequently none of the Unreal gameplay acceptance gates below is closed. Source implementations and deterministic tests are not evidence of flight feel, controller operation, collision correctness, Director fairness, art quality, audio quality or a compelling restart loop.
-
-## Evidence and limits
-
-| Evidence | Result | What the result establishes |
+| Evidence | Result | Boundary / location |
 | --- | --- | --- |
-| Fresh container compile of `SurvivalCore.cpp` and `CoreTests.cpp`, `gcc:14-bookworm`, C++17, `-O2 -Wall -Wextra -Wpedantic -Werror` | **VERIFIED DOMAIN**: lead recorded successful compile and `PASS 266 portable gameplay-domain assertions` | The final recorded domain snapshot, including the Wave 10 malformed-state test, compiles without enabled warnings and satisfies its assertions. This excludes all Unreal translation units. |
-| AddressSanitizer + UndefinedBehaviorSanitizer build, C++17, `-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer` | **VERIFIED DOMAIN**: second `PASS 266`, no sanitizer diagnostic | The exercised portable test paths produced no reported address/undefined-behavior failure. This does not establish exhaustive memory safety or Unreal runtime correctness. |
-| `Tests/CoreTests.cpp` | Eight executed domain test groups in the recorded container run | Damage/recovery; boost/brake/dodge/utilities; wave lifecycle/economy; all upgrade tiers/repair; contracts; death/progression/reset; versioned payloads/invalid input; deterministic and defensive inputs. |
-| `ContentSource/source_validation.json` | **VERIFIED SOURCE FORMATS ONLY**: 26 OBJ meshes and 10 PCM WAVs recorded valid | OBJ indices, normals, finite geometry and nonzero triangle areas; WAV format/headroom/loop boundaries; supplied GLB hash. These checks do not run Unreal import, rendering, animation, collision, or audio playback. |
-| Content specialist's source checks, detailed in `CONTENT_PIPELINE.md` | Five Python scripts passed syntax compilation; generation matched across 39 source/manifest files | Python syntax and deterministic generation only. Source geometry preview is not a gameplay screenshot. |
-| `Scripts/CheckProject.py`; Python `compileall` for scripts/source generators | **VERIFIED SOURCE ONLY**: 19 structural checks passed; syntax compilation passed | Project/module/config/header structure and source syntax only; no UHT, Unreal compilation, engine Python API execution or rendering. |
-| Supplied hero source | Preserved SHA-256 `c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91` | The supplied `model-rigged.glb` was not replaced. Skeletal import and visible piloting remain unverified. |
-| Unreal tooling inspection | **WINDOWS TOOLCHAIN BLOCKED** | Initial missing-engine finding superseded: full UE5.8.2 is now at C:/Program Files/EpicGames2/UE_5.8. Fresh editor build reaches UBT but fails Win64 SDK validation (minimum10.0.19041.0). MSVC is also absent. |
-| Real assets-only authoring | **ASSET IMPORT VERIFIED / GAMEPLAY OPEN** | Content-only UE5.8.2 workbench opened, saved54 real asset files and recorded zero authoring errors with status ASSETS_IMPORTED_GAMEPLAY_CLASSES_PENDING. Gameplay map/Data Asset creation remains dependent on the compiled game module. |
-| Docker availability | Earlier daemon connection failures were superseded by the successful portable container run | Docker now supplies portable test tooling. It does not supply the licensed Unreal Windows build environment. No host system packages were installed for these checks. |
-| Unreal save automation | **UNVERIFIED UNREAL** | `SSAutomationTests.cpp` registers `SpaceSurvival.Save.PayloadRoundTrip`. It has not run; it covers memory serialization when run, not the entire disk/crash/resume transaction. |
-| Packaged Windows artifact | **NOT PRODUCED** | No executable, cooked content, stage directory or claimed package checksum is available. |
-| `Scripts/Build.ps1 -Target Editor` | **BLOCKED AT PREFLIGHT** | Failed because `C:\Program Files\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat` is absent. Compilation did not start; this is not a compiler test result. |
-| Human experience and performance | **UNVERIFIED UNREAL** | No keyboard/mouse play, controller play, ten-wave playthrough, station walkthrough, listening test, CPU/GPU capture or 60 FPS result was obtained. |
+| Editor builds | HUD-label rebuild: success, 6.91 seconds. Settings: 44.82 seconds. Earlier journey builds: 26.38 and 6.37 seconds | `.agent/local/EditorLabelsBuild.log`, `EditorSettingsBuild.log`, `EditorJourneyBuild3.log`, `EditorJourneyBuild4.log`; HUD-label package and native label/acceptance smoke passed |
+| Portable domain checks | 404 strict GCC 14 C++17 assertions and 404 ASan/UBSan assertions passed locally and in CI | CI run `34741749101`, core job `103682494677`: two PASS 404 results; includes paid depot shield service. These do not run Unreal adapters |
+| Source CI | Both jobs succeeded for source head `1ff473f2d37aa4c8e717fea75664eb2dd29dfa31`; source job `103682494581` passed all steps | PR merge ref `b81c7a54236f2a79eccc822fe3c2c88368177359`, base `0cf0ca6c17fe1febe6aa5c3640189152dcefaf96`; receipt `docs/validation/2026-09-13-source-ci.json` |
+| Structural/Python checks | 20 structural checks and Python syntax passed | Source shape/syntax, not execution of every script |
+| Source assets | 26 OBJ and 10 WAV formats validated; original GLB hash preserved | Source integrity, not quality approval |
+| Gameplay content | Survival map and Phase 1 Data Asset authored; import receipt has no errors | `Saved/Validation/ContentImport.json`: `IMPORTED_NOT_GAMEPLAY_VALIDATED` |
+| Persisted validation | Full fresh-editor Validate target passed, including latest material usage flags | `.agent/local/PersistedValidation2.log`; saved map/class/rosters, backgrounds NoCollision, hero skeletal and station instanced-material usage |
+| Unreal automation | 12 succeeded; 0 succeeded with warnings; 0 failed; 0 not run | `.agent/local/JourneyFlightAutomation2.log`, `Artifacts/UnrealTests/index.json`; report created 2026-09-13 05:30:57 |
+| Fresh-process storage lifecycle | Preflight plus three fresh Unreal processes succeeded; owner save hashes unchanged | `Artifacts/SaveLifecycle/6636199c7dc44237a67439999a1f9e6e/result.json`; exact scope below |
+| Pilot derivative | Imported, preview-fitted and wired into actual game; original walking mesh/source retained | `ContentSource/PilotMeshFitReview.json`; preview fit and limited smoke, not animation/art acceptance |
+| Editor-game smoke | Shell, visible pilot and New Run flight observed; backdrop/material defects found and repaired | Limited observation, not a complete controls or natural gameplay pass |
+| Windows package | Package 5 BuildCookRun succeeded in 67.06 seconds, exit 0; 59/59 project packages and runtime Cube verified | `.agent/local/WindowsPackage5.log`; archive `Artifacts/Windows`. Current identity in [BUILD_RUN.md](BUILD_RUN.md); performance remains tied to package 4 |
+| Current package 5 smoke | Native New Run rendered; Wave 2 Salvage Cache label at 21 m wrapped inside dark backing near the right edge, with legible E/A prompt. Native E accepted it; text changed to 3 OBJECTIVES REMAIN, prompt disappeared and flight continued | `Artifacts/PackageSmoke/5fedd7a0c1964923bd3937e4b159f21a`; label/acceptance smoke only, not objective completion or human feel |
+| Earlier package 4 smoke | Fresh native menu/New Run at Wave 1 rendered; all 11 scalability groups applied at quality 2 on frame 0 after Game Engine Initialized | `Artifacts/PackageSmoke/57579fdb25bd449ba907598454c4fed4/Saved/Logs/PackagedFinal.log`; startup correction verified |
+| Earlier package 3 smoke | Neutral-controls Wave 4 death/results, another fresh run and account retention after relaunch observed | `Artifacts/PackageSmoke/f1721585eb9544fbb8eb02181a06e528`; launch PID 23348. No full ten-wave or active-piloting claim |
+| Settings UI smoke | Mouse sensitivity changed from 1.0 to 1.2 by native click; settings file created | UI value/write observed; sensitivity readback after UI relaunch remains open |
+| Early-flight performance | Package 4 Waves 1–3: approximately 119.96 FPS, p99 9.119 ms, maximum 10.898 ms; zero active-flight frames above 16.667 ms | 14,530 frames after five-second warmup, 120 FPS cap; representative gate remains open. [Finalized analysis](PERFORMANCE.md), [receipt](validation/2026-09-13-final-performance.json) |
+| Encounter-label readability repair | Contrast backing and bounded wrapping compiled in 6.91 seconds | Actual glow washed out the prior label; package 5 Salvage Cache backing/wrapping and native acceptance are now observed. Busiest-scene readability still requires acceptance |
 
-The recorded final test image manifest is `sha256:7d300ba9cd9bec9e2df64005aafc07449f50be0866835ac650614386bc181f3b`; its `gcc:14-bookworm` base is `sha256:5e927c284bf55a7dc796262e311a0703344f62f41f5621eb56843111b1d37e15`. These identify the domain test environment, not a Windows game package. The working tree was still being reconciled when this record was written; bind delivery claims to the lead's final commit and preserve the test outputs.
+Package 3 capture review found effective scalability quality 3 while the session/menu held quality 2. GameInstance Init ran before engine scalability initialization. The OnStart reapplication now builds and is verified in fresh package 4: Game Engine Initialized precedes all 11 quality-2 groups on frame 0. The 12-test suite, storage harness and earlier package 3 smoke remain evidence for their recorded snapshots; the startup correction has separate build/packaged verification.
 
-The missing Windows C++ toolchain concretely blocks executing the game build/package/playback checks here; the now-present editor supports independent asset work. Unfinished art, animation, NPC presentation, tutorial behavior and content authoring depth are implementation/quality gaps; they are not described as impossible because of that build blocker.
+Editor builds used UE 5.8.2, MSVC 14.51.36257 and SDK 10.0.26100.0. Newer-than-preferred compiler and engine-header C4996 warnings remain. Installation/reboot are complete.
 
-## Reproduce the available checks
+Original hero SHA-256: `c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91`. Sanitized receipts are under `docs/validation`, including `2026-09-13-integrated-unreal.json`, `2026-09-13-save-lifecycle.json`, `2026-09-13-PersistedContent.json` and `2026-09-13-SceneValidation.json`. Historical receipts preserve their earlier snapshots; older assertion counts or pending states are not the current result.
 
-Run from the repository root with Docker Desktop's Linux engine running:
+The earlier four-test run included a transient-world warning. The first journey attempt crashed in a fixture controller view-target recursion; marking that controller local before possession corrected the harness. The latest complete suite passes cleanly. The first package attempt was blocked by global Live Coding; the wrapper now passes `-ubtargs=-NoHotReloadFromIDE`, and package 2 succeeded without closing the owner's unrelated editor. Its rendered launch exposed a Lumen distance-field warning; enabling mesh distance fields and cooking package 3 removed that observed warning. The latest native menu has no observed station checkerboard.
+
+The earlier package 3 smoke displayed Wave 1 with full hull/shield and the provisional pilot. With neutral controls, it reached Wave 4 and died; Results showed score 1,740, +105 XP, account level 1 and Heavy Cannon at 150 XP with 45 XP remaining. Selecting another run produced Wave 1, 0 credits, hull 100, shield 60, boost 100, brake heat 0 and Rapid Laser. A subsequent actual relaunch retained account 105 XP, highest wave 4, best score 1,740 and one completed run without a duplicate award. This verifies a real packaged death/results/fresh-run/account-retention route for package 3, **not active piloting, natural ten-wave acceptance, earned unlocks in packaged play or retry motivation**.
+
+The finalized performance sample used package 4 at 2560×1440, DX12/SM6, quality 2 and a 120 FPS cap on the i7-14700F/RTX 5080 PC, with neutral flight controls. It includes 15,131 active-flight frames; the reported 14,530-frame sample excludes the first five seconds. Neither raw nor trimmed flight exceeded 16.667 ms. The separate startup maximum was 2,174.921 ms; process RAM/VRAM, both climaxes, docking/stations and full-run stability remain open. These measurements precede the HUD-label patch and are not a performance pass for the later executable.
+
+## Exact Unreal test coverage
+
+Every test below returned **Success** in the latest 12-test report.
+
+| Test | Executed scope |
+| --- | --- |
+| `SpaceSurvival.Flight.FrameRateTrajectories` | Real pawn ticks for a four-second maneuver at 30/60/120/144 Hz. Against 120 Hz: position within 25 cm, velocity within 15 cm/s, heading within 0.05 degrees at sampled seconds |
+| `SpaceSurvival.Flight.BoostBrakeMovement` | Actual motion/resource drain and recharge, nonzero minimum braking speed, overheat release and cooling |
+| `SpaceSurvival.Flight.DirectionalDodgeCollision` | Three requested direction cases, repeat-impulse rejection and swept wall impact that still damages shield |
+| `SpaceSurvival.Flight.ManualWeaponImpacts` | Both manually triggered weapons, cooldown, laser single damage/tracer behavior, cannon travel/impact, off-axis control target and no self-hit |
+| `SpaceSurvival.Integration.AcceleratedTenWaveJourney` | Actual world/Director/GameMode route through both stations and climaxes, events, upgrade choices, depot purchase, shield-only recharge and stale out-of-range action rejection |
+| `SpaceSurvival.Integration.JourneyDeathAndFreshRun` | Actor death/account award/hangar and fresh in-memory run reset with disk persistence blocked |
+| `SpaceSurvival.Integration.LateEventAcceptance` | Both event types accepted near offer expiry; real objective callbacks complete within the accepted deadline |
+| `SpaceSurvival.Integration.StationWalkerRecovery` | Rotated hub, deck escapes/below-floor recovery, momentum reset and procedural exit |
+| `SpaceSurvival.Integration.ObjectiveRouteAdmission` | Blocked route does not commit acceptance/objectives; bounded alternate placement can succeed when clear |
+| `SpaceSurvival.Integration.RequiredClimaxAdmission` | Required Wave 10 gravity/asteroid/enemy composition respects budget, capacity and retry rules |
+| `SpaceSurvival.Save.PayloadRoundTrip` | In-memory Unreal envelope/payload round trip |
+| `SpaceSurvival.Save.PlatformDiskRoundTrip` | GUID-named QA slot write/readback/consumption and exact-slot cleanup; no production slot writes |
+
+Flight fixtures call gameplay methods directly; they do not exercise physical mouse/gamepad polling. Actor fixtures use transient worlds and avoid GameInstance Init, with account persistence blocked. The journey uses **12-second waves, enlarged durability, forced objective completion, fixture bootstrap and assisted positioning**. Passing it establishes the exercised actor transitions and assertions, not natural pacing, fairness, human control, rendering or retry appeal.
+
+## Fresh-process GameInstance save lifecycle
+
+`Scripts/TestSaveLifecycle.ps1` passed with result token `6636199c7dc44237a67439999a1f9e6e`.
+
+| Process phase | Observed result |
+| --- | --- |
+| Preflight, PID 21936 | Verified generic SaveGame backend and isolated directory before GameInstance Init or save writes |
+| Suspend, PID 79976 | Real Init and station suspension persisted a fixture Wave 5 build, meters, credits, utility, contract, pending reward, temporary buff and settings |
+| ResumeDeath, PID 18120 | Fresh Init restored/consumed the station suspension, launched Wave 6, persisted death once, awarded 475 XP / level 3 / one history entry and invalidated the dead checkpoint |
+| FreshStart, PID 47644 | Another fresh Init retained account/settings and both early unlocks; new Swift/Heavy Cannon run had baseline tiers, zero credits and no utility |
+
+The storage fixture deliberately seeds station state, 100 kills and 1,200 earned credits; it does not earn those through natural play. The harness uses a GUID `UserDir`, checks the generic backend and rejects reparse paths before writes. The receipt records `productionSaveHashesUnchanged: true` and hashes the three isolated save files. It runs preflight plus **three separate fresh Unreal processes**, not an in-memory reset.
+
+This closes the exercised GameInstance storage lifecycle gate. It does **not** validate station menu selection, UI quit/relaunch, packaged save behavior, corrupt-account recovery, interrupted writes or subjective gameplay.
+
+## Acceptance gate matrix
+
+“Automated partial” means specific source/actor behavior passed under the stated fixture limits; the full player requirement remains open.
+
+| Gate | Current evidence | Remaining closure |
+| --- | --- | --- |
+| Build/content/package | Compiled, persisted Validate, Windows archive and limited rendered launch passed | Broader offline/reference coverage and final artifact identity |
+| Keyboard/mouse and controller | Automated partial: real movement/resource/dodge/weapon adapters | Both physical inputs, soft targeting, live menus, hold/toggle, reconnects and feel |
+| Survival/damage | Domain coverage plus physical dodge collision | Full contextual recovery, field/subsystem effects and damage feedback together in natural play |
+| Waves/Director/hazards/enemies | Accelerated ten-wave actor route and admission regressions passed | Natural durations, persistence, behavior distinctions, fragments/passages, fairness and readable combinations |
+| Economy/upgrades/utilities | Domain and journey coverage, paid depot shield/range assertions | All I–V paths and both utilities under real affordability/replacement decisions |
+| Events/depot/contracts | Event lifetime/route and journey actions passed; contract rules in domain | Natural success/failure, exactly-once depot experience and both disclosed contracts through resolution |
+| Wave 5 / Station 1 | Automated wormhole/climax/docking/station route and walker recovery | Natural approach/exit/service discovery, visit duration, purchases and UI Save & Quit/Continue |
+| Waves 6–10 / Wave 10 | Automated escalation route and required compound admission | Natural compound pressure/readability, arrival and services |
+| Station 2/restart boundary | Services/suspension exist; further launch disabled | Resolve successful-slice/retry behavior; abandonment currently gives no XP/history |
+| Death/account/unlocks/hangar | Actor death/reset, actual fresh-process storage and package 3 death/results/restart/account retention passed | Natural progression to both unlocks, complete loadout/UI route and repeatability |
+| Save/settings | Actual fresh-process lifecycle/settings and package 4 startup scalability passed; native sensitivity value/write observed | UI sensitivity readback after relaunch, packaged station lifecycle, real failure/interruption recovery |
+| Shell/accessibility/tutorial | Rendered packaged menu/launch/results and package 5 event-label/native-acceptance smoke; compiled controls/settings | Both-input navigation, every preference, text at all scales, learned prompts and actual audio response |
+| Hybrid visuals/audio | Imported assets, fitted pilot and limited rendered smoke | **Owner rejected graphics**; major art replacement, animation/VFX/audio polish and listening/readability acceptance |
+| Performance | Package 4 early-flight CPU/GPU/frame times measured; synthetic cross-rate movement agreement | Both climaxes/stations/full-run measurements, process RAM/VRAM and representative 60 FPS/higher-refresh scalability acceptance |
+| Docs/Git | Independent source audit found and corrected admission/depot gaps; reconciliation in progress | Final documentation commit/push and final commit/receipt identity; source through 1ff473f is pushed with both CI jobs passing. PR remains unmerged |
+
+Remaining implementation is distinct from human acceptance: the Station 2 boundary, authored exit/vendor/audio presentation and broader data-driven content workflow are unfinished. Storage fault/interruption behavior and representative performance also need technical verification; they are not blocked solely on owner feedback.
+
+The fixed roster remains two weapons/enemies/utilities/events/contracts and four hazard families. No multiplayer, Steamworks, cloud, inventory or later authored progression was added.
+
+## Reproduce checks
+
+From the repository root, using the engine/tooling described in [BUILD_RUN.md](BUILD_RUN.md):
 
 ```powershell
 ./Scripts/TestCore.ps1
-```
-
-The wrapper rebuilds the image before executing it. Its direct equivalent is:
-
-```powershell
-docker build --progress plain -t spacesurvival-core-checks .
-docker run --rm spacesurvival-core-checks
-```
-
-With existing Python 3, source checks are:
-
-```powershell
+./Scripts/Format.ps1 -Check
 python Scripts/CheckProject.py
+python -m compileall -q Scripts ContentSource
 python ContentSource/ValidateSources.py
+./Scripts/Build.ps1 -Target Editor
+./Scripts/Build.ps1 -Target Content
+./Scripts/Build.ps1 -Target Validate
+./Scripts/Build.ps1 -Target Test
+./Scripts/TestSaveLifecycle.ps1 -EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'
+./Scripts/Build.ps1 -Target Package
 ```
 
-The presence of the check commands is not itself a pass record. Preserve the full output and exact commit SHA for release-candidate runs. Run engine steps using `Scripts/Build.ps1 -Target Editor`, then `Content`, `Test` and `Package` with the actual full `-EngineRoot`; consult the build instructions and `CONTENT_PIPELINE.md`. `-NullRHI` automation cannot establish graphics or performance results.
+Record the source/build identity and actual result. Local logs/reports/packages are ignored; concise sanitized delivery receipts belong under `docs/validation`.
 
-## IMPLEMENT.md gate matrix
+## Required hands-on protocol
 
-In this matrix, **DOMAIN VERIFIED / UNREAL OPEN** means relevant deterministic assertions executed while the integrated requirement remains unverified. **SOURCE ONLY / UNREAL OPEN** means there is an implementation path but no executed gameplay evidence. **BLOCKED** identifies a concrete environment dependency, not acceptance.
+No owner hands-on pass has been received. Follow the single sequential [PLAYTEST_TOMORROW.md](PLAYTEST_TOMORROW.md) log, keyboard/mouse first and physical controller second. Every checkbox remains unchecked despite the automated successes.
 
-Source map abbreviations:
+Record date, commit/build/hash, device/settings, expected versus observed behavior and evidence. Complete the natural two-block route, both stations, all scoped weapons/upgrades/utilities/events/contracts, live depot shield service and range rejection, settings, UI suspension/Continue, ordinary and resumed death, unlocks and fresh-run reset. Include the current Station 2 boundary friction.
 
-- **Core**: `Source/SpaceSurvival/Domain/SurvivalCore.h/.cpp`; tests in `Tests/CoreTests.cpp`.
-- **Ship**: `Private/SSShip.cpp`; **Controller/GameMode**: `Private/SSGameMode.cpp`.
-- **World**: `Private/SSWorldActors.cpp` and `Public/SSWorldActors.h`.
-- **Station**: `Private/SSStation.cpp`; **HUD**: `Private/SSHUD.cpp`.
-- **Save**: `Private/SSGameInstance.cpp`; **UE automation**: `Private/SSAutomationTests.cpp`.
-- **Content/Tuning**: `Scripts/AuthorContent.py`, `ContentSource/`, `Public/SSPhase1Data.h`.
-
-All abbreviated source paths are beneath `Source/SpaceSurvival/` unless a different root is shown.
-
-### Build gate
-
-| Required criterion | Status | Source/evidence and remaining verification |
-| --- | --- | --- |
-| Unreal project opens cleanly | BLOCKED | `SpaceSurvival.uproject`, module/targets/config and content authoring script exist; open the real project and retain its log. |
-| C++ project compiles | BUILD SUCCEEDED WITH ENGINE WARNINGS | UHT, reflected classes, adapters and linking succeeded140.75s; engine-header deprecations and nonpreferred compiler warning recorded. No game runtime test implied. |
-| Required maps/assets resolve | BLOCKED | Canonical `/Game/SpaceSurvival/` paths are declared; real `.uasset`/`.umap` import and packaged reference resolution remain open. |
-| Packaged Windows build succeeds | BLOCKED | `Scripts/Build.ps1 -Target Package` provides BuildCookRun routing. Run it after content import, launch the resulting executable outside Editor, and record artifact path/hash. |
-
-### Flight and survival/damage gates
-
-| Required criterion | Status | Source/evidence and remaining verification |
-| --- | --- | --- |
-| Keyboard/mouse works | SOURCE ONLY / UNREAL OPEN | Controller key polling, mouse steering and station movement; test all bindings and menu focus physically. |
-| Controller works | SOURCE ONLY / UNREAL OPEN | Stick, trigger, shoulder, face-button and menu bindings; test actual device, dead zones, trigger toggles, sensitivity and reconnect behavior. |
-| Pitch/yaw, banking, throttle, inertia | SOURCE ONLY / UNREAL OPEN | Ship substepped steering, acceleration-limited velocity and visual banking; assess weight and response at several frame rates. |
-| Rechargeable boost | DOMAIN VERIFIED / UNREAL OPEN | Core `TickFlight`; Ship applies speed change. Verify meter/feedback, exhaustion and recharge together. |
-| Partial brake, heat and overheat | DOMAIN VERIFIED / UNREAL OPEN | Core heat/lockout/recovery; Ship minimum forward speed and brake factor. Verify braking cannot park indefinitely. |
-| Directional dodge without invulnerability | DOMAIN VERIFIED / UNREAL OPEN | Core cooldown and damage-during-dodge assertions; Ship directional impulse. Validate all directions against actual obstacles. |
-| Readable high-speed chase camera | SOURCE ONLY / UNREAL OPEN | Ship spring arm, limited boost pullback/FOV and impact shake. Check pilot visibility, clipping and hazard lead time. |
-| Shield-first damage, no automatic shield regeneration | DOMAIN VERIFIED / UNREAL OPEN | Core overflow/energy/recovery tests; Ship/World source damage adapters. Verify collisions, projectiles and pickups agree. |
-| Hull recovers to full; slow under danger, fast after delay | DOMAIN VERIFIED / UNREAL OPEN | Core recovery tests; GameMode determines danger from active threats. Validate actual danger classification, interruption and station repair value. |
-| Wave damage scaling and lightweight damage types | DOMAIN VERIFIED / UNREAL OPEN | Core scaling/helpers and kinetic/energy/electrical/gravity/thermal rules; verify actual source damage, force and presentation. |
-| Rare temporary subsystem impairment | DOMAIN VERIFIED / UNREAL OPEN | Core effective-tier reduction and repair preserve purchased tiers. Verify frequency, warning, duration and handling impact. |
-| Waves 1–10 complete in order | DOMAIN VERIFIED / UNREAL OPEN | Core tests traverse two five-wave blocks and stations. No physical run has traversed them. |
-| Hidden variable duration and bounded breathing | DOMAIN VERIFIED / UNREAL OPEN | Core deterministic RNG/timers and ≤20-second bound; HUD omits countdown. Verify pressure reduces naturally while flight continues. |
-| Director pressure escalates | SOURCE ONLY / UNREAL OPEN | Core multiplier and World pressure budget/composition. Test resulting encounter density, behavior and variety, not just numeric growth. |
-| No routine unavoidable spawn states | SOURCE ONLY / UNREAL OPEN | World safe-lane, lead-time and active-threat limits. Requires observed survival across varied headings, speed, upgrades and compound pressure. |
-| Selected hazards persist over wave boundaries | SOURCE ONLY / UNREAL OPEN | World normal Configure avoids clearing the world; station/death ResetEncounter clears actors. Verify hazard persistence and no transition hitches. |
-
-### Content gate
-
-| Required criterion | Status | Source/evidence and remaining verification |
-| --- | --- | --- |
-| Four hazard families | SOURCE ONLY / UNREAL OPEN | World asteroids, wreckage, electrical storms and gravity. Test each independently and overlapping. |
-| Asteroid sizes/destruction/fragmentation | SOURCE ONLY / UNREAL OPEN | Small/medium destruction, bounded debris and drops; massive obstacles. Verify physical radii, weapon response, fragments and dangerous aftermath. |
-| Wreckage authored passages | SOURCE ONLY / UNREAL OPEN | World passage placement and generated debris geometry. Verify navigable clearance and destructible/non-destructible distinction. |
-| Electrical warning/secondary effect | SOURCE ONLY / UNREAL OPEN | World warning rings, delayed electrical hazard and Core interference. Verify warning lead time and control consequences. |
-| Gravity affects ship and debris | SOURCE ONLY / UNREAL OPEN | World force application and Ship external-force handling. Verify controllability and readable direction/strength. |
-| Both enemy archetypes | SOURCE ONLY / UNREAL OPEN | Pursuer and Flanker behavior in World. Verify distinct behavior, hazard interaction and behavioral escalation rather than inflated health. |
-| Both weapon classes; manual aim plus soft assistance | DOMAIN VERIFIED / UNREAL OPEN | Core weapon stats/replacement/tier effects; Ship trace/projectile firing and target assistance. Verify rates, damage, line-of-sight and manual aim. |
-| Both utilities | DOMAIN VERIFIED / UNREAL OPEN | Core Vector Thrusters/Overdrive Cooling tests; GameMode deliberate fitting/reward menus. Verify input, meter and handling effects; one slot replaces the previous utility. |
-| Both optional events | SOURCE ONLY / UNREAL OPEN | World explicit acceptance/objectives/failure and GameMode reward choice. Verify approach does not accept, success/failure is correct and rewards cannot repeat. |
-| Exactly one guaranteed mobile depot | SOURCE ONLY / UNREAL OPEN | World Wave 3 breathing offer, three randomized upgrade offers/deal and saved `depotSeen`; GameMode checks live proximity and offered track before purchase. Verify one encounter per run/resume. |
-| Both contract types | DOMAIN VERIFIED / UNREAL OPEN | Core modifier/objective success, failure, exclusivity and resolution tests; station terms/acceptance. Verify gameplay handicap and counted objectives. |
-| Pickups and risk/value placement | SOURCE ONLY / UNREAL OPEN | World credits/repair/rare shield/buff actors and GameMode collection; generated distinct silhouettes. Verify collection radii, risk, rarity and feedback. |
-| Credits and 2–3 meaningful station purchases | DOMAIN VERIFIED / UNREAL OPEN | Default survival baseline yields 425 credits by Station 1; three initial 130-credit upgrades leave 35 repair credits. This arithmetic is tested; competent-player economy, depot spending, rewards and Station 2 choices are not balanced by playtest. |
-
-### Climax and station gates
-
-| Required criterion | Status | Source/evidence and remaining verification |
-| --- | --- | --- |
-| Wave 5 wormhole → combat → station | DOMAIN VERIFIED / UNREAL OPEN | Core Flight→Wormhole→Climax→Approach order; World wormhole passage and GameMode spawning/routing. Verify actual pull, traversal, hostile arrival and continuity. |
-| Wave 10 gravity + asteroid storm + enemy pressure | SOURCE ONLY / UNREAL OPEN | Core climax routing; World's compound encounter configuration. Verify all pressures actually overlap with readable, survivable escape space. |
-| Both climaxes lead cleanly into stations | DOMAIN VERIFIED / UNREAL OPEN | Core approach/docking/station states; GameMode actor/pawn transitions. Verify no stranded pawn, duplicate actors or lost run state. |
-| Player approach and assisted landing | SOURCE ONLY / UNREAL OPEN | Heading-aligned station, corridor, 12 m assistance threshold and Ship docking interpolation. Test arbitrary pitch/yaw, low/high speed and aborted approach. |
-| Acornaut exits correctly | SOURCE ONLY / UNREAL OPEN; PRESENTATION GAP | Ship destruction/pawn possession creates the walker. This is an instantaneous change, not a finished exit animation. Validate character mesh, orientation, floor contact and camera. |
-| All five upgrades through I–V | DOMAIN VERIFIED / UNREAL OPEN | Core purchase/cost/tier bounds and effective-stat tests; guaranteed station panel. Verify installed changes in actual ship behavior and repeated purchases. |
-| Repair | DOMAIN VERIFIED / UNREAL OPEN | Core paid hull/shield repair and subsystem reset; station console. Verify funds, feedback and no unnecessary charge at full service. |
-| Contract board | DOMAIN VERIFIED / UNREAL OPEN | Core rules and GameMode disclosed terms; Station physical terminal. Verify one active contract and no unreachable Station 2 contract. |
-| Save & Quit | DOMAIN VERIFIED / UNREAL OPEN | Core payloads; Save disk wrapper and station terminal. Requires closing/relaunching the packaged executable and restoring the same run. |
-| Relaunch | DOMAIN VERIFIED / UNREAL OPEN | Station 1 starts Wave 6 with current build; Station 2 intentionally stops authored flight. See boundary decision below. |
-| Walk/run/interact and compact 1–3-minute visit | SOURCE ONLY / UNREAL OPEN | Walker input/animation hooks and diegetic station services. Requires physical walkthrough and timing. |
-| Vendor/NPC, servicing, machinery, announcements and story detail | SOURCE ONLY / UNREAL OPEN; QUALITY GAPS | Mica text/vendor interaction, service arm, ambience and beacon log exist. No separate skeletal NPC/vendor character or recorded spoken station announcements have been integrated. |
-| Optional station interaction/reward | SOURCE ONLY / UNREAL OPEN | Beacon restoration grants 25 credits once per station via `stationRewardClaimed`; verify repeat/restore behavior. |
-
-### Progression and save gates
-
-| Required criterion | Status | Source/evidence and remaining verification |
-| --- | --- | --- |
-| Death ends run | DOMAIN VERIFIED / UNREAL OPEN | Core fatal damage/EndRun and active flag. Verify every physical damage source and removal of flight control. |
-| Score and XP awarded once | DOMAIN VERIFIED / UNREAL OPEN | Core score, XP, run ID idempotency and duplicate-EndRun tests. Verify Results and durable account write after actual death. |
-| Account progression persists | DOMAIN VERIFIED / UNREAL OPEN | Account codec round trip; Save write/readback wrapper. Requires process restart and disk-error checks. |
-| Second starting weapon unlock | DOMAIN VERIFIED / UNREAL OPEN | Level 2 at 150 XP; tests verify Heavy Cannon selection becomes available. Verify UI feedback and actual next-run weapon. |
-| Second ship unlock/sidegrade | DOMAIN VERIFIED / UNREAL OPEN | Level 3 at 450 XP; tests verify greater speed/maneuver/response and lower hull. Verify model selection and actual playstyle. |
-| New run retains unlocks and resets run power | DOMAIN VERIFIED / UNREAL OPEN | Core resets tiers, credits, utility, contracts, encounter flags and wave. Verify the full death→Results→hangar→loadout→launch path. |
-| Hangar ship/weapon/progression/launch | SOURCE ONLY / UNREAL OPEN | Station home variant, GameMode selections and shortcuts. Persistent stats show last/best run; a richer run-history list is not implemented. |
-| Separate account/settings/suspension domains | DOMAIN VERIFIED / UNREAL OPEN | Three strict codecs and three SaveGame slots. Verify actual platform paths and settings persistence. |
-| Station suspended run survives application close/relaunch | DOMAIN VERIFIED / UNREAL OPEN | Payload round trip preserves run values, contract, utility, pending reward and buff duration. Actual UE SaveGame disk round trip has not executed. |
-| Death after resume cannot reload checkpoint | DOMAIN VERIFIED / UNREAL OPEN | Save consumes suspended slot before exposing resumed state; account run ID rejects the latest awarded run. Portable replay tests prevent duplicate XP, but disk order/crash behavior needs process-level validation. |
-| Invalid data and persistence failures | DOMAIN VERIFIED / UNREAL OPEN | Codecs reject malformed/versioned/nonfinite/out-of-range/inconsistent state without mutating output; adapter protects unreadable existing accounts and verifies writes. Exercise real failure/recovery paths with disposable test profiles. |
-
-### Shell, presentation, performance and delivery gates
-
-| Required criterion | Status | Source/evidence and remaining verification |
-| --- | --- | --- |
-| Continue/New Run/Hangar/Settings/Graphics/Audio/Controls/Stats/Quit | SOURCE ONLY / UNREAL OPEN | GameMode panels and HUD. Verify navigation, enabled states, focus, pause/resume and quit behavior with both input devices. |
-| Subtitles, UI scale, non-color warnings/pickups, shake/blur, hold/toggle | SOURCE ONLY / UNREAL OPEN | Settings codec, HUD distinction, shape assets and runtime toggles. Verify actual effects, legibility and persisted values. |
-| Tutorial | SOURCE ONLY / UNREAL OPEN | Wave 1–3 guidance and resettable persistent flags exist. Observed steering, throttle, boost, brake, dodge, firing, pickup and explicit event acceptance now clear corresponding hints. This source behavior does not prove comfortable teaching or player mastery. |
-| Hybrid visuals and visibly piloting Acornaut | SOURCE ONLY / UNREAL OPEN; QUALITY GAP | Supplied hero import path, open-cockpit source hull, materials and camera exist. Primitive generated geometry/materials have not met the approved Hybrid commercial-quality bar; seated/reactive animation remains unfinished. |
-| VFX, warning audio, music layers and world audio | SOURCE ONLY / UNREAL OPEN; QUALITY GAP | World/Ship hooks and ten synthesized WAVs exist. Verify playback, mix, spatialization, stem synchronization and feedback quality; spoken reactions are not recorded audio. |
-| Gradual visual regions independent of stations/waves | SOURCE ONLY / UNREAL OPEN | Ambient-region/world presentation code requires in-engine inspection; visual change must remain independent of gameplay composition and block cadence. |
-| Performance measured against 60 FPS | UNVERIFIED UNREAL | No CPU/GPU/frame-time measurements exist; no FPS or hardware capability claim is made. |
-| Bottlenecks documented and 120+ FPS scalability path | SOURCE ONLY / UNREAL OPEN | Active-threat limits, bounded fragments, substeps and quality/frame-limit settings exist. Profile actual cost and validate reduced visual settings preserve simulation/readability. |
-| Transition/spawn/docking hitches and frame-rate independence | DOMAIN VERIFIED / UNREAL OPEN | Portable meter/recovery step comparisons executed; physical flight, actor spawning, map assets, docking and frame pacing remain unmeasured. |
-| Documentation/clean implementation branch/PR | DELIVERY CHECK REQUIRED | Reconcile project state, architecture, issues, Phase 2 notes, build instructions and performance record with the final commit; branch/PR state is recorded by the lead. This document does not claim a PR exists or is merged. |
-| No deferred Phase 2 implementation | SOURCE REVIEW ONLY | Scoped runtime contains two enemies/weapons/utilities/events/contracts and four hazard families; no multiplayer, Steamworks, cloud or inventory implementation is intended. Final diff review remains required. |
-
-## Independent source review and corrections
-
-An independent specialist inspected Core integration in GameMode, GameInstance, Ship, HUD and Station. The lead applied the following corrections, which were then confirmed in current source. These are static confirmations, not executed Unreal regression passes:
-
-- Preserve handled death phase when showing the hangar, avoiding the Results→hangar→Results loop.
-- Gate new-run launch on completed death persistence; validate a candidate run before consuming an existing suspension.
-- Protect unreadable existing account saves against automatic overwrites; refuse resumed play when the account is blocked.
-- Destroy an existing walker during resume/station entry; retain the approach hub rather than rebuilding it unnecessarily.
-- Read relevant flight/economy/Director tuning from `DA_Phase1`; apply Engine acceleration to the physical velocity step.
-- Use `Stats().weaponDamage` once, avoiding duplicate Heavy Cannon and temporary-buff multipliers.
-- Align station arrival to ship heading, open the inbound corridor, transform service/dock positions with the hub, and correct the assistance message to 12 m.
-- Pause normal flight shell panels while keeping depot/reward panels live; enable controller ticking while paused.
-- Wire subtitle preference to dialogue rendering, preserve critical warnings, and apply master/effects volume to station ambience.
-- Add explicit Station 2 abandonment/restart routing.
-- Tighten Core decoding to reject normal Flight at Wave 10; the climax phase is mandatory.
-
-Tuning remains a limited common `UDataAsset` plus C++ definitions. A full designer-authored library of separate hazard, encounter, utility, contract and station assets is not complete. This is a remaining architecture/content-authoring requirement, not evidence that exposing a few values fulfills every Data Asset expectation.
-
-## Station 2 slice-boundary decision
-
-The full-game design is indefinite; Phase 1 authors ten waves. Station 2 therefore remains a live station, not victory or death. It offers the station services and Save & Quit. `LaunchFromStation()` refuses Wave 11. The shell explicitly offers abandonment of this slice and return to hangar launch, discarding run state and any suspension without awarding death XP. A new launch receives a fresh run ID and fresh run upgrades. This is the bounded Phase 1 interpretation; it does not validate indefinite survival or a Station 2→Wave 11 flight loop.
-
-## Required integrated manual protocol
-
-Use a built/cooked candidate with a recorded commit, package hash, engine/toolchain versions, hardware, graphics settings, resolution, input-device model and test date. Back up existing personal saves outside the game save directory; use disposable test profiles for destructive/failure tests. Keep shipping-like gameplay separate from any temporary development acceleration or injected state. Do not credit a cheated/accelerated run as the natural ten-wave experience.
-
-1. **Cold launch and shell:** Launch the packaged executable offline with no saves. Verify hangar, starting locks, graphics/audio/controls/accessibility menus, controller navigation, mouse clicks, text scaling and Quit. Change settings, close/relaunch and verify persistence. Exercise pause/return during flight and confirm depot/reward menus remain live.
-2. **Fresh keyboard/mouse run:** Launch Wave 1 with starter/Rapid Laser. Use pitch, yaw, bank, throttle, strafe, boost to exhaustion/recharge, sustained braking to overheat/cool, and all dodge directions. Collide while dodging and confirm damage. At 30/60/120 FPS caps compare the same maneuver route and stopping/turning response. Check chase camera and visible pilot.
-3. **Damage and weapons together:** Capture shield-only hits, overflow to hull, shield remaining depleted, regeneration delay, slow recovery while danger persists, fast safe recovery and repair. Use both weapons against small/medium/massive asteroids and both enemies. Check manual shots off target, assisted aim, obstruction handling, fragmentation, pickups, critical impairment and temporary buff expiry.
-4. **Waves 1–5 and opportunity flow:** Play naturally through all waves while recording wave order and pacing. Confirm hidden duration, short breathing and persistent hazards. Approach the Salvage Cache without accepting, leave, return and explicitly accept; exercise success and failure on separate runs. Find the one Wave 3 depot, compare its offered subset/discount, purchase in range and reject an out-of-range purchase. Verify no second depot appears later or after suspension.
-5. **Wave 5 and Station 1:** Record wormhole warning, increasing pull, actual passage, hostile combat and station detection. Approach from varied heading/pitch, enter the marked corridor and observe assisted landing. Walk/run/interact through all five upgrade tracks, repair, Mica, contract board, beacon story reward, Save & Quit and launch. Record ordinary visit duration and affordability; test beacon reward cannot repeat.
-6. **Suspension and process restart:** Before saving, record ship/weapon, hull/shield, tiers, utility, credits, wave, contract/progress, depot/event flags and any unclaimed reward/buff. Save & Quit, restart the executable, Continue, compare state and relaunch into Wave 6. Close without making a new suspension and confirm consumed data is not offered again. Repeat with each contract type. Verify corrupt/truncated/version-mismatched saves fail closed and preserved unreadable accounts are not overwritten.
-7. **Waves 6–10 and Station 2:** Record stronger compositions and more aggressive enemies using the same roster. Complete the Distress event and choose its reward explicitly. Prove Vector Thrusters and Overdrive Cooling change handling/meter behavior, then deliberately replace one. Verify Wave 10 overlaps gravity, asteroid storm and enemy pressure with fair warnings and an achievable escape path. Enter Station 2, resolve success/failure contracts, use station services and suspension, then test the explicitly labelled abandonment/new-run route without death XP.
-8. **Death and restart:** Die before a station and after resuming a suspension. Verify run termination, one XP/score award, unlock progress, no reloadable consumed checkpoint, Results→hangar review, loadout selection and fresh Wave 1 state. Progress normally through weapon and agile-ship unlock thresholds and use both. Simulate failed account write and failed suspension invalidation with a disposable test environment; confirm launch remains gated until retry succeeds and XP is not awarded twice.
-9. **Controller end-to-end run:** Repeat the entire ten-wave route and station/save/restart loop using a physical controller, including each menu, flight capability, weapon, dodge direction, event acceptance, utility/reward choice and on-foot action. Record device/connection and test trigger hold/toggle plus disconnect/reconnect. Keyboard emulation is not a controller pass.
-10. **Presentation and performance:** Inspect imported hero skeleton/texture/animation, pilot pose/tail clearance, silhouette readability, ring transparency, collision boundaries, NPC/station activity and region transitions. Listen with all music layers and hazards overlapping. Capture CPU/GPU/frame-time traces during ordinary flight, dense scenes, Wave 5, docking, stations, Wave 10 and origin rebasing. Record median and tail frame times, spikes, resolution/settings and bottlenecks; compare 60 FPS baseline and reduced settings with higher-refresh targets. Reduced settings must preserve simulation, response and warning clarity.
-11. **Replay motivation:** After an ordinary death and after reaching the authored boundary, have the tester decide whether to launch immediately and record the reason. Identify friction in flight feel, pacing, rewards, progression, readability or downtime. This qualitative gate cannot be inferred from test assertions, code size or an attractive source preview.
-
-For every manual case, record PASS/FAIL/BLOCKED, observed result, exact build/hash, supporting screenshot/video/log/trace, defect reference and retest outcome. Keep unexecuted cells open. Phase 1 remains PARTIAL until the required integrated player experience and delivery artifacts meet both authoritative documents.
+Inspect animation/camera/feet, warning direction and non-color meaning, pickups, all UI scales and overlapping sounds. Follow [PERFORMANCE.md](PERFORMANCE.md) for measured performance. After death and the available boundary, record whether another run is immediately appealing and why. No automated count, package success or asset preview answers that question.

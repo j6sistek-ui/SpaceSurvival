@@ -428,7 +428,7 @@
   ],
   "errors": [],
   "limits": [
-    "No gameplay classes or map validation",
+    "No gameplay simulation or input validation",
     "No rendered visual approval",
     "No audio listening",
     "No player input or performance verification"
@@ -443,9 +443,16 @@
       99.77645874023438,
       92.08002853393555
     ],
+    "pilot_animation": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+    "pilot_seconds": 4.0,
     "materials": [
       "/Game/SpaceSurvival/Character/model-rigged_material_0.model-rigged_material_0"
     ],
     "source_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+  },
+  "scene": {
+    "map": "/Game/SpaceSurvival/Maps/Survival.Survival",
+    "data": "/Game/SpaceSurvival/Data/DA_Phase1.DA_Phase1",
+    "collision_and_skeletal_material_flags": "validated"
   }
 }
