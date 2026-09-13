@@ -376,8 +376,8 @@ void ASSHUD::DrawHUD()
                 InteractionHint = TEXT("REWARD SECURED / visit the Beacon Log");
                 HintColor = FLinearColor(1, .8f, .4f);
             }
-            Text(TEXT("W A S D / left stick: walk   |   Shift / X: run   |   Esc / Menu: shell"), Margin,
-                 H - 35 * Scale, .65f);
+            Text(TEXT("WASD / left stick: walk | Mouse / right stick: turn | Shift / X: run | Esc / Menu: shell"),
+                 Margin, H - 35 * Scale, .65f);
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
         {

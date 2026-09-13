@@ -5,6 +5,9 @@
 #include "SSShip.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/Engine.h"
@@ -244,6 +247,69 @@ bool FSSContractArrivalFeedback::RunTest(const FString &)
         F.Mode->Announce(TEXT("Acornaut: Good to be back."));
         TestFalse(TEXT("Actual pilot dialogue remains suppressed with subtitles off"), F.Mode->IsAnnouncementVisible());
     }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationChaseCamera, "SpaceSurvival.Integration.StationChaseCamera",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSStationChaseCamera::RunTest(const FString &)
+{
+    FSSDockingWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    F.Place(FVector(-150, 0, 220), FVector(1, 0, 0));
+    F.Mode->Tick(0.f);
+    F.Mode->Tick(3.01f);
+    auto *Walker = Cast<ASSWalker>(F.Controller->GetPawn());
+    if (!TestNotNull(TEXT("Actual station arrival supplies the third-person walker"), Walker))
+        return false;
+    const FRotator Arrival = F.Controller->GetControlRotation();
+    Walker->Move(FVector2D(0, 1), FVector2D(1, 1), true, .1f);
+    TestTrue(TEXT("Authored disembark ignores look and walking"),
+             Walker->IsDisembarking() && F.Controller->GetControlRotation().Equals(Arrival));
+    for (int32 Frame = 0; Frame < 25; ++Frame)
+        Walker->Tick(.1f);
+    for (int32 Rate : {30, 60, 144})
+    {
+        const float Dt = 1.f / Rate;
+        for (float Sign : {-1.f, 1.f})
+        {
+            F.Controller->SetControlRotation(FRotator::ZeroRotator);
+            for (int32 Frame = 0; Frame < Rate; ++Frame)
+                Walker->Move(FVector2D::ZeroVector, FVector2D(1, Sign * .5f), false, Dt);
+            const FRotator View = F.Controller->GetControlRotation().GetNormalized();
+            TestTrue(TEXT("Station yaw applies now rather than waiting in discarded RotationInput"),
+                     FMath::IsNearlyEqual(View.Yaw, 90.f, .01f));
+            TestTrue(TEXT("Both vertical directions turn equally across frame rates"),
+                     FMath::IsNearlyEqual(View.Pitch, -Sign * 35.f, .01f));
+            TestTrue(TEXT("The upright body faces camera yaw without camera pitch or roll"),
+                     Walker->GetActorRotation().Equals(FRotator(0, 90, 0), .01f));
+        }
+    }
+    F.Controller->SetControlRotation(FRotator(-12, 73, 0));
+    Walker->Move(FVector2D(0, -1), FVector2D::ZeroVector, false, 1.f / 60.f);
+    TestTrue(TEXT("Backward walking stays behind-facing rather than rotating toward the viewer"),
+             Walker->GetActorRotation().Equals(FRotator(0, 73, 0), .01f) &&
+                 FVector::DotProduct(Walker->GetPendingMovementInputVector(), Walker->GetActorForwardVector()) <
+                     -.99f &&
+                 !Walker->GetCharacterMovement()->bOrientRotationToMovement);
+    Walker->ConsumeMovementInputVector();
+    Walker->Move(FVector2D(1, 0), FVector2D::ZeroVector, true, 1.f / 60.f);
+    TestTrue(TEXT("Strafe uses the same view direction and retains run speed"),
+             FVector::DotProduct(Walker->GetPendingMovementInputVector(), Walker->GetActorRightVector()) > .99f &&
+                 Walker->GetCharacterMovement()->MaxWalkSpeed == 560.f);
+    Walker->ConsumeMovementInputVector();
+    Walker->Boom->TickComponent(1.f / 60.f, LEVELTICK_All, nullptr);
+    TestTrue(TEXT("Actual camera remains behind the facing body with collision protection enabled"),
+             FVector::DotProduct(Walker->Camera->GetComponentLocation() - Walker->GetActorLocation(),
+                                 Walker->GetActorForwardVector()) < -100.f &&
+                 Walker->Boom->bDoCollisionTest);
+    Walker->Move(FVector2D::ZeroVector, FVector2D(0, 100), false, 1.f);
+    TestEqual(TEXT("Downward view stops before flipping the camera"),
+              FRotator::NormalizeAxis(F.Controller->GetControlRotation().Pitch), -55.0);
+    Walker->Move(FVector2D::ZeroVector, FVector2D(0, -100), false, 1.f);
+    TestEqual(TEXT("Upward view remains bounded"), FRotator::NormalizeAxis(F.Controller->GetControlRotation().Pitch),
+              35.0);
     return true;
 }
 #endif

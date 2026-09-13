@@ -329,7 +329,7 @@ ASSWalker::ASSWalker()
 {
     PrimaryActorTick.bCanEverTick = true;
     bUseControllerRotationYaw = false;
-    GetCharacterMovement()->bOrientRotationToMovement = true;
+    GetCharacterMovement()->bOrientRotationToMovement = false;
     GetCharacterMovement()->RotationRate = FRotator(0, 540, 0);
     GetCharacterMovement()->MaxWalkSpeed = 320;
     Boom = CreateDefaultSubobject<USpringArmComponent>(TEXT("WalkCameraBoom"));
@@ -506,9 +506,18 @@ void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)
 {
     if (Disembarking)
         return;
-    AddControllerYawInput(Look.X * 90.f * Dt);
-    AddControllerPitchInput(-Look.Y * 70.f * Dt);
-    const FRotator Yaw(0, GetControlRotation().Yaw, 0);
+    if (!Controller || !FMath::IsFinite(Dt) || Dt <= 0.f || Look.ContainsNaN())
+        return;
+    // Input is polled after Super::PlayerTick has already consumed RotationInput.
+    // Apply this frame's station view directly before TickActor clears that buffer.
+    FRotator View = Controller->GetControlRotation();
+    View.Yaw = FRotator::NormalizeAxis(View.Yaw + Look.X * 90.f * Dt);
+    View.Pitch = FMath::Clamp(FRotator::NormalizeAxis(View.Pitch) - Look.Y * 70.f * Dt, -55.f, 35.f);
+    View.Roll = 0.f;
+    Controller->SetControlRotation(View);
+    const FRotator Yaw(0, View.Yaw, 0);
+    // Forward, back and strafe share this facing: the chase view stays behind the body.
+    SetActorRotation(Yaw);
     GetCharacterMovement()->MaxWalkSpeed = Run ? 560.f : 320.f;
     AddMovementInput(Yaw.Vector(), Direction.Y);
     AddMovementInput(FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y), Direction.X);

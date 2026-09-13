@@ -263,7 +263,9 @@ void ASSGameMode::ShowHangar()
     Hub->BuildHub(true);
     Hub->SetBayShip(SelectedShip);
     Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator::ZeroRotator);
-    UGameplayStatics::GetPlayerController(this, 0)->Possess(Walker);
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    PC->Possess(Walker);
+    PC->SetControlRotation(FRotator(-12.f, Hub->GetActorRotation().Yaw, 0.f));
     PreviousPhase = int32(GetGameInstance<USSGameInstance>()->Session.run.phase);
     PreviousWave = -1;
     ClosePanel();
@@ -376,7 +378,7 @@ void ASSGameMode::EnterStation()
     if (Ship)
         PC->bAutoManageActiveCameraTarget = false;
     PC->Possess(Walker);
-    PC->SetControlRotation(Hub->GetActorRotation());
+    PC->SetControlRotation(FRotator(-12.f, Hub->GetActorRotation().Yaw, 0.f));
     if (Ship)
     {
         // Match both the outgoing component and its actual current bone pose before
