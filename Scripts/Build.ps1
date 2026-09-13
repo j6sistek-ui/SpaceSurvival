@@ -57,6 +57,17 @@ try {
         & $uat BuildCookRun "-project=$project" -noP4 -platform=Win64 -clientconfig=Development '-ubtargs=-NoHotReloadFromIDE' -build -cook -stage -pak -iostore -prereqs -archive "-archivedirectory=$root\Artifacts\Windows" -utf8output 2>&1 | Tee-Object -FilePath $packageLog
         if ($LASTEXITCODE -ne 0) { throw "Package failed with exit code $LASTEXITCODE; inspect $packageLog." }
         & "$PSScriptRoot\BundlePrerequisites.ps1" -BuildLog $packageLog
+        $acknowledgements = Join-Path $root 'THIRD_PARTY.md'
+        $acknowledgementsOutput = Join-Path $root 'Artifacts\Windows\THIRD_PARTY.md'
+        if ((Test-Path -LiteralPath $acknowledgementsOutput) -and
+            ((Get-Item -LiteralPath $acknowledgementsOutput -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+            throw 'Refusing redirected acknowledgements output.'
+        }
+        Copy-Item -LiteralPath $acknowledgements -Destination $acknowledgementsOutput -Force
+        if ((Get-FileHash -LiteralPath $acknowledgements -Algorithm SHA256).Hash -ne
+            (Get-FileHash -LiteralPath $acknowledgementsOutput -Algorithm SHA256).Hash) {
+            throw 'Packaged acknowledgements differ from the project source.'
+        }
     }
     if ($LASTEXITCODE -ne 0) { throw "$Target failed with exit code $LASTEXITCODE" }
 } finally { Pop-Location }

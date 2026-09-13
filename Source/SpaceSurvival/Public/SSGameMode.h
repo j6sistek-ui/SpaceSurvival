@@ -29,7 +29,8 @@ enum class ESSPanel
     Reward,
     Depot,
     Launch,
-    Results
+    Results,
+    Acknowledgements
 };
 struct FSSMenuEntry
 {

@@ -121,6 +121,12 @@ def validate(source_root=ROOT, output_path=None):
     results["station_deck"] = {"license": deck_manifest["license"], "author": deck_manifest["author"],
                                "asset_url": deck_manifest["asset_url"], "source_maps": deck_manifest["maps"],
                                "runtime_visual_approval": False}
+    nasa_check = ROOT / "ThirdParty/NASA/MilkyWay2020/CheckSource.py"
+    if nasa_check.exists():
+        nasa = runpy.run_path(str(nasa_check))["check"]()
+        results["milky_way_sky"] = {"source_sha256": nasa["sha256"], "width": nasa["width"],
+                                     "height": nasa["height"], "credit": nasa["credit"],
+                                     "runtime_visual_approval": False}
     results["reviewed_source_references"] = validate_reviewed_references(ROOT.parent)
     if output_path is not None:
         output = Path(output_path)
@@ -169,6 +175,22 @@ def validate_reviewed_references(project_root):
         if "shader_sha256" in report:
             for relative, expected in report["shader_sha256"].items():
                 checked(base / relative, expected)  # HLSL remains exact raw bytes.
+
+    station_base = Path("ContentSource/StationShellCandidate")
+    station_report = project_root / station_base / "Report.json"
+    if station_report.exists():
+        station = json.loads(station_report.read_text(encoding="utf-8"))
+        checked(station_base / "Generate.py", station["source_sha256"])
+        checked(station_base / "UVRevision.json", station["uv_revision_sha256"])
+        for item in station["outputs"]:
+            checked(station_base / item["file"], item["sha256"])
+        for relative, expected in station["protected_sources"].items():
+            # Runtime sources in this authoring record describe the historical
+            # layout. The shell integration deliberately changes their visuals.
+            if not relative.startswith("Source/"):
+                checked(relative, expected)
+    else:
+        optional_absent.append((station_base / "Report.json").as_posix())
 
     tail = json.loads((project_root / "ContentSource/Animation/TailCandidateV2.json").read_text(encoding="utf-8"))
     checked(Path("ContentSource/Animation/TailCandidateV2.glb"), tail["sha256"])

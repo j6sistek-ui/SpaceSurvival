@@ -1,0 +1,96 @@
+{
+  "status": "OFFICIAL_DOWNLOAD_AND_NATIVE_SIZE_DECODE_VERIFIED",
+  "downloads": [
+    {
+      "file": "NASA-4851.html",
+      "url": "https://svs.gsfc.nasa.gov/4851/",
+      "final_url": "https://svs.gsfc.nasa.gov/4851/",
+      "bytes": 92423,
+      "sha256": "5016a3d3675e756e8b307a187f0cbae209fc9b5053f48506587c0abaf20cdb5d",
+      "last_modified": null,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "file": "NASA-SVS-reuse.html",
+      "url": "https://svs.gsfc.nasa.gov/help/",
+      "final_url": "https://svs.gsfc.nasa.gov/help/",
+      "bytes": 70292,
+      "sha256": "b1ae0f1e0b3d9e491382107209d2abbf86dabcfd9029c4e5b9c25af421e0513e",
+      "last_modified": null,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "file": "NASA-media-guidelines.html",
+      "url": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "final_url": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "bytes": 315453,
+      "sha256": "3234e73791b2aec6a2bf019eae7f6ec6fbfdf6fd89f1cd869f84b031fe70dd48",
+      "last_modified": null,
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "file": "milkyway_2020_8k.exr",
+      "url": "https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004851/milkyway_2020_8k.exr",
+      "final_url": "https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004851/milkyway_2020_8k.exr",
+      "bytes": 137307727,
+      "sha256": "361d1961647af073b3b3e4aea4fca85f15b3c9d915e0c8c4befb02520dadd10a",
+      "last_modified": "Wed, 11 Aug 2021 15:58:15 GMT",
+      "content_type": "image/aces"
+    },
+    {
+      "file": "ESA-Gaia-credit.html",
+      "url": "https://gea.esac.esa.int/archive/documentation/GDR2/Miscellaneous/sec_credit_and_citation_instructions/",
+      "bytes": 27776,
+      "sha256": "4b75a6ff52afe7245baec073ee06f9ec81ef274aab92aa53c3b909f4013f39a4"
+    }
+  ],
+  "source_header": {
+    "magic": 20000630,
+    "version": 2,
+    "dataWindow": [
+      0,
+      0,
+      8191,
+      4095
+    ],
+    "displayWindow": [
+      0,
+      0,
+      8191,
+      4095
+    ],
+    "channels": "RGB HALF",
+    "compression": "ZIP16"
+  },
+  "decoded_inspection": {
+    "source": "milkyway_2020_8k.exr",
+    "dimensions": [
+      8192,
+      4096
+    ],
+    "decoder": "Blender 5.1.2",
+    "input_color_space": "Linear Rec.709",
+    "linear_rgb_min": 0.0,
+    "linear_rgb_max": 1.0,
+    "linear_luminance_percentiles": {
+      "0": 0.0,
+      "25": 0.0008140411810018122,
+      "50": 0.0027181031182408333,
+      "75": 0.008017913438379765,
+      "90": 0.017457466572523117,
+      "95": 0.02626139484345913,
+      "99": 0.051769696176052094,
+      "99.9": 0.10302037000656128,
+      "100": 1.0
+    },
+    "pixels_any_channel_above_one_percent": 0.0,
+    "pixels_luminance_below_001_percent": 79.67016100883484,
+    "preview_conversion": "Native-size PNG RGB8; Blender Standard display transform, exposure 0, gamma 1; HDR highlights may clip. No artistic edits or engine rendering.",
+    "preview": {
+      "file": "milkyway_2020_8k_display0.png",
+      "bytes": 52500034,
+      "sha256": "e5d17bc576e8a7278ab314958efb36e68a9ce0e6616169e035ef683a9f7c039d"
+    }
+  },
+  "policy_snapshot_note": "Exact downloaded HTML and raw EXR retained under ignored .agent/local/SkyCandidate. Public source/license URLs remain authoritative; hashes identify the retrieval."
+}

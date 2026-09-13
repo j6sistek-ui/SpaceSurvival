@@ -12,6 +12,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Rendering/SkeletalMeshRenderData.h"
 #include "Rendering/SkinWeightVertexBuffer.h"
@@ -44,6 +45,194 @@ struct FSSIsolatedTestWorld
     }
 };
 } // namespace
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationPresentationCollision,
+                                 "SpaceSurvival.Integration.StationPresentationCollision",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSStationPresentationCollision::RunTest(const FString &)
+{
+    const TCHAR *ShellPath = TEXT("/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1.SM_StationShellCandidateV1");
+    struct FBoundary
+    {
+        FVector Position, Scale;
+    };
+    TArray<FBoundary> Boundaries = {{FVector(0, -1400, 170), FVector(34, .3f, 4.5f)},
+                                    {FVector(0, 1400, 170), FVector(34, .3f, 4.5f)},
+                                    {FVector(-1700, -1050, 350), FVector(.5f, 7, 8)},
+                                    {FVector(-1700, 1050, 350), FVector(.5f, 7, 8)},
+                                    {FVector(1700, 0, 100), FVector(.3f, 28, 2)}};
+    for (float X : {-1200.f, -600.f, 0.f, 600.f, 1200.f})
+        for (float Y : {-1400.f, 1400.f})
+            Boundaries.Add({FVector(X, Y, 500), FVector(.5f, .5f, 10)});
+
+    for (bool Home : {true, false})
+        for (bool UseShell : {true, false})
+        {
+            // Fresh actor/world per branch: BuildHub appends components. No GI Init or save APIs.
+            FSSIsolatedTestWorld Fixture;
+            if (!TestNotNull(TEXT("Create isolated station collision world"), Fixture.World))
+                return false;
+            auto *Hub = Fixture.World->SpawnActor<ASSStation>(FVector(16000, -8000, 5000), FRotator(0, 75, 0));
+            if (!TestNotNull(TEXT("Create transformed station"), Hub))
+                return false;
+            const FString Label = FString::Printf(TEXT("%s / %s"), Home ? TEXT("Home") : TEXT("Station"),
+                                                  UseShell ? TEXT("shell") : TEXT("fallback"));
+            UStaticMesh *ExpectedShell = nullptr;
+            if (UseShell)
+            {
+                TestEqual(Label + TEXT(" uses the reviewed default shell path"), Hub->ShellAsset.ToString(),
+                          FString(ShellPath));
+                ExpectedShell = Hub->ShellAsset.LoadSynchronous();
+                if (!TestNotNull(Label + TEXT(" loads the actual candidate; no silent fallback pass"), ExpectedShell))
+                    return false;
+            }
+            else
+                Hub->ShellAsset.Reset(); // Actor-local seam; do not rename/delete any project asset.
+            Hub->BuildHub(Home);
+            TestEqual(Label + TEXT(" preserves hub context"), Hub->IsHome(), Home);
+
+            TInlineComponentArray<UStaticMeshComponent *> Components;
+            Hub->GetComponents(Components);
+            TArray<UStaticMeshComponent *> SolidCubes;
+            UStaticMeshComponent *Shell = nullptr, *Floor = nullptr;
+            int32 ShellCount = 0;
+            for (auto *Component : Components)
+            {
+                if (Component->GetFName() == TEXT("StationShell"))
+                {
+                    Shell = Component;
+                    ++ShellCount;
+                }
+                if (Cast<UInstancedStaticMeshComponent>(Component) || !Component->GetStaticMesh() ||
+                    Component->GetStaticMesh()->GetPathName() != TEXT("/Engine/BasicShapes/Cube.Cube") ||
+                    Component->GetCollisionEnabled() != ECollisionEnabled::QueryAndPhysics)
+                    continue;
+                SolidCubes.Add(Component);
+                if (Component->GetRelativeLocation().Equals(FVector(0, 0, -60), .001))
+                    Floor = Component;
+            }
+            TestEqual(Label + TEXT(" creates a shell only when resolved"), ShellCount, UseShell ? 1 : 0);
+            if (UseShell)
+            {
+                if (!TestNotNull(Label + TEXT(" exposes the shell component"), Shell))
+                    return false;
+                TestTrue(Label + TEXT(" keeps shell presentation out of collision, overlaps and navigation"),
+                         Shell->GetStaticMesh() == ExpectedShell &&
+                             Shell->GetAttachParent() == Hub->GetRootComponent() &&
+                             Shell->GetRelativeTransform().Equals(FTransform::Identity, .001) &&
+                             Shell->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
+                             !Shell->GetGenerateOverlapEvents() && !Shell->CanEverAffectNavigation());
+            }
+            TestEqual(Label + TEXT(" keeps the deck plus all 15 physical boundary cubes"), SolidCubes.Num(), 16);
+            if (!TestNotNull(Label + TEXT(" retains the solid deck"), Floor))
+                return false;
+            TestTrue(Label + TEXT(" keeps the deck visible at its original scale"),
+                     Floor->IsVisible() && Floor->GetRelativeScale3D().Equals(FVector(34, 28, 1), .001));
+            for (const FBoundary &Expected : Boundaries)
+            {
+                UStaticMeshComponent *Found = nullptr;
+                int32 Matches = 0;
+                for (auto *Cube : SolidCubes)
+                    if (Cube->GetRelativeLocation().Equals(Expected.Position, .001))
+                    {
+                        Found = Cube;
+                        ++Matches;
+                    }
+                TestEqual(Label + TEXT(" has one physical proxy at each original boundary"), Matches, 1);
+                if (!TestNotNull(Label + TEXT(" retains each boundary proxy"), Found))
+                    return false;
+                // Compare every stored channel; ECC_MAX also includes a nonserialized sentinel.
+                const bool BlocksAllChannels =
+                    Found->GetCollisionResponseToChannels() == FCollisionResponseContainer(ECR_Block);
+                TestTrue(Label + TEXT(" preserves boundary geometry and collision while changing only presentation"),
+                         Found->GetRelativeScale3D().Equals(Expected.Scale, .001) &&
+                             Found->GetRelativeRotation().IsNearlyZero(.001) &&
+                             Found->GetCollisionObjectType() == ECC_WorldStatic && BlocksAllChannels &&
+                             Found->IsVisible() == !UseShell && bool(Found->CastShadow) == !UseShell);
+            }
+
+            TInlineComponentArray<UInstancedStaticMeshComponent *> Batches;
+            Hub->GetComponents(Batches);
+            auto BatchCount = [&Batches](const TCHAR *Name)
+            {
+                int32 Count = 0;
+                for (auto *Batch : Batches)
+                    if (Batch->GetFName() == Name)
+                        Count += Batch->GetInstanceCount();
+                return Count;
+            };
+            TestEqual(Label + TEXT(" retains all textured walking floor tiles"), BatchCount(TEXT("TexturedDeckPanels")),
+                      36);
+            TestEqual(Label + TEXT(" removes only the 24 duplicate wall/canopy panels"), BatchCount(TEXT("DeckPanels")),
+                      UseShell ? 0 : 24);
+            TestEqual(Label + TEXT(" preserves runway guides when canopy/perimeter copies are removed"),
+                      BatchCount(TEXT("DeckGuides")), UseShell ? 14 : 28);
+            TestEqual(Label + TEXT(" preserves cradle, pallets and station-only service dressing"),
+                      BatchCount(TEXT("ServiceStructure")), (Home ? 9 : 13) + (UseShell ? 0 : 19));
+
+            const FTransform Transform = Hub->GetActorTransform();
+            auto WorldPoint = [&Transform](FVector Local) { return Transform.TransformPosition(Local); };
+            FCollisionObjectQueryParams StaticObjects(ECC_WorldStatic);
+            FCollisionQueryParams Query(SCENE_QUERY_STAT(SSStationPresentationCollision), false);
+            FHitResult Hit;
+            // Positive floor/boundary queries prevent a missing physics scene from passing the clear corridor.
+            for (FVector Point : {FVector(-300, 0, 180), FVector(650, -350, 180)})
+            {
+                const bool Blocked = Fixture.World->LineTraceSingleByObjectType(
+                    Hit, WorldPoint(Point), WorldPoint(FVector(Point.X, Point.Y, -200)), StaticObjects, Query);
+                TestTrue(Label + TEXT(" resolves the original deck, not a cosmetic replacement"),
+                         Blocked && Hit.GetComponent() == Floor &&
+                             FMath::IsNearlyEqual(Transform.InverseTransformPosition(Hit.ImpactPoint).Z, -10.0, .1));
+            }
+            for (float Side : {-1.f, 1.f})
+            {
+                TestTrue(Label + TEXT(" side walls still block"),
+                         Fixture.World->LineTraceSingleByObjectType(Hit, WorldPoint(FVector(-300, Side * 1300, 220)),
+                                                                    WorldPoint(FVector(-300, Side * 1500, 220)),
+                                                                    StaticObjects, Query) &&
+                             Hit.GetActor() == Hub &&
+                             SolidCubes.Contains(Cast<UStaticMeshComponent>(Hit.GetComponent())));
+                TestTrue(Label + TEXT(" inbound wings still block beside the open corridor"),
+                         Fixture.World->LineTraceSingleByObjectType(Hit, WorldPoint(FVector(-1900, Side * 1050, 350)),
+                                                                    WorldPoint(FVector(-1500, Side * 1050, 350)),
+                                                                    StaticObjects, Query) &&
+                             Hit.GetActor() == Hub &&
+                             SolidCubes.Contains(Cast<UStaticMeshComponent>(Hit.GetComponent())));
+            }
+            TestFalse(Label + TEXT(" admits the existing 105 cm ship envelope through the real approach corridor"),
+                      Fixture.World->SweepSingleByObjectType(
+                          Hit, Hub->DockPosition() - Hub->GetActorForwardVector() * 3000.f,
+                          Hub->DockPosition() - Hub->GetActorForwardVector() * 1250.f, FQuat::Identity, StaticObjects,
+                          FCollisionShape::MakeSphere(105.f), Query));
+
+            struct FServiceExpectation
+            {
+                FVector Position;
+                ESSPanel HomePanel, StationPanel;
+            };
+            const FServiceExpectation Services[] = {
+                {FVector(200, -1000, 0), ESSPanel::Weapon, ESSPanel::Upgrades},
+                {FVector(-800, -1000, 0), ESSPanel::Ship, ESSPanel::Repair},
+                {FVector(-1100, 850, 0), ESSPanel::Progression, ESSPanel::Contracts},
+                {FVector(0, 1000, 0), ESSPanel::Settings, ESSPanel::Save},
+                {FVector(950, -450, 0), ESSPanel::Launch, ESSPanel::Launch},
+                {FVector(1000, 1000, 0), ESSPanel::None, ESSPanel::Vendor},
+                {FVector(-1400, 0, 0), ESSPanel::None, ESSPanel::Reward}};
+            for (const FServiceExpectation &Expected : Services)
+            {
+                FString ServiceLabel;
+                const ESSPanel Panel = Hub->NearestService(WorldPoint(Expected.Position), ServiceLabel);
+                TestTrue(Label + TEXT(" retains the actual home/station service at its original world anchor"),
+                         Panel == (Home ? Expected.HomePanel : Expected.StationPanel));
+                if (Panel != ESSPanel::None)
+                    TestFalse(Label + TEXT(" retains its service label"), ServiceLabel.IsEmpty());
+            }
+            FString NoServiceLabel;
+            TestTrue(Label + TEXT(" does not add a service outside the walking hub"),
+                     Hub->NearestService(WorldPoint(FVector(0, -2000, 0)), NoServiceLabel) == ESSPanel::None);
+        }
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationWalkerRecovery, "SpaceSurvival.Integration.StationWalkerRecovery",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

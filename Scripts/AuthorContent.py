@@ -497,6 +497,7 @@ class Author:
         self.stage("Materials", self.palette)
         self.stage("Station deck material", lambda: source_module("ss_station_deck", ROOT / "Scripts/AuthorStationDeck.py").author())
         self.stage("Cinematic space material", lambda: source_module("ss_space_panorama", ROOT / "Scripts/AuthorSpacePanorama.py").author())
+        self.stage("Detailed Milky Way sky", lambda: source_module("ss_milky_way", ROOT / "Scripts/AuthorMilkyWay.py").main())
         for item in self.mesh_manifest["assets"]:
             self.stage(item["name"], lambda asset=item: self.static_mesh(asset))
         self.stage("Photographic asteroid surfaces", lambda: source_module("ss_rock_photographic", ROOT / "Scripts/AuthorRockPhotographic.py").main(adopt_existing_meshes=True))
@@ -505,6 +506,7 @@ class Author:
         self.stage("Authored Acorn ship", lambda: source_module("ss_acorn_ship", ROOT / "Scripts/AuthorAcornShip.py").main())
         self.stage("Fitted starter grips", lambda: source_module("ss_grip_fit", ROOT / "Scripts/AuthorGripFit.py").main())
         self.stage("Swift hull", lambda: source_module("ss_swift", ROOT / "Scripts/AuthorSwiftCandidate.py").main())
+        self.stage("Station shell", lambda: source_module("ss_station_shell", ROOT / "Scripts/AuthorStationShell.py").main())
         self.stage("Preserved Acornaut import", self.hero)
         self.stage("Authored pilot animation", self.pilot)
         self.stage("Authored disembark animation", self.disembark)

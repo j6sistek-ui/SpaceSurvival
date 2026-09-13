@@ -142,6 +142,7 @@ def main():
         checked(item["name"], lambda item=item: validate_mesh(item))
     checked("Station deck material", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateStationDeck.py"), run_name="__main__"))
     checked("Space panorama", validate_panorama)
+    checked("Detailed Milky Way sky", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateMilkyWay.py"))["main"]())
     checked("Photographic asteroid surfaces", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateRockPhotographic.py"))["main"](verify_adoption=True))
     checked("Enemy meshes and selection", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateEnemyCandidates.py"))["main"](verify_adoption=True))
     checked("Field meshes and selection", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateFieldCandidatesV3.py"))["main"](verify_adoption=True))
@@ -150,6 +151,7 @@ def main():
     checked("Reviewed tail repair", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateTailRepair.py"), run_name="__main__"))
     checked("Fitted starter grips", lambda: runpy.run_path(str(ROOT / "Scripts/AuthorGripFit.py"))["main"](validate_only=True))
     checked("Swift hull", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateSwiftCandidate.py"))["main"]())
+    checked("Station shell", lambda: runpy.run_path(str(ROOT / "Scripts/ValidateStationShell.py"))["main"]())
     checked("Paired pilot and release", lambda: runpy.run_path(str(ROOT / "Scripts/ValidatePilotGripFit.py"))["main"]())
     def validate_scene():
         runpy.run_path(str(ROOT / "Scripts/ValidateScene.py"), run_name="__main__")

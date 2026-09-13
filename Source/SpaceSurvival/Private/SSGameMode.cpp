@@ -136,7 +136,11 @@ void ASSGameMode::BeginPlay()
         if (It->ActorHasTag(TEXT("SpaceBackdrop")))
         {
             SpaceBackdrop = *It;
-            SpaceMaterial = It->GetStaticMeshComponent()->CreateAndSetMaterialInstanceDynamic(0);
+            auto *BackdropMesh = It->GetStaticMeshComponent();
+            if (auto *DetailedSky = LoadObject<UMaterialInterface>(
+                    nullptr, TEXT("/Game/SpaceSurvival/Materials/MI_SpaceMilkyWay.MI_SpaceMilkyWay")))
+                BackdropMesh->SetMaterial(0, DetailedSky);
+            SpaceMaterial = BackdropMesh->CreateAndSetMaterialInstanceDynamic(0);
         }
         if (It->ActorHasTag(TEXT("SpaceStars")))
             SpaceStars = *It;
@@ -727,9 +731,18 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         AddEntry(TEXT("Graphics"), 10);
         AddEntry(TEXT("Audio"), 11);
         AddEntry(TEXT("Controls"), 12);
+        AddEntry(TEXT("Asset acknowledgements"), 9);
         AddEntry(FString::Printf(TEXT("Subtitles: %s"), S.settings.subtitles ? TEXT("On") : TEXT("Off")), 13);
         AddEntry(FString::Printf(TEXT("UI scale: %.0f%%"), S.settings.uiScale * 100), 14);
         AddEntry(FString::Printf(TEXT("Camera shake: %s"), S.settings.cameraShake ? TEXT("On") : TEXT("Off")), 15);
+        break;
+    case ESSPanel::Acknowledgements:
+        PanelTitle = TEXT("ASSET ACKNOWLEDGEMENTS");
+        PanelDetail = TEXT("Milky Way sky\nNASA/Goddard Space Flight Center Scientific Visualization Studio.\n"
+                           "Gaia DR2: ESA/Gaia/DPAC.\n\n"
+                           "Rock Face / Poly Haven\nPhotography: Greg Zaal. Processing: Dario Barresi. CC0.\n\n"
+                           "Metal Plate / Poly Haven\nRob Tuytel. CC0.\n\n"
+                           "Full source and reuse notes accompany this build in THIRD_PARTY.md.");
         break;
     case ESSPanel::Graphics:
         PanelTitle = TEXT("GRAPHICS");
@@ -967,6 +980,11 @@ void ASSGameMode::ActivateEntry(int32 Index)
     {
         DeathPersisted = GI->PersistDeath();
         OpenPanel(ESSPanel::Results);
+        return;
+    }
+    if (A == 9)
+    {
+        OpenPanel(ESSPanel::Acknowledgements);
         return;
     }
     if (A == 10)

@@ -2,6 +2,8 @@
 
 **Current archive: Package 11, source `6912684223f4a93f4010cd12201aee7fb42395f3`.** The package and normal-timing station/endgame fixtures passed with the boundaries in [current state](PROJECT_STATE.md) and the [package receipt](validation/2026-09-13-windows-integrated-presentation-package.json). Phase 1 remains PARTIAL; see the physical playtest and presentation gaps before treating the build as accepted.
 
+The newer station/8K-sky/HUD source has a successful Editor build, 25 clean tests and rendered Station 1 evidence, but is not in Package 11. The next package also copies root `THIRD_PARTY.md` byte-exact beside the launcher and preserves existing engine notices.
+
 ## Tooling and repository
 
 Run commands from the repository root, currently `C:/Users/j6sis/SpaceSurvival`.
@@ -41,8 +43,8 @@ Each target accepts `-EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'`. Close pr
 
 - **Editor** invokes UnrealBuildTool for SpaceSurvivalEditor, Win64 Development.
 - **Content** imports canonical sources and authors the tuning asset and Survival map. Inspect `Saved/Validation/ContentImport.json`; the successful status is `IMPORTED_NOT_GAMEPLAY_VALIDATED` with no errors. Existing authored assets are preserved, and partial/wrong-type imports are rejected. Read [CONTENT_PIPELINE.md](CONTENT_PIPELINE.md) before deliberate reimport.
-- **Validate** starts a fresh rendering-enabled editor process and checks persisted assets, map/GameMode, fixed rosters/selections, backdrop collision, mesh material usage and compiled field shader statistics. NullRHI cannot supply those shader statistics and is not used for this target. The full rendering-enabled readback passed at 11:48:03 UTC in `.agent/local/VisualIntegrationValidate2.log`; the preceding no-change content rerun preserved all 110 asset files byte-for-byte.
-- **Test** remains NullRHI and runs the SpaceSurvival automation prefix into Artifacts/UnrealTests/index.json/index.html. It requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every state Success; process exit 0 alone is insufficient. The current 24-test result passed at 12:00:54 UTC and is retained in `.agent/local/ChaseAim-tests.json`. Earlier authored-exit contact failures and their correction remain in [VALIDATION.md](VALIDATION.md). Shortened/assisted fixtures do not establish rendering, balance, physical input or performance.
+- **Validate** starts a fresh rendering-enabled editor process and checks persisted assets, map/GameMode, fixed rosters/selections, backdrop collision, mesh material usage and compiled field shader statistics. NullRHI cannot supply those shader statistics and is not used for this target. The latest full rendering-enabled readback passed through 13:44:39 UTC in `.agent/local/SkyStation-Validate.log`, with all 120 content files unchanged. The prior 110-asset Package 11 source run remains historical.
+- **Test** remains NullRHI and runs the SpaceSurvival automation prefix into Artifacts/UnrealTests/index.json/index.html. It requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every state Success; process exit 0 alone is insufficient. The latest 25-test result passed at 13:43:51 UTC and is retained in `.agent/local/SkyStation-tests.json`; the prior 24-test Package 11 source result remains in `.agent/local/ChaseAim-tests.json`. Earlier authored-exit contact failures and their correction remain in [VALIDATION.md](VALIDATION.md). Shortened/assisted fixtures do not establish rendering, balance, physical input or performance.
 
 `Scripts/ValidateScene.py`, executed by the editor Python runner, checks saved background collision and skeletal/instanced-material usage. Its `--repair` option intentionally changes those owned assets; omit it for readback validation. Results go to `Saved/Validation/SceneValidation.json`. The latest repair/readback is recorded in [VALIDATION.md](VALIDATION.md).
 

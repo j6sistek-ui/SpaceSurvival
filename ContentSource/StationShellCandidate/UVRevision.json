@@ -1,0 +1,63 @@
+{
+  "status": "UV_ONLY_REVISION_REQUIRES_REIMPORT_AND_NATIVE_TANGENT_VALIDATION",
+  "utc": "2026-09-13T12:50:55.375689+00:00",
+  "projection": "Object-local dominant geometric face axis,1 metre repeat, explicit per-triangle corner UVs. Box-axis seams intentional. Editable base-mesh UV layer StationBox1m; export regenerates evaluated-face coordinates after bevels.",
+  "prior_obj_sha256": "c3d97c0febf5549c628df03349b50039a83b70e438c1b4f5f1e07b0c7e877e3b",
+  "obj_sha256": "00170f94119324892042335420f5563a15c9bf2c9f5690bed901f52153f14783",
+  "prior_blend_sha256": "650ffac815a8608f5181dd30016d3ce15ccdefddb2e06323ea115a582bd2a11a",
+  "blend_sha256": "c0bd61b56f0bbe350fa6f9a7fd8f5fd871bc3a6cac6c17ed000c7c6d3eaaf248",
+  "exact_geometry_normal_material_record_sha256": "c3f45f946eea6ede6c06983638cd7ba408bb586644ad62f04d4c989521d0a8f7",
+  "geometry_normal_material_records_unchanged": 384513,
+  "uv_corner_records": 255540,
+  "generator_sha256": "995db41e3c0b79726928dde75f608f3effadf0a2f3f050825d22faa36fac6ec0",
+  "executed_uv_helper_sha256": "49823e090056920bea3b22d16154c57ed27aae720a35fdf8d1671917cce9d648",
+  "prior_import": [
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1",
+      "bytes": 1178488,
+      "sha256": "2eb899c5b6d090e08adb702c2f95591127c6063ebb2f14219099677f36f11c38"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GraphiteAlloy",
+      "bytes": 11931,
+      "sha256": "052140620d723a9f69006428995f85cd99ebde51432b7495a86733650234af4f"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_BlueGreyPanels",
+      "bytes": 11525,
+      "sha256": "5c7f9ecb6462403fd8593bb47880cc30af6e3e09966be842f4096592f6128b09"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_MachinedEdges",
+      "bytes": 11313,
+      "sha256": "28390b20a7dc2981a67310da48441033d277976961573e79b68ba741d5b4d672"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_SafetyOchre",
+      "bytes": 12022,
+      "sha256": "91cb4172ebe61f559f59bae242329685de03d71527d28cc4d196b8b912877f82"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_RecessAndRadiator",
+      "bytes": 10333,
+      "sha256": "c2486e535a52f2b65268ba436ae4781fee5be221ea9e47d40d5d5745ea4f08b2"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GuideLight",
+      "bytes": 11993,
+      "sha256": "f450aea7c0f5875269eba5212c07b163d7397fa373d2d0d893f19fa4ca76a89c"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_WorkLight",
+      "bytes": 11890,
+      "sha256": "061706a14aa668652ec8bb3185c17e6dc692df295562e34bb441d56fe130be1b"
+    }
+  ],
+  "prior_warning": "Unreal reported degenerate tangent bases for the UV-less mesh. This warning is unresolved until reimport/fresh native validation.",
+  "limits": [
+    "No geometry, triangle ordering, normals, materials, source render pixels, collision or bounds changed.",
+    "No source renders repeated because all displayed materials are UV-independent. Historical images remain exactly identified.",
+    "Full precision UV storage is required on import to retain small bevel charts at metre-scale coordinates.",
+    "This authoring pass executes the promoted generator UV helpers, not its full render main()."
+  ]
+}

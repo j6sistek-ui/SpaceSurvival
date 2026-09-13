@@ -1,0 +1,244 @@
+{
+  "authored_parts": 401,
+  "evaluated_triangles": 85180,
+  "material_triangles": {
+    "SSS_GraphiteAlloy": 10008,
+    "SSS_MachinedEdges": 35316,
+    "SSS_SafetyOchre": 6392,
+    "SSS_BlueGreyPanels": 9776,
+    "SSS_RecessAndRadiator": 18424,
+    "SSS_GuideLight": 4888,
+    "SSS_WorkLight": 376
+  },
+  "bounds_cm": [
+    [
+      -1749.6000289916992,
+      -1546.0000038146973,
+      -115.49999713897705
+    ],
+    [
+      1715.999984741211,
+      1546.0000038146973,
+      1000.0
+    ]
+  ],
+  "corridor_conflicting_parts": [],
+  "service_envelope_conflicting_parts": [],
+  "materials": [
+    {
+      "name": "SSS_GraphiteAlloy",
+      "base_color": [
+        0.04800000041723251,
+        0.06800000369548798,
+        0.08299999684095383
+      ],
+      "metallic": 0.7200000286102295,
+      "roughness": 0.3100000023841858,
+      "emission_strength": 0.0
+    },
+    {
+      "name": "SSS_BlueGreyPanels",
+      "base_color": [
+        0.18000000715255737,
+        0.23499999940395355,
+        0.26499998569488525
+      ],
+      "metallic": 0.41999998688697815,
+      "roughness": 0.3700000047683716,
+      "emission_strength": 0.0
+    },
+    {
+      "name": "SSS_MachinedEdges",
+      "base_color": [
+        0.36000001430511475,
+        0.4000000059604645,
+        0.41999998688697815
+      ],
+      "metallic": 0.8399999737739563,
+      "roughness": 0.25,
+      "emission_strength": 0.0
+    },
+    {
+      "name": "SSS_SafetyOchre",
+      "base_color": [
+        0.699999988079071,
+        0.3199999928474426,
+        0.054999999701976776
+      ],
+      "metallic": 0.15000000596046448,
+      "roughness": 0.4099999964237213,
+      "emission_strength": 0.0
+    },
+    {
+      "name": "SSS_RecessAndRadiator",
+      "base_color": [
+        0.012000000104308128,
+        0.023000000044703484,
+        0.02800000086426735
+      ],
+      "metallic": 0.6499999761581421,
+      "roughness": 0.4300000071525574,
+      "emission_strength": 0.0
+    },
+    {
+      "name": "SSS_GuideLight",
+      "base_color": [
+        0.07500000298023224,
+        0.47999998927116394,
+        0.6299999952316284
+      ],
+      "metallic": 0.05000000074505806,
+      "roughness": 0.25,
+      "emission_strength": 2.799999952316284
+    },
+    {
+      "name": "SSS_WorkLight",
+      "base_color": [
+        1.0,
+        0.6100000143051147,
+        0.27000001072883606
+      ],
+      "metallic": 0.0,
+      "roughness": 0.23999999463558197,
+      "emission_strength": 2.200000047683716
+    }
+  ],
+  "views": [
+    {
+      "file": "Approach.png",
+      "camera_m": [
+        -47,
+        -7,
+        9
+      ],
+      "target_m": [
+        0,
+        0,
+        3.3
+      ],
+      "lens_mm": 38,
+      "dimensions": [
+        1600,
+        1000
+      ],
+      "sha256": "59ab03054713683fe96fafcb9bbce215bf32e12e6269728cd529d01f6bf19e27"
+    },
+    {
+      "file": "Interior.png",
+      "camera_m": [
+        -14,
+        -5,
+        2.1
+      ],
+      "target_m": [
+        8,
+        4.5,
+        3.8
+      ],
+      "lens_mm": 24,
+      "dimensions": [
+        1600,
+        1000
+      ],
+      "sha256": "642be2c31005eefb9b056d1a1cc62027d4b26027ea3f6ae4c024f1d21da0ba0b"
+    },
+    {
+      "file": "Wide.png",
+      "camera_m": [
+        -37,
+        -39,
+        26
+      ],
+      "target_m": [
+        0,
+        0,
+        3.3
+      ],
+      "lens_mm": 43,
+      "dimensions": [
+        1600,
+        1000
+      ],
+      "sha256": "c1785dc651b53e2f710eb507765cc2da85dfd544f2b3b491607b382defeabee1"
+    }
+  ],
+  "status": "SOURCE_ONLY_STATION_SHELL_CANDIDATE_NOT_IMPORTED_OR_ACCEPTED",
+  "blender": "5.1.2",
+  "render_device": "Cycles CPU / 8 threads / 36 samples",
+  "source_sha256": "63184a1a247fcc45f8fbf11eff1868da6f3df6a84999eb5f186afbc5a1fa6482",
+  "protected_sources": {
+    "Source/SpaceSurvival/Private/SSStation.cpp": "10cf59d7bd373c208bbda8a27022f17b8aeff79b48d8fbabc1edafc1fe80e16a",
+    "Source/SpaceSurvival/Public/SSStation.h": "1c107a5e73b9b4f7a4f7925da1cd2aa58622a25699e428a447d75ad07de2c46a",
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource/AcornShipGripFit/AcornShipGripFit.blend": "bcd8d19b6408e7f4133d9fb34e7cdd705b2695cfbe7324bb5e754fd14648acb9",
+    "ContentSource/ThirdParty/PolyHaven/MetalPlate/metal_plate_diff_2k.png": "8d56227b8c3b806107df7ffb91e439b7e383943827096ed911b29a7108ca7a01"
+  },
+  "deck_contract_cm": {
+    "size": [
+      3400,
+      2800,
+      100
+    ],
+    "center": [
+      0,
+      0,
+      -60
+    ],
+    "collision_top_z": -10,
+    "exported": false
+  },
+  "corridor_contract_cm": {
+    "x_slab": [
+      -1725,
+      -1675
+    ],
+    "y_open": [
+      -700,
+      700
+    ],
+    "z_open_above": -10,
+    "upper_limit": null,
+    "test": "Conservative evaluated part AABB rejection in the open inbound slab above deck; no lintel added."
+  },
+  "service_envelope_test": "No evaluated shell triangle overlaps a 180x180x280 cm envelope (AABB broad phase, triangle/AABB separating-axis narrow phase) around any of the seven unchanged service anchors. Mica/props remain context-owned, unchanged.",
+  "collision": "Candidate exports no collision mesh. Runtime would retain existing blocking components and use this as NoCollision presentation only. No runtime integration occurred.",
+  "limits": [
+    "Authored shell only; no room, service, mechanic, landing path, Mica or character change.",
+    "Reference ship and exact-sized console boxes are transient context and excluded from .blend and OBJ; no pilot is embedded.",
+    "Deck texture appears only in transient context, with approximate Blender tint; existing Unreal shader and runtime lighting are not reproduced exactly.",
+    "Material bevels/PBR values are source-authoring evidence; no native lighting, shadows, LOD, draw cost, collision or first-person/interact visibility verification.",
+    "No owner acceptance or near-alpha-quality claim."
+  ],
+  "outputs": [
+    {
+      "file": "Approach.png",
+      "bytes": 1786679,
+      "sha256": "59ab03054713683fe96fafcb9bbce215bf32e12e6269728cd529d01f6bf19e27"
+    },
+    {
+      "file": "Interior.png",
+      "bytes": 1987916,
+      "sha256": "642be2c31005eefb9b056d1a1cc62027d4b26027ea3f6ae4c024f1d21da0ba0b"
+    },
+    {
+      "file": "StationShellCandidate.blend",
+      "bytes": 253577,
+      "sha256": "650ffac815a8608f5181dd30016d3ce15ccdefddb2e06323ea115a582bd2a11a"
+    },
+    {
+      "file": "StationShellCandidate.mtl",
+      "bytes": 807,
+      "sha256": "51f283ecd82df91b870bbd03518874ee84280d0134acd602244f55c249aff712"
+    },
+    {
+      "file": "StationShellCandidate.obj",
+      "bytes": 14124475,
+      "sha256": "c3d97c0febf5549c628df03349b50039a83b70e438c1b4f5f1e07b0c7e877e3b"
+    },
+    {
+      "file": "Wide.png",
+      "bytes": 2118687,
+      "sha256": "c1785dc651b53e2f710eb507765cc2da85dfd544f2b3b491607b382defeabee1"
+    }
+  ]
+}

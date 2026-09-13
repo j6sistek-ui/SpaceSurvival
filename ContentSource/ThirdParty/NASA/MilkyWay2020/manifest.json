@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "status": "NATIVE_EVALUATION_CANDIDATE_NOT_OWNER_ACCEPTANCE",
+  "name": "NASA SVS Milky Way 2020 background",
+  "file": "MilkyWay2020_8k.png",
+  "width": 8192,
+  "height": 4096,
+  "bytes": 52500034,
+  "sha256": "e5d17bc576e8a7278ab314958efb36e68a9ce0e6616169e035ef683a9f7c039d",
+  "bit_depth": 8,
+  "channels": "RGB",
+  "display_color_space": "sRGB via Blender Standard, exposure 0, gamma 1",
+  "license": "NASA-SVS-Public-Domain-With-Gaia-Credit",
+  "credit": "NASA/Goddard Space Flight Center Scientific Visualization Studio. Gaia DR2: ESA/Gaia/DPAC.",
+  "source": {
+    "file": "milkyway_2020_8k.exr",
+    "url": "https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004851/milkyway_2020_8k.exr",
+    "final_url": "https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004851/milkyway_2020_8k.exr",
+    "bytes": 137307727,
+    "sha256": "361d1961647af073b3b3e4aea4fca85f15b3c9d915e0c8c4befb02520dadd10a",
+    "last_modified": "Wed, 11 Aug 2021 15:58:15 GMT",
+    "content_type": "image/aces"
+  },
+  "source_page": "https://svs.gsfc.nasa.gov/4851/",
+  "source_page_released": "2020-09-09",
+  "source_page_updated": "2022-08-12",
+  "retrieved_utc": "2026-09-13T12:55:35.283967+00:00",
+  "mapping": "Plate carree/equirectangular celestial ICRF/J2000; RA 0h centered, RA increases leftward; designed for spherical mapping.",
+  "source_kind": "Catalog-derived visualization, 1.7-billion-star source catalog family. Bright Hipparcos/Tycho foreground omitted; faint Gaia points remain.",
+  "alteration": "Native-size display conversion and RGB8 quantization only. No sharpening, resampling, compositing or artistic change.",
+  "raw_exr_policy": "137307727-byte original stays ignored; reacquire only from exact source URL and verify SHA256 before conversion.",
+  "runtime_policy": "Candidate texture plus one override on MI_SpaceMilkyWay; no automatic runtime selection or global texture/quality changes."
+}

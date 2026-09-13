@@ -1,0 +1,278 @@
+{
+  "path": "/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1.SM_StationShellCandidateV1",
+  "triangles": 85180,
+  "vertices": 80001,
+  "sections": 7,
+  "bounds_cm": [
+    [
+      -1749.5999755859375,
+      -1546.0,
+      -115.5
+    ],
+    [
+      1716.0,
+      1546.0,
+      1000.0
+    ]
+  ],
+  "collision": "NoCollision",
+  "uv_channels": 1,
+  "build_settings": {
+    "recompute_normals": false,
+    "recompute_tangents": true,
+    "use_mikk_t_space": true,
+    "use_full_precision_u_vs": true
+  },
+  "materials": [
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GraphiteAlloy.M_StationShell_GraphiteAlloy",
+      "parameters": {
+        "name": "SSS_GraphiteAlloy",
+        "base_color": [
+          0.04800000041723251,
+          0.06800000369548798,
+          0.08299999684095383
+        ],
+        "metallic": 0.7200000286102295,
+        "roughness": 0.3100000023841858,
+        "emission_strength": 0.0
+      },
+      "graph_connections_verified": true,
+      "textures": [],
+      "compiled_statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_BlueGreyPanels.M_StationShell_BlueGreyPanels",
+      "parameters": {
+        "name": "SSS_BlueGreyPanels",
+        "base_color": [
+          0.18000000715255737,
+          0.23499999940395355,
+          0.26499998569488525
+        ],
+        "metallic": 0.41999998688697815,
+        "roughness": 0.3700000047683716,
+        "emission_strength": 0.0
+      },
+      "graph_connections_verified": true,
+      "textures": [],
+      "compiled_statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_MachinedEdges.M_StationShell_MachinedEdges",
+      "parameters": {
+        "name": "SSS_MachinedEdges",
+        "base_color": [
+          0.36000001430511475,
+          0.4000000059604645,
+          0.41999998688697815
+        ],
+        "metallic": 0.8399999737739563,
+        "roughness": 0.25,
+        "emission_strength": 0.0
+      },
+      "graph_connections_verified": true,
+      "textures": [],
+      "compiled_statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_SafetyOchre.M_StationShell_SafetyOchre",
+      "parameters": {
+        "name": "SSS_SafetyOchre",
+        "base_color": [
+          0.699999988079071,
+          0.3199999928474426,
+          0.054999999701976776
+        ],
+        "metallic": 0.15000000596046448,
+        "roughness": 0.4099999964237213,
+        "emission_strength": 0.0
+      },
+      "graph_connections_verified": true,
+      "textures": [],
+      "compiled_statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_RecessAndRadiator.M_StationShell_RecessAndRadiator",
+      "parameters": {
+        "name": "SSS_RecessAndRadiator",
+        "base_color": [
+          0.012000000104308128,
+          0.023000000044703484,
+          0.02800000086426735
+        ],
+        "metallic": 0.6499999761581421,
+        "roughness": 0.4300000071525574,
+        "emission_strength": 0.0
+      },
+      "graph_connections_verified": true,
+      "textures": [],
+      "compiled_statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GuideLight.M_StationShell_GuideLight",
+      "parameters": {
+        "name": "SSS_GuideLight",
+        "base_color": [
+          0.07500000298023224,
+          0.47999998927116394,
+          0.6299999952316284
+        ],
+        "metallic": 0.05000000074505806,
+        "roughness": 0.25,
+        "emission_strength": 2.799999952316284
+      },
+      "graph_connections_verified": true,
+      "textures": [],
+      "compiled_statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_WorkLight.M_StationShell_WorkLight",
+      "parameters": {
+        "name": "SSS_WorkLight",
+        "base_color": [
+          1.0,
+          0.6100000143051147,
+          0.27000001072883606
+        ],
+        "metallic": 0.0,
+        "roughness": 0.23999999463558197,
+        "emission_strength": 2.200000047683716
+      },
+      "graph_connections_verified": true,
+      "textures": [],
+      "compiled_statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    }
+  ],
+  "statistics_limit": "Editor compiled shader estimates; not measured frame time or native art acceptance.",
+  "uv_contract": "One full-precision object-local box-projected UV channel at one-metre repeat; intentional seams. Imported normals preserved, tangents computed with MikkTSpace.",
+  "uv_revision": {
+    "before": {
+      "triangle_position_normal_sha256": "3f1968e5cbffba7cd3b09a8c484349b18b9543d6b98878dfe6413c69654bd123",
+      "triangles": 85180,
+      "rounding_digits": 6,
+      "method": "Built LOD0 FBX expanded triangle positions and normals, winding retained; UV and vertex storage splits excluded."
+    },
+    "after": {
+      "triangle_position_normal_sha256": "3f1968e5cbffba7cd3b09a8c484349b18b9543d6b98878dfe6413c69654bd123",
+      "triangles": 85180,
+      "rounding_digits": 6,
+      "method": "Built LOD0 FBX expanded triangle positions and normals, winding retained; UV and vertex storage splits excluded."
+    },
+    "same_built_surface": true
+  },
+  "author_sha256": "98cca0139aa607752fef95619a8b0a479a8bdb5fda6e9d534c552ef29a43f2a0",
+  "source_validation_sha256": "1f89ddc7fbe412ec7b8651d57e7a116a2ea6df1f56e861e5b105b291868e23a7",
+  "status": "SEPARATE_STATION_SHELL_PERSISTED_NOT_RUNTIME_ADOPTED",
+  "existing_files_unchanged": 159,
+  "source_report_sha256": "4caa1b1d3918e5f77369cc8bc37b5bd796076317d814e50e0f1ed10dce0b91bd",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "limits": [
+    "Source candidate only. No runtime selection, collision integration, performance or owner acceptance."
+  ],
+  "packages": [
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1",
+      "bytes": 1958805,
+      "sha256": "dcfcf42e8d44c5be3f6e6e1988de8e0eef3d35f771ed5526e0dd386e36462738"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GraphiteAlloy",
+      "bytes": 11931,
+      "sha256": "052140620d723a9f69006428995f85cd99ebde51432b7495a86733650234af4f"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_BlueGreyPanels",
+      "bytes": 11525,
+      "sha256": "5c7f9ecb6462403fd8593bb47880cc30af6e3e09966be842f4096592f6128b09"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_MachinedEdges",
+      "bytes": 11313,
+      "sha256": "28390b20a7dc2981a67310da48441033d277976961573e79b68ba741d5b4d672"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_SafetyOchre",
+      "bytes": 12022,
+      "sha256": "91cb4172ebe61f559f59bae242329685de03d71527d28cc4d196b8b912877f82"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_RecessAndRadiator",
+      "bytes": 10333,
+      "sha256": "c2486e535a52f2b65268ba436ae4781fee5be221ea9e47d40d5d5745ea4f08b2"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GuideLight",
+      "bytes": 11993,
+      "sha256": "f450aea7c0f5875269eba5212c07b163d7397fa373d2d0d893f19fa4ca76a89c"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_WorkLight",
+      "bytes": 11890,
+      "sha256": "061706a14aa668652ec8bb3185c17e6dc692df295562e34bb441d56fe130be1b"
+    }
+  ]
+}

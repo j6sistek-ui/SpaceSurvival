@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "SSGameMode.h"
 #include "SSStation.generated.h"
+class UStaticMesh;
 class UStaticMeshComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -18,6 +19,9 @@ class SPACESURVIVAL_API ASSStation : public AActor
 public:
     ASSStation();
     void BuildHub(bool bHome);
+    // Optional presentation asset; the physical hub remains authoritative when it is absent.
+    UPROPERTY(EditAnywhere, Category = "Presentation")
+    TSoftObjectPtr<UStaticMesh> ShellAsset;
     void SetBayShip(int32 ShipKind);
     void ShowBayShip(bool Visible);
     virtual void Tick(float DeltaSeconds) override;

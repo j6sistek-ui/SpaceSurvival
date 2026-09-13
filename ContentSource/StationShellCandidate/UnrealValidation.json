@@ -1,0 +1,356 @@
+{
+  "status": "ISOLATED_STATION_ASSETS_IMPORTED_FRESH_RELOADED_IDEMPOTENT_RUNTIME_REVIEW_PENDING",
+  "utc": "2026-09-13T13:10:17.236777+00:00",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "final_mesh": {
+    "path": "/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1.SM_StationShellCandidateV1",
+    "triangles": 85180,
+    "vertices": 80001,
+    "sections": 7,
+    "bounds_cm": [
+      [
+        -1749.5999755859375,
+        -1546.0,
+        -115.5
+      ],
+      [
+        1716.0,
+        1546.0,
+        1000.0
+      ]
+    ],
+    "collision": "NoCollision",
+    "uv_channels": 1,
+    "build_settings": {
+      "recompute_normals": false,
+      "recompute_tangents": true,
+      "use_mikk_t_space": true,
+      "use_full_precision_u_vs": true
+    }
+  },
+  "packages": [
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1",
+      "bytes": 1958805,
+      "sha256": "dcfcf42e8d44c5be3f6e6e1988de8e0eef3d35f771ed5526e0dd386e36462738"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GraphiteAlloy",
+      "bytes": 11931,
+      "sha256": "052140620d723a9f69006428995f85cd99ebde51432b7495a86733650234af4f"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_BlueGreyPanels",
+      "bytes": 11525,
+      "sha256": "5c7f9ecb6462403fd8593bb47880cc30af6e3e09966be842f4096592f6128b09"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_MachinedEdges",
+      "bytes": 11313,
+      "sha256": "28390b20a7dc2981a67310da48441033d277976961573e79b68ba741d5b4d672"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_SafetyOchre",
+      "bytes": 12022,
+      "sha256": "91cb4172ebe61f559f59bae242329685de03d71527d28cc4d196b8b912877f82"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_RecessAndRadiator",
+      "bytes": 10333,
+      "sha256": "c2486e535a52f2b65268ba436ae4781fee5be221ea9e47d40d5d5745ea4f08b2"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GuideLight",
+      "bytes": 11993,
+      "sha256": "f450aea7c0f5875269eba5212c07b163d7397fa373d2d0d893f19fa4ca76a89c"
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_WorkLight",
+      "bytes": 11890,
+      "sha256": "061706a14aa668652ec8bb3185c17e6dc692df295562e34bb441d56fe130be1b"
+    }
+  ],
+  "source_geometry_normal_material_sha256": "c3f45f946eea6ede6c06983638cd7ba408bb586644ad62f04d4c989521d0a8f7",
+  "native_surface": {
+    "before": {
+      "triangle_position_normal_sha256": "3f1968e5cbffba7cd3b09a8c484349b18b9543d6b98878dfe6413c69654bd123",
+      "triangles": 85180,
+      "rounding_digits": 6,
+      "method": "Built LOD0 FBX expanded triangle positions and normals, winding retained; UV and vertex storage splits excluded."
+    },
+    "after": {
+      "triangle_position_normal_sha256": "3f1968e5cbffba7cd3b09a8c484349b18b9543d6b98878dfe6413c69654bd123",
+      "triangles": 85180,
+      "rounding_digits": 6,
+      "method": "Built LOD0 FBX expanded triangle positions and normals, winding retained; UV and vertex storage splits excluded."
+    },
+    "same_built_surface": true
+  },
+  "native_basis_vectors": {
+    "Normals": {
+      "count": 255540,
+      "nonfinite_components": 0,
+      "minimum_length": 0.9999999999999993,
+      "maximum_unit_error": 6.661338147750939e-16,
+      "zero_vectors": 0
+    },
+    "Tangents": {
+      "count": 255540,
+      "nonfinite_components": 0,
+      "minimum_length": 0.9999999999999992,
+      "maximum_unit_error": 7.771561172376096e-16,
+      "zero_vectors": 0
+    },
+    "Binormals": {
+      "count": 255540,
+      "nonfinite_components": 0,
+      "minimum_length": 0.9999999999999993,
+      "maximum_unit_error": 6.661338147750939e-16,
+      "zero_vectors": 0
+    },
+    "maximum_absolute_normal_tangent_dot": 0.008533800406051839
+  },
+  "native_basis_limit": "Exporter emits built LOD0 vectors. Finite/unit and measured orthogonality checks are not a surface-texture or native appearance approval. Maximum dot is reported without claiming exact orthogonality.",
+  "preservation": {
+    "initial_import_prior_files_unchanged": 152,
+    "initial_prior_packages": 110,
+    "seven_candidate_materials_unchanged_through_uv_repair": true,
+    "root_source_patch_timing": "Root changed its Source/mainpipeline after the initial152-file preservation proof; a new160-file baseline preceded legacy repair.",
+    "new_baseline_file_count": 160,
+    "changed_at_postrepair_check": [
+      "Content/SpaceSurvival/Meshes/SM_StationShellCandidateV1.uasset"
+    ],
+    "fresh_readonly_files_unchanged": 160,
+    "idempotent_uassets": 117,
+    "preserved_umaps": 1,
+    "note": "117uassets plus1umap =118 total project packages. Source/Config/Content released to root after these checks; later root edits are outside this captured comparison."
+  },
+  "compiled_material_statistics": [
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GraphiteAlloy.M_StationShell_GraphiteAlloy",
+      "textures": [],
+      "statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_BlueGreyPanels.M_StationShell_BlueGreyPanels",
+      "textures": [],
+      "statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_MachinedEdges.M_StationShell_MachinedEdges",
+      "textures": [],
+      "statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_SafetyOchre.M_StationShell_SafetyOchre",
+      "textures": [],
+      "statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_RecessAndRadiator.M_StationShell_RecessAndRadiator",
+      "textures": [],
+      "statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_GuideLight.M_StationShell_GuideLight",
+      "textures": [],
+      "statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_StationShell_WorkLight.M_StationShell_WorkLight",
+      "textures": [],
+      "statistics": {
+        "num_vertex_shader_instructions": 148,
+        "num_pixel_shader_instructions": 339,
+        "num_samplers": 3,
+        "num_vertex_texture_samples": 0,
+        "num_pixel_texture_samples": 3,
+        "num_virtual_texture_samples": 0,
+        "num_uv_scalars": 0,
+        "num_interpolator_scalars": 0
+      }
+    }
+  ],
+  "processes": {
+    "initial_import": 14884,
+    "failed_interchange_uv": 88072,
+    "readonly_inspect": 90976,
+    "corrected_legacy_uv": 90944,
+    "fresh_reload_idempotence": 91352,
+    "all_owned_processes_exited": true,
+    "fresh_normal_exit_utc": "2026-09-13T13:07:22.929Z",
+    "owner_processes_preserved": [
+      66256,
+      19168
+    ]
+  },
+  "engine_logs": [
+    {
+      "file": ".agent/local/StationShellSession/ImportEngine.log",
+      "sha256": "4f4471297510f8c03aee586afea5e9cc33ca00c00626b1be0f70e1b83fa8e3ad",
+      "normal_shutdown": true,
+      "python_errors": 0,
+      "degenerate_tangent_warning": true,
+      "fbx_warnings": [
+        "FBXImport: Warning: No smoothing group information was found in this FBX scene.  Please make sure to enable the 'Export Smoothing Groups' option in the FBX Exporter plug-in before exporting the file.  Even for tools that don't support smoothing groups, the FBX Exporter will generate appropriate smoothing data at export-time so that correct vertex normals can be inferred while importing.",
+        "FBXImport: Warning: SM_StationShellCandidateV1 has degenerate tangent bases which will result in incorrect shading.  MikkTSpace relies on tangent bases and may result in mesh corruption, consider disabling this option.",
+        "FBXImport: Warning: SM_StationShellCandidateV1 has some nearly zero bi-normals which can create some issues. (Tolerance of 1E-4)"
+      ]
+    },
+    {
+      "file": ".agent/local/StationShellSession/UVImportEngine.log",
+      "sha256": "2e019d131af73ee24fc7edc85bf04f30504d11d02ec821f59ed11188743c31c4",
+      "normal_shutdown": true,
+      "python_errors": 10,
+      "degenerate_tangent_warning": false,
+      "fbx_warnings": []
+    },
+    {
+      "file": ".agent/local/StationShellSession/InspectEngine.log",
+      "sha256": "a00d943fd7bd1a1b154c4c135241ae8e0141157c9d5928aadc45bd02ee5d1f66",
+      "normal_shutdown": true,
+      "python_errors": 0,
+      "degenerate_tangent_warning": false,
+      "fbx_warnings": []
+    },
+    {
+      "file": ".agent/local/StationShellSession/LegacyRepairEngine.log",
+      "sha256": "758044d317937adbb32287e37795232e1d2ab42be55a9ac3e7a1abcaaeab1927",
+      "normal_shutdown": true,
+      "python_errors": 0,
+      "degenerate_tangent_warning": false,
+      "fbx_warnings": [
+        "FBXImport: Warning: No smoothing group information was found in this FBX scene.  Please make sure to enable the 'Export Smoothing Groups' option in the FBX Exporter plug-in before exporting the file.  Even for tools that don't support smoothing groups, the FBX Exporter will generate appropriate smoothing data at export-time so that correct vertex normals can be inferred while importing."
+      ]
+    },
+    {
+      "file": ".agent/local/StationShellSession/FreshEngine.log",
+      "sha256": "6c1fed7b6bcac126c26a197c2c7934e2c7195a7572ebd1eb59add96f884d87c1",
+      "normal_shutdown": true,
+      "python_errors": 0,
+      "degenerate_tangent_warning": false,
+      "fbx_warnings": []
+    }
+  ],
+  "scripts": [
+    {
+      "file": "ContentSource/StationShellCandidate/Generate.py",
+      "sha256": "995db41e3c0b79726928dde75f608f3effadf0a2f3f050825d22faa36fac6ec0",
+      "utf8_lf": true,
+      "ast_parse": true
+    },
+    {
+      "file": "ContentSource/StationShellCandidate/Validate.py",
+      "sha256": "72fd63e4e35f10921ba09314e4014718afdb250dfa8ea197984837e4435e915f",
+      "utf8_lf": true,
+      "ast_parse": true
+    },
+    {
+      "file": "Scripts/AuthorStationShell.py",
+      "sha256": "98cca0139aa607752fef95619a8b0a479a8bdb5fda6e9d534c552ef29a43f2a0",
+      "utf8_lf": true,
+      "ast_parse": true
+    },
+    {
+      "file": "Scripts/ValidateStationShell.py",
+      "sha256": "830705877ed76f52951620de42cc6084e5296222be796a67d900c3a36a2fea5a",
+      "utf8_lf": true,
+      "ast_parse": true
+    }
+  ],
+  "evidence": [
+    {
+      "file": "Report.json",
+      "sha256": "4caa1b1d3918e5f77369cc8bc37b5bd796076317d814e50e0f1ed10dce0b91bd"
+    },
+    {
+      "file": "Validation.json",
+      "sha256": "1f89ddc7fbe412ec7b8651d57e7a116a2ea6df1f56e861e5b105b291868e23a7"
+    },
+    {
+      "file": "UVRevision.json",
+      "sha256": "e396433c6c0ed03a2a360f2269ad4200d8ca7c10cf583bb1f51b513c843defd2"
+    },
+    {
+      "file": "UnrealImport.json",
+      "sha256": "e0e5bf0dc2780ca368d5c2cfcd2841702e506562c1dc3f0067e76575890aae58"
+    },
+    {
+      "file": "UnrealPersisted.json",
+      "sha256": "8af687d796f3da007acf6abb0ee62034095ddb728879067a81ec4776509005ac"
+    },
+    {
+      "file": "UnrealIdempotence.json",
+      "sha256": "cfd9e78c1b9a5815416d84aec89d84635dcea3d2f525b0f281d938557dee7264"
+    },
+    {
+      "file": "HistoricalEvidence/InitialNoUV/UnrealImport.json",
+      "sha256": "11ea95be78e983553efe81e69863b58cc3a511ae9d72977b9788b7fbca978219"
+    },
+    {
+      "file": "HistoricalEvidence/UVInterchangeSections/Failure.json",
+      "sha256": "33c7b12f39548237280636688bfef5b5120fbd4d178d785d7a8fc996121faacf"
+    }
+  ],
+  "limits": [
+    "Source Blender images are retained unchanged and do not show native station integration.",
+    "A generic missing-smoothing-group import warning remains; measured imported normals are unchanged. No degenerate tangent warning remains in corrected import or fresh reload.",
+    "OneLOD and7sections; compiled shader estimates are not draw cost,60FPS or representative hardware measurements.",
+    "Tiling box-projected UVs have intentional seams and overlap; no nonoverlapping lightmap atlas is claimed.",
+    "Lead owns runtime fallback/visibility/collision preservation tests, build and actual station capture. Owner art acceptance remains open."
+  ]
+}

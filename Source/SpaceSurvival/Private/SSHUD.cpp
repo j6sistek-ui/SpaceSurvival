@@ -227,16 +227,23 @@ void ASSHUD::DrawHUD()
     const auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0));
     if (S.run.active)
     {
-        Text(FString::Printf(TEXT("WAVE %02d"), S.run.wave), Margin, Margin, 1.5f);
+        const FString Location =
+            Walker ? (GM->InHangar() ? TEXT("HOME HANGAR")
+                                     : FString::Printf(TEXT("STATION %02d"), FMath::Max(1, S.run.wave / 5)))
+                   : FString::Printf(TEXT("WAVE %02d"), S.run.wave);
+        Text(Location, Margin, Margin, 1.5f);
         Text(FString::Printf(TEXT("%d CREDITS"), S.run.credits), W - 250 * Scale, Margin, 1.f,
              FLinearColor(1, .78f, .35f));
         Meter(TEXT("HULL"), S.run.hull, Stats.maxHull, Margin, H - 150 * Scale, FLinearColor(.35f, .9f, .65f));
         Meter(TEXT("SHIELD"), S.run.shield, Stats.maxShield, Margin, H - 112 * Scale, FLinearColor(.25f, .7f, 1));
-        Meter(TEXT("BOOST"), S.run.boost, 100, Margin, H - 74 * Scale, FLinearColor(.7f, .4f, 1));
-        Meter(S.run.brakeOverheated ? TEXT("BRAKE OVERHEAT") : TEXT("BRAKE HEAT"), S.run.brakeHeat, 100,
-              W - 250 * Scale, H - 112 * Scale, FLinearColor(1, .6f, .25f));
-        Text(S.run.weapon == SS::Weapon::RapidLaser ? TEXT("RAPID LASER") : TEXT("HEAVY CANNON"), W - 250 * Scale,
-             H - 68 * Scale, .9f);
+        if (!Walker)
+        {
+            Meter(TEXT("BOOST"), S.run.boost, 100, Margin, H - 74 * Scale, FLinearColor(.7f, .4f, 1));
+            Meter(S.run.brakeOverheated ? TEXT("BRAKE OVERHEAT") : TEXT("BRAKE HEAT"), S.run.brakeHeat, 100,
+                  W - 250 * Scale, H - 112 * Scale, FLinearColor(1, .6f, .25f));
+            Text(S.run.weapon == SS::Weapon::RapidLaser ? TEXT("RAPID LASER") : TEXT("HEAVY CANNON"), W - 250 * Scale,
+                 H - 68 * Scale, .9f);
+        }
         if (S.run.criticalSeconds > 0)
             Text(TEXT("! SUBSYSTEM IMPAIRED / REPAIR AVAILABLE"), Margin, 100 * Scale, .9f, FLinearColor(1, .7f, .2f));
         if (S.run.contract != SS::Contract::None)

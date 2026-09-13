@@ -1,8 +1,8 @@
 # Tomorrow's hands-on playtest
 
-**Not yet run. No owner touch, feel, audio or replay-motivation result has been received.** The owner has already rejected the current graphics as far below acceptable. Generated spacecraft, station and secondary visuals are provisional; a substantial art replacement pass remains open. These checks do not ask the owner to accept that art. Preserve the supplied Acornaut.
+**Not yet run. No owner touch, feel, audio or replay-motivation result has been received.** The owner has already rejected the current graphics as far below acceptable. Generated spacecraft, station and secondary visuals are provisional; a substantial art replacement pass remains open. These checks do not ask the owner to accept that art. The supplied Acornaut is the starting point for the owner-authorized mesh, rig and material improvement pass.
 
-Work down this single list, record an observation, and resume at the first unchecked step next time. Every box starts unchecked. A defect is useful evidence; source code or an automated pass is not a hands-on result. The 21-test suite, isolated storage lifecycle and prepared-station native checks passed. Package 10 rendered fixtures exercised normal-duration Station 1 transitions and the full Wave 10 climax using seeded durability and scripted input; earlier full-journey automation uses shortened waves and assistance. Those results do not check any box below.
+Work down this single list, record an observation, and resume at the first unchecked step next time. Every box starts unchecked. A defect is useful evidence; source code or an automated pass is not a hands-on result. The recorded Unreal suite, isolated storage lifecycle and prepared-station native checks passed. Package 11 rendered fixtures exercised normal-duration Station 1 transitions and the full Wave 10 climax using seeded durability and scripted input; earlier full-journey automation uses shortened waves and assistance. Those results do not check any box below.
 
 Session date/time: __________\
 Build/commit: __________\
@@ -12,8 +12,8 @@ Preferred mouse sensitivity: __________  Preferred controller sensitivity: _____
 
 **Package directory:** `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`\
 **Produced launcher:** `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`\
-**Lead's packaged smoke:** Package 10 contains the audio/economy/photographic-rock milestone and passed independently audited Station 1 transition and Wave 10 captures. Earlier package 7/8 save/vendor/death/exit checks retain their historical limits.\
-Package 10/source `0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80` has 88 project packages and a compatible signed x64 runtime. Confirm the current executable hashes in [BUILD_RUN.md](BUILD_RUN.md) before testing; later work may replace the shared archive. The newer combat cues and sharper font review are not in Package 10. This fixture smoke does not check the owner's hands-on boxes or establish natural piloting, docking, audio or retry appeal. Start below at Step 1.
+**Lead's packaged smoke:** Package 11 contains the fitted ships, paired pilot clips, revised fields, enemy models, corrected camera/aim and hero texture-residency improvements. Independently audited Station 1 transition and Wave 10 captures passed. Earlier save/vendor/death checks retain their own historical source limits.\
+Package 11/source `6912684223f4a93f4010cd12201aee7fb42395f3` has 110 project packages and a compatible signed x64 runtime. Its inner executable SHA-256 is `10b9b664c9a9d7480d96412999dd9da0b33215bc423eaae77a395fde8c9ed32c`. Confirm the current executable hashes in [BUILD_RUN.md](BUILD_RUN.md) before testing; later work may replace the shared archive. The new station shell and 8K sky candidate are not in Package 11. These scripted fixtures do not check the owner's hands-on boxes or establish natural piloting, docking, audio or retry appeal. Start below at Step 1.
 
 1. [ ] **Launch the recorded executable and open the home hangar.**\
    Expected: usable game window, visible Acornaut/ship and readable shell; no black view, missing assets or unwanted fullscreen switch.\

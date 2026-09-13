@@ -21,6 +21,8 @@ EXPORT_PATHS = ("ContentSource", "Content", "model-rigged.glb")
 
 CANDIDATE_HOOKS = {
     "AuthorSwiftCandidate.py": "ContentSource/SwiftCandidate/Report.json",
+    "AuthorStationShell.py": "ContentSource/StationShellCandidate/Report.json",
+    "AuthorMilkyWay.py": "ContentSource/ThirdParty/NASA/MilkyWay2020/CheckSource.py",
     "AuthorFieldCandidatesV3.py": "ContentSource/FieldCandidates/V3/SourceReport.json",
 }
 

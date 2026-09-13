@@ -27,6 +27,8 @@ ASSStation::ASSStation()
 {
     PrimaryActorTick.bCanEverTick = true;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HubRoot"));
+    ShellAsset =
+        FSoftObjectPath(TEXT("/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1.SM_StationShellCandidateV1"));
 }
 UStaticMeshComponent *ASSStation::AddMesh(FVector Position, FVector Scale, const TCHAR *Mesh, const TCHAR *Material,
                                           bool Solid)
@@ -67,7 +69,29 @@ void ASSStation::BuildHub(bool bHome)
     const TCHAR *Hull = TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull");
     const TCHAR *Cyan = TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan");
     const TCHAR *Gold = TEXT("/Game/SpaceSurvival/Materials/M_Gold.M_Gold");
-    // Dressing shares five render batches and never alters the physical deck or approach corridor.
+    UStaticMesh *ShellMesh = ShellAsset.IsNull() ? nullptr : ShellAsset.LoadSynchronous();
+    if (ShellMesh)
+    {
+        auto *Shell = NewObject<UStaticMeshComponent>(this, TEXT("StationShell"));
+        Shell->SetupAttachment(RootComponent);
+        Shell->SetStaticMesh(ShellMesh);
+        Shell->SetCollisionProfileName(TEXT("NoCollision"));
+        Shell->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Shell->SetGenerateOverlapEvents(false);
+        Shell->SetCanEverAffectNavigation(false);
+        Shell->RegisterComponent();
+        Geometry.Add(Shell);
+    }
+    auto AddBoundary = [this, Cube, Hull, ShellMesh](FVector Position, FVector Scale)
+    {
+        auto *Boundary = AddMesh(Position, Scale, Cube, Hull, true);
+        if (ShellMesh)
+        {
+            Boundary->SetVisibility(false);
+            Boundary->SetCastShadow(false);
+        }
+    };
+    // Remaining dressing shares five batches; the original collision and approach corridor stay exact.
     auto MakeBatch = [this, Cube](const TCHAR *Name, const TCHAR *Material, bool ForceMips = false)
     {
         auto *Batch = NewObject<UInstancedStaticMeshComponent>(this, FName(Name));
@@ -110,25 +134,29 @@ void ASSStation::BuildHub(bool bHome)
         const float CenterX = -1375.f + X * 550.f;
         for (int Y = 0; Y < 6; ++Y)
             Stamp(FloorPlates, FVector(CenterX, -1125.f + Y * 450.f, -8), FVector(5.35f, 4.35f, .015f));
-        for (float Side : {-1.f, 1.f})
+        if (!ShellMesh)
         {
-            Stamp(Plates, FVector(CenterX, Side * 1378, 205), FVector(5.2f, .12f, 2.8f));
-            Stamp(Structure, FVector(CenterX, Side * 1365, 365), FVector(5.35f, .18f, .14f));
-            Stamp(Plates, FVector(CenterX, Side * 1120, 960), FVector(5.35f, 4.6f, .12f));
-            Stamp(Guides, FVector(CenterX, Side * 1150, 949), FVector(3.6f, .09f, .04f));
+            for (float Side : {-1.f, 1.f})
+            {
+                Stamp(Plates, FVector(CenterX, Side * 1378, 205), FVector(5.2f, .12f, 2.8f));
+                Stamp(Structure, FVector(CenterX, Side * 1365, 365), FVector(5.35f, .18f, .14f));
+                Stamp(Plates, FVector(CenterX, Side * 1120, 960), FVector(5.35f, 4.6f, .12f));
+                Stamp(Guides, FVector(CenterX, Side * 1150, 949), FVector(3.6f, .09f, .04f));
+            }
         }
     }
     for (float Side : {-1.f, 1.f})
     {
-        AddMesh(FVector(0, Side * 1400, 170), FVector(34, .3f, 4.5f), Cube, Hull, true);
-        Stamp(Guides, FVector(0, Side * 1340, 8), FVector(32, .12f, .08f));
+        AddBoundary(FVector(0, Side * 1400, 170), FVector(34, .3f, 4.5f));
+        if (!ShellMesh)
+            Stamp(Guides, FVector(0, Side * 1340, 8), FVector(32, .12f, .08f));
         for (int I = -2; I <= 2; ++I)
-            AddMesh(FVector(I * 600, Side * 1400, 500), FVector(.5f, .5f, 10), Cube, Hull, true);
+            AddBoundary(FVector(I * 600, Side * 1400, 500), FVector(.5f, .5f, 10));
     }
     // Split the inbound wall around a broad, marked docking corridor.
-    AddMesh(FVector(-1700, -1050, 350), FVector(.5f, 7, 8), Cube, Hull, true);
-    AddMesh(FVector(-1700, 1050, 350), FVector(.5f, 7, 8), Cube, Hull, true);
-    AddMesh(FVector(1700, 0, 100), FVector(.3f, 28, 2), Cube, Hull, true);
+    AddBoundary(FVector(-1700, -1050, 350), FVector(.5f, 7, 8));
+    AddBoundary(FVector(-1700, 1050, 350), FVector(.5f, 7, 8));
+    AddBoundary(FVector(1700, 0, 100), FVector(.3f, 28, 2));
     BayShip = AddMesh(FVector(850, 0, 220), FVector(1), ASSShip::HullAssetPath(SS::Ship::Starter), nullptr);
     ServiceArm = AddMesh(FVector(850, 280, 150), FVector(1),
                          TEXT("/Game/SpaceSurvival/Meshes/SM_ServiceArm.SM_ServiceArm"), Hull);
@@ -179,7 +207,8 @@ void ASSStation::BuildHub(bool bHome)
     {
         for (float Side : {-1.f, 1.f})
             Stamp(Guides, FVector(float(I) * 350.f, Side * 650.f, -5), FVector(2.4f, .12f, .04f));
-        Stamp(Structure, FVector(float(I) * 450.f, 0, 980), FVector(.18f, 28, .25f));
+        if (!ShellMesh)
+            Stamp(Structure, FVector(float(I) * 450.f, 0, 980), FVector(.18f, 28, .25f));
     }
     AddMesh(FVector(-450, 1120, 65), FVector(.8f), TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), nullptr, true);
     AddMesh(FVector(-580, 1120, 50), FVector(.6f), TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), nullptr, true);
