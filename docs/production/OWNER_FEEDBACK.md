@@ -25,3 +25,13 @@ These findings inform the short core-mechanics benchmark, especially targeting, 
 | F10 | Owner is primarily a controller player; computer controls are not intuitive for them. | Prioritize a controller-first owner comparison when testing resumes, while retaining keyboard/mouse parity. Record device/layout/sensitivity/inversion. This is preference and context, not a passed or failed controller test. | 2.1,9.2,11.1 |
 
 The intended wormhole experience includes temporary uncertainty about location, while the player must still regain understandable control and receive fair warning of the next danger. This is a proposed interpretation for review, not a new mechanic implemented today.
+
+## D01 - Owner depot behavior clarification (2026-09-13)
+
+This is a direct design clarification, not an uncertain bug diagnosis. Paraphrase: the depot is a floating beacon-like stop; if the player chooses to stop, the ship parks on a physical pad. Acornaut stays aboard. A quick service menu opens and the player then departs, like a drive-through.
+
+This supersedes the planning assumption that depot shopping must remain usable during active flight. Deliberate pad parking is the localized exception to normal forward survival. Preserve exactly one depot encounter, its limited subset of upgrades/deals, and its distinction from full-service walkable stations. No on-foot depot interior is needed.
+
+Proposed presentation interpretation from the earlier following-marker complaint: the beacon marks the encounter location rather than persistently accompanying the ship. Actual assistance/capture behavior, incoming-hazard handling during service, and any service-time limit remain to be specified; no invulnerability, global pause, timer or teleport is implied. Do not infer these unresolved rules from the drive-through analogy.
+
+WBS6.6 and the asset bill now include a ship-sized parking pad and aboard-ship menu. This records intended behavior only; the current released build has not been changed.
