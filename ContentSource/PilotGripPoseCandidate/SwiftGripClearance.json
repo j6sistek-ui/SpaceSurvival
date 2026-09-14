@@ -1,0 +1,1595 @@
+{
+  "status": "SOURCE_SWIFT_AND_FITTED_GRIP_COMPARISON",
+  "protected_sha256": {
+    "ContentSource/SwiftCandidate/SwiftCandidate.blend": "147ca048c7383737fb6babe4fe24cced312bd6760b9a3f1d36ee2ff4dcee69f5",
+    "ContentSource/AcornShipGripFit/AcornShipGripFit.blend": "bcd8d19b6408e7f4133d9fb34e7cdd705b2695cfbe7324bb5e754fd14648acb9",
+    "ContentSource/Animation/TailCandidateV2.glb": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+    "ContentSource/PilotGripPoseCandidate/PilotGripFit.glb": "7fa10daaad36a08545191d7029e19efd0e8bf97bb10711afc58fbf429118cbdd",
+    "ContentSource/PilotGripPoseCandidate/DisembarkGripFit.glb": "8e747c569a6bb000be9d947110fd0bf919fdb7534a9ea986684c3b5f1ea496ec"
+  },
+  "blender": "5.1.2",
+  "generator_sha256": "350538e5c763d48ded40c59b7b94164f4f18c8d7c4c46f7c40194850a4deea96",
+  "pilot_transform": {
+    "position_cm": [
+      -15,
+      0,
+      72
+    ],
+    "scale": 1.5,
+    "blender_z_degrees": 90
+  },
+  "method": "Exact exported GLB playback; full evaluated TailV2 skin and evaluated grip surface triangles. BVH candidates filtered with bidirectional triangle-edge intersection.",
+  "samples": [
+    {
+      "clip": "Pilot",
+      "seconds": 0,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 12,
+          "confirmed_triangle_crossings": 12,
+          "crossing_skin_triangle_ids": [
+            192313,
+            192319,
+            192326,
+            192336,
+            192366,
+            192371
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              13.57236256202062,
+              21.439965069293976,
+              89.16709820429483
+            ],
+            [
+              14.883558452129364,
+              23.928265273571014,
+              89.97330466906229
+            ]
+          ]
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 78,
+          "confirmed_triangle_crossings": 78,
+          "crossing_skin_triangle_ids": [
+            192124,
+            192125,
+            192126,
+            192127,
+            192246,
+            192247,
+            192248,
+            192258,
+            192259,
+            192260,
+            192261,
+            192286,
+            192289,
+            192298,
+            192299,
+            192304,
+            192310,
+            192312,
+            192317,
+            192318,
+            192319,
+            192324,
+            192326,
+            192338,
+            192346,
+            192347,
+            192348,
+            192357,
+            192358,
+            192359,
+            192365,
+            192366,
+            192370,
+            192381,
+            192383,
+            192384,
+            192391,
+            192408
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.521101613839468,
+              20.805584390958153,
+              88.58242829640707
+            ],
+            [
+              21.775396168231964,
+              24.562375247478485,
+              90.83601633707681
+            ]
+          ]
+        },
+        "FittedR": {
+          "bvh_pairs": 26,
+          "confirmed_triangle_crossings": 26,
+          "crossing_skin_triangle_ids": [
+            2152,
+            2153,
+            2154,
+            2164,
+            2167,
+            2191,
+            2192
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              15.172344942887625,
+              -21.46215190490087,
+              91.13347927729288
+            ],
+            [
+              17.371591428915657,
+              -18.13513388236364,
+              93.21856498718262
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "clip": "Pilot",
+      "seconds": 1,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 23,
+          "confirmed_triangle_crossings": 23,
+          "crossing_skin_triangle_ids": [
+            192313,
+            192319,
+            192326,
+            192336,
+            192353,
+            192354,
+            192355,
+            192360,
+            192366,
+            192371,
+            192386,
+            192409
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              12.375295907258987,
+              21.362813313802086,
+              88.73873750368753
+            ],
+            [
+              14.797728757063547,
+              24.474741518497467,
+              90.08046388626099
+            ]
+          ]
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 3,
+          "confirmed_triangle_crossings": 3,
+          "crossing_skin_triangle_ids": [
+            2186,
+            2188,
+            2194
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              11.954121539990108,
+              -22.169543306032814,
+              89.85082308451334
+            ],
+            [
+              12.397631009419758,
+              -21.808170775572457,
+              90.04800915718079
+            ]
+          ]
+        },
+        "FittedL": {
+          "bvh_pairs": 80,
+          "confirmed_triangle_crossings": 80,
+          "crossing_skin_triangle_ids": [
+            192126,
+            192127,
+            192247,
+            192248,
+            192258,
+            192259,
+            192260,
+            192261,
+            192286,
+            192287,
+            192289,
+            192294,
+            192298,
+            192299,
+            192304,
+            192310,
+            192312,
+            192317,
+            192318,
+            192319,
+            192324,
+            192326,
+            192338,
+            192357,
+            192359,
+            192364,
+            192365,
+            192366,
+            192370,
+            192371,
+            192381,
+            192382,
+            192383,
+            192384,
+            192391,
+            192392,
+            192393,
+            192400,
+            192407,
+            192408,
+            192437
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.426960051059723,
+              20.9782212972641,
+              88.13993533452353
+            ],
+            [
+              22.054936985174812,
+              24.80743477741877,
+              90.51782886187235
+            ]
+          ]
+        },
+        "FittedR": {
+          "bvh_pairs": 55,
+          "confirmed_triangle_crossings": 55,
+          "crossing_skin_triangle_ids": [
+            2141,
+            2145,
+            2149,
+            2150,
+            2152,
+            2153,
+            2154,
+            2155,
+            2158,
+            2159,
+            2164,
+            2165,
+            2166,
+            2167,
+            2180,
+            2181,
+            2182,
+            2184,
+            2191,
+            2192
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.109337826569876,
+              -22.77314911286036,
+              90.26629527409872
+            ],
+            [
+              18.993276854356132,
+              -18.228012323379517,
+              92.75610446929932
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "clip": "Pilot",
+      "seconds": 2,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 12,
+          "confirmed_triangle_crossings": 12,
+          "crossing_skin_triangle_ids": [
+            192313,
+            192319,
+            192326,
+            192336,
+            192366,
+            192371
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              13.57236256202062,
+              21.439965069293976,
+              89.16709820429483
+            ],
+            [
+              14.883558452129364,
+              23.928265273571014,
+              89.97330466906229
+            ]
+          ]
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 78,
+          "confirmed_triangle_crossings": 78,
+          "crossing_skin_triangle_ids": [
+            192124,
+            192125,
+            192126,
+            192127,
+            192246,
+            192247,
+            192248,
+            192258,
+            192259,
+            192260,
+            192261,
+            192286,
+            192289,
+            192298,
+            192299,
+            192304,
+            192310,
+            192312,
+            192317,
+            192318,
+            192319,
+            192324,
+            192326,
+            192338,
+            192346,
+            192347,
+            192348,
+            192357,
+            192358,
+            192359,
+            192365,
+            192366,
+            192370,
+            192381,
+            192383,
+            192384,
+            192391,
+            192408
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.521101613839468,
+              20.805584390958153,
+              88.58242829640707
+            ],
+            [
+              21.775396168231964,
+              24.562375247478485,
+              90.83601633707681
+            ]
+          ]
+        },
+        "FittedR": {
+          "bvh_pairs": 26,
+          "confirmed_triangle_crossings": 26,
+          "crossing_skin_triangle_ids": [
+            2152,
+            2153,
+            2154,
+            2164,
+            2167,
+            2191,
+            2192
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              15.172344942887625,
+              -21.46215190490087,
+              91.13347927729288
+            ],
+            [
+              17.371591428915657,
+              -18.13513388236364,
+              93.21856498718262
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "clip": "Pilot",
+      "seconds": 3,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 8,
+          "confirmed_triangle_crossings": 8,
+          "crossing_skin_triangle_ids": [
+            192299,
+            192319,
+            192326,
+            192366
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.607596894105276,
+              22.070230543613434,
+              89.36106562614441
+            ],
+            [
+              14.96983120838801,
+              23.881494998931885,
+              89.98774488766989
+            ]
+          ]
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 73,
+          "confirmed_triangle_crossings": 73,
+          "crossing_skin_triangle_ids": [
+            192120,
+            192121,
+            192123,
+            192124,
+            192125,
+            192126,
+            192207,
+            192246,
+            192247,
+            192258,
+            192259,
+            192260,
+            192261,
+            192289,
+            192298,
+            192299,
+            192311,
+            192312,
+            192317,
+            192318,
+            192319,
+            192325,
+            192326,
+            192331,
+            192335,
+            192338,
+            192339,
+            192340,
+            192341,
+            192346,
+            192347,
+            192348,
+            192352,
+            192358,
+            192365,
+            192366,
+            192370,
+            192381
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.607596894105276,
+              20.905589063962303,
+              88.44226996103922
+            ],
+            [
+              21.759006877740227,
+              24.300529062747955,
+              91.35690927505493
+            ]
+          ]
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Pilot",
+      "seconds": 4,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 12,
+          "confirmed_triangle_crossings": 12,
+          "crossing_skin_triangle_ids": [
+            192313,
+            192319,
+            192326,
+            192336,
+            192366,
+            192371
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              13.57236256202062,
+              21.439965069293976,
+              89.16709820429483
+            ],
+            [
+              14.883558452129364,
+              23.928265273571014,
+              89.97330466906229
+            ]
+          ]
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 78,
+          "confirmed_triangle_crossings": 78,
+          "crossing_skin_triangle_ids": [
+            192124,
+            192125,
+            192126,
+            192127,
+            192246,
+            192247,
+            192248,
+            192258,
+            192259,
+            192260,
+            192261,
+            192286,
+            192289,
+            192298,
+            192299,
+            192304,
+            192310,
+            192312,
+            192317,
+            192318,
+            192319,
+            192324,
+            192326,
+            192338,
+            192346,
+            192347,
+            192348,
+            192357,
+            192358,
+            192359,
+            192365,
+            192366,
+            192370,
+            192381,
+            192383,
+            192384,
+            192391,
+            192408
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.521101613839468,
+              20.805584390958153,
+              88.58242829640707
+            ],
+            [
+              21.775396168231964,
+              24.562375247478485,
+              90.83601633707681
+            ]
+          ]
+        },
+        "FittedR": {
+          "bvh_pairs": 26,
+          "confirmed_triangle_crossings": 26,
+          "crossing_skin_triangle_ids": [
+            2152,
+            2153,
+            2154,
+            2164,
+            2167,
+            2191,
+            2192
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              15.172344942887625,
+              -21.46215190490087,
+              91.13347927729288
+            ],
+            [
+              17.371591428915657,
+              -18.13513388236364,
+              93.21856498718262
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.0,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 12,
+          "confirmed_triangle_crossings": 12,
+          "crossing_skin_triangle_ids": [
+            192313,
+            192319,
+            192326,
+            192336,
+            192366,
+            192371
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              13.57236256202062,
+              21.43996556599935,
+              89.16708827018738
+            ],
+            [
+              14.88355944554011,
+              23.92826477686564,
+              89.97330069541931
+            ]
+          ]
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 78,
+          "confirmed_triangle_crossings": 78,
+          "crossing_skin_triangle_ids": [
+            192124,
+            192125,
+            192126,
+            192127,
+            192246,
+            192247,
+            192248,
+            192258,
+            192259,
+            192260,
+            192261,
+            192286,
+            192289,
+            192298,
+            192299,
+            192304,
+            192310,
+            192312,
+            192317,
+            192318,
+            192319,
+            192324,
+            192326,
+            192338,
+            192346,
+            192347,
+            192348,
+            192357,
+            192358,
+            192359,
+            192365,
+            192366,
+            192370,
+            192381,
+            192383,
+            192384,
+            192391,
+            192408
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.521102607250214,
+              20.805583894252777,
+              88.5824223359426
+            ],
+            [
+              21.775396168231964,
+              24.56237326065699,
+              90.83601236343384
+            ]
+          ]
+        },
+        "FittedR": {
+          "bvh_pairs": 26,
+          "confirmed_triangle_crossings": 26,
+          "crossing_skin_triangle_ids": [
+            2152,
+            2153,
+            2154,
+            2164,
+            2167,
+            2191,
+            2192
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              15.172342956066132,
+              -21.46215091149012,
+              91.13346536954245
+            ],
+            [
+              17.37158546845118,
+              -18.135134379069008,
+              93.21855505307516
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.016666666666666666,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 43,
+          "confirmed_triangle_crossings": 43,
+          "crossing_skin_triangle_ids": [
+            192115,
+            192118,
+            192139,
+            192140,
+            192141,
+            192142,
+            192143,
+            192144,
+            192147,
+            192149,
+            192150,
+            192161,
+            192162,
+            192166,
+            192167,
+            192193,
+            192194,
+            192208,
+            192227,
+            192247
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              17.99495369195938,
+              21.069577833016716,
+              88.24545939763388
+            ],
+            [
+              22.32312113046646,
+              22.310066719849907,
+              91.21505618095398
+            ]
+          ]
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.03333333333333333,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 52,
+          "confirmed_triangle_crossings": 52,
+          "crossing_skin_triangle_ids": [
+            188255,
+            188268,
+            188269,
+            188270,
+            188295,
+            188297,
+            188333,
+            188397,
+            188418,
+            188419,
+            192132,
+            192133,
+            192140,
+            192143,
+            192144,
+            192146,
+            192147,
+            192149,
+            192150,
+            192151,
+            192153,
+            192162,
+            192193,
+            192208
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              17.763634026050568,
+              20.93187520901362,
+              88.65346511205038
+            ],
+            [
+              22.26960907379786,
+              23.342309395472206,
+              91.7167087395986
+            ]
+          ]
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.05,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.06666666666666667,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.08333333333333333,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.1,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.11666666666666667,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.13333333333333333,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.15,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.16666666666666666,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.18333333333333332,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.2,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.21666666666666667,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.23333333333333334,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.25,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.26666666666666666,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.2833333333333333,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.3,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.31666666666666665,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.3333333333333333,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.35,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.36666666666666664,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.38333333333333336,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.4,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.4166666666666667,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "clip": "Exit",
+      "seconds": 0.43333333333333335,
+      "grips": {
+        "SwiftOriginalL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "SwiftOriginalR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedL": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "FittedR": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Counts are crossing triangle pairs, not penetration depth or grasp proximity.",
+    "No continuous collision, body self-contact, main hull, or native live-phase blend validation.",
+    "No asset, scene, source clip or runtime mutation; this does not authorize a Swift cockpit transplant."
+  ]
+}

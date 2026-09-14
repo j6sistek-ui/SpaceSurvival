@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-09-13T11:13:26.235924+00:00",
+  "status": "PERSISTED_ENEMY_ROSTER_AND_ASSETS_VERIFIED_NATIVE_GAMEPLAY_PENDING",
+  "sourceBase": "0eeab8d646a07fa49cc1bb1ca8dcfd9f2a9f65d3",
+  "reports": {
+    "author": {
+      "path": "Saved/Validation/ContentImport.json",
+      "sha256": "7f705f29736fe9a7b644331cb9539ed8b35a15bed865531d99782fda4f4b8f34",
+      "status": "IMPORTED_NOT_GAMEPLAY_VALIDATED",
+      "lastWriteUtc": "2026-09-13T11:09:21.836997+00:00"
+    },
+    "validate": {
+      "path": "Saved/Validation/PersistedContent.json",
+      "sha256": "9424615c0d3d5833cfd25464b504dc82fe315399e5c8f3fae57265594b27e448",
+      "status": "PERSISTED_ASSETS_VALIDATED_NOT_GAMEPLAY",
+      "lastWriteUtc": "2026-09-13T11:11:00.526965+00:00"
+    },
+    "enemyAuthor": {
+      "path": "Saved/Validation/EnemyCandidates/UnrealImport.json",
+      "sha256": "7ec83813d8e9cf06c9fe58abd93f04a537fd88de8358a8084c150731caabadac",
+      "status": "SEPARATE_ENEMY_ASSETS_AUTHORED_FRESH_VALIDATION_PENDING",
+      "lastWriteUtc": "2026-09-13T11:09:19.227859+00:00"
+    },
+    "enemyValidate": {
+      "path": "Saved/Validation/EnemyCandidates/UnrealPersisted.json",
+      "sha256": "b62c637d06eca072442400d03e46f19f21b724f159eaf75c87f638bfb923ba88",
+      "status": "PERSISTED_ENEMY_ASSETS_AND_ROSTER_VERIFIED_NOT_GAMEPLAY",
+      "lastWriteUtc": "2026-09-13T11:10:59.519513+00:00"
+    }
+  },
+  "scripts": [
+    {
+      "path": "Scripts/AuthorContent.py",
+      "sha256LF": "38c09943c77afab4572f80edc852e1e2fde28b3f6a4c07f98cc59da620860688"
+    },
+    {
+      "path": "Scripts/ValidateContent.py",
+      "sha256LF": "ffec8af5f581ab704a39e03a62da97c48a4250ea4ed254f09e98da4dcf2c9971"
+    },
+    {
+      "path": "Scripts/AuthorEnemyCandidates.py",
+      "sha256LF": "aba31bf685bbbb0339eeeaa17d8f251053ab89eecd5a9afba7322a8cc6e8eac9"
+    },
+    {
+      "path": "Scripts/ValidateEnemyCandidates.py",
+      "sha256LF": "87da1e73ee73c105c22fe6d65cc180fa4672e8a6f2ba30e045fd19c17d2475ec"
+    }
+  ],
+  "roster": [
+    {
+      "kind": "<SSWorldKind.PURSUER: 6>",
+      "mesh_before": "SM_PursuerCandidateV1",
+      "mesh_after": "SM_PursuerCandidateV1",
+      "all_other_fields_preserved": true,
+      "tuning_with_prior_mesh_sha256": "060680c4c354a3816e2d09eaea716b808ff7f1e326d1ffc1a4ed1b62f0e2978b"
+    },
+    {
+      "kind": "<SSWorldKind.FLANKER: 7>",
+      "mesh_before": "SM_FlankerCandidateV1",
+      "mesh_after": "SM_FlankerCandidateV1",
+      "all_other_fields_preserved": true,
+      "tuning_with_prior_mesh_sha256": "b61ec99f2427a5d907fa542783a7941822c0d00dd2590d51063c8fde8b6b7e98"
+    }
+  ],
+  "enemyPackages": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Amber.uasset",
+      "bytes": 7714,
+      "sha256": "f44beaa457d984bbf80c274092c12ee1e3a62b4289728e5f3739ec8233117a42"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Ceramic.uasset",
+      "bytes": 6572,
+      "sha256": "51b348be4e057e6a3715ded5227a68b5742eaad1565263a17a8fc5adccd4ea17"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Recess.uasset",
+      "bytes": 6566,
+      "sha256": "91063b83184900f60bfda4bb791333a306fe2f8d8d13ca7c5f4e173320c59335"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Titanium.uasset",
+      "bytes": 6578,
+      "sha256": "a7a65c45352599da90d71fea6bf2c210aa1655aa256ad07cd288e8b7b8064864"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_FlankerCandidateV1.uasset",
+      "bytes": 403933,
+      "sha256": "3f9a1c2ed4497ef0fc2f0f746242d9fa19b216b075ba9850dbde79aa74b4c3a6"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_PursuerCandidateV1.uasset",
+      "bytes": 481277,
+      "sha256": "f487c80f91ddfce92b7110d77510574e39d3d00093752e71722844bb14f5db3b"
+    }
+  ],
+  "dataAsset": {
+    "path": "Content/SpaceSurvival/Data/DA_Phase1.uasset",
+    "sha256": "6cfe3ebfb61ef1de3e58bd48f2a72e78161a5986c31b97d46c069407adcd0505",
+    "note": "Package bytes unchanged: omitted mesh defaults resolve through the newly compiled native defaults. Roster copy/roundtrip preserved every non-mesh field."
+  },
+  "preservation": {
+    "suppliedHeroSha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "freshValidationProtectedFilesUnchanged": 147,
+    "originalCandidateReceiptSha256": "868aa904de696eee69021a7b61bb4fe5cfc2d15795dfda466aa1e1a0a98fc655",
+    "originalCandidateReceiptUnmodified": true
+  },
+  "incidentalAuthoring": {
+    "path": "Content/SpaceSurvival/Meshes/SM_AcornShipV2.uasset",
+    "sha256": "a74f9bb239e697f16e4612d117289832ae32be4f0b5bda5ea5a5bcc41978fe47",
+    "note": "Existing authoring reapplies NoCollision and saves this owned mesh. Fresh dedicated ship validation passed with preserved source, bounds, materials and geometry; no visual redesign."
+  },
+  "checks": {
+    "sourceStructural": 23,
+    "portableStrictAssertions": 744,
+    "portableAsanUbsanAssertions": 744,
+    "pythonSyntax": "Four modified author/validator modules parsed",
+    "editorAndAutomation": "See 2026-09-13-pilot-pose-transition.json, 21 clean Unreal tests before content authoring; not rebound as after-import tests."
+  },
+  "limits": [
+    "Imported/native studio candidates do not prove integrated enemy appearance or frame cost.",
+    "Head-on Flanker contrast and current HUD/shot cue layout need game rendering.",
+    "The runtime selection is outside Package10.",
+    "Swift, grip and field candidates remain unadopted.",
+    "No physical input, human feel/listening/natural fairness or owner art acceptance."
+  ]
+}

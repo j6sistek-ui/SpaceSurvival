@@ -1,0 +1,300 @@
+{
+  "status": "SOURCE_FORMATS_VALIDATED_ONLY",
+  "meshes": [
+    {
+      "name": "SM_AcornShip",
+      "triangles": 3840,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_AgileShip",
+      "triangles": 3840,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Asteroid",
+      "triangles": 440,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_AsteroidSmall",
+      "triangles": 440,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_AsteroidMedium",
+      "triangles": 440,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_AsteroidMassive",
+      "triangles": 440,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Debris",
+      "triangles": 60,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Wreckage",
+      "triangles": 60,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Pursuer",
+      "triangles": 368,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Flanker",
+      "triangles": 368,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_PickupCredit",
+      "triangles": 396,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_PickupRepair",
+      "triangles": 24,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_PickupShield",
+      "triangles": 32,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_PickupBuff",
+      "triangles": 24,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Console",
+      "triangles": 48,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Crate",
+      "triangles": 48,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_ServiceArm",
+      "triangles": 48,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_StationRing",
+      "triangles": 1536,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_VectorThrusters",
+      "triangles": 332,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_OverdriveCooling",
+      "triangles": 96,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_StormRing",
+      "triangles": 768,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_GravityRing",
+      "triangles": 1536,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_MobileDepot",
+      "triangles": 444,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_EventBeacon",
+      "triangles": 396,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Projectile",
+      "triangles": 96,
+      "valid_indices_normals_nonzero_area": true
+    },
+    {
+      "name": "SM_Starfield",
+      "triangles": 1200,
+      "valid_indices_normals_nonzero_area": true
+    }
+  ],
+  "audio": [
+    {
+      "name": "Engine",
+      "peak_sample": 6394,
+      "boundary_jump": 0.004212,
+      "valid_pcm": true
+    },
+    {
+      "name": "Laser",
+      "peak_sample": 10144,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Cannon",
+      "peak_sample": 16944,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Impact",
+      "peak_sample": 12179,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Pickup",
+      "peak_sample": 7062,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Alarm",
+      "peak_sample": 6265,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "Station",
+      "peak_sample": 1942,
+      "boundary_jump": 0.001282,
+      "valid_pcm": true
+    },
+    {
+      "name": "ElectricalCharge",
+      "peak_sample": 1816,
+      "boundary_jump": 0.00351,
+      "valid_pcm": true
+    },
+    {
+      "name": "ElectricalDischarge",
+      "peak_sample": 11193,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "GravityAmbience",
+      "peak_sample": 3642,
+      "boundary_jump": 0.000793,
+      "valid_pcm": true
+    },
+    {
+      "name": "EnemyFire",
+      "peak_sample": 6687,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "EnemyBreak",
+      "peak_sample": 12512,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "DebrisBreak",
+      "peak_sample": 8232,
+      "boundary_jump": 0.0,
+      "valid_pcm": true
+    },
+    {
+      "name": "MusicBase",
+      "peak_sample": 3317,
+      "boundary_jump": 0.001984,
+      "valid_pcm": true
+    },
+    {
+      "name": "MusicPressure",
+      "peak_sample": 2270,
+      "boundary_jump": 0.001434,
+      "valid_pcm": true
+    },
+    {
+      "name": "MusicClimax",
+      "peak_sample": 3645,
+      "boundary_jump": 0.001221,
+      "valid_pcm": true
+    }
+  ],
+  "unverified": [
+    "Unreal import",
+    "hero orientation/animation",
+    "collision",
+    "visual quality in gameplay",
+    "audio mix",
+    "performance"
+  ],
+  "preserved_hero_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "pilot_animation": {
+    "valid_binary_header_and_hash": true,
+    "seconds": 4,
+    "bones": 52
+  },
+  "disembark_animation": {
+    "valid_binary_header_and_hash": true,
+    "seconds": 2.4,
+    "bones": 52,
+    "original_geometry_skin_materials_preserved": true
+  },
+  "space_panorama": {
+    "source_sha256": "a2d2f3dd08e3c38d465eabcdeab264165bd60d163dd7ea82522084ba27659acf",
+    "width": 1774,
+    "height": 887,
+    "runtime_visual_approval": false
+  },
+  "station_deck": {
+    "license": "CC0-1.0",
+    "author": "Rob Tuytel",
+    "asset_url": "https://polyhaven.com/a/metal_plate",
+    "source_maps": [
+      {
+        "kind": "diff",
+        "file": "metal_plate_diff_2k.png",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/metal_plate/metal_plate_diff_2k.png",
+        "bytes": 21404867,
+        "sha256": "8d56227b8c3b806107df7ffb91e439b7e383943827096ed911b29a7108ca7a01",
+        "width": 2048,
+        "height": 2048,
+        "bit_depth": 16,
+        "png_color_type": 2
+      },
+      {
+        "kind": "arm",
+        "file": "metal_plate_arm_2k.png",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/metal_plate/metal_plate_arm_2k.png",
+        "bytes": 22810501,
+        "sha256": "383ab1e60679bab570df23f52a4e316903492421e6eafd3b07b3063a0b2cbfc1",
+        "width": 2048,
+        "height": 2048,
+        "bit_depth": 16,
+        "png_color_type": 2
+      },
+      {
+        "kind": "nor_dx",
+        "file": "metal_plate_nor_dx_2k.png",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/metal_plate/metal_plate_nor_dx_2k.png",
+        "bytes": 20489669,
+        "sha256": "d5234e67e5e007a9cc8cb8f8d68da36bce17f9c3234af382a95dc5dd9e44477a",
+        "width": 2048,
+        "height": 2048,
+        "bit_depth": 16,
+        "png_color_type": 2
+      }
+    ],
+    "runtime_visual_approval": false
+  }
+}

@@ -1,0 +1,239 @@
+{
+  "status": "PACKAGED_VISUAL_CAPTURE_AND_HERO_RESIDENCY_PASS_NOT_ART_OR_PERFORMANCE_ACCEPTANCE",
+  "project_status": "PARTIAL",
+  "recorded_utc": "2026-09-13T12:43:45.760193+00:00",
+  "package": 11,
+  "source_commit": "6912684223f4a93f4010cd12201aee7fb42395f3",
+  "package_receipt": "docs/validation/2026-09-13-windows-integrated-presentation-package.json",
+  "result": {
+    "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\result.json",
+    "bytes": 49552,
+    "sha256": "8946fc40fccae1f64d1844956e7a1ebc139b3ecf6b2e24eaa7e4e5b450a2b39c"
+  },
+  "process": {
+    "processId": 4376,
+    "processExit": 0,
+    "startedUtc": "2026-09-13T12:36:30.3380556Z",
+    "finishedUtc": "2026-09-13T12:39:43.5610510Z",
+    "requestedResolution": [
+      2560,
+      1440
+    ],
+    "audioDisabled": false,
+    "visualCaptureEnabled": true,
+    "suitableForPerformanceFinding": false
+  },
+  "artifacts": [
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival.exe",
+      "bytes": 171520,
+      "sha256": "619AC0779DCEABF638639193EFDEA0733E3B4626DEA623C07062F160F5ABCCF8"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+      "bytes": 332566528,
+      "sha256": "10B9B664C9A9D7480D96412999DD9DA0B33215BC423EAAE77A395FDE8C9ED32C"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+      "bytes": 3204720,
+      "sha256": "F44F4ABCA955C9B7EB65087576406A4535860A19FDF348B6E187D8C01791B354"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+      "bytes": 782,
+      "sha256": "E16DE6427F6FCBFCB96484F4EDED997D32244816C350B7EC46CBC4FBF8545C86"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+      "bytes": 11234869,
+      "sha256": "36F582ADD4F06E74C9CF3C23EB239F1439BDF74BFABC86BEBC54A7B706C69354"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+      "bytes": 257023536,
+      "sha256": "B8C9DA01C09D4A141583EDDC3787279DE337A556F150B4282975DA9414CCB41B"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+      "bytes": 226492,
+      "sha256": "7A818D28983E74AE6D2B27634DE4D17CCE706392A977688EBE871DB5B2E3E341"
+    }
+  ],
+  "isolation": {
+    "artifactsUnchanged": true,
+    "sourceUnchanged": true,
+    "productionPreserved": true,
+    "noTestSaveSlotsWritten": true
+  },
+  "captured_source_count": 155,
+  "raw_evidence": [
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\.ss-endgame-soak",
+      "bytes": 34,
+      "sha256": "d9265b96cd53e2c347221f7d2fd69c9693df3830a2cbbc7a72c5729194c5bbb5"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Approach.png",
+      "bytes": 3474591,
+      "sha256": "f57508ca18fb876f93b180890ad3f899d66cda1dcad142d59df0c14ee45619bf"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Climax.png",
+      "bytes": 3479355,
+      "sha256": "3ff84cdc30daf7519ce2f3f49b0f2ee1ce2977778943e8c1a2c4431b48c1d109"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Compound.png",
+      "bytes": 3504786,
+      "sha256": "4389fefb88d87688e4f8ce3a5ba3000d2520cb5185f856bebd5221d7f192e771"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Endgame.csv",
+      "bytes": 32073644,
+      "sha256": "d78fd91d6f1feaa54092c7e5d6b535d2f2e8f47d6f2fc729811be28219e2e271"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\fixture.json",
+      "bytes": 5084,
+      "sha256": "d4dcdfc0f1c439df930cbc1e177f0d02fff1b0e8f71944472b1cda2480a84479"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Flight.png",
+      "bytes": 4022208,
+      "sha256": "91e95bf872d7999b534d103c53583de669b2e73d7ca89fac697ab22e6fb05e98"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\performance.json",
+      "bytes": 57584,
+      "sha256": "dba9e622d47b312d2add27c2758c10b2e760cf1d154cba9891113e46f7fec80e"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\production-before.json",
+      "bytes": 703,
+      "sha256": "d11e4f7c34188ba5d03cf5b2d86d82f3599a6853bec72c73b81f7d4b2186979f"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Rendered.log",
+      "bytes": 116884,
+      "sha256": "2b95175a5c140c0b747432e0ab8f2541697dd01bd0e0cd4a566be1786e737399"
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\source-before.json",
+      "bytes": 35499,
+      "sha256": "7c70d60728a2a01d288d878a5b4510cb4306f825645044d7517885ae804f05b6"
+    }
+  ],
+  "images": [
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Flight.png",
+      "bytes": 4022208,
+      "sha256": "91e95bf872d7999b534d103c53583de669b2e73d7ca89fac697ab22e6fb05e98",
+      "dimensions": [
+        2560,
+        1440
+      ]
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Climax.png",
+      "bytes": 3479355,
+      "sha256": "3ff84cdc30daf7519ce2f3f49b0f2ee1ce2977778943e8c1a2c4431b48c1d109",
+      "dimensions": [
+        2560,
+        1440
+      ]
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Compound.png",
+      "bytes": 3504786,
+      "sha256": "4389fefb88d87688e4f8ce3a5ba3000d2520cb5185f856bebd5221d7f192e771",
+      "dimensions": [
+        2560,
+        1440
+      ]
+    },
+    {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Approach.png",
+      "bytes": 3474591,
+      "sha256": "f57508ca18fb876f93b180890ad3f899d66cda1dcad142d59df0c14ee45619bf",
+      "dimensions": [
+        2560,
+        1440
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "name": "Flight",
+      "requestStageSeconds": 15.00562858581543,
+      "requestFrame": 8665,
+      "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "animationSeconds": 3.0139920711517334,
+      "hull": "/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit",
+      "pilotTransform": "Rotation: Pitch 1.274337 Yaw -89.995887 Roll 0.184923\r\nTranslation: 62397.258342 892.338787 5845.669719\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+      "leftWrist": "Rotation: Pitch 23.114837 Yaw -91.635829 Roll 40.264556\r\nTranslation: 62425.283254 871.666211 5868.700533\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+      "rightWrist": "Rotation: Pitch -17.388459 Yaw -120.904537 Roll -89.795121\r\nTranslation: 62421.464974 913.128668 5869.199339\r\nScale3D: 1.500000 1.500000 1.500000\r\n"
+    },
+    {
+      "name": "Climax",
+      "requestStageSeconds": 5.002039432525635,
+      "requestFrame": 17644,
+      "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "animationSeconds": 2.2145512104034424,
+      "hull": "/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit",
+      "pilotTransform": "Rotation: Pitch -0.140546 Yaw -90.000975 Roll 0.397443\r\nTranslation: 349522.978885 -121.777579 6808.616887\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+      "leftWrist": "Rotation: Pitch 21.932784 Yaw -91.075291 Roll 41.245648\r\nTranslation: 349551.078640 -142.947945 6830.755355\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+      "rightWrist": "Rotation: Pitch -18.177382 Yaw -121.249341 Roll -88.186196\r\nTranslation: 349547.279076 -101.534450 6832.254836\r\nScale3D: 1.500000 1.500000 1.500000\r\n"
+    },
+    {
+      "name": "Compound",
+      "requestStageSeconds": 5.729374408721924,
+      "requestFrame": 17695,
+      "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "animationSeconds": 2.941887378692627,
+      "hull": "/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit",
+      "pilotTransform": "Rotation: Pitch -0.490880 Yaw -90.003214 Roll 0.375143\r\nTranslation: 350887.182602 -68.589109 6982.117176\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+      "leftWrist": "Rotation: Pitch 21.356812 Yaw -91.543936 Roll 40.529975\r\nTranslation: 350915.279626 -89.964014 7004.404274\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+      "rightWrist": "Rotation: Pitch -18.797717 Yaw -121.265786 Roll -88.659584\r\nTranslation: 350911.471465 -48.536198 7006.192395\r\nScale3D: 1.500000 1.500000 1.500000\r\n"
+    },
+    {
+      "name": "Approach",
+      "requestStageSeconds": 1.0010746717453003,
+      "requestFrame": 21888,
+      "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "animationSeconds": 2.2205164432525635,
+      "hull": "/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit",
+      "pilotTransform": "Rotation: Pitch -0.191514 Yaw -90.001323 Roll 0.395798\r\nTranslation: 487235.480343 -282.539552 6380.347217\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+      "leftWrist": "Rotation: Pitch 21.878701 Yaw -91.082383 Roll 41.235077\r\nTranslation: 487263.579440 -303.730706 6402.471397\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+      "rightWrist": "Rotation: Pitch -18.226138 Yaw -121.257360 Roll -88.168843\r\nTranslation: 487259.779955 -262.318201 6404.008122\r\nScale3D: 1.500000 1.500000 1.500000\r\n"
+    }
+  ],
+  "hero_residency": {
+    "stage": "Compound",
+    "log": {
+      "path": "Artifacts\\EndgameSoak\\d80e278701874841973a1f71eee30ef4\\Rendered.log",
+      "bytes": 116884,
+      "sha256": "2b95175a5c140c0b747432e0ab8f2541697dd01bd0e0cd4a566be1786e737399"
+    },
+    "rows": [
+      {
+        "line": 1115,
+        "text": "[2026.09.13-12.39.00:624][695]2048x2048 (2752 KB, ?), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0, YES, NO, NO, 1, 12, NO"
+      }
+    ],
+    "max_and_current": "2048x2048 /2752 KiB DXT1",
+    "bound": "Single logged snapshot in this actual packaged compound view; not per-image residency proof or a full-run memory profile."
+  },
+  "root_review": [
+    "Directly viewed actual Flight and Compound PNGs. Updated Field charges before discharge label is visible.",
+    "Reticle clear of own ship; current hull/pilot and both fields render with rocks/enemies.",
+    "The electrical boundary is very broad near camera; bright white ribbon branches obscure portions of the background and retain hard angular ends. Gravity boundary still reads as a bubble.",
+    "Sky remains visibly soft, distant enemies thin/dark, hull has shadow faceting and pilot fur/tail remains provisional."
+  ],
+  "limits": [
+    "Seeded Tier V starter/RapidLaser/OverdriveCooling; base durability 50000; normal timers/caps/budgets/spatial admission; scripted input. Exact bytes/process are recorded, but separate build provenance must bind compiled source. No physical input, natural balance, full ten-wave run, natural station interactions, final art, clean-machine or representative FPS acceptance.",
+    "PNG readbacks intentionally perturb frame timing; this run is excluded from performance findings.",
+    "Only main-menu startup observed live; visual judgments here use saved native PNGs. No continuous motion/physical input/listening or owner acceptance.",
+    "Independent normal-timing Package11 performance is recorded separately."
+  ]
+}

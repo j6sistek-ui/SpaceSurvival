@@ -1,0 +1,21 @@
+{
+  "status": "PILOT_DERIVATIVE_IMPORTED_REQUIRES_FIT_REVIEW",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "mesh": "/Game/SpaceSurvival/Character/SK_AcornautPilot.SK_AcornautPilot",
+  "shared_skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+  "materials": [
+    "/Game/SpaceSurvival/Character/model-rigged_material_0.model-rigged_material_0"
+  ],
+  "source_glb_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "derivative_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665",
+  "protected_character_asset_hashes": {
+    "C:\\Users\\j6sis\\SpaceSurvival\\Content\\SpaceSurvival\\Character\\A_Pilot.uasset": "de94f32c0cb14912c2fdfbefeac1966b436dc959014bff2b4821b5854cb3a8ea",
+    "C:\\Users\\j6sis\\SpaceSurvival\\Content\\SpaceSurvival\\Character\\A_Walk.uasset": "386fe4f8921132ebee94d813dd0c454ea49e1a46970bd268bd3204f4bcacc4c7",
+    "C:\\Users\\j6sis\\SpaceSurvival\\Content\\SpaceSurvival\\Character\\geometry_0_PhysicsAsset.uasset": "a5c513bb9aa46d9ed2ab84026a06655bd5c95b0634b9e4d638b5ef5db1a33522",
+    "C:\\Users\\j6sis\\SpaceSurvival\\Content\\SpaceSurvival\\Character\\geometry_0_Skeleton.uasset": "e4e69079b59b5e483253eaa57988a0d5adab27a71067eb8cfe959a0f559779d3",
+    "C:\\Users\\j6sis\\SpaceSurvival\\Content\\SpaceSurvival\\Character\\model-rigged_material_0.uasset": "17d517c4159d0424d45a634d6c93f3c24152446c39d0a1d7eedfaf94b3031460",
+    "C:\\Users\\j6sis\\SpaceSurvival\\Content\\SpaceSurvival\\Character\\model-rigged_texture_0.uasset": "38e22986efcb79c7cf10e0c577b8fd73d161f78cac59311b91901734ad90f592",
+    "C:\\Users\\j6sis\\SpaceSurvival\\Content\\SpaceSurvival\\Character\\SK_Acornaut.uasset": "8cbdde1b50530235f81225e971aae5db50925ebfdaf252cfd48a9fc1fe58839b"
+  },
+  "imported_asset_count": 1
+}

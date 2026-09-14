@@ -1,0 +1,64 @@
+{
+  "status": "NATIVE_ROCK_ASSET_PREVIEWS_CAPTURED_NOT_GAMEPLAY",
+  "errors": [],
+  "material": "/Game/SpaceSurvival/Materials/M_RockPhotographic",
+  "source_key": "ebbe6f3058ebc586f7f4b4110d090363f74f68cd4d79406be6067689fa270129",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "samples": [
+    {
+      "name": "RockPrevious",
+      "candidate": false,
+      "yaw": 0,
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": 3,
+      "png": "ContentSource\\RockPhotographicPreview\\RockPrevious.png"
+    },
+    {
+      "name": "RockPhotographic",
+      "candidate": true,
+      "yaw": 0,
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": 3,
+      "png": "ContentSource\\RockPhotographicPreview\\RockPhotographic.png"
+    },
+    {
+      "name": "RockRotated",
+      "candidate": true,
+      "yaw": 90,
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": 3,
+      "png": "ContentSource\\RockPhotographicPreview\\RockRotated.png"
+    },
+    {
+      "name": "RockRebased",
+      "candidate": true,
+      "yaw": 90,
+      "translation": [
+        1000000,
+        -2000000,
+        300000
+      ],
+      "scale": 3,
+      "png": "ContentSource\\RockPhotographicPreview\\RockRebased.png"
+    }
+  ],
+  "protected_packages_unchanged": 81,
+  "limits": [
+    "Unsaved stock actors and studio lighting; only the three candidate textures are forced resident for90seconds by the preview",
+    "Rotated view co-rotates lights/camera; directional shadows disabled to isolate mapping from cascade/Lumen world-space changes",
+    "Large translation is a mapping stress check, not actual native gameplay origin-rebase execution",
+    "Collision/geometry unchanged; runtime cost and hazard readability not accepted"
+  ]
+}

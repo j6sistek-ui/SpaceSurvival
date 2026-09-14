@@ -1,0 +1,332 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-13T11:13:14.083642+00:00",
+  "status": "V3_OFFLINE_SOURCE_READY_UNIMPORTED_UNRENDERED",
+  "reason": "Lead rejected V2 exterior dotted strands and near-invisible boundary. Separate approved additive shell and broad soft-ribbon approach; V1/V2 remain preserved.",
+  "source_report_sha256": "b7fc789e6b487f90ee2afa91a90a8fc2c514e1daeb0f572345444fc231e8e13e",
+  "actual_obj_checks": {
+    "meshes": [
+      {
+        "name": "SM_ElectricalFieldCandidateV3",
+        "triangles": 2496,
+        "roles": [
+          0,
+          1,
+          2
+        ],
+        "minimum_area_cm2": 0.4595304471447781,
+        "radius_cm": 100,
+        "sections": 1
+      },
+      {
+        "name": "SM_GravityFieldCandidateV3",
+        "triangles": 4032,
+        "roles": [
+          0,
+          1
+        ],
+        "minimum_area_cm2": 1.407817091011341,
+        "radius_cm": 100,
+        "sections": 1
+      }
+    ],
+    "protected_hashes": 30,
+    "limits": "Actual OBJ geometry/UV/normal/provenance checks only; Unreal import/rendering is outside this source check."
+  },
+  "python_ast_files": 5,
+  "author_allowlist_matches_actual_generated_assets": true,
+  "original_v1_v2_inputs_unchanged": 30,
+  "historical_runtime_git": {
+    "base": "ccfc91400ca10168dba7471fa5a2f3c888a32d6e",
+    "sha256": {
+      "Source/SpaceSurvival/Private/SSWorldActors.cpp": "5a905c659ab07b430f82f6661799938784d0a7aff45734d1a71505875e696c6c",
+      "Source/SpaceSurvival/Public/SSContentTypes.h": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141"
+    }
+  },
+  "blender_generation_exit_code": 0,
+  "blender_process_elapsed_seconds": 2.4149053,
+  "blender_warning": "Material.use_nodes deprecation for Blender6.0 only.",
+  "script_sha256": {
+    "ContentSource/FieldCandidates/V3/Generate.py": "16ba5c77d663b929af46adb2893b5d15a3bfbb9fd05599fb107a64a390906ae3",
+    "ContentSource/FieldCandidates/V3/CheckSource.py": "1490cb9a5cf4bd62f61f960bdd92e1392c3466bbebc090b43c0441d23ab0a23d",
+    "Scripts/AuthorFieldCandidatesV3.py": "d7da306b6006a9062b94aece8fc2a741d115ef48d01c1496d29d8b436708f0b2",
+    "Scripts/ValidateFieldCandidatesV3.py": "2a4b0b4d438aaa8a4950c67292d92232e2083eb2a1d961e9c8bbbeee565a2710",
+    "Scripts/PreviewFieldCandidatesV3.py": "b49eb96cd1307dbdc60862ad30c04cbca6f1104fca913fc0c1082cbee55f55ee"
+  },
+  "shader_sha256": {
+    "ElectricalField.hlsl": "d154420eaa52d1a165adc8016b441b0b0461ea574797820408a63c26464942d4",
+    "GravityField.hlsl": "3dd61a963368db944aaf6d7802286f516642462dc6b0022227b2f19bdd1ac819"
+  },
+  "geometry": [
+    {
+      "name": "SM_ElectricalFieldCandidateV3",
+      "source_vertices": 1742,
+      "triangles": 2496,
+      "material_slots": 1,
+      "bounds_cm": [
+        [
+          -100.0,
+          -100.0,
+          -100.0
+        ],
+        [
+          100.0,
+          100.0,
+          100.0
+        ]
+      ],
+      "boundary_triangles": 960,
+      "internal_paths": 18,
+      "path_geometry": [
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        }
+      ]
+    },
+    {
+      "name": "SM_GravityFieldCandidateV3",
+      "source_vertices": 2822,
+      "triangles": 4032,
+      "material_slots": 1,
+      "bounds_cm": [
+        [
+          -100.0,
+          -100.0,
+          -100.0
+        ],
+        [
+          100.0,
+          100.0,
+          100.0
+        ]
+      ],
+      "boundary_triangles": 960,
+      "internal_paths": 6,
+      "path_geometry": [
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        }
+      ]
+    }
+  ],
+  "material_contract": {
+    "blend": "Additive",
+    "shading": "Unlit",
+    "two_sided": true,
+    "depth_test": true,
+    "sections": 1,
+    "authored_graph_nodes": 10,
+    "parameters": [
+      "Tint",
+      "Color",
+      "Emission"
+    ],
+    "boundary": "Time-independent smooth Fresnel rim on radius100 additive shell; no opaque/core object.",
+    "strands": "Broad two-plane cross-ribbons, Gaussian outer falloff and derivative-filtered energy-scaled narrow cores.",
+    "electrical": "White discharge accent derives only from supplied Emission above2.1; no separate timed flash.",
+    "gravity": "Six65-point curved streamlines; Time only modulates bounded decorative flow.",
+    "unchanged": [
+      "gameplay radius",
+      "collision",
+      "warning/damage/force clocks",
+      "WPO disabled",
+      "refraction disabled",
+      "global AA settings",
+      "global bloom settings",
+      "wormhole mesh and shared material"
+    ]
+  },
+  "limits": [
+    "No V3 Unreal import/material compile/native render yet.",
+    "No actual shader statistics/frame-time/readability/occlusion validation.",
+    "Boundary contrast, additive overlap and thin-core filtering require outside/inside native images over actual rocks/ship.",
+    "Spherical mesh and ribbons are visual only; Source/Config/DA/runtime refs unchanged.",
+    "Original V1/V2 receipts/assets are preserved."
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "status": "SEPARATE_ORIGINAL_SOURCE_CANDIDATES_NOT_ADOPTED",
+  "blender": "5.1.2",
+  "generator_sha256": "6c6f4dd6f503dea65a09e682386717c62402f39f5ead4b83c628c71ab04531cd",
+  "coordinate_system": "OBJ centimetres +X forward +Z up; GLB metres with glTF axis transport",
+  "source_origin": "Original deterministic geometry authored for SpaceSurvival in this generator; no downloaded model, image or texture source.",
+  "assets": [
+    {
+      "name": "Pursuer",
+      "parts": 84,
+      "triangles": 14180,
+      "vertices": 7248,
+      "materials": [
+        "EN_Amber",
+        "EN_Recess",
+        "EN_Titanium",
+        "EN_Ceramic"
+      ],
+      "uv_layers": 1,
+      "min_triangle_area_m2": 7.360525273725216e-07,
+      "bounds_cm": [
+        [
+          -135.5,
+          -95.44203,
+          -31.06553
+        ],
+        [
+          135.5,
+          95.44203,
+          31.06553
+        ]
+      ],
+      "max_box_extent_cm": 135.50000190734863,
+      "runtime_uniform_scale_at_radius150": 1.1070110545279999,
+      "farthest_vertex_at_runtime_radius150_cm": 165.27619631032303,
+      "source_center_adjustment_cm": [
+        -2.499997615814209,
+        0.0,
+        -0.6155297160148621
+      ],
+      "obj_sha256": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d",
+      "glb_sha256": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc"
+    },
+    {
+      "name": "Flanker",
+      "parts": 88,
+      "triangles": 14840,
+      "vertices": 7586,
+      "materials": [
+        "EN_Titanium",
+        "EN_Recess",
+        "EN_Ceramic",
+        "EN_Amber"
+      ],
+      "uv_layers": 1,
+      "min_triangle_area_m2": 1.4336067444276068e-08,
+      "bounds_cm": [
+        [
+          -118.49999,
+          -172.72935,
+          -27.41671
+        ],
+        [
+          118.49999,
+          172.72935,
+          27.41671
+        ]
+      ],
+      "max_box_extent_cm": 172.72934913635254,
+      "runtime_uniform_scale_at_radius150": 0.8684106131934186,
+      "farthest_vertex_at_runtime_radius150_cm": 161.36327960878236,
+      "source_center_adjustment_cm": [
+        1.500004529953003,
+        0.0,
+        -1.1167123913764954
+      ],
+      "obj_sha256": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba",
+      "glb_sha256": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682"
+    }
+  ],
+  "materials": [
+    {
+      "name": "EN_Titanium",
+      "base_color": [
+        0.03500000014901161,
+        0.04899999871850014,
+        0.06300000101327896,
+        1.0
+      ],
+      "metallic": 0.8299999833106995,
+      "roughness": 0.3400000035762787,
+      "emission": 0.0
+    },
+    {
+      "name": "EN_Ceramic",
+      "base_color": [
+        0.23999999463558197,
+        0.2800000011920929,
+        0.25999999046325684,
+        1.0
+      ],
+      "metallic": 0.11999999731779099,
+      "roughness": 0.3700000047683716,
+      "emission": 0.0
+    },
+    {
+      "name": "EN_Recess",
+      "base_color": [
+        0.008999999612569809,
+        0.014000000432133675,
+        0.019999999552965164,
+        1.0
+      ],
+      "metallic": 0.4000000059604645,
+      "roughness": 0.41999998688697815,
+      "emission": 0.0
+    },
+    {
+      "name": "EN_Amber",
+      "base_color": [
+        0.949999988079071,
+        0.11500000208616257,
+        0.012000000104308128,
+        1.0
+      ],
+      "metallic": 0.10000000149011612,
+      "roughness": 0.27000001072883606,
+      "emission": 2.5999999046325684
+    }
+  ],
+  "protected_sha256": {
+    "ContentSource\\Meshes\\SM_Pursuer.obj": "fbde4d3b6b09352439692602ea0e706cae09c1d200256f851baa5d0eaacbcb31",
+    "ContentSource\\Meshes\\SM_Flanker.obj": "895f812e9cbbf836f258cdedf65f87ecdc848282913b6d964fa4ca0102c2c24e",
+    "Content\\SpaceSurvival\\Meshes\\SM_Pursuer.uasset": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18",
+    "Content\\SpaceSurvival\\Meshes\\SM_Flanker.uasset": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5",
+    "ContentSource\\GenerateGeometry.py": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00",
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+  },
+  "collision": "No collision mesh or physics change. Existing runtime uses a separate Radius150 sphere and max-box-extent visual scaling; candidate fit is measured above.",
+  "limits": [
+    "Candidate files only, no Unreal import or production reference change.",
+    "Four PBR materials with no texture dependency; needs faithful Unreal materials and game lighting review.",
+    "Studio appearance, runtime LODs, shader cost and gameplay silhouette acceptance remain separate checks.",
+    "Owner rejected prior graphics; these candidates are not owner art acceptance."
+  ],
+  "executed_generator_sha256": "b9562ac75aa8138df281793c85f9cb907c56981860234d3c7c5d4f259f773f54",
+  "post_execution_whitespace_normalization": {
+    "utc": "2026-09-13T10:45:38.707962+00:00",
+    "reason": "Lead precommit whitespace gate found blank lines at EOF. Only terminal CR/LF bytes normalized, without rebuilding geometry or rerendering.",
+    "details": "WhitespaceNormalization.json"
+  }
+}

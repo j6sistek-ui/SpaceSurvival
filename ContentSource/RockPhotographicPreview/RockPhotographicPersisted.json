@@ -1,0 +1,128 @@
+{
+  "status": "PERSISTED_ROCK_CANDIDATE_VALIDATED_NOT_GAMEPLAY",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "material": "/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic",
+  "version": "RockFaceLocalTriplanar1",
+  "source_key": "ebbe6f3058ebc586f7f4b4110d090363f74f68cd4d79406be6067689fa270129",
+  "textures": [
+    {
+      "path": "/Game/SpaceSurvival/Textures/T_RockFace_Color",
+      "source_sha256": "7dbdf01fc89cb43c34e872615fc05f2739209de5c9c6dfc65fddb375bfca2bc9",
+      "compression": "<TextureCompressionSettings.TC_BC7: 11>",
+      "srgb": true,
+      "flip_green": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Textures/T_RockFace_ARM",
+      "source_sha256": "0c3e9a30d2c653e0ab04461ab3c2d897b8713244dbdc5b2674d0ea0c745c86b6",
+      "compression": "<TextureCompressionSettings.TC_MASKS: 2>",
+      "srgb": false,
+      "flip_green": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Textures/T_RockFace_Normal",
+      "source_sha256": "54db6ddca3f8974cccf64cf6d811ea7bfd144195a8fe8fa3b8287ca11477b778",
+      "compression": "<TextureCompressionSettings.TC_NORMALMAP: 1>",
+      "srgb": false,
+      "flip_green": false
+    }
+  ],
+  "texture_sample_nodes": 9,
+  "statistics": {
+    "num_vertex_shader_instructions": 148,
+    "num_pixel_shader_instructions": 448,
+    "num_samplers": 6,
+    "num_vertex_texture_samples": 0,
+    "num_pixel_texture_samples": 12,
+    "num_uv_scalars": 0,
+    "num_interpolator_scalars": 0
+  },
+  "existing_asteroids": [
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_Asteroid.SM_Asteroid",
+      "sha256": "b0d6c0ff8918c07346c75e3e5441ee4e472e3f63690c22282456b57a40195789",
+      "triangles": 440,
+      "extent_cm": [
+        97.03082275390625,
+        93.2756233215332,
+        101.38405990600586
+      ],
+      "simple_collision_count": 0,
+      "materials": [
+        "/Game/SpaceSurvival/Materials/M_Rock.M_Rock"
+      ]
+    },
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_AsteroidSmall.SM_AsteroidSmall",
+      "sha256": "1b377a123a3dd01c960f110608d3b8644f151ffb2e64ff176661378e0e4b27ef",
+      "triangles": 440,
+      "extent_cm": [
+        98.2603988647461,
+        98.88729858398438,
+        99.08878707885742
+      ],
+      "simple_collision_count": 0,
+      "materials": [
+        "/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic"
+      ]
+    },
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_AsteroidMedium.SM_AsteroidMedium",
+      "sha256": "ce40e9181dc9946cbde579fe757a2f29bc89f90268a6915b32bcab39a0341837",
+      "triangles": 440,
+      "extent_cm": [
+        97.18140029907227,
+        95.92502212524414,
+        100.53987121582031
+      ],
+      "simple_collision_count": 0,
+      "materials": [
+        "/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic"
+      ]
+    },
+    {
+      "path": "/Game/SpaceSurvival/Meshes/SM_AsteroidMassive.SM_AsteroidMassive",
+      "sha256": "f623615757b872582bb28becdd00323205f62b8ae639963af724592dddf09539",
+      "triangles": 440,
+      "extent_cm": [
+        97.15786743164062,
+        94.4608154296875,
+        101.78418731689453
+      ],
+      "simple_collision_count": 0,
+      "materials": [
+        "/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic"
+      ]
+    }
+  ],
+  "adoption_verified": true,
+  "content_packages": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_RockPhotographic.uasset",
+      "bytes": 31192,
+      "sha256": "acb1598b5d3a5acca0991d501b6c2de374b37d3ba4eacdfcc87a3683d346bbe1"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Textures\\T_RockFace_ARM.uasset",
+      "bytes": 13034306,
+      "sha256": "3143926cfd5142fffbff088f3757eb746818befb30560cb3713456cc705bfaa7"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Textures\\T_RockFace_Color.uasset",
+      "bytes": 22898362,
+      "sha256": "b64ea4e4b731dda6229bc4fb1c53e89f7a95bad17217af1a58148e1ff671905d"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Textures\\T_RockFace_Normal.uasset",
+      "bytes": 24126313,
+      "sha256": "37bdb981270dc8d2b29cea09e41d4b364a725869706f168444079009b34a5d3d"
+    }
+  ],
+  "limits": [
+    "Local repeat scales with asteroid actor; not constant physical texel density",
+    "No geometry, silhouette or collision repair",
+    "Statistics are editor shader estimates, not runtime performance",
+    "Fresh stock previews remain separate from gameplay acceptance"
+  ]
+}

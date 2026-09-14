@@ -1,0 +1,125 @@
+{
+  "status": "CANDIDATE_SOURCE_GEOMETRY_CHECKED_NOT_RUNTIME_ACCEPTANCE",
+  "utc": "2026-09-13T12:38:40.440699+00:00",
+  "vertices": 43392,
+  "triangles": 85180,
+  "materials": {
+    "SSS_GraphiteAlloy": 10008,
+    "SSS_MachinedEdges": 35316,
+    "SSS_SafetyOchre": 6392,
+    "SSS_BlueGreyPanels": 9776,
+    "SSS_RecessAndRadiator": 18424,
+    "SSS_GuideLight": 4888,
+    "SSS_WorkLight": 376
+  },
+  "exported_normals": 255540,
+  "maximum_normal_unit_error": 1.8033834381370184e-07,
+  "triangle_area_below_one_millionth_square_cm": 0,
+  "bounds_cm": [
+    [
+      -1749.600029,
+      -1546.0000038,
+      -115.4999971
+    ],
+    [
+      1715.9999847,
+      1546.0000038,
+      1000.0
+    ]
+  ],
+  "corridor_triangle_aabb_conflicts": 0,
+  "inbound_domain_cm": {
+    "x_below": -1675,
+    "y_open": [
+      -700,
+      700
+    ],
+    "z_above": -10
+  },
+  "mica_corner_triangle_aabb_conflicts": 0,
+  "mica_envelope_cm": [
+    [
+      1020,
+      1040,
+      -10
+    ],
+    [
+      1200,
+      1220,
+      270
+    ]
+  ],
+  "source_report_sha256": "5dfb2729038af7d86b53c6bcef9bae02eb01430ce2f86d6479eba3fb8468a018",
+  "hash_verified_outputs": 6,
+  "hash_verified_protected_content_sources": 3,
+  "historical_runtime_source_hashes": {
+    "Source/SpaceSurvival/Private/SSStation.cpp": "10cf59d7bd373c208bbda8a27022f17b8aeff79b48d8fbabc1edafc1fe80e16a",
+    "Source/SpaceSurvival/Public/SSStation.h": "1c107a5e73b9b4f7a4f7925da1cd2aa58622a25699e428a447d75ad07de2c46a"
+  },
+  "promoted_validator_sha256": "7eb3dd672732857129e3961d9ea7fff6f3e6ef81b9dffade23bf5c65bac6102a",
+  "source_revision_sha256": "5cbd8c5e1cc7f87f34cb2b98eb8a9e14828d5a11baafb2bac39715689c24d42e",
+  "images": [
+    {
+      "file": "Approach.png",
+      "camera_m": [
+        -47,
+        -7,
+        9
+      ],
+      "target_m": [
+        0,
+        0,
+        3.3
+      ],
+      "lens_mm": 38,
+      "dimensions": [
+        1600,
+        1000
+      ],
+      "sha256": "59ab03054713683fe96fafcb9bbce215bf32e12e6269728cd529d01f6bf19e27"
+    },
+    {
+      "file": "Interior.png",
+      "camera_m": [
+        -14,
+        -5,
+        2.1
+      ],
+      "target_m": [
+        8,
+        4.5,
+        3.8
+      ],
+      "lens_mm": 24,
+      "dimensions": [
+        1600,
+        1000
+      ],
+      "sha256": "642be2c31005eefb9b056d1a1cc62027d4b26027ea3f6ae4c024f1d21da0ba0b"
+    },
+    {
+      "file": "Wide.png",
+      "camera_m": [
+        -37,
+        -39,
+        26
+      ],
+      "target_m": [
+        0,
+        0,
+        3.3
+      ],
+      "lens_mm": 43,
+      "dimensions": [
+        1600,
+        1000
+      ],
+      "sha256": "c1785dc651b53e2f710eb507765cc2da85dfd544f2b3b491607b382defeabee1"
+    }
+  ],
+  "limitations": [
+    "No native import, material, collision, draw/LOD or gameplay validation.",
+    "Corridor/Mica checks conservatively use triangle AABBs; seven service envelopes use the generator separating-axis triangle check.",
+    "The exact deck is render context and excluded from exported shell; exterior housings extend outside its playable footprint."
+  ]
+}

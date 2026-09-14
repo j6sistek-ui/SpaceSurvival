@@ -1,0 +1,159 @@
+{
+  "status": "NATIVE_FIELD_CANDIDATE_SCALAR_SAMPLES_CAPTURED_NOT_ADOPTED",
+  "errors": [],
+  "images": [
+    {
+      "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealElectricalWarning.png",
+      "sha256": "b3ae95036ea8c374f982da9227d2555407f9b779da7fc355f393c3f5e2d13e10",
+      "kind": "Electrical",
+      "emission": 0.35,
+      "camera_cm": [
+        8000,
+        -6500,
+        5000
+      ],
+      "target_cm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealElectricalCharged.png",
+      "sha256": "60d73a07e5a12cf8e4949e53e71445f299a06198b0158f1b88cb7b6eee207785",
+      "kind": "Electrical",
+      "emission": 2.05,
+      "camera_cm": [
+        8000,
+        -6500,
+        5000
+      ],
+      "target_cm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealElectricalDischarge.png",
+      "sha256": "1eeb56d810ae4b81a3099842aa14528cba0acf027dda81a3e290f42a59b7e86b",
+      "kind": "Electrical",
+      "emission": 2.8,
+      "camera_cm": [
+        8000,
+        -6500,
+        5000
+      ],
+      "target_cm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealElectricalEdge.png",
+      "sha256": "8c6cb06dbd7d2b30f687a66b2e90a2bf8933c0fa5f360c7ec2f538d0e6d9be9b",
+      "kind": "Electrical",
+      "emission": 2.8,
+      "camera_cm": [
+        0,
+        -9000,
+        200
+      ],
+      "target_cm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealGravityWarning.png",
+      "sha256": "fecce8c1f689130eb7145f04fa06d8019f532235a9b5286ef86e46a36ce60344",
+      "kind": "Gravity",
+      "emission": 0.35,
+      "camera_cm": [
+        8000,
+        -6500,
+        5000
+      ],
+      "target_cm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealGravityActive.png",
+      "sha256": "823448a4385936fc86f4fb7a250270d9c7dd89fa993e43df1f45decb467d6eea",
+      "kind": "Gravity",
+      "emission": 1.1,
+      "camera_cm": [
+        8000,
+        -6500,
+        5000
+      ],
+      "target_cm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealGravityEdge.png",
+      "sha256": "8804c3473b21bd0b13d6174a8d85497156cc2356a8fef785600134ebd1c77b2b",
+      "kind": "Gravity",
+      "emission": 1.1,
+      "camera_cm": [
+        0,
+        -9000,
+        200
+      ],
+      "target_cm": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "Native\\20daf98c0a824b0dacb42708075db0ff\\UnrealGravityInside.png",
+      "sha256": "d62ce54a30467b09681242ba9bc7e0c6042774500da93309aec1ceb6194598c5",
+      "kind": "Gravity",
+      "emission": 1.1,
+      "camera_cm": [
+        -500,
+        -2200,
+        100
+      ],
+      "target_cm": [
+        1800,
+        1000,
+        250
+      ]
+    }
+  ],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "process_id": 84268,
+  "run_directory": "ContentSource\\FieldCandidates\\V2\\Native\\20daf98c0a824b0dacb42708075db0ff",
+  "source_report_sha256": "1d40f9b5ee014879336fd00fcb5c44acc96b6024d5d17597c024962b4af083f8",
+  "persisted_receipt_sha256": "26559e46240b03737b87a8605fc43dab3f450646771bff7c063f3d2461c6e866",
+  "method": "Unsaved stock static-mesh actors; actual ship/rocks/sky; fixed scalar samples, no gameplay or actor clocks.",
+  "field_radius_cm": 3400,
+  "ship_scale": 1,
+  "asteroid_radii_cm": [
+    480,
+    260,
+    650
+  ],
+  "exposure_min_max": 1,
+  "bloom": 0.35,
+  "no_collision_on_preview_meshes": true,
+  "field_and_background_shadows": false,
+  "ship_and_rock_shadows": true,
+  "limits": [
+    "Material samples use existing numerical Emission values, not live pulse/force integration.",
+    "No GI Init, play session, save calls, Data Asset edits or runtime adoption.",
+    "Captures are material/geometry inspection; no physical controls, natural fairness, frame-time or owner art acceptance.",
+    "Static ship mesh is a scale reference; pilot animation/contact is outside this preview."
+  ],
+  "protected_files_unchanged": 145
+}

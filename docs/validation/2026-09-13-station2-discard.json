@@ -1,0 +1,288 @@
+{
+  "status": "PASSED_ISOLATED_STATION2_DISCARD_PERSISTENCE",
+  "dateUtc": "2026-09-13",
+  "baseCommit": "4178ff443d34a7611a7353bac784091ec25ba0fa",
+  "sourceState": "Uncommitted Station 2 discard, contract tuning and electrical clock follow-up after source 4178ff4. This tested Editor DLL is not Package 9.",
+  "command": "Scripts/TestSaveLifecycle.ps1 -Station2Discard -TimeoutSeconds 120",
+  "sourceFiles": [
+    {
+      "path": "Source/SpaceSurvival/Public/SSGameInstance.h",
+      "sha256": "7463a07885c3b0dded1b556b0f865d05ebd1fdcac35bbb591e05aa33bfeeaa1b",
+      "sha256LfUtf8": "7463a07885c3b0dded1b556b0f865d05ebd1fdcac35bbb591e05aa33bfeeaa1b",
+      "snapshot": "Artifacts/SaveLifecycle/a7f697ebbecb4f48bd7b318fe9756321/TestedSources/SSGameInstance.h"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSGameInstance.cpp",
+      "sha256": "c089ef3ef10480b4c351b322b5e14f20675938a0dafc24fe47de75d0c3b6ce30",
+      "sha256LfUtf8": "c089ef3ef10480b4c351b322b5e14f20675938a0dafc24fe47de75d0c3b6ce30",
+      "snapshot": "Artifacts/SaveLifecycle/a7f697ebbecb4f48bd7b318fe9756321/TestedSources/SSGameInstance.cpp"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+      "sha256": "9a397f3e48e2e1d00f0000b1103b12a75a41141c0dbc535489868ed0593bb542",
+      "sha256LfUtf8": "931182e66e8e1d916408bd476f8c49d97e544da1d34b379086242ee36568de91",
+      "snapshot": "Artifacts/SaveLifecycle/a7f697ebbecb4f48bd7b318fe9756321/TestedSources/SSGameMode.cpp"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp",
+      "sha256": "9fc2cbd84d25d2fa70b9017669030cc51da58ddf87bfed8adb5034cb631fdf03",
+      "sha256LfUtf8": "9fc2cbd84d25d2fa70b9017669030cc51da58ddf87bfed8adb5034cb631fdf03",
+      "snapshot": "Artifacts/SaveLifecycle/a7f697ebbecb4f48bd7b318fe9756321/TestedSources/SSSaveLifecycleAutomationTests.cpp"
+    },
+    {
+      "path": "Scripts/TestSaveLifecycle.ps1",
+      "sha256": "2cef4c1e1f93ca378fba43bcb5142df888665a4fa12c00fd831d9b4c583bec23",
+      "sha256LfUtf8": "2cef4c1e1f93ca378fba43bcb5142df888665a4fa12c00fd831d9b4c583bec23",
+      "snapshot": "Artifacts/SaveLifecycle/a7f697ebbecb4f48bd7b318fe9756321/TestedSources/TestSaveLifecycle.ps1"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSLocalSave.cpp",
+      "sha256": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402",
+      "sha256LfUtf8": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402",
+      "snapshot": "Artifacts/SaveLifecycle/a7f697ebbecb4f48bd7b318fe9756321/TestedSources/SSLocalSave.cpp"
+    }
+  ],
+  "compiledModule": {
+    "bytes": 1420800,
+    "sha256": "cbc8a33691f1a2b7fafa0d2c5bcfe7e56588069ad93f391a15da4b922af4c8a5",
+    "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+    "unchangedAcrossHarness": true
+  },
+  "build": {
+    "log": ".agent/local/ContractElectricalDiscardEditor.log",
+    "sha256": "a3b03440a4b115663aeef19ebbc971b63d811a881780dbe6b822d3a8afd8a44b",
+    "result": "Succeeded",
+    "seconds": 32.22,
+    "warnings": "Existing nonpreferred MSVC 14.51.36257 and engine Character.h C4996 warnings; no project compile errors."
+  },
+  "combinedAutomation": {
+    "log": ".agent/local/ContractElectricalDiscardTests.log",
+    "logSha256": "dca843725e897a941cf4a260130800ed9c96b2b7ab1887f0643e8fe937c31bdd",
+    "reportSha256": "e74a228a3a850ded022f44c971cf014f81e6ea991aed8d99692c55d137cebbe5",
+    "reportCreatedOn": "2026.09.13-08.50.18",
+    "succeeded": 17,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "inProcess": 0,
+    "totalDuration": 2.194974660873413,
+    "scope": "Parent-run combined suite; opt-in filesystem scenarios below ran separately in fresh processes."
+  },
+  "rawEvidence": {
+    "root": "Artifacts/SaveLifecycle/a7f697ebbecb4f48bd7b318fe9756321",
+    "resultSha256": "cbc2c92276219e9773ff7a2e7e6b746bf1ce987a7c301927831206c8765e9f61",
+    "driverLog": ".agent/local/Station2DiscardHarness.log",
+    "driverLogSha256": "a77c3e29a25c5aa36888d98e478418fb39f2c84b3260677f483c9864dfc91bcc",
+    "sourceSnapshotManifestSha256": "446fd5329c179e9feb85be0d44c04994fea5d9d046484df59aac546834fddf82"
+  },
+  "processResults": [
+    {
+      "phase": "Preflight",
+      "processId": 44812,
+      "exitCode": 0,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": false,
+      "receiptSha256": "cfb936038d31a8f673a492736cee10777df8d7c2ef889a4377b15c020c8bd558",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.51.56",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "inProcess": 0,
+        "totalDuration": 0.008036099374294281
+      },
+      "engineReportSha256": "87918ed4d03a1d9bf151444b7c3278f6a1244f2fd2bc42077ce121d6db0a2aa9",
+      "verifiedState": {}
+    },
+    {
+      "phase": "Suspend",
+      "processId": 59756,
+      "exitCode": 0,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "receiptSha256": "f591780bd3562c84c805d8a8006a63115fb6a01f95b6a50e90cd0587eef33128",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.52.10",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "inProcess": 0,
+        "totalDuration": 0.0286995992064476
+      },
+      "engineReportSha256": "a4b1c1104e4bc0a1d21ea744d9bb60a53635aaf4572c8d27bb60aba59d466a62",
+      "verifiedState": {
+        "xp": 0,
+        "level": 1,
+        "completedRuns": 0,
+        "highestWave": 5,
+        "runActive": true
+      }
+    },
+    {
+      "phase": "FailedDiscardStation2",
+      "processId": 61392,
+      "exitCode": 0,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "receiptSha256": "44f9e36161f87d425a29e753ffaa04907307d3d98b1ac7b4deb0fe8337fcc985",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.52.24",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "inProcess": 0,
+        "totalDuration": 0.05641220137476921
+      },
+      "engineReportSha256": "3b456d72d17965b8b18c73dfa96260bd5faad6e68f752f5edbf5aeb764a81d6e",
+      "verifiedState": {
+        "accountFailurePreservedRunAndSlots": true,
+        "suspendFailurePreservedRunAndCheckpoint": true,
+        "highestWavePersistedBeforeInvalidation": true,
+        "evidenceType": "STATION2_DISCARD_AUTOMATION",
+        "xp": 0,
+        "level": 1,
+        "completedRuns": 0,
+        "highestWave": 10,
+        "runActive": true
+      }
+    },
+    {
+      "phase": "DiscardStation2",
+      "processId": 74852,
+      "exitCode": 0,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "receiptSha256": "c5d07b8a60a6bc1d9125a9a1b4b40908ebada2183ae9a3eaaa3d1fd9dd7665bf",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.52.38",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "inProcess": 0,
+        "totalDuration": 0.048344001173973083
+      },
+      "engineReportSha256": "3a64dd53a19edec74633e9aad1672312616b9944f2de44305ac168a37e210c07",
+      "verifiedState": {
+        "freshInitRetainedHighestWave": true,
+        "olderCheckpointResumeKeptHighestWave": true,
+        "actualDiscardActionReturnedToHangar": true,
+        "evidenceType": "STATION2_DISCARD_AUTOMATION",
+        "xp": 0,
+        "level": 1,
+        "completedRuns": 0,
+        "highestWave": 10,
+        "runActive": false
+      }
+    },
+    {
+      "phase": "FreshAfterDiscard",
+      "processId": 33708,
+      "exitCode": 0,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "receiptSha256": "67b63b035c2d27b195c66701c478dd1897988de5b12c5b60ac85ceb1e1aa1829",
+      "engineReport": {
+        "reportCreatedOn": "2026.09.13-08.52.51",
+        "succeeded": 1,
+        "succeededWithWarnings": 0,
+        "failed": 0,
+        "notRun": 0,
+        "inProcess": 0,
+        "totalDuration": 0.011050399392843246
+      },
+      "engineReportSha256": "3d9c10400241e982a2ad0bb58bb89f8f846e2df600696282720fea723bd5e08e",
+      "verifiedState": {
+        "freshInitRetainedHighestWave": true,
+        "discardedCheckpointUnavailable": true,
+        "noDeathProgressionAwarded": true,
+        "evidenceType": "STATION2_DISCARD_AUTOMATION",
+        "xp": 0,
+        "level": 1,
+        "completedRuns": 0,
+        "highestWave": 10,
+        "runActive": false
+      }
+    }
+  ],
+  "verifiedBehavior": [
+    "A live Station 2 run is required; inactive and Station 1 attempts are rejected.",
+    "Actual menu action 51 under a real Windows account destination lock rejects replacement, preserves every live run/account field and exact account/checkpoint/settings bytes, and retains the menu with the storage error.",
+    "Actual action 51 under a suspension destination lock first durably stores highestWave 10, then fails invalidation while preserving the active run and exact valid Wave 5 checkpoint/settings bytes.",
+    "A separate fresh Init reads account highestWave 10; real resume of the older Wave 5 checkpoint does not downgrade that record.",
+    "Actual action 51 retry persists the account and invalidates the checkpoint before clearing the run and possessing the hangar walker.",
+    "Final fresh Init retains highestWave 10, XP 0, level 1, zero completed runs, empty history and no awarded-run marker; Continue/resume is unavailable and all three saved files remain byte-identical."
+  ],
+  "isolation": {
+    "strictGuidUserDir": true,
+    "exactGenericBackendVerifiedBeforeInit": true,
+    "reparsePathsRejected": true,
+    "ownedProcessesConfirmedExited": [
+      44812,
+      59756,
+      61392,
+      74852,
+      33708
+    ],
+    "exactlyThreeSaveDomains": true,
+    "leakedStagingFiles": 0,
+    "productionSaveHashesUnchanged": true,
+    "productionBeforeSha256": "7c692047526da12d3c2cd1f8961ae1addea7ec29ff4f82a75f7f7ccd7a121ef0",
+    "productionAfterSha256": "7c692047526da12d3c2cd1f8961ae1addea7ec29ff4f82a75f7f7ccd7a121ef0",
+    "productionManifest": [
+      {
+        "location": "LocalAppData/SpaceSurvival/Saved/SaveGames",
+        "exists": false,
+        "files": []
+      },
+      {
+        "location": "ProjectSaved/SaveGames",
+        "exists": true,
+        "files": [
+          {
+            "name": "SS_Account_v1.sav",
+            "bytes": 2233,
+            "sha256": "a6ee9827c19071ba4ee84da2faf97a389de1205c4447132a0eac2b066961ef86"
+          },
+          {
+            "name": "SS_Suspend_v1.sav",
+            "bytes": 1989,
+            "sha256": "76a28997a9f08bc4e63d6b59f9023444b1a799f47837c369dedcccb7d517db27"
+          }
+        ]
+      }
+    ]
+  },
+  "isolatedFinalSaveFiles": [
+    {
+      "name": "SS_Account_v1.sav",
+      "bytes": 2103,
+      "sha256": "83568b8fb1d67997ecf5f06fc10344dfcb6a4797527feacc03e3e66b47d09874"
+    },
+    {
+      "name": "SS_Settings_v1.sav",
+      "bytes": 2167,
+      "sha256": "bae0e2542ec37cca38ae2167d9c9836c1d73d0644bc0fd8a06e5202af2c3b6df"
+    },
+    {
+      "name": "SS_Suspend_v1.sav",
+      "bytes": 1989,
+      "sha256": "765bce887ccb0f3505ede19c5417328b25509c8546c1ead4e543c3251d887251"
+    }
+  ],
+  "limits": [
+    "Station advancement and contract objective completion are explicit assisted fixture setup; no natural Wave 1-10, rendered UI, physical input or performance acceptance.",
+    "GameMode action 51 runs in the real GameInstance-owned transient world before normal gameplay BeginPlay; actual save APIs, Windows destination locks and fresh engine processes are used.",
+    "No EndRun, victory, XP award or completed-run history entry is introduced by discard.",
+    "Account and suspension remain separate files: interruption after account persistence can leave an older resumable checkpoint. The regression proves record preservation on that retry path, not a cross-file transaction.",
+    "No disk-full, short-write, arbitrary corruption, hardware power-loss or new automatic backup/recovery claim."
+  ]
+}

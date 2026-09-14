@@ -1,0 +1,618 @@
+{
+  "status": "RENDERED_STATION_TRANSITION_FIXTURE_VERIFIED_NOT_REPRESENTATIVE_60_FPS_ACCEPTANCE",
+  "project_status": "PARTIAL",
+  "recorded_utc": "2026-09-13T09:53:11.979738+00:00",
+  "scenario": "Station5",
+  "package_number": 10,
+  "source_commit": "0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80",
+  "package_receipt": {
+    "path": "C:\\Users\\j6sis\\SpaceSurvival\\docs\\validation\\2026-09-13-windows-audio-economy-package.json",
+    "bytes": 72886,
+    "sha256": "2ebe23674d00842daae77efba00179c060bd6d6a7ca222add61880e8b995a271"
+  },
+  "capture": {
+    "token": "a179137cef334054a25b3edbda38e4e8",
+    "process_id": 40212,
+    "exit_code": 0,
+    "process_closed_check": "Read-only process lookup after capture found no process40212.",
+    "started_utc": "2026-09-13T09:41:02.6239342Z",
+    "finished_utc": "2026-09-13T09:43:54.0384535Z",
+    "evidence": [
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\a179137cef334054a25b3edbda38e4e8\\result.json",
+        "bytes": 38687,
+        "sha256": "8d85c7c0a0eb8cba0154da189278ac9408e823bd80e17e42c7f6f7d56f6f75e4"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\a179137cef334054a25b3edbda38e4e8\\fixture.json",
+        "bytes": 1444,
+        "sha256": "89f1c0df65a8f7ac30c919125d64574d384cb225d4dc60f320b0bb757875ade4"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\a179137cef334054a25b3edbda38e4e8\\performance.json",
+        "bytes": 79656,
+        "sha256": "ddb7a30d54c20081784a9a6f25c2fe2311b049d56ee83c6dfe2ec59530f8ca0e"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\a179137cef334054a25b3edbda38e4e8\\Endgame.csv",
+        "bytes": 34968558,
+        "sha256": "d3c46c971727308d0f3e8c6fe698772f2c94a792566bcc6c36b29092afd3d62f"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\a179137cef334054a25b3edbda38e4e8\\Rendered.log",
+        "bytes": 106957,
+        "sha256": "b0c58eb72c89893f4e773fad934fa3913bd30eb080d68a7104a56eb4931c0a8b"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\a179137cef334054a25b3edbda38e4e8\\source-before.json",
+        "bytes": 29786,
+        "sha256": "c95abf6efcbe109964b02654e9a05b5c47a8151d6688f8101fd000457db677ec"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\a179137cef334054a25b3edbda38e4e8\\production-before.json",
+        "bytes": 703,
+        "sha256": "d11e4f7c34188ba5d03cf5b2d86d82f3599a6853bec72c73b81f7d4b2186979f"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\a179137cef334054a25b3edbda38e4e8\\.ss-endgame-soak",
+        "bytes": 34,
+        "sha256": "77237f2661007490bd237e9b36415361a007c734252583601e58cbef1f321d7a"
+      }
+    ],
+    "fixture_result": {
+      "evidenceType": "RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY",
+      "success": true,
+      "failure": "",
+      "token": "a179137cef334054a25b3edbda38e4e8",
+      "processId": 40212,
+      "savedDir": "C:/Users/j6sis/SpaceSurvival/Artifacts/EndgameSoak/a179137cef334054a25b3edbda38e4e8/User/Saved/",
+      "csv": "C:/Users/j6sis/SpaceSurvival/Artifacts/EndgameSoak/a179137cef334054a25b3edbda38e4e8/Endgame.csv",
+      "noSaveSlotsWritten": true,
+      "allFixtureFramesForeground": true,
+      "scenario": "Station5",
+      "sawWave9": false,
+      "sawWave5": true,
+      "sawWormhole": true,
+      "sawDocking": true,
+      "sawAuthoredExit": true,
+      "wormholeSimulationSeconds": 8.00632270053029,
+      "dockingSimulationSeconds": 3.0001408979296684,
+      "exitSimulationSeconds": 2.3923160023987293,
+      "stationIdleSimulationSeconds": 15.006435099989176,
+      "sawBreathing": true,
+      "sawClimax": true,
+      "sawApproach": true,
+      "fixtureFrames": 16871,
+      "climaxSimulationSeconds": 40.00535859912634,
+      "compoundActorPresenceSeconds": 0,
+      "approachSimulationSeconds": 6.511785302311182,
+      "peakThreats": 23,
+      "wallSeconds": 140.72436989843845,
+      "fixture": "Seeded end of Wave4; starter/RapidLaser, Tier V, OverdriveCooling, base durability50000. Normal Wave5, 8s wormhole,40s climax, ordinary bounded steering to port, actual docking and2.4s exit,15s stationary hub. No forced docking/teleport, menu purchases, physical input, natural progression/balance or representative FPS acceptance."
+    }
+  },
+  "independent_audit": {
+    "result_and_fixture_agree": true,
+    "all_recorded_evidence_file_hashes_match": true,
+    "captured_source_files": 131,
+    "captured_source_clean": true,
+    "source_head": "0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80",
+    "capture_before_snapshot_matches_package_and_current_files": true,
+    "all_package_source_and_content_still_match": true,
+    "all7_capture_artifacts_match_package_and_current_files": true,
+    "production_before_after_and_current_bytes_match": true,
+    "no_test_slot_files": true,
+    "source_artifact_after_limit": "Wrapper compares before/after in memory and retains equality results; source-before/artifact-before are retained. This audit also compared every retained identity with current frozen files and the independent package receipt.",
+    "csv_recalculation": "Independent stdlib streaming CSV parser; exact final append-only header, metadata/footer excluded; all stage frame/GPU/game/render/RHI timing statistics and durations agree with performance.json.",
+    "frame_percentiles": "Nearest rank, no outlier removal; marked-stage aggregates include all captured stage frames.",
+    "stage_sequence": [
+      "Breathing",
+      "Flight",
+      "Wormhole",
+      "Climax",
+      "Approach",
+      "Docking",
+      "AuthoredExit",
+      "StationIdle"
+    ],
+    "phase_sample_difference_frames": [
+      14425
+    ]
+  },
+  "environment": {
+    "metadata": {
+      "platform": "Windows",
+      "config": "Development",
+      "buildversion": "++UE5+Release-5.8-CL-56702186",
+      "engineversion": "5.8.2-56702186+++UE5+Release-5.8",
+      "enginereleaseversion": "5.8.2",
+      "os": "Windows 11 (25H2) [10.0.26200.9445] ",
+      "cpu": "GenuineIntel|Intel(R) Core(TM) i7-14700F",
+      "gpu": "NVIDIA GeForce RTX 5080",
+      "gpudriver": "616.92",
+      "deviceprofile": "Windows",
+      "targetframerate": "120",
+      "starttimestamp": "1789292489",
+      "endtimestamp": "1789292629",
+      "captureduration": "140.647302",
+      "systemresolution.resx": "2560",
+      "systemresolution.resy": "1440",
+      "verbatimrhiname": "D3D12",
+      "rhiname": "D3D12",
+      "rhifeaturelevel": "SM6",
+      "shaderplatform": "PCD3D_SM6",
+      "vsyncenabled": "0",
+      "raytracing": "0",
+      "streamingpoolsizemb": "800",
+      "csvmaxfilebytesreached": "0",
+      "HasHeaderRowAtEnd": "1",
+      "EventTimestamps": "1"
+    },
+    "quality_readback": {
+      "ViewDistanceQuality": {
+        "level": 2,
+        "log_line": 906,
+        "timestamp_utc": "2026-09-13T09:41:04.587000+00:00"
+      },
+      "AntiAliasingQuality": {
+        "level": 2,
+        "log_line": 908,
+        "timestamp_utc": "2026-09-13T09:41:04.587000+00:00"
+      },
+      "ShadowQuality": {
+        "level": 2,
+        "log_line": 914,
+        "timestamp_utc": "2026-09-13T09:41:04.587000+00:00"
+      },
+      "GlobalIlluminationQuality": {
+        "level": 2,
+        "log_line": 930,
+        "timestamp_utc": "2026-09-13T09:41:04.587000+00:00"
+      },
+      "ReflectionQuality": {
+        "level": 2,
+        "log_line": 956,
+        "timestamp_utc": "2026-09-13T09:41:04.613000+00:00"
+      },
+      "PostProcessQuality": {
+        "level": 2,
+        "log_line": 965,
+        "timestamp_utc": "2026-09-13T09:41:04.613000+00:00"
+      },
+      "TextureQuality": {
+        "level": 2,
+        "log_line": 981,
+        "timestamp_utc": "2026-09-13T09:41:04.613000+00:00"
+      },
+      "EffectsQuality": {
+        "level": 2,
+        "log_line": 985,
+        "timestamp_utc": "2026-09-13T09:41:04.613000+00:00"
+      },
+      "FoliageQuality": {
+        "level": 2,
+        "log_line": 1002,
+        "timestamp_utc": "2026-09-13T09:41:04.614000+00:00"
+      },
+      "ShadingQuality": {
+        "level": 2,
+        "log_line": 1006,
+        "timestamp_utc": "2026-09-13T09:41:04.614000+00:00"
+      },
+      "LandscapeQuality": {
+        "level": 2,
+        "log_line": 1007,
+        "timestamp_utc": "2026-09-13T09:41:04.614000+00:00"
+      }
+    },
+    "effective_frame_limit": {
+      "counter": "MaxFrameTime",
+      "meaning": "Target frame budget, NOT actual frame time or simulation delta (UE LaunchEngineLoop.cpp).",
+      "gameplay_budget_ms_unique": [
+        8.3333
+      ],
+      "fps_from_median_budget": 120.0005,
+      "note": "CSV targetframerate metadata is retained separately; it can differ from the applied runtime cap."
+    },
+    "audio_device_initialized": true,
+    "audio_disabled": false,
+    "context": "Existing owner editor and normal desktop environment remain present; this is not a clean-machine benchmark."
+  },
+  "all_csv_frames": {
+    "frames": 16872,
+    "wall_frame_time_sum_s": 140.648611,
+    "fps_from_frame_time_sum": 119.958525,
+    "frame_time": {
+      "samples": 16872,
+      "mean_ms": 8.336215,
+      "median_ms": 8.3334,
+      "p95_ms": 8.3378,
+      "p99_ms": 8.461,
+      "min_ms": 7.8368,
+      "max_ms": 8.8284,
+      "frames_above_16_667_ms": 0
+    },
+    "gpu_time": {
+      "samples": 16872,
+      "mean_ms": 2.983432,
+      "median_ms": 2.78505,
+      "p95_ms": 4.4415,
+      "p99_ms": 4.8751,
+      "min_ms": 2.2528,
+      "max_ms": 5.8013,
+      "frames_above_16_667_ms": 0
+    },
+    "max_active_threats": 23
+  },
+  "marked_fixture_frames": {
+    "frames": 16871,
+    "wall_frame_time_sum_s": 140.640279,
+    "fps_from_frame_time_sum": 119.958522,
+    "frame_time": {
+      "samples": 16871,
+      "mean_ms": 8.336215,
+      "median_ms": 8.3334,
+      "p95_ms": 8.3378,
+      "p99_ms": 8.461,
+      "min_ms": 7.8368,
+      "max_ms": 8.8284,
+      "frames_above_16_667_ms": 0
+    },
+    "gpu_time": {
+      "samples": 16871,
+      "mean_ms": 2.983376,
+      "median_ms": 2.785,
+      "p95_ms": 4.4415,
+      "p99_ms": 4.8751,
+      "min_ms": 2.2528,
+      "max_ms": 5.8013,
+      "frames_above_16_667_ms": 0
+    },
+    "max_active_threats": 23
+  },
+  "stage_measurements": {
+    "Flight": {
+      "frames": 7189,
+      "wall_frame_time_sum_s": 59.924634,
+      "fps_from_frame_time_sum": 119.967358,
+      "frame_time": {
+        "samples": 7189,
+        "mean_ms": 8.335601,
+        "median_ms": 8.3334,
+        "p95_ms": 8.3367,
+        "p99_ms": 8.4347,
+        "min_ms": 7.967,
+        "max_ms": 8.7068,
+        "frames_above_16_667_ms": 0
+      },
+      "gpu_time": {
+        "samples": 7189,
+        "mean_ms": 2.744595,
+        "median_ms": 2.604,
+        "p95_ms": 3.4213,
+        "p99_ms": 3.614,
+        "min_ms": 2.2763,
+        "max_ms": 4.3287,
+        "frames_above_16_667_ms": 0
+      },
+      "max_active_threats": 23,
+      "simulation_seconds": 59.924632
+    },
+    "Breathing": {
+      "frames": 695,
+      "wall_frame_time_sum_s": 5.793288,
+      "fps_from_frame_time_sum": 119.96642,
+      "frame_time": {
+        "samples": 695,
+        "mean_ms": 8.335666,
+        "median_ms": 8.3334,
+        "p95_ms": 8.3376,
+        "p99_ms": 8.4222,
+        "min_ms": 8.264,
+        "max_ms": 8.577,
+        "frames_above_16_667_ms": 0
+      },
+      "gpu_time": {
+        "samples": 695,
+        "mean_ms": 2.654491,
+        "median_ms": 2.5042,
+        "p95_ms": 3.3367,
+        "p99_ms": 3.5115,
+        "min_ms": 2.2528,
+        "max_ms": 3.7093,
+        "frames_above_16_667_ms": 0
+      },
+      "max_active_threats": 0,
+      "simulation_seconds": 5.793288
+    },
+    "Wormhole": {
+      "frames": 960,
+      "wall_frame_time_sum_s": 8.00632,
+      "fps_from_frame_time_sum": 119.90527,
+      "frame_time": {
+        "samples": 960,
+        "mean_ms": 8.339917,
+        "median_ms": 8.3335,
+        "p95_ms": 8.3711,
+        "p99_ms": 8.5213,
+        "min_ms": 8.1176,
+        "max_ms": 8.7139,
+        "frames_above_16_667_ms": 0
+      },
+      "gpu_time": {
+        "samples": 960,
+        "mean_ms": 2.939961,
+        "median_ms": 2.8108,
+        "p95_ms": 3.6068,
+        "p99_ms": 3.8065,
+        "min_ms": 2.4445,
+        "max_ms": 4.1192,
+        "frames_above_16_667_ms": 0
+      },
+      "max_active_threats": 16,
+      "simulation_seconds": 8.006323
+    },
+    "Climax": {
+      "frames": 4799,
+      "wall_frame_time_sum_s": 40.005361,
+      "fps_from_frame_time_sum": 119.958923,
+      "frame_time": {
+        "samples": 4799,
+        "mean_ms": 8.336187,
+        "median_ms": 8.3334,
+        "p95_ms": 8.3383,
+        "p99_ms": 8.454,
+        "min_ms": 7.8368,
+        "max_ms": 8.8284,
+        "frames_above_16_667_ms": 0
+      },
+      "gpu_time": {
+        "samples": 4799,
+        "mean_ms": 2.713607,
+        "median_ms": 2.568,
+        "p95_ms": 3.3822,
+        "p99_ms": 3.5706,
+        "min_ms": 2.2859,
+        "max_ms": 4.1292,
+        "frames_above_16_667_ms": 0
+      },
+      "max_active_threats": 11,
+      "simulation_seconds": 40.005359
+    },
+    "Approach": {
+      "frames": 781,
+      "wall_frame_time_sum_s": 6.511785,
+      "fps_from_frame_time_sum": 119.9364,
+      "frame_time": {
+        "samples": 781,
+        "mean_ms": 8.337752,
+        "median_ms": 8.3335,
+        "p95_ms": 8.3378,
+        "p99_ms": 8.5127,
+        "min_ms": 7.9594,
+        "max_ms": 8.7297,
+        "frames_above_16_667_ms": 0
+      },
+      "gpu_time": {
+        "samples": 781,
+        "mean_ms": 3.120186,
+        "median_ms": 2.9847,
+        "p95_ms": 4.3543,
+        "p99_ms": 5.007,
+        "min_ms": 2.3383,
+        "max_ms": 5.8013,
+        "frames_above_16_667_ms": 0
+      },
+      "max_active_threats": 5,
+      "simulation_seconds": 6.511785
+    },
+    "Docking": {
+      "frames": 360,
+      "wall_frame_time_sum_s": 3.000141,
+      "fps_from_frame_time_sum": 119.994348,
+      "frame_time": {
+        "samples": 360,
+        "mean_ms": 8.333726,
+        "median_ms": 8.33345,
+        "p95_ms": 8.337,
+        "p99_ms": 8.3575,
+        "min_ms": 8.3025,
+        "max_ms": 8.3641,
+        "frames_above_16_667_ms": 0
+      },
+      "gpu_time": {
+        "samples": 360,
+        "mean_ms": 4.407577,
+        "median_ms": 4.2833,
+        "p95_ms": 5.1114,
+        "p99_ms": 5.4305,
+        "min_ms": 3.9826,
+        "max_ms": 5.4854,
+        "frames_above_16_667_ms": 0
+      },
+      "max_active_threats": 5,
+      "simulation_seconds": 3.000141
+    },
+    "AuthoredExit": {
+      "frames": 287,
+      "wall_frame_time_sum_s": 2.392315,
+      "fps_from_frame_time_sum": 119.967479,
+      "frame_time": {
+        "samples": 287,
+        "mean_ms": 8.335592,
+        "median_ms": 8.3335,
+        "p95_ms": 8.3376,
+        "p99_ms": 8.5003,
+        "min_ms": 7.9153,
+        "max_ms": 8.7502,
+        "frames_above_16_667_ms": 0
+      },
+      "gpu_time": {
+        "samples": 287,
+        "mean_ms": 4.180447,
+        "median_ms": 4.078,
+        "p95_ms": 4.853,
+        "p99_ms": 5.0298,
+        "min_ms": 3.655,
+        "max_ms": 5.1922,
+        "frames_above_16_667_ms": 0
+      },
+      "max_active_threats": 5,
+      "simulation_seconds": 2.392316
+    },
+    "StationIdle": {
+      "frames": 1800,
+      "wall_frame_time_sum_s": 15.006435,
+      "fps_from_frame_time_sum": 119.948539,
+      "frame_time": {
+        "samples": 1800,
+        "mean_ms": 8.336909,
+        "median_ms": 8.3335,
+        "p95_ms": 8.339,
+        "p99_ms": 8.5396,
+        "min_ms": 7.9733,
+        "max_ms": 8.8083,
+        "frames_above_16_667_ms": 0
+      },
+      "gpu_time": {
+        "samples": 1800,
+        "mean_ms": 4.271347,
+        "median_ms": 4.1766,
+        "p95_ms": 4.8942,
+        "p99_ms": 5.122,
+        "min_ms": 3.8556,
+        "max_ms": 5.5784,
+        "frames_above_16_667_ms": 0
+      },
+      "max_active_threats": 0,
+      "simulation_seconds": 15.006435
+    }
+  },
+  "simulation_delta": {
+    "samples": 16871,
+    "mean_ms": 8.336215,
+    "median_ms": 8.3334,
+    "p95_ms": 8.3335,
+    "p99_ms": 8.435,
+    "min_ms": 8.3334,
+    "max_ms": 8.8075,
+    "frames_above_16_667_ms": 0
+  },
+  "kind_counts": {
+    "Gravity": {
+      "maximum": 0,
+      "mean": 0.0
+    },
+    "Asteroids": {
+      "maximum": 8,
+      "mean": 2.375378
+    },
+    "Wreckage": {
+      "maximum": 12,
+      "mean": 2.176042
+    },
+    "Electrical": {
+      "maximum": 2,
+      "mean": 0.607966
+    },
+    "Pursuers": {
+      "maximum": 1,
+      "mean": 0.625511
+    },
+    "Flankers": {
+      "maximum": 5,
+      "mean": 1.918914
+    },
+    "Projectiles": {
+      "maximum": 25,
+      "mean": 15.907237
+    },
+    "Pickups": {
+      "maximum": 1,
+      "mean": 0.047122
+    }
+  },
+  "production_save_readback": [
+    {
+      "directory": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames",
+      "exists": true,
+      "files": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Account_v1.sav",
+          "bytes": 2233,
+          "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Suspend_v1.sav",
+          "bytes": 1989,
+          "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+        }
+      ]
+    },
+    {
+      "directory": "C:\\Users\\j6sis\\AppData\\Local\\SpaceSurvival\\Saved\\SaveGames",
+      "exists": false,
+      "files": []
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival.exe",
+      "bytes": 171520,
+      "sha256": "619AC0779DCEABF638639193EFDEA0733E3B4626DEA623C07062F160F5ABCCF8"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+      "bytes": 332521984,
+      "sha256": "4DDE20DC8776827419EE7E3FA58EBDCA9CDD6AAC203DB0754AB57F8D51FD7498"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+      "bytes": 3204592,
+      "sha256": "50C983FBF45CB7BE7E94B056F5FFE6C1EE47788434736A690AC3C23F904FFE23"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+      "bytes": 782,
+      "sha256": "EA2DFB0FAA7436E05DA8D2CCB31931DF65AEE5EE965963A82C28C2AC444927B9"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+      "bytes": 11234869,
+      "sha256": "F94B0EC47F7FF9ADCF6C3EBF628052241F039886947175A1349F9286ACA244A2"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+      "bytes": 254792272,
+      "sha256": "46F70490400A134CDF5C7113F40003B2EE4E94AE82C5D2E4573B118E4A8F7CE2"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+      "bytes": 220915,
+      "sha256": "F914C1D57412E381D4507CDE909C1F717BB0E3919B0567D2872DAFD525F77F11"
+    }
+  ],
+  "timing_interpretation": {
+    "normal_runtime": "Seed ends Wave4, then real Session/Director Wave5, nominal8s wormhole,40s climax, ordinary approach,3s docking and2.4s authored exit into15s stationary hub. Native guard rejects fixed timestep, fixed frame rate, time dilation and any unmarked foreground loss.",
+    "controller_and_input": "Real controller possesses the runtime flight/walking pawn. Fixture directly calls existing ship SetFlightInput/RequestDodge/Fire; physical input is bypassed, not validated.",
+    "phase_sampling": "GameMode samples before automatic BeginDocking; fixture samples PostUpdate. One CSV frame therefore differs. AuthoredExit2.392316s measures frames still reporting disembarking; the terminal update switches to stationary stage, so it is not a slowed/shortened authored clip claim.",
+    "seed_frame": "One CSV seed frame has no fixture marker and is retained in all16872-frame statistics;16871 marked frames are all foreground. Startup/focus wait and CSV-drain time are outside the capture."
+  },
+  "visual_observation": {
+    "lead_report": "Lead visually observed flight only during this run.",
+    "not_observed": [
+      "wormhole appearance",
+      "docking camera/animation",
+      "authored exit appearance"
+    ],
+    "independent_audit": "Read-only files/source/CSV; no UI observation and no visual assertions inferred from phase counters."
+  },
+  "limits": [
+    "Seeded starter/RapidLaser, all five TierV upgrades, OverdriveCooling and base hull/shield50000; actual resulting hull140000. Optional events pre-marked seen. This is not natural balance or a full ten-wave run.",
+    "No physical keyboard/mouse/controller response, natural docking or station service interaction acceptance.",
+    "Audio renderer device was initialized and audio enabled; no listening, cue audibility, spatial perception or cinematic mix acceptance.",
+    "Counts include active telegraphs/offscreen actors; presence does not establish visible contact or readability.",
+    "Capped120FPS1440pDX12quality2 sample does not establish uncapped headroom, low-end scalability, long-session leaks or the representative60FPS gate.",
+    "Owner art rejection and19human checks remain open."
+  ]
+}

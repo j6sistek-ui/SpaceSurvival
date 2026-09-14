@@ -1,0 +1,334 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-13T10:56:17.647282+00:00",
+  "status": "SWIFT_SOURCE_VALIDATED_RENDERED_NOT_IMPORTED_ADOPTED_OR_OWNER_ACCEPTED",
+  "scope": "Only ContentSource/SwiftCandidate; original authoring helpers and cockpit read, no Source/Config/Content edits, build, Unreal process or gameplay selection.",
+  "source_origin": "Original replacement body around 24 exactly preserved authored Acorn cockpit components. No downloaded source. Existing Acornaut is transient only in source render.",
+  "generator": {
+    "path": "ContentSource\\SwiftCandidate\\Generate.py",
+    "bytes": 22525,
+    "sha256": "d8dc3916bd9940764cdb5238a4a0aae9a71f74175cd330c6fb1c25a4e8c0ecf7"
+  },
+  "validator": {
+    "path": "ContentSource\\SwiftCandidate\\Validate.py",
+    "bytes": 6800,
+    "sha256": "09ba1b6a579035d5b347869cf8bac2025c44f52d963168ad4fd293b2650bcbb5"
+  },
+  "original_helper": {
+    "path": "ContentSource\\GenerateAcornShipCandidate.py",
+    "bytes": 24713,
+    "sha256": "25c6b27a5d994fecef014735ac67bf89cca5ed0073adc6fd0f5fddd78418400e"
+  },
+  "reports": [
+    {
+      "path": "ContentSource\\SwiftCandidate\\Report.json",
+      "bytes": 19790,
+      "sha256": "b730855c4b08a3fa86d4238d72acbbd21ee720ceb9bc79bb4fb5d890b43d161d"
+    },
+    {
+      "path": "ContentSource\\SwiftCandidate\\Validation.json",
+      "bytes": 12538,
+      "sha256": "d29582e59896312208151c2bbdb4405f3c55edfbbddd8c87855b3a377ea42a9b"
+    },
+    {
+      "path": "ContentSource\\SwiftCandidate\\RenderReport.json",
+      "bytes": 1809,
+      "sha256": "ef85e82d07da0cd434234d08fef00c47f78c784a0a3da3f8f783e9e55ba34458"
+    },
+    {
+      "path": "ContentSource\\SwiftCandidate\\Reproduction.json",
+      "bytes": 568,
+      "sha256": "8d441ad3118403ebda0e7c9679d193a293863170cb46a0c1490430664a563cf9"
+    }
+  ],
+  "source_outputs": [
+    {
+      "path": "ContentSource\\SwiftCandidate\\SwiftCandidate.blend",
+      "bytes": 373896,
+      "sha256": "147ca048c7383737fb6babe4fe24cced312bd6760b9a3f1d36ee2ff4dcee69f5"
+    },
+    {
+      "path": "ContentSource\\SwiftCandidate\\SwiftCandidate.glb",
+      "bytes": 1601876,
+      "sha256": "fcefcdb52e0366d0ca44d3b58fa3094645c57df5cea6c8f2367fc85a31eaad3f"
+    },
+    {
+      "path": "ContentSource\\SwiftCandidate\\SwiftCandidate.mtl",
+      "bytes": 643,
+      "sha256": "d939dda1dd593fdc5787faec9b6765206baa165a104af7ca65017b154752a25a"
+    },
+    {
+      "path": "ContentSource\\SwiftCandidate\\SwiftCandidate.obj",
+      "bytes": 11451842,
+      "sha256": "5aff093c056f7e49b2038a435a05fb6714d2c046be59a7fafa786658881dfe8c"
+    }
+  ],
+  "model": {
+    "triangles": 46456,
+    "vertices": 23578,
+    "materials": [
+      {
+        "name": "AC01_GraphiteStructure",
+        "base_color": [
+          0.017999999225139618,
+          0.027000000700354576,
+          0.03200000151991844,
+          1.0
+        ],
+        "metallic": 0.7200000286102295,
+        "roughness": 0.2800000011920929,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      {
+        "name": "AC01_ChampagneEdges",
+        "base_color": [
+          0.6800000071525574,
+          0.38999998569488525,
+          0.12999999523162842,
+          1.0
+        ],
+        "metallic": 0.8500000238418579,
+        "roughness": 0.20999999344348907,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      {
+        "name": "AC01_IonAndNav",
+        "base_color": [
+          0.014999999664723873,
+          0.4000000059604645,
+          0.5799999833106995,
+          1.0
+        ],
+        "metallic": 0.18000000715255737,
+        "roughness": 0.20000000298023224,
+        "emission": 3.5,
+        "transmission": 0.0
+      },
+      {
+        "name": "AC01_Windscreen",
+        "base_color": [
+          0.3799999952316284,
+          0.6700000166893005,
+          0.7200000286102295,
+          1.0
+        ],
+        "metallic": 0.0,
+        "roughness": 0.06499999761581421,
+        "emission": 0.0,
+        "transmission": 0.9200000166893005
+      },
+      {
+        "name": "AC01_CockpitPadding",
+        "base_color": [
+          0.008999999612569809,
+          0.014000000432133675,
+          0.01600000075995922,
+          1.0
+        ],
+        "metallic": 0.0,
+        "roughness": 0.550000011920929,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      {
+        "name": "AC01_IvoryPanels",
+        "base_color": [
+          0.8700000047683716,
+          0.8600000143051147,
+          0.7799999713897705,
+          1.0
+        ],
+        "metallic": 0.05999999865889549,
+        "roughness": 0.23999999463558197,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      {
+        "name": "AC01_MachinedTitanium",
+        "base_color": [
+          0.23000000417232513,
+          0.27000001072883606,
+          0.30000001192092896,
+          1.0
+        ],
+        "metallic": 0.9200000166893005,
+        "roughness": 0.2199999988079071,
+        "emission": 0.0,
+        "transmission": 0.0
+      }
+    ],
+    "bounds_cm": [
+      [
+        -243.4999942779541,
+        -128.17363739013672,
+        -56.930601596832275
+      ],
+      [
+        239.00001049041748,
+        128.17363739013672,
+        97.8000819683075
+      ]
+    ],
+    "parts": 85,
+    "preserved_cockpit_parts": 24,
+    "new_body_parts": 61,
+    "new_body_degenerate_triangles": 0,
+    "retained_cockpit_degenerate_export_triangles": 278,
+    "degenerate_by_part": {
+      "Instrument glass -0.15": 38,
+      "Instrument glass 0": 44,
+      "Instrument glass 0.15": 44,
+      "Pilot footwell": 44,
+      "Seat back": 52,
+      "Seat cushion": 56
+    },
+    "pilot_transform": {
+      "position_cm": [
+        -15,
+        0,
+        72
+      ],
+      "unreal_yaw_degrees": -90,
+      "blender_z_rotation_degrees": 90,
+      "scale": 1.5
+    },
+    "pivot_cm": [
+      0,
+      0,
+      0
+    ]
+  },
+  "source_validation": {
+    "fresh_blender_version": "5.1.2",
+    "status": "SWIFT_FRESH_SOURCE_GEOMETRY_COCKPIT_EXPORT_CHECKS_PASS_NOT_UNREAL",
+    "obj": {
+      "vertices": 23578,
+      "triangles": 46456,
+      "materials": [
+        "AC01_ChampagneEdges",
+        "AC01_CockpitPadding",
+        "AC01_GraphiteStructure",
+        "AC01_IonAndNav",
+        "AC01_IvoryPanels",
+        "AC01_MachinedTitanium",
+        "AC01_Windscreen"
+      ],
+      "finite_unit_normals": true,
+      "finite_unit_square_uvs": true,
+      "valid_references": true,
+      "triangles_below_1e_8_cm2": 278,
+      "bounds_cm": [
+        [
+          -243.4999943,
+          -128.1736374,
+          -56.9306016
+        ],
+        [
+          239.0000105,
+          128.1736374,
+          97.800082
+        ]
+      ]
+    },
+    "glb": {
+      "one_mesh": true,
+      "material_primitives": 7,
+      "triangles": 46456,
+      "skins_animations_images_textures": 0,
+      "finite_attributes": true,
+      "maximum_squared_normal_length_error": 2.5704557149452967e-07
+    },
+    "log": {
+      "path": "ContentSource\\SwiftCandidate\\ValidationFinal.log",
+      "bytes": 472,
+      "sha256": "293c7687a470072504ad6f4ea13e1c5e3a4e2a6d5e69a26753deb1c622d8f972"
+    },
+    "stderr": {
+      "path": "ContentSource\\SwiftCandidate\\ValidationFinalError.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "exit_code": 0,
+    "source_only_not_unreal": true
+  },
+  "reproduction": {
+    "status": "FRESH_BLENDER_REBUILD_BYTE_IDENTICAL_OBJ_GLB_MTL",
+    "files": {
+      "SwiftCandidate.obj": "5aff093c056f7e49b2038a435a05fb6714d2c046be59a7fafa786658881dfe8c",
+      "SwiftCandidate.mtl": "d939dda1dd593fdc5787faec9b6765206baa165a104af7ca65017b154752a25a",
+      "SwiftCandidate.glb": "fcefcdb52e0366d0ca44d3b58fa3094645c57df5cea6c8f2367fc85a31eaad3f"
+    },
+    "log": {
+      "path": "ContentSource\\SwiftCandidate\\Reproduction.log",
+      "bytes": 852,
+      "sha256": "fcdb3d0c7c6e4a78cfbddd1877b4604c314da1d50d1466506e7d52fe2c76a94d"
+    },
+    "exit_code": 0,
+    "editable_blend_bytes_deterministic": false
+  },
+  "render": {
+    "renderer": "Cycles CPU8 / 32 samples / 1440x1050 / AgX",
+    "owned_pid": 83452,
+    "exit_code": 0,
+    "process_gone": true,
+    "log": {
+      "path": "ContentSource\\SwiftCandidate\\RenderFinal.log",
+      "bytes": 882,
+      "sha256": "ec005d60866876c0f917884aea5d3a7f605a6a4492c8d7d0f3be9beb1095b422"
+    },
+    "stderr": {
+      "path": "ContentSource\\SwiftCandidate\\RenderFinalError.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "images": [
+      {
+        "file": "Hero.png",
+        "sha256": "2dd5f3317b397c1db77242b28cd3dbfb9b0dbcc4b7b6c799f6083a322e411211"
+      },
+      {
+        "file": "Chase.png",
+        "sha256": "d30cac09ac97eaf32d77bc1e3f81a53c67a719cd1f9cf9451ebe1fdd08b9f95e"
+      },
+      {
+        "file": "Top.png",
+        "sha256": "a4fa74f5ff6a60617208079dca268892d0e5b8a1322328a4a7f04adef30ae509"
+      },
+      {
+        "file": "Cockpit.png",
+        "sha256": "c84179ca11daebaf894c7f87a18e08a3b1ed31758b40bf8fd2e33aaab24c84cf"
+      }
+    ],
+    "optional_probe_warning": "HIPEW initialization failed: Error opening HIP dynamic library. Actual scene cycles.device=CPU,8threads; render completed normally.",
+    "observations": [
+      "Hero, Chase and Top show the full corrected narrow Swift silhouette without overview clipping.",
+      "Continuous hull interpolation and curved ceramic panels correct initial lumpy highlights/intersections.",
+      "Cockpit is a deliberate close detail showing preserved open-palm fit and existing tail defects."
+    ],
+    "limits": "Blender studio plus transient unchanged Pilot0s character. No Unreal/gameplay/physical-input/performance or owner acceptance."
+  },
+  "protected_originals_sha256": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource/Animation/Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource/Animation/TailCandidateV2.glb": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+    "ContentSource/Animation/Disembark.glb": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+    "ContentSource/AcornShipCandidate/AcornShipCandidate.blend": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c",
+    "ContentSource/AcornShipCandidate/AcornShipCandidate.obj": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+    "ContentSource/AcornShipCandidate/AcornShipCandidate.glb": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e",
+    "ContentSource/Meshes/SM_AgileShip.obj": "2d8bb73ac2a35d25cf62f1108d412beaa3fcfa797da922aed9e59ea3ebfce54c",
+    "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset": "9c29554cd017c56d26f691f3b05b39e993f768188b8f02fdef5901b370518c07"
+  },
+  "readme": {
+    "path": "ContentSource\\SwiftCandidate\\README.md",
+    "bytes": 5063,
+    "sha256": "8766aa734effcd9fc9d461e122c14add7ff513e614b49be0269344c431762c14"
+  },
+  "limitations": [
+    "Seven material sections and a single source LOD; no runtime cost measured.",
+    "All278 collapsed export triangles originate in six retained cockpit parts; no zero-degeneracy mesh claim.",
+    "Original cockpit preserved exactly; subsequent grip/pose candidates excluded pending lead review.",
+    "No native import, package, game lighting, full animated clearance, collision feel or natural balance acceptance."
+  ]
+}

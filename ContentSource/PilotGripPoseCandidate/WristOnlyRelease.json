@@ -1,0 +1,982 @@
+{
+  "status": "PAIRED_L_ONLY_ROTATION_PATCH_SOURCE_NOT_IMPORTED",
+  "protected_sha256": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource\\Animation\\Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource\\Animation\\Disembark.glb": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+    "ContentSource\\Animation\\TailCandidateV2.glb": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+    "ContentSource\\AcornShipGripFit\\AcornShipGripFit.blend": "bcd8d19b6408e7f4133d9fb34e7cdd705b2695cfbe7324bb5e754fd14648acb9"
+  },
+  "changed_rotation_tracks": [
+    "L_Wrist",
+    "L_Thumb1",
+    "L_Thumb2",
+    "L_Thumb3",
+    "L_Index1",
+    "L_Index2",
+    "L_Index3",
+    "L_Middle1",
+    "L_Middle2",
+    "L_Middle3",
+    "L_Ring1",
+    "L_Ring2",
+    "L_Ring3",
+    "L_Pinky1",
+    "L_Pinky2",
+    "L_Pinky3"
+  ],
+  "unchanged_track_contract": "All translations/scales and non-L-hand rotations copied byte-for-byte on export; all Exit outputs from sample13 (0.433333s) onward use exact old rotation values.",
+  "release": "Begin at candidatePilot0, open fingers over0.05-0.20s, point hand upward while arm retracts, converge to original wrist0.30-0.42s. Original lower-body/arm path unchanged.",
+  "live_phase_handoff": "Lead owns captured-pose proxy; source pair alone does not remove live Pilot phase mismatch.",
+  "release_samples": [
+    {
+      "seconds": 0.0,
+      "original": {
+        "L": {
+          "bvh_pairs": 38,
+          "confirmed_triangle_crossings": 38,
+          "crossing_skin_triangle_ids": [
+            188905,
+            188923,
+            188932,
+            188933,
+            188943,
+            188945,
+            188952,
+            188953,
+            188972,
+            188975,
+            188984,
+            188994,
+            188995,
+            188996,
+            189008,
+            189014,
+            189026,
+            189040,
+            191931,
+            191933,
+            191945,
+            191948,
+            191958
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              16.289917131265007,
+              20.717250307401024,
+              89.8518979549408
+            ],
+            [
+              21.976570785045624,
+              23.96117846171061,
+              91.5818472703298
+            ]
+          ]
+        },
+        "R": {
+          "bvh_pairs": 26,
+          "confirmed_triangle_crossings": 26,
+          "crossing_skin_triangle_ids": [
+            2152,
+            2153,
+            2154,
+            2164,
+            2167,
+            2191,
+            2192
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              15.172342956066132,
+              -21.46215091149012,
+              91.13346536954245
+            ],
+            [
+              17.37158546845118,
+              -18.135134379069008,
+              93.21855505307516
+            ]
+          ]
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 78,
+          "confirmed_triangle_crossings": 78,
+          "crossing_skin_triangle_ids": [
+            192124,
+            192125,
+            192126,
+            192127,
+            192246,
+            192247,
+            192248,
+            192258,
+            192259,
+            192260,
+            192261,
+            192286,
+            192289,
+            192298,
+            192299,
+            192304,
+            192310,
+            192312,
+            192317,
+            192318,
+            192319,
+            192324,
+            192326,
+            192338,
+            192346,
+            192347,
+            192348,
+            192357,
+            192358,
+            192359,
+            192365,
+            192366,
+            192370,
+            192381,
+            192383,
+            192384,
+            192391,
+            192408
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              14.521099627017975,
+              20.80558786789576,
+              88.58241836229959
+            ],
+            [
+              21.775396168231964,
+              24.56237574418386,
+              90.83600838979086
+            ]
+          ]
+        },
+        "R": {
+          "bvh_pairs": 26,
+          "confirmed_triangle_crossings": 26,
+          "crossing_skin_triangle_ids": [
+            2152,
+            2153,
+            2154,
+            2164,
+            2167,
+            2191,
+            2192
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              15.172342956066132,
+              -21.46215091149012,
+              91.13346536954245
+            ],
+            [
+              17.37158546845118,
+              -18.135134379069008,
+              93.21855505307516
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "seconds": 0.1,
+      "original": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "seconds": 0.16666666666666666,
+      "original": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "seconds": 0.2,
+      "original": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "seconds": 0.23333333333333334,
+      "original": {
+        "L": {
+          "bvh_pairs": 30,
+          "confirmed_triangle_crossings": 30,
+          "crossing_skin_triangle_ids": [
+            189234,
+            189235,
+            189257,
+            189272,
+            189273,
+            189291,
+            189302,
+            189321,
+            189322,
+            189329,
+            189336,
+            189343,
+            189350,
+            192952
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              17.948033909002937,
+              21.181920170783997,
+              90.2067224184672
+            ],
+            [
+              22.877119481563568,
+              24.307365715503693,
+              91.25479459762573
+            ]
+          ]
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "seconds": 0.26666666666666666,
+      "original": {
+        "L": {
+          "bvh_pairs": 118,
+          "confirmed_triangle_crossings": 118,
+          "crossing_skin_triangle_ids": [
+            188916,
+            188943,
+            188944,
+            188945,
+            188972,
+            188973,
+            188974,
+            188975,
+            188995,
+            189008,
+            189014,
+            189026,
+            189040,
+            189041,
+            189042,
+            189052,
+            189089,
+            189116,
+            189120,
+            189138,
+            189140,
+            189144,
+            189163,
+            189164,
+            189165,
+            189187,
+            189188,
+            189201,
+            189202,
+            189203,
+            189236,
+            189248,
+            189259,
+            189260,
+            189261,
+            191952,
+            191954,
+            191957,
+            191958,
+            192021,
+            192022,
+            192117,
+            192118,
+            192119,
+            192122,
+            192127,
+            192192,
+            192204,
+            192205,
+            192206,
+            192236,
+            192274,
+            192284,
+            192286,
+            192287,
+            192293,
+            192294,
+            192304,
+            192310,
+            192323,
+            192324,
+            192338,
+            192363,
+            192364
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              10.93897745013237,
+              20.36841710408529,
+              84.31261976559958
+            ],
+            [
+              22.2919300198555,
+              25.955766439437866,
+              91.52550299962363
+            ]
+          ]
+        },
+        "R": {
+          "bvh_pairs": 132,
+          "confirmed_triangle_crossings": 132,
+          "crossing_skin_triangle_ids": [
+            226,
+            230,
+            234,
+            235,
+            236,
+            237,
+            239,
+            241,
+            244,
+            246,
+            255,
+            261,
+            262,
+            265,
+            268,
+            272,
+            273,
+            278,
+            279,
+            281,
+            2010,
+            2011,
+            2012,
+            2013,
+            2015,
+            2017,
+            2018,
+            2020,
+            2141,
+            2149,
+            2150,
+            2152,
+            2156,
+            2157,
+            2158,
+            2160,
+            2161,
+            2162,
+            2164,
+            2167,
+            2168,
+            2175,
+            2176,
+            2177,
+            2180,
+            2191,
+            2192,
+            6904,
+            6910,
+            6913,
+            6914,
+            6915,
+            6916,
+            6918,
+            8264,
+            8265,
+            8273,
+            8277,
+            8279,
+            8287,
+            8288,
+            8289,
+            8292,
+            8293,
+            8294,
+            8800,
+            8808
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              11.093698690334957,
+              -24.963332215944924,
+              85.67251761754355
+            ],
+            [
+              18.210137387116752,
+              -17.487424115339913,
+              91.30534132321677
+            ]
+          ]
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 42,
+          "confirmed_triangle_crossings": 42,
+          "crossing_skin_triangle_ids": [
+            185641,
+            185649,
+            185657,
+            185665,
+            185666,
+            185682,
+            185688,
+            185689,
+            185690,
+            185695,
+            185696,
+            185697,
+            185698,
+            185714,
+            185715,
+            185727,
+            192302,
+            192303,
+            192314,
+            192342,
+            192350,
+            192373,
+            192374
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              11.36833056807518,
+              22.562752167383827,
+              86.64089838663736
+            ],
+            [
+              13.398750126361847,
+              25.150929391384125,
+              88.76046339670816
+            ]
+          ]
+        },
+        "R": {
+          "bvh_pairs": 132,
+          "confirmed_triangle_crossings": 132,
+          "crossing_skin_triangle_ids": [
+            226,
+            230,
+            234,
+            235,
+            236,
+            237,
+            239,
+            241,
+            244,
+            246,
+            255,
+            261,
+            262,
+            265,
+            268,
+            272,
+            273,
+            278,
+            279,
+            281,
+            2010,
+            2011,
+            2012,
+            2013,
+            2015,
+            2017,
+            2018,
+            2020,
+            2141,
+            2149,
+            2150,
+            2152,
+            2156,
+            2157,
+            2158,
+            2160,
+            2161,
+            2162,
+            2164,
+            2167,
+            2168,
+            2175,
+            2176,
+            2177,
+            2180,
+            2191,
+            2192,
+            6904,
+            6910,
+            6913,
+            6914,
+            6915,
+            6916,
+            6918,
+            8264,
+            8265,
+            8273,
+            8277,
+            8279,
+            8287,
+            8288,
+            8289,
+            8292,
+            8293,
+            8294,
+            8800,
+            8808
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              11.093698690334957,
+              -24.963332215944924,
+              85.67251761754355
+            ],
+            [
+              18.210137387116752,
+              -17.487424115339913,
+              91.30534132321677
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "seconds": 0.3,
+      "original": {
+        "L": {
+          "bvh_pairs": 98,
+          "confirmed_triangle_crossings": 98,
+          "crossing_skin_triangle_ids": [
+            188256,
+            188257,
+            188270,
+            188271,
+            188272,
+            188273,
+            188274,
+            188297,
+            188298,
+            188299,
+            188320,
+            188333,
+            188334,
+            188335,
+            188337,
+            188338,
+            188339,
+            188371,
+            188388,
+            188397,
+            188418,
+            188419,
+            188434,
+            188435,
+            188440,
+            188446,
+            188447,
+            188455,
+            188914,
+            188932,
+            191583,
+            191602,
+            191603,
+            191623,
+            191643,
+            191644,
+            191657,
+            191658,
+            191669,
+            191670,
+            191703,
+            191704,
+            191709,
+            191726,
+            191727,
+            191751,
+            191773,
+            191776,
+            191796,
+            191797,
+            191823,
+            191845,
+            191857,
+            191915,
+            191948,
+            192145,
+            192154,
+            192155,
+            192157,
+            192158
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              10.483357558647793,
+              21.854211390018463,
+              76.45859122276306
+            ],
+            [
+              15.3616135319074,
+              26.06796622276306,
+              87.575634320577
+            ]
+          ]
+        },
+        "R": {
+          "bvh_pairs": 54,
+          "confirmed_triangle_crossings": 54,
+          "crossing_skin_triangle_ids": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            18,
+            42,
+            44,
+            45,
+            51,
+            52,
+            56,
+            63,
+            75,
+            76,
+            82,
+            97,
+            104,
+            113,
+            120,
+            122,
+            124,
+            127,
+            128,
+            150,
+            151,
+            728,
+            733,
+            736,
+            743,
+            744,
+            745,
+            746
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              10.567951450745266,
+              -26.13152265548706,
+              77.54457394282022
+            ],
+            [
+              14.076241354147593,
+              -21.986128389835358,
+              83.1081748008728
+            ]
+          ]
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 54,
+          "confirmed_triangle_crossings": 54,
+          "crossing_skin_triangle_ids": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            18,
+            42,
+            44,
+            45,
+            51,
+            52,
+            56,
+            63,
+            75,
+            76,
+            82,
+            97,
+            104,
+            113,
+            120,
+            122,
+            124,
+            127,
+            128,
+            150,
+            151,
+            728,
+            733,
+            736,
+            743,
+            744,
+            745,
+            746
+          ],
+          "crossing_centroid_bounds_cm": [
+            [
+              10.567951450745266,
+              -26.13152265548706,
+              77.54457394282022
+            ],
+            [
+              14.076241354147593,
+              -21.986128389835358,
+              83.1081748008728
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "seconds": 0.3333333333333333,
+      "original": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "seconds": 0.36666666666666664,
+      "original": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "seconds": 0.4,
+      "original": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    },
+    {
+      "seconds": 0.43333333333333335,
+      "original": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      },
+      "candidate": {
+        "L": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        },
+        "R": {
+          "bvh_pairs": 0,
+          "confirmed_triangle_crossings": 0,
+          "crossing_skin_triangle_ids": [],
+          "crossing_centroid_bounds_cm": null
+        }
+      }
+    }
+  ],
+  "patches": [
+    {
+      "file": "PilotRotations.json",
+      "sha256": "8062fa0a8ca3ba552066207d1d4a4544f1bec2bdc51eb16e04aa4c4cbb2287db"
+    },
+    {
+      "file": "ExitRotations.json",
+      "sha256": "27c4b834480c80e2b0f17d7093545412aeb11952f51bc65106c1475ac26d0cad"
+    }
+  ],
+  "images": [
+    {
+      "file": "ReleaseLift.png",
+      "sha256": "6f0cc299dcbe068b75a7118fec631174a67d788d355baf7d5c4f1a7fbabf5384"
+    },
+    {
+      "file": "ReleaseRetract.png",
+      "sha256": "1e9be6a5708d4b1c946546341d7c261cd087f5386f45a21fb3e26df09549219a"
+    },
+    {
+      "file": "ReleaseOriginalRetract.png",
+      "sha256": "c9e72e9615a5b1a17ef4f6171a3a27f3d9e4a69c83b06dc77b271785bef6ef98"
+    },
+    {
+      "file": "ReleaseConverged.png",
+      "sha256": "ff4ee8b3dfd3de42ad1d1633c9bdb4902b0b921f1c39ead62a0e96ae04723052"
+    }
+  ]
+}

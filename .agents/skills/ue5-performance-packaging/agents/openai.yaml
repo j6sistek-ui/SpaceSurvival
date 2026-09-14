@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE5 Performance and Packaging"
+  short_description: "Measure Unreal performance and package readiness"
+  default_prompt: "Use $ue5-performance-packaging with the SpaceSurvival adapter for this task."

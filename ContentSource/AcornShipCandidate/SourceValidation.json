@@ -1,0 +1,63 @@
+{
+  "status": "SOURCE_EXPORT_VERIFIED_NOT_RUNTIME_OR_ART_ACCEPTANCE",
+  "glb_meshes": 1,
+  "glb_primitives": 9,
+  "glb_vertices": 82859,
+  "glb_triangles": 134678,
+  "glb_skins": 0,
+  "glb_animations": 0,
+  "glb_images": 0,
+  "maximum_normal_length_error": 1.305800902962062e-07,
+  "obj_objects": [
+    "SM_AcornShipV2"
+  ],
+  "obj_material_groups": [
+    "AC01_BurnishedBronze",
+    "AC01_ChampagneEdges",
+    "AC01_CockpitPadding",
+    "AC01_GraphiteStructure",
+    "AC01_IonAndNav",
+    "AC01_IvoryPanels",
+    "AC01_MachinedTitanium",
+    "AC01_WarmCeramic",
+    "AC01_Windscreen"
+  ],
+  "obj_triangles": 134678,
+  "bounds_cm": [
+    [
+      -244.7999954,
+      -142.7843094,
+      -65.3775394
+    ],
+    [
+      209.9999905,
+      142.7843094,
+      97.800082
+    ]
+  ],
+  "protected_source_hashes_unchanged": true,
+  "generator_sha256": "25c6b27a5d994fecef014735ac67bf89cca5ed0073adc6fd0f5fddd78418400e",
+  "triangle_cleanup": {
+    "source": 134678,
+    "unreal_lod0": 134262,
+    "removed": 416,
+    "percent": 0.30888489582559886,
+    "source_exact_zero_area_triangles": 276,
+    "source_triangles_with_vertices_coincident_within_00002_cm": 404,
+    "assessment": "Consistent with importer degeneracy cleanup; exact per-triangle UE mapping is not proven. No mesh changes made merely to equalize counts. Rendered Unreal silhouette remains a required check."
+  },
+  "scripts": [
+    {
+      "path": "ContentSource/GenerateAcornShipCandidate.py",
+      "sha256": "25c6b27a5d994fecef014735ac67bf89cca5ed0073adc6fd0f5fddd78418400e"
+    },
+    {
+      "path": "Scripts/AuthorAcornShip.py",
+      "sha256": "524b24b2e5c7a81a99c2d0c50f7b037f4f56bc6716d7dd4dc78e7e28add9d06d"
+    },
+    {
+      "path": "Scripts/ValidateAcornShip.py",
+      "sha256": "8c5fc34ee557713efa958d8b43cb63886edcdd4dfb4a0263b7116569d6c7833a"
+    }
+  ]
+}

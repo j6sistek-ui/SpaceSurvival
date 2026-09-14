@@ -1,0 +1,154 @@
+{
+  "status": "SHADOW_MATRIX_VERIFIED_NO_CORRECTION_ESTABLISHED",
+  "finished_utc": "2026-09-13T09:32:53.473833+00:00",
+  "owned_pid": 52076,
+  "owned_process_exit_code": 0,
+  "owned_process_confirmed_gone": true,
+  "source_config_content_exactly_unchanged": true,
+  "protected_file_count": 128,
+  "measurement_roi_pixels": {
+    "x": [
+      795,
+      1060
+    ],
+    "y": [
+      350,
+      560
+    ]
+  },
+  "difference_metrics": [
+    {
+      "file": "Baseline.png",
+      "full_image_mean_absolute_channel_difference_255": 0.0,
+      "hull_roi_mean_absolute_channel_difference_255": 0.0,
+      "hull_roi_pixels_any_channel_above8": 0
+    },
+    {
+      "file": "LightBias1.png",
+      "full_image_mean_absolute_channel_difference_255": 0.2222435185185185,
+      "hull_roi_mean_absolute_channel_difference_255": 0.8923569931117101,
+      "hull_roi_pixels_any_channel_above8": 1242
+    },
+    {
+      "file": "LightSlope1.png",
+      "full_image_mean_absolute_channel_difference_255": 0.21856550925925927,
+      "hull_roi_mean_absolute_channel_difference_255": 0.8922252171308775,
+      "hull_roi_pixels_any_channel_above8": 1425
+    },
+    {
+      "file": "VSMTraceOff.png",
+      "full_image_mean_absolute_channel_difference_255": 0.21978842592592593,
+      "hull_roi_mean_absolute_channel_difference_255": 0.7862833183587901,
+      "hull_roi_pixels_any_channel_above8": 1147
+    },
+    {
+      "file": "VSMNormal1.png",
+      "full_image_mean_absolute_channel_difference_255": 0.23489583333333333,
+      "hull_roi_mean_absolute_channel_difference_255": 0.9591793950284516,
+      "hull_roi_pixels_any_channel_above8": 1318
+    },
+    {
+      "file": "VSMNormal2.png",
+      "full_image_mean_absolute_channel_difference_255": 0.25829722222222223,
+      "hull_roi_mean_absolute_channel_difference_255": 1.120197663971249,
+      "hull_roi_pixels_any_channel_above8": 1639
+    },
+    {
+      "file": "HardVSM.png",
+      "full_image_mean_absolute_channel_difference_255": 0.23298564814814815,
+      "hull_roi_mean_absolute_channel_difference_255": 0.8563282419886193,
+      "hull_roi_pixels_any_channel_above8": 1102
+    },
+    {
+      "file": "SourceAngle2.png",
+      "full_image_mean_absolute_channel_difference_255": 0.2684564814814815,
+      "hull_roi_mean_absolute_channel_difference_255": 0.9312848158131177,
+      "hull_roi_pixels_any_channel_above8": 1464
+    },
+    {
+      "file": "BaselineRestored.png",
+      "full_image_mean_absolute_channel_difference_255": 0.18263958333333333,
+      "hull_roi_mean_absolute_channel_difference_255": 0.6311530398322851,
+      "hull_roi_pixels_any_channel_above8": 956
+    }
+  ],
+  "evidence": [
+    {
+      "file": "Baseline.png",
+      "bytes": 452967,
+      "sha256": "253fe5b10804f43566eb4b41c20f913e64ed8b92f9b0b9a0d6d6450746341728"
+    },
+    {
+      "file": "BaselineRestored.png",
+      "bytes": 452714,
+      "sha256": "4efa27995ec1e4f43eb71e635cb8bb41c9f3e949224fd6dbc3146da802724dd2"
+    },
+    {
+      "file": "Capture.py",
+      "bytes": 7623,
+      "sha256": "da27296fb249c42ae578b2c8291d5e2b12264f74db77e45deae66157b4af0d3b"
+    },
+    {
+      "file": "HardVSM.png",
+      "bytes": 454358,
+      "sha256": "dec5427310fae46dc091e7d07714f8a3766c8304f404090d6c350c9125dc7b6f"
+    },
+    {
+      "file": "LightBias1.png",
+      "bytes": 455315,
+      "sha256": "5df04e1b5315f433f397a2e2c749d76c7b164688eb426754be9aa47d12e396b8"
+    },
+    {
+      "file": "LightSlope1.png",
+      "bytes": 454311,
+      "sha256": "5e1765896da5b19780560f1fcc3118ef99ddb58dc27fbfaed6b66591e0e300f1"
+    },
+    {
+      "file": "NativeMatrix.json",
+      "bytes": 12023,
+      "sha256": "0da1750e63398b55d79dc7778d7f723ac9298eea8beac94508970584b6af8967"
+    },
+    {
+      "file": "SourceAngle2.png",
+      "bytes": 455026,
+      "sha256": "0a11ab200b09f408803a4570875cb65dea268c671b06914f42b1f4509cb49b92"
+    },
+    {
+      "file": "VSMNormal1.png",
+      "bytes": 454239,
+      "sha256": "f9a190ad3db228d4a5b82954f98afeb7f898bad325af06627def79ccc715f4cc"
+    },
+    {
+      "file": "VSMNormal2.png",
+      "bytes": 453019,
+      "sha256": "364b356cdd0cc67333548ab196e6ac7b4ecfddeead0d17887968e4b867ad8b9b"
+    },
+    {
+      "file": "VSMTraceOff.png",
+      "bytes": 454464,
+      "sha256": "ef4d974d2164dffd998941a1618e70aa78c88a029941abeb0a9176a36f1ea0a5"
+    }
+  ],
+  "observations": [
+    "Contact-shadow length was already zero on all three lights, so no redundant contact-off image was taken.",
+    "Baseline uses VSM with hardware ray tracing disabled; exact recorded console state is in NativeMatrix.json.",
+    "Every distinct bias/slope/screen-trace/hard-VSM/source-angle case retains the broad white-panel patch pattern.",
+    "Baseline restoration is not pixel-identical because VSM/SMRT noise changes across frames; small pixel differences must not be interpreted as a correction.",
+    "No persistent global render policy, material, mesh, collision or source geometry was changed."
+  ],
+  "next_bounded_tests": [
+    "Isolate key/fill/rim shadow contribution while keeping all three illumination intensities unchanged, to identify the responsible light(s).",
+    "Locate affected screen pixels against built triangles and compare geometric versus shading normals before considering any targeted source correction.",
+    "If justified by those findings, test only a transient material shadow-pass offset on affected hull slots, retaining actual shadow contact checks; no current adoption recommended."
+  ],
+  "additional_evidence": [
+    {
+      "file": "PilotControlProxies.json",
+      "sha256": "8a50fdae81ef757de1133ba281ee764ac5b9de40dd13afd3b36d60975a3e1159"
+    },
+    {
+      "file": "Review.md",
+      "sha256": "8e64c6b483a46c36f2a2e73226b090a5a16ada8e9e0ce65bb93b561f2e263634"
+    }
+  ]
+}

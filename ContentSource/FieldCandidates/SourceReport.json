@@ -1,0 +1,487 @@
+{
+  "status": "GENERATED_UNRENDERED_CANDIDATE_NOT_ADOPTED",
+  "version": "FieldCandidate1",
+  "coordinate_system": "OBJ centimeters +X forward +Z up; Blender meters with same axes",
+  "uv0_contract": {
+    "u": "role*4+longitudinal_fraction; role0=boundary,1=primary,2=branch",
+    "v": "strand_index*2+circumference_fraction; texture coordinates intentionally unwrapped"
+  },
+  "material_contract": {
+    "parameters": [
+      "Tint",
+      "Color",
+      "Emission"
+    ],
+    "sections_per_mesh": 1,
+    "blend_mode": "Opaque",
+    "shading_model": "Unlit",
+    "two_sided": false,
+    "no_texture_samples": true,
+    "no_WPO": true,
+    "no_opacity_input": true,
+    "boundary": "Role0 retains a nonzero brightness floor for all Emission values.",
+    "clock": "Electrical flash amplitude only follows supplied Emission; Time only moves bounded low-contrast detail."
+  },
+  "meshes": [
+    {
+      "name": "SM_ElectricalFieldCandidate",
+      "material": "M_ElectricalFieldCandidate",
+      "tint": [
+        0.24,
+        0.55,
+        1.0
+      ],
+      "vertices": 1644,
+      "triangles": 3168,
+      "material_sections": 1,
+      "bounds_cm": [
+        [
+          -100.0,
+          -100.0,
+          -100.0
+        ],
+        [
+          100.0,
+          100.0,
+          100.0
+        ]
+      ],
+      "max_vertex_radius_cm": 100.0,
+      "minimum_triangle_area_cm2": 0.012995999999999666,
+      "paths": [
+        {
+          "role": 0,
+          "points": 65,
+          "half_width_cm": 0.4,
+          "closed": true,
+          "triangles": 512
+        },
+        {
+          "role": 0,
+          "points": 65,
+          "half_width_cm": 0.4,
+          "closed": true,
+          "triangles": 512
+        },
+        {
+          "role": 0,
+          "points": 65,
+          "half_width_cm": 0.4,
+          "closed": true,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 13,
+          "half_width_cm": 0.65,
+          "closed": false,
+          "triangles": 100
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 1,
+          "points": 13,
+          "half_width_cm": 0.65,
+          "closed": false,
+          "triangles": 100
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 1,
+          "points": 13,
+          "half_width_cm": 0.65,
+          "closed": false,
+          "triangles": 100
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 1,
+          "points": 13,
+          "half_width_cm": 0.65,
+          "closed": false,
+          "triangles": 100
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 1,
+          "points": 13,
+          "half_width_cm": 0.65,
+          "closed": false,
+          "triangles": 100
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 1,
+          "points": 13,
+          "half_width_cm": 0.65,
+          "closed": false,
+          "triangles": 100
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 1,
+          "points": 13,
+          "half_width_cm": 0.65,
+          "closed": false,
+          "triangles": 100
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 1,
+          "points": 13,
+          "half_width_cm": 0.65,
+          "closed": false,
+          "triangles": 100
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        },
+        {
+          "role": 2,
+          "points": 7,
+          "half_width_cm": 0.38,
+          "closed": false,
+          "triangles": 52
+        }
+      ],
+      "projected_area_upper_bounds": [
+        {
+          "direction": [
+            1,
+            0,
+            0
+          ],
+          "summed_area_to_sphere_disk_percent": 16.968514099167017
+        },
+        {
+          "direction": [
+            0,
+            1,
+            0
+          ],
+          "summed_area_to_sphere_disk_percent": 17.432179567331325
+        },
+        {
+          "direction": [
+            0,
+            0,
+            1
+          ],
+          "summed_area_to_sphere_disk_percent": 17.7663566731028
+        },
+        {
+          "direction": [
+            0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "summed_area_to_sphere_disk_percent": 15.493839695388358
+        },
+        {
+          "direction": [
+            0.6666666666666666,
+            -0.6666666666666666,
+            0.3333333333333333
+          ],
+          "summed_area_to_sphere_disk_percent": 15.442793343768447
+        }
+      ],
+      "outputs": [
+        {
+          "file": "SM_ElectricalFieldCandidate.obj",
+          "bytes": 374598,
+          "sha256": "6be6b473113acf81155596cab5fa0bcf6d60cf46fe98eaf5c37b8d9e4b82c771"
+        },
+        {
+          "file": "SM_ElectricalFieldCandidate.blend",
+          "bytes": 158860,
+          "sha256": "1c138bb19078b39cb055f8841b54daec397f332bec6084fa83100dff38495ac7"
+        }
+      ]
+    },
+    {
+      "name": "SM_GravityFieldCandidate",
+      "material": "M_GravityFieldCandidate",
+      "tint": [
+        0.6,
+        0.18,
+        1.0
+      ],
+      "vertices": 1824,
+      "triangles": 3588,
+      "material_sections": 1,
+      "bounds_cm": [
+        [
+          -100.0,
+          -100.0,
+          -100.0
+        ],
+        [
+          100.0,
+          100.0,
+          100.0
+        ]
+      ],
+      "max_vertex_radius_cm": 100.0,
+      "minimum_triangle_area_cm2": 0.02249999999999929,
+      "paths": [
+        {
+          "role": 0,
+          "points": 65,
+          "half_width_cm": 0.4,
+          "closed": true,
+          "triangles": 512
+        },
+        {
+          "role": 0,
+          "points": 65,
+          "half_width_cm": 0.4,
+          "closed": true,
+          "triangles": 512
+        },
+        {
+          "role": 0,
+          "points": 65,
+          "half_width_cm": 0.4,
+          "closed": true,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        },
+        {
+          "role": 1,
+          "points": 29,
+          "half_width_cm": 0.5,
+          "closed": false,
+          "triangles": 228
+        }
+      ],
+      "projected_area_upper_bounds": [
+        {
+          "direction": [
+            1,
+            0,
+            0
+          ],
+          "summed_area_to_sphere_disk_percent": 15.711227223586262
+        },
+        {
+          "direction": [
+            0,
+            1,
+            0
+          ],
+          "summed_area_to_sphere_disk_percent": 16.248460375585992
+        },
+        {
+          "direction": [
+            0,
+            0,
+            1
+          ],
+          "summed_area_to_sphere_disk_percent": 18.246199513802537
+        },
+        {
+          "direction": [
+            0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "summed_area_to_sphere_disk_percent": 15.147913358002443
+        },
+        {
+          "direction": [
+            0.6666666666666666,
+            -0.6666666666666666,
+            0.3333333333333333
+          ],
+          "summed_area_to_sphere_disk_percent": 14.810249650103932
+        }
+      ],
+      "outputs": [
+        {
+          "file": "SM_GravityFieldCandidate.obj",
+          "bytes": 423882,
+          "sha256": "2a2a7172e85bd7c6bc2da5789aa7f5c7f001bfcc7ea0b3420cf27231b13b991f"
+        },
+        {
+          "file": "SM_GravityFieldCandidate.blend",
+          "bytes": 168690,
+          "sha256": "5c95265393b73d5395b5e19c74b19780db9ded4862f1b80d2fcd6240a1bca082"
+        }
+      ]
+    }
+  ],
+  "protected_sha256": {
+    "ContentSource/GenerateGeometry.py": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00",
+    "ContentSource/Meshes/SM_StormRing.obj": "a1d4dd374bb65613de96326deb0641d4aada693214dd48a89bb185c134eaec3b",
+    "ContentSource/Meshes/SM_GravityRing.obj": "d680e1fb894480daa062f3efbf4d79785e6444497fb7e45cbaa02a973e2546ef",
+    "Content/SpaceSurvival/Meshes/SM_StormRing.uasset": "c026dcf829142da52e97e0f60d78113d2f2a274e8b70fccdd2da43ea27d07faa",
+    "Content/SpaceSurvival/Meshes/SM_GravityRing.uasset": "e99e6e833d10e672de06ea00484a76be6132e309a23ccb3f0aebab4dde761a1a",
+    "Content/SpaceSurvival/Materials/M_Emissive.uasset": "1c09844a3166fb49ae81b17d4fa643843cfbf6f29d1f1444fd2dadd4f7445227",
+    "Source/SpaceSurvival/Private/SSWorldActors.cpp": "5a905c659ab07b430f82f6661799938784d0a7aff45734d1a71505875e696c6c",
+    "Source/SpaceSurvival/Public/SSContentTypes.h": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141"
+  },
+  "generator_sha256": "52ca98d237a5000b0e389a8360c09c05127faab6edb8c75c5ade7bd7e4859a15",
+  "palette_sha256": "746802f039669d617b6a023bde63fb75295a4927782f45167771e0b2d031e842",
+  "shader_sha256": {
+    "ElectricalField.hlsl": "d17ea7975fc50d21107a0e52559735b9e77ef01c23049fb43a8abec709762031",
+    "GravityField.hlsl": "c075829d9b2697a6b7de86b244294c89159f0446d5706a717322474f5908a8b7"
+  },
+  "limits": [
+    "No Unreal import, shader compile, rendering, gameplay adoption or performance evidence.",
+    "Opaque thin tubes have open geometric gaps; no fading opacity conceals the outer boundary.",
+    "Three continuous outer filaments suggest spherical extent; sparse wire geometry is not a filled force-volume visualization.",
+    "Projected area is an analytic sum, not visibility/pixel coverage or an occlusion test.",
+    "Existing field clocks, damage, forces, collision, shared emissive and wormhole assets are untouched."
+  ]
+}

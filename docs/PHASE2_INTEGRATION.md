@@ -1,0 +1,74 @@
+# Phase 2 integration notes
+
+**Phase 1 remains PARTIAL; no Phase 2 expansion is authorized.** Package 13/source a628c7f is the audited archive, including station/sky/HUD and both gameplay correction batches. Subsequent projectile-contact, wreckage-budget and contract-feedback corrections passed the 33.08-second Editor build and 37 Unreal tests at 2026-09-13 15:12:50 UTC (3.083320 seconds, zero test warnings/failures/not-run cases). The latest corrections are included in independently audited Package 13; its normal-timing Wave 10 and bounded native settings-selection checks passed. The owner has prioritized gameplay and may clean up the supplied hero externally; ignored HeroAlpha experiments are paused and unadopted. See [current state](PROJECT_STATE.md) for the exact changing build/package boundaries, [architecture](ARCHITECTURE.md) for ownership and [validation](VALIDATION.md) for retained history.
+
+Close natural gameplay, physical controls, audio, clean-PC startup, representative performance and the outstanding presentation quality before expanding content. All 19 [hands-on checks](PLAYTEST_TOMORROW.md) remain open; the automated repair batch does not complete them. Source-preservation checks retain the original for provenance; optimized derivative topology, rig and materials may change with integrated validation.
+
+## Preserve the locked loop
+
+Keep continuous survival, hidden durations, short breathing windows, a climax/station every fifth wave, deliberate credit purchases, non-regenerating shield and death-ended runs. Permanent progression unlocks possibilities; most power remains earned within each run. All additions must respect Director admission and readable combinations.
+
+The Station 2 boundary is explicit in AtSliceBoundary, LaunchFromStation, codecs, Director clamps and contract eligibility. Its live summary reuses services/save/discard; native save/relaunch retained the purchased utility, without Wave 11 or completion XP. The committed discard transaction persists highest-wave progression before consuming suspension and clearing the run. Five fresh processes test both write failures, old-checkpoint resume, actual action 51 retry and final highest wave 10 with zero XP/history. Native discard usability and completion appeal remain open. Later waves need coordinated rules/content/schema/tests/shell changes; enabling one menu item would expose unsupported state. No additional waves are implemented.
+
+## Reuse and required future work
+
+| Area | Existing integration point | Work required later |
+| --- | --- | --- |
+| Hazards/structures/regions | World-body contact/weapon/force contract, admission, six hazard definitions | Stable identities, behavior classes/assets and validated warning/composition policy |
+| Enemies/elites | Two enemy definitions, committed shot telegraphs, shared obstacle interaction | Additional behavior/class policies; preserve behavior/composition scaling rather than inflated health |
+| Weapons | One active weapon, effective stats, muzzle trace and range/lifetime-clipped projectile paths | Definitions/firing strategies and migration-safe identities; preserve actual travel limits and obstruction checks, current two weapons are native branches |
+| Utilities | Two validated Data Asset rows feed prices/effects and guarded station purchases; defaults 150, free event fitting remains separate | Additional definitions/effect policies; retain deliberate choices, commit-time eligibility and no charge for a fitted utility |
+| Events/contracts | Explicit acceptance, callbacks/deadlines, guarded nonduplicate reward choices; contract magnitudes/rewards and transient arrival feedback | Additional objective/modifier definitions, disclosed failure terms and serialization; arrival messages are not persisted contract history |
+| Depots/stations | Data-defined timing/subsets, paid shield-only service, station-local docking admission and swept clearance | Designer-authored layouts must update admission geometry with physical boundaries; intentionally replace the Phase 1 exactly-once depot guarantee |
+| Account/ships/history | XP levels, starting-option guards, per-run stats, account v2 history | Unlock/ship catalog and explicit migrations; preserve reset, history provenance and once-only awards |
+| Challenge modes | Canonical tuning, reset, score calculation | Explicit ruleset identity and separate record/save provenance |
+| Inventory/storage | Existing deliberate utility/weapon replacement | New bounded inventory domain, identity, persistence and station UI; no inventory exists to activate |
+| Economy | Existing domain income/prices plus subsequent validated Data Asset amounts and identity-correct legacy encounter migration | New price/reward policies need explicit ownership, bounds, save compatibility and conservation tests |
+| Presentation/audio | Imported assets, retained ship/exit, HUD; subsequent world spatial-audio subsystem with role overrides, gain/concurrency/lifetime limits | Production LODs, animations, VFX, content classes and measured mix/performance |
+| Steam/cloud/records | Local storage adapter and service-independent codecs | Offline/conflict/privacy decisions, service adapters and version/generation metadata |
+| Eventual co-op | Portable rules and separate world/presentation owners | Authority, participant identity, replication, prediction and shared save/death policy; substantial work remains |
+
+The editable fixed-size catalog exposes current hazard, enemy, pickup, encounter and utility values; contract magnitudes/rewards have a validated bridge. Subsequent economy fields retain the original defaults and native identities. New audio fields resolve a role preset by default, accept a compatible override or use explicit null for silence. Audio is presentation state, never a save or gameplay authority. The content catalog does not instantiate arbitrary Blueprint behavior classes. New types need explicit factories/class references and verified cook dependencies. Keep rules in the session, admission/composition in the Director, objective execution in encounters and choice presentation in UI.
+
+## Preserve the repaired gameplay contracts
+
+The [gameplay quality record](GAMEPLAY_QUALITY.md) and [validation receipt](validation/2026-09-13-gameplay-fairness-followup.json) bind the current repairs. Keep collision impulses distinct from continuous forces and derive contact direction from swept contact, not a crossed endpoint. New projectile strategies must clip the final sweep and relative target motion to the same live range/lifetime interval. Enemy-shot contact compares the first relative ship intersection against world obstruction, with cover winning ties. Preserve launch-seeded history, ship-before-projectile tick ordering, tracking replacement and origin-rebase correction. Collection must account for relative motion and retire before another award; fragmentation must keep bounded attempts, threat capacity and predicted reaction clearance. These rules do not establish natural fairness after later steering or gravity changes.
+
+Menu refresh must preserve the selected action, reward commits must recheck current equipment/eligibility, and purchase previews must use actual effective stats while distinguishing capacity from repair. Contract arrival reports the actual credited delta or failure for 18 seconds even with subtitles disabled; optional character dialogue remains controlled by that setting. The transaction adds no save field and must not be presented as restored history. Wreckage admission now debits only when at least one of four candidate chunks actually spawns. Preserve the normal once-per-passage cost for partial success and retain budget after complete cap/spatial rejection; retries must not require new accrual.
+
+## Save evolution
+
+Account payload v2 reads v1, preserving existing progression/summary/tutorial fields and leaving unavailable history empty. It retains at most ten completed-run identities. Run/settings payloads, envelope and slot names remain v1. Numeric enum values and fixed field order are serialized: do not reorder them or add fields without versioned migration and fixtures.
+
+Preserve the three existing account/settings/suspension slots and consume-before-play semantics. `WriteDomain` serializes through Unreal's compatible `SaveGameToMemory` envelope and verifies its in-memory readback. `SSLocalSave` writes a unique same-directory `.tmp`, calls `Flush(true)`, closes and byte-verifies it, then performs a native same-volume replacement with `MoveFileExW(REPLACE_EXISTING | WRITE_THROUGH)`. It never pre-deletes the live slot or enables a copy/delete fallback. The successful replacement acknowledges consumption before the resume candidate becomes playable; a subsequent transient read cannot reverse that acknowledgement. See [Local save protocol](ARCHITECTURE.md#local-save-protocol) for the API references and exact boundaries.
+
+This implementation permits only Windows with the exact engine generic SaveGame backend; it rejects a configured alternative. A future platform/cloud adapter must explicitly implement an equivalent acknowledgement contract and retain serialization compatibility, rather than bypassing the backend guard. Failed writes attempt cleanup of only their staging file. Orphan `.tmp` files are ignored, never automatically recovered as playable suspensions.
+
+The adapter protects unreadable accounts and rejects suspensions matching the latest or retained awarded IDs. Ten retained IDs are bounded history, not an unlimited anti-replay ledger.
+
+Cloud support needs revisions/generations and a conflict policy that cannot resurrect consumed/dead runs. Per-file staged replacement does not provide atomic multi-slot commits, automatic backups, multi-device conflict resolution or a demonstrated hardware/power-loss guarantee. Actual locked-destination retry and eight-process staging-create/readback-denial/interruption scenarios passed with production hashes unchanged. The parent held a required-acknowledgement oplock until the owned writer was confirmed terminated before replacement; fresh Init preserved the original checkpoint and ignored the orphan stage. Later death/retry retained 475 XP and one completed run. The four-process corrupt-account test protects invalid domain text inside a valid Unreal envelope, blocks New Run/Resume/persistence and verifies a manually restored exact test copy after fresh Init. No arbitrary binary corruption or automatic recovery feature is established.
+
+The Station 2 regression additionally tests the gap between account persistence and suspension invalidation. Failure preserves the live run/checkpoint; fresh Init can resume an older Wave 5 checkpoint while max-preserving the durable Wave 10 record, and actual discard retry leaves no playable checkpoint or invented death award. These bounded scenarios are in [storage faults](validation/2026-09-13-storage-faults.json), [account protection](validation/2026-09-13-corrupt-account.json) and [Station 2 discard](validation/2026-09-13-station2-discard.json). Disk-full/short writes, all interruption boundaries and hardware loss remain unverified. Package 7 separately passed native prepared-station save/continue and resumed death; seeded state, assisted positioning and muted audio limit its claim.
+
+Logical station snapshots do not serialize world actors. If later objectives survive docking or content introduces multiple persistent hubs, define exactly what survives before adding scene serialization.
+
+## Multiplayer boundary
+
+Current code intentionally uses one GameInstance session, one possessed ship/walker, player index 0, local GameMode orchestration and direct authoritative mutations. No replicated state, RPCs, network prediction or co-op lifecycle is implemented.
+
+Future co-op must decide host/server authority for wave time, Director spending, damage, rewards, contracts and suspension. Separate player/account/local settings from shared run state. Define collective docking, disconnect/rejoin and death-ended-run semantics. Add replication and prediction only after those rules are explicit; local portable tests do not establish synchronized simulation.
+
+## Validation before expansion
+
+The current 37-test suite retains earlier content, save-domain, actor, camera, pose and journey coverage and adds the gameplay repair regressions. Earlier exact build/CI histories remain in [VALIDATION.md](VALIDATION.md). The accelerated journey uses 12-second waves, enlarged durability and forced/assisted objectives; it is not a natural ten-wave pass. Component, payment and admission assertions do not establish rendered sound, balance or human input.
+
+First complete natural ten-wave packaged acceptance with both physical inputs, complete service/contract/loadout decisions, naturally earned unlocks and retry appeal. Evaluate native Station 2 discard usability without inventing victory XP. Package 12 and earlier archived builds retain bounded native/performance results in [PERFORMANCE.md](PERFORMANCE.md), with their recorded scripted-input, durability and concurrency limits. They do not validate the latest 37-test source or pending Package 13. Natural camera/animation, sky seam/pole/readability, rejected art, clean-PC startup and representative full-run performance remain open. Photographic surfaces, ship graphs, economy and audio are included in audited Package 10; guarded capture evidence does not establish natural balance or quality. Measure actor scans, spawn bursts, synchronous loads, hero geometry and rendering before choosing pooling/indexing/preloading/LODs. Preserve simulation, response and hazard readability before increasing presentation cost.
+
+For every later system, add deterministic rules coverage, meaningful engine integration tests and actual overlap/feel scenarios. Keep source availability, build success, package success and player acceptance as separate evidence claims.
+
+## Asset refresh boundary (2026-09-14)
+Licensed presentation is optional and does not change the domain model. The Ludo hull is a command-line comparison only; do not treat it as a new ship unlock or approved visible-cockpit implementation. Magnetic service remains on-board, without a new station scene. No deferred Phase2 system was added. See ASSET_REFRESH.md.
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.

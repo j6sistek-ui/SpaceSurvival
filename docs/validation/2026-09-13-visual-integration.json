@@ -1,0 +1,674 @@
+{
+  "status": "INTEGRATED_SOURCE_ASSETS_BUILD_AUTOMATION_AND_BOUNDED_NATIVE_VISUALS_PASS_NOT_ALPHA_ACCEPTANCE",
+  "project_status": "PARTIAL",
+  "recorded_utc": "2026-09-13T12:16:08.994457+00:00",
+  "previous_head": "2e4ad847ec4424ca11f50f7e60d96776921e4793",
+  "integration_commit": "This receipt is part of the subsequent integrated source milestone; use the Git commit containing it. Package 10 remains source 0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80.",
+  "implementation": [
+    "Shared ASSShip::HullAssetPath selects fitted Acorn starter and Swift CandidateV1 in flight and both home/station bays; same stats, mounting transform and collision.",
+    "Paired GripFit Pilot/Disembark clips use existing skeleton and supplied hero geometry; preserve actual live-pose handoff, 0.18s blend, sole-contact path and 2.4s actor clock.",
+    "V3 electrical/gravity fields use authored additive material parent even when a hazard actor is reconfigured; exact gameplay radius, timing and collision retained. Wormhole unchanged.",
+    "Camera pitch +2deg replaces -10deg with original 650cm boom, 175cm socket, 80deg FOV and limited context pullback. Actual manual fire converges from muzzle to camera sight point; near cover blocks damage and soft assistance remains 42 percent.",
+    "Routine content author/validator stages include candidates and source integrity checks; Validate uses real RHI for compiled material statistics. AuthorAcorn collision updates made byte-idempotent.",
+    "Opt-in normal viewport capture records actual request time/current posed mesh, rejects missing screenshots, binds source/artifacts/saves and marks readback runs unsuitable for performance findings.",
+    "Pilot and Walker components force only their shared hero texture mip residency after native evidence showed1024 rather than2048; global texture budgets/quality remain unchanged."
+  ],
+  "unreal_automation": {
+    "historical_23": {
+      "report": {
+        "path": ".agent/local/VisualIntegration-tests.json",
+        "bytes": 25860,
+        "sha256": "956a915f014bf41376eea1e716ff3bbd80c3d9d2c166d9995b97905e4761d9fa"
+      },
+      "reportCreatedOn": "2026.09.13-11.44.31",
+      "succeeded": 23,
+      "succeededWithWarnings": 0,
+      "failed": 0,
+      "notRun": 0,
+      "totalDuration": 2.3821074962615967,
+      "tests": [
+        {
+          "name": "SpaceSurvival.Content.ContractDataAssetBridge",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Content.EconomyDataAssetBounds",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Content.UtilityDataAssetBridge",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.BoostBrakeMovement",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.FrameRateTrajectories",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.ManualWeaponImpacts",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.AudioFirstPlayMix",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.AuthoredDisembark",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.EconomyRewardBridge",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.ElectricalPulseBoundaries",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.ElectricalPulseCadence",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.FieldPresentationSelection",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.LateEventAcceptance",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.ShipPresentationSelection",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.SpatialThreatAudio",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.StationWalkerRecovery",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Save.PayloadRoundTrip",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+          "state": "Success"
+        }
+      ]
+    },
+    "current_24": {
+      "report": {
+        "path": ".agent/local/ChaseAim-tests.json",
+        "bytes": 26256,
+        "sha256": "f36272f07185c2c4e646a2c4fac80d0d0bd3f28a201bed0f7c1cca627cbdddff"
+      },
+      "reportCreatedOn": "2026.09.13-12.00.54",
+      "succeeded": 24,
+      "succeededWithWarnings": 0,
+      "failed": 0,
+      "notRun": 0,
+      "totalDuration": 2.4328885078430176,
+      "tests": [
+        {
+          "name": "SpaceSurvival.Content.ContractDataAssetBridge",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Content.EconomyDataAssetBounds",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Content.UtilityDataAssetBridge",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.BoostBrakeMovement",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.CameraAimMuzzleObstruction",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.FrameRateTrajectories",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Flight.ManualWeaponImpacts",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.AudioFirstPlayMix",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.AuthoredDisembark",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.EconomyRewardBridge",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.ElectricalPulseBoundaries",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.ElectricalPulseCadence",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.FieldPresentationSelection",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.LateEventAcceptance",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.ShipPresentationSelection",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.SpatialThreatAudio",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Integration.StationWalkerRecovery",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Save.PayloadRoundTrip",
+          "state": "Success"
+        },
+        {
+          "name": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+          "state": "Success"
+        }
+      ]
+    },
+    "current_24_dll_sha256": "fd6c66a33b225b453745a0df96a2d1c0fcca4d5875ae0034641942d512ea1e57",
+    "source_raw_sha256_at_24_test_and_wave10_capture": {
+      "Config/DefaultEngine.ini": "78d8bc141acb3beb408d336f9ec71c31c9b270225737592da17bde02cecb16b6",
+      "Config/DefaultGame.ini": "c14845805f2760cfdb580cd413017230bf741e7b10496f2fd484728e6f3e703e",
+      "Config/DefaultInput.ini": "47f6c8282026a192c1f9a7709f5b6f82bab7288083b235e9ae1c3ea731f42f40",
+      "Source/SpaceSurvival.Target.cs": "50bc0fbca25b2aae8a58dc1d3ed93bfc24a12ac7154d949ed321a9c150c702d4",
+      "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "86449dba0e9dcd4b89b71c6f2e6ea946857326fde7f7fbbb4c7305ab8f6366a9",
+      "Source/SpaceSurvival/Domain/SurvivalCore.h": "b7a6915ba71b6a642a6ceee9573fffadf8bed203b4fa6355984212ee1fe1cfaa",
+      "Source/SpaceSurvival/Private/SpaceSurvival.cpp": "1e7a3ebb1bff64523a091df3e8d3d0da34cb5fa13b690218e3f314765a898a87",
+      "Source/SpaceSurvival/Private/SSAdmissionAutomationTests.cpp": "c3ab7f43b497b98efedd0cd1da98c1c0453ab548b7a201724101d787e97e0bd9",
+      "Source/SpaceSurvival/Private/SSAudio.cpp": "99e14fb6a56c5fdd96a3d1d12a8d883a6b2ff40fa0376461d0fe2aeb4da12545",
+      "Source/SpaceSurvival/Private/SSAudioAutomationTests.cpp": "186324711ee437f72ebcaf6ca42af840d823bcc15e4aa99a0841902ad68b349c",
+      "Source/SpaceSurvival/Private/SSAutomationTests.cpp": "459b1a731db1943b26dd0e0c18ebbcd0416db5df839207dec1b5609f99690367",
+      "Source/SpaceSurvival/Private/SSContractAutomationTests.cpp": "f7ac940249caaf87b0fb236d9f53ed49dfc13facf3201787eb234052b41eee5b",
+      "Source/SpaceSurvival/Private/SSEconomyAutomationTests.cpp": "6d8d4bb96eb8c5e75dd187ef70b937a653c97f82fc8fbad8253e59c18785f6f6",
+      "Source/SpaceSurvival/Private/SSFlightAutomationTests.cpp": "2a497ac8af885082fbf06ba74553dcab35b7d88153c7cc514624fbebf0339517",
+      "Source/SpaceSurvival/Private/SSGameInstance.cpp": "c089ef3ef10480b4c351b322b5e14f20675938a0dafc24fe47de75d0c3b6ce30",
+      "Source/SpaceSurvival/Private/SSGameMode.cpp": "ef38c704c1c66fbd5e84c39b4f3d5c3ee7d1e707c9898273087519c522186fdb",
+      "Source/SpaceSurvival/Private/SSHazardAutomationTests.cpp": "054604590bda43ac8feb7a79b4628dcafc3b4adffbece549966118d14c1a6c0f",
+      "Source/SpaceSurvival/Private/SSHUD.cpp": "759a612bfab6c944482ee9a1136ee2bdfeb6d0f3df729640048a45817813639e",
+      "Source/SpaceSurvival/Private/SSIntegrationAutomationTests.cpp": "883d60ff61d3d5bc025ed61a272a03f04c38a9de493922a496f3e0d5a90499ef",
+      "Source/SpaceSurvival/Private/SSJourneyAutomationTests.cpp": "7c7f6fd9dbea1dc812fbde1a7b97e1f2882180c92fb87ae7b6c6fa92ec22a0d6",
+      "Source/SpaceSurvival/Private/SSLocalSave.cpp": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402",
+      "Source/SpaceSurvival/Private/SSLocalSave.h": "21946dc7697636bddb4ad0ca24b0269b5fd3160491ce1b92b85d0787f3b52bff",
+      "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp": "9fc2cbd84d25d2fa70b9017669030cc51da58ddf87bfed8adb5034cb631fdf03",
+      "Source/SpaceSurvival/Private/SSShip.cpp": "ff46e9ab8cb027ba7dcecb0ab43e59ba2079062ede4ce1e1858488048e626593",
+      "Source/SpaceSurvival/Private/SSStation.cpp": "6d226181abc36e4b0211447f8c75046da3c95aff7a51a818d171bcc0818142e9",
+      "Source/SpaceSurvival/Private/SSStationPoseTransition.cpp": "ba631b57b2feab22737b5c53f0a20e31f00850172e541dffa7d24c27d7767cf5",
+      "Source/SpaceSurvival/Private/SSUtilityAutomationTests.cpp": "36a4fc4c1279662ea5edb2a2eeda790e7564c35c1160c4b0cf1c841adff23a1b",
+      "Source/SpaceSurvival/Private/SSWave10Soak.cpp": "8928e895158d67ad5c517df43c58c05bc39fd2751e986fdd079dfb1d31b7e635",
+      "Source/SpaceSurvival/Private/SSWorldActors.cpp": "7aba14e8bb31a52e988846d06bda4df152d0a2f54ee6997ec2c5cc9a9d646645",
+      "Source/SpaceSurvival/Public/SSAudio.h": "c1a06d39d8b4eac285e4735a9d4d4323c48e04353640339c3b15a8666d716327",
+      "Source/SpaceSurvival/Public/SSContentTypes.h": "ea60382db6704c84eddc0bcc92e5b6a20520425ac34bc79a265179c0a847cf01",
+      "Source/SpaceSurvival/Public/SSGameInstance.h": "7463a07885c3b0dded1b556b0f865d05ebd1fdcac35bbb591e05aa33bfeeaa1b",
+      "Source/SpaceSurvival/Public/SSGameMode.h": "3cf7c4c089b2e9afdebb9e014cad6e3125b81561894a3fc9133d3627ab9a92cc",
+      "Source/SpaceSurvival/Public/SSHUD.h": "8471eba5ac2b7c543935788478084e77130893b383352e1a5df7219ed77ea9ab",
+      "Source/SpaceSurvival/Public/SSPhase1Data.h": "dba26769ca2f87f3c9499c18670e1ee3e08e4b999886586616e69add821a0b9a",
+      "Source/SpaceSurvival/Public/SSShip.h": "a648f89563bb5e7cbd51da35d8b46c94cea7c777aa83e9775daa1893fe531f8f",
+      "Source/SpaceSurvival/Public/SSStation.h": "1c107a5e73b9b4f7a4f7925da1cd2aa58622a25699e428a447d75ad07de2c46a",
+      "Source/SpaceSurvival/Public/SSStationPoseTransition.h": "4001c65c61a6230d503199c494f1373fe84dd4e756f270ba7309728f1f471f56",
+      "Source/SpaceSurvival/Public/SSWave10Soak.h": "f065f188601cb47b3aca21dd4ac89bb79ff3728235c64b8a770486e8308ffc66",
+      "Source/SpaceSurvival/Public/SSWorldActors.h": "bb3027367c92bde83002c4ef872e6892e755023863613e704827fa7a55bc8a45",
+      "Source/SpaceSurvival/SpaceSurvival.Build.cs": "cae333d628d605a58ce51a89f1c8addfbdc54674454623de4e732ac8e6891d86",
+      "Source/SpaceSurvivalEditor.Target.cs": "51ee577956e755fa62e3d6d97e90bb93fa741b7b86740eacc1c1a572ff17b066",
+      "SpaceSurvival.uproject": "94864f0a1202f868e389560e1c917464a51db0d293d2210dcb5025531132f8e6"
+    },
+    "binding": "The22.40s successful Editor build immediately preceded24tests and unchanged-source Wave10 capture. Later changes are explicitly recorded: electrical label wording and two component-scoped hero texture-residency flags. Their successful5.93s and8.54s builds are not represented as new24test executions."
+  },
+  "post_test_label": {
+    "date_utc": "2026-09-13T12:14:17.433105+00:00",
+    "path": "Source/SpaceSurvival/Private/SSWorldActors.cpp",
+    "previous_raw_sha256": "7aba14e8bb31a52e988846d06bda4df152d0a2f54ee6997ec2c5cc9a9d646645",
+    "current_raw_sha256": "52b4ee312e821657a167ab44bcd76b20e5c62b7951f5b14b4ac7b66873ac2921",
+    "change": {
+      "before": "ELECTRICAL STORM · Rings charge before discharge",
+      "after": "ELECTRICAL STORM · Field charges before discharge"
+    },
+    "limit": "Wording only after 24-test run and rendered Wave10 capture; pending final build. Gameplay and visual timing unchanged.",
+    "build_result": "Editor PASS 5.93s",
+    "editor_dll_after_label_only": {
+      "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 1603584,
+      "sha256": "2c578722572113d163d777f4dd6e7e7fb661148e6b1887070935ab1903287cd4"
+    }
+  },
+  "content_authoring": {
+    "final_content_and_fresh_validate": "PASS 2026-09-13 11:48:03 UTC",
+    "idempotence_record": {
+      "path": ".agent/local/VisualIntegrationContentIdempotence.json",
+      "bytes": 35693,
+      "sha256": "146f29cc16bb7d3a275d87f9430901defa992e9b0c3434f073eb90c1c535d6fb"
+    },
+    "content_count": 110,
+    "all_content_bytes_unchanged_second_author_and_since": true,
+    "content_raw_sha256": {
+      "Content/SpaceSurvival/Audio/Alarm.uasset": "5855f220b8880ab4837970b13bed537d9cabf466d5c5070ed2612350fbb2ad72",
+      "Content/SpaceSurvival/Audio/Cannon.uasset": "8624d1c875c3faba7133b458edca423a2b4c5ccf1c855ceccb0e6d68fbcb0088",
+      "Content/SpaceSurvival/Audio/DebrisBreak.uasset": "cb1414eb87854481c8d6183d76011e0a2d2bc04abc80eff165dad69c4e151be9",
+      "Content/SpaceSurvival/Audio/ElectricalCharge.uasset": "58a0cb3795c5834b549b8b61a4247fbf8a1fea4204188a4d373b86f0e67e619f",
+      "Content/SpaceSurvival/Audio/ElectricalDischarge.uasset": "f966f3a313e60782d37ef160e90f5cfadbc0fada11dd035697fe051a3df0537e",
+      "Content/SpaceSurvival/Audio/EnemyBreak.uasset": "18dd82fb15ab0acf81b6d9ebda03a6a245105a803557e336167463c5d9120db6",
+      "Content/SpaceSurvival/Audio/EnemyFire.uasset": "9dfe593159b7ccff2380b3f05a41b08032c4eae9f0404a5f9cf6c1611bd5112a",
+      "Content/SpaceSurvival/Audio/Engine.uasset": "7defc6c4679ed4fedd12750475e6a4ac46d5858ad830d42e6f0a25bcc0f76fcf",
+      "Content/SpaceSurvival/Audio/GravityAmbience.uasset": "f19ad14f85d9c945d4ed228fd27496ae3c9574f8511fa43eadc9a6aafb48b229",
+      "Content/SpaceSurvival/Audio/Impact.uasset": "18ad4605b349ccc2304785566693cc0632ac7aa7a623377059ac3daa76bca896",
+      "Content/SpaceSurvival/Audio/Laser.uasset": "35e9d2e6b8bf87ec1cb3ee3c39ba3bc1b32e2fec2b711fe320b0897215ff59c9",
+      "Content/SpaceSurvival/Audio/MusicBase.uasset": "d197113d6dbff2f025e80a252d098275d64d34b67a4c161cbfc44c17aea9dbf9",
+      "Content/SpaceSurvival/Audio/MusicClimax.uasset": "437ca173d341dccea84a636861bca5acb2bc4276b006017b35819abe84fdeea9",
+      "Content/SpaceSurvival/Audio/MusicPressure.uasset": "6d541f6901d789118759a06b8b5d462e687c5396bed5a4ef8f0b096bbff77e5d",
+      "Content/SpaceSurvival/Audio/Pickup.uasset": "ac132a01c8f653391ca94a48151f249ece9d45b1a800cb77b32fc442f97bbf24",
+      "Content/SpaceSurvival/Audio/Station.uasset": "92f83b540593da3dd1edb7e01e793919a8e86d6449a5e62dcd8e865d5d95ad2e",
+      "Content/SpaceSurvival/Authoring/P_AcornautImport.uasset": "2c4399a144af095f1cfee679bbbd731573f48dbf9df7fde45d20b6783c014870",
+      "Content/SpaceSurvival/Authoring/P_DisembarkImport.uasset": "943e49ef09204f0a059ddd9fdc1e163a62758f0797a4c73afd63512aad3fd0fd",
+      "Content/SpaceSurvival/Authoring/P_PilotImport.uasset": "8c6861399f4fdd0a6123515a8a30a89ffbc3e1c1bda1b474423de768f9ab88dc",
+      "Content/SpaceSurvival/Character/A_Disembark.uasset": "a17a080173b3c0fe5f9077f7afc868948d55ce4836718ed3049ec361f974dfd0",
+      "Content/SpaceSurvival/Character/A_DisembarkGripFit.uasset": "13192da7a3001faaa885229bf714f2a2d1331361c91e3faf4ceb08aa681c53fc",
+      "Content/SpaceSurvival/Character/A_Pilot.uasset": "de94f32c0cb14912c2fdfbefeac1966b436dc959014bff2b4821b5854cb3a8ea",
+      "Content/SpaceSurvival/Character/A_PilotGripFit.uasset": "5184434996865dd8831ec50f50722d73fa24f9feef7953d22e38c2c8342c8a45",
+      "Content/SpaceSurvival/Character/A_Walk.uasset": "386fe4f8921132ebee94d813dd0c454ea49e1a46970bd268bd3204f4bcacc4c7",
+      "Content/SpaceSurvival/Character/geometry_0_PhysicsAsset.uasset": "a5c513bb9aa46d9ed2ab84026a06655bd5c95b0634b9e4d638b5ef5db1a33522",
+      "Content/SpaceSurvival/Character/geometry_0_Skeleton.uasset": "e4e69079b59b5e483253eaa57988a0d5adab27a71067eb8cfe959a0f559779d3",
+      "Content/SpaceSurvival/Character/model-rigged_material_0.uasset": "15c3bde582067296e07bbb273994b52ad5f569929121d05eb3efae4ede85e7d7",
+      "Content/SpaceSurvival/Character/model-rigged_texture_0.uasset": "38e22986efcb79c7cf10e0c577b8fd73d161f78cac59311b91901734ad90f592",
+      "Content/SpaceSurvival/Character/SK_Acornaut.uasset": "8cbdde1b50530235f81225e971aae5db50925ebfdaf252cfd48a9fc1fe58839b",
+      "Content/SpaceSurvival/Character/SK_AcornautPilot.uasset": "25159537f75a7d68df97e662443601b8c73623eebdd3c27591f057870b05305a",
+      "Content/SpaceSurvival/Character/SK_AcornautTailV2.uasset": "7a9e6caffe15c488bed4846912e823a60974bad402dd736d222fb3c355d67917",
+      "Content/SpaceSurvival/Data/DA_Phase1.uasset": "6cfe3ebfb61ef1de3e58bd48f2a72e78161a5986c31b97d46c069407adcd0505",
+      "Content/SpaceSurvival/Maps/Survival.umap": "30643d64993e2b5386b975fbe765afdfc0ab134cc6159796b6ce3c92758c2324",
+      "Content/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.uasset": "0e91828d10190e0edef73490ee36659c2cbe41be172f178048dc97d70b9118c4",
+      "Content/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.uasset": "8797aa3e71ccfff42cab9cb7a76efd91e49f0d0434678235fec55a5838056859",
+      "Content/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.uasset": "24b7310f596e4da22c0d7d541a7d81e55b40d8c171b6e6f620e4cfb4c29a3969",
+      "Content/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.uasset": "4be5f2fa9f0d38878ba99648418014b4e390a18a177d0f71a4dbd5752efe9f95",
+      "Content/SpaceSurvival/Materials/M_AcornV2_IonAndNav.uasset": "a1aa26f8df23151bb7d556f0eb139455865a3e42e59173d388797c9bda669bfb",
+      "Content/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.uasset": "c33639070c924e50ae665437431f658f3e8088b9c52dccc5c4dd395416bcd3f3",
+      "Content/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.uasset": "46e4d442190b589022e7cc247692677cc0f8141d522b3de11f15440050965467",
+      "Content/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.uasset": "123c4f918c11926bb0eab7a6d691a9075e4e687dd6581f43b1f821b824202392",
+      "Content/SpaceSurvival/Materials/M_AcornV2_Windscreen.uasset": "5283fba73752f879635a345ab723b9406dda5fd27c4c331138331807fcbcef16",
+      "Content/SpaceSurvival/Materials/M_Amber.uasset": "c70e9f84119f71ca7e76bbc2dbf0531e0d6aade26be196f7bedf133f1904bf2f",
+      "Content/SpaceSurvival/Materials/M_Cyan.uasset": "8923f11bd51b70ef654fea13a1b5afdbe66e52f54b0a2d0a4e1d9e725ab15224",
+      "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidate.uasset": "cc55b4ded82b618c52c5adae608d119fa1c2bebc3b0dfd16964b09765f66fb31",
+      "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidateV2.uasset": "4ed67381325118326c5e633ed43d7fac2059e9ca2999af5f58da72b3bc32e8d1",
+      "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidateV3.uasset": "563cdc6d932b28070bfa111276eb5b061baa7d601da2cdf677b49eb7a0ad154f",
+      "Content/SpaceSurvival/Materials/M_Emissive.uasset": "1c09844a3166fb49ae81b17d4fa643843cfbf6f29d1f1444fd2dadd4f7445227",
+      "Content/SpaceSurvival/Materials/M_EnemyCandidate_Amber.uasset": "f44beaa457d984bbf80c274092c12ee1e3a62b4289728e5f3739ec8233117a42",
+      "Content/SpaceSurvival/Materials/M_EnemyCandidate_Ceramic.uasset": "51b348be4e057e6a3715ded5227a68b5742eaad1565263a17a8fc5adccd4ea17",
+      "Content/SpaceSurvival/Materials/M_EnemyCandidate_Recess.uasset": "91063b83184900f60bfda4bb791333a306fe2f8d8d13ca7c5f4e173320c59335",
+      "Content/SpaceSurvival/Materials/M_EnemyCandidate_Titanium.uasset": "a7a65c45352599da90d71fea6bf2c210aa1655aa256ad07cd288e8b7b8064864",
+      "Content/SpaceSurvival/Materials/M_Gold.uasset": "6df62e0c00e262f482a74836c84c937dd043bb8ce60b48e5cfc6c862642f7001",
+      "Content/SpaceSurvival/Materials/M_GravityFieldCandidate.uasset": "774d46cd0dbfee0b9f07db8be54c306bc507da98e2186816c29888c4bd4dcee0",
+      "Content/SpaceSurvival/Materials/M_GravityFieldCandidateV2.uasset": "985e39ae9ac8e66c3686867eeeab6c82810751d4c72e16f085ff14aee789af3d",
+      "Content/SpaceSurvival/Materials/M_GravityFieldCandidateV3.uasset": "4b383d2d897af1e1e3c1ed91777d3aca88decffb4c257f5c43dfc7174327f3ee",
+      "Content/SpaceSurvival/Materials/M_Hazard.uasset": "e1d1a26aa20cfd17c6e0df5959607b3bed66f3f1f402b5ac9b26b7596e290e46",
+      "Content/SpaceSurvival/Materials/M_Hull.uasset": "7d128dd99493b7876fb8d1fc10cf6879d122118e3b3e80c1339a4b7edf19bbea",
+      "Content/SpaceSurvival/Materials/M_Rock.uasset": "5b44e2035b0fe0bc0d5972f76443a1e0a502346c4fa0bafa8850772b6d633de5",
+      "Content/SpaceSurvival/Materials/M_RockPhotographic.uasset": "acb1598b5d3a5acca0991d501b6c2de374b37d3ba4eacdfcc87a3683d346bbe1",
+      "Content/SpaceSurvival/Materials/M_Space.uasset": "1352430c92730af207767497787fb0c4e333abd5d87cff0ecc33fa71582fb993",
+      "Content/SpaceSurvival/Materials/M_Star.uasset": "f599a1ac9809f0fbdd3fc34cf735d17ab76242375dfac61369e27800d6a56480",
+      "Content/SpaceSurvival/Materials/M_StarWarm.uasset": "20e068709506051028f49cacff9894f5832fb7c2b13183ba06793a1c791c0f57",
+      "Content/SpaceSurvival/Materials/M_StationDeck.uasset": "e90d895cd942329bf4af71efeff9441c1f077f2f0f3cc5b408b2510e02fd156f",
+      "Content/SpaceSurvival/Materials/M_Violet.uasset": "32f58fbe70588002f32cfe29186b0a21ba98cd18bfded30539ee16ac6777a98f",
+      "Content/SpaceSurvival/Meshes/SM_AcornShip.uasset": "e138f280422d1aa7d7106ca432167031d2bb834909a1eedd76fdbe465d481bf9",
+      "Content/SpaceSurvival/Meshes/SM_AcornShipGripFit.uasset": "ea9823aab8c742deed6513c54c985fc9ecd913b8f0d0f20c42090a97dda73d30",
+      "Content/SpaceSurvival/Meshes/SM_AcornShipV2.uasset": "a74f9bb239e697f16e4612d117289832ae32be4f0b5bda5ea5a5bcc41978fe47",
+      "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset": "9c29554cd017c56d26f691f3b05b39e993f768188b8f02fdef5901b370518c07",
+      "Content/SpaceSurvival/Meshes/SM_Asteroid.uasset": "b0d6c0ff8918c07346c75e3e5441ee4e472e3f63690c22282456b57a40195789",
+      "Content/SpaceSurvival/Meshes/SM_AsteroidMassive.uasset": "f623615757b872582bb28becdd00323205f62b8ae639963af724592dddf09539",
+      "Content/SpaceSurvival/Meshes/SM_AsteroidMedium.uasset": "ce40e9181dc9946cbde579fe757a2f29bc89f90268a6915b32bcab39a0341837",
+      "Content/SpaceSurvival/Meshes/SM_AsteroidSmall.uasset": "1b377a123a3dd01c960f110608d3b8644f151ffb2e64ff176661378e0e4b27ef",
+      "Content/SpaceSurvival/Meshes/SM_Console.uasset": "28a087b5a5ea43eebede2392d85c059da98e77f596663518293027e80341d16e",
+      "Content/SpaceSurvival/Meshes/SM_Crate.uasset": "985dbbc5cc95737d5cbec8ca9763258b428da8bbf3d514e6b1764dfe0bbfb973",
+      "Content/SpaceSurvival/Meshes/SM_Debris.uasset": "1817b2364e92beda629c16aa0b02ffe2ec6b602dc9773ccad8ff53e9187140f5",
+      "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidate.uasset": "a33acaf9156fdf34fed1f867ec15a5b7379ab8cea3dc43d9eac811eb5f240c9f",
+      "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV2.uasset": "b945ee2dd61860050292b187ca18259f4a05286df75c0feb57fb038a60be9952",
+      "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV3.uasset": "0c78780054475630c6b966f8ae9c84be04f310cc93fb13940dd78fe8d4adf928",
+      "Content/SpaceSurvival/Meshes/SM_EventBeacon.uasset": "e3546699c3719f0ee5096265710faceaefaa725a791e84c3d5c6853689563613",
+      "Content/SpaceSurvival/Meshes/SM_Flanker.uasset": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5",
+      "Content/SpaceSurvival/Meshes/SM_FlankerCandidateV1.uasset": "3f9a1c2ed4497ef0fc2f0f746242d9fa19b216b075ba9850dbde79aa74b4c3a6",
+      "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidate.uasset": "e24aef39319f1e1fb5881df01a3f62c01f31ec7fe9a0c931a14ab5f0610e933c",
+      "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidateV2.uasset": "b480942bd8aa06ad05a05df170d46ab67597bd339dbaecf09ebe0edfd003e078",
+      "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidateV3.uasset": "bc63278358ac777abed78980e29ffbb3921fc050009899fa87d20b5da29f8ff3",
+      "Content/SpaceSurvival/Meshes/SM_GravityRing.uasset": "e99e6e833d10e672de06ea00484a76be6132e309a23ccb3f0aebab4dde761a1a",
+      "Content/SpaceSurvival/Meshes/SM_MobileDepot.uasset": "700a7347aff1f471e0843c7294508cad69b4d568557abf9b9bd5ede8b826dc3a",
+      "Content/SpaceSurvival/Meshes/SM_OverdriveCooling.uasset": "43895110a7e226a595302e103dade3aa77c95304059e4cf93a6c86578dd30435",
+      "Content/SpaceSurvival/Meshes/SM_PickupBuff.uasset": "6f7212a475fb5b051da3996ff407b58c4b7e555a2938bd28fa4f4cdd272ad6cb",
+      "Content/SpaceSurvival/Meshes/SM_PickupCredit.uasset": "1a7e47f7535665a8647d7512b6eef7ac6e5db24280bb60d994b279ef936baf5c",
+      "Content/SpaceSurvival/Meshes/SM_PickupRepair.uasset": "4415f0d9fe9e585ff1dc52d2284a68e1908d71e2d3551c5407aca71089c85b03",
+      "Content/SpaceSurvival/Meshes/SM_PickupShield.uasset": "763b46adeab209e305b3555c1641084efe9958f3462ae80cf551b17e64dfc5ed",
+      "Content/SpaceSurvival/Meshes/SM_Projectile.uasset": "6c3f1c1bb301173c80abc9fa1eca6b7913f87fda6926fffcd99b89f1a5d188d5",
+      "Content/SpaceSurvival/Meshes/SM_Pursuer.uasset": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18",
+      "Content/SpaceSurvival/Meshes/SM_PursuerCandidateV1.uasset": "f487c80f91ddfce92b7110d77510574e39d3d00093752e71722844bb14f5db3b",
+      "Content/SpaceSurvival/Meshes/SM_ServiceArm.uasset": "2bfb38fe71cabf4120e979c0bc7d92a3fce4df4f4723ea76b11ee00a2d7c89c7",
+      "Content/SpaceSurvival/Meshes/SM_Starfield.uasset": "f2ef14f61cd647d2b3539b8a5229fc36d9fc260495dc3a47b55a639c5f0dedab",
+      "Content/SpaceSurvival/Meshes/SM_StationRing.uasset": "6d9085f5c919f24be9a48683b5404e81d4e10ac68439dfb2f4bee8ef031b6144",
+      "Content/SpaceSurvival/Meshes/SM_StormRing.uasset": "c026dcf829142da52e97e0f60d78113d2f2a274e8b70fccdd2da43ea27d07faa",
+      "Content/SpaceSurvival/Meshes/SM_SwiftCandidateV1.uasset": "0f32ff9616546f444607d7016f4e8f873e5b88b63d95e50aa844ed92e209b82e",
+      "Content/SpaceSurvival/Meshes/SM_VectorThrusters.uasset": "89733129623abf81a4333a579549a0327bd348e4799fe74ff870475f201b77a8",
+      "Content/SpaceSurvival/Meshes/SM_Wreckage.uasset": "12491d09e5b614523764b16c9616e8c9531184c11924a7dee6fa0f2faf795306",
+      "Content/SpaceSurvival/Textures/T_RockFace_ARM.uasset": "3143926cfd5142fffbff088f3757eb746818befb30560cb3713456cc705bfaa7",
+      "Content/SpaceSurvival/Textures/T_RockFace_Color.uasset": "b64ea4e4b731dda6229bc4fb1c53e89f7a95bad17217af1a58148e1ff671905d",
+      "Content/SpaceSurvival/Textures/T_RockFace_Normal.uasset": "37bdb981270dc8d2b29cea09e41d4b364a725869706f168444079009b34a5d3d",
+      "Content/SpaceSurvival/Textures/T_SpacePanorama_starless_v2.uasset": "560de813019d4cf39512757f19a382caf042c41e88595afc617e2221426bf5ef",
+      "Content/SpaceSurvival/Textures/T_SpacePanorama_v1.uasset": "5ac2f769e9e5cd16e1ccdf37c2cfc5c2b3228360846038221de02d46d9b98280",
+      "Content/SpaceSurvival/Textures/T_StationDeck_ARM.uasset": "cb5d53d454965686ba27a117d069512dc63f7ccf3b55902b8831e4817d907737",
+      "Content/SpaceSurvival/Textures/T_StationDeck_Color.uasset": "63ad12dc7c6a89f0b1601f343b905a3c69bc86a91e287cdb1768ec58226d5623",
+      "Content/SpaceSurvival/Textures/T_StationDeck_Normal.uasset": "e2cfe37d645835e22a4b7daa350019b4afa8d209c2bd15f9277b07d96769a9d4"
+    },
+    "author_scripts_raw_sha256_at_execution": {
+      "Scripts/AnalyzePerformance.py": "c5a2476b076c0bc55590ecfed8ace46dc2d264fd7f1fe595d3b07afed833b087",
+      "Scripts/AuthorAcornShip.py": "b3d7615e540d9c67851e1b10d89fc87c3e7ff280a54a2e24510d77e5315a2181",
+      "Scripts/AuthorContent.py": "e06c7c0211c277667adcb0ba8c625cf64f96fd49fc368dbfcaa726b03b7cc169",
+      "Scripts/AuthorEnemyCandidates.py": "5558c5f5d98db97677ab56215d1f414f57b38c6d78c0b6f51491de964463b4ee",
+      "Scripts/AuthorFieldCandidates.py": "c021983beb9e7f00a393f938985f7fcced54d358187837bba784248623644d84",
+      "Scripts/AuthorFieldCandidatesV2.py": "1e1fc55b44587ac8b60368b0f813ae0abe615c720b88d7b0d79cb7f44c0064bf",
+      "Scripts/AuthorFieldCandidatesV3.py": "e8bbb2c383e31d23e481a41f68979cdb87639efbb31e8da046997ef3dee554c4",
+      "Scripts/AuthorGripFit.py": "30fcbe74ee780d607153004a66676d11b0b9ed8359f2f4e2870f9f4e42877380",
+      "Scripts/AuthorPilotGripFit.py": "d5cf0eb9fb2f6fc1184e1c7b6cb1bbde8fb33f90256487269dc2362d2fc819fb",
+      "Scripts/AuthorRockPhotographic.py": "ae7d14c2269cc1f38eb7052da50f5b64c8fcca2a11678ff27b05e043eceb0e44",
+      "Scripts/AuthorSpaceMaterial.py": "520954c8b6ca73a72195a67fc43a479cdd4796041547567eb6a2359d433174e1",
+      "Scripts/AuthorSpacePanorama.py": "017421d99ebca3918efff35998adf5b8e9fa9ed5f7d1f15e2140f07059113c27",
+      "Scripts/AuthorStationDeck.py": "1840c2a564cf62f4433c233c8eeb74e00abe4118d39eff30971511bb7983b07d",
+      "Scripts/AuthorSwiftCandidate.py": "3779bf0b756872531322cdf29bb6f3f4ca2bf496a20656e4beb454d5b0114601",
+      "Scripts/AuthorTailRepair.py": "d1c719f4b35a895ae23a8bd5a5b22d81d84dd534e66a71c7c800a8c53819cffb",
+      "Scripts/CheckProject.py": "b073b7e641b4b0ed2039c45e944bbbac9ca5ebcb3a0fed162fe23a8aa45ef501",
+      "Scripts/GenerateAudio.py": "0539ca1d5f28bcf7e79ffcea603c8dfd123f9edab2396254891801aec35e331f",
+      "Scripts/PreviewFieldCandidates.py": "73fa38d868f35411f458371d48a31e131575b4a6d2032ed66b1f45cbe0bcc904",
+      "Scripts/PreviewFieldCandidatesV2.py": "f5fd525a2bfb22f3aeb591900bf9aa799d43c404e13d847db5659cdf6e34db6a",
+      "Scripts/PreviewFieldCandidatesV3.py": "b49eb96cd1307dbdc60862ad30c04cbca6f1104fca913fc0c1082cbee55f55ee",
+      "Scripts/SourceDigests.py": "d8f16d950c6ba75ad28bad22122f635c70deb47ee26ef68413704d9cad72d4be",
+      "Scripts/TestFreshCheckout.py": "f7e23d6691e0afdbffac73bda478b196f3e2d769bc6a02b8bb13094f64797f8d",
+      "Scripts/ValidateAcornShip.py": "2bfd2ba7fd84a0ec21db1a2906190774ba2bb230ace2b53849d0c4245ce114c7",
+      "Scripts/ValidateContent.py": "a9f400e66a7615fe6e7a02c9deb5fd65871a25f8329a48485c4d735058ceccf0",
+      "Scripts/ValidateEnemyCandidates.py": "87da1e73ee73c105c22fe6d65cc180fa4672e8a6f2ba30e045fd19c17d2475ec",
+      "Scripts/ValidateFieldCandidates.py": "e8a74ddc42498d3b606cb92fbb0f1cef103de003c3ff5fb6697b7f5d2679b985",
+      "Scripts/ValidateFieldCandidatesV2.py": "eedc6f62278bf9eca85a6d515028312513f43f27dcfbcfca9ab088df060c5a36",
+      "Scripts/ValidateFieldCandidatesV3.py": "80b456fe1c66b10938414bac0ab08beadcd79d60d3f1c90a206a8affd12ca8cd",
+      "Scripts/ValidatePilotGripFit.py": "930412309071c10a66e8c78a2bebffc95ccf40a12513fa9be7fcc660545b0214",
+      "Scripts/ValidateRockPhotographic.py": "6509a106457f2dc11ebe937e89ef19196cf52233008d9ae8f0459a4fbc9e937b",
+      "Scripts/ValidateScene.py": "a2b9d4224b1d56c361fef9074423104c0b10a482be733c22a017630085aa0663",
+      "Scripts/ValidateStationDeck.py": "abc87dc69a15346a74db903ff70eec13f6a550b91b581d51390ec49ee12bed5b",
+      "Scripts/ValidateSwiftCandidate.py": "123fd17f30e537f652a63ad566c64884308b7ba4be357071982de4f1e37b6cb1",
+      "Scripts/ValidateTailRepair.py": "7abca26076deea4babdb64655a9dc105b6e2414362fc7d07e21a48754d5af16e"
+    },
+    "fresh_validation_records": [
+      {
+        "record": {
+          "path": "Saved/Validation/ContentImport.json",
+          "bytes": 1284,
+          "sha256": "7f705f29736fe9a7b644331cb9539ed8b35a15bed865531d99782fda4f4b8f34"
+        },
+        "status": "IMPORTED_NOT_GAMEPLAY_VALIDATED",
+        "last_write_utc": "2026-09-13T11:47:38.221361+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/PersistedContent.json",
+          "bytes": 12422,
+          "sha256": "9424615c0d3d5833cfd25464b504dc82fe315399e5c8f3fae57265594b27e448"
+        },
+        "status": "PERSISTED_ASSETS_VALIDATED_NOT_GAMEPLAY",
+        "last_write_utc": "2026-09-13T11:48:01.582043+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/FieldCandidatesV3Import.json",
+          "bytes": 874,
+          "sha256": "3f0c0b3bd198567ba2ac6ee09dd96d1e0b01830961b33c036bd29e05b679abbf"
+        },
+        "status": "FIELD_CANDIDATES_IMPORTED_NOT_ADOPTED_FRESH_VALIDATION_PENDING",
+        "last_write_utc": "2026-09-13T11:47:33.620787+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/FieldCandidatesV3Persisted.json",
+          "bytes": 6757,
+          "sha256": "85152e051a9a6324678466b6e50c1d3a5fa167a3dd1ac4a2c8a26fda931be5cd"
+        },
+        "status": "FIELD_CANDIDATES_PERSISTED_CONTRACT_VERIFIED_NOT_VISUAL_ACCEPTANCE",
+        "last_write_utc": "2026-09-13T11:47:56.843739+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/GripFitImport.json",
+          "bytes": 2382,
+          "sha256": "723f2ac1a51a5fe155469be4365e44102d092b3218fc7430a0cb4407bf30e807"
+        },
+        "status": "SEPARATE_GRIP_FIT_SAVED_VALIDATED_NOT_ADOPTED",
+        "last_write_utc": "2026-09-13T11:47:35.144773+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/GripFitPersisted.json",
+          "bytes": 2382,
+          "sha256": "723f2ac1a51a5fe155469be4365e44102d092b3218fc7430a0cb4407bf30e807"
+        },
+        "status": "SEPARATE_GRIP_FIT_SAVED_VALIDATED_NOT_ADOPTED",
+        "last_write_utc": "2026-09-13T11:47:58.784591+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/PilotGripFitImport.json",
+          "bytes": 1378,
+          "sha256": "b2d1a93fa38e1d6f0398e6470f3922dda67d8dc1102a7a10be2b61429a58e8c8"
+        },
+        "status": "GRIP_PAIR_IMPORTED_SAVED_NOT_ADOPTED",
+        "last_write_utc": "2026-09-13T11:47:37.497596+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/PilotGripFitPersisted.json",
+          "bytes": 1389,
+          "sha256": "1ab5591ed32bcfedfd999d8b568364d1414a9b4f27c80a848721fccdcc814f68"
+        },
+        "status": "GRIP_PAIR_FRESH_PERSISTED_VALIDATED_NOT_ADOPTED",
+        "last_write_utc": "2026-09-13T11:48:01.264950+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/AcornShipPersisted.json",
+          "bytes": 6685,
+          "sha256": "6e11fb3cc25cb20f04e890797f433ae742c0d08415c7475c244821496ad63688"
+        },
+        "status": "CANDIDATE_PERSISTED_ASSETS_VERIFIED_NOT_VISUAL_ACCEPTANCE",
+        "last_write_utc": "2026-09-13T11:47:57.331280+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/RockPhotographicPersisted.json",
+          "bytes": 4557,
+          "sha256": "0e6df371907a5c834bad93c40f9ab7ba45cc6802874ea467ef9fca10ae87bef7"
+        },
+        "status": "PERSISTED_ROCK_CANDIDATE_VALIDATED_NOT_GAMEPLAY",
+        "last_write_utc": "2026-09-13T11:47:54.898839+00:00"
+      },
+      {
+        "record": {
+          "path": "Saved/Validation/StationDeckPersisted.json",
+          "bytes": 1323,
+          "sha256": "dcdf4f94aced187cb5db99afc2020bf80377f33a9fea1f558e0c5174b8887911"
+        },
+        "status": "PERSISTED_DECK_ASSETS_VERIFIED_NOT_VISUAL_ACCEPTANCE",
+        "last_write_utc": "2026-09-13T11:47:54.411692+00:00"
+      }
+    ]
+  },
+  "other_checks": {
+    "portable_domain": "744 strict C++17 and 744 ASan/UBSan assertions PASS",
+    "structure": "23 structural checks PASS",
+    "python": "Scripts and ContentSource compileall PASS; 13 SourceDigests tests PASS",
+    "format": "C++ container format PASS",
+    "fresh_checkout_limit": "Historical 2e export passed. New integrated commit must be exported and verified after commit; this receipt does not preclaim it."
+  },
+  "failures_retained": [
+    "First integrated Editor compilation failed three TestNotNull calls with TObjectPtr; .Get() corrections compiled successfully.",
+    "First fresh Validate failed V3 compiled material statistics under NullRHI. The corrected real-RHI Validate passed; missing statistics are never skipped.",
+    "Initial candidate native grip preview showed a stale original animation; rejected and preserved in candidate evidence. Corrected SetAnimation/actual bone readback is separately recorded."
+  ],
+  "raw_logs": [
+    {
+      "path": ".agent/local/VisualIntegrationEditor.log",
+      "bytes": 10375,
+      "sha256": "eeebb1067352c9a117bf3ead8e62c9c72e102e913cf6244ef56d4f146893d1a4"
+    },
+    {
+      "path": ".agent/local/VisualIntegrationEditor2.log",
+      "bytes": 3648,
+      "sha256": "34df31dd30714ad803502d9aa57d2a2503b7f949da98e0d3ae0f3a31ee587cd2"
+    },
+    {
+      "path": ".agent/local/VisualIntegrationEditor3.log",
+      "bytes": 3044,
+      "sha256": "1dbc546b563bda8893654a467f141271a4779e1c5a034dc0ebf35f25bea69d88"
+    },
+    {
+      "path": ".agent/local/VisualIntegrationContent.log",
+      "bytes": 293839,
+      "sha256": "3cfe12dd3da60169f42d21bbb168e03d0f7dbfe15d3bcab5ca516a624b1aa20c"
+    },
+    {
+      "path": ".agent/local/VisualIntegrationValidate.log",
+      "bytes": 261668,
+      "sha256": "d1f8f57cb4a11ebe904f7eda07a6c6e5411eacec9455ca59718414fef6d3e527"
+    },
+    {
+      "path": ".agent/local/VisualIntegrationContent2.log",
+      "bytes": 294128,
+      "sha256": "b485dac917229f7f35e926af31c65efe006c3af2e9e29b40c9f92d3de701f2f2"
+    },
+    {
+      "path": ".agent/local/VisualIntegrationValidate2.log",
+      "bytes": 272723,
+      "sha256": "3e33a750874227ce8e7b6f6089cb749308bbf58bd5e0d754db424819e45ef3fd"
+    },
+    {
+      "path": ".agent/local/ChaseAimEditor.log",
+      "bytes": 4350,
+      "sha256": "3f665d80bfb3f9329db310b06e03b78730855eb08cfe4ef75e522b7162b83bbf"
+    },
+    {
+      "path": ".agent/local/FieldBannerEditor.log",
+      "bytes": 2522,
+      "sha256": "a5b3048b4cabb2f172175059e3386276a40d97914df698224383f71fbc7c4d56"
+    },
+    {
+      "path": ".agent/local/VisualIntegrationCore.log",
+      "bytes": 2570,
+      "sha256": "3b062e79a7b949f62bed4534af7a8e6d5cc98c2c5dbd37c48cfe5323b427f356"
+    },
+    {
+      "path": ".agent/local/ChaseAimFormat.log",
+      "bytes": 1809,
+      "sha256": "9eb22b4a0af3ee96ebbb9b6fb200836229be61716a03ff4bac22b82cb9a9943f"
+    },
+    {
+      "path": ".agent/local/HeroResidencyEditor.log",
+      "bytes": 3089,
+      "sha256": "d5d8369183c97ec75f00ec2e6eed52f91e0452f52f6b4abc9855dfd8eb3f6a68"
+    }
+  ],
+  "native_visual_receipts": [
+    "docs/validation/2026-09-13-integrated-station-visuals.json",
+    "docs/validation/2026-09-13-integrated-endgame-visuals.json"
+  ],
+  "root_visual_observations": [
+    "Station capture predates camera/aim/subtitle correction. Flight rear hull obscured reticle; fixed afterwards. Initial pose blend and hands hidden by tail/seat; screenshot readbacks delayed intended sample times.",
+    "Wave10 Climax/Compound/Approach PNGs directly reviewed: reticle clear of own hull, simultaneous gravity/asteroids/enemies visible; broad field bubble and thin dark enemies remain visual limits.",
+    "Station approach remains blocky and sky soft. New original candidate art is integrated for further evaluation, not owner accepted.",
+    "Wave10 ListTextures showed all3rocks at2048 and sky2048x1024, but hero1024(max2048). Component residency fix compiled afterwards; actual fixed residency pending package readback."
+  ],
+  "limits": [
+    "Physical keyboard/mouse/controller sensitivity, touch/feel, listening, natural pacing/fairness/economy and retry appeal remain the 19 unchecked PLAYTEST_TOMORROW items.",
+    "Screenshots perturb timing; no new performance or natural full-ten-wave acceptance from these captures.",
+    "Camera-hit-behind-muzzle rejection is source-reviewed but lacks its own actor test.",
+    "Latest runtime is not yet in Package10. A new committed package and source-bound no-readback native performance run are still required.",
+    "Owner rejected prior graphics. Station props, sky, fur, enemy silhouette and audio polish remain achievable work."
+  ],
+  "post_test_hero_residency": {
+    "date_utc": "2026-09-13T12:17:46.477976+00:00",
+    "changes": [
+      {
+        "path": "Source/SpaceSurvival/Private/SSShip.cpp",
+        "before": "ff46e9ab8cb027ba7dcecb0ab43e59ba2079062ede4ce1e1858488048e626593",
+        "after": "fc8252fa47d306242564c8af3a8925e0b28e9690bdcf563104ebdccb8dd0ebb8"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSStation.cpp",
+        "before": "6d226181abc36e4b0211447f8c75046da3c95aff7a51a818d171bcc0818142e9",
+        "after": "10cf59d7bd373c208bbda8a27022f17b8aeff79b48d8fbabc1edafc1fe80e16a"
+      }
+    ],
+    "reason": "Captured Wave10 ListTextures showed nearby hero at1024 rather than2048; component-scoped force for Pilot and Walker only. No global texture budget/quality/collision/pose change.",
+    "verification": "Pending build and packaged ListTextures readback.",
+    "build": "Editor PASS 8.54s",
+    "current_editor_dll": {
+      "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 1603584,
+      "sha256": "5ee79bd71b36cd8afd791e9c4227d2a88e3e54568aebd29da5ef6d96e632744d"
+    },
+    "limit": "Rendering flag only after24test and capturedfd6 source. No additional automation run claimed; packaged texture residency readback pending."
+  }
+}

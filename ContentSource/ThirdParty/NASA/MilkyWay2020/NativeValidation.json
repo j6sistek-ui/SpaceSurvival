@@ -1,0 +1,578 @@
+{
+  "status": "NATIVE_ASSET_IMPORT_FRESH_VALIDATION_AND_IDEMPOTENCE_PASS_NOT_GAMEPLAY_ACCEPTANCE",
+  "recorded_utc": "2026-09-13T13:38:29.048617+00:00",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "git_head_at_receipt": "dccfdfd7569a4178993b67897d9875f95b96cd2d",
+  "boundaries": [
+    "Two new packages only; no existing Source, Config or Content file changed during these processes.",
+    "Main author/validator and runtime selection were prepared by the lead before the protected baseline; this receipt does not claim their complete pipeline or C++ build.",
+    "No native game view, resident mip measurement, frame-cost capture, natural gameplay or owner art acceptance.",
+    "Ordinary streaming remains enabled; no global LOD, texture pool, bloom or anti-aliasing changes.",
+    "Native-size RGB8 display conversion is lossy relative to the original half-float EXR; no upsampling or artistic alteration."
+  ],
+  "source_files": [
+    {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/CheckSource.py",
+      "bytes": 2466,
+      "sha256": "e70e9caaf1ed52382be1ac96c3b69e31186b9279edb73e14c3d89d33a3aca843"
+    },
+    {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/ConversionReceipt.json",
+      "bytes": 704,
+      "sha256": "adc32d08337723ffe868d42fab9e5621fe41b19b50ea217feaefbbcb2b209f6b"
+    },
+    {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/Convert.py",
+      "bytes": 3116,
+      "sha256": "130ae340507f7b5ea85ab606ced86d4485c6f8a566fae6ab6a0a303088361f12"
+    },
+    {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/LICENSE.md",
+      "bytes": 2006,
+      "sha256": "657c9d175e24b119948575455bacd3ec1c4d9f0938545437cd8634b031351746"
+    },
+    {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/manifest.json",
+      "bytes": 1911,
+      "sha256": "7e5eba7795dde02d317e8a8f3e02b61ceecd86c47293cb761fb214e752a6a50f"
+    },
+    {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/MilkyWay2020_8k.png",
+      "bytes": 52500034,
+      "sha256": "e5d17bc576e8a7278ab314958efb36e68a9ce0e6616169e035ef683a9f7c039d"
+    },
+    {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/README.md",
+      "bytes": 5009,
+      "sha256": "8a71c99493c281b0b63a60d29900921cc80c43fef2c732be3f07e5f14c1c6903"
+    },
+    {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/SourceOrigin.json",
+      "bytes": 3346,
+      "sha256": "a7c613bf94ee4f7a8dd3b1c2e837158de6b75d458b3412ea7bf360109ef94119"
+    },
+    {
+      "path": "Scripts/AuthorMilkyWay.py",
+      "bytes": 9562,
+      "sha256": "251a0a9ba8f855fa0b19913e37caa8b392219cec18e3cda5d049576b3985b4e0"
+    },
+    {
+      "path": "Scripts/ValidateMilkyWay.py",
+      "bytes": 2686,
+      "sha256": "9fa53120808d9fcd572e55859d5971ee146de9107e16e12e0117cbd868f3ea8c"
+    }
+  ],
+  "packages": [
+    {
+      "path": "Content/SpaceSurvival/Materials/MI_SpaceMilkyWay.uasset",
+      "bytes": 7526,
+      "sha256": "e92a8e3d51c806ed515eb9996e3396fd1b903f9f0eb0710c3bc178a3cff1020a"
+    },
+    {
+      "path": "Content/SpaceSurvival/Textures/T_MilkyWay2020.uasset",
+      "bytes": 56315364,
+      "sha256": "057b57f719d95e4faeb78522ccedd117752a43ff3cfe8a048296456ef195cc2a"
+    }
+  ],
+  "fresh_readback": {
+    "status": "NASA_SKY_FRESH_SELECTION_AND_8K_VALIDATED_NOT_NATIVE_VISUAL_ACCEPTANCE",
+    "errors": [],
+    "texture": "/Game/SpaceSurvival/Textures/T_MilkyWay2020.T_MilkyWay2020",
+    "dimensions": [
+      8192,
+      4096
+    ],
+    "parent": "/Game/SpaceSurvival/Materials/M_Space.M_Space",
+    "instance": "/Game/SpaceSurvival/Materials/MI_SpaceMilkyWay.MI_SpaceMilkyWay",
+    "texture_overrides": [
+      "SpacePanorama"
+    ],
+    "inherited": [
+      "Tint",
+      "SkyIntensity",
+      "direction mapping",
+      "seam/pole handling"
+    ],
+    "never_stream": false,
+    "source_sha256": "e5d17bc576e8a7278ab314958efb36e68a9ce0e6616169e035ef683a9f7c039d",
+    "packages": [
+      {
+        "path": "Content/SpaceSurvival/Materials/MI_SpaceMilkyWay.uasset",
+        "bytes": 7526,
+        "sha256": "e92a8e3d51c806ed515eb9996e3396fd1b903f9f0eb0710c3bc178a3cff1020a"
+      },
+      {
+        "path": "Content/SpaceSurvival/Textures/T_MilkyWay2020.uasset",
+        "bytes": 56315364,
+        "sha256": "057b57f719d95e4faeb78522ccedd117752a43ff3cfe8a048296456ef195cc2a"
+      }
+    ],
+    "parent_package": {
+      "path": "Content/SpaceSurvival/Materials/M_Space.uasset",
+      "sha256": "1352430c92730af207767497787fb0c4e333abd5d87cff0ecc33fa71582fb993"
+    },
+    "scripts": {
+      "AuthorMilkyWay.py": "251a0a9ba8f855fa0b19913e37caa8b392219cec18e3cda5d049576b3985b4e0",
+      "ValidateMilkyWay.py": "9fa53120808d9fcd572e55859d5971ee146de9107e16e12e0117cbd868f3ea8c"
+    },
+    "engine": "5.8.2-56702186+++UE5+Release-5.8",
+    "preserved_files": 162,
+    "limits": [
+      "Compiled 8192x4096 dimensions do not prove actual runtime mip residency.",
+      "Inherited sky graph and one texture override only; no native view or frame-cost measurement.",
+      "Display-converted RGB8 source is not a byte-lossless copy of the original half-float EXR.",
+      "Existing runtime bindings and geometry stars remain unchanged by these scripts."
+    ]
+  },
+  "processes": [
+    {
+      "phase": "Author",
+      "process": {
+        "phase": "Author",
+        "pid": 93504,
+        "startedUtc": "2026-09-13T13:26:39.5616932Z"
+      },
+      "result": {
+        "status": "FAILED",
+        "errors": [
+          "MaterialInstanceConstantFactoryNew: Failed to find property 'initial_parent' for attribute 'initial_parent' on 'MaterialInstanceConstantFactoryNew'"
+        ]
+      },
+      "log": {
+        "path": ".agent/local/SkyCandidate/Native/Author.log",
+        "bytes": 275451,
+        "sha256": "4e82416e5182ed893fdf2ede82e706148c391179fc4d620bed2478ac6bef9f70"
+      },
+      "report": {
+        "path": ".agent/local/SkyCandidate/Native/Author.result.json",
+        "bytes": 198,
+        "sha256": "64cc06b0d7a5120ed275f9379635be5c354b1a7b18b4b7b4b115c1e1cd28ace3"
+      },
+      "exit": {
+        "exitCode": 0,
+        "provenance": "Observed owned shell session completion printed Author exit 0; no separate exit JSON was written for this first attempt."
+      },
+      "warnings": []
+    },
+    {
+      "phase": "AuthorRetry",
+      "process": {
+        "pid": 91252,
+        "phase": "AuthorRetry",
+        "startedUtc": "2026-09-13T13:31:37.0190049Z"
+      },
+      "result": {
+        "status": "FAILED",
+        "errors": [
+          ""
+        ]
+      },
+      "log": {
+        "path": ".agent/local/SkyCandidate/Native/AuthorRetry.log",
+        "bytes": 269196,
+        "sha256": "14ecad02212fce0e817c1c03357198d6df5fcf015269dcbb1a60b450ec22a7a2"
+      },
+      "report": {
+        "path": ".agent/local/SkyCandidate/Native/AuthorRetry.result.json",
+        "bytes": 51,
+        "sha256": "13ef5c76614af9af4529bbb4c64e50a5f66f1d8bc00948953d55d90802604246"
+      },
+      "exit": {
+        "pid": 91252,
+        "phase": "AuthorRetry",
+        "finishedUtc": "2026-09-13T13:31:54.3112011Z",
+        "exitCode": 0
+      },
+      "warnings": [
+        "Console variable 'r.MotionVectorSimulation' used in the render thread. Rendering artifacts could happen. Use ECVF_RenderThreadSafe or don't use in render thread."
+      ]
+    },
+    {
+      "phase": "AuthorRetry2",
+      "process": {
+        "pid": 86948,
+        "phase": "AuthorRetry2",
+        "startedUtc": "2026-09-13T13:33:30.3892916Z"
+      },
+      "result": {
+        "status": "NASA_SKY_TWO_ASSETS_AUTHORED_NOT_VISUAL_ACCEPTANCE",
+        "errors": [],
+        "texture": "/Game/SpaceSurvival/Textures/T_MilkyWay2020.T_MilkyWay2020",
+        "dimensions": [
+          8192,
+          4096
+        ],
+        "parent": "/Game/SpaceSurvival/Materials/M_Space.M_Space",
+        "instance": "/Game/SpaceSurvival/Materials/MI_SpaceMilkyWay.MI_SpaceMilkyWay",
+        "texture_overrides": [
+          "SpacePanorama"
+        ],
+        "inherited": [
+          "Tint",
+          "SkyIntensity",
+          "direction mapping",
+          "seam/pole handling"
+        ],
+        "never_stream": false,
+        "source_sha256": "e5d17bc576e8a7278ab314958efb36e68a9ce0e6616169e035ef683a9f7c039d",
+        "engine": "5.8.2-56702186+++UE5+Release-5.8",
+        "preserved_files": 161,
+        "created": [
+          "Content/SpaceSurvival/Materials/MI_SpaceMilkyWay.uasset"
+        ]
+      },
+      "log": {
+        "path": ".agent/local/SkyCandidate/Native/AuthorRetry2.log",
+        "bytes": 272317,
+        "sha256": "f594c19559f33e50d69659d8e11b024b1512680fd1067afebe3dd3e9bd307648"
+      },
+      "report": {
+        "path": ".agent/local/SkyCandidate/Native/AuthorRetry2.result.json",
+        "bytes": 766,
+        "sha256": "349208bc130ba31f2e6b26e23d9bd76296607951d0ea59ad2135c35399ca2662"
+      },
+      "exit": {
+        "finishedUtc": "2026-09-13T13:33:43.7947416Z",
+        "pid": 86948,
+        "phase": "AuthorRetry2",
+        "exitCode": 0
+      },
+      "warnings": []
+    },
+    {
+      "phase": "Validate",
+      "process": {
+        "phase": "Validate",
+        "startedUtc": "2026-09-13T13:34:35.1231828Z",
+        "pid": 93092
+      },
+      "result": {
+        "status": "NASA_SKY_FRESH_SELECTION_AND_8K_VALIDATED_NOT_NATIVE_VISUAL_ACCEPTANCE",
+        "errors": [],
+        "texture": "/Game/SpaceSurvival/Textures/T_MilkyWay2020.T_MilkyWay2020",
+        "dimensions": [
+          8192,
+          4096
+        ],
+        "parent": "/Game/SpaceSurvival/Materials/M_Space.M_Space",
+        "instance": "/Game/SpaceSurvival/Materials/MI_SpaceMilkyWay.MI_SpaceMilkyWay",
+        "texture_overrides": [
+          "SpacePanorama"
+        ],
+        "inherited": [
+          "Tint",
+          "SkyIntensity",
+          "direction mapping",
+          "seam/pole handling"
+        ],
+        "never_stream": false,
+        "source_sha256": "e5d17bc576e8a7278ab314958efb36e68a9ce0e6616169e035ef683a9f7c039d",
+        "packages": [
+          {
+            "path": "Content/SpaceSurvival/Materials/MI_SpaceMilkyWay.uasset",
+            "bytes": 7526,
+            "sha256": "e92a8e3d51c806ed515eb9996e3396fd1b903f9f0eb0710c3bc178a3cff1020a"
+          },
+          {
+            "path": "Content/SpaceSurvival/Textures/T_MilkyWay2020.uasset",
+            "bytes": 56315364,
+            "sha256": "057b57f719d95e4faeb78522ccedd117752a43ff3cfe8a048296456ef195cc2a"
+          }
+        ],
+        "parent_package": {
+          "path": "Content/SpaceSurvival/Materials/M_Space.uasset",
+          "sha256": "1352430c92730af207767497787fb0c4e333abd5d87cff0ecc33fa71582fb993"
+        },
+        "scripts": {
+          "AuthorMilkyWay.py": "251a0a9ba8f855fa0b19913e37caa8b392219cec18e3cda5d049576b3985b4e0",
+          "ValidateMilkyWay.py": "9fa53120808d9fcd572e55859d5971ee146de9107e16e12e0117cbd868f3ea8c"
+        },
+        "engine": "5.8.2-56702186+++UE5+Release-5.8",
+        "preserved_files": 162,
+        "limits": [
+          "Compiled 8192x4096 dimensions do not prove actual runtime mip residency.",
+          "Inherited sky graph and one texture override only; no native view or frame-cost measurement.",
+          "Display-converted RGB8 source is not a byte-lossless copy of the original half-float EXR.",
+          "Existing runtime bindings and geometry stars remain unchanged by these scripts."
+        ]
+      },
+      "log": {
+        "path": ".agent/local/SkyCandidate/Native/Validate.log",
+        "bytes": 268189,
+        "sha256": "3ada182241b4f88032f75f1b138124a0958e53a208ecbe2b19cb391cfce829e9"
+      },
+      "report": {
+        "path": ".agent/local/SkyCandidate/Native/Validate.result.json",
+        "bytes": 1864,
+        "sha256": "3f537b17e5fadbe760132ad545df1456d2562a6aff8da28e1c82aa1c6f2b979a"
+      },
+      "exit": {
+        "phase": "Validate",
+        "pid": 93092,
+        "finishedUtc": "2026-09-13T13:34:49.1447104Z",
+        "exitCode": 0
+      },
+      "warnings": [
+        "Console variable 'r.MotionVectorSimulation' used in the render thread. Rendering artifacts could happen. Use ECVF_RenderThreadSafe or don't use in render thread."
+      ]
+    },
+    {
+      "phase": "Idempotence",
+      "process": {
+        "phase": "Idempotence",
+        "pid": 91144,
+        "startedUtc": "2026-09-13T13:35:49.7586931Z"
+      },
+      "result": {
+        "status": "NASA_SKY_TWO_ASSETS_AUTHORED_NOT_VISUAL_ACCEPTANCE",
+        "errors": [],
+        "texture": "/Game/SpaceSurvival/Textures/T_MilkyWay2020.T_MilkyWay2020",
+        "dimensions": [
+          8192,
+          4096
+        ],
+        "parent": "/Game/SpaceSurvival/Materials/M_Space.M_Space",
+        "instance": "/Game/SpaceSurvival/Materials/MI_SpaceMilkyWay.MI_SpaceMilkyWay",
+        "texture_overrides": [
+          "SpacePanorama"
+        ],
+        "inherited": [
+          "Tint",
+          "SkyIntensity",
+          "direction mapping",
+          "seam/pole handling"
+        ],
+        "never_stream": false,
+        "source_sha256": "e5d17bc576e8a7278ab314958efb36e68a9ce0e6616169e035ef683a9f7c039d",
+        "engine": "5.8.2-56702186+++UE5+Release-5.8",
+        "preserved_files": 162,
+        "created": []
+      },
+      "log": {
+        "path": ".agent/local/SkyCandidate/Native/Idempotence.log",
+        "bytes": 268190,
+        "sha256": "62466cf5a8d9dc85c834829aa1ab615783f31cab3066a18632086471e1e1b226"
+      },
+      "report": {
+        "path": ".agent/local/SkyCandidate/Native/Idempotence.result.json",
+        "bytes": 701,
+        "sha256": "9b941fe484752882baa03ff5503c32fdff94814cd3e8c0aab08b0fb38b4361ba"
+      },
+      "exit": {
+        "finishedUtc": "2026-09-13T13:36:03.2182430Z",
+        "phase": "Idempotence",
+        "pid": 91144,
+        "exitCode": 0
+      },
+      "warnings": [
+        "Console variable 'r.MotionVectorSimulation' used in the render thread. Rendering artifacts could happen. Use ECVF_RenderThreadSafe or don't use in render thread."
+      ]
+    }
+  ],
+  "preservation": {
+    "original_count": 160,
+    "final_count": 162,
+    "originals_unchanged": true,
+    "fresh_validate_exact_all_files": true,
+    "author_rerun_exact_all_files": true,
+    "created_only": [
+      "Content/SpaceSurvival/Materials/MI_SpaceMilkyWay.uasset",
+      "Content/SpaceSurvival/Textures/T_MilkyWay2020.uasset"
+    ],
+    "baseline": {
+      "path": ".agent/local/SkyCandidate/Native/Before.json",
+      "bytes": 20442,
+      "sha256": "aad9dfc477a3e675b9c3ba68f8e4fa7f86bcc18907c7385b5bbf46dc890c941d"
+    },
+    "after": {
+      "path": ".agent/local/SkyCandidate/Native/After.json",
+      "bytes": 20701,
+      "sha256": "f63a0ff9bfa196906a5b458e67be7f997e3cf21c532639a4986bbb6fc0c48d08"
+    },
+    "baseline_files": {
+      "Source/SpaceSurvival.Target.cs": "50bc0fbca25b2aae8a58dc1d3ed93bfc24a12ac7154d949ed321a9c150c702d4",
+      "Source/SpaceSurvivalEditor.Target.cs": "51ee577956e755fa62e3d6d97e90bb93fa741b7b86740eacc1c1a572ff17b066",
+      "Source/SpaceSurvival/SpaceSurvival.Build.cs": "cae333d628d605a58ce51a89f1c8addfbdc54674454623de4e732ac8e6891d86",
+      "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "86449dba0e9dcd4b89b71c6f2e6ea946857326fde7f7fbbb4c7305ab8f6366a9",
+      "Source/SpaceSurvival/Domain/SurvivalCore.h": "b7a6915ba71b6a642a6ceee9573fffadf8bed203b4fa6355984212ee1fe1cfaa",
+      "Source/SpaceSurvival/Private/SpaceSurvival.cpp": "1e7a3ebb1bff64523a091df3e8d3d0da34cb5fa13b690218e3f314765a898a87",
+      "Source/SpaceSurvival/Private/SSAdmissionAutomationTests.cpp": "c3ab7f43b497b98efedd0cd1da98c1c0453ab548b7a201724101d787e97e0bd9",
+      "Source/SpaceSurvival/Private/SSAudio.cpp": "99e14fb6a56c5fdd96a3d1d12a8d883a6b2ff40fa0376461d0fe2aeb4da12545",
+      "Source/SpaceSurvival/Private/SSAudioAutomationTests.cpp": "186324711ee437f72ebcaf6ca42af840d823bcc15e4aa99a0841902ad68b349c",
+      "Source/SpaceSurvival/Private/SSAutomationTests.cpp": "459b1a731db1943b26dd0e0c18ebbcd0416db5df839207dec1b5609f99690367",
+      "Source/SpaceSurvival/Private/SSContractAutomationTests.cpp": "f7ac940249caaf87b0fb236d9f53ed49dfc13facf3201787eb234052b41eee5b",
+      "Source/SpaceSurvival/Private/SSEconomyAutomationTests.cpp": "6d8d4bb96eb8c5e75dd187ef70b937a653c97f82fc8fbad8253e59c18785f6f6",
+      "Source/SpaceSurvival/Private/SSFlightAutomationTests.cpp": "2a497ac8af885082fbf06ba74553dcab35b7d88153c7cc514624fbebf0339517",
+      "Source/SpaceSurvival/Private/SSGameInstance.cpp": "c089ef3ef10480b4c351b322b5e14f20675938a0dafc24fe47de75d0c3b6ce30",
+      "Source/SpaceSurvival/Private/SSGameMode.cpp": "a47265514ef39bbc914ae374f5920479f9d3c8583abb2fb0cde92e4d629e4b7a",
+      "Source/SpaceSurvival/Private/SSHazardAutomationTests.cpp": "054604590bda43ac8feb7a79b4628dcafc3b4adffbece549966118d14c1a6c0f",
+      "Source/SpaceSurvival/Private/SSHUD.cpp": "636500d1e7b5c855e80fd89fb1457ffb61f82d06930a10a99b15c4c6a7c919cf",
+      "Source/SpaceSurvival/Private/SSIntegrationAutomationTests.cpp": "5e42261a10bd27eb1651b1c80a961b698360abe9a267fa5f43d9422b0e5ba61b",
+      "Source/SpaceSurvival/Private/SSJourneyAutomationTests.cpp": "7c7f6fd9dbea1dc812fbde1a7b97e1f2882180c92fb87ae7b6c6fa92ec22a0d6",
+      "Source/SpaceSurvival/Private/SSLocalSave.cpp": "cc40fae2668cd37229ce37c3f2d40a321485e7c8b9c54d856b14599b583c7402",
+      "Source/SpaceSurvival/Private/SSLocalSave.h": "21946dc7697636bddb4ad0ca24b0269b5fd3160491ce1b92b85d0787f3b52bff",
+      "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp": "9fc2cbd84d25d2fa70b9017669030cc51da58ddf87bfed8adb5034cb631fdf03",
+      "Source/SpaceSurvival/Private/SSShip.cpp": "fc8252fa47d306242564c8af3a8925e0b28e9690bdcf563104ebdccb8dd0ebb8",
+      "Source/SpaceSurvival/Private/SSStation.cpp": "543e29d2d8886df48454529d2afa9dc978cdffe9c4ff9089d9583405190bd1b1",
+      "Source/SpaceSurvival/Private/SSStationPoseTransition.cpp": "ba631b57b2feab22737b5c53f0a20e31f00850172e541dffa7d24c27d7767cf5",
+      "Source/SpaceSurvival/Private/SSUtilityAutomationTests.cpp": "36a4fc4c1279662ea5edb2a2eeda790e7564c35c1160c4b0cf1c841adff23a1b",
+      "Source/SpaceSurvival/Private/SSWave10Soak.cpp": "8928e895158d67ad5c517df43c58c05bc39fd2751e986fdd079dfb1d31b7e635",
+      "Source/SpaceSurvival/Private/SSWorldActors.cpp": "52b4ee312e821657a167ab44bcd76b20e5c62b7951f5b14b4ac7b66873ac2921",
+      "Source/SpaceSurvival/Public/SSAudio.h": "c1a06d39d8b4eac285e4735a9d4d4323c48e04353640339c3b15a8666d716327",
+      "Source/SpaceSurvival/Public/SSContentTypes.h": "ea60382db6704c84eddc0bcc92e5b6a20520425ac34bc79a265179c0a847cf01",
+      "Source/SpaceSurvival/Public/SSGameInstance.h": "7463a07885c3b0dded1b556b0f865d05ebd1fdcac35bbb591e05aa33bfeeaa1b",
+      "Source/SpaceSurvival/Public/SSGameMode.h": "3cf7c4c089b2e9afdebb9e014cad6e3125b81561894a3fc9133d3627ab9a92cc",
+      "Source/SpaceSurvival/Public/SSHUD.h": "8471eba5ac2b7c543935788478084e77130893b383352e1a5df7219ed77ea9ab",
+      "Source/SpaceSurvival/Public/SSPhase1Data.h": "dba26769ca2f87f3c9499c18670e1ee3e08e4b999886586616e69add821a0b9a",
+      "Source/SpaceSurvival/Public/SSShip.h": "a648f89563bb5e7cbd51da35d8b46c94cea7c777aa83e9775daa1893fe531f8f",
+      "Source/SpaceSurvival/Public/SSStation.h": "e82180831b30f68b60b67b86370cf9d81144901f7065f4808e2a6d032cb073b3",
+      "Source/SpaceSurvival/Public/SSStationPoseTransition.h": "4001c65c61a6230d503199c494f1373fe84dd4e756f270ba7309728f1f471f56",
+      "Source/SpaceSurvival/Public/SSWave10Soak.h": "f065f188601cb47b3aca21dd4ac89bb79ff3728235c64b8a770486e8308ffc66",
+      "Source/SpaceSurvival/Public/SSWorldActors.h": "bb3027367c92bde83002c4ef872e6892e755023863613e704827fa7a55bc8a45",
+      "Config/DefaultEngine.ini": "78d8bc141acb3beb408d336f9ec71c31c9b270225737592da17bde02cecb16b6",
+      "Config/DefaultGame.ini": "c14845805f2760cfdb580cd413017230bf741e7b10496f2fd484728e6f3e703e",
+      "Config/DefaultInput.ini": "47f6c8282026a192c1f9a7709f5b6f82bab7288083b235e9ae1c3ea731f42f40",
+      "Content/SpaceSurvival/Audio/Alarm.uasset": "5855f220b8880ab4837970b13bed537d9cabf466d5c5070ed2612350fbb2ad72",
+      "Content/SpaceSurvival/Audio/Cannon.uasset": "8624d1c875c3faba7133b458edca423a2b4c5ccf1c855ceccb0e6d68fbcb0088",
+      "Content/SpaceSurvival/Audio/DebrisBreak.uasset": "cb1414eb87854481c8d6183d76011e0a2d2bc04abc80eff165dad69c4e151be9",
+      "Content/SpaceSurvival/Audio/ElectricalCharge.uasset": "58a0cb3795c5834b549b8b61a4247fbf8a1fea4204188a4d373b86f0e67e619f",
+      "Content/SpaceSurvival/Audio/ElectricalDischarge.uasset": "f966f3a313e60782d37ef160e90f5cfadbc0fada11dd035697fe051a3df0537e",
+      "Content/SpaceSurvival/Audio/EnemyBreak.uasset": "18dd82fb15ab0acf81b6d9ebda03a6a245105a803557e336167463c5d9120db6",
+      "Content/SpaceSurvival/Audio/EnemyFire.uasset": "9dfe593159b7ccff2380b3f05a41b08032c4eae9f0404a5f9cf6c1611bd5112a",
+      "Content/SpaceSurvival/Audio/Engine.uasset": "7defc6c4679ed4fedd12750475e6a4ac46d5858ad830d42e6f0a25bcc0f76fcf",
+      "Content/SpaceSurvival/Audio/GravityAmbience.uasset": "f19ad14f85d9c945d4ed228fd27496ae3c9574f8511fa43eadc9a6aafb48b229",
+      "Content/SpaceSurvival/Audio/Impact.uasset": "18ad4605b349ccc2304785566693cc0632ac7aa7a623377059ac3daa76bca896",
+      "Content/SpaceSurvival/Audio/Laser.uasset": "35e9d2e6b8bf87ec1cb3ee3c39ba3bc1b32e2fec2b711fe320b0897215ff59c9",
+      "Content/SpaceSurvival/Audio/MusicBase.uasset": "d197113d6dbff2f025e80a252d098275d64d34b67a4c161cbfc44c17aea9dbf9",
+      "Content/SpaceSurvival/Audio/MusicClimax.uasset": "437ca173d341dccea84a636861bca5acb2bc4276b006017b35819abe84fdeea9",
+      "Content/SpaceSurvival/Audio/MusicPressure.uasset": "6d541f6901d789118759a06b8b5d462e687c5396bed5a4ef8f0b096bbff77e5d",
+      "Content/SpaceSurvival/Audio/Pickup.uasset": "ac132a01c8f653391ca94a48151f249ece9d45b1a800cb77b32fc442f97bbf24",
+      "Content/SpaceSurvival/Audio/Station.uasset": "92f83b540593da3dd1edb7e01e793919a8e86d6449a5e62dcd8e865d5d95ad2e",
+      "Content/SpaceSurvival/Authoring/P_AcornautImport.uasset": "2c4399a144af095f1cfee679bbbd731573f48dbf9df7fde45d20b6783c014870",
+      "Content/SpaceSurvival/Authoring/P_DisembarkImport.uasset": "943e49ef09204f0a059ddd9fdc1e163a62758f0797a4c73afd63512aad3fd0fd",
+      "Content/SpaceSurvival/Authoring/P_PilotImport.uasset": "8c6861399f4fdd0a6123515a8a30a89ffbc3e1c1bda1b474423de768f9ab88dc",
+      "Content/SpaceSurvival/Character/A_Disembark.uasset": "a17a080173b3c0fe5f9077f7afc868948d55ce4836718ed3049ec361f974dfd0",
+      "Content/SpaceSurvival/Character/A_DisembarkGripFit.uasset": "13192da7a3001faaa885229bf714f2a2d1331361c91e3faf4ceb08aa681c53fc",
+      "Content/SpaceSurvival/Character/A_Pilot.uasset": "de94f32c0cb14912c2fdfbefeac1966b436dc959014bff2b4821b5854cb3a8ea",
+      "Content/SpaceSurvival/Character/A_PilotGripFit.uasset": "5184434996865dd8831ec50f50722d73fa24f9feef7953d22e38c2c8342c8a45",
+      "Content/SpaceSurvival/Character/A_Walk.uasset": "386fe4f8921132ebee94d813dd0c454ea49e1a46970bd268bd3204f4bcacc4c7",
+      "Content/SpaceSurvival/Character/geometry_0_PhysicsAsset.uasset": "a5c513bb9aa46d9ed2ab84026a06655bd5c95b0634b9e4d638b5ef5db1a33522",
+      "Content/SpaceSurvival/Character/geometry_0_Skeleton.uasset": "e4e69079b59b5e483253eaa57988a0d5adab27a71067eb8cfe959a0f559779d3",
+      "Content/SpaceSurvival/Character/model-rigged_material_0.uasset": "15c3bde582067296e07bbb273994b52ad5f569929121d05eb3efae4ede85e7d7",
+      "Content/SpaceSurvival/Character/model-rigged_texture_0.uasset": "38e22986efcb79c7cf10e0c577b8fd73d161f78cac59311b91901734ad90f592",
+      "Content/SpaceSurvival/Character/SK_Acornaut.uasset": "8cbdde1b50530235f81225e971aae5db50925ebfdaf252cfd48a9fc1fe58839b",
+      "Content/SpaceSurvival/Character/SK_AcornautPilot.uasset": "25159537f75a7d68df97e662443601b8c73623eebdd3c27591f057870b05305a",
+      "Content/SpaceSurvival/Character/SK_AcornautTailV2.uasset": "7a9e6caffe15c488bed4846912e823a60974bad402dd736d222fb3c355d67917",
+      "Content/SpaceSurvival/Data/DA_Phase1.uasset": "6cfe3ebfb61ef1de3e58bd48f2a72e78161a5986c31b97d46c069407adcd0505",
+      "Content/SpaceSurvival/Maps/Survival.umap": "30643d64993e2b5386b975fbe765afdfc0ab134cc6159796b6ce3c92758c2324",
+      "Content/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.uasset": "0e91828d10190e0edef73490ee36659c2cbe41be172f178048dc97d70b9118c4",
+      "Content/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.uasset": "8797aa3e71ccfff42cab9cb7a76efd91e49f0d0434678235fec55a5838056859",
+      "Content/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.uasset": "24b7310f596e4da22c0d7d541a7d81e55b40d8c171b6e6f620e4cfb4c29a3969",
+      "Content/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.uasset": "4be5f2fa9f0d38878ba99648418014b4e390a18a177d0f71a4dbd5752efe9f95",
+      "Content/SpaceSurvival/Materials/M_AcornV2_IonAndNav.uasset": "a1aa26f8df23151bb7d556f0eb139455865a3e42e59173d388797c9bda669bfb",
+      "Content/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.uasset": "c33639070c924e50ae665437431f658f3e8088b9c52dccc5c4dd395416bcd3f3",
+      "Content/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.uasset": "46e4d442190b589022e7cc247692677cc0f8141d522b3de11f15440050965467",
+      "Content/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.uasset": "123c4f918c11926bb0eab7a6d691a9075e4e687dd6581f43b1f821b824202392",
+      "Content/SpaceSurvival/Materials/M_AcornV2_Windscreen.uasset": "5283fba73752f879635a345ab723b9406dda5fd27c4c331138331807fcbcef16",
+      "Content/SpaceSurvival/Materials/M_Amber.uasset": "c70e9f84119f71ca7e76bbc2dbf0531e0d6aade26be196f7bedf133f1904bf2f",
+      "Content/SpaceSurvival/Materials/M_Cyan.uasset": "8923f11bd51b70ef654fea13a1b5afdbe66e52f54b0a2d0a4e1d9e725ab15224",
+      "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidate.uasset": "cc55b4ded82b618c52c5adae608d119fa1c2bebc3b0dfd16964b09765f66fb31",
+      "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidateV2.uasset": "4ed67381325118326c5e633ed43d7fac2059e9ca2999af5f58da72b3bc32e8d1",
+      "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidateV3.uasset": "563cdc6d932b28070bfa111276eb5b061baa7d601da2cdf677b49eb7a0ad154f",
+      "Content/SpaceSurvival/Materials/M_Emissive.uasset": "1c09844a3166fb49ae81b17d4fa643843cfbf6f29d1f1444fd2dadd4f7445227",
+      "Content/SpaceSurvival/Materials/M_EnemyCandidate_Amber.uasset": "f44beaa457d984bbf80c274092c12ee1e3a62b4289728e5f3739ec8233117a42",
+      "Content/SpaceSurvival/Materials/M_EnemyCandidate_Ceramic.uasset": "51b348be4e057e6a3715ded5227a68b5742eaad1565263a17a8fc5adccd4ea17",
+      "Content/SpaceSurvival/Materials/M_EnemyCandidate_Recess.uasset": "91063b83184900f60bfda4bb791333a306fe2f8d8d13ca7c5f4e173320c59335",
+      "Content/SpaceSurvival/Materials/M_EnemyCandidate_Titanium.uasset": "a7a65c45352599da90d71fea6bf2c210aa1655aa256ad07cd288e8b7b8064864",
+      "Content/SpaceSurvival/Materials/M_Gold.uasset": "6df62e0c00e262f482a74836c84c937dd043bb8ce60b48e5cfc6c862642f7001",
+      "Content/SpaceSurvival/Materials/M_GravityFieldCandidate.uasset": "774d46cd0dbfee0b9f07db8be54c306bc507da98e2186816c29888c4bd4dcee0",
+      "Content/SpaceSurvival/Materials/M_GravityFieldCandidateV2.uasset": "985e39ae9ac8e66c3686867eeeab6c82810751d4c72e16f085ff14aee789af3d",
+      "Content/SpaceSurvival/Materials/M_GravityFieldCandidateV3.uasset": "4b383d2d897af1e1e3c1ed91777d3aca88decffb4c257f5c43dfc7174327f3ee",
+      "Content/SpaceSurvival/Materials/M_Hazard.uasset": "e1d1a26aa20cfd17c6e0df5959607b3bed66f3f1f402b5ac9b26b7596e290e46",
+      "Content/SpaceSurvival/Materials/M_Hull.uasset": "7d128dd99493b7876fb8d1fc10cf6879d122118e3b3e80c1339a4b7edf19bbea",
+      "Content/SpaceSurvival/Materials/M_Rock.uasset": "5b44e2035b0fe0bc0d5972f76443a1e0a502346c4fa0bafa8850772b6d633de5",
+      "Content/SpaceSurvival/Materials/M_RockPhotographic.uasset": "acb1598b5d3a5acca0991d501b6c2de374b37d3ba4eacdfcc87a3683d346bbe1",
+      "Content/SpaceSurvival/Materials/M_Space.uasset": "1352430c92730af207767497787fb0c4e333abd5d87cff0ecc33fa71582fb993",
+      "Content/SpaceSurvival/Materials/M_Star.uasset": "f599a1ac9809f0fbdd3fc34cf735d17ab76242375dfac61369e27800d6a56480",
+      "Content/SpaceSurvival/Materials/M_StarWarm.uasset": "20e068709506051028f49cacff9894f5832fb7c2b13183ba06793a1c791c0f57",
+      "Content/SpaceSurvival/Materials/M_StationDeck.uasset": "e90d895cd942329bf4af71efeff9441c1f077f2f0f3cc5b408b2510e02fd156f",
+      "Content/SpaceSurvival/Materials/M_StationShell_BlueGreyPanels.uasset": "5c7f9ecb6462403fd8593bb47880cc30af6e3e09966be842f4096592f6128b09",
+      "Content/SpaceSurvival/Materials/M_StationShell_GraphiteAlloy.uasset": "052140620d723a9f69006428995f85cd99ebde51432b7495a86733650234af4f",
+      "Content/SpaceSurvival/Materials/M_StationShell_GuideLight.uasset": "f450aea7c0f5875269eba5212c07b163d7397fa373d2d0d893f19fa4ca76a89c",
+      "Content/SpaceSurvival/Materials/M_StationShell_MachinedEdges.uasset": "28390b20a7dc2981a67310da48441033d277976961573e79b68ba741d5b4d672",
+      "Content/SpaceSurvival/Materials/M_StationShell_RecessAndRadiator.uasset": "c2486e535a52f2b65268ba436ae4781fee5be221ea9e47d40d5d5745ea4f08b2",
+      "Content/SpaceSurvival/Materials/M_StationShell_SafetyOchre.uasset": "91cb4172ebe61f559f59bae242329685de03d71527d28cc4d196b8b912877f82",
+      "Content/SpaceSurvival/Materials/M_StationShell_WorkLight.uasset": "061706a14aa668652ec8bb3185c17e6dc692df295562e34bb441d56fe130be1b",
+      "Content/SpaceSurvival/Materials/M_Violet.uasset": "32f58fbe70588002f32cfe29186b0a21ba98cd18bfded30539ee16ac6777a98f",
+      "Content/SpaceSurvival/Meshes/SM_AcornShip.uasset": "e138f280422d1aa7d7106ca432167031d2bb834909a1eedd76fdbe465d481bf9",
+      "Content/SpaceSurvival/Meshes/SM_AcornShipGripFit.uasset": "ea9823aab8c742deed6513c54c985fc9ecd913b8f0d0f20c42090a97dda73d30",
+      "Content/SpaceSurvival/Meshes/SM_AcornShipV2.uasset": "a74f9bb239e697f16e4612d117289832ae32be4f0b5bda5ea5a5bcc41978fe47",
+      "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset": "9c29554cd017c56d26f691f3b05b39e993f768188b8f02fdef5901b370518c07",
+      "Content/SpaceSurvival/Meshes/SM_Asteroid.uasset": "b0d6c0ff8918c07346c75e3e5441ee4e472e3f63690c22282456b57a40195789",
+      "Content/SpaceSurvival/Meshes/SM_AsteroidMassive.uasset": "f623615757b872582bb28becdd00323205f62b8ae639963af724592dddf09539",
+      "Content/SpaceSurvival/Meshes/SM_AsteroidMedium.uasset": "ce40e9181dc9946cbde579fe757a2f29bc89f90268a6915b32bcab39a0341837",
+      "Content/SpaceSurvival/Meshes/SM_AsteroidSmall.uasset": "1b377a123a3dd01c960f110608d3b8644f151ffb2e64ff176661378e0e4b27ef",
+      "Content/SpaceSurvival/Meshes/SM_Console.uasset": "28a087b5a5ea43eebede2392d85c059da98e77f596663518293027e80341d16e",
+      "Content/SpaceSurvival/Meshes/SM_Crate.uasset": "985dbbc5cc95737d5cbec8ca9763258b428da8bbf3d514e6b1764dfe0bbfb973",
+      "Content/SpaceSurvival/Meshes/SM_Debris.uasset": "1817b2364e92beda629c16aa0b02ffe2ec6b602dc9773ccad8ff53e9187140f5",
+      "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidate.uasset": "a33acaf9156fdf34fed1f867ec15a5b7379ab8cea3dc43d9eac811eb5f240c9f",
+      "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV2.uasset": "b945ee2dd61860050292b187ca18259f4a05286df75c0feb57fb038a60be9952",
+      "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV3.uasset": "0c78780054475630c6b966f8ae9c84be04f310cc93fb13940dd78fe8d4adf928",
+      "Content/SpaceSurvival/Meshes/SM_EventBeacon.uasset": "e3546699c3719f0ee5096265710faceaefaa725a791e84c3d5c6853689563613",
+      "Content/SpaceSurvival/Meshes/SM_Flanker.uasset": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5",
+      "Content/SpaceSurvival/Meshes/SM_FlankerCandidateV1.uasset": "3f9a1c2ed4497ef0fc2f0f746242d9fa19b216b075ba9850dbde79aa74b4c3a6",
+      "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidate.uasset": "e24aef39319f1e1fb5881df01a3f62c01f31ec7fe9a0c931a14ab5f0610e933c",
+      "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidateV2.uasset": "b480942bd8aa06ad05a05df170d46ab67597bd339dbaecf09ebe0edfd003e078",
+      "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidateV3.uasset": "bc63278358ac777abed78980e29ffbb3921fc050009899fa87d20b5da29f8ff3",
+      "Content/SpaceSurvival/Meshes/SM_GravityRing.uasset": "e99e6e833d10e672de06ea00484a76be6132e309a23ccb3f0aebab4dde761a1a",
+      "Content/SpaceSurvival/Meshes/SM_MobileDepot.uasset": "700a7347aff1f471e0843c7294508cad69b4d568557abf9b9bd5ede8b826dc3a",
+      "Content/SpaceSurvival/Meshes/SM_OverdriveCooling.uasset": "43895110a7e226a595302e103dade3aa77c95304059e4cf93a6c86578dd30435",
+      "Content/SpaceSurvival/Meshes/SM_PickupBuff.uasset": "6f7212a475fb5b051da3996ff407b58c4b7e555a2938bd28fa4f4cdd272ad6cb",
+      "Content/SpaceSurvival/Meshes/SM_PickupCredit.uasset": "1a7e47f7535665a8647d7512b6eef7ac6e5db24280bb60d994b279ef936baf5c",
+      "Content/SpaceSurvival/Meshes/SM_PickupRepair.uasset": "4415f0d9fe9e585ff1dc52d2284a68e1908d71e2d3551c5407aca71089c85b03",
+      "Content/SpaceSurvival/Meshes/SM_PickupShield.uasset": "763b46adeab209e305b3555c1641084efe9958f3462ae80cf551b17e64dfc5ed",
+      "Content/SpaceSurvival/Meshes/SM_Projectile.uasset": "6c3f1c1bb301173c80abc9fa1eca6b7913f87fda6926fffcd99b89f1a5d188d5",
+      "Content/SpaceSurvival/Meshes/SM_Pursuer.uasset": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18",
+      "Content/SpaceSurvival/Meshes/SM_PursuerCandidateV1.uasset": "f487c80f91ddfce92b7110d77510574e39d3d00093752e71722844bb14f5db3b",
+      "Content/SpaceSurvival/Meshes/SM_ServiceArm.uasset": "2bfb38fe71cabf4120e979c0bc7d92a3fce4df4f4723ea76b11ee00a2d7c89c7",
+      "Content/SpaceSurvival/Meshes/SM_Starfield.uasset": "f2ef14f61cd647d2b3539b8a5229fc36d9fc260495dc3a47b55a639c5f0dedab",
+      "Content/SpaceSurvival/Meshes/SM_StationRing.uasset": "6d9085f5c919f24be9a48683b5404e81d4e10ac68439dfb2f4bee8ef031b6144",
+      "Content/SpaceSurvival/Meshes/SM_StationShellCandidateV1.uasset": "dcfcf42e8d44c5be3f6e6e1988de8e0eef3d35f771ed5526e0dd386e36462738",
+      "Content/SpaceSurvival/Meshes/SM_StormRing.uasset": "c026dcf829142da52e97e0f60d78113d2f2a274e8b70fccdd2da43ea27d07faa",
+      "Content/SpaceSurvival/Meshes/SM_SwiftCandidateV1.uasset": "0f32ff9616546f444607d7016f4e8f873e5b88b63d95e50aa844ed92e209b82e",
+      "Content/SpaceSurvival/Meshes/SM_VectorThrusters.uasset": "89733129623abf81a4333a579549a0327bd348e4799fe74ff870475f201b77a8",
+      "Content/SpaceSurvival/Meshes/SM_Wreckage.uasset": "12491d09e5b614523764b16c9616e8c9531184c11924a7dee6fa0f2faf795306",
+      "Content/SpaceSurvival/Textures/T_RockFace_ARM.uasset": "3143926cfd5142fffbff088f3757eb746818befb30560cb3713456cc705bfaa7",
+      "Content/SpaceSurvival/Textures/T_RockFace_Color.uasset": "b64ea4e4b731dda6229bc4fb1c53e89f7a95bad17217af1a58148e1ff671905d",
+      "Content/SpaceSurvival/Textures/T_RockFace_Normal.uasset": "37bdb981270dc8d2b29cea09e41d4b364a725869706f168444079009b34a5d3d",
+      "Content/SpaceSurvival/Textures/T_SpacePanorama_starless_v2.uasset": "560de813019d4cf39512757f19a382caf042c41e88595afc617e2221426bf5ef",
+      "Content/SpaceSurvival/Textures/T_SpacePanorama_v1.uasset": "5ac2f769e9e5cd16e1ccdf37c2cfc5c2b3228360846038221de02d46d9b98280",
+      "Content/SpaceSurvival/Textures/T_StationDeck_ARM.uasset": "cb5d53d454965686ba27a117d069512dc63f7ccf3b55902b8831e4817d907737",
+      "Content/SpaceSurvival/Textures/T_StationDeck_Color.uasset": "63ad12dc7c6a89f0b1601f343b905a3c69bc86a91e287cdb1768ec58226d5623",
+      "Content/SpaceSurvival/Textures/T_StationDeck_Normal.uasset": "e2cfe37d645835e22a4b7daa350019b4afa8d209c2bd15f9277b07d96769a9d4"
+    }
+  },
+  "resolved_attempts": [
+    {
+      "phase": "Author",
+      "cause": "Factory InitialParent UPROPERTY is not available to Python set_editor_property.",
+      "fix": "Use BlueprintCallable MaterialEditingLibrary.SetMaterialInstanceParent.",
+      "source": {
+        "path": ".agent/local/SkyCandidate/Native/Author.failed-script.py",
+        "bytes": 9289,
+        "sha256": "a9c0577b7cd445056faa7f1aa5aa9cd63995e277a3e33b3266cb8b47a43b5b3c"
+      }
+    },
+    {
+      "phase": "AuthorRetry",
+      "cause": "Installed MaterialEditingLibrary.cpp:1507-1515 leaves bResult false after applying the texture override.",
+      "fix": "Verify exact effective texture getter value and the fresh single global override rather than the broken bool return.",
+      "source": {
+        "path": ".agent/local/SkyCandidate/Native/AuthorRetry.failed-script.py",
+        "bytes": 9287,
+        "sha256": "74f5bf71b8817bbd96e92c4e832ea92e5fbbe640e805fcdcffcf17d816f599cb"
+      }
+    }
+  ],
+  "cleanup": "All five owned commandlet processes returned exit 0 and were observed closed. Failed JSON reports were treated as failures despite engine exit 0. Owner Editor and unrelated processes were preserved."
+}

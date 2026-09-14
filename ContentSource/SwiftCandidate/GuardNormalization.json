@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-13T11:27:32.318710+00:00",
+  "status": "EXACT_PROTECTED_OBJ_GIT_LF_GUARD_CHECKS_PASS_ENGINE_RERUN_PENDING",
+  "scope": "AuthorSwiftCandidate.py only: exact protected text representations and identical material source metadata guard. No geometry, material asset, original source, report or binary normalization.",
+  "executed_native_script": {
+    "path": "Scripts/AuthorSwiftCandidate.py",
+    "sha256": "5169bee4692aa7927c4783c0b528d52f89e04ae3931ce3ca6464f52dff0c2b7b",
+    "bytes": 10272
+  },
+  "subsequent_guard_script": {
+    "path": "Scripts/AuthorSwiftCandidate.py",
+    "sha256": "54dda1af60da433bef28072b90c1fd26e8a7d7ab9bf16c99c98abfd77c2bb926",
+    "bytes": 11268
+  },
+  "prior_immutable_native_receipt": {
+    "path": "ContentSource/SwiftCandidate/NativeReceipt.json",
+    "sha256": "890c822bd677dcda832c54eeae46cda730ab18497a6ccd699ec500127f2193ab"
+  },
+  "source_objects": [
+    {
+      "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+      "original_raw_sha256": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+      "canonical_lf_sha256": "9ad907799e9d777c817b8f9f169eb0799776dbdce0ada185b9720afd82039d9f",
+      "crlf_pairs": 278291,
+      "original_bytes_unchanged": true
+    },
+    {
+      "path": "ContentSource/Meshes/SM_AgileShip.obj",
+      "original_raw_sha256": "2d8bb73ac2a35d25cf62f1108d412beaa3fcfa797da922aed9e59ea3ebfce54c",
+      "canonical_lf_sha256": "45e58394a1c91470f2ce2b4373174ed3c3d2135542a3b03c6a26b4887bef214f",
+      "crlf_pairs": 17324,
+      "original_bytes_unchanged": true
+    }
+  ],
+  "checks": [
+    {
+      "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+      "case": "original",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+      "case": "canonical_lf",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+      "case": "canonical_metadata_original_disk",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+      "case": "arbitrary_content",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+      "case": "mixed_line_endings",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+      "case": "altered_expected",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "path": "ContentSource/Meshes/SM_AgileShip.obj",
+      "case": "original",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "path": "ContentSource/Meshes/SM_AgileShip.obj",
+      "case": "canonical_lf",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "path": "ContentSource/Meshes/SM_AgileShip.obj",
+      "case": "canonical_metadata_original_disk",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "path": "ContentSource/Meshes/SM_AgileShip.obj",
+      "case": "arbitrary_content",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "path": "ContentSource/Meshes/SM_AgileShip.obj",
+      "case": "mixed_line_endings",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "path": "ContentSource/Meshes/SM_AgileShip.obj",
+      "case": "altered_expected",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "path": "model-rigged.glb",
+      "case": "unlisted_exact_match_only",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "path": "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset",
+      "case": "unlisted_exact_match_only",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "path": "unlisted.obj",
+      "case": "unlisted_exact_match_only",
+      "expected": true,
+      "actual": true
+    }
+  ],
+  "validation": "AST extracted and executed the actual pure guard against both originals, exact LF representations, reverse metadata pairing, arbitrary content mutation, mixed line endings, altered expected digest and unchanged binary/unlisted path exact-match rules. Explicit LF and trailing-whitespace checks passed.",
+  "limits": [
+    "No Unreal run after this source-only guard change. Prior native reports remain bound to their actual earlier executed script.",
+    "Fixed digest allowlist accepts exactly original bytes or the full canonical LF bytes; it does not normalize arbitrary input on comparison.",
+    "Immutable Blender source Validate.py retains its earlier raw protected-source guard. Regenerating source after a canonical checkout requires a fresh Generate.py/Validate.py source checkpoint; this change only prepares import of the already reviewed candidate.",
+    "Main pipeline adoption and its fresh Content/Validate execution remain lead-owned."
+  ]
+}

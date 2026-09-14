@@ -1,0 +1,500 @@
+{
+  "status": "SWIFT_FRESH_SOURCE_GEOMETRY_COCKPIT_EXPORT_CHECKS_PASS_NOT_UNREAL",
+  "blender": "5.1.2",
+  "generator_sha256": "d8dc3916bd9940764cdb5238a4a0aae9a71f74175cd330c6fb1c25a4e8c0ecf7",
+  "validator_sha256": "09ba1b6a579035d5b347869cf8bac2025c44f52d963168ad4fd293b2650bcbb5",
+  "report_sha256": "b730855c4b08a3fa86d4238d72acbbd21ee720ceb9bc79bb4fb5d890b43d161d",
+  "cockpit_parts_preserved": 24,
+  "cockpit_fingerprints": {
+    "Cockpit continuous raised coaming": {
+      "sha256": "79104751b067290cf23feb4fb2e9d5ff2b62c68676eff5e47ac760ade717583f",
+      "triangles": 2560,
+      "vertices": 1280,
+      "materials": [
+        "AC01_ChampagneEdges"
+      ]
+    },
+    "Pilot footwell": {
+      "sha256": "f17baaeccb7524bd8b7069b5dd20cfb2bb4532174eb6170e8b68a76ff5e247e5",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_GraphiteStructure"
+      ]
+    },
+    "Seat plinth": {
+      "sha256": "fb05c120df776736c1cd5cbbec7428610d1e80a84a9afa7be5c4a303ee690a35",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_GraphiteStructure"
+      ]
+    },
+    "Seat cushion": {
+      "sha256": "de8a781d2b43e895b95a8616b51c5efd56a4f6494ee3e6dd62abad47bbfcf479",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_CockpitPadding"
+      ]
+    },
+    "Seat back": {
+      "sha256": "bad9e1b8f217e76aa80491e96cde3dddb36ab5306503553c3f014537797fb1f9",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_CockpitPadding"
+      ]
+    },
+    "Seat structural brace -1": {
+      "sha256": "c371c6d54ff7b3e421b71a187c90141a707ce0deea92c214437f707de0b4a3de",
+      "triangles": 20,
+      "vertices": 20,
+      "materials": [
+        "AC01_ChampagneEdges"
+      ]
+    },
+    "Arm console -1": {
+      "sha256": "d4638e0cba3c35d74931c3a78bfb159bdc675a3761da2fd70b1921a147bb0b46",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_GraphiteStructure"
+      ]
+    },
+    "Pilot control grip -1": {
+      "sha256": "72ed62d9212a3dd95fe5c7673bb0fd14cc3da555444fcbf8452a62223b9f36e9",
+      "triangles": 20,
+      "vertices": 20,
+      "materials": [
+        "AC01_CockpitPadding"
+      ]
+    },
+    "Control illumination -1": {
+      "sha256": "e2554886f2c1d98dabf36c8a55a37498949ec6709293cce322b14b8d9a1567ea",
+      "triangles": 1920,
+      "vertices": 960,
+      "materials": [
+        "AC01_IonAndNav"
+      ]
+    },
+    "Seat structural brace 1": {
+      "sha256": "59eb6940ecd07bfaa78989a26b31b33120e03ea5fa399675c5c40f1e858c2674",
+      "triangles": 20,
+      "vertices": 20,
+      "materials": [
+        "AC01_ChampagneEdges"
+      ]
+    },
+    "Arm console 1": {
+      "sha256": "978fcdf5857ad80908f08e2ef855fc64b116263fd3b0d7d8a05d50c6fe27b274",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_GraphiteStructure"
+      ]
+    },
+    "Pilot control grip 1": {
+      "sha256": "f49a7705d29593d06b0a06f64c29d1186cd5cf1e1731f70f6c20d56115e7a963",
+      "triangles": 20,
+      "vertices": 20,
+      "materials": [
+        "AC01_CockpitPadding"
+      ]
+    },
+    "Control illumination 1": {
+      "sha256": "4709974e4abfff58558c4856e713c041f0f16bc15c21f0559383328345995c88",
+      "triangles": 1920,
+      "vertices": 960,
+      "materials": [
+        "AC01_IonAndNav"
+      ]
+    },
+    "Forward instrument deck": {
+      "sha256": "0cb3bf9d59d90209ee045e06806524931b52254f58e7235e34a21f8848772dea",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_GraphiteStructure"
+      ]
+    },
+    "Instrument glass -0.15": {
+      "sha256": "ce87ebbf41e5d0383e7633ab2bf92e55a1e63226aec74f3cfe329ce908f4aae3",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_Windscreen"
+      ]
+    },
+    "Instrument line -0.15": {
+      "sha256": "1c3cd9b8ba08ad0ddd734bb78815c8f495757e7bf8c5bf5aef22b0724612f031",
+      "triangles": 20,
+      "vertices": 20,
+      "materials": [
+        "AC01_IonAndNav"
+      ]
+    },
+    "Instrument glass 0": {
+      "sha256": "cc06aa4ea52a86f5dadcaa2a338baaa7e37d6499a16bcb82d153c5ad23561f0e",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_Windscreen"
+      ]
+    },
+    "Instrument line 0": {
+      "sha256": "dc010ec3a49d93a9ad92253f4334ee44b1ed5cf7fd48fb6d7ab6125b09262bce",
+      "triangles": 20,
+      "vertices": 20,
+      "materials": [
+        "AC01_IonAndNav"
+      ]
+    },
+    "Instrument glass 0.15": {
+      "sha256": "bfeb8bb7ed8b3d55180ee0abc200935fdab7919bccabe64449a788559e4b69fb",
+      "triangles": 588,
+      "vertices": 296,
+      "materials": [
+        "AC01_Windscreen"
+      ]
+    },
+    "Instrument line 0.15": {
+      "sha256": "9fd12ed7dd151dcb4bf510dd99eef430e009dbdb3672a993b6177748422e3ed2",
+      "triangles": 20,
+      "vertices": 20,
+      "materials": [
+        "AC01_IonAndNav"
+      ]
+    },
+    "Curved low windscreen": {
+      "sha256": "068fd03bcaf396ef05e932cbd260340bca1d41af91b521168b73355cf4cdd9ba",
+      "triangles": 1096,
+      "vertices": 550,
+      "materials": [
+        "AC01_Windscreen"
+      ]
+    },
+    "Windscreen top trim": {
+      "sha256": "562296def496618daa26991d9a4319551d797e418c9abbb213f9561b008a8cab",
+      "triangles": 480,
+      "vertices": 250,
+      "materials": [
+        "AC01_ChampagneEdges"
+      ]
+    },
+    "Windscreen edge 0": {
+      "sha256": "6f0c9eb2f2ae6c967122fc783a1002b00706a9d14dc27f6d4633a570c815b27b",
+      "triangles": 200,
+      "vertices": 110,
+      "materials": [
+        "AC01_GraphiteStructure"
+      ]
+    },
+    "Windscreen edge 24": {
+      "sha256": "2845035706fec77040da7f42c3750ccf44320fda9021d500bddba778ad9ea2a5",
+      "triangles": 200,
+      "vertices": 110,
+      "materials": [
+        "AC01_GraphiteStructure"
+      ]
+    }
+  },
+  "new_body_parts": [
+    {
+      "name": "Swift narrow continuous pressure hull",
+      "triangles": 14436
+    },
+    {
+      "name": "Swift cockpit transition collar",
+      "triangles": 2560
+    },
+    {
+      "name": "Swift continuous dorsal nose plate",
+      "triangles": 2720
+    },
+    {
+      "name": "Swift aft curved service rail -1",
+      "triangles": 1592
+    },
+    {
+      "name": "Swift aft curved service rail 1",
+      "triangles": 1592
+    },
+    {
+      "name": "Swift recessed dorsal radiator 00",
+      "triangles": 188
+    },
+    {
+      "name": "Swift recessed dorsal radiator 01",
+      "triangles": 188
+    },
+    {
+      "name": "Swift recessed dorsal radiator 02",
+      "triangles": 188
+    },
+    {
+      "name": "Swift recessed dorsal radiator 03",
+      "triangles": 188
+    },
+    {
+      "name": "Swift recessed dorsal radiator 04",
+      "triangles": 188
+    },
+    {
+      "name": "Swift recessed dorsal radiator 05",
+      "triangles": 188
+    },
+    {
+      "name": "Swift recessed dorsal radiator 06",
+      "triangles": 188
+    },
+    {
+      "name": "Swift recessed dorsal radiator 07",
+      "triangles": 188
+    },
+    {
+      "name": "Swift swept spar -1",
+      "triangles": 332
+    },
+    {
+      "name": "Swift swept ceramic surface -1 0",
+      "triangles": 236
+    },
+    {
+      "name": "Swift swept ceramic surface -1 1",
+      "triangles": 236
+    },
+    {
+      "name": "Swift wing leading metal edge -1",
+      "triangles": 32
+    },
+    {
+      "name": "Swift narrow navigation slit -1",
+      "triangles": 16
+    },
+    {
+      "name": "Swift long engine nacelle -1",
+      "triangles": 476
+    },
+    {
+      "name": "Swift machined exhaust chamber -1",
+      "triangles": 480
+    },
+    {
+      "name": "Swift nozzle retention band -1",
+      "triangles": 384
+    },
+    {
+      "name": "Swift recessed cyan ion face -1",
+      "triangles": 188
+    },
+    {
+      "name": "Swift nozzle injector -1",
+      "triangles": 124
+    },
+    {
+      "name": "Swift engine cooling channel -1 0",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel -1 1",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel -1 2",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel -1 3",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel -1 4",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel -1 5",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel -1 6",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel -1 7",
+      "triangles": 16
+    },
+    {
+      "name": "Swift emitter fairing -1",
+      "triangles": 188
+    },
+    {
+      "name": "Swift emitter muzzle -1",
+      "triangles": 256
+    },
+    {
+      "name": "Swift shoulder service port -1 0",
+      "triangles": 188
+    },
+    {
+      "name": "Swift shoulder service port -1 1",
+      "triangles": 188
+    },
+    {
+      "name": "Swift shoulder service port -1 2",
+      "triangles": 188
+    },
+    {
+      "name": "Swift aft directional strake -1",
+      "triangles": 188
+    },
+    {
+      "name": "Swift swept spar 1",
+      "triangles": 332
+    },
+    {
+      "name": "Swift swept ceramic surface 1 0",
+      "triangles": 236
+    },
+    {
+      "name": "Swift swept ceramic surface 1 1",
+      "triangles": 236
+    },
+    {
+      "name": "Swift wing leading metal edge 1",
+      "triangles": 32
+    },
+    {
+      "name": "Swift narrow navigation slit 1",
+      "triangles": 16
+    },
+    {
+      "name": "Swift long engine nacelle 1",
+      "triangles": 476
+    },
+    {
+      "name": "Swift machined exhaust chamber 1",
+      "triangles": 480
+    },
+    {
+      "name": "Swift nozzle retention band 1",
+      "triangles": 384
+    },
+    {
+      "name": "Swift recessed cyan ion face 1",
+      "triangles": 188
+    },
+    {
+      "name": "Swift nozzle injector 1",
+      "triangles": 124
+    },
+    {
+      "name": "Swift engine cooling channel 1 0",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel 1 1",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel 1 2",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel 1 3",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel 1 4",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel 1 5",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel 1 6",
+      "triangles": 16
+    },
+    {
+      "name": "Swift engine cooling channel 1 7",
+      "triangles": 16
+    },
+    {
+      "name": "Swift emitter fairing 1",
+      "triangles": 188
+    },
+    {
+      "name": "Swift emitter muzzle 1",
+      "triangles": 256
+    },
+    {
+      "name": "Swift shoulder service port 1 0",
+      "triangles": 188
+    },
+    {
+      "name": "Swift shoulder service port 1 1",
+      "triangles": 188
+    },
+    {
+      "name": "Swift shoulder service port 1 2",
+      "triangles": 188
+    },
+    {
+      "name": "Swift aft directional strake 1",
+      "triangles": 188
+    }
+  ],
+  "obj": {
+    "vertices": 23578,
+    "triangles": 46456,
+    "materials": [
+      "AC01_ChampagneEdges",
+      "AC01_CockpitPadding",
+      "AC01_GraphiteStructure",
+      "AC01_IonAndNav",
+      "AC01_IvoryPanels",
+      "AC01_MachinedTitanium",
+      "AC01_Windscreen"
+    ],
+    "finite_unit_normals": true,
+    "finite_unit_square_uvs": true,
+    "valid_references": true,
+    "triangles_below_1e_8_cm2": 278,
+    "bounds_cm": [
+      [
+        -243.4999943,
+        -128.1736374,
+        -56.9306016
+      ],
+      [
+        239.0000105,
+        128.1736374,
+        97.800082
+      ]
+    ]
+  },
+  "glb": {
+    "one_mesh": true,
+    "material_primitives": 7,
+    "triangles": 46456,
+    "skins_animations_images_textures": 0,
+    "finite_attributes": true,
+    "maximum_squared_normal_length_error": 2.5704557149452967e-07
+  },
+  "source_degenerate_export_triangles": 278,
+  "source_degenerate_export_by_part": {
+    "Instrument glass -0.15": 38,
+    "Instrument glass 0": 44,
+    "Instrument glass 0.15": 44,
+    "Pilot footwell": 44,
+    "Seat back": 52,
+    "Seat cushion": 56
+  },
+  "protected_originals_unchanged": 9,
+  "limits": [
+    "Only separate source; no Unreal build, import, new collision or gameplay selection.",
+    "Retained cockpit contains existing collapsed bevel triangles after join/world transform; exact authored parts are preserved and new body has no degenerate triangles.",
+    "No owner visual approval, complete animated clearance, runtime shader/LOD/performance or physical-input acceptance."
+  ]
+}

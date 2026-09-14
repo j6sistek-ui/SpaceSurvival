@@ -1,0 +1,1135 @@
+{
+  "status": "TWO_PACKAGE11_RENDERED_FIXTURES_AND_INDEPENDENT_RAW_CSV_AUDIT_PASS_NOT_REPRESENTATIVE_60_FPS_ACCEPTANCE",
+  "project_status": "PARTIAL",
+  "recorded_utc": "2026-09-13T12:38:49.477895+00:00",
+  "source_commit": "6912684223f4a93f4010cd12201aee7fb42395f3",
+  "package_number": 11,
+  "package_receipt": {
+    "path": "docs/validation/2026-09-13-windows-integrated-presentation-package.json",
+    "bytes": 79554,
+    "sha256": "63deef112cfc19c45c63a8790fea4d0e0caa7dfd59707b7b58d084841a450be8"
+  },
+  "game_executable": {
+    "bytes": 332566528,
+    "sha256": "10b9b664c9a9d7480d96412999dd9da0b33215bc423eaae77a395fde8c9ed32c"
+  },
+  "full_manifest_binding": "Package receipt contains all 84 Source/Config/Scripts/project LF identities,110 exact Content identities and 7 archive hashes. Each capture's 155-file raw snapshot covers 39 Source, 3 Config, 110 Content, 2 capture/analyzer scripts and the project; it matches those package identities. Full manifests are linked rather than repeated.",
+  "method": {
+    "independent_script": {
+      "path": ".agent/local/AuditPresentationPerformance.py",
+      "bytes": 12447,
+      "sha256": "4f149a42962a2de4a17eba9da7639a2bb5a1fa711dceb100b31c21b794af16c3"
+    },
+    "parser": "Separate Python standard-library csv reader, final EVENTS header, both header rows and metadata footer excluded. Exact FrameTime/GPUTime/GameThreadTime/RenderThreadTime/RHIThreadTime counters; no similarly named scope substitution.",
+    "percentiles": "Nearest rank sorted[ceil(p*n)-1]; median averages the middle pair. Threshold counts are strictly greater than 16.667/33.333/50 ms.",
+    "recalculation": "All seven existing analyzer groups, station stages, foreground markers, actor-kind maxima, phase durations and compound presence were recalculated from raw numeric rows. Comparison allows 1.1e-6 in final rounded units for one-last-decimal floating summation differences; raw data and retained reports are unchanged.",
+    "audit_rounding_note": "First Station5 audit stopped on Flight simulation seconds 59.926577 versus retained 59.926576 because summing delta milliseconds then dividing differs from summing each divided delta. The audit-only final-digit tolerance was corrected; both audits reran successfully. No game or analyzer change was required.",
+    "fixture_timing": "Simulation seconds sum actual fixture Actor DeltaSeconds, under normal engine frames. Guards reject fixed timestep, bUseFixedFrameRate and effective time dilation other than 1. Wave 10 climax remains 40 s; Station 5 wormhole 8 s and docking 3 s. No duration/cap/budget/spatial-admission override.",
+    "sampling": "Fixture counts/stages are PostUpdate. GameMode phase is sampled earlier and may differ for one docking transition frame; stage-based station timings use the later sample. A 2.4 s authored animation can produce slightly less than 2.4 s of marked exit-stage duration.",
+    "foreground": "Every marked frame must record ApplicationForeground=1. This does not establish physical input latency or a quiet host.",
+    "settings": "2560x1440 Windows Development, DX12/SM6, RTX5080, i7-14700F, all 11 scalability groups at 2, 120 FPS target, VSync off, audio enabled. Frame budget is a cap target; it is not measured frame time.",
+    "normal_control_paths": "Seeded flight calls ordinary SetFlightInput, RequestDodge and Fire. Station approach uses scripted steering into the same flight input API and ordinary docking; actual Walker possession/authored exit and 15 s stationary hub follow.",
+    "processes": "Wrapper reported normal exit 0; independent read found both completed owned PIDs absent. No process was launched, controlled or terminated by this audit."
+  },
+  "captures": [
+    {
+      "scenario": "Wave10",
+      "token": "9461b70d07454d738f22a1c87c91b793",
+      "capture_directory": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793",
+      "status": "INDEPENDENT_RAW_CSV_AND_IDENTITY_AUDIT_PASS_NOT_REPRESENTATIVE_ACCEPTANCE",
+      "started_utc": "2026-09-13T12:25:31.3243272Z",
+      "finished_utc": "2026-09-13T12:28:22.1023023Z",
+      "owned_process_id": 82304,
+      "process_exit": 0,
+      "owned_process_absent_on_independent_read": true,
+      "raw_evidence": [
+        {
+          "path": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/.ss-endgame-soak",
+          "bytes": 34,
+          "sha256": "9a354424957e42d9e697e23ef7f58ea0db09011e3c4eefdff5975a65cf6708c5"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/Endgame.csv",
+          "bytes": 32408460,
+          "sha256": "150c7e934389563cada6d8e0500d6568fe3b9b67b74ac54cbc0840a04d21cd51"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/fixture.json",
+          "bytes": 1737,
+          "sha256": "bd2be8d912ddf2233708314211a3716bd49cf4c0a869cb3e65d79b5071f56f82"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/performance.json",
+          "bytes": 57066,
+          "sha256": "7f938c60748f7f8784b4a1a8487fdd8754cec0aa7690a73ddaeb6ffc66aca0df"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/production-before.json",
+          "bytes": 703,
+          "sha256": "d11e4f7c34188ba5d03cf5b2d86d82f3599a6853bec72c73b81f7d4b2186979f"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/Rendered.log",
+          "bytes": 107620,
+          "sha256": "22c47c08e0ffefc24bce8cf7bf4c72c7c18de9cf8682541cab713fb015234c60"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/source-before.json",
+          "bytes": 35499,
+          "sha256": "7c70d60728a2a01d288d878a5b4510cb4306f825645044d7517885ae804f05b6"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/result.json",
+          "bytes": 45014,
+          "sha256": "dc700ee0760c81fe4735414340a6525d3c41f5184e36043518aacb03eb598929"
+        }
+      ],
+      "independent_calculation_record": {
+        "path": ".agent/local/Package11-Wave10-Independent.json",
+        "bytes": 48643,
+        "sha256": "2cbd0392cc3180cdf5a253f962cb1c5127a824e941760948494df01ee6b72f67"
+      },
+      "identity_checks": {
+        "source_snapshot_files": 155,
+        "source_commit": "6912684223f4a93f4010cd12201aee7fb42395f3",
+        "snapshot_matches_package_receipt": true,
+        "seven_artifact_hashes_match_package_receipt": true,
+        "wrapper_before_after_source_artifact_preservation": true,
+        "current_source_artifact_hashes_independently_verified": true,
+        "production_before_after_and_current_match": true,
+        "fixture_save_directory_has_no_slots": true
+      },
+      "csv": {
+        "data_rows": 15619,
+        "header_rows": 2,
+        "final_columns": 383,
+        "fixture_frames": 15618,
+        "foreground_fixture_frames": 15618,
+        "all_seven_analyzer_groups_recomputed_match": true,
+        "scenario_stage_and_post_update_phase_valid": true,
+        "game_mode_vs_post_update_phase_differences": 0
+      },
+      "fixture_all": {
+        "frames": 15618,
+        "first_frame_index": 1,
+        "last_frame_index": 15618,
+        "wall_frame_time_sum_s": 130.220407,
+        "fps_from_frame_time_sum": 119.935119,
+        "timings": {
+          "FrameTime": {
+            "samples": 15618,
+            "mean_ms": 8.337841,
+            "median_ms": 8.3335,
+            "p95_ms": 8.346,
+            "p99_ms": 8.5134,
+            "min_ms": 7.5562,
+            "max_ms": 9.9738,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          },
+          "GPUTime": {
+            "samples": 15618,
+            "mean_ms": 2.709851,
+            "median_ms": 2.606,
+            "p95_ms": 3.2691,
+            "p99_ms": 3.5488,
+            "min_ms": 2.2765,
+            "max_ms": 4.2834,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          },
+          "GameThreadTime": {
+            "samples": 15618,
+            "mean_ms": 2.008794,
+            "median_ms": 1.9089,
+            "p95_ms": 2.7386,
+            "p99_ms": 3.4004,
+            "min_ms": 1.3697,
+            "max_ms": 8.8056,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          },
+          "RenderThreadTime": {
+            "samples": 15618,
+            "mean_ms": 3.755125,
+            "median_ms": 3.5654,
+            "p95_ms": 4.8559,
+            "p99_ms": 5.5619,
+            "min_ms": 2.8318,
+            "max_ms": 10.2102,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          },
+          "RHIThreadTime": {
+            "samples": 15618,
+            "mean_ms": 2.595816,
+            "median_ms": 2.4894,
+            "p95_ms": 3.6299,
+            "p99_ms": 4.1342,
+            "min_ms": 1.3973,
+            "max_ms": 7.2795,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          }
+        },
+        "max_active_threats": 23,
+        "hull_min": 140000.0,
+        "hull_max": 140000.0,
+        "ship_speed_cm_per_s_max": 6758.626
+      },
+      "simulation_delta_ms": {
+        "samples": 15618,
+        "mean_ms": 8.337841,
+        "median_ms": 8.3334,
+        "p95_ms": 8.3381,
+        "p99_ms": 8.4803,
+        "min_ms": 8.3334,
+        "max_ms": 9.9658,
+        "zero_samples": 0,
+        "percent_above_ms": {
+          "16.667": 0.0,
+          "33.333": 0.0,
+          "50.0": 0.0
+        }
+      },
+      "flight_all": {
+        "frames": 15618,
+        "first_frame_index": 1,
+        "last_frame_index": 15618,
+        "wall_frame_time_sum_s": 130.220407,
+        "fps_from_frame_time_sum": 119.935119,
+        "max_active_threats": 23,
+        "frame_time_ms": {
+          "samples": 15618,
+          "mean_ms": 8.337841,
+          "median_ms": 8.3335,
+          "p95_ms": 8.346,
+          "p99_ms": 8.5134,
+          "min_ms": 7.5562,
+          "max_ms": 9.9738,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "simulation_seconds": null
+      },
+      "flight_after_five_second_warmup": {
+        "frames": 15018,
+        "first_frame_index": 601,
+        "last_frame_index": 15618,
+        "wall_frame_time_sum_s": 125.21535,
+        "fps_from_frame_time_sum": 119.937372,
+        "max_active_threats": 23,
+        "frame_time_ms": {
+          "samples": 15018,
+          "mean_ms": 8.337685,
+          "median_ms": 8.3335,
+          "p95_ms": 8.3456,
+          "p99_ms": 8.5101,
+          "min_ms": 7.5562,
+          "max_ms": 9.9738,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "simulation_seconds": null
+      },
+      "stages": {
+        "Flight": {
+          "frames": 8627,
+          "first_frame_index": 695,
+          "last_frame_index": 9321,
+          "simulation_seconds": 71.927945,
+          "mean_frame_ms": 8.337539,
+          "p99_frame_ms": 8.5091,
+          "maximum_frame_ms": 8.8781,
+          "frames_above_16_667_ms": 0
+        },
+        "Breathing": {
+          "frames": 1593,
+          "first_frame_index": 1,
+          "last_frame_index": 10220,
+          "simulation_seconds": 13.284866,
+          "mean_frame_ms": 8.339527,
+          "p99_frame_ms": 8.5901,
+          "maximum_frame_ms": 9.1125,
+          "frames_above_16_667_ms": 0
+        },
+        "Climax": {
+          "frames": 4798,
+          "first_frame_index": 10221,
+          "last_frame_index": 15018,
+          "simulation_seconds": 40.003666,
+          "mean_frame_ms": 8.337571,
+          "p99_frame_ms": 8.4906,
+          "maximum_frame_ms": 9.9738,
+          "frames_above_16_667_ms": 0
+        },
+        "Approach": {
+          "frames": 600,
+          "first_frame_index": 15019,
+          "last_frame_index": 15618,
+          "simulation_seconds": 5.003929,
+          "mean_frame_ms": 8.339883,
+          "p99_frame_ms": 8.5326,
+          "maximum_frame_ms": 8.7202,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "wave_phase_coverage": {
+        "Wave8_Phase2": {
+          "frames": 694,
+          "first_frame_index": 1,
+          "last_frame_index": 694,
+          "simulation_seconds": 5.788854,
+          "mean_frame_ms": 8.341291,
+          "p99_frame_ms": 8.6544,
+          "maximum_frame_ms": 9.1125,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave9_Phase1": {
+          "frames": 8627,
+          "first_frame_index": 695,
+          "last_frame_index": 9321,
+          "simulation_seconds": 71.927945,
+          "mean_frame_ms": 8.337539,
+          "p99_frame_ms": 8.5091,
+          "maximum_frame_ms": 8.8781,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave9_Phase2": {
+          "frames": 899,
+          "first_frame_index": 9322,
+          "last_frame_index": 10220,
+          "simulation_seconds": 7.496011,
+          "mean_frame_ms": 8.338164,
+          "p99_frame_ms": 8.5215,
+          "maximum_frame_ms": 8.8896,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave10_Phase4": {
+          "frames": 4798,
+          "first_frame_index": 10221,
+          "last_frame_index": 15018,
+          "simulation_seconds": 40.003666,
+          "mean_frame_ms": 8.337571,
+          "p99_frame_ms": 8.4906,
+          "maximum_frame_ms": 9.9738,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave10_Phase5": {
+          "frames": 600,
+          "first_frame_index": 15019,
+          "last_frame_index": 15618,
+          "simulation_seconds": 5.003929,
+          "mean_frame_ms": 8.339883,
+          "p99_frame_ms": 8.5326,
+          "maximum_frame_ms": 8.7202,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "compound_actor_presence_simulation_seconds": 38.278336,
+      "compound_frame_group": {
+        "frames": 4591,
+        "first_frame_index": 10428,
+        "last_frame_index": 15018,
+        "wall_frame_time_sum_s": 38.278336,
+        "fps_from_frame_time_sum": 119.937294,
+        "max_active_threats": 20,
+        "frame_time_ms": {
+          "samples": 4591,
+          "mean_ms": 8.33769,
+          "median_ms": 8.3334,
+          "p95_ms": 8.3427,
+          "p99_ms": 8.5004,
+          "min_ms": 7.801,
+          "max_ms": 9.9738,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "simulation_seconds": null
+      },
+      "peak_actual_counted_threats": 23,
+      "configured_total_threat_cap": 24,
+      "per_phase_count_maxima": {
+        "Flight": {
+          "enemy_maximum": 4,
+          "active_threat_maximum": 23
+        },
+        "Climax": {
+          "enemy_maximum": 5,
+          "active_threat_maximum": 20
+        },
+        "Approach": {
+          "enemy_maximum": 5,
+          "active_threat_maximum": 11
+        }
+      },
+      "kind_counts": {
+        "Gravity": {
+          "maximum": 1,
+          "mean": 0.567166
+        },
+        "Asteroids": {
+          "maximum": 9,
+          "mean": 3.579332
+        },
+        "Wreckage": {
+          "maximum": 12,
+          "mean": 4.268472
+        },
+        "Electrical": {
+          "maximum": 2,
+          "mean": 0.723524
+        },
+        "Pursuers": {
+          "maximum": 2,
+          "mean": 0.796389
+        },
+        "Flankers": {
+          "maximum": 4,
+          "mean": 2.342746
+        },
+        "Projectiles": {
+          "maximum": 24,
+          "mean": 18.609169
+        },
+        "Pickups": {
+          "maximum": 2,
+          "mean": 0.062044
+        }
+      },
+      "render_metadata": {
+        "platform": "Windows",
+        "config": "Development",
+        "buildversion": "++UE5+Release-5.8-CL-56702186",
+        "engineversion": "5.8.2-56702186+++UE5+Release-5.8",
+        "enginereleaseversion": "5.8.2",
+        "os": "Windows 11 (25H2) [10.0.26200.9445] ",
+        "cpu": "GenuineIntel|Intel(R) Core(TM) i7-14700F",
+        "gpu": "NVIDIA GeForce RTX 5080",
+        "gpudriver": "616.92",
+        "deviceprofile": "Windows",
+        "targetframerate": "120",
+        "starttimestamp": "1789302367",
+        "endtimestamp": "1789302497",
+        "captureduration": "130.226319",
+        "systemresolution.resx": "2560",
+        "systemresolution.resy": "1440",
+        "verbatimrhiname": "D3D12",
+        "rhiname": "D3D12",
+        "rhifeaturelevel": "SM6",
+        "shaderplatform": "PCD3D_SM6",
+        "vsyncenabled": "0",
+        "raytracing": "0",
+        "streamingpoolsizemb": "800",
+        "csvmaxfilebytesreached": "0",
+        "HasHeaderRowAtEnd": "1",
+        "EventTimestamps": "1"
+      },
+      "effective_frame_budget_ms": [
+        8.3333
+      ],
+      "all_eleven_scalability_groups": {
+        "ViewDistanceQuality": {
+          "level": 2,
+          "log_line": 906
+        },
+        "AntiAliasingQuality": {
+          "level": 2,
+          "log_line": 908
+        },
+        "ShadowQuality": {
+          "level": 2,
+          "log_line": 914
+        },
+        "GlobalIlluminationQuality": {
+          "level": 2,
+          "log_line": 930
+        },
+        "ReflectionQuality": {
+          "level": 2,
+          "log_line": 956
+        },
+        "PostProcessQuality": {
+          "level": 2,
+          "log_line": 965
+        },
+        "TextureQuality": {
+          "level": 2,
+          "log_line": 981
+        },
+        "EffectsQuality": {
+          "level": 2,
+          "log_line": 985
+        },
+        "FoliageQuality": {
+          "level": 2,
+          "log_line": 1002
+        },
+        "ShadingQuality": {
+          "level": 2,
+          "log_line": 1006
+        },
+        "LandscapeQuality": {
+          "level": 2,
+          "log_line": 1007
+        }
+      },
+      "screenshots_disabled_no_png_or_readback_log": true,
+      "normal_exit_and_capture_markers": [
+        {
+          "line": 1069,
+          "message": "[2026.09.13-12.26.07:109][  4]LogCsvProfiler: Display: Capture started. CSV ID: 37B7496846F97514D0F38DA184641685"
+        },
+        {
+          "line": 1118,
+          "message": "[2026.09.13-12.28.17:400][623]LogCsvProfiler: Display: Capture Ended. Writing CSV to file : C:/Users/j6sis/SpaceSurvival/Artifacts/EndgameSoak/9461b70d07454d738f22a1c87c91b793/Endgame.csv"
+        },
+        {
+          "line": 1122,
+          "message": "[2026.09.13-12.28.17:409][625]LogTemp: Display: ENDGAME_FIXTURE_FINISHED success=1 climax=40.004 compound=38.278 approach=5.004; "
+        },
+        {
+          "line": 1148,
+          "message": "[2026.09.13-12.28.18:303][626]LogExit: Game engine shut down"
+        }
+      ],
+      "fixture_configuration": "Fixed seed 5eade000000000000000000000000010; starter/RapidLaser; five Tier V paths; OverdriveCooling; base hull/shield 50000; seeded end of Wave8; no contract/events. Normal wave timings, 40s climax, caps, budgets, spatial admission and damage. Scripted shallow strafe, boost/brake cycles, dodge/8s and fire2s/6s. Kind presence includes telegraphs/offscreen actors. No station docking or natural balance/input/feel acceptance.",
+      "visual_observation_limit": "Lead observed startup only; the game closed before the lead inspected the Wave 10 compound scene. Actor presence counters do not establish visibility or readability."
+    },
+    {
+      "scenario": "Station5",
+      "token": "ff25f69277224a3a85a07e37bb577ecf",
+      "capture_directory": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf",
+      "status": "INDEPENDENT_RAW_CSV_AND_IDENTITY_AUDIT_PASS_NOT_REPRESENTATIVE_ACCEPTANCE",
+      "started_utc": "2026-09-13T12:29:34.1777570Z",
+      "finished_utc": "2026-09-13T12:32:57.5584463Z",
+      "owned_process_id": 84280,
+      "process_exit": 0,
+      "owned_process_absent_on_independent_read": true,
+      "raw_evidence": [
+        {
+          "path": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/.ss-endgame-soak",
+          "bytes": 34,
+          "sha256": "2b4460f3c48810ff76d414770ba78fb6f8e9f7a8c0ac8ec0d8bddfc4b4938081"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/Endgame.csv",
+          "bytes": 34993644,
+          "sha256": "ff2e0f005b2aafefd154a675c521339525746b53fa423d5f172b922ecbcb1c78"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/fixture.json",
+          "bytes": 1693,
+          "sha256": "e7e8cffe1a9161b99e0d24112ffcd632c61e98bf8b65ee0dba51d5466f014334"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/performance.json",
+          "bytes": 79665,
+          "sha256": "67ef50899cb58f7b4760bb50d3aa6b2c5e42a09ec87b32a4f5dd3cf4b6cb8e6d"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/production-before.json",
+          "bytes": 703,
+          "sha256": "d11e4f7c34188ba5d03cf5b2d86d82f3599a6853bec72c73b81f7d4b2186979f"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/Rendered.log",
+          "bytes": 107481,
+          "sha256": "ef4dc1b1aef9afe402226efc012419ac209d7785a1af81ba24bd09a1365ed1a8"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/source-before.json",
+          "bytes": 35499,
+          "sha256": "7c70d60728a2a01d288d878a5b4510cb4306f825645044d7517885ae804f05b6"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/result.json",
+          "bytes": 44973,
+          "sha256": "8db13b7df91b08e89e6f86ace418eca662345c88d2bd0665e0e6ba853265a938"
+        }
+      ],
+      "independent_calculation_record": {
+        "path": ".agent/local/Package11-Station5-Independent.json",
+        "bytes": 62875,
+        "sha256": "07190a524d4e2af866278128c3af8c8973fcc6bd0ad3e4797780ce9275dd5d6e"
+      },
+      "identity_checks": {
+        "source_snapshot_files": 155,
+        "source_commit": "6912684223f4a93f4010cd12201aee7fb42395f3",
+        "snapshot_matches_package_receipt": true,
+        "seven_artifact_hashes_match_package_receipt": true,
+        "wrapper_before_after_source_artifact_preservation": true,
+        "current_source_artifact_hashes_independently_verified": true,
+        "production_before_after_and_current_match": true,
+        "fixture_save_directory_has_no_slots": true
+      },
+      "csv": {
+        "data_rows": 16868,
+        "header_rows": 2,
+        "final_columns": 385,
+        "fixture_frames": 16867,
+        "foreground_fixture_frames": 16867,
+        "all_seven_analyzer_groups_recomputed_match": true,
+        "scenario_stage_and_post_update_phase_valid": true,
+        "game_mode_vs_post_update_phase_differences": 1
+      },
+      "fixture_all": {
+        "frames": 16867,
+        "first_frame_index": 1,
+        "last_frame_index": 16867,
+        "wall_frame_time_sum_s": 140.645269,
+        "fps_from_frame_time_sum": 119.925826,
+        "timings": {
+          "FrameTime": {
+            "samples": 16867,
+            "mean_ms": 8.338488,
+            "median_ms": 8.3335,
+            "p95_ms": 8.3467,
+            "p99_ms": 8.5476,
+            "min_ms": 7.831,
+            "max_ms": 8.8939,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          },
+          "GPUTime": {
+            "samples": 16867,
+            "mean_ms": 2.948301,
+            "median_ms": 2.7394,
+            "p95_ms": 4.3946,
+            "p99_ms": 4.7915,
+            "min_ms": 2.2535,
+            "max_ms": 5.261,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          },
+          "GameThreadTime": {
+            "samples": 16867,
+            "mean_ms": 1.834656,
+            "median_ms": 1.7769,
+            "p95_ms": 2.3625,
+            "p99_ms": 2.7809,
+            "min_ms": 1.2667,
+            "max_ms": 6.3368,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          },
+          "RenderThreadTime": {
+            "samples": 16867,
+            "mean_ms": 3.402319,
+            "median_ms": 3.3271,
+            "p95_ms": 4.059,
+            "p99_ms": 4.5173,
+            "min_ms": 2.7499,
+            "max_ms": 7.7749,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          },
+          "RHIThreadTime": {
+            "samples": 16867,
+            "mean_ms": 2.375843,
+            "median_ms": 2.327,
+            "p95_ms": 2.992,
+            "p99_ms": 3.331,
+            "min_ms": 1.473,
+            "max_ms": 12.302,
+            "zero_samples": 0,
+            "percent_above_ms": {
+              "16.667": 0.0,
+              "33.333": 0.0,
+              "50.0": 0.0
+            }
+          }
+        },
+        "max_active_threats": 23,
+        "hull_min": 140000.0,
+        "hull_max": 140000.0,
+        "ship_speed_cm_per_s_max": 7108.3379
+      },
+      "simulation_delta_ms": {
+        "samples": 16867,
+        "mean_ms": 8.338488,
+        "median_ms": 8.3334,
+        "p95_ms": 8.3395,
+        "p99_ms": 8.5056,
+        "min_ms": 8.3334,
+        "max_ms": 8.8697,
+        "zero_samples": 0,
+        "percent_above_ms": {
+          "16.667": 0.0,
+          "33.333": 0.0,
+          "50.0": 0.0
+        }
+      },
+      "flight_all": {
+        "frames": 14780,
+        "first_frame_index": 1,
+        "last_frame_index": 14780,
+        "wall_frame_time_sum_s": 123.243664,
+        "fps_from_frame_time_sum": 119.925029,
+        "max_active_threats": 23,
+        "frame_time_ms": {
+          "samples": 14780,
+          "mean_ms": 8.338543,
+          "median_ms": 8.3335,
+          "p95_ms": 8.3479,
+          "p99_ms": 8.547,
+          "min_ms": 7.831,
+          "max_ms": 8.8556,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "simulation_seconds": null
+      },
+      "flight_after_five_second_warmup": {
+        "frames": 14180,
+        "first_frame_index": 601,
+        "last_frame_index": 14780,
+        "wall_frame_time_sum_s": 118.242042,
+        "fps_from_frame_time_sum": 119.923504,
+        "max_active_threats": 23,
+        "frame_time_ms": {
+          "samples": 14180,
+          "mean_ms": 8.338649,
+          "median_ms": 8.3335,
+          "p95_ms": 8.3487,
+          "p99_ms": 8.5495,
+          "min_ms": 7.831,
+          "max_ms": 8.8556,
+          "zero_samples": 0,
+          "percent_above_ms": {
+            "16.667": 0.0,
+            "33.333": 0.0,
+            "50.0": 0.0
+          }
+        },
+        "simulation_seconds": null
+      },
+      "stages": {
+        "Flight": {
+          "frames": 7186,
+          "first_frame_index": 696,
+          "last_frame_index": 7881,
+          "simulation_seconds": 59.926577,
+          "mean_frame_ms": 8.339351,
+          "p99_frame_ms": 8.5707,
+          "maximum_frame_ms": 8.8365,
+          "frames_above_16_667_ms": 0
+        },
+        "Breathing": {
+          "frames": 695,
+          "first_frame_index": 1,
+          "last_frame_index": 695,
+          "simulation_seconds": 5.793423,
+          "mean_frame_ms": 8.335859,
+          "p99_frame_ms": 8.4971,
+          "maximum_frame_ms": 8.7451,
+          "frames_above_16_667_ms": 0
+        },
+        "Wormhole": {
+          "frames": 960,
+          "first_frame_index": 7882,
+          "last_frame_index": 8841,
+          "simulation_seconds": 8.007362,
+          "mean_frame_ms": 8.341001,
+          "p99_frame_ms": 8.6615,
+          "maximum_frame_ms": 8.8556,
+          "frames_above_16_667_ms": 0
+        },
+        "Climax": {
+          "frames": 4798,
+          "first_frame_index": 8842,
+          "last_frame_index": 13639,
+          "simulation_seconds": 40.002631,
+          "mean_frame_ms": 8.337355,
+          "p99_frame_ms": 8.4895,
+          "maximum_frame_ms": 8.7888,
+          "frames_above_16_667_ms": 0
+        },
+        "Approach": {
+          "frames": 781,
+          "first_frame_index": 13640,
+          "last_frame_index": 14420,
+          "simulation_seconds": 6.51244,
+          "mean_frame_ms": 8.338591,
+          "p99_frame_ms": 8.5322,
+          "maximum_frame_ms": 8.7741,
+          "frames_above_16_667_ms": 0
+        },
+        "Docking": {
+          "frames": 360,
+          "first_frame_index": 14421,
+          "last_frame_index": 14780,
+          "simulation_seconds": 3.00123,
+          "mean_frame_ms": 8.336756,
+          "p99_frame_ms": 8.5308,
+          "maximum_frame_ms": 8.6971,
+          "frames_above_16_667_ms": 0
+        },
+        "AuthoredExit": {
+          "frames": 287,
+          "first_frame_index": 14781,
+          "last_frame_index": 15067,
+          "simulation_seconds": 2.3938,
+          "mean_frame_ms": 8.340774,
+          "p99_frame_ms": 8.6368,
+          "maximum_frame_ms": 8.8164,
+          "frames_above_16_667_ms": 0
+        },
+        "StationIdle": {
+          "frames": 1800,
+          "first_frame_index": 15068,
+          "last_frame_index": 16867,
+          "simulation_seconds": 15.007807,
+          "mean_frame_ms": 8.337668,
+          "p99_frame_ms": 8.5483,
+          "maximum_frame_ms": 8.8939,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "wave_phase_coverage": {
+        "Wave4_Phase2": {
+          "frames": 695,
+          "first_frame_index": 1,
+          "last_frame_index": 695,
+          "simulation_seconds": 5.793423,
+          "mean_frame_ms": 8.335859,
+          "p99_frame_ms": 8.4971,
+          "maximum_frame_ms": 8.7451,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave5_Phase1": {
+          "frames": 7186,
+          "first_frame_index": 696,
+          "last_frame_index": 7881,
+          "simulation_seconds": 59.926577,
+          "mean_frame_ms": 8.339351,
+          "p99_frame_ms": 8.5707,
+          "maximum_frame_ms": 8.8365,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave5_Phase3": {
+          "frames": 960,
+          "first_frame_index": 7882,
+          "last_frame_index": 8841,
+          "simulation_seconds": 8.007362,
+          "mean_frame_ms": 8.341001,
+          "p99_frame_ms": 8.6615,
+          "maximum_frame_ms": 8.8556,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave5_Phase4": {
+          "frames": 4798,
+          "first_frame_index": 8842,
+          "last_frame_index": 13639,
+          "simulation_seconds": 40.002631,
+          "mean_frame_ms": 8.337355,
+          "p99_frame_ms": 8.4895,
+          "maximum_frame_ms": 8.7888,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave5_Phase5": {
+          "frames": 781,
+          "first_frame_index": 13640,
+          "last_frame_index": 14420,
+          "simulation_seconds": 6.51244,
+          "mean_frame_ms": 8.338591,
+          "p99_frame_ms": 8.5322,
+          "maximum_frame_ms": 8.7741,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave5_Phase6": {
+          "frames": 360,
+          "first_frame_index": 14421,
+          "last_frame_index": 14780,
+          "simulation_seconds": 3.00123,
+          "mean_frame_ms": 8.336756,
+          "p99_frame_ms": 8.5308,
+          "maximum_frame_ms": 8.6971,
+          "frames_above_16_667_ms": 0
+        },
+        "Wave5_Phase7": {
+          "frames": 2087,
+          "first_frame_index": 14781,
+          "last_frame_index": 16867,
+          "simulation_seconds": 17.401607,
+          "mean_frame_ms": 8.338095,
+          "p99_frame_ms": 8.5577,
+          "maximum_frame_ms": 8.8939,
+          "frames_above_16_667_ms": 0
+        }
+      },
+      "compound_actor_presence_simulation_seconds": 0.0,
+      "compound_frame_group": {
+        "frames": 0
+      },
+      "peak_actual_counted_threats": 23,
+      "configured_total_threat_cap": 24,
+      "per_phase_count_maxima": {
+        "Flight": {
+          "enemy_maximum": 2,
+          "active_threat_maximum": 23
+        },
+        "Climax": {
+          "enemy_maximum": 5,
+          "active_threat_maximum": 15
+        },
+        "Approach": {
+          "enemy_maximum": 5,
+          "active_threat_maximum": 5
+        },
+        "Docking": {
+          "enemy_maximum": 5,
+          "active_threat_maximum": 5
+        },
+        "Station": {
+          "enemy_maximum": 0,
+          "active_threat_maximum": 0
+        }
+      },
+      "kind_counts": {
+        "Gravity": {
+          "maximum": 0,
+          "mean": 0.0
+        },
+        "Asteroids": {
+          "maximum": 8,
+          "mean": 2.479635
+        },
+        "Wreckage": {
+          "maximum": 15,
+          "mean": 2.397522
+        },
+        "Electrical": {
+          "maximum": 3,
+          "mean": 0.804826
+        },
+        "Pursuers": {
+          "maximum": 1,
+          "mean": 0.495227
+        },
+        "Flankers": {
+          "maximum": 5,
+          "mean": 1.949546
+        },
+        "Projectiles": {
+          "maximum": 24,
+          "mean": 14.489061
+        },
+        "Pickups": {
+          "maximum": 1,
+          "mean": 0.070374
+        }
+      },
+      "render_metadata": {
+        "platform": "Windows",
+        "config": "Development",
+        "buildversion": "++UE5+Release-5.8-CL-56702186",
+        "engineversion": "5.8.2-56702186+++UE5+Release-5.8",
+        "enginereleaseversion": "5.8.2",
+        "os": "Windows 11 (25H2) [10.0.26200.9445] ",
+        "cpu": "GenuineIntel|Intel(R) Core(TM) i7-14700F",
+        "gpu": "NVIDIA GeForce RTX 5080",
+        "gpudriver": "616.92",
+        "deviceprofile": "Windows",
+        "targetframerate": "120",
+        "starttimestamp": "1789302632",
+        "endtimestamp": "1789302773",
+        "captureduration": "140.652767",
+        "systemresolution.resx": "2560",
+        "systemresolution.resy": "1440",
+        "verbatimrhiname": "D3D12",
+        "rhiname": "D3D12",
+        "rhifeaturelevel": "SM6",
+        "shaderplatform": "PCD3D_SM6",
+        "vsyncenabled": "0",
+        "raytracing": "0",
+        "streamingpoolsizemb": "800",
+        "csvmaxfilebytesreached": "0",
+        "HasHeaderRowAtEnd": "1",
+        "EventTimestamps": "1"
+      },
+      "effective_frame_budget_ms": [
+        8.3333
+      ],
+      "all_eleven_scalability_groups": {
+        "ViewDistanceQuality": {
+          "level": 2,
+          "log_line": 906
+        },
+        "AntiAliasingQuality": {
+          "level": 2,
+          "log_line": 908
+        },
+        "ShadowQuality": {
+          "level": 2,
+          "log_line": 914
+        },
+        "GlobalIlluminationQuality": {
+          "level": 2,
+          "log_line": 930
+        },
+        "ReflectionQuality": {
+          "level": 2,
+          "log_line": 956
+        },
+        "PostProcessQuality": {
+          "level": 2,
+          "log_line": 965
+        },
+        "TextureQuality": {
+          "level": 2,
+          "log_line": 981
+        },
+        "EffectsQuality": {
+          "level": 2,
+          "log_line": 985
+        },
+        "FoliageQuality": {
+          "level": 2,
+          "log_line": 1002
+        },
+        "ShadingQuality": {
+          "level": 2,
+          "log_line": 1006
+        },
+        "LandscapeQuality": {
+          "level": 2,
+          "log_line": 1007
+        }
+      },
+      "screenshots_disabled_no_png_or_readback_log": true,
+      "normal_exit_and_capture_markers": [
+        {
+          "line": 1069,
+          "message": "[2026.09.13-12.30.32:375][724]LogCsvProfiler: Display: Capture started. CSV ID: E0E0EE944892D9EDABCEAD9BFB093D59"
+        },
+        {
+          "line": 1117,
+          "message": "[2026.09.13-12.32.53:091][592]LogCsvProfiler: Display: Capture Ended. Writing CSV to file : C:/Users/j6sis/SpaceSurvival/Artifacts/EndgameSoak/ff25f69277224a3a85a07e37bb577ecf/Endgame.csv"
+        },
+        {
+          "line": 1121,
+          "message": "[2026.09.13-12.32.53:102][594]LogTemp: Display: ENDGAME_FIXTURE_FINISHED success=1 climax=40.003 compound=0.000 approach=6.512; "
+        },
+        {
+          "line": 1147,
+          "message": "[2026.09.13-12.32.53:924][595]LogExit: Game engine shut down"
+        }
+      ],
+      "fixture_configuration": "Seeded end of Wave4; starter/RapidLaser, Tier V, OverdriveCooling, base durability50000. Normal Wave5, 8s wormhole,40s climax, ordinary bounded steering to port, actual docking and2.4s exit,15s stationary hub. No forced docking/teleport, menu purchases, physical input, natural progression/balance or representative FPS acceptance.",
+      "visual_observation_limit": "Lead observed startup and Wave 5 combat around CSV frame 9255. Lead did not catch station arrival or exit during this performance run. Successful stage/possession counters are not an independent visual inspection."
+    }
+  ],
+  "host_load_confounders": {
+    "wave10_cpu_render_overlap": {
+      "status": "CONFIRMED_OVERLAP_NOT_AN_ISOLATED_BENCHMARK",
+      "render_report": {
+        "path": ".agent/local/StationShellCandidate/Report.json",
+        "bytes": 6848,
+        "sha256": "5dfb2729038af7d86b53c6bcef9bae02eb01430ce2f86d6479eba3fb8468a018"
+      },
+      "render_log": {
+        "path": ".agent/local/StationShellCandidate/Generate.log",
+        "bytes": 1443,
+        "sha256": "a583df87167859ec10837e8e0cd86f1d70f2aa9fc0be5cd73807cd8e65b1539d"
+      },
+      "render_device": "Cycles CPU / 8 threads / 36 samples",
+      "last_render_elapsed_seconds": 78.079,
+      "log_last_write_utc": "2026-09-13T12:26:53.715986+00:00",
+      "approximate_start_utc": "2026-09-13T12:25:35Z",
+      "csv_capture_started_utc": "2026-09-13T12:26:07.109Z",
+      "provenance": "Parent and content_pipeline handback plus retained final corrected Generate.log/Report.json. The approximate UTC start is inferred from elapsed render time and final log write, not an independently timestamped process-start record; final Blender PID was not captured. The earlier PID 88492 belongs to a different candidate run and is not reused.",
+      "impact_limit": "CPU rendering with 8 threads overlaps approximately the first 47 s of measured Wave10-scenario capture. This is recorded as a confounder; no causal impact estimate, isolated comparison or headroom conclusion is inferred from the capped result."
+    },
+    "station5": "Parent/content_pipeline reported the Blender render had ended before this scenario started. No clean-host or all-background-process isolation claim is made; owner editor remains preserved."
+  },
+  "production_save_preservation": {
+    "same_before_after_in_both_runs_and_independently_current_verified": true,
+    "snapshots": [
+      {
+        "directory": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames",
+        "exists": true,
+        "files": [
+          {
+            "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Account_v1.sav",
+            "bytes": 2233,
+            "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+          },
+          {
+            "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Suspend_v1.sav",
+            "bytes": 1989,
+            "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+          }
+        ]
+      },
+      {
+        "directory": "C:\\Users\\j6sis\\AppData\\Local\\SpaceSurvival\\Saved\\SaveGames",
+        "exists": false,
+        "files": []
+      }
+    ],
+    "fixture_slot_files_written": 0,
+    "limit": "Read-only file inventories/size/SHA comparisons at the captured boundaries; no production restoration, writes or fixture-slot cleanup were performed."
+  },
+  "acceptance_limits": [
+    "These are two seeded fixture intervals, not a natural complete Waves 1-10 progression or representative performance gate. Earlier Packages 4/9/10 captures keep their own identities and are not rebound here.",
+    "Both use fixed seed, Tier V on all five paths, OverdriveCooling and base hull/shield 50000; optional offers are marked seen and no contracts/events are exercised. Success does not establish survival balance, economy, event/reward flow or player motivation.",
+    "Wave 10 begins after a seeded Wave 8 finish and ends after 5 s approach without Station 2. Station 5 begins after a seeded Wave 4 finish and ends after 15 s station idle without services, save or Wave 6 launch interactions.",
+    "Actor-kind counts include telegraphs and offscreen objects. Compound presence is not proof the hazards/enemies were visible or readable; root observation limits are recorded per scenario.",
+    "Screenshots/ListTextures readback was disabled in both runs. A later Package 11 visual capture is separate and must not supply performance samples here. These runs do not verify hero texture residency, the revised caption, pose blend quality or rendered exit quality.",
+    "All 19 owner keyboard/mouse/controller/feel/listening/readability/retry checks remain unchecked. Audio was enabled but no listening approval is inferred.",
+    "A 120 FPS cap and one machine cannot establish uncapped headroom, worst-case content, sustained 60 FPS across target hardware, higher-refresh scalability, clean-PC runtime compatibility or final art acceptance."
+  ]
+}

@@ -1,0 +1,449 @@
+{
+  "status": "SKY_STATION_RUNTIME_VERIFIED_WITH_FIXTURE_LIMITS",
+  "phase1_status": "PARTIAL",
+  "scope": "Integrated NASA 8K sky, reviewed station shell and station HUD behavior in an uncooked Editor game.",
+  "audit_script": {
+    "path": ".agent/local/AuditSkyStationRuntime.py",
+    "bytes": 13636,
+    "sha256": "e35199d84f741b60f762eea2d61951cc7c382f64e7a62b572345a51ecd7fb034"
+  },
+  "source_and_binary_binding": {
+    "base_head": "dccfdfd7569a4178993b67897d9875f95b96cd2d",
+    "binding": "Exact uncommitted worktree integration above base HEAD; the base commit alone does not identify this binary.",
+    "build_snapshot": {
+      "path": ".agent/local/SkyStation-Build.json",
+      "bytes": 38765,
+      "sha256": "95f4f5f61f895edf8d869c787550d5aecc66b9238c94301dc47a8f0611552842"
+    },
+    "gate_record": {
+      "path": ".agent/local/SkyStation-Gates.json",
+      "bytes": 39639,
+      "sha256": "f380464d51836a1dd4b9ccea9f0c310747867ce2b590ac6aad56fb008a479acd"
+    },
+    "capture_snapshot": {
+      "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/source-before.json",
+      "bytes": 38999,
+      "sha256": "8cb3ed89ab76dc6b880cc8136260d04fbb50651596fa4749f4f4d96e17dead8a"
+    },
+    "build_snapshot_file_count": 209,
+    "capture_snapshot_file_counts": {
+      "Config": 3,
+      "Content": 120,
+      "Scripts": 2,
+      "Source": 39,
+      "SpaceSurvival.uproject": 1
+    },
+    "capture_is_exact_subset_of_build_snapshot": true,
+    "gate_manifest_equals_build_manifest": true,
+    "focal_source_assets": [
+      {
+        "path": "Content/SpaceSurvival/Materials/MI_SpaceMilkyWay.uasset",
+        "bytes": 7526,
+        "sha256": "e92a8e3d51c806ed515eb9996e3396fd1b903f9f0eb0710c3bc178a3cff1020a"
+      },
+      {
+        "path": "Content/SpaceSurvival/Textures/T_MilkyWay2020.uasset",
+        "bytes": 56315364,
+        "sha256": "057b57f719d95e4faeb78522ccedd117752a43ff3cfe8a048296456ef195cc2a"
+      },
+      {
+        "path": "Scripts/AnalyzePerformance.py",
+        "bytes": 22454,
+        "sha256": "c5a2476b076c0bc55590ecfed8ace46dc2d264fd7f1fe595d3b07afed833b087"
+      },
+      {
+        "path": "Scripts/CaptureEndgame.ps1",
+        "bytes": 14239,
+        "sha256": "90f4b0c02ea25de90bc90616c06bd87e1b296da2ab143e7b690a83aaa6c7383e"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+        "bytes": 59180,
+        "sha256": "d5f39ff1dc57f00e25480c12a1d7a7e2296776912b80f447e922959b95a95999"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSHUD.cpp",
+        "bytes": 22939,
+        "sha256": "636500d1e7b5c855e80fd89fb1457ffb61f82d06930a10a99b15c4c6a7c919cf"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSIntegrationAutomationTests.cpp",
+        "bytes": 36998,
+        "sha256": "5e42261a10bd27eb1651b1c80a961b698360abe9a267fa5f43d9422b0e5ba61b"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSStation.cpp",
+        "bytes": 23610,
+        "sha256": "543e29d2d8886df48454529d2afa9dc978cdffe9c4ff9089d9583405190bd1b1"
+      },
+      {
+        "path": "Source/SpaceSurvival/Private/SSWave10Soak.cpp",
+        "bytes": 24789,
+        "sha256": "8928e895158d67ad5c517df43c58c05bc39fd2751e986fdd079dfb1d31b7e635"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSGameMode.h",
+        "bytes": 4006,
+        "sha256": "21b82c4916f9a4ad0e1b4d8278af3a21bf2e05303c8074ddfb7a2a79adb4f9c0"
+      },
+      {
+        "path": "Source/SpaceSurvival/Public/SSStation.h",
+        "bytes": 3234,
+        "sha256": "e82180831b30f68b60b67b86370cf9d81144901f7065f4808e2a6d032cb073b3"
+      }
+    ],
+    "editor_dll": {
+      "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 1632768,
+      "sha256": "01906d3ff41f77ce059e4e5666df5ffaef16352412989bd700e94440e62949fb"
+    },
+    "independent_pre_thaw_check": "After capture completion and before releasing the lead's source freeze, the auditor rehashed all209 build files, all165 capture files, both executable artifacts, all capture evidence and gate logs; every size/hash matched. Production save names/sizes/hashes also matched. Later work is not rebound by this receipt.",
+    "capture_wrapper_source_and_artifact_guards": true,
+    "guard_limit": "Full before snapshot and final comparison booleans are retained; no separate full source-after manifest exists. The build record supplies the compilation-to-DLL binding; Automation JSON alone does not embed DLL identity."
+  },
+  "build_and_gates": {
+    "editor_seconds": 27.7,
+    "editor_log": {
+      "path": ".agent/local/SkyStation-Editor.log",
+      "bytes": 5439,
+      "sha256": "c1726c4fee21cce2301e705f789a83b9f4aaf0ea844a06ecd1afcea56812cbca"
+    },
+    "test_report": {
+      "path": ".agent/local/SkyStation-tests.json",
+      "bytes": 26663,
+      "sha256": "73143f1da2e75ede6d6bd3ae800a21497ee079d769ab48a9a24e2de3bf408939"
+    },
+    "test_log": {
+      "path": ".agent/local/SkyStation-Test.log",
+      "bytes": 305019,
+      "sha256": "be5cfeeb5fd8b96402bd8d21b33c2307378ad96ad6be1ef46925b4413cc88830"
+    },
+    "created_utc": "2026-09-13T13:43:51Z",
+    "succeeded": 25,
+    "failed": 0,
+    "warnings": 0,
+    "not_run": 0,
+    "duration_seconds": 2.552166223526001,
+    "all_entries_success_zero_errors_warnings": true,
+    "station_regression": {
+      "fullTestPath": "SpaceSurvival.Integration.StationPresentationCollision",
+      "state": "Success",
+      "duration": 0.024770598858594894,
+      "errors": 0,
+      "warnings": 0
+    },
+    "historical_station_test_repair": {
+      "path": "docs/validation/2026-09-13-station-shell-integration.json",
+      "bytes": 22841,
+      "sha256": "9f87512d500651f9b82d6b9256365f9cff15e996c52b8e12cc6bbce81ca32ff3"
+    },
+    "author_log": {
+      "path": ".agent/local/SkyStation-Content.log",
+      "bytes": 293948,
+      "sha256": "5f9655707a00cf5094e51c0c45fa169b1e38fa3e5519072b56fffee4247421cd"
+    },
+    "author_success_utc": "2026-09-13T13:44:13.022Z",
+    "fresh_validator_log": {
+      "path": ".agent/local/SkyStation-Validate.log",
+      "bytes": 272784,
+      "sha256": "a6a5224e01470e56227c2bd4280dd9908f2a3dd59973f681a0168cf3ef3c305f"
+    },
+    "validation_success_utc": "2026-09-13T13:44:38.176Z",
+    "content_and_validation_normal_shutdown_no_python_errors": true,
+    "build_warnings": "Installed compiler preference and engine-header warnings remain distinct from zero Automation warning entries.",
+    "sky_asset_import_receipt": {
+      "path": "ContentSource/ThirdParty/NASA/MilkyWay2020/NativeValidation.json",
+      "bytes": 36561,
+      "sha256": "3abf514ca8510de82f81187beb7e15c88fea90d37825e2c123cf3ca217920616"
+    }
+  },
+  "native_capture": {
+    "token": "c4b0915081334fa7b382d220e10b9989",
+    "mode": "UncookedEditorGame",
+    "scenario": "Station5",
+    "process_id": 96672,
+    "normal_exit_code": 0,
+    "started_utc": "2026-09-13T13:46:46.3007376Z",
+    "finished_utc": "2026-09-13T13:49:25.9349072Z",
+    "result": {
+      "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/result.json",
+      "bytes": 61033,
+      "sha256": "b1c39adb4cd07fd83871fdde454d1f73b758a7518907a34abe4950e82e1f5062"
+    },
+    "fixture": {
+      "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/fixture.json",
+      "bytes": 11812,
+      "sha256": "4005ac6a8b0fe2a0e1c9ddef03a3888a1390959f7643b18bba67a5d4da5e0e75"
+    },
+    "log": {
+      "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Rendered.log",
+      "bytes": 240068,
+      "sha256": "bd38c2468348630eb300b0b0f6ccdd2e4d75cb29cf4b16a8020e5bc44d1f9210"
+    },
+    "csv": {
+      "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Endgame.csv",
+      "bytes": 34188934,
+      "sha256": "89b244a785aaf8981ffc312adfa6c7ab641435f0dff976d91f4fa910d5470a0d"
+    },
+    "analysis": {
+      "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/performance.json",
+      "bytes": 80610,
+      "sha256": "c6c81e8bbe9285db02c28ca00054f0817b0bc6a1ad6124caad09cc8864024673"
+    },
+    "command_log": {
+      "path": ".agent/local/SkyStation-NativeCapture.log",
+      "bytes": 2827,
+      "sha256": "5ae0ab9c4819becfe69673e674b9eabcf63a5260f7039fb168b006db322a1169"
+    },
+    "verified_capture_evidence_files": 19,
+    "artifacts": [
+      {
+        "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+        "bytes": 512952,
+        "sha256": "6f9c95c131f37cbdc384ade02fcf6ed828baa366b25234d0d85e212244cac9aa"
+      },
+      {
+        "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+        "bytes": 1632768,
+        "sha256": "01906d3ff41f77ce059e4e5666df5ffaef16352412989bd700e94440e62949fb"
+      }
+    ],
+    "fixture_frames": 16405,
+    "all_fixture_frames_foreground": true,
+    "csv_recalculated_stages": {
+      "Flight": {
+        "frames": 7136,
+        "simulation_seconds": 59.922962
+      },
+      "Breathing": {
+        "frames": 694,
+        "simulation_seconds": 5.787709
+      },
+      "Wormhole": {
+        "frames": 960,
+        "simulation_seconds": 8.007358
+      },
+      "Climax": {
+        "frames": 4763,
+        "simulation_seconds": 40.003932
+      },
+      "Approach": {
+        "frames": 744,
+        "simulation_seconds": 6.506949
+      },
+      "Docking": {
+        "frames": 324,
+        "simulation_seconds": 3.005494
+      },
+      "AuthoredExit": {
+        "frames": 61,
+        "simulation_seconds": 2.356203
+      },
+      "StationIdle": {
+        "frames": 1723,
+        "simulation_seconds": 15.008208
+      }
+    },
+    "peak_active_threats": 24,
+    "functional_coverage": "Normal Wave5, wormhole,40-second climax, bounded steering through approach, actual docking, authored exit and15-second stationary station interval.",
+    "fixture_limits": "Seeded end of Wave4; starter/RapidLaser, Tier V, OverdriveCooling, base durability50000. Normal Wave5, 8s wormhole,40s climax, ordinary bounded steering to port, actual docking and2.4s exit,15s stationary hub. No forced docking/teleport, menu purchases, physical input, natural progression/balance or representative FPS acceptance.",
+    "production_before": {
+      "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/production-before.json",
+      "bytes": 703,
+      "sha256": "d11e4f7c34188ba5d03cf5b2d86d82f3599a6853bec72c73b81f7d4b2186979f"
+    },
+    "production_before_equals_after": true,
+    "production_save_identities": [
+      {
+        "directory": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames",
+        "exists": true,
+        "files": [
+          {
+            "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Account_v1.sav",
+            "bytes": 2233,
+            "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+          },
+          {
+            "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Suspend_v1.sav",
+            "bytes": 1989,
+            "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+          }
+        ]
+      },
+      {
+        "directory": "C:\\Users\\j6sis\\AppData\\Local\\SpaceSurvival\\Saved\\SaveGames",
+        "exists": false,
+        "files": []
+      }
+    ],
+    "isolated_save_slots": 0,
+    "screenshots": [
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Approach.png",
+        "bytes": 4144092,
+        "sha256": "547b3daff2b83770a75b76d666d619728fdab196611c4f5df5eae62520dc36bf",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 1.0058189630508423,
+        "request_engine_frame": 13911
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Climax.png",
+        "bytes": 4215034,
+        "sha256": "d9bcfb7edf634305fbd39c480280523a2c03e6b5df50745523dfc93b2f6ac9a6",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 5.002729892730713,
+        "request_engine_frame": 9629
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Docking.png",
+        "bytes": 4446956,
+        "sha256": "a7b2006ba6f3011191999be7a713899d670475a696a643614abc4e5054022aa9",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 1.0000249147415161,
+        "request_engine_frame": 14656
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Exit0.png",
+        "bytes": 4518289,
+        "sha256": "61ccc99af0dbd54669f52e2d52a4565b483cac67bc62009ececb7c2cfde6d12e",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 0.008334200829267502,
+        "request_engine_frame": 14861
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Exit1.png",
+        "bytes": 4342591,
+        "sha256": "d0fe554ad5c5799a4698bac78424d1b24889330ae5192a43e8054f1364f59ee3",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 0.3616516888141632,
+        "request_engine_frame": 14862
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Exit2.png",
+        "bytes": 4252897,
+        "sha256": "f024cec932b97992a1c3a4bf588eaf20ec2eeabcd1c1744dda1f3809c2600595",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 0.6707789301872253,
+        "request_engine_frame": 14863
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Exit3.png",
+        "bytes": 4234666,
+        "sha256": "bd39989cfc61536d768ff8d2b6069305f2e48b1efa2969519305b3097ee4ad3e",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 0.9762641191482544,
+        "request_engine_frame": 14864
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Exit4.png",
+        "bytes": 4411305,
+        "sha256": "f63690dfc4a8bb616ac52b3b60a84bffeccf5f56f0411e6e0fd0d96d056bbf9f",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 1.282423973083496,
+        "request_engine_frame": 14865
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Exit5.png",
+        "bytes": 4508273,
+        "sha256": "fe9b3d99a78a9486cf6baa929eddf7f0e2811cd189144f905bd9d84e41f2a374",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 1.650800347328186,
+        "request_engine_frame": 14873
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Exit6.png",
+        "bytes": 4659664,
+        "sha256": "465c2e55ff585dae458fbaad70b3cb5c326191e89d5b0f56f138142a87337fb2",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 2.356203317642212,
+        "request_engine_frame": 14921
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/Flight.png",
+        "bytes": 3009609,
+        "sha256": "c659a4280edef601e8b1f16e7e798f1e1de5750fdbbde9da02f02960acc089c4",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 15.0004301071167,
+        "request_engine_frame": 2036
+      },
+      {
+        "path": "Artifacts/EndgameSoak/c4b0915081334fa7b382d220e10b9989/StationIdle.png",
+        "bytes": 5309210,
+        "sha256": "8c19320251136051b1d8cde5eda872ba7d134a9e4334040a297b14e52276cd41",
+        "dimensions": [
+          2560,
+          1440
+        ],
+        "request_stage_seconds": 2.0047664642333984,
+        "request_engine_frame": 15123
+      }
+    ],
+    "independently_viewed": [
+      "Flight.png",
+      "Climax.png",
+      "Approach.png",
+      "StationIdle.png"
+    ],
+    "independent_image_observations": [
+      "Flight and Climax show a detailed Milky Way band and darker background. Flight is substantially occluded by a nearby asteroid and the ship is dark; this is not a readability pass.",
+      "Climax retains visible flight meters and weapon label, with enemy markers ahead. Approach shows the selected station shell and marked entrance.",
+      "StationIdle shows STATION01, the character on the textured deck, the ship in its bay and Launch Control. Boost, brake heat, weapon and flight-radar elements are absent on foot; hull and shield remain.",
+      "Primitive service console, strong ship shadow/faceting and the existing pilot/tail appearance remain visible. No owner art acceptance is inferred."
+    ],
+    "lead_live_observations": "Lead reported seeing native flight, late combat and stationary Station1, including the darker sharp sky, station header, hidden flight-only HUD and present ship/floor. The independent reviewer inspected saved PNGs only.",
+    "sky_texture_readback": {
+      "current_and_max_dimensions": [
+        8192,
+        4096
+      ],
+      "current_and_max_reported_KB": 43712,
+      "format": "PF_BC7",
+      "mips": 14,
+      "utc": "2026-09-13T13:49:08.726Z",
+      "exact_line": "[2026.09.13-13.49.08:726][123]8192x4096 (43712 KB, 0), 8192x4096 (43712 KB), PF_BC7, TEXTUREGROUP_Skybox, /Game/SpaceSurvival/Textures/T_MilkyWay2020.T_MilkyWay2020, YES, NO, NO, 1, 14, NO"
+    },
+    "hero_texture_readback": "[2026.09.13-13.49.08:726][123]2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0, YES, NO, NO, 2, 12, NO",
+    "residency_limit": "This is an actual StationIdle ListTextures observation, not an assertion that every earlier frame was fully resident. Runtime selected the new material before creating the MID.",
+    "suitable_for_performance_finding": false,
+    "motion_and_performance_limit": "PNG requests are fulfilled after the recorded request. Screenshot readbacks and ListTextures perturb timing; the sparse exit samples do not establish continuous animation quality. No FPS result is claimed."
+  },
+  "remaining_limits": [
+    "Uncooked Editor capture only. Package11 predates station shell and NASA/HUD integration; no new packaged or clean-PC proof.",
+    "Seeded TierV ship with base durability50000 and scripted controller APIs, not physical keyboard/controller input or naturally earned progression.",
+    "This reaches Station1 only; no station purchase, save, launch-to-Wave6, full ten-wave natural run, listening or urge-to-retry acceptance.",
+    "No new engine process, build/test execution, source or asset mutation was performed by this audit. Current user-requested further hero/art work remains outside this record."
+  ]
+}

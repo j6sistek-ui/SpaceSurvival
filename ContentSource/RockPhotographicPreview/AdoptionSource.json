@@ -1,0 +1,14 @@
+{
+  "scope": "Three existing asteroid size meshes, material slot0 only",
+  "meshes": {
+    "SM_AsteroidSmall": {
+      "obj_sha256": "c5933bac0466b6b30ffa28390c1ab52e1d91973709babb1f22f43538d0b15360"
+    },
+    "SM_AsteroidMedium": {
+      "obj_sha256": "8671b91c7cc019c2cf66b409c2ded959b3e9ebee9ceb947d4eebc8b8e525f032"
+    },
+    "SM_AsteroidMassive": {
+      "obj_sha256": "73bcc6e68bd03d54ccae1b1ef0cbf1b76cffacdb4c0dc74094ef190d4ea251dc"
+    }
+  }
+}

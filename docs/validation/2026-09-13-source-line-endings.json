@@ -1,0 +1,572 @@
+{
+  "status": "SOURCE_SERIALIZATION_FIX_VERIFIED_PENDING_NEW_CANDIDATE_COMMIT_EXPORT_AND_CI",
+  "project_status": "PARTIAL",
+  "recorded_utc": "2026-09-13T11:59:19.509814+00:00",
+  "scope": "Exact source identity across Git LF and Windows CRLF serialization; no source geometry, binary assets, runtime rules or historical receipts rewritten by this fix.",
+  "worktree_base_commit": "2e4ad847ec4424ca11f50f7e60d96776921e4793",
+  "implementation_is_uncommitted_at_this_checkpoint": true,
+  "comparison_rule": {
+    "always_allowed": "Exact raw SHA-256.",
+    "only_alternate": "The complete opposite LF/CRLF representation of valid UTF-8 .obj, .mtl or .json, with uniform newlines and no NUL.",
+    "remain_raw_only": [
+      "Mixed newlines",
+      "Bare CR",
+      "Invalid UTF-8",
+      "NUL-containing data",
+      "GLB",
+      "UASSET",
+      "UMAP",
+      "WAV",
+      "PNG",
+      "BLEND",
+      "Python",
+      "HLSL",
+      "other suffixes"
+    ],
+    "never_normalized": [
+      "Geometry values",
+      "Material values",
+      "JSON values/order/spacing",
+      "Final newline presence",
+      "BOM presence",
+      "Binary data"
+    ],
+    "metadata_policy": "Accept verified aliases without relabeling existing execution hashes; use reviewed verified OBJ identity for existing field composite keys. New metadata may still record actual raw execution bytes."
+  },
+  "pre_fix": {
+    "failure_receipt": {
+      "path": ".agent/local/SourceDigestBefore/failure.json",
+      "bytes": 1115,
+      "sha256": "7d4b8049f0a35a897a23943b7c72a2adb12662ba1ab68217ab417c217c9db831"
+    },
+    "retained_original_validator": {
+      "path": ".agent/local/SourceDigestBefore/ValidateSources.py",
+      "bytes": 8567,
+      "sha256": "6021cfe98f5fb08cf60f1186e88a6eb77d7d0ed09b93900e301f8b2e69a9e7bf",
+      "lf_sha256": "6021cfe98f5fb08cf60f1186e88a6eb77d7d0ed09b93900e301f8b2e69a9e7bf"
+    },
+    "observed_failure": {
+      "status": "REPRODUCED_PRE_FIX_VALIDATE_SOURCES_FAILURE_ON_REAL_GIT_ARCHIVE",
+      "recorded_utc": "2026-09-13T11:36:12.626836+00:00",
+      "commit": "2e4ad847ec4424ca11f50f7e60d96776921e4793",
+      "archive_command": [
+        "git",
+        "archive",
+        "--format=tar",
+        "2e4ad847ec4424ca11f50f7e60d96776921e4793",
+        "--",
+        "ContentSource/Meshes"
+      ],
+      "archive_sha256": "3f810187665b89763c1509ead008ca4ff34cca0a6871ded4aea00fbe5fc5eb53",
+      "validator_raw_sha256": "6021cfe98f5fb08cf60f1186e88a6eb77d7d0ed09b93900e301f8b2e69a9e7bf",
+      "failure": "<fresh Git export>\\ContentSource\\Meshes\\SM_AcornShip.obj",
+      "first_mesh": "SM_AcornShip",
+      "manifest_expected_sha256": "0a2e57f9845d992bfb67a3055f90fbb3db5c7ef9651a3ed476e6b9dc647ad008",
+      "git_export_actual_sha256": "2347c3c6a2c4fc7c7543bcb41ec37f883c3ae609fddc93863384b6391574294b",
+      "git_export_crlf_pairs": 0,
+      "source_geometry_was_not_modified": true,
+      "scope": "Actual current portable validate() called against temporary exact Git archive bytes; failure occurs at its first manifest hash assertion before any write. No engine or owner assets touched."
+    }
+  },
+  "unit_tests": {
+    "command": [
+      "python",
+      "Tests/TestSourceDigests.py"
+    ],
+    "runtime": "Existing installed Unreal Engine bundled Python; no host installation.",
+    "exit_code": 0,
+    "tests": 13,
+    "elapsed_seconds": 0.133,
+    "log": {
+      "path": ".agent/local/SourceDigestUnitFinal.log",
+      "bytes": 117,
+      "sha256": "30624c9b8f6697ca4c2cff05086bf23e40bdea77eb8fa093becf2c8030c53829"
+    },
+    "coverage": [
+      "Both uniform text representations in both directions",
+      "Raw binary and nonallowlisted source identities",
+      "Geometry/material/JSON mutation rejection",
+      "Whitespace/key ordering/final newline/BOM preservation",
+      "Malformed hash/UTF-8/NUL/mixed/bare-CR rejection",
+      "No comparison writes input bytes",
+      "Required committed Swift/V3 author hook report absence, with historical and comment-only exemptions"
+    ]
+  },
+  "fresh_git_export": {
+    "command": [
+      "python",
+      "Scripts/TestFreshCheckout.py",
+      "--output",
+      ".agent/local/SourceDigestFreshFinal.json"
+    ],
+    "exit_code": 0,
+    "receipt_file": {
+      "path": ".agent/local/SourceDigestFreshFinal.json",
+      "bytes": 11099,
+      "sha256": "d8620ce824bd9914a3bd9ee779054cb33f6e04a8efdb7e6077403cc2fd7998e7"
+    },
+    "raw_log": {
+      "path": ".agent/local/SourceDigestFreshFinal.log",
+      "bytes": 277,
+      "sha256": "14612e1bac31e9a4905534eeae050a9b70ac3cbe4902a3c9d3334466f96fe973"
+    },
+    "record": {
+      "status": "FRESH_GIT_EXPORTED_SOURCE_FORMATS_AND_REVIEWED_REFERENCES_PASS_NOT_UNREAL",
+      "recorded_utc": "2026-09-13T11:50:41.514497+00:00",
+      "source_commit": "2e4ad847ec4424ca11f50f7e60d96776921e4793",
+      "archive_command": [
+        "git",
+        "archive",
+        "--format=tar",
+        "2e4ad847ec4424ca11f50f7e60d96776921e4793",
+        "--",
+        "ContentSource",
+        "Content",
+        "model-rigged.glb"
+      ],
+      "archive_sha256": "d41d29953ca066a1569229133ed3ec445704915b39f735f103bd08a22585d489",
+      "archive_bytes": 767057920,
+      "exported_files": 507,
+      "exported_bytes": 766641011,
+      "source_manifest_sha256": "1bc97ccca3f593a089a5f2766db4c91845f525272b6b6c4a62949775ac6f2208",
+      "implementation_files": {
+        "Scripts/TestFreshCheckout.py": {
+          "bytes": 7330,
+          "sha256": "76bcc8b71eb1d6c8b76c0f60dd5ed5052f66e11be93a58a075e120a2a123008f"
+        },
+        "Scripts/SourceDigests.py": {
+          "bytes": 1536,
+          "sha256": "d8f16d950c6ba75ad28bad22122f635c70deb47ee26ef68413704d9cad72d4be"
+        },
+        "ContentSource/ValidateSources.py": {
+          "bytes": 12406,
+          "sha256": "665f8d49c25d25ccc7bf44bde0357d61ce260f7cc5b0bdea1a2a841fd0b2d2c6"
+        }
+      },
+      "committed_author_pipeline_sha256": "38c09943c77afab4572f80edc852e1e2fde28b3f6a4c07f98cc59da620860688",
+      "required_candidate_reports": [],
+      "first_git_mesh": {
+        "bytes": 569500,
+        "sha256": "2347c3c6a2c4fc7c7543bcb41ec37f883c3ae609fddc93863384b6391574294b"
+      },
+      "first_git_mesh_has_lf_and_no_cr": true,
+      "mesh_count": 26,
+      "audio_count": 16,
+      "preserved_hero_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+      "reviewed_source_references": {
+        "checked": [
+          {
+            "path": "model-rigged.glb",
+            "reviewed_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+            "actual_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+          },
+          {
+            "path": "ContentSource/Animation/Pilot.glb",
+            "reviewed_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+            "actual_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976"
+          },
+          {
+            "path": "ContentSource/Animation/PilotMesh.glb",
+            "reviewed_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665",
+            "actual_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665"
+          },
+          {
+            "path": "ContentSource/Meshes/SM_AcornShip.obj",
+            "reviewed_sha256": "0a2e57f9845d992bfb67a3055f90fbb3db5c7ef9651a3ed476e6b9dc647ad008",
+            "actual_sha256": "2347c3c6a2c4fc7c7543bcb41ec37f883c3ae609fddc93863384b6391574294b"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.blend",
+            "reviewed_sha256": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c",
+            "actual_sha256": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.glb",
+            "reviewed_sha256": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e",
+            "actual_sha256": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.mtl",
+            "reviewed_sha256": "374485c5af6cd34ea7ff14dfa098e4438eb7f57603b270cd065ef7bd0637d732",
+            "actual_sha256": "b014d3a61143e0bf0e68e7b0fad35d695bcf3f9e37b4935166bff2d61552445d"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/AcornShipCandidate.obj",
+            "reviewed_sha256": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+            "actual_sha256": "9ad907799e9d777c817b8f9f169eb0799776dbdce0ada185b9720afd82039d9f"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/Chase.png",
+            "reviewed_sha256": "e6ca67d4cff1fe7c52eb239afcd2cda44632f4fb589c4300bfa2482bf3fead4f",
+            "actual_sha256": "e6ca67d4cff1fe7c52eb239afcd2cda44632f4fb589c4300bfa2482bf3fead4f"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/Cockpit.png",
+            "reviewed_sha256": "c24be8cc9a112d55bf588c85c942c500d603d1aef56b753ffcd19a0c2b3be223",
+            "actual_sha256": "c24be8cc9a112d55bf588c85c942c500d603d1aef56b753ffcd19a0c2b3be223"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/EngineDetail.png",
+            "reviewed_sha256": "67852b07c0d8de498bcf4bc61e7be66fb668bdb57188d8eee5d77ae1ff950112",
+            "actual_sha256": "67852b07c0d8de498bcf4bc61e7be66fb668bdb57188d8eee5d77ae1ff950112"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/Hero.png",
+            "reviewed_sha256": "93a64097ec30f781deea864ab99c42a5c376685621553bf7c70355ebf835c71a",
+            "actual_sha256": "93a64097ec30f781deea864ab99c42a5c376685621553bf7c70355ebf835c71a"
+          },
+          {
+            "path": "ContentSource/AcornShipCandidate/Side.png",
+            "reviewed_sha256": "08f87215ede12c3df58164ce04334544c06323dc935c6ba4613efd99bf3b5472",
+            "actual_sha256": "08f87215ede12c3df58164ce04334544c06323dc935c6ba4613efd99bf3b5472"
+          },
+          {
+            "path": "ContentSource/Meshes/SM_Pursuer.obj",
+            "reviewed_sha256": "fbde4d3b6b09352439692602ea0e706cae09c1d200256f851baa5d0eaacbcb31",
+            "actual_sha256": "4769934d6a4afbbeb08ccba4225b5892552eb298b805e9f9baf2bdd82b5e7b2a"
+          },
+          {
+            "path": "ContentSource/Meshes/SM_Flanker.obj",
+            "reviewed_sha256": "895f812e9cbbf836f258cdedf65f87ecdc848282913b6d964fa4ca0102c2c24e",
+            "actual_sha256": "df6c6756ed0d48fb90e0954b82d30e18af9af06ba647117873ae328c26179999"
+          },
+          {
+            "path": "Content/SpaceSurvival/Meshes/SM_Pursuer.uasset",
+            "reviewed_sha256": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18",
+            "actual_sha256": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18"
+          },
+          {
+            "path": "Content/SpaceSurvival/Meshes/SM_Flanker.uasset",
+            "reviewed_sha256": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5",
+            "actual_sha256": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5"
+          },
+          {
+            "path": "ContentSource/GenerateGeometry.py",
+            "reviewed_sha256": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00",
+            "actual_sha256": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00"
+          },
+          {
+            "path": "model-rigged.glb",
+            "reviewed_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+            "actual_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+          },
+          {
+            "path": "ContentSource/EnemyCandidates/Pursuer.obj",
+            "reviewed_sha256": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d",
+            "actual_sha256": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d"
+          },
+          {
+            "path": "ContentSource/EnemyCandidates/Pursuer.glb",
+            "reviewed_sha256": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc",
+            "actual_sha256": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc"
+          },
+          {
+            "path": "ContentSource/EnemyCandidates/Flanker.obj",
+            "reviewed_sha256": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba",
+            "actual_sha256": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba"
+          },
+          {
+            "path": "ContentSource/EnemyCandidates/Flanker.glb",
+            "reviewed_sha256": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682",
+            "actual_sha256": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682"
+          },
+          {
+            "path": "ContentSource/Animation/TailCandidateV2.glb",
+            "reviewed_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+            "actual_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345"
+          },
+          {
+            "path": "model-rigged.glb",
+            "reviewed_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+            "actual_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+          },
+          {
+            "path": "ContentSource/Animation/TailCandidate.glb",
+            "reviewed_sha256": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00",
+            "actual_sha256": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00"
+          },
+          {
+            "path": "ContentSource/Animation/Pilot.glb",
+            "reviewed_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+            "actual_sha256": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976"
+          },
+          {
+            "path": "ContentSource/Animation/PilotMesh.glb",
+            "reviewed_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665",
+            "actual_sha256": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665"
+          },
+          {
+            "path": "ContentSource/TailCandidateV2Preview/RaySelection.json",
+            "reviewed_sha256": "0d0ef01887b5b5bb28f2c6dc46383604b2f04f47b2e1fa19bc4c2581db506abd",
+            "actual_sha256": "d2828898ad0dc4454aba9cb2ef0acc76de7cbd22346ba48eee4cdd12161ee450"
+          },
+          {
+            "path": "ContentSource/TailCandidateV2Preview/RaySelectionResidual.json",
+            "reviewed_sha256": "94ecbf8e2fa940f677f31de94907c698536b578c107fed859a458882cd26f6da",
+            "actual_sha256": "ffd69a5ee206e8ed9a1bce328cf8826e5b4d59653f2e753b14c41355e017e93c"
+          },
+          {
+            "path": "ContentSource/Meshes/SM_AsteroidSmall.obj",
+            "reviewed_sha256": "c5933bac0466b6b30ffa28390c1ab52e1d91973709babb1f22f43538d0b15360",
+            "actual_sha256": "f283420ebcf9b733b77e36c0d7e2a13a14219e516c7c122a8bb34c6d3ba07825"
+          },
+          {
+            "path": "ContentSource/Meshes/SM_AsteroidMedium.obj",
+            "reviewed_sha256": "8671b91c7cc019c2cf66b409c2ded959b3e9ebee9ceb947d4eebc8b8e525f032",
+            "actual_sha256": "a4a0823dcfca45a10e5791c86576521b28b69e2be64d2f18b08d4ea1fc3deebf"
+          },
+          {
+            "path": "ContentSource/Meshes/SM_AsteroidMassive.obj",
+            "reviewed_sha256": "73bcc6e68bd03d54ccae1b1ef0cbf1b76cffacdb4c0dc74094ef190d4ea251dc",
+            "actual_sha256": "3df1743993ab1229f8765fe01cbd4740af079cb1fcf03e4c2cc32ddf54bf8331"
+          }
+        ],
+        "optional_candidates_absent_from_tree": [
+          "ContentSource/SwiftCandidate/Report.json",
+          "ContentSource/FieldCandidates/V3/SourceReport.json"
+        ],
+        "limits": "Source references only. Does not replace Unreal geometry, metadata, roster, graph or native validation."
+      },
+      "all_exported_bytes_unchanged": true,
+      "limits": [
+        "Current validator/helper implementation is identified independently of the exported asset commit.",
+        "This runs portable source format/reference checks; it does not run Unreal authoring, metadata, geometry, shader, native rendering or gameplay tests.",
+        "No source regeneration, working-tree asset normalization or historical receipt rewrite."
+      ]
+    }
+  },
+  "current_worktree_validation": {
+    "previous_observation": "Portable current-worktree source checks passed 26 meshes, 16 WAVs and 83 reviewed references before the final hook-only test harness edit. That tool output was not separately retained as a raw log.",
+    "engine_content_log": {
+      "path": ".agent/local/VisualIntegrationContent2.log",
+      "bytes": 294128,
+      "sha256": "b485dac917229f7f35e926af31c65efe006c3af2e9e29b40c9f92d3de701f2f2"
+    },
+    "engine_validate_log": {
+      "path": ".agent/local/VisualIntegrationValidate2.log",
+      "bytes": 272723,
+      "sha256": "3e33a750874227ce8e7b6f6089cb749308bbf58bd5e0d754db424819e45ef3fd"
+    },
+    "persisted_receipt": {
+      "path": "Saved/Validation/PersistedContent.json",
+      "bytes": 12422,
+      "sha256": "9424615c0d3d5833cfd25464b504dc82fe315399e5c8f3fae57265594b27e448"
+    },
+    "persisted_status": "PERSISTED_ASSETS_VALIDATED_NOT_GAMEPLAY",
+    "persisted_errors": [],
+    "validate_success_log_time_utc": "2026-09-13T11:48:01.582Z",
+    "validate_normal_exit_utc": "2026-09-13T11:48:03.335Z",
+    "idempotence_receipt": {
+      "path": ".agent/local/VisualIntegrationContentIdempotence.json",
+      "bytes": 35693,
+      "sha256": "146f29cc16bb7d3a275d87f9430901defa992e9b0c3434f073eb90c1c535d6fb"
+    },
+    "content_files_identical": 110,
+    "author_scripts_stable_for_final_engine_run": true,
+    "author_script_hashes_rechecked_against_idempotence_record": [
+      "Scripts/AuthorContent.py",
+      "Scripts/ValidateContent.py",
+      "Scripts/SourceDigests.py",
+      "Scripts/AuthorAcornShip.py",
+      "Scripts/ValidateAcornShip.py",
+      "Scripts/AuthorEnemyCandidates.py",
+      "Scripts/ValidateEnemyCandidates.py",
+      "Scripts/AuthorSwiftCandidate.py",
+      "Scripts/ValidateSwiftCandidate.py",
+      "Scripts/AuthorTailRepair.py",
+      "Scripts/ValidateTailRepair.py",
+      "Scripts/AuthorRockPhotographic.py",
+      "Scripts/ValidateRockPhotographic.py",
+      "Scripts/AuthorGripFit.py",
+      "Scripts/AuthorPilotGripFit.py",
+      "Scripts/ValidatePilotGripFit.py",
+      "Scripts/AuthorFieldCandidates.py",
+      "Scripts/AuthorFieldCandidatesV2.py",
+      "Scripts/AuthorFieldCandidatesV3.py",
+      "Scripts/ValidateFieldCandidatesV3.py"
+    ],
+    "limit": "Existing Windows worktree Unreal authoring and fresh persisted-asset validation; not Unreal execution from the temporary Git export."
+  },
+  "resolved_validation_failure": {
+    "log": {
+      "path": ".agent/local/VisualIntegrationValidate.log",
+      "bytes": 261668,
+      "sha256": "d1f8f57cb4a11ebe904f7eda07a6c6e5411eacec9455ca59718414fef6d3e527"
+    },
+    "failure": "First fresh asset validation failed the Field V3 compiled shader-stat guard under NullRHI. The lead changed Validate to real RHI and repeated Content plus validation; no missing-stat skip was accepted.",
+    "final_repeat_passed": true,
+    "source_guard_failure_in_that_first_engine_validation": false
+  },
+  "execution_boundaries": [
+    "All meaningful author/helper/validator comparison edits preceded the first 11:45 Content/Validate execution.",
+    "AuthorRockPhotographic.py had one extra terminal blank line removed at 11:45:37.5775182Z, after the first Content and Validate processes completed. Final Content2 and Validate2 ran this final file and all author script hashes remained stable.",
+    "TestFreshCheckout.py and Tests/TestSourceDigests.py alone gained the committed candidate-report gate after Content2/Validate2. They are not imported by the engine authoring/validation path; the final 13-test and Git-export results bind their new hashes."
+  ],
+  "source_files": [
+    {
+      "path": "Scripts/AuthorContent.py",
+      "bytes": 32855,
+      "sha256": "e06c7c0211c277667adcb0ba8c625cf64f96fd49fc368dbfcaa726b03b7cc169",
+      "lf_sha256": "e06c7c0211c277667adcb0ba8c625cf64f96fd49fc368dbfcaa726b03b7cc169"
+    },
+    {
+      "path": "Scripts/ValidateContent.py",
+      "bytes": 14370,
+      "sha256": "a9f400e66a7615fe6e7a02c9deb5fd65871a25f8329a48485c4d735058ceccf0",
+      "lf_sha256": "a9f400e66a7615fe6e7a02c9deb5fd65871a25f8329a48485c4d735058ceccf0"
+    },
+    {
+      "path": "Scripts/SourceDigests.py",
+      "bytes": 1536,
+      "sha256": "d8f16d950c6ba75ad28bad22122f635c70deb47ee26ef68413704d9cad72d4be",
+      "lf_sha256": "d8f16d950c6ba75ad28bad22122f635c70deb47ee26ef68413704d9cad72d4be"
+    },
+    {
+      "path": "Scripts/AuthorAcornShip.py",
+      "bytes": 14091,
+      "sha256": "b3d7615e540d9c67851e1b10d89fc87c3e7ff280a54a2e24510d77e5315a2181",
+      "lf_sha256": "b3d7615e540d9c67851e1b10d89fc87c3e7ff280a54a2e24510d77e5315a2181"
+    },
+    {
+      "path": "Scripts/ValidateAcornShip.py",
+      "bytes": 7271,
+      "sha256": "2bfd2ba7fd84a0ec21db1a2906190774ba2bb230ace2b53849d0c4245ce114c7",
+      "lf_sha256": "2bfd2ba7fd84a0ec21db1a2906190774ba2bb230ace2b53849d0c4245ce114c7"
+    },
+    {
+      "path": "Scripts/AuthorEnemyCandidates.py",
+      "bytes": 12676,
+      "sha256": "5558c5f5d98db97677ab56215d1f414f57b38c6d78c0b6f51491de964463b4ee",
+      "lf_sha256": "5558c5f5d98db97677ab56215d1f414f57b38c6d78c0b6f51491de964463b4ee"
+    },
+    {
+      "path": "Scripts/ValidateEnemyCandidates.py",
+      "bytes": 15311,
+      "sha256": "87da1e73ee73c105c22fe6d65cc180fa4672e8a6f2ba30e045fd19c17d2475ec",
+      "lf_sha256": "87da1e73ee73c105c22fe6d65cc180fa4672e8a6f2ba30e045fd19c17d2475ec"
+    },
+    {
+      "path": "Scripts/AuthorSwiftCandidate.py",
+      "bytes": 10440,
+      "sha256": "3779bf0b756872531322cdf29bb6f3f4ca2bf496a20656e4beb454d5b0114601",
+      "lf_sha256": "3779bf0b756872531322cdf29bb6f3f4ca2bf496a20656e4beb454d5b0114601"
+    },
+    {
+      "path": "Scripts/ValidateSwiftCandidate.py",
+      "bytes": 16653,
+      "sha256": "123fd17f30e537f652a63ad566c64884308b7ba4be357071982de4f1e37b6cb1",
+      "lf_sha256": "123fd17f30e537f652a63ad566c64884308b7ba4be357071982de4f1e37b6cb1"
+    },
+    {
+      "path": "Scripts/AuthorTailRepair.py",
+      "bytes": 5483,
+      "sha256": "d1c719f4b35a895ae23a8bd5a5b22d81d84dd534e66a71c7c800a8c53819cffb",
+      "lf_sha256": "d1c719f4b35a895ae23a8bd5a5b22d81d84dd534e66a71c7c800a8c53819cffb"
+    },
+    {
+      "path": "Scripts/ValidateTailRepair.py",
+      "bytes": 11407,
+      "sha256": "7abca26076deea4babdb64655a9dc105b6e2414362fc7d07e21a48754d5af16e",
+      "lf_sha256": "b0a66af4a4c49c7da259809f28f3b1dbcbff27db52cc972e862bb7cc7b28bb66"
+    },
+    {
+      "path": "Scripts/AuthorRockPhotographic.py",
+      "bytes": 17842,
+      "sha256": "ae7d14c2269cc1f38eb7052da50f5b64c8fcca2a11678ff27b05e043eceb0e44",
+      "lf_sha256": "ae7d14c2269cc1f38eb7052da50f5b64c8fcca2a11678ff27b05e043eceb0e44"
+    },
+    {
+      "path": "Scripts/ValidateRockPhotographic.py",
+      "bytes": 13147,
+      "sha256": "6509a106457f2dc11ebe937e89ef19196cf52233008d9ae8f0459a4fbc9e937b",
+      "lf_sha256": "6509a106457f2dc11ebe937e89ef19196cf52233008d9ae8f0459a4fbc9e937b"
+    },
+    {
+      "path": "Scripts/AuthorGripFit.py",
+      "bytes": 19646,
+      "sha256": "30fcbe74ee780d607153004a66676d11b0b9ed8359f2f4e2870f9f4e42877380",
+      "lf_sha256": "30fcbe74ee780d607153004a66676d11b0b9ed8359f2f4e2870f9f4e42877380"
+    },
+    {
+      "path": "Scripts/AuthorPilotGripFit.py",
+      "bytes": 7321,
+      "sha256": "d5cf0eb9fb2f6fc1184e1c7b6cb1bbde8fb33f90256487269dc2362d2fc819fb",
+      "lf_sha256": "d5cf0eb9fb2f6fc1184e1c7b6cb1bbde8fb33f90256487269dc2362d2fc819fb"
+    },
+    {
+      "path": "Scripts/ValidatePilotGripFit.py",
+      "bytes": 1727,
+      "sha256": "930412309071c10a66e8c78a2bebffc95ccf40a12513fa9be7fcc660545b0214",
+      "lf_sha256": "930412309071c10a66e8c78a2bebffc95ccf40a12513fa9be7fcc660545b0214"
+    },
+    {
+      "path": "Scripts/AuthorFieldCandidates.py",
+      "bytes": 10958,
+      "sha256": "c021983beb9e7f00a393f938985f7fcced54d358187837bba784248623644d84",
+      "lf_sha256": "c021983beb9e7f00a393f938985f7fcced54d358187837bba784248623644d84"
+    },
+    {
+      "path": "Scripts/AuthorFieldCandidatesV2.py",
+      "bytes": 12088,
+      "sha256": "1e1fc55b44587ac8b60368b0f813ae0abe615c720b88d7b0d79cb7f44c0064bf",
+      "lf_sha256": "1e1fc55b44587ac8b60368b0f813ae0abe615c720b88d7b0d79cb7f44c0064bf"
+    },
+    {
+      "path": "Scripts/AuthorFieldCandidatesV3.py",
+      "bytes": 14482,
+      "sha256": "e8bbb2c383e31d23e481a41f68979cdb87639efbb31e8da046997ef3dee554c4",
+      "lf_sha256": "e8bbb2c383e31d23e481a41f68979cdb87639efbb31e8da046997ef3dee554c4"
+    },
+    {
+      "path": "Scripts/ValidateFieldCandidatesV3.py",
+      "bytes": 11181,
+      "sha256": "80b456fe1c66b10938414bac0ab08beadcd79d60d3f1c90a206a8affd12ca8cd",
+      "lf_sha256": "80b456fe1c66b10938414bac0ab08beadcd79d60d3f1c90a206a8affd12ca8cd"
+    },
+    {
+      "path": "ContentSource/ValidateSources.py",
+      "bytes": 12406,
+      "sha256": "665f8d49c25d25ccc7bf44bde0357d61ce260f7cc5b0bdea1a2a841fd0b2d2c6",
+      "lf_sha256": "665f8d49c25d25ccc7bf44bde0357d61ce260f7cc5b0bdea1a2a841fd0b2d2c6"
+    },
+    {
+      "path": "Tests/TestSourceDigests.py",
+      "bytes": 5254,
+      "sha256": "5d2d028f571cdb9be3193dbc2b0be730e82f5e5ad20047c02e2fdf0754547366",
+      "lf_sha256": "5d2d028f571cdb9be3193dbc2b0be730e82f5e5ad20047c02e2fdf0754547366"
+    },
+    {
+      "path": "Scripts/TestFreshCheckout.py",
+      "bytes": 7330,
+      "sha256": "76bcc8b71eb1d6c8b76c0f60dd5ed5052f66e11be93a58a075e120a2a123008f",
+      "lf_sha256": "76bcc8b71eb1d6c8b76c0f60dd5ed5052f66e11be93a58a075e120a2a123008f"
+    },
+    {
+      "path": ".github/workflows/core.yml",
+      "bytes": 1746,
+      "sha256": "58ba95bc88b85bc16135c5f4b0f7064faef5162b8821ae3ee8102de5559a4082",
+      "lf_sha256": "58ba95bc88b85bc16135c5f4b0f7064faef5162b8821ae3ee8102de5559a4082"
+    }
+  ],
+  "ci": {
+    "workflow": ".github/workflows/core.yml",
+    "added_steps": [
+      "python3 Tests/TestSourceDigests.py",
+      "python3 Scripts/TestFreshCheckout.py"
+    ],
+    "remote_result": "PENDING; lead will commit and push the new implementation/candidate sources.",
+    "new_commit_gate": "Read the exact same commit's AuthorContent.py with AST. When Swift or Field V3 author hooks are present, their candidate reports must also exist in that exact export."
+  },
+  "independent_review": {
+    "reviewer": "integration_review",
+    "scope": "Read-only shared comparison, authored metadata guards, export extraction/identity and CI source pass review.",
+    "result": "No concrete blocker found; no engine launch or test run by reviewer."
+  },
+  "limits": [
+    "The executed fresh export is commit 2e4ad847ec4424ca11f50f7e60d96776921e4793, which does not contain the pending Swift/V3 author hooks or their candidate reports. Current script implementation hashes are recorded separately. The new candidate commit must run the same export gate.",
+    "No full Unreal authoring, compiled material or native gameplay validation from a fresh checkout has been performed by this task.",
+    "The portable validator retains source geometry/reference checks but does not replace dedicated Unreal mesh normals/UV/bounds/material/collision/roster tests.",
+    "Historical standalone candidate generators and CheckSource/Validate scripts retain their recorded execution identities. Historical Field V1 runtime-source pins can still require their original checkout; they are not the current main pipeline.",
+    "No new asset or game-quality acceptance, package, performance or human input/listening result is claimed by this receipt."
+  ]
+}

@@ -1,0 +1,297 @@
+{
+  "title": "PARTIAL — Package 13 Wave 10 scripted performance",
+  "status": "RENDERED_WAVE10_FIXTURE_AND_INDEPENDENT_CSV_AUDIT_PASS_NOT_REPRESENTATIVE_ACCEPTANCE",
+  "project_status": "PARTIAL",
+  "recorded_utc": "2026-09-13T15:29:00.864998+00:00",
+  "source_commit": "a628c7faa3d6c160ded22981bd3c230cb0cbf203",
+  "package_number": 13,
+  "package_receipt": {
+    "path": "docs/validation/2026-09-13-windows-gameplay-fairness-package.json",
+    "bytes": 44472,
+    "sha256": "d9dd380d4381eb6aa14540ca628c4c98678ea7ace5c6228c466e3f08500cceee"
+  },
+  "game_executable": {
+    "bytes": 332669952,
+    "sha256": "a07be4cf56e7c0c099d63953c566fe480a4a3bb144680f772b4a56f80eb73c21"
+  },
+  "binding": "The 169-file capture snapshot includes 43 Source files, 3 Config files, 120 Content files, 2 capture/analyzer scripts and the project. Raw hashes match the retained Package 13 audit, which compared the inputs with immutable commit a628c7faa3d6c160ded22981bd3c230cb0cbf203. Source preservation is recorded by the wrapper completion guard; the full before snapshot is retained. This receipt does not rebind any Package 12 measurements.",
+  "method": {
+    "independent_script": {
+      "path": ".agent/local/AuditFairnessPerformance.py",
+      "bytes": 13087,
+      "sha256": "0d54230151cda3943080cf2649917d422c6338460b5fbd70c247caca032424d7"
+    },
+    "parser": "Independent Python standard-library CSV parsing using the final EVENTS header. Both header rows and the metadata footer are excluded. Exact FrameTime, GPUTime, GameThreadTime, RenderThreadTime and RHIThreadTime counters are used.",
+    "percentiles": "Nearest rank sorted[ceil(p*n)-1]; median averages the middle pair. Threshold counts are strictly greater than 16.667/33.333/50 ms. Final rounded comparison tolerance is 1.1e-6.",
+    "recalculation": "All seven analyzer groups, foreground markers, kind counts, phase timings, caps and compound presence were recomputed from raw rows and matched. Neither the CSV nor retained analysis was modified.",
+    "settings": "Win64 Development, 2560x1440, DX12/SM6, all 11 scalability groups at 2, VSync off, 120 FPS cap, audio enabled. Intel i7-14700F and NVIDIA RTX 5080. MaxFrameTime 8.3333 ms is the requested budget, not measured frame time.",
+    "timing": "Normal actual engine frames and Actor DeltaSeconds. Fixture guards reject fixed timestep, fixed frame rate and effective time dilation other than 1. Existing timers, 40 s climax, threat caps, budgets, spatial admission and damage remain enabled.",
+    "processes": "Wrapper reports successful normal exit 0. Independent process read confirmed owned PID 106548 is absent. This audit launched no game or engine.",
+    "readback": "Capture flags and visualRequests show no in-game screenshot/readback; no PNGs or screenshot log markers exist. Startup before CSV recording is not measured."
+  },
+  "host_activity": {
+    "provenance": "Lead-reported operational context; no independent process-history instrumentation.",
+    "overlap": "No build, Blender or indexing overlapped capture. Owner Editor 66256 and ordinary desktop apps remained open; this was not a clean benchmark host.",
+    "window_activity": "Lead activated the window and used text state only; no screenshot was used during this capture."
+  },
+  "capture": {
+    "scenario": "Wave10",
+    "token": "755fd7116a074090bbfafb9c128128b4",
+    "started_utc": "2026-09-13T15:24:13.2242580Z",
+    "finished_utc": "2026-09-13T15:26:31.5184123Z",
+    "owned_process_id": 106548,
+    "process_exit": 0,
+    "owned_process_absent_on_independent_read": true,
+    "raw_evidence": [
+      {
+        "path": "Artifacts/EndgameSoak/755fd7116a074090bbfafb9c128128b4/.ss-endgame-soak",
+        "bytes": 34,
+        "sha256": "5d91b6aa368ae36edf127ed766f2fc2a2d6536984bf7c99f020ab854ab31f4b3"
+      },
+      {
+        "path": "Artifacts/EndgameSoak/755fd7116a074090bbfafb9c128128b4/Endgame.csv",
+        "bytes": 32397370,
+        "sha256": "0cfe349bd22dc736d21de637bb70200f67ea7901f41153e6f95a45dacd43d520"
+      },
+      {
+        "path": "Artifacts/EndgameSoak/755fd7116a074090bbfafb9c128128b4/fixture.json",
+        "bytes": 1738,
+        "sha256": "a2df1ef8d08e375f5da50788e9a1cd11d1bf5325c15db0d1a5608354adcea5ce"
+      },
+      {
+        "path": "Artifacts/EndgameSoak/755fd7116a074090bbfafb9c128128b4/performance.json",
+        "bytes": 57032,
+        "sha256": "bfd28eccf1edbd78301d1dafa629a7b7f4c5340d0d0c428bcc06d3cc34335a93"
+      },
+      {
+        "path": "Artifacts/EndgameSoak/755fd7116a074090bbfafb9c128128b4/production-before.json",
+        "bytes": 703,
+        "sha256": "d11e4f7c34188ba5d03cf5b2d86d82f3599a6853bec72c73b81f7d4b2186979f"
+      },
+      {
+        "path": "Artifacts/EndgameSoak/755fd7116a074090bbfafb9c128128b4/Rendered.log",
+        "bytes": 107062,
+        "sha256": "61cf658e80fb17256d2edd58d5eba005d101ce1a311c2699d5a65fd5fff1f989"
+      },
+      {
+        "path": "Artifacts/EndgameSoak/755fd7116a074090bbfafb9c128128b4/source-before.json",
+        "bytes": 38856,
+        "sha256": "a262c0a6cfadf8a91946095754e5e2b72f0ba9d9e066ead786200741f60db876"
+      },
+      {
+        "path": "Artifacts/EndgameSoak/755fd7116a074090bbfafb9c128128b4/result.json",
+        "bytes": 48512,
+        "sha256": "8cba03c376ff6303d68a7cd7a46e3c4d491d9965d4be0d3ca4e227783d59f52f"
+      }
+    ],
+    "independent_recalculation": {
+      "path": ".agent/local/Package13-Wave10-Independent.json",
+      "bytes": 48828,
+      "sha256": "f83f1fff99e524be0c7372e1327900e807989f6fcd515250538edbd539c1c258"
+    },
+    "raw_frames": 15619,
+    "fixture_frames": 15618,
+    "foreground_frames": 15618,
+    "source_snapshot_files": 169,
+    "captured_source_matches_package_commit": true,
+    "capture_source_unchanged_guard": true,
+    "seven_artifacts_match_package_receipt": true,
+    "archive_hashes_independently_verified": true,
+    "production_before_after_and_current_match": true,
+    "no_fixture_save_slots": true,
+    "all_seven_analyzer_groups_recomputed_match": true,
+    "fixture_average_fps": 119.927329,
+    "fixture_timing_ms": {
+      "FrameTime": {
+        "samples": 15618,
+        "mean_ms": 8.338383,
+        "median_ms": 8.3335,
+        "p95_ms": 8.3506,
+        "p99_ms": 8.5174,
+        "min_ms": 7.8178,
+        "max_ms": 8.9063,
+        "zero_samples": 0,
+        "percent_above_ms": {
+          "16.667": 0.0,
+          "33.333": 0.0,
+          "50.0": 0.0
+        }
+      },
+      "GPUTime": {
+        "samples": 15618,
+        "mean_ms": 2.720213,
+        "median_ms": 2.59855,
+        "p95_ms": 3.2749,
+        "p99_ms": 3.5514,
+        "min_ms": 2.2892,
+        "max_ms": 4.1942,
+        "zero_samples": 0,
+        "percent_above_ms": {
+          "16.667": 0.0,
+          "33.333": 0.0,
+          "50.0": 0.0
+        }
+      },
+      "GameThreadTime": {
+        "samples": 15618,
+        "mean_ms": 1.83415,
+        "median_ms": 1.77885,
+        "p95_ms": 2.3184,
+        "p99_ms": 2.7612,
+        "min_ms": 1.2593,
+        "max_ms": 8.6768,
+        "zero_samples": 0,
+        "percent_above_ms": {
+          "16.667": 0.0,
+          "33.333": 0.0,
+          "50.0": 0.0
+        }
+      },
+      "RenderThreadTime": {
+        "samples": 15618,
+        "mean_ms": 3.372184,
+        "median_ms": 3.29985,
+        "p95_ms": 3.9663,
+        "p99_ms": 4.4498,
+        "min_ms": 2.8028,
+        "max_ms": 11.4776,
+        "zero_samples": 0,
+        "percent_above_ms": {
+          "16.667": 0.0,
+          "33.333": 0.0,
+          "50.0": 0.0
+        }
+      },
+      "RHIThreadTime": {
+        "samples": 15618,
+        "mean_ms": 2.344019,
+        "median_ms": 2.29705,
+        "p95_ms": 2.9272,
+        "p99_ms": 3.2914,
+        "min_ms": 1.4644,
+        "max_ms": 12.0072,
+        "zero_samples": 0,
+        "percent_above_ms": {
+          "16.667": 0.0,
+          "33.333": 0.0,
+          "50.0": 0.0
+        }
+      }
+    },
+    "all_frames_max_ms": 8.9063,
+    "stages": {
+      "Flight": {
+        "frames": 8625,
+        "simulation_seconds": 71.920192,
+        "frame_p99_ms": 8.521,
+        "frame_max_ms": 8.8517,
+        "gpu_p99_ms": 3.5489
+      },
+      "Breathing": {
+        "frames": 1595,
+        "simulation_seconds": 13.296294,
+        "frame_p99_ms": 8.436,
+        "frame_max_ms": 8.7692,
+        "gpu_p99_ms": 3.487
+      },
+      "Climax": {
+        "frames": 4798,
+        "simulation_seconds": 40.006196,
+        "frame_p99_ms": 8.505,
+        "frame_max_ms": 8.9063,
+        "gpu_p99_ms": 3.5167
+      },
+      "Approach": {
+        "frames": 600,
+        "simulation_seconds": 5.006182,
+        "frame_p99_ms": 8.6116,
+        "frame_max_ms": 8.8714,
+        "gpu_p99_ms": 3.827
+      }
+    },
+    "compound_actor_presence_simulation_seconds": 38.28,
+    "peak_actual_counted_threats": 23,
+    "per_phase_caps": {
+      "Flight": {
+        "enemy_maximum": 4,
+        "active_threat_maximum": 23
+      },
+      "Climax": {
+        "enemy_maximum": 5,
+        "active_threat_maximum": 21
+      },
+      "Approach": {
+        "enemy_maximum": 5,
+        "active_threat_maximum": 12
+      }
+    },
+    "kind_counts": {
+      "Gravity": {
+        "maximum": 1,
+        "mean": 0.56723
+      },
+      "Asteroids": {
+        "maximum": 9,
+        "mean": 3.738315
+      },
+      "Wreckage": {
+        "maximum": 12,
+        "mean": 4.195544
+      },
+      "Electrical": {
+        "maximum": 2,
+        "mean": 0.725637
+      },
+      "Pursuers": {
+        "maximum": 3,
+        "mean": 0.965168
+      },
+      "Flankers": {
+        "maximum": 3,
+        "mean": 2.143168
+      },
+      "Projectiles": {
+        "maximum": 15,
+        "mean": 7.57485
+      },
+      "Pickups": {
+        "maximum": 2,
+        "mean": 0.14304
+      }
+    },
+    "phase_sample_order_differences": 0,
+    "fixture_description": "Fixed seed 5eade000000000000000000000000010; starter/RapidLaser; five Tier V paths; OverdriveCooling; base hull/shield 50000; seeded end of Wave8; no contract/events. Normal wave timings, 40s climax, caps, budgets, spatial admission and damage. Scripted shallow strafe, boost/brake cycles, dodge/8s and fire2s/6s. Kind presence includes telegraphs/offscreen actors. No station docking or natural balance/input/feel acceptance."
+  },
+  "production_save_preservation": [
+    {
+      "directory": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames",
+      "exists": true,
+      "files": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Account_v1.sav",
+          "bytes": 2233,
+          "sha256": "A6EE9827C19071BA4EE84DA2FAF97A389DE1205C4447132A0EAC2B066961EF86"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Saved\\SaveGames\\SS_Suspend_v1.sav",
+          "bytes": 1989,
+          "sha256": "76A28997A9F08BC4E63D6B59F9023444B1A799F47837C369DEDCCCB7D517DB27"
+        }
+      ]
+    },
+    {
+      "directory": "C:\\Users\\j6sis\\AppData\\Local\\SpaceSurvival\\Saved\\SaveGames",
+      "exists": false,
+      "files": []
+    }
+  ],
+  "conclusion": "The final fairness package maintained the 120 FPS cap closely through this scripted Wave 10 load. No marked frame exceeded 16.667 ms. This supports integrated endgame performance on this machine; the representative 60 FPS acceptance gate remains open.",
+  "limitations": [
+    "One seeded run starting at the end of Wave 8 with Tier V starter/RapidLaser/OverdriveCooling and 50000 base hull/shield; no natural full 10-wave run, balanced survival or urge-to-retry acceptance.",
+    "Controls call ordinary flight, boost/brake, dodge and weapon APIs through a scripted fixture. This does not test physical keyboard/controller latency or subjective flight quality.",
+    "Actor counts include offscreen threats and warning states; no visibility, aiming readability or visual-art acceptance is inferred.",
+    "No Station 1 or Station 2 services, natural station interactions, menu purchases or contracts are exercised by this Wave 10-only capture. Earlier Package 12 station/performance evidence remains historical.",
+    "Audio was enabled but listening and mix acceptance were not performed.",
+    "One RTX 5080 system at 1440p quality 2 and a 120 FPS cap; no lower-tier hardware, uncapped headroom, clean-PC compatibility or representative hardware coverage."
+  ]
+}

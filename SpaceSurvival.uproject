@@ -1,0 +1,13 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.8",
+  "Category": "Games",
+  "Description": "SpaceSurvival Phase 1 single-player survival flight",
+  "Modules": [{"Name": "SpaceSurvival", "Type": "Runtime", "LoadingPhase": "Default"}],
+  "Plugins": [
+    {"Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": ["Editor"]},
+    {"Name": "EditorScriptingUtilities", "Enabled": true, "TargetAllowList": ["Editor"]},
+    {"Name": "InterchangeEditor", "Enabled": true, "TargetAllowList": ["Editor"]},
+    {"Name": "AndroidFileServer", "Enabled": false}
+  ]
+}

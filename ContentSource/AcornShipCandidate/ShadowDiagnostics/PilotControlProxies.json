@@ -1,0 +1,89 @@
+{
+  "status": "READ_ONLY_PILOT_CONTROL_PROXY_MEASUREMENT_NOT_SURFACE_CONTACT",
+  "samples": 121,
+  "seconds": 4,
+  "coordinate_basis": "Ship authoring cm, Blender Z+90deg rotation, uniform1.5scale,(-15,0,72)translation; not independently imported UE bone measurement",
+  "source_sha256": {
+    "ContentSource/Animation/Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource/GenerateAcornShipCandidate.py": "25c6b27a5d994fecef014735ac67bf89cca5ed0073adc6fd0f5fddd78418400e",
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+  },
+  "method": "Composed sampled original-glTF TRS joint hierarchy, converted to Blender, applied the documented ship pilot transform. Palm proxy is midpoint of Wrist and Middle1 joint heads.",
+  "hands": [
+    {
+      "side": "L",
+      "wrist_cm": [
+        12.94242,
+        21.082233,
+        94.249429
+      ],
+      "middle_knuckle_cm": [
+        23.778776,
+        21.082232,
+        93.165791
+      ],
+      "palm_midpoint_proxy_cm": [
+        18.360598,
+        21.082233,
+        93.70761
+      ],
+      "max_proxy_motion_from0_cm": 0.515798,
+      "nearest_grip_centerline_distance_range_cm": [
+        6.333247,
+        6.838144
+      ],
+      "suggested_grip_top_delta_cm": [
+        4.860598,
+        -2.417767,
+        3.70761
+      ]
+    },
+    {
+      "side": "R",
+      "wrist_cm": [
+        9.13731,
+        -20.322157,
+        95.602653
+      ],
+      "middle_knuckle_cm": [
+        19.296717,
+        -20.322162,
+        94.586708
+      ],
+      "palm_midpoint_proxy_cm": [
+        14.217013,
+        -20.32216,
+        95.094681
+      ],
+      "max_proxy_motion_from0_cm": 0.559923,
+      "nearest_grip_centerline_distance_range_cm": [
+        5.541121,
+        6.562041
+      ],
+      "suggested_grip_top_delta_cm": [
+        0.717013,
+        3.17784,
+        5.094681
+      ]
+    }
+  ],
+  "current_grips": {
+    "bottom_cm": [
+      12,
+      "side*24.5",
+      77
+    ],
+    "top_cm": [
+      13.5,
+      "side*23.5",
+      90
+    ],
+    "radius_cm": 1.8
+  },
+  "proposal": "Keep original pilot pose/transform, grip base and arm-console location. Extend/angle only each upper grip segment toward its own palm, then validate actual hand surface/contact and release motion before choosing final endpoints.",
+  "limitations": [
+    "Joint midpoint is not a measured skin contact surface.",
+    "Open fingers remain; this does not establish a grasp animation.",
+    "No character, grip geometry, source or asset was modified."
+  ]
+}

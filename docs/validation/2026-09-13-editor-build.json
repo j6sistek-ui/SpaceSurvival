@@ -1,0 +1,21 @@
+{
+  "recorded_utc": "2026-09-13T04:35Z",
+  "status": "EDITOR_BUILD_SUCCEEDED_GAMEPLAY_PENDING",
+  "engine": "5.8.2-56702186",
+  "compiler": "MSVC14.51.36257",
+  "sdk": "10.0.26100.0",
+  "seconds": 140.75,
+  "binary_sha256": "d19ccb999a3ef3dd18b6550d18ed6a425ae1380e6115c35ad4ff97022e82db2b",
+  "warnings": [
+    "Compiler newer than preferred14.50.35717",
+    "Engine-header C4996 deprecation warnings"
+  ],
+  "portable_assertions_per_build": 372,
+  "portable_image": "sha256:87fb1af1abefb57514eb09440dad32690e8a7f2c6226ffd7be98277fc8df8b2c",
+  "limits": [
+    "No game map or DA",
+    "No Unreal automation execution",
+    "No gameplay/controller/package/performance validation",
+    "Whitespace formatting followed successful compile; no intended semantic change"
+  ]
+}

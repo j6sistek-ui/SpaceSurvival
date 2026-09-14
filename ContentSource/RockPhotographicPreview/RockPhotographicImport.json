@@ -1,0 +1,115 @@
+{
+  "status": "ISOLATED_ROCK_MATERIAL_IMPORTED_FRESH_VALIDATION_PENDING",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "material": "/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic",
+  "source_key": "ebbe6f3058ebc586f7f4b4110d090363f74f68cd4d79406be6067689fa270129",
+  "protected_content_packages_unchanged": 74,
+  "new_content_assets": 4,
+  "geometry_or_assignment_changes": true,
+  "adoption": {
+    "status": "THREE_ASTEROID_MATERIALS_ADOPTED_GEOMETRY_COLLISION_PRESERVED",
+    "errors": [],
+    "material": "/Game/SpaceSurvival/Materials/M_RockPhotographic",
+    "rows": [
+      {
+        "mesh": "/Game/SpaceSurvival/Meshes/SM_AsteroidSmall.SM_AsteroidSmall",
+        "geometry_before_equals_after": true,
+        "geometry": {
+          "render_lod0_geometry_sha256": "b2c467434eb9564d342c55cc55ce4bc3acb31a807f8f0e270a0d8865b9dfef80",
+          "triangles": 440,
+          "vertices": 1320,
+          "lods": 1,
+          "uv_channels": 1,
+          "sections": 1,
+          "bounds_origin_cm": [
+            1.4865264892578125,
+            -1.717071533203125,
+            4.911212921142578
+          ],
+          "bounds_extent_cm": [
+            98.2603988647461,
+            98.88729858398438,
+            99.08878707885742
+          ],
+          "simple_collision_count": 0,
+          "section_collision": [
+            true
+          ],
+          "collision_trace": "<CollisionTraceFlag.CTF_USE_DEFAULT: 0>",
+          "collision_enabled": "<CollisionEnabled.QUERY_AND_PHYSICS: 3>",
+          "collision_profile": "BlockAll"
+        },
+        "package_sha256": "1b377a123a3dd01c960f110608d3b8644f151ffb2e64ff176661378e0e4b27ef"
+      },
+      {
+        "mesh": "/Game/SpaceSurvival/Meshes/SM_AsteroidMedium.SM_AsteroidMedium",
+        "geometry_before_equals_after": true,
+        "geometry": {
+          "render_lod0_geometry_sha256": "4bcb82cb3e1379aca0471fa5ce00942acd351e9f6fd83e3e1fcf91e6c1228605",
+          "triangles": 440,
+          "vertices": 1320,
+          "lods": 1,
+          "uv_channels": 1,
+          "sections": 1,
+          "bounds_origin_cm": [
+            -2.439983367919922,
+            -2.860698699951172,
+            3.4601287841796875
+          ],
+          "bounds_extent_cm": [
+            97.18140029907227,
+            95.92502212524414,
+            100.53987121582031
+          ],
+          "simple_collision_count": 0,
+          "section_collision": [
+            true
+          ],
+          "collision_trace": "<CollisionTraceFlag.CTF_USE_DEFAULT: 0>",
+          "collision_enabled": "<CollisionEnabled.QUERY_AND_PHYSICS: 3>",
+          "collision_profile": "BlockAll"
+        },
+        "package_sha256": "ce40e9181dc9946cbde579fe757a2f29bc89f90268a6915b32bcab39a0341837"
+      },
+      {
+        "mesh": "/Game/SpaceSurvival/Meshes/SM_AsteroidMassive.SM_AsteroidMassive",
+        "geometry_before_equals_after": true,
+        "geometry": {
+          "render_lod0_geometry_sha256": "ce7bf30f3b48d96ef52c91306c8d462f88a39928fff23a119b226e1ef61fec94",
+          "triangles": 440,
+          "vertices": 1320,
+          "lods": 1,
+          "uv_channels": 1,
+          "sections": 1,
+          "bounds_origin_cm": [
+            -3.8778533935546875,
+            1.36334228515625,
+            2.2158126831054688
+          ],
+          "bounds_extent_cm": [
+            97.15786743164062,
+            94.4608154296875,
+            101.78418731689453
+          ],
+          "simple_collision_count": 0,
+          "section_collision": [
+            true
+          ],
+          "collision_trace": "<CollisionTraceFlag.CTF_USE_DEFAULT: 0>",
+          "collision_enabled": "<CollisionEnabled.QUERY_AND_PHYSICS: 3>",
+          "collision_profile": "BlockAll"
+        },
+        "package_sha256": "f623615757b872582bb28becdd00323205f62b8ae639963af724592dddf09539"
+      }
+    ],
+    "runtime_residency": "Lead-owned scoped residency; no NeverStream asset change",
+    "telegraphs_or_gameplay_changed": false
+  },
+  "limits": [
+    "Object-local repeat scales with the rock actor",
+    "Nine texture samples; actual gameplay cost not profiled",
+    "No displacement, geometry or collision change",
+    "Source alpha/ARM metallic unused; rock is dielectric"
+  ]
+}

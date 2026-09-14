@@ -1,0 +1,497 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-13T11:21:15.617486+00:00",
+  "status": "SEPARATE_SWIFT_IMPORT_FRESH_VALIDATION_AND_NATIVE_VIEWS_PASS_WITH_RECORDED_LIMITATIONS_NOT_ADOPTED",
+  "project_status": "PARTIAL; owner graphics rejection and human acceptance gates remain open.",
+  "scope": "One new StaticMesh and two dedicated scripts. No runtime selection, Source/Config, author-main pipeline, original Swift or shared-material edits. Three unsaved native studio views only.",
+  "prior_source_checkpoint": {
+    "path": "ContentSource/SwiftCandidate/SourceReceipt.json",
+    "bytes": 11442,
+    "sha256": "2c1348d6e95b66936b96f8cca9f999db539d2e74708414129fcddc9ce5ceb1c8"
+  },
+  "historical_readme": {
+    "path": "ContentSource\\SwiftCandidate\\README.md",
+    "bytes": 5063,
+    "sha256": "8766aa734effcd9fc9d461e122c14add7ff513e614b49be0269344c431762c14"
+  },
+  "current_readme": {
+    "path": "ContentSource/SwiftCandidate/README.md",
+    "bytes": 7098,
+    "sha256": "fd9e97c54782a7977770bc0d8db5acc41d02aa5f0f6f72e2a604ce8ad23113c0"
+  },
+  "scripts": [
+    {
+      "path": "Scripts/AuthorSwiftCandidate.py",
+      "bytes": 10272,
+      "sha256": "5169bee4692aa7927c4783c0b528d52f89e04ae3931ce3ca6464f52dff0c2b7b"
+    },
+    {
+      "path": "Scripts/ValidateSwiftCandidate.py",
+      "bytes": 16642,
+      "sha256": "a449742b1b8891bd8ee482ddc579e6859f7ea4e77fa04d3d6091f0b41cd513b1"
+    }
+  ],
+  "executed_source": {
+    "report": {
+      "path": "ContentSource/SwiftCandidate/Report.json",
+      "bytes": 19790,
+      "sha256": "b730855c4b08a3fa86d4238d72acbbd21ee720ceb9bc79bb4fb5d890b43d161d"
+    },
+    "validation": {
+      "path": "ContentSource/SwiftCandidate/Validation.json",
+      "bytes": 12538,
+      "sha256": "d29582e59896312208151c2bbdb4405f3c55edfbbddd8c87855b3a377ea42a9b"
+    },
+    "obj": {
+      "path": "ContentSource/SwiftCandidate/SwiftCandidate.obj",
+      "bytes": 11451842,
+      "sha256": "5aff093c056f7e49b2038a435a05fb6714d2c046be59a7fafa786658881dfe8c"
+    },
+    "protected_originals_sha256": {
+      "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+      "ContentSource/Animation/Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+      "ContentSource/Animation/TailCandidateV2.glb": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+      "ContentSource/Animation/Disembark.glb": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+      "ContentSource/AcornShipCandidate/AcornShipCandidate.blend": "73ab5df45c5ca63ce696d9df047e87de274c1e1cb0c2a5b73b0e1d6a2e27187c",
+      "ContentSource/AcornShipCandidate/AcornShipCandidate.obj": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+      "ContentSource/AcornShipCandidate/AcornShipCandidate.glb": "624212d2890e2fe32dfb2710980c3b658e86e5d4e467e614ce025c1b7644f10e",
+      "ContentSource/Meshes/SM_AgileShip.obj": "2d8bb73ac2a35d25cf62f1108d412beaa3fcfa797da922aed9e59ea3ebfce54c",
+      "Content/SpaceSurvival/Meshes/SM_AgileShip.uasset": "9c29554cd017c56d26f691f3b05b39e993f768188b8f02fdef5901b370518c07"
+    }
+  },
+  "engine": {
+    "version": "5.8.2-56702186+++UE5+Release-5.8",
+    "executable": "C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe",
+    "project_dll": {
+      "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 1558528,
+      "sha256": "ce1f1c199c5cf15adc7f97947e18022e67facb6d571dcec2589d1a313f989e12"
+    },
+    "dll_last_write_utc": "2026-09-13T10:49:29.052150+00:00",
+    "identity_limit": "DLL hash read at post-run handoff; matches the pre-existing lead build identity. No build occurred within the exclusive import/preview window. This receipt is not a build or packaged-artifact pass."
+  },
+  "processes": [
+    {
+      "phase": "NullRHI import",
+      "pid": 67452,
+      "exit_code": 0,
+      "normal_shutdown_utc": "2026-09-13T11:12:52.503Z",
+      "process_gone": true,
+      "success_marker": "SWIFT_CANDIDATE_IMPORT_OK",
+      "arguments": [
+        "C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject",
+        "-NullRHI",
+        "-unattended",
+        "-nosplash",
+        "-nosound",
+        "-ExecutePythonScript=C:/Users/j6sis/SpaceSurvival/Scripts/AuthorSwiftCandidate.py",
+        "-abslog=C:/Users/j6sis/SpaceSurvival/Saved/Validation/SwiftCandidate/SwiftImport.log",
+        "-stdout"
+      ]
+    },
+    {
+      "phase": "fresh saved validation and rendered preview",
+      "pid": 20992,
+      "exit_code": 0,
+      "normal_shutdown_utc": "2026-09-13T11:14:16.824Z",
+      "process_gone": true,
+      "success_markers": [
+        "SWIFT_CANDIDATE_PERSISTED_OK",
+        "SWIFT_CANDIDATE_PREVIEW_FINISHED"
+      ],
+      "arguments": [
+        "C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject",
+        "-RenderOffscreen",
+        "-unattended",
+        "-nosplash",
+        "-nosound",
+        "-windowed",
+        "-ResX=1600",
+        "-ResY=1200",
+        "-ExecutePythonScript=C:/Users/j6sis/SpaceSurvival/Scripts/ValidateSwiftCandidate.py --preview",
+        "-abslog=C:/Users/j6sis/SpaceSurvival/Saved/Validation/SwiftCandidate/SwiftPreview.log",
+        "-stdout"
+      ]
+    }
+  ],
+  "owner_editor": {
+    "pid": 66256,
+    "preserved": true,
+    "readback": "Still running after both owned processes exited."
+  },
+  "raw_logs": [
+    {
+      "path": "Saved/Validation/SwiftCandidate/SwiftImport.log",
+      "bytes": 256411,
+      "sha256": "abf31245fa71573c0bf113d3e2a83925f8ea495469f6e2ebb80600f4f5414bea"
+    },
+    {
+      "path": "Saved/Validation/SwiftCandidate/SwiftImportCommand.log",
+      "bytes": 23737,
+      "sha256": "5e646564d9dea1f086811063766b82317e96eeb6f9d7293c633a3d070fc62bad"
+    },
+    {
+      "path": "Saved/Validation/SwiftCandidate/SwiftImportError.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Saved/Validation/SwiftCandidate/SwiftPreview.log",
+      "bytes": 346717,
+      "sha256": "35a96588c8ac69f1468eb65248d8813746ee7bf8f5e669181b8799dcce9bad92"
+    },
+    {
+      "path": "Saved/Validation/SwiftCandidate/SwiftPreviewCommand.log",
+      "bytes": 24882,
+      "sha256": "d685b5fe0dd88aefd9fe82cf1628274d42d63ce9306c756f97641a27a4a186f1"
+    },
+    {
+      "path": "Saved/Validation/SwiftCandidate/SwiftPreviewError.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "warnings": {
+    "SwiftImport.log": [
+      "[2026.09.13-11.12.48:314][  2]FBXImport: Warning: No smoothing group information was found in this FBX scene.  Please make sure to enable the 'Export Smoothing Groups' option in the FBX Exporter plug-in before exporting the file.  Even for tools that don't support smoothing groups, the FBX Exporter will generate appropriate smoothing data at export-time so that correct vertex normals can be inferred while importing. ",
+      "[2026.09.13-11.12.48:314][  2]FBXImport: Warning: SM_SwiftCandidateV1 has some nearly zero tangents which can create some issues. (Tolerance of 1E-4) ",
+      "[2026.09.13-11.12.48:314][  2]FBXImport: Warning: SM_SwiftCandidateV1 has some nearly zero bi-normals which can create some issues. (Tolerance of 1E-4) "
+    ],
+    "SwiftPreview.log": []
+  },
+  "reports": [
+    {
+      "executed": {
+        "path": "Saved/Validation/SwiftCandidate/SwiftImport.json",
+        "bytes": 5248,
+        "sha256": "a1f8ab3252036eedf825de8d5df4132f38c952ad5902f900ae883c10e78f86d0"
+      },
+      "retained": {
+        "path": "ContentSource/SwiftCandidate/NativeReview/SwiftImport.json",
+        "bytes": 5248,
+        "sha256": "a1f8ab3252036eedf825de8d5df4132f38c952ad5902f900ae883c10e78f86d0"
+      },
+      "byte_identical": true
+    },
+    {
+      "executed": {
+        "path": "Saved/Validation/SwiftCandidate/SwiftPersisted.json",
+        "bytes": 7386,
+        "sha256": "77b93f2a1bbbbf9a64665ceb6544f8d9ed37d8c57d4d6bdb600282fa520a2e12"
+      },
+      "retained": {
+        "path": "ContentSource/SwiftCandidate/NativeReview/SwiftPersisted.json",
+        "bytes": 7386,
+        "sha256": "77b93f2a1bbbbf9a64665ceb6544f8d9ed37d8c57d4d6bdb600282fa520a2e12"
+      },
+      "byte_identical": true
+    },
+    {
+      "executed": {
+        "path": "Saved/Validation/SwiftCandidate/SwiftPreview.json",
+        "bytes": 11431,
+        "sha256": "b5330dcf13151724ea758f5bd28631e73ff8f6da292b44accdbccfb4722acfa5"
+      },
+      "retained": {
+        "path": "ContentSource/SwiftCandidate/NativeReview/SwiftPreview.json",
+        "bytes": 11431,
+        "sha256": "b5330dcf13151724ea758f5bd28631e73ff8f6da292b44accdbccfb4722acfa5"
+      },
+      "byte_identical": true
+    }
+  ],
+  "asset": {
+    "path": "Content/SpaceSurvival/Meshes/SM_SwiftCandidateV1.uasset",
+    "bytes": 1378975,
+    "sha256": "0f32ff9616546f444607d7016f4e8f873e5b88b63d95e50aa844ed92e209b82e"
+  },
+  "existing_material_packages": [
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.uasset",
+      "bytes": 12711,
+      "sha256": "4be5f2fa9f0d38878ba99648418014b4e390a18a177d0f71a4dbd5752efe9f95"
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.uasset",
+      "bytes": 13892,
+      "sha256": "8797aa3e71ccfff42cab9cb7a76efd91e49f0d0434678235fec55a5838056859"
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_IonAndNav.uasset",
+      "bytes": 12245,
+      "sha256": "a1aa26f8df23151bb7d556f0eb139455865a3e42e59173d388797c9bda669bfb"
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_Windscreen.uasset",
+      "bytes": 11512,
+      "sha256": "5283fba73752f879635a345ab723b9406dda5fd27c4c331138331807fcbcef16"
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.uasset",
+      "bytes": 9472,
+      "sha256": "24b7310f596e4da22c0d7d541a7d81e55b40d8c171b6e6f620e4cfb4c29a3969"
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.uasset",
+      "bytes": 14264,
+      "sha256": "c33639070c924e50ae665437431f658f3e8088b9c52dccc5c4dd395416bcd3f3"
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.uasset",
+      "bytes": 13305,
+      "sha256": "46e4d442190b589022e7cc247692677cc0f8141d522b3de11f15440050965467"
+    }
+  ],
+  "native_geometry": {
+    "mesh": "/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1.SM_SwiftCandidateV1",
+    "source_triangles": 46456,
+    "native_triangles": 46120,
+    "triangle_cleanup_delta": 336,
+    "vertices": 41450,
+    "bounds_cm": [
+      [
+        -243.5,
+        -128.17364501953125,
+        -56.93060302734375
+      ],
+      [
+        239.00001525878906,
+        128.17364501953125,
+        97.80007934570312
+      ]
+    ],
+    "lods": 1,
+    "material_sections": 7,
+    "uv_channels": 1,
+    "normal_import_method": "IMPORT_NORMALS",
+    "collision_shapes": 0,
+    "all_section_collision_disabled": true,
+    "collision_profile": "NoCollision",
+    "slots": [
+      {
+        "slot": "AC01_GraphiteStructure",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.M_AcornV2_GraphiteStructure"
+      },
+      {
+        "slot": "AC01_ChampagneEdges",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.M_AcornV2_ChampagneEdges"
+      },
+      {
+        "slot": "AC01_IonAndNav",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav.M_AcornV2_IonAndNav"
+      },
+      {
+        "slot": "AC01_Windscreen",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen.M_AcornV2_Windscreen"
+      },
+      {
+        "slot": "AC01_CockpitPadding",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.M_AcornV2_CockpitPadding"
+      },
+      {
+        "slot": "AC01_IvoryPanels",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.M_AcornV2_IvoryPanels"
+      },
+      {
+        "slot": "AC01_MachinedTitanium",
+        "material": "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.M_AcornV2_MachinedTitanium"
+      }
+    ],
+    "pilot_transform": {
+      "position_cm": [
+        -15,
+        0,
+        72
+      ],
+      "unreal_yaw_degrees": -90,
+      "blender_z_rotation_degrees": 90,
+      "scale": 1.5
+    },
+    "import_translation_cm": [
+      0,
+      0,
+      0
+    ],
+    "import_rotation_degrees": [
+      0,
+      0,
+      0
+    ],
+    "import_scale": 1,
+    "built_geometry": {
+      "built_attributes_sha256": "76a04aea4d55c91aafd31410d36f84c8f11b94b3bd7c5ddafd3bc134919dbfcb",
+      "export_fbx_sha256": "b46ea34e3e9e425f71b70410b0d1f3eeea81e2e246faf826c0196a4fde461bea",
+      "finite_unit_normals": true,
+      "finite_unit_square_uvs": true,
+      "arrays": [
+        "Binormals",
+        "Normals",
+        "PolygonVertexIndex",
+        "Tangents",
+        "UV",
+        "UVIndex",
+        "Vertices"
+      ]
+    }
+  },
+  "built_geometry_local_readback": {
+    "path": "Saved/Validation/SwiftCandidate/SwiftBuiltLOD0.fbx",
+    "bytes": 25092478,
+    "sha256": "b46ea34e3e9e425f71b70410b0d1f3eeea81e2e246faf826c0196a4fde461bea"
+  },
+  "preservation": {
+    "import_existing_source_config_content_files_unchanged": 147,
+    "new_content_assets": [
+      "Content\\SpaceSurvival\\Meshes\\SM_SwiftCandidateV1.uasset"
+    ],
+    "fresh_validation_and_preview_existing_files_unchanged": 148,
+    "evidence": "Executed script snapshots every existing Source/Config/Content file before and verifies SHA-256 after; counts are in the retained emitted reports. Individual snapshot maps were in process memory and were not persisted.",
+    "seven_materials_not_saved_or_modified": true,
+    "production_save_hash_comparison_performed": false,
+    "production_save_limit": "This unsaved editor studio does not create GameMode/GameInstance or call game saves. No separate production-save byte snapshot was collected; do not infer an independently measured save hash pass."
+  },
+  "render": {
+    "rhi": "D3D12 SM6",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "resolution": [
+      1600,
+      1200
+    ],
+    "method": "Unsaved StaticMeshActor at unit scale/world zero, preserved TailV2/Pilot0s pose and native pilot mount, three ordinary shadow-casting studio lights. No GameMode/run/physical input or save calls.",
+    "temporary_hero_residency": {
+      "texture": "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0",
+      "seconds": 120,
+      "minimum_wait_per_view_seconds": 10,
+      "saved_streaming_flag_changes": false,
+      "require_full_and_equal_current_dimensions": true
+    },
+    "images": [
+      {
+        "file": "Saved\\Validation\\SwiftCandidate\\Preview-17477f49936a4282b27775b3f7dcf2be\\Hero.png",
+        "sha256": "afc69937173b95fa9ce603f5100853f6988fd577d879bf66d87b69651244452a",
+        "view": "Hero",
+        "camera_cm": [
+          580,
+          -740,
+          450
+        ],
+        "target_cm": [
+          0,
+          0,
+          30
+        ],
+        "pilot_seconds": 0,
+        "residency": {
+          "texture": "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0",
+          "maximum_dimensions": [
+            2048,
+            2048
+          ],
+          "current_dimensions": [
+            2048,
+            2048
+          ],
+          "current_kb": 2752,
+          "format": "PF_DXT1",
+          "mips": 12,
+          "usage_count": 1,
+          "raw_csv": "2048,2048,2752,0,2048,2048,2752,PF_DXT1,TEXTUREGROUP_World,/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0,YES,NO,NO,1,12,NO",
+          "section_sha256": "db12036c9f8b5927afa832aedbff3399700736ffc0b419e93ae00b2ac4b0f8de"
+        },
+        "executed_file": "Saved/Validation/SwiftCandidate/Preview-17477f49936a4282b27775b3f7dcf2be/Hero.png",
+        "retained_file": "ContentSource/SwiftCandidate/NativeReview/Hero.png",
+        "retained_bytes": 408954
+      },
+      {
+        "file": "Saved\\Validation\\SwiftCandidate\\Preview-17477f49936a4282b27775b3f7dcf2be\\Chase.png",
+        "sha256": "26ca430ece9a763ea18b226919ea887fd97aeac3feb45d4c25012fd767fc2c03",
+        "view": "Chase",
+        "camera_cm": [
+          -750,
+          -490,
+          340
+        ],
+        "target_cm": [
+          -15,
+          0,
+          32
+        ],
+        "pilot_seconds": 0,
+        "residency": {
+          "texture": "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0",
+          "maximum_dimensions": [
+            2048,
+            2048
+          ],
+          "current_dimensions": [
+            2048,
+            2048
+          ],
+          "current_kb": 2752,
+          "format": "PF_DXT1",
+          "mips": 12,
+          "usage_count": 1,
+          "raw_csv": "2048,2048,2752,0,2048,2048,2752,PF_DXT1,TEXTUREGROUP_World,/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0,YES,NO,NO,1,12,NO",
+          "section_sha256": "b1ec6c6443c8cc4e6fec18715055946bdacd86145a1bbccb6e97bdca4d6f0513"
+        },
+        "executed_file": "Saved/Validation/SwiftCandidate/Preview-17477f49936a4282b27775b3f7dcf2be/Chase.png",
+        "retained_file": "ContentSource/SwiftCandidate/NativeReview/Chase.png",
+        "retained_bytes": 595980
+      },
+      {
+        "file": "Saved\\Validation\\SwiftCandidate\\Preview-17477f49936a4282b27775b3f7dcf2be\\Cockpit.png",
+        "sha256": "0d35e8b9b8b25f3a1387abe3c8a9737bd99b48a55c0c4358219810c2dde1b670",
+        "view": "Cockpit",
+        "camera_cm": [
+          210,
+          -220,
+          225
+        ],
+        "target_cm": [
+          -15,
+          0,
+          75
+        ],
+        "pilot_seconds": 0,
+        "residency": {
+          "texture": "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0",
+          "maximum_dimensions": [
+            2048,
+            2048
+          ],
+          "current_dimensions": [
+            2048,
+            2048
+          ],
+          "current_kb": 2752,
+          "format": "PF_DXT1",
+          "mips": 12,
+          "usage_count": 1,
+          "raw_csv": "2048,2048,2752,0,2048,2048,2752,PF_DXT1,TEXTUREGROUP_World,/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0,YES,NO,NO,1,12,NO",
+          "section_sha256": "4506a99b4944eb7954c34dad9db5eeca50891deb042eeb956544de147c829d10"
+        },
+        "executed_file": "Saved/Validation/SwiftCandidate/Preview-17477f49936a4282b27775b3f7dcf2be/Cockpit.png",
+        "retained_file": "ContentSource/SwiftCandidate/NativeReview/Cockpit.png",
+        "retained_bytes": 1399398
+      }
+    ],
+    "all_three_inspected": true,
+    "observations": [
+      "Full narrow ship silhouette and seven reused materials appear in Hero and Chase; Cockpit is a deliberate close framing.",
+      "Dark metal is underlit against the black studio background. White-panel faceting and speckled metal highlights remain visible under ordinary studio shadows.",
+      "Existing open palms and tail fragments remain. Constant original Pilot0s pose is not evidence of any new animation pose or transition."
+    ]
+  },
+  "independent_review": {
+    "reviewer": "integration_review",
+    "scope": "Read-only source/API/guard review; no engine launch or test run.",
+    "result": "No concrete blocker in exact mesh destination, metadata/material/source guards, zero import transform, bounds/section/collision checks, texture filtering, setup-failure receipts and installed 16-column ListTextures CSV parsing."
+  },
+  "limitations": [
+    "No runtime adoption, DataAsset selection, main content-pipeline hook or packaged build of this Swift candidate.",
+    "One LOD and seven material sections; no draw cost or representative gameplay performance measurement.",
+    "Three importer warnings remain recorded; finite unit normals/UV checks do not resolve near-zero tangent/binormal warnings.",
+    "Importer removed 336 triangles. Source validation attributes 278 collapsed faces to six retained cockpit components, but exact native removed-face mapping is unproven.",
+    "No full animated clearance, dock/disembark, physical input, collision perception, gameplay readability, listening or owner acceptance."
+  ]
+}

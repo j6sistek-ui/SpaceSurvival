@@ -1,0 +1,33 @@
+{
+  "status": "GRIP_PAIR_FRESH_PERSISTED_VALIDATED_NOT_ADOPTED",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "errors": [],
+  "clips": [
+    {
+      "path": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+      "seconds": 4.0,
+      "skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+      "root_motion": false,
+      "force_root_lock": false,
+      "source_sha256": "7fa10daaad36a08545191d7029e19efd0e8bf97bb10711afc58fbf429118cbdd",
+      "package_sha256": "5184434996865dd8831ec50f50722d73fa24f9feef7953d22e38c2c8342c8a45",
+      "package_bytes": 386697
+    },
+    {
+      "path": "/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit",
+      "seconds": 2.4000000953674316,
+      "skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton.geometry_0_Skeleton",
+      "root_motion": false,
+      "force_root_lock": false,
+      "source_sha256": "8e747c569a6bb000be9d947110fd0bf919fdb7534a9ea986684c3b5f1ea496ec",
+      "package_sha256": "13192da7a3001faaa885229bf714f2a2d1331361c91e3faf4ceb08aa681c53fc",
+      "package_bytes": 454726
+    }
+  ],
+  "limits": [
+    "New candidate clips only; runtime selection unchanged",
+    "Native rendered combined pose review is separate",
+    "Initial seated skin/grip intersections and existing fur/claw limitations remain"
+  ],
+  "protected_existing_files_unchanged": 148
+}

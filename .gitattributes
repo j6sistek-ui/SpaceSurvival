@@ -1,0 +1,22 @@
+* text=auto
+*.h text eol=lf
+*.cpp text eol=lf
+*.cs text eol=lf
+*.py text eol=lf
+*.ps1 text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.obj text eol=lf
+*.mtl text eol=lf
+*.json text eol=lf
+*.hlsl text eol=lf
+*.glb binary
+*.blend binary
+*.uasset binary
+*.umap binary
+*.wav binary
+*.png binary
+ContentSource/Meshes/*.obj linguist-generated=true
+ContentSource/Meshes/Palette.mtl linguist-generated=true
+ContentSource/AcornShipCandidate/*.obj linguist-generated=true
+ContentSource/AcornShipCandidate/*.mtl linguist-generated=true

@@ -1,0 +1,177 @@
+{
+  "status": "AUTHORED_EXIT_UNREAL_CONTRACT_AND_BOUNDED_PACKAGED_REPLAY_PASSED",
+  "date_utc": "2026-09-13T07:12:22.122410+00:00",
+  "base_commit": "6146e9f9111eb7d73ed29ffc7aa1b535f5dbdeff",
+  "source_sha256_lf": {
+    "Source/SpaceSurvival/Private/SSStation.cpp": "0be81325a27282fe9b085d8716e8b94dbf5ec413e6ec633ef863635c44c0ad21",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "6487074ccc6998752bcc001f45da904548a57814b24ada2c27040e3c4c914a0a",
+    "Source/SpaceSurvival/Private/SSHUD.cpp": "d464b292f234685bd92c82bb7230357a5d9421ee0e43d973a8e8658e61e03083",
+    "Source/SpaceSurvival/Private/SSIntegrationAutomationTests.cpp": "5fe4fdf4bd9a74c45ce9db9ca451197a1e80eb455c4b7556c5ac6598ed26fea5",
+    "Source/SpaceSurvival/Private/SSJourneyAutomationTests.cpp": "7c7f6fd9dbea1dc812fbde1a7b97e1f2882180c92fb87ae7b6c6fa92ec22a0d6",
+    "Source/SpaceSurvival/Public/SSStation.h": "acf2f2b805d50b68fc881e8fc7c713e85d0ed19fb75e61650bbca139bc3851f0",
+    "Source/SpaceSurvival/Public/SSGameMode.h": "ecb99e0f323cdf3a873f65400ee921af2b3b805a5c132539673deeacae56f4ba",
+    "Scripts/Build.ps1": "8032be9e37023aef445c158faae29c7f4fab01a3cb76b0b46bb9b46cfe486bec",
+    "Scripts/BundlePrerequisites.ps1": "14e5e09a0a22a18efc67558f2d0dd52e8025cd33577725bcfaaf2ff5b6837bb0",
+    "Scripts/AuthorContent.py": "33130ab31db68b7ce1c03b57b387d55d67e372581e7c26ba33e6b74083bf8366",
+    "Scripts/AuthorSpacePanorama.py": "24889053d2116ad2fca6050fbb23ea4fe918147988cc8a3eb00bced6c8f3e624",
+    "Scripts/ValidateContent.py": "1aaabb2dc94d355770786b382cb88ad9c1495f6207ebaa29128a9217b702cdc4",
+    "ContentSource/ValidateSources.py": "b6b27baaae1373e498863f07f55a59fe33cdda8d5807c038446736b01b77b794"
+  },
+  "editor_builds": [
+    {
+      "log": ".agent/local/EditorExitBuild.log",
+      "sha256": "290427f5216e2e2d578620e5028f84323d61c256e1729d8ef1a3a3cde6592bb0",
+      "seconds": 18.64,
+      "result": "Succeeded"
+    },
+    {
+      "log": ".agent/local/EditorExitContactBuild.log",
+      "sha256": "96339bafb451a95b9e0ebefb655cb4dc5d73eb91e118bc0340af85a07642c0a8",
+      "seconds": 5.73,
+      "result": "Succeeded"
+    }
+  ],
+  "unreal": {
+    "succeeded": 13,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "totalDuration": 2.2634902000427246,
+    "reportCreatedOn": "2026.09.13-07.11.25",
+    "log": ".agent/local/ExitContactAutomation.log",
+    "log_sha256": "db2509c15c26df2fecea6a3b6c36dc04fd9926e74d4d73cadf24e03f16a5321d",
+    "report_sha256": "4005089dcf5d2e9c5eb4fdf5219434ede12ce4713bb05db770689beac126b624",
+    "tests": [
+      {
+        "path": "SpaceSurvival.Flight.BoostBrakeMovement",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Flight.FrameRateTrajectories",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Flight.ManualWeaponImpacts",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Integration.AuthoredDisembark",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Integration.LateEventAcceptance",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Integration.StationWalkerRecovery",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Save.PayloadRoundTrip",
+        "state": "Success"
+      },
+      {
+        "path": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+        "state": "Success"
+      }
+    ]
+  },
+  "initial_failure": {
+    "log": ".agent/local/ExitAutomation.log",
+    "sha256": "764a094807c45339e9e27bcd1ce544c2dcc3b16b830b73389249ec93d4d5b958",
+    "result": "12 passed, AuthoredDisembark failed: normal walking floor adjustment displaced actor/feet. Corrected endpoint and sole-based mesh fit; original tolerances retained."
+  },
+  "contact_measurements": {
+    "skinned_lod0_vertices": 203227,
+    "walking_floor_gap_cm": 2.150001,
+    "mesh_relative_z_cm": 6.954042,
+    "sole_deck_clearance_cm": {
+      "contact": -0.016462,
+      "walk_handoff": -0.012915
+    },
+    "handoff_actor_delta_cm": [
+      0,
+      0,
+      0
+    ],
+    "left_foot_delta_cm": [
+      -0.008,
+      -0.006,
+      0.004
+    ],
+    "right_foot_delta_cm": [
+      0,
+      -0.009,
+      0.003
+    ],
+    "frame_rates_hz": [
+      30,
+      60,
+      144
+    ],
+    "all_frame_rate_endpoint_deltas_cm": 0
+  },
+  "animation": {
+    "source": "ContentSource/Animation/Disembark.glb",
+    "sha256": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+    "seconds": 2.4,
+    "frames": 73,
+    "bones": 52,
+    "scale": 1.5,
+    "actor_travel_seconds": [
+      0.82,
+      1.6
+    ],
+    "planted_seconds": [
+      1.6,
+      2.4
+    ],
+    "walk_handoff_seconds": 0.308333333,
+    "asset": "Content/SpaceSurvival/Character/A_Disembark.uasset",
+    "asset_sha256": "a17a080173b3c0fe5f9077f7afc868948d55ce4836718ed3049ec361f974dfd0"
+  },
+  "sky": {
+    "source": "ContentSource/Textures/SpacePanorama-v1.png",
+    "sha256": "2ae245359fbac353bffdd579fc884ee8b8db0633c6deaadca73681e232f783a1",
+    "width": 1774,
+    "height": 887,
+    "provenance": "ContentSource/Textures/SpacePanorama-v1.json",
+    "persisted_config_validated": true,
+    "rendered_review": false
+  },
+  "persisted_validation": {
+    "receipt": "Saved/Validation/PersistedContent.json",
+    "sha256": "7587a0d0de9d9544ab942de69eb9b424fdd5a84e241dc1f56d339b6e8a3ef890",
+    "errors": []
+  },
+  "limits": [
+    "Package8 native slowed replay verified visible exit and post-exit service interaction. Natural docking camera, art quality and human feel remain open.",
+    "Authored pose begins at Pilot time0; moving pilot idle to start has small measured source-pose reset, not a continuous pose blend.",
+    "Existing pilot-tail derivative remains visibly defective; new tail candidate is separate and not imported.",
+    "Native SSReviewExit requires explicit development flag and guarded isolated station profile; it replays the production transition but does not prove natural docking.",
+    "No physical keyboard/controller feel, natural pacing, audio listening or owner art approval.",
+    "Package8 prerequisite copy/signature/bytes verified; clean-machine install and launch remain unverified.",
+    "Initial failed-test process returned0; Build.ps1 now requires a fresh all-success automation report."
+  ],
+  "later_packaged_validation": "docs/validation/2026-09-13-windows-exit-package.json"
+}

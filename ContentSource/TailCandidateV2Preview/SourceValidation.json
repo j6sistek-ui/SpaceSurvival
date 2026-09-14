@@ -1,0 +1,27 @@
+{
+  "status": "INDEPENDENT_GLTF_DATA_COMPARISON_PASSED",
+  "errors": [],
+  "source_sha256": "c3e2167ed2a84f31435c3cc04c9e7af60e5fb8075b7d5090f36044c923ee9345",
+  "original_source_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "total_source_vertices": 202507,
+  "additional_tail_vertices": 2631,
+  "preserved_prior_vertices": 199876,
+  "preserved_original_body_vertices": 55743,
+  "original_bin_prefix_identical": true,
+  "all_original_uvs_indices_rig_material_data_identical": true,
+  "all_body_position_normal_joint_weight_arrays_identical": true,
+  "protected_sources_unchanged": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource\\Animation\\TailCandidate.glb": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00",
+    "ContentSource\\Animation\\Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource\\Animation\\PilotMesh.glb": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665"
+  },
+  "syntax_checked": [
+    "ContentSource/InspectTailStrip.py",
+    "ContentSource/GenerateTailCandidateV2.py",
+    "ContentSource/PreviewTailCandidateV2.py",
+    "Scripts/AuthorTailRepair.py",
+    "Scripts/ValidateTailRepair.py"
+  ],
+  "limit": "Source attributes and rig equality; native CPU-skinning checked separately by lead test"
+}

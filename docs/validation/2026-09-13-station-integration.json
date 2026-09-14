@@ -1,0 +1,180 @@
+{
+  "status": "STATION_DOMAIN_UNREAL_AND_PACKAGED_MENU_LIFECYCLE_PASSED_WITH_LIMITS",
+  "date_utc": "2026-09-13T06:38:27.607282+00:00",
+  "source_commit": "6146e9f9111eb7d73ed29ffc7aa1b535f5dbdeff",
+  "source_sha256_lf": {
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "f938dfc21abb753493fa0cc5db6892b0f06cccce8201a388ba8f8bb23edd7570",
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "9336efb658e17f96ec9563f7a73082f2d58b9c59c6be0bd2e3fd4962d92c6447",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "cc7f1ceabfcb14addd3c5c6b3cfe298e28b5dcf5a63e0078d27100f9509c744a",
+    "Source/SpaceSurvival/Private/SSJourneyAutomationTests.cpp": "d8a026c9f7636a569f3443647e5abd9a041950f5db43cc18929a2c8b623758ab",
+    "Source/SpaceSurvival/Private/SSSaveLifecycleAutomationTests.cpp": "55e19fdfdcc4d931900810ca5d116baf729a4a0f965f74cebdcccba4df82038f",
+    "Tests/CoreTests.cpp": "a960701f028a21874410e5a72a710320457823941e59d09699e09aedccf67bdd",
+    "Scripts/TestSaveLifecycle.ps1": "d6c0367a96f6703a6e3068528afebf9473c58e13293d2d20627fe0675de841d8",
+    "Scripts/Build.ps1": "8e610a46ba1c5fd3dcd04960847eeb8f7eb39605d332d33ceee02a23da895d27",
+    "Config/DefaultGame.ini": "c14845805f2760cfdb580cd413017230bf741e7b10496f2fd484728e6f3e703e"
+  },
+  "editor_builds": [
+    {
+      "log": ".agent/local/EditorStationBuild.log",
+      "sha256": "0625f189f96dc9f6c3147fbf3caa5695f34c87af32be2a88dafbe10b9bad328e",
+      "seconds": 22.63,
+      "result": "Succeeded"
+    },
+    {
+      "log": ".agent/local/EditorStationQABuild.log",
+      "sha256": "21d3d52c72f3e4bccc772830dc575990ee32f9e92db5486f974e48e38bf4d371",
+      "seconds": 6.44,
+      "result": "Succeeded"
+    }
+  ],
+  "unreal": {
+    "succeeded": 12,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "totalDuration": 3.3102662563323975,
+    "reportCreatedOn": "2026.09.13-06.35.50",
+    "report_sha256": "6bef27555b863bf63631677d303be1c15d914ef9d2f9280198193d8d98244193",
+    "log": ".agent/local/StationFinalAutomation.log",
+    "log_sha256": "8f9dcb2f459c3cc728bca83a347e3a25aff8be13966363d0ee278eab5c71c2f8",
+    "tests": [
+      {
+        "fullTestPath": "SpaceSurvival.Flight.BoostBrakeMovement",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Flight.DirectionalDodgeCollision",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Flight.FrameRateTrajectories",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Flight.ManualWeaponImpacts",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.LateEventAcceptance",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.RequiredClimaxAdmission",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Integration.StationWalkerRecovery",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Save.PayloadRoundTrip",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+        "state": "Success"
+      }
+    ]
+  },
+  "domain": {
+    "assertions": 524,
+    "strict": "passed by integration_review agent",
+    "sanitizers": "passed by integration_review agent",
+    "raw_local_log_retained": false,
+    "ci_verification_pending": false,
+    "ci": {
+      "run_id": 34743207064,
+      "core_job": 103686326144,
+      "source_job": 103686326191,
+      "both_jobs": "success",
+      "tested_merge_short_sha": "2081fb7",
+      "source_head": "6146e9f9111eb7d73ed29ffc7aa1b535f5dbdeff",
+      "base": "0cf0ca6c17fe1febe6aa5c3640189152dcefaf96",
+      "strict_and_sanitizer_log_pass_counts": [
+        524,
+        524
+      ]
+    }
+  },
+  "prepared_stations": [
+    {
+      "wave": 5,
+      "token": "607ec92522354437b36481ae521c3a19",
+      "user_dir": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\SaveLifecycle\\607ec92522354437b36481ae521c3a19\\User",
+      "evidence_type": "PREPARED_FIXTURE_NOT_GAMEPLAY",
+      "raw_receipt": "Artifacts/SaveLifecycle/607ec92522354437b36481ae521c3a19/result.json",
+      "raw_sha256": "08a111114624c3c029d67046dd0895639f4771b3f5927f129da060434ca92d48",
+      "production_save_hashes_unchanged": true,
+      "process_ids": [
+        13216,
+        37792
+      ],
+      "save_files": [
+        {
+          "name": "SS_Account_v1.sav",
+          "bytes": 2102,
+          "sha256": "20B6118E9441F45D2541971FE6701895178DCCEDECE7D866D32839F3CA7DBFF8"
+        },
+        {
+          "name": "SS_Settings_v1.sav",
+          "bytes": 2167,
+          "sha256": "BAE0E2542EC37CCA38AE2167D9C9836C1D73D0644BC0FD8A06E5202AF2C3B6DF"
+        },
+        {
+          "name": "SS_Suspend_v1.sav",
+          "bytes": 2250,
+          "sha256": "3BE88059F6EA1FEE3FFB0D3ABF9CA41EF84C2C038824EE83263CB8CF7ACA5E23"
+        }
+      ]
+    },
+    {
+      "wave": 10,
+      "token": "1a8189b79eb64c918bc338dd52ea89de",
+      "user_dir": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\SaveLifecycle\\1a8189b79eb64c918bc338dd52ea89de\\User",
+      "evidence_type": "PREPARED_FIXTURE_NOT_GAMEPLAY",
+      "raw_receipt": "Artifacts/SaveLifecycle/1a8189b79eb64c918bc338dd52ea89de/result.json",
+      "raw_sha256": "33bcb5a630611e4d198775e4533df28d56daa0bbd464302bce49f88feda9692e",
+      "production_save_hashes_unchanged": true,
+      "process_ids": [
+        46788,
+        77196
+      ],
+      "save_files": [
+        {
+          "name": "SS_Account_v1.sav",
+          "bytes": 2103,
+          "sha256": "9D2505D7E05833A57366C9D4A88EBB72592F1636F5896F93F4E3AB98F63F4082"
+        },
+        {
+          "name": "SS_Settings_v1.sav",
+          "bytes": 2167,
+          "sha256": "C55E2D439688640379DC4FB48D85956C8AF2590338FBCBA2D5118A0F00FA75CF"
+        },
+        {
+          "name": "SS_Suspend_v1.sav",
+          "bytes": 2252,
+          "sha256": "9E8316A49087EA370CEF149C3F84B3B49209FEF117D45F4B9F045ED75BE7053A"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Journey fixture uses assisted positions, shortened waves and enlarged durability.",
+    "The accelerated journey opens station menus programmatically. Separate package7 native terminal, vendor, Save & Quit and Continue checks passed with fixture state and assisted positioning; see packaged_native_receipt.",
+    "No changed completion XP or Wave11; live Station2 semantics remain pending owner acceptance.",
+    "Prepared profiles seed station state, kills, upgrades, utility and contract; not natural travel or contract completion."
+  ],
+  "packaged_native_receipt": "docs/validation/2026-09-13-windows-station-package.json"
+}

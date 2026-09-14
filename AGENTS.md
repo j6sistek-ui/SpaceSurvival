@@ -59,6 +59,8 @@ If a material deviation is technically required, document it explicitly.
 
 - Inspect the repository, available Unreal environment, dependencies, assets, build capability, and Git state before modifying implementation.
 - Prefer production-quality implementations over temporary hacks in core systems.
+- When an Unreal-specific issue stalls, consult the owner-provided [Unreal skills catalog](https://github.com/kevinpbuckley/unreal-engine-skills/tree/master/skills/core) and read the relevant skill before further trial-and-error. Validate version-specific advice against installed engine source; plugin-specific guidance does not authorize installing that plugin.
+- Assess every proposed asset, kit or tool against the whole Phase 1 scope and the owner's desired experience, not only the active task. Maintain docs/production/SOLUTION_CATALOG.md with stable IDs, WBS uses, dated evidence, separate acquisition/evaluation status, whole-project value, timing and next checks. Retain useful later options; distinguish duplicate functionality from useful new art. Do not infer purchase, installation, integration or acceptance from a wishlist or catalog entry.
 - Keep systems modular and data-driven where practical.
 - Do not hide incomplete behavior behind placeholder success states.
 - Use subagents or parallel workstreams where useful, but one lead implementation context must own architectural coherence, integration, and final Definition-of-Done verification.
@@ -113,3 +115,19 @@ Leave the repository with the delivery package required by `IMPLEMENT.md`, inclu
 - Phase 2 integration notes;
 - validation/test record;
 - clean, understandable Git state suitable for continued development.
+
+## Repository tooling workflow
+
+- Run `./Scripts/TestCore.ps1` from the repository root for portable domain checks. `Dockerfile` uses `gcc:14-bookworm` to build strict C++17 and ASan/UBSan test binaries; it does not install host packages.
+- Run `./Scripts/Format.ps1 -Check` to check C++ formatting, or omit `-Check` to apply it. `Tools.Dockerfile` supplies clang-format inside a container; `.clang-format` preserves Unreal generated-header include order.
+- Run `python Scripts/CheckProject.py`, `python -m compileall -q Scripts ContentSource`, and `python ContentSource/ValidateSources.py` for source/content-source checks using an existing Python runtime.
+- Unreal compilation, asset authoring, automation and Windows packaging use the owner's installed Unreal engine and Windows C++/SDK toolchain through `Scripts/Build.ps1`. The Linux container does not supply or validate these tools. Do not install host prerequisites without explicit owner instruction.
+- Keep runtime artifacts, intermediate files and raw editor logs in ignored `Artifacts`, `Intermediate` and `Saved` directories. Commit concise sanitized validation records under `docs/validation` and intended content assets under `Content`.
+- Never treat portable test passes or the assets-only authoring workbench as evidence of an integrated Unreal gameplay pass.
+
+## Repository skills
+
+- Codex-discoverable skills live under `.agents/skills`; see its README for selection and provenance.
+- Use `spacesurvival-gameplay-review` for requested gameplay/code quality reviews and Phase 1 acceptance work; load other skills only for the active task.
+- Imported generic skills must read `.agents/skills/PROJECT_ADAPTER.md`. They do not authorize networking, new mechanics, engine changes, tool installation, publication or merge.
+- Verify third-party API advice against the installed engine. A skill, MCP connection or passing fixture does not establish accepted gameplay.

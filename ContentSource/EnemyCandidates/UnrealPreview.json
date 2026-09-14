@@ -1,0 +1,303 @@
+{
+  "status": "NATIVE_SEPARATE_ENEMY_PREVIEWS_CAPTURED_NOT_ADOPTED",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "meshes": [
+    {
+      "kind": "Pursuer",
+      "path": "/Game/SpaceSurvival/Meshes/SM_PursuerCandidateV1.SM_PursuerCandidateV1",
+      "triangles": 14180,
+      "render_vertices": 22644,
+      "bounds_cm": [
+        [
+          -135.5,
+          -95.44202423095703,
+          -31.065528869628906
+        ],
+        [
+          135.5,
+          95.44202423095703,
+          31.065528869628906
+        ]
+      ],
+      "origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_extent_cm": 135.5,
+      "runtime_scale_at_radius150": 1.1070110701107012,
+      "source_farthest_vertex_at_radius150_cm": 165.27619631032303,
+      "material_slots": [
+        "EN_Amber",
+        "EN_Recess",
+        "EN_Titanium",
+        "EN_Ceramic"
+      ],
+      "lods": 1,
+      "uv_channels": 1,
+      "simple_collision_shapes": 0,
+      "all_section_collision_disabled": true,
+      "normal_import_method": "IMPORT_NORMALS",
+      "built_lod0_attributes_sha256": "4cbbe04fda17a603f8d24b315004a4a9d2ba5ad9a4c54ccafb11a1f32ef365fe",
+      "fbx_sha256": "15b19db07291c0b279fd36422ec68d9a931a4cc3bf242a349229fa61dd285816",
+      "arrays_present": [
+        "Binormals",
+        "Normals",
+        "PolygonVertexIndex",
+        "Tangents",
+        "UV",
+        "UVIndex",
+        "Vertices"
+      ],
+      "built_normals_finite_unit": true,
+      "built_uvs_finite_in_unit_square": true
+    },
+    {
+      "kind": "Flanker",
+      "path": "/Game/SpaceSurvival/Meshes/SM_FlankerCandidateV1.SM_FlankerCandidateV1",
+      "triangles": 14840,
+      "render_vertices": 23954,
+      "bounds_cm": [
+        [
+          -118.49999237060547,
+          -172.72935485839844,
+          -27.416711807250977
+        ],
+        [
+          118.49999237060547,
+          172.72935485839844,
+          27.416711807250977
+        ]
+      ],
+      "origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_extent_cm": 172.72935485839844,
+      "runtime_scale_at_radius150": 0.8684105844253763,
+      "source_farthest_vertex_at_radius150_cm": 161.36327960878236,
+      "material_slots": [
+        "EN_Titanium",
+        "EN_Recess",
+        "EN_Ceramic",
+        "EN_Amber"
+      ],
+      "lods": 1,
+      "uv_channels": 1,
+      "simple_collision_shapes": 0,
+      "all_section_collision_disabled": true,
+      "normal_import_method": "IMPORT_NORMALS",
+      "built_lod0_attributes_sha256": "e2d50b5472e2168d3e988408804fb0213d8fde7d95d2b6507b7e14978cbfa1bd",
+      "fbx_sha256": "d7e5641767d2f862eca8fa441c12c78cda9972f42afc6ab76ecba3a5361bd318",
+      "arrays_present": [
+        "Binormals",
+        "Normals",
+        "PolygonVertexIndex",
+        "Tangents",
+        "UV",
+        "UVIndex",
+        "Vertices"
+      ],
+      "built_normals_finite_unit": true,
+      "built_uvs_finite_in_unit_square": true
+    }
+  ],
+  "materials": [
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Titanium.M_EnemyCandidate_Titanium",
+      "source_palette_sha256": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+      "name": "EN_Titanium",
+      "base_color": [
+        0.03500000014901161,
+        0.04899999871850014,
+        0.06300000101327896,
+        1.0
+      ],
+      "metallic": 0.8299999833106995,
+      "roughness": 0.3400000035762787,
+      "emission": 0.0
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Ceramic.M_EnemyCandidate_Ceramic",
+      "source_palette_sha256": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+      "name": "EN_Ceramic",
+      "base_color": [
+        0.23999999463558197,
+        0.2800000011920929,
+        0.25999999046325684,
+        1.0
+      ],
+      "metallic": 0.11999999731779099,
+      "roughness": 0.3700000047683716,
+      "emission": 0.0
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Recess.M_EnemyCandidate_Recess",
+      "source_palette_sha256": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+      "name": "EN_Recess",
+      "base_color": [
+        0.008999999612569809,
+        0.014000000432133675,
+        0.019999999552965164,
+        1.0
+      ],
+      "metallic": 0.4000000059604645,
+      "roughness": 0.41999998688697815,
+      "emission": 0.0
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Amber.M_EnemyCandidate_Amber",
+      "source_palette_sha256": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+      "name": "EN_Amber",
+      "base_color": [
+        0.949999988079071,
+        0.11500000208616257,
+        0.012000000104308128,
+        1.0
+      ],
+      "metallic": 0.10000000149011612,
+      "roughness": 0.27000001072883606,
+      "emission": 2.5999999046325684
+    }
+  ],
+  "source_report_sha256": "13ad4d2677644e96e59b4b6082175772ffd537f0705a128df2a0f5d32e83d148",
+  "packages": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Amber.uasset",
+      "bytes": 7714,
+      "sha256": "f44beaa457d984bbf80c274092c12ee1e3a62b4289728e5f3739ec8233117a42"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Ceramic.uasset",
+      "bytes": 6572,
+      "sha256": "51b348be4e057e6a3715ded5227a68b5742eaad1565263a17a8fc5adccd4ea17"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Recess.uasset",
+      "bytes": 6566,
+      "sha256": "91063b83184900f60bfda4bb791333a306fe2f8d8d13ca7c5f4e173320c59335"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Titanium.uasset",
+      "bytes": 6578,
+      "sha256": "a7a65c45352599da90d71fea6bf2c210aa1655aa256ad07cd288e8b7b8064864"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_FlankerCandidateV1.uasset",
+      "bytes": 403933,
+      "sha256": "3f9a1c2ed4497ef0fc2f0f746242d9fa19b216b075ba9850dbde79aa74b4c3a6"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_PursuerCandidateV1.uasset",
+      "bytes": 481277,
+      "sha256": "f487c80f91ddfce92b7110d77510574e39d3d00093752e71722844bb14f5db3b"
+    }
+  ],
+  "limits": [
+    "Only two separate enemy meshes and four shared materials; no production enemy selection.",
+    "Existing Radius150 actor collision sphere retained. Max-extent fitting can leave outer corners beyond that sphere, as recorded; no additional collider.",
+    "One LOD and four draw sections per mesh; no runtime LOD/performance or final art acceptance."
+  ],
+  "existing_protected_files_unchanged": 135,
+  "images": [
+    {
+      "file": "UnrealPursuerForwardQuarter.png",
+      "sha256": "8163106934e04bc6fd09a0df8088663caf56ce770e95aeb217cedc0a888f40b5",
+      "kind": "Pursuer",
+      "view": "ForwardQuarter",
+      "scale": 1.1070110701107012,
+      "camera_cm": [
+        650,
+        -650,
+        500
+      ]
+    },
+    {
+      "file": "UnrealPursuerRearQuarter.png",
+      "sha256": "2ced42221ac1d1b33d349ccb743104bc7b72ab4be18bf3c3aff1c63f2440a28e",
+      "kind": "Pursuer",
+      "view": "RearQuarter",
+      "scale": 1.1070110701107012,
+      "camera_cm": [
+        -650,
+        -650,
+        450
+      ]
+    },
+    {
+      "file": "UnrealPursuerTopSilhouette.png",
+      "sha256": "ef30db12919cab4efbbba68edda75e9a07a64761dc76c0b398b6183ef53c9890",
+      "kind": "Pursuer",
+      "view": "TopSilhouette",
+      "scale": 1.1070110701107012,
+      "camera_cm": [
+        0.01,
+        0,
+        1000
+      ]
+    },
+    {
+      "file": "UnrealPursuerHeadOn.png",
+      "sha256": "99e22900591f68038037eeea08a41260b0db0276b8d14969bfceac45f324b46d",
+      "kind": "Pursuer",
+      "view": "HeadOn",
+      "scale": 1.1070110701107012,
+      "camera_cm": [
+        800,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "UnrealFlankerForwardQuarter.png",
+      "sha256": "0e922ddaef375422116d3c2a6cb20468aafac90a0831a1d3d71e6dcf557d10c3",
+      "kind": "Flanker",
+      "view": "ForwardQuarter",
+      "scale": 0.8684105844253763,
+      "camera_cm": [
+        650,
+        -650,
+        500
+      ]
+    },
+    {
+      "file": "UnrealFlankerRearQuarter.png",
+      "sha256": "ea6506ea2ecb244680e92ec01fc1ac89fb2a641efbf515a27606ecea3a75d43e",
+      "kind": "Flanker",
+      "view": "RearQuarter",
+      "scale": 0.8684105844253763,
+      "camera_cm": [
+        -650,
+        -650,
+        450
+      ]
+    },
+    {
+      "file": "UnrealFlankerTopSilhouette.png",
+      "sha256": "7de65b2097c607cc7e71ce3f30b77942ad6dc58dabd5f830e5031660624536b0",
+      "kind": "Flanker",
+      "view": "TopSilhouette",
+      "scale": 0.8684105844253763,
+      "camera_cm": [
+        0.01,
+        0,
+        1000
+      ]
+    },
+    {
+      "file": "UnrealFlankerHeadOn.png",
+      "sha256": "06192773d0bfb20dc66726dfd5cab4c232027fddf0d199f2d746c7a652bf61c4",
+      "kind": "Flanker",
+      "view": "HeadOn",
+      "scale": 0.8684105844253763,
+      "camera_cm": [
+        800,
+        0,
+        0
+      ]
+    }
+  ],
+  "preview_method": "Unsaved StaticMeshActor, unchanged +X-forward orientation, uniform scale150/maxBoxExtent, three studio directional lights, ordinary shadows. HeadOn camera lies on +X, matching ASSEnemy::Tick's existing direction toward the player; no AI or physical input simulated."
+}

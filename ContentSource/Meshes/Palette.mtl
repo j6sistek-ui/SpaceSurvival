@@ -1,0 +1,65 @@
+newmtl M_Hull
+Kd 0.075 0.115 0.15
+Ks 0.5 0.5 0.5
+Ns 68.0
+illum 2
+
+newmtl M_Gold
+Kd 0.48 0.255 0.075
+Ks 0.5 0.5 0.5
+Ns 72.0
+illum 2
+
+newmtl M_Rock
+Kd 0.19 0.16 0.145
+Ks 0.5 0.5 0.5
+Ns 13.0
+illum 2
+
+newmtl M_Cyan
+Kd 0.025 0.66 0.85
+Ks 0.5 0.5 0.5
+Ns 75.0
+illum 2
+
+newmtl M_Amber
+Kd 1.0 0.33 0.035
+Ks 0.5 0.5 0.5
+Ns 70.0
+illum 2
+
+newmtl M_Violet
+Kd 0.5 0.14 0.87
+Ks 0.5 0.5 0.5
+Ns 70.0
+illum 2
+
+newmtl M_Hazard
+Kd 0.28 0.22 0.19
+Ks 0.5 0.5 0.5
+Ns 30.0
+illum 2
+
+newmtl M_Emissive
+Kd 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 70.0
+illum 2
+
+newmtl M_Space
+Kd 0.0003 0.0005 0.0015
+Ks 0.5 0.5 0.5
+Ns 1.0
+illum 2
+
+newmtl M_Star
+Kd 0.55 0.73 1.0
+Ks 0.5 0.5 0.5
+Ns 1.0
+illum 2
+
+newmtl M_StarWarm
+Kd 1.0 0.65 0.39
+Ks 0.5 0.5 0.5
+Ns 1.0
+illum 2

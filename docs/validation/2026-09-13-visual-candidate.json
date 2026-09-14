@@ -1,0 +1,103 @@
+{
+  "status": "UNCooked_NATIVE_VISUAL_CHECK_WITH_OPEN_ISSUES",
+  "dateUtc": "2026-09-13",
+  "processId": 59660,
+  "profile": "Artifacts/SaveLifecycle/f0634e884b9c49c5977a56451f299ce1",
+  "binaryAndAssetsBeforeNextRebuild": [
+    {
+      "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 1343488,
+      "sha256": "3c6e0606cae3fbd82caf1bc48e95abebbcbdec764a488ffb1d79062260115aca"
+    },
+    {
+      "path": "Content/SpaceSurvival/Meshes/SM_AcornShipV2.uasset",
+      "bytes": 1927128,
+      "sha256": "1b1c9e7c02e9041ca68efc503cdc2c12d4e3da7efb4477324902c9fe4270f1e3"
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_Space.uasset",
+      "bytes": 17639,
+      "sha256": "1352430c92730af207767497787fb0c4e333abd5d87cff0ecc33fa71582fb993"
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_StationDeck.uasset",
+      "bytes": 20099,
+      "sha256": "e90d895cd942329bf4af71efeff9441c1f077f2f0f3cc5b408b2510e02fd156f"
+    },
+    {
+      "path": "Content/SpaceSurvival/Textures/T_SpacePanorama_starless_v2.uasset",
+      "bytes": 2224044,
+      "sha256": "560de813019d4cf39512757f19a382caf042c41e88595afc617e2221426bf5ef"
+    },
+    {
+      "path": "Content/SpaceSurvival/Textures/T_StationDeck_ARM.uasset",
+      "bytes": 24817468,
+      "sha256": "cb5d53d454965686ba27a117d069512dc63f7ccf3b55902b8831e4817d907737"
+    },
+    {
+      "path": "Content/SpaceSurvival/Textures/T_StationDeck_Color.uasset",
+      "bytes": 22233830,
+      "sha256": "63ad12dc7c6a89f0b1601f343b905a3c69bc86a91e287cdb1768ec58226d5623"
+    },
+    {
+      "path": "Content/SpaceSurvival/Textures/T_StationDeck_Normal.uasset",
+      "bytes": 21955574,
+      "sha256": "e2cfe37d645835e22a4b7daa350019b4afa8d209c2bd15f9277b07d96769a9d4"
+    }
+  ],
+  "log": ".agent/local/VisualCandidatePreview2.log",
+  "logSha256": "02dae3fc794da89060aa72b86652773ed98a19d4a3d3230c7b8ffa68b5ac2b56",
+  "observed": [
+    "Native shell to Home hangar: deck texture and starter ship render",
+    "Native shell New run: starter ship and calmer starless panorama render, asteroids enter flight",
+    "Normal Alt+F4 closure08:06:13.942 UTC; process absent; production save list/size/SHA unchanged"
+  ],
+  "limits": [
+    "Uncooked Development game, not packaged validation",
+    "No physical control feel or natural balance acceptance",
+    "Asteroid surfaces, station props and pilot hand contact remain provisional",
+    "Sky still visually soft; no complete wrap/pole flight review",
+    "New tail mesh was not loaded by this preview"
+  ],
+  "resourceCheck": {
+    "utc": "08:03:54.879",
+    "sky": {
+      "size": [
+        2048,
+        1024
+      ],
+      "residentKiB": 2752,
+      "format": "BC7",
+      "mips": 12
+    },
+    "deck": {
+      "maximumSize": [
+        2048,
+        2048
+      ],
+      "observedResidentSize": [
+        64,
+        64
+      ],
+      "maximumKiB": {
+        "ARM": 2752,
+        "Color": 5504,
+        "Normal": 5504
+      },
+      "formats": {
+        "ARM": "DXT1",
+        "Color": "BC7",
+        "Normal": "BC5"
+      },
+      "issue": "Runtime-created floor batch lacked residency. ForceMipStreaming added before registration after this preview; verification pending."
+    }
+  },
+  "warnings": [
+    "Engine DataflowNodes FDataflowToolNodeSnapshot::Date initialization error during uncooked Editor startup",
+    "Engine r.MotionVectorSimulation render-thread warning"
+  ],
+  "priorAttempt": {
+    "pid": 61836,
+    "outcome": "Hidden launch exposed no addressable window; only owned exact process terminated, then interactive launch succeeded"
+  }
+}

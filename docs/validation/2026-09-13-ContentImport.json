@@ -1,0 +1,21 @@
+{
+  "status": "ASSETS_IMPORTED_GAMEPLAY_CLASSES_PENDING",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "source_glb_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "saved_assets": [
+    "/Game/SpaceSurvival/Audio/Alarm.Alarm",
+    "/Game/SpaceSurvival/Audio/Cannon.Cannon",
+    "/Game/SpaceSurvival/Audio/Engine.Engine",
+    "/Game/SpaceSurvival/Audio/Impact.Impact",
+    "/Game/SpaceSurvival/Audio/Laser.Laser",
+    "/Game/SpaceSurvival/Audio/MusicBase.MusicBase",
+    "/Game/SpaceSurvival/Audio/MusicClimax.MusicClimax",
+    "/Game/SpaceSurvival/Audio/MusicPressure.MusicPressure",
+    "/Game/SpaceSurvival/Audio/Pickup.Pickup",
+    "/Game/SpaceSurvival/Audio/Station.Station",
+    "/Game/SpaceSurvival/Authoring/P_PilotImport.P_PilotImport",
+    "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot"
+  ],
+  "errors": [],
+  "limits": "Import does not verify visual quality, character orientation, input, gameplay, or performance"
+}

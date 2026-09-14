@@ -1,0 +1,37 @@
+{
+  "status": "SOURCE_CI_PASSED_NOT_UNREAL_OR_PLAYER_ACCEPTANCE",
+  "observed_utc": "2026-09-13T06:03:00Z",
+  "repository": "j6sistek-ui/SpaceSurvival",
+  "pull_request": 3,
+  "head_sha": "1ff473f2d37aa4c8e717fea75664eb2dd29dfa31",
+  "base_sha": "0cf0ca6c17fe1febe6aa5c3640189152dcefaf96",
+  "tested_pr_merge_sha": "b81c7a54236f2a79eccc822fe3c2c88368177359",
+  "workflow_run_id": 34741749101,
+  "workflow_url": "https://github.com/j6sistek-ui/SpaceSurvival/actions/runs/34741749101",
+  "source_job": {
+    "id": 103682494581,
+    "conclusion": "success",
+    "checks": [
+      "Source project/original hero validation",
+      "Python syntax",
+      "Container C++ formatting",
+      "Whitespace"
+    ]
+  },
+  "core_job": {
+    "id": 103682494677,
+    "conclusion": "success",
+    "gcc_image": "gcc:14-bookworm",
+    "image_digest": "sha256:5e927c284bf55a7dc796262e311a0703344f62f41f5621eb56843111b1d37e15",
+    "strict_assertions": 404,
+    "sanitizer_assertions": 404,
+    "strict_log_timestamp": "2026-09-13T06:02:25.3620807Z",
+    "sanitizer_log_timestamp": "2026-09-13T06:02:32.9330713Z",
+    "pass_text": "PASS 404 portable gameplay-domain assertions. Unreal integration and gameplay feel are unverified."
+  },
+  "limits": [
+    "CI checks the recorded PR merge ref, not a Windows package.",
+    "Unreal build/integration/storage and physical player acceptance are separate records.",
+    "Subsequent documentation and analyzer changes are outside this source-check snapshot."
+  ]
+}

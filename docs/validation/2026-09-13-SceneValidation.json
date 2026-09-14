@@ -1,0 +1,46 @@
+{
+  "repair": false,
+  "actors": [
+    {
+      "label": "DistantStarfield",
+      "location": "<Struct 'Vector' (0x000001F5930538A0) {x: 0.000000, y: 0.000000, z: 0.000000}>",
+      "collision_before": "<CollisionEnabled.NO_COLLISION: 0>",
+      "profile_before": "NoCollision",
+      "actor_collision_before": false,
+      "collision_after": "<CollisionEnabled.NO_COLLISION: 0>",
+      "actor_collision_after": false
+    },
+    {
+      "label": "DeepSpaceBackdrop",
+      "location": "<Struct 'Vector' (0x000001F59308D460) {x: 0.000000, y: 0.000000, z: 0.000000}>",
+      "collision_before": "<CollisionEnabled.NO_COLLISION: 0>",
+      "profile_before": "NoCollision",
+      "actor_collision_before": false,
+      "collision_after": "<CollisionEnabled.NO_COLLISION: 0>",
+      "actor_collision_after": false
+    }
+  ],
+  "materials": [
+    {
+      "path": "/Game/SpaceSurvival/Character/model-rigged_material_0.model-rigged_material_0",
+      "skeletal_before": true,
+      "skeletal_after": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_Hull.M_Hull",
+      "instanced_before": true,
+      "instanced_after": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_Gold.M_Gold",
+      "instanced_before": true,
+      "instanced_after": true
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan",
+      "instanced_before": true,
+      "instanced_after": true
+    }
+  ],
+  "errors": []
+}

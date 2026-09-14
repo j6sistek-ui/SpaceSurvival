@@ -1,0 +1,129 @@
+{
+  "status": "COMPILED_AND_RENDERED_CANDIDATE_NOT_OWNER_ACCEPTANCE",
+  "project_status": "PARTIAL",
+  "recorded_utc": "2026-09-13T10:03Z",
+  "base_commit": "0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80",
+  "source_state": "Three modified HUD/world presentation files; final layout repair is later than the rendered fixture. Package10 excludes this change.",
+  "final_sources": [
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Source\\SpaceSurvival\\Private\\SSHUD.cpp",
+      "bytes": 21825,
+      "sha256": "e6107d2b3c4c4ac8b7d125faa05e3175080725626d49ac88063ac912e1b4e369"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Source\\SpaceSurvival\\Private\\SSWorldActors.cpp",
+      "bytes": 64825,
+      "sha256": "5a905c659ab07b430f82f6661799938784d0a7aff45734d1a71505875e696c6c"
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Source\\SpaceSurvival\\Public\\SSHUD.h",
+      "bytes": 944,
+      "sha256": "786e3c78603819a6f986b5c47f18202ec1b2ac45f9360fb2f9fda81a343e5ef3"
+    }
+  ],
+  "builds": [
+    {
+      "log": {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\CombatCueEditor.log",
+        "bytes": 4633,
+        "sha256": "a6ea70db6e32d7a7cddbcdeac242e41462fce4de3952ec0da6b33f2b9aed8bef"
+      },
+      "result": "failed",
+      "seconds": 11.19,
+      "cause": "HUD used protected Kind and GetLabel through AActor; fixed to existing GetKind and checked ASSWorldBody cast."
+    },
+    {
+      "log": {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\CombatCueEditor2.log",
+        "bytes": 2940,
+        "sha256": "a77410b0bfe020fcdc51c4901444d53902cf40071c8649e4ea3b7b5ed846b3a5"
+      },
+      "result": "success",
+      "seconds": 5.19
+    },
+    {
+      "log": {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\CombatCueEditor3.log",
+        "bytes": 2939,
+        "sha256": "51e8ed8e8ab2027ebab37da3f7d5281d773296fe109122654f17998347e21ba3"
+      },
+      "result": "success",
+      "seconds": 6.43,
+      "limit": "Subsequent label bounds/radar offset/glyph size repair; no gameplay change."
+    }
+  ],
+  "tests": {
+    "report": {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\.agent\\local\\CombatCue-20260913T095533-tests.json",
+      "bytes": 25054,
+      "sha256": "9426c3dfc52c9e91c930050c38eb7c4d3b741883468a614bf7cfb09b11fb53e2"
+    },
+    "tested_identities": [
+      {
+        "Path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+        "Hash": "9D3F36F5BEF8BBBFD3DF4645FF3EA398E0475DEC1E48C4648EDEC916FA36A594"
+      },
+      {
+        "Path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\UnrealTests\\index.json",
+        "Hash": "9426C3DFC52C9E91C930050C38EB7C4D3B741883468A614BF7CFB09B11FB53E2"
+      }
+    ],
+    "succeeded": 21,
+    "failed": 0,
+    "warnings": 0,
+    "not_run": 0,
+    "duration_seconds": 2.3781089782714844,
+    "limit": "21 existing integrated tests before the final HUD-only layout repair. They do not verify rendered layout."
+  },
+  "native": {
+    "token": "99a48430f03d48019d92fb2e895448ee",
+    "process_id": 35328,
+    "success": true,
+    "files": [
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\99a48430f03d48019d92fb2e895448ee\\result.json",
+        "bytes": 37642,
+        "sha256": "3ccf78c35c35e85761bc38d89fcc143b8431c1a3ec27a7b6c75cf6a5489cee99"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\99a48430f03d48019d92fb2e895448ee\\fixture.json",
+        "bytes": 1487,
+        "sha256": "8af520a3d2400549f19cee5db1f7acd273d6ca316e195cc74e1d8430175ea49c"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\99a48430f03d48019d92fb2e895448ee\\performance.json",
+        "bytes": 57163,
+        "sha256": "d761f4c3a866ddfa946a5d72558f41ea33f8b95ce2bc5d9620b6b8d268491cc4"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\99a48430f03d48019d92fb2e895448ee\\source-before.json",
+        "bytes": 29944,
+        "sha256": "18ef18c91a9f48ea48fda0aa2fe329d11b27be5f4843be0ba7d6990f04796acb"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\99a48430f03d48019d92fb2e895448ee\\Endgame.csv",
+        "bytes": 32867870,
+        "sha256": "e64f72ad627506a4e02a22d840e04ef286661671c56779596cad9fb652a0e0ed"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\99a48430f03d48019d92fb2e895448ee\\Rendered.log",
+        "bytes": 219860,
+        "sha256": "50d3cf6e344852479663986f5f12ce858f859f325f8ae61069d6cef7faead10a"
+      }
+    ],
+    "source_unchanged_during_capture": true,
+    "artifacts_unchanged_during_capture": true,
+    "observed_by_lead": [
+      "Wave9 enemy silhouettes without surrounding emissive halos, archetype symbols and radial contacts display.",
+      "Wave10 enemy cues with collision warning.",
+      "Announcement overlapped CONTACTS header; repaired afterward by moving radar down20scaledpixels."
+    ],
+    "not_observed": [
+      "Final layout repair in a renderer",
+      "Reliable offscreen shot recognition by a human",
+      "Every soft target label at maximum UI scale",
+      "Physical input, listening, natural fairness or owner art acceptance"
+    ]
+  },
+  "behavior_boundary": "Existing enemy charge timer, aim commitment, projectile creation, damage, collisions and archetypes are unchanged. Same DynamicMaterial charge pulse now lights compact muzzle mesh. HUD reads IsChargingShot; no gameplay mutation."
+}

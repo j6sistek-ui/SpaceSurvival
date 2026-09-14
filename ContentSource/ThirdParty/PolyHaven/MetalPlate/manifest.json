@@ -1,0 +1,47 @@
+{
+  "asset": "Metal Plate",
+  "author": "Rob Tuytel",
+  "provider": "Poly Haven",
+  "asset_url": "https://polyhaven.com/a/metal_plate",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "license_checked_utc": "2026-09-13",
+  "retrieved_utc": "2026-09-13T07:45:13.371424+00:00",
+  "physical_width_cm": 50,
+  "use": "Station deck panels only; original texture bytes preserved, shader tint/desaturation applied in Unreal.",
+  "maps": [
+    {
+      "kind": "diff",
+      "file": "metal_plate_diff_2k.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/metal_plate/metal_plate_diff_2k.png",
+      "bytes": 21404867,
+      "sha256": "8d56227b8c3b806107df7ffb91e439b7e383943827096ed911b29a7108ca7a01",
+      "width": 2048,
+      "height": 2048,
+      "bit_depth": 16,
+      "png_color_type": 2
+    },
+    {
+      "kind": "arm",
+      "file": "metal_plate_arm_2k.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/metal_plate/metal_plate_arm_2k.png",
+      "bytes": 22810501,
+      "sha256": "383ab1e60679bab570df23f52a4e316903492421e6eafd3b07b3063a0b2cbfc1",
+      "width": 2048,
+      "height": 2048,
+      "bit_depth": 16,
+      "png_color_type": 2
+    },
+    {
+      "kind": "nor_dx",
+      "file": "metal_plate_nor_dx_2k.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/metal_plate/metal_plate_nor_dx_2k.png",
+      "bytes": 20489669,
+      "sha256": "d5234e67e5e007a9cc8cb8f8d68da36bce17f9c3234af382a95dc5dd9e44477a",
+      "width": 2048,
+      "height": 2048,
+      "bit_depth": 16,
+      "png_color_type": 2
+    }
+  ]
+}

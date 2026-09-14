@@ -1,0 +1,59 @@
+{
+  "recorded_utc": "2026-09-13T04:28:26Z",
+  "source_commit": null,
+  "binding": "SHA-256 of source and tests in the executed Docker image, matched against the current local files. These changes were uncommitted when recorded; no HEAD or PR-head binding is claimed.",
+  "supersedes_for_current_domain_source": "docs/validation/2026-09-13-domain.json",
+  "execution_time_utc": null,
+  "execution_time_note": "Exact test execution timestamp was not captured; the two PASS outputs and exit code were observed during this implementation session before this receipt was written.",
+  "image": {
+    "tag_used": "spacesurvival-history-checks:latest",
+    "observed_image_id": "sha256:91fef5f1ffb5308e12ef8c4c3f668b01dd62349c0405879265b3ce39c8dfeb47",
+    "build_manifest_list": "sha256:91fef5f1ffb5308e12ef8c4c3f668b01dd62349c0405879265b3ce39c8dfeb47",
+    "build_image_manifest": "sha256:4286907cbdac06ddecd4b1693212b86604e80ff6b8ba8e3659bd2aa391e6ce6f",
+    "base": "gcc:14-bookworm",
+    "base_digest": "sha256:5e927c284bf55a7dc796262e311a0703344f62f41f5621eb56843111b1d37e15"
+  },
+  "matched_image_and_local_sha256": {
+    "Source/SpaceSurvival/Domain/SurvivalCore.h": "f1ed5a35ec11a5c25753ba1b0e15ac3dc0ad88b95130c2f7fcaefb438288b755",
+    "Source/SpaceSurvival/Domain/SurvivalCore.cpp": "ea2031d1b6b94d670aebd45ab732a5e161a8a8457b55f435b0d2e88b75d4486c",
+    "Tests/CoreTests.cpp": "f4e2abd330d7325700904b806a1eee35c580f18b3a8a607ffde64c25cfa3639c",
+    "Tests/RunCore.sh": "68292fd548e208c44d94ea059b2ef9fc440e8a21b8e2d6be9d07c771b4a6a17b"
+  },
+  "local_dockerfile_sha256": "8b06c8bc8e98b7e4bb878f10b60e405db20d0fd3a9a694fe27357955218c2e26",
+  "build_command": "docker build --progress plain -t spacesurvival-history-checks .",
+  "run_command": "docker run --rm spacesurvival-history-checks",
+  "build_exit_code": 0,
+  "run_exit_code": 0,
+  "strict": {
+    "compiler": "GCC 14, C++17",
+    "flags": "-std=c++17 -O2 -Wall -Wextra -Wpedantic -Werror",
+    "result": "PASS 372 portable gameplay-domain assertions. Unreal integration and gameplay feel are unverified."
+  },
+  "sanitizers": {
+    "compiler": "GCC 14, C++17",
+    "flags": "-std=c++17 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+    "result": "PASS 372 portable gameplay-domain assertions. Unreal integration and gameplay feel are unverified.",
+    "diagnostics_observed": false
+  },
+  "coverage_added": [
+    "Newest-first history records for death only, capped at 10 with oldest eviction",
+    "Run ID, wave, score, XP, kills, earned credits, ship and active weapon round trip",
+    "Once-only death and retained historical ID replay rejection",
+    "Abandonment reset adds neither XP nor history",
+    "Account payload v1 migration to v2 without inventing unavailable historical fields",
+    "Malformed, truncated, oversized, duplicate, invalid enum, inconsistent summary and out-of-range history rejection"
+  ],
+  "additional_source_checks": {
+    "command": "python Scripts/CheckProject.py",
+    "result": "PASS 20 source structural checks. Unreal build, content import and gameplay remain separate gates.",
+    "automation_source_diff_check": "git diff --check -- Source/SpaceSurvival/Private/SSAutomationTests.cpp passed"
+  },
+  "new_unreal_disk_test": {
+    "name": "SpaceSurvival.Save.PlatformDiskRoundTrip",
+    "status": "NOT_RUN",
+    "source": "Source/SpaceSurvival/Private/SSAutomationTests.cpp",
+    "source_sha256_at_recording": "ff5c994370100ef5be39270c279ddf1c40f9a3eef9024ed407b60c866e7c1bc5",
+    "intended_scope": "UE platform SaveGame disk serialization, account/history and station payload preservation, invalid consumed-marker overwrite and exact GUID QA-slot cleanup within one process. It does not exercise process restart or the full GameInstance save transaction."
+  },
+  "limits": "Portable rules only. No Unreal C++ build, UHT pass, execution of the new disk test, integrated gameplay, controller, process-restart, crash-recovery, performance or near-alpha quality claim is established by this receipt."
+}

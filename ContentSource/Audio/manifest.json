@@ -1,0 +1,173 @@
+{
+  "status": "Generated provisional audio; Unreal mix/listening validation pending",
+  "source": "Original mathematical synthesis; no samples or external assets",
+  "music": {
+    "bpm": 96,
+    "bars": 8,
+    "beats_per_bar": 4,
+    "key": "D minor",
+    "seconds": 20
+  },
+  "assets": [
+    {
+      "name": "Engine",
+      "seconds": 4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -14.19,
+      "rms_dbfs": -20.65,
+      "sha256": "56d119e07d8252cf3336e41527d33772be9cdb5cfa993a15896d16d95970c5d2"
+    },
+    {
+      "name": "Laser",
+      "seconds": 0.25,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -10.18,
+      "rms_dbfs": -22.69,
+      "sha256": "ddb0c603d23ac98ca5475db32ab40afce6a5b4db679674c389c9fcaebe926e84"
+    },
+    {
+      "name": "Cannon",
+      "seconds": 0.7,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -5.73,
+      "rms_dbfs": -21.38,
+      "sha256": "b8a570d93e42d662403132e4d05f388be515f543ddba508228bcf496cb2cce61"
+    },
+    {
+      "name": "Impact",
+      "seconds": 0.8,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -8.6,
+      "rms_dbfs": -24.24,
+      "sha256": "de65402ca87f664f63d789aadb37e2dd27a5d24af601aa3ba6759e49c15b6bc7"
+    },
+    {
+      "name": "Pickup",
+      "seconds": 0.55,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -13.33,
+      "rms_dbfs": -26.58,
+      "sha256": "883523071118373b60ec68b9866dd6f7827b8786734a90d4b4a90a360546bb18"
+    },
+    {
+      "name": "Alarm",
+      "seconds": 0.65,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -14.37,
+      "rms_dbfs": -28.69,
+      "sha256": "ee237b8f9c52863f21cf4b3b28b012a05cfb250eea2de94d47001b314ec653f3"
+    },
+    {
+      "name": "Station",
+      "seconds": 4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -24.55,
+      "rms_dbfs": -29.14,
+      "sha256": "3be5a1472247d7b4cfe228dd791978da89e36b51a1ad5a60b023f1322eae727b"
+    },
+    {
+      "name": "ElectricalCharge",
+      "seconds": 2,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -25.13,
+      "rms_dbfs": -29.65,
+      "sha256": "ee2496d74bc4718a4b153dff6c88b5b7aac6f9fa0bfd7c74ac2a615bf486cb55"
+    },
+    {
+      "name": "ElectricalDischarge",
+      "seconds": 0.6,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -9.33,
+      "rms_dbfs": -27.36,
+      "sha256": "0008ce22955d5051d01a284dceb91e1d2f6b2afe6260d659ef252f4526f91149"
+    },
+    {
+      "name": "GravityAmbience",
+      "seconds": 4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": true,
+      "peak_dbfs": -19.08,
+      "rms_dbfs": -25.47,
+      "sha256": "be8d9d83dd7ad5f85f3f70508fd8265e1e201ea884a870cef84248de79be3b9e"
+    },
+    {
+      "name": "EnemyFire",
+      "seconds": 0.4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -13.8,
+      "rms_dbfs": -26.91,
+      "sha256": "1b7d0c5ce1ef98311bb696b659d4c08f19d3c9be5bc22afdb4939dc6b853c5ea"
+    },
+    {
+      "name": "EnemyBreak",
+      "seconds": 0.9,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -8.36,
+      "rms_dbfs": -24.4,
+      "sha256": "ab217f118b62ba2ccca508d59bc3a764dc745667c94d5f2111b46c36f48d31cc"
+    },
+    {
+      "name": "DebrisBreak",
+      "seconds": 0.65,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -12.0,
+      "rms_dbfs": -28.19,
+      "sha256": "1fb888104e85455b0fbca36dfc1ddf7b9355f7cee210c2da35abd4f8c615738f"
+    },
+    {
+      "name": "MusicBase",
+      "seconds": 20,
+      "sample_rate": 32000,
+      "channels": 2,
+      "loop": true,
+      "peak_dbfs": -19.89,
+      "rms_dbfs": -28.79,
+      "sha256": "8d022434f7a9bfc4f45710badcd0b17e1ad966a2c46dbc60ed300f7a15d999d7"
+    },
+    {
+      "name": "MusicPressure",
+      "seconds": 20,
+      "sample_rate": 32000,
+      "channels": 2,
+      "loop": true,
+      "peak_dbfs": -23.19,
+      "rms_dbfs": -36.69,
+      "sha256": "8c53ec88731fb0c90ba696c15433db85e112891cfeba6dbee68e6da6ab521280"
+    },
+    {
+      "name": "MusicClimax",
+      "seconds": 20,
+      "sample_rate": 32000,
+      "channels": 2,
+      "loop": true,
+      "peak_dbfs": -19.08,
+      "rms_dbfs": -32.67,
+      "sha256": "6ae740fc137c13cb4cabdbbc6fb0229e650b1f53e0ecef38b426f1a0ba2037b5"
+    }
+  ]
+}

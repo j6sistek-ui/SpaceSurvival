@@ -1,0 +1,168 @@
+{
+  "status": "SEPARATE_SWIFT_MESH_AUTHORED_FRESH_VALIDATION_PENDING",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "mesh": "/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1.SM_SwiftCandidateV1",
+  "materials": [
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.M_AcornV2_GraphiteStructure",
+      "source_material": "AC01_GraphiteStructure",
+      "values": {
+        "name": "AC01_GraphiteStructure",
+        "base_color": [
+          0.017999999225139618,
+          0.027000000700354576,
+          0.03200000151991844,
+          1.0
+        ],
+        "metallic": 0.7200000286102295,
+        "roughness": 0.2800000011920929,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      "translucent": false,
+      "existing_material_changed": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.M_AcornV2_ChampagneEdges",
+      "source_material": "AC01_ChampagneEdges",
+      "values": {
+        "name": "AC01_ChampagneEdges",
+        "base_color": [
+          0.6800000071525574,
+          0.38999998569488525,
+          0.12999999523162842,
+          1.0
+        ],
+        "metallic": 0.8500000238418579,
+        "roughness": 0.20999999344348907,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      "translucent": false,
+      "existing_material_changed": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav.M_AcornV2_IonAndNav",
+      "source_material": "AC01_IonAndNav",
+      "values": {
+        "name": "AC01_IonAndNav",
+        "base_color": [
+          0.014999999664723873,
+          0.4000000059604645,
+          0.5799999833106995,
+          1.0
+        ],
+        "metallic": 0.18000000715255737,
+        "roughness": 0.20000000298023224,
+        "emission": 3.5,
+        "transmission": 0.0
+      },
+      "translucent": false,
+      "existing_material_changed": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen.M_AcornV2_Windscreen",
+      "source_material": "AC01_Windscreen",
+      "values": {
+        "name": "AC01_Windscreen",
+        "base_color": [
+          0.3799999952316284,
+          0.6700000166893005,
+          0.7200000286102295,
+          1.0
+        ],
+        "metallic": 0.0,
+        "roughness": 0.06499999761581421,
+        "emission": 0.0,
+        "transmission": 0.9200000166893005
+      },
+      "translucent": true,
+      "existing_material_changed": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.M_AcornV2_CockpitPadding",
+      "source_material": "AC01_CockpitPadding",
+      "values": {
+        "name": "AC01_CockpitPadding",
+        "base_color": [
+          0.008999999612569809,
+          0.014000000432133675,
+          0.01600000075995922,
+          1.0
+        ],
+        "metallic": 0.0,
+        "roughness": 0.550000011920929,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      "translucent": false,
+      "existing_material_changed": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.M_AcornV2_IvoryPanels",
+      "source_material": "AC01_IvoryPanels",
+      "values": {
+        "name": "AC01_IvoryPanels",
+        "base_color": [
+          0.8700000047683716,
+          0.8600000143051147,
+          0.7799999713897705,
+          1.0
+        ],
+        "metallic": 0.05999999865889549,
+        "roughness": 0.23999999463558197,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      "translucent": false,
+      "existing_material_changed": false
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.M_AcornV2_MachinedTitanium",
+      "source_material": "AC01_MachinedTitanium",
+      "values": {
+        "name": "AC01_MachinedTitanium",
+        "base_color": [
+          0.23000000417232513,
+          0.27000001072883606,
+          0.30000001192092896,
+          1.0
+        ],
+        "metallic": 0.9200000166893005,
+        "roughness": 0.2199999988079071,
+        "emission": 0.0,
+        "transmission": 0.0
+      },
+      "translucent": false,
+      "existing_material_changed": false
+    }
+  ],
+  "source_report_sha256": "b730855c4b08a3fa86d4238d72acbbd21ee720ceb9bc79bb4fb5d890b43d161d",
+  "obj_sha256": "5aff093c056f7e49b2038a435a05fb6714d2c046be59a7fafa786658881dfe8c",
+  "pilot_transform": {
+    "position_cm": [
+      -15,
+      0,
+      72
+    ],
+    "unreal_yaw_degrees": -90,
+    "blender_z_rotation_degrees": 90,
+    "scale": 1.5
+  },
+  "existing_protected_files_unchanged": 147,
+  "new_content_assets": [
+    "Content\\SpaceSurvival\\Meshes\\SM_SwiftCandidateV1.uasset"
+  ],
+  "package": {
+    "path": "Content\\SpaceSurvival\\Meshes\\SM_SwiftCandidateV1.uasset",
+    "bytes": 1378975,
+    "sha256": "0f32ff9616546f444607d7016f4e8f873e5b88b63d95e50aa844ed92e209b82e"
+  },
+  "limits": [
+    "One separate mesh only; existing seven material packages unchanged.",
+    "No runtime selection, stat/collision/pilot transform or author-main pipeline change.",
+    "Source cockpit degeneracies are retained; native cleanup count is a separate fresh check.",
+    "No native appearance, animated clearance, performance or owner quality acceptance from import."
+  ]
+}

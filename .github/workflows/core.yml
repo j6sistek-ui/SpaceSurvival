@@ -1,0 +1,38 @@
+name: Phase 1 source checks
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    container: gcc:14-bookworm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile strict C++ domain tests
+        run: g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic -Werror -ISource/SpaceSurvival/Domain Source/SpaceSurvival/Domain/SurvivalCore.cpp Tests/CoreTests.cpp -o /tmp/core-tests
+      - name: Run deterministic domain acceptance tests
+        run: /tmp/core-tests
+      - name: Compile and run memory / undefined behavior checks
+        run: |
+          g++ -std=c++17 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -ISource/SpaceSurvival/Domain Source/SpaceSurvival/Domain/SurvivalCore.cpp Tests/CoreTests.cpp -o /tmp/core-sanitized
+          /tmp/core-sanitized
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate source project and original asset
+        run: python3 Scripts/CheckProject.py
+      - name: Exact text and binary source identity rules
+        run: python3 Tests/TestSourceDigests.py
+      - name: Validate actual fresh Git source export
+        run: python3 Scripts/TestFreshCheckout.py
+      - name: Python syntax
+        run: python3 -m compileall -q Scripts ContentSource
+      - name: C++ formatting in container
+        run: |
+          docker build -f Tools.Dockerfile -t spacesurvival-format .
+          docker run --rm --entrypoint /bin/sh --mount "type=bind,source=$PWD,target=/workspace,readonly" spacesurvival-format -c "find Source Tests -type f \( -name '*.cpp' -o -name '*.h' \) -print0 | xargs -0 clang-format --dry-run --Werror"
+      - name: Whitespace
+        run: git diff --check

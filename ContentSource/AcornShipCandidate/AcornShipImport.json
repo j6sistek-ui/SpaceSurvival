@@ -1,0 +1,37 @@
+{
+  "status": "CANDIDATE_IMPORTED_FRESH_RELOAD_PENDING",
+  "errors": [],
+  "source_render_is_not_gameplay": true,
+  "limits": [
+    "Candidate only; owner acceptance remains pending",
+    "One LOD, nine material sections",
+    "No rendered Unreal appearance or performance acceptance from import",
+    "Pilot palms float somewhat around controls; unchanged supplied character/tail"
+  ],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "mesh": "/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2",
+  "material_paths": [
+    "/Game/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.M_AcornV2_WarmCeramic",
+    "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.M_AcornV2_IvoryPanels",
+    "/Game/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.M_AcornV2_BurnishedBronze",
+    "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.M_AcornV2_ChampagneEdges",
+    "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.M_AcornV2_GraphiteStructure",
+    "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.M_AcornV2_CockpitPadding",
+    "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.M_AcornV2_MachinedTitanium",
+    "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav.M_AcornV2_IonAndNav",
+    "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen.M_AcornV2_Windscreen"
+  ],
+  "obj_sha256": "8e09eba338a04d621d3958584d2c8fac7610bdd090bad33ac48fd866f5a643a7",
+  "protected_content_packages_unchanged": 63,
+  "pilot_transform": {
+    "position_cm": [
+      -15,
+      0,
+      72
+    ],
+    "unreal_yaw_degrees": -90,
+    "blender_z_rotation_degrees": 90,
+    "scale": 1.5,
+    "source": "Existing PilotMesh.glb plus A_Pilot0s,loaded only for previews"
+  }
+}

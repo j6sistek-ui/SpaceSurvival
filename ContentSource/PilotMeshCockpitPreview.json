@@ -1,0 +1,605 @@
+{
+  "status": "FIT_STUDY_CAPTURED_NOT_GAMEPLAY",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "elapsed_seconds": 5.125,
+  "source_glb_sha256": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+  "samples": [
+    {
+      "name": "CockpitScale15Front",
+      "scale": 1.5,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        520,
+        -610,
+        380
+      ],
+      "target": [
+        -20,
+        0,
+        40
+      ],
+      "fov": 46,
+      "png": "UnrealPilotMeshCockpitScale15Front.png",
+      "animation_seconds": 1.0,
+      "animation_asset": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "sockets_world_cm": {
+        "Pelvis": [
+          -15.0,
+          0.0,
+          72.0
+        ],
+        "Head": [
+          -12.01203,
+          0.06616,
+          120.81709
+        ],
+        "L_Wrist": [
+          12.9268,
+          -20.98466,
+          93.84429
+        ],
+        "R_Wrist": [
+          9.13581,
+          20.38368,
+          95.14245
+        ],
+        "L_Ankle": [
+          16.22392,
+          -11.21741,
+          38.54819
+        ],
+        "L_Foot": [
+          33.09399,
+          -11.21738,
+          36.86118
+        ],
+        "R_Ankle": [
+          11.77447,
+          12.11618,
+          38.76873
+        ],
+        "R_Foot": [
+          30.90964,
+          12.11619,
+          36.85522
+        ]
+      },
+      "actor_bounds": [
+        [
+          -14.34016,
+          4.32677,
+          91.82673
+        ],
+        [
+          61.60301,
+          52.02967,
+          74.56337
+        ]
+      ]
+    },
+    {
+      "name": "CockpitScale15Rear",
+      "scale": 1.5,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        -520,
+        470,
+        320
+      ],
+      "target": [
+        -30,
+        0,
+        70
+      ],
+      "fov": 46,
+      "png": "UnrealPilotMeshCockpitScale15Rear.png",
+      "animation_seconds": 1.0,
+      "animation_asset": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "sockets_world_cm": {
+        "Pelvis": [
+          -15.0,
+          0.0,
+          72.0
+        ],
+        "Head": [
+          -12.01203,
+          0.06616,
+          120.81709
+        ],
+        "L_Wrist": [
+          12.9268,
+          -20.98466,
+          93.84429
+        ],
+        "R_Wrist": [
+          9.13581,
+          20.38368,
+          95.14245
+        ],
+        "L_Ankle": [
+          16.22392,
+          -11.21741,
+          38.54819
+        ],
+        "L_Foot": [
+          33.09399,
+          -11.21738,
+          36.86118
+        ],
+        "R_Ankle": [
+          11.77447,
+          12.11618,
+          38.76873
+        ],
+        "R_Foot": [
+          30.90964,
+          12.11619,
+          36.85522
+        ]
+      },
+      "actor_bounds": [
+        [
+          -14.34016,
+          4.32677,
+          91.82673
+        ],
+        [
+          61.60301,
+          52.02967,
+          74.56337
+        ]
+      ]
+    },
+    {
+      "name": "CockpitScale15Side",
+      "scale": 1.5,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        0,
+        -760,
+        130
+      ],
+      "target": [
+        -25,
+        0,
+        65
+      ],
+      "fov": 46,
+      "png": "UnrealPilotMeshCockpitScale15Side.png",
+      "animation_seconds": 1.0,
+      "animation_asset": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "sockets_world_cm": {
+        "Pelvis": [
+          -15.0,
+          0.0,
+          72.0
+        ],
+        "Head": [
+          -12.01203,
+          0.06616,
+          120.81709
+        ],
+        "L_Wrist": [
+          12.9268,
+          -20.98466,
+          93.84429
+        ],
+        "R_Wrist": [
+          9.13581,
+          20.38368,
+          95.14245
+        ],
+        "L_Ankle": [
+          16.22392,
+          -11.21741,
+          38.54819
+        ],
+        "L_Foot": [
+          33.09399,
+          -11.21738,
+          36.86118
+        ],
+        "R_Ankle": [
+          11.77447,
+          12.11618,
+          38.76873
+        ],
+        "R_Foot": [
+          30.90964,
+          12.11619,
+          36.85522
+        ]
+      },
+      "actor_bounds": [
+        [
+          -14.34016,
+          4.32677,
+          91.82673
+        ],
+        [
+          61.60301,
+          52.02967,
+          74.56337
+        ]
+      ]
+    },
+    {
+      "name": "CockpitScale15Chase",
+      "scale": 1.5,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        -650,
+        0,
+        175
+      ],
+      "target": [
+        335,
+        0,
+        0
+      ],
+      "fov": 80,
+      "png": "UnrealPilotMeshCockpitScale15Chase.png",
+      "animation_seconds": 1.0,
+      "animation_asset": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "sockets_world_cm": {
+        "Pelvis": [
+          -15.0,
+          0.0,
+          72.0
+        ],
+        "Head": [
+          -12.01203,
+          0.06616,
+          120.81709
+        ],
+        "L_Wrist": [
+          12.9268,
+          -20.98466,
+          93.84429
+        ],
+        "R_Wrist": [
+          9.13581,
+          20.38368,
+          95.14245
+        ],
+        "L_Ankle": [
+          16.22392,
+          -11.21741,
+          38.54819
+        ],
+        "L_Foot": [
+          33.09399,
+          -11.21738,
+          36.86118
+        ],
+        "R_Ankle": [
+          11.77447,
+          12.11618,
+          38.76873
+        ],
+        "R_Foot": [
+          30.90964,
+          12.11619,
+          36.85522
+        ]
+      },
+      "actor_bounds": [
+        [
+          -14.34016,
+          4.32677,
+          91.82673
+        ],
+        [
+          61.60301,
+          52.02967,
+          74.56337
+        ]
+      ]
+    },
+    {
+      "name": "CockpitCycle0.0",
+      "scale": 1.5,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        -520,
+        470,
+        320
+      ],
+      "target": [
+        -30,
+        0,
+        70
+      ],
+      "fov": 46,
+      "sample": 0.0,
+      "png": "UnrealPilotMeshCockpitCycle0.0.png",
+      "animation_seconds": 0.0,
+      "animation_asset": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "sockets_world_cm": {
+        "Pelvis": [
+          -15.0,
+          0.0,
+          72.0
+        ],
+        "Head": [
+          -12.41319,
+          -0.00052,
+          120.85208
+        ],
+        "L_Wrist": [
+          12.94191,
+          -21.08342,
+          94.25189
+        ],
+        "R_Wrist": [
+          9.1368,
+          20.32168,
+          95.60534
+        ],
+        "L_Ankle": [
+          16.22392,
+          -11.21741,
+          38.54819
+        ],
+        "L_Foot": [
+          33.09399,
+          -11.21738,
+          36.86118
+        ],
+        "R_Ankle": [
+          11.77447,
+          12.11618,
+          38.76873
+        ],
+        "R_Foot": [
+          30.90964,
+          12.11619,
+          36.85522
+        ]
+      },
+      "actor_bounds": [
+        [
+          -14.34016,
+          4.32677,
+          91.82673
+        ],
+        [
+          61.60301,
+          52.02967,
+          74.56337
+        ]
+      ]
+    },
+    {
+      "name": "CockpitCycle2.0",
+      "scale": 1.5,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        -520,
+        470,
+        320
+      ],
+      "target": [
+        -30,
+        0,
+        70
+      ],
+      "fov": 46,
+      "sample": 2.0,
+      "png": "UnrealPilotMeshCockpitCycle2.0.png",
+      "animation_seconds": 2.0,
+      "animation_asset": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "sockets_world_cm": {
+        "Pelvis": [
+          -15.0,
+          0.0,
+          72.0
+        ],
+        "Head": [
+          -12.411,
+          -0.0001,
+          120.85191
+        ],
+        "L_Wrist": [
+          12.94212,
+          -21.08261,
+          94.24987
+        ],
+        "R_Wrist": [
+          9.13708,
+          20.3222,
+          95.60294
+        ],
+        "L_Ankle": [
+          16.22392,
+          -11.21741,
+          38.54819
+        ],
+        "L_Foot": [
+          33.09399,
+          -11.21738,
+          36.86118
+        ],
+        "R_Ankle": [
+          11.77447,
+          12.11618,
+          38.76873
+        ],
+        "R_Foot": [
+          30.90964,
+          12.11619,
+          36.85522
+        ]
+      },
+      "actor_bounds": [
+        [
+          -14.34016,
+          4.32677,
+          91.82673
+        ],
+        [
+          61.60301,
+          52.02967,
+          74.56337
+        ]
+      ]
+    },
+    {
+      "name": "CockpitCycle3.9",
+      "scale": 1.5,
+      "position": [
+        -15,
+        0,
+        72
+      ],
+      "camera": [
+        -520,
+        470,
+        320
+      ],
+      "target": [
+        -30,
+        0,
+        70
+      ],
+      "fov": 46,
+      "sample": 3.9,
+      "png": "UnrealPilotMeshCockpitCycle3.9.png",
+      "animation_seconds": 3.9000000953674316,
+      "animation_asset": "/Game/SpaceSurvival/Character/A_Pilot.A_Pilot",
+      "sockets_world_cm": {
+        "Pelvis": [
+          -15.0,
+          0.0,
+          72.0
+        ],
+        "Head": [
+          -12.4705,
+          -0.01,
+          120.8566
+        ],
+        "L_Wrist": [
+          12.94407,
+          -21.09744,
+          94.31071
+        ],
+        "R_Wrist": [
+          9.13685,
+          20.31317,
+          95.67181
+        ],
+        "L_Ankle": [
+          16.22392,
+          -11.21741,
+          38.54819
+        ],
+        "L_Foot": [
+          33.09399,
+          -11.21738,
+          36.86118
+        ],
+        "R_Ankle": [
+          11.77447,
+          12.11618,
+          38.76873
+        ],
+        "R_Foot": [
+          30.90964,
+          12.11619,
+          36.85522
+        ]
+      },
+      "actor_bounds": [
+        [
+          -14.34016,
+          4.32677,
+          91.82673
+        ],
+        [
+          61.60301,
+          52.02967,
+          74.56337
+        ]
+      ]
+    }
+  ],
+  "bone_names": [
+    "Pelvis",
+    "Spine1",
+    "Spine2",
+    "Spine3",
+    "Neck",
+    "Head",
+    "L_Collar",
+    "L_Shoulder",
+    "L_Elbow",
+    "L_Wrist",
+    "L_Middle1",
+    "L_Middle2",
+    "L_Middle3",
+    "L_Ring1",
+    "L_Ring2",
+    "L_Ring3",
+    "L_Pinky1",
+    "L_Pinky2",
+    "L_Pinky3",
+    "L_Thumb1",
+    "L_Thumb2",
+    "L_Thumb3",
+    "L_Index1",
+    "L_Index2",
+    "L_Index3",
+    "R_Collar",
+    "R_Shoulder",
+    "R_Elbow",
+    "R_Wrist",
+    "R_Index1",
+    "R_Index2",
+    "R_Index3",
+    "R_Ring1",
+    "R_Ring2",
+    "R_Ring3",
+    "R_Pinky1",
+    "R_Pinky2",
+    "R_Pinky3",
+    "R_Thumb1",
+    "R_Thumb2",
+    "R_Thumb3",
+    "R_Middle1",
+    "R_Middle2",
+    "R_Middle3",
+    "L_Hip",
+    "L_Knee",
+    "L_Ankle",
+    "L_Foot",
+    "R_Hip",
+    "R_Knee",
+    "R_Ankle",
+    "R_Foot"
+  ],
+  "limits": "Unsaved stock actors with explicitly sampled imported animations, no game mode or gameplay control. Source GLB and all content assets unchanged. Skeletal actor bounds may reflect import bounds rather than deformed sole geometry. Camera matches current chase transform only in the Chase view."
+}

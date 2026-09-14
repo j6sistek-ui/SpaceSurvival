@@ -1,0 +1,388 @@
+{
+  "recorded_utc": "2026-09-13T16:48:16.574129+00:00",
+  "status": "BUILD_TEST_PACKAGE_PASS_NATIVE_OBSERVATION_NOT_OWNER_ACCEPTANCE",
+  "source_commit": "f4bfec8bb955a9dab23300c55b1ca81c53442504",
+  "package": 14,
+  "editor_seconds": 5.12,
+  "native_build_seconds": 69.48,
+  "uat_duration_log": "0h 2m 8s",
+  "tests": {
+    "reportCreatedOn": "2026.09.13-16.40.33",
+    "succeeded": 38,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "totalDuration": 2.694498062133789
+  },
+  "test_names": [
+    "SpaceSurvival.Content.ContractDataAssetBridge",
+    "SpaceSurvival.Content.EconomyDataAssetBounds",
+    "SpaceSurvival.Content.UtilityDataAssetBridge",
+    "SpaceSurvival.Flight.BoostBrakeMovement",
+    "SpaceSurvival.Flight.CameraAimMuzzleObstruction",
+    "SpaceSurvival.Flight.CannonRangeAndHitch",
+    "SpaceSurvival.Flight.ContactImpactResponse",
+    "SpaceSurvival.Flight.DirectionalDodgeCollision",
+    "SpaceSurvival.Flight.FrameRateTrajectories",
+    "SpaceSurvival.Flight.ManualWeaponImpacts",
+    "SpaceSurvival.Flight.ProjectileRelativeMotion",
+    "SpaceSurvival.Flight.SweptImpactDirection",
+    "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
+    "SpaceSurvival.Integration.AudioFirstPlayMix",
+    "SpaceSurvival.Integration.AuthoredDisembark",
+    "SpaceSurvival.Integration.ContractArrivalFeedback",
+    "SpaceSurvival.Integration.DockingAdmission",
+    "SpaceSurvival.Integration.EconomyRewardBridge",
+    "SpaceSurvival.Integration.ElectricalPulseBoundaries",
+    "SpaceSurvival.Integration.ElectricalPulseCadence",
+    "SpaceSurvival.Integration.FieldPresentationSelection",
+    "SpaceSurvival.Integration.FragmentReactionAdmission",
+    "SpaceSurvival.Integration.JourneyDeathAndFreshRun",
+    "SpaceSurvival.Integration.LateEventAcceptance",
+    "SpaceSurvival.Integration.ObjectiveRouteAdmission",
+    "SpaceSurvival.Integration.PickupSweptCollection",
+    "SpaceSurvival.Integration.RequiredClimaxAdmission",
+    "SpaceSurvival.Integration.ShipPresentationSelection",
+    "SpaceSurvival.Integration.SpatialThreatAudio",
+    "SpaceSurvival.Integration.StationChaseCamera",
+    "SpaceSurvival.Integration.StationPresentationCollision",
+    "SpaceSurvival.Integration.StationWalkerRecovery",
+    "SpaceSurvival.Integration.WreckageBudgetAdmission",
+    "SpaceSurvival.Menu.RewardChoiceEligibility",
+    "SpaceSurvival.Menu.SettingsRefreshFocus",
+    "SpaceSurvival.Menu.UpgradePreview",
+    "SpaceSurvival.Save.PayloadRoundTrip",
+    "SpaceSurvival.Save.PlatformDiskRoundTrip"
+  ],
+  "editor_dll": {
+    "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+    "bytes": 1739264,
+    "sha256": "8725d5462c06d45277c30f8e53325e1f382a8178d4a7734e1ecca85aba4c5cf7"
+  },
+  "test_report": {
+    "path": ".agent/local/StationCamera-tests.json",
+    "bytes": 33508,
+    "sha256": "433ed6b6cffc7eeb3a8f29b6d4400ed9aeef2c234ba8ba3841535652a953eb3a"
+  },
+  "logs": [
+    {
+      "path": ".agent/local/StationCamera-Editor.log",
+      "bytes": 11532,
+      "sha256": "a4dce27754923603051663e1cfa2ff5df0eb6027847a44e2e1093682dd2cd449"
+    },
+    {
+      "path": ".agent/local/StationCamera-Editor2.log",
+      "bytes": 3001,
+      "sha256": "1739bf88750b7c4b0089453cd2c833ac098369cbe6bed10cd18543be99e9fe80"
+    },
+    {
+      "path": ".agent/local/StationCamera-Test.log",
+      "bytes": 359939,
+      "sha256": "53cd806f1ea4403a7ae138f4dbc4364529b3baf341393bc6a1b682279fa3af94"
+    },
+    {
+      "path": ".agent/local/StationCamera-Package14.log",
+      "bytes": 80811,
+      "sha256": "029f7b62886c9327e369a98c21873199231cb2b0456162f83039554ac2c66bbf"
+    },
+    {
+      "path": ".agent/local/StationCamera-FormatCheck.log",
+      "bytes": 1654,
+      "sha256": "b4c68a193b56c8bd463cb280bf060dc6c9cb177b8a10738c5de3e1465056f975"
+    },
+    {
+      "path": ".agent/local/StationCamera-SourceCheck.log",
+      "bytes": 100,
+      "sha256": "af7e8f62b30d44ab72ad7875b4a02953d1a4606a7933b0a4161e9973d6a190d0"
+    }
+  ],
+  "game": {
+    "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe",
+    "bytes": 332677120,
+    "sha256": "4918a6a0906ca11622ae45928b494870fcf2c7e174df4dbf4748d932a610fb55"
+  },
+  "unchanged_content_count": 120,
+  "content_manifest_sha256": "7cf3f5801404a55c29e750dfe271d12b2c058769486ee76d14334b7849f52301",
+  "archive_files": [
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/DbgHelp/dbghelp.dll",
+      "bytes": 2232688,
+      "sha256": "36795e47d9724ee68349efbbe64aba94db108b9cad1e3dfe8bc510f359136f53"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/MsQuic/v220/win64/msquic.dll",
+      "bytes": 2547080,
+      "sha256": "5c6b07bf263dd8b85cb146b59468a22eb1fbd8635d4a6c56a8e41b67ce5eca2b"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/NVIDIA/NVaftermath/Win64/GFSDK_Aftermath_Lib.x64.dll",
+      "bytes": 5799016,
+      "sha256": "82d7a3e50710d660927db2f318cbed471049c962b7c05de12c2b2b3e40a35af9"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Ogg/Win64/VS2015/libogg_64.dll",
+      "bytes": 59832,
+      "sha256": "f23df1213c4bf23b5c666bafa7ec18743847a2e18192ae8e0d096a2fb7c28bf9"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbis_64.dll",
+      "bytes": 1724856,
+      "sha256": "a56d43a98e197f5e73a1dadf5c1dc7a07ad40327b199faa4ff1247abd6eccd5b"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbisfile_64.dll",
+      "bytes": 48568,
+      "sha256": "d64e67ca918716be8b6056a6f7a1f6256e910754425db8369d952943264b40eb"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_api_dump.dll",
+      "bytes": 8161680,
+      "sha256": "8c5af98e2d899d4aec744c63a8bc99b90124d8fc3bdc120d4c178e1df3a3e5e8"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_api_dump.json",
+      "bytes": 13848,
+      "sha256": "9e55221c225dce4b5448bac7dadb7e39fd216f51354dde02e58f950f4a0dd80b"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_crash_diagnostic.dll",
+      "bytes": 2890128,
+      "sha256": "7972fa60e084dc7da6c8a69ac1645b112f5e98a078fc27a7d3df469f2da4f811"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_crash_diagnostic.json",
+      "bytes": 23055,
+      "sha256": "578bde354874789671dee1a96468c965619c9f3ba16cfa65f850e81a80674087"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_gfxreconstruct.dll",
+      "bytes": 8166288,
+      "sha256": "dd72d28450db1b52bd6c5dc12228741b680940c5fb5eb6b6a0e26f0ee5c3fc3e"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_gfxreconstruct.json",
+      "bytes": 28099,
+      "sha256": "71d4e243a2af74874f4f61378bdfe3753cb01ce5eb9b98400d83612bf882a815"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_profiles.dll",
+      "bytes": 1485200,
+      "sha256": "93227f57ddca0084e1655a65d2cc915d65b5191f6c645a17c0b36cfa2f714b38"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_profiles.json",
+      "bytes": 66696,
+      "sha256": "6095c28691757e083a8c1bef3c69ca76a8b5017e21acaf55d1bc7e82221a0fbe"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_shader_object.dll",
+      "bytes": 415632,
+      "sha256": "eebd555aab6df20b21520564d0eb2341ad0e9cdde6148ee1c71ef76805c5e7df"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_shader_object.json",
+      "bytes": 4455,
+      "sha256": "18ecafc9a65e1b7af8cd0e36dc936026cdb3aed333c4ea5a7c17d6d9465cfaf4"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_synchronization2.dll",
+      "bytes": 397200,
+      "sha256": "341b6b5eedbf4b7aeb4439af85b23974b820b1413dfaf6356911476df44ed559"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_synchronization2.json",
+      "bytes": 1910,
+      "sha256": "a1e980a24be9a16a826b00c27d61b85ee0e2e17226dc9c4e8eec031879e5f26a"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_validation.dll",
+      "bytes": 19509136,
+      "sha256": "ea37bfda6749684d88a1944ae7103a87d9b38468579f397c3c82ede1ceaa40d6"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_validation.json",
+      "bytes": 95917,
+      "sha256": "5c464b84457776d92a674de506f7b7a489294583a7d7609f78fcc52bc4406d09"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Windows/WinPixEventRuntime/x64/WinPixEventRuntime.dll",
+      "bytes": 69056,
+      "sha256": "ba40d206c6113ac1a35993a06390c93e55602713a902d7ba7b2f2f0ed13e3d3f"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Windows/XAudio2_9/x64/xaudio2_9redist.dll",
+      "bytes": 858152,
+      "sha256": "0ca010abcabe52493fdb744d79c4c8132ae6756046b68aa7c88bdc03ec1effcd"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Config/StagedBuild_SpaceSurvival.ini",
+      "bytes": 3,
+      "sha256": "f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Content/Renderer/TessellationTable.bin",
+      "bytes": 259568,
+      "sha256": "edc4f3b628a139c5e185bbaeca661c95c1f427368d3b92892c5cff36c56dd941"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Content/Slate/Cursor/invisible.cur",
+      "bytes": 326,
+      "sha256": "fef3980fa567e9c45d5d8dcaa432a2c1a3f3bb17fe67d7ab198164f56c142aa1"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Content/SlateDebug/Fonts/LastResort.tps",
+      "bytes": 930,
+      "sha256": "0f775fa99d05e21d43d2d06d55982b23dcdccdb512a9a5a07aff674f212c41b8"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Content/SlateDebug/Fonts/LastResort.ttf",
+      "bytes": 5395052,
+      "sha256": "fff0f8de0b868b964950fe97c9b60f893e9bc85a4f90b3629c5693db058b97b9"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/GPUDumpViewer/GPUDumpViewer.html",
+      "bytes": 195428,
+      "sha256": "eb599b5171e99d7c2e35732abf9525baeb39b9c2ac86619522f307c57cc90384"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/GPUDumpViewer/OpenGPUDumpViewer.bat",
+      "bytes": 879,
+      "sha256": "e8f7ef9c88697041bd87902b76e52558979ca866c7450b1da108a94a027f441b"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/GPUDumpViewer/OpenGPUDumpViewer.sh",
+      "bytes": 2165,
+      "sha256": "1b222b5d5aad6dd9b5b9f0a1c72d38635149540f2c7a368600ec76c1d304390a"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/Redist/en-us/vc_redist.arm64.exe",
+      "bytes": 11751688,
+      "sha256": "9a4540c1ed0ac2a0755c0093a9c01e4b3dbe21b25805318ba495648fc890e14f"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/Redist/en-us/vc_redist.x64.exe",
+      "bytes": 18731856,
+      "sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Plugins/NNE/NNERuntimeORT/Binaries/ThirdParty/Onnxruntime/Win64/onnxruntime.dll",
+      "bytes": 17339384,
+      "sha256": "5df3d744b5cc4421181e9e2c97cadff4e9b1b2b25e80202160e80fc94ff948f2"
+    },
+    {
+      "path": "Artifacts/Windows/Manifest_DebugFiles_Win64.txt",
+      "bytes": 443,
+      "sha256": "32b1421a9e329a58a30fb10f7f0d6153a8ce7038ba590229a89dfd76db4dfed8"
+    },
+    {
+      "path": "Artifacts/Windows/Manifest_NonUFSFiles_Win64.txt",
+      "bytes": 3073,
+      "sha256": "9400695cce2e9d891a2d3de41c154c008891e0594f43a3461607006f61e2e036"
+    },
+    {
+      "path": "Artifacts/Windows/Manifest_UFSFiles_Win64.txt",
+      "bytes": 225125,
+      "sha256": "dfc1fe38ca5197223773a9f16f421f227318788941a96730e24d659255130319"
+    },
+    {
+      "path": "Artifacts/Windows/NOTICES.txt",
+      "bytes": 111,
+      "sha256": "ba49ae5586f817b36a2772269f71f899cb1f54b5f2720fad951319edd5e140b8"
+    },
+    {
+      "path": "Artifacts/Windows/Prerequisites.json",
+      "bytes": 1933,
+      "sha256": "17571d06e726cf73f441331b886c15c4db4475a540631a600e870b0117039442"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/D3D12/x64/D3D12Core.dll",
+      "bytes": 4831768,
+      "sha256": "c41711499e13244fd07ca28a9b32ece29e4454ecc38fb50681f74254b333a9b3"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/D3D12/x64/d3d12SDKLayers.dll",
+      "bytes": 4943344,
+      "sha256": "e36f1ee4371798892529762368907d19b997493ad6f30aa8acbfd0132881804f"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/DML/x64/DirectML.dll",
+      "bytes": 18538488,
+      "sha256": "f97b69379ecbdbab7e1dcd2b6170e7f285d367c86ee6718bc401c4d7cef1275c"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe",
+      "bytes": 332677120,
+      "sha256": "4918a6a0906ca11622ae45928b494870fcf2c7e174df4dbf4748d932a610fb55"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.pdb",
+      "bytes": 370348032,
+      "sha256": "d07594ac75856c11737e790208c33a6cf82013f19589780f47972a3d9dc99a4f"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/tbb12.dll",
+      "bytes": 342456,
+      "sha256": "de15a5f93bfd334d4fe32343a81d76f9de0824af8e31b2189637d12545af2673"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/tbbmalloc.dll",
+      "bytes": 117176,
+      "sha256": "74edc04a8f5bc2593a5a555b675c1251d6d90e693ee6a67cfa11dd3b2d17a856"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.ucas",
+      "bytes": 3204720,
+      "sha256": "f44f4abca955c9b7eb65087576406a4535860a19fdf348b6e187d8c01791b354"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.utoc",
+      "bytes": 782,
+      "sha256": "e16de6427f6fcbfcb96484f4eded997d32244816c350b7ec46cbc4fbf8545c86"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.pak",
+      "bytes": 11236917,
+      "sha256": "b53588472326c150d2f556ca9da989121d2cdb2116c210a0dc5ba85e5f379630"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.ucas",
+      "bytes": 293201872,
+      "sha256": "874b36461a0352efc18690feef10bf2e7630c76a86807b88a9a6daff997bd6f8"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.utoc",
+      "bytes": 237097,
+      "sha256": "d63d53c24bca6b8ed09bf1034b4a23ab9404e205240f230638fb203f3a55ae87"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival.exe",
+      "bytes": 171520,
+      "sha256": "619ac0779dceabf638639193efdea0733e3b4626dea623c07062f160f5abccf8"
+    },
+    {
+      "path": "Artifacts/Windows/THIRD_PARTY.md",
+      "bytes": 1891,
+      "sha256": "ce0190a546efc08971d8bd153078e7ba15414b22e14858123e6038f0cb7709f1"
+    }
+  ],
+  "native": {
+    "profile": "Artifacts/StationCamera/8888216c671e45dc868fb7d3163c6766/User",
+    "pid": 107272,
+    "resolution": "1280x720",
+    "audio": "disabled for visual check",
+    "observations": [
+      "Packaged hangar shows chase view behind the body.",
+      "User input interrupted the attempted automation drag; no successful injected look action claimed.",
+      "Fresh observation shows a turned view and moved character near launch control with camera still behind body."
+    ],
+    "left_running_for_user": true,
+    "automated_hidden_attempt": "PID63020 had no targetable window and was terminated before fresh visible launch."
+  },
+  "limits": [
+    "No new full-run/performance or physical controller test.",
+    "Native observations are two discrete views with user input, not a controlled mouse sensitivity/inversion test.",
+    "No owner camera comfort acceptance yet.",
+    "No independent IoStore export audit repeated for Package14; UAT/cook/stage/package succeeded and project Content remained byte-exact to source.",
+    "The copied project saves were backed up, not adopted or deleted; production saves were not intentionally modified."
+  ]
+}

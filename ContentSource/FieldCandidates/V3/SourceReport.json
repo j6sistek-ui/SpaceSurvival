@@ -1,0 +1,455 @@
+{
+  "status": "GENERATED_UNRENDERED_CANDIDATE_NOT_ADOPTED",
+  "version": "FieldCandidate3",
+  "coordinate_system": "OBJ centimeters +X forward +Z up; Blender meters with same axes",
+  "uv0_contract": {
+    "u": "role*4+longitudinal_fraction; role0=boundary,1=primary,2=branch",
+    "v": "strand_index*4+cross_ribbon_width0to1; role0 is spherical boundary surface"
+  },
+  "material_contract": {
+    "parameters": [
+      "Tint",
+      "Color",
+      "Emission"
+    ],
+    "extra_inputs": [
+      "PixelNormalWS",
+      "CameraVectorWS"
+    ],
+    "sections_per_mesh": 1,
+    "blend_mode": "Additive",
+    "shading_model": "Unlit",
+    "two_sided": true,
+    "no_texture_samples": true,
+    "no_WPO": true,
+    "no_opacity_input": false,
+    "boundary": "Role0 is a low-opacity additive spherical extent with smooth Fresnel rim; no Time modulation.",
+    "clock": "Electrical flash amplitude only follows supplied Emission; Time only moves bounded low-contrast detail."
+  },
+  "meshes": [
+    {
+      "name": "SM_ElectricalFieldCandidateV3",
+      "material": "M_ElectricalFieldCandidateV3",
+      "tint": [
+        0.24,
+        0.55,
+        1.0
+      ],
+      "vertices": 1742,
+      "triangles": 2496,
+      "material_sections": 1,
+      "bounds_cm": [
+        [
+          -100.0,
+          -100.0,
+          -100.0
+        ],
+        [
+          100.0,
+          100.0,
+          100.0
+        ]
+      ],
+      "max_vertex_radius_cm": 100.00000000000001,
+      "minimum_triangle_area_cm2": 0.45953044780108576,
+      "paths": [
+        {
+          "role": 0,
+          "surface": "additive spherical boundary",
+          "longitude": 32,
+          "latitude": 16,
+          "vertices": 482,
+          "triangles": 960
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 1,
+          "points": 17,
+          "half_width_cm": 2.3,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 128
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        },
+        {
+          "role": 2,
+          "points": 9,
+          "half_width_cm": 1.5,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 64
+        }
+      ],
+      "projected_area_upper_bounds": [
+        {
+          "direction": [
+            1,
+            0,
+            0
+          ],
+          "summed_area_to_sphere_disk_percent": 218.74199484418085
+        },
+        {
+          "direction": [
+            0,
+            1,
+            0
+          ],
+          "summed_area_to_sphere_disk_percent": 218.12983757096163
+        },
+        {
+          "direction": [
+            0,
+            0,
+            1
+          ],
+          "summed_area_to_sphere_disk_percent": 219.40717825183964
+        },
+        {
+          "direction": [
+            0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "summed_area_to_sphere_disk_percent": 219.90215812264304
+        },
+        {
+          "direction": [
+            0.6666666666666666,
+            -0.6666666666666666,
+            0.3333333333333333
+          ],
+          "summed_area_to_sphere_disk_percent": 219.6583878210705
+        }
+      ],
+      "outputs": [
+        {
+          "file": "SM_ElectricalFieldCandidateV3.obj",
+          "bytes": 293541,
+          "sha256": "4407f836f648b9e7aab3384cb8fc95d1e21d51476b54d7ead586aa1a1a40ccf0"
+        },
+        {
+          "file": "SM_ElectricalFieldCandidateV3.blend",
+          "bytes": 148777,
+          "sha256": "b21c9d9ffbe5416e29e894b02beb21aea4ad2f1a9d00bcaf7770ffbf5df4aa1f"
+        }
+      ]
+    },
+    {
+      "name": "SM_GravityFieldCandidateV3",
+      "material": "M_GravityFieldCandidateV3",
+      "tint": [
+        0.6,
+        0.18,
+        1.0
+      ],
+      "vertices": 2822,
+      "triangles": 4032,
+      "material_sections": 1,
+      "bounds_cm": [
+        [
+          -100.0,
+          -100.0,
+          -100.0
+        ],
+        [
+          100.0,
+          100.0,
+          100.0
+        ]
+      ],
+      "max_vertex_radius_cm": 100.00000000000001,
+      "minimum_triangle_area_cm2": 1.407817090343686,
+      "paths": [
+        {
+          "role": 0,
+          "surface": "additive spherical boundary",
+          "longitude": 32,
+          "latitude": 16,
+          "vertices": 482,
+          "triangles": 960
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        },
+        {
+          "role": 1,
+          "points": 65,
+          "half_width_cm": 2.6,
+          "closed": false,
+          "cross_ribbon_planes": 2,
+          "triangles": 512
+        }
+      ],
+      "projected_area_upper_bounds": [
+        {
+          "direction": [
+            1,
+            0,
+            0
+          ],
+          "summed_area_to_sphere_disk_percent": 221.43620335229383
+        },
+        {
+          "direction": [
+            0,
+            1,
+            0
+          ],
+          "summed_area_to_sphere_disk_percent": 222.6237681775354
+        },
+        {
+          "direction": [
+            0,
+            0,
+            1
+          ],
+          "summed_area_to_sphere_disk_percent": 227.79524589087674
+        },
+        {
+          "direction": [
+            0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "summed_area_to_sphere_disk_percent": 222.60487448890473
+        },
+        {
+          "direction": [
+            0.6666666666666666,
+            -0.6666666666666666,
+            0.3333333333333333
+          ],
+          "summed_area_to_sphere_disk_percent": 221.6991867991872
+        }
+      ],
+      "outputs": [
+        {
+          "file": "SM_GravityFieldCandidateV3.obj",
+          "bytes": 484021,
+          "sha256": "54b71ccead502256166deea83e2421d64f6d8b6425826f4683e756bb54471ca3"
+        },
+        {
+          "file": "SM_GravityFieldCandidateV3.blend",
+          "bytes": 184522,
+          "sha256": "0e47fa79fb0d6a2e6fe270a504642b9853b01d4615b39c1bab9a43be3a12ec7b"
+        }
+      ]
+    }
+  ],
+  "protected_sha256": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource/FieldCandidates/V2/Generate.py": "15315a7c9059f92a20086fc737fec32b2c44bf338cf97d77300c51495bba5e90",
+    "ContentSource/FieldCandidates/V2/CheckSource.py": "f3da9c76b856439b76dc6fc2364917ec63512d00567f322701547bacbb3713c5",
+    "ContentSource/FieldCandidates/V2/ElectricalField.hlsl": "e4aa9f5f902493297c6a17a8c1449de85b3e5929ed9fedb263d88a1bd55e5fa0",
+    "ContentSource/FieldCandidates/V2/GravityField.hlsl": "cb5d3bddc7b5b752e90cb731382463eb9729cab80c183c3ea31473cb904523e6",
+    "ContentSource/FieldCandidates/V2/SourceReport.json": "1d40f9b5ee014879336fd00fcb5c44acc96b6024d5d17597c024962b4af083f8",
+    "ContentSource/FieldCandidates/V2/SourceValidation.json": "e0657cc651f3c59629445c659ced1a370c3c0737da52c12895bd3f6566a53615",
+    "ContentSource/FieldCandidates/V2/CandidateReceipt.json": "a644de7a842b475f3f627c54d6d4e8c55b1aed52402f2cc525b593f9202c783f",
+    "ContentSource/FieldCandidates/V2/UnrealImport.json": "098ea42d4fcd17bbdf435e586087b80076cf76e104a19cb28ca461941849d415",
+    "ContentSource/FieldCandidates/V2/UnrealPersisted.json": "26559e46240b03737b87a8605fc43dab3f450646771bff7c063f3d2461c6e866",
+    "ContentSource/FieldCandidates/V2/UnrealPreview.json": "19124a91a26aa8a0007324acd7f8fe7cc39557ef8dd3c3ad35c146b2498d7517",
+    "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidateV2.uasset": "b945ee2dd61860050292b187ca18259f4a05286df75c0feb57fb038a60be9952",
+    "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidateV2.uasset": "b480942bd8aa06ad05a05df170d46ab67597bd339dbaecf09ebe0edfd003e078",
+    "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidateV2.uasset": "4ed67381325118326c5e633ed43d7fac2059e9ca2999af5f58da72b3bc32e8d1",
+    "Content/SpaceSurvival/Materials/M_GravityFieldCandidateV2.uasset": "985e39ae9ac8e66c3686867eeeab6c82810751d4c72e16f085ff14aee789af3d",
+    "ContentSource/GenerateGeometry.py": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00",
+    "ContentSource/Meshes/SM_StormRing.obj": "a1d4dd374bb65613de96326deb0641d4aada693214dd48a89bb185c134eaec3b",
+    "ContentSource/Meshes/SM_GravityRing.obj": "d680e1fb894480daa062f3efbf4d79785e6444497fb7e45cbaa02a973e2546ef",
+    "Content/SpaceSurvival/Meshes/SM_StormRing.uasset": "c026dcf829142da52e97e0f60d78113d2f2a274e8b70fccdd2da43ea27d07faa",
+    "Content/SpaceSurvival/Meshes/SM_GravityRing.uasset": "e99e6e833d10e672de06ea00484a76be6132e309a23ccb3f0aebab4dde761a1a",
+    "Content/SpaceSurvival/Materials/M_Emissive.uasset": "1c09844a3166fb49ae81b17d4fa643843cfbf6f29d1f1444fd2dadd4f7445227",
+    "ContentSource/FieldCandidates/Generate.py": "52ca98d237a5000b0e389a8360c09c05127faab6edb8c75c5ade7bd7e4859a15",
+    "ContentSource/FieldCandidates/ElectricalField.hlsl": "d17ea7975fc50d21107a0e52559735b9e77ef01c23049fb43a8abec709762031",
+    "ContentSource/FieldCandidates/GravityField.hlsl": "c075829d9b2697a6b7de86b244294c89159f0446d5706a717322474f5908a8b7",
+    "ContentSource/FieldCandidates/SourceReport.json": "3845e4eae22cb4b0c1ba881c5c375362a62b03891db333500f3a4ab6696875bd",
+    "ContentSource/FieldCandidates/CandidateReceipt.json": "04c8158b71643e43415c8b841d5fa0c0f3dffa4c382feefdd99b80462cd915bf",
+    "Content/SpaceSurvival/Meshes/SM_ElectricalFieldCandidate.uasset": "a33acaf9156fdf34fed1f867ec15a5b7379ab8cea3dc43d9eac811eb5f240c9f",
+    "Content/SpaceSurvival/Meshes/SM_GravityFieldCandidate.uasset": "e24aef39319f1e1fb5881df01a3f62c01f31ec7fe9a0c931a14ab5f0610e933c",
+    "Content/SpaceSurvival/Materials/M_ElectricalFieldCandidate.uasset": "cc55b4ded82b618c52c5adae608d119fa1c2bebc3b0dfd16964b09765f66fb31",
+    "Content/SpaceSurvival/Materials/M_GravityFieldCandidate.uasset": "774d46cd0dbfee0b9f07db8be54c306bc507da98e2186816c29888c4bd4dcee0"
+  },
+  "historical_runtime_git": {
+    "base": "ccfc91400ca10168dba7471fa5a2f3c888a32d6e",
+    "sha256": {
+      "Source/SpaceSurvival/Private/SSWorldActors.cpp": "5a905c659ab07b430f82f6661799938784d0a7aff45734d1a71505875e696c6c",
+      "Source/SpaceSurvival/Public/SSContentTypes.h": "02a5644f303af7ae1f307e52bf3b0e80319ef5e79bbe214faeec193ea5b75141"
+    }
+  },
+  "generator_sha256": "16ba5c77d663b929af46adb2893b5d15a3bfbb9fd05599fb107a64a390906ae3",
+  "palette_sha256": "aafe9b7dab22a00e2cc2dc8518337840c13d258f970d791c45b22ca931bc4d79",
+  "shader_sha256": {
+    "ElectricalField.hlsl": "d154420eaa52d1a165adc8016b441b0b0461ea574797820408a63c26464942d4",
+    "GravityField.hlsl": "3dd61a963368db944aaf6d7802286f516642462dc6b0022227b2f19bdd1ac819"
+  },
+  "limits": [
+    "No Unreal import, shader compile, rendering, gameplay adoption or performance evidence.",
+    "Broad additive cross-ribbons use derivative-filtered cores and soft outer coverage; antialiasing still requires native proof.",
+    "Spherical boundary shell has additive, low-opacity falloff; interior/rock readability requires native proof.",
+    "Projected area is an analytic sum, not visibility/pixel coverage or an occlusion test.",
+    "Existing field clocks, damage, forces, collision, shared emissive and wormhole assets are untouched."
+  ]
+}

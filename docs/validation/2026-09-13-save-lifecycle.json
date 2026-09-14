@@ -1,0 +1,67 @@
+{
+  "status": "REAL_MULTI_PROCESS_STORAGE_PASSED",
+  "date_utc": "2026-09-13T05:30:00Z",
+  "success": true,
+  "production_save_hashes_unchanged": true,
+  "isolated_save_files": [
+    {
+      "name": "SS_Account_v1.sav",
+      "bytes": 2226,
+      "sha256": "C928F6302A5B3E765B0538B6C5CBA4A5ECBBF84D350B93F7F555D268C1CF764B"
+    },
+    {
+      "name": "SS_Settings_v1.sav",
+      "bytes": 2167,
+      "sha256": "B53EACAC19C072986F5898167683D569ECA096DC334F28F3882F96EBF6F591C0"
+    },
+    {
+      "name": "SS_Suspend_v1.sav",
+      "bytes": 1989,
+      "sha256": "A4CFD9BFACF2C1DE85BE8EB6620843B74C6DDF1D2CF18053459DBE4FC5319219"
+    }
+  ],
+  "processes": [
+    {
+      "phase": "Preflight",
+      "processId": 21936,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": false
+    },
+    {
+      "phase": "Suspend",
+      "processId": 79976,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "xp": 0,
+      "level": 1,
+      "completedRuns": 0
+    },
+    {
+      "phase": "ResumeDeath",
+      "processId": 18120,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "xp": 475,
+      "level": 3,
+      "completedRuns": 1
+    },
+    {
+      "phase": "FreshStart",
+      "processId": 47644,
+      "success": true,
+      "genericBackendVerified": true,
+      "gameInstanceInitialized": true,
+      "xp": 475,
+      "level": 3,
+      "completedRuns": 1
+    }
+  ],
+  "limits": [
+    "Storage lifecycle only; station UI, quit interaction and subjective gameplay are separate gates.",
+    "Station state and 100 kills are deterministic fixtures; journey and human tests are separate"
+  ],
+  "raw_receipt_sha256": "76b227eafa1eae615bb246c0380447675060e465ec1e52da99dfb0d246f6abcb"
+}

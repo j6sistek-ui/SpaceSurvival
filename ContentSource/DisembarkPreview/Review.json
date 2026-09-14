@@ -1,0 +1,532 @@
+{
+  "status": "SOURCE_CHECKED_RUNTIME_AND_ART_UNACCEPTED",
+  "source_clip_sha256": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb",
+  "protected_sources_unchanged": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource\\Animation\\Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource\\Animation\\PilotMesh.glb": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665"
+  },
+  "endpoint_comparison_all_52_joints": {
+    "method": "Independent glTF-channel TRS interpolation comparison of every original skin joint; quaternion-sign invariant",
+    "start_vs_A_Pilot_0s": {
+      "max_translation_cm": 1.0758287517870702e-05,
+      "max_rotation_degrees": 1.707547292503189e-05,
+      "max_scale_error": 5.960464477539062e-07
+    },
+    "end_vs_A_Walk_0_308333s": {
+      "max_translation_cm": 0.00010655454169452926,
+      "max_rotation_degrees": 0.0017783307823100172,
+      "max_scale_error": 3.582239133947951e-05
+    }
+  },
+  "pelvis_gltf_start_end": {
+    "translation": {
+      "start": [
+        -5.878973752260208e-09,
+        1.5059409719242467e-08,
+        3.9537553675472736e-08
+      ],
+      "end": [
+        5.254789721220732e-05,
+        -0.11089593917131424,
+        0.22082406282424927
+      ]
+    },
+    "rotation": {
+      "start": [
+        -0.4163370430469513,
+        -0.11034832149744034,
+        -0.04062877595424652,
+        0.9015741944313049
+      ],
+      "end": [
+        -0.08519449830055237,
+        0.016951577737927437,
+        -0.02113679051399231,
+        0.9959958791732788
+      ]
+    },
+    "scale": {
+      "start": [
+        1.0,
+        0.9999997019767761,
+        0.9999997615814209
+      ],
+      "end": [
+        1.0,
+        1.0,
+        0.9999998807907104
+      ]
+    }
+  },
+  "existing_pilot_derivative_comparison": {
+    "PilotMeshExit": {
+      "clip": "A_Disembark",
+      "frames_checked": 73,
+      "body_vs_original_max_vertex_error_cm": 0.0,
+      "tail_vs_rigid_pelvis_max_vertex_error_cm": 1.8848644685931504e-05,
+      "peak_tail_frame_step": {
+        "body_cm": 8.647027015686035,
+        "tail_cm": 9.274114608764648,
+        "frame": 19
+      },
+      "min_tail_to_leg_joint_axis_cm": 5.721322536468506
+    },
+    "PilotMeshWalk": {
+      "clip": "A_Walk",
+      "frames_checked": 75,
+      "body_vs_original_max_vertex_error_cm": 0.0,
+      "tail_vs_rigid_pelvis_max_vertex_error_cm": 1.8907454432337545e-05,
+      "peak_tail_frame_step": {
+        "body_cm": 6.932858467102051,
+        "tail_cm": 2.101942777633667,
+        "frame": 7
+      },
+      "min_tail_to_leg_joint_axis_cm": 5.721324920654297
+    }
+  },
+  "source_visual_findings": [
+    "Original skin weights produce a severe jagged lateral tail fan during brace and hop, around/through the legs. Animation alone cannot repair this.",
+    "The existing pilot derivative keeps the selected curl rigidly attached to Pelvis during exit and walk, and all62321 non-tail body vertices match original positions exactly at every sampled frame.",
+    "Derivative curl is compact and upright, but conspicuous dangling unselected fur shards persist below the pelvis/behind the knees. It is not a visual pass.",
+    "Front/side/rear renders at seven times per configuration show body articulation and foot motion; no actor route, cockpit, deck, camera blending or scale transition is rendered.",
+    "Fixed ankle targets in1.6\u20132.4s do not establish sole/deck contact or collision clearance.",
+    "Final pose is numerically compatible with A_Walk at0.30833333333333335 seconds; resume that phase or use a deliberate animation blend.",
+    "Separate TailCandidate.glb investigation is recorded in ContentSource/TailCandidatePreview/Review.json; existing pilot derivative conclusions above remain unchanged."
+  ],
+  "transform_contract": {
+    "source_scale": 1.0,
+    "armature_world_identity": true,
+    "pilot_runtime_mesh_location_cm": [
+      -15,
+      0,
+      72
+    ],
+    "pilot_runtime_mesh_yaw_degrees": -90,
+    "pilot_runtime_scale": 1.5,
+    "walker_runtime_mesh_z_cm": -23,
+    "walker_runtime_mesh_yaw_degrees": -90,
+    "walker_runtime_scale": 1.0,
+    "root_motion_extraction": false,
+    "world_route_owner": "C++ station transition must match the initial mesh world transform and drive travel to traced safe deck endpoint",
+    "scale_transition": "Unresolved; deliberate cockpit occlusion or reviewed consistent scale required. Do not visibly shrink character."
+  },
+  "import_requirements": {
+    "target": "/Game/SpaceSurvival/Character/A_Disembark",
+    "skeleton": "/Game/SpaceSurvival/Character/geometry_0_Skeleton",
+    "source_basis": "OriginalGLTFBasis1. Metres and glTF Y-up; no FBX100x adjustment",
+    "pipeline_template": "/Interchange/Pipelines/DefaultAssetsPipeline",
+    "import_only_animations": true,
+    "replace_existing": false,
+    "try_auto_select_skeleton": false,
+    "use_t0_as_ref_pose": false,
+    "import_meshes_materials_textures_physics": false,
+    "sample_rate_hz": 30,
+    "expected_return": "Exactly one AnimSequence, no mesh/skeleton changes",
+    "required_reload_checks": "Persisted same-skeleton AnimSequence length2.4 seconds; root motion disabled; render start/middle/end in Unreal before runtime fit acceptance"
+  },
+  "verification_scope": [
+    "Two scripts parse as Python",
+    "Two generator runs produced identical source GLB hash",
+    "Fresh Blender5.1.2 re-import:73 pose/socket samples",
+    "Existing derivative:73 exit +75 walk samples at scale1; body match and rigid-tail comparisons",
+    "No Unreal imports, builds, runtime edits or commits"
+  ],
+  "artifacts": [
+    {
+      "path": "ContentSource/Animation/Disembark.glb",
+      "bytes": 22323796,
+      "sha256": "0c629ecd060183728b9bb45d9c496a55e9b7906359824dc2c1ae02dbc47a40cb"
+    },
+    {
+      "path": "ContentSource/Animation/Disembark.json",
+      "bytes": 85400,
+      "sha256": "96ba224b2703240d671c947789124d2260c590242388e2750227171577d1ad40"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Front.png",
+      "bytes": 1428282,
+      "sha256": "e0a76c0df01b75f9ed6207af8d5b479b2079445d992757fa9c214f30e1e3fb68"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Front_000.png",
+      "bytes": 237545,
+      "sha256": "52d8ab9f8da140d790a599265e26a06caffb2e6eea35f8afe3d6de074479a7d3"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Front_040.png",
+      "bytes": 250658,
+      "sha256": "451b023ad433143caa7094ba5592a9a65b9850ae261f9ffe6415d55d82086bb2"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Front_080.png",
+      "bytes": 223635,
+      "sha256": "3293e883efe8e62dc8da23f66da4c3abb181e71d42dee1eb6ddd9f2dd168873b"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Front_110.png",
+      "bytes": 232900,
+      "sha256": "21f66692ac4bc8eb9e97edadcc95b48a11585173b072161770cbcf60fa0b982b"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Front_160.png",
+      "bytes": 237533,
+      "sha256": "20b9773b557d4a88d4806b756978aa54b9f85d0059f5fb370f71632680a77c30"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Front_180.png",
+      "bytes": 230745,
+      "sha256": "863ef5e9678ae381a709dce696241fef1a7ed78c534dddc1c37adbbc1bd85a73"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Front_240.png",
+      "bytes": 220075,
+      "sha256": "7b728d83d8d102b717005d30f677a3a4e0ce40366c103f9c85885a5137ea2917"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Measurements.json",
+      "bytes": 160637,
+      "sha256": "9a6313bb92c1476cd1c9eccfcfae32e85c67f7620338c7bb7302f2603eeaacbb"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Front.png",
+      "bytes": 1294703,
+      "sha256": "baf25b8d28d08471c79b9d2dfc499fd2c00f9fdc134274632eda8be99026c0b3"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Front_000.png",
+      "bytes": 214256,
+      "sha256": "a323fa8d04f97f1329961feaaf29edccada1a8dd28b8c64a253a5f4c426d566a"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Front_040.png",
+      "bytes": 216984,
+      "sha256": "937562044d851c55a6390b215a9f186b36b0b9cb7f6a510e5f1881bb36ffb525"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Front_080.png",
+      "bytes": 223837,
+      "sha256": "4477c2f3c490dc524488abed6e502eef35e20deab0defbda42e4b77a2a9c047a"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Front_110.png",
+      "bytes": 221280,
+      "sha256": "983444a27f88767ddfb6420d06606fbea399989255554d9ecd543bdef24d0c32"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Front_160.png",
+      "bytes": 225132,
+      "sha256": "02a11720a60e4d079a2aee3678f8891c92d8c793f2030035fa3ea70072ec4788"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Front_180.png",
+      "bytes": 219421,
+      "sha256": "1d131e0866ce2958eb24e7de6a936e907d1f692f57b0b614a586c9b96b738a11"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Front_240.png",
+      "bytes": 223293,
+      "sha256": "a11c933d8b16e200c2330f9491225b95459da0f9cf83054c60a48161b8f7b504"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Measurements.json",
+      "bytes": 197283,
+      "sha256": "dc2f6f5526a0003c226cac40f991527cc10aba0335520d7761c502da83962e11"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Rear.png",
+      "bytes": 1316368,
+      "sha256": "c95c7d1d61042969c6a30ab65f5a45956fd250760865bdf4f28603b165161ed0"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Rear_000.png",
+      "bytes": 216754,
+      "sha256": "240d40d7c6ed04cd4221f958a90111b3d0f06eb99054b3b8bbee97a91962ad86"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Rear_040.png",
+      "bytes": 220582,
+      "sha256": "5937933734d2fdada209cec2bd184ed4f1908f5f0e5eb3548415708564735695"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Rear_080.png",
+      "bytes": 229305,
+      "sha256": "d562385ec84c349e811aa1f84557f91055ed6bd52953c279be5496fc8322b4c3"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Rear_110.png",
+      "bytes": 225393,
+      "sha256": "a61cd4cac3a122977ccddc3ce9b014e7a8539ca261f1c345b20cee7a718ce8cb"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Rear_160.png",
+      "bytes": 230436,
+      "sha256": "4426b3239f44588d28b89fa338a5cac5985fd175b01f137cb5f8c8ec80f6b1d1"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Rear_180.png",
+      "bytes": 225552,
+      "sha256": "ce2a8e1307411e2715d7cb6f310c1d886e0d60c65614a229cdb4c3590d71f8d3"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Rear_240.png",
+      "bytes": 230024,
+      "sha256": "b36468918c634f7334e8942b6ae4e2e63df87bd873e80dc4649becc9b8745f5c"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Side.png",
+      "bytes": 1356732,
+      "sha256": "29d78e5dd7bbd84a5204b05316e4373b2cec031f52202c7686130cfc4d0cc05a"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Side_000.png",
+      "bytes": 231310,
+      "sha256": "e2e2b5294caac9d8bf445fe236f3081e2ca582e9582c2a83fcc0813f8a4ffc1a"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Side_040.png",
+      "bytes": 227269,
+      "sha256": "2cbb050f0bf4915f3084359582552e446ba34f0096dca548f5a3a92a0f05bba0"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Side_080.png",
+      "bytes": 231992,
+      "sha256": "70de40f1fd2da8f77e23427dcf7a8dd03b74b2c5051699d92d8c95c1190c8fa9"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Side_110.png",
+      "bytes": 226395,
+      "sha256": "e96b06e943a61d12b6ea767968e35c0dedacb8447485ad7ea8e4a0edd2f69b67"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Side_160.png",
+      "bytes": 230969,
+      "sha256": "ea0b32a68d1000c3c1785656fc9500fc1f28ebb299986ab9b163f984d4f331e3"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Side_180.png",
+      "bytes": 229723,
+      "sha256": "62997e5b9e31db106386a4d8bde5912f1065485475835631dd8ce59a4261bbb7"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshExit/Side_240.png",
+      "bytes": 232284,
+      "sha256": "a1d4f4d6927675a95a15b211c99d0ed535e0cd084e273bdde7ceb4f7ade7309d"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Front.png",
+      "bytes": 1323386,
+      "sha256": "b03a7c33a96a72db47413d3c9173003ebb1fe579a4d6302fabda6498913204c1"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Front_000.png",
+      "bytes": 220843,
+      "sha256": "02aea20684716ae670793c0c0ccd13ab22146ee4eb07e1d33b5ab1554aa0b1dd"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Front_040.png",
+      "bytes": 223305,
+      "sha256": "0619763b4fcfa37453a248fa15d2c4b4b5fa0ab00279e88a9bbb335cd106ce19"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Front_080.png",
+      "bytes": 222997,
+      "sha256": "f82df5f9e00e4fa7042072a5f9a6c3b6c3cb13cdb35268fe953042a21189c61a"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Front_120.png",
+      "bytes": 221086,
+      "sha256": "ba8066185761f0aa5302185c2ad7981af5012679e4acf7255a3d1702e320d8e3"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Front_160.png",
+      "bytes": 223145,
+      "sha256": "9b4515ad85fb598c99c484d8dc64738712da3f0f0d4c43fb75fe04f6a52d043d"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Front_200.png",
+      "bytes": 222830,
+      "sha256": "6cda6fcab84eebc161993a69e229bc377dab1fe541f5bf35de9cc819d4c6ee3c"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Front_247.png",
+      "bytes": 221064,
+      "sha256": "fb72e3a5277ba8b23079ab2b38b04da4aaa5712904a26b14b3d727d8a380e010"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Measurements.json",
+      "bytes": 201897,
+      "sha256": "c63db58cb5328244b142f9b55cc9a1ec41fc9ec1a627345eff6abf72ce2a5aa0"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Rear.png",
+      "bytes": 1354114,
+      "sha256": "744c0c76d2431864ee89037a8b077ab313a38623d42c4302cf6bea85b9f57b62"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Rear_000.png",
+      "bytes": 226898,
+      "sha256": "c131add3ba8f6fa62b23b64fae8f544a85682ebc467e574c7f9c0604369cfbed"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Rear_040.png",
+      "bytes": 229569,
+      "sha256": "0c75f57e32ac672fc363bab6edda4b834a5711bddc1621d8faad333e7cd63643"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Rear_080.png",
+      "bytes": 229185,
+      "sha256": "b7845ab387a5b0e790767d27e67c65bfc92d61924d66485472bf00262a725ecf"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Rear_120.png",
+      "bytes": 227526,
+      "sha256": "65b8997d24d49cfcf0c58eb5a2a8cfd9c90f8682df78d6d3d78d7cf5c01a48b7"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Rear_160.png",
+      "bytes": 229426,
+      "sha256": "99d3cdc91903d3d6108fb8c925e4594889ee52b653551b3aad89240a1382232e"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Rear_200.png",
+      "bytes": 228401,
+      "sha256": "626bfa715eb9a514e2200cfec7d875421955e08bee2c83616e6c494f589eac3e"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Rear_247.png",
+      "bytes": 227252,
+      "sha256": "e909889a7a1f326f7682132fca3daa5adff94593ab28bfef1141a2ed9db93256"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Side.png",
+      "bytes": 1387727,
+      "sha256": "2843a2276860a2291b33b4fadff0ba0e4e37fb1175137a6248d05aa33b84c696"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Side_000.png",
+      "bytes": 233401,
+      "sha256": "a69e4070c837d449eacbb18cc9420dca27337c4a5abac127fc4c30abf7204c41"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Side_040.png",
+      "bytes": 231054,
+      "sha256": "8638514bf40d9258d380cf9119b1ebe91c248423d903544abfada1720b0ffca0"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Side_080.png",
+      "bytes": 230041,
+      "sha256": "6d6c8e8d3f2be213bb9558e51c55d3f3c93bb97a42b641978ecaa4566ccbb47f"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Side_120.png",
+      "bytes": 232302,
+      "sha256": "80b1f42b82424b8a9c008b4258e5222de5a858148274cdcdf7c3353bcf572953"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Side_160.png",
+      "bytes": 232598,
+      "sha256": "ba67ebe7ae8077b0965c7d1d51b17dcf36722e046f838301bbd07190c2b5349d"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Side_200.png",
+      "bytes": 230567,
+      "sha256": "99166a7e5e3621c195e6b30d88d27bc8c85161745ef9e1d690f2f2c4f7ad2e16"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/PilotMeshWalk/Side_247.png",
+      "bytes": 233724,
+      "sha256": "29a0c147650f48aa5927582d3219aaaa8c0f4458c84263341f11de1ebda3fa5f"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Rear.png",
+      "bytes": 1462221,
+      "sha256": "588987280b21d755ba841d319bb2a90d3289774883648505caca01e7974857b9"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Rear_000.png",
+      "bytes": 234874,
+      "sha256": "4c228efe81455a3bc269eb458996b3cf9d8c2ceab3747866bc8c75cfa2c0bc3d"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Rear_040.png",
+      "bytes": 256218,
+      "sha256": "0e35a44571d78a1c5fdf614d3731ded15ecf0140ed8284619b2f1607ef858b1f"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Rear_080.png",
+      "bytes": 233541,
+      "sha256": "6b2ecfa789a541d6acd475f6498a81a1efbf57a06d2d1ba7a80a7a56950439e8"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Rear_110.png",
+      "bytes": 237290,
+      "sha256": "fe72491d284a38e2fc3cd12e86fc90ee8147beb408a817e82dcdd0797aeba37b"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Rear_160.png",
+      "bytes": 241116,
+      "sha256": "d4d40b7f903d3c4238f5fea1cc2e5314791d992b6f95e875133c4bb762addc78"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Rear_180.png",
+      "bytes": 236073,
+      "sha256": "5d8e2a2ea7d42a1d639d9849ec20a82bdc3b69f31cdde433aefc23c4d7b968ce"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Rear_240.png",
+      "bytes": 229574,
+      "sha256": "13261ea0a6f926c5ee59fb8ed276a4f43a9ee044a17d761ec29ec7b833ad1ca5"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Side.png",
+      "bytes": 1380073,
+      "sha256": "baff7bbe9255a8fd9d5eac156723bac73f5a0a4caf9ab2e87755c97f77d3369c"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Side_000.png",
+      "bytes": 231229,
+      "sha256": "a6d111ce5b78823a942a8ef944fc9cedc9f39ac79a3d88fe74bc878fa4390ce9"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Side_040.png",
+      "bytes": 236798,
+      "sha256": "6392f7f0a989529cd4a5d3721c9c02f4bb4fa15f9569ef6ca9e1a3dc41cfd2ec"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Side_080.png",
+      "bytes": 231643,
+      "sha256": "88fcf2d79c5bba35fdbb0c4a8260093ecb5480b521180ccaf94c3f20805f18be"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Side_110.png",
+      "bytes": 214500,
+      "sha256": "041bd41d609e87b33cf33034561f154c45d9d42f4b2374a01280edce15befbc0"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Side_160.png",
+      "bytes": 220810,
+      "sha256": "bd96c20cb26bc49891d1ccef8f1bdcc7b4c8d2fbdc44beed783948e266d8b311"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Side_180.png",
+      "bytes": 226642,
+      "sha256": "3dccff70732c317ca3b436828d6b4054a32464f87a94b40cdd50b5cb1cd168a1"
+    },
+    {
+      "path": "ContentSource/DisembarkPreview/Side_240.png",
+      "bytes": 236779,
+      "sha256": "c1650502339909e5459fffe82f71a44c5e127066754de1d49209bed35f644e1b"
+    },
+    {
+      "path": "ContentSource/GenerateDisembark.py",
+      "bytes": 15797,
+      "sha256": "c980ac0506758a319b7e9f7f2b391b1c10690267df3e6e9b06e6cbc7e2aea333"
+    },
+    {
+      "path": "ContentSource/PreviewDisembark.py",
+      "bytes": 13213,
+      "sha256": "5a8da4c025f748ada5a754b8e3e3fb631b869149d9da7162ff6f569053a30ecc"
+    }
+  ]
+}

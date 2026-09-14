@@ -1,0 +1,55 @@
+{
+  "status": "READ_ONLY_PERSISTED_NORMAL_SETTINGS",
+  "errors": [],
+  "mesh": "/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2",
+  "build_settings": {
+    "recompute_normals": false,
+    "recompute_tangents": true,
+    "use_mikk_t_space": true,
+    "compute_weighted_normals": true,
+    "remove_degenerates": true,
+    "use_high_precision_tangent_basis": false,
+    "use_full_precision_u_vs": false,
+    "generate_lightmap_u_vs": false
+  },
+  "import_settings": {
+    "normal_import_method": "<FBXNormalImportMethod.FBXNIM_IMPORT_NORMALS: 1>",
+    "normal_generation_method": "<FBXNormalGenerationMethod.MIKK_T_SPACE: 1>",
+    "compute_weighted_normals": "True",
+    "import_uniform_scale": "1.0",
+    "convert_scene": "False",
+    "force_front_x_axis": "False"
+  },
+  "local_noise_connections": [
+    {
+      "material": "WarmCeramic",
+      "expression": "MaterialExpressionTransformPosition_0",
+      "source_type": "<MaterialPositionTransformSource.TRANSFORMPOSSOURCE_WORLD: 1>",
+      "target_type": "<MaterialPositionTransformSource.TRANSFORMPOSSOURCE_LOCAL: 0>",
+      "connected_inputs": [
+        null
+      ]
+    },
+    {
+      "material": "IvoryPanels",
+      "expression": "MaterialExpressionTransformPosition_0",
+      "source_type": "<MaterialPositionTransformSource.TRANSFORMPOSSOURCE_WORLD: 1>",
+      "target_type": "<MaterialPositionTransformSource.TRANSFORMPOSSOURCE_LOCAL: 0>",
+      "connected_inputs": [
+        null
+      ]
+    },
+    {
+      "material": "BurnishedBronze",
+      "expression": "MaterialExpressionTransformPosition_0",
+      "source_type": "<MaterialPositionTransformSource.TRANSFORMPOSSOURCE_WORLD: 1>",
+      "target_type": "<MaterialPositionTransformSource.TRANSFORMPOSSOURCE_LOCAL: 0>",
+      "connected_inputs": [
+        null
+      ]
+    }
+  ],
+  "import_data_class": "FbxStaticMeshImportData",
+  "packages_unchanged": true,
+  "note": "Read-only asset query; no normal rebuild/reimport or authored-source changes"
+}

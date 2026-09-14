@@ -1,0 +1,615 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-13T10:34:27.045651+00:00",
+  "status": "SEPARATE_ENEMY_CANDIDATES_VALIDATED_AND_RENDERED_NOT_ADOPTED",
+  "reference_head_at_receipt": "ccfc91400ca10168dba7471fa5a2f3c888a32d6e",
+  "identity_limit": "New candidate source/assets are uncommitted at this receipt. The reference HEAD is read at receipt time, not an independently captured launch HEAD; all candidate scripts, geometry, saved assets and images are bound by their own hashes.",
+  "authority": "Lead-authorized original source candidates, then exactly two new meshes/four shared materials plus eight unsaved native studio renders. Runtime selections and author-main hooks remain lead-owned.",
+  "source_origin": "Original deterministic geometry authored for SpaceSurvival in this generator; no downloaded model, image or texture source.",
+  "toolchain": {
+    "blender": "5.1.2",
+    "engine": "5.8.2-56702186+++UE5+Release-5.8"
+  },
+  "scripts": [
+    {
+      "path": "ContentSource\\EnemyCandidates\\Generate.py",
+      "bytes": 25684,
+      "sha256": "6c6f4dd6f503dea65a09e682386717c62402f39f5ead4b83c628c71ab04531cd",
+      "sha256_lf": "6c6f4dd6f503dea65a09e682386717c62402f39f5ead4b83c628c71ab04531cd",
+      "executed_sha256": "b9562ac75aa8138df281793c85f9cb907c56981860234d3c7c5d4f259f773f54",
+      "executed_sha256_lf": "b9562ac75aa8138df281793c85f9cb907c56981860234d3c7c5d4f259f773f54"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\Validate.py",
+      "bytes": 5632,
+      "sha256": "d9b881021ddb53fee482200ded4ba2709370a760ae9ae8e2d5a0bb3d1ead5e8e",
+      "sha256_lf": "d9b881021ddb53fee482200ded4ba2709370a760ae9ae8e2d5a0bb3d1ead5e8e",
+      "executed_sha256": "902b8bbce73f8731e1f373d51f16d9b9c332478fc0c48b0bee1755039594788f",
+      "executed_sha256_lf": "5e8b4c13d7eb11baac02aeb3d794b1420abdc24ed79ae43bc1592e8e390aed34"
+    },
+    {
+      "path": "Scripts\\AuthorEnemyCandidates.py",
+      "bytes": 10483,
+      "sha256": "c24d010c7e3d33400bc37830ba57b62b227ff2865b7f1827e378ba5cf5a6a018",
+      "sha256_lf": "c24d010c7e3d33400bc37830ba57b62b227ff2865b7f1827e378ba5cf5a6a018",
+      "executed_sha256": "bc7530ac401c2477f8177880dff55d5b2bd71e2d9743978a25cf8989049a14c4",
+      "executed_sha256_lf": "5808df951cf35dc81dac5f1ec4fe6eed45a806a7aabc4bd61671107fd896bfb6"
+    },
+    {
+      "path": "Scripts\\ValidateEnemyCandidates.py",
+      "bytes": 14705,
+      "sha256": "9159ceba9453b68f6732a22d0885768bc5c1f550890260d95d31d20b70975440",
+      "sha256_lf": "9159ceba9453b68f6732a22d0885768bc5c1f550890260d95d31d20b70975440",
+      "executed_sha256": "bfa4fe02c33b94e879510fbea23de808f3e90e4bddbdb2475a39bdbd192c830b",
+      "executed_sha256_lf": "10c42370e93eff7d849d6c0ec62e39a5c26b5e78f5967f03e7f1304da11160bf"
+    }
+  ],
+  "editable_and_exported_source": [
+    {
+      "path": "ContentSource\\EnemyCandidates\\Pursuer.blend",
+      "bytes": 145778,
+      "sha256": "0e33ff6d6c1362191ced49cc55c9b5c6a8d51cd6f004e323f5c208a59fa8d543"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\Pursuer.obj",
+      "bytes": 3428645,
+      "sha256": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\Pursuer.glb",
+      "bytes": 814580,
+      "sha256": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\Flanker.blend",
+      "bytes": 146480,
+      "sha256": "a72de44f90e7f20b787017ca2cae502fbb7adb132c4f805ea6f5139d738652a2"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\Flanker.obj",
+      "bytes": 3587220,
+      "sha256": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\Flanker.glb",
+      "bytes": 860452,
+      "sha256": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\EnemyPalette.mtl",
+      "bytes": 613,
+      "sha256": "39b22eca5beed8b8fce82585509d4f849747c0dd3fc4ddf25caac6176dbb1695"
+    }
+  ],
+  "reports": [
+    {
+      "path": "ContentSource\\EnemyCandidates\\SourceReport.json",
+      "bytes": 5160,
+      "sha256": "c2404e4dfcc2984e0046674e64d7954e5cc1338b3cacdd954c702baf38d62bd8",
+      "sha256_before_lf_serialization": "623d60a5c5e15e57afae16a06e579e171ad8878ee87b6fae4fc2851468f8018d"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\Validation.json",
+      "bytes": 2705,
+      "sha256": "7ed35447f297e99ae38b1e8eb888f7f394bcaa5f90d6c92efc799fba79940e3e",
+      "sha256_before_lf_serialization": "be74ae1a854998efad0ec26d86c3bba045b319d1198e306023e8878983388039"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\Reproduction.json",
+      "bytes": 1183,
+      "sha256": "d0c9ef285945ba8862bde6b2fb42bcccbd0eba66a607bed7645d5dd6dc00a58d",
+      "sha256_before_lf_serialization": "ccd1bef4daa800a86d3991649c1c727aa3b9ed99b9a860403d37adc097ee2dd0"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\RenderReport.json",
+      "bytes": 2193,
+      "sha256": "2ce191d7590fade6053c7b327a97549850272638632dd1bdcb4711a9e7e00a95",
+      "sha256_before_lf_serialization": "d828bc726ba40e75ad72ca0db092105402eaf178fa4984f012fbda883b1826df"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\UnrealImport.json",
+      "bytes": 2418,
+      "sha256": "7333dd32f056dd4bbc4a1313e79818d337a72dd246727bba5deedd0000d48968",
+      "sha256_before_lf_serialization": "ae395e65b97da65f771c6d040dd1b7de12ff53167132a02e63541219c2c52c14"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\UnrealPersisted.json",
+      "bytes": 6579,
+      "sha256": "7c86e0cadd81ceae5c9581776122d9688758baf4a4f6d777e7eae59095e3ea96",
+      "sha256_before_lf_serialization": "c7fdecdf1f91c971e0c117693d974265404486da35bbf2df010b326bcdf52c0a"
+    },
+    {
+      "path": "ContentSource\\EnemyCandidates\\UnrealPreview.json",
+      "bytes": 9275,
+      "sha256": "7eaf9aca7d6bf295667d2877ba98914875390cbc2e25a7071bdf4dd023b5dc80",
+      "sha256_before_lf_serialization": "2e694df12abd2476c2d62a56819d38a3f29834b330bba191bb6984a585a828d6"
+    }
+  ],
+  "original_assets_preserved_sha256": {
+    "ContentSource\\Meshes\\SM_Pursuer.obj": "fbde4d3b6b09352439692602ea0e706cae09c1d200256f851baa5d0eaacbcb31",
+    "ContentSource\\Meshes\\SM_Flanker.obj": "895f812e9cbbf836f258cdedf65f87ecdc848282913b6d964fa4ca0102c2c24e",
+    "Content\\SpaceSurvival\\Meshes\\SM_Pursuer.uasset": "f6fa730cf1aefbdc55755635eec5e6142495b970b32685962822e081d621bf18",
+    "Content\\SpaceSurvival\\Meshes\\SM_Flanker.uasset": "918c3a64f0836b855d0538a42c38d1bfc4d25e108c5af5f7a03e859c584392e5",
+    "ContentSource\\GenerateGeometry.py": "a6e57333905536ea64a4e3fd7f78b9697201439c40d9bb10f0fe2cab86f8ea00",
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91"
+  },
+  "source_topology": [
+    {
+      "name": "Pursuer",
+      "triangles": 14180,
+      "vertices": 7248,
+      "closed_components": 84,
+      "all_edges_two_incident_faces": true,
+      "all_components_outward_positive_volume": true,
+      "min_triangle_area_cm2": 0.00736052203269811,
+      "min_uv_triangle_area": 8.087849999995713e-09,
+      "min_corner_normal_dot_face_normal": 0.822354090215051,
+      "finite_unit_normals": true,
+      "four_materials": [
+        "EN_Amber",
+        "EN_Ceramic",
+        "EN_Recess",
+        "EN_Titanium"
+      ],
+      "glb_four_primitives_with_normals_uvs": true,
+      "obj_sha256": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d",
+      "glb_sha256": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc"
+    },
+    {
+      "name": "Flanker",
+      "triangles": 14840,
+      "vertices": 7586,
+      "closed_components": 88,
+      "all_edges_two_incident_faces": true,
+      "all_components_outward_positive_volume": true,
+      "min_triangle_area_cm2": 0.00014335023333170816,
+      "min_uv_triangle_area": 1.1238000000323238e-10,
+      "min_corner_normal_dot_face_normal": 0.8520717107772001,
+      "finite_unit_normals": true,
+      "four_materials": [
+        "EN_Amber",
+        "EN_Ceramic",
+        "EN_Recess",
+        "EN_Titanium"
+      ],
+      "glb_four_primitives_with_normals_uvs": true,
+      "obj_sha256": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba",
+      "glb_sha256": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682"
+    }
+  ],
+  "deterministic_reproduction": {
+    "status": "FRESH_BLENDER_REBUILD_BYTE_IDENTICAL_OBJ_GLB_MTL",
+    "blender": "5.1.2",
+    "files": {
+      "Pursuer.obj": "82c0cb3c9488838488b3d5e2aab13bdf7868bd212cce2f64fedbce90db78574d",
+      "Pursuer.glb": "ee215b834150027ee73e0d0d79d807411c90db9f65797a6752476c6b721f37bc",
+      "Flanker.obj": "c0fe45df0dbf615c1ab7c1f9b781bf7ce46ef64e033b955e581555040fc7cfba",
+      "Flanker.glb": "272bf645dc459a94d26515fb0c7ac4c06e751f14ccf82952f0f4ec6c432c3682",
+      "EnemyPalette.mtl": "39b22eca5beed8b8fce82585509d4f849747c0dd3fc4ddf25caac6176dbb1695"
+    },
+    "generator_sha256": "6c6f4dd6f503dea65a09e682386717c62402f39f5ead4b83c628c71ab04531cd",
+    "limit": "Editable .blend containers are retained but their bytes are not claimed deterministic; exported mesh/UV/normal/material bytes match.",
+    "executed_generator_sha256": "b9562ac75aa8138df281793c85f9cb907c56981860234d3c7c5d4f259f773f54",
+    "post_execution_whitespace_normalization": {
+      "utc": "2026-09-13T10:45:38.707962+00:00",
+      "reason": "Lead precommit whitespace gate found blank lines at EOF. Only terminal CR/LF bytes normalized, without rebuilding geometry or rerendering.",
+      "details": "WhitespaceNormalization.json"
+    }
+  },
+  "unreal_meshes": [
+    {
+      "kind": "Pursuer",
+      "path": "/Game/SpaceSurvival/Meshes/SM_PursuerCandidateV1.SM_PursuerCandidateV1",
+      "triangles": 14180,
+      "render_vertices": 22644,
+      "bounds_cm": [
+        [
+          -135.5,
+          -95.44202423095703,
+          -31.065528869628906
+        ],
+        [
+          135.5,
+          95.44202423095703,
+          31.065528869628906
+        ]
+      ],
+      "origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_extent_cm": 135.5,
+      "runtime_scale_at_radius150": 1.1070110701107012,
+      "source_farthest_vertex_at_radius150_cm": 165.27619631032303,
+      "material_slots": [
+        "EN_Amber",
+        "EN_Recess",
+        "EN_Titanium",
+        "EN_Ceramic"
+      ],
+      "lods": 1,
+      "uv_channels": 1,
+      "simple_collision_shapes": 0,
+      "all_section_collision_disabled": true,
+      "normal_import_method": "IMPORT_NORMALS",
+      "built_lod0_attributes_sha256": "4cbbe04fda17a603f8d24b315004a4a9d2ba5ad9a4c54ccafb11a1f32ef365fe",
+      "fbx_sha256": "15b19db07291c0b279fd36422ec68d9a931a4cc3bf242a349229fa61dd285816",
+      "arrays_present": [
+        "Binormals",
+        "Normals",
+        "PolygonVertexIndex",
+        "Tangents",
+        "UV",
+        "UVIndex",
+        "Vertices"
+      ],
+      "built_normals_finite_unit": true,
+      "built_uvs_finite_in_unit_square": true
+    },
+    {
+      "kind": "Flanker",
+      "path": "/Game/SpaceSurvival/Meshes/SM_FlankerCandidateV1.SM_FlankerCandidateV1",
+      "triangles": 14840,
+      "render_vertices": 23954,
+      "bounds_cm": [
+        [
+          -118.49999237060547,
+          -172.72935485839844,
+          -27.416711807250977
+        ],
+        [
+          118.49999237060547,
+          172.72935485839844,
+          27.416711807250977
+        ]
+      ],
+      "origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_extent_cm": 172.72935485839844,
+      "runtime_scale_at_radius150": 0.8684105844253763,
+      "source_farthest_vertex_at_radius150_cm": 161.36327960878236,
+      "material_slots": [
+        "EN_Titanium",
+        "EN_Recess",
+        "EN_Ceramic",
+        "EN_Amber"
+      ],
+      "lods": 1,
+      "uv_channels": 1,
+      "simple_collision_shapes": 0,
+      "all_section_collision_disabled": true,
+      "normal_import_method": "IMPORT_NORMALS",
+      "built_lod0_attributes_sha256": "e2d50b5472e2168d3e988408804fb0213d8fde7d95d2b6507b7e14978cbfa1bd",
+      "fbx_sha256": "d7e5641767d2f862eca8fa441c12c78cda9972f42afc6ab76ecba3a5361bd318",
+      "arrays_present": [
+        "Binormals",
+        "Normals",
+        "PolygonVertexIndex",
+        "Tangents",
+        "UV",
+        "UVIndex",
+        "Vertices"
+      ],
+      "built_normals_finite_unit": true,
+      "built_uvs_finite_in_unit_square": true
+    }
+  ],
+  "unreal_materials": [
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Titanium.M_EnemyCandidate_Titanium",
+      "source_palette_sha256": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+      "name": "EN_Titanium",
+      "base_color": [
+        0.03500000014901161,
+        0.04899999871850014,
+        0.06300000101327896,
+        1.0
+      ],
+      "metallic": 0.8299999833106995,
+      "roughness": 0.3400000035762787,
+      "emission": 0.0
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Ceramic.M_EnemyCandidate_Ceramic",
+      "source_palette_sha256": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+      "name": "EN_Ceramic",
+      "base_color": [
+        0.23999999463558197,
+        0.2800000011920929,
+        0.25999999046325684,
+        1.0
+      ],
+      "metallic": 0.11999999731779099,
+      "roughness": 0.3700000047683716,
+      "emission": 0.0
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Recess.M_EnemyCandidate_Recess",
+      "source_palette_sha256": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+      "name": "EN_Recess",
+      "base_color": [
+        0.008999999612569809,
+        0.014000000432133675,
+        0.019999999552965164,
+        1.0
+      ],
+      "metallic": 0.4000000059604645,
+      "roughness": 0.41999998688697815,
+      "emission": 0.0
+    },
+    {
+      "path": "/Game/SpaceSurvival/Materials/M_EnemyCandidate_Amber.M_EnemyCandidate_Amber",
+      "source_palette_sha256": "213ce75b9d136de89988464b163554c8fbb7b6b515b081b8b8b38a576b7fed62",
+      "name": "EN_Amber",
+      "base_color": [
+        0.949999988079071,
+        0.11500000208616257,
+        0.012000000104308128,
+        1.0
+      ],
+      "metallic": 0.10000000149011612,
+      "roughness": 0.27000001072883606,
+      "emission": 2.5999999046325684
+    }
+  ],
+  "packages": [
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Amber.uasset",
+      "bytes": 7714,
+      "sha256": "f44beaa457d984bbf80c274092c12ee1e3a62b4289728e5f3739ec8233117a42"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Ceramic.uasset",
+      "bytes": 6572,
+      "sha256": "51b348be4e057e6a3715ded5227a68b5742eaad1565263a17a8fc5adccd4ea17"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Recess.uasset",
+      "bytes": 6566,
+      "sha256": "91063b83184900f60bfda4bb791333a306fe2f8d8d13ca7c5f4e173320c59335"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Materials\\M_EnemyCandidate_Titanium.uasset",
+      "bytes": 6578,
+      "sha256": "a7a65c45352599da90d71fea6bf2c210aa1655aa256ad07cd288e8b7b8064864"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_FlankerCandidateV1.uasset",
+      "bytes": 403933,
+      "sha256": "3f9a1c2ed4497ef0fc2f0f746242d9fa19b216b075ba9850dbde79aa74b4c3a6"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Meshes\\SM_PursuerCandidateV1.uasset",
+      "bytes": 481277,
+      "sha256": "f487c80f91ddfce92b7110d77510574e39d3d00093752e71722844bb14f5db3b"
+    }
+  ],
+  "unreal_import": {
+    "exit_code": 0,
+    "completion_utc": "2026-09-13T10:25:32.898Z",
+    "protected_existing_file_count": 129,
+    "added_assets": 6,
+    "log": {
+      "path": "ContentSource\\EnemyCandidates\\UnrealImport.log",
+      "bytes": 271009,
+      "sha256": "d4ab9d48754b4387bdffddcf6274216e3e4ceb632eaa0937eac05f1007c28784"
+    },
+    "command_log": {
+      "path": "ContentSource\\EnemyCandidates\\UnrealImportCommand.log",
+      "bytes": 28368,
+      "sha256": "789d33de4c7960569ab6a06294cae036f9b46654220f90b1b9a0e16e9d96c615"
+    },
+    "warnings": [
+      "Two missing smoothing-group messages from the OBJ import through FbxFactory. Imported normal mode, finite unit built normals and native surfaces were checked; import is not described as warning-free."
+    ]
+  },
+  "unreal_preview": {
+    "owned_pid": 31756,
+    "exit_code": 0,
+    "normal_exit_log_utc": "2026-09-13T10:28:44.480Z",
+    "process_confirmed_gone": true,
+    "protected_existing_file_count": 135,
+    "log": {
+      "path": "ContentSource\\EnemyCandidates\\UnrealPreview.log",
+      "bytes": 265377,
+      "sha256": "3b8bc183f5ec5c49b233da0c20499ce92cb41b8aa99030b5397d511115f23ca4"
+    },
+    "command_log": {
+      "path": "ContentSource\\EnemyCandidates\\UnrealPreviewCommand.log",
+      "bytes": 25434,
+      "sha256": "205deff8ddc1b83bb87b570e46ee82b111b16bd72ccd00a87ed28d4159487116"
+    },
+    "stderr": {
+      "path": "ContentSource\\EnemyCandidates\\UnrealPreviewError.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "method": "Unsaved StaticMeshActor, unchanged +X-forward orientation, uniform scale150/maxBoxExtent, three studio directional lights, ordinary shadows. HeadOn camera lies on +X, matching ASSEnemy::Tick's existing direction toward the player; no AI or physical input simulated.",
+    "arguments": [
+      "-unattended",
+      "-RenderOffscreen",
+      "-nosplash",
+      "-nosound",
+      "-windowed",
+      "-ResX=1400",
+      "-ResY=1000",
+      "-ExecutePythonScript=Scripts/ValidateEnemyCandidates.py --preview"
+    ],
+    "images": [
+      {
+        "file": "UnrealPursuerForwardQuarter.png",
+        "sha256": "8163106934e04bc6fd09a0df8088663caf56ce770e95aeb217cedc0a888f40b5",
+        "kind": "Pursuer",
+        "view": "ForwardQuarter",
+        "scale": 1.1070110701107012,
+        "camera_cm": [
+          650,
+          -650,
+          500
+        ]
+      },
+      {
+        "file": "UnrealPursuerRearQuarter.png",
+        "sha256": "2ced42221ac1d1b33d349ccb743104bc7b72ab4be18bf3c3aff1c63f2440a28e",
+        "kind": "Pursuer",
+        "view": "RearQuarter",
+        "scale": 1.1070110701107012,
+        "camera_cm": [
+          -650,
+          -650,
+          450
+        ]
+      },
+      {
+        "file": "UnrealPursuerTopSilhouette.png",
+        "sha256": "ef30db12919cab4efbbba68edda75e9a07a64761dc76c0b398b6183ef53c9890",
+        "kind": "Pursuer",
+        "view": "TopSilhouette",
+        "scale": 1.1070110701107012,
+        "camera_cm": [
+          0.01,
+          0,
+          1000
+        ]
+      },
+      {
+        "file": "UnrealPursuerHeadOn.png",
+        "sha256": "99e22900591f68038037eeea08a41260b0db0276b8d14969bfceac45f324b46d",
+        "kind": "Pursuer",
+        "view": "HeadOn",
+        "scale": 1.1070110701107012,
+        "camera_cm": [
+          800,
+          0,
+          0
+        ]
+      },
+      {
+        "file": "UnrealFlankerForwardQuarter.png",
+        "sha256": "0e922ddaef375422116d3c2a6cb20468aafac90a0831a1d3d71e6dcf557d10c3",
+        "kind": "Flanker",
+        "view": "ForwardQuarter",
+        "scale": 0.8684105844253763,
+        "camera_cm": [
+          650,
+          -650,
+          500
+        ]
+      },
+      {
+        "file": "UnrealFlankerRearQuarter.png",
+        "sha256": "ea6506ea2ecb244680e92ec01fc1ac89fb2a641efbf515a27606ecea3a75d43e",
+        "kind": "Flanker",
+        "view": "RearQuarter",
+        "scale": 0.8684105844253763,
+        "camera_cm": [
+          -650,
+          -650,
+          450
+        ]
+      },
+      {
+        "file": "UnrealFlankerTopSilhouette.png",
+        "sha256": "7de65b2097c607cc7e71ce3f30b77942ad6dc58dabd5f830e5031660624536b0",
+        "kind": "Flanker",
+        "view": "TopSilhouette",
+        "scale": 0.8684105844253763,
+        "camera_cm": [
+          0.01,
+          0,
+          1000
+        ]
+      },
+      {
+        "file": "UnrealFlankerHeadOn.png",
+        "sha256": "06192773d0bfb20dc66726dfd5cab4c232027fddf0d199f2d746c7a652bf61c4",
+        "kind": "Flanker",
+        "view": "HeadOn",
+        "scale": 0.8684105844253763,
+        "camera_cm": [
+          800,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "renderer_module_at_receipt": {
+    "path": "Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+    "bytes": 1527808,
+    "sha256": "651cac5a57fd0b694fe548c216c4ec1aaf992914f8ac45cce1db18db11ef291e"
+  },
+  "syntax": {
+    "files": 4,
+    "ast_parse": "PASS"
+  },
+  "visual_review": {
+    "reviewer": "implementation agent",
+    "images_inspected": [
+      "UnrealPursuerForwardQuarter.png",
+      "UnrealPursuerRearQuarter.png",
+      "UnrealPursuerTopSilhouette.png",
+      "UnrealPursuerHeadOn.png",
+      "UnrealFlankerForwardQuarter.png",
+      "UnrealFlankerRearQuarter.png",
+      "UnrealFlankerTopSilhouette.png",
+      "UnrealFlankerHeadOn.png"
+    ],
+    "observations": [
+      "All eight native images show complete, unclipped geometry and populated material sections.",
+      "Compact Pursuer and swept wide Flanker silhouettes are distinct in quarter/top views.",
+      "Head-on geometry is dark/shallow against the studio black background, especially Flanker wings; integrated gameplay lighting and cue readability remain unresolved."
+    ],
+    "lead_review_reported": [
+      "UnrealPursuerForwardQuarter",
+      "UnrealFlankerHeadOn",
+      "UnrealFlankerTopSilhouette"
+    ],
+    "lead_followup": "Existing muzzle light must be located from mesh forward bound during lead-owned integration; no gameplay radius or projectile policy change is included here."
+  },
+  "limits": [
+    "Only two separate enemy meshes and four shared materials; no production enemy selection.",
+    "Existing Radius150 actor collision sphere retained. Max-extent fitting can leave outer corners beyond that sphere, as recorded; no additional collider.",
+    "One LOD and four draw sections per mesh; no runtime LOD/performance or final art acceptance.",
+    "No runtime adoption, author-main selection, cooked build, LOD/performance, game lighting, physical input, natural gameplay or owner art approval.",
+    "Studio uses no GameInstance run or save calls; production save bytes were not separately snapshotted by this candidate task.",
+    "Original Acornaut source and original enemies remain unchanged. Supplied art is not embedded in these original enemy models."
+  ],
+  "readme": {
+    "path": "ContentSource\\EnemyCandidates\\README.md",
+    "bytes": 6751,
+    "sha256": "85f58eff850267568d1cac10612c9f63f6e1be6d842d3891983875f4759657da"
+  },
+  "post_execution_whitespace_normalization": {
+    "path": "ContentSource\\EnemyCandidates\\WhitespaceNormalization.json",
+    "bytes": 12249,
+    "sha256": "46bb5af7e8ca6df9dbe0c79d66ecca49ea8341e37d4f79c8f34ce2b0fa66172d"
+  },
+  "normalization_limit": "Actual execution used retained executed script/generator hashes and original SourceReport hash. Current generator/validator changed only terminal newlines; engine report writers additionally specify LF serialization. Existing JSON values are unchanged by LF conversion. Raw engine execution reports and matching original SourceReport are retained locally. All mesh, material and rendered image bytes remain unchanged; no fresh engine execution is inferred.",
+  "raw_engine_execution_records": [
+    {
+      "path": ".agent\\local\\EnemyExecutedReceipts\\UnrealImport.json",
+      "bytes": 2473,
+      "sha256": "ae395e65b97da65f771c6d040dd1b7de12ff53167132a02e63541219c2c52c14"
+    },
+    {
+      "path": ".agent\\local\\EnemyExecutedReceipts\\UnrealPersisted.json",
+      "bytes": 6783,
+      "sha256": "c7fdecdf1f91c971e0c117693d974265404486da35bbf2df010b326bcdf52c0a"
+    },
+    {
+      "path": ".agent\\local\\EnemyExecutedReceipts\\UnrealPreview.json",
+      "bytes": 9578,
+      "sha256": "2e694df12abd2476c2d62a56819d38a3f29834b330bba191bb6984a585a828d6"
+    },
+    {
+      "path": ".agent\\local\\EnemyExecutedReceipts\\SourceReport.json",
+      "bytes": 4760,
+      "sha256": "13ad4d2677644e96e59b4b6082175772ffd537f0705a128df2a0f5d32e83d148"
+    }
+  ]
+}

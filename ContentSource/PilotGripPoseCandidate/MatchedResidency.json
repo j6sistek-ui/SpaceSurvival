@@ -1,0 +1,105 @@
+{
+  "status": "MATCHED_FULL_HERO_TEXTURE_RESIDENCY_VERIFIED",
+  "log_sha256": "fe465080c3ac4c4d7ffa6ca85a173285ed068416b6d3e16ffc86fef9ae73d512",
+  "texture": "/Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0",
+  "temporary_forced_seconds": 120,
+  "wait_per_view_seconds": 10,
+  "no_saved_texture_flag_changes": true,
+  "rows": [
+    {
+      "case": "UnrealResidentBefore",
+      "image_sha256": "f44b17f752b95189d9a2d6fc665c56606ddd1e718e9e0f4e5871313c71d67d3b",
+      "marker_timestamp": "2026.09.13-11.21.52:510",
+      "maximum_dimensions": [
+        2048,
+        2048
+      ],
+      "current_dimensions": [
+        2048,
+        2048
+      ],
+      "current_kib": 2752,
+      "format": "PF_DXT1",
+      "lod_group": "TEXTUREGROUP_World",
+      "streaming": "YES",
+      "unknown_ref": "NO",
+      "virtual_texture": "NO",
+      "usage_count": 1,
+      "mip_count": 12,
+      "uncompressed": "NO",
+      "raw_texture_row": "2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0, YES, NO, NO, 1, 12, NO"
+    },
+    {
+      "case": "UnrealResidentAfter",
+      "image_sha256": "e28fd31b7529c21c8f72860dd30c975fcd6f5e15acfaf552a193805f721c7dc6",
+      "marker_timestamp": "2026.09.13-11.22.02:981",
+      "maximum_dimensions": [
+        2048,
+        2048
+      ],
+      "current_dimensions": [
+        2048,
+        2048
+      ],
+      "current_kib": 2752,
+      "format": "PF_DXT1",
+      "lod_group": "TEXTUREGROUP_World",
+      "streaming": "YES",
+      "unknown_ref": "NO",
+      "virtual_texture": "NO",
+      "usage_count": 1,
+      "mip_count": 12,
+      "uncompressed": "NO",
+      "raw_texture_row": "2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0, YES, NO, NO, 1, 12, NO"
+    },
+    {
+      "case": "UnrealReleaseLift",
+      "image_sha256": "0a252428233f9b06114197f5d33caed95668218909b6ee3fe55cbebb07530588",
+      "marker_timestamp": "2026.09.13-11.22.13:460",
+      "maximum_dimensions": [
+        2048,
+        2048
+      ],
+      "current_dimensions": [
+        2048,
+        2048
+      ],
+      "current_kib": 2752,
+      "format": "PF_DXT1",
+      "lod_group": "TEXTUREGROUP_World",
+      "streaming": "YES",
+      "unknown_ref": "NO",
+      "virtual_texture": "NO",
+      "usage_count": 1,
+      "mip_count": 12,
+      "uncompressed": "NO",
+      "raw_texture_row": "2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0, YES, NO, NO, 1, 12, NO"
+    },
+    {
+      "case": "UnrealReleaseRetract",
+      "image_sha256": "3e473f7f4b4b845e668599dce2bc2e35cca17a9ea50f81015c037bfa91872bce",
+      "marker_timestamp": "2026.09.13-11.22.23:932",
+      "maximum_dimensions": [
+        2048,
+        2048
+      ],
+      "current_dimensions": [
+        2048,
+        2048
+      ],
+      "current_kib": 2752,
+      "format": "PF_DXT1",
+      "lod_group": "TEXTUREGROUP_World",
+      "streaming": "YES",
+      "unknown_ref": "NO",
+      "virtual_texture": "NO",
+      "usage_count": 1,
+      "mip_count": 12,
+      "uncompressed": "NO",
+      "raw_texture_row": "2048x2048 (2752 KB, 0), 2048x2048 (2752 KB), PF_DXT1, TEXTUREGROUP_World, /Game/SpaceSurvival/Character/model-rigged_texture_0.model-rigged_texture_0, YES, NO, NO, 1, 12, NO"
+    }
+  ],
+  "limits": [
+    "Only the actual hero texture is checked here. This is residency evidence for these four studio screenshots, not game streaming or performance acceptance."
+  ]
+}

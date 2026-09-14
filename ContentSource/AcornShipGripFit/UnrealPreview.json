@@ -1,0 +1,110 @@
+{
+  "status": "SEPARATE_GRIP_FIT_IMPORTED_NATIVE_PREVIEWED_NOT_ADOPTED",
+  "errors": [],
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "limits": [
+    "Separate asset only; gameplay still selectsSM_AcornShipV2",
+    "Open/upturned sourceLhand remains; no grasp pose repair",
+    "No performance or owner art acceptance"
+  ],
+  "mesh": "/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit",
+  "bounds_cm": [
+    [
+      -244.79998779296875,
+      -142.78431701660156,
+      -65.3775405883789
+    ],
+    [
+      209.99998474121094,
+      142.78431701660156,
+      97.80007934570312
+    ]
+  ],
+  "triangles": 134622,
+  "vertices": 79448,
+  "material_sections": 9,
+  "collision_enabled": "NoCollision",
+  "slots": [
+    {
+      "slot": "AC01_GraphiteStructure",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.M_AcornV2_GraphiteStructure"
+    },
+    {
+      "slot": "AC01_WarmCeramic",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.M_AcornV2_WarmCeramic"
+    },
+    {
+      "slot": "AC01_IvoryPanels",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.M_AcornV2_IvoryPanels"
+    },
+    {
+      "slot": "AC01_BurnishedBronze",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.M_AcornV2_BurnishedBronze"
+    },
+    {
+      "slot": "AC01_ChampagneEdges",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.M_AcornV2_ChampagneEdges"
+    },
+    {
+      "slot": "AC01_MachinedTitanium",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.M_AcornV2_MachinedTitanium"
+    },
+    {
+      "slot": "AC01_IonAndNav",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav.M_AcornV2_IonAndNav"
+    },
+    {
+      "slot": "AC01_CockpitPadding",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.M_AcornV2_CockpitPadding"
+    },
+    {
+      "slot": "AC01_Windscreen",
+      "material": "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen.M_AcornV2_Windscreen"
+    }
+  ],
+  "package": {
+    "file": "Content\\SpaceSurvival\\Meshes\\SM_AcornShipGripFit.uasset",
+    "bytes": 1901173,
+    "sha256": "ea9823aab8c742deed6513c54c985fc9ecd913b8f0d0f20c42090a97dda73d30"
+  },
+  "source_obj_sha256": "b2dd058d556c4cd43b0bc08263db77f15e53e6e300d630070f16de1cc632c4db",
+  "existing_protected_files_unchanged": 128,
+  "images": [
+    {
+      "file": "UnrealBefore.png",
+      "sha256": "6343011fb88d51e1ee99312ecd898daf8a22e2a5ed2b539a488200e097986718",
+      "clip": "Pilot",
+      "seconds": 0
+    },
+    {
+      "file": "UnrealAfter.png",
+      "sha256": "85c4d0f6a6a82066d6c1b87c7cd35f63f4b1ee2f8db19e7feb9daf1266f0b4e7",
+      "clip": "Pilot",
+      "seconds": 0
+    },
+    {
+      "file": "UnrealLeftContact.png",
+      "sha256": "071c4deaaec2044400edaeaf6b5c8f0cfc9fa7901b02b152fcf6fb2fd69bc6c8",
+      "clip": "Pilot",
+      "seconds": 0
+    },
+    {
+      "file": "UnrealRightContact.png",
+      "sha256": "9a46c26863d73307e1050c4db4167526e95c157ceba9c5487e5f859cbfb2d5c5",
+      "clip": "Pilot",
+      "seconds": 0
+    },
+    {
+      "file": "UnrealPilotPeak.png",
+      "sha256": "7c16cb7e5c082045cb9b5b9f941c06e5ecd164badd761cc425c38dbeccfee198",
+      "clip": "Pilot",
+      "seconds": 1
+    },
+    {
+      "file": "UnrealExitRelease.png",
+      "sha256": "f929faa057395f087538c3e649ce4f2ec7cc87b80e7c0e33ebbed251a9bec852",
+      "clip": "Disembark",
+      "seconds": 0.2
+    }
+  ]
+}

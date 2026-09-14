@@ -1,0 +1,417 @@
+{
+  "status": "SEPARATE_CANDIDATE_PARTIAL_VISUAL_DEFECT_REMAINS",
+  "candidate_sha256": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00",
+  "protected_sources_unchanged": {
+    "model-rigged.glb": "c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91",
+    "ContentSource\\Animation\\Pilot.glb": "0ee35425431564d280d7f5874d603eb45759f1be8e1c08872d9ad62be0d49976",
+    "ContentSource\\Animation\\PilotMesh.glb": "0387fea102e1e0c8e69de520197d68ef570f39172aa7fbbf4051db7a5e5e5665"
+  },
+  "selection": {
+    "old_tail_vertices": 140186,
+    "additional_tail_vertices": 3947,
+    "total_tail_vertices": 144133,
+    "remaining_vertices_preserved": 58374,
+    "algorithm": "Whole indexed components; reviewed rear base plus tightly bounded303-vertex root continuity selection. Selection.json binds exact additional indices.",
+    "source_geometry_claim": "Selected fur-only region checked in front/side/rear and close underside overlay. All remaining vertex position/normal/joint/weight values unchanged; all UVs,indices,materials,images,nodes and skin definition unchanged.",
+    "rejected_broad_method": "Removing height restriction selected3725 foot/lower-leg vertices; rejected before candidate export. BroadSelection overlays retained as evidence.",
+    "rejected_welding_method": "Welding positions to1micrometre linked202466 vertices, including body; rejected. WeldedSelection.json retained only as diagnostic."
+  },
+  "deformation_samples": {
+    "Exit": {
+      "frames_checked": 73,
+      "vertices": 202507,
+      "tail_vertices": 144133,
+      "body_vs_original_max_vertex_error_cm": 0.0,
+      "tail_vs_rigid_pelvis_max_vertex_error_cm": 1.8848644685931504e-05,
+      "peak_tail_frame_step": {
+        "body_cm": 8.647027015686035,
+        "tail_cm": 9.274114608764648,
+        "frame": 19
+      },
+      "min_tail_to_leg_joint_axis_cm": 5.7065958976745605
+    },
+    "Walk": {
+      "frames_checked": 75,
+      "vertices": 202507,
+      "tail_vertices": 144133,
+      "body_vs_original_max_vertex_error_cm": 0.0,
+      "tail_vs_rigid_pelvis_max_vertex_error_cm": 1.8907454432337545e-05,
+      "peak_tail_frame_step": {
+        "body_cm": 6.932858467102051,
+        "tail_cm": 2.101942777633667,
+        "frame": 7
+      },
+      "min_tail_to_leg_joint_axis_cm": 5.70659875869751
+    }
+  },
+  "visual_findings": [
+    "Candidate curl is compact and follows Pelvis without the original lateral leg fan.",
+    "Walk and late-exit side/rear previews improve the conspicuous trailing tail-base shards.",
+    "High-resolution seated rear still exposes a conspicuous hanging strip. Geometry ownership of that residual strip is not proven safe enough for further automatic selection. This defect remains open.",
+    "Curl has rigid Pelvis motion and no secondary tail dynamics. Existing material/shape quality and rear head/backpack occlusion remain subject to owner art review.",
+    "The candidate is kept separate. No original or existing pilot asset was overwritten, and no Unreal import or runtime asset adoption was performed."
+  ],
+  "preview_paths": {
+    "seated_rear": "ContentSource/TailCandidatePreview/CandidateTailProposalRear.png",
+    "exit_contact_sheets": [
+      "ContentSource/TailCandidatePreview/Exit/Front.png",
+      "ContentSource/TailCandidatePreview/Exit/Side.png",
+      "ContentSource/TailCandidatePreview/Exit/Rear.png"
+    ],
+    "walk_contact_sheets": [
+      "ContentSource/TailCandidatePreview/Walk/Front.png",
+      "ContentSource/TailCandidatePreview/Walk/Side.png",
+      "ContentSource/TailCandidatePreview/Walk/Rear.png"
+    ],
+    "selection_closeup": "ContentSource/TailCandidatePreview/SelectionUnderTail.png"
+  },
+  "import_handoff": "Decision pending. If deliberately imported, use new SkeletalMesh asset only with existing geometry_0_Skeleton and material, disable new animations/materials/textures/physics, preserve original and existing PilotMesh packages. Recheck all three clips and actual station fit in Unreal before adoption.",
+  "source_validation": "Four new authoring/inspection scripts parse as Python; generator invariant assertions and fresh Blender imports completed. No UE build/import/runtime tests in this subtask.",
+  "artifacts": [
+    {
+      "path": "ContentSource/Animation/TailCandidate.glb",
+      "bytes": 32128444,
+      "sha256": "43615b14275e348e3f5a07253a64cb475e3caffe0a294feea81e1c10e3abea00"
+    },
+    {
+      "path": "ContentSource/Animation/TailCandidate.json",
+      "bytes": 1530,
+      "sha256": "251c06470e5b0ad2e7de77702c2183677f066c93fb2dc635c4c03e12d9004ed9"
+    },
+    {
+      "path": "ContentSource/GenerateTailCandidate.py",
+      "bytes": 13609,
+      "sha256": "844b1351e28f0444b24ee5c74e35ee657c3f54673b5d0e790bea09c50ceccb96"
+    },
+    {
+      "path": "ContentSource/InspectTailCandidate.py",
+      "bytes": 6005,
+      "sha256": "035bdb71032991258c09b57dccc0115e0cc7ed48f582c56f03f7714a2597e7aa"
+    },
+    {
+      "path": "ContentSource/PreviewDisembark.py",
+      "bytes": 13213,
+      "sha256": "5a8da4c025f748ada5a754b8e3e3fb631b869149d9da7162ff6f569053a30ecc"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/BroadSelection.json",
+      "bytes": 1390472,
+      "sha256": "dfdf5325ad310e5905470679fdb235a515772e4859ad98f015df434709a6f987"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/BroadSelectionFront.png",
+      "bytes": 694592,
+      "sha256": "0979f26512b5863d5b8677abc891bc307003425290022cec73cc7130b861219a"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/BroadSelectionRear.png",
+      "bytes": 746298,
+      "sha256": "49ce3291eb2454daaaeada026715b199e93baf70ca884cd009ff6348ed1b1faa"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/BroadSelectionSide.png",
+      "bytes": 758982,
+      "sha256": "b09525ce53cde98b61291811c9769268f36c38485ecf2a8810035d27a9602314"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/CandidateTailProposalFront.png",
+      "bytes": 1066703,
+      "sha256": "72ba532d44f0ca9871f4a7e1dd7ed5fcfbfdaaf0f041674c77454d284561d48e"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/CandidateTailProposalRear.png",
+      "bytes": 1130010,
+      "sha256": "7a6153f0d152c982b705886e4ae48da268b4ae0d853f6becc922d27f86ad617f"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Front.png",
+      "bytes": 1293135,
+      "sha256": "63319b13a736d56c68cdf989110765f8dcd71e587bc701cda3c6ad157cfa8ab2"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Front_000.png",
+      "bytes": 213132,
+      "sha256": "86fe8341b0c2cf6c794f26ce401f744c13ac122ca77ecfa84b912f583a1ec807"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Front_040.png",
+      "bytes": 216046,
+      "sha256": "9e81d3d48ba3b448beebb96c5b2ff93029d28053101623cb70c40bef23e4750e"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Front_080.png",
+      "bytes": 223826,
+      "sha256": "15dcabc994830585f02cf5dae5461c5761f285a7101a9b89149ec2867ac7d03e"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Front_110.png",
+      "bytes": 220833,
+      "sha256": "01ddd93a22ad2dfe7c29927948b7412397eda095835f5e9ec8705a0f31bf1728"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Front_160.png",
+      "bytes": 225096,
+      "sha256": "11e94f159129e0efc2c095bd3f0fac5511ddcb3752126c47d3983598cb01ee78"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Front_180.png",
+      "bytes": 219153,
+      "sha256": "50b3ab4173eee5af2018a51032622b38b6bddede7c34e6dc3055b554dc3a8c6e"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Front_240.png",
+      "bytes": 223180,
+      "sha256": "a2371b6f6b643a0f827efe4d36c7a147663e0b3bb210f8f3afdab0e89e614de0"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Measurements.json",
+      "bytes": 197175,
+      "sha256": "33a498ed293ff6a42a73651b9db4e5ff1dc4bd2414cada86432c7a62405caec1"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Rear.png",
+      "bytes": 1308875,
+      "sha256": "01e4a321a405934447b67f4f6811fd224822dcad68fbd25a120bff7acfb6e3b0"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Rear_000.png",
+      "bytes": 216046,
+      "sha256": "78bb4826d29ea56411a789a83b6a05127a767086e9e8857f85118ec8f5c3b5eb"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Rear_040.png",
+      "bytes": 219855,
+      "sha256": "c26cba969aa4aa04effa40591f3a6f91c641165a0db50778adf36f629c59cd95"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Rear_080.png",
+      "bytes": 228668,
+      "sha256": "7d5466ef9976e1b9dc991f7df7c17664689aebeefebaa3e57a0f4cb6b87b7caf"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Rear_110.png",
+      "bytes": 224379,
+      "sha256": "92bf5b51dafefa106243d9bd1d38f85b97fe4b8e8f7a947c2e342ec97e1780b0"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Rear_160.png",
+      "bytes": 229630,
+      "sha256": "3a030f891c8c85bec073eb741d466013a0caa9b729953a5cd088d930c999b676"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Rear_180.png",
+      "bytes": 224509,
+      "sha256": "5cf59b85c9c8f21262e64429688ee4b52a3e465267dfaaca6439d9b5cdcea20e"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Rear_240.png",
+      "bytes": 229510,
+      "sha256": "a1736a2734d5c8b61d2e3054f2fed897448cf7353c7d1cb88a9159b9275f2ed0"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Side.png",
+      "bytes": 1342245,
+      "sha256": "426ac553c131fc184625c9a110fe59d4c7424018c99bbcd84f2c228e474e8103"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Side_000.png",
+      "bytes": 229010,
+      "sha256": "f20717475ed5ba6b2995edfeddd07abb3002209e9dafda9751a32c7872c348a0"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Side_040.png",
+      "bytes": 224923,
+      "sha256": "62bc64beb6dbd4262c4daa647b24ba742e7b3e2020b645d27b162fcc3c3dabc7"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Side_080.png",
+      "bytes": 230037,
+      "sha256": "51bb0f00f3d5759cdd38ea29a59d5c1bcc130023daf793f862b39b302560d8c9"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Side_110.png",
+      "bytes": 224292,
+      "sha256": "6f5f9295394b93ebcd4320493d3931eaf887fff935a2a35395baf8f7506dbd72"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Side_160.png",
+      "bytes": 229421,
+      "sha256": "8979fedb8fcd1ba9ea272b318b4aa2b1e7aa5b30e786fd639ce98e78615111fb"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Side_180.png",
+      "bytes": 227644,
+      "sha256": "e4231db6e6375d55ef7298ae7b96221318f0b20502a3ebc4a27947e187e9bbf9"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Exit/Side_240.png",
+      "bytes": 230576,
+      "sha256": "a0d9edd29f0160f089fe90eaacfc2002ae849c9e4892798f37d69e678a4e53c5"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/PilotMotion.json",
+      "bytes": 49444,
+      "sha256": "71e9b7e62d0424f757f2de9865e3e9ac28291bc73f4877105daed97800b79616"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/ResidualSelection.json",
+      "bytes": 146822,
+      "sha256": "e461bca4d37fc34c98720ec6cd0745917fbac5d6758678641171f9cbd57cddad"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Selection.json",
+      "bytes": 1333601,
+      "sha256": "93143c1e4db812e83adef5c4ff4c1e42c6c6ec7e8d30cf940f46f550b4c06b52"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/SelectionFront.png",
+      "bytes": 689244,
+      "sha256": "68414d8b2e13c24d1393a8b1e9e899bc15e1d85eadedcad1ee3457d91af88a93"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/SelectionRear.png",
+      "bytes": 743421,
+      "sha256": "9b7182b99c974414762452b439d672302337232c074678fa85e9e9568809de20"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/SelectionSide.png",
+      "bytes": 756597,
+      "sha256": "e1676c2379e962081186da653af1d6d34d35ab9a643402dd6df7cf6b68d0071d"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/SelectionUnderTail.png",
+      "bytes": 1262156,
+      "sha256": "4d44108aad9ece1a499105614b10ea49ee3c1f1d289a478238240885865612bd"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Front.png",
+      "bytes": 1322960,
+      "sha256": "d7a8d5d78ea8217017ea23532a086a77fb6449f9a0c2d52397dbfe879c307727"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Front_000.png",
+      "bytes": 220780,
+      "sha256": "320c3c9e6e8d4c3013e7bc1c470f26eab1844c174e8bf33341ef873031930eea"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Front_040.png",
+      "bytes": 223212,
+      "sha256": "e5db3a2f4efcbca2bd4b79b5ee33120a9cb394e46309eb6dce1ac97bed970bcb"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Front_080.png",
+      "bytes": 222990,
+      "sha256": "45f5fbf33855c51a1d4bfad593ce00f8db28f9e53253bd98f3ba6331915c44c5"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Front_120.png",
+      "bytes": 220981,
+      "sha256": "56ede7cb9f630e1bbdd0eced1ba5d23d6fe29dd444b550024791ed262ecf9bd3"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Front_160.png",
+      "bytes": 223012,
+      "sha256": "3e80df3d6dea26157348c7dc41485607ff9b9ff3d072fb7a216b7234f65b8347"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Front_200.png",
+      "bytes": 222852,
+      "sha256": "db635a484be61e2dde5cbd0108e464f27224a1f8c57478418a7a1ffd7aa9c3dd"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Front_247.png",
+      "bytes": 221084,
+      "sha256": "97c400146794bb94c95baabcd7722eb746969704a8f11aabab20f602d3daea3f"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Measurements.json",
+      "bytes": 201772,
+      "sha256": "66762cf9b92bdf7e9f5db56e210fcb251ff2787d772ff2787fe0b0dd516090e3"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Rear.png",
+      "bytes": 1351389,
+      "sha256": "f023405d6296b9e14ea747dbf3cf851b284b1ecb38b8c79d8f1f314542045d13"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Rear_000.png",
+      "bytes": 226448,
+      "sha256": "34339df6ae7c40534a0c806b9ac028d6fbd7cfb40acefa71aa8eaa50dd468999"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Rear_040.png",
+      "bytes": 229011,
+      "sha256": "74b3dcda9b15a3f860f8917e69efabf719615078042295fd8ab61a620ce8f1bf"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Rear_080.png",
+      "bytes": 228590,
+      "sha256": "09fe0425d3e5b8fbdd2e2825f9555d6a19ebcebe00fac0a34fa44d6a1ed0ae3e"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Rear_120.png",
+      "bytes": 227368,
+      "sha256": "df0331bde1c00a3ff6390724bace66dcf0cb874e4778a634f3d2ef928fe9916d"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Rear_160.png",
+      "bytes": 229058,
+      "sha256": "940f18c799208bb1d842c520b6aad8ce82e63dae02a5654830f3ceea840a5fee"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Rear_200.png",
+      "bytes": 227834,
+      "sha256": "6ae4a851ca64076ba51004ba8305f8fbdeddf58c03bc741a521fa92852745f47"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Rear_247.png",
+      "bytes": 226707,
+      "sha256": "189418d65eadf59fe42a4e11229c4b3e6d9d7935a2d8db21204e22357e2515fe"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Side.png",
+      "bytes": 1376065,
+      "sha256": "502cd8c1f60f16a2d4f7e5e9450b489fd151fc17c3e6c1416c3c2da564710c18"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Side_000.png",
+      "bytes": 231596,
+      "sha256": "09168b9112b482b75847a0e2ce84a3e0adbd00d3642b225fef17bc8b7e899d40"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Side_040.png",
+      "bytes": 229380,
+      "sha256": "fa37ee16a3345a9e3362221f0d2fc71478837a116a6111c3cae89569b6e801a2"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Side_080.png",
+      "bytes": 228175,
+      "sha256": "3fe00cb1bb78ae2f7f4ed92aa80674588951d28b2c384f5409842a1fe14480a4"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Side_120.png",
+      "bytes": 230508,
+      "sha256": "491d9565005b7f5f65ede2b5d4d302d7c6be9dbcbe60065cf4c92c2ee67bbb69"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Side_160.png",
+      "bytes": 230984,
+      "sha256": "5666c21cf68668908ab2199419f979be5475aa85484f4e43ebb300c8fa0af038"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Side_200.png",
+      "bytes": 228797,
+      "sha256": "8140c2ce7ee7b7d28da980be89feb47047f739af10f156e24f1831515a71bc42"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/Walk/Side_247.png",
+      "bytes": 231972,
+      "sha256": "ccba37ae6808be1d65a3989f51867c945a9bed3fe4a1e2a3d887d6b8032bba22"
+    },
+    {
+      "path": "ContentSource/TailCandidatePreview/WeldedSelection.json",
+      "bytes": 781711,
+      "sha256": "f7ca676cb7d7b4d8981279707078f52d8b3689e50f83a0366c8b77ce28376b09"
+    }
+  ]
+}

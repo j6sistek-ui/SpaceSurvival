@@ -1,0 +1,408 @@
+{
+  "status": "UNSAVED_SHADOW_MATRIX_COMPLETE_PROJECT_UNCHANGED",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "started_utc": "2026-09-13T09:32:31.714333+00:00",
+  "errors": [],
+  "baseline_cvars": {
+    "r.Shadow.Virtual.Enable": 1.0,
+    "r.Shadow.Virtual.NormalBias": 0.5,
+    "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+    "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+    "r.RayTracing": 0.0
+  },
+  "baseline_lights": [
+    {
+      "shadow_bias": 0.5,
+      "shadow_slope_bias": 0.5,
+      "contact_shadow_length": 0.0,
+      "light_source_angle": 0.5357000231742859,
+      "cast_shadows": true
+    },
+    {
+      "shadow_bias": 0.5,
+      "shadow_slope_bias": 0.5,
+      "contact_shadow_length": 0.0,
+      "light_source_angle": 0.5357000231742859,
+      "cast_shadows": true
+    },
+    {
+      "shadow_bias": 0.5,
+      "shadow_slope_bias": 0.5,
+      "contact_shadow_length": 0.0,
+      "light_source_angle": 0.5357000231742859,
+      "cast_shadows": true
+    }
+  ],
+  "contact_off_case_skipped_because_already_zero": true,
+  "camera_cm": [
+    -720,
+    470,
+    310
+  ],
+  "target_cm": [
+    -15,
+    0,
+    20
+  ],
+  "fov": 42,
+  "light_fixture": [
+    [
+      -35,
+      -30,
+      [
+        0.9,
+        0.95,
+        1,
+        1
+      ],
+      4
+    ],
+    [
+      -25,
+      145,
+      [
+        1,
+        0.89,
+        0.75,
+        1
+      ],
+      2
+    ],
+    [
+      -65,
+      70,
+      [
+        0.5,
+        0.7,
+        1,
+        1
+      ],
+      1
+    ]
+  ],
+  "images": [
+    {
+      "file": "Baseline.png",
+      "sha256": "253fe5b10804f43566eb4b41c20f913e64ed8b92f9b0b9a0d6d6450746341728",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 0.5,
+        "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        }
+      ]
+    },
+    {
+      "file": "LightBias1.png",
+      "sha256": "5df04e1b5315f433f397a2e2c749d76c7b164688eb426754be9aa47d12e396b8",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 0.5,
+        "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 1.0,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 1.0,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 1.0,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        }
+      ]
+    },
+    {
+      "file": "LightSlope1.png",
+      "sha256": "5e1765896da5b19780560f1fcc3118ef99ddb58dc27fbfaed6b66591e0e300f1",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 0.5,
+        "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 1.0,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 1.0,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 1.0,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        }
+      ]
+    },
+    {
+      "file": "VSMTraceOff.png",
+      "sha256": "ef4d974d2164dffd998941a1618e70aa78c88a029941abeb0a9176a36f1ea0a5",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 0.5,
+        "r.Shadow.Virtual.ScreenRayLength": 0.0,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        }
+      ]
+    },
+    {
+      "file": "VSMNormal1.png",
+      "sha256": "f9a190ad3db228d4a5b82954f98afeb7f898bad325af06627def79ccc715f4cc",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 1.0,
+        "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        }
+      ]
+    },
+    {
+      "file": "VSMNormal2.png",
+      "sha256": "364b356cdd0cc67333548ab196e6ac7b4ecfddeead0d17887968e4b867ad8b9b",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 2.0,
+        "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        }
+      ]
+    },
+    {
+      "file": "HardVSM.png",
+      "sha256": "dec5427310fae46dc091e7d07714f8a3766c8304f404090d6c350c9125dc7b6f",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 0.5,
+        "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 0.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        }
+      ]
+    },
+    {
+      "file": "SourceAngle2.png",
+      "sha256": "0a11ab200b09f408803a4570875cb65dea268c671b06914f42b1f4509cb49b92",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 0.5,
+        "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 2.0,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 2.0,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 2.0,
+          "cast_shadows": true
+        }
+      ]
+    },
+    {
+      "file": "BaselineRestored.png",
+      "sha256": "4efa27995ec1e4f43eb71e635cb8bb41c9f3e949224fd6dbc3146da802724dd2",
+      "cvars": {
+        "r.Shadow.Virtual.Enable": 1.0,
+        "r.Shadow.Virtual.NormalBias": 0.5,
+        "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+        "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+        "r.RayTracing": 0.0
+      },
+      "lights": [
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        },
+        {
+          "shadow_bias": 0.5,
+          "shadow_slope_bias": 0.5,
+          "contact_shadow_length": 0.0,
+          "light_source_angle": 0.5357000231742859,
+          "cast_shadows": true
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Unsaved stock actor studio; no gameplay/performance/art acceptance",
+    "AA0, exposure1,bloom0 are isolated diagnostic process settings",
+    "Only one variable changes per case; shadows remain on in every view"
+  ],
+  "restored_cvars": {
+    "r.Shadow.Virtual.Enable": 1.0,
+    "r.Shadow.Virtual.NormalBias": 0.5,
+    "r.Shadow.Virtual.ScreenRayLength": 0.014999999664723873,
+    "r.Shadow.Virtual.SMRT.RayCountDirectional": 8.0,
+    "r.RayTracing": 0.0
+  },
+  "changed_protected_files": [],
+  "added_protected_files": [],
+  "protected_file_count": 128,
+  "protected_manifest_sha256": "b5b5f8076e25dbb6cef7113558c9947ad325b5aa23d0e88d5600eed854e64d18",
+  "finished_utc": "2026-09-13T09:32:53.473833+00:00"
+}
