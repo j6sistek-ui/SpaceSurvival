@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE5 UI and Focus"
+  short_description: "Review Unreal UI layout, lifecycle and input focus"
+  default_prompt: "Use $ue5-ui-umg-slate with the SpaceSurvival adapter for this task."

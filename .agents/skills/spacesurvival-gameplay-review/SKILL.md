@@ -26,6 +26,8 @@ Report what was inspected, what changed, what evidence supports it and what rema
 
 Relevant public references, loaded only for the active problem:
 
+- [Skills by work area](references/skills-by-work-area.md): project-specific tasks and pinned references across gameplay, presentation, architecture and delivery; select only the active area.
+
 - [Epic Enhanced Input](https://dev.epicgames.com/documentation/unreal-engine/enhanced-input-in-unreal-engine): context and action routing.
 - [Epic Visual Logger](https://dev.epicgames.com/documentation/en-us/unreal-engine/visual-logger-in-unreal-engine): state around gameplay failures.
 - [Epic Unreal Insights](https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-insights-in-unreal-engine): frame time, loading and memory.

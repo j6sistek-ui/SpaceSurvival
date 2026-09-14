@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE5 Architecture"
+  short_description: "Review Unreal module and ownership boundaries"
+  default_prompt: "Use $ue5-architecture with the SpaceSurvival adapter for this task."

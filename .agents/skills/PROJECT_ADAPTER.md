@@ -10,6 +10,15 @@ Use this mapping when a repository skill is selected. This file adapts generic g
 - Read current asset paths and save slots from source when needed; do not infer loaded content from filesystem existence. The default and optional trial ship differ. Appropriately licensed local content is required to reproduce the licensed presentation.
 - Existing native rules and Data Assets are the starting point. A header-only change does not require a token .cpp edit. Retain stable string paths until a measured loading, cook or authoring problem justifies migration. Keep natural simulation Tick where it is needed.
 
+## Apply knowledge to the current system
+
+- Architecture: map responsibilities and dependencies first. A single runtime module is not a defect. Extract a bounded class/component only where coupling causes a demonstrated problem; preserve reflected asset paths and save identities.
+- Blueprint: this project's durable rules are native. Use graphs for the authorized content/tuning task, not to duplicate native input. No arbitrary node count or unverified MCP operation is required.
+- Saves: distinguish ephemeral state, account/tutorial progress, settings and consumable suspension. Preserve staged writes, validation, once-only death rewards and consume-before-resume semantics. Any asynchronous design must handle ordering, stale callbacks, travel/shutdown and failure without exposing mutable UObjects to worker threads.
+- UI: the current HUD is Canvas-based. Apply focus, input ownership, feedback and readable layout principles there. UMG/Slate is an option for a justified panel migration, not an acceptance requirement or a reason to rebuild every screen.
+- World interaction: use existing Session/domain transactions and director admission rules. Revalidate range/state at action time, handle rejection visibly, and grant rewards once. Do not replace the scoped depot or every-five-wave station cadence with generic pickups/spawners.
+- Animation, audio, VFX, materials, collision, lifetime and authoring need their own evidence. Select the matching section of [the work-area guide](spacesurvival-gameplay-review/references/skills-by-work-area.md). The full catalog is an audit reference, not material to load into every task.
+
 ## Tools and validation
 
 - Detect the current engine installation; the reviewed version was UE 5.8.2. Do not copy an author's absolute paths or assume nearby minor-version APIs are identical.
@@ -30,3 +39,5 @@ Existing Python authoring remains useful. For a future connection, evaluate UE 5
 The imported UnrealXu debug helper scripts were omitted. In an isolated fixture, its scan_output_log.py returned zero errors and warnings for standard category-before-verbosity Unreal log lines containing one of each. Its filesystem-only asset helper would not prove cooked or loaded state. Use the repository's current validation flow and relevant editor inspection.
 
 Buckley's Enhanced Input skill at 023eaa68 claims wrong-type FInputActionValue getters return zero. Installed UE 5.8.2 InputActionValue.h getters instead expose components / IsNonZero; consult current engine source and Epic's API reference. Buckley materials remain linked references because redistribution licensing was unconfirmed at review time.
+
+The [catalog audit](CATALOG_AUDIT.md) records additional checked errors involving FName case comparison, quaternion order, timers, collision, sound types and import conventions. Consult the relevant erratum when using that domain; do not infer that unlisted examples were independently validated.
