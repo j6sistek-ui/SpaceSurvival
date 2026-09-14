@@ -30,4 +30,4 @@ Tune `DA_DeepSpaceLook` and its private instances in the editor. `ss.AtmosphereC
 - Existing station-exterior material warnings still report missing Nanite usage and fallback in the packaged startup log. They are outside the flight-scene changes and remain a station follow-up.
 - Local grains remain simple geometry; large-rock material/color balance, exhaust/nozzle fit, continuous animation quality, natural combat readability, physical controller feedback and representative busy-scene performance need further review. Bounded parallax is not infinite world streaming.
 
-Evidence: `docs/validation/2026-09-14-combined-space-look.json`. Current Windows archive is local; itch remains 0.1.15-alpha/build1978147. Existing draft PR6 stays unmerged.
+Evidence: `docs/validation/2026-09-14-combined-space-look.json`. Current Windows archive is local; itch remains 0.1.15-alpha/build1978147. Existing PR6 stays unmerged.
