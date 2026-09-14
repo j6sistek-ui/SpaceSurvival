@@ -16,7 +16,7 @@ constexpr int32 DustCount = 128;
 constexpr double DustHalfWidth = 3400.0; // Cube corners remain within 6000cm.
 TAutoConsoleVariable<int32> DustEnabled(TEXT("ss.LocalDust"), 1,
                                         TEXT("Enable cosmetic local dust grains (0 disables)."));
-TAutoConsoleVariable<int32> CloudEnabled(TEXT("ss.AtmosphereClouds"), 1,
+TAutoConsoleVariable<int32> CloudEnabled(TEXT("ss.AtmosphereClouds"), 0,
                                          TEXT("Enable optional distant atmosphere cloud banks (0 disables)."));
 TAutoConsoleVariable<int32> TrailEnabled(TEXT("ss.EngineTrails"), 1,
                                          TEXT("Enable optional Niagara engine ribbon trails (0 disables)."));

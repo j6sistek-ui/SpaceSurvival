@@ -75,3 +75,5 @@ See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt 
 - Optional Ludo ship is a trial with enclosed/hidden pilot; default visible-pilot ship remains available.
 - Review issue #7 flags live reward controller/keyboard capability differences and synchronous tutorial progress writes. Runtime impact and fixes remain pending; these are not completed repairs.
 - Natural ten-wave balance, physical controller comfort, listening, current representative 60 FPS, clean-PC installation and itch update/save preservation remain unverified.
+
+Release correction: the final packaged check reproduced an opaque rectangle from the experimental cloud bounds. Atmospheric cloud banks are therefore disabled by default (`ss.AtmosphereClouds=0`) for 0.1.15-alpha. Local dust, background asteroids and engine wakes remain enabled. Earlier statements that the rectangle was fully fixed are superseded.

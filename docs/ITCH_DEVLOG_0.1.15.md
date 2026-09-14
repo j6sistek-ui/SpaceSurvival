@@ -14,7 +14,7 @@ This is an early-development tester update. Phase 1 remains partial; the game is
 
 ## Known issues and unfinished work
 
-- Atmospheric cloud banks are still not visibly effective. The desired layered nebula/dust-volume look is unfinished; this update is not the reference-quality environment.
+- Atmospheric cloud banks are disabled by default because the packaged check exposed opaque rectangular artifacts. The desired layered nebula/dust-volume look is unfinished. Local dust and background rocks remain enabled.
 - Engine wakes use temporary warm ribbon effects. Final exhaust color, placement and tuning remain work in progress.
 - The station exterior has a conservative solid collision boundary. Gaps in that exterior model are not fly-through passages.
 - Character motion, ship/pilot fit and the optional enclosed ship still need continuous-motion and player review. The optional ship hides the pilot.
