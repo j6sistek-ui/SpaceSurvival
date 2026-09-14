@@ -61,7 +61,7 @@ ASSShip::ASSShip()
     ReadabilityLight->SetupAttachment(RootComponent);
     ReadabilityLight->SetRelativeLocation(FVector(-350, -180, 220));
     ReadabilityLight->SetIntensityUnits(ELightUnits::Lumens);
-    ReadabilityLight->SetIntensity(9000.f);
+    ReadabilityLight->SetIntensity(1500.f);
     ReadabilityLight->SetAttenuationRadius(900.f);
     ReadabilityLight->SetLightColor(FLinearColor(.7f, .82f, 1.f));
     ReadabilityLight->SetCastShadows(false);
@@ -157,6 +157,8 @@ void ASSShip::FinishDocking()
     SetActorLocation(DockTarget);
     SetActorRotation(DockRotation);
     Pilot->SetVisibility(false);
+    if (auto *ReadabilityLight = FindComponentByClass<UPointLightComponent>())
+        ReadabilityLight->SetVisibility(false);
     EngineAudio->Stop();
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Velocity = Forces = FVector::ZeroVector;
@@ -180,7 +182,7 @@ void ASSShip::Tick(float Dt)
     ImpactCooldown = FMath::Max(0.f, ImpactCooldown - Dt);
     if (Moored)
     {
-        // A physical hold only: hazards, damage and the run clock remain active.
+        // Existing hazards and damage remain active; GameMode freezes wave progress.
         Velocity = Forces = FVector::ZeroVector;
         SoftTarget = nullptr;
         S.TickFlight(Dt, false, false);
