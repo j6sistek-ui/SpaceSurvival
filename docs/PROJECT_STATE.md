@@ -1,13 +1,14 @@
 # SpaceSurvival project state
 
-**Phase 1: PARTIAL.** State reconciled September 14, 2026. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, owner checks and closure status. This page owns the source/build/release and storage explanation.
+**Phase 1: PARTIAL.** Visual enhancement in progress, September 14, 2026. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, owner checks and closure status. This page owns the source/build/release and storage explanation.
 
 ## Source, build and release
 
 | Layer | Last verified state | What it means |
 | --- | --- | --- |
 | GitHub source | PRs #3, #6, #9 and #10 merged; main synchronized locally at `425e3b2` before this documentation-only PR | Foundation, refresh, catalog and merge handoff are in main. This is a dated checkpoint, not an automatically updating branch indicator. |
-| This documentation change | Branch `codex/documentation-review`, based on that main checkpoint | Consolidates work/status navigation and requires PR documentation review. No gameplay, imported asset, save or package change. Review [PR #11](https://github.com/j6sistek-ui/SpaceSurvival/pull/11); its live GitHub state is authoritative. |
+| Documentation foundation | `codex/documentation-review`, PR #11 open at this check | Consolidates work/status navigation and requires PR documentation review. Its live GitHub state is authoritative. |
+| Current visual work | `codex/visual-enhancement`, stacked on PR #11 at `b2304546` | New purchased/free assets, bounded presentation systems and isolated rendered validation in progress. New package pending; no merge or itch upload. |
 | Latest recorded local game | September 14 combined space look; `Artifacts/Windows/SpaceSurvival.exe` | Owned cool sky, thin nebular volumes, ambient light, layered asteroids and blue-white exhaust. Existing optional `Try New Ship.cmd` remains a separate trial. |
 | Package identity | [Combined-look receipt](validation/2026-09-14-combined-space-look.json); inner game SHA-256 `89b5dd59f63cd77be56018869b03df79f91a08bf32f0e3e061404554abb2d815` | The six executable/container hashes and eight recorded source hashes were independently matched before the merge handoff. This is not an exhaustive fresh-clone reproduction claim. |
 | Published tester build | Last verified itch `0.1.15-alpha`, build `1978147`, source `602be07`; [release record](ITCH_RELEASES.md#september-14-update) | Older than the local combined-look game; experimental clouds disabled in that release. Later source merges did not upload it. Devlog publication remains open. |
@@ -33,8 +34,8 @@ Verified against tracked paths and ignore rules at the September 14 handoff. Git
 | `ContentSource/`, `model-rigged.glb`, `art/` | Yes, committed sources | Editable sources, preserved original hero and reference media. |
 | Lowercase `artifacts/` reference files | Yes: briefing PDF and reference images | Windows treats `artifacts` and `Artifacts` as the same folder. Tracked references coexist with ignored build outputs: do not treat the entire physical folder as disposable. |
 | `User downloaded assets/` | No | Fab downloads/raw imports; preserve originals or an exact reacquisition record. |
-| `Content/Asteroid_Library/`, `SciFiCorridor/`, `NiagaraExamples/`, `RPGEnvironmentVFX/`, `Vefects/` | No | Locally licensed vendor content; excluded by `.gitignore`. |
-| `Content/SpaceSurvival/Licensed/` | No | Private atmosphere, exhaust, station exterior and other derivatives. Back up manual tuning/authoring; a clone will not restore it. |
+| Existing vendor roots plus `Content/SpaceNebulaFantasy/`, `Spacecraft_Pack/`, `PyroVFX/`, `Sci_Fi_Weapons_VFX_AIO/`, `Robot_scout_R_21/`, `Defect/` | No | Locally licensed/free vendor content; excluded by `.gitignore`. Only selected runtime dependencies should enter the package. |
+| `Content/SpaceSurvival/Licensed/` | No | Private atmosphere, combat effects, ship modules, station exterior/dressing/screens and selected-asset cook label. Back up manual tuning/authoring; a clone will not restore it. |
 | `Artifacts/Windows/`, `Artifacts/Releases/` | No | Local packaged game and prepared release payloads. An itch upload is a separate copy of a selected package. |
 | `.agent/local/` | No | Logs plus unique paused art experiments and handoffs. It is not all disposable cache. |
 | `Saved/` and game user profiles | No | Logs, validation and potentially personal saves/settings; preserve saves separately. |

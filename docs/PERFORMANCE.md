@@ -1,8 +1,12 @@
 # Performance findings
 
+Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The visual enhancement pass is being validated. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
+
+## Earlier build records
+
 **2026-09-14 asset refresh ready for owner review:** [Refresh record](ASSET_REFRESH.md) supersedes earlier statements that no leg derivative was adopted. Licensed corridor/asteroid presentation, repaired walk/exit clips, depot and combat-feedback corrections are integrated. Latest Editor build and all 39 Unreal tests pass with zero test warnings. The offscreen Station 5 sequence reached docking, exit and Station 1 with 12 captures; this is visual/transition evidence, not FPS or natural gameplay acceptance. Optional Ludo ship packaged and exercised through the offscreen Station5 sequence. The final flight-fill/docking-light correction was compiled and verified in that package. Phase 1 remains PARTIAL.
 
-**Latest measured package: 13; current package: 14. The representative Phase 1 performance gate remains OPEN.** Its normal-timing Wave 10 capture passed on the available i7-14700F/RTX 5080 at 2560x1440, DX12/SM6, quality 2, VSync off and cap 120. This is a seeded Tier V fixture with enlarged durability and scripted controls; it is not natural balance, physical response, clean-PC or lower-end acceptance.
+**Historical measured package: 13; subsequent package at that checkpoint: 14. The representative Phase 1 performance gate remains OPEN.** Its normal-timing Wave 10 capture passed on the available i7-14700F/RTX 5080 at 2560x1440, DX12/SM6, quality 2, VSync off and cap 120. This is a seeded Tier V fixture with enlarged durability and scripted controls; it is not natural balance, physical response, clean-PC or lower-end acceptance.
 
 Package 14 fixes station look and has no new performance measurement. The figures below belong to the preceding build.
 

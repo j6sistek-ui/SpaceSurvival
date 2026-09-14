@@ -4,6 +4,9 @@
 #include "GameFramework/Actor.h"
 #include "SSWave10Soak.generated.h"
 class ASSGameMode;
+class ACameraActor;
+class ASSEnemy;
+class UNiagaraComponent;
 class FJsonValue;
 
 /** Explicit isolated Development capture. Never used by ordinary gameplay. */
@@ -14,6 +17,7 @@ class SPACESURVIVAL_API ASSWave10Soak : public AActor
 public:
     ASSWave10Soak();
     static void TryStart(ASSGameMode *Mode);
+    static void NotifyEnemyDefeated(ASSEnemy *Enemy);
     virtual void Tick(float DeltaSeconds) override;
 
 private:
@@ -30,6 +34,16 @@ private:
     TArray<TSharedPtr<FJsonValue>> VisualRecords;
     TSet<FString> VisualNames;
     void CaptureVisual(const TCHAR *Name, float StageSeconds);
+    void CaptureStationReview(const TCHAR *Name, FVector LocalCamera, FVector LocalTarget);
+    void CaptureCombatAfterKill();
+    TWeakObjectPtr<UNiagaraComponent> CombatExplosion;
+    FString CombatEnemy;
+    double CombatKilledAt = 0;
+    UPROPERTY(Transient)
+    TObjectPtr<ACameraActor> StationReviewCamera;
+    TWeakObjectPtr<AActor> PreviousReviewViewTarget;
+    FName StationReviewShot;
+    double ReviewCameraReadyAt = 0;
     double FocusSince = 0;
     bool SawClimax = false, SawApproach = false;
     bool Wave1 = false;

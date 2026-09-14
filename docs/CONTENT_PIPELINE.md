@@ -1,12 +1,95 @@
 # Phase 1 content pipeline
 
-Status and storage: [PROJECT_STATE.md](PROJECT_STATE.md). Active work and owner acceptance: [KNOWN_ISSUES.md](KNOWN_ISSUES.md). This document retains the original source/authoring pipeline and dated asset evidence; it is not a current build inventory or task queue. The licensed presentation now used locally is documented in [ASSET_REFRESH.md](ASSET_REFRESH.md) and [combined space look](production/COMBINED_SPACE_LOOK.md). A Git checkout alone omits those licensed inputs and derivatives.
+Status and storage: [PROJECT_STATE.md](PROJECT_STATE.md). Active work and owner acceptance: [KNOWN_ISSUES.md](KNOWN_ISSUES.md). This document describes the selected licensed authoring workflow and retains the original pipeline and dated evidence; it is not a current build inventory or task queue. Earlier licensed presentation is documented in [ASSET_REFRESH.md](ASSET_REFRESH.md) and [combined space look](production/COMBINED_SPACE_LOOK.md). A Git checkout alone omits licensed inputs and derivatives.
 
 **Historical Package 10 checkpoint:** Package 10/source `0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80` contains 88 project packages and passed independent cooked-index/source/artifact checks, plus separate rendered Station 5 and Wave 10 fixtures. Later font, enemy and pose source is outside that archive. Current source/build identity is tracked in [PROJECT_STATE.md](PROJECT_STATE.md); [VALIDATION.md](VALIDATION.md) and immutable receipts retain their tested source identities.
 
 **The owner explicitly rejected the current graphics as far below acceptable.** Generated spacecraft, station and secondary meshes/materials are provisional implementation content, not approved final art. A substantial art replacement pass remains open; preserve the supplied Acornaut. Primitive dressing does not meet near-alpha presentation. Later owner observations are retained in [OWNER_FEEDBACK.md](production/OWNER_FEEDBACK.md); unresolved acceptance is tracked only in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 Generated geometry, much of the material palette and synthesized audio remain original provisional content. The original station deck pipeline additionally uses attributed CC0 texture maps from Poly Haven; their source bytes and license record are preserved. These assets establish editable sources but have not met the approved Hybrid direction or near-alpha quality bar. Source projections and import checks cannot establish final Unreal shading, animation, flight readability or sound quality.
+
+## Selected licensed visual workflow
+
+This workflow extends an already authored project using the owner's supplied packs and existing UE 5.8/Blender installations. **Do not run `Build.ps1 -Target Content` or regenerate baseline sources for this visual pass.** Build the Editor module to expose the new reflected presentation classes, then run only the inspection and authoring scripts below. The integration lead serializes Editor processes, builds and captures. Do not launch an overlapping import, run vendor example maps or activate plugins as a side effect of inspection.
+
+### Private source staging
+
+The verified copy source for these six mounted roots is `User downloaded assets/SpaceSurvival/Content/<root>`. Copy each complete named folder to `Content/<root>` without changing its name or internal paths. This preserves `/Game/<root>` references. The first four rows are the paid roots selected for this pass; the last two are completed free downloads selected after separate inspection.
+
+| Pack | Mounted root | Selected use |
+| --- | --- | --- |
+| Havolk SpaceShip02Modular | `Spacecraft_Pack` | Fitted upgrade/utility modules and the two existing enemy archetypes |
+| NebulaFantasy | `SpaceNebulaFantasy` | Three sky compositions and a far-star cubemap |
+| SidearmStudios EXPLOSIONS | `PyroVFX` | One inspected small-explosion system |
+| Pautinka Sci-Fi Weapons VFX All In One | `Sci_Fi_Weapons_VFX_AIO` | Bolts, muzzles, impacts and a cosmetic anomaly |
+| Robot scout R21 | `Robot_scout_R_21` | Two decorative staff using the original skeletal mesh and compatible idle |
+| Electronic Elements | `Defect` | Seven measured instrument/switch/lamp placements from six unique meshes |
+
+The matching Robot/Defect VaultCache lineage is `Robotscob94d93332ad0V1/data/Content/Robot_scout_R_21` and `Electron87f9894602bfV1/data/Content/Defect`, under `User downloaded assets/VaultCache`. Download/cache directory names are local receipt identities, not portable asset identifiers. On another workstation locate the same completed pack and verify its files before staging. Compare source/destination file lists and SHA-256 hashes, including on reruns; an existing mismatched destination requires reconciliation rather than an overwrite. Do not copy the owner project's whole Content tree, external-actor folders or maps into the working project.
+
+`User downloaded assets/`, all six mounted roots and `Content/SpaceSurvival/Licensed/` are ignored. Blender intermediates, private receipts and review images stay under `.agent/local/StationVisualPass` or `Artifacts`. Commit the generators, runtime code and attribution, never paid originals or derivatives. Preserve the original hero, artist handoffs, purchased packages and earlier adopted content. The [solution catalog](production/SOLUTION_CATALOG.md) owns selection rationale; [THIRD_PARTY.md](../THIRD_PARTY.md) owns attribution and acquisition details.
+
+### Inspection, preparation and authoring order
+
+Start from the existing canonical map, character and hull assets plus the earlier licensed corridor, asteroid, atmosphere and Station4 setup. `AuthorSpaceVisualPass.py` requires the existing `/Game/SpaceSurvival/Licensed/Atmosphere/DA_DeepSpaceLook`; it is not a bootstrap replacement for that setup. If absent, restore the earlier look through its documented [combined-look workflow](production/COMBINED_SPACE_LOOK.md#reproduction-and-tuning) before this pass. Do not rerun `AuthorDeepSpaceLook.py` after the new region author, since that earlier script selects the previous sky again.
+
+1. Build `SpaceSurvivalEditor` after source changes. Run [InspectShipVisualSources.py](../Scripts/InspectShipVisualSources.py) in Unreal to inspect mounted mesh bounds/materials and export built LOD FBXs into `Artifacts/ShipVisualPass/Source`; it never saves vendor assets. Run [InspectCombatVisualAssets.py](../Scripts/InspectCombatVisualAssets.py) to record actual parameter types, emitter spaces, renderers and dependencies for 14 candidates in `Artifacts/VisualEnhancement/CombatAssetInspection.json`. The native `SSVFXPresentationLibrary` audit must be available before combat authoring.
+2. Run [InspectStationVisualSources.py](../Scripts/InspectStationVisualSources.py) with Blender for the supplied GLB/Blend station candidates. Run [InspectStationFreeAssets.py](../Scripts/InspectStationFreeAssets.py) in Unreal for the R21 mesh/skeleton, animation compatibility and Defect mesh bounds/materials. Its `.agent/local/StationVisualPass/FreeAssetInspection.json` distinguishes unavailable optional metadata as `UNKNOWN`; inspection does not authorize example Blueprint behavior or prove animation quality.
+3. Run [AssembleShipVisualPass.py](../Scripts/AssembleShipVisualPass.py) with Blender after the ship export. Optional `--inspect` produces a source contact sheet; the ordinary assembly produces 36 OBJ meshes and `Assembly.json`, and `--render` adds fit previews. It reads the existing Starter/Swift hulls for fitting without exporting or replacing them. Run [PrepareStationVisualSources.py](../Scripts/PrepareStationVisualSources.py) with the explicit selection `-- corner station3`. This writes only private ServiceCargo and Station3 derivatives, retaining source PBR at a maximum 2K texture size. The script's broader default also prepares the unadopted Figur candidate, so use the explicit selection for reproduction.
+4. Run [AuthorStationVisualPass.py](../Scripts/AuthorStationVisualPass.py), [AuthorShipVisualPass.py](../Scripts/AuthorShipVisualPass.py) and [AuthorCombatVisualPass.py](../Scripts/AuthorCombatVisualPass.py) serially in Unreal. Their receipts are `.agent/local/StationVisualPass/UnrealAuthoring.json`, `Artifacts/ShipVisualPass/Import.json` and `Artifacts/VisualEnhancement/CombatAuthor.json`. Station authoring supports an optional ordinary-Python `--prepare-only` check before Unreal; its full run also authors the explicit free-asset cook label, clones the two corridor material parent chains described below, and applies instancing/Nanite material usage only to private derivatives, including existing imports. Ship import verifies source hashes, fitted bounds, original material references and disabled collision; it checks protected source packages remain unchanged.
+5. Run [AuthorSpaceVisualPass.py](../Scripts/AuthorSpaceVisualPass.py) last, after Station3 exists. It duplicates the selected turquoise/dark Skybox8, orange Skybox6 and blue Skybox1 cubemaps at a 2K maximum plus the far-white stars at 1K, authors `M_RegionSky`, and updates only the private look Data Asset/materials. Its `Artifacts/VisualPass/SpaceAuthor.json` records selected region and structure paths. Station4 remains the service destination; Station3 is distant scenery. The fragmented Figur candidate stays unadopted.
+
+For the Blender steps, use an existing executable path and repository root as the working directory:
+
+```powershell
+& $BlenderExe --background --factory-startup --python Scripts/AssembleShipVisualPass.py -- --render
+& $BlenderExe --background --factory-startup --python Scripts/PrepareStationVisualSources.py -- corner station3
+python Scripts/AuthorStationVisualPass.py --prepare-only
+```
+
+For each Unreal script above, use the full Editor scripting route after the previous process exits. For example, with `$EngineRoot` pointing to the existing installation:
+
+```powershell
+$ProjectRoot = (Resolve-Path .).Path
+$Editor = Join-Path $EngineRoot 'Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$Script = Join-Path $ProjectRoot 'Scripts/InspectCombatVisualAssets.py'
+& $Editor (Join-Path $ProjectRoot 'SpaceSurvival.uproject') -unattended "-ExecutePythonScript=$Script" -nosplash
+```
+
+Use the ordered script paths rather than a broad content rebuild. Read each fresh receipt and log before proceeding; process exit alone is insufficient. Existing private imports carry authoring/source markers; a mismatch or partial import requires deliberate reconciliation. Original vendor packages are read-only inputs. Private materials may be regenerated by their narrow author scripts, so preserve any deliberate manual derivative edits before rerunning.
+
+### Selected outputs and validation boundary
+
+| Private output under `/Game/SpaceSurvival/Licensed` | Contract |
+| --- | --- |
+| `ShipVisualPass/Meshes` | 34 module meshes plus `SM_PursuerHavolk` and `SM_FlankerHavolk`; six runtime module components reflect existing purchases without changing stats or rosters |
+| `Combat/DA_CombatVisuals`, systems and materials | Eleven roles with shared/per-role capacity, lifetime, scale and distance tuning; private Niagara emitter/material edits only, with light renderers disabled and no selected particle-collision modules |
+| `StationVisualPass/Cargo`, `Meshes`, `Screens` | `SM_ServiceCargo`, `SM_Station3Exterior` and an original decorative service-screen texture/material; no new service interaction or collision |
+| `StationVisualPass/Materials` | Private `MI_Grid_Teto01` and `MI_TileTube` plus complete parent chains, preserving instance overrides while enabling instancing/Nanite usage on private masters |
+| `StationVisualPass/DA_StationFreePresentationCook` | Runtime PrimaryAssetLabel selecting the R21 mesh, idle and six Defect meshes for cooking with their dependencies |
+| `Atmosphere` | Existing look extended with three region cubemaps, a star layer, editable sky material, lighting and bounded structure references |
+
+Combat authoring consumes the real inspection receipt, verifies the Sidearm `User.scale` float binding, and checks private emitter/renderer ownership before edits. Runtime caches its Data Asset/system references once per world. The installed Wormhole Portal plugin remains disabled for this project; the anomaly uses the selected Pautinka Niagara asset and adds no plugin transit or rendering subsystem.
+
+The free station selections use mounted originals directly, without mesh or animation reimport: `/Game/Robot_scout_R_21/Mesh/SK_Robot_scout_R21` and `/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonIdle`, plus Defect's `SM_P161_ElectricMeter_01/02`, `SM_P160_switch`, `SM_P158_annunciator_01/02` under `StaticMeshes/Props/WallDecoration` and `SM_P163_lamp` under `StaticMeshes/Props/Photo`. Runtime creates ordinary static components and two skeletal single-node animation components; no vendor Blueprint, navigation, AI or interaction system is adopted. Their original materials, skeleton and clip are retained.
+
+Cooking must retain all selected runtime dependencies. The existing `/Game/SpaceSurvival` cook rule covers private derivatives and their hard references. For Robot/Defect runtime string paths, `AuthorStationVisualPass.py` authors the private runtime `DA_StationFreePresentationCook` label with eight explicit assets, `AlwaysCook` and recursive dependencies. Directory labeling and explicit Blueprint selection are disabled. `Config/DefaultGame.ini` overrides the inherited `PrimaryAssetLabel` scan entry to `bIsEditorOnly=False` while retaining the type's `Unknown` default cook rule, so unrelated labels are not broadly forced to cook. Because the installed Python wrapper does not expose the effective Asset Manager settings, the author verifies the exact engine/project source entries and records their hashes; it does not claim native effective-config validation. Run this updated author even when the meshes were previously imported; staging or a string load alone does not establish cook inclusion. Verify the selected mesh, idle and prop packages plus their material/texture/skeleton dependencies in the cooked index, without vendor example maps or blanket pack cooking. Label authoring, actual cook/archive inclusion and rendered packaged availability are separate verification steps.
+
+The same author duplicates `/Game/SciFiCorridor/Materials/MI_Grid_Teto01` and `MI_TileTube` recursively through their parent chains into `StationVisualPass/Materials`. Instance parameter overrides and texture references are preserved; usage flags are changed only on private masters. Runtime substitutes these two exact material paths in both existing shell batches and new detail batches, retaining originals if an override is absent. Cargo and Station3/Station4 usage corrections also stay in private packages; no source mesh or vendor material graph is rewritten. The authoring receipt records the private chain mapping and usage changes for readback.
+
+Import, bounds, hashes and parameter checks establish content integrity. A fresh readback and actual rendered flight/combat/station/rebase review must separately establish the selected material output, particle appearance, animation, culling and lifetime behavior. `SpaceSurvival.Presentation.CombatVFXFallback` covers missing optional content; `CombatVFXLifecycle` requires the real private systems and a rendering backend, so the usual NullRHI test target does not run it. Render captures and component tests do not establish natural input, listening quality or representative performance. Preserve source hashes, run identity and receipt boundaries, and update only the canonical state/validation/issue records with final results.
+
+### Selected visual capture
+
+After the compiled source and authoring steps are validated, the integration lead runs the existing guarded capture workflow. For an uncooked Editor game using the installed engine:
+
+```powershell
+./Scripts/CaptureEndgame.ps1 -Editor -EngineRoot $EngineRoot -Scenario Station5 -CaptureVisuals
+```
+
+Omit `-Editor` only when deliberately validating the separately built Windows archive. Visual mode launches hidden with `-RenderOffscreen` and checks an isolated GUID/profile receipt. Its 16 required PNGs are `Flight`, `Climax`, `Wormhole`, `CombatImpact`, `Approach`, `Docking`, `Exit0` through `Exit6`, `StationIdle`, `StationServices` and `StationOverview`. The wrapper requires the exact names, valid PNG headers and requested resolution, not merely a file count. `Wormhole` uses the normal view after at least two seconds. `CombatImpact` observes an actual weapon kill, waits 0.15–0.65 simulation seconds for a still-active explosion inside the viewport, and records the source enemy, private system, location and delay. No target or damage is injected for this image; a run without a qualifying visible kill fails the required-image check. The two station review views begin after seven/twelve idle seconds and settle for 0.5 seconds before the screenshot request. A labeled transient camera changes viewpoint for those two images without changing walking-pawn possession or pose; the original view target is restored at fixture stop.
+
+These offscreen captures are visual/transition evidence only. Their receipt explicitly excludes performance findings because screenshot readback, ListTextures and review viewpoints perturb the workload. Successful capture does not establish continuous motion quality, natural services/input, near-alpha art acceptance or packaged inclusion beyond the executable actually selected. Final results and remaining checks belong in the canonical validation/state/issue records, not in this reproduction guide.
 
 ## Sources and preservation
 
@@ -47,7 +130,7 @@ Routine execution writes `Saved/Validation/EnemyCandidates`, with fresh GUID fol
 
 At this checkpoint, separate Swift, grip/paired animation and field revisions were under review. Later adoption and owner acceptance must be read from project state and the active issue ledger. Field V1 and V2 have explicit visual rejections and are not runtime-selected. They do not inherit successful source/import checks as visual acceptance. No additional ship or hazard identity was introduced.
 
-## Generate source content
+## Generate baseline source content
 
 From repository root, using existing Python 3 or the Unreal bundled Python:
 
@@ -58,7 +141,7 @@ python ContentSource/ValidateSources.py
 
 Generation is deterministic for the same Python/runtime and never writes to the supplied GLB. Geometry output normalizes rounded negative zero so negligible floating-point sign differences between bundled Python and Unreal Python do not cause normal-coordinate churn. Generated source files are intentionally reviewable and committed. Content changes should edit their generator, regenerate, and review the source diffs and preview. Normal engine import consumes and hash-checks the committed sources; it does not regenerate them.
 
-## Import and author real Unreal assets
+## Import and author baseline Unreal assets
 
 Build `SpaceSurvivalEditor` first. Enable the project's Python, Editor Scripting Utilities, Interchange and Interchange Editor plugins. The importer requires the reflected classes `/Script/SpaceSurvival.SSPhase1Data` and `/Script/SpaceSurvival.SSGameMode`.
 
@@ -88,7 +171,7 @@ The importer:
 
 Existing authored materials, meshes, data assets and maps are preserved on rerun. WAV loop metadata is reapplied. The `SSAuthoringVersion` asset metadata marker distinguishes completed initial authoring from a partially created object; a missing marker fails closed for manual reconciliation. This is intentionally an initial authoring workflow, not a destructive bulk reimporter. Reimport changed assets deliberately in Editor; do not delete authored work to force reruns. A partial canonical character import stops with a clear reconciliation error. Import success is labeled `IMPORTED_NOT_GAMEPLAY_VALIDATED`.
 
-`--assets-only` omits map/data stages and reports `ASSETS_IMPORTED_GAMEPLAY_CLASSES_PENDING`. It was used historically through a temporary module-free workbench while the owner installed the toolchain. The normal post-install Content target has since created the map and Data Asset using the actual game project. Use that regular target for current authoring; the historical workbench was not a playable deliverable.
+`--assets-only` omits map/data stages and reports `ASSETS_IMPORTED_GAMEPLAY_CLASSES_PENDING`. It was used historically through a temporary module-free workbench while the owner installed the toolchain. The normal post-install Content target subsequently created the map and Data Asset using the actual game project. That target is for baseline authoring; the [selected visual workflow](#selected-licensed-visual-workflow) uses only its narrow scripts. The historical workbench was not a playable deliverable.
 
 `Scripts/ValidateContent.py` is a separate read-only editor validation pass intended for a fresh editor process. It loads all expected static meshes and checks built LOD geometry, imported axis/centimeter bounds and material groups; it checks palette material classes, the skeletal mesh/walk/pilot/disembark shared skeleton, animation durations, physics asset and materials; and it checks all SoundWave durations, channels, imported sample rates and loop flags. Results go to `Saved/Validation/PersistedContent.json`. The wrapper exposes this as `./Scripts/Build.ps1 -Target Validate`; it additionally checks the real map/GameMode class, fixed Data Asset rosters and the scene checks in `ValidateScene.py`. The separate scene validator supports deliberate `--repair` for owned backdrop collision and skeletal/instanced-material usage. The complete fresh-process Validate target passed in `.agent/local/PersistedValidation2.log`, including the repaired saved flags. These checks establish persisted Unreal asset integrity, not visual quality, animation, input or gameplay acceptance. The Windows cook/stage/archive has separately succeeded; a limited packaged menu/launch/death/restart smoke is recorded. Package 3 enables mesh distance fields for Lumen and shows no observed menu warning or station checkerboard.
 

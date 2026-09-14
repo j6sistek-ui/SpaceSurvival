@@ -1,4 +1,5 @@
 #include "SSStation.h"
+#include "SSShipPresentation.h"
 #include "SSShip.h"
 #include "Misc/PackageName.h"
 #include "SSStationPoseTransition.h"
@@ -204,6 +205,9 @@ void ASSStation::BuildHub(bool bHome)
     AddBoundary(FVector(-1700, 1050, 350), FVector(.5f, 7, 8));
     AddBoundary(FVector(1700, 0, 100), FVector(.3f, 28, 2));
     BayShip = AddMesh(FVector(850, 0, 220), FVector(1), ASSShip::HullAssetPath(SS::Ship::Starter), nullptr);
+    auto *Modules = NewObject<USSShipPresentation>(this);
+    Modules->RegisterComponent();
+    Modules->SetHull(BayShip);
     ServiceArm = AddMesh(FVector(850, 280, 150), FVector(1),
                          TEXT("/Game/SpaceSurvival/Meshes/SM_ServiceArm.SM_ServiceArm"), Hull);
     // The ship's measured underside is at deck Z153.5; its cradle stays inside its footprint.
@@ -237,14 +241,16 @@ void ASSStation::BuildHub(bool bHome)
         AddService(FVector(1000, 1000, 0), TEXT("ENGINEER MICA / MODULES"), ESSPanel::Vendor);
         AddService(FVector(-1400, 0, 0), TEXT("BEACON LOG / LOST CREW"), ESSPanel::Reward);
         AddMesh(FVector(1050, 1130, 120), FVector(.5f), TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), Hull);
-        // Mica's service avatar is a physical, moving vendor at the module bench.
-        const TCHAR *Sphere = TEXT("/Engine/BasicShapes/Sphere.Sphere");
-
-        AddMesh(FVector(1110, 1130, 135), FVector(.55f, .5f, .75f), Sphere, Gold);
-        VendorHead = AddMesh(FVector(1110, 1130, 200), FVector(.56f, .56f, .45f), Sphere, Hull);
-        auto *Visor = AddMesh(FVector(1084, 1130, 204), FVector(.08f, .4f, .12f), Cube, Cyan);
-        Visor->AttachToComponent(VendorHead, FAttachmentTransformRules::KeepWorldTransform);
-        VendorArm = AddMesh(FVector(1080, 1090, 150), FVector(.16f, .16f, .6f), Cube, Gold);
+        // Preserve the vendor interaction, using the optional idle robot when available.
+        if (GetComponentsByTag(USkeletalMeshComponent::StaticClass(), TEXT("StationRobotMica")).IsEmpty())
+        {
+            const TCHAR *Sphere = TEXT("/Engine/BasicShapes/Sphere.Sphere");
+            AddMesh(FVector(1110, 1130, 135), FVector(.55f, .5f, .75f), Sphere, Gold);
+            VendorHead = AddMesh(FVector(1110, 1130, 200), FVector(.56f, .56f, .45f), Sphere, Hull);
+            auto *Visor = AddMesh(FVector(1084, 1130, 204), FVector(.08f, .4f, .12f), Cube, Cyan);
+            Visor->AttachToComponent(VendorHead, FAttachmentTransformRules::KeepWorldTransform);
+            VendorArm = AddMesh(FVector(1080, 1090, 150), FVector(.16f, .16f, .6f), Cube, Gold);
+        }
         BeaconRotor = AddMesh(FVector(-1490, 0, 165), FVector(.55f),
                               TEXT("/Game/SpaceSurvival/Meshes/SM_EventBeacon.SM_EventBeacon"), nullptr);
     }

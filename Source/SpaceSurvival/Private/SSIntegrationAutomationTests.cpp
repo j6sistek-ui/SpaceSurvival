@@ -218,9 +218,32 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
                     if (!ExpectedMaterial && Mesh->GetFName() == TEXT("SM_Top_Wall02"))
                         ExpectedMaterial = LoadObject<UMaterialInterface>(
                             nullptr, TEXT("/Game/SciFiCorridor/Materials/MI_CorridorWall_02.MI_CorridorWall_02"));
-                    TestTrue(Label + TEXT(" preserves vendor slots or assigns the two explicit missing-slot repairs"),
+                    const TCHAR *ServiceScreen =
+                        TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/Screens/M_ServiceScreen");
+                    const bool UsesServiceScreen =
+                        Mesh->GetFName() == TEXT("SM_MonitorScreen") && FPackageName::DoesPackageExist(ServiceScreen);
+                    bool UsesPrivateUsageMaterial = false;
+                    for (const TCHAR *Name : {TEXT("MI_Grid_Teto01"), TEXT("MI_TileTube")})
+                        if (ExpectedMaterial &&
+                            ExpectedMaterial->GetPathName() ==
+                                FString::Printf(TEXT("/Game/SciFiCorridor/Materials/%s.%s"), Name, Name))
+                        {
+                            const FString PrivatePath = FString::Printf(
+                                TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/Materials/%s"), Name);
+                            if (FPackageName::DoesPackageExist(PrivatePath))
+                            {
+                                ExpectedMaterial = LoadObject<UMaterialInterface>(nullptr, *PrivatePath);
+                                UsesPrivateUsageMaterial = true;
+                            }
+                        }
+                    if (UsesServiceScreen)
+                        ExpectedMaterial = LoadObject<UMaterialInterface>(nullptr, ServiceScreen);
+                    TestTrue(Label + TEXT(" preserves vendor slots and uses only exact approved private overrides"),
                              Material && Material == ExpectedMaterial &&
-                                 Material->GetPathName().StartsWith(TEXT("/Game/SciFiCorridor/")));
+                                 (UsesServiceScreen
+                                      ? Material->GetPathName() == FString(ServiceScreen) + TEXT(".M_ServiceScreen")
+                                      : UsesPrivateUsageMaterial ||
+                                            Material->GetPathName().StartsWith(TEXT("/Game/SciFiCorridor/"))));
                 }
             }
             TestEqual(Label + TEXT(" creates all eight licensed batches only when selected and available"),

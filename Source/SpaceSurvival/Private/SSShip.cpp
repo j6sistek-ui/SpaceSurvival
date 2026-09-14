@@ -1,8 +1,10 @@
 #include "SSShip.h"
+#include "SSVFXPresentation.h"
 #include "SSAudio.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSPhase1Data.h"
+#include "SSShipPresentation.h"
 #include "SSWorldActors.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -72,6 +74,7 @@ ASSShip::ASSShip()
     EngineAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineAudio"));
     EngineAudio->SetAutoActivate(false);
     EngineAudio->SetupAttachment(RootComponent);
+    Presentation = CreateDefaultSubobject<USSShipPresentation>(TEXT("PurchasedShipModules"));
 }
 const TCHAR *ASSShip::HullAssetPath(SS::Ship Kind)
 {
@@ -97,6 +100,7 @@ void ASSShip::BeginPlay()
     auto *GI = GetGameInstance<USSGameInstance>();
     HullMesh->SetStaticMesh(
         LoadObject<UStaticMesh>(nullptr, HullAssetPath(GI ? GI->Session.run.ship : SS::Ship::Starter)));
+    Presentation->SetHull(HullMesh);
     Pilot->SetSkeletalMesh(
         LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
     Pilot->SetVisibility(!HullMesh->GetStaticMesh() || !HullMesh->GetStaticMesh()->GetPathName().StartsWith(
@@ -364,6 +368,9 @@ void ASSShip::Fire()
         Params.AddIgnoredActor(this);
         GetWorld()->LineTraceSingleByChannel(Hit, Start, Start + Direction * Tuning->WeaponRange, ECC_Visibility,
                                              Params);
+        if (Hit.bBlockingHit)
+            if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+                FX->PlayImpact(Hit.ImpactPoint, Hit.ImpactNormal, true, false);
         if (auto *Body = Cast<ASSWorldBody>(Hit.GetActor()))
             Body->ReceiveWeaponHit(Damage);
         auto *Trace = GetWorld()->SpawnActor<ASSProjectile>(Start, Direction.Rotation());

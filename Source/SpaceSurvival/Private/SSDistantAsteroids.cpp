@@ -42,9 +42,10 @@ ASSDistantAsteroids::ASSDistantAsteroids()
 void ASSDistantAsteroids::BeginPlay()
 {
     Super::BeginPlay();
-    const TCHAR *Names[] = {TEXT("SM_Asteroid_Barren_1"), TEXT("SM_Asteroid_Barren_2"), TEXT("SM_Asteroid_Barren_3"),
-                            TEXT("SM_AsteroidBarren_4")};
-    for (int32 Index = 0; Index < 4; ++Index)
+    const TCHAR *Names[] = {TEXT("SM_Asteroid_Barren_1"), TEXT("SM_Asteroid_Barren_2"),  TEXT("SM_Asteroid_Barren_3"),
+                            TEXT("SM_AsteroidBarren_4"),  TEXT("SM_AsteroidFragment_1"), TEXT("SM_AsteroidFragment_2"),
+                            TEXT("SM_AsteroidMineral_1"), TEXT("SM_AsteroidMineral_3")};
+    for (int32 Index = 0; Index < UE_ARRAY_COUNT(Names); ++Index)
     {
         const FString Package = FString::Printf(TEXT("/Game/Asteroid_Library/Static_Meshes/%s"), Names[Index]);
         UStaticMesh *Mesh =
@@ -190,7 +191,7 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
     if (!Travel.ContainsNaN() && Travel.SizeSquared() < FMath::Square(8000.0))
         ParallaxOffset = (ParallaxOffset - Travel * .08).GetClampedToMaxSize(MaximumParallax);
     // Slow individual tumble around each mesh bound center, not its imported pivot.
-    // Four batched submissions, no per-rock actors, collision, or gameplay Tick.
+    // Bounded batched submissions, no per-rock actors, collision, or gameplay Tick.
     SpinSeconds = FMath::Fmod(SpinSeconds + FMath::Max(0.f, DeltaSeconds), 36000.0);
     for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
     {

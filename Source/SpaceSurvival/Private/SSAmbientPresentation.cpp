@@ -114,7 +114,7 @@ void ASSAmbientPresentation::BeginPlay()
             DustPositions.Add(FVector(Random.FRandRange(-DustHalfWidth, DustHalfWidth),
                                       Random.FRandRange(-DustHalfWidth, DustHalfWidth),
                                       Random.FRandRange(-DustHalfWidth, DustHalfWidth)));
-            DustSizes.Add(Random.FRandRange(1.5f, 5.f));
+            DustSizes.Add(Random.FRandRange(.35f, 1.1f));
             DustTransforms.Add(FTransform(FRotator(Random.FRandRange(0.f, 180.f), Random.FRandRange(0.f, 180.f), 0.f),
                                           FVector::ZeroVector, FVector::ZeroVector));
         }

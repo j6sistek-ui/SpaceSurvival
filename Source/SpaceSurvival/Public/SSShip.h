@@ -10,6 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UAudioComponent;
 class USSPhase1Data;
+class USSShipPresentation;
 
 UCLASS()
 class SPACESURVIVAL_API ASSShip : public APawn
@@ -57,6 +58,8 @@ public:
     TObjectPtr<UCameraComponent> Camera;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<UAudioComponent> EngineAudio;
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<USSShipPresentation> Presentation;
     UPROPERTY(EditAnywhere)
     TObjectPtr<USSPhase1Data> Tuning;
 
