@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE5 C++ Gameplay"
+  short_description: "Build bounded Unreal gameplay classes and components"
+  default_prompt: "Use $ue5-cpp-gameplay with the SpaceSurvival adapter for this task."

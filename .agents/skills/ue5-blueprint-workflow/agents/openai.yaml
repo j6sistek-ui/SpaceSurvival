@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE5 Blueprint Workflow"
+  short_description: "Inspect and author bounded Unreal Blueprint changes"
+  default_prompt: "Use $ue5-blueprint-workflow with the SpaceSurvival adapter for this task."
