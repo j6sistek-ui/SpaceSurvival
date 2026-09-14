@@ -8,6 +8,8 @@ The owner reports that the game feels generic and stale and that the current gra
 
 ## Start here
 
+- [Owner playtest findings](OWNER_FEEDBACK.md): entry-level handling baseline and unresolved event, contract, station and combat clarity reports.
+
 - [47 work packages](WORK_PACKAGES.md): each element's needs, proposed owner, source strategy, dependencies and acceptance.
 - [CSV work register](WORK_PACKAGES.csv): the same packages for importing into a task board or spreadsheet.
 - [Asset sourcing and outsourcing briefs](SOURCING.md): what to buy, commission, reuse and integrate internally.

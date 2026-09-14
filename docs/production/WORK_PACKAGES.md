@@ -368,7 +368,7 @@ Effort: S = bounded definition task; M = several coupled deliverables; L = repea
 
 ### 6.6 Mobile depot
 
-**Needs:** One friendly merchant exterior, approach/service marker, subset upgrade presentation/deals, transactional and departure cues.
+**Needs:** Beacon-marked optional merchant stop with suspended gravity/magnetic mooring, aboard-ship service menu, subset upgrades/deals and clear lock/release cues; no landing pad or disembarkation..
 
 **Proposed owner:** Agent + environment artist. **Source strategy:** Kitbash existing station/ship modules.
 
@@ -376,9 +376,9 @@ Effort: S = bounded definition task; M = several coupled deliverables; L = repea
 
 **Start guidance:** Start once required interfaces/reference decisions are stable; integrated acceptance requires listed predecessors.
 
-**Accept when:** Exactly one encounter appears in slice; service remains usable in flight and does not replace station.
+**Accept when:** Exactly one depot appears; player deliberately approaches and opts into a suspended mooring, uses quick services while aboard, then releases into flight; passing does not commit the player..
 
-**Basis:** Briefing p14. **State:** Planned; quality acceptance open.
+**Basis:** Owner depot clarification 2026-09-13; Briefing p14. **State:** Planned; quality acceptance open.
 
 ### 6.7 Two contracts
 
