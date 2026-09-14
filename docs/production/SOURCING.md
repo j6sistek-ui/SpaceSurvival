@@ -2,6 +2,10 @@
 
 **Proposal, 2026-09-13. Nothing purchased, commissioned, licensed or imported by this planning task.** Read [quality plan](QUALITY_PLAN.md) and [work packages](WORK_PACKAGES.md). The following counts are proposed production quantities, not additions to the gameplay roster.
 
+## Current catalog
+
+The [whole-project solution catalog](SOLUTION_CATALOG.md) is the current register for owned resources, assessed candidates, wishlist leads, unmet needs and useful later options. Its whole-game value/timing assessments supersede narrower immediate-task rankings below. The dated production quantities, candidate screening and procurement/outsourcing briefs here remain planning references; they do not establish current acquisition or acceptance.
+
 ## Asset bill of needs
 
 | Element / WBS | Minimum useful delivery | Reuse / buy / custom | What still needs integration |

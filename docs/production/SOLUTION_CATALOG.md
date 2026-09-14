@@ -1,0 +1,173 @@
+# SpaceSurvival whole-project solution catalog
+
+Updated 2026-09-14. Owner direction, paraphrased (including the later 14 wishlist screenshots): assess and retain assets, kits, tools and specialist options against the whole game scope and intended experience, including needs beyond the active task. A useful later option stays in the catalog.
+
+This is the canonical solution register. [GAME_SCOPE](../GAME_SCOPE.md) and [IMPLEMENT](../../IMPLEMENT.md) remain authoritative; this register does not authorize purchases, installations, new mechanics or Phase 2 implementation. [Work packages](WORK_PACKAGES.csv) define the existing 47 production packages; [SOURCING](SOURCING.md) retains procurement checks and quoteable specialist briefs. Use [video target](VIDEO_VISUAL_TARGET.md) and the owner briefing for presentation fit. Current implementation evidence is in [PROJECT_STATE](../../PROJECT_STATE.md), not the historical sourcing proposals.
+
+## How to use and maintain this register
+
+- Add each supplied candidate once under a stable ID, even when it is not needed this week. Preserve rejected alternatives with the reason; do not repeatedly rediscover them.
+- Record whole-project contribution and nearest WBS IDs before judging immediate relevance. Existing placement code does not make new shapes, materials, animations or sounds redundant.
+- Keep separate: acquisition (unknown / owner reports library / local source evidenced), evaluation (unreviewed / listing / local inspection / integrated / accepted), and timing (evaluate next / later Phase 1 / Phase 2 only / park). Library presence, purchase, download, import, integration and quality acceptance are different facts.
+- Whole-project value is a qualitative priority, not a score or completion percentage. **High** means a strong match to an identified gap; **conditional** means a plausible use with important unknowns; **park** means retain but no current justification. High value does not imply buy now.
+- Before a purchase recommendation, refresh the exact listing, license tier/price, UE version, dependencies and available evidence. Dated listing claims are not runtime validation. Do not infer product identity from a truncated wishlist title.
+- On acquisition/evaluation, add the product revision, licensed storage location or manifest reference, actual reusable components, trial scene, optimization needs, measured integration effort, acceptance result and next action. Keep vendor files and account/license details in permitted private storage.
+- Select a small trial that answers a whole-game need, integrate accepted derivatives through existing systems, then assess actual play. Do not mark a WBS package done because a pack contains a relevant asset.
+- Leave broad tooling/framework candidates parked until a demonstrated gap justifies evaluation. Use the [adapted Unreal skills](../../.agents/skills/README.md) for a bounded issue; they are guidance, not asset ownership or acceptance.
+
+## Needs across the complete Phase 1 experience
+
+All listed WBS IDs already exist. These are quality/workflow mappings, not additional roster requirements.
+
+| Need | WBS | What a kit or specialist can supply | Work retained by lead and owner; acceptance |
+| --- | --- | --- | --- |
+| Shared reference, fit and tuning | 1.1, 1.2, 1.3 | Alignment scene, model specifications, profiling or authoring aids | One coherent camera/scale/socket contract; repeatable comparison; owner feedback |
+| Player handling and controls | 2.1, 2.2, 2.3 | Input glyphs, curves/examples, supporting animation/FX | Mouse/controller parity, sensitivity dial, inversion, boost, heat brake, dodge, inertia and chase framing; physical play |
+| Damage, shooting and impacts | 2.4, 3.3, 5.3, 5.4 | Muzzle/projectile/shield/impact/death FX, fragments, audio source | Manual aim plus soft assist, two weapon identities, hit/death certainty, cover and damage timing; combat amid hazards |
+| Enemy craft and flight | 5.1, 5.2 | Two readable ship silhouettes, engine/muzzle anchors, animation/FX; possible navigation aid | Pursuer versus Flanker movement, turning/acceleration, pursuit/flank/attack/recovery, hazard interaction, fairness and pressure; no extra enemy archetypes |
+| Changing space and ambient objects | 3.1, 3.2, 3.4, 10.3 | Rock families, planets/rings, distant structures, wreckage, nebula skies, dust | Shape/scale/depth composition, changing visual identity, negative space and readable threats; gradual ordinary region changes independent of wave blocks/stations |
+| Director, hazards and climaxes | 3.5, 3.6, 4.1, 4.2, 4.3 | Electrical/gravity cues, portal/transit FX, debris motion examples | Four hazard families; warning/force/damage timelines; Wave 5 arrival and recovery; Wave 10 compound readability; same continuous run |
+| Rewards, economy and objectives | 6.1, 6.2, 6.3, 6.4, 6.5, 6.7 | Icons, reward FX/audio, cache/beacon/console props | Five I-V tracks, two utilities, two events/contracts; explain accepted objective, risk, progress, outcome and upgrade tradeoffs |
+| Depot | 6.6 | Distinct beacon exterior, magnetic hold/release FX, service display | One guaranteed optional suspended stop; stay aboard, no pad/on-foot scene; clear approach, menu and departure |
+| Hero and both ships | 7.1, 7.2, 7.3, 7.4, 7.5 | Cleanup, topology/PBR, rig/weights, animations, sockets, LODs | Acornaut identity, visible piloting, hands/tail/seat fit, two scoped ship tradeoffs, repaired deformation and continuous movement |
+| Station, NPCs and hangar | 8.1, 8.2, 8.3, 8.4, 8.5 | Interior/exterior kit, props, servicing machinery, NPC base/short loops, announcements | Compact third-person hub, docking/exit/launch, actual services, 1-2 NPC interactions, lived-in activity and 1-3 minute normal visit |
+| HUD, onboarding and persistence | 9.1, 9.2, 9.3, 9.4 | Fonts/icons/device glyphs/layout components, test aids | Own HUD identity and data/focus; target allegiance; settings, death/XP/unlock/retry and safe suspend/resume |
+| Sound and music | 10.1, 10.2 | Engine/maneuver/weapon/impact layers, environmental loops, music stems | Mix, state triggers, spatial cues, concurrency and transitions; listening in real play |
+| Qualification and release | 11.1, 11.2, 11.3 | Profiling/QA tooling, licensed import manifests | Natural ten-wave play, representative 60 FPS/scalability, clean-PC package/update/save verification; evidence bound to actual build |
+
+**Current production gaps:** no reviewed record establishes an accepted enemy art pair, finished hero/ship rig fit, finished NPC interaction animation set, professional sound mix/adaptive score, or owner-accepted flight/combat feel. Those remain visible needs even while environment work is active. A kit may remove asset work; systems and integrated acceptance still require implementation and playtesting.
+
+## Regional composition: evaluate variety as a real deliverable
+
+A visual region should have a deliberate combination of distant landmark, rock silhouette/surface family, scale distribution, local particulate/nebular structure, lighting/contrast and restrained ambient motion/audio. Changing density or tint alone is insufficient.
+
+Candidate directions for comparison, not locked biome designs:
+
+| Proposed appearance | Possible ingredients | Scope boundary |
+| --- | --- | --- |
+| Familiar rocky belt | Owned barren/cratered rocks, sparse particulate, distant planet/ring | Existing asteroid roles and Director admission |
+| Cold fragmented region | Ice/crystal silhouettes, pale rim light, thin irregular dust and open dark space | Visual treatment; no new freezing or resource/mining rules |
+| Mineral/strange region | Holed/organic/mineral forms, limited emissive accents, different landmark and background | Decorative glow must not masquerade as a pickup or hostile cue |
+| Industrial wreckage | Reused exterior/structural sections, broken hulls, beacons and distant derelict silhouette | Existing wreckage/salvage systems; no extra mission library |
+
+For a wormhole arrival, evaluate the reveal, lighting/landmark contrast, ejection/recovery, sound and resumed combat together. Do not assign a new region to every five-wave block or replace gradual ordinary region transitions. Retain future black-hole, minefield, stellar and comet possibilities as Phase 2 references only where they would introduce deferred hazard behavior.
+
+## Owned or supplied resources: retain all plausible uses
+
+Acquisition below follows project records or owner messages, not a fresh account entitlement audit. No row claims near-alpha acceptance. E1-E4 in the evidence section bind existing integration claims.
+
+| ID | Resource / source | Acquisition and evaluation evidence | Whole-project value / timing | Remaining needs and next sample |
+| --- | --- | --- | --- | --- |
+| A01 | Asteroid Library - Makemake | Acquired/local source; selected rocks, sky and private thin-volume derivatives integrated (E1-E3). Exact Fab listing identity not pinned here | High; use now. WBS 3.1, 3.2, 10.3; possible 3.3 | Audit unused mineral/fragment families; close-pass materials/LODs and full-scene contrast; fracture compatibility unproven |
+| A02 | [Sci-Fi / Futuristic Corridor - Leartes](https://www.fab.com/listings/f2f045e8-bbc3-46be-bfcf-f6b3920ac17e) | Acquired/local source; station shell integrated (E1) | High; station Phase 1. WBS 8.2, 8.3, 8.5; possible 3.4, 6.6 | Service corner/camera/lighting sample; selectively reuse props and broken structures without assuming fracture assets |
+| A03 | Space Station 4 - Gerardo Justel (owner library title) | Supplied local GLB; exterior derivative integrated (E2). Exact listing/license revision unpinned | High; exterior review. WBS 8.1, 8.2; possible 6.6 | Fix existing material usage fallback; approach silhouette; conservative collider does not make mesh gaps traversable |
+| A04 | Space Station - Gerardo Justel, blue ring preview | Owner screenshot shows on disk; runtime adoption not established | Conditional; later Phase 1. WBS 6.6, 8.1, 10.3 | Pin exact listing/file; evaluate distant landmark or depot silhouette, not presumed interior |
+| A05 | Space Station - Gerardo Justel, tower preview | Owner library screenshot shows download option; usable local source unconfirmed | Conditional; later Phase 1. WBS 8.1, 10.3 | Resolve separately from A04; inspect geometry/material cost before treating it as available |
+| A06 | Sci Fi Space Station Interior - YaMaKundra | Owner library screenshot; local content/integration unconfirmed | Conditional; later Phase 1. WBS 8.2, 8.3, 8.5 | Inventory modular pieces and fit against Leartes before adding another material language |
+| A07 | Niagara Examples Pack - Epic Games | Local source evidenced; private ribbon derivatives integrated (E2-E3) | High reusable foundation. WBS 2.2, 2.4, 3.3, 5.3, 5.4, 6.1, 10.3 | Inventory relevant emitters; current exhaust needs nozzle fit/body/response; other uses are untested |
+| A08 | Free Galaxy Shader - Vefects | Owner library/on-disk screenshot; inspected per E2; wholesale adoption not established | Conditional; later Phase 1. WBS 3.6, 4.2, 10.3 | Inspect specific materials and dependencies for destination or anomaly presentation |
+| A09 | Free RPG crafting/environment VFX kit (exact listing unpinned) | Owner reports available; RPG effects inspected per E2; detailed usable inventory absent | Conditional; later Phase 1. WBS 2.2, 3.5, 3.6, 5.3, 5.4, 6.1 | Salvage sparks/glows/trails individually; actual emitter behavior matters more than marketing genre |
+| A10 | Wormhole Portal - Team Beaver | Library screenshot; only manifest found in latest file search (E4) | High need, availability unconfirmed. WBS 4.2 | Obtain/locate usable content before evaluating entrance/exit; manifest is not a downloaded effect |
+| A11 | Supplied Acornaut hero and unrigged STL reference | Source supplied; original preserved; repaired animation derivatives (E1) | High; identity/rig work. WBS 7.1, 7.2, 7.3 | Compare bind pose/weights/animation; commission or implement bounded cleanup, then pilot/station motion review |
+| A12 | Supplied Ludo ship GLBs, including decimation variants | Source supplied; optional 31,056-triangle ship trial integrated (E1) | Conditional trial. WBS 7.4; possible 7.5 | Closed canopy hides pilot and collider fit is provisional; not accepted replacement or a second-ship unlock asset |
+| A13 | Supplied space object1.glb | Owner supplied file; contents/adoption not established in records reviewed here | Conditional; identity first. Potential WBS 6.6, 8.1, 10.3 | Locate earlier inspection or inspect actual model before assigning a role |
+| A14 | Project-generated mesh/audio sources | E5: 26 provisional meshes and 16 synthesized WAVs | Working sources; no final art/audio acceptance. WBS 5.1-5.4, 6.1, 6.6, 8.3, 10.1 | Preserve useful proxies; replace/refine where appearance/listening shows gaps |
+| A15 | Sharur's Normandy Village (incidental library screenshot) | Library sighting only; not an owner-selected space solution | Park; no established Phase 1 fit | Do not spend evaluation time without a specific reusable component need |
+
+## Linked candidates and assessments, including useful later options
+
+All B entries have **acquisition unconfirmed**; a cart checkmark in an owner screenshot does not establish ownership. Listing inspection is not purchase, import or integration. Values below assess the entire game; the dated narrow-task recommendations in E4 remain historical context and are superseded where noted.
+
+| ID | Candidate | Evidence / potential contribution | Whole-project value and timing | Remaining work / evaluation trigger |
+| --- | --- | --- | --- | --- |
+| B01 | [Asteroids - Etherion Designs](https://www.fab.com/listings/d56a7851-d4fd-4cfe-ba95-8b09381dbff2) | Live listing/specs and overview inspected 2026-09-14. Eight rock themes, material controls, planet/ring assets and dust particle | High; next region-variety sample. WBS 3.1, 3.2, 10.3; possible 3.3 | Compare selected ice/crystal/holed families to owned art; moderate fantasy saturation; inspect actual mesh counts, material cost and breakup suitability |
+| B02 | [Space Maps V2 - GTCH](https://www.fab.com/listings/2c6226a9-88fd-4efe-90f9-adaa637e0ae9) | Live listing/gallery inspected 2026-09-14: planetary scenes, ten configurable 8K skies, moving rock Blueprint; UE5.2-5.8; $29.99-33.99 observed | Conditional/high for destination landmarks; later Phase 1. WBS 10.3, 4.2 | Weigh prepared planetary scenes against missing region looks; local nebular volume not established; normalize saturated palette |
+| B03 | [NebulaFantasy - Marek Brzezinski](https://www.fab.com/listings/5a7278e8-70cc-4db9-a350-ce4e1d0c7277) | E4: ten HDR skies and star/nebula controls; declared versions through UE5.3 | High for economical sky variety; later Phase 1. WBS 10.3, 4.2 | Check UE5.8 and unique compositions; supplies background, not local parallax |
+| B04 | [Universe - Marek Brzezinski](https://www.fab.com/listings/867fd79b-e218-4e00-9ee7-7f536ac4ff10) | E4: planets, rocks, HDR skies, dust and demo scenes; declared versions through UE5.3 | Conditional/high for a broader destination library; later Phase 1. WBS 10.3, 3.1, 3.2, 4.2 | Compare actual landmark/art coverage with B02/B03; do not assume distinct sky images across products |
+| B05 | [Dynamic Space Debris - Alchemic Iron Games](https://www.fab.com/listings/c7ea9d53-16a4-4e80-8ed4-7476c015029a) | E4: bounded mesh placement/movement, small mesh set; declared versions through UE5.4 | Conditional, lower incremental art coverage; later Phase 1. WBS 3.2, 10.3 | Retain if its low-detail shapes or authoring workflow fill a measured gap; a spawn volume is not fog |
+| B06 | [Portal Niagara Fluids - SHOGUN GAMES](https://www.fab.com/listings/304b9b3d-1b4d-4d1e-9557-638042e916f8) | E4: three effects/parameters, NiagaraFluids dependency, UE5.4-5.8; publisher warns of cost | High conditional entrance/exit candidate; Phase 1 wormhole pass. WBS 4.2, 10.3 | Compare A10 if usable; profile with combat; travel/ejection/recovery remains project work |
+| B07 | [Procedural Vortex Tunnel - Athian Games](https://www.fab.com/listings/ffde44a2-67d8-44e6-9bfa-9df349c42441) | E4: spline tunnel and effects; C++ runtime/editor plugin; declared UE5.8 | Conditional; later Phase 1 transit evaluation. WBS 4.2 | Establish transit shot/control needs first; plugin maintenance and packaged cost; no stronger tube-only experience |
+| B08 | [Volumetric All In One - Pautinka](https://www.fab.com/listings/d3f7f619-c334-4796-9694-bd2ea28864dc) | Earlier candidate retained; prior technical claims lack a durable dated evidence record here, so contents/version need refresh | Conditional; retain for atmospheric authoring. WBS 3.5, 3.6, 4.2, 10.3 | Compare against owned thin-volume controls; demand sparse nebular look and measured cost |
+| B09 | [Creator Toolkit Materials All In One - Pautinka](https://www.fab.com/listings/64a609ae-1728-4f61-bb72-1d1aed171eab) | E7 screenshot identifies material toolkit; exact bundle contents, overlap with B08 and UE version remain unverified | Conditional alternative bundle; later Phase 1 tooling. WBS 10.3 | Evaluate authoring time saved and verify whether it includes B08 before selecting either |
+| B10 | [Modular Space Hangar - Game Stuff Studio](https://www.fab.com/listings/aa78e50b-f1f9-4169-897c-3020ef3d14d0) | E6: screened kit of structural pieces, crane, doors, props/decals; owner held purchase for evaluation | High conditional hub assembly option; later Phase 1. WBS 8.1-8.5 | Evaluate actual missing bay pieces after owned interior assembly; ship/pilot camera and service layout first |
+| B11 | [Modular Space Station Kit - Pavel Inozemtsev](https://www.fab.com/listings/632e21ca-1e22-4ee2-bff6-dddb32ea7c36) | E6: structural sections/materials/decals; 2026-09-13 screening only | Conditional exterior/depot/distant structures. WBS 6.6, 8.1, 8.2, 10.3 | Compare modular flexibility to owned complete exteriors; walkable interior coverage unconfirmed |
+| B12 | [Modular Space Station Pack - Brandon Westlake](https://www.fab.com/listings/1e752498-191a-4f64-9a56-fc709afdf1fd) | E6: 45 modules and poseable armatures; interchange formats, no baked animation stated | Conditional exterior/servicing source. WBS 6.6, 8.1, 8.4, 10.3 | Unreal setup, material normalization, animation and hard-science style fit |
+| B13 | [Sci-Fi sounds - Gamemaster Audio](https://www.gamemasteraudio.com/product/sci-fi-sounds-and-sci-fi-weapons/) | E6: screened weapon/shield/UI/atmosphere source library; not auditioned | High conditional audio source; Phase 1. WBS 2.4, 5.3, 5.4, 10.1, 10.2 | Audition engine plus two weapons plus hits in a short gameplay mix; no finished adaptive score implied |
+| B14 | [SCI-FI - BOOM Library](https://www.boomlibrary.com/sound-effects/sci-fi/) | E6: sound-design source alternative, not auditioned | High conditional specialist source; Phase 1. WBS 10.1, 10.2 | Choose edition/rights and usable loops; compare B13 against a specific sound brief |
+| B15 | [Asteroids 1 - Makemake](https://www.fab.com/listings/104b0750-c90d-435e-8862-6217775174f6) | E6: old screened candidate; identity equivalence to owned A01 unconfirmed | Park duplicate-identity check. WBS 3.1 | Resolve before recommending another purchase; never treat old shortlist as proof of ownership |
+| B16 | [Owner's earlier station candidate](https://www.fab.com/listings/73e2813f-4318-4687-b35b-747dfc602270) | Supplied URL; exact product mapping not verified in current records | Retain, unranked. Potential WBS 8.1, 8.2, 8.5 | Identify exact title/vendor and reconcile against A06/B10 before evaluating |
+
+### B01: why this candidate merits the next diversity comparison
+
+The Etherion listing advertises 53 asteroid assets across cratered, crystal, ice, holed, soft, mineral, organic and glowing themes. The inspected overview shows meaningful silhouette/surface differences. Reusing selected families can reduce modeling/material work for distinctive regions while owned Makemake rocks continue to serve the main rocky field.
+
+Live Fab technical details on 2026-09-14 list UE4.22-4.27 / UE5.0-5.8, four autogenerated LODs per asteroid, autogenerated collision, 4K asteroid textures and a dust-mote particle. Price range shown was $39.99-74.99 before tax/license selection; update June 22, 2026. These are publisher claims, not benchmarks.
+
+The same page says 45 unique meshes while advertising 53 asteroid meshes; its vertex-count buckets total 54 entries. Treat exact unique-shape counts as UNCONFIRMED. Many listed assets are 10k-60k vertices; these are vertices, not triangles. Do not populate the whole field with maximum-detail meshes or assume Nanite/destruction support. Trial two contrasting families with distance LODs, close-pass lighting, silhouette readability, texture residency and integrated frame-time measurement.
+
+Use bright crystal/organic/glowing themes selectively and normalize them to the Hybrid target. Visual variants do not add new hazard mechanics. Planet/ring materials add potential ambient landmarks, but this is not a complete destination, wormhole or local nebula solution. Sources: [Fab](https://www.fab.com/listings/d56a7851-d4fd-4cfe-ba95-8b09381dbff2), [publisher](https://etheriondesigns.com/product/asteroids-mega-pack/).
+
+## Wishlist and named leads retained for later screening
+
+C entries are **unreviewed leads** from owner screenshot/messages, not endorsed products or proven dependencies. The owner's September 14 clarification treats these as saved alternatives with substantial overlap, not a buy-all list. Unless stated otherwise, acquisition, exact listing URL, version, contents and performance are UNCONFIRMED. Some titles were truncated on screen. Grouping describes a possible role to investigate, not verified features.
+
+| ID | Lead / visible creator where known | Potential whole-project role / WBS | Timing and next evidence |
+| --- | --- | --- | --- |
+| C01 | AeroNav 3D: Volumetric Flying AI Navigation - Tasfiqur Rahman (title truncated) | Enemy navigation/avoidance aid; 5.1, 5.2 | Later Phase 1 only if current enemy flight has a measured gap; does not define Pursuer/Flanker behavior |
+| C02 | Agentic FeedbackFX - Insodimension (title truncated) | Feedback authoring; 2.4, 5.3, 5.4, 6.1, 10.3 | Identify exact product and dependencies; no framework replacement assumed |
+| C03 | Better Homing Projectiles - Pitch n' Roll Games (title truncated) | Possible projectile implementation reference; 5.3, 5.4 | Park unless scoped soft-assist problem needs it; purchase does not authorize homing weapons |
+| C04 | Blue Sci-Fi GUI Kit + Icons - HONETI (title truncated) | Icons/device/UI ingredients; 9.1, 9.2 | Later Phase 1 screen inventory; preserve custom HUD identity and actual controls |
+| C05 | Cosmic Material PBR. Seamless - SubMALabs | Surface/ambient material source; 3.1, 3.6, 10.3 | Inspect material type, scale and shader cost; not presumed volumetric |
+| C06 | Debris Impact FX - SHOGUN GAMES | Collision/fragment response; 2.4, 3.3, 3.4 | High need, unreviewed candidate; inspect stone/metal distinctions and effect budgets |
+| C07 | Deep Space [UI] - IL.ranch | HUD/menu components; 9.1, 9.2, 9.3 | Later Phase 1; compare visual language/device support without replacing behavior |
+| C08 | EXPLOSIONS - Niagara... - Sidearm Studios (title truncated) | Enemy death, impacts, destructive feedback; 2.4, 3.3, 5.1-5.4 | High need; inspect space-suitable effects, clarity and cost in actual combat |
+| C09 | Energy Beam VFX - Dr.Game (title truncated) | Laser/electrical visual source; 3.5, 5.3, 10.3 | Later Phase 1; visuals must fit Rapid Laser cadence; no extra beam weapon |
+| C10 | HighRes Asteroids Pack - Vladimir Perminov | Additional shape/surface family; 3.1, 3.2, 10.3 | Compare actual diversity against A01/B01; high resolution alone is not a distinct regional identity |
+| C11 | Local Mind AI - Tasfiqur Rahman | Possible authoring/NPC tooling; 8.4 | Park: scope uses small authored NPC interactions; no need established for runtime generative dialogue/model dependency |
+| C12 | Modular Sci-Fi Hallways - Talon Hackbarth | Interior assembly/props; 8.2, 8.3, 8.5 | Later Phase 1 if owned kit lacks a needed section |
+| C13 | Mechanical Damage FX - SHOGUN GAMES | Ship/enemy/wreckage damage feedback; 2.4, 3.4, 5.1-5.4 | High need; audition alongside debris/death/weapon effects, not separately accepted |
+| C14 | POLYGON - Sci-Fi Space... - Synty Studios (title truncated) | Props/ship/station prototyping; 5.1, 5.2, 8.2, 8.4 | Park visual-fit check; stylized content may need substantial normalization for Hybrid identity |
+| C15 | Rocket Thruster Exhaust FX - SHOGUN GAMES | Thrust/boost/brake visual vocabulary; 2.2, 7.4, 7.5, 10.3 | High need; compare nozzle fit and response against A07 derivative before selection |
+| C16 | Science of Space Station Kitbash (owner-described title; identity unconfirmed) | Strong station/depot exteriors, miscellaneous structures/derelicts; 3.4, 6.6, 8.1, 10.3 | High conditional modeling relief; identify listing, modularity, materials/LODs and runtime suitability |
+| C17 | Unnamed remaining wishlist entries | Roles unclassified | Keep unresolved inventory; earlier screenshot reported 34 items, later screenshots add leads. This is deduplicated visible coverage, not a complete-account audit |
+| C18 | Asteroids HD - NV3D | Rock silhouette/surface alternative; 3.1, 3.2, 10.3 | Later Phase 1 diversity comparison; screenshot advertises skybox/LOD but actual contents/version unverified |
+| C19 | Asteroids Mini Game & Photogrammet... - Skebos Ltd (title truncated) | Photogrammetry rock source; 3.1, 3.2, 10.3 | Compare close-pass surface detail; retain art candidate without adopting a separate mini-game |
+| C20 | Deep Space Station & Fleet Bundle - Game Ready - MSP Assets | Ambient structures, depot/exterior, potential enemy hull ingredients; 6.6, 8.1, 5.1, 5.2, 10.3 | Inspect GLB/glTF/USDZ geometry, materials, sockets, collisions and art fit; game-ready title is not integration evidence |
+| C21 | Volumetric Nebula and Clouds - Athian Games | Local atmosphere/region authoring; 3.5, 4.2, 10.3 | High relevant need; later bounded comparison against A01/B08/C22/C25; plugin support and cost unverified |
+| C22 | Volumetric Space Nebula Procedural G... - Ambient GraphX (title truncated) | Sparse nebular shape/depth and region composition; 4.2, 10.3 | High relevant need; inspect actual volume technique, travel behavior, opacity/color controls and runtime cost |
+| C23 | Space Ship 02 Modular Pack - Havolk | Ship/structure kitbash, possible enemy pair/depot/ambient debris; 5.1, 5.2, 6.6, 3.4, 10.3 | Later Phase 1 modeling relief; review modular joins/materials and avoid replacing custom acorn identity |
+| C24 | Space Station - Asteroid Mining Facility - Etherion Designs | Station/depot landmark, asteroid-integrated industrial dressing; 6.6, 8.1, 8.2, 10.3 | Later Phase 1 exterior comparison; no mining gameplay implied; check usable interior and docking dimensions |
+| C25 | Space Nebula and Starfield V2 (V3) - Thauros-Development | Regional backdrop/nebular authoring; 4.2, 10.3 | Retain alternative to C21/C22/B08; determine sky versus local volume and plugin dependencies |
+| C26 | Space Dream's Asteroids Pack - Space Dream | Additional rocky family; 3.1, 3.2, 10.3 | Later art comparison for genuinely different profiles and material response; no price-based quality assumption |
+| C27 | Space HDR Backgrounds - Benedikt Engelhard | Distant region color/composition; 10.3, 4.2 | Later background alternative to B03; compare actual skies, resolution and projection, not local-volume coverage |
+| C28 | Ship Core Pro - HeavyCoat | Potential handling/thruster/control/docking implementation aid; 2.1, 2.2, 2.3, 8.1 | Park for a demonstrated gap; compatibility with existing C++ movement, save and arcade rules must precede any migration |
+| C29 | Sky Open VFX - SoftTofuVFX | Portal/electrical/gravity visual ingredients; 3.5, 3.6, 4.2, 10.3 | Later effect sample; remove terrestrial framing and check screen coverage; no new spell/mechanic |
+| C30 | Sci-Fi Showroom Interior / Futuristic Exhibition & Sp... - LIU BIN (title truncated) | Hangar/service display/props; 8.2, 8.3, 8.5 | Later comparison; industrial lived-in target and compact services take priority over showroom styling |
+| C31 | Sci-Fi Space Stations Pack - RaulFernandez | Diverse distant structures/depot/station exterior silhouettes; 6.6, 8.1, 10.3 | Later ambient landmark library; inspect geometry/LODs/materials and differentiation from owned exteriors |
+| C32 | Sci-Fi Weapons VFX All In One - Shots, Lasers, Bea... - Pautinka (title truncated) | Muzzle/projectile/impact/energy-death ingredients; 2.4, 5.3, 5.4, 10.3 | High need; compare as one source alternative to C08/C09/C13; preserve two scoped weapons |
+| C33 | SF - Modular Hangar - GrafxBOX | Structural bay/hangar model source; 8.1, 8.2, 8.5 | Later alternative to B10; screenshot shows OBJ/FBX formats, Unreal assembly/material setup unverified |
+
+NebulaFantasy, Portal Niagara Fluids, Procedural Vortex Tunnel, Modular Space Hangar and Free Galaxy Shader also appeared on the wishlist; reuse B03, B06, B07, B10 and A08 rather than duplicate them.
+
+## What to evaluate next, and what stays tabled
+
+1. **Region variety:** B01 is the strongest newly inspected themed-rock candidate; compare two families, an owned sky and one ambient landmark. B02/B04/C20/C31 remain destination/landmark options; B03/C27 sky variety; C21/C22/C25 local-atmosphere candidates pending verification. No purchase is required to continue the current owned-asset pass.
+2. **Combat and propulsion:** inventory usable A07/A09 emitters; then screen C06/C08/C13/C15/C32 as a coordinated impact/death/thrust set. Pair visual response with audio and actual hit/flight timing.
+3. **Station, depot and NPC life:** normalize A02/A03, evaluate unused A04/A06 components, then C16/B10 only against missing exterior/bay pieces. Keep NPC/servicing animation and navigation as explicit work, not assumed kit coverage.
+4. **Enemy flight and identity:** retain C01 as a possible aid while directly reviewing the existing two archetypes; obtain an art-pair candidate separately. A navigation plugin and ship models solve different parts.
+5. **Controls, UI, audio and rig:** continue project-owned handling/focus/save work; evaluate C04/C07 for presentation ingredients, B13/B14 for audio, and SOURCING specialist packets for hero/ship/NPC animation. Their priority does not disappear when environment work is active.
+
+This ordering is an evaluation proposal, not a commitment to buy or a change to implementation scope. No additional asset has been acquired in this catalog task. Revisit tabled options when a linked WBS need becomes active.
+
+## Evidence and status limits
+
+- **E1:** [Local asset refresh](../ASSET_REFRESH.md), source milestone 1777db7. Historical release/test counts are not current delivery claims.
+- **E2:** [Environment refresh](../ENVIRONMENT_REFRESH.md), including owned exterior/Niagara/RPG inspection; earlier atmosphere experiments are superseded by E3.
+- **E3:** [Combined space look](COMBINED_SPACE_LOOK.md) and [validation receipt](../validation/2026-09-14-combined-space-look.json). Local combined presentation exists; near-alpha, natural input/play and representative performance acceptance remain open.
+- **E4:** [Five Fab assessments](FAB_CANDIDATES_2026-09-14.md), dated 2026-09-14. Their narrow immediate-task ranking is historical; this register adds whole-game value and timing.
+- **E5:** [Mesh source manifest](../../ContentSource/Meshes/manifest.json) and [audio source manifest](../../ContentSource/Audio/manifest.json); provisional sources, not professional finished assets.
+- **E6:** [Sourcing proposal](SOURCING.md), dated 2026-09-13; refresh commercial/technical facts before recommendation.
+- **E7:** Owner-supplied September 14 wishlist screenshots: original desktop view plus later batches of four and ten mobile images. Readable names/creators are transcribed; partially visible titles remain marked. Screenshot prices are not current quotes; cart marks are not acquisition proof. No raw screenshots are committed.
+- Owner library/wishlist screenshots and supplied model messages establish reported possession or interest only. No credentials, paid assets, private receipts, account identifiers or raw downloaded files are copied here.
+
+This documentation change does not update the game package, itch release, Phase 1 acceptance boxes or PR6 metadata.
