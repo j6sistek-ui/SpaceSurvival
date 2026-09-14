@@ -1,0 +1,59 @@
+{
+  "dateUtc": "2026-09-14T00:39:27.227467+00:00",
+  "status": "REFRESH_READY_FOR_OWNER_REVIEW_PHASE1_PARTIAL",
+  "source_commit": "1777db7e076fa96284ced7badd568f6b58001a0b",
+  "package": {
+    "path": "Artifacts/Windows",
+    "files": 53,
+    "bytes": 1527561532,
+    "game_sha256": "70c78997babe5595cda3fb5b1bf6e1d625a6929deb7653b6897ae6061a3929fd",
+    "build_log_sha256": "6edcbff4011a30340174ea2b7d5d09619b2df1ba3a897553381d98b1da031953",
+    "prerequisites_sha256": "a596ca11118e663dca4cd46f7ebf3cc1087c49b64eb6f908c94b7884c7f64823"
+  },
+  "tests": {
+    "succeeded": 39,
+    "failed": 0,
+    "warnings": 0,
+    "notRun": 0,
+    "report_sha256": "6ef6fed6ba50c87e5c7057646b8aa6fa60d87c8f00ac1e4e2caf82fd32141de0",
+    "boundary": "Full engine suite before final light-intensity/docking-visibility-only correction; final correction compiled and exercised in packaged visual run."
+  },
+  "rendered": {
+    "path": "Artifacts/EndgameSoak/f0520a3d07ce4975a01c173100bc0a84",
+    "fixture_sha256": "f11984f67b1f0cf69a4c06ecf49f5dfac62a69e9a94f3f4f45f64e007f0af8aa",
+    "success": true,
+    "offscreen_visual_only": true,
+    "no_save_slots_written": true,
+    "screenshots": {
+      "Approach.png": "132e542a225c27a4853a60299da6ba4cf4853a48d518e8371bcb6ec202d86b4b",
+      "Climax.png": "fb9d868127b3198f54a6ff43ce5f20ef90b56a533f9e31145f18dcd4f1c1337e",
+      "Docking.png": "3cc0f9deee4f6c265cf2356fa02d77ff99bbf56bbb5dae432b1df29d397d0fbc",
+      "Exit0.png": "a717a1c8a57385b48bf40613e3919bd484e0e6d1aa2214b579e4bbf97a0cc906",
+      "Exit1.png": "2db9223aa14ba86233c418d9224f4485f3968002e52e31f60333016bee03d27d",
+      "Exit2.png": "d56deb323b8165a8d94b6bd9061058d756d3d3f3e3126c10edc0e557573f68ba",
+      "Exit3.png": "c1eb3439ad6e6f98f37409a63643960dea59bf2c12bb015a829fcc1b485735c3",
+      "Exit4.png": "f9666345dfe35f0fea390629c5f5b4b07bf23672fd6d760a1f1aa984a1a66d4d",
+      "Exit5.png": "04e9742be967d6330582e8a47efb2c6a74734faa3bef8227149372e336bf2e05",
+      "Exit6.png": "fec26b2c0be08b83e0e2f6f9652ef73e4de53aca82569e13d269b3895cdd665c",
+      "Flight.png": "170220d19c59626841c98a45ed18f28b1870fc14680bacda0214033412f534cc",
+      "StationIdle.png": "5caceffe48653869dbb4cec448b2019647bb1640c65a3f3cc4c374069b620e8d"
+    },
+    "ship": "SM_LudoStarter",
+    "actual_resolution": "888x500 (fixture settings override requested 1600x900)"
+  },
+  "checks": [
+    "23 source structural checks",
+    "Python compileall",
+    "content-source validation",
+    "changed C++ clang-format",
+    "independent scope and logic review"
+  ],
+  "limitations": [
+    "Docker daemon unavailable; no container domain pass",
+    "No new representative performance result; offscreen readbacks are excluded",
+    "Physical controls, audio, natural balance and retry appeal unverified",
+    "Optional ship closed canopy exit fit and wider-hull collision remain provisional",
+    "Licensed raw assets excluded from public repository",
+    "No new itch release or merge"
+  ]
+}
