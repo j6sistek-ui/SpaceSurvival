@@ -2,14 +2,14 @@
 
 Updated 2026-09-14. Owner direction, paraphrased (including the later 14 wishlist screenshots): assess and retain assets, kits, tools and specialist options against the whole game scope and intended experience, including needs beyond the active task. A useful later option stays in the catalog.
 
-This is the canonical solution register. [GAME_SCOPE](../GAME_SCOPE.md) and [IMPLEMENT](../../IMPLEMENT.md) remain authoritative; this register does not authorize purchases, installations, new mechanics or Phase 2 implementation. [Work packages](WORK_PACKAGES.csv) define the existing 47 production packages; [SOURCING](SOURCING.md) retains procurement checks and quoteable specialist briefs. Use [video target](VIDEO_VISUAL_TARGET.md) and the owner briefing for presentation fit. Current implementation evidence is in [PROJECT_STATE](../../PROJECT_STATE.md), not the historical sourcing proposals.
+This is the canonical resource/candidate register, not an active priority or completion queue. [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) alone tracks active work and owner acceptance; the fit ratings, timing and comparisons below support those decisions without scheduling work. [GAME_SCOPE](../GAME_SCOPE.md) and [IMPLEMENT](../../IMPLEMENT.md) remain authoritative; this register does not authorize purchases, installations, new mechanics or Phase 2 implementation. [Work packages](WORK_PACKAGES.md) define the 47 packages from the historical production proposal; [SOURCING](SOURCING.md) retains procurement checks and quoteable specialist briefs. Use [video target](VIDEO_VISUAL_TARGET.md) and the owner briefing for presentation fit. Current implementation evidence is in [PROJECT_STATE](../PROJECT_STATE.md), not the historical sourcing proposals.
 
 ## How to use and maintain this register
 
 - Add each supplied candidate once under a stable ID, even when it is not needed this week. Preserve rejected alternatives with the reason; do not repeatedly rediscover them.
 - Record whole-project contribution and nearest WBS IDs before judging immediate relevance. Existing placement code does not make new shapes, materials, animations or sounds redundant.
 - Keep separate: acquisition (unknown / owner reports library / local source evidenced), evaluation (unreviewed / listing / local inspection / integrated / accepted), and timing (evaluate next / later Phase 1 / Phase 2 only / park). Library presence, purchase, download, import, integration and quality acceptance are different facts.
-- Whole-project value is a qualitative priority, not a score or completion percentage. **High** means a strong match to an identified gap; **conditional** means a plausible use with important unknowns; **park** means retain but no current justification. High value does not imply buy now.
+- Whole-project value is a qualitative fit assessment, not a work priority, score or completion percentage. **High** means a strong match to an identified gap; **conditional** means a plausible use with important unknowns; **park** means retain but no current justification. High value does not imply buy now.
 - Before a purchase recommendation, refresh the exact listing, license tier/price, UE version, dependencies and available evidence. Dated listing claims are not runtime validation. Do not infer product identity from a truncated wishlist title.
 - On acquisition/evaluation, add the product revision, licensed storage location or manifest reference, actual reusable components, trial scene, optimization needs, measured integration effort, acceptance result and next action. Keep vendor files and account/license details in permitted private storage.
 - Select a small trial that answers a whole-game need, integrate accepted derivatives through existing systems, then assess actual play. Do not mark a WBS package done because a pack contains a relevant asset.
@@ -35,7 +35,7 @@ All listed WBS IDs already exist. These are quality/workflow mappings, not addit
 | Sound and music | 10.1, 10.2 | Engine/maneuver/weapon/impact layers, environmental loops, music stems | Mix, state triggers, spatial cues, concurrency and transitions; listening in real play |
 | Qualification and release | 11.1, 11.2, 11.3 | Profiling/QA tooling, licensed import manifests | Natural ten-wave play, representative 60 FPS/scalability, clean-PC package/update/save verification; evidence bound to actual build |
 
-**Current production gaps:** no reviewed record establishes an accepted enemy art pair, finished hero/ship rig fit, finished NPC interaction animation set, professional sound mix/adaptive score, or owner-accepted flight/combat feel. Those remain visible needs even while environment work is active. A kit may remove asset work; systems and integrated acceptance still require implementation and playtesting.
+**Resource coverage limits recorded September 14:** no reviewed resource record here establishes an accepted enemy art pair, finished hero/ship rig fit, finished NPC interaction animation set, professional sound mix/adaptive score, or owner-accepted flight/combat feel. Current action and acceptance states belong to the issue ledger. A kit may remove asset work; systems and integrated acceptance still require implementation and playtesting.
 
 ## Regional composition: evaluate variety as a real deliverable
 
@@ -68,8 +68,8 @@ Acquisition below follows project records or owner messages, not a fresh account
 | A08 | Free Galaxy Shader - Vefects | Owner library/on-disk screenshot; inspected per E2; wholesale adoption not established | Conditional; later Phase 1. WBS 3.6, 4.2, 10.3 | Inspect specific materials and dependencies for destination or anomaly presentation |
 | A09 | Free RPG crafting/environment VFX kit (exact listing unpinned) | Owner reports available; RPG effects inspected per E2; detailed usable inventory absent | Conditional; later Phase 1. WBS 2.2, 3.5, 3.6, 5.3, 5.4, 6.1 | Salvage sparks/glows/trails individually; actual emitter behavior matters more than marketing genre |
 | A10 | Wormhole Portal - Team Beaver | Library screenshot; only manifest found in latest file search (E4) | High need, availability unconfirmed. WBS 4.2 | Obtain/locate usable content before evaluating entrance/exit; manifest is not a downloaded effect |
-| A11 | Supplied Acornaut hero and unrigged STL reference | Source supplied; original preserved; repaired animation derivatives (E1) | High; identity/rig work. WBS 7.1, 7.2, 7.3 | Compare bind pose/weights/animation; commission or implement bounded cleanup, then pilot/station motion review |
-| A12 | Supplied Ludo ship GLBs, including decimation variants | Source supplied; optional 31,056-triangle ship trial integrated (E1) | Conditional trial. WBS 7.4; possible 7.5 | Closed canopy hides pilot and collider fit is provisional; not accepted replacement or a second-ship unlock asset |
+| A11 | Supplied Acornaut hero and unrigged STL reference | Source supplied; original preserved; repaired animation derivatives (E1) | High; identity/rig work. WBS 7.1, 7.2, 7.3 | Regular 3D contributor now owns hero/iconic starter long term (ISS-02); lead integrates. Compare bind/weights/animation and review motion; existing derivatives remain provisional |
+| A12 | Supplied Ludo ship GLBs, including decimation variants | Source supplied; optional 31,056-triangle ship trial integrated (E1) | Conditional trial. WBS 7.4; possible 7.5 | Closed canopy hides pilot and collider fit is provisional; temporary trial, not the regular artist's iconic starter or an accepted second-ship unlock asset |
 | A13 | Supplied space object1.glb | Owner supplied file; contents/adoption not established in records reviewed here | Conditional; identity first. Potential WBS 6.6, 8.1, 10.3 | Locate earlier inspection or inspect actual model before assigning a role |
 | A14 | Project-generated mesh/audio sources | E5: 26 provisional meshes and 16 synthesized WAVs | Working sources; no final art/audio acceptance. WBS 5.1-5.4, 6.1, 6.6, 8.3, 10.1 | Preserve useful proxies; replace/refine where appearance/listening shows gaps |
 | A15 | Sharur's Normandy Village (incidental library screenshot) | Library sighting only; not an owner-selected space solution | Park; no established Phase 1 fit | Do not spend evaluation time without a specific reusable component need |
@@ -97,7 +97,7 @@ All B entries have **acquisition unconfirmed**; a cart checkmark in an owner scr
 | B15 | [Asteroids 1 - Makemake](https://www.fab.com/listings/104b0750-c90d-435e-8862-6217775174f6) | E6: old screened candidate; identity equivalence to owned A01 unconfirmed | Park duplicate-identity check. WBS 3.1 | Resolve before recommending another purchase; never treat old shortlist as proof of ownership |
 | B16 | [Owner's earlier station candidate](https://www.fab.com/listings/73e2813f-4318-4687-b35b-747dfc602270) | Supplied URL; exact product mapping not verified in current records | Retain, unranked. Potential WBS 8.1, 8.2, 8.5 | Identify exact title/vendor and reconcile against A06/B10 before evaluating |
 
-### B01: why this candidate merits the next diversity comparison
+### B01: rationale for a possible diversity comparison
 
 The Etherion listing advertises 53 asteroid assets across cratered, crystal, ice, holed, soft, mineral, organic and glowing themes. The inspected overview shows meaningful silhouette/surface differences. Reusing selected families can reduce modeling/material work for distinctive regions while owned Makemake rocks continue to serve the main rocky field.
 
@@ -149,7 +149,7 @@ C entries are **unreviewed leads** from owner screenshot/messages, not endorsed 
 
 NebulaFantasy, Portal Niagara Fluids, Procedural Vortex Tunnel, Modular Space Hangar and Free Galaxy Shader also appeared on the wishlist; reuse B03, B06, B07, B10 and A08 rather than duplicate them.
 
-## What to evaluate next, and what stays tabled
+## Candidate comparison options (not the active work order)
 
 1. **Region variety:** B01 is the strongest newly inspected themed-rock candidate; compare two families, an owned sky and one ambient landmark. B02/B04/C20/C31 remain destination/landmark options; B03/C27 sky variety; C21/C22/C25 local-atmosphere candidates pending verification. No purchase is required to continue the current owned-asset pass.
 2. **Combat and propulsion:** inventory usable A07/A09 emitters; then screen C06/C08/C13/C15/C32 as a coordinated impact/death/thrust set. Pair visual response with audio and actual hit/flight timing.
@@ -157,7 +157,7 @@ NebulaFantasy, Portal Niagara Fluids, Procedural Vortex Tunnel, Modular Space Ha
 4. **Enemy flight and identity:** retain C01 as a possible aid while directly reviewing the existing two archetypes; obtain an art-pair candidate separately. A navigation plugin and ship models solve different parts.
 5. **Controls, UI, audio and rig:** continue project-owned handling/focus/save work; evaluate C04/C07 for presentation ingredients, B13/B14 for audio, and SOURCING specialist packets for hero/ship/NPC animation. Their priority does not disappear when environment work is active.
 
-This ordering is an evaluation proposal, not a commitment to buy or a change to implementation scope. No additional asset has been acquired in this catalog task. Revisit tabled options when a linked WBS need becomes active.
+These are September 14 comparison proposals, not the active work order, a commitment to buy or a change to implementation scope. No additional asset was acquired in the catalog task. Select a comparison only when the issue ledger makes the linked need active.
 
 ## Evidence and status limits
 
@@ -170,4 +170,4 @@ This ordering is an evaluation proposal, not a commitment to buy or a change to 
 - **E7:** Owner-supplied September 14 wishlist screenshots: original desktop view plus later batches of four and ten mobile images. Readable names/creators are transcribed; partially visible titles remain marked. Screenshot prices are not current quotes; cart marks are not acquisition proof. No raw screenshots are committed.
 - Owner library/wishlist screenshots and supplied model messages establish reported possession or interest only. No credentials, paid assets, private receipts, account identifiers or raw downloaded files are copied here.
 
-This documentation change does not update the game package, itch release, Phase 1 acceptance boxes or PR6 metadata.
+The catalog milestone did not update the game package, itch release or Phase 1 acceptance. Catalog PR9 was subsequently merged through PR6 and PR3 on September 14; that consolidation did not accept the listed art or buy any candidate.

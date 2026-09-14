@@ -1,6 +1,6 @@
 # Combined deep-space environment pass — 2026-09-14
 
-This is an implemented presentation milestone awaiting owner review, not Phase 1 completion. The owner requested a combined sky, lighting, nebular atmosphere, asteroid-depth and exhaust pass using owned assets, then clarified that the medium should resemble thin irregular space dust rather than dense Earth clouds. No new purchase, mechanic, hazard count, progression change or itch publication is included.
+This is an implemented September 14 presentation milestone, not Phase 1 completion. [PROJECT_STATE.md](../PROJECT_STATE.md) records current source/build/storage identity; [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) alone tracks active follow-up and owner acceptance. The settings and evidence below describe this milestone. The owner requested a combined sky, lighting, nebular atmosphere, asteroid-depth and exhaust pass using owned assets, then clarified that the medium should resemble thin irregular space dust rather than dense Earth clouds. No new purchase, mechanic, hazard count, progression change or itch publication is included.
 
 ## What changed
 
@@ -30,4 +30,4 @@ Tune `DA_DeepSpaceLook` and its private instances in the editor. `ss.AtmosphereC
 - Existing station-exterior material warnings still report missing Nanite usage and fallback in the packaged startup log. They are outside the flight-scene changes and remain a station follow-up.
 - Local grains remain simple geometry; large-rock material/color balance, exhaust/nozzle fit, continuous animation quality, natural combat readability, physical controller feedback and representative busy-scene performance need further review. Bounded parallax is not infinite world streaming.
 
-Evidence: `docs/validation/2026-09-14-combined-space-look.json`. Current Windows archive is local; itch remains 0.1.15-alpha/build1978147. Existing PR6 stays unmerged.
+Evidence: `docs/validation/2026-09-14-combined-space-look.json`. At this milestone, the Windows archive was local and itch remained 0.1.15-alpha/build1978147. PR6 was subsequently merged through PR3 into main on September 14. The merge did not publish this archive or establish new gameplay/visual acceptance; use project state for current delivery identity.

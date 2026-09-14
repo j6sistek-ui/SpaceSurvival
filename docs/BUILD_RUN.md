@@ -1,12 +1,8 @@
 # Build and run
 
-**Phase 1: PARTIAL. Current build: Package 14**, source `f4bfec8bb955a9dab23300c55b1ca81c53442504`. The [station camera fix](STATION_CAMERA.md) passed **38/38 Unreal tests** at 16:40:33 UTC, zero warnings/failures/not-run; Editor build, formatting and 23 source checks passed. Windows packaging succeeded. Two native hangar observations show the camera behind the body before and after user movement/turning; physical comfort and controller acceptance remain open. [Current receipt](validation/2026-09-13-station-camera.json).
+**Start with [Project State](PROJECT_STATE.md#source-build-and-release) for the current source, local package and separately published itch identity.** Older package receipts below are historical evidence, not the current contents of the shared archive. Phase 1 remains PARTIAL.
 
-**Playtest the packaged game:** `Artifacts/Windows/SpaceSurvival.exe`. Keep its entire folder together. Do not open the `.uproject` just to play: that starts the editor and may offer a conversion copy. The authoritative project is `C:/Users/j6sis/SpaceSurvival`; the separate `SpaceSurvival 5.8` copy does not receive repository fixes.
-
-**Historical Package 13 archive, source `a628c7faa3d6c160ded22981bd3c230cb0cbf203`.** BuildCookRun and independent artifact audit passed; the [package receipt](validation/2026-09-13-windows-gameplay-fairness-package.json) binds the executable, all 120 project assets and matching 37-test source. Its normal-timing Wave 10 fixture passed at 2026-09-13 15:26:31 UTC. A [native settings check](validation/2026-09-13-native-settings-focus.json) verified selection stays on the controller dial while adjusting 1.0→1.2→1.4, with mouse sensitivity unchanged. These are bounded checks, not physical-input or natural gameplay acceptance. **Phase 1 remains PARTIAL.**
-
-Package 13 includes the industrial station shell, 8K NASA sky, HUD improvements and [gameplay repairs](GAMEPLAY_QUALITY.md), including synchronized projectile contact, successful-spawn Director charging and subtitle-independent contract results. `THIRD_PARTY.md` is byte-exact beside the launcher. HeroAlpha experiments are paused and unadopted; the current character remains provisional. See [current state](PROJECT_STATE.md) and the [hands-on checks](PLAYTEST_TOMORROW.md).
+Play the packaged game at `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`, keeping its entire folder. Do not open the `.uproject` just to play: it starts Unreal Editor and may offer a conversion copy. The authoritative project folder is `C:/Users/j6sis/SpaceSurvival`. See [your next review](KNOWN_ISSUES.md#what-to-personally-review-next) and [local-versus-GitHub storage](PROJECT_STATE.md#where-files-live).
 
 ## Tooling and repository
 
@@ -47,8 +43,8 @@ Each target accepts `-EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'`. Close pr
 
 - **Editor** invokes UnrealBuildTool for SpaceSurvivalEditor, Win64 Development.
 - **Content** imports canonical sources and authors the tuning asset and Survival map. Inspect `Saved/Validation/ContentImport.json`; the successful status is `IMPORTED_NOT_GAMEPLAY_VALIDATED` with no errors. Existing authored assets are preserved, and partial/wrong-type imports are rejected. Read [CONTENT_PIPELINE.md](CONTENT_PIPELINE.md) before deliberate reimport.
-- **Validate** starts a fresh rendering-enabled editor process and checks persisted assets, map/GameMode, fixed rosters/selections, backdrop collision, mesh material usage and compiled field shader statistics. NullRHI cannot supply those shader statistics and is not used for this target. The latest full rendering-enabled readback passed through 13:44:39 UTC in `.agent/local/SkyStation-Validate.log`, with all 120 content files unchanged. The prior 110-asset Package 11 source run remains historical.
-- **Test** remains NullRHI and runs the SpaceSurvival automation prefix into Artifacts/UnrealTests/index.json/index.html. It requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every state Success; process exit 0 alone is insufficient. The latest 37-test gameplay result passed at 15:12:50 UTC and is retained in `.agent/local/GameplayFollowup-tests.json`; the prior 24-test Package 11 source result remains in `.agent/local/ChaseAim-tests.json`. Earlier authored-exit contact failures and their correction remain in [VALIDATION.md](VALIDATION.md). Shortened/assisted fixtures do not establish rendering, balance, physical input or performance.
+- **Validate** starts a fresh rendering-enabled editor process and checks persisted assets, map/GameMode, fixed rosters/selections, backdrop collision, mesh material usage and compiled field shader statistics. NullRHI cannot supply those shader statistics and is not used for this target. The historical September 13 rendering-enabled readback passed through 13:44:39 UTC in `.agent/local/SkyStation-Validate.log`, with all 120 content files unchanged. The prior 110-asset Package 11 source run remains historical.
+- **Test** remains NullRHI and runs the SpaceSurvival automation prefix into Artifacts/UnrealTests/index.json/index.html. It requires a fresh nonempty report, at least one success, zero warnings/failures/not-run cases and every state Success; process exit 0 alone is insufficient. The historical September 13 37-test gameplay result passed at 15:12:50 UTC and is retained in `.agent/local/GameplayFollowup-tests.json`; the prior 24-test Package 11 source result remains in `.agent/local/ChaseAim-tests.json`. Earlier authored-exit contact failures and their correction remain in [VALIDATION.md](VALIDATION.md). Shortened/assisted fixtures do not establish rendering, balance, physical input or performance.
 
 `Scripts/ValidateScene.py`, executed by the editor Python runner, checks saved background collision and skeletal/instanced-material usage. Its `--repair` option intentionally changes those owned assets; omit it for readback validation. Results go to `Saved/Validation/SceneValidation.json`. The latest repair/readback is recorded in [VALIDATION.md](VALIDATION.md).
 
@@ -68,14 +64,9 @@ This runs the project through the installed editor executable. It is not a packa
 ./Scripts/Build.ps1 -Target Package
 ```
 
-The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Package 14 succeeded (UAT log: 0h 2m 8s, exit 0; native build 69.48 seconds).
+The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Historical Package 14 succeeded (UAT log: 0h 2m 8s, exit 0; native build 69.48 seconds).
 
-Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`. **Current identity: Package 14, source `f4bfec8bb955a9dab23300c55b1ca81c53442504`.** Later packaging replaces this shared path; compare the [current receipt](validation/2026-09-13-station-camera.json) before relying on a historical hash.
-
-| Artifact | Size | SHA-256 |
-| --- | --- | --- |
-| `Artifacts/Windows/SpaceSurvival.exe` launcher | 171,520 bytes | `619ac0779dceabf638639193efdea0733e3b4626dea623c07062f160f5abccf8` |
-| `Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe` game | 332,677,120 bytes | `4918a6a0906ca11622ae45928b494870fcf2c7e174df4dbf4748d932a610fb55` |
+Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`. Packaging replaces this shared path. Match the receipt linked from [Project State](PROJECT_STATE.md#source-build-and-release), including the inner game and containers; the launcher alone is not a build identity.
 
 The historical Package 13 receipt also binds all five .pak/.utoc/.ucas containers, all 120 project packages plus Engine Cube, 2,184 index rows, prerequisite provenance and copied acknowledgements. Package 13 Wave 10 passed its normal-timing fixture. Package 12 separately retains the preceding Station 1 transition benchmark; that earlier capture does not establish a new Package 13 Station 1 measurement. Exact measurements and their limits belong in [PERFORMANCE.md](PERFORMANCE.md); earlier package results remain historical.
 
@@ -87,7 +78,7 @@ Keep the entire archive directory together; the launcher alone is not the game. 
 
 ## Historical package checks
 
-Package 12/source3536 passed both normal-timing Station 5 and Wave 10 fixtures before the three follow-up fixes. Its [artifact](validation/2026-09-13-windows-gameplay-quality-package.json) and [performance](validation/2026-09-13-gameplay-quality-performance.json) receipts are immutable; the shared archive now contains Package 13.
+Package 12/source3536 passed both normal-timing Station 5 and Wave 10 fixtures before the three follow-up fixes. Its [artifact](validation/2026-09-13-windows-gameplay-quality-package.json) and [performance](validation/2026-09-13-gameplay-quality-performance.json) receipts are immutable; the shared archive has since been replaced; use the current Project State pointer.
 
 Package 11/source `6912684223f4a93f4010cd12201aee7fb42395f3` is historical. It built in 87.75 seconds, audited 110 project packages and exercised Station 5/Wave 10 scripted fixtures. Its inner executable was `10b9b664c9a9d7480d96412999dd9da0b33215bc423eaae77a395fde8c9ed32c`; that identity does not describe the current shared archive. See its [retained package receipt](validation/2026-09-13-windows-integrated-presentation-package.json).
 
@@ -113,7 +104,7 @@ Package 7 bundled runtime 14.50.35719.0 for compiler 14.51.36257. Package 13 ret
 
 The implemented packaging correction retains unique UAT logs under Artifacts/BuildLogs, then invokes `Scripts/BundlePrerequisites.ps1`. The helper binds to the game link response file and matching built/archive executable, corroborates the selected toolchain from the log, checks a compatible Microsoft-signed x64 runtime from that VS installation, copies only into the archive and writes `Artifacts/Windows/Prerequisites.json` with provenance. Missing compatibility fails clearly; no host installation or Engine modification occurs. ARM64 is outside this Windows x64 target.
 
-Package 13 independently verified the copy/receipt path, compatible runtime and Microsoft signatures. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing an archive, use its matching retained UAT log. The following is a historical Package 13 example and must not be used against Package 14:
+Package 13 independently verified the copy/receipt path, compatible runtime and Microsoft signatures. `Artifacts/Windows/Prerequisites.json` binds the selected toolchain, UAT log, link response file, game hash, signed runtime source and destination. To inspect candidate selection without changing an archive, use its matching retained UAT log. The following is a historical Package 13 example and must not be used against a newer archive:
 
 ```powershell
 ./Scripts/BundlePrerequisites.ps1 -BuildLog "./Artifacts/BuildLogs/WindowsPackage-bbe5c66ccd604a518d096ef1a8834121.log" -DryRun
@@ -140,7 +131,7 @@ Banking follows steering/lateral movement. Settings expose independent mouse/con
 
 Package 6 native clicks saved mouse/controller sensitivity 1.2. After normal close/relaunch the isolated Controls menu displayed both 1.2. This verifies persistence, not comfortable steering response.
 
-Normal shell/settings menus pause flight. Depot/reward panels remain live. Their menu controls are consumed separately from flight controls; this recent behavior needs actual input verification.
+Normal shell/settings menus pause flight. The depot now uses an aboard-ship magnetic service lock (up to 20 seconds); closing its panel releases the ship, and mooring grants no wave progress. Reward panels retain live flight. Physical-device menu behavior remains open in ISS-13 / PT-08 and PT-16.
 
 ## Local saves
 
