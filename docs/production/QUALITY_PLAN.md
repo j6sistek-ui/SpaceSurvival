@@ -8,6 +8,8 @@ The owner reports that the game feels generic and stale and that the current gra
 
 ## Start here
 
+- [Whole-project solution catalog](SOLUTION_CATALOG.md): current resource/candidate register across all 47 work packages, including useful later options. This quality plan's September 13 baseline remains historical; use the catalog and project state for later resource/integration evidence.
+
 - [Owner playtest findings](OWNER_FEEDBACK.md): entry-level handling baseline and unresolved event, contract, station and combat clarity reports.
 
 - [47 work packages](WORK_PACKAGES.md): each element's needs, proposed owner, source strategy, dependencies and acceptance.

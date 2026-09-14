@@ -1,5 +1,7 @@
 # Fab candidates assessed 2026-09-14
 
+Historical focused assessment. Use [SOLUTION_CATALOG.md](SOLUTION_CATALOG.md) for current whole-project value, evaluation timing and retained later uses, including newer candidates. A product that did not help the immediate atmosphere repair can still provide valuable region, landmark or other Phase 1 content.
+
 Read-only assessment of the owner's five supplied listings. No purchase, installation or project benchmark was performed. Compatibility below is the publisher's current declared range, not our validation. The current combined environment does not require another purchase.
 
 | Candidate | Specific contribution | Overlap / constraints | Decision |

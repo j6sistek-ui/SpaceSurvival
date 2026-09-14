@@ -1,5 +1,12 @@
 # SpaceSurvival continuity
 
+[SOLUTION CATALOG]
+- 2026-09-14T19:41Z [USER] Assess/catalog kits against the entire scoped game and desired direction, including changing ambient regions, flight/controls, combat/impacts, effects, NPCs and enemy craft/flight. Retain useful later solutions; active-task overlap alone is not a rejection criterion. Later 14 wishlist screenshots represent saved alternatives with overlap, not a buy-all list.
+- 2026-09-14T19:41Z [CODE] Documentation-only codex/solution-catalog from 01054cc: canonical docs/production/SOLUTION_CATALOG.md maps all 47 WBS packages; separates acquisition, evaluation, whole-game value and timing; preserves unreviewed wishlist leads and open specialist/system needs. AGENTS and planning indexes point to it. No game/assets/release/acceptance changes.
+- 2026-09-14T19:41Z [TOOL] Etherion Asteroids listing/gallery/specs inspected: themed silhouettes/materials, LODs, declared UE5.8. Advertised 53 asteroids conflicts with 45 unique meshes and vertex buckets totaling 54; exact counts UNCONFIRMED. High regional-variety candidate, not acquired or runtime-tested. Space Maps V2 retained for destination landmarks. Source facts dated in catalog.
+
+- 2026-09-14T19:41Z [TOOL] Catalog validation:64 unique records (including unresolved inventory), all47 WBS IDs mapped,14 local links and15 Fab listing-ID formats checked; independent read-only review corrected unsupported B08/B09 technical claims to require refresh. Six Markdown files only; no Unreal build/test required or run. Ready for documentation-only PR against codex/asset-refresh, no merge.
+
 [SKILLS REVIEW HANDOFF]
 - 2026-09-14T02:19Z [USER] Owner challenged selective catalog coverage. Supersedes the initial selection: all 73 SKILL.md entrypoints in pinned UnrealXu/Buckley snapshots were read; applicability is 34 Direct, 19 Selective, 4 Deferred, 16 Not needed. Counts describe overlapping guidance, not missing systems or game completion.
 - 2026-09-14T02:19Z [CODE] Expanded isolated guidance branch to nine discoverable skills (eight MIT imports plus original gameplay review), original work-area guide and complete CATALOG_AUDIT.md. Buckley bodies remain linked because redistribution grant is UNCONFIRMED. Corrected generic Blueprint/UI/save assumptions; no executable helpers or MCP activation.
