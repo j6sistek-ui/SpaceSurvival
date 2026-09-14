@@ -1,5 +1,6 @@
 #include "SSAmbientPresentation.h"
 #include "SSShip.h"
+#include "SSShipPresentation.h"
 #include "SSSpaceLookData.h"
 #include "Components/SkyLightComponent.h"
 #include "Engine/TextureCube.h"
@@ -177,7 +178,10 @@ void ASSAmbientPresentation::Follow(AActor *Actor)
             Rear = Bounds.Min.X + 10.f;
             Side = Bounds.GetExtent().Y * .55f;
         }
-        Trail->SetRelativeLocation(FVector(Rear, Index == 0 ? -Side : Side, 10.f));
+        FVector ExhaustPosition(Rear, Index == 0 ? -Side : Side, 10.f);
+        if (Ship && Ship->Presentation)
+            Ship->Presentation->TryGetExhaustLocalPosition(Index, ExhaustPosition);
+        Trail->SetRelativeLocation(ExhaustPosition);
         Trail->SetRelativeRotation(FRotator::ZeroRotator);
     }
     RestartTrails = true;
@@ -236,8 +240,12 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
     const auto *Ship = Cast<ASSShip>(Followed.Get());
     const bool TrailsVisible =
         Active && Ship && !Ship->IsMoored() && TrailsAvailable && TrailEnabled.GetValueOnGameThread() != 0;
-    for (const auto &Trail : EngineTrails)
+    for (int32 Index = 0; Index < EngineTrails.Num(); ++Index)
     {
+        const auto &Trail = EngineTrails[Index];
+        FVector ExhaustPosition;
+        if (Ship && Ship->Presentation && Ship->Presentation->TryGetExhaustLocalPosition(Index, ExhaustPosition))
+            Trail->SetRelativeLocation(ExhaustPosition);
         if (TrailsVisible)
         {
             if (RestartTrails || !Trail->IsActive())

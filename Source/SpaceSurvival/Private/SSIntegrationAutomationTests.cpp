@@ -2,6 +2,7 @@
 #include "Misc/PackageName.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSStationVisualLayout.h"
 #include "SSWorldActors.h"
 #include "SSPhase1Data.h"
 #include "Animation/AnimSequence.h"
@@ -94,6 +95,7 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
             // Default selection exercises installed licensed content or its real absence fallback.
             // Actor-local opt-out separately proves both legacy and bare presentation branches.
             Hub->bUseLicensedPresentation = Presentation == 0;
+            Hub->bUseEditableLayout = false; // This fixture covers the three native presentation fallbacks.
             const bool UseLicensed = Presentation == 0 && LicensedAvailable;
             const bool UseShell = Presentation != 2 && !UseLicensed;
             const bool HasPresentation = UseLicensed || UseShell;
@@ -498,7 +500,7 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
         TEXT("EXIT_CONTACT actor=%s floorZ=%.6f capsuleGap=%.6f meshZ=%.6f"), *Contact.ToString(), Floor.ImpactPoint.Z,
         Contact.Z - Floor.ImpactPoint.Z - Walker->GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
         Walker->GetMesh()->GetRelativeLocation().Z));
-    auto CheckVisibleSole = [this, Walker, Hub, PilotMesh](const TCHAR *Stage)
+    auto CheckVisibleSole = [this, Walker, Hub, PilotMesh, Floor](const TCHAR *Stage)
     {
         const auto *RenderData = PilotMesh->GetResourceForRendering();
         const auto *Weights = Walker->GetMesh()->GetSkinWeightBuffer(0);
@@ -522,24 +524,42 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
                 Lowest = WorldVertex;
         }
         double PlateZ = -UE_DOUBLE_BIG_NUMBER;
-        TInlineComponentArray<UInstancedStaticMeshComponent *> Batches;
-        Hub->GetComponents(Batches);
-        for (auto *Batch : Batches)
-            if (Batch->GetFName() == TEXT("TexturedDeckPanels") && Batch->GetStaticMesh())
+        FString PlateName;
+        auto CheckPanel = [&PlateZ, &PlateName, Lowest, Floor](UStaticMeshComponent *Mesh, const FTransform &Transform)
+        {
+            if (!Mesh->GetStaticMesh() || !Mesh->IsVisible() || Mesh->bHiddenInGame ||
+                FVector::DotProduct(Transform.GetUnitAxis(EAxis::Z), FVector::UpVector) < .99)
+                return;
+            const FVector Local = Transform.InverseTransformPosition(Lowest);
+            const FBox Bounds = Mesh->GetStaticMesh()->GetBoundingBox();
+            if (Local.X < Bounds.Min.X || Local.X > Bounds.Max.X || Local.Y < Bounds.Min.Y || Local.Y > Bounds.Max.Y)
+                return;
+            const double Top = Transform.TransformPosition(FVector(Local.X, Local.Y, Bounds.Max.Z)).Z;
+            // Ignore walls/ceiling; the selected visible surface must lie near the real collision floor.
+            if (FMath::Abs(Top - Floor.ImpactPoint.Z) <= 20. && Top > PlateZ)
             {
+                PlateZ = Top;
+                PlateName = Mesh->GetName() + TEXT(":") + Mesh->GetStaticMesh()->GetPathName();
+            }
+        };
+        TInlineComponentArray<UStaticMeshComponent *> Panels(Hub);
+        if (auto *Layout = Hub->GetVisualLayout())
+            Layout->GetComponents(Panels, false);
+        for (auto *Panel : Panels)
+            if (auto *Batch = Cast<UInstancedStaticMeshComponent>(Panel))
                 for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
                 {
                     FTransform Instance;
                     Batch->GetInstanceTransform(Index, Instance, true);
-                    const FVector Local = Instance.InverseTransformPosition(Lowest);
-                    const FBox Bounds = Batch->GetStaticMesh()->GetBoundingBox();
-                    if (Local.X >= Bounds.Min.X && Local.X <= Bounds.Max.X && Local.Y >= Bounds.Min.Y &&
-                        Local.Y <= Bounds.Max.Y)
-                        PlateZ =
-                            FMath::Max(PlateZ, Instance.TransformPosition(FVector(Local.X, Local.Y, Bounds.Max.Z)).Z);
+                    CheckPanel(Batch, Instance);
                 }
-            }
-        if (!TestTrue(TEXT("Visible sole resolves to an actual textured floor panel"), PlateZ > -UE_DOUBLE_BIG_NUMBER))
+            else
+                CheckPanel(Panel, Panel->GetComponentTransform());
+        AddInfo(FString::Printf(TEXT("EXIT_VISIBLE_DECK %s sole=%s collisionZ=%.6f panel=%s panelZ=%.6f layout=%s"),
+                                Stage, *Lowest.ToString(), Floor.ImpactPoint.Z, *PlateName, PlateZ,
+                                *GetNameSafe(Hub->GetVisualLayout())));
+        if (!TestTrue(TEXT("Visible sole resolves to an actual visible floor mesh beneath it"),
+                      PlateZ > -UE_DOUBLE_BIG_NUMBER))
             return;
         AddInfo(FString::Printf(TEXT("EXIT_SOLE %s vertices=%d soleZ=%.6f plateZ=%.6f clearance=%.6f"), Stage,
                                 Vertices.Num(), Lowest.Z, PlateZ, Lowest.Z - PlateZ));

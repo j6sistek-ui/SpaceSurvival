@@ -63,6 +63,7 @@ bool FSSVisualStationClearance::RunTest(const FString &)
             return false;
         Hub->SetActorScale3D(FVector(1.25f));
         Hub->bUseLicensedPresentation = true;
+        Hub->bUseEditableLayout = false; // Verify the native fallback independently of owner-authored content.
         Hub->BuildHub(Home);
         const FString Context = Home ? TEXT("Home hangar: ") : TEXT("Service station: ");
         TInlineComponentArray<UStaticMeshComponent *> Batches;

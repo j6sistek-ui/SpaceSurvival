@@ -52,9 +52,18 @@ void USSShipPresentation::LoadModuleAssets()
             Names.Add(FString::Printf(TEXT("SM_Upgrade%s%d"), Track, Tier));
     Names.Add(TEXT("SM_UtilityVector"));
     Names.Add(TEXT("SM_UtilityCooling"));
+    for (const TCHAR *Track :
+         {TEXT("Hull"), TEXT("Shield"), TEXT("Engine"), TEXT("Thrusters"), TEXT("Laser"), TEXT("Cannon")})
+        for (int32 Tier = 2; Tier <= 5; ++Tier)
+            Names.Add(FString::Printf(TEXT("SM_UpgradeHavolk%s%d"), Track, Tier));
+    Names.Add(TEXT("SM_UtilityHavolkVector"));
+    Names.Add(TEXT("SM_UtilityHavolkCooling"));
     for (const FString &Name : Names)
     {
-        const FString Path = TEXT("/Game/SpaceSurvival/Licensed/ShipVisualPass/Meshes/") + Name;
+        const FString Path =
+            FString(Name.Contains(TEXT("Havolk")) ? TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/")
+                                                  : TEXT("/Game/SpaceSurvival/Licensed/ShipVisualPass/Meshes/")) +
+            Name;
         if (FPackageName::DoesPackageExist(Path))
             ModuleAssets.Add(Name, LoadObject<UStaticMesh>(nullptr, *(Path + TEXT(".") + Name)));
     }
@@ -67,18 +76,44 @@ void USSShipPresentation::TickComponent(float DeltaTime, ELevelTick TickType,
     Refresh();
 }
 
+bool USSShipPresentation::TryGetExhaustLocalPosition(int32 SideIndex, FVector &Position) const
+{
+    if (!Hull || !Hull->GetStaticMesh() || Hull->GetStaticMesh()->GetName() != TEXT("SM_PlayerHavolkStarter"))
+        return false;
+    // Native-import-verified nacelle axes. Clear the actual displayed rear
+    // casing, including larger purchased tiers; the two trail count is fixed.
+    float Rear = Hull->GetStaticMesh()->GetBoundingBox().Min.X - 5.f;
+    if (Modules.IsValidIndex(2) && Modules[2] && Modules[2]->IsVisible() && Modules[2]->GetStaticMesh())
+        Rear = Modules[2]->GetStaticMesh()->GetBoundingBox().Min.X - 5.f;
+    Position = FVector(Rear, SideIndex == 0 ? -102.f : 102.f, 10.f);
+    return true;
+}
+
+bool USSShipPresentation::TryGetMuzzleWorldPosition(FVector &Position) const
+{
+    if (!Hull || !Hull->GetStaticMesh() || Hull->GetStaticMesh()->GetName() != TEXT("SM_PlayerHavolkStarter") ||
+        !Modules.IsValidIndex(4) || !Modules[4] || !Modules[4]->IsVisible() || !Modules[4]->GetStaticMesh())
+        return false;
+    // Flash at the visible barrel. Authoritative traces/projectiles retain
+    // their existing origin and aim calculation in ASSShip::Fire.
+    const float Tip = Modules[4]->GetStaticMesh()->GetBoundingBox().Max.X + 2.f;
+    Position = Modules[4]->GetComponentTransform().TransformPosition(FVector(Tip, 0.f, -25.f));
+    return true;
+}
+
 void USSShipPresentation::Refresh()
 {
     const auto *GI = GetWorld() ? GetWorld()->GetGameInstance<USSGameInstance>() : nullptr;
     if (!GI || !Hull || Modules.Num() != 6)
         return;
     const auto &Run = GI->Session.run;
-    // Keep the separate closed-canopy owner trial untouched. These attachments
-    // are fitted to the two original open-cockpit player hulls only.
+    // The separate owner trial stays independent. Each supported hull uses
+    // its own measured fittings, with no gameplay or equipment changes.
     const UStaticMesh *Mesh = Hull->GetStaticMesh();
+    const bool Havolk = Mesh && Mesh->GetName() == TEXT("SM_PlayerHavolkStarter");
     const bool SupportedHull =
         Run.active && Mesh &&
-        (Mesh->GetName() == TEXT("SM_AcornShipGripFit") || Mesh->GetName() == TEXT("SM_SwiftCandidateV1"));
+        (Havolk || Mesh->GetName() == TEXT("SM_AcornShipGripFit") || Mesh->GetName() == TEXT("SM_SwiftCandidateV1"));
     const TCHAR *Tracks[] = {TEXT("Hull"), TEXT("Shield"), TEXT("Engine"), TEXT("Thrusters"), TEXT("Laser")};
     for (int32 I = 0; I < 6; ++I)
     {
@@ -89,6 +124,8 @@ void USSShipPresentation::Refresh()
             if (Tier > 1)
             {
                 FString Track = I == 4 && Run.weapon == SS::Weapon::HeavyCannon ? TEXT("Cannon") : Tracks[I];
+                if (Havolk)
+                    Track = TEXT("Havolk") + Track;
                 if (I < 2 && Mesh->GetName() == TEXT("SM_SwiftCandidateV1"))
                     Track += TEXT("Swift");
                 Name = FString::Printf(TEXT("SM_Upgrade%s%d"), *Track, Tier);
@@ -97,9 +134,9 @@ void USSShipPresentation::Refresh()
         else if (SupportedHull)
         {
             if (Run.utility == SS::Utility::VectorThrusters)
-                Name = TEXT("SM_UtilityVector");
+                Name = Havolk ? TEXT("SM_UtilityHavolkVector") : TEXT("SM_UtilityVector");
             else if (Run.utility == SS::Utility::OverdriveCooling)
-                Name = TEXT("SM_UtilityCooling");
+                Name = Havolk ? TEXT("SM_UtilityHavolkCooling") : TEXT("SM_UtilityCooling");
         }
         if (SelectedAssets[I] != Name)
         {

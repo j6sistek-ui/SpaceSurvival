@@ -81,6 +81,11 @@ const TCHAR *ASSShip::HullAssetPath(SS::Ship Kind)
     if (Kind == SS::Ship::Starter && FParse::Param(FCommandLine::Get(), TEXT("SSShipRefresh")) &&
         FPackageName::DoesPackageExist(TEXT("/Game/SpaceSurvival/ShipRefresh/SM_LudoStarter")))
         return TEXT("/Game/SpaceSurvival/ShipRefresh/SM_LudoStarter.SM_LudoStarter");
+    if (Kind == SS::Ship::Starter &&
+        FPackageName::DoesPackageExist(
+            TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/SM_PlayerHavolkStarter")))
+        return TEXT(
+            "/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/SM_PlayerHavolkStarter.SM_PlayerHavolkStarter");
     return Kind == SS::Ship::Agile ? TEXT("/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1.SM_SwiftCandidateV1")
                                    : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit");
 }
@@ -103,8 +108,13 @@ void ASSShip::BeginPlay()
     Presentation->SetHull(HullMesh);
     Pilot->SetSkeletalMesh(
         LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
-    Pilot->SetVisibility(!HullMesh->GetStaticMesh() || !HullMesh->GetStaticMesh()->GetPathName().StartsWith(
-                                                           TEXT("/Game/SpaceSurvival/ShipRefresh/")));
+    const auto *LoadedHull = HullMesh->GetStaticMesh().Get();
+    const bool ClosedCockpit =
+        LoadedHull &&
+        (LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/ShipRefresh/")) ||
+         LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/")));
+    // Preserve the animated component and its exit-pose handoff under the closed hull.
+    Pilot->SetVisibility(!ClosedCockpit);
     Pilot->PlayAnimation(
         LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit")), true);
     EngineAudio->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Engine.Engine")));

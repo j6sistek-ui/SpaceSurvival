@@ -1,4 +1,6 @@
 #include "SSVFXPresentation.h"
+#include "SSShip.h"
+#include "SSShipPresentation.h"
 #include "Components/SceneComponent.h"
 #include "Dom/JsonObject.h"
 #include "Engine/World.h"
@@ -166,6 +168,10 @@ void USSCombatVFXSubsystem::PlayMuzzle(AActor *Source, FVector Position, FVector
 {
     const ESSCombatVFX Kind =
         !bFromPlayer ? ESSCombatVFX::EnemyMuzzle : (bHeavy ? ESSCombatVFX::CannonMuzzle : ESSCombatVFX::RapidMuzzle);
+    if (bFromPlayer)
+        if (const auto *Ship = Cast<ASSShip>(Source))
+            if (Ship->Presentation)
+                Ship->Presentation->TryGetMuzzleWorldPosition(Position);
     Spawn(Kind, Position, Direction.Rotation(), Source);
 }
 void USSCombatVFXSubsystem::PlayImpact(FVector Position, FVector Normal, bool bFromPlayer, bool bHeavy)

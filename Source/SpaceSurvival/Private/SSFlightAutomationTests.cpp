@@ -2,10 +2,12 @@
 #include "SSGameInstance.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
+#include "SSShipPresentation.h"
 #include "SSDistantAsteroids.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "HAL/IConsoleManager.h"
 #include "Misc/ScopeExit.h"
+#include "Misc/PackageName.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Camera/CameraComponent.h"
@@ -167,8 +169,13 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSShipPresentationSelection, "SpaceSurvival.In
 bool FSSShipPresentationSelection::RunTest(const FString &)
 {
     // Independent expected assets: do not obtain these values from the production selection helper.
-    const TCHAR *ExpectedHullPaths[] = {TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit"),
-                                        TEXT("/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1.SM_SwiftCandidateV1")};
+    const bool HasPrivateStarter = FPackageName::DoesPackageExist(
+        TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/SM_PlayerHavolkStarter"));
+    const TCHAR *ExpectedHullPaths[] = {
+        HasPrivateStarter ? TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/"
+                                 "SM_PlayerHavolkStarter.SM_PlayerHavolkStarter")
+                          : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit"),
+        TEXT("/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1.SM_SwiftCandidateV1")};
     const SS::Ship Kinds[] = {SS::Ship::Starter, SS::Ship::Agile};
     for (int32 Index = 0; Index < 2; ++Index)
     {
@@ -189,10 +196,56 @@ bool FSSShipPresentationSelection::RunTest(const FString &)
         TestTrue(Label + TEXT(" display hull and pilot cannot add blocking collision"),
                  Hull->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
                      Pilot->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
+        TestEqual(Label + TEXT(" only the private closed starter hides its flight pilot"), Pilot->IsVisible(),
+                  !(Index == 0 && HasPrivateStarter));
         TestTrue(Label + TEXT(" retains the authored pilot mount and constant scale"),
                  Pilot->GetAttachParent() == Hull && Pilot->GetRelativeLocation().Equals(FVector(-15, 0, 72), .001) &&
                      Pilot->GetRelativeRotation().Equals(FRotator(0, -90, 0), .001) &&
                      Pilot->GetRelativeScale3D().Equals(FVector(1.5), .001));
+        if (Index == 0 && HasPrivateStarter)
+        {
+            auto *Presentation = Fixture.Ship->FindComponentByClass<USSShipPresentation>();
+            if (!TestNotNull(TEXT("Private Starter has its real module presentation"), Presentation))
+                return false;
+            FVector CosmeticMount;
+            TestTrue(TEXT("Base exhaust clears the imported left nacelle outlet"),
+                     Presentation->TryGetExhaustLocalPosition(0, CosmeticMount) &&
+                         CosmeticMount.Equals(FVector(-235.f, -102.f, 10.f), .01));
+            auto &Run = Fixture.Instance->Session.run;
+            Run.tiers = {{5, 5, 5, 5, 5}};
+            Run.utility = SS::Utility::VectorThrusters;
+            Presentation->TickComponent(0.f, LEVELTICK_All, nullptr);
+            TestTrue(TEXT("Tier-V exhaust clears the larger right nacelle casing"),
+                     Presentation->TryGetExhaustLocalPosition(1, CosmeticMount) &&
+                         CosmeticMount.Equals(FVector(-240.5f, 102.f, 10.f), .01));
+            TestTrue(TEXT("Tier-V muzzle flash follows the visible ventral barrel tip"),
+                     Presentation->TryGetMuzzleWorldPosition(CosmeticMount) &&
+                         Hull->GetComponentTransform()
+                             .InverseTransformPosition(CosmeticMount)
+                             .Equals(FVector(246.f, 0.f, -25.f), .01));
+            int32 FittedModules = 0;
+            for (USceneComponent *Child : Hull->GetAttachChildren())
+                if (auto *Module = Cast<UStaticMeshComponent>(Child))
+                    if (Module->GetStaticMesh())
+                    {
+                        ++FittedModules;
+                        TestTrue(TEXT("Closed Starter loads its own fitted private modules"),
+                                 Module->GetStaticMesh()->GetPathName().StartsWith(
+                                     TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/")));
+                        TestTrue(TEXT("Each fitted module is visible and collisionless"),
+                                 Module->IsVisible() &&
+                                     Module->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
+                    }
+            TestEqual(TEXT("Five tier-V tracks and one utility are visible on the new hull"), FittedModules, 6);
+            Run.tiers = {{1, 1, 1, 1, 1}};
+            Run.utility = SS::Utility::None;
+            Presentation->TickComponent(0.f, LEVELTICK_All, nullptr);
+            TestFalse(TEXT("Tier-I retains the original shot-origin flash fallback"),
+                      Presentation->TryGetMuzzleWorldPosition(CosmeticMount));
+            for (USceneComponent *Child : Hull->GetAttachChildren())
+                if (auto *Module = Cast<UStaticMeshComponent>(Child))
+                    TestFalse(TEXT("Tier-I removes the optional upgrade presentation"), Module->IsVisible());
+        }
 
         auto *Station = Fixture.World->SpawnActor<ASSStation>();
         if (!TestNotNull(Label + TEXT(" creates an actual station actor"), Station))

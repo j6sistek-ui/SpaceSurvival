@@ -14,6 +14,8 @@ class SPACESURVIVAL_API USSShipPresentation : public UActorComponent
 public:
     USSShipPresentation();
     void SetHull(UStaticMeshComponent *InHull);
+    bool TryGetExhaustLocalPosition(int32 SideIndex, FVector &Position) const;
+    bool TryGetMuzzleWorldPosition(FVector &Position) const;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType,
                                FActorComponentTickFunction *ThisTickFunction) override;
 
