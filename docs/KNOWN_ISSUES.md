@@ -26,7 +26,7 @@ No other document maintains a separate active priority order. Solution catalog v
 
 Owner decision, September 14: the regular 3D contributor owns the hero and iconic starter ship long term. The lead owns Unreal integration, collision/scale/socket/material checks, gameplay testing and packaging. Supplied AI models and kitbash alternatives are provisional, not replacements for that contributor's design ownership.
 
-The owner intends to buy a modular ship kit for interim use and later ship variants. Exact pack/acquisition is UNCONFIRMED; Phase 1 still contains only the starter and scoped second ship. Future ship content stays deferred. ISS-02 owns art follow-up and ISS-14 the collaboration/storage setup; the collaborator's Blender-only versus Unreal-editing role is awaiting clarification.
+The owner intends to buy a modular ship kit for interim use and later ship variants. Exact pack/acquisition is UNCONFIRMED; Phase 1 still contains only the starter and scoped second ship. Future ship content stays deferred. ISS-02 owns art follow-up and ISS-14 the collaboration/storage setup; the owner confirmed the collaborator delivers model/texture/animation files only, not Unreal project edits. A private versioned Drive handoff is the proposed starting workflow; destination/access setup remains open.
 
 ## Implementation and verification issues
 
