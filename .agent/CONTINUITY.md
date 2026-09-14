@@ -104,3 +104,5 @@
 - 2026-09-14T13:12Z [TOOL] Prepared immutable0.1.15-alpha61files/1200116505bytes; butler publication running. Devlog drafted docs/ITCH_DEVLOG_0.1.15.md, browser signed-out; owner login requested, publication pending. Phase1PARTIAL.
 
 - 2026-09-14T13:16Z [TOOL] Supersedes upload-pending state: 0.1.15-alpha is verified ready on windows-alpha, upload19226459/build1978147, based on1975861. Butler reports539.30MiB patch (52.88% savings); actual client update/save preservation is unverified. Devlog remains drafted, not published: browser authentication required. Source/release changes pushed in PR6; PR3 conflict resolved. Next authorized work: atmosphere/station presentation; do not overwrite immutable released payload.
+
+- 2026-09-14T17:44Z [USER] Owner designates https://www.youtube.com/watch?v=y8I_wlOLkJU as visual target. [TOOL] Browser sampled opening/10s/20s flight and35s/40s station scenes; observations and scope boundaries recorded in docs/production/VIDEO_VISUAL_TARGET.md. Not full motion/audio review. Current release does not meet target; prioritize layered depth, hull/exhaust lighting, coherent industrial bay and character/terminal contact.
