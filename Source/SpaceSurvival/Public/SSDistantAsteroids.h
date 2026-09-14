@@ -42,6 +42,9 @@ private:
     FVector ParallaxOffset = FVector::ZeroVector;
     FQuat FieldBasis = FQuat::Identity;
     double MinimumAnchorSurface = 0.0;
+    TArray<TArray<FTransform>> RestTransforms;
+    TArray<TArray<FTransform>> AnimatedTransforms;
+    double SpinSeconds = 0.0;
     int32 BuiltCount = -1;
     bool bFlightVisible = false;
 };

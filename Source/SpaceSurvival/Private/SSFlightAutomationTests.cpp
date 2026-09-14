@@ -811,6 +811,19 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     TestTrue(TEXT("World rebase does not create false parallax travel"),
              FMath::IsNearlyEqual(Field->GetMinimumSurfaceDistance(), BeforeShift, .01));
     TestTrue(TEXT("Rebased real instance bounds retain safety separation"), CheckDistance());
+    Count->Set(2000, Priority);
+    Field->Tick(1.f);
+    TestEqual(TEXT("Density is capped at 768 decorative instances"), Field->GetRockCount(), 768);
+    TestTrue(TEXT("Tumbling dense field keeps actual bounds outside weapon range"), CheckDistance());
+    Count->Set(0, Priority);
+    Field->Tick(0.f);
+    TestEqual(TEXT("Density zero removes every instance"), Field->GetRockCount(), 0);
+    for (const auto *Batch : Batches)
+        TestEqual(TEXT("Disabled batch has no residual instances"), Batch->GetInstanceCount(), 0);
+    Count->Set(384, Priority);
+    Field->Tick(1.f);
+    TestEqual(TEXT("Density can be restored without spawning gameplay actors"), Field->GetRockCount(), 384);
+    TestTrue(TEXT("Restored field retains conservative bounds"), CheckDistance());
     Field->SetFlightVisible(false);
     Fixture.Step();
     TestTrue(TEXT("Explicit station-visibility setter hides the field"), Field->IsHidden());

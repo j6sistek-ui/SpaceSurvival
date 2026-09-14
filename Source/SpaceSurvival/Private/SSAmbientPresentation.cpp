@@ -12,8 +12,8 @@
 
 namespace
 {
-constexpr int32 DustCount = 128;
-constexpr double DustHalfWidth = 3400.0; // Cube corners remain within 6000cm.
+constexpr int32 DustCount = 512;
+constexpr double DustHalfWidth = 2400.0; // Fine passing grains, distinct from gameplay debris.
 TAutoConsoleVariable<int32> DustEnabled(TEXT("ss.LocalDust"), 1,
                                         TEXT("Enable cosmetic local dust grains (0 disables)."));
 TAutoConsoleVariable<int32> CloudEnabled(TEXT("ss.AtmosphereClouds"), 0,
@@ -81,7 +81,7 @@ void ASSAmbientPresentation::BeginPlay()
     {
         Dust->SetStaticMesh(Cube);
         DustMaterial = UMaterialInstanceDynamic::Create(HullMaterial, this);
-        DustMaterial->SetVectorParameterValue(TEXT("Color"), FLinearColor(.18f, .21f, .24f));
+        DustMaterial->SetVectorParameterValue(TEXT("Color"), FLinearColor(.30f, .36f, .42f));
         DustMaterial->SetVectorParameterValue(TEXT("Tint"), FLinearColor::White);
         DustMaterial->SetScalarParameterValue(TEXT("Metallic"), 0.f);
         DustMaterial->SetScalarParameterValue(TEXT("Roughness"), .9f);
@@ -96,7 +96,7 @@ void ASSAmbientPresentation::BeginPlay()
             DustPositions.Add(FVector(Random.FRandRange(-DustHalfWidth, DustHalfWidth),
                                       Random.FRandRange(-DustHalfWidth, DustHalfWidth),
                                       Random.FRandRange(-DustHalfWidth, DustHalfWidth)));
-            DustSizes.Add(Random.FRandRange(1.f, 4.f));
+            DustSizes.Add(Random.FRandRange(1.5f, 5.f));
             DustTransforms.Add(FTransform(FRotator(Random.FRandRange(0.f, 180.f), Random.FRandRange(0.f, 180.f), 0.f),
                                           FVector::ZeroVector, FVector::ZeroVector));
         }
@@ -259,6 +259,6 @@ void ASSAmbientPresentation::UpdateDust(const FVector &Center, bool Visible)
         DustTransforms[Index].SetLocation(DustPositions[Index]);
         DustTransforms[Index].SetScale3D(FVector(DustSizes[Index] * Fade / 100.f));
     }
-    // One component submission/render-state update for all 128 grains.
+    // One component submission/render-state update for all grains.
     Dust->BatchUpdateInstancesTransforms(0, DustTransforms, true, true, Teleported);
 }

@@ -1,4 +1,5 @@
 #include "SSWorldActors.h"
+#include "SSAsteroidBurst.h"
 #include "SSAudio.h"
 #include "Components/AudioComponent.h"
 #include "SSGameInstance.h"
@@ -590,6 +591,8 @@ void ASSWorldBody::ReceiveWeaponHit(float Damage)
 void ASSWorldBody::OnDefeated()
 {
     PlayDestructionAudio();
+    if (Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid)
+        ASSAsteroidBurst::SpawnBurst(GetWorld(), GetActorLocation(), LinearVelocity, BodyRadius);
     const auto Definition = Content(this)->Hazard(Kind);
     if (Kind == ESSWorldKind::MediumAsteroid)
     {
