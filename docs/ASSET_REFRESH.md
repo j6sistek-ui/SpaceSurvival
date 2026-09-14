@@ -72,3 +72,7 @@ Two original corridor mesh slots were null: the monitor screen now receives `MI_
 The generic depot exterior has not been replaced by the downloaded standalone station GLBs. The optional ship has a closed canopy; cockpit visibility and an appropriate opening/exit animation require further art work. The existing 105cm forgiving flight collider also remains smaller than that trial hull. Ship fill lighting improves deep-shadow readability but does not establish final lighting quality.
 
 Final receipt: [2026-09-14-asset-refresh.json](validation/2026-09-14-asset-refresh.json). Final source milestone `1777db7`; package game SHA256 `70c78997babe5595cda3fb5b1bf6e1d625a6929deb7653b6897ae6061a3929fd`. Final packaged sequence succeeded with twelve captures, no save-slot writes and offscreen-only labeling. Archive size is 1,527,561,532 bytes across 53 files including development files and prerequisites. The 39-test report precedes the last lighting-only adjustment; that adjustment was compiled and checked in the packaged run.
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.

@@ -144,3 +144,7 @@ The owner permits substantial optimization of the supplied first-pass hero but h
 ## Station look input timing
 
 Walker look applies control rotation immediately after the controller polls input, because the base PlayerTick has already processed its rotation queue. Body yaw and movement share that view direction; backward/strafe movement keeps the chase camera behind the upright body. The existing collision-tested spring arm follows control rotation, with bounded pitch. Disembark input remains locked. See [station camera repair](STATION_CAMERA.md).
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.

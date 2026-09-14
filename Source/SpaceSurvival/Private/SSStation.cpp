@@ -1,5 +1,6 @@
 #include "SSStation.h"
 #include "SSShip.h"
+#include "Misc/PackageName.h"
 #include "SSStationPoseTransition.h"
 #include "SSAudio.h"
 #include "SSGameInstance.h"
@@ -111,6 +112,20 @@ void ASSStation::BuildHub(bool bHome)
         Shell->SetCanEverAffectNavigation(false);
         Shell->RegisterComponent();
         Geometry.Add(Shell);
+    }
+    // Licensed exterior mass sits beyond the rear wall; the dock and walkable bay retain their collision.
+    const TCHAR *ExteriorPath = TEXT("/Game/SpaceSurvival/Licensed/StationExterior/SM_StationExterior");
+    if (FPackageName::DoesPackageExist(ExteriorPath))
+    {
+        auto *Exterior = AddMesh(FVector(7000, 0, 3500), FVector(1), ExteriorPath, nullptr, false);
+        Exterior->SetRelativeRotation(FRotator(0, 90, 0));
+        Exterior->SetCastShadow(false);
+        Exterior->SetCanEverAffectNavigation(false);
+        // The exterior is reachable during manual approach. A conservative solid
+        // envelope prevents flying through it without narrowing the existing bay.
+        auto *ExteriorCollision = AddMesh(FVector(7000, 0, 3500), FVector(71.42f, 100.f, 76.62f), Cube, Hull, true);
+        ExteriorCollision->SetVisibility(false);
+        ExteriorCollision->SetCastShadow(false);
     }
     auto AddBoundary = [this, Cube, Hull, ShellMesh, LicensedShell](FVector Position, FVector Scale)
     {

@@ -62,3 +62,16 @@
 Earlier fixture failures remain historical evidence, not current failing results. The first docking regression incorrectly counted every collidable mesh as a boundary cube: the actual 25 includes 16 deck/boundary cubes, seven service consoles and two crates. That test-only count was removed; the existing station regression still checks exact boundary geometry, and all docking behavior assertions remain. The earlier journey harness crash does not establish a production-game crash. Latest editor builds succeeded; newer-than-preferred MSVC and engine-header C4996 warnings remain.
 
 No multiplayer, Steamworks, cloud services, inventory, extra roster families or post-Wave-10 authored progression was added. No owner touch/feel/audio/retry result has been received; all 19 checks in [PLAYTEST_TOMORROW.md](PLAYTEST_TOMORROW.md) remain untouched.
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.
+
+## September 14 tester release limitations
+
+- Ambient cloud banks are not yet visibly effective; dust and background rocks do not meet the reference atmosphere by themselves. Earlier opaque volume rectangles were removed in the latest source.
+- Niagara engine wakes use provisional warm ribbons, with final color/nozzle fit pending.
+- Station exterior uses a conservative solid collision envelope; visual gaps are not traversable.
+- Optional Ludo ship is a trial with enclosed/hidden pilot; default visible-pilot ship remains available.
+- Review issue #7 flags live reward controller/keyboard capability differences and synchronous tutorial progress writes. Runtime impact and fixes remain pending; these are not completed repairs.
+- Natural ten-wave balance, physical controller comfort, listening, current representative 60 FPS, clean-PC installation and itch update/save preservation remain unverified.

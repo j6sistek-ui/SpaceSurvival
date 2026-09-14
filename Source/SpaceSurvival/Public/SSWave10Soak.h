@@ -32,6 +32,7 @@ private:
     void CaptureVisual(const TCHAR *Name, float StageSeconds);
     double FocusSince = 0;
     bool SawClimax = false, SawApproach = false;
+    bool Wave1 = false;
     bool Station5 = false, SawWormhole = false, SawDocking = false, SawExit = false;
     double WormholeSeconds = 0, DockingSeconds = 0, ExitSeconds = 0, StationIdleSeconds = 0;
     void Stop(const FString &Error);

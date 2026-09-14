@@ -1,5 +1,7 @@
 # Project state
 
+**2026-09-14 environment follow-up:** [Camera/environment refresh](docs/ENVIRONMENT_REFRESH.md) supersedes the earlier presentation snapshot below. Forty-two Unreal tests passed before the final volume-registration threshold adjustment; final Windows package/render status is in the new validation receipt. Phase 1 remains PARTIAL.
+
 **2026-09-14 asset refresh ready for owner review:** [Refresh record](docs/ASSET_REFRESH.md) supersedes earlier statements that no leg derivative was adopted. Licensed corridor/asteroid presentation, repaired walk/exit clips, depot and combat-feedback corrections are integrated. Latest Editor build and all 39 Unreal tests pass with zero test warnings. The offscreen Station 5 sequence reached docking, exit and Station 1 with 12 captures; this is visual/transition evidence, not FPS or natural gameplay acceptance. Optional Ludo ship packaged and exercised through the offscreen Station5 sequence. The final flight-fill/docking-light correction was compiled and verified in that package. Phase 1 remains PARTIAL.
 
 **Restricted tester distribution:** itch version `0.1.14-alpha` is uploaded and page-verified on `windows-alpha` (build 1975861). Selected releases are published manually through [the release workflow](docs/ITCH_RELEASES.md); clean-PC installation and A-to-B update/save preservation remain open. [Release record](docs/validation/2026-09-13-itch-first-release.json).

@@ -3,6 +3,7 @@
 #include "SSGameInstance.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "Camera/CameraComponent.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -31,16 +32,18 @@ CSV_DEFINE_CATEGORY(SpaceSurvivalSoak, true);
 
 namespace
 {
-bool ReadScenario(bool &Station5)
+bool ReadScenario(bool &Station5, bool &Wave1)
 {
     FString Scenario;
+    Wave1 = false;
     if (!FParse::Value(FCommandLine::Get(), TEXT("SSSoakScenario="), Scenario))
     {
         Station5 = false;
         return true;
     }
     Station5 = Scenario == TEXT("Station5");
-    return Station5 || Scenario == TEXT("Wave10");
+    Wave1 = Scenario == TEXT("Wave1");
+    return Station5 || Wave1 || Scenario == TEXT("Wave10");
 }
 bool IsIsolatedSoak(FString &Root, FString &Token)
 {
@@ -57,8 +60,8 @@ bool IsIsolatedSoak(FString &Root, FString &Token)
     Root = FPaths::GetPath(User);
     Token = FPaths::GetCleanFilename(Root);
     FGuid Guid;
-    bool Station5;
-    if (!ReadScenario(Station5))
+    bool Station5, Wave1;
+    if (!ReadScenario(Station5, Wave1) || (Wave1 && !FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"))))
         return false;
     FString Argument, Marker, RootArgument;
     auto &Features = IPlatformFeaturesModule::Get();
@@ -133,7 +136,7 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     Soak->Mode = InMode;
     Soak->Root = Root;
     Soak->Token = Token;
-    ReadScenario(Soak->Station5);
+    ReadScenario(Soak->Station5, Soak->Wave1);
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
     Soak->OffscreenVisuals = Soak->CaptureVisuals && FParse::Param(FCommandLine::Get(), TEXT("RenderOffscreen"));
     Soak->StartedAt = FPlatformTime::Seconds();
@@ -146,9 +149,8 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
            TEXT("ENDGAME_FIXTURE_WAITING_FOR_FOREGROUND: activate this owned game window; capture starts after two "
                 "focused seconds."));
     UE_LOG(LogTemp, Display,
-           TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY: token=%s process=%u; normal time; base durability "
-                "50000; Tier V; scripted input."),
-           *Token, FPlatformProcess::GetCurrentProcessId());
+           TEXT("RENDERED_FIXTURE_NOT_NATURAL_GAMEPLAY: token=%s process=%u wave1NormalStats=%d; scripted input."),
+           *Token, FPlatformProcess::GetCurrentProcessId(), Soak->Wave1);
 #endif
 }
 void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
@@ -178,6 +180,9 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             Row->SetNumberField(TEXT("animationSeconds"), Animation->GetCurrentTime());
         }
         Row->SetStringField(TEXT("hull"), GetPathNameSafe(GM->Ship->HullMesh->GetStaticMesh()));
+        Row->SetStringField(TEXT("cameraTransform"), GM->Ship->Camera->GetComponentTransform().ToHumanReadableString());
+        Row->SetNumberField(TEXT("horizontalFov"), GM->Ship->Camera->FieldOfView);
+        Row->SetBoolField(TEXT("pilotVisible"), GM->Ship->Pilot->IsVisible());
         Row->SetStringField(TEXT("pilotTransform"), Mesh->GetComponentTransform().ToHumanReadableString());
         Row->SetStringField(TEXT("leftWrist"), Mesh->GetSocketTransform(TEXT("L_Wrist")).ToHumanReadableString());
         Row->SetStringField(TEXT("rightWrist"), Mesh->GetSocketTransform(TEXT("R_Wrist")).ToHumanReadableString());
@@ -236,7 +241,10 @@ void ASSWave10Soak::Tick(float Dt)
     }
     auto *GM = Mode.Get();
     auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
-    if (!GI || FPlatformTime::Seconds() - StartedAt > (Station5 ? 240 : 180) ||
+    if (!GI ||
+        FPlatformTime::Seconds() - StartedAt > (Wave1      ? 90
+                                                : Station5 ? 240
+                                                           : 180) ||
         !FMath::IsNearlyEqual(GetWorld()->GetWorldSettings()->GetEffectiveTimeDilation(), 1.f) ||
         FApp::UseFixedTimeStep() || (GEngine && GEngine->bUseFixedFrameRate))
     {
@@ -249,29 +257,37 @@ void ASSWave10Soak::Tick(float Dt)
     if (!Started)
     {
         // Seed only test memory; retain normal durations, caps, pressure, damage and spawn rules.
-        S.tuning.baseHull = S.tuning.baseShield = 50000;
+        if (!Wave1)
+            S.tuning.baseHull = S.tuning.baseShield = 50000;
         if (!S.StartRun("5eade000000000000000000000000010"))
         {
             Stop(TEXT("Fixture run initialization failed."));
             return;
         }
-        S.run.tiers = {{5, 5, 5, 5, 5}};
-        S.run.utility = SS::Utility::OverdriveCooling;
-        S.run.wave = Station5 ? 4 : 8;
-        S.run.wavesCompleted = S.run.wave - 1;
-        S.run.depotSeen = S.run.salvageEventSeen = S.run.distressEventSeen = true;
-        S.FinishWave(); // Real breathing enters the next normal wave through Session::Tick.
+        if (!Wave1)
+        {
+            S.run.tiers = {{5, 5, 5, 5, 5}};
+            S.run.utility = SS::Utility::OverdriveCooling;
+            S.run.wave = Station5 ? 4 : 8;
+            S.run.wavesCompleted = S.run.wave - 1;
+            S.run.depotSeen = S.run.salvageEventSeen = S.run.distressEventSeen = true;
+            S.FinishWave(); // Real breathing enters the next normal wave through Session::Tick.
+        }
         S.run.hull = S.Stats().maxHull;
         S.run.shield = S.Stats().maxShield;
         GM->PreviousPhase = GM->PreviousWave = -1;
         GM->Director->ResetEncounter();
         GM->SpawnFlight(FVector(0, 0, 7000), FRotator::ZeroRotator);
-        GM->Announce(Station5 ? TEXT("AUTOMATED STATION 1 CAPTURE / SEEDED BUILD / NOT NATURAL GAMEPLAY")
-                              : TEXT("AUTOMATED ENDGAME CAPTURE / SEEDED BUILD / NOT NATURAL GAMEPLAY"));
+        GM->Announce(Wave1      ? TEXT("WAVE 1 VISUAL FIXTURE / NORMAL STARTER STATS / SCRIPTED INPUT")
+                     : Station5 ? TEXT("AUTOMATED STATION 1 CAPTURE / SEEDED BUILD / NOT NATURAL GAMEPLAY")
+                                : TEXT("AUTOMATED ENDGAME CAPTURE / SEEDED BUILD / NOT NATURAL GAMEPLAY"));
         Started = true;
         return; // GM phase counters were sampled before this one-time seed; mark only subsequent frames.
     }
-    if (!S.run.active || !IsValid(GM->Ship) || S.run.wave > (Station5 ? 5 : 10) ||
+    if (!S.run.active || !IsValid(GM->Ship) ||
+        S.run.wave > (Wave1      ? 1
+                      : Station5 ? 5
+                                 : 10) ||
         !FMath::IsNearlyEqual(S.tuning.climaxSeconds, 40.0) ||
         (Station5 &&
          (!FMath::IsNearlyEqual(S.tuning.wormholeSeconds, 8.0) || !FMath::IsNearlyEqual(S.tuning.dockingSeconds, 3.0))))
@@ -297,7 +313,7 @@ void ASSWave10Soak::Tick(float Dt)
     const bool Exiting =
         Station5 && S.run.phase == SS::Phase::Station && IsValid(GM->Walker) && GM->Walker->IsDisembarking();
     const int32 Stage = S.run.phase == SS::Phase::Station ? (Exiting ? 7 : 8) : int32(S.run.phase);
-    CSV_CUSTOM_STAT(SpaceSurvivalSoak, Scenario, Station5 ? 2 : 1, ECsvCustomStatOp::Set);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, Scenario, Wave1 ? 3 : Station5 ? 2 : 1, ECsvCustomStatOp::Set);
     CSV_CUSTOM_STAT(SpaceSurvivalSoak, Stage, Stage, ECsvCustomStatOp::Set);
     CSV_CUSTOM_STAT(SpaceSurvivalSoak, Phase, int32(S.run.phase), ECsvCustomStatOp::Set);
     CSV_CUSTOM_STAT(SpaceSurvivalSoak, Fixture, 1, ECsvCustomStatOp::Set);
@@ -311,6 +327,23 @@ void ASSWave10Soak::Tick(float Dt)
     CSV_CUSTOM_STAT(SpaceSurvivalSoak, Flankers, Kinds[7], ECsvCustomStatOp::Set);
     CSV_CUSTOM_STAT(SpaceSurvivalSoak, Projectiles, Kinds[8], ECsvCustomStatOp::Set);
     CSV_CUSTOM_STAT(SpaceSurvivalSoak, Pickups, Kinds[9], ECsvCustomStatOp::Set);
+    if (Wave1)
+    {
+        SawFlightWave |= S.run.wave == 1 && S.run.phase == SS::Phase::Flight;
+        const bool Turning = FlightSeconds >= 7 && FlightSeconds < 14;
+        GM->Ship->SetFlightInput(Turning ? FVector2D(.16, .035) : FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f,
+                                 FlightSeconds >= 14 && FlightSeconds < 21, FlightSeconds >= 21 && FlightSeconds < 28);
+        const float Times[] = {5.f, 12.f, 19.f, 25.f};
+        const TCHAR *Names[] = {TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")};
+        for (int32 Index = 0; Index < UE_ARRAY_COUNT(Times); ++Index)
+            if (FlightSeconds >= Times[Index])
+                CaptureVisual(Names[Index], float(FlightSeconds));
+        if (Threats > GM->Director->MaximumActiveThreats)
+            Stop(TEXT("Director active threat cap exceeded during Wave 1 visual fixture."));
+        else if (FlightSeconds >= 29)
+            Stop(SawFlightWave ? FString() : TEXT("Normal Wave 1 flight was not observed."));
+        return;
+    }
     SawFlightWave |= S.run.wave == (Station5 ? 5 : 9) && S.run.phase == SS::Phase::Flight;
     SawBreathing |= S.run.wave == (Station5 ? 4 : 9) && S.run.phase == SS::Phase::Breathing;
     if (S.run.wave == (Station5 ? 5 : 10) && S.run.phase == SS::Phase::Climax)
@@ -449,8 +482,9 @@ void ASSWave10Soak::WriteResultAndExit()
     const bool Success =
         Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && (AllFramesForeground || OffscreenVisuals);
     auto Result = MakeShared<FJsonObject>();
-    Result->SetStringField(TEXT("evidenceType"), Station5 ? TEXT("RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY")
-                                                          : TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY"));
+    Result->SetStringField(TEXT("evidenceType"), Wave1      ? TEXT("WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS")
+                                                 : Station5 ? TEXT("RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY")
+                                                            : TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY"));
     Result->SetBoolField(TEXT("success"), Success);
     Result->SetBoolField(TEXT("visualCaptureEnabled"), CaptureVisuals);
     Result->SetArrayField(TEXT("visualRequests"), VisualRecords);
@@ -465,9 +499,10 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("noSaveSlotsWritten"), SlotsUntouched);
     Result->SetBoolField(TEXT("allFixtureFramesForeground"), AllFramesForeground);
     Result->SetBoolField(TEXT("offscreenVisualOnly"), OffscreenVisuals);
-    Result->SetBoolField(TEXT("suitableForPerformanceFinding"), !CaptureVisuals && AllFramesForeground);
-    Result->SetStringField(TEXT("scenario"), Station5 ? TEXT("Station5") : TEXT("Wave10"));
-    Result->SetBoolField(TEXT("sawWave9"), !Station5 && SawFlightWave);
+    Result->SetBoolField(TEXT("suitableForPerformanceFinding"), !Wave1 && !CaptureVisuals && AllFramesForeground);
+    Result->SetStringField(TEXT("scenario"), Wave1 ? TEXT("Wave1") : Station5 ? TEXT("Station5") : TEXT("Wave10"));
+    Result->SetBoolField(TEXT("sawWave1"), Wave1 && SawFlightWave);
+    Result->SetBoolField(TEXT("sawWave9"), !Wave1 && !Station5 && SawFlightWave);
     Result->SetBoolField(TEXT("sawWave5"), Station5 && SawFlightWave);
     Result->SetBoolField(TEXT("sawWormhole"), SawWormhole);
     Result->SetBoolField(TEXT("sawDocking"), SawDocking);
@@ -485,7 +520,15 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetNumberField(TEXT("approachSimulationSeconds"), ApproachSeconds);
     Result->SetNumberField(TEXT("peakThreats"), PeakThreats);
     Result->SetNumberField(TEXT("wallSeconds"), FPlatformTime::Seconds() - StartedAt);
-    if (Station5)
+    if (Wave1)
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("Normal fresh Wave1 starter stats, TierI, no utility, real damage and Director. "
+                 "29 seconds scripted cruise/turn/boost/brake; no fire, forced survival or duration override. "
+                 "Screenshot-only evidence, not physical input, natural balance or performance acceptance. "
+                 "SSShipRefresh optionally selects candidate hull; each screenshot records actual asset and pilot "
+                 "visibility."));
+    else if (Station5)
         Result->SetStringField(
             TEXT("fixture"),
             TEXT("Seeded end of Wave4; starter/RapidLaser, Tier V, OverdriveCooling, base durability50000. Normal "

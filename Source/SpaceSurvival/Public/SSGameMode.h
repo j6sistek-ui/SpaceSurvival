@@ -4,6 +4,8 @@
 #include "GameFramework/PlayerController.h"
 #include "SSGameMode.generated.h"
 class ASSShip;
+class ASSDistantAsteroids;
+class ASSAmbientPresentation;
 class ASSStation;
 class ASSWalker;
 class USSSurvivalDirectorComponent;
@@ -94,6 +96,10 @@ private:
     bool bAutomatedSoakInput = false;
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
+    UPROPERTY()
+    TObjectPtr<ASSDistantAsteroids> DistantField;
+    UPROPERTY()
+    TObjectPtr<ASSAmbientPresentation> AmbientPresentation;
     UPROPERTY()
     TObjectPtr<ASSStation> Hub;
     UPROPERTY()

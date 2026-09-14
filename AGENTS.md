@@ -59,6 +59,7 @@ If a material deviation is technically required, document it explicitly.
 
 - Inspect the repository, available Unreal environment, dependencies, assets, build capability, and Git state before modifying implementation.
 - Prefer production-quality implementations over temporary hacks in core systems.
+- When an Unreal-specific issue stalls, consult the owner-provided [Unreal skills catalog](https://github.com/kevinpbuckley/unreal-engine-skills/tree/master/skills/core) and read the relevant skill before further trial-and-error. Validate version-specific advice against installed engine source; plugin-specific guidance does not authorize installing that plugin.
 - Keep systems modular and data-driven where practical.
 - Do not hide incomplete behavior behind placeholder success states.
 - Use subagents or parallel workstreams where useful, but one lead implementation context must own architectural coherence, integration, and final Definition-of-Done verification.

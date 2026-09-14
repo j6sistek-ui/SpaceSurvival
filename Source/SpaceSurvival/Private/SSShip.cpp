@@ -45,17 +45,21 @@ ASSShip::ASSShip()
     Pilot->SetRelativeScale3D(FVector(1.5f));
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ChaseBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 650.f;
-    CameraBoom->SocketOffset = FVector(0, 0, 175);
+    CameraBoom->TargetArmLength = 900.f;
+    CameraBoom->SocketOffset = FVector(0, 0, 125);
     CameraBoom->bDoCollisionTest = false;
     CameraBoom->bEnableCameraLag = true;
     CameraBoom->CameraLagSpeed = 9.f;
+    CameraBoom->CameraLagMaxDistance = 35.f;
+    CameraBoom->bUseCameraLagSubstepping = true;
+    CameraBoom->CameraLagMaxTimeStep = 1.f / 120.f;
     CameraBoom->bInheritRoll = false;
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ChaseCamera"));
     Camera->SetupAttachment(CameraBoom);
     Camera->FieldOfView = 80.f;
-    // Keep the prominent ship below the center sightline without widening the chase.
-    Camera->SetRelativeRotation(FRotator(2, 0, 0));
+    // Frame the entire banked hull below the sightline. The previous upward view
+    // clipped the rear hull even without lag at a 16:9 viewport.
+    Camera->SetRelativeRotation(FRotator(-4, 0, 0));
     // A restrained chase-side fill keeps the player silhouette readable in deep shadow.
     auto *ReadabilityLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("ShipReadabilityFill"));
     ReadabilityLight->SetupAttachment(RootComponent);
@@ -242,7 +246,8 @@ void ASSShip::Tick(float Dt)
     HullMesh->SetRelativeRotation(
         FMath::RInterpTo(HullMesh->GetRelativeRotation(), FRotator(-StrafeInput.Y * 5.f, 0, Bank), Dt, 6.f));
     CameraBoom->TargetArmLength =
-        FMath::FInterpTo(CameraBoom->TargetArmLength, Tuning->ChaseDistance + (S.run.boosting ? 110.f : 0.f), Dt, 3.f);
+        FMath::FInterpTo(CameraBoom->TargetArmLength,
+                         FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f), Dt, 3.f);
     Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? 86.f : 80.f, Dt, 3.f);
     if (GI->Session.settings.cameraShake && S.run.damageFeedback > 0)
         Camera->SetRelativeLocation(

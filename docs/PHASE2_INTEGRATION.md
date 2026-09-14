@@ -68,3 +68,7 @@ For every later system, add deterministic rules coverage, meaningful engine inte
 
 ## Asset refresh boundary (2026-09-14)
 Licensed presentation is optional and does not change the domain model. The Ludo hull is a command-line comparison only; do not treat it as a new ship unlock or approved visible-cockpit implementation. Magnetic service remains on-board, without a new station scene. No deferred Phase2 system was added. See ASSET_REFRESH.md.
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.

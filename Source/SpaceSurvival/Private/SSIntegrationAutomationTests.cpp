@@ -147,7 +147,10 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
                              Shell->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
                              !Shell->GetGenerateOverlapEvents() && !Shell->CanEverAffectNavigation());
             }
-            TestEqual(Label + TEXT(" keeps the deck plus all 15 physical boundary cubes"), SolidCubes.Num(), 16);
+            const bool HasExterior =
+                FPackageName::DoesPackageExist(TEXT("/Game/SpaceSurvival/Licensed/StationExterior/SM_StationExterior"));
+            TestEqual(Label + TEXT(" keeps the deck and 15 boundaries plus the optional exterior proxy"),
+                      SolidCubes.Num(), 16 + (HasExterior ? 1 : 0));
             if (!TestNotNull(Label + TEXT(" retains the solid deck"), Floor))
                 return false;
             TestTrue(Label + TEXT(" keeps the deck visible at its original scale"),

@@ -230,3 +230,7 @@ No owner hands-on pass has been received. Follow the single sequential [PLAYTEST
 Record date, commit/build/hash, device/settings, expected versus observed behavior and evidence. Complete the natural two-block route, both stations, all scoped weapons/upgrades/utilities/events/contracts, live depot shield service and range rejection, settings, UI suspension/Continue, ordinary and resumed death, unlocks and fresh-run reset. Include the current Station 2 boundary friction.
 
 Inspect animation/camera/feet, warning direction and non-color meaning, pickups, all UI scales and overlapping sounds. Follow [PERFORMANCE.md](PERFORMANCE.md) for measured performance. After death and the available boundary, record whether another run is immediately appealing and why. No automated count, package success or asset preview answers that question.
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.

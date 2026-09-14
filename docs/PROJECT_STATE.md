@@ -83,3 +83,7 @@ The remaining job is not limited to owner playtesting. Current fitted Starter/Sw
 Station 2 remains a live services/suspension boundary. Its summary and Save & Quit/relaunch passed native checks; disclosed discard gives no death XP/history. No formal victory, completion XP or owner-approved resolution of indefinite-run/slice semantics is implied.
 
 See [KNOWN_ISSUES.md](KNOWN_ISSUES.md), [ARCHITECTURE.md](ARCHITECTURE.md), [PERFORMANCE.md](PERFORMANCE.md) and [PHASE2_INTEGRATION.md](PHASE2_INTEGRATION.md).
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.

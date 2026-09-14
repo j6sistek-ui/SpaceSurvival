@@ -2,6 +2,10 @@
 #include "SSGameInstance.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
+#include "SSDistantAsteroids.h"
+#include "Components/InstancedStaticMeshComponent.h"
+#include "HAL/IConsoleManager.h"
+#include "Misc/ScopeExit.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Camera/CameraComponent.h"
@@ -16,6 +20,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
+#include "GameFramework/SpringArmComponent.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 namespace
@@ -566,7 +571,13 @@ bool FSSFlightMuzzleObstruction::RunTest(const FString &)
         if (!TestNotNull(Label + TEXT(" creates a camera-visible target"), Target) ||
             !TestNotNull(Label + TEXT(" creates a real damageable muzzle obstruction"), Blocker))
             return false;
-        Blocker->Configure(ESSWorldKind::SmallAsteroid, 60.f, 0.f);
+        // Derive obstruction size from the actual camera/muzzle parallax. A fixed
+        // 60cm blocker intersected both rays after the chase-camera framing repair.
+        const float RaySeparation =
+            FMath::PointDistToSegment(Blocker->GetActorLocation(), CameraOrigin, TargetPosition);
+        if (!TestTrue(Label + TEXT(" actual chase camera and muzzle have usable parallax"), RaySeparation > 10.f))
+            return false;
+        Blocker->Configure(ESSWorldKind::SmallAsteroid, RaySeparation * .4f, 0.f);
         // Geometry is independently checked before Fire: the elevated camera sees over the
         // blocker, while a shot converging from the unchanged muzzle must physically hit it.
         FCollisionQueryParams Query;
@@ -662,6 +673,148 @@ bool FSSProjectileRelativeMotion::RunTest(const FString &)
                 TestTrue(Label + TEXT(" preserves the unobstructed shot path"),
                          Shot->GetActorLocation().Equals(Origin + FVector(365, 0, 0), .01f));
         }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSFlightChaseFraming, "SpaceSurvival.Flight.ChaseFraming",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSFlightChaseFraming::RunTest(const FString &)
+{
+    for (int32 Hertz : {30, 60, 144})
+    {
+        FSSFlightWorld Fixture;
+        if (!Fixture.Initialize(*this))
+            return false;
+        auto *Ship = Fixture.Ship;
+        const UStaticMesh *Hull = Ship->HullMesh->GetStaticMesh();
+        if (!TestNotNull(TEXT("Use actual runtime hull for camera projection"), Hull))
+            return false;
+        const FBox Bounds = Hull->GetBoundingBox();
+        // Exercise the real spring arm/component tick, including acceleration,
+        // bank, boost transitions and heat-limited braking; never move the camera directly.
+        for (int32 Scenario = 0; Scenario < 5; ++Scenario)
+        {
+            Ship->SetFlightInput(Scenario == 3   ? FVector2D(1, .35)
+                                 : Scenario == 4 ? FVector2D(-1, -.35)
+                                                 : FVector2D::ZeroVector,
+                                 Scenario >= 3 ? FVector2D(.7, .4) : FVector2D::ZeroVector, Scenario == 2 ? -1.f : 0.f,
+                                 Scenario == 1, Scenario == 2);
+            for (int32 Frame = 0; Frame < Hertz * 2; ++Frame)
+            {
+                Fixture.Step(1.f / Hertz);
+                const FTransform View = Ship->Camera->GetComponentTransform();
+                const double TanHalfHorizontal = FMath::Tan(FMath::DegreesToRadians(Ship->Camera->FieldOfView * .5));
+                const double TanHalfVertical = TanHalfHorizontal / (16.0 / 9.0);
+                for (int32 Corner = 0; Corner < 8; ++Corner)
+                {
+                    const FVector Point(Corner & 1 ? Bounds.Max.X : Bounds.Min.X,
+                                        Corner & 2 ? Bounds.Max.Y : Bounds.Min.Y,
+                                        Corner & 4 ? Bounds.Max.Z : Bounds.Min.Z);
+                    const FVector Local =
+                        View.InverseTransformPosition(Ship->HullMesh->GetComponentTransform().TransformPosition(Point));
+                    const double X = .5 + Local.Y / (2.0 * Local.X * TanHalfHorizontal);
+                    const double Y = .5 - Local.Z / (2.0 * Local.X * TanHalfVertical);
+                    if (Local.X <= 0 || X < .02 || X > .98 || Y < .02 || Y > .98)
+                    {
+                        AddError(FString::Printf(
+                            TEXT("Hull clipped: %dHz scenario%d frame%d corner%d projection %.3f,%.3f depth%.1f"),
+                            Hertz, Scenario, Frame, Corner, X, Y, Local.X));
+                        return false;
+                    }
+                }
+                const FVector BoomForward = Ship->CameraBoom->GetComponentRotation().Vector();
+                const FVector SocketOffset =
+                    Ship->CameraBoom->GetComponentRotation().RotateVector(Ship->CameraBoom->SocketOffset);
+                const FVector LaggedAnchor = Ship->Camera->GetComponentLocation() +
+                                             BoomForward * Ship->CameraBoom->TargetArmLength - SocketOffset;
+                if (!TestTrue(TEXT("Actual spring-arm positional lag remains bounded"),
+                              FVector::Distance(LaggedAnchor, Ship->CameraBoom->GetComponentLocation()) <= 35.1))
+                    return false;
+                if (!TestTrue(TEXT("Manual weapon sight remains the rendered camera forward"),
+                              Ship->AimDirection().Equals(Ship->Camera->GetForwardVector(), .00001)))
+                    return false;
+            }
+        }
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDistantAsteroidIsolation, "SpaceSurvival.Flight.DistantAsteroidIsolation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDistantAsteroidIsolation::RunTest(const FString &)
+{
+    FSSFlightWorld Fixture;
+    if (!Fixture.Initialize(*this))
+        return false;
+    IConsoleVariable *Count = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
+    if (!TestNotNull(TEXT("Distant asteroid scalability control exists"), Count))
+        return false;
+    const int32 PreviousCount = Count->GetInt();
+    const EConsoleVariableFlags Priority = EConsoleVariableFlags(Count->GetFlags() & ECVF_SetByMask);
+    ON_SCOPE_EXIT
+    {
+        Count->Set(PreviousCount, Priority);
+    };
+    Count->Set(128, Priority);
+    auto *Field = Fixture.World->SpawnActor<ASSDistantAsteroids>();
+    if (!TestNotNull(TEXT("Spawn actual distant field"), Field))
+        return false;
+    Field->Follow(Fixture.Ship);
+    Field->SetFlightVisible(true);
+    TestFalse(TEXT("Dressing cannot be a weapon/damage world-body target"), Field->IsA(ASSWorldBody::StaticClass()));
+    TestFalse(TEXT("Dressing actor collision disabled"), Field->GetActorEnableCollision());
+    TArray<UInstancedStaticMeshComponent *> Batches;
+    Field->GetComponents(Batches);
+    if (!TestEqual(TEXT("Four actual mesh batches loaded"), Batches.Num(), 4))
+        return false;
+    int32 Instances = 0;
+    for (const auto *Batch : Batches)
+    {
+        TestTrue(TEXT("Every batch disables collision"),
+                 Batch->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
+        TestFalse(TEXT("Every batch disables overlaps"), Batch->GetGenerateOverlapEvents());
+        Instances += Batch->GetInstanceCount();
+    }
+    TestEqual(TEXT("Requested density creates bounded real instances"), Instances, 128);
+    auto CheckDistance = [&]()
+    {
+        for (const auto *Batch : Batches)
+        {
+            const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
+            for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+            {
+                FTransform Instance;
+                if (!Batch->GetInstanceTransform(Index, Instance, true))
+                    return false;
+                const FVector Center = Instance.TransformPosition(Bounds.Origin);
+                const double SurfaceDistance = FVector::Distance(Center, Fixture.Ship->GetActorLocation()) -
+                                               Bounds.SphereRadius * Instance.GetScale3D().GetAbsMax();
+                if (SurfaceDistance < Field->GetMinimumSurfaceDistance() - .1 ||
+                    SurfaceDistance <= Fixture.Ship->Tuning->WeaponRange)
+                    return false;
+            }
+        }
+        return true;
+    };
+    TestTrue(TEXT("Actual transformed mesh bounds stay outside the playable weapon range initially"), CheckDistance());
+    for (int32 Step = 0; Step < 160; ++Step)
+    {
+        Fixture.Ship->AddActorWorldOffset(FVector(5000, 1000, 500));
+        Fixture.Step();
+    }
+    TestTrue(TEXT("Long cumulative travel cannot reach decorative mesh bounds"), CheckDistance());
+    const double BeforeShift = Field->GetMinimumSurfaceDistance();
+    const FVector Shift(-700000, -100000, -60000);
+    Fixture.Ship->ApplyWorldOffset(Shift, true);
+    Field->ApplyWorldOffset(Shift, true);
+    Field->Tick(0.f);
+    TestTrue(TEXT("World rebase does not create false parallax travel"),
+             FMath::IsNearlyEqual(Field->GetMinimumSurfaceDistance(), BeforeShift, .01));
+    TestTrue(TEXT("Rebased real instance bounds retain safety separation"), CheckDistance());
+    Field->SetFlightVisible(false);
+    Fixture.Step();
+    TestTrue(TEXT("Explicit station-visibility setter hides the field"), Field->IsHidden());
+    AddInfo(TEXT("Visibility setter exercised only; this test does not establish GameMode station routing."));
     return true;
 }
 #endif

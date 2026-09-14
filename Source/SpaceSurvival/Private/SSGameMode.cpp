@@ -3,6 +3,8 @@
 #include "SSWave10Soak.h"
 #include "SSGameInstance.h"
 #include "SSShip.h"
+#include "SSDistantAsteroids.h"
+#include "SSAmbientPresentation.h"
 #include "SSStation.h"
 #include "Animation/PoseSnapshot.h"
 #include "SSHUD.h"
@@ -285,6 +287,12 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
     if (Ship)
         Ship->Destroy();
     Ship = GetWorld()->SpawnActor<ASSShip>(Location, Rotation);
+    if (!DistantField)
+        DistantField = GetWorld()->SpawnActor<ASSDistantAsteroids>();
+    DistantField->Follow(Ship);
+    if (!AmbientPresentation)
+        AmbientPresentation = GetWorld()->SpawnActor<ASSAmbientPresentation>();
+    AmbientPresentation->Follow(Ship);
     UGameplayStatics::GetPlayerController(this, 0)->Possess(Ship);
     Director->SetActive(true);
     ClosePanel();
@@ -410,6 +418,12 @@ void ASSGameMode::Tick(float Dt)
     if (!GI)
         return;
     auto &S = GI->Session;
+    if (DistantField)
+        DistantField->SetFlightVisible(S.run.phase == SS::Phase::Flight || S.run.phase == SS::Phase::Breathing ||
+                                       S.run.phase == SS::Phase::Climax);
+    if (AmbientPresentation)
+        AmbientPresentation->SetFlightVisible(S.run.phase == SS::Phase::Flight || S.run.phase == SS::Phase::Breathing ||
+                                              S.run.phase == SS::Phase::Climax);
     AnnouncementSeconds = FMath::Max(0.f, AnnouncementSeconds - Dt);
     bool Danger = false;
     if (Ship && S.IsFlying())
