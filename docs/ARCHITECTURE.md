@@ -1,5 +1,7 @@
 # SpaceSurvival Phase 1 architecture
 
+**2026-09-14 asset refresh ready for owner review:** [Refresh record](ASSET_REFRESH.md) supersedes earlier statements that no leg derivative was adopted. Licensed corridor/asteroid presentation, repaired walk/exit clips, depot and combat-feedback corrections are integrated. Latest Editor build and all 39 Unreal tests pass with zero test warnings. The offscreen Station 5 sequence reached docking, exit and Station 1 with 12 captures; this is visual/transition evidence, not FPS or natural gameplay acceptance. Optional Ludo ship packaged and exercised through the offscreen Station5 sequence. The final flight-fill/docking-light correction was compiled and verified in that package. Phase 1 remains PARTIAL.
+
 This document describes current source ownership and data flow. [PROJECT_STATE.md](PROJECT_STATE.md) records the latest build/commit/package boundary; [VALIDATION.md](VALIDATION.md) retains exact current and historical evidence. **Phase 1 remains PARTIAL.** The audited Package 13/source a628c7f archive includes station/sky/HUD and both gameplay correction batches. Subsequent projectile-contact, wreckage-budget and contract-feedback corrections passed the 33.08-second Editor build and 37-test Unreal suite on 2026-09-13 at 15:12:50 UTC (3.083320 seconds, zero test warnings/failures/not-run cases). The latest corrections are included in independently audited Package 13; its normal-timing Wave 10 capture and bounded native settings-selection check passed. See [gameplay quality](GAMEPLAY_QUALITY.md) and its [validation receipt](validation/2026-09-13-gameplay-fairness-followup.json); engine tests do not complete the 19 open [hands-on checks](PLAYTEST_TOMORROW.md).
 
 ## Ownership
@@ -11,6 +13,7 @@ The UE 5.8 project has one C++20 runtime module. Its deterministic domain also c
 | `SS::Session`, `Run`, `Account`, `Settings`, `Tuning` | Authoritative run phases, resource/damage rules, effective stats, economy, upgrades, utilities, contracts, score/XP/unlocks and strict codecs. No actors, rendering or file I/O |
 | `USSGameInstance` / `USSStoredData` | Session lifetime, three compatible SaveGame domains, serialization verification, suspension consumption and settings application |
 | `SSLocalSave` | Windows generic-backend staging, flushed byte verification and native replacement of an existing slot |
+| USSSpaceLookData, ASSAmbientPresentation, ASSDistantAsteroids | Optional licensed sky/volume/light configuration and bounded cosmetic dust/rock/exhaust presentation; no Director, collision or progression authority. See [combined look](production/COMBINED_SPACE_LOOK.md) |
 | `ASSGameMode` | Run/hangar/station orchestration, pawn possession, phase reactions, shell actions, music and warning/reaction coordination |
 | `ASSPlayerController` | Keyboard/mouse and gamepad polling, menu consumption, sensitivities, inversion and hold/toggle latches |
 | `ASSShip` | Swept flight, inertia, visual banking, external forces, dodge, chase camera, manual/soft aim, laser/cannon and ship audio |
@@ -142,3 +145,7 @@ The owner permits substantial optimization of the supplied first-pass hero but h
 ## Station look input timing
 
 Walker look applies control rotation immediately after the controller polls input, because the base PlayerTick has already processed its rotation queue. Body yaw and movement share that view direction; backward/strafe movement keeps the chase camera behind the upright body. The existing collision-tested spring arm follows control rotation, with bounded pitch. Disembark input remains locked. See [station camera repair](STATION_CAMERA.md).
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.

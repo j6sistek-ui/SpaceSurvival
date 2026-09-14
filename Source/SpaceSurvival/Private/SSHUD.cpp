@@ -110,7 +110,7 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
     {
         DrawRect(FLinearColor(.008f, .018f, .03f, .72f), Radar.X - 78.f * Scale, Radar.Y - 92.f * Scale, 156.f * Scale,
                  180.f * Scale);
-        Text(TEXT("CONTACTS"), Radar.X - 44.f * Scale, Radar.Y - 85.f * Scale, .52f, FLinearColor(.65f, .83f, .9f));
+        Text(TEXT("HOSTILES"), Radar.X - 44.f * Scale, Radar.Y - 85.f * Scale, .52f, FLinearColor(.65f, .83f, .9f));
         for (int32 Ring = 1; Ring <= 2; ++Ring)
             for (int32 Segment = 0; Segment < 32; ++Segment)
             {
@@ -130,7 +130,8 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
         if (It->IsActorBeingDestroyed())
             continue;
         const bool Flanker = It->GetKind() == ESSWorldKind::Flanker, Charging = It->IsChargingShot();
-        const FLinearColor Color = Flanker ? FLinearColor(1.f, .75f, .32f) : FLinearColor(1.f, .43f, .3f);
+        // Affiliation has one consistent color; glyph shape identifies the archetype.
+        const FLinearColor Color(1.f, .32f, .25f);
         const FVector Position = It->GetActorLocation();
         const FVector Local = Ship->GetActorTransform().InverseTransformPosition(Position);
         if (ShowRadar)
@@ -152,8 +153,8 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
                 Radius = FMath::Clamp(float(FVector2D::Distance(Screen, Edge)), 18.f * Scale, 90.f * Scale);
             const float GlyphY = FMath::Max(float(Screen.Y) - Radius - 12.f * Scale, 125.f * Scale);
             ThreatGlyph(FVector2D(Screen.X, GlyphY), Flanker, Charging, 9.f, Color);
-            if (Charging)
-                Text(TEXT("!"), Screen.X + 12.f * Scale, GlyphY - 11.f * Scale, .55f, FLinearColor(1.f, .94f, .7f));
+            Text(Charging ? TEXT("HOSTILE / FIRING") : TEXT("HOSTILE"), Screen.X + 14.f * Scale, GlyphY - 8.f * Scale,
+                 .45f, Color);
         }
         else if (Charging)
         {
@@ -184,7 +185,8 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
                 }
             if (const auto *Target = Cast<ASSWorldBody>(Ship->SoftTarget))
             {
-                const FString Label = Target->GetLabel();
+                const FString Label =
+                    (Cast<ASSEnemy>(Target) ? TEXT("HOSTILE / ") : TEXT("HAZARD / ")) + Target->GetLabel();
                 const float LabelWidth = MeasureText(Label, .5f).X;
                 float LabelX = Screen.X + 29.f * Scale;
                 if (LabelX + LabelWidth > W - 12.f * Scale)
@@ -247,10 +249,52 @@ void ASSHUD::DrawHUD()
         if (S.run.criticalSeconds > 0)
             Text(TEXT("! SUBSYSTEM IMPAIRED / REPAIR AVAILABLE"), Margin, 100 * Scale, .9f, FLinearColor(1, .7f, .2f));
         if (S.run.contract != SS::Contract::None)
-            Text(FString::Printf(TEXT("CONTRACT %s  %d / %d"),
-                                 S.run.contract == SS::Contract::Objective ? TEXT("HUNTER") : TEXT("PRESSURE"),
-                                 S.run.contractProgress, S.run.contractTarget),
-                 Margin, 140 * Scale, .8f);
+        {
+            const bool Hunter = S.run.contract == SS::Contract::Objective;
+            const FString Objective = FString::Printf(
+                TEXT("%s: %d / %d"),
+                Hunter ? TEXT("HUNTER CONTRACT / Destroy enemy ships") : TEXT("PRESSURE CONTRACT / Survive waves"),
+                FMath::Min(S.run.contractProgress, S.run.contractTarget), S.run.contractTarget);
+            const FString Terms = S.run.contractProgress >= S.run.contractTarget
+                                      ? TEXT("Objective met / reach Station 2 to collect reward")
+                                      : TEXT("Complete before Station 2 / reward paid on arrival");
+            const float PanelW = FMath::Min(490.f * Scale, W - 2.f * Margin);
+            const float ObjectiveH =
+                Paragraph(Objective, 0, 0, PanelW - 20.f * Scale, .65f, FLinearColor::White, false);
+            const float TermsH = Paragraph(Terms, 0, 0, PanelW - 20.f * Scale, .52f, FLinearColor::White, false);
+            DrawRect(FLinearColor(.015f, .025f, .04f, .88f), Margin, 133.f * Scale, PanelW,
+                     ObjectiveH + TermsH + 16.f * Scale);
+            Paragraph(Objective, Margin + 10.f * Scale, 141.f * Scale, PanelW - 20.f * Scale, .65f,
+                      FLinearColor(.8f, .94f, 1.f));
+            Paragraph(Terms, Margin + 10.f * Scale, 141.f * Scale + ObjectiveH, PanelW - 20.f * Scale, .52f,
+                      FLinearColor(.7f, .8f, .85f));
+        }
+    }
+    // Observe credited kills, not disappearing actors: hazards/despawns are not player kills.
+    // A new or resumed run establishes a baseline and never replays old confirmations.
+    const FString CurrentRun = UTF8_TO_TCHAR(S.run.id.c_str());
+    if (FeedbackRun != CurrentRun || S.run.kills < ObservedKills)
+    {
+        FeedbackRun = CurrentRun;
+        ObservedKills = S.run.kills;
+        KillNoticeUntil = 0.f;
+        RecentKills = 0;
+    }
+    const float Now = GetWorld()->GetTimeSeconds();
+    if (S.run.kills > ObservedKills)
+    {
+        RecentKills = (Now < KillNoticeUntil ? RecentKills : 0) + S.run.kills - ObservedKills;
+        ObservedKills = S.run.kills;
+        KillNoticeUntil = Now + 2.2f;
+    }
+    if (S.IsFlying() && Now < KillNoticeUntil && !MenuOpen)
+    {
+        const FString Notice =
+            RecentKills > 1 ? FString::Printf(TEXT("%d HOSTILES DESTROYED"), RecentKills) : TEXT("HOSTILE DESTROYED");
+        const float NoticeW = MeasureText(Notice, .7f).X;
+        DrawRect(FLinearColor(.015f, .025f, .04f, .88f), (W - NoticeW) * .5f - 12.f * Scale, H * .5f + 44.f * Scale,
+                 NoticeW + 24.f * Scale, 32.f * Scale);
+        Text(Notice, (W - NoticeW) * .5f, H * .5f + 50.f * Scale, .7f, FLinearColor(.65f, 1.f, .8f));
     }
     if (auto *Ship = GM->GetPlayerShip(); Ship && S.IsFlying())
     {
@@ -258,6 +302,9 @@ void ASSHUD::DrawHUD()
         DrawLine(W * .5f + 5 * Scale, H * .5f, W * .5f + 14 * Scale, H * .5f, FLinearColor::White, 1.3f);
         DrawLine(W * .5f, H * .5f - 14 * Scale, W * .5f, H * .5f - 5 * Scale, FLinearColor::White, 1.3f);
         DrawCombatCues(Ship, GM->Director && GM->Director->GetActiveThreatCount() > 3);
+        if (Ship->IsMoored())
+            Text(TEXT("MAGNETIC LOCK / Close services to release"), Margin, H - 195.f * Scale, .7f,
+                 FLinearColor(.55f, .95f, 1.f));
         ASSEncounterBeacon *InteractBeacon = nullptr;
         float InteractDistance = MAX_flt;
         if (!MenuOpen && !Walker && !S.run.pendingReward)

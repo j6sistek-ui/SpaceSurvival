@@ -4,6 +4,8 @@
 #include "GameFramework/PlayerController.h"
 #include "SSGameMode.generated.h"
 class ASSShip;
+class ASSDistantAsteroids;
+class ASSAmbientPresentation;
 class ASSStation;
 class ASSWalker;
 class USSSurvivalDirectorComponent;
@@ -95,6 +97,10 @@ private:
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
     UPROPERTY()
+    TObjectPtr<ASSDistantAsteroids> DistantField;
+    UPROPERTY()
+    TObjectPtr<ASSAmbientPresentation> AmbientPresentation;
+    UPROPERTY()
     TObjectPtr<ASSStation> Hub;
     UPROPERTY()
     TObjectPtr<ASSWalker> Walker;
@@ -119,6 +125,8 @@ private:
     int32 HistoryPage = 0;
     bool PendingReward = false, RewardCombat = false, DeathPersisted = false;
     float RegionTime = 0.f;
+    float ArrivalColorBlend = 0.f;
+    bool bWormholeArrived = false;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
     bool LowHullAlerted = false;
     void UpdateMusicMix();

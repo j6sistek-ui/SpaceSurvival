@@ -23,3 +23,12 @@ Author: Rob Tuytel. Provider: Poly Haven.
 [Metal Plate source](https://polyhaven.com/a/metal_plate), [CC0 license](https://polyhaven.com/license). Original 2K texture maps are retained unchanged. The game applies its own material settings to the station deck.
 
 Source and reuse records were checked on 2026-09-13. These acknowledgements do not change the respective source terms.
+
+## Owner-supplied Fab presentation
+
+- Asteroid Library — Makemake: asteroid meshes and ambient cloud materials.
+- Sci-Fi / Futuristic Corridor — Leartes Studios: station interior components.
+- Space Station 4 — Gerardo Justel: exterior body derivative, preserving PBR maps; detached light-point geometry omitted and textures reduced to 2K.
+- Niagara Examples Pack — Epic Games: engine ribbon trail evaluation/integration. https://www.fab.com/listings/0e188eca-4e54-4fb2-a9ed-d8b8a565e600
+
+These assets were supplied from the owner's local Fab library. Original packages and licensed derivatives remain outside public Git. Their respective licenses remain applicable; these credits do not grant redistribution rights to raw asset files. RPG Environment VFX and Free Galaxy Shader were inspected but are not claimed as adopted runtime content.

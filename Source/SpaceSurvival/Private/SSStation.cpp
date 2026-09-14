@@ -1,5 +1,6 @@
 #include "SSStation.h"
 #include "SSShip.h"
+#include "Misc/PackageName.h"
 #include "SSStationPoseTransition.h"
 #include "SSAudio.h"
 #include "SSGameInstance.h"
@@ -23,6 +24,8 @@
 #include "EngineUtils.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
+
+#include "SSStationRefresh.inl"
 
 ASSStation::ASSStation()
 {
@@ -96,7 +99,8 @@ void ASSStation::BuildHub(bool bHome)
     const TCHAR *Hull = TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull");
     const TCHAR *Cyan = TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan");
     const TCHAR *Gold = TEXT("/Game/SpaceSurvival/Materials/M_Gold.M_Gold");
-    UStaticMesh *ShellMesh = ShellAsset.IsNull() ? nullptr : ShellAsset.LoadSynchronous();
+    const bool LicensedShell = bUseLicensedPresentation && BuildLicensedShell();
+    UStaticMesh *ShellMesh = LicensedShell || ShellAsset.IsNull() ? nullptr : ShellAsset.LoadSynchronous();
     if (ShellMesh)
     {
         auto *Shell = NewObject<UStaticMeshComponent>(this, TEXT("StationShell"));
@@ -109,10 +113,24 @@ void ASSStation::BuildHub(bool bHome)
         Shell->RegisterComponent();
         Geometry.Add(Shell);
     }
-    auto AddBoundary = [this, Cube, Hull, ShellMesh](FVector Position, FVector Scale)
+    // Licensed exterior mass sits beyond the rear wall; the dock and walkable bay retain their collision.
+    const TCHAR *ExteriorPath = TEXT("/Game/SpaceSurvival/Licensed/StationExterior/SM_StationExterior");
+    if (FPackageName::DoesPackageExist(ExteriorPath))
+    {
+        auto *Exterior = AddMesh(FVector(7000, 0, 3500), FVector(1), ExteriorPath, nullptr, false);
+        Exterior->SetRelativeRotation(FRotator(0, 90, 0));
+        Exterior->SetCastShadow(false);
+        Exterior->SetCanEverAffectNavigation(false);
+        // The exterior is reachable during manual approach. A conservative solid
+        // envelope prevents flying through it without narrowing the existing bay.
+        auto *ExteriorCollision = AddMesh(FVector(7000, 0, 3500), FVector(71.42f, 100.f, 76.62f), Cube, Hull, true);
+        ExteriorCollision->SetVisibility(false);
+        ExteriorCollision->SetCastShadow(false);
+    }
+    auto AddBoundary = [this, Cube, Hull, ShellMesh, LicensedShell](FVector Position, FVector Scale)
     {
         auto *Boundary = AddMesh(Position, Scale, Cube, Hull, true);
-        if (ShellMesh)
+        if (ShellMesh || LicensedShell)
         {
             Boundary->SetVisibility(false);
             Boundary->SetCastShadow(false);
@@ -141,6 +159,7 @@ void ASSStation::BuildHub(bool bHome)
     auto *Plates = MakeBatch(TEXT("DeckPanels"), Hull);
     auto *FloorPlates =
         MakeBatch(TEXT("TexturedDeckPanels"), TEXT("/Game/SpaceSurvival/Materials/M_StationDeck.M_StationDeck"), true);
+    FloorPlates->SetVisibility(!LicensedShell);
     auto *Structure = MakeBatch(TEXT("ServiceStructure"), Hull);
     auto *Paint = MakeBatch(TEXT("BayPaint"), Gold);
     auto *Guides = MakeBatch(TEXT("DeckGuides"), Cyan);
@@ -161,7 +180,7 @@ void ASSStation::BuildHub(bool bHome)
         const float CenterX = -1375.f + X * 550.f;
         for (int Y = 0; Y < 6; ++Y)
             Stamp(FloorPlates, FVector(CenterX, -1125.f + Y * 450.f, -8), FVector(5.35f, 4.35f, .015f));
-        if (!ShellMesh)
+        if (!ShellMesh && !LicensedShell)
         {
             for (float Side : {-1.f, 1.f})
             {
@@ -175,7 +194,7 @@ void ASSStation::BuildHub(bool bHome)
     for (float Side : {-1.f, 1.f})
     {
         AddBoundary(FVector(0, Side * 1400, 170), FVector(34, .3f, 4.5f));
-        if (!ShellMesh)
+        if (!ShellMesh && !LicensedShell)
             Stamp(Guides, FVector(0, Side * 1340, 8), FVector(32, .12f, .08f));
         for (int I = -2; I <= 2; ++I)
             AddBoundary(FVector(I * 600, Side * 1400, 500), FVector(.5f, .5f, 10));
@@ -234,7 +253,7 @@ void ASSStation::BuildHub(bool bHome)
     {
         for (float Side : {-1.f, 1.f})
             Stamp(Guides, FVector(float(I) * 350.f, Side * 650.f, -5), FVector(2.4f, .12f, .04f));
-        if (!ShellMesh)
+        if (!ShellMesh && !LicensedShell)
             Stamp(Structure, FVector(float(I) * 450.f, 0, 980), FVector(.18f, 28, .25f));
     }
     AddMesh(FVector(-450, 1120, 65), FVector(.8f), TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), nullptr, true);
@@ -355,7 +374,8 @@ void ASSWalker::BeginPlay()
     Super::BeginPlay();
     GetMesh()->SetSkeletalMesh(
         LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
-    WalkAnimation = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_Walk.A_Walk"));
+    WalkAnimation =
+        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair"));
     StartWalkingAnimation();
 }
 void ASSWalker::StartWalkingAnimation()
@@ -384,8 +404,8 @@ void ASSWalker::SampleExitPose(float Seconds)
 bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing,
                                const FPoseSnapshot *SourcePose)
 {
-    auto *ExitAnimation =
-        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit"));
+    auto *ExitAnimation = LoadObject<UAnimSequence>(
+        nullptr, TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair"));
     if (!ExitAnimation || !WalkAnimation || !GetMesh()->GetSkeletalMeshAsset())
         return false;
     // Component local transform * actor transform = the actual seated pilot component transform.

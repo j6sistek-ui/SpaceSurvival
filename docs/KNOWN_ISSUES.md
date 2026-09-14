@@ -1,6 +1,8 @@
 # Known issues and limitations
 
-**Phase 1: PARTIAL. Current build: Package 14**, source `f4bfec8bb955a9dab23300c55b1ca81c53442504`. The [station camera fix](STATION_CAMERA.md) passed **38/38 Unreal tests** at 16:40:33 UTC, zero warnings/failures/not-run; Editor build, formatting and 23 source checks passed. Windows packaging succeeded. Two native hangar observations show the camera behind the body before and after user movement/turning; physical comfort and controller acceptance remain open. [Current receipt](validation/2026-09-13-station-camera.json).
+**2026-09-14 asset refresh ready for owner review:** [Refresh record](ASSET_REFRESH.md) supersedes earlier statements that no leg derivative was adopted. Licensed corridor/asteroid presentation, repaired walk/exit clips, depot and combat-feedback corrections are integrated. Latest Editor build and all 39 Unreal tests pass with zero test warnings. The offscreen Station 5 sequence reached docking, exit and Station 1 with 12 captures; this is visual/transition evidence, not FPS or natural gameplay acceptance. Optional Ludo ship packaged and exercised through the offscreen Station5 sequence. The final flight-fill/docking-light correction was compiled and verified in that package. Phase 1 remains PARTIAL.
+
+**Phase 1: PARTIAL. Historical build: Package 14**, source `f4bfec8bb955a9dab23300c55b1ca81c53442504`. The [station camera fix](STATION_CAMERA.md) passed **38/38 Unreal tests** at 16:40:33 UTC, zero warnings/failures/not-run; Editor build, formatting and 23 source checks passed. Windows packaging succeeded. Two native hangar observations show the camera behind the body before and after user movement/turning; physical comfort and controller acceptance remain open. [Historical receipt](validation/2026-09-13-station-camera.json).
 
 **Phase 1: PARTIAL.** Prior gameplay source passed the 33.08-second Editor build and all 37 Unreal tests at 2026-09-13 15:12:50 UTC (3.083320 seconds, zero test warnings/failures/not-run cases). Package 13/source `a628c7faa3d6c160ded22981bd3c230cb0cbf203` is independently audited; native settings focus and the separately audited scripted Wave 10 capture passed. Package 12 and its two passed rendered fixtures are historical evidence from before the three follow-up fixes. HeroAlpha is paused and unadopted after the owner prioritized gameplay and external hero cleanup. All 19 hands-on checks remain open. See [gameplay quality](GAMEPLAY_QUALITY.md) and [follow-up evidence](validation/2026-09-13-gameplay-fairness-followup.json), with the separate [Package 13 audit](validation/2026-09-13-windows-gameplay-fairness-package.json).
 
@@ -60,3 +62,18 @@
 Earlier fixture failures remain historical evidence, not current failing results. The first docking regression incorrectly counted every collidable mesh as a boundary cube: the actual 25 includes 16 deck/boundary cubes, seven service consoles and two crates. That test-only count was removed; the existing station regression still checks exact boundary geometry, and all docking behavior assertions remain. The earlier journey harness crash does not establish a production-game crash. Latest editor builds succeeded; newer-than-preferred MSVC and engine-header C4996 warnings remain.
 
 No multiplayer, Steamworks, cloud services, inventory, extra roster families or post-Wave-10 authored progression was added. No owner touch/feel/audio/retry result has been received; all 19 checks in [PLAYTEST_TOMORROW.md](PLAYTEST_TOMORROW.md) remain untouched.
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.
+
+## September 14 tester release limitations
+
+- Ambient cloud banks are not yet visibly effective; dust and background rocks do not meet the reference atmosphere by themselves. Earlier opaque volume rectangles were removed in the latest source.
+- Niagara engine wakes use provisional warm ribbons, with final color/nozzle fit pending.
+- Station exterior uses a conservative solid collision envelope; visual gaps are not traversable.
+- Optional Ludo ship is a trial with enclosed/hidden pilot; default visible-pilot ship remains available.
+- Review issue #7 flags live reward controller/keyboard capability differences and synchronous tutorial progress writes. Runtime impact and fixes remain pending; these are not completed repairs.
+- Natural ten-wave balance, physical controller comfort, listening, current representative 60 FPS, clean-PC installation and itch update/save preservation remain unverified.
+
+Release correction: the final packaged check reproduced an opaque rectangle from the experimental cloud bounds. Atmospheric cloud banks are therefore disabled by default (`ss.AtmosphereClouds=0`) for 0.1.15-alpha. Local dust, background asteroids and engine wakes remain enabled. Earlier statements that the rectangle was fully fixed are superseded.

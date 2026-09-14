@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE5 Save and Restore Review"
+  short_description: "Review local save schemas and restore behavior"
+  default_prompt: "Use $ue5-save-load-replication with the SpaceSurvival adapter for this task."

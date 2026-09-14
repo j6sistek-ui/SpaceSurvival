@@ -108,3 +108,7 @@ Preferred mouse sensitivity: __________  Preferred controller sensitivity: _____
     Immediate retry: __________  Why / why not: ____________________________\
     Biggest next adjustment: ______________________________________________\
     First unchecked step / next place to resume: ___________________________
+
+### Environment follow-up prompts (existing acceptance boxes unchanged)
+
+Please compare normal starter and optional trial ship: whole-hull visibility during turns, boost and brake; controller comfort with standard/inverted pitch; distinguish distant cosmetic rocks from nearby hazards; judge dust/volume density and sight readability; inspect station exterior arrival scale and whether the conservative closed exterior is understandable. Engine wake color/nozzle fit remains provisional. Report whether you want to restart after death; no scripted capture answers that question.

@@ -1,0 +1,33 @@
+# Combined deep-space environment pass — 2026-09-14
+
+This is an implemented presentation milestone awaiting owner review, not Phase 1 completion. The owner requested a combined sky, lighting, nebular atmosphere, asteroid-depth and exhaust pass using owned assets, then clarified that the medium should resemble thin irregular space dust rather than dense Earth clouds. No new purchase, mechanic, hazard count, progression change or itch publication is included.
+
+## What changed
+
+- The distant sky now uses the owned Asteroid Library's cool `MI_Skybox_024` cubemap configuration through a private master/instance. The original materials and maps are preserved. A mild `Tint` input retains the existing gradual region/wormhole color influence.
+- `USSSpaceLookData` supplies the sky, ambient-light cube/intensity, cloud material, offsets, scale and fog-grid settings. The authored private `DA_DeepSpaceLook` is optional; source-only installations retain the prior sky and omit missing licensed atmosphere.
+- A specified-cubemap skylight reveals hull and rock surfaces. It is enabled during flight and hidden with the atmosphere in stations. It does not continuously recapture the scene.
+- Two thin local banks retain the purchased simple-volume graph. Their private density is 0.000025, with a restrained cool scattering color, separated placements and a 2.4 km fog grid. Unlike the earlier custom emission-only graph, this preserves the vendor medium's lighting behavior. The screenshot's broad nebula shapes are largely distant cubemap artwork; the local participating medium is a separate subtle layer.
+- Cloud positions retain ordinary world travel before bounded displacement saturates. Asteroids use four persistent depth/size bands with different parallax and tumble rates, 384 default instances and a 768 cap in four mesh batches. Rare large silhouettes frame the view; an initial clear aim corridor is preserved. The conservative minimum decorative surface distance is 227 m, outside the current 140 m weapon range.
+- The 512 local dust grains remain cosmetic. The engine ribbon is a private Epic Niagara derivative with blue-white emissive color, preserving the existing spawning, lifetime and opacity behavior. This is not a newly validated thrust/nozzle animation system.
+
+## Reproduction and tuning
+
+Build the Editor target using `Scripts/Build.ps1 -Target Editor`. With the owned `Asteroid_Library` and `NiagaraExamples` content staged, execute `Scripts/AuthorDeepSpaceLook.py`, then `Scripts/AuthorDeepSpaceExhaust.py` through Unreal Python. Both create only private derivatives under `/Game/SpaceSurvival/Licensed/Atmosphere`, which are excluded from public source control and included by the existing project cook rule. The scripts can be rerun to restore the baseline values; manual instance/data edits should be preserved separately before doing so. Bump graph metadata versions deliberately when changing generated graphs.
+
+Tune `DA_DeepSpaceLook` and its private instances in the editor. `ss.AtmosphereClouds=0` removes the local medium while retaining sky/hull lighting. `ss.DistantAsteroidCount=0..768`, `ss.LocalDust=0/1` and `ss.EngineTrails=0/1` remain independent cosmetic controls. Shadow scalability may disable volumetric fog; the distant sky remains available. No additional sky/atmosphere plugin is required.
+
+`Scripts/CaptureSpaceLook.ps1` captures the current Editor game offscreen. Add `-Packaged` for the built Windows archive. Each run has an isolated fresh profile and an immutable identity/save/screenshot receipt. It waits for completion and checks four 1920×1080 images, not their artistic quality. Normal launcher: `Artifacts/Windows/SpaceSurvival.exe`; existing optional ship launcher remains separate.
+
+## Validation and limits
+
+- Editor compilation and Windows BuildCookRun succeeded with the existing owner-installed UE 5.8.2/MSVC toolchain. Known engine-header deprecations and the nonpreferred installed compiler warning remain.
+- All 44 Unreal automation tests passed, with zero test warnings/failures/not-run. This includes actual depth-transform bounds/turn/rebase tests and the new presentation data/material/visibility/isolation test.
+- 27 structural source checks, native clang-format checks and Python compilation passed. Source assets validated: 26 meshes, 16 WAVs and unchanged supplied hero GLB. Docker daemon is unavailable; existing native tools were used, with no host installation. Portable domain tests were not repeated because domain code did not change.
+- The unchanged author LV_1 scene rendered as a baseline. The final editor and Windows package each completed a normal-stat 29-second scripted Wave1 cruise/turn/boost/brake fixture at 1920×1080. The packaged receipt verifies exact executable/container identities, four PNGs and preserved production saves. These fixtures do not fire, prove natural flight comfort or validate the ten-wave experience.
+- Visual review found dark openings, cool irregular nebular forms, readable rock surfaces and blue-white ribbons. No opaque rectangular cloud boundary is visible in the reviewed final captures. This does not identify the historical custom shader's exact failure cause.
+- Editor diagnostic medians: frame 8.33 ms (120 FPS cap), GPU 2.98 ms, game thread 2.01 ms, volumetric fog 0.096 ms. Full recorded frame maximum was 515.67 ms. Startup/readback stalls are included; they are not removed or attributed individually. This is an RTX 5080 offscreen visual fixture, not representative 60 FPS acceptance. Standard `AnalyzePerformance.py` currently rejects the newer Wave1 scenario; the diagnostic was explicitly filtered from the final CSV header.
+- Existing station-exterior material warnings still report missing Nanite usage and fallback in the packaged startup log. They are outside the flight-scene changes and remain a station follow-up.
+- Local grains remain simple geometry; large-rock material/color balance, exhaust/nozzle fit, continuous animation quality, natural combat readability, physical controller feedback and representative busy-scene performance need further review. Bounded parallax is not infinite world streaming.
+
+Evidence: `docs/validation/2026-09-14-combined-space-look.json`. Current Windows archive is local; itch remains 0.1.15-alpha/build1978147. Existing PR6 stays unmerged.

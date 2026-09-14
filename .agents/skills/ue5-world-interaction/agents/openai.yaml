@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE5 World Interaction"
+  short_description: "Validate pickups, encounters and service interactions"
+  default_prompt: "Use $ue5-world-interaction with the SpaceSurvival adapter for this task."

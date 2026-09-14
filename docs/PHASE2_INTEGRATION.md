@@ -65,3 +65,10 @@ The current 37-test suite retains earlier content, save-domain, actor, camera, p
 First complete natural ten-wave packaged acceptance with both physical inputs, complete service/contract/loadout decisions, naturally earned unlocks and retry appeal. Evaluate native Station 2 discard usability without inventing victory XP. Package 12 and earlier archived builds retain bounded native/performance results in [PERFORMANCE.md](PERFORMANCE.md), with their recorded scripted-input, durability and concurrency limits. They do not validate the latest 37-test source or pending Package 13. Natural camera/animation, sky seam/pole/readability, rejected art, clean-PC startup and representative full-run performance remain open. Photographic surfaces, ship graphs, economy and audio are included in audited Package 10; guarded capture evidence does not establish natural balance or quality. Measure actor scans, spawn bursts, synchronous loads, hero geometry and rendering before choosing pooling/indexing/preloading/LODs. Preserve simulation, response and hazard readability before increasing presentation cost.
 
 For every later system, add deterministic rules coverage, meaningful engine integration tests and actual overlap/feel scenarios. Keep source availability, build success, package success and player acceptance as separate evidence claims.
+
+## Asset refresh boundary (2026-09-14)
+Licensed presentation is optional and does not change the domain model. The Ludo hull is a command-line comparison only; do not treat it as a new ship unlock or approved visible-cockpit implementation. Magnetic service remains on-board, without a new station scene. No deferred Phase2 system was added. See ASSET_REFRESH.md.
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.

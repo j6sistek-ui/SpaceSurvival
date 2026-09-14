@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-14T17:57Z",
+  "status": "REVIEW_PASS",
+  "tests": {
+    "passed": 43,
+    "warnings": 0,
+    "failed": 0
+  },
+  "evidence": [
+    {
+      "path": "Artifacts/EnvironmentRefresh/AsteroidChecks.log",
+      "sha256": "bd84bdf70ecc92ac478188ba71710f218aad41c286c42e585f83729d3a666ca7"
+    },
+    {
+      "path": "Artifacts/UnrealTests/index.json",
+      "sha256": "d807b1b1d36c87247a3ee1dc25068540b9f6e873387997eb9cd1f135da9258cc"
+    },
+    {
+      "path": "Artifacts/EndgameSoak/ec68ff5fceef43f48b7f47d34c2ece3e/fixture.json",
+      "sha256": "79cc8c2e253c35bd54620986531b9e67447f198cb248911db12a7dde6356b67b"
+    },
+    {
+      "path": "Artifacts/EndgameSoak/ec68ff5fceef43f48b7f47d34c2ece3e/Cruise.png",
+      "sha256": "ba969768805fa3ac6d48f4b27b7223f3a46860608f15b8781e05d92e4bee2789"
+    }
+  ],
+  "limits": [
+    "Density screenshot predates cosmetic breakup addition.",
+    "No new package or itch upload.",
+    "No physical controls, natural gameplay, audio or representative performance acceptance."
+  ]
+}

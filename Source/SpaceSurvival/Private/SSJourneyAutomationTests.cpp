@@ -311,6 +311,18 @@ bool FSSAcceleratedJourney::RunTest(const FString &Parameters)
                 continue;
             HandledSignals.Add(Beacon);
             auto *Ship = Fixture.Mode->GetPlayerShip();
+            const FVector BeforeServiceLocation = Ship->GetActorLocation();
+            if (Beacon->IsDepot())
+            {
+                // The accelerated fixture can offer a depot alongside live threats.
+                // Explicitly stage the service above their bounds, exercising real
+                // acceptance rather than weakening the production safety check.
+                double ClearHeight = BeforeServiceLocation.Z;
+                for (TActorIterator<ASSWorldBody> It(Fixture.World); It; ++It)
+                    ClearHeight = FMath::Max(ClearHeight, It->GetActorLocation().Z + It->GetBodyRadius());
+                Ship->SetActorLocation(
+                    FVector(BeforeServiceLocation.X, BeforeServiceLocation.Y, ClearHeight + 10000.0));
+            }
             Beacon->SetActorLocation(Ship->GetActorLocation() + Ship->GetActorRightVector() * 200.f);
             Fixture.Mode->ClosePanel();
             TSet<ASSEnemy *> ExistingEnemies;
@@ -319,7 +331,7 @@ bool FSSAcceleratedJourney::RunTest(const FString &Parameters)
             Fixture.Mode->Interact();
             if (Beacon->IsDepot())
             {
-                if (!TestTrue(TEXT("Moving depot opens through GameMode interaction"),
+                if (!TestTrue(TEXT("Magnetic depot opens through GameMode interaction"),
                               Fixture.Mode->Panel == ESSPanel::Depot))
                     return false;
                 if (!TestEqual(TEXT("Depot offers a three-track subset"), Beacon->GetOffers().Num(), 3))
@@ -365,6 +377,12 @@ bool FSSAcceleratedJourney::RunTest(const FString &Parameters)
                 TestTrue(TEXT("Out-of-range depot offer closes"), Fixture.Mode->Panel == ESSPanel::None);
                 Beacon->SetActorLocation(DepotLocation);
                 Fixture.Mode->ClosePanel();
+                TestFalse(TEXT("Closing services releases magnetic hold"), Ship->IsMoored());
+                // No actor Tick separates release and this attempted reacquisition.
+                Fixture.Mode->Interact();
+                TestTrue(TEXT("Released depot cannot reset its timer before the next beacon tick"),
+                         !Ship->IsMoored() && Fixture.Mode->Panel == ESSPanel::None);
+                Ship->SetActorLocation(BeforeServiceLocation);
                 continue;
             }
             if (!TestTrue(TEXT("Explicit GameMode interaction accepts the optional event"), Beacon->IsAccepted()))

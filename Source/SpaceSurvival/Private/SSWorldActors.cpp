@@ -1,4 +1,5 @@
 #include "SSWorldActors.h"
+#include "SSAsteroidBurst.h"
 #include "SSAudio.h"
 #include "Components/AudioComponent.h"
 #include "SSGameInstance.h"
@@ -8,6 +9,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Misc/PackageName.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
@@ -239,11 +241,26 @@ void ASSWorldBody::UpdateVisual()
         CatalogMesh = Content(this)->Hazard(Kind).MeshName.ToString();
     else if (IsEnemy())
         CatalogMesh = Content(this)->Enemy(Kind).MeshName.ToString();
-    Visual->SetStaticMesh(Mesh(*CatalogMesh));
+    UStaticMesh *SelectedMesh = nullptr;
+    const bool bRock = Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
+                       Kind == ESSWorldKind::MassiveAsteroid;
+    if (bRock)
+    {
+        const TCHAR *RockNames[] = {TEXT("SM_Asteroid_Barren_1"), TEXT("SM_Asteroid_Barren_2"),
+                                    TEXT("SM_Asteroid_Barren_3"), TEXT("SM_AsteroidBarren_4")};
+        const FString RockPackage =
+            FString::Printf(TEXT("/Game/Asteroid_Library/Static_Meshes/%s"), RockNames[GetUniqueID() % 4]);
+        if (FPackageName::DoesPackageExist(RockPackage))
+            SelectedMesh = LoadObject<UStaticMesh>(nullptr, *RockPackage);
+    }
+    Visual->SetStaticMesh(SelectedMesh ? SelectedMesh : Mesh(*CatalogMesh));
     // Match collision to the loaded mesh rather than assuming authoring units.
     // Missing authoring remains an explicit fallback, not presentation verification.
     const float MeshExtent = Visual->GetStaticMesh() ? Visual->GetStaticMesh()->GetBounds().BoxExtent.GetMax() : 50.f;
     Visual->SetRelativeScale3D(FVector(BodyRadius / FMath::Max(1.f, MeshExtent)));
+    Visual->SetRelativeLocation(SelectedMesh ? -Visual->GetRelativeRotation().RotateVector(
+                                                   SelectedMesh->GetBounds().Origin * Visual->GetRelativeScale3D())
+                                             : FVector::ZeroVector);
     const bool bPreserveAuthoredMaterial = Visual->GetStaticMesh() &&
                                            Visual->GetStaticMesh()->GetPathName().StartsWith(TEXT("/Game/")) &&
                                            (IsSolidHazard() || IsEnemy());
@@ -453,7 +470,17 @@ void ASSWorldBody::Tick(float DeltaSeconds)
     ShipContactRemaining = FMath::Max(0.f, ShipContactRemaining - DeltaSeconds);
     AddActorWorldOffset(LinearVelocity * DeltaSeconds, false);
     if (IsSolidHazard())
+    {
         Visual->AddLocalRotation(FRotator(2.f, 4.f, 1.5f) * DeltaSeconds);
+        const UStaticMesh *VisualMesh = Visual->GetStaticMesh();
+        if (VisualMesh && VisualMesh->GetPathName().StartsWith(TEXT("/Game/Asteroid_Library/")))
+        {
+            // Rotate about the visual bounds centre, not the vendor's off-centre
+            // authoring pivot. Keep that centre on the unchanged collision sphere.
+            Visual->SetRelativeLocation(-Visual->GetRelativeRotation().RotateVector(VisualMesh->GetBounds().Origin *
+                                                                                    Visual->GetRelativeScale3D()));
+        }
+    }
     const bool bElectricalDischarge = Kind == ESSWorldKind::ElectricalStorm && AdvanceElectricalPulse(DeltaSeconds);
     UpdateFieldAudio(bElectricalDischarge);
     ASSShip *Ship = FindShip();
@@ -564,6 +591,8 @@ void ASSWorldBody::ReceiveWeaponHit(float Damage)
 void ASSWorldBody::OnDefeated()
 {
     PlayDestructionAudio();
+    if (Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid)
+        ASSAsteroidBurst::SpawnBurst(GetWorld(), GetActorLocation(), LinearVelocity, BodyRadius);
     const auto Definition = Content(this)->Hazard(Kind);
     if (Kind == ESSWorldKind::MediumAsteroid)
     {
@@ -942,7 +971,22 @@ void ASSWormholePassage::Tick(float DeltaSeconds)
     const FVector Relative = Ship->GetActorLocation() - EntryPoint;
     const FVector Lateral = Relative - PassageForward * FVector::DotProduct(Relative, PassageForward);
     const FVector Centring = -Lateral.GetClampedToMaxSize(2000.f) * (.12f + .22f * Alpha);
-    Ship->AddExternalForce(PassageForward * (600.f + 1600.f * Alpha) + Centring);
+    // A bounded exit turbulence envelope gives the transition a physical release,
+    // without reversing input or adding immunity. Forward control remains available.
+    const float ExitTime = PassageElapsed - PassageDuration;
+    const float ExitEnvelope =
+        ExitTime >= 0.f ? FMath::Max(0.f, 1.f - ExitTime / 2.f) : FMath::Clamp((Alpha - .75f) * 4.f, 0.f, 1.f);
+    const FVector Turbulence = Ship->GetActorRightVector() * FMath::Sin(PassageElapsed * 7.f) * 650.f +
+                               Ship->GetActorUpVector() * FMath::Cos(PassageElapsed * 5.f) * 420.f;
+    Ship->AddExternalForce(
+        (ExitTime < 0.f ? PassageForward * (600.f + 1600.f * Alpha) + Centring : FVector::ZeroVector) +
+        Turbulence * ExitEnvelope);
+    if (ExitTime >= 0.f)
+    {
+        Visual->SetVisibility(false);
+        for (UStaticMeshComponent *Ring : PassageRings)
+            Ring->SetVisibility(false);
+    }
     Visual->AddLocalRotation(FRotator(0.f, 0.f, 40.f * DeltaSeconds));
     for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
         PassageRings[Index]->AddLocalRotation(
@@ -950,7 +994,7 @@ void ASSWormholePassage::Tick(float DeltaSeconds)
     if (DynamicMaterial)
         DynamicMaterial->SetScalarParameterValue(TEXT("Emission"),
                                                  1.8f + Alpha * 2.f + .3f * FMath::Sin(PassageElapsed * 8.f));
-    if (PassageElapsed >= PassageDuration)
+    if (PassageElapsed >= PassageDuration + 2.f)
         Destroy();
 }
 
@@ -1084,7 +1128,7 @@ bool ASSEncounterBeacon::IsPlayerInRange() const
 FString ASSEncounterBeacon::GetEncounterLabel() const
 {
     if (IsDepot())
-        return FString::Printf(TEXT("MOBILE DEPOT · %d%% OFF · THREE SYSTEM DEALS"),
+        return FString::Printf(TEXT("DEPOT · OPTIONAL 20s MAGNETIC MOORING · %d%% OFF"),
                                FMath::RoundToInt((1.f - Discount) * 100.f));
     const TCHAR *Name =
         EncounterKind == ESSEncounterKind::SalvageCache ? TEXT("SALVAGE CACHE") : TEXT("DISTRESS / COMBAT");
@@ -1097,10 +1141,32 @@ FString ASSEncounterBeacon::GetEncounterLabel() const
 
 bool ASSEncounterBeacon::TryAccept()
 {
-    if (bResolved || !IsPlayerInRange())
+    if (bResolved || bAccepted || !IsPlayerInRange())
         return false;
     if (IsDepot())
-        return true; // The UI presents offers; Session owns any actual purchase.
+    {
+        ASSShip *Ship = FindShip();
+        if (!Ship || Ship->IsMoored())
+            return false;
+        bool bFieldClear = true;
+        for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
+            if (It->IsEnvironmentalField() && !It->IsActorBeingDestroyed() &&
+                FVector::DistSquared(It->GetActorLocation(), Ship->GetActorLocation()) <
+                    FMath::Square(It->GetBodyRadius() + 1500.f))
+                bFieldClear = false;
+        if (!bFieldClear || !HasSpatialClearance(this, Ship->GetActorLocation(), Ship->GetActorLocation(), 1500.f))
+        {
+            Announce(this, TEXT("MOORING UNSAFE / Clear nearby hazards before engaging the lock"));
+            return false;
+        }
+        if (!Ship->BeginMooring())
+            return false;
+        bAccepted = true;
+        ObjectiveSeconds = 20.f;
+        LifetimeSeconds = FMath::Max(LifetimeSeconds, Age + 25.f);
+        Announce(this, TEXT("MAGNETIC LOCK / Stay aboard. Select services, then release to depart."));
+        return true;
+    }
     if (bAccepted)
         return false;
     if (USSGameInstance *Instance = GetGameInstance<USSGameInstance>())
@@ -1257,16 +1323,26 @@ void ASSEncounterBeacon::FailObjective()
 
 void ASSEncounterBeacon::Tick(float DeltaSeconds)
 {
-    // Track alongside the ship once reached, allowing a deliberate moving interaction.
-    // No pause, invulnerability, free repairs or full station service is granted.
-    if (ASSShip *Ship = FindShip())
+    // A signal marks a place in the world; proximity never makes it follow the player.
+    LinearVelocity = FVector::ZeroVector;
+    if (!bAnnounced)
     {
-        if (bAccepted || IsPlayerInRange())
-            LinearVelocity = Ship->GetVelocity();
-        if (!bAnnounced)
+        bAnnounced = true;
+        Announce(this, GetEncounterLabel());
+    }
+    if (IsDepot() && bAccepted && !bResolved)
+    {
+        ObjectiveSeconds -= DeltaSeconds;
+        ASSShip *Ship = FindShip();
+        if (!Ship || !Ship->IsMoored() || ObjectiveSeconds <= 0.f)
         {
-            bAnnounced = true;
-            Announce(this, GetEncounterLabel());
+            bResolved = true;
+            if (ASSGameMode *Mode = GameMode(this))
+                if (Mode->ActiveBeacon == this && Mode->Panel == ESSPanel::Depot)
+                    Mode->ClosePanel();
+            if (Ship && Ship->IsMoored())
+                Ship->EndMooring();
+            Announce(this, TEXT("MAGNETIC LOCK RELEASED / Departure clear"));
         }
     }
     Super::Tick(DeltaSeconds);
@@ -1495,6 +1571,8 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
     if (!IsActive() || !FindShip())
         return;
     CleanTrackedActors();
+    if (FindShip()->IsMoored())
+        return; // No new admission or banked pressure during the bounded service stop.
     WaveAge += DeltaSeconds;
     float Modifier = 1.f;
     if (USSGameInstance *Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))

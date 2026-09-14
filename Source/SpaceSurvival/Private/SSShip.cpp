@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/AudioComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -17,6 +18,9 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
 #include "Animation/AnimSequence.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "Misc/PackageName.h"
 
 ASSShip::ASSShip()
 {
@@ -41,23 +45,39 @@ ASSShip::ASSShip()
     Pilot->SetRelativeScale3D(FVector(1.5f));
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ChaseBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 650.f;
-    CameraBoom->SocketOffset = FVector(0, 0, 175);
+    CameraBoom->TargetArmLength = 900.f;
+    CameraBoom->SocketOffset = FVector(0, 0, 125);
     CameraBoom->bDoCollisionTest = false;
     CameraBoom->bEnableCameraLag = true;
     CameraBoom->CameraLagSpeed = 9.f;
+    CameraBoom->CameraLagMaxDistance = 35.f;
+    CameraBoom->bUseCameraLagSubstepping = true;
+    CameraBoom->CameraLagMaxTimeStep = 1.f / 120.f;
     CameraBoom->bInheritRoll = false;
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ChaseCamera"));
     Camera->SetupAttachment(CameraBoom);
     Camera->FieldOfView = 80.f;
-    // Keep the prominent ship below the center sightline without widening the chase.
-    Camera->SetRelativeRotation(FRotator(2, 0, 0));
+    // Frame the entire banked hull below the sightline. The previous upward view
+    // clipped the rear hull even without lag at a 16:9 viewport.
+    Camera->SetRelativeRotation(FRotator(-4, 0, 0));
+    // A restrained chase-side fill keeps the player silhouette readable in deep shadow.
+    auto *ReadabilityLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("ShipReadabilityFill"));
+    ReadabilityLight->SetupAttachment(RootComponent);
+    ReadabilityLight->SetRelativeLocation(FVector(-350, -180, 220));
+    ReadabilityLight->SetIntensityUnits(ELightUnits::Lumens);
+    ReadabilityLight->SetIntensity(1500.f);
+    ReadabilityLight->SetAttenuationRadius(900.f);
+    ReadabilityLight->SetLightColor(FLinearColor(.7f, .82f, 1.f));
+    ReadabilityLight->SetCastShadows(false);
     EngineAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineAudio"));
     EngineAudio->SetAutoActivate(false);
     EngineAudio->SetupAttachment(RootComponent);
 }
 const TCHAR *ASSShip::HullAssetPath(SS::Ship Kind)
 {
+    if (Kind == SS::Ship::Starter && FParse::Param(FCommandLine::Get(), TEXT("SSShipRefresh")) &&
+        FPackageName::DoesPackageExist(TEXT("/Game/SpaceSurvival/ShipRefresh/SM_LudoStarter")))
+        return TEXT("/Game/SpaceSurvival/ShipRefresh/SM_LudoStarter.SM_LudoStarter");
     return Kind == SS::Ship::Agile ? TEXT("/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1.SM_SwiftCandidateV1")
                                    : TEXT("/Game/SpaceSurvival/Meshes/SM_AcornShipGripFit.SM_AcornShipGripFit");
 }
@@ -79,6 +99,8 @@ void ASSShip::BeginPlay()
         LoadObject<UStaticMesh>(nullptr, HullAssetPath(GI ? GI->Session.run.ship : SS::Ship::Starter)));
     Pilot->SetSkeletalMesh(
         LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
+    Pilot->SetVisibility(!HullMesh->GetStaticMesh() || !HullMesh->GetStaticMesh()->GetPathName().StartsWith(
+                                                           TEXT("/Game/SpaceSurvival/ShipRefresh/")));
     Pilot->PlayAnimation(
         LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit")), true);
     EngineAudio->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Engine.Engine")));
@@ -104,11 +126,43 @@ void ASSShip::SetDockingTarget(FVector Target, FRotator Rotation)
     DockRotation = Rotation;
     Docking = true;
 }
+bool ASSShip::BeginMooring()
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (Docking || !GI || !GI->Session.IsFlying())
+        return false;
+    Moored = true;
+    Velocity = Forces = FVector::ZeroVector;
+    SoftTarget = nullptr;
+    SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+    return true;
+}
+void ASSShip::EndMooring()
+{
+    if (!Moored)
+        return;
+    Moored = false;
+    Forces = FVector::ZeroVector;
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (GI && GI->Session.IsFlying())
+        Velocity = GetActorForwardVector() * float(GI->Session.Stats().speed);
+}
+float ASSShip::SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength)
+{
+    if (!FMath::IsFinite(Alignment) || !FMath::IsFinite(ConeDegrees) || ConeDegrees <= 0.f ||
+        !FMath::IsFinite(MaximumStrength))
+        return 0.f;
+    const float Edge = FMath::Cos(FMath::DegreesToRadians(FMath::Clamp(ConeDegrees, .01f, 45.f)));
+    const float Position = FMath::Clamp((Alignment - Edge) / FMath::Max(1.f - Edge, SMALL_NUMBER), 0.f, 1.f);
+    return FMath::Clamp(MaximumStrength, 0.f, .4f) * Position;
+}
 void ASSShip::FinishDocking()
 {
     SetActorLocation(DockTarget);
     SetActorRotation(DockRotation);
     Pilot->SetVisibility(false);
+    if (auto *ReadabilityLight = FindComponentByClass<UPointLightComponent>())
+        ReadabilityLight->SetVisibility(false);
     EngineAudio->Stop();
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Velocity = Forces = FVector::ZeroVector;
@@ -130,6 +184,14 @@ void ASSShip::Tick(float Dt)
     auto &S = GI->Session;
     FireCooldown = FMath::Max(0.f, FireCooldown - Dt);
     ImpactCooldown = FMath::Max(0.f, ImpactCooldown - Dt);
+    if (Moored)
+    {
+        // Existing hazards and damage remain active; GameMode freezes wave progress.
+        Velocity = Forces = FVector::ZeroVector;
+        SoftTarget = nullptr;
+        S.TickFlight(Dt, false, false);
+        return;
+    }
     if (Docking)
     {
         SetActorLocation(FMath::VInterpTo(GetActorLocation(), DockTarget, Dt, 2.f));
@@ -184,7 +246,8 @@ void ASSShip::Tick(float Dt)
     HullMesh->SetRelativeRotation(
         FMath::RInterpTo(HullMesh->GetRelativeRotation(), FRotator(-StrafeInput.Y * 5.f, 0, Bank), Dt, 6.f));
     CameraBoom->TargetArmLength =
-        FMath::FInterpTo(CameraBoom->TargetArmLength, Tuning->ChaseDistance + (S.run.boosting ? 110.f : 0.f), Dt, 3.f);
+        FMath::FInterpTo(CameraBoom->TargetArmLength,
+                         FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f), Dt, 3.f);
     Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? 86.f : 80.f, Dt, 3.f);
     if (GI->Session.settings.cameraShake && S.run.damageFeedback > 0)
         Camera->SetRelativeLocation(
@@ -225,7 +288,7 @@ FVector ASSShip::AimDirection() const
 void ASSShip::RequestDodge()
 {
     auto *GI = GetGameInstance<USSGameInstance>();
-    if (!GI || !GI->Session.Dodge())
+    if (Moored || !GI || !GI->Session.Dodge())
         return;
     FVector2D Direction = StrafeInput.IsNearlyZero() ? Steer : StrafeInput;
     if (Direction.IsNearlyZero())
@@ -257,7 +320,7 @@ void ASSShip::ReceiveImpact(float Amount, FVector AwayFromContact)
 void ASSShip::Fire()
 {
     auto *GI = GetGameInstance<USSGameInstance>();
-    if (!GI || !GI->Session.IsFlying() || FireCooldown > 0)
+    if (Moored || !GI || !GI->Session.IsFlying() || FireCooldown > 0)
         return;
     auto &S = GI->Session;
     const bool Cannon = S.run.weapon == SS::Weapon::HeavyCannon;
@@ -274,9 +337,17 @@ void ASSShip::Fire()
         FVector::DotProduct(SightHit.ImpactPoint - Start, Sight) > 1.f)
         AimPoint = SightHit.ImpactPoint;
     FVector Direction = (AimPoint - Start).GetSafeNormal();
-    if (IsValid(SoftTarget))
-        Direction =
-            FMath::Lerp(Direction, (SoftTarget->GetActorLocation() - Start).GetSafeNormal(), .42f).GetSafeNormal();
+    if (IsValid(SoftTarget) && !SoftTarget->IsActorBeingDestroyed())
+    {
+        const FVector TargetDelta = SoftTarget->GetActorLocation() - SightOrigin;
+        const float Alignment = FVector::DotProduct(Sight, TargetDelta.GetSafeNormal());
+        const float Weight = SoftAssistWeight(Alignment, Tuning->SoftAimDegrees, MaximumSoftAssist);
+        // Recheck the current sightline at trigger time; a previous frame's target must not pull a turn.
+        if (FVector::DistSquared(SoftTarget->GetActorLocation(), GetActorLocation()) <=
+            FMath::Square(Tuning->WeaponRange))
+            Direction = FMath::Lerp(Direction, (SoftTarget->GetActorLocation() - Start).GetSafeNormal(), Weight)
+                            .GetSafeNormal();
+    }
     // The existing muzzle trace/projectile sweep still handles nearby cover;
     // selecting a visible aim point never permits shooting through an obstacle.
     const float Damage = float(S.Stats().weaponDamage);

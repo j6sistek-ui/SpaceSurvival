@@ -12,3 +12,12 @@ BuildOutput/
 __pycache__/
 .agent/local/
 Build/Windows/FileOpenOrder/
+
+# Owner-licensed Fab source and local content (never publish raw assets).
+User downloaded assets/
+Content/Asteroid_Library/
+Content/SciFiCorridor/
+Content/SpaceSurvival/Licensed/
+Content/NiagaraExamples/
+Content/RPGEnvironmentVFX/
+Content/Vefects/

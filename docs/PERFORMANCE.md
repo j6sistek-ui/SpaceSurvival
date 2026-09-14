@@ -1,5 +1,7 @@
 # Performance findings
 
+**2026-09-14 asset refresh ready for owner review:** [Refresh record](ASSET_REFRESH.md) supersedes earlier statements that no leg derivative was adopted. Licensed corridor/asteroid presentation, repaired walk/exit clips, depot and combat-feedback corrections are integrated. Latest Editor build and all 39 Unreal tests pass with zero test warnings. The offscreen Station 5 sequence reached docking, exit and Station 1 with 12 captures; this is visual/transition evidence, not FPS or natural gameplay acceptance. Optional Ludo ship packaged and exercised through the offscreen Station5 sequence. The final flight-fill/docking-light correction was compiled and verified in that package. Phase 1 remains PARTIAL.
+
 **Latest measured package: 13; current package: 14. The representative Phase 1 performance gate remains OPEN.** Its normal-timing Wave 10 capture passed on the available i7-14700F/RTX 5080 at 2560x1440, DX12/SM6, quality 2, VSync off and cap 120. This is a seeded Tier V fixture with enlarged durability and scripted controls; it is not natural balance, physical response, clean-PC or lower-end acceptance.
 
 Package 14 fixes station look and has no new performance measurement. The figures below belong to the preceding build.
@@ -147,3 +149,7 @@ python Scripts/AnalyzePerformance.py 'path/to/completed.csv' --log 'path/to/game
 The analyzer uses Python's standard library, accommodates Unreal's growing header and large event field, excludes metadata rows, separates actual run phases and records exact hashes/settings. The [corrected-settings receipt](validation/2026-09-13-final-performance.json) contains per-wave timings, CPU/GPU measurements, worst frames, configuration chronology and method limits.
 
 Next capture ordinary active piloting, natural arrivals at both stations, the unmeasured Station 2 transition and a natural ten-wave run. Package 10's scripted Station 5 measurement does not close those human-play checks. Record process RAM/VRAM, frame-time spikes and an Insights trace; compare quality levels and 60/120/144 caps using a controlled route. Prioritize responsive input, simulation correctness and hazard readability before visual fidelity. No representative 60 FPS or 120+ FPS acceptance is claimed yet.
+
+## 2026-09-14 camera/environment follow-up
+
+See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.
