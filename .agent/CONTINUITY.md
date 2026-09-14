@@ -1,5 +1,11 @@
 # SpaceSurvival continuity
 
+[CONSOLIDATED OWNER REVIEW]
+- 2026-09-14T20:08Z [USER] Explicitly authorized merging everything, then owner review before further gameplay work. This supersedes earlier hold/unmerged instructions for PR3, PR6 and PR9; no automatic itch publication or new purchase is implied.
+- 2026-09-14T20:08Z [TOOL] Merged PR9 into asset-refresh (3a1b408), PR6 into phase1-implementation (56ee9ab), then PR3 into main (80e39b3). Each expected head was refreshed immediately before merge; source/core checks passed on each merged head. Three local merge previews and consolidated source tree match 6e4edd145e7541df809667981bad473c3b997c28; no conflict resolution or gameplay edits were needed.
+- 2026-09-14T20:08Z [TOOL] Local main fast-forwarded to 80e39b3. Independent read-only package verification matches all eight recorded source hashes, six executable/container hashes and sizes, capture receipt and four PNGs to the combined-look record. Existing Artifacts/Windows/SpaceSurvival.exe is the current combined-look review build; no rebuild or new launch was performed.
+- 2026-09-14T20:08Z [OUTCOMES] Catalog/implementation/environment work consolidated for owner inspection. Phase1 remains PARTIAL: physical/natural play, near-alpha presentation/audio, full-run and representative performance acceptance remain open. Itch remains 0.1.15-alpha/build1978147, older than the local combined build. Next work must use a new codex/ implementation branch from main and the whole-project solution catalog; let the owner review before starting another visual/gameplay pass.
+
 [SOLUTION CATALOG]
 - 2026-09-14T19:41Z [USER] Assess/catalog kits against the entire scoped game and desired direction, including changing ambient regions, flight/controls, combat/impacts, effects, NPCs and enemy craft/flight. Retain useful later solutions; active-task overlap alone is not a rejection criterion. Later 14 wishlist screenshots represent saved alternatives with overlap, not a buy-all list.
 - 2026-09-14T19:41Z [CODE] Documentation-only codex/solution-catalog from 01054cc: canonical docs/production/SOLUTION_CATALOG.md maps all 47 WBS packages; separates acquisition, evaluation, whole-game value and timing; preserves unreviewed wishlist leads and open specialist/system needs. AGENTS and planning indexes point to it. No game/assets/release/acceptance changes.
