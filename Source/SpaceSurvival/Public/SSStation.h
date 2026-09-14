@@ -12,6 +12,7 @@ class USpringArmComponent;
 class UAudioComponent;
 class UAnimSequence;
 class UTextRenderComponent;
+class UMaterialInterface;
 class ASSStationVisualLayout;
 struct FPoseSnapshot;
 
@@ -68,6 +69,8 @@ private:
         ESSPanel Panel;
     };
     TArray<FService> Services;
+    UPROPERTY()
+    TObjectPtr<UMaterialInterface> ServiceLabelMaterial;
     UPROPERTY()
     TArray<TObjectPtr<UTextRenderComponent>> ServiceLabels;
     UPROPERTY()

@@ -27,6 +27,7 @@
 #include "EngineUtils.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "UObject/ConstructorHelpers.h"
 
 #include "SSStationRefresh.inl"
 
@@ -34,6 +35,13 @@ ASSStation::ASSStation()
 {
     PrimaryActorTick.bCanEverTick = true;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HubRoot"));
+    // Retain the engine font material on the CDO so its masked, unlit graph is also cooked.
+    if (FPackageName::DoesPackageExist(TEXT("/Engine/EngineMaterials/UnlitText")))
+    {
+        static ConstructorHelpers::FObjectFinderOptional<UMaterialInterface> UnlitText(
+            TEXT("/Engine/EngineMaterials/UnlitText.UnlitText"));
+        ServiceLabelMaterial = UnlitText.Get();
+    }
     VisualLayoutAsset = FSoftObjectPath(
         TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout.BP_StationVisualLayout_C"));
     ShellAsset =
@@ -70,6 +78,8 @@ void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Pan
     Text->SetWorldSize(23);
     Text->SetText(FText::FromString(Label));
     Text->SetTextRenderColor(FColor(130, 230, 245));
+    if (ServiceLabelMaterial && ServiceLabelMaterial->GetShadingModels().HasOnlyShadingModel(MSM_Unlit))
+        Text->SetTextMaterial(ServiceLabelMaterial);
     Text->SetCastShadow(false);
     Text->ComponentTags.Add(TEXT("StationServiceLabel"));
     Text->RegisterComponent();

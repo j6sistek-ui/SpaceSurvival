@@ -6,6 +6,7 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "Materials/MaterialInterface.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationServiceLabelView, "SpaceSurvival.Integration.StationServiceLabelView",
@@ -49,6 +50,9 @@ bool FSSStationServiceLabelView::RunTest(const FString &)
             TestEqual(TEXT("View changes preserve label wording"), Text->Text.ToString(), InitialText[Index]);
             if (Text->ComponentHasTag(TEXT("StationServiceLabel")))
             {
+                auto *Material = Text->GetMaterial(0);
+                TestTrue(TEXT("Service labels use an unlit material so shadowed stations keep readable text"),
+                         Material && Material->GetShadingModels().HasOnlyShadingModel(MSM_Unlit));
                 // UE text quads face local +X; a camera on that side sees the readable front face.
                 const FVector TowardView =
                     (Camera->GetActorLocation() - Text->GetComponentLocation()).GetSafeNormal2D();

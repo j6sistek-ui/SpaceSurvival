@@ -152,6 +152,17 @@ for index, (x, y) in enumerate([
         'cast_shadows': False,
     })
 
+# Broad shadowless fill keeps the walking pilot and bay hardware readable between task pools.
+for index, x in enumerate([-600, 850]):
+    lights.append({
+        'name': f'WalkwayFill_{index}',
+        'location': [x, 0, 430],
+        'color': [0.80, 0.88, 1.0],
+        'intensity': 70000,
+        'attenuation_radius': 1800,
+        'cast_shadows': False,
+    })
+
 recipe = {
     'schema_version': 1,
     'purpose': 'Initial editable station workshop composition; asset-only, gameplay anchors remain native.',
