@@ -1,5 +1,8 @@
 #include "SSAmbientPresentation.h"
 #include "SSShip.h"
+#include "SSSpaceLookData.h"
+#include "Components/SkyLightComponent.h"
+#include "Engine/TextureCube.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
@@ -16,7 +19,7 @@ constexpr int32 DustCount = 512;
 constexpr double DustHalfWidth = 2400.0; // Fine passing grains, distinct from gameplay debris.
 TAutoConsoleVariable<int32> DustEnabled(TEXT("ss.LocalDust"), 1,
                                         TEXT("Enable cosmetic local dust grains (0 disables)."));
-TAutoConsoleVariable<int32> CloudEnabled(TEXT("ss.AtmosphereClouds"), 0,
+TAutoConsoleVariable<int32> CloudEnabled(TEXT("ss.AtmosphereClouds"), 1,
                                          TEXT("Enable optional distant atmosphere cloud banks (0 disables)."));
 TAutoConsoleVariable<int32> TrailEnabled(TEXT("ss.EngineTrails"), 1,
                                          TEXT("Enable optional Niagara engine ribbon trails (0 disables)."));
@@ -27,6 +30,11 @@ ASSAmbientPresentation::ASSAmbientPresentation()
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.TickGroup = TG_PostPhysics;
     SetRootComponent(CreateDefaultSubobject<USceneComponent>(TEXT("PresentationRoot")));
+    AmbientLight = CreateDefaultSubobject<USkyLightComponent>(TEXT("SpaceAmbientLight"));
+    AmbientLight->SetupAttachment(RootComponent);
+    AmbientLight->SetMobility(EComponentMobility::Movable);
+    AmbientLight->SourceType = SLS_SpecifiedCubemap;
+    AmbientLight->SetVisibility(false);
     VolumeFog = CreateDefaultSubobject<UExponentialHeightFogComponent>(TEXT("CloudVolumeGrid"));
     VolumeFog->SetupAttachment(RootComponent);
     // Engine scene registration rejects densities below DELTA / 1000.
@@ -71,9 +79,19 @@ ASSAmbientPresentation::ASSAmbientPresentation()
 void ASSAmbientPresentation::BeginPlay()
 {
     Super::BeginPlay();
-    const TCHAR *CloudPath = TEXT("/Game/SpaceSurvival/Licensed/Atmosphere/M_SpaceDustVolume");
-    auto *Material =
-        FPackageName::DoesPackageExist(CloudPath) ? LoadObject<UMaterialInterface>(nullptr, CloudPath) : nullptr;
+    const TCHAR *LookPath = TEXT("/Game/SpaceSurvival/Licensed/Atmosphere/DA_DeepSpaceLook");
+    SpaceLook = FPackageName::DoesPackageExist(LookPath) ? LoadObject<USSSpaceLookData>(nullptr, LookPath) : nullptr;
+    UMaterialInterface *Material = SpaceLook ? SpaceLook->CloudMaterial.Get() : nullptr;
+    if (SpaceLook)
+    {
+        VolumeFog->SetFogDensity(SpaceLook->FogDensity);
+        VolumeFog->SetFogHeightFalloff(0.f);
+        VolumeFog->SetVolumetricFogExtinctionScale(1.f);
+        VolumeFog->SetVolumetricFogAlbedo(FColor::White);
+        VolumeFog->SetVolumetricFogDistance(SpaceLook->FogDistance);
+        AmbientLight->SetCubemap(SpaceLook->AmbientCubemap);
+        AmbientLight->SetIntensity(SpaceLook->AmbientIntensity);
+    }
     auto *Cube = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
     auto *HullMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"),
                                                         nullptr, LOAD_NoWarn | LOAD_Quiet);
@@ -110,16 +128,19 @@ void ASSAmbientPresentation::BeginPlay()
             auto *Cloud = CloudBanks[Index].Get();
             Cloud->SetStaticMesh(Cube);
             // Engine cube is 100cm across; banks remain inside the 1.6km fog grid.
-            Cloud->SetWorldScale3D(Index == 0 ? FVector(600, 500, 250) : FVector(700, 500, 350));
+            Cloud->SetWorldScale3D(SpaceLook->CloudScale);
             auto *Dynamic = UMaterialInstanceDynamic::Create(Material, this);
-            Dynamic->SetScalarParameterValue(TEXT("Density"), .00001f);
+            // Keep the authored volume parameters, including its soft boundary and lighting.
             Cloud->SetMaterial(0, Dynamic);
             CloudMaterials.Add(Dynamic);
         }
     }
-    auto *System = LoadObject<UNiagaraSystem>(
-        nullptr, TEXT("/Game/NiagaraExamples/FX_Weapons/Trails/NS_SimpleRibbonTrail.NS_SimpleRibbonTrail"), nullptr,
-        LOAD_NoWarn | LOAD_Quiet);
+    const TCHAR *TrailPath = TEXT("/Game/SpaceSurvival/Licensed/Atmosphere/NS_DeepSpaceExhaust");
+    auto *System = FPackageName::DoesPackageExist(TrailPath) ? LoadObject<UNiagaraSystem>(nullptr, TrailPath) : nullptr;
+    if (!System)
+        System = LoadObject<UNiagaraSystem>(
+            nullptr, TEXT("/Game/NiagaraExamples/FX_Weapons/Trails/NS_SimpleRibbonTrail.NS_SimpleRibbonTrail"), nullptr,
+            LOAD_NoWarn | LOAD_Quiet);
     TrailsAvailable = System != nullptr;
     for (const auto &Trail : EngineTrails)
     {
@@ -137,6 +158,8 @@ void ASSAmbientPresentation::Follow(AActor *Actor)
         RemoveTickPrerequisiteActor(Followed.Get());
     Followed = Actor;
     DustInitialized = false;
+    CloudPositionInitialized = false;
+    CloudTravel = FVector::ZeroVector;
     if (Actor)
         AddTickPrerequisiteActor(Actor);
     auto *Ship = Cast<ASSShip>(Actor);
@@ -169,6 +192,7 @@ void ASSAmbientPresentation::SetFlightVisible(bool Visible)
     {
         Dust->SetVisibility(false);
         VolumeFog->SetVisibility(false);
+        AmbientLight->SetVisibility(false);
         for (const auto &Cloud : CloudBanks)
             Cloud->SetVisibility(false);
         for (const auto &Trail : EngineTrails)
@@ -184,16 +208,30 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
     const bool Active = FlightVisible && Followed.IsValid();
     const bool CloudsVisible = Active && CloudAvailable && CloudEnabled.GetValueOnGameThread() != 0;
     const FVector Center = Followed.IsValid() ? Followed->GetActorLocation() : FVector::ZeroVector;
+    if (!CloudPositionInitialized)
+    {
+        LastCloudCenter = Center;
+        CloudPositionInitialized = true;
+    }
+    const FVector CloudStep = Center - LastCloudCenter;
+    // Banks remain world-stationary over ordinary travel. Bound the accumulated
+    // offset so long runs cannot leave the local fog grid; never rotate with aim.
+    if (CloudStep.SizeSquared() < FMath::Square(6000.0))
+        CloudTravel = (CloudTravel - CloudStep).GetClampedToMaxSize(35000.0);
+    else
+        CloudTravel = FVector::ZeroVector;
+    LastCloudCenter = Center;
     VolumeFog->SetVisibility(CloudsVisible);
+    AmbientLight->SetVisibility(Active && SpaceLook && SpaceLook->AmbientCubemap);
     if (CloudsVisible)
-        VolumeFog->SetWorldLocation(Center);
+        VolumeFog->SetWorldLocation(Center + FVector(0, 0, -10000000));
     UpdateDust(Center, Active && DustEnabled.GetValueOnGameThread() != 0);
     for (int32 Index = 0; Index < CloudBanks.Num(); ++Index)
     {
         CloudBanks[Index]->SetVisibility(CloudsVisible);
         if (CloudsVisible)
-            CloudBanks[Index]->SetWorldLocation(
-                Center + (Index == 0 ? FVector(65000, 30000, 17000) : FVector(100000, -45000, -18000)));
+            CloudBanks[Index]->SetWorldLocation(Center + CloudTravel +
+                                                (Index == 0 ? SpaceLook->CloudOffsetA : SpaceLook->CloudOffsetB));
     }
     const auto *Ship = Cast<ASSShip>(Followed.Get());
     const bool TrailsVisible =
@@ -220,6 +258,8 @@ void ASSAmbientPresentation::ApplyWorldOffset(const FVector &InOffset, bool bWor
         for (auto &Position : DustPositions)
             Position += InOffset;
     }
+    if (CloudPositionInitialized)
+        LastCloudCenter += InOffset;
     // Clear world-space ribbon history across rebasing to avoid a screen-wide streak.
     for (const auto &Trail : EngineTrails)
         Trail->DeactivateImmediate();

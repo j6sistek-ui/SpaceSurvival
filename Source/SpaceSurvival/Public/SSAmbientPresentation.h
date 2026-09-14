@@ -8,6 +8,8 @@ class UExponentialHeightFogComponent;
 class UInstancedStaticMeshComponent;
 class UMaterialInstanceDynamic;
 class UNiagaraComponent;
+class USkyLightComponent;
+class USSSpaceLookData;
 
 /** Optional private-content atmosphere. Never participates in gameplay collision. */
 UCLASS()
@@ -35,10 +37,17 @@ private:
     TObjectPtr<UExponentialHeightFogComponent> VolumeFog;
     UPROPERTY()
     TObjectPtr<UMaterialInstanceDynamic> DustMaterial;
+    UPROPERTY()
+    TObjectPtr<USkyLightComponent> AmbientLight;
+    UPROPERTY()
+    TObjectPtr<USSSpaceLookData> SpaceLook;
     TArray<FVector> DustPositions;
     TArray<FTransform> DustTransforms;
     TArray<float> DustSizes;
     FVector LastDustCenter = FVector::ZeroVector;
+    FVector CloudTravel = FVector::ZeroVector;
+    FVector LastCloudCenter = FVector::ZeroVector;
+    bool CloudPositionInitialized = false;
     bool DustInitialized = false;
     void UpdateDust(const FVector &Center, bool Visible);
     TWeakObjectPtr<AActor> Followed;

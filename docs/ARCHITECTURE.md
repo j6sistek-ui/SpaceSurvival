@@ -13,6 +13,7 @@ The UE 5.8 project has one C++20 runtime module. Its deterministic domain also c
 | `SS::Session`, `Run`, `Account`, `Settings`, `Tuning` | Authoritative run phases, resource/damage rules, effective stats, economy, upgrades, utilities, contracts, score/XP/unlocks and strict codecs. No actors, rendering or file I/O |
 | `USSGameInstance` / `USSStoredData` | Session lifetime, three compatible SaveGame domains, serialization verification, suspension consumption and settings application |
 | `SSLocalSave` | Windows generic-backend staging, flushed byte verification and native replacement of an existing slot |
+| USSSpaceLookData, ASSAmbientPresentation, ASSDistantAsteroids | Optional licensed sky/volume/light configuration and bounded cosmetic dust/rock/exhaust presentation; no Director, collision or progression authority. See [combined look](production/COMBINED_SPACE_LOOK.md) |
 | `ASSGameMode` | Run/hangar/station orchestration, pawn possession, phase reactions, shell actions, music and warning/reaction coordination |
 | `ASSPlayerController` | Keyboard/mouse and gamepad polling, menu consumption, sensitivities, inversion and hold/toggle latches |
 | `ASSShip` | Swept flight, inertia, visual banking, external forces, dodge, chase camera, manual/soft aim, laser/cannon and ship audio |

@@ -797,6 +797,74 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
         return true;
     };
     TestTrue(TEXT("Actual transformed mesh bounds stay outside the playable weapon range initially"), CheckDistance());
+    TArray<TArray<FVector>> InitialCenters;
+    InitialCenters.SetNum(Batches.Num());
+    TSet<int32> AnchorMeshBatches;
+    int32 FarRocks = 0;
+    bool bClearEntryAim = true;
+    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
+    {
+        const auto *Batch = Batches[BatchIndex];
+        TestFalse(TEXT("Decoration does not affect navigation"), Batch->CanEverAffectNavigation());
+        TestFalse(TEXT("Decoration does not introduce distant shadow work"), Batch->CastShadow);
+        const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
+        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+        {
+            FTransform Instance;
+            Batch->GetInstanceTransform(Index, Instance, true);
+            const FVector Center = Instance.TransformPosition(Bounds.Origin) - Fixture.Ship->GetActorLocation();
+            InitialCenters[BatchIndex].Add(Center);
+            const double Radius = Bounds.SphereRadius * Instance.GetScale3D().GetAbsMax();
+            if (Radius > 2200.0)
+                AnchorMeshBatches.Add(BatchIndex);
+            if (Center.Size() > 100000.0)
+                ++FarRocks;
+            if (Center.GetSafeNormal().X > .97 && Radius > 220.1)
+                bClearEntryAim = false;
+        }
+    }
+    TestTrue(TEXT("All four meshes contribute large silhouettes instead of one repeated anchor"),
+             AnchorMeshBatches.Num() == Batches.Num());
+    TestTrue(TEXT("Distant fragments supply a separate depth layer"), FarRocks > 0);
+    TestTrue(TEXT("Initial central aim corridor contains only small backdrop silhouettes"), bClearEntryAim);
+    const FRotator InitialRotation = Fixture.Ship->GetActorRotation();
+    Fixture.Ship->SetActorRotation(FRotator(20.f, 90.f, 0.f));
+    Field->Tick(0.f);
+    bool bStableDuringTurn = true;
+    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
+    {
+        const auto *Batch = Batches[BatchIndex];
+        const FVector Origin = Batch->GetStaticMesh()->GetBounds().Origin;
+        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+        {
+            FTransform Instance;
+            Batch->GetInstanceTransform(Index, Instance, true);
+            const FVector Center = Instance.TransformPosition(Origin) - Fixture.Ship->GetActorLocation();
+            bStableDuringTurn &= Center.Equals(InitialCenters[BatchIndex][Index], .1);
+        }
+    }
+    TestTrue(TEXT("Turning the viewer does not swivel or reseed the environment"), bStableDuringTurn);
+    Fixture.Ship->SetActorRotation(InitialRotation);
+    Fixture.Ship->AddActorWorldOffset(FVector(0, 1000, 0));
+    Field->Tick(0.f);
+    double MinimumShift = TNumericLimits<double>::Max();
+    double MaximumShift = 0.0;
+    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
+    {
+        const auto *Batch = Batches[BatchIndex];
+        const FVector Origin = Batch->GetStaticMesh()->GetBounds().Origin;
+        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+        {
+            FTransform Instance;
+            Batch->GetInstanceTransform(Index, Instance, true);
+            const FVector Center = Instance.TransformPosition(Origin) - Fixture.Ship->GetActorLocation();
+            const double Shift = (Center - InitialCenters[BatchIndex][Index]).Size();
+            MinimumShift = FMath::Min(MinimumShift, Shift);
+            MaximumShift = FMath::Max(MaximumShift, Shift);
+        }
+    }
+    TestTrue(TEXT("Translation produces different motion in the near and distant layers"),
+             MinimumShift > 0.0 && MaximumShift > 40.0 && MinimumShift < MaximumShift * .5);
     for (int32 Step = 0; Step < 160; ++Step)
     {
         Fixture.Ship->AddActorWorldOffset(FVector(5000, 1000, 500));

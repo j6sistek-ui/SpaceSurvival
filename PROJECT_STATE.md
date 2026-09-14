@@ -1,3 +1,5 @@
+**2026-09-14 combined space look:** [Current presentation milestone](docs/production/COMBINED_SPACE_LOOK.md) supersedes the environment settings below. Owned cool cubemap, thin nebular volumes, ambient lighting, four asteroid depth bands and blue-white ribbons are integrated. 44 Unreal tests and Windows packaging passed; final packaged 1080p scripted Wave1 capture passed with production saves preserved. This is ready for owner visual review; Phase 1 remains PARTIAL and itch remains 0.1.15-alpha.
+
 # Project state
 
 **2026-09-14 environment follow-up:** [Camera/environment refresh](docs/ENVIRONMENT_REFRESH.md) supersedes the earlier presentation snapshot below. Forty-two Unreal tests passed before the final volume-registration threshold adjustment; final Windows package/render status is in the new validation receipt. Phase 1 remains PARTIAL.

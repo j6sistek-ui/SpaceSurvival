@@ -1,0 +1,147 @@
+{
+  "status": "IMPLEMENTED_PACKAGED_READY_FOR_VISUAL_REVIEW",
+  "phase1": "PARTIAL",
+  "date": "2026-09-14",
+  "source_base": "195f7bb5d643aa94dcf78a25504909d8d5145794",
+  "source_files_sha256": {
+    "Source/SpaceSurvival/Private/SSAmbientPresentation.cpp": "1ff327e7dbaee730806218093fd5ec6633c34f6d2bb53474af7964c6fc844c4b",
+    "Source/SpaceSurvival/Private/SSDistantAsteroids.cpp": "4910e0bca9cbcd925118e2904582b5853f239243b7449012ba25286b860d8dcc",
+    "Source/SpaceSurvival/Private/SSFlightAutomationTests.cpp": "8e3d9af4ecf776e40bd0dc0a9a8a9181b5c31846ead47016f03352dfdba0706a",
+    "Source/SpaceSurvival/Private/SSGameMode.cpp": "a367ace085999dbb2c50ad911596f30ec75fb6eb3d6f2e4b69ca1086181f6f2b",
+    "Source/SpaceSurvival/Private/SSAmbientPresentationAutomationTests.cpp": "483960dce6996580f2ff62da3763de7b0840b4c7efa442e03e7a284c427b15e4",
+    "Source/SpaceSurvival/Public/SSAmbientPresentation.h": "66b51e763e2292d4c11c0d8366e684be914d73b97d0c3e5f659c80577871ef5a",
+    "Source/SpaceSurvival/Public/SSDistantAsteroids.h": "64fc567443075477bd7681b7086a68076fb0275ffd834b3fd7bffb0bbda48418",
+    "Source/SpaceSurvival/Public/SSSpaceLookData.h": "8ff94d266417c2a0ae692bb76686493c19a0f6f14d9a2191434b33de44ec677b"
+  },
+  "unreal_tests": {
+    "succeeded": 44,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0
+  },
+  "source_checks": 27,
+  "native_format": "passed",
+  "python_compile": "passed",
+  "source_assets": "26 meshes,16WAVs, supplied GLB unchanged",
+  "container": "Docker daemon unavailable; installed native toolchain used, no installation",
+  "package": "Artifacts/Windows",
+  "package_capture": {
+    "root": "Artifacts/EndgameSoak/4517235493a443e88987b0d9a3802f2d",
+    "capture_receipt_sha256": "b2b5fed1c7a0ca3fad777ea3199d8e72fa28562a4c7d6a27ca0aedb5c48a490f",
+    "success": true,
+    "production_preserved": true,
+    "artifacts_unchanged": true,
+    "no_save_slots_written": true,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "stages": [
+      "Cruise",
+      "Turn",
+      "Boost",
+      "Brake"
+    ],
+    "normal_stats": true,
+    "scripted": true,
+    "fires": false,
+    "offscreen": true
+  },
+  "artifacts": [
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe",
+      "bytes": 332870144,
+      "sha256": "89B5DD59F63CD77BE56018869B03DF79F91A08BF32F0E3E061404554ABB2D815"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.ucas",
+      "bytes": 3205840,
+      "sha256": "7C80D34E5EED1CE48AA6F9DE44112B97064666885D6BB63AD01BA40708EF22F1"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.utoc",
+      "bytes": 782,
+      "sha256": "A27B9DE20DE2E994BF29CCEE7F052667BDF37BEEFD126B7BBA6E26118A47C5D5"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.pak",
+      "bytes": 11257405,
+      "sha256": "24BB16CEF69615919417E9C6922BB254CEABA60AD8AD52A4D19F5B857A9B05BD"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.ucas",
+      "bytes": 1395805152,
+      "sha256": "F2C42A15A99AC1D4F7F44250AC84BC42406FADC21D84DCAE4B95D4CE4F5DD45F"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.utoc",
+      "bytes": 769648,
+      "sha256": "483B3EB9E9A134E9038FF982F6A8FC49F0EE748FF4D5A13A49CBEC56251EB3A6"
+    }
+  ],
+  "images": {
+    "Cruise": "6442979b148bbb85d9d264971e19674c70beaa8ceba22204935bf89837cf9b69",
+    "Turn": "ff59c9b0e778917a67a88d5b30c6be0c4503f1a13bca9ef6e7ef708d51bd7cce",
+    "Boost": "c80fc2f96ae461058ee6fa80d16c20b7c2eac863254db5dc1607a1bd957de967",
+    "Brake": "78dd08f6775f16e262ff5f57dab9bd4ee892e1e95aa4c47cf48d82e3baf7b1e5"
+  },
+  "visual_review": "Packaged Cruise/Turn/Brake plus final Editor Cruise/Turn/Boost inspected; cool wisps and dark openings, no rectangular cloud boundary visible. Continuous motion and owner acceptance remain open.",
+  "performance": {
+    "evidence": "OFFSCREEN_WAVE1_WITH_SCREENSHOT_READBACKS_NOT_FPS_ACCEPTANCE",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "source_fixture": "Artifacts\\EndgameSoak\\17ab13d8b921475a880144d026ad455e\\fixture.json",
+    "includes_startup_and_readback_stalls": true,
+    "timings": {
+      "FrameTime": {
+        "samples": 3360,
+        "median_ms": 8.3335,
+        "p95_ms": 8.3453,
+        "max_ms": 515.6676
+      },
+      "GPUTime": {
+        "samples": 3360,
+        "median_ms": 2.98445,
+        "p95_ms": 3.1335,
+        "max_ms": 4.084
+      },
+      "GameThreadTime": {
+        "samples": 3360,
+        "median_ms": 2.0143500000000003,
+        "p95_ms": 2.6033,
+        "max_ms": 204.8215
+      },
+      "RenderThreadTime": {
+        "samples": 3360,
+        "median_ms": 4.8604,
+        "p95_ms": 6.497,
+        "max_ms": 25.6413
+      },
+      "GPU/VolumetricFog": {
+        "samples": 3360,
+        "median_ms": 0.096,
+        "p95_ms": 0.1003,
+        "max_ms": 0.587
+      },
+      "GPU/Translucency": {
+        "samples": 3360,
+        "median_ms": 0.1619,
+        "p95_ms": 0.1887,
+        "max_ms": 0.1949
+      }
+    },
+    "limitation": "Standard AnalyzePerformance.py currently rejects Wave1 scenario3; this explicitly filtered diagnostic uses final CSV header, not the endgame acceptance path."
+  },
+  "known_issues": [
+    "Uniform cool rock lighting and thin ribbon exhaust still differ from target.",
+    "Local grain geometry and nozzle fit remain provisional.",
+    "Bounded parallax saturates; no infinite streaming.",
+    "Packaged station_1/station_2 materials report missing Nanite usage and fallback.",
+    "Standard endgame performance analyzer rejects Wave1 scenario3; diagnostic is separate.",
+    "Physical input, natural combat/ten-wave quality and representative60FPS are unverified."
+  ],
+  "itch": "Unchanged0.1.15-alpha/build1978147",
+  "independent_review": "No blocking gameplay/cook/GC defect; authoring report-directory creation issue fixed; quality limitations recorded."
+}

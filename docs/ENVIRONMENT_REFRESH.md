@@ -1,5 +1,7 @@
 # Camera and environment refresh
 
+**Historical release record.** The [combined space look](production/COMBINED_SPACE_LOOK.md) supersedes the cloud, sky, lighting, density, exhaust and tuning settings below. The 0.1.15-alpha release itself remains unchanged.
+
 Owner request: retain approachable early-wave hazards while adding background volume, space dust and depth from supplied assets; fix the clipped flight camera; evaluate Space Station 4 as exterior mass. This is a scoped presentation follow-up, not Phase 1 completion.
 
 ## Implementation

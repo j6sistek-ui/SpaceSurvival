@@ -13,7 +13,22 @@ TAutoConsoleVariable<int32>
                          ECVF_Scalability);
 constexpr double MaximumParallax = 4500.0;
 constexpr double MinimumAnchorDistance = 32000.0;
-constexpr double MaximumRockRadius = 2200.0;
+constexpr double MaximumRockRadius = 4800.0;
+struct FDepthBand
+{
+    float MinimumDistance;
+    float MaximumDistance;
+    float MinimumRadius;
+    float MaximumRadius;
+    double Parallax;
+    double Tumble;
+};
+// The pack's examples build scale from sparse large bodies through many small fragments.
+// Keep that hierarchy in four bounded visual layers; none enters the playable hazard volume.
+const FDepthBand DepthBands[] = {{42000.f, 62000.f, 2300.f, float(MaximumRockRadius), .7, .25},
+                                 {float(MinimumAnchorDistance), 51000.f, 450.f, 1000.f, 1.0, 1.0},
+                                 {68000.f, 95000.f, 450.f, 1400.f, .35, .5},
+                                 {115000.f, 175000.f, 180.f, 650.f, .12, .1}};
 } // namespace
 
 ASSDistantAsteroids::ASSDistantAsteroids()
@@ -92,10 +107,13 @@ void ASSDistantAsteroids::BuildField(int32 Count)
     for (const auto &Batch : Batches)
     {
         Batch->ClearInstances();
-        Batch->SetRelativeLocation(ParallaxOffset);
+        Batch->SetRelativeLocation(FVector::ZeroVector);
     }
+    InstanceBands.SetNum(Batches.Num());
     RestTransforms.SetNum(Batches.Num());
     AnimatedTransforms.SetNum(Batches.Num());
+    for (auto &Bands : InstanceBands)
+        Bands.Reset();
     for (auto &Transforms : RestTransforms)
         Transforms.Reset();
     for (auto &Transforms : AnimatedTransforms)
@@ -112,14 +130,24 @@ void ASSDistantAsteroids::BuildField(int32 Count)
     FRandomStream Random(740127);
     for (int32 Index = 0; Index < Count; ++Index)
     {
-        auto *Batch = Batches[Index % Batches.Num()].Get();
+        const int32 BandIndex = Index % 16 == 0 ? 0 : (Index % 4 == 0 ? 1 : (Index % 4 == 1 ? 2 : 3));
+        const FDepthBand &Band = DepthBands[BandIndex];
+        // Decouple the mesh cycle from the size cycle: large anchors formerly all used
+        // one mesh and appeared in only two of the eight cluster directions.
+        const int32 BatchIndex = (Index + Index / 4 + Index / 16) % Batches.Num();
+        auto *Batch = Batches[BatchIndex].Get();
         const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
-        const FVector Direction = (Clusters[Index % UE_ARRAY_COUNT(Clusters)] + Random.VRand() * .42).GetSafeNormal();
-        const double Distance = MinimumAnchorDistance + (Index % 3) * 18000.0 + Random.FRandRange(0.f, 12000.f);
-        // Most rocks are small distant silhouettes; sparse larger anchors supply scale.
-        // Leave the central sight corridor open without turning decoration into hazards.
-        double Radius =
-            Index % 12 == 0 ? Random.FRandRange(1400.f, float(MaximumRockRadius)) : Random.FRandRange(100.f, 700.f);
+        const int32 ClusterIndex = Random.RandRange(0, UE_ARRAY_COUNT(Clusters) - 1);
+        FVector Direction = (Clusters[ClusterIndex] + Random.VRand() * .42).GetSafeNormal();
+        // Move the largest silhouettes to the sides of the entry view, rather than
+        // letting a backdrop rock conceal targets directly ahead of the launch heading.
+        if (BandIndex == 0 && Direction.X > .9)
+        {
+            Direction.Y += Direction.Y < 0 ? -.45 : .45;
+            Direction.Normalize();
+        }
+        const double Distance = Random.FRandRange(Band.MinimumDistance, Band.MaximumDistance);
+        double Radius = Random.FRandRange(Band.MinimumRadius, Band.MaximumRadius);
         if (Direction.X > .97)
             Radius = FMath::Min(Radius, 220.0);
         const double Scale = Radius / FMath::Max(1.0, double(Bounds.SphereRadius));
@@ -129,9 +157,12 @@ void ASSDistantAsteroids::BuildField(int32 Count)
         const FVector Center = FieldBasis.RotateVector(Direction * Distance);
         const FVector Pivot = Center - Rotation.RotateVector(Bounds.Origin * Scale);
         const FTransform Pose(Rotation, Pivot, FVector(Scale));
-        Batch->AddInstance(Pose);
-        RestTransforms[Index % Batches.Num()].Add(Pose);
-        AnimatedTransforms[Index % Batches.Num()].Add(Pose);
+        FTransform Animated = Pose;
+        Animated.AddToTranslation(ParallaxOffset * Band.Parallax);
+        Batch->AddInstance(Animated);
+        RestTransforms[BatchIndex].Add(Pose);
+        AnimatedTransforms[BatchIndex].Add(Animated);
+        InstanceBands[BatchIndex].Add(uint8(BandIndex));
         ++BuiltCount;
     }
 }
@@ -154,7 +185,7 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
     if (Wanted != BuiltCount && !Batches.IsEmpty())
         BuildField(Wanted);
     // A finite sky-shell translation gives gentle depth without eventually reaching
-    // a non-colliding rock. Even at the clamp, all mesh bounds remain >=25300cm away.
+    // a non-colliding rock. Even at the clamp, all mesh bounds remain >=22700cm away.
     // Large jumps are teleports, not parallax motion; rebasing is handled separately.
     if (!Travel.ContainsNaN() && Travel.SizeSquared() < FMath::Square(8000.0))
         ParallaxOffset = (ParallaxOffset - Travel * .08).GetClampedToMaxSize(MaximumParallax);
@@ -164,17 +195,19 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
     for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
     {
         auto *Batch = Batches[BatchIndex].Get();
-        Batch->SetRelativeLocation(ParallaxOffset);
+        Batch->SetRelativeLocation(FVector::ZeroVector);
         const FVector Origin = Batch->GetStaticMesh()->GetBounds().Origin;
         for (int32 Index = 0; Index < RestTransforms[BatchIndex].Num(); ++Index)
         {
+            const FDepthBand &Band = DepthBands[InstanceBands[BatchIndex][Index]];
             const FTransform &Rest = RestTransforms[BatchIndex][Index];
             const FVector Axis = FVector(1.0, .3 + BatchIndex, .2 + Index % 3).GetSafeNormal();
-            const double Rate = .2 + .1 * ((Index + BatchIndex) % 7);
+            const double Rate = (.2 + .1 * ((Index + BatchIndex) % 7)) * Band.Tumble;
             const FQuat Rotation = FQuat(Axis, FMath::DegreesToRadians(SpinSeconds * Rate)) * Rest.GetRotation();
             FTransform &Pose = AnimatedTransforms[BatchIndex][Index];
             Pose.SetRotation(Rotation);
-            Pose.SetLocation(Rest.TransformPosition(Origin) - Rotation.RotateVector(Origin * Rest.GetScale3D()));
+            Pose.SetLocation(Rest.TransformPosition(Origin) - Rotation.RotateVector(Origin * Rest.GetScale3D()) +
+                             ParallaxOffset * Band.Parallax);
         }
         if (!AnimatedTransforms[BatchIndex].IsEmpty())
             Batch->BatchUpdateInstancesTransforms(0, AnimatedTransforms[BatchIndex], false, true, false);

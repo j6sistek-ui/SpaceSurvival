@@ -5,6 +5,8 @@
 #include "SSShip.h"
 #include "SSDistantAsteroids.h"
 #include "SSAmbientPresentation.h"
+#include "SSSpaceLookData.h"
+#include "Misc/PackageName.h"
 #include "SSStation.h"
 #include "Animation/PoseSnapshot.h"
 #include "SSHUD.h"
@@ -142,6 +144,10 @@ void ASSGameMode::BeginPlay()
             if (auto *DetailedSky = LoadObject<UMaterialInterface>(
                     nullptr, TEXT("/Game/SpaceSurvival/Materials/MI_SpaceMilkyWay.MI_SpaceMilkyWay")))
                 BackdropMesh->SetMaterial(0, DetailedSky);
+            const TCHAR *LookPath = TEXT("/Game/SpaceSurvival/Licensed/Atmosphere/DA_DeepSpaceLook");
+            if (FPackageName::DoesPackageExist(LookPath))
+                if (auto *Look = LoadObject<USSSpaceLookData>(nullptr, LookPath); Look && Look->SkyMaterial)
+                    BackdropMesh->SetMaterial(0, Look->SkyMaterial);
             SpaceMaterial = BackdropMesh->CreateAndSetMaterialInstanceDynamic(0);
         }
         if (It->ActorHasTag(TEXT("SpaceStars")))
