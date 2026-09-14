@@ -109,7 +109,7 @@ Use bright crystal/organic/glowing themes selectively and normalize them to the 
 
 ## Wishlist and named leads retained for later screening
 
-C entries are **unreviewed leads** from owner screenshot/messages, not endorsed products or proven dependencies. The owner's September 14 clarification treats these as saved alternatives with substantial overlap, not a buy-all list. Unless stated otherwise, acquisition, exact listing URL, version, contents and performance are UNCONFIRMED. Some titles were truncated on screen. Grouping describes a possible role to investigate, not verified features.
+C entries retain stable wishlist IDs. Most are **unreviewed leads**; C10 and C23 now have identified listings and dated assessments below. None is a proven runtime dependency from listing review alone. The owner's September 14 clarification treats these as saved alternatives with substantial overlap, not a buy-all list. Unless stated otherwise, acquisition, exact listing URL, version, contents and performance are UNCONFIRMED. Some titles were truncated on screen. Grouping describes a possible role to investigate, not verified features.
 
 | ID | Lead / visible creator where known | Potential whole-project role / WBS | Timing and next evidence |
 | --- | --- | --- | --- |
@@ -122,7 +122,7 @@ C entries are **unreviewed leads** from owner screenshot/messages, not endorsed 
 | C07 | Deep Space [UI] - IL.ranch | HUD/menu components; 9.1, 9.2, 9.3 | Later Phase 1; compare visual language/device support without replacing behavior |
 | C08 | EXPLOSIONS - Niagara... - Sidearm Studios (title truncated) | Enemy death, impacts, destructive feedback; 2.4, 3.3, 5.1-5.4 | High need; inspect space-suitable effects, clarity and cost in actual combat |
 | C09 | Energy Beam VFX - Dr.Game (title truncated) | Laser/electrical visual source; 3.5, 5.3, 10.3 | Later Phase 1; visuals must fit Rapid Laser cadence; no extra beam weapon |
-| C10 | HighRes Asteroids Pack - Vladimir Perminov | Additional shape/surface family; 3.1, 3.2, 10.3 | Compare actual diversity against A01/B01; high resolution alone is not a distinct regional identity |
+| C10 | [HighRes Asteroids Pack - Vladimir Perminov](https://www.fab.com/listings/dfef8cab-5e4a-43d1-910b-e6efaccaa2c8) | Additional shape/surface family; 3.1, 3.2, 10.3 | Listing reviewed Sept14; useful diversity candidate alongside A01. Acquisition/local evaluation unconfirmed; compare actual shape/material difference and LOD cost |
 | C11 | Local Mind AI - Tasfiqur Rahman | Possible authoring/NPC tooling; 8.4 | Park: scope uses small authored NPC interactions; no need established for runtime generative dialogue/model dependency |
 | C12 | Modular Sci-Fi Hallways - Talon Hackbarth | Interior assembly/props; 8.2, 8.3, 8.5 | Later Phase 1 if owned kit lacks a needed section |
 | C13 | Mechanical Damage FX - SHOGUN GAMES | Ship/enemy/wreckage damage feedback; 2.4, 3.4, 5.1-5.4 | High need; audition alongside debris/death/weapon effects, not separately accepted |
@@ -135,7 +135,7 @@ C entries are **unreviewed leads** from owner screenshot/messages, not endorsed 
 | C20 | Deep Space Station & Fleet Bundle - Game Ready - MSP Assets | Ambient structures, depot/exterior, potential enemy hull ingredients; 6.6, 8.1, 5.1, 5.2, 10.3 | Inspect GLB/glTF/USDZ geometry, materials, sockets, collisions and art fit; game-ready title is not integration evidence |
 | C21 | Volumetric Nebula and Clouds - Athian Games | Local atmosphere/region authoring; 3.5, 4.2, 10.3 | High relevant need; later bounded comparison against A01/B08/C22/C25; plugin support and cost unverified |
 | C22 | Volumetric Space Nebula Procedural G... - Ambient GraphX (title truncated) | Sparse nebular shape/depth and region composition; 4.2, 10.3 | High relevant need; inspect actual volume technique, travel behavior, opacity/color controls and runtime cost |
-| C23 | Space Ship 02 Modular Pack - Havolk | Ship/structure kitbash, possible enemy pair/depot/ambient debris; 5.1, 5.2, 6.6, 3.4, 10.3 | Later Phase 1 modeling relief; review modular joins/materials and avoid replacing custom acorn identity |
+| C23 | [Space Ship 02 Modular Pack - Havolk](https://www.fab.com/listings/8d658f0c-4d5e-4ba5-9470-d7c9d7823a10) | Interim craft, enemy pair and debris kitbash; 7.4, 7.5, 5.1, 5.2, 3.4; possible 6.6, 10.3 | Owner-identified intended kit; listing reviewed Sept14, purchase unconfirmed. Strong modeling relief; regular artist owns iconic starter; inspect assembled cost/joins/sockets |
 | C24 | Space Station - Asteroid Mining Facility - Etherion Designs | Station/depot landmark, asteroid-integrated industrial dressing; 6.6, 8.1, 8.2, 10.3 | Later Phase 1 exterior comparison; no mining gameplay implied; check usable interior and docking dimensions |
 | C25 | Space Nebula and Starfield V2 (V3) - Thauros-Development | Regional backdrop/nebular authoring; 4.2, 10.3 | Retain alternative to C21/C22/B08; determine sky versus local volume and plugin dependencies |
 | C26 | Space Dream's Asteroids Pack - Space Dream | Additional rocky family; 3.1, 3.2, 10.3 | Later art comparison for genuinely different profiles and material response; no price-based quality assumption |
@@ -148,6 +148,12 @@ C entries are **unreviewed leads** from owner screenshot/messages, not endorsed 
 | C33 | SF - Modular Hangar - GrafxBOX | Structural bay/hangar model source; 8.1, 8.2, 8.5 | Later alternative to B10; screenshot shows OBJ/FBX formats, Unreal assembly/material setup unverified |
 
 NebulaFantasy, Portal Niagara Fluids, Procedural Vortex Tunnel, Modular Space Hangar and Free Galaxy Shader also appeared on the wishlist; reuse B03, B06, B07, B10 and A08 rather than duplicate them.
+
+## C10 and C23: identified listings, reviewed September 14
+
+**C10 — HighRes Asteroids Pack.** [Publisher listing](https://www.fab.com/listings/dfef8cab-5e4a-43d1-910b-e6efaccaa2c8) describes 45 models across three size groups, baked normal/resource textures and eight seamless detail sets, in Unreal format. This supports a useful surface/silhouette-variety trial alongside A01. It does not establish a complete new region, runtime destruction or local atmosphere. Triangle counts, LOD/collision setup, UE5.8 support, current price and local performance were not exposed in the fetched listing and remain unverified. Gallery fetch failed; no fresh visual comparison or import was performed. Assess one close-pass rock and a surface-varied field before adoption. Related active need: ISS-01; existing hazard mechanics stay authoritative.
+
+**C23 — Space Ship 02 Modular Pack (Havolk).** [Publisher listing](https://www.fab.com/listings/8d658f0c-4d5e-4ba5-9470-d7c9d7823a10) specifies 37 static FBX meshes, PBR, 1K/2K/4K texture options and separate body/engine/wing/weapon polygon totals. These are not a finished ship's triangle count. Strong modeling-relief candidate for interim craft, distinctive Pursuer/Flanker assemblies and wreckage; later player-ship variants remain deferred beyond Phase 1's two ships. Inspect material slots/draw calls, actual triangles/LODs, joins, pivot/socket/axis fit and collision. Current price, engine-version range and runtime performance are unverified. Static modular assets do not supply flight, rigging or in-game customization. Owner identifies this as the intended kit; purchase/download is not confirmed. The regular artist retains hero/iconic-starter ownership (ISS-02).
 
 ## Candidate comparison options (not the active work order)
 
