@@ -17,3 +17,5 @@ This milestone adds the authored station shell with original collision/services 
 All 19 [hands-on checks](docs/PLAYTEST_TOMORROW.md) remain unchecked. Physical keyboard/mouse/controller comfort, natural full-run balance, listening, retry appeal, clean-PC startup and representative minimum-spec performance remain open. Station 2 remains live services/save/discard with no Wave 11 or completion XP. Achievable asset and integration work continues.
 
 Full system status: [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md).
+
+September 14 release checkpoint: source `602be07`, fresh Windows package with experimental cloud banks disabled by default after artifact reproduction. Receipt: `docs/validation/2026-09-14-environment-refresh.json`. 0.1.15-alpha upload in progress; devlog awaits browser authentication. Phase 1 PARTIAL.

@@ -87,3 +87,5 @@ See [KNOWN_ISSUES.md](KNOWN_ISSUES.md), [ARCHITECTURE.md](ARCHITECTURE.md), [PER
 ## 2026-09-14 camera/environment follow-up
 
 See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.
+
+September 14 release checkpoint: source `602be07`, fresh Windows package with experimental cloud banks disabled by default after artifact reproduction. Receipt: `docs/validation/2026-09-14-environment-refresh.json`. 0.1.15-alpha upload in progress; devlog awaits browser authentication. Phase 1 PARTIAL.

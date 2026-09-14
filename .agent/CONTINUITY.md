@@ -97,3 +97,8 @@
 - 2026-09-13T21:22Z [USER] D01 correction supersedes physical pad: optional suspended gravity/magnetic mooring, stay aboard, menu then release. WBS6.6/CSV/asset bill aligned. F11 records one pinched hero leg; mesh versus rig/animation cause UNCONFIRMED. Planning only; no gameplay or asset changes.
 
 - 2026-09-14T13:01Z [TOOL] Reconciled PR3 add/add continuity conflict with main. Both histories retained; planning-only restrictions above are historical to that task. Owner feedback and production plan imported unchanged. No gameplay changes or acceptance claims.
+
+[ITCH 0.1.15 RELEASE]
+- 2026-09-14T13:12Z [USER] Authorized all-current-changes itch update and known-issues devlog; upload before further presentation work.
+- 2026-09-14T13:12Z [TOOL] PR3 continuity conflict resolved at ea1eb8a and remote mergeable confirmed; asset branch integrated planning at 61b2575. Final source602be07 disables cloud bounds after packaged rectangle reproduction. Package2 succeeds, final Wave1 fixture45cd93d6e8324407ae573c33c594d5b2 has no failure/save writes, Cruise reviewed without rectangle.42tests before cvar-default-only mitigation;25source+4release tests pass. Receipt docs/validation/2026-09-14-environment-refresh.json.
+- 2026-09-14T13:12Z [TOOL] Prepared immutable0.1.15-alpha61files/1200116505bytes; butler publication running. Devlog drafted docs/ITCH_DEVLOG_0.1.15.md, browser signed-out; owner login requested, publication pending. Phase1PARTIAL.
