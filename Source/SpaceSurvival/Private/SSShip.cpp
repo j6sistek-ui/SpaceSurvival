@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/AudioComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -55,6 +56,15 @@ ASSShip::ASSShip()
     Camera->FieldOfView = 80.f;
     // Keep the prominent ship below the center sightline without widening the chase.
     Camera->SetRelativeRotation(FRotator(2, 0, 0));
+    // A restrained chase-side fill keeps the player silhouette readable in deep shadow.
+    auto *ReadabilityLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("ShipReadabilityFill"));
+    ReadabilityLight->SetupAttachment(RootComponent);
+    ReadabilityLight->SetRelativeLocation(FVector(-350, -180, 220));
+    ReadabilityLight->SetIntensityUnits(ELightUnits::Lumens);
+    ReadabilityLight->SetIntensity(9000.f);
+    ReadabilityLight->SetAttenuationRadius(900.f);
+    ReadabilityLight->SetLightColor(FLinearColor(.7f, .82f, 1.f));
+    ReadabilityLight->SetCastShadows(false);
     EngineAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineAudio"));
     EngineAudio->SetAutoActivate(false);
     EngineAudio->SetupAttachment(RootComponent);

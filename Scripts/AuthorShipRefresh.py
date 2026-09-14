@@ -29,4 +29,3 @@ def main():
   o.location=loc;o.rotation_euler=(Vector((0,0,.2))-o.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=str(OUT/(name+'.png'));bpy.ops.render.render(write_still=True)
  print(json.dumps(report))
 if __name__=='__main__':main()
-
