@@ -90,3 +90,9 @@ Official references checked 2026-09-13:
 
 Actual patch size varies with changed assets and cooked container layout. This setup does not
 promise tiny updates or prove save compatibility across future game/schema changes.
+
+## September 14 update
+
+0.1.15-alpha is verified ready on windows-alpha, upload19226459/build1978147, based on1975861. Butler reports539.30MiB patch (52.88% savings); actual client update/save preservation is unverified. Devlog remains drafted, not published: browser authentication required.
+
+Source `602be07`; package receipt `validation/2026-09-14-environment-refresh.json`. Public-copy draft: `ITCH_DEVLOG_0.1.15.md`. Experimental clouds disabled by default after packaged artifact reproduction. Phase1 PARTIAL.

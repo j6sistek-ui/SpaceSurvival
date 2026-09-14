@@ -18,4 +18,4 @@ All 19 [hands-on checks](docs/PLAYTEST_TOMORROW.md) remain unchecked. Physical k
 
 Full system status: [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md).
 
-September 14 release checkpoint: source `602be07`, fresh Windows package with experimental cloud banks disabled by default after artifact reproduction. Receipt: `docs/validation/2026-09-14-environment-refresh.json`. 0.1.15-alpha upload in progress; devlog awaits browser authentication. Phase 1 PARTIAL.
+September 14 release checkpoint: source `602be07`, fresh Windows package with experimental cloud banks disabled by default after artifact reproduction. Receipt: `docs/validation/2026-09-14-environment-refresh.json`. 0.1.15-alpha verified live, itch build1978147; devlog awaits browser authentication. Phase 1 PARTIAL.
