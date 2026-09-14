@@ -1,5 +1,11 @@
 # SpaceSurvival continuity
 
+[SKILLS REVIEW HANDOFF]
+- 2026-09-14T01:52Z [OUTCOMES] Full evaluation published as https://github.com/j6sistek-ui/SpaceSurvival/issues/7. Four skill formats, local references and three Codex UI schemas validated. Skill delivery remains an unmerged guidance PR; no Unreal rebuild, gameplay change or MCP activation in this task.
+- 2026-09-14T01:49Z [USER] Authorized a full gameplay/code and public-skills/MCP evaluation issue, plus a small repo-local skill set. This isolated branch changes guidance only; the active asset-refresh worktree remains separately owned.
+- 2026-09-14T01:49Z [CODE] Added three pinned MIT UnrealXu workflows and an original SpaceSurvival gameplay-review skill under .agents/skills. Project adapter preserves scope and distinguishes fixture results from actual player acceptance. Buckley skills remain references because redistribution licensing is UNCONFIRMED; Unreal MCP activation is not part of this change.
+- 2026-09-14T01:49Z [TOOL] Review pinned to 748c63f: live reward input has device capability asymmetry; tutorial inputs call synchronous durable account writes. Performance impact and physical reproduction remain UNCONFIRMED. Upstream log helper returned zero counts for a fixture containing one standard-format error and warning; optional helper scripts omitted.
+
 [PLANS]
 - 2026-09-13T15:15Z [USER] Continue full Phase1 against GAME_SCOPE/IMPLEMENT; owner prioritizes gameplay strength and can clean hero externally. All19 PLAYTEST_TOMORROW checks stay unchecked; physical feel/audio/retry deferred to owner. Sensitivity remains a dial. Never auto-merge PR3.
 - 2026-09-13T15:15Z [CODE] Final gameplay follow-up source a628c7f is frozen/tested37PASS and Package13 audited; native settings and finalWave10 audits passed. Final documentation/PR reconciliation and clean-head verification next. Package12 receipts remain immutable historical evidence after archive replacement.

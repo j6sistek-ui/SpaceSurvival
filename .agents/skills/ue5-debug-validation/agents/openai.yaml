@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE5 Debug and Validation"
+  short_description: "Trace Unreal gameplay failures to their first cause"
+  default_prompt: "Use $ue5-debug-validation with the SpaceSurvival adapter for this task."

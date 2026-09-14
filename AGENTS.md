@@ -122,3 +122,10 @@ Leave the repository with the delivery package required by `IMPLEMENT.md`, inclu
 - Unreal compilation, asset authoring, automation and Windows packaging use the owner's installed Unreal engine and Windows C++/SDK toolchain through `Scripts/Build.ps1`. The Linux container does not supply or validate these tools. Do not install host prerequisites without explicit owner instruction.
 - Keep runtime artifacts, intermediate files and raw editor logs in ignored `Artifacts`, `Intermediate` and `Saved` directories. Commit concise sanitized validation records under `docs/validation` and intended content assets under `Content`.
 - Never treat portable test passes or the assets-only authoring workbench as evidence of an integrated Unreal gameplay pass.
+
+## Repository skills
+
+- Codex-discoverable skills live under `.agents/skills`; see its README for selection and provenance.
+- Use `spacesurvival-gameplay-review` for requested gameplay/code quality reviews and Phase 1 acceptance work; load other skills only for the active task.
+- Imported generic skills must read `.agents/skills/PROJECT_ADAPTER.md`. They do not authorize networking, new mechanics, engine changes, tool installation, publication or merge.
+- Verify third-party API advice against the installed engine. A skill, MCP connection or passing fixture does not establish accepted gameplay.
