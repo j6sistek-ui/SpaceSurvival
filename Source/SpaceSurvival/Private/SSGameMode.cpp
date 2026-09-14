@@ -291,6 +291,8 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
 }
 void ASSGameMode::StartNewRun()
 {
+    bWormholeArrived = false;
+    ArrivalColorBlend = 0.f;
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
@@ -422,7 +424,7 @@ void ASSGameMode::Tick(float Dt)
     const SS::Contract ArrivingContract = S.run.contract;
     const int32 CreditsBeforeStep = S.run.credits;
     const int32 ContractsBeforeStep = S.run.contractsCompleted;
-    S.Tick(Dt, Danger);
+    S.Tick(Ship && Ship->IsMoored() ? 0.f : Dt, Danger); // Service time grants no wave progress or free regeneration.
 #if CSV_PROFILER && !CSV_PROFILER_MINIMAL
     // Sample after the domain step; avoid the threat actor scan outside an enabled capture.
     if (FCsvProfiler::IsCapturing() && FCsvProfiler::Get()->IsCategoryEnabled(CSV_CATEGORY_INDEX(SpaceSurvival)))
@@ -443,6 +445,7 @@ void ASSGameMode::Tick(float Dt)
 #endif
     UpdateThreatFeedback(Dt);
     RegionTime += Dt;
+    ArrivalColorBlend = FMath::FInterpTo(ArrivalColorBlend, bWormholeArrived ? 1.f : 0.f, Dt, .35f);
     if (auto *Pawn = UGameplayStatics::GetPlayerPawn(this, 0))
     {
         if (SpaceBackdrop)
@@ -455,7 +458,8 @@ void ASSGameMode::Tick(float Dt)
             const uint32 RegionSeed = GetTypeHash(FString(UTF8_TO_TCHAR(S.run.id.c_str())));
             const float Blend = .5f + .5f * FMath::Sin(RegionTime * .006f + float(RegionSeed % 1000) * .01f);
             SpaceMaterial->SetVectorParameterValue(
-                TEXT("Tint"), FMath::Lerp(FLinearColor(.45f, .65f, 1), FLinearColor(1, .35f, .8f), Blend));
+                TEXT("Tint"), FMath::Lerp(FMath::Lerp(FLinearColor(.45f, .65f, 1), FLinearColor(1, .35f, .8f), Blend),
+                                          FLinearColor(.25f, 1.f, .65f), ArrivalColorBlend * .8f));
         }
     }
     WeaponBuffSeconds = float(S.run.weaponBuffSeconds);
@@ -498,9 +502,12 @@ void ASSGameMode::Tick(float Dt)
         }
         if (S.run.phase == SS::Phase::Climax)
         {
+            if (S.run.wave == 5)
+                bWormholeArrived = true;
             Director->Configure(S.run.wave, true);
-            Announce(S.run.wave == 5 ? TEXT("Hostile space. Stay mobile until a station signal resolves.")
-                                     : TEXT("COMPOUND FRONT  |  Gravity, asteroids and enemy pressure."));
+            Announce(S.run.wave == 5
+                         ? TEXT("WORMHOLE EXIT / Unknown space. Recover your heading; hostile contacts ahead.")
+                         : TEXT("COMPOUND FRONT  |  Gravity, asteroids and enemy pressure."));
         }
         if (S.run.phase == SS::Phase::Approach && Ship)
         {
@@ -667,7 +674,10 @@ void ASSGameMode::Interact()
         {
             ActiveBeacon = Closest;
             if (Closest->IsDepot())
-                OpenPanel(ESSPanel::Depot);
+            {
+                if (Closest->TryAccept())
+                    OpenPanel(ESSPanel::Depot);
+            }
             else if (Closest->TryAccept())
             {
                 if (auto *GI = GetGameInstance<USSGameInstance>())
@@ -686,6 +696,8 @@ void ASSGameMode::AddEntry(const FString &Label, int32 Action, bool Enabled)
 }
 void ASSGameMode::ClosePanel()
 {
+    if (Ship && Ship->IsMoored())
+        Ship->EndMooring();
     Panel = ESSPanel::None;
     Entries.Empty();
     SelectedEntry = 0;
@@ -694,7 +706,7 @@ void ASSGameMode::ClosePanel()
         PC->bShowMouseCursor = false;
         PC->SetInputMode(FInputModeGameOnly());
     }
-    // In-flight depot/reward panels never stop the universe or park the ship.
+    // Release the local mooring; the universe was never globally paused for services.
     UGameplayStatics::SetGamePaused(this, false);
 }
 void ASSGameMode::OpenPanel(ESSPanel NewPanel)
@@ -709,6 +721,8 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                                                        Panel == ESSPanel::Audio || Panel == ESSPanel::Controls);
     const int32 SelectedAction =
         SettingsRefresh && Entries.IsValidIndex(SelectedEntry) ? Entries[SelectedEntry].Action : INDEX_NONE;
+    if (Ship && Ship->IsMoored() && NewPanel != ESSPanel::Depot)
+        Ship->EndMooring();
     Panel = NewPanel;
     Entries.Empty();
     SelectedEntry = 0;
@@ -796,7 +810,9 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             "dodge\nE / A: interact   |   Esc / Menu: shell   |   Walk: W A S D / left stick, Shift / X run");
         AddEntry(FString::Printf(TEXT("Mouse sensitivity: %.1f"), S.settings.mouseSensitivity), 22);
         AddEntry(FString::Printf(TEXT("Controller sensitivity: %.1f"), S.settings.controllerSensitivity), 23);
-        AddEntry(FString::Printf(TEXT("Invert pitch: %s"), S.settings.invertPitch ? TEXT("On") : TEXT("Off")), 24);
+        AddEntry(
+            FString::Printf(TEXT("Vertical look: %s"), S.settings.invertPitch ? TEXT("Inverted") : TEXT("Standard")),
+            24);
         AddEntry(FString::Printf(TEXT("Boost: %s"), S.settings.toggleBoost ? TEXT("Toggle") : TEXT("Hold")), 25);
         AddEntry(FString::Printf(TEXT("Brake: %s"), S.settings.toggleBrake ? TEXT("Toggle") : TEXT("Hold")), 26);
         AddEntry(TEXT("Replay flight guidance next run"), 27);
@@ -841,12 +857,15 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         break;
     case ESSPanel::Upgrades:
     case ESSPanel::Depot:
-        PanelTitle = Panel == ESSPanel::Depot ? TEXT("MOBILE DEPOT / PASSING DEALS") : TEXT("CORE UPGRADES");
+        PanelTitle = Panel == ESSPanel::Depot ? TEXT("DEPOT / MAGNETIC LOCK ENGAGED") : TEXT("CORE UPGRADES");
         PanelDetail =
             FString::Printf(TEXT("Credits %d | Upgrades last until the run ends.\n"
                                  "Hull/Shield add capacity only; repair separately. Engine also raises acceleration; "
                                  "Thrusters also improve response."),
                             S.run.credits);
+        if (Panel == ESSPanel::Depot)
+            PanelDetail += TEXT(
+                "\n20-second service lock. Stay aboard; close this menu to release. No wave progress while moored.");
         for (int I = 0; I < 5; ++I)
         {
             const bool Available =
@@ -942,10 +961,11 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     }
     case ESSPanel::Reward:
         PanelTitle = PendingReward ? TEXT("SIGNAL REWARD / CHOOSE ONE") : TEXT("LOST CREW BEACON");
-        PanelDetail = PendingReward ? TEXT("One deliberate reward. A module replaces the current module; a weapon "
-                                           "replaces the active weapon.")
-                                    : TEXT("An unfinished beacon repeats a crew's home coordinates. Mica kept the "
-                                           "receiver powered. Restore its antenna to recover the cargo tip.");
+        PanelDetail = PendingReward
+                          ? TEXT("One deliberate reward. A module replaces the current module; a weapon "
+                                 "replaces the active weapon.")
+                          : TEXT("OPTIONAL STATION TASK: repair this lost-crew beacon with the button below to collect "
+                                 "a one-time credit reward. No flight objective; safe to skip.");
         if (PendingReward)
         {
             AddEntry(S.run.utility == SS::Utility::VectorThrusters ? TEXT("Vector Thrusters / already fitted")
@@ -1021,6 +1041,8 @@ void ASSGameMode::ActivateEntry(int32 Index)
     {
         if (GI->ResumeRun())
         {
+            bWormholeArrived = S.run.wave >= 5;
+            ArrivalColorBlend = bWormholeArrived ? 1.f : 0.f;
             StationTarget = FVector::ZeroVector;
             EnterStation();
             PreviousPhase = int32(S.run.phase);

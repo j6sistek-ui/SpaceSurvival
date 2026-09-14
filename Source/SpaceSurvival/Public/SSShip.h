@@ -34,8 +34,17 @@ public:
     void AddExternalForce(FVector Force);
     void SetDockingTarget(FVector Target, FRotator Rotation);
     void FinishDocking();
+    bool BeginMooring();
+    void EndMooring();
+    bool IsMoored() const
+    {
+        return Moored;
+    }
+    static float SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength);
     FVector AimDirection() const;
     AActor *SoftTarget = nullptr;
+    UPROPERTY(EditAnywhere, Category = "Flight|Aim", meta = (ClampMin = "0.0", ClampMax = "0.4"))
+    float MaximumSoftAssist = .20f;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USphereComponent> Collision;
     UPROPERTY(VisibleAnywhere)
@@ -56,7 +65,7 @@ private:
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f;
-    bool BoostInput = false, BrakeInput = false, Docking = false;
+    bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false;
     FVector DockTarget = FVector::ZeroVector;
     FRotator DockRotation = FRotator::ZeroRotator;
 };

@@ -20,6 +20,8 @@ class SPACESURVIVAL_API ASSStation : public AActor
 public:
     ASSStation();
     void BuildHub(bool bHome);
+    UPROPERTY(EditAnywhere, Category = "Presentation")
+    bool bUseLicensedPresentation = true;
     // Optional presentation asset; the physical hub remains authoritative when it is absent.
     UPROPERTY(EditAnywhere, Category = "Presentation")
     TSoftObjectPtr<UStaticMesh> ShellAsset;
@@ -42,6 +44,7 @@ public:
     }
 
 private:
+    bool BuildLicensedShell();
     struct FService
     {
         FVector Location;

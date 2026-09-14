@@ -135,6 +135,7 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     Soak->Token = Token;
     ReadScenario(Soak->Station5);
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
+    Soak->OffscreenVisuals = Soak->CaptureVisuals && FParse::Param(FCommandLine::Get(), TEXT("RenderOffscreen"));
     Soak->StartedAt = FPlatformTime::Seconds();
     InMode->bAutomatedSoakInput = true;
     // Prevent incidental account writes. No save APIs are called by the fixture.
@@ -220,7 +221,7 @@ void ASSWave10Soak::Tick(float Dt)
             FPlatformMisc::RequestExit(false);
             return;
         }
-        if (!FApp::HasFocus())
+        if (!OffscreenVisuals && !FApp::HasFocus())
         {
             FocusSince = 0;
             return;
@@ -445,7 +446,8 @@ void ASSWave10Soak::WriteResultAndExit()
     }
     const bool SlotsUntouched = NoSaveSlots();
     const FString Csv = CaptureResult.Get();
-    const bool Success = Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && AllFramesForeground;
+    const bool Success =
+        Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && (AllFramesForeground || OffscreenVisuals);
     auto Result = MakeShared<FJsonObject>();
     Result->SetStringField(TEXT("evidenceType"), Station5 ? TEXT("RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY")
                                                           : TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY"));
@@ -462,6 +464,8 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetStringField(TEXT("csv"), Csv);
     Result->SetBoolField(TEXT("noSaveSlotsWritten"), SlotsUntouched);
     Result->SetBoolField(TEXT("allFixtureFramesForeground"), AllFramesForeground);
+    Result->SetBoolField(TEXT("offscreenVisualOnly"), OffscreenVisuals);
+    Result->SetBoolField(TEXT("suitableForPerformanceFinding"), !CaptureVisuals && AllFramesForeground);
     Result->SetStringField(TEXT("scenario"), Station5 ? TEXT("Station5") : TEXT("Wave10"));
     Result->SetBoolField(TEXT("sawWave9"), !Station5 && SawFlightWave);
     Result->SetBoolField(TEXT("sawWave5"), Station5 && SawFlightWave);

@@ -26,6 +26,7 @@ private:
     bool Started = false, Stopping = false, SawFlightWave = false, SawBreathing = false;
     bool CaptureRequested = false, AllFramesForeground = true;
     bool CaptureVisuals = false;
+    bool OffscreenVisuals = false;
     TArray<TSharedPtr<FJsonValue>> VisualRecords;
     TSet<FString> VisualNames;
     void CaptureVisual(const TCHAR *Name, float StageSeconds);

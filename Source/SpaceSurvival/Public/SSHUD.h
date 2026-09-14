@@ -14,6 +14,9 @@ public:
 private:
     TArray<FBox2D> MenuBounds;
     float Scale = 1.f;
+    FString FeedbackRun;
+    int32 ObservedKills = 0, RecentKills = 0;
+    float KillNoticeUntil = 0.f;
     FSlateFontInfo HudFont(float Size) const;
     FVector2D MeasureText(const FString &Value, float Size) const;
     void Text(const FString &Value, float X, float Y, float Size = 1.f, FLinearColor Color = FLinearColor::White);

@@ -119,6 +119,8 @@ private:
     int32 HistoryPage = 0;
     bool PendingReward = false, RewardCombat = false, DeathPersisted = false;
     float RegionTime = 0.f;
+    float ArrivalColorBlend = 0.f;
+    bool bWormholeArrived = false;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
     bool LowHullAlerted = false;
     void UpdateMusicMix();

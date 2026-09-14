@@ -1,4 +1,5 @@
 #include "Misc/AutomationTest.h"
+#include "Misc/PackageName.h"
 #include "SSShip.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
@@ -52,6 +53,21 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationPresentationCollision,
 bool FSSStationPresentationCollision::RunTest(const FString &)
 {
     const TCHAR *ShellPath = TEXT("/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1.SM_StationShellCandidateV1");
+    struct FLicensedBatch
+    {
+        const TCHAR *Mesh;
+        int32 Instances;
+    };
+    const FLicensedBatch LicensedExpected[] = {{TEXT("SM_Celling_01"), 66}, {TEXT("SM_Crate"), 3},
+                                               {TEXT("SM_Floor_01"), 102},  {TEXT("SM_LampCelling"), 10},
+                                               {TEXT("SM_Monitor"), 5},     {TEXT("SM_MonitorScreen"), 5},
+                                               {TEXT("SM_Top_Wall02"), 31}, {TEXT("SM_Wall_03"), 57}};
+    bool LicensedAvailable = true;
+    for (const auto &Expected : LicensedExpected)
+        LicensedAvailable &=
+            FPackageName::DoesPackageExist(FString(TEXT("/Game/SciFiCorridor/Meshes/")) + Expected.Mesh);
+    if (!LicensedAvailable)
+        AddInfo(TEXT("Licensed assets unavailable: default selection must use the actual legacy shell fallback."));
     struct FBoundary
     {
         FVector Position, Scale;
@@ -66,7 +82,7 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
             Boundaries.Add({FVector(X, Y, 500), FVector(.5f, .5f, 10)});
 
     for (bool Home : {true, false})
-        for (bool UseShell : {true, false})
+        for (int32 Presentation : {0, 1, 2})
         {
             // Fresh actor/world per branch: BuildHub appends components. No GI Init or save APIs.
             FSSIsolatedTestWorld Fixture;
@@ -75,8 +91,16 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
             auto *Hub = Fixture.World->SpawnActor<ASSStation>(FVector(16000, -8000, 5000), FRotator(0, 75, 0));
             if (!TestNotNull(TEXT("Create transformed station"), Hub))
                 return false;
+            // Default selection exercises installed licensed content or its real absence fallback.
+            // Actor-local opt-out separately proves both legacy and bare presentation branches.
+            Hub->bUseLicensedPresentation = Presentation == 0;
+            const bool UseLicensed = Presentation == 0 && LicensedAvailable;
+            const bool UseShell = Presentation != 2 && !UseLicensed;
+            const bool HasPresentation = UseLicensed || UseShell;
             const FString Label = FString::Printf(TEXT("%s / %s"), Home ? TEXT("Home") : TEXT("Station"),
-                                                  UseShell ? TEXT("shell") : TEXT("fallback"));
+                                                  UseLicensed ? TEXT("licensed")
+                                                  : UseShell  ? TEXT("shell")
+                                                              : TEXT("fallback"));
             UStaticMesh *ExpectedShell = nullptr;
             if (UseShell)
             {
@@ -148,11 +172,56 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
                          Found->GetRelativeScale3D().Equals(Expected.Scale, .001) &&
                              Found->GetRelativeRotation().IsNearlyZero(.001) &&
                              Found->GetCollisionObjectType() == ECC_WorldStatic && BlocksAllChannels &&
-                             Found->IsVisible() == !UseShell && bool(Found->CastShadow) == !UseShell);
+                             Found->IsVisible() == !HasPresentation && bool(Found->CastShadow) == !HasPresentation);
             }
 
             TInlineComponentArray<UInstancedStaticMeshComponent *> Batches;
             Hub->GetComponents(Batches);
+            int32 LicensedBatchCount = 0;
+            for (auto *Batch : Batches)
+            {
+                if (Batch->GetFName() == TEXT("TexturedDeckPanels"))
+                    TestEqual(Label + TEXT(" hides duplicate floor only for licensed tiles"), Batch->IsVisible(),
+                              !UseLicensed);
+                if (!Batch->GetName().StartsWith(TEXT("LicensedStation_")))
+                    continue;
+                ++LicensedBatchCount;
+                TestTrue(Label + TEXT(" licensed dressing has no collision, overlap or navigation"),
+                         Batch->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
+                             !Batch->GetGenerateOverlapEvents() && !Batch->CanEverAffectNavigation() &&
+                             Batch->GetAttachParent() == Hub->GetRootComponent() &&
+                             Batch->GetRelativeTransform().Equals(FTransform::Identity, .001));
+                UStaticMesh *Mesh = Batch->GetStaticMesh();
+                if (!TestNotNull(Label + TEXT(" licensed batch resolves its source mesh"), Mesh))
+                    return false;
+                bool Recognized = false;
+                for (const auto &Expected : LicensedExpected)
+                    if (Mesh->GetName() == Expected.Mesh)
+                    {
+                        Recognized = true;
+                        TestEqual(Label + TEXT(" has measured instance count for ") + Expected.Mesh,
+                                  Batch->GetInstanceCount(), Expected.Instances);
+                    }
+                TestTrue(Label + TEXT(" uses only reviewed licensed meshes"), Recognized);
+                const auto &Materials = Mesh->GetStaticMaterials();
+                TestTrue(Label + TEXT(" keeps source material slots"), Materials.Num() > 0);
+                for (int32 Slot = 0; Slot < Materials.Num(); ++Slot)
+                {
+                    auto *Material = Batch->GetMaterial(Slot);
+                    UMaterialInterface *ExpectedMaterial = Materials[Slot].MaterialInterface;
+                    if (!ExpectedMaterial && Mesh->GetFName() == TEXT("SM_MonitorScreen"))
+                        ExpectedMaterial = LoadObject<UMaterialInterface>(
+                            nullptr, TEXT("/Game/SciFiCorridor/Materials/MI_MonitorError_Inst2.MI_MonitorError_Inst2"));
+                    if (!ExpectedMaterial && Mesh->GetFName() == TEXT("SM_Top_Wall02"))
+                        ExpectedMaterial = LoadObject<UMaterialInterface>(
+                            nullptr, TEXT("/Game/SciFiCorridor/Materials/MI_CorridorWall_02.MI_CorridorWall_02"));
+                    TestTrue(Label + TEXT(" preserves vendor slots or assigns the two explicit missing-slot repairs"),
+                             Material && Material == ExpectedMaterial &&
+                                 Material->GetPathName().StartsWith(TEXT("/Game/SciFiCorridor/")));
+                }
+            }
+            TestEqual(Label + TEXT(" creates all eight licensed batches only when selected and available"),
+                      LicensedBatchCount, UseLicensed ? 8 : 0);
             auto BatchCount = [&Batches](const TCHAR *Name)
             {
                 int32 Count = 0;
@@ -164,11 +233,11 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
             TestEqual(Label + TEXT(" retains all textured walking floor tiles"), BatchCount(TEXT("TexturedDeckPanels")),
                       36);
             TestEqual(Label + TEXT(" removes only the 24 duplicate wall/canopy panels"), BatchCount(TEXT("DeckPanels")),
-                      UseShell ? 0 : 24);
+                      HasPresentation ? 0 : 24);
             TestEqual(Label + TEXT(" preserves runway guides when canopy/perimeter copies are removed"),
-                      BatchCount(TEXT("DeckGuides")), UseShell ? 14 : 28);
+                      BatchCount(TEXT("DeckGuides")), HasPresentation ? 14 : 28);
             TestEqual(Label + TEXT(" preserves cradle, pallets and station-only service dressing"),
-                      BatchCount(TEXT("ServiceStructure")), (Home ? 9 : 13) + (UseShell ? 0 : 19));
+                      BatchCount(TEXT("ServiceStructure")), (Home ? 9 : 13) + (HasPresentation ? 0 : 19));
 
             const FTransform Transform = Hub->GetActorTransform();
             auto WorldPoint = [&Transform](FVector Local) { return Transform.TransformPosition(Local); };
@@ -280,8 +349,8 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
     auto *Ship = Fixture.World->SpawnActor<ASSShip>();
     auto *Controller = Fixture.World->SpawnActor<APlayerController>();
-    auto *ExitAnimation =
-        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_DisembarkGripFit.A_DisembarkGripFit"));
+    auto *ExitAnimation = LoadObject<UAnimSequence>(
+        nullptr, TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair"));
     auto *PilotAnimation =
         LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit"));
     if (!TestNotNull(TEXT("Create station"), Hub) || !TestNotNull(TEXT("Create walker"), Walker) ||
@@ -476,7 +545,7 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     TestTrue(TEXT("Completion restores collision, walking and the matching walk phase"),
              Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
                  Walker->GetCharacterMovement()->MovementMode == MOVE_Walking && Animation &&
-                 Animation->GetCurrentAsset() && Animation->GetCurrentAsset()->GetName() == TEXT("A_Walk") &&
+                 Animation->GetCurrentAsset() && Animation->GetCurrentAsset()->GetName() == TEXT("A_WalkLegRepair") &&
                  Animation->IsLooping() && FMath::IsNearlyEqual(Animation->GetCurrentTime(), .308333333f, .001f));
     TestTrue(TEXT("Walk handoff preserves both foot positions"),
              Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot")).Equals(LeftFoot, .1) &&
