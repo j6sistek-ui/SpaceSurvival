@@ -42,8 +42,18 @@ def entries(folder):
     return result
 
 
+def runtime_user_state(relative):
+    path = PurePosixPath(relative)
+    return (any(part.casefold() == 'saved' for part in path.parts)
+            or path.suffix.casefold() in {'.sav', '.log'})
+
+
 def check(folder, receipt):
     actual = entries(folder)
+    # A matching old receipt is not permission to publish personal runtime state.
+    # Include directories so an empty Saved folder cannot pass verification either.
+    if any(runtime_user_state(p.relative_to(folder).as_posix()) for p in folder.rglob('*')):
+        raise ValueError('Runtime user state is forbidden in release payloads; prepare a fresh version')
     if actual != receipt['files']:
         raise ValueError('Release files changed or unexpected files were added; prepare a fresh version')
     if receipt['target'] != TARGET:
@@ -65,7 +75,7 @@ def prepare(version, package_receipt):
         path = safe_path(source, rel)
         if not path.is_file() or path.stat().st_size != row['bytes'] or sha(path) != row['sha256']:
             raise ValueError(f'Package no longer matches audit: {rel}')
-        if rel in EXCLUDED or rel.lower().endswith('.pdb'):
+        if rel in EXCLUDED or rel.lower().endswith('.pdb') or runtime_user_state(rel):
             continue
         selected.append((rel, path))
     required = {'SpaceSurvival.exe', 'SpaceSurvival/Binaries/Win64/SpaceSurvival.exe',

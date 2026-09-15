@@ -34,7 +34,9 @@ for Package14: a newer archive will fail its hash check. Do not relabel an untes
 
 Prepared payloads live under `Artifacts/Releases/<version>/payload`, with a hash receipt
 alongside, outside the upload. Preparation refuses to overwrite a version. Verification
-rejects changed/missing/extra files and links, and publishing always runs a dry run first.
+rejects changed/missing/extra files and links. It also refuses runtime Saved directories
+and .sav/.log files even when an older prepared receipt lists matching hashes. Publishing
+always runs a dry run first.
 Keep payloads closed to other writers during publish. Release receipts are local integrity
 records, not signed attestations. The channel is fixed to prevent accidental cross-project uploads.
 No automatic rollback: republishing an older audited payload is another deliberate upload.
@@ -43,7 +45,7 @@ No automatic rollback: republishing an older audited payload is another delibera
 
 A cooked Windows game, not the Unreal project. Unreal Editor and Visual Studio are unnecessary.
 The payload preserves all audited runtime dependencies and notices, removes PDB symbols,
-UAT file manifests and the developer-path prerequisite receipt, and adds `.itch.toml`,
+UAT file manifests, all runtime Saved directories and .sav/.log files, and the developer-path prerequisite receipt, and adds `.itch.toml`,
 `VERSION.txt` and `PLAYTEST.txt`. Original symbols remain in the local package for debugging.
 
 Install through the itch desktop app using an account granted access to the restricted page.
@@ -73,7 +75,7 @@ save files before the first migration test. This A-to-B test and clean-PC instal
 
 Ask feedback to include VERSION.txt, wave/station, expected/actual behavior and reproduction
 steps or a clip. Camera comfort, mouse inversion, physical controller parity and natural run
-balance remain owner/tester checks in PLAYTEST_TOMORROW.md. No new in-game version badge was
+balance remain owner/tester checks in [KNOWN_ISSUES.md](KNOWN_ISSUES.md). No new in-game version badge was
 added by this release task; version is available in itch and the installed VERSION.txt.
 
 ## Verification and limits
@@ -96,3 +98,15 @@ promise tiny updates or prove save compatibility across future game/schema chang
 0.1.15-alpha is verified ready on windows-alpha, upload19226459/build1978147, based on1975861. Butler reports539.30MiB patch (52.88% savings); actual client update/save preservation is unverified. Devlog remains drafted, not published: browser authentication required.
 
 Source `602be07`; package receipt `validation/2026-09-14-environment-refresh.json`. Public-copy draft: `ITCH_DEVLOG_0.1.15.md`. Experimental clouds disabled by default after packaged artifact reproduction. Phase1 PARTIAL.
+
+## September 15 visual release
+
+The owner authorized merging PR11/12 and updating itch. Both PRs are merged; main was verified at `c0479cf`. Packaged game source remains `cf6296f`; subsequent documentation/merge/release-script commits do not relabel its runtime source.
+
+**0.1.16-alpha.1 is verified ready** on windows-alpha, upload **19226459**, build **1979965**, based on **1978147**. The clean payload contains **51 files / 2,664,557,549 bytes**. Butler reports a **1.49 GiB patch (39.76% savings)**, with 32.19% of old data reused. These are publisher reports, not measured client-download or update/save-preservation results. The [immutable release receipt](validation/2026-09-15-itch-visual-release.json) records every uploaded file hash, the reviewed Package4 lineage, merge commits and ready status.
+
+The preview caught ten runtime files under Saved (settings/logs/saves). They were also present in the earlier 0.1.15 payload. The corrected publisher excludes case-insensitive Saved directories and .sav/.log files and refuses an older unsafe payload even if its receipt matches. The abandoned local 0.1.16-alpha preparation was never uploaded; a new immutable 0.1.16-alpha.1 preparation was used. All 63 original audited files remain byte-identical, including local saves. Existing published history was not deleted.
+
+Six synthetic release-safety tests and Python compilation pass; CI now runs the release tests.31 source structural checks pass. No Unreal rebuild or new gameplay acceptance is claimed: the release carries the same verified game executable and cooked containers. All 19 owner cases remain open.
+
+[Current devlog copy](ITCH_DEVLOG_0.1.16.md) is prepared but **not published**: itch browser security/sign-in needs owner completion. It supersedes the unpublished 0.1.15 draft. The game update itself is available through the existing itch app channel. Use that app's Play action with -SaveToUserDir; do not copy developer Saved folders into a tester installation.

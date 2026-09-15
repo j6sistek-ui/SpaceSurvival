@@ -10,7 +10,7 @@ Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains P
 - [Solution catalog](docs/production/SOLUTION_CATALOG.md): owned assets and possible solutions across Phase 1; catalog value is not the work schedule.
 - [Game scope](docs/GAME_SCOPE.md) and [implementation contract](IMPLEMENT.md): authoritative design and completion requirements.
 
-The local packaged game is at `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`; keep its entire folder. The [project state](docs/PROJECT_STATE.md#source-build-and-release) identifies source `cf6296f`, audited Package 4 with verified star-adjusted captures, and the older itch release. Package 3's receipt remains a separate checkpoint. A source merge does not rebuild the executable or publish an update.
+The local packaged game is at `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`; keep its entire folder. The [project state](docs/PROJECT_STATE.md#source-build-and-release) identifies source `cf6296f`, audited Package 4 with verified star-adjusted captures, and the separately verified itch release. Package 3's receipt remains a separate checkpoint. A source merge does not rebuild the executable or publish an update.
 
 The game has the ten-wave system foundation, two weapons/enemies, four hazard families, stations, progression and local saves. Automated and scripted checks exist; natural play, controller comfort, near-alpha presentation/audio and representative performance still need acceptance. Current art is provisional.
 
