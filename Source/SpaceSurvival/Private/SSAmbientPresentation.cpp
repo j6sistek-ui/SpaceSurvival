@@ -17,7 +17,7 @@
 
 namespace
 {
-constexpr int32 DustCount = 512;
+constexpr int32 DustCount = 320;
 constexpr double DustHalfWidth = 2400.0; // Fine passing grains, distinct from gameplay debris.
 TAutoConsoleVariable<int32> DustEnabled(TEXT("ss.LocalDust"), 1,
                                         TEXT("Enable cosmetic local dust grains (0 disables)."));
@@ -133,7 +133,7 @@ void ASSAmbientPresentation::BeginPlay()
             DustPositions.Add(FVector(Random.FRandRange(-DustHalfWidth, DustHalfWidth),
                                       Random.FRandRange(-DustHalfWidth, DustHalfWidth),
                                       Random.FRandRange(-DustHalfWidth, DustHalfWidth)));
-            DustSizes.Add(Random.FRandRange(.35f, 1.1f));
+            DustSizes.Add(Random.FRandRange(.25f, .85f));
             DustTransforms.Add(FTransform(FRotator(Random.FRandRange(0.f, 180.f), Random.FRandRange(0.f, 180.f), 0.f),
                                           FVector::ZeroVector, FVector::ZeroVector));
         }
@@ -390,7 +390,7 @@ void ASSAmbientPresentation::UpdateDust(const FVector &Center, const FVector &Ve
         DustTransforms[Index].SetLocation(DustPositions[Index]);
         DustTransforms[Index].SetRotation(TravelRotation);
         const float Width = DustSizes[Index] * Fade / 100.f;
-        DustTransforms[Index].SetScale3D(FVector(Width * (1.f + SpeedFraction * 7.f), Width, Width));
+        DustTransforms[Index].SetScale3D(FVector(Width * (1.f + SpeedFraction * 3.f), Width, Width));
     }
     // One component submission/render-state update for all grains.
     Dust->BatchUpdateInstancesTransforms(0, DustTransforms, true, true, Teleported);

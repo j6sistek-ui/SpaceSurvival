@@ -21,6 +21,7 @@ def main():
     for folder,name in [('Skybox_8','T_Nebula_Turquoise_Dark_8'),('Skybox_6','T_Nebula_Orange_6'),('Skybox_1','T_Nebula_Blue_1')]:
         a=duplicate('/Game/SpaceNebulaFantasy/Textures/'+folder+'/'+name,'T_Region_'+folder)
         a.set_editor_property('max_texture_size',2048)
+        a.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_HDR_COMPRESSED)
         cubes.append(a)
     audited_galaxies=[]
     for suffix in ('02','04'):

@@ -32,6 +32,13 @@ public:
     float KeyIntensity = 4.f;
     UPROPERTY(EditAnywhere, Category = "Dressing")
     TArray<TObjectPtr<UStaticMesh>> StructureMeshes;
+    /** Normalized construction-script samples, baked from owned field Blueprints by the editor. */
+    UPROPERTY(EditAnywhere, Category = "Dressing")
+    TArray<FVector> AsteroidArchSamples;
+    UPROPERTY(EditAnywhere, Category = "Dressing")
+    TArray<FVector> AsteroidGlobularSamples;
+    UPROPERTY(EditAnywhere, Category = "Dressing")
+    TArray<FVector> AsteroidLinearSamples;
     UPROPERTY(EditAnywhere, Category = "Cloud")
     TObjectPtr<UMaterialInterface> CloudMaterial;
     UPROPERTY(EditAnywhere, Category = "Cloud")
