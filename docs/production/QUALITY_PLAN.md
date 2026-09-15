@@ -1,6 +1,6 @@
 # SpaceSurvival: Phase 1 quality recovery plan
 
-**Planning proposal - 2026-09-13. No gameplay changes, purchases, contractor engagements or new releases are authorized by this document alone.**
+**Historical planning proposal - 2026-09-13.** This remains a rationale and work-decomposition reference, not the active priority or completion queue. [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) alone tracks active work and owner acceptance; [PROJECT_STATE.md](../PROJECT_STATE.md) records current source/build/storage. No gameplay changes, purchases, contractor engagements or new releases are authorized by this document alone.
 
 The next milestone should prove an exciting short stretch of SpaceSurvival in its intended chase view. We should then extend that quality through the first five-wave loop and finally the complete ten-wave slice. Increasing asset count before that proof risks producing a more expensive version of the same flat experience.
 
@@ -8,12 +8,12 @@ The owner reports that the game feels generic and stale and that the current gra
 
 ## Start here
 
-- [Whole-project solution catalog](SOLUTION_CATALOG.md): current resource/candidate register across all 47 work packages, including useful later options. This quality plan's September 13 baseline remains historical; use the catalog and project state for later resource/integration evidence.
+- [Whole-project solution catalog](SOLUTION_CATALOG.md): current resource/candidate register across all 47 work packages, including useful later options. Use it for resource facts and comparison options, project state for integration identity, and the issue ledger for actual priorities.
 
-- [Owner playtest findings](OWNER_FEEDBACK.md): entry-level handling baseline and unresolved event, contract, station and combat clarity reports.
+- [Owner playtest findings](OWNER_FEEDBACK.md): historical observations with links to the active issue IDs.
 
-- [47 work packages](WORK_PACKAGES.md): each element's needs, proposed owner, source strategy, dependencies and acceptance.
-- [CSV work register](WORK_PACKAGES.csv): the same packages for importing into a task board or spreadsheet.
+- [47 work packages](WORK_PACKAGES.md): September 13 needs, proposed owners, source strategies, dependencies and acceptance definitions.
+- [CSV work register](WORK_PACKAGES.csv): the same historical proposal for reference/export, not a live task board.
 - [Asset sourcing and outsourcing briefs](SOURCING.md): what to buy, commission, reuse and integrate internally.
 - [Owner briefing](../../artifacts/SpaceSurvival-Briefing.pdf) and [asteroid reference](../../art/asteroids.jpg).
 
@@ -21,7 +21,7 @@ The recommended split is: **owner directs and playtests; lead agent owns systems
 
 ## Baseline and source authority
 
-This plan is based on the implementation branch at `d5533027a979d73420a7b99dad6b1c3dd9a82e96` and the owner reference upload on main at `1116715`. These are separate branches; this documentation PR does not merge implementation PR3. Current gameplay binary remains Package14/source `f4bfec8`, distributed as itch `0.1.14-alpha`.
+This September 13 plan was based on implementation branch `d5533027a979d73420a7b99dad6b1c3dd9a82e96` and owner reference upload `1116715`. They were separate branches at that time; the gameplay binary then was Package14/source `f4bfec8`, distributed as itch `0.1.14-alpha`. PR3 and the later asset/catalog PRs were merged on September 14. These baseline identities are historical; use project state for the current checkout, local package and published release.
 
 The complete 18-page raster PDF was visually inspected; text extraction returned no text. The supplied download and repository PDF have identical SHA256 `6ab43fd115cb563c9f61490e09e881c6e89998aa22200d1b7bfcd46180d9257d`. Page9's bottom hazard cards are clipped in the source page; the written scope supplies the electrical/gravity requirements. The `art/asteroids.jpg` and `art/station.jpg` originals were also inspected. Other named art files support the same presentation direction visible throughout the briefing; the uploaded `art/hero.mp4` is indexed but has not been motion-reviewed in this planning pass. No fresh gameplay or listening session was performed today.
 
@@ -40,7 +40,7 @@ The reference station includes ship-servicing staging, while flight art varies i
 
 ## What is known versus what needs diagnosis
 
-Known from repository records: integrated flight/Director/damage/economy/station/save systems; two weapons/enemies; four hazard families; packaged Windows release; 38 Package14 Unreal tests passed. These bounded tests are not proof of natural balance, input comfort, final visuals, rendered sound or replay appeal. The current owner rejection is a quality finding, even where code functions.
+Known from repository records at the September 13 baseline: integrated flight/Director/damage/economy/station/save systems; two weapons/enemies; four hazard families; packaged Windows release; 38 Package14 Unreal tests passed. These bounded tests are not proof of natural balance, input comfort, final visuals, rendered sound or replay appeal. The current owner rejection is a quality finding, even where code functions.
 
 Likely contributors to the flat experience are **hypotheses to test**, not a new runtime audit:
 
@@ -87,7 +87,7 @@ No exact cause is declared until the comparison produces evidence. A polished sc
 
 This is a deliverable tree, not a claim that each branch can finish independently. For example, station geometry depends on docking and camera clearance; finished pilot animation depends on ship contacts; Director density depends on control authority and visibility.
 
-## Milestones and sequencing
+## Proposed milestones and sequencing (September 13 baseline)
 
 | Gate | Integrated deliverable | Work allowed in parallel | Exit decision |
 | --- | --- | --- | --- |
@@ -143,7 +143,7 @@ There is no approved cash budget, contractor availability or reliable calendar e
 | Recommended targeted specialists | Character rig/animation and hero ship pair; one station kit; focused sound pass | Buys the labor most difficult to automate while retaining one gameplay owner |
 | Broader art support | Add environment assembly/lighting and dedicated VFX/composer after G1 | Faster parallel polish only if contracts, budget and review capacity are established |
 
-First sourcing priorities: (1) reusable asteroid surfaces/silhouettes and representative sound for G1; (2) character/ship alignment sample; (3) one station interior kit after layout; (4) full character/ship production and signature audio; (5) extra dressing only if a measured gap remains. A model commission is not necessarily the earliest critical-path job, even when it is the largest art cost.
+September 13 sourcing proposal: (1) reusable asteroid surfaces/silhouettes and representative sound for G1; (2) character/ship alignment sample; (3) one station interior kit after layout; (4) full character/ship production and signature audio; (5) extra dressing only if a measured gap remains. A model commission is not necessarily the earliest critical-path job, even when it is the largest art cost.
 
 ## Scope guard and completion tracking
 
@@ -151,10 +151,10 @@ Retain four hazard families, Pursuer/Flanker, Rapid Laser/Heavy Cannon with one 
 
 Do not add multiplayer, Steamworks, cloud/leaderboards, reputation, inventory, bosses, additional hazard/enemy/weapon rosters, extra station archetypes or a campaign. Camera/feedback polish must not introduce a separate flight mode, invulnerable dodge or indefinite braking. Region art does not become a biome rules system.
 
-For each work package record four separate outcomes: **implemented; integrated in current build; technically verified; owner quality accepted**. Attach commit/build, normal versus assisted conditions, device, clip/log and known limits. An asset import is not art acceptance; an automated test is not a fun test. On completion, reconcile every applicable IMPLEMENT gate, not merely this WBS checklist.
+In the active issue ledger, record four separate outcomes for the affected work package: **implemented; integrated in current build; technically verified; owner quality accepted**. Attach commit/build, normal versus assisted conditions, device, clip/log and known limits. An asset import is not art acceptance; an automated test is not a fun test. On completion, reconcile every applicable IMPLEMENT gate, not merely this WBS checklist.
 
 ## Owner workload when work resumes
 
 First session: review one short baseline/reference comparison and choose the biggest feel gap. Lead proposes a small change, builds it and gives one paired test. Owner reports where control felt wrong, what caused a hit, whether a purchase felt useful and whether they wanted another attempt. The lead translates that into tasks; the owner does not need to coordinate modelers, debug imports or manage ten simultaneous technical checklists.
 
-No playtest is requested today. The immediate deliverable is this plan and its reviewable task/asset briefs.
+The September 13 deliverable requested no playtest that day. Current owner review instructions belong only in the active issue ledger.

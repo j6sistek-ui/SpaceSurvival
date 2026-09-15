@@ -1,5 +1,20 @@
 # SpaceSurvival continuity
 
+[DOCUMENTATION AND OPEN WORK]
+- 2026-09-14T20:30Z [USER] Require a quick stale-document/owner-review checklist for every PR, one visible open issues log, retained follow-ups and no competing priorities. Asked how external 3D collaborators can deliver revisions without manual owner shuttling.
+- 2026-09-14T20:30Z [CODE] Branch codex/documentation-review from merged main425e3b2. KNOWN_ISSUES now owns active issues/priorities and all19 still-unchecked acceptance cases; PLAYTEST_TOMORROW and root PROJECT_STATE are redirects. docs/PROJECT_STATE owns source/build/release/storage; README is the entry point. Older planning milestones explicitly historical; immutable receipts preserved.
+- 2026-09-14T20:30Z [TOOL] Read-only storage audit: vendor/private roots absent from tracked files; lowercase artifacts references coexist with ignored Artifacts builds on Windows; .agent/local includes unique art experiments. UE5.8 conversion copy absent. No deletion or asset/game changes. Docker daemon unavailable; existing Python used without installation.
+- 2026-09-14T20:30Z [DECISIONS] PR template/gate requires six reviewed documentation groups plus Open/Check/Still open. Repo check guards canonical checklist count/navigation; prose truth and server required-status enforcement remain separate. External modeler workflow is a proposed private versioned Drive handoff with lead import/test/package, not auto-overwrite of live Content; setup stays ISS-14.
+- 2026-09-14T20:30Z [PROGRESS] Documentation/gate verification completed; PR11 open for owner review; no merge or itch publication authorized for this new PR. Phase1 PARTIAL. Dated entries below are historical and superseded where the current state/log says otherwise.
+
+- 2026-09-14T20:35Z [USER] Regular 3D contributor owns hero/iconicstarter longterm; lead integrates/tests. Planned modularshipkit remains unpurchased/unidentified here; provisional currentuse/futurevariants do not expand Phase1 roster. Superseded by owner clarification below.
+- 2026-09-14T20:35Z [TOOL] 20 documentationgate tests, canonical19open/0passed check, Python execution,27structuralchecks and whitespace pass; independent doc review no material blocker. Main ruleset23224538 requires PRs but no status checks; ISS-15 explicitly retains server-enforcement follow-up after merge. No game/assets/saves/publication changed.
+
+- 2026-09-14T20:39Z [USER] Confirmed regular artist delivers model/texture/animation files only. Recommend versioned private Drive handoffs; lead imports/tests/packages. Folder/access setup still open under ISS-14; no Unreal repository editing required for artist.
+- 2026-09-14T20:39Z [OUTCOMES] PR11 https://github.com/j6sistek-ui/SpaceSurvival/pull/11 open/unmerged, documentation branch pushed. 145 changed-document local links and two Python syntax trees verified. Existing game/package/itch unchanged; server-required documentation check activation remains ISS-15 after merge. Await final CI and owner review.
+
+- 2026-09-14T20:42Z [USER] Identified HighRes Asteroids C10 and intended Havolk SpaceShip02Modular C23 by exact Fab URLs. [TOOL] Listings inspected; existing stable rows updated with dated facts/unknowns, no duplicate assets/docs. C10 useful regionalvariety; C23 strong modeling relief for interim/enemy/debris and future variants, preserving artist starter ownership and Phase1 roster. No purchase/import occurred; engineversion/LOD/price/performance unverified.
+
 [CONSOLIDATED OWNER REVIEW]
 - 2026-09-14T20:08Z [USER] Explicitly authorized merging everything, then owner review before further gameplay work. This supersedes earlier hold/unmerged instructions for PR3, PR6 and PR9; no automatic itch publication or new purchase is implied.
 - 2026-09-14T20:08Z [TOOL] Merged PR9 into asset-refresh (3a1b408), PR6 into phase1-implementation (56ee9ab), then PR3 into main (80e39b3). Each expected head was refreshed immediately before merge; source/core checks passed on each merged head. Three local merge previews and consolidated source tree match 6e4edd145e7541df809667981bad473c3b997c28; no conflict resolution or gameplay edits were needed.

@@ -1,8 +1,10 @@
 # Phase 1 work package dictionary
 
-Read [the production plan](QUALITY_PLAN.md) first. This is a decomposition of remaining quality work, not a replacement game design. Existing systems should be repaired/refined, not recreated merely because they appear here. Every package requires implementation, integration, technical verification and owner quality acceptance as separate recorded states.
+This is the **September 13 historical proposal baseline**, retained as a work/asset dictionary alongside [the production rationale](QUALITY_PLAN.md). Every `State: Planned` field below and in [WORK_PACKAGES.csv](WORK_PACKAGES.csv) describes that proposal; it is not live scheduling, a claim that existing systems are missing, or a current completion verdict. [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) alone tracks active priorities, work and owner acceptance; [PROJECT_STATE.md](../PROJECT_STATE.md) records current source/build/storage.
 
-Effort: S = bounded definition task; M = several coupled deliverables; L = repeated cross-discipline iteration. These are relative planning sizes, not days, prices or additive schedule estimates. All proposed assignments await scheduling. Dependencies refer to package IDs required for integrated acceptance, not strict finish-to-start scheduling. Samples start when their interfaces are stable. Instrumentation, benchmark audio, QA and profiling start at G0/G1 and recur throughout production; the CSV includes start_guidance.
+Existing systems should be repaired/refined, not recreated merely because they appear here. Implementation, integration, technical verification and owner quality acceptance are separate outcomes recorded in the active ledger, not maintained again in this dictionary.
+
+Effort: S = bounded definition task; M = several coupled deliverables; L = repeated cross-discipline iteration. These are relative planning sizes, not days, prices or additive schedule estimates. Assignments below were proposed and unscheduled at the September 13 baseline. Dependencies refer to package IDs required for integrated acceptance, not strict finish-to-start scheduling. Samples start when their interfaces are stable. Instrumentation, benchmark audio, QA and profiling start at G0/G1 and recur throughout production; the CSV includes start_guidance.
 
 ## 1. Direction and shared contracts
 
