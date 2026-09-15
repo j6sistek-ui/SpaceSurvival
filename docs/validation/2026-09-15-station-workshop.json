@@ -1,0 +1,81 @@
+{
+  "schema": "spacesurvival.station-workshop-validation.v1",
+  "recorded_at_utc": "2026-09-15T02:46:12+00:00",
+  "pr": "https://github.com/j6sistek-ui/SpaceSurvival/pull/14",
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "source_sha256_lf": {
+    "Source/SpaceSurvival/Private/SSStationWorkshop.cpp": "17ebe85704fecd5f6d55a9046c8c55c0018ba809c9e839e343d2ac29ae3d4e77",
+    "Source/SpaceSurvival/Public/SSStationVisualLayout.h": "86aa5b854898821b9ac38c168ef737a5f7db9e819ecb83b85415db5b57c1d1e7",
+    "Source/SpaceSurvivalEditor/Private/SpaceSurvivalEditorModule.cpp": "09123f692742da93ba50eec95a26262888b06c90270bfd09d79894fbe10c5f22",
+    "Source/SpaceSurvivalEditor/SpaceSurvivalEditor.Build.cs": "ecdbee8595dd79543ccf407114978184b08684426f36dc0d177e98be0ac0b340",
+    "Source/SpaceSurvivalEditor.Target.cs": "4656d5deb1370491d1d51c780761a7cf01f76e7d8d7e2aaca35840409f76fba3",
+    "SpaceSurvival.uproject": "e8163c9b7e976d34bd22d3178d8ca810345715120641b021f3bf0f4a9c0a0450",
+    "Scripts/AuthorStationWorkshop.py": "4b009b1a3716ffd9b49dcfb19cdb4df4b68bd96238dc81b97af3439c187f9742",
+    "Scripts/ValidateStationWorkshop.py": "1646088ece44c8651f162ab0025c60b32b95bc457ca0b24c58f9e0d1ca31df1a",
+    "Scripts/OpenStationWorkshop.ps1": "00ee00ab7aead6ad15f2e224551da55251b26442682e89b561f230d0e314ba69",
+    "Open Station Workshop.cmd": "eb9f97617e75a2b56d57ae160d1a33b685af4acf19a536d8cccbc2eba7e0b3a3"
+  },
+  "source_binding_note": "Final working source normalized to LF. The final UI build/capture preceded clang-format whitespace-only formatting. Bridge test preceded the isolated UI catalog/layout correction; bridge behavior is unchanged.",
+  "editor_build": {
+    "status": "PASS",
+    "log": "Artifacts/BuildLogs/StationWorkshopEditor8.log",
+    "sha256": "7e352b92ed80edff975777c255da2422549d196b48772830bb3679d65057e48a",
+    "seconds": 12.12,
+    "warnings": "Engine-header C4996 deprecations; installed nonpreferred compiler advisory. No project compile errors."
+  },
+  "integration": {
+    "status": "PASS",
+    "checks": [
+      "ten materials exist",
+      "unsupported actor rejects apply without changing Blueprint",
+      "zero scale rejects apply without changing Blueprint",
+      "preparation rerun preserves saved map/material bytes",
+      "added rotated/scaled prop survives map save/reopen",
+      "export includes addition",
+      "runtime Blueprint has correct transform and material",
+      "deletion applies",
+      "final exported scene equals initial scene"
+    ],
+    "material_presets": 10,
+    "before_placements": 380,
+    "after_placements": 380,
+    "result_path": ".agent/local/StationWorkshop/Validation/Result.json",
+    "result_sha256": "0e119a729b907dd5661c72e05580c4cdbecac7dbd435161527293253b1a0f5c9",
+    "log": "Artifacts/BuildLogs/StationWorkshopValidate5.log"
+  },
+  "visible_panel": {
+    "status": "PASS",
+    "capture": ".agent/local/StationWorkshop/WorkshopPanel4.png",
+    "sha256": "88a6527955c2bbb9c4b95d5171012c1e21593a7fb63e064510cc5b379ea9583b",
+    "log": "Artifacts/BuildLogs/StationWorkshopPanel4.log",
+    "matching_placeable_assets": 677,
+    "observed": "Root inspected actual rendered editor panel: mesh thumbnails visible, material selector plus Open Workshop, Save + Apply and Export Layout visible.",
+    "method": "Hidden offscreen editor render; no physical mouse-input claim."
+  },
+  "checks": {
+    "source_structural": "31 PASS",
+    "changed_cpp_format": "PASS, 3 files",
+    "python_compile": "PASS",
+    "powershell_launcher_parse": "PASS",
+    "documentation_gate": "PASS",
+    "whitespace": "PASS"
+  },
+  "preservation": {
+    "original_blueprint_backup": ".agent/local/StationWorkshop/PreWorkshopOriginal/BP_StationVisualLayout.uasset",
+    "original_sha256": "16f283187b74ee0951704fe36c00b983486491b762b4d5e8ee195877e08783dc",
+    "test_prop_removed": true,
+    "final_export_equals_original": true,
+    "per_apply_backups": ".agent/local/StationWorkshop/Backups",
+    "licensed_assets_tracked": false
+  },
+  "limitations": [
+    "Physical user interaction and owner first edit not yet verified.",
+    "No full gameplay or packaged build rerun for editor-only authoring.",
+    "Local Docker daemon unavailable; existing native tools used without package installation.",
+    "Visual layout keeps existing native collision and service anchors; paused defects are not repaired.",
+    "Catalog contains currently imported meshes and Niagara systems plus basic shapes, not every downloaded or behavioral Blueprint asset.",
+    "JSON references local assets and is a handoff manifest, not a standalone asset bundle or arbitrary import implementation.",
+    "All 19 owner acceptance cases remain open.",
+    "Installed game and itch 0.1.16-alpha.1 were not updated."
+  ]
+}

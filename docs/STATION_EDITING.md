@@ -1,10 +1,50 @@
-# Edit the station in Unreal
+# Station Workshop
 
-Start by opening this exact project file: **`C:\Users\j6sis\SpaceSurvival\SpaceSurvival.uproject`**. It already targets Unreal Engine 5.8. Use this working project when the Launcher asks where to add an asset. The project under `User downloaded assets\SpaceSurvival` is a source/staging project; the older separately converted `SpaceSurvival 5.8` copy is not the working project.
+**Open `C:/Users/j6sis/SpaceSurvival/Open Station Workshop.cmd`.** It opens the working Unreal project directly into the saved workshop. If the editor is already open, use **Tools > Station Workshop**, then **Open Workshop**. No additional plugin purchase is needed.
 
-In its Content Browser, find **BP_StationVisualLayout** at **Content → SpaceSurvival → Licensed → StationVisualPass**. Double-click it and choose its **Viewport** tab. This is the saved visual layout loaded by `ASSStation` for the home hangar and service stations. The one-time authoring step below creates it; once present, ordinary layout editing does not require a script or C++ build.
+This is an editor authoring tool. It uses the normal Unreal viewport for selection, movement and undo, with a focused asset/material panel. It is not an in-game construction mechanic. The workshop becomes the source for visual station placement; gameplay collision and interaction locations are still separate and their reported bugs remain open.
 
-## Add your first prop
+The panel can be undocked by dragging its tab beside the viewport, or resized to show more thumbnails. Search narrows the imported asset catalog; preset materials remain a separate ten-choice list.
+
+## First edit
+
+1. In the workshop panel, search for a mesh and drag it into the viewport, or double-click its thumbnail to place it in front of the camera. Existing furnishings are individually selectable too. Press **F** to focus the selected object.
+2. Use **W** to move, **E** to rotate and **R** to scale. Every supported mesh can be scaled on individual axes. Use the Details panel for exact numbers, **Alt+drag** to duplicate, **Delete** to remove and **Ctrl+Z** to undo. Grid/rotation/scale snapping is in the viewport toolbar.
+3. Click **Save + Apply**. This saves the workshop and updates the station visual Blueprint used by the game. The previous saved map/Blueprint is backed up before application. A result message confirms success or explains why nothing was applied.
+
+**Save + Apply changes the project, not the already-packaged executable or itch.** To see it in editor gameplay, open `Content/SpaceSurvival/Maps/Survival`, start Play and enter the home hangar. A later package/update includes the saved layout. Stop Play before returning to the workshop. Playing the workshop map itself is only an editing preview, with the base GameMode and no survival loop.
+
+## Assets and ten material choices
+
+The thumbnail browser searches all currently imported static meshes, skeletal meshes and Niagara systems under Content, plus Unreal's basic shapes. It loads the selected asset when placed, rather than every model at once. New downloads must first be added/imported into the working project using the routes below. Lights can be placed with Unreal's Place Actors panel; point, spot and rect lights are supported.
+
+Original asset materials stay assigned until you choose a preset and press **Apply to selection**. The ten choices are **Steel, Dark steel, Painted white, Copper, Caution yellow, Rubber, Glass, Cyan light, Amber light and Red light**. They are original, simple PBR/tinted or emissive starting materials; they do not replace a detailed textured vendor material automatically. Application affects every material slot on the selected meshes; Ctrl+Z reverses it. Editor-only guides are excluded.
+
+Blueprint actors with behavior, instanced-mesh actors and other unsupported types are rejected by Save + Apply/Export with a named error; they are not silently converted or discarded. Place the underlying meshes or Niagara system instead. Material assets themselves are not listed in the mesh browser. Zero or invalid scale is rejected; finite nonzero scale, including mirrored and nonuniform scale, is supported.
+
+## Saving, exporting and keeping your work
+
+The editable source is `/Game/SpaceSurvival/Licensed/StationWorkshop/L_StationWorkshop`. Open Workshop reuses its saved contents; it does not regenerate the station on every launch. Save + Apply derives `/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout` from it. Once using the workshop, make composition edits here; direct edits to the derived Blueprint can be overwritten by the next Apply.
+
+**Export Layout** writes a timestamped `.json` into `.agent/local/StationWorkshop/Exports`. It contains stable object identifiers, asset references, world transforms, materials, animation references, visibility and editable Unreal settings. It can include unsaved editor changes, which is marked in the export. The saved map retains groups/attachments; the exported/applied layout flattens component world transforms. It is a handoff manifest, not a complete standalone project or a general-purpose scene importer.
+
+Models and textures are referenced, not embedded in JSON. Keep the private Content folders with the map; GitHub does not contain these licensed files. Apply creates timestamped backups under `.agent/local/StationWorkshop/Backups`. These local copies are recovery checkpoints, not an off-machine backup. See [Project State](PROJECT_STATE.md#where-files-live) for the storage boundary.
+
+The cyan docking-lane and service arrows are editor-only guides. Moving a guide does not move gameplay service locations. Component mobility becomes Movable on application so it attaches correctly to the station. Visual collision stays disabled and existing native collision remains in place; this authoring tool does not close the reported walk-through props, blocked labels or NPC placement issues. Keep clearance around the anchors listed below until that separately paused repair work resumes.
+
+## Setup on another development checkout
+
+Use the exact working project `C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject`, not the staging project under User downloaded assets or the older separately converted SpaceSurvival 5.8 copy. Compile once with `Scripts/Build.ps1 -Target Editor`, restore/import the private station content, then run `Scripts/OpenStationWorkshop.ps1 -Prepare`. Preparation creates the ten presets and workshop only when absent, preserving saved owner edits. No engine/tool installation occurs. The launcher detects an already-open Unreal editor and directs you to its Tools menu instead of starting another instance.
+
+Official editor references: [drag-and-drop asset placement](https://dev.epicgames.com/documentation/en-us/unreal-engine/placing-actors-in-unreal-engine) and [transform/duplicate controls](https://dev.epicgames.com/documentation/en-us/unreal-engine/transforming-actors-in-unreal-engine), checked September 14, 2026.
+
+## Advanced: edit the derived Blueprint directly
+
+This older route remains available, but the workshop is now the recommended source of composition. Do not alternate between the two without reconciling changes: Save + Apply replaces the derived component tree with workshop contents.
+
+In the Content Browser, find **BP_StationVisualLayout** at **Content > SpaceSurvival > Licensed > StationVisualPass**. Double-click it and choose its **Viewport** tab.
+
+### Add a Blueprint component
 
 The Blueprint contains ordinary mesh components, two idle skeletal staff components and lights. Make one small change first:
 
@@ -114,19 +154,3 @@ The licensed Blueprint and its dependencies remain local private content and are
 ## Verify a saved layout
 
 Restart Play and check the approach, exit path, every service and launch from the normal game camera. Confirm that removed native props have not reappeared, the staff and screens resolve, and the scene contains the edited furniture and lights. Native `SpaceSurvival.Integration.StationEditableLayout` automation checks actual Blueprint loading, fallback, nonblocking components, unchanged collision/service anchors and ownership cleanup. The separate native visual-clearance and exterior tests continue to cover fallback presentation. Rendered art quality, owner edits and representative performance still require review in the game.
-
-## Proposed station workshop
-
-Owner request, September 14: browse owned assets, place/rotate/scale/delete them visually, and save or export the composition for the lead to integrate. This section is a proposal, not an enabled build mode. Active status and incoming bugs belong only in [KNOWN_ISSUES](KNOWN_ISSUES.md#iss-09).
-
-Recommended first version: a dedicated Unreal editor workshop level, using the existing Content Browser and transform tools. No purchased plugin is needed for those editor capabilities. Assets must be imported or migrated into the working project before they appear; a Fab download alone is insufficient. Organize collections for structure, furniture, electronics, robots, lights and VFX rather than loading every downloaded model into a runtime menu.
-
-The lead's setup would provide the current station at correct scale, a useful camera, and visible markers for the walkable area, ship clearance, services and NPC locations. The owner would drag assets in, move/rotate/scale/duplicate/delete, use undo and snapping, and save. Saved levels and Blueprints are Unreal scene data; individual decorations do not need to become handwritten C++.
-
-The missing project-specific step is a reliable connection between that workshop and the station spawned by the game. The current component Blueprint preserves saved visual edits, but native collision and service anchors remain separate. An ordinary saved workshop level is not currently consumed by that runtime path. Proposed acceptance: a moved, added and deleted prop survives editor restart and appears in the actual station after applying the layout; original owner edits remain preserved.
-
-The existing DescribeStationVisualLayout function exports an audit of component names/classes/transforms and mesh paths, but omits hierarchy, material overrides, light settings and animation state; it is not a complete scene round trip. If a text handoff is useful, add an explicit layout export/import bridge containing stable object IDs, asset paths, parent relationships, transforms, material references, supported light/VFX settings and service/collision roles. It must report unsupported actors/properties rather than silently discard them. JSON references existing assets; it does not contain meshes or textures. Keep the saved Unreal scene as the authoring source, export from it in one direction, and validate a representative round trip before claiming parity. Reconcile gameplay collision, interaction and NPC clearance in a separately authorized integration pass; exporting transforms alone does not solve them.
-
-A No Man's Sky-style in-game editor is feasible but would add an asset palette, selection/gizmos, placement rules, undo, persistence and asset cooking/loading work. Defer that expense unless runtime authoring is preferred over the standard editor. No runtime-editor plugin has been selected or compatibility-tested. Manual layouts and paid content still require the private backup/handoff described in [Project State](PROJECT_STATE.md#where-files-live); Git source alone does not preserve them.
-
-Official editor references checked September 14, 2026: [drag-and-drop asset placement](https://dev.epicgames.com/documentation/en-us/unreal-engine/placing-actors-in-unreal-engine) and [move, rotate, scale and duplicate](https://dev.epicgames.com/documentation/en-us/unreal-engine/transforming-actors-in-unreal-engine).

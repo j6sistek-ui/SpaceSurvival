@@ -4,6 +4,8 @@ Updated 2026-09-14. Owner direction, paraphrased (including the later 14 wishlis
 
 This is the canonical resource/candidate register, not an active priority or completion queue. [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) alone tracks active work and owner acceptance; the fit ratings, timing and comparisons below support those decisions without scheduling work. [GAME_SCOPE](../GAME_SCOPE.md) and [IMPLEMENT](../../IMPLEMENT.md) remain authoritative; this register does not authorize purchases, installations, new mechanics or Phase 2 implementation. [Work packages](WORK_PACKAGES.md) define the 47 packages from the historical production proposal; [SOURCING](SOURCING.md) retains procurement checks and quoteable specialist briefs. Use [video target](VIDEO_VISUAL_TARGET.md) and the owner briefing for presentation fit. Current implementation evidence is in [PROJECT_STATE](../PROJECT_STATE.md), not the historical sourcing proposals.
 
+**Owner composition tooling:** the local Station Workshop uses Unreal's built-in viewport and asset browser, with ten original material presets and a saved-map-to-station bridge. No marketplace runtime-editor plugin was purchased or selected. See [Station editing](../STATION_EDITING.md) for capabilities and [ISS-09](../KNOWN_ISSUES.md#iss-09) for active follow-up. Existing catalog candidates and ownership classifications are unchanged.
+
 ## How to use and maintain this register
 
 - Add each supplied candidate once under a stable ID, even when it is not needed this week. Preserve rejected alternatives with the reason; do not repeatedly rediscover them.

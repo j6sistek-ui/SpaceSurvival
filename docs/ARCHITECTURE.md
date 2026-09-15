@@ -178,3 +178,9 @@ Walker look applies control rotation immediately after the controller polls inpu
 ## 2026-09-14 camera/environment follow-up
 
 See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.
+
+## Station Workshop authoring boundary
+
+The editor-only `SpaceSurvivalEditor` module registers the Station Workshop Slate panel and asset picker. It is loaded only by the editor target. `USSStationLayoutAuthoringLibrary` bridges the saved workshop map to the existing runtime visual Blueprint; its implementations are editor guarded, with non-editor failure stubs. The workshop map is the composition source, while Save + Apply backs up and derives `BP_StationVisualLayout` through native component duplication and Blueprint compile/save. There is no runtime UI construction system or JSON loader. Exported JSON is a placement/settings handoff; component world transforms are flattened and the saved map retains authoring hierarchy.
+
+Only supported mesh, light and Niagara actors/components are accepted. Hidden transient editor infrastructure is excluded using editor-actor visibility/editability criteria; arbitrary visible unsupported content is rejected before station replacement. Validation first compiles a disposable candidate; failed replacement restores the old component tree and preserves disk backups. Runtime attachment requires Movable components; collision and services remain with the native station. See [Station editing](STATION_EDITING.md) for scope, presets, backup paths and ownership of the saved files.

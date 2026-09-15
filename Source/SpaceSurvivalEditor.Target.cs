@@ -7,6 +7,6 @@ public class SpaceSurvivalEditorTarget : TargetRules
         Type = TargetType.Editor;
         DefaultBuildSettings = BuildSettingsVersion.V7;
         IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_8;
-        ExtraModuleNames.Add("SpaceSurvival");
+        ExtraModuleNames.AddRange(new[] { "SpaceSurvival", "SpaceSurvivalEditor" });
     }
 }
