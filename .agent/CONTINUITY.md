@@ -1,6 +1,8 @@
 # SpaceSurvival continuity
 
 [PLANS]
+- 2026-09-15T20:58Z [USER] Improve owned assets before considering more flight-control, effect or other enhancement purchases. Weekly usage is very low and work may transfer to another model, so each action needs a concise durable handoff rather than another full audit.
+- 2026-09-15T20:58Z [CODE] PR16 now adds an owned-first purchase gate and a per-ACT transfer packet covering objective, authority, state, inputs, evidence and one bounded next operation. These remain canonical instructions inside KNOWN_ISSUES; no parallel backlog was created.
 - 2026-09-15T20:36Z [USER] Owner requested one systematic update to open issues and actions after the owned-tool/asset underutilization assessment. Documentation-only scope: organize all gaps without starting fixes, Unreal work, purchases, packaging or publication. `docs/KNOWN_ISSUES.md` remains the sole active queue.
 - 2026-09-15T20:36Z [CODE] New canonical ACT-00–ACT-10 sequence covers asset audition, flight, combat, asteroid/region depth, wormhole, station, characters/NPCs, Workshop semantics, audio/UI/glyphs, progression/release and final performance/acceptance. Existing 19 PT cases and ISS rows remain open; no acceptance state changed.
 - 2026-09-15T08:30Z [USER] Owner explicitly authorized merge. Complete the owned audio/character/station asset PR, merge prerequisite PR14 first, then merge the dependent PR after exact-head/check verification. Itch publication is not part of this instruction.

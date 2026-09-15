@@ -61,6 +61,30 @@ The sequence below is the active execution order. It covers the whole Phase 1 ex
 
 For each action, component count, successful import, Blueprint compilation, automated tests and a still image are intermediate evidence. Player-visible motion, sound, collision, interaction, representative performance and the exact packaged build determine acceptance. Fixed comparison cameras and short natural-play captures should use the visual target before/after whenever presentation changes.
 
+### Owned-first purchase gate
+
+Do not recommend or purchase another flight, combat, VFX, environment, audio, UI or workflow pack until the active action records all four points below:
+
+1. The exact missing player-facing capability, with a target frame, clip or reproducible scenario.
+2. The owned candidates already examined and their **owned/imported/referenced/visible/accepted** states.
+3. Why each plausible owned candidate failed the role after a bounded audition, including quality, control, compatibility, dependency or performance evidence.
+4. What the proposed purchase uniquely supplies, where it enters the action, and how it will be accepted in natural play.
+
+A listing's screenshots, feature list or similarity to the target is discovery evidence only. Overlap belongs in the solution catalog. A purchase is justified by a demonstrated capability gap, not by incomplete use of an existing pack.
+
+### Transfer packet for another model or contributor
+
+Work on only one ACT item at a time unless its row explicitly requires a paired slice. Before handing it off, leave this compact packet in `.agent/CONTINUITY.md` and the PR's **Open / Check / Still open** section:
+
+- **Action and objective:** ACT ID, linked ISS/RPT/PT IDs, and the exact player-facing result.
+- **Authority and limits:** relevant GAME_SCOPE/IMPLEMENT requirements, explicit owner decisions, protected behavior and excluded work.
+- **Current state:** branch, exact head, open PR, source/package/itch distinction, and whether private licensed content is required.
+- **Inputs:** owned asset IDs/paths, target references, relevant skills to read, and the last accepted fallback.
+- **Evidence:** baseline captures or reproduction, commands already run, receipts, observed failures and acceptance still missing.
+- **Next operation:** one concrete bounded step, expected outputs and the condition for stopping or asking the owner to review.
+
+The receiving model should begin from this packet and current files, then verify drift cheaply. It should not repeat the whole library audit, reinterpret scope or start a later action because the active action is difficult. Partial work updates the same ACT/ISS rows and remains open.
+
 No other document maintains a separate active priority order. The [solution catalog](production/SOLUTION_CATALOG.md) records candidate value and utilization, not purchase authorization or scheduling. Work-package and Phase 2 documents provide context only; the action IDs above own current order.
 
 ## Art ownership
