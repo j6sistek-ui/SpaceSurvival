@@ -121,6 +121,7 @@ private:
     FQuat ExitStartRotation = FQuat::Identity, ExitEndRotation = FQuat::Identity;
     double ExitElapsed = 0.0;
     bool Disembarking = false;
+    bool bTemporarySpaceHero = false;
     UPROPERTY()
     TObjectPtr<UAnimSequence> WalkAnimation;
     void SampleExitPose(float Seconds);

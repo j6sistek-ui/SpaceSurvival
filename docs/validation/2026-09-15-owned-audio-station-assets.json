@@ -1,0 +1,55 @@
+{
+  "status": "source_editor_automation_pass_package_and_owner_review_open",
+  "date": "2026-09-15",
+  "source_parent": "059d67664a18201469217f5ffa4f5fc7fabff1f9",
+  "branch": "codex/licensed-audio-station-assets",
+  "pull_request": 15,
+  "engine": "Unreal Engine 5.8.2",
+  "integration": {
+    "audio_roles": 10,
+    "private_first_generated_fallback": true,
+    "temporary_space_hero_with_fallback": true,
+    "supplemental_presentation_staff": 2,
+    "explicit_owned_character_cook_references": 5
+  },
+  "workshop": {
+    "game_placeables": 702,
+    "engine_basic_shapes": 6,
+    "total_placeables": 708,
+    "material_presets": 10,
+    "new_root_placeables": {
+      "SciFITrooper_Man_03": 26,
+      "Heavy_space_trooper": 2,
+      "CosmicMaterial": 2,
+      "private_drone": 1
+    }
+  },
+  "build": {
+    "target": "SpaceSurvivalEditor Win64 Development",
+    "result": "succeeded"
+  },
+  "automation": {
+    "report": "Artifacts/UnrealTests/index.json",
+    "succeeded": 49,
+    "warnings": 0,
+    "failed": 0,
+    "not_run": 0,
+    "duration_seconds": 8.625296593
+  },
+  "format": {
+    "changed_cpp_files": 11,
+    "result": "passed",
+    "tool": "installed Visual Studio clang-format; Docker unavailable"
+  },
+  "known_warnings": [
+    "Robot Scout and Sci-Fi Trooper skeleton packages reference missing /Engine/EngineMeshes/Humanoid preview content; selected meshes and animations still loaded in automation."
+  ],
+  "open": [
+    "new package and cook verification",
+    "rendered temporary hero and staff review",
+    "human listening, loop seams and mix approval",
+    "input glyph integration",
+    "natural station entrance collision reproduction",
+    "itch remains at 0.1.16-alpha.1 build 1979965"
+  ]
+}

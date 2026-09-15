@@ -49,7 +49,7 @@
 namespace StationWorkshop
 {
 const TCHAR *MapPackage = TEXT("/Game/SpaceSurvival/Licensed/StationWorkshop/L_StationWorkshop");
-const TCHAR *LayoutPackage = TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout");
+const TCHAR *WorkshopLayoutPackage = TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout");
 const FName GuideTag(TEXT("StationWorkshopGuide"));
 
 bool EditorReady(FString &Result)
@@ -320,7 +320,7 @@ bool USSStationLayoutAuthoringLibrary::OpenStationWorkshop(FString &Result)
             Loaded ? TEXT("Opened your saved Station Workshop unchanged.") : TEXT("Could not load saved workshop.");
         return Loaded;
     }
-    auto *Layout = LoadObject<UBlueprint>(nullptr, LayoutPackage);
+    auto *Layout = LoadObject<UBlueprint>(nullptr, WorkshopLayoutPackage);
     if (!Layout || !Layout->GeneratedClass || Layout->Status == BS_Error)
     {
         Result = TEXT("The saved BP_StationVisualLayout must exist and compile before creating a workshop.");
@@ -414,7 +414,7 @@ bool USSStationLayoutAuthoringLibrary::ApplyStationWorkshop(FString &Result)
         UE_LOG(LogTemp, Display, TEXT("Station Workshop validation: %s"), *Result);
         return false;
     }
-    auto *Layout = LoadObject<UBlueprint>(nullptr, LayoutPackage);
+    auto *Layout = LoadObject<UBlueprint>(nullptr, WorkshopLayoutPackage);
     if (!Layout || !Layout->SimpleConstructionScript || Layout->ParentClass != ASSStationVisualLayout::StaticClass())
     {
         Result = TEXT("The station visual Blueprint is missing or has an unexpected parent. Nothing was applied.");
@@ -429,7 +429,7 @@ bool USSStationLayoutAuthoringLibrary::ApplyStationWorkshop(FString &Result)
     const FString BackupDirectory = FPaths::ProjectDir() / TEXT(".agent/local/StationWorkshop/Backups") /
                                     (FDateTime::UtcNow().ToString(TEXT("%Y%m%dT%H%M%S")) + TEXT("-") +
                                      FGuid::NewGuid().ToString(EGuidFormats::Digits));
-    if (!Backup(LayoutPackage, BackupDirectory, Result) || !Backup(MapPackage, BackupDirectory, Result))
+    if (!Backup(WorkshopLayoutPackage, BackupDirectory, Result) || !Backup(MapPackage, BackupDirectory, Result))
         return false;
     if (!UEditorLoadingAndSavingUtils::SaveMap(World, MapPackage))
     {
@@ -544,7 +544,7 @@ bool USSStationLayoutAuthoringLibrary::ExportStationWorkshop(const FString &File
     auto Root = MakeShared<FJsonObject>();
     Root->SetStringField(TEXT("schema"), TEXT("spacesurvival.station-workshop.v1"));
     Root->SetStringField(TEXT("source_map"), MapPackage);
-    Root->SetStringField(TEXT("target_blueprint"), LayoutPackage);
+    Root->SetStringField(TEXT("target_blueprint"), WorkshopLayoutPackage);
     Root->SetStringField(TEXT("exported_utc"), FDateTime::UtcNow().ToIso8601());
     Root->SetStringField(TEXT("coordinate_system"),
                          TEXT("Unreal left-handed Z-up; world origin equals station layout origin; centimetres"));

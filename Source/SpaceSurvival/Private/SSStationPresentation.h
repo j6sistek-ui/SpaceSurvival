@@ -12,4 +12,5 @@ namespace SSStationPresentation
 {
 UMaterialInterface *InstancedMaterial(UMaterialInterface *Source);
 void BuildDetails(AActor *Owner, TArray<TObjectPtr<UStaticMeshComponent>> &Geometry);
+void BuildSupplementalStaff(AActor *Owner);
 } // namespace SSStationPresentation

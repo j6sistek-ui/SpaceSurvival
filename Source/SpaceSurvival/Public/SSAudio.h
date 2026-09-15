@@ -14,6 +14,8 @@ namespace SSAudio
 {
 float EffectsGain(const UObject *Context, float Gain = 1.f);
 float MusicGain(const UObject *Context, float Gain = 1.f);
+/** Load an optional private licensed replacement, falling back to the generated role sound. */
+USoundBase *PresentationSound(const TCHAR *Name);
 } // namespace SSAudio
 
 USTRUCT()

@@ -64,6 +64,75 @@ void BuildStaff(AActor *Owner)
 }
 } // namespace
 
+void BuildSupplementalStaff(AActor *Owner)
+{
+    if (!IsValid(Owner) || !Owner->GetRootComponent())
+        return;
+    struct FStaffSource
+    {
+        const TCHAR *Name;
+        const TCHAR *Mesh;
+        const TCHAR *Idle;
+        FVector Center;
+        float Height;
+        float Yaw;
+        float Rate;
+    };
+    const FStaffSource Sources[] = {
+        {TEXT("StationHeavyTrooper"),
+         TEXT("/Game/Heavy_space_trooper/character/mesh/Heavy_space_trooper_A_Pose.Heavy_space_trooper_A_Pose"),
+         TEXT("/Game/Heavy_space_trooper/Demo/animations/ThirdPersonIdle.ThirdPersonIdle"),
+         FVector(-1450.f, 1120.f, 88.f), 190.f, 90.f, .86f},
+        {TEXT("StationCompanionDrone"),
+         TEXT("/Game/SpaceSurvival/Licensed/StationAssets/Drone/SK_StationDrone.SK_StationDrone"),
+         TEXT("/Game/SpaceSurvival/Licensed/StationAssets/Drone/A_DroneIdle.A_DroneIdle"),
+         FVector(1390.f, -1080.f, 300.f), 95.f, -90.f, .72f},
+    };
+    for (const FStaffSource &Source : Sources)
+    {
+        if (!Owner->GetComponentsByTag(USkeletalMeshComponent::StaticClass(), FName(Source.Name)).IsEmpty())
+            continue;
+        bool Ready = true;
+        for (const TCHAR *Path : {Source.Mesh, Source.Idle})
+            if (!FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(Path))))
+                Ready = false;
+        if (!Ready)
+            continue;
+        if (auto *Mesh = LoadObject<USkeletalMesh>(nullptr, Source.Mesh))
+            if (auto *Idle = LoadObject<UAnimSequence>(nullptr, Source.Idle))
+                if (Mesh->GetSkeleton() == Idle->GetSkeleton() && !Mesh->GetMaterials().IsEmpty())
+                {
+                    const FBoxSphereBounds Bounds = Mesh->GetBounds();
+                    const float NativeHeight = Bounds.BoxExtent.Z * 2.f;
+                    if (FMath::IsFinite(NativeHeight) && NativeHeight > 1.f)
+                    {
+                        const float Scale = Source.Height / NativeHeight;
+                        const FRotator Rotation(0.f, Source.Yaw, 0.f);
+                        auto *Staff = NewObject<USkeletalMeshComponent>(Owner, FName(Source.Name));
+                        Staff->SetupAttachment(Owner->GetRootComponent());
+                        Staff->SetSkeletalMeshAsset(Mesh);
+                        Staff->SetCollisionProfileName(TEXT("NoCollision"));
+                        Staff->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+                        Staff->SetGenerateOverlapEvents(false);
+                        Staff->SetCanEverAffectNavigation(false);
+                        Staff->SetMobility(EComponentMobility::Movable);
+                        Staff->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+                        Staff->bEnableUpdateRateOptimizations = true;
+                        Staff->bComponentUseFixedSkelBounds = true;
+                        Staff->SetComponentTickInterval(1.f / 30.f);
+                        Staff->ComponentTags.Add(TEXT("StationRobotStaff"));
+                        Staff->ComponentTags.Add(FName(Source.Name));
+                        const FVector Location = Source.Center - Rotation.RotateVector(Bounds.Origin * Scale);
+                        Staff->SetRelativeTransform(FTransform(Rotation, Location, FVector(Scale)));
+                        Owner->AddInstanceComponent(Staff);
+                        Staff->RegisterComponent();
+                        Staff->PlayAnimation(Idle, true);
+                        Staff->SetPlayRate(Source.Rate);
+                    }
+                }
+    }
+}
+
 UMaterialInterface *InstancedMaterial(UMaterialInterface *Source)
 {
     if (!Source)

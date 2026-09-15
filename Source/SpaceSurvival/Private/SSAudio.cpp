@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/PackageName.h"
 #include "Sound/SoundAttenuation.h"
 #include "Sound/SoundBase.h"
 #include "Sound/SoundConcurrency.h"
@@ -39,6 +40,15 @@ float MusicGain(const UObject *Context, float Gain)
     return Instance ? UnitGain(Instance->Session.settings.masterVolume) *
                           UnitGain(Instance->Session.settings.musicVolume) * UnitGain(Gain)
                     : 0.f;
+}
+USoundBase *PresentationSound(const TCHAR *Name)
+{
+    const FString Licensed = FString::Printf(TEXT("/Game/SpaceSurvival/Licensed/Audio/%s.%s"), Name, Name);
+    if (FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(Licensed)))
+        if (auto *Sound = LoadObject<USoundBase>(nullptr, *Licensed))
+            return Sound;
+    const FString Generated = FString::Printf(TEXT("/Game/SpaceSurvival/Audio/%s.%s"), Name, Name);
+    return LoadObject<USoundBase>(nullptr, *Generated);
 }
 } // namespace SSAudio
 
@@ -81,10 +91,7 @@ USoundBase *USSWorldAudioSubsystem::ResolveCue(const FSSAudioCueDefinition &Cue,
 {
     USoundBase *Sound = nullptr;
     if (Cue.UseDefaultSound)
-    {
-        const FString Path = FString::Printf(TEXT("/Game/SpaceSurvival/Audio/%s.%s"), DefaultName, DefaultName);
-        Sound = LoadObject<USoundBase>(nullptr, *Path);
-    }
+        Sound = SSAudio::PresentationSound(DefaultName);
     else if (!Cue.Sound.IsNull())
         Sound = Cue.Sound.LoadSynchronous();
     // Explicit override + null means silence, never an implicit preset fallback.

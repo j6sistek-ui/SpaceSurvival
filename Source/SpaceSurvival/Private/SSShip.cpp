@@ -117,7 +117,7 @@ void ASSShip::BeginPlay()
     Pilot->SetVisibility(!ClosedCockpit);
     Pilot->PlayAnimation(
         LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit")), true);
-    EngineAudio->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Engine.Engine")));
+    EngineAudio->SetSound(SSAudio::PresentationSound(TEXT("Engine")));
     UpdateEngineMix();
     EngineAudio->Play();
     Velocity = GetActorForwardVector() * Tuning->CruiseSpeed;
@@ -318,7 +318,7 @@ void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)
         return;
     GI->Session.ApplyDamage(Amount, Type);
     UGameplayStatics::PlaySoundAtLocation(
-        this, LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Impact.Impact")), GetActorLocation(),
+        this, SSAudio::PresentationSound(TEXT("Impact")), GetActorLocation(),
         float(GI->Session.settings.masterVolume * GI->Session.settings.effectsVolume));
 }
 void ASSShip::ReceiveImpact(float Amount, FVector AwayFromContact)
@@ -387,9 +387,6 @@ void ASSShip::Fire()
         if (Trace)
             Trace->Launch(Direction, 55000.f, 0.f, true, this, Tuning->WeaponRange);
     }
-    UGameplayStatics::PlaySoundAtLocation(
-        this,
-        LoadObject<USoundBase>(nullptr, Cannon ? TEXT("/Game/SpaceSurvival/Audio/Cannon.Cannon")
-                                               : TEXT("/Game/SpaceSurvival/Audio/Laser.Laser")),
-        Start, float(S.settings.masterVolume * S.settings.effectsVolume));
+    UGameplayStatics::PlaySoundAtLocation(this, SSAudio::PresentationSound(Cannon ? TEXT("Cannon") : TEXT("Laser")),
+                                          Start, float(S.settings.masterVolume * S.settings.effectsVolume));
 }

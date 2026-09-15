@@ -394,12 +394,23 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     auto *SeatedAnimation = Ship->Pilot->GetSingleNodeInstance();
     if (!TestNotNull(TEXT("Real ship BeginPlay resolves the runtime pilot mesh"), PilotMesh) ||
         !TestNotNull(TEXT("Real walker BeginPlay resolves the runtime character mesh"), WalkerMesh) ||
-        !TestTrue(TEXT("Ship and walker use the same actual runtime mesh before geometry evaluation"),
-                  PilotMesh == WalkerMesh) ||
         !TestTrue(TEXT("Real ship BeginPlay selects the authored pilot animation"),
                   SeatedAnimation && SeatedAnimation->GetCurrentAsset() == PilotAnimation))
         return false;
-    AddInfo(TEXT("EXIT_RUNTIME_MESH: ") + PilotMesh->GetPathName());
+    const bool bTemporaryHero = PilotMesh != WalkerMesh;
+    if (bTemporaryHero)
+    {
+        TestEqual(
+            TEXT("Installed temporary hero replaces the station walker mesh"), WalkerMesh->GetPathName(),
+            FString(TEXT("/Game/SciFITrooper_Man_03/SkeletalMesh/SK_SciFITrooper_Man_03.SK_SciFITrooper_Man_03")));
+        ExitAnimation = LoadObject<UAnimSequence>(
+            nullptr, TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonJump_End.ThirdPersonJump_End"));
+        if (!TestNotNull(TEXT("Temporary hero supplies its compatible exit clip"), ExitAnimation) ||
+            !TestTrue(TEXT("Temporary exit and walk clips share the installed hero skeleton"),
+                      ExitAnimation->GetSkeleton() == WalkerMesh->GetSkeleton()))
+            return false;
+    }
+    AddInfo(TEXT("EXIT_RUNTIME_MESH: ") + WalkerMesh->GetPathName());
     Controller->SetAsLocalPlayerController();
     Fixture.World->AddController(Controller);
     Controller->Possess(Walker);
@@ -414,12 +425,52 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     const FTransform Seated = Ship->Pilot->GetComponentTransform();
     const FVector Pelvis = Ship->Pilot->GetSocketLocation(TEXT("Pelvis"));
     const FVector End = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
-    TestTrue(TEXT("Exit is the authored 2.4 second clip without extracted root motion"),
-             FMath::IsNearlyEqual(ExitAnimation->GetPlayLength(), 2.4f, .001f) && !ExitAnimation->HasRootMotion());
+    TestTrue(TEXT("Exit uses a nonempty clip without extracted root motion"),
+             ExitAnimation->GetPlayLength() > 0.f && !ExitAnimation->HasRootMotion());
     if (!TestTrue(TEXT("Begin actual authored exit"),
                   Walker->BeginDisembark(Seated, End, Hub->GetActorRotation(), &SeatedPose)))
         return false;
     auto *Animation = Walker->GetMesh()->GetSingleNodeInstance();
+    if (bTemporaryHero)
+    {
+        TestTrue(TEXT("Temporary hero starts from the ship position with its own stable scale"),
+                 Walker->GetActorLocation().Equals(Seated.GetLocation(), .001) &&
+                     Walker->GetMesh()->GetSkeletalMeshAsset() == WalkerMesh &&
+                     Walker->GetMesh()->GetRelativeScale3D().GetAbsMin() > UE_SMALL_NUMBER);
+        TestTrue(TEXT("Temporary hero begins its compatible nonlooping exit clip"),
+                 Animation && Animation->GetCurrentAsset() == ExitAnimation && !Animation->IsLooping());
+        TestNull(TEXT("Different-skeleton temporary hero does not consume the pilot pose transition"),
+                 Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance()));
+        const FRotator Control = Controller->GetControlRotation();
+        Walker->Move(FVector2D(1, 1), FVector2D(1, 1), true, .1f);
+        TestTrue(TEXT("Temporary hero exit blocks queued movement and camera input"),
+                 Walker->GetPendingMovementInputVector().IsNearlyZero() &&
+                     Controller->GetControlRotation().Equals(Control, .001) &&
+                     Walker->GetCharacterMovement()->MovementMode == MOVE_None);
+        Walker->Tick(.4f);
+        TestTrue(TEXT("Temporary hero remains at the ship during the initial brace"),
+                 Walker->IsDisembarking() && Walker->GetActorLocation().Equals(Seated.GetLocation(), .01));
+        Walker->Tick(2.1f);
+        Animation = Walker->GetMesh()->GetSingleNodeInstance();
+        AddInfo(FString::Printf(TEXT("TEMP_EXIT actor=%s requested=%s mode=%d collision=%d"),
+                                *Walker->GetActorLocation().ToString(), *End.ToString(),
+                                int32(Walker->GetCharacterMovement()->MovementMode),
+                                int32(Walker->GetCapsuleComponent()->GetCollisionEnabled())));
+        TestFalse(TEXT("Temporary hero completes the authored exit clock"), Walker->IsDisembarking());
+        TestTrue(TEXT("Temporary hero remains possessed"), Controller->GetPawn() == Walker);
+        TestTrue(TEXT("Temporary hero reaches the requested deck position in plan"),
+                 FVector2D(Walker->GetActorLocation()).Equals(FVector2D(End), .1f));
+        TestTrue(TEXT("Temporary hero restores collision and walking"),
+                 Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
+                     Walker->GetCharacterMovement()->MovementMode == MOVE_Walking);
+        TestTrue(TEXT("Temporary hero hands off to its matching looping walk clip"),
+                 Animation && Animation->GetCurrentAsset() &&
+                     Animation->GetCurrentAsset()->GetName() == TEXT("ThirdPersonWalk") && Animation->IsLooping());
+        Walker->Move(FVector2D(0, 1), FVector2D::ZeroVector, false, .1f);
+        TestFalse(TEXT("Walking input returns after the temporary exit"),
+                  Walker->GetPendingMovementInputVector().IsNearlyZero());
+        return true;
+    }
     TestTrue(TEXT("Walker retains the shared runtime mesh and constant scale"),
              Walker->GetMesh()->GetSkeletalMeshAsset() == PilotMesh &&
                  Walker->GetMesh()->GetRelativeScale3D().Equals(FVector(1.5f), .001));

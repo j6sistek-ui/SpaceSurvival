@@ -2,6 +2,14 @@
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed authoring, package audit and both packaged capture fixtures. Package 3's scripted/package evidence remains a separate checkpoint. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
+## September 15 owned audio and station assets
+
+The [owned-asset receipt](validation/2026-09-15-owned-audio-station-assets.json) records the source/editor boundary for the selective local pass. `SpaceSurvivalEditor Win64 Development` built successfully with UE5.8.2. Static authoring validation found all ten private audio roles, their generated fallbacks, the temporary hero/staff assets and explicit cook references. The Station Workshop filter resolves 702 `/Game` assets plus six engine basic shapes for **708** placeable entries; the curated material preset list remains ten.
+
+The final merge-gate `Artifacts/UnrealTests/index.json` report records **49 successes, zero warnings/failures/not-run** in 8.625296593 seconds. An earlier run passed 48/49 because a historical station disembark fixture required the walker mesh to equal the pilot mesh. The fixture was updated to exercise the intended different-skeleton temporary-hero route while preserving missing-content fallback coverage; the complete suite then passed. Eleven changed C++ files passed the installed Visual Studio clang-format dry run. Docker was unavailable, so no host package was installed and the native formatter was used.
+
+Engine logs warn that Robot Scout and Sci-Fi Trooper skeleton packages reference missing `/Engine/EngineMeshes/Humanoid` preview content. Their selected runtime meshes and animations still load in automation. A new package/cook, rendered character/staff review, human listening, loop/mix approval and itch update were not performed. The station-edge collision-death report is captured separately and was not fixed by this pass.
+
 ## September 15 Station Workshop
 
 [PR14](https://github.com/j6sistek-ui/SpaceSurvival/pull/14) adds editor authoring while reported bug fixes remain paused. The [workshop receipt](validation/2026-09-15-station-workshop.json) binds source-file hashes to the UE5.8.2 Editor build, native save/apply/export test and actual offscreen panel capture. All nine integration checks pass: ten materials exist; unsupported actors and zero scale reject before changing the station; a rotated, nonuniformly scaled copper prop survives save/reopen and appears correctly in the runtime Blueprint; deletion applies; setup reruns preserve map/material bytes; and the final exported 380 placements equal the initial composition. Original assets and per-apply backups remain local.
