@@ -135,6 +135,21 @@ private:
         FGlobalTabmanager::Get()->TryInvokeTab(StationWorkshop::TabId);
     }
 
+    TSharedRef<SWidget> GenerateMaterialOption(TSharedPtr<FString> Option)
+    {
+        return SNew(STextBlock).Text(FText::FromString(*Option));
+    }
+
+    void SelectMaterial(TSharedPtr<FString> Option, ESelectInfo::Type)
+    {
+        SelectedMaterial = Option;
+    }
+
+    FText SelectedMaterialText() const
+    {
+        return FText::FromString(SelectedMaterial.IsValid() ? *SelectedMaterial : FString());
+    }
+
     TSharedRef<SDockTab> SpawnWorkshopTab(const FSpawnTabArgs &Args)
     {
         FAssetPickerConfig Picker;
@@ -178,6 +193,24 @@ private:
         const TSharedRef<SWidget> AssetPicker =
             FModuleManager::LoadModuleChecked<FContentBrowserModule>("ContentBrowser").Get().CreateAssetPicker(Picker);
 
+        const TSharedRef<STextBlock> MaterialLabel =
+            SNew(STextBlock).Text_Raw(this, &FSpaceSurvivalEditorModule::SelectedMaterialText);
+        const TSharedRef<SComboBox<TSharedPtr<FString>>> MaterialSelector =
+            SNew(SComboBox<TSharedPtr<FString>>)
+                .OptionsSource(&MaterialOptions)
+                .InitiallySelectedItem(SelectedMaterial)
+                .OnGenerateWidget_Raw(this, &FSpaceSurvivalEditorModule::GenerateMaterialOption)
+                .OnSelectionChanged_Raw(this, &FSpaceSurvivalEditorModule::SelectMaterial)[MaterialLabel];
+        const TSharedRef<SButton> MaterialButton =
+            SNew(SButton)
+                .Text(LOCTEXT("ApplyMaterial", "Apply to selection"))
+                .ToolTipText(LOCTEXT("MaterialHint", "Replace every material slot on selected meshes. "
+                                                     "Ctrl+Z restores the original materials."))
+                .OnClicked_Raw(this, &FSpaceSurvivalEditorModule::ApplyMaterial);
+        const TSharedRef<SHorizontalBox> MaterialControls = SNew(SHorizontalBox);
+        MaterialControls->AddSlot().FillWidth(1).Padding(0, 0, 6, 0)[MaterialSelector];
+        MaterialControls->AddSlot().AutoWidth()[MaterialButton];
+
         FSlateFontInfo HeadingFont = FAppStyle::GetFontStyle("NormalText");
         HeadingFont.Size = 18;
         TSharedRef<SDockTab> Tab = SNew(SDockTab).TabRole(ETabRole::NomadTab)[SNew(SBorder).Padding(
@@ -218,32 +251,7 @@ private:
                                                       "snapping. F frames the selection."))] +
                 SVerticalBox::Slot().AutoHeight().Padding(
                     0, 0, 0, 6)[SNew(STextBlock).Text(LOCTEXT("Materials", "10 MATERIAL PRESETS"))] +
-                SVerticalBox::Slot().AutoHeight().Padding(
-                    0, 0, 0,
-                    10)[SNew(SHorizontalBox) +
-                        SHorizontalBox::Slot().FillWidth(1).Padding(0, 0, 6, 0)
-                            [SNew(SComboBox<TSharedPtr<FString>>)
-                                 .OptionsSource(&MaterialOptions)
-                                 .InitiallySelectedItem(SelectedMaterial)
-                                 .OnGenerateWidget_Lambda([](TSharedPtr<FString> Option)
-                                                          { return SNew(STextBlock).Text(FText::FromString(*Option)); })
-                                 .OnSelectionChanged_Lambda(
-                                     [this](TSharedPtr<FString> Option, ESelectInfo::Type)
-                                     { SelectedMaterial = Option; })[SNew(STextBlock)
-                                                                         .Text_Lambda(
-                                                                             [this]()
-                                                                             {
-                                                                                 return FText::FromString(
-                                                                                     SelectedMaterial.IsValid()
-                                                                                         ? *SelectedMaterial
-                                                                                         : FString());
-                                                                             })]] +
-                        SHorizontalBox::Slot().AutoWidth()
-                            [SNew(SButton)
-                                 .Text(LOCTEXT("ApplyMaterial", "Apply to selection"))
-                                 .ToolTipText(LOCTEXT("MaterialHint", "Replace every material slot on selected meshes. "
-                                                                      "Ctrl+Z restores the original materials."))
-                                 .OnClicked_Raw(this, &FSpaceSurvivalEditorModule::ApplyMaterial)]] +
+                SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 10)[MaterialControls] +
                 SVerticalBox::Slot().AutoHeight().Padding(
                     0, 0, 0, 6)[SNew(STextBlock).Text(LOCTEXT("Assets", "IMPORTED ASSETS + BASIC SHAPES"))] +
                 SVerticalBox::Slot().FillHeight(

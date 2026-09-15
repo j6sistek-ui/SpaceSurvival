@@ -6,7 +6,7 @@
   "source_sha256_lf": {
     "Source/SpaceSurvival/Private/SSStationWorkshop.cpp": "17ebe85704fecd5f6d55a9046c8c55c0018ba809c9e839e343d2ac29ae3d4e77",
     "Source/SpaceSurvival/Public/SSStationVisualLayout.h": "86aa5b854898821b9ac38c168ef737a5f7db9e819ecb83b85415db5b57c1d1e7",
-    "Source/SpaceSurvivalEditor/Private/SpaceSurvivalEditorModule.cpp": "09123f692742da93ba50eec95a26262888b06c90270bfd09d79894fbe10c5f22",
+    "Source/SpaceSurvivalEditor/Private/SpaceSurvivalEditorModule.cpp": "14180b43d3d11fe110e41b465456501063b6c83952d26b7795ecd8c1f908681f",
     "Source/SpaceSurvivalEditor/SpaceSurvivalEditor.Build.cs": "ecdbee8595dd79543ccf407114978184b08684426f36dc0d177e98be0ac0b340",
     "Source/SpaceSurvivalEditor.Target.cs": "4656d5deb1370491d1d51c780761a7cf01f76e7d8d7e2aaca35840409f76fba3",
     "SpaceSurvival.uproject": "e8163c9b7e976d34bd22d3178d8ca810345715120641b021f3bf0f4a9c0a0450",
@@ -15,12 +15,12 @@
     "Scripts/OpenStationWorkshop.ps1": "00ee00ab7aead6ad15f2e224551da55251b26442682e89b561f230d0e314ba69",
     "Open Station Workshop.cmd": "eb9f97617e75a2b56d57ae160d1a33b685af4acf19a536d8cccbc2eba7e0b3a3"
   },
-  "source_binding_note": "Final working source normalized to LF. The final UI build/capture preceded clang-format whitespace-only formatting. Bridge test preceded the isolated UI catalog/layout correction; bridge behavior is unchanged.",
+  "source_binding_note": "Final LF-normalized source; Editor9 builds this revision. Integration tests exercise the unchanged native bridge. Panel4 capture precedes an equivalent named-widget/callback refactor to make clang-format14 and22 agree; UI layout and behavior are preserved.",
   "editor_build": {
     "status": "PASS",
-    "log": "Artifacts/BuildLogs/StationWorkshopEditor8.log",
-    "sha256": "7e352b92ed80edff975777c255da2422549d196b48772830bb3679d65057e48a",
-    "seconds": 12.12,
+    "log": "Artifacts/BuildLogs/StationWorkshopEditor9.log",
+    "sha256": "684dda360a10dc75b42be2ac9f8bbffb8f42abc1edce0cabaf980226fa1d4f03",
+    "seconds": 8.58,
     "warnings": "Engine-header C4996 deprecations; installed nonpreferred compiler advisory. No project compile errors."
   },
   "integration": {
@@ -77,5 +77,10 @@
     "JSON references local assets and is a handoff manifest, not a standalone asset bundle or arbitrary import implementation.",
     "All 19 owner acceptance cases remain open.",
     "Installed game and itch 0.1.16-alpha.1 were not updated."
-  ]
+  ],
+  "ci_checkpoint": {
+    "source": "Initial ba1b763 job passed source/export/Python/release checks, then failed only clang-format14 on nested Slate material controls. Replaced that block with equivalent named widgets/callbacks; final branch CI is authoritative.",
+    "core": "ba1b763 PASS",
+    "documentation": "ba1b763 PASS"
+  }
 }
