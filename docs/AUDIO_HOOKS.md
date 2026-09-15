@@ -1,8 +1,10 @@
 # Phase 1 audio hooks
 
-Status: **Unreal build, content import, fresh content validation and both audio automation tests passed.** The final combined suite passed 21/21 tests with no warnings or failures at 2026-09-13 09:29:16 UTC. Native playback and listening acceptance remain unverified. Phase 1 remains **PARTIAL**.
+Historical September 13 hook implementation: **Unreal build, content import, fresh content validation and both audio automation tests passed.** The final combined suite passed 21/21 tests with no warnings or failures at 2026-09-13 09:29:16 UTC. Native playback and listening acceptance remain unverified. Phase 1 remains **PARTIAL**.
 
 The scope requires spatial threats, distinct warnings, atmospheric environments and an adaptive score. This change wires those existing behaviors to editable cues. It does not establish cinematic quality, mix balance, perceived direction, warning readability or owner acceptance.
+
+The September 15 [local audio and glyph evaluation](production/SOLUTION_CATALOG.md#new-local-audio-and-glyphs-evaluation-and-proposed-integration) records the two newly downloaded sound packs and the proposed selective integration. Those assets have not replaced these generated sources; listening and integration remain pending.
 
 ## Startup and settings
 
@@ -60,4 +62,4 @@ The fixtures use in-memory sessions, never call GameInstance Init or save APIs, 
 
 The [focused receipt](validation/2026-09-13-audio-hooks.json) binds exact final C++/Python source, Editor DLL, imported audio assets, 16 source hashes, logs and test results. It independently compares all ten original WAVs with immutable commit a9da95e18be56fe55b230b0ad48b4fad2317360b. The first failing suite's log is retained; its report, original failing test source and DLL were not copied or hashed before the rerun, and the receipt states that limit.
 
-Package 9 remains a historical source4178 artifact and does not contain this change. Human listening and game-feel checks remain unchecked in PLAYTEST_TOMORROW.md.
+Package 9 remains a historical source4178 artifact and does not contain this change. Human listening and game-feel checks remain open under [ISS-08 in the canonical issue log](KNOWN_ISSUES.md#iss-08).

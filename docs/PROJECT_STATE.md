@@ -15,6 +15,10 @@
 
 To play locally, open `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`, keeping the complete directory. Do not open the Unreal project just to play. See [save-location differences](BUILD_RUN.md#local-saves) before changing launch arguments or moving an installation.
 
+## Newly staged audio and input glyphs
+
+September 15 evaluation found `IndieSounds-SciFi`, `cplomedia_SciFiSoundFX` and `EasyInputPrompts` inside `User downloaded assets/SpaceSurvival/Content`, with vault copies. These roots are absent from the working project Content and are not included in the current game/itch release. [The catalog evaluation](production/SOLUTION_CATALOG.md#new-local-audio-and-glyphs-evaluation-and-proposed-integration) owns resource fit and the proposed integration; ISS-05/08 own active follow-up. This was a read-only source/media inspection with private derived thumbnails/inventory and documentation updates.
+
 ## Local Station Workshop
 
 [PR #14](https://github.com/j6sistek-ui/SpaceSurvival/pull/14) now carries the owner-authorized editor workshop, in addition to captured feedback. Its branch is `codex/owner-feedback-build-workflow`; it is not merged. The editor module is separate from packaged gameplay. Start it with `Open Station Workshop.cmd`; [Station editing](STATION_EDITING.md) owns controls, setup and limitations. [Workshop validation](validation/2026-09-15-station-workshop.json) records the successful Editor build, nine integration checks, ten material presets, 380 preserved placements and an actual panel capture showing the populated 677-asset catalog. Physical mouse/controller interaction and owner acceptance remain open.
