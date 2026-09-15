@@ -1,0 +1,527 @@
+{
+  "schema": "spacesurvival.visual-enhancement.v1",
+  "recorded_utc": "2026-09-15T00:22:18.694962+00:00",
+  "status": "IMPLEMENTED_AND_SCRIPTED_EVIDENCE_VERIFIED_OWNER_ACCEPTANCE_PENDING",
+  "writer": {
+    "path": "Artifacts/VisualPass/WriteFinalReceipt.py",
+    "bytes": 23325,
+    "sha256": "2e50cd0f95fedfa4dce42f2ee14d8d7a42b20616344759143fde5111921ee0c6"
+  },
+  "source": {
+    "head": "cf6296f286dba9a89583649e19f988ed09af2f16",
+    "branch": "codex/visual-enhancement",
+    "worktree_dirty": true,
+    "changed_cpp_header_count": 30,
+    "changed_cpp_header_manifest_sha256": "a824fef7faf09228a2cc4156cb01cd235bca158af7eb4dda41029696199c50dc",
+    "binding_limit": "Build log, current source hashes and captured binary hashes are separate contemporaneous evidence; no hermetic compiler-input attestation. Capture HEAD may precede the final source commit."
+  },
+  "editor_build": {
+    "receipt": {
+      "path": "Artifacts/VisualPass/EditorBuild12.log",
+      "bytes": 10987,
+      "sha256": "ae3e414378d5ee7ca45d953a011760f3cca91d097915df0f2f1b8ba4e3d9c0e5"
+    },
+    "result": "Succeeded",
+    "seconds": 44.21
+  },
+  "unreal_tests": {
+    "receipt": {
+      "path": "Artifacts/UnrealTests/index.json",
+      "bytes": 43580,
+      "sha256": "0ea92350375af7a144426db850872510b386fcafc34e016384927a931026c299"
+    },
+    "report_created": "2026.09.14-23.57.10",
+    "succeeded": 49,
+    "failed": 0,
+    "warnings": 0,
+    "not_run": 0,
+    "duration_seconds": 4.7355475425720215,
+    "rhi_scope": "Suite invocation is not a visual-quality or performance check"
+  },
+  "format": {
+    "receipt": {
+      "path": "Artifacts/VisualPass/FollowupFormat.json",
+      "bytes": 5314,
+      "sha256": "5e507548b87ba4354ce82907f005068d18f06b8dde27c8d0ea60d8485328d38b"
+    },
+    "checked_files": 30,
+    "passed": true,
+    "version": "clang-format version 22.1.3 (https://github.com/llvm/llvm-project e9846648fd6183ee6d8cbdb4502213fcf902a211)"
+  },
+  "player_import": {
+    "receipt": {
+      "path": "Artifacts/PlayerShipVisualPass/Import.json",
+      "bytes": 17890,
+      "sha256": "026fca6b6da36eb7ece4d6eda7429ed173f78e43170bfbc8120be78590673fe5"
+    },
+    "assembly": {
+      "path": "Artifacts/PlayerShipVisualPass/Assembly/Assembly.json",
+      "bytes": 48957,
+      "sha256": "59b8f4e5ef6cd6be5764fa933119b2fd9f618de7b868295c71c7c985bb008aa4"
+    },
+    "status": "IMPORTED_BOUNDS_MATERIAL_COLLISION_VERIFIED_REQUIRES_NATIVE_REVIEW",
+    "engine": "5.8.2-56702186+++UE5+Release-5.8",
+    "asset_count": 27,
+    "protected_assets_unchanged_at_import": 214,
+    "base_hull": {
+      "path": "/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/SM_PlayerHavolkStarter.SM_PlayerHavolkStarter",
+      "bounds_cm": [
+        [
+          -230.0,
+          -185.5,
+          -57.500003814697266
+        ],
+        [
+          230.0,
+          185.5,
+          57.5
+        ]
+      ],
+      "triangles": 15189,
+      "sections": 5,
+      "materials": [
+        "/Game/Spacecraft_Pack/Material/White_Material/MI_White_Spacecraft_02.MI_White_Spacecraft_02",
+        "/Game/Spacecraft_Pack/Material/White_Material/MI_White_Wing.MI_White_Wing",
+        "/Game/Spacecraft_Pack/Material/White_Material/MI_White_Engine.MI_White_Engine",
+        "/Game/Spacecraft_Pack/Material/Blue_Material/MI_Blue_Wing.MI_Blue_Wing",
+        "/Game/Spacecraft_Pack/Material/Base_Material/MI_Weapon.MI_Weapon"
+      ],
+      "collision": "NoCollision",
+      "source_sha256": "4520ef1dffc9a66356247a1da8d977ef66163a28f0a8d821c30b99b7954f7b52"
+    }
+  },
+  "editable_station": {
+    "receipt": {
+      "path": ".agent/local/StationVisualPass/EditableLayout-d4acef24a0d943c390c5224bb27a3ae6/Authoring.json",
+      "bytes": 152496,
+      "sha256": "cb7cfffd74da1c89bbdcb94ca43fb29466412f29f79d5ed460b961a3c0b4f645"
+    },
+    "status": "OWNER_LAYOUT_PRESERVED_UNCHANGED",
+    "blueprint": {
+      "path": "Content/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout.uasset",
+      "bytes": 721811,
+      "sha256": "16f283187b74ee0951704fe36c00b983486491b762b4d5e8ee195877e08783dc"
+    },
+    "recipe": {
+      "path": ".agent/local/StationVisualPass/EditableLayout.json",
+      "bytes": 53396,
+      "sha256": "be35eb1d51a42fe84d1227fef7701063fa1d5e8fdec4e67b40f1ec5ca7a41ebe"
+    },
+    "recipe_normalized_text_sha256": "1ddc2e092f539c4958eed3ac8441c1248ef6b8596a795539c622ad86388e418c",
+    "engine": "5.8.2-56702186+++UE5+Release-5.8",
+    "compiled": true,
+    "component_count": 380,
+    "parent": "/Script/SpaceSurvival.SSStationVisualLayout"
+  },
+  "captures": [
+    {
+      "receipt": {
+        "path": "Artifacts/EndgameSoak/83e8d2af8d124cb99a1369727447ebbd/capture.json",
+        "bytes": 13741,
+        "sha256": "a86b23d4212eabad584f72a153f6dc1a69a5eabe6748ec98a8c85036445480e6"
+      },
+      "native_fixture": {
+        "path": "Artifacts/EndgameSoak/83e8d2af8d124cb99a1369727447ebbd/fixture.json",
+        "bytes": 6411,
+        "sha256": "4562c4047fcc80a75abf28b6c6b2a9e7169d2c5d5e05e3510d0172a38b9b5b44"
+      },
+      "success": true,
+      "scenario": "Wave1",
+      "mode": "WindowsDevelopmentPackage",
+      "started_utc": "2026-09-15T00:15:56.9339551Z",
+      "finished_utc": "2026-09-15T00:16:36.2886747Z",
+      "source": {
+        "head": "cf6296f286dba9a89583649e19f988ed09af2f16",
+        "preserved": true,
+        "level": "HEAD/worktree status only; Wave1 wrapper does not hash source files"
+      },
+      "compiled_artifacts": [
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe",
+          "bytes": 333051904,
+          "sha256": "65cc1f692bad328366cc7148e083631ab98414c6bef8c0d79a618c8ff906f5ca"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.ucas",
+          "bytes": 3208160,
+          "sha256": "a533f9b466fc68bd3f504eedd03e2fa569f4d8936c4d2998a429d14210ab272b"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.utoc",
+          "bytes": 782,
+          "sha256": "1b565d5f0a6c942267e3b29d740625dbc1d5065cc1cef8adff0c5676f35f8784"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.pak",
+          "bytes": 11275862,
+          "sha256": "79d107fe5083757c93e40d396baa2ee973732fdba3a117fb39a9aa3633bfc662"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.ucas",
+          "bytes": 2178579312,
+          "sha256": "2803c6a1645c7f07f94641357bf8a288b40e5171832a54b100b4fb9987eca528"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.utoc",
+          "bytes": 1211756,
+          "sha256": "16bab8f07de0f94e7ec298bcd67f64927f020dff3a51548cd24a1bafec1372b2"
+        }
+      ],
+      "production_saves_preserved": true,
+      "no_test_save_slots_written": true,
+      "image_count": 4,
+      "images": [
+        {
+          "path": "Artifacts/EndgameSoak/83e8d2af8d124cb99a1369727447ebbd/Cruise.png",
+          "bytes": 2513511,
+          "sha256": "cd39756efcb0f0029e05768de6e1a7381b21d4f0ffca3c2b841f0b2a445da225",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/83e8d2af8d124cb99a1369727447ebbd/Turn.png",
+          "bytes": 1708495,
+          "sha256": "b1abb1f92efe63eda039374bc99863b806a44abb30c8e049a5bdf550315e558c",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/83e8d2af8d124cb99a1369727447ebbd/Boost.png",
+          "bytes": 1783461,
+          "sha256": "295ab26c20aa6993ea4cf3c278482a8ea6f3db3244defa44076484dd336e08c4",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/83e8d2af8d124cb99a1369727447ebbd/Brake.png",
+          "bytes": 1818213,
+          "sha256": "4319f7d5f6880eb52612483ded44b0ffe913160b3de2a80875f138281ece95bb",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "fixture_frames": 3401,
+      "wall_seconds": 29.10832329839468,
+      "offscreen_visual_only": true,
+      "performance_evidence": false,
+      "limits": "Hidden rendered game; 29 seconds of scripted normal-stat cruise/turn/boost/brake and no fire. PNG headers/dimensions/hashes are verified, not visual quality. No FPS, physical input, natural balance or complete run claim."
+    },
+    {
+      "receipt": {
+        "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/result.json",
+        "bytes": 85475,
+        "sha256": "fcbd8b4ba956502636041aae827701f0820688f335c6c26d0f622093eac47685"
+      },
+      "native_fixture": {
+        "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/fixture.json",
+        "bytes": 20922,
+        "sha256": "cb1131125fb38ff7b79876666b35bd88f5f76b90cf7a423c5dab7ffa610449db"
+      },
+      "success": true,
+      "scenario": "Station5",
+      "mode": "WindowsDevelopmentPackage",
+      "started_utc": "2026-09-15T00:17:52.7033279Z",
+      "finished_utc": "2026-09-15T00:20:23.5153458Z",
+      "source": {
+        "head": "cf6296f286dba9a89583649e19f988ed09af2f16",
+        "preserved": true,
+        "current_files_match": true,
+        "file_count": 202,
+        "file_manifest_sha256": "71d90ef410e3536b7b695d7d6392d93ed90361c2bd90a3d84f662753a53d84dc",
+        "level": "Exact recorded tracked/unignored source/content files; ignored private assets are separate"
+      },
+      "compiled_artifacts": [
+        {
+          "path": "Artifacts/Windows/SpaceSurvival.exe",
+          "bytes": 171520,
+          "sha256": "619ac0779dceabf638639193efdea0733e3b4626dea623c07062f160f5abccf8"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe",
+          "bytes": 333051904,
+          "sha256": "65cc1f692bad328366cc7148e083631ab98414c6bef8c0d79a618c8ff906f5ca"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.ucas",
+          "bytes": 3208160,
+          "sha256": "a533f9b466fc68bd3f504eedd03e2fa569f4d8936c4d2998a429d14210ab272b"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.utoc",
+          "bytes": 782,
+          "sha256": "1b565d5f0a6c942267e3b29d740625dbc1d5065cc1cef8adff0c5676f35f8784"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.pak",
+          "bytes": 11275862,
+          "sha256": "79d107fe5083757c93e40d396baa2ee973732fdba3a117fb39a9aa3633bfc662"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.ucas",
+          "bytes": 2178579312,
+          "sha256": "2803c6a1645c7f07f94641357bf8a288b40e5171832a54b100b4fb9987eca528"
+        },
+        {
+          "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.utoc",
+          "bytes": 1211756,
+          "sha256": "16bab8f07de0f94e7ec298bcd67f64927f020dff3a51548cd24a1bafec1372b2"
+        }
+      ],
+      "production_saves_preserved": true,
+      "no_test_save_slots_written": true,
+      "image_count": 16,
+      "images": [
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Flight.png",
+          "bytes": 2567423,
+          "sha256": "a9f749feb21b83b6e3e83aaff89aa8fe557ce3b8c1424a64f0a9e8edfa0c804d",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Climax.png",
+          "bytes": 2436207,
+          "sha256": "3eb4af3066eb4e639fa42474cd7ee22f4e5ee7f7710ab0964356d7f6f418b496",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Wormhole.png",
+          "bytes": 2684557,
+          "sha256": "fce88d32b132571bc5ac40ebc2e3c391d76f3caf38de365e877d7934bda1c845",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Approach.png",
+          "bytes": 2069061,
+          "sha256": "331125e8f34b2c871bfe62342f182ba027d20f56d90f6dede385f3aca10abe25",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Docking.png",
+          "bytes": 2713642,
+          "sha256": "0819b64417521df222ccfcaafb6abb14bf435deb3481043d02a8afef1108906d",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Exit0.png",
+          "bytes": 2989290,
+          "sha256": "dbca0815cb0f853b7867c6079afd4e9169c4d4c6a387807cc1ccfb7d05dd234c",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Exit1.png",
+          "bytes": 2817459,
+          "sha256": "d2ecf1d72d85c649724774d981fbffdff80926b1d5a61566c3c8abfc5f198fd4",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Exit2.png",
+          "bytes": 2736085,
+          "sha256": "e4cde009d52a96bb13048a998690476c9b2d6a747ba11c12b4e773e49278a83c",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Exit3.png",
+          "bytes": 2621035,
+          "sha256": "28c900914a082a7d8bf89714b460b2fb2f56ede467367d6847e21bac75c7d781",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Exit4.png",
+          "bytes": 2681968,
+          "sha256": "21a91c42474995e1b1184785cee636e5156f136e14409a505abbb7db1a26a4d7",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Exit5.png",
+          "bytes": 2718689,
+          "sha256": "07ae14888414019ad1f23782e5c9287ad38c516b126376336d13703661cbbb60",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/Exit6.png",
+          "bytes": 2759904,
+          "sha256": "113529efe801a0e3f7735525ea490cf2e4398a5d97f7a7775521c883f775c91f",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/StationIdle.png",
+          "bytes": 3122467,
+          "sha256": "28aaece673b1ab2c1a7d27359ee3271e083aea5c7fda22c599f5182ed03be066",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/StationServices.png",
+          "bytes": 3218974,
+          "sha256": "fc03f35b17f6f5e37ea66d76feee168982f4796b0d725d3deef36593effea3bb",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/StationOverview.png",
+          "bytes": 3179965,
+          "sha256": "83cd89befcb98da3981c17a73846e8024fac35492aef35b4a9ae48729fa8fc21",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "path": "Artifacts/EndgameSoak/57b542f96fac479ab20841b6a2ec8d1b/CombatImpact.png",
+          "bytes": 2356942,
+          "sha256": "4a562ff7ba49a4b1d576962b4e93f4cc75171ba52ba5af94454af8b06956de24",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "fixture_frames": 16341,
+      "wall_seconds": 140.99921799823642,
+      "offscreen_visual_only": true,
+      "performance_evidence": false,
+      "limits": "Seeded Tier V starter/RapidLaser/OverdriveCooling; base durability 50000; normal timers/caps/budgets/spatial admission; scripted input. Exact bytes/process are recorded, but separate build provenance must bind compiled source. No physical input, natural balance, full ten-wave run, natural station interactions, final art, clean-machine or representative FPS acceptance.",
+      "combat_impact_request": {
+        "name": "CombatImpact",
+        "requestStageSeconds": 13.025397300720215,
+        "requestFrame": 1799,
+        "combatSourceEnemy": "SSEnemy_2147482172",
+        "combatSystem": "/Game/SpaceSurvival/Licensed/Combat/NS_EnemyExplosion.NS_EnemyExplosion",
+        "combatEffectPosition": "X=51665.076 Y=1613.172 Z=5649.075",
+        "combatSecondsSinceKill": 0.15001590177416801,
+        "normalWeaponKill": true,
+        "animation": "/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit",
+        "animationSeconds": 1.0337551832199097,
+        "hull": "/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/SM_PlayerHavolkStarter.SM_PlayerHavolkStarter",
+        "cameraTransform": "Rotation: Pitch -4.000000 Yaw 0.000000 Roll -0.000000\r\nTranslation: 50271.496142 1603.675309 5758.206383\r\nScale3D: 1.000000 1.000000 1.000000\r\n",
+        "horizontalFov": 85.73352813720703,
+        "scriptedStationReviewCamera": false,
+        "pilotVisible": false,
+        "pilotTransform": "Rotation: Pitch 1.405559 Yaw -90.002060 Roll -0.083967\r\nTranslation: 51296.454870 1603.582121 5704.893061\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+        "leftWrist": "Rotation: Pitch 23.907098 Yaw -90.338279 Roll 42.140522\r\nTranslation: 51324.348870 1583.139510 5727.286112\r\nScale3D: 1.500000 1.500000 1.500000\r\n",
+        "rightWrist": "Rotation: Pitch -16.479989 Yaw -120.952788 Roll -88.156428\r\nTranslation: 51320.557452 1624.527321 5727.563721\r\nScale3D: 1.500000 1.500000 1.500000\r\n"
+      }
+    }
+  ],
+  "package_audit": {
+    "pointer": {
+      "path": "Artifacts/VisualPass/PackageAudit-current.json",
+      "bytes": 468,
+      "sha256": "48792546f5b1c4190ed29589ec94f26bc3b489b79fa943867a4d4a81a1109f05"
+    },
+    "receipt": {
+      "path": "Artifacts/VisualPass/PackageAudit-ccc6491dd42e4219b36acabaa036cf91/Audit.json",
+      "bytes": 1727881,
+      "sha256": "b05fc9117c1675d943d1cdd97a62f511376792761beb422b5d3ac28fb5119445"
+    },
+    "status": "ACTUAL_IOSTORE_PRESENCE_AND_COOKED_IMPORT_AUDIT_PASS",
+    "archive_label": "Visual enhancement Package4, quieter stars, source cf6296f",
+    "finished_utc": "2026-09-15T00:15:54.432141+00:00",
+    "archive_files": 63,
+    "archive_bytes": 3040476076,
+    "archive_file_manifest_sha256": "0a3d209878c5251daa28d7293d8d6ea0b0435284c5b3b1fe8f348a92b6097cdc",
+    "game_executable_sha256": "65cc1f692bad328366cc7148e083631ab98414c6bef8c0d79a618c8ff906f5ca",
+    "group_counts": {
+      "selected_free_assets": 8,
+      "havolk_meshes": 36,
+      "combat_systems": 11,
+      "region_cubes": 3,
+      "station_scenery_and_manifests": 13,
+      "station_label_material": 1,
+      "private_authored_packages": 154,
+      "station_editable_layout": 36
+    },
+    "indexed_exports": 1380,
+    "cooked_dependency_packages": 1380,
+    "archive_unchanged": true,
+    "current_recipe_inputs_match": true,
+    "packaged_capture_payload_matches_archive": true,
+    "limits": [
+      "Verifies cooked package exports and described import resolution, not every property or rendered asset appearance.",
+      "Source recipes specify expected identities only; actual archive index and package descriptions provide package proof.",
+      "No game/editor launch, natural gameplay, performance, audio, installation, or clean-PC acceptance asserted."
+    ]
+  },
+  "limitations": [
+    "Rendered fixtures are scripted, hidden/offscreen and visual-only; they do not establish natural gameplay, physical input/controller parity, audio or 60 FPS.",
+    "Station5 uses seeded Tier V equipment and fixture durability; Wave1 is normal-stat scripted flight without firing.",
+    "Frozen private input hashes plus successful cook provide build-input evidence. Verified packaged container identities bind the captured payload, without proving byte-to-serialized-property equivalence.",
+    "PNG identity and on-screen effect request evidence do not establish artist acceptance or judge visual quality automatically.",
+    "Packaged launches are verified scripted captures of the audited payload; clean-machine installation is untested.",
+    "The provisional purchased-kit Starter does not replace the planned artist-designed iconic ship.",
+    "No itch publication, PR merge, or complete Phase 1 acceptance is asserted by this receipt."
+  ],
+  "frozen_private_inputs": {
+    "receipt": {
+      "path": "Artifacts/VisualPass/FrozenPrivateInputs.json",
+      "bytes": 39281,
+      "sha256": "065c27dbc627e6d7f27a5dbce0d6a8d789e0ab91e2a6e53482884f7861afb862"
+    },
+    "recorded_utc": "2026-09-15T00:13:59.895849+00:00",
+    "source_commit": "cf6296f286dba9a89583649e19f988ed09af2f16",
+    "scope": "Private authored Licensed content frozen before successful cook and final packaged captures; vendor roots separately preserved; not serialized-property equivalence.",
+    "file_count": 154,
+    "bytes": 357609143,
+    "file_manifest_sha256": "c5a1aee9efbf34117d2ce7131fcb42e56deff7898505c965a82572bbdb2acdb3",
+    "recorded_before_captures": true,
+    "complete_current_licensed_file_set_matches": true,
+    "provenance": "Private input freeze plus successful cook is build-input evidence. Packaged capture container hashes bind the actual rendered payload. This does not establish byte-to-serialized-property equivalence."
+  },
+  "star_balance": {
+    "authoring": {
+      "path": "Artifacts/VisualPass/SpaceAuthor.json",
+      "bytes": 764,
+      "sha256": "5723963546bf57f543ef0712244aeda95a56a6d07af77a3485bec3bad156f3dd"
+    },
+    "parameters": {
+      "brightness": 0.3,
+      "contrast_exponent": 1.45,
+      "directional_gain_min": 0.18,
+      "directional_gain_max": 1.0,
+      "noise_scale": 35.0,
+      "temporal_animation": false
+    },
+    "scope": "Owner-requested material-only brightness/variation follow-up; nebula/object lighting unchanged. The 49-test C++ suite predates this material edit; its C++ sources are unchanged, while the new material was authored, cooked and rendered separately."
+  },
+  "supersedes_review_package": {
+    "path": "docs/validation/2026-09-14-visual-enhancement.json",
+    "bytes": 22380,
+    "sha256": "5ad3dfd71121d499f4dac98a94dd1ff6f2003a0cb95c825e6c681ba054b0c802"
+  },
+  "earlier_portable_domain_evidence": {
+    "receipt": {
+      "path": "Artifacts/VisualPass/NativeCore.json",
+      "bytes": 1741,
+      "sha256": "9ca0ebc601c12dae8ec0d390285301273316a47ce0c7f100abc4fba2c93e9000"
+    },
+    "assertions": 744,
+    "completed_utc": "2026-09-14T22:00:23.7666839Z",
+    "compiler": "19.51.36257.0",
+    "flags": [
+      "/std:c++17",
+      "/O2",
+      "/W4",
+      "/WX",
+      "/permissive-",
+      "/EHsc",
+      "/utf-8",
+      "/ISource/SpaceSurvival/Domain",
+      "Source/SpaceSurvival/Domain/SurvivalCore.cpp",
+      "Tests/CoreTests.cpp",
+      "/FoArtifacts/VisualPass/",
+      "/FeArtifacts/VisualPass/native-core.exe",
+      "/FdArtifacts/VisualPass/native-core.pdb"
+    ],
+    "source_hashes_still_match": true,
+    "scope": "Earlier pre-follow-up native domain check; not rerun for the final visual follow-up",
+    "sanitizers": "NOT RUN: native strict C++17 check only; GCC ASan/UBSan Docker target unavailable"
+  }
+}

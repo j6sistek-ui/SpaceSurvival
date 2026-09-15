@@ -58,6 +58,8 @@ $ssProject = Join-Path (Get-Location) 'SpaceSurvival.uproject'
 
 This runs the project through the installed editor executable. It is not a packaged build.
 
+For manual station composition, open the populated `BP_StationVisualLayout` Blueprint described in [STATION_EDITING.md](STATION_EDITING.md). Its mesh and light components drive the live station presentation; the create-once authoring script preserves saved manual edits.
+
 ## Windows package
 
 ```powershell
@@ -169,6 +171,8 @@ For a normal-frame scripted benchmark, use `CaptureEndgame.ps1` without visual r
 ./Scripts/CaptureEndgame.ps1 -Editor -Scenario Wave10 -CaptureVisuals
 ```
 
-`-Editor` uses the installed editor's uncooked game mode and current project DLL; omitting it selects the current packaged inner executable. Each launch owns a fresh GUID under Artifacts/EndgameSoak, records exact source/artifact/production-save identities, waits for foreground and requires complete fixture output. Keep the window foreground. Station 5 defaults to 330 seconds timeout, Wave 10 to 240 seconds; cleanup only terminates the owned process. No build, install or package occurs in this wrapper.
+`-Editor` uses the installed editor's uncooked game mode and current project DLL; omitting it selects the current packaged inner executable. Each launch owns a fresh GUID under Artifacts/EndgameSoak, records exact source/artifact/production-save identities and requires complete fixture output. Visual captures launch hidden with `-RenderOffscreen -ForceRes` and do not require focus. Runs without `-CaptureVisuals` still require foreground: focus the owned game window within 60 seconds and keep it foreground for the timing fixture. Station 5 defaults to 330 seconds timeout, Wave 10 to 240 seconds; cleanup only terminates the owned process. No build, install or package occurs in this wrapper.
 
-`-CaptureVisuals` captures the normal viewport/HUD, pose request metadata and ListTextures without camera/pose overrides. Current source expects 12 Station 5 or 4 Wave 10 images. Readback delays can skip early exit checkpoints; requested times are not proof of rendered poses. These runs are excluded from performance findings even when a CSV/performance.json is produced. Package 12 includes this switch; Package 11 visual/residency records remain historical, and Package 10 predates it. No Package 12 visual readback is established by its normal-timing Station 5 fixture. See [ENDGAME_CAPTURE.md](ENDGAME_CAPTURE.md) for fixture guards and [PERFORMANCE.md](PERFORMANCE.md) for benchmark limits.
+Current `-CaptureVisuals` source requires exactly **16 Station 5 images**: Flight, Climax, Wormhole, Approach, Docking, Exit0-Exit6, StationIdle, StationServices, StationOverview and CombatImpact. Wave 10 requires exactly four: Flight, Climax, Compound and Approach. The wrapper checks names, PNG dimensions and request metadata. StationServices and StationOverview use labeled fixture review cameras without changing possession; the other frames retain the normal viewport/HUD. CombatImpact must identify a live enemy-explosion effect 0.15-0.65 seconds after an actual weapon kill. Pose requests do not override animation, and requested exit times are not proof of the rendered pose.
+
+Visual runs also request ListTextures and are excluded from performance findings even when a CSV/performance.json is produced. The executable must contain the matching capture implementation; these current-source instructions do not establish which historical package supports the complete image set. Package 12 introduced the earlier visual switch, and its normal-timing Station 5 fixture does not establish a visual readback. See [ENDGAME_CAPTURE.md](ENDGAME_CAPTURE.md) for the underlying fixture and historical receipts, and [PERFORMANCE.md](PERFORMANCE.md) for benchmark limits.
