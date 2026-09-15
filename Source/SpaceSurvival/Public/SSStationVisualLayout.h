@@ -29,4 +29,12 @@ public:
     static UBlueprint *CreateStationVisualLayout(const FString &RecipeJson, bool bResetExisting = false);
     UFUNCTION(BlueprintCallable, Category = "Station Authoring")
     static FString DescribeStationVisualLayout(UBlueprint *Blueprint);
+
+    // Author in an ordinary saved editor level, then apply its visual components.
+    UFUNCTION(BlueprintCallable, Category = "Station Authoring")
+    static bool OpenStationWorkshop(FString &Result);
+    UFUNCTION(BlueprintCallable, Category = "Station Authoring")
+    static bool ApplyStationWorkshop(FString &Result);
+    UFUNCTION(BlueprintCallable, Category = "Station Authoring")
+    static bool ExportStationWorkshop(const FString &FilePath, FString &Result);
 };

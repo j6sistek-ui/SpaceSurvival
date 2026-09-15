@@ -3,7 +3,10 @@
   "EngineAssociation": "5.8",
   "Category": "Games",
   "Description": "SpaceSurvival Phase 1 single-player survival flight",
-  "Modules": [{"Name": "SpaceSurvival", "Type": "Runtime", "LoadingPhase": "Default"}],
+  "Modules": [
+    {"Name": "SpaceSurvival", "Type": "Runtime", "LoadingPhase": "Default"},
+    {"Name": "SpaceSurvivalEditor", "Type": "Editor", "LoadingPhase": "PostEngineInit"}
+  ],
   "Plugins": [
     {"Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": ["Editor"]},
     {"Name": "EditorScriptingUtilities", "Enabled": true, "TargetAllowList": ["Editor"]},

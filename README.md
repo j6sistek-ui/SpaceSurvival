@@ -14,6 +14,8 @@ The local packaged game is at `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/Sp
 
 The game has the ten-wave system foundation, two weapons/enemies, four hazard families, stations, progression and local saves. Automated and scripted checks exist; natural play, controller comfort, near-alpha presentation/audio and representative performance still need acceptance. Current art is provisional.
 
+**Arrange the station yourself:** double-click `Open Station Workshop.cmd` in the working project. The [Station Workshop guide](docs/STATION_EDITING.md) covers asset placement, ten material presets, Save + Apply and layout export. Existing packaged builds update only after a later package/release.
+
 ## Development
 
 From the repository root, use existing tooling; no host package installation is implied:

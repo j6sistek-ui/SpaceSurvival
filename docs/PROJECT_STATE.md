@@ -1,12 +1,12 @@
 # SpaceSurvival project state
 
-**Phase 1: PARTIAL.** The visual pass is merged and itch **0.1.16-alpha.1 / build 1979965** is ready on windows-alpha (verified September 15 UTC / September 14 local). [PR #11](https://github.com/j6sistek-ui/SpaceSurvival/pull/11) and [PR #12](https://github.com/j6sistek-ui/SpaceSurvival/pull/12) are merged. The release-safety fix and distribution records are tracked in [PR #13](https://github.com/j6sistek-ui/SpaceSurvival/pull/13), now approved for merge by the owner; its GitHub state is authoritative. It does not change the game binaries. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, owner checks and closure status. This page owns the source/build/release and storage explanation.
+**Phase 1: PARTIAL.** The visual pass is merged and itch **0.1.16-alpha.1 / build 1979965** is ready on windows-alpha (verified September 15 UTC / September 14 local). [PR #11](https://github.com/j6sistek-ui/SpaceSurvival/pull/11) and [PR #12](https://github.com/j6sistek-ui/SpaceSurvival/pull/12) are merged. The release-safety fix and distribution records are tracked in [PR #13](https://github.com/j6sistek-ui/SpaceSurvival/pull/13), merged at `ac08e0b`; its GitHub state is authoritative. It does not change the game binaries. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, owner checks and closure status. This page owns the source/build/release and storage explanation.
 
 ## Source, build and release
 
 | Layer | Last verified state | What it means |
 | --- | --- | --- |
-| GitHub source | PRs #11 and #12 merged at `e0af942` and `c0479cf`; pre-PR13 main checkpoint `c0479cfeba34e826143a3e40a45e79162f9f8697` | Documentation foundation and visual pass are in main. PR #13 carries the release publisher guard and release records; source merge and itch publication are verified independently. |
+| GitHub source | PRs #11–13 merged; main checkpoint `ac08e0b9dd37fa054ac691ca285162310271009e` | Documentation foundation and visual pass are in main. PR #13 carries the release publisher guard and release records; source merge and itch publication are verified independently. |
 | Documentation foundation | PR #11 merged | Canonical state/open-work navigation and PR documentation review are present. Required status-check enforcement remains a separate open repository-setting task. |
 | Current visual source | PR #12 merged; packaged source `cf6296f286dba9a89583649e19f988ed09af2f16` | C++ remains unchanged from Editor Build 12, 49 passing Unreal tests and the 30-file C++ format audit. The later star material was authored/cooked/captured separately. Release work changed distribution filtering/docs only; no Unreal rebuild was required. |
 | Latest audited local game | Package 4/source `cf6296f`; `Artifacts/Windows/SpaceSurvival.exe` | Built successfully and passed actual IoStore dependency audit plus packaged Wave 1/four-image and Station 5/16-image captures. The star layer is dimmer with static directional variation. Furnished editable station, new starter, walkway fill and unlit labels remain included. Existing optional `Try New Ship.cmd` remains a separate trial. |
@@ -14,6 +14,18 @@
 | Published tester build | itch `0.1.16-alpha.1`, upload `19226459`, ready build `1979965` from `1978147`; [release record](ITCH_RELEASES.md#september-15-visual-release) | Same audited game executable and cooked containers as Package 4, with developer symbols/manifests and runtime Saved/log/save data excluded. Payload: 51 files / 2,664,557,549 bytes. Butler reports a 1.49 GiB patch; actual client update/save preservation remains unverified. Devlog copy is ready but browser sign-in/security verification blocks posting. |
 
 To play locally, open `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`, keeping the complete directory. Do not open the Unreal project just to play. See [save-location differences](BUILD_RUN.md#local-saves) before changing launch arguments or moving an installation.
+
+## Newly staged audio and input glyphs
+
+September 15 evaluation found `IndieSounds-SciFi`, `cplomedia_SciFiSoundFX` and `EasyInputPrompts` inside `User downloaded assets/SpaceSurvival/Content`, with vault copies. These roots are absent from the working project Content and are not included in the current game/itch release. [The catalog evaluation](production/SOLUTION_CATALOG.md#new-local-audio-and-glyphs-evaluation-and-proposed-integration) owns resource fit and the proposed integration; ISS-05/08 own active follow-up. This was a read-only source/media inspection with private derived thumbnails/inventory and documentation updates.
+
+## Local Station Workshop
+
+[PR #14](https://github.com/j6sistek-ui/SpaceSurvival/pull/14) now carries the owner-authorized editor workshop, in addition to captured feedback. Its branch is `codex/owner-feedback-build-workflow`; it is not merged. The editor module is separate from packaged gameplay. Start it with `Open Station Workshop.cmd`; [Station editing](STATION_EDITING.md) owns controls, setup and limitations. [Workshop validation](validation/2026-09-15-station-workshop.json) records the successful Editor build, nine integration checks, ten material presets, 380 preserved placements and an actual panel capture showing the populated 677-asset catalog. Physical mouse/controller interaction and owner acceptance remain open.
+
+The saved `Content/SpaceSurvival/Licensed/StationWorkshop/L_StationWorkshop.umap` is the authoring source; Save + Apply derives `BP_StationVisualLayout`. Ten original preset instances live under `StationWorkshop/Materials`. Both remain local/private, as do timestamped layout JSON exports and previous map/Blueprint backups under `.agent/local/StationWorkshop`. Preserve this folder and the referenced private Content assets when backing up. Source-only Git does not reproduce this furnished workshop without those assets.
+
+Applying a layout affects the next editor gameplay session and future packages; it does not update the existing packaged EXE or itch installation. The published build above is unchanged. Collision/services remain native and reported bugs remain paused in the sole [issues log](KNOWN_ISSUES.md).
 
 ## Verified foundation and limits
 
