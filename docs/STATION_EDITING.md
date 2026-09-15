@@ -16,7 +16,7 @@ The panel can be undocked by dragging its tab beside the viewport, or resized to
 
 ## Assets and ten material choices
 
-The thumbnail browser searches all currently imported static meshes, skeletal meshes and Niagara systems under Content, plus Unreal's basic shapes. It loads the selected asset when placed, rather than every model at once. New downloads must first be added/imported into the working project using the routes below. Lights can be placed with Unreal's Place Actors panel; point, spot and rect lights are supported.
+The thumbnail browser searches all currently imported static meshes, skeletal meshes and Niagara systems under Content, plus Unreal's basic shapes. The September 15 owned-asset pass validates **708** exact filtered entries: 702 under `/Game` and six engine basic shapes. It loads the selected asset when placed, rather than every model at once. New downloads must first be added/imported into the working project using the routes below. Lights can be placed with Unreal's Place Actors panel; point, spot and rect lights are supported.
 
 Original asset materials stay assigned until you choose a preset and press **Apply to selection**. The ten choices are **Steel, Dark steel, Painted white, Copper, Caution yellow, Rubber, Glass, Cyan light, Amber light and Red light**. They are original, simple PBR/tinted or emissive starting materials; they do not replace a detailed textured vendor material automatically. Application affects every material slot on the selected meshes; Ctrl+Z reverses it. Editor-only guides are excluded.
 
@@ -69,6 +69,10 @@ These folder names were checked on disk on 2026-09-14. Open the **Content** root
 | `StarterBundle/ModularSciFiMats` | Shared StarterBundle materials used by its meshes |
 | `Defect` | Electronic props and their materials; browse its mesh assets for meters, switches and lights |
 | `Robot_scout_R_21/Mesh` | `SK_Robot_scout_R21`, the skeletal mesh already used by the two staff |
+| `SciFITrooper_Man_03` | 26 filtered placeables; its character mesh plus matching walk/exit animations supply the temporary station hero |
+| `Heavy_space_trooper` | Two filtered placeables; one mesh and matching idle clip supply a supplemental presentation-only staff member |
+| `CosmicMaterial` | Material instances for manual use through Details plus two filtered mesh entries; material assets do not appear as placeable thumbnails |
+| `SpaceSurvival/Licensed/StationAssets/Drone` | One private filtered skeletal mesh; its imported idle clip supplies a supplemental presentation-only drone |
 | `SpaceSurvival/Licensed/StationVisualPass` | The editable layout and selected private station materials/derivatives |
 
 For a cabinet or other ordinary prop, add a **Static Mesh** component as above. The robot is a **Skeletal Mesh**, with a compatible animation configured on the existing staff components. Move or duplicate those existing staff components only when another animated staff member is intended; a static prop needs no animation or Blueprint behavior.
@@ -108,7 +112,7 @@ The editor-only cyan box marks the docking lane: local **X -1900 to 1715, Y -700
 | Walk spawn | `(-300, 0, 180)` |
 | Docked ship | `(850, 0, 220)` |
 
-The Mica robot starts at approximately `(1110, 1130)` with its feet on the deck; its interaction remains at the Mica service arrow. Keep the two staff in their service alcoves. Their serialized idle clips loop without AI and update at most at 30 Hz while rendered. Changing a skeletal mesh also requires a compatible animation.
+The Mica robot starts at approximately `(1110, 1130)` with its feet on the deck; its interaction remains at the Mica service arrow. Keep the two original staff in their service alcoves. When the new local packages exist, a heavy trooper appears near `(-1450, 1120, 88)` and a drone near `(1390, -1080, 300)`. They are presentation-only: no collision, navigation, AI or service behavior. Their serialized idle clips loop and update at most at 30 Hz while rendered. Changing a skeletal mesh also requires a compatible animation.
 
 Use a few localized light pools around work areas and leave readable contrast between paths and equipment. Add lights gradually and inspect the actual game camera; more lights, shadow casters, transparent screens or skeletal staff can raise rendering cost. Blueprint viewport appearance alone does not establish game exposure, camera readability or performance.
 

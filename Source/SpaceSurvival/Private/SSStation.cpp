@@ -324,6 +324,8 @@ void ASSStation::BuildHub(bool bHome)
         BeaconRotor = AddMesh(FVector(-1490, 0, 165), FVector(.55f),
                               TEXT("/Game/SpaceSurvival/Meshes/SM_EventBeacon.SM_EventBeacon"), nullptr);
     }
+    // Optional owned characters remain presentation-only and appear whenever their private assets are installed.
+    SSStationPresentation::BuildSupplementalStaff(this);
     // Dock lights, safety strips and repeated structural ribs unify the compact hub.
     for (int I = -3; I <= 3; ++I)
     {
@@ -380,7 +382,7 @@ void ASSStation::BuildHub(bool bHome)
     Ambience = NewObject<UAudioComponent>(this);
     Ambience->SetAutoActivate(false);
     Ambience->SetupAttachment(RootComponent);
-    Ambience->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Station.Station")));
+    Ambience->SetSound(SSAudio::PresentationSound(TEXT("Station")));
     Ambience->SetVolumeMultiplier(SSAudio::EffectsGain(this, .25f));
     Ambience->RegisterComponent();
     Ambience->Play();
@@ -466,10 +468,40 @@ ASSWalker::ASSWalker()
 void ASSWalker::BeginPlay()
 {
     Super::BeginPlay();
-    GetMesh()->SetSkeletalMesh(
-        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
-    WalkAnimation =
-        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair"));
+    const TCHAR *TemporaryMesh =
+        TEXT("/Game/SciFITrooper_Man_03/SkeletalMesh/SK_SciFITrooper_Man_03.SK_SciFITrooper_Man_03");
+    const TCHAR *TemporaryWalk = TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonWalk.ThirdPersonWalk");
+    bTemporarySpaceHero =
+        FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(TemporaryMesh))) &&
+        FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(TemporaryWalk)));
+    USkeletalMesh *HeroMesh = LoadObject<USkeletalMesh>(
+        nullptr, bTemporarySpaceHero ? TemporaryMesh
+                                     : TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2"));
+    WalkAnimation = LoadObject<UAnimSequence>(
+        nullptr,
+        bTemporarySpaceHero ? TemporaryWalk : TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair"));
+    if (bTemporarySpaceHero && (!HeroMesh || !WalkAnimation || HeroMesh->GetSkeleton() != WalkAnimation->GetSkeleton()))
+    {
+        bTemporarySpaceHero = false;
+        HeroMesh = LoadObject<USkeletalMesh>(nullptr,
+                                             TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2"));
+        WalkAnimation =
+            LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair"));
+    }
+    GetMesh()->SetSkeletalMesh(HeroMesh);
+    if (bTemporarySpaceHero && HeroMesh)
+    {
+        const FBoxSphereBounds Bounds = HeroMesh->GetBounds();
+        const float Height = Bounds.BoxExtent.Z * 2.f;
+        const float Scale = Height > 1.f ? 180.f / Height : 1.f;
+        const float WalkingFloorGap =
+            (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
+        GetMesh()->SetRelativeLocation(FVector(0.f, 0.f,
+                                               -(Bounds.Origin.Z - Bounds.BoxExtent.Z) * Scale -
+                                                   GetCapsuleComponent()->GetScaledCapsuleHalfHeight() -
+                                                   WalkingFloorGap + 2.75f));
+        GetMesh()->SetRelativeScale3D(FVector(Scale));
+    }
     StartWalkingAnimation();
 }
 void ASSWalker::StartWalkingAnimation()
@@ -499,12 +531,16 @@ bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector En
                                const FPoseSnapshot *SourcePose)
 {
     auto *ExitAnimation = LoadObject<UAnimSequence>(
-        nullptr, TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair"));
+        nullptr, bTemporarySpaceHero
+                     ? TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonJump_End.ThirdPersonJump_End")
+                     : TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair"));
     if (!ExitAnimation || !WalkAnimation || !GetMesh()->GetSkeletalMeshAsset())
         return false;
     // Component local transform * actor transform = the actual seated pilot component transform.
     // This preserves yaw, local mesh offset and the constant 1.5 mesh scale without interpolated shrinking.
-    const FTransform StartTransform = GetMesh()->GetRelativeTransform().Inverse() * PilotWorldTransform;
+    const FTransform StartTransform = bTemporarySpaceHero
+                                          ? FTransform(Facing, PilotWorldTransform.GetLocation(), FVector::OneVector)
+                                          : GetMesh()->GetRelativeTransform().Inverse() * PilotWorldTransform;
     ExitStart = StartTransform.GetLocation();
     ExitStartRotation = StartTransform.GetRotation();
     ExitEndRotation = Facing.Quaternion();
@@ -527,7 +563,7 @@ bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector En
     ConsumeMovementInputVector();
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SetActorTransform(StartTransform, false, nullptr, ETeleportType::TeleportPhysics);
-    if (SourcePose && SourcePose->bIsValid)
+    if (!bTemporarySpaceHero && SourcePose && SourcePose->bIsValid)
     {
         GetMesh()->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
         if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))

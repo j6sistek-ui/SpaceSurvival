@@ -131,12 +131,16 @@ bool FSSVisualStationClearance::RunTest(const FString &)
         Hub->GetComponents(StaffComponents);
         int32 StaffCount = 0;
         bool HasMica = false;
+        bool HasHeavyTrooper = false;
+        bool HasDrone = false;
         for (auto *Staff : StaffComponents)
         {
             if (!Staff->ComponentHasTag(TEXT("StationRobotStaff")))
                 continue;
             ++StaffCount;
             HasMica |= Staff->ComponentHasTag(TEXT("StationRobotMica"));
+            HasHeavyTrooper |= Staff->ComponentHasTag(TEXT("StationHeavyTrooper"));
+            HasDrone |= Staff->ComponentHasTag(TEXT("StationCompanionDrone"));
             const FString Label = Context + Staff->GetName();
             TestTrue(Label + TEXT(" remains owned and attached to the actual hub"),
                      Staff->GetOwner() == Hub && Staff->IsRegistered() &&
@@ -161,24 +165,34 @@ bool FSSVisualStationClearance::RunTest(const FString &)
             auto *Animation = Idle->GetAnimationAsset();
             if (!TestNotNull(Label + TEXT(" resolves its idle animation"), Animation))
                 return false;
-            TestTrue(Label + TEXT(" loops the matching source idle"),
-                     Idle->IsLooping() && Animation->GetSkeleton() == Mesh->GetSkeleton() &&
-                         Animation->GetName() == TEXT("ThirdPersonIdle"));
+            TestTrue(
+                Label + TEXT(" loops the matching source idle"),
+                Idle->IsLooping() && Animation->GetSkeleton() == Mesh->GetSkeleton() &&
+                    (Animation->GetName() == TEXT("ThirdPersonIdle") || Animation->GetName() == TEXT("A_DroneIdle")));
             const FTransform LocalTransform =
                 Staff->GetComponentTransform().GetRelativeTransform(Hub->GetActorTransform());
             const FBox Bounds = Mesh->GetBounds().GetBox().TransformBy(LocalTransform.ToMatrixWithScale());
             TestFalse(Label + TEXT(" leaves the full entrance and central lane clear"),
                       Bounds.Intersect(ProtectedLane));
-            TestTrue(Label + TEXT(" rests on the deck at human scale"),
-                     FMath::IsNearlyEqual(Bounds.Min.Z, -7., .1) && FMath::IsNearlyEqual(Bounds.GetSize().Z, 190., .1));
+            if (Staff->ComponentHasTag(TEXT("StationCompanionDrone")))
+                TestTrue(Label + TEXT(" remains a compact hovering companion"),
+                         FMath::IsNearlyEqual(Bounds.GetSize().Z, 95., .1) && Bounds.Min.Z > 100.f);
+            else
+                TestTrue(Label + TEXT(" rests on the deck at human scale"),
+                         FMath::IsNearlyEqual(Bounds.Min.Z, -7., .1) &&
+                             FMath::IsNearlyEqual(Bounds.GetSize().Z, 190., .1));
         }
-        TestTrue(Context + TEXT("never adds more than two animated staff"), StaffCount <= 2);
+        TestTrue(Context + TEXT("never adds more than four animated staff"), StaffCount <= 4);
         if (FPackageName::DoesPackageExist(TEXT("/Game/Robot_scout_R_21/Mesh/SK_Robot_scout_R21")) &&
             FPackageName::DoesPackageExist(TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonIdle")))
         {
-            TestEqual(Context + TEXT("presents the two installed idle staff"), StaffCount, 2);
+            TestTrue(Context + TEXT("presents at least the two installed idle staff"), StaffCount >= 2);
             TestTrue(Context + TEXT("provides the precise Mica visual replacement tag"), HasMica);
         }
+        if (FPackageName::DoesPackageExist(TEXT("/Game/Heavy_space_trooper/character/mesh/Heavy_space_trooper_A_Pose")))
+            TestTrue(Context + TEXT("presents the installed heavy trooper"), HasHeavyTrooper);
+        if (FPackageName::DoesPackageExist(TEXT("/Game/SpaceSurvival/Licensed/StationAssets/Drone/SK_StationDrone")))
+            TestTrue(Context + TEXT("presents the imported companion drone"), HasDrone);
     }
     return true;
 }

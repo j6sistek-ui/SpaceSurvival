@@ -127,7 +127,7 @@ void ASSGameMode::BeginPlay()
     MusicPressure->SetSound(
         LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/MusicPressure.MusicPressure")));
     MusicClimax->SetSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/MusicClimax.MusicClimax")));
-    AlarmSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Alarm.Alarm"));
+    AlarmSound = SSAudio::PresentationSound(TEXT("Alarm"));
     AlarmAttenuation = NewObject<USoundAttenuation>(this);
     AlarmAttenuation->Attenuation.bAttenuate = true;
     AlarmAttenuation->Attenuation.bSpatialize = true;
@@ -691,8 +691,7 @@ void ASSGameMode::NotifyPickup(int32 Kind, float Amount)
         S.account.tutorialFlags |= 64u;
         GI->PersistAccount();
     }
-    UGameplayStatics::PlaySound2D(this,
-                                  LoadObject<USoundBase>(nullptr, TEXT("/Game/SpaceSurvival/Audio/Pickup.Pickup")),
+    UGameplayStatics::PlaySound2D(this, SSAudio::PresentationSound(TEXT("Pickup")),
                                   float(S.settings.masterVolume * S.settings.effectsVolume));
 }
 void ASSGameMode::Interact()

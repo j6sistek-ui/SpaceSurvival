@@ -4,7 +4,19 @@ Historical September 13 hook implementation: **Unreal build, content import, fre
 
 The scope requires spatial threats, distinct warnings, atmospheric environments and an adaptive score. This change wires those existing behaviors to editable cues. It does not establish cinematic quality, mix balance, perceived direction, warning readability or owner acceptance.
 
-The September 15 [local audio and glyph evaluation](production/SOLUTION_CATALOG.md#new-local-audio-and-glyphs-evaluation-and-proposed-integration) records the two newly downloaded sound packs and the proposed selective integration. Those assets have not replaced these generated sources; listening and integration remain pending.
+The September 15 [local audio and glyph record](production/SOLUTION_CATALOG.md#new-local-audio-and-glyphs-evaluation-and-selective-integration) now includes a selective first implementation from `cplomedia_spaceship`. Runtime presentation lookup first checks ignored `/Game/SpaceSurvival/Licensed/Audio` assets, then falls back to the generated `/Game/SpaceSurvival/Audio` role. This keeps a source-only checkout functional. Ten selected roles cover Engine, Laser, Cannon, Impact, Pickup, Alarm, Station, EnemyFire, EnemyBreak and DebrisBreak. Human listening, loop-seam/mix judgment and package cooking remain pending; music and input glyphs are unchanged.
+
+| Role | Selected local source | Duration / behavior |
+| --- | --- | --- |
+| Engine | `engine16_loop` | 9.5905 s loop |
+| Laser | `aliengun001singleshot` | 0.125 s one-shot |
+| Cannon | `aliengun004singleshot` | 0.25 s one-shot |
+| Impact | `mechanic05` | 1.5005 s one-shot |
+| Pickup | `bleep31` | 0.1261 s one-shot |
+| Alarm | `alarm03` | 2.4 s one-shot |
+| Station | `electric_power01_loop` | 5.0667 s loop |
+| EnemyFire | `Alien_gun_set_08_sound10` | 0.25 s one-shot |
+| EnemyBreak / DebrisBreak | `explosion24` | 3.7184 s one-shot shared by both roles |
 
 ## Startup and settings
 
@@ -48,6 +60,8 @@ USSWorldAudioSubsystem owns the spatial mix for a Game/PIE world, separately fro
 Native renderer concurrency, starvation, pause/focus behavior, mixing under maximum pressure and positional perception require rendered playback and listening. No such pass is claimed here.
 
 ## Sources and validation
+
+The owned-asset follow-up built `SpaceSurvivalEditor` successfully and the final Unreal automation report passed **49/49** with zero warnings, failures or unrun tests. Static authoring validation confirms all ten private role assets, their loop flags, private-first routing and generated fallbacks. The first run passed 48/49 because a historical disembark fixture assumed the walker always reused the pilot mesh; the fixture was updated to validate the intended different-skeleton temporary-hero path while retaining fallback coverage, then the full suite passed. This is source/editor automation evidence, not audible output. See the [owned-asset receipt](validation/2026-09-15-owned-audio-station-assets.json).
 
 Scripts/GenerateAudio.py adds six deterministic original synthetic sources. All ten earlier WAV files retain their exact bytes; the local generation receipt is .agent/local/AudioSourceGeneration.json. The complete audio manifest records 16 source hashes, formats, durations and peak/RMS levels. No samples or external audio were used.
 
