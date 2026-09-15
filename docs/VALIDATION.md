@@ -278,3 +278,9 @@ Inspect animation/camera/feet, warning direction and non-color meaning, pickups,
 ## 2026-09-14 camera/environment follow-up
 
 See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.
+
+## September 15 itch release filtering and publication
+
+[The release receipt](validation/2026-09-15-itch-visual-release.json) binds clean 0.1.16-alpha.1 to ready itch build 1979965 and the unchanged Package4 game payload. Six synthetic release safety regressions pass, including refusal of a hash-matching unsafe receipt and preservation of required runtime files/original package data. Python compilation, 31 source checks, local documentation checks and whitespace checks pass; the CI source workflow now runs the release suite. All 63 original audited files were rehashed unchanged and all 51 prepared payload files reverified after upload. No runtime Saved directory, .sav or .log is in the new payload.
+
+This changes release filtering and records publication; it does not rebuild Unreal or close any of the 19 owner acceptance cases. Client installation, actual update/save preservation, natural input/play/audio and representative performance remain open. Devlog browser publication is still blocked at security/sign-in; exact prepared copy is tracked separately.
