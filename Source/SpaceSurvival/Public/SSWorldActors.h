@@ -13,6 +13,7 @@ class USphereComponent;
 class UStaticMeshComponent;
 class UMaterialInstanceDynamic;
 class UAudioComponent;
+class UPointLightComponent;
 
 /** Common target/damage contract for weapon traces and environmental collisions. */
 UCLASS(Blueprintable)
@@ -142,6 +143,8 @@ public:
                 float MaximumTravel = -1.f);
     virtual void Tick(float DeltaSeconds) override;
     virtual void ReceiveWeaponHit(float Damage) override;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Presentation")
+    TObjectPtr<UPointLightComponent> ShotLight;
 
 private:
     bool bPlayerShot = false;

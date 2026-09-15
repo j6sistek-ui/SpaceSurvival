@@ -8,6 +8,7 @@ class UExponentialHeightFogComponent;
 class UInstancedStaticMeshComponent;
 class UMaterialInstanceDynamic;
 class UNiagaraComponent;
+class UPointLightComponent;
 class USkyLightComponent;
 class USSSpaceLookData;
 
@@ -32,6 +33,12 @@ private:
     UPROPERTY()
     TArray<TObjectPtr<UNiagaraComponent>> EngineTrails;
     UPROPERTY()
+    TArray<TObjectPtr<UStaticMeshComponent>> EngineCores;
+    UPROPERTY()
+    TArray<TObjectPtr<UMaterialInstanceDynamic>> EngineCoreMaterials;
+    UPROPERTY()
+    TArray<TObjectPtr<UPointLightComponent>> EngineLights;
+    UPROPERTY()
     TObjectPtr<UInstancedStaticMeshComponent> Dust;
     UPROPERTY()
     TObjectPtr<UExponentialHeightFogComponent> VolumeFog;
@@ -49,7 +56,7 @@ private:
     FVector LastCloudCenter = FVector::ZeroVector;
     bool CloudPositionInitialized = false;
     bool DustInitialized = false;
-    void UpdateDust(const FVector &Center, bool Visible);
+    void UpdateDust(const FVector &Center, const FVector &Velocity, bool Visible);
     TWeakObjectPtr<AActor> Followed;
     bool FlightVisible = false;
     bool CloudAvailable = false;

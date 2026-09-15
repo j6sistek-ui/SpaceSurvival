@@ -16,6 +16,13 @@ PATHS=[
  '/Game/RPGEnvironmentVFX/VFX/Niagara/NS_MagicalGlowRays',
  '/Game/RPGEnvironmentVFX/VFX/Niagara/NS_PixieTrail',
  '/Game/RPGEnvironmentVFX/VFX/Niagara/NS_ForgeSparks']
+PATHS += [
+ '/Game/NERVES/FX/NS_ElectircBeams_Blue',
+ '/Game/NERVES/BP/BP_Blue',
+ '/Game/NiagaraExamples/FX_Player/NS_Player_Electricity_Looping',
+ '/Game/NiagaraExamples/FX_Ribbons/NS_TeslaCoil',
+ '/Game/Sci_Fi_Weapons_VFX_AIO/VFX/NS_Lightning_Damage_Land_Mid',
+]
 
 def prop(obj,name):
  try:return obj.get_editor_property(name)

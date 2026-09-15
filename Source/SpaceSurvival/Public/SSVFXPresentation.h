@@ -8,6 +8,7 @@
 
 class UNiagaraComponent;
 class UNiagaraSystem;
+class UPointLightComponent;
 
 UENUM(BlueprintType)
 enum class ESSCombatVFX : uint8
@@ -22,7 +23,9 @@ enum class ESSCombatVFX : uint8
     CannonImpact,
     EnemyImpact,
     EnemyExplosion,
-    WormholeMouth
+    WormholeMouth,
+    ElectricalField,
+    ElectricalDischarge
 };
 
 USTRUCT(BlueprintType)
@@ -37,7 +40,7 @@ struct FSSCombatVFXDefinition
     FVector Scale = FVector(1.f);
     UPROPERTY(EditAnywhere, Category = "Effect")
     FRotator RotationOffset = FRotator::ZeroRotator;
-    UPROPERTY(EditAnywhere, Category = "Budget", meta = (ClampMin = "0.02", ClampMax = "8"))
+    UPROPERTY(EditAnywhere, Category = "Budget", meta = (ClampMin = "0.02", ClampMax = "120"))
     float MaximumSeconds = .6f;
     UPROPERTY(EditAnywhere, Category = "Budget", meta = (ClampMin = "0", ClampMax = "32"))
     int32 ActiveLimit = 8;
@@ -73,6 +76,24 @@ public:
     ASSCombatVFXAnchor();
 };
 
+/** Brief bounded light cue paired with muzzle, impact and destruction effects. */
+UCLASS(Transient, NotBlueprintable)
+class SPACESURVIVAL_API ASSCombatLightPulse : public AActor
+{
+    GENERATED_BODY()
+public:
+    ASSCombatLightPulse();
+    virtual void Tick(float DeltaSeconds) override;
+    void Configure(FLinearColor Color, float Intensity, float Radius, float Seconds);
+
+private:
+    UPROPERTY()
+    TObjectPtr<UPointLightComponent> Light;
+    float Age = 0.f;
+    float Duration = .1f;
+    float PeakIntensity = 1000.f;
+};
+
 USTRUCT()
 struct FSSCombatVFXInstance
 {
@@ -102,6 +123,8 @@ public:
     void PlayImpact(FVector Position, FVector Normal, bool bFromPlayer, bool bHeavy);
     void PlayEnemyExplosion(FVector Position, float BodyRadius);
     bool AttachAnomaly(AActor *Owner);
+    bool AttachElectricalField(AActor *Owner, float Radius);
+    void PlayElectricalDischarge(FVector Position, float BodyRadius);
 
 protected:
     virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
@@ -116,6 +139,7 @@ private:
     TSet<ESSCombatVFX> ValidScaleBindings;
     UNiagaraComponent *Spawn(ESSCombatVFX Kind, FVector Position, FRotator Rotation, AActor *FollowOwner = nullptr,
                              float Size = 1.f);
+    void SpawnLight(FVector Position, FLinearColor Color, float Intensity, float Radius, float Seconds);
 };
 
 /** Narrow authoring/audit bridge, using installed Niagara APIs rather than inferred parameter tokens. */

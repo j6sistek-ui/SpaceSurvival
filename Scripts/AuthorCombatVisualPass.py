@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BASE = '/Game/SpaceSurvival/Licensed/Combat'
 WEAPONS = '/Game/Sci_Fi_Weapons_VFX_AIO/VFX/'
 PYRO = '/Game/PyroVFX/Niagara_FX/Explosions/'
+NERVES = '/Game/NERVES/FX/'
 CYAN = (.08, .9, 2.2, 1.)
 AMBER = (2.4, .58, .055, 1.)
 RED = (2.5, .045, .012, 1.)
@@ -32,6 +33,8 @@ PLAN = [
     ('EnemyImpact', WEAPONS+'NS_Simple_Core_Impact_1', RED, True, (.8, .8, .8), .35, 6),
     ('EnemyExplosion', PYRO+'NS_General_S_Ex_01', None, False, (1., 1., 1.), 3.2, 4),
     ('WormholeMouth', WEAPONS+'NS_Anomal_Hole', VIOLET, True, (2.8, 2.8, 2.8), 8., 1),
+    ('ElectricalField', NERVES+'NS_ElectircBeams_Blue', None, True, (.72, .72, .72), 75., 4),
+    ('ElectricalDischarge', WEAPONS+'NS_Lightning_Damage_Land_Mid', None, False, (1.15, 1.15, 1.15), .8, 4),
 ]
 
 
@@ -137,7 +140,8 @@ def main():
         row.set_editor_property('scale', u.Vector(*scale))
         row.set_editor_property('maximum_seconds', lifetime)
         row.set_editor_property('active_limit', cap)
-        row.set_editor_property('bounds_radius', 3000. if name in ('EnemyExplosion', 'WormholeMouth') else 1500.)
+        row.set_editor_property('bounds_radius', 3000. if name in (
+            'EnemyExplosion', 'WormholeMouth', 'ElectricalField', 'ElectricalDischarge') else 1500.)
         audit = native_row(system)
         if name == 'EnemyExplosion':
             parameters = {p['name']: p for p in audit['parameters']}

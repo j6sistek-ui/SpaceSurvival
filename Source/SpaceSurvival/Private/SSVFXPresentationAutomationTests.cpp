@@ -3,6 +3,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
@@ -110,6 +111,10 @@ bool FSSCombatVFXFallback::RunTest(const FString &)
         Projectile->Launch(FVector::ForwardVector, 55000.f, 0.f, true, Owner, 1000.f);
         TestTrue(TEXT("Native projectile core remains visible without Niagara"), Projectile->Visual->IsVisible());
         TestNotNull(TEXT("Native projectile core keeps a mesh"), Projectile->Visual->GetStaticMesh().Get());
+        auto *ShotLight = Projectile->FindComponentByClass<UPointLightComponent>();
+        TestNotNull(TEXT("Native projectile keeps a compact readable light when Niagara is absent"), ShotLight);
+        if (ShotLight)
+            TestTrue(TEXT("Native projectile light is bounded"), ShotLight->AttenuationRadius <= 900.f);
         TestEqual(TEXT("Presentation does not change the player collision radius"), Projectile->GetBodyRadius(), 28.f);
         TestEqual(TEXT("Presentation does not change the six-second projectile lifetime"), Projectile->LifetimeSeconds,
                   6.f);
@@ -147,10 +152,14 @@ bool FSSCombatVFXLifecycle::RunTest(const FString &)
                                                         { return Row.Kind == ESSCombatVFX::RapidBolt; });
     auto *Enemy = Fixture.Data->Effects.FindByPredicate([](const FSSCombatVFXDefinition &Row)
                                                         { return Row.Kind == ESSCombatVFX::EnemyBolt; });
+    auto *Electrical = Fixture.Data->Effects.FindByPredicate([](const FSSCombatVFXDefinition &Row)
+                                                             { return Row.Kind == ESSCombatVFX::ElectricalField; });
     if (!TestNotNull(TEXT("Authored rapid bolt definition"), Rapid) ||
         !TestNotNull(TEXT("Authored enemy bolt definition"), Enemy) ||
+        !TestNotNull(TEXT("Authored Nerves field definition"), Electrical) ||
         !TestNotNull(TEXT("Real rapid Niagara system"), Rapid->System.Get()) ||
-        !TestNotNull(TEXT("Real enemy Niagara system"), Enemy->System.Get()))
+        !TestNotNull(TEXT("Real enemy Niagara system"), Enemy->System.Get()) ||
+        !TestNotNull(TEXT("Real Nerves Niagara system"), Electrical->System.Get()))
         return false;
     auto *OwnerA = Fixture.Owner();
     auto *OwnerB = Fixture.Owner(FVector(1500, 0, 0));
@@ -210,6 +219,26 @@ bool FSSCombatVFXLifecycle::RunTest(const FString &)
                  Explosion->GetComponentLocation().Equals(Before + Shift, .01));
     }
     Fixture.FX->Tick(9.f);
+
+    auto *FieldOwner = Fixture.Owner(FVector(2600, 500, 0));
+    if (!TestNotNull(TEXT("Electrical field owner"), FieldOwner))
+        return false;
+    TestTrue(TEXT("Electrical hook allocates the selected Nerves derivative"),
+             Fixture.FX->AttachElectricalField(FieldOwner, 1000.f));
+    auto Fields = AttachedEffects(Fixture.World, Electrical->System.Get());
+    if (TestEqual(TEXT("One owned electrical field follows its gameplay owner"), Fields.Num(), 1))
+    {
+        bool StartValid = false, EndValid = false;
+        const FVector Start = Fields[0]->GetVariableVec3(TEXT("User.BeamStartPoint"), StartValid);
+        const FVector End = Fields[0]->GetVariableVec3(TEXT("User.BeamEndPoint"), EndValid);
+        TestTrue(TEXT("Verified Nerves endpoints are bound"), StartValid && EndValid);
+        TestTrue(TEXT("Nerves field spans the configured gameplay radius without changing it"),
+                 Start.Equals(FVector(-720.f, 0.f, 0.f), .01f) && End.Equals(FVector(720.f, 0.f, 0.f), .01f));
+    }
+    FieldOwner->Destroy();
+    Fixture.FX->Tick(0.f);
+    TestEqual(TEXT("Destroying the field owner releases its Nerves effect"),
+              AttachedEffects(Fixture.World, Electrical->System.Get()).Num(), 0);
 
     // Renderer-enabled negative paths use the same live templates, so an empty
     // template or disabled renderer cannot falsely establish these budget gates.
