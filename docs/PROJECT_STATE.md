@@ -1,6 +1,6 @@
 # SpaceSurvival project state
 
-**Phase 1: PARTIAL.** The visual pass is merged and itch **0.1.16-alpha.1 / build 1979965** is ready on windows-alpha (verified September 15 UTC / September 14 local). [PR #11](https://github.com/j6sistek-ui/SpaceSurvival/pull/11) and [PR #12](https://github.com/j6sistek-ui/SpaceSurvival/pull/12) are merged. The release-safety/docs follow-up is on `codex/itch-visual-release`; it does not change the game binaries. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, owner checks and closure status. This page owns the source/build/release and storage explanation.
+**Phase 1: PARTIAL.** The visual pass is merged and itch **0.1.16-alpha.1 / build 1979965** is ready on windows-alpha (verified September 15 UTC / September 14 local). [PR #11](https://github.com/j6sistek-ui/SpaceSurvival/pull/11) and [PR #12](https://github.com/j6sistek-ui/SpaceSurvival/pull/12) are merged. The release-safety/docs follow-up is [PR #13](https://github.com/j6sistek-ui/SpaceSurvival/pull/13), open on `codex/itch-visual-release`; it does not change the game binaries. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, owner checks and closure status. This page owns the source/build/release and storage explanation.
 
 ## Source, build and release
 
