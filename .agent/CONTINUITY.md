@@ -1,6 +1,8 @@
 # SpaceSurvival continuity
 
 [PLANS]
+- 2026-09-15T20:36Z [USER] Owner requested one systematic update to open issues and actions after the owned-tool/asset underutilization assessment. Documentation-only scope: organize all gaps without starting fixes, Unreal work, purchases, packaging or publication. `docs/KNOWN_ISSUES.md` remains the sole active queue.
+- 2026-09-15T20:36Z [CODE] New canonical ACT-00–ACT-10 sequence covers asset audition, flight, combat, asteroid/region depth, wormhole, station, characters/NPCs, Workshop semantics, audio/UI/glyphs, progression/release and final performance/acceptance. Existing 19 PT cases and ISS rows remain open; no acceptance state changed.
 - 2026-09-15T08:30Z [USER] Owner explicitly authorized merge. Complete the owned audio/character/station asset PR, merge prerequisite PR14 first, then merge the dependent PR after exact-head/check verification. Itch publication is not part of this instruction.
 - 2026-09-15T08:30Z [USER] Capture RPT-20260915-07 only: station entrance edge snag/repeated bounce damage ended a run. Exact build, speed, angle and hull state are UNCONFIRMED; repair remains paused.
 - 2026-09-15T03:12Z [USER] Evaluate and plan newly added local audio/input glyphs only. No imports, runtime changes, fixes, merge or publication authorized. Evaluation/conditional integration is recorded in SOLUTION_CATALOG E12 and ISS-05/08; no competing issue queue.
@@ -13,6 +15,7 @@
 - 2026-09-15T00:32Z [CODE] Package4 and all20 packaged images verified; canonical docs and PR12 handoff complete. Owner approved merge and itch publication; both merges verified. Next: finish browser devlog after owner sign-in, complete the explicitly approved PR13 merge (https://github.com/j6sistek-ui/SpaceSurvival/pull/13), then owner visual review via the sole KNOWN_ISSUES log. Current receipt docs/validation/2026-09-14-visual-enhancement-stars.json supersedes the Package3 review checkpoint.
 
 [DECISIONS]
+- 2026-09-15T20:36Z [USER] Asset work will distinguish owned, imported, referenced, visible and accepted. Component counts, import/build success and still images remain intermediate evidence; natural motion, audio, collision, interaction, performance and the exact package decide acceptance.
 - 2026-09-15T08:30Z [CODE] Owned audio uses private-first role lookup with generated fallback. Sci-Fi Space Character is a temporary station hero with compatible walk/exit and Acornaut fallback; Heavy Space Trooper and drone are presentation-only staff. Ten Workshop presets remain curated while filtered placeables expand to 708.
 - 2026-09-14T23:58Z [USER] GAME_SCOPE > IMPLEMENT > assumptions. Preserve Phase1 roster, cadence, economy and handling; no deferred systems. Regular artist owns hero/iconic Starter longterm and supplies model/texture/animation files only. Purchased-kit Starter is provisional; lead integrates/tests/packages.
 - 2026-09-14T23:58Z [USER] Station visual layout should be owner editable; standard script reruns must preserve hand edits. docs/STATION_EDITING.md explains working project, BP_StationVisualLayout, native asset migration/raw import and first prop placement. Collision/service anchors remain native, so decorative placement does not move interactions.
