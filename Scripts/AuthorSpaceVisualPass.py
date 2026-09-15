@@ -56,7 +56,19 @@ def main():
     link(blend,desat,'')
     power=node('MaterialExpressionScalarParameter',parameter_name='SkyBrightness',default_value=.3)
     mult=node('MaterialExpressionMultiply');link(desat,mult,'A');link(power,mult,'B')
-    stars_gain=node('MaterialExpressionMultiply',const_b=.55);link(star,stars_gain,'A','RGB')
+    # Stars have their own exposure and a fixed directional brightness distribution.
+    # Most points recede; the noise is anchored to the cubemap direction, never time.
+    star_contrast=node('MaterialExpressionPower',const_exponent=1.45)
+    link(star,star_contrast,'Base','RGB')
+    star_brightness=node('MaterialExpressionScalarParameter',parameter_name='StarBrightness',default_value=.30)
+    noise_function=next(getattr(u.NoiseFunction,name) for name in dir(u.NoiseFunction)
+                        if 'GRADIENTTEX3D' in name.upper().replace('_',''))
+    variation=node('MaterialExpressionNoise',scale=35.,quality=1,levels=1,
+                   output_min=.18,output_max=1.,noise_function=noise_function)
+    # UE 5.8 names this pin by its world-position origin; query the reflected name.
+    link(direction,variation,str(EDIT.get_material_expression_input_names(variation)[0]))
+    star_varied=node('MaterialExpressionMultiply');link(star_contrast,star_varied,'A');link(variation,star_varied,'B')
+    stars_gain=node('MaterialExpressionMultiply');link(star_varied,stars_gain,'A');link(star_brightness,stars_gain,'B')
     add=node('MaterialExpressionAdd');link(mult,add,'A');link(stars_gain,add,'B')
     assert EDIT.connect_material_property(add,'',u.MaterialProperty.MP_EMISSIVE_COLOR)
     EDIT.layout_material_expressions(m);EDIT.recompile_material(m)
@@ -79,6 +91,6 @@ def main():
     for asset in cubes+[stars,m,look]+([cloud] if cloud else []):
         assert LIB.save_loaded_asset(asset,only_if_is_dirty=False)
     out=ROOT/'Artifacts/VisualPass';out.mkdir(parents=True,exist_ok=True)
-    (out/'SpaceAuthor.json').write_text(json.dumps({'status':'AUTHORED_REQUIRES_RENDER','regions':[x.get_path_name() for x in cubes],'structures':[x.get_path_name() for x in meshes],'vendor_saved':False},indent=2))
+    (out/'SpaceAuthor.json').write_text(json.dumps({'status':'AUTHORED_REQUIRES_RENDER','regions':[x.get_path_name() for x in cubes],'structures':[x.get_path_name() for x in meshes],'vendor_saved':False,'stars':{'brightness':.30,'contrast_exponent':1.45,'directional_gain_min':.18,'directional_gain_max':1.,'noise_scale':35.,'temporal_animation':False}},indent=2))
     u.log('SPACE_VISUAL_PASS_AUTHORED')
 if __name__=='__main__':main()
