@@ -2,9 +2,9 @@
 
 **Start here. This is the single active issues, follow-up, action and priority log.** Updated September 15, 2026. Phase 1 remains PARTIAL.
 
-## Current instruction: organize the gaps, continue capturing feedback
+## Current instruction: execute the flight, combat and space slice
 
-Owner direction, September 15: turn the owned-asset, presentation, gameplay and verification gaps into one systematic action queue. This update organizes work; it does not authorize a repair, engine session, new purchase, package or publication. The earlier capture-only direction therefore remains in effect until the owner starts an action. Continue appending observations to the surviving ISS/RPT rows instead of creating a competing backlog. The Station Workshop remains available for owner composition work; see [Station editing](STATION_EDITING.md).
+Owner direction, September 15: execute the paired ACT-00–ACT-03 flight/combat/space vertical slice before considering more purchases. Source `b6c58b889544445ca9593ab1503904dd095d1ccf` is the implementation checkpoint. It does not fix the separately captured input/station bugs, publish itch, replace the current package or close owner acceptance. ACT-04 received a compatibility and dependency audit only; the installed Wormhole Portal plugin remains disabled until a separate controlled integration pilot. Continue appending observations to the surviving ISS/RPT rows instead of creating a competing backlog. The Station Workshop remains available for owner composition work; see [Station editing](STATION_EDITING.md).
 
 ### Newly reported bugs — open, capture only
 
@@ -25,7 +25,7 @@ Additional owner reports (capture only; same unconfirmed build/device boundary):
 | RPT-20260914-06 | Backgrounds still look graphically weak and fuzzy, like low-resolution artwork. | ISS-01; PT-03,18. Later compare actual runtime resolution, filtering and source imagery; cause unconfirmed. |
 | RPT-20260915-07 | The ship died while pulling into the station after catching an entrance edge, bouncing off several times and taking repeated collision damage. | ISS-03/06; PT-09,12,13. Capture only. Later reproduce with the exact build, approach speed/angle and hull state; review entrance snag points, repeated-impact cadence and docking-assist recovery before changing collision. |
 
-Owner subsequently authorized building the editor workshop with approximately ten material presets and scalable placement. This authoring work is active; the bug-fix pause remains in force.
+Owner subsequently authorized the editor workshop and this bounded presentation slice. The unrelated bug-fix pause remains in force.
 
 Lead maintains these reports here while the owner continues listing observations. Existing acceptance cases remain open. Reproduction and repair are paused until the owner resumes them.
 
@@ -40,6 +40,8 @@ The new local visual build is ready for owner review: **Package 4, source `cf629
 When the owner resumes structured review, start with item 1; the lead records your build, device/settings and observations against the corresponding IDs, then brings you back to the next unresolved step. You do not need to edit Markdown or remember the full checklist. Partial observations leave the corresponding acceptance case open.
 
 Technical validation: 49 Unreal tests passed cleanly at 23:57:10 UTC on September 14, covering the unchanged C++ implementation. The subsequent star-material change was authored, cooked and rendered separately. Package 4 passed its actual IoStore export/import audit and both packaged visual captures: 4 Wave 1 images and 16 Station 5 images. [Current validation](validation/2026-09-14-visual-enhancement-stars.json) binds the source, private inputs and actual package. Scripted captures and automated checks do not close natural play, visual quality or representative performance acceptance.
+
+The new slice is **source/editor evidence only** and is absent from Package 4 and itch. Its final editor build, 49/49 headless suite, 1/1 rendering-enabled VFX lifecycle test and current fixed captures are recorded in the [September 15 validation section](VALIDATION.md#september-15-flight-combat-and-space-slice). Use those captures for review; keep Package 4 as the last published executable until this source is packaged separately.
 
 ## Current action queue and ownership
 
@@ -60,6 +62,16 @@ The sequence below is the active execution order. It covers the whole Phase 1 ex
 | 10 | **ACT-10 — Representative performance and final acceptance** | ISS-01–16; PT-01–19 | Profile the selected content in a natural busy run, complete Waves 1–10 and both stations with physical devices, and package the exact reviewed source. | All applicable PT cases have build/device/evidence records; representative 60 FPS target is assessed with frame-time distributions; remaining limitations are explicit; only then may Phase 1 move from PARTIAL. |
 
 For each action, component count, successful import, Blueprint compilation, automated tests and a still image are intermediate evidence. Player-visible motion, sound, collision, interaction, representative performance and the exact packaged build determine acceptance. Fixed comparison cameras and short natural-play captures should use the visual target before/after whenever presentation changes.
+
+### September 15 ACT-00–ACT-04 checkpoint
+
+| Action | Implemented or evaluated at `b6c58b8` | State that remains open |
+| --- | --- | --- |
+| ACT-00 | Audited Asteroid Library's three construction-script field Blueprints, five sky candidates, Cosmic Material instances, Nerves, Niagara Examples, Sci-Fi Weapons VFX and the installed Wormhole Portal plugin. Fixed capture rejected the two Free Galaxy cubemaps from the region rotation after they produced a weaker sparse black/red scene; the three NebulaFantasy regions remain selected. | The audit is not a reusable audition level and no candidate is accepted from inventory alone. Private/vendor content remains outside Git. |
+| ACT-01 | Drive state now reaches presentation; two nozzle cores, localized lights, trail scaling and speed-oriented dust distinguish idle/acceleration/boost/braking/damage in code. A first capture exposed hull washout; reduced emission and light radius restore readable ship surfaces. | Fixed Boost/Brake stills do not show enough state distinction for acceptance. Natural motion, listening, package cooking, physical controls and owner judgment remain open. |
+| ACT-02 | Rapid Laser, Heavy Cannon and enemy bolts have distinct native cores and bounded projectile lights even when optional Niagara is absent. Muzzle/impact/explosion light pulses are bounded. Pursuer/Flanker motion gains vertical/lateral/longitudinal variation and banking. The Nerves-derived electrical field and Sci-Fi Weapons discharge are authored private effects. | The scripted real-kill frame shows a visible spark/fire impact but cannot establish complete muzzle/travel/hit/death chains, audio sync, allegiance readability, dynamic combat feel or representative cost. RPT-20260914-04/05 and PT-06/12/18 remain open. |
+| ACT-03 | Current custom field remains 384 instances across four distance bands and eight mesh choices; speed dust is stretched along travel. All three native Asteroid Library field Blueprints load but expose no CDO components because their layouts are construction-script driven, so they were not substituted blindly. Three restrained NebulaFantasy regions and star settings remain selected. Cosmic Materials are tiled PBR surface candidates, not sky volumes. | Native Blueprint versus custom-field rendered comparison, close/mid/far material diversity, fuzzy-background diagnosis, natural parallax and representative performance remain open. |
+| ACT-04 | Wormhole Portal 1.0 is installed for UE5.8/Win64; 309 plugin assets and its runtime/sample/renderer/editor modules plus EnhancedInput/StateTree dependencies were inventoried. | Plugin is not enabled, spawned, cooked or timed. Current captures still show the custom ring transition, so approach/transit/destination acceptance remains open. |
 
 ### Owned-first purchase gate
 

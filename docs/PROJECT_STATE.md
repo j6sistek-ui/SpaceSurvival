@@ -7,6 +7,7 @@
 | Layer | Last verified state | What it means |
 | --- | --- | --- |
 | GitHub source | PRs #11–15 merged; main `4aa4656` at this audit | Documentation foundation, visual pass, release guard, Station Workshop and the owned audio/character/staff integration are in main. The systematic-gap action update is documentation-only and remains outside main until its review PR is approved and merged. Source merge and itch publication remain separate. |
+| Current unmerged slice | `b6c58b889544445ca9593ab1503904dd095d1ccf` on `codex/flight-combat-space-slice`, based on `2394ffe` | Flight/combat/space source and editor evidence only. Editor build, 49/49 headless tests, 1/1 rendering-enabled Niagara lifecycle test, container formatting and fixed captures pass within their recorded limits. The [slice receipt](validation/2026-09-15-flight-combat-space-slice.json) lists selected/rejected owned candidates and open acceptance. Package 4, the local EXE and itch remain unchanged. |
 | Documentation foundation | PR #11 merged | Canonical state/open-work navigation and PR documentation review are present. Required status-check enforcement remains a separate open repository-setting task. |
 | Current visual source | PR #12 merged; packaged source `cf6296f286dba9a89583649e19f988ed09af2f16` | C++ remains unchanged from Editor Build 12, 49 passing Unreal tests and the 30-file C++ format audit. The later star material was authored/cooked/captured separately. Release work changed distribution filtering/docs only; no Unreal rebuild was required. |
 | Latest audited local game | Package 4/source `cf6296f`; `Artifacts/Windows/SpaceSurvival.exe` | Built successfully and passed actual IoStore dependency audit plus packaged Wave 1/four-image and Station 5/16-image captures. The star layer is dimmer with static directional variation. Furnished editable station, new starter, walkway fill and unlit labels remain included. Existing optional `Try New Ship.cmd` remains a separate trial. |
@@ -14,6 +15,12 @@
 | Published tester build | itch `0.1.16-alpha.1`, upload `19226459`, ready build `1979965` from `1978147`; [release record](ITCH_RELEASES.md#september-15-visual-release) | Same audited game executable and cooked containers as Package 4, with developer symbols/manifests and runtime Saved/log/save data excluded. Payload: 51 files / 2,664,557,549 bytes. Butler reports a 1.49 GiB patch; actual client update/save preservation remains unverified. Devlog copy is ready but browser sign-in/security verification blocks posting. |
 
 To play locally, open `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`, keeping the complete directory. Do not open the Unreal project just to play. See [save-location differences](BUILD_RUN.md#local-saves) before changing launch arguments or moving an installation.
+
+## Flight, combat and space source checkpoint
+
+The unmerged slice implements the first ACT-00–ACT-03 source pass: state-driven drive presentation, distinct native rapid/cannon/hostile bolts, bounded combat light cues, broader enemy movement, Nerves electrical fields, an owned Asteroid Library Blueprint comparison and explicit background/material selection. The first Free Galaxy comparison and overbright engine-light treatment were rejected; corrected editor captures retain NebulaFantasy regions and reduced drive lighting. Cosmic Materials remain available for alien surfaces and the Workshop rather than being forced into the background.
+
+ACT-04 has an installed-plugin inventory only. The 309-asset Wormhole Portal plugin is not enabled in the project, and the fixed Station 5 capture still shows the existing custom ring tunnel. Natural play, synchronized sound, boost/brake readability in motion, dynamic-combat feel, the plugin pilot, representative performance, package/cook and owner acceptance remain open. Ship Core Pro is recorded as owned but blocked by its UE5.7 installer against this UE5.8.2 project. See [validation](VALIDATION.md#september-15-flight-combat-and-space-slice) for evidence and limits, and [KNOWN_ISSUES](KNOWN_ISSUES.md) for the only active queue.
 
 ## Owned audio, characters and input glyphs
 
