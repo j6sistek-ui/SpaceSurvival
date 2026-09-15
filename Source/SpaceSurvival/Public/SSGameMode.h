@@ -101,6 +101,11 @@ private:
     UPROPERTY()
     TObjectPtr<ASSAmbientPresentation> AmbientPresentation;
     UPROPERTY()
+    TObjectPtr<class ASSSpaceScenery> SpaceScenery;
+    UPROPERTY()
+    TObjectPtr<class USSSpaceLookData> SpaceLook;
+    int32 ActiveSkyIndex = -1;
+    UPROPERTY()
     TObjectPtr<ASSStation> Hub;
     UPROPERTY()
     TObjectPtr<ASSWalker> Walker;

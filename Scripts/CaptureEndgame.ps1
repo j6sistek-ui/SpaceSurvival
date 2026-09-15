@@ -4,6 +4,8 @@ Default: current packaged inner executable. -Editor uses the installed editor wi
 Requires a rebuilt binary containing ASSWave10Soak. No install, build or package occurs here.
 Every run uses a fresh GUID profile, preserves production saves, binds exact file hashes,
 and rejects incomplete fixture/CSV evidence. This is not natural gameplay acceptance.
+Visual captures render offscreen. Nonvisual runs still require the caller to focus
+the hidden launched game window before the foreground-only timing fixture starts.
 #>
 param(
     [switch]$Editor,
@@ -20,6 +22,10 @@ $ErrorActionPreference = 'Stop'
 $Scenario = if ($Scenario -ieq 'Station5') { 'Station5' } else { 'Wave10' }
 if ($Scenario -eq 'Station5' -and -not $PSBoundParameters.ContainsKey('TimeoutSeconds')) { $TimeoutSeconds = 330 }
 $evidenceType = if ($Scenario -eq 'Station5') { 'RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY' } else { 'RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY' }
+$expectedVisualNames = if ($Scenario -eq 'Station5') {
+    @('Flight', 'Climax', 'Wormhole', 'Approach', 'Docking', 'Exit0', 'Exit1', 'Exit2', 'Exit3', 'Exit4', 'Exit5', 'Exit6',
+        'StationIdle', 'StationServices', 'StationOverview', 'CombatImpact')
+} else { @('Flight', 'Climax', 'Compound', 'Approach') }
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 function Assert-NoReparsePath([string]$Path) {
     $candidate = [IO.Path]::GetFullPath($Path)
@@ -37,6 +43,22 @@ function FileIdentity([string]$Path) {
     Assert-NoReparsePath $Path
     $item = Get-Item -LiteralPath $Path
     [ordered]@{ path = $item.FullName; bytes = $item.Length; sha256 = (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash }
+}
+function PngIdentity([string]$Path) {
+    $identity = FileIdentity $Path
+    $stream = [IO.File]::OpenRead($Path)
+    try {
+        $header = [byte[]]::new(24)
+        if ($stream.Read($header, 0, 24) -ne 24 -or
+            [Convert]::ToHexString($header[0..7]) -cne '89504E470D0A1A0A' -or
+            [Text.Encoding]::ASCII.GetString($header, 12, 4) -cne 'IHDR') { throw "Invalid PNG header: $Path" }
+        $pngWidth = [uint32]$header[16] * 16777216 + [uint32]$header[17] * 65536 + [uint32]$header[18] * 256 + [uint32]$header[19]
+        $pngHeight = [uint32]$header[20] * 16777216 + [uint32]$header[21] * 65536 + [uint32]$header[22] * 256 + [uint32]$header[23]
+        if ($pngWidth -ne $Width -or $pngHeight -ne $Height) { throw "Unexpected screenshot size ${pngWidth}x${pngHeight}: $Path" }
+        $identity.width = $pngWidth
+        $identity.height = $pngHeight
+        return $identity
+    } finally { $stream.Dispose() }
 }
 function ProductionSaves {
     foreach ($directory in @((Join-Path $repoRoot 'Saved/SaveGames'),
@@ -103,20 +125,22 @@ if ($Editor) { $arguments += @((Join-Path $repoRoot 'SpaceSurvival.uproject'), '
 $arguments += @('-SSWave10Soak', "-SSSoakScenario=$Scenario", '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$runRoot", '-windowed', "-ResX=$Width", "-ResY=$Height",
     '-NoSplash', '-NoLiveCoding', '-csvGpuStats', "-abslog=$logPath", '-unattended')
 if ($NoSound) { $arguments += '-nosound' }
-if ($CaptureVisuals) { $arguments += '-SSSoakVisuals' }
+if ($CaptureVisuals) { $arguments += @('-SSSoakVisuals', '-RenderOffscreen', '-ForceRes') }
 $process = $null
 $success = $false
 $failure = $null
 $fixture = $null
 $analysis = $null
+$images = @()
 $started = [DateTime]::UtcNow.ToString('o')
 $sourceBefore | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $runRoot 'source-before.json') -Encoding utf8
 $productionBefore | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $runRoot 'production-before.json') -Encoding utf8
 Write-Output "Endgame fixture evidence: $runRoot"
 try {
     $native = ($arguments | ForEach-Object { NativeArgument $_ }) -join ' '
-    $process = Start-Process -FilePath $exe -WorkingDirectory $repoRoot -ArgumentList $native -WindowStyle Normal -PassThru
-    Write-Output "Started owned rendered process $($process.Id). Scenario $Scenario with normal timers; no natural gameplay claim."
+    $process = Start-Process -FilePath $exe -WorkingDirectory $repoRoot -ArgumentList $native -WindowStyle Hidden -PassThru
+    Write-Output "Started owned hidden process $($process.Id). Scenario $Scenario; offscreen visuals=$([bool]$CaptureVisuals); no natural gameplay claim."
+    if (-not $CaptureVisuals) { Write-Output 'Foreground timing run: focus this owned game window within 60 seconds.' }
     $timer = [Diagnostics.Stopwatch]::StartNew()
     while (-not $process.WaitForExit(1000)) {
         if ($timer.Elapsed.TotalSeconds -ge $TimeoutSeconds) { throw 'Rendered fixture exceeded timeout.' }
@@ -128,11 +152,35 @@ try {
     $fixture = Get-Content -LiteralPath $fixturePath -Raw | ConvertFrom-Json
     if (-not $fixture.success -or $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $Scenario -or
         $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or
-        ($CaptureVisuals -and (-not $fixture.visualCaptureEnabled -or @($fixture.visualRequests).Count -ne $(if ($Scenario -eq 'Station5') { 12 } else { 4 }))) -or -not $fixture.noSaveSlotsWritten -or -not $fixture.allFixtureFramesForeground -or
+        ($CaptureVisuals -and (-not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or
+            $fixture.suitableForPerformanceFinding -or @($fixture.visualRequests).Count -ne $expectedVisualNames.Count)) -or
+        (-not $CaptureVisuals -and ($fixture.visualCaptureEnabled -or $fixture.offscreenVisualOnly -or -not $fixture.allFixtureFramesForeground)) -or
+        -not $fixture.noSaveSlotsWritten -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine [IO.Path]::GetFullPath($savedRoot).TrimEnd('\', '/') -or
         -not $fixture.sawBreathing -or -not $fixture.sawClimax -or -not $fixture.sawApproach -or
         $fixture.climaxSimulationSeconds -lt 39.5) {
         throw 'Fixture receipt did not satisfy exact process/profile/full-duration/composition checks.'
+    }
+    if ($CaptureVisuals) {
+        $actualNames = @($fixture.visualRequests | ForEach-Object { $_.name } | Sort-Object -CaseSensitive)
+        $expectedNames = @($expectedVisualNames | Sort-Object -CaseSensitive)
+        if (($actualNames -join ',') -cne ($expectedNames -join ',')) { throw 'Visual receipt has missing, duplicate or unexpected scene names.' }
+        $actualPngNames = @(Get-ChildItem -LiteralPath $runRoot -Filter '*.png' -File | ForEach-Object { $_.BaseName } | Sort-Object -CaseSensitive)
+        if (($actualPngNames -join ',') -cne ($expectedNames -join ',')) { throw 'PNG files do not match the exact required scene names.' }
+        $images = @($expectedVisualNames | ForEach-Object { PngIdentity (Join-Path $runRoot "$_.png") })
+        if ($Scenario -eq 'Station5') {
+            $combat = @($fixture.visualRequests | Where-Object { $_.name -ceq 'CombatImpact' })[0]
+            if (-not $combat.normalWeaponKill -or $combat.combatSecondsSinceKill -lt 0.15 -or
+                $combat.combatSecondsSinceKill -gt 0.65 -or -not $combat.combatSourceEnemy -or
+                $combat.combatSystem -cne '/Game/SpaceSurvival/Licensed/Combat/NS_EnemyExplosion.NS_EnemyExplosion') {
+                throw 'Combat capture does not identify a live explosion after a real weapon kill.'
+            }
+            foreach ($stage in @(@('Wormhole', 2), @('StationServices', 7), @('StationOverview', 12))) {
+                $row = @($fixture.visualRequests | Where-Object { $_.name -ceq $stage[0] })[0]
+                if ($row.requestStageSeconds -lt $stage[1]) { throw "Visual stage captured too early: $($stage[0])" }
+                if ($stage[0] -cne 'Wormhole' -and -not $row.scriptedStationReviewCamera) { throw 'Station review frame lacks its labeled fixture viewpoint.' }
+            }
+        }
     }
     if ($Scenario -eq 'Station5') {
         if (-not $fixture.sawWave5 -or -not $fixture.sawWormhole -or -not $fixture.sawDocking -or -not $fixture.sawAuthoredExit -or
@@ -154,10 +202,10 @@ try {
     $analysis = Get-Content -LiteralPath $output -Raw | ConvertFrom-Json
     if ($Scenario -eq 'Station5') {
         if ($analysis.status -cne 'RENDERED_STATION_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE' -or -not $analysis.station_fixture.observed -or
-            -not $analysis.station_fixture.all_fixture_frames_foreground -or $analysis.station_fixture.stages.Wormhole.simulation_seconds -lt 7.9 -or
+            (-not $CaptureVisuals -and -not $analysis.station_fixture.all_fixture_frames_foreground) -or $analysis.station_fixture.stages.Wormhole.simulation_seconds -lt 7.9 -or
             $analysis.station_fixture.stages.Docking.simulation_seconds -lt 2.9 -or $analysis.station_fixture.stages.AuthoredExit.simulation_seconds -lt 2.3 -or
             $analysis.station_fixture.stages.StationIdle.simulation_seconds -lt 15) { throw 'CSV lacks station transition and foreground evidence.' }
-    } elseif ($analysis.status -cne 'RENDERED_ENDGAME_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE' -or -not $analysis.endgame_fixture.observed -or -not $analysis.endgame_fixture.all_fixture_frames_foreground -or
+    } elseif ($analysis.status -cne 'RENDERED_ENDGAME_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE' -or -not $analysis.endgame_fixture.observed -or (-not $CaptureVisuals -and -not $analysis.endgame_fixture.all_fixture_frames_foreground) -or
         $analysis.endgame_fixture.compound_presence_simulation_seconds -lt 3.5) { throw 'CSV lacks the required fixture/composition evidence.' }
     $success = $true
 } catch {
@@ -193,6 +241,7 @@ try {
         productionBefore = $productionBefore; productionAfter = $productionAfter; productionPreserved = $productionPreserved
         noTestSaveSlotsWritten = $noSlots; requestedResolution = @($Width, $Height); audioDisabled = [bool]$NoSound
         visualCaptureEnabled = [bool]$CaptureVisuals; suitableForPerformanceFinding = -not [bool]$CaptureVisuals
+        offscreenVisualOnly = [bool]$CaptureVisuals; images = $images
         fixture = $fixture; analysisPath = $(if ($null -ne $analysis) { 'performance.json' } else { $null })
         evidenceFiles = @(Get-ChildItem -LiteralPath $runRoot -File | Sort-Object Name | ForEach-Object { FileIdentity $_.FullName })
         limits = 'Seeded Tier V starter/RapidLaser/OverdriveCooling; base durability 50000; normal timers/caps/budgets/spatial admission; scripted input. Exact bytes/process are recorded, but separate build provenance must bind compiled source. No physical input, natural balance, full ten-wave run, natural station interactions, final art, clean-machine or representative FPS acceptance.'

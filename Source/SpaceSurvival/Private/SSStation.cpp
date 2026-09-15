@@ -1,4 +1,6 @@
 #include "SSStation.h"
+#include "SSStationVisualLayout.h"
+#include "SSShipPresentation.h"
 #include "SSShip.h"
 #include "Misc/PackageName.h"
 #include "SSStationPoseTransition.h"
@@ -15,6 +17,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "Sound/SoundBase.h"
@@ -24,6 +27,7 @@
 #include "EngineUtils.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "UObject/ConstructorHelpers.h"
 
 #include "SSStationRefresh.inl"
 
@@ -31,6 +35,15 @@ ASSStation::ASSStation()
 {
     PrimaryActorTick.bCanEverTick = true;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HubRoot"));
+    // Retain the engine font material on the CDO so its masked, unlit graph is also cooked.
+    if (FPackageName::DoesPackageExist(TEXT("/Engine/EngineMaterials/UnlitText")))
+    {
+        static ConstructorHelpers::FObjectFinderOptional<UMaterialInterface> UnlitText(
+            TEXT("/Engine/EngineMaterials/UnlitText.UnlitText"));
+        ServiceLabelMaterial = UnlitText.Get();
+    }
+    VisualLayoutAsset = FSoftObjectPath(
+        TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout.BP_StationVisualLayout_C"));
     ShellAsset =
         FSoftObjectPath(TEXT("/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1.SM_StationShellCandidateV1"));
 }
@@ -53,8 +66,10 @@ UStaticMeshComponent *ASSStation::AddMesh(FVector Position, FVector Scale, const
 }
 void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Panel)
 {
-    AddMesh(Position, FVector(1), TEXT("/Game/SpaceSurvival/Meshes/SM_Console.SM_Console"),
-            TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"), true);
+    auto *Stand = AddMesh(Position, FVector(1), TEXT("/Game/SpaceSurvival/Meshes/SM_Console.SM_Console"),
+                          TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"), true);
+    Stand->SetVisibility(!VisualLayout);
+    Stand->SetCastShadow(!VisualLayout);
     auto *Text = NewObject<UTextRenderComponent>(this);
     Text->SetupAttachment(RootComponent);
     Text->SetRelativeLocation(Position + FVector(-55, 0, 190));
@@ -63,7 +78,12 @@ void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Pan
     Text->SetWorldSize(23);
     Text->SetText(FText::FromString(Label));
     Text->SetTextRenderColor(FColor(130, 230, 245));
+    if (ServiceLabelMaterial && ServiceLabelMaterial->GetShadingModels().HasOnlyShadingModel(MSM_Unlit))
+        Text->SetTextMaterial(ServiceLabelMaterial);
+    Text->SetCastShadow(false);
+    Text->ComponentTags.Add(TEXT("StationServiceLabel"));
     Text->RegisterComponent();
+    ServiceLabels.Add(Text);
     Services.Add({Position, Label, Panel});
 }
 bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
@@ -92,6 +112,46 @@ bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
         Hit, Ship->GetActorLocation(), DockPosition(), Ship->Collision->GetComponentQuat(),
         Ship->Collision->GetCollisionObjectType(), Ship->Collision->GetCollisionShape(), Query, Responses);
 }
+bool ASSStation::BuildEditableLayout()
+{
+    if (!bUseEditableLayout || !bUseLicensedPresentation || VisualLayoutAsset.IsNull() ||
+        !FPackageName::DoesPackageExist(VisualLayoutAsset.ToSoftObjectPath().GetLongPackageName()))
+        return false;
+    auto *Class = VisualLayoutAsset.LoadSynchronous();
+    if (!Class)
+        return false;
+    FActorSpawnParameters Params;
+    Params.Owner = this;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    VisualLayout = GetWorld()->SpawnActor<ASSStationVisualLayout>(Class, GetActorTransform(), Params);
+    if (!VisualLayout)
+        return false;
+    VisualLayout->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+    VisualLayout->EnforcePresentationOnly();
+    return true;
+}
+
+void ASSStation::DestroyVisualLayout()
+{
+    auto *Layout = VisualLayout.Get();
+    VisualLayout = nullptr;
+    if (IsValid(Layout))
+        Layout->Destroy();
+}
+
+void ASSStation::Destroyed()
+{
+    // EndPlay is not routed for an uninitialized actor destroyed in an authoring/preview world.
+    DestroyVisualLayout();
+    Super::Destroyed();
+}
+
+void ASSStation::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    DestroyVisualLayout();
+    Super::EndPlay(EndPlayReason);
+}
+
 void ASSStation::BuildHub(bool bHome)
 {
     Home = bHome;
@@ -99,7 +159,8 @@ void ASSStation::BuildHub(bool bHome)
     const TCHAR *Hull = TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull");
     const TCHAR *Cyan = TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan");
     const TCHAR *Gold = TEXT("/Game/SpaceSurvival/Materials/M_Gold.M_Gold");
-    const bool LicensedShell = bUseLicensedPresentation && BuildLicensedShell();
+    const bool EditableLayout = BuildEditableLayout();
+    const bool LicensedShell = EditableLayout || (bUseLicensedPresentation && BuildLicensedShell());
     UStaticMesh *ShellMesh = LicensedShell || ShellAsset.IsNull() ? nullptr : ShellAsset.LoadSynchronous();
     if (ShellMesh)
     {
@@ -117,10 +178,13 @@ void ASSStation::BuildHub(bool bHome)
     const TCHAR *ExteriorPath = TEXT("/Game/SpaceSurvival/Licensed/StationExterior/SM_StationExterior");
     if (FPackageName::DoesPackageExist(ExteriorPath))
     {
-        auto *Exterior = AddMesh(FVector(7000, 0, 3500), FVector(1), ExteriorPath, nullptr, false);
-        Exterior->SetRelativeRotation(FRotator(0, 90, 0));
-        Exterior->SetCastShadow(false);
-        Exterior->SetCanEverAffectNavigation(false);
+        if (!EditableLayout)
+        {
+            auto *Exterior = AddMesh(FVector(7000, 0, 3500), FVector(1), ExteriorPath, nullptr, false);
+            Exterior->SetRelativeRotation(FRotator(0, 90, 0));
+            Exterior->SetCastShadow(false);
+            Exterior->SetCanEverAffectNavigation(false);
+        }
         // The exterior is reachable during manual approach. A conservative solid
         // envelope prevents flying through it without narrowing the existing bay.
         auto *ExteriorCollision = AddMesh(FVector(7000, 0, 3500), FVector(71.42f, 100.f, 76.62f), Cube, Hull, true);
@@ -153,9 +217,12 @@ void ASSStation::BuildHub(bool bHome)
         Geometry.Add(Batch);
         return Batch;
     };
-    auto Stamp = [](UInstancedStaticMeshComponent *Batch, FVector Position, FVector Scale,
-                    FRotator Rotation = FRotator::ZeroRotator)
-    { Batch->AddInstance(FTransform(Rotation, Position, Scale)); };
+    auto Stamp = [EditableLayout](UInstancedStaticMeshComponent *Batch, FVector Position, FVector Scale,
+                                  FRotator Rotation = FRotator::ZeroRotator)
+    {
+        if (!EditableLayout)
+            Batch->AddInstance(FTransform(Rotation, Position, Scale));
+    };
     auto *Plates = MakeBatch(TEXT("DeckPanels"), Hull);
     auto *FloorPlates =
         MakeBatch(TEXT("TexturedDeckPanels"), TEXT("/Game/SpaceSurvival/Materials/M_StationDeck.M_StationDeck"), true);
@@ -174,7 +241,9 @@ void ASSStation::BuildHub(bool bHome)
         Material->SetScalarParameterValue(TEXT("Metallic"), .15f);
         Material->SetScalarParameterValue(TEXT("Roughness"), .75f);
     }
-    AddMesh(FVector(0, 0, -60), FVector(34, 28, 1), Cube, Hull, true);
+    auto *DeckCollision = AddMesh(FVector(0, 0, -60), FVector(34, 28, 1), Cube, Hull, true);
+    DeckCollision->SetVisibility(!EditableLayout);
+    DeckCollision->SetCastShadow(!EditableLayout);
     for (int X = 0; X < 6; ++X)
     {
         const float CenterX = -1375.f + X * 550.f;
@@ -204,6 +273,9 @@ void ASSStation::BuildHub(bool bHome)
     AddBoundary(FVector(-1700, 1050, 350), FVector(.5f, 7, 8));
     AddBoundary(FVector(1700, 0, 100), FVector(.3f, 28, 2));
     BayShip = AddMesh(FVector(850, 0, 220), FVector(1), ASSShip::HullAssetPath(SS::Ship::Starter), nullptr);
+    auto *Modules = NewObject<USSShipPresentation>(this);
+    Modules->RegisterComponent();
+    Modules->SetHull(BayShip);
     ServiceArm = AddMesh(FVector(850, 280, 150), FVector(1),
                          TEXT("/Game/SpaceSurvival/Meshes/SM_ServiceArm.SM_ServiceArm"), Hull);
     // The ship's measured underside is at deck Z153.5; its cradle stays inside its footprint.
@@ -236,15 +308,19 @@ void ASSStation::BuildHub(bool bHome)
     {
         AddService(FVector(1000, 1000, 0), TEXT("ENGINEER MICA / MODULES"), ESSPanel::Vendor);
         AddService(FVector(-1400, 0, 0), TEXT("BEACON LOG / LOST CREW"), ESSPanel::Reward);
-        AddMesh(FVector(1050, 1130, 120), FVector(.5f), TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), Hull);
-        // Mica's service avatar is a physical, moving vendor at the module bench.
-        const TCHAR *Sphere = TEXT("/Engine/BasicShapes/Sphere.Sphere");
-
-        AddMesh(FVector(1110, 1130, 135), FVector(.55f, .5f, .75f), Sphere, Gold);
-        VendorHead = AddMesh(FVector(1110, 1130, 200), FVector(.56f, .56f, .45f), Sphere, Hull);
-        auto *Visor = AddMesh(FVector(1084, 1130, 204), FVector(.08f, .4f, .12f), Cube, Cyan);
-        Visor->AttachToComponent(VendorHead, FAttachmentTransformRules::KeepWorldTransform);
-        VendorArm = AddMesh(FVector(1080, 1090, 150), FVector(.16f, .16f, .6f), Cube, Gold);
+        if (!EditableLayout)
+            AddMesh(FVector(1050, 1130, 120), FVector(.5f), TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), Hull);
+        // Preserve the vendor interaction, using the optional idle robot when available.
+        if (!EditableLayout &&
+            GetComponentsByTag(USkeletalMeshComponent::StaticClass(), TEXT("StationRobotMica")).IsEmpty())
+        {
+            const TCHAR *Sphere = TEXT("/Engine/BasicShapes/Sphere.Sphere");
+            AddMesh(FVector(1110, 1130, 135), FVector(.55f, .5f, .75f), Sphere, Gold);
+            VendorHead = AddMesh(FVector(1110, 1130, 200), FVector(.56f, .56f, .45f), Sphere, Hull);
+            auto *Visor = AddMesh(FVector(1084, 1130, 204), FVector(.08f, .4f, .12f), Cube, Cyan);
+            Visor->AttachToComponent(VendorHead, FAttachmentTransformRules::KeepWorldTransform);
+            VendorArm = AddMesh(FVector(1080, 1090, 150), FVector(.16f, .16f, .6f), Cube, Gold);
+        }
         BeaconRotor = AddMesh(FVector(-1490, 0, 165), FVector(.55f),
                               TEXT("/Game/SpaceSurvival/Meshes/SM_EventBeacon.SM_EventBeacon"), nullptr);
     }
@@ -256,8 +332,14 @@ void ASSStation::BuildHub(bool bHome)
         if (!ShellMesh && !LicensedShell)
             Stamp(Structure, FVector(float(I) * 450.f, 0, 980), FVector(.18f, 28, .25f));
     }
-    AddMesh(FVector(-450, 1120, 65), FVector(.8f), TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), nullptr, true);
-    AddMesh(FVector(-580, 1120, 50), FVector(.6f), TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), nullptr, true);
+    auto *CrateCollision = AddMesh(FVector(-450, 1120, 65), FVector(.8f),
+                                   TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), nullptr, true);
+    CrateCollision->SetVisibility(!EditableLayout);
+    CrateCollision->SetCastShadow(!EditableLayout);
+    CrateCollision = AddMesh(FVector(-580, 1120, 50), FVector(.6f),
+                             TEXT("/Game/SpaceSurvival/Meshes/SM_Crate.SM_Crate"), nullptr, true);
+    CrateCollision->SetVisibility(!EditableLayout);
+    CrateCollision->SetCastShadow(!EditableLayout);
     // Pallets and the module bench support the existing props without moving their collision.
     Stamp(Structure, FVector(-450, 1120, 27.5f), FVector(.7f, .6f, .75f));
     Stamp(Structure, FVector(-580, 1120, 20), FVector(.52f, .48f, .6f));
@@ -280,7 +362,7 @@ void ASSStation::BuildHub(bool bHome)
         Plaque->SetCastShadow(false);
         Plaque->RegisterComponent();
     }
-    for (int I = 0; I < 4; ++I)
+    for (int I = 0; I < (EditableLayout ? 0 : 4); ++I)
     {
         auto *Light = NewObject<UPointLightComponent>(this);
         Light->SetupAttachment(RootComponent);
@@ -306,6 +388,18 @@ void ASSStation::BuildHub(bool bHome)
 void ASSStation::Tick(float Dt)
 {
     Super::Tick(Dt);
+    if (auto *Controller = GetWorld()->GetFirstPlayerController())
+    {
+        FVector ViewLocation;
+        FRotator ViewRotation;
+        Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+        for (UTextRenderComponent *Label : ServiceLabels)
+        {
+            const FVector ToCamera = (ViewLocation - Label->GetComponentLocation()).GetSafeNormal2D();
+            if (!ToCamera.IsNearlyZero())
+                Label->SetWorldRotation(FRotator(0, ToCamera.Rotation().Yaw, 0));
+        }
+    }
     if (ServiceArm)
         ServiceArm->SetRelativeRotation(FRotator(0, 0, FMath::Sin(GetWorld()->GetTimeSeconds() * .7f) * 16.f));
     if (VendorHead)

@@ -7,5 +7,7 @@ public class SpaceSurvival : ModuleRules
         CppStandard = CppStandardVersion.Cpp20;
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Slate", "SlateCore", "Json", "JsonUtilities", "Niagara" });
         PublicIncludePaths.Add(ModuleDirectory);
+        if (Target.bBuildEditor)
+            PrivateDependencyModuleNames.Add("UnrealEd");
     }
 }

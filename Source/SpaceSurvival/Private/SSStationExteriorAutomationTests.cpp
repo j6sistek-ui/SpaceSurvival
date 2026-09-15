@@ -49,6 +49,7 @@ bool FSSStationExteriorCollision::RunTest(const FString &)
         auto *Hub = Fixture.World->SpawnActor<ASSStation>(FVector(16000, -8000, 5000), FRotator(0, 75, 0));
         if (!TestNotNull(TEXT("Spawn transformed actual station"), Hub))
             return false;
+        Hub->bUseEditableLayout = false; // Native exterior fallback; editable layout has separate coverage.
         Hub->BuildHub(Home);
         TInlineComponentArray<UStaticMeshComponent *> Components;
         Hub->GetComponents(Components);

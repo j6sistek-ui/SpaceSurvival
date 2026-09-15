@@ -6,6 +6,10 @@
 #include "SSDistantAsteroids.h"
 #include "SSAmbientPresentation.h"
 #include "SSSpaceLookData.h"
+#include "SSSpaceScenery.h"
+#include "Engine/DirectionalLight.h"
+#include "Components/DirectionalLightComponent.h"
+#include "Engine/TextureCube.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
 #include "Animation/PoseSnapshot.h"
@@ -147,12 +151,23 @@ void ASSGameMode::BeginPlay()
             const TCHAR *LookPath = TEXT("/Game/SpaceSurvival/Licensed/Atmosphere/DA_DeepSpaceLook");
             if (FPackageName::DoesPackageExist(LookPath))
                 if (auto *Look = LoadObject<USSSpaceLookData>(nullptr, LookPath); Look && Look->SkyMaterial)
+                {
+                    SpaceLook = Look;
                     BackdropMesh->SetMaterial(0, Look->SkyMaterial);
+                }
             SpaceMaterial = BackdropMesh->CreateAndSetMaterialInstanceDynamic(0);
         }
         if (It->ActorHasTag(TEXT("SpaceStars")))
             SpaceStars = *It;
     }
+    if (SpaceLook && SpaceLook->RegionSkies.Num() > 1)
+        for (TActorIterator<ADirectionalLight> It(GetWorld()); It; ++It)
+            if (auto *Light = Cast<UDirectionalLightComponent>(It->GetLightComponent());
+                Light && Light->ForwardShadingPriority == 2)
+            {
+                Light->SetLightColor(SpaceLook->KeyColor);
+                Light->SetIntensity(SpaceLook->KeyIntensity);
+            }
     ShowHangar();
     OpenPanel(ESSPanel::Main);
     ASSWave10Soak::TryStart(this);
@@ -299,6 +314,9 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
     if (!AmbientPresentation)
         AmbientPresentation = GetWorld()->SpawnActor<ASSAmbientPresentation>();
     AmbientPresentation->Follow(Ship);
+    if (!SpaceScenery)
+        SpaceScenery = GetWorld()->SpawnActor<ASSSpaceScenery>();
+    SpaceScenery->Follow(Ship);
     UGameplayStatics::GetPlayerController(this, 0)->Possess(Ship);
     Director->SetActive(true);
     ClosePanel();
@@ -430,6 +448,9 @@ void ASSGameMode::Tick(float Dt)
     if (AmbientPresentation)
         AmbientPresentation->SetFlightVisible(S.run.phase == SS::Phase::Flight || S.run.phase == SS::Phase::Breathing ||
                                               S.run.phase == SS::Phase::Climax);
+    if (SpaceScenery)
+        SpaceScenery->SetFlightVisible(S.run.phase == SS::Phase::Flight || S.run.phase == SS::Phase::Breathing ||
+                                       S.run.phase == SS::Phase::Climax);
     AnnouncementSeconds = FMath::Max(0.f, AnnouncementSeconds - Dt);
     bool Danger = false;
     if (Ship && S.IsFlying())
@@ -477,6 +498,23 @@ void ASSGameMode::Tick(float Dt)
             // Long gradual visual drift, independent of wave and station cadence.
             const uint32 RegionSeed = GetTypeHash(FString(UTF8_TO_TCHAR(S.run.id.c_str())));
             const float Blend = .5f + .5f * FMath::Sin(RegionTime * .006f + float(RegionSeed % 1000) * .01f);
+            if (SpaceLook && SpaceLook->RegionSkies.Num() > 1)
+            {
+                const int32 Count = SpaceLook->RegionSkies.Num();
+                const double Travel = RegionTime / FMath::Max(60.f, SpaceLook->RegionSeconds) +
+                                      double(RegionSeed % Count) + ArrivalColorBlend;
+                const int32 Index = int32(FMath::FloorToDouble(Travel)) % Count;
+                const float Fraction = float(FMath::Frac(Travel));
+                if (ActiveSkyIndex != Index)
+                {
+                    SpaceMaterial->SetTextureParameterValue(TEXT("RegionA"), SpaceLook->RegionSkies[Index]);
+                    SpaceMaterial->SetTextureParameterValue(TEXT("RegionB"),
+                                                            SpaceLook->RegionSkies[(Index + 1) % Count]);
+                    ActiveSkyIndex = Index;
+                }
+                SpaceMaterial->SetScalarParameterValue(TEXT("RegionBlend"),
+                                                       Fraction * Fraction * (3.f - 2.f * Fraction));
+            }
             SpaceMaterial->SetVectorParameterValue(
                 TEXT("Tint"), FMath::Lerp(FMath::Lerp(FLinearColor(.45f, .65f, 1), FLinearColor(1, .35f, .8f), Blend),
                                           FLinearColor(.25f, 1.f, .65f), ArrivalColorBlend * .8f));

@@ -3,7 +3,9 @@
 #include "SSGameInstance.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -11,6 +13,9 @@
 #include "UnrealClient.h"
 #include "Kismet/GameplayStatics.h"
 #include "SSWorldActors.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
+#include "UObject/UObjectIterator.h"
 #include "EngineUtils.h"
 #include "Engine/Engine.h"
 #include "GameFramework/WorldSettings.h"
@@ -169,6 +174,14 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
     Row->SetStringField(TEXT("name"), Name);
     Row->SetNumberField(TEXT("requestStageSeconds"), StageSeconds);
     Row->SetNumberField(TEXT("requestFrame"), double(GFrameCounter));
+    if (FCString::Strcmp(Name, TEXT("CombatImpact")) == 0 && CombatExplosion.IsValid())
+    {
+        Row->SetStringField(TEXT("combatSourceEnemy"), CombatEnemy);
+        Row->SetStringField(TEXT("combatSystem"), GetPathNameSafe(CombatExplosion->GetAsset()));
+        Row->SetStringField(TEXT("combatEffectPosition"), CombatExplosion->GetComponentLocation().ToString());
+        Row->SetNumberField(TEXT("combatSecondsSinceKill"), GetWorld()->GetTimeSeconds() - CombatKilledAt);
+        Row->SetBoolField(TEXT("normalWeaponKill"), true);
+    }
     if (auto *GM = Mode.Get())
     {
         auto *Mesh = IsValid(GM->Walker) && UGameplayStatics::GetPlayerPawn(this, 0) == GM->Walker
@@ -182,6 +195,18 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         Row->SetStringField(TEXT("hull"), GetPathNameSafe(GM->Ship->HullMesh->GetStaticMesh()));
         Row->SetStringField(TEXT("cameraTransform"), GM->Ship->Camera->GetComponentTransform().ToHumanReadableString());
         Row->SetNumberField(TEXT("horizontalFov"), GM->Ship->Camera->FieldOfView);
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        const bool ReviewView = IsValid(StationReviewCamera) && PC && PC->GetViewTarget() == StationReviewCamera;
+        Row->SetBoolField(TEXT("scriptedStationReviewCamera"), ReviewView);
+        if (ReviewView)
+        {
+            Row->SetStringField(TEXT("cameraTransform"),
+                                StationReviewCamera->GetActorTransform().ToHumanReadableString());
+            Row->SetNumberField(TEXT("horizontalFov"), StationReviewCamera->GetCameraComponent()->FieldOfView);
+            Row->SetStringField(
+                TEXT("reviewCameraLimit"),
+                TEXT("Scripted visual inspection viewpoint; the actual walking pawn remains possessed."));
+        }
         Row->SetBoolField(TEXT("pilotVisible"), GM->Ship->Pilot->IsVisible());
         Row->SetStringField(TEXT("pilotTransform"), Mesh->GetComponentTransform().ToHumanReadableString());
         Row->SetStringField(TEXT("leftWrist"), Mesh->GetSocketTransform(TEXT("L_Wrist")).ToHumanReadableString());
@@ -189,11 +214,113 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
     }
     VisualNames.Add(Name);
     VisualRecords.Add(MakeShared<FJsonValueObject>(Row));
-    // Normal viewport + HUD, no camera/pose override. Screenshot is fulfilled at
-    // frame end; the recorded sample is the request, not a claim of exact render time.
+    // Viewport + HUD. Only the two explicitly labeled station review frames use
+    // a fixture camera. Fulfilled at frame end; this is the request timestamp.
     FScreenshotRequest::RequestScreenshot(Path, true, false, false, FIntRect(), true);
     UE_LOG(LogTemp, Display, TEXT("SOAK_VISUAL_REQUEST %s stageSeconds=%.6f frame=%llu"), Name, StageSeconds,
            GFrameCounter);
+#endif
+}
+void ASSWave10Soak::NotifyEnemyDefeated(ASSEnemy *Enemy)
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    if (!IsValid(Enemy) || !FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals")))
+        return;
+    for (TActorIterator<ASSWave10Soak> It(Enemy->GetWorld()); It; ++It)
+    {
+        auto *Soak = *It;
+        if (!Soak->Station5 || !Soak->CaptureVisuals || !Soak->Started || Soak->Stopping ||
+            Soak->VisualNames.Contains(TEXT("CombatImpact")) || Soak->CombatExplosion.IsValid())
+            continue;
+        // Observe the real weapon-death path. A rejected/missing cosmetic must
+        // not become successful visual evidence merely because a kill occurred.
+        for (TObjectIterator<UNiagaraComponent> Effect; Effect; ++Effect)
+            if (Effect->GetWorld() == Enemy->GetWorld() && Effect->IsActive() && !Effect->IsComplete() &&
+                Effect->GetAsset() &&
+                Effect->GetAsset()->GetPathName() ==
+                    TEXT("/Game/SpaceSurvival/Licensed/Combat/NS_EnemyExplosion.NS_EnemyExplosion") &&
+                Effect->GetComponentLocation().Equals(Enemy->GetActorLocation(), 1.f))
+            {
+                Soak->CombatExplosion = *Effect;
+                Soak->CombatEnemy = Enemy->GetName();
+                Soak->CombatKilledAt = Enemy->GetWorld()->GetTimeSeconds();
+                return;
+            }
+    }
+#endif
+}
+void ASSWave10Soak::CaptureCombatAfterKill()
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    if (!Station5 || !CombatExplosion.IsValid() || VisualNames.Contains(TEXT("CombatImpact")))
+        return;
+    const double SinceKill = GetWorld()->GetTimeSeconds() - CombatKilledAt;
+    if (!CombatExplosion->IsActive() || CombatExplosion->IsComplete() || SinceKill > .65)
+    {
+        CombatExplosion.Reset();
+        return;
+    }
+    if (SinceKill < .15 || FScreenshotRequest::IsScreenshotRequested())
+        return;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    int32 Width = 0, Height = 0;
+    FVector2D Pixel;
+    if (PC)
+        PC->GetViewportSize(Width, Height);
+    if (!PC || !PC->ProjectWorldLocationToScreen(CombatExplosion->GetComponentLocation(), Pixel) ||
+        Pixel.X < Width * .1 || Pixel.X > Width * .9 || Pixel.Y < Height * .15 || Pixel.Y > Height * .85)
+    {
+        CombatExplosion.Reset(); // Wait for the next visible, real weapon kill.
+        return;
+    }
+    CaptureVisual(TEXT("CombatImpact"), float(FlightSeconds));
+#endif
+}
+void ASSWave10Soak::CaptureStationReview(const TCHAR *Name, FVector LocalCamera, FVector LocalTarget)
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    if (!CaptureVisuals || !Station5 || !VisualNames.Contains(TEXT("StationIdle")) || VisualNames.Contains(Name) ||
+        FScreenshotRequest::IsScreenshotRequested())
+        return;
+    auto *GM = Mode.Get();
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (!GM || !IsValid(GM->Hub) || !PC || !IsValid(GM->Walker) || PC->GetPawn() != GM->Walker ||
+        GM->Walker->IsDisembarking())
+    {
+        Stop(TEXT("Station review camera requires the existing hub and possessed walking pawn after exit."));
+        return;
+    }
+    if (StationReviewShot != FName(Name))
+    {
+        if (!IsValid(StationReviewCamera))
+        {
+            PreviousReviewViewTarget = PC->GetViewTarget();
+            FActorSpawnParameters Parameters;
+            Parameters.Owner = this;
+            Parameters.ObjectFlags |= RF_Transient;
+            StationReviewCamera = GetWorld()->SpawnActor<ACameraActor>(Parameters);
+            if (!StationReviewCamera)
+            {
+                Stop(TEXT("Could not create the transient station review camera."));
+                return;
+            }
+            StationReviewCamera->SetActorEnableCollision(false);
+            StationReviewCamera->SetActorTickEnabled(false);
+            StationReviewCamera->GetCameraComponent()->SetFieldOfView(70.f);
+        }
+        const FTransform HubTransform = GM->Hub->GetActorTransform();
+        const FVector Position = HubTransform.TransformPosition(LocalCamera);
+        const FVector Target = HubTransform.TransformPosition(LocalTarget);
+        StationReviewCamera->SetActorLocationAndRotation(Position, (Target - Position).Rotation());
+        PC->SetViewTarget(StationReviewCamera);
+        StationReviewShot = FName(Name);
+        // Let the normal camera update and temporal rendering settle before the
+        // screenshot request; never move or possess a different gameplay pawn.
+        ReviewCameraReadyAt = StationIdleSeconds + .5;
+        return;
+    }
+    if (StationIdleSeconds >= ReviewCameraReadyAt)
+        CaptureVisual(Name, float(StationIdleSeconds));
 #endif
 }
 void ASSWave10Soak::Stop(const FString &Error)
@@ -203,6 +330,14 @@ void ASSWave10Soak::Stop(const FString &Error)
         return;
     Failure = Error;
     Stopping = true;
+    if (IsValid(StationReviewCamera))
+    {
+        if (auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+            PC && PC->GetViewTarget() == StationReviewCamera && PreviousReviewViewTarget.IsValid())
+            PC->SetViewTarget(PreviousReviewViewTarget.Get());
+        StationReviewCamera->Destroy();
+        StationReviewCamera = nullptr;
+    }
     CaptureResult = FCsvProfiler::Get()->EndCapture();
 #endif
 }
@@ -385,6 +520,7 @@ void ASSWave10Soak::Tick(float Dt)
     }
     if (CaptureVisuals)
     {
+        CaptureCombatAfterKill();
         if (S.run.phase == SS::Phase::Flight && FlightSeconds >= 15)
             CaptureVisual(TEXT("Flight"), FlightSeconds);
         if (S.run.phase == SS::Phase::Climax && ClimaxSeconds >= 5)
@@ -396,6 +532,8 @@ void ASSWave10Soak::Tick(float Dt)
             CaptureVisual(TEXT("Approach"), ApproachSeconds);
         if (Station5)
         {
+            if (S.run.phase == SS::Phase::Wormhole && WormholeSeconds >= 2)
+                CaptureVisual(TEXT("Wormhole"), WormholeSeconds);
             if (S.run.phase == SS::Phase::Docking && DockingSeconds >= 1)
                 CaptureVisual(TEXT("Docking"), DockingSeconds);
             if (Exiting)
@@ -407,6 +545,10 @@ void ASSWave10Soak::Tick(float Dt)
             }
             if (StationIdleSeconds >= 2)
                 CaptureVisual(TEXT("StationIdle"), StationIdleSeconds);
+            if (StationIdleSeconds >= 7)
+                CaptureStationReview(TEXT("StationServices"), FVector(600, 500, 220), FVector(1110, 1130, 160));
+            if (StationIdleSeconds >= 12 && VisualNames.Contains(TEXT("StationServices")))
+                CaptureStationReview(TEXT("StationOverview"), FVector(1300, -1150, 650), FVector(-600, 0, 300));
         }
         const TCHAR *TextureStage = Station5 ? TEXT("StationIdle") : TEXT("Compound");
         if (VisualNames.Contains(TextureStage) && !VisualNames.Contains(TEXT("TexturesLogged")))
@@ -469,9 +611,20 @@ void ASSWave10Soak::WriteResultAndExit()
     }
     if (CaptureVisuals)
     {
-        const int32 Expected = Station5 ? 12 : 4;
-        if (VisualRecords.Num() != Expected)
+        const TArray<FString> Expected =
+            Station5 ? TArray<FString>{TEXT("Flight"),      TEXT("Climax"),          TEXT("Wormhole"),
+                                       TEXT("Approach"),    TEXT("Docking"),         TEXT("Exit0"),
+                                       TEXT("Exit1"),       TEXT("Exit2"),           TEXT("Exit3"),
+                                       TEXT("Exit4"),       TEXT("Exit5"),           TEXT("Exit6"),
+                                       TEXT("StationIdle"), TEXT("StationServices"), TEXT("StationOverview"),
+                                       TEXT("CombatImpact")}
+            : Wave1  ? TArray<FString>{TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")}
+                     : TArray<FString>{TEXT("Flight"), TEXT("Climax"), TEXT("Compound"), TEXT("Approach")};
+        if (VisualRecords.Num() != Expected.Num())
             Failure = TEXT("Visual fixture did not request every required scene stage.");
+        for (const FString &Name : Expected)
+            if (!VisualNames.Contains(Name))
+                Failure = TEXT("Visual fixture is missing required scene stage: ") + Name;
         for (const auto &Row : VisualRecords)
             if (IFileManager::Get().FileSize(
                     *(Root / (Row->AsObject()->GetStringField(TEXT("name")) + TEXT(".png")))) <= 0)
@@ -488,9 +641,11 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("success"), Success);
     Result->SetBoolField(TEXT("visualCaptureEnabled"), CaptureVisuals);
     Result->SetArrayField(TEXT("visualRequests"), VisualRecords);
-    Result->SetStringField(TEXT("visualCaptureLimit"),
-                           TEXT("Normal viewport screenshots are fulfilled after each recorded request. Image readback "
-                                "and ListTextures perturb timings; visual captures are not performance evidence."));
+    Result->SetStringField(
+        TEXT("visualCaptureLimit"),
+        TEXT("Viewport screenshots are fulfilled after each recorded request. StationServices and "
+             "StationOverview use labeled fixture cameras without changing possession. Image readback "
+             "and ListTextures perturb timings; visual captures are not performance evidence."));
     Result->SetStringField(TEXT("failure"), Failure);
     Result->SetStringField(TEXT("token"), Token);
     Result->SetNumberField(TEXT("processId"), FPlatformProcess::GetCurrentProcessId());

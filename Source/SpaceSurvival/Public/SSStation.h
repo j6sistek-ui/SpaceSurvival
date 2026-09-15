@@ -11,6 +11,9 @@ class UCameraComponent;
 class USpringArmComponent;
 class UAudioComponent;
 class UAnimSequence;
+class UTextRenderComponent;
+class UMaterialInterface;
+class ASSStationVisualLayout;
 struct FPoseSnapshot;
 
 UCLASS()
@@ -22,6 +25,14 @@ public:
     void BuildHub(bool bHome);
     UPROPERTY(EditAnywhere, Category = "Presentation")
     bool bUseLicensedPresentation = true;
+    UPROPERTY(EditAnywhere, Category = "Presentation")
+    bool bUseEditableLayout = true;
+    UPROPERTY(EditAnywhere, Category = "Presentation")
+    TSoftClassPtr<ASSStationVisualLayout> VisualLayoutAsset;
+    ASSStationVisualLayout *GetVisualLayout() const
+    {
+        return VisualLayout;
+    }
     // Optional presentation asset; the physical hub remains authoritative when it is absent.
     UPROPERTY(EditAnywhere, Category = "Presentation")
     TSoftObjectPtr<UStaticMesh> ShellAsset;
@@ -29,6 +40,8 @@ public:
     void ShowBayShip(bool Visible);
     bool CanAssistDocking(const ASSShip *Ship) const;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void Destroyed() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     ESSPanel NearestService(FVector Position, FString &Label) const;
     FVector WalkSpawn() const
     {
@@ -44,7 +57,11 @@ public:
     }
 
 private:
+    bool BuildEditableLayout();
+    void DestroyVisualLayout();
     bool BuildLicensedShell();
+    UPROPERTY()
+    TObjectPtr<ASSStationVisualLayout> VisualLayout;
     struct FService
     {
         FVector Location;
@@ -52,6 +69,10 @@ private:
         ESSPanel Panel;
     };
     TArray<FService> Services;
+    UPROPERTY()
+    TObjectPtr<UMaterialInterface> ServiceLabelMaterial;
+    UPROPERTY()
+    TArray<TObjectPtr<UTextRenderComponent>> ServiceLabels;
     UPROPERTY()
     TArray<TObjectPtr<UStaticMeshComponent>> Geometry;
     UPROPERTY()

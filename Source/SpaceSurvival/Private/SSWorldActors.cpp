@@ -1,5 +1,7 @@
 #include "SSWorldActors.h"
 #include "SSAsteroidBurst.h"
+#include "SSVFXPresentation.h"
+#include "SSWave10Soak.h"
 #include "SSAudio.h"
 #include "Components/AudioComponent.h"
 #include "SSGameInstance.h"
@@ -253,6 +255,14 @@ void ASSWorldBody::UpdateVisual()
         if (FPackageName::DoesPackageExist(RockPackage))
             SelectedMesh = LoadObject<UStaticMesh>(nullptr, *RockPackage);
     }
+    if (IsEnemy())
+    {
+        const TCHAR *Package = Kind == ESSWorldKind::Pursuer
+                                   ? TEXT("/Game/SpaceSurvival/Licensed/ShipVisualPass/Meshes/SM_PursuerHavolk")
+                                   : TEXT("/Game/SpaceSurvival/Licensed/ShipVisualPass/Meshes/SM_FlankerHavolk");
+        if (FPackageName::DoesPackageExist(Package))
+            SelectedMesh = LoadObject<UStaticMesh>(nullptr, Package);
+    }
     Visual->SetStaticMesh(SelectedMesh ? SelectedMesh : Mesh(*CatalogMesh));
     // Match collision to the loaded mesh rather than assuming authoring units.
     // Missing authoring remains an explicit fallback, not presentation verification.
@@ -278,8 +288,9 @@ void ASSWorldBody::UpdateVisual()
         const float IndicatorExtent =
             ThreatIndicator->GetStaticMesh() ? ThreatIndicator->GetStaticMesh()->GetBounds().BoxExtent.GetMax() : 50.f;
         const FBoxSphereBounds Bounds = Visual->GetStaticMesh()->GetBounds();
-        const float MuzzleX = (Bounds.Origin.X + Bounds.BoxExtent.X) * Visual->GetRelativeScale3D().X;
-        ThreatIndicator->SetRelativeLocation(FVector(MuzzleX + BodyRadius * .025f, 0.f, 0.f));
+        const FVector Nose =
+            Visual->GetRelativeTransform().TransformPosition(Bounds.Origin + FVector(Bounds.BoxExtent.X, 0, 0));
+        ThreatIndicator->SetRelativeLocation(Nose + FVector(BodyRadius * .025f, 0.f, 0.f));
         ThreatIndicator->SetRelativeScale3D(FVector(BodyRadius * .075f / FMath::Max(1.f, IndicatorExtent)));
         ThreatIndicator->SetCastShadow(false);
         FeedbackMesh = ThreatIndicator;
@@ -736,6 +747,8 @@ void ASSEnemy::Tick(float DeltaSeconds)
                 {
                     bDefeated = true;
                     PlayDestructionAudio();
+                    if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+                        FX->PlayEnemyExplosion(GetActorLocation(), BodyRadius);
                     if (ObjectiveOwner.IsValid())
                         ObjectiveOwner->RegisterObjectiveProgress();
                     Destroy();
@@ -750,6 +763,9 @@ void ASSEnemy::Tick(float DeltaSeconds)
 void ASSEnemy::OnDefeated()
 {
     PlayDestructionAudio();
+    if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+        FX->PlayEnemyExplosion(GetActorLocation(), BodyRadius);
+    ASSWave10Soak::NotifyEnemyDefeated(this);
     if (ASSGameMode *Mode = GameMode(this))
         Mode->NotifyEnemyKilled();
     if (ObjectiveOwner.IsValid())
@@ -777,6 +793,14 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
     TravelRemaining = FMath::IsFinite(MaximumTravel) ? MaximumTravel : 0.f;
     SourceActor = Source;
     LinearVelocity = Direction.GetSafeNormal() * Speed;
+    if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+    {
+        const bool Heavy = bFromPlayer && Damage > 0.f;
+        FX->AttachProjectile(this, bFromPlayer, Heavy);
+        FX->PlayMuzzle(Source, GetActorLocation(), Direction, bFromPlayer, Heavy);
+        // A small native core remains readable if scalability culls Niagara.
+        Visual->SetRelativeScale3D(Visual->GetRelativeScale3D() * FVector(1.3f, .22f, .22f));
+    }
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     TrackedShip = FindShip();
     bHasPreviousShipPosition = TrackedShip.IsValid();
@@ -807,6 +831,10 @@ void ASSProjectile::Tick(float DeltaSeconds)
     {
         Travel = Travel.GetClampedToMaxSize(TravelRemaining);
         TravelRemaining = FMath::Max(0.f, TravelRemaining - float(Travel.Size()));
+        // FVector clamps smaller distances to zero. Retire the same residual
+        // instead of leaving a stationary projectile until its lifetime ends.
+        if (TravelRemaining < UE_KINDA_SMALL_NUMBER)
+            TravelRemaining = 0.f;
     }
     const FVector End = Start + Travel;
     ASSShip *Ship = FindShip();
@@ -881,11 +909,15 @@ void ASSProjectile::Tick(float DeltaSeconds)
     if (ShipHitTime <= 1.0 && (!WorldHit || ShipHitTime < WorldHit->Time))
     {
         Ship->ReceiveDamage(CollisionDamage, SS::DamageType::Energy);
+        if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
+            FX->PlayImpact(Start + Travel * ShipHitTime, -LinearVelocity.GetSafeNormal(), bPlayerShot, false);
         Destroy();
         return;
     }
     if (WorldHit)
     {
+        if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
+            FX->PlayImpact(WorldHit->ImpactPoint, WorldHit->ImpactNormal, bPlayerShot, bPlayerShot);
         if (ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor()))
             if (bPlayerShot || Body->IsSolidHazard())
                 Body->ReceiveWeaponHit(CollisionDamage);
@@ -933,6 +965,8 @@ void ASSWormholePassage::BeginPassage(ASSShip *Ship, float Duration)
     CourseLength = FMath::Max(10000.f, static_cast<float>(Ship->GetVelocity().Size()) * PassageDuration * 1.08f);
     SetActorLocation(EntryPoint + PassageForward * 2500.f);
     SetActorRotation(PassageForward.Rotation());
+    if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+        FX->AttachAnomaly(this);
     UStaticMesh *RingMesh = Mesh(TEXT("SM_GravityRing"));
     Visual->SetStaticMesh(RingMesh);
     const float MeshExtent = RingMesh ? RingMesh->GetBounds().BoxExtent.GetMax() : 50.f;
@@ -974,6 +1008,18 @@ void ASSWormholePassage::Tick(float DeltaSeconds)
     // A bounded exit turbulence envelope gives the transition a physical release,
     // without reversing input or adding immunity. Forward control remains available.
     const float ExitTime = PassageElapsed - PassageDuration;
+    if (ExitTime < 0.f)
+    {
+        // The entrance is behind the camera soon after transit begins. Keep
+        // the one bounded Niagara mouth ahead while the native course stays
+        // anchored to its original world positions. Forces use EntryPoint.
+        SetActorLocation(Ship->GetActorLocation() + PassageForward * 3500.f);
+        const FVector CourseStart = GetActorTransform().InverseTransformPosition(EntryPoint + PassageForward * 2500.f);
+        Visual->SetRelativeLocation(CourseStart);
+        for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
+            PassageRings[Index]->SetRelativeLocation(
+                CourseStart + FVector(CourseLength * float(Index + 1) / float(PassageRings.Num()), 0.f, 0.f));
+    }
     const float ExitEnvelope =
         ExitTime >= 0.f ? FMath::Max(0.f, 1.f - ExitTime / 2.f) : FMath::Clamp((Alpha - .75f) * 4.f, 0.f, 1.f);
     const FVector Turbulence = Ship->GetActorRightVector() * FMath::Sin(PassageElapsed * 7.f) * 650.f +

@@ -5,6 +5,7 @@
 
 class UMaterialInterface;
 class UTextureCube;
+class UStaticMesh;
 
 /** Editable licensed space presentation; no simulation, collision or progression data. */
 UCLASS(BlueprintType)
@@ -18,6 +19,19 @@ public:
     TObjectPtr<UTextureCube> AmbientCubemap;
     UPROPERTY(EditAnywhere, Category = "Sky", meta = (ClampMin = "0"))
     float AmbientIntensity = 20.f;
+    /** Licensed cubemap compositions. Visual travel is independent of wave cadence. */
+    UPROPERTY(EditAnywhere, Category = "Regions")
+    TArray<TObjectPtr<UTextureCube>> RegionSkies;
+    UPROPERTY(EditAnywhere, Category = "Regions")
+    TObjectPtr<UTextureCube> RegionStars;
+    UPROPERTY(EditAnywhere, Category = "Regions", meta = (ClampMin = "60"))
+    float RegionSeconds = 180.f;
+    UPROPERTY(EditAnywhere, Category = "Lighting")
+    FLinearColor KeyColor = FLinearColor(.95f, .87f, .73f);
+    UPROPERTY(EditAnywhere, Category = "Lighting", meta = (ClampMin = "0"))
+    float KeyIntensity = 4.f;
+    UPROPERTY(EditAnywhere, Category = "Dressing")
+    TArray<TObjectPtr<UStaticMesh>> StructureMeshes;
     UPROPERTY(EditAnywhere, Category = "Cloud")
     TObjectPtr<UMaterialInterface> CloudMaterial;
     UPROPERTY(EditAnywhere, Category = "Cloud")
