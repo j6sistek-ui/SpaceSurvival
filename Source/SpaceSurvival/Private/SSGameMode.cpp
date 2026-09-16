@@ -1469,6 +1469,17 @@ void ASSPlayerController::PlayerTick(float Dt)
         return;
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {
+        // A connected controller is polled even while an offscreen fixture window is not
+        // foreground, so a physical return/switch press could cancel a scripted gallery
+        // round trip. The guarded fixture owns gallery transitions as it owns other input.
+        if (GM->bAutomatedSoakInput)
+        {
+            for (const FKey &Key : {EKeys::Escape, EKeys::Gamepad_FaceButton_Right, EKeys::Tab,
+                                    EKeys::Gamepad_FaceButton_Top, EKeys::Home, EKeys::Gamepad_Special_Right})
+                if (WasInputKeyJustPressed(Key))
+                    UE_LOG(LogTemp, Display, TEXT("ALIEN_GALLERY_INPUT_SUPPRESSED key=%s"), *Key.ToString());
+            return;
+        }
         if (WasInputKeyJustPressed(EKeys::Escape) || WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Right))
         {
             UE_LOG(LogTemp, Display, TEXT("ALIEN_GALLERY_INPUT_RETURN automated=%d"), GM->bAutomatedSoakInput);

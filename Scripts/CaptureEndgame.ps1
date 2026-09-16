@@ -50,7 +50,7 @@ function PngIdentity([string]$Path) {
     try {
         $header = [byte[]]::new(24)
         if ($stream.Read($header, 0, 24) -ne 24 -or
-            [Convert]::ToHexString($header[0..7]) -cne '89504E470D0A1A0A' -or
+            [BitConverter]::ToString([byte[]]$header[0..7]).Replace('-', '') -cne '89504E470D0A1A0A' -or
             [Text.Encoding]::ASCII.GetString($header, 12, 4) -cne 'IHDR') { throw "Invalid PNG header: $Path" }
         $pngWidth = [uint32]$header[16] * 16777216 + [uint32]$header[17] * 65536 + [uint32]$header[18] * 256 + [uint32]$header[19]
         $pngHeight = [uint32]$header[20] * 16777216 + [uint32]$header[21] * 65536 + [uint32]$header[22] * 256 + [uint32]$header[23]
