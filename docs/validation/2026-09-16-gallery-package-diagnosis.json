@@ -1,0 +1,329 @@
+{
+  "dateUtc": "2026-09-16T06:55Z",
+  "status": "BLOCKED_INTERMITTENT_PACKAGED_GALLERY_EXIT",
+  "baseCommit": "261ff918fd90735e0aded45ffbbd0dd0ea6ca947",
+  "changes": "Diagnostic logs only in SSAlienGallery.cpp and SSGameMode.cpp. Earlier first-failure preservation is committed in 261ff91. No gallery behavior fix.",
+  "expected": "Station doorway -> full showcase -> asset-layout map -> preserved station/run return.",
+  "observed": "Run bd640abc40b94168a00955202af0487c failed at stage 5: Gallery exited before requested scene was ready. Three later lifecycle-instrumented packaged runs passed.",
+  "sourceHashes": [
+    {
+      "path": "Source/SpaceSurvival/Private/SSAlienGallery.cpp",
+      "sha256": "7C2B5D5E46A04A30722C7B8F38201401266F7C156B46AE71CAF59D17DD273473"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+      "sha256": "D32124B81AE28F4502B6D4F8302E0E239B5B90591C44FD71A887499683E0A042"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSWave10Soak.cpp",
+      "sha256": "81D952FF560D479905A3209CA7059AD07701ABA4F33F5A5B09C3B8E132DAB30A"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSAlienGalleryAutomationTests.cpp",
+      "sha256": "6C75209A58E78DFC4AF0B2DD66664228150CD84EF04FA664C008CC3429B4E729"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSGameMode.h",
+      "sha256": "8E17FE9C31DD52C22E3D403B1410E6173D24E1BAD85D1AF152B2B50A88701752"
+    }
+  ],
+  "runs": [
+    {
+      "id": "bedaedd587f141f5919ae793245718aa",
+      "label": "Package017Gallery",
+      "success": false,
+      "receipt": "Artifacts/EndgameSoak/bedaedd587f141f5919ae793245718aa/capture.json",
+      "sha256": "285AA395D4AA5D8ACEC8D731B9FC539C11674DA0CDE6CF86A25C4F896012CFE1",
+      "source": {
+        "head": "ade88eec48319428ddcb1a6bac8d8880294452a3",
+        "dirtyEntries": [],
+        "bindingLimit": "HEAD and worktree state are recorded; a separate build/package receipt must bind source to the recorded compiled files. Artifacts identify Editor module or packaged executable/containers as applicable."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+          "bytes": 333185536,
+          "sha256": "0172CEE1A905D778DD84448FB6CBFBA8002449252B57688961779DBAE464BF72"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+          "bytes": 3209504,
+          "sha256": "702A26B62A09E49AF19D18A99EB0D312265D3A2748323E5467B1A53B2D2058E7"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+          "bytes": 782,
+          "sha256": "779CDF4A7D2ECE47724D5043945A42E8D7B5594E9A104584A3194532750E8BAA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+          "bytes": 11288254,
+          "sha256": "B4C4D1A61129F3B1EE5F0EF359767A922B0E016AA514D25240FE75B2B9DC247B"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+          "bytes": 2229638272,
+          "sha256": "6F9F88D1D3CF5011BD641BE503D7DCCEB5A4635E3545B85734C2A9099DFEC88C"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+          "bytes": 1278197,
+          "sha256": "6E793727D903DA28E68D083A319DCDD160A069F06C46267E7BF9F6B61A8F7515"
+        }
+      ]
+    },
+    {
+      "id": "e0816352591a4ad18e9e2356f561e67b",
+      "label": "Package017DiagnosticGallery",
+      "success": true,
+      "receipt": "Artifacts/EndgameSoak/e0816352591a4ad18e9e2356f561e67b/capture.json",
+      "sha256": "7E83D93C7BBBE10A557026880950433581B8A3942E6B6A18F188E4FFA1736CD9",
+      "source": {
+        "head": "5486a5820c4ac6f0ff1f3dae0c35cc0aba38eab2",
+        "dirtyEntries": [
+          " M Source/SpaceSurvival/Private/SSWave10Soak.cpp"
+        ],
+        "bindingLimit": "HEAD and worktree state are recorded; a separate build/package receipt must bind source to the recorded compiled files. Artifacts identify Editor module or packaged executable/containers as applicable."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+          "bytes": 333187072,
+          "sha256": "FBC2B449FA952BAE9F2CE101BEFE1FD9309439DB92274CA6A427ACC328C206CA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+          "bytes": 3209504,
+          "sha256": "702A26B62A09E49AF19D18A99EB0D312265D3A2748323E5467B1A53B2D2058E7"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+          "bytes": 782,
+          "sha256": "779CDF4A7D2ECE47724D5043945A42E8D7B5594E9A104584A3194532750E8BAA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+          "bytes": 11288254,
+          "sha256": "B4C4D1A61129F3B1EE5F0EF359767A922B0E016AA514D25240FE75B2B9DC247B"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+          "bytes": 2229638336,
+          "sha256": "51ECF702299049D0ED51619696F29A11ADDCCDCCD10C281175ACC7FB167CA53A"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+          "bytes": 1278197,
+          "sha256": "468DBB9A89C5851722220713F72DB567F932F9751A21CCAB3D35483BA51CAFCF"
+        }
+      ]
+    },
+    {
+      "id": "bd640abc40b94168a00955202af0487c",
+      "label": "Package017GalleryRepeat",
+      "success": false,
+      "receipt": "Artifacts/EndgameSoak/bd640abc40b94168a00955202af0487c/capture.json",
+      "sha256": "ED08BFD1E2ED13C22065815FDABECD8C48E96C8F18A71E1414325575E89DE33D",
+      "source": {
+        "head": "261ff918fd90735e0aded45ffbbd0dd0ea6ca947",
+        "dirtyEntries": [],
+        "bindingLimit": "HEAD and worktree state are recorded; a separate build/package receipt must bind source to the recorded compiled files. Artifacts identify Editor module or packaged executable/containers as applicable."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+          "bytes": 333187072,
+          "sha256": "FBC2B449FA952BAE9F2CE101BEFE1FD9309439DB92274CA6A427ACC328C206CA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+          "bytes": 3209504,
+          "sha256": "702A26B62A09E49AF19D18A99EB0D312265D3A2748323E5467B1A53B2D2058E7"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+          "bytes": 782,
+          "sha256": "779CDF4A7D2ECE47724D5043945A42E8D7B5594E9A104584A3194532750E8BAA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+          "bytes": 11288254,
+          "sha256": "B4C4D1A61129F3B1EE5F0EF359767A922B0E016AA514D25240FE75B2B9DC247B"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+          "bytes": 2229638336,
+          "sha256": "51ECF702299049D0ED51619696F29A11ADDCCDCCD10C281175ACC7FB167CA53A"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+          "bytes": 1278197,
+          "sha256": "468DBB9A89C5851722220713F72DB567F932F9751A21CCAB3D35483BA51CAFCF"
+        }
+      ]
+    },
+    {
+      "id": "2616c10927224d10bf742e55338a9852",
+      "label": "Package017LifecycleGallery",
+      "success": true,
+      "receipt": "Artifacts/EndgameSoak/2616c10927224d10bf742e55338a9852/capture.json",
+      "sha256": "ED1141194BA153CA6D7CE6C14BA816B47F97A9F6BC811022A9EFAD437B5B4B1F",
+      "source": {
+        "head": "261ff918fd90735e0aded45ffbbd0dd0ea6ca947",
+        "dirtyEntries": [
+          " M Source/SpaceSurvival/Private/SSAlienGallery.cpp",
+          " M Source/SpaceSurvival/Private/SSGameMode.cpp"
+        ],
+        "bindingLimit": "HEAD and worktree state are recorded; a separate build/package receipt must bind source to the recorded compiled files. Artifacts identify Editor module or packaged executable/containers as applicable."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+          "bytes": 333187072,
+          "sha256": "117A67C8A3774F9F602EAEE255AF21D5817EBF22690814D2A9E7F05C337CBF9D"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+          "bytes": 3209504,
+          "sha256": "702A26B62A09E49AF19D18A99EB0D312265D3A2748323E5467B1A53B2D2058E7"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+          "bytes": 782,
+          "sha256": "779CDF4A7D2ECE47724D5043945A42E8D7B5594E9A104584A3194532750E8BAA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+          "bytes": 11288254,
+          "sha256": "B4C4D1A61129F3B1EE5F0EF359767A922B0E016AA514D25240FE75B2B9DC247B"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+          "bytes": 2229638336,
+          "sha256": "51ECF702299049D0ED51619696F29A11ADDCCDCCD10C281175ACC7FB167CA53A"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+          "bytes": 1278197,
+          "sha256": "468DBB9A89C5851722220713F72DB567F932F9751A21CCAB3D35483BA51CAFCF"
+        }
+      ]
+    },
+    {
+      "id": "75cb227fe9044f4f8ce3cc0b999af469",
+      "label": "Package017LifecycleRepeat",
+      "success": true,
+      "receipt": "Artifacts/EndgameSoak/75cb227fe9044f4f8ce3cc0b999af469/capture.json",
+      "sha256": "B58E75634FD7AAF5239C34D117272FF03348A2949312A2C864C6350B733A0B18",
+      "source": {
+        "head": "261ff918fd90735e0aded45ffbbd0dd0ea6ca947",
+        "dirtyEntries": [
+          " M Source/SpaceSurvival/Private/SSAlienGallery.cpp",
+          " M Source/SpaceSurvival/Private/SSGameMode.cpp"
+        ],
+        "bindingLimit": "HEAD and worktree state are recorded; a separate build/package receipt must bind source to the recorded compiled files. Artifacts identify Editor module or packaged executable/containers as applicable."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+          "bytes": 333187072,
+          "sha256": "117A67C8A3774F9F602EAEE255AF21D5817EBF22690814D2A9E7F05C337CBF9D"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+          "bytes": 3209504,
+          "sha256": "702A26B62A09E49AF19D18A99EB0D312265D3A2748323E5467B1A53B2D2058E7"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+          "bytes": 782,
+          "sha256": "779CDF4A7D2ECE47724D5043945A42E8D7B5594E9A104584A3194532750E8BAA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+          "bytes": 11288254,
+          "sha256": "B4C4D1A61129F3B1EE5F0EF359767A922B0E016AA514D25240FE75B2B9DC247B"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+          "bytes": 2229638336,
+          "sha256": "51ECF702299049D0ED51619696F29A11ADDCCDCCD10C281175ACC7FB167CA53A"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+          "bytes": 1278197,
+          "sha256": "468DBB9A89C5851722220713F72DB567F932F9751A21CCAB3D35483BA51CAFCF"
+        }
+      ]
+    },
+    {
+      "id": "7ab83a84e8094016a6b9b135a046242f",
+      "label": "Package017LifecycleThird",
+      "success": true,
+      "receipt": "Artifacts/EndgameSoak/7ab83a84e8094016a6b9b135a046242f/capture.json",
+      "sha256": "6A43D84E3215A27B371D88D9771C567731F7F03FE434CEEF13CEC975786CDA7C",
+      "source": {
+        "head": "261ff918fd90735e0aded45ffbbd0dd0ea6ca947",
+        "dirtyEntries": [
+          " M Source/SpaceSurvival/Private/SSAlienGallery.cpp",
+          " M Source/SpaceSurvival/Private/SSGameMode.cpp"
+        ],
+        "bindingLimit": "HEAD and worktree state are recorded; a separate build/package receipt must bind source to the recorded compiled files. Artifacts identify Editor module or packaged executable/containers as applicable."
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Binaries\\Win64\\SpaceSurvival.exe",
+          "bytes": 333187072,
+          "sha256": "117A67C8A3774F9F602EAEE255AF21D5817EBF22690814D2A9E7F05C337CBF9D"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.ucas",
+          "bytes": 3209504,
+          "sha256": "702A26B62A09E49AF19D18A99EB0D312265D3A2748323E5467B1A53B2D2058E7"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\global.utoc",
+          "bytes": 782,
+          "sha256": "779CDF4A7D2ECE47724D5043945A42E8D7B5594E9A104584A3194532750E8BAA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.pak",
+          "bytes": 11288254,
+          "sha256": "B4C4D1A61129F3B1EE5F0EF359767A922B0E016AA514D25240FE75B2B9DC247B"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.ucas",
+          "bytes": 2229638336,
+          "sha256": "51ECF702299049D0ED51619696F29A11ADDCCDCCD10C281175ACC7FB167CA53A"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\Windows\\SpaceSurvival\\Content\\Paks\\SpaceSurvival-Windows.utoc",
+          "bytes": 1278197,
+          "sha256": "468DBB9A89C5851722220713F72DB567F932F9751A21CCAB3D35483BA51CAFCF"
+        }
+      ]
+    }
+  ],
+  "packageBuildLog": ".agent/local/Package017Lifecycle.log",
+  "packageBuildResult": "PASS",
+  "restoredEditorBuildLog": ".agent/local/GalleryDiagnosticRestoredBuild.log",
+  "restoredEditorBuildResult": "PASS, 54.66 seconds",
+  "maps": "Both L_Showcase_level.umap and L_assets.umap have ExportBundleData in original package IoStore index .agent/local/Package017Index.csv. This is presence evidence, not proof of correct runtime state.",
+  "experiment": "Synthetic ASSPlayerController::PlayerTick input injection crashed in base PlayerTick in an isolated test world (.agent/local/GalleryInputRed.log). Test/header modifications were removed and Editor rebuilt. No valid regression verdict or game crash diagnosis.",
+  "hypotheses": [
+    "First check: gallery input handling precedes bAutomatedSoakInput guard, so Escape/B can in principle interrupt a hidden fixture. UNCONFIRMED as cause; use a real local player/viewport-backed repro.",
+    "Next check: streaming/view/controller lifetime during scene switch. UNCONFIRMED; use lifecycle markers to distinguish load/view failure from explicit Leave.",
+    "Timing/startup differences remain unclassified. Three passes after logging do not prove a repair."
+  ],
+  "markers": [
+    "ENDGAME_FIXTURE_FIRST_FAILURE",
+    "ALIEN_GALLERY_LOAD_FAILED",
+    "ALIEN_GALLERY_LEAVE",
+    "ALIEN_GALLERY_VIEW_FAILED",
+    "ALIEN_GALLERY_INPUT_RETURN"
+  ],
+  "next": "Read onboarding, current state and ISS-11. Reproduce on the lifecycle-instrumented package with controlled input and actual viewport context. Fix only a proven cause. Rebuild and repeat full packaged round trips, then finish flight/dependency/release checks before preparing 0.1.17. No upload or merge without owner instruction.",
+  "limits": "No natural input, performance, audio or visual-target acceptance. No full automation-suite rerun on this diagnostic revision. Production saves preserved by recorded fixtures; licensed originals unchanged by this diagnostic pass. No release payload prepared or uploaded.",
+  "priorArchive": "Artifacts/Windows-before-0.1.17-20260916",
+  "currentCandidate": "Artifacts/Windows"
+}

@@ -1470,7 +1470,10 @@ void ASSPlayerController::PlayerTick(float Dt)
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {
         if (WasInputKeyJustPressed(EKeys::Escape) || WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Right))
+        {
+            UE_LOG(LogTemp, Display, TEXT("ALIEN_GALLERY_INPUT_RETURN automated=%d"), GM->bAutomatedSoakInput);
             GM->AlienGallery->Leave();
+        }
         else if (WasInputKeyJustPressed(EKeys::Tab) || WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Top))
             GM->AlienGallery->SwitchScene();
         else if (WasInputKeyJustPressed(EKeys::Home) || WasInputKeyJustPressed(EKeys::Gamepad_Special_Right))

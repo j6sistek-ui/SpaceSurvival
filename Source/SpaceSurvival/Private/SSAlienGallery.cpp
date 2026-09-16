@@ -90,7 +90,10 @@ bool USSAlienGallery::StartLoad()
     Level = ULevelStreamingDynamic::LoadLevelInstance(this, MapPath(bAssets), FVector::ZeroVector,
                                                       FRotator::ZeroRotator, Success);
     if (!Success || !Level)
+    {
+        UE_LOG(LogTemp, Error, TEXT("ALIEN_GALLERY_LOAD_FAILED map=%s"), MapPath(bAssets));
         return false;
+    }
     Level->SetShouldBeVisible(false);
     State = EState::Loading;
     LoadStarted = FPlatformTime::Seconds();
@@ -232,6 +235,8 @@ void USSAlienGallery::Leave()
 {
     if (!IsActive())
         return;
+    UE_LOG(LogTemp, Display, TEXT("ALIEN_GALLERY_LEAVE state=%d assets=%d controller=%d camera=%d age=%.3f"),
+           int32(State), bAssets, Controller.IsValid(), IsValid(Camera), FPlatformTime::Seconds() - LoadStarted);
     bSwitchAfterUnload = false;
     State = EState::Unloading;
     if (Level)
@@ -276,6 +281,8 @@ void USSAlienGallery::Update(float Dt)
                 Camera = GetWorld()->SpawnActor<ASSGalleryCamera>(InitialView.GetLocation(), InitialView.Rotator());
             if (!Camera || !Controller.IsValid())
             {
+                UE_LOG(LogTemp, Error, TEXT("ALIEN_GALLERY_VIEW_FAILED camera=%d controller=%d"), IsValid(Camera),
+                       Controller.IsValid());
                 Leave();
                 return;
             }
