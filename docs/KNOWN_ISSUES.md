@@ -489,10 +489,10 @@ The owner's concept set is **already in this repository** at `art/`, dated Septe
 Eighteen files named per game system: `asteroids`, `wormhole`, `storm`, `gravity`, `station`, `wreckage`, `depot`,
 `climax-10`, `between-waves`, `combat`, `hangar`, `key-art`, `ship-hero`, `ship-interceptor`, plus `hero.mp4` and
 the Acornaut portraits. The same set plus `teaser.mp4` sits in the owner's Drive under AI/art, with a pitch deck in
-AI/screenshots. **These are per-system visual targets and they supersede guessing from general space art.** Three
+AI/screenshots. **Owner framing, September 16: these are concept images, not specifications. "Closer we get the better."** They are directional references for mood, scale and palette. They do not define any system, and at least one of them, the wormhole, is explicitly not the target. The owner also notes the set lacks a dangerous asteroid field, because density and threat read from motion rather than from a still, and that a separate AI-generated motion video was supplied for that feel. Treat every entry below as a direction to move toward, never as an acceptance bar. Three
 were read this session and each changes a currently open item.
 
-**`art/wormhole.jpg` refutes the current wormhole entirely.** The target is a vast luminous **spiral vortex** that
+**`art/wormhole.jpg` is a mood reference, NOT the wormhole target. Owner, September 16: "no the wormholes won't be like that".** The paragraph below was written before that correction and overstated the image's authority; it is retained only as a record of what the concept art shows. **Do not re-scope the wormhole against it.** The four recorded rendering faults under RPT-20260916-11 stand on their own evidence and remain the actionable work. Superseded reading follows. The target is a vast luminous **spiral vortex** that
 fills most of the frame, with a bright warm gold and cream core, rock and debris caught in the arms and drawn inward,
 deep black space to one side, and enemy silhouettes against it. It is a funnel with flow, at enormous scale.
 The implementation is concentric blue rings. That is not a tuning gap, it is a different object. The four rendering

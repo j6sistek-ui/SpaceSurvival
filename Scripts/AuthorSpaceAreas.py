@@ -154,8 +154,8 @@ def main():
     # easier to take fog away than to add it, so the field carries it and one region sets it to zero.
     zone_fog={
         'ObsidianWreck':.0042,   # the charcoal wreckfield, deliberately the eerie one
-        'MineralReach':.0012,    # open rock field, light haze only
-        'AlienCauseway':.0030,   # moderate, so the alien structures still read against it
+        'MineralReach':.0006,    # thinned: the rock field sits near the dark end, closer to art/asteroids.jpg
+        'AlienCauseway':.0020,   # thinned: structures read harder against less haze
         'AmberDerelict':0.,      # genuinely fogless: hard edges, deep blacks, full contrast
     }
     recipes=[];record=[]
