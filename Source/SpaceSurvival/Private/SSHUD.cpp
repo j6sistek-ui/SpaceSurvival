@@ -2,11 +2,13 @@
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSAlienGallery.h"
+#include "SSInputGlyphs.h"
 #include "SSShip.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Engine/Canvas.h"
 #include "Engine/Font.h"
+#include "Engine/Texture2D.h"
 #include "CanvasItem.h"
 #include "EngineFontServices.h"
 #include "Fonts/FontMeasure.h"
@@ -76,6 +78,26 @@ void ASSHUD::Stroke(FVector2D A, FVector2D B, FLinearColor Color, float Width)
     // A dark under-stroke retains the symbol against stars, lamps and light rock.
     DrawLine(A.X, A.Y, B.X, B.Y, FLinearColor(0.f, .008f, .015f, .8f), (Width + 2.f) * Scale);
     DrawLine(A.X, A.Y, B.X, B.Y, Color, Width * Scale);
+}
+float ASSHUD::DrawPrompt(FName ActionId, const FString &KeyboardLabel, const FString &GamepadLabel, float X, float Y,
+                         float Size, FLinearColor Color)
+{
+    const auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+    const auto *PC = Cast<ASSPlayerController>(GetOwningPlayerController());
+    const bool Gamepad = PC && PC->bLastInputWasGamepad;
+    const USSInputGlyphSet *Set = GM ? (Gamepad ? GM->GamepadGlyphs : GM->KeyboardGlyphs) : nullptr;
+    UTexture2D *Icon = (Set && !ActionId.IsNone()) ? Set->Find(ActionId) : nullptr;
+    if (!Icon)
+    {
+        const FString &Label = Gamepad ? GamepadLabel : KeyboardLabel;
+        Text(Label, X, Y, Size, Color);
+        return X + MeasureText(Label, Size).X;
+    }
+    const float IconSize = 24.f * Scale * Size;
+    FCanvasTileItem TileItem(FVector2D(X, Y), Icon->GetResource(), FVector2D(IconSize, IconSize), Color);
+    TileItem.BlendMode = SE_BLEND_Translucent;
+    Canvas->DrawItem(TileItem);
+    return X + IconSize + 6.f * Scale;
 }
 void ASSHUD::ThreatGlyph(FVector2D Centre, bool Flanker, bool Charging, float Size, FLinearColor Color)
 {
@@ -413,8 +435,9 @@ void ASSHUD::DrawHUD()
     }
     if (!MenuOpen && (!Walker || !Walker->IsDisembarking()))
     {
-        FString InteractionHint;
+        FString InteractionLabel;
         FLinearColor HintColor = FLinearColor::White;
+        bool NeedsPrompt = false;
         // Match Interact: walking always targets a service; pending rewards take priority only in the ship.
         if (Walker)
         {
@@ -424,15 +447,16 @@ void ASSHUD::DrawHUD()
                 const auto Service = It->NearestService(Walker->GetActorLocation(), Label);
                 if (Service != ESSPanel::None)
                 {
-                    InteractionHint = Service == ESSPanel::Reward && S.run.pendingReward
-                                          ? TEXT("E / A   CHOOSE SECURED REWARD")
-                                          : TEXT("E / A   ") + Label;
+                    InteractionLabel = Service == ESSPanel::Reward && S.run.pendingReward
+                                            ? TEXT("CHOOSE SECURED REWARD")
+                                            : Label;
+                    NeedsPrompt = true;
                     break;
                 }
             }
-            if (InteractionHint.IsEmpty() && S.run.pendingReward)
+            if (InteractionLabel.IsEmpty() && S.run.pendingReward)
             {
-                InteractionHint = TEXT("REWARD SECURED / visit the Beacon Log");
+                InteractionLabel = TEXT("REWARD SECURED / visit the Beacon Log");
                 HintColor = FLinearColor(1, .8f, .4f);
             }
             Text(TEXT("WASD / left stick: walk | Mouse / right stick: turn | Shift / X: run | Esc / Menu: shell"),
@@ -440,11 +464,19 @@ void ASSHUD::DrawHUD()
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
         {
-            InteractionHint = TEXT("REWARD SECURED / E or A to choose");
+            InteractionLabel = TEXT("REWARD SECURED / choose");
             HintColor = FLinearColor(1, .8f, .4f);
+            NeedsPrompt = true;
         }
-        if (!InteractionHint.IsEmpty())
-            Text(InteractionHint, W * .5f - 200 * Scale, H - 80 * Scale, .9f, HintColor);
+        if (!InteractionLabel.IsEmpty())
+        {
+            const float BaseX = W * .5f - 200 * Scale, BaseY = H - 80 * Scale;
+            float LabelX = BaseX;
+            if (NeedsPrompt)
+                LabelX = DrawPrompt(TEXT("Interact"), TEXT("E"), TEXT("A"), BaseX, BaseY, .9f, HintColor) +
+                         10.f * Scale;
+            Text(InteractionLabel, LabelX, BaseY, .9f, HintColor);
+        }
     }
     if (GM->IsAnnouncementVisible())
     {

@@ -1463,6 +1463,54 @@ ASSPlayerController::ASSPlayerController()
     PrimaryActorTick.bTickEvenWhenPaused = true;
     bShouldPerformFullTickWhenPaused = true;
 }
+void ASSPlayerController::UpdateLastInputDevice()
+{
+    static const FKey GamepadButtons[] = {
+        EKeys::Gamepad_FaceButton_Bottom, EKeys::Gamepad_FaceButton_Right, EKeys::Gamepad_FaceButton_Top,
+        EKeys::Gamepad_FaceButton_Left,   EKeys::Gamepad_DPad_Up,          EKeys::Gamepad_DPad_Down,
+        EKeys::Gamepad_DPad_Left,         EKeys::Gamepad_DPad_Right,       EKeys::Gamepad_LeftShoulder,
+        EKeys::Gamepad_RightShoulder,     EKeys::Gamepad_LeftThumbstick,   EKeys::Gamepad_RightThumbstick,
+        EKeys::Gamepad_Special_Left,      EKeys::Gamepad_Special_Right,
+    };
+    for (const FKey &Key : GamepadButtons)
+        if (IsInputKeyDown(Key))
+        {
+            bLastInputWasGamepad = true;
+            return;
+        }
+    const float Deadzone = .2f;
+    if (FMath::Abs(GetInputAnalogKeyState(EKeys::Gamepad_LeftX)) > Deadzone ||
+        FMath::Abs(GetInputAnalogKeyState(EKeys::Gamepad_LeftY)) > Deadzone ||
+        FMath::Abs(GetInputAnalogKeyState(EKeys::Gamepad_RightX)) > Deadzone ||
+        FMath::Abs(GetInputAnalogKeyState(EKeys::Gamepad_RightY)) > Deadzone ||
+        GetInputAnalogKeyState(EKeys::Gamepad_LeftTriggerAxis) > Deadzone ||
+        GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis) > Deadzone)
+    {
+        bLastInputWasGamepad = true;
+        return;
+    }
+    float MouseX = 0, MouseY = 0;
+    GetInputMouseDelta(MouseX, MouseY);
+    if (!FMath::IsNearlyZero(MouseX) || !FMath::IsNearlyZero(MouseY) || IsInputKeyDown(EKeys::LeftMouseButton) ||
+        IsInputKeyDown(EKeys::RightMouseButton))
+    {
+        bLastInputWasGamepad = false;
+        return;
+    }
+    static const FKey KeyboardKeys[] = {
+        EKeys::W,     EKeys::A,          EKeys::S,      EKeys::D,     EKeys::Q,      EKeys::E,
+        EKeys::R,     EKeys::F,          EKeys::LeftShift, EKeys::SpaceBar, EKeys::LeftControl,
+        EKeys::Escape, EKeys::Enter,     EKeys::Up,     EKeys::Down,  EKeys::Left,   EKeys::Right,
+        EKeys::Tab,
+    };
+    for (const FKey &Key : KeyboardKeys)
+        if (IsInputKeyDown(Key))
+        {
+            bLastInputWasGamepad = false;
+            return;
+        }
+    // No input this frame: keep whichever device was last active.
+}
 void ASSPlayerController::PlayerTick(float Dt)
 {
     Super::PlayerTick(Dt);
@@ -1470,6 +1518,7 @@ void ASSPlayerController::PlayerTick(float Dt)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GM || !GI)
         return;
+    UpdateLastInputDevice();
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {
         // A connected controller is polled even while an offscreen fixture window is not
