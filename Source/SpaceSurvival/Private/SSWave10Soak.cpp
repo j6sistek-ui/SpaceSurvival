@@ -345,6 +345,8 @@ void ASSWave10Soak::Stop(const FString &Error)
     if (Stopping)
         return;
     Failure = Error;
+    if (!Error.IsEmpty())
+        UE_LOG(LogTemp, Error, TEXT("ENDGAME_FIXTURE_FIRST_FAILURE galleryStage=%d: %s"), GalleryStage, *Error);
     Stopping = true;
     if (IsValid(StationReviewCamera))
     {
@@ -743,7 +745,7 @@ void ASSWave10Soak::WriteResultAndExit()
         SetActorTickEnabled(false);
         return;
     }
-    if (CaptureVisuals)
+    if (CaptureVisuals && Failure.IsEmpty())
     {
         const TArray<FString> Expected =
             Gallery    ? TArray<FString>{TEXT("GalleryDoorway"), TEXT("GalleryShowcase"), TEXT("GalleryAssets"),
@@ -767,7 +769,7 @@ void ASSWave10Soak::WriteResultAndExit()
                 Failure = TEXT("Visual fixture screenshot was not written.");
     }
     const bool SlotsUntouched = NoSaveSlots();
-    if (Gallery && (!GalleryRunPreserved || !GalleryReturned))
+    if (Failure.IsEmpty() && Gallery && (!GalleryRunPreserved || !GalleryReturned))
         Failure = TEXT("Gallery return/session checks failed.");
     const FString Csv = CaptureResult.Get();
     const bool Success =
