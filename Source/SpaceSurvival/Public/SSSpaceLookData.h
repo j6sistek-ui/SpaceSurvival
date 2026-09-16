@@ -7,6 +7,21 @@ class UMaterialInterface;
 class UTextureCube;
 class UStaticMesh;
 
+/** Authored silhouette placement, expressed as a visual bounds center and radius in cm. */
+USTRUCT(BlueprintType)
+struct FSSSceneryPlacement
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<UStaticMesh> Mesh;
+    UPROPERTY(EditAnywhere)
+    FVector Center = FVector(220000, 110000, 20000);
+    UPROPERTY(EditAnywhere)
+    FRotator Rotation = FRotator::ZeroRotator;
+    UPROPERTY(EditAnywhere, meta = (ClampMin = "1"))
+    float Radius = 100000.f;
+};
+
 /** Editable licensed space presentation; no simulation, collision or progression data. */
 UCLASS(BlueprintType)
 class SPACESURVIVAL_API USSSpaceLookData : public UDataAsset
@@ -32,6 +47,8 @@ public:
     float KeyIntensity = 4.f;
     UPROPERTY(EditAnywhere, Category = "Dressing")
     TArray<TObjectPtr<UStaticMesh>> StructureMeshes;
+    UPROPERTY(EditAnywhere, Category = "Dressing")
+    TArray<FSSSceneryPlacement> StructureComposition;
     /** Normalized construction-script samples, baked from owned field Blueprints by the editor. */
     UPROPERTY(EditAnywhere, Category = "Dressing")
     TArray<FVector> AsteroidArchSamples;

@@ -4,6 +4,10 @@
 
 ## Current instruction: continue ACT-03 asteroid and regional depth
 
+September 16 continuation: owner supplied three Jump Space frames, prioritizing the first, and requested a concept-led iterative composition using owned structures and broken pieces. **Prepared, not integrated:** [concept and mapping](production/COMBINED_SPACE_LOOK.md#september-16-orbital-wreck-composition-target), private ring/kit-beam derivatives and editable scenery placements. The new build is blocked at linking by the open owner editor; do not merge this continuation as verified. The older asteroid checkpoint below remains separate.
+
+Immediate lead next step: after the owner saves/closes the editor, rebuild, run `AuthorOrbitalWreck.py`, render fixed gameplay views and compare against the concept. Continue placement, lighting and localized-volume iteration until the listed composition criteria are demonstrated. Current targets are distant scenery, not traversable obstacles. No new engine screenshot, package or visual pass is claimed. [Preparation receipt](validation/2026-09-16-orbital-wreck-preparation.json).
+
 Latest owner direction: continue the asteroid step against the target before moving on. The target is a navigable-looking region with varied near/middle/distant silhouettes, quieter early danger, sparse speed dust, nebular depth and readable focal objects. **ACT-03 remains PARTIAL** at source `16007ab`; see [the asteroid receipt](validation/2026-09-15-asteroid-depth.json). This follow-up changes ambient presentation, not Director hazard counts or early-wave balance. Those gameplay observations still require natural play. The owner explicitly prefers unfinished work recorded here over unsupported claims that it is fixed.
 
 Next lead operation: review sustained straight travel and broad turns at normal speed against the target, especially shell recycling, scale changes, near/middle separation, projectile readability and particle clutter. Then address the observed mismatch; no further purchase is required for that review. Keep the fuzzy/flat-background complaint open: a cubemap resolution comparison is not a depth solution.

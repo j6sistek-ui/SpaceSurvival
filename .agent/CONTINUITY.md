@@ -1,6 +1,7 @@
 # SpaceSurvival continuity
 
 [PLANS]
+- 2026-09-16T01:41Z [USER] New Jump Space reference (first frame prioritized): build an owned-inventory concept, then iterate deliberate wreck/rock/volume composition until matched. Generated concept and owned Station3/Figur derivatives prepared; no new mechanics.
 - 2026-09-15T23:57Z [USER] Continue ACT-03 toward the target: layered asteroid depth, restrained speed particles and readable focal objects. Unfinished work must remain explicit; do not call it fixed from code/tests. Keep other actions visible without starting station/propulsion repairs.
 - 2026-09-15T22:12Z [USER] Execute the annotated flight/combat/space vertical slice before more purchases. Owner will merge PR16; this work remains a separate review PR and must not auto-merge. Packaging and itch publication are not authorized by this slice.
 - 2026-09-15T20:58Z [USER] Improve owned assets before considering more flight-control, effect or other enhancement purchases. Weekly usage is very low and work may transfer to another model, so each action needs a concise durable handoff rather than another full audit.
@@ -54,6 +55,7 @@
 - 2026-09-14T23:58Z [TOOL] Packaged CombatImpact records real weapon kill and private NS_EnemyExplosion active at0.150006s; no visible fire/smoke plume established. Near-ship occlusion plausible, unconfirmed. Blue/gold bars are existing wreckage hazards, not proof explosion particles rendered. Keep ISS-01/06 appearance open.
 
 [OUTCOMES]
+- 2026-09-16T01:41Z [TOOL] Orbital-wreck continuation is UNFINISHED: linker LNK1104 because owner editor PID36992 (plain SpaceSurvival.uproject, started 21:31 local) holds DLL. Async request to save/close pending; do not kill it. Blender derivatives/contact pass; new authoring NOT run. Native VS formatter/31 source checks pass; Docker backend unavailable, stalled desktop-start CLI stopped. Resume with Editor build, AuthorOrbitalWreck.py, actual capture/iteration, tests, then docs/PR. Prior asteroid 49 tests do not validate this work.
 - 2026-09-15T23:57Z [TOOL] Asteroid implementation 16007ab: Editor build PASS 43.72s, automation 49/49 with zero warnings/fails/not-run, container formatting PASS. Final four-frame 1080p capture b6f44246abb2439da60423c6b0cf087f passes; native audition be0fdfbd6b5845dfba3ae235db38be2d has six frames. Continuous motion, scale-fade recycling, nebula depth, representative performance and package remain open. PR16 actually merged as f2fae331; PR17 is the unmerged delivery. EXE/Package4/itch unchanged.
 - 2026-09-15T22:12Z [TOOL] UE5.8.2 Editor build PASS; final headless automation 49/49 with zero warnings/fails/not-run; rendered D3D12 CombatVFXLifecycle 1/1; Docker 29.7.2 container formatter PASS. Natural combat/flight, synchronized listening, physical input, wormhole pilot, package/cook, performance and owner acceptance remain open. Evidence: `docs/validation/2026-09-15-flight-combat-space-slice.json`.
 - 2026-09-15T12:35Z [TOOL] PR14 exact head 059d676 passed its GitHub workflows and merged as e44decdd. Dependent owned-asset delivery is PR15; its current/final GitHub merge state is authoritative. Published itch remains unchanged.

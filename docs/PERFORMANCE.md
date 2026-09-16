@@ -2,6 +2,10 @@
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed package audit and packaged capture validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
+## September 16 prepared orbital wreck (unmeasured)
+
+Blender derivatives contain 21,622 triangles for the broken arc, 9,600 for the ring fragment and 1,088 for the kit beam. Trial composition uses eight placements and local volume adjustments. No Unreal resource or frame-time result exists for this continuation; visible screen coverage and fog cost require measurement after integration. Earlier sky-memory figures remain historical for their specific configuration.
+
 ## September 15 asteroid source follow-up
 
 The 384-instance field expands from eight to 15 mesh batches; dust decreases from 512 to 320 grains. This is not a measured GPU improvement: geometry/material diversity and per-instance recycling still need representative profiling.

@@ -2,6 +2,10 @@
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed authoring, package audit and both packaged capture fixtures. Package 3's scripted/package evidence remains a separate checkpoint. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
+## September 16 orbital wreck preparation: blocked before engine validation
+
+[Preparation receipt](validation/2026-09-16-orbital-wreck-preparation.json) records the concept, three Blender derivatives and inspected contact sheet. Source hashes of original Station3/Figur inputs remain unchanged. New C++/Python composition work is prepared; the build attempt reached linking but failed with LNK1104 because the open owner editor holds `UnrealEditor-SpaceSurvival.dll`. A later rotation guard is also unbuilt. No new Unreal import, automation, motion capture or visual acceptance exists. Native installed clang-format and 31 structural checks pass; new Python scripts parse. Docker's backend was unavailable and its stalled start command was stopped. Nothing was installed. Prior 49-test evidence below applies only to its older checkpoint.
+
 ## September 15 asteroid layout, travel and sky comparison
 
 Implementation `16007ab` and [receipt](validation/2026-09-15-asteroid-depth.json) record this follow-up. Editor build passed in 43.72 seconds with existing MSVC preference/engine-header warnings. Fresh 23:31:37 UTC automation passes 49/49 with zero warnings/fails/not-run, including sustained-travel parallax, transformed shell bounds, camera rotation, rebasing and density controls. Container formatting, 31 source checks, 120 Python AST parses and source validation (26 meshes/16 WAV/original GLB) pass.

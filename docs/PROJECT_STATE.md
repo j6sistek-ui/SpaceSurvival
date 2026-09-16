@@ -2,6 +2,10 @@
 
 **Phase 1: PARTIAL.** The visual pass is merged and itch **0.1.16-alpha.1 / build 1979965** is ready on windows-alpha (verified September 15 UTC / September 14 local). [PRs #11–16](https://github.com/j6sistek-ui/SpaceSurvival/pulls?q=is%3Apr+is%3Amerged+11..16) are merged; PR #14's Station Workshop merge is `e44decdd`, and PR #15's owned audio/character/staff merge is `4aa4656`. These source changes do not alter the published game binaries. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, systematic action IDs, owner checks and closure status. This page owns the source/build/release and storage explanation.
 
+## September 16 continuation is unfinished
+
+PR17 now also carries prepared orbital-wreck composition work based on the owner's Jump Space reference. The generated concept, three private art derivatives and editable placement source exist; Unreal import/render has not run. Build attempted but linking failed because the owner-open SpaceSurvival editor locks the game DLL. The previous successful asteroid build/49 tests apply to `16007ab`, not these new changes. Source formatting and structural checks alone do not validate this continuation. [Preparation receipt](validation/2026-09-16-orbital-wreck-preparation.json); ACT-03 owns resumption. EXE and itch unchanged.
+
 ## Source, build and release
 
 | Layer | Last verified state | What it means |

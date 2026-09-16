@@ -15,6 +15,10 @@ Run commands from the repository root, currently `C:/Users/j6sis/SpaceSurvival`.
 
 The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomplete installation location. Use the complete engine above or pass an explicit `-EngineRoot`.
 
+## Orbital wreck preparation (not yet engine-validated)
+
+`PrepareOrbitalWreck.py` runs in the installed Blender background process and writes private broken Station3 sections plus a Figur kit beam. `PreviewOrbitalWreck.py` produces a Blender-only contact sheet. Both preserve supplied sources. After a successful Editor build, execute `AuthorOrbitalWreck.py` through the same Unreal Python runner shown below. It backs up the private look/cloud, imports three derivatives, then authors eight placements and trial lighting/volume settings. Do not run it over unsaved owner editor work. This sequence still awaits its first Unreal integration/render; see the preparation receipt and ACT-03.
+
 ## Owned asteroid presentation authoring
 
 After the Editor build, execute `Scripts/PreviewAsteroidLibrary.py` through Unreal's editor Python runner for an unsaved native-field audition, then `Scripts/AuthorAsteroidDepth.py` to bake layouts and select 2K BC6H skies. Asteroid Library, NebulaFantasy and the private `DA_DeepSpaceLook` must already exist. These scripts require a rendering-enabled editor, not ordinary Python or NullRHI. Serialize project automation instances.

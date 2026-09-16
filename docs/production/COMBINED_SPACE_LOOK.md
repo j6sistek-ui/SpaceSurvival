@@ -2,6 +2,16 @@
 
 This is an implemented September 14 presentation milestone, not Phase 1 completion. [PROJECT_STATE.md](../PROJECT_STATE.md) records current source/build/storage identity; [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) alone tracks active follow-up and owner acceptance. The settings and evidence below describe this milestone. The owner requested a combined sky, lighting, nebular atmosphere, asteroid-depth and exhaust pass using owned assets, then clarified that the medium should resemble thin irregular space dust rather than dense Earth clouds. No new purchase, mechanic, hazard count, progression change or itch publication is included.
 
+## September 16 orbital wreck composition target
+
+Owner supplied three Jump Space images, prioritizing the first for spatial volume, variation and deliberate structure placement. This is visual direction; no mechanics from that game are adopted. The [generated concept](references/orbital-wreck-concept.png) is explicitly **not gameplay** and does not claim the actual owned mesh detail or player ship. Actual derivative contact sheet: `Artifacts/OrbitalWreck/DerivativeContact.png`.
+
+The intended composition has a dominant broken industrial arc framing the right, a cropped heavy fragment at lower left, a diagonal rock/debris cluster receding behind them, and a small distant station as a secondary landmark. The central flight/aim space remains dark and open. Thin localized amber/cool dust pockets separate overlapping silhouettes; avoid a uniform blanket of Earth-like clouds or uniform confetti.
+
+Owned mapping: Station3 supplies the textured broken arc and smaller ring section; Figur station kit supplies `Cube_RLExtr.098` with its previously baked private metal atlas; Asteroid Library supplies rocks/fragments; NebulaFantasy supplies the distant image backdrop. Originals remain unchanged. The concept's bespoke ship and fine architectural details are directional, not an inventory claim.
+
+Engine comparison criteria: (1) readable foreground/middle/background overlap, (2) clearly unequal structure/rock scales with clustered debris, (3) open central aim/ship silhouette, (4) warm edge light and cool shadow with localized transparent haze, and (5) stable layout during turns/travel. Actual continuous motion and performance must be reviewed separately. Status/next work remain solely under ACT-03 in KNOWN_ISSUES; preparation is not target completion.
+
 ## What changed
 
 - The distant sky now uses the owned Asteroid Library's cool `MI_Skybox_024` cubemap configuration through a private master/instance. The original materials and maps are preserved. A mild `Tint` input retains the existing gradual region/wormhole color influence.
