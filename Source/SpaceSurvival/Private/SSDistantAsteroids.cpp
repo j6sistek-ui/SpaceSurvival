@@ -9,8 +9,8 @@
 namespace
 {
 TAutoConsoleVariable<int32>
-    DistantAsteroidCount(TEXT("ss.DistantAsteroidCount"), 384,
-                         TEXT("Visual-only distant asteroid count, clamped 0..768. Does not alter hazards."),
+    DistantAsteroidCount(TEXT("ss.DistantAsteroidCount"), 2048,
+                         TEXT("Visual-only distant asteroid count, clamped 0..3072. Does not alter hazards."),
                          ECVF_Scalability);
 constexpr double MinimumAnchorDistance = 32000.0;
 constexpr double MaximumRockRadius = 4800.0;
@@ -27,8 +27,8 @@ struct FDepthBand
 // Keep that hierarchy in four bounded visual layers; none enters the playable hazard volume.
 const FDepthBand DepthBands[] = {{42000.f, 62000.f, 2300.f, float(MaximumRockRadius), .7, .25},
                                  {float(MinimumAnchorDistance), 51000.f, 450.f, 1000.f, 1.0, 1.0},
-                                 {68000.f, 95000.f, 450.f, 1400.f, .35, .5},
-                                 {115000.f, 175000.f, 180.f, 650.f, .12, .1}};
+                                 {68000.f, 95000.f, 1200.f, 3400.f, .35, .5},
+                                 {115000.f, 175000.f, 400.f, 1600.f, .12, .1}};
 
 float ShellFade(const FVector &Center, const FDepthBand &Band)
 {
@@ -81,7 +81,7 @@ void ASSDistantAsteroids::BeginPlay()
         Batch->RegisterComponent();
         Batches.Add(Batch);
     }
-    BuildField(FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 768));
+    BuildField(FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 3072));
 }
 
 void ASSDistantAsteroids::Follow(AActor *InViewer)
@@ -99,7 +99,7 @@ void ASSDistantAsteroids::Follow(AActor *InViewer)
         AddTickPrerequisiteActor(InViewer);
         SetActorHiddenInGame(!bFlightVisible);
     }
-    BuildField(FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 768));
+    BuildField(FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 3072));
 }
 
 void ASSDistantAsteroids::SetFlightVisible(bool bVisible)
@@ -140,18 +140,29 @@ void ASSDistantAsteroids::BuildField(int32 Count)
     const FVector Clusters[] = {FVector(1, -.65, .24), FVector(1, .7, .4),   FVector(1, -.15, -.65),
                                 FVector(1, .18, .65),  FVector(1, .05, .06), FVector(-.5, -1, .2),
                                 FVector(-.5, 1, -.3),  FVector(-1, 0, .45)};
+    // The persistent distant belts also occupy lateral and vertical headings.
+    // A broad turn must reveal another field, rather than the gap between two
+    // launch-facing clusters. These directions never follow camera rotation.
+    const FVector DistantClusters[] = {FVector(1, -.65, .24), FVector(1, .7, .4),   FVector(1, -.15, -.65),
+                                       FVector(1, .18, .65),  FVector(1, .05, .06), FVector(.1, -1, .25),
+                                       FVector(.1, 1, -.2),   FVector(-.7, -1, .2), FVector(-.7, 1, -.3),
+                                       FVector(-1, 0, .45),   FVector(0, 0, 1),     FVector(0, 0, -1)};
     FRandomStream Random(740127);
+    int32 BandOrdinals[4] = {};
     for (int32 Index = 0; Index < Count; ++Index)
     {
-        const int32 BandIndex = Index % 16 == 0 ? 0 : (Index % 4 == 0 ? 1 : (Index % 4 == 1 ? 2 : 3));
+        const int32 BandIndex = Index % 256 == 0 ? 0 : (Index % 64 == 0 ? 1 : (Index % 8 == 1 ? 2 : 3));
         const FDepthBand &Band = DepthBands[BandIndex];
-        const int32 BatchIndex = (BandIndex == 0   ? Index / 16 % 8
-                                  : BandIndex == 1 ? 4 + Index / 4 % 8
-                                                   : 8 + (Index + Index / 4) % 7) %
+        const int32 Ordinal = BandOrdinals[BandIndex]++;
+        const int32 BatchIndex = (BandIndex == 0   ? Ordinal % 8
+                                  : BandIndex == 1 ? 4 + Ordinal % 8
+                                  : BandIndex == 2 ? Ordinal % 8
+                                                   : Ordinal % 15) %
                                  Batches.Num();
         auto *Batch = Batches[BatchIndex].Get();
         const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
-        const int32 ClusterIndex = Random.RandRange(0, UE_ARRAY_COUNT(Clusters) - 1);
+        const int32 ClusterIndex =
+            Random.RandRange(0, BandIndex >= 2 ? UE_ARRAY_COUNT(DistantClusters) - 1 : UE_ARRAY_COUNT(Clusters) - 1);
         FVector Detail = Random.VRand();
         if (SpaceLook)
         {
@@ -159,9 +170,16 @@ void ASSDistantAsteroids::BuildField(int32 Count)
                                   : ClusterIndex % 3 == 1 ? SpaceLook->AsteroidGlobularSamples
                                                           : SpaceLook->AsteroidLinearSamples;
             if (!Samples.IsEmpty())
-                Detail = Samples[Random.RandRange(0, Samples.Num() - 1)].GetClampedToMaxSize(1.0);
+                Detail =
+                    (Samples[Random.RandRange(0, Samples.Num() - 1)] + Random.VRand() * .18).GetClampedToMaxSize(1.0);
         }
-        FVector Direction = (Clusters[ClusterIndex] + Detail * .65).GetSafeNormal();
+        FVector Direction =
+            ((BandIndex >= 2 ? DistantClusters[ClusterIndex] : Clusters[ClusterIndex]) + Detail * .65).GetSafeNormal();
+        // A continuous distant population supports the authored belts. Increasing
+        // belt density alone leaves the same empty headings during broad turns.
+        // This direction is seeded once, never derived from the live camera.
+        if (BandIndex == 3 && Index % 3 != 0)
+            Direction = Random.VRand();
         // Move the largest silhouettes to the sides of the entry view, rather than
         // letting a backdrop rock conceal targets directly ahead of the launch heading.
         if (BandIndex == 0 && Direction.X > .9)
@@ -171,7 +189,7 @@ void ASSDistantAsteroids::BuildField(int32 Count)
         }
         const double Distance = Random.FRandRange(Band.MinimumDistance + 3500.f, Band.MaximumDistance - 3500.f);
         double Radius = Random.FRandRange(Band.MinimumRadius, Band.MaximumRadius);
-        if (Direction.X > .97)
+        if (BandIndex < 2 && Direction.X > .97)
             Radius = FMath::Min(Radius, 220.0);
         const double Scale = Radius / FMath::Max(1.0, double(Bounds.SphereRadius));
         const FQuat Rotation = FRotator(Random.FRandRange(-180.f, 180.f), Random.FRandRange(-180.f, 180.f),
@@ -203,7 +221,7 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
     SetActorLocation(Position, false, nullptr, ETeleportType::TeleportPhysics);
     if (!bFlightVisible)
         return;
-    const int32 Wanted = FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 768);
+    const int32 Wanted = FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 3072);
     if (Wanted != BuiltCount && !Batches.IsEmpty())
         BuildField(Wanted);
     // Keep parallax moving during sustained travel. Each shell recycles only at its

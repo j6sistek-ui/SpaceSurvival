@@ -38,7 +38,7 @@ bool FSSStationServiceLabelView::RunTest(const FString &)
         InitialText.Add(Text->Text.ToString());
         ServiceCount += Text->ComponentHasTag(TEXT("StationServiceLabel")) ? 1 : 0;
     }
-    TestEqual(TEXT("All seven live service labels participate in view-facing presentation"), ServiceCount, 7);
+    TestEqual(TEXT("All eight live service labels participate in view-facing presentation"), ServiceCount, 8);
     for (auto *Camera : {FrontCamera, RearCamera})
     {
         Controller->SetViewTarget(Camera);

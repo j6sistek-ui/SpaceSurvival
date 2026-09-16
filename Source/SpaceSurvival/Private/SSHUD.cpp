@@ -1,6 +1,7 @@
 #include "SSHUD.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
+#include "SSAlienGallery.h"
 #include "SSShip.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
@@ -225,6 +226,17 @@ void ASSHUD::DrawHUD()
     const auto Stats = S.Stats();
     Scale = FMath::Clamp(float(Canvas->SizeY) / 1080.f * float(S.settings.uiScale), .65f, 1.6f);
     const float W = Canvas->SizeX, H = Canvas->SizeY, Margin = 30 * Scale;
+    if (GM->AlienGallery && GM->AlienGallery->IsActive())
+    {
+        DrawRect(FLinearColor(.01f, .015f, .025f, .9f), Margin - 10, Margin - 8, W - 2 * Margin + 20, 120 * Scale);
+        Text(GM->AlienGallery->Status(), Margin, Margin, .8f, FLinearColor(.55f, .95f, 1));
+        Paragraph(TEXT("WASD / left stick: fly | mouse / right stick: look | E Q / bumpers: rise & fall | Shift / RT: "
+                       "fast | Ctrl / LT: slow"),
+                  Margin, Margin + 35 * Scale, W - 2 * Margin, .55f, FLinearColor::White);
+        Text(TEXT("Tab / Y: switch showcase & all assets | Home / Start: reset view | Esc / B: return to station"),
+             Margin, Margin + 78 * Scale, .55f);
+        return;
+    }
     const bool MenuOpen = GM->IsMenuOpen();
     const auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0));
     if (S.run.active)

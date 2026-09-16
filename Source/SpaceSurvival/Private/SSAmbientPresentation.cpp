@@ -2,6 +2,8 @@
 #include "SSShip.h"
 #include "SSShipPresentation.h"
 #include "SSSpaceLookData.h"
+#include "SSSpaceScenery.h"
+#include "Engine/StaticMeshActor.h"
 #include "Components/SkyLightComponent.h"
 #include "Engine/TextureCube.h"
 #include "Engine/DirectionalLight.h"
@@ -51,6 +53,9 @@ ASSAmbientPresentation::ASSAmbientPresentation()
     VolumeFog->SetVolumetricFogAlbedo(FColor::Black);
     VolumeFog->SetVolumetricFogEmissive(FLinearColor::Black);
     VolumeFog->SetVolumetricFogDistance(160000.f);
+    VolumeFog->SetStartDistance(30000.f);
+    VolumeFog->SetVolumetricFogStartDistance(25000.f);
+    VolumeFog->SetVolumetricFogNearFadeInDistance(10000.f);
     VolumeFog->SetVisibility(false);
     Dust = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("LocalDust"));
     Dust->SetupAttachment(RootComponent);
@@ -240,6 +245,8 @@ void ASSAmbientPresentation::SetFlightVisible(bool Visible)
                 {
                     FlightKey = *It;
                     PreviousKeyRotation = It->GetActorRotation();
+                    PreviousKeyColor = Light->GetLightColor();
+                    PreviousKeyIntensity = Light->Intensity;
                     It->SetActorRotation(SpaceLook->FlightKeyRotation);
                     break;
                 }
@@ -247,6 +254,11 @@ void ASSAmbientPresentation::SetFlightVisible(bool Visible)
         else if (FlightKey.IsValid())
         {
             FlightKey->SetActorRotation(PreviousKeyRotation);
+            if (auto *Light = Cast<UDirectionalLightComponent>(FlightKey->GetLightComponent()))
+            {
+                Light->SetLightColor(PreviousKeyColor);
+                Light->SetIntensity(PreviousKeyIntensity);
+            }
             FlightKey.Reset();
         }
     }
@@ -268,10 +280,62 @@ void ASSAmbientPresentation::SetFlightVisible(bool Visible)
         RestartTrails = true;
 }
 
+void ASSAmbientPresentation::UpdateAreaStyle(float DeltaSeconds)
+{
+    if (!SpaceLook || SpaceLook->AreaRecipes.IsEmpty())
+        return;
+    if (!RegionScenery.IsValid())
+        for (TActorIterator<ASSSpaceScenery> It(GetWorld()); It; ++It)
+        {
+            RegionScenery = *It;
+            break;
+        }
+    if (!RegionScenery.IsValid())
+        return;
+    const auto Blend = RegionScenery->GetCurrentAreaBlend();
+    if (!SpaceLook->AreaRecipes.IsValidIndex(Blend.First) || !SpaceLook->AreaRecipes.IsValidIndex(Blend.Second))
+        return;
+    const auto &A = SpaceLook->AreaRecipes[Blend.First];
+    const auto &B = SpaceLook->AreaRecipes[Blend.Second];
+    const float Smooth = AreaStyleInitialized ? 1.f - FMath::Exp(-FMath::Max(0.f, DeltaSeconds) * .3f) : 1.f;
+    CurrentHazeColor = FMath::Lerp(CurrentHazeColor, FMath::Lerp(A.HazeColor, B.HazeColor, Blend.Alpha), Smooth);
+    CurrentKeyColor = FMath::Lerp(CurrentKeyColor, FMath::Lerp(A.KeyColor, B.KeyColor, Blend.Alpha), Smooth);
+    CurrentHazeDensity =
+        FMath::Lerp(CurrentHazeDensity, FMath::Lerp(A.HazeDensity, B.HazeDensity, Blend.Alpha), Smooth);
+    CurrentKeyIntensity =
+        FMath::Lerp(CurrentKeyIntensity, FMath::Lerp(A.KeyIntensity, B.KeyIntensity, Blend.Alpha), Smooth);
+    CurrentAmbientIntensity =
+        FMath::Lerp(CurrentAmbientIntensity, FMath::Lerp(A.AmbientIntensity, B.AmbientIntensity, Blend.Alpha), Smooth);
+    AreaStyleInitialized = true;
+    // A restrained distance tint connects separated silhouettes without washing
+    // the nearby ship. The bounded volume banks provide the denser local patches.
+    VolumeFog->SetFogInscatteringColor(CurrentHazeColor * .12f);
+    for (const auto &Material : CloudMaterials)
+    {
+        Material->SetVectorParameterValue(TEXT("Color"), CurrentHazeColor);
+        Material->SetScalarParameterValue(TEXT("Density"), CurrentHazeDensity);
+    }
+    AmbientLight->SetIntensity(CurrentAmbientIntensity);
+    if (FlightKey.IsValid())
+        if (auto *Light = Cast<UDirectionalLightComponent>(FlightKey->GetLightComponent()))
+        {
+            Light->SetLightColor(CurrentKeyColor);
+            Light->SetIntensity(CurrentKeyIntensity);
+        }
+    if (!RegionSkyMaterial)
+        for (TActorIterator<AStaticMeshActor> It(GetWorld()); It; ++It)
+            if (It->ActorHasTag(TEXT("SpaceBackdrop")))
+                RegionSkyMaterial = Cast<UMaterialInstanceDynamic>(It->GetStaticMeshComponent()->GetMaterial(0));
+    if (RegionSkyMaterial)
+        RegionSkyMaterial->SetVectorParameterValue(TEXT("AreaTint"), CurrentHazeColor * 3.f);
+}
+
 void ASSAmbientPresentation::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const bool Active = FlightVisible && Followed.IsValid();
+    if (Active)
+        UpdateAreaStyle(DeltaSeconds);
     const bool CloudsVisible = Active && CloudAvailable && CloudEnabled.GetValueOnGameThread() != 0;
     const FVector Center = Followed.IsValid() ? Followed->GetActorLocation() : FVector::ZeroVector;
     if (!CloudPositionInitialized)

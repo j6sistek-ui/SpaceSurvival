@@ -182,6 +182,10 @@ bool FSSAmbientPresentationContent::RunTest(const FString &)
     const FRotator StationRotation(-35, -40, 0), FillRotation(20, 140, 0);
     Key->SetActorRotation(StationRotation);
     Fill->SetActorRotation(FillRotation);
+    auto *KeyComponent = CastChecked<UDirectionalLightComponent>(Key->GetLightComponent());
+    KeyComponent->SetLightColor(FLinearColor(.4f, .7f, .8f));
+    KeyComponent->SetIntensity(7.f);
+    const FLinearColor StationColor = KeyComponent->GetLightColor();
     Fixture.Presentation->SetFlightVisible(true);
     TestTrue(TEXT("Flight optionally consumes the authored light direction"),
              Key->GetActorRotation().Equals(Look && Look->bOverrideFlightKeyDirection ? Look->FlightKeyRotation
@@ -199,8 +203,17 @@ bool FSSAmbientPresentationContent::RunTest(const FString &)
     CloudSwitch->Set(1, Priority);
     Fixture.Presentation->Tick(0.f);
     CheckVisibility(CloudsAvailable, SkyAvailable);
+    if (Look && Look->bOverrideFlightKeyDirection)
+    {
+        KeyComponent->SetLightColor(FLinearColor::Red);
+        KeyComponent->SetIntensity(14.f);
+    }
     Fixture.Presentation->SetFlightVisible(false);
     TestTrue(TEXT("Station entry restores the scene key direction"), Key->GetActorRotation().Equals(StationRotation));
+    TestTrue(TEXT("Station entry restores key color after region presentation"),
+             KeyComponent->GetLightColor().Equals(StationColor, .001f));
+    TestTrue(TEXT("Station entry restores key intensity after region presentation"),
+             FMath::IsNearlyEqual(KeyComponent->Intensity, 7.f));
     CheckVisibility(false, false); // Station entry hides the medium immediately, before the next frame.
     Fixture.Presentation->SetFlightVisible(true);
     Fixture.Presentation->Tick(0.f);

@@ -2,7 +2,13 @@
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed package audit and packaged capture validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
-## September 16 orbital wreck (performance unmeasured)
+## September 16 spatial areas and gallery (performance unmeasured)
+
+The new spatial path retains 27 neighboring cells, up to 64 shadowed major placements and a configured 384 regional-clutter allowance. The distant field now defaults to 2,048 instances; far and regional clutter share a 3,072 ceiling. Three merged alien assemblies contain 20/20/21 source pieces with original detail material graphs; merging does not prove reduced GPU cost. Larger apparent rocks, shadowed masses and the 6km fog grid require a separate representative timing pass. Bound counts are guardrails, not a 60 FPS finding. The shared cap describes steady state: live console changes can briefly rebuild the far field before the regional 0.05-second budget update catches up.
+
+The gallery streams the full vendor maps while suppressing the station scene; it is a separate inspection workload. Screenshot fixtures perturb frame cadence and do not establish smooth flight, streaming hitch behavior, gallery responsiveness or packaged resource limits. Current hashes and captures are in [the area/gallery receipt](validation/2026-09-16-space-areas-gallery.json); acceptance remains in the sole issues log.
+
+## Earlier September 16 orbital wreck (performance unmeasured)
 
 Blender derivatives contain 21,622 triangles for the broken arc, 9,600 for the ring fragment and 1,088 for the kit beam. The current trial uses twelve major placements including eight owned rocks, plus the existing 384-instance field and local volume adjustments. Real Unreal renders exist; no representative frame-time result exists for this continuation. Dense screenshot readbacks severely perturb frame cadence and may delay texture settling; the sequence starts after the first five-second normal-rendering view. Screen coverage, streaming, fog cost and sustained-travel behavior still require measurement without screenshot readback. Earlier sky-memory figures remain historical for their specific configuration.
 

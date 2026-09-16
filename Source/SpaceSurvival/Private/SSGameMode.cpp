@@ -1,4 +1,5 @@
 #include "SSGameMode.h"
+#include "SSAlienGallery.h"
 #include "SSAudio.h"
 #include "SSWave10Soak.h"
 #include "SSGameInstance.h"
@@ -70,6 +71,7 @@ ASSGameMode::ASSGameMode()
     PlayerControllerClass = ASSPlayerController::StaticClass();
     HUDClass = ASSHUD::StaticClass();
     Director = CreateDefaultSubobject<USSSurvivalDirectorComponent>(TEXT("SurvivalDirector"));
+    AlienGallery = CreateDefaultSubobject<USSAlienGallery>(TEXT("AlienGallery"));
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("AudioRoot"));
     MusicBase = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicBase"));
     MusicPressure = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicPressure"));
@@ -316,6 +318,8 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
     AmbientPresentation->Follow(Ship);
     if (!SpaceScenery)
         SpaceScenery = GetWorld()->SpawnActor<ASSSpaceScenery>();
+    if (const auto *GI = GetGameInstance<USSGameInstance>())
+        SpaceScenery->SetRunSeed(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str()))));
     SpaceScenery->Follow(Ship);
     UGameplayStatics::GetPlayerController(this, 0)->Possess(Ship);
     Director->SetActive(true);
@@ -438,6 +442,11 @@ void ASSGameMode::EnterStation()
 void ASSGameMode::Tick(float Dt)
 {
     Super::Tick(Dt);
+    if (AlienGallery && AlienGallery->IsActive())
+    {
+        AlienGallery->Update(Dt);
+        return; // Evaluation never advances the domain, region, rewards or save lifecycle.
+    }
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
@@ -696,6 +705,8 @@ void ASSGameMode::NotifyPickup(int32 Kind, float Amount)
 }
 void ASSGameMode::Interact()
 {
+    if (AlienGallery && AlienGallery->IsActive())
+        return;
     if (IsMenuOpen())
         return;
     if (Walker && Hub)
@@ -704,7 +715,9 @@ void ASSGameMode::Interact()
             return;
         FString Label;
         const auto Service = Hub->NearestService(Walker->GetActorLocation(), Label);
-        if (Service != ESSPanel::None)
+        if (Service == ESSPanel::AlienGallery)
+            AlienGallery->Enter(UGameplayStatics::GetPlayerController(this, 0));
+        else if (Service != ESSPanel::None)
             OpenPanel(Service);
         return;
     }
@@ -1427,6 +1440,21 @@ void ASSPlayerController::SSReviewExit()
 #endif
 }
 
+void ASSPlayerController::SSReviewAlienGallery(bool Assets)
+{
+    if (auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>())
+        GM->AlienGallery->Enter(this, Assets);
+}
+void ASSPlayerController::SSReviewGalleryReturn()
+{
+    if (auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>())
+        GM->AlienGallery->Leave();
+}
+void ASSPlayerController::SSReviewGallerySwitch()
+{
+    if (auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>())
+        GM->AlienGallery->SwitchScene();
+}
 ASSPlayerController::ASSPlayerController()
 {
     PrimaryActorTick.bTickEvenWhenPaused = true;
@@ -1439,6 +1467,19 @@ void ASSPlayerController::PlayerTick(float Dt)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GM || !GI)
         return;
+    if (GM->AlienGallery && GM->AlienGallery->IsActive())
+    {
+        if (WasInputKeyJustPressed(EKeys::Escape) || WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Right))
+            GM->AlienGallery->Leave();
+        else if (WasInputKeyJustPressed(EKeys::Tab) || WasInputKeyJustPressed(EKeys::Gamepad_FaceButton_Top))
+            GM->AlienGallery->SwitchScene();
+        else if (WasInputKeyJustPressed(EKeys::Home) || WasInputKeyJustPressed(EKeys::Gamepad_Special_Right))
+            GM->AlienGallery->ResetView();
+        if (GM->AlienGallery->IsReady())
+            if (auto *Camera = Cast<ASSGalleryCamera>(GetPawn()))
+                Camera->Drive(this, Dt);
+        return;
+    }
     if (GM->bAutomatedSoakInput)
         return; // Guarded fixture owns scripted input; Super still updates the normal camera.
     if (LastInputPawn.Get() != GetPawn())

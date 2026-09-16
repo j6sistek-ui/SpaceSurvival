@@ -50,6 +50,12 @@ private:
     double FocusSince = 0;
     bool SawClimax = false, SawApproach = false;
     bool Wave1 = false;
+    bool Gallery = false, GalleryRunPreserved = false, GalleryReturned = false;
+    int32 GalleryStage = 0;
+    double GalleryStageAt = 0, GalleryReadyAt = 0;
+    FString GalleryRunBefore, GalleryAccountBefore;
+    FTransform GalleryReturnTransform;
+    void TickGallery(float DeltaSeconds);
     bool Station5 = false, SawWormhole = false, SawDocking = false, SawExit = false;
     double WormholeSeconds = 0, DockingSeconds = 0, ExitSeconds = 0, StationIdleSeconds = 0;
     void Stop(const FString &Error);

@@ -1,14 +1,11 @@
 <#
-Capture the normal-stat Wave1 visual fixture in a hidden editor game process.
+Capture the full alien gallery and station return fixture in a hidden editor game process.
 No build, package, publication or save operation is performed. Screenshots are not FPS evidence.
 #>
 param(
-    [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$')][string]$Label = 'CombinedLook',
+    [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$')][string]$Label = 'AlienGallery',
     [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
-    [switch]$Packaged,
-    [switch]$Sequence,
-    [ValidateRange(-1,3)][int]$Area = -1,
-    [ValidateRange(0,10000)][int]$Variation = 0
+    [switch]$Packaged
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -107,24 +104,20 @@ New-Item -ItemType Directory -Path $slotsRoot | Out-Null
 New-Item -ItemType Directory -Path $pointerRoot -Force | Out-Null
 $token | Set-Content -LiteralPath (Join-Path $root '.ss-endgame-soak') -Encoding utf8
 $arguments = if ($Packaged) { @() } else { @((Join-Path $repo 'SpaceSurvival.uproject'), '-game') }
-$arguments += @('-SSWave10Soak', '-SSSoakScenario=Wave1',
+$arguments += @('-SSWave10Soak', '-SSSoakScenario=Gallery',
     '-SSSoakVisuals', '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$root", '-RenderOffscreen',
     '-ForceRes', '-windowed', '-ResX=1920', '-ResY=1080', '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
     '-nosound', '-unattended', "-abslog=$(Join-Path $root 'Rendered.log')")
-if ($Sequence) { $arguments += '-SSSoakSequence' }
-$arguments += "-ExecCmds=ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
 $metadata = [ordered]@{
-    evidenceType = 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS'; status = 'starting'; success = $false
+    evidenceType = 'ALIEN_GALLERY_SCRIPTED_VISUAL_REVIEW'; status = 'starting'; success = $false
     root = $root; label = $Label; token = $token; pid = $null; processStartUtc = $null; processExit = $null
-    startedUtc = [DateTime]::UtcNow.ToString('o'); finishedUtc = $null; timeoutSeconds = 120
+    startedUtc = [DateTime]::UtcNow.ToString('o'); finishedUtc = $null; timeoutSeconds = 300
     mode = $(if ($Packaged) { 'WindowsDevelopmentPackage' } else { 'UncookedEditorGame' })
     sourceBefore = $sourceBefore; sourceAfter = $null; artifacts = $artifactsBefore; artifactsUnchanged = $false
     productionBefore = $productionBefore; productionAfter = $null; productionPreserved = $false
     noTestSaveSlotsWritten = $false; requestedResolution = @(1920, 1080); images = @(); fixture = $null
     suitableForPerformanceFinding = $false
-    sequenceRequested = [bool]$Sequence
-    areaPreview = $Area; areaVariation = $Variation
-    limits = 'Hidden rendered game; 29 seconds of scripted normal-stat cruise/turn/boost/brake and no fire. PNG headers/dimensions/hashes are verified, not visual quality. No FPS, physical input, natural balance or complete run claim.'
+    limits = 'Hidden rendered game; scripted placement at actual station service, full vendor showcase and asset layout, then station return. Run/account and return transform preservation checked. PNG headers/dimensions/hashes are verified, not visual quality. No FPS, physical input, natural balance or complete run claim.'
     failures = @()
 }
 $metadataPath = Join-Path $root 'capture.json'
@@ -143,10 +136,10 @@ try {
     $metadata | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $metadataPath -Encoding utf8
     @{ root = $root; pid = $process.Id; label = $Label; metadata = $metadataPath; status = 'running' } |
         ConvertTo-Json | Set-Content -LiteralPath $pointer -Encoding utf8
-    Write-Output "Owned hidden Wave1 capture $($process.Id): $root"
+    Write-Output "Owned hidden alien gallery capture $($process.Id): $root"
     $timer = [Diagnostics.Stopwatch]::StartNew()
     while (-not $process.WaitForExit(1000)) {
-        if ($timer.Elapsed.TotalSeconds -ge 120) { throw 'Owned visual capture exceeded its 120-second timeout.' }
+        if ($timer.Elapsed.TotalSeconds -ge 300) { throw 'Owned visual capture exceeded its 300-second timeout.' }
     }
     $process.Refresh()
     if ($process.ExitCode -ne 0) { throw "Visual capture exited $($process.ExitCode)." }
@@ -155,15 +148,14 @@ try {
     $fixture = Get-Content -LiteralPath $fixturePath -Raw | ConvertFrom-Json
     $metadata.fixture = $fixture
     if (-not $fixture.success -or -not $fixture.noSaveSlotsWritten -or
-        $fixture.evidenceType -cne 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' -or $fixture.scenario -cne 'Wave1' -or
-        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or -not $fixture.sawWave1 -or
+        $fixture.evidenceType -cne 'ALIEN_GALLERY_SCRIPTED_VISUAL_REVIEW' -or $fixture.scenario -cne 'Gallery' -or
+        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $fixture.galleryReturned -or -not $fixture.galleryRunPreserved) -or
         -not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or $fixture.suitableForPerformanceFinding -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine $savedRoot.TrimEnd('\', '/') -or
         [IO.Path]::GetFullPath($fixture.csv) -ine (Join-Path $root 'Endgame.csv')) { throw 'Fixture identity, visibility or save isolation receipt failed.' }
     $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
     $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
-    if (($names -join ',') -cne 'Cruise,Turn,Boost,Brake') { throw 'Fixture did not capture the four required stages in order.' }
-    if ($Sequence -and @($allNames | Where-Object { $_ -like 'Sequence_*' }).Count -lt 40) { throw 'Dense sequence did not produce enough real frames.' }
+    if (($names -join ',') -cne 'GalleryDoorway,GalleryShowcase,GalleryAssets,GalleryReturn') { throw 'Fixture did not capture doorway, full showcase, all assets and return in order.' }
     $metadata.images = @($allNames | ForEach-Object { PngIdentity (Join-Path $root "$_.png") })
     $captureValid = $true
 } catch {
@@ -207,4 +199,4 @@ try {
         ConvertTo-Json | Set-Content -LiteralPath $pointer -Encoding utf8
     Write-Output "Capture receipt: $metadataPath; success=$($metadata.success)"
 }
-if (-not $metadata.success) { throw "Space-look capture failed: $($failures -join '; ')" }
+if (-not $metadata.success) { throw "Alien gallery capture failed: $($failures -join '; ')" }

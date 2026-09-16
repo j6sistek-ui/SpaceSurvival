@@ -32,7 +32,8 @@ enum class ESSPanel
     Depot,
     Launch,
     Results,
-    Acknowledgements
+    Acknowledgements,
+    AlienGallery
 };
 struct FSSMenuEntry
 {
@@ -84,6 +85,8 @@ public:
     float AnnouncementSeconds = 0.f, WeaponBuffSeconds = 0.f;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USSSurvivalDirectorComponent> Director;
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<class USSAlienGallery> AlienGallery;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Content")
     TObjectPtr<class USSPhase1Data> Tuning;
     UPROPERTY()
@@ -150,6 +153,12 @@ public:
     virtual void PlayerTick(float DeltaSeconds) override;
     UFUNCTION(Exec)
     void SSReviewExit();
+    UFUNCTION(Exec)
+    void SSReviewAlienGallery(bool Assets = false);
+    UFUNCTION(Exec)
+    void SSReviewGalleryReturn();
+    UFUNCTION(Exec)
+    void SSReviewGallerySwitch();
 
 private:
     bool BoostLatch = false, BrakeLatch = false;

@@ -2,6 +2,7 @@
 #include "SSSpaceLookData.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "Engine/StaticMesh.h"
@@ -100,6 +101,10 @@ bool FSSScenerySafety::RunTest(const FString &)
     FSSSceneryWorld Fixture;
     if (!Fixture.Initialize(*this))
         return false;
+    // This test deliberately exercises backward compatibility, even when the installed look has regions.
+    auto *LegacyLook = DuplicateObject<USSSpaceLookData>(Look, GetTransientPackage());
+    LegacyLook->AreaRecipes.Reset();
+    Fixture.Scenery->ConfigureLook(LegacyLook);
     TInlineComponentArray<UStaticMeshComponent *> Structures;
     Fixture.Scenery->GetComponents(Structures);
     if (!TestTrue(TEXT("Authored scenery actually builds visible geometry"), !Structures.IsEmpty()))
@@ -187,6 +192,167 @@ bool FSSScenerySafety::RunTest(const FString &)
     Fixture.Scenery->Tick(0);
     TestTrue(TEXT("Losing the followed viewer hides scenery safely"), Fixture.Scenery->IsHidden());
     AddInfo(TEXT("Component and geometry safety only; no rendered readability or performance claim."));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSSceneryRegions, "SpaceSurvival.Presentation.WorldStableAreaRecipes",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSSceneryRegions::RunTest(const FString &)
+{
+    auto *Preview = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.SpaceAreaPreview"));
+    auto *Variation = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.SpaceAreaVariation"));
+    auto *FarCount = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
+    if (!TestNotNull(TEXT("Area preview exists"), Preview) || !TestNotNull(TEXT("Area variation exists"), Variation) ||
+        !TestNotNull(TEXT("Shared far-field budget exists"), FarCount))
+        return false;
+    const int32 OldPreview = Preview->GetInt(), OldVariation = Variation->GetInt(), OldFar = FarCount->GetInt();
+    const auto PreviewPriority = EConsoleVariableFlags(Preview->GetFlags() & ECVF_SetByMask);
+    const auto VariationPriority = EConsoleVariableFlags(Variation->GetFlags() & ECVF_SetByMask);
+    const auto FarPriority = EConsoleVariableFlags(FarCount->GetFlags() & ECVF_SetByMask);
+    ON_SCOPE_EXIT
+    {
+        Preview->Set(OldPreview, PreviewPriority);
+        Variation->Set(OldVariation, VariationPriority);
+        FarCount->Set(OldFar, FarPriority);
+    };
+    Preview->Set(0, PreviewPriority);
+    Variation->Set(0, VariationPriority);
+    FarCount->Set(2688, FarPriority);
+    FSSSceneryWorld Fixture;
+    if (!Fixture.Initialize(*this))
+        return false;
+    auto *Mesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+    if (!TestNotNull(TEXT("Engine geometry makes coverage independent of licensed content"), Mesh))
+        return false;
+    auto *Look = NewObject<USSSpaceLookData>();
+    Look->AreaClutterBudget = 768;
+    Look->AreaRecipes.SetNum(3);
+    for (int32 RecipeIndex = 0; RecipeIndex < 3; ++RecipeIndex)
+    {
+        auto &Recipe = Look->AreaRecipes[RecipeIndex];
+        Recipe.Name = FName(*FString::Printf(TEXT("Fixture%d"), RecipeIndex));
+        Recipe.ClutterDensity = 2.f;
+        FSSSceneryCandidate Candidate;
+        Candidate.Mesh = Mesh;
+        Candidate.MinRadius = 1200;
+        Candidate.MaxRadius = 3200;
+        Recipe.Clutter.Add(Candidate);
+        for (int32 Index = 0; Index < 8; ++Index)
+        {
+            FSSSceneryPlacement Placement;
+            Placement.Mesh = Mesh;
+            Placement.Center = FVector(90000 + 11000 * Index, Index % 2 ? 100000 : -100000, 10000 * RecipeIndex);
+            Placement.Radius = 2500;
+            Recipe.Landmarks.Add(Placement);
+        }
+    }
+    Fixture.Viewer->SetActorLocation(FVector::ZeroVector);
+    Fixture.Scenery->ConfigureLook(Look);
+    Fixture.Scenery->Follow(Fixture.Viewer);
+    Fixture.Scenery->SetFlightVisible(true);
+    Fixture.Scenery->Tick(0);
+    TestEqual(TEXT("All neighboring world cells resident"), Fixture.Scenery->GetResidentCellCount(), 27);
+    TestTrue(TEXT("Local clutter exists and shares the 3072 total limit with 2688 far instances"),
+             Fixture.Scenery->GetResidentClutterCount() > 0 && Fixture.Scenery->GetResidentClutterCount() <= 384);
+    TestEqual(TEXT("Starting authored cell retains its entire eight-part group"),
+              Fixture.Scenery->GetResidentLandmarkCount(), 8);
+    auto Snapshot = [&](FVector RemoveOffset = FVector::ZeroVector)
+    {
+        TArray<FString> Result;
+        TInlineComponentArray<UStaticMeshComponent *> Parts;
+        Fixture.Scenery->GetComponents(Parts);
+        for (auto *Part : Parts)
+        {
+            TestEqual(TEXT("World-stable scenery remains noncolliding"), Part->GetCollisionEnabled(),
+                      ECollisionEnabled::NoCollision);
+            TestFalse(TEXT("Scenery never modifies navigation"), Part->CanEverAffectNavigation());
+            if (auto *Batch = Cast<UInstancedStaticMeshComponent>(Part))
+            {
+                TestFalse(TEXT("Clutter batches retain their bounded shadow-free cost"), Part->CastShadow);
+                for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+                {
+                    FTransform Transform;
+                    Batch->GetInstanceTransform(Index, Transform, true);
+                    Transform.AddToTranslation(-RemoveOffset);
+                    Result.Add(Transform.ToString());
+                }
+            }
+            else
+            {
+                TestTrue(TEXT("Authored major forms cast shadows for depth"), Part->CastShadow);
+                FTransform Transform = Part->GetComponentTransform();
+                Transform.AddToTranslation(-RemoveOffset);
+                Result.Add(Transform.ToString());
+            }
+        }
+        Result.Sort();
+        return Result;
+    };
+    const auto Initial = Snapshot();
+    Fixture.Viewer->SetActorRotation(FRotator(65, 145, 30));
+    Fixture.Viewer->AddActorWorldOffset(FVector(12000, -3000, 1700));
+    Fixture.Scenery->Tick(.05f);
+    TestTrue(TEXT("Turning and ordinary movement never drag, clear or reroll scenery"), Initial == Snapshot());
+    Fixture.Viewer->SetActorLocation(FVector(500000, 500000, 500000));
+    Fixture.Scenery->Tick(.05f);
+    TestEqual(TEXT("Maximum eight complete authored groups remain within 64 landmarks"),
+              Fixture.Scenery->GetResidentLandmarkCount(), 64);
+    TestTrue(TEXT("Movement preserves the shared small/middle resident budget"),
+             Fixture.Scenery->GetResidentClutterCount() <= 384);
+    Fixture.Viewer->SetActorLocation(FVector::ZeroVector);
+    Fixture.Scenery->Tick(.05f);
+    TestTrue(TEXT("Revisiting regenerates exactly the same transforms, including unloaded neighbors"),
+             Initial == Snapshot());
+    const FVector Shift(12000, -3200, 700);
+    Fixture.Viewer->ApplyWorldOffset(Shift, true);
+    Fixture.Scenery->ApplyWorldOffset(Shift, true);
+    Fixture.Scenery->Tick(0);
+    TestTrue(TEXT("Rebase changes no logical cell or relative scene placement"), Initial == Snapshot(Shift));
+    Preview->Set(2, PreviewPriority);
+    Fixture.Scenery->Tick(0);
+    TestEqual(TEXT("Explicit preview selects the requested recipe"), Fixture.Scenery->GetCurrentAreaIndex(), 2);
+    TestFalse(TEXT("Different authored area actually changes geometry"), Initial == Snapshot(Shift));
+    Preview->Set(0, PreviewPriority);
+    Variation->Set(1, VariationPriority);
+    Fixture.Scenery->Tick(0);
+    TestFalse(TEXT("A second explicit variation produces a different region arrangement"), Initial == Snapshot(Shift));
+    Variation->Set(0, VariationPriority);
+    Fixture.Scenery->Tick(0);
+    TestTrue(TEXT("Restoring variation reproduces the original recipe exactly"), Initial == Snapshot(Shift));
+    Fixture.Scenery->SetRunSeed(101);
+    Fixture.Scenery->Tick(0);
+    TestTrue(TEXT("A fixed recipe preview ignores real run identity"), Initial == Snapshot(Shift));
+    Preview->Set(-1, PreviewPriority);
+    Fixture.Scenery->Tick(0);
+    const auto FirstRun = Snapshot(Shift);
+    Fixture.Scenery->SetRunSeed(202);
+    Fixture.Scenery->Tick(0);
+    TestFalse(TEXT("A different persistent run identity varies normal play"), FirstRun == Snapshot(Shift));
+    Fixture.Scenery->SetRunSeed(101);
+    Fixture.Scenery->Tick(0);
+    TestTrue(TEXT("Restoring a run identity restores its complete arrangement"), FirstRun == Snapshot(Shift));
+    FarCount->Set(3072, FarPriority);
+    Fixture.Scenery->Tick(0);
+    TestEqual(TEXT("Full far-field budget leaves no local clutter overspend"),
+              Fixture.Scenery->GetResidentClutterCount(), 0);
+    const auto Before = ASSSpaceScenery::SampleAreaStyle(Look, FVector(999999, 55000, -33000));
+    const auto After = ASSSpaceScenery::SampleAreaStyle(Look, FVector(1000001, 55000, -33000));
+    TestTrue(TEXT("Style blending is continuous across noise-cell seams"),
+             FMath::Abs((Before.First + Before.Alpha) - (After.First + After.Alpha)) < .001f);
+    Preview->Set(0, PreviewPriority);
+    Look->AreaRecipes[0].Landmarks[0].Center = FVector::ZeroVector;
+    Fixture.Scenery->ConfigureLook(Look);
+    Fixture.Scenery->Tick(0);
+    TestEqual(TEXT("A landmark violating the authored clearance rejects the entire group"),
+              Fixture.Scenery->GetResidentLandmarkCount(), 0);
+    Fixture.Scenery->ConfigureLook(nullptr);
+    Fixture.Scenery->Tick(0);
+    TestEqual(TEXT("Missing optional data leaves no stale resident cells"), Fixture.Scenery->GetResidentCellCount(), 0);
+    TInlineComponentArray<UStaticMeshComponent *> EmptyParts;
+    Fixture.Scenery->GetComponents(EmptyParts);
+    TestEqual(TEXT("Source-only missing look cleanly omits licensed scenery"), EmptyParts.Num(), 0);
+    AddInfo(TEXT("Deterministic state/budget coverage only; art quality, distant streaming visibility and performance "
+                 "require gameplay review."));
     return true;
 }
 #endif
