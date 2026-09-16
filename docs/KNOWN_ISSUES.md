@@ -894,6 +894,48 @@ knows speed and could take drive state for a denser, longer streak under thrust.
 step. Post-process effects are now known to be cheaper than assumed because the volume exists.
 
 
+
+#### September 16 thrust feedback, first pass
+
+Four changes, taken in the order the inventory ranked them. All are in `SSShip.cpp` and `SSAmbientPresentation.cpp`;
+nothing touches the settings UI, which is being reworked in parallel.
+
+**1. Boost now has a transient.** `BoostPunch` is set to one on the frame boost engages and decays over about a
+third of a second. Squared so it eases out. It moves the camera 16 cm back along the boom and adds a 9 cm shake
+that fades, on top of a 2.2 cm rumble held for as long as boost is. The rumble runs at 34 and 27 hertz against the
+damage shake's 70 and 53, so a hit taken while boosting still reads as a separate, sharper event rather than
+merging into the rumble. Both sit inside the existing `settings.cameraShake` gate, so the accessibility toggle that
+already exists covers the new motion too, which is why this was the cheapest of the four.
+
+**2. The dust field is finally handed the drive state.** It had been given velocity alone, so accelerating changed
+nothing about the field the player flies through. Thrust now stretches grains a further 2.4x on top of the existing
+speed stretch, and pulls the near-culling limit in from 200 to 130 cm so grains that were held clear of the ship at
+cruise come past the camera under power. Density near the eye is what actually reads as speed.
+
+**3. Boost ramps instead of stepping.** `VisualPower = (Boosting ? 1.75 : Braking ? .55 : DrivePower) * Pulse`
+discarded throttle and speed outright while boosting, so every drive effect jumped to a fixed value and sat there.
+It now interpolates toward `Boosting ? 1.35 + .4*DrivePower : Braking ? .55 : DrivePower` at speed 7, which keeps
+the throttle in the signal and gives the transition a shape. Boost still dominates; it just arrives.
+
+**4. Speed post-process, on the player camera rather than the level volume.** Chromatic fringe rises to 1.6 and the
+vignette from the engine default of .4 to .75, both following the boost punch and the held boost rather than the
+damage clock. Put on `UCameraComponent::PostProcessSettings` so it follows the player and cannot disturb the
+authored `ReadableSpaceExposure` volume. Behind `ss.SpeedPostFX`.
+
+**The accessibility gap, stated plainly.** Chromatic aberration and vignette both have real accessibility
+implications and belong behind a player-facing toggle next to the existing subtitles, camera shake and motion blur
+switches. They are behind a console variable instead, which is not good enough as a shipping answer. The settings UI
+is being reworked in parallel, so adding a menu entry now would collide; **this must be revisited once that work
+lands.** The camera shake additions do not have this gap, because they reuse the toggle that already exists.
+
+**Evidence and its limits.** 51 automation tests pass. A dense 89 frame sequence was captured and assembled into a
+clip, and chromatic fringing is plainly visible on high-contrast rock edges in the thrusting frames and absent in
+the cruising ones, which confirms the post-process path works end to end. **A still frame cannot demonstrate a .36
+second transient**, and there is no matched before-clip, because producing one would mean rebuilding at the previous
+commit. The punch, the rumble and the dust response are asserted from the code and from the clip, not from a
+controlled comparison.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.

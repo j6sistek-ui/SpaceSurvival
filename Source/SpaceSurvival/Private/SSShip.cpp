@@ -12,6 +12,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Camera/CameraComponent.h"
+#include "HAL/IConsoleManager.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
@@ -20,6 +21,16 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
 #include "Animation/AnimSequence.h"
+
+namespace
+{
+// Speed cues on the player camera rather than on the level's volume, so they follow the player and cannot
+// disturb the authored exposure. No settings-menu entry yet: chromatic fringe and vignette both have real
+// accessibility implications and belong behind a player toggle, but the settings UI is being reworked and
+// this should land there rather than as a console variable left for someone to find.
+TAutoConsoleVariable<int32> SpeedPostFX(TEXT("ss.SpeedPostFX"), 1,
+                                        TEXT("Chromatic fringe and vignette under thrust (0 disables)."));
+} // namespace
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Misc/PackageName.h"
@@ -279,16 +290,47 @@ void ASSShip::Tick(float Dt)
         FMath::FInterpTo(CameraBoom->TargetArmLength,
                          FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f), Dt, 3.f);
     Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? 86.f : 80.f, Dt, 3.f);
-    if (GI->Session.settings.cameraShake && S.run.damageFeedback > 0)
+    // Boost engaging is an event, but every drive effect in the game is a sustained level, so acceleration
+    // reads as a state change rather than as a shove. This is the transient: full on the frame boost is pressed,
+    // gone in about a third of a second.
+    if (S.run.boosting && !WasBoosting)
+        BoostPunch = 1.f;
+    WasBoosting = S.run.boosting;
+    BoostPunch = FMath::Max(0.f, BoostPunch - Dt * 2.8f);
+    FVector CameraOffset = FVector::ZeroVector;
+    if (GI->Session.settings.cameraShake)
     {
-        // Two non-harmonic axes so the motion does not trace a line, peaking at 0.40 degrees for the
-        // lightest hit and 0.796 at the heaviest against the 900 cm boom, deliberately under one degree.
-        const float Amplitude = (3.f + 22.f * ShakeSeverity) * float(S.run.damageFeedback);
-        Camera->SetRelativeLocation(
-            FVector(0, FMath::Sin(ShakeSeconds * 70.f) * Amplitude, FMath::Cos(ShakeSeconds * 53.f) * Amplitude * .7f));
+        if (S.run.damageFeedback > 0)
+        {
+            // Two non-harmonic axes so the motion does not trace a line, peaking at 0.20 degrees for the
+            // lightest hit and 0.796 at the heaviest against the 900 cm boom, deliberately under one degree.
+            const float Amplitude = (3.f + 22.f * ShakeSeverity) * float(S.run.damageFeedback);
+            CameraOffset += FVector(0, FMath::Sin(ShakeSeconds * 70.f) * Amplitude,
+                                    FMath::Cos(ShakeSeconds * 53.f) * Amplitude * .7f);
+        }
+        // Squared so the kick eases out rather than ending abruptly. The camera falls back along the boom and
+        // catches up, which is the shove; the rumble underneath it is deliberately slower than the damage
+        // shake's 70 and 53 hertz, so a hit taken while boosting still reads as a separate, sharper event.
+        const float Punch = BoostPunch * BoostPunch;
+        const float Amplitude = (S.run.boosting ? 2.2f : 0.f) + 9.f * Punch;
+        CameraOffset += FVector(-16.f * Punch, FMath::Sin(ShakeSeconds * 34.f) * Amplitude,
+                                FMath::Cos(ShakeSeconds * 27.f) * Amplitude * .6f);
+    }
+    Camera->SetRelativeLocation(CameraOffset);
+    if (SpeedPostFX.GetValueOnGameThread() != 0)
+    {
+        // Follows the boost punch and the held boost, not the damage clock: these are speed cues, and a hit
+        // already has its own louder language in the shake and the red drive pulse.
+        const float Push = FMath::Clamp(BoostPunch * .6f + (S.run.boosting ? .5f : 0.f), 0.f, 1.f);
+        Camera->PostProcessBlendWeight = 1.f;
+        Camera->PostProcessSettings.bOverride_SceneFringeIntensity = true;
+        Camera->PostProcessSettings.SceneFringeIntensity = 1.6f * Push;
+        // .4 is the engine's own default, so cruising looks exactly as it did and only thrust tightens it.
+        Camera->PostProcessSettings.bOverride_VignetteIntensity = true;
+        Camera->PostProcessSettings.VignetteIntensity = .4f + .35f * Push;
     }
     else
-        Camera->SetRelativeLocation(FVector::ZeroVector);
+        Camera->PostProcessBlendWeight = 0.f;
     UpdateEngineMix();
     SoftTarget = nullptr;
     float Best = FMath::Cos(FMath::DegreesToRadians(Tuning->SoftAimDegrees));

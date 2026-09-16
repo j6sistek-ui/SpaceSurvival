@@ -39,6 +39,8 @@ private:
     TArray<TObjectPtr<UNiagaraComponent>> AmbientStorms;
     bool AmbientStormsAvailable = false;
     float CurrentAmbientStormScale = 0.f;
+    /** Drive level the visuals actually follow. Ramped rather than stepped, so boost has a shape. */
+    float DriveRamp = .45f;
     UPROPERTY()
     TArray<TObjectPtr<UStaticMeshComponent>> EngineCores;
     UPROPERTY()
@@ -72,7 +74,7 @@ private:
     FVector LastCloudCenter = FVector::ZeroVector;
     bool CloudPositionInitialized = false;
     bool DustInitialized = false;
-    void UpdateDust(const FVector &Center, const FVector &Velocity, bool Visible);
+    void UpdateDust(const FVector &Center, const FVector &Velocity, float Thrust, bool Visible);
     TWeakObjectPtr<AActor> Followed;
     bool FlightVisible = false;
     bool CloudAvailable = false;

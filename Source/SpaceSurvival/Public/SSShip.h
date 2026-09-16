@@ -78,6 +78,9 @@ private:
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f;
     /** Impact shake phase and severity. Presentation only; neither reaches thrust or shot origin. */
     float ShakeSeconds = 0.f, ShakeSeverity = 0.f;
+    /** Decays from one when boost engages, so acceleration has a transient the sustained levels do not give it. */
+    float BoostPunch = 0.f;
+    bool WasBoosting = false;
     float DrivePresentationPower = .45f, DrivePresentationDamage = 0.f;
     bool DrivePresentationBoosting = false, DrivePresentationBraking = false;
     bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false;

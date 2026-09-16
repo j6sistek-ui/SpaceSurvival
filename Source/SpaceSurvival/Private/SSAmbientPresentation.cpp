@@ -633,7 +633,14 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
     if (CloudsVisible)
         VolumeFog->SetWorldLocation(Center + FVector(0, 0, -10000000));
     const auto *Ship = Cast<ASSShip>(Followed.Get());
-    UpdateDust(Center, Ship ? Ship->GetVelocity() : FVector::ZeroVector,
+    // Read once here rather than twice: the dust wants it as much as the drive does, and it used to get
+    // handed velocity alone, so accelerating changed nothing about the field the player flies through.
+    float DrivePower = 0.f, Damage = 0.f;
+    bool Boosting = false, Braking = false;
+    if (Ship)
+        Ship->GetDrivePresentation(DrivePower, Boosting, Braking, Damage);
+    const float Thrust = Boosting ? 1.f : FMath::Clamp((DrivePower - .55f) / .8f, 0.f, 1.f);
+    UpdateDust(Center, Ship ? Ship->GetVelocity() : FVector::ZeroVector, Thrust,
                Active && DustEnabled.GetValueOnGameThread() != 0);
     for (int32 Index = 0; Index < CloudBanks.Num(); ++Index)
     {
@@ -679,16 +686,17 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
     }
     const bool TrailsVisible =
         Active && Ship && !Ship->IsMoored() && TrailsAvailable && TrailEnabled.GetValueOnGameThread() != 0;
-    float DrivePower = 0.f, Damage = 0.f;
-    bool Boosting = false, Braking = false;
-    if (Ship)
-        Ship->GetDrivePresentation(DrivePower, Boosting, Braking, Damage);
     const float Pulse = .85f + .15f * FMath::Sin(GetWorld()->GetTimeSeconds() * (Damage > .1f ? 28.f : 9.f));
     const FLinearColor DriveColor = Damage > .1f && Pulse < .92f ? FLinearColor(1.f, .02f, .01f)
                                     : Braking                    ? FLinearColor(1.f, .18f, .02f)
                                     : Boosting                   ? FLinearColor(.18f, .62f, 1.2f)
                                                                  : FLinearColor(.03f, .22f, .82f);
-    const float VisualPower = (Boosting ? 1.75f : Braking ? .55f : DrivePower) * Pulse;
+    // Boost and brake were flat steps that discarded throttle and speed outright, so every drive effect
+    // jumped to a fixed value and sat there, which is why boost read as a state rather than as acceleration.
+    // Ramping keeps the throttle in the signal and gives the transition a shape; boost still dominates.
+    const float DriveTarget = Boosting ? 1.35f + .4f * DrivePower : Braking ? .55f : DrivePower;
+    DriveRamp = FMath::FInterpTo(DriveRamp, DriveTarget, DeltaSeconds, 7.f);
+    const float VisualPower = DriveRamp * Pulse;
     const bool LayeredNow = ThrusterLayered.GetValueOnGameThread() != 0;
     // Collected here and applied in the core pass below, which is where the mesh length is known.
     TArray<TOptional<FVector>, TInlineAllocator<4>> ExhaustPositions;
@@ -796,7 +804,7 @@ void ASSAmbientPresentation::ApplyWorldOffset(const FVector &InOffset, bool bWor
     RestartTrails = true;
 }
 
-void ASSAmbientPresentation::UpdateDust(const FVector &Center, const FVector &Velocity, bool Visible)
+void ASSAmbientPresentation::UpdateDust(const FVector &Center, const FVector &Velocity, float Thrust, bool Visible)
 {
     Dust->SetVisibility(Visible && DustMaterial != nullptr);
     if (!Visible || !DustMaterial || DustPositions.IsEmpty())
@@ -826,12 +834,16 @@ void ASSAmbientPresentation::UpdateDust(const FVector &Center, const FVector &Ve
         DustPositions[Index] = Center + Offset;
         const double EdgeDistance = DustHalfWidth - Offset.GetAbsMax();
         const float Edge = FMath::Clamp(float(EdgeDistance / 700.0), 0.f, 1.f);
-        const float Bubble = FMath::Clamp(float((Offset.Size() - 200.0) / 300.0), 0.f, 1.f);
+        // Thrust pulls the near limit in, so grains held clear of the ship at cruise come past the camera
+        // under power. Density near the eye is what actually reads as speed.
+        const float Bubble = FMath::Clamp(float((Offset.Size() - (200.0 - 70.0 * double(Thrust))) / 300.0), 0.f, 1.f);
         const float Fade = Edge * Edge * (3.f - 2.f * Edge) * Bubble * Bubble * (3.f - 2.f * Bubble);
         DustTransforms[Index].SetLocation(DustPositions[Index]);
         DustTransforms[Index].SetRotation(TravelRotation);
         const float Width = DustSizes[Index] * Fade / 100.f;
-        DustTransforms[Index].SetScale3D(FVector(Width * (1.f + SpeedFraction * 3.f), Width, Width));
+        // Speed alone already stretched these; thrust stretches them further, so accelerating changes the
+        // field rather than only moving through it faster.
+        DustTransforms[Index].SetScale3D(FVector(Width * (1.f + SpeedFraction * 3.f + Thrust * 2.4f), Width, Width));
     }
     // One component submission/render-state update for all grains.
     Dust->BatchUpdateInstancesTransforms(0, DustTransforms, true, true, Teleported);
