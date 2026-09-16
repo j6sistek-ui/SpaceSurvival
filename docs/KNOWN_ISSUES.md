@@ -193,6 +193,87 @@ danger radius is what the player avoids.
 The earlier note on this row that the referent was undetermined is now superseded.
 
 
+
+#### September 16 verified environment, difficulty and lane causes (RPT-20260916-19)
+
+An 11-agent read-only audit with adversarial verification, which then measured actual captured pixels rather than
+describing them. Full working copy retained locally at `.agent/local/audit2-field.md`. Nothing implemented.
+
+**The fog is off by three orders of magnitude, and this is proved rather than inferred.**
+`Scripts/AuthorSpaceAreas.py:161` authors `fog_density` as 0.000025, `SSAmbientPresentation.cpp:112` feeds it
+straight to `SetFogDensity`, and the engine then divides it by 1000 at
+`Engine/Source/Runtime/Renderer/Private/SceneCore.cpp:404`. The result is roughly one percent opacity across the
+entire six kilometre grid. Its colour at `SSAmbientPresentation.cpp:312` is a near-black near-neutral. There are no
+light rays because no `LightShaft` setting exists anywhere in `Source/`, `Scripts/` or `Config/`, so both
+`bEnableLightShaftOcclusion` and `bEnableLightShaftBloom` sit at their false defaults.
+
+**Why the earlier fog trial was rejected, measured rather than recalled.** The background of every flight frame is
+opaque unlit geometry, not sky: `Scripts/AuthorContent.py:452` spawns a 50 km backdrop sphere and
+`ContentSource/GenerateGeometry.py:287` places the starfield at 40 km, and neither is flagged as sky. Height fog
+therefore paints every background pixel. A pixel measurement of the rejected capture against the current one shows
+the failure signature is not brightness but collapsed contrast:
+
+| | current | rejected fog trial |
+| --- | --- | --- |
+| luminance p5 | 11.2 | 42.3 |
+| p95 minus p5 | 47.8 | **13.1** |
+| blue-to-red ratio | 1.33 | 1.22 |
+
+**The untried lever that makes this proposal different.** `FogCutoffDistance` and `FogMaxOpacity` both sit at their
+disabled and unbounded defaults and have never been used in this project. Bounding fog at 20 km excludes the 40 km
+starfield and 50 km backdrop entirely, so true blacks and the stars survive. That is the structural difference from
+the rejected trial, which raised density with no bound.
+
+**Two consequences that overturn the obvious approach.** First, with fog bounded it can only veil pixels that have
+geometry inside the bound, so fog CANNOT fill empty negative space; the blue between rocks in the owner's references
+must come from the sky, not the fog. Second, brightness is not the discriminator: the reference images measure a
+median luminance near 23, effectively identical to the current game frame. **Chroma is.** The references sit at a
+blue-to-red ratio between 2.0 and 7.4 against the game's 1.33.
+
+**Difficulty: the cap is not the limiter, the cadence is.** Modelled from verified constants and cross-checked by two
+agents, concurrent hittable asteroids FALL as a run progresses: roughly 12 at wave 1, 6 to 7 at wave 5, 5 to 6 at
+wave 10. Raising `MaximumActiveThreats` from 24 to 40 alone moves wave 5 from 6.3 to 6.5 rocks. The spawn interval at
+`SSContentTypes.h:495-497` is 0.65 to 1.2 seconds and is constant at every wave. Separately the most common rock is
+smaller than the ship: `SSContentTypes.h:127` sets `Radius` 95 against `ShipRadius` 120 at `SSWorldActors.cpp:24`,
+which is why the 48 percent weighted hazard reads as grit rather than as a rock.
+
+**A real bug, not tuning, and it explains the empty wave 5.** The spawn roll chain at `SSWorldActors.cpp:1721-1765`
+is a strict if/else-if with no fall-through. When the roll picks the enemy branch but `SpawnEnemy` returns null
+because the enemy cap is full, the entire opportunity is burned, and the cooldown was already re-armed at `:1688`
+before the attempt, so a full interval is lost. At wave 5 the climax at `:1722` forces the enemy branch 100 percent
+of the time, so once five enemies exist the wave admits nothing at all for roughly 29 of its 40 seconds. Adding a
+fall-through to the asteroid branch fixes it without touching the authored beat. **Do not delete the wave 5 clause
+itself**; it implements `docs/GAME_SCOPE.md:1166-1176`.
+
+**Lanes: the guaranteed clear hole follows the player's nose.** `SSWorldActors.cpp:1495-1496` builds the spawn window
+from the ship's own right and up vectors and `:1506` tests candidates against `SafeLane` in that same ship-local
+basis. Every direction the player points is a right way by construction, so the owner's stated goal is currently
+impossible. `docs/production/COMBINED_SPACE_LOOK.md:60` already condemns this pattern.
+Three options, and the middle one needs an explicit owner decision:
+L1, free tuning with no sign-off, rebalance the decorative depth bands so the near field clumps into masses with lit
+voids between them; 86 percent of the decorative budget currently sits in the farthest band with 0.12 parallax, a
+near-static backdrop that can never form a wall the player flies past.
+L2, delete the `SafeLane` test, one line. **Ruled a MECHANIC CHANGE, not tuning**, because `SafeLane` implements
+`docs/GAME_SCOPE.md:81`, the guarantee against unavoidable hits. Named, not done.
+L3, a real world-space lane field, is three new systems and fights `docs/GAME_SCOPE.md:916` "there is no fixed path".
+Phase 2.
+Off the table regardless: making decorative scenery collidable to form corridors, per `docs/KNOWN_ISSUES.md:23`.
+
+**Boost currently halves the rock density.** `BoostMultiplier` raises closing speed and the spawn `Lead` scales with
+it at `SSWorldActors.cpp:1502`, pushing the spawn plane from roughly 104 m to 206 m. Owner decision: fix it, which
+weakens the 3.5 second reaction guarantee, or accept that boosting clears the field.
+
+**Build order matters and is not optional.** With the fog bounded, fog only veils geometry, so adding rocks increases
+apparent fog and adding fog increases apparent rock count. Landing both at once makes a bad result unattributable,
+which is the exact pattern behind all five prior rejected trials. **One change per capture, never two**, with numeric
+accept-or-revert thresholds recorded in the working copy.
+
+**Nothing here closes ACT-03.** `docs/production/COMBINED_SPACE_LOOK.md:64` requires lead plus independent agreement
+across three recipes, two run variations, multiple cell crossings, a sparse-to-dense change and a revisit. Four good
+cruise stills will not close that gate, and presenting them as closure would repeat the pattern behind every previous
+rejection.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
