@@ -8,7 +8,11 @@ param(
     [switch]$Packaged,
     [switch]$Sequence,
     [ValidateRange(-1,3)][int]$Area = -1,
-    [ValidateRange(0,10000)][int]$Variation = 0
+    [ValidateRange(0,10000)][int]$Variation = 0,
+    # Owner review aid for RPT-20260915-08: capture thruster candidates without an editor session.
+    [ValidateRange(-1,3)][int]$ThrusterShape = -1,
+    [ValidateRange(0,40)][double]$ThrusterEmission = 0,
+    [ValidateRange(0,10)][double]$ThrusterScale = 0
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -112,7 +116,11 @@ $arguments += @('-SSWave10Soak', '-SSSoakScenario=Wave1',
     '-ForceRes', '-windowed', '-ResX=1920', '-ResY=1080', '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
     '-nosound', '-unattended', "-abslog=$(Join-Path $root 'Rendered.log')")
 if ($Sequence) { $arguments += '-SSSoakSequence' }
-$arguments += "-ExecCmds=ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
+$execCmds = "ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
+if ($ThrusterShape -ge 0) { $execCmds += ",ss.ThrusterShape $ThrusterShape" }
+if ($ThrusterEmission -gt 0) { $execCmds += ",ss.ThrusterEmission $ThrusterEmission" }
+if ($ThrusterScale -gt 0) { $execCmds += ",ss.ThrusterScale $ThrusterScale" }
+$arguments += "-ExecCmds=$execCmds"
 $metadata = [ordered]@{
     evidenceType = 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS'; status = 'starting'; success = $false
     root = $root; label = $Label; token = $token; pid = $null; processStartUtc = $null; processExit = $null

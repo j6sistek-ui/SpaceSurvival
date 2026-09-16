@@ -30,6 +30,26 @@ TAutoConsoleVariable<int32> CloudEnabled(TEXT("ss.AtmosphereClouds"), 1,
                                          TEXT("Enable optional distant atmosphere cloud banks (0 disables)."));
 TAutoConsoleVariable<int32> TrailEnabled(TEXT("ss.EngineTrails"), 1,
                                          TEXT("Enable optional Niagara engine ribbon trails (0 disables)."));
+// Owner review aid for RPT-20260915-08, "thrusters look like cubes". Shape/emission/scale are switchable so a
+// set of candidates can be captured and chosen from, instead of one being picked on the implementer's taste.
+TAutoConsoleVariable<int32> ThrusterShape(TEXT("ss.ThrusterShape"), 1,
+                                          TEXT("Engine core mesh: 0 cube, 1 cone, 2 sphere, 3 cylinder."));
+TAutoConsoleVariable<float> ThrusterEmission(TEXT("ss.ThrusterEmission"), 3.f, TEXT("Engine core emissive strength."));
+TAutoConsoleVariable<float> ThrusterScale(TEXT("ss.ThrusterScale"), 1.f, TEXT("Engine core size multiplier."));
+
+/** True for the shapes whose length runs along the mesh's +Z (cone, cylinder), unlike the symmetric cube. */
+bool ThrusterCoreIsAxial()
+{
+    const int32 Shaped = FMath::Clamp(ThrusterShape.GetValueOnGameThread(), 0, 3);
+    return Shaped == 1 || Shaped == 3;
+}
+
+/** Pitching +90 maps the mesh's +Z onto the ship's -X, so a cone's apex trails aft like a real plume
+ *  rather than standing on end. Without this the cone renders point-first out of the nozzle. */
+FRotator ThrusterCoreRotation()
+{
+    return ThrusterCoreIsAxial() ? FRotator(90.f, 0.f, 0.f) : FRotator::ZeroRotator;
+}
 } // namespace
 
 ASSAmbientPresentation::ASSAmbientPresentation()
@@ -182,13 +202,20 @@ void ASSAmbientPresentation::BeginPlay()
         }
         Dust->AddInstances(DustTransforms, false, false, false);
     }
-    if (Cube && CoreMaterial)
+    const TCHAR *ShapePaths[] = {TEXT("/Engine/BasicShapes/Cube.Cube"), TEXT("/Engine/BasicShapes/Cone.Cone"),
+                                 TEXT("/Engine/BasicShapes/Sphere.Sphere"),
+                                 TEXT("/Engine/BasicShapes/Cylinder.Cylinder")};
+    const int32 ShapeIndex = FMath::Clamp(ThrusterShape.GetValueOnGameThread(), 0, 3);
+    auto *CoreShape = LoadObject<UStaticMesh>(nullptr, ShapePaths[ShapeIndex]);
+    if (!CoreShape)
+        CoreShape = Cube;
+    if (CoreShape && CoreMaterial)
         for (const auto &Core : EngineCores)
         {
-            Core->SetStaticMesh(Cube);
+            Core->SetStaticMesh(CoreShape);
             auto *Dynamic = UMaterialInstanceDynamic::Create(CoreMaterial, this);
             Dynamic->SetVectorParameterValue(TEXT("Color"), FLinearColor::White);
-            Dynamic->SetScalarParameterValue(TEXT("Emission"), 3.f);
+            Dynamic->SetScalarParameterValue(TEXT("Emission"), ThrusterEmission.GetValueOnGameThread());
             Core->SetMaterial(0, Dynamic);
             EngineCoreMaterials.Add(Dynamic);
         }
@@ -259,7 +286,7 @@ void ASSAmbientPresentation::Follow(AActor *Actor)
             EngineCores[Index]->AttachToComponent(Ship && Ship->HullMesh ? Ship->HullMesh.Get() : GetRootComponent(),
                                                   FAttachmentTransformRules::KeepRelativeTransform);
             EngineCores[Index]->SetRelativeLocation(ExhaustPosition + FVector(-18.f, 0.f, 0.f));
-            EngineCores[Index]->SetRelativeRotation(FRotator::ZeroRotator);
+            EngineCores[Index]->SetRelativeRotation(ThrusterCoreRotation());
         }
     }
     RestartTrails = true;
@@ -458,6 +485,9 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
                                     : Boosting                   ? FLinearColor(.18f, .62f, 1.2f)
                                                                  : FLinearColor(.03f, .22f, .82f);
     const float VisualPower = (Boosting ? 1.75f : Braking ? .55f : DrivePower) * Pulse;
+    // Collected here and applied in the core pass below, which is where the mesh length is known.
+    TArray<TOptional<FVector>, TInlineAllocator<4>> ExhaustPositions;
+    ExhaustPositions.SetNum(EngineCores.Num());
     for (int32 Index = 0; Index < EngineTrails.Num(); ++Index)
     {
         const auto &Trail = EngineTrails[Index];
@@ -466,7 +496,7 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
         {
             Trail->SetRelativeLocation(ExhaustPosition);
             if (EngineCores.IsValidIndex(Index))
-                EngineCores[Index]->SetRelativeLocation(ExhaustPosition + FVector(-18.f, 0.f, 0.f));
+                ExhaustPositions[Index] = ExhaustPosition;
         }
         if (TrailsVisible)
         {
@@ -487,11 +517,21 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
             const float Length = FMath::Clamp(18.f + VisualPower * 42.f, 14.f, 95.f);
             const float Width = FMath::Clamp(7.f + VisualPower * 4.f, 6.f, 18.f);
             // Engine cube is 100cm; extend rearward along the ship's +X/-X axis.
-            Core->SetRelativeScale3D(FVector(Length, Width, Width) / 100.f);
+            const float ShapeScale = FMath::Max(.05f, ThrusterScale.GetValueOnGameThread());
+            // A cone or cylinder is rotated so its length runs aft, so its axes swap relative to a cube.
+            const bool Axial = ThrusterCoreIsAxial();
+            const FVector CoreSize = Axial ? FVector(Width, Width, Length) : FVector(Length, Width, Width);
+            Core->SetRelativeScale3D(CoreSize * ShapeScale / 100.f);
+            // Every basic shape straddles its own origin, so an axial mesh would bury its wide end in the
+            // hull. Shift it aft by half its length to seat the flare at the nozzle lip.
+            if (ExhaustPositions.IsValidIndex(Index) && ExhaustPositions[Index].IsSet())
+                Core->SetRelativeLocation(ExhaustPositions[Index].GetValue() +
+                                          FVector(-18.f - (Axial ? Length * ShapeScale * .5f : 0.f), 0.f, 0.f));
             if (EngineCoreMaterials.IsValidIndex(Index))
             {
                 EngineCoreMaterials[Index]->SetVectorParameterValue(TEXT("Tint"), DriveColor);
-                EngineCoreMaterials[Index]->SetScalarParameterValue(TEXT("Emission"), .45f + VisualPower * 1.15f);
+                EngineCoreMaterials[Index]->SetScalarParameterValue(
+                    TEXT("Emission"), (.45f + VisualPower * 1.15f) * ThrusterEmission.GetValueOnGameThread() / 3.f);
             }
             if (EngineLights.IsValidIndex(Index))
             {
