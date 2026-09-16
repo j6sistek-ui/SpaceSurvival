@@ -579,6 +579,13 @@ void ASSGameMode::Tick(float Dt)
         if (S.run.phase == SS::Phase::Approach && Ship)
         {
             Director->SetActive(false);
+            // Deactivating the Director stops further admission but leaves spawned hostiles alive,
+            // so the station became reachable with wave enemies still flying. The five-wave cadence
+            // is locked, so this is a correctness repair. Destroy, never OnDefeated: the defeat path
+            // awards kills, credits, XP and objective progress the player never earned.
+            for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
+                if (It->IsEnemy() && !It->IsActorBeingDestroyed())
+                    It->Destroy();
             const FRotator Arrival(0, Ship->GetActorRotation().Yaw, 0);
             const FVector Dock = Ship->GetActorLocation() + Ship->GetActorForwardVector() * 18000.f;
             StationTarget = Dock - Arrival.Vector() * 850.f - FVector(0, 0, 220);

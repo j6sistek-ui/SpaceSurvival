@@ -76,6 +76,8 @@ private:
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f;
+    /** Impact shake phase and severity. Presentation only; neither reaches thrust or shot origin. */
+    float ShakeSeconds = 0.f, ShakeSeverity = 0.f;
     float DrivePresentationPower = .45f, DrivePresentationDamage = 0.f;
     bool DrivePresentationBoosting = false, DrivePresentationBraking = false;
     bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false;

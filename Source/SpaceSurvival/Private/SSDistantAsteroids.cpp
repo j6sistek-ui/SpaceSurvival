@@ -257,7 +257,9 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
             Pose.SetLocation(Center - Rotation.RotateVector(Origin * Pose.GetScale3D()));
         }
         if (!AnimatedTransforms[BatchIndex].IsEmpty())
-            Batch->BatchUpdateInstancesTransforms(0, AnimatedTransforms[BatchIndex], false, true, false);
+            // bMarkRenderStateDirty takes RecreateRenderState_Concurrent and skips the incremental
+            // instance-data path, rebuilding every batch's scene proxy each frame for no visual gain.
+            Batch->BatchUpdateInstancesTransforms(0, AnimatedTransforms[BatchIndex], false, false, false);
     }
 }
 

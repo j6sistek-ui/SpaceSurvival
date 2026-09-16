@@ -198,6 +198,7 @@ void ASSShip::Tick(float Dt)
     auto &S = GI->Session;
     FireCooldown = FMath::Max(0.f, FireCooldown - Dt);
     ImpactCooldown = FMath::Max(0.f, ImpactCooldown - Dt);
+    ShakeSeconds += Dt;
     if (Moored)
     {
         // Existing hazards and damage remain active; GameMode freezes wave progress.
@@ -279,8 +280,13 @@ void ASSShip::Tick(float Dt)
                          FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f), Dt, 3.f);
     Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? 86.f : 80.f, Dt, 3.f);
     if (GI->Session.settings.cameraShake && S.run.damageFeedback > 0)
+    {
+        // Two non-harmonic axes so the motion does not trace a line, peaking at 0.40 degrees for the
+        // lightest hit and 0.796 at the heaviest against the 900 cm boom, deliberately under one degree.
+        const float Amplitude = (3.f + 22.f * ShakeSeverity) * float(S.run.damageFeedback);
         Camera->SetRelativeLocation(
-            FVector(0, FMath::Sin(GetWorld()->GetTimeSeconds() * 70.f) * 3.f * float(S.run.damageFeedback), 0));
+            FVector(0, FMath::Sin(ShakeSeconds * 70.f) * Amplitude, FMath::Cos(ShakeSeconds * 53.f) * Amplitude * .7f));
+    }
     else
         Camera->SetRelativeLocation(FVector::ZeroVector);
     UpdateEngineMix();
@@ -331,6 +337,12 @@ void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
+    // Phase the shake from this impact instead of from world time, and scale it by severity.
+    // Severity belongs here, in the single damage funnel, because Session::ApplyDamage re-arms
+    // damageFeedback on every damage event: storing it on contact alone would fire a full-strength
+    // shake for an enemy laser graze arriving seconds later.
+    ShakeSeconds = 0.f;
+    ShakeSeverity = FMath::Clamp((Amount - 8.f) / 60.f, .15f, 1.f);
     GI->Session.ApplyDamage(Amount, Type);
     UGameplayStatics::PlaySoundAtLocation(
         this, SSAudio::PresentationSound(TEXT("Impact")), GetActorLocation(),
