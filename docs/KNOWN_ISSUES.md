@@ -562,6 +562,41 @@ station reads cool, grey and sparse by comparison.
 `C:/Program Files/Lian-Li/L-Connect 3/ffmpeg.exe` for anyone repeating this.
 
 
+
+#### September 16 effect inventory: 193 owned Niagara systems, and a purpose-built fog bank set
+
+Prompted by the owner asking whether other owned effects suit distant work. They do, and the current effort was
+hand-rolling things the library already provides.
+
+**193 Niagara systems are owned and outside the private derivative folder.** By pack: Sci-Fi Weapons VFX 84,
+Niagara Examples 67, Pyro 22, RPG Environment VFX 13, Nerves 7. The project's combat visual data binds eleven roles.
+
+**`Content/NiagaraExamples/FX_Fog` is a purpose-built fog bank set and is the direct answer to the owner's request
+for distant fog pockets.** It contains `BP_FogBankVolume` and `BP_FogBankCard`, a presets asset, and **three seeds
+each of `SVT_FogBank` and `SVT_FogBank_Whisps` as sparse volume textures**. Three seeds means built-in variation,
+which matches the owner's requirement that zones differ per playthrough. This is Epic's own authored solution and it
+supersedes the hand-built cloud-bank approach currently in `ASSAmbientPresentation`, which places two static meshes
+carrying a volume material and which the current pass could not get to render at distance.
+
+**Other candidates found for distant and ambient use, none currently used:**
+- **Fourteen** `NS_Simpl_Lightning_1` to `_14` in the Sci-Fi Weapons pack. A family of simple lightning systems,
+  far more likely to suit distant flanking arcs than the Nerves beams, which are authored for close work and are
+  what three failed placement attempts were fighting.
+- `NS_MagicalGlowRays` in RPG Environment VFX. Directly relevant to the still-unimplemented light shafts.
+- `NS_Player_Electricity_Looping` in the Niagara examples, a looping electrical system.
+- `NS_Ground_Energy`, `_1`, `_2` for energy fields, and `NS_Smoke_Plume` and `NS_Chimney_Smoke` for drifting volume.
+- `NS_Boundary`, `_Box`, `_Cylinder`, `_Sphere` for visualising volumes, useful when authoring lane or hazard bounds.
+
+**`Content/NiagaraExamples/GalleryLevel.umap` exists**, which is the pack's own showcase level. Opening it is the
+fastest way to audition any of these at real scale before wiring anything, and nobody has done so.
+
+**Consequence for the ambient storm work.** The Nerves beams are wired, load and compile, and do not render at any
+of the three placements tried. Rather than a fourth placement attempt, the next step is to audition the simple
+lightning family and the fog bank volumes in the gallery level, pick what actually reads at distance, and wire that.
+This is the same lesson already recorded twice: check what is owned before building, and audition in the vendor's
+own showcase before integrating.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
