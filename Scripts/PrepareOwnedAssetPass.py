@@ -23,6 +23,7 @@ NATIVE_PACKS = (
     "SciFITrooper_Man_03",
     "Heavy_space_trooper",
     "CosmicMaterial",
+    "NERVES",
 )
 
 AUDIO = {

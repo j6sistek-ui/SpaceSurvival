@@ -93,6 +93,12 @@ Official references checked 2026-09-13:
 Actual patch size varies with changed assets and cooked container layout. This setup does not
 promise tiny updates or prove save compatibility across future game/schema changes.
 
+## September 16 prepared 0.1.17-alpha, not published, publication ON HOLD
+
+**September 16 09:05 UTC hold.** Owner hands-on play of this candidate found the station ALIEN WORLD doorway silently unresponsive, then working after a reload. `USSAlienGallery::Enter` rejects before `StartLoad` with no log or message, and the scripted fixture cannot see it because it teleports the walker and calls `ASSGameMode::Interact` directly instead of walking and pressing a key. This is a second, undiagnosed intermittent defect on the gallery entry path. Publication of `0.1.17-alpha` is on hold and the candidate is NOT release-ready. See ISS-11 and RPT-20260916-10 in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+
+`Artifacts/Releases/0.1.17-alpha/payload` is prepared and locally verified from packaged source `a77010e`: 51 files, 2,715,833,034 bytes, against the passing IoStore dependency audit and packaged fixtures recorded in the [gallery input-isolation receipt](validation/2026-09-16-gallery-input-isolation.json). Preparation and local verification upload nothing. `preview` and `publish` contact itch and need portable butler plus an explicit owner decision; neither was run. The published tester build is still `0.1.16-alpha.1`. Clean-PC installation and a real A-to-B update with save preservation remain unverified.
+
 ## September 14 update
 
 0.1.15-alpha is verified ready on windows-alpha, upload19226459/build1978147, based on1975861. Butler reports539.30MiB patch (52.88% savings); actual client update/save preservation is unverified. Devlog remains drafted, not published: browser authentication required.

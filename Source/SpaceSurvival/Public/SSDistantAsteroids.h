@@ -5,6 +5,7 @@
 #include "SSDistantAsteroids.generated.h"
 
 class UInstancedStaticMeshComponent;
+class USSSpaceLookData;
 
 /** Unreachable background dressing, deliberately outside the damage/target actor hierarchy. */
 UCLASS()
@@ -27,7 +28,7 @@ public:
     /** Conservative world-space distance from viewer to the nearest rendered mesh bound. */
     double GetMinimumSurfaceDistance() const
     {
-        return MinimumAnchorSurface - ParallaxOffset.Size();
+        return MinimumAnchorSurface;
     }
 
 protected:
@@ -37,9 +38,10 @@ private:
     void BuildField(int32 Count);
     UPROPERTY()
     TArray<TObjectPtr<UInstancedStaticMeshComponent>> Batches;
+    UPROPERTY()
+    TObjectPtr<USSSpaceLookData> SpaceLook;
     TWeakObjectPtr<AActor> Viewer;
     FVector PreviousViewerPosition = FVector::ZeroVector;
-    FVector ParallaxOffset = FVector::ZeroVector;
     FQuat FieldBasis = FQuat::Identity;
     double MinimumAnchorSurface = 0.0;
     TArray<TArray<uint8>> InstanceBands;

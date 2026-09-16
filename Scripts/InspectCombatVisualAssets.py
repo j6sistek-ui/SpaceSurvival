@@ -11,12 +11,16 @@ import unreal as u
 ROOT = Path(__file__).resolve().parents[1]
 WEAPONS = '/Game/Sci_Fi_Weapons_VFX_AIO/VFX/'
 PYRO = '/Game/PyroVFX/Niagara_FX/Explosions/'
+NERVES = '/Game/NERVES/FX/'
 PATHS = [WEAPONS + name for name in [
     'NS_Gun_Beam_1', 'NS_Gun_Beam_2', 'NS_Gun_Beam_3', 'NS_Gun_Beam_4',
     'NS_Gun_Start_Poin_1', 'NS_Gun_Start_Poin_2',
     'NS_Simple_Impact_1', 'NS_Simple_Impact_2',
     'NS_Simple_Core_Impact_1', 'NS_Anomal_Hole', 'NS_Lighting_Ball',
-]] + [PYRO + name for name in ['NS_General_S_Ex_01', 'NS_General_S_Ex_02', 'NS_General_M_Ex_01']]
+]] + [PYRO + name for name in ['NS_General_S_Ex_01', 'NS_General_S_Ex_02', 'NS_General_M_Ex_01']] + [
+    NERVES + 'NS_ElectircBeams_Blue',
+    WEAPONS + 'NS_Lightning_Damage_Land_Mid',
+]
 
 
 def prop(obj, name):

@@ -30,6 +30,9 @@ private:
     bool Started = false, Stopping = false, SawFlightWave = false, SawBreathing = false;
     bool CaptureRequested = false, AllFramesForeground = true;
     bool CaptureVisuals = false;
+    bool CaptureSequence = false;
+    double NextSequenceSeconds = 6; // Let normal rendering/texture streaming settle before repeated readbacks.
+    int32 SequenceIndex = 0;
     bool OffscreenVisuals = false;
     TArray<TSharedPtr<FJsonValue>> VisualRecords;
     TSet<FString> VisualNames;
@@ -47,6 +50,12 @@ private:
     double FocusSince = 0;
     bool SawClimax = false, SawApproach = false;
     bool Wave1 = false;
+    bool Gallery = false, GalleryRunPreserved = false, GalleryReturned = false;
+    int32 GalleryStage = 0;
+    double GalleryStageAt = 0, GalleryReadyAt = 0;
+    FString GalleryRunBefore, GalleryAccountBefore;
+    FTransform GalleryReturnTransform;
+    void TickGallery(float DeltaSeconds);
     bool Station5 = false, SawWormhole = false, SawDocking = false, SawExit = false;
     double WormholeSeconds = 0, DockingSeconds = 0, ExitSeconds = 0, StationIdleSeconds = 0;
     void Stop(const FString &Error);

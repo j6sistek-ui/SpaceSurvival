@@ -14,6 +14,23 @@ The panel can be undocked by dragging its tab beside the viewport, or resized to
 
 **Save + Apply changes the project, not the already-packaged executable or itch.** To see it in editor gameplay, open `Content/SpaceSurvival/Maps/Survival`, start Play and enter the home hangar. A later package/update includes the saved layout. Stop Play before returning to the workshop. Playing the workshop map itself is only an editing preview, with the base GameMode and no survival loop.
 
+## Inspect the complete alien world
+
+In the current development project, play `/Game/SpaceSurvival/Maps/Survival`, close the opening menu and approach the cyan **ALIEN WORLD** doorway in the home hangar or a station. Press **E / A** at its prompt. This opens the complete owned `L_Showcase_level` for visual inspection. **Tab / Y** switches to the pack's complete `L_assets` layout; **Esc / B** returns to the station and original walker position.
+
+| Gallery action | Keyboard/mouse | Controller |
+| --- | --- | --- |
+| Move / look | WASD / mouse | Left / right stick |
+| Rise / fall | E / Q | Right / left bumper |
+| Fast / slow movement | Shift / Ctrl | Right / left trigger |
+| Showcase / asset layout | Tab | Y |
+| Reset view | Home | Start |
+| Return or cancel loading | Esc | B |
+
+The labeled evaluation camera flies without collision so you can inspect large structures from any side. Run progression stops during review, and the existing station and session remain in memory for return. This is a viewer: movement does not edit, export or save vendor placements. Use the Workshop to arrange selected assets in your own station. If the owned map is missing, entry reports that it is unavailable and leaves the station in place.
+
+**The old packaged EXE and itch build have no gallery doorway.** Open `Play Development Build.cmd` with the installed private megastructure maps; see [authoring and capture setup](BUILD_RUN.md#spatial-areas-and-alien-gallery-development-project). The first asset view showed empty floor. Corrected capture `3bc9ba3b7f2a42c8a3899b57ae024b38` shows the modular inventory and has independent acceptance for the scripted entry/switch/return path. Ordinary navigation, physical controls, detailed inspection and packaged behavior remain unverified.
+
 ## Assets and ten material choices
 
 The thumbnail browser searches all currently imported static meshes, skeletal meshes and Niagara systems under Content, plus Unreal's basic shapes. The September 15 owned-asset pass validates **708** exact filtered entries: 702 under `/Game` and six engine basic shapes. It loads the selected asset when placed, rather than every model at once. New downloads must first be added/imported into the working project using the routes below. Lights can be placed with Unreal's Place Actors panel; point, spot and rect lights are supported.
@@ -74,6 +91,7 @@ These folder names were checked on disk on 2026-09-14. Open the **Content** root
 | `CosmicMaterial` | Material instances for manual use through Details plus two filtered mesh entries; material assets do not appear as placeable thumbnails |
 | `SpaceSurvival/Licensed/StationAssets/Drone` | One private filtered skeletal mesh; its imported idle clip supplies a supplemental presentation-only drone |
 | `SpaceSurvival/Licensed/StationVisualPass` | The editable layout and selected private station materials/derivatives |
+| `Megastructure_Scifi_World/Meshes` | Owned alien structure, arch, pillar, panel, floor and lamp meshes; added locally September 16. The complete showcase and inventory maps remain under its `Level` folder |
 
 For a cabinet or other ordinary prop, add a **Static Mesh** component as above. The robot is a **Skeletal Mesh**, with a compatible animation configured on the existing staff components. Move or duplicate those existing staff components only when another animated staff member is intended; a static prop needs no animation or Blueprint behavior.
 
@@ -106,6 +124,7 @@ The editor-only cyan box marks the docking lane: local **X -1900 to 1715, Y -700
 | Repair / Ship Bay | `(-800, -1000, 0)` |
 | Contracts / Pilot Record | `(-1100, 850, 0)` |
 | Save / Settings | `(0, 1000, 0)` |
+| Alien World review doorway | `(450, 1000, 0)`; doorway frame centered at `(450, 1180)`, extending to about Z 324 cm |
 | Launch | `(950, -450, 0)` |
 | Mica | `(1000, 1000, 0)` |
 | Beacon | `(-1400, 0, 0)` |

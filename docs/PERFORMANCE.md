@@ -2,9 +2,25 @@
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed package audit and packaged capture validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
+## September 16 spatial areas and gallery (performance unmeasured)
+
+The new spatial path retains 27 neighboring cells, up to 64 shadowed major placements and a configured 384 regional-clutter allowance. The distant field now defaults to 2,048 instances; far and regional clutter share a 3,072 ceiling. Three merged alien assemblies contain 20/20/21 source pieces with original detail material graphs; merging does not prove reduced GPU cost. Larger apparent rocks, shadowed masses and the 6km fog grid require a separate representative timing pass. Bound counts are guardrails, not a 60 FPS finding. The shared cap describes steady state: live console changes can briefly rebuild the far field before the regional 0.05-second budget update catches up.
+
+The gallery streams the full vendor maps while suppressing the station scene; it is a separate inspection workload. Screenshot fixtures perturb frame cadence and do not establish smooth flight, streaming hitch behavior, gallery responsiveness or packaged resource limits. Current hashes and captures are in [the area/gallery receipt](validation/2026-09-16-space-areas-gallery.json); acceptance remains in the sole issues log.
+
+## Earlier September 16 orbital wreck (performance unmeasured)
+
+Blender derivatives contain 21,622 triangles for the broken arc, 9,600 for the ring fragment and 1,088 for the kit beam. The current trial uses twelve major placements including eight owned rocks, plus the existing 384-instance field and local volume adjustments. Real Unreal renders exist; no representative frame-time result exists for this continuation. Dense screenshot readbacks severely perturb frame cadence and may delay texture settling; the sequence starts after the first five-second normal-rendering view. Screen coverage, streaming, fog cost and sustained-travel behavior still require measurement without screenshot readback. Earlier sky-memory figures remain historical for their specific configuration.
+
+## September 15 asteroid source follow-up
+
+The 384-instance field expands from eight to 15 mesh batches; dust decreases from 512 to 320 grains. This is not a measured GPU improvement: geometry/material diversity and per-instance recycling still need representative profiling.
+
+Texture resource readback reports 24 MiB per 2048-face BC6H sky (72 MiB for three), versus 96 MiB per 4096-face sky (288 MiB total). The corresponding uncompressed 2K resource was 192 MiB per sky. These are texture figures, not total VRAM or cooked size. Fixed 1080p views showed little gain from 4K, so 2K BC6H is selected; HDR compression is lossy. Screenshot timings are excluded from FPS acceptance. See [receipt](validation/2026-09-15-asteroid-depth.json).
+
 ## September 14 visual-pass measurement boundary
 
-Current source `cf6296f` changes only the star material authoring: reduced brightness, increased contrast and one level of static directional noise. Authoring, Package 4's dependency audit and the 725-file fresh Git export pass. Its [star-adjusted receipt](validation/2026-09-14-visual-enhancement-stars.json) verifies four packaged Wave 1 images (`83e8d2af8d124cb99a1369727447ebbd`) and 16 Station 5 images (`57b542f96fac479ab20841b6a2ec8d1b`), with production saves preserved. These are hidden/offscreen visual fixtures; the material's shader cost has not been benchmarked. C++ is unchanged from `4dc45ac` and its passing Editor Build 12 (44.21 seconds), 49 Unreal tests and 30-file format check; those checks were not rerun for this material-only change.
+At this historical checkpoint, source `cf6296f` changes only the star material authoring: reduced brightness, increased contrast and one level of static directional noise. Authoring, Package 4's dependency audit and the 725-file fresh Git export pass. Its [star-adjusted receipt](validation/2026-09-14-visual-enhancement-stars.json) verifies four packaged Wave 1 images (`83e8d2af8d124cb99a1369727447ebbd`) and 16 Station 5 images (`57b542f96fac479ab20841b6a2ec8d1b`), with production saves preserved. These are hidden/offscreen visual fixtures; the material's shader cost has not been benchmarked. C++ is unchanged from `4dc45ac` and its passing Editor Build 12 (44.21 seconds), 49 Unreal tests and 30-file format check; those checks were not rerun for this material-only change.
 
 At the preceding `4dc45ac` checkpoint, Package 3 passed archive/dependency verification and both packaged visual fixtures: four Wave 1 images (`91762e8ad7cc4684a57f1a11063b4d9d`) and 16 Station 5 images (`8ce67d72b1df406eb2b3e7382bed397e`). The [Package 3 receipt](validation/2026-09-14-visual-enhancement.json) binds that captured payload to its audited archive. These hidden/offscreen screenshot runs do not establish normal foreground frame time, smoothness or representative performance. The 380-component station, 11 lights and fitted player modules still need that assessment.
 

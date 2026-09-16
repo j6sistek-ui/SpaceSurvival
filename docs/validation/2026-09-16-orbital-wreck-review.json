@@ -1,0 +1,1068 @@
+{
+  "status": "PARTIAL_TARGET_NOT_MET",
+  "recorded_utc": "2026-09-16T02:22Z",
+  "source_base": "6ee36d7f2627d1465b8debadcc81f8920c22d5b1",
+  "source_binding": "Base plus file hashes below; final documentation/commit follows. Captured build precedes test-only light mobility correction; runtime source unchanged between captured and final tested builds.",
+  "files": [
+    {
+      "path": "Source/SpaceSurvival/Private/SSAmbientPresentation.cpp",
+      "sha256": "b7dc66a22f04200c124cb93717da13bccd1094dab49e631234738d3f35bdb9a0"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSAmbientPresentation.h",
+      "sha256": "d9875d7967483e2fbf4b405b4ddbd473c1d436464f12d3ea52069748aaf3bc0c"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSSpaceLookData.h",
+      "sha256": "6c8d8dae199b7e6b6c634625e61b572f0e0b202f5dd2891955c39b4603de11d6"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSSpaceScenery.cpp",
+      "sha256": "cc8ebaa37b11a9e1552d5145ec2041d9eb39eca03ae36548dabec230fb6ea771"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSWave10Soak.cpp",
+      "sha256": "64551ee7462f4632338cfff711a9acbed6227a13b9f88514ececb96335f3e7a5"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSWave10Soak.h",
+      "sha256": "d704b03129f83fbeccc5958fca3c6dfc2fbba2e63cbf238c97029f8420cbb0bb"
+    },
+    {
+      "path": "Scripts/AuthorOrbitalWreck.py",
+      "sha256": "f8b4cd46d7e9efa79b36174d3df0c4d8d936047dac40717c68c004126345b9c0"
+    },
+    {
+      "path": "Scripts/CaptureSpaceLook.ps1",
+      "sha256": "8b354568b8e20a8d761d6ca00c686c3b98c3985f942133e10b70b6a6c6c28c0f"
+    }
+  ],
+  "concept": {
+    "path": "docs/production/references/orbital-wreck-concept.png",
+    "sha256": "3ac12838c2841f30930c7b7e8a4fbc32bede0273d9e4e598cc1e06345b8d14ab",
+    "type": "GENERATED_TARGET_NOT_GAMEPLAY"
+  },
+  "private_content": [
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\Atmosphere\\DA_DeepSpaceLook.uasset",
+      "sha256": "966850e86e6c3c7c45c5ab8b55ccf774303b4e072814e1b8616180f8cc059ba1"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\Atmosphere\\M_OrbitalWreckSky.uasset",
+      "sha256": "6e3f2c84bd039b6fae391b4cf19196bb7c3e3c14d6148d08d11e79f0c52bd0d3"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\Atmosphere\\MI_DeepSpaceCloud.uasset",
+      "sha256": "64752e70e523fb4a5824f6a5b5065df603b81811c8f95705941de5f2071aa134"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_0.uasset",
+      "sha256": "d149c3f0ba31b23e2010fe0c3cb2df1ce7421484e4ded4c24f0e04b9d093b758"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_1.uasset",
+      "sha256": "57f9726eee422d5d242d9f4d3efcfb542beca21fd9b208354395a82770989519"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_10.uasset",
+      "sha256": "d108a890b7b08a859e349f47c081b5a0ba11565e5070c7288fc9800204e3e9ec"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_11.uasset",
+      "sha256": "5f8322af66c2806d290d0bfe768e861d0369f1cd292c3921e20701c42446bc97"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_12.uasset",
+      "sha256": "08a45db92ca86ba3b2cb10d35f5101bae98d88d7da3d25b947f9f8f7e5a1bbb0"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_2.uasset",
+      "sha256": "5e1c9f63e8a009b8f5c0a4d3833151ab70e2f310a5c8658cb863cfeffcd3d674"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_3.uasset",
+      "sha256": "5cb71aa0c1a0796adb483d65f680d9b8b9f2dbe3ccf8f5e4f31a49482b768b3e"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_8.uasset",
+      "sha256": "4ee8df09f466ab6f3a70ae422aa527f5784d10add9c6ad76ce4984406ce764de"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\Image_9.uasset",
+      "sha256": "52a2557fadd60ed71378f0f0e0641f761d61ce3ea47d58647697dec4616e8001"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\SM_BrokenArc.uasset",
+      "sha256": "742c5a4e3ad3ce74f368f980646c2a3949d8bc0fddb7276ec929ddf140481214"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\spacestation_main.uasset",
+      "sha256": "75e7a602edf31924e10bcee6aa3657f6bf0413f1abe50ddc26d0ec46c2bfe6f3"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\BrokenArc\\spacestation_main2.uasset",
+      "sha256": "392fecce0e05bd34a1e921afd991a276c9f8d874036292e9a948a9272ef90463"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\KitBeam\\M_Figur_0.uasset",
+      "sha256": "5f614ebb8c94f98d10db4797aa3a8d8ea7fb4774761ab8e87c507f6c2856825f"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\KitBeam\\SM_KitBeam.uasset",
+      "sha256": "5172db0d016f1e8e7e68fa7606dfcddd76d7ffc00e9f7e3d7d163cc19866396d"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\KitBeam\\T_Figur_0_Color.uasset",
+      "sha256": "67f6f591ace94ff7def78665cdab9a77c373c01e70623c9da74a290e881b6e49"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\KitBeam\\T_Figur_0_Metallic-T_Figur_0_Roughness.uasset",
+      "sha256": "e24eec19ba6ef24b336577d301cf09b0e522d96764127f465b9ef06975dee51c"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\KitBeam\\T_Figur_0_Normal.uasset",
+      "sha256": "3563607ddcb847b8495cc886f86923b370ad5d671676a8419c73505f61132b4f"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_0.uasset",
+      "sha256": "34470ede3ea78530bee1278269580516ce96cba1a6ae2021b32e0caf592113bf"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_1.uasset",
+      "sha256": "d8b853447db4205ae2d95786ab413ee3adeff521afa75348f2129880fd336ec0"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_10.uasset",
+      "sha256": "235c9b84f8d952306a2059509d71f50e625186ad6de0c1184454cdfdc3db9ac6"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_11.uasset",
+      "sha256": "30800f3720e50d87fe2da0e86b3e06d9e95fdfc9f8bdeb3c7b0b2b2022b0155c"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_12.uasset",
+      "sha256": "0c9f1945fb2dc0c1b95fc58801d258d90285f57ecd32a7cd6098239dae0fb2a5"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_2.uasset",
+      "sha256": "a9e828f0cc1774a059e8ff1abade32b5f7a8bd5220096741518dbcfe456e3c4e"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_3.uasset",
+      "sha256": "c08cf6b11eec719943ba30b89796b96bc12a4146b20ffe66b2103fc58abb645b"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_8.uasset",
+      "sha256": "a3fe8d6a78fc5c02cfab41c96ab187722e598efc0dea15f87a88e6cc0b90e329"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\Image_9.uasset",
+      "sha256": "e838347c544f3a98c88eb3edd00f40610eedb627d6dc2c381cb9b57d2734bd01"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\SM_RingFragment.uasset",
+      "sha256": "4930a3117424830a3c9fb0a7049f393bdd5333c362304f2eaee11f8ee7f6ccc6"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\spacestation_main.uasset",
+      "sha256": "e5e599748cc29cb80ee63b3af86bfab8fffd371f8143f2c3a115b19e90024f4d"
+    },
+    {
+      "path": "Content\\SpaceSurvival\\Licensed\\OrbitalWreck\\RingFragment\\spacestation_main2.uasset",
+      "sha256": "aa27f67a25ab545e87df431eaf5b26564423ce91c8e0131299245827505cef54"
+    }
+  ],
+  "author_receipt": "Artifacts/OrbitalWreck/86fe92f9463f4e64b974bbd2cab245b2/report.json",
+  "placements": [
+    {
+      "mesh": "/Game/SpaceSurvival/Licensed/OrbitalWreck/BrokenArc/SM_BrokenArc.SM_BrokenArc",
+      "center_cm": [
+        275000,
+        200000,
+        12000
+      ],
+      "rotation": [
+        6.3611093629270335e-15,
+        80.00000000000001,
+        110.00000000000003
+      ],
+      "radius_cm": 190000
+    },
+    {
+      "mesh": "/Game/SpaceSurvival/Licensed/OrbitalWreck/BrokenArc/SM_BrokenArc.SM_BrokenArc",
+      "center_cm": [
+        220000,
+        -180000,
+        -95000
+      ],
+      "rotation": [
+        55,
+        -10,
+        -35
+      ],
+      "radius_cm": 175000
+    },
+    {
+      "mesh": "/Game/SpaceSurvival/Licensed/StationVisualPass/Meshes/SM_Station3Exterior.SM_Station3Exterior",
+      "center_cm": [
+        490000,
+        -210000,
+        155000
+      ],
+      "rotation": [
+        15,
+        -30,
+        0
+      ],
+      "radius_cm": 28000
+    },
+    {
+      "mesh": "/Game/SpaceSurvival/Licensed/OrbitalWreck/KitBeam/SM_KitBeam.SM_KitBeam",
+      "center_cm": [
+        305000,
+        210000,
+        115000
+      ],
+      "rotation": [
+        15,
+        -40,
+        -60
+      ],
+      "radius_cm": 18000
+    },
+    {
+      "mesh": "/Game/Asteroid_Library/Static_Meshes/SM_Asteroid_Barren_1.SM_Asteroid_Barren_1",
+      "center_cm": [
+        185000,
+        -120000,
+        35000
+      ],
+      "rotation": [
+        20,
+        35,
+        70
+      ],
+      "radius_cm": 65000
+    },
+    {
+      "mesh": "/Game/Asteroid_Library/Static_Meshes/SM_Asteroid_Barren_3.SM_Asteroid_Barren_3",
+      "center_cm": [
+        310000,
+        245000,
+        120000
+      ],
+      "rotation": [
+        45,
+        10,
+        30
+      ],
+      "radius_cm": 72000
+    },
+    {
+      "mesh": "/Game/Asteroid_Library/Static_Meshes/SM_AsteroidBarren_4.SM_AsteroidBarren_4",
+      "center_cm": [
+        235000,
+        195000,
+        65000
+      ],
+      "rotation": [
+        75,
+        40,
+        25
+      ],
+      "radius_cm": 42000
+    },
+    {
+      "mesh": "/Game/Asteroid_Library/Static_Meshes/SM_AsteroidMineral_2.SM_AsteroidMineral_2",
+      "center_cm": [
+        190000,
+        195000,
+        -85000
+      ],
+      "rotation": [
+        20,
+        35,
+        70
+      ],
+      "radius_cm": 68000
+    },
+    {
+      "mesh": "/Game/Asteroid_Library/Static_Meshes/SM_Asteroid_Barren_2.SM_Asteroid_Barren_2",
+      "center_cm": [
+        85000,
+        220000,
+        80000
+      ],
+      "rotation": [
+        45,
+        -20,
+        10
+      ],
+      "radius_cm": 69000
+    },
+    {
+      "mesh": "/Game/Asteroid_Library/Static_Meshes/SM_Asteroid_Barren_3.SM_Asteroid_Barren_3",
+      "center_cm": [
+        -65000,
+        235000,
+        -70000
+      ],
+      "rotation": [
+        -25,
+        70,
+        30
+      ],
+      "radius_cm": 78000
+    },
+    {
+      "mesh": "/Game/Asteroid_Library/Static_Meshes/SM_AsteroidFragment_2.SM_AsteroidFragment_2",
+      "center_cm": [
+        100000,
+        300000,
+        15000
+      ],
+      "rotation": [
+        10,
+        40,
+        70
+      ],
+      "radius_cm": 42000
+    },
+    {
+      "mesh": "/Game/Asteroid_Library/Static_Meshes/SM_AsteroidMineral_1.SM_AsteroidMineral_1",
+      "center_cm": [
+        360000,
+        280000,
+        180000
+      ],
+      "rotation": [
+        50,
+        15,
+        20
+      ],
+      "radius_cm": 41000
+    }
+  ],
+  "capture": {
+    "root": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7",
+    "success": true,
+    "mode": "UncookedEditorGame",
+    "artifacts": [
+      {
+        "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+        "bytes": 512952,
+        "sha256": "6F9C95C131F37CBDC384ADE02FCF6ED828BAA366B25234D0D85E212244CAC9AA"
+      },
+      {
+        "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+        "bytes": 2411520,
+        "sha256": "415862C9641B207CA6D8865EC9386516A5FE93A20922B5FF90EB4FE1A94BC040"
+      }
+    ],
+    "productionPreserved": true,
+    "requestedResolution": [
+      1920,
+      1080
+    ],
+    "limits": "Hidden rendered game; 29 seconds of scripted normal-stat cruise/turn/boost/brake and no fire. PNG headers/dimensions/hashes are verified, not visual quality. No FPS, physical input, natural balance or complete run claim."
+  },
+  "images": [
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Cruise.png",
+      "bytes": 2315925,
+      "sha256": "4EBCDE1519D468EB6F043410E071AA6452436A38CC0A71F52FEECDC792DBB727",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_000.png",
+      "bytes": 2317176,
+      "sha256": "B932030B1FC1C6F3829F72038389ABE4D2F8B095EA8FB5AE6C60053B37FB7062",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_001.png",
+      "bytes": 2318368,
+      "sha256": "F166CEA387E4C6C1E4F06E6323971BFA523E978EDF19977BAC0BF3545F640915",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_002.png",
+      "bytes": 2310528,
+      "sha256": "C738DCA7FFC67E9A6EE2E979434C82EB165FC88B4EEBF573513C4787FAD7E736",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_003.png",
+      "bytes": 2302896,
+      "sha256": "470D122466CF8E8980CC4690A30E40FA58FE4D87D962783B3C221F4DF1D1E357",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_004.png",
+      "bytes": 2303853,
+      "sha256": "9B8F6DCE69B6AE055EE69E1630F26893166D2A41532ED82602C43A6723AC31D1",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_005.png",
+      "bytes": 2294162,
+      "sha256": "3B04E9D29A97706202C047EF60B5DF8773A70FC6DDE36E4D35EA3E259D710DFF",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_006.png",
+      "bytes": 2267096,
+      "sha256": "46DB0EABF5CC726FD62D1BF1E50A21BBF40F0DAD784FC551FA919AD70108D0DF",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_007.png",
+      "bytes": 2224353,
+      "sha256": "2A7DC40C975F9F705385D229C0F7CA1A04FBC6B262F3570390D81BB55F3C4E69",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_008.png",
+      "bytes": 2171359,
+      "sha256": "FB498C2958E5FBCF754FDF8E6F0B9691EA154ADDA1B6E524420F7A3B984C111B",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_009.png",
+      "bytes": 2096859,
+      "sha256": "3350CA4F7E1C6E3C0D7B919A7A3F9152C70854E756D8730E6C01EBF684C17A6D",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_010.png",
+      "bytes": 2035942,
+      "sha256": "3BEDFAF5CF7E597775663443F52E8A9C14110FCD24A1109B0600507EC4D314F7",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_011.png",
+      "bytes": 2013299,
+      "sha256": "FF239FF4350F4E6107ACE7DDC1FD544B38CC10D4C78C70108510B1128B79378B",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_012.png",
+      "bytes": 2013426,
+      "sha256": "F3B4C6675B40260787DD6FDBEA14C8214EFA39B9C82FC0CBF9CB8F80B3AF1E1F",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_013.png",
+      "bytes": 2016105,
+      "sha256": "EF59C8660422D8E9251683D5B976FD9F969CCB854F7022CB9CE17FC66FA28EC1",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_014.png",
+      "bytes": 2040731,
+      "sha256": "00ED9A86D1346BA44843A4D0D0FBA7892A6C7A5C415E2DFD7769677B5D0B9517",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_015.png",
+      "bytes": 2077398,
+      "sha256": "D9BC8305CE83C97F3E401C9F6189CAC2D0350C410FA6FA7D50144E4B7137FF69",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_016.png",
+      "bytes": 2101520,
+      "sha256": "A62CD8C89DCE994B533BA8E01142BE059CD1F8B60A2284C025D9ACE932CF35DD",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_017.png",
+      "bytes": 2117721,
+      "sha256": "29A406B7BE71E4F16CDEFF29233364C95DC5C3D20C8A66D74B81972FCACB6FBE",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_018.png",
+      "bytes": 2122012,
+      "sha256": "99809313CE17D6CFEEE9F723AA050143891233D665E591D1D6568C8E3CF49F13",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_019.png",
+      "bytes": 2098814,
+      "sha256": "09BFD2CAB3D0E9D9F4117D3841A356C7164C5AACBAC9BADE08ED61E58F072134",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_020.png",
+      "bytes": 2076835,
+      "sha256": "141D350E7337651D8D196A20A7C9E33E2ED79F255E1118F2780E00B22AA1F226",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_021.png",
+      "bytes": 2076057,
+      "sha256": "A83D4E9F23C1EDABD54CA319B7B17D55A7DF881BF5FEE93F1D3D87FD95CE5743",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_022.png",
+      "bytes": 2075543,
+      "sha256": "EDC3A06702C7D9F0254CC2DABA5B2A6F05260938B6E9A5B6424E3412A14E03FD",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Turn.png",
+      "bytes": 2076349,
+      "sha256": "8C805F9537EAD966A8292A010C461FCD3C70E0233910CB00E6CF7B02BA73A135",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_023.png",
+      "bytes": 2083954,
+      "sha256": "93976F3BC9C35D876B798EA5BDD1D8F238D4440386624F858DB714B1B489F035",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_024.png",
+      "bytes": 2054758,
+      "sha256": "E331EA963F1075AF8684C88495CFBC88A4D0A7C8A88FB3CC545E81E2D63436EC",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_025.png",
+      "bytes": 2074293,
+      "sha256": "FA494E30EDB0947D0E0993FE9B56E54314AA8D741E562584351EB0EF61FE647A",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_026.png",
+      "bytes": 2057275,
+      "sha256": "DD1977F86BAF7D49BAFFEA17704267FAA5144BE7053AF491AC74E2CC26F3C4D2",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_027.png",
+      "bytes": 2046253,
+      "sha256": "6547B18A0E2D236BCC2485352CA653B856DE10D3F0812B3B9E399605403A5433",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_028.png",
+      "bytes": 1998370,
+      "sha256": "DA91614A2680A5365191F607382D22B9D893881B44914E9AF703E7AE6A59ED59",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_029.png",
+      "bytes": 1966812,
+      "sha256": "1B26D940BD068BF21B30AEBFE3F6F91EA3C1E3EDA46BC9EC8FFAEA36841B947A",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_030.png",
+      "bytes": 2006515,
+      "sha256": "E5947D052DEF66137207A1382D03A330B24254E7662B51D61B28B32AD73E9B09",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_031.png",
+      "bytes": 2018646,
+      "sha256": "81209FB8934675313F20A8FC97B8724BFDF48D621FFF92AC3982711602BEC983",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_032.png",
+      "bytes": 2017594,
+      "sha256": "43749501DB6CEE2283D5F34F481F1A97C67BA891A96A394A512BD705511ED52F",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_033.png",
+      "bytes": 2007739,
+      "sha256": "25F8B70C7392F0B167D2CBE7FB307B9406DD8A1D312F91E802CBD3A00274843F",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_034.png",
+      "bytes": 2017598,
+      "sha256": "D48D41E2EC22B55F1CA19E60ED3A3F6E87F5BD63E0F913F5A07B35484CFD0C68",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_035.png",
+      "bytes": 2019141,
+      "sha256": "5C00A34A06A9C4131F7FB21912C064519C43DCFB3FDB5194C7412283955075D3",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_036.png",
+      "bytes": 2032083,
+      "sha256": "81AAC2FC1CFC064FE83899DBC056BEFA749D4911840AB56E75DF4AF38DE3AD30",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_037.png",
+      "bytes": 2016000,
+      "sha256": "5F26077255187E382A63E43A8E22495D97EB64D0CC177EA811CDF43D18FA17DF",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_038.png",
+      "bytes": 2026990,
+      "sha256": "67135B0EC4AD63C1B0FC200FD342312DC5EDE69B2506253A01F633B9F9F9DD43",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_039.png",
+      "bytes": 2068676,
+      "sha256": "2106EBD08D7605BA17CBB17B9D6937523D359D354EA3008EA0A1B18D50DD3DC2",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_040.png",
+      "bytes": 2039494,
+      "sha256": "48E392D9461E9CF821016D35AAEA98B0AE5962E0B3AEC4A8412B15392B64772C",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_041.png",
+      "bytes": 2045141,
+      "sha256": "C950215DCC39841F43ABC87C9296673B9C99E9AFF59561D2A81311ECA902FBE5",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_042.png",
+      "bytes": 2045008,
+      "sha256": "501FC5D49BA7048F18026BE8ED7AA0042D48A687F73B06A138E7987564EE285F",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_043.png",
+      "bytes": 1968743,
+      "sha256": "FC512B6D3AB42258F9A9265C7BCF1C5F8041F6857C0B7E3A05E8EA5788E86D1D",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_044.png",
+      "bytes": 1955050,
+      "sha256": "E7FCEF2EEC181D5806C5930121B7A961572A39C2B86E1FEF306F869671975C1D",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_045.png",
+      "bytes": 1946010,
+      "sha256": "42A84375FEB30C772E0791F1579147E596FC74A1C7FE6671339F392FE4A8F916",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_046.png",
+      "bytes": 1943540,
+      "sha256": "FA79AD8D4060FFFB4726759AE78599D6EDA93E3CCE3036176F2210CE33EB8E5C",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_047.png",
+      "bytes": 1956619,
+      "sha256": "173225AD948D9DB4CC7156CC6B7CB5CCC4B0DAF9CCF4923A0FA6760CA7D14AC3",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Boost.png",
+      "bytes": 1957019,
+      "sha256": "F2C8E1A61E4FC447BAA88C45A5804F58D9182F0B676D802A7F650824FB9B9BB4",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_048.png",
+      "bytes": 1976393,
+      "sha256": "38B0FAA7ADF7C6277C83F795D05688C4459549F0CBA09225B56FB91F4CE73E44",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_049.png",
+      "bytes": 1975846,
+      "sha256": "C8B70BAF2450BD9670A2D21FE597D4760B3A32432AB1FAB10B72FF8A5F05C604",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_050.png",
+      "bytes": 1973596,
+      "sha256": "237D38DBD1BEF005237D6E182C85101D15AE6B271C18C2E851D86DA071BEEC51",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_051.png",
+      "bytes": 1999180,
+      "sha256": "7CE49B8B7CEB7577A246BAA972044382B47F53EFF0565C4B01C05434F4B865EF",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_052.png",
+      "bytes": 1993696,
+      "sha256": "A1577A82D3D3420CC1FC30F2865E7C46A47EFED2343BDEE0F699BB93EE537018",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_053.png",
+      "bytes": 2007397,
+      "sha256": "9415FDB5C84E1B36083F22528402146D4A5DE298276272F14057FAF1B6EF61EB",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_054.png",
+      "bytes": 2012727,
+      "sha256": "0E03A5D70D642590FB38235B9F928673D0C0EADA2D8BCAD6A625A4FC4FF63105",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_055.png",
+      "bytes": 2008903,
+      "sha256": "F33F49EA4095AD33791379016B566C5C81E94CC94320F1A7A60024D6EEB52C12",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_056.png",
+      "bytes": 2011156,
+      "sha256": "CA916EE22B39BBDCE9470559B010B2893BE516F0F5D533DD76303DB10A9310E7",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_057.png",
+      "bytes": 1998009,
+      "sha256": "457D8AC204A9B109AA2BB63A33412201806A2C0BFF5E25D2E1CF7A4DC582C2B5",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_058.png",
+      "bytes": 2003639,
+      "sha256": "7C120FB9458338DD4D2197E2480E692E0B0BBC282AB06C6592D3F95366CEB914",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_059.png",
+      "bytes": 2004216,
+      "sha256": "C3BB2591EDC02A298F9E0FAF28AAA944C71BD6F7CEE6D5AFB6B897F60FD45F87",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_060.png",
+      "bytes": 2011786,
+      "sha256": "E3F0C6EF1130F40C460D3EF8E74C27135429C0E2E59A42A30910AE6490E0FDA4",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_061.png",
+      "bytes": 2021034,
+      "sha256": "E47D6E4DD134D8C42B749BA228C9BEBF00B4BB1BC49B6709A5C772E2B97393A6",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_062.png",
+      "bytes": 2023587,
+      "sha256": "4D0EAD5E76F7F10374C849E10F9A701AD87C329D74EA0B1242B3465FD57A3D77",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_063.png",
+      "bytes": 2023000,
+      "sha256": "BCD746BE4D32A387F7F0247F75AC854D02F5C3FCB4CE75EEE1FB92E939046AAA",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_064.png",
+      "bytes": 2025773,
+      "sha256": "68851AEA10C13B4D553E5D38F87530B0E78D4CA02E7EA83494B3AF9B5567EA6F",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_065.png",
+      "bytes": 2030705,
+      "sha256": "A8499E96248987ABF21565DA2B9D9F35B453C973D53BB2ABFBDDD04A3848ABBC",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_066.png",
+      "bytes": 2032126,
+      "sha256": "46A8252131761D43A319EB278FBBAD9329DA9ED835508399BBE05D363682EBCD",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_067.png",
+      "bytes": 2047522,
+      "sha256": "02AF0D3ACE43BD5A58E099224F9244C2C54EC744BA4E1FCC659CB8A650419F56",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_068.png",
+      "bytes": 2052796,
+      "sha256": "BFBA048FE2039462718DB1F94D1016E88B5631535E02F9E05703C5D2BF6DD8CF",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_069.png",
+      "bytes": 2067710,
+      "sha256": "A3358EF4941703A7E19445C3C039ACBD2AFD0AD777131DE03B8E113A4B165CEB",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Brake.png",
+      "bytes": 2097950,
+      "sha256": "446B039EE600B0E27B00CF2916456C037FAF40E4043EFCCA6BEF1487FDCFA723",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_070.png",
+      "bytes": 2069157,
+      "sha256": "80AEE4F5BC5755F9EE742B2FD3C92DF620EB6BE8DD26B2EF9908A03AFD7D9969",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_071.png",
+      "bytes": 2078343,
+      "sha256": "33A3D89FEF1FC83BC5241FB267FBFE0BA18BB9CD7DDF3312480E1CDD74FC1341",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_072.png",
+      "bytes": 2083443,
+      "sha256": "1E29F2BF61DC17C60D2CED66B70C16D784C20F509CFA35526BD4761EA73BBE12",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_073.png",
+      "bytes": 2085499,
+      "sha256": "B10054C19BAF5AF07950A964346E0B688921DD85056AB2CE86250CDF6744EFC8",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_074.png",
+      "bytes": 2081481,
+      "sha256": "D708D3092220D9E1C8BB3E14C9B1C43299EF673DCF8881FB042DAAA8410A8505",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_075.png",
+      "bytes": 2048185,
+      "sha256": "38887505AC341AFBEE465604DB54E3BA7F4E78CF52A91523AE782D45CD6EC827",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_076.png",
+      "bytes": 2046042,
+      "sha256": "FAADFCF0273D84A4B9212EFF9FCB456AAA13369E497B668CDA4C1325B2275E6B",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_077.png",
+      "bytes": 2052150,
+      "sha256": "DAB23AEA050161C7255BBC72098A043533DD4D14D5C8199A06680E54CBF8E353",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_078.png",
+      "bytes": 2062385,
+      "sha256": "B4FB059E5F3589FDCB687BD5A09F006ADAB0DAD6B068FABDDCBB4A654E4B591F",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_079.png",
+      "bytes": 2059525,
+      "sha256": "692F4AD9900B1057694995DB42E883FADED8145B8F00E05A1855FE36E77CBC31",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_080.png",
+      "bytes": 2067704,
+      "sha256": "681D15A36929DF42D931EBC26F4751341F4EFDF9B3981338B20573BE4BA6BA16",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_081.png",
+      "bytes": 2092241,
+      "sha256": "1648BCE855C1EAC7CF0B7697870D4A4D77F69F06A5E8EE0DC7179412DD868F7C",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_082.png",
+      "bytes": 2093168,
+      "sha256": "D070397BF01E3130AA09DAE8234F7661556508A5653222ADBE6462FBC8EAADEC",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "path": "C:\\Users\\j6sis\\SpaceSurvival\\Artifacts\\EndgameSoak\\b8e2f95727b6444ab64294d53664a9c7\\Sequence_083.png",
+      "bytes": 2086368,
+      "sha256": "87D033A96B9660B3EA006F4EFD1E2D7FAA98319EEAE848FA896B3D92791D20E3",
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "sequence": {
+    "count": 84,
+    "requested_interval_seconds": 0.25,
+    "start_seconds": 6,
+    "timestamp_source": "fixture.json visualRequests",
+    "limit": "Screenshot readbacks perturb frame time; cannot establish smooth real-time motion, representative FPS or natural gameplay."
+  },
+  "independent_review": {
+    "reviewer": "/root/orbital_visual_review",
+    "verdict": "NOT MET",
+    "lead_agrees": true,
+    "reviewed": [
+      "Cruise",
+      "Turn",
+      "Boost",
+      "Brake",
+      "Sequence_000",
+      "Sequence_015",
+      "Sequence_016",
+      "Sequence_017",
+      "Sequence_018",
+      "Sequence_019",
+      "Sequence_020",
+      "Sequence_029",
+      "Sequence_048",
+      "Sequence_083"
+    ],
+    "criteria": {
+      "structure_framing": "PARTIAL",
+      "scale_and_clusters": "PARTIAL",
+      "depth_layers": "PARTIAL",
+      "open_aim_corridor": "NOT MET",
+      "light_and_material": "PARTIAL",
+      "localized_haze": "NOT MET",
+      "restrained_stars": "MET_FOR_REVIEWED_FRAMES",
+      "continuous_motion": "UNVERIFIED"
+    },
+    "required_corrections": [
+      "Move giant pair away from turned aim corridor; avoid persistent wall and struts through focal ship area.",
+      "Add intermediate receding clusters between huge bodies and tiny fragments.",
+      "Restore readable wreck surfaces with cool fill while preserving warm directional edges.",
+      "Create visible thin localized atmospheric separation between depth layers.",
+      "Review continuous motion and representative performance separately."
+    ]
+  },
+  "validation": {
+    "editor_build": "PASS; capture runtime build 14.01 seconds, later test-only rebuild succeeded",
+    "unreal_tests": {
+      "succeeded": 49,
+      "failed": 0,
+      "notRun": 0,
+      "succeededWithWarnings": 0
+    },
+    "native_format": "PASS",
+    "structural_checks": 31,
+    "documentation_check": "PASS",
+    "python_ast": "PASS",
+    "docker": "Backend unavailable from preceding attempt; existing native toolchain used, nothing installed.",
+    "tests_report_sha256": "9944fdf1a6ef59b223c0d10d4bcc883bc57fbf22da489f2ac33b117628273a3d",
+    "current_tested_dll_sha256": "459e7156cdcd8ada0774a101e58a6925806f9a7fa825f05e275ce01b1e5b35a7"
+  },
+  "failed_history": [
+    {
+      "capture": "5f3b287ed1214afea2e6d6920fe6649f",
+      "result": "Valid capture; independently rejected composition."
+    },
+    {
+      "capture": "49b8e5d709474476a553164c7b8f5216",
+      "result": "Valid stills; lighting/depth remained incomplete."
+    },
+    {
+      "capture": "f5cc720aaa844ba29a703d1f69017d30",
+      "result": "Receipt failed because validator expected exactly four requests; cold material settling visible under immediate dense readback. Not accepted. Validator fixed and sampling delayed."
+    },
+    {
+      "tests": "Artifacts/OrbitalWreck/Tests01-failed-fixture-mobility.json",
+      "result": "48/49: new fixture lights were not movable. Corrected fixture to match authored map, then 49/49 clean."
+    }
+  ],
+  "remaining_warnings": "Engine C4996 deprecations and newer-than-preferred compiler notice; pre-existing station drone skeletal-material usage warnings seen during capture. No new wreck Nanite usage warning in final capture.",
+  "release": "PR17 remains draft/unmerged. Windows package and itch unchanged."
+}

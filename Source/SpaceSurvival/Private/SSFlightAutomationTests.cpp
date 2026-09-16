@@ -823,6 +823,7 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     int32 Instances = 0;
     for (const auto *Batch : Batches)
     {
+        TestTrue(TEXT("Each available mesh family participates at normal density"), Batch->GetInstanceCount() > 0);
         TestTrue(TEXT("Every batch disables collision"),
                  Batch->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
         TestFalse(TEXT("Every batch disables overlaps"), Batch->GetGenerateOverlapEvents());
@@ -872,14 +873,16 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
                 AnchorMeshBatches.Add(BatchIndex);
             if (Center.Size() > 100000.0)
                 ++FarRocks;
-            if (Center.GetSafeNormal().X > .97 && Radius > 220.1)
+            if (Center.GetSafeNormal().X > .97 &&
+                ((Center.Size() < 65000.0 && Radius > 220.1) || Radius / Center.Size() > .05))
                 bClearEntryAim = false;
         }
     }
-    TestTrue(TEXT("All four meshes contribute large silhouettes instead of one repeated anchor"),
-             AnchorMeshBatches.Num() == Batches.Num());
+    TestTrue(TEXT("Large silhouettes use multiple barren/mineral meshes instead of one repeated anchor"),
+             AnchorMeshBatches.Num() >= 4);
     TestTrue(TEXT("Distant fragments supply a separate depth layer"), FarRocks > 0);
-    TestTrue(TEXT("Initial central aim corridor contains only small backdrop silhouettes"), bClearEntryAim);
+    TestTrue(TEXT("Initial nearby aim corridor is clear; distant field silhouettes stay below three angular degrees"),
+             bClearEntryAim);
     const FRotator InitialRotation = Fixture.Ship->GetActorRotation();
     Fixture.Ship->SetActorRotation(FRotator(20.f, 90.f, 0.f));
     Field->Tick(0.f);
@@ -924,6 +927,29 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
         Fixture.Step();
     }
     TestTrue(TEXT("Long cumulative travel cannot reach decorative mesh bounds"), CheckDistance());
+    TArray<FVector> BeforeFurtherTravel;
+    for (const auto *Batch : Batches)
+        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+        {
+            FTransform Instance;
+            Batch->GetInstanceTransform(Index, Instance, true);
+            BeforeFurtherTravel.Add(Instance.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) -
+                                    Fixture.Ship->GetActorLocation());
+        }
+    Fixture.Ship->AddActorWorldOffset(FVector(1000, 0, 0));
+    Field->Tick(0.f);
+    int32 FurtherIndex = 0;
+    bool bStillMoving = false;
+    for (const auto *Batch : Batches)
+        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+        {
+            FTransform Instance;
+            Batch->GetInstanceTransform(Index, Instance, true);
+            const FVector Center = Instance.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) -
+                                   Fixture.Ship->GetActorLocation();
+            bStillMoving |= !Center.Equals(BeforeFurtherTravel[FurtherIndex++], 1.0);
+        }
+    TestTrue(TEXT("Parallax continues after prolonged flight instead of saturating a fixed offset"), bStillMoving);
     const double BeforeShift = Field->GetMinimumSurfaceDistance();
     const FVector Shift(-700000, -100000, -60000);
     Fixture.Ship->ApplyWorldOffset(Shift, true);
@@ -932,9 +958,9 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     TestTrue(TEXT("World rebase does not create false parallax travel"),
              FMath::IsNearlyEqual(Field->GetMinimumSurfaceDistance(), BeforeShift, .01));
     TestTrue(TEXT("Rebased real instance bounds retain safety separation"), CheckDistance());
-    Count->Set(2000, Priority);
+    Count->Set(4000, Priority);
     Field->Tick(1.f);
-    TestEqual(TEXT("Density is capped at 768 decorative instances"), Field->GetRockCount(), 768);
+    TestEqual(TEXT("Density is capped at 3072 decorative instances"), Field->GetRockCount(), 3072);
     TestTrue(TEXT("Tumbling dense field keeps actual bounds outside weapon range"), CheckDistance());
     Count->Set(0, Priority);
     Field->Tick(0.f);

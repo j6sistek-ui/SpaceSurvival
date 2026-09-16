@@ -1,0 +1,669 @@
+{
+  "recordedUtc": "2026-09-16T04:55:46.699640+00:00",
+  "status": "PARTIAL - flight target NOT MET; gallery bounded scripted path MET",
+  "sourceBase": "fd4a158e275652261548479511a4e165a2e17087",
+  "sourceBinding": "Captured with uncommitted changes; source hashes below bind this candidate. Licensed content stays local.",
+  "sourceFiles": [
+    {
+      "path": "Scripts/AuthorAlienGallery.py",
+      "bytes": 2646,
+      "sha256": "3d76d9d87078b4b4b1567b8163efbc73ef8c61b43dc7b66459433e3e29134f08"
+    },
+    {
+      "path": "Scripts/AuthorSpaceAreas.py",
+      "bytes": 10322,
+      "sha256": "9b3594c4d0b0969f571fef673f01e168d02bc821b0a66739feb1dbdc65516a54"
+    },
+    {
+      "path": "Scripts/AuthorWreckAssemblies.py",
+      "bytes": 12155,
+      "sha256": "5188950494fc3ed0cd4b34e70379ccbb040377580051ff830a418ed30b6d6398"
+    },
+    {
+      "path": "Scripts/CaptureAlienGallery.ps1",
+      "bytes": 12709,
+      "sha256": "a16e2cf5f87f15deec603fbe6a3b21454183af622b5839dd8155a2c766818b2b"
+    },
+    {
+      "path": "Scripts/CaptureSpaceLook.ps1",
+      "bytes": 12991,
+      "sha256": "6c18dc1f7c76d490ec95b5c79391ad24f0f55ff843019578a5760d4c0fb026ec"
+    },
+    {
+      "path": "Scripts/PlayDevelopmentBuild.ps1",
+      "bytes": 1194,
+      "sha256": "109f779e51abd4f28a00ad0aecefabfd0b16316e5165d6698204e0466ff76172"
+    },
+    {
+      "path": "Scripts/PreviewMegastructure.py",
+      "bytes": 4027,
+      "sha256": "270a5923b4ae4483aa7c2bf288a41948a0ef11549e14863b46d4628e5414213e"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSAlienGallery.cpp",
+      "bytes": 13048,
+      "sha256": "ffb2b69367be0393602f5140b3524c9e244b38c202a990b5090e8c3960a84fa9"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSAlienGalleryAutomationTests.cpp",
+      "bytes": 6324,
+      "sha256": "6c75209a58e78dfc4af0b2dd66664228150cd84ef04fa664c008cc3429b4e729"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSAmbientPresentation.cpp",
+      "bytes": 23467,
+      "sha256": "5a4d07cae6ee267d770ab3feaf3830976ffefc098ca474e0fe53d2ee2c55d289"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSAmbientPresentationAutomationTests.cpp",
+      "bytes": 11778,
+      "sha256": "f3fae4e99025c51f39176e83eede043b2536c2a1dbbc216a90d6f6d0eef006f8"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSDistantAsteroids.cpp",
+      "bytes": 13357,
+      "sha256": "6e805fe1e8ac83ea8203e230c48af4ceb8961c6bdfc73efda2285e65be824f84"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSFlightAutomationTests.cpp",
+      "bytes": 53767,
+      "sha256": "bbd5f63ee7ccf568e0277f4c5a9789a01a2d709e69c31ff56969f575a1ac0223"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+      "bytes": 70533,
+      "sha256": "4f9f906c309869dbfc1d401f3e59f6751c35b2ade4af1d9f2172f1247e4adf11"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSHUD.cpp",
+      "bytes": 26289,
+      "sha256": "73eff830a95ae6e4d2447cca2c218b7e2e6a8d67290916fa51be73058a5b9f17"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSSpaceScenery.cpp",
+      "bytes": 18349,
+      "sha256": "a19421ffafca0cdeb1dea38d89164225c338333b257ae4fed4b2d4ad7f11e855"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSSpaceSceneryAutomationTests.cpp",
+      "bytes": 18054,
+      "sha256": "2c677d9daa7c5e92c43f4b6a657410e1188bbfd13abbf7b238fa8e7b5a606d87"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSStation.cpp",
+      "bytes": 33908,
+      "sha256": "2b4dc4812b6aa888278e69d21b05a28bbacafe9758c8830990dfe5fbdf06aae1"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSStationServiceLabelAutomationTests.cpp",
+      "bytes": 4309,
+      "sha256": "e1e513cf74315efa6451ba9a490310dffc63e0081a523138b6d82a352ef45d51"
+    },
+    {
+      "path": "Source/SpaceSurvival/Private/SSWave10Soak.cpp",
+      "bytes": 42401,
+      "sha256": "51c9307f0ca1ffe300b2b25aaaffa42a388ebb832372d7c1ba1e9f190e5cae18"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSAlienGallery.h",
+      "bytes": 2053,
+      "sha256": "3b351658427198488a9d35134999912e7d8370965c6d8c87250a52c64a87ddb8"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSAmbientPresentation.h",
+      "bytes": 2906,
+      "sha256": "a13063561e335a0b057c87c016b15cf233425da3cc751d6a82ceb10237067036"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSGameMode.h",
+      "bytes": 4761,
+      "sha256": "8e17fe9c31dd52c22e3d403b1410e6173d24e1bad85d1af152b2b50a88701752"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSSpaceLookData.h",
+      "bytes": 5745,
+      "sha256": "60bb1fe958ad689ed3bd2f355b057b47ccc0f866b10c58436e61d44abd1dde49"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSSpaceScenery.h",
+      "bytes": 2657,
+      "sha256": "a82b5eab366d97519080c5786a8b8487844d593485b7b4bf120f4cc75f452906"
+    },
+    {
+      "path": "Source/SpaceSurvival/Public/SSWave10Soak.h",
+      "bytes": 2518,
+      "sha256": "a73e9ffc7bb2208e73d144641d286a097f3d6c18e0690279d62cf7cdf239d49b"
+    }
+  ],
+  "module": {
+    "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+    "bytes": 2539008,
+    "sha256": "243e8792691b006225e43fd6957474c4b0bb4eba0d4a2cef978787cfee8f8fc1"
+  },
+  "build": {
+    "result": "PASS",
+    "log": {
+      "path": "Artifacts/SpaceAreasBuild-review.log",
+      "bytes": 7996,
+      "sha256": "b246801bcf4e854d3eb05b46fba7327ab0d311b7f85be691604828fa54273e35"
+    }
+  },
+  "automation": {
+    "reportCreatedOn": "2026.09.16-04.49.42",
+    "succeeded": 51,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0
+  },
+  "automationReport": {
+    "path": "Artifacts/UnrealTests/index.json",
+    "bytes": 41731,
+    "sha256": "3c10adc745fc04b08f478a86df0072346232c9c2e7e08c87c5138499438b2a74"
+  },
+  "checks": {
+    "sourceStructure": "PASS 32",
+    "nativeClangFormat": "PASS changed C++ files",
+    "pythonAST": "PASS 87 scripts",
+    "contentSources": "PASS 26 meshes, 16 WAV, original GLB unchanged (--check-only)",
+    "powershellSyntax": "PASS Scripts/*.ps1",
+    "documentationNavigation": "PASS",
+    "docker": "Unavailable backend; existing native tooling only, no installs"
+  },
+  "privateContent": [
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/DA_DeepSpaceLook.uasset",
+      "bytes": 48962,
+      "sha256": "6d6114a4d6a1e29a792c06f14fa53117ba2f687748abcd16171255ca8a10b827"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/M_DeepSpaceExhaust.uasset",
+      "bytes": 13303,
+      "sha256": "4fe26d0027d18e76da84206b4431f38a5083045087804989d412068a43db0062"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/M_DeepSpaceSky.uasset",
+      "bytes": 38065,
+      "sha256": "f4cb07adda9d6faeae9cfe35938a46660f2c1676da7d5228b22844e8a3c28477"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/M_NebulaVolume.uasset",
+      "bytes": 16478,
+      "sha256": "66c38b34d30b111ffcfeffebc215b4d377857f12a0de18eefdb9014a95809abd"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/M_OrbitalWreckSky.uasset",
+      "bytes": 24202,
+      "sha256": "6e3f2c84bd039b6fae391b4cf19196bb7c3e3c14d6148d08d11e79f0c52bd0d3"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/M_RegionSky.uasset",
+      "bytes": 24144,
+      "sha256": "737388acccf2bccc7767d4fdaa54539703bc7fa7628f0ac9fa96552e905bb9f1"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/M_SpaceDustVolume.uasset",
+      "bytes": 17884,
+      "sha256": "3b4328c05120fd35189a06c50cdd991f5ab534808b75705322bfda7407e6c97e"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/M_SpatialAreaSky.uasset",
+      "bytes": 23732,
+      "sha256": "18f6b02d545d8d7cc2e61daf2197fcb6478185e148090b689ad5665a21f1c462"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/MI_DeepSpaceCloud.uasset",
+      "bytes": 8153,
+      "sha256": "64752e70e523fb4a5824f6a5b5065df603b81811c8f95705941de5f2071aa134"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/MI_DeepSpaceSky.uasset",
+      "bytes": 13516,
+      "sha256": "2fe2d1787b8926db719d9e192a8deac604cefed3332292cce187286a3eee8f21"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/MI_metal_01_O_Wreck.uasset",
+      "bytes": 16915,
+      "sha256": "9723383d313ce5e541d170b64c71d8d6f322e233f75fbb3a829df3829bad9527"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/MI_metal_01_Wreck.uasset",
+      "bytes": 16629,
+      "sha256": "5a30d2aa59516878b6ecb3b58c4a99e6e16b2f5f806afaf4e2a725d930cfa858"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/NS_DeepSpaceExhaust.uasset",
+      "bytes": 291097,
+      "sha256": "ec2de469d1855468d1e7d24c09f73e9f17856a814b21cdbba236fb064e59ed17"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/T_Region_Galaxy_02.uasset",
+      "bytes": 962777,
+      "sha256": "994adcb2674037f27ccbc3891a58f89c37a58479e64b4d1228356f93dc09249a"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/T_Region_Galaxy_04.uasset",
+      "bytes": 485705,
+      "sha256": "764bd883b47a1829e2b1fc0268bf8b5fc8cf03646995129fa3c3f21983c90900"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/T_Region_Skybox_1.uasset",
+      "bytes": 60318880,
+      "sha256": "4c85a5063c673cd1abfb1c2a4583e259e0f49de31dde2917672f3b9da3163424"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/T_Region_Skybox_6.uasset",
+      "bytes": 38250144,
+      "sha256": "89e3e016dc37da8b4a558684c8e8744be450f5a09149b349e80a49fe02d08cc2"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/T_Region_Skybox_8.uasset",
+      "bytes": 50362131,
+      "sha256": "397d32af9b77528a04f551371291b7f0bf7452755ed1e3318e917f4c07dc9e9f"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/Atmosphere/T_RegionStars.uasset",
+      "bytes": 19816208,
+      "sha256": "23e13ed60ae2b6dcb34bda0673677bebc1b69bf6d1c9fe74e60ce1dd84e7dcd3"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/SpatialAssemblies/SM_BrokenHullSpine.uasset",
+      "bytes": 213110,
+      "sha256": "6b2b5423ba95d535b7e86a27a162fc64c9c896c75c325378758b4e4e22f36441"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/SpatialAssemblies/SM_ButtressedChunk.uasset",
+      "bytes": 211810,
+      "sha256": "484d91ffe11ec295cf87988698dd66f01fedda839aad060cce20316d31c6d034"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/SpatialAssemblies/SM_FragmentedArch.uasset",
+      "bytes": 188123,
+      "sha256": "91110ac9ec8d8551a3f69e85aa8b6edf807cfc11e3e4dac4a15b294c97fda721"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/AlienGallery/DA_AlienGalleryCook.uasset",
+      "bytes": 3143,
+      "sha256": "23916a7577de0f6e5283f8bfc8c8898d2e3d5b028d3c8dfd4a202dba8fa22a82"
+    }
+  ],
+  "vendorPreservation": {
+    "fileCount": 84,
+    "allHashMatchSourceCache": true,
+    "bytes": 82727443
+  },
+  "captures": [
+    {
+      "label": "AreaWreckHandoff",
+      "token": "bfd3c86ca3674c29b93b2319ccd4458b",
+      "mode": "UncookedEditorGame",
+      "runtimeArtifacts": [
+        {
+          "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+          "bytes": 512952,
+          "sha256": "6F9C95C131F37CBDC384ADE02FCF6ED828BAA366B25234D0D85E212244CAC9AA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+          "bytes": 2539008,
+          "sha256": "243E8792691B006225E43FD6957474C4B0BB4EBA0D4A2CEF978787CFEE8F8FC1"
+        }
+      ],
+      "productionPreserved": true,
+      "receipt": {
+        "path": "Artifacts/EndgameSoak/bfd3c86ca3674c29b93b2319ccd4458b/capture.json",
+        "bytes": 15698,
+        "sha256": "b06f8e33e7f935a744164074810df62820a1ba05660d9a5c209c5fc13bebfd63"
+      },
+      "fixture": {
+        "path": "Artifacts/EndgameSoak/bfd3c86ca3674c29b93b2319ccd4458b/fixture.json",
+        "bytes": 6451,
+        "sha256": "9c7c20aafe7198747cd2c7741f4450207f3d8e8b29320938e4fd755b6dcab11d"
+      },
+      "images": [
+        {
+          "path": "Artifacts/EndgameSoak/bfd3c86ca3674c29b93b2319ccd4458b/Boost.png",
+          "bytes": 2011690,
+          "sha256": "282be9972c716f398c514004832aaaa6e840a0212347a1c14d5adc893d68a2af"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/bfd3c86ca3674c29b93b2319ccd4458b/Brake.png",
+          "bytes": 2138628,
+          "sha256": "81c01237e246cd10103d7b7d05ee242a978cdbb2a35cd5b573439551f542c391"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/bfd3c86ca3674c29b93b2319ccd4458b/Cruise.png",
+          "bytes": 2517673,
+          "sha256": "afd8ae9a0f10568283e81ac942af44c5bb5d361d20894bd31964c7e139cd88d4"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/bfd3c86ca3674c29b93b2319ccd4458b/Turn.png",
+          "bytes": 1954616,
+          "sha256": "5cb8ee17f1b7a3c72f9809d3e9ce1733ed5a6890d59769e923f23b041310ab91"
+        }
+      ]
+    },
+    {
+      "label": "AreaMineralHandoff",
+      "token": "c4401b25564742edbb0f8aeb12878a3d",
+      "mode": "UncookedEditorGame",
+      "runtimeArtifacts": [
+        {
+          "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+          "bytes": 512952,
+          "sha256": "6F9C95C131F37CBDC384ADE02FCF6ED828BAA366B25234D0D85E212244CAC9AA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+          "bytes": 2539008,
+          "sha256": "243E8792691B006225E43FD6957474C4B0BB4EBA0D4A2CEF978787CFEE8F8FC1"
+        }
+      ],
+      "productionPreserved": true,
+      "receipt": {
+        "path": "Artifacts/EndgameSoak/c4401b25564742edbb0f8aeb12878a3d/capture.json",
+        "bytes": 15697,
+        "sha256": "43cb61812be30d8a29ce775d2dad308a91fcd3794ba22cf13c1e09f581d5123b"
+      },
+      "fixture": {
+        "path": "Artifacts/EndgameSoak/c4401b25564742edbb0f8aeb12878a3d/fixture.json",
+        "bytes": 6450,
+        "sha256": "f3bd757e1f8c8045a1312c9ee1225b5e3e131a56d56cc3ed785ceea01a6139ab"
+      },
+      "images": [
+        {
+          "path": "Artifacts/EndgameSoak/c4401b25564742edbb0f8aeb12878a3d/Boost.png",
+          "bytes": 2193836,
+          "sha256": "11a2b529e537c02a125381319dc86985defb8a890084767601c8070b6c8bc191"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/c4401b25564742edbb0f8aeb12878a3d/Brake.png",
+          "bytes": 2162465,
+          "sha256": "be1f11329523e568902c8c3309037035757625fe0978f5d980e3819db7ef5113"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/c4401b25564742edbb0f8aeb12878a3d/Cruise.png",
+          "bytes": 2691940,
+          "sha256": "c3546ba4d3748328d174a16b164e6e346f3f510dea8d8ffb26a6db6322cbdfa4"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/c4401b25564742edbb0f8aeb12878a3d/Turn.png",
+          "bytes": 1943722,
+          "sha256": "0b7dea9556a9c8cc11c6a11ff80d6470d661d0700c666d73ad1b5a4461ff56ff"
+        }
+      ]
+    },
+    {
+      "label": "AreaAlienHandoff",
+      "token": "439b21990fae4308babfeb7c1fc777be",
+      "mode": "UncookedEditorGame",
+      "runtimeArtifacts": [
+        {
+          "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+          "bytes": 512952,
+          "sha256": "6F9C95C131F37CBDC384ADE02FCF6ED828BAA366B25234D0D85E212244CAC9AA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+          "bytes": 2539008,
+          "sha256": "243E8792691B006225E43FD6957474C4B0BB4EBA0D4A2CEF978787CFEE8F8FC1"
+        }
+      ],
+      "productionPreserved": true,
+      "receipt": {
+        "path": "Artifacts/EndgameSoak/439b21990fae4308babfeb7c1fc777be/capture.json",
+        "bytes": 15697,
+        "sha256": "741986db74651a44654dab697dc10c2336f685c18a5b6673f4589152eeb1ebfc"
+      },
+      "fixture": {
+        "path": "Artifacts/EndgameSoak/439b21990fae4308babfeb7c1fc777be/fixture.json",
+        "bytes": 6451,
+        "sha256": "bed3a73dbe154e6b46cf7b638ee7749894b342d571d9f396c2da7b443bb97bfa"
+      },
+      "images": [
+        {
+          "path": "Artifacts/EndgameSoak/439b21990fae4308babfeb7c1fc777be/Boost.png",
+          "bytes": 2091538,
+          "sha256": "891fb09a445242101e42bf3ae6e4fd2e53abc0e10afd4573103636eeb7c64c42"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/439b21990fae4308babfeb7c1fc777be/Brake.png",
+          "bytes": 2081819,
+          "sha256": "3c69918c4b875025c6f4f2739118c66b606d47266e98997da7cd1ef6019181e2"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/439b21990fae4308babfeb7c1fc777be/Cruise.png",
+          "bytes": 2735380,
+          "sha256": "39040b2fba0cb34257e1d85d94fab53bede72a1aac7283fe751cdb7517b484d8"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/439b21990fae4308babfeb7c1fc777be/Turn.png",
+          "bytes": 1962509,
+          "sha256": "051f068847e37fe6620e8c03a310554ba4f17a676df34063682326788f22d8b8"
+        }
+      ]
+    },
+    {
+      "label": "AreaAmberHandoff",
+      "token": "609c7a19064b4332880d28f1bf3206d6",
+      "mode": "UncookedEditorGame",
+      "runtimeArtifacts": [
+        {
+          "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+          "bytes": 512952,
+          "sha256": "6F9C95C131F37CBDC384ADE02FCF6ED828BAA366B25234D0D85E212244CAC9AA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+          "bytes": 2539008,
+          "sha256": "243E8792691B006225E43FD6957474C4B0BB4EBA0D4A2CEF978787CFEE8F8FC1"
+        }
+      ],
+      "productionPreserved": true,
+      "receipt": {
+        "path": "Artifacts/EndgameSoak/609c7a19064b4332880d28f1bf3206d6/capture.json",
+        "bytes": 15700,
+        "sha256": "aa7577f510b2b5d05fa6a1ae2f69429f538f880f9adbdc0744f23709e68c252d"
+      },
+      "fixture": {
+        "path": "Artifacts/EndgameSoak/609c7a19064b4332880d28f1bf3206d6/fixture.json",
+        "bytes": 6454,
+        "sha256": "d7c45528f880c1d3cac65e6deaeea67d2e52e040a29c6565a408b1d9f7ca6ed0"
+      },
+      "images": [
+        {
+          "path": "Artifacts/EndgameSoak/609c7a19064b4332880d28f1bf3206d6/Boost.png",
+          "bytes": 2248065,
+          "sha256": "56dd70397fc7e2bda721063bb9b37afd9ed539c7a5fb0a05924d5396d82c5926"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/609c7a19064b4332880d28f1bf3206d6/Brake.png",
+          "bytes": 2266289,
+          "sha256": "2e098e2b7b601bd1bff1b5083d565e37eac4d12f82dfdab729a75423fd938e20"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/609c7a19064b4332880d28f1bf3206d6/Cruise.png",
+          "bytes": 2639987,
+          "sha256": "c2b6e172348e355f14b33ba2d159cb7844c8e39e2a915f9f40b68cb088734745"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/609c7a19064b4332880d28f1bf3206d6/Turn.png",
+          "bytes": 2109825,
+          "sha256": "6655f2fe92aa5abdecbde07da66f868bc8e9e0a2856407834fea8d84a8f89157"
+        }
+      ]
+    },
+    {
+      "label": "AreaVariantHandoff",
+      "token": "6345bd1493fc44909936f6c0f9f25c19",
+      "mode": "UncookedEditorGame",
+      "runtimeArtifacts": [
+        {
+          "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+          "bytes": 512952,
+          "sha256": "6F9C95C131F37CBDC384ADE02FCF6ED828BAA366B25234D0D85E212244CAC9AA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+          "bytes": 2539008,
+          "sha256": "243E8792691B006225E43FD6957474C4B0BB4EBA0D4A2CEF978787CFEE8F8FC1"
+        }
+      ],
+      "productionPreserved": true,
+      "receipt": {
+        "path": "Artifacts/EndgameSoak/6345bd1493fc44909936f6c0f9f25c19/capture.json",
+        "bytes": 15700,
+        "sha256": "51e7ad95fc421502752973de54613521ac02adc1bd8f4a06742ad10deb492454"
+      },
+      "fixture": {
+        "path": "Artifacts/EndgameSoak/6345bd1493fc44909936f6c0f9f25c19/fixture.json",
+        "bytes": 6453,
+        "sha256": "0e7e45148b86ba189fca4ab58663a9ae5d7dd0f587849372b7e44227af9cdb9f"
+      },
+      "images": [
+        {
+          "path": "Artifacts/EndgameSoak/6345bd1493fc44909936f6c0f9f25c19/Boost.png",
+          "bytes": 2116581,
+          "sha256": "8b8aec9506f880e843c9dd2a0b13eb84e7995b3e4caf04bf46cfe695d4c4b5b3"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/6345bd1493fc44909936f6c0f9f25c19/Brake.png",
+          "bytes": 2155583,
+          "sha256": "c0f5129b486fa235e9b6507b705543b6f16f911613892204f7682c9db1219613"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/6345bd1493fc44909936f6c0f9f25c19/Cruise.png",
+          "bytes": 2536594,
+          "sha256": "1167c3cf4f8a87a8c6f5c19ae586dcf86d9cfd16785e8c63b64b0becafe1ddbb"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/6345bd1493fc44909936f6c0f9f25c19/Turn.png",
+          "bytes": 1981032,
+          "sha256": "5c4d849f487b56ef47978227c5bb65d2803bb8a35ea62f31adcb39d043cc3bd5"
+        }
+      ]
+    },
+    {
+      "label": "AlienGalleryReview",
+      "token": "232bcb1fa4e04dd7a9bb4591d886b885",
+      "mode": "UncookedEditorGame",
+      "runtimeArtifacts": [
+        {
+          "path": "C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+          "bytes": 512952,
+          "sha256": "6F9C95C131F37CBDC384ADE02FCF6ED828BAA366B25234D0D85E212244CAC9AA"
+        },
+        {
+          "path": "C:\\Users\\j6sis\\SpaceSurvival\\Binaries\\Win64\\UnrealEditor-SpaceSurvival.dll",
+          "bytes": 2538496,
+          "sha256": "AEA8A1D7E5E21E1A64F62EE7DD81F25B0372DE8D50F6BBC94B4F959032CA83B0"
+        }
+      ],
+      "productionPreserved": true,
+      "receipt": {
+        "path": "Artifacts/EndgameSoak/232bcb1fa4e04dd7a9bb4591d886b885/capture.json",
+        "bytes": 12229,
+        "sha256": "4fbe976a71cd72ba45bfd44ddba1b4b97dae76033098073fc07eb1d6c3864472"
+      },
+      "fixture": {
+        "path": "Artifacts/EndgameSoak/232bcb1fa4e04dd7a9bb4591d886b885/fixture.json",
+        "bytes": 3053,
+        "sha256": "b45ed151cf5f889040cfeaa2f400033da6128071930985ea7603205fc4424c21"
+      },
+      "images": [
+        {
+          "path": "Artifacts/EndgameSoak/232bcb1fa4e04dd7a9bb4591d886b885/GalleryAssets.png",
+          "bytes": 3171741,
+          "sha256": "6cc917e3d55515a1d6de071e645e6972809a77122ddcdbcfa94f666aaa5c942b"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/232bcb1fa4e04dd7a9bb4591d886b885/GalleryDoorway.png",
+          "bytes": 3414873,
+          "sha256": "fe53f07d900871c7145801e45fa963647a67cd9f06e5e31c226a89a25253c7e9"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/232bcb1fa4e04dd7a9bb4591d886b885/GalleryReturn.png",
+          "bytes": 3399582,
+          "sha256": "9d25c1b4ef3dc7e66e938af32ea8a5e152c1c656e892c01a4483aa781cb90efe"
+        },
+        {
+          "path": "Artifacts/EndgameSoak/232bcb1fa4e04dd7a9bb4591d886b885/GalleryShowcase.png",
+          "bytes": 2592829,
+          "sha256": "3202bca711bf16d49c6439a9e63b42642e523dd21c2fe8fd98a1bbc5e2d9346a"
+        }
+      ]
+    }
+  ],
+  "independentReview": {
+    "flight": {
+      "verdict": "NOT MET",
+      "capture": "486460456ffb4c5397e70e195ad156f6",
+      "scope": "All four wreck frames; all 16 preceding Dense area frames also reviewed.",
+      "findings": [
+        "Spherical far distribution improves angular coverage but distant field remains isolated rocks against broad sky.",
+        "Needs receding intermediate clusters and depth-dependent contrast separation.",
+        "Alien slabs remain flat; isolated rings/beams need coherent architectural grouping.",
+        "Turn places large dark masses behind the ship and reticle.",
+        "Second wreck variation changes local rocks but retains main wreck frame/station and much distant layout; not a strong distinct-arrangement gate."
+      ],
+      "leadAgrees": true,
+      "candidateDelta": "Mesh-family ordinal correction rendered and reviewed; structural and depth gaps remain.",
+      "finalCandidateCaptures": [
+        "bfd3c86ca3674c29b93b2319ccd4458b",
+        "c4401b25564742edbb0f8aeb12878a3d",
+        "439b21990fae4308babfeb7c1fc777be",
+        "609c7a19064b4332880d28f1bf3206d6",
+        "6345bd1493fc44909936f6c0f9f25c19"
+      ],
+      "finalCandidateScope": "Cruise/Turn/Boost in four areas and second wreck variation, 15 final frames independently inspected. NOT MET persists; lead agrees."
+    },
+    "gallery": {
+      "verdict": "MET - bounded scripted visual path",
+      "capture": "232bcb1fa4e04dd7a9bb4591d886b885",
+      "scope": "Doorway, full vendor showcase, full asset-layout overview, return; preserved run/account and station view.",
+      "leadAgrees": true,
+      "notEstablished": [
+        "physical input",
+        "close inspection/reset",
+        "packaged execution"
+      ]
+    }
+  },
+  "retainedFailures": [
+    {
+      "capture": "a47bf6939ee34027bd10b9eba763e7e1",
+      "reason": "Flat panel masses and insufficient depth"
+    },
+    {
+      "capture": "872a341c371e4f3db49a6e95f82f67bc",
+      "reason": "Asset overview camera showed only floor; corrected"
+    },
+    {
+      "capture": "01790f0aff69400c8fdb0d5bb89069df",
+      "reason": "Heavy fog washed out the ship; reverted"
+    },
+    {
+      "capture": "e0f022d064cb40dd89f67cff948dbf81",
+      "reason": "Dense belts still left sparse turn sector"
+    },
+    {
+      "test": "Artifacts/SpaceAreasTests-first.json",
+      "reason": "50/51 initial test result used superseded count and distant center assumptions; corrected"
+    }
+  ],
+  "remaining": [
+    "ACT-03 target art match",
+    "long cell crossings and revisit visual review",
+    "abrupt cell admission/removal",
+    "reachable world-fixed scenery has NoCollision",
+    "continuous motion and natural combat readability",
+    "representative performance with 2048 far instances and shadowed structures",
+    "transient shared-budget overshoot possible while changing distant CVar before regional 0.05s update",
+    "cubic thrusters remain ACT-01; not fixed by this work"
+  ],
+  "release": {
+    "merged": false,
+    "packaged": false,
+    "itchUpdated": false,
+    "installedExeContainsChanges": false
+  }
+}

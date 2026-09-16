@@ -14,6 +14,10 @@ If project documents conflict, use this precedence unless a later explicit owner
 
 Do not reinterpret locked design decisions without an explicit owner instruction.
 
+## Onboarding for every contributing chat
+
+Read [docs/CONTRIBUTOR_ONBOARDING.md](docs/CONTRIBUTOR_ONBOARDING.md) and `.agent/CONTINUITY.md` before substantive work. The onboarding guide maps the correct repository, private/local assets, skills, canonical documentation and prior failure modes. It is not another priority list: current owner instructions and `docs/KNOWN_ISSUES.md` own active work. A chat whose default directory is Acornaut must explicitly select the SpaceSurvival checkout. Verify branch, worktree, running editor and current PR before editing shared files.
+
 ## Mission
 
 Build the Phase 1 near-alpha vertical slice defined in `IMPLEMENT.md` and satisfy its complete Definition of Done.

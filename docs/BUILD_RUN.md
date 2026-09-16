@@ -15,6 +15,48 @@ Run commands from the repository root, currently `C:/Users/j6sis/SpaceSurvival`.
 
 The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomplete installation location. Use the complete engine above or pass an explicit `-EngineRoot`.
 
+## Orbital wreck authoring and comparison (target unaccepted)
+
+`PrepareOrbitalWreck.py` runs in the installed Blender background process and writes private broken Station3 sections plus a Figur kit beam. `PreviewOrbitalWreck.py` produces a Blender-only contact sheet. Both preserve supplied sources. After a successful Editor build, execute `AuthorOrbitalWreck.py` through the same Unreal Python runner shown below. It backs up the private look/cloud/sky, imports three derivatives, persists private Nanite material usage, then authors twelve placements and trial lighting/volume settings. It writes private content hashes in `Artifacts/OrbitalWreck/<id>/report.json`. Rerunning resets this trial composition: do not run over unsaved or owner-edited layouts without preserving them. Integration and rendering have run; the concept is still unaccepted under ACT-03.
+
+`./Scripts/CaptureSpaceLook.ps1 -Label OrbitalWreckReview -Sequence` additionally records nominal quarter-second game-view samples from six seconds into the standard fixture. Four required Cruise/Turn/Boost/Brake images remain present. Actual request times/FOV/camera transforms are in `fixture.json`; image hashes and save isolation are checked in `capture.json`. Readbacks perturb frame time and sampling intervals: this is visual sequence evidence, not real-time motion smoothness, FPS or natural-play acceptance. Omit `-Sequence` for the established four-image comparison.
+
+## Spatial areas and alien gallery (development project)
+
+The current source adds four spatial area recipes and an **ALIEN WORLD** review doorway in the home hangar and stations. Use a freshly built Editor game with the owned private content. The existing packaged EXE and published itch build do **not** contain this doorway or these changes; consult [Project State](PROJECT_STATE.md#source-build-and-release) before choosing a build.
+
+Double-click `Play Development Build.cmd` to open the rebuilt game directly. It uses a separate persistent profile under `Artifacts/DevelopmentReviewUser`, preserving the installed game's saves. In the hangar/station, approach **ALIEN WORLD** and press E/A. This launcher requires the local Editor DLL and private content; it does not build or download them.
+
+After `./Scripts/Build.ps1 -Target Editor`, run these scripts **in order**, one completed Unreal editor Python process at a time, using the `-ExecutePythonScript` runner below:
+
+1. `Scripts/AuthorWreckAssemblies.py` — creates private three-dimensional assemblies from owned megastructure meshes in a disposable unsaved map.
+2. `Scripts/AuthorSpaceAreas.py` — backs up the private look asset and authors the four recipes using those assemblies and the existing owned asteroid/atmosphere content.
+3. `Scripts/AuthorAlienGallery.py` — authors `/Game/SpaceSurvival/Licensed/AlienGallery/DA_AlienGalleryCook`, selecting both complete vendor maps and recursive dependencies for a future licensed cook.
+
+Keep `Content/Megastructure_Scifi_World` intact, including `Level/L_Showcase_level` and `Level/L_assets`. The scripts preserve vendor packages; generated assets and the cook label remain private. Existing Asteroid Library, atmosphere and orbital-wreck derivatives are prerequisites. These authoring scripts intentionally update their private outputs; preserve manual changes before rerunning. Do not run them over an owner's unsaved editor session. A label is cook intent, not evidence that an existing package contains either map.
+
+```powershell
+./Scripts/CaptureSpaceLook.ps1 -Label ObsidianArea -Area 0 -Variation 0
+./Scripts/CaptureSpaceLook.ps1 -Label AreaVariant -Area 0 -Variation 1
+./Scripts/CaptureAlienGallery.ps1 -Label AlienGalleryReview
+```
+
+For area comparisons, repeat `CaptureSpaceLook.ps1` with `-Area 0`, `1`, `2` and `3`; `-Variation` selects a repeatable review variation, and `-Sequence` adds sampled motion frames. `-Area -1` retains automatic area selection. These are scripted visual fixtures, not representative performance or physical-input evidence.
+
+The gallery fixture uses a fresh isolated home hangar, the ordinary service interaction, full showcase, asset-layout switch and return. It requires `GalleryDoorway`, `GalleryShowcase`, `GalleryAssets` and `GalleryReturn` PNGs, unchanged encoded run/account state, restored pawn/transform, production-save preservation and exact process/artifact identities. The first capture framed empty floor; corrected capture `3bc9ba3b7f2a42c8a3899b57ae024b38` visibly includes the inventory and passed independent bounded review. Physical input and packaged execution remain unverified. Acceptance belongs in [the active log](KNOWN_ISSUES.md), not the fixture's success flag. See [gallery controls](STATION_EDITING.md#inspect-the-complete-alien-world) for manual inspection.
+
+## Owned asteroid presentation authoring
+
+After the Editor build, execute `Scripts/PreviewAsteroidLibrary.py` through Unreal's editor Python runner for an unsaved native-field audition, then `Scripts/AuthorAsteroidDepth.py` to bake layouts and select 2K BC6H skies. Asteroid Library, NebulaFantasy and the private `DA_DeepSpaceLook` must already exist. These scripts require a rendering-enabled editor, not ordinary Python or NullRHI. Serialize project automation instances.
+
+Example (one script at a time):
+
+```powershell
+& 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe' 'C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject' '-ExecutePythonScript=C:/Users/j6sis/SpaceSurvival/Scripts/AuthorAsteroidDepth.py' -unattended -nosplash -RenderOffscreen
+```
+
+Authoring backs up four private packages under `Artifacts/AsteroidDepth/<run>/`, preserves existing layout arrays and verifies vendor bytes. `-SSSkyResolution=4096` is an optional comparison; 2048 is the default. `AuthorSpaceVisualPass.py` also selects 2K BC6H for these three derivatives. A separate rendered check is required; authoring does not package or publish. Current evidence and open work remain in VALIDATION and KNOWN_ISSUES.
+
 ## Source checks
 
 ```powershell

@@ -204,6 +204,9 @@ void ASSShip::Tick(float Dt)
         Velocity = Forces = FVector::ZeroVector;
         SoftTarget = nullptr;
         S.TickFlight(Dt, false, false);
+        DrivePresentationPower = 0.f;
+        DrivePresentationBoosting = DrivePresentationBraking = false;
+        DrivePresentationDamage = float(S.run.damageFeedback);
         return;
     }
     if (Docking)
@@ -211,11 +214,17 @@ void ASSShip::Tick(float Dt)
         SetActorLocation(FMath::VInterpTo(GetActorLocation(), DockTarget, Dt, 2.f));
         SetActorRotation(FMath::RInterpTo(GetActorRotation(), DockRotation, Dt, 2.f));
         Velocity = FVector::ZeroVector;
+        DrivePresentationPower = .18f;
+        DrivePresentationBoosting = DrivePresentationBraking = false;
+        DrivePresentationDamage = float(S.run.damageFeedback);
         return;
     }
     if (!S.IsFlying())
     {
         Forces = FVector::ZeroVector;
+        DrivePresentationPower = 0.f;
+        DrivePresentationBoosting = DrivePresentationBraking = false;
+        DrivePresentationDamage = float(S.run.damageFeedback);
         return;
     }
     S.TickFlight(Dt, BoostInput, BrakeInput);
@@ -224,6 +233,12 @@ void ASSShip::Tick(float Dt)
     const float BrakeFactor = S.run.braking ? .47f : 1.f;
     const float Speed =
         FMath::Max(Tuning->MinimumSpeed, float(Stats.speed) * (1.f + .3f * ThrottleInput) * BoostFactor * BrakeFactor);
+    DrivePresentationPower = FMath::Clamp(.42f + .28f * FMath::Max(0.f, ThrottleInput) +
+                                              .3f * float(Velocity.Size() / FMath::Max(1.f, Tuning->CruiseSpeed)),
+                                          .25f, 1.35f);
+    DrivePresentationBoosting = S.run.boosting;
+    DrivePresentationBraking = S.run.braking;
+    DrivePresentationDamage = FMath::Clamp(float(S.run.damageFeedback), 0.f, 1.f);
     const float Authority = float(Stats.maneuver) / 1700.f;
     const float Interference = S.run.interferenceSeconds > 0 ? .7f : 1.f;
     // Bounded substeps preserve steering/acceleration and swept movement at low FPS.

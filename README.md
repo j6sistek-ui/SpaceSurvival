@@ -5,6 +5,7 @@ Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains P
 **[Open work and your next review](docs/KNOWN_ISSUES.md)** is the single active task and priority log. Start there; it contains the owner review queue, all hands-on acceptance checks, unresolved problems and closure evidence.
 
 - [Project state and where files live](docs/PROJECT_STATE.md): GitHub source, local assets/builds and the separately published itch version.
+- [Contributor and other-chat onboarding](docs/CONTRIBUTOR_ONBOARDING.md): repository paths, skills, high-value owned assets, documentation duties and mistakes to avoid.
 - [Build and run](docs/BUILD_RUN.md): launch the packaged game or develop with UE 5.8.2.
 - [Edit the station](docs/STATION_EDITING.md): add and arrange owned props in the saved station Blueprint while preserving gameplay boundaries.
 - [Solution catalog](docs/production/SOLUTION_CATALOG.md): owned assets and possible solutions across Phase 1; catalog value is not the work schedule.

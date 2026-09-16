@@ -3,6 +3,8 @@
 #include "SSGameInstance.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSAlienGallery.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -48,7 +50,7 @@ bool ReadScenario(bool &Station5, bool &Wave1)
     }
     Station5 = Scenario == TEXT("Station5");
     Wave1 = Scenario == TEXT("Wave1");
-    return Station5 || Wave1 || Scenario == TEXT("Wave10");
+    return Station5 || Wave1 || Scenario == TEXT("Wave10") || Scenario == TEXT("Gallery");
 }
 bool IsIsolatedSoak(FString &Root, FString &Token)
 {
@@ -142,7 +144,11 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     Soak->Root = Root;
     Soak->Token = Token;
     ReadScenario(Soak->Station5, Soak->Wave1);
+    FString Scenario;
+    FParse::Value(FCommandLine::Get(), TEXT("SSSoakScenario="), Scenario);
+    Soak->Gallery = Scenario == TEXT("Gallery");
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
+    Soak->CaptureSequence = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence"));
     Soak->OffscreenVisuals = Soak->CaptureVisuals && FParse::Param(FCommandLine::Get(), TEXT("RenderOffscreen"));
     Soak->StartedAt = FPlatformTime::Seconds();
     InMode->bAutomatedSoakInput = true;
@@ -182,7 +188,7 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         Row->SetNumberField(TEXT("combatSecondsSinceKill"), GetWorld()->GetTimeSeconds() - CombatKilledAt);
         Row->SetBoolField(TEXT("normalWeaponKill"), true);
     }
-    if (auto *GM = Mode.Get())
+    if (auto *GM = Mode.Get(); GM && !Gallery)
     {
         auto *Mesh = IsValid(GM->Walker) && UGameplayStatics::GetPlayerPawn(this, 0) == GM->Walker
                          ? GM->Walker->GetMesh()
@@ -211,6 +217,16 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         Row->SetStringField(TEXT("pilotTransform"), Mesh->GetComponentTransform().ToHumanReadableString());
         Row->SetStringField(TEXT("leftWrist"), Mesh->GetSocketTransform(TEXT("L_Wrist")).ToHumanReadableString());
         Row->SetStringField(TEXT("rightWrist"), Mesh->GetSocketTransform(TEXT("R_Wrist")).ToHumanReadableString());
+    }
+    if (Gallery)
+    {
+        if (auto *PC = UGameplayStatics::GetPlayerController(this, 0); PC && PC->PlayerCameraManager)
+        {
+            Row->SetStringField(TEXT("cameraLocation"), PC->PlayerCameraManager->GetCameraLocation().ToString());
+            Row->SetStringField(TEXT("cameraRotation"), PC->PlayerCameraManager->GetCameraRotation().ToString());
+            Row->SetNumberField(TEXT("horizontalFov"), PC->PlayerCameraManager->GetFOVAngle());
+        }
+        Row->SetStringField(TEXT("galleryStatus"), Mode->AlienGallery->Status());
     }
     VisualNames.Add(Name);
     VisualRecords.Add(MakeShared<FJsonValueObject>(Row));
@@ -329,6 +345,8 @@ void ASSWave10Soak::Stop(const FString &Error)
     if (Stopping)
         return;
     Failure = Error;
+    if (!Error.IsEmpty())
+        UE_LOG(LogTemp, Error, TEXT("ENDGAME_FIXTURE_FIRST_FAILURE galleryStage=%d: %s"), GalleryStage, *Error);
     Stopping = true;
     if (IsValid(StationReviewCamera))
     {
@@ -339,6 +357,111 @@ void ASSWave10Soak::Stop(const FString &Error)
         StationReviewCamera = nullptr;
     }
     CaptureResult = FCsvProfiler::Get()->EndCapture();
+#endif
+}
+void ASSWave10Soak::TickGallery(float Dt)
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    auto *GM = Mode.Get();
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
+    if (!GI || !PC || !GM->Walker || !GM->Hub || !CaptureVisuals)
+    {
+        Stop(TEXT("Gallery fixture requires the fresh home hangar and visual capture."));
+        return;
+    }
+    ++CapturedFrames;
+    AllFramesForeground &= FApp::HasFocus();
+    const double Now = FPlatformTime::Seconds();
+    auto Next = [&]()
+    {
+        ++GalleryStage;
+        GalleryStageAt = Now;
+        GalleryReadyAt = 0;
+    };
+    auto Payload = [&]() { return FString(UTF8_TO_TCHAR(SS::EncodeRun(GI->Session.run).c_str())); };
+    auto Account = [&]() { return FString(UTF8_TO_TCHAR(SS::EncodeAccount(GI->Session.account).c_str())); };
+    if (GalleryStage == 0)
+    {
+        GM->ClosePanel();
+        GM->Walker->SetActorLocation(GM->Hub->GetActorTransform().TransformPosition(FVector(450, 900, 100)));
+        PC->SetControlRotation(FRotator(-10, 90, 0));
+        Started = true;
+        Next();
+    }
+    else if (GalleryStage == 1 && Now - GalleryStageAt > 4)
+    {
+        CaptureVisual(TEXT("GalleryDoorway"), float(Now - StartedAt));
+        Next();
+    }
+    else if (GalleryStage == 2 && Now - GalleryStageAt > 1)
+    {
+        GalleryReturnTransform = GM->Walker->GetActorTransform();
+        GalleryRunBefore = Payload();
+        GalleryAccountBefore = Account();
+        GM->Interact();
+        if (!GM->AlienGallery->IsActive())
+        {
+            Stop(TEXT("Station doorway did not enter installed alien gallery."));
+            return;
+        }
+        Next();
+    }
+    else if (GalleryStage == 3 || GalleryStage == 5)
+    {
+        if (!GM->AlienGallery->IsActive())
+        {
+            Stop(TEXT("Gallery exited before requested scene was ready."));
+            return;
+        }
+        if (Payload() != GalleryRunBefore || Account() != GalleryAccountBefore)
+        {
+            Stop(TEXT("Gallery changed run/account state."));
+            return;
+        }
+        if (!GM->AlienGallery->IsReady())
+            return;
+        if (GalleryReadyAt == 0)
+            GalleryReadyAt = Now;
+        if (Now - GalleryReadyAt < 10)
+            return;
+        if (GalleryStage == 5 && !GM->AlienGallery->Status().Contains(TEXT("ASSET GALLERY")))
+        {
+            Stop(TEXT("Asset gallery did not switch maps."));
+            return;
+        }
+        CaptureVisual(GalleryStage == 3 ? TEXT("GalleryShowcase") : TEXT("GalleryAssets"), float(Now - StartedAt));
+        Next();
+    }
+    else if (GalleryStage == 4 && Now - GalleryStageAt > 1)
+    {
+        GM->AlienGallery->SwitchScene();
+        Next();
+    }
+    else if (GalleryStage == 6 && Now - GalleryStageAt > 1)
+    {
+        GM->AlienGallery->Leave();
+        Next();
+    }
+    else if (GalleryStage == 7 && !GM->AlienGallery->IsActive())
+    {
+        GalleryReturned =
+            PC->GetPawn() == GM->Walker && GM->Walker->GetActorTransform().Equals(GalleryReturnTransform, .1);
+        GalleryRunPreserved = Payload() == GalleryRunBefore && Account() == GalleryAccountBefore;
+        if (!GalleryReturned || !GalleryRunPreserved)
+        {
+            Stop(TEXT("Gallery return did not preserve pawn/transform/session."));
+            return;
+        }
+        Next();
+    }
+    else if (GalleryStage == 8 && Now - GalleryStageAt > 3)
+    {
+        CaptureVisual(TEXT("GalleryReturn"), float(Now - StartedAt));
+        Next();
+    }
+    else if (GalleryStage == 9 && Now - GalleryStageAt > 2)
+        Stop(TEXT(""));
 #endif
 }
 void ASSWave10Soak::Tick(float Dt)
@@ -377,7 +500,8 @@ void ASSWave10Soak::Tick(float Dt)
     auto *GM = Mode.Get();
     auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
     if (!GI ||
-        FPlatformTime::Seconds() - StartedAt > (Wave1      ? 90
+        FPlatformTime::Seconds() - StartedAt > (Gallery    ? 240
+                                                : Wave1    ? 90
                                                 : Station5 ? 240
                                                            : 180) ||
         !FMath::IsNearlyEqual(GetWorld()->GetWorldSettings()->GetEffectiveTimeDilation(), 1.f) ||
@@ -388,6 +512,11 @@ void ASSWave10Soak::Tick(float Dt)
     }
     if (!FCsvProfiler::IsCapturing())
         return;
+    if (Gallery)
+    {
+        TickGallery(Dt);
+        return;
+    }
     auto &S = GI->Session;
     if (!Started)
     {
@@ -473,6 +602,13 @@ void ASSWave10Soak::Tick(float Dt)
         for (int32 Index = 0; Index < UE_ARRAY_COUNT(Times); ++Index)
             if (FlightSeconds >= Times[Index])
                 CaptureVisual(Names[Index], float(FlightSeconds));
+        if (CaptureSequence && FlightSeconds >= NextSequenceSeconds && !FScreenshotRequest::IsScreenshotRequested())
+        {
+            const FString Name = FString::Printf(TEXT("Sequence_%03d"), SequenceIndex++);
+            CaptureVisual(*Name, float(FlightSeconds));
+            // Actual request timestamps remain in the receipt; no fixed timestep or interpolation.
+            NextSequenceSeconds = FlightSeconds + .25;
+        }
         if (Threats > GM->Director->MaximumActiveThreats)
             Stop(TEXT("Director active threat cap exceeded during Wave 1 visual fixture."));
         else if (FlightSeconds >= 29)
@@ -609,18 +745,20 @@ void ASSWave10Soak::WriteResultAndExit()
         SetActorTickEnabled(false);
         return;
     }
-    if (CaptureVisuals)
+    if (CaptureVisuals && Failure.IsEmpty())
     {
         const TArray<FString> Expected =
-            Station5 ? TArray<FString>{TEXT("Flight"),      TEXT("Climax"),          TEXT("Wormhole"),
-                                       TEXT("Approach"),    TEXT("Docking"),         TEXT("Exit0"),
-                                       TEXT("Exit1"),       TEXT("Exit2"),           TEXT("Exit3"),
-                                       TEXT("Exit4"),       TEXT("Exit5"),           TEXT("Exit6"),
-                                       TEXT("StationIdle"), TEXT("StationServices"), TEXT("StationOverview"),
-                                       TEXT("CombatImpact")}
-            : Wave1  ? TArray<FString>{TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")}
-                     : TArray<FString>{TEXT("Flight"), TEXT("Climax"), TEXT("Compound"), TEXT("Approach")};
-        if (VisualRecords.Num() != Expected.Num())
+            Gallery    ? TArray<FString>{TEXT("GalleryDoorway"), TEXT("GalleryShowcase"), TEXT("GalleryAssets"),
+                                         TEXT("GalleryReturn")}
+            : Station5 ? TArray<FString>{TEXT("Flight"),      TEXT("Climax"),          TEXT("Wormhole"),
+                                         TEXT("Approach"),    TEXT("Docking"),         TEXT("Exit0"),
+                                         TEXT("Exit1"),       TEXT("Exit2"),           TEXT("Exit3"),
+                                         TEXT("Exit4"),       TEXT("Exit5"),           TEXT("Exit6"),
+                                         TEXT("StationIdle"), TEXT("StationServices"), TEXT("StationOverview"),
+                                         TEXT("CombatImpact")}
+            : Wave1    ? TArray<FString>{TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")}
+                       : TArray<FString>{TEXT("Flight"), TEXT("Climax"), TEXT("Compound"), TEXT("Approach")};
+        if (VisualRecords.Num() != Expected.Num() + SequenceIndex || (CaptureSequence && SequenceIndex < 40))
             Failure = TEXT("Visual fixture did not request every required scene stage.");
         for (const FString &Name : Expected)
             if (!VisualNames.Contains(Name))
@@ -631,11 +769,14 @@ void ASSWave10Soak::WriteResultAndExit()
                 Failure = TEXT("Visual fixture screenshot was not written.");
     }
     const bool SlotsUntouched = NoSaveSlots();
+    if (Failure.IsEmpty() && Gallery && (!GalleryRunPreserved || !GalleryReturned))
+        Failure = TEXT("Gallery return/session checks failed.");
     const FString Csv = CaptureResult.Get();
     const bool Success =
         Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && (AllFramesForeground || OffscreenVisuals);
     auto Result = MakeShared<FJsonObject>();
-    Result->SetStringField(TEXT("evidenceType"), Wave1      ? TEXT("WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS")
+    Result->SetStringField(TEXT("evidenceType"), Gallery    ? TEXT("ALIEN_GALLERY_SCRIPTED_VISUAL_REVIEW")
+                                                 : Wave1    ? TEXT("WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS")
                                                  : Station5 ? TEXT("RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY")
                                                             : TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY"));
     Result->SetBoolField(TEXT("success"), Success);
@@ -655,7 +796,12 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("allFixtureFramesForeground"), AllFramesForeground);
     Result->SetBoolField(TEXT("offscreenVisualOnly"), OffscreenVisuals);
     Result->SetBoolField(TEXT("suitableForPerformanceFinding"), !Wave1 && !CaptureVisuals && AllFramesForeground);
-    Result->SetStringField(TEXT("scenario"), Wave1 ? TEXT("Wave1") : Station5 ? TEXT("Station5") : TEXT("Wave10"));
+    Result->SetStringField(TEXT("scenario"), Gallery    ? TEXT("Gallery")
+                                             : Wave1    ? TEXT("Wave1")
+                                             : Station5 ? TEXT("Station5")
+                                                        : TEXT("Wave10"));
+    Result->SetBoolField(TEXT("galleryReturned"), GalleryReturned);
+    Result->SetBoolField(TEXT("galleryRunPreserved"), GalleryRunPreserved);
     Result->SetBoolField(TEXT("sawWave1"), Wave1 && SawFlightWave);
     Result->SetBoolField(TEXT("sawWave9"), !Wave1 && !Station5 && SawFlightWave);
     Result->SetBoolField(TEXT("sawWave5"), Station5 && SawFlightWave);
@@ -675,7 +821,12 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetNumberField(TEXT("approachSimulationSeconds"), ApproachSeconds);
     Result->SetNumberField(TEXT("peakThreats"), PeakThreats);
     Result->SetNumberField(TEXT("wallSeconds"), FPlatformTime::Seconds() - StartedAt);
-    if (Wave1)
+    if (Gallery)
+        Result->SetStringField(
+            TEXT("fixture"), TEXT("Fresh isolated home hangar; scripted walker placement at real service, ordinary "
+                                  "interaction, full vendor showcase, asset layout, return. Exact run/account and "
+                                  "return transform checked. No save APIs, natural input or performance acceptance."));
+    else if (Wave1)
         Result->SetStringField(
             TEXT("fixture"),
             TEXT("Normal fresh Wave1 starter stats, TierI, no utility, real damage and Director. "

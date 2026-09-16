@@ -304,6 +304,13 @@ void ASSStation::BuildHub(bool bHome)
     AddService(FVector(0, 1000, 0), Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"),
                Home ? ESSPanel::Settings : ESSPanel::Save);
     AddService(FVector(950, -450, 0), TEXT("LAUNCH CONTROL"), ESSPanel::Launch);
+    // A separate review doorway: available in home hangar and both stations, never a run destination.
+    AddService(FVector(450, 1000, 0), TEXT("ALIEN WORLD"), ESSPanel::AlienGallery);
+    ServiceLabels.Last()->SetRelativeLocation(FVector(450, 1160, 265));
+    ServiceLabels.Last()->SetWorldSize(20);
+    for (float Side : {-1.f, 1.f})
+        AddMesh(FVector(450 + Side * 120, 1180, 155), FVector(.16f, .30f, 3.1f), Cube, Cyan, false);
+    AddMesh(FVector(450, 1180, 315), FVector(2.56f, .30f, .18f), Cube, Cyan, false);
     if (!Home)
     {
         AddService(FVector(1000, 1000, 0), TEXT("ENGINEER MICA / MODULES"), ESSPanel::Vendor);

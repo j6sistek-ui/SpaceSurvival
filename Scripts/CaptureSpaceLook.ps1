@@ -5,7 +5,10 @@ No build, package, publication or save operation is performed. Screenshots are n
 param(
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$')][string]$Label = 'CombinedLook',
     [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
-    [switch]$Packaged
+    [switch]$Packaged,
+    [switch]$Sequence,
+    [ValidateRange(-1,3)][int]$Area = -1,
+    [ValidateRange(0,10000)][int]$Variation = 0
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -52,7 +55,7 @@ function PngIdentity([string]$Path) {
     try {
         $header = [byte[]]::new(24)
         if ($stream.Read($header, 0, 24) -ne 24 -or
-            [Convert]::ToHexString($header[0..7]) -cne '89504E470D0A1A0A' -or
+            [BitConverter]::ToString([byte[]]$header[0..7]).Replace('-', '') -cne '89504E470D0A1A0A' -or
             [Text.Encoding]::ASCII.GetString($header, 12, 4) -cne 'IHDR') { throw "Invalid PNG header: $Path" }
         $width = [uint32]$header[16] * 16777216 + [uint32]$header[17] * 65536 + [uint32]$header[18] * 256 + [uint32]$header[19]
         $height = [uint32]$header[20] * 16777216 + [uint32]$header[21] * 65536 + [uint32]$header[22] * 256 + [uint32]$header[23]
@@ -108,6 +111,8 @@ $arguments += @('-SSWave10Soak', '-SSSoakScenario=Wave1',
     '-SSSoakVisuals', '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$root", '-RenderOffscreen',
     '-ForceRes', '-windowed', '-ResX=1920', '-ResY=1080', '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
     '-nosound', '-unattended', "-abslog=$(Join-Path $root 'Rendered.log')")
+if ($Sequence) { $arguments += '-SSSoakSequence' }
+$arguments += "-ExecCmds=ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
 $metadata = [ordered]@{
     evidenceType = 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS'; status = 'starting'; success = $false
     root = $root; label = $Label; token = $token; pid = $null; processStartUtc = $null; processExit = $null
@@ -117,6 +122,8 @@ $metadata = [ordered]@{
     productionBefore = $productionBefore; productionAfter = $null; productionPreserved = $false
     noTestSaveSlotsWritten = $false; requestedResolution = @(1920, 1080); images = @(); fixture = $null
     suitableForPerformanceFinding = $false
+    sequenceRequested = [bool]$Sequence
+    areaPreview = $Area; areaVariation = $Variation
     limits = 'Hidden rendered game; 29 seconds of scripted normal-stat cruise/turn/boost/brake and no fire. PNG headers/dimensions/hashes are verified, not visual quality. No FPS, physical input, natural balance or complete run claim.'
     failures = @()
 }
@@ -153,9 +160,11 @@ try {
         -not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or $fixture.suitableForPerformanceFinding -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine $savedRoot.TrimEnd('\', '/') -or
         [IO.Path]::GetFullPath($fixture.csv) -ine (Join-Path $root 'Endgame.csv')) { throw 'Fixture identity, visibility or save isolation receipt failed.' }
-    $names = @($fixture.visualRequests | ForEach-Object { $_.name })
+    $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
+    $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
     if (($names -join ',') -cne 'Cruise,Turn,Boost,Brake') { throw 'Fixture did not capture the four required stages in order.' }
-    $metadata.images = @($names | ForEach-Object { PngIdentity (Join-Path $root "$_.png") })
+    if ($Sequence -and @($allNames | Where-Object { $_ -like 'Sequence_*' }).Count -lt 40) { throw 'Dense sequence did not produce enough real frames.' }
+    $metadata.images = @($allNames | ForEach-Object { PngIdentity (Join-Path $root "$_.png") })
     $captureValid = $true
 } catch {
     $failures.Add($_.Exception.Message)

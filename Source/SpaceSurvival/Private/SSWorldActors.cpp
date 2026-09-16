@@ -10,6 +10,7 @@
 #include "SSPhase1Data.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Misc/PackageName.h"
 #include "Engine/World.h"
@@ -194,6 +195,13 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
             FMath::IsFinite(LifetimeSeconds) ? FMath::Clamp(LifetimeSeconds + 5.f, 5.f, 120.f) : 35.f;
         Visual->PrestreamTextures(ResidencySeconds, false);
     }
+    // Runtime-spawned bodies BeginPlay before the Director applies their kind
+    // and radius. Attach the electrical presentation only after those values
+    // are authoritative, otherwise every storm silently keeps the small-rock
+    // default and never receives its owned Nerves beam.
+    if (Kind == ESSWorldKind::ElectricalStorm)
+        if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+            FX->AttachElectricalField(this, BodyRadius);
     ConfigureAudio();
 }
 
@@ -493,6 +501,9 @@ void ASSWorldBody::Tick(float DeltaSeconds)
         }
     }
     const bool bElectricalDischarge = Kind == ESSWorldKind::ElectricalStorm && AdvanceElectricalPulse(DeltaSeconds);
+    if (bElectricalDischarge)
+        if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+            FX->PlayElectricalDischarge(GetActorLocation(), BodyRadius);
     UpdateFieldAudio(bElectricalDischarge);
     ASSShip *Ship = FindShip();
     if (Ship)
@@ -689,14 +700,19 @@ void ASSEnemy::Tick(float DeltaSeconds)
         const FVector Right = Ship->GetActorRightVector();
         const FVector Up = Ship->GetActorUpVector();
         FVector Desired = Ship->GetActorLocation() + Forward * Definition.ForwardOffset;
-        Desired += Right * FMath::Sin(SteeringPhase) * Definition.LateralAmplitude +
-                   Up * FMath::Cos(SteeringPhase * .65f) * Definition.VerticalAmplitude;
+        Desired +=
+            Right * FMath::Sin(SteeringPhase) * Definition.LateralAmplitude +
+            Up * FMath::Cos(SteeringPhase * .65f) * Definition.VerticalAmplitude +
+            Forward * FMath::Sin(SteeringPhase * Definition.LongitudinalRateRatio) * Definition.LongitudinalAmplitude;
         const float Response = Definition.Response + Wave * Definition.ResponsePerWave;
         const FVector Catchup = ((Desired - GetActorLocation()) * Response)
                                     .GetClampedToMaxSize(Definition.CatchupSpeed + Wave * Definition.CatchupPerWave);
         LinearVelocity =
             FMath::VInterpTo(LinearVelocity, Ship->GetVelocity() + Catchup, DeltaSeconds, Definition.VelocityResponse);
-        SetActorRotation((Ship->GetActorLocation() - GetActorLocation()).Rotation());
+        FRotator Facing = (Ship->GetActorLocation() - GetActorLocation()).Rotation();
+        const FVector RelativeVelocity = LinearVelocity - Ship->GetVelocity();
+        Facing.Roll = FMath::Clamp(-FVector::DotProduct(Right, RelativeVelocity) * .018f, -34.f, 34.f);
+        SetActorRotation(FMath::RInterpTo(GetActorRotation(), Facing, DeltaSeconds, 4.5f));
         ShotCooldown -= DeltaSeconds;
         if (ShotCharge > 0.f)
         {
@@ -782,6 +798,12 @@ ASSProjectile::ASSProjectile()
     Kind = ESSWorldKind::Projectile;
     BodyRadius = 16.f;
     LifetimeSeconds = 6.f;
+    ShotLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("ShotLight"));
+    ShotLight->SetupAttachment(Visual);
+    ShotLight->SetIntensityUnits(ELightUnits::Lumens);
+    ShotLight->SetCastShadows(false);
+    ShotLight->SetAttenuationRadius(650.f);
+    ShotLight->SetVisibility(false);
 }
 
 void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bFromPlayer, AActor *Source,
@@ -793,14 +815,24 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
     TravelRemaining = FMath::IsFinite(MaximumTravel) ? MaximumTravel : 0.f;
     SourceActor = Source;
     LinearVelocity = Direction.GetSafeNormal() * Speed;
+    const bool Heavy = bFromPlayer && Damage > 0.f;
     if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
     {
-        const bool Heavy = bFromPlayer && Damage > 0.f;
         FX->AttachProjectile(this, bFromPlayer, Heavy);
         FX->PlayMuzzle(Source, GetActorLocation(), Direction, bFromPlayer, Heavy);
-        // A small native core remains readable if scalability culls Niagara.
-        Visual->SetRelativeScale3D(Visual->GetRelativeScale3D() * FVector(1.3f, .22f, .22f));
     }
+    // A distinct native core and compact light remain readable if scalability culls Niagara.
+    const FVector CoreShape = !bFromPlayer ? FVector(2.8f, .46f, .46f)
+                              : Heavy      ? FVector(2.2f, .72f, .72f)
+                                           : FVector(5.4f, .38f, .38f);
+    Visual->SetRelativeScale3D(Visual->GetRelativeScale3D() * CoreShape);
+    const FLinearColor LightColor = !bFromPlayer ? FLinearColor(1.f, .04f, .01f)
+                                    : Heavy      ? FLinearColor(1.f, .34f, .025f)
+                                                 : FLinearColor(.04f, .8f, 1.f);
+    ShotLight->SetLightColor(LightColor);
+    ShotLight->SetIntensity(!bFromPlayer ? 3800.f : Heavy ? 8200.f : 5600.f);
+    ShotLight->SetAttenuationRadius(Heavy ? 900.f : 650.f);
+    ShotLight->SetVisibility(true);
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     TrackedShip = FindShip();
     bHasPreviousShipPosition = TrackedShip.IsValid();

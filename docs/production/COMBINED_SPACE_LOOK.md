@@ -1,8 +1,71 @@
-# Combined deep-space environment pass — 2026-09-14
+# Combined deep-space environment and spatial areas
 
-This is an implemented September 14 presentation milestone, not Phase 1 completion. [PROJECT_STATE.md](../PROJECT_STATE.md) records current source/build/storage identity; [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) alone tracks active follow-up and owner acceptance. The settings and evidence below describe this milestone. The owner requested a combined sky, lighting, nebular atmosphere, asteroid-depth and exhaust pass using owned assets, then clarified that the medium should resemble thin irregular space dust rather than dense Earth clouds. No new purchase, mechanic, hazard count, progression change or itch publication is included.
+This record retains the September 14 presentation milestone and the September 16 spatial-area implementation. The current visual target is **NOT MET**: authored inputs and runtime behavior do not establish accepted scenes. [PROJECT_STATE.md](../PROJECT_STATE.md) records current source/build/storage identity; [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) alone tracks active follow-up and owner acceptance. The owner requested combined sky, lighting, thin nebular atmosphere, asteroid depth and exhaust using owned assets, then distinct places across longer zones. No new purchase, mechanic, hazard count, progression change or itch publication is included.
 
-## What changed
+## September 16 orbital wreck composition target
+
+Owner supplied three Jump Space images, prioritizing the first for spatial volume, variation and deliberate structure placement. This is visual direction; no mechanics from that game are adopted. The [generated concept](references/orbital-wreck-concept.png) is explicitly **not gameplay** and does not claim the actual owned mesh detail or player ship. Actual derivative contact sheet: `Artifacts/OrbitalWreck/DerivativeContact.png`.
+
+The intended composition has a dominant broken industrial arc framing the right, a cropped heavy fragment at lower left, a diagonal rock/debris cluster receding behind them, and a small distant station as a secondary landmark. The central flight/aim space remains dark and open. Thin localized amber/cool dust pockets separate overlapping silhouettes; avoid a uniform blanket of Earth-like clouds or uniform confetti.
+
+Owned mapping: Station3 supplies the textured broken arc and smaller ring section; Figur station kit supplies `Cube_RLExtr.098` with its previously baked private metal atlas; Asteroid Library supplies rocks/fragments; NebulaFantasy supplies the distant image backdrop. Originals remain unchanged. The concept's bespoke ship and fine architectural details are directional, not an inventory claim.
+
+Engine comparison criteria: (1) readable foreground/middle/background overlap, (2) clearly unequal structure/rock scales with clustered debris, (3) open central aim/ship silhouette, (4) warm edge light and cool shadow with localized transparent haze, and (5) stable layout during turns/travel. Actual continuous motion and performance must be reviewed separately. Status/next work remain solely under ACT-03 in KNOWN_ISSUES; preparation is not target completion.
+
+Owner-required review method (September 16): the lead and an independent agent must agree that actual Unreal captures meet this target before declaring the composition accepted. The independent reviewer receives the concept, unaltered game captures, source/content identity and the criteria above; it must give MET, PARTIAL or NOT MET with image-specific evidence. Missing evidence is unverified, not a pass. Rejections drive another implementation/capture iteration without lowering the target. Still composition approval does not close continuous-motion, performance or owner gameplay acceptance.
+
+## September 16 spatial-area implementation — partial
+
+The latest owner target adds a dark wreckfield with immense detailed structural masses, receding debris, readable ship scale and thin cool haze. `AreaRecipes` now replaces the camera-following structure shell when present; the old shell remains a compatibility fallback. Four authored drafts provide different object families, palettes, densities and haze:
+
+| Draft recipe | Intended composition and mood |
+| --- | --- |
+| ObsidianWreck | Dense charcoal wreck masses, cool illumination and layered fragments; closest to the latest reference |
+| MineralReach | More open near/middle space, mineral-rich rocks and cool cyan dust, with a dense distant field |
+| AlienCauseway | Connected-looking alien structural groups, broken arches and green/cool haze |
+| AmberDerelict | Broken industrial arc/ring, heavy fragments and warm edge-light direction from the earlier target |
+
+`ASSSpaceScenery` maintains 27 stable world-space cells (private cell size 6.5 km). Authored groups remain whole and rotate together outside the initial cell; fixed sparse group cells cap residency at eight groups/eight placements each. Weighted anisotropic clutter clusters and quiet pockets vary the surrounding space without camera-driven clearing or changing the Director. The persistent run-ID hash varies normal runs; revisits and origin rebases preserve logical placement. `ss.SpaceAreaPreview=-1` enables spatial styles, 0–3 fixes a draft for comparison, and `ss.SpaceAreaVariation` selects reproducible variations. Spatial weights also drive smoothly interpolated haze, key/ambient lighting and sky tint; the sky still uses existing cubemaps.
+
+The distant asteroid layer now defaults to 2,048 objects, with a 3,072 ceiling and more middle/far representation. The authored regional allowance is 384 and is further clamped against that shared 3,072 small-object ceiling. Two-thirds of the farthest band uses fixed seeded spherical coverage; the rest retains clustered composition samples. Per-band mesh ordinals avoid stride aliasing and exercise all available families. Counts are total resident allowances, never per-cell allowances. Major forms have a separate cap of 64 and cast shadows; instanced clutter stays shadowless. These higher-density settings require new performance evidence.
+
+`AuthorWreckAssemblies.py` has successfully authored three private merged meshes: BrokenHullSpine (20 pieces), ButtressedChunk (20), and FragmentedArch (21). The source kit's panels are effectively flat; volumetric pillar cores and buttresses now provide actual depth, with panels used as small fins. Uniform mesh scaling preserves native proportions and original material slots are retained without baking. Private charcoal material and desaturated sky-grade tuning have been applied and rendered; visual acceptance remains open. Assembly creation is not rendered scene acceptance. Current reproduction order and commands belong in [Build and run](../BUILD_RUN.md#spatial-areas-and-alien-gallery-development-project).
+
+**Unfinished:** boundary cells still appear/disappear abruptly; no verified material fade conceals that transition. World-stable decorative objects can now be reached but retain NoCollision, so the old distant-shell safety claim no longer applies. Repeated group silhouettes, mixed-region continuity, approach/turn/revisit, physical expectations, target matching and representative performance remain open. Current capture/independent review has not accepted this pass. The review coverage below remains required; original receipts at the end are historical evidence only.
+
+<a id="long-zone-variety-proposed-style-rules-not-implemented"></a>
+
+## Long-zone variety: art direction and original tuning proposal
+
+The design requirements below remain authoritative visual goals. The example weights and formula are the original proposal, not the exact current implementation; the partial implementation above supersedes its earlier unimplemented status.
+
+[Three-area concept board](references/area-variety-concept.png), generated with the built-in image tool: open rock country, industrial wreck crossing and mineral dust pocket. These are different object/spacing examples, not rendered assets or a promise of exact inventory detail. [Generation prompt](references/area-variety-concept.prompt.txt). The board predates the subsequent dense-distant-field and megastructure clarifications below; its sparse first background is not the final target. The independent review gate still requires actual multi-area Unreal evidence.
+
+Owner clarification on September 16: show different objects and different areas across a long zone, with denser and sparser stretches governed by a consistent ratio/formula. More angles of one arrangement do not satisfy this. The accepted orbital-wreck image remains a quality reference for one landmark area, not a layout to repeat throughout the run. GAME_SCOPE sections 24 and 31 already specify gradual visual regions, no fixed path, procedural surroundings and authored important chunks. Region changes remain independent of waves/stations; future longer waves do not authorize changing current wave durations or Director budgets.
+
+**Art direction comes first:** each area needs a distinct composition, silhouette language, light, thin nebular haze, color and mood. The formulas support that look; efficient placement or increased asset counts cannot establish quality. Owner further clarified that a dense distant asteroid background helps most areas. Maintain that layered backdrop as the usual baseline; sparse/dense changes primarily open or tighten the near/middle space. Sparse does not mean an empty sky. Use depth-separated contrast and local haze so the distant field does not become uniform confetti or compete with threats.
+
+In an open area, show recognizable asteroid belts and grouped fields in the distance and to the sides, with structures emerging through local haze. Compose the view from outside a field as carefully as the view within it. The prototype must demonstrate approach and changing scale/parallax toward those groups, with a coherent transition into closer detail; do not fake a destination with another camera-following shell. This spatial art goal is not yet visually accepted and does not itself authorize extra collidable hazards. Judge the scenes as places, not a generic surrounding particle distribution.
+
+Use a tunable style recipe per area: eligible owned object families and weights, ambient density range, cluster/gap size, near/mid/far balance, separately capped landmark frequency/scale, local dust opacity, lighting palette and transition distance. The following are **initial tuning proposals**, not measured settings or accepted visuals. Percentages describe eligible small/medium near/middle scenery selections; they do not permit that percentage of giant landmarks.
+
+| Example area | Relative near/middle density | Barren rock / mineral rock / industrial debris weights | Authored focal group and spacing |
+| --- | --- | --- | --- |
+| Open rock country | 0.45x | 70 / 20 / 10 | Sparse asymmetrical rock groups, occasional subordinate distant station, long clear gaps |
+| Industrial wreck crossing | 1.25x | 35 / 5 / 60 | Distinct broken hull/truss assemblies with readable open routes and receding smaller debris |
+| Mineral dust pocket | 1.60x | 25 / 65 / 10 | Layered mineral clusters, patchy thin dust, clear pockets between dense groups |
+
+Original proposed ambient count rule: `nearMidTarget = clamp(nearMidBase * blendedStyleDensity * localClusterEnvelope * quietGapMask, 0, maximumBudget - farTarget)`. Reserve a dense but varied `farTarget` first; the split must be tuned in actual gameplay views. Blend nearby style weights continuously with weights summing to one. The proposal used the then-current 384 base/768 cap and approximately 320–1,750 m background bands; those counts are superseded by the partial implementation above. The enduring rule is a **total resident small/medium budget across the active volume, not a per-cell allowance**. Changing the volume requires retuning visual density. The proposed slow envelope of 0.8–1.2 and separate 0–1 gap mask described modest variation plus deliberate quiet stretches. The runtime currently uses fixed cell allowances, blended density and stable quieter cells instead. Judge the result visually; do not use counts as a completion target. Large structures, lights and gameplay hazards have separate budgets.
+
+Counts do not establish visible density: inspect projected size, silhouette overlap, clear space and focal dominance at normal gameplay FOV. A panel and a small rock cannot be treated as visually equivalent simply because both count as one instance. Gap masks, exclusion volumes and authored clearances stay fixed in world space; turning the camera must not delete/reseed props to manufacture a clear reticle. Clear passages do not impose a fixed player path.
+
+Generate stable world-space cells around the player using internal run-local variation and cell identity. Cache/reproduce choices on revisiting; no player-facing seeded-run feature is required. Stream/pool distant cells without visible pop-in, frequent reseeding or camera-attached landmarks. Authored chunks carry their own spacing, silhouette and clearance constraints; rotate/choose compatible variants rather than scatter their parts independently. Changes in density affect newly admitted distant candidates gradually, not a wholesale reroll of visible objects. Localized dust and the distant sky remain distinct layers; cubemap grading is not a volumetric generator.
+
+Independent review must cover at least three distinct recipes, each shown in two run variations, with explicit owned-family mappings and no obvious adjacent-cell/chunk repetition. Traversal evidence must cross multiple cell boundaries, a sparse/dense change and a gradual region blend, then turn/revisit; elapsed seconds alone are insufficient. Require consistency of materials, scale, depth and readability across these views, with performance assessed in a separate run without repeated screenshot readbacks. Reusing one scene from several angles cannot close this gate. The independent agent reviewed the original proposal as scope-consistent; that was design review, not implementation acceptance. The former twelve-placement shell/timer-only approach was insufficient. The optional spatial-area path now implements part of the design, but none of these acceptance requirements is waived. ACT-03 in KNOWN_ISSUES is the sole work/status queue.
+
+The owner subsequently supplied `Megastructure_Scifi_World`. Its modular arches, panels and pillars were proposed for a sparse alien-ruin approach, a denser passage beside connected structural masses and an open departure. The new AlienCauseway draft and merged assemblies now develop that proposal; they do not replace the other area identities or establish accepted traversal/collision. The separate station gallery loads the full vendor scenes for inspection; it is not proof that the flight compositions meet the reference.
+
+## September 14 baseline — historical changes
 
 - The distant sky now uses the owned Asteroid Library's cool `MI_Skybox_024` cubemap configuration through a private master/instance. The original materials and maps are preserved. A mild `Tint` input retains the existing gradual region/wormhole color influence.
 - `USSSpaceLookData` supplies the sky, ambient-light cube/intensity, cloud material, offsets, scale and fog-grid settings. The authored private `DA_DeepSpaceLook` is optional; source-only installations retain the prior sky and omit missing licensed atmosphere.
@@ -11,7 +74,7 @@ This is an implemented September 14 presentation milestone, not Phase 1 completi
 - Cloud positions retain ordinary world travel before bounded displacement saturates. Asteroids use four persistent depth/size bands with different parallax and tumble rates, 384 default instances and a 768 cap in four mesh batches. Rare large silhouettes frame the view; an initial clear aim corridor is preserved. The conservative minimum decorative surface distance is 227 m, outside the current 140 m weapon range.
 - The 512 local dust grains remain cosmetic. The engine ribbon is a private Epic Niagara derivative with blue-white emissive color, preserving the existing spawning, lifetime and opacity behavior. This is not a newly validated thrust/nozzle animation system.
 
-## Reproduction and tuning
+## September 14 baseline reproduction and tuning — historical
 
 Build the Editor target using `Scripts/Build.ps1 -Target Editor`. With the owned `Asteroid_Library` and `NiagaraExamples` content staged, execute `Scripts/AuthorDeepSpaceLook.py`, then `Scripts/AuthorDeepSpaceExhaust.py` through Unreal Python. Both create only private derivatives under `/Game/SpaceSurvival/Licensed/Atmosphere`, which are excluded from public source control and included by the existing project cook rule. The scripts can be rerun to restore the baseline values; manual instance/data edits should be preserved separately before doing so. Bump graph metadata versions deliberately when changing generated graphs.
 
@@ -19,7 +82,7 @@ Tune `DA_DeepSpaceLook` and its private instances in the editor. `ss.AtmosphereC
 
 `Scripts/CaptureSpaceLook.ps1` captures the current Editor game offscreen. Add `-Packaged` for the built Windows archive. Each run has an isolated fresh profile and an immutable identity/save/screenshot receipt. It waits for completion and checks four 1920×1080 images, not their artistic quality. Normal launcher: `Artifacts/Windows/SpaceSurvival.exe`; existing optional ship launcher remains separate.
 
-## Validation and limits
+## September 14 baseline validation and limits — historical
 
 - Editor compilation and Windows BuildCookRun succeeded with the existing owner-installed UE 5.8.2/MSVC toolchain. Known engine-header deprecations and the nonpreferred installed compiler warning remain.
 - All 44 Unreal automation tests passed, with zero test warnings/failures/not-run. This includes actual depth-transform bounds/turn/rebase tests and the new presentation data/material/visibility/isolation test.

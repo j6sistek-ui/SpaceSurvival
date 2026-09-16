@@ -21,7 +21,14 @@ def main():
     for folder,name in [('Skybox_8','T_Nebula_Turquoise_Dark_8'),('Skybox_6','T_Nebula_Orange_6'),('Skybox_1','T_Nebula_Blue_1')]:
         a=duplicate('/Game/SpaceNebulaFantasy/Textures/'+folder+'/'+name,'T_Region_'+folder)
         a.set_editor_property('max_texture_size',2048)
+        a.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_HDR_COMPRESSED)
         cubes.append(a)
+    audited_galaxies=[]
+    for suffix in ('02','04'):
+        a=duplicate('/Game/Vefects/Stylized_Galaxy_Shader/Galaxy/Textures/T_VFX_Lush_Galaxy_Space_Panorama_Cube_'+suffix,
+                    'T_Region_Galaxy_'+suffix)
+        a.set_editor_property('max_texture_size',2048)
+        audited_galaxies.append(a)
     stars=duplicate('/Game/SpaceNebulaFantasy/Textures/Starfields/T_Stars_Far_White','T_RegionStars')
     stars.set_editor_property('max_texture_size',1024)
     path=BASE+'/M_RegionSky'
@@ -88,9 +95,9 @@ def main():
     if cloud:
         EDIT.set_material_instance_scalar_parameter_value(cloud,'Density',.000012)
         EDIT.set_material_instance_vector_parameter_value(cloud,'Color',u.LinearColor(.12,.16,.2,1))
-    for asset in cubes+[stars,m,look]+([cloud] if cloud else []):
+    for asset in cubes+audited_galaxies+[stars,m,look]+([cloud] if cloud else []):
         assert LIB.save_loaded_asset(asset,only_if_is_dirty=False)
     out=ROOT/'Artifacts/VisualPass';out.mkdir(parents=True,exist_ok=True)
-    (out/'SpaceAuthor.json').write_text(json.dumps({'status':'AUTHORED_REQUIRES_RENDER','regions':[x.get_path_name() for x in cubes],'structures':[x.get_path_name() for x in meshes],'vendor_saved':False,'stars':{'brightness':.30,'contrast_exponent':1.45,'directional_gain_min':.18,'directional_gain_max':1.,'noise_scale':35.,'temporal_animation':False}},indent=2))
+    (out/'SpaceAuthor.json').write_text(json.dumps({'status':'AUTHORED_REQUIRES_RENDER','regions':[x.get_path_name() for x in cubes],'structures':[x.get_path_name() for x in meshes],'vendor_saved':False,'selection':{'NebulaFantasy':'three restrained regional cubemaps selected','FreeGalaxyShader':'two cubemaps audited but rejected from region rotation after fixed capture showed weaker sparse black/red depth','CosmicMaterial':'surface PBR candidates audited but not forced into the sky graph'},'stars':{'brightness':.30,'contrast_exponent':1.45,'directional_gain_min':.18,'directional_gain_max':1.,'noise_scale':35.,'temporal_animation':False}},indent=2))
     u.log('SPACE_VISUAL_PASS_AUTHORED')
 if __name__=='__main__':main()

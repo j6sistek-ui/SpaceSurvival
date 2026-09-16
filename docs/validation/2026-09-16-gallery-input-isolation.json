@@ -1,0 +1,702 @@
+{
+  "schema": "spacesurvival.validation/1",
+  "recorded_utc": "2026-09-16T07:59:35.597213+00:00",
+  "status": "GALLERY_INPUT_ISOLATION_FIXED_PACKAGED_ROUND_TRIPS_PASS",
+  "issue": "ISS-11",
+  "source_commit": "a77010e30f8c31da5b3446bce29277659ba4f472",
+  "source_worktree_dirty_entries": [],
+  "supersedes_diagnosis": "docs/validation/2026-09-16-gallery-package-diagnosis.json",
+  "root_cause": {
+    "summary": "ASSPlayerController::PlayerTick handled alien-gallery return/switch/reset keys before the bAutomatedSoakInput guard, so physical device input cancelled scripted packaged fixtures.",
+    "mechanism": "An XInput controller is registered and polled inside the packaged fixture process (LogInputDeviceRegistry RegisterDevice XInputInterface) even though the run is -RenderOffscreen -unattended and never foreground. A stray Gamepad_FaceButton_Right press called USSAlienGallery::Leave(); Gamepad_FaceButton_Top would call SwitchScene().",
+    "first_bad_transition": "ALIEN_GALLERY_INPUT_RETURN automated=1 immediately followed by ALIEN_GALLERY_LEAVE state=2 (Viewing) while the fixture was holding the requested scene, before its stage capture.",
+    "rejected_hypotheses": [
+      "Level load failure on the asset-layout map: no ALIEN_GALLERY_LOAD_FAILED in any reproduction, and the asset map had already reached Viewing (state=2, assets=1) in every stage-5 failure.",
+      "Lost camera or controller during the scene switch: no ALIEN_GALLERY_VIEW_FAILED in any run, and every failing ALIEN_GALLERY_LEAVE recorded controller=1 camera=1.",
+      "Missing packaged map: both vendor maps are present in the actual IoStore index."
+    ]
+  },
+  "fix": {
+    "file": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+    "change": "The gallery branch of ASSPlayerController::PlayerTick returns early when ASSGameMode::bAutomatedSoakInput is set, logging ALIEN_GALLERY_INPUT_SUPPRESSED key=<name>.",
+    "player_behaviour_unchanged": "bAutomatedSoakInput is set only by ASSWave10Soak, which is compiled out of Shipping builds. Escape/B still leaves the gallery in normal play.",
+    "sha256": "d6b29bef12acef481ac35fe15cddfebcae5160052abf27bc685119feb2e18266"
+  },
+  "source_checks": {
+    "structural_checks": 32,
+    "result": "PASS",
+    "content_source": "PASS 26 meshes, 16 WAVs, unchanged GLB"
+  },
+  "portable_domain_checks": {
+    "tool": "Scripts/TestCore.ps1",
+    "result": "PASS",
+    "assertions": 744,
+    "limit": "Portable domain assertions only; Unreal integration and gameplay feel are unverified."
+  },
+  "format": {
+    "tool": "Scripts/Format.ps1 -Check",
+    "result": "PASS"
+  },
+  "editor_build": {
+    "target": "SpaceSurvivalEditor Win64 Development",
+    "result": "PASS",
+    "seconds": 27.6999625
+  },
+  "unreal_tests": {
+    "succeeded": 51,
+    "failed": 0,
+    "notRun": 0,
+    "report": {
+      "path": "Artifacts/UnrealTests/index.json",
+      "bytes": 41723,
+      "sha256": "c5d64343c6c845922da2528104c9d6370ca750cdc89c4bc1aea28b029c829844"
+    }
+  },
+  "package_build": {
+    "target": "BuildCookRun Win64 Development",
+    "result": "PASS",
+    "seconds": 184.4541287,
+    "log": ".agent/local/Package017InputIsolation.log"
+  },
+  "packaged_gallery_baseline_before_fix": {
+    "binary_sha256": "117A67C8A3774F9F602EAEE255AF21D5817EBF22690814D2A9E7F05C337CBF9D",
+    "source_commit": "fe92d8cd9abf53d300bc57fadf9007436d9cc771",
+    "runs": 12,
+    "failures": 6,
+    "every_failure_preceded_by_input_return": true,
+    "detail": [
+      {
+        "token": "ac5e046f5dff4be7949c9af7c27749c6",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.091",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "d7ffac6442e645529bfb51b3b5fb41c5",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.067",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "5e7fae545895470bb54e6dab6a626829",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.059",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "2c7e421d33ed4225b715794da35f95ea",
+        "fixture_success": false,
+        "first_failure": "galleryStage=5: Gallery exited before requested scene was ready.",
+        "input_return": 1,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=1.110",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "f64b89c63e2349a0a46754d58b2b34a3",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.053",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "74ee151cbdb24a319ed665c638fccd5c",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.076",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "1e3bda48e390478db4b054c9b8dac505",
+        "fixture_success": false,
+        "first_failure": "galleryStage=5: Gallery exited before requested scene was ready.",
+        "input_return": 1,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=9.299",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "da16561f79a642b290dc00822a2a0709",
+        "fixture_success": false,
+        "first_failure": "galleryStage=5: Gallery exited before requested scene was ready.",
+        "input_return": 1,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=4.119",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "00515324e81d4ae2bb044350abbb35d2",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.065",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "51dde61ec25846389f46f533ff3bc8de",
+        "fixture_success": false,
+        "first_failure": "galleryStage=5: Gallery exited before requested scene was ready.",
+        "input_return": 1,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=2.187",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "030901a1efca40fba951175bdd3a6c2d",
+        "fixture_success": false,
+        "first_failure": "galleryStage=5: Gallery exited before requested scene was ready.",
+        "input_return": 1,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=5.342",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "4258365350d141809a2aebd54e3e5725",
+        "fixture_success": false,
+        "first_failure": "galleryStage=3: Gallery exited before requested scene was ready.",
+        "input_return": 1,
+        "input_suppressed": [],
+        "leave": "state=2 assets=0 controller=1 camera=1 age=2.045",
+        "load_failed": 0,
+        "view_failed": 0
+      }
+    ]
+  },
+  "packaged_gallery_after_fix": {
+    "binary": {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe",
+      "bytes": 333187072,
+      "sha256": "99839550c02e1d17616d2805944e0c0f4829fe1ca4709e4bc3609ba08c0986d4"
+    },
+    "runs": 14,
+    "failures": 0,
+    "runs_with_suppressed_device_input": 4,
+    "suppressed_presses": [
+      "Gamepad_FaceButton_Top",
+      "Gamepad_FaceButton_Top",
+      "Gamepad_FaceButton_Right",
+      "Gamepad_FaceButton_Right",
+      "Gamepad_FaceButton_Top"
+    ],
+    "detail": [
+      {
+        "token": "9a40f89bf5ef4f2da70b3352af31b7e0",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.069",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "a84e45463ee842d68c55d44d544d2829",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.055",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "4556e9eaf06f4f63b83c7ad2ddd361c6",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.132",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "6688e8be83f94819829efdacf801183e",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.132",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "035086f2825740eb89b3c3d0649e2993",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [
+          "Gamepad_FaceButton_Top",
+          "Gamepad_FaceButton_Top"
+        ],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.065",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "315cfe89a77b40638e4e820f42313aaf",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [
+          "Gamepad_FaceButton_Right"
+        ],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.080",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "3ef19a7f9ada40b580a49689961355cd",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.097",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "bdb129237ce942cb9e4fb3866066ad8c",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.117",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "884ae1ac2790472c863303ec58b9bdb0",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.061",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "39c1804298a844aa90be78433a44003a",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [
+          "Gamepad_FaceButton_Right"
+        ],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.064",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "f10b122c279e4b76bb770cf109486337",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [
+          "Gamepad_FaceButton_Top"
+        ],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.050",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "f45a07903222455c831ba47582cb4437",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.044",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "248e73e4025a49e38617a388f9323981",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.058",
+        "load_failed": 0,
+        "view_failed": 0
+      },
+      {
+        "token": "ddec9f22a330408b8d47b29d0ff91bba",
+        "fixture_success": true,
+        "first_failure": null,
+        "input_return": 0,
+        "input_suppressed": [],
+        "leave": "state=2 assets=1 controller=1 camera=1 age=11.053",
+        "load_failed": 0,
+        "view_failed": 0
+      }
+    ]
+  },
+  "packaged_flight_capture": {
+    "token": "ec934ce029ff462b826af92ee7980635",
+    "scenario": "Wave1",
+    "success": true,
+    "images": [
+      "Cruise.png",
+      "Turn.png",
+      "Boost.png",
+      "Brake.png"
+    ],
+    "production_saves_preserved": true
+  },
+  "packaged_station_capture": {
+    "token": "8cde9679a99f4469921c9af53fd1daaf",
+    "scenario": "Station5",
+    "success": true,
+    "images": [
+      "Flight.png",
+      "Climax.png",
+      "Wormhole.png",
+      "Approach.png",
+      "Docking.png",
+      "Exit0.png",
+      "Exit1.png",
+      "Exit2.png",
+      "Exit3.png",
+      "Exit4.png",
+      "Exit5.png",
+      "Exit6.png",
+      "StationIdle.png",
+      "StationServices.png",
+      "StationOverview.png",
+      "CombatImpact.png"
+    ],
+    "saw_wave5": true,
+    "saw_wormhole": true,
+    "saw_docking": true,
+    "saw_authored_exit": true
+  },
+  "package_audit": {
+    "status": "ACTUAL_IOSTORE_PRESENCE_AND_COOKED_IMPORT_AUDIT_PASS",
+    "label": "PR17 gallery input isolation package (0.1.17 candidate)",
+    "receipt": {
+      "path": "Artifacts/VisualPass/PackageAudit-9d17be5e746f420f835a79577031409e/Audit.json",
+      "bytes": 2154256,
+      "sha256": "975134882a825cd612acc27b708c67207403862769ba831e278677953769e7bf"
+    },
+    "index_rows": 4055,
+    "indexed_export_count": 1604,
+    "cooked_dependency_package_count": 1604,
+    "missing_packages": [],
+    "unresolved_cooked_imports": 0,
+    "selected_closure_import_warnings": 0,
+    "expected_names_resolved_by_case": {
+      "/Game/Heavy_space_trooper/character/mesh/Heavy_space_trooper_A_Pose": "/Game/Heavy_space_trooper/Character/Mesh/Heavy_space_trooper_A_Pose"
+    },
+    "tool_corrections": [
+      "Unreal package names now compare case-insensitively. The saved station Blueprint records /Game/Heavy_space_trooper/character/mesh/... while the cooked filename index records Character/Mesh for the same present package.",
+      "The editor-only Station Workshop authoring map L_StationWorkshop is excluded from the expected cooked set. It derives BP_StationVisualLayout in the editor and is deliberately not cooked."
+    ],
+    "tool_is_local_only": "Artifacts/VisualPass/AuditVisualPackage.py is ignored by Git and is not part of the pull request diff."
+  },
+  "station_layout_receipt": {
+    "blueprint_sha256_unchanged": "6fa8ae4684953171c7baeaa027acff2bc836cef0337dd03fcd1db89aa0a06cf0",
+    "status": "OWNER_LAYOUT_PRESERVED_UNCHANGED",
+    "components": 383,
+    "note": "Re-derived read-only so the audit could bind the current saved layout. The .uasset bytes are identical before and after."
+  },
+  "archive_files": [
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/DbgHelp/dbghelp.dll",
+      "bytes": 2232688,
+      "sha256": "36795e47d9724ee68349efbbe64aba94db108b9cad1e3dfe8bc510f359136f53"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/MsQuic/v220/win64/msquic.dll",
+      "bytes": 2547080,
+      "sha256": "5c6b07bf263dd8b85cb146b59468a22eb1fbd8635d4a6c56a8e41b67ce5eca2b"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/NVIDIA/NVaftermath/Win64/GFSDK_Aftermath_Lib.x64.dll",
+      "bytes": 5799016,
+      "sha256": "82d7a3e50710d660927db2f318cbed471049c962b7c05de12c2b2b3e40a35af9"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Ogg/Win64/VS2015/libogg_64.dll",
+      "bytes": 59832,
+      "sha256": "f23df1213c4bf23b5c666bafa7ec18743847a2e18192ae8e0d096a2fb7c28bf9"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbis_64.dll",
+      "bytes": 1724856,
+      "sha256": "a56d43a98e197f5e73a1dadf5c1dc7a07ad40327b199faa4ff1247abd6eccd5b"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbisfile_64.dll",
+      "bytes": 48568,
+      "sha256": "d64e67ca918716be8b6056a6f7a1f6256e910754425db8369d952943264b40eb"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_api_dump.dll",
+      "bytes": 8161680,
+      "sha256": "8c5af98e2d899d4aec744c63a8bc99b90124d8fc3bdc120d4c178e1df3a3e5e8"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_api_dump.json",
+      "bytes": 13848,
+      "sha256": "9e55221c225dce4b5448bac7dadb7e39fd216f51354dde02e58f950f4a0dd80b"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_crash_diagnostic.dll",
+      "bytes": 2890128,
+      "sha256": "7972fa60e084dc7da6c8a69ac1645b112f5e98a078fc27a7d3df469f2da4f811"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_crash_diagnostic.json",
+      "bytes": 23055,
+      "sha256": "578bde354874789671dee1a96468c965619c9f3ba16cfa65f850e81a80674087"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_gfxreconstruct.dll",
+      "bytes": 8166288,
+      "sha256": "dd72d28450db1b52bd6c5dc12228741b680940c5fb5eb6b6a0e26f0ee5c3fc3e"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_gfxreconstruct.json",
+      "bytes": 28099,
+      "sha256": "71d4e243a2af74874f4f61378bdfe3753cb01ce5eb9b98400d83612bf882a815"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_profiles.dll",
+      "bytes": 1485200,
+      "sha256": "93227f57ddca0084e1655a65d2cc915d65b5191f6c645a17c0b36cfa2f714b38"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_profiles.json",
+      "bytes": 66696,
+      "sha256": "6095c28691757e083a8c1bef3c69ca76a8b5017e21acaf55d1bc7e82221a0fbe"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_shader_object.dll",
+      "bytes": 415632,
+      "sha256": "eebd555aab6df20b21520564d0eb2341ad0e9cdde6148ee1c71ef76805c5e7df"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_shader_object.json",
+      "bytes": 4455,
+      "sha256": "18ecafc9a65e1b7af8cd0e36dc936026cdb3aed333c4ea5a7c17d6d9465cfaf4"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_synchronization2.dll",
+      "bytes": 397200,
+      "sha256": "341b6b5eedbf4b7aeb4439af85b23974b820b1413dfaf6356911476df44ed559"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_synchronization2.json",
+      "bytes": 1910,
+      "sha256": "a1e980a24be9a16a826b00c27d61b85ee0e2e17226dc9c4e8eec031879e5f26a"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_validation.dll",
+      "bytes": 19509136,
+      "sha256": "ea37bfda6749684d88a1944ae7103a87d9b38468579f397c3c82ede1ceaa40d6"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Vulkan/Win64/VkLayer_khronos_validation.json",
+      "bytes": 95917,
+      "sha256": "5c464b84457776d92a674de506f7b7a489294583a7d7609f78fcc52bc4406d09"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Windows/WinPixEventRuntime/x64/WinPixEventRuntime.dll",
+      "bytes": 69056,
+      "sha256": "ba40d206c6113ac1a35993a06390c93e55602713a902d7ba7b2f2f0ed13e3d3f"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Binaries/ThirdParty/Windows/XAudio2_9/x64/xaudio2_9redist.dll",
+      "bytes": 858152,
+      "sha256": "0ca010abcabe52493fdb744d79c4c8132ae6756046b68aa7c88bdc03ec1effcd"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Config/StagedBuild_SpaceSurvival.ini",
+      "bytes": 3,
+      "sha256": "f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Content/Renderer/TessellationTable.bin",
+      "bytes": 259568,
+      "sha256": "edc4f3b628a139c5e185bbaeca661c95c1f427368d3b92892c5cff36c56dd941"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Content/Slate/Cursor/invisible.cur",
+      "bytes": 326,
+      "sha256": "fef3980fa567e9c45d5d8dcaa432a2c1a3f3bb17fe67d7ab198164f56c142aa1"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Content/SlateDebug/Fonts/LastResort.tps",
+      "bytes": 930,
+      "sha256": "0f775fa99d05e21d43d2d06d55982b23dcdccdb512a9a5a07aff674f212c41b8"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Content/SlateDebug/Fonts/LastResort.ttf",
+      "bytes": 5395052,
+      "sha256": "fff0f8de0b868b964950fe97c9b60f893e9bc85a4f90b3629c5693db058b97b9"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/GPUDumpViewer/GPUDumpViewer.html",
+      "bytes": 195428,
+      "sha256": "eb599b5171e99d7c2e35732abf9525baeb39b9c2ac86619522f307c57cc90384"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/GPUDumpViewer/OpenGPUDumpViewer.bat",
+      "bytes": 879,
+      "sha256": "e8f7ef9c88697041bd87902b76e52558979ca866c7450b1da108a94a027f441b"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/GPUDumpViewer/OpenGPUDumpViewer.sh",
+      "bytes": 2165,
+      "sha256": "1b222b5d5aad6dd9b5b9f0a1c72d38635149540f2c7a368600ec76c1d304390a"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/Redist/en-us/vc_redist.arm64.exe",
+      "bytes": 11751688,
+      "sha256": "9a4540c1ed0ac2a0755c0093a9c01e4b3dbe21b25805318ba495648fc890e14f"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Extras/Redist/en-us/vc_redist.x64.exe",
+      "bytes": 18731856,
+      "sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c"
+    },
+    {
+      "path": "Artifacts/Windows/Engine/Plugins/NNE/NNERuntimeORT/Binaries/ThirdParty/Onnxruntime/Win64/onnxruntime.dll",
+      "bytes": 17339384,
+      "sha256": "5df3d744b5cc4421181e9e2c97cadff4e9b1b2b25e80202160e80fc94ff948f2"
+    },
+    {
+      "path": "Artifacts/Windows/Manifest_DebugFiles_Win64.txt",
+      "bytes": 443,
+      "sha256": "9d8d3075844e6d524586348e9efd45c345c67ad2676933501a3dbe595da7f7ce"
+    },
+    {
+      "path": "Artifacts/Windows/Manifest_NonUFSFiles_Win64.txt",
+      "bytes": 3073,
+      "sha256": "a01441bf25c051b2b13f9e49e6203aeafd18cec02d603d17425a11ba8a31d343"
+    },
+    {
+      "path": "Artifacts/Windows/Manifest_UFSFiles_Win64.txt",
+      "bytes": 395475,
+      "sha256": "368ed59ee994f3edcddece16e79660528a6ea414a1a6f94faae715f096448429"
+    },
+    {
+      "path": "Artifacts/Windows/NOTICES.txt",
+      "bytes": 111,
+      "sha256": "ba49ae5586f817b36a2772269f71f899cb1f54b5f2720fad951319edd5e140b8"
+    },
+    {
+      "path": "Artifacts/Windows/Prerequisites.json",
+      "bytes": 2460,
+      "sha256": "ba04003535b15f2bb0fee759ae015cc035b0ec252e59500fa32363cfc9183b08"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival.exe",
+      "bytes": 171520,
+      "sha256": "619ac0779dceabf638639193efdea0733e3b4626dea623c07062f160f5abccf8"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/D3D12/x64/D3D12Core.dll",
+      "bytes": 4831768,
+      "sha256": "c41711499e13244fd07ca28a9b32ece29e4454ecc38fb50681f74254b333a9b3"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/D3D12/x64/d3d12SDKLayers.dll",
+      "bytes": 4943344,
+      "sha256": "e36f1ee4371798892529762368907d19b997493ad6f30aa8acbfd0132881804f"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/DML/x64/DirectML.dll",
+      "bytes": 18538488,
+      "sha256": "f97b69379ecbdbab7e1dcd2b6170e7f285d367c86ee6718bc401c4d7cef1275c"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe",
+      "bytes": 333187072,
+      "sha256": "99839550c02e1d17616d2805944e0c0f4829fe1ca4709e4bc3609ba08c0986d4"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.pdb",
+      "bytes": 376205312,
+      "sha256": "4bcd342f51add67002f87bde7de5223cc85dd44f9b61876e8102893de49fa5bf"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/tbb12.dll",
+      "bytes": 342456,
+      "sha256": "de15a5f93bfd334d4fe32343a81d76f9de0824af8e31b2189637d12545af2673"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Binaries/Win64/tbbmalloc.dll",
+      "bytes": 117176,
+      "sha256": "74edc04a8f5bc2593a5a555b675c1251d6d90e693ee6a67cfa11dd3b2d17a856"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.pak",
+      "bytes": 11288254,
+      "sha256": "b4c4d1a61129f3b1ee5f0ef359767a922b0e016aa514d25240fe75b2b9dc247b"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.ucas",
+      "bytes": 2229638336,
+      "sha256": "51ecf702299049d0ed51619696f29a11addccdccd10c281175acc7fb167ca53a"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/SpaceSurvival-Windows.utoc",
+      "bytes": 1278197,
+      "sha256": "468dbb9a89c5851722220713f72db567f932f9751a21ccab3d35483ba51cafcf"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.ucas",
+      "bytes": 3209504,
+      "sha256": "702a26b62a09e49af19d18a99eb0d312265d3a2748323e5467b1a53b2d2058e7"
+    },
+    {
+      "path": "Artifacts/Windows/SpaceSurvival/Content/Paks/global.utoc",
+      "bytes": 782,
+      "sha256": "779cdf4a7d2ece47724d5043945a42e8d7b5594e9a104584a3194532750e8baa"
+    },
+    {
+      "path": "Artifacts/Windows/THIRD_PARTY.md",
+      "bytes": 8787,
+      "sha256": "bd3a9a98439362ca6011b8dcea6cf2fa1b24485073ad34366f66762173ade049"
+    },
+    {
+      "path": "Artifacts/Windows/Try New Ship.cmd",
+      "bytes": 76,
+      "sha256": "f76814c264b8e3dff5f9809909df21cd97c7c140bd2e84ad45dd41ded3615a63"
+    }
+  ],
+  "archive_file_count": 53,
+  "archive_bytes": 3092438405,
+  "limits": [
+    "Scripted offscreen fixtures only. No natural input, hands-on play, audio, visual-target or 60 FPS acceptance is claimed.",
+    "The stray presses come from a real connected controller. The hardware behaviour itself was not diagnosed and is outside this change.",
+    "Clean-PC installation and a real itch A-to-B update with save preservation remain unverified.",
+    "ACT-03 flight and environment visual acceptance remains NOT MET and is unchanged by this pass.",
+    "No merge, upload or publication was performed."
+  ]
+}

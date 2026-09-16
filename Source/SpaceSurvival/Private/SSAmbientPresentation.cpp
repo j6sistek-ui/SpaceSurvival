@@ -2,11 +2,17 @@
 #include "SSShip.h"
 #include "SSShipPresentation.h"
 #include "SSSpaceLookData.h"
+#include "SSSpaceScenery.h"
+#include "Engine/StaticMeshActor.h"
 #include "Components/SkyLightComponent.h"
 #include "Engine/TextureCube.h"
+#include "Engine/DirectionalLight.h"
+#include "Components/DirectionalLightComponent.h"
+#include "EngineUtils.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Engine/StaticMesh.h"
 #include "HAL/IConsoleManager.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -16,7 +22,7 @@
 
 namespace
 {
-constexpr int32 DustCount = 512;
+constexpr int32 DustCount = 320;
 constexpr double DustHalfWidth = 2400.0; // Fine passing grains, distinct from gameplay debris.
 TAutoConsoleVariable<int32> DustEnabled(TEXT("ss.LocalDust"), 1,
                                         TEXT("Enable cosmetic local dust grains (0 disables)."));
@@ -47,6 +53,9 @@ ASSAmbientPresentation::ASSAmbientPresentation()
     VolumeFog->SetVolumetricFogAlbedo(FColor::Black);
     VolumeFog->SetVolumetricFogEmissive(FLinearColor::Black);
     VolumeFog->SetVolumetricFogDistance(160000.f);
+    VolumeFog->SetStartDistance(30000.f);
+    VolumeFog->SetVolumetricFogStartDistance(25000.f);
+    VolumeFog->SetVolumetricFogNearFadeInDistance(10000.f);
     VolumeFog->SetVisibility(false);
     Dust = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("LocalDust"));
     Dust->SetupAttachment(RootComponent);
@@ -74,6 +83,21 @@ ASSAmbientPresentation::ASSAmbientPresentation()
         Trail->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         Trail->SetCastShadow(false);
         EngineTrails.Add(Trail);
+        auto *Core = CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("EngineCore%d"), Index));
+        Core->SetupAttachment(RootComponent);
+        Core->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Core->SetGenerateOverlapEvents(false);
+        Core->SetCastShadow(false);
+        Core->SetCanEverAffectNavigation(false);
+        Core->SetVisibility(false);
+        EngineCores.Add(Core);
+        auto *Light = CreateDefaultSubobject<UPointLightComponent>(*FString::Printf(TEXT("EngineGlow%d"), Index));
+        Light->SetupAttachment(Core);
+        Light->SetIntensityUnits(ELightUnits::Lumens);
+        Light->SetAttenuationRadius(700.f);
+        Light->SetCastShadows(false);
+        Light->SetVisibility(false);
+        EngineLights.Add(Light);
     }
 }
 
@@ -96,6 +120,8 @@ void ASSAmbientPresentation::BeginPlay()
     auto *Cube = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
     auto *HullMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"),
                                                         nullptr, LOAD_NoWarn | LOAD_Quiet);
+    auto *CoreMaterial = LoadObject<UMaterialInterface>(
+        nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive"), nullptr, LOAD_NoWarn | LOAD_Quiet);
     if (Cube && HullMaterial)
     {
         Dust->SetStaticMesh(Cube);
@@ -115,12 +141,22 @@ void ASSAmbientPresentation::BeginPlay()
             DustPositions.Add(FVector(Random.FRandRange(-DustHalfWidth, DustHalfWidth),
                                       Random.FRandRange(-DustHalfWidth, DustHalfWidth),
                                       Random.FRandRange(-DustHalfWidth, DustHalfWidth)));
-            DustSizes.Add(Random.FRandRange(.35f, 1.1f));
+            DustSizes.Add(Random.FRandRange(.25f, .85f));
             DustTransforms.Add(FTransform(FRotator(Random.FRandRange(0.f, 180.f), Random.FRandRange(0.f, 180.f), 0.f),
                                           FVector::ZeroVector, FVector::ZeroVector));
         }
         Dust->AddInstances(DustTransforms, false, false, false);
     }
+    if (Cube && CoreMaterial)
+        for (const auto &Core : EngineCores)
+        {
+            Core->SetStaticMesh(Cube);
+            auto *Dynamic = UMaterialInstanceDynamic::Create(CoreMaterial, this);
+            Dynamic->SetVectorParameterValue(TEXT("Color"), FLinearColor::White);
+            Dynamic->SetScalarParameterValue(TEXT("Emission"), 3.f);
+            Core->SetMaterial(0, Dynamic);
+            EngineCoreMaterials.Add(Dynamic);
+        }
     CloudAvailable = Material && Cube;
     if (CloudAvailable)
     {
@@ -183,6 +219,13 @@ void ASSAmbientPresentation::Follow(AActor *Actor)
             Ship->Presentation->TryGetExhaustLocalPosition(Index, ExhaustPosition);
         Trail->SetRelativeLocation(ExhaustPosition);
         Trail->SetRelativeRotation(FRotator::ZeroRotator);
+        if (EngineCores.IsValidIndex(Index))
+        {
+            EngineCores[Index]->AttachToComponent(Ship && Ship->HullMesh ? Ship->HullMesh.Get() : GetRootComponent(),
+                                                  FAttachmentTransformRules::KeepRelativeTransform);
+            EngineCores[Index]->SetRelativeLocation(ExhaustPosition + FVector(-18.f, 0.f, 0.f));
+            EngineCores[Index]->SetRelativeRotation(FRotator::ZeroRotator);
+        }
     }
     RestartTrails = true;
 }
@@ -192,6 +235,33 @@ void ASSAmbientPresentation::SetFlightVisible(bool Visible)
     if (FlightVisible == Visible)
         return;
     FlightVisible = Visible;
+    if (SpaceLook && SpaceLook->bOverrideFlightKeyDirection && !SpaceLook->FlightKeyRotation.ContainsNaN())
+    {
+        if (Visible)
+        {
+            for (TActorIterator<ADirectionalLight> It(GetWorld()); It; ++It)
+                if (auto *Light = Cast<UDirectionalLightComponent>(It->GetLightComponent());
+                    Light && Light->ForwardShadingPriority == 2)
+                {
+                    FlightKey = *It;
+                    PreviousKeyRotation = It->GetActorRotation();
+                    PreviousKeyColor = Light->GetLightColor();
+                    PreviousKeyIntensity = Light->Intensity;
+                    It->SetActorRotation(SpaceLook->FlightKeyRotation);
+                    break;
+                }
+        }
+        else if (FlightKey.IsValid())
+        {
+            FlightKey->SetActorRotation(PreviousKeyRotation);
+            if (auto *Light = Cast<UDirectionalLightComponent>(FlightKey->GetLightComponent()))
+            {
+                Light->SetLightColor(PreviousKeyColor);
+                Light->SetIntensity(PreviousKeyIntensity);
+            }
+            FlightKey.Reset();
+        }
+    }
     if (!Visible)
     {
         Dust->SetVisibility(false);
@@ -201,15 +271,71 @@ void ASSAmbientPresentation::SetFlightVisible(bool Visible)
             Cloud->SetVisibility(false);
         for (const auto &Trail : EngineTrails)
             Trail->DeactivateImmediate();
+        for (const auto &Core : EngineCores)
+            Core->SetVisibility(false);
+        for (const auto &Light : EngineLights)
+            Light->SetVisibility(false);
     }
     else
         RestartTrails = true;
+}
+
+void ASSAmbientPresentation::UpdateAreaStyle(float DeltaSeconds)
+{
+    if (!SpaceLook || SpaceLook->AreaRecipes.IsEmpty())
+        return;
+    if (!RegionScenery.IsValid())
+        for (TActorIterator<ASSSpaceScenery> It(GetWorld()); It; ++It)
+        {
+            RegionScenery = *It;
+            break;
+        }
+    if (!RegionScenery.IsValid())
+        return;
+    const auto Blend = RegionScenery->GetCurrentAreaBlend();
+    if (!SpaceLook->AreaRecipes.IsValidIndex(Blend.First) || !SpaceLook->AreaRecipes.IsValidIndex(Blend.Second))
+        return;
+    const auto &A = SpaceLook->AreaRecipes[Blend.First];
+    const auto &B = SpaceLook->AreaRecipes[Blend.Second];
+    const float Smooth = AreaStyleInitialized ? 1.f - FMath::Exp(-FMath::Max(0.f, DeltaSeconds) * .3f) : 1.f;
+    CurrentHazeColor = FMath::Lerp(CurrentHazeColor, FMath::Lerp(A.HazeColor, B.HazeColor, Blend.Alpha), Smooth);
+    CurrentKeyColor = FMath::Lerp(CurrentKeyColor, FMath::Lerp(A.KeyColor, B.KeyColor, Blend.Alpha), Smooth);
+    CurrentHazeDensity =
+        FMath::Lerp(CurrentHazeDensity, FMath::Lerp(A.HazeDensity, B.HazeDensity, Blend.Alpha), Smooth);
+    CurrentKeyIntensity =
+        FMath::Lerp(CurrentKeyIntensity, FMath::Lerp(A.KeyIntensity, B.KeyIntensity, Blend.Alpha), Smooth);
+    CurrentAmbientIntensity =
+        FMath::Lerp(CurrentAmbientIntensity, FMath::Lerp(A.AmbientIntensity, B.AmbientIntensity, Blend.Alpha), Smooth);
+    AreaStyleInitialized = true;
+    // A restrained distance tint connects separated silhouettes without washing
+    // the nearby ship. The bounded volume banks provide the denser local patches.
+    VolumeFog->SetFogInscatteringColor(CurrentHazeColor * .12f);
+    for (const auto &Material : CloudMaterials)
+    {
+        Material->SetVectorParameterValue(TEXT("Color"), CurrentHazeColor);
+        Material->SetScalarParameterValue(TEXT("Density"), CurrentHazeDensity);
+    }
+    AmbientLight->SetIntensity(CurrentAmbientIntensity);
+    if (FlightKey.IsValid())
+        if (auto *Light = Cast<UDirectionalLightComponent>(FlightKey->GetLightComponent()))
+        {
+            Light->SetLightColor(CurrentKeyColor);
+            Light->SetIntensity(CurrentKeyIntensity);
+        }
+    if (!RegionSkyMaterial)
+        for (TActorIterator<AStaticMeshActor> It(GetWorld()); It; ++It)
+            if (It->ActorHasTag(TEXT("SpaceBackdrop")))
+                RegionSkyMaterial = Cast<UMaterialInstanceDynamic>(It->GetStaticMeshComponent()->GetMaterial(0));
+    if (RegionSkyMaterial)
+        RegionSkyMaterial->SetVectorParameterValue(TEXT("AreaTint"), CurrentHazeColor * 3.f);
 }
 
 void ASSAmbientPresentation::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const bool Active = FlightVisible && Followed.IsValid();
+    if (Active)
+        UpdateAreaStyle(DeltaSeconds);
     const bool CloudsVisible = Active && CloudAvailable && CloudEnabled.GetValueOnGameThread() != 0;
     const FVector Center = Followed.IsValid() ? Followed->GetActorLocation() : FVector::ZeroVector;
     if (!CloudPositionInitialized)
@@ -229,7 +355,9 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
     AmbientLight->SetVisibility(Active && SpaceLook && SpaceLook->AmbientCubemap);
     if (CloudsVisible)
         VolumeFog->SetWorldLocation(Center + FVector(0, 0, -10000000));
-    UpdateDust(Center, Active && DustEnabled.GetValueOnGameThread() != 0);
+    const auto *Ship = Cast<ASSShip>(Followed.Get());
+    UpdateDust(Center, Ship ? Ship->GetVelocity() : FVector::ZeroVector,
+               Active && DustEnabled.GetValueOnGameThread() != 0);
     for (int32 Index = 0; Index < CloudBanks.Num(); ++Index)
     {
         CloudBanks[Index]->SetVisibility(CloudsVisible);
@@ -237,22 +365,62 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
             CloudBanks[Index]->SetWorldLocation(Center + CloudTravel +
                                                 (Index == 0 ? SpaceLook->CloudOffsetA : SpaceLook->CloudOffsetB));
     }
-    const auto *Ship = Cast<ASSShip>(Followed.Get());
     const bool TrailsVisible =
         Active && Ship && !Ship->IsMoored() && TrailsAvailable && TrailEnabled.GetValueOnGameThread() != 0;
+    float DrivePower = 0.f, Damage = 0.f;
+    bool Boosting = false, Braking = false;
+    if (Ship)
+        Ship->GetDrivePresentation(DrivePower, Boosting, Braking, Damage);
+    const float Pulse = .85f + .15f * FMath::Sin(GetWorld()->GetTimeSeconds() * (Damage > .1f ? 28.f : 9.f));
+    const FLinearColor DriveColor = Damage > .1f && Pulse < .92f ? FLinearColor(1.f, .02f, .01f)
+                                    : Braking                    ? FLinearColor(1.f, .18f, .02f)
+                                    : Boosting                   ? FLinearColor(.18f, .62f, 1.2f)
+                                                                 : FLinearColor(.03f, .22f, .82f);
+    const float VisualPower = (Boosting ? 1.75f : Braking ? .55f : DrivePower) * Pulse;
     for (int32 Index = 0; Index < EngineTrails.Num(); ++Index)
     {
         const auto &Trail = EngineTrails[Index];
         FVector ExhaustPosition;
         if (Ship && Ship->Presentation && Ship->Presentation->TryGetExhaustLocalPosition(Index, ExhaustPosition))
+        {
             Trail->SetRelativeLocation(ExhaustPosition);
+            if (EngineCores.IsValidIndex(Index))
+                EngineCores[Index]->SetRelativeLocation(ExhaustPosition + FVector(-18.f, 0.f, 0.f));
+        }
         if (TrailsVisible)
         {
             if (RestartTrails || !Trail->IsActive())
                 Trail->Activate(true);
+            Trail->SetRelativeScale3D(FVector(FMath::Clamp(.65f + VisualPower * .55f, .55f, 1.8f)));
         }
         else if (Trail->IsActive())
             Trail->DeactivateImmediate();
+    }
+    const bool CoreVisible = Active && Ship && !Ship->IsMoored() && !EngineCoreMaterials.IsEmpty();
+    for (int32 Index = 0; Index < EngineCores.Num(); ++Index)
+    {
+        auto *Core = EngineCores[Index].Get();
+        Core->SetVisibility(CoreVisible);
+        if (CoreVisible)
+        {
+            const float Length = FMath::Clamp(18.f + VisualPower * 42.f, 14.f, 95.f);
+            const float Width = FMath::Clamp(7.f + VisualPower * 4.f, 6.f, 18.f);
+            // Engine cube is 100cm; extend rearward along the ship's +X/-X axis.
+            Core->SetRelativeScale3D(FVector(Length, Width, Width) / 100.f);
+            if (EngineCoreMaterials.IsValidIndex(Index))
+            {
+                EngineCoreMaterials[Index]->SetVectorParameterValue(TEXT("Tint"), DriveColor);
+                EngineCoreMaterials[Index]->SetScalarParameterValue(TEXT("Emission"), .45f + VisualPower * 1.15f);
+            }
+            if (EngineLights.IsValidIndex(Index))
+            {
+                EngineLights[Index]->SetLightColor(DriveColor.GetClamped());
+                EngineLights[Index]->SetIntensity(35.f + VisualPower * 180.f);
+                EngineLights[Index]->SetAttenuationRadius(170.f + VisualPower * 90.f);
+            }
+        }
+        if (EngineLights.IsValidIndex(Index))
+            EngineLights[Index]->SetVisibility(CoreVisible);
     }
     RestartTrails = false;
 }
@@ -274,7 +442,7 @@ void ASSAmbientPresentation::ApplyWorldOffset(const FVector &InOffset, bool bWor
     RestartTrails = true;
 }
 
-void ASSAmbientPresentation::UpdateDust(const FVector &Center, bool Visible)
+void ASSAmbientPresentation::UpdateDust(const FVector &Center, const FVector &Velocity, bool Visible)
 {
     Dust->SetVisibility(Visible && DustMaterial != nullptr);
     if (!Visible || !DustMaterial || DustPositions.IsEmpty())
@@ -290,6 +458,8 @@ void ASSAmbientPresentation::UpdateDust(const FVector &Center, bool Visible)
         DustInitialized = true;
     }
     LastDustCenter = Center;
+    const float SpeedFraction = FMath::Clamp(float(Velocity.Size() / 4200.0), 0.f, 1.5f);
+    const FQuat TravelRotation = Velocity.IsNearlyZero() ? FQuat::Identity : Velocity.ToOrientationQuat();
     for (int32 Index = 0; Index < DustPositions.Num(); ++Index)
     {
         FVector Offset = DustPositions[Index] - Center;
@@ -305,7 +475,9 @@ void ASSAmbientPresentation::UpdateDust(const FVector &Center, bool Visible)
         const float Bubble = FMath::Clamp(float((Offset.Size() - 200.0) / 300.0), 0.f, 1.f);
         const float Fade = Edge * Edge * (3.f - 2.f * Edge) * Bubble * Bubble * (3.f - 2.f * Bubble);
         DustTransforms[Index].SetLocation(DustPositions[Index]);
-        DustTransforms[Index].SetScale3D(FVector(DustSizes[Index] * Fade / 100.f));
+        DustTransforms[Index].SetRotation(TravelRotation);
+        const float Width = DustSizes[Index] * Fade / 100.f;
+        DustTransforms[Index].SetScale3D(FVector(Width * (1.f + SpeedFraction * 3.f), Width, Width));
     }
     // One component submission/render-state update for all grains.
     Dust->BatchUpdateInstancesTransforms(0, DustTransforms, true, true, Teleported);
