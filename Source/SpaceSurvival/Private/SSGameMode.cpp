@@ -716,7 +716,10 @@ void ASSGameMode::Interact()
         FString Label;
         const auto Service = Hub->NearestService(Walker->GetActorLocation(), Label);
         if (Service == ESSPanel::AlienGallery)
-            AlienGallery->Enter(UGameplayStatics::GetPlayerController(this, 0));
+        {
+            if (AlienGallery && !AlienGallery->Enter(UGameplayStatics::GetPlayerController(this, 0)))
+                Announce(TEXT("Alien gallery entry failed. Try again."));
+        }
         else if (Service != ESSPanel::None)
             OpenPanel(Service);
         return;
@@ -1565,7 +1568,7 @@ void ASSPlayerController::PlayerTick(float Dt)
                          float(Down(EKeys::R)) - float(Down(EKeys::F)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftY));
         const float Throttle = float(Down(EKeys::W) || (!MenuInput && Down(EKeys::Gamepad_DPad_Up))) -
                                float(Down(EKeys::S) || (!MenuInput && Down(EKeys::Gamepad_DPad_Down)));
-        const bool FireHeld = (!MenuInput && Down(EKeys::LeftMouseButton)) || Down(EKeys::Gamepad_RightShoulder);
+        const bool FireHeld = !MenuInput && (Down(EKeys::LeftMouseButton) || Down(EKeys::Gamepad_RightShoulder));
         const uint32 Before = GI->Session.account.tutorialFlags;
         if (!Look.IsNearlyZero())
             GI->Session.account.tutorialFlags |= 1u;
