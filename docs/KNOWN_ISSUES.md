@@ -176,10 +176,31 @@ hand-written shader authored by `Scripts/AuthorFieldCandidatesV3.py:19` and `:19
 ring, not the Nerves beams, is almost certainly the blue circle the owner is describing. The storm therefore draws a
 procedural shader ring AND an owned Nerves beam system on top of each other.
 
-**A third factor suppresses what Nerves contributes.** `SSVFXPresentation.cpp:349-351` disables every Niagara light
-renderer on every private system as a deliberate architectural decision recorded in `docs/ARCHITECTURE.md:133` and
-`docs/CONTENT_PIPELINE.md:70`, with a 20-light budget at `SSVFXPresentation.cpp:199`. So the Nerves beams contribute
-no light, which is consistent with the owner perceiving the effect as not using the pack.
+**A third factor suppresses what Nerves contributes, and the earlier characterisation of it was WRONG.**
+`SSVFXPresentation.cpp:349-351` disables every renderer whose class name contains "LightRenderer" on every private
+Niagara system. This was first recorded here as a deliberate architectural decision. **The owner states it was not
+their policy and was probably introduced by an agent while working on skybox art, and the evidence supports that.**
+
+Corrected findings, all verified directly:
+- It is an **authoring-time bake, not a runtime switch**. `Scripts/AuthorCombatVisualPass.py:103` and `:135` call
+  `prepare_private_system`, which is the editor-only `USSVFXPresentationLibrary::PreparePrivateSystem` declared at
+  `SSVFXPresentation.h:154`. It calls `Modify()` on the emitter, disables the renderer, then `RequestCompile` and
+  waits. The light is therefore switched off permanently inside the derived private assets, including the Nerves
+  storm beams. Undoing it means re-running the combat visual authoring pass with the transform changed, not flipping
+  a flag at runtime.
+- **No rationale was ever recorded.** It entered in commit `189d565`, dated 2026-09-14, "Integrate owned space,
+  station, ship and combat presentation assets", a bulk integration commit whose message body is empty.
+  `docs/ARCHITECTURE.md:133` and `docs/CONTENT_PIPELINE.md:70` describe it as a fact of the pipeline, in the words
+  "dynamic-light renderers are disabled" and "light renderers disabled", with no reason and no owner decision behind
+  it. A documented side effect is not a design policy.
+- **The 20-light budget warning was wrong and should be disregarded.** The cap at `SSVFXPresentation.cpp:195-200`
+  counts `ASSCombatLightPulse` actors, which are this project's own hand-rolled light pulses spawned at `:201`. That
+  is a completely separate system from Niagara light renderers, so re-enabling one does not bypass the other.
+
+**Consequence: the Nerves fix is cheaper than first recorded.** It is not a reversal of a considered architectural
+decision requiring owner sign-off. It is the removal of a blanket transform for one effect. The remaining real work
+is choosing between the two overlapping storm visuals, re-running the authoring pass, and measuring the light cost
+of the beams on their own.
 
 **Consequence for the fix.** This is not a wiring job. It is a decision about which of two overlapping visuals is the
 storm, plus a documented policy question about the light renderer. The smallest correct change is to make the Nerves
