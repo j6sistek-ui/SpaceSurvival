@@ -1,0 +1,141 @@
+{
+  "recorded_at_utc": "2026-09-15T22:12:00Z",
+  "status": "PARTIAL_SOURCE_EDITOR_EVIDENCE",
+  "branch": "codex/flight-combat-space-slice",
+  "source_commit": "b6c58b889544445ca9593ab1503904dd095d1ccf",
+  "base_commit": "2394ffebe57b91a8e9af5b20d4fa304e60036ce7",
+  "engine": "Unreal Engine 5.8.2",
+  "implementation": {
+    "drive_presentation": [
+      "idle",
+      "acceleration",
+      "boost",
+      "braking",
+      "damage"
+    ],
+    "combat_presentation": [
+      "distinct rapid laser, cannon and hostile native bolt cores",
+      "bounded projectile, muzzle, impact and explosion lights",
+      "lateral, vertical and longitudinal enemy motion with facing and bank",
+      "private Nerves electrical field with exposed endpoint parameters",
+      "Sci-Fi Weapons electrical discharge candidate"
+    ],
+    "space_selection": {
+      "selected": [
+        "three NebulaFantasy region cubemaps",
+        "current four-band 384-instance asteroid field with eight mesh choices"
+      ],
+      "rejected_or_deferred": [
+        "two Free Galaxy cubemaps rejected after fixed visual comparison",
+        "Cosmic Materials retained for alien surfaces and Workshop use",
+        "three Asteroid Library construction-script Blueprints audited but not substituted"
+      ]
+    }
+  },
+  "verification": {
+    "editor_build": {
+      "result": "PASS",
+      "target": "SpaceSurvivalEditor Win64 Development",
+      "build_time_seconds": 25.11,
+      "known_warnings": [
+        "Visual Studio 14.51 is newer than preferred 14.50",
+        "existing Unreal Engine header deprecation warnings"
+      ]
+    },
+    "headless_automation": {
+      "report": "Artifacts/UnrealTests/index.json",
+      "created": "2026.09.15-21.55.16",
+      "succeeded": 49,
+      "succeeded_with_warnings": 0,
+      "failed": 0,
+      "not_run": 0
+    },
+    "rendered_lifecycle": {
+      "report": "Artifacts/UnrealTestsRenderedLifecycle/20260915T214241Z/index.json",
+      "test": "SpaceSurvival.Presentation.CombatVFXLifecycle",
+      "succeeded": 1,
+      "succeeded_with_warnings": 0,
+      "failed": 0,
+      "not_run": 0,
+      "scope": "D3D12 Niagara allocation, ownership, endpoint assignment and cleanup; not appearance or player readability"
+    },
+    "container_format": {
+      "result": "PASS",
+      "docker_client": "29.7.2",
+      "docker_server": "29.7.2"
+    }
+  },
+  "captures": [
+    {
+      "directory": "Artifacts/EndgameSoak/f8ce2692dc394df7ac6baccc4942aa3a",
+      "status": "REJECTED_COMPARISON",
+      "finding": "Free Galaxy black/red regions weakened the scene and engine lighting washed out the ship."
+    },
+    {
+      "directory": "Artifacts/EndgameSoak/16d6ade786b2498ea99f972e81293cda",
+      "status": "PASS_WITH_OPEN_ACCEPTANCE",
+      "frames": [
+        "Cruise.png",
+        "Turn.png",
+        "Boost.png",
+        "Brake.png"
+      ],
+      "finding": "NebulaFantasy background and ship readability restored; still frames do not accept boost/brake distinction in motion."
+    },
+    {
+      "directory": "Artifacts/EndgameSoak/f5663f522bf34cb0b73f9805b162c328",
+      "status": "PASS_WITH_OPEN_ACCEPTANCE",
+      "frame_count": 16,
+      "finding": "Combat impact is visible; wormhole remains the custom ring tunnel; screenshot readback excludes performance acceptance."
+    }
+  ],
+  "owned_candidate_audit": {
+    "receipt": "Artifacts/FlightCombatSpaceSlice/OwnedCandidateAudit.json",
+    "asteroid_blueprints": [
+      "Arch",
+      "Globular",
+      "Linear"
+    ],
+    "region_cubemaps": {
+      "NebulaFantasy": 3,
+      "Free Galaxy Shader": 2
+    },
+    "cosmic_material_instances_sampled": 5,
+    "wormhole_portal": {
+      "assets": 309,
+      "plugin_version": "1.0",
+      "engine_version": "5.8.0",
+      "modules": [
+        "Runtime",
+        "Sample",
+        "Renderer",
+        "Editor"
+      ],
+      "project_enabled": false,
+      "pilot_completed": false
+    },
+    "ship_core_pro": {
+      "owned": true,
+      "project_installed": false,
+      "blocker": "Installer offers Unreal Engine 5.7 while the project uses 5.8.2."
+    }
+  },
+  "release_boundary": {
+    "package_built": false,
+    "itch_updated": false,
+    "current_local_executable_changed": false,
+    "published_build_changed": false
+  },
+  "open_acceptance": [
+    "natural flight and combat play",
+    "physical keyboard, mouse and controller review",
+    "synchronized listening and audio mix",
+    "boost and brake readability in motion",
+    "dynamic enemy encounter feel",
+    "Wormhole Portal approach, transit and destination reveal pilot",
+    "new-world destination diversity",
+    "representative 60 FPS",
+    "package and cook",
+    "owner acceptance"
+  ]
+}

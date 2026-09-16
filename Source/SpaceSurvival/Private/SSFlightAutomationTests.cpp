@@ -876,8 +876,8 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
                 bClearEntryAim = false;
         }
     }
-    TestTrue(TEXT("All four meshes contribute large silhouettes instead of one repeated anchor"),
-             AnchorMeshBatches.Num() == Batches.Num());
+    TestTrue(TEXT("Large silhouettes use multiple barren/mineral meshes instead of one repeated anchor"),
+             AnchorMeshBatches.Num() >= 4);
     TestTrue(TEXT("Distant fragments supply a separate depth layer"), FarRocks > 0);
     TestTrue(TEXT("Initial central aim corridor contains only small backdrop silhouettes"), bClearEntryAim);
     const FRotator InitialRotation = Fixture.Ship->GetActorRotation();
@@ -924,6 +924,29 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
         Fixture.Step();
     }
     TestTrue(TEXT("Long cumulative travel cannot reach decorative mesh bounds"), CheckDistance());
+    TArray<FVector> BeforeFurtherTravel;
+    for (const auto *Batch : Batches)
+        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+        {
+            FTransform Instance;
+            Batch->GetInstanceTransform(Index, Instance, true);
+            BeforeFurtherTravel.Add(Instance.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) -
+                                    Fixture.Ship->GetActorLocation());
+        }
+    Fixture.Ship->AddActorWorldOffset(FVector(1000, 0, 0));
+    Field->Tick(0.f);
+    int32 FurtherIndex = 0;
+    bool bStillMoving = false;
+    for (const auto *Batch : Batches)
+        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+        {
+            FTransform Instance;
+            Batch->GetInstanceTransform(Index, Instance, true);
+            const FVector Center = Instance.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) -
+                                   Fixture.Ship->GetActorLocation();
+            bStillMoving |= !Center.Equals(BeforeFurtherTravel[FurtherIndex++], 1.0);
+        }
+    TestTrue(TEXT("Parallax continues after prolonged flight instead of saturating a fixed offset"), bStillMoving);
     const double BeforeShift = Field->GetMinimumSurfaceDistance();
     const FVector Shift(-700000, -100000, -60000);
     Fixture.Ship->ApplyWorldOffset(Shift, true);

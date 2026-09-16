@@ -41,6 +41,14 @@ public:
     {
         return Moored;
     }
+    /** Read-only presentation state. Gameplay remains owned by the domain session. */
+    void GetDrivePresentation(float &OutPower, bool &OutBoosting, bool &OutBraking, float &OutDamage) const
+    {
+        OutPower = DrivePresentationPower;
+        OutBoosting = DrivePresentationBoosting;
+        OutBraking = DrivePresentationBraking;
+        OutDamage = DrivePresentationDamage;
+    }
     static float SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength);
     FVector AimDirection() const;
     AActor *SoftTarget = nullptr;
@@ -68,6 +76,8 @@ private:
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f;
+    float DrivePresentationPower = .45f, DrivePresentationDamage = 0.f;
+    bool DrivePresentationBoosting = false, DrivePresentationBraking = false;
     bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false;
     FVector DockTarget = FVector::ZeroVector;
     FRotator DockRotation = FRotator::ZeroRotator;

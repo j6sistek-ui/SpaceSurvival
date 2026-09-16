@@ -27,10 +27,20 @@ void ASSSpaceScenery::BeginPlay()
         return;
     const FVector Positions[] = {FVector(145000, -85000, 24000), FVector(320000, 130000, -45000),
                                  FVector(-240000, -165000, 60000), FVector(420000, -90000, 100000)};
-    for (int32 Index = 0; Index < FMath::Min(4, Data->StructureMeshes.Num()); ++Index)
+    const bool Authored = !Data->StructureComposition.IsEmpty();
+    const int32 Count =
+        Authored ? FMath::Min(12, Data->StructureComposition.Num()) : FMath::Min(4, Data->StructureMeshes.Num());
+    for (int32 Index = 0; Index < Count; ++Index)
     {
-        auto *Mesh = Data->StructureMeshes[Index].Get();
+        auto *Mesh = Authored ? Data->StructureComposition[Index].Mesh.Get() : Data->StructureMeshes[Index].Get();
         if (!Mesh)
+            continue;
+        const FVector Center = Authored ? Data->StructureComposition[Index].Center : Positions[Index];
+        const double Radius = Authored ? Data->StructureComposition[Index].Radius : (Index == 0 ? 13500.0 : 19000.0);
+        if (Authored && Data->StructureComposition[Index].Rotation.ContainsNaN())
+            continue;
+        // Preserve the unreachable scenery boundary even for hand-authored layouts.
+        if (Center.ContainsNaN() || !FMath::IsFinite(Radius) || Radius <= 0 || Center.Size() - Radius < 105000.0)
             continue;
         auto *Part = NewObject<UStaticMeshComponent>(this);
         Part->SetupAttachment(RootComponent);
@@ -40,9 +50,11 @@ void ASSSpaceScenery::BeginPlay()
         Part->SetCanEverAffectNavigation(false);
         Part->SetCastShadow(false);
         Part->SetMobility(EComponentMobility::Movable);
-        const double Scale = (Index == 0 ? 13500.0 : 19000.0) / FMath::Max(1.0, double(Mesh->GetBounds().SphereRadius));
-        const FQuat Rotation = FRotator(25 + Index * 17, -45 + Index * 60, Index * 11).Quaternion();
-        const FVector Anchor = Positions[Index] - Rotation.RotateVector(Mesh->GetBounds().Origin * Scale);
+        const double Scale = Radius / FMath::Max(1.0, double(Mesh->GetBounds().SphereRadius));
+        const FQuat Rotation = (Authored ? Data->StructureComposition[Index].Rotation
+                                         : FRotator(25 + Index * 17, -45 + Index * 60, Index * 11))
+                                   .Quaternion();
+        const FVector Anchor = Center - Rotation.RotateVector(Mesh->GetBounds().Origin * Scale);
         Part->SetRelativeTransform(FTransform(Rotation, Anchor, FVector(Scale)));
         Part->RegisterComponent();
         Structures.Add(Part);

@@ -15,6 +15,24 @@ Run commands from the repository root, currently `C:/Users/j6sis/SpaceSurvival`.
 
 The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomplete installation location. Use the complete engine above or pass an explicit `-EngineRoot`.
 
+## Orbital wreck authoring and comparison (target unaccepted)
+
+`PrepareOrbitalWreck.py` runs in the installed Blender background process and writes private broken Station3 sections plus a Figur kit beam. `PreviewOrbitalWreck.py` produces a Blender-only contact sheet. Both preserve supplied sources. After a successful Editor build, execute `AuthorOrbitalWreck.py` through the same Unreal Python runner shown below. It backs up the private look/cloud/sky, imports three derivatives, persists private Nanite material usage, then authors twelve placements and trial lighting/volume settings. It writes private content hashes in `Artifacts/OrbitalWreck/<id>/report.json`. Rerunning resets this trial composition: do not run over unsaved or owner-edited layouts without preserving them. Integration and rendering have run; the concept is still unaccepted under ACT-03.
+
+`./Scripts/CaptureSpaceLook.ps1 -Label OrbitalWreckReview -Sequence` additionally records nominal quarter-second game-view samples from six seconds into the standard fixture. Four required Cruise/Turn/Boost/Brake images remain present. Actual request times/FOV/camera transforms are in `fixture.json`; image hashes and save isolation are checked in `capture.json`. Readbacks perturb frame time and sampling intervals: this is visual sequence evidence, not real-time motion smoothness, FPS or natural-play acceptance. Omit `-Sequence` for the established four-image comparison.
+
+## Owned asteroid presentation authoring
+
+After the Editor build, execute `Scripts/PreviewAsteroidLibrary.py` through Unreal's editor Python runner for an unsaved native-field audition, then `Scripts/AuthorAsteroidDepth.py` to bake layouts and select 2K BC6H skies. Asteroid Library, NebulaFantasy and the private `DA_DeepSpaceLook` must already exist. These scripts require a rendering-enabled editor, not ordinary Python or NullRHI. Serialize project automation instances.
+
+Example (one script at a time):
+
+```powershell
+& 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe' 'C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject' '-ExecutePythonScript=C:/Users/j6sis/SpaceSurvival/Scripts/AuthorAsteroidDepth.py' -unattended -nosplash -RenderOffscreen
+```
+
+Authoring backs up four private packages under `Artifacts/AsteroidDepth/<run>/`, preserves existing layout arrays and verifies vendor bytes. `-SSSkyResolution=4096` is an optional comparison; 2048 is the default. `AuthorSpaceVisualPass.py` also selects 2K BC6H for these three derivatives. A separate rendered check is required; authoring does not package or publish. Current evidence and open work remain in VALIDATION and KNOWN_ISSUES.
+
 ## Source checks
 
 ```powershell

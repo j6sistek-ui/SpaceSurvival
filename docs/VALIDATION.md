@@ -2,6 +2,42 @@
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed authoring, package audit and both packaged capture fixtures. Package 3's scripted/package evidence remains a separate checkpoint. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
+## September 16 orbital wreck: integrated, independently rejected against target
+
+The [iteration receipt](validation/2026-09-16-orbital-wreck-review.json) supersedes the earlier editor-lock limitation in the immutable [preparation receipt](validation/2026-09-16-orbital-wreck-preparation.json). Editor build and private authoring succeeded. Latest capture `b8e2f95727b6444ab64294d53664a9c7` contains four verified 1920x1080 gameplay-view images and 84 timestamped samples with production saves preserved. Source hashes, captured DLL and private content hashes are bound in the receipt. A later rebuild changes only the regression fixture's light mobility; runtime source is unchanged.
+
+Unreal automation is **49/49 clean**, including scenery isolation and expanded flight-key/other-fill/station-restoration checks. The first attempt failed 1/49 because test-spawned lights were not movable; that failure is preserved before correction. Native installed clang-format, 31 structural checks, changed Python AST and documentation navigation pass. Docker's backend was unavailable; no host packages were installed. Engine deprecation/newer compiler warnings remain, and existing station drone material usage warnings appeared during rendered startup.
+
+The independent reviewer inspected the four views and selected contiguous turn samples and returned **NOT MET**, with the lead agreeing: giant masses block the turned corridor, middle-distance clustering and atmospheric separation remain weak, and wreck materials are too dark. Stars pass only the reviewed still-image criterion. Sampled readbacks perturb frame cadence; continuous motion, recycling quality, natural play, performance, new packaging and target acceptance remain open under ACT-03. No test pass closes this rejection.
+
+## September 15 asteroid layout, travel and sky comparison
+
+Implementation `16007ab` and [receipt](validation/2026-09-15-asteroid-depth.json) record this follow-up. Editor build passed in 43.72 seconds with existing MSVC preference/engine-header warnings. Fresh 23:31:37 UTC automation passes 49/49 with zero warnings/fails/not-run, including sustained-travel parallax, transformed shell bounds, camera rotation, rebasing and density controls. Container formatting, 31 source checks, 120 Python AST parses and source validation (26 meshes/16 WAV/original GLB) pass.
+
+Three native field Blueprints were constructed/rendered in an unsaved world: six 1600x900 frames, 336 fragment instances per field. Overview cameras fit different bounds; approach stand-off is 30000 cm. This is a layout audition, not equal-density performance comparison. Normalized native samples feed the custom field with 15 selected mesh shapes. Vendor hashes are unchanged.
+
+Final fixed Cruise/Turn/Boost/Brake capture `b6f44246abb2439da60423c6b0cf087f` succeeds at 1920x1080, normal Wave 1 stats, isolated profile and unchanged production saves. Compare 4K BC6H capture `a4ece53a8952485f86902805ec6df0b4`; source panoramas are 8192x4096. Little visible gain at this output scale favors 2K BC6H. This does not close RPT-20260914-06 or establish procedural nebula depth.
+
+Still open: natural movement/close-pass/recycling quality, local volume composition, target fidelity, hazard balance, representative frame times and package/cook. Scale fading may become visible. Cubic engine cores and straight trails remain unfinished (RPT-20260915-08). No new EXE, itch publication or owner pass.
+
+## September 15 flight, combat and space slice
+
+The [slice receipt](validation/2026-09-15-flight-combat-space-slice.json) records the source/editor boundary for commit `b6c58b889544445ca9593ab1503904dd095d1ccf`, originally based on the then-unmerged systematic-actions head `2394ffebe57b91a8e9af5b20d4fa304e60036ce7`. The UE5.8.2 `SpaceSurvivalEditor Win64 Development` build passed. The final headless automation report created at `2026.09.15-21.55.16` records **49 successes, zero warnings/failures/not-run**. A separate D3D12 rendering-enabled run passed `SpaceSurvival.Presentation.CombatVFXLifecycle` **1/1** with no warnings or failures, exercising real Niagara allocation, ownership, Nerves endpoint parameters and cleanup. Docker Desktop was started without live UI control; the repository's container formatter then passed with Docker client/server 29.7.2.
+
+The source adds speed/damage/boost/brake drive presentation, state-driven engine cores/lights/trails, visible native fallback bolt cores and bounded muzzle/impact/explosion lighting. Rapid laser, cannon and hostile shots now have distinct proportions and colors. Enemy presentation can move laterally, vertically and longitudinally with interpolated facing and bank. Nerves is integrated as a private electrical-field derivative using `User.BeamStartPoint`, `User.BeamEndPoint` and `User.ImpactNormal`; the Sci-Fi Weapons pack supplies the bounded discharge candidate. These bindings and the rendered lifecycle test establish implementation, not player-visible quality or listening acceptance.
+
+Owned-content inspection found three construction-script-driven Asteroid Library field Blueprints (Arch, Globular and Linear), three NebulaFantasy cubemaps, two Free Galaxy Shader cubemaps and five sampled Cosmic Material instances with tiled PBR parameter sets. The current four-band, 384-instance field retains eight selected mesh choices because the native Blueprint inventory did not establish a better gameplay substitution. A first fixed capture rejected the Free Galaxy region choice and overbright engine lighting. The corrected source retains the three NebulaFantasy regions, lowers drive emission/light intensity and keeps Cosmic Materials for alien surfaces and Workshop use rather than forcing them into a sky material.
+
+| Capture | Private evidence directory | Verified scope |
+| --- | --- | --- |
+| Rejected first pass | `Artifacts/EndgameSoak/f8ce2692dc394df7ac6baccc4942aa3a` | Fixed comparison showed black/red Free Galaxy regions and engine-light washout; it is rejection evidence, not the selected look. |
+| Corrected Wave 1 | `Artifacts/EndgameSoak/16d6ade786b2498ea99f972e81293cda` | Four 1920x1080 Cruise/Turn/Boost/Brake frames; selected teal NebulaFantasy background and readable ship. Still frames do not establish that boost/brake states are distinct enough in motion. |
+| Corrected Station 5 | `Artifacts/EndgameSoak/f5663f522bf34cb0b73f9805b162c328` | Sixteen 2560x1440 frames. `CombatImpact` visibly records sparks/fire at a real weapon kill. `Wormhole` still shows the project's custom ring tunnel. Screenshot readback makes the fixture timing unsuitable for representative-performance acceptance. |
+
+The installed Wormhole Portal plugin audit found 309 assets, UE5.8 metadata and Runtime/Sample/Renderer/Editor modules with EnhancedInput, StateTree and GameplayStateTree dependencies. It is not enabled or integrated, so ACT-04 remains open and this inventory is not called a pilot. Ship Core Pro is owned but remains compatibility-blocked because its installer offers UE5.7 while this project uses UE5.8.2. No engine downgrade or migration was attempted.
+
+No package/cook, itch upload or public build change was made. Natural flight/combat play, physical controls, synchronized listening, visible boost/brake differentiation, a real Wormhole Portal approach/transit/reveal, destination diversity, representative 60 FPS and owner acceptance remain open in [KNOWN_ISSUES](KNOWN_ISSUES.md).
+
 ## September 15 owned audio and station assets
 
 The [owned-asset receipt](validation/2026-09-15-owned-audio-station-assets.json) records the source/editor boundary for the selective local pass. `SpaceSurvivalEditor Win64 Development` built successfully with UE5.8.2. Static authoring validation found all ten private audio roles, their generated fallbacks, the temporary hero/staff assets and explicit cook references. The Station Workshop filter resolves 702 `/Game` assets plus six engine basic shapes for **708** placeable entries; the curated material preset list remains ten.

@@ -1,12 +1,17 @@
 # SpaceSurvival project state
 
-**Phase 1: PARTIAL.** The visual pass is merged and itch **0.1.16-alpha.1 / build 1979965** is ready on windows-alpha (verified September 15 UTC / September 14 local). [PRs #11–15](https://github.com/j6sistek-ui/SpaceSurvival/pulls?q=is%3Apr+is%3Amerged+11..15) are merged; PR #14's Station Workshop merge is `e44decdd`, and PR #15's owned audio/character/staff merge is `4aa4656`. These source changes do not alter the published game binaries. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, systematic action IDs, owner checks and closure status. This page owns the source/build/release and storage explanation.
+**Phase 1: PARTIAL.** The visual pass is merged and itch **0.1.16-alpha.1 / build 1979965** is ready on windows-alpha (verified September 15 UTC / September 14 local). [PRs #11–16](https://github.com/j6sistek-ui/SpaceSurvival/pulls?q=is%3Apr+is%3Amerged+11..16) are merged; PR #14's Station Workshop merge is `e44decdd`, and PR #15's owned audio/character/staff merge is `4aa4656`. These source changes do not alter the published game binaries. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, systematic action IDs, owner checks and closure status. This page owns the source/build/release and storage explanation.
+
+## September 16 continuation is unfinished
+
+PR17 also carries orbital-wreck composition work based on the owner's accepted concept. The editor lock cleared, the Editor build succeeded, and three private derivatives were imported. Twelve authored major masses, flight-only directional lighting and a private directional sky grade were rendered through successive comparisons. The first independent review rejected target completion; ACT-03 remains open and PR17 remains draft. The latest valid capture includes four 1080p views and 84 timestamped samples, with screenshot timing limitations. [Iteration receipt](validation/2026-09-16-orbital-wreck-review.json) binds source/content/capture identities and validation; [preparation receipt](validation/2026-09-16-orbital-wreck-preparation.json) retains the earlier blocked state as history. EXE and itch unchanged.
 
 ## Source, build and release
 
 | Layer | Last verified state | What it means |
 | --- | --- | --- |
-| GitHub source | PRs #11–15 merged; main `4aa4656` at this audit | Documentation foundation, visual pass, release guard, Station Workshop and the owned audio/character/staff integration are in main. The systematic-gap action update is documentation-only and remains outside main until its review PR is approved and merged. Source merge and itch publication remain separate. |
+| GitHub source | PRs #11–16 merged; main `f2fae331bd32b8c3a76242f0ce74deb7f0a4951d` verified September 15 | Documentation foundation, visual pass, release guard, Station Workshop and the owned audio/character/staff integration are in main. The systematic-gap action log from PR16 is now in main. PR17 remains unmerged. Source merge and itch publication remain separate. |
+| Current unmerged slice | PR17 on `codex/flight-combat-space-slice`; latest implementation `16007ab` (earlier slice `b6c58b8`) | Flight/combat/space source and editor evidence only. Editor build, 49/49 headless tests, 1/1 rendering-enabled Niagara lifecycle test, container formatting and fixed captures pass within their recorded limits. The [slice receipt](validation/2026-09-15-flight-combat-space-slice.json) lists selected/rejected owned candidates and open acceptance. Package 4, the local EXE and itch remain unchanged. |
 | Documentation foundation | PR #11 merged | Canonical state/open-work navigation and PR documentation review are present. Required status-check enforcement remains a separate open repository-setting task. |
 | Current visual source | PR #12 merged; packaged source `cf6296f286dba9a89583649e19f988ed09af2f16` | C++ remains unchanged from Editor Build 12, 49 passing Unreal tests and the 30-file C++ format audit. The later star material was authored/cooked/captured separately. Release work changed distribution filtering/docs only; no Unreal rebuild was required. |
 | Latest audited local game | Package 4/source `cf6296f`; `Artifacts/Windows/SpaceSurvival.exe` | Built successfully and passed actual IoStore dependency audit plus packaged Wave 1/four-image and Station 5/16-image captures. The star layer is dimmer with static directional variation. Furnished editable station, new starter, walkway fill and unlit labels remain included. Existing optional `Try New Ship.cmd` remains a separate trial. |
@@ -14,6 +19,18 @@
 | Published tester build | itch `0.1.16-alpha.1`, upload `19226459`, ready build `1979965` from `1978147`; [release record](ITCH_RELEASES.md#september-15-visual-release) | Same audited game executable and cooked containers as Package 4, with developer symbols/manifests and runtime Saved/log/save data excluded. Payload: 51 files / 2,664,557,549 bytes. Butler reports a 1.49 GiB patch; actual client update/save preservation remains unverified. Devlog copy is ready but browser sign-in/security verification blocks posting. |
 
 To play locally, open `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`, keeping the complete directory. Do not open the Unreal project just to play. See [save-location differences](BUILD_RUN.md#local-saves) before changing launch arguments or moving an installation.
+
+## Asteroid follow-up: source/editor only
+
+Source `16007ab` uses 15 owned rock/debris meshes, native Blueprint layout samples, sustained shell parallax and quieter dust. Three private skies use 2048-face BC6H compression after fixed 2K/4K comparisons. Four final 1920x1080 editor-game frames are under `Artifacts/EndgameSoak/b6f44246abb2439da60423c6b0cf087f`. [The receipt](validation/2026-09-15-asteroid-depth.json) binds source hashes, editor DLL, native auditions and tests. Licensed changes and backups remain local/private; Git alone cannot reproduce this look.
+
+Editor build and 49/49 automation pass. Visual depth/motion and representative performance remain unaccepted. Thrusters still have cubic cores; ACT-01 is unfinished. No change to Package 4, the playable EXE or published itch build.
+
+## Flight, combat and space source checkpoint
+
+The unmerged slice implements the first ACT-00–ACT-03 source pass: state-driven drive presentation, distinct native rapid/cannon/hostile bolts, bounded combat light cues, broader enemy movement, Nerves electrical fields, an owned Asteroid Library Blueprint comparison and explicit background/material selection. The first Free Galaxy comparison and overbright engine-light treatment were rejected; corrected editor captures retain NebulaFantasy regions and reduced drive lighting. Cosmic Materials remain available for alien surfaces and the Workshop rather than being forced into the background.
+
+ACT-04 has an installed-plugin inventory only. The 309-asset Wormhole Portal plugin is not enabled in the project, and the fixed Station 5 capture still shows the existing custom ring tunnel. Natural play, synchronized sound, boost/brake readability in motion, dynamic-combat feel, the plugin pilot, representative performance, package/cook and owner acceptance remain open. Ship Core Pro is recorded as owned but blocked by its UE5.7 installer against this UE5.8.2 project. See [validation](VALIDATION.md#september-15-flight-combat-and-space-slice) for evidence and limits, and [KNOWN_ISSUES](KNOWN_ISSUES.md) for the only active queue.
 
 ## Owned audio, characters and input glyphs
 

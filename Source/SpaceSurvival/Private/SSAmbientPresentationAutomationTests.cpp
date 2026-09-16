@@ -5,6 +5,8 @@
 #include "Components/SceneComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/DirectionalLightComponent.h"
+#include "Engine/DirectionalLight.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "Engine/TextureCube.h"
@@ -169,7 +171,23 @@ bool FSSAmbientPresentationContent::RunTest(const FString &)
             TestEqual(TEXT("Cloud bank visibility agrees with its fog grid"), Cloud->IsVisible(), ExpectClouds);
     };
     CheckVisibility(false, false);
+    auto *Key = Fixture.World->SpawnActor<ADirectionalLight>();
+    auto *Fill = Fixture.World->SpawnActor<ADirectionalLight>();
+    if (!TestNotNull(TEXT("Spawn authored scene key"), Key) || !TestNotNull(TEXT("Spawn independent fill"), Fill))
+        return false;
+    CastChecked<UDirectionalLightComponent>(Key->GetLightComponent())->ForwardShadingPriority = 2;
+    CastChecked<UDirectionalLightComponent>(Fill->GetLightComponent())->ForwardShadingPriority = 1;
+    Key->GetLightComponent()->SetMobility(EComponentMobility::Movable);
+    Fill->GetLightComponent()->SetMobility(EComponentMobility::Movable);
+    const FRotator StationRotation(-35, -40, 0), FillRotation(20, 140, 0);
+    Key->SetActorRotation(StationRotation);
+    Fill->SetActorRotation(FillRotation);
     Fixture.Presentation->SetFlightVisible(true);
+    TestTrue(TEXT("Flight optionally consumes the authored light direction"),
+             Key->GetActorRotation().Equals(Look && Look->bOverrideFlightKeyDirection ? Look->FlightKeyRotation
+                                                                                      : StationRotation));
+    TestTrue(TEXT("Flight direction leaves other scene lights unchanged"),
+             Fill->GetActorRotation().Equals(FillRotation));
     Fixture.Presentation->Tick(0.f);
     CheckVisibility(false, false); // Flight flag alone must not activate an unbound atmosphere.
     Fixture.Presentation->Follow(Fixture.Viewer);
@@ -182,6 +200,7 @@ bool FSSAmbientPresentationContent::RunTest(const FString &)
     Fixture.Presentation->Tick(0.f);
     CheckVisibility(CloudsAvailable, SkyAvailable);
     Fixture.Presentation->SetFlightVisible(false);
+    TestTrue(TEXT("Station entry restores the scene key direction"), Key->GetActorRotation().Equals(StationRotation));
     CheckVisibility(false, false); // Station entry hides the medium immediately, before the next frame.
     Fixture.Presentation->SetFlightVisible(true);
     Fixture.Presentation->Tick(0.f);

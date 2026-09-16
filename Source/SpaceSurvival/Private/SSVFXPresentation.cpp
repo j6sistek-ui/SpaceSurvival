@@ -2,8 +2,10 @@
 #include "SSShip.h"
 #include "SSShipPresentation.h"
 #include "Components/SceneComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Dom/JsonObject.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/PackageName.h"
 #include "NiagaraComponent.h"
@@ -41,6 +43,33 @@ ASSCombatVFXAnchor::ASSCombatVFXAnchor()
     PrimaryActorTick.bCanEverTick = false;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("CosmeticOrigin"));
     SetActorEnableCollision(false);
+}
+
+ASSCombatLightPulse::ASSCombatLightPulse()
+{
+    PrimaryActorTick.bCanEverTick = true;
+    Light = CreateDefaultSubobject<UPointLightComponent>(TEXT("CombatPulse"));
+    RootComponent = Light;
+    Light->SetIntensityUnits(ELightUnits::Lumens);
+    Light->SetCastShadows(false);
+    SetActorEnableCollision(false);
+}
+void ASSCombatLightPulse::Configure(FLinearColor Color, float Intensity, float Radius, float Seconds)
+{
+    PeakIntensity = Bounded(Intensity, 0.f, 50000.f, 1000.f);
+    Duration = Bounded(Seconds, .02f, 1.f, .1f);
+    Light->SetLightColor(Color.GetClamped());
+    Light->SetAttenuationRadius(Bounded(Radius, 50.f, 3000.f, 500.f));
+    Light->SetIntensity(PeakIntensity);
+}
+void ASSCombatLightPulse::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    Age += FMath::Max(0.f, DeltaSeconds);
+    const float Alpha = FMath::Clamp(Age / Duration, 0.f, 1.f);
+    Light->SetIntensity(PeakIntensity * FMath::Square(1.f - Alpha));
+    if (Alpha >= 1.f)
+        Destroy();
 }
 
 bool USSCombatVFXSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
@@ -152,11 +181,25 @@ UNiagaraComponent *USSCombatVFXSubsystem::Spawn(ESSCombatVFX Kind, FVector Posit
     FSSCombatVFXInstance &Instance = Active.AddDefaulted_GetRef();
     Instance.Component = Component;
     Instance.Kind = Kind;
-    Instance.MaximumSeconds = Bounded(Definition->MaximumSeconds, .02f, 8.f, .6f);
+    Instance.MaximumSeconds = Bounded(Definition->MaximumSeconds, .02f, 120.f, .6f);
     Instance.bAttached = IsValid(FollowOwner);
     Instance.FollowOwner = FollowOwner;
     Component->Activate(true);
     return Component;
+}
+void USSCombatVFXSubsystem::SpawnLight(FVector Position, FLinearColor Color, float Intensity, float Radius,
+                                       float Seconds)
+{
+    if (Position.ContainsNaN())
+        return;
+    int32 Count = 0;
+    for (TActorIterator<ASSCombatLightPulse> It(GetWorld()); It; ++It)
+        if (!It->IsActorBeingDestroyed())
+            ++Count;
+    if (Count >= 20)
+        return;
+    if (auto *Pulse = GetWorld()->SpawnActor<ASSCombatLightPulse>(Position, FRotator::ZeroRotator))
+        Pulse->Configure(Color, Intensity, Radius, Seconds);
 }
 bool USSCombatVFXSubsystem::AttachProjectile(AActor *Projectile, bool bFromPlayer, bool bHeavy)
 {
@@ -173,22 +216,53 @@ void USSCombatVFXSubsystem::PlayMuzzle(AActor *Source, FVector Position, FVector
             if (Ship->Presentation)
                 Ship->Presentation->TryGetMuzzleWorldPosition(Position);
     Spawn(Kind, Position, Direction.Rotation(), Source);
+    const FLinearColor Color = !bFromPlayer ? FLinearColor(1.f, .04f, .01f)
+                               : bHeavy     ? FLinearColor(1.f, .32f, .02f)
+                                            : FLinearColor(.03f, .75f, 1.f);
+    SpawnLight(Position, Color, bHeavy ? 13000.f : 7500.f, bHeavy ? 1000.f : 700.f, bHeavy ? .12f : .07f);
 }
 void USSCombatVFXSubsystem::PlayImpact(FVector Position, FVector Normal, bool bFromPlayer, bool bHeavy)
 {
     const ESSCombatVFX Kind =
         !bFromPlayer ? ESSCombatVFX::EnemyImpact : (bHeavy ? ESSCombatVFX::CannonImpact : ESSCombatVFX::RapidImpact);
     Spawn(Kind, Position, Normal.Rotation());
+    const FLinearColor Color = !bFromPlayer ? FLinearColor(1.f, .04f, .01f)
+                               : bHeavy     ? FLinearColor(1.f, .32f, .02f)
+                                            : FLinearColor(.03f, .75f, 1.f);
+    SpawnLight(Position, Color, bHeavy ? 18000.f : 9500.f, bHeavy ? 1400.f : 850.f, bHeavy ? .34f : .17f);
 }
 void USSCombatVFXSubsystem::PlayEnemyExplosion(FVector Position, float BodyRadius)
 {
     Spawn(ESSCombatVFX::EnemyExplosion, Position, FRotator::ZeroRotator, nullptr,
           Bounded(BodyRadius / 140.f, .6f, 2.f, 1.f));
+    SpawnLight(Position, FLinearColor(1.f, .16f, .015f), 26000.f, FMath::Clamp(BodyRadius * 9.f, 900.f, 2600.f), .48f);
 }
 bool USSCombatVFXSubsystem::AttachAnomaly(AActor *Owner)
 {
     return IsValid(Owner) &&
            Spawn(ESSCombatVFX::WormholeMouth, Owner->GetActorLocation(), Owner->GetActorRotation(), Owner) != nullptr;
+}
+bool USSCombatVFXSubsystem::AttachElectricalField(AActor *Owner, float Radius)
+{
+    if (!IsValid(Owner))
+        return false;
+    auto *Component = Spawn(ESSCombatVFX::ElectricalField, Owner->GetActorLocation(), Owner->GetActorRotation(), Owner);
+    if (!Component)
+        return false;
+    const float Span = Bounded(Radius * .72f, 200.f, 2800.f, 900.f);
+    // The inspected Nerves system exposes these exact local-space Vector3f
+    // endpoints. Its private derivative is compiled local so the beam follows
+    // the field actor without editing or ticking the vendor system.
+    Component->SetVariableVec3(TEXT("User.BeamStartPoint"), FVector(-Span, 0.f, 0.f));
+    Component->SetVariableVec3(TEXT("User.BeamEndPoint"), FVector(Span, 0.f, 0.f));
+    Component->SetVariableVec3(TEXT("User.ImpactNormal"), FVector::ForwardVector);
+    return true;
+}
+void USSCombatVFXSubsystem::PlayElectricalDischarge(FVector Position, float BodyRadius)
+{
+    const float Scale = Bounded(BodyRadius / 900.f, .5f, 2.5f, 1.f);
+    Spawn(ESSCombatVFX::ElectricalDischarge, Position, FRotator::ZeroRotator, nullptr, Scale);
+    SpawnLight(Position, FLinearColor(.08f, .45f, 1.f), 30000.f, FMath::Clamp(BodyRadius * 1.3f, 900.f, 3000.f), .32f);
 }
 
 FString USSVFXPresentationLibrary::DescribeSystem(UNiagaraSystem *System)

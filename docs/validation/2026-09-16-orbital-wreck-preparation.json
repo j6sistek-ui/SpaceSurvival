@@ -1,0 +1,42 @@
+{
+  "status": "PREPARED_BUILD_BLOCKED_NOT_RENDERED_IN_UNREAL",
+  "baseCommit": "2895f2a6dd0d34f9b616cf75feac3ad0be1edc12",
+  "sourceHashes": {
+    "Source/SpaceSurvival/Public/SSSpaceLookData.h": "094a89efa13a3ddf9c38b4b82d28c1b635b73ee8d0c4c9ab46edd1c6a6319302",
+    "Source/SpaceSurvival/Private/SSSpaceScenery.cpp": "cc8ebaa37b11a9e1552d5145ec2041d9eb39eca03ae36548dabec230fb6ea771",
+    "Scripts\\AuthorOrbitalWreck.py": "717b55a29a3db71459e2a5be0f8a82f2b3ad9065112df1ec757fc7ecc8863368",
+    "Scripts\\PrepareOrbitalWreck.py": "1c5b17dc8fc7445706e106faf61ab031ca05b632b420122c64910beb75f24125",
+    "Scripts\\PreviewOrbitalWreck.py": "525979662fec136edb24b3a96412f9a7f57a4bbae6d06fa9f1d98d99904f2b51"
+  },
+  "concept": "docs/production/references/orbital-wreck-concept.png",
+  "conceptSha256": "3ac12838c2841f30930c7b7e8a4fbc32bede0273d9e4e598cc1e06345b8d14ab",
+  "conceptEvidence": "Generated composition direction, not gameplay or owned-asset output. Actual pieces inspected separately.",
+  "derivatives": [
+    {
+      "name": "BrokenArc",
+      "triangles": 21622,
+      "source_sha256": "55f5d4697e0333cfa82958571435594fe256c5bb2f7839cd28ef9b14db37f7a9",
+      "output_sha256": "32a8fa6627ae388f88bc6486392f41d7e8277447e92787c1a1e249dcfbb47698"
+    },
+    {
+      "name": "RingFragment",
+      "triangles": 9600,
+      "source_sha256": "55f5d4697e0333cfa82958571435594fe256c5bb2f7839cd28ef9b14db37f7a9",
+      "output_sha256": "74bf209d956f394f573366b75961e7bb50102f670953508457b7ab52dcdf31cc"
+    },
+    {
+      "name": "KitBeam",
+      "source_object": "Cube_RLExtr.098",
+      "source_sha256": "3913fd79109fa0fa086e50fa1b35f14f15b585c1b3d1ce07086bea277a3ced72",
+      "triangles": 1088,
+      "material": "Existing private Figur metal atlas",
+      "output_sha256": "1aa8a350618089a8702a7cff5846f76b942f35d0cb02cf03170927f754ddfcd5"
+    }
+  ],
+  "contactSheet": "Artifacts/OrbitalWreck/DerivativeContact.png",
+  "contactSha256": "d7ebfd17ff41f549cb06f75d8f4e0d8a5307134cd01c01d95f066c2d81599f27",
+  "build": "Attempt failed at linking: LNK1104 on UnrealEditor-SpaceSurvival.dll held by the open owner project editor. Engine import, new tests and engine captures have NOT run.",
+  "format": "Installed VS clang-format PASS. Docker backend unavailable; desktop-start command stalled and was stopped. No host installation.",
+  "sourceChecks": "31 PASS; three new Python scripts parse; no gameplay acceptance.",
+  "remaining": "Save/close owner editor, rebuild, run authoring, inspect actual Unreal output against composition target, iterate lighting/placement/volume, then tests and performance review. ACT-03 remains open."
+}

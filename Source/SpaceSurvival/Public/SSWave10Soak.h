@@ -30,6 +30,9 @@ private:
     bool Started = false, Stopping = false, SawFlightWave = false, SawBreathing = false;
     bool CaptureRequested = false, AllFramesForeground = true;
     bool CaptureVisuals = false;
+    bool CaptureSequence = false;
+    double NextSequenceSeconds = 6; // Let normal rendering/texture streaming settle before repeated readbacks.
+    int32 SequenceIndex = 0;
     bool OffscreenVisuals = false;
     TArray<TSharedPtr<FJsonValue>> VisualRecords;
     TSet<FString> VisualNames;

@@ -269,7 +269,11 @@ struct FSSEnemyDefinition
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float LateralAmplitude = 420.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    float VerticalAmplitude = 0.f;
+    float VerticalAmplitude = 520.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float LongitudinalAmplitude = 900.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0.05", ClampMax = "2"))
+    float LongitudinalRateRatio = .43f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float OrbitRate = .65f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -334,8 +338,10 @@ struct FSSEnemyDefinition
             MeshName = TEXT("SM_FlankerCandidateV1");
             MinimumWave = 4;
             ForwardOffset = 2100.f;
-            LateralAmplitude = 1900.f;
-            VerticalAmplitude = 850.f;
+            LateralAmplitude = 2400.f;
+            VerticalAmplitude = 1250.f;
+            LongitudinalAmplitude = 2300.f;
+            LongitudinalRateRatio = .61f;
         }
     }
 };
