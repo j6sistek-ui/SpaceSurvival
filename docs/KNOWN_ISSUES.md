@@ -100,6 +100,63 @@ eighteen roots, which nearly put a 243 MB untracked asset into history. `AGENTS.
 `PLAYTEST_TOMORROW.md` that does not exist at the repository root.
 
 
+
+#### September 16 verified danger and impact causes (RPT-20260916-20, RPT-20260914-05)
+
+Produced by an 11-agent read-only audit with adversarial verification. **Two earlier statements in this session were
+wrong and are corrected here.** An initial grep for the Unreal API names `AddImpulse`, `CameraShake` and
+`ForceFeedback` returned nothing and was reported as "no knockback and no shake exist". Both actually exist in
+hand-rolled form and the grep missed them. They are not absent; they are imperceptible.
+
+| Finding | Verified mechanism |
+| --- | --- |
+| Knockback EXISTS but is arithmetically invisible | `SSShip.cpp:347` applies `Velocity += AwayFromContact.GetSafeNormal() * FMath::Min(1400.f, Amount * 20.f)`. The impulse is derived from the hazard's fixed `CollisionDamage`, so it is speed-blind: grazing a rock and ramming it at boost produce an identical nudge. At wave 1 that is 340 cm/s, which the integrator's own restoring law at `:258-259` converts to 81 cm of travel, less than the ship's own 120 cm contact radius. |
+| Camera shake EXISTS but is sub-perceptual | `SSShip.cpp:281-283` peaks at 1.5 cm on a single axis, which at the 900 cm camera boom is 0.0955 degrees. Its phase is driven by world time, so the oscillation does not begin at the moment of impact. |
+| Controller force feedback is genuinely absent | No rumble anywhere. This part of the earlier report was correct. |
+| The contact site is the only damage path with no visual response | `SSWorldActors.cpp:529` calls `Ship->ReceiveImpact(...)` and spawns nothing, while an enemy bolt striking the same ship at `:944-945` gets both a contact-point Niagara burst and a light pulse. |
+| The rock is usually not on a collision course BY CONSTRUCTION | `SSWorldActors.cpp:1537` sets hazard velocity to `-Ship->GetActorForwardVector() * drift`, exactly anti-parallel to the ship, so closest approach equals the random spawn offset drawn at `:1505` from a plus-or-minus 2600 by 1700 rectangle. `:1506` additionally refuses any non-field solid spawn near a per-wave `SafeLane` defined at `:1457`. **The game actively guarantees a clear corridor down the player's own axis.** This is the direct opposite of the owner's stated goal in RPT-20260916-19 that there should be only some right ways to go, and the two reports must be resolved together. |
+| Enemies "jump in front of you and sit there", verbatim | `ASSEnemy::Tick` at `SSWorldActors.cpp:690-711` has exactly one movement path; Pursuer and Flanker are the same five lines with different floats. It targets a point in FRONT of the player at `:702` and then slaves enemy velocity to the player's own at `:710-711`, so in the player's reference frame the enemy is stationary. Already logged as RPT-20260914-05. |
+
+**Highest-leverage first change, and it is free.** Amplify the existing camera shake and phase it from the hit rather
+than from world time. That lifts a hit from 0.0955 degrees to between 0.40 and 0.796 degrees on two axes, a 4.2x to
+8.3x increase, with no new asset, no new API, no new serialized field and no new call site. It is provably
+survivability-neutral because it writes only `Camera->SetRelativeLocation` on a spring-arm camera while thrust and
+shot origin are both actor-based. It breaks no test, because the flight fixture disables camera shake at
+`SSFlightAutomationTests.cpp:52`. It also covers five damage sources at once, because `ASSShip::ReceiveDamage` at
+`SSShip.cpp:330-338` is the single funnel for asteroid contact, enemy ram, enemy bolt, electrical storm and wreckage.
+Severity must be set in that funnel and not in `ReceiveImpact`, because `Session::ApplyDamage` re-arms
+`run.damageFeedback` on every damage event at `SurvivalCore.cpp:438`, so a severity stored only on contact would fire
+a full-strength shake for a laser graze arriving seconds later.
+
+**Enemy fix is data-only and carries no test risk.** `docs/GAME_SCOPE.md:1218` requires the Pursuer to aggressively
+close distance and `:1221` requires the Flanker to use wider approach paths; neither does either today. Changing
+`FSSEnemyDefinition(Pursuer)` `LongitudinalAmplitude` from 900 to 2600 and `LongitudinalRateRatio` from 0.43 to 0.9
+makes the station-keeping point sweep through and behind the player instead of parking ahead of it. Both floats are
+required: at ratio 0.43 the sweep period is 20.7 s at wave 1, far too slow to read as a pass. The Flanker already
+sweeps and should be left alone.
+
+**Scope boundary, stated plainly.** The owner's two requests land on opposite sides of the line.
+Visible hull damage is **presentation**: a material driven by hull fraction writes only pixels, and deleting the
+feature leaves every number bit-identical. Knockback magnitude is a **mechanic change** and needs explicit owner
+acceptance plus a Waves 1 to 10 retest. The arithmetic reason in one sentence: the Director guarantees 420 cm of
+surface-to-surface separation between solid hazards at `SSWorldActors.cpp:100`, today's maximum displacement is
+396 cm which sits just inside that guarantee, and the proposed maximum of 569 cm sits outside it, so a hard hit could
+carry the player into a legally spawned neighbour it previously could not reach. It is NOT a new mechanic and not a
+scope violation: `docs/GAME_SCOPE.md:384-389` authorizes deflection, momentum loss and control instability, and `:398`
+authorizes Kinetic knockback by name. One consequence to accept deliberately rather than discover: a braking ship
+rammed head-on by a wave-3 enemy would briefly be pushed backwards.
+
+**Held for owner sign-off, not in this pass.** A three-phase approach, attack-run and break cycle; moving enemy
+spawns to an off-frame bearing, whose proposed audio mitigation does not work because `WarnThreat` sits behind a
+single global six-second alarm lockout at `SSGameMode.cpp:218` already consumed by hazard warnings; and any cut to
+enemy `Health`, which is rejected outright because `docs/production/OWNER_FEEDBACK.md:21` records F05, that shooting
+enemies already felt too easy.
+
+**Trap for any future spawn work.** `ASSEncounterBeacon::Accept` at `SSWorldActors.cpp:1364-1370` spawns DistressCombat
+enemies with a direct `SpawnActor` that never calls `FindSafeSpawn`: seven enemies in a rank abreast, dead ahead,
+alternating Pursuer and Flanker. Any fix routed through `FindSafeSpawn` bypasses it entirely.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
