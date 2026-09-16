@@ -87,6 +87,9 @@ def main():
     charcoal_assemblies()
     pillar=lambda n:KIT+f'Pillar/SM_architecture_module_{n:02}'
     panel=lambda n:KIT+f'Pannels/SM_Pannel_part_{n:02}'
+    # Torn floor plating reads as hull skin rather than architecture, so it carries the
+    # broken-structure story at a larger silhouette than the wall panels do.
+    floor=lambda n:KIT+f'Floor/SM_floor_module_{n:02}'
     barren=[ROCK+n for n in ['SM_Asteroid_Barren_1','SM_Asteroid_Barren_2','SM_Asteroid_Barren_3','SM_AsteroidBarren_4']]
     mineral=[ROCK+f'SM_AsteroidMineral_{i}' for i in range(1,5)]
     fragments=[ROCK+f'SM_AsteroidFragment_{i}' for i in range(1,5)]
@@ -103,7 +106,9 @@ def main():
         (fragments[0],(110000,-110000,68000),31000,(65,20,15)),
         (beam,(295000,215000,-100000),38000,(25,30,55)),
         (station,(480000,-170000,20000),33000,(15,-25,0))],
-        [(p,1.,1800.,11000.) for p in fragments+barren]+[(panel(3),2.,900.,6000.),(pillar(4),1.,1800.,6500.)]),
+        [(p,1.,1800.,11000.) for p in fragments+barren]+
+        [(panel(n),2.,1200.,7500.) for n in (1,3,6,8,12)]+
+        [(floor(n),1.5,2200.,9000.) for n in (2,4)]+[(pillar(4),1.,1800.,6500.)]),
       ('MineralReach',(.18,.32,.34),(.55,.83,1.),.65,(1.8,.5,.4),[
         (mineral[0],(170000,-145000,-55000),74000,(15,30,50)),
         (mineral[2],(215000,175000,50000),71000,(50,10,70)),
@@ -113,7 +118,8 @@ def main():
         (fragments[2],(235000,85000,140000),21000,(20,40,80)),
         (mineral[1],(125000,-195000,115000),48000,(45,45,40)),
         (station,(470000,185000,55000),17000,(0,55,10))],
-        [(p,3.,1400.,9500.) for p in mineral]+[(p,1.,900.,6500.) for p in fragments]),
+        [(p,3.,1400.,9500.) for p in mineral]+[(p,1.,900.,6500.) for p in fragments]+
+        [(panel(n),.6,1000.,5000.) for n in (11,15)]),
       ('AlienCauseway',(.18,.29,.33),(.72,.9,.83),.85,(1.7,.4,.25),[
         (KIT+'Arch/SM_triangle_arch',(215000,135000,50000),100000,(20,35,70)),
         (pillar(12),(175000,-145000,-15000),98000,(0,25,80)),
@@ -123,7 +129,9 @@ def main():
         (KIT+'Arch/SM_arch_01',(470000,65000,110000),39000,(70,-20,10)),
         (barren[0],(270000,-155000,-110000),55000,(20,45,50)),
         (pillar(3),(130000,-185000,115000),31000,(25,35,60))],
-        [(p,1.,1300.,7500.) for p in fragments]+[(panel(5),2.,1700.,6500.),(pillar(2),1.,1500.,5000.)]),
+        [(p,1.,1300.,7500.) for p in fragments]+
+        [(panel(n),2.,1400.,7000.) for n in (2,5,9,13)]+
+        [(floor(n),1.,2000.,8000.) for n in (1,3)]+[(pillar(2),1.,1500.,5000.)]),
       ('AmberDerelict',(.36,.24,.16),(1.,.7,.42),1.15,(1.4,.75,.3),[
         (arc,(245000,210000,6000),150000,(75,5,105)),
         (ring,(165000,-155000,-80000),110000,(25,45,-30)),
@@ -133,7 +141,8 @@ def main():
         (station,(460000,-20000,65000),34000,(15,-30,0)),
         (barren[3],(340000,125000,-95000),49000,(75,40,25)),
         (fragments[3],(165000,175000,125000),34000,(10,40,70))],
-        [(p,2.,1500.,11000.) for p in barren+fragments]+[(beam,1.,700.,4500.)]),
+        [(p,2.,1500.,11000.) for p in barren+fragments]+[(beam,1.,700.,4500.)]+
+        [(panel(n),1.5,1100.,6500.) for n in (4,7,14)]+[(floor(4),1.,2400.,8500.)]),
     ]
     lighting={
         'ObsidianWreck':(.000018,3.8,6.),
