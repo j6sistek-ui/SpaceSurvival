@@ -295,6 +295,74 @@ cruise stills will not close that gate, and presenting them as closure would rep
 rejection.
 
 
+
+#### September 16 owner design model for hazards, and the mechanism behind it
+
+**The owner's model, in their words, supersedes the earlier "lanes" framing.** "You can freely fly through space, but
+the dangers, the intensity of each wave does not change, so if you turn around, the same amount of dangerous
+asteroids would spawn after you, and ultimately the same level. It is not a single path, it is a single intensity."
+Refined immediately after: "close objects do not drift with you, but the other objects in space, the big ones, are
+also hazards as turning, even if not scripted. The new ones spawning in, new direction. Make sure it is not every
+single thing turns with you."
+
+Read as a specification, that is four requirements. Already-spawned hazards are world objects and stay where they
+are. New admissions use the player's current heading, so intensity is preserved whichever way they fly. The large
+decorative masses are themselves dangerous to turn into, without being scripted encounters. And the world must not
+rotate with the ship.
+
+**This supersedes the L1/L2/L3 lane options recorded above.** The earlier framing treated the goal as carving
+corridors and asked whether to delete the `SafeLane` guarantee. That was the wrong question. The goal is uniform
+intensity in a persistent world, not an authored route.
+
+**The mechanism, verified directly, is the retention test rather than the spawner.**
+`SSWorldActors.cpp:590-592` reads
+`if (FVector::DotProduct(GetActorLocation() - Ship->GetActorLocation(), Ship->GetActorForwardVector()) < -16000.f) Destroy();`
+The cull projects each hazard's offset onto the ship's **current** forward vector. Nothing moves when the player
+turns, but the retention rule rotates with them, so turning around reclassifies the field ahead as "behind" and
+destroys it. New admissions then refill ahead of the new heading. The net effect is exactly what the owner describes:
+the threat structure is always in front of you and never persists. This is a small, well-localised fix and it is the
+single highest-value change in the whole environment effort.
+
+**What already matches the owner's model and must not be "fixed".**
+- Non-field hazard velocity is set once at spawn, `SSWorldActors.cpp:1537-1540`, and the body then moves in world
+  space. It does not track the ship. Close objects genuinely do not drift with the player.
+- `ASSSpaceScenery` is world-stable while `AreaRecipes` are in use: `SSSpaceScenery.cpp:68` and `:129` pin the actor
+  to `OriginOffset` and cells are computed in world space from the viewer's position minus that origin. Turning does
+  not move or reseed near and middle scenery. Its legacy non-recipe path at `:155` does follow the viewer, but
+  recipes are active, so that path is not live.
+- New admissions already use the current heading, `SSWorldActors.cpp:1494-1496`. That part is correct and is what
+  preserves intensity after a turn.
+
+**What does not match and is in scope.**
+- The heading-relative cull above.
+- `ASSDistantAsteroids` re-poses every instance each tick relative to the viewer with per-band parallax and radial
+  shell wrapping, and 86 percent of its 2048 instances sit in the farthest band at parallax 0.12, so the background
+  reads as a painted image rather than as geometry.
+- The large masses are not hazards at all: `SSSpaceScenery.cpp:38` disables collision at actor level, overriding the
+  per-component setting at `:288`, and the ship blocks only `ECC_WorldStatic` at `SSShip.cpp:35-36`.
+- Boost thins the field. `SSWorldActors.cpp:1502` derives `Lead` from `ClosingSpeed`, which includes the ship's own
+  velocity, so accelerating pushes the spawn plane out.
+
+**Owner rulings recorded this session.**
+- **Boost must not reduce difficulty.** It is a strategic tool, not an escape from density. The speed-to-spawn-distance
+  coupling is to be removed or compensated. This answers the open boost decision.
+- **Fog and rays should vary as the player travels.** The owner's words: "it is not permanent, it is space, there are
+  different effects that blend together to make an experience as you travel through." That favours per-region
+  atmosphere driven by the existing `AreaRecipes` transition rather than one global setting.
+- **More asteroids on screen is wanted, with proper levels of detail**, and the owner has purchased blueprints and
+  tools toward it. The earlier note that raising `MaximumActiveThreats` alone barely moves the count stands, but it
+  was never a claim that more cannot be rendered; the limiter is arrival rate, not the ceiling.
+- **Two Fab sky assets are under owner evaluation, neither installed.** A Volumetric Space Nebula Procedural
+  Generator, volumetric shader plus procedural blueprint, UE 5.0 to 5.8, whose own listing warns it is
+  computationally intensive and quotes 60 to 80 FPS on an RTX 3060 at 1080p; and Space Skybox Backgrounds 3 by
+  Ambient GraphX, nine HDR skyboxes, one material, nine instances, twelve textures at 8192x4096, each nebula's light
+  source placed on the +X axis. The second gives a defined sun direction per sky, which is what light shafts need in
+  order to point somewhere believable. **Neither removes the underlying defect**: the current backdrop sphere and
+  starfield are not flagged as sky, which is why fog paints them, so a better texture on the same unflagged sphere
+  keeps the bug. Evaluate against `docs/production/SOLUTION_CATALOG.md` before acquisition; both may already hold
+  catalog entries written for a different intended use.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
