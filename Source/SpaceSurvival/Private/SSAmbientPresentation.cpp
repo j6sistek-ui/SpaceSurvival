@@ -74,19 +74,26 @@ struct FSSThrusterLayer
 };
 /** The owner's requested mock-up stack, in their stated order. Nested rather than graded, deliberately. */
 const FSSThrusterLayer ThrusterLayerStack[] = {
-    {1, .90f, 0.f},  // M_DeepSpaceExhaust
-    {4, 1.00f, 0.f}, // M_FresnelGlow
-    {8, .95f, 0.f},  // M_Deadly_Beam
-    {3, .93f, 90.f}, // M_BrightCore, rolled about the exhaust axis, still firing aft
-    {9, 1.10f, 0.f}, // M_Fire_Rays
+    {1, .90f, 0.f},   // M_DeepSpaceExhaust
+    {4, 1.00f, 0.f},  // M_FresnelGlow
+    {8, 1.10f, 0.f},  // M_Deadly_Beam
+    {3, 1.05f, 90.f}, // M_BrightCore, rolled about the exhaust axis, still firing aft
+    {9, 1.30f, 0.f},  // M_Fire_Rays
 };
 constexpr int32 ThrusterLayerCount = int32(UE_ARRAY_COUNT(ThrusterLayerStack));
 TAutoConsoleVariable<int32> ThrusterLayered(TEXT("ss.ThrusterLayered"), 0,
                                             TEXT("Stack the layered drive mock-up instead of one core (0 off)."));
 /** In the layered mock-up the long ribbon leaves the wing nozzles entirely and becomes one small plume on the
  *  centreline of the rear booster, which is what the owner asked to see. */
-TAutoConsoleVariable<float> ThrusterTrailScale(TEXT("ss.ThrusterTrailScale"), .25f,
+TAutoConsoleVariable<float> ThrusterTrailScale(TEXT("ss.ThrusterTrailScale"), .125f,
                                                TEXT("Ribbon size in the layered mock-up."));
+/** Height of that centre plume on the hull. The nozzles sit at Z 10, on the nacelle axis; the big lit ring
+ *  in the middle of the hull face is lower, and the owner wants the plume on the ring rather than on the
+ *  small lit panel above it. Minus twenty seats the origin on the ring itself; a swept comparison put the
+ *  panel at zero and the hull's lower lip near minus fifty. Held as a variable because the right number is
+ *  a thing you look at rather than derive. */
+TAutoConsoleVariable<float> ThrusterTrailHeight(TEXT("ss.ThrusterTrailHeight"), -20.f,
+                                                TEXT("Centre plume height offset, cm, in the layered mock-up."));
 
 /** Lowercased with spaces and underscores dropped, because vendors write "Emissive Gain", "Main Color" and
  *  "Additive_Color" for the same three ideas, and an exact-name list silently matches none of them. */
@@ -693,6 +700,7 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
     {
         FVector Centre = (ExhaustPositions[0].GetValue() + ExhaustPositions[1].GetValue()) * .5f;
         Centre.Y = 0.f; // the booster sits on the hull's centreline whatever the nozzles do
+        Centre.Z += ThrusterTrailHeight.GetValueOnGameThread();
         BoosterCentre = Centre;
     }
     for (int32 Index = 0; Index < EngineTrails.Num(); ++Index)

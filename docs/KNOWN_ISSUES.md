@@ -780,9 +780,16 @@ side nest five shells, sized relative to the current core so ninety per cent mea
 | --- | --- | --- | --- |
 | 1 | `M_DeepSpaceExhaust` (01M) | 90% | |
 | 2 | `M_FresnelGlow` (04M) | 100% | the reference size |
-| 3 | `M_Deadly_Beam` (08M) | 95% | |
-| 4 | `M_BrightCore` (03M) | 93% | rolled 90 degrees about the exhaust axis, still firing aft |
-| 5 | `M_Fire_Rays` (09M) | 110% | |
+| 3 | `M_Deadly_Beam` (08M) | 110% | raised from 95% on owner review |
+| 4 | `M_BrightCore` (03M) | 105% | raised from 93%; rolled 90 degrees about the exhaust axis, still firing aft |
+| 5 | `M_Fire_Rays` (09M) | 130% | raised from 110% |
+
+The centre plume was halved again to `ss.ThrusterTrailScale` .125 and moved down onto the large lit ring in the
+middle of the hull face, which the owner distinguished from the small lit panel above it. The offset is
+`ss.ThrusterTrailHeight`, defaulted to -20 cm from the nozzle axis. That number was chosen by capturing 0, -20, -35
+and -50 and looking: zero leaves the plume on the upper panel, -20 seats its origin on the ring, -35 has it emerging
+from below the ring with the ring unobscured, and -50 drops it clear of the hull. Guessing the number from pixel
+measurements would have been arithmetic dressed up as evidence.
 
 Built behind `ss.ThrusterLayered`, default off, so the shipped game is unchanged until the owner accepts it. Ribbon
 size is `ss.ThrusterTrailScale`. Both are exposed on `Scripts/CaptureSpaceLook.ps1`. Every engine always constructs
