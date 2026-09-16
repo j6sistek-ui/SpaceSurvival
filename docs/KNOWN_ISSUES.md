@@ -482,6 +482,45 @@ them. What they show that the current build does not:
   relevant to the open report that the station gives no approach guidance.
 
 
+
+#### September 16 per-system concept art located, and what it changes
+
+The owner's concept set is **already in this repository** at `art/`, dated September 14, and was not being used.
+Eighteen files named per game system: `asteroids`, `wormhole`, `storm`, `gravity`, `station`, `wreckage`, `depot`,
+`climax-10`, `between-waves`, `combat`, `hangar`, `key-art`, `ship-hero`, `ship-interceptor`, plus `hero.mp4` and
+the Acornaut portraits. The same set plus `teaser.mp4` sits in the owner's Drive under AI/art, with a pitch deck in
+AI/screenshots. **These are per-system visual targets and they supersede guessing from general space art.** Three
+were read this session and each changes a currently open item.
+
+**`art/wormhole.jpg` refutes the current wormhole entirely.** The target is a vast luminous **spiral vortex** that
+fills most of the frame, with a bright warm gold and cream core, rock and debris caught in the arms and drawn inward,
+deep black space to one side, and enemy silhouettes against it. It is a funnel with flow, at enormous scale.
+The implementation is concentric blue rings. That is not a tuning gap, it is a different object. The four rendering
+faults recorded against RPT-20260916-11, single-slot material, far rings larger than near, one global emission and a
+roll that renders nothing, are all real, but fixing them yields a better ring stack rather than this. **Re-scope the
+wormhole against this image before spending effort on the rings.** It also strengthens the case for evaluating the
+owned Wormhole Portal plugin under ACT-04, since a flowing funnel with captured debris is closer to what that plugin
+does than to what the current primitive does.
+
+**`art/storm.jpg` confirms the Nerves referent and the pack choice.** The target is the ship engulfed in a web of
+branching blue-white lightning with a visible spherical containment shell around the hull, arcs forking outward in
+every direction, against deep blue cloud. That is electrical arcs enveloping the player, not a ring on a plane.
+`NS_ElectircBeams_Blue` from the owned A23 Nerves pack is the correct source and is already bound. This makes the
+recorded fix concrete: the procedural `SM_ElectricalFieldCandidateV3` ring should stop being the storm's read, the
+Nerves beams should become it, and the arcs need to reach the ship rather than sit at a radius. It also settles the
+light question in favour of restoring the renderer for this one effect, because the target is lit by its own arcs.
+
+**`art/asteroids.jpg` corrects the fog assignment for the rock zone, and it is a HUD reference too.** The background
+is deep blue-black with only a faint nebula wash, not pale fog. Rocks span an enormous size range, from one filling a
+quarter of the frame to specks, and the near ones carry heavy **motion blur** that sells speed. So the asteroid field
+target is closer to the fogless and light-fog zones than to the eerie one, and the missing cue is scale variance plus
+motion blur rather than atmosphere. The shot also carries a speed readout, a threat count on the radar, an objectives
+list and weapon ammunition, which is a reference for the open input-glyph and station-guidance reports.
+
+**Method note for whoever works these next.** The art was sitting in the repository unused while this project
+iterated on the look from general reference. Check `art/` for a per-system target before starting any visual work.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
