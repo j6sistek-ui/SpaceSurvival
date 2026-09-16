@@ -23,6 +23,12 @@ private:
     float Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color,
                     bool Render = true);
     void Stroke(FVector2D A, FVector2D B, FLinearColor Color, float Width = 1.f);
+    // Draws a device-appropriate action prompt: the assigned glyph icon if the
+    // active GameMode has one for ActionId on the current input device,
+    // otherwise KeyboardLabel/GamepadLabel as text. Returns the X position
+    // immediately after what was drawn, for placing a following label.
+    float DrawPrompt(FName ActionId, const FString &KeyboardLabel, const FString &GamepadLabel, float X, float Y,
+                     float Size, FLinearColor Color);
     void ThreatGlyph(FVector2D Centre, bool Flanker, bool Charging, float Size, FLinearColor Color);
     void DrawCombatCues(class ASSShip *Ship, bool ShowRadar);
     void Meter(const FString &Name, double Value, double Maximum, float X, float Y, FLinearColor Color);
