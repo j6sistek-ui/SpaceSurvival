@@ -9,7 +9,7 @@
 namespace
 {
 TAutoConsoleVariable<int32>
-    DistantAsteroidCount(TEXT("ss.DistantAsteroidCount"), 2048,
+    DistantAsteroidCount(TEXT("ss.DistantAsteroidCount"), 3072,
                          TEXT("Visual-only distant asteroid count, clamped 0..3072. Does not alter hazards."),
                          ECVF_Scalability);
 constexpr double MinimumAnchorDistance = 32000.0;
@@ -151,7 +151,10 @@ void ASSDistantAsteroids::BuildField(int32 Count)
     int32 BandOrdinals[4] = {};
     for (int32 Index = 0; Index < Count; ++Index)
     {
-        const int32 BandIndex = Index % 256 == 0 ? 0 : (Index % 64 == 0 ? 1 : (Index % 8 == 1 ? 2 : 3));
+        // Band 3 is the far, near-static shell. The old split put 86% of the budget there, so the
+        // field read as a painted backdrop with a sparse near zone. Weight the near and middle
+        // bands instead: those carry real parallax and are what the player actually flies through.
+        const int32 BandIndex = Index % 32 == 0 ? 0 : (Index % 4 == 0 ? 1 : (Index % 2 == 0 ? 2 : 3));
         const FDepthBand &Band = DepthBands[BandIndex];
         const int32 Ordinal = BandOrdinals[BandIndex]++;
         const int32 BatchIndex = (BandIndex == 0   ? Ordinal % 8

@@ -99,6 +99,18 @@ ASSAmbientPresentation::ASSAmbientPresentation()
         Light->SetVisibility(false);
         EngineLights.Add(Light);
     }
+    // Six flanking arcs in three pairs. Pairs read as storm cells rather than as isolated sparks.
+    for (int32 Index = 0; Index < 6; ++Index)
+    {
+        auto *Storm = CreateDefaultSubobject<UNiagaraComponent>(*FString::Printf(TEXT("AmbientStorm%d"), Index));
+        Storm->SetupAttachment(RootComponent);
+        Storm->SetAutoActivate(false);
+        Storm->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Storm->SetGenerateOverlapEvents(false);
+        Storm->SetCastShadow(false);
+        Storm->SetVisibility(false);
+        AmbientStorms.Add(Storm);
+    }
 }
 
 void ASSAmbientPresentation::BeginPlay()
@@ -128,6 +140,17 @@ void ASSAmbientPresentation::BeginPlay()
         VolumeFog->SetVolumetricFogDistance(SpaceLook->FogDistance);
         AmbientLight->SetCubemap(SpaceLook->AmbientCubemap);
         AmbientLight->SetIntensity(SpaceLook->AmbientIntensity);
+    }
+    // The owned A23 Nerves beams, vendor misspelling included. Same system the ElectricalStorm hazard
+    // uses, so distant weather and the dangerous version read as one phenomenon at different range.
+    const TCHAR *StormPath = TEXT("/Game/NERVES/FX/NS_ElectircBeams_Blue.NS_ElectircBeams_Blue");
+    if (auto *StormSystem = FPackageName::DoesPackageExist(TEXT("/Game/NERVES/FX/NS_ElectircBeams_Blue"))
+                                ? LoadObject<UNiagaraSystem>(nullptr, StormPath, nullptr, LOAD_NoWarn | LOAD_Quiet)
+                                : nullptr)
+    {
+        for (const auto &Storm : AmbientStorms)
+            Storm->SetAsset(StormSystem);
+        AmbientStormsAvailable = true;
     }
     auto *Cube = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
     auto *HullMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"),
@@ -315,6 +338,10 @@ void ASSAmbientPresentation::UpdateAreaStyle(float DeltaSeconds)
     CurrentHazeDensity =
         FMath::Lerp(CurrentHazeDensity, FMath::Lerp(A.HazeDensity, B.HazeDensity, Blend.Alpha), Smooth);
     CurrentFogDensity = FMath::Lerp(CurrentFogDensity, FMath::Lerp(A.FogDensity, B.FogDensity, Blend.Alpha), Smooth);
+    CurrentFogBrightness =
+        FMath::Lerp(CurrentFogBrightness, FMath::Lerp(A.FogBrightness, B.FogBrightness, Blend.Alpha), Smooth);
+    CurrentAmbientStormScale = FMath::Lerp(CurrentAmbientStormScale,
+                                           FMath::Lerp(A.AmbientStormScale, B.AmbientStormScale, Blend.Alpha), Smooth);
     CurrentKeyIntensity =
         FMath::Lerp(CurrentKeyIntensity, FMath::Lerp(A.KeyIntensity, B.KeyIntensity, Blend.Alpha), Smooth);
     CurrentAmbientIntensity =
@@ -322,7 +349,9 @@ void ASSAmbientPresentation::UpdateAreaStyle(float DeltaSeconds)
     AreaStyleInitialized = true;
     // A restrained distance tint connects separated silhouettes without washing
     // the nearby ship. The bounded volume banks provide the denser local patches.
-    VolumeFog->SetFogInscatteringColor(CurrentHazeColor * .12f);
+    // A luminous belt and an eerie murk are the same fog at different inscattering. Per zone, so one
+    // region can silhouette dark rock against bright haze while another lights rock against dark murk.
+    VolumeFog->SetFogInscatteringColor(CurrentHazeColor * CurrentFogBrightness);
     // Fog is a property of the region, not of the game. Crossing a boundary fades one zone's fog out
     // and the next one's in on the same smoothing as haze and key light, so an open region reads as
     // genuinely open rather than as the same space with the fog switched off.
@@ -381,6 +410,41 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
         if (CloudsVisible)
             CloudBanks[Index]->SetWorldLocation(Center + CloudTravel +
                                                 (Index == 0 ? SpaceLook->CloudOffsetA : SpaceLook->CloudOffsetB));
+    }
+    // Three storm cells, 3 to 5 km out, offset laterally and vertically and never along the forward axis
+    // where the Director admits real hazards. They are region weather seen at distance, not something to
+    // dodge, so nothing here carries collision, damage or a telegraph.
+    const bool StormsVisible =
+        Active && AmbientStormsAvailable && CurrentAmbientStormScale > .01f && CloudEnabled.GetValueOnGameThread() != 0;
+    // Distance here means AHEAD, not sideways. A large lateral offset at short range leaves the frustum,
+    // which is exactly what a first attempt at "farther" got wrong. These sit 6 to 11 km down-range with a
+    // lateral offset of roughly 15 to 20 degrees, so they read as weather on the horizon near the frame edge.
+    // Two earlier attempts put these out of view: straight to the side leaves the frustum, and 6 to 11 km
+    // down-range is past Niagara's own significance culling. These sit 1.8 to 2.8 km ahead with a lateral
+    // offset of 0.7 to 1.1 km, well clear of the hazard corridor the Director admits inside, while staying
+    // inside the view and inside the range at which the system still renders.
+    static const FVector StormOffsets[] = {
+        FVector(182000, 74000, 41000),   FVector(226000, 98000, 22000),    // cell one, ahead and right
+        FVector(198000, -82000, -36000), FVector(254000, -108000, -21000), // cell two, ahead and left
+        FVector(272000, 61000, -58000),  FVector(286000, 39000, -44000)    // cell three, further and low
+    };
+    for (int32 Index = 0; Index < AmbientStorms.Num(); ++Index)
+    {
+        auto *Storm = AmbientStorms[Index].Get();
+        if (!Storm)
+            continue;
+        if (StormsVisible != Storm->IsVisible())
+        {
+            Storm->SetVisibility(StormsVisible);
+            StormsVisible ? Storm->Activate(true) : Storm->Deactivate();
+        }
+        if (StormsVisible)
+        {
+            Storm->SetWorldLocation(Center + CloudTravel + StormOffsets[Index % 6]);
+            Storm->SetWorldScale3D(FVector(CurrentAmbientStormScale));
+            // A beam system's bounds are authored for close use; without this it culls before leaving frame.
+            Storm->SetBoundsScale(24.f);
+        }
     }
     const bool TrailsVisible =
         Active && Ship && !Ship->IsMoored() && TrailsAvailable && TrailEnabled.GetValueOnGameThread() != 0;

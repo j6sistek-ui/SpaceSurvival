@@ -327,8 +327,8 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
     const float Density = FMath::Lerp(DensityA, DensityB, Blend.Alpha);
     // Stable quiet pockets reduce near/middle density; the independent distant field remains rich.
     const float Gap = Random.FRand() < .18f && !Origin ? .25f : 1.f;
-    const int32 Count = FMath::Clamp(FMath::RoundToInt(ClutterPerCell * FMath::Clamp(Density, 0.f, 2.f) * .5f * Gap), 0,
-                                     ClutterPerCell);
+    const int32 Count =
+        FMath::Clamp(FMath::RoundToInt(ClutterPerCell * FMath::Clamp(Density, 0.f, 2.f) * Gap), 0, ClutterPerCell);
     TMap<UStaticMesh *, UInstancedStaticMeshComponent *> Batches;
     for (int32 Index = 0; Index < Count; ++Index)
     {

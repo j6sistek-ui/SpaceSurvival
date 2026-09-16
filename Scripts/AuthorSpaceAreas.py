@@ -106,9 +106,9 @@ def main():
         (fragments[0],(110000,-110000,68000),31000,(65,20,15)),
         (beam,(295000,215000,-100000),38000,(25,30,55)),
         (station,(480000,-170000,20000),33000,(15,-25,0))],
-        [(p,1.,1800.,11000.) for p in fragments+barren]+
-        [(panel(n),2.,1200.,7500.) for n in (1,3,6,8,12)]+
-        [(floor(n),1.5,2200.,9000.) for n in (2,4)]+[(pillar(4),1.,1800.,6500.)]),
+        [(p,1.,700.,17000.) for p in fragments+barren]+
+        [(panel(n),2.,600.,12000.) for n in (1,3,6,8,12)]+
+        [(floor(n),1.5,900.,14000.) for n in (2,4)]+[(pillar(4),1.,1800.,6500.)]),
       ('MineralReach',(.18,.32,.34),(.55,.83,1.),.65,(1.8,.5,.4),[
         (mineral[0],(170000,-145000,-55000),74000,(15,30,50)),
         (mineral[2],(215000,175000,50000),71000,(50,10,70)),
@@ -118,8 +118,8 @@ def main():
         (fragments[2],(235000,85000,140000),21000,(20,40,80)),
         (mineral[1],(125000,-195000,115000),48000,(45,45,40)),
         (station,(470000,185000,55000),17000,(0,55,10))],
-        [(p,3.,1400.,9500.) for p in mineral]+[(p,1.,900.,6500.) for p in fragments]+
-        [(panel(n),.6,1000.,5000.) for n in (11,15)]),
+        [(p,3.,550.,15000.) for p in mineral]+[(p,1.,400.,11000.) for p in fragments]+
+        [(panel(n),.6,450.,9000.) for n in (11,15)]),
       ('AlienCauseway',(.18,.29,.33),(.72,.9,.83),.85,(1.7,.4,.25),[
         (KIT+'Arch/SM_triangle_arch',(215000,135000,50000),100000,(20,35,70)),
         (pillar(12),(175000,-145000,-15000),98000,(0,25,80)),
@@ -129,9 +129,9 @@ def main():
         (KIT+'Arch/SM_arch_01',(470000,65000,110000),39000,(70,-20,10)),
         (barren[0],(270000,-155000,-110000),55000,(20,45,50)),
         (pillar(3),(130000,-185000,115000),31000,(25,35,60))],
-        [(p,1.,1300.,7500.) for p in fragments]+
-        [(panel(n),2.,1400.,7000.) for n in (2,5,9,13)]+
-        [(floor(n),1.,2000.,8000.) for n in (1,3)]+[(pillar(2),1.,1500.,5000.)]),
+        [(p,1.,500.,13000.) for p in fragments]+
+        [(panel(n),2.,600.,12000.) for n in (2,5,9,13)]+
+        [(floor(n),1.,850.,13000.) for n in (1,3)]+[(pillar(2),1.,1500.,5000.)]),
       ('AmberDerelict',(.36,.24,.16),(1.,.7,.42),1.15,(1.4,.75,.3),[
         (arc,(245000,210000,6000),150000,(75,5,105)),
         (ring,(165000,-155000,-80000),110000,(25,45,-30)),
@@ -141,8 +141,8 @@ def main():
         (station,(460000,-20000,65000),34000,(15,-30,0)),
         (barren[3],(340000,125000,-95000),49000,(75,40,25)),
         (fragments[3],(165000,175000,125000),34000,(10,40,70))],
-        [(p,2.,1500.,11000.) for p in barren+fragments]+[(beam,1.,700.,4500.)]+
-        [(panel(n),1.5,1100.,6500.) for n in (4,7,14)]+[(floor(4),1.,2400.,8500.)]),
+        [(p,2.,600.,17000.) for p in barren+fragments]+[(beam,1.,700.,4500.)]+
+        [(panel(n),1.5,500.,11000.) for n in (4,7,14)]+[(floor(4),1.,2400.,8500.)]),
     ]
     lighting={
         'ObsidianWreck':(.000018,3.8,6.),
@@ -152,11 +152,15 @@ def main():
     }
     # Per-zone height fog. Owner direction: some zones should be eerie and some fogless, and it is
     # easier to take fog away than to add it, so the field carries it and one region sets it to zero.
+    # (density, inscattering brightness). Brightness is what makes a zone a luminous belt that dark rock
+    # silhouettes against, rather than a murk that lit rock emerges from. Both appear in the reference set.
+    # (fog density, fog inscattering brightness, ambient storm scale). Storm scale is large because the
+    # arcs sit three to five kilometres off the flight line; zero means that zone has no distant weather.
     zone_fog={
-        'ObsidianWreck':.0042,   # the charcoal wreckfield, deliberately the eerie one
-        'MineralReach':.0006,    # thinned: the rock field sits near the dark end, closer to art/asteroids.jpg
-        'AlienCauseway':.0020,   # thinned: structures read harder against less haze
-        'AmberDerelict':0.,      # genuinely fogless: hard edges, deep blacks, full contrast
+        'ObsidianWreck':(.0042,.12,0.),     # eerie murk: dense and dark, rock lit against it
+        'MineralReach':(.0006,.12,45.),    # near-dark rock field, with distant storm cells flanking it
+        'AlienCauseway':(.0055,3.0,70.),  # luminous belt, dark rock silhouetted, heavier weather
+        'AmberDerelict':(0.,.12,0.),        # genuinely fogless: hard edges, full contrast, warm, clear
     }
     recipes=[];record=[]
     for name,haze,key,density,axes,landmarks,candidates in definitions:
@@ -171,12 +175,14 @@ def main():
             clutter.append(c)
         for k,v in {'clutter':clutter,'clutter_density':density,'cluster_radius':135000.,'clear_radius':40000.,
                     'cluster_axes':u.Vector(*axes),'haze_color':u.LinearColor(*haze,1),
-                    'haze_density':haze_density,'fog_density':zone_fog[name],'key_color':u.LinearColor(*key,1),'key_intensity':key_intensity,
+                    'haze_density':haze_density,'fog_density':zone_fog[name][0],'fog_brightness':zone_fog[name][1],'ambient_storm_scale':zone_fog[name][2],'key_color':u.LinearColor(*key,1),'key_intensity':key_intensity,
                     'ambient_intensity':ambient_intensity}.items():recipe.set_editor_property(k,v)
         recipes.append(recipe);record.append({'name':name,'landmarks':landmarks,'clutter':candidates,'haze':haze,'density':density,'lighting':lighting[name]})
-    for k,v in {'area_recipes':recipes,'area_cell_size':650000.,'area_clutter_budget':384,'area_landmark_budget':64,
-                'sky_material':sky(),'fog_density':.0038,'fog_distance':600000.,'cloud_scale':u.Vector(1800,650,850),
-                'cloud_offset_a':u.Vector(120000,100000,-25000),'cloud_offset_b':u.Vector(260000,-140000,65000),
+    for k,v in {'area_recipes':recipes,'area_cell_size':650000.,'area_clutter_budget':1024,'area_landmark_budget':64,
+                'sky_material':sky(),'fog_density':.0038,'fog_distance':600000.,'cloud_scale':u.Vector(3400,1500,1800),
+                # One distant fog pocket, far ahead and to the left, so the field has a patch of weather in it rather
+    # than a uniform wash. The second bank sits behind the player where it does not read looking forward.
+    'cloud_offset_a':u.Vector(960000,-330000,35000),'cloud_offset_b':u.Vector(-520000,180000,-90000),
                 'override_flight_key_direction':True,'flight_key_rotation':u.Rotator(pitch=-28,yaw=-135,roll=0)}.items():
         look.set_editor_property(k,v)
     assert LIB.save_loaded_asset(look)

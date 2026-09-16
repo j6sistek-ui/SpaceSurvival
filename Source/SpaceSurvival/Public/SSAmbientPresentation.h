@@ -34,6 +34,11 @@ private:
     TArray<TObjectPtr<UMaterialInstanceDynamic>> CloudMaterials;
     UPROPERTY()
     TArray<TObjectPtr<UNiagaraComponent>> EngineTrails;
+    /** Flanking ambient electrical arcs. Decoration, never hazards; see FSSSpaceAreaRecipe::AmbientStormScale. */
+    UPROPERTY()
+    TArray<TObjectPtr<UNiagaraComponent>> AmbientStorms;
+    bool AmbientStormsAvailable = false;
+    float CurrentAmbientStormScale = 0.f;
     UPROPERTY()
     TArray<TObjectPtr<UStaticMeshComponent>> EngineCores;
     UPROPERTY()
@@ -77,6 +82,8 @@ private:
     float CurrentHazeDensity = 0.f;
     /** Blended per-zone height fog, so travelling between regions crosses into and out of fog. */
     float CurrentFogDensity = 0.f;
+    /** Blended per-zone fog brightness; see FSSSpaceAreaRecipe::FogBrightness. */
+    float CurrentFogBrightness = .12f;
     float CurrentKeyIntensity = 0.f;
     float CurrentAmbientIntensity = 0.f;
     void UpdateAreaStyle(float DeltaSeconds);
