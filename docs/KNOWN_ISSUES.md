@@ -681,6 +681,42 @@ flat and then with the new pitch variation; five firing-loop candidates; six hea
 complaint. The current bindings are included as controls. **Awaiting the owner's picks.**
 
 
+
+#### September 16 thruster material audition: the owner chose the wide cone, then asked for distinctive materials
+
+The owner picked `05-cone-big` off the shape sheet, so cone at emission 6 and scale 2.6 are now the shipped defaults
+in `SSAmbientPresentation.cpp`. The console variables stay, because further review passes need them.
+
+They then asked to "play with mixing colors/materials to get unique effects", naming the galaxy shaders in
+particular. **Two hundred and twenty-two owned master materials are plausible for a glowing plume**, found by
+scanning every `.uasset` under `Content/` for the blend mode, shading model and two-sided flags left in the package
+name table. That is a fast and unprivileged read, and it is inference rather than proof, but every candidate it
+produced did load and render, which is the only confirmation that matters here.
+
+**Seventeen were wired into an audition table** behind a new `ss.ThrusterMaterial` index, with a matching
+`-ThrusterMaterial` parameter on `Scripts/CaptureSpaceLook.ps1`, and captured on one seed and camera at boost.
+
+**A borrowed material needed one piece of real work, not just a path swap.** The core is driven by
+`SetVectorParameterValue(TEXT("Tint"))` and `SetScalarParameterValue(TEXT("Emission"))`, and a parameter a material
+does not declare **fails silently**. A borrowed VFX material names its parameters whatever its author liked, so every
+one of them would have sat at its authored colour and ignored the drive state entirely, which reads as a bug rather
+than as a look. `BeginPlay` now asks the chosen material what it exposes, via `GetAllVectorParameterInfo` and
+`GetAllScalarParameterInfo`, keeps the names that match a known colour or strength vocabulary, and `Tick` drives
+whatever was found. A material that loads but declares nothing usable is a legitimate outcome and simply keeps its
+authored look; a material that fails to load falls back to the project emissive and logs a warning rather than
+leaving the nozzles unlit.
+
+**What the audition showed.** Genuinely distinctive: `M_BrightCore` (hot orange chemical burn), `M_Deadly_Beam`
+(cyan crystalline), `M_Star` (clean vivid blue), `M_Skybox_Nebula` (dark navy, unlike anything else in the set),
+`M_Cosmic_Master` (purple marbled), `M_FresnelGlow` (green with a lit rim), and `M_VFX_Lush_Galaxy_Shader`, the one
+the owner named. Two failed honestly: `M_Cable_Glow` blows out the whole frame, and `M_ElectricalFieldCandidateV3`
+renders nothing from this angle. Both are presentable as defects rather than as omissions, and neither is worth
+chasing unless the owner wants that entry.
+
+**Still a stopgap.** This is a single mesh wearing one material. The layered plume recorded above, core plus
+turbulent shell plus spark spray plus nozzle glow, is unchanged by this work and remains the real fix.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.

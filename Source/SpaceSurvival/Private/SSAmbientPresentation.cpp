@@ -30,12 +30,63 @@ TAutoConsoleVariable<int32> CloudEnabled(TEXT("ss.AtmosphereClouds"), 1,
                                          TEXT("Enable optional distant atmosphere cloud banks (0 disables)."));
 TAutoConsoleVariable<int32> TrailEnabled(TEXT("ss.EngineTrails"), 1,
                                          TEXT("Enable optional Niagara engine ribbon trails (0 disables)."));
-// Owner review aid for RPT-20260915-08, "thrusters look like cubes". Shape/emission/scale are switchable so a
-// set of candidates can be captured and chosen from, instead of one being picked on the implementer's taste.
+// RPT-20260915-08, "thrusters look like cubes". Shape/emission/scale are switchable so a set of candidates could
+// be captured and chosen from, instead of one being picked on the implementer's taste. The owner chose the wide
+// cone from that sheet, so these defaults are its settings; the variables stay for further review passes.
 TAutoConsoleVariable<int32> ThrusterShape(TEXT("ss.ThrusterShape"), 1,
                                           TEXT("Engine core mesh: 0 cube, 1 cone, 2 sphere, 3 cylinder."));
-TAutoConsoleVariable<float> ThrusterEmission(TEXT("ss.ThrusterEmission"), 3.f, TEXT("Engine core emissive strength."));
-TAutoConsoleVariable<float> ThrusterScale(TEXT("ss.ThrusterScale"), 1.f, TEXT("Engine core size multiplier."));
+TAutoConsoleVariable<float> ThrusterEmission(TEXT("ss.ThrusterEmission"), 6.f, TEXT("Engine core emissive strength."));
+TAutoConsoleVariable<float> ThrusterScale(TEXT("ss.ThrusterScale"), 2.6f, TEXT("Engine core size multiplier."));
+// The owner asked to try mixing materials for a distinctive drive, and named the galaxy shaders specifically.
+// All of these are already owned. The additive unlit entries are authored for glowing effects; the opaque entries
+// are surface materials used against their grain, which is the point of auditioning rather than assuming.
+const TCHAR *ThrusterMaterialPaths[] = {
+    TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive"),                                  //  0 current
+    TEXT("/Game/SpaceSurvival/Licensed/Atmosphere/M_DeepSpaceExhaust.M_DeepSpaceExhaust"),        //  1 own exhaust
+    TEXT("/Game/NiagaraExamples/Materials/MasterMaterials/M_Mesh_Add.M_Mesh_Add"),                //  2 mesh additive
+    TEXT("/Game/NiagaraExamples/Materials/MasterMaterials/M_BrightCore.M_BrightCore"),            //  3 bright core
+    TEXT("/Game/NiagaraExamples/Materials/MasterMaterials/M_FresnelGlow.M_FresnelGlow"),          //  4 edge glow
+    TEXT("/Game/NiagaraExamples/Materials/MasterMaterials/M_Energy.M_Energy"),                    //  5 energy
+    TEXT("/Game/NiagaraExamples/Materials/MasterMaterials/M_Flare.M_Flare"),                      //  6 flare
+    TEXT("/Game/Sci_Fi_Weapons_VFX_AIO/Matetials/For_VFX/M_Simple_Beam_Aura.M_Simple_Beam_Aura"), //  7 beam aura
+    TEXT("/Game/Sci_Fi_Weapons_VFX_AIO/Matetials/For_VFX/M_Deadly_Beam.M_Deadly_Beam"),           //  8 deadly beam
+    TEXT("/Game/Sci_Fi_Weapons_VFX_AIO/Matetials/For_VFX/M_Fire_Rays.M_Fire_Rays"),               //  9 fire rays
+    TEXT("/Game/Sci_Fi_Weapons_VFX_AIO/Matetials/For_VFX/M_Smoke_Ribbon.M_Smoke_Ribbon"),         // 10 smoke ribbon
+    TEXT("/Game/Sci_Fi_Weapons_VFX_AIO/Matetials/M_Cable_Glow.M_Cable_Glow"),                     // 11 cable glow
+    TEXT("/Game/SpaceSurvival/Materials/M_ElectricalFieldCandidateV3."
+         "M_ElectricalFieldCandidateV3"),                                       // 12 own field
+    TEXT("/Game/SpaceSurvival/Materials/M_Star.M_Star"),                        // 13 own star
+    TEXT("/Game/SpaceNebulaFantasy/Materials/M_Skybox_Nebula.M_Skybox_Nebula"), // 14 nebula
+    TEXT("/Game/Vefects/Stylized_Galaxy_Shader/Galaxy/Materials/M_VFX_Lush_Galaxy_Shader."
+         "M_VFX_Lush_Galaxy_Shader"),                        // 15 galaxy
+    TEXT("/Game/CosmicMaterial/Material/M_Master.M_Master"), // 16 cosmic
+};
+TAutoConsoleVariable<int32> ThrusterMaterial(TEXT("ss.ThrusterMaterial"), 0,
+                                             TEXT("Engine core material index into the audition table."));
+
+/** Parameter names worth driving with the drive colour, across the various VFX authors naming habits. */
+bool IsCoreColorParameter(FName Name)
+{
+    static const FName Known[] = {TEXT("Tint"),          TEXT("Color"),    TEXT("Colour"),       TEXT("BaseColor"),
+                                  TEXT("EmissiveColor"), TEXT("Emissive"), TEXT("ExhaustColor"), TEXT("GlowColor"),
+                                  TEXT("ParticleColor"), TEXT("Color_A"),  TEXT("ColorA"),       TEXT("MainColor")};
+    for (const FName &Candidate : Known)
+        if (Name == Candidate)
+            return true;
+    return false;
+}
+
+/** Scalar names that read as how hot the core is, again across naming habits. */
+bool IsCoreStrengthParameter(FName Name)
+{
+    static const FName Known[] = {TEXT("Emission"),  TEXT("EmissiveStrength"), TEXT("Emissive"),
+                                  TEXT("Intensity"), TEXT("Brightness"),       TEXT("Power"),
+                                  TEXT("Glow"),      TEXT("Multiply")};
+    for (const FName &Candidate : Known)
+        if (Name == Candidate)
+            return true;
+    return false;
+}
 
 /** True for the shapes whose length runs along the mesh's +Z (cone, cylinder), unlike the symmetric cube. */
 bool ThrusterCoreIsAxial()
@@ -175,8 +226,18 @@ void ASSAmbientPresentation::BeginPlay()
     auto *Cube = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
     auto *HullMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"),
                                                         nullptr, LOAD_NoWarn | LOAD_Quiet);
-    auto *CoreMaterial = LoadObject<UMaterialInterface>(
-        nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive"), nullptr, LOAD_NoWarn | LOAD_Quiet);
+    const int32 MaterialIndex =
+        FMath::Clamp(ThrusterMaterial.GetValueOnGameThread(), 0, int32(UE_ARRAY_COUNT(ThrusterMaterialPaths)) - 1);
+    auto *CoreMaterial = LoadObject<UMaterialInterface>(nullptr, ThrusterMaterialPaths[MaterialIndex], nullptr,
+                                                        LOAD_NoWarn | LOAD_Quiet);
+    if (!CoreMaterial)
+    {
+        // A borrowed material that fails to load must not silently leave the nozzles unlit.
+        UE_LOG(LogTemp, Warning, TEXT("ss.ThrusterMaterial %d (%s) did not load; using the project emissive."),
+               MaterialIndex, ThrusterMaterialPaths[MaterialIndex]);
+        CoreMaterial =
+            LoadObject<UMaterialInterface>(nullptr, ThrusterMaterialPaths[0], nullptr, LOAD_NoWarn | LOAD_Quiet);
+    }
     if (Cube && HullMaterial)
     {
         Dust->SetStaticMesh(Cube);
@@ -219,6 +280,26 @@ void ASSAmbientPresentation::BeginPlay()
             Core->SetMaterial(0, Dynamic);
             EngineCoreMaterials.Add(Dynamic);
         }
+    // Ask the chosen material what it actually exposes, once. Setting a parameter a material does not declare
+    // fails silently, so a borrowed material would otherwise sit at its authored colour and ignore the drive
+    // entirely, which reads as a bug rather than as a deliberate look.
+    if (CoreMaterial)
+    {
+        TArray<FMaterialParameterInfo> Parameters;
+        TArray<FGuid> Ids;
+        CoreMaterial->GetAllVectorParameterInfo(Parameters, Ids);
+        for (const FMaterialParameterInfo &Parameter : Parameters)
+            if (IsCoreColorParameter(Parameter.Name))
+                CoreColorParameters.AddUnique(Parameter.Name);
+        Parameters.Reset();
+        Ids.Reset();
+        CoreMaterial->GetAllScalarParameterInfo(Parameters, Ids);
+        for (const FMaterialParameterInfo &Parameter : Parameters)
+            if (IsCoreStrengthParameter(Parameter.Name))
+                CoreStrengthParameters.AddUnique(Parameter.Name);
+        UE_LOG(LogTemp, Log, TEXT("Thruster material %d drives %d colour and %d strength parameters."), MaterialIndex,
+               CoreColorParameters.Num(), CoreStrengthParameters.Num());
+    }
     CloudAvailable = Material && Cube;
     if (CloudAvailable)
     {
@@ -529,9 +610,11 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
                                           FVector(-18.f - (Axial ? Length * ShapeScale * .5f : 0.f), 0.f, 0.f));
             if (EngineCoreMaterials.IsValidIndex(Index))
             {
-                EngineCoreMaterials[Index]->SetVectorParameterValue(TEXT("Tint"), DriveColor);
-                EngineCoreMaterials[Index]->SetScalarParameterValue(
-                    TEXT("Emission"), (.45f + VisualPower * 1.15f) * ThrusterEmission.GetValueOnGameThread() / 3.f);
+                const float Strength = (.45f + VisualPower * 1.15f) * ThrusterEmission.GetValueOnGameThread() / 3.f;
+                for (const FName &Parameter : CoreColorParameters)
+                    EngineCoreMaterials[Index]->SetVectorParameterValue(Parameter, DriveColor);
+                for (const FName &Parameter : CoreStrengthParameters)
+                    EngineCoreMaterials[Index]->SetScalarParameterValue(Parameter, Strength);
             }
             if (EngineLights.IsValidIndex(Index))
             {

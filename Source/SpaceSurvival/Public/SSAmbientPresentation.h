@@ -43,6 +43,11 @@ private:
     TArray<TObjectPtr<UStaticMeshComponent>> EngineCores;
     UPROPERTY()
     TArray<TObjectPtr<UMaterialInstanceDynamic>> EngineCoreMaterials;
+    /** Colour and strength parameters the chosen core material actually exposes. A borrowed VFX material names
+     *  these whatever its author liked, and setting a parameter that is absent fails silently, so the names are
+     *  discovered once from the material itself rather than assumed. */
+    TArray<FName> CoreColorParameters;
+    TArray<FName> CoreStrengthParameters;
     UPROPERTY()
     TArray<TObjectPtr<UPointLightComponent>> EngineLights;
     UPROPERTY()
