@@ -12,6 +12,8 @@ Owned mapping: Station3 supplies the textured broken arc and smaller ring sectio
 
 Engine comparison criteria: (1) readable foreground/middle/background overlap, (2) clearly unequal structure/rock scales with clustered debris, (3) open central aim/ship silhouette, (4) warm edge light and cool shadow with localized transparent haze, and (5) stable layout during turns/travel. Actual continuous motion and performance must be reviewed separately. Status/next work remain solely under ACT-03 in KNOWN_ISSUES; preparation is not target completion.
 
+Owner-required review method (September 16): the lead and an independent agent must agree that actual Unreal captures meet this target before declaring the composition accepted. The independent reviewer receives the concept, unaltered game captures, source/content identity and the criteria above; it must give MET, PARTIAL or NOT MET with image-specific evidence. Missing evidence is unverified, not a pass. Rejections drive another implementation/capture iteration without lowering the target. Still composition approval does not close continuous-motion, performance or owner gameplay acceptance.
+
 ## What changed
 
 - The distant sky now uses the owned Asteroid Library's cool `MI_Skybox_024` cubemap configuration through a private master/instance. The original materials and maps are preserved. A mild `Tint` input retains the existing gradual region/wormhole color influence.

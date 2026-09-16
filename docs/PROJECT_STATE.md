@@ -4,7 +4,7 @@
 
 ## September 16 continuation is unfinished
 
-PR17 now also carries prepared orbital-wreck composition work based on the owner's Jump Space reference. The generated concept, three private art derivatives and editable placement source exist; Unreal import/render has not run. Build attempted but linking failed because the owner-open SpaceSurvival editor locks the game DLL. The previous successful asteroid build/49 tests apply to `16007ab`, not these new changes. Source formatting and structural checks alone do not validate this continuation. [Preparation receipt](validation/2026-09-16-orbital-wreck-preparation.json); ACT-03 owns resumption. EXE and itch unchanged.
+PR17 also carries orbital-wreck composition work based on the owner's accepted concept. The editor lock cleared, the Editor build succeeded, and three private derivatives were imported. Twelve authored major masses, flight-only directional lighting and a private directional sky grade were rendered through successive comparisons. The first independent review rejected target completion; ACT-03 remains open and PR17 remains draft. The latest valid capture includes four 1080p views and 84 timestamped samples, with screenshot timing limitations. [Iteration receipt](validation/2026-09-16-orbital-wreck-review.json) binds source/content/capture identities and validation; [preparation receipt](validation/2026-09-16-orbital-wreck-preparation.json) retains the earlier blocked state as history. EXE and itch unchanged.
 
 ## Source, build and release
 

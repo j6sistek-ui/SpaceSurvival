@@ -143,6 +143,7 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     Soak->Token = Token;
     ReadScenario(Soak->Station5, Soak->Wave1);
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
+    Soak->CaptureSequence = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence"));
     Soak->OffscreenVisuals = Soak->CaptureVisuals && FParse::Param(FCommandLine::Get(), TEXT("RenderOffscreen"));
     Soak->StartedAt = FPlatformTime::Seconds();
     InMode->bAutomatedSoakInput = true;
@@ -473,6 +474,13 @@ void ASSWave10Soak::Tick(float Dt)
         for (int32 Index = 0; Index < UE_ARRAY_COUNT(Times); ++Index)
             if (FlightSeconds >= Times[Index])
                 CaptureVisual(Names[Index], float(FlightSeconds));
+        if (CaptureSequence && FlightSeconds >= NextSequenceSeconds && !FScreenshotRequest::IsScreenshotRequested())
+        {
+            const FString Name = FString::Printf(TEXT("Sequence_%03d"), SequenceIndex++);
+            CaptureVisual(*Name, float(FlightSeconds));
+            // Actual request timestamps remain in the receipt; no fixed timestep or interpolation.
+            NextSequenceSeconds = FlightSeconds + .25;
+        }
         if (Threats > GM->Director->MaximumActiveThreats)
             Stop(TEXT("Director active threat cap exceeded during Wave 1 visual fixture."));
         else if (FlightSeconds >= 29)
@@ -620,7 +628,7 @@ void ASSWave10Soak::WriteResultAndExit()
                                        TEXT("CombatImpact")}
             : Wave1  ? TArray<FString>{TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")}
                      : TArray<FString>{TEXT("Flight"), TEXT("Climax"), TEXT("Compound"), TEXT("Approach")};
-        if (VisualRecords.Num() != Expected.Num())
+        if (VisualRecords.Num() != Expected.Num() + SequenceIndex || (CaptureSequence && SequenceIndex < 40))
             Failure = TEXT("Visual fixture did not request every required scene stage.");
         for (const FString &Name : Expected)
             if (!VisualNames.Contains(Name))

@@ -4,6 +4,9 @@
 #include "SSSpaceLookData.h"
 #include "Components/SkyLightComponent.h"
 #include "Engine/TextureCube.h"
+#include "Engine/DirectionalLight.h"
+#include "Components/DirectionalLightComponent.h"
+#include "EngineUtils.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
@@ -227,6 +230,26 @@ void ASSAmbientPresentation::SetFlightVisible(bool Visible)
     if (FlightVisible == Visible)
         return;
     FlightVisible = Visible;
+    if (SpaceLook && SpaceLook->bOverrideFlightKeyDirection && !SpaceLook->FlightKeyRotation.ContainsNaN())
+    {
+        if (Visible)
+        {
+            for (TActorIterator<ADirectionalLight> It(GetWorld()); It; ++It)
+                if (auto *Light = Cast<UDirectionalLightComponent>(It->GetLightComponent());
+                    Light && Light->ForwardShadingPriority == 2)
+                {
+                    FlightKey = *It;
+                    PreviousKeyRotation = It->GetActorRotation();
+                    It->SetActorRotation(SpaceLook->FlightKeyRotation);
+                    break;
+                }
+        }
+        else if (FlightKey.IsValid())
+        {
+            FlightKey->SetActorRotation(PreviousKeyRotation);
+            FlightKey.Reset();
+        }
+    }
     if (!Visible)
     {
         Dust->SetVisibility(false);

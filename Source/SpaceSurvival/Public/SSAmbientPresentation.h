@@ -11,6 +11,7 @@ class UNiagaraComponent;
 class UPointLightComponent;
 class USkyLightComponent;
 class USSSpaceLookData;
+class ADirectionalLight;
 
 /** Optional private-content atmosphere. Never participates in gameplay collision. */
 UCLASS()
@@ -62,4 +63,6 @@ private:
     bool CloudAvailable = false;
     bool TrailsAvailable = false;
     bool RestartTrails = false;
+    TWeakObjectPtr<ADirectionalLight> FlightKey;
+    FRotator PreviousKeyRotation = FRotator::ZeroRotator;
 };

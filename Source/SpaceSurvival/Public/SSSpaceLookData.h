@@ -45,6 +45,11 @@ public:
     FLinearColor KeyColor = FLinearColor(.95f, .87f, .73f);
     UPROPERTY(EditAnywhere, Category = "Lighting", meta = (ClampMin = "0"))
     float KeyIntensity = 4.f;
+    /** Optional flight-only direction. Station lighting is restored on leaving flight. */
+    UPROPERTY(EditAnywhere, Category = "Lighting")
+    bool bOverrideFlightKeyDirection = false;
+    UPROPERTY(EditAnywhere, Category = "Lighting")
+    FRotator FlightKeyRotation = FRotator(-18, -145, 0);
     UPROPERTY(EditAnywhere, Category = "Dressing")
     TArray<TObjectPtr<UStaticMesh>> StructureMeshes;
     UPROPERTY(EditAnywhere, Category = "Dressing")

@@ -15,9 +15,11 @@ Run commands from the repository root, currently `C:/Users/j6sis/SpaceSurvival`.
 
 The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomplete installation location. Use the complete engine above or pass an explicit `-EngineRoot`.
 
-## Orbital wreck preparation (not yet engine-validated)
+## Orbital wreck authoring and comparison (target unaccepted)
 
-`PrepareOrbitalWreck.py` runs in the installed Blender background process and writes private broken Station3 sections plus a Figur kit beam. `PreviewOrbitalWreck.py` produces a Blender-only contact sheet. Both preserve supplied sources. After a successful Editor build, execute `AuthorOrbitalWreck.py` through the same Unreal Python runner shown below. It backs up the private look/cloud, imports three derivatives, then authors eight placements and trial lighting/volume settings. Do not run it over unsaved owner editor work. This sequence still awaits its first Unreal integration/render; see the preparation receipt and ACT-03.
+`PrepareOrbitalWreck.py` runs in the installed Blender background process and writes private broken Station3 sections plus a Figur kit beam. `PreviewOrbitalWreck.py` produces a Blender-only contact sheet. Both preserve supplied sources. After a successful Editor build, execute `AuthorOrbitalWreck.py` through the same Unreal Python runner shown below. It backs up the private look/cloud/sky, imports three derivatives, persists private Nanite material usage, then authors twelve placements and trial lighting/volume settings. It writes private content hashes in `Artifacts/OrbitalWreck/<id>/report.json`. Rerunning resets this trial composition: do not run over unsaved or owner-edited layouts without preserving them. Integration and rendering have run; the concept is still unaccepted under ACT-03.
+
+`./Scripts/CaptureSpaceLook.ps1 -Label OrbitalWreckReview -Sequence` additionally records nominal quarter-second game-view samples from six seconds into the standard fixture. Four required Cruise/Turn/Boost/Brake images remain present. Actual request times/FOV/camera transforms are in `fixture.json`; image hashes and save isolation are checked in `capture.json`. Readbacks perturb frame time and sampling intervals: this is visual sequence evidence, not real-time motion smoothness, FPS or natural-play acceptance. Omit `-Sequence` for the established four-image comparison.
 
 ## Owned asteroid presentation authoring
 
