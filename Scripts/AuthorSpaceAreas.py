@@ -158,7 +158,7 @@ def main():
                     'ambient_intensity':ambient_intensity}.items():recipe.set_editor_property(k,v)
         recipes.append(recipe);record.append({'name':name,'landmarks':landmarks,'clutter':candidates,'haze':haze,'density':density,'lighting':lighting[name]})
     for k,v in {'area_recipes':recipes,'area_cell_size':650000.,'area_clutter_budget':384,'area_landmark_budget':64,
-                'sky_material':sky(),'fog_density':.000025,'fog_distance':600000.,'cloud_scale':u.Vector(1800,650,850),
+                'sky_material':sky(),'fog_density':.0038,'fog_distance':600000.,'cloud_scale':u.Vector(1800,650,850),
                 'cloud_offset_a':u.Vector(120000,100000,-25000),'cloud_offset_b':u.Vector(260000,-140000,65000),
                 'override_flight_key_direction':True,'flight_key_rotation':u.Rotator(pitch=-28,yaw=-135,roll=0)}.items():
         look.set_editor_property(k,v)
