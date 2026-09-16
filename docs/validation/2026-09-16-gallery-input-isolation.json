@@ -27,6 +27,12 @@
     "result": "PASS",
     "content_source": "PASS 26 meshes, 16 WAVs, unchanged GLB"
   },
+  "portable_domain_checks": {
+    "tool": "Scripts/TestCore.ps1",
+    "result": "PASS",
+    "assertions": 744,
+    "limit": "Portable domain assertions only; Unreal integration and gameplay feel are unverified."
+  },
   "format": {
     "tool": "Scripts/Format.ps1 -Check",
     "result": "PASS"
