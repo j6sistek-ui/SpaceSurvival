@@ -320,8 +320,8 @@ intensity in a persistent world, not an authored route.
 The cull projects each hazard's offset onto the ship's **current** forward vector. Nothing moves when the player
 turns, but the retention rule rotates with them, so turning around reclassifies the field ahead as "behind" and
 destroys it. New admissions then refill ahead of the new heading. The net effect is exactly what the owner describes:
-the threat structure is always in front of you and never persists. This is a small, well-localised fix and it is the
-single highest-value change in the whole environment effort.
+the threat structure is always in front of you and never persists. This is a small, well-localised fix. **It is NOT the highest-value
+change, and the earlier claim here that it was has been refuted with numbers; see the correction below.**
 
 **What already matches the owner's model and must not be "fixed".**
 - Non-field hazard velocity is set once at spawn, `SSWorldActors.cpp:1537-1540`, and the body then moves in world
@@ -361,6 +361,70 @@ single highest-value change in the whole environment effort.
   starfield are not flagged as sky, which is why fog paints them, so a better texture on the same unflagged sphere
   keeps the bug. Evaluate against `docs/production/SOLUTION_CATALOG.md` before acquisition; both may already hold
   catalog entries written for a different intended use.
+
+
+
+#### September 16 intensity model: implementable plan, and a correction to the claim above
+
+An 11-agent audit with adversarial verification and a 60 Hz simulation of the actual admission code, 30 trials of
+180 seconds per case. Full working copy at `.agent/local/audit4-intensity.md`. Nothing implemented. Simulated body
+counts are INFERRED, not measured on hardware.
+
+**CORRECTION, recorded against this project's own log.** The heading-relative cull was recorded above as the single
+highest-value change in the environment effort. **That is not supported.** The rule only acts beyond 16,000 cm and
+the playable field sits inside 10,000, so near-field density is unchanged by it:
+
+| | bodies within 100 m ahead, before | after |
+| --- | --- | --- |
+| cruise | 4.10 | 4.10 |
+| boost | 2.29 | 2.29 |
+
+Fixing retention yields +2.5 percent live bodies at cruise and +20 percent at boost, plus correctness. A discrete
+180 degree turn at cruise peaks at 16.1 live bodies and recovers under both the old and new rules; neither empties
+the field. **The visible intensity defect is the 44 percent near-field drop under boost, from 4.10 to 2.29**, which
+is the boost coupling the owner independently identified. The owner's instinct was right and the earlier ranking here
+was wrong. Retention is a precondition that makes every density number mean the same thing at every heading, not a
+felt win on its own.
+
+**Ordered plan. Steps are dependency-ordered because retention changes the steady state every later number is
+measured against.**
+
+| Step | Change | Scope | Sign-off |
+| --- | --- | --- | --- |
+| 0 | `SSDistantAsteroids.cpp:260` passes `bMarkRenderStateDirty = true`, which destroys and rebuilds 15 scene proxies every frame for nothing. Set it false. Free saving, no behaviour change. | presentation | none |
+| 1a | Replace the heading cull with a per-body world radius fixed at `ASSWorldBody::Configure`, `RetentionRadius = max(16000, spawn distance + 2800)`. One assignment covers all six spawn sites. Rotation-invariant by construction. | **mechanic change** | retest |
+| 1b | `SSGameMode.cpp:242` `Earliest` 2.5 to 3.5 so the existing omnidirectional rear-threat warning matches the reaction promise. | tuning | none |
+| 2 | Boost admission pace: scale budget accrual and cooldown by forward speed over `Stats().speed`, clamped to 1.85. **This is the step that fixes the felt defect.** | **mechanic change** | retest |
+| 3 | Distant field parallax 0.35 and 0.12 to 0.50 and 0.25 so the background reads as geometry. | tuning | none |
+| 4 | Big-mass envelopes: hidden boxes on a new object channel, authored inscribed inside the visible mesh. | **mechanic change** | **acceptance + retest** |
+
+**Two of this log's own recorded verdicts are inverted by direct engine evidence.**
+- The note above that a response container "cannot isolate weapons" is true and irrelevant. The weapon sweeps use
+  `SweepMultiByObjectType`, and the engine's narrow filter consults only the shape's object type, never the response
+  container. A shape typed to a new channel is invisible to those sweeps with **zero** edits to the weapon code. That
+  is why the object-channel approach was chosen over making landmarks `WorldStatic`.
+- The retention flat-radius idea does not work. A flat radius must exceed the maximum spawn radius, 46,220 cm at top
+  tier with boost and full throttle, and a flat 46,000 roughly doubles the body count by raising cruise residence
+  from 11.24 s to 22.8 s. Per-body, set at configure time, is the only workable form.
+
+**What the big-mass envelopes actually buy, stated before anyone calls it done.** At the built 650,000 cm cell size
+and the even/even/even landmark rule, that is one eight-mass group per 13 km cubed, against about 12.6 km of flight
+per ten-wave run. Contact probability is **4.0 to 8.8 percent per run, roughly one contact every 15 runs.** Envelopes
+fix the visual and physical mismatch. They do NOT make the masses a per-wave threat; that needs about 170 times the
+cross-section, which is a density decision for the owner and not tuning.
+
+**Fairness.** Steps 1 and 2 do not relax the no-unavoidable-hits guarantee: that guarantee constrains admission,
+step 1 changes only retention and admits nothing, and step 2 raises the rate while leaving the spawn lead untouched,
+so the 3.5 second reaction window is identical at every speed. A pure sphere in fact retains **less** to the rear and
+flank than today's plane. Step 4 is where the owner is choosing to relax something: a landmark envelope is static
+geometry with no telegraph and no admission lead, so hitting one at boost hurts with no warning beyond the mesh being
+visible. That is what "the big ones are also hazards as turning" asks for, and it needs explicit acceptance.
+
+**Testing.** Step 1 breaks **zero** tests, and that is the problem: no coverage exists for the invariant it creates.
+Three tests must be ADDED, including a full 360 degree yaw asserting that no body is destroyed by rotation alone, and
+the first automated assertion of the 3.5 second reaction guarantee anywhere in the suite. The ten-wave journey test is
+at risk of flakiness rather than a definite break and must be run repeatedly. The scenery safety test keeps passing
+but stops being coverage and must be rewritten to the new invariant.
 
 
 ## Review route when playtesting resumes
