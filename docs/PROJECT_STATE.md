@@ -8,6 +8,10 @@ PR17 also carries orbital-wreck composition work based on the owner's accepted c
 
 ## Source, build and release
 
+New local-only content: owner-supplied `Downloads/VaultCache/Untitled00569c949a0dV1/data/Content/Megastructure_Scifi_World` staged unchanged to ignored `Content/Megastructure_Scifi_World`. Unreal metadata inspection succeeded; vendor example maps and appearance still need rendered audition. No game presentation references or package changes were made by staging. See catalog A24 and [inspection receipt](validation/2026-09-16-megastructure-inspection.json).
+
+September 16 owner clarification broadens ACT-03 review coverage to different areas/object mixes and sparse/dense variation across long zones. Three area concepts and a proposed ratio/formula are documented in [the existing visual direction record](production/COMBINED_SPACE_LOOK.md#long-zone-variety-proposed-style-rules-not-implemented). This is planning only: no procedural-cell runtime or wave-duration change is implemented by that clarification.
+
 | Layer | Last verified state | What it means |
 | --- | --- | --- |
 | GitHub source | PRs #11–16 merged; main `f2fae331bd32b8c3a76242f0ce74deb7f0a4951d` verified September 15 | Documentation foundation, visual pass, release guard, Station Workshop and the owned audio/character/staff integration are in main. The systematic-gap action log from PR16 is now in main. PR17 remains unmerged. Source merge and itch publication remain separate. |

@@ -1,0 +1,1095 @@
+{
+  "engine": "5.8.2-56702186+++UE5+Release-5.8",
+  "status": "METADATA_ONLY_NOT_RENDERED_OR_INTEGRATED",
+  "assets": [
+    {
+      "path": "/Game/Megastructure_Scifi_World/Blueprint/BP_floating_structure",
+      "class": "Blueprint",
+      "loaded": true,
+      "generated_class": "/Game/Megastructure_Scifi_World/Blueprint/BP_floating_structure.BP_floating_structure_C",
+      "default_components": []
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Level/L_assets_BuiltData",
+      "class": "MapBuildDataRegistry",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Level/L_assets",
+      "class": "World",
+      "status": "registered_not_loaded"
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Level/L_Showcase_level",
+      "class": "World",
+      "status": "registered_not_loaded"
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/MI_Demo",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Materials/Master/M_demo.M_demo",
+      "scalar_parameters": [
+        "Specular",
+        "Roughness",
+        "Tile"
+      ],
+      "vector_parameters": [
+        "Color 1",
+        "Color 2"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/MI_emissive_blue",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Materials/Master/M_emissive.M_emissive",
+      "scalar_parameters": [
+        "Emission"
+      ],
+      "vector_parameters": [
+        "Emissive Color"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/MI_emissive_red",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Materials/Master/M_emissive.M_emissive",
+      "scalar_parameters": [
+        "Emission"
+      ],
+      "vector_parameters": [
+        "Emissive Color"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/MI_emissive_white",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Materials/Master/M_emissive.M_emissive",
+      "scalar_parameters": [
+        "Emission"
+      ],
+      "vector_parameters": [
+        "Emissive Color"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/MI_metal_01",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Materials/Master/M_Master_kit_detail_POM.M_Master_kit_detail_POM",
+      "scalar_parameters": [
+        "Specular",
+        "Roughness",
+        "Metallic",
+        "Texture size",
+        "Tiling",
+        "Roughness_mask",
+        "Global_roughness",
+        "Emission",
+        "Mask_power",
+        "Normal tiling",
+        "Detail_normal_intensity",
+        "Metallic contrast",
+        "AO",
+        "HUE",
+        "Blend Mask",
+        "Tile Blend Mask",
+        "Max Expensive Steps Debug Color",
+        "Height Ratio (S)",
+        "Min Steps (S)",
+        "Max Steps (S)"
+      ],
+      "vector_parameters": [
+        "Base Color",
+        "Normal",
+        "Emission_tint",
+        "Collision Mask"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Materials/Master/M_Master_kit_detail_POM_O.M_Master_kit_detail_POM_O",
+      "scalar_parameters": [
+        "Specular",
+        "Roughness",
+        "Metallic",
+        "Texture size",
+        "Tiling",
+        "Roughness_mask",
+        "Global_roughness",
+        "Emission",
+        "Mask_power",
+        "Normal tiling",
+        "Detail_normal_intensity",
+        "Metallic contrast",
+        "AO",
+        "HUE",
+        "Blend Mask",
+        "Tile Blend Mask",
+        "Max Expensive Steps Debug Color",
+        "Height Ratio (S)",
+        "Min Steps (S)",
+        "Max Steps (S)",
+        "Opacity Mask"
+      ],
+      "vector_parameters": [
+        "Base Color",
+        "Normal",
+        "Emission_tint",
+        "Collision Mask"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/Master/M_demo",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/Master/M_emissive",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/Master/M_Master_kit_detail",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/Master/M_Master_kit_detail_POM",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Materials/Master/M_Master_kit_detail_POM_O",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Arch/SM_arch_01",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        725.5565185546875,
+        141.22885131835938,
+        600.2479858398438
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 100,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Arch/SM_arch_02",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        725.5565185546875,
+        141.22885131835938,
+        600.2479858398438
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 100,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Arch/SM_arch_03",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        747.5565185546875,
+        451.66180419921875,
+        617.2439575195312
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 480,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Arch/SM_arch_04",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        747.5565185546875,
+        141.22885131835938,
+        617.243896484375
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 256,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Arch/SM_triangle_arch",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        3802.907958984375,
+        887.9971313476562,
+        2178.64794921875
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 42,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Demo/SM_demo_floor",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        120750.453125,
+        29030.85009765625,
+        18169.862003326416
+      ],
+      "lod_count": 1,
+      "lod0_vertices": 154,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_Demo.MI_Demo"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Floor/SM_floor_module_01",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        2500.0,
+        2500.0,
+        200.0004119873047
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 24,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Floor/SM_floor_module_02",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        499.9999694824219,
+        500.0000305175781,
+        200.0000762939453
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 24,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Floor/SM_floor_module_03",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        1000.0000610351562,
+        1000.0000610351562,
+        200.0001678466797
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 24,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Floor/SM_floor_module_04",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        5000.0,
+        5000.0,
+        200.0008087158203
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 24,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Lamp/SM_lamp_big",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        60.38221740722656,
+        60.38221740722656,
+        15.624052047729492
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 612,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_emissive_red.MI_emissive_red"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Lamp/SM_lamp_long",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        512.4212646484375,
+        35.40245819091797,
+        9.782713890075684
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 77,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_emissive_red.MI_emissive_red"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Lamp/SM_lamp_small",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        24.087282180786133,
+        24.087282180786133,
+        6.232645034790039
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 612,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_emissive_red.MI_emissive_red"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_01",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        112.94244384765625,
+        7.26034922990948e-05,
+        415.33477783203125
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 10,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_02",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        48.90894317626953,
+        5.4075200750958174e-05,
+        318.78900146484375
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_03",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        28.712392807006836,
+        3.174528683302924e-05,
+        187.14767456054688
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_04",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        44.61591339111328,
+        4.9328693421557546e-05,
+        290.8069763183594
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_05",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        44.61591339111328,
+        4.9328693421557546e-05,
+        290.8069763183594
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_06",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        75.01480102539062,
+        8.293861901620403e-05,
+        488.9472351074219
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_07",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        48.90894317626953,
+        5.4075200750958174e-05,
+        318.78900146484375
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_08",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        62.301639556884766,
+        2.302373650309164e-05,
+        406.08258056640625
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_09",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        112.94244384765625,
+        7.26034922990948e-05,
+        415.33477783203125
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 10,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_11",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        28.712392807006836,
+        3.174528683302924e-05,
+        187.14767456054688
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_12",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        44.61591339111328,
+        4.9328693421557546e-05,
+        290.8069763183594
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_13",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        44.61591339111328,
+        4.9328693421557546e-05,
+        290.8069763183594
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_14",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        75.01480102539062,
+        8.293861901620403e-05,
+        488.9472351074219
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pannels/SM_Pannel_part_15",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        62.301639556884766,
+        2.302373650309164e-05,
+        406.08258056640625
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 4,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_01",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        132.2794189453125,
+        113.3131103515625,
+        700.5916748046875
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 58,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_02",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        113.362548828125,
+        131.5683135986328,
+        701.39306640625
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 44,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_03",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        154.17861938476562,
+        155.484375,
+        1067.037353515625
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 326,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_04",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        154.17825317382812,
+        156.24365234375,
+        1061.128173828125
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 326,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_05",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        154.17848205566406,
+        157.3358917236328,
+        1257.46728515625
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 326,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_06",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        44.589595794677734,
+        44.79833221435547,
+        277.71868896484375
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 321,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_07",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        202.1256103515625,
+        202.8641357421875,
+        2735.71728515625
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 983,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_08",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        155.35116577148438,
+        154.68365478515625,
+        364.02996826171875
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 288,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_09",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        1131.636474609375,
+        1171.75634765625,
+        2138.23095703125
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 1786,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_10",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        1834.31884765625,
+        1242.137939453125,
+        2138.23095703125
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 1982,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_11",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        1780.6669921875,
+        262.36614990234375,
+        1835.2530517578125
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 978,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_12",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        2778.4599609375,
+        218.32937622070312,
+        666.2832641601562
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 666,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Meshes/Pillar/SM_architecture_module_13",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        1131.63623046875,
+        1171.756591796875,
+        2157.291259765625
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 1328,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01.MI_metal_01",
+        "/Game/Megastructure_Scifi_World/Materials/MI_metal_01_O.MI_metal_01_O"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Asset/SM_SkySphere_desert",
+      "class": "StaticMesh",
+      "loaded": true,
+      "size_cm": [
+        8192.0,
+        8192.0,
+        8192.0
+      ],
+      "lod_count": 4,
+      "lod0_vertices": 2208,
+      "materials": [
+        "/Game/Megastructure_Scifi_World/Sky_system/Material/MI_sky_day.MI_sky_day"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Blueprint/BP_sky",
+      "class": "Blueprint",
+      "loaded": true,
+      "generated_class": "/Game/Megastructure_Scifi_World/Sky_system/Blueprint/BP_sky.BP_sky_C",
+      "default_components": []
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Material/MI_sky_day",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Sky_system/Material/M_sky_sphere.M_sky_sphere",
+      "scalar_parameters": [
+        "tile",
+        "Speed",
+        "tile_02",
+        "Speed_02",
+        "Blend Bias (S)",
+        "Blend Sharpness (S)"
+      ],
+      "vector_parameters": [
+        "Sky_color",
+        "Cloud_color",
+        "Cloud_color_02",
+        "Cloud_color_03",
+        "Sky_color_02"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Material/MI_sky_night",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Sky_system/Material/M_sky_sphere.M_sky_sphere",
+      "scalar_parameters": [
+        "tile",
+        "Speed",
+        "tile_02",
+        "Speed_02",
+        "Blend Bias (S)",
+        "Blend Sharpness (S)"
+      ],
+      "vector_parameters": [
+        "Sky_color",
+        "Cloud_color",
+        "Cloud_color_02",
+        "Cloud_color_03",
+        "Sky_color_02"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Material/MI_stars",
+      "class": "MaterialInstanceConstant",
+      "loaded": true,
+      "parent": "/Game/Megastructure_Scifi_World/Sky_system/Material/M_sky_sphere.M_sky_sphere",
+      "scalar_parameters": [
+        "tile",
+        "Speed",
+        "tile_02",
+        "Speed_02",
+        "Blend Bias (S)",
+        "Blend Sharpness (S)"
+      ],
+      "vector_parameters": [
+        "Sky_color",
+        "Cloud_color",
+        "Cloud_color_02",
+        "Cloud_color_03",
+        "Sky_color_02"
+      ]
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Material/M_sky_sphere",
+      "class": "Material",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Textures/T_cloud",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Textures/T_cloud_03",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Textures/T_cloud_04",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Textures/T_cloud_06",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Sky_system/Textures/T_cloud_desert",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/Demo/T_demo_floor_D",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_default_texture/T_Black",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_default_texture/T_star",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_flare/T_lens_flare",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_flare/T_lens_flare_02",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_flare/T_lens_flare_03",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_flare/T_lens_flare_04",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_flare/T_lens_flare_05",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_Mask/T_contrast_grunge",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_Mask/T_grunge_mask",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_Mask/T_white",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_metal/T_megastructure_AORM",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_metal/T_megastructure_D",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_metal/T_megastructure_H",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_metal/T_megastructure_N",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_metal/T_megastructure_O",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_normals/T_default_N",
+      "class": "Texture2D",
+      "loaded": true
+    },
+    {
+      "path": "/Game/Megastructure_Scifi_World/Textures/T_normals/T_detail_N",
+      "class": "Texture2D",
+      "loaded": true
+    }
+  ],
+  "limits": "No vendor saves, gameplay references, rendered audition, collision or performance acceptance.",
+  "date_utc": "2026-09-16",
+  "source_cache": "Untitled00569c949a0dV1",
+  "vendor_files": 84,
+  "vendor_bytes": 82727443,
+  "vendor_copy_matches": true,
+  "source_hashes": {
+    "Blueprint/BP_floating_structure.uasset": "a1e5a2ab4c3889e5f7ca89a0a199e868d5dfb09dab426866c8c679788d3684f5",
+    "Level/L_assets.umap": "43d3170f7b825cb9ae3c72bb0c0e6102ee0adc5f3c62f9981569dffc8a40b843",
+    "Level/L_assets_BuiltData.uasset": "c2465d883b0351cce45b9c03fe8df87b40af6bdfa408f39ba05397a477fe6e4d",
+    "Level/L_Showcase_level.umap": "8c727e29dd6ba865b22a6a991573b10590fde768748174bfb04908de11b97a4d",
+    "Materials/Master/M_demo.uasset": "b5a62e8ab4c0219a40916bc772cc345193227b43c26d55372a56642fe5b1466d",
+    "Materials/Master/M_emissive.uasset": "0e702096fe3fcf825f134c4844fdbf35c330425b525702c6c6d787c5739b619a",
+    "Materials/Master/M_Master_kit_detail.uasset": "711a160e0d2a9755fcb198bf63530f4cfe88e75459857578e552826c7646ea09",
+    "Materials/Master/M_Master_kit_detail_POM.uasset": "68d0c3c78a53250d425795da88e773c32fe0e646cfe87dab70193bf5f292a4e3",
+    "Materials/Master/M_Master_kit_detail_POM_O.uasset": "97e1251e43f6ef92b2292b384899f0916535381534aa453aeffa6d55674e8c06",
+    "Materials/MI_Demo.uasset": "0f7eeb00bda9054e4fbb767082a96c49cfc2bd8f23440a215b031ef53b304cdf",
+    "Materials/MI_emissive_blue.uasset": "434ba2d178301c9758586985b1f7fcc1af6208f1b06f569456f4bac475bc0064",
+    "Materials/MI_emissive_red.uasset": "e69ed71840080b3568bc6140576bf9d7574436c03a23a9a284f2c0c12d14fab4",
+    "Materials/MI_emissive_white.uasset": "258ada83631dbcb278dd6d55e6ef60fc218f9bb59910bbaae3f6674c05b94c8b",
+    "Materials/MI_metal_01.uasset": "5b1372ced59560eb4325cdb6223a9d15b72615a30085dadc93cac1501c08fbf2",
+    "Materials/MI_metal_01_O.uasset": "1e7941f4ba7e3416d529d3aad8e872f970d5df382d7819267b5becfb7a3192fc",
+    "Meshes/Arch/SM_arch_01.uasset": "75385ee3377c4f8c239583d099b9e136c8ab43e4ec6bf64a604d2352056e76e0",
+    "Meshes/Arch/SM_arch_02.uasset": "56488a44104810463e0fa36154c512d7462d5f76d8bc3576e126e3bda335baa7",
+    "Meshes/Arch/SM_arch_03.uasset": "6f5fe162f597c1ed71c9d390b039356c324c960928bdcd83c683c81db0e7ebd4",
+    "Meshes/Arch/SM_arch_04.uasset": "2606dfaa8b64ce38f1126812e8590fd1a93e257be7197509b19c26502db873fd",
+    "Meshes/Arch/SM_triangle_arch.uasset": "78f85007f126ad1d36506d1f5d6753b8254c0af3468922e8c67fdd60b5092eb8",
+    "Meshes/Demo/SM_demo_floor.uasset": "3ec486c39bbdbf21431bd2a592a5dafdf8a49bdaa2ebd6b243ef18d583de72a4",
+    "Meshes/Floor/SM_floor_module_01.uasset": "e801b736c9cd382b52d1dd1e460722ff12a862f5b3f0ff9406ac32094e35639d",
+    "Meshes/Floor/SM_floor_module_02.uasset": "70dadf149adb5078df0a1822d38730cc6377793cd9ea139b39d1b7c91d725f61",
+    "Meshes/Floor/SM_floor_module_03.uasset": "a0dc13fe65a319f21bf3eb84ffd26f0fa355fa3961515db53b1cd4f95ba5920a",
+    "Meshes/Floor/SM_floor_module_04.uasset": "f6310cdbd5277b362bcbe257b9f6a132518d4674511c160cf9a282a0ac062960",
+    "Meshes/Lamp/SM_lamp_big.uasset": "a572271f1f27d9de844257c27dee7c8366bccc2a44b8476c8e557f6ecfe750c6",
+    "Meshes/Lamp/SM_lamp_long.uasset": "fecec39aa0fa81f4574b6abe551d093b24837471d848de0575c51c8626265f46",
+    "Meshes/Lamp/SM_lamp_small.uasset": "6f8d6acf1492f6974ce92540ea1a921bcfa887979d0ee9549230b0332955f4d0",
+    "Meshes/Pannels/SM_Pannel_part_01.uasset": "2de221452de16a0ec98d461ef9ead64a453cf212bb6179e785715564bfa54d3a",
+    "Meshes/Pannels/SM_Pannel_part_02.uasset": "a2767845fdd203a018ff6f613711325782305bec28c874df1bf6fdafeb3a2b78",
+    "Meshes/Pannels/SM_Pannel_part_03.uasset": "00a0eaef32e4387064219f30f3af5a929b06c5e1068e8acae51c6fe116259c6c",
+    "Meshes/Pannels/SM_Pannel_part_04.uasset": "8cfa996a9fe97e3e0f71036a8f2d0787e6587f9c071de29d14be46bbfea935fc",
+    "Meshes/Pannels/SM_Pannel_part_05.uasset": "a38756a360fbe1aecf982596cb195292d3b7869fb68c3c4aeae2aab69136d5ed",
+    "Meshes/Pannels/SM_Pannel_part_06.uasset": "f1812e74d0ffd909eacd178b3ebd993a2bc52194741cb17a6046e03e2f7793ff",
+    "Meshes/Pannels/SM_Pannel_part_07.uasset": "d393f8017d0efc30299c69ab82d55f015f4868a1538adb28f90c3d11f80b7424",
+    "Meshes/Pannels/SM_Pannel_part_08.uasset": "9ab6de16b0da194fca74578b8ba0e98047b1d6ef16697a353d76035b86fa0e8c",
+    "Meshes/Pannels/SM_Pannel_part_09.uasset": "30ca1afb32528e65a7128128eef95db9e39e9d737ccb0c3235c0f00ad15ffcf4",
+    "Meshes/Pannels/SM_Pannel_part_11.uasset": "9d909b8ec0442d4a008b1258a24ba086e4cc6a6b384cf588f3547a04ca165317",
+    "Meshes/Pannels/SM_Pannel_part_12.uasset": "a110d3bcfc998ac245f41cdb5bfe7ad7fb9acdf0e15018c78bdecc0da90a2322",
+    "Meshes/Pannels/SM_Pannel_part_13.uasset": "f0a0c58aebbcd60cc94904bcdd1d19a475fcde4cfab6561d91e94579288e206b",
+    "Meshes/Pannels/SM_Pannel_part_14.uasset": "c170cf68b477251bc0fa5321c03dde1422aa3bd2733b38e1996b94be8cd31eab",
+    "Meshes/Pannels/SM_Pannel_part_15.uasset": "e3da26e24c9184a5757da76097c9e789fd104bf0eb83d848c3606ccbb68d185a",
+    "Meshes/Pillar/SM_architecture_module_01.uasset": "26e627e87789fa7d107f84debf7e9828501b7612a2c703050b6e74472c871112",
+    "Meshes/Pillar/SM_architecture_module_02.uasset": "7e9b67d3a13d29d01a9194bdfa9629553c9b1d21dd777802cff14cfcdad6a011",
+    "Meshes/Pillar/SM_architecture_module_03.uasset": "cf25ba52411a8bd2f9c518aef74dacd67f733a5cce606c244ce9004557bf4c9d",
+    "Meshes/Pillar/SM_architecture_module_04.uasset": "00ccef6b5fb5090a5024b9960a4887a40cf46f7b9be7268264c8e07d1b238e0b",
+    "Meshes/Pillar/SM_architecture_module_05.uasset": "33c207cd1806e6ec9c1aa347c6aec16314d09e9f01cefc29ff2a744ea426c755",
+    "Meshes/Pillar/SM_architecture_module_06.uasset": "b6b754a895fdf289019df66977c61da1fea75338b24577fb5456a43ed66752dc",
+    "Meshes/Pillar/SM_architecture_module_07.uasset": "c0dc08363ecfea64e248d16b0f4ac0efda3a7ae10019299919242292692319de",
+    "Meshes/Pillar/SM_architecture_module_08.uasset": "19faa3a0a822954736287830413c142332801e4433175c153170cdc1b9a57fdb",
+    "Meshes/Pillar/SM_architecture_module_09.uasset": "3b60b6934e619861014805bccdcfa2732cb662549137cef8d88692d9c608191f",
+    "Meshes/Pillar/SM_architecture_module_10.uasset": "86a281ee89bfde9abf9e43d9eab873038d9babd92ce2e9bbc6d8c5bcd9427d51",
+    "Meshes/Pillar/SM_architecture_module_11.uasset": "24d6796ad18164288ceca4ab97e970a32b58822063401b0eeaff9b5d1b678d5f",
+    "Meshes/Pillar/SM_architecture_module_12.uasset": "a03c68939cc06b0c02f6689d9a945ae031cd0c36a124c57df2c528c52f71fb26",
+    "Meshes/Pillar/SM_architecture_module_13.uasset": "c75dccda10361d61d2a8889fc6be9ffcc5615fe0c5be6f7c9966b83484f065e0",
+    "Sky_system/Asset/SM_SkySphere_desert.uasset": "80a0bd395b44ed828d2d2e803473e8552de88a7a72fc2c6faf50e30e64bebb94",
+    "Sky_system/Blueprint/BP_sky.uasset": "6956f000b956cf146d831e3bcaeefe8681bd5d655097d1623a2714098f5be5ae",
+    "Sky_system/Material/M_sky_sphere.uasset": "b22faed74bae811950b75d28d9757cbfc0fcfef1974feeead15722ffa419513c",
+    "Sky_system/Material/MI_sky_day.uasset": "f915fadc1b37badd7e43d69c2961e50ed0739305227cd92f9c012fe947bc68f2",
+    "Sky_system/Material/MI_sky_night.uasset": "557fff320c98c2b5d8ceab0d439df3168403680d60b1a3d5bd97f2fabed83a1e",
+    "Sky_system/Material/MI_stars.uasset": "27a277a80044403d7b9122a4b0173e2be31c3075fde12234f256a92358451dc4",
+    "Sky_system/Textures/T_cloud.uasset": "6c62a02218cd9486b2aff38d61fa997769015800a2aab4151ba5fe60fa6cd66d",
+    "Sky_system/Textures/T_cloud_03.uasset": "9dcec00bd3be46ba376c2124441d3fdbcbb5daea875975621334d8e63e85ef66",
+    "Sky_system/Textures/T_cloud_04.uasset": "6aa31fe8d8b127df3ee88d6ab9dd6ab13577acd76037c28ffcdae294f4f80339",
+    "Sky_system/Textures/T_cloud_06.uasset": "07025802767015e3932103e27dd0bd51c730056040ea27b1d4fac667274bf532",
+    "Sky_system/Textures/T_cloud_desert.uasset": "5a9dc39d1333a1fa5ad7bf456a64efa3c5269eae4f293cc2048f0b0fd8a2f87b",
+    "Textures/Demo/T_demo_floor_D.uasset": "2abac854ca78874e48eb44e87dc0980dd06f3badf0691681f112bae5e16795e6",
+    "Textures/T_default_texture/T_Black.uasset": "86e355c5127380fbaf2493f8e19be90b69b938c7c90648ee8ede5322b092a6bb",
+    "Textures/T_default_texture/T_star.uasset": "9f999c01bacd046c0305d95f28f1258001a69cfa52b5be522506e8b5b6baddb0",
+    "Textures/T_flare/T_lens_flare.uasset": "1b1d11eb73d46bd7169780d6842a28058058acbcb3135d1be93b5cc0a9813284",
+    "Textures/T_flare/T_lens_flare_02.uasset": "d3f54a076b5a63b800c9ff07fc044b3488ea375bf1e056cf81f244b7695f6b7b",
+    "Textures/T_flare/T_lens_flare_03.uasset": "7a7e292af809bfe1b92b2c41ce9464657eb28315134525090fba469aa478b3f8",
+    "Textures/T_flare/T_lens_flare_04.uasset": "6d438dbaa2d0fe97f603445b21cd0baccf8d1e9d8cb85415eee5262f2bf00341",
+    "Textures/T_flare/T_lens_flare_05.uasset": "62417a39ccbe77a6641700b9d2222294f7cdddbfd08fcbaf29b782652be7757f",
+    "Textures/T_Mask/T_contrast_grunge.uasset": "5a8803e102c127c4509c4ac72f04a82333211a3191fe9bc58305a74ffa227b40",
+    "Textures/T_Mask/T_grunge_mask.uasset": "2d4c21849ff2eb6ccd89f6d883a8c48b14e6a71cb20e5e061530f0bd0c78ab5c",
+    "Textures/T_Mask/T_white.uasset": "e3e38af18e188746ae64b1ff0dc98b44ccf9f9467f301744a0b4d3dea9dac4c1",
+    "Textures/T_metal/T_megastructure_AORM.uasset": "df4b5419d330942f01b7849526c54c6b0cb5346fb8fef8855fdb33237284cd2e",
+    "Textures/T_metal/T_megastructure_D.uasset": "aa26db28359409fd4c2e90962ac00acd2151012f6e652bda8ec4d6956eb534a9",
+    "Textures/T_metal/T_megastructure_H.uasset": "9e9e1dc963553b9c03c9fe2b7b53eb774c36b0f23ca4083818d6f0a4cb543b4d",
+    "Textures/T_metal/T_megastructure_N.uasset": "3975cb80ea38a446ecf5009f6e7ebc737b5ec4efca690294371864ade0bfc446",
+    "Textures/T_metal/T_megastructure_O.uasset": "516b2422ddf4d84dc95cd6cd6ec5f82f7bf6755c41aa9fdae4213b83f69d632a",
+    "Textures/T_normals/T_default_N.uasset": "135bd19f961cfb1b69c777aa10bbf9c91a95e41a97edaf6ca654e8c5f7b07067",
+    "Textures/T_normals/T_detail_N.uasset": "c2300d34142ca403339d3c02ed4190c15bc06333ec8b4b0aca39392522f8c7c8"
+  },
+  "failures_retained": [
+    "Commandlet attempt 1: unsupported BlueprintGeneratedClass.get_super_class; removed.",
+    "Commandlet attempt 2: StaticMeshEditorSubsystem unavailable; switched to unattended -ExecutePythonScript editor."
+  ],
+  "successful_log": "Artifacts/MegastructureInspection-editor.log",
+  "script": "Scripts/InspectMegastructure.py"
+}
