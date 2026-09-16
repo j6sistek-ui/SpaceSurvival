@@ -75,6 +75,8 @@ private:
     FLinearColor CurrentHazeColor = FLinearColor::White;
     FLinearColor CurrentKeyColor = FLinearColor::White;
     float CurrentHazeDensity = 0.f;
+    /** Blended per-zone height fog, so travelling between regions crosses into and out of fog. */
+    float CurrentFogDensity = 0.f;
     float CurrentKeyIntensity = 0.f;
     float CurrentAmbientIntensity = 0.f;
     void UpdateAreaStyle(float DeltaSeconds);

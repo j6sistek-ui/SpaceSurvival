@@ -62,6 +62,10 @@ struct FSSSpaceAreaRecipe
     FLinearColor HazeColor = FLinearColor(.22f, .3f, .42f);
     UPROPERTY(EditAnywhere)
     float HazeDensity = .000025f;
+    /** Per-zone height fog. Zero is a deliberately fogless region: open, hard-edged, high contrast.
+     *  The engine divides the value it is given by 1000, so 0.0038 is roughly a moderate haze. */
+    UPROPERTY(EditAnywhere, Category = "Area", meta = (ClampMin = "0"))
+    float FogDensity = .0038f;
     UPROPERTY(EditAnywhere)
     FLinearColor KeyColor = FLinearColor(.95f, .87f, .73f);
     UPROPERTY(EditAnywhere)

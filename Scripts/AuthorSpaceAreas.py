@@ -150,6 +150,14 @@ def main():
         'AlienCauseway':(.000011,4.5,9.),
         'AmberDerelict':(.000027,4.5,7.),
     }
+    # Per-zone height fog. Owner direction: some zones should be eerie and some fogless, and it is
+    # easier to take fog away than to add it, so the field carries it and one region sets it to zero.
+    zone_fog={
+        'ObsidianWreck':.0042,   # the charcoal wreckfield, deliberately the eerie one
+        'MineralReach':.0012,    # open rock field, light haze only
+        'AlienCauseway':.0030,   # moderate, so the alien structures still read against it
+        'AmberDerelict':0.,      # genuinely fogless: hard edges, deep blacks, full contrast
+    }
     recipes=[];record=[]
     for name,haze,key,density,axes,landmarks,candidates in definitions:
         haze_density,key_intensity,ambient_intensity=lighting[name]
@@ -163,7 +171,7 @@ def main():
             clutter.append(c)
         for k,v in {'clutter':clutter,'clutter_density':density,'cluster_radius':135000.,'clear_radius':40000.,
                     'cluster_axes':u.Vector(*axes),'haze_color':u.LinearColor(*haze,1),
-                    'haze_density':haze_density,'key_color':u.LinearColor(*key,1),'key_intensity':key_intensity,
+                    'haze_density':haze_density,'fog_density':zone_fog[name],'key_color':u.LinearColor(*key,1),'key_intensity':key_intensity,
                     'ambient_intensity':ambient_intensity}.items():recipe.set_editor_property(k,v)
         recipes.append(recipe);record.append({'name':name,'landmarks':landmarks,'clutter':candidates,'haze':haze,'density':density,'lighting':lighting[name]})
     for k,v in {'area_recipes':recipes,'area_cell_size':650000.,'area_clutter_budget':384,'area_landmark_budget':64,

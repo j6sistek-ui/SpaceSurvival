@@ -314,6 +314,7 @@ void ASSAmbientPresentation::UpdateAreaStyle(float DeltaSeconds)
     CurrentKeyColor = FMath::Lerp(CurrentKeyColor, FMath::Lerp(A.KeyColor, B.KeyColor, Blend.Alpha), Smooth);
     CurrentHazeDensity =
         FMath::Lerp(CurrentHazeDensity, FMath::Lerp(A.HazeDensity, B.HazeDensity, Blend.Alpha), Smooth);
+    CurrentFogDensity = FMath::Lerp(CurrentFogDensity, FMath::Lerp(A.FogDensity, B.FogDensity, Blend.Alpha), Smooth);
     CurrentKeyIntensity =
         FMath::Lerp(CurrentKeyIntensity, FMath::Lerp(A.KeyIntensity, B.KeyIntensity, Blend.Alpha), Smooth);
     CurrentAmbientIntensity =
@@ -322,6 +323,10 @@ void ASSAmbientPresentation::UpdateAreaStyle(float DeltaSeconds)
     // A restrained distance tint connects separated silhouettes without washing
     // the nearby ship. The bounded volume banks provide the denser local patches.
     VolumeFog->SetFogInscatteringColor(CurrentHazeColor * .12f);
+    // Fog is a property of the region, not of the game. Crossing a boundary fades one zone's fog out
+    // and the next one's in on the same smoothing as haze and key light, so an open region reads as
+    // genuinely open rather than as the same space with the fog switched off.
+    VolumeFog->SetFogDensity(FMath::Max(.000001f, CurrentFogDensity));
     for (const auto &Material : CloudMaterials)
     {
         Material->SetVectorParameterValue(TEXT("Color"), CurrentHazeColor);

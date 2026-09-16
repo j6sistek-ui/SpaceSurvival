@@ -427,6 +427,61 @@ at risk of flakiness rather than a definite break and must be run repeatedly. Th
 but stops being coverage and must be rewritten to the new invariant.
 
 
+
+#### September 16 owner direction: run rhythm, difficulty method and composition targets
+
+**The run should feel like whiplash.** The owner's stated rhythm, in their own words: dodging fast asteroids in a
+dense field, then "you think you're out and get ambushed by enemies, battle, then a wormhole yanks you away and
+you're somewhere else". Explicitly: **hazards are not always stacking**. Density is a rhythm, not a level.
+
+Consequences that follow directly and are now design constraints rather than preferences:
+- **Sparse regions are combat space.** "Less dense areas are great for space combat time." Open volume is where
+  fights are legible, so low-density zones are functional, not filler, and must not be treated as empty.
+- **A wreck field is a moment, not a biome.** "Flying through broken ships should happen, but it doesn't have to be
+  a full scene." The four area recipes should not each become a full-scene wreck.
+- **The alien city is a candidate traversal sequence.** "You could probably make it fly through the alien mega city,
+  and dodge the pillars and there's the doors." This is reachable rather than speculative: `USSAlienGallery` already
+  streams the complete vendor maps `L_Showcase_level` and `L_assets` into the live world through
+  `ULevelStreamingDynamic::LoadLevelInstance`, and both are cooked into the package. Today it is an evaluation
+  doorway with the run frozen. Turning it into a flown sequence is a scope decision, not a technology problem, and
+  it is NOT authorized by the remarks above; record it and ask.
+
+**Difficulty method, owner-stated and now the working rule.** "I think maybe it's harder, and work and dialing it
+down, is proof of concept, where easy and dialing up can be weak." So the environment and hazard passes tune toward
+the hard end first and are reduced against real play, rather than starting safe and creeping upward. Combined with
+the fog rule below, the general principle is: **build it in, then take it away.**
+
+**Fog is per-zone, and some zones are fogless.** "There should be fogless zones too, but it's easier to take it away
+than it is to add it." Implemented: `FSSSpaceAreaRecipe::FogDensity` carries height fog per region, blended between
+the two nearest recipes on the same smoothing as haze and key light, so crossing a boundary fades one zone's fog out
+and the next one's in. Authored as ObsidianWreck 0.0042 as the eerie one, AlienCauseway 0.0030, MineralReach 0.0012,
+and **AmberDerelict at zero, genuinely fogless**, for hard edges and full contrast.
+
+**Megastructure must be solid and some pieces must be hazards.** Owner: "megastructure needs to be solid too, not
+fly through, and some of those can become debris themselves, bigger, maybe faster, the more it feels like you
+actually have to dodge." Two separate pieces of work. Solidity is the envelope approach already designed under the
+intensity plan. Making structural pieces into admitted hazards that move is new: it puts region content into the
+hazard budget, which `docs/GAME_SCOPE.md:919-923` currently separates from the Director. **Not authorized by the
+remark alone; it needs an explicit decision and a retest.**
+
+**Wave one is not exempt.** "Yes it's wave one, but somehow we need to scale it." The first wave should already
+demand dodging rather than serving as a tutorial lull.
+
+**Composition targets.** Six further reference images were supplied and one is labelled COMPOSITION TARGET, NOT
+GAMEPLAY. Read as a brief rather than a specification, and the owner notes these are some targets and not all of
+them. What they show that the current build does not:
+- **Scale.** Structures dominate the frame and the ship is small against them. Current landmarks are large but never
+  dominating.
+- **A cropped foreground.** A structural piece enters from the frame edge, very close. The current field has no
+  extreme foreground element.
+- **A warm and cool split.** A visible sun on one side, cool tones on the other. The current look is monochrome blue.
+- **A dark centre.** Deep blacks survive in the middle of the frame despite atmosphere. The first fog pass went
+  uniformly pale, which is the specific defect to fix.
+- **A distant landmark for scale reference**, such as a far ring station silhouette.
+- **Navigation markers.** One mockup carries glowing waypoint hexes and an objectives list. That is directly
+  relevant to the open report that the station gives no approach guidance.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
