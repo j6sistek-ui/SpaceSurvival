@@ -1,16 +1,69 @@
 {
-  "FileVersion": 3,
-  "EngineAssociation": "5.8",
-  "Category": "Games",
-  "Description": "SpaceSurvival Phase 1 single-player survival flight",
-  "Modules": [
-    {"Name": "SpaceSurvival", "Type": "Runtime", "LoadingPhase": "Default"},
-    {"Name": "SpaceSurvivalEditor", "Type": "Editor", "LoadingPhase": "PostEngineInit"}
-  ],
-  "Plugins": [
-    {"Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": ["Editor"]},
-    {"Name": "EditorScriptingUtilities", "Enabled": true, "TargetAllowList": ["Editor"]},
-    {"Name": "InterchangeEditor", "Enabled": true, "TargetAllowList": ["Editor"]},
-    {"Name": "AndroidFileServer", "Enabled": false}
-  ]
+	"FileVersion": 3,
+	"EngineAssociation": "5.8",
+	"Category": "Games",
+	"Description": "SpaceSurvival Phase 1 single-player survival flight",
+	"Modules": [
+		{
+			"Name": "SpaceSurvival",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "SpaceSurvivalEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "PythonScriptPlugin",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "EditorScriptingUtilities",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "InterchangeEditor",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "AndroidFileServer",
+			"Enabled": false
+		},
+		{
+			"Name": "WormholePortal",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64"
+			]
+		},
+		{
+			"Name": "UAssetBrowser",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/648d582688654f7db09939af111c45b5"
+		},
+		{
+			"Name": "Tripo3DUEBridge",
+			"Enabled": false,
+			"SupportedTargetPlatforms": [
+				"Win64"
+			],
+			"Comment": "Disabled 2026-09-16: UnrealBuildTool cannot find its module rules type, which fails every editor build. Tracked as ISS-17. Re-enable once the plugin builds."
+		},
+		{
+			"Name": "ShipCore",
+			"Enabled": true
+		}
+	]
 }
