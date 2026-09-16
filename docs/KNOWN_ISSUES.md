@@ -521,6 +521,47 @@ list and weapon ammunition, which is a reference for the open input-glyph and st
 iterated on the look from general reference. Check `art/` for a per-system target before starting any visual work.
 
 
+
+#### September 16 concept motion video: what the stills could not show
+
+The owner supplied a 47 second AI-generated concept video, 1920x1080 at 24 fps, because the still art "lacks a
+dangerous asteroid field" and density and threat only read from motion. Frames were extracted locally at six second
+intervals with the ffmpeg that ships alongside this machine's Lian Li software. **Directional reference, not a
+specification, and the owner notes it is AI video.**
+
+**The single largest gap it exposes: motion blur is implemented and defaults to OFF.**
+`Source/SpaceSurvival/Domain/SurvivalCore.h:192` reads `bool subtitles = true, cameraShake = true, motionBlur =
+false;` and `SSGameInstance.cpp:153-154` sets `r.MotionBlurQuality` to 3 when on and 0 when off. In the video, heavy
+radial streaking on the near rocks is the dominant cue for speed and danger; every capture this project has ever
+produced is razor sharp and therefore reads as slow no matter how many rocks are present. That is a default value,
+not missing work. **It is a player-facing accessibility setting and must not be flipped silently**, since motion
+blur off is a common accessibility default and this project already exposes the toggle in its own menu. Two options
+for the owner: change the shipped default, or leave the default alone and enable it for scripted captures so that
+evidence frames represent the intended look instead of contradicting it.
+
+**What the frames show, consistently across the space beats.**
+- Density well beyond anything currently authored: rock fills the frame from the near edges to a vanishing point,
+  with no empty background visible at all in the dense beats.
+- A radial, tunnel-like composition. Debris converges toward a point ahead, so the player reads as flying *into*
+  something rather than *past* it.
+- Large masses passing very close to the frame edges, near-miss framing rather than clearance.
+- Deep blacks between the rocks with bright rim lighting, high contrast. Not the pale wash of the first fog pass.
+- A chase camera close behind the ship, with the ship occupying a substantial part of the frame.
+- Combat happening inside the dense field, with enemy craft flanking and tracers crossing, rather than only in open
+  space. Note this sits in tension with the owner's earlier remark that sparse regions are combat space; both may be
+  true at different beats, and it is not resolved here.
+- Navigation markers rendered as small coloured hexes ahead of the ship, orange and blue, and a targeting indicator.
+  Another data point for the open station-guidance and glyph reports.
+
+**The station interior beat is warmer and far denser than the current station.** Amber industrial hangar, overhead
+lighting strips, gantries, stacked crates and machinery filling the volume, with the ship parked inside. The current
+station reads cool, grey and sparse by comparison.
+
+**Working copy of the extracted frames is not retained in the repository.** The source video is the owner's, at
+`C:/Users/j6sis/Downloads/Game concept video.mov`, and the Drive original is in AI/. ffmpeg is available at
+`C:/Program Files/Lian-Li/L-Connect 3/ffmpeg.exe` for anyone repeating this.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
