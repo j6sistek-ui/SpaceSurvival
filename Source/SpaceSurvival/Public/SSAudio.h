@@ -66,6 +66,8 @@ private:
     TArray<TObjectPtr<USoundBase>> WarmSounds;
     UPROPERTY()
     TArray<FSSAudioVoice> Voices;
+    /** Advances once per one-shot to walk the pitch jitter table; see ss.ShotPitchVariation. */
+    int32 ShotIndex = 0;
     UAudioComponent *CreateVoice(AActor *Owner, const FSSAudioCueDefinition &Cue, const TCHAR *DefaultName,
                                  FVector Position, bool Loop, float Intensity);
 };

@@ -55,8 +55,8 @@ Additional owner reports (capture only; same unconfirmed build/device boundary):
 | RPT-20260914-05 | Combat feels like Space Invaders: enemies line up ahead to shoot rather than create a dynamic space fight. | ISS-06; PT-06,12. Later review approaches, lateral/vertical motion, maneuvering and pressure in natural combat before choosing changes. |
 | RPT-20260914-06 | Backgrounds still look graphically weak and fuzzy, like low-resolution artwork. | ISS-01; PT-03,18. Later compare actual runtime resolution, filtering and source imagery; cause unconfirmed. |
 | RPT-20260915-07 | The ship died while pulling into the station after catching an entrance edge, bouncing off several times and taking repeated collision damage. | ISS-03/06; PT-09,12,13. Capture only. Later reproduce with the exact build, approach speed/angle and hull state; review entrance snag points, repeated-impact cadence and docking-assist recovery before changing collision. |
-| RPT-20260915-08 | Thrusters look like cubes. | ISS-01/02; ACT-01; PT-03,18. Owner report plus confirmed Cube-based emissive cores in SSAmbientPresentation.cpp. Unfinished, not fixed: audition tapered exhaust/soft glow from owned effects and verify idle, acceleration, boost, brake and damage in motion. |
-| RPT-20260916-09 | Owner dislikes the shooting audio and wants it improved. | Open / lead; ISS-08/06; ACT-02/08; PT-06,18. Capture only: exact build, weapon and unwanted sound qualities are UNCONFIRMED. Next reproduce both firing sequences, identify the active licensed/fallback cues, compare owned candidates in context and tune repetition, impact synchronization and mix. Close only after actual listening and owner review; no audio change or fix is claimed. |
+| RPT-20260915-08 | Thrusters look like cubes. | Open / lead; ISS-01/02; ACT-01; PT-03,18. Cause confirmed: literal Cube cores plus one recoloured ribbon. Shape/emission/scale are now switchable via ss.ThrusterShape, ss.ThrusterEmission, ss.ThrusterScale and twelve candidates were captured for owner choice; a cone rotation discarded by the attach pass was fixed and the axial variants re-captured. Still open: owner has not picked a shape, and a basic shape is a stopgap. Real fix is a layered plume from owned Pyro, RPG and Sci-Fi systems, sized as its own task. Verify idle, acceleration, boost, brake and damage in motion before closing. |
+| RPT-20260916-09 | Owner dislikes the shooting audio and wants it improved. | Open / lead; ISS-08/06; ACT-02/08; PT-06,18. Three causes confirmed: the .125s laser cue retriggers every .12s so every shot is truncated; no pitch or gain varied between one-shots; the cue was picked by name from 208 candidates and is the thinnest of the only seven short enough to fit the fire rate. Per-shot pitch variation is implemented (ss.ShotPitchVariation, 51 tests pass). A 59s labelled audition of 19 candidates at the real fire cadence was delivered; owner picks are outstanding, as is the decision on moving the rapid weapon to a firing loop. Close only after listening and owner review. |
 | RPT-20260916-10 | The alien world portal did not respond at the station; after reloading it worked. | Open / lead; ISS-11; ACT-03; PT-18. Reproduced by the owner on the packaged 0.1.17-alpha candidate. The interaction hint was shown and other consoles worked, so proximity and menu capture are excluded; packaged maps are present in the IoStore audit. Cause UNCONFIRMED: `USSAlienGallery::Enter` rejects silently. Next add rejection logging, repackage and capture one press; record whether the attempt was at the home hangar or a mid-run station. |
 
 Owner subsequently authorized the editor workshop and this bounded presentation slice. The unrelated bug-fix pause remains in force.
@@ -595,6 +595,89 @@ of the three placements tried. Rather than a fourth placement attempt, the next 
 lightning family and the fog bank volumes in the gallery level, pick what actually reads at distance, and wire that.
 This is the same lesson already recorded twice: check what is owned before building, and audition in the vendor's
 own showcase before integrating.
+
+
+
+#### September 16 thruster cause: a literal engine cube, and a rotation that never survived
+
+RPT-20260915-08 said the thrusters look like cubes. They are cubes.
+`SSAmbientPresentation.cpp` loaded `/Engine/BasicShapes/Cube.Cube` and assigned it to `EngineCores`, one per nozzle,
+scaled long on X and lit by an emissive dynamic material. Nothing tapered anywhere. The only other layer is a single
+recoloured ribbon, `NS_DeepSpaceExhaust`, which `Scripts/AuthorDeepSpaceExhaust.py` derives from Epic's
+`NS_SimpleRibbonTrail`. So the whole exhaust is one box plus one thin ribbon.
+
+**Shape is now switchable and twelve candidates were captured for the owner.** Three console variables were added,
+`ss.ThrusterShape` (0 cube, 1 cone, 2 sphere, 3 cylinder), `ss.ThrusterEmission` and `ss.ThrusterScale`, with matching
+parameters on `Scripts/CaptureSpaceLook.ps1`. Twelve variants were captured at full boost on one seed and camera and
+tiled into a labelled contact sheet, so the choice is the owner's rather than the implementer's taste.
+
+**A second defect surfaced from those captures: the cone rendered point-first.** The cone and cylinder orientation was
+being set in `BeginPlay`, but the later attach pass unconditionally called `SetRelativeRotation(FRotator::ZeroRotator)`
+on every core and silently threw it away. The mesh kept its default +Z axis, which reads as a cone standing on end
+with its apex at the nozzle and its base flaring away, the reverse of a real plume. Fixed by moving the orientation
+into the attach pass behind shared `ThrusterCoreIsAxial` / `ThrusterCoreRotation` helpers, so the rotation and the
+axis swap in `Tick` cannot drift apart again. An axial mesh also straddles its own origin, so half its flare sat
+inside the hull; it is now shifted aft by half its length to seat the wide end at the nozzle lip. The axial variants
+were re-captured after the fix, since the first sheet showed them inverted.
+
+**This is a stopgap, and the owner has said so.** A basic shape with an emissive material is not a thruster; it is a
+placeholder that stops reading as a box. The owner supplied a store-page reference for a dedicated thruster VFX pack
+(Shogun Games, not owned, "might be too far without the bundle") and noted that the owned explosion kit mixed with the
+RPG effects could get closer. That is the right instinct, and the reference decomposes into four layers, all of which
+have owned candidates:
+
+| Layer in the reference | Owned candidate | Note |
+| --- | --- | --- |
+| Hot inner core with hard bloom | current emissive mesh plus `NS_DeepSpaceExhaust` | the only layer that exists today |
+| Turbulent billowy shell, widest at the nozzle, tapering | `PyroVFX/NS_Fire_FX_System_01..03`, `MI_Fire_*`, `T_Fire_*`; Sci-Fi `M_Smoke_Ribbon`, `T_Smoke_Light` | the layer that actually sells it |
+| Spark spray shedding downstream | `RPGEnvironmentVFX/NS_ForgeSparks`; `PyroVFX/NS_Debris_FX` | cheap, high perceived detail |
+| Nozzle glow and rays | `RPGEnvironmentVFX/NS_MagicalGlowRays` | same asset already wanted for light shafts |
+
+**Honest sizing.** This is not a script one-liner. The Pyro fire systems are authored for ground explosions: they are
+buoyancy driven and rise. Used as a plume each needs its velocity redirected along the ship's aft axis, buoyancy
+zeroed, lifetime cut to the plume length and colour driven from the existing `ExhaustColor` vector parameter pattern.
+That is real Niagara emitter work per layer, in the editor, with a capture pass per iteration. It is worth doing and
+it is reachable with assets already owned, but it should be scheduled as its own task rather than folded into the
+shape swap.
+
+**Also found while inventorying: `Content/Vefects` contains `Cam_Shake` and `Cam_Shake_Slight`.** Owned camera shake
+assets, unused. Relevant to the open impact-feedback work, which currently hand-rolls a sine offset on the camera.
+
+
+
+#### September 16 shooting audio cause: the sample is longer than the gap between shots, and nothing varies
+
+RPT-20260916-09 said the shooting audio was an awful choice. Three separate causes were confirmed by reading the
+code and measuring the source recordings; none of them needed a listening session to establish.
+
+**1. The Rapid Laser retriggers before its own sample finishes.** `SSPhase1Data.h:230` sets `LaserInterval = 0.12f`
+and `SSShip.cpp:368` reloads the cooldown from it, so the weapon fires 8.3 times a second. The bound cue,
+`aliengun001singleshot`, measures **0.125 s**. Every shot is cut off by the next one. Nothing ever rings out, and the
+result is a continuous stutter rather than a sequence of shots.
+
+**2. Nothing varies between shots.** `SetPitchMultiplier` appeared nowhere in `SSAudio.cpp`; every one-shot played at
+exactly the same pitch and gain. Eight bit-identical, phase-locked copies per second is what makes a weapon read as
+a mechanical buzz rather than a gun. **Fixed:** `CreateVoice` now applies a per-shot pitch deviation to one-shots
+only, walking a fixed twelve-entry table rather than drawing at random so that captures and the automation suite stay
+reproducible. Depth is `ss.ShotPitchVariation`, default .055. Loops are untouched. 51 automation tests pass.
+
+**3. The sample was chosen by name, not by ear, out of 208 candidates.** The binding lives in a dictionary in
+`Scripts/PrepareOwnedAssetPass.py`. The weapons library holds 208 sounds; **only seven are 0.125 s or shorter**, and
+of those seven `aliengun001singleshot` has the highest zero-crossing rate, meaning it is the thinnest and most
+beep-like of the only options that fit the fire rate. The pack also ships `Laser001`-`Laser007`, ten `gatling*`
+bursts and three `Laser*loop` files, none of which were ever considered.
+
+**The architectural point.** A weapon firing every .12 s is not a one-shot weapon. The pack shipping `Laser008loop`,
+`Laser009loop`, `Laser010loop` and ten gatling bursts is the vendor saying the same thing. A start / loop / stop
+firing voice would fix the truncation, the repetition and the voice-count pressure at once, and it is how rapid
+weapons are normally built. That is a design change, not a sample swap, so it is the owner's call.
+
+**Audition delivered to the owner.** The raw WAV is embedded verbatim inside each `.uasset`, so all 208 were
+extracted directly with no editor round-trip, measured for duration, peak and brightness, and rendered into a 59
+second labelled video: eight laser one-shot candidates each played as eight shots at the real .12 s cadence, first
+flat and then with the new pitch variation; five firing-loop candidates; six heavy cannon candidates at the real
+.85 s cadence. Candidates are played at the in-game rate rather than in isolation, because the rate is most of the
+complaint. The current bindings are included as controls. **Awaiting the owner's picks.**
 
 
 ## Review route when playtesting resumes
