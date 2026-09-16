@@ -784,12 +784,17 @@ side nest five shells, sized relative to the current core so ninety per cent mea
 | 4 | `M_BrightCore` (03M) | 105% | raised from 93%; rolled 90 degrees about the exhaust axis, still firing aft |
 | 5 | `M_Fire_Rays` (09M) | 130% | raised from 110% |
 
-The centre plume was halved again to `ss.ThrusterTrailScale` .125 and moved down onto the large lit ring in the
-middle of the hull face, which the owner distinguished from the small lit panel above it. The offset is
-`ss.ThrusterTrailHeight`, defaulted to -20 cm from the nozzle axis. That number was chosen by capturing 0, -20, -35
-and -50 and looking: zero leaves the plume on the upper panel, -20 seats its origin on the ring, -35 has it emerging
-from below the ring with the ring unobscured, and -50 drops it clear of the hull. Guessing the number from pixel
-measurements would have been arithmetic dressed up as evidence.
+**The centre plume was then removed entirely on owner review**, after a pass that halved it and moved it onto the
+large lit ring in the middle of the hull face. `ss.ThrusterTrailScale` now defaults to zero, and zero means the
+ribbon is not shown at all rather than shown very small. `ss.ThrusterTrailHeight` survives at -20 for whenever it
+comes back; the sweep that chose it put the small spine panel at zero, the ring at -20 and the hull's lower lip
+near -50.
+
+**The shells sit 12 cm higher than the nozzle the ship reports.** The owner marked up a capture showing the stack
+riding low against the nacelle rather than centred on it. `ss.ThrusterHeight` defaults to 12, chosen by sweeping 0,
+12, 22 and 32: zero is the low placement they marked, and past twenty the plume climbs above the housing instead.
+The nozzle position itself is left alone, since `USSShipPresentation::TryGetExhaustLocalPosition` is shared with the
+flight automation tests and with the ribbon.
 
 Built behind `ss.ThrusterLayered`, default off, so the shipped game is unchanged until the owner accepts it. Ribbon
 size is `ss.ThrusterTrailScale`. Both are exposed on `Scripts/CaptureSpaceLook.ps1`. Every engine always constructs

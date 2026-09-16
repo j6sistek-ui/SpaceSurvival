@@ -81,12 +81,17 @@ const FSSThrusterLayer ThrusterLayerStack[] = {
     {9, 1.30f, 0.f},  // M_Fire_Rays
 };
 constexpr int32 ThrusterLayerCount = int32(UE_ARRAY_COUNT(ThrusterLayerStack));
+/** Raises the whole shell stack on the nacelle. The nozzle position the ship reports sits on the nacelle
+ *  axis at Z 10, but the shells read low against the housing, so the stack is nudged up to sit centred
+ *  on it. Twelve centimetres, chosen by sweeping 0, 12, 22 and 32 and looking: zero leaves the plume low on
+ *  the housing, which is what the owner marked up, and past twenty it climbs above the nacelle instead. */
+TAutoConsoleVariable<float> ThrusterHeight(TEXT("ss.ThrusterHeight"), 12.f, TEXT("Engine core height offset, cm."));
 TAutoConsoleVariable<int32> ThrusterLayered(TEXT("ss.ThrusterLayered"), 0,
                                             TEXT("Stack the layered drive mock-up instead of one core (0 off)."));
 /** In the layered mock-up the long ribbon leaves the wing nozzles entirely and becomes one small plume on the
  *  centreline of the rear booster, which is what the owner asked to see. */
-TAutoConsoleVariable<float> ThrusterTrailScale(TEXT("ss.ThrusterTrailScale"), .125f,
-                                               TEXT("Ribbon size in the layered mock-up."));
+TAutoConsoleVariable<float> ThrusterTrailScale(TEXT("ss.ThrusterTrailScale"), 0.f,
+                                               TEXT("Ribbon size in the layered mock-up; zero removes it."));
 /** Height of that centre plume on the hull. The nozzles sit at Z 10, on the nacelle axis; the big lit ring
  *  in the middle of the hull face is lower, and the owner wants the plume on the ring rather than on the
  *  small lit panel above it. Minus twenty seats the origin on the ring itself; a swept comparison put the
@@ -710,7 +715,8 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
             Trail->SetRelativeLocation(ExhaustPositions[Index].GetValue());
         // In the mock-up the long ribbon leaves the wing nozzles entirely: one small plume sits on the
         // centreline between them, on the rear booster, and the second ribbon is simply not shown.
-        const bool ThisTrailVisible = TrailsVisible && (!LayeredNow || Index == 0);
+        const float CentreRibbon = ThrusterTrailScale.GetValueOnGameThread();
+        const bool ThisTrailVisible = TrailsVisible && (!LayeredNow || (Index == 0 && CentreRibbon > .001f));
         if (LayeredNow && Index == 0 && BoosterCentre.IsSet())
             Trail->SetRelativeLocation(BoosterCentre.GetValue());
         if (ThisTrailVisible)
@@ -718,8 +724,7 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
             if (RestartTrails || !Trail->IsActive())
                 Trail->Activate(true);
             const float Grow = FMath::Clamp(.65f + VisualPower * .55f, .55f, 1.8f);
-            Trail->SetRelativeScale3D(
-                FVector(Grow * (LayeredNow ? FMath::Max(.01f, ThrusterTrailScale.GetValueOnGameThread()) : 1.f)));
+            Trail->SetRelativeScale3D(FVector(Grow * (LayeredNow ? FMath::Max(.01f, CentreRibbon) : 1.f)));
         }
         else if (Trail->IsActive())
             Trail->DeactivateImmediate();
@@ -749,9 +754,9 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
             // Every basic shape straddles its own origin, so an axial mesh would bury its wide end in the
             // hull. Shift it aft by half its length to seat the flare at the nozzle lip.
             if (ExhaustPositions.IsValidIndex(Engine) && ExhaustPositions[Engine].IsSet())
-                Core->SetRelativeLocation(
-                    ExhaustPositions[Engine].GetValue() +
-                    FVector(-18.f - (Axial ? Length * ShapeScale * LayerScale * .5f : 0.f), 0.f, 0.f));
+                Core->SetRelativeLocation(ExhaustPositions[Engine].GetValue() +
+                                          FVector(-18.f - (Axial ? Length * ShapeScale * LayerScale * .5f : 0.f), 0.f,
+                                                  ThrusterHeight.GetValueOnGameThread()));
             if (EngineCoreMaterials.IsValidIndex(Index) && CoreColorParameter.IsValidIndex(Layer))
             {
                 const float Strength = (.45f + VisualPower * 1.15f) * ThrusterEmission.GetValueOnGameThread() / 3.f;
