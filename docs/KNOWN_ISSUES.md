@@ -830,6 +830,70 @@ saying so: if the owner wants the stack to follow boost, brake and damage state,
 instances with real colour parameters, which is authoring work, not a code change.
 
 
+
+#### September 16 thrust-reactive inventory, asked for by the owner
+
+The owner asked what effects exist to react to thrust. Surveyed in code and in owned content, then adversarially
+verified; the verification refuted several claims, including one this log had already published, and the corrections
+are folded in below rather than appended.
+
+**Reacts to thrust today.** Drive state is `ASSShip::GetDrivePresentation`, which has **exactly one caller**,
+`SSAmbientPresentation.cpp`. In flight, `DrivePresentationPower = clamp(.42 + .28*max(0,Throttle) +
+.3*(|Velocity|/2400), .25, 1.35)`.
+
+| Effect | Where | Behaviour |
+| --- | --- | --- |
+| Camera field of view | `SSShip.cpp:281` | 80 to 86 degrees on boost, `FInterpTo` speed 3 |
+| Camera boom length | `SSShip.cpp:278` | 900 to 1010 cm on boost, same interp speed, so the two read as one gesture |
+| Engine audio pitch | `SSShip.cpp:96` | `.9 + .15*Throttle`, flat 1.3 on boost |
+| Drive colour | `SSAmbientPresentation.cpp` | idle deep blue, boost cyan-blue, brake orange, damage red pulse |
+| Core size | same | length `clamp(18 + VisualPower*42, 14, 95)` cm, width `clamp(7 + VisualPower*4, 6, 18)` |
+| Core emissive | same | `(.45 + VisualPower*1.15) * ss.ThrusterEmission / 3` |
+| Engine light | same | intensity `35 + VisualPower*180` lm, radius `170 + VisualPower*90` cm |
+| Ribbon scale | same | `clamp(.65 + VisualPower*.55, .55, 1.8)`, the only drive input the ribbons take |
+
+**The structural finding: boost and brake are flat steps, not ramps.** `VisualPower = (Boosting ? 1.75 : Braking ?
+.55 : DrivePower) * Pulse`. While boosting, the actual throttle and speed are discarded entirely. Every effect above
+therefore jumps to a fixed value and sits there. That is the mechanical reason boost reads as a state change rather
+than as acceleration, and it is one expression, not an architecture.
+
+**Nothing is transient.** Every reactive effect in the table is a sustained level. Nothing punches on engagement and
+nothing decays. `Pulse = .85 + .15*sin(t*9)` is the only time-varying term and it runs constantly, even at idle.
+
+**Reacts to speed but never sees thrust.** The dust field: 320 instanced cubes in a 4800 cm box, each rotated to
+`Velocity.ToOrientationQuat()` and stretched along travel by `1 + SpeedFraction*3` where `SpeedFraction =
+clamp(|Velocity|/4200, 0, 1.5)`, so up to 5.5x elongation. It is handed velocity alone; the drive state never
+reaches it.
+
+**Exists but fires only on damage.** The hand-rolled camera shake, `SSShip.cpp:282`, gated on
+`settings.cameraShake && run.damageFeedback > 0`. `damageFeedback` is run state, hard-set to `0.5` by
+`Session::ApplyDamage` and decayed per step, not a settings value. Peak deflection against the 900 cm boom is
+0.796 degrees at the heaviest hit and 0.20 at the lightest. **The in-code comment claiming 0.40 for the lightest hit
+is wrong by a factor of two**; the heaviest figure is correct.
+
+**Correction to an earlier statement in this session: the flight map DOES have a post-process volume.**
+`Scripts/AuthorContent.py:478-488` spawns an unbound volume labelled `ReadableSpaceExposure` into the Survival map
+and authors it: auto-exposure clamped to 1.0/1.0 in both directions, bloom intensity 0.35. It was reported here as
+absent. It is not, and the difference matters for cost: adding chromatic aberration, vignette or a radial effect is
+editing an existing authored volume, not placing a new one. Its pinned exposure is also why brightening the thruster
+actually reads as brighter, since nothing auto-compensates.
+
+**Genuinely absent**, each checked for by name across `Source/` and `Config/`: chromatic aberration, vignette, scene
+fringe, film grain, radial blur, depth of field, tonemapper override, lens flare, heat haze or refraction, speed
+lines, time dilation, any HUD speed readout, and **force feedback or controller rumble of any kind**.
+
+**Owned and unused: three camera shake assets.** `Content/NiagaraExamples/FX_Explosions/CameraShake/CS_Explosion_01`,
+and `Content/Vefects/Stylized_Galaxy_Shader/Demo/Shared/Cam/Cam_Shake` and `Cam_Shake_Slight`. `CS_Explosion_01` is
+referenced by its own pack's explosion emitters, so it is not wholly unreferenced, but nothing in this game uses any
+of them. The project has an `ASSPlayerController` subclass already, so a real `UCameraShakeBase` path has somewhere
+to live.
+
+**Cheapest first, for whenever this is picked up.** A thrust term on the shake that already exists: it runs every
+tick, already honours an accessibility toggle, and would give boost a physical kick. Then the dust, which already
+knows speed and could take drive state for a denser, longer streak under thrust. Then making boost ramp instead of
+step. Post-process effects are now known to be cheaper than assumed because the volume exists.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
