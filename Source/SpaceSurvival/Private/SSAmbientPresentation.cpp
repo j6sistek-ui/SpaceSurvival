@@ -111,6 +111,18 @@ void ASSAmbientPresentation::BeginPlay()
     {
         VolumeFog->SetFogDensity(SpaceLook->FogDensity);
         VolumeFog->SetFogHeightFalloff(0.f);
+        // The flight backdrop is opaque geometry, not sky: AuthorContent spawns a 50 km sphere and
+        // GenerateGeometry places the starfield at 40 km, and the sky material is authored is_sky=False
+        // because is_sky=True rendered black. That is not a mystery worth solving here. A sky material
+        // is routed out of the base pass into EMeshPass::SkyPass, which BasePassRendering.cpp:1512 runs
+        // only when EngineShowFlags.Atmosphere is set, so the sky becomes conditional on a view flag the
+        // offscreen capture path need not share. Bounding the fog instead removes the need for the flag:
+        // the engine documents FogCutoffDistance as "Scene elements past this distance will not have fog
+        // applied. This is useful for excluding skyboxes". At 20 km nothing exists between the playable
+        // field and the cutoff, so the seam is invisible, while the starfield and backdrop keep true black.
+        VolumeFog->SetFogCutoffDistance(2000000.f);
+        // Second guard, so the furthest landmark inside the cutoff still keeps a fifth of its own value.
+        VolumeFog->SetFogMaxOpacity(.8f);
         VolumeFog->SetVolumetricFogExtinctionScale(1.f);
         VolumeFog->SetVolumetricFogAlbedo(FColor::White);
         VolumeFog->SetVolumetricFogDistance(SpaceLook->FogDistance);
