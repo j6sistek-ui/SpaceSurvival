@@ -43,11 +43,12 @@ private:
     TArray<TObjectPtr<UStaticMeshComponent>> EngineCores;
     UPROPERTY()
     TArray<TObjectPtr<UMaterialInstanceDynamic>> EngineCoreMaterials;
-    /** Colour and strength parameters the chosen core material actually exposes. A borrowed VFX material names
-     *  these whatever its author liked, and setting a parameter that is absent fails silently, so the names are
-     *  discovered once from the material itself rather than assumed. */
-    TArray<FName> CoreColorParameters;
-    TArray<FName> CoreStrengthParameters;
+    /** The single colour and single strength parameter the chosen core material actually exposes. A borrowed VFX
+     *  material names these whatever its author liked, and setting a parameter that is absent fails silently, so
+     *  the names are discovered once from the material itself rather than assumed. Exactly one of each is driven:
+     *  M_Emissive multiplies its Tint by its Color, so driving both would square the drive colour. */
+    FName CoreColorParameter;
+    FName CoreStrengthParameter;
     UPROPERTY()
     TArray<TObjectPtr<UPointLightComponent>> EngineLights;
     UPROPERTY()

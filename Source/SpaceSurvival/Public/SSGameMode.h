@@ -144,6 +144,12 @@ private:
     void AddEntry(const FString &Label, int32 Action, bool Enabled = true);
 };
 
+enum class ESSInputFamily : uint8
+{
+    KeyboardMouse,
+    Gamepad
+};
+
 UCLASS()
 class SPACESURVIVAL_API ASSPlayerController : public APlayerController
 {
@@ -159,8 +165,15 @@ public:
     void SSReviewGalleryReturn();
     UFUNCTION(Exec)
     void SSReviewGallerySwitch();
+    /** Which device family last produced input, for HUD prompts. Defaults to keyboard/mouse so a
+     *  cold boot before any input reads correctly on the common case. */
+    ESSInputFamily GetInputFamily() const
+    {
+        return InputFamily;
+    }
 
 private:
     bool BoostLatch = false, BrakeLatch = false;
     TWeakObjectPtr<APawn> LastInputPawn;
+    ESSInputFamily InputFamily = ESSInputFamily::KeyboardMouse;
 };

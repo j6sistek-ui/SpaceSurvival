@@ -171,7 +171,13 @@ void ASSGameMode::BeginPlay()
                 Light->SetIntensity(SpaceLook->KeyIntensity);
             }
     ShowHangar();
-    OpenPanel(ESSPanel::Main);
+    // The hangar is always the first thing on screen. The main menu only interrupts it when
+    // there is a suspended run to offer resuming; otherwise the player is straight into the
+    // hangar with no panel up, and reaches the menu the same way as any later pause, via Escape.
+    if (GetGameInstance<USSGameInstance>()->HasSuspendedRun())
+        OpenPanel(ESSPanel::Main);
+    else
+        ClosePanel();
     ASSWave10Soak::TryStart(this);
 }
 bool ASSGameMode::InHangar() const
@@ -1462,6 +1468,28 @@ void ASSPlayerController::SSReviewGallerySwitch()
     if (auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>())
         GM->AlienGallery->SwitchScene();
 }
+namespace
+{
+// The exact keys this controller ever polls, keyboard/mouse and gamepad halves. EasyInputPrompts'
+// own per-brand icon maps are keyed by these identical FKey names, so detecting a family here is
+// enough to pick a prompt texture later with no translation table of our own.
+const FKey KeyboardMouseProbeKeys[] = {
+    EKeys::W,     EKeys::A,     EKeys::S,          EKeys::D,          EKeys::R,
+    EKeys::F,     EKeys::Q,     EKeys::E,          EKeys::LeftShift,  EKeys::SpaceBar,
+    EKeys::Escape, EKeys::Tab,  EKeys::Home,       EKeys::Enter,      EKeys::Up,
+    EKeys::Down,  EKeys::Left,  EKeys::Right,      EKeys::LeftMouseButton, EKeys::RightMouseButton};
+const FKey GamepadProbeKeys[] = {
+    EKeys::Gamepad_FaceButton_Bottom, EKeys::Gamepad_FaceButton_Right, EKeys::Gamepad_FaceButton_Top,
+    EKeys::Gamepad_FaceButton_Left,   EKeys::Gamepad_DPad_Up,          EKeys::Gamepad_DPad_Down,
+    EKeys::Gamepad_LeftShoulder,      EKeys::Gamepad_RightShoulder,    EKeys::Gamepad_LeftTrigger,
+    EKeys::Gamepad_RightTrigger,      EKeys::Gamepad_Special_Left,     EKeys::Gamepad_Special_Right,
+    EKeys::Gamepad_LeftX,             EKeys::Gamepad_LeftY,            EKeys::Gamepad_RightX,
+    EKeys::Gamepad_RightY};
+// A held stick past this point counts as gamepad input; below it is drift/dead-zone noise that
+// must not fight the keyboard/mouse latch every frame a controller merely sits connected.
+constexpr float GamepadAnalogThreshold = .35f;
+} // namespace
+
 ASSPlayerController::ASSPlayerController()
 {
     PrimaryActorTick.bTickEvenWhenPaused = true;
@@ -1474,6 +1502,25 @@ void ASSPlayerController::PlayerTick(float Dt)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GM || !GI)
         return;
+    // Runs above every early return below (including the alien gallery's) so device-specific
+    // prompts keep updating even while those paths never reach the rest of this function.
+    for (const FKey &Key : GamepadProbeKeys)
+        if (WasInputKeyJustPressed(Key) || FMath::Abs(GetInputAnalogKeyState(Key)) > GamepadAnalogThreshold)
+        {
+            InputFamily = ESSInputFamily::Gamepad;
+            break;
+        }
+    float DeviceMouseX = 0.f, DeviceMouseY = 0.f;
+    GetInputMouseDelta(DeviceMouseX, DeviceMouseY);
+    if (!FMath::IsNearlyZero(DeviceMouseX) || !FMath::IsNearlyZero(DeviceMouseY))
+        InputFamily = ESSInputFamily::KeyboardMouse;
+    else
+        for (const FKey &Key : KeyboardMouseProbeKeys)
+            if (WasInputKeyJustPressed(Key))
+            {
+                InputFamily = ESSInputFamily::KeyboardMouse;
+                break;
+            }
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {
         // A connected controller is polled even while an offscreen fixture window is not

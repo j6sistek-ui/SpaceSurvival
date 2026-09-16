@@ -12,8 +12,38 @@
 #include "Fonts/FontMeasure.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Engine/Engine.h"
+#include "Engine/Texture2D.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "UObject/UnrealType.h"
+
+namespace
+{
+// The owned EasyInputPrompts pack (RPT-20260916-18) exposes each device family as an instance of
+// its own Blueprint PrimaryDataAsset class, PDA_KeysIconsMapping, which has no native C++ header.
+// Reading its single "KeysIcons" TMap<FKey, UTexture2D*> property through reflection avoids adding
+// a duplicate native mirror of a Blueprint-owned schema.
+UTexture2D *FindKeyIcon(const UObject *Mapping, const FKey &Key)
+{
+    if (!Mapping)
+        return nullptr;
+    const FMapProperty *MapProp = FindFProperty<FMapProperty>(Mapping->GetClass(), TEXT("KeysIcons"));
+    const FStructProperty *KeyProp = MapProp ? CastField<FStructProperty>(MapProp->KeyProp) : nullptr;
+    const FObjectProperty *ValueProp = MapProp ? CastField<FObjectProperty>(MapProp->ValueProp) : nullptr;
+    if (!KeyProp || !ValueProp)
+        return nullptr;
+    FScriptMapHelper Helper(MapProp, MapProp->ContainerPtrToValuePtr<void>(Mapping));
+    for (int32 Index = 0; Index < Helper.GetMaxIndex(); ++Index)
+    {
+        if (!Helper.IsValidIndex(Index))
+            continue;
+        const FKey *Candidate = reinterpret_cast<const FKey *>(Helper.GetKeyPtr(Index));
+        if (Candidate && *Candidate == Key)
+            return Cast<UTexture2D>(ValueProp->GetObjectPropertyValue(Helper.GetValuePtr(Index)));
+    }
+    return nullptr;
+}
+} // namespace
 
 FSlateFontInfo ASSHUD::HudFont(float Size) const
 {
@@ -36,6 +66,49 @@ void ASSHUD::Text(const FString &Value, float X, float Y, float Size, FLinearCol
     FCanvasTextItem Item(FVector2D(FMath::RoundToFloat(X), FMath::RoundToFloat(Y)), FText::FromString(Value),
                          HudFont(Size), Color);
     Canvas->DrawItem(Item);
+}
+bool ASSHUD::UsingGamepad() const
+{
+    const auto *PC = Cast<ASSPlayerController>(GetOwningPlayerController());
+    return PC && PC->GetInputFamily() == ESSInputFamily::Gamepad;
+}
+UTexture2D *ASSHUD::GlyphTexture(const FKey &Key, bool Gamepad)
+{
+    // Lazily resolved rather than loaded in BeginPlay: this HUD class also runs for automation
+    // fixtures that never touch a prompt, so a build without the licensed pack staged still runs.
+    if (Gamepad)
+    {
+        if (!GamepadIcons)
+            GamepadIcons = LoadObject<UObject>(
+                nullptr, TEXT("/Game/EasyInputPrompts/Datas/IconsData/DA_InputsPrompt_XB_Gamepad."
+                              "DA_InputsPrompt_XB_Gamepad"),
+                nullptr, LOAD_NoWarn | LOAD_Quiet);
+        return FindKeyIcon(GamepadIcons, Key);
+    }
+    if (!KeyboardMouseIcons)
+        KeyboardMouseIcons = LoadObject<UObject>(
+            nullptr,
+            TEXT("/Game/EasyInputPrompts/Datas/IconsData/DA_InputsPrompt_KeyboardMouse.DA_InputsPrompt_KeyboardMouse"),
+            nullptr, LOAD_NoWarn | LOAD_Quiet);
+    return FindKeyIcon(KeyboardMouseIcons, Key);
+}
+float ASSHUD::Glyph(const FKey &KeyboardKey, const FKey &GamepadKey, float X, float Y, float Size, FLinearColor Color)
+{
+    const bool Gamepad = UsingGamepad();
+    const FKey &Key = Gamepad ? GamepadKey : KeyboardKey;
+    const float Extent = FMath::RoundToFloat(22.f * Size * Scale);
+    if (UTexture2D *Texture = GlyphTexture(Key, Gamepad))
+    {
+        FCanvasTileItem Item(FVector2D(FMath::RoundToFloat(X), FMath::RoundToFloat(Y)), Texture->GetResource(),
+                             FVector2D(Extent, Extent), Color);
+        Item.BlendMode = SE_BLEND_Translucent;
+        Canvas->DrawItem(Item);
+        return Extent;
+    }
+    // The pack not being staged in this build, or a name it does not carry, must not blank the
+    // prompt out; the key's own display name keeps it legible either way.
+    Text(Key.GetDisplayName().ToString(), X, Y, Size, Color);
+    return MeasureText(Key.GetDisplayName().ToString(), Size).X;
 }
 float ASSHUD::Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color,
                         bool Render)
@@ -347,16 +420,22 @@ void ASSHUD::DrawHUD()
             const float Padding = 10.f * Scale, PanelW = FMath::Min(420.f * Scale, W - 2.f * Margin);
             const float TextW = PanelW - 2.f * Padding;
             const float LabelH = Paragraph(Label, 0, 0, TextW, .7f, LabelColor, false);
-            const float PromptH =
-                ShowPrompt ? Paragraph(TEXT("E / A  INTERACT"), 0, 0, TextW, .7f, FLinearColor::White, false) : 0.f;
+            const float GlyphGap = 6.f * Scale;
+            const float PromptH = ShowPrompt ? Paragraph(TEXT("INTERACT"), 0, 0, TextW, .7f, FLinearColor::White, false)
+                                             : 0.f;
             const float PanelH = LabelH + PromptH + 2.f * Padding;
             Screen.X = FMath::Clamp(float(Screen.X), Margin, W - Margin - PanelW);
             Screen.Y = FMath::Clamp(float(Screen.Y), Margin, H - Margin - PanelH);
             DrawRect(FLinearColor(.015f, .025f, .04f, .94f), Screen.X, Screen.Y, PanelW, PanelH);
             Paragraph(Label, Screen.X + Padding, Screen.Y + Padding, TextW, .7f, LabelColor);
             if (ShowPrompt)
-                Paragraph(TEXT("E / A  INTERACT"), Screen.X + Padding, Screen.Y + Padding + LabelH, TextW, .7f,
-                          FLinearColor::White);
+            {
+                const float GlyphW =
+                    Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, Screen.X + Padding,
+                         Screen.Y + Padding + LabelH, .7f);
+                Paragraph(TEXT("INTERACT"), Screen.X + Padding + GlyphW + GlyphGap, Screen.Y + Padding + LabelH,
+                         TextW - GlyphW - GlyphGap, .7f, FLinearColor::White);
+            }
         }
         if (S.run.phase == SS::Phase::Approach)
         {
@@ -413,8 +492,9 @@ void ASSHUD::DrawHUD()
     }
     if (!MenuOpen && (!Walker || !Walker->IsDisembarking()))
     {
-        FString InteractionHint;
+        FString InteractionHint, HintPrefix, HintSuffix;
         FLinearColor HintColor = FLinearColor::White;
+        bool GlyphBeforeHint = false, GlyphInsideHint = false;
         // Match Interact: walking always targets a service; pending rewards take priority only in the ship.
         if (Walker)
         {
@@ -424,9 +504,9 @@ void ASSHUD::DrawHUD()
                 const auto Service = It->NearestService(Walker->GetActorLocation(), Label);
                 if (Service != ESSPanel::None)
                 {
-                    InteractionHint = Service == ESSPanel::Reward && S.run.pendingReward
-                                          ? TEXT("E / A   CHOOSE SECURED REWARD")
-                                          : TEXT("E / A   ") + Label;
+                    GlyphBeforeHint = true;
+                    InteractionHint =
+                        Service == ESSPanel::Reward && S.run.pendingReward ? TEXT("CHOOSE SECURED REWARD") : Label;
                     break;
                 }
             }
@@ -440,11 +520,28 @@ void ASSHUD::DrawHUD()
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
         {
-            InteractionHint = TEXT("REWARD SECURED / E or A to choose");
+            GlyphInsideHint = true;
+            HintPrefix = TEXT("REWARD SECURED / ");
+            HintSuffix = TEXT(" to choose");
             HintColor = FLinearColor(1, .8f, .4f);
         }
-        if (!InteractionHint.IsEmpty())
-            Text(InteractionHint, W * .5f - 200 * Scale, H - 80 * Scale, .9f, HintColor);
+        const float HintX = W * .5f - 200 * Scale, HintY = H - 80 * Scale, HintSize = .9f;
+        const float GlyphGap = 6.f * Scale;
+        if (GlyphBeforeHint)
+        {
+            const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, HintX, HintY, HintSize, HintColor);
+            Text(InteractionHint, HintX + GlyphW + GlyphGap, HintY, HintSize, HintColor);
+        }
+        else if (GlyphInsideHint)
+        {
+            Text(HintPrefix, HintX, HintY, HintSize, HintColor);
+            const float PrefixW = MeasureText(HintPrefix, HintSize).X;
+            const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, HintX + PrefixW, HintY, HintSize,
+                                      HintColor);
+            Text(HintSuffix, HintX + PrefixW + GlyphW + GlyphGap, HintY, HintSize, HintColor);
+        }
+        else if (!InteractionHint.IsEmpty())
+            Text(InteractionHint, HintX, HintY, HintSize, HintColor);
     }
     if (GM->IsAnnouncementVisible())
     {

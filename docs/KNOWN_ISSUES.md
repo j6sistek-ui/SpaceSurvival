@@ -43,7 +43,7 @@ These are paraphrases of the owner's reports, not reproduced findings. Report co
 | RPT-20260916-15 | There is a new hero in the purchased files to try in game; its rigging and animations need fixing, and the tail is probably not rigged. | Open / lead; ACT-11; ISS-16. **Owner confirmed target:** User downloaded assets/astronaut+squirrel+3d+model.glb, to replace the player walker at the station. **Verified by direct GLB inspection on September 16, not capture only:** 42-joint biped armature, ZERO animations, NO tail bones and NO finger bones, plus a stray neutral_bone. The tail is the largest mesh at 324,940 vertices and is skinned to Waist 62%, R_ThighTwist01 27%, L_ThighTwist01 8% and Spine01 3%, so it will shear with the legs during any walk cycle. Bone names are not UE mannequin names, so retargeting needs an explicit mapping. Model height is about 0.9 m against the current trooper it replaces. |
 | RPT-20260916-16 | All the objects in space can literally be flown through. | Open / lead; ISS-01/03; ACT-03. **Partly verified:** SSSpaceScenery.cpp and SSDistantAsteroids.cpp set ECollisionEnabled::NoCollision on all decorative geometry by design, and hittable hazards are separate ASSWorldBody actors. Next decide which reachable objects must become solid without making thousands of instances a physics cost. |
 | RPT-20260916-17 | Most objects in the space station are poorly placed and can be walked through. | Open / lead; ISS-03/16; ACT-05. **Partly verified:** ASSStation::AddMesh takes a Solid flag that selects QueryAndPhysics or NoCollision, and several decorative callers pass false, including the alien doorway frame. Next audit every AddMesh call site and separate real geometry from floor paint and signage. |
-| RPT-20260916-18 | The menus and prompts do not use input glyphs. | Open / lead; ISS-05/13; ACT-08. B23 EasyInputPrompts is staged at User downloaded assets/SpaceSurvival/Content/EasyInputPrompts and remains unintegrated. Next establish whether the HUD can draw textures at all and whether the active input device is known, because both gate a real glyph system. |
+| RPT-20260916-18 | The menus and prompts do not use input glyphs. | Needs owner retest / lead; ISS-05/13; ACT-08. B23 EasyInputPrompts is copied into `Content/EasyInputPrompts` (gitignored, same as every other licensed pack) and cooked via a narrow `DirectoriesToAlwaysCook` entry scoped to `Datas/IconsData` only, never the vendor demo content or the unused PlayStation/Switch icon sets. `ASSPlayerController::PlayerTick` now latches a keyboard/mouse-vs-gamepad `ESSInputFamily` from the same keys it already polls, updated above every early return (including the alien gallery's) at `SSGameMode.cpp:1476`. `ASSHUD::Glyph()` reads the vendor `PDA_KeysIconsMapping` Blueprint asset's `KeysIcons` map through reflection (no native mirror of its schema) and draws the matching texture, falling back to the key's own display name if the icon pack is absent from a build. Wired at the three single-key interact prompts (beacon, station service hint, ship reward hint); the long paragraph-style control lists in the Settings panel and event announcements still spell out both device names as plain text, since giving those true inline icon runs is the vendor's own RichText-decorator scope, not this pass. Gamepad glyphs default to the Xbox set; PS/Switch brand detection and real per-controller hardware identification are still undecided, per `IMPLEMENT.md`'s Windows-first scope. Editor build, 32 source checks and 51/51 automation pass; the icon textures rendering correctly at actual HUD scale in a live session has not been eyeballed. |
 | RPT-20260916-19 | The asteroids do not give the fill effect wanted; the owner's reference scenes use fog and rays of light. There are too few asteroids you can actually hit and the difficulty needs to be higher. The goal is to feel like there are only some right ways to go. | Open / lead; ISS-01/02/12; ACT-03. **Supersedes the September 16 owner hold on ACT-03 environment iteration.** Five owner reference images supplied. **Verified:** SSAmbientPresentation.cpp creates a volumetric fog component and then disables it, with density 0.000001, black inscattering and albedo, extinction scale 0 and SetVisibility(false). Next translate the references into concrete fog and light-shaft values without repeating the rejected excessive-fog trial, and design readable lanes rather than an even scatter. |
 | RPT-20260916-20 | The game is supposed to feel like survival and danger. A random rock flies near you and enemies jump in front of you and sit there. Asteroid impact has no effect visually or haptically. The owner wants visible ship damage and impacts that knock the ship around true to physics in a game way. | Open / lead; ISS-02/03/06/08; ACT-02/11. **Verified:** a repository-wide search finds ZERO uses of ForceFeedback, CameraShake or PlayHapticEffect anywhere in Source/, and no OnHit, NotifyHit or AddImpulse in gameplay. The ship is kinematic: SSShip.cpp integrates a custom Velocity and calls SetActorLocation, and a Forces accumulator already exists clamped to 4500. Damage is applied numerically through Session::ApplyDamage with no momentum change. Next decide the knockback model and the full feedback chain, and label which parts change survivability. |
 
@@ -715,6 +715,58 @@ chasing unless the owner wants that entry.
 
 **Still a stopgap.** This is a single mesh wearing one material. The layered plume recorded above, core plus
 turbulent shell plus spark spray plus nozzle glow, is unchanged by this work and remains the real fix.
+
+
+
+#### September 16 correction: the material switch shipped with two defects, both found by adversarial review
+
+An eight-agent survey with an adversarial verification pass was run over the material work after it was committed.
+It refuted two claims the implementation rested on. Both were real and both are now fixed. Recording them because
+each is the same failure mode that produced the cone-rotation bug earlier the same day: **a write that silently does
+nothing, or silently does too much, and looks plausible in a screenshot either way.**
+
+**Defect one, a regression introduced by the material switch: the drive colour was being squared.**
+`Scripts/AuthorContent.py:138-139` authors `M_Emissive` with **two** vector parameters, `Tint` and `Color`, and the
+graph multiplies them into emissive. The original code drove `Tint` each tick and pinned `Color` to white once. The
+new code matched **both** names and drove both with `DriveColor` every tick, so the shipped default thruster was
+rendering `DriveColor` squared. Every capture in the first audition sheet carries that error.
+
+**Defect two, the one the change existed to prevent: the name list matched almost nothing.** Vendors do not write
+`Emission`. Read out of the packages directly, the real parameter names are `Emissive Gain` and `Glow Exponent`
+(`M_BrightCore`), `Main Color`, `Main Glow`, `Glow Boost` (`M_Cable_Glow`), `Additive_Color` (`M_Skybox_Nebula`),
+`Galaxy Tint` and `Galaxy Emission Intensity` (`M_VFX_Lush_Galaxy_Shader`), `Base Color` (`M_FresnelGlow`). An
+exact-name list matches none of those, so the drive state silently did not reach most of the table.
+
+**The fix.** Names are normalised, lowercased with spaces and underscores dropped, then scored. **Exactly one**
+colour parameter and one strength parameter are claimed, highest score wins, which is what stops `Tint` and `Color`
+both being driven. Shape and animation controls are rejected outright by substring, so `Glow Exponent` and
+`Distortion Gain` are not mistaken for brightness. The chosen names are written to the log on every run, so a
+capture is self-documenting and a silent no-op can no longer be mistaken for an authored look:
+
+```
+Thruster material 0 drives colour 'Tint' and strength 'Emission'.
+Thruster material 3 drives colour 'None' and strength 'Emissive Gain'.
+Thruster material 4 drives colour 'Base Color' and strength 'None'.
+```
+
+**A third finding, and the reason index 12 rendered nothing.** `M_ElectricalFieldCandidateV3` splits behaviour on a
+packed UV role channel: `ContentSource/FieldCandidates/V3/ElectricalField.hlsl` reads
+`float role = floor(UV.x * 0.25 + 0.00001)` and takes a dim grey-blue extent-shell branch when `role < 0.5`. A stock
+`/Engine/BasicShapes/Cone` has U in [0,1], so role is always zero and the shell branch always wins. The material is
+not broken; it simply cannot be auditioned on a stock primitive. Index 12 is now
+`/Game/NiagaraExamples/Materials/MI_RocketFlareCore`, which is a rocket flare core by authorship rather than by
+hopeful repurposing.
+
+**Honest outcomes that are not defects.** `M_Mesh_Add`, `M_Energy`, `M_Simple_Beam_Aura` and `M_Deadly_Beam` bind
+nothing at all, because they take their colour from Niagara particle data rather than from a material parameter, and
+a static mesh supplies none. They keep their authored look. `M_Master` (index 16) declares no emission-style
+parameter of any kind and cannot be made to glow through this plumbing. These are reported rather than hidden.
+
+**Candidates the survey found that are not yet auditioned**, all verified to exist on disk: `MI_Boundary_TechGrid`,
+`M_Sphere` and `MI_Shield` (translucent unlit with panner and fresnel), the project's own `M_WormholeMouth_*` which
+already carries a `CombatTint` parameter, the six Vefects galaxy instances with animated star panning, and **the ten
+`SpaceNebulaFantasy` nebula instances, which are ten ready-made colour families** and are the most direct answer to
+the owner's request to mix colours rather than only materials.
 
 
 ## Review route when playtesting resumes

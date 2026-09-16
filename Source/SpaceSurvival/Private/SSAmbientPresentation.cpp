@@ -53,10 +53,9 @@ const TCHAR *ThrusterMaterialPaths[] = {
     TEXT("/Game/Sci_Fi_Weapons_VFX_AIO/Matetials/For_VFX/M_Fire_Rays.M_Fire_Rays"),               //  9 fire rays
     TEXT("/Game/Sci_Fi_Weapons_VFX_AIO/Matetials/For_VFX/M_Smoke_Ribbon.M_Smoke_Ribbon"),         // 10 smoke ribbon
     TEXT("/Game/Sci_Fi_Weapons_VFX_AIO/Matetials/M_Cable_Glow.M_Cable_Glow"),                     // 11 cable glow
-    TEXT("/Game/SpaceSurvival/Materials/M_ElectricalFieldCandidateV3."
-         "M_ElectricalFieldCandidateV3"),                                       // 12 own field
-    TEXT("/Game/SpaceSurvival/Materials/M_Star.M_Star"),                        // 13 own star
-    TEXT("/Game/SpaceNebulaFantasy/Materials/M_Skybox_Nebula.M_Skybox_Nebula"), // 14 nebula
+    TEXT("/Game/NiagaraExamples/Materials/MI_RocketFlareCore.MI_RocketFlareCore"),                // 12 rocket flare
+    TEXT("/Game/SpaceSurvival/Materials/M_Star.M_Star"),                                          // 13 own star
+    TEXT("/Game/SpaceNebulaFantasy/Materials/M_Skybox_Nebula.M_Skybox_Nebula"),                   // 14 nebula
     TEXT("/Game/Vefects/Stylized_Galaxy_Shader/Galaxy/Materials/M_VFX_Lush_Galaxy_Shader."
          "M_VFX_Lush_Galaxy_Shader"),                        // 15 galaxy
     TEXT("/Game/CosmicMaterial/Material/M_Master.M_Master"), // 16 cosmic
@@ -64,28 +63,64 @@ const TCHAR *ThrusterMaterialPaths[] = {
 TAutoConsoleVariable<int32> ThrusterMaterial(TEXT("ss.ThrusterMaterial"), 0,
                                              TEXT("Engine core material index into the audition table."));
 
-/** Parameter names worth driving with the drive colour, across the various VFX authors naming habits. */
-bool IsCoreColorParameter(FName Name)
+/** Lowercased with spaces and underscores dropped, because vendors write "Emissive Gain", "Main Color" and
+ *  "Additive_Color" for the same three ideas, and an exact-name list silently matches none of them. */
+FString NormalizedParameter(FName Name)
 {
-    static const FName Known[] = {TEXT("Tint"),          TEXT("Color"),    TEXT("Colour"),       TEXT("BaseColor"),
-                                  TEXT("EmissiveColor"), TEXT("Emissive"), TEXT("ExhaustColor"), TEXT("GlowColor"),
-                                  TEXT("ParticleColor"), TEXT("Color_A"),  TEXT("ColorA"),       TEXT("MainColor")};
-    for (const FName &Candidate : Known)
-        if (Name == Candidate)
+    FString Text = Name.ToString().ToLower();
+    Text.ReplaceInline(TEXT(" "), TEXT(""));
+    Text.ReplaceInline(TEXT("_"), TEXT(""));
+    return Text;
+}
+
+/** Shape and animation controls that happen to carry a colour or glow word. Driving an exponent or a panner
+ *  speed with the drive intensity would distort the material rather than brighten it. */
+bool IsShapeControl(const FString &Normalized)
+{
+    static const TCHAR *Rejects[] = {TEXT("exponent"), TEXT("power"),  TEXT("speed"),  TEXT("shift"),
+                                     TEXT("distort"),  TEXT("invert"), TEXT("thresh"), TEXT("density"),
+                                     TEXT("opacity"),  TEXT("rough"),  TEXT("metal"),  TEXT("fade"),
+                                     TEXT("noise"),    TEXT("tiling"), TEXT("scale"),  TEXT("offset")};
+    for (const TCHAR *Reject : Rejects)
+        if (Normalized.Contains(Reject))
             return true;
     return false;
 }
 
-/** Scalar names that read as how hot the core is, again across naming habits. */
-bool IsCoreStrengthParameter(FName Name)
+/** How well a vector parameter serves as the one the drive colour should own. Zero means leave it alone. */
+int32 CoreColorPriority(FName Name)
 {
-    static const FName Known[] = {TEXT("Emission"),  TEXT("EmissiveStrength"), TEXT("Emissive"),
-                                  TEXT("Intensity"), TEXT("Brightness"),       TEXT("Power"),
-                                  TEXT("Glow"),      TEXT("Multiply")};
-    for (const FName &Candidate : Known)
-        if (Name == Candidate)
-            return true;
-    return false;
+    const FString Normalized = NormalizedParameter(Name);
+    if (IsShapeControl(Normalized))
+        return 0;
+    if (Normalized == TEXT("tint"))
+        return 100;
+    if (Normalized.Contains(TEXT("tint")))
+        return 90;
+    if (Normalized == TEXT("color") || Normalized == TEXT("colour"))
+        return 80;
+    if (Normalized.Contains(TEXT("color")) || Normalized.Contains(TEXT("colour")))
+        return 70;
+    return 0;
+}
+
+/** How well a scalar parameter reads as how hot the core is. Zero means leave it alone. */
+int32 CoreStrengthPriority(FName Name)
+{
+    const FString Normalized = NormalizedParameter(Name);
+    if (IsShapeControl(Normalized))
+        return 0;
+    if (Normalized.Contains(TEXT("emissi")))
+        return 100;
+    if (Normalized.Contains(TEXT("intensity")))
+        return 80;
+    if (Normalized.Contains(TEXT("bright")))
+        return 70;
+    if (Normalized.Contains(TEXT("gain")))
+        return 60;
+    if (Normalized.Contains(TEXT("glow")))
+        return 50;
+    return 0;
 }
 
 /** True for the shapes whose length runs along the mesh's +Z (cone, cylinder), unlike the symmetric cube. */
@@ -282,23 +317,39 @@ void ASSAmbientPresentation::BeginPlay()
         }
     // Ask the chosen material what it actually exposes, once. Setting a parameter a material does not declare
     // fails silently, so a borrowed material would otherwise sit at its authored colour and ignore the drive
-    // entirely, which reads as a bug rather than as a deliberate look.
+    // entirely, which reads as a bug rather than as a deliberate look. Exactly one parameter of each kind is
+    // claimed: M_Emissive multiplies its Tint by its Color, so driving both would square the drive colour.
     if (CoreMaterial)
     {
         TArray<FMaterialParameterInfo> Parameters;
         TArray<FGuid> Ids;
+        int32 BestColor = 0, BestStrength = 0;
         CoreMaterial->GetAllVectorParameterInfo(Parameters, Ids);
         for (const FMaterialParameterInfo &Parameter : Parameters)
-            if (IsCoreColorParameter(Parameter.Name))
-                CoreColorParameters.AddUnique(Parameter.Name);
+        {
+            const int32 Priority = CoreColorPriority(Parameter.Name);
+            if (Priority > BestColor)
+            {
+                BestColor = Priority;
+                CoreColorParameter = Parameter.Name;
+            }
+        }
         Parameters.Reset();
         Ids.Reset();
         CoreMaterial->GetAllScalarParameterInfo(Parameters, Ids);
         for (const FMaterialParameterInfo &Parameter : Parameters)
-            if (IsCoreStrengthParameter(Parameter.Name))
-                CoreStrengthParameters.AddUnique(Parameter.Name);
-        UE_LOG(LogTemp, Log, TEXT("Thruster material %d drives %d colour and %d strength parameters."), MaterialIndex,
-               CoreColorParameters.Num(), CoreStrengthParameters.Num());
+        {
+            const int32 Priority = CoreStrengthPriority(Parameter.Name);
+            if (Priority > BestStrength)
+            {
+                BestStrength = Priority;
+                CoreStrengthParameter = Parameter.Name;
+            }
+        }
+        // Logged by name so a capture run shows exactly what was driven, rather than leaving a silent no-op to
+        // be mistaken for an authored look.
+        UE_LOG(LogTemp, Log, TEXT("Thruster material %d drives colour '%s' and strength '%s'."), MaterialIndex,
+               *CoreColorParameter.ToString(), *CoreStrengthParameter.ToString());
     }
     CloudAvailable = Material && Cube;
     if (CloudAvailable)
@@ -611,10 +662,10 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
             if (EngineCoreMaterials.IsValidIndex(Index))
             {
                 const float Strength = (.45f + VisualPower * 1.15f) * ThrusterEmission.GetValueOnGameThread() / 3.f;
-                for (const FName &Parameter : CoreColorParameters)
-                    EngineCoreMaterials[Index]->SetVectorParameterValue(Parameter, DriveColor);
-                for (const FName &Parameter : CoreStrengthParameters)
-                    EngineCoreMaterials[Index]->SetScalarParameterValue(Parameter, Strength);
+                if (!CoreColorParameter.IsNone())
+                    EngineCoreMaterials[Index]->SetVectorParameterValue(CoreColorParameter, DriveColor);
+                if (!CoreStrengthParameter.IsNone())
+                    EngineCoreMaterials[Index]->SetScalarParameterValue(CoreStrengthParameter, Strength);
             }
             if (EngineLights.IsValidIndex(Index))
             {
