@@ -633,8 +633,9 @@ have owned candidates:
 | Spark spray shedding downstream | `RPGEnvironmentVFX/NS_ForgeSparks`; `PyroVFX/NS_Debris_FX` | cheap, high perceived detail |
 | Nozzle glow and rays | `RPGEnvironmentVFX/NS_MagicalGlowRays` | same asset already wanted for light shafts |
 
-**Honest sizing.** This is not a script one-liner. The Pyro fire systems are authored for ground explosions: they are
-buoyancy driven and rise. Used as a plume each needs its velocity redirected along the ship's aft axis, buoyancy
+**Honest sizing.** This is not a script one-liner. The Pyro fire systems are authored for ground explosions and rise
+rather than travel: the pack names its own material instances `MI_Atomic_Ex_RiseUp`, `MI_Car_riseup01`,
+`MI_LargEx_riseup1`, `MI_MEx_Rise_Up_02` and so on, so the upward drift is deliberate and pervasive. Used as a plume each needs its velocity redirected along the ship's aft axis, buoyancy
 zeroed, lifetime cut to the plume length and colour driven from the existing `ExhaustColor` vector parameter pattern.
 That is real Niagara emitter work per layer, in the editor, with a capture pass per iteration. It is worth doing and
 it is reachable with assets already owned, but it should be scheduled as its own task rather than folded into the
