@@ -339,6 +339,19 @@ Inspect animation/camera/feet, warning direction and non-color meaning, pickups,
 
 See [ENVIRONMENT_REFRESH.md](ENVIRONMENT_REFRESH.md) and its validation receipt for the camera, bounded background asteroids, dust/volume layer, Niagara wake and licensed station exterior. This supersedes older presentation descriptions only. Phase 1 remains PARTIAL; scripted captures do not establish natural gameplay, controller feel or near-alpha acceptance. No itch publication or merge is included.
 
+## September 16 packaged gallery input isolation
+
+ISS-11's intermittent packaged alien-gallery exit is reproduced, diagnosed and fixed at source `a77010e`.
+
+- **Reproduction.** Twelve packaged round trips of the unchanged instrumented build (`SpaceSurvival.exe` SHA256 `117A67C8...`, source `fe92d8c`) failed six times. Every failure logged `ALIEN_GALLERY_INPUT_RETURN automated=1` immediately before `ALIEN_GALLERY_LEAVE state=2`, with `controller=1 camera=1`, at ages spread randomly through the ten-second hold, on both the showcase and asset-layout stages.
+- **Cause.** The alien-gallery branch of `ASSPlayerController::PlayerTick` handled return, switch and reset keys before the `bAutomatedSoakInput` guard. A connected XInput controller is registered and polled inside the packaged fixture process even though the run is offscreen, unattended and never foreground, so a stray `Gamepad_FaceButton_Right` press called `Leave()` mid-fixture.
+- **Rejected by evidence.** No run logged `ALIEN_GALLERY_LOAD_FAILED` or `ALIEN_GALLERY_VIEW_FAILED`, and the asset-layout map had already reached the viewing state in every stage-5 failure, so level-load failure, lost camera or controller, and missing packaged maps are all excluded.
+- **Fix and verification.** The guarded fixture now owns gallery input as it owns other input, logging `ALIEN_GALLERY_INPUT_SUPPRESSED key=<name>`. Fourteen of fourteen packaged round trips then passed while five stray `Gamepad_FaceButton_Right`/`Gamepad_FaceButton_Top` presses were suppressed and recorded in four runs. Player behaviour is unchanged: the flag is set only by the soak fixture, which is absent from Shipping builds.
+- **Supporting checks.** 32 source structural checks, content-source validation, the containerised C++ format audit, the Editor build (27.70s), 51/51 Unreal automation tests and the Win64 Development package (184.45s) all pass. Packaged Wave 1 flight captured Cruise, Turn, Boost and Brake; packaged Station 5 captured all 16 transition images with Wave 5, wormhole, docking and authored exit observed. The IoStore dependency audit passes with zero missing packages, zero unresolved cooked imports and zero import warnings.
+- **Limits.** Scripted offscreen fixtures only. No natural input, hands-on play, audio, visual-target or 60 FPS acceptance. The controller hardware behaviour itself was not diagnosed. Clean-PC installation and a real itch A-to-B update with save preservation remain unverified, and nothing was uploaded or merged.
+
+[Receipt](validation/2026-09-16-gallery-input-isolation.json). The earlier [diagnosis receipt](validation/2026-09-16-gallery-package-diagnosis.json) is retained as history.
+
 ## September 15 itch release filtering and publication
 
 [The release receipt](validation/2026-09-15-itch-visual-release.json) binds clean 0.1.16-alpha.1 to ready itch build 1979965 and the unchanged Package4 game payload. Six synthetic release safety regressions pass, including refusal of a hash-matching unsafe receipt and preservation of required runtime files/original package data. Python compilation, 31 source checks, local documentation checks and whitespace checks pass; the CI source workflow now runs the release suite. All 63 original audited files were rehashed unchanged and all 51 prepared payload files reverified after upload. No runtime Saved directory, .sav or .log is in the new payload.
