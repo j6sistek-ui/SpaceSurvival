@@ -936,6 +936,62 @@ commit. The punch, the rumble and the dust response are asserted from the code a
 controlled comparison.
 
 
+
+#### September 16 asteroid field continuity: the shell recycled far rocks to the near edge
+
+The owner reported that the field looks right ahead but empties the moment they turn, that rocks then appear very
+close, and that in a comparable game the field is simply there in every direction. **Root cause found and fixed, in
+`ASSDistantAsteroids`, and it is four lines.**
+
+Each depth band is a spherical shell around the player with a parallax offset, and an instance that leaves the shell
+is recycled to the antipode. The rule as written sent an instance that drifted past the **outer** edge back in at the
+**inner** one:
+
+```cpp
+if (Distance < Band.MinimumDistance)        Center = -normal * Band.MaximumDistance;   // near -> far, fine
+else if (Distance > Band.MaximumDistance)   Center = -normal * Band.MinimumDistance;   // far -> NEAR, the defect
+```
+
+Sustained travel pushes every instance toward the back of its shell, so in forward flight the dominant case is the
+second one. Each rock that fell out of the back returned at the **near** edge in front, where `ShellFade` scales an
+instance to zero within 3500 units of either boundary. So the forward field filled up with invisible rocks stacked
+at the inner radius, which then became visible only as they drifted outward: **that is the "spawn so close"**. And
+because instances only ever left the back and returned to the front, the rear hemisphere drained: **that is the
+"field is empty when I turn"**. One rule, both symptoms.
+
+**Measured rather than argued.** The recycling rule was reimplemented in a standalone simulation and run over
+cruise at 2400 cm/s, counting instances ahead and behind and weighting them by `ShellFade`, i.e. by whether they
+could actually be seen:
+
+| | ahead | behind | **visible ahead** | visible behind | at the near edge |
+| --- | --- | --- | --- | --- | --- |
+| Shipped rule, band 0, after 35 s | 704 | 796 | **0** | 112 | 704 of 704 |
+| Shipped rule, band 1, after 35 s | 649 | 851 | **0** | 87 | 649 of 649 |
+| Fixed rule, band 0, after 35 s | 777 | 723 | **653** | 590 | 161 |
+| Fixed rule, band 1, after 35 s | 719 | 781 | **589** | 638 | 145 |
+
+Zero visible instances ahead, in two of four bands, after thirty-five seconds of ordinary cruising. Band 3 survives
+because its parallax is .12 and it drains twelve times slower.
+
+**The fix is to re-enter through the edge the instance left through**, so a rock that recedes past the outer
+boundary comes back at the outer boundary on the opposite side and approaches from a distance, fading in where
+nobody can see it happen.
+
+**Confirmed in game, not only in the model.** Two captures of the same scripted run, identical seed and camera, at
+frame ~2,800: the old build shows a handful of scattered fragments, the new one a full field of near and mid bodies
+in every part of the frame.
+
+**What this does NOT address.** The hittable hazards are a separate system admitted by the survival Director, and
+whether *they* are forward-biased is not answered here. The owner has previously reported too few hittable rocks,
+which is its own open row. This fix is set dressing density and continuity only.
+
+**The owner's design question stands unanswered on purpose.** They asked how other games give "the only way out is
+through" without feeling scripted, and then said the free-will side can be tabled, that they would accept drifting
+in a field beyond sight and being able to slow, and that if continuity cannot be fixed the player must be
+restricted. Continuity *was* the defect, so the restriction may no longer be necessary; that judgement is theirs
+and should be made after they fly the fixed build rather than before.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.

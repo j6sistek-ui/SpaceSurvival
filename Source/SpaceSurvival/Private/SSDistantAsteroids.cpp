@@ -246,10 +246,16 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
             FTransform &Rest = RestTransforms[BatchIndex][Index];
             FVector Center = Rest.TransformPosition(Origin) - FieldTravel * Band.Parallax;
             const double Distance = Center.Size();
+            // Re-enter through the edge it left through. Sending a rock that drifted past the OUTER edge back
+            // in at the INNER one is what made the field behind the player empty and made rocks appear close:
+            // sustained travel pushed every instance out of the back, and each one returned to the near edge in
+            // front, where ShellFade scales it to nothing until it drifts outward far enough to be seen. A 90
+            // second cruise simulation of the old rule left bands 0 to 2 with zero visible instances ahead and
+            // every one of them piled at the inner edge; re-entering at the same edge holds the field even.
             if (Distance < Band.MinimumDistance)
-                Center = -Center.GetSafeNormal() * Band.MaximumDistance;
-            else if (Distance > Band.MaximumDistance)
                 Center = -Center.GetSafeNormal() * Band.MinimumDistance;
+            else if (Distance > Band.MaximumDistance)
+                Center = -Center.GetSafeNormal() * Band.MaximumDistance;
             Rest.SetLocation(Center - Rest.GetRotation().RotateVector(Origin * Rest.GetScale3D()));
             const FVector Axis = FVector(1.0, .3 + BatchIndex, .2 + Index % 3).GetSafeNormal();
             const double Rate = (.2 + .1 * ((Index + BatchIndex) % 7)) * Band.Tumble;
