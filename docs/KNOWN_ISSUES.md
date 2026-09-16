@@ -157,6 +157,42 @@ enemies with a direct `SpawnActor` that never calls `FindSafeSpawn`: seven enemi
 alternating Pursuer and Flanker. Any fix routed through `FindSafeSpawn` bypasses it entirely.
 
 
+
+#### September 16 RPT-20260916-14 referent RESOLVED by the owner, and the diagnosis inverted
+
+The owner identified the effect: **the blue circles of electricity that appear as a hazard to avoid around wave 4**,
+described as "39 second slop art". That is `ESSWorldKind::ElectricalStorm`. The report title says the lighting is not
+using Nerves. Direct inspection shows the opposite, and the real problem is different from what the report implies.
+
+**Nerves is already wired.** `Scripts/AuthorCombatVisualPass.py:36` binds the `ElectricalField` effect to
+`Content/NERVES/FX/NS_ElectircBeams_Blue`, the owned A23 Nerves system, using the vendor's own misspelling of
+"Electirc" that `docs/CONTRIBUTOR_ONBOARDING.md` warns about. `SSWorldActors.cpp:202-204` attaches it at runtime, and
+the comment immediately above it at `:199-201` records why the attach is deferred: otherwise "every storm silently
+keeps the small-rock default and never receives its owned Nerves beam."
+
+**The slop art is a second, separate visual rendering at the same time.** `ASSWorldBody::UpdateVisual` at
+`SSWorldActors.cpp:223` sets the storm's static mesh to `SM_ElectricalFieldCandidateV3`, a procedural mesh with a
+hand-written shader authored by `Scripts/AuthorFieldCandidatesV3.py:19` and `:194` from `ElectricalField.hlsl`. That
+ring, not the Nerves beams, is almost certainly the blue circle the owner is describing. The storm therefore draws a
+procedural shader ring AND an owned Nerves beam system on top of each other.
+
+**A third factor suppresses what Nerves contributes.** `SSVFXPresentation.cpp:349-351` disables every Niagara light
+renderer on every private system as a deliberate architectural decision recorded in `docs/ARCHITECTURE.md:133` and
+`docs/CONTENT_PIPELINE.md:70`, with a 20-light budget at `SSVFXPresentation.cpp:199`. So the Nerves beams contribute
+no light, which is consistent with the owner perceiving the effect as not using the pack.
+
+**Consequence for the fix.** This is not a wiring job. It is a decision about which of two overlapping visuals is the
+storm, plus a documented policy question about the light renderer. The smallest correct change is to make the Nerves
+beams the storm's actual read and either remove `SM_ElectricalFieldCandidateV3` or reduce it to a faint containment
+boundary, then decide separately and explicitly whether this one effect is allowed a light renderer against the
+existing budget. Removing the mesh outright needs checking against the hazard's collision and its telegraph, because
+`SSWorldActors.cpp:250-251` sources the catalog mesh for solid hazards and fields alike, and the storm's readable
+danger radius is what the player avoids.
+
+**Status:** referent CONFIRMED by the owner, mechanism VERIFIED by inspection, fix NOT implemented and not yet chosen.
+The earlier note on this row that the referent was undetermined is now superseded.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
