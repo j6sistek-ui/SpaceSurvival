@@ -4,6 +4,8 @@
 
 ## September 16 areas and alien gallery: source/editor only
 
+The owner has paused further ACT-03 scene iteration to focus on other issues. Current improvements are retained; the visual target remains NOT MET. This pause supersedes the earlier instruction to continue environment work, without closing its acceptance gaps. The sole action queue remains [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+
 PR17 now implements four owned-content area recipes, deterministic world-space region cells, three assembled alien wreck meshes, distinct haze/light palettes and a denser distant asteroid field. It also adds the station **ALIEN WORLD** service, which streams the complete vendor showcase and asset-layout maps with an inspection camera, frozen run and return to the original walker. The former fixed-composition/proposal-only statements are superseded by this checkpoint.
 
 Editor build and 51/51 Unreal tests pass. First flight compositions were rejected and revised; independent review remains NOT MET, with the lead agreeing. Final mesh-family selection no longer aliases with depth-band strides; that correction does not close visual acceptance. The corrected gallery's rendered round trip is independently accepted within its scripted scope. Natural input, long-zone boundary/near-surface traversal, performance and packaged behavior remain unverified. [Current evidence](validation/2026-09-16-space-areas-gallery.json); [sole active queue](KNOWN_ISSUES.md). Earlier [orbital review](validation/2026-09-16-orbital-wreck-review.json) remains historical evidence.
