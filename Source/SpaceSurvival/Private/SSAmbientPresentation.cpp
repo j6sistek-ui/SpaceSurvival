@@ -63,6 +63,31 @@ const TCHAR *ThrusterMaterialPaths[] = {
 TAutoConsoleVariable<int32> ThrusterMaterial(TEXT("ss.ThrusterMaterial"), 0,
                                              TEXT("Engine core material index into the audition table."));
 
+/** One nested shell of the layered drive: which audition material it wears, its size relative to the single-core
+ *  size, and a roll about the exhaust axis. A cone is rotationally symmetric, so roll only turns the material's
+ *  mapping, which is the point: it stops two shells sharing a texture from reading as one surface. */
+struct FSSThrusterLayer
+{
+    int32 Material;
+    float Scale;
+    float Roll;
+};
+/** The owner's requested mock-up stack, in their stated order. Nested rather than graded, deliberately. */
+const FSSThrusterLayer ThrusterLayerStack[] = {
+    {1, .90f, 0.f},  // M_DeepSpaceExhaust
+    {4, 1.00f, 0.f}, // M_FresnelGlow
+    {8, .95f, 0.f},  // M_Deadly_Beam
+    {3, .93f, 90.f}, // M_BrightCore, rolled about the exhaust axis, still firing aft
+    {9, 1.10f, 0.f}, // M_Fire_Rays
+};
+constexpr int32 ThrusterLayerCount = int32(UE_ARRAY_COUNT(ThrusterLayerStack));
+TAutoConsoleVariable<int32> ThrusterLayered(TEXT("ss.ThrusterLayered"), 0,
+                                            TEXT("Stack the layered drive mock-up instead of one core (0 off)."));
+/** In the layered mock-up the long ribbon leaves the wing nozzles entirely and becomes one small plume on the
+ *  centreline of the rear booster, which is what the owner asked to see. */
+TAutoConsoleVariable<float> ThrusterTrailScale(TEXT("ss.ThrusterTrailScale"), .25f,
+                                               TEXT("Ribbon size in the layered mock-up."));
+
 /** Lowercased with spaces and underscores dropped, because vendors write "Emissive Gain", "Main Color" and
  *  "Additive_Color" for the same three ideas, and an exact-name list silently matches none of them. */
 FString NormalizedParameter(FName Name)
@@ -189,14 +214,23 @@ ASSAmbientPresentation::ASSAmbientPresentation()
         Trail->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         Trail->SetCastShadow(false);
         EngineTrails.Add(Trail);
-        auto *Core = CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("EngineCore%d"), Index));
-        Core->SetupAttachment(RootComponent);
-        Core->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        Core->SetGenerateOverlapEvents(false);
-        Core->SetCastShadow(false);
-        Core->SetCanEverAffectNavigation(false);
-        Core->SetVisibility(false);
-        EngineCores.Add(Core);
+        // Every engine always owns its full stack of shells. Components cannot be created outside the
+        // constructor, so the unused ones are simply hidden when the mock-up is off.
+        UStaticMeshComponent *Core = nullptr;
+        for (int32 Layer = 0; Layer < ThrusterLayerCount; ++Layer)
+        {
+            auto *Shell =
+                CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("EngineCore%d_%d"), Index, Layer));
+            Shell->SetupAttachment(RootComponent);
+            Shell->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            Shell->SetGenerateOverlapEvents(false);
+            Shell->SetCastShadow(false);
+            Shell->SetCanEverAffectNavigation(false);
+            Shell->SetVisibility(false);
+            EngineCores.Add(Shell);
+            if (Layer == 0)
+                Core = Shell;
+        }
         auto *Light = CreateDefaultSubobject<UPointLightComponent>(*FString::Printf(TEXT("EngineGlow%d"), Index));
         Light->SetupAttachment(Core);
         Light->SetIntensityUnits(ELightUnits::Lumens);
@@ -261,18 +295,29 @@ void ASSAmbientPresentation::BeginPlay()
     auto *Cube = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
     auto *HullMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"),
                                                         nullptr, LOAD_NoWarn | LOAD_Quiet);
-    const int32 MaterialIndex =
+    const bool Layered = ThrusterLayered.GetValueOnGameThread() != 0;
+    const int32 Chosen =
         FMath::Clamp(ThrusterMaterial.GetValueOnGameThread(), 0, int32(UE_ARRAY_COUNT(ThrusterMaterialPaths)) - 1);
-    auto *CoreMaterial = LoadObject<UMaterialInterface>(nullptr, ThrusterMaterialPaths[MaterialIndex], nullptr,
-                                                        LOAD_NoWarn | LOAD_Quiet);
-    if (!CoreMaterial)
+    // One material per shell. Off the mock-up every shell but the first is hidden, so they all take the single
+    // chosen material and only the first is ever seen.
+    TArray<UMaterialInterface *, TInlineAllocator<8>> LayerMaterials;
+    for (int32 Layer = 0; Layer < ThrusterLayerCount; ++Layer)
     {
-        // A borrowed material that fails to load must not silently leave the nozzles unlit.
-        UE_LOG(LogTemp, Warning, TEXT("ss.ThrusterMaterial %d (%s) did not load; using the project emissive."),
-               MaterialIndex, ThrusterMaterialPaths[MaterialIndex]);
-        CoreMaterial =
-            LoadObject<UMaterialInterface>(nullptr, ThrusterMaterialPaths[0], nullptr, LOAD_NoWarn | LOAD_Quiet);
+        const int32 MaterialIndex = FMath::Clamp(Layered ? ThrusterLayerStack[Layer].Material : Chosen, 0,
+                                                 int32(UE_ARRAY_COUNT(ThrusterMaterialPaths)) - 1);
+        auto *Loaded = LoadObject<UMaterialInterface>(nullptr, ThrusterMaterialPaths[MaterialIndex], nullptr,
+                                                      LOAD_NoWarn | LOAD_Quiet);
+        if (!Loaded)
+        {
+            // A borrowed material that fails to load must not silently leave the nozzles unlit.
+            UE_LOG(LogTemp, Warning, TEXT("Thruster material %d (%s) did not load; using the project emissive."),
+                   MaterialIndex, ThrusterMaterialPaths[MaterialIndex]);
+            Loaded =
+                LoadObject<UMaterialInterface>(nullptr, ThrusterMaterialPaths[0], nullptr, LOAD_NoWarn | LOAD_Quiet);
+        }
+        LayerMaterials.Add(Loaded);
     }
+    auto *CoreMaterial = LayerMaterials[0];
     if (Cube && HullMaterial)
     {
         Dust->SetStaticMesh(Cube);
@@ -309,47 +354,56 @@ void ASSAmbientPresentation::BeginPlay()
         for (const auto &Core : EngineCores)
         {
             Core->SetStaticMesh(CoreShape);
-            auto *Dynamic = UMaterialInstanceDynamic::Create(CoreMaterial, this);
+            auto *LayerMaterial = LayerMaterials[EngineCoreMaterials.Num() % ThrusterLayerCount];
+            auto *Dynamic = UMaterialInstanceDynamic::Create(LayerMaterial ? LayerMaterial : CoreMaterial, this);
             Dynamic->SetVectorParameterValue(TEXT("Color"), FLinearColor::White);
             Dynamic->SetScalarParameterValue(TEXT("Emission"), ThrusterEmission.GetValueOnGameThread());
             Core->SetMaterial(0, Dynamic);
             EngineCoreMaterials.Add(Dynamic);
         }
-    // Ask the chosen material what it actually exposes, once. Setting a parameter a material does not declare
+    // Ask each shell's material what it actually exposes, once. Setting a parameter a material does not declare
     // fails silently, so a borrowed material would otherwise sit at its authored colour and ignore the drive
     // entirely, which reads as a bug rather than as a deliberate look. Exactly one parameter of each kind is
-    // claimed: M_Emissive multiplies its Tint by its Color, so driving both would square the drive colour.
-    if (CoreMaterial)
+    // claimed per shell: M_Emissive multiplies its Tint by its Color, so driving both would square the colour.
+    CoreColorParameter.SetNum(ThrusterLayerCount);
+    CoreStrengthParameter.SetNum(ThrusterLayerCount);
+    for (int32 Layer = 0; Layer < ThrusterLayerCount; ++Layer)
     {
+        auto *LayerMaterial = LayerMaterials[Layer];
+        if (!LayerMaterial)
+            continue;
         TArray<FMaterialParameterInfo> Parameters;
         TArray<FGuid> Ids;
         int32 BestColor = 0, BestStrength = 0;
-        CoreMaterial->GetAllVectorParameterInfo(Parameters, Ids);
+        LayerMaterial->GetAllVectorParameterInfo(Parameters, Ids);
         for (const FMaterialParameterInfo &Parameter : Parameters)
         {
             const int32 Priority = CoreColorPriority(Parameter.Name);
             if (Priority > BestColor)
             {
                 BestColor = Priority;
-                CoreColorParameter = Parameter.Name;
+                CoreColorParameter[Layer] = Parameter.Name;
             }
         }
         Parameters.Reset();
         Ids.Reset();
-        CoreMaterial->GetAllScalarParameterInfo(Parameters, Ids);
+        LayerMaterial->GetAllScalarParameterInfo(Parameters, Ids);
         for (const FMaterialParameterInfo &Parameter : Parameters)
         {
             const int32 Priority = CoreStrengthPriority(Parameter.Name);
             if (Priority > BestStrength)
             {
                 BestStrength = Priority;
-                CoreStrengthParameter = Parameter.Name;
+                CoreStrengthParameter[Layer] = Parameter.Name;
             }
         }
         // Logged by name so a capture run shows exactly what was driven, rather than leaving a silent no-op to
         // be mistaken for an authored look.
-        UE_LOG(LogTemp, Log, TEXT("Thruster material %d drives colour '%s' and strength '%s'."), MaterialIndex,
-               *CoreColorParameter.ToString(), *CoreStrengthParameter.ToString());
+        UE_LOG(LogTemp, Log, TEXT("Thruster shell %d (%s) drives colour '%s' and strength '%s'."), Layer,
+               *LayerMaterial->GetName(), *CoreColorParameter[Layer].ToString(),
+               *CoreStrengthParameter[Layer].ToString());
+        if (!Layered)
+            break; // Only the first shell is ever visible off the mock-up.
     }
     CloudAvailable = Material && Cube;
     if (CloudAvailable)
@@ -413,12 +467,18 @@ void ASSAmbientPresentation::Follow(AActor *Actor)
             Ship->Presentation->TryGetExhaustLocalPosition(Index, ExhaustPosition);
         Trail->SetRelativeLocation(ExhaustPosition);
         Trail->SetRelativeRotation(FRotator::ZeroRotator);
-        if (EngineCores.IsValidIndex(Index))
+        for (int32 Layer = 0; Layer < ThrusterLayerCount; ++Layer)
         {
-            EngineCores[Index]->AttachToComponent(Ship && Ship->HullMesh ? Ship->HullMesh.Get() : GetRootComponent(),
+            const int32 Shell = Index * ThrusterLayerCount + Layer;
+            if (!EngineCores.IsValidIndex(Shell))
+                continue;
+            EngineCores[Shell]->AttachToComponent(Ship && Ship->HullMesh ? Ship->HullMesh.Get() : GetRootComponent(),
                                                   FAttachmentTransformRules::KeepRelativeTransform);
-            EngineCores[Index]->SetRelativeLocation(ExhaustPosition + FVector(-18.f, 0.f, 0.f));
-            EngineCores[Index]->SetRelativeRotation(ThrusterCoreRotation());
+            EngineCores[Shell]->SetRelativeLocation(ExhaustPosition + FVector(-18.f, 0.f, 0.f));
+            // Roll turns the shell about the exhaust axis without changing where it fires.
+            FRotator Orientation = ThrusterCoreRotation();
+            Orientation.Roll += ThrusterLayerStack[Layer].Roll;
+            EngineCores[Shell]->SetRelativeRotation(Orientation);
         }
     }
     RestartTrails = true;
@@ -617,34 +677,56 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
                                     : Boosting                   ? FLinearColor(.18f, .62f, 1.2f)
                                                                  : FLinearColor(.03f, .22f, .82f);
     const float VisualPower = (Boosting ? 1.75f : Braking ? .55f : DrivePower) * Pulse;
+    const bool LayeredNow = ThrusterLayered.GetValueOnGameThread() != 0;
     // Collected here and applied in the core pass below, which is where the mesh length is known.
     TArray<TOptional<FVector>, TInlineAllocator<4>> ExhaustPositions;
-    ExhaustPositions.SetNum(EngineCores.Num());
+    ExhaustPositions.SetNum(EngineTrails.Num());
+    for (int32 Index = 0; Index < ExhaustPositions.Num(); ++Index)
+    {
+        FVector ExhaustPosition;
+        if (Ship && Ship->Presentation && Ship->Presentation->TryGetExhaustLocalPosition(Index, ExhaustPosition))
+            ExhaustPositions[Index] = ExhaustPosition;
+    }
+    // The booster centre, known only once every nozzle has been read.
+    TOptional<FVector> BoosterCentre;
+    if (ExhaustPositions.Num() >= 2 && ExhaustPositions[0].IsSet() && ExhaustPositions[1].IsSet())
+    {
+        FVector Centre = (ExhaustPositions[0].GetValue() + ExhaustPositions[1].GetValue()) * .5f;
+        Centre.Y = 0.f; // the booster sits on the hull's centreline whatever the nozzles do
+        BoosterCentre = Centre;
+    }
     for (int32 Index = 0; Index < EngineTrails.Num(); ++Index)
     {
         const auto &Trail = EngineTrails[Index];
-        FVector ExhaustPosition;
-        if (Ship && Ship->Presentation && Ship->Presentation->TryGetExhaustLocalPosition(Index, ExhaustPosition))
-        {
-            Trail->SetRelativeLocation(ExhaustPosition);
-            if (EngineCores.IsValidIndex(Index))
-                ExhaustPositions[Index] = ExhaustPosition;
-        }
-        if (TrailsVisible)
+        if (ExhaustPositions.IsValidIndex(Index) && ExhaustPositions[Index].IsSet())
+            Trail->SetRelativeLocation(ExhaustPositions[Index].GetValue());
+        // In the mock-up the long ribbon leaves the wing nozzles entirely: one small plume sits on the
+        // centreline between them, on the rear booster, and the second ribbon is simply not shown.
+        const bool ThisTrailVisible = TrailsVisible && (!LayeredNow || Index == 0);
+        if (LayeredNow && Index == 0 && BoosterCentre.IsSet())
+            Trail->SetRelativeLocation(BoosterCentre.GetValue());
+        if (ThisTrailVisible)
         {
             if (RestartTrails || !Trail->IsActive())
                 Trail->Activate(true);
-            Trail->SetRelativeScale3D(FVector(FMath::Clamp(.65f + VisualPower * .55f, .55f, 1.8f)));
+            const float Grow = FMath::Clamp(.65f + VisualPower * .55f, .55f, 1.8f);
+            Trail->SetRelativeScale3D(
+                FVector(Grow * (LayeredNow ? FMath::Max(.01f, ThrusterTrailScale.GetValueOnGameThread()) : 1.f)));
         }
         else if (Trail->IsActive())
             Trail->DeactivateImmediate();
+        Trail->SetVisibility(ThisTrailVisible);
     }
     const bool CoreVisible = Active && Ship && !Ship->IsMoored() && !EngineCoreMaterials.IsEmpty();
     for (int32 Index = 0; Index < EngineCores.Num(); ++Index)
     {
+        const int32 Engine = Index / ThrusterLayerCount;
+        const int32 Layer = Index % ThrusterLayerCount;
         auto *Core = EngineCores[Index].Get();
-        Core->SetVisibility(CoreVisible);
-        if (CoreVisible)
+        // Off the mock-up only the first shell of each engine exists as far as the viewer is concerned.
+        const bool ShellVisible = CoreVisible && (LayeredNow || Layer == 0);
+        Core->SetVisibility(ShellVisible);
+        if (ShellVisible)
         {
             const float Length = FMath::Clamp(18.f + VisualPower * 42.f, 14.f, 95.f);
             const float Width = FMath::Clamp(7.f + VisualPower * 4.f, 6.f, 18.f);
@@ -653,29 +735,33 @@ void ASSAmbientPresentation::Tick(float DeltaSeconds)
             // A cone or cylinder is rotated so its length runs aft, so its axes swap relative to a cube.
             const bool Axial = ThrusterCoreIsAxial();
             const FVector CoreSize = Axial ? FVector(Width, Width, Length) : FVector(Length, Width, Width);
-            Core->SetRelativeScale3D(CoreSize * ShapeScale / 100.f);
+            // A shell's size is stated relative to the single-core size, so 90 per cent means ten per cent less.
+            const float LayerScale = LayeredNow ? ThrusterLayerStack[Layer].Scale : 1.f;
+            Core->SetRelativeScale3D(CoreSize * ShapeScale * LayerScale / 100.f);
             // Every basic shape straddles its own origin, so an axial mesh would bury its wide end in the
             // hull. Shift it aft by half its length to seat the flare at the nozzle lip.
-            if (ExhaustPositions.IsValidIndex(Index) && ExhaustPositions[Index].IsSet())
-                Core->SetRelativeLocation(ExhaustPositions[Index].GetValue() +
-                                          FVector(-18.f - (Axial ? Length * ShapeScale * .5f : 0.f), 0.f, 0.f));
-            if (EngineCoreMaterials.IsValidIndex(Index))
+            if (ExhaustPositions.IsValidIndex(Engine) && ExhaustPositions[Engine].IsSet())
+                Core->SetRelativeLocation(
+                    ExhaustPositions[Engine].GetValue() +
+                    FVector(-18.f - (Axial ? Length * ShapeScale * LayerScale * .5f : 0.f), 0.f, 0.f));
+            if (EngineCoreMaterials.IsValidIndex(Index) && CoreColorParameter.IsValidIndex(Layer))
             {
                 const float Strength = (.45f + VisualPower * 1.15f) * ThrusterEmission.GetValueOnGameThread() / 3.f;
-                if (!CoreColorParameter.IsNone())
-                    EngineCoreMaterials[Index]->SetVectorParameterValue(CoreColorParameter, DriveColor);
-                if (!CoreStrengthParameter.IsNone())
-                    EngineCoreMaterials[Index]->SetScalarParameterValue(CoreStrengthParameter, Strength);
+                if (!CoreColorParameter[Layer].IsNone())
+                    EngineCoreMaterials[Index]->SetVectorParameterValue(CoreColorParameter[Layer], DriveColor);
+                if (!CoreStrengthParameter[Layer].IsNone())
+                    EngineCoreMaterials[Index]->SetScalarParameterValue(CoreStrengthParameter[Layer], Strength);
             }
-            if (EngineLights.IsValidIndex(Index))
+            // One light per engine, carried by its first shell, not one per shell.
+            if (Layer == 0 && EngineLights.IsValidIndex(Engine))
             {
-                EngineLights[Index]->SetLightColor(DriveColor.GetClamped());
-                EngineLights[Index]->SetIntensity(35.f + VisualPower * 180.f);
-                EngineLights[Index]->SetAttenuationRadius(170.f + VisualPower * 90.f);
+                EngineLights[Engine]->SetLightColor(DriveColor.GetClamped());
+                EngineLights[Engine]->SetIntensity(35.f + VisualPower * 180.f);
+                EngineLights[Engine]->SetAttenuationRadius(170.f + VisualPower * 90.f);
             }
         }
-        if (EngineLights.IsValidIndex(Index))
-            EngineLights[Index]->SetVisibility(CoreVisible);
+        if (Layer == 0 && EngineLights.IsValidIndex(Engine))
+            EngineLights[Engine]->SetVisibility(CoreVisible);
     }
     RestartTrails = false;
 }

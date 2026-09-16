@@ -13,7 +13,9 @@ param(
     [ValidateRange(-1,3)][int]$ThrusterShape = -1,
     [ValidateRange(0,40)][double]$ThrusterEmission = 0,
     [ValidateRange(0,10)][double]$ThrusterScale = 0,
-    [ValidateRange(-1,16)][int]$ThrusterMaterial = -1
+    [ValidateRange(-1,16)][int]$ThrusterMaterial = -1,
+    [switch]$ThrusterLayered,
+    [ValidateRange(0,5)][double]$ThrusterTrailScale = 0
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -122,6 +124,8 @@ if ($ThrusterShape -ge 0) { $execCmds += ",ss.ThrusterShape $ThrusterShape" }
 if ($ThrusterEmission -gt 0) { $execCmds += ",ss.ThrusterEmission $ThrusterEmission" }
 if ($ThrusterScale -gt 0) { $execCmds += ",ss.ThrusterScale $ThrusterScale" }
 if ($ThrusterMaterial -ge 0) { $execCmds += ",ss.ThrusterMaterial $ThrusterMaterial" }
+if ($ThrusterLayered) { $execCmds += ",ss.ThrusterLayered 1" }
+if ($ThrusterTrailScale -gt 0) { $execCmds += ",ss.ThrusterTrailScale $ThrusterTrailScale" }
 $arguments += "-ExecCmds=$execCmds"
 $metadata = [ordered]@{
     evidenceType = 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS'; status = 'starting'; success = $false

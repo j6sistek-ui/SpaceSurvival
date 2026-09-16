@@ -769,6 +769,55 @@ already carries a `CombatTint` parameter, the six Vefects galaxy instances with 
 the owner's request to mix colours rather than only materials.
 
 
+
+#### September 16 layered drive mock-up, specified by the owner
+
+Having picked materials off the audition sheet, the owner specified a stack rather than a single core: remove the
+long ribbon from the wing nozzles and put one much smaller plume on the centreline of the rear booster, then on each
+side nest five shells, sized relative to the current core so ninety per cent means ten per cent smaller.
+
+| Shell | Material | Size | Note |
+| --- | --- | --- | --- |
+| 1 | `M_DeepSpaceExhaust` (01M) | 90% | |
+| 2 | `M_FresnelGlow` (04M) | 100% | the reference size |
+| 3 | `M_Deadly_Beam` (08M) | 95% | |
+| 4 | `M_BrightCore` (03M) | 93% | rolled 90 degrees about the exhaust axis, still firing aft |
+| 5 | `M_Fire_Rays` (09M) | 110% | |
+
+Built behind `ss.ThrusterLayered`, default off, so the shipped game is unchanged until the owner accepts it. Ribbon
+size is `ss.ThrusterTrailScale`. Both are exposed on `Scripts/CaptureSpaceLook.ps1`. Every engine always constructs
+its full stack, because components cannot be created outside the constructor; off the mock-up the shells after the
+first are simply hidden.
+
+**The roll is not decorative.** A cone is rotationally symmetric, so rolling it about its own axis changes nothing
+geometrically. What it changes is the material's mapping, which is the whole point: it stops two shells that share a
+texture orientation from reading as one surface.
+
+**A bug of my own, caught by looking at the capture rather than trusting the code.** The ribbon was to move to the
+midpoint of the two nozzles, but the midpoint was being computed inside the loop that reads the nozzles, so on the
+first iteration the second nozzle had not been read yet, the guard failed, and the relocation silently never
+happened. The first capture still showed the long beam on the left wing. Nozzle positions are now gathered in a pass
+of their own before the ribbon loop runs. **This is the third instance today of the same failure mode**, after the
+discarded cone rotation and the silently unmatched material parameters: a write that quietly does nothing and leaves
+a screenshot that looks plausible enough to accept. Reading the capture, not the diff, is what caught all three.
+
+**Per-shell parameter binding is logged**, so a capture says exactly what each shell received:
+
+```
+Thruster shell 0 (M_DeepSpaceExhaust) drives colour 'ExhaustColor' and strength 'None'.
+Thruster shell 1 (M_FresnelGlow)      drives colour 'Base Color'   and strength 'None'.
+Thruster shell 2 (M_Deadly_Beam)      drives colour 'None'         and strength 'None'.
+Thruster shell 3 (M_BrightCore)       drives colour 'None'         and strength 'Emissive Gain'.
+Thruster shell 4 (M_Fire_Rays)        drives colour 'None'         and strength 'None'.
+```
+
+Three of the five shells take no drive colour at all, because they colour from Niagara particle data that a static
+mesh does not supply. They hold their authored colours, which is why the stack reads as teal, white and orange at
+once rather than as five copies of the drive colour. That is a happy accident rather than a design, and it is worth
+saying so: if the owner wants the stack to follow boost, brake and damage state, those three shells need material
+instances with real colour parameters, which is authoring work, not a code change.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.

@@ -79,10 +79,10 @@ UTexture2D *ASSHUD::GlyphTexture(const FKey &Key, bool Gamepad)
     if (Gamepad)
     {
         if (!GamepadIcons)
-            GamepadIcons = LoadObject<UObject>(
-                nullptr, TEXT("/Game/EasyInputPrompts/Datas/IconsData/DA_InputsPrompt_XB_Gamepad."
-                              "DA_InputsPrompt_XB_Gamepad"),
-                nullptr, LOAD_NoWarn | LOAD_Quiet);
+            GamepadIcons = LoadObject<UObject>(nullptr,
+                                               TEXT("/Game/EasyInputPrompts/Datas/IconsData/DA_InputsPrompt_XB_Gamepad."
+                                                    "DA_InputsPrompt_XB_Gamepad"),
+                                               nullptr, LOAD_NoWarn | LOAD_Quiet);
         return FindKeyIcon(GamepadIcons, Key);
     }
     if (!KeyboardMouseIcons)
@@ -421,8 +421,8 @@ void ASSHUD::DrawHUD()
             const float TextW = PanelW - 2.f * Padding;
             const float LabelH = Paragraph(Label, 0, 0, TextW, .7f, LabelColor, false);
             const float GlyphGap = 6.f * Scale;
-            const float PromptH = ShowPrompt ? Paragraph(TEXT("INTERACT"), 0, 0, TextW, .7f, FLinearColor::White, false)
-                                             : 0.f;
+            const float PromptH =
+                ShowPrompt ? Paragraph(TEXT("INTERACT"), 0, 0, TextW, .7f, FLinearColor::White, false) : 0.f;
             const float PanelH = LabelH + PromptH + 2.f * Padding;
             Screen.X = FMath::Clamp(float(Screen.X), Margin, W - Margin - PanelW);
             Screen.Y = FMath::Clamp(float(Screen.Y), Margin, H - Margin - PanelH);
@@ -430,11 +430,10 @@ void ASSHUD::DrawHUD()
             Paragraph(Label, Screen.X + Padding, Screen.Y + Padding, TextW, .7f, LabelColor);
             if (ShowPrompt)
             {
-                const float GlyphW =
-                    Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, Screen.X + Padding,
-                         Screen.Y + Padding + LabelH, .7f);
+                const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, Screen.X + Padding,
+                                           Screen.Y + Padding + LabelH, .7f);
                 Paragraph(TEXT("INTERACT"), Screen.X + Padding + GlyphW + GlyphGap, Screen.Y + Padding + LabelH,
-                         TextW - GlyphW - GlyphGap, .7f, FLinearColor::White);
+                          TextW - GlyphW - GlyphGap, .7f, FLinearColor::White);
             }
         }
         if (S.run.phase == SS::Phase::Approach)
@@ -536,8 +535,8 @@ void ASSHUD::DrawHUD()
         {
             Text(HintPrefix, HintX, HintY, HintSize, HintColor);
             const float PrefixW = MeasureText(HintPrefix, HintSize).X;
-            const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, HintX + PrefixW, HintY, HintSize,
-                                      HintColor);
+            const float GlyphW =
+                Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, HintX + PrefixW, HintY, HintSize, HintColor);
             Text(HintSuffix, HintX + PrefixW + GlyphW + GlyphGap, HintY, HintSize, HintColor);
         }
         else if (!InteractionHint.IsEmpty())

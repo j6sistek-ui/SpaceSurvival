@@ -39,5 +39,5 @@ private:
      *  one. Falls back to the key's own display name if the icon pack has not resolved (or is not
      *  present in this build), so a prompt never goes silently blank. */
     float Glyph(const FKey &KeyboardKey, const FKey &GamepadKey, float X, float Y, float Size,
-               FLinearColor Color = FLinearColor::White);
+                FLinearColor Color = FLinearColor::White);
 };

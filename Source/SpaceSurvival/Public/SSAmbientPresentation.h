@@ -47,8 +47,11 @@ private:
      *  material names these whatever its author liked, and setting a parameter that is absent fails silently, so
      *  the names are discovered once from the material itself rather than assumed. Exactly one of each is driven:
      *  M_Emissive multiplies its Tint by its Color, so driving both would square the drive colour. */
-    FName CoreColorParameter;
-    FName CoreStrengthParameter;
+    TArray<FName> CoreColorParameter;
+    TArray<FName> CoreStrengthParameter;
+    /** Engine count. Each engine wears SSThruster::LayerCount stacked cores, so a core's engine is
+     *  Index / LayerCount and its layer is Index % LayerCount. */
+    static constexpr int32 EngineCount = 2;
     UPROPERTY()
     TArray<TObjectPtr<UPointLightComponent>> EngineLights;
     UPROPERTY()
