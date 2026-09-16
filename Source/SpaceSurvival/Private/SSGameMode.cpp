@@ -1498,10 +1498,9 @@ void ASSPlayerController::UpdateLastInputDevice()
         return;
     }
     static const FKey KeyboardKeys[] = {
-        EKeys::W,     EKeys::A,          EKeys::S,      EKeys::D,     EKeys::Q,      EKeys::E,
-        EKeys::R,     EKeys::F,          EKeys::LeftShift, EKeys::SpaceBar, EKeys::LeftControl,
-        EKeys::Escape, EKeys::Enter,     EKeys::Up,     EKeys::Down,  EKeys::Left,   EKeys::Right,
-        EKeys::Tab,
+        EKeys::W,     EKeys::A,  EKeys::S,         EKeys::D,        EKeys::Q,           EKeys::E,
+        EKeys::R,     EKeys::F,  EKeys::LeftShift, EKeys::SpaceBar, EKeys::LeftControl, EKeys::Escape,
+        EKeys::Enter, EKeys::Up, EKeys::Down,      EKeys::Left,     EKeys::Right,       EKeys::Tab,
     };
     for (const FKey &Key : KeyboardKeys)
         if (IsInputKeyDown(Key))

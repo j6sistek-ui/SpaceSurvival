@@ -447,9 +447,8 @@ void ASSHUD::DrawHUD()
                 const auto Service = It->NearestService(Walker->GetActorLocation(), Label);
                 if (Service != ESSPanel::None)
                 {
-                    InteractionLabel = Service == ESSPanel::Reward && S.run.pendingReward
-                                            ? TEXT("CHOOSE SECURED REWARD")
-                                            : Label;
+                    InteractionLabel =
+                        Service == ESSPanel::Reward && S.run.pendingReward ? TEXT("CHOOSE SECURED REWARD") : Label;
                     NeedsPrompt = true;
                     break;
                 }
@@ -473,8 +472,8 @@ void ASSHUD::DrawHUD()
             const float BaseX = W * .5f - 200 * Scale, BaseY = H - 80 * Scale;
             float LabelX = BaseX;
             if (NeedsPrompt)
-                LabelX = DrawPrompt(TEXT("Interact"), TEXT("E"), TEXT("A"), BaseX, BaseY, .9f, HintColor) +
-                         10.f * Scale;
+                LabelX =
+                    DrawPrompt(TEXT("Interact"), TEXT("E"), TEXT("A"), BaseX, BaseY, .9f, HintColor) + 10.f * Scale;
             Text(InteractionLabel, LabelX, BaseY, .9f, HintColor);
         }
     }
