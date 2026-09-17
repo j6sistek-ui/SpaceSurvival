@@ -45,3 +45,7 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 # Tripo bridge generated materials and loose shortcuts.
 /Content/TripoModels/
 *.lnk
+
+# Fab listings imported from the vault cache (Scripts/ImportVaultGlb.py): licensed, and outside
+# /Game/SpaceSurvival so they cook only when something references them.
+/Content/Fab/

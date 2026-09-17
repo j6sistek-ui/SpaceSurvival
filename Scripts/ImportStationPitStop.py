@@ -15,6 +15,8 @@ import sys
 import unreal as u
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import AuthorStationPitStopMaterials as hull_materials  # noqa: E402
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 TAG = argv[argv.index('--tag') + 1] if '--tag' in argv else 'default'
 OUT = ROOT / 'Artifacts' / 'StationPitStop' / TAG
@@ -86,6 +88,8 @@ def main():
     nanite = mesh.get_editor_property('nanite_settings')
     nanite.set_editor_property('enabled', True)
     mesh.set_editor_property('nanite_settings', nanite)
+    # The import clears this folder, so the plated hull materials are authored and assigned on every import.
+    assigned = hull_materials.apply(mesh)
     for slot in mesh.static_materials:
         mat = slot.material_interface
         base = mat.get_base_material() if hasattr(mat, 'get_base_material') else mat
@@ -99,7 +103,7 @@ def main():
                   bounds_cm_imported=[[b.origin.x - b.box_extent.x, b.origin.y - b.box_extent.y, b.origin.z - b.box_extent.z],
                                       [b.origin.x + b.box_extent.x, b.origin.y + b.box_extent.y, b.origin.z + b.box_extent.z]],
                   bounds_cm_receipt=receipt['composition_bounds_cm'], collision_boxes_cm=receipt['collision_boxes_cm'],
-                  y_sign=y_sign, y_note='collision box Y is multiplied by y_sign; -1 means the glTF round trip mirrored Y',
+                  hull_materials=assigned, y_sign=y_sign, y_note='collision box Y is multiplied by y_sign; -1 means the glTF round trip mirrored Y',
                   materials=[s.material_interface.get_path_name() for s in mesh.static_materials],
                   triangles=receipt['triangles'], engine=u.SystemLibrary.get_engine_version())
     (OUT / 'Import.json').write_text(json.dumps(result, indent=2), encoding='utf-8')

@@ -151,7 +151,8 @@ for j, lx in enumerate(range(-1400, 1600, 350)):
               shadows=False)
         if j % 2 == 0:
             light(f'Amber_{j}_{"P" if side > 0 else "S"}', (lx, side * 700, 900), [1.0, 0.62, 0.30], 26000, 1500)
-light('MouthSpill', (-1500, 0, 720), [1.0, 0.68, 0.38], 80000, 3200)
+# 80000 burned the inside of the mouth frame white at this range; the spill should glow, not glare.
+light('MouthSpill', (-1150, 0, 760), [1.0, 0.68, 0.38], 14000, 3000)
 light('BayCore', (850, 0, 880), [1.0, 0.72, 0.45], 42000, 1900)
 for side in (-1, 1):
     light(f'WalkUnder_{"P" if side > 0 else "S"}', (0, side * 1250, WALK_Z - 60), [0.25, 0.75, 1.0], 9000, 1400)

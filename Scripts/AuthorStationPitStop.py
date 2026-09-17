@@ -186,11 +186,15 @@ def pbr(name, color, metallic, rough, emissive=(0, 0, 0), strength=0.0):
     return m
 HULL = pbr('PitStop_Hull', (0.16, 0.17, 0.19), 0.85, 0.55)
 PANEL = pbr('PitStop_Panel', (0.05, 0.08, 0.12), 0.3, 0.3)
+# Lights only emit. With a pale base colour the level's sun turned the mouth frame into a white slab from inside.
+DARK = (0.02, 0.02, 0.02)
 ACCENT = pbr('PitStop_Accent', (0.55, 0.24, 0.05), 0.6, 0.5, (0.9, 0.35, 0.05), 0.15)
 # Emission is modest on purpose: in game these bloom, and at 12 the lane read as white blobs and the frame as a slab of glare.
-LIGHT_WARM = pbr('PitStop_LightWarm', (1, 0.8, 0.6), 0.0, 0.4, (1.0, 0.62, 0.30), 4.0)
-LIGHT_CYAN = pbr('PitStop_LightCyan', (0.7, 0.9, 1), 0.0, 0.4, (0.25, 0.85, 1.0), 4.0)
-LIGHT_RED = pbr('PitStop_LightRed', (1, 0.6, 0.6), 0.0, 0.4, (1.0, 0.12, 0.08), 5.0)
+LIGHT_WARM = pbr('PitStop_LightWarm', DARK, 0.0, 0.4, (1.0, 0.62, 0.30), 4.0)
+# The mouth frame is seen from two metres away inside the bay: at the lane's strength it glares white.
+LIGHT_FRAME = pbr('PitStop_LightFrame', DARK, 0.0, 0.4, (1.0, 0.62, 0.30), 0.9)
+LIGHT_CYAN = pbr('PitStop_LightCyan', DARK, 0.0, 0.4, (0.25, 0.85, 1.0), 4.0)
+LIGHT_RED = pbr('PitStop_LightRed', DARK, 0.0, 0.4, (1.0, 0.12, 0.08), 5.0)
 # Map the kitbash's two material families onto the hull palette.
 for i, m in enumerate(body.data.materials):
     name = (m.name if m else '').lower()
@@ -236,9 +240,9 @@ parts = []
 # Mouth frame: inner opening is exactly the collision gap. Visible equals solid.
 T, D = 90.0, 140.0   # frame bar thickness, depth along X
 zc = (MOUTH_Z[0] + MOUTH_Z[1]) / 2; zh = MOUTH_Z[1] - MOUTH_Z[0]
-parts.append(box('Frame_Left', (MOUTH_X, MOUTH_Y + T / 2, zc), (D, T, zh + 2 * T), LIGHT_WARM))
-parts.append(box('Frame_Right', (MOUTH_X, -MOUTH_Y - T / 2, zc), (D, T, zh + 2 * T), LIGHT_WARM))
-parts.append(box('Frame_Top', (MOUTH_X, 0, MOUTH_Z[1] + T / 2), (D, 2 * MOUTH_Y + 2 * T, T), LIGHT_WARM))
+parts.append(box('Frame_Left', (MOUTH_X, MOUTH_Y + T / 2, zc), (D, T, zh + 2 * T), LIGHT_FRAME))
+parts.append(box('Frame_Right', (MOUTH_X, -MOUTH_Y - T / 2, zc), (D, T, zh + 2 * T), LIGHT_FRAME))
+parts.append(box('Frame_Top', (MOUTH_X, 0, MOUTH_Z[1] + T / 2), (D, 2 * MOUTH_Y + 2 * T, T), LIGHT_FRAME))
 parts.append(box('Frame_Sill', (MOUTH_X, 0, MOUTH_Z[0] - T / 2), (D, 2 * MOUTH_Y + 2 * T, T), HULL))
 for name, (bx, by, bz) in slabs.items():
     parts.append(box(name, ((bx[0] + bx[1]) / 2, (by[0] + by[1]) / 2, (bz[0] + bz[1]) / 2),
@@ -454,7 +458,7 @@ receipt = dict(source=str(SRC), source_sha256=digest, station=STATION, scale=SCA
                tower_azimuth_native=round(tower_az, 1), ring=dict(ro_native=round(ring_ro, 3), ri_native=round(ring_ri, 3),
                rim_z_native=[round(rim_zlo, 3), round(rim_zhi, 3)]), triangles=dict(source=tris_source, after_cut=tris_after),
                bounds_cm=[[round(v) for v in lo], [round(v) for v in hi]], collision_boxes_cm=collision, checks=checks,
-               materials=[m.name for m in (HULL, PANEL, ACCENT, LIGHT_WARM, LIGHT_CYAN, LIGHT_RED)],
+               materials=[m.name for m in (HULL, PANEL, ACCENT, LIGHT_WARM, LIGHT_FRAME, LIGHT_CYAN, LIGHT_RED)],
                output=str(target), output_sha256=hashlib.sha256(target.read_bytes()).hexdigest(),
                frame='station-local cm, +X into the hangar, mouth plane X=-1700; place at station origin with no rotation',
                axis_note='exported Y-up glTF from Blender Z-up; verify in UE that bounds match bounds_cm before trusting placement')
