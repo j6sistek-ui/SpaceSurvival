@@ -1,6 +1,9 @@
 """Self-test of the prefab library and live-link endpoint, headless.
 
-  UnrealEditor-Cmd.exe <project> -unattended -stdout -FullStdOutLogOutput -ExecutePythonScript="Scripts/TestPrefabs.py"
+  UnrealEditor-Cmd.exe <project> -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser \
+      "-ExecutePythonScript=<abs path>/Scripts/TestPrefabs.py"
+
+The script path must be absolute: a relative one resolves against the engine's Binaries folder (docs/BUILD_RUN.md).
 
 Runs in the editor's start-up level without saving it: places parts, saves them as a prefab, places the
 prefab, drives the live-link endpoint through create, move, pull and remove, and checks the transform

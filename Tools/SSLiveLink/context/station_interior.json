@@ -1,0 +1,142 @@
+{
+ "schema_version": 1,
+ "scene": "Station interior",
+ "purpose": "What the hangar's native code fixes in place, shown locked in Blender so dressing is arranged around it. Nothing here is written back: ASSStation owns the deck, the walls, the docking lane, the docked ship and the service anchors.",
+ "units": "Unreal centimetres, station-local, Z up, left-handed. The add-on converts on load: metres, Y flipped.",
+ "display": "WIRE draws edges only; GHOST is a see-through solid in the entry's colour [r, g, b, alpha].",
+ "rules": {
+  "flight_lane": {
+   "min": [-1900.0, -700.0, -10.0],
+   "max": [1715.0, 700.0, 967.5],
+   "floor_top_z": -7.25,
+   "floor_tolerance": 0.5,
+   "why": "A docking ship flies this volume. No part's world bounds may overlap it. Floor panels are the one exception: their visible top belongs at Z -7.25, above the hidden physical floor at Z -10, so a part whose bounds end at or below floor_top_z (plus floor_tolerance) does not count.",
+   "source": [
+    "Scripts/PrepareStationPitStopLayout.py:21 LANE = dict(x=(-1900.0, 1715.0), y=(-700.0, 700.0), z=(-10.0, 967.5)), asserted at :162-167",
+    "Scripts/PrepareStationPitStopLayout.py:20 DECK = -7.25",
+    "Source/SpaceSurvival/Private/SSStation.cpp:101-105 CanAssistDocking: |Y| <= 700, Z -10 .. 967.5, wall ends at X -1675",
+    "docs/STATION_EDITING.md:119 docking lane guide and the floor panel exception"
+   ]
+  }
+ },
+ "objects": [
+  {
+   "name": "Deck",
+   "kind": "box",
+   "center": [0, 0, -60],
+   "size": [3400, 2800, 100],
+   "display": "GHOST",
+   "color": [0.35, 0.4, 0.45, 0.25],
+   "note": "The physical floor: X +-1700, Y +-1400, top at Z -10. Visible floor panels sit on it with their top at Z -7.25.",
+   "source": "Source/SpaceSurvival/Private/SSStation.cpp:268 DeckCollision = AddMesh(FVector(0, 0, -60), FVector(34, 28, 1), Cube): the engine cube is 100 cm"
+  },
+  {
+   "name": "Wall boundaries",
+   "kind": "boxes",
+   "display": "WIRE",
+   "color": [0.9, 0.9, 0.9, 1.0],
+   "note": "Solid and invisible in the game. The two mouth halves leave the 1400 cm opening between them.",
+   "boxes": [
+    {"center": [0, -1400, 170], "size": [3400, 30, 450], "source": "Source/SpaceSurvival/Private/SSStation.cpp:289 AddBoundary(FVector(0, Side * 1400, 170), FVector(34, .3f, 4.5f)), Side -1"},
+    {"center": [0, 1400, 170], "size": [3400, 30, 450], "source": "Source/SpaceSurvival/Private/SSStation.cpp:289 AddBoundary(FVector(0, Side * 1400, 170), FVector(34, .3f, 4.5f)), Side +1"},
+    {"center": [-1200, -1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293 AddBoundary(FVector(I * 600, Side * 1400, 500), FVector(.5f, .5f, 10)), I -2, Side -1"},
+    {"center": [-600, -1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I -1, Side -1"},
+    {"center": [0, -1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I 0, Side -1"},
+    {"center": [600, -1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I 1, Side -1"},
+    {"center": [1200, -1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I 2, Side -1"},
+    {"center": [-1200, 1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I -2, Side +1"},
+    {"center": [-600, 1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I -1, Side +1"},
+    {"center": [0, 1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I 0, Side +1"},
+    {"center": [600, 1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I 1, Side +1"},
+    {"center": [1200, 1400, 500], "size": [50, 50, 1000], "source": "Source/SpaceSurvival/Private/SSStation.cpp:292-293, I 2, Side +1"},
+    {"center": [-1700, -1050, 350], "size": [50, 700, 800], "source": "Source/SpaceSurvival/Private/SSStation.cpp:296 AddBoundary(FVector(-1700, -1050, 350), FVector(.5f, 7, 8))"},
+    {"center": [-1700, 1050, 350], "size": [50, 700, 800], "source": "Source/SpaceSurvival/Private/SSStation.cpp:297 AddBoundary(FVector(-1700, 1050, 350), FVector(.5f, 7, 8))"},
+    {"center": [1700, 0, 100], "size": [30, 2800, 200], "source": "Source/SpaceSurvival/Private/SSStation.cpp:298 AddBoundary(FVector(1700, 0, 100), FVector(.3f, 28, 2))"}
+   ]
+  },
+  {
+   "name": "Flight lane",
+   "kind": "box",
+   "rule": "flight_lane",
+   "display": "WIRE",
+   "color": [0.2, 0.85, 1.0, 1.0],
+   "note": "The volume parts must not enter: X -1900..1715, |Y| <= 700, Z -10..967.5. Apply refuses a scene with a part in it.",
+   "source": "rules.flight_lane"
+  },
+  {
+   "name": "Mouth",
+   "kind": "box",
+   "min": [-1700, -700, -10],
+   "max": [-1700, 700, 967.5],
+   "display": "GHOST",
+   "color": [1.0, 0.65, 0.3, 0.2],
+   "note": "The plane a ship crosses to come in: X -1700, the admission gap |Y| <= 700, between the deck and the bay beams.",
+   "source": [
+    "Source/SpaceSurvival/Private/SSStation.cpp:296-297 the split inbound wall at X -1700 leaves Y -700..700 open",
+    "Source/SpaceSurvival/Private/SSStation.cpp:101-105 admission: |Y| <= 700, Z -10 .. 967.5",
+    "Scripts/AuthorStationPitStop.py:37 MOUTH_X, MOUTH_Y, MOUTH_Z = -1700.0, 700.0, (-10.0, 967.5)"
+   ]
+  },
+  {
+   "name": "Approach corridor",
+   "kind": "box",
+   "min": [-17150, -700, -10],
+   "max": [-1700, 700, 967.5],
+   "display": "WIRE",
+   "color": [0.2, 0.85, 1.0, 1.0],
+   "hidden": true,
+   "note": "Outside the hangar, 154 m long; hidden so View All frames the hangar. Show it in the outliner when needed.",
+   "source": "Scripts/AuthorStationPitStop.py:38 CORRIDOR_START_X = -17150.0, with the mouth's Y and Z"
+  },
+  {
+   "name": "Bay ship spot",
+   "kind": "point",
+   "location": [850, 0, 220],
+   "empty": "ARROWS",
+   "size": 300,
+   "note": "Where the docked ship hangs, nose toward +X. Its cradle and service arm are native.",
+   "source": [
+    "Source/SpaceSurvival/Private/SSStation.cpp:299 BayShip = AddMesh(FVector(850, 0, 220), ...)",
+    "Source/SpaceSurvival/Public/SSStation.h:51-54 DockPosition() = FVector(850, 0, 220)"
+   ]
+  },
+  {
+   "name": "Service arm",
+   "kind": "point",
+   "location": [850, 280, 150],
+   "empty": "PLAIN_AXES",
+   "size": 100,
+   "source": "Source/SpaceSurvival/Private/SSStation.cpp:304 ServiceArm = AddMesh(FVector(850, 280, 150), ...)"
+  },
+  {
+   "name": "Walk spawn",
+   "kind": "point",
+   "location": [-300, 0, 180],
+   "empty": "PLAIN_AXES",
+   "size": 100,
+   "note": "Where the pilot stands after docking.",
+   "source": "Source/SpaceSurvival/Public/SSStation.h:47-50 WalkSpawn() = FVector(-300, 0, 180)"
+  },
+  {
+   "name": "Alien World doorway",
+   "kind": "boxes",
+   "display": "WIRE",
+   "color": [0.2, 0.85, 1.0, 1.0],
+   "note": "The cyan doorway frame is native and stays visible in the game.",
+   "boxes": [
+    {"center": [330, 1180, 155], "size": [16, 30, 310], "source": "Source/SpaceSurvival/Private/SSStation.cpp:338-339 AddMesh(FVector(450 + Side * 120, 1180, 155), FVector(.16f, .30f, 3.1f)), Side -1"},
+    {"center": [570, 1180, 155], "size": [16, 30, 310], "source": "Source/SpaceSurvival/Private/SSStation.cpp:338-339, Side +1"},
+    {"center": [450, 1180, 315], "size": [256, 30, 18], "source": "Source/SpaceSurvival/Private/SSStation.cpp:340 AddMesh(FVector(450, 1180, 315), FVector(2.56f, .30f, .18f))"}
+   ]
+  },
+  {"kind": "service", "label": "CORE UPGRADES I - V", "home_label": "LOADOUT / WEAPON", "location": [200, -1000, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:323 AddService(FVector(200, -1000, 0), ...)"},
+  {"kind": "service", "label": "REPAIR BAY", "home_label": "SHIP BAY", "location": [-800, -1000, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:325 AddService(FVector(-800, -1000, 0), ...)"},
+  {"kind": "service", "label": "CONTRACT BOARD", "home_label": "PILOT RECORD", "location": [-1100, 850, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:327 AddService(FVector(-1100, 850, 0), ...)"},
+  {"kind": "service", "label": "SUSPEND / SAVE & QUIT", "home_label": "SYSTEMS", "location": [0, 1000, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:329 AddService(FVector(0, 1000, 0), ...)"},
+  {"kind": "service", "label": "LAUNCH CONTROL", "location": [950, -450, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:331 AddService(FVector(950, -450, 0), TEXT(\"LAUNCH CONTROL\"), ESSPanel::Launch)"},
+  {"kind": "service", "label": "PAINT BAY", "location": [-1400, -1000, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:333 AddService(FVector(-1400, -1000, 0), TEXT(\"PAINT BAY\"), ESSPanel::Paint)"},
+  {"kind": "service", "label": "ALIEN WORLD", "location": [450, 1000, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:335 AddService(FVector(450, 1000, 0), TEXT(\"ALIEN WORLD\"), ESSPanel::AlienGallery)"},
+  {"kind": "service", "label": "ENGINEER MICA / MODULES", "stations_only": true, "location": [1000, 1000, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:343 AddService(FVector(1000, 1000, 0), TEXT(\"ENGINEER MICA / MODULES\"), ESSPanel::Vendor), inside if (!Home)"},
+  {"kind": "service", "label": "BEACON LOG / LOST CREW", "stations_only": true, "location": [-1400, 0, 0], "source": "Source/SpaceSurvival/Private/SSStation.cpp:344 AddService(FVector(-1400, 0, 0), TEXT(\"BEACON LOG / LOST CREW\"), ESSPanel::Reward), inside if (!Home)"}
+ ]
+}

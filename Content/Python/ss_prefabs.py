@@ -106,7 +106,22 @@ def pack_of(asset_path):
     return parts[2] if len(parts) > 2 else 'Game'
 
 
+BLENDER_BASE = '/Game/Blender'   # where Send to Unreal files meshes, one folder per category (Content/Python/ss_send.py)
+
+
+def _folder_name(category):
+    """A category as its folder under BLENDER_BASE: 'Pipes & Cables' -> 'Pipes_Cables' (category_folder in the add-on's send.py)."""
+    return re.sub(r'_+', '_', re.sub(r'[^A-Za-z0-9_]+', '_', category)).strip('_')
+
+
 def classify(asset_path):
+    # A mesh sent from Blender was filed by the owner, who chose its category in the panel: the folder says which.
+    # Its name ('SM_Bracket') would say Misc.
+    if asset_path.startswith(BLENDER_BASE + '/'):
+        folder = asset_path[len(BLENDER_BASE) + 1:].split('/')[0]
+        for category in [c for c, _ in CATEGORIES] + ['Misc']:
+            if _folder_name(category) == folder:
+                return category
     name = asset_path.split('/')[-1].split('.')[0].lower()
     pack = pack_of(asset_path).lower()
     words = re.sub(r'[^a-z0-9]+', ' ', name).split()

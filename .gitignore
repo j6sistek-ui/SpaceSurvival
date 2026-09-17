@@ -49,3 +49,10 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 # Fab listings imported from the vault cache (Scripts/ImportVaultGlb.py): licensed, and outside
 # /Game/SpaceSurvival so they cook only when something references them.
 /Content/Fab/
+
+# Meshes sent from Blender (Content/Python/ss_send.py): experiments, their materials and textures, and
+# kitbashes of licensed pack geometry. Outside /Game/SpaceSurvival so they cook only when something
+# references them. A finished original mesh is added on purpose with `git add -f`.
+/Content/Blender/
+# Scripts/TestSendScenes.py duplicates a licensed pack mesh here; a killed run leaves it until the next run.
+/Content/_SSSelfTest/
