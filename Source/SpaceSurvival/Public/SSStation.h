@@ -3,8 +3,10 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
 #include "SSGameMode.h"
+#include "SSContentTypes.h"
 #include "SSStation.generated.h"
 class ASSShip;
+class USSPhase1Data;
 class UStaticMesh;
 class UStaticMeshComponent;
 class UCameraComponent;
@@ -111,10 +113,20 @@ public:
         return Disembarking;
     }
     void Move(FVector2D Direction, FVector2D Look, bool Run, float DeltaSeconds);
+    /** Whichever hero this build installed. Telemetry and tests ask it for the names and numbers
+     *  they used to spell out, so they follow the hero the player is actually wearing. */
+    const FSSHeroDefinition &GetHero() const
+    {
+        return Hero;
+    }
+    /** Deck plates sit this far above the collision floor; the sole is fitted to them, not to it. */
+    static constexpr float DeckClearance = 2.75f;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USpringArmComponent> Boom;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<UCameraComponent> Camera;
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<USSPhase1Data> Tuning;
 
 private:
     TWeakObjectPtr<ASSStation> RecoveryHub;
@@ -122,9 +134,13 @@ private:
     FQuat ExitStartRotation = FQuat::Identity, ExitEndRotation = FQuat::Identity;
     double ExitElapsed = 0.0;
     bool Disembarking = false;
-    bool bTemporarySpaceHero = false;
+    /** True when the seated pilot is this same hero, so its component transform and its live pose
+     *  carry over to the exit. A stand-in that only walks starts the exit from the ship position. */
+    bool SharesPilotRig = true;
+    FSSHeroDefinition Hero = FSSHeroDefinition::Fallback();
     UPROPERTY()
     TObjectPtr<UAnimSequence> WalkAnimation;
+    double MeshLift(double ScaledSoleOffset) const;
     void SampleExitPose(float Seconds);
     void StartWalkingAnimation();
 };

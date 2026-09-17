@@ -39,6 +39,10 @@ public:
         Encounters = {FSSEncounterDefinition(ESSEncounterKind::SalvageCache),
                       FSSEncounterDefinition(ESSEncounterKind::DistressCombat),
                       FSSEncounterDefinition(ESSEncounterKind::MobileDepot)};
+        // Preference order. The stand-in trooper is first while it is installed; the Acornaut is what
+        // this repository actually ships; the squirrel waits here, inert, until its assets are imported.
+        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Trooper), FSSHeroDefinition(ESSHeroIdentity::Acornaut),
+                  FSSHeroDefinition(ESSHeroIdentity::Squirrel)};
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy")
     FSSEconomyContentTuning Economy;
@@ -152,6 +156,9 @@ public:
     TArray<FSSPickupDefinition> Pickups;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, EditFixedSize, Category = "Content")
     TArray<FSSEncounterDefinition> Encounters;
+    /** Ordered by preference: the first entry this build actually has the assets for wears the slot. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, EditFixedSize, Category = "Content")
+    TArray<FSSHeroDefinition> Heroes;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Director")
     FSSDirectorContentTuning DirectorContent;
     FSSHazardDefinition Hazard(ESSWorldKind Kind) const
@@ -181,6 +188,27 @@ public:
             if (Entry.Kind == Kind)
                 return Entry;
         return FSSEncounterDefinition(Kind);
+    }
+    FSSHeroDefinition Hero(ESSHeroIdentity Identity) const
+    {
+        for (const auto &Entry : Heroes)
+            if (Entry.Identity == Identity)
+                return Entry;
+        return FSSHeroDefinition(Identity);
+    }
+    /** The authored entry for the hero the pawns are built with, whatever else is installed. */
+    FSSHeroDefinition FallbackHero() const
+    {
+        return Hero(FSSHeroDefinition::Fallback().Identity);
+    }
+    /** The first hero in roster order whose mesh and this slot's clip are both present in this build.
+     *  A hero whose assets are absent is skipped, exactly as an uninstalled stand-in always was. */
+    FSSHeroDefinition SelectHero(ESSHeroSlot Slot) const
+    {
+        for (const auto &Entry : Heroes)
+            if (Entry.Installed(Slot))
+                return Entry;
+        return FallbackHero();
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float CruiseSpeed = 2400.f;

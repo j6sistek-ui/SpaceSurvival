@@ -3,6 +3,9 @@
 #include "CoreMinimal.h"
 #include "SSContentTypes.generated.h"
 
+class USkeletalMesh;
+class USkeletalMeshComponent;
+
 /** The two locked contract types expose magnitudes only, never station cadence or extra slots. */
 USTRUCT(BlueprintType)
 struct FSSContractContentTuning
@@ -475,6 +478,160 @@ struct FSSEncounterDefinition
             OfferDelay = 0.f;
             BeaconRadius = 420.f;
             CompletionCredits = 0;
+        }
+    }
+};
+
+/** The two places a hero is worn. A hero that has no clip for a slot is not a candidate for it:
+ *  the temporary trooper walks the deck but has never been seated, so the ship keeps the Acornaut. */
+UENUM(BlueprintType)
+enum class ESSHeroSlot : uint8
+{
+    Walker,
+    Pilot
+};
+
+UENUM(BlueprintType)
+enum class ESSHeroIdentity : uint8
+{
+    /** Licensed stand-in. Wins the walker slot while it is installed; fitted to a height, not to a scale. */
+    Trooper,
+    /** The hero whose mesh and clips are in this repository. Every measured constant below is its own. */
+    Acornaut,
+    /** Authored in Blender, not yet imported. Inert: selection skips it until its assets exist. */
+    Squirrel
+};
+
+/** One hero, described rather than spelled out at the call sites. This carries everything the walking
+ *  pawn and the seated pilot used to hold as literals: where the assets are, how the mesh meets the
+ *  deck, how fast its walk clip was authored to travel, and the bone names the code asks for by hand.
+ *  Selection walks the roster in order and skips a hero whose assets this build does not contain. */
+USTRUCT(BlueprintType)
+struct FSSHeroDefinition
+{
+    GENERATED_BODY()
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Identity")
+    ESSHeroIdentity Identity = ESSHeroIdentity::Acornaut;
+    /** Short stable name for logs and telemetry. Read by people, never parsed. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Identity")
+    FName Id = TEXT("Acornaut");
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString MeshPath = TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2");
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString WalkClipPath = TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair");
+    /** Empty when this hero has never been seated; the pilot slot then falls to the next hero that has. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString PilotClipPath = TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit");
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString DisembarkClipPath = TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair");
+    /** Centimetres from the mesh origin down to the sole at WalkHandoffSeconds, before scale.
+     *  Measured, not guessed: the Acornaut's boot sole sits 62.90269494 cm below its mesh origin. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit")
+    float SoleOffset = 62.90269494f;
+    /** The rendered scale, used when FitHeight is zero. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "0.01"))
+    float MeshScale = 1.5f;
+    /** Non-zero replaces MeshScale and SoleOffset with what the imported bounds give: the scale that
+     *  makes this mesh this many centimetres tall, and the sole those scaled bounds actually reach. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "0"))
+    float FitHeight = 0.f;
+    /** Mesh component yaw that turns the authored facing into the pawn's forward. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit")
+    float MeshYaw = -90.f;
+    /** Where the seated hero sits inside the hull. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit")
+    FVector PilotMountOffset = FVector(-15, 0, 72);
+    /** The pose the walk clip and the disembark clip share. The walk clip is frozen here so the
+     *  standing hero and the hero that has just stepped off the ship are in the same pose. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Motion", meta = (ClampMin = "0"))
+    float WalkHandoffSeconds = .308333333f;
+    /** Ground speed in cm/s at which the walk clip plays at its authored rate, at the rendered scale.
+     *  The Acornaut's 1.2 m/s stride at 1.5 scale is 180. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Motion", meta = (ClampMin = "1"))
+    float WalkSpeed = 180.f;
+    /** The names the code reaches for by hand. A hero that does not have one leaves it None, and
+     *  ResolveBone reports the gap instead of quietly handing back the component transform.
+     *
+     *  These are spellings, not meanings, and the meanings do not line up across heroes. This hero's
+     *  LeftFootBone is a toe and its ankle is L_Ankle; the trooper's foot_l is the ankle and its toe is
+     *  ball_l; the squirrel's L_Foot is the ankle again. Anything that needs a particular joint rather
+     *  than "the bone this hero calls its foot" has to say so, and cannot assume these agree. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    FName RootBone = TEXT("Pelvis");
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    FName PelvisBone = TEXT("Pelvis");
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    FName LeftFootBone = TEXT("L_Foot");
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    FName RightFootBone = TEXT("R_Foot");
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    FName LeftHandBone = TEXT("L_Wrist");
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    FName RightHandBone = TEXT("R_Wrist");
+
+    /** True when this build actually contains the mesh and the clip this slot plays. */
+    bool Installed(ESSHeroSlot Slot) const;
+    /** The scale this hero renders at once its mesh is loaded; FitHeight needs the imported bounds. */
+    float RenderedScale(const USkeletalMesh *Mesh) const;
+    /** Centimetres from the mesh origin down to the sole, already scaled. Double, because a fitted
+     *  hero's bounds are, and the caller's arithmetic has always been carried at their width. */
+    double ScaledSoleOffset(const USkeletalMesh *Mesh) const;
+    /** GetSocketTransform answers an unknown name with the component transform and no complaint, so a
+     *  hero missing a bone measures the wrong thing in silence. This returns false instead, still
+     *  filling Out with that same component transform so a caller that records anyway is unchanged. */
+    static bool ResolveBone(const USkeletalMeshComponent *Mesh, FName Bone, FTransform &Out);
+    /** The hero the pawns are built with. A constructor cannot ask what content is installed and a
+     *  class default must not depend on it, so both pawns start here and BeginPlay decides. It is
+     *  also where selection lands when no hero in the roster is installed. */
+    static FSSHeroDefinition Fallback()
+    {
+        return FSSHeroDefinition(ESSHeroIdentity::Acornaut);
+    }
+
+    FSSHeroDefinition() = default;
+    explicit FSSHeroDefinition(ESSHeroIdentity InIdentity) : Identity(InIdentity)
+    {
+        if (Identity == ESSHeroIdentity::Trooper)
+        {
+            Id = TEXT("Trooper");
+            MeshPath = TEXT("/Game/SciFITrooper_Man_03/SkeletalMesh/SK_SciFITrooper_Man_03.SK_SciFITrooper_Man_03");
+            WalkClipPath = TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonWalk.ThirdPersonWalk");
+            // Never seated: the ship keeps the Acornaut pilot while this stand-in walks the deck.
+            PilotClipPath = FString();
+            DisembarkClipPath =
+                TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonJump_End.ThirdPersonJump_End");
+            // Licensed body of unknown proportions: fitted to 180 cm from its own bounds, sole included.
+            SoleOffset = 0.f;
+            FitHeight = 180.f;
+            // Its rig is the Unreal mannequin set, read out of SK_SciFITrooper_Man_03's reference
+            // skeleton: lowercase, side-suffixed, and sharing not one spelling with the Acornaut's
+            // except the pelvis. Naming them is what lets this hero be measured at all; the hand
+            // bones in particular are what the soak used to record as the component while calling
+            // them wrists. Its ankle is foot_l, as the mannequin means it, and its toe is ball_l.
+            RootBone = TEXT("root");
+            PelvisBone = TEXT("pelvis");
+            LeftFootBone = TEXT("foot_l");
+            RightFootBone = TEXT("foot_r");
+            LeftHandBone = TEXT("hand_l");
+            RightHandBone = TEXT("hand_r");
+        }
+        else if (Identity == ESSHeroIdentity::Squirrel)
+        {
+            Id = TEXT("Squirrel");
+            // Authored in Blender and measured inside Unreal, but not imported: every path below is
+            // still empty on disk, so Installed() is false and selection never reaches this entry.
+            MeshPath = TEXT("/Game/SpaceSurvival/Character/SK_SquirrelHero.SK_SquirrelHero");
+            WalkClipPath = TEXT("/Game/SpaceSurvival/Character/A_SquirrelWalk.A_SquirrelWalk");
+            PilotClipPath = TEXT("/Game/SpaceSurvival/Character/A_SquirrelPilot.A_SquirrelPilot");
+            DisembarkClipPath = TEXT("/Game/SpaceSurvival/Character/A_SquirrelDisembark.A_SquirrelDisembark");
+            // Measured on the imported base: it stands on Z = 0, so its sole is its origin.
+            SoleOffset = 0.f;
+            // 46 bones, root named Root, no fingers and no wrists; its hands are L_Hand and R_Hand,
+            // its L_Foot is the ankle it sounds like. The mount offset and the stride are the
+            // Acornaut's until its own pilot clip exists to measure them from.
+            RootBone = TEXT("Root");
+            LeftHandBone = TEXT("L_Hand");
+            RightHandBone = TEXT("R_Hand");
         }
     }
 };

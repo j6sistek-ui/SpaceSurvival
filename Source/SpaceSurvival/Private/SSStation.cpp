@@ -4,6 +4,7 @@
 #include "SSStationVisualLayout.h"
 #include "SSShipPresentation.h"
 #include "SSShip.h"
+#include "SSPhase1Data.h"
 #include "Misc/PackageName.h"
 #include "SSStationPoseTransition.h"
 #include "SSAudio.h"
@@ -494,54 +495,47 @@ ASSWalker::ASSWalker()
     Boom->bUsePawnControlRotation = true;
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("WalkCamera"));
     Camera->SetupAttachment(Boom);
-    // Measured boot sole at the authored walk handoff is -62.90269494 cm, below the ankle bone.
-    // Fit it to the deck plates (2.75 cm above collision), including UE's normal walking floor gap.
-    const float WalkingFloorGap =
-        (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
-    GetMesh()->SetRelativeLocation(FVector(
-        0, 0, 62.90269494f * 1.5f - GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - WalkingFloorGap + 2.75f));
-    GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
-    GetMesh()->SetRelativeScale3D(FVector(1.5f));
+    // Built with the fallback hero, because a constructor cannot ask what content is installed.
+    // BeginPlay applies whichever hero this build actually has, over these same three calls.
+    GetMesh()->SetRelativeLocation(FVector(0, 0, MeshLift(Hero.ScaledSoleOffset(nullptr))));
+    GetMesh()->SetRelativeRotation(FRotator(0, Hero.MeshYaw, 0));
+    GetMesh()->SetRelativeScale3D(FVector(Hero.RenderedScale(nullptr)));
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     GetMesh()->bForceMipStreaming = true;
+}
+double ASSWalker::MeshLift(double ScaledSoleOffset) const
+{
+    // Stand the hero's own measured sole on the deck plates, including UE's normal walking floor gap.
+    const float WalkingFloorGap =
+        (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
+    return ScaledSoleOffset - GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - WalkingFloorGap + DeckClearance;
 }
 void ASSWalker::BeginPlay()
 {
     Super::BeginPlay();
-    const TCHAR *TemporaryMesh =
-        TEXT("/Game/SciFITrooper_Man_03/SkeletalMesh/SK_SciFITrooper_Man_03.SK_SciFITrooper_Man_03");
-    const TCHAR *TemporaryWalk = TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonWalk.ThirdPersonWalk");
-    bTemporarySpaceHero =
-        FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(TemporaryMesh))) &&
-        FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(TemporaryWalk)));
-    USkeletalMesh *HeroMesh = LoadObject<USkeletalMesh>(
-        nullptr, bTemporarySpaceHero ? TemporaryMesh
-                                     : TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2"));
-    WalkAnimation = LoadObject<UAnimSequence>(
-        nullptr,
-        bTemporarySpaceHero ? TemporaryWalk : TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair"));
-    if (bTemporarySpaceHero && (!HeroMesh || !WalkAnimation || HeroMesh->GetSkeleton() != WalkAnimation->GetSkeleton()))
+    if (!Tuning)
+        Tuning = LoadObject<USSPhase1Data>(nullptr, TEXT("/Game/SpaceSurvival/Data/DA_Phase1.DA_Phase1"));
+    if (!Tuning)
+        Tuning = NewObject<USSPhase1Data>(this);
+    Hero = Tuning->SelectHero(ESSHeroSlot::Walker);
+    USkeletalMesh *HeroMesh = LoadObject<USkeletalMesh>(nullptr, *Hero.MeshPath);
+    WalkAnimation = LoadObject<UAnimSequence>(nullptr, *Hero.WalkClipPath);
+    const FSSHeroDefinition Shipped = Tuning->FallbackHero();
+    // A clip can only play on the skeleton it was authored against. An installed hero whose assets
+    // fail to load, or whose walk belongs to another skeleton, gives the slot back to the shipped hero.
+    if (Hero.Identity != Shipped.Identity &&
+        (!HeroMesh || !WalkAnimation || HeroMesh->GetSkeleton() != WalkAnimation->GetSkeleton()))
     {
-        bTemporarySpaceHero = false;
-        HeroMesh = LoadObject<USkeletalMesh>(nullptr,
-                                             TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2"));
-        WalkAnimation =
-            LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair"));
+        Hero = Shipped;
+        HeroMesh = LoadObject<USkeletalMesh>(nullptr, *Hero.MeshPath);
+        WalkAnimation = LoadObject<UAnimSequence>(nullptr, *Hero.WalkClipPath);
     }
+    // Only a hero who also flies the ship inherits the seated component transform and its live pose.
+    SharesPilotRig = Tuning->SelectHero(ESSHeroSlot::Pilot).Identity == Hero.Identity;
     GetMesh()->SetSkeletalMesh(HeroMesh);
-    if (bTemporarySpaceHero && HeroMesh)
-    {
-        const FBoxSphereBounds Bounds = HeroMesh->GetBounds();
-        const float Height = Bounds.BoxExtent.Z * 2.f;
-        const float Scale = Height > 1.f ? 180.f / Height : 1.f;
-        const float WalkingFloorGap =
-            (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
-        GetMesh()->SetRelativeLocation(FVector(0.f, 0.f,
-                                               -(Bounds.Origin.Z - Bounds.BoxExtent.Z) * Scale -
-                                                   GetCapsuleComponent()->GetScaledCapsuleHalfHeight() -
-                                                   WalkingFloorGap + 2.75f));
-        GetMesh()->SetRelativeScale3D(FVector(Scale));
-    }
+    GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, MeshLift(Hero.ScaledSoleOffset(HeroMesh))));
+    GetMesh()->SetRelativeRotation(FRotator(0, Hero.MeshYaw, 0));
+    GetMesh()->SetRelativeScale3D(FVector(Hero.RenderedScale(HeroMesh)));
     StartWalkingAnimation();
 }
 void ASSWalker::StartWalkingAnimation()
@@ -550,8 +544,8 @@ void ASSWalker::StartWalkingAnimation()
     if (auto *Animation = GetMesh()->GetSingleNodeInstance())
     {
         Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
-        // The paired disembark clip ends at this exact authored A_Walk pose.
-        Animation->SetPosition(.308333333f, false);
+        // The paired disembark clip ends at this exact authored walk pose.
+        Animation->SetPosition(Hero.WalkHandoffSeconds, false);
     }
     GetMesh()->GlobalAnimRateScale = 0.f;
     GetMesh()->TickAnimation(0.f, false);
@@ -570,17 +564,16 @@ void ASSWalker::SampleExitPose(float Seconds)
 bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing,
                                const FPoseSnapshot *SourcePose)
 {
-    auto *ExitAnimation = LoadObject<UAnimSequence>(
-        nullptr, bTemporarySpaceHero
-                     ? TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonJump_End.ThirdPersonJump_End")
-                     : TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair"));
+    auto *ExitAnimation =
+        Hero.DisembarkClipPath.IsEmpty() ? nullptr : LoadObject<UAnimSequence>(nullptr, *Hero.DisembarkClipPath);
     if (!ExitAnimation || !WalkAnimation || !GetMesh()->GetSkeletalMeshAsset())
         return false;
     // Component local transform * actor transform = the actual seated pilot component transform.
-    // This preserves yaw, local mesh offset and the constant 1.5 mesh scale without interpolated shrinking.
-    const FTransform StartTransform = bTemporarySpaceHero
-                                          ? FTransform(Facing, PilotWorldTransform.GetLocation(), FVector::OneVector)
-                                          : GetMesh()->GetRelativeTransform().Inverse() * PilotWorldTransform;
+    // This preserves yaw, local mesh offset and the hero's own mesh scale without interpolated shrinking.
+    // A hero who never flies the ship has no seat of its own and starts from the ship position instead.
+    const FTransform StartTransform = SharesPilotRig
+                                          ? GetMesh()->GetRelativeTransform().Inverse() * PilotWorldTransform
+                                          : FTransform(Facing, PilotWorldTransform.GetLocation(), FVector::OneVector);
     ExitStart = StartTransform.GetLocation();
     ExitStartRotation = StartTransform.GetRotation();
     ExitEndRotation = Facing.Quaternion();
@@ -603,19 +596,58 @@ bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector En
     ConsumeMovementInputVector();
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SetActorTransform(StartTransform, false, nullptr, ETeleportType::TeleportPhysics);
-    if (!bTemporarySpaceHero && SourcePose && SourcePose->bIsValid)
+    // Losing the seated pose is not fatal: the exit still plays, from the clip's own first pose rather
+    // than from the pose the pilot was actually holding. It is a visible seam either way, so one place
+    // decides it and one line says it out loud. The reasons the transition works out are only half of
+    // them; the half that fires on every transition today is that the hero walking the deck was never
+    // the hero in the seat, and that used to be the one case that passed in silence.
+    ESSPoseRefusal Refusal = ESSPoseRefusal::Accepted;
+    if (!SharesPilotRig)
+        Refusal = ESSPoseRefusal::NotSharedRig;
+    else if (!SourcePose || !SourcePose->bIsValid)
+        Refusal = ESSPoseRefusal::NoSnapshot;
+    else
     {
         GetMesh()->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
         if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
         {
             Transition->SetAnimationAsset(ExitAnimation, false, 1.f);
-            Transition->SetSourcePose(*SourcePose);
+            Transition->SetSourcePose(*SourcePose, &Refusal);
         }
         else
-            GetMesh()->PlayAnimation(ExitAnimation, false);
+            Refusal = ESSPoseRefusal::NoTransitionInstance;
     }
-    else
-        GetMesh()->PlayAnimation(ExitAnimation, false);
+    if (Refusal != ESSPoseRefusal::Accepted)
+    {
+        // A pose the transition itself refused leaves that instance already holding the exit clip.
+        // The reasons decided above never reached it, so those still have to start the clip.
+        if (Refusal == ESSPoseRefusal::NotSharedRig || Refusal == ESSPoseRefusal::NoSnapshot ||
+            Refusal == ESSPoseRefusal::NoTransitionInstance)
+            GetMesh()->PlayAnimation(ExitAnimation, false);
+        const FString PilotId = Tuning ? Tuning->SelectHero(ESSHeroSlot::Pilot).Id.ToString() : FString(TEXT("none"));
+        const FString SnapshotMesh = SourcePose ? SourcePose->SkeletalMeshName.ToString() : FString(TEXT("none"));
+        const FString Line = FString::Printf(
+            TEXT("SSDisembark: the walking hero '%s' could not carry a seated pose into its exit because %s. "
+                 "The exit starts from the clip instead. pilotHero=%s walkerMesh=%s walkerBones=%d "
+                 "snapshotMesh=%s snapshotBones=%d"),
+            *Hero.Id.ToString(), USSStationPoseTransition::RefusalReason(Refusal), *PilotId,
+            *GetNameSafe(GetMesh()->GetSkeletalMeshAsset()),
+            GetMesh()->GetSkeletalMeshAsset()->GetRefSkeleton().GetNum(), *SnapshotMesh,
+            SourcePose ? SourcePose->LocalTransforms.Num() : 0);
+        // Two of these are the expected shape of a call, not a fault. A stand-in that only walks the deck
+        // has no seat of its own, and the exit is deliberately started without a pose where there never
+        // was one. Those explain the seam at Log, which keeps it in the log file without training anyone
+        // to ignore warnings on a build that is behaving exactly as designed. A pose that was handed over
+        // and still could not be carried is a rig that should have matched and did not: that is a warning.
+        if (Refusal == ESSPoseRefusal::NotSharedRig || Refusal == ESSPoseRefusal::NoSnapshot)
+        {
+            UE_LOG(LogTemp, Log, TEXT("%s"), *Line);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("%s"), *Line);
+        }
+    }
     if (auto *Animation = GetMesh()->GetSingleNodeInstance())
     {
         Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
@@ -689,7 +721,8 @@ void ASSWalker::Tick(float Dt)
                 GetCharacterMovement()->SetMovementMode(MOVE_Walking);
             }
         }
-        GetMesh()->GlobalAnimRateScale = GetVelocity().Size2D() / 180.f;
+        // The stride plays at its authored rate at the hero's own natural walking speed.
+        GetMesh()->GlobalAnimRateScale = GetVelocity().Size2D() / FMath::Max(1.f, Hero.WalkSpeed);
     }
 }
 void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)

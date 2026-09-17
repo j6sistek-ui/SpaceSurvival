@@ -190,9 +190,11 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
     }
     if (auto *GM = Mode.Get(); GM && !Gallery)
     {
-        auto *Mesh = IsValid(GM->Walker) && UGameplayStatics::GetPlayerPawn(this, 0) == GM->Walker
-                         ? GM->Walker->GetMesh()
-                         : GM->Ship->Pilot.Get();
+        const bool Walking = IsValid(GM->Walker) && UGameplayStatics::GetPlayerPawn(this, 0) == GM->Walker;
+        auto *Mesh = Walking ? GM->Walker->GetMesh() : GM->Ship->Pilot.Get();
+        // Whose bone names to ask for: the hero actually wearing the measured component.
+        const FSSHeroDefinition &Hero = Walking ? GM->Walker->GetHero() : GM->Ship->GetPilotHero();
+        Row->SetStringField(TEXT("hero"), Hero.Id.ToString());
         if (auto *Animation = Mesh->GetSingleNodeInstance())
         {
             Row->SetStringField(TEXT("animation"), GetPathNameSafe(Animation->GetCurrentAsset()));
@@ -215,8 +217,26 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         }
         Row->SetBoolField(TEXT("pilotVisible"), GM->Ship->Pilot->IsVisible());
         Row->SetStringField(TEXT("pilotTransform"), Mesh->GetComponentTransform().ToHumanReadableString());
-        Row->SetStringField(TEXT("leftWrist"), Mesh->GetSocketTransform(TEXT("L_Wrist")).ToHumanReadableString());
-        Row->SetStringField(TEXT("rightWrist"), Mesh->GetSocketTransform(TEXT("R_Wrist")).ToHumanReadableString());
+        // A hero that does not have the asked-for bone used to read back as the component itself, which
+        // looks like a measurement. The value is still recorded, now beside the name it stands for and
+        // an explicit admission when that name resolved to nothing.
+        auto RecordBone = [&Row, Mesh, &Hero](const TCHAR *Field, FName Bone)
+        {
+            FTransform Transform;
+            const bool Resolved = FSSHeroDefinition::ResolveBone(Mesh, Bone, Transform);
+            Row->SetStringField(Field, Transform.ToHumanReadableString());
+            Row->SetStringField(FString(Field) + TEXT("Bone"), Bone.ToString());
+            if (!Resolved)
+            {
+                Row->SetBoolField(FString(Field) + TEXT("Missing"), true);
+                UE_LOG(LogTemp, Warning,
+                       TEXT("SOAK_BONE_MISSING field=%s hero=%s bone=%s mesh=%s; the component transform was "
+                            "recorded because this hero has no such bone."),
+                       Field, *Hero.Id.ToString(), *Bone.ToString(), *GetPathNameSafe(Mesh->GetSkeletalMeshAsset()));
+            }
+        };
+        RecordBone(TEXT("leftWrist"), Hero.LeftHandBone);
+        RecordBone(TEXT("rightWrist"), Hero.RightHandBone);
     }
     if (Gallery)
     {

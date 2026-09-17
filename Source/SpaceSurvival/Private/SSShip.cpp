@@ -54,9 +54,11 @@ ASSShip::ASSShip()
     Pilot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     // The player is always close to this single shared hero texture.
     Pilot->bForceMipStreaming = true;
-    Pilot->SetRelativeLocation(FVector(-15, 0, 72));
-    Pilot->SetRelativeRotation(FRotator(0, -90, 0));
-    Pilot->SetRelativeScale3D(FVector(1.5f));
+    // Seated with the fallback hero, because a constructor cannot ask what content is installed.
+    // BeginPlay reapplies these three from whichever hero this build actually seats.
+    Pilot->SetRelativeLocation(PilotHero.PilotMountOffset);
+    Pilot->SetRelativeRotation(FRotator(0, PilotHero.MeshYaw, 0));
+    Pilot->SetRelativeScale3D(FVector(PilotHero.RenderedScale(nullptr)));
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ChaseBoom"));
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 900.f;
@@ -124,8 +126,29 @@ void ASSShip::BeginPlay()
         LoadObject<UStaticMesh>(nullptr, HullAssetPath(GI ? GI->Session.run.ship : SS::Ship::Starter)));
     Presentation->SetHull(HullMesh);
     RefreshPaint();
-    Pilot->SetSkeletalMesh(
-        LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
+    PilotHero = Tuning->SelectHero(ESSHeroSlot::Pilot);
+    auto *PilotMesh = LoadObject<USkeletalMesh>(nullptr, *PilotHero.MeshPath);
+    auto *PilotClip =
+        PilotHero.PilotClipPath.IsEmpty() ? nullptr : LoadObject<UAnimSequence>(nullptr, *PilotHero.PilotClipPath);
+    const FSSHeroDefinition Shipped = Tuning->FallbackHero();
+    // The same guard the walker keeps, for the same reason: a clip can only play on the skeleton it was
+    // authored against. An installed hero whose assets fail to load, or whose pilot clip belongs to
+    // another rig, gives the seat back to the shipped hero instead of evaluating somebody else's body.
+    if (PilotHero.Identity != Shipped.Identity &&
+        (!PilotMesh || !PilotClip || PilotMesh->GetSkeleton() != PilotClip->GetSkeleton()))
+    {
+        UE_LOG(LogTemp, Warning,
+               TEXT("SSPilot: hero '%s' cannot take the seat and is demoted to '%s'. mesh=%s clip=%s"),
+               *PilotHero.Id.ToString(), *Shipped.Id.ToString(), *PilotHero.MeshPath, *PilotHero.PilotClipPath);
+        PilotHero = Shipped;
+        PilotMesh = LoadObject<USkeletalMesh>(nullptr, *PilotHero.MeshPath);
+        PilotClip =
+            PilotHero.PilotClipPath.IsEmpty() ? nullptr : LoadObject<UAnimSequence>(nullptr, *PilotHero.PilotClipPath);
+    }
+    Pilot->SetSkeletalMesh(PilotMesh);
+    Pilot->SetRelativeLocation(PilotHero.PilotMountOffset);
+    Pilot->SetRelativeRotation(FRotator(0, PilotHero.MeshYaw, 0));
+    Pilot->SetRelativeScale3D(FVector(PilotHero.RenderedScale(PilotMesh)));
     const auto *LoadedHull = HullMesh->GetStaticMesh().Get();
     const bool ClosedCockpit =
         LoadedHull &&
@@ -133,8 +156,7 @@ void ASSShip::BeginPlay()
          LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/")));
     // Preserve the animated component and its exit-pose handoff under the closed hull.
     Pilot->SetVisibility(!ClosedCockpit);
-    Pilot->PlayAnimation(
-        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit")), true);
+    Pilot->PlayAnimation(PilotClip, true);
     EngineAudio->SetSound(SSAudio::PresentationSound(TEXT("Engine")));
     UpdateEngineMix();
     EngineAudio->Play();

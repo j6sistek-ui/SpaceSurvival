@@ -87,7 +87,7 @@ beneath it. Establish which branch executes before editing anything here.
 | RPT-20260916-16 fly-through space | `SSSpaceScenery.cpp:38` calls `SetActorEnableCollision(false)` in the constructor, which overrides the per-component setting at `:288`. The ship also blocks only `ECC_WorldStatic` at `SSShip.cpp:35-36`, and no WorldStatic geometry exists in the flight world. | There is no small fix. Making landmarks WorldStatic also stops cannon projectiles on them, because the sweeps at `SSWorldActors.cpp:916/924` filter by object type so a response container cannot isolate weapons, while the laser still passes through and enemies move unswept at `:490`, meaning only the player is blocked. Needs authored invisible envelopes per placement. Medium to large. |
 | RPT-20260916-14 Nerves lighting | **Referent UNDETERMINED and the investigation's root cause was rejected.** `SSVFXPresentation.cpp:349-351` deliberately disables every Niagara light renderer on every private system, per `docs/ARCHITECTURE.md:133` and `docs/CONTENT_PIPELINE.md:70`. That is a documented architectural decision, not a wiring bug. | Do not start until the owner names the effect. Re-enabling a light renderer reverses documented policy and bypasses the 20-light budget at `SSVFXPresentation.cpp:199`. RPT-20260916-19 is a rival referent, since its subject is also lighting, as fog and light rays. |
 | RPT-20260916-18 input glyphs | Two gaps: the B23 pack was never copied out of the gitignored staging root into `Content/`, and nothing in the game tracks the active input device, so every prompt must print both names. | Must carry a `DirectoriesToAlwaysCook` entry or the glyphs ship blank in the package while every test still passes, a failure mode `docs/CONTENT_PIPELINE.md:80` already documents. The device latch must sit ABOVE the gallery early-return in `ASSPlayerController::PlayerTick` or gallery prompts never update. Leave `USSAlienGallery::Status()` alone; it is asserted at `SSAlienGalleryAutomationTests.cpp:97`. |
-| RPT-20260916-15 hero | The engine-side swap is NOT a mesh path change. `SSStation.cpp:481-483` sets `bTemporarySpaceHero` from `DoesPackageExist` on the two SciFITrooper paths; both exist on this machine, so the flag is TRUE, the trooper branch at `:485-489` is taken and the fallback branch at `:492-496` is DEAD CODE. A second hero is hardcoded at `SSShip.cpp:110` as the seated pilot `SK_AcornautTailV2`. The authored seated-to-standing blend requires walker and pilot to be the SAME asset, because `SSStationPoseTransition.cpp:61` rejects the pose unless the skeletal mesh names match. The auto-fit scale and sole-offset block at `SSStation.cpp:499-510` is itself gated behind `bTemporarySpaceHero`. | A mesh dropped into the other slot inherits the constructor constants at `:466-471`: 1.5 scale, -90 yaw, 62.9 cm sole offset. The squirrel is 1,958,812 triangles against the current hero's roughly 197,000, with no LODs, on the pawn closest to camera; it needs decimation and an owner triangle budget. Retarget from the existing Acornaut clips rather than the trooper or mannequin, because `SSStation.cpp:521` seeks the walk clip to authored phase 0.308333333 and `:612` uses the 0.82 / 1.6 / 2.4 disembark window, and retargeting preserves clip length so those constants stay valid. |
+| RPT-20260916-15 hero | The engine-side swap is NOT a mesh path change. `SSStation.cpp:481-483` sets `bTemporarySpaceHero` from `DoesPackageExist` on the two SciFITrooper paths; both exist on this machine, so the flag is TRUE, the trooper branch at `:485-489` is taken and the fallback branch at `:492-496` is DEAD CODE. A second hero is hardcoded at `SSShip.cpp:110` as the seated pilot `SK_AcornautTailV2`. The authored seated-to-standing blend requires walker and pilot to be the SAME asset, because `SSStationPoseTransition.cpp:61` rejects the pose unless the skeletal mesh names match. The auto-fit scale and sole-offset block at `SSStation.cpp:499-510` is itself gated behind `bTemporarySpaceHero`. | A mesh dropped into the other slot inherits the constructor constants at `:466-471`: 1.5 scale, -90 yaw, 62.9 cm sole offset. The squirrel is 1,958,812 triangles against the current hero's roughly 197,000, with no LODs, on the pawn closest to camera; it needs decimation and an owner triangle budget. Retargeting from the Acornaut clips was the September 16 recommendation; it is **superseded**. Measured on September 17: the two skeletons share four bone names out of 52 and 46, and those four mean different things, so the clips must be authored fresh against the squirrel rig. The constants named here are no longer literals: see the September 17 hero-slot entry below. |
 
 **AGENTS.md verdict.** The audit's own initial claim that the validation section is a stale restatement of
 IMPLEMENT.md was REJECTED by its verifier. `AGENTS.md:76` reads "validate every applicable requirement in
@@ -1208,6 +1208,46 @@ also that the admission tick still stops at `MaximumActiveThreats` (24); only th
 `ss.HazardCount`, so 40 is not reachable yet. That is left alone until someone has flown the corrected field.
 
 
+
+#### September 17 the hero slot is described by data, and what the squirrel measured against it
+
+Two things happened to the hero on September 17. The model itself is built, Blender-only, under the ignored
+`.agent/local/HeroSquirrel/`: cleaned, re-rigged symmetric on 46 bones with five real tail bones and a straightened
+tail, brought from 1,958,812 triangles to **198,994** with three LODs under it, and frozen as a base GLB with a
+receipt and a validator. None of it is in the game.
+
+**What Unreal says about it** (`.agent/local/HeroSquirrel/Stage5_Unreal/PROBE_FINDINGS.md`, measured in two probe
+imports into the ignored, never-cooked `/Game/Blender/_HeroProbe`, deleted after): the import is clean. 46 bones,
+`Root` at index 0, the glTF skin order kept index for index, no inserted root, no rename, no mirror, correct
+centimetres, standing on Z = 0, facing +Y — which is the direction the −90° yaw on the mesh component already
+expects. A test clip authored with the stage-4 composition poses the wrist, elbow, tail and head in Unreal to
+within **0.0005 mm** of what Blender measured, so clips will play as they look. The engine's own render of the
+imported asset is `Stage5_Unreal/ImportedPreview.png`.
+
+**The obstacle is the slot, not the model.** `SK_AcornautTailV2` has 52 bones and shares only four names with the
+squirrel — `Head`, `Pelvis`, `L_Foot`, `R_Foot` — and they do not mean the same thing: the Acornaut's `Pelvis` is
+its root and its `L_Foot` is a toe, where the squirrel's `L_Foot` is the ankle. Every existing clip is bound to
+`geometry_0_Skeleton`, so all three must be re-authored; `SSStationPoseTransition` would refuse a pose snapshot
+across them, correctly. `SSWave10Soak` asked for `L_Wrist`/`R_Wrist`, which the squirrel does not have, and a
+missing socket returns the component transform without complaining.
+
+**So the hero is now data.** `FSSHeroDefinition` in `SSContentTypes.h` carries a hero's mesh, its three clips, the
+sole offset that stands it on the deck, its scale or fit-height, its mesh yaw, the pilot mount, the walk handoff
+second, the walk speed and the bone names the code asks for by hand; `USSPhase1Data::Heroes` holds the trooper,
+the Acornaut and an inert squirrel entry whose assets do not exist yet, and `SelectHero(slot)` picks the first one
+actually installed, exactly as the old `bTemporarySpaceHero` test did. The literals are gone from `ASSWalker`,
+`ASSShip` and the soak. **Nothing the player sees changes**: four new tests in
+`SSHeroSlotAutomationTests.cpp` pin today's numbers as literals so a later edit to the data cannot move the
+current hero, 58 of 58 automation tests pass, and the Station 5 exit capture `9856021450074177907d2a8789a67467`
+shows the walker riding the disembark arc and landing with its boots on the deck as before.
+
+Two silences were also given a voice: `BeginDisembark` no longer discards the pose-snapshot result and says which
+of the seven reasons refused it, and asking for a bone a hero does not have now returns false instead of quietly
+reading the component transform.
+
+**Still open:** the three clips (upright walk — the owner's instruction, "upright walk, not the scamper" — plus
+pilot and disembark) are being authored against the frozen base; the seat fit that replaces the Acornaut-shaped
+`(-15, 0, 72)` pilot mount is not measured yet; and nothing has been imported into the game.
 
 #### September 17 the station target: what a pit stop looks like in this game
 
