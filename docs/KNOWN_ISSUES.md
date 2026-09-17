@@ -1200,6 +1200,37 @@ case for interior dressing. The kitbash is **ten complete station designs in one
 million triangles, sixty-three materials**, and is the asset the owner meant. Nanite is already in use in this
 project, so its density is usable rather than a problem.
 
+#### September 17 the station target: what was built
+
+**Exterior.** `Scripts/AuthorStationPitStop.py` (Blender, headless) composes the body from kitbash station 3 at
+6.5x: a 180 m disc with its tower, and under its rim a dock module built as slabs around the hangar volume, so the
+bay is open by construction and each slab is one collision box. The bow plate's inner edge is the admission gap
+exactly (|Y| <= 700, Z -10..967.5 at X = -1700); a warm frame and bar mark it; window rows, cyan edge strips,
+outrigger fins with nav lights and thirty kitbash greebles (size-capped, kept out of the mouth by test) make it read
+as a lit, inhabited thing. Approach lane and beacons are part of the mesh. Every run renders nine views (approach,
+front, under, side, quarter, ghost-through-the-mouth, keel under/side) and prints checks: zero body vertices inside
+the hangar, mouth opening, enclosure margins. `Scripts/ImportStationPitStop.py` brings the glTF in at 0.01 scale as
+one Nanite mesh, checks its size and centre against the receipt and records that the round trip mirrors Y;
+`Scripts/GenerateStationPitStopBoxes.py` writes the thirteen collision boxes into `SSStationPitStopBoxes.inl` with
+that sign, and `ASSStation::BuildHub` places body and boxes natively when the asset exists (the old exterior is the
+fallback). Interior: `Scripts/PrepareStationPitStopLayout.py` writes the hangar recipe (mezzanines, gantry, stacks,
+pipes, banners, the paint bay, amber overhead and mouth spill) and asserts the flight lane stays empty.
+
+**Verification.** The Station5 route must be captured with `Scripts/CaptureEndgame.ps1 -Scenario Station5 -Editor
+-CaptureVisuals`: the default mode runs the packaged build in `Artifacts/Windows`, which still holds the old
+exterior until the next package. The layout library now logs which rule rejected a recipe instead of returning
+nothing (the first failure was a licensed screen mesh with an empty material slot).
+
+**Ship painter (owner request).** `PAINT BAY` service at (-1400, -1000) in every hub; panel cycles four sections
+(body, wings, engines, weapons; found from each slot's material name, glass and lights excluded) over ten flat
+finishes plus factory. Choices live on the account (`ACCOUNT` payload version 3; version 2 loads as factory) and
+repaint the flying ship and the bay ship at once. `SSShipPaint.cpp`; tests `SpaceSurvival.Paint.*`.
+
+**Prefab library and Blender live link (owner request).** See [PREFAB_LIVE_LINK.md](PREFAB_LIVE_LINK.md): every
+owned static mesh catalogued by category with a glTF proxy, prefabs as `Prefabs/<Category>/<Name>.json`, the
+`SS Prefabs` editor menu, and a Blender add-on that pushes, pulls and follows live over the engine's Python remote
+execution. Both sides have headless self-tests.
+
 
 ## Review route when playtesting resumes
 
