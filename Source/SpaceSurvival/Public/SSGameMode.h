@@ -10,6 +10,7 @@ class ASSStation;
 class ASSWalker;
 class USSSurvivalDirectorComponent;
 class ASSEncounterBeacon;
+class USSInputGlyphSet;
 
 enum class ESSPanel
 {
@@ -99,6 +100,7 @@ public:
 
 private:
     friend class ASSPlayerController;
+    friend class ASSHUD; // DrawPrompt reads the glyph sets; main did not build without this.
     friend class ASSWave10Soak;
     friend class FSSAudioFirstState;
     bool bAutomatedSoakInput = false;
@@ -133,6 +135,12 @@ private:
     TObjectPtr<class USoundBase> AlarmSound;
     UPROPERTY()
     TObjectPtr<class USoundAttenuation> AlarmAttenuation;
+    // Device-aware HUD prompts: assign one set per device once the owned B23
+    // glyph textures are imported. Unassigned actions fall back to text.
+    UPROPERTY(EditDefaultsOnly, Category = "Input Glyphs")
+    TObjectPtr<USSInputGlyphSet> KeyboardGlyphs;
+    UPROPERTY(EditDefaultsOnly, Category = "Input Glyphs")
+    TObjectPtr<USSInputGlyphSet> GamepadGlyphs;
     int32 PreviousPhase = -1, PreviousWave = -1;
     int32 SelectedShip = 0, SelectedWeapon = 0;
     int32 HistoryPage = 0;
@@ -178,7 +186,13 @@ public:
         return InputFamily;
     }
 
+    // True when the most recent frame's input came from a gamepad rather than
+    // keyboard/mouse. Drives which device's HUD prompt/glyph is shown.
+    UPROPERTY(BlueprintReadOnly)
+    bool bLastInputWasGamepad = false;
+
 private:
+    void UpdateLastInputDevice();
     bool BoostLatch = false, BrakeLatch = false;
     TWeakObjectPtr<APawn> LastInputPawn;
     ESSInputFamily InputFamily = ESSInputFamily::KeyboardMouse;

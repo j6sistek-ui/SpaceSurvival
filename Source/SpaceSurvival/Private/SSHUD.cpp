@@ -2,11 +2,13 @@
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSAlienGallery.h"
+#include "SSInputGlyphs.h"
 #include "SSShip.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Engine/Canvas.h"
 #include "Engine/Font.h"
+#include "Engine/Texture2D.h"
 #include "CanvasItem.h"
 #include "EngineFontServices.h"
 #include "Fonts/FontMeasure.h"
@@ -206,6 +208,26 @@ void ASSHUD::Stroke(FVector2D A, FVector2D B, FLinearColor Color, float Width)
     // A dark under-stroke retains the symbol against stars, lamps and light rock.
     DrawLine(A.X, A.Y, B.X, B.Y, FLinearColor(0.f, .008f, .015f, .8f), (Width + 2.f) * Scale);
     DrawLine(A.X, A.Y, B.X, B.Y, Color, Width * Scale);
+}
+float ASSHUD::DrawPrompt(FName ActionId, const FString &KeyboardLabel, const FString &GamepadLabel, float X, float Y,
+                         float Size, FLinearColor Color)
+{
+    const auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+    const auto *PC = Cast<ASSPlayerController>(GetOwningPlayerController());
+    const bool Gamepad = PC && PC->bLastInputWasGamepad;
+    const USSInputGlyphSet *Set = GM ? (Gamepad ? GM->GamepadGlyphs : GM->KeyboardGlyphs) : nullptr;
+    UTexture2D *Icon = (Set && !ActionId.IsNone()) ? Set->Find(ActionId) : nullptr;
+    if (!Icon)
+    {
+        const FString &Label = Gamepad ? GamepadLabel : KeyboardLabel;
+        Text(Label, X, Y, Size, Color);
+        return X + MeasureText(Label, Size).X;
+    }
+    const float IconSize = 24.f * Scale * Size;
+    FCanvasTileItem TileItem(FVector2D(X, Y), Icon->GetResource(), FVector2D(IconSize, IconSize), Color);
+    TileItem.BlendMode = SE_BLEND_Translucent;
+    Canvas->DrawItem(TileItem);
+    return X + IconSize + 6.f * Scale;
 }
 void ASSHUD::ThreatGlyph(FVector2D Centre, bool Flanker, bool Charging, float Size, FLinearColor Color)
 {

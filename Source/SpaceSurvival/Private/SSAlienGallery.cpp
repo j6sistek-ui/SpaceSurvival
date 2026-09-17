@@ -62,11 +62,31 @@ bool USSAlienGallery::Enter(APlayerController *PC, bool Assets)
 {
     auto *GI = GetWorld() ? GetWorld()->GetGameInstance<USSGameInstance>() : nullptr;
     auto *Walker = PC ? Cast<ASSWalker>(PC->GetPawn()) : nullptr;
-    if (IsActive() || !GI || !Walker || Walker->IsDisembarking() ||
-        (GI->Session.run.phase != SS::Phase::Hangar && GI->Session.run.phase != SS::Phase::Station))
+    if (IsActive())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ALIEN_GALLERY_ENTER_REJECTED reason=AlreadyActive"));
         return false;
+    }
+    if (!GI || !Walker)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ALIEN_GALLERY_ENTER_REJECTED reason=%s"),
+               GI ? TEXT("NoWalkerPawn") : TEXT("NoGameInstance"));
+        return false;
+    }
+    if (Walker->IsDisembarking())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ALIEN_GALLERY_ENTER_REJECTED reason=Disembarking"));
+        return false;
+    }
+    if (GI->Session.run.phase != SS::Phase::Hangar && GI->Session.run.phase != SS::Phase::Station)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ALIEN_GALLERY_ENTER_REJECTED reason=WrongPhase phase=%d"),
+               static_cast<int32>(GI->Session.run.phase));
+        return false;
+    }
     if (!FPackageName::DoesPackageExist(MapPath(Assets)))
     {
+        UE_LOG(LogTemp, Warning, TEXT("ALIEN_GALLERY_ENTER_REJECTED reason=MapMissing map=%s"), MapPath(Assets));
         if (auto *GM = Cast<ASSGameMode>(GetOwner()))
             GM->Announce(TEXT("Alien gallery unavailable: install the owned Megastructure Sci-Fi World maps."));
         return false;
