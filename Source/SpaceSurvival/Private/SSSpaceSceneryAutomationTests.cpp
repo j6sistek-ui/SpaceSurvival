@@ -109,19 +109,50 @@ bool FSSScenerySafety::RunTest(const FString &)
     Fixture.Scenery->GetComponents(Structures);
     if (!TestTrue(TEXT("Authored scenery actually builds visible geometry"), !Structures.IsEmpty()))
         return false;
-    TestFalse(TEXT("The scenery actor itself has no gameplay collision"), Fixture.Scenery->GetActorEnableCollision());
+    // Scenery used to be strictly decorative. It is now solid, because a rock large enough to fly into should
+    // stop the ship rather than swallow it; actor-level collision gates the components, so it has to be on too.
+    TestTrue(TEXT("The scenery actor allows its parts to be swept against"),
+             Fixture.Scenery->GetActorEnableCollision());
     for (auto *Part : Structures)
     {
         TestTrue(TEXT("Every decorative part belongs to its registered scenery actor"),
                  Part->IsRegistered() && Part->GetOwner() == Fixture.Scenery &&
                      Part->GetAttachParent() == Fixture.Scenery->GetRootComponent());
-        TestEqual(TEXT("Decorative structures have no collision"), Part->GetCollisionEnabled(),
-                  ECollisionEnabled::NoCollision);
+        TestEqual(TEXT("Scenery is query-only and never simulates"), Part->GetCollisionEnabled(),
+                  ECollisionEnabled::QueryOnly);
+        TestEqual(TEXT("Scenery answers as world static"), Part->GetCollisionObjectType(), ECC_WorldStatic);
+        TestEqual(TEXT("Scenery blocks the ship"), Part->GetCollisionResponseToChannel(ECC_Pawn), ECR_Block);
+        TestEqual(TEXT("Scenery blocks weapon and sight traces"), Part->GetCollisionResponseToChannel(ECC_Visibility),
+                  ECR_Block);
         TestFalse(TEXT("Decorative structures generate no overlaps"), Part->GetGenerateOverlapEvents());
         TestFalse(TEXT("Decorative structures are excluded from navigation"), Part->CanEverAffectNavigation());
         TestFalse(TEXT("Distant structures add no shadow rendering work"), Part->CastShadow);
         if (!TestNotNull(TEXT("Decorative structures resolve their imported meshes"), Part->GetStaticMesh().Get()))
             return false;
+    }
+    // Settings alone prove nothing: a mesh with no simple collision is query-only and still unhittable. Sweep
+    // the ship's own sphere radius through a real structure's bounds and require an actual blocking hit.
+    {
+        UStaticMeshComponent *Solid = nullptr;
+        for (auto *Part : Structures)
+            if (Part->GetStaticMesh() && Part->GetCollisionEnabled() != ECollisionEnabled::NoCollision &&
+                Part->Bounds.SphereRadius > 1000.f)
+            {
+                Solid = Part;
+                break;
+            }
+        if (TestNotNull(TEXT("A solid structure exists to sweep against"), Solid))
+        {
+            const FVector Centre = Solid->Bounds.Origin;
+            const double Reach = Solid->Bounds.SphereRadius * 3.0;
+            FHitResult Hit;
+            FCollisionQueryParams Params;
+            Params.AddIgnoredActor(Fixture.Viewer);
+            const bool Blocked = Fixture.Scenery->GetWorld()->SweepSingleByChannel(
+                Hit, Centre + FVector(Reach, 0, 0), Centre - FVector(Reach, 0, 0), FQuat::Identity, ECC_Visibility,
+                FCollisionShape::MakeSphere(105.f), Params);
+            TestTrue(TEXT("A sweep through a structure actually reports a blocking hit"), Blocked);
+        }
     }
     TestTrue(TEXT("Scenery starts hidden without a viewer"), Fixture.Scenery->IsHidden());
     Fixture.Scenery->SetFlightVisible(true);
@@ -263,8 +294,11 @@ bool FSSSceneryRegions::RunTest(const FString &)
         Fixture.Scenery->GetComponents(Parts);
         for (auto *Part : Parts)
         {
-            TestEqual(TEXT("World-stable scenery remains noncolliding"), Part->GetCollisionEnabled(),
-                      ECollisionEnabled::NoCollision);
+            // Solid, but query-only: the field is swept against and never simulates.
+            TestEqual(TEXT("World-stable scenery is swept against, never simulated"), Part->GetCollisionEnabled(),
+                      ECollisionEnabled::QueryOnly);
+            TestEqual(TEXT("World-stable scenery blocks the ship"), Part->GetCollisionResponseToChannel(ECC_Pawn),
+                      ECR_Block);
             TestFalse(TEXT("Scenery never modifies navigation"), Part->CanEverAffectNavigation());
             if (auto *Batch = Cast<UInstancedStaticMeshComponent>(Part))
             {

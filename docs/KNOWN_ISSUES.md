@@ -1082,6 +1082,46 @@ actor-level flag follows the same switch. 51 tests pass with the switch off.
 path rather than being the only source of hittable content. That depends on the content pass landing first.
 
 
+
+#### September 16 the field is solid: content pass landed
+
+The blocker recorded above is cleared. `Scripts/AuthorSolidScenery.py` builds collision-bearing derivatives of
+every mesh the scenery places, 45 of them, into `/Game/SpaceSurvival/Licensed/SolidScenery`. Vendor assets are not
+modified in place, per the project's standing convention for purchased content.
+
+**The diagnosis above was half wrong, and the correction matters.** It said the vendor meshes carry no simple
+collision. Probing one directly showed the opposite: a fresh copy of `SM_Asteroid_Barren_1` already has **one convex
+element**. `CTF_UseComplexAsSimple` was simply telling the engine to ignore it. For twenty-four of the forty-five
+meshes the entire fix is a flag flip.
+
+**Why the wrong conclusion was reached, which is worth knowing before anyone repeats it.**
+`StaticMeshEditorSubsystem.get_simple_collision_count` **does not count convex elements** — only boxes, spheres and
+capsules. Used as a success check it reports zero on a mesh that is fully collidable, which is exactly what it did
+here, twice: first making the meshes look empty, then making a successful convex decomposition look like a failure.
+The script now counts the aggregate geometry itself, and the docstring says so.
+
+**Twenty-one meshes genuinely had nothing**, all of them from the architectural kit. `set_convex_decomposition_collisions`
+returns True on those while producing no primitives, so the generator is judged by what it leaves behind rather than
+by what it returns, and falls through convex to an 18-DOP hull to a box until something actually lands. Final split:
+7 by convex decomposition, 14 by 18-DOP.
+
+**Both authoring paths were repointed**, not only the obvious one. `AuthorSpaceAreas.py` resolves every mesh through
+the derivative folder, and `AuthorOrbitalWreck.py` does the same for the legacy `StructureComposition`, its wreck
+pieces and the station exterior. Missing the second one left the sweep test failing while everything else passed,
+which is how it was caught.
+
+**`ss.SceneryCollision` is on.** The test that matters sweeps the ship's own 105 cm sphere through a real structure
+and requires a blocking hit; it fails if the meshes ever regress. 51 tests pass.
+
+**What the player gets.** Every rock and every megastructure is now solid and blocks weapon and sight traces, so
+shots stop at cover and soft aim cannot lock through a rock. The existing impact path applies unchanged: 15 damage
+behind a .8 second cooldown, and the velocity deflected along the surface. The dust field stays passable, which is
+the owner's "dust and small rocks should bounce off you" tier.
+
+**Still open, and now unblocked:** the Director's side of the direction, governing how many bodies it throws, at what
+speed, and how closely aligned to the flight path, rather than being the only source of hittable content.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.

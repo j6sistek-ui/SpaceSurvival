@@ -121,15 +121,23 @@ def main():
         meshes[name] = mesh
         prepare_mesh_materials(mesh)
     look = LIB.load_asset(ATM+'/DA_DeepSpaceLook'); assert look
-    station = LIB.load_asset('/Game/SpaceSurvival/Licensed/StationVisualPass/Meshes/SM_Station3Exterior')
-    rock = lambda name: LIB.load_asset('/Game/Asteroid_Library/Static_Meshes/'+name)
+    # Prefer the collision-bearing derivative from AuthorSolidScenery.py. The vendor rocks ship
+    # CTF_UseComplexAsSimple, so placing the originals gives structures that look solid and are not.
+    solid = lambda name: '/Game/SpaceSurvival/Licensed/SolidScenery/' + name
+    rock = lambda name: LIB.load_asset(solid(name) if LIB.does_asset_exist(solid(name))
+                                       else '/Game/Asteroid_Library/Static_Meshes/' + name)
+    def solid_or(path):
+        name = path.rsplit('/', 1)[1]
+        return LIB.load_asset(solid(name) if LIB.does_asset_exist(solid(name)) else path)
+    station = solid_or('/Game/SpaceSurvival/Licensed/StationVisualPass/Meshes/SM_Station3Exterior')
+    piece = lambda key: solid_or(meshes[key].get_path_name().split('.')[0])
     arc_rotation = u.MathLibrary.compose_rotators(u.Rotator(pitch=80,yaw=0,roll=20), u.Rotator(roll=90))
     # Major masses around the forward and turned view; fewer isolated metal strips.
     composition = [
-        (meshes['BrokenArc'], (275000,200000,12000), (arc_rotation.pitch,arc_rotation.yaw,arc_rotation.roll), 190000),
-        (meshes['BrokenArc'], (220000,-180000,-95000), (55,-10,-35), 175000),
+        (piece('BrokenArc'), (275000,200000,12000), (arc_rotation.pitch,arc_rotation.yaw,arc_rotation.roll), 190000),
+        (piece('BrokenArc'), (220000,-180000,-95000), (55,-10,-35), 175000),
         (station, (490000,-210000,155000), (15,-30,0), 28000),
-        (meshes['KitBeam'], (305000,210000,115000), (15,-40,-60), 18000),
+        (piece('KitBeam'), (305000,210000,115000), (15,-40,-60), 18000),
         (rock('SM_Asteroid_Barren_1'), (185000,-120000,35000), (20,35,70), 65000),
         (rock('SM_Asteroid_Barren_3'), (310000,245000,120000), (45,10,30), 72000),
         (rock('SM_AsteroidBarren_4'), (235000,195000,65000), (75,40,25), 42000),

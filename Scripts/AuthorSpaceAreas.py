@@ -17,8 +17,14 @@ WRECK='/Game/SpaceSurvival/Licensed/OrbitalWreck/'
 LIB=u.EditorAssetLibrary
 EDIT=u.MaterialEditingLibrary
 
+SOLID='/Game/SpaceSurvival/Licensed/SolidScenery/'
 def mesh(path):
-    obj=u.load_asset(path)
+    # Prefer the collision-bearing derivative from AuthorSolidScenery.py when one exists. The vendor
+    # meshes ship CTF_UseComplexAsSimple, which makes the engine ignore their own hulls, and an
+    # instanced static mesh component cannot use complex collision at all, so placing the originals
+    # gives a field that looks solid and is not.
+    solid=SOLID+path.rsplit('/',1)[1]
+    obj=u.load_asset(solid) if LIB.does_asset_exist(solid) else u.load_asset(path)
     assert isinstance(obj,u.StaticMesh),path
     return obj
 
