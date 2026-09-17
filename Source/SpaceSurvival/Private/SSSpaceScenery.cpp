@@ -20,6 +20,35 @@ uint32 CellSeed(const FIntVector &Cell, int32 Seed)
     return HashCombineFast(HashCombineFast(GetTypeHash(Cell.X), GetTypeHash(Cell.Y)),
                            HashCombineFast(GetTypeHash(Cell.Z), GetTypeHash(Seed)));
 }
+// Set dressing shipped as NoCollision, so every rock and every megastructure was something to steer
+// through rather than around. The owner's rule is that anything mid-size or larger should hurt. The
+// smallest clutter rock authored here has radius 850 and the largest landmark 19000, against a largest
+// Director hazard of 650, so by that rule every piece of it qualifies; the grain-sized dust field is the
+// tier that stays passable. Query only: none of this ever simulates, it is only swept against by the
+// ship's sphere, which already blocks WorldStatic and already damages and deflects on a blocking hit.
+// Default OFF, and that is a finding rather than a preference. Every mesh in both vendor packs is authored
+// CTF_UseComplexAsSimple, meaning none of them carries simple collision primitives, and an instanced static
+// mesh component cannot use complex collision at all. Turning this on today makes the clutter query-only
+// against nothing. The plumbing is kept because it is correct and it is what the content pass will need; the
+// pass that gives derivative copies of those meshes real simple collision is what unlocks it.
+TAutoConsoleVariable<int32> SceneryCollision(TEXT("ss.SceneryCollision"), 0,
+                                             TEXT("Make scenery rocks and landmarks solid (needs mesh "
+                                                  "collision; see KNOWN_ISSUES)."));
+void ApplySceneryCollision(UPrimitiveComponent *Part)
+{
+    Part->SetGenerateOverlapEvents(false);
+    if (SceneryCollision.GetValueOnGameThread() == 0)
+    {
+        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        return;
+    }
+    Part->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Part->SetCollisionObjectType(ECC_WorldStatic);
+    Part->SetCollisionResponseToAllChannels(ECR_Ignore);
+    Part->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+    // Visibility too, so shots stop at a rock and soft aim cannot lock through one.
+    Part->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+}
 double ValidCellSize(const USSSpaceLookData *Data)
 {
     return Data && FMath::IsFinite(Data->AreaCellSize) ? FMath::Max(300000.0, double(Data->AreaCellSize)) : 500000.0;
@@ -35,7 +64,9 @@ ASSSpaceScenery::ASSSpaceScenery()
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.TickInterval = .05f;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneryRoot"));
-    SetActorEnableCollision(false);
+    // Actor-level collision gates every component, so this has to follow the same switch the components do;
+    // leaving it false would have made the per-component setup below silently do nothing.
+    SetActorEnableCollision(SceneryCollision.GetValueOnGameThread() != 0);
     SetActorHiddenInGame(true);
 }
 void ASSSpaceScenery::BeginPlay()
@@ -90,8 +121,7 @@ void ASSSpaceScenery::ConfigureLook(USSSpaceLookData *Data)
         auto *Part = NewObject<UStaticMeshComponent>(this);
         Part->SetupAttachment(RootComponent);
         Part->SetStaticMesh(Mesh);
-        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        Part->SetGenerateOverlapEvents(false);
+        ApplySceneryCollision(Part);
         Part->SetCanEverAffectNavigation(false);
         Part->SetCastShadow(false);
         Part->SetMobility(EComponentMobility::Movable);
@@ -292,8 +322,7 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
     auto Register = [&](UStaticMeshComponent *Part)
     {
         Part->SetupAttachment(RootComponent);
-        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        Part->SetGenerateOverlapEvents(false);
+        ApplySceneryCollision(Part);
         Part->SetCanEverAffectNavigation(false);
         Part->SetCastShadow(false);
         Part->SetMobility(EComponentMobility::Movable);

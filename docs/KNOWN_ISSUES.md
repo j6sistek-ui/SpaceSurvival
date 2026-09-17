@@ -1037,6 +1037,51 @@ and behind is the owner's call, not an obvious bug.
 51 tests pass. Captures of the same scripted run at the turn frame show the three stages in order.
 
 
+
+#### September 16 making the field hittable: the plumbing is trivial, the blocker is the meshes
+
+The owner's direction: "all asteroids of a certain size should be hittable... the existing ones aren't safe havens
+to steer into. the dust and small rocks should bounce off of you, but anything mid size or higher should hurt", with
+the Director reduced to governing how many are thrown at the player, at what speed, and how closely aligned to the
+flight path.
+
+**The size threshold the owner asked for turns out to be moot, and that is the interesting part.** Measured against
+the authored data: scenery clutter radii run **850 to 14,000**, landmark structures **13,500 to 19,000**, and the
+largest hazard the Director can admit is `MassiveAsteroid` at **650**. Every single piece of set dressing in the game
+is larger than the largest thing the player is currently allowed to hit. By the owner's own rule there is nothing to
+threshold: all of it qualifies, and the grain-sized dust field in `ASSAmbientPresentation` is the only tier that
+should stay passable.
+
+**The impact path already exists in full.** `ASSShip` roots on a query-only sphere that already blocks
+`ECC_WorldStatic`, already moves swept with `AddActorWorldOffset(..., true, &Hit)`, and on a blocking hit already
+calls `ReceiveDamage(15 * DamageScale)` behind a .8 second cooldown and deflects with
+`VectorPlaneProject(Velocity, Hit.Normal) * .65`. Nothing had to be built. The scenery was simply
+`SetCollisionEnabled(NoCollision)`, plus `SetActorEnableCollision(false)` at the actor level, which would have
+silently neutered any per-component setup on its own.
+
+**The blocker, found by writing a test that sweeps rather than one that checks settings.** With collision enabled
+the settings assertions all passed and **the sweep still reported no hit**. Reading the packages directly:
+`Content/Asteroid_Library/Static_Meshes` and `Content/Megastructure_Scifi_World/Meshes` are **uniformly authored
+`CTF_UseComplexAsSimple`** — every one of them, in both packs. That flag means the mesh carries no simple collision
+primitives and falls back to its render triangles, and **an instanced static mesh component cannot use complex
+collision at all**. So the clutter, which is the dense near-field content and the whole point of the exercise, is
+unhittable no matter what the component says.
+
+**What unlocks it is a content pass, not code.** Derivative copies of the meshes actually used by the scenery need
+real simple collision generated, convex decomposition or an n-DOP hull per rock, and the look data repointed at
+them. Derivative copies rather than edits in place, because the project's standing convention for purchased content
+is to duplicate into the private licensed folder rather than modify a vendor asset, as `AuthorDeepSpaceExhaust.py`
+does. Landmarks are single `UStaticMeshComponent`s rather than instances, so they may work from complex collision
+alone and should be re-tested separately once the clutter path is real.
+
+**State of the change.** The collision plumbing is in and correct, behind `ss.SceneryCollision`, **defaulted off**,
+because switching it on today makes the field query-only against nothing and would look like the work was done. The
+actor-level flag follows the same switch. 51 tests pass with the switch off.
+
+**Not started: the Director's side of the owner's direction** — governing count, speed, and alignment to the flight
+path rather than being the only source of hittable content. That depends on the content pass landing first.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
