@@ -192,7 +192,9 @@ ACCENT = pbr('PitStop_Accent', (0.55, 0.24, 0.05), 0.6, 0.5, (0.9, 0.35, 0.05), 
 # Emission is modest on purpose: in game these bloom, and at 12 the lane read as white blobs and the frame as a slab of glare.
 LIGHT_WARM = pbr('PitStop_LightWarm', DARK, 0.0, 0.4, (1.0, 0.62, 0.30), 4.0)
 # The mouth frame is seen from two metres away inside the bay: at the lane's strength it glares white.
-LIGHT_FRAME = pbr('PitStop_LightFrame', DARK, 0.0, 0.4, (1.0, 0.62, 0.30), 0.9)
+# Two captures at 4.0 and 0.9 both showed a cream slab from inside: the bay's exposure is set by a dim room, so
+# the frame needs a fraction of what the lane lights out in the sun need. Deeper amber, a tenth of the strength.
+LIGHT_FRAME = pbr('PitStop_LightFrame', DARK, 0.0, 0.4, (1.0, 0.42, 0.10), 0.09)
 LIGHT_CYAN = pbr('PitStop_LightCyan', DARK, 0.0, 0.4, (0.25, 0.85, 1.0), 4.0)
 LIGHT_RED = pbr('PitStop_LightRed', DARK, 0.0, 0.4, (1.0, 0.12, 0.08), 5.0)
 # Map the kitbash's two material families onto the hull palette.
