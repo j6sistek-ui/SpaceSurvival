@@ -198,8 +198,22 @@ bool FSSShipPresentationSelection::RunTest(const FString &)
                      Pilot->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
         TestEqual(Label + TEXT(" only the private closed starter hides its flight pilot"), Pilot->IsVisible(),
                   !(Index == 0 && HasPrivateStarter));
-        TestTrue(Label + TEXT(" retains the authored pilot mount and constant scale"),
-                 Pilot->GetAttachParent() == Hull && Pilot->GetRelativeLocation().Equals(FVector(-15, 0, 72), .001) &&
+        // The mount is the seated hero's own measurement of this cushion, not a constant of the ship, and
+        // the ship's whole job with it is to apply it unchanged. Each hero's is written out here rather
+        // than read back off the definition the ship just used, which would only assert that the ship had
+        // used something: the Acornaut's 72 cm includes 62.9 cm of its own sole, and the imported hero,
+        // whose origin is its sole, sits at 27.933 - inheriting the first is what floated it 44 cm up.
+        const FSSHeroDefinition &PilotHero = Fixture.Ship->GetPilotHero();
+        FVector ExpectedMount = FVector::ZeroVector;
+        if (PilotHero.Identity == ESSHeroIdentity::Acornaut)
+            ExpectedMount = FVector(-15, 0, 72);
+        else if (PilotHero.Identity == ESSHeroIdentity::Squirrel)
+            ExpectedMount = FVector(-12.5, 0, 27.933);
+        else if (!TestTrue(Label + TEXT(" is flown by a hero this test has a measured mount for"), false))
+            return false;
+        TestTrue(Label + TEXT(" retains the seated hero's measured pilot mount and constant scale"),
+                 Pilot->GetAttachParent() == Hull && Pilot->GetRelativeLocation().Equals(ExpectedMount, .001) &&
+                     PilotHero.PilotMountOffset.Equals(ExpectedMount, .001) &&
                      Pilot->GetRelativeRotation().Equals(FRotator(0, -90, 0), .001) &&
                      Pilot->GetRelativeScale3D().Equals(FVector(1.5), .001));
         if (Index == 0 && HasPrivateStarter)

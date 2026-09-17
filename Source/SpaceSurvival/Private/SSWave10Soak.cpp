@@ -9,8 +9,10 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Animation/AnimSingleNodeInstance.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/StaticMesh.h"
 #include "UnrealClient.h"
 #include "Kismet/GameplayStatics.h"
@@ -666,13 +668,67 @@ void ASSWave10Soak::Tick(float Dt)
             Stop(TEXT("Station fixture did not possess the actual exit/walking pawn."));
             return;
         }
+        if (!HeroKnown)
+        {
+            HeroKnown = true;
+            HeroClimbsOut = !GM->Walker->GetHero().DisembarkClipPath.IsEmpty();
+            StationHeroId = GM->Walker->GetHero().Id.ToString();
+            UE_LOG(LogTemp, Display, TEXT("ENDGAME_FIXTURE_STATION_HERO id=%s climbsOut=%d"), *StationHeroId,
+                   HeroClimbsOut ? 1 : 0);
+        }
         if (Exiting)
         {
             SawExit = true;
             ExitSeconds += Dt;
         }
         else
+        {
             StationIdleSeconds += Dt;
+            // A hero that does not climb out has no exit footage to certify, so the pawn is the evidence
+            // instead, and it is all of the evidence a working transition leaves behind: the player's own
+            // walker, with the collision and the walking the exit path takes away and hands back, resting
+            // its full weight on the station's own collision floor, inside the deck the station itself
+            // keeps a walker on, clear of the hull the ship has just parked in, turned the way the station
+            // faces, and actually on screen. A transition that had gone wrong fails at least one of these
+            // - a pawn still stripped mid-exit, one falling or parked in the air at seat height, one left
+            // inside the ship, one left at world north while the camera looks down the hub, one the player
+            // is not even looking through.
+            const auto *Movement = GM->Walker->GetCharacterMovement();
+            const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+            const FVector Local =
+                IsValid(GM->Hub) ? GM->Hub->GetActorTransform().InverseTransformPosition(GM->Walker->GetActorLocation())
+                                 : FVector::ZeroVector;
+            // The body stands the way the station does. The hub carries whatever heading the ship flew in
+            // on, and the walker neither orients to movement nor follows the controller, so this is the
+            // clause that separates an arrival which placed the body from one that left it at identity.
+            const bool Facing =
+                IsValid(GM->Hub) && FMath::Abs(FMath::FindDeltaAngleDegrees(GM->Walker->GetActorRotation().Yaw,
+                                                                            GM->Hub->GetActorRotation().Yaw)) <= 1.;
+            const bool OnDeck =
+                IsValid(GM->Hub) && Movement && Movement->MovementMode == MOVE_Walking &&
+                Movement->CurrentFloor.bBlockingHit && Movement->CurrentFloor.HitResult.GetActor() == GM->Hub &&
+                GM->Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
+                FMath::Abs(Local.X) <= 1750. && FMath::Abs(Local.Y) <= 1450. && Local.Z > 0. &&
+                FVector::Dist2D(GM->Walker->GetActorLocation(), GM->Hub->DockPosition()) > 500. && Facing;
+            if (OnDeck)
+            {
+                SawStandingExit = true;
+                DeckSeconds += Dt;
+            }
+            // That the player is looking through the hero's own camera is separate evidence and needs a
+            // separate window, because every clause above reads the pawn: without this the whole arrival
+            // could be filmed from the ship's chase camera twelve metres away and each of them would
+            // still be true. It cannot be asked of the whole idle, though - the possession blend owns the
+            // first fraction of a second, and from seven seconds in the fixture borrows the view for its
+            // own labelled review shots and does not give it back until the run stops. So it is counted
+            // over what is left, which is the stretch this fixture is actually filming the player's view.
+            if (OnDeck && !IsValid(StationReviewCamera) && PC && PC->GetViewTarget() == GM->Walker)
+                PlayerViewSeconds += Dt;
+        }
+        // Read every station frame, on both routes: being hauled back onto the deck is a failed arrival
+        // whether or not the hero had a clip, and this fixture never walks the pawn anywhere, so the
+        // clamp has nothing legitimate to rescue it from.
+        DeckRescues = FMath::Max(DeckRescues, GM->Walker->OffDeckRecoveries());
     }
     if (CaptureVisuals)
     {
@@ -743,11 +799,41 @@ void ASSWave10Soak::Tick(float Dt)
     if (Threats > GM->Director->MaximumActiveThreats)
         Stop(TEXT("Director active threat cap exceeded during rendered fixture."));
     else if (Station5 && StationIdleSeconds >= 15)
-        Stop(SawFlightWave && SawBreathing && SawWormhole && WormholeSeconds >= 7.9 && SawClimax &&
-                     ClimaxSeconds >= 39.5 && SawApproach && ApproachSeconds > 0 && SawDocking &&
-                     DockingSeconds >= 2.9 && SawExit && ExitSeconds >= 2.3
-                 ? FString()
-                 : TEXT("Required complete Wave 5, wormhole, docking or authored exit coverage was not observed."));
+    {
+        // Getting off the ship is certified two ways, and the hero decides which one this run owes. One
+        // with an exit clip owes the climb-out itself: 2.3 s of a running transition, which is what the
+        // Exit0..6 frames are shots of. One with none owes the same arrival without the animation - the
+        // docking motion really ran, and it really ended with the player standing on the deck in control
+        // for as long as the climb-out would have taken. Neither may be paid with the other's evidence:
+        // a hero with no clip that somehow started a transition is a fault, not a pass, and a hero with a
+        // clip cannot certify by standing still. Docking itself is demanded in both, so a run that
+        // skipped the arrival and spawned a walker on the deck certifies nothing.
+        const bool Arrived = SawDocking && DockingSeconds >= 2.9;
+        const bool ClimbedOut = HeroClimbsOut && SawExit && ExitSeconds >= 2.3;
+        // The standing arrival is owed for the whole window, not a slice of it. The climb-out branch
+        // above cannot be paid by a self-correction because its 2.3 s has to come out of a 2.4 s stage;
+        // a bare 2.3 s of deck out of fifteen could be, since the walker's own Tick hauls a pawn that
+        // is off the deck back to the spawn and sets it walking again, which rebuilds every clause of
+        // the evidence. So the deck has to hold for all of the window bar a settle budget, and the
+        // rescue counter has to be nought - together those refuse an arrival that was ever wrong, as
+        // well as one that was wrong and got quietly fixed.
+        const bool StoodOutside = !HeroClimbsOut && !SawExit && SawStandingExit && DeckSeconds >= 2.3 &&
+                                  DeckSeconds >= StationIdleSeconds - 1.5 && PlayerViewSeconds >= 2.3;
+        const bool Covered = SawFlightWave && SawBreathing && SawWormhole && WormholeSeconds >= 7.9 && SawClimax &&
+                             ClimaxSeconds >= 39.5 && SawApproach && ApproachSeconds > 0 && Arrived && HeroKnown &&
+                             DeckRescues == 0 && (ClimbedOut || StoodOutside);
+        Stop(Covered ? FString()
+                     : FString::Printf(
+                           TEXT("Required complete Wave 5, wormhole, docking or arrival coverage was not observed: "
+                                "hero=%s climbsOut=%d wave5=%d breathing=%d wormhole=%d/%.2f climax=%d/%.2f "
+                                "approach=%d/%.2f docking=%d/%.2f exit=%d/%.2f standingOnDeck=%d/%.2f of %.2f "
+                                "playerView=%.2f deckRescues=%d"),
+                           StationHeroId.IsEmpty() ? TEXT("none") : *StationHeroId, HeroClimbsOut ? 1 : 0,
+                           SawFlightWave ? 1 : 0, SawBreathing ? 1 : 0, SawWormhole ? 1 : 0, WormholeSeconds,
+                           SawClimax ? 1 : 0, ClimaxSeconds, SawApproach ? 1 : 0, ApproachSeconds, SawDocking ? 1 : 0,
+                           DockingSeconds, SawExit ? 1 : 0, ExitSeconds, SawStandingExit ? 1 : 0, DeckSeconds,
+                           StationIdleSeconds, PlayerViewSeconds, DeckRescues));
+    }
     else if (!Station5 && ApproachSeconds >= 5)
         Stop(SawFlightWave && SawBreathing && SawClimax && ClimaxSeconds >= 39.5 && CompoundSeconds >= 3.5
                  ? FString()
@@ -767,17 +853,25 @@ void ASSWave10Soak::WriteResultAndExit()
     }
     if (CaptureVisuals && Failure.IsEmpty())
     {
-        const TArray<FString> Expected =
-            Gallery    ? TArray<FString>{TEXT("GalleryDoorway"), TEXT("GalleryShowcase"), TEXT("GalleryAssets"),
-                                         TEXT("GalleryReturn")}
-            : Station5 ? TArray<FString>{TEXT("Flight"),      TEXT("Climax"),          TEXT("Wormhole"),
-                                         TEXT("Approach"),    TEXT("Docking"),         TEXT("Exit0"),
-                                         TEXT("Exit1"),       TEXT("Exit2"),           TEXT("Exit3"),
-                                         TEXT("Exit4"),       TEXT("Exit5"),           TEXT("Exit6"),
-                                         TEXT("StationIdle"), TEXT("StationServices"), TEXT("StationOverview"),
-                                         TEXT("CombatImpact")}
-            : Wave1    ? TArray<FString>{TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")}
-                       : TArray<FString>{TEXT("Flight"), TEXT("Climax"), TEXT("Compound"), TEXT("Approach")};
+        TArray<FString> Expected;
+        if (Gallery)
+            Expected = {TEXT("GalleryDoorway"), TEXT("GalleryShowcase"), TEXT("GalleryAssets"), TEXT("GalleryReturn")};
+        else if (Station5)
+        {
+            Expected = {TEXT("Flight"), TEXT("Climax"), TEXT("Wormhole"), TEXT("Approach"), TEXT("Docking")};
+            // The seven exit frames are shots of a climb-out, so they are owed only by a run that had one.
+            // A hero with no exit clip never enters that stage, and demanding its frames would be asking
+            // for pictures of an animation the owner cancelled; the station frames below are its arrival.
+            if (HeroClimbsOut)
+                for (int32 Index = 0; Index < 7; ++Index)
+                    Expected.Add(FString::Printf(TEXT("Exit%d"), Index));
+            Expected.Append(
+                {TEXT("StationIdle"), TEXT("StationServices"), TEXT("StationOverview"), TEXT("CombatImpact")});
+        }
+        else if (Wave1)
+            Expected = {TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")};
+        else
+            Expected = {TEXT("Flight"), TEXT("Climax"), TEXT("Compound"), TEXT("Approach")};
         if (VisualRecords.Num() != Expected.Num() + SequenceIndex || (CaptureSequence && SequenceIndex < 40))
             Failure = TEXT("Visual fixture did not request every required scene stage.");
         for (const FString &Name : Expected)
@@ -828,6 +922,12 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("sawWormhole"), SawWormhole);
     Result->SetBoolField(TEXT("sawDocking"), SawDocking);
     Result->SetBoolField(TEXT("sawAuthoredExit"), SawExit);
+    Result->SetStringField(TEXT("stationHero"), StationHeroId);
+    Result->SetBoolField(TEXT("heroClimbsOut"), HeroClimbsOut);
+    Result->SetBoolField(TEXT("sawStandingExit"), SawStandingExit);
+    Result->SetNumberField(TEXT("standingOnDeckSeconds"), DeckSeconds);
+    Result->SetNumberField(TEXT("offDeckRescues"), DeckRescues);
+    Result->SetNumberField(TEXT("playerViewOnDeckSeconds"), PlayerViewSeconds);
     Result->SetNumberField(TEXT("wormholeSimulationSeconds"), WormholeSeconds);
     Result->SetNumberField(TEXT("dockingSimulationSeconds"), DockingSeconds);
     Result->SetNumberField(TEXT("exitSimulationSeconds"), ExitSeconds);
@@ -858,9 +958,12 @@ void ASSWave10Soak::WriteResultAndExit()
         Result->SetStringField(
             TEXT("fixture"),
             TEXT("Seeded end of Wave4; starter/RapidLaser, Tier V, OverdriveCooling, base durability50000. Normal "
-                 "Wave5, 8s wormhole,40s climax, ordinary bounded steering to port, actual docking and2.4s exit,15s "
-                 "stationary hub. No forced docking/teleport, menu purchases, physical input, natural "
-                 "progression/balance or representative FPS acceptance."));
+                 "Wave5, 8s wormhole,40s climax, ordinary bounded steering to port, actual docking and15s "
+                 "stationary hub. Arrival is certified against the hero that was possessed: a hero with an exit "
+                 "clip owes 2.3s of authored climb-out and its Exit0..6 frames; a hero with none (RPT-20260917-01) "
+                 "owes 2.3s standing on the station's own collision floor, on the deck, clear of the docked hull, "
+                 "with collision and walking restored, and films no exit. No forced docking/teleport, menu "
+                 "purchases, physical input, natural progression/balance or representative FPS acceptance."));
     else
         Result->SetStringField(
             TEXT("fixture"),

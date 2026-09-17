@@ -541,6 +541,31 @@ struct FSSHeroDefinition
     /** Where the seated hero sits inside the hull. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit")
     FVector PilotMountOffset = FVector(-15, 0, 72);
+    /** Multiplier on the walking pawn's readability rig for this hero. It belongs to the hero because
+     *  albedo does: the lamp that models a pale suit leaves a black one the cut-out the owner
+     *  complained about, and the lamp that opens a black one blows a pale one out.
+     *
+     *  Every hero's value is measured, not chosen, and the rule is the same for all three: one
+     *  inverse-albedo step from the squirrel, the only hero that has actually been rendered with the
+     *  rig, so that each suit takes the same amount of added light. scale = 2.5 x 0.046 / thisHerosReturn.
+     *  That is what stops a rig sized for a black suit from arriving on a pale one at the same strength.
+     *
+     *  What goes in as "this hero's return" is the mean linear albedo of its base colour map over its
+     *  used texels, with atlas padding dropped - except where the suit gives back more than its base
+     *  colour says it should, which the trooper's glossy plates do, and then it is read off a render of
+     *  that hero standing on the deck instead. Both numbers, and which one was used, are in each
+     *  hero's own branch below.
+     *
+     *  This default is the Acornaut's own measured value, in the same way every other default in this
+     *  struct spells out the Acornaut; the constructor's branches carry the other two. Its atlas,
+     *  model-rigged.glb, averages 0.235 linear albedo over its used texels, five times the squirrel's,
+     *  so it asks for a fifth of the squirrel's lamp. Unlike the squirrel's, this number has never been
+     *  confirmed in a render: no capture of this hero on the deck exists, and its source also carries a
+     *  0.4 base colour factor that would argue for more light if the import honours it. It is
+     *  deliberately left at the low end of that uncertainty, because a hero that is under-lit is the
+     *  hero nobody has complained about and a hero that is over-lit is a torch. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presentation", meta = (ClampMin = "0"))
+    float ReadabilityLightScale = .5f;
     /** The pose the walk clip and the disembark clip share. The walk clip is frozen here so the
      *  standing hero and the hero that has just stepped off the ship are in the same pose. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Motion", meta = (ClampMin = "0"))
@@ -603,6 +628,15 @@ struct FSSHeroDefinition
             // Licensed body of unknown proportions: fitted to 180 cm from its own bounds, sole included.
             SoleOffset = 0.f;
             FitHeight = 180.f;
+            // Measured twice, because this hero is the one the two methods disagree about. Its base
+            // colour maps average 0.123 linear albedo over their used texels with the emissive ones
+            // dropped, 2.7 times the squirrel's, which would ask for 0.94. But its armour is glossy
+            // metal, and in the one capture of it standing on the deck its non-emissive plates return
+            // 0.62 of the deck beside them against the squirrel's 0.12 - five times, not 2.7, because
+            // specular carries what albedo does not. The render is what readability is about, so the
+            // render wins: 2.5 / 5.07 = 0.49. Its gold is emissive and answers no lamp at all, so the
+            // brightness it reads with today is not brightness this rig can add to.
+            ReadabilityLightScale = .5f;
             // Its rig is the Unreal mannequin set, read out of SK_SciFITrooper_Man_03's reference
             // skeleton: lowercase, side-suffixed, and sharing not one spelling with the Acornaut's
             // except the pelvis. Naming them is what lets this hero be measured at all; the hand
@@ -618,17 +652,49 @@ struct FSSHeroDefinition
         else if (Identity == ESSHeroIdentity::Squirrel)
         {
             Id = TEXT("Squirrel");
-            // Authored in Blender and measured inside Unreal, but not imported: every path below is
-            // still empty on disk, so Installed() is false and selection never reaches this entry.
-            MeshPath = TEXT("/Game/SpaceSurvival/Character/SK_SquirrelHero.SK_SquirrelHero");
-            WalkClipPath = TEXT("/Game/SpaceSurvival/Character/A_SquirrelWalk.A_SquirrelWalk");
-            PilotClipPath = TEXT("/Game/SpaceSurvival/Character/A_SquirrelPilot.A_SquirrelPilot");
-            DisembarkClipPath = TEXT("/Game/SpaceSurvival/Character/A_SquirrelDisembark.A_SquirrelDisembark");
+            // Licensed/ rather than Character/: this hero is derived from a purchased model, and
+            // Content/SpaceSurvival/Licensed is the ignored tree every other licensed pack lives in,
+            // where Content/SpaceSurvival/Character is tracked. Selection skips this entry until the
+            // files exist on disk.
+            MeshPath = TEXT("/Game/SpaceSurvival/Licensed/Hero/SK_SquirrelHero.SK_SquirrelHero");
+            WalkClipPath = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelWalk.A_SquirrelWalk");
+            PilotClipPath = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelPilot.A_SquirrelPilot");
+            // No exit clip, deliberately: the ship has no door, so nobody climbs out of it yet
+            // (RPT-20260917-01). A hero with no exit clip is simply standing outside when the
+            // docking motion finishes.
+            DisembarkClipPath = FString();
             // Measured on the imported base: it stands on Z = 0, so its sole is its origin.
             SoleOffset = 0.f;
+            // And that is exactly why this hero cannot inherit the mount above it. The Acornaut's
+            // FVector(-15, 0, 72) was measured for a body whose origin sits 62.90269494 cm above its
+            // boots; this body's origin IS its boots, so the same number left it floating 44.067 cm
+            // over the seat - a third of its own height, which is the float the owner reported.
+            //
+            // Measured against the cockpit geometry itself rather than adjusted by eye:
+            // .agent/local/HeroSquirrel/Stage6_Clips/SeatFit.json, taken in SwiftCandidate.blend
+            // (/Game/SpaceSurvival/Meshes/SM_SwiftCandidateV1) and confirmed identical in the Acorn
+            // grip-fit cockpit, whose 24 seat, footwell, coaming and windscreen parts have
+            // byte-identical world bounds and whose ship origin is the same (0, 0, 0). At this mount
+            // the hips sit on the cushion and the boots hang into the footwell.
+            //
+            // Only the Swift ever shows it: ASSShip hides the pilot under the closed hulls, which in
+            // this build are SM_PlayerHavolkStarter (the installed licensed starter) and anything
+            // under ShipRefresh/, and FinishDocking() hides it outright. The Agile kind's
+            // SM_SwiftCandidateV1 is the open cockpit this is for.
+            PilotMountOffset = FVector(-12.5, 0, 27.933);
+            // The darkest hero in the game, measured rather than guessed: the base colour map in
+            // SquirrelHero_Base.glb averages 0.046 linear albedo over its used texels, about half of
+            // fresh asphalt, with 73% of them under 0.05. At the rig's baseline it is still a
+            // silhouette. 2.5 is deliberately short of the ~5x its albedo deficit alone would ask for,
+            // because the suit is meant to read as dark worn leather and not to be repainted grey.
+            //
+            // This is the only one of the three scales that has been confirmed in a render, which is
+            // why it is the anchor the other two are derived from rather than the other way round. At
+            // 2.5 the suit sits at 0.75 of the deck beside it, up from 0.12, and nothing clips.
+            ReadabilityLightScale = 2.5f;
             // 46 bones, root named Root, no fingers and no wrists; its hands are L_Hand and R_Hand,
-            // its L_Foot is the ankle it sounds like. The mount offset and the stride are the
-            // Acornaut's until its own pilot clip exists to measure them from.
+            // its L_Foot is the ankle it sounds like. The stride is still the Acornaut's: the walk
+            // clip has not been measured for travel yet, so 180 cm/s stands until it is.
             RootBone = TEXT("Root");
             LeftHandBone = TEXT("L_Hand");
             RightHandBone = TEXT("R_Hand");

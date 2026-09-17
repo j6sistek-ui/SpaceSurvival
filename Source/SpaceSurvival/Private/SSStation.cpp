@@ -18,6 +18,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
+#include "HAL/IConsoleManager.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -481,6 +482,47 @@ ESSPanel ASSStation::NearestService(FVector Position, FString &Label) const
     }
     return Result;
 }
+namespace
+{
+// The walker's readability rig, and the owner's dials for it.
+//
+// Why it exists: the station's lighting is authored and liked, and it is also exactly why the hero
+// disappears into it. Every lamp in the recipe hangs at Z 260 to 570 over a head at about Z 135, so the
+// deck takes them at near-normal incidence and returns a specular streak as well, while the hero's
+// vertical, camera-facing surfaces take the same lamps at a graze of roughly 0.2. The floor is lit; the
+// hero is skimmed. Brightening the station would only widen that gap, so the answer belongs on the pawn.
+//
+// The strength is split in two: these dials are the look, and the hero's own ReadabilityLightScale is
+// how much of it that hero's albedo needs. Turning a dial moves every hero together; the data field is
+// what keeps a black suit and a pale one from wanting the same lamp.
+//
+// The lumens look small beside the station's own lamps and the ship's 1500 lm fill. They are, and the
+// reason is distance and exposure: these sit about 2.5 m from the hero in a bay whose exposure is set
+// for a deck that renders at 0.074 relative luminance. The first attempt at this asked for the same
+// order of magnitude as the station's lamps, 16250 lm on the key, and rendered the squirrel's black
+// suit at mean luma 230 of 255 with 70% of it clipped white. So the whole rig belongs in the low
+// hundreds, and these two were then measured into place over two more captures: they land the
+// squirrel's body at about three quarters of the deck's luminance, up from an eighth.
+//
+// These two are also the lamps' built intensities, so the class defaults and the dials cannot drift
+// apart: a light that is registered but never ticked, in the editor or in some future path that skips
+// BeginPlay, burns exactly what the dial says it burns.
+constexpr float KeyLumens = 95.f;
+constexpr float RimLumens = 160.f;
+TAutoConsoleVariable<float> HeroLightKey(TEXT("ss.HeroLightKey"), KeyLumens,
+                                         TEXT("Lumens in the walker's camera-side key light, before the hero's own "
+                                              "scale. Models the body and lights what the camera sees."));
+TAutoConsoleVariable<float> HeroLightRim(TEXT("ss.HeroLightRim"), RimLumens,
+                                         TEXT("Lumens in the walker's far-side rim light, before the hero's own "
+                                              "scale. This is the one that separates the silhouette."));
+TAutoConsoleVariable<float> HeroLightScale(TEXT("ss.HeroLightScale"), 1.f,
+                                           TEXT("Master multiplier on the walker's readability rig. 0 switches it "
+                                                "off outright, for comparison against the station alone. The useful "
+                                                "range ends near 1.4: at 1 the squirrel's body sits at about three "
+                                                "quarters of the deck's luminance, and past 1.4 the character is "
+                                                "brighter than the floor it is standing on, which reads as a torch."));
+} // namespace
+
 ASSWalker::ASSWalker()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -495,6 +537,87 @@ ASSWalker::ASSWalker()
     Boom->bUsePawnControlRotation = true;
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("WalkCamera"));
     Camera->SetupAttachment(Boom);
+    // A readability rig, not a torch. Two unshadowed point lights ride the pawn, and both are confined
+    // with the hero's mesh to one lighting channel that nothing else in the world is on, so the deck,
+    // the hull and the ship never take them. That confinement is what lets them be strong enough to
+    // open a suit as dark as the squirrel's while the station's own lighting is left untouched.
+    //
+    // What the channel actually covers, because it is not everything: the deferred direct pass honours
+    // it, and so does Lumen, which is what this project renders with - its surface cache carries both a
+    // per-light and a per-primitive-group channel mask. Volumetric fog does not honour it at all; local
+    // lights are injected on scattering intensity alone, which is why both lamps set that to zero below
+    // rather than relying on the channel. With those two closed, what is left is Lumen's indirect
+    // bounce off the hero itself, and that is small but not nil: on the owner's own frame the deck
+    // immediately left and right of the character moved by 0.6 and 0.4 of one code value out of 255,
+    // where two renders of the same build differ by 0.1 to 0.2 in the same places. So the bound on the
+    // floor is measured, not structural, and winding ss.HeroLightScale far past 1 winds it up too.
+    //
+    // Offsets are in the rig's frame, which is yawed to the camera every tick: -X is toward the camera,
+    // +X away, +Y to the camera's right, Z from the capsule centre (88 cm above the deck plates). They
+    // are absolute centimetres and the same for every hero, which is deliberate: the capsule is the
+    // same for every hero too, and the heroes this roster holds stand between about 135 and 180 cm, so
+    // the key lands from just over the head to just under the top of it across that range. A rig scaled
+    // to each hero's own height would hold the angles exactly but would have to move the lamps, and
+    // moving them changes their distance and so their strength. Validated on the squirrel.
+    LightRig = CreateDefaultSubobject<USceneComponent>(TEXT("HeroLightRig"));
+    LightRig->SetupAttachment(RootComponent);
+    KeyLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("HeroKeyLight"));
+    KeyLight->SetupAttachment(LightRig);
+    // 190 back toward the camera, 170 to its left, 85 up: 40 degrees off the view axis and 16 above the
+    // torso. That is a portrait key rather than a lamp on the lens, so it models the body instead of
+    // flattening it, and it is near enough the view for the suit to answer. The suits are roughness
+    // 0.47 dielectrics, which have a broad specular lobe: a light this close to the camera axis puts a
+    // sheen where the camera can see it, and specular does not care how black the base colour is.
+    KeyLight->SetRelativeLocation(FVector(-190, -170, 85));
+    KeyLight->SetIntensityUnits(ELightUnits::Lumens);
+    // Both, and in this order. The units alone would leave the engine's 5000 on the dial and reinterpret
+    // it as 5000 lumens, twenty-one times what the hero ever gets, on any path that does not reach
+    // UpdateReadabilityLighting - the editor viewport among them.
+    KeyLight->SetIntensity(KeyLumens);
+    // Volumetric fog ignores lighting channels, so the channel alone would not keep this lamp out of the
+    // bay's air. Zero scattering is what actually keeps it out.
+    KeyLight->SetVolumetricScatteringIntensity(0.f);
+    // Warm, near the amber the overhead pools already lay on the deck, so the hero reads as lit by this
+    // bay rather than by something that followed it in.
+    KeyLight->SetLightColor(FLinearColor(1.f, .86f, .7f));
+    // Reaches the soles at 308 cm. The radius is a cost bound, not a look: the inverse square has taken
+    // this light to nothing well inside it, so where it stops is not a place anyone can see.
+    KeyLight->SetAttenuationRadius(460.f);
+    KeyLight->SetCastShadows(false);
+    // The owner's words: "the overhead can reflect, but he isn't a lantern". A readability lamp is a
+    // courtesy to the player, and it should leave no evidence in the world. The channel keeps its direct
+    // light off the deck, but indirect does not ask the channel: without these two the lamp bounces off
+    // the hero into the room and is gathered again by the polished deck, so the hero reads as a light
+    // source lying on a mirror. Off both paths, his reflection is still there and is lit by the bay, as
+    // the overhead pools are. The cost is that the reflection is darker than the hero, which is the
+    // honest consequence of lighting him for the camera and not for the room.
+    KeyLight->SetAffectGlobalIllumination(false);
+    KeyLight->SetAffectReflection(false);
+    KeyLight->LightingChannels.bChannel0 = false;
+    KeyLight->LightingChannels.bChannel1 = true;
+    RimLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("HeroRimLight"));
+    RimLight->SetupAttachment(LightRig);
+    // The far side, 210 past the hero, 200 to the camera's right and 170 up: 136 degrees round from the
+    // view axis at about 25 of elevation. At a silhouette edge the view is grazing, and Fresnel takes
+    // even a near-black dielectric to almost total reflection there, so this is the lamp that costs
+    // nothing in albedo. It is the one that answers the actual complaint: the measured squirrel had no
+    // rim at all, and what looked like one was the deck showing through the antialiased edge.
+    RimLight->SetRelativeLocation(FVector(210, 200, 170));
+    RimLight->SetIntensityUnits(ELightUnits::Lumens);
+    RimLight->SetIntensity(RimLumens);
+    RimLight->SetVolumetricScatteringIntensity(0.f);
+    // Cool, near the walkway fills' own (.8, .88, 1), so the edge belongs to the light behind the hero.
+    RimLight->SetLightColor(FLinearColor(.78f, .87f, 1.f));
+    RimLight->SetAttenuationRadius(540.f);
+    RimLight->SetCastShadows(false);
+    // Same reasoning as the key, and it matters more here: a rim lamp sits behind the hero pointing back
+    // at the camera, which is the worst place to be gathered from by a floor.
+    RimLight->SetAffectGlobalIllumination(false);
+    RimLight->SetAffectReflection(false);
+    RimLight->LightingChannels.bChannel0 = false;
+    RimLight->LightingChannels.bChannel1 = true;
+    // The hero keeps the station's channel and adds the rig's. This is the only primitive that does.
+    GetMesh()->LightingChannels.bChannel1 = true;
     // Built with the fallback hero, because a constructor cannot ask what content is installed.
     // BeginPlay applies whichever hero this build actually has, over these same three calls.
     GetMesh()->SetRelativeLocation(FVector(0, 0, MeshLift(Hero.ScaledSoleOffset(nullptr))));
@@ -536,7 +659,39 @@ void ASSWalker::BeginPlay()
     GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, MeshLift(Hero.ScaledSoleOffset(HeroMesh))));
     GetMesh()->SetRelativeRotation(FRotator(0, Hero.MeshYaw, 0));
     GetMesh()->SetRelativeScale3D(FVector(Hero.RenderedScale(HeroMesh)));
+    // The rig's strength is this hero's, and BeginPlay is the first moment that is known.
+    UpdateReadabilityLighting();
     StartWalkingAnimation();
+}
+void ASSWalker::UpdateReadabilityLighting()
+{
+    if (!LightRig || !KeyLight || !RimLight)
+        return;
+    // Aimed at the camera, not at the world. The player orbits the boom, and a hero lit from a fixed
+    // world direction is a cut-out again the moment they turn; the complaint was about one such angle.
+    // Yaw only: the look clamps to 55 degrees down, and a rig that inherited pitch would swing the key
+    // under the character's chin at the bottom of that.
+    //
+    // Read from the same place the boom reads it, not from the camera component. This runs in the
+    // pawn's tick group, TG_PrePhysics, and the boom writes the camera's transform in TG_PostPhysics,
+    // so the component's rotation this frame is still last frame's and the rig would trail the view
+    // through a fast turn. GetViewRotation is the control rotation while possessed and the actor's
+    // while not, which is the same fallback the boom takes, so the unpossessed case is unchanged.
+    LightRig->SetWorldRotation(FRotator(0, GetViewRotation().Yaw, 0));
+    const float Scale = FMath::Max(0.f, HeroLightScale.GetValueOnGameThread()) * Hero.ReadabilityLightScale;
+    const float Key = FMath::Max(0.f, HeroLightKey.GetValueOnGameThread()) * Scale;
+    const float Rim = FMath::Max(0.f, HeroLightRim.GetValueOnGameThread()) * Scale;
+    // Only on a change: setting an intensity dirties the render state, and this runs every frame so the
+    // owner can turn a dial mid-session and watch it move.
+    if (!FMath::IsNearlyEqual(KeyLight->Intensity, Key))
+        KeyLight->SetIntensity(Key);
+    if (!FMath::IsNearlyEqual(RimLight->Intensity, Rim))
+        RimLight->SetIntensity(Rim);
+    // Zero is off rather than black: a light with no intensity still costs a pass over its own bounds.
+    if (KeyLight->IsVisible() != (Key > 0.f))
+        KeyLight->SetVisibility(Key > 0.f);
+    if (RimLight->IsVisible() != (Rim > 0.f))
+        RimLight->SetVisibility(Rim > 0.f);
 }
 void ASSWalker::StartWalkingAnimation()
 {
@@ -668,6 +823,9 @@ void ASSWalker::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 void ASSWalker::Tick(float Dt)
 {
     Super::Tick(Dt);
+    // Before the early returns below: the exit is the other shot the owner looks at, and a dial that
+    // only took effect while standing still would be a dial that lies.
+    UpdateReadabilityLighting();
     if (Disembarking)
     {
         if (!FMath::IsFinite(Dt) || Dt <= 0.f)
@@ -714,6 +872,9 @@ void ASSWalker::Tick(float Dt)
             // finite deck is returned to its safe spawn without ending the run.
             if (FMath::Abs(Local.X) > 1750.f || FMath::Abs(Local.Y) > 1450.f || Local.Z < -250.f)
             {
+                // Counted, because this restores the very state an arrival is asked to prove and would
+                // otherwise let a broken arrival pose as a good one that simply started off the deck.
+                ++OffDeckRescues;
                 GetCharacterMovement()->StopMovementImmediately();
                 ConsumeMovementInputVector();
                 SetActorLocation(Hub->WalkSpawn(), false, nullptr, ETeleportType::TeleportPhysics);

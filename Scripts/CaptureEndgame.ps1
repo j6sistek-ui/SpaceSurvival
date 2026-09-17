@@ -22,10 +22,16 @@ $ErrorActionPreference = 'Stop'
 $Scenario = if ($Scenario -ieq 'Station5') { 'Station5' } else { 'Wave10' }
 if ($Scenario -eq 'Station5' -and -not $PSBoundParameters.ContainsKey('TimeoutSeconds')) { $TimeoutSeconds = 330 }
 $evidenceType = if ($Scenario -eq 'Station5') { 'RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY' } else { 'RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY' }
+# The seven Exit frames are shots of a hero climbing out of the ship. The owner cancelled that animation
+# (RPT-20260917-01), so a hero may have no exit clip at all, and a run with that hero has no climb-out to
+# film: it is standing outside the ship when the docking motion ends. Which list applies is not knowable
+# before the run - the hero the station actually possessed decides it - so the Station5 list is completed
+# from the receipt below rather than assumed here.
 $expectedVisualNames = if ($Scenario -eq 'Station5') {
-    @('Flight', 'Climax', 'Wormhole', 'Approach', 'Docking', 'Exit0', 'Exit1', 'Exit2', 'Exit3', 'Exit4', 'Exit5', 'Exit6',
+    @('Flight', 'Climax', 'Wormhole', 'Approach', 'Docking',
         'StationIdle', 'StationServices', 'StationOverview', 'CombatImpact')
 } else { @('Flight', 'Climax', 'Compound', 'Approach') }
+$exitVisualNames = @('Exit0', 'Exit1', 'Exit2', 'Exit3', 'Exit4', 'Exit5', 'Exit6')
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 function Assert-NoReparsePath([string]$Path) {
     $candidate = [IO.Path]::GetFullPath($Path)
@@ -150,6 +156,12 @@ try {
     $fixturePath = Join-Path $runRoot 'fixture.json'
     Assert-NoReparsePath $fixturePath
     $fixture = Get-Content -LiteralPath $fixturePath -Raw | ConvertFrom-Json
+    if ($Scenario -eq 'Station5') {
+        if (-not ($fixture.PSObject.Properties.Name -contains 'heroClimbsOut')) {
+            throw 'Fixture receipt predates the conditional exit; rebuild the binary before capturing.'
+        }
+        if ($fixture.heroClimbsOut) { $expectedVisualNames += $exitVisualNames }
+    }
     if (-not $fixture.success -or $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $Scenario -or
         $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or
         ($CaptureVisuals -and (-not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or
@@ -183,10 +195,34 @@ try {
         }
     }
     if ($Scenario -eq 'Station5') {
-        if (-not $fixture.sawWave5 -or -not $fixture.sawWormhole -or -not $fixture.sawDocking -or -not $fixture.sawAuthoredExit -or
+        # Getting off the ship is certified two ways and the hero decides which one this run owes. One with
+        # an exit clip owes the climb-out itself. One with none owes the same arrival without the animation:
+        # the docking motion really ran, and it really ended with the player standing on the station's own
+        # floor, on the deck, clear of the docked hull, collision and walking restored, for at least as long
+        # as the climb-out would have taken. Neither may be paid with the other's evidence - a hero with no
+        # clip that somehow recorded exit time is a broken transition, not a pass.
+        # The standing arrival is owed for the whole idle window rather than a slice of it, and it is owed
+        # without a rescue: the walker's own Tick hauls a pawn that is off the deck back to its spawn and
+        # sets it walking, which rebuilds every clause of that evidence, so an arrival that went wrong and
+        # was healed would otherwise read exactly like one that was right.
+        foreach ($field in 'offDeckRescues', 'playerViewOnDeckSeconds') {
+            if (-not ($fixture.PSObject.Properties.Name -contains $field)) {
+                throw "Station receipt predates '$field'; rebuild before certifying."
+            }
+        }
+        $arrival = if ($fixture.heroClimbsOut) {
+            $fixture.sawAuthoredExit -and $fixture.exitSimulationSeconds -ge 2.3
+        } else {
+            (-not $fixture.sawAuthoredExit) -and $fixture.exitSimulationSeconds -eq 0 -and
+            $fixture.sawStandingExit -and $fixture.standingOnDeckSeconds -ge 2.3 -and
+            $fixture.standingOnDeckSeconds -ge ($fixture.stationIdleSimulationSeconds - 1.5) -and
+            $fixture.playerViewOnDeckSeconds -ge 2.3
+        }
+        $arrival = $arrival -and $fixture.offDeckRescues -eq 0
+        if (-not $fixture.sawWave5 -or -not $fixture.sawWormhole -or -not $fixture.sawDocking -or -not $arrival -or
             $fixture.wormholeSimulationSeconds -lt 7.9 -or $fixture.dockingSimulationSeconds -lt 2.9 -or
-            $fixture.exitSimulationSeconds -lt 2.3 -or $fixture.stationIdleSimulationSeconds -lt 15 -or $fixture.approachSimulationSeconds -le 0) {
-            throw 'Station fixture lacks full wormhole/docking/exit/idle coverage.'
+            $fixture.stationIdleSimulationSeconds -lt 15 -or $fixture.approachSimulationSeconds -le 0) {
+            throw "Station fixture lacks full wormhole/docking/arrival/idle coverage (hero=$($fixture.stationHero) climbsOut=$($fixture.heroClimbsOut) exit=$($fixture.exitSimulationSeconds) standingOnDeck=$($fixture.standingOnDeckSeconds) of $($fixture.stationIdleSimulationSeconds) playerView=$($fixture.playerViewOnDeckSeconds) rescues=$($fixture.offDeckRescues))."
         }
     } elseif (-not $fixture.sawWave9 -or $fixture.compoundActorPresenceSeconds -lt 3.5 -or $fixture.approachSimulationSeconds -lt 5) {
         throw 'Endgame fixture lacks full Wave9/compound/approach coverage.'
@@ -201,10 +237,16 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Completed CSV analysis failed.' }
     $analysis = Get-Content -LiteralPath $output -Raw | ConvertFrom-Json
     if ($Scenario -eq 'Station5') {
+        # Stage 7 in the timeline is the climb-out. A run whose hero has one owes 2.3 s of it in the CSV as
+        # well as in the receipt; a run whose hero has none owes exactly zero, and its arrival is the
+        # docking stage plus the full stationary hub. Demanding zero is not a relaxation: it is what catches
+        # the receipt and the timeline disagreeing about whether a transition ran at all.
+        $exitStageSeconds = $analysis.station_fixture.stages.AuthoredExit.simulation_seconds
+        $exitStageOk = if ($fixture.heroClimbsOut) { $exitStageSeconds -ge 2.3 } else { $exitStageSeconds -eq 0 }
         if ($analysis.status -cne 'RENDERED_STATION_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE' -or -not $analysis.station_fixture.observed -or
             (-not $CaptureVisuals -and -not $analysis.station_fixture.all_fixture_frames_foreground) -or $analysis.station_fixture.stages.Wormhole.simulation_seconds -lt 7.9 -or
-            $analysis.station_fixture.stages.Docking.simulation_seconds -lt 2.9 -or $analysis.station_fixture.stages.AuthoredExit.simulation_seconds -lt 2.3 -or
-            $analysis.station_fixture.stages.StationIdle.simulation_seconds -lt 15) { throw 'CSV lacks station transition and foreground evidence.' }
+            $analysis.station_fixture.stages.Docking.simulation_seconds -lt 2.9 -or -not $exitStageOk -or
+            $analysis.station_fixture.stages.StationIdle.simulation_seconds -lt 15) { throw "CSV lacks station transition and foreground evidence (exitStage=$exitStageSeconds climbsOut=$($fixture.heroClimbsOut))." }
     } elseif ($analysis.status -cne 'RENDERED_ENDGAME_FIXTURE_ONLY_NOT_60_FPS_ACCEPTANCE' -or -not $analysis.endgame_fixture.observed -or (-not $CaptureVisuals -and -not $analysis.endgame_fixture.all_fixture_frames_foreground) -or
         $analysis.endgame_fixture.compound_presence_simulation_seconds -lt 3.5) { throw 'CSV lacks the required fixture/composition evidence.' }
     $success = $true
@@ -248,5 +290,11 @@ try {
     }
     $result | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Encoding utf8
     Write-Output "Endgame result: $(Join-Path $runRoot 'result.json'); success=$($result.success)"
+    # Say which hero the token certifies. Nothing fails when the licensed pack is absent - selection just
+    # falls through to a hero that does climb out and the other branch passes - so the one way to notice
+    # that a capture certified somebody else's arrival is for the capture to name who it filmed.
+    if ($Scenario -eq 'Station5' -and $null -ne $fixture) {
+        Write-Output "Station hero: $($fixture.stationHero); climbsOut=$($fixture.heroClimbsOut); onDeck=$($fixture.standingOnDeckSeconds) of $($fixture.stationIdleSimulationSeconds); playerView=$($fixture.playerViewOnDeckSeconds); rescues=$($fixture.offDeckRescues)"
+    }
 }
 if (-not $result.success) { throw "Endgame fixture did not pass all capture/isolation checks: $failure" }

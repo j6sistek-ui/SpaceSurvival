@@ -223,24 +223,102 @@ bool CheckStation(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
         ++WorldBodies;
     Test.TestEqual(TEXT("Station transition tears down hazards, enemies, projectiles and event actors"), WorldBodies,
                    0);
-    Test.TestTrue(TEXT("Station starts the authored exit before allowing services"), Walker->IsDisembarking());
+    // How a hero gets from the seat onto the deck depends on the hero, and both routes are correct. One
+    // with an exit clip climbs out and the station holds the player off until it finishes. One without -
+    // the ship has no door, so the exit animation was cancelled and the gap logged as RPT-20260917-01 -
+    // is standing outside the ship the moment the docking motion ends. What is not allowed is either one
+    // wearing the other's behaviour: a transition that started with no clip to play, or a clip that
+    // arrived and was never used.
+    const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
+    Test.AddInfo(FString::Printf(TEXT("JOURNEY_STATION_HERO id=%s climbsOut=%d exiting=%d"),
+                                 *Walker->GetHero().Id.ToString(), ClimbsOut ? 1 : 0,
+                                 Walker->IsDisembarking() ? 1 : 0));
+    Test.TestEqual(TEXT("The station starts an authored exit exactly when this hero has one to start"),
+                   Walker->IsDisembarking(), ClimbsOut);
     const int32 ArrivalWave = Fixture.Instance->Session.run.wave;
-    Walker->SetActorLocation(Hub->GetActorTransform().TransformPosition(FVector(200, -800, 100)));
-    Fixture.Mode->Interact();
-    Test.TestTrue(TEXT("Early console interaction cannot interrupt the authored exit"), !Fixture.Mode->IsMenuOpen());
-    Fixture.Mode->OpenPanel(ESSPanel::Main);
-    Test.TestTrue(TEXT("Shell cannot pause or skip the authored exit"), !Fixture.Mode->IsMenuOpen());
-    Fixture.Mode->LaunchFromHub();
-    Test.TestEqual(TEXT("Early departure leaves the station wave unchanged"), Fixture.Instance->Session.run.wave,
-                   ArrivalWave);
+    const FVector Console = Hub->GetActorTransform().TransformPosition(FVector(200, -800, 100));
+    const FVector Exit = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
+
+    // Services stay shut while a transition is running and the shell cannot skip it. That gate reads one
+    // thing - whether the GameMode's walker is mid-exit - and with a hero that has no exit clip there is
+    // nothing running for it to refuse, so the check would quietly become vacuous on exactly the builds
+    // whose hero does not climb out. A transition is therefore built rather than the check dropped: a
+    // second walker, on a roster narrowed to heroes that do climb out, stands in as the GameMode's walker
+    // for as long as the three calls take. The arriving walker keeps possession throughout and is put
+    // back before anything else runs.
+    auto *WalkerProperty = FindFProperty<FObjectPropertyBase>(ASSGameMode::StaticClass(), TEXT("Walker"));
+    if (!Test.TestNotNull(TEXT("Find the existing walker reference"), WalkerProperty))
+        return false;
+    ASSWalker *StandIn = nullptr;
+    if (!ClimbsOut)
+    {
+        auto *Climbing = NewObject<USSPhase1Data>(Fixture.Mode);
+        for (auto &Entry : Climbing->Heroes)
+            if (Entry.DisembarkClipPath.IsEmpty())
+            {
+                Entry.MeshPath = TEXT("/Game/SpaceSurvival/Character/SK_NoSuchHero.SK_NoSuchHero");
+                Entry.WalkClipPath = TEXT("/Game/SpaceSurvival/Character/A_NoSuchWalk.A_NoSuchWalk");
+                Entry.PilotClipPath = TEXT("/Game/SpaceSurvival/Character/A_NoSuchPilot.A_NoSuchPilot");
+            }
+        // Deferred, because the roster has to be on the pawn before its BeginPlay reads one.
+        const FTransform Spawn(Hub->GetActorRotation(), Hub->WalkSpawn());
+        StandIn = Fixture.World->SpawnActorDeferred<ASSWalker>(ASSWalker::StaticClass(), Spawn);
+        if (!Test.TestNotNull(TEXT("Create a stand-in walker that does climb out"), StandIn))
+            return false;
+        StandIn->Tuning = Climbing;
+        StandIn->FinishSpawning(Spawn);
+        Test.AddInfo(FString::Printf(TEXT("JOURNEY_GATE_STANDIN id=%s clip=%s"), *StandIn->GetHero().Id.ToString(),
+                                     *StandIn->GetHero().DisembarkClipPath));
+        if (!Test.TestTrue(
+                TEXT("The stand-in begins the exit this build's arriving hero has none of"),
+                StandIn->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit, Hub->GetActorRotation())))
+        {
+            StandIn->Destroy();
+            return false;
+        }
+        WalkerProperty->SetObjectPropertyValue_InContainer(Fixture.Mode, StandIn);
+    }
+    {
+        ASSWalker *Gated = StandIn ? StandIn : Walker;
+        Gated->SetActorLocation(Console);
+        if (!Test.TestTrue(TEXT("The gate is put in front of a walker that really is mid-exit"),
+                           Gated->IsDisembarking()))
+            return false;
+        Fixture.Mode->Interact();
+        Test.TestTrue(TEXT("Early console interaction cannot interrupt the authored exit"),
+                      !Fixture.Mode->IsMenuOpen());
+        Fixture.Mode->OpenPanel(ESSPanel::Main);
+        Test.TestTrue(TEXT("Shell cannot pause or skip the authored exit"), !Fixture.Mode->IsMenuOpen());
+        Fixture.Mode->LaunchFromHub();
+        Test.TestEqual(TEXT("Early departure leaves the station wave unchanged"), Fixture.Instance->Session.run.wave,
+                       ArrivalWave);
+        Test.TestTrue(TEXT("Early departure does not leave the station either"),
+                      Fixture.Instance->Session.run.phase == SS::Phase::Station);
+    }
+    if (StandIn)
+    {
+        WalkerProperty->SetObjectPropertyValue_InContainer(Fixture.Mode, Walker);
+        StandIn->Destroy();
+        // Nothing the stand-in did touched the arriving hero, which has been standing on the deck in
+        // control since docking finished. That is the whole of this hero's exit.
+        Test.TestTrue(TEXT("A hero with no exit clip is outside the ship and in control from the first frame"),
+                      !Walker->IsDisembarking() && Fixture.Controller->GetPawn() == Walker &&
+                          Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
+        // In plan, because the pawn settles onto the deck vertically: it is where the station puts a
+        // walker, not dragged to the seat and not left at the authored exit target.
+        Test.TestTrue(TEXT("It stands where the station spawns a walker, clear of the hull the ship docked in"),
+                      FVector2D(Hub->GetActorTransform().InverseTransformPosition(Walker->GetActorLocation()))
+                              .Equals(FVector2D(-300, 0), 1.f) &&
+                          FVector::Dist2D(Walker->GetActorLocation(), Hub->DockPosition()) > 500.);
+    }
     for (int32 Index = 0; Index < 60 && Walker->IsDisembarking(); ++Index)
         Fixture.Step();
-    Test.TestTrue(TEXT("Authored exit completes with possession, collision and walking restored"),
+    Test.TestTrue(TEXT("However the hero reached the deck, it has possession, collision and walking"),
                   !Walker->IsDisembarking() && Fixture.Controller->GetPawn() == Walker &&
                       Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
-    Test.TestTrue(TEXT("Disembark leaves the walker above the station floor"),
+    Test.TestTrue(TEXT("Arrival leaves the walker above the station floor"),
                   Hub->GetActorTransform().InverseTransformPosition(Walker->GetActorLocation()).Z > 0.f);
-    Walker->SetActorLocation(Hub->GetActorTransform().TransformPosition(FVector(200, -800, 100)));
+    Walker->SetActorLocation(Console);
     Fixture.Mode->Interact();
     Test.TestTrue(TEXT("Physical upgrade console opens the upgrade panel"), Fixture.Mode->Panel == ESSPanel::Upgrades);
     int32 UpgradeTracks = 0;

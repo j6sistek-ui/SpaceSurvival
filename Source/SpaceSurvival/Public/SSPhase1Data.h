@@ -40,10 +40,11 @@ public:
                       FSSEncounterDefinition(ESSEncounterKind::DistressCombat),
                       FSSEncounterDefinition(ESSEncounterKind::MobileDepot)};
         // Preference order: the first hero whose assets are installed wins. The squirrel is asked about
-        // first so that importing it is the whole swap; it is absent today, so the stand-in trooper still
-        // takes the deck and the Acornaut, which this repository actually ships, still takes the seat.
-        // Putting the trooper first would mean the real hero could never be selected while a stand-in
-        // that was only ever temporary sat in front of it.
+        // first so that importing it is the whole swap, and since September 17 that import has happened:
+        // where this order used to leave the stand-in trooper on the deck and the Acornaut in the seat,
+        // the squirrel now takes both, and the two behind it are what a build without the licensed tree
+        // falls back through. Putting the trooper first would mean the real hero could never be selected
+        // while a stand-in that was only ever temporary sat in front of it.
         Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel), FSSHeroDefinition(ESSHeroIdentity::Trooper),
                   FSSHeroDefinition(ESSHeroIdentity::Acornaut)};
     }

@@ -11,6 +11,7 @@ class UStaticMesh;
 class UStaticMeshComponent;
 class UCameraComponent;
 class USpringArmComponent;
+class UPointLightComponent;
 class UAudioComponent;
 class UAnimSequence;
 class UTextRenderComponent;
@@ -121,15 +122,35 @@ public:
     }
     /** Deck plates sit this far above the collision floor; the sole is fitted to them, not to it. */
     static constexpr float DeckClearance = 2.75f;
+    /** How many times Tick has had to haul this pawn back onto the deck. In play that is a mercy: a
+     *  walker who wanders off the finite deck is returned to its spawn rather than losing the run. To
+     *  anything checking an arrival it is the opposite - the clamp restores exactly the state an
+     *  arrival is asked to prove (walking, on the deck, at WalkSpawn), so a fixture that only looks
+     *  at the pawn cannot tell a good arrival from a bad one the clamp healed. Counting the rescues
+     *  is what tells them apart, so a rescue during arrival can be refused rather than certified. */
+    int32 OffDeckRecoveries() const
+    {
+        return OffDeckRescues;
+    }
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USpringArmComponent> Boom;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<UCameraComponent> Camera;
+    /** The readability rig: a yaw-only frame that holds the two lights aimed relative to the view. */
+    UPROPERTY(VisibleAnywhere, Category = "Readability")
+    TObjectPtr<USceneComponent> LightRig;
+    /** Camera-side key. Models the body and gives the suit a specular the camera can see. */
+    UPROPERTY(VisibleAnywhere, Category = "Readability")
+    TObjectPtr<UPointLightComponent> KeyLight;
+    /** Far-side rim. Draws the outline against a deck that is brighter than any hero suit. */
+    UPROPERTY(VisibleAnywhere, Category = "Readability")
+    TObjectPtr<UPointLightComponent> RimLight;
     UPROPERTY(EditAnywhere)
     TObjectPtr<USSPhase1Data> Tuning;
 
 private:
     TWeakObjectPtr<ASSStation> RecoveryHub;
+    int32 OffDeckRescues = 0;
     FVector ExitStart = FVector::ZeroVector, ExitEnd = FVector::ZeroVector;
     FQuat ExitStartRotation = FQuat::Identity, ExitEndRotation = FQuat::Identity;
     double ExitElapsed = 0.0;
@@ -143,4 +164,5 @@ private:
     double MeshLift(double ScaledSoleOffset) const;
     void SampleExitPose(float Seconds);
     void StartWalkingAnimation();
+    void UpdateReadabilityLighting();
 };

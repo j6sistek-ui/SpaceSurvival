@@ -8,7 +8,9 @@
 #include "Animation/AnimSingleNodeInstance.h"
 #include "Animation/PoseSnapshot.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "HAL/IConsoleManager.h"
 #include "Engine/Engine.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
@@ -47,6 +49,16 @@ const TCHAR *const AcornautMesh = TEXT("/Game/SpaceSurvival/Character/SK_Acornau
 const TCHAR *const AcornautWalk = TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair");
 const TCHAR *const AcornautPilot = TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit");
 const TCHAR *const AcornautExit = TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair");
+const TCHAR *const SquirrelMesh = TEXT("/Game/SpaceSurvival/Licensed/Hero/SK_SquirrelHero.SK_SquirrelHero");
+const TCHAR *const SquirrelWalk = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelWalk.A_SquirrelWalk");
+const TCHAR *const SquirrelPilot = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelPilot.A_SquirrelPilot");
+/** Measured in the Swift cockpit, .agent/local/HeroSquirrel/Stage6_Clips/SeatFit.json, and written out
+ *  here for the same reason every other number in this table is: so that losing it says so out loud. */
+const FVector SquirrelMount(-12.5, 0, 27.933);
+// Paths no build has, used to say "this hero is not installed" without waiting for one not to be.
+const TCHAR *const NoSuchMesh = TEXT("/Game/SpaceSurvival/Character/SK_NoSuchHero.SK_NoSuchHero");
+const TCHAR *const NoSuchWalk = TEXT("/Game/SpaceSurvival/Character/A_NoSuchWalk.A_NoSuchWalk");
+const TCHAR *const NoSuchPilot = TEXT("/Game/SpaceSurvival/Character/A_NoSuchPilot.A_NoSuchPilot");
 
 float WalkingFloorGap()
 {
@@ -67,16 +79,18 @@ bool FSSHeroRoster::RunTest(const FString &)
         return false;
     if (!TestEqual(TEXT("Three heroes, in preference order"), Content->Heroes.Num(), 3))
         return false;
-    // The real hero is asked about first, so importing it is the whole swap. It is absent today, which is
-    // what leaves the stand-in on the deck; a roster that asked the stand-in first could never reach it.
-    TestEqual(TEXT("The hero that is coming is asked about first"), AsInt(Content->Heroes[0].Identity),
+    // The real hero is asked about first, so importing it is the whole swap - and on September 17 that
+    // import happened. Nothing below asks whether this machine has the files. Whether a hero is installed
+    // is a fact about a build, not about the roster: these assets live under the ignored Licensed/ tree,
+    // so the same roster answers one way here and another on a machine without the pack, and a test that
+    // pinned either answer would be pinning today's content rather than the rule. The rule - order, and
+    // what selection does with a given set of files - is proved below on rosters this test builds itself.
+    TestEqual(TEXT("The hero the game is about is asked about first"), AsInt(Content->Heroes[0].Identity),
               AsInt(ESSHeroIdentity::Squirrel));
     TestEqual(TEXT("The stand-in is second"), AsInt(Content->Heroes[1].Identity), AsInt(ESSHeroIdentity::Trooper));
     TestEqual(TEXT("The shipped hero is last"), AsInt(Content->Heroes[2].Identity), AsInt(ESSHeroIdentity::Acornaut));
     TestEqual(TEXT("The pawns are built with the shipped hero"), AsInt(FSSHeroDefinition::Fallback().Identity),
               AsInt(ESSHeroIdentity::Acornaut));
-    TestFalse(TEXT("The hero that is coming is not installed, so it cannot be selected yet"),
-              Content->Heroes[0].Installed(ESSHeroSlot::Walker) || Content->Heroes[0].Installed(ESSHeroSlot::Pilot));
 
     const FSSHeroDefinition Trooper = Content->Heroes[1];
     TestEqual(TEXT("Trooper mesh path"), Trooper.MeshPath, FString(TrooperMesh));
@@ -116,25 +130,91 @@ bool FSSHeroRoster::RunTest(const FString &)
              Trooper.LeftHandBone != Acornaut.LeftHandBone && Trooper.LeftFootBone != Acornaut.LeftFootBone);
 
     const FSSHeroDefinition Squirrel = Content->Heroes[0];
+    TestEqual(TEXT("Squirrel mesh path"), Squirrel.MeshPath, FString(SquirrelMesh));
+    TestEqual(TEXT("Squirrel walk clip"), Squirrel.WalkClipPath, FString(SquirrelWalk));
+    TestEqual(TEXT("Squirrel pilot clip"), Squirrel.PilotClipPath, FString(SquirrelPilot));
+    // An empty exit clip is not a missing asset, it is this hero saying it does not climb out. The ship
+    // has no door, so the owner cancelled the exit animation and had the gap logged as RPT-20260917-01:
+    // when the docking motion finishes this hero is simply standing outside. Every test that used to
+    // assume a climb-out now asks this field first, so this is the line that decides all of them.
+    TestTrue(TEXT("The squirrel has no exit clip, by decision rather than by omission"),
+             Squirrel.DisembarkClipPath.IsEmpty());
     TestEqual(TEXT("Squirrel stands on its own origin"), Squirrel.SoleOffset, 0.f, 0.f);
     TestEqual(TEXT("Squirrel scale"), Squirrel.MeshScale, 1.5f, 0.f);
     TestEqual(TEXT("Squirrel is scaled, not fitted"), Squirrel.FitHeight, 0.f, 0.f);
+    TestEqual(TEXT("Squirrel mesh yaw"), Squirrel.MeshYaw, -90.f, 0.f);
+    // The mount is measured, and measuring it was the whole point: this hero's origin is its sole, so
+    // inheriting the Acornaut's 72 cm - which is 62.9 cm of somebody else's sole plus a seat - left it
+    // floating 44.067 cm above the cushion, a third of its own height. Pinned beside the Acornaut's so
+    // that a hero which quietly stops overriding it fails here rather than in a capture.
+    TestEqual(TEXT("Squirrel pilot mount, measured in the Swift cockpit"), Squirrel.PilotMountOffset, SquirrelMount,
+              0.f);
+    TestFalse(TEXT("And it is not the mount it used to inherit, which is what the float was"),
+              Squirrel.PilotMountOffset.Equals(Acornaut.PilotMountOffset));
+    TestEqual(TEXT("Squirrel walk handoff second"), Squirrel.WalkHandoffSeconds, .308333333f, 0.f);
+    TestEqual(TEXT("Squirrel walk speed"), Squirrel.WalkSpeed, 180.f, 0.f);
     TestTrue(TEXT("Squirrel bone names are its own, measured in Unreal from the imported base"),
              Squirrel.RootBone == TEXT("Root") && Squirrel.PelvisBone == TEXT("Pelvis") &&
                  Squirrel.LeftFootBone == TEXT("L_Foot") && Squirrel.RightFootBone == TEXT("R_Foot") &&
                  Squirrel.LeftHandBone == TEXT("L_Hand") && Squirrel.RightHandBone == TEXT("R_Hand"));
-    TestFalse(TEXT("The squirrel's assets do not exist, so it cannot walk"), Squirrel.Installed(ESSHeroSlot::Walker));
-    TestFalse(TEXT("The squirrel's assets do not exist, so it cannot fly"), Squirrel.Installed(ESSHeroSlot::Pilot));
-    TestNotEqual(TEXT("An uninstalled hero is skipped, never selected, for the walker"),
-                 AsInt(Content->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(ESSHeroIdentity::Squirrel));
-    TestNotEqual(TEXT("An uninstalled hero is skipped, never selected, for the pilot"),
-                 AsInt(Content->SelectHero(ESSHeroSlot::Pilot).Identity), AsInt(ESSHeroIdentity::Squirrel));
-    TestEqual(TEXT("The pilot slot goes to the shipped hero, because the stand-in has no pilot clip"),
-              AsInt(Content->SelectHero(ESSHeroSlot::Pilot).Identity), AsInt(ESSHeroIdentity::Acornaut));
+    // Both kinds of hero exist, which is what lets the tests below cover both exits rather than whichever
+    // one this build happens to install.
+    TestTrue(TEXT("The roster carries a hero that climbs out and a hero that does not"),
+             !Acornaut.DisembarkClipPath.IsEmpty() && !Trooper.DisembarkClipPath.IsEmpty() &&
+                 Squirrel.DisembarkClipPath.IsEmpty());
     for (const auto &Entry : Content->Heroes)
-        AddInfo(FString::Printf(TEXT("HERO_ROSTER id=%s walker=%d pilot=%d mesh=%s"), *Entry.Id.ToString(),
+        AddInfo(FString::Printf(TEXT("HERO_ROSTER id=%s walker=%d pilot=%d climbsOut=%d mesh=%s"), *Entry.Id.ToString(),
                                 Entry.Installed(ESSHeroSlot::Walker) ? 1 : 0,
-                                Entry.Installed(ESSHeroSlot::Pilot) ? 1 : 0, *Entry.MeshPath));
+                                Entry.Installed(ESSHeroSlot::Pilot) ? 1 : 0, Entry.DisembarkClipPath.IsEmpty() ? 0 : 1,
+                                *Entry.MeshPath));
+    AddInfo(FString::Printf(TEXT("HERO_ROSTER_SELECTED walker=%s pilot=%s"),
+                            *Content->SelectHero(ESSHeroSlot::Walker).Id.ToString(),
+                            *Content->SelectHero(ESSHeroSlot::Pilot).Id.ToString()));
+
+    // Presence is what selection reads, and it is read here off a roster whose files this test decides,
+    // so the claim holds on the machine that has the licensed pack and on the machine that does not.
+    {
+        auto *Uninstalled = NewObject<USSPhase1Data>();
+        if (!TestNotNull(TEXT("Construct a roster whose front hero has no files"), Uninstalled))
+            return false;
+        Uninstalled->Heroes[0].MeshPath = FString(NoSuchMesh);
+        Uninstalled->Heroes[0].WalkClipPath = FString(NoSuchWalk);
+        Uninstalled->Heroes[0].PilotClipPath = FString(NoSuchPilot);
+        TestFalse(TEXT("A hero whose files are not on disk is not installed for the walker"),
+                  Uninstalled->Heroes[0].Installed(ESSHeroSlot::Walker));
+        TestFalse(TEXT("A hero whose files are not on disk is not installed for the pilot"),
+                  Uninstalled->Heroes[0].Installed(ESSHeroSlot::Pilot));
+        TestNotEqual(TEXT("An uninstalled hero is skipped, never selected, for the walker"),
+                     AsInt(Uninstalled->SelectHero(ESSHeroSlot::Walker).Identity),
+                     AsInt(Uninstalled->Heroes[0].Identity));
+        TestNotEqual(TEXT("An uninstalled hero is skipped, never selected, for the pilot"),
+                     AsInt(Uninstalled->SelectHero(ESSHeroSlot::Pilot).Identity),
+                     AsInt(Uninstalled->Heroes[0].Identity));
+    }
+    {
+        // A hero that has never been seated is not a candidate for the seat, however far up the roster it
+        // sits - the claim the stand-in used to carry, now made without depending on the stand-in being
+        // installed. Every entry is given the shipped hero's own assets, which this repository tracks, so
+        // the only thing that can decide the seat here is the empty clip.
+        auto *Seatless = NewObject<USSPhase1Data>();
+        if (!TestNotNull(TEXT("Construct a roster whose front hero has never been seated"), Seatless))
+            return false;
+        for (auto &Entry : Seatless->Heroes)
+        {
+            Entry.MeshPath = FString(AcornautMesh);
+            Entry.WalkClipPath = FString(AcornautWalk);
+            Entry.PilotClipPath = FString(AcornautPilot);
+        }
+        Seatless->Heroes[0].PilotClipPath = FString();
+        TestTrue(TEXT("A hero with a mesh and a walk clip takes the deck"),
+                 Seatless->Heroes[0].Installed(ESSHeroSlot::Walker));
+        TestFalse(TEXT("The same hero with no pilot clip cannot take the seat"),
+                  Seatless->Heroes[0].Installed(ESSHeroSlot::Pilot));
+        TestEqual(TEXT("The walker slot goes to the front hero"),
+                  AsInt(Seatless->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(Seatless->Heroes[0].Identity));
+        TestEqual(TEXT("The pilot slot walks past it to the first hero that has been seated"),
+                  AsInt(Seatless->SelectHero(ESSHeroSlot::Pilot).Identity), AsInt(Seatless->Heroes[1].Identity));
+    }
 
     // A roster whose assets are all absent still answers, with the hero the pawns were built with.
     auto *Absent = NewObject<USSPhase1Data>();
@@ -142,18 +222,20 @@ bool FSSHeroRoster::RunTest(const FString &)
         return false;
     for (auto &Entry : Absent->Heroes)
     {
-        Entry.MeshPath = TEXT("/Game/SpaceSurvival/Character/SK_NoSuchHero.SK_NoSuchHero");
-        Entry.WalkClipPath = TEXT("/Game/SpaceSurvival/Character/A_NoSuchWalk.A_NoSuchWalk");
-        Entry.PilotClipPath = TEXT("/Game/SpaceSurvival/Character/A_NoSuchPilot.A_NoSuchPilot");
+        Entry.MeshPath = FString(NoSuchMesh);
+        Entry.WalkClipPath = FString(NoSuchWalk);
+        Entry.PilotClipPath = FString(NoSuchPilot);
         TestFalse(TEXT("A hero with no assets on disk is not installed"), Entry.Installed(ESSHeroSlot::Walker));
     }
     TestEqual(TEXT("With nothing installed, selection lands on the hero the pawns were built with"),
               AsInt(Absent->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(FSSHeroDefinition::Fallback().Identity));
-    // Presence decides, not position. Give the middle hero its real assets back while the one in front of
-    // it and the one behind it stay missing: it must win, and it is not the hero selection falls back to,
-    // so this cannot pass by accident. This is the shape the swap itself relies on.
-    Absent->Heroes[1].MeshPath = FString(TrooperMesh);
-    Absent->Heroes[1].WalkClipPath = FString(TrooperWalk);
+    // Presence decides, not position. Give the middle hero real assets while the one in front of it and
+    // the one behind it stay missing: it must win, and it is not the hero selection falls back to, so this
+    // cannot pass by accident. This is the shape the swap itself relies on. The assets handed over are the
+    // shipped hero's, which this repository tracks, so what is being tested is the walk past a missing
+    // entry rather than whether a licensed pack happens to be installed on this machine.
+    Absent->Heroes[1].MeshPath = FString(AcornautMesh);
+    Absent->Heroes[1].WalkClipPath = FString(AcornautWalk);
     TestEqual(TEXT("Selection walks past a missing hero to the installed one behind it"),
               AsInt(Absent->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(ESSHeroIdentity::Trooper));
 
@@ -260,6 +342,22 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
                  Shipped.PelvisBone == TEXT("Pelvis") && Shipped.LeftFootBone == TEXT("L_Foot") &&
                      Shipped.RightFootBone == TEXT("R_Foot") && Shipped.LeftHandBone == TEXT("L_Wrist") &&
                      Shipped.RightHandBone == TEXT("R_Wrist"));
+        // The imported hero, through the same asset. Its mount is the number a serialized Heroes array
+        // could silently take back: DA_Phase1 carries no Heroes array today, so the constructor is what
+        // the game reads, and the day it does carry one this is where an out-of-date copy of the mount
+        // is caught rather than in a capture of a hero floating over the cushion.
+        const FSSHeroDefinition Imported = Content->Hero(ESSHeroIdentity::Squirrel);
+        TestEqual(TEXT("The loaded asset's imported hero keeps its mesh"), Imported.MeshPath, FString(SquirrelMesh));
+        TestEqual(TEXT("The loaded asset's imported hero keeps its walk clip"), Imported.WalkClipPath,
+                  FString(SquirrelWalk));
+        TestEqual(TEXT("The loaded asset's imported hero keeps its pilot clip"), Imported.PilotClipPath,
+                  FString(SquirrelPilot));
+        TestTrue(TEXT("The loaded asset's imported hero still has no exit clip"), Imported.DisembarkClipPath.IsEmpty());
+        TestEqual(TEXT("The loaded asset's imported hero keeps its measured mount"), Imported.PilotMountOffset,
+                  SquirrelMount, 0.f);
+        TestEqual(TEXT("The loaded asset's imported hero still stands on its own origin"), Imported.SoleOffset, 0.f,
+                  0.f);
+        TestEqual(TEXT("The loaded asset's imported hero keeps its scale"), Imported.MeshScale, 1.5f, 0.f);
     }
     if (Content)
         for (const auto &Entry : Content->Heroes)
@@ -285,8 +383,26 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
                 TestEqual(TEXT("The stand-in's sole is still the bottom of its scaled bounds"),
                           Entry.ScaledSoleOffset(Mesh), -(Bounds.Origin.Z - Bounds.BoxExtent.Z) * Scale, 0.);
             }
-            AddInfo(FString::Printf(TEXT("HERO_FIT id=%s scale=%.9f scaledSole=%.9f"), *Entry.Id.ToString(),
-                                    Entry.RenderedScale(Mesh), Entry.ScaledSoleOffset(Mesh)));
+            else if (Entry.Identity == ESSHeroIdentity::Squirrel)
+            {
+                TestEqual(TEXT("The imported hero still renders at 1.5"), Entry.RenderedScale(Mesh), 1.5f, 0.f);
+                TestEqual(TEXT("The imported hero's sole is still its own origin, so the scaled offset is zero"),
+                          Entry.ScaledSoleOffset(Mesh), 0., 0.);
+                // Against the asset, not against the declaration. A hero with no FitHeight has its sole
+                // offset read straight off SoleOffset and the mesh is never consulted, so the assertion
+                // above is 0 == 0 for as long as the constant says zero - it cannot notice the mesh
+                // moving underneath it. This one can. The whole seat measurement rests on this hero's
+                // origin being its sole, and this mesh lives under the ignored Licensed tree and is
+                // expected to be re-imported; an export that moved the armature would bury the hero in
+                // the deck plates or float it over them, in the station and in the seat both, with every
+                // other number in this file still agreeing with itself. Measured z_min is -0.0045 cm.
+                const FBoxSphereBounds Bounds = Mesh->GetBounds();
+                TestEqual(TEXT("The imported hero's mesh really does stand on its own origin"),
+                          double(Bounds.Origin.Z - Bounds.BoxExtent.Z), 0., .05);
+            }
+            AddInfo(FString::Printf(TEXT("HERO_FIT id=%s scale=%.9f scaledSole=%.9f boundsZMin=%.9f"),
+                                    *Entry.Id.ToString(), Entry.RenderedScale(Mesh), Entry.ScaledSoleOffset(Mesh),
+                                    Mesh->GetBounds().Origin.Z - Mesh->GetBounds().BoxExtent.Z));
         }
 
     // The walking pawn's mesh component against the arithmetic the code carried before the data existed,
@@ -309,6 +425,16 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
         ExpectedZ = -(Bounds.Origin.Z - Bounds.BoxExtent.Z) * Scale - HalfHeight - WalkingFloorGap() + 2.75f;
         TestEqual(TEXT("The stand-in wears its own mesh"), HeroMesh->GetPathName(), FString(TrooperMesh));
     }
+    else if (Hero.Identity == ESSHeroIdentity::Squirrel)
+    {
+        // Its origin is its sole, so the sole term is zero and the mesh hangs at nothing but the capsule
+        // and the walking floor gap. That is a different number from the other two rather than a
+        // simplification of them, and writing it out is what catches this hero quietly inheriting
+        // 62.90269494 cm of somebody else's boots - which is exactly what its seat mount did.
+        ExpectedScale = 1.5f;
+        ExpectedZ = double(0.f * 1.5f) - HalfHeight - WalkingFloorGap() + 2.75f;
+        TestEqual(TEXT("The imported hero wears its own mesh"), HeroMesh->GetPathName(), FString(SquirrelMesh));
+    }
     else if (!TestTrue(TEXT("A hero this test has no expected numbers for is wearing the walker slot"), false))
         return false;
     AddInfo(FString::Printf(TEXT("HERO_WALKER_MESH z=%.9f expectedZ=%.9f scale=%.9f expectedScale=%.9f half=%.9f"),
@@ -321,19 +447,47 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
     TestEqual(TEXT("The walker mesh keeps the -90 degree yaw"), Walker->GetMesh()->GetRelativeRotation(),
               FRotator(0, -90, 0), 1e-6f);
 
-    // The seated pilot: an unchanged mount, an unchanged mesh, an unchanged clip.
-    TestEqual(TEXT("The ship is still flown by the shipped hero"), AsInt(PilotHero.Identity),
-              AsInt(ESSHeroIdentity::Acornaut));
-    TestEqual(TEXT("The pilot wears the shipped hero's mesh"), PilotMesh->GetPathName(), FString(AcornautMesh));
-    TestEqual(TEXT("The pilot sits at the old mount offset"), Ship->Pilot->GetRelativeLocation(), FVector(-15, 0, 72),
+    // The seated pilot, against the numbers measured for whichever hero is in the seat rather than
+    // against the hero the seat used to hold. Each mount is written out again here for the same reason
+    // the walker's sole is: it is a measurement, it cannot be derived from anything else in the build,
+    // and inheriting one instead of measuring it is what left a hero 44.067 cm above the cushion.
+    FVector ExpectedMount = FVector::ZeroVector;
+    FString ExpectedPilotMesh, ExpectedPilotClip;
+    float ExpectedPilotScale = 0.f;
+    if (PilotHero.Identity == ESSHeroIdentity::Acornaut)
+    {
+        ExpectedMount = FVector(-15, 0, 72);
+        ExpectedPilotMesh = FString(AcornautMesh);
+        ExpectedPilotClip = FString(AcornautPilot);
+        ExpectedPilotScale = 1.5f;
+    }
+    else if (PilotHero.Identity == ESSHeroIdentity::Squirrel)
+    {
+        ExpectedMount = SquirrelMount;
+        ExpectedPilotMesh = FString(SquirrelMesh);
+        ExpectedPilotClip = FString(SquirrelPilot);
+        ExpectedPilotScale = 1.5f;
+    }
+    // The stand-in has never been seated, so reaching this is either a new hero nobody measured a seat
+    // for or the seat having stopped asking the roster at all.
+    else if (!TestTrue(TEXT("A hero this test has no seat numbers for is wearing the pilot slot"), false))
+        return false;
+    AddInfo(FString::Printf(TEXT("HERO_SEAT pilot=%s mount=%s expectedMount=%s declared=%s"), *PilotHero.Id.ToString(),
+                            *Ship->Pilot->GetRelativeLocation().ToString(), *ExpectedMount.ToString(),
+                            *PilotHero.PilotMountOffset.ToString()));
+    TestEqual(TEXT("The pilot wears the seated hero's own mesh"), PilotMesh->GetPathName(), ExpectedPilotMesh);
+    TestEqual(TEXT("The seated hero declares the mount measured for it"), PilotHero.PilotMountOffset, ExpectedMount,
               0.f);
+    TestEqual(TEXT("The seat applies that mount verbatim, which is all the ship does with it"),
+              Ship->Pilot->GetRelativeLocation(), ExpectedMount, 0.f);
     TestEqual(TEXT("The pilot keeps the old yaw"), Ship->Pilot->GetRelativeRotation(), FRotator(0, -90, 0), 1e-6f);
-    TestEqual(TEXT("The pilot keeps the old scale"), Ship->Pilot->GetRelativeScale3D(), FVector(1.5f), 0.f);
+    TestEqual(TEXT("The pilot sits at this hero's own scale"), Ship->Pilot->GetRelativeScale3D(),
+              FVector(ExpectedPilotScale), 0.f);
     auto *Seated = Ship->Pilot->GetSingleNodeInstance();
     if (!TestNotNull(TEXT("The pilot plays a clip"), Seated))
         return false;
-    TestEqual(TEXT("The pilot plays the old authored pilot clip"),
-              Seated->GetCurrentAsset() ? Seated->GetCurrentAsset()->GetPathName() : FString(), FString(AcornautPilot));
+    TestEqual(TEXT("The pilot plays the seated hero's own authored pilot clip"),
+              Seated->GetCurrentAsset() ? Seated->GetCurrentAsset()->GetPathName() : FString(), ExpectedPilotClip);
     TestTrue(TEXT("The pilot clip still loops"), Seated->IsLooping());
 
     // The walk clip, frozen at the pose the exit clip ends on.
@@ -572,6 +726,104 @@ bool FSSSharedRigDisembark::RunTest(const FString &)
     TestEqual(TEXT("Frozen at the handoff second the hero declares, not at a literal"), Walk->GetCurrentTime(),
               Hero.WalkHandoffSeconds, 1e-6f);
     TestEqual(TEXT("And that second is still the measured one"), Hero.WalkHandoffSeconds, .308333333f, 0.f);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSHeroReadabilityLight, "SpaceSurvival.Integration.HeroReadabilityLight",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSHeroReadabilityLight::RunTest(const FString &)
+{
+    FSSHeroTestWorld Fixture;
+    if (!TestNotNull(TEXT("Create isolated hero world"), Fixture.World))
+        return false;
+    auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+    if (!TestNotNull(TEXT("Spawn the actual walking pawn"), Walker))
+        return false;
+    if (!TestNotNull(TEXT("The pawn carries a key light"), Walker->KeyLight.Get()) ||
+        !TestNotNull(TEXT("The pawn carries a rim light"), Walker->RimLight.Get()))
+        return false;
+
+    // The two things that keep the rig off the floor, and the reason it is allowed to be as strong as
+    // it is. The lighting channel is the first: the lights and the hero's mesh share one, and no other
+    // primitive on the pawn or in the station is on it, so the deferred direct pass and Lumen both skip
+    // the deck. The channel does not cover volumetric fog, which injects local lights on scattering
+    // intensity alone, so the second is that both lamps scatter nothing. Losing either would put a pool
+    // of light on the floor around the character and the fix would be the torch it was meant not to be.
+    for (const UPointLightComponent *Light : {Walker->KeyLight.Get(), Walker->RimLight.Get()})
+    {
+        TestFalse(TEXT("A readability light is off the channel the world is lit on"),
+                  Light->LightingChannels.bChannel0);
+        TestTrue(TEXT("A readability light is on the hero's own channel"), Light->LightingChannels.bChannel1);
+        TestEqual(TEXT("A readability light puts nothing into the bay's air, which the channel would not stop"),
+                  Light->VolumetricScatteringIntensity, 0.f, 0.f);
+        TestFalse(TEXT("A readability light casts no shadow, so it costs no shadow map"), Light->CastShadows);
+        TestTrue(TEXT("A readability light is bounded, so it costs a known area"),
+                 Light->AttenuationRadius > 0.f && Light->AttenuationRadius <= 600.f);
+        TestEqual(TEXT("A readability light is dialled in lumens, not in the engine's unitless default"),
+                  static_cast<int32>(Light->IntensityUnits), static_cast<int32>(ELightUnits::Lumens));
+    }
+    // Built at what the dials say, so a pawn that is registered but never ticked - the editor viewport,
+    // or any future path that skips BeginPlay - is not burning the engine's 5000 lumen class default.
+    TestEqual(TEXT("The key is built at the key dial's own default"), Walker->KeyLight->Intensity,
+              IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HeroLightKey"))->GetFloat(), 1e-3f);
+    TestEqual(TEXT("The rim is built at the rim dial's own default"), Walker->RimLight->Intensity,
+              IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HeroLightRim"))->GetFloat(), 1e-3f);
+    TestTrue(TEXT("The hero keeps the world's lighting"), Walker->GetMesh()->LightingChannels.bChannel0);
+    TestTrue(TEXT("The hero also receives the rig"), Walker->GetMesh()->LightingChannels.bChannel1);
+    TestFalse(TEXT("The pawn's collision capsule is not on the rig's channel"),
+              Walker->GetCapsuleComponent()->LightingChannels.bChannel1);
+
+    // Key toward the camera, rim away from it, on opposite sides and both above the capsule centre.
+    // This is the shape of a lit subject rather than a lamp on the lens: the exact centimetres are feel
+    // and may move, but a key that crossed to the far side would stop lighting what the camera sees,
+    // and a rim on the key's side would stop drawing the edge that the complaint was about.
+    const FVector Key = Walker->KeyLight->GetRelativeLocation();
+    const FVector Rim = Walker->RimLight->GetRelativeLocation();
+    TestTrue(TEXT("The key is on the camera's side of the hero"), Key.X < 0.);
+    TestTrue(TEXT("The rim is on the far side of the hero"), Rim.X > 0.);
+    TestTrue(TEXT("They are on opposite sides of the view axis"), Key.Y * Rim.Y < 0.);
+    TestTrue(TEXT("Both are above the capsule centre"), Key.Z > 0. && Rim.Z > 0.);
+    TestTrue(TEXT("The rim is the higher of the two, so it grazes the outline"), Rim.Z > Key.Z);
+
+    Walker->DispatchBeginPlay();
+    const FSSHeroDefinition Hero = Walker->GetHero();
+    auto *Master = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HeroLightScale"));
+    auto *KeyDial = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HeroLightKey"));
+    if (!TestNotNull(TEXT("The master dial exists"), Master) || !TestNotNull(TEXT("The key dial exists"), KeyDial))
+        return false;
+    const float MasterWas = Master->GetFloat(), KeyWas = KeyDial->GetFloat();
+    Walker->Tick(.016f);
+    AddInfo(FString::Printf(TEXT("HERO_LIGHT hero=%s scale=%.6f key=%.3f rim=%.3f"), *Hero.Id.ToString(),
+                            Hero.ReadabilityLightScale, Walker->KeyLight->Intensity, Walker->RimLight->Intensity));
+    // Each hero's measured scale, pinned hard. The product check below reads the same field on both
+    // sides, so on its own it would pass at any value at all - and this field is the one number in the
+    // rig that answers the owner's complaint, because it is the whole of why the darkest suit gets two
+    // and a half times the lamp. Every one of these came off a measurement of that hero's base colour;
+    // moving one should mean a new measurement, and should have to say so here.
+    TestEqual(TEXT("The darkest hero declares the scale its 0.046 albedo was measured to need"),
+              FSSHeroDefinition(ESSHeroIdentity::Squirrel).ReadabilityLightScale, 2.5f, 0.f);
+    TestEqual(TEXT("The trooper's glossy plates return five times as much, so it declares a fifth"),
+              FSSHeroDefinition(ESSHeroIdentity::Trooper).ReadabilityLightScale, .5f, 0.f);
+    TestEqual(TEXT("The pale fallback declares its own, rather than inheriting a lamp sized for a black suit"),
+              FSSHeroDefinition(ESSHeroIdentity::Acornaut).ReadabilityLightScale, .5f, 0.f);
+    // The dial is the look and the hero's scale is how much of it that hero's albedo needs. Their
+    // product is what reaches the lamp, so a hero added later cannot be lit without declaring a scale.
+    TestEqual(TEXT("The key burns the dial times this hero's own scale"), Walker->KeyLight->Intensity,
+              KeyWas * MasterWas * Hero.ReadabilityLightScale, 1e-3f);
+    KeyDial->Set(KeyWas * 2.f, ECVF_SetByCode);
+    Walker->Tick(.016f);
+    TestEqual(TEXT("Turning the dial mid-session moves the light"), Walker->KeyLight->Intensity,
+              KeyWas * 2.f * MasterWas * Hero.ReadabilityLightScale, 1e-3f);
+    // Off is off, not black: the owner compares against the station alone by typing ss.HeroLightScale 0,
+    // and a light left visible at zero intensity would still cost a pass over its bounds.
+    Master->Set(0.f, ECVF_SetByCode);
+    Walker->Tick(.016f);
+    TestFalse(TEXT("The master dial at zero switches the key off"), Walker->KeyLight->IsVisible());
+    TestFalse(TEXT("The master dial at zero switches the rim off"), Walker->RimLight->IsVisible());
+    Master->Set(MasterWas, ECVF_SetByCode);
+    KeyDial->Set(KeyWas, ECVF_SetByCode);
+    Walker->Tick(.016f);
+    TestTrue(TEXT("And restoring it brings them back"), Walker->KeyLight->IsVisible() && Walker->RimLight->IsVisible());
     return true;
 }
 #endif
