@@ -151,8 +151,21 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
             }
             const bool HasExterior =
                 FPackageName::DoesPackageExist(TEXT("/Game/SpaceSurvival/Licensed/StationExterior/SM_StationExterior"));
-            TestEqual(Label + TEXT(" keeps the deck and 15 boundaries plus the optional exterior proxy"),
-                      SolidCubes.Num(), 16 + (HasExterior ? 1 : 0));
+            const bool HasPitStop =
+                FPackageName::DoesPackageExist(TEXT("/Game/SpaceSurvival/Licensed/StationPitStop/SM_StationPitStop"));
+            int32 PitStopSolids = 0;
+            for (auto *Cube : SolidCubes)
+                PitStopSolids += Cube->ComponentHasTag(TEXT("StationPitStopSolid")) ? 1 : 0;
+            if (HasPitStop)
+            {
+#include "SSStationPitStopBoxes.inl"
+                TestEqual(Label + TEXT(" places every generated pit stop box"), PitStopSolids,
+                          static_cast<int32>(UE_ARRAY_COUNT(SSStationPitStopBoxes)));
+            }
+            else
+                TestEqual(Label + TEXT(" has no pit stop solids without the pit stop asset"), PitStopSolids, 0);
+            TestEqual(Label + TEXT(" keeps the deck and 15 boundaries plus the exterior's own solids"),
+                      SolidCubes.Num(), 16 + PitStopSolids + (!HasPitStop && HasExterior ? 1 : 0));
             if (!TestNotNull(Label + TEXT(" retains the solid deck"), Floor))
                 return false;
             TestTrue(Label + TEXT(" keeps the deck visible at its original scale"),

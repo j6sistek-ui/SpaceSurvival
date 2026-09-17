@@ -33,7 +33,8 @@ enum class ESSPanel
     Launch,
     Results,
     Acknowledgements,
-    AlienGallery
+    AlienGallery,
+    Paint
 };
 struct FSSMenuEntry
 {
@@ -83,6 +84,7 @@ public:
     float PlayerHitFlashSeconds = 0.f;
     TArray<FSSMenuEntry> Entries;
     int32 SelectedEntry = 0;
+    int32 PaintSection = 0; // The hull section the paint bay is showing.
     ESSPanel Panel = ESSPanel::None;
     FVector StationTarget = FVector::ZeroVector;
     float AnnouncementSeconds = 0.f, WeaponBuffSeconds = 0.f;
@@ -145,6 +147,7 @@ private:
     void EnterStation();
     void SpawnFlight(FVector Location, FRotator Rotation);
     void AddEntry(const FString &Label, int32 Action, bool Enabled = true);
+    void RepaintShips();
 };
 
 enum class ESSInputFamily : uint8

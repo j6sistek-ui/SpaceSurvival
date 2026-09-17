@@ -13,6 +13,7 @@
 #include "Engine/TextureCube.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
+#include "SSShipPaint.h"
 #include "Animation/PoseSnapshot.h"
 #include "SSHUD.h"
 #include "SSWorldActors.h"
@@ -784,6 +785,13 @@ void ASSGameMode::AddEntry(const FString &Label, int32 Action, bool Enabled)
 {
     Entries.Add({Label, Action, Enabled});
 }
+void ASSGameMode::RepaintShips()
+{
+    if (Ship)
+        Ship->RefreshPaint();
+    for (TActorIterator<ASSStation> It(GetWorld()); It; ++It)
+        It->RefreshPaint();
+}
 void ASSGameMode::ClosePanel()
 {
     if (Ship && Ship->IsMoored())
@@ -1049,6 +1057,22 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             45, S.CanPurchaseUtility(SS::Utility::OverdriveCooling));
         break;
     }
+    case ESSPanel::Paint:
+    {
+        PanelTitle = TEXT("PAINT BAY");
+        PanelDetail = TEXT("Ten finishes over four hull sections, kept on your account across runs. Cycle the "
+                           "section, then pick a finish; the bay ship shows it at once.");
+        const int32 Current = S.account.paint[PaintSection];
+        AddEntry(FString::Printf(TEXT("Section: %s / %s  (next section)"), SSPaint::SectionName(PaintSection),
+                                 SSPaint::ColourName(Current)),
+                 120);
+        for (int32 Colour = 0; Colour < SS::PaintColours; ++Colour)
+            AddEntry(FString::Printf(TEXT("%s%s"), SSPaint::ColourName(Colour),
+                                     Current == Colour ? TEXT(" / current") : TEXT("")),
+                     121 + Colour, Current != Colour);
+        AddEntry(TEXT("Factory finish for this section"), 131, Current >= 0);
+        break;
+    }
     case ESSPanel::Reward:
         PanelTitle = PendingReward ? TEXT("SIGNAL REWARD / CHOOSE ONE") : TEXT("LOST CREW BEACON");
         PanelDetail = PendingReward
@@ -1198,6 +1222,21 @@ void ASSGameMode::ActivateEntry(int32 Index)
     {
         HistoryPage = 0;
         OpenPanel(ESSPanel::History);
+        return;
+    }
+    if (A == 120)
+    {
+        PaintSection = (PaintSection + 1) % SS::PaintSections;
+        OpenPanel(ESSPanel::Paint);
+        return;
+    }
+    if (A >= 121 && A <= 131)
+    {
+        S.account.paint[PaintSection] = A == 131 ? -1 : A - 121;
+        if (!GI->PersistAccount())
+            Announce(GI->LastSaveError);
+        RepaintShips();
+        OpenPanel(ESSPanel::Paint);
         return;
     }
     if (A == 60 || A == 61)

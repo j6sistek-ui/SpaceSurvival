@@ -166,6 +166,8 @@ struct RunHistoryEntry
     Weapon weapon = Weapon::RapidLaser; // Active weapon at the end of the run.
 };
 constexpr std::size_t MaxRunHistory = 10;
+constexpr int PaintSections = 4; // Body, wings, engines, weapons: what the paint bay paints independently.
+constexpr int PaintColours = 10; // The bay's flat palette; a choice of -1 is the factory finish.
 
 struct Account
 {
@@ -174,7 +176,8 @@ struct Account
     int lastScore = 0, lastXP = 0, lastWave = 0;
     std::string lastAwardedRunId;
     std::uint32_t tutorialFlags = 0;
-    std::vector<RunHistoryEntry> history; // Newest first, at most MaxRunHistory.
+    std::vector<RunHistoryEntry> history;                   // Newest first, at most MaxRunHistory.
+    std::array<int, PaintSections> paint{{-1, -1, -1, -1}}; // Paint bay choice per hull section; -1 is factory.
     bool HeavyCannonUnlocked() const
     {
         return level >= 2;

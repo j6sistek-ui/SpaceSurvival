@@ -55,6 +55,8 @@ public:
         OutBraking = DrivePresentationBraking;
         OutDamage = DrivePresentationDamage;
     }
+    /** Reapplies the account's paint bay choices to the hull: after the hull loads, and when paint changes. */
+    void RefreshPaint();
     static float SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength);
     FVector AimDirection() const;
     AActor *SoftTarget = nullptr;

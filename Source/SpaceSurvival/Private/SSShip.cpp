@@ -1,4 +1,5 @@
 #include "SSShip.h"
+#include "SSShipPaint.h"
 #include "SSVFXPresentation.h"
 #include "SSAudio.h"
 #include "SSGameInstance.h"
@@ -106,6 +107,11 @@ void ASSShip::UpdateEngineMix()
     EngineAudio->SetVolumeMultiplier(SSAudio::EffectsGain(this, .35f));
     EngineAudio->SetPitchMultiplier(GI && GI->Session.run.boosting ? 1.3f : .9f + .15f * ThrottleInput);
 }
+void ASSShip::RefreshPaint()
+{
+    if (const auto *GI = GetGameInstance<USSGameInstance>())
+        SSPaint::Apply(HullMesh, GI->Session.account);
+}
 void ASSShip::BeginPlay()
 {
     Super::BeginPlay();
@@ -117,6 +123,7 @@ void ASSShip::BeginPlay()
     HullMesh->SetStaticMesh(
         LoadObject<UStaticMesh>(nullptr, HullAssetPath(GI ? GI->Session.run.ship : SS::Ship::Starter)));
     Presentation->SetHull(HullMesh);
+    RefreshPaint();
     Pilot->SetSkeletalMesh(
         LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
     const auto *LoadedHull = HullMesh->GetStaticMesh().Get();

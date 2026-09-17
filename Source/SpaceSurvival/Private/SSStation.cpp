@@ -1,4 +1,6 @@
 #include "SSStation.h"
+#include "SSShipPaint.h"
+#include "SSGameInstance.h"
 #include "SSStationVisualLayout.h"
 #include "SSShipPresentation.h"
 #include "SSShip.h"
@@ -174,9 +176,31 @@ void ASSStation::BuildHub(bool bHome)
         Shell->RegisterComponent();
         Geometry.Add(Shell);
     }
-    // Licensed exterior mass sits beyond the rear wall; the dock and walkable bay retain their collision.
+    // The pit stop body: the hangar is a notch in it, authored in station-local centimetres by
+    // Scripts/AuthorStationPitStop.py, so it sits at the origin with no rotation. It carries no collision of its
+    // own; the solid parts are the boxes generated from the same receipt, so the visual and the collision cannot
+    // disagree, and the mouth is the admission gap exactly. It is placed natively in every path, because it is
+    // structure rather than dressing and is never harvested into the editable layout.
+    const TCHAR *PitStopPath = TEXT("/Game/SpaceSurvival/Licensed/StationPitStop/SM_StationPitStop");
+    const bool PitStop = FPackageName::DoesPackageExist(PitStopPath);
+    if (PitStop)
+    {
+        auto *Body = AddMesh(FVector::ZeroVector, FVector(1), PitStopPath, nullptr, false);
+        Body->SetCastShadow(false);
+        Body->SetCanEverAffectNavigation(false);
+#include "SSStationPitStopBoxes.inl"
+        for (const auto &Box : SSStationPitStopBoxes)
+        {
+            auto *Solid = AddMesh(Box.Center, Box.Extent * (2.f / 100.f), Cube, Hull, true);
+            Solid->SetVisibility(false);
+            Solid->SetCastShadow(false);
+            Solid->SetCanEverAffectNavigation(false);
+            Solid->ComponentTags.Add(TEXT("StationPitStopSolid"));
+        }
+    }
+    // The previous licensed exterior, kept as the fallback when the pit stop asset is absent.
     const TCHAR *ExteriorPath = TEXT("/Game/SpaceSurvival/Licensed/StationExterior/SM_StationExterior");
-    if (FPackageName::DoesPackageExist(ExteriorPath))
+    if (!PitStop && FPackageName::DoesPackageExist(ExteriorPath))
     {
         if (!EditableLayout)
         {
@@ -276,6 +300,7 @@ void ASSStation::BuildHub(bool bHome)
     auto *Modules = NewObject<USSShipPresentation>(this);
     Modules->RegisterComponent();
     Modules->SetHull(BayShip);
+    RefreshPaint();
     ServiceArm = AddMesh(FVector(850, 280, 150), FVector(1),
                          TEXT("/Game/SpaceSurvival/Meshes/SM_ServiceArm.SM_ServiceArm"), Hull);
     // The ship's measured underside is at deck Z153.5; its cradle stays inside its footprint.
@@ -304,6 +329,8 @@ void ASSStation::BuildHub(bool bHome)
     AddService(FVector(0, 1000, 0), Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"),
                Home ? ESSPanel::Settings : ESSPanel::Save);
     AddService(FVector(950, -450, 0), TEXT("LAUNCH CONTROL"), ESSPanel::Launch);
+    // The paint bay: a lift stand on the starboard wall; the editable layout dresses it with a platform and arch.
+    AddService(FVector(-1400, -1000, 0), TEXT("PAINT BAY"), ESSPanel::Paint);
     // A separate review doorway: available in home hangar and both stations, never a run destination.
     AddService(FVector(450, 1000, 0), TEXT("ALIEN WORLD"), ESSPanel::AlienGallery);
     ServiceLabels.Last()->SetRelativeLocation(FVector(450, 1160, 265));
@@ -425,6 +452,12 @@ void ASSStation::SetBayShip(int32 ShipKind)
     if (BayShip)
         BayShip->SetStaticMesh(LoadObject<UStaticMesh>(
             nullptr, ASSShip::HullAssetPath(ShipKind == 1 ? SS::Ship::Agile : SS::Ship::Starter)));
+    RefreshPaint();
+}
+void ASSStation::RefreshPaint()
+{
+    if (const auto *GI = GetGameInstance<USSGameInstance>())
+        SSPaint::Apply(BayShip, GI->Session.account);
 }
 void ASSStation::ShowBayShip(bool Visible)
 {
