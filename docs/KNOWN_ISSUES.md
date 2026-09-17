@@ -1154,6 +1154,59 @@ right values is a judgement that needs someone flying it. They are starting poin
 too little, per the owner's own standing preference that harder and dialling down is proof of concept where easy and
 dialling up is weak.
 
+#### September 17 the speed dial was deleting what it admitted
+
+Found by the packaged Wave 10 fixture while preparing `0.1.18-alpha`, not by play. It failed with
+`compoundActorPresenceSeconds=0`: through a full 40-second Wave 10 climax, gravity, asteroids and enemies never
+coexisted, and the peak threat count was 15 where Package 13 had recorded 23.
+
+**Cause, also arithmetic.** The two September 16 changes each held on their own and broke each other. Retirement became
+a fixed 22,000 from the ship. The speed dial multiplied the drift term inside the spawn lead, so at a 2,400 cruise the
+lead is 13,125 plus the body's radius plus 350, and candidates land up to 5,500 beyond that. For the 4,300 climax
+gravity field that is 17,775-23,275 ahead before any lateral offset. A body admitted past 22,000 was spawned, charged
+to the budget, counted as the compound front's required gravity well, and destroyed on its first tick. The compound
+flags are set once and never retried, so the front silently never formed. Boosting widens the overlap to ordinary
+asteroids and enemies: the faster the player flew, the more of the field was deleted at birth, which is the opposite of
+the direction the dials were built for.
+
+**Fix.** One rule, held by the body rather than by whoever places it: a body is never retired for being where it was
+placed. The first tick that sees a ship raises that body's `RetireDistance` to at least its distance plus 4,000, so
+hazards, enemies, wreckage passages, salvage caches and their debris, distress attackers and offered signals are all
+covered, and so is any placer written later. The default stays 22,000.
+
+An independent review of the first version of this fix, which had patched only the Director's three spawn calls, found
+the rest, and each is corrected here:
+
+- **Encounters had the same defect on their own lead formula.** Accepting the Wave 2 salvage signal during any boost put
+  the third cache at 22,740; it was deleted unseen, the objective could only reach two of three, and the signal was
+  lost after 26 seconds with nothing to tell the player why. Distress attackers crossed the radius from engine tier 2.
+  The accepted signal itself now also outlives its course, since the objectives report to it.
+- **A field could outrun the ship.** Fields carry a share of the ship's velocity at admission: .65 in a climax, and
+  boost is 1.85 of cruise, so a field admitted during a boost travelled at 1.2 of cruise and could never be reached once
+  the boost ran out. The carried velocity is now a share of at most cruise speed.
+- **The required gravity well was asked for once.** Fields are not drawn at random during a climax, so a turn of a few
+  seconds that carried the ship out of reach ended the compound front for the rest of the climax. The Director now
+  tracks that body and asks again if it is lost.
+- **Storms admitted past 22,000 had no beam.** The Nerves beam is requested once and the presentation refuses requests
+  beyond the same 22,000. Such storms used to be deleted anyway; now that they live, the body asks again until granted.
+
+`SpaceSurvival.Integration.AdmittedBodiesOutliveAdmission` places the three required Wave 10 bodies, a wreckage
+passage, a salvage course and a distress pair beyond the default radius, requires each to survive its next tick, then
+destroys the gravity field and requires a replacement. With the rule and the re-arm disabled it fails 37 expectations
+across every one of those paths; with them it passes.
+
+**Measured after.** Editor Wave 10 fixture `10e0bfc0df774d65839265d1999e057d`: compound presence 40.0 of 40.0 seconds
+(0 before, 23.7 on Package 10), peak threats 24 (15 before), and the Compound frame shows the gravity well, the asteroid
+front and three hostiles together. 54 of 54 Unreal tests pass through `Scripts/Build.ps1 -Target Test`; the alien
+gallery lifecycle test now declares the three rejection warnings it provokes on purpose, which had been marking the
+run as passed-with-warnings. Not tested by play: boost-then-release and turn-around were reasoned from the code and
+checked by the review, not flown.
+
+**What this changes for the owner's judgement of the dials.** Every impression of 3x, .55 and 40 formed before this fix
+was formed with part of the field missing, more so at speed. The field is now as dense as the dials asked for. Note
+also that the admission tick still stops at `MaximumActiveThreats` (24); only the per-spawn checks read
+`ss.HazardCount`, so 40 is not reachable yet. That is left alone until someone has flown the corrected field.
+
 
 
 #### September 17 the station target: what a pit stop looks like in this game

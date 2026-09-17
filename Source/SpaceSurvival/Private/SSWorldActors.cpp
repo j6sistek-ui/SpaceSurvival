@@ -200,9 +200,11 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
     // and radius. Attach the electrical presentation only after those values
     // are authoritative, otherwise every storm silently keeps the small-rock
     // default and never receives its owned Nerves beam.
+    // The request is refused beyond the presentation cull, and a storm can be admitted beyond it, so
+    // Tick asks again until it is granted.
     if (Kind == ESSWorldKind::ElectricalStorm)
         if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
-            FX->AttachElectricalField(this, BodyRadius);
+            bFieldPresentationAttached = FX->AttachElectricalField(this, BodyRadius);
     ConfigureAudio();
 }
 
@@ -506,6 +508,9 @@ void ASSWorldBody::Tick(float DeltaSeconds)
         if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
             FX->PlayElectricalDischarge(GetActorLocation(), BodyRadius);
     UpdateFieldAudio(bElectricalDischarge);
+    if (Kind == ESSWorldKind::ElectricalStorm && !bFieldPresentationAttached)
+        if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+            bFieldPresentationAttached = FX->AttachElectricalField(this, BodyRadius);
     ASSShip *Ship = FindShip();
     if (Ship)
     {
@@ -594,11 +599,23 @@ void ASSWorldBody::Tick(float DeltaSeconds)
         // turn completed. That contradicts the intended model, in which the danger around the player is one
         // intensity rather than one direction. The radius is larger than the old threshold so that nothing
         // now disappears sooner than it used to, in any direction.
-        if (FVector::DistSquared(GetActorLocation(), Ship->GetActorLocation()) > FMath::Square(22000.f))
+        if (!bAdmitted)
+        {
+            bAdmitted = true;
+            KeepAdmittedAt(Ship->GetActorLocation());
+        }
+        if (FVector::DistSquared(GetActorLocation(), Ship->GetActorLocation()) > FMath::Square(RetireDistance))
             Destroy();
     }
     if (LifetimeSeconds > 0.f && Age > LifetimeSeconds)
         Destroy();
+}
+
+void ASSWorldBody::KeepAdmittedAt(const FVector &ShipLocation)
+{
+    // The slack covers a field admitted ahead of a ship that then brakes: the field keeps a share of the
+    // speed the ship had, and for a few seconds it is the one pulling away.
+    RetireDistance = FMath::Max(RetireDistance, FVector::Dist(GetActorLocation(), ShipLocation) + 4000.f);
 }
 
 void ASSWorldBody::ReceiveWeaponHit(float Damage)
@@ -1340,6 +1357,10 @@ bool ASSEncounterBeacon::TryAccept()
     ObjectiveSeconds = FMath::Max(3.f, Definition.ObjectiveDuration);
     // Offer age must not shorten the objective window granted on acceptance.
     LifetimeSeconds = FMath::Max(LifetimeSeconds, Age + ObjectiveSeconds + 5.f);
+    // Nor may distance. The objectives report to this signal, and the last of them is a course length away
+    // from it: accepted during a boost, the third cache sits past the radius at which the signal would retire,
+    // taking the objective's progress with it.
+    RetireDistance += Lead + (ObjectiveCount - 1) * FMath::Max(0.f, Definition.CacheSpacing) + 4000.f;
     if (USSGameInstance *Instance = GetGameInstance<USSGameInstance>())
     {
         if (EncounterKind == ESSEncounterKind::SalvageCache)
@@ -1463,6 +1484,7 @@ void USSSurvivalDirectorComponent::Configure(int32 InWave, bool bInClimax)
     AvailableBudget = 1.f;
     SpawnCooldown = .75f;
     bCompoundGravitySpawned = bCompoundAsteroidSpawned = bCompoundEnemySpawned = false;
+    CompoundGravity.Reset();
     SafeLane = FVector2D(Random.RandRange(-1, 1) * 950.f, Random.RandRange(-1, 1) * 750.f);
     if (USSGameInstance *Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
     {
@@ -1567,7 +1589,13 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     {
         if (bField)
         {
-            Body->SetLinearVelocity(Ship->GetVelocity() *
+            // A share of cruise, not of whatever the ship was doing when the field was admitted. Boost is
+            // 1.85 of cruise and the climax share is .65, so a field admitted during a boost travelled at 1.2
+            // of cruise, could never be reached once the boost ran out, and retired unseen a few seconds later.
+            FVector Carried = Ship->GetVelocity();
+            if (const USSGameInstance *Instance = Cast<USSGameInstance>(GetWorld()->GetGameInstance()))
+                Carried = Carried.GetClampedToMaxSize(FMath::Max(1.f, float(Instance->Session.Stats().speed)));
+            Body->SetLinearVelocity(Carried *
                                     (bClimax ? Definition.ClimaxVelocityFraction : Definition.FieldVelocityFraction));
         }
         else
@@ -1740,6 +1768,11 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
     SpawnCooldown = Random.FRandRange(FMath::Max(.1f, DirectorData.SpawnIntervalMin),
                                       FMath::Max(DirectorData.SpawnIntervalMin, DirectorData.SpawnIntervalMax));
 
+    // A turn of a few seconds carries the ship out of the required field's reach and retires it. Every other
+    // kind is simply admitted again ahead of the new heading; fields are not drawn during a climax, so this one
+    // has to be asked for again or the front is asteroids and enemies for the rest of it.
+    if (bClimax && Wave == 10 && bCompoundGravitySpawned && !CompoundGravity.IsValid())
+        bCompoundGravitySpawned = false;
     if (bClimax && Wave == 10 && (!bCompoundGravitySpawned || !bCompoundAsteroidSpawned || !bCompoundEnemySpawned))
     {
         // Establish each required component before random composition resumes.
@@ -1753,15 +1786,17 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
             FMath::Max(.1f, bEnemy ? Data->Enemy(Required).PressureCost : Data->Hazard(Required).PressureCost);
         if (AvailableBudget >= Cost)
         {
-            const bool SpawnedRequired =
-                bEnemy ? SpawnEnemy(Required) != nullptr
-                       : SpawnHazard(Required,
-                                     Required == ESSWorldKind::GravityAnomaly ? Gravity.ClimaxRadius : -1.f) != nullptr;
+            ASSWorldBody *SpawnedRequired =
+                bEnemy ? SpawnEnemy(Required)
+                       : SpawnHazard(Required, Required == ESSWorldKind::GravityAnomaly ? Gravity.ClimaxRadius : -1.f);
             if (SpawnedRequired)
             {
                 AvailableBudget -= Cost;
                 if (Required == ESSWorldKind::GravityAnomaly)
+                {
                     bCompoundGravitySpawned = true;
+                    CompoundGravity = SpawnedRequired;
+                }
                 else if (Required == ESSWorldKind::MediumAsteroid)
                     bCompoundAsteroidSpawned = true;
                 else

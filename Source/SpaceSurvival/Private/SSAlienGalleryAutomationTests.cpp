@@ -50,6 +50,10 @@ bool FSSAlienGalleryLifecycle::RunTest(const FString &Parameters)
     GI->Session.run.credits = 345;
     const std::string Run = SS::EncodeRun(GI->Session.run), Account = SS::EncodeAccount(GI->Session.account);
     auto *Gallery = GM->AlienGallery.Get();
+    // Every refused entry says why in the log, for the packaged defect where a doorway ignored the key. This
+    // test refuses on purpose, several times, so the warnings are declared rather than left to mark the run.
+    AddExpectedMessage(TEXT("ALIEN_GALLERY_ENTER_REJECTED"), ELogVerbosity::Warning,
+                       EAutomationExpectedMessageFlags::Contains, 0);
     TestFalse(TEXT("Reject absent controller without entering evaluation"), Gallery->Enter(nullptr));
     GI->Session.run.phase = SS::Phase::Flight;
     TestFalse(TEXT("Cannot enter from an active flight phase"), Gallery->Enter(PC));
