@@ -15,6 +15,7 @@
 #include "Misc/PackageName.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
+#include "HAL/IConsoleManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
@@ -587,8 +588,13 @@ void ASSWorldBody::Tick(float DeltaSeconds)
         // Retain hazards across wave boundaries, retire only beyond the playable vicinity.
         PreviousShipPosition = Ship->GetActorLocation();
         bHasPreviousShipPosition = true;
-        if (FVector::DotProduct(GetActorLocation() - Ship->GetActorLocation(), Ship->GetActorForwardVector()) <
-            -16000.f)
+        // Retire on distance, not on facing. This used to be a dot product against the ship's CURRENT
+        // forward vector, so a body was kept or destroyed according to where the player happened to be
+        // looking: turning around retired everything that had been more than 16,000 ahead, in the frame the
+        // turn completed. That contradicts the intended model, in which the danger around the player is one
+        // intensity rather than one direction. The radius is larger than the old threshold so that nothing
+        // now disappears sooner than it used to, in any direction.
+        if (FVector::DistSquared(GetActorLocation(), Ship->GetActorLocation()) > FMath::Square(22000.f))
             Destroy();
     }
     if (LifetimeSeconds > 0.f && Age > LifetimeSeconds)
@@ -953,6 +959,9 @@ void ASSProjectile::Tick(float DeltaSeconds)
         if (ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor()))
             if (bPlayerShot || Body->IsSolidHazard())
                 Body->ReceiveWeaponHit(CollisionDamage);
+        if (bPlayerShot)
+            if (auto *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
+                Mode->NotifyPlayerShotHit();
         Destroy();
         return;
     }
@@ -1486,6 +1495,27 @@ void USSSurvivalDirectorComponent::CleanTrackedActors()
     Spawned.RemoveAll([](const TWeakObjectPtr<ASSWorldBody> &Body) { return !Body.IsValid(); });
 }
 
+namespace
+{
+// The owner's direction for the Director: it governs how many bodies it throws, how fast, and how
+// closely aligned to the flight path. Authored drift is 40 to 350 cm/s against a 2400 cm/s cruise, so
+// a hazard supplied at most about a eighth of the closing speed and was in practice a stationary rock
+// the player drove into. These are the dials for that.
+TAutoConsoleVariable<float> HazardSpeed(TEXT("ss.HazardSpeed"), 3.f,
+                                        TEXT("Multiplier on authored hazard drift speed."));
+TAutoConsoleVariable<float> HazardAim(TEXT("ss.HazardAim"), .55f,
+                                      TEXT("0 fires along the ship's heading at spawn, 1 leads the ship."));
+TAutoConsoleVariable<int32> HazardCount(TEXT("ss.HazardCount"), 40, TEXT("Active hazard and enemy cap."));
+
+/** How fast a hazard may travel, after the dial. Shared so the spawn distance and the velocity cannot
+ *  disagree: reaction time is computed from closing speed, and a faster hazard that spawned at the old
+ *  distance would arrive inside the reaction budget, which is unfair rather than hard. */
+float HazardSpeedScale()
+{
+    return FMath::Max(0.f, HazardSpeed.GetValueOnGameThread());
+}
+} // namespace
+
 bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location, bool bField) const
 {
     ASSShip *Ship = FindShip();
@@ -1498,6 +1528,7 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
     float MaximumDrift = 450.f;
     for (const auto &Hazard : Content(this)->Hazards)
         MaximumDrift = FMath::Max(MaximumDrift, Hazard.DriftSpeedMax);
+    MaximumDrift *= HazardSpeedScale();
     const float ClosingSpeed = Ship->GetVelocity().Size() + MaximumDrift;
     const float Lead = FMath::Max(9000.f, ClosingSpeed * MinimumReactionSeconds + Radius + PlayerClearanceRadius);
     for (int32 Attempt = 0; Attempt < 16; ++Attempt)
@@ -1518,7 +1549,7 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
 
 ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float Radius)
 {
-    if (GetActiveThreatCount() >= MaximumActiveThreats)
+    if (GetActiveThreatCount() >= FMath::Max(1, HazardCount.GetValueOnGameThread()))
         return nullptr;
     const auto Definition = Content(this)->Hazard(Kind);
     Radius = Radius > 0.f ? Radius : Definition.Radius;
@@ -1534,12 +1565,33 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     Body->TelegraphSeconds = FMath::Max(MinimumReactionSeconds, Definition.TelegraphSeconds);
     if (ASSShip *Ship = FindShip())
     {
-        Body->SetLinearVelocity(
-            bField
-                ? Ship->GetVelocity() * (bClimax ? Definition.ClimaxVelocityFraction : Definition.FieldVelocityFraction)
-                : -Ship->GetActorForwardVector() *
-                      Random.FRandRange(Definition.DriftSpeedMin,
-                                        FMath::Max(Definition.DriftSpeedMin, Definition.DriftSpeedMax)));
+        if (bField)
+        {
+            Body->SetLinearVelocity(Ship->GetVelocity() *
+                                    (bClimax ? Definition.ClimaxVelocityFraction : Definition.FieldVelocityFraction));
+        }
+        else
+        {
+            const float Speed = Random.FRandRange(Definition.DriftSpeedMin,
+                                                  FMath::Max(Definition.DriftSpeedMin, Definition.DriftSpeedMax)) *
+                                HazardSpeedScale();
+            // Firing along the heading the ship happened to hold at spawn means any turn sends the hazard
+            // sailing past, which is what made them read as scenery drifting by. Leading the ship instead
+            // makes a hazard something to dodge. Partial by default: a field where everything intercepts
+            // is not harder, it is unavoidable, and the owner asked for danger rather than for a tax.
+            FVector Direction = -Ship->GetActorForwardVector();
+            const float Aim = FMath::Clamp(HazardAim.GetValueOnGameThread(), 0.f, 1.f);
+            const FVector ToShip = Ship->GetActorLocation() - Location;
+            if (Aim > 0.f && Speed > 1.f && !ToShip.IsNearlyZero())
+            {
+                const float Closing = FMath::Max(1.f, Speed + Ship->GetVelocity().Size());
+                const FVector Lead = Ship->GetActorLocation() + Ship->GetVelocity() * (ToShip.Size() / Closing);
+                const FVector Intercept = (Lead - Location).GetSafeNormal();
+                if (!Intercept.IsNearlyZero())
+                    Direction = FMath::Lerp(Direction, Intercept, Aim).GetSafeNormal();
+            }
+            Body->SetLinearVelocity(Direction * Speed);
+        }
     }
     Spawned.Add(Body);
     return Body;
@@ -1547,7 +1599,7 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
 
 ASSEnemy *USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective)
 {
-    if (GetActiveThreatCount() >= MaximumActiveThreats)
+    if (GetActiveThreatCount() >= FMath::Max(1, HazardCount.GetValueOnGameThread()))
         return nullptr;
     int32 EnemyCount = 0;
     for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)

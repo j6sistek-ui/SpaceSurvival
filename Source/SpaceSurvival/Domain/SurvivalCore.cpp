@@ -717,7 +717,7 @@ void Session::EndRun()
 
 std::string EncodeAccount(const Account &a)
 {
-    auto out = Writer("ACCOUNT", 2);
+    auto out = Writer("ACCOUNT", 3);
     out << a.xp << ' ' << a.level << ' ' << a.highestWave << ' ' << a.runs << ' ' << a.bestScore << ' ' << a.lastScore
         << ' ' << a.lastXP << ' ' << a.lastWave << ' ' << std::quoted(a.lastAwardedRunId) << ' ' << a.tutorialFlags
         << ' ' << a.history.size();
@@ -725,6 +725,8 @@ std::string EncodeAccount(const Account &a)
         out << ' ' << std::quoted(entry.id) << ' ' << entry.wave << ' ' << entry.score << ' ' << entry.xp << ' '
             << entry.kills << ' ' << entry.credits << ' ' << static_cast<int>(entry.ship) << ' '
             << static_cast<int>(entry.weapon);
+    for (int choice : a.paint)
+        out << ' ' << choice;
     return out.str();
 }
 
@@ -739,13 +741,13 @@ bool DecodeAccount(const std::string &text, Account &output, std::string &error)
     std::istringstream in(text);
     in.imbue(std::locale::classic());
     int version = 0;
-    if (!Header(in, "ACCOUNT", error, 2, &version))
+    if (!Header(in, "ACCOUNT", error, 3, &version))
         return false;
     Account a;
     std::int64_t tutorialFlags = 0;
     in >> a.xp >> a.level >> a.highestWave >> a.runs >> a.bestScore >> a.lastScore >> a.lastXP >> a.lastWave >>
         std::quoted(a.lastAwardedRunId) >> tutorialFlags;
-    if (version == 2)
+    if (version >= 2)
     {
         int count = 0;
         if (!(in >> count) || count < 0 || count > static_cast<int>(MaxRunHistory))
@@ -769,6 +771,14 @@ bool DecodeAccount(const std::string &text, Account &output, std::string &error)
             a.history.push_back(entry);
         }
     }
+    // Version 3 added the paint bay. Older payloads mean the factory finish.
+    if (version >= 3)
+        for (auto &choice : a.paint)
+            if (!(in >> choice) || choice < -1 || choice >= PaintColours)
+            {
+                error = "Invalid paint choice";
+                return false;
+            }
     if (!FinishRead(in, error))
         return false;
     if (a.xp < 0 || a.xp > 1000000000000LL || a.level != LevelForXP(a.xp) || a.highestWave < 0 || a.highestWave > 10 ||

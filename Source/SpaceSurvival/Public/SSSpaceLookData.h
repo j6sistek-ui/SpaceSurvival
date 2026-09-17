@@ -62,6 +62,20 @@ struct FSSSpaceAreaRecipe
     FLinearColor HazeColor = FLinearColor(.22f, .3f, .42f);
     UPROPERTY(EditAnywhere)
     float HazeDensity = .000025f;
+    /** Per-zone height fog. Zero is a deliberately fogless region: open, hard-edged, high contrast.
+     *  The engine divides the value it is given by 1000, so 0.0038 is roughly a moderate haze. */
+    UPROPERTY(EditAnywhere, Category = "Area", meta = (ClampMin = "0"))
+    float FogDensity = .0038f;
+    /** Scales the zone's haze colour into fog inscattering. Low values give dark fog that rocks are lit
+     *  against; high values give a bright field that dark rocks silhouette against. Both read well, and
+     *  choosing per zone is what separates an eerie murk from a luminous belt. */
+    UPROPERTY(EditAnywhere, Category = "Area", meta = (ClampMin = "0"))
+    float FogBrightness = .12f;
+    /** Flanking ambient electrical arcs, scale multiplier. Zero disables them for this zone.
+     *  Decoration only: these sit kilometres off the flight line and are never gameplay hazards.
+     *  The admitted ElectricalStorm hazard is a separate, dangerous thing owned by the Director. */
+    UPROPERTY(EditAnywhere, Category = "Area", meta = (ClampMin = "0"))
+    float AmbientStormScale = 0.f;
     UPROPERTY(EditAnywhere)
     FLinearColor KeyColor = FLinearColor(.95f, .87f, .73f);
     UPROPERTY(EditAnywhere)

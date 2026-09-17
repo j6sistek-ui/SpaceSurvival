@@ -34,10 +34,26 @@ private:
     TArray<TObjectPtr<UMaterialInstanceDynamic>> CloudMaterials;
     UPROPERTY()
     TArray<TObjectPtr<UNiagaraComponent>> EngineTrails;
+    /** Flanking ambient electrical arcs. Decoration, never hazards; see FSSSpaceAreaRecipe::AmbientStormScale. */
+    UPROPERTY()
+    TArray<TObjectPtr<UNiagaraComponent>> AmbientStorms;
+    bool AmbientStormsAvailable = false;
+    float CurrentAmbientStormScale = 0.f;
+    /** Drive level the visuals actually follow. Ramped rather than stepped, so boost has a shape. */
+    float DriveRamp = .45f;
     UPROPERTY()
     TArray<TObjectPtr<UStaticMeshComponent>> EngineCores;
     UPROPERTY()
     TArray<TObjectPtr<UMaterialInstanceDynamic>> EngineCoreMaterials;
+    /** The single colour and single strength parameter the chosen core material actually exposes. A borrowed VFX
+     *  material names these whatever its author liked, and setting a parameter that is absent fails silently, so
+     *  the names are discovered once from the material itself rather than assumed. Exactly one of each is driven:
+     *  M_Emissive multiplies its Tint by its Color, so driving both would square the drive colour. */
+    TArray<FName> CoreColorParameter;
+    TArray<FName> CoreStrengthParameter;
+    /** Engine count. Each engine wears SSThruster::LayerCount stacked cores, so a core's engine is
+     *  Index / LayerCount and its layer is Index % LayerCount. */
+    static constexpr int32 EngineCount = 2;
     UPROPERTY()
     TArray<TObjectPtr<UPointLightComponent>> EngineLights;
     UPROPERTY()
@@ -58,7 +74,7 @@ private:
     FVector LastCloudCenter = FVector::ZeroVector;
     bool CloudPositionInitialized = false;
     bool DustInitialized = false;
-    void UpdateDust(const FVector &Center, const FVector &Velocity, bool Visible);
+    void UpdateDust(const FVector &Center, const FVector &Velocity, float Thrust, bool Visible);
     TWeakObjectPtr<AActor> Followed;
     bool FlightVisible = false;
     bool CloudAvailable = false;
@@ -75,6 +91,10 @@ private:
     FLinearColor CurrentHazeColor = FLinearColor::White;
     FLinearColor CurrentKeyColor = FLinearColor::White;
     float CurrentHazeDensity = 0.f;
+    /** Blended per-zone height fog, so travelling between regions crosses into and out of fog. */
+    float CurrentFogDensity = 0.f;
+    /** Blended per-zone fog brightness; see FSSSpaceAreaRecipe::FogBrightness. */
+    float CurrentFogBrightness = .12f;
     float CurrentKeyIntensity = 0.f;
     float CurrentAmbientIntensity = 0.f;
     void UpdateAreaStyle(float DeltaSeconds);

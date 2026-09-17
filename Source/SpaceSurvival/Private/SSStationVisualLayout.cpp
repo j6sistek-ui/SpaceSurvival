@@ -161,7 +161,10 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
     }
     FStationAuthorWorld Fixture;
     if (!Fixture.World)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Station layout: no authoring world."));
         return nullptr;
+    }
     auto *Donor = Fixture.World->SpawnActor<ASSStation>();
     Donor->bUseEditableLayout = false;
     Donor->BuildHub(false);
@@ -171,7 +174,10 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
             BPTYPE_Normal, UBlueprint::StaticClass(), UBlueprintGeneratedClass::StaticClass(),
             TEXT("StationLayoutAuthoring"));
     if (!Blueprint || !Blueprint->SimpleConstructionScript)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Station layout: no Blueprint or construction script."));
         return nullptr;
+    }
     auto *SCS = Blueprint->SimpleConstructionScript.Get();
     const TArray<USCS_Node *> OldNodes = SCS->GetAllNodes();
     for (auto *Node : OldNodes)
@@ -194,7 +200,13 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
         const FName NodeName(*Name);
         if (Names.Contains(NodeName) || Transform.ContainsNaN() ||
             Transform.GetScale3D().GetAbsMin() <= UE_SMALL_NUMBER)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Station layout: component '%s' rejected (%s)."), *Name,
+                   Names.Contains(NodeName)  ? TEXT("duplicate name")
+                   : Transform.ContainsNaN() ? TEXT("NaN transform")
+                                             : TEXT("zero scale"));
             return static_cast<USceneComponent *>(nullptr);
+        }
         Names.Add(NodeName);
         auto *Node = SCS->CreateNode(Class, NodeName);
         SCS->AddNode(Node);
@@ -217,13 +229,20 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
     {
         auto *Target = Cast<UStaticMeshComponent>(AddNode(UStaticMeshComponent::StaticClass(), Name, Transform));
         if (!Target || !Mesh)
+        {
+            if (!Mesh)
+                UE_LOG(LogTemp, Error, TEXT("Station layout: '%s' has no mesh."), *Name);
             return false;
+        }
         Target->SetStaticMesh(Mesh);
         Target->SetCastShadow(Shadows);
         for (int32 Slot = 0; Slot < Materials.Num(); ++Slot)
         {
             if (!Materials[Slot])
+            {
+                UE_LOG(LogTemp, Error, TEXT("Station layout: '%s' material slot %d is empty."), *Name, Slot);
                 return false;
+            }
             Target->SetMaterial(Slot, Materials[Slot]);
         }
         Target->ComponentTags.Append(Tags);
@@ -301,7 +320,11 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
                 return nullptr;
             auto *Mesh = LoadObject<UStaticMesh>(nullptr, *Object->GetStringField(TEXT("asset")));
             if (!Mesh)
+            {
+                UE_LOG(LogTemp, Error, TEXT("Station layout: recipe asset '%s' did not load."),
+                       *Object->GetStringField(TEXT("asset")));
                 return nullptr;
+            }
             TArray<UMaterialInterface *> Materials;
             for (int32 Slot = 0; Slot < Mesh->GetStaticMaterials().Num(); ++Slot)
                 Materials.Add(Mesh->GetMaterial(Slot));
@@ -310,7 +333,11 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
                 for (int32 Slot = 0; Slot < Overrides->Num(); ++Slot)
                 {
                     if (!Materials.IsValidIndex(Slot))
+                    {
+                        UE_LOG(LogTemp, Error, TEXT("Station layout: '%s' overrides material slot %d, which it lacks."),
+                               *Object->GetStringField(TEXT("name")), Slot);
                         return nullptr;
+                    }
                     Materials[Slot] = LoadObject<UMaterialInterface>(nullptr, *(*Overrides)[Slot]->AsString());
                 }
             bool Shadows = true;
@@ -340,7 +367,10 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
     Blueprint->MarkPackageDirty();
     FKismetEditorUtilities::CompileBlueprint(Blueprint);
     if (Blueprint->Status == BS_Error || !Blueprint->GeneratedClass)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Station layout: Blueprint failed to compile (%d components)."), Names.Num());
         return nullptr;
+    }
     UE_LOG(LogTemp, Display,
            TEXT("Station editable layout authored with %d individual components; save through author script."),
            Names.Num());

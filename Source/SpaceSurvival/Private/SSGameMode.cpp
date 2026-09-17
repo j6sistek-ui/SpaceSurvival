@@ -13,6 +13,7 @@
 #include "Engine/TextureCube.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
+#include "SSShipPaint.h"
 #include "Animation/PoseSnapshot.h"
 #include "SSHUD.h"
 #include "SSWorldActors.h"
@@ -171,7 +172,13 @@ void ASSGameMode::BeginPlay()
                 Light->SetIntensity(SpaceLook->KeyIntensity);
             }
     ShowHangar();
-    OpenPanel(ESSPanel::Main);
+    // The hangar is always the first thing on screen. The main menu only interrupts it when
+    // there is a suspended run to offer resuming; otherwise the player is straight into the
+    // hangar with no panel up, and reaches the menu the same way as any later pause, via Escape.
+    if (GetGameInstance<USSGameInstance>()->HasSuspendedRun())
+        OpenPanel(ESSPanel::Main);
+    else
+        ClosePanel();
     ASSWave10Soak::TryStart(this);
 }
 bool ASSGameMode::InHangar() const
@@ -218,12 +225,19 @@ void ASSGameMode::WarnThreat(const FString &Message, FVector Position, float Dur
         AlarmCooldown = 6.f;
     }
 }
+void ASSGameMode::NotifyPlayerShotHit()
+{
+    // Re-armed on every connecting shot, so sustained fire holds the hit reticle rather than
+    // strobing between it and the firing one.
+    PlayerHitFlashSeconds = .14f;
+}
 void ASSGameMode::UpdateThreatFeedback(float Dt)
 {
     AlarmCooldown = FMath::Max(0.f, AlarmCooldown - Dt);
     ReactionCooldown = FMath::Max(0.f, ReactionCooldown - Dt);
     ThreatWarningSeconds = FMath::Max(0.f, ThreatWarningSeconds - Dt);
     PilotReactionSeconds = FMath::Max(0.f, PilotReactionSeconds - Dt);
+    PlayerHitFlashSeconds = FMath::Max(0.f, PlayerHitFlashSeconds - Dt);
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI || !Ship || !GI->Session.IsFlying())
         return;
@@ -579,6 +593,13 @@ void ASSGameMode::Tick(float Dt)
         if (S.run.phase == SS::Phase::Approach && Ship)
         {
             Director->SetActive(false);
+            // Deactivating the Director stops further admission but leaves spawned hostiles alive,
+            // so the station became reachable with wave enemies still flying. The five-wave cadence
+            // is locked, so this is a correctness repair. Destroy, never OnDefeated: the defeat path
+            // awards kills, credits, XP and objective progress the player never earned.
+            for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
+                if (It->IsEnemy() && !It->IsActorBeingDestroyed())
+                    It->Destroy();
             const FRotator Arrival(0, Ship->GetActorRotation().Yaw, 0);
             const FVector Dock = Ship->GetActorLocation() + Ship->GetActorForwardVector() * 18000.f;
             StationTarget = Dock - Arrival.Vector() * 850.f - FVector(0, 0, 220);
@@ -766,6 +787,13 @@ void ASSGameMode::Interact()
 void ASSGameMode::AddEntry(const FString &Label, int32 Action, bool Enabled)
 {
     Entries.Add({Label, Action, Enabled});
+}
+void ASSGameMode::RepaintShips()
+{
+    if (Ship)
+        Ship->RefreshPaint();
+    for (TActorIterator<ASSStation> It(GetWorld()); It; ++It)
+        It->RefreshPaint();
 }
 void ASSGameMode::ClosePanel()
 {
@@ -1032,6 +1060,22 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             45, S.CanPurchaseUtility(SS::Utility::OverdriveCooling));
         break;
     }
+    case ESSPanel::Paint:
+    {
+        PanelTitle = TEXT("PAINT BAY");
+        PanelDetail = TEXT("Ten finishes over four hull sections, kept on your account across runs. Cycle the "
+                           "section, then pick a finish; the bay ship shows it at once.");
+        const int32 Current = S.account.paint[PaintSection];
+        AddEntry(FString::Printf(TEXT("Section: %s / %s  (next section)"), SSPaint::SectionName(PaintSection),
+                                 SSPaint::ColourName(Current)),
+                 120);
+        for (int32 Colour = 0; Colour < SS::PaintColours; ++Colour)
+            AddEntry(FString::Printf(TEXT("%s%s"), SSPaint::ColourName(Colour),
+                                     Current == Colour ? TEXT(" / current") : TEXT("")),
+                     121 + Colour, Current != Colour);
+        AddEntry(TEXT("Factory finish for this section"), 131, Current >= 0);
+        break;
+    }
     case ESSPanel::Reward:
         PanelTitle = PendingReward ? TEXT("SIGNAL REWARD / CHOOSE ONE") : TEXT("LOST CREW BEACON");
         PanelDetail = PendingReward
@@ -1181,6 +1225,21 @@ void ASSGameMode::ActivateEntry(int32 Index)
     {
         HistoryPage = 0;
         OpenPanel(ESSPanel::History);
+        return;
+    }
+    if (A == 120)
+    {
+        PaintSection = (PaintSection + 1) % SS::PaintSections;
+        OpenPanel(ESSPanel::Paint);
+        return;
+    }
+    if (A >= 121 && A <= 131)
+    {
+        S.account.paint[PaintSection] = A == 131 ? -1 : A - 121;
+        if (!GI->PersistAccount())
+            Announce(GI->LastSaveError);
+        RepaintShips();
+        OpenPanel(ESSPanel::Paint);
         return;
     }
     if (A == 60 || A == 61)
@@ -1458,6 +1517,52 @@ void ASSPlayerController::SSReviewGallerySwitch()
     if (auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>())
         GM->AlienGallery->SwitchScene();
 }
+namespace
+{
+// The exact keys this controller ever polls, keyboard/mouse and gamepad halves. EasyInputPrompts'
+// own per-brand icon maps are keyed by these identical FKey names, so detecting a family here is
+// enough to pick a prompt texture later with no translation table of our own.
+const FKey KeyboardMouseProbeKeys[] = {EKeys::W,
+                                       EKeys::A,
+                                       EKeys::S,
+                                       EKeys::D,
+                                       EKeys::R,
+                                       EKeys::F,
+                                       EKeys::Q,
+                                       EKeys::E,
+                                       EKeys::LeftShift,
+                                       EKeys::SpaceBar,
+                                       EKeys::Escape,
+                                       EKeys::Tab,
+                                       EKeys::Home,
+                                       EKeys::Enter,
+                                       EKeys::Up,
+                                       EKeys::Down,
+                                       EKeys::Left,
+                                       EKeys::Right,
+                                       EKeys::LeftMouseButton,
+                                       EKeys::RightMouseButton};
+const FKey GamepadProbeKeys[] = {EKeys::Gamepad_FaceButton_Bottom,
+                                 EKeys::Gamepad_FaceButton_Right,
+                                 EKeys::Gamepad_FaceButton_Top,
+                                 EKeys::Gamepad_FaceButton_Left,
+                                 EKeys::Gamepad_DPad_Up,
+                                 EKeys::Gamepad_DPad_Down,
+                                 EKeys::Gamepad_LeftShoulder,
+                                 EKeys::Gamepad_RightShoulder,
+                                 EKeys::Gamepad_LeftTrigger,
+                                 EKeys::Gamepad_RightTrigger,
+                                 EKeys::Gamepad_Special_Left,
+                                 EKeys::Gamepad_Special_Right,
+                                 EKeys::Gamepad_LeftX,
+                                 EKeys::Gamepad_LeftY,
+                                 EKeys::Gamepad_RightX,
+                                 EKeys::Gamepad_RightY};
+// A held stick past this point counts as gamepad input; below it is drift/dead-zone noise that
+// must not fight the keyboard/mouse latch every frame a controller merely sits connected.
+constexpr float GamepadAnalogThreshold = .35f;
+} // namespace
+
 ASSPlayerController::ASSPlayerController()
 {
     PrimaryActorTick.bTickEvenWhenPaused = true;
@@ -1517,6 +1622,26 @@ void ASSPlayerController::PlayerTick(float Dt)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GM || !GI)
         return;
+    // Runs above every early return below (including the alien gallery's) so device-specific
+    // prompts keep updating even while those paths never reach the rest of this function.
+    for (const FKey &Key : GamepadProbeKeys)
+        if (WasInputKeyJustPressed(Key) || FMath::Abs(GetInputAnalogKeyState(Key)) > GamepadAnalogThreshold)
+        {
+            InputFamily = ESSInputFamily::Gamepad;
+            break;
+        }
+    float DeviceMouseX = 0.f, DeviceMouseY = 0.f;
+    GetInputMouseDelta(DeviceMouseX, DeviceMouseY);
+    if (!FMath::IsNearlyZero(DeviceMouseX) || !FMath::IsNearlyZero(DeviceMouseY))
+        InputFamily = ESSInputFamily::KeyboardMouse;
+    else
+        for (const FKey &Key : KeyboardMouseProbeKeys)
+            if (WasInputKeyJustPressed(Key))
+            {
+                InputFamily = ESSInputFamily::KeyboardMouse;
+                break;
+            }
+    // main tracks the same thing for its data-asset prompts; both stay current until one system is retired.
     UpdateLastInputDevice();
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {

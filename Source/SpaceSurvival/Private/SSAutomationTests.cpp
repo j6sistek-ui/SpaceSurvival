@@ -110,7 +110,7 @@ bool FSSPlatformSaveRoundTrip::RunTest(const FString &Parameters)
     if (!TestEqual(TEXT("Completed run creates one history record"), int32(Session.account.history.size()), 1))
         return false;
     const std::string AccountPayload = SS::EncodeAccount(Session.account);
-    if (!TestTrue(TEXT("Account payload uses version 2"), AccountPayload.rfind("SS ACCOUNT 2 ", 0) == 0))
+    if (!TestTrue(TEXT("Account payload uses version 3"), AccountPayload.rfind("SS ACCOUNT 3 ", 0) == 0))
         return false;
     if (!TestTrue(TEXT("Create independent suspended QA run"), Session.StartRun("qa-suspended-" + Suffix)))
         return false;
@@ -160,7 +160,7 @@ bool FSSPlatformSaveRoundTrip::RunTest(const FString &Parameters)
     SS::Account DecodedAccount;
     SS::Run DecodedRun;
     std::string Error;
-    if (!TestTrue(TEXT("Decode disk account v2"),
+    if (!TestTrue(TEXT("Decode disk account"),
                   SS::DecodeAccount(TCHAR_TO_UTF8(*LoadedAccount->Payload), DecodedAccount, Error)))
         return false;
     if (!TestTrue(TEXT("Decode disk station run"),

@@ -20,6 +20,32 @@ uint32 CellSeed(const FIntVector &Cell, int32 Seed)
     return HashCombineFast(HashCombineFast(GetTypeHash(Cell.X), GetTypeHash(Cell.Y)),
                            HashCombineFast(GetTypeHash(Cell.Z), GetTypeHash(Seed)));
 }
+// Set dressing shipped as NoCollision, so every rock and every megastructure was something to steer
+// through rather than around. The owner's rule is that anything mid-size or larger should hurt. The
+// smallest clutter rock authored here has radius 850 and the largest landmark 19000, against a largest
+// Director hazard of 650, so by that rule every piece of it qualifies; the grain-sized dust field is the
+// tier that stays passable. Query only: none of this ever simulates, it is only swept against by the
+// ship's sphere, which already blocks WorldStatic and already damages and deflects on a blocking hit.
+// On. The meshes the scenery places are now collision-bearing derivatives authored by
+// AuthorSolidScenery.py; the vendor originals ship CTF_UseComplexAsSimple, which makes the engine
+// ignore their hulls, and an instanced static mesh component cannot use complex collision at all.
+TAutoConsoleVariable<int32> SceneryCollision(TEXT("ss.SceneryCollision"), 1,
+                                             TEXT("Make scenery rocks and landmarks solid (0 disables)."));
+void ApplySceneryCollision(UPrimitiveComponent *Part)
+{
+    Part->SetGenerateOverlapEvents(false);
+    if (SceneryCollision.GetValueOnGameThread() == 0)
+    {
+        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        return;
+    }
+    Part->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Part->SetCollisionObjectType(ECC_WorldStatic);
+    Part->SetCollisionResponseToAllChannels(ECR_Ignore);
+    Part->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+    // Visibility too, so shots stop at a rock and soft aim cannot lock through one.
+    Part->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+}
 double ValidCellSize(const USSSpaceLookData *Data)
 {
     return Data && FMath::IsFinite(Data->AreaCellSize) ? FMath::Max(300000.0, double(Data->AreaCellSize)) : 500000.0;
@@ -35,7 +61,9 @@ ASSSpaceScenery::ASSSpaceScenery()
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.TickInterval = .05f;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneryRoot"));
-    SetActorEnableCollision(false);
+    // Actor-level collision gates every component, so this has to follow the same switch the components do;
+    // leaving it false would have made the per-component setup below silently do nothing.
+    SetActorEnableCollision(SceneryCollision.GetValueOnGameThread() != 0);
     SetActorHiddenInGame(true);
 }
 void ASSSpaceScenery::BeginPlay()
@@ -90,8 +118,7 @@ void ASSSpaceScenery::ConfigureLook(USSSpaceLookData *Data)
         auto *Part = NewObject<UStaticMeshComponent>(this);
         Part->SetupAttachment(RootComponent);
         Part->SetStaticMesh(Mesh);
-        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        Part->SetGenerateOverlapEvents(false);
+        ApplySceneryCollision(Part);
         Part->SetCanEverAffectNavigation(false);
         Part->SetCastShadow(false);
         Part->SetMobility(EComponentMobility::Movable);
@@ -227,8 +254,15 @@ void ASSSpaceScenery::RefreshCells()
     const int32 Preview = AreaPreview.GetValueOnGameThread();
     const int32 Variation = EffectiveVariation();
     const auto *FarCount = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
-    const int32 Budget =
-        FMath::Clamp(Look->AreaClutterBudget, 0, 3072 - FMath::Clamp(FarCount ? FarCount->GetInt() : 2048, 0, 3072));
+    // The two systems share one 3072 instance cap and this takes the remainder, so a distant count at the
+    // cap silently leaves nothing here. That happened once; say so rather than render an empty field.
+    const int32 Remaining = 3072 - FMath::Clamp(FarCount ? FarCount->GetInt() : 2048, 0, 3072);
+    const int32 Budget = FMath::Clamp(Look->AreaClutterBudget, 0, Remaining);
+    if (Look->AreaClutterBudget > 0 && Budget == 0)
+        UE_LOG(LogTemp, Warning,
+               TEXT("Scenery clutter starved: ss.DistantAsteroidCount leaves %d of the shared 3072 cap, so the "
+                    "authored budget of %d builds nothing."),
+               Remaining, Look->AreaClutterBudget);
     const FIntVector Center = CellAt(Followed->GetActorLocation() - OriginOffset, ValidCellSize(Look));
     if (Preview != LastPreview || Variation != LastVariation || Budget != LastClutterBudget)
     {
@@ -285,8 +319,7 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
     auto Register = [&](UStaticMeshComponent *Part)
     {
         Part->SetupAttachment(RootComponent);
-        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        Part->SetGenerateOverlapEvents(false);
+        ApplySceneryCollision(Part);
         Part->SetCanEverAffectNavigation(false);
         Part->SetCastShadow(false);
         Part->SetMobility(EComponentMobility::Movable);
@@ -327,8 +360,8 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
     const float Density = FMath::Lerp(DensityA, DensityB, Blend.Alpha);
     // Stable quiet pockets reduce near/middle density; the independent distant field remains rich.
     const float Gap = Random.FRand() < .18f && !Origin ? .25f : 1.f;
-    const int32 Count = FMath::Clamp(FMath::RoundToInt(ClutterPerCell * FMath::Clamp(Density, 0.f, 2.f) * .5f * Gap), 0,
-                                     ClutterPerCell);
+    const int32 Count =
+        FMath::Clamp(FMath::RoundToInt(ClutterPerCell * FMath::Clamp(Density, 0.f, 2.f) * Gap), 0, ClutterPerCell);
     TMap<UStaticMesh *, UInstancedStaticMeshComponent *> Batches;
     for (int32 Index = 0; Index < Count; ++Index)
     {

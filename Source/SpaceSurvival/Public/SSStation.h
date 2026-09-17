@@ -38,6 +38,7 @@ public:
     TSoftObjectPtr<UStaticMesh> ShellAsset;
     void SetBayShip(int32 ShipKind);
     void ShowBayShip(bool Visible);
+    void RefreshPaint();
     bool CanAssistDocking(const ASSShip *Ship) const;
     virtual void Tick(float DeltaSeconds) override;
     virtual void Destroyed() override;

@@ -739,7 +739,29 @@ void PersistentRunHistory()
     std::string error;
     CHECK(SS::DecodeAccount(recorded, restored, error));
     CHECK(SS::EncodeAccount(restored) == recorded);
-    CHECK(recorded.rfind("SS ACCOUNT 2 ", 0) == 0);
+    CHECK(recorded.rfind("SS ACCOUNT 3 ", 0) == 0);
+
+    // Version 3 added the paint bay: one choice per hull section, -1 for the factory finish.
+    auto painted = s.account;
+    painted.paint = {{3, -1, 9, 0}};
+    SS::Account repainted;
+    CHECK(SS::DecodeAccount(SS::EncodeAccount(painted), repainted, error));
+    CHECK(repainted.paint == painted.paint && SS::EncodeAccount(repainted) == SS::EncodeAccount(painted));
+    // A version 2 payload, written before the paint bay, still loads, keeps its history and means factory finish.
+    std::string legacy = recorded;
+    legacy.replace(0, std::string("SS ACCOUNT 3 ").size(), "SS ACCOUNT 2 ");
+    for (int trailing = 0; trailing < SS::PaintSections; ++trailing)
+        legacy.erase(legacy.find_last_of(' '));
+    SS::Account fromLegacy;
+    fromLegacy.paint = {{5, 5, 5, 5}};
+    CHECK(SS::DecodeAccount(legacy, fromLegacy, error));
+    CHECK(fromLegacy.paint == SS::Account{}.paint && fromLegacy.history.size() == s.account.history.size());
+    // Choices outside the palette are refused rather than clamped.
+    painted.paint[1] = SS::PaintColours;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(painted), repainted, error));
+    painted.paint[1] = -2;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(painted), repainted, error));
+
     const auto unchanged = SS::EncodeAccount(restored);
     CHECK(!SS::DecodeAccount(recorded.substr(0, recorded.size() - 2), restored, error));
     CHECK(!SS::DecodeAccount(recorded + " trailing", restored, error));
@@ -796,16 +818,23 @@ void PersistentRunHistory()
     CHECK(migrated.lastAwardedRunId == "legacy-run" && migrated.lastScore == 3000 && migrated.lastXP == 175 &&
           migrated.lastWave == 6);
     CHECK(migrated.tutorialFlags == 7 && migrated.history.empty() && migrated.HeavyCannonUnlocked());
-    const auto v2 = SS::EncodeAccount(migrated);
-    CHECK(v2.rfind("SS ACCOUNT 2 ", 0) == 0);
-    CHECK(SS::DecodeAccount(v2, restored, error));
-    CHECK(SS::EncodeAccount(restored) == v2);
-    CHECK(!SS::DecodeAccount("SS ACCOUNT 3 0", restored, error));
-    CHECK(!SS::DecodeAccount(v2.substr(0, v2.find_last_of(' ') + 1) + "-1", restored, error));
-    CHECK(!SS::DecodeAccount(v2.substr(0, v2.find_last_of(' ') + 1) + "11", restored, error));
+    const auto v3 = SS::EncodeAccount(migrated);
+    CHECK(v3.rfind("SS ACCOUNT 3 ", 0) == 0);
+    CHECK(SS::DecodeAccount(v3, restored, error));
+    CHECK(SS::EncodeAccount(restored) == v3);
+    CHECK(!SS::DecodeAccount("SS ACCOUNT 4 0", restored, error));
+    // The history count sits just before the four paint choices; an impossible count is still refused.
+    auto paintStart = v3.size();
+    for (int choice = 0; choice < SS::PaintSections; ++choice)
+        paintStart = v3.find_last_of(' ', paintStart - 1);
+    const auto paintTail = v3.substr(paintStart);
+    const auto beforeCount = v3.substr(0, v3.find_last_of(' ', paintStart - 1) + 1);
+    CHECK(SS::DecodeAccount(beforeCount + "0" + paintTail, restored, error));
+    CHECK(!SS::DecodeAccount(beforeCount + "-1" + paintTail, restored, error));
+    CHECK(!SS::DecodeAccount(beforeCount + "11" + paintTail, restored, error));
     CHECK(!SS::DecodeAccount(v1 + " unexpected", restored, error));
     CHECK(!SS::DecodeAccount(v1.substr(0, v1.size() / 2), restored, error));
-    CHECK(SS::EncodeAccount(restored) == v2);
+    CHECK(SS::EncodeAccount(restored) == v3);
     SS::Session afterMigration;
     afterMigration.account = migrated;
     CHECK(!afterMigration.StartRun("legacy-run"));

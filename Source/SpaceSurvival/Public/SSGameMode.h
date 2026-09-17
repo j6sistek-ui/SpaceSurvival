@@ -34,7 +34,8 @@ enum class ESSPanel
     Launch,
     Results,
     Acknowledgements,
-    AlienGallery
+    AlienGallery,
+    Paint
 };
 struct FSSMenuEntry
 {
@@ -57,6 +58,7 @@ public:
         return Ship;
     }
     void NotifyEnemyKilled();
+    void NotifyPlayerShotHit();
     void NotifyEventCompleted(bool bCombat);
     void NotifyPickup(int32 Kind, float Amount);
     void Announce(const FString &Message);
@@ -79,8 +81,11 @@ public:
     FString ThreatWarning, PilotReaction;
     FVector ThreatPosition = FVector::ZeroVector;
     float ThreatWarningSeconds = 0.f, PilotReactionSeconds = 0.f;
+    /** Counts down after a player shot connects, so the reticle can flash its hit state. */
+    float PlayerHitFlashSeconds = 0.f;
     TArray<FSSMenuEntry> Entries;
     int32 SelectedEntry = 0;
+    int32 PaintSection = 0; // The hull section the paint bay is showing.
     ESSPanel Panel = ESSPanel::None;
     FVector StationTarget = FVector::ZeroVector;
     float AnnouncementSeconds = 0.f, WeaponBuffSeconds = 0.f;
@@ -95,6 +100,7 @@ public:
 
 private:
     friend class ASSPlayerController;
+    friend class ASSHUD; // DrawPrompt reads the glyph sets; main did not build without this.
     friend class ASSWave10Soak;
     friend class FSSAudioFirstState;
     bool bAutomatedSoakInput = false;
@@ -149,6 +155,13 @@ private:
     void EnterStation();
     void SpawnFlight(FVector Location, FRotator Rotation);
     void AddEntry(const FString &Label, int32 Action, bool Enabled = true);
+    void RepaintShips();
+};
+
+enum class ESSInputFamily : uint8
+{
+    KeyboardMouse,
+    Gamepad
 };
 
 UCLASS()
@@ -166,6 +179,12 @@ public:
     void SSReviewGalleryReturn();
     UFUNCTION(Exec)
     void SSReviewGallerySwitch();
+    /** Which device family last produced input, for HUD prompts. Defaults to keyboard/mouse so a
+     *  cold boot before any input reads correctly on the common case. */
+    ESSInputFamily GetInputFamily() const
+    {
+        return InputFamily;
+    }
 
     // True when the most recent frame's input came from a gamepad rather than
     // keyboard/mouse. Drives which device's HUD prompt/glyph is shown.
@@ -176,4 +195,5 @@ private:
     void UpdateLastInputDevice();
     bool BoostLatch = false, BrakeLatch = false;
     TWeakObjectPtr<APawn> LastInputPawn;
+    ESSInputFamily InputFamily = ESSInputFamily::KeyboardMouse;
 };

@@ -1,4 +1,5 @@
 #include "SSShip.h"
+#include "SSShipPaint.h"
 #include "SSVFXPresentation.h"
 #include "SSAudio.h"
 #include "SSGameInstance.h"
@@ -12,6 +13,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Camera/CameraComponent.h"
+#include "HAL/IConsoleManager.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
@@ -20,6 +22,16 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
 #include "Animation/AnimSequence.h"
+
+namespace
+{
+// Speed cues on the player camera rather than on the level's volume, so they follow the player and cannot
+// disturb the authored exposure. No settings-menu entry yet: chromatic fringe and vignette both have real
+// accessibility implications and belong behind a player toggle, but the settings UI is being reworked and
+// this should land there rather than as a console variable left for someone to find.
+TAutoConsoleVariable<int32> SpeedPostFX(TEXT("ss.SpeedPostFX"), 1,
+                                        TEXT("Chromatic fringe and vignette under thrust (0 disables)."));
+} // namespace
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Misc/PackageName.h"
@@ -95,6 +107,11 @@ void ASSShip::UpdateEngineMix()
     EngineAudio->SetVolumeMultiplier(SSAudio::EffectsGain(this, .35f));
     EngineAudio->SetPitchMultiplier(GI && GI->Session.run.boosting ? 1.3f : .9f + .15f * ThrottleInput);
 }
+void ASSShip::RefreshPaint()
+{
+    if (const auto *GI = GetGameInstance<USSGameInstance>())
+        SSPaint::Apply(HullMesh, GI->Session.account);
+}
 void ASSShip::BeginPlay()
 {
     Super::BeginPlay();
@@ -106,6 +123,7 @@ void ASSShip::BeginPlay()
     HullMesh->SetStaticMesh(
         LoadObject<UStaticMesh>(nullptr, HullAssetPath(GI ? GI->Session.run.ship : SS::Ship::Starter)));
     Presentation->SetHull(HullMesh);
+    RefreshPaint();
     Pilot->SetSkeletalMesh(
         LoadObject<USkeletalMesh>(nullptr, TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2")));
     const auto *LoadedHull = HullMesh->GetStaticMesh().Get();
@@ -198,6 +216,8 @@ void ASSShip::Tick(float Dt)
     auto &S = GI->Session;
     FireCooldown = FMath::Max(0.f, FireCooldown - Dt);
     ImpactCooldown = FMath::Max(0.f, ImpactCooldown - Dt);
+    FireVisualSeconds = FMath::Max(0.f, FireVisualSeconds - Dt);
+    ShakeSeconds += Dt;
     if (Moored)
     {
         // Existing hazards and damage remain active; GameMode freezes wave progress.
@@ -278,11 +298,47 @@ void ASSShip::Tick(float Dt)
         FMath::FInterpTo(CameraBoom->TargetArmLength,
                          FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f), Dt, 3.f);
     Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? 86.f : 80.f, Dt, 3.f);
-    if (GI->Session.settings.cameraShake && S.run.damageFeedback > 0)
-        Camera->SetRelativeLocation(
-            FVector(0, FMath::Sin(GetWorld()->GetTimeSeconds() * 70.f) * 3.f * float(S.run.damageFeedback), 0));
+    // Boost engaging is an event, but every drive effect in the game is a sustained level, so acceleration
+    // reads as a state change rather than as a shove. This is the transient: full on the frame boost is pressed,
+    // gone in about a third of a second.
+    if (S.run.boosting && !WasBoosting)
+        BoostPunch = 1.f;
+    WasBoosting = S.run.boosting;
+    BoostPunch = FMath::Max(0.f, BoostPunch - Dt * 2.8f);
+    FVector CameraOffset = FVector::ZeroVector;
+    if (GI->Session.settings.cameraShake)
+    {
+        if (S.run.damageFeedback > 0)
+        {
+            // Two non-harmonic axes so the motion does not trace a line, peaking at 0.20 degrees for the
+            // lightest hit and 0.796 at the heaviest against the 900 cm boom, deliberately under one degree.
+            const float Amplitude = (3.f + 22.f * ShakeSeverity) * float(S.run.damageFeedback);
+            CameraOffset += FVector(0, FMath::Sin(ShakeSeconds * 70.f) * Amplitude,
+                                    FMath::Cos(ShakeSeconds * 53.f) * Amplitude * .7f);
+        }
+        // Squared so the kick eases out rather than ending abruptly. The camera falls back along the boom and
+        // catches up, which is the shove; the rumble underneath it is deliberately slower than the damage
+        // shake's 70 and 53 hertz, so a hit taken while boosting still reads as a separate, sharper event.
+        const float Punch = BoostPunch * BoostPunch;
+        const float Amplitude = (S.run.boosting ? 2.2f : 0.f) + 9.f * Punch;
+        CameraOffset += FVector(-16.f * Punch, FMath::Sin(ShakeSeconds * 34.f) * Amplitude,
+                                FMath::Cos(ShakeSeconds * 27.f) * Amplitude * .6f);
+    }
+    Camera->SetRelativeLocation(CameraOffset);
+    if (SpeedPostFX.GetValueOnGameThread() != 0)
+    {
+        // Follows the boost punch and the held boost, not the damage clock: these are speed cues, and a hit
+        // already has its own louder language in the shake and the red drive pulse.
+        const float Push = FMath::Clamp(BoostPunch * .6f + (S.run.boosting ? .5f : 0.f), 0.f, 1.f);
+        Camera->PostProcessBlendWeight = 1.f;
+        Camera->PostProcessSettings.bOverride_SceneFringeIntensity = true;
+        Camera->PostProcessSettings.SceneFringeIntensity = 1.6f * Push;
+        // .4 is the engine's own default, so cruising looks exactly as it did and only thrust tightens it.
+        Camera->PostProcessSettings.bOverride_VignetteIntensity = true;
+        Camera->PostProcessSettings.VignetteIntensity = .4f + .35f * Push;
+    }
     else
-        Camera->SetRelativeLocation(FVector::ZeroVector);
+        Camera->PostProcessBlendWeight = 0.f;
     UpdateEngineMix();
     SoftTarget = nullptr;
     float Best = FMath::Cos(FMath::DegreesToRadians(Tuning->SoftAimDegrees));
@@ -331,6 +387,12 @@ void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
+    // Phase the shake from this impact instead of from world time, and scale it by severity.
+    // Severity belongs here, in the single damage funnel, because Session::ApplyDamage re-arms
+    // damageFeedback on every damage event: storing it on contact alone would fire a full-strength
+    // shake for an enemy laser graze arriving seconds later.
+    ShakeSeconds = 0.f;
+    ShakeSeverity = FMath::Clamp((Amount - 8.f) / 60.f, .15f, 1.f);
     GI->Session.ApplyDamage(Amount, Type);
     UGameplayStatics::PlaySoundAtLocation(
         this, SSAudio::PresentationSound(TEXT("Impact")), GetActorLocation(),
@@ -354,6 +416,9 @@ void ASSShip::Fire()
     auto &S = GI->Session;
     const bool Cannon = S.run.weapon == SS::Weapon::HeavyCannon;
     FireCooldown = Cannon ? Tuning->CannonInterval : Tuning->LaserInterval;
+    // Long enough to stay lit between rapid-laser shots, short enough that one cannon shot does
+    // not hold the reticle open for most of a second.
+    FireVisualSeconds = .16f;
     const FVector Start = GetActorLocation() + GetActorForwardVector() * 240.f;
     const FVector Sight = AimDirection();
     const FVector SightOrigin = Camera ? Camera->GetComponentLocation() : Start;

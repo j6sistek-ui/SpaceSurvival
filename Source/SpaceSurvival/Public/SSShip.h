@@ -41,6 +41,12 @@ public:
     {
         return Moored;
     }
+    /** Brief window after each shot. The HUD reticle needs one firing state that reads the same on
+     *  both weapons, and the cannon's own cooldown is far too long to stand in for that. */
+    bool IsFiring() const
+    {
+        return FireVisualSeconds > 0.f;
+    }
     /** Read-only presentation state. Gameplay remains owned by the domain session. */
     void GetDrivePresentation(float &OutPower, bool &OutBoosting, bool &OutBraking, float &OutDamage) const
     {
@@ -49,6 +55,8 @@ public:
         OutBraking = DrivePresentationBraking;
         OutDamage = DrivePresentationDamage;
     }
+    /** Reapplies the account's paint bay choices to the hull: after the hull loads, and when paint changes. */
+    void RefreshPaint();
     static float SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength);
     FVector AimDirection() const;
     AActor *SoftTarget = nullptr;
@@ -75,7 +83,12 @@ private:
     void UpdateEngineMix();
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
-    float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f;
+    float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f, FireVisualSeconds = 0.f;
+    /** Impact shake phase and severity. Presentation only; neither reaches thrust or shot origin. */
+    float ShakeSeconds = 0.f, ShakeSeverity = 0.f;
+    /** Decays from one when boost engages, so acceleration has a transient the sustained levels do not give it. */
+    float BoostPunch = 0.f;
+    bool WasBoosting = false;
     float DrivePresentationPower = .45f, DrivePresentationDamage = 0.f;
     bool DrivePresentationBoosting = false, DrivePresentationBraking = false;
     bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false;

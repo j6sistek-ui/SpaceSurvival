@@ -8,6 +8,11 @@
 
 namespace
 {
+// 2048, not 3072. ASSSpaceScenery takes its own clutter budget as whatever is left of a shared 3072
+// instance cap, so setting this to the cap starves the only near-field system that is world-stable and
+// direction-independent, which is precisely the content a player sees when they turn around. The density
+// that raising this was meant to buy came instead from fixing the shell recycle, which made the instances
+// that already existed visible rather than adding more.
 TAutoConsoleVariable<int32>
     DistantAsteroidCount(TEXT("ss.DistantAsteroidCount"), 2048,
                          TEXT("Visual-only distant asteroid count, clamped 0..3072. Does not alter hazards."),
@@ -151,7 +156,10 @@ void ASSDistantAsteroids::BuildField(int32 Count)
     int32 BandOrdinals[4] = {};
     for (int32 Index = 0; Index < Count; ++Index)
     {
-        const int32 BandIndex = Index % 256 == 0 ? 0 : (Index % 64 == 0 ? 1 : (Index % 8 == 1 ? 2 : 3));
+        // Band 3 is the far, near-static shell. The old split put 86% of the budget there, so the
+        // field read as a painted backdrop with a sparse near zone. Weight the near and middle
+        // bands instead: those carry real parallax and are what the player actually flies through.
+        const int32 BandIndex = Index % 32 == 0 ? 0 : (Index % 4 == 0 ? 1 : (Index % 2 == 0 ? 2 : 3));
         const FDepthBand &Band = DepthBands[BandIndex];
         const int32 Ordinal = BandOrdinals[BandIndex]++;
         const int32 BatchIndex = (BandIndex == 0   ? Ordinal % 8
@@ -243,10 +251,16 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
             FTransform &Rest = RestTransforms[BatchIndex][Index];
             FVector Center = Rest.TransformPosition(Origin) - FieldTravel * Band.Parallax;
             const double Distance = Center.Size();
+            // Re-enter through the edge it left through. Sending a rock that drifted past the OUTER edge back
+            // in at the INNER one is what made the field behind the player empty and made rocks appear close:
+            // sustained travel pushed every instance out of the back, and each one returned to the near edge in
+            // front, where ShellFade scales it to nothing until it drifts outward far enough to be seen. A 90
+            // second cruise simulation of the old rule left bands 0 to 2 with zero visible instances ahead and
+            // every one of them piled at the inner edge; re-entering at the same edge holds the field even.
             if (Distance < Band.MinimumDistance)
-                Center = -Center.GetSafeNormal() * Band.MaximumDistance;
-            else if (Distance > Band.MaximumDistance)
                 Center = -Center.GetSafeNormal() * Band.MinimumDistance;
+            else if (Distance > Band.MaximumDistance)
+                Center = -Center.GetSafeNormal() * Band.MaximumDistance;
             Rest.SetLocation(Center - Rest.GetRotation().RotateVector(Origin * Rest.GetScale3D()));
             const FVector Axis = FVector(1.0, .3 + BatchIndex, .2 + Index % 3).GetSafeNormal();
             const double Rate = (.2 + .1 * ((Index + BatchIndex) % 7)) * Band.Tumble;
@@ -257,7 +271,9 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
             Pose.SetLocation(Center - Rotation.RotateVector(Origin * Pose.GetScale3D()));
         }
         if (!AnimatedTransforms[BatchIndex].IsEmpty())
-            Batch->BatchUpdateInstancesTransforms(0, AnimatedTransforms[BatchIndex], false, true, false);
+            // bMarkRenderStateDirty takes RecreateRenderState_Concurrent and skips the incremental
+            // instance-data path, rebuilding every batch's scene proxy each frame for no visual gain.
+            Batch->BatchUpdateInstancesTransforms(0, AnimatedTransforms[BatchIndex], false, false, false);
     }
 }
 

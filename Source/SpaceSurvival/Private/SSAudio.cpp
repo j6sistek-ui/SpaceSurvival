@@ -8,6 +8,7 @@
 #include "Misc/PackageName.h"
 #include "Sound/SoundAttenuation.h"
 #include "Sound/SoundBase.h"
+#include "HAL/IConsoleManager.h"
 #include "Sound/SoundConcurrency.h"
 
 namespace
@@ -15,6 +16,17 @@ namespace
 float UnitGain(double Value)
 {
     return FMath::IsFinite(Value) ? float(FMath::Clamp(Value, 0.0, 1.0)) : 0.f;
+}
+// RPT-20260916-09. The Rapid Laser fires every .12s and its cue is .125s long, so eight identical, phase-locked
+// copies land per second and the weapon reads as one flat mechanical buzz. Real guns never repeat exactly. Walking
+// a fixed table rather than drawing at random keeps captures and the automation suite reproducible.
+TAutoConsoleVariable<float> ShotPitchVariation(TEXT("ss.ShotPitchVariation"), .055f,
+                                               TEXT("Peak per-shot pitch deviation for one-shots (0 disables)."));
+float ShotPitch(int32 Index)
+{
+    static const float Jitter[] = {0.f, -.7f, .75f, -.4f, .5f, -.92f, .22f, -.16f, .88f, -.55f, .34f, -.28f};
+    const float Amount = FMath::Clamp(ShotPitchVariation.GetValueOnGameThread(), 0.f, .5f);
+    return 1.f + Jitter[Index % UE_ARRAY_COUNT(Jitter)] * Amount;
 }
 void ReleaseVoice(UAudioComponent *Component)
 {
@@ -172,6 +184,8 @@ UAudioComponent *USSWorldAudioSubsystem::CreateVoice(AActor *Owner, const FSSAud
     Component->ConcurrencySet.Add(Loop ? FieldConcurrency : ShotConcurrency);
     Component->SetSound(Sound);
     Component->SetVolumeMultiplier(SSAudio::EffectsGain(this, Gain * Envelope));
+    if (!Loop)
+        Component->SetPitchMultiplier(ShotPitch(ShotIndex++));
     if (Loop)
     {
         Component->SetupAttachment(Owner->GetRootComponent());
