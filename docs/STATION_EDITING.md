@@ -135,6 +135,10 @@ The Mica robot starts at approximately `(1110, 1130)` with its feet on the deck;
 
 Use a few localized light pools around work areas and leave readable contrast between paths and equipment. Add lights gradually and inspect the actual game camera; more lights, shadow casters, transparent screens or skeletal staff can raise rendering cost. Blueprint viewport appearance alone does not establish game exposure, camera readability or performance.
 
+## A third route: open the interior in Blender
+
+The Blender add-on can open the station interior as a scene, let you move, add and remove parts with the whole parts library at hand, and **Apply** it back. It writes the recipe `Prefabs/Scenes/StationInterior.json` and rebuilds `BP_StationVisualLayout` from it, after copying the previous Blueprint and recipe aside. Each route only sees its own work: Blender reads the recipe and never the Blueprint, so an Apply replaces changes made in the Station Workshop or the Blueprint editor since the last recipe build. It asks before doing that (`layout changed outside a recipe`), but pick one route per change. Clicks, refusals and what has and has not been tested are in [Prefab live link](PREFAB_LIVE_LINK.md).
+
 ## Initial authoring and preserving manual work
 
 The lead runs [AuthorStationVisualPass.py](../Scripts/AuthorStationVisualPass.py) to prepare the selected private materials/screens, then [AuthorStationEditableLayout.py](../Scripts/AuthorStationEditableLayout.py) through the installed editor Python runner. The latter calls the small native editor bridge to create real Blueprint component templates. Its default supplemental recipe is private `.agent/local/StationVisualPass/EditableLayout.json`; use `--layout-recipe <path>` to select another recipe.
