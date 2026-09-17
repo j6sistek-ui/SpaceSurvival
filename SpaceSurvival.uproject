@@ -24,6 +24,14 @@
 			]
 		},
 		{
+			"Name": "GLTFExporter",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			],
+			"Comment": "Blender proxies for the prefab library (Content/Python/ss_prefabs.py); editor only."
+		},
+		{
 			"Name": "EditorScriptingUtilities",
 			"Enabled": true,
 			"TargetAllowList": [
