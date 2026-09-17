@@ -1122,6 +1122,39 @@ the owner's "dust and small rocks should bounce off you" tier.
 speed, and how closely aligned to the flight path, rather than being the only source of hittable content.
 
 
+
+#### September 16 the Director's three dials
+
+The owner's direction: the Director governs "how many he hurls at you, higher speed, more in line with your flight
+path". Each is now a dial, because this is a feel change and feel is dialled rather than argued.
+
+**Speed was the real problem and it is arithmetic, not opinion.** Authored drift is 40 to 350 cm/s against a
+2400 cm/s cruise, so a hazard supplied between 2 and 13 per cent of the closing speed. The player was not being hit
+by anything; the player was driving into stationary rocks. `ss.HazardSpeed` defaults to 3, taking drift to 120-1050
+and the hazard's share of closing speed to 5-30 per cent.
+
+**Reaction distance had to move with it.** `FindSafeSpawn` computes the spawn lead from closing speed times
+`MinimumReactionSeconds`, using the largest authored drift. Multiplying drift without multiplying that term would
+have spawned faster hazards at the old distance, arriving inside the reaction budget. That is unfair rather than
+hard, and it is the kind of change that reads as a difficulty increase while actually being a bug. The multiplier is
+applied in both places from one shared function so they cannot drift apart.
+
+**Alignment.** Velocity was `-Ship->GetActorForwardVector()`, the heading the ship happened to hold at the instant
+of spawn, so any turn afterwards sent the hazard sailing past. That is what made hazards read as scenery going by.
+They now lead the ship's predicted position, blended against the old behaviour by `ss.HazardAim`, default .55.
+Partial on purpose: a field in which everything intercepts is not harder, it is unavoidable, and the owner asked for
+danger rather than for a tax.
+
+**Count.** `MaximumActiveThreats` was a fixed 24 checked in two places. Both now read `ss.HazardCount`, default 40.
+
+All three are console variables so the owner can dial them in a session rather than wait on a build. 51 tests pass.
+
+**Unverified by play.** These are the right levers and the arithmetic is checked, but whether 3x, .55 and 40 are the
+right values is a judgement that needs someone flying it. They are starting points chosen to be too much rather than
+too little, per the owner's own standing preference that harder and dialling down is proof of concept where easy and
+dialling up is weak.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
