@@ -9,6 +9,7 @@
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
+#include "HAL/IConsoleManager.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 namespace
@@ -166,5 +167,141 @@ bool FSSWreckageBudgetAdmission::RunTest(const FString &)
     Partial.Step();
     TestEqual(TEXT("A partial passage still spends its normal one-unit cost"), Partial.WreckageCount(), 0);
     return true;
+}
+
+// Every placer derives its lead from the ship's speed; retirement was one fixed radius. Tripling hazard speed
+// moved the lead for a 4,300 climax gravity field to 17,775-23,275 at cruise, so the packaged Wave 10 fixture saw
+// its required gravity well admitted, charged for and deleted on its first tick, and the compound front never
+// formed. Boost did the same to asteroids, enemies, salvage caches and distress attackers. The pawn in this world
+// has not begun play and cannot be given a velocity, so the dial and the authored lead stand in for ship speed.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSAdmittedBodiesOutliveAdmission,
+                                 "SpaceSurvival.Integration.AdmittedBodiesOutliveAdmission",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSAdmittedBodiesOutliveAdmission::RunTest(const FString &)
+{
+    IConsoleVariable *Speed = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HazardSpeed"));
+    if (!TestNotNull(TEXT("Resolve the Director's speed dial"), Speed))
+        return false;
+    const float DefaultRetire = GetDefault<ASSWorldBody>()->RetireDistance;
+    const float SavedSpeed = Speed->GetFloat();
+    // 450 is the floor FindSafeSpawn puts under the largest authored drift. One step past the quotient lands a
+    // body of any radius beyond the default retirement radius while the ship is at rest.
+    const float Dial = FMath::CeilToFloat(DefaultRetire / (450.f * 3.5f)) + 1.f;
+    Speed->Set(Dial, ECVF_SetByCode);
+    if (!FMath::IsNearlyEqual(Speed->GetFloat(), Dial))
+    {
+        AddError(TEXT("ss.HazardSpeed is pinned by the console or the command line; clear it before this test."));
+        return false;
+    }
+    // Survives the tick after it was placed, and says why: the radius now covers where the body was put.
+    auto Outlives = [&](ASSWorldBody *Body, const ASSShip *Ship, const FString &Label)
+    {
+        const double Distance = FVector::Dist(Body->GetActorLocation(), Ship->GetActorLocation());
+        TestTrue(Label + TEXT(" was placed beyond the default retirement radius"), Distance > DefaultRetire);
+        Body->Tick(0.f);
+        Body->Tick(.1f);
+        TestFalse(Label + TEXT(" survives the tick after it was placed"), Body->IsActorBeingDestroyed());
+        TestTrue(Label + TEXT(" has a retirement radius that covers where it was placed"),
+                 Body->RetireDistance > Distance);
+    };
+    auto Find = [](UWorld *World, ESSWorldKind Kind)
+    {
+        for (TActorIterator<ASSWorldBody> It(World); It; ++It)
+            if (!It->IsActorBeingDestroyed() && It->GetKind() == Kind)
+                return *It;
+        return static_cast<ASSWorldBody *>(nullptr);
+    };
+    bool bResult = true;
+    {
+        FSSWreckageBudgetWorld F;
+        bResult &= F.Initialize(*this);
+        if (bResult)
+        {
+            const ASSShip *Ship = Cast<ASSShip>(F.World->GetFirstPlayerController()->GetPawn());
+            F.Director->BaseBudgetPerSecond = 100.f;
+            F.Director->Configure(10, true);
+            // The compound block admits gravity, then an asteroid, then a pursuer, one per spawn tick.
+            ASSWorldBody *Gravity = nullptr, *Asteroid = nullptr, *Pursuer = nullptr;
+            for (int32 Attempt = 0; Attempt < 60 && !(Gravity && Asteroid && Pursuer); ++Attempt)
+            {
+                F.Step(1.f);
+                Gravity = Find(F.World, ESSWorldKind::GravityAnomaly);
+                Asteroid = Find(F.World, ESSWorldKind::MediumAsteroid);
+                Pursuer = Find(F.World, ESSWorldKind::Pursuer);
+            }
+            bResult &= TestNotNull(TEXT("The Wave 10 climax admits its required gravity field"), Gravity) &&
+                       TestNotNull(TEXT("The Wave 10 climax admits its required asteroid"), Asteroid) &&
+                       TestNotNull(TEXT("The Wave 10 climax admits its required pursuer"), Pursuer);
+            if (bResult)
+            {
+                Outlives(Gravity, Ship, TEXT("The required gravity field"));
+                Outlives(Asteroid, Ship, TEXT("The required asteroid"));
+                Outlives(Pursuer, Ship, TEXT("The required pursuer"));
+                // Fields are not drawn during a climax. One that is lost has to be asked for again.
+                Gravity->SetActorLocation(FVector(-1000000, 0, 0));
+                Gravity->Destroy();
+                ASSWorldBody *Replacement = nullptr;
+                for (int32 Attempt = 0; Attempt < 60 && !Replacement; ++Attempt)
+                {
+                    F.Step(1.f);
+                    Replacement = Find(F.World, ESSWorldKind::GravityAnomaly);
+                }
+                bResult &= TestNotNull(TEXT("A required gravity field that is lost is admitted again"), Replacement);
+            }
+        }
+    }
+    {
+        FSSWreckageBudgetWorld F;
+        if (F.Initialize(*this))
+        {
+            const ASSShip *Ship = Cast<ASSShip>(F.World->GetFirstPlayerController()->GetPawn());
+            F.Step(1.f);
+            int32 Chunks = 0;
+            for (TActorIterator<ASSWorldBody> It(F.World); It; ++It)
+                if (It->GetKind() == ESSWorldKind::Wreckage)
+                    Outlives(*It, Ship, FString::Printf(TEXT("Passage chunk %d"), ++Chunks));
+            bResult &= TestEqual(TEXT("The wreckage passage was admitted whole"), Chunks, 4);
+        }
+        else
+            bResult = false;
+    }
+    for (ESSEncounterKind Kind : {ESSEncounterKind::SalvageCache, ESSEncounterKind::DistressCombat})
+    {
+        // Accepted during a boost, the course starts past the radius. The authored lead says so here.
+        const TCHAR *Name = Kind == ESSEncounterKind::SalvageCache ? TEXT("Salvage") : TEXT("Distress");
+        FSSWreckageBudgetWorld F;
+        if (!F.Initialize(*this))
+        {
+            bResult = false;
+            continue;
+        }
+        const ASSShip *Ship = Cast<ASSShip>(F.World->GetFirstPlayerController()->GetPawn());
+        for (auto &Entry : F.Mode->Tuning->Encounters)
+            Entry.ObjectiveLeadDistance = DefaultRetire + 1000.f;
+        auto *Beacon = F.World->SpawnActor<ASSEncounterBeacon>(FVector(1500, 0, 0), FRotator::ZeroRotator);
+        if (!TestNotNull(TEXT("Create the accepted signal"), Beacon))
+        {
+            bResult = false;
+            continue;
+        }
+        Beacon->ConfigureEncounter(Kind, Kind == ESSEncounterKind::SalvageCache ? 2 : 7);
+        Beacon->Tick(.1f);
+        if (!TestTrue(FString::Printf(TEXT("%s signal is accepted"), Name), Beacon->TryAccept()))
+        {
+            bResult = false;
+            continue;
+        }
+        int32 Objectives = 0;
+        for (TActorIterator<ASSWorldBody> It(F.World); It; ++It)
+            if (*It != Beacon)
+                Outlives(*It, Ship, FString::Printf(TEXT("%s objective body %d"), Name, ++Objectives));
+        bResult &= TestTrue(FString::Printf(TEXT("%s acceptance placed its objectives"), Name),
+                            Objectives >= Beacon->GetObjectiveRemaining());
+        // The signal the objectives report to must still exist when the ship is at the far end of the course.
+        TestTrue(FString::Printf(TEXT("%s signal is kept for the length of its course"), Name),
+                 Beacon->RetireDistance > DefaultRetire + DefaultRetire);
+    }
+    Speed->Set(SavedSpeed, ECVF_SetByCode);
+    return bResult;
 }
 #endif

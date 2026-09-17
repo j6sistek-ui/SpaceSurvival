@@ -71,6 +71,13 @@ public:
     float GravityAcceleration = 650.f;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tuning")
     bool bPersistentAcrossWaves = false;
+    /** How far from the ship this body may be before it retires. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tuning")
+    float RetireDistance = 22000.f;
+    /** A body is never retired for being where it was placed. Every placer derives its lead from the ship's
+     *  speed and retirement was one fixed radius, so a fast ship or a large field was admitted beyond it and
+     *  deleted on its first tick. The first tick that sees a ship calls this; no placer has to remember to. */
+    void KeepAdmittedAt(const FVector &ShipLocation);
 
 protected:
     virtual void BeginPlay() override;
@@ -98,6 +105,9 @@ protected:
     bool bDefeated = false;
     bool bWarningIssued = false;
     bool bHasPreviousShipPosition = false;
+    bool bAdmitted = false;
+    // The storm's beam is culled by distance when it is requested, and a storm can be admitted past that cull.
+    bool bFieldPresentationAttached = false;
     FVector PreviousShipPosition = FVector::ZeroVector;
     FRandomStream LocalRandom;
     UPROPERTY(Transient)
@@ -325,6 +335,9 @@ private:
     bool bSalvageOffered = false;
     bool bDistressOffered = false;
     bool bCompoundGravitySpawned = false;
+    // Fields are excluded from random composition during a climax, so a required one that is lost is lost
+    // for good unless the Director notices. Asteroids and enemies are replaced by ordinary admission.
+    TWeakObjectPtr<ASSWorldBody> CompoundGravity;
     bool bCompoundAsteroidSpawned = false;
     bool bCompoundEnemySpawned = false;
     float Pressure = 0.f;
