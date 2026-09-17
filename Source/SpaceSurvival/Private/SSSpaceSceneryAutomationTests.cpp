@@ -331,6 +331,11 @@ bool FSSSceneryRegions::RunTest(const FString &)
     Fixture.Scenery->SetRunSeed(101);
     Fixture.Scenery->Tick(0);
     TestTrue(TEXT("Restoring a run identity restores its complete arrangement"), FirstRun == Snapshot(Shift));
+    // Taking the whole shared cap for the far field is exactly the condition the runtime now warns about,
+    // because it silently starved the local clutter once. The warning is the expected observation here, not
+    // an incident, so it is declared rather than left to fail the run.
+    AddExpectedMessage(TEXT("Scenery clutter starved"), ELogVerbosity::Warning,
+                       EAutomationExpectedMessageFlags::Contains, 0);
     FarCount->Set(3072, FarPriority);
     Fixture.Scenery->Tick(0);
     TestEqual(TEXT("Full far-field budget leaves no local clutter overspend"),

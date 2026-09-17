@@ -224,12 +224,19 @@ void ASSGameMode::WarnThreat(const FString &Message, FVector Position, float Dur
         AlarmCooldown = 6.f;
     }
 }
+void ASSGameMode::NotifyPlayerShotHit()
+{
+    // Re-armed on every connecting shot, so sustained fire holds the hit reticle rather than
+    // strobing between it and the firing one.
+    PlayerHitFlashSeconds = .14f;
+}
 void ASSGameMode::UpdateThreatFeedback(float Dt)
 {
     AlarmCooldown = FMath::Max(0.f, AlarmCooldown - Dt);
     ReactionCooldown = FMath::Max(0.f, ReactionCooldown - Dt);
     ThreatWarningSeconds = FMath::Max(0.f, ThreatWarningSeconds - Dt);
     PilotReactionSeconds = FMath::Max(0.f, PilotReactionSeconds - Dt);
+    PlayerHitFlashSeconds = FMath::Max(0.f, PlayerHitFlashSeconds - Dt);
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI || !Ship || !GI->Session.IsFlying())
         return;

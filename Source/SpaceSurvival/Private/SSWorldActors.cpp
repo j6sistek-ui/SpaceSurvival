@@ -587,8 +587,13 @@ void ASSWorldBody::Tick(float DeltaSeconds)
         // Retain hazards across wave boundaries, retire only beyond the playable vicinity.
         PreviousShipPosition = Ship->GetActorLocation();
         bHasPreviousShipPosition = true;
-        if (FVector::DotProduct(GetActorLocation() - Ship->GetActorLocation(), Ship->GetActorForwardVector()) <
-            -16000.f)
+        // Retire on distance, not on facing. This used to be a dot product against the ship's CURRENT
+        // forward vector, so a body was kept or destroyed according to where the player happened to be
+        // looking: turning around retired everything that had been more than 16,000 ahead, in the frame the
+        // turn completed. That contradicts the intended model, in which the danger around the player is one
+        // intensity rather than one direction. The radius is larger than the old threshold so that nothing
+        // now disappears sooner than it used to, in any direction.
+        if (FVector::DistSquared(GetActorLocation(), Ship->GetActorLocation()) > FMath::Square(22000.f))
             Destroy();
     }
     if (LifetimeSeconds > 0.f && Age > LifetimeSeconds)
@@ -953,6 +958,9 @@ void ASSProjectile::Tick(float DeltaSeconds)
         if (ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor()))
             if (bPlayerShot || Body->IsSolidHazard())
                 Body->ReceiveWeaponHit(CollisionDamage);
+        if (bPlayerShot)
+            if (auto *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
+                Mode->NotifyPlayerShotHit();
         Destroy();
         return;
     }

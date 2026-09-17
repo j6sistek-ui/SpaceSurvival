@@ -19,6 +19,24 @@
 
 namespace
 {
+// Ring radius measured on each source texture. The four states were authored at slightly different
+// scales, so drawing them at one bitmap size makes the ring itself jump by up to 14% between
+// states. Fitting each to a shared ring radius instead leaves the tick marks as the only thing
+// that moves: they sit outside the ring at rest and pinch inward while firing.
+struct FSSCrosshairSource
+{
+    const TCHAR *Path;
+    float NativeRingRadius;
+};
+const FSSCrosshairSource CrosshairSources[] = {
+    {TEXT("/Game/SpaceSurvival/Licensed/UI/Crosshairs/T_Crosshair_Default.T_Crosshair_Default"), 33.71f},
+    {TEXT("/Game/SpaceSurvival/Licensed/UI/Crosshairs/T_Crosshair_Firing.T_Crosshair_Firing"), 37.47f},
+    {TEXT("/Game/SpaceSurvival/Licensed/UI/Crosshairs/T_Crosshair_Hit.T_Crosshair_Hit"), 38.30f},
+    {TEXT("/Game/SpaceSurvival/Licensed/UI/Crosshairs/T_Crosshair_Boost.T_Crosshair_Boost"), 38.09f},
+};
+TAutoConsoleVariable<float> CrosshairRingRadius(TEXT("ss.CrosshairSize"), 16.f,
+                                                TEXT("Crosshair ring radius in pixels at 1080p."));
+
 // The owned EasyInputPrompts pack (RPT-20260916-18) exposes each device family as an instance of
 // its own Blueprint PrimaryDataAsset class, PDA_KeysIconsMapping, which has no native C++ header.
 // Reading its single "KeysIcons" TMap<FKey, UTexture2D*> property through reflection avoids adding
@@ -109,6 +127,45 @@ float ASSHUD::Glyph(const FKey &KeyboardKey, const FKey &GamepadKey, float X, fl
     // prompt out; the key's own display name keeps it legible either way.
     Text(Key.GetDisplayName().ToString(), X, Y, Size, Color);
     return MeasureText(Key.GetDisplayName().ToString(), Size).X;
+}
+void ASSHUD::DrawCrosshair(ASSShip *Ship, float CentreX, float CentreY)
+{
+    if (CrosshairTextures.Num() != UE_ARRAY_COUNT(CrosshairSources))
+    {
+        CrosshairTextures.Reset();
+        for (const FSSCrosshairSource &Source : CrosshairSources)
+            CrosshairTextures.Add(LoadObject<UTexture2D>(nullptr, Source.Path, nullptr, LOAD_NoWarn | LOAD_Quiet));
+    }
+    float Power = 0.f, Damage = 0.f;
+    bool Boosting = false, Braking = false;
+    Ship->GetDrivePresentation(Power, Boosting, Braking, Damage);
+    const auto *GM = Cast<ASSGameMode>(UGameplayStatics::GetGameMode(this));
+    // A connecting shot outranks the act of firing, which outranks boosting.
+    int32 State = 0;
+    if (GM && GM->PlayerHitFlashSeconds > 0.f)
+        State = 2;
+    else if (Ship->IsFiring())
+        State = 1;
+    else if (Boosting)
+        State = 3;
+    UTexture2D *Texture = CrosshairTextures.IsValidIndex(State) ? CrosshairTextures[State].Get() : nullptr;
+    if (!Texture || !Texture->GetResource())
+    {
+        // The art is absent from this build; the original three ticks still mark the aim point.
+        DrawLine(CentreX - 14 * Scale, CentreY, CentreX - 5 * Scale, CentreY, FLinearColor::White, 1.3f);
+        DrawLine(CentreX + 5 * Scale, CentreY, CentreX + 14 * Scale, CentreY, FLinearColor::White, 1.3f);
+        DrawLine(CentreX, CentreY - 14 * Scale, CentreX, CentreY - 5 * Scale, FLinearColor::White, 1.3f);
+        return;
+    }
+    const float Ring = FMath::Max(4.f, CrosshairRingRadius.GetValueOnGameThread()) * Scale;
+    const float Fit = Ring / CrosshairSources[State].NativeRingRadius;
+    const FVector2D Size(Texture->GetSizeX() * Fit, Texture->GetSizeY() * Fit);
+    FCanvasTileItem Item(FVector2D(CentreX - Size.X * .5f, CentreY - Size.Y * .5f), Texture->GetResource(), Size,
+                         FLinearColor::White);
+    // Straight-alpha over. The kit's glow keeps full-saturation colour as alpha falls off, so a
+    // premultiplied mode blooms the faint halo into a solid cyan block.
+    Item.BlendMode = SE_BLEND_Translucent;
+    Canvas->DrawItem(Item);
 }
 float ASSHUD::Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color,
                         bool Render)
@@ -383,9 +440,7 @@ void ASSHUD::DrawHUD()
     }
     if (auto *Ship = GM->GetPlayerShip(); Ship && S.IsFlying())
     {
-        DrawLine(W * .5f - 14 * Scale, H * .5f, W * .5f - 5 * Scale, H * .5f, FLinearColor::White, 1.3f);
-        DrawLine(W * .5f + 5 * Scale, H * .5f, W * .5f + 14 * Scale, H * .5f, FLinearColor::White, 1.3f);
-        DrawLine(W * .5f, H * .5f - 14 * Scale, W * .5f, H * .5f - 5 * Scale, FLinearColor::White, 1.3f);
+        DrawCrosshair(Ship, W * .5f, H * .5f);
         DrawCombatCues(Ship, GM->Director && GM->Director->GetActiveThreatCount() > 3);
         if (Ship->IsMoored())
             Text(TEXT("MAGNETIC LOCK / Close services to release"), Margin, H - 195.f * Scale, .7f,

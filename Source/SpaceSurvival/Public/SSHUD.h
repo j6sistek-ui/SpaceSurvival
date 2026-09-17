@@ -22,6 +22,8 @@ private:
     TObjectPtr<UObject> KeyboardMouseIcons;
     UPROPERTY()
     TObjectPtr<UObject> GamepadIcons;
+    UPROPERTY()
+    TArray<TObjectPtr<UTexture2D>> CrosshairTextures;
     FSlateFontInfo HudFont(float Size) const;
     FVector2D MeasureText(const FString &Value, float Size) const;
     void Text(const FString &Value, float X, float Y, float Size = 1.f, FLinearColor Color = FLinearColor::White);
@@ -30,6 +32,8 @@ private:
     void Stroke(FVector2D A, FVector2D B, FLinearColor Color, float Width = 1.f);
     void ThreatGlyph(FVector2D Centre, bool Flanker, bool Charging, float Size, FLinearColor Color);
     void DrawCombatCues(class ASSShip *Ship, bool ShowRadar);
+    /** Aim reticle. Four owned states share one on-screen ring size, so only the tick marks move. */
+    void DrawCrosshair(class ASSShip *Ship, float CentreX, float CentreY);
     void Meter(const FString &Name, double Value, double Maximum, float X, float Y, FLinearColor Color);
     /** True while the owning controller's last input came from a gamepad, so a prompt can pick the
      *  matching half of the EasyInputPrompts icon set instead of naming both devices at once. */

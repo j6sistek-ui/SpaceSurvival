@@ -56,6 +56,7 @@ public:
         return Ship;
     }
     void NotifyEnemyKilled();
+    void NotifyPlayerShotHit();
     void NotifyEventCompleted(bool bCombat);
     void NotifyPickup(int32 Kind, float Amount);
     void Announce(const FString &Message);
@@ -78,6 +79,8 @@ public:
     FString ThreatWarning, PilotReaction;
     FVector ThreatPosition = FVector::ZeroVector;
     float ThreatWarningSeconds = 0.f, PilotReactionSeconds = 0.f;
+    /** Counts down after a player shot connects, so the reticle can flash its hit state. */
+    float PlayerHitFlashSeconds = 0.f;
     TArray<FSSMenuEntry> Entries;
     int32 SelectedEntry = 0;
     ESSPanel Panel = ESSPanel::None;

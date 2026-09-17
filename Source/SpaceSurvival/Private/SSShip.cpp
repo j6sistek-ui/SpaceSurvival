@@ -209,6 +209,7 @@ void ASSShip::Tick(float Dt)
     auto &S = GI->Session;
     FireCooldown = FMath::Max(0.f, FireCooldown - Dt);
     ImpactCooldown = FMath::Max(0.f, ImpactCooldown - Dt);
+    FireVisualSeconds = FMath::Max(0.f, FireVisualSeconds - Dt);
     ShakeSeconds += Dt;
     if (Moored)
     {
@@ -408,6 +409,9 @@ void ASSShip::Fire()
     auto &S = GI->Session;
     const bool Cannon = S.run.weapon == SS::Weapon::HeavyCannon;
     FireCooldown = Cannon ? Tuning->CannonInterval : Tuning->LaserInterval;
+    // Long enough to stay lit between rapid-laser shots, short enough that one cannon shot does
+    // not hold the reticle open for most of a second.
+    FireVisualSeconds = .16f;
     const FVector Start = GetActorLocation() + GetActorForwardVector() * 240.f;
     const FVector Sight = AimDirection();
     const FVector SightOrigin = Camera ? Camera->GetComponentLocation() : Start;

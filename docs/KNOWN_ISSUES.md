@@ -992,6 +992,51 @@ restricted. Continuity *was* the defect, so the restriction may no longer be nec
 and should be made after they fly the fixed build rather than before.
 
 
+
+#### September 16 field continuity, second pass: two more causes, one of them mine
+
+An eight-agent diagnosis with adversarial verification was run over the same symptom after the recycle fix landed.
+It found two further causes. The verifiers also refuted a good deal of what the diagnosing agents claimed, including
+one agent that diagnosed code the fix had already replaced, so what follows is only what was checked by hand
+against the tree.
+
+**Cause two, and it is a regression I introduced earlier today.** `ASSSpaceScenery` takes its clutter budget as
+whatever is left of a shared 3072 instance cap: `Clamp(AreaClutterBudget, 0, 3072 - ss.DistantAsteroidCount)`.
+Commit `9dcd144` raised that cvar's default from 2048 to **3072**, which is the cap exactly, so the remainder is
+zero and **every cell has been building zero clutter ever since**. `AreaClutterBudget` is authored at 1024 and none
+of it was reaching the world. The irony is direct: that commit was called "Raise field density" and it silently
+switched off the only near-field system that is world-stable and direction-independent, which is precisely the
+content a player sees when they turn around.
+
+The count is back to 2048, which leaves the authored 1024. The density that raising it was meant to buy came from
+the recycle fix instead, which made instances that already existed visible rather than adding more. The remainder is
+now computed explicitly and **logs a warning when an authored budget resolves to nothing**, so this cannot recur
+silently. `SSSpaceSceneryAutomationTests` deliberately drives the starved case, so that test now declares the
+warning as expected rather than failing on it.
+
+**Cause three: hazards were retired by where the player was looking.** `ASSWorldBody::Tick` ended with
+
+```cpp
+if (FVector::DotProduct(GetActorLocation() - Ship->GetActorLocation(), Ship->GetActorForwardVector()) < -16000.f)
+    Destroy();
+```
+
+a live dot product against the ship's **current** forward vector, reached by every subclass: enemies, encounter
+beacons and pickups included. Turning retired everything that had been more than 16,000 ahead, in the frame the turn
+completed. **The magnitude claimed by the diagnosing agent was overstated and the verifier was right to refute it**:
+a body 10,000 ahead scores -10,000 after a 180 degree turn and survives; only bodies beyond the threshold are lost.
+It is a partial cull, not an annihilation. It is still wrong, because it contradicts the owner's stated model in
+which the danger around the player is one intensity rather than one direction. Retirement is now radial at 22,000,
+which is further than the old threshold, so nothing disappears sooner than it used to in any direction.
+
+**Still open, and a design question rather than a defect.** Admission is placed only along the ship's current
+forward vector, `Forward * (Lead + rand(0,5500)) + Right * rand(-2600,2600) + Up * rand(-1700,1700)`, a narrow
+window ahead. Keeping hazards once admitted is a fix; deciding whether they should also be *admitted* to the sides
+and behind is the owner's call, not an obvious bug.
+
+51 tests pass. Captures of the same scripted run at the turn frame show the three stages in order.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.

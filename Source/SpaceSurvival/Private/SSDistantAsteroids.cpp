@@ -8,8 +8,13 @@
 
 namespace
 {
+// 2048, not 3072. ASSSpaceScenery takes its own clutter budget as whatever is left of a shared 3072
+// instance cap, so setting this to the cap starves the only near-field system that is world-stable and
+// direction-independent, which is precisely the content a player sees when they turn around. The density
+// that raising this was meant to buy came instead from fixing the shell recycle, which made the instances
+// that already existed visible rather than adding more.
 TAutoConsoleVariable<int32>
-    DistantAsteroidCount(TEXT("ss.DistantAsteroidCount"), 3072,
+    DistantAsteroidCount(TEXT("ss.DistantAsteroidCount"), 2048,
                          TEXT("Visual-only distant asteroid count, clamped 0..3072. Does not alter hazards."),
                          ECVF_Scalability);
 constexpr double MinimumAnchorDistance = 32000.0;

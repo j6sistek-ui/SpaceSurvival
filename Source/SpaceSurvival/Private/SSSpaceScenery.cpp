@@ -227,8 +227,15 @@ void ASSSpaceScenery::RefreshCells()
     const int32 Preview = AreaPreview.GetValueOnGameThread();
     const int32 Variation = EffectiveVariation();
     const auto *FarCount = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
-    const int32 Budget =
-        FMath::Clamp(Look->AreaClutterBudget, 0, 3072 - FMath::Clamp(FarCount ? FarCount->GetInt() : 2048, 0, 3072));
+    // The two systems share one 3072 instance cap and this takes the remainder, so a distant count at the
+    // cap silently leaves nothing here. That happened once; say so rather than render an empty field.
+    const int32 Remaining = 3072 - FMath::Clamp(FarCount ? FarCount->GetInt() : 2048, 0, 3072);
+    const int32 Budget = FMath::Clamp(Look->AreaClutterBudget, 0, Remaining);
+    if (Look->AreaClutterBudget > 0 && Budget == 0)
+        UE_LOG(LogTemp, Warning,
+               TEXT("Scenery clutter starved: ss.DistantAsteroidCount leaves %d of the shared 3072 cap, so the "
+                    "authored budget of %d builds nothing."),
+               Remaining, Look->AreaClutterBudget);
     const FIntVector Center = CellAt(Followed->GetActorLocation() - OriginOffset, ValidCellSize(Look));
     if (Preview != LastPreview || Variation != LastVariation || Budget != LastClutterBudget)
     {
