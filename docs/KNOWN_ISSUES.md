@@ -1155,6 +1155,52 @@ too little, per the owner's own standing preference that harder and dialling dow
 dialling up is weak.
 
 
+
+#### September 17 the station target: what a pit stop looks like in this game
+
+The owner: the station is "an odd box in front of a bigger object, with little detail, despite tons of purchased
+assets... Make it fancy. Generate a mental target for what a space station pit stop should look like in this game,
+and don't stop until you have it." This is the target. Everything that follows is measured against it.
+
+**What it is in the fiction.** The exhale. The run is a field, an ambush, a wormhole, then this. It is the one lit,
+working thing in a dead field: a garage in space, not a city. Approaching it should feel like coming into harbour at
+night, and the eye should find it before the HUD does, because nothing else out there is lit.
+
+**From three kilometres, on approach.** One silhouette, not two objects. A dark mass with a single bright slot cut
+into it, a lane of blinking approach lights converging on the slot, and beacons on the extremities so the shape
+reads against the field. Warm light spills out of the mouth onto the surrounding hull. The body is four to six times
+the hangar in every dimension, so the hangar is a notch in the station and not the station itself: ship ten metres,
+hangar thirty-four, body one hundred and fifty to two hundred and fifty.
+
+**From three hundred metres, docking.** The mouth is cut into the body. The pilot flies under an overhang into a bay
+whose walls are the station's own structure, not a box parked in front of it. Gantry lights frame the mouth and the
+lane lights run on into the deck strip inside. **Visible equals solid**: the lit frame is exactly the collision gap,
+which retires the death-through-the-window defect by construction rather than by tuning.
+
+**Inside, the hangar.** Amber and dense, the concept video's beat. Overhead light strips. The ship parked centre
+stage under a gantry, a real service arm over it. A mezzanine walkway along both long walls with railings and
+equipment on it. Stacked containers, machinery and cabling filling the corners so the floor is never empty. Each
+service is a physical thing: Launch Control is a booth with screens, the Engineer has a workbench, Contracts is a
+wall of displays, Upgrades is a rack, and the new Paint Bay is a lift stand with a colour gantry over it. The loader
+robot and the scout drone work the floor as ambient crew. The open mouth at the far end frames the field you came
+in from, which is already the single best thing about the current room and stays.
+
+**What does not move.** The docking corridor and its admission volume, the deck collision, the thirty-four by
+twenty-eight metre floor, the service anchor positions, the save and service rules. All of it is gameplay-owned by
+`ASSStation` and pinned by automation. The redesign wraps it; it does not renegotiate it.
+
+**How it is judged.** From at least three angles every time, because a single view lets a floating object read as
+attached; and contact is checked from bounds, not from a picture. In game, the Station5 scripted route provides
+Approach, Docking, Idle, Services and Overview frames on one seed, so before and after are the same route.
+
+**Assets, from the catalogue rendered today.** `Space_Station` A is mislabelled and is an asteroid cluster. B is a
+ring-and-spire station, twelve units across, and is the strongest single silhouette in the set. 3 is two small rings.
+4 is the H-shaped hulk currently in use. `TheCorner` is a fifty-seven metre landing disc. `Container_04` is a hard
+case for interior dressing. The kitbash is **ten complete station designs in one Blender file, 1,268 objects, 12.7
+million triangles, sixty-three materials**, and is the asset the owner meant. Nanite is already in use in this
+project, so its density is usable rather than a problem.
+
+
 ## Review route when playtesting resumes
 
 **For the new area/gallery work:** open `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. Its separate development profile keeps the installed game's saves apart. First visit **ALIEN WORLD** in the hangar, inspect the showcase, Tab/Y to the asset layout and Esc/B back. Current scene quality and lead-owned remaining checks are at the top of this log. The older packaged route below remains for release-specific PT checks.
