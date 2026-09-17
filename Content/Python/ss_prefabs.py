@@ -164,15 +164,31 @@ def thumb_rel(proxy_rel):
     return 'thumbs/' + proxy_rel[:-4] + '.png' if proxy_rel.endswith('.glb') else None
 
 
-def build_catalog(export_proxies=True, limit=0):
-    """Scan every owned static mesh, classify it, measure it and (optionally) export a proxy.
+def export_thumbnail(asset, out_path, size=256):
+    """Write the engine's own textured preview of an asset; False when the editor module is not loaded.
+
+    The Blender renderer can only draw a proxy, and proxies carry no textures: a white wall panel looks like
+    every other white wall panel. USSThumbnailLibrary (SpaceSurvivalEditor) draws what the Content Browser
+    shows, so a part can be recognised.
+    """
+    library = getattr(u, 'SSThumbnailLibrary', None)
+    if library is None:
+        return False
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    return bool(library.export_asset_thumbnail(asset, str(out_path), size)) and out_path.exists()
+
+
+def build_catalog(export_proxies=True, limit=0, engine_thumbnails=True, force_thumbnails=False):
+    """Scan every owned static mesh, classify it, measure it and (optionally) export a proxy and a thumbnail.
 
     Returns the catalogue dict. Proxies already on disk are kept, so reruns are cheap. The catalogue is
     written from scratch, so whatever sits on disk is put back on every row: "proxy" whenever the GLB
-    exists, whether or not this run exports any, and "thumb" whenever Blender has rendered its
-    thumbnail. A rebuild therefore never costs the add-on or the gallery their pictures.
+    exists, whether or not this run exports any, and "thumb" whenever a thumbnail exists. Thumbnails the
+    engine has drawn are kept ("thumb_source": "unreal"); a clay one from Blender is replaced the first time
+    the engine can draw the real thing.
     """
     LIBRARY.mkdir(parents=True, exist_ok=True)
+    previous = {m['asset']: m for m in (load_catalog() or {}).get('meshes', [])}
     paths = _static_meshes()
     if limit:
         paths = paths[:limit]
@@ -207,8 +223,16 @@ def build_catalog(export_proxies=True, limit=0):
         if proxy.exists():
             row['proxy'] = str(proxy.relative_to(LIBRARY)).replace('\\', '/')
             thumb = thumb_rel(row['proxy'])
+            source = previous.get(path, {}).get('thumb_source', 'blender')
+            if thumb and engine_thumbnails and (force_thumbnails or source != 'unreal' or not (LIBRARY / thumb).exists()):
+                try:
+                    if export_thumbnail(mesh, LIBRARY / thumb):
+                        source = 'unreal'
+                except Exception as e:  # a part without a picture is still a part
+                    _log(f'thumbnail failed for {path}: {e}')
             if thumb and (LIBRARY / thumb).exists():
                 row['thumb'] = thumb
+                row['thumb_source'] = source
         meshes.append(row)
         if i % 50 == 0:
             _log(f'catalogued {i + 1}/{len(paths)} ({time.time() - t0:.0f}s)')

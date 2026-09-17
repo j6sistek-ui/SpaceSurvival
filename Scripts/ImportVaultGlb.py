@@ -7,7 +7,7 @@ Some Fab listings arrive as a single converted GLB under
 `User downloaded assets/VaultCache/FabLibrary/<Listing>-<hash>/glb/converted/` and are never seen by the
 project: they are not under /Game, so the catalogue, the Blender panel and the gallery cannot show them.
 This brings each one in as one static mesh with its materials and textures at
-/Game/SpaceSurvival/Licensed/Fab/<Listing>/SM_<Listing>, writes a receipt, and leaves the rest to
+/Game/Fab/<Listing>/SM_<Listing>, writes a receipt, and leaves the rest to
 Scripts/ExportPrefabCatalog.py. Licensed content stays out of git (the folder is ignored); the receipts
 in Artifacts/VaultImport say what was imported from what.
 
@@ -24,7 +24,9 @@ import unreal as u
 
 ROOT = Path(__file__).resolve().parents[1]
 VAULT = ROOT / 'User downloaded assets' / 'VaultCache' / 'FabLibrary'
-BASE = '/Game/SpaceSurvival/Licensed/Fab'
+# Outside /Game/SpaceSurvival on purpose: that tree is always cooked, and a 355 MB planet nobody has placed yet
+# does not belong in the tester download. Here a listing cooks only once a level or prefab references it.
+BASE = '/Game/Fab'
 OUT = ROOT / 'Artifacts' / 'VaultImport'
 LIB = u.EditorAssetLibrary
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
