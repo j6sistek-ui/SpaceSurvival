@@ -67,15 +67,18 @@ bool FSSHeroRoster::RunTest(const FString &)
         return false;
     if (!TestEqual(TEXT("Three heroes, in preference order"), Content->Heroes.Num(), 3))
         return false;
-    TestEqual(TEXT("The stand-in is asked about first"), AsInt(Content->Heroes[0].Identity),
-              AsInt(ESSHeroIdentity::Trooper));
-    TestEqual(TEXT("The shipped hero is second"), AsInt(Content->Heroes[1].Identity), AsInt(ESSHeroIdentity::Acornaut));
-    TestEqual(TEXT("The hero that is coming is last"), AsInt(Content->Heroes[2].Identity),
+    // The real hero is asked about first, so importing it is the whole swap. It is absent today, which is
+    // what leaves the stand-in on the deck; a roster that asked the stand-in first could never reach it.
+    TestEqual(TEXT("The hero that is coming is asked about first"), AsInt(Content->Heroes[0].Identity),
               AsInt(ESSHeroIdentity::Squirrel));
+    TestEqual(TEXT("The stand-in is second"), AsInt(Content->Heroes[1].Identity), AsInt(ESSHeroIdentity::Trooper));
+    TestEqual(TEXT("The shipped hero is last"), AsInt(Content->Heroes[2].Identity), AsInt(ESSHeroIdentity::Acornaut));
     TestEqual(TEXT("The pawns are built with the shipped hero"), AsInt(FSSHeroDefinition::Fallback().Identity),
               AsInt(ESSHeroIdentity::Acornaut));
+    TestFalse(TEXT("The hero that is coming is not installed, so it cannot be selected yet"),
+              Content->Heroes[0].Installed(ESSHeroSlot::Walker) || Content->Heroes[0].Installed(ESSHeroSlot::Pilot));
 
-    const FSSHeroDefinition Trooper = Content->Heroes[0];
+    const FSSHeroDefinition Trooper = Content->Heroes[1];
     TestEqual(TEXT("Trooper mesh path"), Trooper.MeshPath, FString(TrooperMesh));
     TestEqual(TEXT("Trooper walk clip"), Trooper.WalkClipPath, FString(TrooperWalk));
     TestEqual(TEXT("Trooper exit clip"), Trooper.DisembarkClipPath, FString(TrooperExit));
@@ -91,7 +94,7 @@ bool FSSHeroRoster::RunTest(const FString &)
                  Trooper.LeftFootBone == TEXT("foot_l") && Trooper.RightFootBone == TEXT("foot_r") &&
                  Trooper.LeftHandBone == TEXT("hand_l") && Trooper.RightHandBone == TEXT("hand_r"));
 
-    const FSSHeroDefinition Acornaut = Content->Heroes[1];
+    const FSSHeroDefinition Acornaut = Content->Heroes[2];
     TestEqual(TEXT("Acornaut mesh path"), Acornaut.MeshPath, FString(AcornautMesh));
     TestEqual(TEXT("Acornaut walk clip"), Acornaut.WalkClipPath, FString(AcornautWalk));
     TestEqual(TEXT("Acornaut pilot clip"), Acornaut.PilotClipPath, FString(AcornautPilot));
@@ -112,7 +115,7 @@ bool FSSHeroRoster::RunTest(const FString &)
     TestTrue(TEXT("The stand-in and the shipped hero disagree about what a hand and a foot are called"),
              Trooper.LeftHandBone != Acornaut.LeftHandBone && Trooper.LeftFootBone != Acornaut.LeftFootBone);
 
-    const FSSHeroDefinition Squirrel = Content->Heroes[2];
+    const FSSHeroDefinition Squirrel = Content->Heroes[0];
     TestEqual(TEXT("Squirrel stands on its own origin"), Squirrel.SoleOffset, 0.f, 0.f);
     TestEqual(TEXT("Squirrel scale"), Squirrel.MeshScale, 1.5f, 0.f);
     TestEqual(TEXT("Squirrel is scaled, not fitted"), Squirrel.FitHeight, 0.f, 0.f);
@@ -146,11 +149,13 @@ bool FSSHeroRoster::RunTest(const FString &)
     }
     TestEqual(TEXT("With nothing installed, selection lands on the hero the pawns were built with"),
               AsInt(Absent->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(FSSHeroDefinition::Fallback().Identity));
-    // Presence decides, not position: an installed hero behind two missing ones still wins the slot.
-    Absent->Heroes[2].MeshPath = Acornaut.MeshPath;
-    Absent->Heroes[2].WalkClipPath = Acornaut.WalkClipPath;
-    TestEqual(TEXT("Selection walks past the missing heroes to the installed one behind them"),
-              AsInt(Absent->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(ESSHeroIdentity::Squirrel));
+    // Presence decides, not position. Give the middle hero its real assets back while the one in front of
+    // it and the one behind it stay missing: it must win, and it is not the hero selection falls back to,
+    // so this cannot pass by accident. This is the shape the swap itself relies on.
+    Absent->Heroes[1].MeshPath = FString(TrooperMesh);
+    Absent->Heroes[1].WalkClipPath = FString(TrooperWalk);
+    TestEqual(TEXT("Selection walks past a missing hero to the installed one behind it"),
+              AsInt(Absent->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(ESSHeroIdentity::Trooper));
 
     // An empty roster is not a reason to have no hero at all.
     auto *Empty = NewObject<USSPhase1Data>();

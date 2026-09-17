@@ -46,6 +46,7 @@ These are paraphrases of the owner's reports, not reproduced findings. Report co
 | RPT-20260916-18 | The menus and prompts do not use input glyphs. | Needs owner retest / lead; ISS-05/13; ACT-08. B23 EasyInputPrompts is copied into `Content/EasyInputPrompts` (gitignored, same as every other licensed pack) and cooked via a narrow `DirectoriesToAlwaysCook` entry scoped to `Datas/IconsData` only, never the vendor demo content or the unused PlayStation/Switch icon sets. `ASSPlayerController::PlayerTick` now latches a keyboard/mouse-vs-gamepad `ESSInputFamily` from the same keys it already polls, updated above every early return (including the alien gallery's) at `SSGameMode.cpp:1476`. `ASSHUD::Glyph()` reads the vendor `PDA_KeysIconsMapping` Blueprint asset's `KeysIcons` map through reflection (no native mirror of its schema) and draws the matching texture, falling back to the key's own display name if the icon pack is absent from a build. Wired at the three single-key interact prompts (beacon, station service hint, ship reward hint); the long paragraph-style control lists in the Settings panel and event announcements still spell out both device names as plain text, since giving those true inline icon runs is the vendor's own RichText-decorator scope, not this pass. Gamepad glyphs default to the Xbox set; PS/Switch brand detection and real per-controller hardware identification are still undecided, per `IMPLEMENT.md`'s Windows-first scope. Editor build, 32 source checks and 51/51 automation pass; the icon textures rendering correctly at actual HUD scale in a live session has not been eyeballed. |
 | RPT-20260916-19 | The asteroids do not give the fill effect wanted; the owner's reference scenes use fog and rays of light. There are too few asteroids you can actually hit and the difficulty needs to be higher. The goal is to feel like there are only some right ways to go. | Open / lead; ISS-01/02/12; ACT-03. **Supersedes the September 16 owner hold on ACT-03 environment iteration.** Five owner reference images supplied. **Verified:** SSAmbientPresentation.cpp creates a volumetric fog component and then disables it, with density 0.000001, black inscattering and albedo, extinction scale 0 and SetVisibility(false). Next translate the references into concrete fog and light-shaft values without repeating the rejected excessive-fog trial, and design readable lanes rather than an even scatter. |
 | RPT-20260916-20 | The game is supposed to feel like survival and danger. A random rock flies near you and enemies jump in front of you and sit there. Asteroid impact has no effect visually or haptically. The owner wants visible ship damage and impacts that knock the ship around true to physics in a game way. | Open / lead; ISS-02/03/06/08; ACT-02/11. **Verified:** a repository-wide search finds ZERO uses of ForceFeedback, CameraShake or PlayHapticEffect anywhere in Source/, and no OnHit, NotifyHit or AddImpulse in gameplay. The ship is kinematic: SSShip.cpp integrates a custom Velocity and calls SetActorLocation, and a Forces accumulator already exists clamped to 4500. Damage is applied numerically through Session::ApplyDamage with no momentum change. Next decide the knockback model and the full feedback chain, and label which parts change survivability. |
+| RPT-20260917-01 | The hero floats high above the ship when leaving it: not a suitable animation. The ship has no door yet, so a character climbing out would phase through the hull anyway. **Owner direction, September 17:** stop work on the exit animation and log the gap. Leaving the ship should be the docking motion to landing, and when that animation finishes the hero simply appears outside the ship. | Open / lead; ISS-02/03; ACT-05/06. **Cause confirmed, not capture only:** `ASSWalker::Tick` drives the actor itself between 0.82 s and 1.6 s of the 2.4 s disembark and adds `FMath::Sin(Travel * PI) * 125.f` cm of arc to the interpolated position (`SSStation.cpp`), so the pawn is lifted 125 cm over the hull at the midpoint regardless of what the clip does. The frame the owner saw is `Artifacts/EndgameSoak/9856021450074177907d2a8789a67467/Exit3.png`. The authored clip is not the fault: the arc is the game's own motion. Next, on the owner's direction: replace the arc and the exit clip with docking-to-landing followed by placing the walker outside the ship, and keep the seated-to-standing pose handoff out of it until the ship has a door. **The squirrel hero's disembark clip is therefore not being authored**; its walk and seated clips are. |
 
 Additional owner reports (capture only; same unconfirmed build/device boundary):
 
@@ -1208,6 +1209,26 @@ also that the admission tick still stops at `MaximumActiveThreats` (24); only th
 `ss.HazardCount`, so 40 is not reachable yet. That is left alone until someone has flown the corrected field.
 
 
+
+#### September 17 the exit animation is a gap, on the owner's direction
+
+The owner watched the walker leave the ship and said it floats high above the hull, which it does. The 125 cm
+arc is the game's, not the clip's: `ASSWalker::Tick` lerps the pawn from the ship to the deck between 0.82 s and
+1.6 s and adds `sin(t * PI) * 125 cm` on top. With no door on the ship, any climb-out would pass through the hull,
+so there is nothing an animation can do here yet.
+
+**Direction taken, verbatim:** "let's not work about exit animation yet, we don't have a door on the ship yet, so
+it'll just phase through anyways. Exit ship just have docking motion to landing, and after animation finishes.
+appear outside of ship for now", and "log the animation gap for now".
+
+So the exit becomes: the ship's docking motion plays to landing, and when it finishes the hero is placed outside
+the ship, standing. No arc, no climb-out, no seated-to-standing pose handoff until there is a door to come out
+of. The squirrel's disembark clip is not being authored; its walk and its seated pilot clip are, because the
+owner's ask is the squirrel wearing its own animations. The pose-handoff machinery
+(`SSStationPoseTransition`) stays in the code and keeps its tests: it is correct, it is just not what this
+moment needs.
+
+Recorded as RPT-20260917-01. What replaces the arc is not written yet.
 
 #### September 17 the hero slot is described by data, and what the squirrel measured against it
 

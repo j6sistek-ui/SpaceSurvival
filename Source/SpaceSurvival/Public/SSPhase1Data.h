@@ -39,10 +39,13 @@ public:
         Encounters = {FSSEncounterDefinition(ESSEncounterKind::SalvageCache),
                       FSSEncounterDefinition(ESSEncounterKind::DistressCombat),
                       FSSEncounterDefinition(ESSEncounterKind::MobileDepot)};
-        // Preference order. The stand-in trooper is first while it is installed; the Acornaut is what
-        // this repository actually ships; the squirrel waits here, inert, until its assets are imported.
-        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Trooper), FSSHeroDefinition(ESSHeroIdentity::Acornaut),
-                  FSSHeroDefinition(ESSHeroIdentity::Squirrel)};
+        // Preference order: the first hero whose assets are installed wins. The squirrel is asked about
+        // first so that importing it is the whole swap; it is absent today, so the stand-in trooper still
+        // takes the deck and the Acornaut, which this repository actually ships, still takes the seat.
+        // Putting the trooper first would mean the real hero could never be selected while a stand-in
+        // that was only ever temporary sat in front of it.
+        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel), FSSHeroDefinition(ESSHeroIdentity::Trooper),
+                  FSSHeroDefinition(ESSHeroIdentity::Acornaut)};
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy")
     FSSEconomyContentTuning Economy;
