@@ -57,6 +57,65 @@ Example (one script at a time):
 
 Authoring backs up four private packages under `Artifacts/AsteroidDepth/<run>/`, preserves existing layout arrays and verifies vendor bytes. `-SSSkyResolution=4096` is an optional comparison; 2048 is the default. `AuthorSpaceVisualPass.py` also selects 2K BC6H for these three derivatives. A separate rendered check is required; authoring does not package or publish. Current evidence and open work remain in VALIDATION and KNOWN_ISSUES.
 
+## Station pit stop authoring (development project, unaccepted)
+
+Added 2026-09-17. The current source composes the station exterior as one body the hangar is cut into and dresses the hangar interior. Nothing here has been packaged or published, and the look is not owner-accepted: the installed package in `Artifacts/Windows` predates this work and still shows the old exterior. Generated outputs under `Artifacts/`, `.agent/local/` and `Content/SpaceSurvival/Licensed/` are git-ignored; only the scripts and the generated collision include are tracked. Open work stays in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+
+Run the steps **in order**, one completed process at a time:
+
+1. `Scripts/AuthorStationPitStop.py` - Blender 5.1 background process. Reads the owned station kitbash `.blend` from the vault cache (vendor geometry is read, never written), composes the body around the hangar volume, renders ten views and prints its checks; the last check requires 0 body vertices inside the hangar volume. Writes `Artifacts/StationPitStop/<tag>/StationPitStop.glb`, `PitStop.json` and the renders. `--tag` defaults to `default`; the current composition is `keel`.
+2. `Scripts/ImportStationPitStop.py -- --tag keel` - editor Python. Clears and reimports `/Game/SpaceSurvival/Licensed/StationPitStop/SM_StationPitStop` through Interchange as one combined static mesh, import scale 0.01 (the composition is authored in centimetres), Nanite on, no collision. It asserts size and X/Z centre against the receipt and records `y_sign` in `Import.json`; the glTF round trip mirrors Y, so the recorded value is -1. Success logs `STATION_PITSTOP_IMPORTED`.
+3. `python Scripts/GenerateStationPitStopBoxes.py --tag keel` - plain Python. Refuses to run without an `Import.json` matching the receipt's GLB hash, then writes the tracked `Source/SpaceSurvival/Private/SSStationPitStopBoxes.inl` (13 boxes) with that sign. Do not edit the include by hand; regenerate it.
+4. `./Scripts/Build.ps1 -Target Editor` - the include is compiled into `ASSStation` and the station tests, so rebuild after every regeneration. Without the imported asset the hub falls back to the previous exterior (`SM_StationExterior` plus one proxy cube).
+5. `python Scripts/PrepareStationPitStopLayout.py` - plain Python, no Unreal. Needs the private `OwnerStationAssets.json` and `EditableLayout.json` under `.agent/local/StationVisualPass` plus `Artifacts/Refresh/vendor-meshes.json`. Writes `.agent/local/StationVisualPass/PitStopLayout.json` (231 parts, 18 lights on 2026-09-17) and asserts the flight lane X -1900..1715, |Y|<=700, Z -10..967.5 stays empty.
+6. `Scripts/AuthorStationEditableLayout.py --layout-recipe <absolute path to PitStopLayout.json> --reset-layout` - editor Python. `--reset-layout` rebuilds `BP_StationVisualLayout` from the recipe (483 components from this one) after preserving the prior saved `.uasset` in its receipt directory. It discards manual changes from the active layout: read [Station editing](STATION_EDITING.md#initial-authoring-and-preserving-manual-work) and save/close the Blueprint first. A refused recipe now logs the rule that rejected it (duplicate name, NaN, zero scale, missing mesh, empty material slot, invalid material override, Blueprint compile) instead of returning nothing.
+7. `./Scripts/CaptureEndgame.ps1 -Editor -Scenario Station5 -CaptureVisuals` - rendered fixture check of the result; see [Additional isolated QA modes](#additional-isolated-qa-modes) for why both switches are needed.
+
+```powershell
+$blender = 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe'
+$ueCmd = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$root = 'C:/Users/j6sis/SpaceSurvival'
+& $blender --background --factory-startup --python "$root/Scripts/AuthorStationPitStop.py" -- --tag keel
+& $ueCmd "$root/SpaceSurvival.uproject" -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser "-ExecutePythonScript=$root/Scripts/ImportStationPitStop.py -- --tag keel"
+python Scripts/GenerateStationPitStopBoxes.py --tag keel
+./Scripts/Build.ps1 -Target Editor
+python Scripts/PrepareStationPitStopLayout.py
+& $ueCmd "$root/SpaceSurvival.uproject" -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser "-ExecutePythonScript=$root/Scripts/AuthorStationEditableLayout.py --layout-recipe $root/.agent/local/StationVisualPass/PitStopLayout.json --reset-layout"
+./Scripts/CaptureEndgame.ps1 -Editor -Scenario Station5 -CaptureVisuals
+```
+
+Headless editor runs share three gotchas:
+
+- **Absolute script path.** A relative `-ExecutePythonScript` path resolves against the engine `Binaries` folder, not the repository root. `Build.ps1` already passes absolute paths; do the same by hand.
+- **Script arguments travel inside the same value.** The engine must see `-ExecutePythonScript="<absolute script> <arguments>"`; the September 17 logs record exactly that form in `LogInit: Command Line`. The pit stop import, vault import and catalogue export read only what follows a bare `--`; `AuthorStationEditableLayout.py` uses argparse and takes its flags directly.
+- **`-DisablePlugins=UAssetBrowser`.** That third-party plugin crashed once at start-up in its `FExtFolderGatherer` thread (access violation, frame 0, before any project script ran). The headless runs on 2026-09-17 passed the switch; `Build.ps1` does not add it, so check for that frame before blaming a project script.
+
+In editor Python, `unreal.Rotator` positional order is (roll, pitch, yaw); pass `roll=`, `pitch=` and `yaw=` by keyword.
+
+## Prefab catalogue, thumbnails and vault imports
+
+Added 2026-09-17. [PREFAB_LIVE_LINK.md](PREFAB_LIVE_LINK.md) describes the prefab library, the **SS Prefabs** editor menu and the Blender add-on; these are its headless entry points. Everything generated lands under `Artifacts/PrefabLibrary` or `Artifacts/VaultImport` (git-ignored). Imported listings are licensed content and stay out of git; see the `ImportVaultGlb.py` note below for where they land, because one of the two locations is not ignored yet. Prefab recipes are tracked as `Prefabs/<Category>/<Name>.json`; none exist yet. The add-on under `Tools/SSLiveLink` is still being refactored, so treat that document as the authority for its current entry points.
+
+```powershell
+$blender = 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe'
+$ueCmd = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$root = 'C:/Users/j6sis/SpaceSurvival'
+& $ueCmd "$root/SpaceSurvival.uproject" -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser "-ExecutePythonScript=$root/Scripts/ImportVaultGlb.py"
+& $ueCmd "$root/SpaceSurvival.uproject" -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser "-ExecutePythonScript=$root/Scripts/ExportPrefabCatalog.py"
+& $blender --background --factory-startup --python "$root/Tools/SSLiveLink/render_thumbnails.py"
+python Tools/SSLiveLink/build_gallery.py
+& $ueCmd "$root/SpaceSurvival.uproject" -unattended -stdout -FullStdOutLogOutput -DisablePlugins=UAssetBrowser "-ExecutePythonScript=$root/Scripts/TestPrefabs.py"
+```
+
+- **`ImportVaultGlb.py`** imports each Fab listing that exists only as `User downloaded assets/VaultCache/FabLibrary/<Listing>-<hash>/glb/converted/*.glb` as one static mesh, with a receipt in `Artifacts/VaultImport`; rigged listings are forced static. The script committed in `8e90995` targets `/Game/SpaceSurvival/Licensed/Fab/<Name>/SM_<Name>` (git-ignored); a later 2026-09-17 edit changes the target to `/Game/Fab/<Name>/SM_<Name>` because `/Game/SpaceSurvival` is always cooked, and the ten meshes and receipts on disk are at that second location. `Content/Fab/` is git-ignored. An existing target is kept unless `-- --force`; `-- --only <text>` and `-- --skip <text>` filter by name. Of the eleven GLB-only listings in the vault on 2026-09-17, ten have import receipts and Space Station 4 is left alone because it was already imported as `SM_StationExterior`. Success logs `VAULT_GLB_IMPORTED`. Run it before the catalogue export so the new meshes are catalogued. Owned Unreal-format listings whose vault entry is only a launcher manifest cannot be imported this way; only the owner can add them through Fab/Epic.
+- **`ExportPrefabCatalog.py`** writes `Artifacts/PrefabLibrary/catalog.json` and glTF proxies under `proxies/<pack>/` (458 meshes on 2026-09-17). The first run takes minutes; existing proxies are kept, so reruns add only what is new. `-- --no-proxies` is the quick variant and `-- --limit N` bounds a trial. It needs the GLTFExporter plugin, which is enabled for the Editor target only. Success logs `PREFAB_CATALOG`. The editor equivalent is SS Prefabs > Rebuild Catalogue.
+- **Thumbnails come from the engine.** `ExportPrefabCatalog.py` writes each part's real textured preview through `USSThumbnailLibrary` (`Source/SpaceSurvivalEditor`): textures pinned resident, a full turn of camera yaws tried so one-sided walls face the viewer, drawn at 512 and averaged to 256, exposure lifted, flat `#1b1d22` backdrop. Rows record `"thumb_source": "unreal"` and are kept on later runs; `-- --force-thumbnails` redraws them all. The Blender renderer below is the fallback for a machine without the editor build: its proxies carry no textures, so its pictures are clay shapes.
+- **`render_thumbnails.py`** renders a 256x256 PNG per proxy into `Artifacts/PrefabLibrary/thumbs` in one Blender session and rewrites `catalog.json` with the `thumb` entries. Existing thumbnails are kept unless `--force`; `--limit N` and `--only <text>` go after the bare `--`. The last line printed is `THUMBNAILS_OK` with rendered/skipped/failed counts.
+- **`build_gallery.py`** is plain Python (no Blender, no Unreal) and writes the offline page `Artifacts/PrefabLibrary/index.html` from the catalogue and any prefab recipes; it fails clearly when no catalogue exists.
+- **`TestPrefabs.py`** runs in the unsaved start-up level: save-to-place round trip, live create/move/pull/remove and the rotator formula against the engine. It logs `PREFABS_SELFTEST_OK` or raises; that run passed on 2026-09-17.
+
+The live link uses the engine's Python remote execution, enabled in `Config/DefaultEngine.ini` with multicast 239.0.0.1:6766 bound to 127.0.0.1, so only an editor on this machine can be reached.
+
 ## Source checks
 
 ```powershell
@@ -70,7 +129,7 @@ python Scripts/TestFreshCheckout.py
 git diff --check
 ```
 
-Portable tests compile the domain and its tests under strict C++17 and ASan/UBSan. They do not compile Unreal adapters or exercise input, rendering or gameplay. Formatting without `-Check` changes source files. Capture the actual result and source revision; a listed command is not a pass record. Source-format validation writes its routine receipt to Saved/Validation rather than mutating historical source receipts. Fresh-checkout checks use an immutable Git export: uncommitted candidates are not included. The current implementation accepts only exact or complete uniform LF/CRLF forms for UTF-8 OBJ/MTL/JSON; original GLB/binary hashes remain exact.
+Portable tests compile the domain and its tests under strict C++17 and ASan/UBSan. They do not compile Unreal adapters or exercise input, rendering or gameplay. `TestCore.ps1` and `Format.ps1` both call `docker build` and `docker run`, so Docker Desktop must be running first; the formatter and GCC check images are cached locally, but the daemon still has to be up. Formatting without `-Check` changes source files. Capture the actual result and source revision; a listed command is not a pass record. Source-format validation writes its routine receipt to Saved/Validation rather than mutating historical source receipts. Fresh-checkout checks use an immutable Git export: uncommitted candidates are not included. The current implementation accepts only exact or complete uniform LF/CRLF forms for UTF-8 OBJ/MTL/JSON; original GLB/binary hashes remain exact.
 
 ## Unreal build, content and automation
 
@@ -179,7 +238,7 @@ Normal shell/settings menus pause flight. The depot now uses an aboard-ship magn
 
 ## Local saves
 
-Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 2 and reads version 1; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
+Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 3, which appends the four paint-bay choices (-1 for factory finish, 0-9 for a colour; out-of-range values are refused), and still reads versions 2 and 1 as the factory finish; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
 
 Save & Quit is available at stations. Continue consumes the suspension before exposing restored play; death persists XP/run identity and invalidates suspension. Unreadable account data is protected from overwrite and requires a known-good backup for recovery. Use isolated test profiles for failure tests and preserve existing personal saves.
 
@@ -214,6 +273,8 @@ For a normal-frame scripted benchmark, use `CaptureEndgame.ps1` without visual r
 ```
 
 `-Editor` uses the installed editor's uncooked game mode and current project DLL; omitting it selects the current packaged inner executable. Each launch owns a fresh GUID under Artifacts/EndgameSoak, records exact source/artifact/production-save identities and requires complete fixture output. Visual captures launch hidden with `-RenderOffscreen -ForceRes` and do not require focus. Runs without `-CaptureVisuals` still require foreground: focus the owned game window within 60 seconds and keep it foreground for the timing fixture. Station 5 defaults to 330 seconds timeout, Wave 10 to 240 seconds; cleanup only terminates the owned process. No build, install or package occurs in this wrapper.
+
+As of 2026-09-17 both switches matter for the station pit stop work. The default mode runs the packaged build in `Artifacts/Windows`, which predates that work and still shows the old exterior, so only `-Editor` (receipt mode `UncookedEditorGame`) renders the current source. Without `-CaptureVisuals` the wrapper opens a window that asks for focus, which an unattended run cannot give. Two `-Editor -Scenario Station5 -CaptureVisuals` runs reported success that day: `Artifacts/EndgameSoak/a495a8bb393243dfa7f9349e2d5df40f`, then `Artifacts/EndgameSoak/df3bbc149c764c9995700b5ae0e19182` after the lane/frame lights were dimmed and the gantry legs removed. They are rendered fixture evidence only: not natural play, not 60 FPS acceptance and not owner acceptance of the look.
 
 Current `-CaptureVisuals` source requires exactly **16 Station 5 images**: Flight, Climax, Wormhole, Approach, Docking, Exit0-Exit6, StationIdle, StationServices, StationOverview and CombatImpact. Wave 10 requires exactly four: Flight, Climax, Compound and Approach. The wrapper checks names, PNG dimensions and request metadata. StationServices and StationOverview use labeled fixture review cameras without changing possession; the other frames retain the normal viewport/HUD. CombatImpact must identify a live enemy-explosion effect 0.15-0.65 seconds after an actual weapon kill. Pose requests do not override animation, and requested exit times are not proof of the rendered pose.
 
