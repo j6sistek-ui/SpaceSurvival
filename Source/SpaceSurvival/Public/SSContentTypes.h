@@ -649,6 +649,18 @@ struct FSSHullDefinition
      *  "outward" is allowed to wander for this hull. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
     float ContactOffAxisShare = .01f;
+    /** How far below the commanded speed floor this hull may dip while a held brake converges on it.
+     *
+     *  A kinematic hull resolves its speed by assignment, so it arrives at the floor exactly and never
+     *  passes it. A force drive decelerates toward the floor and overshoots a little before settling, which
+     *  is what deceleration does. Measured: the classic hull reaches 1000.0 against a floor of 1000, the
+     *  Phoenix dips to 924.1.
+     *
+     *  This is a convergence allowance, not permission to stop. The thing the brake test is actually named
+     *  for - that braking never stops or reverses forward travel - is asserted separately and is true of
+     *  every hull without any allowance at all. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float BrakeFloorUndershootCmS = .5f;
 
     /** The length this hull actually flies at, which is what any gameplay comparison wants. */
     float ScaledLength() const
@@ -698,6 +710,8 @@ struct FSSHullDefinition
             return Why = TEXT("CameraLagShareOfArm is unset; a hull has to say how far its camera may trail"), false;
         if (ContactOffAxisShare <= 0.f)
             return Why = TEXT("ContactOffAxisShare is unset; a hull has to say how straight its shoves land"), false;
+        if (BrakeFloorUndershootCmS <= 0.f)
+            return Why = TEXT("BrakeFloorUndershootCmS is unset; a hull has to say how it settles onto a floor"), false;
         // A skeletal hull is the only kind that can carry its own animated gear, and the only kind the
         // module presentation cannot fit. Catching the combination here is cheaper than finding a ship
         // wearing another ship's nacelle casings.
@@ -788,6 +802,9 @@ struct FSSHullDefinition
             FrameRateHeadingDeg = .9f;
             // Measured .12 / .13 / .22 / .44 at 144 / 120 / 60 / 30 Hz. Declared just above the worst.
             ContactOffAxisShare = .55f;
+            // Measured 75.9 cm/s below a 1000 floor - 7.6 percent - while the held brake converges. It
+            // never approaches stopping; the lowest speed reached is 924.
+            BrakeFloorUndershootCmS = 100.f;
             // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
             // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
             // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this

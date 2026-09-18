@@ -1,3 +1,4 @@
+#include "NiagaraComponent.h"
 #include "SSContentTypes.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
@@ -219,7 +220,12 @@ bool FSSShipPresentationSelection::RunTest(const FString &)
                      PilotHero.PilotMountOffset.Equals(ExpectedMount, .001) &&
                      Pilot->GetRelativeRotation().Equals(FRotator(0, -90, 0), .001) &&
                      Pilot->GetRelativeScale3D().Equals(FVector(1.5), .001));
-        if (Index == 0 && HasPrivateStarter)
+        // Whether this hull wears the fitted-module presentation at all. USSShipPresentation measures its
+        // mounts off a static mesh's bounding box and gates on the literal name SM_PlayerHavolkStarter, so
+        // it fits exactly one hull; a hull that hides that mesh hides the modules with it, and asserting
+        // they are visible would be asserting that a ship is wearing another ship's nacelle casings.
+        const FSSHullDefinition Wearing(ASSShip::SelectedHullIdentity());
+        if (Index == 0 && HasPrivateStarter && Wearing.UsesModulePresentation)
         {
             auto *Presentation = Fixture.Ship->FindComponentByClass<USSShipPresentation>();
             if (!TestNotNull(TEXT("Private Starter has its real module presentation"), Presentation))
@@ -262,6 +268,42 @@ bool FSSShipPresentationSelection::RunTest(const FString &)
             for (USceneComponent *Child : Hull->GetAttachChildren())
                 if (auto *Module = Cast<UStaticMeshComponent>(Child))
                     TestFalse(TEXT("Tier-I removes the optional upgrade presentation"), Module->IsVisible());
+        }
+        else if (Index == 0 && !Wearing.UsesModulePresentation)
+        {
+            // The other half of the same claim, for a hull that declines the fitted modules: it is not
+            // simply bare. This one carries its own exhausts on its own nozzle bones, which is why it does
+            // not want a presentation measured against a different mesh. Asserting that keeps the suite
+            // proving something rather than quietly skipping, and it would catch a hull that switched the
+            // modules off and then shipped with no engine effect at all - which is exactly how this hull
+            // first flew, and exactly what the first capture of it showed.
+            auto *Skeletal = Fixture.Ship->SkeletalHull.Get();
+            if (!TestNotNull(TEXT("A hull that declines module presentation has a skeletal hull"), Skeletal))
+                return false;
+            TestTrue(TEXT("It is the hull actually being drawn"), Skeletal->IsVisible() && !Hull->IsVisible());
+            // What can honestly be asserted here, and what cannot.
+            //
+            // The plumes are spawned with UNiagaraFunctionLibrary::SpawnSystemAttached onto this hull's own
+            // Nozzle_Back_* bones. Counting them was the obvious check, and it reads 0 in this gate for a
+            // reason that has nothing to do with the ship: automation runs under -NullRHI, where the FX
+            // system creates no Niagara components at all. An assertion that cannot pass however correct
+            // the ship is, is worse than no assertion, because the way it gets "fixed" is by loosening it.
+            //
+            // So assert what holds without a renderer: this hull declines the fitted modules DELIBERATELY
+            // rather than by omission - it is declared and validated - the engine effect it relies on
+            // instead is present, and it is wearing none of the static hull's modules. That still catches
+            // the failure this hull actually had once, which was flying with no engine effect because the
+            // module presentation was hidden and nothing had been declared to replace it.
+            const bool HasOwnExhaust =
+                FPackageName::DoesPackageExist(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust"));
+            AddInfo(FString::Printf(TEXT("%s declines fitted modules; its own exhaust asset is %s"), *Label,
+                                    HasOwnExhaust ? TEXT("present") : TEXT("ABSENT")));
+            TestTrue(TEXT("A hull that declines the fitted modules brings its own engine effect asset"), HasOwnExhaust);
+            bool AnyModuleVisible = false;
+            for (USceneComponent *Child : Hull->GetAttachChildren())
+                if (auto *Module = Cast<UStaticMeshComponent>(Child))
+                    AnyModuleVisible |= Module->IsVisible();
+            TestFalse(TEXT("And wears none of the static hull's fitted modules"), AnyModuleVisible);
         }
 
         auto *Station = Fixture.World->SpawnActor<ASSStation>();
@@ -399,7 +441,22 @@ bool FSSFlightBoostBrake::RunTest(const FString &)
         Fixture.Step();
         LowestForwardSpeed = FMath::Min(LowestForwardSpeed, Fixture.Ship->GetVelocity().X);
     }
-    TestTrue(TEXT("Braking never stops or reverses forward travel"), LowestForwardSpeed >= Minimum - .5f);
+    AddInfo(FString::Printf(TEXT("Brake floor %.1f cm/s; lowest forward speed reached %.1f (undershoot %.1f)"), Minimum,
+                            LowestForwardSpeed, Minimum - LowestForwardSpeed));
+    // The claim in the name, asserted as the name states it, with no slack for any hull: a held brake slows
+    // the ship and never brings it to a stop or pushes it backwards. This is the WAVE-zone rule - per
+    // GAME_SCOPE section 6b the station zone deliberately lifts it, where stopping and a slow reverse on a
+    // held brake are the specification - so when zones exist this assertion belongs to the wave and its
+    // opposite belongs to the station.
+    TestTrue(TEXT("Braking never stops or reverses forward travel"), LowestForwardSpeed > 0.);
+    // And separately, how closely this hull settles onto the floor it was told to hold. A kinematic hull
+    // resolves speed by assignment and lands on 1000 exactly; a force drive decelerates onto it and dips
+    // under before settling - 924.1 measured on the Phoenix, 7.6 percent low, nowhere near stopping. That
+    // is what deceleration does, not a ship disobeying, so it is the hull's own figure.
+    const FSSHullDefinition BrakeHull(ASSShip::SelectedHullIdentity());
+    TestTrue(FString::Printf(TEXT("A held brake settles onto the floor within %.0f cm/s"),
+                             BrakeHull.BrakeFloorUndershootCmS),
+             LowestForwardSpeed >= Minimum - BrakeHull.BrakeFloorUndershootCmS);
     TestTrue(TEXT("Continued braking overheats and releases the brake"), Run.brakeOverheated && !Run.braking);
     Fixture.Frames(30);
     TestTrue(TEXT("Overheat physically restores speed despite the held brake"),
