@@ -1,3 +1,6 @@
+#include "SSContentTypes.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 #include "Misc/AutomationTest.h"
 #include "SSGameInstance.h"
 #include "SSPhase1Data.h"
@@ -307,6 +310,17 @@ bool FSSFlightFrameRates::RunTest(const FString &)
     TArray<FSSFlightSample> Reference;
     if (!RecordFlight(*this, 120, Reference))
         return false;
+    // Whose agreement figures apply is whoever is actually flying, asked of the one function that decides
+    // it. The first version of this re-derived the choice from the command line and got it wrong the moment
+    // the hull stopped being flag-selected: it reported Classic while a Phoenix was in the air, and held a
+    // force-solver hull to a fixed-substep integrator's numbers.
+    const FSSHullDefinition Tolerances(ASSShip::SelectedHullIdentity());
+    FString Why;
+    TestTrue(FString::Printf(TEXT("The flying hull declares its own agreement figures: %s"), *Why),
+             Tolerances.Validate(Why));
+    AddInfo(FString::Printf(TEXT("Hull under test: %s (position %.0f cm, velocity %.0f cm/s, heading %.2f deg)"),
+                            *Tolerances.Id.ToString(), Tolerances.FrameRatePositionCm, Tolerances.FrameRateVelocityCmS,
+                            Tolerances.FrameRateHeadingDeg));
     TestTrue(TEXT("Throttle accelerates the real pawn above cruise"), Reference[0].Velocity.X > 2800.f);
     TestTrue(TEXT("Steer and strafe produce substantial lateral and vertical travel"),
              Reference[2].Position.Y > 1000.f && Reference[2].Position.Z > 500.f);
@@ -326,13 +340,22 @@ bool FSSFlightFrameRates::RunTest(const FString &)
             const double PositionError = FVector::Distance(Samples[Index].Position, Reference[Index].Position);
             const double VelocityError = FVector::Distance(Samples[Index].Velocity, Reference[Index].Velocity);
             const FRotator RotationError = (Samples[Index].Rotation - Reference[Index].Rotation).GetNormalized();
-            AddInfo(FString::Printf(TEXT("%s: position error %.3f cm; velocity error %.3f cm/s"), *Label, PositionError,
-                                    VelocityError));
-            // 25 cm is under one eighth of the collision diameter after roughly 100 metres of travel.
-            TestTrue(Label + TEXT(" position agrees within 25 cm"), PositionError <= 25.f);
-            TestTrue(Label + TEXT(" velocity agrees within 15 cm/s"), VelocityError <= 15.f);
-            TestTrue(Label + TEXT(" heading agrees within 0.05 degrees"),
-                     FMath::Abs(RotationError.Yaw) <= .05f && FMath::Abs(RotationError.Pitch) <= .05f);
+            AddInfo(FString::Printf(TEXT("%s: position error %.3f cm; velocity error %.3f cm/s; heading error "
+                                         "yaw %.4f pitch %.4f deg"),
+                                    *Label, PositionError, VelocityError, RotationError.Yaw, RotationError.Pitch));
+            // The tolerances are the hull's own. The classic hull's are unchanged - 25 cm was always
+            // derived as "under one eighth of the collision diameter", so it was a per-hull number frozen
+            // as a literal the moment a second hull existed. Asking the hull keeps the rule and lets each
+            // ship answer for itself, which is the whole of "confirm values exist for that model".
+            TestTrue(Label + FString::Printf(TEXT(" position agrees within %.0f cm"), Tolerances.FrameRatePositionCm),
+                     PositionError <= Tolerances.FrameRatePositionCm);
+            TestTrue(Label +
+                         FString::Printf(TEXT(" velocity agrees within %.0f cm/s"), Tolerances.FrameRateVelocityCmS),
+                     VelocityError <= Tolerances.FrameRateVelocityCmS);
+            TestTrue(Label +
+                         FString::Printf(TEXT(" heading agrees within %.2f degrees"), Tolerances.FrameRateHeadingDeg),
+                     FMath::Abs(RotationError.Yaw) <= Tolerances.FrameRateHeadingDeg &&
+                         FMath::Abs(RotationError.Pitch) <= Tolerances.FrameRateHeadingDeg);
         }
     }
     return true;

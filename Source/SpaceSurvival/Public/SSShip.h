@@ -27,6 +27,11 @@ public:
      *  carried 120, so hazard contact was already being judged against a ship 15 cm wider than the one
      *  the docking sweeps used. That is survivable at 105 and is not survivable at all once a hull of a
      *  different size is installed, which is why this exists now rather than after the fact. */
+    /** Which hull this build flies. THE selection, in one place, because a test that re-derives it is a
+     *  second copy of a rule - and this project has paid for a duplicated constant three times already. A
+     *  fixture asking "whose tolerances apply" and BeginPlay asking "whose mesh do I load" must never be
+     *  able to disagree. */
+    static ESSHullIdentity SelectedHullIdentity();
     static float FlightCollisionRadius();
     /** The stick as ShipCore's gyro sees it: (yaw, pitch) stick to the plugin's (roll, pitch, yaw) body torque,
      *  axes and signs. Pure and static so the translation is pinned by a test that needs no physics world;

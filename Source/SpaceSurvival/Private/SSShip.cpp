@@ -221,6 +221,13 @@ float ASSShip::DockApproachRadius() const
                                 : 0.f;
     return FMath::Max(1200.f, NoseReach + 1200.f);
 }
+ESSHullIdentity ASSShip::SelectedHullIdentity()
+{
+    const FSSHullDefinition Phoenix(ESSHullIdentity::StellarPhoenix);
+    return FParse::Param(FCommandLine::Get(), TEXT("SSPhoenix")) && Phoenix.Installed()
+               ? ESSHullIdentity::StellarPhoenix
+               : ESSHullIdentity::Classic;
+}
 float ASSShip::FlightCollisionRadius()
 {
     // Read from the class default object, so it tracks the constructor and any hull swap that changes it
@@ -305,7 +312,7 @@ void ASSShip::BeginPlay()
     // and fitted upgrade modules off that hull, so ShipPresentationSelection went red on the one machine
     // that owns the pack. Opt in explicitly and the shipped ship is untouched everywhere.
     if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix);
-        FParse::Param(FCommandLine::Get(), TEXT("SSPhoenix")) && Hull.Installed())
+        SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix)
     {
         if (auto *HullSkeletal = LoadObject<USkeletalMesh>(nullptr, *Hull.MeshPath))
         {
@@ -333,12 +340,12 @@ void ASSShip::BeginPlay()
             // planform puts the reticle on your own ship and you cannot see what you are shooting at.
             // High eye, shallow tilt: the ship settles into the lower third where its top is visible, and
             // the centre stays clear sky.
-            HullChaseScale = 4.5f;
+            HullChaseScale = Hull.ChaseScale;
             // Lift and tilt the view. Dead astern is this hull's worst angle: from directly behind, a
             // 24.84 m ship is a slab and its swept wings are edge-on and invisible. Looking slightly down
             // on it shows the planform, which is where the wings actually read.
-            CameraBoom->SocketOffset = FVector(0, 0, 3000.f);
-            Camera->SetRelativeRotation(FRotator(-16.f, 0, 0));
+            CameraBoom->SocketOffset = FVector(0, 0, Hull.ChaseHeight);
+            Camera->SetRelativeRotation(FRotator(Hull.ChasePitch, 0, 0));
             // Three dials for looking at the thing, because finding a flattering chase angle is an eye
             // question and rebuilding between guesses costs minutes each. -SSChase multiplies the boom,
             // -SSChaseHeight moves the eye up or down, -SSChasePitch tilts it. All optional; with none

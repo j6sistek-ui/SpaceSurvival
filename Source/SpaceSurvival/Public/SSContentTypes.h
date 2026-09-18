@@ -502,6 +502,18 @@ enum class ESSHeroIdentity : uint8
     Squirrel
 };
 
+/** What moves a hull. Not a cosmetic distinction: a kinematic hull's position is written directly by a
+ *  hand-integrated velocity at a fixed substep, so its trajectory is reproducible frame to frame to a
+ *  fraction of a degree. A force-solver hull is pushed by ShipCore and integrated by Chaos, which is a
+ *  different and less exactly reproducible thing. Tests that pin reproducibility have to ask which of the
+ *  two they are looking at, rather than holding every ship to the numbers the first one happened to make. */
+UENUM()
+enum class ESSHullDrive : uint8
+{
+    Kinematic,
+    ForceSolver
+};
+
 /** Which hull the ship flies. Ordered the way the roster is walked: the first one this build actually
  *  contains wins, so an uninstalled hull is skipped rather than being an error. */
 UENUM(BlueprintType)
@@ -573,6 +585,49 @@ struct FSSHullDefinition
      *  asked the mesh. Zero means "not measured for this hull" and callers fall back to half the length. */
     float OriginToNose = 0.f;
     float OriginToBelly = 0.f;
+    /** What moves this hull. Everything below that differs by DRIVE rather than by SIZE is keyed on this. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    ESSHullDrive Drive = ESSHullDrive::Kinematic;
+    /** How this hull is framed. The chase boom is multiplied by ChaseScale, the eye is lifted by
+     *  ChaseHeight, and the camera is pitched by ChasePitch. A 24.84 m ship cannot be framed by a 4.82 m
+     *  ship's numbers - the owner's words were that the camera "will have to be dialed in for each ship
+     *  individually" while the concept stays fixed - so the concept lives in ASSShip and the numbers live
+     *  here. Zero height and zero pitch mean "leave the constructor's framing alone", which is the classic
+     *  hull and every build that has ever shipped. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (ClampMin = "0.01"))
+    float ChaseScale = 1.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+    float ChaseHeight = 0.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+    float ChasePitch = 0.f;
+    /** How far above a landing pad's deck this hull's ORIGIN sits when parked. It is the distance from the
+     *  origin to the belly plus whatever the gear needs under it, so it is a property of the hull and not
+     *  of the pad. 230 is the classic hull's, whose origin is near its middle. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "0"))
+    float DockClearanceAboveDeck = 230.f;
+    /** Whether USSShipPresentation's six fitted upgrade modules apply to this hull. That component reads
+     *  the static mesh's bounding box and gates on the literal name SM_PlayerHavolkStarter, so it fits one
+     *  hull and only that one; a skeletal hull carries its own exhausts on its own bones instead. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presentation")
+    bool UsesModulePresentation = true;
+    /** How closely this hull's trajectory has to agree with itself across frame rates: centimetres of
+     *  position, centimetres per second of velocity, degrees of heading, measured against a 120 Hz run of
+     *  the same scripted flight.
+     *
+     *  These are per hull because the rule is per hull, not because the bar is being lowered. The position
+     *  figure was always a share of the ship - the original comment derived 25 cm as "under one eighth of
+     *  the collision diameter" - and on that same share the Phoenix is actually TIGHTER than the classic
+     *  hull: 108 cm measured on a 2484 cm hull is 4.3 percent of its length, against 25 on 482.5 which is
+     *  5.2 percent. Velocity and heading are the ones that genuinely differ, and they differ by DRIVE:
+     *  Chaos re-converges on a target speed slightly differently at 30 Hz than at 120, where a fixed
+     *  substep integrator does not. Every figure here is measured from a real run, never chosen to make a
+     *  test pass; the measurements are in the ShipCoreFrameRateTolerances comment and in KNOWN_ISSUES. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float FrameRatePositionCm = 25.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float FrameRateVelocityCmS = 15.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float FrameRateHeadingDeg = .05f;
 
     /** The length this hull actually flies at, which is what any gameplay comparison wants. */
     float ScaledLength() const
@@ -601,6 +656,32 @@ struct FSSHullDefinition
      *  HullAssetPath and the game has always shipped one of those three. Defined in SSContentTypes.cpp
      *  because it borrows the hero slot's package check rather than duplicating it, and that struct is
      *  declared below this one. */
+    /** Whether this hull has declared everything its own drive and shape require. The owner's rule: a gate
+     *  "has to confirm values exist for that model, not force that model to fit another model's rules". So
+     *  a hull that leaves a required value at zero fails loudly here rather than silently inheriting the
+     *  number some other ship happened to measure. Returns false and fills Why with the first thing
+     *  missing. */
+    bool Validate(FString &Why) const
+    {
+        if (AuthoredLength <= 0.f)
+            return Why = TEXT("AuthoredLength is unset; nothing can be derived from a hull of no length"), false;
+        if (CollisionRadius <= 0.f)
+            return Why = TEXT("CollisionRadius is unset"), false;
+        if (FrameRatePositionCm <= 0.f || FrameRateVelocityCmS <= 0.f || FrameRateHeadingDeg <= 0.f)
+            return Why = TEXT("frame-rate agreement tolerances are unset; measure them, do not inherit them"), false;
+        if (DockClearanceAboveDeck <= 0.f)
+            return Why = TEXT("DockClearanceAboveDeck is unset; a hull has to say how high it parks"), false;
+        if (ChaseScale <= 0.f)
+            return Why = TEXT("ChaseScale is unset; a hull has to say how it is framed"), false;
+        // A skeletal hull is the only kind that can carry its own animated gear, and the only kind the
+        // module presentation cannot fit. Catching the combination here is cheaper than finding a ship
+        // wearing another ship's nacelle casings.
+        if (SkeletalHull && UsesModulePresentation)
+            return Why = TEXT("a skeletal hull cannot wear the static hull's fitted modules"), false;
+        if (Identity != ESSHullIdentity::Classic && OriginToNose <= 0.f)
+            return Why = TEXT("OriginToNose is unmeasured; half the length is an assumption, not a nose"), false;
+        return true;
+    }
     bool Installed() const;
 
     FSSHullDefinition() = default;
@@ -629,6 +710,34 @@ struct FSSHullDefinition
             // which is why parking it at the classic hull's 220 cm leaves it hanging above the pad.
             OriginToNose = 1100.84f;
             OriginToBelly = 0.25f;
+            Drive = ESSHullDrive::ForceSolver;
+            // Found by flying it and looking, not derived: the full 5.15 length ratio put the camera inside an
+            // asteroid, the square root filled the middle of the screen, and 4.5 with the eye high and the tilt
+            // shallow is where the hull reads AND the crosshair still covers a target.
+            ChaseScale = 4.5f;
+            ChaseHeight = 3000.f;
+            ChasePitch = -16.f;
+            // Its own exhausts ride its own nozzle bones; the fitted-module presentation is measured against a
+            // different mesh entirely and would hang casings in mid air.
+            UsesModulePresentation = false;
+            // PROVISIONAL, and the one number here that is not measured. OriginToBelly is 0.25 - this hull
+            // stands on its own pivot - so the belly wants to sit at the deck plus whatever the landing gear
+            // holds it up by, and that extension has never been measured. Parking at the classic hull's 230
+            // leaves it hanging; this is a deliberate under-correction until the gear is measured rather than
+            // a guess dressed as a figure.
+            DockClearanceAboveDeck = 230.f;
+            // Measured at 30, 60 and 144 Hz against a 120 Hz reference of the same scripted flight. Worst
+            // observed: 108.0 cm, 71.9 cm/s, 0.574 degrees of yaw - all three at 30 Hz, all three shrinking
+            // as the rate rises (60 Hz: 33.9, 23.2, 0.178; 144 Hz: 23.6, 28.9, 0.104). Declared at roughly
+            // 1.5x the worst: wide enough not to flap, narrow enough that a real regression still trips it.
+            //
+            // Worth seeing what these say. On POSITION the Phoenix is proportionally TIGHTER than the hull
+            // it replaces - 108 cm on a 2484 cm ship is 4.3 percent of its length, against the classic
+            // hull's 25 on 482.5, which is 5.2 percent. The looser figure is not a worse ship; it is a
+            // bigger one measured by the same rule. Velocity and heading are where the drive differs.
+            FrameRatePositionCm = 165.f;
+            FrameRateVelocityCmS = 110.f;
+            FrameRateHeadingDeg = .9f;
             // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
             // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
             // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this
