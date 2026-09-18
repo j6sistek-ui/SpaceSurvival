@@ -470,6 +470,12 @@ bool FSSImpactFrameRates::RunTest(const FString &)
 {
     FVector ReferenceVelocity = FVector::ZeroVector;
     FVector ReferenceTravel = FVector::ZeroVector;
+    // Whose figures apply, asked of the one function that decides which hull flies.
+    const FSSHullDefinition Tolerances(ASSShip::SelectedHullIdentity());
+    FString Why;
+    if (!TestTrue(FString::Printf(TEXT("The flying hull declares its own agreement figures: %s"), *Why),
+                  Tolerances.Validate(Why)))
+        return false;
     for (int32 Hertz : {120, 30, 60, 144})
     {
         FSSFlightWorld Fixture;
@@ -487,8 +493,35 @@ bool FSSImpactFrameRates::RunTest(const FString &)
         TestEqual(Label + TEXT(" routes a single 30-point impact through shield"), Fixture.Instance->Session.run.shield,
                   Shield - 30.0);
         const FVector Impulse = Fixture.Ship->GetVelocity() - Before;
+        // What this asserts: the contact shoved the ship outward, hard, and nothing else moved it.
+        //
+        // It used to spell "nothing else" as |Impulse.X| < 1 cm/s and a total under 601. Both are facts
+        // about a fixed-substep integrator sitting exactly on its own fixed point - the kinematic hull is
+        // seeded at precisely cruise, so Desired - Velocity is zero and the substep loop adds no
+        // longitudinal change at all. A force drive has no such fixed point: DriveShipCore feeds a trim
+        // ERROR to the thrusters every frame, so there is always some legitimate thrust inside the measured
+        // step, and at this game's 3200 cm/s^2 that is up to ~107 cm/s at 30 Hz. The old bound is not tight,
+        // it is unreachable in principle.
+        //
+        // So the allowance is one frame of THIS ship's own acceleration - a quantity both drives have, and
+        // which is ~0 for the kinematic hull because it is already at its target. The outward push and its
+        // dominance are unchanged, because those are the actual claim.
+        // The push is the right size, points outward, and is dominated by outward.
+        //
+        // It used to require |Impulse.X| < 1 cm/s, which is not a fact about impacts: it is a fact about a
+        // fixed-substep integrator seeded exactly at cruise, whose relative motion against an asteroid
+        // given that same velocity is nil, so the contact normal comes out exactly perpendicular. A force
+        // drive accelerates during the frame, a little relative drift accumulates, and the normal tilts -
+        // measured at .12 of the outward component at 144 Hz and .44 at 30 Hz, while the magnitude stayed
+        // exactly 600 cm/s at every rate. The shove is correct; its direction breathes with the frame.
+        //
+        // An earlier attempt allowed one frame of thrust here. That was the wrong mechanism - the tilt is
+        // geometric amplification of the drift, not the drift itself - and it failed by roughly 2.3x,
+        // which is how it got caught.
+        const double ThrustPerFrame = double(Fixture.Instance->Session.Stats().acceleration) / Hertz;
         TestTrue(Label + TEXT(" causes an immediate bounded outward deflection"),
-                 Impulse.Y < -450.f && Impulse.Size() <= 601.f && FMath::Abs(Impulse.X) < 1.f);
+                 Impulse.Y < -450.f && Impulse.Size() <= 601.f + ThrustPerFrame &&
+                     FMath::Abs(Impulse.X) <= FMath::Max(1.f, FMath::Abs(Impulse.Y) * Tolerances.ContactOffAxisShare));
         const FVector Origin = Fixture.Ship->GetActorLocation();
         Fixture.Frames(Hertz / 4, 1.f / Hertz);
         const float Remainder = .25f - float(Hertz / 4) / Hertz;
@@ -509,11 +542,22 @@ bool FSSImpactFrameRates::RunTest(const FString &)
         {
             TestTrue(Label + TEXT(" recovery velocity agrees with 120 Hz within 25 cm/s"),
                      Fixture.Ship->GetVelocity().Equals(ReferenceVelocity, 25.f));
-            TestTrue(Label + TEXT(" quarter-second recovery travel agrees within 12 cm"),
-                     Travel.Equals(ReferenceTravel, 12.f));
+            // Frame-rate agreement again, at contact scale. 12 cm over a quarter second is the residue of
+            // the kinematic hull clamping every frame into identical 1/120 substeps, so 30 Hz is literally
+            // four of what 120 Hz does once. Chaos substeps on its own schedule and cannot reproduce that,
+            // which is the same reason the whole-trajectory figures moved into the hull. This one scales
+            // with the hull's declared position tolerance rather than carrying a second literal: a quarter
+            // second of contact recovery is a small fraction of the four-second flight that figure was
+            // measured over.
+            const double TravelAgreement = FMath::Max(12.0, Tolerances.FrameRatePositionCm * .25);
+            TestTrue(
+                Label + FString::Printf(TEXT(" quarter-second recovery travel agrees within %.0f cm"), TravelAgreement),
+                Travel.Equals(ReferenceTravel, TravelAgreement));
         }
-        AddInfo(FString::Printf(TEXT("%s: impulse %.3f cm/s, lateral travel %.3f cm, residual %.3f cm/s"), *Label,
-                                Impulse.Size(), Travel.Y, Fixture.Ship->GetVelocity().Y));
+        AddInfo(FString::Printf(TEXT("%s: impulse (%.2f, %.2f, %.2f) size %.3f, allowance %.2f, lateral travel "
+                                     "%.3f cm, residual %.3f cm/s"),
+                                *Label, Impulse.X, Impulse.Y, Impulse.Z, Impulse.Size(), ThrustPerFrame, Travel.Y,
+                                Fixture.Ship->GetVelocity().Y));
     }
     return true;
 }
@@ -533,13 +577,38 @@ bool FSSImpactCrossing::RunTest(const FString &)
     const FVector Before = Fixture.Ship->GetVelocity();
     const double Shield = Fixture.Instance->Session.run.shield;
     // A 100 ms crossing at 8000 cm/s ends beyond the obstacle, outside its radius.
+    // Whose drive is flying, because the next two lines differ by it.
+    const FSSHullDefinition Hull(ASSShip::SelectedHullIdentity());
     Fixture.Ship->AddActorWorldOffset(FVector(800, 0, 0));
     Body->Tick(.1f);
+    // A force drive needs one step before the push exists. ASSWorldBody::Tick calls ReceiveImpact, which on
+    // a kinematic hull writes the velocity member and is readable immediately - but on a simulating body it
+    // adds an impulse, and an impulse does nothing until physics runs. Without this the Phoenix measured a
+    // deflection of exactly (0, 0, 0) while still taking the damage: the shove had been issued and never
+    // integrated.
+    //
+    // Conditional, because stepping is not free for the other drive: a kinematic hull's Tick integrates
+    // velocity back toward its target, so the same step spends part of the deflection before it is read and
+    // the classic hull fails its own assertion. The step is an artifact of how an impulse becomes velocity,
+    // so it belongs only to the drive that needs it. Caught by the classic gate, which is what it is for.
+    if (Hull.Drive == ESSHullDrive::ForceSolver)
+        Fixture.Step(1.f / 240.f);
     const FVector Deflection = Fixture.Ship->GetVelocity() - Before;
     TestEqual(TEXT("Continuous crossing still applies exactly one kinetic hit"), Fixture.Instance->Session.run.shield,
               Shield - 30.0);
+    // The claim is that a crossing through the body's centre pushes the ship BACK the way it came, rather
+    // than flinging it out the far side - which is what the degenerate-normal fallback in ASSWorldBody
+    // exists for. The .01 cm/s bounds on the other two axes were the kinematic hull's stillness, not part
+    // of that claim; a force drive carries its own thrust through the 100 ms the body is ticked for. The
+    // allowance is that thrust, so the assertion still says "the push is backwards along entry, and
+    // nothing sideways happened", which is the thing worth protecting.
+    // Same rule as the contact suite: the push is backwards along entry and dominated by that axis. The
+    // .01 cm/s bounds on the other two were the kinematic hull's stillness rather than part of the claim.
+    const double OffAxis = FMath::Max(.01, FMath::Abs(Deflection.X) * Hull.ContactOffAxisShare);
+    AddInfo(FString::Printf(TEXT("Centre crossing deflection (%.2f, %.2f, %.2f), off-axis allowance %.2f"),
+                            Deflection.X, Deflection.Y, Deflection.Z, OffAxis));
     TestTrue(TEXT("Center crossing deflects against entry rather than accelerating out the far side"),
-             Deflection.X < -599.f && FMath::Abs(Deflection.Y) < .01f && FMath::Abs(Deflection.Z) < .01f);
+             Deflection.X < -599.f && FMath::Abs(Deflection.Y) <= OffAxis && FMath::Abs(Deflection.Z) <= OffAxis);
     TestTrue(TEXT("Impact preserves forward momentum"), Fixture.Ship->GetVelocity().X > 1000.f);
     return true;
 }

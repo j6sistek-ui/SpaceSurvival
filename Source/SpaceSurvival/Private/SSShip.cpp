@@ -777,7 +777,21 @@ void ASSShip::ReceiveImpact(float Amount, FVector AwayFromContact)
         return;
     // A contact changes velocity once, in cm/s. Gravity remains an acceleration
     // integrated over time; treating a single impact that way weakened it at high FPS.
-    Velocity += AwayFromContact.GetSafeNormal() * FMath::Min(1400.f, Amount * 20.f);
+    const FVector Push = AwayFromContact.GetSafeNormal() * FMath::Min(1400.f, Amount * 20.f);
+    Velocity += Push;
+    // And give it to the body, which is the thing that moves under ShipCore. This is the third time the
+    // same gap has been found: GetVelocity read a member the solver never writes, collision damage came
+    // off a swept hit a simulating body never performs, and this - the only push hazards ever apply - was
+    // landing in a member the solver never reads. The Phoenix took the damage and did not move. A wave of
+    // asteroids would have hurt it and never once shoved it, which is the kind of defect that reads as
+    // "the collisions feel weightless" rather than as anything a test named.
+    //
+    // bVelChange is what makes it the same push rather than a similar one: the kinematic line above adds
+    // centimetres per second directly, and an impulse scaled by mass would be a different quantity wearing
+    // the same number. Hazard contact does not arrive through OnComponentHit - ASSWorldBody does its own
+    // analytic closest-approach test and calls this - so nothing else covers it.
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+        Collision->AddImpulse(Push, NAME_None, true);
 }
 void ASSShip::Fire()
 {

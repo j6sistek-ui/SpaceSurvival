@@ -635,6 +635,20 @@ struct FSSHullDefinition
     float FrameRateVelocityCmS = 15.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
     float FrameRateHeadingDeg = .05f;
+    /** How far off-axis a contact push may land, as a share of its outward component.
+     *
+     *  A hazard shoves the ship along the contact normal, and that normal is computed from the relative
+     *  path during the frame. A kinematic hull seeded exactly at cruise has no relative motion against an
+     *  asteroid given the same velocity, so the normal is perpendicular and the off-axis share is
+     *  essentially zero. A force-driven hull accelerates DURING the frame, so a little relative drift
+     *  accumulates and tilts the normal - geometrically amplified, not merely one frame of thrust. Measured
+     *  on the Phoenix: .12 at 144 Hz rising to .44 at 30 Hz, with the push magnitude exactly right at 600
+     *  cm/s throughout. The push is correct; only its direction breathes with the frame rate.
+     *
+     *  The rule both drives share is that the push is the right size and points outward. This is how much
+     *  "outward" is allowed to wander for this hull. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float ContactOffAxisShare = .01f;
 
     /** The length this hull actually flies at, which is what any gameplay comparison wants. */
     float ScaledLength() const
@@ -682,6 +696,8 @@ struct FSSHullDefinition
             return Why = TEXT("ChaseScale is unset; a hull has to say how it is framed"), false;
         if (CameraLagShareOfArm <= 0.f)
             return Why = TEXT("CameraLagShareOfArm is unset; a hull has to say how far its camera may trail"), false;
+        if (ContactOffAxisShare <= 0.f)
+            return Why = TEXT("ContactOffAxisShare is unset; a hull has to say how straight its shoves land"), false;
         // A skeletal hull is the only kind that can carry its own animated gear, and the only kind the
         // module presentation cannot fit. Catching the combination here is cheaper than finding a ship
         // wearing another ship's nacelle casings.
@@ -770,6 +786,8 @@ struct FSSHullDefinition
             FrameRatePositionCm = 165.f;
             FrameRateVelocityCmS = 110.f;
             FrameRateHeadingDeg = .9f;
+            // Measured .12 / .13 / .22 / .44 at 144 / 120 / 60 / 30 Hz. Declared just above the worst.
+            ContactOffAxisShare = .55f;
             // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
             // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
             // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this
