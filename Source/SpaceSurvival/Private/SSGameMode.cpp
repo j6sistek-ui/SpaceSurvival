@@ -653,17 +653,23 @@ void ASSGameMode::Tick(float Dt)
     }
     if (S.run.phase == SS::Phase::Approach && Ship && Hub)
     {
-        // Admission is still judged against the bay, and the ship is still flown down the same inbound lane
-        // it always was - the pad sits on that centreline, between the arriving ship and the mouth, so
-        // stopping there is the same approach ending earlier rather than a different approach. The rules
-        // that decide whether to offer the assist at all (come in level, centred, through the mouth) are
-        // deliberately left alone: on an open pad half of them stop meaning anything - a vertical drop onto
-        // a landing pad is not an illegal roof dive - and re-deriving them is its own piece of work, not a
-        // line to change on the way past.
-        const FVector ToDock = Hub->DockPosition() - Ship->GetActorLocation();
-        if (ToDock.Size() < 1200.f &&
-            FVector::DotProduct(Ship->GetActorForwardVector(), ToDock.GetSafeNormal()) > .45f &&
-            Hub->CanAssistDocking(Ship) && S.BeginDocking())
+        // Admission is proximity to the PAD and a clear path to it, from any heading. The old rule also
+        // required Dot(forward, toDock) > .45, which said "come in level, centred, through the hangar
+        // mouth" - a corridor. Against an open pad that is not a safety rule, it is an arbitrary one: a
+        // ship descending vertically onto a landing pad is landing, not diving through a roof. The owner
+        // asked that you not be forced to approach a certain way, so heading is no longer part of the
+        // decision. What remains is the part that was always physical - whether this hull can actually
+        // get there without hitting anything.
+        const FVector ToDock = Hub->PadDockPosition() - Ship->GetActorLocation();
+        // Close enough, slow enough, and able to get there. Speed is a real condition rather than dressing:
+        // without it you could hold full thrust through the pad and still be handed a landing, which is the
+        // one way an approach with no heading rule could feel like nothing at all. The threshold is this
+        // run's own cruise speed, so it scales with the Engine upgrade instead of going stale, and it lands
+        // where the owner put it - you cannot dock boosting, you can dock at a normal cruise or slower.
+        // This is the intended dial; the number is expected to come down once it has been flown.
+        const float ApproachSpeed = Ship->GetVelocity().Size();
+        if (ToDock.Size() < 1200.f && ApproachSpeed <= float(S.Stats().speed) && Hub->CanAssistDocking(Ship) &&
+            S.BeginDocking())
         {
             Ship->SetDockingTarget(Hub->PadDockPosition(), Hub->GetActorRotation());
             Announce(TEXT("Docking assistance engaged. Welcome to port."));

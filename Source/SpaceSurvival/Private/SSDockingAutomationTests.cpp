@@ -131,16 +131,34 @@ bool FSSDockingAdmission::RunTest(const FString &)
     FSSDockingWorld F;
     if (!F.Initialize(*this))
         return false;
-    // The station presentation regression checks the 16 boundary/deck cubes.
-    // Service consoles and crates also collide; exercise admission physics here.
-    F.Reject(*this, TEXT("Roof dive"), FVector(0, 0, 1000), FVector(850, 0, -780));
-    F.Reject(*this, TEXT("Rear wall approach"), FVector(1850, 0, 220), FVector(-1, 0, 0));
-    F.Reject(*this, TEXT("Side entry"), FVector(350, 800, 220), FVector(500, -800, 0));
-    F.Reject(*this, TEXT("Flight body crosses lane edge"), FVector(-150, 650, 220), FVector(1000, -650, 0));
-    F.Reject(*this, TEXT("Below deck"), FVector(-150, 0, 40), FVector(1000, 0, 180));
-    F.Reject(*this, TEXT("Outside unchanged 12 metre band"), FVector(-400, 0, 220), FVector(1, 0, 0));
-    F.Reject(*this, TEXT("Facing away from dock"), FVector(-150, 0, 220), FVector(-1, 0, 0));
-    F.Reject(*this, TEXT("Aimed at dock but not inbound"), FVector(750, 550, 220), FVector(100, -550, 0));
+    // This suite used to pin a corridor: eight ways of arriving, each refused for not being "level, centred
+    // and through the hangar mouth". Docking now happens at an exterior pad, and the rule for it is that
+    // you are not forced to approach a certain way - so most of those refusals describe a game that no
+    // longer exists. Worse, every one of them would still have passed, on distance alone, while its name
+    // went on claiming to test heading and lane discipline. That is the failure mode where a suite stays
+    // green and stops meaning anything, so the cases are re-derived rather than re-pointed.
+    //
+    // Two things are actually still true of admission, and they are what is tested now: you have to be near
+    // the pad, and your hull has to be able to reach it without hitting something. Heading is not a rule any
+    // more, which is why the four headings below are ADMITTED rather than refused.
+    const FVector Pad(ASSStation::PadCenterX, 0, 220);
+    for (const auto &Case : {TPair<FVector, FVector>(Pad + FVector(-900, 0, 0), FVector(1, 0, 0)),
+                             TPair<FVector, FVector>(Pad + FVector(0, 0, 900), FVector(0, 0, -1)),
+                             TPair<FVector, FVector>(Pad + FVector(0, 900, 0), FVector(0, -1, 0)),
+                             TPair<FVector, FVector>(Pad + FVector(700, 0, 0), FVector(-1, 0, 0))})
+    {
+        F.Instance->Session.run.phase = SS::Phase::Approach;
+        F.Instance->Session.run.phaseDuration = 0.0;
+        F.Place(Case.Key, Case.Value);
+        F.Mode->Tick(0.f);
+        TestTrue(TEXT("Any heading is admitted near the pad, including straight down and from behind"),
+                 F.Instance->Session.run.phase == SS::Phase::Docking);
+    }
+    F.Instance->Session.run.phase = SS::Phase::Approach;
+    F.Instance->Session.run.phaseDuration = 0.0;
+    // Out of range stays out of range, whichever way it points.
+    F.Reject(*this, TEXT("Beyond the approach range of the pad"), Pad + FVector(-1900, 0, 0), FVector(1, 0, 0));
+    F.Reject(*this, TEXT("Far side of the station"), FVector(1850, 0, 220), FVector(-1, 0, 0));
 
     auto *Obstacle = F.World->SpawnActor<AActor>();
     if (!TestNotNull(TEXT("Create temporary swept-clearance obstacle"), Obstacle))
@@ -153,23 +171,23 @@ bool FSSDockingAdmission::RunTest(const FString &)
     Box->SetCollisionObjectType(ECC_WorldStatic);
     Box->SetCollisionResponseToAllChannels(ECR_Block);
     Box->RegisterComponent();
-    Obstacle->SetActorLocationAndRotation(F.Hub->GetActorTransform().TransformPosition(FVector(350, 160, 220)),
+    Obstacle->SetActorLocationAndRotation(F.Hub->GetActorTransform().TransformPosition(Pad + FVector(-450, 160, 0)),
                                           F.Hub->GetActorRotation());
-    F.Place(FVector(-150, 0, 220), FVector(1, 0, 0));
+    F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
     FHitResult Hit;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockingRegression), false, F.Ship);
     TestFalse(
         TEXT("Obstacle misses the flight center line"),
-        F.World->LineTraceSingleByChannel(Hit, F.Ship->GetActorLocation(), F.Hub->DockPosition(), ECC_Pawn, Query));
+        F.World->LineTraceSingleByChannel(Hit, F.Ship->GetActorLocation(), F.Hub->PadDockPosition(), ECC_Pawn, Query));
     TestTrue(TEXT("Actual flight sphere catches the offset obstacle"),
-             F.World->SweepSingleByChannel(Hit, F.Ship->GetActorLocation(), F.Hub->DockPosition(), FQuat::Identity,
+             F.World->SweepSingleByChannel(Hit, F.Ship->GetActorLocation(), F.Hub->PadDockPosition(), FQuat::Identity,
                                            ECC_Pawn, F.Ship->Collision->GetCollisionShape(), Query) &&
                  Hit.GetActor() == Obstacle);
-    F.Reject(*this, TEXT("Swept body blocked despite clear center line"), FVector(-150, 0, 220), FVector(1, 0, 0));
+    F.Reject(*this, TEXT("Swept body blocked despite clear center line"), Pad + FVector(-900, 0, 0), FVector(1, 0, 0));
     Obstacle->SetActorEnableCollision(false);
     Obstacle->Destroy();
 
-    F.Place(FVector(-150, 0, 220), FVector(1, 0, 0));
+    F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
     const FVector AdmissionPosition = F.Ship->GetActorLocation();
     F.Mode->Tick(0.f);
     TestTrue(TEXT("Centered inbound lane admits the actual rotated station"),
@@ -211,7 +229,7 @@ bool FSSContractArrivalFeedback::RunTest(const FString &)
         Run.contractProgress = Case == 0 ? 5 : Run.contractTarget;
         Run.contractResolved = false;
         Run.credits = Run.totalCreditsEarned = 300;
-        F.Place(FVector(-150, 0, 220), FVector(1, 0, 0));
+        F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
         F.Mode->Tick(0.f);
         if (!TestTrue(TEXT("Contract arrival uses actual docking admission"), Run.phase == SS::Phase::Docking))
             return false;
@@ -264,7 +282,7 @@ bool FSSStationChaseCamera::RunTest(const FString &)
     FSSDockingWorld F;
     if (!F.Initialize(*this))
         return false;
-    F.Place(FVector(-150, 0, 220), FVector(1, 0, 0));
+    F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
     F.Mode->Tick(0.f);
     F.Mode->Tick(3.01f);
     auto *Walker = Cast<ASSWalker>(F.Controller->GetPawn());

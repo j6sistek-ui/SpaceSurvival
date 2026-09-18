@@ -187,8 +187,8 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SSJourneyDockApproach), false, Ship);
     FHitResult Hit;
     const FVector Forward = Hub->GetActorForwardVector();
-    const FVector Dock = Hub->DockPosition();
-    Test.TestFalse(TEXT("Real station corridor admits the ship before assistance"),
+    const FVector Dock = Hub->PadDockPosition();
+    Test.TestFalse(TEXT("The pad approach is clear before assistance"),
                    Fixture.World->SweepSingleByObjectType(
                        Hit, Dock - Forward * 3000.f, Dock - Forward * 1250.f, FQuat::Identity, StaticObjects,
                        FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius()), Query));

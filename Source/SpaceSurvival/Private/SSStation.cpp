@@ -140,12 +140,18 @@ bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
         return false;
     const float Radius = Ship->Collision->GetScaledSphereRadius() / SmallestScale;
     const FVector Local = HubTransform.InverseTransformPosition(Ship->GetActorLocation());
-    // BuildHub's split wall ends at X=-1675 with a 1400 cm opening. Keep the
-    // complete flight body above the deck (-10) and below the bay beams (967.5).
-    // Admission is on the inbound side of the dock; roof/rear/side dives retain control.
-    if (Local.X < -1675.f || Local.X >= 850.f || FMath::Abs(Local.Y) > 700.f - Radius || Local.Z < -10.f + Radius ||
-        Local.Z > 967.5f - Radius ||
-        FVector::DotProduct(Ship->GetActorForwardVector(), GetActorForwardVector()) <= .45f)
+    // This used to be a corridor: the body had to sit inside the hangar mouth (X -1675..850, |Y| <= 700,
+    // Z -10..967.5) AND be pointed along the station's own forward. That was the real gate - the heading
+    // test in ASSGameMode was only ever the second half of it - and it is what made docking something you
+    // could only do by flying a particular line through a particular hole.
+    //
+    // Docking is at an open exterior pad now, and the rule for it is that you are not forced to approach a
+    // certain way. So no box and no heading. Two physical things survive, because they are about whether
+    // the ship can be there at all rather than about how it chose to arrive:
+    //   - the whole flight body has to be clear above the pad deck, not buried in it or under the station
+    //   - and the swept body has to actually reach the dock point without hitting anything
+    // Range is the caller's business: ASSGameMode admits within 1200 cm of PadDockPosition.
+    if (Local.Z < PadDeckTop + Radius)
         return false;
     FHitResult Hit;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockAdmission), false, Ship);
@@ -153,7 +159,7 @@ bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
     // Check the actual flight collision body, including the physical station. Do not
     // admit a path merely because its center line misses a rib or another blocker.
     return !GetWorld()->SweepSingleByChannel(
-        Hit, Ship->GetActorLocation(), DockPosition(), Ship->Collision->GetComponentQuat(),
+        Hit, Ship->GetActorLocation(), PadDockPosition(), Ship->Collision->GetComponentQuat(),
         Ship->Collision->GetCollisionObjectType(), Ship->Collision->GetCollisionShape(), Query, Responses);
 }
 bool ASSStation::BuildEditableLayout()
