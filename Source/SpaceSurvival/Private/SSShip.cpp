@@ -394,6 +394,13 @@ void ASSShip::BeginPlay()
     UpdateEngineMix();
     EngineAudio->Play();
     Velocity = GetActorForwardVector() * Tuning->CruiseSpeed;
+    // And give the same cruise to the body, when there is one. GetVelocity reads the physics body under
+    // ShipCore, so seeding only the member above left the ship reporting a dead stop at BeginPlay while
+    // looking correct in every other respect - the Director spawn lead, the enemy aim lead and eleven
+    // flight tests all ask this question in the first frame. The -SSPhoenix flag hid it; making the hull
+    // the default is what surfaced it.
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+        Collision->SetPhysicsLinearVelocity(Velocity);
 }
 void ASSShip::SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake)
 {

@@ -465,6 +465,9 @@ void ASSGameMode::EnterStation()
                                                                      Hub->GetActorRotation(), &SeatedPose);
         ensureMsgf(!ClimbsOut || ExitStarted, TEXT("Required authored disembark assets are unavailable."));
         Ship->FinishDocking();
+        // Down. The marker has done its job and an indicator that outlives the landing is just a decal on
+        // the deck, so it goes out the moment the ship is parked rather than staying lit underneath it.
+        Hub->ShowPadIndicator(false);
         // Keep the outgoing camera's last view while blending, rather than snapping on possession.
         PC->SetViewTargetWithBlend(Walker, ExitStarted ? ASSWalker::DisembarkDuration : .4f, VTBlend_Cubic, 0.f, true);
     }

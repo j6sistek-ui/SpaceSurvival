@@ -101,6 +101,17 @@ void ASSStation::BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hul
                              TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan"), false);
         Kerb->ComponentTags.Add(TEXT("StationLandingKerb"));
     }
+    // Where to put it down. A lit disc on the deck at the dock point, so the pad reads as a place to aim
+    // for rather than a grey square, and so a pilot can see where the ship will end up before committing.
+    // Built from the engine's own cylinder and the cyan material the arch and the pad kerbs already use -
+    // no new asset, nothing imported. It is flattened rather than scaled as a plane so it reads from a low
+    // angle on approach as well as from above.
+    PadIndicator = AddMesh(FVector(PadCenterX, 0, PadDeckTop + 3.f), FVector(18.f, 18.f, .04f),
+                           TEXT("/Engine/BasicShapes/Cylinder.Cylinder"),
+                           TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan"), false);
+    PadIndicator->SetCastShadow(false);
+    PadIndicator->SetCanEverAffectNavigation(false);
+    PadIndicator->ComponentTags.Add(TEXT("StationPadIndicator"));
     if (bHome)
         return;
     // A pit stop's worth of services where the ship actually is, rather than making the player walk inside
@@ -512,6 +523,11 @@ void ASSStation::ShowBayShip(bool Visible)
 {
     if (BayShip)
         BayShip->SetVisibility(Visible);
+}
+void ASSStation::ShowPadIndicator(bool Visible)
+{
+    if (PadIndicator)
+        PadIndicator->SetVisibility(Visible);
 }
 ESSPanel ASSStation::NearestService(FVector Position, FString &Label) const
 {

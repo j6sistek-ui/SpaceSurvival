@@ -41,6 +41,9 @@ public:
     TSoftObjectPtr<UStaticMesh> ShellAsset;
     void SetBayShip(int32 ShipKind);
     void ShowBayShip(bool Visible);
+    /** The landing marker on the pad. Lit while the pad is waiting for a ship, dark once one is sitting on
+     *  it - an indicator that stays up after you have landed is just a decal. */
+    void ShowPadIndicator(bool Visible);
     void RefreshPaint();
     bool CanAssistDocking(const ASSShip *Ship) const;
     virtual void Tick(float DeltaSeconds) override;
@@ -123,6 +126,8 @@ private:
     TObjectPtr<UStaticMeshComponent> ServiceArm;
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> BayShip;
+    UPROPERTY()
+    TObjectPtr<UStaticMeshComponent> PadIndicator;
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> VendorHead;
     UPROPERTY()
