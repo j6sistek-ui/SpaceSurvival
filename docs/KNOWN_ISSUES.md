@@ -1210,6 +1210,64 @@ also that the admission tick still stops at `MaximumActiveThreats` (24); only th
 
 
 
+#### September 18 flight moves to Ship Core, and what the plugin does not tell you
+
+**Owner direction, verbatim:** "use ship core 100% nothing i have today is good. at least i didn't test the
+latest if its used at all.. but all flight mechanics use ship core." Also: the Stellar Phoenix shuttle is
+the new main ship, landing gear is automatic on the docking button rather than a separate control, the hero
+must be able to walk into the ship and sit in the pilot chair, and the station gets a landing zone OUTSIDE
+it rather than the ship flying into the bay.
+
+**Why this is a large change rather than a swap.** `ASSShip` is fully kinematic: a `USphereComponent` root
+with `QueryOnly` collision, a hand-integrated `Velocity`, a fixed 1/120 loop and `AddActorWorldOffset` with
+a sweep. Ship Core is force-based on a simulating rigid body - `UThrusterManagerComp` casts the owner's root
+to a `UPrimitiveComponent`, reads `GetMass()` and calls `AddForce`. Nothing in this project has ever used
+rigid-body physics; a grep for `SetSimulatePhysics`, `AddImpulse` and `OnComponentHit` across
+`Source/SpaceSurvival` returns nothing. So about a third of `SSShip.cpp` is replaced, and it is the
+load-bearing third.
+
+**Step zero was invisible.** The plugin has been `"Enabled": true` in the uproject for some time, so it
+compiled - but `SpaceSurvival.Build.cs` never listed it, meaning no game file could include its headers and
+the module never linked against it. It was present and unreachable. That is why "is it used at all" had no
+observable answer.
+
+**The mass is a measurement, not a preference.** Ship Core divides thrust by mass to get acceleration. Its
+default `MaxThrustPosX` is 15,000,000 and the game's base acceleration is 3200 cm/s^2
+(`SurvivalCore.h:125`), so 15,000,000 / 3200 = **4687.5 kg** is the mass at which the plugin's stock force
+set reproduces today's flight. Measured in the new test: **3173.3 cm/s^2**, 0.8% off. Nothing had to be
+re-derived.
+
+**Three silent traps, each of which cost a red test to find.** All three produce a ship that looks correctly
+configured and does not move, which is the worst failure mode to debug behind a half-migrated flight model:
+
+- **The plugin's components never activate themselves.** `UThrusterManagerComp` and `UGyroManagerComp` set
+  `bCanEverTick` and a `TG_PostPhysics` group in their constructors but never set `bAutoActivate`, and
+  neither `TickComponent` checks `IsActive()`. A component added from C++ sits inactive. This is invisible
+  in the Blueprint workflow the plugin was written for, where the editor activates components for you.
+- **A world with no GameMode never dispatches BeginPlay.** `UWorld::BeginPlay` goes through the authority
+  GameMode's `StartPlay`. The plugin resolves its `ShipMesh` pointer in `BeginPlay` and its `TickComponent`
+  returns immediately while that pointer is null. Active, ticking, configured, motionless.
+- **Physics world teardown order is not local.** `EndPlay` then `DestroyWorld` then `DestroyWorldContext`;
+  skipping `EndPlay` leaves the Chaos solver attached to a world being torn down and kills the editor
+  **eighteen tests later**, inside an unrelated test's cleanup.
+
+**What the plugin gets right, verified by reading it rather than trusting the name.** Its authority gating
+works in standalone - the pawn is `ROLE_Authority`, so `if (!Owner->HasAuthority())` passes and the autopilot
+ticks; the run confirms it with `THRUSTER BeginPlay Owner=Actor_0 Role=3 ShipMesh=OK SimPhys=1`. It has a
+`PRECISE` mode documented as "assists with docking but allows manual input", and a
+`ComputeSafeApproachSpeed_V2` that accounts for reaction time, thruster ramp and alignment time - which is a
+purpose-built answer to the owner's report of not being able to slow down before hitting the station.
+
+**Two real defects in the vendor code, to patch or route around rather than discover at runtime.**
+`UThrusterManagerComp::SetInertialDampeners` dereferences `ShipMesh` with no null check, while its `_Server`
+twin guards it - and `ShipMesh` is set to null on the self-disable path, so the crash lands on exactly the
+path a Brake input would call. And `UAutopilotManagerComp` fires an `AddOnScreenDebugMessage` **every tick**
+while following a spline, ungated by any debug flag, which would paint every capture PNG.
+
+**State:** stage 1 only. Nothing is deleted, `ASSShip` is untouched, and the new test runs against a bare
+`AActor` rather than the game's ship so that a failure accuses the plugin and not the game. 62 of 62
+automation tests pass with zero warnings.
+
 #### September 17 the squirrel is the hero: seated, lit, animated, and audible
 
 The owner's ask was "my ask is for hero to be squirrel and have its animations added". This is what that
