@@ -699,10 +699,21 @@ struct FSSHeroDefinition
         else if (Identity == ESSHeroIdentity::Squirrel)
         {
             Id = TEXT("Squirrel");
-            // Licensed/ rather than Character/: this hero is derived from a purchased model, and
-            // Content/SpaceSurvival/Licensed is the ignored tree every other licensed pack lives in,
-            // where Content/SpaceSurvival/Character is tracked. Selection skips this entry until the
-            // files exist on disk.
+            // Licensed/ rather than Character/ is WRONG for most of what is under it, and is a known
+            // open decision rather than a considered choice. An earlier version of this comment claimed
+            // the hero "is derived from a purchased model"; that was an assumption, and the owner has
+            // since stated plainly that the model is their own - generated in Tripo, whose bridge output
+            // still sits in the ignored Content/TripoModels. Only the five retargeted clips below are
+            // licence-restricted, and those verifiably are: each one still carries MoCap Online's own
+            // master path and source MD5 inside the asset. So the mesh, skeleton, physics asset,
+            // material, textures, walk and pilot clip are first-party work sitting in an ignored tree
+            // named for somebody else's content, with no history and no backup, and the five clips
+            // beside them are the only things that actually have to stay out of git.
+            //
+            // Splitting them is blocked on one question only: this repository is public, so tracking
+            // the art publishes it, and whether that is allowed depends on the owner's Tripo plan.
+            // Until that is answered nothing moves, because git history cannot be taken back.
+            // Selection skips this entry until the files exist on disk.
             MeshPath = TEXT("/Game/SpaceSurvival/Licensed/Hero/SK_SquirrelHero.SK_SquirrelHero");
             WalkClipPath = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelWalk.A_SquirrelWalk");
             PilotClipPath = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelPilot.A_SquirrelPilot");

@@ -1222,13 +1222,32 @@ and the measurements.
 
 **That path is wrong, and it is the owner's own art that is sitting in it.** The folder was chosen on the
 assumption that the model came from a pack. It did not: the owner stated on September 17, "squirrel is
-homemade, no license". Only the idle, the two fidgets, the jog and the run are licence-restricted, and those
+homemade, no license", and the evidence on disk agrees - the source GLB's header reads
+`{"generator": "Tripo", "version": "2.0"}` and the model sits in the owner's own Tripo bridge output at the
+ignored `Content/TripoModels/astronaut_squirrel_3d_model_Clone1_Clone1/`.
+
+**How that error nearly hardened into fact.** A review of this question was asked to weigh the owner's
+statement against the written record, and found two documents calling the model purchased: a comment in
+`SSContentTypes.h` and a line in `.agent/local/HeroSquirrel/Stage1_Clean/ImportSource.py`. Neither was
+independent corroboration. Both were written during the September 17 hero work by the same author who made
+the original assumption - one guess, cited twice, and `git log -S` on the comment points straight back at
+commit `0d47c4c`. Where provenance is concerned, check who wrote the record before weighing it against the
+person who made the thing.
+
+**What is genuinely licence-restricted, verified rather than assumed.** Read as raw bytes, each of the five
+retargeted clips still embeds MoCap Online's own master path - for example
+`W:/MoCap Packs/UE4/_FBX_MASTERS/Mobility_PRO_v27/PRO/IPC/MOB1_Jog_F_IPC.fbx` - with the source FBX's
+timestamp and MD5 beside it. `A_SquirrelWalk` and `A_SquirrelPilot` carry no such strings. The split is
+therefore 9 first-party packages, 70.7 MB, against 5 licence-derived clips, 1.95 MB. Only the idle, the two fidgets, the jog and the run are licence-restricted, and those
 derive from the MoCap Online pack. So `SK_SquirrelHero`, its three textures, `SquirrelSuit`, `A_SquirrelWalk`
 and `A_SquirrelPilot` are first-party work stored in an ignored directory named Licensed - which means they
 are not in the repository and exist only on the owner's drive, with no history and no backup. Nothing shipped
 depends on this, because the cooked packages carry the art either way, and moving them was deliberately not
-done inside the 0.1.19 release because it would have invalidated the audited package. It is the first thing
-to do after it.
+done inside the 0.1.19 release because it would have invalidated the audited package.
+
+**It is blocked on one question, and only one.** This repository is public, so tracking the art publishes it
+permanently and irreversibly, and whether that is permitted depends on the owner's Tripo plan. The owner is
+checking. Nothing moves until they answer: a wrong call here cannot be taken back out of git history.
 
 **Seated.** It inherited the Acornaut's `PilotMountOffset` of `(-15, 0, 72)` and floated 44.067 cm over the
 cushion - a third of its own height, which is the float the owner reported. That number was measured for a
