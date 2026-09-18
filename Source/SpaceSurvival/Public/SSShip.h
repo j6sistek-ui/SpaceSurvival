@@ -79,6 +79,12 @@ public:
     TObjectPtr<USphereComponent> Collision;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<UStaticMeshComponent> HullMesh;
+    /** The hull when it is a skeletal mesh. The three hulls the game has always flown are static meshes,
+     *  and the Stellar Phoenix is not, so rather than converting HullMesh and changing what every existing
+     *  hull does, the pawn carries both and shows one. Hidden and empty unless a skeletal hull is
+     *  installed, which keeps the shipped ship exactly as it was. */
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<USkeletalMeshComponent> SkeletalHull;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USkeletalMeshComponent> Pilot;
     UPROPERTY(VisibleAnywhere)
@@ -95,6 +101,13 @@ public:
 private:
     void UpdateEngineMix();
     FSSHeroDefinition PilotHero = FSSHeroDefinition::Fallback();
+    /** How much further back the chase boom sits, because the hull is that many times longer than the one
+     *  the 900 cm arm was framed for. One while the classic hull flies, which is every build today. */
+    float HullChaseScale = 1.f;
+    /** The hull's own engine exhausts, attached to its engine bones. Empty for a static hull, whose
+     *  exhausts USSShipPresentation already fits to the mesh it knows. */
+    UPROPERTY()
+    TArray<TObjectPtr<class UNiagaraComponent>> HullExhausts;
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f, FireVisualSeconds = 0.f;

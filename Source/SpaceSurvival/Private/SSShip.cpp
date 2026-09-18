@@ -22,6 +22,9 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
 #include "Animation/AnimSequence.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
 
 namespace
 {
@@ -49,6 +52,12 @@ ASSShip::ASSShip()
     HullMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AcornHull"));
     HullMesh->SetupAttachment(RootComponent);
     HullMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    SkeletalHull = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalHull"));
+    SkeletalHull->SetupAttachment(RootComponent);
+    SkeletalHull->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    // Empty and hidden by default. A build without a skeletal hull installed never sees this component,
+    // and the static HullMesh below is exactly what it has always been.
+    SkeletalHull->SetVisibility(false);
     Pilot = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("AcornautPilot"));
     Pilot->SetupAttachment(HullMesh);
     Pilot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -63,7 +72,11 @@ ASSShip::ASSShip()
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 900.f;
     CameraBoom->SocketOffset = FVector(0, 0, 125);
-    CameraBoom->bDoCollisionTest = false;
+    // On, now that the boom can be long. It was off because a 900 cm arm behind a 4.8 m hull never had
+    // anything to hit; a hull five times longer needs an arm five times longer, and the first Wave 10
+    // capture with one put the camera inside an asteroid with the ship nowhere in frame.
+    CameraBoom->bDoCollisionTest = true;
+    CameraBoom->ProbeSize = 60.f;
     CameraBoom->bEnableCameraLag = true;
     CameraBoom->CameraLagSpeed = 9.f;
     CameraBoom->CameraLagMaxDistance = 35.f;
@@ -165,6 +178,77 @@ void ASSShip::BeginPlay()
     // Preserve the animated component and its exit-pose handoff under the closed hull.
     Pilot->SetVisibility(!ClosedCockpit);
     Pilot->PlayAnimation(PilotClip, true);
+    // A skeletal hull, if this build has one. The static hull stays loaded and simply stops being drawn:
+    // paint, the module presentation and the chase-framing test all still read it, and none of them has to
+    // learn about a second kind of hull before the flight model itself moves.
+    // Behind -SSPhoenix, the same idiom HullAssetPath already uses for -SSShipRefresh. The first version
+    // switched hulls whenever the pack happened to be installed, which is not a decision a build should
+    // make for itself: it hid the static hull, and USSShipPresentation hangs the exhausts, muzzle flashes
+    // and fitted upgrade modules off that hull, so ShipPresentationSelection went red on the one machine
+    // that owns the pack. Opt in explicitly and the shipped ship is untouched everywhere.
+    if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix);
+        FParse::Param(FCommandLine::Get(), TEXT("SSPhoenix")) && Hull.Installed())
+    {
+        if (auto *HullSkeletal = LoadObject<USkeletalMesh>(nullptr, *Hull.MeshPath))
+        {
+            SkeletalHull->SetSkeletalMesh(HullSkeletal);
+            // Authored along +Y, so it needs a quarter turn to point where the pawn calls forward.
+            SkeletalHull->SetRelativeRotation(FRotator(0, Hull.MeshYaw, 0));
+            SkeletalHull->SetRelativeScale3D(FVector(Hull.HullScale));
+            SkeletalHull->SetVisibility(true);
+            HullMesh->SetVisibility(false);
+            // Gear up and ramp shut. The rest pose is the landing configuration, so a ship that never
+            // played this would fly with its undercarriage down and its cargo ramp hanging open.
+            if (auto *Stow = LoadObject<UAnimSequence>(nullptr, *Hull.LandingStowClipPath))
+                SkeletalHull->PlayAnimation(Stow, false);
+            // The boom was framed for a 4.82 m hull and a 24.84 m one fills the frame, so it has to back
+            // off - but not by the full 5.15 length ratio. At that distance the ship is a speck, the
+            // asteroid field reads as gravel, and the first capture put the camera inside a rock. The
+            // square root is the honest compromise: it grows with the hull, it keeps the ship a similar
+            // share of the frame rather than a similar number of metres away, and at 2.27x it lands the
+            // arm near 20 m for this hull instead of 46.
+            HullChaseScale = FMath::Sqrt(Hull.LengthRatioToClassic());
+            // Lift and tilt the view. Dead astern is this hull's worst angle: from directly behind, a
+            // 24.84 m ship is a slab and its swept wings are edge-on and invisible. Looking slightly down
+            // on it shows the planform, which is where the wings actually read.
+            CameraBoom->SocketOffset = FVector(0, 0, 125.f * HullChaseScale * 1.8f);
+            Camera->SetRelativeRotation(FRotator(-11.f, 0, 0));
+            // The pack's own exhausts, on the pack's own engine bones. USSShipPresentation fits exhausts
+            // to the static hull it was measured against and knows nothing about this mesh, so without
+            // these the ship flies with no engine effect at all - which is exactly how the first capture
+            // came out.
+            if (auto *Exhaust = LoadObject<UNiagaraSystem>(
+                    nullptr, TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust.VFX_Exhaust")))
+            {
+                // NOT the bones called Engine_*. Every one of those sits at [0, 0, 0] - they are
+                // rotation-only control bones, exactly like the wing bones - so attaching to them put the
+                // plumes inside the ship's belly. The bones that are actually AT the nozzles are the
+                // Nozzle_Back_* set, measured in the hull's authored space where -Y is aft:
+                //   Nozzle_Back_Up_Left/Right    at X +/-182, Y -627.5, Z 553.0
+                //   Nozzle_Back_Down_Left/Right  at X +/-183, Y -851.9, Z 188.2
+                // The two big side nacelles, which are what actually reads as "engines" on this ship, have
+                // no bone of their own; their position comes from the separate engine meshes the pack
+                // ships, whose origins are X +/-589.85, Y -636.6, Z 349.64.
+                for (const TCHAR *Nozzle : {TEXT("Nozzle_Back_Up_Left_Mesh"), TEXT("Nozzle_Back_Up_Right_Mesh"),
+                                            TEXT("Nozzle_Back_Down_Left_Mesh"), TEXT("Nozzle_Back_Down_Right_Mesh")})
+                {
+                    if (auto *Plume = UNiagaraFunctionLibrary::SpawnSystemAttached(
+                            Exhaust, SkeletalHull, FName(Nozzle), FVector::ZeroVector, FRotator::ZeroRotator,
+                            EAttachLocation::SnapToTarget, false))
+                        HullExhausts.Add(Plume);
+                }
+                // Two more were tried at the big side nacelles, placed by hand at the engine meshes'
+                // own origins, and they are deliberately not here. The pack's VFX_Exhaust does not emit
+                // along the axis a component rotation would steer - the plumes fired out of the ship's
+                // flanks like comet tails whichever way the component was turned - so they were guesses
+                // dressed up as placement. The four above snap to real bones and inherit the rig's own
+                // orientations, which is why they point aft. Bigger nacelle plumes need the system's own
+                // emission settings read, not another transform invented for it.
+            }
+            UE_LOG(LogTemp, Display, TEXT("SSHull: flying '%s', %.0f cm, chase x%.2f"), *Hull.Id.ToString(),
+                   Hull.ScaledLength(), HullChaseScale);
+        }
+    }
     EngineAudio->SetSound(SSAudio::PresentationSound(TEXT("Engine")));
     UpdateEngineMix();
     EngineAudio->Play();
@@ -324,9 +408,9 @@ void ASSShip::Tick(float Dt)
     const float Bank = -Steer.X * 28.f - StrafeInput.X * 12.f;
     HullMesh->SetRelativeRotation(
         FMath::RInterpTo(HullMesh->GetRelativeRotation(), FRotator(-StrafeInput.Y * 5.f, 0, Bank), Dt, 6.f));
-    CameraBoom->TargetArmLength =
-        FMath::FInterpTo(CameraBoom->TargetArmLength,
-                         FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f), Dt, 3.f);
+    CameraBoom->TargetArmLength = FMath::FInterpTo(
+        CameraBoom->TargetArmLength,
+        (FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f)) * HullChaseScale, Dt, 3.f);
     Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? 86.f : 80.f, Dt, 3.f);
     // Boost engaging is an event, but every drive effect in the game is a sustained level, so acceleration
     // reads as a state change rather than as a shove. This is the transient: full on the frame boost is pressed,
@@ -370,6 +454,13 @@ void ASSShip::Tick(float Dt)
     else
         Camera->PostProcessBlendWeight = 0.f;
     UpdateEngineMix();
+    // Exhausts follow the drive, which is the same value the HUD crosshair and the dust field read, so the
+    // plume grows under throttle and boost rather than burning flat. Scale rather than a Niagara parameter
+    // on purpose: the pack's parameter names are its own and guessing one would fail silently.
+    const float PlumeDrive = FMath::Clamp(.55f + .9f * DrivePresentationPower, .4f, 1.8f);
+    for (UNiagaraComponent *Plume : HullExhausts)
+        if (IsValid(Plume))
+            Plume->SetRelativeScale3D(FVector(PlumeDrive));
     SoftTarget = nullptr;
     float Best = FMath::Cos(FMath::DegreesToRadians(Tuning->SoftAimDegrees));
     const FVector Aim = AimDirection();

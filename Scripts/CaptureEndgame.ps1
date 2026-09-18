@@ -15,7 +15,10 @@ param(
     [ValidateRange(640, 7680)][int]$Width = 2560,
     [ValidateRange(480, 4320)][int]$Height = 1440,
     [switch]$CaptureVisuals,
-    [switch]$NoSound
+    [switch]$NoSound,
+    # Passed through verbatim to the game. For opt-in build flags the fixture itself knows nothing about,
+    # such as -SSPhoenix, so capturing a variant does not mean editing this script each time.
+    [string[]]$ExtraArgs = @()
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -131,6 +134,7 @@ if ($Editor) { $arguments += @((Join-Path $repoRoot 'SpaceSurvival.uproject'), '
 $arguments += @('-SSWave10Soak', "-SSSoakScenario=$Scenario", '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$runRoot", '-windowed', "-ResX=$Width", "-ResY=$Height",
     '-NoSplash', '-NoLiveCoding', '-csvGpuStats', "-abslog=$logPath", '-unattended')
 if ($NoSound) { $arguments += '-nosound' }
+if ($ExtraArgs.Count -gt 0) { $arguments += $ExtraArgs }
 if ($CaptureVisuals) { $arguments += @('-SSSoakVisuals', '-RenderOffscreen', '-ForceRes') }
 $process = $null
 $success = $false
