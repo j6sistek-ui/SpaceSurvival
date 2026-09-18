@@ -1,4 +1,5 @@
 #include "SSSpaceScenery.h"
+#include "SSShip.h"
 #include "SSSpaceLookData.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -150,7 +151,7 @@ bool FSSScenerySafety::RunTest(const FString &)
             Params.AddIgnoredActor(Fixture.Viewer);
             const bool Blocked = Fixture.Scenery->GetWorld()->SweepSingleByChannel(
                 Hit, Centre + FVector(Reach, 0, 0), Centre - FVector(Reach, 0, 0), FQuat::Identity, ECC_Visibility,
-                FCollisionShape::MakeSphere(105.f), Params);
+                FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius()), Params);
             TestTrue(TEXT("A sweep through a structure actually reports a blocking hit"), Blocked);
         }
     }

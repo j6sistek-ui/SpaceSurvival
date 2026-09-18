@@ -1,4 +1,5 @@
 #include "Misc/AutomationTest.h"
+#include "SSShip.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
 #include "Components/StaticMeshComponent.h"
@@ -166,7 +167,7 @@ bool FSSStationExteriorCollision::RunTest(const FString &)
                   Fixture.World->SweepSingleByObjectType(
                       Hit, Hub->DockPosition() - Hub->GetActorForwardVector() * 3000.f,
                       Hub->DockPosition() - Hub->GetActorForwardVector() * 1250.f, FQuat::Identity, Objects,
-                      FCollisionShape::MakeSphere(105.f), Query));
+                      FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius()), Query));
     }
     return true;
 }

@@ -90,6 +90,14 @@ ASSShip::ASSShip()
     EngineAudio->SetupAttachment(RootComponent);
     Presentation = CreateDefaultSubobject<USSShipPresentation>(TEXT("PurchasedShipModules"));
 }
+float ASSShip::FlightCollisionRadius()
+{
+    // Read from the class default object, so it tracks the constructor and any hull swap that changes it
+    // instead of needing five other files edited in step. Unscaled deliberately: nothing scales the flight
+    // pawn today, and a scaled answer here would silently differ from the constructor's authored number.
+    const auto *Default = GetDefault<ASSShip>();
+    return Default && Default->Collision ? Default->Collision->GetUnscaledSphereRadius() : 105.f;
+}
 const TCHAR *ASSShip::HullAssetPath(SS::Ship Kind)
 {
     if (Kind == SS::Ship::Starter && FParse::Param(FCommandLine::Get(), TEXT("SSShipRefresh")) &&
