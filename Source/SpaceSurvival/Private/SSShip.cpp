@@ -201,18 +201,37 @@ void ASSShip::BeginPlay()
             // played this would fly with its undercarriage down and its cargo ramp hanging open.
             if (auto *Stow = LoadObject<UAnimSequence>(nullptr, *Hull.LandingStowClipPath))
                 SkeletalHull->PlayAnimation(Stow, false);
-            // The boom was framed for a 4.82 m hull and a 24.84 m one fills the frame, so it has to back
-            // off - but not by the full 5.15 length ratio. At that distance the ship is a speck, the
-            // asteroid field reads as gravel, and the first capture put the camera inside a rock. The
-            // square root is the honest compromise: it grows with the hull, it keeps the ship a similar
-            // share of the frame rather than a similar number of metres away, and at 2.27x it lands the
-            // arm near 20 m for this hull instead of 46.
-            HullChaseScale = FMath::Sqrt(Hull.LengthRatioToClassic());
+            // Found by flying it and looking, not derived. Three candidates were captured in Wave 10:
+            // the full 5.15 length ratio put the camera inside an asteroid with the ship out of frame;
+            // the square root, 2.27, was close enough that the hull filled the middle of the screen; and
+            // 4.5 with the eye high and the tilt shallow is where both things the camera has to do are
+            // actually done at once.
+            //
+            // Both things matter and they pull against each other. The hull has to READ - this ship's
+            // character is its swept planform and that is invisible from directly astern - and the
+            // CROSSHAIR has to be usable. The reticle is drawn at screen centre because aim is defined as
+            // camera-forward, which was free when the hull was 4.82 m and the centre was empty space past
+            // it. At 24.84 m the hull IS the centre, so a camera tilted down far enough to show the
+            // planform puts the reticle on your own ship and you cannot see what you are shooting at.
+            // High eye, shallow tilt: the ship settles into the lower third where its top is visible, and
+            // the centre stays clear sky.
+            HullChaseScale = 4.5f;
             // Lift and tilt the view. Dead astern is this hull's worst angle: from directly behind, a
             // 24.84 m ship is a slab and its swept wings are edge-on and invisible. Looking slightly down
             // on it shows the planform, which is where the wings actually read.
-            CameraBoom->SocketOffset = FVector(0, 0, 125.f * HullChaseScale * 1.8f);
-            Camera->SetRelativeRotation(FRotator(-11.f, 0, 0));
+            CameraBoom->SocketOffset = FVector(0, 0, 3000.f);
+            Camera->SetRelativeRotation(FRotator(-16.f, 0, 0));
+            // Three dials for looking at the thing, because finding a flattering chase angle is an eye
+            // question and rebuilding between guesses costs minutes each. -SSChase multiplies the boom,
+            // -SSChaseHeight moves the eye up or down, -SSChasePitch tilts it. All optional; with none
+            // passed this is exactly the geometry above.
+            float Override = 0.f;
+            if (FParse::Value(FCommandLine::Get(), TEXT("SSChase="), Override) && Override > 0.f)
+                HullChaseScale = Override;
+            if (FParse::Value(FCommandLine::Get(), TEXT("SSChaseHeight="), Override))
+                CameraBoom->SocketOffset = FVector(0, 0, Override);
+            if (FParse::Value(FCommandLine::Get(), TEXT("SSChasePitch="), Override))
+                Camera->SetRelativeRotation(FRotator(Override, 0, 0));
             // The pack's own exhausts, on the pack's own engine bones. USSShipPresentation fits exhausts
             // to the static hull it was measured against and knows nothing about this mesh, so without
             // these the ship flies with no engine effect at all - which is exactly how the first capture
