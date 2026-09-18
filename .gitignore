@@ -22,6 +22,9 @@ Content/NiagaraExamples/
 Content/RPGEnvironmentVFX/
 Content/Vefects/
 Content/NERVES/
+# Stellar Phoenix Shuttle (Fab, built for 5.3). It must live at /Game/Stellar_Phoenix because every
+# reference inside the pack is by that package path; moving it under Fab/ would break them all.
+Content/Stellar_Phoenix/
 
 Content/SpaceNebulaFantasy/
 
