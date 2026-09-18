@@ -1,74 +1,98 @@
 # UI kit art requests
 
-Gaps found while composing real game screens from `SpaceSurvival_UI_Kit_REORGANIZED`. This is an art
-request list for the kit's author, not a task queue; open work stays in
-[KNOWN_ISSUES](../KNOWN_ISSUES.md). Written September 16, 2026 against the ship upgrade panel pass.
+Art request list for the kit's author, not a task queue; open work stays in
+[KNOWN_ISSUES](../KNOWN_ISSUES.md).
 
-The kit is a template library rather than a set of finished screens, and the owner has confirmed
-screens will be composed from its parts. Everything below is a gap in the *parts*.
+Packages, newest last. Build from the newest.
 
-## Verified good — no action needed
+| Folder | Source zip | Note |
+| --- | --- | --- |
+| `SpaceSurvival_UI_Kit_REORGANIZED` | `..._REORGANIZED_UE5_8.zip` | Original full library, baked text throughout |
+| `UIKit_Runtime` | `..._RUNTIME_COMPONENTS_PLUS_REFERENCE_TEMPLATES_UE5_8.zip` | First textless pass; frames were stripped of artwork |
+| `UIKit_Patched` | `..._RUNTIME_COMPONENTS_PATCHED_PLUS_NEW_UE5_8.zip` | **Current.** Frames repaired, pips/rows/settings added |
 
-- **Nine-slice works.** `Windows/Frames/Premium_Large.png` (554x214) stretched to 840x470 with a
-  46 px corner inset and held up: corners clean, edges straight, no smeared decoration.
-- **Alpha is correct.** Straight (unpremultiplied) alpha on transparent ground. The cyan bleed seen
-  in preview was a premultiplied compositing artifact, not a defect. Keep it as it is.
-- **Icons cover the five upgrade trees exactly**: `sys_hull`, `sys_shield`, `sys_engine`, `thruster`,
-  `sys_weapons`. They read clearly down at 34 px.
-- **Blank buttons are sufficient.** 5 styles x 3 widths x 5 states, all label-free.
+## Verified fixed in the patched package
 
-## Gaps, in priority order
+- **Frame artwork restored.** `Premium_Large_Window` again has the thick border, angled corner
+  plates and inner outline. Confirmed against the broken version and the original art at identical
+  size. Medium, Small, Portrait, Compact Module, Modal Dialog, Side Panel, NPC dialogues and the
+  three Settings windows are all rich too.
+- **Tier pips solved, better than requested.** `HUD/Progression_Pips` ships hex and star families in
+  Empty / Filled / Current / Completed / Locked / Premium, plus 5-step bars. At 18 px they read
+  clearly and differentiate strongly, which is exactly what the diamond substitute failed at.
+- **Settings windows recovered** in Large / Medium / Small with section and row components.
+- **Row plates added** in Default / Hover / Selected / Disabled.
+- **Sliders expanded** to blue default/hover/active/disabled plus green, amber and red.
+- **Also added:** icon backplates, checkbox family, vertical scrollbar, arrow controls, extra toggle
+  colours.
 
-### 1. Every window frame has its name baked into the art
-`LARGE PANEL`, `MEDIUM PANEL`, `SMALL PANEL`, `SIDE PANEL`, `SQUARE PANEL`, `PORTRAIT PANEL`,
-`THIN HEADER PANEL`, `EMPTY CONTENT FRAME`, `CARD FRAME`, `LIST FRAME`, `COMPACT MODULE`,
-`TABBED FRAME`, `MODAL DIALOG FRAME`, `POPUP WINDOW (LARGE/MEDIUM/SMALL)`.
+## Still open
 
-The label sits across the top-left corner and top edge, so it survives nine-slicing and cannot be
-cropped out without destroying the corner. **Blank versions of every frame are the single highest
-value item.** The game draws all titles itself.
+### 1. Baked text returned on 11 assets
+The defect the textless pass existed to remove is back on:
 
-### 2. No tier / segment pip
-The upgrade panel shows tier I-V. There is no small segmented indicator in the kit — the only bar
-assets are full 640x128 framed resource modules, far too heavy for a table row. Needed: a small
-segment pip, filled and empty states, roughly 14x14, or a 5-segment strip about 90x14.
+`Windows/Frames/Premium_Card_Frame` ("CARD FRAME"), `Windows/Frames/Premium_List_Frame`
+("LIST FRAME"), `Windows/Settings/Premium_Settings_Row_Default` / `_Hover` / `_Selected`
+("SETTINGS ROW (NORMAL/HOVER/SELECTED)"), `Windows/Settings/Premium_Settings_Tab_Default` /
+`_Empty` (caught the source sheet's "SETTINGS COMPONENTS" header across the top), and all four
+`Windows/Rows/Premium_Row_*` plates ("ROW (DEFAULT)" and so on).
 
-### 3. No compact currency readout
-`HUD/Resources/Premium_Credits.png` is 642x128, a full framed module. A panel header needs a small
-inline coin glyph plus space for a live number, roughly 26x26. Currently substituting
-`Icons/Resources/pickup_gold.png`, which works but is a pickup icon rather than a currency mark.
+The Settings tabs in particular look like crops that caught the sheet title rather than the asset.
 
-### 4. Row backing plate missing
-Table rows are currently flat rects drawn in code. A blank row plate in normal / hover / selected /
-disabled, nine-sliceable horizontally, about 756x52, would match the kit's language.
+### 2. Nine-slice metadata declares impossible margins on 21 of 169 entries
+The declared `margin_px` is larger than half the source's smaller dimension, so the slice is
+mathematically invalid — the engine either clamps it or drops the border image entirely.
 
-### 5. Settings windows only exist as slivers
-5 of 7 files in `Menu_Kits_And_Templates/Settings` are broken crops (`audio` 858x66,
-`controls_keyboard_mouse` 178x25, `display` 123x42, `gameplay` 186x51, `graphics` 236x31). The
-complete windows exist only inside `Reference_Sheets/neon_sci_fi_settings_ui_asset_sheet.png`.
+| Asset | Declared | Max possible | Source |
+| --- | --- | --- | --- |
+| Thin_Header | 42 | 14 | 323x28 |
+| Info / Warning CompactBackplate | 38 | 16 | 326x33 |
+| Critical / Success CompactBackplate | 38 | 17 | 326x35 |
+| Compact_Module | 42 | 26 | 153x53 |
+| Hull / Shields / Credits StatusModule | 56 | 42 | ~220x84 |
+| List_Frame | 52 | 38 | 176x76 |
+| All four popup backplates | 48 | 38 | ~180x76 |
+| Large_Window | 66 | 58 | 264x117 |
+| Card_Frame | 46 | 38 | 160x76 |
 
-### 6. Slider and toggle parts are not extracted
-The reference sheets show sliders, toggles, checkboxes, radios and dropdowns, but
-`Toggles_And_Controls/` only holds one 121x44 tab bar, eight small headers and two settings windows.
-Settings needs slider track, slider fill, slider thumb, toggle on/off and checkbox on/off as
-separate assets.
+The metadata was not regenerated against the new, much smaller source images.
 
-### 7. Packaging defects in the reorganized set
-- `ship_upgrade_window` / `ship_loadout_window` / `inventory_window` are rotated by one: each holds
-  the next one's art. Only the `Premium_` copies are named correctly.
-- `Premium_` and plain files are byte-identical (SHA-256) for Main_Menu, Pause_Menu, Objectives and
-  Mission_Complete, so those categories offer no actual alternate.
-- Both `Mission_Complete` files show the amber NEW ITEM DISCOVERED popup, not a mission-complete
-  card. The green card is instead bleeding into the edge of the Inventory crops.
-- `HUD/Crosshairs` mixes in non-crosshairs: distance readouts with baked values (`100 m`, `2.8 km`),
-  text-only labels, and three demo strips (`COLOR VARIANTS`, `THICKNESS VARIANTS`, `SIZE VARIANTS`).
+### 3. Source resolutions collapsed
+`Premium_Large_Window` went from 1280x720 in the previous package to **264x117**. Card Frame is
+160x76, the popups ~180x76. Stretched to the game's real 840 px panel these are being enlarged
+roughly 3x, and the patch notes acknowledge 4K validation was deferred. Re-export the repaired
+frames at the previous resolution.
 
-### 8. Typos baked into pixels
-`ANMOR BREAK` (armor), `IMMMEDIATE ACTION REQUIRED` (three Ms), `DAMGE` (damage), and an Objectives
-tab reading `HIAN` instead of MAIN.
+### 4. Two broken crops
+- `Windows/Frames/Premium_Tabbed_Frame` is not a frame. It renders as loose tab pills over vertical
+  scratch marks, clearly a bad crop from a component sheet.
+- `Windows/Rows/Premium_Row_Disabled` renders as a fragmented dashed outline rather than a coherent
+  plate.
+
+### 5. Interior fill is inconsistent across the frame family
+About half carry a tinted interior (Compact Module, Medium, Portrait, Side Panel, Modal Dialog, NPC
+dialogues, Settings windows and rows). The other half are fully transparent inside (Large Window,
+Card, List, Small Window, Thin Header, all four popups, Settings tabs), so those need a fill drawn
+underneath in code. Pick one convention.
+
+### 6. Catalog does not match the package
+`Docs/Asset_Catalog.json` lists 371 entries against **552 PNGs on disk**:
+- **192 files are undocumented**, including the entire Stardust button family, the new pips, rows
+  and settings components.
+- **11 entries point at files that are not in the zip** — every
+  `Reference_Templates_DO_NOT_IMPORT/*_ScreenBackplate_TEXTLESS.png`.
+
+The 9-slice metadata has no phantom entries, but covers only 169 of 552 files.
+
+### 7. Thruster icon still missing
+`Icons/Systems` has Comms, Engine, Lock, Navigation, Repair, Scanner. The five upgrade trees are
+Hull, Shield, Engine, **Thrusters**, Weapon, so the Engine icon is currently used twice.
+
+### 8. Cannon icon ambiguous at row size
+`Icons/Weapons/Premium_Cannon` reduces to a thin diagonal stroke at 34 px. Worth comparing against
+`Premium_Laser` at 32-40 px, since both weapons need a legible row icon.
 
 ## Not gaps — deliberately unused
 
-The kit carries oxygen, fuel, radiation, heat, ammo, reload, inventory grid, mission and extraction
-concepts the game does not have. The owner has kept them for possible later use. They are not
-missing art and need no action.
+Oxygen, fuel, radiation, heat and progress modules are kept for possible later use and need no
+action.

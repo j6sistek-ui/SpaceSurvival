@@ -671,8 +671,8 @@ void ASSGameMode::Tick(float Dt)
         // where the owner put it - you cannot dock boosting, you can dock at a normal cruise or slower.
         // This is the intended dial; the number is expected to come down once it has been flown.
         const float ApproachSpeed = Ship->GetVelocity().Size();
-        if (ToDock.Size() < 1200.f && ApproachSpeed <= float(S.Stats().speed) && Hub->CanAssistDocking(Ship) &&
-            S.BeginDocking())
+        if (ToDock.Size() < Ship->DockApproachRadius() && ApproachSpeed <= float(S.Stats().speed) &&
+            Hub->CanAssistDocking(Ship) && S.BeginDocking())
         {
             Ship->SetDockingTarget(Hub->PadDockPosition(), Hub->GetActorRotation());
             Announce(TEXT("Docking assistance engaged. Welcome to port."));

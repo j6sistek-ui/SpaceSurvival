@@ -28,6 +28,8 @@ public:
      *  the docking sweeps used. That is survivable at 105 and is not survivable at all once a hull of a
      *  different size is installed, which is why this exists now rather than after the fact. */
     static float FlightCollisionRadius();
+    /** How close this hull has to be to a dock point to be offered docking, in centimetres. */
+    float DockApproachRadius() const;
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;

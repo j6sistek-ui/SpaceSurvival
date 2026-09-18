@@ -137,9 +137,21 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     if (Collision->IsSimulatingPhysics())
         Thrusters->SetInertialDampeners(true);
 
-    // Input. Throttle is thrust along the hull's own forward; strafe is the other two axes. Steering
-    // becomes torque: X is pitch, Y is yaw, Z is roll in the gyro's frame.
-    const FVector Thrust(FMath::Clamp(ThrottleInput + (BoostInput ? 1.f : 0.f), -1.f, 1.f),
+    // Input. Throttle is a TRIM, not a thrust direction, and getting that wrong is what stopped the Phoenix
+    // ever reaching a landing pad. On the hand-written model throttle scales a target speed - Speed above is
+    // already max(MinimumSpeed, stat * (1 + .3 * throttle) * boost * brake) - so throttle -1 means "cruise at
+    // seventy percent", still travelling forward. Feeding that same -1 in here as an axis meant "full
+    // reverse", so the classic hull closed on the pad while the Phoenix backed away from it, and the
+    // dampener then braked at the full thrust clamp on top because input and velocity disagreed in sign.
+    //
+    // So drive the error instead: thrust forward when under the trimmed speed, back when over it. That is
+    // what a throttle trim IS on a body that has to be pushed, it gives the same meaning to the same input
+    // on both paths, and it is the settle-into-a-cruise behaviour the flight feel is aiming at. The band is
+    // a share of the target rather than a constant so it scales with the Engine upgrade instead of going
+    // stale, and the floor keeps it sane when the target approaches zero in the station zone.
+    const float ForwardSpeed = FVector::DotProduct(Collision->GetPhysicsLinearVelocity(), GetActorForwardVector());
+    const float Trim = FMath::Clamp((Speed - ForwardSpeed) / FMath::Max(100.f, Speed * .15f), -1.f, 1.f);
+    const FVector Thrust(FMath::Clamp(Trim + (BoostInput ? 1.f : 0.f), -1.f, 1.f),
                          FMath::Clamp(StrafeInput.X, -1.f, 1.f), FMath::Clamp(StrafeInput.Y, -1.f, 1.f));
     Thrusters->SetThrustersInput(Thrust);
     const float Turn = Authority * Interference;
@@ -176,6 +188,17 @@ FVector ASSShip::GetVelocity() const
     if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
         return Collision->GetPhysicsLinearVelocity();
     return Velocity;
+}
+float ASSShip::DockApproachRadius() const
+{
+    // How close counts as "at the pad". 1200 cm is origin-to-origin and was measured against a 482.5 cm
+    // hull, whose whole body sits inside that ball. A 2484 cm hull's nose reaches 1242 cm past its own
+    // origin, so the same number asks a ship to put its centre where its nose already is. Half a hull plus
+    // the classic margin, so every ship is judged by where its body is rather than by one ship's length.
+    const float HalfLength = SkeletalHull && SkeletalHull->IsVisible()
+                                 ? FSSHullDefinition(ESSHullIdentity::StellarPhoenix).ScaledLength() * .5f
+                                 : 0.f;
+    return FMath::Max(1200.f, HalfLength + 1200.f);
 }
 float ASSShip::FlightCollisionRadius()
 {
