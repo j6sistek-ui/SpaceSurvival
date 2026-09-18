@@ -341,6 +341,12 @@ void ASSShip::BeginPlay()
             // High eye, shallow tilt: the ship settles into the lower third where its top is visible, and
             // the centre stays clear sky.
             HullChaseScale = Hull.ChaseScale;
+            // Start the boom where this hull needs it, rather than letting it crawl out there. Tick
+            // interpolates TargetArmLength toward ChaseDistance * HullChaseScale at rate 3, so a hull that
+            // wants 4050 cm spends its first second climbing out of the constructor's 900 - which for a
+            // 24.84 m ship means the camera opens the run inside the hull. ChaseFraming caught it on frame
+            // zero at a depth of 698 cm; a player would have caught it by looking.
+            CameraBoom->TargetArmLength *= Hull.ChaseScale;
             // Lift and tilt the view. Dead astern is this hull's worst angle: from directly behind, a
             // 24.84 m ship is a slab and its swept wings are edge-on and invisible. Looking slightly down
             // on it shows the planform, which is where the wings actually read.

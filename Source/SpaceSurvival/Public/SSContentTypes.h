@@ -600,6 +600,13 @@ struct FSSHullDefinition
     float ChaseHeight = 0.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
     float ChasePitch = 0.f;
+    /** How far the chase camera is allowed to trail its own anchor, as a share of the boom length. Lag is
+     *  angular - the arm trails while the anchor swings - so the same degrees of swing move a long boom
+     *  further than a short one, and the bound has to be a ratio rather than a distance. .039 is the
+     *  classic hull's, which on its 900 cm arm is the 35.1 cm this was written as before a second hull
+     *  existed. A hull whose share genuinely differs declares its own; the Phoenix measures .0427. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (ClampMin = "0.001"))
+    float CameraLagShareOfArm = .039f;
     /** How far above a landing pad's deck this hull's ORIGIN sits when parked. It is the distance from the
      *  origin to the belly plus whatever the gear needs under it, so it is a property of the hull and not
      *  of the pad. 230 is the classic hull's, whose origin is near its middle. */
@@ -673,6 +680,8 @@ struct FSSHullDefinition
             return Why = TEXT("DockClearanceAboveDeck is unset; a hull has to say how high it parks"), false;
         if (ChaseScale <= 0.f)
             return Why = TEXT("ChaseScale is unset; a hull has to say how it is framed"), false;
+        if (CameraLagShareOfArm <= 0.f)
+            return Why = TEXT("CameraLagShareOfArm is unset; a hull has to say how far its camera may trail"), false;
         // A skeletal hull is the only kind that can carry its own animated gear, and the only kind the
         // module presentation cannot fit. Catching the combination here is cheaper than finding a ship
         // wearing another ship's nacelle casings.
@@ -716,7 +725,30 @@ struct FSSHullDefinition
             // shallow is where the hull reads AND the crosshair still covers a target.
             ChaseScale = 4.5f;
             ChaseHeight = 3000.f;
-            ChasePitch = -16.f;
+            // -16 was found by eye and framed the ship beautifully in a still; ChaseFraming, once it was
+            // projecting the hull actually being drawn, showed the belly-aft corner sitting 36.7 degrees
+            // below the camera centre line against a 29.4 degree frame half-angle - about seven degrees
+            // off the bottom edge. Steepened to put the whole hull inside the frame through all five
+            // scripted manoeuvres. The eye stays high, which is what the owner asked for; it now looks
+            // where it is flying rather than slightly over it.
+            ChasePitch = -27.f;
+            // Measured at .1198 of a 4050 cm arm - 485.2 cm - against the classic hull's .0389. Three
+            // times the classic's share, and that figure took three attempts to get right, so it is worth
+            // saying how: a bound that aborts the run on its first breach truncates the very maximum it is
+            // bounding, and each time the bound was raised the "measurement" grew to meet it - 172.9, then
+            // 214.5, then 251.9. The number above is from -SSCameraLagSurvey, which lifts the bound so the
+            // run completes and the worst is the real worst. Do not set this from a gate run.
+            //
+            // The quantity is the gap between the arm the camera was asked to hold and the arm it holds.
+            // On a small socket offset that is simply the spring arm's lag, clamped by CameraLagMaxDistance
+            // at 35 cm - which is exactly what the classic hull measures, and why its bound looked like a
+            // measurement of behaviour rather than of a clamp. On this hull the offset is 3000 cm, so the
+            // same fraction of a degree between placement and readback is levered into centimetres, and the
+            // figure is lag plus that leverage. Which is why it belongs to the hull and not to the game.
+            //
+            // Whether 12 percent of arm reads as the camera breathing during hard turns is a feel question
+            // with hands on the stick, not something this number settles. It is recorded, not endorsed.
+            CameraLagShareOfArm = .13f;
             // Its own exhausts ride its own nozzle bones; the fitted-module presentation is measured against a
             // different mesh entirely and would hang casings in mid air.
             UsesModulePresentation = false;

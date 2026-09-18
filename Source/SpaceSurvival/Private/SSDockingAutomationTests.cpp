@@ -97,6 +97,17 @@ struct FSSDockingWorld
         const auto Transform = Hub->GetActorTransform();
         Ship->SetActorLocationAndRotation(Transform.TransformPosition(LocalPosition),
                                           Transform.TransformVectorNoScale(LocalDirection).Rotation());
+        // And leave it there. Every case in this suite means "a ship is at this spot, pointing this way -
+        // is it offered docking?", which on a kinematic pawn is the whole of it: put it down and it stays.
+        // A ShipCore hull is a simulating body carrying its BeginPlay cruise speed, so it drifts between
+        // being placed and being asked, and the reject cases - which check the ship was NOT moved - failed
+        // on the ship's own momentum rather than on anything admission did. Stopping the body makes the
+        // question the same question for both hulls.
+        if (Ship->Collision && Ship->Collision->IsSimulatingPhysics())
+        {
+            Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+            Ship->Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+        }
     }
 
     void Reject(FAutomationTestBase &Test, const TCHAR *Name, FVector LocalPosition, FVector LocalDirection)
@@ -157,7 +168,10 @@ bool FSSDockingAdmission::RunTest(const FString &)
     F.Instance->Session.run.phase = SS::Phase::Approach;
     F.Instance->Session.run.phaseDuration = 0.0;
     // Out of range stays out of range, whichever way it points.
-    F.Reject(*this, TEXT("Beyond the approach range of the pad"), Pad + FVector(-1900, 0, 0), FVector(1, 0, 0));
+    // Out of range means out of THIS ship's range. 1900 cm is beyond the classic hull's 1200 and inside the
+    // Phoenix's 2301, so a literal here tests "too far" for one hull and "comfortably arrived" for another.
+    const float BeyondRange = F.Ship->DockApproachRadius() + 700.f;
+    F.Reject(*this, TEXT("Beyond the approach range of the pad"), Pad + FVector(-BeyondRange, 0, 0), FVector(1, 0, 0));
     F.Reject(*this, TEXT("Far side of the station"), FVector(1850, 0, 220), FVector(-1, 0, 0));
 
     auto *Obstacle = F.World->SpawnActor<AActor>();

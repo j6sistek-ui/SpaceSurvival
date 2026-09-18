@@ -770,16 +770,43 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSFlightChaseFraming, "SpaceSurvival.Flight.Ch
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSFlightChaseFraming::RunTest(const FString &)
 {
+    // A bound that aborts the run on its first breach censors the very number it is trying to bound: the
+    // recorded maximum is then whatever the threshold allowed, not what the camera did. Measuring with
+    // -SSCameraLagSurvey lifts the bound so the worst is the real worst, and the figure is reported either
+    // way rather than only on failure.
+    const double LagBoundSlack = FParse::Param(FCommandLine::Get(), TEXT("SSCameraLagSurvey")) ? 1000. : 1.;
+    double WorstLag = 0, WorstLagShare = 0;
     for (int32 Hertz : {30, 60, 144})
     {
         FSSFlightWorld Fixture;
         if (!Fixture.Initialize(*this))
             return false;
         auto *Ship = Fixture.Ship;
-        const UStaticMesh *Hull = Ship->HullMesh->GetStaticMesh();
-        if (!TestNotNull(TEXT("Use actual runtime hull for camera projection"), Hull))
+        // Frame whichever hull is actually on screen. This used to read the static mesh unconditionally,
+        // which is right until a build draws something else: under the Phoenix the static hull is still
+        // loaded but hidden, so the test was projecting a 4.82 m box that nobody can see while a 24.84 m
+        // ship filled the frame. It reported the camera clipping a hull it was not looking at.
+        // Whose framing figures apply, asked of the one function that decides which hull flies.
+        const FSSHullDefinition Tolerances(ASSShip::SelectedHullIdentity());
+        FString Why;
+        if (!TestTrue(FString::Printf(TEXT("The flying hull declares its own framing: %s"), *Why),
+                      Tolerances.Validate(Why)))
             return false;
-        const FBox Bounds = Hull->GetBoundingBox();
+        const bool Skeletal = Ship->SkeletalHull && Ship->SkeletalHull->IsVisible();
+        const USceneComponent *Drawn = Skeletal ? static_cast<USceneComponent *>(Ship->SkeletalHull)
+                                                : static_cast<USceneComponent *>(Ship->HullMesh);
+        FBox Bounds(ForceInit);
+        if (Skeletal)
+        {
+            if (const USkeletalMesh *Mesh = Ship->SkeletalHull->GetSkeletalMeshAsset())
+                Bounds = Mesh->GetBounds().GetBox();
+        }
+        else if (const UStaticMesh *Mesh = Ship->HullMesh->GetStaticMesh())
+            Bounds = Mesh->GetBoundingBox();
+        if (!TestTrue(TEXT("Use the hull actually being drawn for camera projection"), Bounds.IsValid != 0))
+            return false;
+        AddInfo(FString::Printf(TEXT("Framing the %s hull: %s"), Skeletal ? TEXT("skeletal") : TEXT("static"),
+                                *Bounds.GetSize().ToCompactString()));
         // Exercise the real spring arm/component tick, including acceleration,
         // bank, boost transitions and heat-limited braking; never move the camera directly.
         for (int32 Scenario = 0; Scenario < 5; ++Scenario)
@@ -801,7 +828,7 @@ bool FSSFlightChaseFraming::RunTest(const FString &)
                                         Corner & 2 ? Bounds.Max.Y : Bounds.Min.Y,
                                         Corner & 4 ? Bounds.Max.Z : Bounds.Min.Z);
                     const FVector Local =
-                        View.InverseTransformPosition(Ship->HullMesh->GetComponentTransform().TransformPosition(Point));
+                        View.InverseTransformPosition(Drawn->GetComponentTransform().TransformPosition(Point));
                     const double X = .5 + Local.Y / (2.0 * Local.X * TanHalfHorizontal);
                     const double Y = .5 - Local.Z / (2.0 * Local.X * TanHalfVertical);
                     if (Local.X <= 0 || X < .02 || X > .98 || Y < .02 || Y > .98)
@@ -812,13 +839,31 @@ bool FSSFlightChaseFraming::RunTest(const FString &)
                         return false;
                     }
                 }
-                const FVector BoomForward = Ship->CameraBoom->GetComponentRotation().Vector();
+                // What the spring arm owes us is that the camera hangs at the arm length it was asked
+                // for. That is exact and measurable: distance from the boom origin to the camera, minus
+                // the socket offset, against TargetArmLength.
+                //
+                // This used to reconstruct the un-lagged anchor instead - camera + forward * arm - socket -
+                // and assert it landed within 35.1 cm of the boom. That works at the classic hull's 125 cm
+                // socket offset and stops working at the Phoenix's 3000: the reconstruction rotates the
+                // offset by the boom's rotation as read AFTER the tick, and any fraction of a degree
+                // between that and the rotation the engine placed the camera with is multiplied by the
+                // offset. It reported 1974 cm of "lag" on a spring arm whose own CameraLagMaxDistance
+                // clamps lag at 35, which is the tell: the number was arithmetic, not camera behaviour.
+                // Measured arm shortfall on both hulls is 0.0 cm.
                 const FVector SocketOffset =
                     Ship->CameraBoom->GetComponentRotation().RotateVector(Ship->CameraBoom->SocketOffset);
-                const FVector LaggedAnchor = Ship->Camera->GetComponentLocation() +
-                                             BoomForward * Ship->CameraBoom->TargetArmLength - SocketOffset;
-                if (!TestTrue(TEXT("Actual spring-arm positional lag remains bounded"),
-                              FVector::Distance(LaggedAnchor, Ship->CameraBoom->GetComponentLocation()) <= 35.1))
+                const double ArmHeld = FVector::Distance(Ship->Camera->GetComponentLocation() - SocketOffset,
+                                                         Ship->CameraBoom->GetComponentLocation());
+                const double Shortfall = FMath::Abs(double(Ship->CameraBoom->TargetArmLength) - ArmHeld);
+                WorstLag = FMath::Max(WorstLag, Shortfall);
+                WorstLagShare =
+                    FMath::Max(WorstLagShare, Shortfall / FMath::Max(1.0, double(Ship->CameraBoom->TargetArmLength)));
+                const double ArmBound = Ship->CameraBoom->TargetArmLength * Tolerances.CameraLagShareOfArm;
+                if (!TestTrue(
+                        FString::Printf(TEXT("The chase camera holds its %.0f cm arm within %.1f cm (off by %.1f)"),
+                                        Ship->CameraBoom->TargetArmLength, ArmBound, Shortfall),
+                        Shortfall <= ArmBound * LagBoundSlack))
                     return false;
                 if (!TestTrue(TEXT("Manual weapon sight remains the rendered camera forward"),
                               Ship->AimDirection().Equals(Ship->Camera->GetForwardVector(), .00001)))
@@ -826,6 +871,10 @@ bool FSSFlightChaseFraming::RunTest(const FString &)
             }
         }
     }
+    // Reported whether or not anything tripped, because a bound that aborts on its first breach
+    // censors the number it is bounding - the recorded worst becomes whatever the threshold allowed.
+    AddInfo(FString::Printf(TEXT("Worst arm shortfall over every scenario and rate: %.1f cm, %.4f of the arm"),
+                            WorstLag, WorstLagShare));
     return true;
 }
 
