@@ -22,9 +22,11 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
 #include "Animation/AnimSequence.h"
+#include "GyroManagerComp.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "ThrusterManagerComp.h"
 
 namespace
 {
@@ -102,6 +104,78 @@ ASSShip::ASSShip()
     EngineAudio->SetAutoActivate(false);
     EngineAudio->SetupAttachment(RootComponent);
     Presentation = CreateDefaultSubobject<USSShipPresentation>(TEXT("PurchasedShipModules"));
+}
+void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed,
+                            float Authority, float Interference)
+{
+    if (!Thrusters || !Gyros || !Collision)
+        return;
+    const float Mass = FMath::Max(1.f, Collision->GetMass());
+
+    // Thrust from the upgraded stat, so buying Engine tiers still moves the ship. All six axes get the
+    // SAME number on purpose: the plugin ships Z stronger than X and Y, 20e6 against 15e6, which would
+    // quietly make vertical strafe a third livelier than horizontal for no reason anybody chose.
+    const float AxisThrust = float(Acceleration) * Mass;
+    Thrusters->SetAllThrustersForce(AxisThrust);
+
+    // Top speed. The limiter defaults OFF, so without this the Engine upgrade's speed half would do
+    // nothing at all while still costing credits, and the ship would accelerate without limit.
+    Thrusters->SetSpeedLimiterActive(true);
+    Thrusters->SetMaxSpeedLimit(Speed, FMath::Max(100.f, Speed * .12f));
+
+    // Turning authority and how hard it stops turning. Response is re-homed onto the gyro's proportional
+    // gain rather than dropped: it was a rate constant on linear velocity error and there is no such dial
+    // on a rigid body, so it becomes the rate constant on ANGULAR error. That is a re-purposing and not a
+    // translation, and the Thrusters upgrade stays observable as crisper turning because of it.
+    Gyros->MaxTotalTorque = FMath::Max(.5, Maneuver / 340.0);
+    Gyros->ProportionalGain = FMath::Max(.5, Response);
+
+    // Inertial dampeners: release the stick and the ship settles instead of coasting forever. This is the
+    // single biggest contributor to the feel the owner asked for, and the plugin defaults it on - but
+    // SetInertialDampeners dereferences its mesh pointer with no null check while its own _Server twin
+    // guards it, and standalone always takes the unguarded path. Only call it once the body is confirmed.
+    if (Collision->IsSimulatingPhysics())
+        Thrusters->SetInertialDampeners(true);
+
+    // Input. Throttle is thrust along the hull's own forward; strafe is the other two axes. Steering
+    // becomes torque: X is pitch, Y is yaw, Z is roll in the gyro's frame.
+    const FVector Thrust(FMath::Clamp(ThrottleInput + (BoostInput ? 1.f : 0.f), -1.f, 1.f),
+                         FMath::Clamp(StrafeInput.X, -1.f, 1.f), FMath::Clamp(StrafeInput.Y, -1.f, 1.f));
+    Thrusters->SetThrustersInput(Thrust);
+    const float Turn = Authority * Interference;
+    Gyros->SetGyrosInput(FVector(FMath::Clamp(-Steer.Y, -1.f, 1.f) * Turn, FMath::Clamp(Steer.X, -1.f, 1.f) * Turn,
+                                 // A little roll into the turn, because a ship that yaws flat reads as a
+                                 // cursor. The gyro damps roll rate but has no attitude reference, so this
+                                 // is a lean and not a bank that holds.
+                                 FMath::Clamp(-Steer.X, -1.f, 1.f) * .35f * Turn));
+
+    // Gravity wells and the wormhole still push, but their numbers were accelerations integrated by hand.
+    // Against a real body they are forces, so they carry the mass with them.
+    if (!Forces.IsNearlyZero())
+        Collision->AddForce(Forces.GetClampedToMaxSize(4500.f) * Mass);
+}
+void ASSShip::OnHullImpact(UPrimitiveComponent *, AActor *OtherActor, UPrimitiveComponent *, FVector,
+                           const FHitResult &)
+{
+    // The same 15 damage on the same .8 s cooldown the swept path charged, so the Phoenix is not quietly
+    // invulnerable to the asteroid field every other hull has always had to respect.
+    if (!ShipCoreDriven || !OtherActor || OtherActor == this || ImpactCooldown > 0)
+        return;
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI)
+        return;
+    ReceiveDamage(15.f * float(GI->Session.DamageScale()));
+    ImpactCooldown = .8f;
+}
+FVector ASSShip::GetVelocity() const
+{
+    // Sixteen production sites read this - Director spawn lead, enemy aim lead, hazard intercept, the
+    // collision-course warning, the dust field. Under ShipCore the hand-kept member is never written, so
+    // leaving it as the answer would freeze every one of them at the BeginPlay cruise seed while nothing
+    // errored and the game just quietly got easier.
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+        return Collision->GetPhysicsLinearVelocity();
+    return Velocity;
 }
 float ASSShip::FlightCollisionRadius()
 {
@@ -232,6 +306,50 @@ void ASSShip::BeginPlay()
                 CameraBoom->SocketOffset = FVector(0, 0, Override);
             if (FParse::Value(FCommandLine::Get(), TEXT("SSChasePitch="), Override))
                 Camera->SetRelativeRotation(FRotator(Override, 0, 0));
+            // ---- ShipCore takes the controls ----
+            // The plugin is force-based on a simulating rigid body, and its components check exactly once
+            // in BeginPlay: if the root is not already simulating they null their pointer, deactivate
+            // themselves and never look again. So the body has to be ready BEFORE they are attached.
+            Collision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+            Collision->SetNotifyRigidBodyCollision(true);
+            // A 24.84 m hull at boost crosses more than a station wall's thickness in one frame, and this
+            // game has never had a swept rigid body before. Without CCD it tunnels.
+            Collision->SetUseCCD(true);
+            // 4687.5 kg is not a preference. ShipCore divides thrust by mass to get acceleration, its
+            // default forward thrust is 15,000,000, and this game's base acceleration is 3200 cm/s^2, so
+            // this is the mass at which the plugin's stock numbers reproduce the flight the game already
+            // had. Left to itself the engine would derive about 581 kg from the sphere's radius, and then
+            // a readability tweak to that radius would silently move acceleration.
+            Collision->SetMassOverrideInKg(NAME_None, 4687.5f, true);
+            Collision->SetLinearDamping(0.f);
+            Collision->SetAngularDamping(0.f);
+            Collision->SetSimulatePhysics(true);
+            if (Collision->IsSimulatingPhysics())
+            {
+                // bAutoActivate BEFORE registering, on both. Neither constructor sets it and neither
+                // TickComponent checks IsActive(), so a component added from C++ sits there inactive while
+                // looking perfectly configured - invisible in the Blueprint workflow the plugin was
+                // written for, where the editor activates components for you.
+                Thrusters = NewObject<UThrusterManagerComp>(this, TEXT("ShipCoreThrusters"));
+                Thrusters->bAutoActivate = true;
+                // This is a space game. The plugin disables gravity on the body and then re-applies WORLD
+                // gravity by hand as a force every frame, so leaving this alone makes the ship fall.
+                Thrusters->bCustomGravity = true;
+                Thrusters->CustomGravity = FVector::ZeroVector;
+                Thrusters->RegisterComponent();
+                Gyros = NewObject<UGyroManagerComp>(this, TEXT("ShipCoreGyros"));
+                Gyros->bAutoActivate = true;
+                Gyros->RegisterComponent();
+                ShipCoreDriven = true;
+                Collision->OnComponentHit.AddDynamic(this, &ASSShip::OnHullImpact);
+                UE_LOG(LogTemp, Display, TEXT("SSHull: ShipCore driving, mass %.1f kg"), Collision->GetMass());
+            }
+            else
+            {
+                // Say so rather than flying the old model while the log implies otherwise.
+                Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+                UE_LOG(LogTemp, Warning, TEXT("SSHull: body refused to simulate; ShipCore is NOT driving."));
+            }
             // The pack's own exhausts, on the pack's own engine bones. USSShipPresentation fits exhausts
             // to the static hull it was measured against and knows nothing about this mesh, so without
             // these the ship flies with no engine effect at all - which is exactly how the first capture
@@ -394,33 +512,40 @@ void ASSShip::Tick(float Dt)
     DrivePresentationDamage = FMath::Clamp(float(S.run.damageFeedback), 0.f, 1.f);
     const float Authority = float(Stats.maneuver) / 1700.f;
     const float Interference = S.run.interferenceSeconds > 0 ? .7f : 1.f;
-    // Bounded substeps preserve steering/acceleration and swept movement at low FPS.
-    const int32 Steps = FMath::Clamp(FMath::CeilToInt(Dt / (1.f / 120.f)), 1, 32);
-    const float Step = Dt / Steps;
-    for (int32 I = 0; I < Steps; ++I)
+    if (ShipCoreDriven)
     {
-        auto Rotation = GetActorRotation();
-        Rotation.Yaw += Steer.X * Tuning->SteeringDegrees * Authority * Interference * Step;
-        Rotation.Pitch = FMath::Clamp(
-            Rotation.Pitch + Steer.Y * Tuning->SteeringDegrees * Authority * Interference * Step, -85.f, 85.f);
-        Rotation.Roll = 0;
-        SetActorRotation(Rotation);
-        const FVector Desired =
-            GetActorForwardVector() * Speed +
-            (GetActorRightVector() * StrafeInput.X + GetActorUpVector() * StrafeInput.Y) * float(Stats.maneuver);
-        const FVector ResponseDelta = (Desired - Velocity) * (1.f - FMath::Exp(-float(Stats.response) * Step));
-        Velocity += ResponseDelta.GetClampedToMaxSize(float(Stats.acceleration) * Step);
-        Velocity += Forces.GetClampedToMaxSize(4500.f) * Step;
-        FHitResult Hit;
-        AddActorWorldOffset(Velocity * Step, true, &Hit);
-        if (Hit.bBlockingHit)
+        DriveShipCore(Dt, Stats.acceleration, Stats.maneuver, Stats.response, Speed, Authority, Interference);
+    }
+    else
+    {
+        // Bounded substeps preserve steering/acceleration and swept movement at low FPS.
+        const int32 Steps = FMath::Clamp(FMath::CeilToInt(Dt / (1.f / 120.f)), 1, 32);
+        const float Step = Dt / Steps;
+        for (int32 I = 0; I < Steps; ++I)
         {
-            if (ImpactCooldown <= 0)
+            auto Rotation = GetActorRotation();
+            Rotation.Yaw += Steer.X * Tuning->SteeringDegrees * Authority * Interference * Step;
+            Rotation.Pitch = FMath::Clamp(
+                Rotation.Pitch + Steer.Y * Tuning->SteeringDegrees * Authority * Interference * Step, -85.f, 85.f);
+            Rotation.Roll = 0;
+            SetActorRotation(Rotation);
+            const FVector Desired =
+                GetActorForwardVector() * Speed +
+                (GetActorRightVector() * StrafeInput.X + GetActorUpVector() * StrafeInput.Y) * float(Stats.maneuver);
+            const FVector ResponseDelta = (Desired - Velocity) * (1.f - FMath::Exp(-float(Stats.response) * Step));
+            Velocity += ResponseDelta.GetClampedToMaxSize(float(Stats.acceleration) * Step);
+            Velocity += Forces.GetClampedToMaxSize(4500.f) * Step;
+            FHitResult Hit;
+            AddActorWorldOffset(Velocity * Step, true, &Hit);
+            if (Hit.bBlockingHit)
             {
-                ReceiveDamage(15.f * float(S.DamageScale()));
-                ImpactCooldown = .8f;
+                if (ImpactCooldown <= 0)
+                {
+                    ReceiveDamage(15.f * float(S.DamageScale()));
+                    ImpactCooldown = .8f;
+                }
+                Velocity = FVector::VectorPlaneProject(Velocity, Hit.Normal) * .65f;
             }
-            Velocity = FVector::VectorPlaneProject(Velocity, Hit.Normal) * .65f;
         }
     }
     Forces = FVector::ZeroVector;

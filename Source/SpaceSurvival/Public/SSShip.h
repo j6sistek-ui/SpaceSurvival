@@ -5,6 +5,7 @@
 #include "SSContentTypes.h"
 #include "SSShip.generated.h"
 class USphereComponent;
+class UPrimitiveComponent;
 class UStaticMeshComponent;
 class USkeletalMeshComponent;
 class USpringArmComponent;
@@ -30,10 +31,7 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
-    virtual FVector GetVelocity() const override
-    {
-        return Velocity;
-    }
+    virtual FVector GetVelocity() const override;
     void SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake);
     void RequestDodge();
     void Fire();
@@ -108,6 +106,24 @@ private:
      *  exhausts USSShipPresentation already fits to the mesh it knows. */
     UPROPERTY()
     TArray<TObjectPtr<class UNiagaraComponent>> HullExhausts;
+    /** True once the root is simulating and ShipCore's components have accepted it. While false the hand
+     *  written integrator below runs exactly as it always has, which is every build that does not pass
+     *  -SSPhoenix. */
+    bool ShipCoreDriven = false;
+    UPROPERTY()
+    TObjectPtr<class UThrusterManagerComp> Thrusters;
+    UPROPERTY()
+    TObjectPtr<class UGyroManagerComp> Gyros;
+    /** Hands this frame's input and this run's upgraded stats to ShipCore, which then moves the body.
+     *  Replaces the substepped integrator entirely while it is driving; the two never both run. */
+    void DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed, float Authority,
+                       float Interference);
+    /** Hull impact while ShipCore drives. The old integrator took its hits off the swept move's
+     *  FHitResult, and a simulating body never runs that path - so without this, ramming an asteroid in
+     *  the Phoenix is free. Physics handles the bounce; this only carries the damage across. */
+    UFUNCTION()
+    void OnHullImpact(UPrimitiveComponent *HitComp, AActor *OtherActor, UPrimitiveComponent *OtherComp,
+                      FVector NormalImpulse, const FHitResult &Hit);
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f, FireVisualSeconds = 0.f;
