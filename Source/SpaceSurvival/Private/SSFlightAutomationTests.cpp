@@ -366,9 +366,32 @@ bool FSSFlightFrameRates::RunTest(const FString &)
     TestTrue(TEXT("Throttle accelerates the real pawn above cruise"), Reference[0].Velocity.X > 2800.f);
     TestTrue(TEXT("Steer and strafe produce substantial lateral and vertical travel"),
              Reference[2].Position.Y > 1000.f && Reference[2].Position.Z > 500.f);
+    for (int32 I = 1; I < Reference.Num(); ++I)
+        AddInfo(
+            FString::Printf(TEXT("Second %d heading change: yaw %+.3f pitch %+.3f deg"), I + 1,
+                            FRotator::NormalizeAxis(Reference[I].Rotation.Yaw - Reference[I - 1].Rotation.Yaw),
+                            FRotator::NormalizeAxis(Reference[I].Rotation.Pitch - Reference[I - 1].Rotation.Pitch)));
+    // What reversing the stick has to do, stated as a rate rather than as a heading. Comparing the heading
+    // one second later holds every hull to one hull's angular inertia: a kinematic hull turns at a commanded
+    // rate and flips it the instant the stick does, so it is already pointing back; a force drive decelerates
+    // onto the reversal. Measured on the Phoenix, yaw swings from +49.9 to -4.5 deg in the second while pitch
+    // falls from +2.414 to +0.051 - a stop by any standard a pilot would recognise, and a failure by the old
+    // assertion, which asked it to have crossed back as well.
+    const double YawBefore = FRotator::NormalizeAxis(Reference[2].Rotation.Yaw - Reference[1].Rotation.Yaw);
+    const double YawAfter = FRotator::NormalizeAxis(Reference[3].Rotation.Yaw - Reference[2].Rotation.Yaw);
+    const double PitchBefore = FRotator::NormalizeAxis(Reference[2].Rotation.Pitch - Reference[1].Rotation.Pitch);
+    const double PitchAfter = FRotator::NormalizeAxis(Reference[3].Rotation.Pitch - Reference[2].Rotation.Pitch);
+    // Universal, and allowed no slack by any hull: opposite stick turns the ship back the other way rather
+    // than merely bending the curve it was already on.
     TestTrue(TEXT("Opposite steering reverses the change of heading"),
-             Reference[3].Rotation.Yaw < Reference[2].Rotation.Yaw &&
-                 Reference[3].Rotation.Pitch < Reference[2].Rotation.Pitch);
+             YawAfter < YawBefore && PitchAfter < PitchBefore);
+    // And per hull, how completely one second of it kills the turn. Classic reverses outright; the Phoenix
+    // keeps 2.1 percent of its pitch rate. A heavier ship declares a larger residual rather than the suite
+    // loosening for every ship at once.
+    TestTrue(FString::Printf(TEXT("A second of opposite stick leaves at most %.0f%% of the turn"),
+                             Tolerances.SteeringReversalResidualShare * 100.f),
+             YawAfter <= FMath::Max(0., YawBefore * Tolerances.SteeringReversalResidualShare) &&
+                 PitchAfter <= FMath::Max(0., PitchBefore * Tolerances.SteeringReversalResidualShare));
     TestTrue(TEXT("Reduced throttle decreases actual velocity"),
              Reference[3].Velocity.Size() < Reference[2].Velocity.Size() - 300.f);
     for (int32 Hertz : {30, 60, 144})
@@ -485,6 +508,8 @@ bool FSSFlightDodgeCollision::RunTest(const FString &)
         const FVector Before = Fixture.Ship->GetVelocity();
         Fixture.Ship->RequestDodge();
         const FVector Impulse = Fixture.Ship->GetVelocity() - Before;
+        AddInfo(FString::Printf(TEXT("Dodge case %d: impulse %s (%.1f cm/s), expected direction %s"), Index,
+                                *Impulse.ToString(), Impulse.Size(), *Expected[Index].ToString()));
         TestTrue(FString::Printf(TEXT("Dodge case %d uses the requested lateral/vertical direction"), Index),
                  FVector::DotProduct(Impulse.GetSafeNormal(), Expected[Index]) > .999 && Impulse.Size() > 2000.f &&
                      FMath::Abs(Impulse.X) < .01f);
@@ -504,7 +529,10 @@ bool FSSFlightDodgeCollision::RunTest(const FString &)
     Wall->SetRootComponent(Box);
     Wall->AddInstanceComponent(Box);
     Box->SetBoxExtent(FVector(10000, 10, 10000));
-    Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    // Query-only was enough while every hull moved by swept AddActorWorldOffset, which asks queries where it
+    // may go. A simulating body is stopped by the physics scene instead, and a query-only wall is not in it -
+    // the Phoenix flew straight through this one. Blocking both makes it a wall to either drive.
+    Box->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     Box->SetCollisionObjectType(ECC_WorldStatic);
     Box->SetCollisionResponseToAllChannels(ECR_Block);
     Box->RegisterComponent();
@@ -512,9 +540,33 @@ bool FSSFlightDodgeCollision::RunTest(const FString &)
     const double ShieldBefore = Fixture.Instance->Session.run.shield;
     Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D(1, 0), 0.f, false, false);
     Fixture.Ship->RequestDodge();
-    Fixture.Frames(6);
+    // Track the furthest the ship gets rather than where it comes to rest. Where it ends up is the drive's
+    // business - a swept kinematic move stops dead against the face, a simulating body is resolved by the
+    // physics scene and rebounds off it - and neither is the claim being made here.
+    double Furthest = Fixture.Ship->GetActorLocation().Y;
+    for (int32 Frame = 0; Frame < 6; ++Frame)
+    {
+        Fixture.Frames(1);
+        Furthest = FMath::Max(Furthest, Fixture.Ship->GetActorLocation().Y);
+    }
+    // Where the wall stops the ship, worked out from the wall and the hull rather than written down. The
+    // face is 190 (placed at 200, ten thick) and a ship is held off it by its own flight collision, so the
+    // literal 86 this once read was the classic sphere's 105 cm radius spelled as a constant - a number
+    // that silently means something else the moment a hull is fitted with a different one.
+    const float WallFace = 200.f - 10.f;
+    const float Reach = ASSShip::FlightCollisionRadius();
+    const FSSHullDefinition WallHull(ASSShip::SelectedHullIdentity());
+    AddInfo(FString::Printf(
+        TEXT("Dodge into the wall reached Y %.2f and came to rest at %.2f; face %.0f less a %.0f cm hull reach"),
+        Furthest, Fixture.Ship->GetActorLocation().Y, WallFace, Reach));
+    // Both halves of "swept against it rather than through it", and both true of any drive: the ship is
+    // carried all the way onto the wall, and it is not carried into or past it.
+    // Never into it or past it, of any hull and with no allowance at all.
     TestTrue(TEXT("Dodge is swept against a blocking wall rather than tunnelling through it"),
-             Fixture.Ship->GetActorLocation().Y > 50.f && Fixture.Ship->GetActorLocation().Y <= 86.f);
+             Furthest <= WallFace - Reach + 1.f);
+    // And carried all the way onto it, to within the standoff this hull's drive settles at.
+    TestTrue(FString::Printf(TEXT("The wall is what stops the dodge, within %.0f cm"), WallHull.ContactStandoffCm),
+             Furthest >= WallFace - Reach - WallHull.ContactStandoffCm);
     TestTrue(TEXT("The physical impact still damages shield during dodge cooldown"),
              Fixture.Instance->Session.run.dodgeCooldown > 0.0 &&
                  Fixture.Instance->Session.run.shield < ShieldBefore - 1.0);
@@ -683,19 +735,75 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         // Deliberately nondefault damage also verifies Fire consumes the session's weapon stat.
         Fixture.Instance->Session.tuning.baseWeaponDamage = 10;
         Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
+        // Hold station for the three shots, because this suite is about what a weapon does to a target and
+        // not about what cruising does to a sight picture.
+        //
+        // A chase camera whose pitch differs from the direction of travel cannot keep a fixed point on its
+        // ray: flying level translates the lens level while the ray still points down, so the point slides
+        // off the reticle. The classic boom sits near the ship's axis, so travel and ray very nearly agree
+        // and the drift is invisible; the Phoenix looks 27 degrees down, and measured, a target 3866 cm
+        // ahead left the crosshair inside a quarter second - the first shot hit, the sight ray found nothing
+        // at all by the second. That is a camera dial worth knowing about, but it is not a weapon defect,
+        // and a weapon suite should not be the thing that reports it.
+        Fixture.Instance->Session.tuning.baseSpeed = 0;
         // Settle the actual default chase view; do not flatten its pitch or use the aiming helper.
         Fixture.Frames(30);
+        // Where a target has to sit for this to be a shooting test at all, derived from the camera that is
+        // actually fitted instead of from a distance that only ever suited one of them. It stays ON the sight
+        // ray, because proving the shot converges from the muzzle onto the crosshair is the whole point of
+        // the suite - but it is placed a fixed reach beyond THE SHIP rather than beyond the lens.
+        //
+        // Camera height, pitch and arm length are per-hull dials and will be tuned further, so a constant
+        // measured from the lens stops meaning the same thing the moment one is turned. At a flat 5000 cm it
+        // put a target 3811 past the classic nose and 730 SHORT of the Phoenix's, at a muzzle sight dot of
+        // -0.29: behind the firing direction, where no correctly aimed shot could reach it.
         const FVector CameraRay = Fixture.Ship->Camera->GetForwardVector();
-        const FVector TargetPosition = Fixture.Ship->Camera->GetComponentLocation() + CameraRay * 5000.f;
+        const FVector Eye = Fixture.Ship->Camera->GetComponentLocation();
+        const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
+        const float ShipAlongRay = FMath::Max(0.f, FVector::DotProduct(Muzzle - Eye, CameraRay));
+        const float EngagementReach = 3800.f;
+        // The sight is traced from the lens, so a camera dialled far enough back could put a target that is
+        // merely in front of the hull outside weapon range. Say that in those words if it ever happens,
+        // rather than letting it arrive later disguised as a missed shot.
+        TestTrue(TEXT("A target in front of the hull is within weapon range"),
+                 ShipAlongRay + EngagementReach < Fixture.Ship->Tuning->WeaponRange);
+        const FVector TargetPosition = Eye + CameraRay * (ShipAlongRay + EngagementReach);
         auto *Target = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation());
         auto *Miss = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation() +
                                     Fixture.Ship->Camera->GetRightVector() * 1200.f);
         if (!TestNotNull(TEXT("Spawn target on the actual default camera ray"), Target) ||
             !TestNotNull(TEXT("Spawn off-axis control target"), Miss))
             return false;
+        {
+            const FVector Local = Fixture.Ship->GetActorTransform().InverseTransformPosition(TargetPosition);
+            AddInfo(FString::Printf(
+                TEXT("Target is %.1f cm from the muzzle, %.1f past the nose; ship-local %s; muzzle-to-target dot "
+                     "with sight %.2f"),
+                FVector::Dist(TargetPosition, Muzzle),
+                Local.X - FSSHullDefinition(ASSShip::SelectedHullIdentity()).ScaledOriginToNose(), *Local.ToString(),
+                FVector::DotProduct((TargetPosition - Muzzle).GetSafeNormal(), CameraRay)));
+        }
+        // Reports the shooting geometry as it stands at the instant of a shot, because the ship keeps flying
+        // between the three of them and only the third one is asserted.
+        auto ReportShot = [&](const TCHAR *When)
+        {
+            const FVector Now = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
+            const FVector Lens = Fixture.Ship->Camera->GetComponentLocation();
+            const FVector Sight = Fixture.Ship->Camera->GetForwardVector();
+            FHitResult SightHit;
+            FCollisionQueryParams Query(SCENE_QUERY_STAT(SSTestAim), false, Fixture.Ship);
+            Fixture.Ship->GetWorld()->LineTraceSingleByChannel(
+                SightHit, Lens, Lens + Sight * Fixture.Ship->Tuning->WeaponRange, ECC_Visibility, Query);
+            AddInfo(FString::Printf(
+                TEXT("%s: muzzle %.0f cm from target; sight ray hits %s; muzzle-to-target sight dot %.3f"), When,
+                FVector::Dist(Now, TargetPosition),
+                SightHit.bBlockingHit ? *GetNameSafe(SightHit.GetActor()) : TEXT("nothing"),
+                FVector::DotProduct((TargetPosition - Now).GetSafeNormal(), Sight)));
+        };
         TestNull(TEXT("Manual camera-ray case has no soft-assist target"), Fixture.Ship->SoftTarget);
         TestEqual(TEXT("Flight ticks alone do not fire a weapon"), Fixture.Projectiles(), 0);
         TestFalse(TEXT("Target survives without manual Fire"), Target->IsActorBeingDestroyed());
+        ReportShot(TEXT("Shot 1"));
         Fixture.Ship->Fire();
         TestEqual(TEXT("Manual Fire spawns one projectile or laser tracer"), Fixture.Projectiles(), 1);
         Fixture.Ship->Fire();
@@ -704,11 +812,19 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
                   Target->IsActorBeingDestroyed());
         if (Weapon == SS::Weapon::RapidLaser)
         {
-            Fixture.Frames(15);
+            // Long enough for the 55000 cm/s tracer to fly the whole way to the target and out the far side,
+            // which is what makes "does not apply a second damage hit" mean anything, and no longer - every
+            // extra frame is sight drift bought for nothing.
+            Fixture.Frames(8);
             TestFalse(TEXT("Laser tracer does not apply a second damage hit"), Target->IsActorBeingDestroyed());
+            // The cooldown has already been proven above, by the shot it refused. Retiring it here lets the
+            // remaining two shots leave on one frame, so all three are fired at one sight picture and the
+            // claim under test is the damage they add up to rather than how far the ship flew between them.
+            Fixture.Ship->Tuning->LaserInterval = 0.f;
+            ReportShot(TEXT("Shot 2"));
             Fixture.Ship->Fire();
             TestFalse(TEXT("Two tuned laser hits leave the target alive"), Target->IsActorBeingDestroyed());
-            Fixture.Frames(15);
+            ReportShot(TEXT("Shot 3"));
             Fixture.Ship->Fire();
             TestTrue(TEXT("Third manual laser hitscan defeats the camera-ray target"), Target->IsActorBeingDestroyed());
         }

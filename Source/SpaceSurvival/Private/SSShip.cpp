@@ -223,8 +223,16 @@ float ASSShip::DockApproachRadius() const
 }
 ESSHullIdentity ASSShip::SelectedHullIdentity()
 {
+    // The Phoenix is the ship. Every rule it used to fail has been read, measured and either rewritten as
+    // something true of any hull or moved into the hull's own row, so this is a default rather than a flag
+    // that happens to work: the whole suite passes on it.
+    //
+    // Two ways to fly the classic hull remain, and both matter. -SSClassic asks for it, which is how the
+    // two are compared side by side; and Installed() still answers for the licensed pack, so a fresh
+    // checkout or a CI machine that does not have it flies the classic hull rather than failing to find a
+    // mesh. -SSPhoenix keeps working and now simply asks for what it already gets.
     const FSSHullDefinition Phoenix(ESSHullIdentity::StellarPhoenix);
-    return FParse::Param(FCommandLine::Get(), TEXT("SSPhoenix")) && Phoenix.Installed()
+    return !FParse::Param(FCommandLine::Get(), TEXT("SSClassic")) && Phoenix.Installed()
                ? ESSHullIdentity::StellarPhoenix
                : ESSHullIdentity::Classic;
 }
@@ -306,11 +314,11 @@ void ASSShip::BeginPlay()
     // A skeletal hull, if this build has one. The static hull stays loaded and simply stops being drawn:
     // paint, the module presentation and the chase-framing test all still read it, and none of them has to
     // learn about a second kind of hull before the flight model itself moves.
-    // Behind -SSPhoenix, the same idiom HullAssetPath already uses for -SSShipRefresh. The first version
-    // switched hulls whenever the pack happened to be installed, which is not a decision a build should
-    // make for itself: it hid the static hull, and USSShipPresentation hangs the exhausts, muzzle flashes
-    // and fitted upgrade modules off that hull, so ShipPresentationSelection went red on the one machine
-    // that owns the pack. Opt in explicitly and the shipped ship is untouched everywhere.
+    // Which hull that is comes from SelectedHullIdentity and nowhere else. An early version switched hulls
+    // wherever the pack happened to be installed and did it inline, which hid the static hull that
+    // USSShipPresentation hangs the exhausts, muzzle flashes and fitted upgrade modules off - so the
+    // presentation suite went red on the one machine that owns the pack. The presentation now asks the hull
+    // whether it wears those modules, and the choice is made in one place that every test can also ask.
     if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix);
         SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix)
     {
@@ -475,6 +483,15 @@ void ASSShip::HoldBody(bool Hold)
 {
     if (!ShipCoreDriven || !Collision)
         return;
+    // ShipCore's managers are components with their own tick, and they push into the body on their own
+    // schedule rather than only when this class asks them to. Switching the body off underneath them leaves
+    // them calling AddForce, AddTorque and GetMass against a body that is not simulating for as long as the
+    // hold lasts - 110 engine warnings across one ten-wave journey, every one of them a push thrown away.
+    // Holding the ship therefore has to stop the things pushing it, not only the thing being pushed.
+    if (Thrusters)
+        Thrusters->SetComponentTickEnabled(!Hold);
+    if (Gyros)
+        Gyros->SetComponentTickEnabled(!Hold);
     if (Hold)
     {
         // Docking and mooring were written for a kinematic pawn: they move the actor with SetActorLocation
@@ -620,7 +637,15 @@ void ASSShip::Tick(float Dt)
     const float Interference = S.run.interferenceSeconds > 0 ? .7f : 1.f;
     if (ShipCoreDriven)
     {
-        DriveShipCore(Dt, Stats.acceleration, Stats.maneuver, Stats.response, Speed, Authority, Interference);
+        // Nothing to drive while the body is held. HoldBody switches the body off for the length of a
+        // scripted move - docking onto a pad, sitting moored at the station - and that move owns the ship
+        // until it hands it back. ShipCore has no way to know, so without this its thrusters and gyros go on
+        // calling AddForce, AddTorque and GetMass against a body that is not simulating: 110 engine warnings
+        // in a single ten-wave journey, every one of them a push that was thrown away. The kinematic branch
+        // below must not run either - it would move the actor out from under the scripted move - which is
+        // why this is a guard inside the branch rather than a condition on it.
+        if (Collision && Collision->IsSimulatingPhysics())
+            DriveShipCore(Dt, Stats.acceleration, Stats.maneuver, Stats.response, Speed, Authority, Interference);
     }
     else
     {
@@ -750,7 +775,18 @@ void ASSShip::RequestDodge()
     if (Direction.IsNearlyZero())
         Direction = FVector2D(1, 0);
     Direction.Normalize();
-    Velocity += (GetActorRightVector() * Direction.X + GetActorUpVector() * Direction.Y) * Tuning->DodgeImpulse;
+    const FVector Dodge =
+        (GetActorRightVector() * Direction.X + GetActorUpVector() * Direction.Y) * Tuning->DodgeImpulse;
+    Velocity += Dodge;
+    // The same member-versus-body gap that swallowed collision damage and hazard shoves, and the same fix:
+    // the line above moves the hand-kept integrator's velocity, which a simulating body never reads, so on
+    // a force-driven hull the dodge key did nothing whatsoever. The body's velocity is moved by exactly the
+    // vector the kinematic line adds, so one dodge is one dodge on either drive rather than a figure scaled
+    // by whichever hull's mass happens to be flying. It is set rather than queued as an impulse because a
+    // dodge is an instantaneous change of velocity and reads back as one immediately, which is both what the
+    // kinematic path has always done and what anything asking "did the dodge take" can actually observe.
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+        Collision->SetPhysicsLinearVelocity(Collision->GetPhysicsLinearVelocity() + Dodge);
     // No collision immunity is granted; every world body still applies damage.
 }
 void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)

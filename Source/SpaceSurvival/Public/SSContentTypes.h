@@ -662,6 +662,32 @@ struct FSSHullDefinition
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
     float BrakeFloorUndershootCmS = .5f;
 
+    /** How much of a turn this hull may still be carrying one second after the stick is reversed.
+     *
+     *  A kinematic hull turns at a commanded rate and flips it the instant the stick does, so a second of
+     *  opposite stick leaves nothing: measured, the classic hull swings from +42.25 deg of yaw to -19.50.
+     *  A force drive has angular inertia and decelerates onto the reversal, so a little of the old turn
+     *  survives the second: the Phoenix falls from +2.414 deg of pitch to +0.051, which is 2.1 percent of
+     *  the turn it was in and a stop in every sense that matters to a pilot.
+     *
+     *  This is a residual, not permission to ignore the stick. That reversing the stick reverses the turn
+     *  is asserted separately and holds for every hull with no allowance at all. A heavier ship earns a
+     *  larger figure here by declaring one, not by the suite loosening for everybody. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float SteeringReversalResidualShare = .01f;
+
+    /** How far short of a surface this hull comes to rest when it is carried onto one.
+     *
+     *  A swept kinematic move is resolved by a query and is placed exactly against the face: measured, the
+     *  classic hull stops 0.01 cm short of it. A simulating body is resolved by the physics scene at a
+     *  substep boundary, so it settles a little further out - the Phoenix stops 1.38 cm short while closing
+     *  at 2500 cm/s, which is well inside one substep of travel.
+     *
+     *  This is the near side of the contact only. That the hull never ends up inside or beyond the surface
+     *  is asserted separately and holds for every hull with no allowance. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float ContactStandoffCm = .5f;
+
     /** The length this hull actually flies at, which is what any gameplay comparison wants. */
     float ScaledLength() const
     {
@@ -712,6 +738,12 @@ struct FSSHullDefinition
             return Why = TEXT("ContactOffAxisShare is unset; a hull has to say how straight its shoves land"), false;
         if (BrakeFloorUndershootCmS <= 0.f)
             return Why = TEXT("BrakeFloorUndershootCmS is unset; a hull has to say how it settles onto a floor"), false;
+        if (SteeringReversalResidualShare <= 0.f)
+            return Why = TEXT("SteeringReversalResidualShare is unset; a hull has to say how fast it gives up a turn"),
+                   false;
+        if (ContactStandoffCm <= 0.f)
+            return Why = TEXT("ContactStandoffCm is unset; a hull has to say how close it comes to rest on a surface"),
+                   false;
         // A skeletal hull is the only kind that can carry its own animated gear, and the only kind the
         // module presentation cannot fit. Catching the combination here is cheaper than finding a ship
         // wearing another ship's nacelle casings.
@@ -805,6 +837,11 @@ struct FSSHullDefinition
             // Measured 75.9 cm/s below a 1000 floor - 7.6 percent - while the held brake converges. It
             // never approaches stopping; the lowest speed reached is 924.
             BrakeFloorUndershootCmS = 100.f;
+            // Measured 2.1 percent of its pitch rate left after a second of opposite stick, and its yaw
+            // fully reversed. A tenth is the headroom, not the measurement.
+            SteeringReversalResidualShare = .1f;
+            // Measured 1.38 cm short of a wall it was dodged into at 2500 cm/s. Five is the headroom.
+            ContactStandoffCm = 5.f;
             // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
             // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
             // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this

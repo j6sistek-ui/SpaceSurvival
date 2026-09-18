@@ -119,8 +119,8 @@ private:
     UPROPERTY()
     TArray<TObjectPtr<class UNiagaraComponent>> HullExhausts;
     /** True once the root is simulating and ShipCore's components have accepted it. While false the hand
-     *  written integrator below runs exactly as it always has, which is every build that does not pass
-     *  -SSPhoenix. */
+     *  written integrator below runs exactly as it always has, which is now the classic hull: a build run
+     *  with -SSClassic, or one without the licensed pack installed. */
     bool ShipCoreDriven = false;
     UPROPERTY()
     TObjectPtr<class UThrusterManagerComp> Thrusters;
