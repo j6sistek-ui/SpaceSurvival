@@ -490,6 +490,14 @@ void ASSShip::FinishDocking()
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Velocity = Forces = FVector::ZeroVector;
     HoldBody(true);
+    // Down: gear out and the rear ramp open. One authored motion does both - Cargo_Door_Bone swings 83.7
+    // degrees alongside Foot_Bone through 90.3 - so the ship a player walks back up to is already standing
+    // on its legs with its door open, rather than resting its belly on the pad with everything stowed.
+    // Played last, because SetActorTickEnabled(false) below stops this actor but not its animation.
+    if (ShipCoreDriven && SkeletalHull && SkeletalHull->IsVisible())
+        if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix); !Hull.LandingDeployClipPath.IsEmpty())
+            if (auto *Deploy = LoadObject<UAnimSequence>(nullptr, *Hull.LandingDeployClipPath))
+                SkeletalHull->PlayAnimation(Deploy, false);
     SetActorTickEnabled(false);
 }
 void ASSShip::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
