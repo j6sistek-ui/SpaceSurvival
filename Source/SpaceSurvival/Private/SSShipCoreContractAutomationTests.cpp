@@ -9,6 +9,7 @@
 #include "GyroManagerComp.h"
 #include "SSContentTypes.h"
 #include "PhysicsEngine/BodyInstance.h"
+#include "PhysicsEngine/PhysicsSettings.h"
 #include "ThrusterManagerComp.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -269,6 +270,30 @@ bool FSSHullDefinitionScaleTest::RunTest(const FString &)
     // Deliberately unscaled. The authored size is what makes a walkable interior possible for a 1.35 m
     // hero, and the owner asked that a value not be changed unless it is certainly wrong.
     TestEqual(TEXT("The hull is not scaled down on a guess"), Phoenix.HullScale, 1.f);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSWorldGravityBelongsToTheHeroTest, "SpaceSurvival.Flight.WorldGravityBelongsToHero",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSWorldGravityBelongsToTheHeroTest::RunTest(const FString &)
+{
+    // This exists because of a real regression, not a hypothetical one. Moving flight to ShipCore, the
+    // obvious-looking way to stop a simulating ship falling was DefaultGravityZ=0 in DefaultEngine.ini.
+    // It works for the ship, and it silently breaks the hero: ASSWalker is an ACharacter whose
+    // UCharacterMovementComponent spawns 260 cm above the station deck (WalkSpawn Z 180 against a deck
+    // top at Z -80) and reaches MOVE_Walking by FALLING onto it. At zero gravity it never lands, so the
+    // Station5 fixture's standingOnDeck went from 14.55 seconds to 0.00 of a required 15.00 - and all 63
+    // automation tests stayed green, because the ones that look at the walker assert its spawn position
+    // rather than its landing.
+    //
+    // Gravity is a per-body concern in this game. Exactly one thing simulates - the ship, and only under
+    // -SSPhoenix - and it opts out on its own body via SetEnableGravity(false), with ShipCore's
+    // bCustomGravity zero vector stopping the plugin re-applying world gravity as a force. Everything
+    // else that needs gravity is a character. So the world keeps its gravity and the ship turns its own
+    // off, rather than the other way round.
+    const float Gravity = UPhysicsSettings::Get()->DefaultGravityZ;
+    TestTrue(TEXT("World gravity is left to the engine default, because the walking hero needs it to land"),
+             Gravity < -100.f);
     return true;
 }
 #endif

@@ -321,6 +321,10 @@ void ASSShip::BeginPlay()
             // had. Left to itself the engine would derive about 581 kg from the sphere's radius, and then
             // a readability tweak to that radius would silently move acceleration.
             Collision->SetMassOverrideInKg(NAME_None, 4687.5f, true);
+            // Off on the body, not in world settings. The world's gravity belongs to the walking hero,
+            // whose CharacterMovement needs it to land on the deck; this ship is the only thing in the
+            // game that simulates, so it is the only thing that should opt out.
+            Collision->SetEnableGravity(false);
             Collision->SetLinearDamping(0.f);
             Collision->SetAngularDamping(0.f);
             Collision->SetSimulatePhysics(true);
