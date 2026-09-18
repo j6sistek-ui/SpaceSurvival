@@ -659,9 +659,59 @@ void ASSWalker::BeginPlay()
     GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, MeshLift(Hero.ScaledSoleOffset(HeroMesh))));
     GetMesh()->SetRelativeRotation(FRotator(0, Hero.MeshYaw, 0));
     GetMesh()->SetRelativeScale3D(FVector(Hero.RenderedScale(HeroMesh)));
+    // What this hero stands in, if it has anything to stand in. A clip can only play on the skeleton
+    // it was authored against, exactly as above, and here a mismatch is not a reason to give the slot
+    // away - it is a reason for this hero to stand the way heroes stood before any of these existed.
+    IdleAnimation = nullptr;
+    FidgetAnimations.Reset();
+    // Rung zero is the walk, always, installed or not - every other rung is measured against it and
+    // UpdateHeroAnimation reads GaitAnimations[0] where it used to read WalkAnimation.
+    GaitAnimations.Reset();
+    GaitSpeeds.Reset();
+    GaitAnimations.Add(WalkAnimation);
+    GaitSpeeds.Add(FMath::Max(1.f, Hero.WalkSpeed));
+    if (const USkeleton *Skeleton = HeroMesh ? HeroMesh->GetSkeleton() : nullptr)
+    {
+        auto LoadClip = [Skeleton](const FString &Path) -> UAnimSequence *
+        {
+            // Asked about before it is loaded, because a hero declaring an idle this build does not
+            // carry is the ordinary shape of a build without the licensed pack, and LoadObject would
+            // put a warning in the log for every one of them.
+            auto *Clip = FSSHeroDefinition::AssetInstalled(Path) ? LoadObject<UAnimSequence>(nullptr, *Path) : nullptr;
+            return Clip && Clip->GetSkeleton() == Skeleton ? Clip : nullptr;
+        };
+        IdleAnimation = LoadClip(Hero.IdleClipPath);
+        // Only alongside an idle: a fidget is a clip you cut away from and come back to, so one with
+        // nowhere to come back to would be a hero left holding a pose once its fidget second passed.
+        if (IdleAnimation)
+            for (const FString &Path : Hero.IdleFidgetClipPaths)
+                if (auto *Fidget = LoadClip(Path))
+                    FidgetAnimations.Add(Fidget);
+        // The ladder, built once and ascending. A hero with neither fast clip installed ends with a
+        // single rung and ChooseGait can only ever return it, which is the behaviour every hero had.
+        auto AddGait = [this, &LoadClip](const FString &Path, float Speed)
+        {
+            if (auto *Clip = LoadClip(Path))
+                if (Speed > GaitSpeeds.Last())
+                {
+                    GaitAnimations.Add(Clip);
+                    GaitSpeeds.Add(Speed);
+                }
+        };
+        AddGait(Hero.JogClipPath, Hero.JogSpeed);
+        AddGait(Hero.RunClipPath, Hero.RunSpeed);
+    }
     // The rig's strength is this hero's, and BeginPlay is the first moment that is known.
     UpdateReadabilityLighting();
-    StartWalkingAnimation();
+    // Where this hero's ankle rests when it is simply standing. Footsteps compare against it rather
+    // than against a fixed height, because the heroes this roster holds stand between 135 and 180 cm
+    // and an ankle that is planted on one of them is mid-stride on another.
+    FTransform RestFoot;
+    if (FSSHeroDefinition::ResolveBone(GetMesh(), Hero.LeftFootBone, RestFoot))
+        FootRestHeight =
+            FMath::Max(0.f, float(RestFoot.GetLocation().Z -
+                                  (GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight())));
+    StartStandingAnimation(false);
 }
 void ASSWalker::UpdateReadabilityLighting()
 {
@@ -693,19 +743,203 @@ void ASSWalker::UpdateReadabilityLighting()
     if (RimLight->IsVisible() != (Rim > 0.f))
         RimLight->SetVisibility(Rim > 0.f);
 }
-void ASSWalker::StartWalkingAnimation()
+void ASSWalker::PlayClip(UAnimSequence *Clip, float Seconds, bool Loop, float RateScale, bool CarryPose)
 {
-    GetMesh()->PlayAnimation(WalkAnimation, true);
-    if (auto *Animation = GetMesh()->GetSingleNodeInstance())
+    // Starting a clip is a hard cut: PlayAnimation resets the single-node instance's clock, so this
+    // is how a clip is started rather than resumed, and calling it on the clip already playing would
+    // restart the stride every frame. Every caller is a transition; nothing calls this to keep going.
+    //
+    // CarryPose is what stops that cut being seen. Measured across all 46 bones, the jump from the
+    // idle's first pose into the walk at WalkHandoffSeconds moves R_Calf 7.73 cm, which is 11.6 cm at
+    // this hero's scale, and the jump the other way - out of an arbitrary walk phase back to the idle
+    // - has a median worst bone of 16.8 cm and reaches 22.2, so 33.2 cm on the deck. Those are the
+    // two most frequent transitions in the game, one per start and one per stop. USSStationPoseTransition
+    // already exists for exactly this: it holds the outgoing pose and blends off it over BlendDuration,
+    // and it was built for this same pawn and this same mesh. Reusing it costs one snapshot per cut.
+    //
+    // A hero with no idle never passes true, and then this function is the line it always was.
+    FPoseSnapshot Outgoing;
+    if (CarryPose && GetMesh()->GetSkeletalMeshAsset() && GetMesh()->GetAnimInstance())
+        GetMesh()->SnapshotPose(Outgoing);
+    CutSeconds = -1.f;
+    if (Outgoing.bIsValid)
     {
-        Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
-        // The paired disembark clip ends at this exact authored walk pose.
-        Animation->SetPosition(Hero.WalkHandoffSeconds, false);
+        // Not PlayAnimation: that would switch the component back to a plain single-node instance and
+        // throw away the very object holding the pose being blended from.
+        GetMesh()->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
+        if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+        {
+            Transition->SetAnimationAsset(Clip, Loop, 1.f);
+            Transition->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+            Transition->SetPosition(Seconds, false);
+            Transition->SetPlaying(true);
+            // A refused pose is not a failure worth a branch upstream. It means this cut is as hard
+            // as every cut used to be, which is the thing being improved rather than depended on.
+            if (Transition->SetSourcePose(Outgoing))
+                CutSeconds = 0.f;
+        }
     }
-    GetMesh()->GlobalAnimRateScale = 0.f;
+    else
+    {
+        GetMesh()->PlayAnimation(Clip, Loop);
+        if (auto *Animation = GetMesh()->GetSingleNodeInstance())
+        {
+            Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+            Animation->SetPosition(Seconds, false);
+        }
+    }
+    GetMesh()->GlobalAnimRateScale = RateScale;
     GetMesh()->TickAnimation(0.f, false);
     GetMesh()->RefreshBoneTransforms();
     GetMesh()->SetComponentTickEnabled(true);
+}
+int32 ASSWalker::ChooseGait(float Speed) const
+{
+    // Boundaries are geometric means, not midpoints, because what has to stay near 1 is a RATIO: the
+    // rate a gait plays at is Speed divided by that gait's own authored speed. Splitting at the
+    // geometric mean makes the worst rate on either side of a boundary the same distance from 1.
+    // For this hero - 180, 205.5, 384.3 against pawn speeds of 320 and 560 - it puts the boundaries
+    // at 192 and 281, so cruising sits in the run at 0.83x and sprinting in the run at 1.46x, where
+    // one clip for everything had the walk at 1.78x and 3.11x. The jog holds the ramp between them.
+    int32 Chosen = Gait;
+    // Up while the speed is clear of the boundary above, down while it is clear of the one below.
+    while (Chosen + 1 < GaitSpeeds.Num() &&
+           Speed > FMath::Sqrt(GaitSpeeds[Chosen] * GaitSpeeds[Chosen + 1]) * (1.f + GaitHysteresis))
+        ++Chosen;
+    while (Chosen > 0 && Speed < FMath::Sqrt(GaitSpeeds[Chosen - 1] * GaitSpeeds[Chosen]) / (1.f + GaitHysteresis))
+        --Chosen;
+    return Chosen;
+}
+void ASSWalker::StartStandingAnimation(bool CarryPose)
+{
+    Moving = false;
+    StandingSeconds = 0.f;
+    FidgetSecondsLeft = 0.f;
+    Gait = 0;
+    // A hero with an idle stands in it, at its own authored rate. A hero without one stands where
+    // every hero used to: the walk clip, frozen on the single frame the disembark clip ends at, with
+    // the stride stopped dead. Those two lines are the whole difference, and the second of them is
+    // the old body of this function unchanged - same clip, same second, same zero, no pose carried.
+    if (IdleAnimation)
+        PlayClip(IdleAnimation, 0.f, true, 1.f, CarryPose);
+    else
+        PlayClip(WalkAnimation, Hero.WalkHandoffSeconds, true, 0.f, false);
+}
+void ASSWalker::UpdateHeroAnimation(float Dt)
+{
+    // THE GAIT MAPPING.
+    //
+    // One rule: play the gait whose own authored travel is nearest the pawn's speed, at a rate of
+    // pawnSpeed / thatGait'sSpeed. The rate is what makes the planted foot cancel the ground exactly,
+    // so every band has no skate by construction; choosing the nearest gait is what keeps that rate
+    // near 1 instead of stretching one clip over the whole range. With a single gait installed the
+    // rule collapses to what the game always did - the walk at Speed/WalkSpeed - and that is the case
+    // the two heroes without fast clips take.
+    //
+    // For the squirrel the ladder is the walk at 180, the jog at 205.5 and the run at 384.3, against
+    // a pawn that walks at 320 and runs at 560 (Move). Its cruising speed lands in the run at 0.83x
+    // and its sprint in the run at 1.46x, where one clip for everything ran the walk at 1.78x and
+    // 3.11x. That is not a quirk of the clips: 320 cm/s on a hero 134.7 cm tall is 2.4 body heights a
+    // second, which on a person is a run, so the pawn's "walk" was never a walk.
+    //
+    // What this cannot do is blend two gaits, because a single-node pawn plays one clip - so each
+    // band change is a cut, taken through the same pose carry as every other cut here, and the
+    // hysteresis in ChooseGait is what stops a pawn sitting on a boundary cutting every frame.
+    const float Speed = GetVelocity().Size2D();
+    if (!IdleAnimation)
+    {
+        // Unchanged, and deliberately still one line: for a hero with no idle this is the whole of
+        // its animation, standing and walking alike, exactly as it was before any of this existed.
+        GetMesh()->GlobalAnimRateScale = Speed / FMath::Max(1.f, Hero.WalkSpeed);
+        return;
+    }
+    // One sane step, used by everything below it. A frame that reports no time, or reports a NaN,
+    // must not be able to run a blend out, bring a fidget forward, or push one away for ever.
+    const float Step = FMath::IsFinite(Dt) && Dt > 0.f ? Dt : 0.f;
+    if (CutSeconds >= 0.f)
+    {
+        CutSeconds += Step;
+        // The same call the disembark uses, and the same curve: seconds in, smoothstepped alpha out.
+        // It clears its own held pose when it arrives, so this only has to stop asking.
+        if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+            Transition->SetExitTime(CutSeconds);
+        if (CutSeconds >= USSStationPoseTransition::BlendDuration)
+            CutSeconds = -1.f;
+    }
+    // Held input, not just measured speed. GetVelocity on a walking pawn is what it managed to move,
+    // so a hero pressed into a bulkhead reports nearly zero and would drop into the idle - and then,
+    // after IdleFidgetSeconds of the player still holding forward, stand there and fidget at the wall.
+    // The deck is a bounded room, so that is not a corner case. Requiring the intent to be gone too
+    // leaves a pressed hero where it always was - a blocked pawn reports no speed, so the ladder
+    // below picks its slowest rung and plays the walk at rate ~0, which is exactly what pressing into
+    // a bulkhead looked like before any of this. Releasing the stick still reaches the idle the same
+    // frame, so the guard buys that case without costing a frame anywhere else.
+    //
+    // Both halves are asked because they are true at different moments: the pending input vector is
+    // this frame's, set before this tick and consumed after it, and the acceleration is what the
+    // movement component made of the last one.
+    const auto *Movement = GetCharacterMovement();
+    const bool Pushing = !GetPendingMovementInputVector().IsNearlyZero() ||
+                         (Movement && !Movement->GetCurrentAcceleration().IsNearlyZero());
+    if (Moving ? Speed < Hero.WalkSpeed * MoveExitFraction && !Pushing : Speed > Hero.WalkSpeed * MoveEnterFraction)
+    {
+        Moving = !Moving;
+        // Into the gait at the walk's handoff second rather than at its start, because that second is
+        // a planted contact - heel strike is at 0.158 and toe-off at 0.467 - while the clip's own
+        // frame zero is mid-swing. Leaving a stand on a foot already on the ground is a step; leaving
+        // it on a foot in the air is a stumble. It is also the one pose this hero has always stood
+        // in, so the cut out of the idle lands exactly where the game used to start every walk from.
+        if (Moving)
+        {
+            Gait = ChooseGait(Speed);
+            PlayClip(GaitAnimations[Gait], Hero.WalkHandoffSeconds, true, Speed / GaitSpeeds[Gait], true);
+        }
+        else
+            StartStandingAnimation();
+    }
+    if (Moving)
+    {
+        const int32 Wanted = ChooseGait(Speed);
+        if (Wanted != Gait)
+        {
+            Gait = Wanted;
+            // Frame zero, not the walk's handoff second: that second is a contact pose of the WALK,
+            // and the other two clips are different lengths with their contacts elsewhere. The pose
+            // carry is what covers the seam, so the entry phase no longer has to.
+            PlayClip(GaitAnimations[Gait], 0.f, true, Speed / GaitSpeeds[Gait], true);
+        }
+        GetMesh()->GlobalAnimRateScale = Speed / GaitSpeeds[Gait];
+        return;
+    }
+    if (FidgetSecondsLeft > 0.f)
+    {
+        FidgetSecondsLeft -= Step;
+        // A fidget's last pose is its first pose is the idle's first pose, all three within 0.01 cm
+        // and 0.05 degrees, so being a frame early or late on the way back cannot show.
+        if (FidgetSecondsLeft <= 0.f)
+        {
+            FidgetSecondsLeft = 0.f;
+            StandingSeconds = 0.f;
+            PlayClip(IdleAnimation, 0.f, true, 1.f, true);
+        }
+    }
+    else
+    {
+        StandingSeconds += Step;
+        if (Hero.IdleFidgetSeconds > 0.f && FidgetAnimations.Num() > 0 && StandingSeconds >= Hero.IdleFidgetSeconds)
+        {
+            // In turn rather than at random: two fidgets alternating is what a person standing about
+            // looks like, and a random pick can repeat itself twice running, which does not.
+            UAnimSequence *Fidget = FidgetAnimations[NextFidget % FidgetAnimations.Num()];
+            NextFidget = (NextFidget + 1) % FidgetAnimations.Num();
+            FidgetSecondsLeft = Fidget->GetPlayLength();
+            StandingSeconds = 0.f;
+            PlayClip(Fidget, 0.f, false, 1.f, true);
+        }
+    }
+    // An idle keeps its own clock. The pawn is not moving, so there is no ground speed for it to
+    // follow, and the zero this used to be is what made standing a still frame in the first place.
+    GetMesh()->GlobalAnimRateScale = 1.f;
 }
 void ASSWalker::SampleExitPose(float Seconds)
 {
@@ -847,7 +1081,12 @@ void ASSWalker::Tick(float Dt)
             ConsumeMovementInputVector();
             GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-            StartWalkingAnimation();
+            // The exit clip is authored to end on the walk's handoff pose, so for the two heroes that
+            // climb out this hands back to the exact frame it always did - they have no idle, so the
+            // pose carry is not reached and this is the same call it always was. A hero with both an
+            // exit clip and an idle would land on a pose the idle does not start from; none is that
+            // shape today, and when one is, the carry below covers it.
+            StartStandingAnimation();
         }
     }
     else
@@ -882,8 +1121,50 @@ void ASSWalker::Tick(float Dt)
                 GetCharacterMovement()->SetMovementMode(MOVE_Walking);
             }
         }
-        // The stride plays at its authored rate at the hero's own natural walking speed.
-        GetMesh()->GlobalAnimRateScale = GetVelocity().Size2D() / FMath::Max(1.f, Hero.WalkSpeed);
+        // Which clip this hero should be in, and how fast it should run.
+        UpdateHeroAnimation(Dt);
+        UpdateFootsteps(Dt);
+    }
+}
+void ASSWalker::UpdateFootsteps(float Dt)
+{
+    // Fired from the feet themselves, not from notifies hung on the clips. This hero's gaits come
+    // from two different places - the walk authored for this game, the rest retargeted from mocap -
+    // and re-importing any of them would drop a notify, silently. A boot coming down is the same
+    // event in every clip, and it is the event the sound belongs to.
+    StepCooldown = FMath::Max(0.f, StepCooldown - Dt);
+    auto *Movement = GetCharacterMovement();
+    const bool OnFoot = Moving && !Disembarking && Movement && Movement->IsMovingOnGround();
+    const FName Feet[2] = {Hero.LeftFootBone, Hero.RightFootBone};
+    const float Deck = GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    for (int32 Side = 0; Side < 2; ++Side)
+    {
+        FTransform Foot;
+        if (!OnFoot || FootRestHeight <= 0.f || !FSSHeroDefinition::ResolveBone(GetMesh(), Feet[Side], Foot))
+        {
+            // Standing, mid-exit, or a hero whose feet this build cannot name: nothing is planted,
+            // so the next real step still sounds instead of being swallowed as "already down".
+            FootPlanted[Side] = false;
+            continue;
+        }
+        const bool Planted = Foot.GetLocation().Z - Deck <= FootRestHeight * 1.35f;
+        if (Planted && !FootPlanted[Side] && StepCooldown <= 0.f)
+        {
+            if (auto *Audio = GetWorld()->GetSubsystem<USSWorldAudioSubsystem>())
+                if (auto *Voice = Audio->PlayOneShot(FSSAudioCueDefinition(), TEXT("Footstep"), Foot.GetLocation()))
+                {
+                    // No two boots land alike, and a hero moving faster lands harder.
+                    Voice->SetPitchMultiplier(FMath::FRandRange(.92f, 1.09f));
+                    Voice->SetVolumeMultiplier(SSAudio::EffectsGain(
+                        this, FMath::GetMappedRangeValueClamped(FVector2D(60.f, 480.f), FVector2D(.45f, 1.f),
+                                                                float(GetVelocity().Size2D()))));
+                }
+            // A walk lands about twice a second and a sprint about four times; this bar is under
+            // both, so it never silences a real step - it only stops a clip that jitters at the
+            // contact threshold from turning two frames into a burst.
+            StepCooldown = .12f;
+        }
+        FootPlanted[Side] = Planted;
     }
 }
 void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)

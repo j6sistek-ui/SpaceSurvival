@@ -3,17 +3,14 @@
 #include "Engine/SkeletalMesh.h"
 #include "Misc/PackageName.h"
 
-namespace
-{
-bool AssetExists(const FString &ObjectPath)
+bool FSSHeroDefinition::AssetInstalled(const FString &ObjectPath)
 {
     return !ObjectPath.IsEmpty() && FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(ObjectPath));
 }
-} // namespace
 
 bool FSSHeroDefinition::Installed(ESSHeroSlot Slot) const
 {
-    return AssetExists(MeshPath) && AssetExists(Slot == ESSHeroSlot::Pilot ? PilotClipPath : WalkClipPath);
+    return AssetInstalled(MeshPath) && AssetInstalled(Slot == ESSHeroSlot::Pilot ? PilotClipPath : WalkClipPath);
 }
 
 float FSSHeroDefinition::RenderedScale(const USkeletalMesh *Mesh) const

@@ -122,6 +122,23 @@ public:
     }
     /** Deck plates sit this far above the collision floor; the sole is fitted to them, not to it. */
     static constexpr float DeckClearance = 2.75f;
+    /** The two speeds the idle/locomotion switch turns on, as fractions of this hero's own authored
+     *  walk speed so they mean the same thing for a hero whose stride is not 180 cm/s. Standing
+     *  becomes moving above the first; moving becomes standing below the second. They are different
+     *  numbers on purpose: one threshold would let a pawn creeping across it - a nudged stick, the
+     *  last centimetres of braking, a shove from geometry - flip clip every frame, and each flip is a
+     *  hard cut on a single-node pawn, so the flicker would be the loudest thing on screen. At the
+     *  squirrel's 180 these are 18 and 7.2 cm/s: 18 is reached within a frame of real input and is
+     *  slow enough that the step it starts is a step, and below 7.2 the hero covers less ground in a
+     *  second than its own planted foot wanders inside the idle, so a planted idle foot there cannot
+     *  be seen to slide. */
+    static constexpr float MoveEnterFraction = .10f;
+    static constexpr float MoveExitFraction = .04f;
+    /** How far past a gait boundary the pawn has to get before the clip changes, as a fraction of
+     *  that boundary. The boundaries themselves are the geometric means of the neighbouring clips'
+     *  authored speeds, so this band is symmetric in the thing that actually matters - the ratio the
+     *  rate ends up at. Without it a pawn cruising on a boundary changes clip every frame. */
+    static constexpr float GaitHysteresis = .08f;
     /** How many times Tick has had to haul this pawn back onto the deck. In play that is a mercy: a
      *  walker who wanders off the finite deck is returned to its spawn rather than losing the run. To
      *  anything checking an arrival it is the opposite - the clamp restores exactly the state an
@@ -161,8 +178,47 @@ private:
     FSSHeroDefinition Hero = FSSHeroDefinition::Fallback();
     UPROPERTY()
     TObjectPtr<UAnimSequence> WalkAnimation;
+    /** Null for a hero that declares no idle, and null for one whose idle failed to load or belongs
+     *  to another skeleton. Every branch that reads it treats null as "this hero stands the way the
+     *  game has always stood a hero", so a missing file degrades rather than breaks. */
+    UPROPERTY()
+    TObjectPtr<UAnimSequence> IdleAnimation;
+    UPROPERTY()
+    TArray<TObjectPtr<UAnimSequence>> FidgetAnimations;
+    /** The gaits this hero owns, ascending by the speed each was authored to travel at. Element 0 is
+     *  always the walk, so this is never empty and a hero with no fast clips has exactly one entry -
+     *  which is the whole of the old behaviour, reached without a branch. */
+    UPROPERTY()
+    TArray<TObjectPtr<UAnimSequence>> GaitAnimations;
+    TArray<float> GaitSpeeds;
+    /** Which side of the hysteresis band the pawn is currently on, not what its velocity is. */
+    bool Moving = false;
+    /** Which entry of GaitAnimations is playing; kept across frames because the band it was chosen
+     *  in is wider than the band it would be re-chosen in. */
+    int32 Gait = 0;
+    float StandingSeconds = 0.f;
+    float FidgetSecondsLeft = 0.f;
+    int32 NextFidget = 0;
+    /** Seconds into a cross-blend out of the pose the previous clip was holding, or negative when no
+     *  blend is running. Only a hero with an idle ever sets it: see PlayClip. */
+    float CutSeconds = -1.f;
     double MeshLift(double ScaledSoleOffset) const;
     void SampleExitPose(float Seconds);
-    void StartWalkingAnimation();
+    void PlayClip(UAnimSequence *Clip, float Seconds, bool Loop, float RateScale, bool CarryPose);
+    int32 ChooseGait(float Speed) const;
+    /** CarryPose false is the spawn case: there is no outgoing animation to blend off, only the
+     *  reference pose the component happens to be holding, and blending off that would make the
+     *  hero's first tenth of a second a fade out of a T-pose. */
+    void StartStandingAnimation(bool CarryPose = true);
+    void UpdateHeroAnimation(float DeltaSeconds);
+    void UpdateFootsteps(float DeltaSeconds);
     void UpdateReadabilityLighting();
+    /** Whether each boot was down last frame, so a step sounds on the way down and not every frame
+     *  it stays there, and a short bar on how soon the next one may sound. */
+    bool FootPlanted[2] = {false, false};
+    float StepCooldown = 0.f;
+    /** How high this hero's ankle sits above the deck when it simply stands, measured once from the
+     *  mesh it is wearing. A boot is planted when it comes back near that, which is a number every
+     *  hero answers for itself rather than one tuned to the squirrel's short legs. */
+    float FootRestHeight = 0.f;
 };

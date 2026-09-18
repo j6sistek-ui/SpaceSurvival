@@ -804,12 +804,18 @@ bool FSSUnauthoredDisembark::RunTest(const FString &Parameters)
     TestTrue(TEXT("A refused exit leaves the hero's mesh ticking on its own clock"),
              Walker->GetMesh()->IsComponentTickEnabled());
     auto *Animation = Walker->GetMesh()->GetSingleNodeInstance();
-    TestTrue(TEXT("The hero is still standing in its own looping walk clip at its own handoff second"),
+    // Standing, in whichever clip standing means for this hero: its idle from the start if it has
+    // one, and otherwise the looping walk frozen at its own handoff second, as it always was.
+    const FSSHeroDefinition &StandingHero = Walker->GetHero();
+    const bool StandsInAnIdle = !StandingHero.IdleClipPath.IsEmpty();
+    TestTrue(TEXT("The hero is still standing in its own looping standing clip, entered where it should be"),
              Animation && Animation->GetCurrentAsset() &&
                  Animation->GetCurrentAsset()->GetName() ==
-                     FPackageName::ObjectPathToObjectName(Walker->GetHero().WalkClipPath) &&
+                     FPackageName::ObjectPathToObjectName(StandsInAnIdle ? StandingHero.IdleClipPath
+                                                                         : StandingHero.WalkClipPath) &&
                  Animation->IsLooping() &&
-                 FMath::IsNearlyEqual(Animation->GetCurrentTime(), Walker->GetHero().WalkHandoffSeconds, .001f));
+                 FMath::IsNearlyEqual(Animation->GetCurrentTime(),
+                                      StandsInAnIdle ? 0.f : StandingHero.WalkHandoffSeconds, .001f));
     Walker->Move(FVector2D(0, 1), FVector2D(1, 0), false, .1f);
     TestFalse(TEXT("The player is in control the moment docking finishes, with no exit to wait through"),
               Walker->GetPendingMovementInputVector().IsNearlyZero());

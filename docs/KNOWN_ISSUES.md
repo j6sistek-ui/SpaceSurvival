@@ -1210,6 +1210,110 @@ also that the admission tick still stops at `MaximumActiveThreats` (24); only th
 
 
 
+#### September 17 the squirrel is the hero: seated, lit, animated, and audible
+
+The owner's ask was "my ask is for hero to be squirrel and have its animations added". This is what that
+took, in the order it happened, and what it cost.
+
+**It is in the game.** `USSPhase1Data::Heroes` lists the squirrel first, so it is what
+`ASSWalker`/`ASSShip` resolve; the trooper and the Acornaut stay behind it as the fallbacks. Its assets live
+under `Content/SpaceSurvival/Licensed/Hero/`, which is git-ignored, because the model and every MoCap-derived
+clip come from purchased or licence-restricted packs. The tracked tree carries only the paths and the
+measurements.
+
+**Seated.** It inherited the Acornaut's `PilotMountOffset` of `(-15, 0, 72)` and floated 44.067 cm over the
+cushion - a third of its own height, which is the float the owner reported. That number was measured for a
+body whose origin sits 62.9 cm above its boots; this body's origin *is* its boots. The replacement
+`(-12.5, 0, 27.933)` is measured against the cockpit geometry in `Stage6_Clips/SeatFit.json`, not adjusted by
+eye, and puts the hips on the cushion with the boots in the footwell.
+
+**Lit.** The suit's base colour averages 0.046 linear albedo, about half of fresh asphalt, with 73% of its
+texels under 0.05, and every lamp in the hangar hangs above head height. It was a silhouette on a bright
+floor. It now carries a warm key and a cool rim of its own on lighting channel 1, scaled per hero
+(`ReadabilityLightScale`: squirrel 2.5, trooper and Acornaut 0.5, because the same rig on a light suit would
+blow it out). At 2.5 the suit reads at 0.75 of the deck beside it, up from 0.12. A first attempt at this was
+rejected in review for measuring contrast against floor pixels rather than the character, and for a rig that
+would have been ~3x too hot on the trooper. **Lighting channels do not contain a Lumen scene**: with
+`r.DynamicGlobalIlluminationMethod=1` and `r.ReflectionMethod=1` the channel mask is respected by direct
+lighting only, so the hero's own lamps were bouncing off the deck and glinting in the hull - it read as a
+lantern, which the owner called out. `SetAffectGlobalIllumination(false)` and `SetAffectReflection(false)` on
+both lights close that; the overhead lamps are untouched and still bounce.
+
+**Facing.** The hero was being placed on the deck at world yaw 0 regardless of the heading it flew in on. The
+old climb-out arc had been hiding it. Reverting the fix misses the station heading by exactly 73 degrees in
+the test.
+
+**It stands in a real idle.** Standing still had been one frozen frame of the walk. `MOB1_Stand_Relaxed_Idle_v2`
+from the MoCap Online pack is retargeted onto the squirrel's own skeleton as `A_SquirrelIdle`, with two stand
+fidgets that cut in every 12.266666 s - two whole idle loops, which is not a taste: the fidgets' first pose
+matches the idle's first pose to 0.004 cm across all 46 bones, so a cut on a loop boundary costs nothing.
+`ASSWalker` now chooses a clip rather than playing one: idle when standing, a gait chosen by speed, a
+hysteresis band so a pawn creeping across a threshold cannot flicker, and a short blend off whatever pose it
+was holding. A hero that declares no idle behaves exactly as it always did - walk frozen at the handoff
+second - and the tests pin that.
+
+**It has a jog and a run.** The first retarget pass looked unusable: the fast gaits put the boot 3 cm through
+the deck and the stand clips skated 10.8 cm per foot with the feet never leaving the ground. The animation was
+not the problem. Unreal's Python hands out *copies* of an op's chain array, so `for chain in chains` mutated
+nothing and `set_editor_property` then stored the unchanged array - silently, because the scalars on the same
+struct did take. Every chain was still on INTERPOLATED, both floor constraints were off, and the op stack had
+no IK Chains op at all, so the leg goals were never given a target and every foot was pure FK. The script now
+assigns by index and reads each value back off the op, and a setting that did not take is an error in the
+receipt rather than a step claiming success. With that corrected the gaits ground correctly and are wired in
+at their measured speeds (jog 205.5, run 384.3 cm/s against the walk's 180): at the pawn's 320 cm/s the run
+plays at 0.83x rather than the walk being stretched to 1.78x, and at a sprint 1.46x rather than 3.11x.
+
+**Footsteps exist.** There were none; the station was walked in silence. `ContentSource/Audio/Footstep.wav` is
+generated the way this project generates all its provisional audio - deterministic, tracked, no licence - a
+boot on deck plate at 0.3 s, deliberately the quietest and shortest sound in the set, because at a walk it
+fires twice a second. It is triggered from the feet rather than from notifies on the clips: `ASSWalker` reads
+the hero's own foot bones, named by its hero data, and sounds a step when one comes down near where that
+hero's ankle rests in its reference pose, with a randomised pitch and a 0.12 s cooldown. That works for the
+authored walk, the retargeted gaits and anything added later, and survives re-importing a clip, which a notify
+would not.
+
+**The tail, on the owner's instruction.** Nothing retargeted from a human carries tail motion, and no chain in
+the retargeter touches `Tail_01..05` - measured, their local transforms deviate from frame 0 by 0.000 in every
+clip the script produces. That deferral was the owner's ("differ more tail work outside of the current walk for
+later"), then narrowed to "a subtle wobble to each for now, leave walk as is, and idle no wobble", then to
+"can dial it in more later". `Scripts/AuthorHeroTailSway.py` writes one slow cycle per loop across the five
+tail bones, 7 degrees at the tip on the fidgets and 4 on the gaits, amplitude growing toward the tip and each
+bone lagging the one above it.
+
+**Dialling it in later is the requirement, so it has to be idempotent, and the first version was not.** The
+sway is composed onto the rotation the bone already has, so running it twice stacked two sways: asking for 4
+after 7 would have given 11. The script now records each clip's untouched tail tracks to a baseline file
+beside the clips on its first run and composes from that recording ever after, and it refuses to take a first
+baseline from a tail that is already moving - which would bake an existing sway in permanently - telling you
+to rebuild the clips with `AuthorHeroMocapRetarget.py` instead. Measured across two consecutive runs, every
+tail rotation in all four clips agrees to 0.000002 degrees. The sway that lands is 13.89 degrees of travel on
+the fidgets and 7.93 on the gaits, and `A_SquirrelIdle` measures 0.000 while `A_SquirrelWalk` keeps its own
+authored 13.62 - both left exactly as the owner asked. The idle's tail is therefore still a motionless plume
+from directly behind; the fidgets are what break that up.
+
+**What is not adopted, and why.** Three of the eight retargeted clips are written to
+`Licensed/MocapSource/` and referenced by nothing: the run-to-stop ends on a pose nothing returns from and its
+sole reaches -2.20; the crouch idle folds a character that is mostly helmet and backpack into a pile; and the
+MoCap walk exists only to be looked at beside the authored one, which stays, because the authored walk is
+calibrated to this game's 180 cm/s and grounded to half a millimetre. `Config/DefaultGame.ini` names that
+folder under `DirectoriesToNeverCook`, so the raw pack files and the unused derivatives stay out of the
+shipping package while `/Game/SpaceSurvival` around them is always cooked - the pack's terms allow use, not
+redistribution, and a cook is a redistribution. `THIRD_PARTY.md` records it as a retarget source with no mesh,
+material or texture adopted.
+
+**What is honestly wrong with the fidgets.** Measured as contact-patch path - per frame, the smallest
+horizontal movement among the touching sole markers, summed, so a pivot scores zero and only a sliding flat
+foot scores - the idle is 0.76/0.71 cm over 6.1 s and its toe never leaves a 0.17 cm circle, but fidget A is
+7.73/10.84 cm with the toe wandering 4.07 cm on the deck, and that wander is invented by the retarget (the
+source's feet move 1.41 cm, which at this body's 0.3935 height ratio should be 0.55). It survives because 4 cm
+across five seconds is slower than the eye tracks. Fidget B's 3.46 cm step is real and in the capture. One
+clearance to trip over if the mesh is re-exported: in the idle the glove passes the lower torso with 3.3 mm to
+spare on the deck, and the idle is the pose held longest.
+
+61 of 61 automation tests pass with no warnings, and Station 5 capture `f9fb7a985dd54b2882baf09f80907258`
+certifies. Still open: no climb-out (RPT-20260917-01, below), no turn-in-place, and the walk moves neither head
+nor wrists.
+
 #### September 17 the exit animation is a gap, on the owner's direction
 
 The owner watched the walker leave the ship and said it floats high above the hull, which it does. The 125 cm

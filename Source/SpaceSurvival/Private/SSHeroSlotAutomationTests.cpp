@@ -49,9 +49,17 @@ const TCHAR *const AcornautMesh = TEXT("/Game/SpaceSurvival/Character/SK_Acornau
 const TCHAR *const AcornautWalk = TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair");
 const TCHAR *const AcornautPilot = TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit");
 const TCHAR *const AcornautExit = TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair");
+// Two more clips on the same skeleton, used as stand-in fast gaits. They are the wrong motions and
+// that is deliberate: what is under test is which clip is chosen at which speed and at what rate, and
+// using the squirrel's real jog and run would make this pass only on a machine holding the pack.
+const TCHAR *const AcornautJogStandIn = TEXT("/Game/SpaceSurvival/Character/A_Walk.A_Walk");
+const TCHAR *const AcornautRunStandIn = TEXT("/Game/SpaceSurvival/Character/A_Pilot.A_Pilot");
 const TCHAR *const SquirrelMesh = TEXT("/Game/SpaceSurvival/Licensed/Hero/SK_SquirrelHero.SK_SquirrelHero");
 const TCHAR *const SquirrelWalk = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelWalk.A_SquirrelWalk");
 const TCHAR *const SquirrelPilot = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelPilot.A_SquirrelPilot");
+const TCHAR *const SquirrelIdle = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelIdle.A_SquirrelIdle");
+const TCHAR *const SquirrelFidgetA = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelFidgetA.A_SquirrelFidgetA");
+const TCHAR *const SquirrelFidgetB = TEXT("/Game/SpaceSurvival/Licensed/Hero/A_SquirrelFidgetB.A_SquirrelFidgetB");
 /** Measured in the Swift cockpit, .agent/local/HeroSquirrel/Stage6_Clips/SeatFit.json, and written out
  *  here for the same reason every other number in this table is: so that losing it says so out loud. */
 const FVector SquirrelMount(-12.5, 0, 27.933);
@@ -162,6 +170,39 @@ bool FSSHeroRoster::RunTest(const FString &)
     TestTrue(TEXT("The roster carries a hero that climbs out and a hero that does not"),
              !Acornaut.DisembarkClipPath.IsEmpty() && !Trooper.DisembarkClipPath.IsEmpty() &&
                  Squirrel.DisembarkClipPath.IsEmpty());
+
+    // The retargeted stand clips, written out a second time for the same reason every other path in
+    // this table is: they are the difference between a hero standing in a living idle and a hero
+    // standing on one frame of its own walk, and losing one should read as this failing rather than
+    // as the character quietly going still again.
+    TestEqual(TEXT("Squirrel idle clip"), Squirrel.IdleClipPath, FString(SquirrelIdle));
+    TestEqual(TEXT("Squirrel carries two fidgets"), Squirrel.IdleFidgetClipPaths.Num(), 2);
+    if (Squirrel.IdleFidgetClipPaths.Num() == 2)
+    {
+        TestEqual(TEXT("Squirrel first fidget"), Squirrel.IdleFidgetClipPaths[0], FString(SquirrelFidgetA));
+        TestEqual(TEXT("Squirrel second fidget"), Squirrel.IdleFidgetClipPaths[1], FString(SquirrelFidgetB));
+    }
+    // Two of the idle's own 6.133333 s loops. The fidgets' first pose is the idle's first pose to
+    // 0.000 cm and 0.009 degrees across all 46 bones, so a cut taken on a loop boundary needs no
+    // blend - and this pawn has no blend to give it. A value off a loop boundary would still play,
+    // and would pop, which is exactly the kind of regression a number nobody pinned invites.
+    TestEqual(TEXT("The squirrel fidgets on its own idle's loop boundary"), Squirrel.IdleFidgetSeconds, 12.266666f,
+              1e-6f);
+    // And the two heroes that have no idle say so by declaring nothing, which is what keeps every
+    // line of the walking pawn's animation behaving for them exactly as it did before any of this.
+    TestTrue(TEXT("The trooper has no idle and so no fidgets"), Trooper.IdleClipPath.IsEmpty() &&
+                                                                    Trooper.IdleFidgetClipPaths.Num() == 0 &&
+                                                                    Trooper.IdleFidgetSeconds == 0.f);
+    TestTrue(TEXT("The shipped hero has no idle and so no fidgets"), Acornaut.IdleClipPath.IsEmpty() &&
+                                                                         Acornaut.IdleFidgetClipPaths.Num() == 0 &&
+                                                                         Acornaut.IdleFidgetSeconds == 0.f);
+    TestTrue(TEXT("The roster carries a hero that stands in an idle and heroes that do not"),
+             !Squirrel.IdleClipPath.IsEmpty() && Acornaut.IdleClipPath.IsEmpty() && Trooper.IdleClipPath.IsEmpty());
+    // Every fidget is a clip the hero could actually return from, which is the only thing that makes
+    // it a fidget rather than a pose the hero is left stuck in.
+    for (const auto &Entry : Content->Heroes)
+        TestTrue(TEXT("No hero declares a fidget without an idle to come back to"),
+                 Entry.IdleFidgetClipPaths.Num() == 0 || !Entry.IdleClipPath.IsEmpty());
     for (const auto &Entry : Content->Heroes)
         AddInfo(FString::Printf(TEXT("HERO_ROSTER id=%s walker=%d pilot=%d climbsOut=%d mesh=%s"), *Entry.Id.ToString(),
                                 Entry.Installed(ESSHeroSlot::Walker) ? 1 : 0,
@@ -490,19 +531,29 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
               Seated->GetCurrentAsset() ? Seated->GetCurrentAsset()->GetPathName() : FString(), ExpectedPilotClip);
     TestTrue(TEXT("The pilot clip still loops"), Seated->IsLooping());
 
-    // The walk clip, frozen at the pose the exit clip ends on.
+    // What a standing hero is in. A hero with an idle stands in it from its start at its own rate; a
+    // hero without one stands in the walk clip frozen at the pose the exit clip ends on, which is
+    // where every hero stood before any idle existed. Both branches are spelled out rather than read
+    // off the walker, so this says which one today's installed hero took and pins what that means.
+    const bool StandsInAnIdle = !Hero.IdleClipPath.IsEmpty();
     auto *Walk = Walker->GetMesh()->GetSingleNodeInstance();
     if (!TestNotNull(TEXT("The walker plays a clip"), Walk))
         return false;
-    TestEqual(TEXT("The walker plays this hero's own walk clip"),
-              Walk->GetCurrentAsset() ? Walk->GetCurrentAsset()->GetPathName() : FString(), Hero.WalkClipPath);
-    TestTrue(TEXT("The walk clip still loops"), Walk->IsLooping());
-    AddInfo(FString::Printf(TEXT("HERO_WALK_FREEZE seconds=%.9f rate=%.9f"), Walk->GetCurrentTime(),
-                            Walker->GetMesh()->GlobalAnimRateScale));
-    TestEqual(TEXT("The walk clip is frozen at the same handoff second as before"), Walk->GetCurrentTime(), .308333333f,
-              1e-6f);
-    TestEqual(TEXT("The hero's handoff second is that same number"), Hero.WalkHandoffSeconds, .308333333f, 0.f);
-    TestEqual(TEXT("A standing hero's stride does not advance"), Walker->GetMesh()->GlobalAnimRateScale, 0.f, 0.f);
+    AddInfo(FString::Printf(TEXT("HERO_STAND hero=%s idle=%d clip=%s seconds=%.9f rate=%.9f"), *Hero.Id.ToString(),
+                            StandsInAnIdle ? 1 : 0,
+                            Walk->GetCurrentAsset() ? *Walk->GetCurrentAsset()->GetPathName() : TEXT("none"),
+                            Walk->GetCurrentTime(), Walker->GetMesh()->GlobalAnimRateScale));
+    TestEqual(TEXT("The walker stands in this hero's own standing clip"),
+              Walk->GetCurrentAsset() ? Walk->GetCurrentAsset()->GetPathName() : FString(),
+              StandsInAnIdle ? Hero.IdleClipPath : Hero.WalkClipPath);
+    TestTrue(TEXT("The standing clip loops"), Walk->IsLooping());
+    TestEqual(TEXT("It starts where that clip is meant to be entered"), Walk->GetCurrentTime(),
+              StandsInAnIdle ? 0.f : .308333333f, 1e-6f);
+    TestEqual(TEXT("The hero's handoff second is still that same number"), Hero.WalkHandoffSeconds, .308333333f, 0.f);
+    // The number that used to be zero for everybody. An idle keeps its own clock; a frozen walk still
+    // must not advance, because advancing it is exactly what standing in it would look like.
+    TestEqual(TEXT("A standing hero's clip runs at its own rate, or not at all when it is a frozen walk"),
+              Walker->GetMesh()->GlobalAnimRateScale, StandsInAnIdle ? 1.f : 0.f, 0.f);
     TestEqual(TEXT("The stride still plays at its authored rate at 180 cm/s"), Hero.WalkSpeed, 180.f, 0.f);
 
     // Bone names. The old code spelled them out, and when a rig did not have the name it measured the
@@ -824,6 +875,533 @@ bool FSSHeroReadabilityLight::RunTest(const FString &)
     KeyDial->Set(KeyWas, ECVF_SetByCode);
     Walker->Tick(.016f);
     TestTrue(TEXT("And restoring it brings them back"), Walker->KeyLight->IsVisible() && Walker->RimLight->IsVisible());
+    return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSHeroIdleSwitch, "SpaceSurvival.Integration.HeroIdleSwitch",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSHeroIdleSwitch::RunTest(const FString &)
+{
+    // What the walking pawn plays, and when it changes. Both heroes below are built here rather than
+    // accepted from the roster, because which hero a machine installs is a fact about that machine:
+    // the licensed pack carrying the only real idle is not in this repository, and a test that needed
+    // it would pass here and quietly cover nothing everywhere else. So one hero is given an idle made
+    // of clips this repository does ship, one is given none, and the claims are about the rule.
+    FSSHeroTestWorld Fixture;
+    if (!TestNotNull(TEXT("Create isolated idle-switch world"), Fixture.World))
+        return false;
+    // The pawn's own velocity is what the switch reads, so the fixture writes it directly. Nothing
+    // here ticks the movement component, which is what makes it stay put from one Tick to the next.
+    auto Drive = [](ASSWalker *Pawn, float Speed) { Pawn->GetCharacterMovement()->Velocity = FVector(Speed, 0, 0); };
+
+    // A hero with no idle: every claim here is the behaviour that shipped before an idle existed.
+    {
+        auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+        if (!TestNotNull(TEXT("Spawn a pawn for the hero that has no idle"), Walker))
+            return false;
+        auto *Roster = NewObject<USSPhase1Data>(Walker);
+        if (!TestNotNull(TEXT("Construct a roster with no idle anywhere in it"), Roster))
+            return false;
+        for (auto &Entry : Roster->Heroes)
+        {
+            Entry.IdleClipPath = FString();
+            Entry.IdleFidgetClipPaths.Reset();
+            Entry.IdleFidgetSeconds = 0.f;
+            if (Entry.Identity != ESSHeroIdentity::Acornaut)
+            {
+                Entry.MeshPath = FString(NoSuchMesh);
+                Entry.WalkClipPath = FString(NoSuchWalk);
+                Entry.PilotClipPath = FString(NoSuchPilot);
+            }
+        }
+        Walker->Tuning = Roster;
+        Walker->DispatchBeginPlay();
+        const FSSHeroDefinition Hero = Walker->GetHero();
+        // Fetched afresh every time, never cached: starting a clip re-initialises the single-node
+        // instance, so a pointer held across a switch can be reading a discarded object.
+        auto Playing = [Walker]() -> FString
+        {
+            auto *Node = Walker->GetMesh()->GetSingleNodeInstance();
+            return Node && Node->GetCurrentAsset() ? Node->GetCurrentAsset()->GetPathName() : FString();
+        };
+        auto Seconds = [Walker]() -> float
+        {
+            auto *Node = Walker->GetMesh()->GetSingleNodeInstance();
+            return Node ? Node->GetCurrentTime() : -1.f;
+        };
+        auto Scrub = [Walker](float To)
+        {
+            if (auto *Node = Walker->GetMesh()->GetSingleNodeInstance())
+                Node->SetPosition(To, false);
+        };
+        if (!TestEqual(TEXT("The narrowed roster puts the hero with no idle on the deck"), AsInt(Hero.Identity),
+                       AsInt(ESSHeroIdentity::Acornaut)) ||
+            !TestNotNull(TEXT("It plays a clip"), Walker->GetMesh()->GetSingleNodeInstance()))
+            return false;
+        AddInfo(FString::Printf(TEXT("IDLE_SWITCH_NONE hero=%s clip=%s seconds=%.6f rate=%.6f"), *Hero.Id.ToString(),
+                                *Playing(), Seconds(), Walker->GetMesh()->GlobalAnimRateScale));
+        TestEqual(TEXT("A hero with no idle still stands in its own walk clip"), Playing(), Hero.WalkClipPath);
+        TestTrue(TEXT("Still looping"), Walker->GetMesh()->GetSingleNodeInstance()->IsLooping());
+        TestEqual(TEXT("Still frozen at its own handoff second"), Seconds(), Hero.WalkHandoffSeconds, 1e-6f);
+        TestEqual(TEXT("Still with the stride stopped dead"), Walker->GetMesh()->GlobalAnimRateScale, 0.f, 0.f);
+
+        // Walking, then standing again. The clip never changes and its position is never touched: the
+        // whole of this hero's animation is one rate that follows the pawn, exactly as it always was.
+        Drive(Walker, 320.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("Walking scales the stride by speed over this hero's own authored walk speed"),
+                  Walker->GetMesh()->GlobalAnimRateScale, 320.f / Hero.WalkSpeed, 1e-6f);
+        TestEqual(TEXT("And does not change the clip"), Playing(), Hero.WalkClipPath);
+        Scrub(.45f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("A walking hero's stride is not restarted every tick"), Seconds(), .45f, 1e-6f);
+        Drive(Walker, 0.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("Standing still stops the stride rather than switching clip"),
+                  Walker->GetMesh()->GlobalAnimRateScale, 0.f, 0.f);
+        TestEqual(TEXT("Stopping leaves this hero in the walk clip"), Playing(), Hero.WalkClipPath);
+        TestEqual(TEXT("And stopping does not rewind it either"), Seconds(), .45f, 1e-6f);
+        // Standing for a long time changes nothing for a hero that was given nothing to change to.
+        for (int32 Frame = 0; Frame < 200; ++Frame)
+            Walker->Tick(.1f);
+        TestEqual(TEXT("Twenty seconds of standing still leaves it in the same frozen walk"), Playing(),
+                  Hero.WalkClipPath);
+        TestEqual(TEXT("At the same second"), Seconds(), .45f, 1e-6f);
+        TestEqual(TEXT("With the same stopped stride"), Walker->GetMesh()->GlobalAnimRateScale, 0.f, 0.f);
+    }
+
+    // A hero with an idle, assembled from clips this repository ships. The pilot clip stands in for an
+    // idle and the exit and walk clips stand in for two fidgets. They are the wrong motions, and that
+    // is the point: what is under test is which clip is playing and what changed it, and using the
+    // squirrel's real three would make this pass only on a machine holding the licensed pack.
+    {
+        auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+        if (!TestNotNull(TEXT("Spawn a pawn for the hero that has an idle"), Walker))
+            return false;
+        auto *Roster = NewObject<USSPhase1Data>(Walker);
+        if (!TestNotNull(TEXT("Construct a roster whose hero stands in an idle"), Roster))
+            return false;
+        for (auto &Entry : Roster->Heroes)
+            if (Entry.Identity == ESSHeroIdentity::Acornaut)
+            {
+                Entry.IdleClipPath = FString(AcornautPilot);
+                Entry.IdleFidgetClipPaths = {FString(AcornautExit), FString(AcornautWalk)};
+                // Short, so the fidget clock runs out in a handful of ticks. The squirrel's own
+                // 12.266666 is pinned in the roster test; what is pinned here is what a value does.
+                Entry.IdleFidgetSeconds = 1.f;
+            }
+            else
+            {
+                Entry.MeshPath = FString(NoSuchMesh);
+                Entry.WalkClipPath = FString(NoSuchWalk);
+                Entry.PilotClipPath = FString(NoSuchPilot);
+            }
+        Walker->Tuning = Roster;
+        Walker->DispatchBeginPlay();
+        const FSSHeroDefinition Hero = Walker->GetHero();
+        auto Playing = [Walker]() -> FString
+        {
+            auto *Node = Walker->GetMesh()->GetSingleNodeInstance();
+            return Node && Node->GetCurrentAsset() ? Node->GetCurrentAsset()->GetPathName() : FString();
+        };
+        auto Seconds = [Walker]() -> float
+        {
+            auto *Node = Walker->GetMesh()->GetSingleNodeInstance();
+            return Node ? Node->GetCurrentTime() : -1.f;
+        };
+        auto Looping = [Walker]()
+        {
+            auto *Node = Walker->GetMesh()->GetSingleNodeInstance();
+            return Node && Node->IsLooping();
+        };
+        auto Scrub = [Walker](float To)
+        {
+            if (auto *Node = Walker->GetMesh()->GetSingleNodeInstance())
+                Node->SetPosition(To, false);
+        };
+        if (!TestEqual(TEXT("The narrowed roster puts the hero with an idle on the deck"), AsInt(Hero.Identity),
+                       AsInt(ESSHeroIdentity::Acornaut)) ||
+            !TestNotNull(TEXT("It plays a clip"), Walker->GetMesh()->GetSingleNodeInstance()))
+            return false;
+        const float Enter = Hero.WalkSpeed * ASSWalker::MoveEnterFraction;
+        const float Exit = Hero.WalkSpeed * ASSWalker::MoveExitFraction;
+        AddInfo(FString::Printf(TEXT("IDLE_SWITCH_IDLE hero=%s clip=%s seconds=%.6f rate=%.6f enter=%.3f exit=%.3f"),
+                                *Hero.Id.ToString(), *Playing(), Seconds(), Walker->GetMesh()->GlobalAnimRateScale,
+                                Enter, Exit));
+
+        // The instant the player arrives on the deck. For a hero that does not climb out that instant
+        // is BeginPlay, and the pawn is standing still, so it is the idle that plays - from the idle's
+        // own start, at the idle's own rate, and not the frozen walk frame it used to be.
+        TestEqual(TEXT("A hero with an idle arrives standing in it"), Playing(), Hero.IdleClipPath);
+        TestTrue(TEXT("The idle loops"), Looping());
+        TestEqual(TEXT("The idle starts at its own beginning"), Seconds(), 0.f, 1e-6f);
+        TestEqual(TEXT("The idle runs at its own authored rate rather than at the pawn's zero speed"),
+                  Walker->GetMesh()->GlobalAnimRateScale, 1.f, 0.f);
+
+        // The threshold, from both sides. This speed is inside the band, so on its own it decides
+        // nothing: what plays at it depends entirely on which side the pawn came from. Collapsing the
+        // two thresholds into one would make both answers below the same, and a pawn creeping across
+        // that one line would cut clip every frame - which on a single-node pawn is a hard cut.
+        const float Creep = (Enter + Exit) * .5f;
+        if (!TestTrue(TEXT("The creep speed really is inside the band, or nothing below proves anything"),
+                      Creep > Exit && Creep < Enter))
+            return false;
+        Drive(Walker, Creep);
+        for (int32 Frame = 0; Frame < 5; ++Frame)
+            Walker->Tick(.1f);
+        TestEqual(TEXT("Creeping does not start the walk in a hero that was standing"), Playing(), Hero.IdleClipPath);
+        TestEqual(TEXT("And does not touch the idle's rate"), Walker->GetMesh()->GlobalAnimRateScale, 1.f, 0.f);
+
+        Drive(Walker, 320.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("Real movement puts the hero into its locomotion clip"), Playing(), Hero.WalkClipPath);
+        TestTrue(TEXT("Which loops"), Looping());
+        // Entered at the handoff second - a planted contact, heel strike at 0.158 and toe-off at
+        // 0.467 - rather than at the clip's own frame zero, which is mid-swing. This is the number
+        // that decides whether leaving a stand reads as a step or as a stumble.
+        TestEqual(TEXT("Entered at the handoff second, on a foot already on the ground"), Seconds(),
+                  Hero.WalkHandoffSeconds, 1e-6f);
+        TestEqual(TEXT("And the stride follows the pawn, exactly as it does for a hero with no idle"),
+                  Walker->GetMesh()->GlobalAnimRateScale, 320.f / Hero.WalkSpeed, 1e-6f);
+        Scrub(.45f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("A moving hero's stride is not restarted every tick"), Seconds(), .45f, 1e-6f);
+
+        Drive(Walker, Creep);
+        for (int32 Frame = 0; Frame < 5; ++Frame)
+            Walker->Tick(.1f);
+        TestEqual(TEXT("The same creep speed leaves a moving hero moving, which is what two thresholds buy"), Playing(),
+                  Hero.WalkClipPath);
+        TestEqual(TEXT("Still at its own stride rate down there"), Walker->GetMesh()->GlobalAnimRateScale,
+                  Creep / Hero.WalkSpeed, 1e-6f);
+        TestEqual(TEXT("And still not restarted"), Seconds(), .45f, 1e-6f);
+
+        Drive(Walker, 0.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("Stopping puts the hero back into its idle"), Playing(), Hero.IdleClipPath);
+        TestEqual(TEXT("From the idle's beginning"), Seconds(), 0.f, 1e-6f);
+        TestEqual(TEXT("At the idle's own rate"), Walker->GetMesh()->GlobalAnimRateScale, 1.f, 0.f);
+        Scrub(2.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("And a standing hero's idle is not restarted every tick either"), Seconds(), 2.f, 1e-6f);
+
+        // Leaving a stand a second time starts the walk at the handoff second again rather than
+        // picking up the half second it was abandoned at: a stand is long enough that resuming
+        // mid-stride would put a foot down wherever it happened to have been left.
+        Drive(Walker, 320.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("Moving again re-enters the walk at the handoff second, not where it was left"), Seconds(),
+                  Hero.WalkHandoffSeconds, 1e-6f);
+        Drive(Walker, 0.f);
+        Walker->Tick(.1f);
+
+        // The fidget clock. It is what keeps the idle from being one loop of a tail that never moves,
+        // so it has to fire, has to come back, and has to take turns. Every loop below stops on the
+        // change it is waiting for, so nothing here depends on how long a stand-in clip happens to be.
+        TestEqual(TEXT("Stopping goes to the idle, not straight to a fidget"), Playing(), Hero.IdleClipPath);
+        for (int32 Frame = 0; Frame < 5; ++Frame)
+            Walker->Tick(.1f);
+        TestEqual(TEXT("Standing does not fidget before its time"), Playing(), Hero.IdleClipPath);
+        for (int32 Frame = 0; Frame < 20 && Playing() == Hero.IdleClipPath; ++Frame)
+            Walker->Tick(.1f);
+        TestEqual(TEXT("Standing past the fidget second cuts to the first fidget"), Playing(),
+                  Hero.IdleFidgetClipPaths[0]);
+        TestFalse(TEXT("A fidget plays once rather than looping"), Looping());
+        TestEqual(TEXT("From its own beginning"), Seconds(), 0.f, 1e-6f);
+        TestEqual(TEXT("At its own rate, like the idle it interrupts"), Walker->GetMesh()->GlobalAnimRateScale, 1.f,
+                  0.f);
+        for (int32 Frame = 0; Frame < 200 && Playing() != Hero.IdleClipPath; ++Frame)
+            Walker->Tick(.1f);
+        TestEqual(TEXT("When the fidget runs out the hero is back in its idle"), Playing(), Hero.IdleClipPath);
+        TestEqual(TEXT("From the idle's beginning, which is the pose the fidget ended on"), Seconds(), 0.f, 1e-6f);
+        for (int32 Frame = 0; Frame < 20 && Playing() == Hero.IdleClipPath; ++Frame)
+            Walker->Tick(.1f);
+        TestEqual(TEXT("The next fidget is the other one, rather than the same one twice"), Playing(),
+                  Hero.IdleFidgetClipPaths[1]);
+
+        // And a fidget is never something the player has to wait out. The clip path alone cannot show
+        // that: the second fidget stand-in IS the walk clip, so an implementation that ignored the
+        // speed change entirely would leave the same path playing and pass. What separates the two
+        // states is everything else about how that clip is being played - a fidget runs once, from
+        // wherever its own clock has reached, at rate 1; the walk loops, from the handoff second, at
+        // the pawn's stride rate - so all three are asserted and none of them is already true.
+        if (!TestEqual(TEXT("The second fidget really is the stand-in that doubles as the walk clip, "
+                            "which is why the three properties below are the test"),
+                       Hero.IdleFidgetClipPaths[1], Hero.WalkClipPath))
+            return false;
+        TestFalse(TEXT("A fidget is not looping before the pawn moves"), Looping());
+        Drive(Walker, 320.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("Moving during a fidget goes straight to the walk"), Playing(), Hero.WalkClipPath);
+        TestTrue(TEXT("Playing as the walk does, looping"), Looping());
+        TestEqual(TEXT("From the handoff second rather than from wherever the fidget had reached"), Seconds(),
+                  Hero.WalkHandoffSeconds, 1e-6f);
+        TestEqual(TEXT("And at the pawn's stride rate rather than the fidget's rate of one"),
+                  Walker->GetMesh()->GlobalAnimRateScale, 320.f / Hero.WalkSpeed, 1e-6f);
+        Drive(Walker, 0.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("And stopping goes back to the idle rather than resuming the abandoned fidget"), Playing(),
+                  Hero.IdleClipPath);
+
+        // A declared idle that is not on disk is not a broken hero, it is a hero that stands the old
+        // way. This is the shape a machine without the licensed pack is actually in, and it must not
+        // be able to leave a pawn holding a null clip.
+        auto *Missing = Fixture.World->SpawnActor<ASSWalker>();
+        auto *BadRoster = NewObject<USSPhase1Data>(Missing);
+        if (!TestNotNull(TEXT("Spawn a pawn for a hero whose idle is not installed"), Missing) ||
+            !TestNotNull(TEXT("Construct a roster pointing at an idle that is not there"), BadRoster))
+            return false;
+        for (auto &Entry : BadRoster->Heroes)
+            if (Entry.Identity == ESSHeroIdentity::Acornaut)
+            {
+                Entry.IdleClipPath = TEXT("/Game/SpaceSurvival/Character/A_NoSuchIdle.A_NoSuchIdle");
+                Entry.IdleFidgetClipPaths = {TEXT("/Game/SpaceSurvival/Character/A_NoSuchFidget.A_NoSuchFidget")};
+                Entry.IdleFidgetSeconds = 1.f;
+            }
+            else
+            {
+                Entry.MeshPath = FString(NoSuchMesh);
+                Entry.WalkClipPath = FString(NoSuchWalk);
+                Entry.PilotClipPath = FString(NoSuchPilot);
+            }
+        Missing->Tuning = BadRoster;
+        Missing->DispatchBeginPlay();
+        auto *Fallen = Missing->GetMesh()->GetSingleNodeInstance();
+        if (!TestNotNull(TEXT("A hero whose idle is missing still plays something"), Fallen))
+            return false;
+        TestEqual(TEXT("A hero whose idle is not installed stands in its walk clip instead"),
+                  Fallen->GetCurrentAsset() ? Fallen->GetCurrentAsset()->GetPathName() : FString(),
+                  Missing->GetHero().WalkClipPath);
+        TestEqual(TEXT("Frozen at the handoff second, exactly as a hero that declared no idle at all"),
+                  Fallen->GetCurrentTime(), Missing->GetHero().WalkHandoffSeconds, 1e-6f);
+        TestEqual(TEXT("With the stride stopped"), Missing->GetMesh()->GlobalAnimRateScale, 0.f, 0.f);
+        for (int32 Frame = 0; Frame < 30; ++Frame)
+            Missing->Tick(.1f);
+        auto *Later = Missing->GetMesh()->GetSingleNodeInstance();
+        TestTrue(TEXT("And no fidget clock runs for a hero that has no idle to come back to"),
+                 Later && Later->GetCurrentAsset() &&
+                     Later->GetCurrentAsset()->GetPathName() == Missing->GetHero().WalkClipPath);
+    }
+
+    // THE GAIT LADDER. A hero with fast clips picks the one whose own authored travel is nearest the
+    // pawn's speed and plays it at speed/thatSpeed, so the planted foot cancels the ground in every
+    // band. A hero without them has one rung and cannot leave it, which is the case the other two
+    // heroes are in and the one that must not have changed.
+    {
+        auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+        auto *Roster = NewObject<USSPhase1Data>(Walker);
+        if (!TestNotNull(TEXT("Spawn a pawn for the hero that has fast gaits"), Walker) ||
+            !TestNotNull(TEXT("Construct a roster whose hero has a jog and a run"), Roster))
+            return false;
+        // The squirrel's own three speeds, so the arithmetic under test is the shipped arithmetic.
+        const float Walk = 180.f, Jog = 205.5f, Run = 384.3f;
+        for (auto &Entry : Roster->Heroes)
+            if (Entry.Identity == ESSHeroIdentity::Acornaut)
+            {
+                Entry.IdleClipPath = FString(AcornautPilot);
+                Entry.IdleFidgetSeconds = 0.f;
+                Entry.WalkSpeed = Walk;
+                Entry.JogClipPath = FString(AcornautJogStandIn);
+                Entry.JogSpeed = Jog;
+                Entry.RunClipPath = FString(AcornautRunStandIn);
+                Entry.RunSpeed = Run;
+            }
+            else
+            {
+                Entry.MeshPath = FString(NoSuchMesh);
+                Entry.WalkClipPath = FString(NoSuchWalk);
+                Entry.PilotClipPath = FString(NoSuchPilot);
+            }
+        Walker->Tuning = Roster;
+        Walker->DispatchBeginPlay();
+        const FSSHeroDefinition Hero = Walker->GetHero();
+        auto Playing = [Walker]() -> FString
+        {
+            auto *Node = Walker->GetMesh()->GetSingleNodeInstance();
+            return Node && Node->GetCurrentAsset() ? Node->GetCurrentAsset()->GetPathName() : FString();
+        };
+        auto Rate = [Walker]() { return Walker->GetMesh()->GlobalAnimRateScale; };
+        auto DriveFor = [Walker, &Drive](float Speed, int32 Frames)
+        {
+            Drive(Walker, Speed);
+            for (int32 Frame = 0; Frame < Frames; ++Frame)
+                Walker->Tick(.1f);
+        };
+        // The boundaries are geometric means, so each is the speed at which the two neighbouring
+        // clips are equally wrong. Spelling them out here means a change to the rule fails loudly.
+        const float WalkJog = FMath::Sqrt(Walk * Jog), JogRun = FMath::Sqrt(Jog * Run);
+        AddInfo(FString::Printf(TEXT("GAIT_LADDER walk=%.1f jog=%.1f run=%.1f boundaries=%.2f,%.2f hysteresis=%.2f"),
+                                Walk, Jog, Run, WalkJog, JogRun, ASSWalker::GaitHysteresis));
+
+        DriveFor(160.f, 3);
+        TestEqual(TEXT("Below the first boundary the hero is in its walk"), Playing(), Hero.WalkClipPath);
+        TestEqual(TEXT("At the walk's own rate"), Rate(), 160.f / Walk, 1e-4f);
+        DriveFor(230.f, 3);
+        TestEqual(TEXT("Between the boundaries it is in the jog"), Playing(), Hero.JogClipPath);
+        TestEqual(TEXT("At a rate divided by the jog's authored speed, not the walk's"), Rate(), 230.f / Jog, 1e-4f);
+        DriveFor(320.f, 3);
+        TestEqual(TEXT("At the pawn's cruising speed it is in the run"), Playing(), Hero.RunClipPath);
+        TestEqual(TEXT("Which at 320 is a rate below one rather than the walk's 1.78"), Rate(), 320.f / Run, 1e-4f);
+        TestTrue(TEXT("And that rate really is nearer one than one clip for everything would be"),
+                 FMath::Abs(320.f / Run - 1.f) < FMath::Abs(320.f / Walk - 1.f));
+        DriveFor(560.f, 3);
+        TestEqual(TEXT("At a sprint it is still the run"), Playing(), Hero.RunClipPath);
+        TestEqual(TEXT("At the sprint's own rate"), Rate(), 560.f / Run, 1e-4f);
+        TestTrue(TEXT("A sprint no longer runs a clip at over three times its authored rate"), 560.f / Run < 2.f);
+
+        // Hysteresis, proved the only way it can be: the same speed, reached from both sides, has to
+        // give different answers. Without it a pawn cruising on a boundary changes clip every frame,
+        // and every one of those is a hard cut on a pawn that plays one clip.
+        const float OnTheLine = JogRun;
+        DriveFor(OnTheLine, 3);
+        TestEqual(TEXT("Coming down from a sprint onto the boundary leaves the hero in the run"), Playing(),
+                  Hero.RunClipPath);
+        DriveFor(160.f, 3);
+        DriveFor(OnTheLine, 3);
+        TestEqual(TEXT("Coming up from a walk onto the same speed leaves it in the jog"), Playing(), Hero.JogClipPath);
+
+        // Standing still is still standing still, whatever the ladder has on it.
+        DriveFor(0.f, 3);
+        TestEqual(TEXT("Stopping still reaches the idle rather than the slowest gait"), Playing(), Hero.IdleClipPath);
+
+        // Holding forward into a bulkhead. GetVelocity reports what the pawn managed to move, which
+        // against a wall is nearly nothing, so velocity alone would drop a pressed hero into the idle
+        // and then, once the fidget clock ran out, stand it there fidgeting at the wall.
+        Drive(Walker, 400.f);
+        Walker->Tick(.1f);
+        if (!TestEqual(TEXT("The hero is moving before it is blocked"), Playing(), Hero.RunClipPath))
+            return false;
+        Drive(Walker, 0.f);
+        Walker->AddMovementInput(FVector(1, 0, 0), 1.f);
+        Walker->Tick(.1f);
+        // It lands in the walk rather than the run, and that is right rather than a miss: a blocked
+        // pawn reports no speed, so the ladder drops to its slowest rung. The walk clip at rate zero
+        // is precisely what a hero pressed into a bulkhead looked like before any of this existed.
+        // What the guard buys is the thing it does NOT do, which is stand the hero up into its idle.
+        TestEqual(TEXT("A hero pressed into a wall holds its walk rather than standing up in the idle"), Playing(),
+                  Hero.WalkClipPath);
+        TestNotEqual(TEXT("And is certainly not standing"), Playing(), Hero.IdleClipPath);
+        TestEqual(TEXT("At the rate its stopped velocity asks for, which is what pressing looked like before"), Rate(),
+                  0.f, 1e-4f);
+        // And it is the held input doing that, not a stuck flag: releasing reaches the idle at once,
+        // so the guard buys the wall case without costing a frame anywhere else.
+        Walker->ConsumeMovementInputVector();
+        Walker->Tick(.1f);
+        TestEqual(TEXT("Letting go of the stick reaches the idle on the very next frame"), Playing(),
+                  Hero.IdleClipPath);
+
+        // THE CUT. Every clip change above is a hard cut on a single-node pawn, and the two most
+        // frequent of them - starting and stopping - move a bone 11.6 cm and up to 33.2 cm at this
+        // hero's rendered scale. USSStationPoseTransition already existed for this pawn and this mesh,
+        // so a cut carries the outgoing pose and blends off it instead of snapping.
+        Drive(Walker, 320.f);
+        Walker->Tick(.1f);
+        auto *Transition = Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance());
+        if (!TestNotNull(TEXT("Starting to move hands the outgoing pose to the blend"), Transition))
+            return false;
+        TestTrue(TEXT("Which begins held on the pose the hero was actually in"), Transition->GetExitBlend() < 1.f);
+        TestTrue(TEXT("Off a snapshot that was accepted, rather than an empty one"),
+                 Transition->GetSourcePose().bIsValid);
+        Walker->Tick(USSStationPoseTransition::BlendDuration + .01f);
+        TestEqual(TEXT("And has arrived at the new clip a blend later"), Transition->GetExitBlend(), 1.f, 1e-4f);
+    }
+
+    // The same ladder for a hero that has no fast clips: one rung, and the arithmetic it always had.
+    {
+        auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+        auto *Roster = NewObject<USSPhase1Data>(Walker);
+        if (!TestNotNull(TEXT("Spawn a pawn for a hero with no fast gaits"), Walker) ||
+            !TestNotNull(TEXT("Construct a roster whose hero has none"), Roster))
+            return false;
+        for (auto &Entry : Roster->Heroes)
+            if (Entry.Identity != ESSHeroIdentity::Acornaut)
+            {
+                Entry.MeshPath = FString(NoSuchMesh);
+                Entry.WalkClipPath = FString(NoSuchWalk);
+                Entry.PilotClipPath = FString(NoSuchPilot);
+            }
+        Walker->Tuning = Roster;
+        Walker->DispatchBeginPlay();
+        const FSSHeroDefinition Hero = Walker->GetHero();
+        if (!TestTrue(TEXT("This hero really declares no fast gait, or the rest proves nothing"),
+                      Hero.JogClipPath.IsEmpty() && Hero.RunClipPath.IsEmpty()))
+            return false;
+        auto *Node = Walker->GetMesh()->GetSingleNodeInstance();
+        if (!TestNotNull(TEXT("It plays a clip"), Node))
+            return false;
+        Drive(Walker, 560.f);
+        Walker->Tick(.1f);
+        TestEqual(TEXT("A hero with one gait sprints in its walk clip, exactly as it always did"),
+                  Node->GetCurrentAsset() ? Node->GetCurrentAsset()->GetPathName() : FString(), Hero.WalkClipPath);
+        TestEqual(TEXT("At the same 3.11x it always played it at"), Walker->GetMesh()->GlobalAnimRateScale,
+                  560.f / Hero.WalkSpeed, 1e-4f);
+        TestNull(TEXT("And a hero with no idle never takes the blend instance either"),
+                 Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance()));
+    }
+
+    // Finally, on a machine that actually holds the licensed pack, the real clips. This asks whether
+    // the files are here rather than assuming it, for the same reason the roster test does: they live
+    // under the ignored Licensed/ tree, so the answer is a fact about a build. Where they are present
+    // they are checked for the one thing that would let them load and still not play - a clip runs
+    // only on the skeleton it was authored against, and a re-import onto another one is silent.
+    const FSSHeroDefinition Squirrel(ESSHeroIdentity::Squirrel);
+    // Asked about before loaded, so that a machine without the pack reads as "not installed" rather
+    // than as a warning in the log, which is the difference between a fact and a fault.
+    auto *SquirrelBody = FSSHeroDefinition::AssetInstalled(Squirrel.MeshPath)
+                             ? LoadObject<USkeletalMesh>(nullptr, *Squirrel.MeshPath)
+                             : nullptr;
+    auto *SquirrelStand = FSSHeroDefinition::AssetInstalled(Squirrel.IdleClipPath)
+                              ? LoadObject<UAnimSequence>(nullptr, *Squirrel.IdleClipPath)
+                              : nullptr;
+    AddInfo(FString::Printf(TEXT("IDLE_SWITCH_INSTALLED mesh=%d idle=%d fidgets=%d"), SquirrelBody ? 1 : 0,
+                            SquirrelStand ? 1 : 0, Squirrel.IdleFidgetClipPaths.Num()));
+    if (SquirrelBody && SquirrelStand)
+    {
+        TestTrue(TEXT("The installed idle was authored against the installed hero's own skeleton"),
+                 SquirrelStand->GetSkeleton() == SquirrelBody->GetSkeleton());
+        TestTrue(TEXT("The installed idle is long enough to be an idle rather than a pose"),
+                 SquirrelStand->GetPlayLength() > 1.f);
+        // The fidget second is a whole number of these loops, and being one is the entire reason the
+        // cut into a fidget needs no blend on a pawn that has none. A clip re-exported at another
+        // length breaks that silently, so the relationship is checked against the clip itself.
+        const float Loop = SquirrelStand->GetPlayLength();
+        const float Over = FMath::Fmod(Squirrel.IdleFidgetSeconds, Loop);
+        AddInfo(FString::Printf(TEXT("IDLE_SWITCH_LOOP idleSeconds=%.6f fidgetSeconds=%.6f remainder=%.6f"), Loop,
+                                Squirrel.IdleFidgetSeconds, Over));
+        TestTrue(TEXT("The fidget second really is a whole number of the installed idle's loops"),
+                 FMath::Min(Over, Loop - Over) < .01f);
+        for (const FString &Path : Squirrel.IdleFidgetClipPaths)
+        {
+            auto *Fidget =
+                FSSHeroDefinition::AssetInstalled(Path) ? LoadObject<UAnimSequence>(nullptr, *Path) : nullptr;
+            if (!TestNotNull(FString::Printf(TEXT("The installed hero's fidget %s is on disk beside its idle"), *Path),
+                             Fidget))
+                continue;
+            TestTrue(TEXT("And was authored against that same skeleton"),
+                     Fidget->GetSkeleton() == SquirrelBody->GetSkeleton());
+        }
+        // The fast gaits, and the one thing about them that cannot be checked by looking at a path:
+        // the speed beside each clip is what its rate is divided by, so a ladder that is not strictly
+        // ascending would make ChooseGait's boundaries meaningless and a foot skate by the error.
+        for (const TPair<FString, float> &Gait : {TPair<FString, float>(Squirrel.JogClipPath, Squirrel.JogSpeed),
+                                                  TPair<FString, float>(Squirrel.RunClipPath, Squirrel.RunSpeed)})
+        {
+            auto *Clip =
+                FSSHeroDefinition::AssetInstalled(Gait.Key) ? LoadObject<UAnimSequence>(nullptr, *Gait.Key) : nullptr;
+            if (!TestNotNull(FString::Printf(TEXT("The installed hero's gait %s is on disk"), *Gait.Key), Clip))
+                continue;
+            TestTrue(TEXT("Authored against the same skeleton as the hero that plays it"),
+                     Clip->GetSkeleton() == SquirrelBody->GetSkeleton());
+        }
+        AddInfo(FString::Printf(TEXT("GAIT_INSTALLED walk=%.1f jog=%.1f run=%.1f"), Squirrel.WalkSpeed,
+                                Squirrel.JogSpeed, Squirrel.RunSpeed));
+        TestTrue(TEXT("The installed hero's gait ladder ascends, which is what makes its boundaries mean anything"),
+                 Squirrel.WalkSpeed < Squirrel.JogSpeed && Squirrel.JogSpeed < Squirrel.RunSpeed);
+        // The whole point of the ladder, stated as the inequality it actually is: every speed the pawn
+        // reaches should play some clip nearer its own authored rate than one clip for everything did.
+        for (const float Speed : {320.f, 560.f})
+            TestTrue(FString::Printf(TEXT("At %.0f cm/s the chosen gait's rate is nearer one than the walk's"), Speed),
+                     FMath::Abs(Speed / Squirrel.RunSpeed - 1.f) < FMath::Abs(Speed / Squirrel.WalkSpeed - 1.f));
+    }
     return true;
 }
 #endif

@@ -84,6 +84,16 @@ def impact(t, rng):
     return decay(t, 0.001, 0.20) * (0.20 * rng.uniform(-1, 1) + 0.18 * sine(53, t) + 0.04 * sine(183, t))
 
 
+def footstep(t, rng):
+    # A boot meeting a deck plate. The body of it is a low thud with almost no attack; the plate
+    # answers with a short ring two octaves up, kept quiet so it reads as steel underfoot rather
+    # than as a bell; and the grit between the two is what stops it sounding like a drum. Short,
+    # because this plays twice a second at a walk and anything with a tail turns into a drone.
+    return (0.16 * decay(t, 0.001, 0.055) * sine(78, t) +
+            0.05 * decay(t, 0.001, 0.030) * rng.uniform(-1, 1) +
+            0.035 * decay(t, 0.004, 0.110) * (sine(742, t) + 0.5 * sine(1180, t)))
+
+
 def pickup(t, _rng):
     return sum(0.12 * decay(t - start, 0.006, 0.12) * sine(hz, t - start)
                for start, hz in ((0, 587.33), (0.065, 880), (0.13, 1174.66)) if t >= start)
@@ -158,6 +168,7 @@ def main():
         ("Engine", 4, engine, True), ("Laser", 0.25, laser, False),
         ("Cannon", 0.7, cannon, False), ("Impact", 0.8, impact, False),
         ("Pickup", 0.55, pickup, False), ("Alarm", 0.65, alarm, False),
+        ("Footstep", 0.3, footstep, False),
         ("Station", 4, station, True),
         ("ElectricalCharge", 2, electrical_charge, True),
         ("ElectricalDischarge", 0.6, electrical_discharge, False),
