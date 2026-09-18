@@ -502,6 +502,142 @@ enum class ESSHeroIdentity : uint8
     Squirrel
 };
 
+/** Which hull the ship flies. Ordered the way the roster is walked: the first one this build actually
+ *  contains wins, so an uninstalled hull is skipped rather than being an error. */
+UENUM(BlueprintType)
+enum class ESSHullIdentity : uint8
+{
+    /** Whatever ASSShip::HullAssetPath resolves today - the Havolk starter, the Swift or the Acorn.
+     *  A static mesh, roughly 4.8 m long, and the size every gameplay constant was calibrated against. */
+    Classic,
+    /** The Stellar Phoenix Shuttle. A skeletal mesh with a rear ramp, an interior and a cockpit, and
+     *  the hull the owner has chosen. Inert until the pawn can carry a skeletal hull. */
+    StellarPhoenix
+};
+
+/** One hull, described rather than spelled out. This exists for the same reason FSSHeroDefinition does:
+ *  the ship's size, facing and mount points were constants measured from one particular mesh, and a
+ *  different hull cannot be dropped into that.
+ *
+ *  It matters more here than it did for the hero, because of scale. Every gameplay distance in this game
+ *  - hazard radii, the collection radius, spawn leads, the station's 1400 cm doorway - was calibrated
+ *  against a 4.82 m hull. The Phoenix is 24.8 m, which is 5.2 times longer, and the owner raised that
+ *  himself: "the ship is larger than the old one, so scale or something has to adjust to accommodate the
+ *  gameplay element being the same." HullScale is where that adjustment lives, in one number, so it can
+ *  be dialled rather than chased through six files. */
+USTRUCT(BlueprintType)
+struct FSSHullDefinition
+{
+    GENERATED_BODY()
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Identity")
+    ESSHullIdentity Identity = ESSHullIdentity::Classic;
+    /** Short stable name for logs. Read by people, never parsed. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Identity")
+    FName Id = TEXT("Classic");
+    /** Empty for Classic, which resolves its mesh through ASSShip::HullAssetPath because which of the
+     *  three it gets depends on a command line flag and on what the build contains. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString MeshPath;
+    /** True when the mesh is skeletal. The pawn's hull component is a static mesh today, so this is the
+     *  flag that says a hull cannot be flown yet rather than a quiet failure to load. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    bool SkeletalHull = false;
+    /** Gear down and rear ramp open. On the Phoenix these are one motion: measured, Cargo_Door_Bone
+     *  swings 83.7 degrees in the same clip that drops Foot_Bone through 90.3. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString LandingDeployClipPath;
+    /** Gear up and rear ramp shut, which is the clip the launch sequence plays on thrust. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString LandingStowClipPath;
+    /** The measured length of the authored mesh along its own forward axis, in centimetres, before
+     *  HullScale. Recorded so the scale arithmetic can be checked rather than believed. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "0"))
+    float AuthoredLength = 482.5f;
+    /** What the hull renders and collides at. One is the authored size. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "0.01"))
+    float HullScale = 1.f;
+    /** Mesh component yaw that turns the authored facing into the pawn's forward. The Phoenix is
+     *  authored along +Y, so it needs -90; the current hulls are already along +X. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit")
+    float MeshYaw = 0.f;
+    /** The radius of the sphere that has to fit through the station corridor, before HullScale. This is
+     *  the number ASSShip::FlightCollisionRadius has always answered with, and the reason it is here is
+     *  that it stops being 105 the moment a different hull is installed. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "1"))
+    float CollisionRadius = 105.f;
+    /** How far the nose reaches past the hull's own origin, and how far the belly sits below it, both in
+     *  authored centimetres before HullScale. These exist because "half the length" is not the same thing
+     *  as "where the nose is" unless the pivot happens to be centred, and on the Phoenix it is not: measured
+     *  in 5.8, the centre sits 141.16 cm aft of the pivot, so the nose reaches 1100.84 while the tail
+     *  reaches 1383.16. Three separate passes wrote length/2 into a nose-relative formula before anybody
+     *  asked the mesh. Zero means "not measured for this hull" and callers fall back to half the length. */
+    float OriginToNose = 0.f;
+    float OriginToBelly = 0.f;
+
+    /** The length this hull actually flies at, which is what any gameplay comparison wants. */
+    float ScaledLength() const
+    {
+        return AuthoredLength * HullScale;
+    }
+    /** The collision radius this hull actually flies at. */
+    /** Nose reach in world centimetres. Falls back to half the length for a hull nobody has measured,
+     *  which is the old assumption - kept as a fallback rather than as the answer, so an unmeasured hull
+     *  behaves as before instead of reading zero and admitting docking from inside the station. */
+    float ScaledOriginToNose() const
+    {
+        return (OriginToNose > 0.f ? OriginToNose : AuthoredLength * .5f) * HullScale;
+    }
+    float ScaledCollisionRadius() const
+    {
+        return CollisionRadius * HullScale;
+    }
+    /** How many times longer this hull is than the one every gameplay distance was calibrated against.
+     *  One means no reconciliation is needed; the Phoenix at full size is 5.15. */
+    float LengthRatioToClassic() const
+    {
+        return ScaledLength() / 482.5f;
+    }
+    /** Whether this build holds the mesh. Classic is always installed: it resolves through
+     *  HullAssetPath and the game has always shipped one of those three. Defined in SSContentTypes.cpp
+     *  because it borrows the hero slot's package check rather than duplicating it, and that struct is
+     *  declared below this one. */
+    bool Installed() const;
+
+    FSSHullDefinition() = default;
+    explicit FSSHullDefinition(ESSHullIdentity InIdentity) : Identity(InIdentity)
+    {
+        if (Identity == ESSHullIdentity::StellarPhoenix)
+        {
+            Id = TEXT("StellarPhoenix");
+            MeshPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Meshes/Stellar_Phoenix.Stellar_Phoenix");
+            SkeletalHull = true;
+            LandingDeployClipPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/Landing_On.Landing_On");
+            LandingStowClipPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/Landing_Off.Landing_Off");
+            // Measured in 5.8 by loading it: bounds 1243.9 x 2484.0 x 704.8, standing on Z = 0. The long
+            // axis is Y, not X - the airbrake mesh spans X and the left engine sits at X +589.85 - which
+            // is also why MeshYaw is -90 rather than 0.
+            AuthoredLength = 2484.f;
+            MeshYaw = -90.f;
+            // Half the widest horizontal extent, 1243.9 / 2. A sphere is a poor fit for a hull this shape
+            // and that is a known problem rather than an oversight: most of a 24.8 x 12.4 m ship would sit
+            // outside a sphere sized to its width, or inside one sized to its length. Recorded here so the
+            // number is at least derived from the mesh instead of inherited from a different ship.
+            CollisionRadius = 621.95f;
+            // Measured from the loaded mesh, not inferred: half-extents 621.94 x 1242.0 x 352.4 with the box
+            // centre offset (-1.98, -141.16, 352.65) from the pivot. So the nose is at +1100.84 along the
+            // authored forward, and the belly sits 0.25 cm under the origin - the hull stands on its own pivot,
+            // which is why parking it at the classic hull's 220 cm leaves it hanging above the pad.
+            OriginToNose = 1100.84f;
+            OriginToBelly = 0.25f;
+            // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
+            // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
+            // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this
+            // one number once it has been flown, not in a guess made before anything has flown.
+            HullScale = 1.f;
+        }
+    }
+};
+
 /** One hero, described rather than spelled out at the call sites. This carries everything the walking
  *  pawn and the seated pilot used to hold as literals: where the assets are, how the mesh meets the
  *  deck, how fast its walk clip was authored to travel, and the bone names the code asks for by hand.

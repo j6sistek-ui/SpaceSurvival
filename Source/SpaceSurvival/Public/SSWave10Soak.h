@@ -58,6 +58,11 @@ private:
     void TickGallery(float DeltaSeconds);
     bool Station5 = false, SawWormhole = false, SawDocking = false, SawExit = false;
     double WormholeSeconds = 0, DockingSeconds = 0, ExitSeconds = 0, StationIdleSeconds = 0;
+    /** Last frame's ship rotation during Approach, for rate-damped steering. See Tick. */
+    FRotator ApproachLastRotation = FRotator::ZeroRotator;
+    bool ApproachHasLastRotation = false;
+    /** Next ApproachSeconds at which the approach diagnostic line is written. */
+    double NextApproachLog = 0;
     /** Which arrival this run is supposed to show, read off the hero the station actually possessed
      *  rather than assumed. A hero with an exit clip climbs out of the ship; a hero without one is
      *  standing outside it when the docking motion finishes (RPT-20260917-01), and the evidence that

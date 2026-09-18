@@ -1,4 +1,5 @@
 #include "SSStation.h"
+#include "SSLandingPad.h"
 #include "SSShipPaint.h"
 #include "SSGameInstance.h"
 #include "SSStationVisualLayout.h"
@@ -68,6 +69,47 @@ UStaticMeshComponent *ASSStation::AddMesh(FVector Position, FVector Scale, const
     Geometry.Add(C);
     return C;
 }
+void ASSStation::BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hull)
+{
+    // The pad is its own actor, placed where this station keeps its pad and attached so it rides along
+    // through origin rebasing and anything else that moves the station. Everything about the pad - its
+    // deck, kerbs, indicator, where a ship parks on it - is the pad's, and a pad dropped at the far end of
+    // the map with no station near it is built by exactly this call.
+    DestroyLandingPad();
+    const FTransform Where = GetActorTransform();
+    FActorSpawnParameters Params;
+    Params.Owner = this;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    LandingPad = GetWorld()->SpawnActor<ASSLandingPad>(ASSLandingPad::StaticClass(),
+                                                       Where.TransformPosition(FVector(PadCenterX, 0, PadDeckTop)),
+                                                       GetActorRotation(), Params);
+    if (LandingPad)
+    {
+        LandingPad->HalfExtent = PadHalfExtent;
+        LandingPad->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+        LandingPad->Build();
+    }
+    // The walkway in to the hangar mouth is the station's, because it is the station that has a mouth. A
+    // scaled unit cube spanning [Low, High] is centred at the midpoint and scaled by the span over 100; it
+    // shares the pad's bottom so the two read as one poured structure. Kept inside |Y| <= 400 so it passes
+    // through the mouth's own |Y| <= 700 opening without touching the jambs.
+    //
+    // No threshold plate is needed and one would be wrong. The interior DeckCollision spans Z -110..-10 and
+    // Bow_Sill's top face is -10, so the walk from pad to deck is already one continuous plane. An earlier
+    // pass here added a half-step for a 70 cm lip measured off Keel_Floor - which is the exterior hull box,
+    // not the floor the hero stands on.
+    const float Bottom = -280.f, LowX = PadCenterX + PadHalfExtent, HighX = PadWalkwayInnerX;
+    auto *Walkway =
+        AddMesh(FVector((LowX + HighX) * .5f, 0, (Bottom + PadDeckTop) * .5f),
+                FVector((HighX - LowX) / 100.f, 800.f / 100.f, (PadDeckTop - Bottom) / 100.f), Cube, Hull, true);
+    Walkway->ComponentTags.Add(TEXT("StationLandingWalkway"));
+    if (bHome)
+        return;
+    // A pit stop's worth of services where the ship actually is, rather than making the player walk inside
+    // for the two things they came to do. The interior hub keeps all nine of its own.
+    AddService(FVector(PadCenterX - 700.f, -900.f, PadDeckTop + 80.f), TEXT("DOCK REPAIR"), ESSPanel::Repair);
+    AddService(FVector(PadCenterX - 700.f, 900.f, PadDeckTop + 80.f), TEXT("DOCK UPGRADES I - V"), ESSPanel::Upgrades);
+}
 void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Panel)
 {
     auto *Stand = AddMesh(Position, FVector(1), TEXT("/Game/SpaceSurvival/Meshes/SM_Console.SM_Console"),
@@ -100,12 +142,18 @@ bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
         return false;
     const float Radius = Ship->Collision->GetScaledSphereRadius() / SmallestScale;
     const FVector Local = HubTransform.InverseTransformPosition(Ship->GetActorLocation());
-    // BuildHub's split wall ends at X=-1675 with a 1400 cm opening. Keep the
-    // complete flight body above the deck (-10) and below the bay beams (967.5).
-    // Admission is on the inbound side of the dock; roof/rear/side dives retain control.
-    if (Local.X < -1675.f || Local.X >= 850.f || FMath::Abs(Local.Y) > 700.f - Radius || Local.Z < -10.f + Radius ||
-        Local.Z > 967.5f - Radius ||
-        FVector::DotProduct(Ship->GetActorForwardVector(), GetActorForwardVector()) <= .45f)
+    // This used to be a corridor: the body had to sit inside the hangar mouth (X -1675..850, |Y| <= 700,
+    // Z -10..967.5) AND be pointed along the station's own forward. That was the real gate - the heading
+    // test in ASSGameMode was only ever the second half of it - and it is what made docking something you
+    // could only do by flying a particular line through a particular hole.
+    //
+    // Docking is at an open exterior pad now, and the rule for it is that you are not forced to approach a
+    // certain way. So no box and no heading. Two physical things survive, because they are about whether
+    // the ship can be there at all rather than about how it chose to arrive:
+    //   - the whole flight body has to be clear above the pad deck, not buried in it or under the station
+    //   - and the swept body has to actually reach the dock point without hitting anything
+    // Range is the caller's business: ASSGameMode admits within 1200 cm of PadDockPosition.
+    if (Local.Z < PadDeckTop + Radius)
         return false;
     FHitResult Hit;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockAdmission), false, Ship);
@@ -113,7 +161,7 @@ bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
     // Check the actual flight collision body, including the physical station. Do not
     // admit a path merely because its center line misses a rib or another blocker.
     return !GetWorld()->SweepSingleByChannel(
-        Hit, Ship->GetActorLocation(), DockPosition(), Ship->Collision->GetComponentQuat(),
+        Hit, Ship->GetActorLocation(), PadDockPosition(), Ship->Collision->GetComponentQuat(),
         Ship->Collision->GetCollisionObjectType(), Ship->Collision->GetCollisionShape(), Query, Responses);
 }
 bool ASSStation::BuildEditableLayout()
@@ -147,12 +195,14 @@ void ASSStation::Destroyed()
 {
     // EndPlay is not routed for an uninitialized actor destroyed in an authoring/preview world.
     DestroyVisualLayout();
+    DestroyLandingPad();
     Super::Destroyed();
 }
 
 void ASSStation::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     DestroyVisualLayout();
+    DestroyLandingPad();
     Super::EndPlay(EndPlayReason);
 }
 
@@ -334,6 +384,7 @@ void ASSStation::BuildHub(bool bHome)
     // The paint bay: a lift stand on the starboard wall; the editable layout dresses it with a platform and arch.
     AddService(FVector(-1400, -1000, 0), TEXT("PAINT BAY"), ESSPanel::Paint);
     // A separate review doorway: available in home hangar and both stations, never a run destination.
+    BuildLandingPad(Home, Cube, Hull);
     AddService(FVector(450, 1000, 0), TEXT("ALIEN WORLD"), ESSPanel::AlienGallery);
     ServiceLabels.Last()->SetRelativeLocation(FVector(450, 1160, 265));
     ServiceLabels.Last()->SetWorldSize(20);
@@ -465,6 +516,55 @@ void ASSStation::ShowBayShip(bool Visible)
 {
     if (BayShip)
         BayShip->SetVisibility(Visible);
+}
+void ASSStation::ShowPadIndicator(bool Visible)
+{
+    if (LandingPad)
+        LandingPad->ShowIndicator(Visible);
+}
+FVector ASSStation::PadDockPosition() const
+{
+    // 230 above the deck is the classic hull's clearance, and the deck is at -10, so this is the same
+    // Z 220 the bay has always parked at. The hull-specific clearance belongs to the ship and is the
+    // next thing to move here; until it does, both hulls park where they parked yesterday.
+    return LandingPad ? LandingPad->DockPoint() : GetActorTransform().TransformPosition(FVector(PadCenterX, 0, 220.f));
+}
+FVector ASSStation::PadWalkSpawn() const
+{
+    return LandingPad ? LandingPad->WalkSpawn()
+                      : GetActorTransform().TransformPosition(FVector(PadCenterX + 400.f, 0, 180.f));
+}
+FVector ASSStation::PadExit() const
+{
+    return LandingPad ? LandingPad->ExitPoint()
+                      : GetActorTransform().TransformPosition(FVector(PadCenterX + 200.f, -350.f, 100.f));
+}
+bool ASSStation::Walkable(const FVector &World) const
+{
+    const FVector Local = GetActorTransform().InverseTransformPosition(World);
+    if (Local.Z < -250.f)
+        return false;
+    // The interior deck, exactly as it always was.
+    if (FMath::Abs(Local.X) <= 1750.f && FMath::Abs(Local.Y) <= 1450.f)
+        return true;
+    // The walkway, from the pad's near edge in through the mouth, overlapping the interior box past the
+    // doorway at -1750 so there is no seam to fall through on the threshold.
+    if (Local.X >= PadCenterX + PadHalfExtent - 100.f && Local.X <= -1500.f && FMath::Abs(Local.Y) <= 500.f)
+        return true;
+    // And the pad, which answers for itself in its own frame. A station whose pad has not been built yet -
+    // a fixture that spawned it without BuildHub, or the instant between spawn and build - answers from
+    // where it WILL put its pad, so the envelope is geometry either way and never silently shrinks to the
+    // interior because an actor pointer happens to be null.
+    if (LandingPad)
+        return LandingPad->Covers(World);
+    return FMath::Abs(Local.X - PadCenterX) <= PadHalfExtent + 100.f && FMath::Abs(Local.Y) <= PadHalfExtent + 100.f;
+}
+void ASSStation::DestroyLandingPad()
+{
+    auto *Pad = LandingPad.Get();
+    LandingPad = nullptr;
+    if (IsValid(Pad))
+        Pad->Destroy();
 }
 ESSPanel ASSStation::NearestService(FVector Position, FString &Label) const
 {
@@ -1106,10 +1206,13 @@ void ASSWalker::Tick(float Dt)
         }
         if (const ASSStation *Hub = RecoveryHub.Get())
         {
-            const FVector Local = Hub->GetActorTransform().InverseTransformPosition(GetActorLocation());
             // The ship's inbound corridor stays open. A walker who leaves the
             // finite deck is returned to its safe spawn without ending the run.
-            if (FMath::Abs(Local.X) > 1750.f || FMath::Abs(Local.Y) > 1450.f || Local.Z < -250.f)
+            // The deck is no longer only the interior: it now includes the exterior landing pad and the
+            // walkway between them, which is what makes "land outside and walk in" possible at all. Before
+            // this the envelope stopped at X -1750 and the hangar mouth is at -1800, so the hero was fenced
+            // in fifty centimetres short of its own doorway.
+            if (!Hub->Walkable(GetActorLocation()))
             {
                 // Counted, because this restores the very state an arrival is asked to prove and would
                 // otherwise let a broken arrival pose as a good one that simply started off the deck.

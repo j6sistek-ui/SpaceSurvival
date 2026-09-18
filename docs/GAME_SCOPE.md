@@ -254,9 +254,13 @@ The flight system supports:
 
 Normal traversal has strong forward momentum.
 
-The player should generally be progressing through space rather than freely parking or backtracking.
+**Inside a wave**, the player should be progressing through space rather than freely parking or backtracking.
 
-However, there should not be a visible switch between "forward survival mode" and "combat mode."
+**Inside the station zone** (see below), the ship may slow to a stop. That is the same flight model with the
+speed floor lifted for a scheduled break, not a second model - and a ship that must always cruise cannot be
+lowered onto a pad.
+
+There should not be a visible switch between "forward survival mode" and "combat mode."
 
 The environment should naturally determine how the player uses the same flight model.
 
@@ -288,6 +292,9 @@ Continuous braking eventually overheats or weakens the braking system until it c
 
 This prevents players from defeating high-speed survival by crawling through space.
 
+That rule exists to protect survival, so it applies where survival is happening. Inside the station zone the
+ship may hold station or stop, because crawling there defeats nothing.
+
 ## Dodge
 
 A dedicated directional dodge produces a sharp movement burst.
@@ -295,6 +302,29 @@ A dedicated directional dodge produces a sharp movement burst.
 There are **no invulnerability frames** in the base implementation.
 
 Dodging into an obstacle still causes damage.
+
+---
+
+# 6b. The station zone
+
+There is one mode. Survival - asteroids, hazards, combat, forward momentum - is the game, and it does not
+switch off and on.
+
+The station zone is a **scheduled break inside that mode**, not a second mode. It is the interim checkpoint
+the fifth-wave cadence has always led to, given a size and a boundary. Inside it survival is paused rather
+than replaced: nothing is hunting the player, so the rules that exist to keep survival honest - the speed
+floor, the brake-heat limit - have nothing to protect and are relaxed. The ship may slow or stop. Docking,
+landing, services and launching happen here.
+
+This is deliberately not a mode switch. The player does not change how they fly; they arrive somewhere and
+are allowed to stop. The flight model, the controls and the camera concept are the same on both sides of the
+boundary.
+
+Leaving the zone starts the next block. The next wave begins because the player flew out, not because a
+timer expired.
+
+Normal (non-fifth) wave transitions are unchanged: brief breathing windows, flight continues, no parking.
+The station zone is a fifth-wave feature, not a between-every-wave one.
 
 ---
 
@@ -310,17 +340,28 @@ Limited dynamic camera behavior is allowed:
 - slight widening during exceptionally dense hazards
 - small adaptation during major combat encounters
 
-Avoid dramatic mode-switching camera behavior.
+Avoid dramatic mode-switching camera behavior. The camera's job during a wave is to keep the player feeling
+chased; it should not drift or loosen in a way that makes the moment feel casual.
+
+The concept is fixed. The numbers are per hull. A longer ship needs a different distance, height and pitch to
+read at all, so framing is dialled in for each ship rather than shared - and difficulty is balanced by tuning
+the ship, so that each hull ends up at a comparable difficulty even when it is slower or heavier.
 
 ---
 
 # 8. Acornaut Presentation
 
-Acornaut is visibly piloting the ship during gameplay.
+Acornaut is visibly piloting the ship on open-cockpit hulls.
+
+On a closed-canopy hull the pilot is not drawn in flight. This is a relaxation of the original preference,
+taken deliberately: the hull matters more to how the game looks than the silhouette in its cockpit does.
+Acornaut is seen instead on the landing pad, walking out through the ship's own door, in the station, and in
+hangars and cinematics - which reads as more immersive, not less. If a later hull or a later treatment makes
+in-flight visibility work, it returns.
 
 Match the approved Hybrid concept direction:
 
-- Acornaut's head/body/tail silhouette remains visible
+- on open hulls, Acornaut's head/body/tail silhouette remains visible
 - the spacecraft remains the dominant gameplay object
 - Acornaut is more prominent in stations, hangars and cinematics
 
@@ -672,13 +713,19 @@ Every fifth-wave climax leads to a guaranteed station.
 
 The player:
 
-1. approaches manually
-2. enters a safe docking corridor
-3. receives landing assistance
-4. lands
-5. exits as Acornaut
-6. accesses station services
-7. launches into the next block
+1. approaches manually, **from any direction** - there is no required corridor, lane or heading
+2. gets close to a landing pad, slowly enough that a landing is plausible, and is offered docking
+3. **presses a button to engage it** - docking is never automatic
+4. the ship slows to a hover over the pad, then lowers onto it as the landing gear opens
+5. on contact the rear door opens, Acornaut stands, and control returns
+6. walks out onto the pad and into the station, and accesses its services
+7. launches: door shuts, gear stows, the ship lifts off the pad, control returns
+8. flies clear of the station zone, which begins the next block
+
+Steps 2-7 are the same at every landing pad in the game, now and later. A pad carries its own dock point and
+approach volume; the sequence is written against pads rather than against any one station.
+
+Approach is gated on **proximity and speed**, not on angle. A ship cannot dock at full thrust.
 
 ## Station gameplay
 
@@ -1327,6 +1374,20 @@ Early progression should prove two unlock categories:
 
 1. second starting weapon option
 2. second spacecraft
+
+## Ship roster
+
+Ships are data. Each hull declares its own size, collision, framing and handling, and every gate reads those
+rather than assuming one base model. Adding a ship is a data row, not a rewrite, and a hull that fails to
+declare a value fails loudly rather than inheriting another ship's numbers.
+
+Bigger hulls may be less agile. That is a property of the hull, not an exception to the flight model, and
+difficulty is balanced by tuning each hull rather than by making them all handle alike.
+
+**Build one hull that feels right before building tiers.** The current ship is the reference: the version
+that handles the way the game should handle. Progression is then applied as dials down from it - a true
+starting player gets a version reduced by some percentage, and upgrades close the gap - rather than by
+authoring separate tiers up front. Get one working model that looks and feels right first.
 
 ## Second ship
 

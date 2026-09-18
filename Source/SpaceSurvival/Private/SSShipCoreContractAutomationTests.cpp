@@ -7,7 +7,10 @@
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/WorldSettings.h"
 #include "GyroManagerComp.h"
+#include "SSContentTypes.h"
+#include "SSShip.h"
 #include "PhysicsEngine/BodyInstance.h"
+#include "PhysicsEngine/PhysicsSettings.h"
 #include "ThrusterManagerComp.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -224,14 +227,227 @@ bool FSSShipCoreBodyContractTest::RunTest(const FString &)
                  Gained < FSSShipCoreRig::ExpectedAcceleration * 4.f);
 
     // 4. The gyro turns the body. Same standard: this proves the torque path works, not that it feels right.
+    //    As first written this applied input on Y and asserted |yaw| changed by more than a degree after a
+    //    full second at max torque. Y is the PITCH axis of a body-frame torque vector, and a body pitched
+    //    past ninety degrees reports a 180 degree Euler yaw flip - so the check passed on a rotation it
+    //    never asked for. Which axis is which, and in which sign, is measured by ShipCoreGyroAxes below;
+    //    this keeps only the feasibility half, on the axis that actually yaws, over a burst short enough
+    //    to stay well inside the range where the rotator means what it says.
     Rig.Thrusters->SetThrustersInput(FVector::ZeroVector);
     const float YawBefore = Rig.Body->GetActorRotation().Yaw;
-    Rig.Gyros->SetGyrosInput(FVector(0, 1, 0));
-    Rig.Frames(120);
+    Rig.Gyros->SetGyrosInput(FVector(0, 0, 1));
+    Rig.Frames(30);
     const float YawGained = FMath::Abs(FRotator::NormalizeAxis(Rig.Body->GetActorRotation().Yaw - YawBefore));
-    AddInfo(FString::Printf(TEXT("Yaw change over 1 s of full input: %.2f degrees"), YawGained));
+    AddInfo(FString::Printf(TEXT("Yaw change over a quarter second of full Z input: %.2f degrees"), YawGained));
     TestTrue(TEXT("Gyro input rotates the body"), YawGained > 1.f);
 
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSShipCoreGyroAxesTest, "SpaceSurvival.Flight.ShipCoreGyroAxes",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSShipCoreGyroAxesTest::RunTest(const FString &)
+{
+    // Which input axis turns the body which way. Measured, because the plugin's own header says the vector
+    // is (Pitch, Yaw, Roll) and its code applies it as a body-frame torque - X about forward, Y about right,
+    // Z about up - which is (Roll, Pitch, Yaw). The game's DriveShipCore trusted the comment, so on the
+    // Phoenix the pitch stick rolled and the yaw stick pitched, and the ship's own approach log showed
+    // both commands saturated for a hundred seconds with neither error closing. DriveShipCore is written
+    // against THIS test; if the plugin ever changes its convention, this goes red before a pilot notices.
+    //
+    // Each axis gets a fresh, level body and a burst of full input that stops as soon as any angle passes
+    // fifteen degrees, so the rotator is read well inside the range where its three angles mean what they
+    // say. A second pass below starts each body rotated instead, because at identity the body frame and
+    // the world frame coincide and a world-frame torque would pass the first pass unnoticed. The sign column was first
+    // written as a hypothesis - +input turns the body in the rotator's positive direction on all three - and the first
+    // run refuted two of them, naming the values: +X gave roll -15.06, +Y gave pitch -15.32, +Z gave yaw +15.32, with
+    // 0.00 on every other angle. So the table below is the measurement. Yaw follows the torque's sign; pitch and roll
+    // oppose it, which is how FRotator's nose-up and right-wing-down conventions sit against a left-handed angular
+    // velocity.
+    struct FAxis
+    {
+        FVector Input;
+        const TCHAR *Name;
+        int32 Expect; // 0 roll, 1 pitch, 2 yaw
+        float Sign;
+    };
+    const FAxis Axes[] = {{FVector(1, 0, 0), TEXT("X"), 0, -1.f},
+                          {FVector(0, 1, 0), TEXT("Y"), 1, -1.f},
+                          {FVector(0, 0, 1), TEXT("Z"), 2, 1.f}};
+    const TCHAR *Names[3] = {TEXT("roll"), TEXT("pitch"), TEXT("yaw")};
+    for (const FAxis &Axis : Axes)
+    {
+        FSSShipCoreRig Rig;
+        if (!Rig.Initialize(*this))
+            return false;
+        Rig.Frames(10);
+        const FRotator Start = Rig.Body->GetActorRotation();
+        Rig.Gyros->SetGyrosInput(Axis.Input);
+        FRotator Delta = FRotator::ZeroRotator;
+        int32 Frames = 0;
+        for (; Frames < 480; ++Frames)
+        {
+            Rig.Step();
+            const FRotator Now = Rig.Body->GetActorRotation();
+            Delta =
+                FRotator(FRotator::NormalizeAxis(Now.Pitch - Start.Pitch), FRotator::NormalizeAxis(Now.Yaw - Start.Yaw),
+                         FRotator::NormalizeAxis(Now.Roll - Start.Roll));
+            if (FMath::Abs(Delta.Roll) > 15.f || FMath::Abs(Delta.Pitch) > 15.f || FMath::Abs(Delta.Yaw) > 15.f)
+                break;
+        }
+        const float Angles[3] = {Delta.Roll, Delta.Pitch, Delta.Yaw};
+        int32 Dominant = 0;
+        for (int32 I = 1; I < 3; ++I)
+            if (FMath::Abs(Angles[I]) > FMath::Abs(Angles[Dominant]))
+                Dominant = I;
+        AddInfo(FString::Printf(TEXT("+%s input for %d frames: roll %+.2f  pitch %+.2f  yaw %+.2f  -> %s"), Axis.Name,
+                                Frames, Delta.Roll, Delta.Pitch, Delta.Yaw, Names[Dominant]));
+        TestTrue(FString::Printf(TEXT("+%s input actually turns the body"), Axis.Name),
+                 FMath::Abs(Angles[Dominant]) > 2.f);
+        TestEqual(FString::Printf(TEXT("+%s input is %s"), Axis.Name, Names[Axis.Expect]), Dominant, Axis.Expect);
+        TestTrue(FString::Printf(TEXT("+%s input turns %s in the measured direction (%s)"), Axis.Name,
+                                 Names[Axis.Expect], Axis.Sign > 0.f ? TEXT("positive") : TEXT("negative")),
+                 Angles[Axis.Expect] * Axis.Sign > 0.f);
+        // The other two stay small. On this body that is a floor under the test's own bookkeeping rather
+        // than a measurement of the plugin: the rig's hull is a sphere, its inertia is isotropic, and a
+        // torque about one principal axis cannot move another - which also holds for the Phoenix, whose
+        // simulating root is the same 105 cm sphere. It stays because a wrong index in this test would
+        // trip it, not because the plugin could.
+        for (int32 I = 0; I < 3; ++I)
+            if (I != Axis.Expect)
+                TestTrue(FString::Printf(TEXT("+%s input leaks little into %s"), Axis.Name, Names[I]),
+                         FMath::Abs(Angles[I]) < FMath::Max(1.f, FMath::Abs(Angles[Axis.Expect]) * .34f));
+    }
+    // Second pass: body frame, not world frame. The body starts pitched, yawed and rolled all at once, so
+    // its axes point nowhere near the world's, and the rotation it makes is read as a quaternion in the
+    // body's own frame - Start.Inverse() * Now - whose axis is then the body axis it turned about. Signs
+    // were settled above; this only asks which axis, so the axis is compared unsigned.
+    for (const FAxis &Axis : Axes)
+    {
+        FSSShipCoreRig Rig;
+        if (!Rig.Initialize(*this))
+            return false;
+        Rig.Body->SetActorRotation(FRotator(20.f, 135.f, -30.f), ETeleportType::TeleportPhysics);
+        Rig.Hull->SetPhysicsAngularVelocityInRadians(FVector::ZeroVector);
+        Rig.Frames(10);
+        const FQuat Start = Rig.Body->GetActorQuat();
+        Rig.Gyros->SetGyrosInput(Axis.Input);
+        FVector BodyAxis = FVector::ZeroVector;
+        float AngleDeg = 0.f;
+        int32 Frames = 0;
+        for (; Frames < 480; ++Frames)
+        {
+            Rig.Step();
+            const FQuat Delta = Start.Inverse() * Rig.Body->GetActorQuat();
+            double AngleRad = 0.0;
+            Delta.ToAxisAndAngle(BodyAxis, AngleRad);
+            AngleDeg = FMath::RadiansToDegrees(AngleRad);
+            if (AngleDeg > 15.f)
+                break;
+        }
+        const float Components[3] = {FMath::Abs(float(BodyAxis.X)), FMath::Abs(float(BodyAxis.Y)),
+                                     FMath::Abs(float(BodyAxis.Z))};
+        int32 Dominant = 0;
+        for (int32 I = 1; I < 3; ++I)
+            if (Components[I] > Components[Dominant])
+                Dominant = I;
+        AddInfo(FString::Printf(
+            TEXT("+%s input from a rotated start, %d frames: body axis |%.2f %.2f %.2f| over %.1f deg -> %s"),
+            Axis.Name, Frames, Components[0], Components[1], Components[2], AngleDeg, Names[Dominant]));
+        TestTrue(FString::Printf(TEXT("+%s input from a rotated start still turns the body"), Axis.Name),
+                 AngleDeg > 2.f);
+        TestEqual(FString::Printf(TEXT("+%s input is about the body's own %s axis, not the world's"), Axis.Name,
+                                  Names[Axis.Expect]),
+                  Dominant, Axis.Expect);
+        TestTrue(FString::Printf(TEXT("+%s input's body axis is clean"), Axis.Name), Components[Axis.Expect] > .9f);
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSShipStickToGyroTest, "SpaceSurvival.Flight.ShipStickToGyro",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSShipStickToGyroTest::RunTest(const FString &)
+{
+    // The other half of the chain. ShipCoreGyroAxes pins what the PLUGIN does with a vector; this pins what
+    // the GAME puts in the vector for a given stick, so the negations in GyroInputFor are asserted rather
+    // than read. Together: +yaw stick -> (0, 0, +1) -> +yaw rotator; +pitch stick -> (0, -1, 0) -> +pitch
+    // rotator, the same meaning the kinematic path has always given the same stick.
+    const FVector RightTurn = ASSShip::GyroInputFor(FVector2D(1.f, 0.f), 1.f);
+    TestTrue(TEXT("Full right stick is +1 on the yaw axis (Z)"), FMath::IsNearlyEqual(float(RightTurn.Z), 1.f));
+    TestTrue(TEXT("Full right stick puts nothing on pitch (Y)"), FMath::IsNearlyZero(float(RightTurn.Y)));
+    TestTrue(TEXT("Full right stick leans .35 on the roll axis (X), negated for the rotator's roll sign"),
+             FMath::IsNearlyEqual(float(RightTurn.X), -.35f));
+    const FVector NoseUp = ASSShip::GyroInputFor(FVector2D(0.f, 1.f), 1.f);
+    TestTrue(TEXT("Full nose-up stick is -1 on the pitch axis (Y), because +Y torque reads as -pitch"),
+             FMath::IsNearlyEqual(float(NoseUp.Y), -1.f));
+    TestTrue(TEXT("Full nose-up stick puts nothing on yaw or roll"),
+             FMath::IsNearlyZero(float(NoseUp.Z)) && FMath::IsNearlyZero(float(NoseUp.X)));
+    const FVector Scaled = ASSShip::GyroInputFor(FVector2D(3.f, -3.f), .5f);
+    TestTrue(TEXT("Stick is clamped to unit before the turn authority scales it"),
+             FMath::IsNearlyEqual(float(Scaled.Z), .5f) && FMath::IsNearlyEqual(float(Scaled.Y), .5f) &&
+                 FMath::IsNearlyEqual(float(Scaled.X), -.175f));
+    TestTrue(TEXT("Centred stick is silence on every axis"),
+             ASSShip::GyroInputFor(FVector2D::ZeroVector, 1.f).IsZero());
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSHullDefinitionScaleTest, "SpaceSurvival.Flight.HullDefinitionScale",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSSHullDefinitionScaleTest::RunTest(const FString &)
+{
+    // The owner's own words: "the ship is larger than the old one, so scale or something has to adjust to
+    // accommodate the gameplay element being the same." This test is where that sentence becomes a number.
+    // It does not assert that the scale is RIGHT - nobody has flown it - only that it is what somebody
+    // wrote down, so changing it later is a deliberate act with a failing test attached rather than a
+    // quiet drift.
+    const FSSHullDefinition Classic(ESSHullIdentity::Classic);
+    TestEqual(TEXT("Classic is the hull every gameplay distance was calibrated against"),
+              Classic.LengthRatioToClassic(), 1.f);
+    TestEqual(TEXT("Classic keeps the collision radius the corridor sweeps use"), Classic.ScaledCollisionRadius(),
+              105.f);
+    TestFalse(TEXT("Classic is a static mesh"), Classic.SkeletalHull);
+    TestTrue(TEXT("Classic is always present, whichever of the three meshes it resolves to"), Classic.Installed());
+
+    const FSSHullDefinition Phoenix(ESSHullIdentity::StellarPhoenix);
+    TestTrue(TEXT("The Phoenix is a skeletal hull, which the pawn cannot carry yet"), Phoenix.SkeletalHull);
+    // Measured by loading the asset in 5.8: bounds 1243.9 x 2484.0 x 704.8, long axis Y.
+    TestEqual(TEXT("Authored length is the measured 24.84 m"), Phoenix.AuthoredLength, 2484.f);
+    TestEqual(TEXT("Authored forward is +Y, so the hull needs a quarter turn"), Phoenix.MeshYaw, -90.f);
+    // 2484 / 482.5 = 5.1482..., which is the whole of the owner's concern expressed as one number.
+    TestTrue(TEXT("The Phoenix is about 5.15 times the length of the hull it replaces"),
+             FMath::IsNearlyEqual(Phoenix.LengthRatioToClassic(), 2484.f / 482.5f, .001f));
+    // Half the widest horizontal extent. A sphere is a poor fit for this shape and that is recorded as a
+    // known problem; what matters here is that the number is derived from the mesh rather than inherited.
+    TestTrue(TEXT("Collision radius is half the measured width, not the old hull's 105"),
+             FMath::IsNearlyEqual(Phoenix.ScaledCollisionRadius(), 621.95f, .01f));
+    // Deliberately unscaled. The authored size is what makes a walkable interior possible for a 1.35 m
+    // hero, and the owner asked that a value not be changed unless it is certainly wrong.
+    TestEqual(TEXT("The hull is not scaled down on a guess"), Phoenix.HullScale, 1.f);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSWorldGravityBelongsToTheHeroTest, "SpaceSurvival.Flight.WorldGravityBelongsToHero",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSWorldGravityBelongsToTheHeroTest::RunTest(const FString &)
+{
+    // This exists because of a real regression, not a hypothetical one. Moving flight to ShipCore, the
+    // obvious-looking way to stop a simulating ship falling was DefaultGravityZ=0 in DefaultEngine.ini.
+    // It works for the ship, and it silently breaks the hero: ASSWalker is an ACharacter whose
+    // UCharacterMovementComponent spawns 260 cm above the station deck (WalkSpawn Z 180 against a deck
+    // top at Z -80) and reaches MOVE_Walking by FALLING onto it. At zero gravity it never lands, so the
+    // Station5 fixture's standingOnDeck went from 14.55 seconds to 0.00 of a required 15.00 - and all 63
+    // automation tests stayed green, because the ones that look at the walker assert its spawn position
+    // rather than its landing.
+    //
+    // Gravity is a per-body concern in this game. Exactly one thing simulates - the ship, and only under
+    // -SSPhoenix - and it opts out on its own body via SetEnableGravity(false), with ShipCore's
+    // bCustomGravity zero vector stopping the plugin re-applying world gravity as a force. Everything
+    // else that needs gravity is a character. So the world keeps its gravity and the ship turns its own
+    // off, rather than the other way round.
+    const float Gravity = UPhysicsSettings::Get()->DefaultGravityZ;
+    TestTrue(TEXT("World gravity is left to the engine default, because the walking hero needs it to land"),
+             Gravity < -100.f);
     return true;
 }
 #endif

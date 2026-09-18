@@ -17,6 +17,7 @@ class UAnimSequence;
 class UTextRenderComponent;
 class UMaterialInterface;
 class ASSStationVisualLayout;
+class ASSLandingPad;
 struct FPoseSnapshot;
 
 UCLASS()
@@ -41,6 +42,15 @@ public:
     TSoftObjectPtr<UStaticMesh> ShellAsset;
     void SetBayShip(int32 ShipKind);
     void ShowBayShip(bool Visible);
+    /** The landing marker on the pad. Lit while the pad is waiting for a ship, dark once one is sitting on
+     *  it - an indicator that stays up after you have landed is just a decal. */
+    void ShowPadIndicator(bool Visible);
+    /** The pad this station owns. A real, separately placeable ASSLandingPad, attached to the station so it
+     *  moves with it; the station is one client of a pad, not the definition of one. */
+    ASSLandingPad *GetLandingPad() const
+    {
+        return LandingPad;
+    }
     void RefreshPaint();
     bool CanAssistDocking(const ASSShip *Ship) const;
     virtual void Tick(float DeltaSeconds) override;
@@ -55,6 +65,28 @@ public:
     {
         return GetActorTransform().TransformPosition(FVector(850, 0, 220));
     }
+    /** Where THIS station places ITS pad, in station-local centimetres. These are measured, not chosen. The
+     *  deck is at Z -10 because that is already the top of everything the hero walks on: DeckCollision spans
+     *  Z -110..-10 and Bow_Sill's top face is -10 too. One plane end to end means walking in from the pad
+     *  needs no step, which matters because ASSWalker has two movement inputs and no jump. The pad itself -
+     *  its deck, kerbs, indicator, and every question about parking or standing on it - is ASSLandingPad,
+     *  which knows nothing about stations; these numbers are only this station's placement of one. */
+    static constexpr float PadDeckTop = -10.f;
+    static constexpr float PadCenterX = -4500.f;
+    static constexpr float PadHalfExtent = 1600.f;
+    /** Where the walkway meets the hangar mouth. The mouth itself spans X -1900..-1700. */
+    static constexpr float PadWalkwayInnerX = -1900.f;
+    /** Where the ship parks, the hero appears, and a disembark ends - all answered by the pad. The station
+     *  keeps these names so that every caller written against "the station's pad" keeps working, but the
+     *  numbers now live on the one place they mean anything. */
+    FVector PadDockPosition() const;
+    FVector PadWalkSpawn() const;
+    FVector PadExit() const;
+    /** Whether a world position is somewhere the hero is allowed to be: the interior deck, the walkway out
+     *  to the pad, or the pad itself. The three overlap across each threshold on purpose - a gap between
+     *  any two would be a spot where crossing it teleports the hero home. Not static any more, because the
+     *  pad is an actor with its own transform and the only honest answer comes from asking it. */
+    bool Walkable(const FVector &World) const;
     bool IsHome() const
     {
         return Home;
@@ -84,6 +116,8 @@ private:
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> BayShip;
     UPROPERTY()
+    TObjectPtr<ASSLandingPad> LandingPad;
+    UPROPERTY()
     TObjectPtr<UStaticMeshComponent> VendorHead;
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> VendorArm;
@@ -94,6 +128,9 @@ private:
     bool Home = false;
     UStaticMeshComponent *AddMesh(FVector Position, FVector Scale, const TCHAR *Mesh, const TCHAR *Material,
                                   bool Solid = false);
+    /** Spawns this station's pad and builds the walkway that joins it to the hangar mouth. */
+    void BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hull);
+    void DestroyLandingPad();
     void AddService(FVector Position, const FString &Label, ESSPanel Panel);
 };
 

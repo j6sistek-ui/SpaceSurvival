@@ -1210,6 +1210,66 @@ also that the admission tick still stops at `MaximumActiveThreats` (24); only th
 
 
 
+#### September 18 the Stellar Phoenix, measured rather than read off the store page
+
+The owner bought the Stellar Phoenix Shuttle and made it the new main ship. Before anything is built on it,
+here is what it actually is. Every number came from loading the asset in 5.8 under
+`.agent/local/StellarPhoenix/`, where the probe scripts live and are re-runnable.
+
+**It imports clean.** Built for UE 5.3, loads into 5.8 with zero failures: 165 bones, 3 material slots
+(`Spaceship_1`, `Spaceship_2`, `Spaceship_Glass`) all resolving, 13 textures all present, no integrity
+issues. It lives at `Content/Stellar_Phoenix/`, git-ignored as licensed Fab content, because every
+reference inside the pack is by the package path `/Game/Stellar_Phoenix` and moving it under `Fab/` would
+break all of them. Only the 71 MB `Spaceship/`, `Data/` and `FirstPerson/Input/` subset was taken; the
+94 MB demo map and 33 MB of Epic first-person arms were left out.
+
+**Size, and the owner's worry about it.** `1243.9 x 2484.0 x 704.8 cm` - 12.4 m wide, **24.8 m long**,
+7.0 m tall, standing on Z = 0. Its authored forward is **+Y, not +X**, so it needs a -90 degree yaw when
+mounted, exactly as the squirrel hero did. The hull it replaces, `SM_SwiftCandidateV1`, is 4.82 m, so the
+Phoenix is **5.2x longer** than the ship the whole game is calibrated around. The owner raised this
+himself: "the ship is larger than the old one, so scale or something has to adjust to accommodate the
+gameplay element being the same." That decision is open and is the first thing to settle.
+
+**The animations are not what their names suggest.** Measured by asking all 165 bones how far each travels
+between a clip's first and last frame:
+
+| Clip | Length | Bones moved | What it actually does |
+|---|---|---|---|
+| `Landing_On` | 2.067 s | 31 | Gear down **and rear ramp open** |
+| `Landing_Off` | 1.567 s | 36 | Gear up **and rear ramp shut** |
+| `BattleMode_Enter` | 2.6 s | 8 | 4 airbrake flaps at 4.4 deg, 4 fairings at ~3 cm |
+| `BattleMode_Exit` | 2.3 s | 10 | Engines rotate 8.7 deg, fairings return |
+| `AirBrake` | 1.633 s | 3 | 3 airbrake flaps at 4.5 deg |
+
+The landing clips are the good news and are exactly the launch behaviour the owner described:
+`Cargo_Door_Bone` swings **83.7 degrees** in both, alongside `Foot_Bone` at 90.3 and the
+`Chasis_Back_Left/Right_2/4/7/8_Bone` set with `Leg_B_Bone` and `Leg_D_Bone`. Gear and ramp are one
+motion, already authored, free.
+
+**`BattleMode` is not the wings.** All 16 `Wing_Up/Down_A/B_Left/Right` bones are unanimated in every clip
+the pack ships. The owner's "wings fold out when the pilot sits down" has nothing behind it yet. They can
+be authored - the bones sit at component origin, so they are rotation-only controls and a deploy clip is
+the same operation as `Scripts/AuthorHeroTailSway.py` - but what the deployed pose should look like is the
+owner's eye, not an engineering question. Author a candidate and have it approved; do not ship a guess.
+
+**Read the bones, not the names.** An earlier pass sampled `Cargo_Door` rather than `Cargo_Door_Bone` and
+concluded the ramp was never animated, which was wrong. The gear bones are `Chasis_*` with one **s**,
+while the `Chassis-_Door_A/B` bones with two are something else and barely move. The pack also spells
+interior `Interiro` and has a Cyrillic C in `Сountermeasures`. Ask a bone how far it moves; never infer
+from what it is called.
+
+**Walking aboard is the big one.** The layout supports it - `Cockpit_Mesh` at Y +882.8 Z +451.8 at the
+front, a rear ramp from `Cargo_Door` at Y -957.8 Z +195.4 down to `Cargo_Door_A` at Y -1130.2 Z +133.4,
+`Interior_Mesh` and `Interiro_Doors_L/R_Mesh` between them. But **there is no walkable collision**:
+per-poly is off, and a skeletal mesh's physics asset is per-bone primitives for simulation, not an
+interior floor. "The hero walks into it, to the pilot chair" was one sentence and is the largest single
+item in the whole request; it needs collision that does not exist yet, either per-poly on the mesh or
+authored invisible floor geometry.
+
+**The advertised damage is an impact flash.** `M_Hit` and `T_Hit_Impact` only - no damage bones, no
+destruction meshes, no crush zones. `Data/Spaceship.uasset` is a `NiagaraEffectType` performance baseline,
+not a damage config. The owner has deferred damage work regardless.
+
 #### September 18 flight moves to Ship Core, and what the plugin does not tell you
 
 **Owner direction, verbatim:** "use ship core 100% nothing i have today is good. at least i didn't test the
@@ -1264,9 +1324,166 @@ twin guards it - and `ShipMesh` is set to null on the self-disable path, so the 
 path a Brake input would call. And `UAutopilotManagerComp` fires an `AddOnScreenDebugMessage` **every tick**
 while following a spline, ungated by any debug flag, which would paint every capture PNG.
 
-**State:** stage 1 only. Nothing is deleted, `ASSShip` is untouched, and the new test runs against a bare
+**State when that was written:** stage 1 only, `ASSShip` untouched, the new test running against a bare
 `AActor` rather than the game's ship so that a failure accuses the plugin and not the game. 62 of 62
-automation tests pass with zero warnings.
+automation tests passing with zero warnings. That is no longer where this stands - see the next entry.
+
+#### September 18 the Phoenix's stick was wired to the wrong gyro axes, and how that was found
+
+The Phoenix had stopped docking - approach ran the full 126-second timeout with `sawDocking=false` - after
+the measured pivot commit shrank the admission radius from 2442 cm to 2301 cm. The first theory was the
+fixture's proportional steering oscillating on a body with inertia; rate damping was added and the ship
+went from weaving across a 30 km box to sitting dead still at 5.8 cm/s. The CSV only carries the camera, so
+the ship's state was being inferred. A once-per-second `SOAK_APPROACH` line was added to the fixture -
+station-local position, distance versus radius, physics velocity, the simulating flag, heading error and
+command, `CanAssistDocking`, and the blocking actor if the clearance sweep fails - and it read:
+
+- `t=1..3`: the fixture commands nose-down (`pitchErr -8.8 -> -42.7`, `steer.Y` saturated) and the ship
+  **climbs** from Z 289 to 2029.
+- `t=116..125`: both commands saturated at -0.75 for a hundred seconds and **neither error closes** - yaw
+  stuck at -175 degrees, pitch at -80. A saturated command whose error never moves is going to the wrong
+  axis.
+- It ended pinned 43 m above the pad, one collision radius outside the station's Disc box, thrusting into
+  `SSStation_1/StaticMeshComponent_12` at 6 cm/s. That was the standstill.
+
+**The cause.** ShipCore's `GyroManagerComp.h:47` documents its input as `(Pitch, Yaw, Roll)`. Its code
+applies the vector as a body-frame torque - `ApplyFinalTorque` does `AddTorqueInRadians(
+Xf.TransformVectorNoScale(FinalLocalTorque))`, and `CalculateFinalTorque` scales `.X` by `RollMultiplier`
+"roll input shaping only" - so physically X is roll, Y is pitch, Z is yaw. `ASSShip::DriveShipCore` trusted
+the comment, so the pitch stick rolled the Phoenix and the yaw stick pitched it. Nothing had ever exercised
+it: the classic hull's kinematic path never touches the gyros and the Wave 10 captures steer with a zero
+vector, so every gate stayed green.
+
+**The old check was passing falsely.** `ShipCoreBodyContract` applied Y input for a full second at max
+torque and asserted `|delta yaw| > 1 degree`. Y is pitch; a body pitched past ninety degrees reports a 180
+degree Euler yaw flip. It passed on a rotation it never asked for.
+
+**Measured, not reasoned.** `SpaceSurvival.Flight.ShipCoreGyroAxes` gives each axis a fresh level body
+and a burst of full input that stops as soon as any angle passes fifteen degrees, then asserts which
+rotator angle dominated, that the other two stayed under a third of it, and the sign:
+
+| input | roll | pitch | yaw |
+|---|---|---|---|
+| +X | **-15.06** | 0.00 | 0.00 |
+| +Y | 0.00 | **-15.32** | 0.00 |
+| +Z | 0.00 | 0.00 | **+15.32** |
+
+Zero leakage. The order is (Roll, Pitch, Yaw), and the signs are not uniform: yaw follows the torque's
+sign, pitch and roll oppose it. The first sign hypothesis was +/+/+; the test refuted two of them by name,
+and the measurement became the table. `DriveShipCore` now sends `(Lean, Pitch, Yaw)` with yaw `+Steer.X`,
+pitch `-Steer.Y`, lean `-Steer.X * .35`, so the stick means the same thing on both hulls. The lean's sign
+is a feel dial, flagged as such in the code.
+
+**Verified:** 67 automation tests, zero warnings, zero failed, zero not-run - the axis test, a second pass of it
+from a rotated start that reads the turn as a body-frame quaternion so a world-frame torque could not hide,
+and `ShipStickToGyro`, which pins the game's stick-to-vector translation as a pure function so the whole chain
+from stick to rotator sign is measured. The rendered Station5 capture
+with `-SSPhoenix` is `success=True`, `sawDocking=True`, approach **4.22 s** (from a 126 s timeout, and
+faster than the classic hull's 4.42), docking 3.01 s, onDeck 14.55 of 15.00, zero off-deck rescues. The
+diagnostic lines on that run show yaw error -0.6 to -0.1 degrees, pitch error zero, commands near zero,
+altitude level, distance closing 12,621 to 2,376 cm in four seconds.
+
+**The lesson is the same one as the 105 cm radius, the `Cargo_Door` bone and the centred pivot: a name
+is a claim, a measurement is a fact.** The header comment was wrong about order and silent about sign,
+and the only test that could have caught it was itself written against the comment.
+
+Kept: the fixture's rate-damped steering - right for a body with inertia even though it was not the bug -
+and the `SOAK_APPROACH` diagnostics, because the next time the ship does something inexplicable the
+question should be answered by reading, not inferring.
+
+#### September 18 the landing pad is a thing, not three numbers on the station
+
+The owner's requirement, verbatim: "a landing pad anywhere in the game, ever, future features anything,
+all docks and launches the same exact way" and "make sure this is a prefab type concept or feature so if
+we add landing pads anywhere else, they all work exactly the same."
+
+Before this the pad was `PadCenterX`, `PadDeckTop` and `PadHalfExtent` as `static constexpr` on
+`ASSStation`, plus a lambda that assembled cubes in station-local space. Exactly one pad could exist, at
+one station, and the docking sequence had nowhere to be written against except that station.
+
+**`ASSLandingPad` is now an actor.** Placeable on its own, at any transform, with no station behind it.
+Its origin IS the landing spot - the centre of the deck's top surface - so `DeckPoint()` is the actor's
+location and nothing is derived from a slab centre and a thickness. It answers every question a landing
+needs in its own frame: `DockPoint(clearance)`, `WalkSpawn()`, `ExitPoint()`, `Covers(world)`, and it owns
+the lit indicator. `ASSStation` spawns one at its placement constants, attaches it so it rides through
+origin rebasing, and keeps `PadDockPosition()` / `PadWalkSpawn()` / `PadExit()` as thin delegates so every
+existing caller still works. The walkway that joins the pad to the hangar mouth stays the station's,
+because it is the station that has a mouth.
+
+**The dock clearance is the ship's number, not the pad's.** `DockPoint(230.f)` is the classic hull's
+clearance and the default. `OriginToBelly` for the Phoenix is 0.25 cm - it stands on its own pivot - so it
+should park at deck + gear height, not deck + 230. That per-hull clearance is the next thing to move; until
+it does the Phoenix still hangs 220 cm above the pad. Recorded, measured, not guessed.
+
+**Two things had to stop being static.** `ASSStation::WalkableLocal(Local)` became `Walkable(World)` on
+the instance, because the pad has its own transform and the only honest answer comes from asking it. It
+keeps a geometric fallback for a station whose pad has not been built - a fixture that spawned it without
+`BuildHub` - so the envelope never silently shrinks to the interior because an actor pointer is null. And
+the soak fixture's "is the hero on the deck" check accepted only `GM->Hub` as the floor actor; on the pad
+the floor is the pad, and a check that would have certified a correct landing as a failure was the exact
+shape of the stale-envelope bug fixed two entries ago.
+
+**Proof it works with nothing around it:** `SpaceSurvival.Station.LandingPadStandsAlone` spawns a pad at
+(-38000, 21000, -6500) yawed 137 degrees with no station, builds it, and checks a solid deck under the dock
+point, the walk spawn and the exit; that coverage follows the pad's rotation and not the world axes; that
+building twice builds once; and that the indicator starts lit and goes out.
+
+**Counts moved with the structure.** The station's solid-cube count is 17 rather than 18 - the deck belongs
+to the pad now, which is the point.
+
+**Verified:** Editor build clean; 65 automation tests succeeded, 0 warnings, 0 failed, 0 notRun, including the new standalone pad test. A rendered Station5 capture on the classic hull is success=True with sawDocking=True, approach 4.42 s, docking 3.00 s, onDeck 14.55 of 15.00 and zero off-deck rescues - the hero lands on the pad actor deck and is never rescued. The same capture with -SSPhoenix does NOT dock on this commit: telemetry shows the soak fixture P-only steering oscillating on the ShipCore body across a 30 km box with 45 km vertical swings. The refactor did not cause that - the dock point is unchanged and the classic control docks - and the fixture fix is the next entry.
+
+#### September 18 Ship Core actually takes the controls
+
+The owner pressed on the honest gap: "what are you using ship core for if not the controls?" The answer at
+the time was the chase camera and nothing else. The plugin was linked, enabled, contract-tested and
+attached to no ship. This entry is the swap itself.
+
+`ASSShip`'s `USphereComponent` root now simulates, and `UThrusterManagerComp` plus `UGyroManagerComp` move
+it. The hand-written substepped integrator is still in the file and still runs - **every build that does not
+pass `-SSPhoenix` flies exactly as it always did.** The two paths never both run.
+
+**The dials are not a straight translation, and one of them is a re-purposing.** Worth knowing before
+tuning, because the upgrade screen still sells all four:
+
+| Stat | Where it lands | Note |
+|---|---|---|
+| `acceleration` | thruster force, times mass | Same number on all six axes on purpose |
+| `speed` | the speed limiter | Defaults **off**; without switching it on the upgrade is inert |
+| `maneuver` | `MaxTotalTorque` | |
+| `response` | `ProportionalGain` | Was a rate constant on **linear** velocity error; a rigid body has no such dial, so it is re-homed onto **angular** error |
+
+The plugin ships Z thrust at 20e6 against 15e6 for X and Y. Left alone that makes vertical strafe a third
+livelier than horizontal for no reason anybody chose, so all six axes are set to the same figure.
+
+**Two things that would have broken quietly rather than loudly.** Both are the same shape - the old flight
+model was the only writer of a value the rest of the game reads:
+
+- **`GetVelocity` had to move to the physics body.** Sixteen production sites read it: Director spawn lead,
+  enemy aim lead, hazard intercept, the collision-course warning, the dust field. Under Ship Core the
+  hand-kept `Velocity` member is never written, so leaving it as the answer would have frozen all sixteen at
+  the `BeginPlay` cruise seed. Nothing would have errored; the game would just have got easier.
+- **Collision damage had to move to `OnComponentHit`.** The old integrator took its hits off the swept
+  move's `FHitResult`, and a simulating body never runs that path - so ramming an asteroid in the Phoenix
+  was free until this was bound. Same 15 damage on the same .8 s cooldown; physics handles the bounce.
+  Bound and building, but **not yet proven at runtime**: the Wave 10 soak never collided, so nothing has
+  actually hit anything under the new path.
+
+**Inertial dampeners are on.** Release the stick and the ship settles rather than coasting forever, which is
+the single biggest contributor to the feel being chased. `SetInertialDampeners` is called only once the body
+is confirmed simulating, because of the vendor defect recorded above - it dereferences `ShipMesh` unguarded
+while its own `_Server` twin checks, and standalone always takes the unguarded path.
+
+**CCD is on** because a 24.84 m hull at boost crosses more than a station wall's thickness in one frame, and
+this game had never had a swept rigid body before. Without it the ship tunnels.
+
+**Verified:** 63 of 63 automation tests, zero warnings, zero failed, zero not-run. A rendered Wave 10
+capture returns `success=True` with `SSHull: ShipCore driving, mass 4687.5 kg` in the log, peak speed
+6748 cm/s under 24 active threats.
+
+**Still open:** the feel itself. Making the parameters reachable is not the same as dialling them in, and
+nobody has flown this with hands on a controller yet. Docking through `UAutopilotManagerComp`, the station
+landing zone, the sit-to-launch sequence and the walkable interior are all still ahead.
 
 #### September 17 the squirrel is the hero: seated, lit, animated, and audible
 

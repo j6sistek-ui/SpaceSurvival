@@ -4,6 +4,7 @@
 #include "SSPhase1Data.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSLandingPad.h"
 #include "SSWorldActors.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -187,8 +188,8 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SSJourneyDockApproach), false, Ship);
     FHitResult Hit;
     const FVector Forward = Hub->GetActorForwardVector();
-    const FVector Dock = Hub->DockPosition();
-    Test.TestFalse(TEXT("Real station corridor admits the ship before assistance"),
+    const FVector Dock = Hub->PadDockPosition();
+    Test.TestFalse(TEXT("The pad approach is clear before assistance"),
                    Fixture.World->SweepSingleByObjectType(
                        Hit, Dock - Forward * 3000.f, Dock - Forward * 1250.f, FQuat::Identity, StaticObjects,
                        FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius()), Query));
@@ -196,6 +197,12 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
                   Fixture.World->LineTraceSingleByObjectType(
                       Hit, Hub->WalkSpawn(), Hub->WalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&
                       Hit.GetActor() == Hub);
+    // The pad is where the hero is actually put down now, so it needs the same proof the interior deck
+    // has always had: something solid under the spawn, belonging to the station rather than to nothing.
+    Test.TestTrue(TEXT("The landing pad has a physical deck beneath where the hero is set down, and it is the pad"),
+                  Fixture.World->LineTraceSingleByObjectType(
+                      Hit, Hub->PadWalkSpawn(), Hub->PadWalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&
+                      Hit.GetActor() == Hub->GetLandingPad());
     // Fixture places the player in the assist admission band. Natural manual
     // approach/input precision and high-speed flight feel require separate playtests.
     Ship->SetActorLocation(Dock - Forward * 1000.f);
@@ -212,8 +219,8 @@ bool CheckStation(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
         !Test.TestNotNull(TEXT("Station possesses Acornaut walker"), Walker) ||
         !Test.TestNotNull(TEXT("Station retains the docked ship"), Ship))
         return false;
-    Test.TestTrue(TEXT("Ship finishes at the actual dock position"),
-                  Ship->GetActorLocation().Equals(Hub->DockPosition(), 1.0));
+    Test.TestTrue(TEXT("Ship finishes parked on the exterior landing pad"),
+                  Ship->GetActorLocation().Equals(Hub->PadDockPosition(), 1.0));
     Test.TestFalse(TEXT("Docked ship stops its flight tick"), Ship->IsActorTickEnabled());
     Test.TestTrue(TEXT("Docked ship collision is disabled"),
                   Ship->Collision->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
@@ -306,10 +313,10 @@ bool CheckStation(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
                           Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
         // In plan, because the pawn settles onto the deck vertically: it is where the station puts a
         // walker, not dragged to the seat and not left at the authored exit target.
-        Test.TestTrue(TEXT("It stands where the station spawns a walker, clear of the hull the ship docked in"),
+        Test.TestTrue(TEXT("It stands where the station puts a walker down on the pad, clear of its own ship"),
                       FVector2D(Hub->GetActorTransform().InverseTransformPosition(Walker->GetActorLocation()))
-                              .Equals(FVector2D(-300, 0), 1.f) &&
-                          FVector::Dist2D(Walker->GetActorLocation(), Hub->DockPosition()) > 500.);
+                              .Equals(FVector2D(ASSStation::PadCenterX + 400.f, 0), 1.f) &&
+                          FVector::Dist2D(Walker->GetActorLocation(), Hub->PadDockPosition()) > 300.);
     }
     for (int32 Index = 0; Index < 60 && Walker->IsDisembarking(); ++Index)
         Fixture.Step();

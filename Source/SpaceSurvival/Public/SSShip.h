@@ -5,6 +5,7 @@
 #include "SSContentTypes.h"
 #include "SSShip.generated.h"
 class USphereComponent;
+class UPrimitiveComponent;
 class UStaticMeshComponent;
 class USkeletalMeshComponent;
 class USpringArmComponent;
@@ -27,13 +28,17 @@ public:
      *  the docking sweeps used. That is survivable at 105 and is not survivable at all once a hull of a
      *  different size is installed, which is why this exists now rather than after the fact. */
     static float FlightCollisionRadius();
+    /** The stick as ShipCore's gyro sees it: (yaw, pitch) stick to the plugin's (roll, pitch, yaw) body torque,
+     *  axes and signs. Pure and static so the translation is pinned by a test that needs no physics world;
+     *  the plugin's own convention is pinned separately by ShipCoreGyroAxes, and between them the whole chain
+     *  from stick to rotator sign is measured rather than read. */
+    static FVector GyroInputFor(FVector2D Steer, float Turn);
+    /** How close this hull has to be to a dock point to be offered docking, in centimetres. */
+    float DockApproachRadius() const;
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
-    virtual FVector GetVelocity() const override
-    {
-        return Velocity;
-    }
+    virtual FVector GetVelocity() const override;
     void SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake);
     void RequestDodge();
     void Fire();
@@ -79,6 +84,12 @@ public:
     TObjectPtr<USphereComponent> Collision;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<UStaticMeshComponent> HullMesh;
+    /** The hull when it is a skeletal mesh. The three hulls the game has always flown are static meshes,
+     *  and the Stellar Phoenix is not, so rather than converting HullMesh and changing what every existing
+     *  hull does, the pawn carries both and shows one. Hidden and empty unless a skeletal hull is
+     *  installed, which keeps the shipped ship exactly as it was. */
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<USkeletalMeshComponent> SkeletalHull;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USkeletalMeshComponent> Pilot;
     UPROPERTY(VisibleAnywhere)
@@ -95,6 +106,33 @@ public:
 private:
     void UpdateEngineMix();
     FSSHeroDefinition PilotHero = FSSHeroDefinition::Fallback();
+    /** How much further back the chase boom sits, because the hull is that many times longer than the one
+     *  the 900 cm arm was framed for. One while the classic hull flies, which is every build today. */
+    float HullChaseScale = 1.f;
+    /** The hull's own engine exhausts, attached to its engine bones. Empty for a static hull, whose
+     *  exhausts USSShipPresentation already fits to the mesh it knows. */
+    UPROPERTY()
+    TArray<TObjectPtr<class UNiagaraComponent>> HullExhausts;
+    /** True once the root is simulating and ShipCore's components have accepted it. While false the hand
+     *  written integrator below runs exactly as it always has, which is every build that does not pass
+     *  -SSPhoenix. */
+    bool ShipCoreDriven = false;
+    UPROPERTY()
+    TObjectPtr<class UThrusterManagerComp> Thrusters;
+    UPROPERTY()
+    TObjectPtr<class UGyroManagerComp> Gyros;
+    /** Hands this frame's input and this run's upgraded stats to ShipCore, which then moves the body.
+     *  Replaces the substepped integrator entirely while it is driving; the two never both run. */
+    void DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed, float Authority,
+                       float Interference);
+    /** Stop or restart the physics body around a scripted move. Only does anything while ShipCore drives. */
+    void HoldBody(bool Hold);
+    /** Hull impact while ShipCore drives. The old integrator took its hits off the swept move's
+     *  FHitResult, and a simulating body never runs that path - so without this, ramming an asteroid in
+     *  the Phoenix is free. Physics handles the bounce; this only carries the damage across. */
+    UFUNCTION()
+    void OnHullImpact(UPrimitiveComponent *HitComp, AActor *OtherActor, UPrimitiveComponent *OtherComp,
+                      FVector NormalImpulse, const FHitResult &Hit);
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f, FireVisualSeconds = 0.f;

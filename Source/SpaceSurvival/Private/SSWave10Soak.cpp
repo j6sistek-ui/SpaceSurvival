@@ -3,6 +3,9 @@
 #include "SSGameInstance.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSLandingPad.h"
+#include "Components/SphereComponent.h"
+#include "Engine/World.h"
 #include "SSAlienGallery.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraActor.h"
@@ -706,10 +709,16 @@ void ASSWave10Soak::Tick(float Dt)
                                                                             GM->Hub->GetActorRotation().Yaw)) <= 1.;
             const bool OnDeck =
                 IsValid(GM->Hub) && Movement && Movement->MovementMode == MOVE_Walking &&
-                Movement->CurrentFloor.bBlockingHit && Movement->CurrentFloor.HitResult.GetActor() == GM->Hub &&
+                Movement->CurrentFloor.bBlockingHit &&
+                (Movement->CurrentFloor.HitResult.GetActor() == GM->Hub ||
+                 Movement->CurrentFloor.HitResult.GetActor() == GM->Hub->GetLandingPad()) &&
                 GM->Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
-                FMath::Abs(Local.X) <= 1750. && FMath::Abs(Local.Y) <= 1450. && Local.Z > 0. &&
-                FVector::Dist2D(GM->Walker->GetActorLocation(), GM->Hub->DockPosition()) > 500. && Facing;
+                // Ask the station where the hero is allowed to stand rather than repeating its envelope
+                // here. This used to carry its own copy of |X| <= 1750 / |Y| <= 1450, which stopped being
+                // the deck the moment arrival moved out to the exterior landing pad - and a fixture with a
+                // stale copy of a boundary reports a correct arrival as a failure.
+                GM->Hub->Walkable(GM->Walker->GetActorLocation()) && Local.Z > 0. &&
+                FVector::Dist2D(GM->Walker->GetActorLocation(), GM->Hub->PadDockPosition()) > 300. && Facing;
             if (OnDeck)
             {
                 SawStandingExit = true;
@@ -772,14 +781,69 @@ void ASSWave10Soak::Tick(float Dt)
         }
     }
     // Applied after normal simulation for the next engine frame; never relocate the ship or force docking.
+    if (S.run.phase != SS::Phase::Approach)
+        ApproachHasLastRotation = false;
     if (Station5 && S.run.phase == SS::Phase::Approach && IsValid(GM->Hub))
     {
-        const FRotator Desired = (GM->Hub->DockPosition() - GM->Ship->GetActorLocation()).Rotation();
+        const FRotator Desired = (GM->Hub->PadDockPosition() - GM->Ship->GetActorLocation()).Rotation();
         const FRotator Current = GM->Ship->GetActorRotation();
+        // Steer like a pilot, not like a thermostat. This used to be pure proportional - clamp(error/30) -
+        // which converges on the kinematic hull because heading there follows the input directly. On a
+        // body with inertia that is proportional control on a double integrator and it overshoots, so the
+        // command is now error minus a share of the rate the ship is already turning at. The rate comes
+        // from this fixture's own frame-to-frame rotation, in the same FRotator terms as the error, so the
+        // damping sign cannot disagree with the error sign whatever the physics frame's convention is.
+        //
+        // For the record: the run that motivated this - the Phoenix at full cruise weaving across a 30 km
+        // box with 45 km vertical swings - was not mostly this controller's fault. Its own SOAK_APPROACH
+        // lines later showed both commands saturated for a hundred seconds with neither error closing,
+        // which is a command going to the wrong axis: DriveShipCore was feeding the pitch stick to the
+        // gyro's roll axis and the yaw stick to its pitch axis. Damping is still right for this body. It
+        // just was not the bug.
+        const float Step = FMath::Max(Dt, 1.f / 240.f);
+        const float YawRate =
+            ApproachHasLastRotation ? FMath::FindDeltaAngleDegrees(ApproachLastRotation.Yaw, Current.Yaw) / Step : 0.f;
+        const float PitchRate = ApproachHasLastRotation
+                                    ? FMath::FindDeltaAngleDegrees(ApproachLastRotation.Pitch, Current.Pitch) / Step
+                                    : 0.f;
+        ApproachLastRotation = Current;
+        ApproachHasLastRotation = true;
+        const float Kp = 1.f / 40.f, Kd = .015f;
         const FVector2D Steering(
-            FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw) / 30.f, -.75f, .75f),
-            FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Pitch, Desired.Pitch) / 30.f, -.75f, .75f));
+            FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw) * Kp - YawRate * Kd, -.75f, .75f),
+            FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Pitch, Desired.Pitch) * Kp - PitchRate * Kd, -.75f,
+                         .75f));
         GM->Ship->SetFlightInput(Steering, FVector2D::ZeroVector, -1.f, false, false);
+        // Diagnostic, once a second: where the ship is relative to the pad, whether its body is simulating,
+        // how fast it is really going, the heading error and the command, whether admission's clearance
+        // would pass, and - if the clearance sweep is blocked - by what. Fixture-only; nothing here touches
+        // the ship. It exists because two Phoenix runs failed two different ways and the CSV only carries
+        // the camera, so the ship's own state was being inferred rather than read.
+        if (ApproachSeconds >= NextApproachLog)
+        {
+            NextApproachLog = ApproachSeconds + 1.0;
+            const FVector Local = GM->Hub->GetActorTransform().InverseTransformPosition(GM->Ship->GetActorLocation());
+            const FVector Dock = GM->Hub->PadDockPosition();
+            const bool Sim = GM->Ship->Collision && GM->Ship->Collision->IsSimulatingPhysics();
+            const FVector PhysV = Sim ? GM->Ship->Collision->GetPhysicsLinearVelocity() : FVector::ZeroVector;
+            FHitResult Block;
+            FCollisionQueryParams Q(SCENE_QUERY_STAT(SSSoakApproachProbe), false, GM->Ship);
+            const bool Blocked =
+                GM->Ship->Collision && GetWorld()->SweepSingleByChannel(Block, GM->Ship->GetActorLocation(), Dock,
+                                                                        GM->Ship->Collision->GetComponentQuat(),
+                                                                        GM->Ship->Collision->GetCollisionObjectType(),
+                                                                        GM->Ship->Collision->GetCollisionShape(), Q);
+            UE_LOG(LogTemp, Display,
+                   TEXT("SOAK_APPROACH t=%.0f local=(%.0f,%.0f,%.0f) toDock=%.0f radius=%.0f speed=%.0f physV=%.0f "
+                        "sim=%d yawErr=%.1f pitchErr=%.1f steer=(%.2f,%.2f) assist=%d blocked=%d by=%s/%s"),
+                   ApproachSeconds, Local.X, Local.Y, Local.Z, FVector::Dist(GM->Ship->GetActorLocation(), Dock),
+                   GM->Ship->DockApproachRadius(), GM->Ship->GetVelocity().Size(), PhysV.Size(), Sim ? 1 : 0,
+                   FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw),
+                   FMath::FindDeltaAngleDegrees(Current.Pitch, Desired.Pitch), Steering.X, Steering.Y,
+                   GM->Hub->CanAssistDocking(GM->Ship) ? 1 : 0, Blocked ? 1 : 0,
+                   Blocked && Block.GetActor() ? *Block.GetActor()->GetName() : TEXT("-"),
+                   Blocked && Block.GetComponent() ? *Block.GetComponent()->GetName() : TEXT("-"));
+        }
     }
     else if (!Station5 || (S.run.phase != SS::Phase::Docking && S.run.phase != SS::Phase::Station))
     {
