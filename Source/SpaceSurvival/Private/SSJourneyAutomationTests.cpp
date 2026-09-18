@@ -189,9 +189,9 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
     const FVector Forward = Hub->GetActorForwardVector();
     const FVector Dock = Hub->DockPosition();
     Test.TestFalse(TEXT("Real station corridor admits the ship before assistance"),
-                   Fixture.World->SweepSingleByObjectType(Hit, Dock - Forward * 3000.f, Dock - Forward * 1250.f,
-                                                          FQuat::Identity, StaticObjects,
-                                                          FCollisionShape::MakeSphere(105.f), Query));
+                   Fixture.World->SweepSingleByObjectType(
+                       Hit, Dock - Forward * 3000.f, Dock - Forward * 1250.f, FQuat::Identity, StaticObjects,
+                       FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius()), Query));
     Test.TestTrue(TEXT("Walker spawn has a physical station floor beneath it"),
                   Fixture.World->LineTraceSingleByObjectType(
                       Hit, Hub->WalkSpawn(), Hub->WalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&

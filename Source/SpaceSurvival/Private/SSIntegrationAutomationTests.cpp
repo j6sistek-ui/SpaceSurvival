@@ -313,7 +313,7 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
                       Fixture.World->SweepSingleByObjectType(
                           Hit, Hub->DockPosition() - Hub->GetActorForwardVector() * 3000.f,
                           Hub->DockPosition() - Hub->GetActorForwardVector() * 1250.f, FQuat::Identity, StaticObjects,
-                          FCollisionShape::MakeSphere(105.f), Query));
+                          FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius()), Query));
 
             struct FServiceExpectation
             {

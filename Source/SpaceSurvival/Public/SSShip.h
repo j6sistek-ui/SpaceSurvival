@@ -21,6 +21,12 @@ public:
     ASSShip();
     // Flight and every station bay share the same reviewed hull selection.
     static const TCHAR *HullAssetPath(SS::Ship Kind);
+    /** The radius of the body that actually has to fit through the station's corridor, read off the ship
+     *  rather than repeated. It was repeated: five call sites carried a literal 105 while SSWorldActors
+     *  carried 120, so hazard contact was already being judged against a ship 15 cm wider than the one
+     *  the docking sweeps used. That is survivable at 105 and is not survivable at all once a hull of a
+     *  different size is installed, which is why this exists now rather than after the fact. */
+    static float FlightCollisionRadius();
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;

@@ -22,7 +22,17 @@
 
 namespace
 {
-constexpr float ShipRadius = 120.f;
+// Was a literal 120 while the pawn's own sphere is 105, so hazard contact was judged against a ship 15 cm
+// wider than the one every docking sweep used. Read it off the ship instead.
+//
+// A function and not a constant: a namespace-scope initialiser runs during static initialisation, before
+// the engine has built any class default object, so asking the ship how big it is there dereferences null
+// and takes the process down before a single test runs. Asked at the call site, it is answered by a CDO
+// that exists.
+float ShipRadius()
+{
+    return ASSShip::FlightCollisionRadius();
+}
 
 ASSGameMode *GameMode(const UObject *Context)
 {
@@ -527,7 +537,7 @@ void ASSWorldBody::Tick(float DeltaSeconds)
                     : static_cast<float>(FMath::Clamp(
                           -FVector::DotProduct(PreviousRelative, RelativePath) / RelativePath.SizeSquared(), 0.0, 1.0));
             const float SweptDistance = (PreviousRelative + RelativePath * ClosestTime).Size();
-            if (SweptDistance < BodyRadius + ShipRadius && ShipContactRemaining <= 0.f)
+            if (SweptDistance < BodyRadius + ShipRadius() && ShipContactRemaining <= 0.f)
             {
                 FVector ContactNormal = (PreviousRelative + RelativePath * ClosestTime).GetSafeNormal();
                 if (ContactNormal.IsNearlyZero())
@@ -647,7 +657,7 @@ void ASSWorldBody::OnDefeated()
         const float Reaction =
             Mode && Mode->Director ? Mode->Director->MinimumReactionSeconds : Content(this)->MinimumReactionSeconds;
         const float ReactionSeconds = FMath::IsFinite(Reaction) ? FMath::Max(0.f, Reaction) : 3.5f;
-        const float Clearance = ShipRadius + FMath::Max(10.f, Definition.FragmentRadius);
+        const float Clearance = ShipRadius() + FMath::Max(10.f, Definition.FragmentRadius);
         for (int32 Index = 0; Index < FMath::Clamp(Definition.FragmentCount, 0, 3); ++Index)
         {
             if (!HasThreatCapacity(this))
@@ -1174,7 +1184,7 @@ void ASSPickup::Tick(float DeltaSeconds)
     {
         const FVector ToShip = ShipEnd - GetActorLocation();
         const auto Definition = Content(this)->Pickup(PickupKind);
-        const float CollectionRadius = ShipRadius + Definition.CollectionPadding;
+        const float CollectionRadius = ShipRadius() + Definition.CollectionPadding;
         const bool bCrossedCollection =
             FMath::PointDistToSegment(FVector::ZeroVector, PreviousRelative, ToShip) < CollectionRadius;
         // Magnetism remains local and cannot overshoot or continue after expiry.
@@ -1322,7 +1332,7 @@ bool ASSEncounterBeacon::TryAccept()
                 const FVector Centre =
                     CandidateOrigin + Forward * (Lead + Index * Definition.CacheSpacing) +
                     Right * (Index % 2 ? -Definition.CacheLateralOffset : Definition.CacheLateralOffset);
-                bClear = HasSpatialClearance(this, PreviousCache, Centre, ShipRadius);
+                bClear = HasSpatialClearance(this, PreviousCache, Centre, ShipRadius());
                 for (int32 Side : {-1, 1})
                 {
                     const FVector DebrisPosition = Centre + Right * Side * Definition.DebrisHalfSpacing + Up * 100.f;
