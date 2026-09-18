@@ -39,3 +39,12 @@ bool FSSHeroDefinition::ResolveBone(const USkeletalMeshComponent *Mesh, FName Bo
     Out = Mesh->GetSocketTransform(Bone);
     return true;
 }
+
+bool FSSHullDefinition::Installed() const
+{
+    // Classic is always installed: ASSShip::HullAssetPath picks between three meshes the game has always
+    // shipped, and which one it picks depends on a command-line flag, so there is no single path to test.
+    // Anything else has to actually be present, and the Phoenix lives in a git-ignored licensed folder,
+    // so a build without it is the ordinary state rather than a fault.
+    return Identity == ESSHullIdentity::Classic || FSSHeroDefinition::AssetInstalled(MeshPath);
+}

@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/WorldSettings.h"
 #include "GyroManagerComp.h"
+#include "SSContentTypes.h"
 #include "PhysicsEngine/BodyInstance.h"
 #include "ThrusterManagerComp.h"
 
@@ -232,6 +233,42 @@ bool FSSShipCoreBodyContractTest::RunTest(const FString &)
     AddInfo(FString::Printf(TEXT("Yaw change over 1 s of full input: %.2f degrees"), YawGained));
     TestTrue(TEXT("Gyro input rotates the body"), YawGained > 1.f);
 
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSHullDefinitionScaleTest, "SpaceSurvival.Flight.HullDefinitionScale",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSSHullDefinitionScaleTest::RunTest(const FString &)
+{
+    // The owner's own words: "the ship is larger than the old one, so scale or something has to adjust to
+    // accommodate the gameplay element being the same." This test is where that sentence becomes a number.
+    // It does not assert that the scale is RIGHT - nobody has flown it - only that it is what somebody
+    // wrote down, so changing it later is a deliberate act with a failing test attached rather than a
+    // quiet drift.
+    const FSSHullDefinition Classic(ESSHullIdentity::Classic);
+    TestEqual(TEXT("Classic is the hull every gameplay distance was calibrated against"),
+              Classic.LengthRatioToClassic(), 1.f);
+    TestEqual(TEXT("Classic keeps the collision radius the corridor sweeps use"), Classic.ScaledCollisionRadius(),
+              105.f);
+    TestFalse(TEXT("Classic is a static mesh"), Classic.SkeletalHull);
+    TestTrue(TEXT("Classic is always present, whichever of the three meshes it resolves to"), Classic.Installed());
+
+    const FSSHullDefinition Phoenix(ESSHullIdentity::StellarPhoenix);
+    TestTrue(TEXT("The Phoenix is a skeletal hull, which the pawn cannot carry yet"), Phoenix.SkeletalHull);
+    // Measured by loading the asset in 5.8: bounds 1243.9 x 2484.0 x 704.8, long axis Y.
+    TestEqual(TEXT("Authored length is the measured 24.84 m"), Phoenix.AuthoredLength, 2484.f);
+    TestEqual(TEXT("Authored forward is +Y, so the hull needs a quarter turn"), Phoenix.MeshYaw, -90.f);
+    // 2484 / 482.5 = 5.1482..., which is the whole of the owner's concern expressed as one number.
+    TestTrue(TEXT("The Phoenix is about 5.15 times the length of the hull it replaces"),
+             FMath::IsNearlyEqual(Phoenix.LengthRatioToClassic(), 2484.f / 482.5f, .001f));
+    // Half the widest horizontal extent. A sphere is a poor fit for this shape and that is recorded as a
+    // known problem; what matters here is that the number is derived from the mesh rather than inherited.
+    TestTrue(TEXT("Collision radius is half the measured width, not the old hull's 105"),
+             FMath::IsNearlyEqual(Phoenix.ScaledCollisionRadius(), 621.95f, .01f));
+    // Deliberately unscaled. The authored size is what makes a walkable interior possible for a 1.35 m
+    // hero, and the owner asked that a value not be changed unless it is certainly wrong.
+    TestEqual(TEXT("The hull is not scaled down on a guess"), Phoenix.HullScale, 1.f);
     return true;
 }
 #endif
