@@ -1210,6 +1210,66 @@ also that the admission tick still stops at `MaximumActiveThreats` (24); only th
 
 
 
+#### September 18 the Stellar Phoenix, measured rather than read off the store page
+
+The owner bought the Stellar Phoenix Shuttle and made it the new main ship. Before anything is built on it,
+here is what it actually is. Every number came from loading the asset in 5.8 under
+`.agent/local/StellarPhoenix/`, where the probe scripts live and are re-runnable.
+
+**It imports clean.** Built for UE 5.3, loads into 5.8 with zero failures: 165 bones, 3 material slots
+(`Spaceship_1`, `Spaceship_2`, `Spaceship_Glass`) all resolving, 13 textures all present, no integrity
+issues. It lives at `Content/Stellar_Phoenix/`, git-ignored as licensed Fab content, because every
+reference inside the pack is by the package path `/Game/Stellar_Phoenix` and moving it under `Fab/` would
+break all of them. Only the 71 MB `Spaceship/`, `Data/` and `FirstPerson/Input/` subset was taken; the
+94 MB demo map and 33 MB of Epic first-person arms were left out.
+
+**Size, and the owner's worry about it.** `1243.9 x 2484.0 x 704.8 cm` - 12.4 m wide, **24.8 m long**,
+7.0 m tall, standing on Z = 0. Its authored forward is **+Y, not +X**, so it needs a -90 degree yaw when
+mounted, exactly as the squirrel hero did. The hull it replaces, `SM_SwiftCandidateV1`, is 4.82 m, so the
+Phoenix is **5.2x longer** than the ship the whole game is calibrated around. The owner raised this
+himself: "the ship is larger than the old one, so scale or something has to adjust to accommodate the
+gameplay element being the same." That decision is open and is the first thing to settle.
+
+**The animations are not what their names suggest.** Measured by asking all 165 bones how far each travels
+between a clip's first and last frame:
+
+| Clip | Length | Bones moved | What it actually does |
+|---|---|---|---|
+| `Landing_On` | 2.067 s | 31 | Gear down **and rear ramp open** |
+| `Landing_Off` | 1.567 s | 36 | Gear up **and rear ramp shut** |
+| `BattleMode_Enter` | 2.6 s | 8 | 4 airbrake flaps at 4.4 deg, 4 fairings at ~3 cm |
+| `BattleMode_Exit` | 2.3 s | 10 | Engines rotate 8.7 deg, fairings return |
+| `AirBrake` | 1.633 s | 3 | 3 airbrake flaps at 4.5 deg |
+
+The landing clips are the good news and are exactly the launch behaviour the owner described:
+`Cargo_Door_Bone` swings **83.7 degrees** in both, alongside `Foot_Bone` at 90.3 and the
+`Chasis_Back_Left/Right_2/4/7/8_Bone` set with `Leg_B_Bone` and `Leg_D_Bone`. Gear and ramp are one
+motion, already authored, free.
+
+**`BattleMode` is not the wings.** All 16 `Wing_Up/Down_A/B_Left/Right` bones are unanimated in every clip
+the pack ships. The owner's "wings fold out when the pilot sits down" has nothing behind it yet. They can
+be authored - the bones sit at component origin, so they are rotation-only controls and a deploy clip is
+the same operation as `Scripts/AuthorHeroTailSway.py` - but what the deployed pose should look like is the
+owner's eye, not an engineering question. Author a candidate and have it approved; do not ship a guess.
+
+**Read the bones, not the names.** An earlier pass sampled `Cargo_Door` rather than `Cargo_Door_Bone` and
+concluded the ramp was never animated, which was wrong. The gear bones are `Chasis_*` with one **s**,
+while the `Chassis-_Door_A/B` bones with two are something else and barely move. The pack also spells
+interior `Interiro` and has a Cyrillic C in `Сountermeasures`. Ask a bone how far it moves; never infer
+from what it is called.
+
+**Walking aboard is the big one.** The layout supports it - `Cockpit_Mesh` at Y +882.8 Z +451.8 at the
+front, a rear ramp from `Cargo_Door` at Y -957.8 Z +195.4 down to `Cargo_Door_A` at Y -1130.2 Z +133.4,
+`Interior_Mesh` and `Interiro_Doors_L/R_Mesh` between them. But **there is no walkable collision**:
+per-poly is off, and a skeletal mesh's physics asset is per-bone primitives for simulation, not an
+interior floor. "The hero walks into it, to the pilot chair" was one sentence and is the largest single
+item in the whole request; it needs collision that does not exist yet, either per-poly on the mesh or
+authored invisible floor geometry.
+
+**The advertised damage is an impact flash.** `M_Hit` and `T_Hit_Impact` only - no damage bones, no
+destruction meshes, no crush zones. `Data/Spaceship.uasset` is a `NiagaraEffectType` performance baseline,
+not a damage config. The owner has deferred damage work regardless.
+
 #### September 18 flight moves to Ship Core, and what the plugin does not tell you
 
 **Owner direction, verbatim:** "use ship core 100% nothing i have today is good. at least i didn't test the
