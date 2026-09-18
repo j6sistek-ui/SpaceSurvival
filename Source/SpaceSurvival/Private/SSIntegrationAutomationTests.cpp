@@ -164,8 +164,10 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
             }
             else
                 TestEqual(Label + TEXT(" has no pit stop solids without the pit stop asset"), PitStopSolids, 0);
-            TestEqual(Label + TEXT(" keeps the deck and 15 boundaries plus the exterior's own solids"),
-                      SolidCubes.Num(), 16 + PitStopSolids + (!HasPitStop && HasExterior ? 1 : 0));
+            // 16 as before, plus the two landing plates: the exterior pad and the walkway that joins it to
+            // the hangar mouth. Both decks are the same plane, so no step plate exists between them.
+            TestEqual(Label + TEXT(" keeps the deck, 15 boundaries and 2 landing plates plus the exterior's own"),
+                      SolidCubes.Num(), 18 + PitStopSolids + (!HasPitStop && HasExterior ? 1 : 0));
             if (!TestNotNull(Label + TEXT(" retains the solid deck"), Floor))
                 return false;
             TestTrue(Label + TEXT(" keeps the deck visible at its original scale"),
@@ -361,9 +363,22 @@ bool FSSStationWalkerRecovery::RunTest(const FString &Parameters)
     Walker->SetActorLocation(DeckPosition);
     Walker->Tick(1.f / 60.f);
     TestTrue(TEXT("Ordinary deck position is unchanged"), Walker->GetActorLocation().Equals(DeckPosition, .01));
+    // The other half of the same rule. A rescue envelope that only says where the hero may not go is
+    // half a specification; these are the three places the walk-out route depends on it saying yes.
+    for (const FVector &Local :
+         {FVector(-1800, 0, 180), FVector(ASSStation::PadCenterX, 0, 180), FVector(-2400, 0, 180)})
+    {
+        const FVector Position = HubTransform.TransformPosition(Local);
+        Walker->SetActorLocation(Position);
+        Walker->Tick(1.f / 60.f);
+        TestTrue(TEXT("The doorway, the walkway and the pad are all places the hero may stand"),
+                 Walker->GetActorLocation().Equals(Position, .01));
+    }
 
-    const FVector Escapes[] = {FVector(-1800, 0, 180), FVector(1800, 0, 180), FVector(0, 1500, 180),
-                               FVector(0, -1500, 180), FVector(0, 0, -300)};
+    // -1800 used to be an escape and is now the hangar doorway, which the hero has to be able to stand in
+    // to walk out to the pad at all. What is still an escape on that side is past the far edge of the pad.
+    const FVector Escapes[] = {FVector(-6500, 0, 180), FVector(1800, 0, 180), FVector(0, 1500, 180),
+                               FVector(0, -1500, 180), FVector(0, 0, -300),   FVector(-4500, 2000, 180)};
     for (const FVector &Local : Escapes)
     {
         Walker->SetActorLocation(HubTransform.TransformPosition(Local));

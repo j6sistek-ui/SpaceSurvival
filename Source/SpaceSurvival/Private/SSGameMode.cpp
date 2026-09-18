@@ -424,6 +424,11 @@ void ASSGameMode::EnterStation()
         Hub->BuildHub(false);
     }
     Hub->SetBayShip(int32(GetGameInstance<USSGameInstance>()->Session.run.ship));
+    // The bay's display hull is a static stand-in that only ever shows the Starter or the Agile, so at a
+    // station it is a picture of a ship the player may well not be flying, parked indoors, while their
+    // actual ship sits on the pad outside. Hide it unconditionally here. The home hangar keeps it, because
+    // there it is the ship-selection display and showing each hull is its whole job.
+    Hub->ShowBayShip(false);
     // Facing the station, not world north. Unlike the home hub above, this one is spawned at whatever
     // heading the ship happened to be flying on the Approach transition, so its yaw is arbitrary - and
     // the walker neither orients to movement nor follows the controller. The authored exit reconciled
@@ -431,7 +436,11 @@ void ASSGameMode::EnterStation()
     // clip never runs that, so the body has to arrive already facing the way the camera two lines below
     // is pointed, or the player meets the hero side-on and the body snaps through that angle on the
     // first input (RPT-20260917-01).
-    Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator(0, Hub->GetActorRotation().Yaw, 0));
+    // Arrival is on the exterior pad, not in the service bay. The owner's ask was "when you fly to space
+    // station there's a clean landing area and you get out and walk inside", and this is the line that
+    // decides it: the hero is put down beside its ship on the pad, and the way in is a walk through the
+    // hangar mouth rather than a cut. The bay is still built and still holds the display ship.
+    Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->PadWalkSpawn(), FRotator(0, Hub->GetActorRotation().Yaw, 0));
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     const bool AutoCamera = PC->bAutoManageActiveCameraTarget;
     if (Ship)
@@ -442,9 +451,9 @@ void ASSGameMode::EnterStation()
     {
         // Match both the outgoing component and its actual current bone pose before
         // hiding it. A short actor-clock blend hands this pose to the authored exit.
-        Ship->SetActorLocation(Hub->DockPosition());
+        Ship->SetActorLocation(Hub->PadDockPosition());
         Ship->SetActorRotation(Hub->GetActorRotation());
-        const FVector Exit = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
+        const FVector Exit = Hub->PadExit();
         FPoseSnapshot SeatedPose;
         Ship->Pilot->SnapshotPose(SeatedPose);
         // A hero only climbs out if it has a clip for it. The ship has no door, so the one authored
@@ -456,13 +465,12 @@ void ASSGameMode::EnterStation()
                                                                      Hub->GetActorRotation(), &SeatedPose);
         ensureMsgf(!ClimbsOut || ExitStarted, TEXT("Required authored disembark assets are unavailable."));
         Ship->FinishDocking();
-        Hub->ShowBayShip(false);
         // Keep the outgoing camera's last view while blending, rather than snapping on possession.
         PC->SetViewTargetWithBlend(Walker, ExitStarted ? ASSWalker::DisembarkDuration : .4f, VTBlend_Cubic, 0.f, true);
     }
     PC->bAutoManageActiveCameraTarget = AutoCamera;
     ClosePanel();
-    Announce(TEXT("Dockmaster: Welcome aboard. Your ship is in the service bay."));
+    Announce(TEXT("Dockmaster: Pad is yours. Walk in when you are ready."));
     React(TEXT("Docked. Easy on the way down."));
 }
 void ASSGameMode::Tick(float Dt)
@@ -645,12 +653,19 @@ void ASSGameMode::Tick(float Dt)
     }
     if (S.run.phase == SS::Phase::Approach && Ship && Hub)
     {
+        // Admission is still judged against the bay, and the ship is still flown down the same inbound lane
+        // it always was - the pad sits on that centreline, between the arriving ship and the mouth, so
+        // stopping there is the same approach ending earlier rather than a different approach. The rules
+        // that decide whether to offer the assist at all (come in level, centred, through the mouth) are
+        // deliberately left alone: on an open pad half of them stop meaning anything - a vertical drop onto
+        // a landing pad is not an illegal roof dive - and re-deriving them is its own piece of work, not a
+        // line to change on the way past.
         const FVector ToDock = Hub->DockPosition() - Ship->GetActorLocation();
         if (ToDock.Size() < 1200.f &&
             FVector::DotProduct(Ship->GetActorForwardVector(), ToDock.GetSafeNormal()) > .45f &&
             Hub->CanAssistDocking(Ship) && S.BeginDocking())
         {
-            Ship->SetDockingTarget(Hub->DockPosition(), Hub->GetActorRotation());
+            Ship->SetDockingTarget(Hub->PadDockPosition(), Hub->GetActorRotation());
             Announce(TEXT("Docking assistance engaged. Welcome to port."));
         }
     }
@@ -1498,11 +1513,11 @@ void ASSPlayerController::SSReviewExit()
         !IsValid(GM->Hub) || !IsValid(GM->Walker) || GetPawn() != GM->Walker || GM->Walker->IsDisembarking())
         return;
     if (!IsValid(GM->Ship))
-        GM->Ship = GetWorld()->SpawnActor<ASSShip>(GM->Hub->DockPosition(), GM->Hub->GetActorRotation());
+        GM->Ship = GetWorld()->SpawnActor<ASSShip>(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
     if (!IsValid(GM->Ship))
         return;
-    GM->Ship->SetActorLocationAndRotation(GM->Hub->DockPosition(), GM->Hub->GetActorRotation());
-    GM->Ship->SetDockingTarget(GM->Hub->DockPosition(), GM->Hub->GetActorRotation());
+    GM->Ship->SetActorLocationAndRotation(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
+    GM->Ship->SetDockingTarget(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
     GM->Ship->Pilot->SetVisibility(true);
     SetViewTarget(GM->Ship);
     if (PlayerCameraManager)

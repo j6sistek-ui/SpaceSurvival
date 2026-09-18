@@ -55,6 +55,46 @@ public:
     {
         return GetActorTransform().TransformPosition(FVector(850, 0, 220));
     }
+    /** The exterior landing pad, in station-local centimetres. These are measured, not chosen. The deck is
+     *  at Z -10 because that is already the top of everything the hero walks on: DeckCollision spans
+     *  Z -110..-10 and Bow_Sill's top face is -10 too. One plane end to end means walking in from the pad
+     *  needs no step, which matters because ASSWalker has two movement inputs and no jump. The pad is wide
+     *  enough to hold the 2484 x 1244 cm Phoenix with room either side. Everything on the pad derives from
+     *  these numbers, so moving the pad moves the ship, the hero, the services and the tests together. */
+    static constexpr float PadDeckTop = -10.f;
+    static constexpr float PadCenterX = -4500.f;
+    static constexpr float PadHalfExtent = 1600.f;
+    /** Where the walkway meets the hangar mouth. The mouth itself spans X -1900..-1700. */
+    static constexpr float PadWalkwayInnerX = -1900.f;
+    /** Where the ship parks on the pad. The Z is literally DockPosition's Z: the pad deck and the bay deck
+     *  are the same plane, so parking at the same height is the same clearance, for either hull. */
+    FVector PadDockPosition() const
+    {
+        return GetActorTransform().TransformPosition(FVector(PadCenterX, 0, 220.f));
+    }
+    /** Where the hero appears on the pad. Same Z as WalkSpawn, so it is the same 190 cm drop onto the same
+     *  plane - a CharacterMovement pawn reaches MOVE_Walking by falling onto its floor. */
+    FVector PadWalkSpawn() const
+    {
+        return GetActorTransform().TransformPosition(FVector(PadCenterX + 400.f, 0, 180.f));
+    }
+    /** Where a disembarking hero is set down, beside the parked ship rather than inside it. */
+    FVector PadExit() const
+    {
+        return GetActorTransform().TransformPosition(FVector(PadCenterX + 200.f, -350.f, 100.f));
+    }
+    /** Whether a station-local position is somewhere the hero is allowed to be. Two boxes: the interior
+     *  deck, and the pad with its walkway. They overlap across the doorway on purpose - a gap between them
+     *  would be a spot where crossing the threshold teleports the hero home. */
+    static bool WalkableLocal(const FVector &Local)
+    {
+        if (Local.Z < -250.f)
+            return false;
+        const bool Interior = FMath::Abs(Local.X) <= 1750.f && FMath::Abs(Local.Y) <= 1450.f;
+        const bool Pad = Local.X >= PadCenterX - PadHalfExtent - 100.f && Local.X <= -1500.f &&
+                         FMath::Abs(Local.Y) <= PadHalfExtent + 100.f;
+        return Interior || Pad;
+    }
     bool IsHome() const
     {
         return Home;
@@ -94,6 +134,8 @@ private:
     bool Home = false;
     UStaticMeshComponent *AddMesh(FVector Position, FVector Scale, const TCHAR *Mesh, const TCHAR *Material,
                                   bool Solid = false);
+    /** The pad, its walkway and the step that makes the doorway passable. */
+    void BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hull);
     void AddService(FVector Position, const FString &Label, ESSPanel Panel);
 };
 

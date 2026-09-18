@@ -118,6 +118,8 @@ private:
      *  Replaces the substepped integrator entirely while it is driving; the two never both run. */
     void DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed, float Authority,
                        float Interference);
+    /** Stop or restart the physics body around a scripted move. Only does anything while ShipCore drives. */
+    void HoldBody(bool Hold);
     /** Hull impact while ShipCore drives. The old integrator took its hits off the swept move's
      *  FHitResult, and a simulating body never runs that path - so without this, ramming an asteroid in
      *  the Phoenix is free. Physics handles the bounce; this only carries the damage across. */

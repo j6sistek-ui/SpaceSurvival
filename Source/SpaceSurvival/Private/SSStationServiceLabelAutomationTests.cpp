@@ -38,7 +38,9 @@ bool FSSStationServiceLabelView::RunTest(const FString &)
         InitialText.Add(Text->Text.ToString());
         ServiceCount += Text->ComponentHasTag(TEXT("StationServiceLabel")) ? 1 : 0;
     }
-    TestEqual(TEXT("All nine live service labels participate in view-facing presentation"), ServiceCount, 9);
+    // Nine inside, plus the two on the exterior landing pad - a pit stop's worth of services where the
+    // ship actually parks, so arriving does not mean walking inside before anything can be done.
+    TestEqual(TEXT("All eleven live service labels participate in view-facing presentation"), ServiceCount, 11);
     for (auto *Camera : {FrontCamera, RearCamera})
     {
         Controller->SetViewTarget(Camera);

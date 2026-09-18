@@ -407,11 +407,38 @@ void ASSShip::AddExternalForce(FVector Force)
 {
     Forces += Force.GetClampedToMaxSize(2500.f);
 }
+void ASSShip::HoldBody(bool Hold)
+{
+    if (!ShipCoreDriven || !Collision)
+        return;
+    if (Hold)
+    {
+        // Docking and mooring were written for a kinematic pawn: they move the actor with SetActorLocation
+        // and declare the ship stopped by zeroing the hand-kept Velocity member. Neither reaches a
+        // simulating body. Chaos keeps integrating the velocity it already had, so the ship slides off the
+        // pad while the interpolation drags it back, and a moored ship drifts away from the station it is
+        // moored to. Stopping the body makes the scripted move the only thing moving the ship, which is
+        // exactly what that code already assumes.
+        Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+        Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+        Collision->SetSimulatePhysics(false);
+    }
+    else
+    {
+        // Hand the body back the speed the kinematic path decided on, rather than letting it resume with
+        // whatever it was carrying when it was frozen - which, after a stay at the station, is a stale
+        // approach velocity pointing at the pad.
+        Collision->SetSimulatePhysics(true);
+        Collision->SetPhysicsLinearVelocity(Velocity);
+        Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+    }
+}
 void ASSShip::SetDockingTarget(FVector Target, FRotator Rotation)
 {
     DockTarget = Target;
     DockRotation = Rotation;
     Docking = true;
+    HoldBody(true);
 }
 bool ASSShip::BeginMooring()
 {
@@ -420,6 +447,7 @@ bool ASSShip::BeginMooring()
         return false;
     Moored = true;
     Velocity = Forces = FVector::ZeroVector;
+    HoldBody(true);
     SoftTarget = nullptr;
     SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
     return true;
@@ -433,6 +461,7 @@ void ASSShip::EndMooring()
     const auto *GI = GetGameInstance<USSGameInstance>();
     if (GI && GI->Session.IsFlying())
         Velocity = GetActorForwardVector() * float(GI->Session.Stats().speed);
+    HoldBody(false);
 }
 float ASSShip::SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength)
 {
@@ -453,6 +482,7 @@ void ASSShip::FinishDocking()
     EngineAudio->Stop();
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Velocity = Forces = FVector::ZeroVector;
+    HoldBody(true);
     SetActorTickEnabled(false);
 }
 void ASSShip::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)

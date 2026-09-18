@@ -178,10 +178,16 @@ bool FSSDockingAdmission::RunTest(const FString &)
               3.0);
     TestTrue(TEXT("Admission itself does not teleport the player"),
              F.Ship->GetActorLocation().Equals(AdmissionPosition));
+    // Admission is still judged against the bay, but the assist now flies the ship to the exterior pad, so
+    // the distance that has to be closing is the distance to where it is actually going. Stated as a share
+    // of the gap rather than as a band in centimetres: the old 800..1000 window only meant "a tenth of the
+    // way, smoothly" for one particular dock distance, and silently stopped meaning it when the dock moved.
+    const double BeforeDistance = FVector::Dist(F.Ship->GetActorLocation(), F.Hub->PadDockPosition());
     F.Ship->Tick(.05f);
-    const double RemainingDistance = FVector::Dist(F.Ship->GetActorLocation(), F.Hub->DockPosition());
-    TestTrue(TEXT("Existing assistance advances smoothly along the cleared path"),
-             RemainingDistance > 800.0 && RemainingDistance < 1000.0);
+    const double RemainingDistance = FVector::Dist(F.Ship->GetActorLocation(), F.Hub->PadDockPosition());
+    const double Closed = (BeforeDistance - RemainingDistance) / FMath::Max(BeforeDistance, 1.0);
+    TestTrue(TEXT("Existing assistance advances smoothly along the cleared path, without teleporting"),
+             Closed > .02 && Closed < .25);
     return true;
 }
 

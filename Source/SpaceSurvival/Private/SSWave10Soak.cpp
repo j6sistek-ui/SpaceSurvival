@@ -708,8 +708,12 @@ void ASSWave10Soak::Tick(float Dt)
                 IsValid(GM->Hub) && Movement && Movement->MovementMode == MOVE_Walking &&
                 Movement->CurrentFloor.bBlockingHit && Movement->CurrentFloor.HitResult.GetActor() == GM->Hub &&
                 GM->Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
-                FMath::Abs(Local.X) <= 1750. && FMath::Abs(Local.Y) <= 1450. && Local.Z > 0. &&
-                FVector::Dist2D(GM->Walker->GetActorLocation(), GM->Hub->DockPosition()) > 500. && Facing;
+                // Ask the station where the hero is allowed to stand rather than repeating its envelope
+                // here. This used to carry its own copy of |X| <= 1750 / |Y| <= 1450, which stopped being
+                // the deck the moment arrival moved out to the exterior landing pad - and a fixture with a
+                // stale copy of a boundary reports a correct arrival as a failure.
+                ASSStation::WalkableLocal(Local) && Local.Z > 0. &&
+                FVector::Dist2D(GM->Walker->GetActorLocation(), GM->Hub->PadDockPosition()) > 300. && Facing;
             if (OnDeck)
             {
                 SawStandingExit = true;
@@ -774,7 +778,7 @@ void ASSWave10Soak::Tick(float Dt)
     // Applied after normal simulation for the next engine frame; never relocate the ship or force docking.
     if (Station5 && S.run.phase == SS::Phase::Approach && IsValid(GM->Hub))
     {
-        const FRotator Desired = (GM->Hub->DockPosition() - GM->Ship->GetActorLocation()).Rotation();
+        const FRotator Desired = (GM->Hub->PadDockPosition() - GM->Ship->GetActorLocation()).Rotation();
         const FRotator Current = GM->Ship->GetActorRotation();
         const FVector2D Steering(
             FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw) / 30.f, -.75f, .75f),

@@ -68,6 +68,46 @@ UStaticMeshComponent *ASSStation::AddMesh(FVector Position, FVector Scale, const
     Geometry.Add(C);
     return C;
 }
+void ASSStation::BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hull)
+{
+    // A slab is a scaled unit cube, so a box spanning [Low, High] on an axis is centred at their midpoint
+    // and scaled by their span over 100. Every plate below shares one bottom, so the pad, the walkway and
+    // the step read as one poured structure rather than three floating tiles.
+    const float Bottom = -280.f;
+    auto Slab = [this, Cube, Hull, Bottom](float LowX, float HighX, float HalfY, float Top, const TCHAR *Tag)
+    {
+        auto *Plate =
+            AddMesh(FVector((LowX + HighX) * .5f, 0, (Bottom + Top) * .5f),
+                    FVector((HighX - LowX) / 100.f, HalfY * 2.f / 100.f, (Top - Bottom) / 100.f), Cube, Hull, true);
+        Plate->ComponentTags.Add(FName(Tag));
+        return Plate;
+    };
+    // The pad itself. 3200 cm square against a 2484 x 1244 cm hull, so the Phoenix fits with room to spare
+    // and the 482 cm starter looks like what it is - a small ship on a big pad.
+    Slab(PadCenterX - PadHalfExtent, PadCenterX + PadHalfExtent, PadHalfExtent, PadDeckTop, TEXT("StationLandingPad"));
+    // The walkway in to the hangar mouth. Kept inside |Y| <= 400 so it passes through the mouth's own
+    // |Y| <= 700 opening without touching the jambs.
+    Slab(PadCenterX + PadHalfExtent, PadWalkwayInnerX, 400.f, PadDeckTop, TEXT("StationLandingWalkway"));
+    // No threshold plate is needed and one would be wrong. The interior DeckCollision spans Z -110..-10 and
+    // Bow_Sill's top face is -10, so the walk from pad to deck is already one continuous plane. An earlier
+    // pass here added a half-step for a 70 cm lip measured off Keel_Floor - which is the exterior hull box,
+    // not the floor the hero stands on.
+    // Edge markers, so the pad reads as a pad from the air rather than as a grey square. Deliberately kept
+    // under the 45 cm step height: anything taller is a wall the hero would have to climb to reach its ship.
+    for (float Side : {-1.f, 1.f})
+    {
+        auto *Kerb = AddMesh(FVector(PadCenterX, Side * (PadHalfExtent - 60.f), PadDeckTop + 12.f),
+                             FVector(PadHalfExtent * 2.f / 100.f, 1.2f, .24f), Cube,
+                             TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan"), false);
+        Kerb->ComponentTags.Add(TEXT("StationLandingKerb"));
+    }
+    if (bHome)
+        return;
+    // A pit stop's worth of services where the ship actually is, rather than making the player walk inside
+    // for the two things they came to do. The interior hub keeps all nine of its own.
+    AddService(FVector(PadCenterX - 700.f, -900.f, PadDeckTop + 80.f), TEXT("DOCK REPAIR"), ESSPanel::Repair);
+    AddService(FVector(PadCenterX - 700.f, 900.f, PadDeckTop + 80.f), TEXT("DOCK UPGRADES I - V"), ESSPanel::Upgrades);
+}
 void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Panel)
 {
     auto *Stand = AddMesh(Position, FVector(1), TEXT("/Game/SpaceSurvival/Meshes/SM_Console.SM_Console"),
@@ -334,6 +374,7 @@ void ASSStation::BuildHub(bool bHome)
     // The paint bay: a lift stand on the starboard wall; the editable layout dresses it with a platform and arch.
     AddService(FVector(-1400, -1000, 0), TEXT("PAINT BAY"), ESSPanel::Paint);
     // A separate review doorway: available in home hangar and both stations, never a run destination.
+    BuildLandingPad(Home, Cube, Hull);
     AddService(FVector(450, 1000, 0), TEXT("ALIEN WORLD"), ESSPanel::AlienGallery);
     ServiceLabels.Last()->SetRelativeLocation(FVector(450, 1160, 265));
     ServiceLabels.Last()->SetWorldSize(20);
@@ -1109,7 +1150,11 @@ void ASSWalker::Tick(float Dt)
             const FVector Local = Hub->GetActorTransform().InverseTransformPosition(GetActorLocation());
             // The ship's inbound corridor stays open. A walker who leaves the
             // finite deck is returned to its safe spawn without ending the run.
-            if (FMath::Abs(Local.X) > 1750.f || FMath::Abs(Local.Y) > 1450.f || Local.Z < -250.f)
+            // The deck is no longer only the interior: it now includes the exterior landing pad and the
+            // walkway between them, which is what makes "land outside and walk in" possible at all. Before
+            // this the envelope stopped at X -1750 and the hangar mouth is at -1800, so the hero was fenced
+            // in fifty centimetres short of its own doorway.
+            if (!ASSStation::WalkableLocal(Local))
             {
                 // Counted, because this restores the very state an arrival is asked to prove and would
                 // otherwise let a broken arrival pose as a good one that simply started off the deck.
