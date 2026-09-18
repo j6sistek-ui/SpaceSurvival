@@ -1324,9 +1324,61 @@ twin guards it - and `ShipMesh` is set to null on the self-disable path, so the 
 path a Brake input would call. And `UAutopilotManagerComp` fires an `AddOnScreenDebugMessage` **every tick**
 while following a spline, ungated by any debug flag, which would paint every capture PNG.
 
-**State:** stage 1 only. Nothing is deleted, `ASSShip` is untouched, and the new test runs against a bare
+**State when that was written:** stage 1 only, `ASSShip` untouched, the new test running against a bare
 `AActor` rather than the game's ship so that a failure accuses the plugin and not the game. 62 of 62
-automation tests pass with zero warnings.
+automation tests passing with zero warnings. That is no longer where this stands - see the next entry.
+
+#### September 18 Ship Core actually takes the controls
+
+The owner pressed on the honest gap: "what are you using ship core for if not the controls?" The answer at
+the time was the chase camera and nothing else. The plugin was linked, enabled, contract-tested and
+attached to no ship. This entry is the swap itself.
+
+`ASSShip`'s `USphereComponent` root now simulates, and `UThrusterManagerComp` plus `UGyroManagerComp` move
+it. The hand-written substepped integrator is still in the file and still runs - **every build that does not
+pass `-SSPhoenix` flies exactly as it always did.** The two paths never both run.
+
+**The dials are not a straight translation, and one of them is a re-purposing.** Worth knowing before
+tuning, because the upgrade screen still sells all four:
+
+| Stat | Where it lands | Note |
+|---|---|---|
+| `acceleration` | thruster force, times mass | Same number on all six axes on purpose |
+| `speed` | the speed limiter | Defaults **off**; without switching it on the upgrade is inert |
+| `maneuver` | `MaxTotalTorque` | |
+| `response` | `ProportionalGain` | Was a rate constant on **linear** velocity error; a rigid body has no such dial, so it is re-homed onto **angular** error |
+
+The plugin ships Z thrust at 20e6 against 15e6 for X and Y. Left alone that makes vertical strafe a third
+livelier than horizontal for no reason anybody chose, so all six axes are set to the same figure.
+
+**Two things that would have broken quietly rather than loudly.** Both are the same shape - the old flight
+model was the only writer of a value the rest of the game reads:
+
+- **`GetVelocity` had to move to the physics body.** Sixteen production sites read it: Director spawn lead,
+  enemy aim lead, hazard intercept, the collision-course warning, the dust field. Under Ship Core the
+  hand-kept `Velocity` member is never written, so leaving it as the answer would have frozen all sixteen at
+  the `BeginPlay` cruise seed. Nothing would have errored; the game would just have got easier.
+- **Collision damage had to move to `OnComponentHit`.** The old integrator took its hits off the swept
+  move's `FHitResult`, and a simulating body never runs that path - so ramming an asteroid in the Phoenix
+  was free until this was bound. Same 15 damage on the same .8 s cooldown; physics handles the bounce.
+  Bound and building, but **not yet proven at runtime**: the Wave 10 soak never collided, so nothing has
+  actually hit anything under the new path.
+
+**Inertial dampeners are on.** Release the stick and the ship settles rather than coasting forever, which is
+the single biggest contributor to the feel being chased. `SetInertialDampeners` is called only once the body
+is confirmed simulating, because of the vendor defect recorded above - it dereferences `ShipMesh` unguarded
+while its own `_Server` twin checks, and standalone always takes the unguarded path.
+
+**CCD is on** because a 24.84 m hull at boost crosses more than a station wall's thickness in one frame, and
+this game had never had a swept rigid body before. Without it the ship tunnels.
+
+**Verified:** 63 of 63 automation tests, zero warnings, zero failed, zero not-run. A rendered Wave 10
+capture returns `success=True` with `SSHull: ShipCore driving, mass 4687.5 kg` in the log, peak speed
+6748 cm/s under 24 active threats.
+
+**Still open:** the feel itself. Making the parameters reachable is not the same as dialling them in, and
+nobody has flown this with hands on a controller yet. Docking through `UAutopilotManagerComp`, the station
+landing zone, the sit-to-launch sequence and the walkable interior are all still ahead.
 
 #### September 17 the squirrel is the hero: seated, lit, animated, and audible
 
