@@ -80,7 +80,11 @@ def preview(record):
             if state['frames']==30:
                 repaired,original=state['components'];names=[str(repaired.get_bone_name(i)) for i in range(repaired.get_num_bones())];assert names==[str(original.get_bone_name(i)) for i in range(original.get_num_bones())] and len(names)==52
                 error=max((repaired.get_socket_location(name)-original.get_socket_location(name)).length() for name in names);assert error<.001,'Original body skeleton pose differs'
-                sample={**case,'scale':1.5,'yaw':-90,'bone_count':len(names),'max_original_vs_repaired_bone_location_difference_cm':error,'sampled_seconds':repaired.get_position(),'sockets_world_cm':{name:vector(repaired.get_socket_location(name)) for name in ('Pelvis','Head','L_Foot','R_Foot','L_Ankle','R_Ankle')},'png':str(path.relative_to(ROOT))};state['samples'].append(sample)
+                # get_socket_location answers a name the rig does not have with the component transform and no
+                # complaint, so a bone that stopped existing would be filed below as a plausible measurement
+                # rather than as a gap. Unreal matches these names without regard to case; so does this.
+                probes=('Pelvis','Head','L_Foot','R_Foot','L_Ankle','R_Ankle');present={name.lower() for name in names};absent=[name for name in probes if name.lower() not in present];assert not absent,'Repaired hero has no such bones to sample: '+','.join(absent)
+                sample={**case,'scale':1.5,'yaw':-90,'bone_count':len(names),'max_original_vs_repaired_bone_location_difference_cm':error,'sampled_seconds':repaired.get_position(),'sockets_world_cm':{name:vector(repaired.get_socket_location(name)) for name in probes},'png':str(path.relative_to(ROOT))};state['samples'].append(sample)
                 u.AutomationLibrary.finish_loading_before_screenshot();state['task']=u.AutomationLibrary.take_high_res_screenshot(1600,1000,str(path),camera,delay=.3);assert state['task'].is_valid_task()
             if state['task'] and state['task'].is_task_done() and path.exists():
                 state['index']+=1

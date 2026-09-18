@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -263,12 +264,55 @@ bool FSSStationChaseCamera::RunTest(const FString &)
     auto *Walker = Cast<ASSWalker>(F.Controller->GetPawn());
     if (!TestNotNull(TEXT("Actual station arrival supplies the third-person walker"), Walker))
         return false;
+    // What arrival hands the player depends on the hero, and both answers are correct. A hero with an
+    // exit clip is still climbing out, and the exit owns the camera and the body until it finishes. A
+    // hero without one - the ship has no door, so the exit animation was cancelled and logged as
+    // RPT-20260917-01 - is standing outside the ship already, and the player has the camera and the body
+    // from the first frame. The test asserts whichever applies rather than assuming the climb-out, but it
+    // does not let either turn into the other: an exit that ignored input and never ended, or an arrival
+    // that left the player unable to look, would both still be caught here.
     const FRotator Arrival = F.Controller->GetControlRotation();
+    const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
+    AddInfo(FString::Printf(TEXT("STATION_ARRIVAL hero=%s climbsOut=%d"), *Walker->GetHero().Id.ToString(),
+                            ClimbsOut ? 1 : 0));
+    // Read before Move, which sets the body's rotation itself. This fixture flies in on a heading of 73
+    // degrees and the station is built at it, so the hub's yaw here is nothing like world north - which
+    // is the whole point. A hero with no exit clip is placed by the spawn and by nothing else: it does
+    // not orient to movement and does not follow the controller, and the authored exit that used to
+    // reconcile body and camera by slerping to the hub's rotation on its last tick never runs. So the
+    // spawn has to have turned it, or the player meets the hero 73 degrees side-on for the whole arrival
+    // and the body snaps through that angle on the first input. A climbing hero is mid-clip here and
+    // wears the seated pose instead; its facing is checked below, where the exit has finished.
+    const double HubYaw = F.Hub->GetActorRotation().Yaw;
+    if (!ClimbsOut)
+        TestEqual(TEXT("A hero with no exit clip arrives turned the way the station faces"),
+                  double(FMath::Abs(FMath::FindDeltaAngleDegrees(Walker->GetActorRotation().Yaw, HubYaw))), 0., 1e-3);
+    TestEqual(TEXT("The arrival camera is pointed the same way the station faces"),
+              double(FMath::Abs(FMath::FindDeltaAngleDegrees(Arrival.Yaw, HubYaw))), 0., 1e-3);
     Walker->Move(FVector2D(0, 1), FVector2D(1, 1), true, .1f);
-    TestTrue(TEXT("Authored disembark ignores look and walking"),
-             Walker->IsDisembarking() && F.Controller->GetControlRotation().Equals(Arrival));
+    if (ClimbsOut)
+        TestTrue(TEXT("An authored disembark ignores look and walking"),
+                 Walker->IsDisembarking() && F.Controller->GetControlRotation().Equals(Arrival) &&
+                     Walker->GetPendingMovementInputVector().IsNearlyZero());
+    else
+        TestTrue(TEXT("A hero with no exit clip already has look and walking when docking finishes"),
+                 !Walker->IsDisembarking() && !F.Controller->GetControlRotation().Equals(Arrival) &&
+                     !Walker->GetPendingMovementInputVector().IsNearlyZero() &&
+                     Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
+    Walker->ConsumeMovementInputVector();
     for (int32 Frame = 0; Frame < 25; ++Frame)
         Walker->Tick(.1f);
+    // Either route ends in the same place: the player driving the walker, however it got onto the deck.
+    TestTrue(TEXT("The chase camera checks below run on a walker the player controls"),
+             !Walker->IsDisembarking() && F.Controller->GetPawn() == Walker &&
+                 Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
+    // The climb-out's own last tick slerps the body to the station's facing, which is the behaviour the
+    // spawn above now has to reproduce for a hero that never runs it. Asserted here rather than with the
+    // other one because it is only true once the clip has finished. The walking hero has been driven by
+    // Move since, so its facing is its view's and is no longer the arrival's to check.
+    if (ClimbsOut)
+        TestEqual(TEXT("A climb-out ends turned the way the station faces"),
+                  double(FMath::Abs(FMath::FindDeltaAngleDegrees(Walker->GetActorRotation().Yaw, HubYaw))), 0., 1e-3);
     for (int32 Rate : {30, 60, 144})
     {
         const float Dt = 1.f / Rate;

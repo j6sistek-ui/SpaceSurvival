@@ -70,6 +70,16 @@
       "sha256": "ee237b8f9c52863f21cf4b3b28b012a05cfb250eea2de94d47001b314ec653f3"
     },
     {
+      "name": "Footstep",
+      "seconds": 0.3,
+      "sample_rate": 32000,
+      "channels": 1,
+      "loop": false,
+      "peak_dbfs": -13.57,
+      "rms_dbfs": -29.08,
+      "sha256": "d5e046f47c40066600d0d20b7c1150d841f5c23387277019d3b426b913c559ac"
+    },
+    {
       "name": "Station",
       "seconds": 4,
       "sample_rate": 32000,

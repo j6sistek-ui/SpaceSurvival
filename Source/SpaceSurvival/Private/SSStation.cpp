@@ -4,6 +4,7 @@
 #include "SSStationVisualLayout.h"
 #include "SSShipPresentation.h"
 #include "SSShip.h"
+#include "SSPhase1Data.h"
 #include "Misc/PackageName.h"
 #include "SSStationPoseTransition.h"
 #include "SSAudio.h"
@@ -17,6 +18,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
+#include "HAL/IConsoleManager.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -480,6 +482,47 @@ ESSPanel ASSStation::NearestService(FVector Position, FString &Label) const
     }
     return Result;
 }
+namespace
+{
+// The walker's readability rig, and the owner's dials for it.
+//
+// Why it exists: the station's lighting is authored and liked, and it is also exactly why the hero
+// disappears into it. Every lamp in the recipe hangs at Z 260 to 570 over a head at about Z 135, so the
+// deck takes them at near-normal incidence and returns a specular streak as well, while the hero's
+// vertical, camera-facing surfaces take the same lamps at a graze of roughly 0.2. The floor is lit; the
+// hero is skimmed. Brightening the station would only widen that gap, so the answer belongs on the pawn.
+//
+// The strength is split in two: these dials are the look, and the hero's own ReadabilityLightScale is
+// how much of it that hero's albedo needs. Turning a dial moves every hero together; the data field is
+// what keeps a black suit and a pale one from wanting the same lamp.
+//
+// The lumens look small beside the station's own lamps and the ship's 1500 lm fill. They are, and the
+// reason is distance and exposure: these sit about 2.5 m from the hero in a bay whose exposure is set
+// for a deck that renders at 0.074 relative luminance. The first attempt at this asked for the same
+// order of magnitude as the station's lamps, 16250 lm on the key, and rendered the squirrel's black
+// suit at mean luma 230 of 255 with 70% of it clipped white. So the whole rig belongs in the low
+// hundreds, and these two were then measured into place over two more captures: they land the
+// squirrel's body at about three quarters of the deck's luminance, up from an eighth.
+//
+// These two are also the lamps' built intensities, so the class defaults and the dials cannot drift
+// apart: a light that is registered but never ticked, in the editor or in some future path that skips
+// BeginPlay, burns exactly what the dial says it burns.
+constexpr float KeyLumens = 95.f;
+constexpr float RimLumens = 160.f;
+TAutoConsoleVariable<float> HeroLightKey(TEXT("ss.HeroLightKey"), KeyLumens,
+                                         TEXT("Lumens in the walker's camera-side key light, before the hero's own "
+                                              "scale. Models the body and lights what the camera sees."));
+TAutoConsoleVariable<float> HeroLightRim(TEXT("ss.HeroLightRim"), RimLumens,
+                                         TEXT("Lumens in the walker's far-side rim light, before the hero's own "
+                                              "scale. This is the one that separates the silhouette."));
+TAutoConsoleVariable<float> HeroLightScale(TEXT("ss.HeroLightScale"), 1.f,
+                                           TEXT("Master multiplier on the walker's readability rig. 0 switches it "
+                                                "off outright, for comparison against the station alone. The useful "
+                                                "range ends near 1.4: at 1 the squirrel's body sits at about three "
+                                                "quarters of the deck's luminance, and past 1.4 the character is "
+                                                "brighter than the floor it is standing on, which reads as a torch."));
+} // namespace
+
 ASSWalker::ASSWalker()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -494,69 +537,409 @@ ASSWalker::ASSWalker()
     Boom->bUsePawnControlRotation = true;
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("WalkCamera"));
     Camera->SetupAttachment(Boom);
-    // Measured boot sole at the authored walk handoff is -62.90269494 cm, below the ankle bone.
-    // Fit it to the deck plates (2.75 cm above collision), including UE's normal walking floor gap.
-    const float WalkingFloorGap =
-        (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
-    GetMesh()->SetRelativeLocation(FVector(
-        0, 0, 62.90269494f * 1.5f - GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - WalkingFloorGap + 2.75f));
-    GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
-    GetMesh()->SetRelativeScale3D(FVector(1.5f));
+    // A readability rig, not a torch. Two unshadowed point lights ride the pawn, and both are confined
+    // with the hero's mesh to one lighting channel that nothing else in the world is on, so the deck,
+    // the hull and the ship never take them. That confinement is what lets them be strong enough to
+    // open a suit as dark as the squirrel's while the station's own lighting is left untouched.
+    //
+    // What the channel actually covers, because it is not everything: the deferred direct pass honours
+    // it, and so does Lumen, which is what this project renders with - its surface cache carries both a
+    // per-light and a per-primitive-group channel mask. Volumetric fog does not honour it at all; local
+    // lights are injected on scattering intensity alone, which is why both lamps set that to zero below
+    // rather than relying on the channel. With those two closed, what is left is Lumen's indirect
+    // bounce off the hero itself, and that is small but not nil: on the owner's own frame the deck
+    // immediately left and right of the character moved by 0.6 and 0.4 of one code value out of 255,
+    // where two renders of the same build differ by 0.1 to 0.2 in the same places. So the bound on the
+    // floor is measured, not structural, and winding ss.HeroLightScale far past 1 winds it up too.
+    //
+    // Offsets are in the rig's frame, which is yawed to the camera every tick: -X is toward the camera,
+    // +X away, +Y to the camera's right, Z from the capsule centre (88 cm above the deck plates). They
+    // are absolute centimetres and the same for every hero, which is deliberate: the capsule is the
+    // same for every hero too, and the heroes this roster holds stand between about 135 and 180 cm, so
+    // the key lands from just over the head to just under the top of it across that range. A rig scaled
+    // to each hero's own height would hold the angles exactly but would have to move the lamps, and
+    // moving them changes their distance and so their strength. Validated on the squirrel.
+    LightRig = CreateDefaultSubobject<USceneComponent>(TEXT("HeroLightRig"));
+    LightRig->SetupAttachment(RootComponent);
+    KeyLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("HeroKeyLight"));
+    KeyLight->SetupAttachment(LightRig);
+    // 190 back toward the camera, 170 to its left, 85 up: 40 degrees off the view axis and 16 above the
+    // torso. That is a portrait key rather than a lamp on the lens, so it models the body instead of
+    // flattening it, and it is near enough the view for the suit to answer. The suits are roughness
+    // 0.47 dielectrics, which have a broad specular lobe: a light this close to the camera axis puts a
+    // sheen where the camera can see it, and specular does not care how black the base colour is.
+    KeyLight->SetRelativeLocation(FVector(-190, -170, 85));
+    KeyLight->SetIntensityUnits(ELightUnits::Lumens);
+    // Both, and in this order. The units alone would leave the engine's 5000 on the dial and reinterpret
+    // it as 5000 lumens, twenty-one times what the hero ever gets, on any path that does not reach
+    // UpdateReadabilityLighting - the editor viewport among them.
+    KeyLight->SetIntensity(KeyLumens);
+    // Volumetric fog ignores lighting channels, so the channel alone would not keep this lamp out of the
+    // bay's air. Zero scattering is what actually keeps it out.
+    KeyLight->SetVolumetricScatteringIntensity(0.f);
+    // Warm, near the amber the overhead pools already lay on the deck, so the hero reads as lit by this
+    // bay rather than by something that followed it in.
+    KeyLight->SetLightColor(FLinearColor(1.f, .86f, .7f));
+    // Reaches the soles at 308 cm. The radius is a cost bound, not a look: the inverse square has taken
+    // this light to nothing well inside it, so where it stops is not a place anyone can see.
+    KeyLight->SetAttenuationRadius(460.f);
+    KeyLight->SetCastShadows(false);
+    // The owner's words: "the overhead can reflect, but he isn't a lantern". A readability lamp is a
+    // courtesy to the player, and it should leave no evidence in the world. The channel keeps its direct
+    // light off the deck, but indirect does not ask the channel: without these two the lamp bounces off
+    // the hero into the room and is gathered again by the polished deck, so the hero reads as a light
+    // source lying on a mirror. Off both paths, his reflection is still there and is lit by the bay, as
+    // the overhead pools are. The cost is that the reflection is darker than the hero, which is the
+    // honest consequence of lighting him for the camera and not for the room.
+    KeyLight->SetAffectGlobalIllumination(false);
+    KeyLight->SetAffectReflection(false);
+    KeyLight->LightingChannels.bChannel0 = false;
+    KeyLight->LightingChannels.bChannel1 = true;
+    RimLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("HeroRimLight"));
+    RimLight->SetupAttachment(LightRig);
+    // The far side, 210 past the hero, 200 to the camera's right and 170 up: 136 degrees round from the
+    // view axis at about 25 of elevation. At a silhouette edge the view is grazing, and Fresnel takes
+    // even a near-black dielectric to almost total reflection there, so this is the lamp that costs
+    // nothing in albedo. It is the one that answers the actual complaint: the measured squirrel had no
+    // rim at all, and what looked like one was the deck showing through the antialiased edge.
+    RimLight->SetRelativeLocation(FVector(210, 200, 170));
+    RimLight->SetIntensityUnits(ELightUnits::Lumens);
+    RimLight->SetIntensity(RimLumens);
+    RimLight->SetVolumetricScatteringIntensity(0.f);
+    // Cool, near the walkway fills' own (.8, .88, 1), so the edge belongs to the light behind the hero.
+    RimLight->SetLightColor(FLinearColor(.78f, .87f, 1.f));
+    RimLight->SetAttenuationRadius(540.f);
+    RimLight->SetCastShadows(false);
+    // Same reasoning as the key, and it matters more here: a rim lamp sits behind the hero pointing back
+    // at the camera, which is the worst place to be gathered from by a floor.
+    RimLight->SetAffectGlobalIllumination(false);
+    RimLight->SetAffectReflection(false);
+    RimLight->LightingChannels.bChannel0 = false;
+    RimLight->LightingChannels.bChannel1 = true;
+    // The hero keeps the station's channel and adds the rig's. This is the only primitive that does.
+    GetMesh()->LightingChannels.bChannel1 = true;
+    // Built with the fallback hero, because a constructor cannot ask what content is installed.
+    // BeginPlay applies whichever hero this build actually has, over these same three calls.
+    GetMesh()->SetRelativeLocation(FVector(0, 0, MeshLift(Hero.ScaledSoleOffset(nullptr))));
+    GetMesh()->SetRelativeRotation(FRotator(0, Hero.MeshYaw, 0));
+    GetMesh()->SetRelativeScale3D(FVector(Hero.RenderedScale(nullptr)));
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     GetMesh()->bForceMipStreaming = true;
+}
+double ASSWalker::MeshLift(double ScaledSoleOffset) const
+{
+    // Stand the hero's own measured sole on the deck plates, including UE's normal walking floor gap.
+    const float WalkingFloorGap =
+        (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
+    return ScaledSoleOffset - GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - WalkingFloorGap + DeckClearance;
 }
 void ASSWalker::BeginPlay()
 {
     Super::BeginPlay();
-    const TCHAR *TemporaryMesh =
-        TEXT("/Game/SciFITrooper_Man_03/SkeletalMesh/SK_SciFITrooper_Man_03.SK_SciFITrooper_Man_03");
-    const TCHAR *TemporaryWalk = TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonWalk.ThirdPersonWalk");
-    bTemporarySpaceHero =
-        FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(TemporaryMesh))) &&
-        FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(TemporaryWalk)));
-    USkeletalMesh *HeroMesh = LoadObject<USkeletalMesh>(
-        nullptr, bTemporarySpaceHero ? TemporaryMesh
-                                     : TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2"));
-    WalkAnimation = LoadObject<UAnimSequence>(
-        nullptr,
-        bTemporarySpaceHero ? TemporaryWalk : TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair"));
-    if (bTemporarySpaceHero && (!HeroMesh || !WalkAnimation || HeroMesh->GetSkeleton() != WalkAnimation->GetSkeleton()))
+    if (!Tuning)
+        Tuning = LoadObject<USSPhase1Data>(nullptr, TEXT("/Game/SpaceSurvival/Data/DA_Phase1.DA_Phase1"));
+    if (!Tuning)
+        Tuning = NewObject<USSPhase1Data>(this);
+    Hero = Tuning->SelectHero(ESSHeroSlot::Walker);
+    USkeletalMesh *HeroMesh = LoadObject<USkeletalMesh>(nullptr, *Hero.MeshPath);
+    WalkAnimation = LoadObject<UAnimSequence>(nullptr, *Hero.WalkClipPath);
+    const FSSHeroDefinition Shipped = Tuning->FallbackHero();
+    // A clip can only play on the skeleton it was authored against. An installed hero whose assets
+    // fail to load, or whose walk belongs to another skeleton, gives the slot back to the shipped hero.
+    if (Hero.Identity != Shipped.Identity &&
+        (!HeroMesh || !WalkAnimation || HeroMesh->GetSkeleton() != WalkAnimation->GetSkeleton()))
     {
-        bTemporarySpaceHero = false;
-        HeroMesh = LoadObject<USkeletalMesh>(nullptr,
-                                             TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2"));
-        WalkAnimation =
-            LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_WalkLegRepair.A_WalkLegRepair"));
+        Hero = Shipped;
+        HeroMesh = LoadObject<USkeletalMesh>(nullptr, *Hero.MeshPath);
+        WalkAnimation = LoadObject<UAnimSequence>(nullptr, *Hero.WalkClipPath);
     }
+    // Only a hero who also flies the ship inherits the seated component transform and its live pose.
+    SharesPilotRig = Tuning->SelectHero(ESSHeroSlot::Pilot).Identity == Hero.Identity;
     GetMesh()->SetSkeletalMesh(HeroMesh);
-    if (bTemporarySpaceHero && HeroMesh)
+    GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, MeshLift(Hero.ScaledSoleOffset(HeroMesh))));
+    GetMesh()->SetRelativeRotation(FRotator(0, Hero.MeshYaw, 0));
+    GetMesh()->SetRelativeScale3D(FVector(Hero.RenderedScale(HeroMesh)));
+    // What this hero stands in, if it has anything to stand in. A clip can only play on the skeleton
+    // it was authored against, exactly as above, and here a mismatch is not a reason to give the slot
+    // away - it is a reason for this hero to stand the way heroes stood before any of these existed.
+    IdleAnimation = nullptr;
+    FidgetAnimations.Reset();
+    // Rung zero is the walk, always, installed or not - every other rung is measured against it and
+    // UpdateHeroAnimation reads GaitAnimations[0] where it used to read WalkAnimation.
+    GaitAnimations.Reset();
+    GaitSpeeds.Reset();
+    GaitAnimations.Add(WalkAnimation);
+    GaitSpeeds.Add(FMath::Max(1.f, Hero.WalkSpeed));
+    if (const USkeleton *Skeleton = HeroMesh ? HeroMesh->GetSkeleton() : nullptr)
     {
-        const FBoxSphereBounds Bounds = HeroMesh->GetBounds();
-        const float Height = Bounds.BoxExtent.Z * 2.f;
-        const float Scale = Height > 1.f ? 180.f / Height : 1.f;
-        const float WalkingFloorGap =
-            (UCharacterMovementComponent::MIN_FLOOR_DIST + UCharacterMovementComponent::MAX_FLOOR_DIST) * .5f;
-        GetMesh()->SetRelativeLocation(FVector(0.f, 0.f,
-                                               -(Bounds.Origin.Z - Bounds.BoxExtent.Z) * Scale -
-                                                   GetCapsuleComponent()->GetScaledCapsuleHalfHeight() -
-                                                   WalkingFloorGap + 2.75f));
-        GetMesh()->SetRelativeScale3D(FVector(Scale));
+        auto LoadClip = [Skeleton](const FString &Path) -> UAnimSequence *
+        {
+            // Asked about before it is loaded, because a hero declaring an idle this build does not
+            // carry is the ordinary shape of a build without the licensed pack, and LoadObject would
+            // put a warning in the log for every one of them.
+            auto *Clip = FSSHeroDefinition::AssetInstalled(Path) ? LoadObject<UAnimSequence>(nullptr, *Path) : nullptr;
+            return Clip && Clip->GetSkeleton() == Skeleton ? Clip : nullptr;
+        };
+        IdleAnimation = LoadClip(Hero.IdleClipPath);
+        // Only alongside an idle: a fidget is a clip you cut away from and come back to, so one with
+        // nowhere to come back to would be a hero left holding a pose once its fidget second passed.
+        if (IdleAnimation)
+            for (const FString &Path : Hero.IdleFidgetClipPaths)
+                if (auto *Fidget = LoadClip(Path))
+                    FidgetAnimations.Add(Fidget);
+        // The ladder, built once and ascending. A hero with neither fast clip installed ends with a
+        // single rung and ChooseGait can only ever return it, which is the behaviour every hero had.
+        auto AddGait = [this, &LoadClip](const FString &Path, float Speed)
+        {
+            if (auto *Clip = LoadClip(Path))
+                if (Speed > GaitSpeeds.Last())
+                {
+                    GaitAnimations.Add(Clip);
+                    GaitSpeeds.Add(Speed);
+                }
+        };
+        AddGait(Hero.JogClipPath, Hero.JogSpeed);
+        AddGait(Hero.RunClipPath, Hero.RunSpeed);
     }
-    StartWalkingAnimation();
+    // The rig's strength is this hero's, and BeginPlay is the first moment that is known.
+    UpdateReadabilityLighting();
+    // Where this hero's ankle rests when it is simply standing. Footsteps compare against it rather
+    // than against a fixed height, because the heroes this roster holds stand between 135 and 180 cm
+    // and an ankle that is planted on one of them is mid-stride on another.
+    FTransform RestFoot;
+    if (FSSHeroDefinition::ResolveBone(GetMesh(), Hero.LeftFootBone, RestFoot))
+        FootRestHeight =
+            FMath::Max(0.f, float(RestFoot.GetLocation().Z -
+                                  (GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight())));
+    StartStandingAnimation(false);
 }
-void ASSWalker::StartWalkingAnimation()
+void ASSWalker::UpdateReadabilityLighting()
 {
-    GetMesh()->PlayAnimation(WalkAnimation, true);
-    if (auto *Animation = GetMesh()->GetSingleNodeInstance())
+    if (!LightRig || !KeyLight || !RimLight)
+        return;
+    // Aimed at the camera, not at the world. The player orbits the boom, and a hero lit from a fixed
+    // world direction is a cut-out again the moment they turn; the complaint was about one such angle.
+    // Yaw only: the look clamps to 55 degrees down, and a rig that inherited pitch would swing the key
+    // under the character's chin at the bottom of that.
+    //
+    // Read from the same place the boom reads it, not from the camera component. This runs in the
+    // pawn's tick group, TG_PrePhysics, and the boom writes the camera's transform in TG_PostPhysics,
+    // so the component's rotation this frame is still last frame's and the rig would trail the view
+    // through a fast turn. GetViewRotation is the control rotation while possessed and the actor's
+    // while not, which is the same fallback the boom takes, so the unpossessed case is unchanged.
+    LightRig->SetWorldRotation(FRotator(0, GetViewRotation().Yaw, 0));
+    const float Scale = FMath::Max(0.f, HeroLightScale.GetValueOnGameThread()) * Hero.ReadabilityLightScale;
+    const float Key = FMath::Max(0.f, HeroLightKey.GetValueOnGameThread()) * Scale;
+    const float Rim = FMath::Max(0.f, HeroLightRim.GetValueOnGameThread()) * Scale;
+    // Only on a change: setting an intensity dirties the render state, and this runs every frame so the
+    // owner can turn a dial mid-session and watch it move.
+    if (!FMath::IsNearlyEqual(KeyLight->Intensity, Key))
+        KeyLight->SetIntensity(Key);
+    if (!FMath::IsNearlyEqual(RimLight->Intensity, Rim))
+        RimLight->SetIntensity(Rim);
+    // Zero is off rather than black: a light with no intensity still costs a pass over its own bounds.
+    if (KeyLight->IsVisible() != (Key > 0.f))
+        KeyLight->SetVisibility(Key > 0.f);
+    if (RimLight->IsVisible() != (Rim > 0.f))
+        RimLight->SetVisibility(Rim > 0.f);
+}
+void ASSWalker::PlayClip(UAnimSequence *Clip, float Seconds, bool Loop, float RateScale, bool CarryPose)
+{
+    // Starting a clip is a hard cut: PlayAnimation resets the single-node instance's clock, so this
+    // is how a clip is started rather than resumed, and calling it on the clip already playing would
+    // restart the stride every frame. Every caller is a transition; nothing calls this to keep going.
+    //
+    // CarryPose is what stops that cut being seen. Measured across all 46 bones, the jump from the
+    // idle's first pose into the walk at WalkHandoffSeconds moves R_Calf 7.73 cm, which is 11.6 cm at
+    // this hero's scale, and the jump the other way - out of an arbitrary walk phase back to the idle
+    // - has a median worst bone of 16.8 cm and reaches 22.2, so 33.2 cm on the deck. Those are the
+    // two most frequent transitions in the game, one per start and one per stop. USSStationPoseTransition
+    // already exists for exactly this: it holds the outgoing pose and blends off it over BlendDuration,
+    // and it was built for this same pawn and this same mesh. Reusing it costs one snapshot per cut.
+    //
+    // A hero with no idle never passes true, and then this function is the line it always was.
+    FPoseSnapshot Outgoing;
+    if (CarryPose && GetMesh()->GetSkeletalMeshAsset() && GetMesh()->GetAnimInstance())
+        GetMesh()->SnapshotPose(Outgoing);
+    CutSeconds = -1.f;
+    if (Outgoing.bIsValid)
     {
-        Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
-        // The paired disembark clip ends at this exact authored A_Walk pose.
-        Animation->SetPosition(.308333333f, false);
+        // Not PlayAnimation: that would switch the component back to a plain single-node instance and
+        // throw away the very object holding the pose being blended from.
+        GetMesh()->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
+        if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+        {
+            Transition->SetAnimationAsset(Clip, Loop, 1.f);
+            Transition->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+            Transition->SetPosition(Seconds, false);
+            Transition->SetPlaying(true);
+            // A refused pose is not a failure worth a branch upstream. It means this cut is as hard
+            // as every cut used to be, which is the thing being improved rather than depended on.
+            if (Transition->SetSourcePose(Outgoing))
+                CutSeconds = 0.f;
+        }
     }
-    GetMesh()->GlobalAnimRateScale = 0.f;
+    else
+    {
+        GetMesh()->PlayAnimation(Clip, Loop);
+        if (auto *Animation = GetMesh()->GetSingleNodeInstance())
+        {
+            Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+            Animation->SetPosition(Seconds, false);
+        }
+    }
+    GetMesh()->GlobalAnimRateScale = RateScale;
     GetMesh()->TickAnimation(0.f, false);
     GetMesh()->RefreshBoneTransforms();
     GetMesh()->SetComponentTickEnabled(true);
+}
+int32 ASSWalker::ChooseGait(float Speed) const
+{
+    // Boundaries are geometric means, not midpoints, because what has to stay near 1 is a RATIO: the
+    // rate a gait plays at is Speed divided by that gait's own authored speed. Splitting at the
+    // geometric mean makes the worst rate on either side of a boundary the same distance from 1.
+    // For this hero - 180, 205.5, 384.3 against pawn speeds of 320 and 560 - it puts the boundaries
+    // at 192 and 281, so cruising sits in the run at 0.83x and sprinting in the run at 1.46x, where
+    // one clip for everything had the walk at 1.78x and 3.11x. The jog holds the ramp between them.
+    int32 Chosen = Gait;
+    // Up while the speed is clear of the boundary above, down while it is clear of the one below.
+    while (Chosen + 1 < GaitSpeeds.Num() &&
+           Speed > FMath::Sqrt(GaitSpeeds[Chosen] * GaitSpeeds[Chosen + 1]) * (1.f + GaitHysteresis))
+        ++Chosen;
+    while (Chosen > 0 && Speed < FMath::Sqrt(GaitSpeeds[Chosen - 1] * GaitSpeeds[Chosen]) / (1.f + GaitHysteresis))
+        --Chosen;
+    return Chosen;
+}
+void ASSWalker::StartStandingAnimation(bool CarryPose)
+{
+    Moving = false;
+    StandingSeconds = 0.f;
+    FidgetSecondsLeft = 0.f;
+    Gait = 0;
+    // A hero with an idle stands in it, at its own authored rate. A hero without one stands where
+    // every hero used to: the walk clip, frozen on the single frame the disembark clip ends at, with
+    // the stride stopped dead. Those two lines are the whole difference, and the second of them is
+    // the old body of this function unchanged - same clip, same second, same zero, no pose carried.
+    if (IdleAnimation)
+        PlayClip(IdleAnimation, 0.f, true, 1.f, CarryPose);
+    else
+        PlayClip(WalkAnimation, Hero.WalkHandoffSeconds, true, 0.f, false);
+}
+void ASSWalker::UpdateHeroAnimation(float Dt)
+{
+    // THE GAIT MAPPING.
+    //
+    // One rule: play the gait whose own authored travel is nearest the pawn's speed, at a rate of
+    // pawnSpeed / thatGait'sSpeed. The rate is what makes the planted foot cancel the ground exactly,
+    // so every band has no skate by construction; choosing the nearest gait is what keeps that rate
+    // near 1 instead of stretching one clip over the whole range. With a single gait installed the
+    // rule collapses to what the game always did - the walk at Speed/WalkSpeed - and that is the case
+    // the two heroes without fast clips take.
+    //
+    // For the squirrel the ladder is the walk at 180, the jog at 205.5 and the run at 384.3, against
+    // a pawn that walks at 320 and runs at 560 (Move). Its cruising speed lands in the run at 0.83x
+    // and its sprint in the run at 1.46x, where one clip for everything ran the walk at 1.78x and
+    // 3.11x. That is not a quirk of the clips: 320 cm/s on a hero 134.7 cm tall is 2.4 body heights a
+    // second, which on a person is a run, so the pawn's "walk" was never a walk.
+    //
+    // What this cannot do is blend two gaits, because a single-node pawn plays one clip - so each
+    // band change is a cut, taken through the same pose carry as every other cut here, and the
+    // hysteresis in ChooseGait is what stops a pawn sitting on a boundary cutting every frame.
+    const float Speed = GetVelocity().Size2D();
+    if (!IdleAnimation)
+    {
+        // Unchanged, and deliberately still one line: for a hero with no idle this is the whole of
+        // its animation, standing and walking alike, exactly as it was before any of this existed.
+        GetMesh()->GlobalAnimRateScale = Speed / FMath::Max(1.f, Hero.WalkSpeed);
+        return;
+    }
+    // One sane step, used by everything below it. A frame that reports no time, or reports a NaN,
+    // must not be able to run a blend out, bring a fidget forward, or push one away for ever.
+    const float Step = FMath::IsFinite(Dt) && Dt > 0.f ? Dt : 0.f;
+    if (CutSeconds >= 0.f)
+    {
+        CutSeconds += Step;
+        // The same call the disembark uses, and the same curve: seconds in, smoothstepped alpha out.
+        // It clears its own held pose when it arrives, so this only has to stop asking.
+        if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+            Transition->SetExitTime(CutSeconds);
+        if (CutSeconds >= USSStationPoseTransition::BlendDuration)
+            CutSeconds = -1.f;
+    }
+    // Held input, not just measured speed. GetVelocity on a walking pawn is what it managed to move,
+    // so a hero pressed into a bulkhead reports nearly zero and would drop into the idle - and then,
+    // after IdleFidgetSeconds of the player still holding forward, stand there and fidget at the wall.
+    // The deck is a bounded room, so that is not a corner case. Requiring the intent to be gone too
+    // leaves a pressed hero where it always was - a blocked pawn reports no speed, so the ladder
+    // below picks its slowest rung and plays the walk at rate ~0, which is exactly what pressing into
+    // a bulkhead looked like before any of this. Releasing the stick still reaches the idle the same
+    // frame, so the guard buys that case without costing a frame anywhere else.
+    //
+    // Both halves are asked because they are true at different moments: the pending input vector is
+    // this frame's, set before this tick and consumed after it, and the acceleration is what the
+    // movement component made of the last one.
+    const auto *Movement = GetCharacterMovement();
+    const bool Pushing = !GetPendingMovementInputVector().IsNearlyZero() ||
+                         (Movement && !Movement->GetCurrentAcceleration().IsNearlyZero());
+    if (Moving ? Speed < Hero.WalkSpeed * MoveExitFraction && !Pushing : Speed > Hero.WalkSpeed * MoveEnterFraction)
+    {
+        Moving = !Moving;
+        // Into the gait at the walk's handoff second rather than at its start, because that second is
+        // a planted contact - heel strike is at 0.158 and toe-off at 0.467 - while the clip's own
+        // frame zero is mid-swing. Leaving a stand on a foot already on the ground is a step; leaving
+        // it on a foot in the air is a stumble. It is also the one pose this hero has always stood
+        // in, so the cut out of the idle lands exactly where the game used to start every walk from.
+        if (Moving)
+        {
+            Gait = ChooseGait(Speed);
+            PlayClip(GaitAnimations[Gait], Hero.WalkHandoffSeconds, true, Speed / GaitSpeeds[Gait], true);
+        }
+        else
+            StartStandingAnimation();
+    }
+    if (Moving)
+    {
+        const int32 Wanted = ChooseGait(Speed);
+        if (Wanted != Gait)
+        {
+            Gait = Wanted;
+            // Frame zero, not the walk's handoff second: that second is a contact pose of the WALK,
+            // and the other two clips are different lengths with their contacts elsewhere. The pose
+            // carry is what covers the seam, so the entry phase no longer has to.
+            PlayClip(GaitAnimations[Gait], 0.f, true, Speed / GaitSpeeds[Gait], true);
+        }
+        GetMesh()->GlobalAnimRateScale = Speed / GaitSpeeds[Gait];
+        return;
+    }
+    if (FidgetSecondsLeft > 0.f)
+    {
+        FidgetSecondsLeft -= Step;
+        // A fidget's last pose is its first pose is the idle's first pose, all three within 0.01 cm
+        // and 0.05 degrees, so being a frame early or late on the way back cannot show.
+        if (FidgetSecondsLeft <= 0.f)
+        {
+            FidgetSecondsLeft = 0.f;
+            StandingSeconds = 0.f;
+            PlayClip(IdleAnimation, 0.f, true, 1.f, true);
+        }
+    }
+    else
+    {
+        StandingSeconds += Step;
+        if (Hero.IdleFidgetSeconds > 0.f && FidgetAnimations.Num() > 0 && StandingSeconds >= Hero.IdleFidgetSeconds)
+        {
+            // In turn rather than at random: two fidgets alternating is what a person standing about
+            // looks like, and a random pick can repeat itself twice running, which does not.
+            UAnimSequence *Fidget = FidgetAnimations[NextFidget % FidgetAnimations.Num()];
+            NextFidget = (NextFidget + 1) % FidgetAnimations.Num();
+            FidgetSecondsLeft = Fidget->GetPlayLength();
+            StandingSeconds = 0.f;
+            PlayClip(Fidget, 0.f, false, 1.f, true);
+        }
+    }
+    // An idle keeps its own clock. The pawn is not moving, so there is no ground speed for it to
+    // follow, and the zero this used to be is what made standing a still frame in the first place.
+    GetMesh()->GlobalAnimRateScale = 1.f;
 }
 void ASSWalker::SampleExitPose(float Seconds)
 {
@@ -570,17 +953,16 @@ void ASSWalker::SampleExitPose(float Seconds)
 bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing,
                                const FPoseSnapshot *SourcePose)
 {
-    auto *ExitAnimation = LoadObject<UAnimSequence>(
-        nullptr, bTemporarySpaceHero
-                     ? TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonJump_End.ThirdPersonJump_End")
-                     : TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair"));
+    auto *ExitAnimation =
+        Hero.DisembarkClipPath.IsEmpty() ? nullptr : LoadObject<UAnimSequence>(nullptr, *Hero.DisembarkClipPath);
     if (!ExitAnimation || !WalkAnimation || !GetMesh()->GetSkeletalMeshAsset())
         return false;
     // Component local transform * actor transform = the actual seated pilot component transform.
-    // This preserves yaw, local mesh offset and the constant 1.5 mesh scale without interpolated shrinking.
-    const FTransform StartTransform = bTemporarySpaceHero
-                                          ? FTransform(Facing, PilotWorldTransform.GetLocation(), FVector::OneVector)
-                                          : GetMesh()->GetRelativeTransform().Inverse() * PilotWorldTransform;
+    // This preserves yaw, local mesh offset and the hero's own mesh scale without interpolated shrinking.
+    // A hero who never flies the ship has no seat of its own and starts from the ship position instead.
+    const FTransform StartTransform = SharesPilotRig
+                                          ? GetMesh()->GetRelativeTransform().Inverse() * PilotWorldTransform
+                                          : FTransform(Facing, PilotWorldTransform.GetLocation(), FVector::OneVector);
     ExitStart = StartTransform.GetLocation();
     ExitStartRotation = StartTransform.GetRotation();
     ExitEndRotation = Facing.Quaternion();
@@ -603,19 +985,58 @@ bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector En
     ConsumeMovementInputVector();
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SetActorTransform(StartTransform, false, nullptr, ETeleportType::TeleportPhysics);
-    if (!bTemporarySpaceHero && SourcePose && SourcePose->bIsValid)
+    // Losing the seated pose is not fatal: the exit still plays, from the clip's own first pose rather
+    // than from the pose the pilot was actually holding. It is a visible seam either way, so one place
+    // decides it and one line says it out loud. The reasons the transition works out are only half of
+    // them; the half that fires on every transition today is that the hero walking the deck was never
+    // the hero in the seat, and that used to be the one case that passed in silence.
+    ESSPoseRefusal Refusal = ESSPoseRefusal::Accepted;
+    if (!SharesPilotRig)
+        Refusal = ESSPoseRefusal::NotSharedRig;
+    else if (!SourcePose || !SourcePose->bIsValid)
+        Refusal = ESSPoseRefusal::NoSnapshot;
+    else
     {
         GetMesh()->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
         if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
         {
             Transition->SetAnimationAsset(ExitAnimation, false, 1.f);
-            Transition->SetSourcePose(*SourcePose);
+            Transition->SetSourcePose(*SourcePose, &Refusal);
         }
         else
-            GetMesh()->PlayAnimation(ExitAnimation, false);
+            Refusal = ESSPoseRefusal::NoTransitionInstance;
     }
-    else
-        GetMesh()->PlayAnimation(ExitAnimation, false);
+    if (Refusal != ESSPoseRefusal::Accepted)
+    {
+        // A pose the transition itself refused leaves that instance already holding the exit clip.
+        // The reasons decided above never reached it, so those still have to start the clip.
+        if (Refusal == ESSPoseRefusal::NotSharedRig || Refusal == ESSPoseRefusal::NoSnapshot ||
+            Refusal == ESSPoseRefusal::NoTransitionInstance)
+            GetMesh()->PlayAnimation(ExitAnimation, false);
+        const FString PilotId = Tuning ? Tuning->SelectHero(ESSHeroSlot::Pilot).Id.ToString() : FString(TEXT("none"));
+        const FString SnapshotMesh = SourcePose ? SourcePose->SkeletalMeshName.ToString() : FString(TEXT("none"));
+        const FString Line = FString::Printf(
+            TEXT("SSDisembark: the walking hero '%s' could not carry a seated pose into its exit because %s. "
+                 "The exit starts from the clip instead. pilotHero=%s walkerMesh=%s walkerBones=%d "
+                 "snapshotMesh=%s snapshotBones=%d"),
+            *Hero.Id.ToString(), USSStationPoseTransition::RefusalReason(Refusal), *PilotId,
+            *GetNameSafe(GetMesh()->GetSkeletalMeshAsset()),
+            GetMesh()->GetSkeletalMeshAsset()->GetRefSkeleton().GetNum(), *SnapshotMesh,
+            SourcePose ? SourcePose->LocalTransforms.Num() : 0);
+        // Two of these are the expected shape of a call, not a fault. A stand-in that only walks the deck
+        // has no seat of its own, and the exit is deliberately started without a pose where there never
+        // was one. Those explain the seam at Log, which keeps it in the log file without training anyone
+        // to ignore warnings on a build that is behaving exactly as designed. A pose that was handed over
+        // and still could not be carried is a rig that should have matched and did not: that is a warning.
+        if (Refusal == ESSPoseRefusal::NotSharedRig || Refusal == ESSPoseRefusal::NoSnapshot)
+        {
+            UE_LOG(LogTemp, Log, TEXT("%s"), *Line);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("%s"), *Line);
+        }
+    }
     if (auto *Animation = GetMesh()->GetSingleNodeInstance())
     {
         Animation->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
@@ -636,6 +1057,9 @@ void ASSWalker::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 void ASSWalker::Tick(float Dt)
 {
     Super::Tick(Dt);
+    // Before the early returns below: the exit is the other shot the owner looks at, and a dial that
+    // only took effect while standing still would be a dial that lies.
+    UpdateReadabilityLighting();
     if (Disembarking)
     {
         if (!FMath::IsFinite(Dt) || Dt <= 0.f)
@@ -657,7 +1081,12 @@ void ASSWalker::Tick(float Dt)
             ConsumeMovementInputVector();
             GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-            StartWalkingAnimation();
+            // The exit clip is authored to end on the walk's handoff pose, so for the two heroes that
+            // climb out this hands back to the exact frame it always did - they have no idle, so the
+            // pose carry is not reached and this is the same call it always was. A hero with both an
+            // exit clip and an idle would land on a pose the idle does not start from; none is that
+            // shape today, and when one is, the carry below covers it.
+            StartStandingAnimation();
         }
     }
     else
@@ -682,6 +1111,9 @@ void ASSWalker::Tick(float Dt)
             // finite deck is returned to its safe spawn without ending the run.
             if (FMath::Abs(Local.X) > 1750.f || FMath::Abs(Local.Y) > 1450.f || Local.Z < -250.f)
             {
+                // Counted, because this restores the very state an arrival is asked to prove and would
+                // otherwise let a broken arrival pose as a good one that simply started off the deck.
+                ++OffDeckRescues;
                 GetCharacterMovement()->StopMovementImmediately();
                 ConsumeMovementInputVector();
                 SetActorLocation(Hub->WalkSpawn(), false, nullptr, ETeleportType::TeleportPhysics);
@@ -689,7 +1121,50 @@ void ASSWalker::Tick(float Dt)
                 GetCharacterMovement()->SetMovementMode(MOVE_Walking);
             }
         }
-        GetMesh()->GlobalAnimRateScale = GetVelocity().Size2D() / 180.f;
+        // Which clip this hero should be in, and how fast it should run.
+        UpdateHeroAnimation(Dt);
+        UpdateFootsteps(Dt);
+    }
+}
+void ASSWalker::UpdateFootsteps(float Dt)
+{
+    // Fired from the feet themselves, not from notifies hung on the clips. This hero's gaits come
+    // from two different places - the walk authored for this game, the rest retargeted from mocap -
+    // and re-importing any of them would drop a notify, silently. A boot coming down is the same
+    // event in every clip, and it is the event the sound belongs to.
+    StepCooldown = FMath::Max(0.f, StepCooldown - Dt);
+    auto *Movement = GetCharacterMovement();
+    const bool OnFoot = Moving && !Disembarking && Movement && Movement->IsMovingOnGround();
+    const FName Feet[2] = {Hero.LeftFootBone, Hero.RightFootBone};
+    const float Deck = GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    for (int32 Side = 0; Side < 2; ++Side)
+    {
+        FTransform Foot;
+        if (!OnFoot || FootRestHeight <= 0.f || !FSSHeroDefinition::ResolveBone(GetMesh(), Feet[Side], Foot))
+        {
+            // Standing, mid-exit, or a hero whose feet this build cannot name: nothing is planted,
+            // so the next real step still sounds instead of being swallowed as "already down".
+            FootPlanted[Side] = false;
+            continue;
+        }
+        const bool Planted = Foot.GetLocation().Z - Deck <= FootRestHeight * 1.35f;
+        if (Planted && !FootPlanted[Side] && StepCooldown <= 0.f)
+        {
+            if (auto *Audio = GetWorld()->GetSubsystem<USSWorldAudioSubsystem>())
+                if (auto *Voice = Audio->PlayOneShot(FSSAudioCueDefinition(), TEXT("Footstep"), Foot.GetLocation()))
+                {
+                    // No two boots land alike, and a hero moving faster lands harder.
+                    Voice->SetPitchMultiplier(FMath::FRandRange(.92f, 1.09f));
+                    Voice->SetVolumeMultiplier(SSAudio::EffectsGain(
+                        this, FMath::GetMappedRangeValueClamped(FVector2D(60.f, 480.f), FVector2D(.45f, 1.f),
+                                                                float(GetVelocity().Size2D()))));
+                }
+            // A walk lands about twice a second and a sprint about four times; this bar is under
+            // both, so it never silences a real step - it only stops a clip that jitters at the
+            // contact threshold from turning two frames into a burst.
+            StepCooldown = .12f;
+        }
+        FootPlanted[Side] = Planted;
     }
 }
 void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)

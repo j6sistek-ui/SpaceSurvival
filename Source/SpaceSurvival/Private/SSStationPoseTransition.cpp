@@ -49,26 +49,69 @@ FAnimInstanceProxy *USSStationPoseTransition::CreateAnimInstanceProxy()
     return new FSSStationPoseProxy(this);
 }
 
-bool USSStationPoseTransition::SetSourcePose(const FPoseSnapshot &Pose)
+const TCHAR *USSStationPoseTransition::RefusalReason(ESSPoseRefusal Refusal)
+{
+    switch (Refusal)
+    {
+    case ESSPoseRefusal::Accepted:
+        return TEXT("accepted");
+    case ESSPoseRefusal::NoMesh:
+        return TEXT("the walker has no skeletal mesh to map the pose onto");
+    case ESSPoseRefusal::InvalidSnapshot:
+        return TEXT("the snapshot itself is not valid");
+    case ESSPoseRefusal::DifferentMesh:
+        return TEXT("the snapshot was taken on a different mesh");
+    case ESSPoseRefusal::BoneCountMismatch:
+        return TEXT("the snapshot has a different number of bones than this reference skeleton");
+    case ESSPoseRefusal::BoneNameMismatch:
+        return TEXT("a bone name differs from this reference skeleton at the same index");
+    case ESSPoseRefusal::MalformedTransform:
+        return TEXT("a bone transform is not finite or its rotation is not normalized");
+    case ESSPoseRefusal::NotSharedRig:
+        return TEXT("the hero walking the deck is not the hero flying the ship, so there is no seated "
+                    "pose of its own to carry");
+    case ESSPoseRefusal::NoSnapshot:
+        return TEXT("no seated pose was handed to the exit at all");
+    case ESSPoseRefusal::NoTransitionInstance:
+        return TEXT("the mesh would not take the pose transition instance");
+    }
+    return TEXT("unknown");
+}
+
+bool USSStationPoseTransition::SetSourcePose(const FPoseSnapshot &Pose, ESSPoseRefusal *OutRefusal)
 {
     // Index mapping is valid only for the exact same mesh and reference order.
     // Reject malformed/cross-mesh snapshots instead of blending unrelated bones.
     SourcePose.Reset();
     ExitBlend = 1.f;
     ++SourceRevision;
+    auto Refuse = [OutRefusal](ESSPoseRefusal Refusal)
+    {
+        if (OutRefusal)
+            *OutRefusal = Refusal;
+        return Refusal == ESSPoseRefusal::Accepted;
+    };
     const auto *Component = GetSkelMeshComponent();
     const auto *Mesh = Component ? Component->GetSkeletalMeshAsset() : nullptr;
-    if (!Mesh || !Pose.bIsValid || Pose.SkeletalMeshName != Mesh->GetFName() ||
-        Pose.LocalTransforms.Num() != Mesh->GetRefSkeleton().GetNum() ||
+    if (!Mesh)
+        return Refuse(ESSPoseRefusal::NoMesh);
+    if (!Pose.bIsValid)
+        return Refuse(ESSPoseRefusal::InvalidSnapshot);
+    if (Pose.SkeletalMeshName != Mesh->GetFName())
+        return Refuse(ESSPoseRefusal::DifferentMesh);
+    if (Pose.LocalTransforms.Num() != Mesh->GetRefSkeleton().GetNum() ||
         Pose.BoneNames.Num() != Pose.LocalTransforms.Num())
-        return false;
+        return Refuse(ESSPoseRefusal::BoneCountMismatch);
     for (int32 I = 0; I < Pose.BoneNames.Num(); ++I)
-        if (Pose.BoneNames[I] != Mesh->GetRefSkeleton().GetBoneName(I) || Pose.LocalTransforms[I].ContainsNaN() ||
-            !Pose.LocalTransforms[I].IsRotationNormalized())
-            return false;
+    {
+        if (Pose.BoneNames[I] != Mesh->GetRefSkeleton().GetBoneName(I))
+            return Refuse(ESSPoseRefusal::BoneNameMismatch);
+        if (Pose.LocalTransforms[I].ContainsNaN() || !Pose.LocalTransforms[I].IsRotationNormalized())
+            return Refuse(ESSPoseRefusal::MalformedTransform);
+    }
     SourcePose = Pose;
     ExitBlend = 0.f;
-    return true;
+    return Refuse(ESSPoseRefusal::Accepted);
 }
 
 void USSStationPoseTransition::SetExitTime(float Seconds)

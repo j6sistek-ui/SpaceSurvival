@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Domain/SurvivalCore.h"
+#include "SSContentTypes.h"
 #include "SSShip.generated.h"
 class USphereComponent;
 class UStaticMeshComponent;
@@ -57,6 +58,12 @@ public:
     }
     /** Reapplies the account's paint bay choices to the hull: after the hull loads, and when paint changes. */
     void RefreshPaint();
+    /** The hero in the seat. Not always the one walking the deck: a stand-in that has never been
+     *  seated wins the walker slot without taking this one. */
+    const FSSHeroDefinition &GetPilotHero() const
+    {
+        return PilotHero;
+    }
     static float SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength);
     FVector AimDirection() const;
     AActor *SoftTarget = nullptr;
@@ -81,6 +88,7 @@ public:
 
 private:
     void UpdateEngineMix();
+    FSSHeroDefinition PilotHero = FSSHeroDefinition::Fallback();
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f, FireVisualSeconds = 0.f;

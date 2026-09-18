@@ -390,36 +390,56 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
     auto *Ship = Fixture.World->SpawnActor<ASSShip>();
     auto *Controller = Fixture.World->SpawnActor<APlayerController>();
-    auto *ExitAnimation = LoadObject<UAnimSequence>(
-        nullptr, TEXT("/Game/SpaceSurvival/Character/A_DisembarkLegRepair.A_DisembarkLegRepair"));
-    auto *PilotAnimation =
-        LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Character/A_PilotGripFit.A_PilotGripFit"));
     if (!TestNotNull(TEXT("Create station"), Hub) || !TestNotNull(TEXT("Create walker"), Walker) ||
-        !TestNotNull(TEXT("Create ship"), Ship) || !TestNotNull(TEXT("Create local controller"), Controller) ||
-        !TestNotNull(TEXT("Load authored exit"), ExitAnimation) ||
-        !TestNotNull(TEXT("Load pilot animation"), PilotAnimation))
+        !TestNotNull(TEXT("Create ship"), Ship) || !TestNotNull(TEXT("Create local controller"), Controller))
         return false;
+    // This whole test is the authored exit: the clip, its clock, the pose handoff and the landing. Which
+    // hero happens to be installed decides whether there is an authored exit at all - the imported hero
+    // deliberately has no exit clip (RPT-20260917-01) and would leave every assertion below with nothing
+    // to measure. So the hero is chosen rather than accepted: the roster is narrowed to heroes that do
+    // climb out, and the first of those that this build installed takes the deck. The other case, a hero
+    // with no clip, is not skipped - it is checked at the end, where refusing is the correct answer.
+    auto *ClimbingRoster = NewObject<USSPhase1Data>(Walker);
+    if (!TestNotNull(TEXT("Construct a roster of heroes that climb out"), ClimbingRoster))
+        return false;
+    for (auto &Entry : ClimbingRoster->Heroes)
+        if (Entry.DisembarkClipPath.IsEmpty())
+        {
+            Entry.MeshPath = TEXT("/Game/SpaceSurvival/Character/SK_NoSuchHero.SK_NoSuchHero");
+            Entry.WalkClipPath = TEXT("/Game/SpaceSurvival/Character/A_NoSuchWalk.A_NoSuchWalk");
+            Entry.PilotClipPath = TEXT("/Game/SpaceSurvival/Character/A_NoSuchPilot.A_NoSuchPilot");
+        }
+    Walker->Tuning = ClimbingRoster;
+    Ship->Tuning = ClimbingRoster;
     Hub->BuildHub(false);
     Walker->DispatchBeginPlay();
     Ship->DispatchBeginPlay();
+    AddInfo(FString::Printf(TEXT("EXIT_HERO walker=%s pilot=%s exitClip=%s"), *Walker->GetHero().Id.ToString(),
+                            *Ship->GetPilotHero().Id.ToString(), *Walker->GetHero().DisembarkClipPath));
+    if (!TestFalse(TEXT("The hero chosen for this test is one that climbs out"),
+                   Walker->GetHero().DisembarkClipPath.IsEmpty()))
+        return false;
     auto *PilotMesh = Ship->Pilot->GetSkeletalMeshAsset();
     auto *WalkerMesh = Walker->GetMesh()->GetSkeletalMeshAsset();
     auto *SeatedAnimation = Ship->Pilot->GetSingleNodeInstance();
+    // The clips each slot should be playing come from the hero that took the slot, not from a third
+    // copy of the paths kept here. The roster already decides who wears what, and a roster change
+    // should read as the roster changing rather than as the ship having picked the wrong clip.
+    auto *PilotAnimation = LoadObject<UAnimSequence>(nullptr, *Ship->GetPilotHero().PilotClipPath);
+    auto *ExitAnimation = LoadObject<UAnimSequence>(nullptr, *Walker->GetHero().DisembarkClipPath);
     if (!TestNotNull(TEXT("Real ship BeginPlay resolves the runtime pilot mesh"), PilotMesh) ||
         !TestNotNull(TEXT("Real walker BeginPlay resolves the runtime character mesh"), WalkerMesh) ||
-        !TestTrue(TEXT("Real ship BeginPlay selects the authored pilot animation"),
+        !TestNotNull(TEXT("Load the seated hero's own pilot clip"), PilotAnimation) ||
+        !TestNotNull(TEXT("Load the walking hero's own exit clip"), ExitAnimation) ||
+        !TestTrue(TEXT("Real ship BeginPlay selects the seated hero's authored pilot animation"),
                   SeatedAnimation && SeatedAnimation->GetCurrentAsset() == PilotAnimation))
         return false;
     const bool bTemporaryHero = PilotMesh != WalkerMesh;
     if (bTemporaryHero)
     {
-        TestEqual(
-            TEXT("Installed temporary hero replaces the station walker mesh"), WalkerMesh->GetPathName(),
-            FString(TEXT("/Game/SciFITrooper_Man_03/SkeletalMesh/SK_SciFITrooper_Man_03.SK_SciFITrooper_Man_03")));
-        ExitAnimation = LoadObject<UAnimSequence>(
-            nullptr, TEXT("/Game/SciFITrooper_Man_03/DemoContent/Anims/ThirdPersonJump_End.ThirdPersonJump_End"));
-        if (!TestNotNull(TEXT("Temporary hero supplies its compatible exit clip"), ExitAnimation) ||
-            !TestTrue(TEXT("Temporary exit and walk clips share the installed hero skeleton"),
+        TestEqual(TEXT("Installed temporary hero replaces the station walker mesh"), WalkerMesh->GetPathName(),
+                  Walker->GetHero().MeshPath);
+        if (!TestTrue(TEXT("Temporary exit and walk clips share the installed hero skeleton"),
                       ExitAnimation->GetSkeleton() == WalkerMesh->GetSkeleton()))
             return false;
     }
@@ -436,7 +456,10 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     Ship->Pilot->SnapshotPose(SeatedPose);
     TestTrue(TEXT("Capture the actual nonzero-phase pilot pose"), SeatedPose.bIsValid);
     const FTransform Seated = Ship->Pilot->GetComponentTransform();
-    const FVector Pelvis = Ship->Pilot->GetSocketLocation(TEXT("Pelvis"));
+    FTransform SeatedPelvis;
+    TestTrue(TEXT("The seated hero actually has the pelvis bone its definition names"),
+             FSSHeroDefinition::ResolveBone(Ship->Pilot, Ship->GetPilotHero().PelvisBone, SeatedPelvis));
+    const FVector Pelvis = SeatedPelvis.GetLocation();
     const FVector End = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
     TestTrue(TEXT("Exit uses a nonempty clip without extracted root motion"),
              ExitAnimation->GetPlayLength() > 0.f && !ExitAnimation->HasRootMotion());
@@ -478,18 +501,24 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
                      Walker->GetCharacterMovement()->MovementMode == MOVE_Walking);
         TestTrue(TEXT("Temporary hero hands off to its matching looping walk clip"),
                  Animation && Animation->GetCurrentAsset() &&
-                     Animation->GetCurrentAsset()->GetName() == TEXT("ThirdPersonWalk") && Animation->IsLooping());
+                     Animation->GetCurrentAsset()->GetName() ==
+                         FPackageName::ObjectPathToObjectName(Walker->GetHero().WalkClipPath) &&
+                     Animation->IsLooping());
         Walker->Move(FVector2D(0, 1), FVector2D::ZeroVector, false, .1f);
         TestFalse(TEXT("Walking input returns after the temporary exit"),
                   Walker->GetPendingMovementInputVector().IsNearlyZero());
         return true;
     }
-    TestTrue(TEXT("Walker retains the shared runtime mesh and constant scale"),
-             Walker->GetMesh()->GetSkeletalMeshAsset() == PilotMesh &&
-                 Walker->GetMesh()->GetRelativeScale3D().Equals(FVector(1.5f), .001));
+    TestTrue(
+        TEXT("Walker retains the shared runtime mesh and this hero's own rendered scale"),
+        Walker->GetMesh()->GetSkeletalMeshAsset() == PilotMesh &&
+            Walker->GetMesh()->GetRelativeScale3D().Equals(FVector(Walker->GetHero().RenderedScale(WalkerMesh)), .001));
+    FTransform ExitPelvis;
+    TestTrue(TEXT("The walking hero actually has the pelvis bone its definition names"),
+             FSSHeroDefinition::ResolveBone(Walker->GetMesh(), Walker->GetHero().PelvisBone, ExitPelvis));
     TestTrue(TEXT("Exit starts at the exact seated component transform and pelvis"),
              Walker->GetMesh()->GetComponentTransform().Equals(Seated, .001) &&
-                 Walker->GetMesh()->GetSocketLocation(TEXT("Pelvis")).Equals(Pelvis, .1));
+                 ExitPelvis.GetLocation().Equals(Pelvis, .1));
     TestTrue(TEXT("Exit starts at zero, nonlooping, under the actor clock"),
              Animation && Animation->GetCurrentAsset() == ExitAnimation && !Animation->IsLooping() &&
                  !Animation->IsPlaying() && FMath::IsNearlyZero(Animation->GetCurrentTime()));
@@ -631,13 +660,24 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
                  FMath::Abs(Lowest.Z - PlateZ) <= .1);
     };
     CheckVisibleSole(TEXT("contact"));
-    const FVector LeftFoot = Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot"));
-    const FVector RightFoot = Walker->GetMesh()->GetSocketLocation(TEXT("R_Foot"));
+    // The hero names its own ankles; a hero without them would be reported here, not silently measured
+    // at the component, which is where an unknown socket used to land.
+    auto FootLocation = [this, Walker](bool Left)
+    {
+        const FSSHeroDefinition &WalkingHero = Walker->GetHero();
+        const FName Bone = Left ? WalkingHero.LeftFootBone : WalkingHero.RightFootBone;
+        FTransform Foot;
+        TestTrue(FString::Printf(TEXT("Walking hero has the %s foot bone its definition names"),
+                                 Left ? TEXT("left") : TEXT("right")),
+                 FSSHeroDefinition::ResolveBone(Walker->GetMesh(), Bone, Foot));
+        return Foot.GetLocation();
+    };
+    const FVector LeftFoot = FootLocation(true);
+    const FVector RightFoot = FootLocation(false);
     Walker->Tick(.4f);
     TestTrue(TEXT("Actor and both feet stay planted during compression"),
              Walker->IsDisembarking() && Walker->GetActorLocation().Equals(Contact, .01) &&
-                 Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot")).Equals(LeftFoot, .1) &&
-                 Walker->GetMesh()->GetSocketLocation(TEXT("R_Foot")).Equals(RightFoot, .1));
+                 FootLocation(true).Equals(LeftFoot, .1) && FootLocation(false).Equals(RightFoot, .1));
     TestTrue(TEXT("Collision and movement stay disabled before clip completion"),
              Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
                  Walker->GetCharacterMovement()->MovementMode == MOVE_None);
@@ -645,8 +685,7 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     Animation = Walker->GetMesh()->GetSingleNodeInstance();
     AddInfo(FString::Printf(TEXT("EXIT_HANDOFF actorDelta=%s leftFootDelta=%s rightFootDelta=%s floorDist=%.6f"),
                             *(Walker->GetActorLocation() - Contact).ToString(),
-                            *(Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot")) - LeftFoot).ToString(),
-                            *(Walker->GetMesh()->GetSocketLocation(TEXT("R_Foot")) - RightFoot).ToString(),
+                            *(FootLocation(true) - LeftFoot).ToString(), *(FootLocation(false) - RightFoot).ToString(),
                             Walker->GetCharacterMovement()->CurrentFloor.FloorDist));
     CheckVisibleSole(TEXT("walk handoff"));
     TestTrue(TEXT("Exit completes without losing possession or moving the planted actor"),
@@ -655,11 +694,13 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
     TestTrue(TEXT("Completion restores collision, walking and the matching walk phase"),
              Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
                  Walker->GetCharacterMovement()->MovementMode == MOVE_Walking && Animation &&
-                 Animation->GetCurrentAsset() && Animation->GetCurrentAsset()->GetName() == TEXT("A_WalkLegRepair") &&
-                 Animation->IsLooping() && FMath::IsNearlyEqual(Animation->GetCurrentTime(), .308333333f, .001f));
+                 Animation->GetCurrentAsset() &&
+                 Animation->GetCurrentAsset()->GetName() ==
+                     FPackageName::ObjectPathToObjectName(Walker->GetHero().WalkClipPath) &&
+                 Animation->IsLooping() &&
+                 FMath::IsNearlyEqual(Animation->GetCurrentTime(), Walker->GetHero().WalkHandoffSeconds, .001f));
     TestTrue(TEXT("Walk handoff preserves both foot positions"),
-             Walker->GetMesh()->GetSocketLocation(TEXT("L_Foot")).Equals(LeftFoot, .1) &&
-                 Walker->GetMesh()->GetSocketLocation(TEXT("R_Foot")).Equals(RightFoot, .1));
+             FootLocation(true).Equals(LeftFoot, .1) && FootLocation(false).Equals(RightFoot, .1));
     Walker->Move(FVector2D(0, 1), FVector2D::ZeroVector, false, .1f);
     TestFalse(TEXT("Walking input is restored after the authored exit"),
               Walker->GetPendingMovementInputVector().IsNearlyZero());
@@ -672,8 +713,9 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
         for (int32 Frame = 0; Frame < Rate * 3; ++Frame)
         {
             Walker->Tick(1.f / Rate);
-            if (!TestTrue(TEXT("All exit samples preserve the full pilot mesh scale"),
-                          Walker->GetMesh()->GetComponentScale().Equals(FVector(1.5f), .001)))
+            if (!TestTrue(TEXT("All exit samples preserve this hero's full rendered mesh scale"),
+                          Walker->GetMesh()->GetComponentScale().Equals(
+                              FVector(Walker->GetHero().RenderedScale(WalkerMesh)), .001)))
                 return false;
         }
         AddInfo(FString::Printf(TEXT("EXIT_RATE rate=%d actorDelta=%s floorDist=%.6f"), Rate,
@@ -683,6 +725,108 @@ bool FSSAuthoredDisembark::RunTest(const FString &Parameters)
                  !Walker->IsDisembarking() && Walker->GetActorLocation().Equals(Contact, .1) &&
                      Walker->GetCharacterMovement()->MovementMode == MOVE_Walking);
     }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSUnauthoredDisembark, "SpaceSurvival.Integration.UnauthoredDisembark",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSUnauthoredDisembark::RunTest(const FString &Parameters)
+{
+    // The other half of the exit, and the half this build actually takes. The ship has no door, so the
+    // owner cancelled the exit animation and had the gap logged as RPT-20260917-01: a hero with no exit
+    // clip does not climb out, it is standing outside the ship when the docking motion finishes. That is
+    // a correct outcome, not a missing asset, so what has to be protected is that the refusal is complete.
+    // A half-applied exit is the dangerous shape: BeginDisembark takes collision, movement and input away
+    // before it plays anything, and a refusal that had already done that and then returned false would
+    // leave the player standing on the deck unable to move, with nothing left to hand control back.
+    // The hero is chosen rather than accepted, so this holds on a build with no imported hero at all.
+    FSSIsolatedTestWorld Fixture;
+    if (!TestNotNull(TEXT("Create isolated standing-exit world"), Fixture.World))
+        return false;
+    auto *Hub = Fixture.World->SpawnActor<ASSStation>(FVector(16000, -8000, 5000), FRotator(0, 75, 0));
+    auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+    auto *Ship = Fixture.World->SpawnActor<ASSShip>();
+    auto *Controller = Fixture.World->SpawnActor<APlayerController>();
+    if (!TestNotNull(TEXT("Create station"), Hub) || !TestNotNull(TEXT("Create walker"), Walker) ||
+        !TestNotNull(TEXT("Create ship"), Ship) || !TestNotNull(TEXT("Create local controller"), Controller))
+        return false;
+    auto *Roster = NewObject<USSPhase1Data>(Walker);
+    if (!TestNotNull(TEXT("Construct a roster of heroes that do not climb out"), Roster))
+        return false;
+    for (auto &Entry : Roster->Heroes)
+        Entry.DisembarkClipPath = FString();
+    Walker->Tuning = Roster;
+    Ship->Tuning = Roster;
+    Hub->BuildHub(false);
+    Walker->DispatchBeginPlay();
+    Ship->DispatchBeginPlay();
+    Controller->SetAsLocalPlayerController();
+    Fixture.World->AddController(Controller);
+    Controller->Possess(Walker);
+    Ship->SetActorLocationAndRotation(Hub->DockPosition(), Hub->GetActorRotation());
+    // Where the station puts a hero that does not climb out: its own walk spawn, on the deck and well
+    // clear of the hull the ship just parked in.
+    Walker->SetActorLocation(Hub->WalkSpawn());
+    const FVector Standing = Walker->GetActorLocation();
+    const FTransform Seated = Ship->Pilot->GetComponentTransform();
+    const FVector End = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
+    FPoseSnapshot SeatedPose;
+    Ship->Pilot->SnapshotPose(SeatedPose);
+    // Put the pawn in the state a finished arrival leaves it in - walking, solid, its mesh ticking - so
+    // that "unchanged" below is a claim about the refusal rather than about an untouched fixture default.
+    Walker->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+    Walker->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    const auto CollisionBefore = Walker->GetCapsuleComponent()->GetCollisionEnabled();
+    const auto MovementBefore = Walker->GetCharacterMovement()->MovementMode;
+    AddInfo(FString::Printf(TEXT("STANDING_EXIT hero=%s standing=%s seat=%s collision=%d movement=%d"),
+                            *Walker->GetHero().Id.ToString(), *Standing.ToString(), *Seated.GetLocation().ToString(),
+                            int32(CollisionBefore), int32(MovementBefore)));
+    if (!TestTrue(TEXT("The hero chosen for this test has no exit clip to climb out with"),
+                  Walker->GetHero().DisembarkClipPath.IsEmpty()))
+        return false;
+    TestFalse(TEXT("A hero with no exit clip refuses the exit rather than playing somebody else's"),
+              Walker->BeginDisembark(Seated, End, Hub->GetActorRotation(), &SeatedPose));
+    TestFalse(TEXT("A refused exit never starts"), Walker->IsDisembarking());
+    TestTrue(TEXT("A refused exit leaves the pawn standing outside the ship rather than moved to the seat"),
+             Walker->GetActorLocation().Equals(Standing, .01) &&
+                 !Walker->GetActorLocation().Equals(Seated.GetLocation(), 1.));
+    // The two things BeginDisembark takes away before it plays anything. Both are checked against what
+    // they were and against the states a started exit leaves behind, so this cannot pass by both sides
+    // being broken in the same way.
+    TestTrue(TEXT("A refused exit does not take the player's collision away"),
+             Walker->GetCapsuleComponent()->GetCollisionEnabled() == CollisionBefore &&
+                 Walker->GetCapsuleComponent()->GetCollisionEnabled() != ECollisionEnabled::NoCollision);
+    TestTrue(TEXT("A refused exit does not take the player's movement away"),
+             Walker->GetCharacterMovement()->MovementMode == MovementBefore &&
+                 Walker->GetCharacterMovement()->MovementMode == MOVE_Walking);
+    // The exit also takes the mesh off its own clock so that only the actor advances the clip. A refusal
+    // that did that and then returned false would leave a hero frozen mid-stride on the deck.
+    TestTrue(TEXT("A refused exit leaves the hero's mesh ticking on its own clock"),
+             Walker->GetMesh()->IsComponentTickEnabled());
+    auto *Animation = Walker->GetMesh()->GetSingleNodeInstance();
+    // Standing, in whichever clip standing means for this hero: its idle from the start if it has
+    // one, and otherwise the looping walk frozen at its own handoff second, as it always was.
+    const FSSHeroDefinition &StandingHero = Walker->GetHero();
+    const bool StandsInAnIdle = !StandingHero.IdleClipPath.IsEmpty();
+    TestTrue(TEXT("The hero is still standing in its own looping standing clip, entered where it should be"),
+             Animation && Animation->GetCurrentAsset() &&
+                 Animation->GetCurrentAsset()->GetName() ==
+                     FPackageName::ObjectPathToObjectName(StandsInAnIdle ? StandingHero.IdleClipPath
+                                                                         : StandingHero.WalkClipPath) &&
+                 Animation->IsLooping() &&
+                 FMath::IsNearlyEqual(Animation->GetCurrentTime(),
+                                      StandsInAnIdle ? 0.f : StandingHero.WalkHandoffSeconds, .001f));
+    Walker->Move(FVector2D(0, 1), FVector2D(1, 0), false, .1f);
+    TestFalse(TEXT("The player is in control the moment docking finishes, with no exit to wait through"),
+              Walker->GetPendingMovementInputVector().IsNearlyZero());
+    Walker->ConsumeMovementInputVector();
+    // And nothing starts one late: there is no clock left running that could take control back.
+    for (int32 Frame = 0; Frame < 30; ++Frame)
+        Walker->Tick(.1f);
+    TestFalse(TEXT("No exit starts on a later tick"), Walker->IsDisembarking());
+    TestTrue(TEXT("Control is still the player's a second later"),
+             Walker->GetCapsuleComponent()->GetCollisionEnabled() != ECollisionEnabled::NoCollision &&
+                 Walker->GetCharacterMovement()->MovementMode != MOVE_None && Controller->GetPawn() == Walker);
     return true;
 }
 

@@ -46,6 +46,7 @@ These are paraphrases of the owner's reports, not reproduced findings. Report co
 | RPT-20260916-18 | The menus and prompts do not use input glyphs. | Needs owner retest / lead; ISS-05/13; ACT-08. B23 EasyInputPrompts is copied into `Content/EasyInputPrompts` (gitignored, same as every other licensed pack) and cooked via a narrow `DirectoriesToAlwaysCook` entry scoped to `Datas/IconsData` only, never the vendor demo content or the unused PlayStation/Switch icon sets. `ASSPlayerController::PlayerTick` now latches a keyboard/mouse-vs-gamepad `ESSInputFamily` from the same keys it already polls, updated above every early return (including the alien gallery's) at `SSGameMode.cpp:1476`. `ASSHUD::Glyph()` reads the vendor `PDA_KeysIconsMapping` Blueprint asset's `KeysIcons` map through reflection (no native mirror of its schema) and draws the matching texture, falling back to the key's own display name if the icon pack is absent from a build. Wired at the three single-key interact prompts (beacon, station service hint, ship reward hint); the long paragraph-style control lists in the Settings panel and event announcements still spell out both device names as plain text, since giving those true inline icon runs is the vendor's own RichText-decorator scope, not this pass. Gamepad glyphs default to the Xbox set; PS/Switch brand detection and real per-controller hardware identification are still undecided, per `IMPLEMENT.md`'s Windows-first scope. Editor build, 32 source checks and 51/51 automation pass; the icon textures rendering correctly at actual HUD scale in a live session has not been eyeballed. |
 | RPT-20260916-19 | The asteroids do not give the fill effect wanted; the owner's reference scenes use fog and rays of light. There are too few asteroids you can actually hit and the difficulty needs to be higher. The goal is to feel like there are only some right ways to go. | Open / lead; ISS-01/02/12; ACT-03. **Supersedes the September 16 owner hold on ACT-03 environment iteration.** Five owner reference images supplied. **Verified:** SSAmbientPresentation.cpp creates a volumetric fog component and then disables it, with density 0.000001, black inscattering and albedo, extinction scale 0 and SetVisibility(false). Next translate the references into concrete fog and light-shaft values without repeating the rejected excessive-fog trial, and design readable lanes rather than an even scatter. |
 | RPT-20260916-20 | The game is supposed to feel like survival and danger. A random rock flies near you and enemies jump in front of you and sit there. Asteroid impact has no effect visually or haptically. The owner wants visible ship damage and impacts that knock the ship around true to physics in a game way. | Open / lead; ISS-02/03/06/08; ACT-02/11. **Verified:** a repository-wide search finds ZERO uses of ForceFeedback, CameraShake or PlayHapticEffect anywhere in Source/, and no OnHit, NotifyHit or AddImpulse in gameplay. The ship is kinematic: SSShip.cpp integrates a custom Velocity and calls SetActorLocation, and a Forces accumulator already exists clamped to 4500. Damage is applied numerically through Session::ApplyDamage with no momentum change. Next decide the knockback model and the full feedback chain, and label which parts change survivability. |
+| RPT-20260917-01 | The hero floats high above the ship when leaving it: not a suitable animation. The ship has no door yet, so a character climbing out would phase through the hull anyway. **Owner direction, September 17:** stop work on the exit animation and log the gap. Leaving the ship should be the docking motion to landing, and when that animation finishes the hero simply appears outside the ship. | Open / lead; ISS-02/03; ACT-05/06. **Cause confirmed, not capture only:** `ASSWalker::Tick` drives the actor itself between 0.82 s and 1.6 s of the 2.4 s disembark and adds `FMath::Sin(Travel * PI) * 125.f` cm of arc to the interpolated position (`SSStation.cpp`), so the pawn is lifted 125 cm over the hull at the midpoint regardless of what the clip does. The frame the owner saw is `Artifacts/EndgameSoak/9856021450074177907d2a8789a67467/Exit3.png`. The authored clip is not the fault: the arc is the game's own motion. Next, on the owner's direction: replace the arc and the exit clip with docking-to-landing followed by placing the walker outside the ship, and keep the seated-to-standing pose handoff out of it until the ship has a door. **The squirrel hero's disembark clip is therefore not being authored**; its walk and seated clips are. |
 
 Additional owner reports (capture only; same unconfirmed build/device boundary):
 
@@ -87,7 +88,7 @@ beneath it. Establish which branch executes before editing anything here.
 | RPT-20260916-16 fly-through space | `SSSpaceScenery.cpp:38` calls `SetActorEnableCollision(false)` in the constructor, which overrides the per-component setting at `:288`. The ship also blocks only `ECC_WorldStatic` at `SSShip.cpp:35-36`, and no WorldStatic geometry exists in the flight world. | There is no small fix. Making landmarks WorldStatic also stops cannon projectiles on them, because the sweeps at `SSWorldActors.cpp:916/924` filter by object type so a response container cannot isolate weapons, while the laser still passes through and enemies move unswept at `:490`, meaning only the player is blocked. Needs authored invisible envelopes per placement. Medium to large. |
 | RPT-20260916-14 Nerves lighting | **Referent UNDETERMINED and the investigation's root cause was rejected.** `SSVFXPresentation.cpp:349-351` deliberately disables every Niagara light renderer on every private system, per `docs/ARCHITECTURE.md:133` and `docs/CONTENT_PIPELINE.md:70`. That is a documented architectural decision, not a wiring bug. | Do not start until the owner names the effect. Re-enabling a light renderer reverses documented policy and bypasses the 20-light budget at `SSVFXPresentation.cpp:199`. RPT-20260916-19 is a rival referent, since its subject is also lighting, as fog and light rays. |
 | RPT-20260916-18 input glyphs | Two gaps: the B23 pack was never copied out of the gitignored staging root into `Content/`, and nothing in the game tracks the active input device, so every prompt must print both names. | Must carry a `DirectoriesToAlwaysCook` entry or the glyphs ship blank in the package while every test still passes, a failure mode `docs/CONTENT_PIPELINE.md:80` already documents. The device latch must sit ABOVE the gallery early-return in `ASSPlayerController::PlayerTick` or gallery prompts never update. Leave `USSAlienGallery::Status()` alone; it is asserted at `SSAlienGalleryAutomationTests.cpp:97`. |
-| RPT-20260916-15 hero | The engine-side swap is NOT a mesh path change. `SSStation.cpp:481-483` sets `bTemporarySpaceHero` from `DoesPackageExist` on the two SciFITrooper paths; both exist on this machine, so the flag is TRUE, the trooper branch at `:485-489` is taken and the fallback branch at `:492-496` is DEAD CODE. A second hero is hardcoded at `SSShip.cpp:110` as the seated pilot `SK_AcornautTailV2`. The authored seated-to-standing blend requires walker and pilot to be the SAME asset, because `SSStationPoseTransition.cpp:61` rejects the pose unless the skeletal mesh names match. The auto-fit scale and sole-offset block at `SSStation.cpp:499-510` is itself gated behind `bTemporarySpaceHero`. | A mesh dropped into the other slot inherits the constructor constants at `:466-471`: 1.5 scale, -90 yaw, 62.9 cm sole offset. The squirrel is 1,958,812 triangles against the current hero's roughly 197,000, with no LODs, on the pawn closest to camera; it needs decimation and an owner triangle budget. Retarget from the existing Acornaut clips rather than the trooper or mannequin, because `SSStation.cpp:521` seeks the walk clip to authored phase 0.308333333 and `:612` uses the 0.82 / 1.6 / 2.4 disembark window, and retargeting preserves clip length so those constants stay valid. |
+| RPT-20260916-15 hero | The engine-side swap is NOT a mesh path change. `SSStation.cpp:481-483` sets `bTemporarySpaceHero` from `DoesPackageExist` on the two SciFITrooper paths; both exist on this machine, so the flag is TRUE, the trooper branch at `:485-489` is taken and the fallback branch at `:492-496` is DEAD CODE. A second hero is hardcoded at `SSShip.cpp:110` as the seated pilot `SK_AcornautTailV2`. The authored seated-to-standing blend requires walker and pilot to be the SAME asset, because `SSStationPoseTransition.cpp:61` rejects the pose unless the skeletal mesh names match. The auto-fit scale and sole-offset block at `SSStation.cpp:499-510` is itself gated behind `bTemporarySpaceHero`. | A mesh dropped into the other slot inherits the constructor constants at `:466-471`: 1.5 scale, -90 yaw, 62.9 cm sole offset. The squirrel is 1,958,812 triangles against the current hero's roughly 197,000, with no LODs, on the pawn closest to camera; it needs decimation and an owner triangle budget. Retargeting from the Acornaut clips was the September 16 recommendation; it is **superseded**. Measured on September 17: the two skeletons share four bone names out of 52 and 46, and those four mean different things, so the clips must be authored fresh against the squirrel rig. The constants named here are no longer literals: see the September 17 hero-slot entry below. |
 
 **AGENTS.md verdict.** The audit's own initial claim that the validation section is a stale restatement of
 IMPLEMENT.md was REJECTED by its verifier. `AGENTS.md:76` reads "validate every applicable requirement in
@@ -1208,6 +1209,170 @@ also that the admission tick still stops at `MaximumActiveThreats` (24); only th
 `ss.HazardCount`, so 40 is not reachable yet. That is left alone until someone has flown the corrected field.
 
 
+
+#### September 17 the squirrel is the hero: seated, lit, animated, and audible
+
+The owner's ask was "my ask is for hero to be squirrel and have its animations added". This is what that
+took, in the order it happened, and what it cost.
+
+**It is in the game.** `USSPhase1Data::Heroes` lists the squirrel first, so it is what
+`ASSWalker`/`ASSShip` resolve; the trooper and the Acornaut stay behind it as the fallbacks. Its assets live
+under `Content/SpaceSurvival/Licensed/Hero/`, which is git-ignored, because the model and every MoCap-derived
+clip come from purchased or licence-restricted packs. The tracked tree carries only the paths and the
+measurements.
+
+**Seated.** It inherited the Acornaut's `PilotMountOffset` of `(-15, 0, 72)` and floated 44.067 cm over the
+cushion - a third of its own height, which is the float the owner reported. That number was measured for a
+body whose origin sits 62.9 cm above its boots; this body's origin *is* its boots. The replacement
+`(-12.5, 0, 27.933)` is measured against the cockpit geometry in `Stage6_Clips/SeatFit.json`, not adjusted by
+eye, and puts the hips on the cushion with the boots in the footwell.
+
+**Lit.** The suit's base colour averages 0.046 linear albedo, about half of fresh asphalt, with 73% of its
+texels under 0.05, and every lamp in the hangar hangs above head height. It was a silhouette on a bright
+floor. It now carries a warm key and a cool rim of its own on lighting channel 1, scaled per hero
+(`ReadabilityLightScale`: squirrel 2.5, trooper and Acornaut 0.5, because the same rig on a light suit would
+blow it out). At 2.5 the suit reads at 0.75 of the deck beside it, up from 0.12. A first attempt at this was
+rejected in review for measuring contrast against floor pixels rather than the character, and for a rig that
+would have been ~3x too hot on the trooper. **Lighting channels do not contain a Lumen scene**: with
+`r.DynamicGlobalIlluminationMethod=1` and `r.ReflectionMethod=1` the channel mask is respected by direct
+lighting only, so the hero's own lamps were bouncing off the deck and glinting in the hull - it read as a
+lantern, which the owner called out. `SetAffectGlobalIllumination(false)` and `SetAffectReflection(false)` on
+both lights close that; the overhead lamps are untouched and still bounce.
+
+**Facing.** The hero was being placed on the deck at world yaw 0 regardless of the heading it flew in on. The
+old climb-out arc had been hiding it. Reverting the fix misses the station heading by exactly 73 degrees in
+the test.
+
+**It stands in a real idle.** Standing still had been one frozen frame of the walk. `MOB1_Stand_Relaxed_Idle_v2`
+from the MoCap Online pack is retargeted onto the squirrel's own skeleton as `A_SquirrelIdle`, with two stand
+fidgets that cut in every 12.266666 s - two whole idle loops, which is not a taste: the fidgets' first pose
+matches the idle's first pose to 0.004 cm across all 46 bones, so a cut on a loop boundary costs nothing.
+`ASSWalker` now chooses a clip rather than playing one: idle when standing, a gait chosen by speed, a
+hysteresis band so a pawn creeping across a threshold cannot flicker, and a short blend off whatever pose it
+was holding. A hero that declares no idle behaves exactly as it always did - walk frozen at the handoff
+second - and the tests pin that.
+
+**It has a jog and a run.** The first retarget pass looked unusable: the fast gaits put the boot 3 cm through
+the deck and the stand clips skated 10.8 cm per foot with the feet never leaving the ground. The animation was
+not the problem. Unreal's Python hands out *copies* of an op's chain array, so `for chain in chains` mutated
+nothing and `set_editor_property` then stored the unchanged array - silently, because the scalars on the same
+struct did take. Every chain was still on INTERPOLATED, both floor constraints were off, and the op stack had
+no IK Chains op at all, so the leg goals were never given a target and every foot was pure FK. The script now
+assigns by index and reads each value back off the op, and a setting that did not take is an error in the
+receipt rather than a step claiming success. With that corrected the gaits ground correctly and are wired in
+at their measured speeds (jog 205.5, run 384.3 cm/s against the walk's 180): at the pawn's 320 cm/s the run
+plays at 0.83x rather than the walk being stretched to 1.78x, and at a sprint 1.46x rather than 3.11x.
+
+**Footsteps exist.** There were none; the station was walked in silence. `ContentSource/Audio/Footstep.wav` is
+generated the way this project generates all its provisional audio - deterministic, tracked, no licence - a
+boot on deck plate at 0.3 s, deliberately the quietest and shortest sound in the set, because at a walk it
+fires twice a second. It is triggered from the feet rather than from notifies on the clips: `ASSWalker` reads
+the hero's own foot bones, named by its hero data, and sounds a step when one comes down near where that
+hero's ankle rests in its reference pose, with a randomised pitch and a 0.12 s cooldown. That works for the
+authored walk, the retargeted gaits and anything added later, and survives re-importing a clip, which a notify
+would not.
+
+**The tail, on the owner's instruction.** Nothing retargeted from a human carries tail motion, and no chain in
+the retargeter touches `Tail_01..05` - measured, their local transforms deviate from frame 0 by 0.000 in every
+clip the script produces. That deferral was the owner's ("differ more tail work outside of the current walk for
+later"), then narrowed to "a subtle wobble to each for now, leave walk as is, and idle no wobble", then to
+"can dial it in more later". `Scripts/AuthorHeroTailSway.py` writes one slow cycle per loop across the five
+tail bones, 7 degrees at the tip on the fidgets and 4 on the gaits, amplitude growing toward the tip and each
+bone lagging the one above it.
+
+**Dialling it in later is the requirement, so it has to be idempotent, and the first version was not.** The
+sway is composed onto the rotation the bone already has, so running it twice stacked two sways: asking for 4
+after 7 would have given 11. The script now records each clip's untouched tail tracks to a baseline file
+beside the clips on its first run and composes from that recording ever after, and it refuses to take a first
+baseline from a tail that is already moving - which would bake an existing sway in permanently - telling you
+to rebuild the clips with `AuthorHeroMocapRetarget.py` instead. Measured across two consecutive runs, every
+tail rotation in all four clips agrees to 0.000002 degrees. The sway that lands is 13.89 degrees of travel on
+the fidgets and 7.93 on the gaits, and `A_SquirrelIdle` measures 0.000 while `A_SquirrelWalk` keeps its own
+authored 13.62 - both left exactly as the owner asked. The idle's tail is therefore still a motionless plume
+from directly behind; the fidgets are what break that up.
+
+**What is not adopted, and why.** Three of the eight retargeted clips are written to
+`Licensed/MocapSource/` and referenced by nothing: the run-to-stop ends on a pose nothing returns from and its
+sole reaches -2.20; the crouch idle folds a character that is mostly helmet and backpack into a pile; and the
+MoCap walk exists only to be looked at beside the authored one, which stays, because the authored walk is
+calibrated to this game's 180 cm/s and grounded to half a millimetre. `Config/DefaultGame.ini` names that
+folder under `DirectoriesToNeverCook`, so the raw pack files and the unused derivatives stay out of the
+shipping package while `/Game/SpaceSurvival` around them is always cooked - the pack's terms allow use, not
+redistribution, and a cook is a redistribution. `THIRD_PARTY.md` records it as a retarget source with no mesh,
+material or texture adopted.
+
+**What is honestly wrong with the fidgets.** Measured as contact-patch path - per frame, the smallest
+horizontal movement among the touching sole markers, summed, so a pivot scores zero and only a sliding flat
+foot scores - the idle is 0.76/0.71 cm over 6.1 s and its toe never leaves a 0.17 cm circle, but fidget A is
+7.73/10.84 cm with the toe wandering 4.07 cm on the deck, and that wander is invented by the retarget (the
+source's feet move 1.41 cm, which at this body's 0.3935 height ratio should be 0.55). It survives because 4 cm
+across five seconds is slower than the eye tracks. Fidget B's 3.46 cm step is real and in the capture. One
+clearance to trip over if the mesh is re-exported: in the idle the glove passes the lower torso with 3.3 mm to
+spare on the deck, and the idle is the pose held longest.
+
+61 of 61 automation tests pass with no warnings, and Station 5 capture `f9fb7a985dd54b2882baf09f80907258`
+certifies. Still open: no climb-out (RPT-20260917-01, below), no turn-in-place, and the walk moves neither head
+nor wrists.
+
+#### September 17 the exit animation is a gap, on the owner's direction
+
+The owner watched the walker leave the ship and said it floats high above the hull, which it does. The 125 cm
+arc is the game's, not the clip's: `ASSWalker::Tick` lerps the pawn from the ship to the deck between 0.82 s and
+1.6 s and adds `sin(t * PI) * 125 cm` on top. With no door on the ship, any climb-out would pass through the hull,
+so there is nothing an animation can do here yet.
+
+**Direction taken, verbatim:** "let's not work about exit animation yet, we don't have a door on the ship yet, so
+it'll just phase through anyways. Exit ship just have docking motion to landing, and after animation finishes.
+appear outside of ship for now", and "log the animation gap for now".
+
+So the exit becomes: the ship's docking motion plays to landing, and when it finishes the hero is placed outside
+the ship, standing. No arc, no climb-out, no seated-to-standing pose handoff until there is a door to come out
+of. The squirrel's disembark clip is not being authored; its walk and its seated pilot clip are, because the
+owner's ask is the squirrel wearing its own animations. The pose-handoff machinery
+(`SSStationPoseTransition`) stays in the code and keeps its tests: it is correct, it is just not what this
+moment needs.
+
+Recorded as RPT-20260917-01. What replaces the arc is not written yet.
+
+#### September 17 the hero slot is described by data, and what the squirrel measured against it
+
+Two things happened to the hero on September 17. The model itself is built, Blender-only, under the ignored
+`.agent/local/HeroSquirrel/`: cleaned, re-rigged symmetric on 46 bones with five real tail bones and a straightened
+tail, brought from 1,958,812 triangles to **198,994** with three LODs under it, and frozen as a base GLB with a
+receipt and a validator. None of it is in the game.
+
+**What Unreal says about it** (`.agent/local/HeroSquirrel/Stage5_Unreal/PROBE_FINDINGS.md`, measured in two probe
+imports into the ignored, never-cooked `/Game/Blender/_HeroProbe`, deleted after): the import is clean. 46 bones,
+`Root` at index 0, the glTF skin order kept index for index, no inserted root, no rename, no mirror, correct
+centimetres, standing on Z = 0, facing +Y — which is the direction the −90° yaw on the mesh component already
+expects. A test clip authored with the stage-4 composition poses the wrist, elbow, tail and head in Unreal to
+within **0.0005 mm** of what Blender measured, so clips will play as they look. The engine's own render of the
+imported asset is `Stage5_Unreal/ImportedPreview.png`.
+
+**The obstacle is the slot, not the model.** `SK_AcornautTailV2` has 52 bones and shares only four names with the
+squirrel — `Head`, `Pelvis`, `L_Foot`, `R_Foot` — and they do not mean the same thing: the Acornaut's `Pelvis` is
+its root and its `L_Foot` is a toe, where the squirrel's `L_Foot` is the ankle. Every existing clip is bound to
+`geometry_0_Skeleton`, so all three must be re-authored; `SSStationPoseTransition` would refuse a pose snapshot
+across them, correctly. `SSWave10Soak` asked for `L_Wrist`/`R_Wrist`, which the squirrel does not have, and a
+missing socket returns the component transform without complaining.
+
+**So the hero is now data.** `FSSHeroDefinition` in `SSContentTypes.h` carries a hero's mesh, its three clips, the
+sole offset that stands it on the deck, its scale or fit-height, its mesh yaw, the pilot mount, the walk handoff
+second, the walk speed and the bone names the code asks for by hand; `USSPhase1Data::Heroes` holds the trooper,
+the Acornaut and an inert squirrel entry whose assets do not exist yet, and `SelectHero(slot)` picks the first one
+actually installed, exactly as the old `bTemporarySpaceHero` test did. The literals are gone from `ASSWalker`,
+`ASSShip` and the soak. **Nothing the player sees changes**: four new tests in
+`SSHeroSlotAutomationTests.cpp` pin today's numbers as literals so a later edit to the data cannot move the
+current hero, 58 of 58 automation tests pass, and the Station 5 exit capture `9856021450074177907d2a8789a67467`
+shows the walker riding the disembark arc and landing with its boots on the deck as before.
+
+Two silences were also given a voice: `BeginDisembark` no longer discards the pose-snapshot result and says which
+of the seven reasons refused it, and asking for a bone a hero does not have now returns false instead of quietly
+reading the component transform.
+
+**Still open:** the three clips (upright walk — the owner's instruction, "upright walk, not the scamper" — plus
+pilot and disembark) are being authored against the frozen base; the seat fit that replaces the Acornaut-shaped
+`(-15, 0, 72)` pilot mount is not measured yet; and nothing has been imported into the game.
 
 #### September 17 the station target: what a pit stop looks like in this game
 

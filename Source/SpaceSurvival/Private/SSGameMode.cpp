@@ -424,7 +424,14 @@ void ASSGameMode::EnterStation()
         Hub->BuildHub(false);
     }
     Hub->SetBayShip(int32(GetGameInstance<USSGameInstance>()->Session.run.ship));
-    Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator::ZeroRotator);
+    // Facing the station, not world north. Unlike the home hub above, this one is spawned at whatever
+    // heading the ship happened to be flying on the Approach transition, so its yaw is arbitrary - and
+    // the walker neither orients to movement nor follows the controller. The authored exit reconciled
+    // the two for free by slerping the body to the hub's rotation on its last tick; a hero with no exit
+    // clip never runs that, so the body has to arrive already facing the way the camera two lines below
+    // is pointed, or the player meets the hero side-on and the body snaps through that angle on the
+    // first input (RPT-20260917-01).
+    Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator(0, Hub->GetActorRotation().Yaw, 0));
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     const bool AutoCamera = PC->bAutoManageActiveCameraTarget;
     if (Ship)
@@ -440,13 +447,18 @@ void ASSGameMode::EnterStation()
         const FVector Exit = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
         FPoseSnapshot SeatedPose;
         Ship->Pilot->SnapshotPose(SeatedPose);
-        const bool ExitStarted =
-            Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit, Hub->GetActorRotation(), &SeatedPose);
-        ensureMsgf(ExitStarted, TEXT("Required authored disembark assets are unavailable."));
+        // A hero only climbs out if it has a clip for it. The ship has no door, so the one authored
+        // exit lifts the pawn 125 cm over its own hull; a hero without an exit clip is simply standing
+        // outside when the docking motion finishes, which is where the walker already spawned
+        // (RPT-20260917-01).
+        const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
+        const bool ExitStarted = ClimbsOut && Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit,
+                                                                     Hub->GetActorRotation(), &SeatedPose);
+        ensureMsgf(!ClimbsOut || ExitStarted, TEXT("Required authored disembark assets are unavailable."));
         Ship->FinishDocking();
         Hub->ShowBayShip(false);
         // Keep the outgoing camera's last view while blending, rather than snapping on possession.
-        PC->SetViewTargetWithBlend(Walker, ASSWalker::DisembarkDuration, VTBlend_Cubic, 0.f, true);
+        PC->SetViewTargetWithBlend(Walker, ExitStarted ? ASSWalker::DisembarkDuration : .4f, VTBlend_Cubic, 0.f, true);
     }
     PC->bAutoManageActiveCameraTarget = AutoCamera;
     ClosePanel();

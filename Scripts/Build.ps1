@@ -21,7 +21,9 @@ function Invoke-ContentPython([string]$Script) {
     $logDirectory = Join-Path $root 'Saved\Logs'
     New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
     $scriptLog = Join-Path $logDirectory (([IO.Path]::GetFileNameWithoutExtension($Script)) + '-Harness.log')
-    & $editor $project -unattended -stdout -FullStdOutLogOutput "-ExecutePythonScript=$Script" 2>&1 | Tee-Object -FilePath $scriptLog
+    # -RenderOffscreen keeps a real RHI (content authoring builds meshes and shaders and needs one)
+    # while leaving the editor window off the owner's screen. NullRHI would take the RHI away too.
+    & $editor $project -unattended -stdout -FullStdOutLogOutput -RenderOffscreen "-ExecutePythonScript=$Script" 2>&1 | Tee-Object -FilePath $scriptLog
     if ($LASTEXITCODE -ne 0 -or (Select-String -LiteralPath $scriptLog -Pattern 'LogEditorPythonExecuter: Error:|LogPython: Error:|LogSavePackage: Error:' -Quiet)) {
         throw "Unreal Python/content failed; inspect $scriptLog. Editor exit code alone is insufficient."
     }
