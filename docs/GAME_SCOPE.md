@@ -254,11 +254,17 @@ The flight system supports:
 
 Normal traversal has strong forward momentum.
 
-The player should generally be progressing through space rather than freely parking or backtracking.
+**Inside a wave**, the player should be progressing through space rather than freely parking or backtracking.
 
-However, there should not be a visible switch between "forward survival mode" and "combat mode."
+**Inside the station zone** (see Zones, below), the ship may slow to a stop. That is not a second flight
+model - it is the same model with the wave's speed floor lifted, because there is nothing to survive there
+and because a ship that must always cruise cannot be landed on a pad.
 
-The environment should naturally determine how the player uses the same flight model.
+There should not be a visible switch between "forward survival mode" and "combat mode."
+
+The environment should naturally determine how the player uses the same flight model. The station zone is the
+one place the rules themselves differ, and it is meant to read as arriving somewhere rather than as a mode
+being announced.
 
 Dense asteroids encourage forward weaving.
 
@@ -288,6 +294,9 @@ Continuous braking eventually overheats or weakens the braking system until it c
 
 This prevents players from defeating high-speed survival by crawling through space.
 
+That rule exists to protect survival, so it applies where survival is happening. Inside the station zone the
+ship may hold station or stop, because crawling there defeats nothing.
+
 ## Dodge
 
 A dedicated directional dodge produces a sharp movement burst.
@@ -295,6 +304,23 @@ A dedicated directional dodge produces a sharp movement burst.
 There are **no invulnerability frames** in the base implementation.
 
 Dodging into an obstacle still causes damage.
+
+---
+
+# 6b. Zones
+
+A run alternates between two zones. Same ship, same controls, different rules.
+
+**Wave zone.** Survival. Forward momentum, the Director active, the brake-heat rule in force.
+
+**Station zone.** A large free-roam bubble around a station, entered when a fifth-wave climax is completed.
+Inside it the ship may slow or stop, there is no survival pressure, and docking, landing and launching happen.
+
+Leaving the station zone is what starts the next block. The next wave begins because the player flew out,
+not because a timer expired.
+
+Normal (non-fifth) wave transitions are unchanged: brief breathing windows, flight continues, no parking.
+The station zone is a fifth-wave feature, not a between-every-wave one.
 
 ---
 
@@ -316,11 +342,15 @@ Avoid dramatic mode-switching camera behavior.
 
 # 8. Acornaut Presentation
 
-Acornaut is visibly piloting the ship during gameplay.
+Acornaut is visibly piloting the ship on open-cockpit hulls.
+
+On a closed-canopy hull the pilot is not drawn in flight. Acornaut is then seen on the landing pad, walking
+the station, and in hangars and cinematics. This is a deliberate consequence of the hull roster carrying
+closed-cockpit ships, not an omission.
 
 Match the approved Hybrid concept direction:
 
-- Acornaut's head/body/tail silhouette remains visible
+- on open hulls, Acornaut's head/body/tail silhouette remains visible
 - the spacecraft remains the dominant gameplay object
 - Acornaut is more prominent in stations, hangars and cinematics
 
@@ -672,13 +702,19 @@ Every fifth-wave climax leads to a guaranteed station.
 
 The player:
 
-1. approaches manually
-2. enters a safe docking corridor
-3. receives landing assistance
-4. lands
-5. exits as Acornaut
-6. accesses station services
-7. launches into the next block
+1. approaches manually, **from any direction** - there is no required corridor, lane or heading
+2. gets close to a landing pad, slowly enough that a landing is plausible, and is offered docking
+3. **presses a button to engage it** - docking is never automatic
+4. the ship slows to a hover over the pad, then lowers onto it as the landing gear opens
+5. on contact the rear door opens, Acornaut stands, and control returns
+6. walks out onto the pad and into the station, and accesses its services
+7. launches: door shuts, gear stows, the ship lifts off the pad, control returns
+8. flies clear of the station zone, which begins the next block
+
+Steps 2-7 are the same at every landing pad in the game, now and later. A pad carries its own dock point and
+approach volume; the sequence is written against pads rather than against any one station.
+
+Approach is gated on **proximity and speed**, not on angle. A ship cannot dock at full thrust.
 
 ## Station gameplay
 
@@ -1327,6 +1363,14 @@ Early progression should prove two unlock categories:
 
 1. second starting weapon option
 2. second spacecraft
+
+## Ship roster
+
+Ships are data. Each hull declares its own size, collision, framing, handling and tolerances, and every gate
+reads those rather than assuming one base model. Adding a ship is a data row, not a rewrite, and a hull that
+fails to declare a value fails loudly rather than inheriting another ship's numbers.
+
+Bigger hulls may be less agile. That is a property of the hull, not an exception to the flight model.
 
 ## Second ship
 
