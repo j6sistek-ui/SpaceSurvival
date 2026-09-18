@@ -164,10 +164,11 @@ bool FSSStationPresentationCollision::RunTest(const FString &)
             }
             else
                 TestEqual(Label + TEXT(" has no pit stop solids without the pit stop asset"), PitStopSolids, 0);
-            // 16 as before, plus the two landing plates: the exterior pad and the walkway that joins it to
-            // the hangar mouth. Both decks are the same plane, so no step plate exists between them.
-            TestEqual(Label + TEXT(" keeps the deck, 15 boundaries and 2 landing plates plus the exterior's own"),
-                      SolidCubes.Num(), 18 + PitStopSolids + (!HasPitStop && HasExterior ? 1 : 0));
+            // 16 as before, plus the walkway that joins the hangar mouth to the pad. The pad's own deck is
+            // not counted here because it is not the station's: it belongs to the ASSLandingPad the station
+            // spawns, which is the point - a pad is a thing that can exist without a station around it.
+            TestEqual(Label + TEXT(" keeps the deck, 15 boundaries and the walkway plus the exterior's own"),
+                      SolidCubes.Num(), 17 + PitStopSolids + (!HasPitStop && HasExterior ? 1 : 0));
             if (!TestNotNull(Label + TEXT(" retains the solid deck"), Floor))
                 return false;
             TestTrue(Label + TEXT(" keeps the deck visible at its original scale"),

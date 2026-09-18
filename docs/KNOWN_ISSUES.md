@@ -1328,6 +1328,48 @@ while following a spline, ungated by any debug flag, which would paint every cap
 `AActor` rather than the game's ship so that a failure accuses the plugin and not the game. 62 of 62
 automation tests passing with zero warnings. That is no longer where this stands - see the next entry.
 
+#### September 18 the landing pad is a thing, not three numbers on the station
+
+The owner's requirement, verbatim: "a landing pad anywhere in the game, ever, future features anything,
+all docks and launches the same exact way" and "make sure this is a prefab type concept or feature so if
+we add landing pads anywhere else, they all work exactly the same."
+
+Before this the pad was `PadCenterX`, `PadDeckTop` and `PadHalfExtent` as `static constexpr` on
+`ASSStation`, plus a lambda that assembled cubes in station-local space. Exactly one pad could exist, at
+one station, and the docking sequence had nowhere to be written against except that station.
+
+**`ASSLandingPad` is now an actor.** Placeable on its own, at any transform, with no station behind it.
+Its origin IS the landing spot - the centre of the deck's top surface - so `DeckPoint()` is the actor's
+location and nothing is derived from a slab centre and a thickness. It answers every question a landing
+needs in its own frame: `DockPoint(clearance)`, `WalkSpawn()`, `ExitPoint()`, `Covers(world)`, and it owns
+the lit indicator. `ASSStation` spawns one at its placement constants, attaches it so it rides through
+origin rebasing, and keeps `PadDockPosition()` / `PadWalkSpawn()` / `PadExit()` as thin delegates so every
+existing caller still works. The walkway that joins the pad to the hangar mouth stays the station's,
+because it is the station that has a mouth.
+
+**The dock clearance is the ship's number, not the pad's.** `DockPoint(230.f)` is the classic hull's
+clearance and the default. `OriginToBelly` for the Phoenix is 0.25 cm - it stands on its own pivot - so it
+should park at deck + gear height, not deck + 230. That per-hull clearance is the next thing to move; until
+it does the Phoenix still hangs 220 cm above the pad. Recorded, measured, not guessed.
+
+**Two things had to stop being static.** `ASSStation::WalkableLocal(Local)` became `Walkable(World)` on
+the instance, because the pad has its own transform and the only honest answer comes from asking it. It
+keeps a geometric fallback for a station whose pad has not been built - a fixture that spawned it without
+`BuildHub` - so the envelope never silently shrinks to the interior because an actor pointer is null. And
+the soak fixture's "is the hero on the deck" check accepted only `GM->Hub` as the floor actor; on the pad
+the floor is the pad, and a check that would have certified a correct landing as a failure was the exact
+shape of the stale-envelope bug fixed two entries ago.
+
+**Proof it works with nothing around it:** `SpaceSurvival.Station.LandingPadStandsAlone` spawns a pad at
+(-38000, 21000, -6500) yawed 137 degrees with no station, builds it, and checks a solid deck under the dock
+point, the walk spawn and the exit; that coverage follows the pad's rotation and not the world axes; that
+building twice builds once; and that the indicator starts lit and goes out.
+
+**Counts moved with the structure.** The station's solid-cube count is 17 rather than 18 - the deck belongs
+to the pad now, which is the point.
+
+**Verified:** Editor build clean; 65 automation tests succeeded, 0 warnings, 0 failed, 0 notRun, including the new standalone pad test. A rendered Station5 capture on the classic hull is success=True with sawDocking=True, approach 4.42 s, docking 3.00 s, onDeck 14.55 of 15.00 and zero off-deck rescues - the hero lands on the pad actor deck and is never rescued. The same capture with -SSPhoenix does NOT dock on this commit: telemetry shows the soak fixture P-only steering oscillating on the ShipCore body across a 30 km box with 45 km vertical swings. The refactor did not cause that - the dock point is unchanged and the classic control docks - and the fixture fix is the next entry.
+
 #### September 18 Ship Core actually takes the controls
 
 The owner pressed on the honest gap: "what are you using ship core for if not the controls?" The answer at

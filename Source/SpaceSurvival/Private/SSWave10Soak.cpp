@@ -3,6 +3,7 @@
 #include "SSGameInstance.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSLandingPad.h"
 #include "SSAlienGallery.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraActor.h"
@@ -706,13 +707,15 @@ void ASSWave10Soak::Tick(float Dt)
                                                                             GM->Hub->GetActorRotation().Yaw)) <= 1.;
             const bool OnDeck =
                 IsValid(GM->Hub) && Movement && Movement->MovementMode == MOVE_Walking &&
-                Movement->CurrentFloor.bBlockingHit && Movement->CurrentFloor.HitResult.GetActor() == GM->Hub &&
+                Movement->CurrentFloor.bBlockingHit &&
+                (Movement->CurrentFloor.HitResult.GetActor() == GM->Hub ||
+                 Movement->CurrentFloor.HitResult.GetActor() == GM->Hub->GetLandingPad()) &&
                 GM->Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
                 // Ask the station where the hero is allowed to stand rather than repeating its envelope
                 // here. This used to carry its own copy of |X| <= 1750 / |Y| <= 1450, which stopped being
                 // the deck the moment arrival moved out to the exterior landing pad - and a fixture with a
                 // stale copy of a boundary reports a correct arrival as a failure.
-                ASSStation::WalkableLocal(Local) && Local.Z > 0. &&
+                GM->Hub->Walkable(GM->Walker->GetActorLocation()) && Local.Z > 0. &&
                 FVector::Dist2D(GM->Walker->GetActorLocation(), GM->Hub->PadDockPosition()) > 300. && Facing;
             if (OnDeck)
             {

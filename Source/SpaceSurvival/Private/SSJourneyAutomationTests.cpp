@@ -4,6 +4,7 @@
 #include "SSPhase1Data.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSLandingPad.h"
 #include "SSWorldActors.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -198,10 +199,10 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
                       Hit.GetActor() == Hub);
     // The pad is where the hero is actually put down now, so it needs the same proof the interior deck
     // has always had: something solid under the spawn, belonging to the station rather than to nothing.
-    Test.TestTrue(TEXT("The landing pad has a physical deck beneath where the hero is set down"),
+    Test.TestTrue(TEXT("The landing pad has a physical deck beneath where the hero is set down, and it is the pad"),
                   Fixture.World->LineTraceSingleByObjectType(
                       Hit, Hub->PadWalkSpawn(), Hub->PadWalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&
-                      Hit.GetActor() == Hub);
+                      Hit.GetActor() == Hub->GetLandingPad());
     // Fixture places the player in the assist admission band. Natural manual
     // approach/input precision and high-speed flight feel require separate playtests.
     Ship->SetActorLocation(Dock - Forward * 1000.f);
