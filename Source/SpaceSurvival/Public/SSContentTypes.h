@@ -565,6 +565,14 @@ struct FSSHullDefinition
      *  that it stops being 105 the moment a different hull is installed. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "1"))
     float CollisionRadius = 105.f;
+    /** How far the nose reaches past the hull's own origin, and how far the belly sits below it, both in
+     *  authored centimetres before HullScale. These exist because "half the length" is not the same thing
+     *  as "where the nose is" unless the pivot happens to be centred, and on the Phoenix it is not: measured
+     *  in 5.8, the centre sits 141.16 cm aft of the pivot, so the nose reaches 1100.84 while the tail
+     *  reaches 1383.16. Three separate passes wrote length/2 into a nose-relative formula before anybody
+     *  asked the mesh. Zero means "not measured for this hull" and callers fall back to half the length. */
+    float OriginToNose = 0.f;
+    float OriginToBelly = 0.f;
 
     /** The length this hull actually flies at, which is what any gameplay comparison wants. */
     float ScaledLength() const
@@ -572,6 +580,13 @@ struct FSSHullDefinition
         return AuthoredLength * HullScale;
     }
     /** The collision radius this hull actually flies at. */
+    /** Nose reach in world centimetres. Falls back to half the length for a hull nobody has measured,
+     *  which is the old assumption - kept as a fallback rather than as the answer, so an unmeasured hull
+     *  behaves as before instead of reading zero and admitting docking from inside the station. */
+    float ScaledOriginToNose() const
+    {
+        return (OriginToNose > 0.f ? OriginToNose : AuthoredLength * .5f) * HullScale;
+    }
     float ScaledCollisionRadius() const
     {
         return CollisionRadius * HullScale;
@@ -608,6 +623,12 @@ struct FSSHullDefinition
             // outside a sphere sized to its width, or inside one sized to its length. Recorded here so the
             // number is at least derived from the mesh instead of inherited from a different ship.
             CollisionRadius = 621.95f;
+            // Measured from the loaded mesh, not inferred: half-extents 621.94 x 1242.0 x 352.4 with the box
+            // centre offset (-1.98, -141.16, 352.65) from the pivot. So the nose is at +1100.84 along the
+            // authored forward, and the belly sits 0.25 cm under the origin - the hull stands on its own pivot,
+            // which is why parking it at the classic hull's 220 cm leaves it hanging above the pad.
+            OriginToNose = 1100.84f;
+            OriginToBelly = 0.25f;
             // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
             // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
             // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this

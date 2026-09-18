@@ -192,13 +192,16 @@ FVector ASSShip::GetVelocity() const
 float ASSShip::DockApproachRadius() const
 {
     // How close counts as "at the pad". 1200 cm is origin-to-origin and was measured against a 482.5 cm
-    // hull, whose whole body sits inside that ball. A 2484 cm hull's nose reaches 1242 cm past its own
-    // origin, so the same number asks a ship to put its centre where its nose already is. Half a hull plus
-    // the classic margin, so every ship is judged by where its body is rather than by one ship's length.
-    const float HalfLength = SkeletalHull && SkeletalHull->IsVisible()
-                                 ? FSSHullDefinition(ESSHullIdentity::StellarPhoenix).ScaledLength() * .5f
-                                 : 0.f;
-    return FMath::Max(1200.f, HalfLength + 1200.f);
+    // hull, whose whole body sits inside that ball. It asks a longer ship to put its centre where its nose
+    // already is. Nose reach plus the classic margin, so every ship is judged by where its body is.
+    //
+    // Nose reach, not half the length. The Phoenix's pivot is 141.16 cm aft of its centre, so its nose is
+    // at 1100.84 and its tail at 1383.16 - the halves are not equal and using one for the other is wrong in
+    // both directions at once.
+    const float NoseReach = SkeletalHull && SkeletalHull->IsVisible()
+                                ? FSSHullDefinition(ESSHullIdentity::StellarPhoenix).ScaledOriginToNose()
+                                : 0.f;
+    return FMath::Max(1200.f, NoseReach + 1200.f);
 }
 float ASSShip::FlightCollisionRadius()
 {
