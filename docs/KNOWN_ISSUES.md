@@ -1328,6 +1328,69 @@ while following a spline, ungated by any debug flag, which would paint every cap
 `AActor` rather than the game's ship so that a failure accuses the plugin and not the game. 62 of 62
 automation tests passing with zero warnings. That is no longer where this stands - see the next entry.
 
+#### September 18 the Phoenix's stick was wired to the wrong gyro axes, and how that was found
+
+The Phoenix had stopped docking - approach ran the full 126-second timeout with `sawDocking=false` - after
+the measured pivot commit shrank the admission radius from 2442 cm to 2301 cm. The first theory was the
+fixture's proportional steering oscillating on a body with inertia; rate damping was added and the ship
+went from weaving across a 30 km box to sitting dead still at 5.8 cm/s. The CSV only carries the camera, so
+the ship's state was being inferred. A once-per-second `SOAK_APPROACH` line was added to the fixture -
+station-local position, distance versus radius, physics velocity, the simulating flag, heading error and
+command, `CanAssistDocking`, and the blocking actor if the clearance sweep fails - and it read:
+
+- `t=1..3`: the fixture commands nose-down (`pitchErr -8.8 -> -42.7`, `steer.Y` saturated) and the ship
+  **climbs** from Z 289 to 2029.
+- `t=116..125`: both commands saturated at -0.75 for a hundred seconds and **neither error closes** - yaw
+  stuck at -175 degrees, pitch at -80. A saturated command whose error never moves is going to the wrong
+  axis.
+- It ended pinned 43 m above the pad, one collision radius outside the station's Disc box, thrusting into
+  `SSStation_1/StaticMeshComponent_12` at 6 cm/s. That was the standstill.
+
+**The cause.** ShipCore's `GyroManagerComp.h:47` documents its input as `(Pitch, Yaw, Roll)`. Its code
+applies the vector as a body-frame torque - `ApplyFinalTorque` does `AddTorqueInRadians(
+Xf.TransformVectorNoScale(FinalLocalTorque))`, and `CalculateFinalTorque` scales `.X` by `RollMultiplier`
+"roll input shaping only" - so physically X is roll, Y is pitch, Z is yaw. `ASSShip::DriveShipCore` trusted
+the comment, so the pitch stick rolled the Phoenix and the yaw stick pitched it. Nothing had ever exercised
+it: the classic hull's kinematic path never touches the gyros and the Wave 10 captures steer with a zero
+vector, so every gate stayed green.
+
+**The old check was passing falsely.** `ShipCoreBodyContract` applied Y input for a full second at max
+torque and asserted `|delta yaw| > 1 degree`. Y is pitch; a body pitched past ninety degrees reports a 180
+degree Euler yaw flip. It passed on a rotation it never asked for.
+
+**Measured, not reasoned.** `SpaceSurvival.Flight.ShipCoreGyroAxes` gives each axis a fresh level body
+and a burst of full input that stops as soon as any angle passes fifteen degrees, then asserts which
+rotator angle dominated, that the other two stayed under a third of it, and the sign:
+
+| input | roll | pitch | yaw |
+|---|---|---|---|
+| +X | **-15.06** | 0.00 | 0.00 |
+| +Y | 0.00 | **-15.32** | 0.00 |
+| +Z | 0.00 | 0.00 | **+15.32** |
+
+Zero leakage. The order is (Roll, Pitch, Yaw), and the signs are not uniform: yaw follows the torque's
+sign, pitch and roll oppose it. The first sign hypothesis was +/+/+; the test refuted two of them by name,
+and the measurement became the table. `DriveShipCore` now sends `(Lean, Pitch, Yaw)` with yaw `+Steer.X`,
+pitch `-Steer.Y`, lean `-Steer.X * .35`, so the stick means the same thing on both hulls. The lean's sign
+is a feel dial, flagged as such in the code.
+
+**Verified:** 67 automation tests, zero warnings, zero failed, zero not-run - the axis test, a second pass of it
+from a rotated start that reads the turn as a body-frame quaternion so a world-frame torque could not hide,
+and `ShipStickToGyro`, which pins the game's stick-to-vector translation as a pure function so the whole chain
+from stick to rotator sign is measured. The rendered Station5 capture
+with `-SSPhoenix` is `success=True`, `sawDocking=True`, approach **4.22 s** (from a 126 s timeout, and
+faster than the classic hull's 4.42), docking 3.01 s, onDeck 14.55 of 15.00, zero off-deck rescues. The
+diagnostic lines on that run show yaw error -0.6 to -0.1 degrees, pitch error zero, commands near zero,
+altitude level, distance closing 12,621 to 2,376 cm in four seconds.
+
+**The lesson is the same one as the 105 cm radius, the `Cargo_Door` bone and the centred pivot: a name
+is a claim, a measurement is a fact.** The header comment was wrong about order and silent about sign,
+and the only test that could have caught it was itself written against the comment.
+
+Kept: the fixture's rate-damped steering - right for a body with inertia even though it was not the bug -
+and the `SOAK_APPROACH` diagnostics, because the next time the ship does something inexplicable the
+question should be answered by reading, not inferring.
+
 #### September 18 the landing pad is a thing, not three numbers on the station
 
 The owner's requirement, verbatim: "a landing pad anywhere in the game, ever, future features anything,

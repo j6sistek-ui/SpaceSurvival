@@ -28,6 +28,11 @@ public:
      *  the docking sweeps used. That is survivable at 105 and is not survivable at all once a hull of a
      *  different size is installed, which is why this exists now rather than after the fact. */
     static float FlightCollisionRadius();
+    /** The stick as ShipCore's gyro sees it: (yaw, pitch) stick to the plugin's (roll, pitch, yaw) body torque,
+     *  axes and signs. Pure and static so the translation is pinned by a test that needs no physics world;
+     *  the plugin's own convention is pinned separately by ShipCoreGyroAxes, and between them the whole chain
+     *  from stick to rotator sign is measured rather than read. */
+    static FVector GyroInputFor(FVector2D Steer, float Turn);
     /** How close this hull has to be to a dock point to be offered docking, in centimetres. */
     float DockApproachRadius() const;
     virtual void BeginPlay() override;

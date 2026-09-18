@@ -105,6 +105,28 @@ ASSShip::ASSShip()
     EngineAudio->SetupAttachment(RootComponent);
     Presentation = CreateDefaultSubobject<USSShipPresentation>(TEXT("PurchasedShipModules"));
 }
+FVector ASSShip::GyroInputFor(FVector2D Steer, float Turn)
+{
+    // Gyro input is a body-frame torque vector: X turns about forward (roll), Y about right (pitch), Z about
+    // up (yaw). That is what the plugin's own ApplyFinalTorque does with it. The plugin's header says
+    // (Pitch, Yaw, Roll), and the first version of this believed it, so the pitch stick rolled the Phoenix
+    // and the yaw stick pitched it - which the ship's own approach log showed as both commands saturated
+    // for a hundred seconds with neither error closing.
+    //
+    // Axes AND signs come from SpaceSurvival.Flight.ShipCoreGyroAxes, which measured them: +Z torque gives
+    // +yaw, but +Y gives -pitch and +X gives -roll. The kinematic path treats +Steer.X as +yaw and
+    // +Steer.Y as +pitch, and the stick has to mean the same thing on both hulls, so pitch is negated here
+    // and yaw is not. ShipStickToGyro pins this function's output directly.
+    const float Yaw = FMath::Clamp(Steer.X, -1.f, 1.f) * Turn;
+    const float Pitch = -FMath::Clamp(Steer.Y, -1.f, 1.f) * Turn;
+    // A little roll into the turn, because a ship that yaws flat reads as a cursor. Negated for the same
+    // reason as pitch, so a right (+yaw) turn produces positive rotator roll. Two things about it are
+    // feel checks with hands on the stick, not rules: whether that reads as leaning into the turn, and
+    // whether the gyro - which damps rate but holds no attitude - lets a held turn settle into a steady
+    // roll rate rather than a lean. Flip the sign or zero the .35 if either reads wrong; it is a dial.
+    const float Lean = -FMath::Clamp(Steer.X, -1.f, 1.f) * .35f * Turn;
+    return FVector(Lean, Pitch, Yaw);
+}
 void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed,
                             float Authority, float Interference)
 {
@@ -155,11 +177,7 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
                          FMath::Clamp(StrafeInput.X, -1.f, 1.f), FMath::Clamp(StrafeInput.Y, -1.f, 1.f));
     Thrusters->SetThrustersInput(Thrust);
     const float Turn = Authority * Interference;
-    Gyros->SetGyrosInput(FVector(FMath::Clamp(-Steer.Y, -1.f, 1.f) * Turn, FMath::Clamp(Steer.X, -1.f, 1.f) * Turn,
-                                 // A little roll into the turn, because a ship that yaws flat reads as a
-                                 // cursor. The gyro damps roll rate but has no attitude reference, so this
-                                 // is a lean and not a bank that holds.
-                                 FMath::Clamp(-Steer.X, -1.f, 1.f) * .35f * Turn));
+    Gyros->SetGyrosInput(GyroInputFor(Steer, Turn));
 
     // Gravity wells and the wormhole still push, but their numbers were accelerations integrated by hand.
     // Against a real body they are forces, so they carry the mass with them.
