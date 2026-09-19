@@ -111,6 +111,29 @@ would have shown up in one offscreen capture.
 
 **"67 tests green" was never the thing worth buying.**
 
+## Bought content
+
+The owner has bought 100+ content packs. **A pack's Blueprint is the deliverable, not a reference for its
+meshes.** When they supply an asset or pack:
+
+- **Use the Blueprint it ships, and its tools.** Reparent it to our class, or child-actor it. Do not
+  re-derive its contents by hand.
+- **Use its tools, not merely its ideas.** Buying a Blueprint that generates asteroids procedurally and
+  then hand-placing our own asteroids "in that style" throws away the thing that was paid for.
+- **A conflict with the game's architecture is a conversation.** Flag it, explain the specific risk, and
+  let the owner choose. It is not licence to rebuild.
+- In practice only a pack's *logic* conflicts — its own movement or input graph. Its *component wiring*
+  almost never does. **Keep the wiring, replace the logic.**
+
+**The evidence, so this is not an abstraction.** `BP_Spaceship` in the Stellar Phoenix pack already had the
+skeletal mesh, both engine nacelle meshes, a separate airbrake mesh, twelve Niagara components, a point
+light, two spring arms, a camera and the anim clips wired and working in its own demo level. Rebuilding
+that by reading its component list and retyping the transforms into C++ produced **four separate placement
+errors in one evening**: nacelle offsets composed against the wrong pivot so the engines hung under the
+belly; 90 degrees transcribed into yaw instead of roll so the plumes sprayed sideways; eight effects
+placed flat when they are children of some other parent; and a lamp mounted where it cannot light the
+door it was added for. Every one of those was already correct in the Blueprint.
+
 ## Hard rules
 
 - **Never put a window on the owner's screen.** Every Unreal invocation passes `-NullRHI` (no renderer) or
