@@ -1,5 +1,21 @@
 # SpaceSurvival Agent Instructions
 
+## Operating notes — read alongside this file
+
+[CLAUDE.md](CLAUDE.md) is the operational half of these instructions, and it applies to **every** agent
+working in this repository, not only Claude. The filename is one tool's convention; the contents are not.
+Codex, ChatGPT and any other assistant should read it together with this document.
+
+It covers what this file deliberately leaves out: the installed toolchain and its current state, the exact
+build, test and format commands, how to run a single automation suite instead of the whole one, the rule
+that no Unreal invocation may open a window on the owner's screen, which hull flies by default, and the
+traps that have already cost real time.
+
+The split is intentional, so that neither file drifts by restating the other. **This file owns what you may
+do** — scope discipline, PR and documentation policy, the Definition of Done. **CLAUDE.md owns how the
+machine works.** Where a command here is prescribed and the machine disagrees, CLAUDE.md records both rather
+than silently overriding this one.
+
 ## Source of truth
 
 Read these before substantive project work:
