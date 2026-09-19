@@ -136,9 +136,14 @@ door it was added for. Every one of those was already correct in the Blueprint.
 
 ## Hard rules
 
-- **Never put a window on the owner's screen.** Every Unreal invocation passes `-NullRHI` (no renderer) or
-  `-RenderOffscreen` (renderer, no window). Automation uses `-NullRHI`; content authoring and captures need
-  a real RHI, so they use `-RenderOffscreen`.
+- **Background runs go offscreen; an editor window is not forbidden.** Anything started on Claude's own
+  initiative - automation, captures, content authoring - passes `-NullRHI` (no renderer) or
+  `-RenderOffscreen` (a real renderer, no window), because it should never interrupt whatever the owner is
+  doing. Automation uses `-NullRHI`; content authoring and captures need a real RHI, so `-RenderOffscreen`.
+  That is courtesy, not a prohibition: opening the editor is fine when the owner is working alongside and
+  expects it. An earlier version of this file called it a hard rule, which was wrong - it came from a
+  single occasion when the owner happened to be busy, and it quietly ruled out interactive work that would
+  sometimes be the faster answer.
 - **Never commit `docs/production/UI_ART_REQUESTS.md`.** The owner keeps an uncommitted local edit there.
 - **A change that affects how the game plays or feels is a conversation, not a task.** Propose it and wait.
   Fixing something that is provably broken is work; changing a dial is a decision.
