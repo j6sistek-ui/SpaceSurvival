@@ -1172,10 +1172,16 @@ struct FSSHeroDefinition
     static bool ResolveBone(const USkeletalMeshComponent *Mesh, FName Bone, FTransform &Out);
     /** The hero the pawns are built with. A constructor cannot ask what content is installed and a
      *  class default must not depend on it, so both pawns start here and BeginPlay decides. It is
-     *  also where selection lands when no hero in the roster is installed. */
+     *  also where selection lands when no hero in the roster is installed.
+     *
+     *  This is the remastered squirrel, and the reason it can be is that its assets are now tracked -
+     *  they live under Licensed/Hero, which the ignore file re-includes by name. The requirement was
+     *  never "the Acornaut"; it was "a hero whose files are in this repository", and for as long as
+     *  the squirrel was ignored the Acornaut was the only thing that met it. A clone now boots
+     *  wearing the hero the game is actually about rather than the one it was remastered away from. */
     static FSSHeroDefinition Fallback()
     {
-        return FSSHeroDefinition(ESSHeroIdentity::Acornaut);
+        return FSSHeroDefinition(ESSHeroIdentity::Squirrel);
     }
 
     FSSHeroDefinition() = default;

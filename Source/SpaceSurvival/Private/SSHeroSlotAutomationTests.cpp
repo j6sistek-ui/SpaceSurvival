@@ -151,8 +151,11 @@ bool FSSHeroRoster::RunTest(const FString &)
         TestTrue(TEXT("The wardrobe is offered at least the hero it is already wearing"),
                  Content->InstalledHeroes(ESSHeroSlot::Walker).Num() >= 1);
     }
+    // The shipped hero is the remastered squirrel now that its assets are tracked. What this asserts
+    // is not which hero it happens to be but that the fallback is one the repository actually carries -
+    // a fallback whose files a clone lacks is not a fallback at all.
     TestEqual(TEXT("The pawns are built with the shipped hero"), AsInt(FSSHeroDefinition::Fallback().Identity),
-              AsInt(ESSHeroIdentity::Acornaut));
+              AsInt(ESSHeroIdentity::Squirrel));
 
     // Found by identity, not by index: the roster grew once and will again, and an index here is a
     // test that breaks for a reason that has nothing to do with what it is checking.
@@ -346,8 +349,11 @@ bool FSSHeroRoster::RunTest(const FString &)
     Empty->Heroes.Empty();
     TestEqual(TEXT("An empty roster still answers with the built-in hero"),
               AsInt(Empty->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(FSSHeroDefinition::Fallback().Identity));
-    TestEqual(TEXT("An empty roster's built-in hero still carries the measured sole offset"),
-              Empty->SelectHero(ESSHeroSlot::Walker).SoleOffset, 62.90269494f, 0.f);
+    // Asserted against the shipped hero's own constant rather than a literal. The claim is that an
+    // empty roster still hands back a fully measured hero, not that it hands back one particular one -
+    // and the shipped hero has changed once already, from the Acornaut to the remastered squirrel.
+    TestEqual(TEXT("An empty roster's built-in hero still carries its measured sole offset"),
+              Empty->SelectHero(ESSHeroSlot::Walker).SoleOffset, FSSHeroDefinition::Fallback().SoleOffset, 0.f);
 
     // Without a mesh to measure, an unfitted hero is exactly its declared scale and product.
     TestEqual(TEXT("An unfitted hero renders at its declared scale"), Acornaut.RenderedScale(nullptr), 1.5f, 0.f);
@@ -377,15 +383,18 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
                             Walker->GetMesh()->GetRelativeScale3D().Z, BuiltHalfHeight));
     // The double() is not decoration: MeshLift carries this sum at double width, so the expected value
     // has to as well, or the two disagree in the last bits of a float for no reason anyone can see.
+    const FSSHeroDefinition Built = FSSHeroDefinition::Fallback();
     TestEqual(TEXT("The pawn is built standing the shipped hero's measured sole on the deck plates"),
               Walker->GetMesh()->GetRelativeLocation(),
-              FVector(0, 0, double(62.90269494f * 1.5f) - BuiltHalfHeight - WalkingFloorGap() + 2.75f), 1e-5f);
+              FVector(0, 0, double(Built.SoleOffset * Built.MeshScale) - BuiltHalfHeight -
+                                WalkingFloorGap() + 2.75f),
+              1e-5f);
     TestEqual(TEXT("The pawn is built at the shipped hero's scale"), Walker->GetMesh()->GetRelativeScale3D(),
-              FVector(1.5f), 1e-6f);
+              FVector(Built.MeshScale), 1e-6f);
     TestEqual(TEXT("The pawn is built at the shipped hero's yaw"), Walker->GetMesh()->GetRelativeRotation(),
-              FRotator(0, -90, 0), 1e-6f);
+              FRotator(0, Built.MeshYaw, 0), 1e-6f);
     TestEqual(TEXT("The seat is built at the shipped hero's mount"), Ship->Pilot->GetRelativeLocation(),
-              FVector(-15, 0, 72), 0.f);
+              Built.PilotMountOffset, 0.f);
     Walker->DispatchBeginPlay();
     Ship->DispatchBeginPlay();
     const FSSHeroDefinition Hero = Walker->GetHero();
