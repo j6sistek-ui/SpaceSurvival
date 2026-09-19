@@ -40,6 +40,11 @@ TAutoConsoleVariable<float> ThrusterScale(TEXT("ss.ThrusterScale"), 2.6f, TEXT("
 // The owner asked to try mixing materials for a distinctive drive, and named the galaxy shaders specifically.
 // All of these are already owned. The additive unlit entries are authored for glowing effects; the opaque entries
 // are surface materials used against their grain, which is the point of auditioning rather than assuming.
+// NOTCOOKED-BEGIN: candidates, not content. ss.ThrusterMaterial selects one and defaults to 0, which is
+// the project's own material under an always-cooked root. The rest are here to be auditioned in the editor
+// against owned packs; cooking them would pull whole vendor roots into every package to support a console
+// variable no player sets. If one is ever chosen as the default, it needs a DirectoriesToAlwaysCook entry
+// and this marker has to move.
 const TCHAR *ThrusterMaterialPaths[] = {
     TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive"),                                  //  0 current
     TEXT("/Game/SpaceSurvival/Licensed/Atmosphere/M_DeepSpaceExhaust.M_DeepSpaceExhaust"),        //  1 own exhaust
@@ -60,6 +65,7 @@ const TCHAR *ThrusterMaterialPaths[] = {
          "M_VFX_Lush_Galaxy_Shader"),                        // 15 galaxy
     TEXT("/Game/CosmicMaterial/Material/M_Master.M_Master"), // 16 cosmic
 };
+// NOTCOOKED-END
 TAutoConsoleVariable<int32> ThrusterMaterial(TEXT("ss.ThrusterMaterial"), 0,
                                              TEXT("Engine core material index into the audition table."));
 
