@@ -27,6 +27,11 @@ public:
      *  carried 120, so hazard contact was already being judged against a ship 15 cm wider than the one
      *  the docking sweeps used. That is survivable at 105 and is not survivable at all once a hull of a
      *  different size is installed, which is why this exists now rather than after the fact. */
+    /** Which hull this build flies. THE selection, in one place, because a test that re-derives it is a
+     *  second copy of a rule - and this project has paid for a duplicated constant three times already. A
+     *  fixture asking "whose tolerances apply" and BeginPlay asking "whose mesh do I load" must never be
+     *  able to disagree. */
+    static ESSHullIdentity SelectedHullIdentity();
     static float FlightCollisionRadius();
     /** The stick as ShipCore's gyro sees it: (yaw, pitch) stick to the plugin's (roll, pitch, yaw) body torque,
      *  axes and signs. Pure and static so the translation is pinned by a test that needs no physics world;
@@ -113,9 +118,15 @@ private:
      *  exhausts USSShipPresentation already fits to the mesh it knows. */
     UPROPERTY()
     TArray<TObjectPtr<class UNiagaraComponent>> HullExhausts;
+    /** The hull's engine nacelles, when the hull keeps them as separate meshes rather than in its rig. */
+    UPROPERTY()
+    TArray<TObjectPtr<UStaticMeshComponent>> HullEngineParts;
+    /** The hull's own lamp, when it declares one. Nothing else lights a ship out here. */
+    UPROPERTY()
+    TObjectPtr<class UPointLightComponent> HullLight;
     /** True once the root is simulating and ShipCore's components have accepted it. While false the hand
-     *  written integrator below runs exactly as it always has, which is every build that does not pass
-     *  -SSPhoenix. */
+     *  written integrator below runs exactly as it always has, which is now the classic hull: a build run
+     *  with -SSClassic, or one without the licensed pack installed. */
     bool ShipCoreDriven = false;
     UPROPERTY()
     TObjectPtr<class UThrusterManagerComp> Thrusters;
@@ -127,6 +138,14 @@ private:
                        float Interference);
     /** Stop or restart the physics body around a scripted move. Only does anything while ShipCore drives. */
     void HoldBody(bool Hold);
+
+public:
+    /** The point this ship aims at: the reticle is drawn here, and shots converge here. Ship-relative, so
+     *  it does not slide off target as the camera pitch changes. Falls back to the camera ray for a hull
+     *  that declares no reach, which is every hull that is not the Phoenix. */
+    FVector CrosshairWorldPoint() const;
+
+private:
     /** Hull impact while ShipCore drives. The old integrator took its hits off the swept move's
      *  FHitResult, and a simulating body never runs that path - so without this, ramming an asteroid in
      *  the Phoenix is free. Physics handles the bounce; this only carries the damage across. */

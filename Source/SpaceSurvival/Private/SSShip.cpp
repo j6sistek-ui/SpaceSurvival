@@ -221,6 +221,21 @@ float ASSShip::DockApproachRadius() const
                                 : 0.f;
     return FMath::Max(1200.f, NoseReach + 1200.f);
 }
+ESSHullIdentity ASSShip::SelectedHullIdentity()
+{
+    // The Phoenix is the ship. Every rule it used to fail has been read, measured and either rewritten as
+    // something true of any hull or moved into the hull's own row, so this is a default rather than a flag
+    // that happens to work: the whole suite passes on it.
+    //
+    // Two ways to fly the classic hull remain, and both matter. -SSClassic asks for it, which is how the
+    // two are compared side by side; and Installed() still answers for the licensed pack, so a fresh
+    // checkout or a CI machine that does not have it flies the classic hull rather than failing to find a
+    // mesh. -SSPhoenix keeps working and now simply asks for what it already gets.
+    const FSSHullDefinition Phoenix(ESSHullIdentity::StellarPhoenix);
+    return !FParse::Param(FCommandLine::Get(), TEXT("SSClassic")) && Phoenix.Installed()
+               ? ESSHullIdentity::StellarPhoenix
+               : ESSHullIdentity::Classic;
+}
 float ASSShip::FlightCollisionRadius()
 {
     // Read from the class default object, so it tracks the constructor and any hull swap that changes it
@@ -299,13 +314,13 @@ void ASSShip::BeginPlay()
     // A skeletal hull, if this build has one. The static hull stays loaded and simply stops being drawn:
     // paint, the module presentation and the chase-framing test all still read it, and none of them has to
     // learn about a second kind of hull before the flight model itself moves.
-    // Behind -SSPhoenix, the same idiom HullAssetPath already uses for -SSShipRefresh. The first version
-    // switched hulls whenever the pack happened to be installed, which is not a decision a build should
-    // make for itself: it hid the static hull, and USSShipPresentation hangs the exhausts, muzzle flashes
-    // and fitted upgrade modules off that hull, so ShipPresentationSelection went red on the one machine
-    // that owns the pack. Opt in explicitly and the shipped ship is untouched everywhere.
+    // Which hull that is comes from SelectedHullIdentity and nowhere else. An early version switched hulls
+    // wherever the pack happened to be installed and did it inline, which hid the static hull that
+    // USSShipPresentation hangs the exhausts, muzzle flashes and fitted upgrade modules off - so the
+    // presentation suite went red on the one machine that owns the pack. The presentation now asks the hull
+    // whether it wears those modules, and the choice is made in one place that every test can also ask.
     if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix);
-        FParse::Param(FCommandLine::Get(), TEXT("SSPhoenix")) && Hull.Installed())
+        SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix)
     {
         if (auto *HullSkeletal = LoadObject<USkeletalMesh>(nullptr, *Hull.MeshPath))
         {
@@ -315,30 +330,151 @@ void ASSShip::BeginPlay()
             SkeletalHull->SetRelativeScale3D(FVector(Hull.HullScale));
             SkeletalHull->SetVisibility(true);
             HullMesh->SetVisibility(false);
-            // Gear up and ramp shut. The rest pose is the landing configuration, so a ship that never
-            // played this would fly with its undercarriage down and its cargo ramp hanging open.
-            if (auto *Stow = LoadObject<UAnimSequence>(nullptr, *Hull.LandingStowClipPath))
-                SkeletalHull->PlayAnimation(Stow, false);
-            // Found by flying it and looking, not derived. Three candidates were captured in Wave 10:
-            // the full 5.15 length ratio put the camera inside an asteroid with the ship out of frame;
-            // the square root, 2.27, was close enough that the hull filled the middle of the screen; and
-            // 4.5 with the eye high and the tilt shallow is where both things the camera has to do are
-            // actually done at once.
+            // The configuration this hull flies in. The rest pose is the landing one, so a ship that
+            // played nothing would fly with its undercarriage down and its cargo ramp hanging open.
             //
-            // Both things matter and they pull against each other. The hull has to READ - this ship's
-            // character is its swept planform and that is invisible from directly astern - and the
-            // CROSSHAIR has to be usable. The reticle is drawn at screen centre because aim is defined as
-            // camera-forward, which was free when the hull was 4.82 m and the centre was empty space past
-            // it. At 24.84 m the hull IS the centre, so a camera tilted down far enough to show the
-            // planform puts the reticle on your own ship and you cannot see what you are shooting at.
+            // Flight is the wings-out clip, not merely the gear-up one. Every clip in this pack writes all
+            // 182 bones, so they cannot be layered and each one is a whole-ship configuration - which is
+            // what makes the rule simple: open in flight, closed on the pad, and the gear clip played at
+            // the pad folds the wings on its way past. Falls back to the stow clip for a hull that
+            // declares no flight pose.
+            const FString &FlightPose =
+                Hull.FlightPoseClipPath.IsEmpty() ? Hull.LandingStowClipPath : Hull.FlightPoseClipPath;
+            // Held at the clip's LAST frame rather than played from its first. PlayAnimation only reaches
+            // the configuration we want if the pose actually advances, and it was not advancing - which is
+            // why every capture showed the rest pose, gear down and cargo door open, whichever clip was
+            // asked for. Seeking to the end and stopping there does not depend on a single tick.
+            SkeletalHull->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+            if (auto *Pose = LoadObject<UAnimSequence>(nullptr, *FlightPose))
+            {
+                SkeletalHull->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+                SkeletalHull->SetAnimation(Pose);
+                SkeletalHull->SetPosition(Pose->GetPlayLength(), false);
+                SkeletalHull->Stop();
+            }
+            // The nacelles, which are not in the skeletal mesh. The pack ships them as separate static
+            // meshes and its own BP hangs them here; without this the ship flies with no engines on it at
+            // all, which is how every capture so far has looked - four small plumes at the rear nozzles
+            // and nothing where a player actually reads an engine. Attached under the hull so they inherit
+            // MeshYaw with it, at the pack's own offsets.
+            // TEMPORARY DIAGNOSTIC - which material slot the black region on this hull belongs to.
+            // Swaps the glass slot for the engine's default grey. If the black area turns grey it is
+            // M_Spaceship_Glass, which is BLEND_TRANSLUCENT and two-sided with no normal and no metallic
+            // input, and a translucent gloss with nothing to reflect reads as a hole in deep space.
+            if (FParse::Param(FCommandLine::Get(), TEXT("SSGlassProbe")))
+                for (int32 Slot = 0; Slot < SkeletalHull->GetNumMaterials(); ++Slot)
+                    if (UMaterialInterface *Fitted = SkeletalHull->GetMaterial(Slot))
+                    {
+                        UE_LOG(LogTemp, Warning, TEXT("GLASSPROBE slot %d = %s"), Slot, *Fitted->GetName());
+                        if (Fitted->GetName().Contains(TEXT("Glass")))
+                            SkeletalHull->SetMaterial(Slot, UMaterial::GetDefaultMaterial(MD_Surface));
+                    }
+            // Separates "the geometry is missing" from "the geometry is unlit". M_Exaust is UNLIT and
+            // additive, so anything wearing it glows against space no matter where the key light is. If the
+            // dark panel under the hull lights up, the door is there and the problem is lighting; if it
+            // stays a hole, the mesh is absent the way the nacelles were.
+            if (FParse::Param(FCommandLine::Get(), TEXT("SSHullProbe")))
+                if (auto *Unlit = LoadObject<UMaterialInterface>(
+                        nullptr, TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/Material/M_Exaust.M_Exaust")))
+                    for (int32 Slot = 0; Slot < SkeletalHull->GetNumMaterials(); ++Slot)
+                        SkeletalHull->SetMaterial(Slot, Unlit);
+            // TEMPORARY DIAGNOSTIC - where this rig's bones actually are, in component space.
+            if (FParse::Param(FCommandLine::Get(), TEXT("SSBoneSurvey")))
+            {
+                const FBoxSphereBounds HullBounds = SkeletalHull->CalcBounds(FTransform::Identity);
+                UE_LOG(LogTemp, Warning, TEXT("BONESURVEY hull bounds origin=%s extent=%s"),
+                       *HullBounds.Origin.ToString(), *HullBounds.BoxExtent.ToString());
+                const TArray<FName> BoneNames = SkeletalHull->GetAllSocketNames();
+                UE_LOG(LogTemp, Warning, TEXT("BONESURVEY sockets=%d bones=%d"), BoneNames.Num(),
+                       SkeletalHull->GetNumBones());
+                for (int32 B = 0; B < SkeletalHull->GetNumBones(); ++B)
+                {
+                    const FName BoneName = SkeletalHull->GetBoneName(B);
+                    const FString Lower = BoneName.ToString().ToLower();
+                    if (!Lower.Contains(TEXT("engine")) && !Lower.Contains(TEXT("nacelle")) &&
+                        !Lower.Contains(TEXT("wing")) && !Lower.Contains(TEXT("nozzle")) &&
+                        !Lower.Contains(TEXT("thrust")) && !Lower.Contains(TEXT("body")))
+                        continue;
+                    const FVector Local = SkeletalHull->GetComponentTransform().InverseTransformPosition(
+                        SkeletalHull->GetBoneLocation(BoneName));
+                    UE_LOG(LogTemp, Warning, TEXT("BONESURVEY %-44s %s"), *BoneName.ToString(), *Local.ToString());
+                }
+            }
+            for (int32 Side = 0; Side < 2; ++Side)
+            {
+                const FString &PartPath = Side == 0 ? Hull.EngineLeftMeshPath : Hull.EngineRightMeshPath;
+                if (PartPath.IsEmpty())
+                    continue;
+                auto *PartMesh = LoadObject<UStaticMesh>(nullptr, *PartPath);
+                if (!PartMesh)
+                    continue;
+                auto *Part = NewObject<UStaticMeshComponent>(this);
+                Part->SetStaticMesh(PartMesh);
+                Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+                Part->RegisterComponent();
+                Part->AttachToComponent(SkeletalHull, FAttachmentTransformRules::KeepRelativeTransform);
+                Part->SetRelativeLocation(Side == 0 ? Hull.EngineLeftOffset : Hull.EngineRightOffset);
+                Part->SetVisibility(true);
+                HullEngineParts.Add(Part);
+            }
+            // The lamp this hull carries. Without it the aft faces - the cargo door most visibly - receive
+            // nothing at all and the ship renders with a hole in it.
+            if (Hull.HullLightIntensity > 0.f)
+            {
+                HullLight = NewObject<UPointLightComponent>(this);
+                HullLight->SetMobility(EComponentMobility::Movable);
+                HullLight->RegisterComponent();
+                HullLight->AttachToComponent(SkeletalHull, FAttachmentTransformRules::KeepRelativeTransform);
+                HullLight->SetRelativeLocation(FVector::ZeroVector);
+                HullLight->SetIntensity(Hull.HullLightIntensity);
+                HullLight->SetAttenuationRadius(Hull.HullLightRadius);
+                HullLight->SetLightColor(FLinearColor(Hull.HullLightColor));
+                HullLight->SetCastShadows(false);
+            }
+            // The hull's declared effect rig, at the transforms its author placed. Attached under the hull
+            // so it inherits MeshYaw exactly as the nacelle meshes do.
+            for (int32 E = 0; E < Hull.EffectPaths.Num() && E < Hull.EffectTransforms.Num(); ++E)
+            {
+                auto *System = LoadObject<UNiagaraSystem>(nullptr, *Hull.EffectPaths[E]);
+                if (!System)
+                    continue;
+                const FTransform &Placed = Hull.EffectTransforms[E];
+                if (auto *Effect = UNiagaraFunctionLibrary::SpawnSystemAttached(
+                        System, SkeletalHull, NAME_None, Placed.GetLocation(), Placed.Rotator(),
+                        EAttachLocation::KeepRelativeOffset, false))
+                {
+                    Effect->SetRelativeScale3D(Placed.GetScale3D());
+                    HullExhausts.Add(Effect);
+                }
+            }
+            // These are the pack's own camera numbers, read out of BP_Spaceship rather than searched for.
+            // The pack ships a playable demo level, so the framing its author intended was on disk the
+            // whole time: a 3000 arm, the eye 250 above the ship, and a shallow tilt - the spring arm
+            // pitched -18 with the camera pitched +5 back, about -13 net.
+            //
+            // What was here before was found by flying it and looking, and it was a long way out: a 4050
+            // arm with the eye 3000 up and a -27 tilt, which is eight times the height at twice the angle.
+            // That is why the ship sat small and distant in every capture, and it is the direct cause of
+            // the crosshair drift in #47 - a ray pointing 27 degrees down while the ship travels level
+            // cannot hold a fixed point, and at -13 it very nearly can.
             // High eye, shallow tilt: the ship settles into the lower third where its top is visible, and
             // the centre stays clear sky.
-            HullChaseScale = 4.5f;
+            HullChaseScale = Hull.ChaseScale;
+            // Start the boom where this hull needs it, rather than letting it crawl out there. Tick
+            // interpolates TargetArmLength toward ChaseDistance * HullChaseScale at rate 3, so a hull that
+            // wants 4050 cm spends its first second climbing out of the constructor's 900 - which for a
+            // 24.84 m ship means the camera opens the run inside the hull. ChaseFraming caught it on frame
+            // zero at a depth of 698 cm; a player would have caught it by looking.
+            CameraBoom->TargetArmLength *= Hull.ChaseScale;
             // Lift and tilt the view. Dead astern is this hull's worst angle: from directly behind, a
             // 24.84 m ship is a slab and its swept wings are edge-on and invisible. Looking slightly down
             // on it shows the planform, which is where the wings actually read.
-            CameraBoom->SocketOffset = FVector(0, 0, 3000.f);
-            Camera->SetRelativeRotation(FRotator(-16.f, 0, 0));
+            CameraBoom->SetRelativeLocation(FVector(0, 0, Hull.ChaseBoomZ));
+            CameraBoom->TargetOffset = FVector(0, 0, Hull.ChaseHeight);
+            CameraBoom->SocketOffset = FVector::ZeroVector;
+            CameraBoom->SetRelativeRotation(FRotator(Hull.ChaseArmPitch, 0, 0));
+            Camera->SetRelativeRotation(FRotator(Hull.ChasePitch, 0, 0));
+            Camera->FieldOfView = Hull.ChaseFov;
             // Three dials for looking at the thing, because finding a flattering chase angle is an eye
             // question and rebuilding between guesses costs minutes each. -SSChase multiplies the boom,
             // -SSChaseHeight moves the eye up or down, -SSChasePitch tilts it. All optional; with none
@@ -414,14 +550,18 @@ void ASSShip::BeginPlay()
                 // The two big side nacelles, which are what actually reads as "engines" on this ship, have
                 // no bone of their own; their position comes from the separate engine meshes the pack
                 // ships, whose origins are X +/-589.85, Y -636.6, Z 349.64.
-                for (const TCHAR *Nozzle : {TEXT("Nozzle_Back_Up_Left_Mesh"), TEXT("Nozzle_Back_Up_Right_Mesh"),
-                                            TEXT("Nozzle_Back_Down_Left_Mesh"), TEXT("Nozzle_Back_Down_Right_Mesh")})
-                {
-                    if (auto *Plume = UNiagaraFunctionLibrary::SpawnSystemAttached(
-                            Exhaust, SkeletalHull, FName(Nozzle), FVector::ZeroVector, FRotator::ZeroRotator,
-                            EAttachLocation::SnapToTarget, false))
-                        HullExhausts.Add(Plume);
-                }
+                // Superseded by the pack's own rig below, which places the big nacelle exhausts where the
+                // nacelles actually are. Kept only as the fallback for a hull that declares no rig.
+                if (Hull.EffectPaths.IsEmpty())
+                    for (const TCHAR *Nozzle :
+                         {TEXT("Nozzle_Back_Up_Left_Mesh"), TEXT("Nozzle_Back_Up_Right_Mesh"),
+                          TEXT("Nozzle_Back_Down_Left_Mesh"), TEXT("Nozzle_Back_Down_Right_Mesh")})
+                    {
+                        if (auto *Plume = UNiagaraFunctionLibrary::SpawnSystemAttached(
+                                Exhaust, SkeletalHull, FName(Nozzle), FVector::ZeroVector, FRotator::ZeroRotator,
+                                EAttachLocation::SnapToTarget, false))
+                            HullExhausts.Add(Plume);
+                    }
                 // Two more were tried at the big side nacelles, placed by hand at the engine meshes'
                 // own origins, and they are deliberately not here. The pack's VFX_Exhaust does not emit
                 // along the axis a component rotation would steer - the plumes fired out of the ship's
@@ -462,6 +602,15 @@ void ASSShip::HoldBody(bool Hold)
 {
     if (!ShipCoreDriven || !Collision)
         return;
+    // ShipCore's managers are components with their own tick, and they push into the body on their own
+    // schedule rather than only when this class asks them to. Switching the body off underneath them leaves
+    // them calling AddForce, AddTorque and GetMass against a body that is not simulating for as long as the
+    // hold lasts - 110 engine warnings across one ten-wave journey, every one of them a push thrown away.
+    // Holding the ship therefore has to stop the things pushing it, not only the thing being pushed.
+    if (Thrusters)
+        Thrusters->SetComponentTickEnabled(!Hold);
+    if (Gyros)
+        Gyros->SetComponentTickEnabled(!Hold);
     if (Hold)
     {
         // Docking and mooring were written for a kinematic pawn: they move the actor with SetActorLocation
@@ -505,6 +654,12 @@ bool ASSShip::BeginMooring()
 }
 void ASSShip::EndMooring()
 {
+    // Wings back out and gear back up on leaving the pad, which is the same clip flight starts in. The
+    // docking clip left the ship in its landing configuration, and nothing else would ever undo it.
+    if (ShipCoreDriven && SkeletalHull && SkeletalHull->IsVisible())
+        if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix); !Hull.FlightPoseClipPath.IsEmpty())
+            if (auto *Pose = LoadObject<UAnimSequence>(nullptr, *Hull.FlightPoseClipPath))
+                SkeletalHull->PlayAnimation(Pose, false);
     if (!Moored)
         return;
     Moored = false;
@@ -607,7 +762,15 @@ void ASSShip::Tick(float Dt)
     const float Interference = S.run.interferenceSeconds > 0 ? .7f : 1.f;
     if (ShipCoreDriven)
     {
-        DriveShipCore(Dt, Stats.acceleration, Stats.maneuver, Stats.response, Speed, Authority, Interference);
+        // Nothing to drive while the body is held. HoldBody switches the body off for the length of a
+        // scripted move - docking onto a pad, sitting moored at the station - and that move owns the ship
+        // until it hands it back. ShipCore has no way to know, so without this its thrusters and gyros go on
+        // calling AddForce, AddTorque and GetMass against a body that is not simulating: 110 engine warnings
+        // in a single ten-wave journey, every one of them a push that was thrown away. The kinematic branch
+        // below must not run either - it would move the actor out from under the scripted move - which is
+        // why this is a guard inside the branch rather than a condition on it.
+        if (Collision && Collision->IsSimulatingPhysics())
+            DriveShipCore(Dt, Stats.acceleration, Stats.maneuver, Stats.response, Speed, Authority, Interference);
     }
     else
     {
@@ -648,7 +811,10 @@ void ASSShip::Tick(float Dt)
     CameraBoom->TargetArmLength = FMath::FInterpTo(
         CameraBoom->TargetArmLength,
         (FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f)) * HullChaseScale, Dt, 3.f);
-    Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? 86.f : 80.f, Dt, 3.f);
+    // Relative to whatever this hull is framed at, rather than to the one hull the 80/86 pair was chosen
+    // for - otherwise a wider hull snaps back to the narrow framing on its first frame of boost.
+    const float BaseFov = FSSHullDefinition(SelectedHullIdentity()).ChaseFov;
+    Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? BaseFov + 6.f : BaseFov, Dt, 3.f);
     // Boost engaging is an event, but every drive effect in the game is a sustained level, so acceleration
     // reads as a state change rather than as a shove. This is the transient: full on the frame boost is pressed,
     // gone in about a third of a second.
@@ -724,9 +890,24 @@ void ASSShip::Tick(float Dt)
         }
     }
 }
+FVector ASSShip::CrosshairWorldPoint() const
+{
+    const FSSHullDefinition Hull(SelectedHullIdentity());
+    if (Hull.CrosshairReach <= 0.f)
+        return Camera ? Camera->GetComponentLocation() + Camera->GetForwardVector() * 20000.f
+                      : GetActorLocation() + GetActorForwardVector() * 20000.f;
+    return GetActorLocation() + GetActorUpVector() * Hull.CrosshairMountZ +
+           GetActorForwardVector() * Hull.CrosshairReach;
+}
 FVector ASSShip::AimDirection() const
 {
-    return Camera ? Camera->GetForwardVector() : GetActorForwardVector();
+    // Where the reticle is, which is the only answer that makes "shoot at the crosshair" true. It used to
+    // be the camera's forward, and on a hull that fills the centre of the screen that put the reticle on
+    // the ship's own nose while the shot went somewhere else entirely.
+    const FSSHullDefinition Hull(SelectedHullIdentity());
+    if (Hull.CrosshairReach <= 0.f)
+        return Camera ? Camera->GetForwardVector() : GetActorForwardVector();
+    return (CrosshairWorldPoint() - (GetActorLocation() + GetActorForwardVector() * 240.f)).GetSafeNormal();
 }
 void ASSShip::RequestDodge()
 {
@@ -737,7 +918,18 @@ void ASSShip::RequestDodge()
     if (Direction.IsNearlyZero())
         Direction = FVector2D(1, 0);
     Direction.Normalize();
-    Velocity += (GetActorRightVector() * Direction.X + GetActorUpVector() * Direction.Y) * Tuning->DodgeImpulse;
+    const FVector Dodge =
+        (GetActorRightVector() * Direction.X + GetActorUpVector() * Direction.Y) * Tuning->DodgeImpulse;
+    Velocity += Dodge;
+    // The same member-versus-body gap that swallowed collision damage and hazard shoves, and the same fix:
+    // the line above moves the hand-kept integrator's velocity, which a simulating body never reads, so on
+    // a force-driven hull the dodge key did nothing whatsoever. The body's velocity is moved by exactly the
+    // vector the kinematic line adds, so one dodge is one dodge on either drive rather than a figure scaled
+    // by whichever hull's mass happens to be flying. It is set rather than queued as an impulse because a
+    // dodge is an instantaneous change of velocity and reads back as one immediately, which is both what the
+    // kinematic path has always done and what anything asking "did the dodge take" can actually observe.
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+        Collision->SetPhysicsLinearVelocity(Collision->GetPhysicsLinearVelocity() + Dodge);
     // No collision immunity is granted; every world body still applies damage.
 }
 void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)
@@ -764,7 +956,21 @@ void ASSShip::ReceiveImpact(float Amount, FVector AwayFromContact)
         return;
     // A contact changes velocity once, in cm/s. Gravity remains an acceleration
     // integrated over time; treating a single impact that way weakened it at high FPS.
-    Velocity += AwayFromContact.GetSafeNormal() * FMath::Min(1400.f, Amount * 20.f);
+    const FVector Push = AwayFromContact.GetSafeNormal() * FMath::Min(1400.f, Amount * 20.f);
+    Velocity += Push;
+    // And give it to the body, which is the thing that moves under ShipCore. This is the third time the
+    // same gap has been found: GetVelocity read a member the solver never writes, collision damage came
+    // off a swept hit a simulating body never performs, and this - the only push hazards ever apply - was
+    // landing in a member the solver never reads. The Phoenix took the damage and did not move. A wave of
+    // asteroids would have hurt it and never once shoved it, which is the kind of defect that reads as
+    // "the collisions feel weightless" rather than as anything a test named.
+    //
+    // bVelChange is what makes it the same push rather than a similar one: the kinematic line above adds
+    // centimetres per second directly, and an impulse scaled by mass would be a different quantity wearing
+    // the same number. Hazard contact does not arrive through OnComponentHit - ASSWorldBody does its own
+    // analytic closest-approach test and calls this - so nothing else covers it.
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+        Collision->AddImpulse(Push, NAME_None, true);
 }
 void ASSShip::Fire()
 {
@@ -779,7 +985,13 @@ void ASSShip::Fire()
     FireVisualSeconds = .16f;
     const FVector Start = GetActorLocation() + GetActorForwardVector() * 240.f;
     const FVector Sight = AimDirection();
-    const FVector SightOrigin = Camera ? Camera->GetComponentLocation() : Start;
+    // Where the sight is traced FROM has to agree with where the aim points. While aim was the lens's
+    // forward, tracing from the lens was right. Now that a hull can aim at a reticle of its own, the ray
+    // has to leave the muzzle - starting at the lens and travelling in the ship's direction is a line that
+    // passes through neither, and it quietly made every shot miss what the reticle was over.
+    const FVector SightOrigin = FSSHullDefinition(SelectedHullIdentity()).CrosshairReach > 0.f ? Start
+                                : Camera ? Camera->GetComponentLocation()
+                                         : Start;
     FVector AimPoint = SightOrigin + Sight * Tuning->WeaponRange;
     FCollisionQueryParams SightQuery(SCENE_QUERY_STAT(SSManualAim), false, this);
     FHitResult SightHit;

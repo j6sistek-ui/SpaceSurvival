@@ -502,6 +502,18 @@ enum class ESSHeroIdentity : uint8
     Squirrel
 };
 
+/** What moves a hull. Not a cosmetic distinction: a kinematic hull's position is written directly by a
+ *  hand-integrated velocity at a fixed substep, so its trajectory is reproducible frame to frame to a
+ *  fraction of a degree. A force-solver hull is pushed by ShipCore and integrated by Chaos, which is a
+ *  different and less exactly reproducible thing. Tests that pin reproducibility have to ask which of the
+ *  two they are looking at, rather than holding every ship to the numbers the first one happened to make. */
+UENUM()
+enum class ESSHullDrive : uint8
+{
+    Kinematic,
+    ForceSolver
+};
+
 /** Which hull the ship flies. Ordered the way the roster is walked: the first one this build actually
  *  contains wins, so an uninstalled hull is skipped rather than being an error. */
 UENUM(BlueprintType)
@@ -549,6 +561,44 @@ struct FSSHullDefinition
     /** Gear up and rear ramp shut, which is the clip the launch sequence plays on thrust. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
     FString LandingStowClipPath;
+
+    /** The pose this hull flies in, played once at spawn and again on leaving a pad.
+     *
+     *  Every clip this pack ships writes all 182 bones, so they cannot be layered - playing the gear clip
+     *  after the wing clip would overwrite the wings. That is not a limitation to work around, it is the
+     *  pack's design: each clip IS a whole-ship configuration, which is also why it ships three
+     *  PA_Landing-* pose assets for the combined resting states. So flight is one clip and landing is
+     *  another, and the owner's rule falls straight out of it - open in flight, closed on the pad, driven
+     *  by the game rather than by a key. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FString FlightPoseClipPath;
+
+    /** The engine nacelles, which are not part of the skeletal mesh at all.
+     *
+     *  The pack ships them as two separate static meshes and its own BP_Spaceship hangs them off the hull
+     *  at these offsets. Leaving them off is why this ship has been flying with no engines: the four
+     *  bone-attached plumes were firing out of small rear nozzles while the things a player reads AS the
+     *  engines were simply not on the ship. Offsets are the pack's own, in un-yawed mesh space, so they
+     *  attach under the hull component and inherit MeshYaw with it. */
+    /** The hull's own effect rig: one system path per entry, with the transform the pack authored for it.
+     *
+     *  Parallel arrays rather than a nested struct so this stays a plain reflectable row. Read out of
+     *  BP_Spaceship, which places twelve of them - the two big nacelle exhausts and their spawn glows are
+     *  the ones that read as "the engines are lit", and hanging a system off a convenient bone instead is
+     *  why every capture so far had dark nacelles. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    TArray<FString> EffectPaths;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    TArray<FTransform> EffectTransforms;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FString EngineLeftMeshPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FString EngineRightMeshPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FVector EngineLeftOffset = FVector::ZeroVector;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FVector EngineRightOffset = FVector::ZeroVector;
     /** The measured length of the authored mesh along its own forward axis, in centimetres, before
      *  HullScale. Recorded so the scale arithmetic can be checked rather than believed. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "0"))
@@ -573,6 +623,154 @@ struct FSSHullDefinition
      *  asked the mesh. Zero means "not measured for this hull" and callers fall back to half the length. */
     float OriginToNose = 0.f;
     float OriginToBelly = 0.f;
+    /** What moves this hull. Everything below that differs by DRIVE rather than by SIZE is keyed on this. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    ESSHullDrive Drive = ESSHullDrive::Kinematic;
+    /** How this hull is framed. The chase boom is multiplied by ChaseScale, the eye is lifted by
+     *  ChaseHeight, and the camera is pitched by ChasePitch. A 24.84 m ship cannot be framed by a 4.82 m
+     *  ship's numbers - the owner's words were that the camera "will have to be dialed in for each ship
+     *  individually" while the concept stays fixed - so the concept lives in ASSShip and the numbers live
+     *  here. Zero height and zero pitch mean "leave the constructor's framing alone", which is the classic
+     *  hull and every build that has ever shipped. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (ClampMin = "0.01"))
+    float ChaseScale = 1.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+    float ChaseHeight = 0.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+    float ChasePitch = 0.f;
+    /** Pitch applied to the BOOM rather than to the camera, which is a different thing and not a
+     *  duplicate. Pitching the arm moves where the camera SITS - up and back, looking down over the hull.
+     *  Pitching the camera only changes where it LOOKS from wherever the arm already put it. Folding both
+     *  into one number put this hull level with its own camera and merely tilted the view down, so the
+     *  ship rode high in frame and clipped its own top edge while the reticle sat below it. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    float ChaseArmPitch = 0.f;
+    /** Where the boom itself is mounted on the hull, before any of the above. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    float ChaseBoomZ = 0.f;
+    /** Field of view this hull is framed at. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "30"))
+    float ChaseFov = 80.f;
+    /** How far ahead of the hull the aim point sits, and how high it is mounted.
+     *
+     *  The reticle is this point projected to screen, not the middle of the screen. Screen centre only ever
+     *  worked while the ship was small enough to leave the centre empty; on a hull that fills it, the
+     *  reticle sits on your own nose and you cannot see what you are shooting at. The pack answers this
+     *  with a second spring arm 20000 cm long mounted at Z 426.9, which is where these come from. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float CrosshairReach = 0.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    float CrosshairMountZ = 0.f;
+
+    /** The lamp this hull carries, because nothing in deep space lights a ship.
+     *
+     *  BP_Spaceship hangs a point light at the ship origin, and leaving it off is why the cargo door read
+     *  as a black hole. That geometry is present and correctly placed - proved by painting every slot with
+     *  an unlit material, which showed the door as a solid panel with its seams - it simply had nothing
+     *  lighting it. The kit's daylit demo fills that face from the sky; space does not. Zero means no lamp. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull", meta = (ClampMin = "0"))
+    float HullLightIntensity = 0.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull", meta = (ClampMin = "0"))
+    float HullLightRadius = 1000.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FColor HullLightColor = FColor(161, 213, 255);
+    /** How far the chase camera is allowed to trail its own anchor, as a share of the boom length. Lag is
+     *  angular - the arm trails while the anchor swings - so the same degrees of swing move a long boom
+     *  further than a short one, and the bound has to be a ratio rather than a distance. .039 is the
+     *  classic hull's, which on its 900 cm arm is the 35.1 cm this was written as before a second hull
+     *  existed. A hull whose share genuinely differs declares its own; the Phoenix measures .0427. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (ClampMin = "0.001"))
+    float CameraLagShareOfArm = .039f;
+    /** How far above a landing pad's deck this hull's ORIGIN sits when parked. It is the distance from the
+     *  origin to the belly plus whatever the gear needs under it, so it is a property of the hull and not
+     *  of the pad. 230 is the classic hull's, whose origin is near its middle. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "0"))
+    float DockClearanceAboveDeck = 230.f;
+    /** Whether USSShipPresentation's six fitted upgrade modules apply to this hull. That component reads
+     *  the static mesh's bounding box and gates on the literal name SM_PlayerHavolkStarter, so it fits one
+     *  hull and only that one; a skeletal hull carries its own exhausts on its own bones instead. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presentation")
+    bool UsesModulePresentation = true;
+    /** How closely this hull's trajectory has to agree with itself across frame rates: centimetres of
+     *  position, centimetres per second of velocity, degrees of heading, measured against a 120 Hz run of
+     *  the same scripted flight.
+     *
+     *  These are per hull because the rule is per hull, not because the bar is being lowered. The position
+     *  figure was always a share of the ship - the original comment derived 25 cm as "under one eighth of
+     *  the collision diameter" - and on that same share the Phoenix is actually TIGHTER than the classic
+     *  hull: 108 cm measured on a 2484 cm hull is 4.3 percent of its length, against 25 on 482.5 which is
+     *  5.2 percent. Velocity and heading are the ones that genuinely differ, and they differ by DRIVE:
+     *  Chaos re-converges on a target speed slightly differently at 30 Hz than at 120, where a fixed
+     *  substep integrator does not. Every figure here is measured from a real run, never chosen to make a
+     *  test pass; the measurements are in the ShipCoreFrameRateTolerances comment and in KNOWN_ISSUES. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float FrameRatePositionCm = 25.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float FrameRateVelocityCmS = 15.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float FrameRateHeadingDeg = .05f;
+    /** How far off-axis a contact push may land, as a share of its outward component.
+     *
+     *  A hazard shoves the ship along the contact normal, and that normal is computed from the relative
+     *  path during the frame. A kinematic hull seeded exactly at cruise has no relative motion against an
+     *  asteroid given the same velocity, so the normal is perpendicular and the off-axis share is
+     *  essentially zero. A force-driven hull accelerates DURING the frame, so a little relative drift
+     *  accumulates and tilts the normal - geometrically amplified, not merely one frame of thrust. Measured
+     *  on the Phoenix: .12 at 144 Hz rising to .44 at 30 Hz, with the push magnitude exactly right at 600
+     *  cm/s throughout. The push is correct; only its direction breathes with the frame rate.
+     *
+     *  The rule both drives share is that the push is the right size and points outward. This is how much
+     *  "outward" is allowed to wander for this hull. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float ContactOffAxisShare = .01f;
+    /** How far below the commanded speed floor this hull may dip while a held brake converges on it.
+     *
+     *  A kinematic hull resolves its speed by assignment, so it arrives at the floor exactly and never
+     *  passes it. A force drive decelerates toward the floor and overshoots a little before settling, which
+     *  is what deceleration does. Measured: the classic hull reaches 1000.0 against a floor of 1000, the
+     *  Phoenix dips to 924.1.
+     *
+     *  This is a convergence allowance, not permission to stop. The thing the brake test is actually named
+     *  for - that braking never stops or reverses forward travel - is asserted separately and is true of
+     *  every hull without any allowance at all. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float BrakeFloorUndershootCmS = .5f;
+
+    /** How much of a turn this hull may still be carrying one second after the stick is reversed.
+     *
+     *  A kinematic hull turns at a commanded rate and flips it the instant the stick does, so a second of
+     *  opposite stick leaves nothing: measured, the classic hull swings from +42.25 deg of yaw to -19.50.
+     *  A force drive has angular inertia and decelerates onto the reversal, so a little of the old turn
+     *  survives the second: the Phoenix falls from +2.414 deg of pitch to +0.051, which is 2.1 percent of
+     *  the turn it was in and a stop in every sense that matters to a pilot.
+     *
+     *  This is a residual, not permission to ignore the stick. That reversing the stick reverses the turn
+     *  is asserted separately and holds for every hull with no allowance at all. A heavier ship earns a
+     *  larger figure here by declaring one, not by the suite loosening for everybody. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float SteeringReversalResidualShare = .01f;
+
+    /** How far short of a surface this hull comes to rest when it is carried onto one.
+     *
+     *  A swept kinematic move is resolved by a query and is placed exactly against the face: measured, the
+     *  classic hull stops 0.01 cm short of it. A simulating body is resolved by the physics scene at a
+     *  substep boundary, so it settles a little further out - the Phoenix stops 1.38 cm short while closing
+     *  at 2500 cm/s, which is well inside one substep of travel.
+     *
+     *  This is the near side of the contact only. That the hull never ends up inside or beyond the surface
+     *  is asserted separately and holds for every hull with no allowance. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float ContactStandoffCm = .5f;
+
+    /** How close to the edge of frame this hull's bounding box is allowed to come.
+     *
+     *  The claim the framing check is named for - that the ship is on screen at all - is asserted
+     *  separately and allows no hull any slack. This is the comfort margin on top of it. Two percent was
+     *  chosen against a 4.82 m hull in a folded pose; the Phoenix flies with its wings deployed, so its
+     *  box is far wider and deeper and it reaches 0.981 of the frame at the pack's own framing. That is
+     *  still on screen, and the framing is the one the ship's author shipped. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float FrameMarginShare = .02f;
 
     /** The length this hull actually flies at, which is what any gameplay comparison wants. */
     float ScaledLength() const
@@ -601,6 +799,44 @@ struct FSSHullDefinition
      *  HullAssetPath and the game has always shipped one of those three. Defined in SSContentTypes.cpp
      *  because it borrows the hero slot's package check rather than duplicating it, and that struct is
      *  declared below this one. */
+    /** Whether this hull has declared everything its own drive and shape require. The owner's rule: a gate
+     *  "has to confirm values exist for that model, not force that model to fit another model's rules". So
+     *  a hull that leaves a required value at zero fails loudly here rather than silently inheriting the
+     *  number some other ship happened to measure. Returns false and fills Why with the first thing
+     *  missing. */
+    bool Validate(FString &Why) const
+    {
+        if (AuthoredLength <= 0.f)
+            return Why = TEXT("AuthoredLength is unset; nothing can be derived from a hull of no length"), false;
+        if (CollisionRadius <= 0.f)
+            return Why = TEXT("CollisionRadius is unset"), false;
+        if (FrameRatePositionCm <= 0.f || FrameRateVelocityCmS <= 0.f || FrameRateHeadingDeg <= 0.f)
+            return Why = TEXT("frame-rate agreement tolerances are unset; measure them, do not inherit them"), false;
+        if (DockClearanceAboveDeck <= 0.f)
+            return Why = TEXT("DockClearanceAboveDeck is unset; a hull has to say how high it parks"), false;
+        if (ChaseScale <= 0.f)
+            return Why = TEXT("ChaseScale is unset; a hull has to say how it is framed"), false;
+        if (CameraLagShareOfArm <= 0.f)
+            return Why = TEXT("CameraLagShareOfArm is unset; a hull has to say how far its camera may trail"), false;
+        if (ContactOffAxisShare <= 0.f)
+            return Why = TEXT("ContactOffAxisShare is unset; a hull has to say how straight its shoves land"), false;
+        if (BrakeFloorUndershootCmS <= 0.f)
+            return Why = TEXT("BrakeFloorUndershootCmS is unset; a hull has to say how it settles onto a floor"), false;
+        if (SteeringReversalResidualShare <= 0.f)
+            return Why = TEXT("SteeringReversalResidualShare is unset; a hull has to say how fast it gives up a turn"),
+                   false;
+        if (ContactStandoffCm <= 0.f)
+            return Why = TEXT("ContactStandoffCm is unset; a hull has to say how close it comes to rest on a surface"),
+                   false;
+        // A skeletal hull is the only kind that can carry its own animated gear, and the only kind the
+        // module presentation cannot fit. Catching the combination here is cheaper than finding a ship
+        // wearing another ship's nacelle casings.
+        if (SkeletalHull && UsesModulePresentation)
+            return Why = TEXT("a skeletal hull cannot wear the static hull's fitted modules"), false;
+        if (Identity != ESSHullIdentity::Classic && OriginToNose <= 0.f)
+            return Why = TEXT("OriginToNose is unmeasured; half the length is an assumption, not a nose"), false;
+        return true;
+    }
     bool Installed() const;
 
     FSSHullDefinition() = default;
@@ -613,6 +849,51 @@ struct FSSHullDefinition
             SkeletalHull = true;
             LandingDeployClipPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/Landing_On.Landing_On");
             LandingStowClipPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/Landing_Off.Landing_Off");
+            // Wings out. 2.6 s, and it leaves the gear stowed, so one clip is the whole flight
+            // configuration.
+            FlightPoseClipPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/BattleMode_Enter.BattleMode_Enter");
+            EngineLeftMeshPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Meshes/SM_Stellar_Phoenix_Engine_Left."
+                                      "SM_Stellar_Phoenix_Engine_Left");
+            EngineRightMeshPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Meshes/SM_Stellar_Phoenix_Engine_Right."
+                                       "SM_Stellar_Phoenix_Engine_Right");
+            // Zero, because these meshes are authored in the ship's own space: each one's pivot IS the
+            // ship origin and its geometry already sits out at the nacelle. Proved rather than assumed -
+            // the engine meshes' geometry centres on X +/-590, Z 349.64, and the rig's own
+            // Nozzle_Front_Left_Mesh / Nozzle_Front_Right_Mesh bones sit at X +583.2 / -591.7, Z 349.77.
+            // Those agree to within a centimetre, so the meshes drop straight onto the hull.
+            //
+            // The first attempt used BP_Spaceship's component offsets instead, which are relative to that
+            // Blueprint's own root and not to this mesh. Composed on top of the pivot they put the engines
+            // at Z 4.7 - the belly - and the nacelles hung underneath the ship in the capture.
+            EngineLeftOffset = FVector::ZeroVector;
+            EngineRightOffset = FVector::ZeroVector;
+            // The pack's own effect rig, transform for transform out of BP_Spaceship: two nacelle exhausts
+            // at X +/-505, Z 345 - exactly where the engine meshes sit - and their two spawn glows.
+            //
+            // The rotations are (pitch, yaw, roll) and the order matters. The first transcription of this
+            // table put the exhausts' 90 degrees into YAW instead of ROLL, turning each emitter a quarter
+            // turn, and the plumes sprayed out sideways like comet tails while the ship flew straight.
+            //
+            // The eight VFX_Exhaust_Small placements the Blueprint also carries are deliberately absent.
+            // Their offsets sit at Z -195 to -533, below this hull's belly, and on screen they read as
+            // streaks of light trailing underneath rather than anything attached to the ship. They must
+            // hang off some other parent inside that Blueprint, and the subobject walk that produced this
+            // table records transforms but not parentage, so their real anchors are not known. Four right
+            // beats twelve where eight are wrong.
+            EffectPaths.Reserve(4);
+            EffectTransforms.Reserve(4);
+            EffectPaths.Add(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust.VFX_Exhaust"));
+            EffectTransforms.Add(
+                FTransform(FRotator(-0.000, 0.000, 90.000), FVector(503.618, -778.856, 345.000), FVector(1.0)));
+            EffectPaths.Add(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust.VFX_Exhaust"));
+            EffectTransforms.Add(
+                FTransform(FRotator(-0.000, 0.000, -90.000), FVector(-510.000, -778.856, 345.000), FVector(1.0)));
+            EffectPaths.Add(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust_Spawn.VFX_Exhaust_Spawn"));
+            EffectTransforms.Add(
+                FTransform(FRotator(-35.000, 180.000, -90.000), FVector(499.263, -838.602, 346.746), FVector(2.5)));
+            EffectPaths.Add(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust_Spawn.VFX_Exhaust_Spawn"));
+            EffectTransforms.Add(
+                FTransform(FRotator(-1.060, -0.000, 90.000), FVector(-512.241, -838.602, 346.746), FVector(2.5)));
             // Measured in 5.8 by loading it: bounds 1243.9 x 2484.0 x 704.8, standing on Z = 0. The long
             // axis is Y, not X - the airbrake mesh spans X and the left engine sits at X +589.85 - which
             // is also why MeshYaw is -90 rather than 0.
@@ -629,6 +910,99 @@ struct FSSHullDefinition
             // which is why parking it at the classic hull's 220 cm leaves it hanging above the pad.
             OriginToNose = 1100.84f;
             OriginToBelly = 0.25f;
+            Drive = ESSHullDrive::ForceSolver;
+            // Found by flying it and looking, not derived: the full 5.15 length ratio put the camera inside an
+            // asteroid, the square root filled the middle of the screen, and 4.5 with the eye high and the tilt
+            // shallow is where the hull reads AND the crosshair still covers a target.
+            // 3800, not the pack's 3000. Its demo ship flies wings-folded and small in frame; this one
+            // holds BattleMode_Enter, so the silhouette is far wider and it rolls into a turn, which
+            // sweeps a 24.84 m wingspan toward the edge. At the pack's 3000 a corner left the bottom of
+            // the screen entirely - 1.003, off screen rather than close to it - and 3450 still touched it
+            // at exactly 1.000. Measured at 3800 across five scenarios and three frame rates: ordinary
+            // flight keeps 0.152 to 0.161 of the frame, and the two full-stick-plus-strafe manoeuvres keep
+            // 0.049 to 0.051. The rest of the rig is still the pack's.
+            ChaseScale = 4.22222f;
+            // TargetOffset, not SocketOffset. The first attempt used the socket, which slides the camera
+            // along the end of the arm; this moves the point the arm ORBITS, and the two frame the ship
+            // differently - which is what put the reticle in the wrong place against the pack's own shots.
+            ChaseHeight = 250.f;
+            ChaseBoomZ = 125.f;
+            ChaseFov = 90.f;
+            CrosshairReach = 20000.f;
+            CrosshairMountZ = 426.912089f;
+            // Straight off BP_Spaceship's PointLight: intensity 1000, radius 1000, at the ship origin.
+            //
+            // The radius is NOT the pack's 1000. That figure lights the pack's own demo, where the camera
+            // sits close and the interesting faces are already filled by a daylit sky. This hull is 2484
+            // long - nose 1100 forward, tail 1383 aft - so a 1000 radius from the origin dies before it
+            // reaches the cargo door at roughly 800 to 900 aft, which is why the door stayed black after
+            // the lamp went in. 2600 covers the hull end to end; the intensity rises with it because the
+            // falloff is inverse square. Both are dials, and both are this hull's own.
+            HullLightIntensity = 5000.f;
+            HullLightRadius = 2600.f;
+            HullLightColor = FColor(161, 213, 255);
+            // -16 was found by eye and framed the ship beautifully in a still; ChaseFraming, once it was
+            // projecting the hull actually being drawn, showed the belly-aft corner sitting 36.7 degrees
+            // below the camera centre line against a 29.4 degree frame half-angle - about seven degrees
+            // off the bottom edge. Steepened to put the whole hull inside the frame through all five
+            // scripted manoeuvres. The eye stays high, which is what the owner asked for; it now looks
+            // where it is flying rather than slightly over it.
+            // Both halves of the pack's own rig, kept apart because they do different jobs: the arm is
+            // pitched down 18 to put the eye above and behind, the camera tipped back 5 from there.
+            ChaseArmPitch = -18.f;
+            ChasePitch = 5.f;
+            // Measured at .1198 of a 4050 cm arm - 485.2 cm - against the classic hull's .0389. Three
+            // times the classic's share, and that figure took three attempts to get right, so it is worth
+            // saying how: a bound that aborts the run on its first breach truncates the very maximum it is
+            // bounding, and each time the bound was raised the "measurement" grew to meet it - 172.9, then
+            // 214.5, then 251.9. The number above is from -SSCameraLagSurvey, which lifts the bound so the
+            // run completes and the worst is the real worst. Do not set this from a gate run.
+            //
+            // The quantity is the gap between the arm the camera was asked to hold and the arm it holds.
+            // On a small socket offset that is simply the spring arm's lag, clamped by CameraLagMaxDistance
+            // at 35 cm - which is exactly what the classic hull measures, and why its bound looked like a
+            // measurement of behaviour rather than of a clamp. On this hull the offset is 3000 cm, so the
+            // same fraction of a degree between placement and readback is levered into centimetres, and the
+            // figure is lag plus that leverage. Which is why it belongs to the hull and not to the game.
+            //
+            // Whether 12 percent of arm reads as the camera breathing during hard turns is a feel question
+            // with hands on the stick, not something this number settles. It is recorded, not endorsed.
+            CameraLagShareOfArm = .13f;
+            // Its own exhausts ride its own nozzle bones; the fitted-module presentation is measured against a
+            // different mesh entirely and would hang casings in mid air.
+            UsesModulePresentation = false;
+            // PROVISIONAL, and the one number here that is not measured. OriginToBelly is 0.25 - this hull
+            // stands on its own pivot - so the belly wants to sit at the deck plus whatever the landing gear
+            // holds it up by, and that extension has never been measured. Parking at the classic hull's 230
+            // leaves it hanging; this is a deliberate under-correction until the gear is measured rather than
+            // a guess dressed as a figure.
+            DockClearanceAboveDeck = 230.f;
+            // Measured at 30, 60 and 144 Hz against a 120 Hz reference of the same scripted flight. Worst
+            // observed: 108.0 cm, 71.9 cm/s, 0.574 degrees of yaw - all three at 30 Hz, all three shrinking
+            // as the rate rises (60 Hz: 33.9, 23.2, 0.178; 144 Hz: 23.6, 28.9, 0.104). Declared at roughly
+            // 1.5x the worst: wide enough not to flap, narrow enough that a real regression still trips it.
+            //
+            // Worth seeing what these say. On POSITION the Phoenix is proportionally TIGHTER than the hull
+            // it replaces - 108 cm on a 2484 cm ship is 4.3 percent of its length, against the classic
+            // hull's 25 on 482.5, which is 5.2 percent. The looser figure is not a worse ship; it is a
+            // bigger one measured by the same rule. Velocity and heading are where the drive differs.
+            FrameRatePositionCm = 165.f;
+            FrameRateVelocityCmS = 110.f;
+            FrameRateHeadingDeg = .9f;
+            // Measured .12 / .13 / .22 / .44 at 144 / 120 / 60 / 30 Hz. Declared just above the worst.
+            ContactOffAxisShare = .55f;
+            // Measured 75.9 cm/s below a 1000 floor - 7.6 percent - while the held brake converges. It
+            // never approaches stopping; the lowest speed reached is 924.
+            BrakeFloorUndershootCmS = 100.f;
+            // Measured 2.1 percent of its pitch rate left after a second of opposite stick, and its yaw
+            // fully reversed. A tenth is the headroom, not the measurement.
+            SteeringReversalResidualShare = .1f;
+            // Measured 1.38 cm short of a wall it was dodged into at 2500 cm/s. Five is the headroom.
+            ContactStandoffCm = 5.f;
+            // Worst corner across five scenarios and three frame rates, wings out.
+            // 0.04 against a measured worst case of 0.049, on the hardest input the suite has. Declaring
+            // the 0.01 this started at would have left five times the slack and caught nothing.
+            FrameMarginShare = .04f;
             // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
             // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
             // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this

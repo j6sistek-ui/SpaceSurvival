@@ -462,7 +462,16 @@ void ASSHUD::DrawHUD()
     }
     if (auto *Ship = GM->GetPlayerShip(); Ship && S.IsFlying())
     {
-        DrawCrosshair(Ship, W * .5f, H * .5f);
+        // Drawn where the ship is actually aiming, not at the middle of the screen. Those are the same
+        // place only while the hull is small enough to leave the centre empty.
+        FVector2D Reticle(W * .5f, H * .5f);
+        if (APlayerController *Viewer = GetOwningPlayerController())
+        {
+            FVector2D Projected;
+            if (Viewer->ProjectWorldLocationToScreen(Ship->CrosshairWorldPoint(), Projected))
+                Reticle = Projected;
+        }
+        DrawCrosshair(Ship, Reticle.X, Reticle.Y);
         DrawCombatCues(Ship, GM->Director && GM->Director->GetActiveThreatCount() > 3);
         if (Ship->IsMoored())
             Text(TEXT("MAGNETIC LOCK / Close services to release"), Margin, H - 195.f * Scale, .7f,
