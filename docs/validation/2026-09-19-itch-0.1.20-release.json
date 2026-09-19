@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-19T04:43:25.273875+00:00",
+  "status": "ITCH_BUILD_PUBLISHED_CLIENT_UPDATE_ACCEPTANCE_PENDING",
+  "version": "0.1.20-alpha",
+  "target": "j6sistek-ui/space-survival:windows-alpha",
+  "upload_id": 19226459,
+  "build_id": 1993461,
+  "previous_build_id": 1990196,
+  "itch_build_state_when_recorded": "PROCESSING",
+  "packaged_source_commit": "59fbc99e190e6f7e82a97ef20c0fa1eccb00b027",
+  "packaged_source_branch": "codex/phoenix-findings",
+  "merges": [],
+  "review_receipt": "docs/validation/2026-09-19-itch-0.1.20-package.json",
+  "review_receipt_sha256": "145532016b880731f500eb1fc66a938e4ac1ca787dbb1c6ed349b1d04c96b835",
+  "payload_files": 51,
+  "payload_bytes": 3060999580,
+  "butler_report": {
+    "patch_mib": 348.48,
+    "savings_percent": 88.06,
+    "reused_percent": 81.54,
+    "fresh_data_mib": 538.96,
+    "note": "Reported by butler during publish."
+  },
+  "what_changed": [
+    "The Stellar Phoenix is the default hull and, for the first time, is actually inside the package. Every previous build shipped the classic hull: the ship is loaded by string path, so the cooker never followed it, and Installed() answered false with no error and no log line.",
+    "Six content roots reached a package for the first time - the ship and its effects, the station props, both station staff, the electrical-storm beams and the alien gallery levels.",
+    "The ship carries the parts its pack ships: both engine nacelle meshes, the pack effect rig at its authored transforms, its onboard point light, its camera rig and the wings-out flight pose.",
+    "The crosshair is a world point ahead of the hull rather than screen centre, and aim and the sight trace both follow it from the muzzle."
+  ],
+  "validation": {
+    "automation": "67 succeeded, 0 failed, 0 notRun, 0 warnings with the Phoenix default; the same 67 under -SSClassic.",
+    "package": "BUILD SUCCESSFUL, 0 errors, 2 warnings.",
+    "package_audit": "ACTUAL_IOSTORE_PRESENCE_AND_COOKED_IMPORT_AUDIT_PASS",
+    "rendered_fixtures": "Station5 and Wave10 both success=True from the packaged build, not the editor.",
+    "cook_coverage": "Scripts/CheckCookCoverage.py: 22 cook roots, 112 string-loaded paths, 0 not covered.",
+    "package_contents": "Stellar_Phoenix, Engine_Left, BattleMode_Enter, Robot_scout, Heavy_space, NERVES and Megastructure all present in SpaceSurvival-Windows.utoc."
+  },
+  "open_defects": [
+    "Issue 53: exhaust emitters are world-space, so plumes smear sideways at flight speed.",
+    "Issue 54: the cargo door receives no fill light in deep space and reads as a black hole.",
+    "Issue 55: DockClearanceAboveDeck has no readers, so the ship parks about 2.3 m above the pad.",
+    "Issue 49: BP_Spaceship does not compile in this project; reparenting it is proposed but unproven.",
+    "Issue 56: this release fixed cook coverage; the check is a report and is not yet wired into the gate."
+  ],
+  "authorization": "The owner asked for the critical fixes and a republish, and confirmed the itch channel is an alpha for one tester who needs the latest build, bugs included.",
+  "limitations": [
+    "No owner gameplay acceptance: the owner has not flown this build.",
+    "Rendered fixtures are scripted, assert no frame rate, and are not natural play.",
+    "itch build state at the time of writing was PROCESSING, not READY.",
+    "No devlog was written or posted for this version."
+  ]
+}
