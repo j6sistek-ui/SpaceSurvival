@@ -914,7 +914,14 @@ struct FSSHullDefinition
             // Found by flying it and looking, not derived: the full 5.15 length ratio put the camera inside an
             // asteroid, the square root filled the middle of the screen, and 4.5 with the eye high and the tilt
             // shallow is where the hull reads AND the crosshair still covers a target.
-            ChaseScale = 3.33333f;
+            // 3800, not the pack's 3000. Its demo ship flies wings-folded and small in frame; this one
+            // holds BattleMode_Enter, so the silhouette is far wider and it rolls into a turn, which
+            // sweeps a 24.84 m wingspan toward the edge. At the pack's 3000 a corner left the bottom of
+            // the screen entirely - 1.003, off screen rather than close to it - and 3450 still touched it
+            // at exactly 1.000. Measured at 3800 across five scenarios and three frame rates: ordinary
+            // flight keeps 0.152 to 0.161 of the frame, and the two full-stick-plus-strafe manoeuvres keep
+            // 0.049 to 0.051. The rest of the rig is still the pack's.
+            ChaseScale = 4.22222f;
             // TargetOffset, not SocketOffset. The first attempt used the socket, which slides the camera
             // along the end of the arm; this moves the point the arm ORBITS, and the two frame the ship
             // differently - which is what put the reticle in the wrong place against the pack's own shots.
@@ -992,8 +999,10 @@ struct FSSHullDefinition
             SteeringReversalResidualShare = .1f;
             // Measured 1.38 cm short of a wall it was dodged into at 2500 cm/s. Five is the headroom.
             ContactStandoffCm = 5.f;
-            // Measured 0.019 of the frame at its closest, wings out, on the pack's own camera.
-            FrameMarginShare = .01f;
+            // Worst corner across five scenarios and three frame rates, wings out.
+            // 0.04 against a measured worst case of 0.049, on the hardest input the suite has. Declaring
+            // the 0.01 this started at would have left five times the slack and caught nothing.
+            FrameMarginShare = .04f;
             // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
             // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
             // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this
