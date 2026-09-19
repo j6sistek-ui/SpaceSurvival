@@ -17,7 +17,14 @@ Build/Windows/FileOpenOrder/
 User downloaded assets/
 Content/Asteroid_Library/
 Content/SciFiCorridor/
-Content/SpaceSurvival/Licensed/
+# Licensed and derived content, excluded a level at a time rather than as a whole tree, because git
+# cannot re-include anything inside a directory that is itself excluded - and one thing in here has to
+# be tracked.
+Content/SpaceSurvival/Licensed/*
+# The remastered squirrel is the owner's OWN art, not a licensed pack. It sits under Licensed/ only
+# because that tree was blanket-ignored. It is the hero the game is about, it is the fallback a clone
+# with no packs boots with, and until now it existed on exactly one machine and in no backup.
+!Content/SpaceSurvival/Licensed/Hero/
 Content/NiagaraExamples/
 Content/RPGEnvironmentVFX/
 Content/Vefects/
