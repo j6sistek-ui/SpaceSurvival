@@ -70,6 +70,47 @@ that something is worth fixing, and then investigating it fully before anyone sa
 - Verify what the change touched, not everything around it.
 - Prefer the narrow fix over the sweep that would also find its cousins. Offer the sweep; do not take it.
 
+### Before anything expensive, ask
+
+Unless the owner asked for that specific thing, confirm before starting. Say which rung you think it needs
+and why — **take the lowest rung that would actually answer the question.**
+
+1. **Look at it.** One offscreen capture or screenshot. Minutes, and it answers anything visible.
+2. **One automation suite.** Seconds. The single-suite command is above.
+3. **The whole suite.** Minutes — for the commit, not for the iteration.
+4. **A full debug: instrument, rebuild, measure, re-measure.** Expensive. **Confirm it is needed first.**
+5. **A subagent sweep.** Rare. State the cost before starting.
+
+Most questions about the game are answered on rung 1. Reaching for rung 4 first is the habit to break.
+
+### Is it worth validating at all
+
+Before building verification around something, three questions:
+
+1. **Can the owner see or feel it?** If not, does it change something they can?
+2. **Does it exist?**
+3. **What is the cheapest check that catches a real regression?** Usually one assertion — not a new field.
+
+Fails 1 or 2, it is a one-line mention to the owner, not an investigation.
+
+### The hard facts, so this does not repeat
+
+Both of these happened in a single session, and both looked reasonable while they were happening:
+
+- **`ContactStandoffCm` exists because a ship stops 1.38 cm further from a wall.** A substep artefact, on a
+  24.84 m hull. It was given a documented per-hull field, a `Validate()` rule and a measured comment. No
+  player can perceive 1.38 cm.
+- **An assertion counting the hull's Niagara plumes was written, then withdrawn.** Under `-NullRHI` that
+  count is *always zero* however correct the ship is — validating something that cannot exist inside the
+  harness doing the validating.
+
+In that same session, on the ship a player actually looks at: exhaust ribbons and engine cores were sitting
+**11 m in front of the real engines**, the drive visual was **frozen at one value**, and a packaged build
+would have shipped the **wrong hull entirely**. All three visible. None needed a tolerance field. The first
+would have shown up in one offscreen capture.
+
+**"67 tests green" was never the thing worth buying.**
+
 ## Hard rules
 
 - **Never put a window on the owner's screen.** Every Unreal invocation passes `-NullRHI` (no renderer) or
