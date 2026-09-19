@@ -1152,9 +1152,9 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         for (int32 Index = 0; Index < Bodies.Num() && Index < 8; ++Index)
         {
             const bool Current = Bodies[Index].Id == Worn;
-            AddEntry(FString::Printf(TEXT("%s%s"), *Bodies[Index].Id.ToString(),
-                                     Current ? TEXT(" / wearing") : TEXT("")),
-                     140 + Index, !Current);
+            AddEntry(
+                FString::Printf(TEXT("%s%s"), *Bodies[Index].Id.ToString(), Current ? TEXT(" / wearing") : TEXT("")),
+                140 + Index, !Current);
         }
         // -1 is the default the account starts at, so this row is "forget my choice" rather than a body.
         AddEntry(TEXT("Station default"), 139, S.account.hero >= 0);

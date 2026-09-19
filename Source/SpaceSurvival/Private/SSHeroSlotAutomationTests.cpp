@@ -105,11 +105,11 @@ bool FSSHeroRoster::RunTest(const FString &)
     // The four selectable bodies sit between the squirrel and the two fallbacks. Position is not the
     // point - being reachable only by name is, because anything ahead of the squirrel would take the
     // deck on a new game and the squirrel is what a new game is supposed to wear.
-    for (ESSHeroIdentity Selectable : {ESSHeroIdentity::Nyxar, ESSHeroIdentity::Soldier,
-                                       ESSHeroIdentity::RobotScout, ESSHeroIdentity::HeavyTrooper})
+    for (ESSHeroIdentity Selectable :
+         {ESSHeroIdentity::Nyxar, ESSHeroIdentity::Soldier, ESSHeroIdentity::RobotScout, ESSHeroIdentity::HeavyTrooper})
     {
-        const int32 Index = Content->Heroes.IndexOfByPredicate(
-            [Selectable](const FSSHeroDefinition &Entry) { return Entry.Identity == Selectable; });
+        const int32 Index = Content->Heroes.IndexOfByPredicate([Selectable](const FSSHeroDefinition &Entry)
+                                                               { return Entry.Identity == Selectable; });
         if (!TestTrue(TEXT("Every selectable body is on the roster"), Index != INDEX_NONE))
             continue;
         const FSSHeroDefinition &Body = Content->Heroes[Index];
@@ -124,8 +124,7 @@ bool FSSHeroRoster::RunTest(const FString &)
         TestTrue(TEXT("A selectable body has never been seated"), Body.PilotClipPath.IsEmpty());
         // 178 is the tallest a body can stand and still sit inside both the 176 cm capsule and the
         // 135-180 cm the readability rig is calibrated across.
-        TestEqual(TEXT("A selectable body is fitted to 178 cm rather than to a scale"), Body.FitHeight,
-                  178.f, 0.f);
+        TestEqual(TEXT("A selectable body is fitted to 178 cm rather than to a scale"), Body.FitHeight, 178.f, 0.f);
         TestEqual(TEXT("A fitted body declares no sole offset of its own"), Body.SoleOffset, 0.f, 0.f);
         TestFalse(TEXT("A selectable body carries a name the wardrobe can show"), Body.Id.IsNone());
     }
@@ -141,8 +140,8 @@ bool FSSHeroRoster::RunTest(const FString &)
         if (Content->Heroes[1].Installed(ESSHeroSlot::Walker))
             TestEqual(TEXT("A preference that is installed wins the slot"), Named.Id, Preferred);
         else
-            TestEqual(TEXT("A preference whose pack is absent falls through to roster order"),
-                      AsInt(Named.Identity), AsInt(Ordered.Identity));
+            TestEqual(TEXT("A preference whose pack is absent falls through to roster order"), AsInt(Named.Identity),
+                      AsInt(Ordered.Identity));
         TestEqual(TEXT("An empty preference is exactly the old behaviour"),
                   AsInt(Content->SelectHero(ESSHeroSlot::Walker, NAME_None).Identity), AsInt(Ordered.Identity));
         TestEqual(TEXT("A preference naming nothing on the roster falls through rather than failing"),
@@ -159,8 +158,7 @@ bool FSSHeroRoster::RunTest(const FString &)
 
     // Found by identity, not by index: the roster grew once and will again, and an index here is a
     // test that breaks for a reason that has nothing to do with what it is checking.
-    const FSSHeroDefinition Trooper =
-        Content->Hero(ESSHeroIdentity::Trooper);
+    const FSSHeroDefinition Trooper = Content->Hero(ESSHeroIdentity::Trooper);
     TestEqual(TEXT("Trooper mesh path"), Trooper.MeshPath, FString(TrooperMesh));
     TestEqual(TEXT("Trooper walk clip"), Trooper.WalkClipPath, FString(TrooperWalk));
     TestEqual(TEXT("Trooper exit clip"), Trooper.DisembarkClipPath, FString(TrooperExit));
@@ -386,8 +384,7 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
     const FSSHeroDefinition Built = FSSHeroDefinition::Fallback();
     TestEqual(TEXT("The pawn is built standing the shipped hero's measured sole on the deck plates"),
               Walker->GetMesh()->GetRelativeLocation(),
-              FVector(0, 0, double(Built.SoleOffset * Built.MeshScale) - BuiltHalfHeight -
-                                WalkingFloorGap() + 2.75f),
+              FVector(0, 0, double(Built.SoleOffset * Built.MeshScale) - BuiltHalfHeight - WalkingFloorGap() + 2.75f),
               1e-5f);
     TestEqual(TEXT("The pawn is built at the shipped hero's scale"), Walker->GetMesh()->GetRelativeScale3D(),
               FVector(Built.MeshScale), 1e-6f);

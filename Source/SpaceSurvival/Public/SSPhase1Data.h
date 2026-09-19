@@ -48,8 +48,8 @@ public:
         // Squirrel stays first, so a new game with no preference saved still wears it: SelectHero
         // returns the first installed entry and nothing below it can displace that. The four
         // selectable bodies sit behind it and are reachable only by asking for one by name.
-        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel),  FSSHeroDefinition(ESSHeroIdentity::Nyxar),
-                  FSSHeroDefinition(ESSHeroIdentity::Soldier),   FSSHeroDefinition(ESSHeroIdentity::RobotScout),
+        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel),     FSSHeroDefinition(ESSHeroIdentity::Nyxar),
+                  FSSHeroDefinition(ESSHeroIdentity::Soldier),      FSSHeroDefinition(ESSHeroIdentity::RobotScout),
                   FSSHeroDefinition(ESSHeroIdentity::HeavyTrooper), FSSHeroDefinition(ESSHeroIdentity::Trooper),
                   FSSHeroDefinition(ESSHeroIdentity::Acornaut)};
     }

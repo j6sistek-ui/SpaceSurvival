@@ -175,7 +175,7 @@ void BuildAlienCrew(AActor *Owner)
         const TCHAR *Clip;
         const TCHAR *Skin;
         FVector Center;
-        int32 Group;   // >=0 turns to face that group's centre; <0 faces Focus, or paces if listed below
+        int32 Group; // >=0 turns to face that group's centre; <0 faces Focus, or paces if listed below
         FVector Focus;
         float Height;
         float Rate;
@@ -188,20 +188,20 @@ void BuildAlienCrew(AActor *Owner)
     const FVector ServiceCounter(700.f, -500.f, 88.f);
     const FVector DockMouth(-1710.f, 0.f, 88.f);
     const FAlien Crew[] = {
-        {TEXT("StationAlienTalkerA"), TEXT("A_Alien_Convo_01_Low_Key_Loop"),
-         TEXT("MI_NyxarCrew_Teal"), FVector(620.f, 900.f, 88.f), 0, FVector::ZeroVector, 196.f, .95f, 0.f},
-        {TEXT("StationAlienListenerA"), TEXT("A_Alien_Convo_11_Listening_Loop"),
-         TEXT("MI_NyxarCrew_Amber"), FVector(820.f, 1000.f, 88.f), 0, FVector::ZeroVector, 189.f, .90f, .31f},
-        {TEXT("StationAlienListenerB"), TEXT("A_Alien_Convo_11_Listening_Loop"),
-         TEXT("MI_NyxarCrew_Violet"), FVector(760.f, 760.f, 88.f), 0, FVector::ZeroVector, 193.f, 1.02f, .62f},
-        {TEXT("StationAlienTalkerB"), TEXT("A_Alien_Convo_01_Low_Key_Loop"),
-         TEXT("MI_NyxarCrew_Jade"), FVector(-640.f, -860.f, 88.f), 1, FVector::ZeroVector, 191.f, .88f, .45f},
-        {TEXT("StationAlienListenerC"), TEXT("A_Alien_Convo_11_Listening_Loop"),
-         TEXT("MI_NyxarCrew_Rose"), FVector(-840.f, -960.f, 88.f), 1, FVector::ZeroVector, 198.f, .97f, .18f},
-        {TEXT("StationAlienFidget"), TEXT("A_Alien_MOB1_Walk_F_Loop_IPC"),
-         TEXT("MI_NyxarCrew_Pale"), FVector(1420.f, -820.f, 88.f), -1, ServiceCounter, 187.f, .92f, .55f},
-        {TEXT("StationAlienWatch"), TEXT("A_Alien_Walk_06_Look_Around_Loop_IP"),
-         TEXT("MI_NyxarCrew_Teal"), FVector(-1420.f, 820.f, 88.f), -1, DockMouth, 194.f, .88f, .10f},
+        {TEXT("StationAlienTalkerA"), TEXT("A_Alien_Convo_01_Low_Key_Loop"), TEXT("MI_NyxarCrew_Teal"),
+         FVector(620.f, 900.f, 88.f), 0, FVector::ZeroVector, 196.f, .95f, 0.f},
+        {TEXT("StationAlienListenerA"), TEXT("A_Alien_Convo_11_Listening_Loop"), TEXT("MI_NyxarCrew_Amber"),
+         FVector(820.f, 1000.f, 88.f), 0, FVector::ZeroVector, 189.f, .90f, .31f},
+        {TEXT("StationAlienListenerB"), TEXT("A_Alien_Convo_11_Listening_Loop"), TEXT("MI_NyxarCrew_Violet"),
+         FVector(760.f, 760.f, 88.f), 0, FVector::ZeroVector, 193.f, 1.02f, .62f},
+        {TEXT("StationAlienTalkerB"), TEXT("A_Alien_Convo_01_Low_Key_Loop"), TEXT("MI_NyxarCrew_Jade"),
+         FVector(-640.f, -860.f, 88.f), 1, FVector::ZeroVector, 191.f, .88f, .45f},
+        {TEXT("StationAlienListenerC"), TEXT("A_Alien_Convo_11_Listening_Loop"), TEXT("MI_NyxarCrew_Rose"),
+         FVector(-840.f, -960.f, 88.f), 1, FVector::ZeroVector, 198.f, .97f, .18f},
+        {TEXT("StationAlienFidget"), TEXT("A_Alien_MOB1_Walk_F_Loop_IPC"), TEXT("MI_NyxarCrew_Pale"),
+         FVector(1420.f, -820.f, 88.f), -1, ServiceCounter, 187.f, .92f, .55f},
+        {TEXT("StationAlienWatch"), TEXT("A_Alien_Walk_06_Look_Around_Loop_IP"), TEXT("MI_NyxarCrew_Teal"),
+         FVector(-1420.f, 820.f, 88.f), -1, DockMouth, 194.f, .88f, .10f},
     };
 
     if (!FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(MeshPath))))
@@ -256,9 +256,7 @@ void BuildAlienCrew(AActor *Owner)
                                    ? Centre[Member.Group]
                                    : Member.Focus;
         const FVector Toward = Target - Member.Center;
-        const float Heading = Toward.IsNearlyZero()
-                                  ? 0.f
-                                  : FMath::RadiansToDegrees(FMath::Atan2(Toward.Y, Toward.X));
+        const float Heading = Toward.IsNearlyZero() ? 0.f : FMath::RadiansToDegrees(FMath::Atan2(Toward.Y, Toward.X));
 
         const float Scale = Member.Height / NativeHeight;
         const FRotator Rotation(0.f, Heading - AlienMeshFacesPlusY, 0.f);
@@ -313,9 +311,8 @@ void PaceAlienCrew(AActor *Owner)
         const float U = Time * Route.Speed + Route.Phase;
         const FVector Offset(Route.SpanX * FMath::Sin(U), Route.SpanY * FMath::Sin(2.f * U), 0.f);
         const FVector Velocity(Route.SpanX * FMath::Cos(U), 2.f * Route.SpanY * FMath::Cos(2.f * U), 0.f);
-        const float Heading = Velocity.IsNearlyZero()
-                                  ? 0.f
-                                  : FMath::RadiansToDegrees(FMath::Atan2(Velocity.Y, Velocity.X));
+        const float Heading =
+            Velocity.IsNearlyZero() ? 0.f : FMath::RadiansToDegrees(FMath::Atan2(Velocity.Y, Velocity.X));
 
         const FRotator Rotation(0.f, Heading - AlienMeshFacesPlusY, 0.f);
         const float Scale = Crewman->GetRelativeScale3D().X;

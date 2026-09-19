@@ -739,7 +739,7 @@ void PersistentRunHistory()
     std::string error;
     CHECK(SS::DecodeAccount(recorded, restored, error));
     CHECK(SS::EncodeAccount(restored) == recorded);
-    CHECK(recorded.rfind("SS ACCOUNT 3 ", 0) == 0);
+    CHECK(recorded.rfind("SS ACCOUNT 4 ", 0) == 0);
 
     // Version 3 added the paint bay: one choice per hull section, -1 for the factory finish.
     auto painted = s.account;
@@ -747,15 +747,40 @@ void PersistentRunHistory()
     SS::Account repainted;
     CHECK(SS::DecodeAccount(SS::EncodeAccount(painted), repainted, error));
     CHECK(repainted.paint == painted.paint && SS::EncodeAccount(repainted) == SS::EncodeAccount(painted));
-    // A version 2 payload, written before the paint bay, still loads, keeps its history and means factory finish.
+    // A version 2 payload, written before either the paint bay or the wardrobe, still loads, keeps its
+    // history, and means the factory finish with no body ever chosen.
     std::string legacy = recorded;
-    legacy.replace(0, std::string("SS ACCOUNT 3 ").size(), "SS ACCOUNT 2 ");
-    for (int trailing = 0; trailing < SS::PaintSections; ++trailing)
+    legacy.replace(0, std::string("SS ACCOUNT 4 ").size(), "SS ACCOUNT 2 ");
+    for (int trailing = 0; trailing < SS::PaintSections + 1; ++trailing)
         legacy.erase(legacy.find_last_of(' '));
     SS::Account fromLegacy;
     fromLegacy.paint = {{5, 5, 5, 5}};
+    fromLegacy.hero = 3;
     CHECK(SS::DecodeAccount(legacy, fromLegacy, error));
     CHECK(fromLegacy.paint == SS::Account{}.paint && fromLegacy.history.size() == s.account.history.size());
+    CHECK(fromLegacy.hero == -1);
+
+    // Version 4 added the wardrobe. A version 3 payload - after the paint bay, before the wardrobe -
+    // keeps its paint and simply records no choice, which is the migration a live save actually takes.
+    std::string beforeWardrobe = SS::EncodeAccount(painted);
+    beforeWardrobe.replace(0, std::string("SS ACCOUNT 4 ").size(), "SS ACCOUNT 3 ");
+    beforeWardrobe.erase(beforeWardrobe.find_last_of(' '));
+    SS::Account upgraded;
+    upgraded.hero = 5;
+    CHECK(SS::DecodeAccount(beforeWardrobe, upgraded, error));
+    CHECK(upgraded.paint == painted.paint && upgraded.hero == -1);
+
+    // The choice round trips, and a body outside the range the domain will vouch for is refused rather
+    // than clamped: the domain stores the number and the game layer decides what it names.
+    auto dressed = painted;
+    dressed.hero = 3;
+    SS::Account redressed;
+    CHECK(SS::DecodeAccount(SS::EncodeAccount(dressed), redressed, error));
+    CHECK(redressed.hero == 3 && SS::EncodeAccount(redressed) == SS::EncodeAccount(dressed));
+    dressed.hero = SS::MaxHeroIdentity + 1;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(dressed), redressed, error));
+    dressed.hero = -2;
+    CHECK(!SS::DecodeAccount(SS::EncodeAccount(dressed), redressed, error));
     // Choices outside the palette are refused rather than clamped.
     painted.paint[1] = SS::PaintColours;
     CHECK(!SS::DecodeAccount(SS::EncodeAccount(painted), repainted, error));
@@ -818,23 +843,24 @@ void PersistentRunHistory()
     CHECK(migrated.lastAwardedRunId == "legacy-run" && migrated.lastScore == 3000 && migrated.lastXP == 175 &&
           migrated.lastWave == 6);
     CHECK(migrated.tutorialFlags == 7 && migrated.history.empty() && migrated.HeavyCannonUnlocked());
-    const auto v3 = SS::EncodeAccount(migrated);
-    CHECK(v3.rfind("SS ACCOUNT 3 ", 0) == 0);
-    CHECK(SS::DecodeAccount(v3, restored, error));
-    CHECK(SS::EncodeAccount(restored) == v3);
-    CHECK(!SS::DecodeAccount("SS ACCOUNT 4 0", restored, error));
-    // The history count sits just before the four paint choices; an impossible count is still refused.
-    auto paintStart = v3.size();
-    for (int choice = 0; choice < SS::PaintSections; ++choice)
-        paintStart = v3.find_last_of(' ', paintStart - 1);
-    const auto paintTail = v3.substr(paintStart);
-    const auto beforeCount = v3.substr(0, v3.find_last_of(' ', paintStart - 1) + 1);
-    CHECK(SS::DecodeAccount(beforeCount + "0" + paintTail, restored, error));
-    CHECK(!SS::DecodeAccount(beforeCount + "-1" + paintTail, restored, error));
-    CHECK(!SS::DecodeAccount(beforeCount + "11" + paintTail, restored, error));
+    const auto v4 = SS::EncodeAccount(migrated);
+    CHECK(v4.rfind("SS ACCOUNT 4 ", 0) == 0);
+    CHECK(SS::DecodeAccount(v4, restored, error));
+    CHECK(SS::EncodeAccount(restored) == v4);
+    CHECK(!SS::DecodeAccount("SS ACCOUNT 5 0", restored, error));
+    // The history count sits just before the four paint choices and the wardrobe choice; an impossible
+    // count is still refused.
+    auto tailStart = v4.size();
+    for (int trailing = 0; trailing < SS::PaintSections + 1; ++trailing)
+        tailStart = v4.find_last_of(' ', tailStart - 1);
+    const auto tail = v4.substr(tailStart);
+    const auto beforeCount = v4.substr(0, v4.find_last_of(' ', tailStart - 1) + 1);
+    CHECK(SS::DecodeAccount(beforeCount + "0" + tail, restored, error));
+    CHECK(!SS::DecodeAccount(beforeCount + "-1" + tail, restored, error));
+    CHECK(!SS::DecodeAccount(beforeCount + "11" + tail, restored, error));
     CHECK(!SS::DecodeAccount(v1 + " unexpected", restored, error));
     CHECK(!SS::DecodeAccount(v1.substr(0, v1.size() / 2), restored, error));
-    CHECK(SS::EncodeAccount(restored) == v3);
+    CHECK(SS::EncodeAccount(restored) == v4);
     SS::Session afterMigration;
     afterMigration.account = migrated;
     CHECK(!afterMigration.StartRun("legacy-run"));

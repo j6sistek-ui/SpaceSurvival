@@ -1373,11 +1373,10 @@ struct FSSHeroDefinition
                                 "A_Alien_MOB1_Walk_F_Loop_IPC.A_Alien_MOB1_Walk_F_Loop_IPC");
             IdleClipPath = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
                                 "A_Alien_MOB1_Stand_Relaxed_Idle_v2_IPC.A_Alien_MOB1_Stand_Relaxed_Idle_v2_IPC");
-            IdleFidgetClipPaths = {
-                TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
-                     "A_Alien_MOB1_Stand_Relaxed_Fgt_v1_IPC.A_Alien_MOB1_Stand_Relaxed_Fgt_v1_IPC"),
-                TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
-                     "A_Alien_MOB1_Stand_Relaxed_Fgt_v4_IPC.A_Alien_MOB1_Stand_Relaxed_Fgt_v4_IPC")};
+            IdleFidgetClipPaths = {TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
+                                        "A_Alien_MOB1_Stand_Relaxed_Fgt_v1_IPC.A_Alien_MOB1_Stand_Relaxed_Fgt_v1_IPC"),
+                                   TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
+                                        "A_Alien_MOB1_Stand_Relaxed_Fgt_v4_IPC.A_Alien_MOB1_Stand_Relaxed_Fgt_v4_IPC")};
             JogClipPath = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
                                "A_Alien_MOB1_Jog_F_IPC.A_Alien_MOB1_Jog_F_IPC");
             RunClipPath = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
