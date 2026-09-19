@@ -49,6 +49,11 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 /Content/TripoModels/
 *.lnk
 
+# Local UI layout tool: generated manifest, saved layouts and copied glyph art.
+/Tools/UILayout/assets.json
+/Tools/UILayout/layout.json
+/Tools/UILayout/glyphs/
+
 # Fab listings imported from the vault cache (Scripts/ImportVaultGlb.py): licensed, and outside
 # /Game/SpaceSurvival so they cook only when something references them.
 /Content/Fab/
@@ -59,3 +64,30 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 /Content/Blender/
 # Scripts/TestSendScenes.py duplicates a licensed pack mesh here; a killed run leaves it until the next run.
 /Content/_SSSelfTest/
+
+# Owner-licensed alien NPC (Fab: "Alien / Sci-Fi Humanoid - UE5", standard UE5 skeleton). Ships its own
+# IK rig, retargeter, control rigs and locomotion clips; the station recolours its material instances
+# per NPC rather than duplicating the mesh.
+/Content/Nyxar/
+
+# Owner-licensed MoCap Online animation packs (Mobility Starter, Mocap Basics). Both self-contained on
+# their own UE4_Mannequin_Skeleton; the station's alien crew clips are retargeted copies under
+# /Game/SpaceSurvival/Licensed, so these two roots are source material and never cook directly.
+/Content/MCO_Mocap_Basics/
+/Content/Mobility/
+
+# Owner-licensed Retro Futuristic Soldier (Fab). Self-contained: ships its own SK_Mannequin skeleton
+# and a full MF_Unarmed_* locomotion set, so it needs no retarget. Selectable from the station kiosk.
+/Content/RetroFuturisticSoldier/
+
+# Owner-licensed Paragon heroes and the RamsterZ animation library, installed 2026-09-19. Not adopted:
+# the Paragon bodies are 1.2-2.4 GB each, stand 1.8-3.1 m against a 176 cm capsule, and carry MOBA
+# ability clips rather than plain locomotion, so none is on the hero roster. Ignored so that a
+# `git add .` cannot pull twelve gigabytes of licensed content into the repository.
+/Content/ParagonGRIMexe/
+/Content/ParagonHowitzer/
+/Content/ParagonKwang/
+/Content/ParagonPhase/
+/Content/ParagonSevarog/
+/Content/ParagonYin/
+/Content/RamsterZ_FreeAnims_Volume1/

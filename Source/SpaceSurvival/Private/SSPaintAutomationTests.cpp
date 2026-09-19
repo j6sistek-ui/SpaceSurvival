@@ -15,25 +15,56 @@ bool FSSPaintAccountPayload::RunTest(const FString &Parameters)
     TestTrue(TEXT("Paint survives the round trip"), Decoded.paint == Painted.paint);
     TestTrue(TEXT("Re-encoding is stable"), SS::EncodeAccount(Decoded) == SS::EncodeAccount(Painted));
 
-    // A version 2 payload, written before the paint bay existed, still loads and means the factory finish.
+    // A version 2 payload, written before either the paint bay or the wardrobe existed, still loads
+    // and means the factory finish and no chosen body.
     std::string Version2 = SS::EncodeAccount(SS::Account{});
-    const std::string Marker = "SS ACCOUNT 3 ";
-    TestTrue(TEXT("Fresh payload is version 3"), Version2.compare(0, Marker.size(), Marker) == 0);
+    const std::string Marker = "SS ACCOUNT 4 ";
+    TestTrue(TEXT("Fresh payload is version 4"), Version2.compare(0, Marker.size(), Marker) == 0);
     Version2.replace(0, Marker.size(), "SS ACCOUNT 2 ");
-    for (int Trailing = 0; Trailing < SS::PaintSections; ++Trailing)
+    // The four paint sections AND the wardrobe choice: version 2 predates both trailing fields.
+    for (int Trailing = 0; Trailing < SS::PaintSections + 1; ++Trailing)
         Version2.erase(Version2.find_last_of(' '));
     SS::Account Legacy;
     Legacy.paint = {{5, 5, 5, 5}};
+    Legacy.hero = 3;
     TestTrue(TEXT("Version 2 payload decodes"), SS::DecodeAccount(Version2, Legacy, Error));
     TestTrue(TEXT("Version 2 payload means factory finish"), Legacy.paint == SS::Account{}.paint);
+    TestEqual(TEXT("Version 2 payload means no body was ever chosen"), Legacy.hero, -1);
 
-    // Out-of-range choices are refused rather than clamped: the file is wrong, not the pilot.
-    std::string Version3 = SS::EncodeAccount(SS::Account{});
-    Version3.replace(Version3.size() - 2, 2, "10");
-    TestFalse(TEXT("Colour past the palette is rejected"), SS::DecodeAccount(Version3, Decoded, Error));
-    Version3 = SS::EncodeAccount(SS::Account{});
-    Version3.replace(Version3.size() - 2, 2, "-2");
-    TestFalse(TEXT("Colour below the factory finish is rejected"), SS::DecodeAccount(Version3, Decoded, Error));
+    // A version 3 payload - written after the paint bay but before the wardrobe - keeps its paint and
+    // simply has no choice recorded. This is the migration the wardrobe actually needs to survive.
+    std::string Version3 = SS::EncodeAccount(Painted);
+    Version3.replace(0, Marker.size(), "SS ACCOUNT 3 ");
+    Version3.erase(Version3.find_last_of(' '));
+    SS::Account Upgraded;
+    Upgraded.hero = 5;
+    TestTrue(TEXT("Version 3 payload decodes"), SS::DecodeAccount(Version3, Upgraded, Error));
+    TestTrue(TEXT("Version 3 payload keeps its paint"), Upgraded.paint == Painted.paint);
+    TestEqual(TEXT("Version 3 payload means no body was ever chosen"), Upgraded.hero, -1);
+
+    // The wardrobe choice survives its own round trip.
+    SS::Account Worn = SS::Account{};
+    Worn.hero = 3;
+    SS::Account WornBack;
+    TestTrue(TEXT("A wardrobe choice round trips"), SS::DecodeAccount(SS::EncodeAccount(Worn), WornBack, Error));
+    TestEqual(TEXT("The body chosen is the body restored"), WornBack.hero, 3);
+
+    // Out-of-range choices are refused rather than clamped: the file is wrong, not the pilot. The
+    // wardrobe choice is the last field now, so the paint colour is the one before it.
+    std::string Bad = SS::EncodeAccount(SS::Account{});
+    const std::size_t HeroStart = Bad.find_last_of(' ');
+    const std::size_t PaintStart = Bad.find_last_of(' ', HeroStart - 1);
+    Bad.replace(HeroStart + 1, std::string::npos, "999");
+    TestFalse(TEXT("A body past the roster is rejected"), SS::DecodeAccount(Bad, Decoded, Error));
+    Bad = SS::EncodeAccount(SS::Account{});
+    Bad.replace(HeroStart + 1, std::string::npos, "-2");
+    TestFalse(TEXT("A body below the default is rejected"), SS::DecodeAccount(Bad, Decoded, Error));
+    Bad = SS::EncodeAccount(SS::Account{});
+    Bad.replace(PaintStart + 1, HeroStart - PaintStart - 1, "10");
+    TestFalse(TEXT("Colour past the palette is rejected"), SS::DecodeAccount(Bad, Decoded, Error));
+    Bad = SS::EncodeAccount(SS::Account{});
+    Bad.replace(PaintStart + 1, HeroStart - PaintStart - 1, "-2");
+    TestFalse(TEXT("Colour below the factory finish is rejected"), SS::DecodeAccount(Bad, Decoded, Error));
     return true;
 }
 

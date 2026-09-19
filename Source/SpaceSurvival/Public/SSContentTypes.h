@@ -499,7 +499,15 @@ enum class ESSHeroIdentity : uint8
     /** The hero whose mesh and clips are in this repository. Every measured constant below is its own. */
     Acornaut,
     /** Authored in Blender, not yet imported. Inert: selection skips it until its assets exist. */
-    Squirrel
+    Squirrel,
+    /** Licensed alien, already the station's crew. Its clips are retarget results on its own skeleton. */
+    Nyxar,
+    /** Licensed soldier on the Unreal mannequin rig, carrying its own eight-way locomotion. */
+    Soldier,
+    /** Licensed robot on the UE4 mannequin rig, so the MoCap library plays on it untouched. */
+    RobotScout,
+    /** Licensed trooper on the UE4 mannequin rig, the second body that rig already fits. */
+    HeavyTrooper
 };
 
 /** What moves a hull. Not a cosmetic distinction: a kinematic hull's position is written directly by a
@@ -1334,6 +1342,132 @@ struct FSSHeroDefinition
             RootBone = TEXT("Root");
             LeftHandBone = TEXT("L_Hand");
             RightHandBone = TEXT("R_Hand");
+        }
+        // The four selectable bodies below share a shape, so read them together. Each is a licensed
+        // mesh of unknown proportions fitted to a height rather than a scale, exactly as the trooper
+        // above is, and each names the Unreal mannequin bone set because that is what its rig uses -
+        // verified on the alien by reading 161 track names off its own retargeted walk.
+        //
+        // FitHeight is 178 for all four and that number is not arbitrary: the walker's capsule is a
+        // fixed 176 cm collider and the readability rig is calibrated across 135-180 cm, so 178 is the
+        // tallest a new body can stand and still sit inside both. Their native heights differ by five
+        // centimetres at most (178.6 to 183.8), so none of them is being distorted to get there.
+        //
+        // WalkSpeed, JogSpeed and RunSpeed here are DESIGN values, not measurements, and that is a
+        // real difference from the squirrel above whose three speeds were each read off a planted
+        // foot. Every clip these four use is in-place - the MoCap packs' IPC variants and the
+        // mannequin ThirdPerson set - so there is no root travel to measure. What the numbers do is
+        // order the gait ladder: AddGait only accepts a rung faster than the one below it, so a jog
+        // and a run that both inherited the default 180 would silently never be added at all.
+        else if (Identity == ESSHeroIdentity::Nyxar)
+        {
+            Id = TEXT("Nyxar");
+            MeshPath = TEXT("/Game/Nyxar/Meshes/SKM_Nyxar.SKM_Nyxar");
+            WalkClipPath = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
+                                "A_Alien_MOB1_Walk_F_Loop_IPC.A_Alien_MOB1_Walk_F_Loop_IPC");
+            IdleClipPath = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
+                                "A_Alien_MOB1_Stand_Relaxed_Idle_v2_IPC.A_Alien_MOB1_Stand_Relaxed_Idle_v2_IPC");
+            IdleFidgetClipPaths = {
+                TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
+                     "A_Alien_MOB1_Stand_Relaxed_Fgt_v1_IPC.A_Alien_MOB1_Stand_Relaxed_Fgt_v1_IPC"),
+                TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
+                     "A_Alien_MOB1_Stand_Relaxed_Fgt_v4_IPC.A_Alien_MOB1_Stand_Relaxed_Fgt_v4_IPC")};
+            JogClipPath = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
+                               "A_Alien_MOB1_Jog_F_IPC.A_Alien_MOB1_Jog_F_IPC");
+            RunClipPath = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/"
+                               "A_Alien_MOB1_Run_F_IPC.A_Alien_MOB1_Run_F_IPC");
+            // Never seated. The ship keeps whichever hero owns the pilot slot, which is what already
+            // happens for the trooper, so walking as the alien leaves the squirrel flying.
+            PilotClipPath = FString();
+            DisembarkClipPath = FString();
+            SoleOffset = 0.f;
+            FitHeight = 178.f;
+            IdleFidgetSeconds = 11.f;
+            WalkSpeed = 180.f;
+            JogSpeed = 300.f;
+            RunSpeed = 450.f;
+            // Dark plates with emissive panels at the hands, eyes and spine. Left at 1 because nothing
+            // has been measured on the deck yet - unlike the trooper's 0.5, which two captures argued
+            // about before it was settled.
+            ReadabilityLightScale = 1.f;
+            RootBone = TEXT("root");
+            PelvisBone = TEXT("pelvis");
+            LeftFootBone = TEXT("foot_l");
+            RightFootBone = TEXT("foot_r");
+            LeftHandBone = TEXT("hand_l");
+            RightHandBone = TEXT("hand_r");
+        }
+        else if (Identity == ESSHeroIdentity::Soldier)
+        {
+            Id = TEXT("Soldier");
+            MeshPath = TEXT("/Game/RetroFuturisticSoldier/Meshes/SKM_Soldier_Manny.SKM_Soldier_Manny");
+            WalkClipPath = TEXT("/Game/RetroFuturisticSoldier/Anims/Unarmed/Walk/"
+                                "MF_Unarmed_Walk_Fwd.MF_Unarmed_Walk_Fwd");
+            IdleClipPath = TEXT("/Game/RetroFuturisticSoldier/Anims/Unarmed/MM_Idle.MM_Idle");
+            JogClipPath = TEXT("/Game/RetroFuturisticSoldier/Anims/Unarmed/Jog/"
+                               "MF_Unarmed_Jog_Fwd.MF_Unarmed_Jog_Fwd");
+            // No run clip in the pack. The ladder simply ends at the jog, which AddGait already
+            // handles - a hero with neither fast clip keeps the single walk rung.
+            RunClipPath = FString();
+            PilotClipPath = FString();
+            DisembarkClipPath = FString();
+            SoleOffset = 0.f;
+            FitHeight = 178.f;
+            WalkSpeed = 180.f;
+            JogSpeed = 300.f;
+            ReadabilityLightScale = 1.f;
+            RootBone = TEXT("root");
+            PelvisBone = TEXT("pelvis");
+            LeftFootBone = TEXT("foot_l");
+            RightFootBone = TEXT("foot_r");
+            LeftHandBone = TEXT("hand_l");
+            RightHandBone = TEXT("hand_r");
+        }
+        else if (Identity == ESSHeroIdentity::RobotScout)
+        {
+            Id = TEXT("RobotScout");
+            MeshPath = TEXT("/Game/Robot_scout_R_21/Mesh/SK_Robot_scout_R21.SK_Robot_scout_R21");
+            WalkClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonWalk.ThirdPersonWalk");
+            IdleClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonIdle.ThirdPersonIdle");
+            // Its pack ships no jog, so the ladder goes straight from walk to run.
+            JogClipPath = FString();
+            RunClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonRun.ThirdPersonRun");
+            PilotClipPath = FString();
+            DisembarkClipPath = FString();
+            SoleOffset = 0.f;
+            FitHeight = 178.f;
+            WalkSpeed = 180.f;
+            RunSpeed = 450.f;
+            ReadabilityLightScale = 1.f;
+            RootBone = TEXT("root");
+            PelvisBone = TEXT("pelvis");
+            LeftFootBone = TEXT("foot_l");
+            RightFootBone = TEXT("foot_r");
+            LeftHandBone = TEXT("hand_l");
+            RightHandBone = TEXT("hand_r");
+        }
+        else if (Identity == ESSHeroIdentity::HeavyTrooper)
+        {
+            Id = TEXT("HeavyTrooper");
+            MeshPath = TEXT("/Game/Heavy_space_trooper/character/mesh/"
+                            "Heavy_space_trooper_A_Pose.Heavy_space_trooper_A_Pose");
+            WalkClipPath = TEXT("/Game/Heavy_space_trooper/Demo/animations/ThirdPersonWalk.ThirdPersonWalk");
+            IdleClipPath = TEXT("/Game/Heavy_space_trooper/Demo/animations/ThirdPersonIdle.ThirdPersonIdle");
+            JogClipPath = FString();
+            RunClipPath = TEXT("/Game/Heavy_space_trooper/Demo/animations/ThirdPersonRun.ThirdPersonRun");
+            PilotClipPath = FString();
+            DisembarkClipPath = FString();
+            SoleOffset = 0.f;
+            FitHeight = 178.f;
+            WalkSpeed = 180.f;
+            RunSpeed = 450.f;
+            ReadabilityLightScale = 1.f;
+            RootBone = TEXT("root");
+            PelvisBone = TEXT("pelvis");
+            LeftFootBone = TEXT("foot_l");
+            RightFootBone = TEXT("foot_r");
+            LeftHandBone = TEXT("hand_l");
+            RightHandBone = TEXT("hand_r");
         }
     }
 };

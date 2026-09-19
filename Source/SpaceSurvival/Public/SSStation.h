@@ -151,6 +151,11 @@ public:
         return Disembarking;
     }
     void Move(FVector2D Direction, FVector2D Look, bool Run, float DeltaSeconds);
+    /** Put a hero on this pawn: mesh, lift, yaw, scale, the gait ladder, the readability rig and the
+     *  foot rest height. Called once from BeginPlay, and again whenever the station wardrobe changes
+     *  the choice. An empty preference is exactly the old behaviour - the first installed hero in
+     *  roster order - so a pawn that is never asked for anything wears what it always wore. */
+    void ApplyHero(FName PreferredId = NAME_None);
     /** Whichever hero this build installed. Telemetry and tests ask it for the names and numbers
      *  they used to spell out, so they follow the hero the player is actually wearing. */
     const FSSHeroDefinition &GetHero() const

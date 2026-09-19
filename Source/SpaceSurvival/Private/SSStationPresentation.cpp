@@ -3,6 +3,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
+#include "Engine/World.h"
 #include "Engine/StaticMesh.h"
 #include "GameFramework/Actor.h"
 #include "Materials/MaterialInterface.h"
@@ -130,6 +131,197 @@ void BuildSupplementalStaff(AActor *Owner)
                         Staff->SetPlayRate(Source.Rate);
                     }
                 }
+    }
+}
+
+// The alien clips are retargeted from the MoCap mannequin, and that mesh is authored facing +Y - the
+// same convention BuildStaff relies on. A component turned straight at a heading therefore presents
+// its shoulder, not its face, so every heading below gives up a quarter turn.
+constexpr float AlienMeshFacesPlusY = 90.f;
+constexpr int32 AlienGroupCount = 2;
+
+// Who wanders, and how far. Deliberately only two of the seven: a group mid-conversation that drifts
+// apart stops reading as a conversation.
+struct FAlienPace
+{
+    const TCHAR *Name;
+    FVector Center;
+    float SpanX;
+    float SpanY;
+    float Speed;
+    float Phase;
+};
+const FAlienPace AlienPacers[] = {
+    {TEXT("StationAlienFidget"), FVector(1420.f, -820.f, 88.f), 96.f, 58.f, .42f, 0.f},
+    {TEXT("StationAlienWatch"), FVector(-1420.f, 820.f, 88.f), 112.f, 64.f, .33f, 1.7f},
+};
+
+void BuildAlienCrew(AActor *Owner)
+{
+    if (!IsValid(Owner) || !Owner->GetRootComponent())
+        return;
+
+    // The pack ships a standard-proportion UE5 skeleton plus its own IK rig and retargeter, so these
+    // clips are retarget results onto SKEL_Nyxar rather than anything hand-animated. They live under
+    // /Game/SpaceSurvival, which always cooks; the mesh and its materials do not, which is why
+    // Config/DefaultGame.ini names those three folders. Scripts/AuthorAlienCrew.py rebuilds both.
+    const TCHAR *MeshPath = TEXT("/Game/Nyxar/Meshes/SKM_Nyxar.SKM_Nyxar");
+    const FString AnimRoot = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/Anims/");
+    const FString SkinRoot = TEXT("/Game/SpaceSurvival/Licensed/StationAssets/AlienCrew/");
+
+    struct FAlien
+    {
+        const TCHAR *Name;
+        const TCHAR *Clip;
+        const TCHAR *Skin;
+        FVector Center;
+        int32 Group;   // >=0 turns to face that group's centre; <0 faces Focus, or paces if listed below
+        FVector Focus;
+        float Height;
+        float Rate;
+        float Phase;
+    };
+    // Nobody is given a yaw. A conversation group faces the middle of its own circle, worked out below
+    // from where its members actually stand, so moving one of them re-aims the others instead of
+    // leaving a group talking past each other. The two solitary figures pace, and take their heading
+    // from the direction they are travelling.
+    const FVector ServiceCounter(700.f, -500.f, 88.f);
+    const FVector DockMouth(-1710.f, 0.f, 88.f);
+    const FAlien Crew[] = {
+        {TEXT("StationAlienTalkerA"), TEXT("A_Alien_Convo_01_Low_Key_Loop"),
+         TEXT("MI_NyxarCrew_Teal"), FVector(620.f, 900.f, 88.f), 0, FVector::ZeroVector, 196.f, .95f, 0.f},
+        {TEXT("StationAlienListenerA"), TEXT("A_Alien_Convo_11_Listening_Loop"),
+         TEXT("MI_NyxarCrew_Amber"), FVector(820.f, 1000.f, 88.f), 0, FVector::ZeroVector, 189.f, .90f, .31f},
+        {TEXT("StationAlienListenerB"), TEXT("A_Alien_Convo_11_Listening_Loop"),
+         TEXT("MI_NyxarCrew_Violet"), FVector(760.f, 760.f, 88.f), 0, FVector::ZeroVector, 193.f, 1.02f, .62f},
+        {TEXT("StationAlienTalkerB"), TEXT("A_Alien_Convo_01_Low_Key_Loop"),
+         TEXT("MI_NyxarCrew_Jade"), FVector(-640.f, -860.f, 88.f), 1, FVector::ZeroVector, 191.f, .88f, .45f},
+        {TEXT("StationAlienListenerC"), TEXT("A_Alien_Convo_11_Listening_Loop"),
+         TEXT("MI_NyxarCrew_Rose"), FVector(-840.f, -960.f, 88.f), 1, FVector::ZeroVector, 198.f, .97f, .18f},
+        {TEXT("StationAlienFidget"), TEXT("A_Alien_MOB1_Walk_F_Loop_IPC"),
+         TEXT("MI_NyxarCrew_Pale"), FVector(1420.f, -820.f, 88.f), -1, ServiceCounter, 187.f, .92f, .55f},
+        {TEXT("StationAlienWatch"), TEXT("A_Alien_Walk_06_Look_Around_Loop_IP"),
+         TEXT("MI_NyxarCrew_Teal"), FVector(-1420.f, 820.f, 88.f), -1, DockMouth, 194.f, .88f, .10f},
+    };
+
+    if (!FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(FString(MeshPath))))
+        return;
+    auto *Mesh = LoadObject<USkeletalMesh>(nullptr, MeshPath);
+    if (!Mesh || Mesh->GetMaterials().IsEmpty())
+        return;
+    for (const auto &Slot : Mesh->GetMaterials())
+        if (!Slot.MaterialInterface)
+            return;
+    const FBoxSphereBounds Bounds = Mesh->GetBounds();
+    const float NativeHeight = Bounds.BoxExtent.Z * 2.f;
+    if (!FMath::IsFinite(NativeHeight) || NativeHeight < 1.f)
+        return;
+
+    // The body sits in the last slot; the first is the eye-occlusion shader, which stays as shipped.
+    const int32 BodySlot = Mesh->GetMaterials().Num() - 1;
+
+    // Where each conversation circle actually sits, rather than where it was assumed to sit.
+    FVector Centre[AlienGroupCount];
+    int32 Members[AlienGroupCount];
+    for (int32 Index = 0; Index < AlienGroupCount; ++Index)
+    {
+        Centre[Index] = FVector::ZeroVector;
+        Members[Index] = 0;
+    }
+    for (const FAlien &Member : Crew)
+        if (Member.Group >= 0 && Member.Group < AlienGroupCount)
+        {
+            Centre[Member.Group] += Member.Center;
+            ++Members[Member.Group];
+        }
+    for (int32 Index = 0; Index < AlienGroupCount; ++Index)
+        if (Members[Index] > 0)
+            Centre[Index] /= float(Members[Index]);
+
+    for (const FAlien &Member : Crew)
+    {
+        if (!Owner->GetComponentsByTag(USkeletalMeshComponent::StaticClass(), FName(Member.Name)).IsEmpty())
+            continue;
+        const FString ClipPath = AnimRoot + Member.Clip + TEXT(".") + Member.Clip;
+        if (!FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(ClipPath)))
+            continue;
+        auto *Clip = LoadObject<UAnimSequence>(nullptr, *ClipPath);
+        if (!Clip || Clip->GetSkeleton() != Mesh->GetSkeleton())
+            continue;
+
+        // A two-member circle puts its centre exactly between the pair, so facing the centre and
+        // facing the partner are the same aim; a trio gets the circle, which is what reads as one
+        // conversation rather than two separate ones.
+        const FVector Target = Member.Group >= 0 && Member.Group < AlienGroupCount && Members[Member.Group] > 0
+                                   ? Centre[Member.Group]
+                                   : Member.Focus;
+        const FVector Toward = Target - Member.Center;
+        const float Heading = Toward.IsNearlyZero()
+                                  ? 0.f
+                                  : FMath::RadiansToDegrees(FMath::Atan2(Toward.Y, Toward.X));
+
+        const float Scale = Member.Height / NativeHeight;
+        const FRotator Rotation(0.f, Heading - AlienMeshFacesPlusY, 0.f);
+        auto *Crewman = NewObject<USkeletalMeshComponent>(Owner, FName(Member.Name));
+        Crewman->SetupAttachment(Owner->GetRootComponent());
+        Crewman->SetSkeletalMeshAsset(Mesh);
+        Crewman->SetCollisionProfileName(TEXT("NoCollision"));
+        Crewman->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Crewman->SetGenerateOverlapEvents(false);
+        Crewman->SetCanEverAffectNavigation(false);
+        Crewman->SetMobility(EComponentMobility::Movable);
+        Crewman->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+        Crewman->bEnableUpdateRateOptimizations = true;
+        Crewman->bComponentUseFixedSkelBounds = true;
+        Crewman->SetComponentTickInterval(1.f / 30.f);
+        Crewman->ComponentTags.Add(TEXT("StationAlienCrew"));
+        Crewman->ComponentTags.Add(FName(Member.Name));
+
+        const FString SkinPath = SkinRoot + Member.Skin + TEXT(".") + Member.Skin;
+        if (FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(SkinPath)))
+            if (auto *Skin = LoadObject<UMaterialInterface>(nullptr, *SkinPath))
+                Crewman->SetMaterial(BodySlot, Skin);
+
+        const FVector Location = Member.Center - Rotation.RotateVector(Bounds.Origin * Scale);
+        Crewman->SetRelativeTransform(FTransform(Rotation, Location, FVector(Scale)));
+        Owner->AddInstanceComponent(Crewman);
+        Crewman->RegisterComponent();
+        Crewman->PlayAnimation(Clip, true);
+        Crewman->SetPlayRate(Member.Rate);
+        Crewman->SetPosition(Clip->GetPlayLength() * Member.Phase, false);
+    }
+}
+
+void PaceAlienCrew(AActor *Owner)
+{
+    if (!IsValid(Owner) || !Owner->GetWorld())
+        return;
+    const float Time = Owner->GetWorld()->GetTimeSeconds();
+    for (const FAlienPace &Route : AlienPacers)
+    {
+        const TArray<UActorComponent *> Found =
+            Owner->GetComponentsByTag(USkeletalMeshComponent::StaticClass(), FName(Route.Name));
+        if (Found.IsEmpty())
+            continue;
+        auto *Crewman = Cast<USkeletalMeshComponent>(Found[0]);
+        if (!Crewman || !Crewman->GetSkeletalMeshAsset())
+            continue;
+
+        // A figure of eight, not a line: the heading comes from the derivative, so it is continuous
+        // and nobody snaps round at the end of a leg. Amplitudes are under a metre - a few steps of
+        // shifting weight near their post, not a patrol route.
+        const float U = Time * Route.Speed + Route.Phase;
+        const FVector Offset(Route.SpanX * FMath::Sin(U), Route.SpanY * FMath::Sin(2.f * U), 0.f);
+        const FVector Velocity(Route.SpanX * FMath::Cos(U), 2.f * Route.SpanY * FMath::Cos(2.f * U), 0.f);
+        const float Heading = Velocity.IsNearlyZero()
+                                  ? 0.f
+                                  : FMath::RadiansToDegrees(FMath::Atan2(Velocity.Y, Velocity.X));
+
+        const FRotator Rotation(0.f, Heading - AlienMeshFacesPlusY, 0.f);
+        const float Scale = Crewman->GetRelativeScale3D().X;
+        const FBoxSphereBounds Bounds = Crewman->GetSkeletalMeshAsset()->GetBounds();
+        const FVector Location = Route.Center + Offset - Rotation.RotateVector(Bounds.Origin * Scale);
+        Crewman->SetRelativeLocationAndRotation(Location, Rotation);
     }
 }
 

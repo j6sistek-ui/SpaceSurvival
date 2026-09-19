@@ -85,7 +85,10 @@ bool FSSHeroRoster::RunTest(const FString &)
     auto *Content = NewObject<USSPhase1Data>();
     if (!TestNotNull(TEXT("Construct the actual runtime content defaults"), Content))
         return false;
-    if (!TestEqual(TEXT("Three heroes, in preference order"), Content->Heroes.Num(), 3))
+    // Seven: the squirrel, the four bodies the station wardrobe can put on the deck, and the two the
+    // roster has always ended with. The count is asserted because a hero silently vanishing from the
+    // roster is exactly the kind of thing the wardrobe would hide - it would just show one fewer row.
+    if (!TestEqual(TEXT("Seven heroes, in preference order"), Content->Heroes.Num(), 7))
         return false;
     // The real hero is asked about first, so importing it is the whole swap - and on September 17 that
     // import happened. Nothing below asks whether this machine has the files. Whether a hero is installed
@@ -95,12 +98,66 @@ bool FSSHeroRoster::RunTest(const FString &)
     // what selection does with a given set of files - is proved below on rosters this test builds itself.
     TestEqual(TEXT("The hero the game is about is asked about first"), AsInt(Content->Heroes[0].Identity),
               AsInt(ESSHeroIdentity::Squirrel));
-    TestEqual(TEXT("The stand-in is second"), AsInt(Content->Heroes[1].Identity), AsInt(ESSHeroIdentity::Trooper));
-    TestEqual(TEXT("The shipped hero is last"), AsInt(Content->Heroes[2].Identity), AsInt(ESSHeroIdentity::Acornaut));
+    TestEqual(TEXT("The stand-in is second from last"), AsInt(Content->Heroes[Content->Heroes.Num() - 2].Identity),
+              AsInt(ESSHeroIdentity::Trooper));
+    TestEqual(TEXT("The shipped hero is last"), AsInt(Content->Heroes.Last().Identity),
+              AsInt(ESSHeroIdentity::Acornaut));
+    // The four selectable bodies sit between the squirrel and the two fallbacks. Position is not the
+    // point - being reachable only by name is, because anything ahead of the squirrel would take the
+    // deck on a new game and the squirrel is what a new game is supposed to wear.
+    for (ESSHeroIdentity Selectable : {ESSHeroIdentity::Nyxar, ESSHeroIdentity::Soldier,
+                                       ESSHeroIdentity::RobotScout, ESSHeroIdentity::HeavyTrooper})
+    {
+        const int32 Index = Content->Heroes.IndexOfByPredicate(
+            [Selectable](const FSSHeroDefinition &Entry) { return Entry.Identity == Selectable; });
+        if (!TestTrue(TEXT("Every selectable body is on the roster"), Index != INDEX_NONE))
+            continue;
+        const FSSHeroDefinition &Body = Content->Heroes[Index];
+        TestTrue(TEXT("A selectable body never displaces the squirrel"), Index > 0);
+        TestFalse(TEXT("A selectable body names a mesh"), Body.MeshPath.IsEmpty());
+        TestFalse(TEXT("A selectable body names a walk, which is rung zero of its gait ladder"),
+                  Body.WalkClipPath.IsEmpty());
+        TestFalse(TEXT("A selectable body names an idle, so it has something to stand in"),
+                  Body.IdleClipPath.IsEmpty());
+        // None of the four has a seated clip, so the ship keeps whoever owns the pilot slot. Walking
+        // as one of these leaves the squirrel flying, which is how the trooper has always behaved.
+        TestTrue(TEXT("A selectable body has never been seated"), Body.PilotClipPath.IsEmpty());
+        // 178 is the tallest a body can stand and still sit inside both the 176 cm capsule and the
+        // 135-180 cm the readability rig is calibrated across.
+        TestEqual(TEXT("A selectable body is fitted to 178 cm rather than to a scale"), Body.FitHeight,
+                  178.f, 0.f);
+        TestEqual(TEXT("A fitted body declares no sole offset of its own"), Body.SoleOffset, 0.f, 0.f);
+        TestFalse(TEXT("A selectable body carries a name the wardrobe can show"), Body.Id.IsNone());
+    }
+
+    // The preference layer. SelectHero's own rule is pinned elsewhere in this file and is deliberately
+    // untouched; this is the overload the wardrobe calls.
+    {
+        const FName Preferred = Content->Heroes[1].Id;
+        const FSSHeroDefinition Named = Content->SelectHero(ESSHeroSlot::Walker, Preferred);
+        const FSSHeroDefinition Ordered = Content->SelectHero(ESSHeroSlot::Walker);
+        // Only assertable when the named body's assets are actually in this build; on a machine
+        // without the licensed tree it correctly falls through, which is the other half of the rule.
+        if (Content->Heroes[1].Installed(ESSHeroSlot::Walker))
+            TestEqual(TEXT("A preference that is installed wins the slot"), Named.Id, Preferred);
+        else
+            TestEqual(TEXT("A preference whose pack is absent falls through to roster order"),
+                      AsInt(Named.Identity), AsInt(Ordered.Identity));
+        TestEqual(TEXT("An empty preference is exactly the old behaviour"),
+                  AsInt(Content->SelectHero(ESSHeroSlot::Walker, NAME_None).Identity), AsInt(Ordered.Identity));
+        TestEqual(TEXT("A preference naming nothing on the roster falls through rather than failing"),
+                  AsInt(Content->SelectHero(ESSHeroSlot::Walker, TEXT("NoSuchHero")).Identity),
+                  AsInt(Ordered.Identity));
+        TestTrue(TEXT("The wardrobe is offered at least the hero it is already wearing"),
+                 Content->InstalledHeroes(ESSHeroSlot::Walker).Num() >= 1);
+    }
     TestEqual(TEXT("The pawns are built with the shipped hero"), AsInt(FSSHeroDefinition::Fallback().Identity),
               AsInt(ESSHeroIdentity::Acornaut));
 
-    const FSSHeroDefinition Trooper = Content->Heroes[1];
+    // Found by identity, not by index: the roster grew once and will again, and an index here is a
+    // test that breaks for a reason that has nothing to do with what it is checking.
+    const FSSHeroDefinition Trooper =
+        Content->Hero(ESSHeroIdentity::Trooper);
     TestEqual(TEXT("Trooper mesh path"), Trooper.MeshPath, FString(TrooperMesh));
     TestEqual(TEXT("Trooper walk clip"), Trooper.WalkClipPath, FString(TrooperWalk));
     TestEqual(TEXT("Trooper exit clip"), Trooper.DisembarkClipPath, FString(TrooperExit));
@@ -116,7 +173,7 @@ bool FSSHeroRoster::RunTest(const FString &)
                  Trooper.LeftFootBone == TEXT("foot_l") && Trooper.RightFootBone == TEXT("foot_r") &&
                  Trooper.LeftHandBone == TEXT("hand_l") && Trooper.RightHandBone == TEXT("hand_r"));
 
-    const FSSHeroDefinition Acornaut = Content->Heroes[2];
+    const FSSHeroDefinition Acornaut = Content->Hero(ESSHeroIdentity::Acornaut);
     TestEqual(TEXT("Acornaut mesh path"), Acornaut.MeshPath, FString(AcornautMesh));
     TestEqual(TEXT("Acornaut walk clip"), Acornaut.WalkClipPath, FString(AcornautWalk));
     TestEqual(TEXT("Acornaut pilot clip"), Acornaut.PilotClipPath, FString(AcornautPilot));
@@ -137,7 +194,7 @@ bool FSSHeroRoster::RunTest(const FString &)
     TestTrue(TEXT("The stand-in and the shipped hero disagree about what a hand and a foot are called"),
              Trooper.LeftHandBone != Acornaut.LeftHandBone && Trooper.LeftFootBone != Acornaut.LeftFootBone);
 
-    const FSSHeroDefinition Squirrel = Content->Heroes[0];
+    const FSSHeroDefinition Squirrel = Content->Hero(ESSHeroIdentity::Squirrel);
     TestEqual(TEXT("Squirrel mesh path"), Squirrel.MeshPath, FString(SquirrelMesh));
     TestEqual(TEXT("Squirrel walk clip"), Squirrel.WalkClipPath, FString(SquirrelWalk));
     TestEqual(TEXT("Squirrel pilot clip"), Squirrel.PilotClipPath, FString(SquirrelPilot));
@@ -277,8 +334,10 @@ bool FSSHeroRoster::RunTest(const FString &)
     // entry rather than whether a licensed pack happens to be installed on this machine.
     Absent->Heroes[1].MeshPath = FString(AcornautMesh);
     Absent->Heroes[1].WalkClipPath = FString(AcornautWalk);
+    // Asserted against whoever the second entry happens to be, not a named hero: the claim is that
+    // presence beats position, and naming one would only pin today's roster order again.
     TestEqual(TEXT("Selection walks past a missing hero to the installed one behind it"),
-              AsInt(Absent->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(ESSHeroIdentity::Trooper));
+              AsInt(Absent->SelectHero(ESSHeroSlot::Walker).Identity), AsInt(Absent->Heroes[1].Identity));
 
     // An empty roster is not a reason to have no hero at all.
     auto *Empty = NewObject<USSPhase1Data>();

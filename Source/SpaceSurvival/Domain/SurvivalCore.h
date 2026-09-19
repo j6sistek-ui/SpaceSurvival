@@ -168,6 +168,10 @@ struct RunHistoryEntry
 constexpr std::size_t MaxRunHistory = 10;
 constexpr int PaintSections = 4; // Body, wings, engines, weapons: what the paint bay paints independently.
 constexpr int PaintColours = 10; // The bay's flat palette; a choice of -1 is the factory finish.
+// The largest ESSHeroIdentity a save may name. The domain layer deliberately does not know the enum -
+// it stores the number and the game layer decides what it means - so this is the one bound it can
+// check. Raise it when the roster grows; a save naming a body this build lacks falls back on its own.
+constexpr int MaxHeroIdentity = 32;
 
 struct Account
 {
@@ -178,6 +182,10 @@ struct Account
     std::uint32_t tutorialFlags = 0;
     std::vector<RunHistoryEntry> history;                   // Newest first, at most MaxRunHistory.
     std::array<int, PaintSections> paint{{-1, -1, -1, -1}}; // Paint bay choice per hull section; -1 is factory.
+    // Which body the station wardrobe last put on the deck, as an ESSHeroIdentity value. -1 means the
+    // player has never chosen, and a new game is meant to wear whatever the roster offers first, so
+    // -1 must stay the default: it is what makes an untouched save behave exactly as it did before.
+    int hero = -1;
     bool HeavyCannonUnlocked() const
     {
         return level >= 2;
