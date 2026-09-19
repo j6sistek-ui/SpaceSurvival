@@ -381,6 +381,10 @@ void ASSStation::BuildHub(bool bHome)
     AddService(FVector(0, 1000, 0), Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"),
                Home ? ESSPanel::Settings : ESSPanel::Save);
     AddService(FVector(950, -450, 0), TEXT("LAUNCH CONTROL"), ESSPanel::Launch);
+    // The crew wardrobe: the station's own kiosk, and the only place a body can be changed. Stations
+    // only - the home hangar is where a run is prepared, not where the crew get changed.
+    if (!Home)
+        AddService(FVector(-1400, 500, 0), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
     // The paint bay: a lift stand on the starboard wall; the editable layout dresses it with a platform and arch.
     AddService(FVector(-1400, -1000, 0), TEXT("PAINT BAY"), ESSPanel::Paint);
     // A separate review doorway: available in home hangar and both stations, never a run destination.
@@ -413,6 +417,7 @@ void ASSStation::BuildHub(bool bHome)
     }
     // Optional owned characters remain presentation-only and appear whenever their private assets are installed.
     SSStationPresentation::BuildSupplementalStaff(this);
+    SSStationPresentation::BuildAlienCrew(this);
     // Dock lights, safety strips and repeated structural ribs unify the compact hub.
     for (int I = -3; I <= 3; ++I)
     {
@@ -476,6 +481,7 @@ void ASSStation::BuildHub(bool bHome)
 }
 void ASSStation::Tick(float Dt)
 {
+    SSStationPresentation::PaceAlienCrew(this);
     Super::Tick(Dt);
     if (auto *Controller = GetWorld()->GetFirstPlayerController())
     {
@@ -740,7 +746,17 @@ void ASSWalker::BeginPlay()
         Tuning = LoadObject<USSPhase1Data>(nullptr, TEXT("/Game/SpaceSurvival/Data/DA_Phase1.DA_Phase1"));
     if (!Tuning)
         Tuning = NewObject<USSPhase1Data>(this);
-    Hero = Tuning->SelectHero(ESSHeroSlot::Walker);
+    // The hero half of BeginPlay now lives in ApplyHero so the wardrobe can run it again. Nothing is
+    // asked for here: a pawn spawning with no preference wears the first installed hero, exactly as
+    // it always did. The station passes the saved choice in once it has one.
+    ApplyHero();
+}
+
+void ASSWalker::ApplyHero(FName PreferredId)
+{
+    if (!Tuning)
+        return;
+    Hero = Tuning->SelectHero(ESSHeroSlot::Walker, PreferredId);
     USkeletalMesh *HeroMesh = LoadObject<USkeletalMesh>(nullptr, *Hero.MeshPath);
     WalkAnimation = LoadObject<UAnimSequence>(nullptr, *Hero.WalkClipPath);
     const FSSHeroDefinition Shipped = Tuning->FallbackHero();
@@ -755,6 +771,10 @@ void ASSWalker::BeginPlay()
     }
     // Only a hero who also flies the ship inherits the seated component transform and its live pose.
     SharesPilotRig = Tuning->SelectHero(ESSHeroSlot::Pilot).Identity == Hero.Identity;
+    // Stop first. Re-applying over a hero that is mid-clip would leave the old sequence playing on a
+    // mesh it was never authored against, which reads as the new body standing in the old one's pose.
+    GetMesh()->Stop();
+    GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
     GetMesh()->SetSkeletalMesh(HeroMesh);
     GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, MeshLift(Hero.ScaledSoleOffset(HeroMesh))));
     GetMesh()->SetRelativeRotation(FRotator(0, Hero.MeshYaw, 0));

@@ -717,7 +717,7 @@ void Session::EndRun()
 
 std::string EncodeAccount(const Account &a)
 {
-    auto out = Writer("ACCOUNT", 3);
+    auto out = Writer("ACCOUNT", 4);
     out << a.xp << ' ' << a.level << ' ' << a.highestWave << ' ' << a.runs << ' ' << a.bestScore << ' ' << a.lastScore
         << ' ' << a.lastXP << ' ' << a.lastWave << ' ' << std::quoted(a.lastAwardedRunId) << ' ' << a.tutorialFlags
         << ' ' << a.history.size();
@@ -727,6 +727,7 @@ std::string EncodeAccount(const Account &a)
             << static_cast<int>(entry.weapon);
     for (int choice : a.paint)
         out << ' ' << choice;
+    out << ' ' << a.hero;
     return out.str();
 }
 
@@ -741,7 +742,7 @@ bool DecodeAccount(const std::string &text, Account &output, std::string &error)
     std::istringstream in(text);
     in.imbue(std::locale::classic());
     int version = 0;
-    if (!Header(in, "ACCOUNT", error, 3, &version))
+    if (!Header(in, "ACCOUNT", error, 4, &version))
         return false;
     Account a;
     std::int64_t tutorialFlags = 0;
@@ -779,6 +780,14 @@ bool DecodeAccount(const std::string &text, Account &output, std::string &error)
                 error = "Invalid paint choice";
                 return false;
             }
+    // Version 4 added the wardrobe. Older payloads never chose, which is what -1 already means, so
+    // nothing has to be migrated - a version 3 save opens wearing exactly what it wore before.
+    if (version >= 4)
+        if (!(in >> a.hero) || a.hero < -1 || a.hero > MaxHeroIdentity)
+        {
+            error = "Invalid wardrobe choice";
+            return false;
+        }
     if (!FinishRead(in, error))
         return false;
     if (a.xp < 0 || a.xp > 1000000000000LL || a.level != LevelForXP(a.xp) || a.highestWave < 0 || a.highestWave > 10 ||

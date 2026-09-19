@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
+#include "SSContentTypes.h"
 #include "SSGameMode.generated.h"
 class ASSShip;
 class ASSDistantAsteroids;
@@ -35,7 +36,8 @@ enum class ESSPanel
     Results,
     Acknowledgements,
     AlienGallery,
-    Paint
+    Paint,
+    Wardrobe
 };
 struct FSSMenuEntry
 {
@@ -95,6 +97,13 @@ public:
     TObjectPtr<class USSAlienGallery> AlienGallery;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Content")
     TObjectPtr<class USSPhase1Data> Tuning;
+    /** Every hero this build can actually put on the deck, in roster order. What the wardrobe lists. */
+    TArray<FSSHeroDefinition> WardrobeBodies() const;
+    /** The body the deck should be wearing: the saved choice when it is installed, otherwise whatever
+     *  roster order gives. Never returns a hero this build does not carry. */
+    FName WornHeroId() const;
+    /** Put WornHeroId on the walking pawn, if there is one. Safe to call when there is not. */
+    void WearHero();
     UPROPERTY()
     TObjectPtr<ASSEncounterBeacon> ActiveBeacon;
 

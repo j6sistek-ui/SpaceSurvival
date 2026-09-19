@@ -45,7 +45,12 @@ public:
         // the squirrel now takes both, and the two behind it are what a build without the licensed tree
         // falls back through. Putting the trooper first would mean the real hero could never be selected
         // while a stand-in that was only ever temporary sat in front of it.
-        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel), FSSHeroDefinition(ESSHeroIdentity::Trooper),
+        // Squirrel stays first, so a new game with no preference saved still wears it: SelectHero
+        // returns the first installed entry and nothing below it can displace that. The four
+        // selectable bodies sit behind it and are reachable only by asking for one by name.
+        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel),     FSSHeroDefinition(ESSHeroIdentity::Nyxar),
+                  FSSHeroDefinition(ESSHeroIdentity::Soldier),      FSSHeroDefinition(ESSHeroIdentity::RobotScout),
+                  FSSHeroDefinition(ESSHeroIdentity::HeavyTrooper), FSSHeroDefinition(ESSHeroIdentity::Trooper),
                   FSSHeroDefinition(ESSHeroIdentity::Acornaut)};
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy")
@@ -213,6 +218,27 @@ public:
             if (Entry.Installed(Slot))
                 return Entry;
         return FallbackHero();
+    }
+    /** The same walk, but a named hero gets first refusal. A preference that is empty, unknown, or
+     *  names a hero this build does not carry falls through to the ordinary order above rather than
+     *  failing - so a save naming a body whose pack was uninstalled still opens, wearing the default.
+     *  SelectHero itself is deliberately left alone: three automation tests pin its rule. */
+    FSSHeroDefinition SelectHero(ESSHeroSlot Slot, FName PreferredId) const
+    {
+        if (!PreferredId.IsNone())
+            for (const auto &Entry : Heroes)
+                if (Entry.Id == PreferredId && Entry.Installed(Slot))
+                    return Entry;
+        return SelectHero(Slot);
+    }
+    /** Every hero this build could actually put on the deck, in roster order. What the wardrobe lists. */
+    TArray<FSSHeroDefinition> InstalledHeroes(ESSHeroSlot Slot) const
+    {
+        TArray<FSSHeroDefinition> Available;
+        for (const auto &Entry : Heroes)
+            if (Entry.Installed(Slot))
+                Available.Add(Entry);
+        return Available;
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float CruiseSpeed = 2400.f;

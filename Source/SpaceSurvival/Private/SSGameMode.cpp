@@ -302,6 +302,7 @@ void ASSGameMode::ShowHangar()
     Hub->BuildHub(true);
     Hub->SetBayShip(SelectedShip);
     Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator::ZeroRotator);
+    WearHero();
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     PC->Possess(Walker);
     PC->SetControlRotation(FRotator(-12.f, Hub->GetActorRotation().Yaw, 0.f));
@@ -441,6 +442,7 @@ void ASSGameMode::EnterStation()
     // decides it: the hero is put down beside its ship on the pad, and the way in is a walk through the
     // hangar mouth rather than a cut. The bay is still built and still holds the display ship.
     Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->PadWalkSpawn(), FRotator(0, Hub->GetActorRotation().Yaw, 0));
+    WearHero();
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     const bool AutoCamera = PC->bAutoManageActiveCameraTarget;
     if (Ship)
@@ -846,6 +848,34 @@ void ASSGameMode::ClosePanel()
     // Release the local mooring; the universe was never globally paused for services.
     UGameplayStatics::SetGamePaused(this, false);
 }
+TArray<FSSHeroDefinition> ASSGameMode::WardrobeBodies() const
+{
+    return Tuning ? Tuning->InstalledHeroes(ESSHeroSlot::Walker) : TArray<FSSHeroDefinition>();
+}
+
+FName ASSGameMode::WornHeroId() const
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (!Tuning || !GI)
+        return NAME_None;
+    const auto &S = GI->Session;
+    // No choice saved is the ordinary case for a new game, and it must stay the ordinary answer:
+    // roster order, which puts the squirrel on the deck.
+    if (S.account.hero < 0)
+        return Tuning->SelectHero(ESSHeroSlot::Walker).Id;
+    // A saved choice is a request, not a guarantee. SelectHero's preference overload falls through to
+    // roster order when the named body is not installed, so a save made on a machine with a pack that
+    // this one lacks still opens - wearing the default rather than nothing.
+    const FSSHeroDefinition Chosen = Tuning->Hero(static_cast<ESSHeroIdentity>(S.account.hero));
+    return Tuning->SelectHero(ESSHeroSlot::Walker, Chosen.Id).Id;
+}
+
+void ASSGameMode::WearHero()
+{
+    if (Walker)
+        Walker->ApplyHero(WornHeroId());
+}
+
 void ASSGameMode::OpenPanel(ESSPanel NewPanel)
 {
     if (Walker && Walker->IsDisembarking())
@@ -1112,6 +1142,24 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         AddEntry(TEXT("Factory finish for this section"), 131, Current >= 0);
         break;
     }
+    case ESSPanel::Wardrobe:
+    {
+        PanelTitle = TEXT("CREW WARDROBE");
+        PanelDetail = TEXT("Who walks the deck. The choice is kept on your account for the rest of the game. "
+                           "The ship keeps its own pilot, so flying is unchanged.");
+        const TArray<FSSHeroDefinition> Bodies = WardrobeBodies();
+        const FName Worn = WornHeroId();
+        for (int32 Index = 0; Index < Bodies.Num() && Index < 8; ++Index)
+        {
+            const bool Current = Bodies[Index].Id == Worn;
+            AddEntry(
+                FString::Printf(TEXT("%s%s"), *Bodies[Index].Id.ToString(), Current ? TEXT(" / wearing") : TEXT("")),
+                140 + Index, !Current);
+        }
+        // -1 is the default the account starts at, so this row is "forget my choice" rather than a body.
+        AddEntry(TEXT("Station default"), 139, S.account.hero >= 0);
+        break;
+    }
     case ESSPanel::Reward:
         PanelTitle = PendingReward ? TEXT("SIGNAL REWARD / CHOOSE ONE") : TEXT("LOST CREW BEACON");
         PanelDetail = PendingReward
@@ -1261,6 +1309,17 @@ void ASSGameMode::ActivateEntry(int32 Index)
     {
         HistoryPage = 0;
         OpenPanel(ESSPanel::History);
+        return;
+    }
+    if (A == 139 || (A >= 140 && A <= 147))
+    {
+        const TArray<FSSHeroDefinition> Bodies = WardrobeBodies();
+        const int32 Index = A - 140;
+        S.account.hero = A == 139 || !Bodies.IsValidIndex(Index) ? -1 : static_cast<int>(Bodies[Index].Identity);
+        if (!GI->PersistAccount())
+            Announce(GI->LastSaveError);
+        WearHero();
+        OpenPanel(ESSPanel::Wardrobe);
         return;
     }
     if (A == 120)

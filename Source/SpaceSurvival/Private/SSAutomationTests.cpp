@@ -110,7 +110,7 @@ bool FSSPlatformSaveRoundTrip::RunTest(const FString &Parameters)
     if (!TestEqual(TEXT("Completed run creates one history record"), int32(Session.account.history.size()), 1))
         return false;
     const std::string AccountPayload = SS::EncodeAccount(Session.account);
-    if (!TestTrue(TEXT("Account payload uses version 3"), AccountPayload.rfind("SS ACCOUNT 3 ", 0) == 0))
+    if (!TestTrue(TEXT("Account payload uses version 4"), AccountPayload.rfind("SS ACCOUNT 4 ", 0) == 0))
         return false;
     if (!TestTrue(TEXT("Create independent suspended QA run"), Session.StartRun("qa-suspended-" + Suffix)))
         return false;
