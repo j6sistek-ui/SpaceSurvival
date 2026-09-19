@@ -56,6 +56,20 @@ python Scripts/CheckPrDocumentation.py --repo .
 python Tests/TestPrDocumentation.py     # only when changing the documentation gate
 ```
 
+## Cost
+
+Usage is a real constraint here. The expensive mistake is not a slow command — it is deciding on your own
+that something is worth fixing, and then investigating it fully before anyone said they cared.
+
+- **Ask before investigating anything the owner did not ask for.** One line — *"found X, worth fixing?"* —
+  costs a sentence; measuring it costs a session. **Noticing a defect is not authorisation to chase it.**
+- Run **one automation suite**, not all 67, while iterating. The single-suite command is above.
+- Fan out subagents only when the owner asks for it, or once at a milestone — and say what it will cost
+  before starting. One sweep in this repository spent 927k tokens in thirteen minutes. It was worth it
+  that time; it is not a routine move.
+- Verify what the change touched, not everything around it.
+- Prefer the narrow fix over the sweep that would also find its cousins. Offer the sweep; do not take it.
+
 ## Hard rules
 
 - **Never put a window on the owner's screen.** Every Unreal invocation passes `-NullRHI` (no renderer) or
