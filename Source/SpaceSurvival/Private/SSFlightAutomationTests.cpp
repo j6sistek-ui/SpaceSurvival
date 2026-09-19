@@ -767,7 +767,9 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         // rather than letting it arrive later disguised as a missed shot.
         TestTrue(TEXT("A target in front of the hull is within weapon range"),
                  ShipAlongRay + EngagementReach < Fixture.Ship->Tuning->WeaponRange);
-        const FVector TargetPosition = Eye + CameraRay * (ShipAlongRay + EngagementReach);
+        // On the line the ship is actually aiming down, which is the reticle's line and no longer the
+        // lens's. ShipAlongRay survives only in the range check above, which is still about the sight trace.
+        const FVector TargetPosition = Muzzle + Fixture.Ship->AimDirection() * EngagementReach;
         auto *Target = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation());
         auto *Miss = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation() +
                                     Fixture.Ship->Camera->GetRightVector() * 1200.f);
@@ -855,9 +857,9 @@ bool FSSWeaponRange::RunTest(const FString &)
             Fixture.Ship->Tuning->WeaponRange = 4000.f;
             Fixture.Frames(30);
             const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
-            const FVector AimPoint =
-                Fixture.Ship->Camera->GetComponentLocation() + Fixture.Ship->Camera->GetForwardVector() * 4000.f;
-            const FVector Direction = (AimPoint - Muzzle).GetSafeNormal();
+            // Down the ship's own sight line. Reconstructing it from the camera was the same assumption the
+            // suite above made, and it stops being true the moment the reticle leaves screen centre.
+            const FVector Direction = Fixture.Ship->AimDirection();
             auto *Target =
                 Fixture.Target(Muzzle + Direction * (BeyondRange ? 4500.f : 3500.f) - Fixture.Ship->GetActorLocation());
             if (!TestNotNull(TEXT("Create isolated range target"), Target))
@@ -1058,6 +1060,7 @@ bool FSSFlightChaseFraming::RunTest(const FString &)
                                                  : FVector2D::ZeroVector,
                                  Scenario >= 3 ? FVector2D(.7, .4) : FVector2D::ZeroVector, Scenario == 2 ? -1.f : 0.f,
                                  Scenario == 1, Scenario == 2);
+            double ClosestToEdge = 1.;
             for (int32 Frame = 0; Frame < Hertz * 2; ++Frame)
             {
                 Fixture.Step(1.f / Hertz);
@@ -1073,7 +1076,23 @@ bool FSSFlightChaseFraming::RunTest(const FString &)
                         View.InverseTransformPosition(Drawn->GetComponentTransform().TransformPosition(Point));
                     const double X = .5 + Local.Y / (2.0 * Local.X * TanHalfHorizontal);
                     const double Y = .5 - Local.Z / (2.0 * Local.X * TanHalfVertical);
-                    if (Local.X <= 0 || X < .02 || X > .98 || Y < .02 || Y > .98)
+                    // On screen at all is the claim, and it is the same for every hull. How much breathing
+                    // room it keeps beyond that is the hull's own figure: a wide planform flown wings-out
+                    // fills more of the frame than the folded 4.82 m hull the flat two percent was set for.
+                    const double Margin = FSSHullDefinition(ASSShip::SelectedHullIdentity()).FrameMarginShare;
+                    if (Local.X <= 0 || X <= 0. || X >= 1. || Y <= 0. || Y >= 1.)
+                    {
+                        AddError(FString::Printf(
+                            TEXT("Hull left the frame: %dHz scenario%d frame%d corner%d projection %.3f,%.3f"), Hertz,
+                            Scenario, Frame, Corner, X, Y));
+                        return false;
+                    }
+                    // Measured, not iterated. Raising this bound to "find" the worst case gives a bigger
+                    // number every time, because the check aborts on the first breach - which is exactly
+                    // how 0.981 became 0.993 on the next run. -SSFrameSurvey reports the true extreme.
+                    ClosestToEdge = FMath::Min3(ClosestToEdge, FMath::Min(X, 1. - X), FMath::Min(Y, 1. - Y));
+                    if (!FParse::Param(FCommandLine::Get(), TEXT("SSFrameSurvey")) &&
+                        (X < Margin || X > 1. - Margin || Y < Margin || Y > 1. - Margin))
                     {
                         AddError(FString::Printf(
                             TEXT("Hull clipped: %dHz scenario%d frame%d corner%d projection %.3f,%.3f depth%.1f"),
@@ -1107,10 +1126,18 @@ bool FSSFlightChaseFraming::RunTest(const FString &)
                                         Ship->CameraBoom->TargetArmLength, ArmBound, Shortfall),
                         Shortfall <= ArmBound * LagBoundSlack))
                     return false;
-                if (!TestTrue(TEXT("Manual weapon sight remains the rendered camera forward"),
-                              Ship->AimDirection().Equals(Ship->Camera->GetForwardVector(), .00001)))
+                // The sight is whatever the reticle is drawn on, and the reticle is no longer the middle of
+                // the screen. It used to be, and "camera forward" meant "where the player is pointing" for
+                // exactly as long as the hull was small enough to leave the centre of frame empty. On a hull
+                // that fills it, camera forward points at the ship's own nose.
+                const FVector SightMuzzle = Ship->GetActorLocation() + Ship->GetActorForwardVector() * 240.f;
+                if (!TestTrue(TEXT("Manual weapon sight points at the reticle this hull draws"),
+                              Ship->AimDirection().Equals((Ship->CrosshairWorldPoint() - SightMuzzle).GetSafeNormal(),
+                                                          .0001)))
                     return false;
             }
+            AddInfo(FString::Printf(TEXT("%dHz scenario%d: hull came within %.3f of the frame edge"), Hertz, Scenario,
+                                    ClosestToEdge));
         }
     }
     // Reported whether or not anything tripped, because a bound that aborts on its first breach

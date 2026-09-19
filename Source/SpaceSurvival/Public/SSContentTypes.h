@@ -561,6 +561,44 @@ struct FSSHullDefinition
     /** Gear up and rear ramp shut, which is the clip the launch sequence plays on thrust. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
     FString LandingStowClipPath;
+
+    /** The pose this hull flies in, played once at spawn and again on leaving a pad.
+     *
+     *  Every clip this pack ships writes all 182 bones, so they cannot be layered - playing the gear clip
+     *  after the wing clip would overwrite the wings. That is not a limitation to work around, it is the
+     *  pack's design: each clip IS a whole-ship configuration, which is also why it ships three
+     *  PA_Landing-* pose assets for the combined resting states. So flight is one clip and landing is
+     *  another, and the owner's rule falls straight out of it - open in flight, closed on the pad, driven
+     *  by the game rather than by a key. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FString FlightPoseClipPath;
+
+    /** The engine nacelles, which are not part of the skeletal mesh at all.
+     *
+     *  The pack ships them as two separate static meshes and its own BP_Spaceship hangs them off the hull
+     *  at these offsets. Leaving them off is why this ship has been flying with no engines: the four
+     *  bone-attached plumes were firing out of small rear nozzles while the things a player reads AS the
+     *  engines were simply not on the ship. Offsets are the pack's own, in un-yawed mesh space, so they
+     *  attach under the hull component and inherit MeshYaw with it. */
+    /** The hull's own effect rig: one system path per entry, with the transform the pack authored for it.
+     *
+     *  Parallel arrays rather than a nested struct so this stays a plain reflectable row. Read out of
+     *  BP_Spaceship, which places twelve of them - the two big nacelle exhausts and their spawn glows are
+     *  the ones that read as "the engines are lit", and hanging a system off a convenient bone instead is
+     *  why every capture so far had dark nacelles. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    TArray<FString> EffectPaths;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    TArray<FTransform> EffectTransforms;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FString EngineLeftMeshPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FString EngineRightMeshPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FVector EngineLeftOffset = FVector::ZeroVector;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FVector EngineRightOffset = FVector::ZeroVector;
     /** The measured length of the authored mesh along its own forward axis, in centimetres, before
      *  HullScale. Recorded so the scale arithmetic can be checked rather than believed. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit", meta = (ClampMin = "0"))
@@ -600,6 +638,42 @@ struct FSSHullDefinition
     float ChaseHeight = 0.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
     float ChasePitch = 0.f;
+    /** Pitch applied to the BOOM rather than to the camera, which is a different thing and not a
+     *  duplicate. Pitching the arm moves where the camera SITS - up and back, looking down over the hull.
+     *  Pitching the camera only changes where it LOOKS from wherever the arm already put it. Folding both
+     *  into one number put this hull level with its own camera and merely tilted the view down, so the
+     *  ship rode high in frame and clipped its own top edge while the reticle sat below it. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    float ChaseArmPitch = 0.f;
+    /** Where the boom itself is mounted on the hull, before any of the above. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    float ChaseBoomZ = 0.f;
+    /** Field of view this hull is framed at. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "30"))
+    float ChaseFov = 80.f;
+    /** How far ahead of the hull the aim point sits, and how high it is mounted.
+     *
+     *  The reticle is this point projected to screen, not the middle of the screen. Screen centre only ever
+     *  worked while the ship was small enough to leave the centre empty; on a hull that fills it, the
+     *  reticle sits on your own nose and you cannot see what you are shooting at. The pack answers this
+     *  with a second spring arm 20000 cm long mounted at Z 426.9, which is where these come from. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float CrosshairReach = 0.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    float CrosshairMountZ = 0.f;
+
+    /** The lamp this hull carries, because nothing in deep space lights a ship.
+     *
+     *  BP_Spaceship hangs a point light at the ship origin, and leaving it off is why the cargo door read
+     *  as a black hole. That geometry is present and correctly placed - proved by painting every slot with
+     *  an unlit material, which showed the door as a solid panel with its seams - it simply had nothing
+     *  lighting it. The kit's daylit demo fills that face from the sky; space does not. Zero means no lamp. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull", meta = (ClampMin = "0"))
+    float HullLightIntensity = 0.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull", meta = (ClampMin = "0"))
+    float HullLightRadius = 1000.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hull")
+    FColor HullLightColor = FColor(161, 213, 255);
     /** How far the chase camera is allowed to trail its own anchor, as a share of the boom length. Lag is
      *  angular - the arm trails while the anchor swings - so the same degrees of swing move a long boom
      *  further than a short one, and the bound has to be a ratio rather than a distance. .039 is the
@@ -688,6 +762,16 @@ struct FSSHullDefinition
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
     float ContactStandoffCm = .5f;
 
+    /** How close to the edge of frame this hull's bounding box is allowed to come.
+     *
+     *  The claim the framing check is named for - that the ship is on screen at all - is asserted
+     *  separately and allows no hull any slack. This is the comfort margin on top of it. Two percent was
+     *  chosen against a 4.82 m hull in a folded pose; the Phoenix flies with its wings deployed, so its
+     *  box is far wider and deeper and it reaches 0.981 of the frame at the pack's own framing. That is
+     *  still on screen, and the framing is the one the ship's author shipped. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0"))
+    float FrameMarginShare = .02f;
+
     /** The length this hull actually flies at, which is what any gameplay comparison wants. */
     float ScaledLength() const
     {
@@ -765,6 +849,51 @@ struct FSSHullDefinition
             SkeletalHull = true;
             LandingDeployClipPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/Landing_On.Landing_On");
             LandingStowClipPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/Landing_Off.Landing_Off");
+            // Wings out. 2.6 s, and it leaves the gear stowed, so one clip is the whole flight
+            // configuration.
+            FlightPoseClipPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/BattleMode_Enter.BattleMode_Enter");
+            EngineLeftMeshPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Meshes/SM_Stellar_Phoenix_Engine_Left."
+                                      "SM_Stellar_Phoenix_Engine_Left");
+            EngineRightMeshPath = TEXT("/Game/Stellar_Phoenix/Spaceship/Meshes/SM_Stellar_Phoenix_Engine_Right."
+                                       "SM_Stellar_Phoenix_Engine_Right");
+            // Zero, because these meshes are authored in the ship's own space: each one's pivot IS the
+            // ship origin and its geometry already sits out at the nacelle. Proved rather than assumed -
+            // the engine meshes' geometry centres on X +/-590, Z 349.64, and the rig's own
+            // Nozzle_Front_Left_Mesh / Nozzle_Front_Right_Mesh bones sit at X +583.2 / -591.7, Z 349.77.
+            // Those agree to within a centimetre, so the meshes drop straight onto the hull.
+            //
+            // The first attempt used BP_Spaceship's component offsets instead, which are relative to that
+            // Blueprint's own root and not to this mesh. Composed on top of the pivot they put the engines
+            // at Z 4.7 - the belly - and the nacelles hung underneath the ship in the capture.
+            EngineLeftOffset = FVector::ZeroVector;
+            EngineRightOffset = FVector::ZeroVector;
+            // The pack's own effect rig, transform for transform out of BP_Spaceship: two nacelle exhausts
+            // at X +/-505, Z 345 - exactly where the engine meshes sit - and their two spawn glows.
+            //
+            // The rotations are (pitch, yaw, roll) and the order matters. The first transcription of this
+            // table put the exhausts' 90 degrees into YAW instead of ROLL, turning each emitter a quarter
+            // turn, and the plumes sprayed out sideways like comet tails while the ship flew straight.
+            //
+            // The eight VFX_Exhaust_Small placements the Blueprint also carries are deliberately absent.
+            // Their offsets sit at Z -195 to -533, below this hull's belly, and on screen they read as
+            // streaks of light trailing underneath rather than anything attached to the ship. They must
+            // hang off some other parent inside that Blueprint, and the subobject walk that produced this
+            // table records transforms but not parentage, so their real anchors are not known. Four right
+            // beats twelve where eight are wrong.
+            EffectPaths.Reserve(4);
+            EffectTransforms.Reserve(4);
+            EffectPaths.Add(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust.VFX_Exhaust"));
+            EffectTransforms.Add(
+                FTransform(FRotator(-0.000, 0.000, 90.000), FVector(503.618, -778.856, 345.000), FVector(1.0)));
+            EffectPaths.Add(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust.VFX_Exhaust"));
+            EffectTransforms.Add(
+                FTransform(FRotator(-0.000, 0.000, -90.000), FVector(-510.000, -778.856, 345.000), FVector(1.0)));
+            EffectPaths.Add(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust_Spawn.VFX_Exhaust_Spawn"));
+            EffectTransforms.Add(
+                FTransform(FRotator(-35.000, 180.000, -90.000), FVector(499.263, -838.602, 346.746), FVector(2.5)));
+            EffectPaths.Add(TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust_Spawn.VFX_Exhaust_Spawn"));
+            EffectTransforms.Add(
+                FTransform(FRotator(-1.060, -0.000, 90.000), FVector(-512.241, -838.602, 346.746), FVector(2.5)));
             // Measured in 5.8 by loading it: bounds 1243.9 x 2484.0 x 704.8, standing on Z = 0. The long
             // axis is Y, not X - the airbrake mesh spans X and the left engine sits at X +589.85 - which
             // is also why MeshYaw is -90 rather than 0.
@@ -785,15 +914,36 @@ struct FSSHullDefinition
             // Found by flying it and looking, not derived: the full 5.15 length ratio put the camera inside an
             // asteroid, the square root filled the middle of the screen, and 4.5 with the eye high and the tilt
             // shallow is where the hull reads AND the crosshair still covers a target.
-            ChaseScale = 4.5f;
-            ChaseHeight = 3000.f;
+            ChaseScale = 3.33333f;
+            // TargetOffset, not SocketOffset. The first attempt used the socket, which slides the camera
+            // along the end of the arm; this moves the point the arm ORBITS, and the two frame the ship
+            // differently - which is what put the reticle in the wrong place against the pack's own shots.
+            ChaseHeight = 250.f;
+            ChaseBoomZ = 125.f;
+            ChaseFov = 90.f;
+            CrosshairReach = 20000.f;
+            CrosshairMountZ = 426.912089f;
+            // Straight off BP_Spaceship's PointLight: intensity 1000, radius 1000, at the ship origin.
+            //
+            // The radius is NOT the pack's 1000. That figure lights the pack's own demo, where the camera
+            // sits close and the interesting faces are already filled by a daylit sky. This hull is 2484
+            // long - nose 1100 forward, tail 1383 aft - so a 1000 radius from the origin dies before it
+            // reaches the cargo door at roughly 800 to 900 aft, which is why the door stayed black after
+            // the lamp went in. 2600 covers the hull end to end; the intensity rises with it because the
+            // falloff is inverse square. Both are dials, and both are this hull's own.
+            HullLightIntensity = 5000.f;
+            HullLightRadius = 2600.f;
+            HullLightColor = FColor(161, 213, 255);
             // -16 was found by eye and framed the ship beautifully in a still; ChaseFraming, once it was
             // projecting the hull actually being drawn, showed the belly-aft corner sitting 36.7 degrees
             // below the camera centre line against a 29.4 degree frame half-angle - about seven degrees
             // off the bottom edge. Steepened to put the whole hull inside the frame through all five
             // scripted manoeuvres. The eye stays high, which is what the owner asked for; it now looks
             // where it is flying rather than slightly over it.
-            ChasePitch = -27.f;
+            // Both halves of the pack's own rig, kept apart because they do different jobs: the arm is
+            // pitched down 18 to put the eye above and behind, the camera tipped back 5 from there.
+            ChaseArmPitch = -18.f;
+            ChasePitch = 5.f;
             // Measured at .1198 of a 4050 cm arm - 485.2 cm - against the classic hull's .0389. Three
             // times the classic's share, and that figure took three attempts to get right, so it is worth
             // saying how: a bound that aborts the run on its first breach truncates the very maximum it is
@@ -842,6 +992,8 @@ struct FSSHullDefinition
             SteeringReversalResidualShare = .1f;
             // Measured 1.38 cm short of a wall it was dodged into at 2500 cm/s. Five is the headroom.
             ContactStandoffCm = 5.f;
+            // Measured 0.019 of the frame at its closest, wings out, on the pack's own camera.
+            FrameMarginShare = .01f;
             // Deliberately 1: the owner said not to change a value unless it is certainly wrong, and the
             // authored size is not wrong - it is what makes a walkable interior possible for a 1.35 m
             // hero. The reconciliation the owner asked for belongs in the gameplay distances or in this
