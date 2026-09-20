@@ -268,26 +268,31 @@ revives it. Do not build a workflow on them.
 
 ### Fix the shot, not the set
 
-A still will surface things that are fine in game and wrong in a photograph. Standing the hero beside
-the station's glass partitions put what looked like a second, ghosted copy of his arm in frame.
+Standing the hero beside the crew room's glass dividers made his arm render **torn** - a hard,
+stair-stepped rip down it, with what looked like a second copy alongside.
 
-**It was not a reflection.** Zooming in showed one arm split along a glass panel's edge, the part
-behind the glass laterally offset from the part seen directly - the panel displacing what is behind
-it. A reflection would not produce that hard, stair-stepped tear down the middle. The jagged boundary
-was made worse by anti-aliasing being disabled for the still.
+**The mechanism is not known, and two confident diagnoses were wrong.** It was called reflections in
+parallel glass; it was then called refraction through a panel. Neither holds up. What is established:
 
-Worth recording because the first diagnosis was wrong twice over: disabling temporal AA did not fix
-it, disabling SSR did not fix it, and it was called a reflection before anyone zoomed in. **Zoom to
-native resolution before naming the cause** - the 5120x2880 crop settled in one look what two render
-settings could not.
+- The arm was genuinely torn, not mirrored. Only a native-resolution zoom showed this.
+- The metal surface behind it is what made it read as a reflection, helped by a third small finger
+  that looked like a panel edge.
+- Disabling temporal AA changed nothing. Disabling SSR changed nothing. Both were toggled on a guess.
+- `SM_GlassDivider` panels flank the spot about 2 m to either side - close enough to be implicated,
+  too far for the arm to be intersecting them.
+- Moving the subject 80 cm, with the camera left where it was, cleared it completely.
 
-The owner's call on the remedy, and the right one: *"it's probably good live but kills the picture."*
-Softening or de-glossing the glass would have fixed the photograph and flattened a real effect in the
-running game. **Move the subject instead.** He stepped 80 cm clear of the partition, the camera did not
-move, and the problem left frame.
+So the entry worth keeping is procedural, not technical:
 
-Corollary: when a still shows an artefact, work out whether it is the renderer or the room before
-changing any setting. Move the subject, or re-point the capture, and see whether it follows.
+1. **Zoom to native resolution before naming a cause.** One crop of the 5120x2880 frame settled in a
+   glance what two render settings could not. Both were changed before anyone looked closely.
+2. **Move the subject, or re-point the capture, and see whether the artefact follows.** That
+   distinguishes the renderer from the room without touching a single setting.
+3. **Do not repair the set to fix a photograph.** De-glossing the glass would have changed the running
+   game to fix one still. The owner's call: *"it's probably good live but kills the picture."*
+
+If this recurs somewhere a subject cannot simply be moved, it needs a real diagnosis rather than a
+fourth guess.
 
 ### Placing a character for a still
 
