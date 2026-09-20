@@ -291,8 +291,10 @@ So the entry worth keeping is procedural, not technical:
 3. **Do not repair the set to fix a photograph.** De-glossing the glass would have changed the running
    game to fix one still. The owner's call: *"it's probably good live but kills the picture."*
 
-If this recurs somewhere a subject cannot simply be moved, it needs a real diagnosis rather than a
-fourth guess.
+Not worth chasing further. The owner's call is that staged stills are a stopgap and the real answer is
+a photo mode - logged in
+[docs/production/FEATURE_PROPOSALS.md](production/FEATURE_PROPOSALS.md), not built. Until then, move
+the subject and move on.
 
 ### Placing a character for a still
 
