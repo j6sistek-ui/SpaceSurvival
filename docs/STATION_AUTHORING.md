@@ -266,6 +266,21 @@ stall forever, waiting on viewport redraws that never come. Requesting an oversi
 appears to wedge the subsystem outright. Neither realtime-on nor `editor_invalidate_viewports()`
 revives it. Do not build a workflow on them.
 
+### Fix the shot, not the set
+
+A still will surface things that are correct in game and wrong in a photograph. The station's glass
+partitions reflect the hero; standing him beside two parallel panes put **two extra copies of his arm**
+in frame, which reads as ghosting or a broken mesh. It survived turning off temporal AA and turning off
+SSR, because it was neither - it was the set behaving correctly.
+
+The owner's call, and the right one: *"it's probably good live but kills the picture."* Softening the
+glass material would have fixed the still and flattened a real effect in the running game. **Move the
+subject instead.** He stepped 80 cm clear of the partition, the camera did not move, and the
+reflections left frame.
+
+Corollary: when a still shows an artefact, work out whether it is the renderer or the room before
+changing any setting. Point the capture somewhere else, or move the subject, and see if it follows.
+
 ### Placing a character for a still
 
 Never hand-place the hero as a bare `SkeletalMeshActor`. Spawn the game's own pawn, `ASSWalker`: it
