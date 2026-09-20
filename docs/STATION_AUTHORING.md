@@ -216,6 +216,80 @@ sy = H/2 - (dot(d, up)    / dot(d, fwd)) * focal
 
 One capture plus local cropping replaced 30 thumbnail calls and kept true relative scale.
 
+### Hero/beauty stills: use SceneCapture2D, not the viewport
+
+`captureviewport` is fine for checking work. It is **not** how to make a presentable still: it is
+locked to the viewport size (2038x782, and a cine camera letterboxes inside that to ~1390x782) and it
+inherits the cine camera's depth of field.
+
+For anything going outside the project, render through a `SceneCapture2D` into a render target. Full
+control of resolution, no viewport dependency, and it never stalls:
+
+```python
+rt = unreal.RenderingLibrary.create_render_target2d(
+        world, 2560, 1440, unreal.TextureRenderTargetFormat.RTF_RGBA8,
+        unreal.LinearColor(0,0,0,1), False)
+sc = eas.spawn_actor_from_class(unreal.SceneCapture2D, loc, rot)
+comp = sc.capture_component2d
+comp.set_editor_property("texture_target", rt)
+comp.set_editor_property("capture_source", unreal.SceneCaptureSource.SCS_FINAL_COLOR_LDR)
+comp.set_editor_property("fov_angle", 48.5)          # HORIZONTAL degrees, not focal length
+comp.set_editor_property("capture_every_frame", True)   # see below - required
+comp.set_editor_property("capture_on_movement", True)
+comp.capture_scene()
+unreal.RenderingLibrary.export_render_target(world, rt, out_dir, "shot.png")
+```
+
+Measured against the viewport path on the same frame: **sharpness (variance of the Laplacian) 749 vs
+53, at 2560x1440 instead of 1390x782.**
+
+Four traps, all of which cost a cycle:
+
+- **`capture_every_frame = False` silently returns a stale image.** `capture_scene()` on its own does
+  not refresh the target, so every export is byte-identical to the first one and it looks as though
+  settings are being ignored. Diagnose by pointing the capture somewhere absurd (the ceiling) and
+  checking the export actually changes.
+- **SceneCapture does NOT inherit the level's PostProcessVolume exposure.** Straight out of the box it
+  blew out at 74% of pixels clipped. Lock it: `override_auto_exposure_method` + `AEM_HISTOGRAM`, then
+  `override_auto_exposure_min_brightness` / `max_brightness` set to the SAME value. **The override
+  flag is what matters** - setting `auto_exposure_bias` without `override_auto_exposure_bias` does
+  nothing at all, which reads exactly like a broken capture. Higher lock = darker image; for the
+  station interior **60** gave mean 0.406 with 1.8% clipped.
+- **Do not calibrate with `read_render_target_raw_pixel`.** Sampling ~150 pixels per iteration stalls
+  the render thread long enough to close the MCP socket. Export the PNG and measure it locally.
+- **Depth of field will quietly ruin a two-character shot.** A 40 mm at f/2.8 focused on a subject at
+  3.9 m leaves a second figure at 7.9 m visibly soft. SceneCapture has no DoF by default, which is the
+  correct look here; on a CineCamera, stop down or set the focus between the subjects.
+
+`HighResShot` and `AutomationLibrary.take_high_res_screenshot` both work **exactly once** and then
+stall forever, waiting on viewport redraws that never come. Requesting an oversize shot (5120x2880)
+appears to wedge the subsystem outright. Neither realtime-on nor `editor_invalidate_viewports()`
+revives it. Do not build a workflow on them.
+
+### Placing a character for a still
+
+Never hand-place the hero as a bare `SkeletalMeshActor`. Spawn the game's own pawn, `ASSWalker`: it
+carries `MeshYaw = -90`, the measured sole offset, `RenderedScale` (1.5) and its own authored key/rim
+rig on lighting channel 1. For crew, copy `SSStationPresentation::BuildAlienCrew` - mesh
+`/Game/Nyxar/Meshes/SKM_Nyxar`, `AlienMeshFacesPlusY = 90`, scale from native bounds, skin on the LAST
+material slot. There is one Nyxar mesh and six colour skins; there is no male/female variant.
+
+Three things that will each waste a shot:
+
+- **`unreal.Rotator(a, b, c)` is `(roll, pitch, yaw)`.** `Rotator(0, yaw, 0)` sets PITCH. This laid the
+  hero on his back, then stood him on his head. Always pass keywords: `unreal.Rotator(roll=0, pitch=0,
+  yaw=...)`. `find_look_at_rotation` returns a correct rotator - prefer it for cameras.
+- **`set_animation()` does not stick and the mesh renders its reference pose.** Confirm by reading
+  back `animation_data.anim_to_play`; if it is `None` the clip never applied. The working sequence is
+  `set_update_animation_in_editor(True)`, animation mode `ANIMATION_SINGLE_NODE`, assign
+  `anim_to_play` **through the `animation_data` struct**, then `play(True)`. `set_position()` alone
+  never evaluates in the editor.
+- **`get_actor_bounds()` on a skeletal mesh is a FIXED box that ignores the pose.** Grounding off it
+  put the hero 108 cm in the air. Ground off the skinned asset's own bounds
+  (`bottom = actor_z + rel_z + (origin.z - extent.z) * scale`), and remember **the deck is not at
+  z = 0**: `SM_Floor_C` is placed at 0 but its surface is at **+10.7**, so a character grounded to 0 is
+  buried to the ankles.
+
 ### Hard rules
 
 - **Never put a window on the owner's screen.** `-NullRHI` (no renderer) for automation,
