@@ -296,6 +296,42 @@ a photo mode - logged in
 [docs/production/FEATURE_PROPOSALS.md](production/FEATURE_PROPOSALS.md), not built. Until then, move
 the subject and move on.
 
+### Importing a rigged character: set the Skeleton field
+
+**The single most expensive field in the import dialog is `Skeleton`.** Leave it empty and Unreal
+creates a brand-new skeleton for that mesh. The mesh then owns a skeleton no clip in the project was
+authored against, so it can never play an existing animation, and there is no cheap way back.
+
+This is what happened to the Tripo alien. It imported with its own `_Skeleton`, and the wardrobe's own
+rule - `ApplyHero` rejects a hero whose mesh skeleton differs from its walk clip's - meant it could be
+listed as installed and still never appear.
+
+Three findings from trying to repair it after the fact:
+
+- **`SkeletalMesh.Skeleton` is read-only from Python.** There is no `set_skeleton`, no
+  `merge_all_bones_to_bone_tree`, and `set_editor_property` refuses even with a notify-mode override.
+  Re-pointing a mesh at another skeleton cannot be scripted; it is a Content Browser action.
+- **Matching bone NAMES is not enough.** All 61 of the alien's bones existed in `SKEL_Nyxar`'s 164, on
+  standard UE names, and that was taken as proof it would bind. It did not: *Assign Skeleton* returned
+  **FAILED TO MERGE BONES**, because the hierarchy - parenting and order - is what has to match, not
+  the name set. Compare hierarchy, not a set intersection.
+- **`Skeleton.add_compatible_skeleton` registers but does not help here.** The compatibility entry is
+  accepted, and the single-node animation path still refuses the clip.
+
+> **Never accept "Would you like to regenerate the skeleton from this mesh?"** Its warning is literal:
+> it invalidates every animation linked to the target skeleton. Accepting it on `SKEL_Nyxar` would have
+> taken the six AlienCrew clips, the Nyxar playable body and the seven station crew NPCs with it.
+> The answer is No, every time.
+
+The fix is upstream, not in Unreal: re-rig or re-export against a known skeleton, then import with
+`Skeleton` pointed at the existing asset. Rigs already carrying clip sets in this project:
+
+| Rig | Body already on it | Clip set it brings |
+|---|---|---|
+| UE5 mannequin | `RetroFuturisticSoldier` | its own eight-way locomotion |
+| UE4 mannequin | `Robot_scout`, `HeavyTrooper` | the MoCap library, plays untouched |
+| `SKEL_Nyxar` | `Nyxar` | the six AlienCrew clips |
+
 ### Placing a character for a still
 
 Never hand-place the hero as a bare `SkeletalMeshActor`. Spawn the game's own pawn, `ASSWalker`: it
