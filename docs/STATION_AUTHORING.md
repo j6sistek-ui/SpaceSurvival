@@ -268,18 +268,26 @@ revives it. Do not build a workflow on them.
 
 ### Fix the shot, not the set
 
-A still will surface things that are correct in game and wrong in a photograph. The station's glass
-partitions reflect the hero; standing him beside two parallel panes put **two extra copies of his arm**
-in frame, which reads as ghosting or a broken mesh. It survived turning off temporal AA and turning off
-SSR, because it was neither - it was the set behaving correctly.
+A still will surface things that are fine in game and wrong in a photograph. Standing the hero beside
+the station's glass partitions put what looked like a second, ghosted copy of his arm in frame.
 
-The owner's call, and the right one: *"it's probably good live but kills the picture."* Softening the
-glass material would have fixed the still and flattened a real effect in the running game. **Move the
-subject instead.** He stepped 80 cm clear of the partition, the camera did not move, and the
-reflections left frame.
+**It was not a reflection.** Zooming in showed one arm split along a glass panel's edge, the part
+behind the glass laterally offset from the part seen directly - the panel displacing what is behind
+it. A reflection would not produce that hard, stair-stepped tear down the middle. The jagged boundary
+was made worse by anti-aliasing being disabled for the still.
+
+Worth recording because the first diagnosis was wrong twice over: disabling temporal AA did not fix
+it, disabling SSR did not fix it, and it was called a reflection before anyone zoomed in. **Zoom to
+native resolution before naming the cause** - the 5120x2880 crop settled in one look what two render
+settings could not.
+
+The owner's call on the remedy, and the right one: *"it's probably good live but kills the picture."*
+Softening or de-glossing the glass would have fixed the photograph and flattened a real effect in the
+running game. **Move the subject instead.** He stepped 80 cm clear of the partition, the camera did not
+move, and the problem left frame.
 
 Corollary: when a still shows an artefact, work out whether it is the renderer or the room before
-changing any setting. Point the capture somewhere else, or move the subject, and see if it follows.
+changing any setting. Move the subject, or re-point the capture, and see whether it follows.
 
 ### Placing a character for a still
 
