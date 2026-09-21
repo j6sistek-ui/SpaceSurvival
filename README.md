@@ -11,11 +11,13 @@ Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains P
 - [Solution catalog](docs/production/SOLUTION_CATALOG.md): owned assets and possible solutions across Phase 1; catalog value is not the work schedule.
 - [Game scope](docs/GAME_SCOPE.md) and [implementation contract](IMPLEMENT.md): authoritative design and completion requirements.
 
-The local packaged game is at `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`; keep its entire folder. The [project state](docs/PROJECT_STATE.md) distinguishes the September 21 gameplay reset checkout from existing packages and dated release records. The repair checkout has its own editor binaries; a source merge does not rebuild the packaged executable or publish an update.
+The **September 21 reset candidate** is at `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`. Use **`Play Packaged Review.cmd` in that checkout** to open its verified Windows package with a separate review save profile. Package source is `7a63b03`; its archive/dependency audit passed. Current rendered checks and remaining acceptance are in [project state](docs/PROJECT_STATE.md#september-21-gameplay-reset-candidate) and the [reset receipt](docs/validation/2026-09-21-flight-loop-reset.md).
+
+The original checkout's `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe` and the published itch build are separate, older builds. Keep each package's entire folder. A source merge does not rebuild an executable or publish an update.
 
 The game has the ten-wave system foundation, two weapons/enemies, four hazard families, stations, progression and local saves. Automated and scripted checks exist; natural play, controller comfort, near-alpha presentation/audio and representative performance still need acceptance. Current art is provisional.
 
-**Arrange the station yourself:** double-click `Open Station Workshop.cmd` in the working project. The [Station Workshop guide](docs/STATION_EDITING.md) covers asset placement, ten material presets, Save + Apply and layout export. Existing packaged builds update only after a later package/release.
+**Station authoring:** the reset uses its own recipe and matching physical solids; see [Station authoring](docs/STATION_AUTHORING.md). `Open Station Workshop.cmd` and the [Station Workshop guide](docs/STATION_EDITING.md) still edit the preserved legacy layout, and have not been migrated to the reset. Existing packages update only after a later build.
 
 ## Development
 
