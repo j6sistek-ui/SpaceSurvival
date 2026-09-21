@@ -111,6 +111,26 @@ would have shown up in one offscreen capture.
 
 **"67 tests green" was never the thing worth buying.**
 
+## Before starting any task: read the nwiro skill library
+
+**If the nwiro MCP is active, `ue_agentskilltoolset_listskills` is the first call of a task** — before
+planning, before writing anything. Then `ue_agentskilltoolset_getskills` (the parameter is
+`skillPaths`) for every skill whose trigger matches. They are authoritative instructions from the
+people who built the tooling.
+
+The four present on 2026-09-20 trigger broadly: Blueprint work **including review**, any lighting
+(sun/sky/cloud/fog/exposure), any material choice, and skill authoring itself. A session was spent
+re-deriving things they state outright — lighting properties live on the **component** and never the
+actor; exposure behaves differently depending on whether the Post Process min/max overrides are
+active, so read them before choosing a bias; screenshot assessment is capped at **three cycles, then
+stop and report**; a Blueprint must be **compiled** before structural changes reach the CDO.
+
+**Check each skill's premise before using its numbers.** `DefaultOutdoorLightingSkill` is terrestrial:
+its lux table assumes a sun and an atmosphere scattering into a sky. This game is deep space far from
+a star — no scattering, no sky fill — so a dim hard key with black shadows is correct, and **the owner
+does not want true daylight.** The station's own `BayLight`, `120000 / 650^2 = 0.284` illuminance, is
+the reference here, not a lux figure. Terrestrial rules apply again only for a shot near a planet.
+
 ## Hard rules
 
 - **Never put a window on the owner's screen.** Every Unreal invocation passes `-NullRHI` (no renderer) or
