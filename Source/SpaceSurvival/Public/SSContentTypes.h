@@ -985,12 +985,11 @@ struct FSSHullDefinition
             // Its own exhausts ride its own nozzle bones; the fitted-module presentation is measured against a
             // different mesh entirely and would hang casings in mid air.
             UsesModulePresentation = false;
-            // PROVISIONAL, and the one number here that is not measured. OriginToBelly is 0.25 - this hull
-            // stands on its own pivot - so the belly wants to sit at the deck plus whatever the landing gear
-            // holds it up by, and that extension has never been measured. Parking at the classic hull's 230
-            // leaves it hanging; this is a deliberate under-correction until the gear is measured rather than
-            // a guess dressed as a figure.
-            DockClearanceAboveDeck = 230.f;
+            // Settled Landing_On LOD0 foot vertices reach -2.433 cm relative to the ship origin;
+            // the rear feet reach +1.875 cm. PhoenixGearGeometry records the actual rigid skin
+            // influences and final bone transforms. The old 230 cm value floated this hull above
+            // the pad; 2.5 cm places the lowest authored foot on it without burying the mesh.
+            DockClearanceAboveDeck = 2.5f;
             // Measured at 30, 60 and 144 Hz against a 120 Hz reference of the same scripted flight. Worst
             // observed: 108.0 cm, 71.9 cm/s, 0.574 degrees of yaw - all three at 30 Hz, all three shrinking
             // as the rate rises (60 Hz: 33.9, 23.2, 0.178; 144 Hz: 23.6, 28.9, 0.104). Declared at roughly

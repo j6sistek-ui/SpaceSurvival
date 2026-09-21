@@ -6,6 +6,7 @@
 #include "SSGameMode.h"
 #include "SSPhase1Data.h"
 #include "SSShipPresentation.h"
+#include "SSShipVisualRig.h"
 #include "SSWorldActors.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -104,6 +105,7 @@ ASSShip::ASSShip()
     EngineAudio->SetAutoActivate(false);
     EngineAudio->SetupAttachment(RootComponent);
     Presentation = CreateDefaultSubobject<USSShipPresentation>(TEXT("PurchasedShipModules"));
+    VisualRig = CreateDefaultSubobject<USSShipVisualRig>(TEXT("AuthoredShipRig"));
 }
 FVector ASSShip::GyroInputFor(FVector2D Steer, float Turn)
 {
@@ -143,14 +145,16 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     // Top speed. The limiter defaults OFF, so without this the Engine upgrade's speed half would do
     // nothing at all while still costing credits, and the ship would accelerate without limit.
     Thrusters->SetSpeedLimiterActive(true);
-    Thrusters->SetMaxSpeedLimit(Speed, FMath::Max(100.f, Speed * .12f));
+    const float Limit = FMath::Max(Speed, float(Maneuver));
+    Thrusters->SetMaxSpeedLimit(Limit, FMath::Max(100.f, Limit * .12f));
 
     // Turning authority and how hard it stops turning. Response is re-homed onto the gyro's proportional
     // gain rather than dropped: it was a rate constant on linear velocity error and there is no such dial
     // on a rigid body, so it becomes the rate constant on ANGULAR error. That is a re-purposing and not a
     // translation, and the Thrusters upgrade stays observable as crisper turning because of it.
-    Gyros->MaxTotalTorque = FMath::Max(.5, Maneuver / 340.0);
     Gyros->ProportionalGain = FMath::Max(.5, Response);
+    const float TurnRate = FMath::DegreesToRadians(Tuning->SteeringDegrees * Authority * Interference);
+    Gyros->MaxTotalTorque = FMath::Max(1.f, TurnRate * float(Gyros->ProportionalGain) * 2.f);
 
     // Inertial dampeners: release the stick and the ship settles instead of coasting forever. This is the
     // single biggest contributor to the feel the owner asked for, and the plugin defaults it on - but
@@ -173,11 +177,13 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     // stale, and the floor keeps it sane when the target approaches zero in the station zone.
     const float ForwardSpeed = FVector::DotProduct(Collision->GetPhysicsLinearVelocity(), GetActorForwardVector());
     const float Trim = FMath::Clamp((Speed - ForwardSpeed) / FMath::Max(100.f, Speed * .15f), -1.f, 1.f);
-    const FVector Thrust(FMath::Clamp(Trim + (BoostInput ? 1.f : 0.f), -1.f, 1.f),
-                         FMath::Clamp(StrafeInput.X, -1.f, 1.f), FMath::Clamp(StrafeInput.Y, -1.f, 1.f));
+    const FVector Thrust(Trim, FMath::Clamp(StrafeInput.X, -1.f, 1.f), FMath::Clamp(StrafeInput.Y, -1.f, 1.f));
     Thrusters->SetThrustersInput(Thrust);
-    const float Turn = Authority * Interference;
-    Gyros->SetGyrosInput(GyroInputFor(Steer, Turn));
+    // ShipCore accepts angular acceleration, not a turn rate. Convert the same degrees/second used by
+    // input into its rate-damped solver. Banking targets an attitude; a held turn must not roll forever.
+    const float BankError = FMath::FindDeltaAngleDegrees(GetActorRotation().Roll, Steer.X * 28.f);
+    const FVector TargetRate(-FMath::DegreesToRadians(BankError) * 3.f, -Steer.Y * TurnRate, Steer.X * TurnRate);
+    Gyros->SetGyrosInput(TargetRate * float(Gyros->ProportionalGain / Gyros->MaxTotalTorque));
 
     // Gravity wells and the wormhole still push, but their numbers were accelerations integrated by hand.
     // Against a real body they are forces, so they carry the mass with them.
@@ -265,7 +271,8 @@ void ASSShip::UpdateEngineMix()
 }
 void ASSShip::RefreshPaint()
 {
-    if (const auto *GI = GetGameInstance<USSGameInstance>())
+    if (const auto *GI = GetGameInstance<USSGameInstance>();
+        GI && HullMesh && HullMesh->IsVisible() && (!SkeletalHull || !SkeletalHull->GetSkeletalMeshAsset()))
         SSPaint::Apply(HullMesh, GI->Session.account);
 }
 void ASSShip::BeginPlay()
@@ -279,7 +286,6 @@ void ASSShip::BeginPlay()
     HullMesh->SetStaticMesh(
         LoadObject<UStaticMesh>(nullptr, HullAssetPath(GI ? GI->Session.run.ship : SS::Ship::Starter)));
     Presentation->SetHull(HullMesh);
-    RefreshPaint();
     PilotHero = Tuning->SelectHero(ESSHeroSlot::Pilot);
     auto *PilotMesh = LoadObject<USkeletalMesh>(nullptr, *PilotHero.MeshPath);
     auto *PilotClip =
@@ -312,7 +318,7 @@ void ASSShip::BeginPlay()
     Pilot->SetVisibility(!ClosedCockpit);
     Pilot->PlayAnimation(PilotClip, true);
     // A skeletal hull, if this build has one. The static hull stays loaded and simply stops being drawn:
-    // paint, the module presentation and the chase-framing test all still read it, and none of them has to
+    // the module presentation and the chase-framing test still read it, and neither has to
     // learn about a second kind of hull before the flight model itself moves.
     // Which hull that is comes from SelectedHullIdentity and nowhere else. An early version switched hulls
     // wherever the pack happened to be installed and did it inline, which hid the static hull that
@@ -322,131 +328,27 @@ void ASSShip::BeginPlay()
     if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix);
         SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix)
     {
-        if (auto *HullSkeletal = LoadObject<USkeletalMesh>(nullptr, *Hull.MeshPath))
+        const bool HasRig = VisualRig->Initialize(this, Hull);
+        if (HasRig)
         {
-            SkeletalHull->SetSkeletalMesh(HullSkeletal);
-            // Authored along +Y, so it needs a quarter turn to point where the pawn calls forward.
+            SkeletalHull->SetVisibility(false);
+            SkeletalHull = VisualRig->GetHull();
+        }
+        else if (auto *Mesh = LoadObject<USkeletalMesh>(nullptr, *Hull.MeshPath))
+        {
+            // A missing Blueprint is a visible fallback, never a second physics/input implementation.
+            SkeletalHull->SetSkeletalMesh(Mesh);
             SkeletalHull->SetRelativeRotation(FRotator(0, Hull.MeshYaw, 0));
             SkeletalHull->SetRelativeScale3D(FVector(Hull.HullScale));
             SkeletalHull->SetVisibility(true);
+            if (auto *Clip = LoadObject<UAnimSequence>(nullptr, *Hull.FlightPoseClipPath))
+                SkeletalHull->PlayAnimation(Clip, false);
+            UE_LOG(LogTemp, Warning, TEXT("SSHull: Phoenix Blueprint rig unavailable; mesh fallback active."));
+        }
+        if (SkeletalHull && SkeletalHull->GetSkeletalMeshAsset())
+        {
             HullMesh->SetVisibility(false);
-            // The configuration this hull flies in. The rest pose is the landing one, so a ship that
-            // played nothing would fly with its undercarriage down and its cargo ramp hanging open.
-            //
-            // Flight is the wings-out clip, not merely the gear-up one. Every clip in this pack writes all
-            // 182 bones, so they cannot be layered and each one is a whole-ship configuration - which is
-            // what makes the rule simple: open in flight, closed on the pad, and the gear clip played at
-            // the pad folds the wings on its way past. Falls back to the stow clip for a hull that
-            // declares no flight pose.
-            const FString &FlightPose =
-                Hull.FlightPoseClipPath.IsEmpty() ? Hull.LandingStowClipPath : Hull.FlightPoseClipPath;
-            // Held at the clip's LAST frame rather than played from its first. PlayAnimation only reaches
-            // the configuration we want if the pose actually advances, and it was not advancing - which is
-            // why every capture showed the rest pose, gear down and cargo door open, whichever clip was
-            // asked for. Seeking to the end and stopping there does not depend on a single tick.
-            SkeletalHull->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
-            if (auto *Pose = LoadObject<UAnimSequence>(nullptr, *FlightPose))
-            {
-                SkeletalHull->SetAnimationMode(EAnimationMode::AnimationSingleNode);
-                SkeletalHull->SetAnimation(Pose);
-                SkeletalHull->SetPosition(Pose->GetPlayLength(), false);
-                SkeletalHull->Stop();
-            }
-            // The nacelles, which are not in the skeletal mesh. The pack ships them as separate static
-            // meshes and its own BP hangs them here; without this the ship flies with no engines on it at
-            // all, which is how every capture so far has looked - four small plumes at the rear nozzles
-            // and nothing where a player actually reads an engine. Attached under the hull so they inherit
-            // MeshYaw with it, at the pack's own offsets.
-            // TEMPORARY DIAGNOSTIC - which material slot the black region on this hull belongs to.
-            // Swaps the glass slot for the engine's default grey. If the black area turns grey it is
-            // M_Spaceship_Glass, which is BLEND_TRANSLUCENT and two-sided with no normal and no metallic
-            // input, and a translucent gloss with nothing to reflect reads as a hole in deep space.
-            if (FParse::Param(FCommandLine::Get(), TEXT("SSGlassProbe")))
-                for (int32 Slot = 0; Slot < SkeletalHull->GetNumMaterials(); ++Slot)
-                    if (UMaterialInterface *Fitted = SkeletalHull->GetMaterial(Slot))
-                    {
-                        UE_LOG(LogTemp, Warning, TEXT("GLASSPROBE slot %d = %s"), Slot, *Fitted->GetName());
-                        if (Fitted->GetName().Contains(TEXT("Glass")))
-                            SkeletalHull->SetMaterial(Slot, UMaterial::GetDefaultMaterial(MD_Surface));
-                    }
-            // Separates "the geometry is missing" from "the geometry is unlit". M_Exaust is UNLIT and
-            // additive, so anything wearing it glows against space no matter where the key light is. If the
-            // dark panel under the hull lights up, the door is there and the problem is lighting; if it
-            // stays a hole, the mesh is absent the way the nacelles were.
-            if (FParse::Param(FCommandLine::Get(), TEXT("SSHullProbe")))
-                if (auto *Unlit = LoadObject<UMaterialInterface>(
-                        nullptr, TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/Material/M_Exaust.M_Exaust")))
-                    for (int32 Slot = 0; Slot < SkeletalHull->GetNumMaterials(); ++Slot)
-                        SkeletalHull->SetMaterial(Slot, Unlit);
-            // TEMPORARY DIAGNOSTIC - where this rig's bones actually are, in component space.
-            if (FParse::Param(FCommandLine::Get(), TEXT("SSBoneSurvey")))
-            {
-                const FBoxSphereBounds HullBounds = SkeletalHull->CalcBounds(FTransform::Identity);
-                UE_LOG(LogTemp, Warning, TEXT("BONESURVEY hull bounds origin=%s extent=%s"),
-                       *HullBounds.Origin.ToString(), *HullBounds.BoxExtent.ToString());
-                const TArray<FName> BoneNames = SkeletalHull->GetAllSocketNames();
-                UE_LOG(LogTemp, Warning, TEXT("BONESURVEY sockets=%d bones=%d"), BoneNames.Num(),
-                       SkeletalHull->GetNumBones());
-                for (int32 B = 0; B < SkeletalHull->GetNumBones(); ++B)
-                {
-                    const FName BoneName = SkeletalHull->GetBoneName(B);
-                    const FString Lower = BoneName.ToString().ToLower();
-                    if (!Lower.Contains(TEXT("engine")) && !Lower.Contains(TEXT("nacelle")) &&
-                        !Lower.Contains(TEXT("wing")) && !Lower.Contains(TEXT("nozzle")) &&
-                        !Lower.Contains(TEXT("thrust")) && !Lower.Contains(TEXT("body")))
-                        continue;
-                    const FVector Local = SkeletalHull->GetComponentTransform().InverseTransformPosition(
-                        SkeletalHull->GetBoneLocation(BoneName));
-                    UE_LOG(LogTemp, Warning, TEXT("BONESURVEY %-44s %s"), *BoneName.ToString(), *Local.ToString());
-                }
-            }
-            for (int32 Side = 0; Side < 2; ++Side)
-            {
-                const FString &PartPath = Side == 0 ? Hull.EngineLeftMeshPath : Hull.EngineRightMeshPath;
-                if (PartPath.IsEmpty())
-                    continue;
-                auto *PartMesh = LoadObject<UStaticMesh>(nullptr, *PartPath);
-                if (!PartMesh)
-                    continue;
-                auto *Part = NewObject<UStaticMeshComponent>(this);
-                Part->SetStaticMesh(PartMesh);
-                Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-                Part->RegisterComponent();
-                Part->AttachToComponent(SkeletalHull, FAttachmentTransformRules::KeepRelativeTransform);
-                Part->SetRelativeLocation(Side == 0 ? Hull.EngineLeftOffset : Hull.EngineRightOffset);
-                Part->SetVisibility(true);
-                HullEngineParts.Add(Part);
-            }
-            // The lamp this hull carries. Without it the aft faces - the cargo door most visibly - receive
-            // nothing at all and the ship renders with a hole in it.
-            if (Hull.HullLightIntensity > 0.f)
-            {
-                HullLight = NewObject<UPointLightComponent>(this);
-                HullLight->SetMobility(EComponentMobility::Movable);
-                HullLight->RegisterComponent();
-                HullLight->AttachToComponent(SkeletalHull, FAttachmentTransformRules::KeepRelativeTransform);
-                HullLight->SetRelativeLocation(FVector::ZeroVector);
-                HullLight->SetIntensity(Hull.HullLightIntensity);
-                HullLight->SetAttenuationRadius(Hull.HullLightRadius);
-                HullLight->SetLightColor(FLinearColor(Hull.HullLightColor));
-                HullLight->SetCastShadows(false);
-            }
-            // The hull's declared effect rig, at the transforms its author placed. Attached under the hull
-            // so it inherits MeshYaw exactly as the nacelle meshes do.
-            for (int32 E = 0; E < Hull.EffectPaths.Num() && E < Hull.EffectTransforms.Num(); ++E)
-            {
-                auto *System = LoadObject<UNiagaraSystem>(nullptr, *Hull.EffectPaths[E]);
-                if (!System)
-                    continue;
-                const FTransform &Placed = Hull.EffectTransforms[E];
-                if (auto *Effect = UNiagaraFunctionLibrary::SpawnSystemAttached(
-                        System, SkeletalHull, NAME_None, Placed.GetLocation(), Placed.Rotator(),
-                        EAttachLocation::KeepRelativeOffset, false))
-                {
-                    Effect->SetRelativeScale3D(Placed.GetScale3D());
-                    HullExhausts.Add(Effect);
-                }
-            }
+            Pilot->SetVisibility(false);
             // These are the pack's own camera numbers, read out of BP_Spaceship rather than searched for.
             // The pack ships a playable demo level, so the framing its author intended was on disk the
             // whole time: a 3000 arm, the eye 250 above the ship, and a shallow tilt - the spring arm
@@ -534,46 +436,11 @@ void ASSShip::BeginPlay()
                 Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
                 UE_LOG(LogTemp, Warning, TEXT("SSHull: body refused to simulate; ShipCore is NOT driving."));
             }
-            // The pack's own exhausts, on the pack's own engine bones. USSShipPresentation fits exhausts
-            // to the static hull it was measured against and knows nothing about this mesh, so without
-            // these the ship flies with no engine effect at all - which is exactly how the first capture
-            // came out.
-            if (auto *Exhaust = LoadObject<UNiagaraSystem>(
-                    nullptr, TEXT("/Game/Stellar_Phoenix/Spaceship/VFX/VFX_Exhaust.VFX_Exhaust")))
-            {
-                // NOT the bones called Engine_*. Every one of those sits at [0, 0, 0] - they are
-                // rotation-only control bones, exactly like the wing bones - so attaching to them put the
-                // plumes inside the ship's belly. The bones that are actually AT the nozzles are the
-                // Nozzle_Back_* set, measured in the hull's authored space where -Y is aft:
-                //   Nozzle_Back_Up_Left/Right    at X +/-182, Y -627.5, Z 553.0
-                //   Nozzle_Back_Down_Left/Right  at X +/-183, Y -851.9, Z 188.2
-                // The two big side nacelles, which are what actually reads as "engines" on this ship, have
-                // no bone of their own; their position comes from the separate engine meshes the pack
-                // ships, whose origins are X +/-589.85, Y -636.6, Z 349.64.
-                // Superseded by the pack's own rig below, which places the big nacelle exhausts where the
-                // nacelles actually are. Kept only as the fallback for a hull that declares no rig.
-                if (Hull.EffectPaths.IsEmpty())
-                    for (const TCHAR *Nozzle :
-                         {TEXT("Nozzle_Back_Up_Left_Mesh"), TEXT("Nozzle_Back_Up_Right_Mesh"),
-                          TEXT("Nozzle_Back_Down_Left_Mesh"), TEXT("Nozzle_Back_Down_Right_Mesh")})
-                    {
-                        if (auto *Plume = UNiagaraFunctionLibrary::SpawnSystemAttached(
-                                Exhaust, SkeletalHull, FName(Nozzle), FVector::ZeroVector, FRotator::ZeroRotator,
-                                EAttachLocation::SnapToTarget, false))
-                            HullExhausts.Add(Plume);
-                    }
-                // Two more were tried at the big side nacelles, placed by hand at the engine meshes'
-                // own origins, and they are deliberately not here. The pack's VFX_Exhaust does not emit
-                // along the axis a component rotation would steer - the plumes fired out of the ship's
-                // flanks like comet tails whichever way the component was turned - so they were guesses
-                // dressed up as placement. The four above snap to real bones and inherit the rig's own
-                // orientations, which is why they point aft. Bigger nacelle plumes need the system's own
-                // emission settings read, not another transform invented for it.
-            }
             UE_LOG(LogTemp, Display, TEXT("SSHull: flying '%s', %.0f cm, chase x%.2f"), *Hull.Id.ToString(),
                    Hull.ScaledLength(), HullChaseScale);
         }
     }
+    RefreshPaint();
     EngineAudio->SetSound(SSAudio::PresentationSound(TEXT("Engine")));
     UpdateEngineMix();
     EngineAudio->Play();
@@ -633,12 +500,39 @@ void ASSShip::HoldBody(bool Hold)
         Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
     }
 }
-void ASSShip::SetDockingTarget(FVector Target, FRotator Rotation)
+void ASSShip::SetDockingTarget(FVector Target, FRotator Rotation, float Duration)
 {
+    TransitionStart = GetActorLocation();
+    TransitionRotation = GetActorRotation();
+    TransitionElapsed = 0.f;
+    TransitionDuration = FMath::Max(.1f, Duration);
     DockTarget = Target;
     DockRotation = Rotation;
     Docking = true;
+    TakingOff = false;
+    Moored = false;
     HoldBody(true);
+    if (VisualRig)
+        VisualRig->PlayLanding(TransitionDuration);
+}
+void ASSShip::BeginTakeoff(FVector HoverTarget, FRotator Rotation, float Duration)
+{
+    TransitionStart = GetActorLocation();
+    TransitionRotation = GetActorRotation();
+    TransitionElapsed = 0.f;
+    TransitionDuration = FMath::Max(.1f, Duration);
+    DockTarget = HoverTarget;
+    DockRotation = Rotation;
+    TakingOff = true;
+    Docking = Moored = false;
+    Velocity = Forces = FVector::ZeroVector;
+    HoldBody(true);
+    Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    SetActorTickEnabled(true);
+    EngineAudio->Play();
+    SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+    if (VisualRig)
+        VisualRig->PlayTakeoff(TransitionDuration);
 }
 bool ASSShip::BeginMooring()
 {
@@ -656,7 +550,9 @@ void ASSShip::EndMooring()
 {
     // Wings back out and gear back up on leaving the pad, which is the same clip flight starts in. The
     // docking clip left the ship in its landing configuration, and nothing else would ever undo it.
-    if (ShipCoreDriven && SkeletalHull && SkeletalHull->IsVisible())
+    if (VisualRig && VisualRig->HasBlueprintRig())
+        VisualRig->PlayTakeoff();
+    else if (ShipCoreDriven && SkeletalHull && SkeletalHull->IsVisible())
         if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix); !Hull.FlightPoseClipPath.IsEmpty())
             if (auto *Pose = LoadObject<UAnimSequence>(nullptr, *Hull.FlightPoseClipPath))
                 SkeletalHull->PlayAnimation(Pose, false);
@@ -686,6 +582,8 @@ void ASSShip::FinishDocking()
     if (auto *ReadabilityLight = FindComponentByClass<UPointLightComponent>())
         ReadabilityLight->SetVisibility(false);
     EngineAudio->Stop();
+    if (VisualRig)
+        VisualRig->UpdateFlight(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Velocity = Forces = FVector::ZeroVector;
     HoldBody(true);
@@ -693,7 +591,12 @@ void ASSShip::FinishDocking()
     // degrees alongside Foot_Bone through 90.3 - so the ship a player walks back up to is already standing
     // on its legs with its door open, rather than resting its belly on the pad with everything stowed.
     // Played last, because SetActorTickEnabled(false) below stops this actor but not its animation.
-    if (ShipCoreDriven && SkeletalHull && SkeletalHull->IsVisible())
+    if (VisualRig && VisualRig->HasBlueprintRig())
+    {
+        VisualRig->PlayLanding();
+        VisualRig->SetStationCollision(true);
+    }
+    else if (ShipCoreDriven && SkeletalHull && SkeletalHull->IsVisible())
         if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix); !Hull.LandingDeployClipPath.IsEmpty())
             if (auto *Deploy = LoadObject<UAnimSequence>(nullptr, *Hull.LandingDeployClipPath))
                 SkeletalHull->PlayAnimation(Deploy, false);
@@ -702,8 +605,9 @@ void ASSShip::FinishDocking()
 void ASSShip::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 {
     Super::ApplyWorldOffset(InOffset, bWorldShift);
-    if (Docking)
+    if (Docking || TakingOff)
         DockTarget += InOffset;
+    TransitionStart += InOffset;
 }
 void ASSShip::Tick(float Dt)
 {
@@ -728,17 +632,37 @@ void ASSShip::Tick(float Dt)
         DrivePresentationDamage = float(S.run.damageFeedback);
         return;
     }
-    if (Docking)
+    if (Docking || TakingOff)
     {
-        SetActorLocation(FMath::VInterpTo(GetActorLocation(), DockTarget, Dt, 2.f));
-        SetActorRotation(FMath::RInterpTo(GetActorRotation(), DockRotation, Dt, 2.f));
+        TransitionElapsed += Dt;
+        const float T = FMath::Clamp(TransitionElapsed / TransitionDuration, 0.f, 1.f);
+        const auto Smooth = [](float A) { return A * A * (3.f - 2.f * A); };
+        const FVector Hover = DockTarget + FRotationMatrix(DockRotation).GetUnitAxis(EAxis::Z) * 700.f;
+        const FVector Position = TakingOff  ? FMath::Lerp(TransitionStart, DockTarget, Smooth(T))
+                                 : T < .55f ? FMath::Lerp(TransitionStart, Hover, Smooth(T / .55f))
+                                            : FMath::Lerp(Hover, DockTarget, Smooth((T - .55f) / .45f));
+        SetActorLocationAndRotation(
+            Position, FQuat::Slerp(TransitionRotation.Quaternion(), DockRotation.Quaternion(), Smooth(T)));
         Velocity = FVector::ZeroVector;
         DrivePresentationPower = .18f;
         DrivePresentationBoosting = DrivePresentationBraking = false;
         DrivePresentationDamage = float(S.run.damageFeedback);
+        if (VisualRig)
+            VisualRig->UpdateFlight(FVector2D::ZeroVector, FVector2D::ZeroVector, DrivePresentationPower, false, false);
+        if (TakingOff && T >= 1.f)
+        {
+            TakingOff = false;
+            WasInStationZone = false;
+            StationThrottle = 0.f;
+            Collision->SetCollisionEnabled(ShipCoreDriven ? ECollisionEnabled::QueryAndPhysics
+                                                          : ECollisionEnabled::QueryOnly);
+            HoldBody(false);
+        }
         return;
     }
-    if (!S.IsFlying())
+    const auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+    const bool InStationZone = GM && GM->IsInStationZone();
+    if (!S.IsFlying() && !(GM && GM->IsDepartingStation()))
     {
         Forces = FVector::ZeroVector;
         DrivePresentationPower = 0.f;
@@ -746,18 +670,34 @@ void ASSShip::Tick(float Dt)
         DrivePresentationDamage = float(S.run.damageFeedback);
         return;
     }
-    S.TickFlight(Dt, BoostInput, BrakeInput);
+    S.TickFlight(Dt, BoostInput && !BrakeInput, InStationZone ? false : BrakeInput, GM && GM->IsDepartingStation());
+    if (InStationZone)
+    {
+        S.run.braking = BrakeInput;
+        S.run.brakeHeat = FMath::Max(0.0, S.run.brakeHeat - Dt * 20.0);
+        S.run.brakeOverheated = false;
+    }
     const auto Stats = S.Stats();
     const float BoostFactor = S.run.boosting ? Tuning->BoostMultiplier : 1.f;
     const float BrakeFactor = S.run.braking ? .47f : 1.f;
-    const float Speed =
+    float Speed =
         FMath::Max(Tuning->MinimumSpeed, float(Stats.speed) * (1.f + .3f * ThrottleInput) * BoostFactor * BrakeFactor);
+    if (InStationZone)
+    {
+        if (!WasInStationZone)
+            StationThrottle = FMath::Clamp(GetVelocity().Size() / FMath::Max(1.f, float(Stats.speed)), 0.f, 1.f);
+        StationThrottle = FMath::Clamp(StationThrottle + ThrottleInput * Dt * .5f - (BrakeInput ? Dt : 0.f), 0.f, 1.f);
+        Speed = float(Stats.speed) * StationThrottle * BoostFactor;
+    }
+    WasInStationZone = InStationZone;
     DrivePresentationPower = FMath::Clamp(.42f + .28f * FMath::Max(0.f, ThrottleInput) +
-                                              .3f * float(Velocity.Size() / FMath::Max(1.f, Tuning->CruiseSpeed)),
+                                              .3f * float(GetVelocity().Size() / FMath::Max(1.f, Tuning->CruiseSpeed)),
                                           .25f, 1.35f);
     DrivePresentationBoosting = S.run.boosting;
     DrivePresentationBraking = S.run.braking;
     DrivePresentationDamage = FMath::Clamp(float(S.run.damageFeedback), 0.f, 1.f);
+    if (VisualRig)
+        VisualRig->UpdateFlight(Steer, StrafeInput, DrivePresentationPower, S.run.boosting, S.run.braking);
     const float Authority = float(Stats.maneuver) / 1700.f;
     const float Interference = S.run.interferenceSeconds > 0 ? .7f : 1.f;
     if (ShipCoreDriven)
@@ -866,7 +806,8 @@ void ASSShip::Tick(float Dt)
             Plume->SetRelativeScale3D(FVector(PlumeDrive));
     SoftTarget = nullptr;
     float Best = FMath::Cos(FMath::DegreesToRadians(Tuning->SoftAimDegrees));
-    const FVector Aim = AimDirection();
+    const FVector Aim =
+        Camera ? (CrosshairWorldPoint() - Camera->GetComponentLocation()).GetSafeNormal() : AimDirection();
     for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
     {
         if (!It->IsWeaponTarget())
@@ -881,8 +822,8 @@ void ASSShip::Tick(float Dt)
         FHitResult Hit;
         FCollisionQueryParams Params;
         Params.AddIgnoredActor(this);
-        GetWorld()->LineTraceSingleByChannel(Hit, GetActorLocation() + GetActorForwardVector() * 240.f,
-                                             It->GetActorLocation(), ECC_Visibility, Params);
+        GetWorld()->LineTraceSingleByChannel(Hit, MuzzleWorldPosition(), It->GetActorLocation(), ECC_Visibility,
+                                             Params);
         if (!Hit.bBlockingHit || Hit.GetActor() == *It)
         {
             Best = Dot;
@@ -890,29 +831,10 @@ void ASSShip::Tick(float Dt)
         }
     }
 }
-FVector ASSShip::CrosshairWorldPoint() const
-{
-    const FSSHullDefinition Hull(SelectedHullIdentity());
-    if (Hull.CrosshairReach <= 0.f)
-        return Camera ? Camera->GetComponentLocation() + Camera->GetForwardVector() * 20000.f
-                      : GetActorLocation() + GetActorForwardVector() * 20000.f;
-    return GetActorLocation() + GetActorUpVector() * Hull.CrosshairMountZ +
-           GetActorForwardVector() * Hull.CrosshairReach;
-}
-FVector ASSShip::AimDirection() const
-{
-    // Where the reticle is, which is the only answer that makes "shoot at the crosshair" true. It used to
-    // be the camera's forward, and on a hull that fills the centre of the screen that put the reticle on
-    // the ship's own nose while the shot went somewhere else entirely.
-    const FSSHullDefinition Hull(SelectedHullIdentity());
-    if (Hull.CrosshairReach <= 0.f)
-        return Camera ? Camera->GetForwardVector() : GetActorForwardVector();
-    return (CrosshairWorldPoint() - (GetActorLocation() + GetActorForwardVector() * 240.f)).GetSafeNormal();
-}
 void ASSShip::RequestDodge()
 {
     auto *GI = GetGameInstance<USSGameInstance>();
-    if (Moored || !GI || !GI->Session.Dodge())
+    if (Moored || Docking || TakingOff || !GI || !GI->Session.Dodge())
         return;
     FVector2D Direction = StrafeInput.IsNearlyZero() ? Steer : StrafeInput;
     if (Direction.IsNearlyZero())
@@ -971,72 +893,4 @@ void ASSShip::ReceiveImpact(float Amount, FVector AwayFromContact)
     // analytic closest-approach test and calls this - so nothing else covers it.
     if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
         Collision->AddImpulse(Push, NAME_None, true);
-}
-void ASSShip::Fire()
-{
-    auto *GI = GetGameInstance<USSGameInstance>();
-    if (Moored || !GI || !GI->Session.IsFlying() || FireCooldown > 0)
-        return;
-    auto &S = GI->Session;
-    const bool Cannon = S.run.weapon == SS::Weapon::HeavyCannon;
-    FireCooldown = Cannon ? Tuning->CannonInterval : Tuning->LaserInterval;
-    // Long enough to stay lit between rapid-laser shots, short enough that one cannon shot does
-    // not hold the reticle open for most of a second.
-    FireVisualSeconds = .16f;
-    const FVector Start = GetActorLocation() + GetActorForwardVector() * 240.f;
-    const FVector Sight = AimDirection();
-    // Where the sight is traced FROM has to agree with where the aim points. While aim was the lens's
-    // forward, tracing from the lens was right. Now that a hull can aim at a reticle of its own, the ray
-    // has to leave the muzzle - starting at the lens and travelling in the ship's direction is a line that
-    // passes through neither, and it quietly made every shot miss what the reticle was over.
-    const FVector SightOrigin = FSSHullDefinition(SelectedHullIdentity()).CrosshairReach > 0.f ? Start
-                                : Camera ? Camera->GetComponentLocation()
-                                         : Start;
-    FVector AimPoint = SightOrigin + Sight * Tuning->WeaponRange;
-    FCollisionQueryParams SightQuery(SCENE_QUERY_STAT(SSManualAim), false, this);
-    FHitResult SightHit;
-    // Resolve the visible reticle point, then converge from the real muzzle.
-    // Camera obstructions behind the muzzle must never reverse a shot.
-    if (GetWorld()->LineTraceSingleByChannel(SightHit, SightOrigin, AimPoint, ECC_Visibility, SightQuery) &&
-        FVector::DotProduct(SightHit.ImpactPoint - Start, Sight) > 1.f)
-        AimPoint = SightHit.ImpactPoint;
-    FVector Direction = (AimPoint - Start).GetSafeNormal();
-    if (IsValid(SoftTarget) && !SoftTarget->IsActorBeingDestroyed())
-    {
-        const FVector TargetDelta = SoftTarget->GetActorLocation() - SightOrigin;
-        const float Alignment = FVector::DotProduct(Sight, TargetDelta.GetSafeNormal());
-        const float Weight = SoftAssistWeight(Alignment, Tuning->SoftAimDegrees, MaximumSoftAssist);
-        // Recheck the current sightline at trigger time; a previous frame's target must not pull a turn.
-        if (FVector::DistSquared(SoftTarget->GetActorLocation(), GetActorLocation()) <=
-            FMath::Square(Tuning->WeaponRange))
-            Direction = FMath::Lerp(Direction, (SoftTarget->GetActorLocation() - Start).GetSafeNormal(), Weight)
-                            .GetSafeNormal();
-    }
-    // The existing muzzle trace/projectile sweep still handles nearby cover;
-    // selecting a visible aim point never permits shooting through an obstacle.
-    const float Damage = float(S.Stats().weaponDamage);
-    if (Cannon)
-    {
-        auto *Shot = GetWorld()->SpawnActor<ASSProjectile>(Start, Direction.Rotation());
-        if (Shot)
-            Shot->Launch(Direction, 19000.f, Damage, true, this, Tuning->WeaponRange);
-    }
-    else
-    {
-        FHitResult Hit;
-        FCollisionQueryParams Params;
-        Params.AddIgnoredActor(this);
-        GetWorld()->LineTraceSingleByChannel(Hit, Start, Start + Direction * Tuning->WeaponRange, ECC_Visibility,
-                                             Params);
-        if (Hit.bBlockingHit)
-            if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
-                FX->PlayImpact(Hit.ImpactPoint, Hit.ImpactNormal, true, false);
-        if (auto *Body = Cast<ASSWorldBody>(Hit.GetActor()))
-            Body->ReceiveWeaponHit(Damage);
-        auto *Trace = GetWorld()->SpawnActor<ASSProjectile>(Start, Direction.Rotation());
-        if (Trace)
-            Trace->Launch(Direction, 55000.f, 0.f, true, this, Tuning->WeaponRange);
-    }
-    UGameplayStatics::PlaySoundAtLocation(this, SSAudio::PresentationSound(Cannon ? TEXT("Cannon") : TEXT("Laser")),
-                                          Start, float(S.settings.masterVolume * S.settings.effectsVolume));
 }

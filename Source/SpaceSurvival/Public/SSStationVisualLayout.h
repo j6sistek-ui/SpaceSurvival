@@ -14,6 +14,9 @@ class SPACESURVIVAL_API ASSStationVisualLayout : public AActor
     GENERATED_BODY()
 public:
     ASSStationVisualLayout();
+    /** This layout supplies deliberate collision/ground-floor specifications as Box components. */
+    UPROPERTY(EditDefaultsOnly, Category = "Station Layout")
+    bool bFunctionalLayout = false;
     virtual void OnConstruction(const FTransform &Transform) override;
     void EnforcePresentationOnly();
 };
@@ -27,6 +30,10 @@ public:
     // An existing Blueprint is returned untouched unless reset was explicit.
     UFUNCTION(BlueprintCallable, Category = "Station Authoring")
     static UBlueprint *CreateStationVisualLayout(const FString &RecipeJson, bool bResetExisting = false);
+    /** Author a separate layout without replacing the owner's existing Blueprint. */
+    UFUNCTION(BlueprintCallable, Category = "Station Authoring")
+    static UBlueprint *CreateStationLayoutAtPath(const FString &RecipeJson, const FString &DestinationPackage,
+                                                 bool bResetExisting = false);
     UFUNCTION(BlueprintCallable, Category = "Station Authoring")
     static FString DescribeStationVisualLayout(UBlueprint *Blueprint);
 

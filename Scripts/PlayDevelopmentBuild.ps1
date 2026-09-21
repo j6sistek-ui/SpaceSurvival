@@ -16,5 +16,6 @@ if ($profile.Contains('"') -or $project.Contains('"')) { throw 'Unsupported quot
 # build, author assets, package or overwrite the installed game's save profile.
 Start-Process -FilePath $editor -WorkingDirectory $root -WindowStyle Normal -ArgumentList @(
     ('"' + $project + '"'), '-game', '-windowed', '-ResX=1600', '-ResY=900',
-    ('-UserDir="' + $profile + '"'), '-SaveToUserDir', '-nosplash'
+    ('-UserDir="' + $profile + '"'), '-SaveToUserDir', '-nosplash',
+    '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit'
 )

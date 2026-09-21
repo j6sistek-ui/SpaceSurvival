@@ -2,6 +2,7 @@
 #include "SSGameMode.h"
 #include "SSGameInstance.h"
 #include "SSShip.h"
+#include "SSShipVisualRig.h"
 #include "SSStation.h"
 #include "SSLandingPad.h"
 #include "Components/SphereComponent.h"
@@ -17,6 +18,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/SkeletalMesh.h"
 #include "UnrealClient.h"
 #include "Kismet/GameplayStatics.h"
 #include "SSWorldActors.h"
@@ -74,6 +76,9 @@ bool IsIsolatedSoak(FString &Root, FString &Token)
     FGuid Guid;
     bool Station5, Wave1;
     if (!ReadScenario(Station5, Wave1) || (Wave1 && !FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"))))
+        return false;
+    if (FParse::Param(FCommandLine::Get(), TEXT("SSStationExteriorReview")) &&
+        (!Station5 || !FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"))))
         return false;
     FString Argument, Marker, RootArgument;
     auto &Features = IPlatformFeaturesModule::Get();
@@ -153,6 +158,7 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     FParse::Value(FCommandLine::Get(), TEXT("SSSoakScenario="), Scenario);
     Soak->Gallery = Scenario == TEXT("Gallery");
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
+    Soak->CaptureStationExterior = FParse::Param(FCommandLine::Get(), TEXT("SSStationExteriorReview"));
     Soak->CaptureSequence = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence"));
     Soak->OffscreenVisuals = Soak->CaptureVisuals && FParse::Param(FCommandLine::Get(), TEXT("RenderOffscreen"));
     Soak->StartedAt = FPlatformTime::Seconds();
@@ -205,7 +211,19 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             Row->SetStringField(TEXT("animation"), GetPathNameSafe(Animation->GetCurrentAsset()));
             Row->SetNumberField(TEXT("animationSeconds"), Animation->GetCurrentTime());
         }
-        Row->SetStringField(TEXT("hull"), GetPathNameSafe(GM->Ship->HullMesh->GetStaticMesh()));
+        const FSSHullDefinition Hull(ASSShip::SelectedHullIdentity());
+        const auto *Rig = GM->Ship->GetVisualRig();
+        const auto *VisibleSkeletalHull = GM->Ship->SkeletalHull.Get();
+        const bool SkeletalHullVisible =
+            VisibleSkeletalHull && VisibleSkeletalHull->IsVisible() && VisibleSkeletalHull->GetSkeletalMeshAsset();
+        Row->SetStringField(TEXT("hullIdentity"), Hull.Id.ToString());
+        Row->SetStringField(TEXT("hullDefinitionMesh"), Hull.MeshPath);
+        Row->SetBoolField(TEXT("blueprintRigActive"), Rig && Rig->HasBlueprintRig());
+        Row->SetStringField(TEXT("hull"), SkeletalHullVisible
+                                              ? GetPathNameSafe(VisibleSkeletalHull->GetSkeletalMeshAsset())
+                                              : GetPathNameSafe(GM->Ship->HullMesh->GetStaticMesh()));
+        Row->SetStringField(TEXT("fallbackHull"), GetPathNameSafe(GM->Ship->HullMesh->GetStaticMesh()));
+        Row->SetBoolField(TEXT("fallbackHullVisible"), GM->Ship->HullMesh->IsVisible());
         Row->SetStringField(TEXT("cameraTransform"), GM->Ship->Camera->GetComponentTransform().ToHumanReadableString());
         Row->SetNumberField(TEXT("horizontalFov"), GM->Ship->Camera->FieldOfView);
         const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
@@ -409,7 +427,13 @@ void ASSWave10Soak::TickGallery(float Dt)
     if (GalleryStage == 0)
     {
         GM->ClosePanel();
-        GM->Walker->SetActorLocation(GM->Hub->GetActorTransform().TransformPosition(FVector(450, 900, 100)));
+        FVector Doorway;
+        if (!GM->Hub->ServicePosition(ESSPanel::AlienGallery, Doorway))
+        {
+            Stop(TEXT("Current station layout has no alien gallery service anchor."));
+            return;
+        }
+        GM->Walker->SetActorLocation(Doorway + GM->Hub->GetActorUpVector() * 110.f);
         PC->SetControlRotation(FRotator(-10, 90, 0));
         Started = true;
         Next();
@@ -666,6 +690,11 @@ void ASSWave10Soak::Tick(float Dt)
     }
     if (Station5 && S.run.phase == SS::Phase::Station)
     {
+        if (CaptureStationExterior && (!IsValid(GM->Hub) || !GM->Hub->IsUsingFunctionalLayout()))
+        {
+            Stop(TEXT("Exterior colony review requires the installed functional station reset."));
+            return;
+        }
         if (!IsValid(GM->Walker) || UGameplayStatics::GetPlayerPawn(this, 0) != GM->Walker)
         {
             Stop(TEXT("Station fixture did not possess the actual exit/walking pawn."));
@@ -718,7 +747,9 @@ void ASSWave10Soak::Tick(float Dt)
                 // the deck the moment arrival moved out to the exterior landing pad - and a fixture with a
                 // stale copy of a boundary reports a correct arrival as a failure.
                 GM->Hub->Walkable(GM->Walker->GetActorLocation()) && Local.Z > 0. &&
-                FVector::Dist2D(GM->Walker->GetActorLocation(), GM->Hub->PadDockPosition()) > 300. && Facing;
+                GM->Hub->GetLandingPad()->IsOutsideParkedHull(
+                    GM->Walker->GetActorLocation(), GM->Walker->GetCapsuleComponent()->GetScaledCapsuleRadius()) &&
+                Facing;
             if (OnDeck)
             {
                 SawStandingExit = true;
@@ -767,9 +798,21 @@ void ASSWave10Soak::Tick(float Dt)
             if (StationIdleSeconds >= 2)
                 CaptureVisual(TEXT("StationIdle"), StationIdleSeconds);
             if (StationIdleSeconds >= 7)
-                CaptureStationReview(TEXT("StationServices"), FVector(600, 500, 220), FVector(1110, 1130, 160));
+                CaptureStationReview(
+                    TEXT("StationServices"),
+                    GM->Hub->IsUsingFunctionalLayout() ? FVector(550, 650, 210) : FVector(600, 500, 220),
+                    GM->Hub->IsUsingFunctionalLayout() ? FVector(1050, 1250, 125) : FVector(1110, 1130, 160));
             if (StationIdleSeconds >= 12 && VisualNames.Contains(TEXT("StationServices")))
-                CaptureStationReview(TEXT("StationOverview"), FVector(1300, -1150, 650), FVector(-600, 0, 300));
+                CaptureStationReview(TEXT("StationOverview"),
+                                     GM->Hub->IsUsingFunctionalLayout() ? FVector(-1600, -350, 390)
+                                                                        : FVector(1300, -1150, 650),
+                                     GM->Hub->IsUsingFunctionalLayout() ? FVector(400, 0, 120) : FVector(-600, 0, 300));
+            if (CaptureStationExterior && StationIdleSeconds >= 17 && VisualNames.Contains(TEXT("StationOverview")))
+                CaptureStationReview(TEXT("StationColonyOverview"), FVector(-17000, -6000, 9000),
+                                     FVector(-1600, 0, 2400));
+            if (CaptureStationExterior && StationIdleSeconds >= 22 &&
+                VisualNames.Contains(TEXT("StationColonyOverview")))
+                CaptureStationReview(TEXT("StationPadMouth"), FVector(-2000, 2200, 1000), FVector(-5200, -400, 300));
         }
         const TCHAR *TextureStage = Station5 ? TEXT("StationIdle") : TEXT("Compound");
         if (VisualNames.Contains(TextureStage) && !VisualNames.Contains(TEXT("TexturesLogged")))
@@ -780,7 +823,8 @@ void ASSWave10Soak::Tick(float Dt)
             UE_LOG(LogTemp, Display, TEXT("SOAK_VISUAL_TEXTURE_RESIDENCY_END"));
         }
     }
-    // Applied after normal simulation for the next engine frame; never relocate the ship or force docking.
+    // Applied after normal simulation for the next engine frame. Never relocate the ship or bypass
+    // docking eligibility: the fixture presses the ordinary interaction once the pilot prompt is ready.
     if (S.run.phase != SS::Phase::Approach)
         ApproachHasLastRotation = false;
     if (Station5 && S.run.phase == SS::Phase::Approach && IsValid(GM->Hub))
@@ -813,7 +857,19 @@ void ASSWave10Soak::Tick(float Dt)
             FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw) * Kp - YawRate * Kd, -.75f, .75f),
             FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Pitch, Desired.Pitch) * Kp - PitchRate * Kd, -.75f,
                          .75f));
-        GM->Ship->SetFlightInput(Steering, FVector2D::ZeroVector, -1.f, false, false);
+        const float DistanceToPad = FVector::Distance(GM->Ship->GetActorLocation(), GM->GetLandingTarget());
+        // Station throttle is a persistent trim now. Holding S for the whole approach would park the
+        // fixture far from the pad. Retain cruise until the final braking window, then deliberately dock.
+        GM->Ship->SetFlightInput(Steering, FVector2D::ZeroVector, 0.f, false,
+                                 DistanceToPad < GM->GetDockingRadius() * 2.f);
+        FString DockingMessage;
+        if (!RequestedDocking && GM->DockingStatus(DockingMessage))
+        {
+            GM->Interact();
+            RequestedDocking = S.run.phase == SS::Phase::Docking;
+            UE_LOG(LogTemp, Display, TEXT("SOAK_DOCK_REQUEST path=GameModeInteract accepted=%d"),
+                   RequestedDocking ? 1 : 0);
+        }
         // Diagnostic, once a second: where the ship is relative to the pad, whether its body is simulating,
         // how fast it is really going, the heading error and the command, whether admission's clearance
         // would pass, and - if the clearance sweep is blocked - by what. Fixture-only; nothing here touches
@@ -837,7 +893,7 @@ void ASSWave10Soak::Tick(float Dt)
                    TEXT("SOAK_APPROACH t=%.0f local=(%.0f,%.0f,%.0f) toDock=%.0f radius=%.0f speed=%.0f physV=%.0f "
                         "sim=%d yawErr=%.1f pitchErr=%.1f steer=(%.2f,%.2f) assist=%d blocked=%d by=%s/%s"),
                    ApproachSeconds, Local.X, Local.Y, Local.Z, FVector::Dist(GM->Ship->GetActorLocation(), Dock),
-                   GM->Ship->DockApproachRadius(), GM->Ship->GetVelocity().Size(), PhysV.Size(), Sim ? 1 : 0,
+                   GM->GetDockingRadius(), GM->Ship->GetVelocity().Size(), PhysV.Size(), Sim ? 1 : 0,
                    FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw),
                    FMath::FindDeltaAngleDegrees(Current.Pitch, Desired.Pitch), Steering.X, Steering.Y,
                    GM->Hub->CanAssistDocking(GM->Ship) ? 1 : 0, Blocked ? 1 : 0,
@@ -862,7 +918,7 @@ void ASSWave10Soak::Tick(float Dt)
     }
     if (Threats > GM->Director->MaximumActiveThreats)
         Stop(TEXT("Director active threat cap exceeded during rendered fixture."));
-    else if (Station5 && StationIdleSeconds >= 15)
+    else if (Station5 && StationIdleSeconds >= (CaptureStationExterior ? 25 : 15))
     {
         // Getting off the ship is certified two ways, and the hero decides which one this run owes. One
         // with an exit clip owes the climb-out itself: 2.3 s of a running transition, which is what the
@@ -872,7 +928,7 @@ void ASSWave10Soak::Tick(float Dt)
         // a hero with no clip that somehow started a transition is a fault, not a pass, and a hero with a
         // clip cannot certify by standing still. Docking itself is demanded in both, so a run that
         // skipped the arrival and spawned a walker on the deck certifies nothing.
-        const bool Arrived = SawDocking && DockingSeconds >= 2.9;
+        const bool Arrived = RequestedDocking && SawDocking && DockingSeconds >= 2.9;
         const bool ClimbedOut = HeroClimbsOut && SawExit && ExitSeconds >= 2.3;
         // The standing arrival is owed for the whole window, not a slice of it. The climb-out branch
         // above cannot be paid by a self-correction because its 2.3 s has to come out of a 2.4 s stage;
@@ -931,6 +987,8 @@ void ASSWave10Soak::WriteResultAndExit()
                     Expected.Add(FString::Printf(TEXT("Exit%d"), Index));
             Expected.Append(
                 {TEXT("StationIdle"), TEXT("StationServices"), TEXT("StationOverview"), TEXT("CombatImpact")});
+            if (CaptureStationExterior)
+                Expected.Append({TEXT("StationColonyOverview"), TEXT("StationPadMouth")});
         }
         else if (Wave1)
             Expected = {TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")};
@@ -959,11 +1017,12 @@ void ASSWave10Soak::WriteResultAndExit()
                                                             : TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY"));
     Result->SetBoolField(TEXT("success"), Success);
     Result->SetBoolField(TEXT("visualCaptureEnabled"), CaptureVisuals);
+    Result->SetBoolField(TEXT("stationExteriorReview"), CaptureStationExterior);
     Result->SetArrayField(TEXT("visualRequests"), VisualRecords);
     Result->SetStringField(
         TEXT("visualCaptureLimit"),
-        TEXT("Viewport screenshots are fulfilled after each recorded request. StationServices and "
-             "StationOverview use labeled fixture cameras without changing possession. Image readback "
+        TEXT("Viewport screenshots are fulfilled after each recorded request. Station review shots use labeled "
+             "fixture cameras without changing possession, runtime lighting or exposure settings. Image readback "
              "and ListTextures perturb timings; visual captures are not performance evidence."));
     Result->SetStringField(TEXT("failure"), Failure);
     Result->SetStringField(TEXT("token"), Token);
@@ -985,6 +1044,8 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("sawWave5"), Station5 && SawFlightWave);
     Result->SetBoolField(TEXT("sawWormhole"), SawWormhole);
     Result->SetBoolField(TEXT("sawDocking"), SawDocking);
+    Result->SetBoolField(TEXT("requestedDocking"), RequestedDocking);
+    Result->SetStringField(TEXT("dockInputPath"), TEXT("Scripted GameMode.Interact; not physical controller input"));
     Result->SetBoolField(TEXT("sawAuthoredExit"), SawExit);
     Result->SetStringField(TEXT("stationHero"), StationHeroId);
     Result->SetBoolField(TEXT("heroClimbsOut"), HeroClimbsOut);

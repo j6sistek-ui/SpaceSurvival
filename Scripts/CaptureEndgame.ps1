@@ -15,6 +15,7 @@ param(
     [ValidateRange(640, 7680)][int]$Width = 2560,
     [ValidateRange(480, 4320)][int]$Height = 1440,
     [switch]$CaptureVisuals,
+    [switch]$StationExterior,
     [switch]$NoSound,
     # Passed through verbatim to the game. For opt-in build flags the fixture itself knows nothing about,
     # such as -SSPhoenix, so capturing a variant does not mean editing this script each time.
@@ -23,6 +24,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $Scenario = if ($Scenario -ieq 'Station5') { 'Station5' } else { 'Wave10' }
+if ($StationExterior -and ($Scenario -ne 'Station5' -or -not $CaptureVisuals)) {
+    throw '-StationExterior requires -Scenario Station5 -CaptureVisuals.'
+}
 if ($Scenario -eq 'Station5' -and -not $PSBoundParameters.ContainsKey('TimeoutSeconds')) { $TimeoutSeconds = 330 }
 $evidenceType = if ($Scenario -eq 'Station5') { 'RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY' } else { 'RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY' }
 # The seven Exit frames are shots of a hero climbing out of the ship. The owner cancelled that animation
@@ -34,6 +38,7 @@ $expectedVisualNames = if ($Scenario -eq 'Station5') {
     @('Flight', 'Climax', 'Wormhole', 'Approach', 'Docking',
         'StationIdle', 'StationServices', 'StationOverview', 'CombatImpact')
 } else { @('Flight', 'Climax', 'Compound', 'Approach') }
+if ($StationExterior) { $expectedVisualNames += @('StationColonyOverview', 'StationPadMouth') }
 $exitVisualNames = @('Exit0', 'Exit1', 'Exit2', 'Exit3', 'Exit4', 'Exit5', 'Exit6')
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 function Assert-NoReparsePath([string]$Path) {
@@ -52,6 +57,30 @@ function FileIdentity([string]$Path) {
     Assert-NoReparsePath $Path
     $item = Get-Item -LiteralPath $Path
     [ordered]@{ path = $item.FullName; bytes = $item.Length; sha256 = (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash }
+}
+function SourceFileIdentity([string]$RelativePath) {
+    $logicalPath = Join-Path $repoRoot $RelativePath
+    $contentRoot = Join-Path $repoRoot 'Content'
+    # Isolated Unreal worktrees may share the owner's licensed Content through one junction.
+    # Resolve only this read-only source input. Output, binary and save paths retain the strict
+    # no-reparse rule, and FileIdentity still rejects nested redirects in the resolved input.
+    if ($RelativePath.Replace('\', '/').StartsWith('Content/', [StringComparison]::OrdinalIgnoreCase) -and
+        (Test-Path -LiteralPath $contentRoot) -and
+        (((Get-Item -LiteralPath $contentRoot -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+        $targets = @((Get-Item -LiteralPath $contentRoot -Force).Target)
+        if ($targets.Count -ne 1 -or -not [IO.Path]::IsPathRooted($targets[0])) {
+            throw 'Shared Content must have one absolute junction target.'
+        }
+        $resolvedRoot = [IO.Path]::GetFullPath($targets[0]).TrimEnd('\', '/')
+        $resolved = [IO.Path]::GetFullPath((Join-Path $resolvedRoot $RelativePath.Substring(8)))
+        if (-not $resolved.StartsWith($resolvedRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'Source content escaped the resolved Content root.'
+        }
+        $identity = FileIdentity $resolved
+        $identity.logicalPath = $logicalPath
+        return $identity
+    }
+    FileIdentity $logicalPath
 }
 function PngIdentity([string]$Path) {
     $identity = FileIdentity $Path
@@ -88,7 +117,7 @@ function SourceSnapshot {
     $paths = @(& git -C $repoRoot ls-files --cached --others --exclude-standard -- Source Config Content `
         Scripts/AnalyzePerformance.py Scripts/CaptureEndgame.ps1 SpaceSurvival.uproject | Sort-Object -Unique)
     if ($LASTEXITCODE -ne 0) { throw 'Cannot enumerate source/content snapshot.' }
-    $identities = @($paths | ForEach-Object { FileIdentity (Join-Path $repoRoot $_) })
+    $identities = @($paths | ForEach-Object { SourceFileIdentity $_ })
     $dirty = @(& git -C $repoRoot status --porcelain -- Source Config Content Scripts/AnalyzePerformance.py Scripts/CaptureEndgame.ps1 SpaceSurvival.uproject)
     [ordered]@{ head = $head; dirtyEntries = $dirty; rawWorktreeFiles = $identities;
         bindingLimit = 'Exact contemporaneous source/content snapshot. A separate successful build/package receipt must bind these sources to this executable; HEAD alone does not prove compilation.' }
@@ -136,6 +165,7 @@ $arguments += @('-SSWave10Soak', "-SSSoakScenario=$Scenario", '-SaveToUserDir', 
 if ($NoSound) { $arguments += '-nosound' }
 if ($ExtraArgs.Count -gt 0) { $arguments += $ExtraArgs }
 if ($CaptureVisuals) { $arguments += @('-SSSoakVisuals', '-RenderOffscreen', '-ForceRes') }
+if ($StationExterior) { $arguments += '-SSStationExteriorReview' }
 $process = $null
 $success = $false
 $failure = $null
@@ -165,6 +195,10 @@ try {
             throw 'Fixture receipt predates the conditional exit; rebuild the binary before capturing.'
         }
         if ($fixture.heroClimbsOut) { $expectedVisualNames += $exitVisualNames }
+        if ($StationExterior -and (-not ($fixture.PSObject.Properties.Name -contains 'stationExteriorReview') -or
+                -not $fixture.stationExteriorReview)) {
+            throw 'Fixture receipt does not certify the requested station exterior review; rebuild the binary.'
+        }
     }
     if (-not $fixture.success -or $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $Scenario -or
         $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or
@@ -191,7 +225,9 @@ try {
                 $combat.combatSystem -cne '/Game/SpaceSurvival/Licensed/Combat/NS_EnemyExplosion.NS_EnemyExplosion') {
                 throw 'Combat capture does not identify a live explosion after a real weapon kill.'
             }
-            foreach ($stage in @(@('Wormhole', 2), @('StationServices', 7), @('StationOverview', 12))) {
+            $reviewStages = @(@('Wormhole', 2), @('StationServices', 7), @('StationOverview', 12))
+            if ($StationExterior) { $reviewStages += @(@('StationColonyOverview', 17), @('StationPadMouth', 22)) }
+            foreach ($stage in $reviewStages) {
                 $row = @($fixture.visualRequests | Where-Object { $_.name -ceq $stage[0] })[0]
                 if ($row.requestStageSeconds -lt $stage[1]) { throw "Visual stage captured too early: $($stage[0])" }
                 if ($stage[0] -cne 'Wormhole' -and -not $row.scriptedStationReviewCamera) { throw 'Station review frame lacks its labeled fixture viewpoint.' }

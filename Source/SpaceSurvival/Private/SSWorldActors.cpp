@@ -983,10 +983,11 @@ void ASSProjectile::Tick(float DeltaSeconds)
     {
         if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
             FX->PlayImpact(WorldHit->ImpactPoint, WorldHit->ImpactNormal, bPlayerShot, bPlayerShot);
-        if (ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor()))
+        ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor());
+        if (Body)
             if (bPlayerShot || Body->IsSolidHazard())
                 Body->ReceiveWeaponHit(CollisionDamage);
-        if (bPlayerShot)
+        if (bPlayerShot && CollisionDamage > 0.f && Body && Body->IsWeaponTarget())
             if (auto *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
                 Mode->NotifyPlayerShotHit();
         Destroy();

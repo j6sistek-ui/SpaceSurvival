@@ -524,17 +524,33 @@ void ASSHUD::DrawHUD()
         }
         if (S.run.phase == SS::Phase::Approach)
         {
+            const FVector LandingTarget = GM->GetLandingTarget();
             FVector2D Screen(W * .5f, 130 * Scale);
-            if (!PlayerOwner->ProjectWorldLocationToScreen(GM->StationTarget, Screen))
+            if (!PlayerOwner->ProjectWorldLocationToScreen(LandingTarget, Screen))
             {
-                const FVector Local = Ship->GetActorTransform().InverseTransformPosition(GM->StationTarget);
+                const FVector Local = Ship->GetActorTransform().InverseTransformPosition(LandingTarget);
                 Screen = FVector2D(Local.Y < 0 ? 100 * Scale : W - 300 * Scale, H * .5f);
             }
-            Screen.X = FMath::Clamp(Screen.X, 100 * Scale, W - 300 * Scale);
+            Screen.X = FMath::Clamp(Screen.X, 60 * Scale, FMath::Max(60 * Scale, W - 520 * Scale));
             Screen.Y = FMath::Clamp(Screen.Y, 130 * Scale, H - 180 * Scale);
-            Text(TEXT("[ STATION ]  APPROACH"), Screen.X, Screen.Y, .9f, FLinearColor(.45f, .9f, 1));
+            FString Status;
+            const bool Ready = GM->DockingStatus(Status);
+            const float StatusHeight = Paragraph(Status, Screen.X, Screen.Y, 500 * Scale, .75f,
+                                                 Ready ? FLinearColor(.4f, 1.f, .65f) : FLinearColor(.45f, .9f, 1));
+            if (Ready)
+            {
+                const float KeyWidth = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, Screen.X,
+                                             Screen.Y + StatusHeight + 8 * Scale, .75f);
+                Text(TEXT("ENGAGE DOCKING"), Screen.X + KeyWidth + 8 * Scale, Screen.Y + StatusHeight + 8 * Scale, .75f,
+                     FLinearColor::White);
+            }
         }
     }
+    if (GM->IsDepartingStation())
+        Text(GM->GetPlayerShip() && GM->GetPlayerShip()->IsTakingOff()
+                 ? TEXT("TAKEOFF  |  Gear stowing; controls return after lift-off")
+                 : TEXT("STATION ZONE  |  Fly clear of the pad to begin the next wave"),
+             W * .22f, 130 * Scale, .85f, FLinearColor(.45f, .9f, 1));
     if (auto *Ship = GM->GetPlayerShip(); Ship && S.IsFlying() && GM->ThreatWarningSeconds > 0.f)
     {
         const float AlertW = FMath::Min(620.f * Scale, W - 2.f * Margin);
@@ -594,8 +610,10 @@ void ASSHUD::DrawHUD()
                         Service == ESSPanel::Reward && S.run.pendingReward ? TEXT("CHOOSE SECURED REWARD") : Label;
                     break;
                 }
+                InteractionHint = It->ServiceGuidance(Walker->GetActorLocation());
+                HintColor = FLinearColor(.68f, .82f, .9f);
             }
-            if (InteractionHint.IsEmpty() && S.run.pendingReward)
+            if (!GlyphBeforeHint && S.run.pendingReward)
             {
                 InteractionHint = TEXT("REWARD SECURED / visit the Beacon Log");
                 HintColor = FLinearColor(1, .8f, .4f);

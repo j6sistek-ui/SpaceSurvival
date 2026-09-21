@@ -105,6 +105,18 @@ struct FSSFlightWorld
             Step(DeltaSeconds);
     }
 
+    // A visible target under the HUD reticle, constructed from the camera independently of
+    // AimDirection. Putting targets on AimDirection itself previously concealed parallax misses.
+    FVector ReticleTarget(float MuzzleRange) const
+    {
+        const FVector Eye = Ship->Camera->GetComponentLocation();
+        const FVector Ray = (Ship->CrosshairWorldPoint() - Eye).GetSafeNormal();
+        const FVector Delta = Ship->MuzzleWorldPosition() - Eye;
+        const double Along = FVector::DotProduct(Delta, Ray);
+        const double AcrossSquared = FMath::Max(0., Delta.SizeSquared() - Along * Along);
+        return Eye + Ray * (Along + FMath::Sqrt(FMath::Max(0., double(MuzzleRange) * MuzzleRange - AcrossSquared)));
+    }
+
     ASSWorldBody *Target(FVector Offset)
     {
         auto *Body = World->SpawnActor<ASSWorldBody>(Ship->GetActorLocation() + Offset, FRotator::ZeroRotator);
@@ -309,7 +321,9 @@ bool FSSShipPresentationSelection::RunTest(const FString &)
         auto *Station = Fixture.World->SpawnActor<ASSStation>();
         if (!TestNotNull(Label + TEXT(" creates an actual station actor"), Station))
             return false;
-        // Exercise the home hangar and station construction paths once each.
+        // Retained native bay-display regression. The functional reset uses the actual exterior
+        // player ship and is covered separately by StationResetCollision/StationDepartureBoundary.
+        Station->bUseEditableLayout = false;
         Station->BuildHub(Index == 0);
         TArray<UStaticMeshComponent *> Components;
         Station->GetComponents<UStaticMeshComponent>(Components);
@@ -735,41 +749,14 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         // Deliberately nondefault damage also verifies Fire consumes the session's weapon stat.
         Fixture.Instance->Session.tuning.baseWeaponDamage = 10;
         Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
-        // Hold station for the three shots, because this suite is about what a weapon does to a target and
-        // not about what cruising does to a sight picture.
-        //
-        // A chase camera whose pitch differs from the direction of travel cannot keep a fixed point on its
-        // ray: flying level translates the lens level while the ray still points down, so the point slides
-        // off the reticle. The classic boom sits near the ship's axis, so travel and ray very nearly agree
-        // and the drift is invisible; the Phoenix looks 27 degrees down, and measured, a target 3866 cm
-        // ahead left the crosshair inside a quarter second - the first shot hit, the sight ray found nothing
-        // at all by the second. That is a camera dial worth knowing about, but it is not a weapon defect,
-        // and a weapon suite should not be the thing that reports it.
-        Fixture.Instance->Session.tuning.baseSpeed = 0;
-        // Settle the actual default chase view; do not flatten its pitch or use the aiming helper.
         Fixture.Frames(30);
-        // Where a target has to sit for this to be a shooting test at all, derived from the camera that is
-        // actually fitted instead of from a distance that only ever suited one of them. It stays ON the sight
-        // ray, because proving the shot converges from the muzzle onto the crosshair is the whole point of
-        // the suite - but it is placed a fixed reach beyond THE SHIP rather than beyond the lens.
-        //
-        // Camera height, pitch and arm length are per-hull dials and will be tuned further, so a constant
-        // measured from the lens stops meaning the same thing the moment one is turned. At a flat 5000 cm it
-        // put a target 3811 past the classic nose and 730 SHORT of the Phoenix's, at a muzzle sight dot of
-        // -0.29: behind the firing direction, where no correctly aimed shot could reach it.
-        const FVector CameraRay = Fixture.Ship->Camera->GetForwardVector();
-        const FVector Eye = Fixture.Ship->Camera->GetComponentLocation();
-        const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
-        const float ShipAlongRay = FMath::Max(0.f, FVector::DotProduct(Muzzle - Eye, CameraRay));
-        const float EngagementReach = 3800.f;
-        // The sight is traced from the lens, so a camera dialled far enough back could put a target that is
-        // merely in front of the hull outside weapon range. Say that in those words if it ever happens,
-        // rather than letting it arrive later disguised as a missed shot.
-        TestTrue(TEXT("A target in front of the hull is within weapon range"),
-                 ShipAlongRay + EngagementReach < Fixture.Ship->Tuning->WeaponRange);
-        // On the line the ship is actually aiming down, which is the reticle's line and no longer the
-        // lens's. ShipAlongRay survives only in the range check above, which is still about the sight trace.
-        const FVector TargetPosition = Muzzle + Fixture.Ship->AimDirection() * EngagementReach;
+        const FVector Muzzle = Fixture.Ship->MuzzleWorldPosition();
+        const FVector CameraRay =
+            (Fixture.Ship->CrosshairWorldPoint() - Fixture.Ship->Camera->GetComponentLocation()).GetSafeNormal();
+        const FVector TargetPosition = Fixture.ReticleTarget(3800.f);
+        TestTrue(TEXT("Target visibly lies under the projected reticle"),
+                 FVector::DotProduct((TargetPosition - Fixture.Ship->Camera->GetComponentLocation()).GetSafeNormal(),
+                                     CameraRay) > .99999);
         auto *Target = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation());
         auto *Miss = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation() +
                                     Fixture.Ship->Camera->GetRightVector() * 1200.f);
@@ -789,9 +776,9 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         // between the three of them and only the third one is asserted.
         auto ReportShot = [&](const TCHAR *When)
         {
-            const FVector Now = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
+            const FVector Now = Fixture.Ship->MuzzleWorldPosition();
             const FVector Lens = Fixture.Ship->Camera->GetComponentLocation();
-            const FVector Sight = Fixture.Ship->Camera->GetForwardVector();
+            const FVector Sight = (Fixture.Ship->CrosshairWorldPoint() - Lens).GetSafeNormal();
             FHitResult SightHit;
             FCollisionQueryParams Query(SCENE_QUERY_STAT(SSTestAim), false, Fixture.Ship);
             Fixture.Ship->GetWorld()->LineTraceSingleByChannel(
@@ -823,6 +810,9 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
             // remaining two shots leave on one frame, so all three are fired at one sight picture and the
             // claim under test is the damage they add up to rather than how far the ship flew between them.
             Fixture.Ship->Tuning->LaserInterval = 0.f;
+            // The live ship has moved since the first shot; preserve the same target's remaining
+            // health but put it under the current reticle before testing the next two damage hits.
+            Target->SetActorLocation(Fixture.ReticleTarget(3800.f));
             ReportShot(TEXT("Shot 2"));
             Fixture.Ship->Fire();
             TestFalse(TEXT("Two tuned laser hits leave the target alive"), Target->IsActorBeingDestroyed());
@@ -843,6 +833,55 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSCrosshairTargetDamage, "SpaceSurvival.Flight.CrosshairTargetDamage",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSCrosshairTargetDamage::RunTest(const FString &)
+{
+    for (SS::Weapon Weapon : {SS::Weapon::RapidLaser, SS::Weapon::HeavyCannon})
+        for (ESSWorldKind Kind : {ESSWorldKind::Pursuer, ESSWorldKind::Flanker, ESSWorldKind::MediumAsteroid,
+                                  ESSWorldKind::MassiveAsteroid})
+        {
+            FSSFlightWorld Fixture;
+            if (!Fixture.Initialize(*this, Weapon))
+                return false;
+            Fixture.Instance->Session.tuning.baseWeaponDamage = 500;
+            Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
+            Fixture.Frames(30);
+            const FVector Position = Fixture.ReticleTarget(6000.f);
+            const bool Enemy = Kind == ESSWorldKind::Pursuer || Kind == ESSWorldKind::Flanker;
+            ASSWorldBody *Target = Enemy ? Fixture.World->SpawnActor<ASSEnemy>(Position, FRotator::ZeroRotator)
+                                         : Fixture.World->SpawnActor<ASSWorldBody>(Position, FRotator::ZeroRotator);
+            if (!TestNotNull(TEXT("Spawn a native combat target under the actual HUD reticle"), Target))
+                return false;
+            Target->Configure(Kind, 120.f, 0.f);
+            Target->SetActorTickEnabled(false);
+            Fixture.Ship->SoftTarget = nullptr;
+            const bool Destructible = Kind != ESSWorldKind::MassiveAsteroid;
+            const FString Label = FString::Printf(TEXT("weapon=%d kind=%d"), int32(Weapon), int32(Kind));
+            TestFalse(Label + TEXT(" starts without a firing presentation pulse"), Fixture.Ship->IsFiring());
+            Fixture.Ship->Fire();
+            TestTrue(Label + TEXT(" manual trigger starts its firing presentation pulse"), Fixture.Ship->IsFiring());
+            ASSProjectile *Round = nullptr;
+            for (TActorIterator<ASSProjectile> It(Fixture.World); It; ++It)
+                Round = *It;
+            if (!TestNotNull(Label + TEXT(" creates the visible shot"), Round))
+                return false;
+            TestTrue(Label + TEXT(" visible shot starts at the authoritative hull muzzle"),
+                     Round->GetActorLocation().Equals(Fixture.Ship->MuzzleWorldPosition(), .01));
+            if (Weapon == SS::Weapon::HeavyCannon)
+            {
+                TestFalse(Label + TEXT(" cannon waits for physical projectile contact"),
+                          Target->IsActorBeingDestroyed());
+                // Test the actual sweep against a fixed target without enemy manoeuvres or ship travel
+                // changing this sight picture. Motion/hitch behaviour has its own existing suite.
+                Round->Tick(.5f);
+            }
+            TestEqual(Label + TEXT(" native damage defeats scoped targets while massive rock remains cover"),
+                      Target->IsActorBeingDestroyed(), Destructible);
+        }
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSWeaponRange, "SpaceSurvival.Flight.CannonRangeAndHitch",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSWeaponRange::RunTest(const FString &)
@@ -856,12 +895,9 @@ bool FSSWeaponRange::RunTest(const FString &)
             Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
             Fixture.Ship->Tuning->WeaponRange = 4000.f;
             Fixture.Frames(30);
-            const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
-            // Down the ship's own sight line. Reconstructing it from the camera was the same assumption the
-            // suite above made, and it stops being true the moment the reticle leaves screen centre.
-            const FVector Direction = Fixture.Ship->AimDirection();
+            const FVector Muzzle = Fixture.Ship->MuzzleWorldPosition();
             auto *Target =
-                Fixture.Target(Muzzle + Direction * (BeyondRange ? 4500.f : 3500.f) - Fixture.Ship->GetActorLocation());
+                Fixture.Target(Fixture.ReticleTarget(BeyondRange ? 4500.f : 3500.f) - Fixture.Ship->GetActorLocation());
             if (!TestNotNull(TEXT("Create isolated range target"), Target))
                 return false;
             Fixture.Ship->Fire();
@@ -897,9 +933,8 @@ bool FSSFlightMuzzleObstruction::RunTest(const FString &)
         Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
         Fixture.Frames(30);
         const FVector CameraOrigin = Fixture.Ship->Camera->GetComponentLocation();
-        const FVector CameraForward = Fixture.Ship->Camera->GetForwardVector();
-        const FVector TargetPosition = CameraOrigin + CameraForward * 5000.f;
-        const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
+        const FVector TargetPosition = Fixture.ReticleTarget(5000.f);
+        const FVector Muzzle = Fixture.Ship->MuzzleWorldPosition();
         auto *Target = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation());
         auto *Blocker = Fixture.Target(FMath::Lerp(Muzzle, TargetPosition, .2f) - Fixture.Ship->GetActorLocation());
         if (!TestNotNull(Label + TEXT(" creates a camera-visible target"), Target) ||
@@ -1130,10 +1165,12 @@ bool FSSFlightChaseFraming::RunTest(const FString &)
                 // the screen. It used to be, and "camera forward" meant "where the player is pointing" for
                 // exactly as long as the hull was small enough to leave the centre of frame empty. On a hull
                 // that fills it, camera forward points at the ship's own nose.
-                const FVector SightMuzzle = Ship->GetActorLocation() + Ship->GetActorForwardVector() * 240.f;
-                if (!TestTrue(TEXT("Manual weapon sight points at the reticle this hull draws"),
-                              Ship->AimDirection().Equals((Ship->CrosshairWorldPoint() - SightMuzzle).GetSafeNormal(),
-                                                          .0001)))
+                const FVector SightEnd = Ship->MuzzleWorldPosition() + Ship->AimDirection() * Ship->Tuning->WeaponRange;
+                const FVector Eye = Ship->Camera->GetComponentLocation();
+                if (!TestTrue(TEXT("Manual weapon sight converges onto the camera ray under the drawn reticle"),
+                              (SightEnd - Eye)
+                                  .GetSafeNormal()
+                                  .Equals((Ship->CrosshairWorldPoint() - Eye).GetSafeNormal(), .0001)))
                     return false;
             }
             AddInfo(FString::Printf(TEXT("%dHz scenario%d: hull came within %.3f of the frame edge"), Hertz, Scenario,

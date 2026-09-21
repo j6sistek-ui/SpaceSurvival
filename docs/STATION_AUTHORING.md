@@ -9,6 +9,79 @@ because doing it the other way cost a session.
 
 ---
 
+## Functional reset layout — September 21 owner redesign
+
+The owner requested a full replacement of the station's layout, physical interaction and presentation.
+The replacement has its own authored asset, `/Game/SpaceSurvival/Licensed/StationReset/BP_StationReset`.
+The original `StationVisualPass/BP_StationVisualLayout` is preserved. The native station selects the
+reset by default when installed and retains the original layout/native room as missing-asset fallbacks.
+
+`Scripts/AuthorStationReset.py` is the new layout's authoring source. Its default operation measures
+the existing licensed meshes and writes a dry-run recipe, placements and source bounds under ignored
+`Artifacts/StationReset`. The integration lead runs it through the serialized headless Unreal Python
+authoring process. `-SSApplyStationReset` explicitly applies and saves the separate Blueprint using
+`CreateStationLayoutAtPath`; a native Editor rebuild is required after changing that reflected API.
+
+The apply operation records the original Blueprint's SHA-256 before and after. It refuses to replace
+an existing reset asset unless that file matches its last `ownership.json` output hash. A matching
+previous output is backed up before rebuilding. This protects both the original layout and unknown
+owner edits to the new one. Generated output and receipts are private/local until deliberately included
+in a delivery; source code and an authoring script do not establish that a package has been regenerated.
+
+The reset recipe extends the legacy schema below:
+
+- `functional_layout: true` selects the native functional-layout path.
+- `collision_boxes` declares named transforms, half extents and `walk_floor` flags. These become
+  editable, non-colliding specification components in the Blueprint. The native hub creates matching
+  physical boxes for the intentional floor, walls, columns, terminals and supports.
+- `service_anchors` declares named transforms and existing service kinds. An anchor is an unobstructed
+  standing point in front of its console. Native panels, economy and interaction rules remain unchanged.
+- `skeletal_meshes` declares each staffed bay's supplied body, matching idle animation and measured
+  transform. `collision_capsules` supplies deliberate body blockers. Engineer Mica and the dockmaster
+  stand on the actual floor, away from the central aisle; decoration does not substitute for staff.
+
+The visible reset is an industrial 40 × 30 m concourse with an unobstructed central aisle, ten separated
+service zones, metal panels, attached ribs/conduits, warm perimeter lighting and restrained cyan guides.
+The pad is circular with physical 110 cm segmented guardrails that reject walker step-up. Angled return
+guards overlap the straight bridge rails, closing the diagonal gaps while leaving the eight-metre bridge
+clear. Its cantilever cradle
+returns into the rock-embedded layered foundation. Mesh bounds
+determine placement, so the visible floor and physical floor share the pad's Z=-10 plane. The native hub
+skips the original station's interior/exterior dressing when using this functional layout. Character
+customization is available in both the home hangar and arrival stations. The actual supplied player ship
+is parked on the home pad and is reused for takeoff.
+
+The asteroid is the private `/Game/SpaceSurvival/Licensed/StationReset/SM_StationAsteroid` derivative;
+the original owned Fab mesh and material remain untouched. The source mesh has 5,464,576 triangles,
+even though its rendering fallback has only 23,194. World scale changes placement, not source cost.
+The source-triangle audit established the candidate pose `(7500,0,5300)`, rotation
+`(34.319873,-22.187753,-6.929723)`, uniform scale145: the cavity faces local -X and the playable room
+grid clears rock. This is a measured composition starting point, not rendered acceptance. The asteroid
+has no gameplay collision because the vendor's convex shell fills its cavity. Intentional station solids
+bound the playable district; outer colony modules are scenery, not additional traversable rooms.
+
+For the bounded offscreen exterior review, after rebuilding the native fixture and authoring the reset:
+
+```powershell
+./Scripts/CaptureEndgame.ps1 -Editor -Scenario Station5 -CaptureVisuals -StationExterior -NoSound -Width 2560 -Height 1440
+```
+
+This keeps the ordinary Station5 flight, docking, possessed walker and interior review checks, then
+adds `StationColonyOverview.png` and `StationPadMouth.png` at 17 and 22 station-idle seconds. The first
+uses station-local camera `(-17000,-6000,9000)` toward `(-1600,0,2400)`; the second uses
+`(-2000,2200,1000)` toward `(-5200,-400,300)`. Both use 70-degree horizontal FOV. The camera does not
+move the player, relight the scene or change exposure. The fixture refuses this option if the functional
+reset is absent, and the capture script requires both additional raw frames and their camera receipts.
+Frustum calculations place the pad, roof and both terraces inside the overview at 16:9; actual reduced
+asteroid containment/sight rays are recorded by `InspectStationAsteroidPlacement.py`. Rays and framing
+are preparation for rendered review, not proof that a camera is visually satisfactory.
+
+Run `python Tests/TestStationResetRecipe.py` for geometric recipe guards. The native reset tests cover
+the actual colliders and wardrobe interaction after the asset has been authored. Neither replaces
+rendered inspection from at least three angles, natural walking, service interaction, landing/takeoff
+or the owner's design acceptance. The remainder of this document records the preserved original
+pipeline and its useful measurement/viewing techniques.
+
 ## 1. The pipeline
 
 ```

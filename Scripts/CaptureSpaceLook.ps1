@@ -17,7 +17,8 @@ param(
     [switch]$ThrusterLayered,
     [ValidateRange(0,5)][double]$ThrusterTrailScale = 0,
     [ValidateRange(-400,400)][double]$ThrusterTrailHeight = 0,
-    [ValidateRange(-400,400)][double]$ThrusterHeight = 0
+    [ValidateRange(-400,400)][double]$ThrusterHeight = 0,
+    [string[]]$ExtraArgs = @()
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -131,6 +132,7 @@ if ($ThrusterTrailScale -gt 0) { $execCmds += ",ss.ThrusterTrailScale $ThrusterT
 if ($ThrusterTrailHeight -ne 0) { $execCmds += ",ss.ThrusterTrailHeight $ThrusterTrailHeight" }
 if ($ThrusterHeight -ne 0) { $execCmds += ",ss.ThrusterHeight $ThrusterHeight" }
 $arguments += "-ExecCmds=$execCmds"
+$arguments += $ExtraArgs
 $metadata = [ordered]@{
     evidenceType = 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS'; status = 'starting'; success = $false
     root = $root; label = $Label; token = $token; pid = $null; processStartUtc = $null; processExit = $null

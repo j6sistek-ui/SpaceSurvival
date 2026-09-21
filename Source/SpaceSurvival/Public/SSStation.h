@@ -37,6 +37,7 @@ public:
     {
         return VisualLayout;
     }
+    bool IsUsingFunctionalLayout() const;
     // Optional presentation asset; the physical hub remains authoritative when it is absent.
     UPROPERTY(EditAnywhere, Category = "Presentation")
     TSoftObjectPtr<UStaticMesh> ShellAsset;
@@ -57,6 +58,11 @@ public:
     virtual void Destroyed() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     ESSPanel NearestService(FVector Position, FString &Label) const;
+    bool ServicePosition(ESSPanel Panel, FVector &WorldPosition) const;
+    /** Guidance to an existing service, including when no console is in interaction range. */
+    FString ServiceGuidance(FVector Position) const;
+    /** Select a floor-supported pad exit outside this ship's actual rendered footprint. */
+    bool ConfigurePadExit(const ASSShip *Ship, float CapsuleRadius, float CapsuleHalfHeight);
     FVector WalkSpawn() const
     {
         return GetActorTransform().TransformPosition(FVector(-300, 0, 180));
@@ -80,6 +86,8 @@ public:
      *  keeps these names so that every caller written against "the station's pad" keeps working, but the
      *  numbers now live on the one place they mean anything. */
     FVector PadDockPosition() const;
+    /** The colony mouth opens toward local -X; park facing the clear departure route. */
+    FRotator PadDockRotation() const;
     FVector PadWalkSpawn() const;
     FVector PadExit() const;
     /** Whether a world position is somewhere the hero is allowed to be: the interior deck, the walkway out
@@ -93,6 +101,10 @@ public:
     }
 
 private:
+    void BuildFunctionalHub();
+    /** Measured main-deck tiles; these share the native floor proxies, never the decorative hull bounds. */
+    TArray<FBox> AuthoredWalkDecks;
+    void BuildAuthoredWalkDeck();
     bool BuildEditableLayout();
     void DestroyVisualLayout();
     bool BuildLicensedShell();
@@ -131,7 +143,7 @@ private:
     /** Spawns this station's pad and builds the walkway that joins it to the hangar mouth. */
     void BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hull);
     void DestroyLandingPad();
-    void AddService(FVector Position, const FString &Label, ESSPanel Panel);
+    void AddService(FVector Position, const FString &Label, ESSPanel Panel, bool BuildStand = true);
 };
 
 UCLASS()

@@ -30,6 +30,7 @@ private:
     bool Started = false, Stopping = false, SawFlightWave = false, SawBreathing = false;
     bool CaptureRequested = false, AllFramesForeground = true;
     bool CaptureVisuals = false;
+    bool CaptureStationExterior = false;
     bool CaptureSequence = false;
     double NextSequenceSeconds = 6; // Let normal rendering/texture streaming settle before repeated readbacks.
     int32 SequenceIndex = 0;
@@ -57,6 +58,7 @@ private:
     FTransform GalleryReturnTransform;
     void TickGallery(float DeltaSeconds);
     bool Station5 = false, SawWormhole = false, SawDocking = false, SawExit = false;
+    bool RequestedDocking = false;
     double WormholeSeconds = 0, DockingSeconds = 0, ExitSeconds = 0, StationIdleSeconds = 0;
     /** Last frame's ship rotation during Approach, for rate-damped steering. See Tick. */
     FRotator ApproachLastRotation = FRotator::ZeroRotator;

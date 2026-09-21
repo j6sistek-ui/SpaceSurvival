@@ -13,6 +13,7 @@
 #include "Engine/TextureCube.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
+#include "SSLandingPad.h"
 #include "SSShipPaint.h"
 #include "Animation/PoseSnapshot.h"
 #include "SSHUD.h"
@@ -20,6 +21,7 @@
 #include "SSPhase1Data.h"
 #include "Components/AudioComponent.h"
 #include "Components/SceneComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EngineUtils.h"
@@ -283,6 +285,7 @@ void ASSGameMode::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 }
 void ASSGameMode::ShowHangar()
 {
+    bDepartingStation = bStartNextBlockOnExit = false;
     ThreatWarningSeconds = PilotReactionSeconds = 0.f;
     Director->SetActive(false);
     Director->ResetEncounter();
@@ -301,6 +304,12 @@ void ASSGameMode::ShowHangar()
     Hub = GetWorld()->SpawnActor<ASSStation>(FVector::ZeroVector, FRotator::ZeroRotator);
     Hub->BuildHub(true);
     Hub->SetBayShip(SelectedShip);
+    if (Hub->IsUsingFunctionalLayout())
+    {
+        Ship = GetWorld()->SpawnActor<ASSShip>(Hub->PadDockPosition(), Hub->PadDockRotation());
+        Ship->SetDockingTarget(Hub->PadDockPosition(), Hub->PadDockRotation());
+        Ship->FinishDocking();
+    }
     Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator::ZeroRotator);
     WearHero();
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
@@ -310,14 +319,14 @@ void ASSGameMode::ShowHangar()
     PreviousWave = -1;
     ClosePanel();
 }
-void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
+void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation, bool PreserveHub)
 {
     if (Walker)
     {
         Walker->Destroy();
         Walker = nullptr;
     }
-    if (Hub)
+    if (Hub && !PreserveHub)
     {
         Hub->Destroy();
         Hub = nullptr;
@@ -325,6 +334,15 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
     if (Ship)
         Ship->Destroy();
     Ship = GetWorld()->SpawnActor<ASSShip>(Location, Rotation);
+    FollowFlightPresentation();
+    UGameplayStatics::GetPlayerController(this, 0)->Possess(Ship);
+    Director->SetActive(!PreserveHub);
+    ClosePanel();
+}
+void ASSGameMode::FollowFlightPresentation()
+{
+    if (!Ship)
+        return;
     if (!DistantField)
         DistantField = GetWorld()->SpawnActor<ASSDistantAsteroids>();
     DistantField->Follow(Ship);
@@ -336,12 +354,10 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
     if (const auto *GI = GetGameInstance<USSGameInstance>())
         SpaceScenery->SetRunSeed(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str()))));
     SpaceScenery->Follow(Ship);
-    UGameplayStatics::GetPlayerController(this, 0)->Possess(Ship);
-    Director->SetActive(true);
-    ClosePanel();
 }
 void ASSGameMode::StartNewRun()
 {
+    bStartNextBlockOnExit = false;
     bWormholeArrived = false;
     ArrivalColorBlend = 0.f;
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -379,11 +395,16 @@ void ASSGameMode::StartNewRun()
     Director->ResetEncounter();
     PreviousPhase = -1;
     PreviousWave = -1;
-    SpawnFlight(FVector(0, 0, 7000), FRotator::ZeroRotator);
-    Announce(TEXT("Acornaut: One more journey. Steer, weave, and keep moving."));
+    if (Hub)
+        BeginDeparture();
+    else
+        SpawnFlight(FVector(0, 0, 7000), FRotator::ZeroRotator);
+    Announce(TEXT("Departure ready. Lift off, then fly clear of the station zone to begin Wave 1."));
 }
 void ASSGameMode::LaunchFromHub()
 {
+    if (bDepartingStation)
+        return;
     if (Walker && Walker->IsDisembarking())
         return;
     if (InHangar())
@@ -394,19 +415,111 @@ void ASSGameMode::LaunchFromHub()
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
-    if (!GI->Session.LaunchFromStation())
+    if (!Hub || GI->Session.run.phase != SS::Phase::Station || GI->Session.run.wave >= 10)
     {
         Announce(TEXT("Phase 1 flight content ends at Station 2. This live run can be suspended here."));
         return;
     }
-    const FVector Location =
-        Hub ? Hub->GetActorTransform().TransformPosition(FVector(3500, 0, 1800)) : FVector(0, 0, 7000);
-    const FRotator Rotation = Hub ? Hub->GetActorRotation() : FRotator::ZeroRotator;
-    SpawnFlight(Location, Rotation);
-    Announce(TEXT("Dockmaster: Departure clear. Good hunting, Acornaut."));
+    bStartNextBlockOnExit = true;
+    BeginDeparture();
+    Announce(TEXT("Departure ready. Lift off, then fly clear of the station zone to begin the next wave."));
+}
+void ASSGameMode::BeginDeparture()
+{
+    if (!Hub)
+        return;
+    bDepartingStation = true;
+    Director->SetActive(false);
+    Hub->ShowBayShip(false);
+    Hub->ShowPadIndicator(false);
+    const FVector Dock = Hub->PadDockPosition();
+    const FRotator Facing = Hub->PadDockRotation();
+    if (!Ship)
+        SpawnFlight(Dock, Facing, true);
+    else
+    {
+        if (Walker)
+        {
+            Walker->Destroy();
+            Walker = nullptr;
+        }
+        auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        PC->Possess(Ship);
+        PC->SetViewTargetWithBlend(Ship, .4f);
+        ClosePanel();
+    }
+    if (Ship)
+    {
+        FollowFlightPresentation();
+        Ship->BeginTakeoff(Dock + Hub->GetActorUpVector() * 700.f, Facing);
+    }
+}
+
+FVector ASSGameMode::GetLandingTarget() const
+{
+    return Hub ? Hub->PadDockPosition() : StationTarget;
+}
+float ASSGameMode::GetDockingRadius() const
+{
+    const auto *Pad = Hub ? Hub->GetLandingPad() : nullptr;
+    return FMath::Max(Pad ? Pad->ApproachRadius : 1200.f, Ship ? Ship->DockApproachRadius() : 1200.f);
+}
+bool ASSGameMode::IsInStationZone() const
+{
+    if (!Hub)
+        return false;
+    const auto *Pad = Hub->GetLandingPad();
+    const APawn *Pawn = Ship ? static_cast<const APawn *>(Ship.Get()) : static_cast<const APawn *>(Walker.Get());
+    return Pawn && FVector::DistSquared(Pawn->GetActorLocation(), GetLandingTarget()) <=
+                       FMath::Square(Pad ? Pad->StationZoneRadius : 18000.f);
+}
+bool ASSGameMode::DockingStatus(FString &Message) const
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || !Ship || !Hub || GI->Session.run.phase != SS::Phase::Approach || bDepartingStation)
+    {
+        Message = TEXT("Docking is unavailable.");
+        return false;
+    }
+    const float Distance = FVector::Distance(Ship->GetActorLocation(), GetLandingTarget());
+    if (Distance > GetDockingRadius())
+    {
+        Message = FString::Printf(TEXT("LANDING PAD  %.0f m  |  Approach within %.0f m"), Distance / 100.f,
+                                  GetDockingRadius() / 100.f);
+        return false;
+    }
+    const float Limit = float(GI->Session.Stats().speed);
+    if (Ship->GetVelocity().Size() > Limit)
+    {
+        Message = FString::Printf(TEXT("LANDING PAD  |  Brake below %.0f m/s"), Limit / 100.f);
+        return false;
+    }
+    if (!Hub->CanAssistDocking(Ship))
+    {
+        Message = TEXT("LANDING PAD  |  Path blocked: move clear above the pad");
+        return false;
+    }
+    Message = TEXT("LANDING PAD  |  Ready to dock");
+    return true;
+}
+bool ASSGameMode::RequestDocking()
+{
+    FString Status;
+    if (!DockingStatus(Status))
+    {
+        Announce(Status);
+        return false;
+    }
+    auto &Session = GetGameInstance<USSGameInstance>()->Session;
+    if (!Session.BeginDocking())
+        return false;
+    Ship->SetDockingTarget(GetLandingTarget(), Hub->PadDockRotation(), float(Session.run.phaseDuration));
+    Announce(TEXT("Docking engaged. Holding over the pad, then lowering to land."));
+    return true;
 }
 void ASSGameMode::EnterStation()
 {
+    bDepartingStation = bStartNextBlockOnExit = false;
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Walker)
@@ -430,6 +543,17 @@ void ASSGameMode::EnterStation()
     // actual ship sits on the pad outside. Hide it unconditionally here. The home hangar keeps it, because
     // there it is the ship-selection display and showing each hull is its whole job.
     Hub->ShowBayShip(false);
+    bool SafePadExit = true;
+    if (Ship)
+    {
+        Ship->SetActorLocation(Hub->PadDockPosition());
+        Ship->SetActorRotation(Hub->PadDockRotation());
+        const auto *Capsule = GetDefault<ASSWalker>()->GetCapsuleComponent();
+        SafePadExit =
+            Hub->ConfigurePadExit(Ship, Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight());
+        if (!SafePadExit)
+            UE_LOG(LogTemp, Warning, TEXT("STATION_EXIT_FALLBACK: no supported exterior capsule space on pad."));
+    }
     // Facing the station, not world north. Unlike the home hub above, this one is spawned at whatever
     // heading the ship happened to be flying on the Approach transition, so its yaw is arbitrary - and
     // the walker neither orients to movement nor follows the controller. The authored exit reconciled
@@ -441,7 +565,8 @@ void ASSGameMode::EnterStation()
     // station there's a clean landing area and you get out and walk inside", and this is the line that
     // decides it: the hero is put down beside its ship on the pad, and the way in is a walk through the
     // hangar mouth rather than a cut. The bay is still built and still holds the display ship.
-    Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->PadWalkSpawn(), FRotator(0, Hub->GetActorRotation().Yaw, 0));
+    Walker = GetWorld()->SpawnActor<ASSWalker>(SafePadExit ? Hub->PadWalkSpawn() : Hub->WalkSpawn(),
+                                               FRotator(0, Hub->GetActorRotation().Yaw, 0));
     WearHero();
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     const bool AutoCamera = PC->bAutoManageActiveCameraTarget;
@@ -454,14 +579,12 @@ void ASSGameMode::EnterStation()
         // Match both the outgoing component and its actual current bone pose before
         // hiding it. A short actor-clock blend hands this pose to the authored exit.
         Ship->SetActorLocation(Hub->PadDockPosition());
-        Ship->SetActorRotation(Hub->GetActorRotation());
-        const FVector Exit = Hub->PadExit();
+        Ship->SetActorRotation(Hub->PadDockRotation());
+        const FVector Exit = SafePadExit ? Hub->PadExit() : Hub->WalkSpawn();
         FPoseSnapshot SeatedPose;
         Ship->Pilot->SnapshotPose(SeatedPose);
-        // A hero only climbs out if it has a clip for it. The ship has no door, so the one authored
-        // exit lifts the pawn 125 cm over its own hull; a hero without an exit clip is simply standing
-        // outside when the docking motion finishes, which is where the walker already spawned
-        // (RPT-20260917-01).
+        // Only heroes with an authored exit clip use the seated-pose transition. Other heroes receive
+        // control at the same measured exterior endpoint as soon as docking finishes.
         const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
         const bool ExitStarted = ClimbsOut && Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit,
                                                                      Hub->GetActorRotation(), &SeatedPose);
@@ -513,7 +636,25 @@ void ASSGameMode::Tick(float Dt)
     const SS::Contract ArrivingContract = S.run.contract;
     const int32 CreditsBeforeStep = S.run.credits;
     const int32 ContractsBeforeStep = S.run.contractsCompleted;
-    S.Tick(Ship && Ship->IsMoored() ? 0.f : Dt, Danger); // Service time grants no wave progress or free regeneration.
+    // Launch does not spend the next wave while the ship is still on or beside its pad.
+    // Only crossing the station boundary commits the existing domain launch transaction.
+    const bool DepartureFrame = bDepartingStation;
+    if (bDepartingStation && Ship && !Ship->IsTakingOff() && !IsInStationZone())
+    {
+        const bool MayLeave = !bStartNextBlockOnExit || S.LaunchFromStation();
+        if (MayLeave)
+        {
+            bDepartingStation = bStartNextBlockOnExit = false;
+            if (Hub)
+            {
+                Hub->Destroy();
+                Hub = nullptr;
+            }
+            Director->SetActive(true);
+            Announce(FString::Printf(TEXT("STATION ZONE CLEAR  |  WAVE %d"), S.run.wave));
+        }
+    }
+    S.Tick(DepartureFrame || (Ship && Ship->IsMoored()) ? 0.f : Dt, Danger);
 #if CSV_PROFILER && !CSV_PROFILER_MINIMAL
     // Sample after the domain step; avoid the threat actor scan outside an enabled capture.
     if (FCsvProfiler::IsCapturing() && FCsvProfiler::Get()->IsCategoryEnabled(CSV_CATEGORY_INDEX(SpaceSurvival)))
@@ -592,7 +733,8 @@ void ASSGameMode::Tick(float Dt)
         if (S.run.wave != PreviousWave)
         {
             Director->Configure(S.run.wave, S.run.phase == SS::Phase::Climax);
-            Announce(FString::Printf(TEXT("WAVE %d  |  Keep surviving"), S.run.wave));
+            if (!bDepartingStation)
+                Announce(FString::Printf(TEXT("WAVE %d  |  Keep surviving"), S.run.wave));
         }
         Director->SetBreathing(S.run.phase == SS::Phase::Breathing);
         if (S.run.phase == SS::Phase::Wormhole)
@@ -617,14 +759,9 @@ void ASSGameMode::Tick(float Dt)
         }
         if (S.run.phase == SS::Phase::Approach && Ship)
         {
-            Director->SetActive(false);
-            // Deactivating the Director stops further admission but leaves spawned hostiles alive,
-            // so the station became reachable with wave enemies still flying. The five-wave cadence
-            // is locked, so this is a correctness repair. Destroy, never OnDefeated: the defeat path
-            // awards kills, credits, XP and objective progress the player never earned.
-            for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
-                if (It->IsEnemy() && !It->IsActorBeingDestroyed())
-                    It->Destroy();
+            // The scheduled station break is safe to stop in. Retire lingering hazards as well as enemies,
+            // without defeat callbacks or unearned kill/reward credit.
+            Director->ResetEncounter();
             const FRotator Arrival(0, Ship->GetActorRotation().Yaw, 0);
             const FVector Dock = Ship->GetActorLocation() + Ship->GetActorForwardVector() * 18000.f;
             StationTarget = Dock - Arrival.Vector() * 850.f - FVector(0, 0, 220);
@@ -633,8 +770,7 @@ void ASSGameMode::Tick(float Dt)
             Hub = GetWorld()->SpawnActor<ASSStation>(StationTarget, Arrival);
             Hub->BuildHub(false);
             Hub->ShowBayShip(false);
-            Announce(TEXT(
-                "STATION DETECTED  |  Approach the marked corridor. Final landing assistance engages inside 12 m."));
+            Announce(TEXT("STATION ZONE  |  Follow LANDING PAD. Brake, then press Interact when docking is ready."));
         }
         if (S.run.phase == SS::Phase::Station)
         {
@@ -655,30 +791,6 @@ void ASSGameMode::Tick(float Dt)
         }
         PreviousPhase = int32(S.run.phase);
         PreviousWave = S.run.wave;
-    }
-    if (S.run.phase == SS::Phase::Approach && Ship && Hub)
-    {
-        // Admission is proximity to the PAD and a clear path to it, from any heading. The old rule also
-        // required Dot(forward, toDock) > .45, which said "come in level, centred, through the hangar
-        // mouth" - a corridor. Against an open pad that is not a safety rule, it is an arbitrary one: a
-        // ship descending vertically onto a landing pad is landing, not diving through a roof. The owner
-        // asked that you not be forced to approach a certain way, so heading is no longer part of the
-        // decision. What remains is the part that was always physical - whether this hull can actually
-        // get there without hitting anything.
-        const FVector ToDock = Hub->PadDockPosition() - Ship->GetActorLocation();
-        // Close enough, slow enough, and able to get there. Speed is a real condition rather than dressing:
-        // without it you could hold full thrust through the pad and still be handed a landing, which is the
-        // one way an approach with no heading rule could feel like nothing at all. The threshold is this
-        // run's own cruise speed, so it scales with the Engine upgrade instead of going stale, and it lands
-        // where the owner put it - you cannot dock boosting, you can dock at a normal cruise or slower.
-        // This is the intended dial; the number is expected to come down once it has been flown.
-        const float ApproachSpeed = Ship->GetVelocity().Size();
-        if (ToDock.Size() < Ship->DockApproachRadius() && ApproachSpeed <= float(S.Stats().speed) &&
-            Hub->CanAssistDocking(Ship) && S.BeginDocking())
-        {
-            Ship->SetDockingTarget(Hub->PadDockPosition(), Hub->GetActorRotation());
-            Announce(TEXT("Docking assistance engaged. Welcome to port."));
-        }
     }
     // Unreal origin rebasing keeps the uninterrupted journey numerically stable.
     if (Ship && Ship->GetActorLocation().Size() > 1000000.f)
@@ -768,6 +880,11 @@ void ASSGameMode::Interact()
         return;
     if (IsMenuOpen())
         return;
+    if (const auto *GI = GetGameInstance<USSGameInstance>(); Ship && GI && GI->Session.run.phase == SS::Phase::Approach)
+    {
+        RequestDocking();
+        return;
+    }
     if (Walker && Hub)
     {
         if (Walker->IsDisembarking())
@@ -781,6 +898,8 @@ void ASSGameMode::Interact()
         }
         else if (Service != ESSPanel::None)
             OpenPanel(Service);
+        else
+            Announce(Hub->ServiceGuidance(Walker->GetActorLocation()));
         return;
     }
     if (Ship)
@@ -900,7 +1019,9 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         PC->SetInputMode(FInputModeGameAndUI());
     }
     const bool LivePanel = (Panel == ESSPanel::Depot || Panel == ESSPanel::Reward) && S.IsFlying();
-    UGameplayStatics::SetGamePaused(this, S.IsFlying() && !LivePanel);
+    // Station departure retains the domain's Station phase until the ship leaves the safe zone,
+    // but already owns a moving pawn. Menus must pause its lift and physical flight as usual.
+    UGameplayStatics::SetGamePaused(this, (S.IsFlying() || bDepartingStation) && !LivePanel);
     switch (Panel)
     {
     case ESSPanel::Main:
@@ -1129,17 +1250,20 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     case ESSPanel::Paint:
     {
         PanelTitle = TEXT("PAINT BAY");
-        PanelDetail = TEXT("Ten finishes over four hull sections, kept on your account across runs. Cycle the "
-                           "section, then pick a finish; the bay ship shows it at once.");
+        const bool Supported = SSPaint::SupportsSection(Ship, PaintSection, static_cast<SS::Ship>(SelectedShip));
+        PanelDetail =
+            Supported ? TEXT("Choose a finish for this hull section. Your colours stay on your account across runs.")
+                      : TEXT("This ship keeps its factory finish for this section. Custom paint is unavailable. "
+                             "Your saved colours remain available for compatible ships.");
         const int32 Current = S.account.paint[PaintSection];
         AddEntry(FString::Printf(TEXT("Section: %s / %s  (next section)"), SSPaint::SectionName(PaintSection),
-                                 SSPaint::ColourName(Current)),
+                                 Supported ? SSPaint::ColourName(Current) : TEXT("Factory finish / paint unavailable")),
                  120);
         for (int32 Colour = 0; Colour < SS::PaintColours; ++Colour)
             AddEntry(FString::Printf(TEXT("%s%s"), SSPaint::ColourName(Colour),
-                                     Current == Colour ? TEXT(" / current") : TEXT("")),
-                     121 + Colour, Current != Colour);
-        AddEntry(TEXT("Factory finish for this section"), 131, Current >= 0);
+                                     Supported && Current == Colour ? TEXT(" / current") : TEXT("")),
+                     121 + Colour, Supported && Current != Colour);
+        AddEntry(TEXT("Factory finish for this section"), 131, Supported && Current >= 0);
         break;
     }
     case ESSPanel::Wardrobe:
@@ -1330,6 +1454,12 @@ void ASSGameMode::ActivateEntry(int32 Index)
     }
     if (A >= 121 && A <= 131)
     {
+        // Recheck at activation as well as rendering: stale entries must not alter a different hull's colours.
+        if (!SSPaint::SupportsSection(Ship, PaintSection, static_cast<SS::Ship>(SelectedShip)))
+        {
+            OpenPanel(ESSPanel::Paint);
+            return;
+        }
         S.account.paint[PaintSection] = A == 131 ? -1 : A - 121;
         if (!GI->PersistAccount())
             Announce(GI->LastSaveError);
@@ -1581,11 +1711,11 @@ void ASSPlayerController::SSReviewExit()
         !IsValid(GM->Hub) || !IsValid(GM->Walker) || GetPawn() != GM->Walker || GM->Walker->IsDisembarking())
         return;
     if (!IsValid(GM->Ship))
-        GM->Ship = GetWorld()->SpawnActor<ASSShip>(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
+        GM->Ship = GetWorld()->SpawnActor<ASSShip>(GM->Hub->PadDockPosition(), GM->Hub->PadDockRotation());
     if (!IsValid(GM->Ship))
         return;
-    GM->Ship->SetActorLocationAndRotation(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
-    GM->Ship->SetDockingTarget(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
+    GM->Ship->SetActorLocationAndRotation(GM->Hub->PadDockPosition(), GM->Hub->PadDockRotation());
+    GM->Ship->SetDockingTarget(GM->Hub->PadDockPosition(), GM->Hub->PadDockRotation());
     GM->Ship->Pilot->SetVisibility(true);
     SetViewTarget(GM->Ship);
     if (PlayerCameraManager)

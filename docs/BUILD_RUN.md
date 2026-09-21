@@ -4,6 +4,8 @@
 
 Play the packaged game at `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`, keeping its entire folder. Do not open the `.uproject` just to play: it starts Unreal Editor and may offer a conversion copy. The authoritative project folder is `C:/Users/j6sis/SpaceSurvival`. See [your next review](KNOWN_ISSUES.md#what-to-personally-review-next) and [local-versus-GitHub storage](PROJECT_STATE.md#where-files-live).
 
+The September 21 flight/station reset is being integrated separately at `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`. Its review entry point is that worktree's `Play Development Build.cmd`, after the integration lead confirms its build and private authoring receipts. The launcher opens the built editor game using `Artifacts/DevelopmentReviewUser` within the selected checkout and disables `UAssetBrowser` and the secondary `NwiroIntegrationKit` server. It neither packages nor replaces the installed game's saves. Source/build/render readiness remains in Project State; an older packaged EXE does not contain this reset merely because its source is present.
+
 ## Tooling and repository
 
 Run commands from the repository root, currently `C:/Users/j6sis/SpaceSurvival`.
@@ -57,7 +59,26 @@ Example (one script at a time):
 
 Authoring backs up four private packages under `Artifacts/AsteroidDepth/<run>/`, preserves existing layout arrays and verifies vendor bytes. `-SSSkyResolution=4096` is an optional comparison; 2048 is the default. `AuthorSpaceVisualPass.py` also selects 2K BC6H for these three derivatives. A separate rendered check is required; authoring does not package or publish. Current evidence and open work remain in VALIDATION and KNOWN_ISSUES.
 
-## Station pit stop authoring (development project, unaccepted)
+## Station reset authoring (development project, unaccepted)
+
+Paraphrase of the owner's September 21 direction: an industrial steel/amber district inside the supplied hollow asteroid, with connected colony structures around it. After the Editor build, prepare the Phoenix presentation derivative described in [Content pipeline](CONTENT_PIPELINE.md#stellar-phoenix-presentation-adapter), then author the reduced asteroid before the station layout. Use one Unreal process at a time. Run each inspection first and inspect its receipt before adding its apply flag:
+
+```powershell
+$ssRoot = (Get-Location).Path
+$ssEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroid.py"
+# After inspecting Artifacts/StationAsteroid/dry-run.json:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroid.py" -SSApplyStationAsteroid
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/InspectStationAsteroidPlacement.py"
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationReset.py"
+# After inspecting Artifacts/StationReset/plan.json and recipe.json:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationReset.py" -SSApplyStationReset
+```
+
+The asteroid author preserves the 5.46-million-triangle source, targets a separate 500,000-triangle source mesh, and records actual counts and sampled shape comparisons in `Artifacts/StationAsteroid/author.json`. Uniform scale 145 gives the unit-scale roughly 2 m import a roughly 300 m design envelope; scaling does not optimize geometry. The bowl background has collision disabled so its original convex body cannot seal the cavity. Native district floor/wall/column/console/staff bodies and the circular pad own the bounded playable space; the outer asteroid and colony are not an unrestricted walkable world. The station author saves `BP_StationReset`, preserves the original `BP_StationVisualLayout`, and refuses an output whose ownership hash no longer matches. Generated assets and receipts remain private. Run the reset integration tests and render the actual home/arrival/departure experience before review; a successful author is not a visual or performance pass.
+
+## Historical station pit stop authoring (development project, unaccepted)
 
 Added 2026-09-17. The current source composes the station exterior as one body the hangar is cut into and dresses the hangar interior. Nothing here has been packaged or published, and the look is not owner-accepted: the installed package in `Artifacts/Windows` predates this work and still shows the old exterior. Generated outputs under `Artifacts/`, `.agent/local/` and `Content/SpaceSurvival/Licensed/` are git-ignored; only the scripts and the generated collision include are tracked. Open work stays in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
@@ -230,16 +251,27 @@ The dry run binds the current built/archive executable and link response file; u
 | --- | --- | --- |
 | Flight steering / on-foot look | Mouse | Right stick |
 | Flight lateral / vertical | A/D and R/F | Left stick |
-| Throttle | W/S | D-pad up/down |
+| Throttle / station speed trim | W/S | D-pad up/down |
 | Fire | Left mouse | Right bumper |
 | Boost | Shift | Right trigger |
-| Heat-limited brake | Space | Left trigger |
+| Brake (wave heat / station stop) | Space | Left trigger |
 | Directional dodge | Q with movement direction | Left bumper with left-stick direction |
 | Walk / run | WASD / Shift | Left stick / X |
 | Interact / choose | E / Enter | A |
+| Dock when the pad says ready | E | A |
 | Shell / back | Escape | Menu / B |
 
 Banking follows steering/lateral movement. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
+
+The flight reset requires the rebuilt project DLL and the private Phoenix presentation derivative described in [the content pipeline](CONTENT_PIPELINE.md#stellar-phoenix-presentation-adapter), together with the installed ShipCore plugin and licensed Phoenix content. Rebuild/authoring does not update an older packaged executable; confirm the [source/build/package identity](PROJECT_STATE.md) before comparing controls. `-SSClassic` selects the previous hull path for comparison.
+
+On station approach, follow the exterior landing-pad marker. Within the 180 m station zone, W/S or D-pad adjusts a persistent speed trim; brake reduces it to zero without overheating. Slow to unboosted cruise speed or below, approach above the deck and use the HUD's hull-aware distance/clearance message. Press E/controller A when ready to begin the three-second align-and-lower sequence. Entering the radius by itself does not dock. Firing is disabled during docking and lift-off.
+
+The launch service returns control to the same parked ship and lifts it 7 m before handing back steering and thrust. Increase the station trim with W/D-pad up and fly clear of the 180 m zone to resume the wave clock and encounter spawning. Initial departure preserves Wave 1's time; Station 1 departure starts Wave 6 at that boundary. Station 2 remains the Phase 1 service/save boundary and does not start Wave 11.
+
+The [station reset](CONTENT_PIPELINE.md#functional-station-reset) uses the separate `BP_StationReset` layout in both the home hangar and station visits. Its floor, walls, columns and consoles have native blocking bodies; service prompts are at usable points beside the consoles. CREW WARDROBE opens the installed body choices at home as well as mid-run and changes the actual walking character. This requires the authored/saved reset asset; if it is absent, the original layout remains the fallback. Check the active layout when reviewing the redesign.
+
+`SpaceSurvival.Flight.ControllerToPhysics` and `SpaceSurvival.Flight.ControllerAfterTakeoff` exercise injected raw keyboard/mouse and gamepad events through the actual controller and movement body, including possession and lift-off. `SpaceSurvival.Flight.CrosshairTargetDamage` covers native target damage with both weapons. Their run results belong in the validation record; these synthetic checks do not establish physical-device response, rendered animation quality or owner acceptance.
 
 Package 6 native clicks saved mouse/controller sensitivity 1.2. After normal close/relaunch the isolated Controls menu displayed both 1.2. This verifies persistence, not comfortable steering response.
 
@@ -247,7 +279,7 @@ Normal shell/settings menus pause flight. The depot now uses an aboard-ship magn
 
 ## Local saves
 
-Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 3, which appends the four paint-bay choices (-1 for factory finish, 0-9 for a colour; out-of-range values are refused), and still reads versions 2 and 1 as the factory finish; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
+Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 4, retaining the four paint-bay choices from version 3 (-1 for factory finish, 0-9 for a colour) and appending the walking-hero choice. Older account versions remain readable, with absent paint/hero choices taking their defaults; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
 
 Save & Quit is available at stations. Continue consumes the suspension before exposing restored play; death persists XP/run identity and invalidates suspension. Unreadable account data is protected from overwrite and requires a known-good backup for recovery. Use isolated test profiles for failure tests and preserve existing personal saves.
 

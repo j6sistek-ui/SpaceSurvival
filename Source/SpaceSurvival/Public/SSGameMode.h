@@ -79,6 +79,16 @@ public:
         return Panel != ESSPanel::None;
     }
     bool InHangar() const;
+    bool IsInStationZone() const;
+    bool IsDepartingStation() const
+    {
+        return bDepartingStation;
+    }
+    FVector GetLandingTarget() const;
+    float GetDockingRadius() const;
+    /** Shared eligibility and feedback for the HUD and the actual use-button transaction. */
+    bool DockingStatus(FString &Message) const;
+    bool RequestDocking();
     FString PanelTitle, PanelDetail, Announcement;
     FString ThreatWarning, PilotReaction;
     FVector ThreatPosition = FVector::ZeroVector;
@@ -159,10 +169,14 @@ private:
     bool bWormholeArrived = false;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
     bool LowHullAlerted = false;
+    bool bDepartingStation = false;
+    bool bStartNextBlockOnExit = false;
     void UpdateMusicMix();
     void UpdateThreatFeedback(float DeltaSeconds);
     void EnterStation();
-    void SpawnFlight(FVector Location, FRotator Rotation);
+    void SpawnFlight(FVector Location, FRotator Rotation, bool PreserveHub = false);
+    void FollowFlightPresentation();
+    void BeginDeparture();
     void AddEntry(const FString &Label, int32 Action, bool Enabled = true);
     void RepaintShips();
 };

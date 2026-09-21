@@ -28,9 +28,18 @@ public:
     /** Half the width of the square deck. 1600 holds the 2484 x 1244 cm Phoenix with room either side. */
     UPROPERTY(EditAnywhere, Category = "Landing Pad")
     float HalfExtent = 1600.f;
+    /** Reset colony pad: a circular physical slab with full-height walking guards and an open bridge. */
+    UPROPERTY(EditAnywhere, Category = "Landing Pad")
+    bool bCircularDeck = false;
     /** How far the slab hangs below the deck surface. */
     UPROPERTY(EditAnywhere, Category = "Landing Pad")
     float DeckThickness = 270.f;
+    /** Minimum capture radius; a long hull may require a wider approach envelope. */
+    UPROPERTY(EditAnywhere, Category = "Landing Pad", meta = (ClampMin = "1200"))
+    float ApproachRadius = 1200.f;
+    /** Survival resumes only when a departing ship clears this boundary. */
+    UPROPERTY(EditAnywhere, Category = "Landing Pad", meta = (ClampMin = "5000"))
+    float StationZoneRadius = 18000.f;
     /** Builds the deck, its kerbs and the landing indicator from meshes and materials the project already
      *  ships. Called by whoever placed the pad, once; a second call is a no-op. Explicit rather than
      *  BeginPlay because the automation worlds that spawn stations never run BeginPlay, and a pad that only
@@ -39,6 +48,10 @@ public:
     bool IsBuilt() const
     {
         return Deck != nullptr;
+    }
+    const UStaticMeshComponent *GetDeck() const
+    {
+        return Deck;
     }
     /** The centre of the deck's top surface, in world space. The origin, by construction. */
     FVector DeckPoint() const
@@ -52,18 +65,25 @@ public:
     {
         return GetActorTransform().TransformPosition(FVector(0, 0, ClearanceAboveDeck));
     }
-    /** Where the hero appears. 190 cm up, because a CharacterMovement pawn reaches MOVE_Walking by falling
-     *  onto its floor and this is the same drop the interior spawn has always used. Forward of the ship,
-     *  toward whatever the pad faces. */
+    FVector HoverPoint(float ClearanceAboveDeck = 230.f) const
+    {
+        return DockPoint(ClearanceAboveDeck) + GetActorUpVector() * 700.f;
+    }
+    /** Where the hero appears. ConfigureWalkExit replaces the unoccupied-pad default with a measured,
+     *  floor-supported position beside the actual parked hull. */
     FVector WalkSpawn() const
     {
-        return GetActorTransform().TransformPosition(FVector(400.f, 0, 190.f));
+        return GetActorTransform().TransformPosition(WalkSpawnOffset);
     }
     /** Where a disembarking hero is set down, beside the parked ship rather than inside it. */
     FVector ExitPoint() const
     {
-        return GetActorTransform().TransformPosition(FVector(200.f, -350.f, 110.f));
+        return GetActorTransform().TransformPosition(ExitOffset);
     }
+    /** Bounds are measured in this pad's frame after the ship reaches its parked transform. */
+    bool ConfigureWalkExit(const FBox &HullBounds, float CapsuleRadius, float CapsuleHalfHeight,
+                           const AActor *ParkedShip);
+    bool IsOutsideParkedHull(const FVector &World, float CapsuleRadius) const;
     /** Whether a world position counts as being on this pad, for the purpose of NOT rescuing a walker who
      *  is standing there. Generous by the margin, so the kerbs and the first step off the edge are still
      *  "on the pad"; a hero who actually falls drops through the floor of the band and is caught by the
@@ -71,14 +91,19 @@ public:
     bool Covers(const FVector &World, float Margin = 100.f) const
     {
         const FVector Local = GetActorTransform().InverseTransformPosition(World);
-        return FMath::Abs(Local.X) <= HalfExtent + Margin && FMath::Abs(Local.Y) <= HalfExtent + Margin &&
-               Local.Z >= -240.f;
+        const bool Inside =
+            bCircularDeck ? Local.SizeSquared2D() <= FMath::Square(HalfExtent + Margin)
+                          : FMath::Abs(Local.X) <= HalfExtent + Margin && FMath::Abs(Local.Y) <= HalfExtent + Margin;
+        return Inside && Local.Z >= -240.f;
     }
     /** The lit disc at the dock point. On while the pad is waiting for a ship, off once one is down. */
     void ShowIndicator(bool Visible);
     bool IsIndicatorVisible() const;
 
 private:
+    FVector WalkSpawnOffset = FVector(400.f, 0, 190.f);
+    FVector ExitOffset = FVector(200.f, -350.f, 110.f);
+    FBox ParkedHullBounds = FBox(ForceInit);
     UPROPERTY()
     TObjectPtr<USceneComponent> Root;
     UPROPERTY()

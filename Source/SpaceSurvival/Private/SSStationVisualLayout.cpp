@@ -1,10 +1,11 @@
 #include "SSStationVisualLayout.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMesh.h"
 #if WITH_EDITORONLY_DATA
 #include "Components/ArrowComponent.h"
-#include "Components/BoxComponent.h"
 #endif
 
 ASSStationVisualLayout::ASSStationVisualLayout()
@@ -141,9 +142,25 @@ FTransform JsonTransform(const TSharedPtr<FJsonObject> &Object)
 
 UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FString &RecipeJson, bool bResetExisting)
 {
+    return CreateStationLayoutAtPath(
+        RecipeJson, TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout"), bResetExisting);
+}
+
+UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationLayoutAtPath(const FString &RecipeJson,
+                                                                        const FString &DestinationPackage,
+                                                                        bool bResetExisting)
+{
 #if WITH_EDITOR
-    UBlueprint *Blueprint =
-        FPackageName::DoesPackageExist(LayoutPackage) ? LoadObject<UBlueprint>(nullptr, LayoutPackage) : nullptr;
+    if (!FPackageName::IsValidLongPackageName(DestinationPackage) ||
+        (DestinationPackage != LayoutPackage &&
+         !DestinationPackage.StartsWith(TEXT("/Game/SpaceSurvival/Licensed/StationReset/"))))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Station layout destination is outside the authorized layout folders."));
+        return nullptr;
+    }
+    UBlueprint *Blueprint = FPackageName::DoesPackageExist(DestinationPackage)
+                                ? LoadObject<UBlueprint>(nullptr, *DestinationPackage)
+                                : nullptr;
     if (Blueprint && !bResetExisting)
         return Blueprint;
     if (Blueprint && Blueprint->ParentClass != ASSStationVisualLayout::StaticClass())
@@ -170,9 +187,9 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
     Donor->BuildHub(false);
     if (!Blueprint)
         Blueprint = FKismetEditorUtilities::CreateBlueprint(
-            ASSStationVisualLayout::StaticClass(), CreatePackage(LayoutPackage), TEXT("BP_StationVisualLayout"),
-            BPTYPE_Normal, UBlueprint::StaticClass(), UBlueprintGeneratedClass::StaticClass(),
-            TEXT("StationLayoutAuthoring"));
+            ASSStationVisualLayout::StaticClass(), CreatePackage(*DestinationPackage),
+            FName(*FPackageName::GetShortName(DestinationPackage)), BPTYPE_Normal, UBlueprint::StaticClass(),
+            UBlueprintGeneratedClass::StaticClass(), TEXT("StationLayoutAuthoring"));
     if (!Blueprint || !Blueprint->SimpleConstructionScript)
     {
         UE_LOG(LogTemp, Error, TEXT("Station layout: no Blueprint or construction script."));
@@ -346,6 +363,84 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
                            {FName(TEXT("StationVisualDetail"))}))
                 return nullptr;
         }
+    if (Recipe->TryGetArrayField(TEXT("skeletal_meshes"), Values))
+        for (const auto &Value : *Values)
+        {
+            const auto Object = Value->AsObject();
+            if (!Object)
+                return nullptr;
+            auto *Mesh = LoadObject<USkeletalMesh>(nullptr, *Object->GetStringField(TEXT("asset")));
+            auto *Clip = LoadObject<UAnimSequence>(nullptr, *Object->GetStringField(TEXT("animation")));
+            if (!Mesh || !Clip || Mesh->GetSkeleton() != Clip->GetSkeleton())
+            {
+                UE_LOG(LogTemp, Error, TEXT("Station staff mesh/idle pair is missing or incompatible."));
+                return nullptr;
+            }
+            auto *Staff = Cast<USkeletalMeshComponent>(AddNode(
+                USkeletalMeshComponent::StaticClass(), Object->GetStringField(TEXT("name")), JsonTransform(Object)));
+            if (!Staff)
+                return nullptr;
+            Staff->SetSkeletalMeshAsset(Mesh);
+            Staff->OverrideAnimationData(Clip, true, true, 0.f, 1.f);
+            Staff->bComponentUseFixedSkelBounds = true;
+            Staff->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+            Staff->ComponentTags.Add(TEXT("StationFunctionalStaff"));
+        }
+    if (Recipe->TryGetArrayField(TEXT("collision_capsules"), Values))
+        for (const auto &Value : *Values)
+        {
+            const auto Object = Value->AsObject();
+            if (!Object)
+                return nullptr;
+            const float Radius = Object->GetNumberField(TEXT("radius"));
+            const float HalfHeight = Object->GetNumberField(TEXT("half_height"));
+            if (!FMath::IsFinite(Radius) || !FMath::IsFinite(HalfHeight) || Radius <= 0.f || HalfHeight < Radius)
+                return nullptr;
+            auto *Capsule = Cast<UCapsuleComponent>(
+                AddNode(UCapsuleComponent::StaticClass(), Object->GetStringField(TEXT("name")), JsonTransform(Object)));
+            if (!Capsule)
+                return nullptr;
+            Capsule->SetCapsuleSize(Radius, HalfHeight);
+            Capsule->SetHiddenInGame(true);
+            Capsule->ComponentTags.Add(TEXT("StationStaffSolidSpec"));
+        }
+    if (Recipe->TryGetArrayField(TEXT("service_anchors"), Values))
+        for (const auto &Value : *Values)
+        {
+            const auto Object = Value->AsObject();
+            if (!Object)
+                return nullptr;
+            auto *Anchor =
+                AddNode(USceneComponent::StaticClass(), Object->GetStringField(TEXT("name")), JsonTransform(Object));
+            if (!Anchor)
+                return nullptr;
+            Anchor->ComponentTags.Add(TEXT("StationServiceSpec"));
+            Anchor->ComponentTags.Add(FName(*(TEXT("StationService:") + Object->GetStringField(TEXT("service")))));
+        }
+    if (Recipe->TryGetArrayField(TEXT("collision_boxes"), Values))
+        for (const auto &Value : *Values)
+        {
+            const auto Object = Value->AsObject();
+            if (!Object)
+                return nullptr;
+            const FVector Extent = JsonVector(Object, TEXT("extent"), FVector::ZeroVector);
+            if (Extent.GetMin() <= 0.f || Extent.ContainsNaN())
+            {
+                UE_LOG(LogTemp, Error, TEXT("Station layout collision box has invalid extent."));
+                return nullptr;
+            }
+            auto *Box = Cast<UBoxComponent>(
+                AddNode(UBoxComponent::StaticClass(), Object->GetStringField(TEXT("name")), JsonTransform(Object)));
+            if (!Box)
+                return nullptr;
+            Box->SetBoxExtent(Extent);
+            Box->SetHiddenInGame(true);
+            Box->ComponentTags.Add(TEXT("StationSolidSpec"));
+            bool WalkFloor = false;
+            Object->TryGetBoolField(TEXT("walk_floor"), WalkFloor);
+            if (WalkFloor)
+                Box->ComponentTags.Add(TEXT("StationWalkFloorSpec"));
+        }
     if (Recipe->TryGetArrayField(TEXT("point_lights"), Values))
         for (const auto &Value : *Values)
         {
@@ -371,6 +466,11 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationVisualLayout(const FS
         UE_LOG(LogTemp, Error, TEXT("Station layout: Blueprint failed to compile (%d components)."), Names.Num());
         return nullptr;
     }
+    bool FunctionalLayout = false;
+    Recipe->TryGetBoolField(TEXT("functional_layout"), FunctionalLayout);
+    if (auto *Defaults = Cast<ASSStationVisualLayout>(Blueprint->GeneratedClass->GetDefaultObject()))
+        Defaults->bFunctionalLayout = FunctionalLayout;
+    Blueprint->MarkPackageDirty();
     UE_LOG(LogTemp, Display,
            TEXT("Station editable layout authored with %d individual components; save through author script."),
            Names.Num());

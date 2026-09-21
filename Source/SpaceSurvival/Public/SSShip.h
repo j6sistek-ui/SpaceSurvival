@@ -50,7 +50,12 @@ public:
     void ReceiveDamage(float Amount, SS::DamageType Type = SS::DamageType::Kinetic);
     void ReceiveImpact(float Amount, FVector AwayFromContact);
     void AddExternalForce(FVector Force);
-    void SetDockingTarget(FVector Target, FRotator Rotation);
+    void SetDockingTarget(FVector Target, FRotator Rotation, float Duration = 3.f);
+    void BeginTakeoff(FVector HoverTarget, FRotator Rotation, float Duration = 3.f);
+    bool IsTakingOff() const
+    {
+        return TakingOff;
+    }
     void FinishDocking();
     bool BeginMooring();
     void EndMooring();
@@ -82,6 +87,11 @@ public:
     }
     static float SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength);
     FVector AimDirection() const;
+    FVector MuzzleWorldPosition() const;
+    class USSShipVisualRig *GetVisualRig() const
+    {
+        return VisualRig;
+    }
     AActor *SoftTarget = nullptr;
     UPROPERTY(EditAnywhere, Category = "Flight|Aim", meta = (ClampMin = "0.0", ClampMax = "0.4"))
     float MaximumSoftAssist = .20f;
@@ -105,6 +115,8 @@ public:
     TObjectPtr<UAudioComponent> EngineAudio;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USSShipPresentation> Presentation;
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<class USSShipVisualRig> VisualRig;
     UPROPERTY(EditAnywhere)
     TObjectPtr<USSPhase1Data> Tuning;
 
@@ -162,7 +174,12 @@ private:
     bool WasBoosting = false;
     float DrivePresentationPower = .45f, DrivePresentationDamage = 0.f;
     bool DrivePresentationBoosting = false, DrivePresentationBraking = false;
-    bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false;
+    bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false, TakingOff = false;
+    bool WasInStationZone = false;
+    float StationThrottle = 0.f;
+    float TransitionElapsed = 0.f, TransitionDuration = 3.f;
+    FVector TransitionStart = FVector::ZeroVector;
+    FRotator TransitionRotation = FRotator::ZeroRotator;
     FVector DockTarget = FVector::ZeroVector;
     FRotator DockRotation = FRotator::ZeroRotator;
 };
