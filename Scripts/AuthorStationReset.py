@@ -92,6 +92,9 @@ def build_recipe(measure):
     hull = ["/Game/SpaceSurvival/Materials/M_Hull.M_Hull"]
     cyan = ["/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan"]
     gold = ["/Game/SpaceSurvival/Materials/M_Gold.M_Gold"]
+    graphite = ["/Game/SpaceSurvival/Materials/M_StationShell_GraphiteAlloy.M_StationShell_GraphiteAlloy"]
+    blue_grey = ["/Game/SpaceSurvival/Materials/M_StationShell_BlueGreyPanels.M_StationShell_BlueGreyPanels"]
+    ochre = ["/Game/SpaceSurvival/Materials/M_StationShell_SafetyOchre.M_StationShell_SafetyOchre"]
     # One coherent floor and exterior foundation; floor top is exactly the existing pad/walkway top.
     fitted("Foundation", cube, (100, 0, -125), (4080, 3080, 180), materials=hull)
     # Three connected tiers and narrow inset bands give the outpost a deliberate engineered silhouette.
@@ -110,6 +113,15 @@ def build_recipe(measure):
             fitted(f"Deck_{ix}_{iy}", INDUSTRIAL + "SM_Floor_01", center, (500, 500, 22))
             fitted(f"Ceiling_{ix}_{iy}", INDUSTRIAL + "SM_Celling_01", (center[0], center[1], 527.5), (500, 500, 35))
     box("Ceiling_Main", (100, 0, 527.5), (4000, 3000, 35))
+    # The exterior used to read as the same flat tiled plane as the floor. A low perimeter cap and
+    # four attached stiffeners articulate the existing roof, within its footprint, without new rooms.
+    # Every part starts at the measured ceiling top Z545; the highest edge is only Z635.
+    for side in (-1, 1):
+        fitted(f"ExteriorRoofEdge_{side}", cube, (100, side * 1460, 590), (4000, 80, 90), materials=blue_grey, solid=True)
+    for x in (-1860, 2060):
+        fitted(f"ExteriorRoofEnd_{x}", cube, (x, 0, 590), (80, 2840, 90), materials=blue_grey, solid=True)
+    for x in (-1250, -350, 550, 1450):
+        fitted(f"ExteriorRoofRib_{x}", cube, (x, 0, 567), (80, 2840, 44), materials=graphite, solid=True)
     # Modular walls have matching deliberate solids. The west wall leaves a ten metre opening aligned
     # to the eight metre pad walkway; no door leaf or invisible old hangar wall obstructs that route.
     for side, label in ((-1, "South"), (1, "North")):
@@ -129,6 +141,17 @@ def build_recipe(measure):
         box(f"Wall_Entry_{y}", (-1930, y, 250), (60, 500, 520))
     fitted("EntryHeader", cube, (-1930, 0, 475), (80, 1000, 70), materials=hull, solid=True)
     fitted("EntryLight", cube, (-1878, 0, 435), (8, 960, 10), materials=cyan)
+    # Face-mounted framing makes the existing portal legible from the pad. It remains outside the
+    # ten-metre opening, and the lintel starts at Z440, exactly like the existing physical header.
+    fitted("ExteriorEntryHeader", cube, (-1975, 0, 475), (50, 1200, 70), materials=blue_grey, solid=True)
+    for side in (-1, 1):
+        fitted(f"ExteriorEntryPost_{side}", INDUSTRIAL + "SM_Pilar", (-1950, side * 550, 250),
+               (100, 100, 520), solid=True)
+        fitted(f"ExteriorEntryStripe_{side}", cube, (-2001, side * 580, 250), (2, 12, 450), materials=ochre)
+        fitted(f"ExteriorEntryLamp_{side}", cube, (-2002, side * 530, 320), (4, 12, 140), materials=cyan)
+        lights.append(dict(name=f"EntryFaceFill_{side}", location=[-2015, side * 540, 310],
+                           rotation=[0, 0, 0], scale=[1, 1, 1], color=[.42, .68, 1.0],
+                           intensity=16000, attenuation_radius=1600, cast_shadows=False))
     # Four structural columns touch floor and ceiling and have their own narrow physical footprints.
     for x, y, label in ((-1700, -1350, "SW"), (-1700, 1350, "NW"),
                          (1650, -1350, "SE"), (1650, 1350, "NE")):
@@ -212,6 +235,18 @@ def build_recipe(measure):
         fitted(f"BridgeRail_{y}", cube, (-2430, y, 45), (920, 40, 110), materials=hull, solid=True)
         fitted(f"BridgeRailLight_{y}", cube, (-2430, y, 101), (920, 8, 2), materials=cyan)
         fitted(f"BridgeSupport_{y}", cube, (-2430, y, -180), (780, 90, 340), materials=hull)
+        lights.append(dict(name=f"BridgeRailFill_{y}", location=[-2500, math.copysign(410, y), 110],
+                           rotation=[0, 0, 0], scale=[1, 1, 1], color=[.42, .68, 1.0],
+                           intensity=3000, attenuation_radius=1200, cast_shadows=False))
+    # Cycle2 exposed black-on-black deck/gear immediately beside the possessed walker. These small
+    # pools sit just inside four existing 110cm rail light strips, below the hull, and model local
+    # reflected task light. They do not change exposure, the sky/key, collision or the landing path.
+    for degrees in (60, 120, 240, 300):
+        angle = math.radians(degrees)
+        lights.append(dict(name=f"PadRailFill_{degrees}",
+                           location=[-4500 + 1515 * math.cos(angle), 1515 * math.sin(angle), 85],
+                           rotation=[0, 0, 0], scale=[1, 1, 1], color=[.42, .68, 1.0],
+                           intensity=6500, attenuation_radius=1900, cast_shadows=False))
     # The cavity's front is open space: two continuous cantilever beams carry the pad back into the
     # rock-embedded main foundation. The four uprights meet those beams, not an imaginary ground plane.
     for y in (-950, 950):
@@ -297,6 +332,48 @@ def build_recipe(measure):
                 skeletal_meshes=staff, collision_capsules=capsules), placements, cache
 
 
+def verify_final_trim_clearance(u, placements, out):
+    """Check the added trim against the actual private rock fallback before saving a Blueprint."""
+    mesh_path = ROOT / "Content" / (ASTEROID.removeprefix("/Game/") + ".uasset")
+    before = hashlib.sha256(mesh_path.read_bytes()).hexdigest()
+    mesh = u.load_asset(ASTEROID)
+    dynamic = u.DynamicMesh()
+    lod = u.GeometryScriptMeshReadLOD(lod_type=u.GeometryScriptLODType.RENDER_DATA, lod_index=0)
+    _, outcome = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh_v2(
+        mesh, dynamic, u.GeometryScriptCopyMeshFromAssetOptions(apply_build_settings=False), lod)
+    if outcome != u.GeometryScriptOutcomePins.SUCCESS:
+        raise RuntimeError("Could not read station asteroid fallback for final-trim clearance")
+    spatial = u.GeometryScript_MeshSpatial
+    _, bvh = spatial.build_bvh_for_mesh(dynamic)
+    options = u.GeometryScriptSpatialQueryOptions(max_distance=500.)
+    inverse = u.Quat(0, .30010876326423286, .16601761372063947, .9393470509596106)
+    translation = u.Vector(7500, 0, 5300)
+    samples = []
+    for part in placements:
+        if not part["name"].startswith(("ExteriorRoof", "ExteriorEntry")):
+            continue
+        center, size = part["center"], part["size"]
+        # Each axis-aligned authored box contributes its eight corners and centre. This supplements
+        # the existing room/terrace clearance receipt; it is not a claim of continuous mesh clearance.
+        points = [[center[0] + sx * size[0] / 2, center[1] + sy * size[1] / 2,
+                   center[2] + sz * size[2] / 2] for sx in (-1, 1) for sy in (-1, 1) for sz in (-1, 1)]
+        for coords in points + [center]:
+            point = inverse.rotate_vector((u.Vector(*coords) - translation) / 145.)
+            _, inside, _ = spatial.is_point_inside_mesh(dynamic, bvh, point, options)
+            samples.append(dict(part=part["name"], hub_cm=coords, inside_rock=bool(inside)))
+    inside = [s for s in samples if s["inside_rock"]]
+    preserved = hashlib.sha256(mesh_path.read_bytes()).hexdigest() == before
+    record = dict(asset=ASTEROID, asset_sha256=before, asset_preserved=preserved,
+                  geometry="built_lod0_collision_fallback", triangles=dynamic.get_triangle_count(),
+                  status="sampled-clearance-pass" if not inside and preserved else "failed",
+                  samples=samples, inside_samples=inside,
+                  limit="Added trim corners and centres only; runtime collision and rendered review remain separate.")
+    (out / "final-trim-clearance.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+    if inside or not preserved:
+        raise RuntimeError("Final station trim failed the private asteroid clearance/preservation guard")
+    return dict(samples=len(samples), inside=0, asset_preserved=True)
+
+
 def main():
     import unreal as u
 
@@ -318,6 +395,7 @@ def main():
     (out / "recipe.json").write_text(json.dumps(recipe, indent=2), encoding="utf-8")
     (out / "placements.json").write_text(json.dumps(placements, indent=2), encoding="utf-8")
     (out / "measured-assets.json").write_text(json.dumps(inventory, indent=2), encoding="utf-8")
+    trim_clearance = verify_final_trim_clearance(u, placements, out)
     def sha(path):
         return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
 
@@ -329,7 +407,7 @@ def main():
     dry_run = dict(mode="apply" if apply else "dry_run", package=PACKAGE,
                    original_sha256=original_before, previous_target_sha256=target_before,
                    meshes=len(recipe["static_meshes"]), solids=len(recipe["collision_boxes"]),
-                   services=len(recipe["service_anchors"]))
+                   services=len(recipe["service_anchors"]), final_trim_clearance=trim_clearance)
     (out / "plan.json").write_text(json.dumps(dry_run, indent=2), encoding="utf-8")
     if not apply:
         u.log("STATION_RESET_DRY_RUN " + json.dumps(dry_run))

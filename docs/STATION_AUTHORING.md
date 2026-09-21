@@ -58,7 +58,27 @@ The revised service recipe uses the actual `ModularSci_Comm/SM_Terminal_A` body 
 independently would detach it from the console. Lower canopies, grounded dividers, wardrobe lockers and
 scoped storage give the service bays physical definition. Broad ceiling fill is reduced in favor of
 local warm task pools. The east wall faces rock, so it is a bulkhead; the west entrance provides the
-real view through the pad to space. Rendering of these revisions remains a separate gate.
+real view through the pad to space. Cycle2 (`45ea22a5885646f2adf5ad427fb58a57`, source `0768e2c`) shows
+the curved console controls, staffed bays and industrial floor clearly, but exposed very dark ground
+beside the parked hull and a flat exterior roof. The colony material fallback in that capture prevents
+material acceptance; the private material usage repair has its own authoring receipt.
+
+The final bounded recipe adds local cool light at four existing pad rails, the two bridge rails and the
+entry faces. These lights model local task/bounce light without shadows; their ranges stay local and
+the sky, key light, exposure and existing station lights are unchanged. An attached low roof cap with
+four stiffeners stays inside the existing 40 × 30 m roof footprint, starts at its Z545 top face, and
+ends at Z635. The framed entrance retains the ten-metre opening and Z440 header clearance. The exposed
+roof and portal parts have matching native collision specs; thin stripes and lights sit on those
+supports. Existing collision coordinates, services, staff and the two colony buildings are unchanged.
+The recipe at this checkpoint has 297 meshes, 56 box specs, 32 lights and ten service anchors.
+
+Before saving, `AuthorStationReset.py` reads the actual private asteroid's built collision fallback and
+tests the 135 new trim corners/centres, recording `Artifacts/StationReset/final-trim-clearance.json` and
+verifying the asteroid file is unchanged. Any sampled intersection stops authoring. This supplements
+the prior room/terrace check and does not prove continuous mesh clearance. Portable recipe checks
+cover matched solid bounds and clear service/walking approaches; native station/docking checks and
+the final packaged rendered assessment remain separate gates. No reference-quality or owner acceptance
+follows from these counts, sampled checks or a successful authoring run.
 
 The two outer terraces reference the private
 `StationReset/ColonyHabitat/SM_ColonyHabitat` derivative of object `3` from the owned Figur station kit.
