@@ -72,6 +72,10 @@
 		{
 			"Name": "ShipCore",
 			"Enabled": true
+		},
+		{
+			"Name": "NwiroIntegrationKit",
+			"Enabled": true
 		}
 	]
 }
