@@ -1990,3 +1990,42 @@ On closure retain the item with **Closed**, date, revision/build and evidence; o
 Closed/superseded work at this consolidation: no open acceptance case was closed. Earlier technical repairs and their exact test limits remain in [validation records](VALIDATION.md) and immutable `docs/validation/` receipts. Removed stale running commentary remains recoverable in Git history.
 
 Other documents have distinct roles: [Project State](PROJECT_STATE.md) for build/storage status; [solution catalog](production/SOLUTION_CATALOG.md) for candidate resources; [work packages](production/WORK_PACKAGES.md) for needs/dependencies; [game scope](GAME_SCOPE.md) and [IMPLEMENT](../IMPLEMENT.md) for authority. None is a second active task list.
+
+## 2026-09-20 owner playtest — unactioned, several game-breaking
+
+Reported by the owner after playing. **Nothing here was investigated, reproduced or fixed** — logged
+verbatim so it survives the session. Ordered as reported, not by severity.
+
+### Flight
+
+- **Cannot tell whether the ship is firing.** No readable feedback that a shot happened.
+- **Controls are wrong.** *"there's no pitch or rotation in flight or i don't understand the
+  controls"* — either the axes are missing or they are undiscoverable. Both are failures.
+- The owner's own diagnosis, and it should be the first thing checked:
+  **"this is like the should have used the blueprint thing again."** `BP_Spaceship` ships a
+  128-node EventGraph, nine tunable flight variables and its own input mappings
+  (`Thrust`, `MoveRight`, `Roll`, `MoveUp`, `TakeOff`, `BattleMode`, `Landing`, `EnterExitShip`),
+  none of which are registered in project input settings. `ASSShip` re-implements flight in C++.
+  See the Phoenix section of the blueprint-first rule.
+
+### Approaching the station
+
+- **Very hard to slow down** on approach.
+- **The background went 100% white** near the station — a full white sky, not the space backdrop.
+- **No way to tell how to land.** No affordance, prompt or cue.
+- Outcome: **crashed and died.**
+
+### Inside the station
+
+- Floor coverage is fine; the dressing is not. **"an absolute MESS. objects floating everywhere,
+  disorganized as hell."**
+- Note this contradicts the staged captures taken the same day. Those were composed shots with an
+  added light rig at chosen angles; they are not evidence about the station a player walks into.
+  The owner: *"how you had one good cinematic scene earlier blows my mind."* Treat every previous
+  capture of the station interior as unrepresentative until a playthrough says otherwise.
+
+### Why this list exists
+
+`CLAUDE.md` already says *"Treat '67 tests pass' as saying nothing about what a player receives."*
+This is that, demonstrated: the suite was green, the build succeeded, and the game was unplayable.
+Playtest before claiming any of this works.
