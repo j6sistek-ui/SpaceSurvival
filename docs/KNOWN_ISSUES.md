@@ -2038,6 +2038,27 @@ verbatim so it survives the session. Ordered as reported, not by severity.
   `ASSWalker::MeshLift` computes its lift from `ScaledSoleOffset`, the capsule half height and the
   walking floor gap, with no term for the floor mesh sitting above its own placement Z.
 
+- **Most objects have no collision - the player walks through them, almost nothing is attached.**
+
+### What a live PIE session ruled out
+
+Observed directly in a running PIE session, 31 actors. These narrow the search rather than solve
+anything:
+
+- **There is no `SkyAtmosphere` actor in the level.** The white sky is therefore not a stray sky
+  actor. The remaining candidates are `ReadableSpaceExposure` auto-adapting to a dark station and
+  blowing out the backdrop, or the backdrop material itself.
+- **There are no camera actors in the level.** "Cameras everywhere" is not stray capture or cine
+  actors - it is meshes that read as cameras, or HUD.
+- `DeepSpaceBackdrop` and `DistantStarfield` sit at the player's exact position and track the viewer,
+  which is how a skybox is supposed to behave. Not a bug.
+- The screenshot was taken on the **landing pad** (`SSLandingPad_3`, z = -10), not on the station
+  deck, so the sunk-player and floating-prop reports should be confirmed in both places separately.
+- The station itself is present and built: `SSStation_3` with `BP_StationVisualLayout_C_3`.
+
+Confirmed visually in that screenshot: the player is buried to roughly the knee, and the sky is a
+bright daylight-like gradient rather than space.
+
 ### Why this list exists
 
 `CLAUDE.md` already says *"Treat '67 tests pass' as saying nothing about what a player receives."*
