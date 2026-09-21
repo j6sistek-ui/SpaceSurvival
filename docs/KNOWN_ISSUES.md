@@ -2024,6 +2024,20 @@ verbatim so it survives the session. Ordered as reported, not by severity.
   The owner: *"how you had one good cinematic scene earlier blows my mind."* Treat every previous
   capture of the station interior as unrepresentative until a playthrough says otherwise.
 
+- **Cameras visible everywhere** in the station. Source unknown - not investigated. Worth ruling out
+  first: the capture actors used for development were removed from `Survival` and the map was saved
+  clean at six actors, so these are more likely to be coming from a pack's demo content or from
+  something the station spawns at runtime.
+- **The player stands half inside the floor.**
+
+  A measured lead, found the same day while placing characters and never applied to the player:
+  **the deck surface is not at z=0.** `SM_Floor_C` is placed at z=0 but its geometry spans
+  `-10.00 .. +10.70`, and `SM_FloorDiv_A` reaches `+11.46`. A character grounded to z=0 is buried to
+  roughly the ankle. That is smaller than "half in the floor", so it is a contributing cause at most
+  and something else is likely wrong as well - but it is a real number and the first thing to check.
+  `ASSWalker::MeshLift` computes its lift from `ScaledSoleOffset`, the capsule half height and the
+  walking floor gap, with no term for the floor mesh sitting above its own placement Z.
+
 ### Why this list exists
 
 `CLAUDE.md` already says *"Treat '67 tests pass' as saying nothing about what a player receives."*
