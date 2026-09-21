@@ -33,6 +33,16 @@ class CookCoverageTests(unittest.TestCase):
     def test_directory_exclusion_wins(self):
         self.assertFalse(is_covered("/Game/SpaceSurvival/Licensed/MocapSource/IK_UE4Mannequin", *self.rules))
 
+    def test_plugin_runtime_light_mask_is_explicitly_cooked(self):
+        # The installed plugin's UWPPortalLightTransmissionSubsystem loads this literal
+        # at game-world initialization; scanning our own /Game/ strings cannot discover it.
+        folder = "/WormholePortal/WormholePortal/Materials/LightFunctions"
+        material = folder + "/M_WPPortalSphericalGate.M_WPPortalSphericalGate"
+        self.assertIn(folder, self.rules[0])
+        self.assertTrue(is_covered(material, *self.rules))
+        without_mask = [root for root in self.rules[0] if root != folder]
+        self.assertFalse(is_covered(material, without_mask, self.rules[1], self.rules[2]))
+
     def test_package_boundary_and_case(self):
         roots = ["/Game/Runtime"]
         self.assertTrue(is_covered("/game/runtime/Clip.Clip", roots, [], set()))
