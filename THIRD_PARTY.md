@@ -1,5 +1,9 @@
 # SpaceSurvival asset acknowledgements
 
+## Owner-supplied main-menu composition
+
+The September21 main menu uses the owner's approved [SpaceSurvival UI Kit](https://www.figma.com/design/6M3VvUB7jsPDd3E41YpKM0/SpaceSurvival-UI-Kit?node-id=142-1059): its background, character portraits, title, normal/hover button artwork and footer hints. The game preserves the supplied composition and connects it to native actions. These are exact raster exports; no font files are redistributed by this integration. Per-node source identities, hashes, crop provenance and the static-shader limitation are recorded in `ContentSource/FigmaMainMenu/provenance.json` and `docs/production/FIGMA_MAIN_MENU_PROVENANCE.md`. Figma pages outside the approved main menu are not claimed as integrated.
+
 ## Milky Way sky
 
 NASA/Goddard Space Flight Center Scientific Visualization Studio. Gaia DR2: ESA/Gaia/DPAC.

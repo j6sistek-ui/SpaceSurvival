@@ -1,0 +1,471 @@
+[
+  {
+    "id": "144:1103",
+    "name": "main_menu_background_4k 1",
+    "type": "RECTANGLE",
+    "x": 0,
+    "y": 0,
+    "width": 3840,
+    "height": 2160,
+    "bounds": {
+      "x": -501,
+      "y": -681,
+      "width": 3840,
+      "height": 2160
+    }
+  },
+  {
+    "id": "144:1130",
+    "name": "Space Survival",
+    "type": "TEXT",
+    "x": 689,
+    "y": 24,
+    "width": 2961,
+    "height": 439,
+    "bounds": {
+      "x": 209,
+      "y": -587.5,
+      "width": 2619.95849609375,
+      "height": 230.39999389648438
+    },
+    "text": {
+      "characters": "Space Survival ",
+      "font": {
+        "family": "Wallpoet",
+        "style": "Regular"
+      },
+      "size": 300,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.14127691090106964,
+            "g": 0.879807710647583,
+            "b": 0.8182634711265564
+          },
+          "boundVariables": {}
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "id": "144:1150",
+    "name": "panel_large_white-bright",
+    "type": "INSTANCE",
+    "x": 0,
+    "y": 1921,
+    "width": 596,
+    "height": 231,
+    "bounds": {
+      "x": -501,
+      "y": 1240,
+      "width": 596,
+      "height": 231
+    },
+    "properties": {}
+  },
+  {
+    "id": "144:1164",
+    "name": "panel_wide_black",
+    "type": "INSTANCE",
+    "x": 86,
+    "y": 1936,
+    "width": 516,
+    "height": 146,
+    "bounds": {
+      "x": -415,
+      "y": 1255,
+      "width": 516,
+      "height": 146
+    },
+    "properties": {}
+  },
+  {
+    "id": "144:1153",
+    "name": "V1.02 - see full release log on itch.io",
+    "type": "TEXT",
+    "x": 124,
+    "y": 1971,
+    "width": 441,
+    "height": 75,
+    "bounds": {
+      "x": -365.7247009277344,
+      "y": 1292.9720458984375,
+      "width": 417.47430419921875,
+      "height": 70.0279541015625
+    },
+    "text": {
+      "characters": "V1.02 - see full release log on itch.io",
+      "font": {
+        "family": "Keania One",
+        "style": "Regular"
+      },
+      "size": 36,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9298077821731567,
+            "g": 0.90030437707901,
+            "b": 0.90030437707901
+          },
+          "boundVariables": {}
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "id": "144:1167",
+    "name": "hero 1",
+    "type": "RECTANGLE",
+    "x": 2792,
+    "y": 383,
+    "width": 1048,
+    "height": 1572,
+    "bounds": {
+      "x": 2291,
+      "y": -298,
+      "width": 1048,
+      "height": 1572
+    }
+  },
+  {
+    "id": "145:1169",
+    "name": "grok-image-f5a06ba8-9347-4c40-93bd-409cca5796a0 1",
+    "type": "RECTANGLE",
+    "x": 273,
+    "y": 482,
+    "width": 583,
+    "height": 1374,
+    "bounds": {
+      "x": -228,
+      "y": -199,
+      "width": 583,
+      "height": 1374
+    }
+  },
+  {
+    "id": "147:1262",
+    "name": "ENTER",
+    "type": "TEXT",
+    "x": 1459.71435546875,
+    "y": 2008.71435546875,
+    "width": 150,
+    "height": 56,
+    "bounds": {
+      "x": 961.9803466796875,
+      "y": 1340.456298828125,
+      "width": 144.01806640625,
+      "height": 33.258056640625
+    },
+    "text": {
+      "characters": "ENTER",
+      "font": {
+        "family": "Keania One",
+        "style": "Regular"
+      },
+      "size": 46,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9019607901573181,
+            "g": 0.9490196108818054,
+            "b": 1
+          },
+          "boundVariables": {}
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "id": "147:1263",
+    "name": "select",
+    "type": "TEXT",
+    "x": 1629.71435546875,
+    "y": 2014.71435546875,
+    "width": 118,
+    "height": 49,
+    "bounds": {
+      "x": 1130.514404296875,
+      "y": 1344.7943115234375,
+      "width": 115.630859375,
+      "height": 28.9200439453125
+    },
+    "text": {
+      "characters": "select",
+      "font": {
+        "family": "Keania One",
+        "style": "Regular"
+      },
+      "size": 40,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.43529412150382996,
+            "g": 0.5647059082984924,
+            "b": 0.6784313917160034
+          },
+          "boundVariables": {}
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "id": "147:1264",
+    "name": "W / S",
+    "type": "TEXT",
+    "x": 1837.71435546875,
+    "y": 2008.71435546875,
+    "width": 121,
+    "height": 56,
+    "bounds": {
+      "x": 1339.934326171875,
+      "y": 1340.456298828125,
+      "width": 114.6007080078125,
+      "height": 39.697998046875
+    },
+    "text": {
+      "characters": "W / S",
+      "font": {
+        "family": "Keania One",
+        "style": "Regular"
+      },
+      "size": 46,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9019607901573181,
+            "g": 0.9490196108818054,
+            "b": 1
+          },
+          "boundVariables": {}
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "id": "147:1265",
+    "name": "move",
+    "type": "TEXT",
+    "x": 1978.71435546875,
+    "y": 2014.71435546875,
+    "width": 101,
+    "height": 49,
+    "bounds": {
+      "x": 1480.0343017578125,
+      "y": 1353.71435546875,
+      "width": 96.62255859375,
+      "height": 20
+    },
+    "text": {
+      "characters": "move",
+      "font": {
+        "family": "Keania One",
+        "style": "Regular"
+      },
+      "size": 40,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.43529412150382996,
+            "g": 0.5647059082984924,
+            "b": 0.6784313917160034
+          },
+          "boundVariables": {}
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "id": "147:1266",
+    "name": "ESC",
+    "type": "TEXT",
+    "x": 2169.71435546875,
+    "y": 2008.71435546875,
+    "width": 88,
+    "height": 56,
+    "bounds": {
+      "x": 1671.9803466796875,
+      "y": 1340.456298828125,
+      "width": 81.7457275390625,
+      "height": 33.258056640625
+    },
+    "text": {
+      "characters": "ESC",
+      "font": {
+        "family": "Keania One",
+        "style": "Regular"
+      },
+      "size": 46,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9019607901573181,
+            "g": 0.9490196108818054,
+            "b": 1
+          },
+          "boundVariables": {}
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "id": "147:1267",
+    "name": "quit",
+    "type": "TEXT",
+    "x": 2277.71435546875,
+    "y": 2014.71435546875,
+    "width": 75,
+    "height": 49,
+    "bounds": {
+      "x": 1778.75439453125,
+      "y": 1344.7943115234375,
+      "width": 71.703369140625,
+      "height": 37.840087890625
+    },
+    "text": {
+      "characters": "quit",
+      "font": {
+        "family": "Keania One",
+        "style": "Regular"
+      },
+      "size": 40,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.43529412150382996,
+            "g": 0.5647059082984924,
+            "b": 0.6784313917160034
+          },
+          "boundVariables": {}
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "id": "160:1124",
+    "name": "btn / Continue",
+    "type": "INSTANCE",
+    "x": 1207,
+    "y": 583,
+    "width": 1470,
+    "height": 269,
+    "bounds": {
+      "x": 648,
+      "y": -156,
+      "width": 1586,
+      "height": 385
+    },
+    "properties": {
+      "State": {
+        "value": "Default",
+        "type": "VARIANT",
+        "boundVariables": {}
+      }
+    }
+  },
+  {
+    "id": "160:1135",
+    "name": "btn / New Game",
+    "type": "INSTANCE",
+    "x": 1207,
+    "y": 912,
+    "width": 1470,
+    "height": 269,
+    "bounds": {
+      "x": 648,
+      "y": 173,
+      "width": 1586,
+      "height": 385
+    },
+    "properties": {
+      "State": {
+        "value": "Default",
+        "type": "VARIANT",
+        "boundVariables": {}
+      }
+    }
+  },
+  {
+    "id": "160:1146",
+    "name": "btn / Settings",
+    "type": "INSTANCE",
+    "x": 1207,
+    "y": 1241,
+    "width": 1470,
+    "height": 269,
+    "bounds": {
+      "x": 648,
+      "y": 502,
+      "width": 1586,
+      "height": 385
+    },
+    "properties": {
+      "State": {
+        "value": "Default",
+        "type": "VARIANT",
+        "boundVariables": {}
+      }
+    }
+  },
+  {
+    "id": "160:1157",
+    "name": "btn / Exit Game",
+    "type": "INSTANCE",
+    "x": 1207,
+    "y": 1570,
+    "width": 1470,
+    "height": 269,
+    "bounds": {
+      "x": 648,
+      "y": 831,
+      "width": 1586,
+      "height": 385
+    },
+    "properties": {
+      "State": {
+        "value": "Default",
+        "type": "VARIANT",
+        "boundVariables": {}
+      }
+    }
+  }
+]
