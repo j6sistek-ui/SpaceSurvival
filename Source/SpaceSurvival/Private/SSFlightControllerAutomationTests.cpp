@@ -236,14 +236,14 @@ bool FSSControllerToFlight::RunTest(const FString &)
         for (int32 Frame = 0; Frame < 60; ++Frame)
         {
             if (Gamepad)
-                F.Axis(EKeys::Gamepad_RightTriggerAxis, 1.f);
+                F.Button(EKeys::Gamepad_FaceButton_Right, true);
             F.Step();
         }
         TestTrue(Device + TEXT(" raw boost spends resource and accelerates the actual ship"),
                  F.Instance->Session.run.boosting && F.Instance->Session.run.boost < 95. &&
                      F.Ship->GetVelocity().Size() > Cruise + 100.);
         if (Gamepad)
-            F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
+            F.Button(EKeys::Gamepad_FaceButton_Right, false);
         else
             F.Button(EKeys::LeftShift, false);
         F.Frames(120);
@@ -332,12 +332,21 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
                      F.Ship->Collision->GetCollisionEnabled() != ECollisionEnabled::NoCollision);
 
         const FRotator BeforeTurn = F.Ship->GetActorRotation();
+        // Takeoff leaves the engine off. The pilot must explicitly request ordinary power.
+        if (!Gamepad)
+            F.Button(EKeys::W, true);
         for (int32 Frame = 0; Frame < 60; ++Frame)
         {
+            if (Gamepad)
+                F.Axis(EKeys::Gamepad_RightTriggerAxis, 1.f);
             F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, Gamepad ? .8f : 5.f);
             F.Axis(Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY, Gamepad ? .6f : 4.f);
             F.Step();
         }
+        if (!Gamepad)
+            F.Button(EKeys::W, false);
+        else
+            F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
         const FRotator Turn = (F.Ship->GetActorRotation() - BeforeTurn).GetNormalized();
         TestTrue(Device + TEXT(" raw look still rotates both axes after re-possession and lift"),
                  Turn.Yaw > 5.f && Turn.Pitch > 5.f);
@@ -483,4 +492,253 @@ bool FSSLiveRewardInput::RunTest(const FString &)
     // capture acquisition or physical-device acceptance is claimed by this inert viewport fixture.
     return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSAnalogThrottleAndCoast, "SpaceSurvival.Flight.AnalogThrottleAndCoast",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSAnalogThrottleAndCoast::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
+    F.Frames(30);
+    TestTrue(TEXT("Released throttle does not start the engine or force a speed floor"),
+             F.Ship->GetVelocity().Size() < 1.f && F.Ship->GetThrottle() == 0.f);
+    F.Button(EKeys::W, true);
+    F.Frames(120);
+    F.Button(EKeys::W, false);
+    F.Step();
+    TestTrue(TEXT("W establishes persistent full keyboard throttle before switching to RT"),
+             F.Ship->GetThrottle() > .99f);
+    for (int32 Frame = 0; Frame < 90; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_RightTriggerAxis, .5f);
+        F.Step();
+    }
+    const float HalfSpeed = F.Ship->GetVelocity().Size();
+    TestTrue(TEXT("Half trigger provides ordinary thrust without consuming boost"),
+             FMath::IsNearlyEqual(F.Ship->GetThrottle(), .5f, .01f) && HalfSpeed > 300.f &&
+                 !F.Instance->Session.run.boosting && F.Instance->Session.run.boost >= 99.9);
+    for (int32 Frame = 0; Frame < 90; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_RightTriggerAxis, 1.f);
+        F.Step();
+    }
+    TestTrue(TEXT("Full normal trigger is faster than half power without boosting"),
+             F.Ship->GetVelocity().Size() > HalfSpeed * 1.3f && !F.Instance->Session.run.boosting);
+    const FVector Momentum = F.Ship->GetVelocity();
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
+    for (int32 Frame = 0; Frame < 45; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_RightX, .4f);
+        F.Step();
+    }
+    TestTrue(TEXT("Engine-off turning retains world-space momentum"),
+             FVector::Distance(F.Ship->GetVelocity(), Momentum) < 5.f &&
+                 FMath::Abs(F.Ship->GetActorRotation().Yaw) > 1.f);
+    F.Axis(EKeys::Gamepad_RightX, 0.f);
+    F.Axis(EKeys::MouseX, 5.f);
+    F.Step();
+    F.Button(EKeys::LeftControl, true);
+    F.Step();
+    F.Button(EKeys::LeftControl, false);
+    F.Step();
+    TestTrue(TEXT("Mouse and unrelated keyboard input cannot revive stale W throttle after RT release"),
+             !F.Controller->bLastInputWasGamepad && F.Ship->GetThrottle() == 0.f &&
+                 FVector::Distance(F.Ship->GetVelocity(), Momentum) < 5.f);
+    float Power, Damage;
+    bool Boosting, Braking;
+    F.Ship->GetDrivePresentation(Power, Boosting, Braking, Damage);
+    TestTrue(TEXT("Engine-off presentation has no drive power"), Power == 0.f && !Boosting);
+    F.Button(EKeys::Gamepad_FaceButton_Right, true);
+    F.Frames(30);
+    TestTrue(TEXT("B independently engages boost"),
+             F.Instance->Session.run.boosting && F.Instance->Session.run.boost < 99.f);
+    F.Button(EKeys::Gamepad_FaceButton_Right, false);
+    const double BeforeBrake = F.Ship->GetVelocity().Size();
+    for (int32 Frame = 0; Frame < 60; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_LeftTriggerAxis, 1.f);
+        F.Step();
+    }
+    TestTrue(TEXT("Left trigger reduces coasting speed"), F.Ship->GetVelocity().Size() < BeforeBrake * .65);
+    F.Axis(EKeys::Gamepad_LeftTriggerAxis, 0.f);
+    F.Button(EKeys::S, true);
+    F.Step();
+    F.Button(EKeys::S, false);
+    F.Step();
+    const float KeyboardPower = F.Ship->GetThrottle();
+    TestTrue(TEXT("A fresh S command deliberately resumes the retained keyboard setting"),
+             KeyboardPower > .9f && KeyboardPower < 1.f);
+    F.Axis(EKeys::Gamepad_RightX, .4f);
+    F.Step();
+    TestTrue(TEXT("Controller look changes HUD device without changing keyboard throttle ownership"),
+             F.Controller->bLastInputWasGamepad && FMath::IsNearlyEqual(F.Ship->GetThrottle(), KeyboardPower));
+    F.Axis(EKeys::Gamepad_RightX, 0.f);
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, .35f);
+    F.Step();
+    TestTrue(TEXT("A fresh trigger press takes normal throttle ownership"),
+             FMath::IsNearlyEqual(F.Ship->GetThrottle(), .35f, .01f));
+    F.Button(EKeys::W, true);
+    F.Step();
+    F.Button(EKeys::W, false);
+    F.Step();
+    TestTrue(TEXT("Fresh W takes over from a held trigger without being overridden on the next frame"),
+             F.Ship->GetThrottle() > .99f);
+    for (float Trigger : {.354f, .358f})
+    {
+        F.Axis(EKeys::Gamepad_RightTriggerAxis, Trigger);
+        F.Step();
+    }
+    TestTrue(TEXT("Sub-one-percent trigger noise cannot immediately override a keyboard command"),
+             F.Ship->GetThrottle() > .99f);
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, .366f);
+    F.Step();
+    TestTrue(TEXT("A deliberate gradual trigger adjustment takes ownership once its total change is meaningful"),
+             FMath::IsNearlyEqual(F.Ship->GetThrottle(), .366f, .01f));
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
+    F.Step();
+    TestTrue(TEXT("Actually lifting the held trigger takes ownership and cuts thrust again"),
+             F.Ship->GetThrottle() == 0.f);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSMenuBackBoostRelease, "SpaceSurvival.Flight.MenuBackBoostRelease",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSMenuBackBoostRelease::RunTest(const FString &)
+{
+    for (bool Toggle : {false, true})
+        for (ESSPanel Panel : {ESSPanel::Main, ESSPanel::Reward})
+        {
+            FSSControllerFlightWorld F;
+            if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+                return false;
+            F.Instance->Session.settings.toggleBoost = Toggle;
+            F.Step();
+            if (Panel == ESSPanel::Reward)
+                F.Mode->NotifyEventCompleted(false);
+            F.Mode->OpenPanel(Panel);
+            const double BeforeBoost = F.Instance->Session.run.boost;
+            F.Button(EKeys::Gamepad_FaceButton_Right, true);
+            F.Step();
+            TestFalse(TEXT("B closes the actual panel"), F.Mode->IsMenuOpen());
+            // A physical button remains down across multiple frames after its pressed edge.
+            // Do not synthesize a release immediately after Back, which would hide this defect.
+            F.Frames(12);
+            TestTrue(TEXT("The held menu Back press cannot boost or consume boost after closure"),
+                     !F.Instance->Session.run.boosting && F.Instance->Session.run.boost >= BeforeBoost);
+            F.Controller->UnPossess();
+            F.Step();
+            F.Controller->Possess(F.Ship);
+            F.Frames(4);
+            TestTrue(TEXT("Possession reset preserves suppression of the same consumed Back press"),
+                     !F.Instance->Session.run.boosting && F.Instance->Session.run.boost >= BeforeBoost);
+            F.Button(EKeys::Gamepad_FaceButton_Right, false);
+            F.Step();
+            F.Button(EKeys::Gamepad_FaceButton_Right, true);
+            F.Frames(4);
+            TestTrue(TEXT("Releasing then freshly pressing B engages the selected boost mode"),
+                     F.Instance->Session.run.boosting && F.Instance->Session.run.boost < BeforeBoost);
+            F.Button(EKeys::Gamepad_FaceButton_Right, false);
+            F.Frames(4);
+            TestEqual(TEXT("Hold mode releases and toggle mode stays active after the fresh press"),
+                      F.Instance->Session.run.boosting, Toggle);
+            if (Toggle)
+            {
+                F.Button(EKeys::Gamepad_FaceButton_Right, true);
+                F.Step();
+                TestFalse(TEXT("Another fresh B press switches toggle boost off"), F.Instance->Session.run.boosting);
+                F.Button(EKeys::Gamepad_FaceButton_Right, false);
+                F.Step();
+            }
+        }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSTitleMenuNavigation, "SpaceSurvival.UI.TitleMenuNavigation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSTitleMenuNavigation::RunTest(const FString &)
+{
+    for (bool Gamepad : {false, true})
+    {
+        FSSControllerFlightWorld F;
+        if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+            return false;
+        F.Instance->Session.run = {};
+        F.Mode->Ship = F.Ship;
+        F.Mode->OpenPanel(ESSPanel::Main);
+        F.Step();
+        const FString Device = Gamepad ? TEXT("D-pad/A") : TEXT("W/S/Enter");
+        const int32 Actions[] = {2, 4, 5, 7};
+        if (!TestEqual(Device + TEXT(" title exposes exactly four approved actions"), F.Mode->Entries.Num(), 4))
+            return false;
+        for (int32 Index = 0; Index < UE_ARRAY_COUNT(Actions); ++Index)
+            TestEqual(FString::Printf(TEXT("Title row %d retains its real action"), Index),
+                      F.Mode->Entries[Index].Action, Actions[Index]);
+        TestFalse(TEXT("Fresh isolated profile has no Continue checkpoint"), F.Mode->Entries[0].Enabled);
+        auto Tap = [&](FKey Key)
+        {
+            F.Button(Key, true);
+            F.Step();
+            F.Button(Key, false);
+            F.Step();
+        };
+        const FKey Confirm = Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::Enter;
+        const FKey Up = Gamepad ? EKeys::Gamepad_DPad_Up : EKeys::W;
+        const FKey Down = Gamepad ? EKeys::Gamepad_DPad_Down : EKeys::S;
+        Tap(Confirm);
+        TestTrue(Device + TEXT(" disabled Continue cannot start or dismiss the title"),
+                 F.Mode->IsTitleMenu() && !F.Instance->Session.run.active);
+        for (FKey Back : {EKeys::Gamepad_FaceButton_Right, EKeys::Gamepad_Special_Right})
+        {
+            Tap(Back);
+            TestTrue(TEXT("Controller Back/Menu cannot bypass the startup title"), F.Mode->IsTitleMenu());
+        }
+        Tap(Down);
+        TestEqual(Device + TEXT(" down selects New Game"), F.Mode->SelectedEntry, 1);
+        Tap(Up);
+        TestEqual(Device + TEXT(" up returns to Continue"), F.Mode->SelectedEntry, 0);
+        Tap(Down);
+        Tap(Down);
+        TestEqual(Device + TEXT(" second down selects Settings"), F.Mode->SelectedEntry, 2);
+        Tap(Confirm);
+        TestTrue(Device + TEXT(" confirms actual Settings action"), F.Mode->Panel == ESSPanel::Settings);
+        F.Mode->ClosePanel();
+        TestTrue(TEXT("Closing title-origin Settings returns to the title"), F.Mode->IsTitleMenu());
+        F.Mode->ActivateEntry(2); // The verified title Settings action.
+        const int32 Acknowledgements =
+            F.Mode->Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry) { return Entry.Action == 9; });
+        if (!TestTrue(TEXT("Settings exposes its actual acknowledgements action"), Acknowledgements != INDEX_NONE))
+            return false;
+        F.Mode->ActivateEntry(Acknowledgements);
+        TestTrue(TEXT("Settings opens asset acknowledgements"), F.Mode->Panel == ESSPanel::Acknowledgements);
+        F.Mode->ClosePanel();
+        TestTrue(TEXT("Closing title-origin acknowledgements returns to the title"), F.Mode->IsTitleMenu());
+        Tap(Down);
+        Tap(Confirm);
+        TestTrue(Device + TEXT(" New Game opens the real home walker without starting survival"),
+                 F.Mode->InHangar() && IsValid(F.Mode->Walker) && F.Controller->GetPawn() == F.Mode->Walker &&
+                     !F.Mode->IsMenuOpen() && !F.Instance->Session.run.active && !F.Instance->IsFreeFlight());
+        // Ordinary in-game Settings still closes back to play. StartRun is the pure
+        // domain operation; GameMode.StartNewRun and all persistence APIs are excluded.
+        if (!TestTrue(TEXT("Seed only memory for ordinary in-game Settings"),
+                      F.Instance->Session.StartRun("title-settings-regression")))
+            return false;
+        F.Mode->OpenPanel(ESSPanel::Main);
+        const int32 Settings =
+            F.Mode->Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry) { return Entry.Action == 5; });
+        if (!TestTrue(TEXT("Active pause retains Settings"), Settings != INDEX_NONE))
+            return false;
+        F.Mode->ActivateEntry(Settings);
+        F.Mode->ClosePanel();
+        TestTrue(TEXT("Closing active-run Settings returns to play, not startup"),
+                 !F.Mode->IsMenuOpen() && !F.Mode->IsTitleMenu() && F.Instance->Session.run.active);
+        TestTrue(TEXT("Title fixture keeps account storage blocked"), F.Instance->AccountStorageBlocked);
+        TestFalse(TEXT("Title fixture never ran production GameMode BeginPlay"), F.Mode->HasActorBegunPlay());
+        // Exit Game/Escape are deliberately never activated inside the shared test process.
+    }
+    return true;
+}
+
 #endif

@@ -431,7 +431,7 @@ bool FSSPhoenixMooringPose::RunTest(const FString &)
 
     Fixture.Ship->EndMooring();
     TestFalse(TEXT("Native release clears the magnetic hold"), Fixture.Ship->IsMoored());
-    TestTrue(TEXT("Native release resumes forward flight"), Fixture.Ship->GetVelocity().X > 1000.f);
+    TestTrue(TEXT("Native release waits for the owner's throttle command"), Fixture.Ship->GetVelocity().IsNearlyZero());
     AnimationNamed(*this, Hull, TEXT("BattleMode_Enter"));
     TestEqual(TEXT("Depot release does not rewind the authored flight animation"),
               Hull->GetSingleNodeInstance()->GetCurrentTime(), SettledTime);
@@ -516,8 +516,10 @@ bool FSSPhoenixGearGeometry::RunTest(const FString &)
     const FReferenceSkeleton &Skeleton = Mesh->GetRefSkeleton();
     TArray<FTransform> Bind = Skeleton.GetRefBonePose();
     TArray<FBox> Bounds;
+    TArray<TArray<FVector>> BoardingVertices;
     TArray<int32> Counts, BlendedCounts;
     Bounds.Init(FBox(ForceInit), Bind.Num());
+    BoardingVertices.SetNum(Bind.Num());
     Counts.Init(0, Bind.Num());
     BlendedCounts.Init(0, Bind.Num());
     for (int32 Bone = 0; Bone < Bind.Num(); ++Bone)
@@ -536,7 +538,12 @@ bool FSSPhoenixGearGeometry::RunTest(const FString &)
             if (Vertex.InfluenceWeights[Strongest] == 0)
                 continue;
             const int32 Bone = Section.BoneMap[Vertex.InfluenceBones[Strongest]];
-            Bounds[Bone] += Bind[Bone].InverseTransformPosition(FVector(Vertex.Position));
+            const FVector LocalVertex = Bind[Bone].InverseTransformPosition(FVector(Vertex.Position));
+            Bounds[Bone] += LocalVertex;
+            const FName BoneName = Skeleton.GetBoneName(Bone);
+            if (BoneName == TEXT("Cargo_Door_Mesh") || BoneName == TEXT("Cargo_Door_A_Mesh") ||
+                BoneName == TEXT("Interior_Mesh"))
+                BoardingVertices[Bone].Add(LocalVertex);
             ++Counts[Bone];
             if (Vertex.InfluenceWeights[Strongest] != MAX_uint16)
                 ++BlendedCounts[Bone];
@@ -602,6 +609,23 @@ bool FSSPhoenixGearGeometry::RunTest(const FString &)
             Record->SetStringField(TEXT("landed_ship_min"), Landed.Min.ToString());
             Record->SetStringField(TEXT("landed_ship_max"), Landed.Max.ToString());
             Record->SetStringField(TEXT("landed_bone_to_ship"), BoneToShip.ToString());
+            if (!BoardingVertices[Bone].IsEmpty())
+            {
+                TArray<TSharedPtr<FJsonValue>> Probes;
+                for (const FVector &Point : BoardingVertices[Bone])
+                {
+                    const FVector ShipPoint = BoneToShip.TransformPosition(Point);
+                    if (Skeleton.GetBoneName(Bone) == TEXT("Interior_Mesh") &&
+                        (ShipPoint.X < -1150 || ShipPoint.X > -700 || FMath::Abs(ShipPoint.Y) > 180 ||
+                         ShipPoint.Z > 300))
+                        continue;
+                    auto Probe = MakeShared<FJsonObject>();
+                    Probe->SetStringField(TEXT("bone_local"), Point.ToString());
+                    Probe->SetStringField(TEXT("landed_ship"), ShipPoint.ToString());
+                    Probes.Add(MakeShared<FJsonValueObject>(Probe));
+                }
+                Record->SetArrayField(TEXT("boarding_surface_vertices"), Probes);
+            }
         }
     FString Json;
     FJsonSerializer::Serialize(Receipt, TJsonWriterFactory<>::Create(&Json));
@@ -646,6 +670,15 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
                             Physics->SkeletalBodySetups.Num()));
     Fixture.Rig->SetStationCollision(true);
     Fixture.Seconds(.05f);
+    int32 DisabledShapes = 0;
+    const FBodyInstance *ParkedBody = Hull->GetBodyInstance(TEXT("Body_Bone"));
+    if (!TestNotNull(TEXT("Parked hull keeps the supplied body instance"), ParkedBody))
+        return false;
+    TestEqual(TEXT("Private parked asset retains ten authored box shapes"),
+              Physics->SkeletalBodySetups[0]->AggGeom.BoxElems.Num(), 10);
+    for (int32 Index = 0; Index < Physics->SkeletalBodySetups[0]->AggGeom.GetElementCount(); ++Index)
+        DisabledShapes += ParkedBody->GetShapeCollisionEnabled(Index) == ECollisionEnabled::NoCollision ? 1 : 0;
+    TestEqual(TEXT("Only the obsolete ramp box is disabled on this parked instance"), DisabledShapes, 1);
     TestTrue(TEXT("Parked hull queries block walkers without another simulated body"),
              Hull->GetCollisionEnabled() == ECollisionEnabled::QueryOnly && !Hull->IsSimulatingPhysics() &&
                  Hull->GetCollisionResponseToChannel(ECC_Pawn) == ECR_Block);
@@ -719,10 +752,10 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
         TEXT("Parked nose remains solid above the actual gear"),
         Fixture.World->LineTraceSingleByChannel(BodyHit, FVector(700, 0, 800), FVector(700, 0, 300), ECC_Pawn, Query) &&
             BodyHit.GetComponent() == Hull);
-    TestTrue(TEXT("Supplied deployed cargo ramp remains solid"),
+    TestTrue(TEXT("Bone-attached walking face replaces the coarse cargo ramp envelope"),
              Fixture.World->LineTraceSingleByChannel(RampHit, FVector(-1150, 0, 400), FVector(-1150, 0, 100), ECC_Pawn,
                                                      Query) &&
-                 RampHit.GetComponent() == Hull);
+                 RampHit.GetComponent() && RampHit.GetComponent()->GetName().StartsWith(TEXT("BoardingRamp")));
     // The real fuselage has less than standing headroom along parts of its centreline. Only the new
     // gear proxies promise an open gap; the actual low hull must retain its own blocking collision.
     FCollisionQueryParams GearOnly = Query;

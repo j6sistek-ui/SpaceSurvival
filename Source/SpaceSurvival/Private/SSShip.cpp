@@ -131,6 +131,24 @@ FVector ASSShip::GyroInputFor(FVector2D Steer, float Turn)
     const float Lean = -FMath::Clamp(Steer.X, -1.f, 1.f) * .35f * Turn;
     return FVector(Lean, Pitch, Yaw);
 }
+FVector ASSShip::FlightVelocityTarget(float Speed, float Maneuver, const FVector &CurrentVelocity) const
+{
+    if (DrivePresentationBraking)
+        return FVector::ZeroVector;
+    if (ThrottleInput > .01f || DrivePresentationBoosting)
+        return GetActorForwardVector() * Speed +
+               (GetActorRightVector() * StrafeInput.X + GetActorUpVector() * StrafeInput.Y) * Maneuver;
+    // Engine off preserves world-space momentum even while the pilot turns the ship.
+    // A deliberately commanded maneuvering axis still has its own small thrusters.
+    FVector Desired = CurrentVelocity;
+    if (FMath::Abs(StrafeInput.X) > .01f)
+        Desired += GetActorRightVector() *
+                   (StrafeInput.X * Maneuver - FVector::DotProduct(CurrentVelocity, GetActorRightVector()));
+    if (FMath::Abs(StrafeInput.Y) > .01f)
+        Desired +=
+            GetActorUpVector() * (StrafeInput.Y * Maneuver - FVector::DotProduct(CurrentVelocity, GetActorUpVector()));
+    return Desired;
+}
 void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed,
                             float Authority, float Interference)
 {
@@ -147,7 +165,7 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     // Top speed. The limiter defaults OFF, so without this the Engine upgrade's speed half would do
     // nothing at all while still costing credits, and the ship would accelerate without limit.
     Thrusters->SetSpeedLimiterActive(true);
-    const float Limit = FMath::Max(Speed, float(Maneuver));
+    const float Limit = FMath::Max3(Speed, float(Maneuver), float(GetVelocity().Size()));
     Thrusters->SetMaxSpeedLimit(Limit, FMath::Max(100.f, Limit * .12f));
 
     // Response controls both angular damping here and linear velocity recovery below, so the
@@ -156,16 +174,14 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     const float TurnRate = FMath::DegreesToRadians(Tuning->SteeringDegrees * Authority * Interference);
     Gyros->MaxTotalTorque = FMath::Max(1.f, TurnRate * float(Gyros->ProportionalGain) * 2.f);
 
-    // The vendor dampener targets zero velocity. Feeding it a cruise-speed trim
-    // makes exactly-zero trim brake at full force, then positive trim release
-    // that brake on the next frame. The resulting limit cycle depends on FPS.
-    // Own the velocity target here and let ShipCore apply its bounded forces.
-    // Released strafe still damps to zero; forward flight settles at the trimmed
-    // cruise speed (or zero while stopped in the station zone).
+    // Own the velocity target and let ShipCore apply its bounded forces. The vendor's
+    // zero-velocity dampener would brake when the owner releases the throttle; engine-off
+    // instead preserves world momentum, while powered flight tracks the commanded speed.
     Thrusters->SetInertialDampeners(false);
     const FVector LocalVelocity =
         GetActorTransform().InverseTransformVectorNoScale(Collision->GetPhysicsLinearVelocity());
-    const FVector DesiredVelocity(Speed, StrafeInput.X * Maneuver, StrafeInput.Y * Maneuver);
+    const FVector DesiredVelocity =
+        GetActorTransform().InverseTransformVectorNoScale(FlightVelocityTarget(Speed, float(Maneuver), GetVelocity()));
     const float Step = FMath::Max(Dt, UE_SMALL_NUMBER);
     const double Gain = (1.0 - FMath::Exp(-FMath::Max(.5, Response) * Step)) / Step;
     const FVector Thrust = (DesiredVelocity - LocalVelocity) * (Gain / FMath::Max(1.0, Acceleration));
@@ -299,7 +315,7 @@ const TCHAR *ASSShip::HullAssetPath(SS::Ship Kind)
 void ASSShip::UpdateEngineMix()
 {
     const auto *GI = GetGameInstance<USSGameInstance>();
-    EngineAudio->SetVolumeMultiplier(SSAudio::EffectsGain(this, .35f));
+    EngineAudio->SetVolumeMultiplier(SSAudio::EffectsGain(this, .35f * DrivePresentationPower));
     EngineAudio->SetPitchMultiplier(GI && GI->Session.run.boosting ? 1.3f : .9f + .15f * ThrottleInput);
 }
 void ASSShip::RefreshPaint()
@@ -527,7 +543,7 @@ void ASSShip::SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttl
 {
     Steer = Steering.GetClampedToMaxSize(1.f);
     StrafeInput = Strafe.GetClampedToMaxSize(1.f);
-    ThrottleInput = FMath::Clamp(Throttle, -1.f, 1.f);
+    ThrottleInput = FMath::Clamp(Throttle, 0.f, 1.f);
     BoostInput = Boost;
     BrakeInput = Brake;
 }
@@ -634,10 +650,7 @@ void ASSShip::EndMooring()
     // A depot holds the ship in its existing flight configuration. Only a pad departure begins
     // the landing-gear and battle-mode animation sequence, through BeginTakeoff.
     Moored = false;
-    Forces = FVector::ZeroVector;
-    const auto *GI = GetGameInstance<USSGameInstance>();
-    if (GI && GI->Session.IsFlying())
-        Velocity = GetActorForwardVector() * float(GI->Session.Stats().speed);
+    Velocity = Forces = FVector::ZeroVector;
     HoldBody(false);
 }
 float ASSShip::SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength)
@@ -731,8 +744,7 @@ void ASSShip::Tick(float Dt)
         if (TakingOff && T >= 1.f)
         {
             TakingOff = false;
-            WasInStationZone = false;
-            StationThrottle = 0.f;
+            ThrottleInput = 0.f;
             Collision->SetCollisionEnabled(ShipCoreDriven ? ECollisionEnabled::QueryAndPhysics
                                                           : ECollisionEnabled::QueryOnly);
             HoldBody(false);
@@ -758,20 +770,9 @@ void ASSShip::Tick(float Dt)
     }
     const auto Stats = S.Stats();
     const float BoostFactor = S.run.boosting ? Tuning->BoostMultiplier : 1.f;
-    const float BrakeFactor = S.run.braking ? .47f : 1.f;
-    float Speed =
-        FMath::Max(Tuning->MinimumSpeed, float(Stats.speed) * (1.f + .3f * ThrottleInput) * BoostFactor * BrakeFactor);
-    if (InStationZone)
-    {
-        if (!WasInStationZone)
-            StationThrottle = FMath::Clamp(GetVelocity().Size() / FMath::Max(1.f, float(Stats.speed)), 0.f, 1.f);
-        StationThrottle = FMath::Clamp(StationThrottle + ThrottleInput * Dt * .5f - (BrakeInput ? Dt : 0.f), 0.f, 1.f);
-        Speed = float(Stats.speed) * StationThrottle * BoostFactor;
-    }
-    WasInStationZone = InStationZone;
-    DrivePresentationPower = FMath::Clamp(.42f + .28f * FMath::Max(0.f, ThrottleInput) +
-                                              .3f * float(GetVelocity().Size() / FMath::Max(1.f, Tuning->CruiseSpeed)),
-                                          .25f, 1.35f);
+    const float EnginePower = S.run.boosting ? 1.f : ThrottleInput;
+    const float Speed = float(Stats.speed) * EnginePower * BoostFactor;
+    DrivePresentationPower = S.run.braking ? 0.f : EnginePower;
     DrivePresentationBoosting = S.run.boosting;
     DrivePresentationBraking = S.run.braking;
     DrivePresentationDamage = FMath::Clamp(float(S.run.damageFeedback), 0.f, 1.f);
@@ -804,9 +805,7 @@ void ASSShip::Tick(float Dt)
                 Rotation.Pitch + Steer.Y * Tuning->SteeringDegrees * Authority * Interference * Step, -85.f, 85.f);
             Rotation.Roll = 0;
             SetActorRotation(Rotation);
-            const FVector Desired =
-                GetActorForwardVector() * Speed +
-                (GetActorRightVector() * StrafeInput.X + GetActorUpVector() * StrafeInput.Y) * float(Stats.maneuver);
+            const FVector Desired = FlightVelocityTarget(Speed, float(Stats.maneuver), Velocity);
             const FVector ResponseDelta = (Desired - Velocity) * (1.f - FMath::Exp(-float(Stats.response) * Step));
             Velocity += ResponseDelta.GetClampedToMaxSize(float(Stats.acceleration) * Step);
             Velocity += Forces.GetClampedToMaxSize(4500.f) * Step;
@@ -882,7 +881,10 @@ void ASSShip::Tick(float Dt)
     const float PlumeDrive = FMath::Clamp(.55f + .9f * DrivePresentationPower, .4f, 1.8f);
     for (UNiagaraComponent *Plume : HullExhausts)
         if (IsValid(Plume))
+        {
+            Plume->SetVisibility(DrivePresentationPower > .01f);
             Plume->SetRelativeScale3D(FVector(PlumeDrive));
+        }
     SoftTarget = nullptr;
     float Best = FMath::Cos(FMath::DegreesToRadians(Tuning->SoftAimDegrees));
     const FVector Aim =
@@ -936,7 +938,7 @@ void ASSShip::RequestDodge()
 void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)
 {
     auto *GI = GetGameInstance<USSGameInstance>();
-    if (!GI)
+    if (!GI || GI->IsFreeFlight())
         return;
     // Phase the shake from this impact instead of from world time, and scale it by severity.
     // Severity belongs here, in the single damage funnel, because Session::ApplyDamage re-arms

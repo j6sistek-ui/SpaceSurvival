@@ -188,8 +188,13 @@ bool RecordFlight(FAutomationTestBase &Test, int32 Hertz, TArray<FSSFlightSample
         else if (Second < 3)
             Fixture.Ship->SetFlightInput(FVector2D(.65, .3), FVector2D(.25, .2), 1.f, false, false);
         else
-            Fixture.Ship->SetFlightInput(FVector2D(-.3, -.15), FVector2D(-.2, .1), -.5f, false, false);
+            // Throttle is absolute power: half power remains driven; zero coasts.
+            Fixture.Ship->SetFlightInput(FVector2D(-.3, -.15), FVector2D(-.2, .1), .5f, false, false);
         Fixture.Frames(Hertz, 1.f / Hertz);
+        if (Second == 0)
+            Test.TestTrue(FString::Printf(TEXT("%d Hz full normal power holds configured cruise without boost"), Hertz),
+                          FMath::Abs(Fixture.Ship->GetVelocity().X - Fixture.Instance->Session.Stats().speed) < 5. &&
+                              !Fixture.Instance->Session.run.boosting);
         Samples.Add(
             {Fixture.Ship->GetActorLocation() - Origin, Fixture.Ship->GetVelocity(), Fixture.Ship->GetActorRotation()});
     }
@@ -398,7 +403,6 @@ bool FSSFlightFrameRates::RunTest(const FString &)
     AddInfo(FString::Printf(TEXT("Hull under test: %s (position %.0f cm, velocity %.0f cm/s, heading %.2f deg)"),
                             *Tolerances.Id.ToString(), Tolerances.FrameRatePositionCm, Tolerances.FrameRateVelocityCmS,
                             Tolerances.FrameRateHeadingDeg));
-    TestTrue(TEXT("Throttle accelerates the real pawn above cruise"), Reference[0].Velocity.X > 2800.f);
     TestTrue(TEXT("Steer and strafe produce substantial lateral and vertical travel"),
              Reference[2].Position.Y > 1000.f && Reference[2].Position.Z > 500.f);
     for (int32 I = 1; I < Reference.Num(); ++I)
@@ -481,47 +485,23 @@ bool FSSFlightBoostBrake::RunTest(const FString &)
              Fixture.Ship->GetActorLocation().X - Origin.X > Cruise * 1.2);
     Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
     Fixture.Frames(60);
-    TestTrue(TEXT("Release recharges boost while the pawn returns toward cruise"),
-             !Run.boosting && Run.boost > DrainedBoost && Fixture.Ship->GetVelocity().Size() < BoostSpeed * .8);
-
-    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, -1.f, false, true);
-    const double Minimum = Fixture.Ship->Tuning->MinimumSpeed;
-    double LowestForwardSpeed = Fixture.Ship->GetVelocity().X;
-    for (int32 Index = 0; Index < 150; ++Index)
-    {
-        Fixture.Step();
-        LowestForwardSpeed = FMath::Min(LowestForwardSpeed, Fixture.Ship->GetVelocity().X);
-    }
-    TestTrue(TEXT("Held brake builds heat and physically slows to the nonzero minimum"),
-             Run.braking && Run.brakeHeat > 60.0 && Fixture.Ship->GetVelocity().X <= Minimum + 5.f);
+    TestTrue(TEXT("Release recharges boost while an engine-off ship coasts"),
+             !Run.boosting && Run.boost > DrainedBoost &&
+                 FMath::Abs(Fixture.Ship->GetVelocity().Size() - BoostSpeed) < 5.f);
+    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, true);
+    Fixture.Frames(150);
+    TestTrue(TEXT("Held brake builds heat and slows the ship"),
+             Run.braking && Run.brakeHeat > 60.0 && Fixture.Ship->GetVelocity().Size() < BoostSpeed * .5);
     for (int32 Index = 0; Index < 120 && !Run.brakeOverheated; ++Index)
-    {
         Fixture.Step();
-        LowestForwardSpeed = FMath::Min(LowestForwardSpeed, Fixture.Ship->GetVelocity().X);
-    }
-    AddInfo(FString::Printf(TEXT("Brake floor %.1f cm/s; lowest forward speed reached %.1f (undershoot %.1f)"), Minimum,
-                            LowestForwardSpeed, Minimum - LowestForwardSpeed));
-    // The claim in the name, asserted as the name states it, with no slack for any hull: a held brake slows
-    // the ship and never brings it to a stop or pushes it backwards. This is the WAVE-zone rule - per
-    // GAME_SCOPE section 6b the station zone deliberately lifts it, where stopping and a slow reverse on a
-    // held brake are the specification - so when zones exist this assertion belongs to the wave and its
-    // opposite belongs to the station.
-    TestTrue(TEXT("Braking never stops or reverses forward travel"), LowestForwardSpeed > 0.);
-    // And separately, how closely this hull settles onto the floor it was told to hold. A kinematic hull
-    // resolves speed by assignment and lands on 1000 exactly; a force drive decelerates onto it and dips
-    // under before settling - 924.1 measured on the Phoenix, 7.6 percent low, nowhere near stopping. That
-    // is what deceleration does, not a ship disobeying, so it is the hull's own figure.
-    const FSSHullDefinition BrakeHull(ASSShip::SelectedHullIdentity());
-    TestTrue(FString::Printf(TEXT("A held brake settles onto the floor within %.0f cm/s"),
-                             BrakeHull.BrakeFloorUndershootCmS),
-             LowestForwardSpeed >= Minimum - BrakeHull.BrakeFloorUndershootCmS);
     TestTrue(TEXT("Continued braking overheats and releases the brake"), Run.brakeOverheated && !Run.braking);
+    const FVector CoastingVelocity = Fixture.Ship->GetVelocity();
     Fixture.Frames(30);
-    TestTrue(TEXT("Overheat physically restores speed despite the held brake"),
-             !Run.braking && Fixture.Ship->GetVelocity().X > Minimum * 1.25);
-    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, -1.f, false, false);
+    TestTrue(TEXT("Brake overheat does not turn the released engine back on"),
+             !Run.braking && FVector::Distance(Fixture.Ship->GetVelocity(), CoastingVelocity) < 5.f);
+    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
     Fixture.Frames(240);
-    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, -1.f, false, true);
+    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, true);
     Fixture.Step();
     TestTrue(TEXT("Cooling permits braking again"), !Run.brakeOverheated && Run.braking);
     return true;
@@ -651,6 +631,8 @@ bool FSSImpactFrameRates::RunTest(const FString &)
         FSSFlightWorld Fixture;
         if (!Fixture.Initialize(*this))
             return false;
+        // Recovery means powered flight. Engine-off coasting deliberately retains an impact's momentum.
+        Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, false, false);
         auto *Body = Fixture.Target(FVector(0, 180, 0));
         if (!TestNotNull(TEXT("Create a real grazing asteroid contact"), Body))
             return false;

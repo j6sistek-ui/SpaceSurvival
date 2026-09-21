@@ -53,6 +53,8 @@ bool USSGameInstance::ReadDomain(const FString &Slot, std::string &Payload) cons
 }
 bool USSGameInstance::WriteDomain(const FString &Slot, const std::string &Payload, bool Valid)
 {
+    if (Slot != SettingsSlot && RejectFreeFlightSave())
+        return false;
     auto *Record = Cast<USSStoredData>(UGameplayStatics::CreateSaveGameObject(USSStoredData::StaticClass()));
     Record->Valid = Valid;
     Record->Payload = UTF8_TO_TCHAR(Payload.c_str());
@@ -72,6 +74,8 @@ bool USSGameInstance::WriteDomain(const FString &Slot, const std::string &Payloa
 }
 bool USSGameInstance::PersistAccount()
 {
+    if (RejectFreeFlightSave())
+        return false;
     if (AccountStorageBlocked)
     {
         LastSaveError = TEXT("Unreadable account save is protected from overwrite. Restore a backup to continue.");
@@ -91,20 +95,27 @@ bool USSGameInstance::HasSuspendedRun() const
     std::string Payload, Error;
     SS::Run Candidate;
     return ReadDomain(RunSlot, Payload) && SS::DecodeRun(Payload, Candidate, Error) && Candidate.active &&
-           Candidate.phase == SS::Phase::Station && !WasAwarded(Session.account, Candidate.id);
+           Candidate.phase == SS::Phase::Station &&
+           !WasAwarded(IsFreeFlight() ? SurvivalBeforeFreeFlight->account : Session.account, Candidate.id);
 }
 bool USSGameInstance::SuspendRun()
 {
+    if (RejectFreeFlightSave())
+        return false;
     if (!Session.run.active || Session.run.phase != SS::Phase::Station)
         return false;
     return PersistAccount() && PersistSettings() && WriteDomain(RunSlot, SS::EncodeRun(Session.run));
 }
 bool USSGameInstance::InvalidateSuspend()
 {
+    if (RejectFreeFlightSave())
+        return false;
     return WriteDomain(RunSlot, "", false);
 }
 bool USSGameInstance::ResumeRun()
 {
+    if (RejectFreeFlightSave())
+        return false;
     if (AccountStorageBlocked)
         return false;
     std::string Payload, Error;
@@ -123,12 +134,16 @@ bool USSGameInstance::ResumeRun()
 }
 bool USSGameInstance::PersistDeath()
 {
+    if (RejectFreeFlightSave())
+        return false;
     // Account's lastAwardedRunId also excludes a stale suspended record if a crash
     // occurs between these two writes. Retrying writes cannot award XP twice.
     return PersistAccount() && InvalidateSuspend();
 }
 bool USSGameInstance::DiscardSliceRun()
 {
+    if (RejectFreeFlightSave())
+        return false;
     if (!Session.AtSliceBoundary())
     {
         LastSaveError = TEXT("Only a live run at Station 2 can be discarded here.");
@@ -141,6 +156,61 @@ bool USSGameInstance::DiscardSliceRun()
     Session.run = SS::Run{};
     return true;
 }
+bool USSGameInstance::RejectFreeFlightSave()
+{
+    if (!IsFreeFlight())
+        return false;
+    LastSaveError = TEXT("Free Flight is practice only. Survival progress, XP and checkpoints are protected. "
+                         "Return home before loading or saving a survival run.");
+    return true;
+}
+
+bool USSGameInstance::BeginFreeFlight(SS::Ship Ship, SS::Weapon Weapon)
+{
+    if (IsFreeFlight())
+    {
+        LastSaveError = TEXT("Free Flight is already active.");
+        return false;
+    }
+    if (Session.run.active)
+    {
+        LastSaveError = TEXT("Free Flight is available from home. Continue or safely finish the current survival "
+                             "run first; its progress has not been changed.");
+        return false;
+    }
+    if (AccountStorageBlocked)
+    {
+        LastSaveError = TEXT("Unreadable account save is protected. Restore a backup before selecting a ship.");
+        return false;
+    }
+    SS::Session Practice = Session;
+    const FString Id = TEXT("practice-") + FGuid::NewGuid().ToString(EGuidFormats::Digits);
+    if (!Practice.StartRun(TCHAR_TO_UTF8(*Id), Ship, Weapon))
+    {
+        LastSaveError = TEXT("This ship or weapon is not available for Free Flight.");
+        return false;
+    }
+    SurvivalBeforeFreeFlight = Session;
+    Session = MoveTemp(Practice);
+    LastSaveError.Empty();
+    return true;
+}
+
+bool USSGameInstance::EndFreeFlight()
+{
+    if (!IsFreeFlight())
+    {
+        LastSaveError = TEXT("Free Flight is not active.");
+        return false;
+    }
+    const SS::Settings Settings = Session.settings;
+    Session = MoveTemp(SurvivalBeforeFreeFlight.GetValue());
+    SurvivalBeforeFreeFlight.Reset();
+    Session.settings = Settings;
+    LastSaveError.Empty();
+    return true;
+}
+
 void USSGameInstance::ApplySettings()
 {
     if (auto *Settings = UGameUserSettings::GetGameUserSettings())

@@ -53,6 +53,11 @@ public:
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     virtual FVector GetVelocity() const override;
     void SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake);
+    /** Ordinary engine command, 0 = coast and 1 = full normal power; boost remains separate. */
+    float GetThrottle() const
+    {
+        return ThrottleInput;
+    }
     void RequestDodge();
     void Fire();
     void ReceiveDamage(float Amount, SS::DamageType Type = SS::DamageType::Kinetic);
@@ -159,6 +164,7 @@ private:
      *  Replaces the substepped integrator entirely while it is driving; the two never both run. */
     void DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed, float Authority,
                        float Interference);
+    FVector FlightVelocityTarget(float Speed, float Maneuver, const FVector &CurrentVelocity) const;
     /** Stop or restart the physics body around a scripted move. Only does anything while ShipCore drives. */
     void HoldBody(bool Hold);
 
@@ -183,11 +189,9 @@ private:
     /** Decays from one when boost engages, so acceleration has a transient the sustained levels do not give it. */
     float BoostPunch = 0.f;
     bool WasBoosting = false;
-    float DrivePresentationPower = .45f, DrivePresentationDamage = 0.f;
+    float DrivePresentationPower = 0.f, DrivePresentationDamage = 0.f;
     bool DrivePresentationBoosting = false, DrivePresentationBraking = false;
     bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false, TakingOff = false;
-    bool WasInStationZone = false;
-    float StationThrottle = 0.f;
     float TransitionElapsed = 0.f, TransitionDuration = 3.f;
     FVector TransitionStart = FVector::ZeroVector;
     FRotator TransitionRotation = FRotator::ZeroRotator;

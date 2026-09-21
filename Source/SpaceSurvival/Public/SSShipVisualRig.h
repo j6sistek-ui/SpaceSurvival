@@ -28,6 +28,8 @@ public:
     FBox GetHullBoundsInSpace(const FTransform &Space) const;
     /** Parked hull and measured bone-attached gear shapes query only; never another simulated body. */
     void SetStationCollision(bool Enabled);
+    /** A standing capsule inside the rear cabin, supported by this parked ship's floor. */
+    bool CanBoardAt(FVector WorldCapsuleLocation, float Radius, float HalfHeight) const;
     void UpdateFlight(FVector2D Steering, FVector2D Strafe, float Power, bool Boost, bool Brake);
     void PlayLanding(float Duration = 3.f);
     void PlayTakeoff(float Duration = 3.f);
@@ -48,6 +50,8 @@ private:
     TObjectPtr<USkeletalMeshComponent> Hull;
     UPROPERTY(Transient)
     TArray<TObjectPtr<UBoxComponent>> GearColliders;
+    UPROPERTY(Transient)
+    TArray<TObjectPtr<UBoxComponent>> RampColliders;
     UPROPERTY(Transient)
     TArray<TObjectPtr<USkeletalMeshComponent>> AirBrakes;
     UPROPERTY(Transient)

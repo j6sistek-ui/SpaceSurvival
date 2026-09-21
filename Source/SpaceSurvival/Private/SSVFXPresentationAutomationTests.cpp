@@ -6,6 +6,9 @@
 #include "Components/PointLightComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "Engine/StaticMesh.h"
+#include "EngineUtils.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
@@ -111,6 +114,29 @@ bool FSSCombatVFXFallback::RunTest(const FString &)
         Projectile->Launch(FVector::ForwardVector, 55000.f, 0.f, true, Owner, 1000.f);
         TestTrue(TEXT("Native projectile core remains visible without Niagara"), Projectile->Visual->IsVisible());
         TestNotNull(TEXT("Native projectile core keeps a mesh"), Projectile->Visual->GetStaticMesh().Get());
+        const FBoxSphereBounds MeshBounds = Projectile->Visual->GetStaticMesh()->GetBounds();
+        const FVector CoreSize = MeshBounds.BoxExtent * 2. * Projectile->Visual->GetComponentScale();
+        TestTrue(TEXT("Thin source mesh retains at least a 16 cm readable transverse core"),
+                 CoreSize.Y >= 16. && CoreSize.Z >= 16.);
+        auto *CoreMaterial = Cast<UMaterialInstanceDynamic>(Projectile->Visual->GetMaterial(0));
+        if (TestNotNull(TEXT("Projectile owns a transient emissive material"), CoreMaterial))
+            TestTrue(TEXT("Projectile core is emissive above surface brightness"),
+                     CoreMaterial->K2_GetScalarParameterValue(TEXT("Emission")) > 4.f);
+        ASSWeaponTracePulse *Pulse = nullptr;
+        for (TActorIterator<ASSWeaponTracePulse> It(Fixture.World); It; ++It)
+            if (!It->IsActorBeingDestroyed())
+                Pulse = *It;
+        if (!TestNotNull(TEXT("Close laser shot creates an independent visible pulse"), Pulse))
+            return false;
+        const FBoxSphereBounds PulseMeshBounds = Pulse->Core->GetStaticMesh()->GetBounds();
+        const FTransform PulseTransform = Pulse->Core->GetComponentTransform();
+        const FVector HalfLength(PulseMeshBounds.BoxExtent.X, 0., 0.);
+        TestTrue(
+            TEXT("Pulse starts at the actual muzzle and stops at the hitscan endpoint"),
+            PulseTransform.TransformPosition(PulseMeshBounds.Origin - HalfLength).Equals(FVector(3000, 0, 0), .01) &&
+                PulseTransform.TransformPosition(PulseMeshBounds.Origin + HalfLength).Equals(FVector(4000, 0, 0), .01));
+        TestFalse(TEXT("Laser readability pulse cannot collide or apply another hit"),
+                  Pulse->GetActorEnableCollision());
         auto *ShotLight = Projectile->FindComponentByClass<UPointLightComponent>();
         TestNotNull(TEXT("Native projectile keeps a compact readable light when Niagara is absent"), ShotLight);
         if (ShotLight)
@@ -127,6 +153,34 @@ bool FSSCombatVFXFallback::RunTest(const FString &)
         // minimum vector-clamp distance. It must retire on this same tick.
         TestTrue(TEXT("Actual tracer retires immediately at the engine-precision travel limit"),
                  Projectile->IsActorBeingDestroyed());
+        Pulse->Tick(.03f);
+        Pulse->Tick(.03f);
+        TestFalse(TEXT("Close laser remains visible through multiple frames after its projectile retires"),
+                  Pulse->IsActorBeingDestroyed());
+        Pulse->Tick(.03f);
+        TestTrue(TEXT("Laser pulse retires before the next normal rapid shot"), Pulse->IsActorBeingDestroyed());
+
+        auto *Cannon = Fixture.World->SpawnActor<ASSProjectile>(FVector(6000, 0, 0), FRotator::ZeroRotator);
+        if (!TestNotNull(TEXT("Actual cannon projectile exists"), Cannon))
+            return false;
+        Cannon->Launch(FVector::ForwardVector, 19000.f, 40.f, true, Owner, 4000.f);
+        const FVector CannonSize =
+            Cannon->Visual->GetStaticMesh()->GetBounds().BoxExtent * 2. * Cannon->Visual->GetComponentScale();
+        TestTrue(TEXT("Cannon has a visibly broader core than the rapid laser"),
+                 CannonSize.Y >= CoreSize.Y * 1.5 && CannonSize.Z >= CoreSize.Z * 1.5);
+        auto *CannonMaterial = Cast<UMaterialInstanceDynamic>(Cannon->Visual->GetMaterial(0));
+        if (TestNotNull(TEXT("Cannon material exists"), CannonMaterial))
+        {
+            const FLinearColor Tint = CannonMaterial->K2_GetVectorParameterValue(TEXT("Tint"));
+            TestTrue(TEXT("Cannon keeps its distinct amber shot colour"), Tint.R > Tint.G && Tint.G > Tint.B);
+        }
+        int32 LivePulses = 0;
+        for (TActorIterator<ASSWeaponTracePulse> It(Fixture.World); It; ++It)
+            LivePulses += !It->IsActorBeingDestroyed() ? 1 : 0;
+        TestEqual(TEXT("Cannon remains a travelling round, without an instantaneous laser trace"), LivePulses, 0);
+        Cannon->Tick(.03f);
+        TestTrue(TEXT("Readable cannon retains its original travel speed"),
+                 Cannon->GetActorLocation().Equals(FVector(6570, 0, 0), .01));
     }
     TestFalse(TEXT("Private preparation rejects null systems"),
               USSVFXPresentationLibrary::PreparePrivateSystem(nullptr, true));

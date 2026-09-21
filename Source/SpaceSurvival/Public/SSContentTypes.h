@@ -1166,6 +1166,9 @@ struct FSSHeroDefinition
     static bool AssetInstalled(const FString &ObjectPath);
     /** True when this build actually contains the mesh and the clip this slot plays. */
     bool Installed(ESSHeroSlot Slot) const;
+    /** Resolve only the known broken female import when its complete private replacement is installed.
+     *  Does not change serialized assets, custom mesh/clip choices, fit or other authored tuning. */
+    FSSHeroDefinition ResolvedPresentation() const;
     /** The scale this hero renders at once its mesh is loaded; FitHeight needs the imported bounds. */
     float RenderedScale(const USkeletalMesh *Mesh) const;
     /** Centimetres from the mesh origin down to the sole, already scaled. Double, because a fitted
@@ -1409,14 +1412,10 @@ struct FSSHeroDefinition
         }
         else if (Identity == ESSHeroIdentity::AlienFemale)
         {
-            // Tripo-generated, and rigged by Tripo to the UE4 mannequin: three spine bones, one neck
-            // bone, fingers straight onto the hand. That is why it could never join SKEL_Nyxar, whose
-            // UE5 rig has five spine bones, two neck bones and metacarpals - all 61 bone NAMES matched
-            // and twelve of their PARENTS did not, which is what Assign Skeleton actually compares.
-            // It is bound by hand to Robot_scout's UE4_Mannequin_Skeleton, the same copy its clips are
-            // authored against, so it borrows that pack's locomotion exactly as the robot does. There
-            // are six UE4_Mannequin_Skeleton assets in this project and only that one carries the
-            // clips; binding to any other copy puts the body back to silently falling through.
+            // Preserve the original import identity. Its matching UE4 bone names masked a 100x bind
+            // scale mismatch: direct mannequin playback collapses the body below two centimetres.
+            // ResolvedPresentation selects the normalized private rig and baked clips as one set;
+            // old DA_Phase1 arrays use that same lookup without rewriting the owner's data asset.
             Id = TEXT("AlienFemale");
             MeshPath = TEXT("/Game/TripoModels/AlienFemale/SK_AlienFemale.SK_AlienFemale");
             WalkClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonWalk.ThirdPersonWalk");

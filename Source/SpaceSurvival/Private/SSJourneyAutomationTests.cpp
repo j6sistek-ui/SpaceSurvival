@@ -113,7 +113,7 @@ struct FSSJourneyWorld
     void Step(float Seconds = .05f)
     {
         if (auto *Ship = Cast<ASSShip>(Controller->GetPawn()))
-            Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+            Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, false, false);
         // TickTaskManager deduplicates by the engine frame counter. Each manually
         // driven step is a new synthetic frame; keep the global counter monotonic.
         ++GFrameCounter;

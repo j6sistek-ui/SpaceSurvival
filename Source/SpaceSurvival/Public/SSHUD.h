@@ -11,6 +11,18 @@ class SPACESURVIVAL_API ASSHUD : public AHUD
 public:
     virtual void DrawHUD() override;
     int32 MenuIndexAt(FVector2D Point) const;
+    const TArray<FBox2D> &GetMenuBounds() const
+    {
+        return MenuBounds;
+    }
+    bool IsDrawingFigmaMainMenu() const
+    {
+        return bTitleWasOpen;
+    }
+    int32 GetFigmaMainMenuFocus() const
+    {
+        return bTitleWasOpen ? RenderedTitleFocus : INDEX_NONE;
+    }
 
 private:
     TArray<FBox2D> MenuBounds;
@@ -24,6 +36,14 @@ private:
     TObjectPtr<UObject> GamepadIcons;
     UPROPERTY()
     TArray<TObjectPtr<UTexture2D>> CrosshairTextures;
+    UPROPERTY()
+    TArray<TObjectPtr<UTexture2D>> TitleTextures;
+    bool bTitleAssetsRequested = false, bTitleWasOpen = false, bTitleNavigationFocus = false;
+    int32 LastTitleSelection = INDEX_NONE;
+    int32 RenderedTitleFocus = INDEX_NONE;
+    FVector2D LastTitlePointer = FVector2D::ZeroVector;
+    /** Exact Figma artwork, with the same native entry indices used by pointer/controller input. */
+    bool DrawFigmaMainMenu(const class ASSGameMode &Mode);
     FSlateFontInfo HudFont(float Size) const;
     FVector2D MeasureText(const FString &Value, float Size) const;
     void Text(const FString &Value, float X, float Y, float Size = 1.f, FLinearColor Color = FLinearColor::White);

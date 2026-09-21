@@ -9,6 +9,7 @@
 #include "SSShip.h"
 #include "SSPhase1Data.h"
 #include "Components/SphereComponent.h"
+#include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Engine/StaticMesh.h"
@@ -53,6 +54,19 @@ UStaticMesh *Mesh(const TCHAR *Name, const TCHAR *Fallback = TEXT("/Engine/Basic
     if (UStaticMesh *Authored = LoadObject<UStaticMesh>(nullptr, *Path))
         return Authored;
     return LoadObject<UStaticMesh>(nullptr, Fallback);
+}
+
+void SizeShotCore(UStaticMeshComponent *Core, const FVector &Dimensions)
+{
+    if (!Core || !Core->GetStaticMesh())
+        return;
+    const FBoxSphereBounds Bounds = Core->GetStaticMesh()->GetBounds();
+    const FVector Size = Bounds.BoxExtent * 2.;
+    const FVector Scale(Dimensions.X / FMath::Max(1., Size.X), Dimensions.Y / FMath::Max(1., Size.Y),
+                        Dimensions.Z / FMath::Max(1., Size.Z));
+    Core->SetRelativeScale3D(Scale);
+    Core->SetRelativeLocation(-Bounds.Origin * Scale);
+    Core->SetCastShadow(false);
 }
 
 FLinearColor BodyColor(ESSWorldKind Kind)
@@ -854,6 +868,55 @@ void ASSEnemy::OnDefeated()
             Pickup->ConfigurePickup(0, Definition.CreditDropAmount);
 }
 
+ASSWeaponTracePulse::ASSWeaponTracePulse()
+{
+    PrimaryActorTick.bCanEverTick = true;
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("TraceOrigin"));
+    Core = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LaserTrace"));
+    Core->SetupAttachment(RootComponent);
+    Core->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Core->SetGenerateOverlapEvents(false);
+    Core->SetCastShadow(false);
+    SetActorEnableCollision(false);
+}
+
+void ASSWeaponTracePulse::Configure(FVector Start, FVector End)
+{
+    const FVector Segment = End - Start;
+    if (Start.ContainsNaN() || End.ContainsNaN() || Segment.SizeSquared() < 1.)
+    {
+        Destroy();
+        return;
+    }
+    SetActorLocationAndRotation((Start + End) * .5, Segment.Rotation());
+    Core->SetStaticMesh(Mesh(TEXT("SM_Projectile")));
+    // Fit each actual mesh axis. The source is 200 x 14 x 14 cm: scaling every axis
+    // by its longest extent had made the nominal 28 cm projectile only 1.5 cm wide.
+    SizeShotCore(Core, FVector(Segment.Size(), 20., 20.));
+    if (auto *Base =
+            LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive")))
+    {
+        Material = UMaterialInstanceDynamic::Create(Base, this);
+        Material->SetVectorParameterValue(TEXT("Tint"), FLinearColor(.15f, .8f, 1.f));
+        Material->SetVectorParameterValue(TEXT("Color"), FLinearColor::White);
+        Material->SetScalarParameterValue(TEXT("Emission"), 8.f);
+        Core->SetMaterial(0, Material);
+    }
+}
+
+void ASSWeaponTracePulse::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    Age += FMath::Max(0.f, DeltaSeconds);
+    // An actual close hitscan tracer can reach its endpoint before one rendered frame.
+    // Retain the already resolved segment for a few frames, without another collision query.
+    constexpr float Duration = .08f;
+    if (Age >= Duration)
+        Destroy();
+    else if (Material)
+        Material->SetScalarParameterValue(TEXT("Emission"), 8.f * (1.f - Age / Duration));
+}
+
 ASSProjectile::ASSProjectile()
 {
     Kind = ESSWorldKind::Projectile;
@@ -883,10 +946,10 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
         FX->PlayMuzzle(Source, GetActorLocation(), Direction, bFromPlayer, Heavy);
     }
     // A distinct native core and compact light remain readable if scalability culls Niagara.
-    const FVector CoreShape = !bFromPlayer ? FVector(2.8f, .46f, .46f)
-                              : Heavy      ? FVector(2.2f, .72f, .72f)
-                                           : FVector(5.4f, .38f, .38f);
-    Visual->SetRelativeScale3D(Visual->GetRelativeScale3D() * CoreShape);
+    const FVector CoreDimensions = !bFromPlayer ? FVector(160., 16., 16.)
+                                   : Heavy      ? FVector(220., 32., 32.)
+                                                : FVector(600., 20., 20.);
+    SizeShotCore(Visual, CoreDimensions);
     const FLinearColor LightColor = !bFromPlayer ? FLinearColor(1.f, .04f, .01f)
                                     : Heavy      ? FLinearColor(1.f, .34f, .025f)
                                                  : FLinearColor(.04f, .8f, 1.f);
@@ -904,8 +967,19 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
         AddTickPrerequisiteActor(TrackedShip.Get());
     }
     if (DynamicMaterial)
-        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), bPlayerShot ? FLinearColor(.3f, 1.f, 1.f)
-                                                                           : FLinearColor(1.f, .2f, .05f));
+    {
+        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), LightColor);
+        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), Heavy ? 12.f : 8.f);
+    }
+    if (bPlayerShot && !Heavy && TravelRemaining > 0.f)
+    {
+        int32 ActivePulses = 0;
+        for (TActorIterator<ASSWeaponTracePulse> It(GetWorld()); It; ++It)
+            ActivePulses += !It->IsActorBeingDestroyed() ? 1 : 0;
+        if (ActivePulses < 12)
+            if (auto *Pulse = GetWorld()->SpawnActor<ASSWeaponTracePulse>())
+                Pulse->Configure(GetActorLocation(), GetActorLocation() + Direction.GetSafeNormal() * TravelRemaining);
+    }
 }
 
 void ASSProjectile::Tick(float DeltaSeconds)

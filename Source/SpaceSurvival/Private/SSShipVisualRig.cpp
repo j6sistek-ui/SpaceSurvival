@@ -22,6 +22,8 @@
 #include "NiagaraSystem.h"
 #include "PhysicsEngine/PhysicsThrusterComponent.h"
 #include "PhysicsEngine/PhysicsAsset.h"
+#include "PhysicsEngine/BodyInstance.h"
+#include "PhysicsEngine/SkeletalBodySetup.h"
 
 namespace
 {
@@ -184,6 +186,37 @@ bool USSShipVisualRig::Initialize(ASSShip *Ship, const FSSHullDefinition &Defini
         GearColliders.Add(Box);
     }
 
+    // Rigid-vertex measurements in PhoenixGearGeometry identify the walking faces, not the raised
+    // edge trim. Bone-local units are metres at the supplied bone scale of 100. The toe's face runs
+    // Y=-.225..2.533, Z=-.022..-.010; the main central face runs (-2.371,.034)..(-.174,.266).
+    // Their overlapping upper faces make a continuous ~27-degree slope. Narrow supports stay within
+    // both rendered panels, extend to the visible toe, and follow their separate animated bones.
+    const auto AddRamp = [this](const TCHAR *Name, const TCHAR *Bone, FVector Start, FVector End, float HalfWidth)
+    {
+        if (Hull->GetBoneIndex(FName(Bone)) == INDEX_NONE)
+            return;
+        UBoxComponent *Box = NewObject<UBoxComponent>(RigPawn, FName(Name));
+        const FVector Along = (End - Start).GetSafeNormal();
+        const FQuat Rotation = FRotationMatrix::MakeFromYZ(Along, FVector::UpVector).ToQuat();
+        const FVector Normal = Rotation.GetAxisZ();
+        constexpr float HalfThickness = .025f;
+        Box->SetupAttachment(Hull, FName(Bone));
+        Box->SetRelativeRotation(Rotation);
+        Box->SetRelativeLocation((Start + End) * .5 - Normal * HalfThickness);
+        Box->SetBoxExtent(FVector(HalfWidth, FVector::Distance(Start, End) * .5, HalfThickness));
+        Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Box->SetGenerateOverlapEvents(false);
+        Box->SetCanEverAffectNavigation(false);
+        Box->CanCharacterStepUpOn = ECB_Yes;
+        RigPawn->AddInstanceComponent(Box);
+        Box->RegisterComponent();
+        RampColliders.Add(Box);
+    };
+    AddRamp(TEXT("BoardingRampToe"), TEXT("Cargo_Door_A_Mesh"), FVector(0, -.225, -.022), FVector(0, 2.533, -.010),
+            1.14f);
+    AddRamp(TEXT("BoardingRampMain"), TEXT("Cargo_Door_Mesh"), FVector(0, -2.884, -.020), FVector(0, .020, .2865),
+            1.14f);
+
     LandingOn = LoadClip(Definition.LandingDeployClipPath, Hull);
     LandingOff = LoadClip(Definition.LandingStowClipPath, Hull);
     BattleEnter = LoadClip(Definition.FlightPoseClipPath, Hull);
@@ -256,7 +289,7 @@ void USSShipVisualRig::SetStationCollision(bool Enabled)
     TInlineComponentArray<UPrimitiveComponent *> Components(RigPawn);
     for (UPrimitiveComponent *Component : Components)
         if (Cast<USkeletalMeshComponent>(Component) || Cast<UStaticMeshComponent>(Component) ||
-            GearColliders.Contains(Component))
+            GearColliders.Contains(Component) || RampColliders.Contains(Component))
         {
             Component->SetSimulatePhysics(false);
             Component->SetCollisionObjectType(ECC_WorldDynamic);
@@ -266,6 +299,63 @@ void USSShipVisualRig::SetStationCollision(bool Enabled)
             Component->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
             Component->SetCollisionEnabled(Enabled ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
         }
+    if (Enabled)
+    {
+        // Disable only the coarse ramp envelope on this body instance. The asset's box geometry
+        // remains untouched; UE intersects this per-shape filter with the component filter.
+        // Classify the measured shape in ship space rather than assuming an array index forever.
+        UPhysicsAsset *Physics = Hull->GetPhysicsAsset();
+        int32 Replaced = 0;
+        for (USkeletalBodySetup *Setup : Physics->SkeletalBodySetups)
+            if (FBodyInstance *Body = Hull->GetBodyInstance(Setup->BoneName))
+            {
+                const FTransform BoneToShip =
+                    Hull->GetSocketTransform(Setup->BoneName).GetRelativeTransform(GetOwner()->GetActorTransform());
+                for (int32 Index = 0; Index < Setup->AggGeom.GetElementCount(); ++Index)
+                    if (const FKShapeElem *Shape = Setup->AggGeom.GetElement(Index);
+                        Shape && Shape->GetShapeType() == EAggCollisionShape::Box)
+                    {
+                        // Match the parked-asset author's measurement, which preserves the original
+                        // boxes. The separate flight profile converts its shapes to convexes.
+                        FKConvexElem Measurement;
+                        Measurement.ConvexFromBoxElem(*static_cast<const FKBoxElem *>(Shape));
+                        Measurement.BakeTransformToVerts();
+                        FBox Bounds(ForceInit);
+                        for (const FVector &Vertex : Measurement.VertexData)
+                            Bounds += BoneToShip.TransformPosition(Vertex);
+                        if (Bounds.Min.X < -1250.f && Bounds.Max.X < -900.f && Bounds.Min.Z < 10.f &&
+                            Bounds.Max.Z < 250.f)
+                        {
+                            Body->SetShapeCollisionEnabled(Index, ECollisionEnabled::NoCollision);
+                            ++Replaced;
+                        }
+                    }
+            }
+        ensureMsgf(
+            Replaced == 1 && RampColliders.Num() == 2,
+            TEXT("Phoenix boarding expects one measured ramp envelope and two authored panels; replaced=%d panels=%d"),
+            Replaced, RampColliders.Num());
+    }
+}
+
+bool USSShipVisualRig::CanBoardAt(FVector Position, float Radius, float HalfHeight) const
+{
+    if (!Parked || !HasBlueprintRig() || Position.ContainsNaN() || !FMath::IsFinite(Radius) ||
+        !FMath::IsFinite(HalfHeight) || Radius <= 0.f || HalfHeight < Radius)
+        return false;
+    const FVector Local = GetOwner()->GetActorTransform().InverseTransformPosition(Position);
+    // The visible rear doorway is at X=-958. Require the whole capsule beyond it and inside the
+    // measured cabin walls (Y=-193..194), with feet at its ~230cm floor, not underneath the hull.
+    if (Local.X - Radius < -940.f || Local.X > -650.f || FMath::Abs(Local.Y) + Radius > 180.f ||
+        Local.Z - HalfHeight < 210.f || Local.Z - HalfHeight > 260.f)
+        return false;
+    FHitResult Floor;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(PhoenixCabinBoarding), false, GetOwner());
+    const FVector Feet = Position - FVector(0, 0, HalfHeight);
+    return GetWorld()->LineTraceSingleByChannel(Floor, Feet + FVector(0, 0, 5), Feet - FVector(0, 0, 12),
+                                                ECC_Visibility, Query) &&
+           Floor.GetComponent() == Hull && Floor.ImpactNormal.Z > .7f &&
+           FMath::Abs(Feet.Z - Floor.ImpactPoint.Z) <= 5.f;
 }
 
 void USSShipVisualRig::UpdateFlight(FVector2D Steering, FVector2D Strafe, float Power, bool Boost, bool Brake)
@@ -381,7 +471,7 @@ void USSShipVisualRig::TickComponent(float DeltaTime, ELevelTick TickType,
         const float Maneuver = FMath::Max(SteeringInput.Size(), StrafeInput.Size());
         const float Strength = Parked        ? 0.f
                                : ManeuverJet ? FMath::Max(Maneuver, Braking ? .7f : 0.f)
-                                             : FMath::Clamp(.35f + DrivePower + (Boosting ? .3f : 0.f), .35f, 1.7f);
+                                             : FMath::Clamp(DrivePower + (Boosting ? .3f : 0.f), 0.f, 1.3f);
         if (Strength > .05f)
         {
             if (!Effect->IsActive())
@@ -405,6 +495,7 @@ void USSShipVisualRig::ReleaseRig()
     RigPawn = nullptr;
     Hull = nullptr;
     GearColliders.Reset();
+    RampColliders.Reset();
     AirBrakes.Reset();
     EnginePivots.Reset();
     EngineRestRotations.Reset();

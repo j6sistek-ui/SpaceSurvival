@@ -51,6 +51,18 @@ private:
     double FocusSince = 0;
     bool SawClimax = false, SawApproach = false;
     bool Wave1 = false;
+    bool WeaponReadability = false;
+    int32 WeaponReviewStage = -4;
+    double WeaponStageAt = 0;
+    double WeaponRenderingReadyAt = -1;
+    int32 WeaponWarmupShots = 0, WeaponWarmupPeakAssets = 0, WeaponWarmupPeakShaders = 0;
+    TWeakObjectPtr<ASSEnemy> WeaponReviewTarget;
+    void TickWeaponReadability();
+    bool MainMenu = false, MainMenuStatePreserved = false;
+    int32 MainMenuStage = 0;
+    double MainMenuStageAt = 0;
+    FString MainMenuRunBefore, MainMenuAccountBefore;
+    void TickMainMenu(float DeltaSeconds);
     bool Gallery = false, GalleryRunPreserved = false, GalleryReturned = false;
     int32 GalleryStage = 0;
     double GalleryStageAt = 0, GalleryReadyAt = 0;
@@ -83,6 +95,13 @@ private:
      *  take the view at seven seconds and keep it. */
     double PlayerViewSeconds = 0;
     FString StationHeroId;
+    FString RequestedWalkerId;
+    bool WalkerMotionActive = false, WalkerMotionComplete = false;
+    int32 WalkerMotionStage = 0;
+    double WalkerMotionSeconds = 0, WalkerMotionStageSeconds = 0;
+    FVector WalkerMotionStart = FVector::ZeroVector, WalkerMotionDirection = FVector::ZeroVector;
+    float WalkerTurnStartYaw = 0.f, WalkerMaximumTravel = 0.f;
+    void TickWalkerMotion(float DeltaSeconds);
     void Stop(const FString &Error);
     void WriteResultAndExit();
 };

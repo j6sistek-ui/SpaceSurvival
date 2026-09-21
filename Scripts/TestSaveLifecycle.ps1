@@ -25,6 +25,8 @@ loading. This is not arbitrary binary corruption or an automatic backup/recovery
 Use -Station2Discard separately for real action 51 account/checkpoint replacement failures,
 fresh-process retry and highest-wave readback without death XP or completed-run history.
 Station advancement is an explicit fixture; this does not validate natural station arrival.
+Use -FreeFlightIsolation for temporary practice sessions with real rejected account/run writes,
+byte-preserved survival checkpoints, allowed settings persistence and fresh-process resume.
 ##>
 param(
     [string]$EngineRoot = '',
@@ -33,13 +35,14 @@ param(
     [ValidateSet(5, 10)][int]$PreparePackagedStation,
     [switch]$StorageFaults,
     [switch]$CorruptAccount,
-    [switch]$Station2Discard
+    [switch]$Station2Discard,
+    [switch]$FreeFlightIsolation
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $prepareStation = $PSBoundParameters.ContainsKey('PreparePackagedStation')
-if (([int][bool]$PreflightOnly + [int][bool]$prepareStation + [int][bool]$StorageFaults + [int][bool]$CorruptAccount + [int][bool]$Station2Discard) -gt 1) {
-    throw 'Choose only one of -PreflightOnly, -PreparePackagedStation, -StorageFaults, -CorruptAccount or -Station2Discard; nothing was created.'
+if (([int][bool]$PreflightOnly + [int][bool]$prepareStation + [int][bool]$StorageFaults + [int][bool]$CorruptAccount + [int][bool]$Station2Discard + [int][bool]$FreeFlightIsolation) -gt 1) {
+    throw 'Choose one lifecycle mode only; nothing was created.'
 }
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 $project = Join-Path $repoRoot 'SpaceSurvival.uproject'
@@ -201,6 +204,7 @@ elseif ($StorageFaults) {
 }
 elseif ($CorruptAccount) { $stages += @('SeedCorruptAccount', 'ProtectCorruptAccount', 'RecoverAccount') }
 elseif ($Station2Discard) { $stages += @('Suspend', 'FailedDiscardStation2', 'DiscardStation2', 'FreshAfterDiscard') }
+elseif ($FreeFlightIsolation) { $stages += @('Suspend', 'FreeFlight', 'FreshAfterFreeFlight') }
 elseif (-not $PreflightOnly) { $stages += @('Suspend', 'ResumeDeath', 'FreshStart') }
 $receipts = @()
 $corruptFixtureHashes = $null
@@ -232,6 +236,7 @@ try {
             if ($StorageFaults) { $arguments += '-SSSaveFaults' }
             if ($CorruptAccount) { $arguments += '-SSCorruptAccount' }
             if ($Station2Discard) { $arguments += '-SSStation2Discard' }
+            if ($FreeFlightIsolation) { $arguments += '-SSFreeFlightIsolation' }
             if ($Station2Discard -and $phase -in @('FailedDiscardStation2', 'DiscardStation2', 'FreshAfterDiscard')) {
                 if (($discardFixtureSlots | ConvertTo-Json -Compress) -cne
                     (@(Get-IsolatedSaveManifest) | ConvertTo-Json -Compress)) {
@@ -525,9 +530,10 @@ try {
         storageFaults = [bool]$StorageFaults
         corruptAccount = [bool]$CorruptAccount
         station2Discard = [bool]$Station2Discard
+        freeFlightIsolation = [bool]$FreeFlightIsolation
         testAccountCopySha256 = $corruptFixtureHashes
         preparedStationWave = if ($prepareStation) { $PreparePackagedStation } else { $null }
-        evidenceType = if ($prepareStation) { 'PREPARED_FIXTURE_NOT_GAMEPLAY' } elseif ($StorageFaults) { 'STORAGE_FAULT_AUTOMATION' } elseif ($CorruptAccount) { 'CORRUPT_ACCOUNT_PROTECTION_AUTOMATION' } elseif ($Station2Discard) { 'STATION2_DISCARD_AUTOMATION' } else { 'STORAGE_LIFECYCLE_AUTOMATION' }
+        evidenceType = if ($prepareStation) { 'PREPARED_FIXTURE_NOT_GAMEPLAY' } elseif ($StorageFaults) { 'STORAGE_FAULT_AUTOMATION' } elseif ($CorruptAccount) { 'CORRUPT_ACCOUNT_PROTECTION_AUTOMATION' } elseif ($Station2Discard) { 'STATION2_DISCARD_AUTOMATION' } elseif ($FreeFlightIsolation) { 'FREE_FLIGHT_STORAGE_ISOLATION' } else { 'STORAGE_LIFECYCLE_AUTOMATION' }
         token = $token
         root = $runRoot
         savedDir = $savedRoot
@@ -543,6 +549,8 @@ try {
             'Real fresh Init protects a valid Unreal envelope with invalid account domain text; actual GI resume/persistence and GameMode New Run are rejected without changing corrupt bytes. Exact test-owned copy restoration is manual, followed by fresh Init. No arbitrary binary corruption, automatic recovery/backup feature, hardware-loss or gameplay claim.'
         } elseif ($Station2Discard) {
             'Actual Station 2 action 51 under real account/suspension locks, fresh-process resume/retry preserving highest wave 10, and final fresh Init with no XP/completed-run history or Continue. Station progression is assisted fixture setup; no natural travel, physical UI, victory, performance or hardware-loss claim.'
+        } elseif ($FreeFlightIsolation) {
+            'Real temporary practice session, rejected survival writes, preserved account/checkpoint bytes, allowed settings persistence, return-home restoration and fresh-process normal resume. No rendered flight, physical input, performance or hardware-loss claim.'
         } else {
             'Storage lifecycle and actual Windows locked-destination failure/retry only. No forced process termination, disk-full/short-write, staged-readback fault, hardware-loss, station UI or subjective gameplay claim.'
         }

@@ -483,14 +483,8 @@ bool FSSStationChaseCamera::RunTest(const FString &)
     const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
     AddInfo(FString::Printf(TEXT("STATION_ARRIVAL hero=%s climbsOut=%d"), *Walker->GetHero().Id.ToString(),
                             ClimbsOut ? 1 : 0));
-    // Read before Move, which sets the body's rotation itself. This fixture flies in on a heading of 73
-    // degrees and the station is built at it, so the hub's yaw here is nothing like world north - which
-    // is the whole point. A hero with no exit clip is placed by the spawn and by nothing else: it does
-    // not orient to movement and does not follow the controller, and the authored exit that used to
-    // reconcile body and camera by slerping to the hub's rotation on its last tick never runs. So the
-    // spawn has to have turned it, or the player meets the hero 73 degrees side-on for the whole arrival
-    // and the body snaps through that angle on the first input. A climbing hero is mid-clip here and
-    // wears the seated pose instead; its facing is checked below, where the exit has finished.
+    // Arrival supplies the initial facing before CharacterMovement receives travel input.
+    // This station is rotated 73 degrees, so a world-north default cannot pass.
     const double HubYaw = F.Hub->GetActorRotation().Yaw;
     if (!ClimbsOut)
         TestEqual(TEXT("A hero with no exit clip arrives turned the way the station faces"),
@@ -516,11 +510,11 @@ bool FSSStationChaseCamera::RunTest(const FString &)
                  Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
     // The climb-out's own last tick slerps the body to the station's facing, which is the behaviour the
     // spawn above now has to reproduce for a hero that never runs it. Asserted here rather than with the
-    // other one because it is only true once the clip has finished. The walking hero has been driven by
-    // Move since, so its facing is its view's and is no longer the arrival's to check.
+    // other one because it is only true once the clip has finished.
     if (ClimbsOut)
         TestEqual(TEXT("A climb-out ends turned the way the station faces"),
                   double(FMath::Abs(FMath::FindDeltaAngleDegrees(Walker->GetActorRotation().Yaw, HubYaw))), 0., 1e-3);
+    const FRotator StandingFacing = Walker->GetActorRotation();
     for (int32 Rate : {30, 60, 144})
     {
         const float Dt = 1.f / Rate;
@@ -534,27 +528,26 @@ bool FSSStationChaseCamera::RunTest(const FString &)
                      FMath::IsNearlyEqual(View.Yaw, 90.f, .01f));
             TestTrue(TEXT("Both vertical directions turn equally across frame rates"),
                      FMath::IsNearlyEqual(View.Pitch, Sign * 35.f, .01f));
-            TestTrue(TEXT("The upright body faces camera yaw without camera pitch or roll"),
-                     Walker->GetActorRotation().Equals(FRotator(0, 90, 0), .01f));
+            TestTrue(TEXT("Orbiting the view does not rotate the stationary body"),
+                     Walker->GetActorRotation().Equals(StandingFacing, .01f));
         }
     }
     F.Controller->SetControlRotation(FRotator(-12, 73, 0));
     Walker->Move(FVector2D(0, -1), FVector2D::ZeroVector, false, 1.f / 60.f);
-    TestTrue(TEXT("Backward walking stays behind-facing rather than rotating toward the viewer"),
-             Walker->GetActorRotation().Equals(FRotator(0, 73, 0), .01f) &&
-                 FVector::DotProduct(Walker->GetPendingMovementInputVector(), Walker->GetActorForwardVector()) <
-                     -.99f &&
-                 !Walker->GetCharacterMovement()->bOrientRotationToMovement);
+    TestTrue(TEXT("Backward input is camera-relative and CharacterMovement faces travel"),
+             FVector::DotProduct(Walker->GetPendingMovementInputVector(), FRotator(0, 73, 0).Vector()) < -.99f &&
+                 Walker->GetCharacterMovement()->bOrientRotationToMovement);
     Walker->ConsumeMovementInputVector();
     Walker->Move(FVector2D(1, 0), FVector2D::ZeroVector, true, 1.f / 60.f);
     TestTrue(TEXT("Strafe uses the same view direction and retains run speed"),
-             FVector::DotProduct(Walker->GetPendingMovementInputVector(), Walker->GetActorRightVector()) > .99f &&
+             FVector::DotProduct(Walker->GetPendingMovementInputVector(),
+                                 FRotationMatrix(FRotator(0, 73, 0)).GetUnitAxis(EAxis::Y)) > .99f &&
                  Walker->GetCharacterMovement()->MaxWalkSpeed == 560.f);
     Walker->ConsumeMovementInputVector();
     Walker->Boom->TickComponent(1.f / 60.f, LEVELTICK_All, nullptr);
-    TestTrue(TEXT("Actual camera remains behind the facing body with collision protection enabled"),
+    TestTrue(TEXT("Actual camera remains behind the view direction with collision protection enabled"),
              FVector::DotProduct(Walker->Camera->GetComponentLocation() - Walker->GetActorLocation(),
-                                 Walker->GetActorForwardVector()) < -100.f &&
+                                 FRotator(0, 73, 0).Vector()) < -100.f &&
                  Walker->Boom->bDoCollisionTest);
     Walker->Move(FVector2D::ZeroVector, FVector2D(0, -100), false, 1.f);
     TestEqual(TEXT("Downward view stops before flipping the camera"),

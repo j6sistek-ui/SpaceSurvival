@@ -142,6 +142,24 @@ private:
     TWeakObjectPtr<ASSEncounterBeacon> ObjectiveOwner;
 };
 
+/** Brief world-space laser trace. Cosmetic only; hitscan remains the sole damage authority. */
+UCLASS()
+class SPACESURVIVAL_API ASSWeaponTracePulse : public AActor
+{
+    GENERATED_BODY()
+public:
+    ASSWeaponTracePulse();
+    void Configure(FVector Start, FVector End);
+    virtual void Tick(float DeltaSeconds) override;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Presentation")
+    TObjectPtr<UStaticMeshComponent> Core;
+
+private:
+    UPROPERTY(Transient)
+    TObjectPtr<UMaterialInstanceDynamic> Material;
+    float Age = 0.f;
+};
+
 /** World-space projectile: dodging or intervening geometry can defeat a shot. */
 UCLASS()
 class SPACESURVIVAL_API ASSProjectile : public ASSWorldBody

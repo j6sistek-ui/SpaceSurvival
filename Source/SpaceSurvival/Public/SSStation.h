@@ -74,7 +74,7 @@ public:
     /** Where THIS station places ITS pad, in station-local centimetres. These are measured, not chosen. The
      *  deck is at Z -10 because that is already the top of everything the hero walks on: DeckCollision spans
      *  Z -110..-10 and Bow_Sill's top face is -10 too. One plane end to end means walking in from the pad
-     *  needs no step, which matters because ASSWalker has two movement inputs and no jump. The pad itself -
+     *  needs no step. The pad itself -
      *  its deck, kerbs, indicator, and every question about parking or standing on it - is ASSLandingPad,
      *  which knows nothing about stations; these numbers are only this station's placement of one. */
     static constexpr float PadDeckTop = -10.f;
@@ -226,6 +226,7 @@ private:
     FQuat ExitStartRotation = FQuat::Identity, ExitEndRotation = FQuat::Identity;
     double ExitElapsed = 0.0;
     bool Disembarking = false;
+    bool BoardingOffered = false;
     /** True when the seated pilot is this same hero, so its component transform and its live pose
      *  carry over to the exit. A stand-in that only walks starts the exit from the ship position. */
     bool SharesPilotRig = true;

@@ -16,6 +16,7 @@ param(
     [ValidateRange(480, 4320)][int]$Height = 1440,
     [switch]$CaptureVisuals,
     [switch]$StationExterior,
+    [ValidateSet('AlienFemale')][string]$Walker = '',
     [switch]$NoSound,
     # Passed through verbatim to the game. For opt-in build flags the fixture itself knows nothing about,
     # such as -SSPhoenix, so capturing a variant does not mean editing this script each time.
@@ -26,6 +27,9 @@ $ErrorActionPreference = 'Stop'
 $Scenario = if ($Scenario -ieq 'Station5') { 'Station5' } else { 'Wave10' }
 if ($StationExterior -and ($Scenario -ne 'Station5' -or -not $CaptureVisuals)) {
     throw '-StationExterior requires -Scenario Station5 -CaptureVisuals.'
+}
+if ($Walker -and ($Scenario -ne 'Station5' -or -not $CaptureVisuals)) {
+    throw '-Walker requires -Scenario Station5 -CaptureVisuals.'
 }
 if ($Scenario -eq 'Station5' -and -not $PSBoundParameters.ContainsKey('TimeoutSeconds')) { $TimeoutSeconds = 330 }
 $evidenceType = if ($Scenario -eq 'Station5') { 'RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY' } else { 'RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY' }
@@ -39,6 +43,7 @@ $expectedVisualNames = if ($Scenario -eq 'Station5') {
         'StationIdle', 'StationServices', 'StationOverview', 'CombatImpact')
 } else { @('Flight', 'Climax', 'Compound', 'Approach') }
 if ($StationExterior) { $expectedVisualNames += @('StationColonyOverview', 'StationPadMouth') }
+if ($Walker) { $expectedVisualNames += @('WalkerOut', 'WalkerTurn', 'WalkerReturn') }
 $exitVisualNames = @('Exit0', 'Exit1', 'Exit2', 'Exit3', 'Exit4', 'Exit5', 'Exit6')
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 function Assert-NoReparsePath([string]$Path) {
@@ -166,6 +171,7 @@ if ($NoSound) { $arguments += '-nosound' }
 if ($ExtraArgs.Count -gt 0) { $arguments += $ExtraArgs }
 if ($CaptureVisuals) { $arguments += @('-SSSoakVisuals', '-RenderOffscreen', '-ForceRes') }
 if ($StationExterior) { $arguments += '-SSStationExteriorReview' }
+if ($Walker) { $arguments += "-SSSoakWalker=$Walker" }
 $process = $null
 $success = $false
 $failure = $null
@@ -199,6 +205,10 @@ try {
                 -not $fixture.stationExteriorReview)) {
             throw 'Fixture receipt does not certify the requested station exterior review; rebuild the binary.'
         }
+        if ($Walker -and ($fixture.requestedWalker -cne $Walker -or $fixture.stationHero -cne $Walker -or
+                -not $fixture.walkerMotionComplete -or $fixture.walkerMaximumTravelCm -lt 100)) {
+            throw 'Fixture did not certify the exact requested walker and actual short movement.'
+        }
     }
     if (-not $fixture.success -or $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $Scenario -or
         $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or
@@ -231,6 +241,19 @@ try {
                 $row = @($fixture.visualRequests | Where-Object { $_.name -ceq $stage[0] })[0]
                 if ($row.requestStageSeconds -lt $stage[1]) { throw "Visual stage captured too early: $($stage[0])" }
                 if ($stage[0] -cne 'Wormhole' -and -not $row.scriptedStationReviewCamera) { throw 'Station review frame lacks its labeled fixture viewpoint.' }
+            }
+            if ($Walker) {
+                foreach ($name in @('StationIdle', 'WalkerOut', 'WalkerTurn', 'WalkerReturn')) {
+                    $row = @($fixture.visualRequests | Where-Object { $_.name -ceq $name })[0]
+                    if ($row.hero -cne $Walker -or $row.requestedWalker -cne $Walker -or
+                        -not $row.walkerMeshVisible -or -not $row.actualWalkerView -or
+                        $row.scriptedStationReviewCamera -or -not $row.walkerMesh) {
+                        throw "Requested walker frame lacks the actual visible body/player camera: $name"
+                    }
+                    if ($name -cne 'StationIdle' -and ($row.walkerSpeed -le 40 -or -not $row.animation)) {
+                        throw "Requested motion frame does not show an actually moving, animated walker: $name"
+                    }
+                }
             }
         }
     }
@@ -272,6 +295,7 @@ try {
     if ([IO.Path]::GetFullPath($fixture.csv) -ine [IO.Path]::GetFullPath($csv)) { throw 'Fixture returned an unexpected CSV path.' }
     $output = Join-Path $runRoot 'performance.json'
     $captureNote = if ($CaptureVisuals) { 'Screenshot readbacks and ListTextures perturb timing: this run is visual evidence only, not a performance finding.' } else { 'No automated screenshot readback.' }
+    if ($Walker) { $captureNote += ' Requested walker motion is appended as CSV Stage9 after stationary acceptance; stationary counters exclude that motion.' }
     & $python -B (Join-Path $repoRoot 'Scripts/AnalyzePerformance.py') $csv --log $logPath --output $output `
         --context-note "Explicit seeded $Scenario fixture with enlarged durability and scripted controls; no natural progression/feel claim." --context-note $captureNote
     if ($LASTEXITCODE -ne 0) { throw 'Completed CSV analysis failed.' }
@@ -323,6 +347,7 @@ try {
         productionBefore = $productionBefore; productionAfter = $productionAfter; productionPreserved = $productionPreserved
         noTestSaveSlotsWritten = $noSlots; requestedResolution = @($Width, $Height); audioDisabled = [bool]$NoSound
         visualCaptureEnabled = [bool]$CaptureVisuals; suitableForPerformanceFinding = -not [bool]$CaptureVisuals
+        requestedWalker = $Walker
         offscreenVisualOnly = [bool]$CaptureVisuals; images = $images
         fixture = $fixture; analysisPath = $(if ($null -ne $analysis) { 'performance.json' } else { $null })
         evidenceFiles = @(Get-ChildItem -LiteralPath $runRoot -File | Sort-Object Name | ForEach-Object { FileIdentity $_.FullName })

@@ -202,8 +202,8 @@ public:
     {
         for (const auto &Entry : Heroes)
             if (Entry.Identity == Identity)
-                return Entry;
-        return FSSHeroDefinition(Identity);
+                return Entry.ResolvedPresentation();
+        return FSSHeroDefinition(Identity).ResolvedPresentation();
     }
     /** The authored entry for the hero the pawns are built with, whatever else is installed. */
     FSSHeroDefinition FallbackHero() const
@@ -215,8 +215,11 @@ public:
     FSSHeroDefinition SelectHero(ESSHeroSlot Slot) const
     {
         for (const auto &Entry : Heroes)
-            if (Entry.Installed(Slot))
-                return Entry;
+        {
+            const FSSHeroDefinition Resolved = Entry.ResolvedPresentation();
+            if (Resolved.Installed(Slot))
+                return Resolved;
+        }
         return FallbackHero();
     }
     /** The same walk, but a named hero gets first refusal. A preference that is empty, unknown, or
@@ -227,8 +230,12 @@ public:
     {
         if (!PreferredId.IsNone())
             for (const auto &Entry : Heroes)
-                if (Entry.Id == PreferredId && Entry.Installed(Slot))
-                    return Entry;
+                if (Entry.Id == PreferredId)
+                {
+                    const FSSHeroDefinition Resolved = Entry.ResolvedPresentation();
+                    if (Resolved.Installed(Slot))
+                        return Resolved;
+                }
         return SelectHero(Slot);
     }
     /** Every hero this build could actually put on the deck, in roster order. What the wardrobe lists. */
@@ -236,8 +243,11 @@ public:
     {
         TArray<FSSHeroDefinition> Available;
         for (const auto &Entry : Heroes)
-            if (Entry.Installed(Slot))
-                Available.Add(Entry);
+        {
+            const FSSHeroDefinition Resolved = Entry.ResolvedPresentation();
+            if (Resolved.Installed(Slot))
+                Available.Add(Resolved);
+        }
         return Available;
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")

@@ -69,10 +69,16 @@ public:
     void React(const FString &Message);
     void Interact();
     void OpenPanel(ESSPanel Panel);
+    /** Approved front-end screen; active-run pause menus retain their existing actions. */
+    bool IsTitleMenu() const;
     void ClosePanel();
     void ActivateEntry(int32 Index, bool FromPointer = false);
     void StartNewRun();
+    void StartFreeFlight();
+    void EndFreeFlight();
     void LaunchFromHub();
+    bool IsWalkerInsideShip(const ASSWalker *Candidate) const;
+    bool TryBoardShip(ASSWalker *Candidate);
     void ShowHangar();
     bool IsMenuOpen() const
     {
@@ -122,7 +128,9 @@ private:
     friend class ASSHUD; // DrawPrompt reads the glyph sets; main did not build without this.
     friend class ASSWave10Soak;
     friend class FSSAudioFirstState;
+    friend class FSSTitleMenuNavigation;
     bool bAutomatedSoakInput = false;
+    bool bTitleSettingsNavigation = false;
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
     UPROPERTY()
@@ -217,6 +225,12 @@ public:
 private:
     void UpdateLastInputDevice();
     bool BoostLatch = false, BrakeLatch = false;
+    /** A menu Back press must be released before B can become a new boost command. */
+    bool SuppressGamepadBoostUntilRelease = false;
+    float KeyboardThrottle = 0.f;
+    /** Only a throttle command changes ownership; look, fire and UI glyph changes cannot restore thrust. */
+    bool bAnalogThrottle = false;
+    float LastRightTriggerCommand = 0.f;
     TWeakObjectPtr<APawn> LastInputPawn;
     ESSInputFamily InputFamily = ESSInputFamily::KeyboardMouse;
 };

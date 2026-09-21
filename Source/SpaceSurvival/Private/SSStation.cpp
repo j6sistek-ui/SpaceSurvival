@@ -909,7 +909,7 @@ ASSWalker::ASSWalker()
 {
     PrimaryActorTick.bCanEverTick = true;
     bUseControllerRotationYaw = false;
-    GetCharacterMovement()->bOrientRotationToMovement = false;
+    GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0, 540, 0);
     GetCharacterMovement()->MaxWalkSpeed = 320;
     Boom = CreateDefaultSubobject<USpringArmComponent>(TEXT("WalkCameraBoom"));
@@ -1523,6 +1523,13 @@ void ASSWalker::Tick(float Dt)
         // Which clip this hero should be in, and how fast it should run.
         UpdateHeroAnimation(Dt);
         UpdateFootsteps(Dt);
+        if (ASSGameMode *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
+        {
+            if (!Mode->IsWalkerInsideShip(this) && GetCharacterMovement()->IsMovingOnGround())
+                BoardingOffered = false;
+            else if (!BoardingOffered && GetCharacterMovement()->IsMovingOnGround())
+                BoardingOffered = Mode->TryBoardShip(this);
+        }
     }
 }
 void ASSWalker::UpdateFootsteps(float Dt)
@@ -1580,8 +1587,8 @@ void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)
     View.Roll = 0.f;
     Controller->SetControlRotation(View);
     const FRotator Yaw(0, View.Yaw, 0);
-    // Forward, back and strafe share this facing: the chase view stays behind the body.
-    SetActorRotation(Yaw);
+    // Movement is camera-relative; CharacterMovement turns the body toward actual travel at its
+    // configured rotation rate. Orbiting the camera alone does not spin the standing character.
     GetCharacterMovement()->MaxWalkSpeed = Run ? 560.f : 320.f;
     AddMovementInput(Yaw.Vector(), Direction.Y);
     AddMovementInput(FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y), Direction.X);

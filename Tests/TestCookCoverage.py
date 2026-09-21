@@ -13,7 +13,7 @@ class CookCoverageTests(unittest.TestCase):
         self.rules = cook_rules((ROOT / "Config/DefaultGame.ini").read_text(encoding="utf-8"))
 
     def test_author_assets_are_excluded_despite_parent_cook_root(self):
-        self.assertEqual(len(self.rules[2]), 6)
+        self.assertEqual(len(self.rules[2]), 10)
         for package in self.rules[2]:
             with self.subTest(package=package):
                 self.assertFalse(is_covered(package + "." + package.rsplit("/", 1)[1], *self.rules))
@@ -32,6 +32,21 @@ class CookCoverageTests(unittest.TestCase):
 
     def test_directory_exclusion_wins(self):
         self.assertFalse(is_covered("/Game/SpaceSurvival/Licensed/MocapSource/IK_UE4Mannequin", *self.rules))
+
+    def test_female_authoring_excludes_only_tools_and_keeps_runtime_dependencies(self):
+        base = "/Game/SpaceSurvival/Licensed/AlienFemalePresentation/"
+        for name in ("IK_Source", "IK_Female", "RTG_Female"):
+            package = base + "Authoring/" + name
+            self.assertIn(package, self.rules[2])
+            self.assertFalse(is_covered(package, *self.rules))
+        for name in ("SK_AlienFemalePresentation", "SKEL_AlienFemalePresentation",
+                     "MI_AlienFemaleCorrected", "T_AlienFemaleMetallicLinear", "T_AlienFemaleRoughnessLinear",
+                     "A_AlienFemaleIdle", "A_AlienFemaleWalk", "A_AlienFemaleRun"):
+            self.assertTrue(is_covered(base + name, *self.rules))
+        self.assertFalse(is_covered(base + "MI_AlienFemalePresentation", *self.rules))
+        self.assertTrue(is_covered("/Game/TripoModels/Materials/M_Tripo_PBR_Master", *self.rules))
+        for suffix in ("BaseColor", "Normal", "Metallic", "Roughness"):
+            self.assertTrue(is_covered("/Game/TripoModels/AlienFemale/T_AlienFemale_" + suffix, *self.rules))
 
     def test_plugin_runtime_light_mask_is_explicitly_cooked(self):
         # The installed plugin's UWPPortalLightTransmissionSubsystem loads this literal
