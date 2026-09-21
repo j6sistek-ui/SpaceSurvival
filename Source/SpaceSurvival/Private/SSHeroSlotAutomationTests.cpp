@@ -85,10 +85,12 @@ bool FSSHeroRoster::RunTest(const FString &)
     auto *Content = NewObject<USSPhase1Data>();
     if (!TestNotNull(TEXT("Construct the actual runtime content defaults"), Content))
         return false;
-    // Seven: the squirrel, the four bodies the station wardrobe can put on the deck, and the two the
+    // Eight: the squirrel, the five bodies the station wardrobe can put on the deck, and the two the
     // roster has always ended with. The count is asserted because a hero silently vanishing from the
     // roster is exactly the kind of thing the wardrobe would hide - it would just show one fewer row.
-    if (!TestEqual(TEXT("Seven heroes, in preference order"), Content->Heroes.Num(), 7))
+    // It went from seven to eight when the Tripo alien was wired in; changing this number is meant to
+    // be a deliberate act, which is the whole reason it is pinned.
+    if (!TestEqual(TEXT("Eight heroes, in preference order"), Content->Heroes.Num(), 8))
         return false;
     // The real hero is asked about first, so importing it is the whole swap - and on September 17 that
     // import happened. Nothing below asks whether this machine has the files. Whether a hero is installed
@@ -102,11 +104,12 @@ bool FSSHeroRoster::RunTest(const FString &)
               AsInt(ESSHeroIdentity::Trooper));
     TestEqual(TEXT("The shipped hero is last"), AsInt(Content->Heroes.Last().Identity),
               AsInt(ESSHeroIdentity::Acornaut));
-    // The four selectable bodies sit between the squirrel and the two fallbacks. Position is not the
+    // The five selectable bodies sit between the squirrel and the two fallbacks. Position is not the
     // point - being reachable only by name is, because anything ahead of the squirrel would take the
     // deck on a new game and the squirrel is what a new game is supposed to wear.
     for (ESSHeroIdentity Selectable :
-         {ESSHeroIdentity::Nyxar, ESSHeroIdentity::Soldier, ESSHeroIdentity::RobotScout, ESSHeroIdentity::HeavyTrooper})
+         {ESSHeroIdentity::Nyxar, ESSHeroIdentity::AlienFemale, ESSHeroIdentity::Soldier,
+          ESSHeroIdentity::RobotScout, ESSHeroIdentity::HeavyTrooper})
     {
         const int32 Index = Content->Heroes.IndexOfByPredicate([Selectable](const FSSHeroDefinition &Entry)
                                                                { return Entry.Identity == Selectable; });

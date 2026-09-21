@@ -502,6 +502,12 @@ enum class ESSHeroIdentity : uint8
     Squirrel,
     /** Licensed alien, already the station's crew. Its clips are retarget results on its own skeleton. */
     Nyxar,
+    /** Tripo-generated alien on the UE4 mannequin rig, hand-bound to Robot_scout's copy of
+     *  UE4_Mannequin_Skeleton so it borrows that pack's locomotion. Carries no clips of its own.
+     *  Skeleton is read-only to script, so that binding cannot be automated or restored by code: a
+     *  re-import that leaves the import dialog's Skeleton field empty puts it back on an orphan
+     *  skeleton, and ApplyHero will then hand the slot straight back to the shipped hero. */
+    AlienFemale,
     /** Licensed soldier on the Unreal mannequin rig, carrying its own eight-way locomotion. */
     Soldier,
     /** Licensed robot on the UE4 mannequin rig, so the MoCap library plays on it untouched. */
@@ -1394,6 +1400,41 @@ struct FSSHeroDefinition
             // Dark plates with emissive panels at the hands, eyes and spine. Left at 1 because nothing
             // has been measured on the deck yet - unlike the trooper's 0.5, which two captures argued
             // about before it was settled.
+            ReadabilityLightScale = 1.f;
+            RootBone = TEXT("root");
+            PelvisBone = TEXT("pelvis");
+            LeftFootBone = TEXT("foot_l");
+            RightFootBone = TEXT("foot_r");
+            LeftHandBone = TEXT("hand_l");
+            RightHandBone = TEXT("hand_r");
+        }
+        else if (Identity == ESSHeroIdentity::AlienFemale)
+        {
+            // Tripo-generated, and rigged by Tripo to the UE4 mannequin: three spine bones, one neck
+            // bone, fingers straight onto the hand. That is why it could never join SKEL_Nyxar, whose
+            // UE5 rig has five spine bones, two neck bones and metacarpals - all 61 bone NAMES matched
+            // and twelve of their PARENTS did not, which is what Assign Skeleton actually compares.
+            // It is bound by hand to Robot_scout's UE4_Mannequin_Skeleton, the same copy its clips are
+            // authored against, so it borrows that pack's locomotion exactly as the robot does. There
+            // are six UE4_Mannequin_Skeleton assets in this project and only that one carries the
+            // clips; binding to any other copy puts the body back to silently falling through.
+            Id = TEXT("AlienFemale");
+            MeshPath = TEXT("/Game/TripoModels/AlienFemale/SK_AlienFemale.SK_AlienFemale");
+            WalkClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonWalk.ThirdPersonWalk");
+            IdleClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonIdle.ThirdPersonIdle");
+            // Same pack, so the same gap: no jog, and the ladder goes walk straight to run.
+            JogClipPath = FString();
+            RunClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonRun.ThirdPersonRun");
+            // Never seated, like the alien crew it stands among. The ship keeps its own pilot.
+            PilotClipPath = FString();
+            DisembarkClipPath = FString();
+            SoleOffset = 0.f;
+            // Imports at 97.9 cm against the robot's 178.6, so it is fitted to a height rather than
+            // scaled by a guessed factor - the same treatment the trooper gets.
+            FitHeight = 178.f;
+            WalkSpeed = 180.f;
+            RunSpeed = 450.f;
+            // Untested under the station's own lights. Left at 1 rather than guessed.
             ReadabilityLightScale = 1.f;
             RootBone = TEXT("root");
             PelvisBone = TEXT("pelvis");
