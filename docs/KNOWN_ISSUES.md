@@ -2087,6 +2087,27 @@ wall-mounted prop against an actual wall face or not at all.
 
 It also explains why the staged captures looked fine: every one of them was framed to avoid these.
 
+### The wardrobe kiosk cannot be used
+
+Reported 2026-09-20: *"kiosk blocked by something."* Not diagnosed.
+
+`CREW WARDROBE` is added at world **(-1400, 500, 0)** (`SSStation.cpp:387`) and triggered by
+`ASSGameMode::Interact()` -> `ASSStation::NearestService(Walker->GetActorLocation())`, which picks
+whichever of the twelve kiosks is closest.
+
+**Ruled out:** the recipe is not obstructing it. Only two props sit within 2.5 m - a corridor cable
+at 117 cm and a bollard light at 144 cm - and neither is on the kiosk. So this is not the
+floating-props bug.
+
+Worth checking first, in order: whether `NearestService` is resolving to a *different* kiosk (there
+are three on the same x = -1400 line - `PAINT BAY` at y=-1000, `BEACON LOG` at y=0, wardrobe at
+y=500); whether the player can physically reach that spot at all given the collision report; and
+whether the panel opens but lists nothing, which would point at `Installed(Slot)` rejecting bodies on
+an asset path rather than at the kiosk.
+
+The eighth body added today has **never been seen in the wardrobe panel.** The automation proves the
+roster holds eight and that the alien fits the deck; it does not prove the panel opens or lists them.
+
 ### Why this list exists
 
 `CLAUDE.md` already says *"Treat '67 tests pass' as saying nothing about what a player receives."*
