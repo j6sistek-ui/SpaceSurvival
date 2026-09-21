@@ -5,6 +5,9 @@
 #include "Engine/World.h"
 #include "Engine/OverlapResult.h"
 #include "Materials/MaterialInterface.h"
+#if WITH_EDITOR
+#include "StaticMeshCompiler.h"
+#endif
 
 ASSLandingPad::ASSLandingPad()
 {
@@ -20,7 +23,21 @@ UStaticMeshComponent *ASSLandingPad::AddMesh(FVector Position, FVector Scale, co
     // from one onto the other never crosses a seam.
     auto *C = NewObject<UStaticMeshComponent>(this);
     C->SetupAttachment(Root);
-    C->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, Mesh));
+    UStaticMesh *StaticMesh = LoadObject<UStaticMesh>(nullptr, Mesh);
+    C->SetStaticMesh(StaticMesh);
+#if WITH_EDITOR
+    // Editor loads may leave even BasicShapes compiling after garbage collection. Unreal skips
+    // physics creation for such meshes, but the pad must support the pilot as soon as Build returns.
+    // Finish only this solid's compilation; cooked builds already contain the compiled mesh.
+    const bool WaitForSolid = Solid && StaticMesh && StaticMesh->IsCompiling();
+    if (WaitForSolid)
+    {
+        UE_LOG(LogTemp, Display, TEXT("SS_PAD_SOLID_WAIT mesh=%s compiling=%d"), *StaticMesh->GetPathName(),
+               StaticMesh->IsCompiling());
+        UStaticMesh *RequiredMeshes[] = {StaticMesh};
+        FStaticMeshCompilingManager::Get().FinishCompilation(RequiredMeshes);
+    }
+#endif
     if (Material)
         C->SetMaterial(0, LoadObject<UMaterialInterface>(nullptr, Material));
     C->SetRelativeLocation(Position);
@@ -31,6 +48,11 @@ UStaticMeshComponent *ASSLandingPad::AddMesh(FVector Position, FVector Scale, co
     C->SetCanEverAffectNavigation(false);
     C->ComponentTags.Add(FName(Tag));
     C->RegisterComponent();
+#if WITH_EDITOR
+    if (WaitForSolid)
+        UE_LOG(LogTemp, Display, TEXT("SS_PAD_SOLID_READY mesh=%s compiling=%d physics=%d"), *StaticMesh->GetPathName(),
+               StaticMesh->IsCompiling(), C->IsPhysicsStateCreated());
+#endif
     return C;
 }
 void ASSLandingPad::Build()

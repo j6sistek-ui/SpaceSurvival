@@ -70,7 +70,7 @@ public:
     void Interact();
     void OpenPanel(ESSPanel Panel);
     void ClosePanel();
-    void ActivateEntry(int32 Index);
+    void ActivateEntry(int32 Index, bool FromPointer = false);
     void StartNewRun();
     void LaunchFromHub();
     void ShowHangar();

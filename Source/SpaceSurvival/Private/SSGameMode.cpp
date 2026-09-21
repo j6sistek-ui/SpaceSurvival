@@ -1013,15 +1013,21 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     Entries.Empty();
     SelectedEntry = 0;
     PanelDetail.Empty();
-    if (auto *PC = UGameplayStatics::GetPlayerController(this, 0))
-    {
-        PC->bShowMouseCursor = true;
-        PC->SetInputMode(FInputModeGameAndUI());
-    }
     const bool LivePanel = (Panel == ESSPanel::Depot || Panel == ESSPanel::Reward) && S.IsFlying();
+    const bool CaptureFlightLook = Panel == ESSPanel::Reward && LivePanel;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (PC)
+    {
+        PC->bShowMouseCursor = !CaptureFlightLook;
+        if (CaptureFlightLook)
+            PC->SetInputMode(FInputModeGameOnly());
+        else
+            PC->SetInputMode(FInputModeGameAndUI());
+    }
     // Station departure retains the domain's Station phase until the ship leaves the safe zone,
-    // but already owns a moving pawn. Menus must pause its lift and physical flight as usual.
-    UGameplayStatics::SetGamePaused(this, (S.IsFlying() || bDepartingStation) && !LivePanel);
+    // and arrival retains the piloted pawn during Docking. Both scripted moves pause with menus.
+    const bool PilotedDocking = S.run.phase == SS::Phase::Docking && Ship && PC && PC->GetPawn() == Ship;
+    UGameplayStatics::SetGamePaused(this, (S.IsFlying() || bDepartingStation || PilotedDocking) && !LivePanel);
     switch (Panel)
     {
     case ESSPanel::Main:
@@ -1291,6 +1297,8 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                                  "replaces the active weapon.")
                           : TEXT("OPTIONAL STATION TASK: repair this lost-crew beacon with the button below to collect "
                                  "a one-time credit reward. No flight objective; safe to skip.");
+        if (CaptureFlightLook)
+            PanelDetail += TEXT("\nKeep flying. Up/Down or D-pad: choose. Enter/A: confirm. Esc/B: close.");
         if (PendingReward)
         {
             AddEntry(S.run.utility == SS::Utility::VectorThrusters ? TEXT("Vector Thrusters / already fitted")
@@ -1345,8 +1353,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             SelectedEntry = Restored;
     }
 }
-void ASSGameMode::ActivateEntry(int32 Index)
+void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
 {
+    if (FromPointer)
+    {
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        if (!PC || !PC->bShowMouseCursor)
+            return;
+    }
     if (!Entries.IsValidIndex(Index) || !Entries[Index].Enabled)
         return;
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -1438,8 +1452,9 @@ void ASSGameMode::ActivateEntry(int32 Index)
     if (A == 139 || (A >= 140 && A <= 147))
     {
         const TArray<FSSHeroDefinition> Bodies = WardrobeBodies();
-        const int32 Index = A - 140;
-        S.account.hero = A == 139 || !Bodies.IsValidIndex(Index) ? -1 : static_cast<int>(Bodies[Index].Identity);
+        const int32 HeroIndex = A - 140;
+        S.account.hero =
+            A == 139 || !Bodies.IsValidIndex(HeroIndex) ? -1 : static_cast<int>(Bodies[HeroIndex].Identity);
         if (!GI->PersistAccount())
             Announce(GI->LastSaveError);
         WearHero();
@@ -1926,12 +1941,12 @@ void ASSPlayerController::PlayerTick(float Dt)
             GM->ActivateEntry(GM->SelectedEntry);
         if (Pressed(EKeys::Gamepad_FaceButton_Right))
             GM->ClosePanel();
-        if (Pressed(EKeys::LeftMouseButton))
+        if (bShowMouseCursor && Pressed(EKeys::LeftMouseButton))
             if (auto *HUD = Cast<ASSHUD>(GetHUD()))
             {
                 float X, Y;
                 if (GetMousePosition(X, Y))
-                    GM->ActivateEntry(HUD->MenuIndexAt(FVector2D(X, Y)));
+                    GM->ActivateEntry(HUD->MenuIndexAt(FVector2D(X, Y)), true);
             }
         if (!LiveFlightMenu || !GI->Session.IsFlying())
         {
@@ -1950,8 +1965,10 @@ void ASSPlayerController::PlayerTick(float Dt)
         (GM->Tuning ? GM->Tuning->ControllerSensitivity : 1.f) * float(GI->Session.settings.controllerSensitivity);
     const float MouseScale = float(GI->Session.settings.mouseSensitivity) * MouseDegrees /
                              (FMath::Max(1.f, SteeringDegrees) * FMath::Max(.001f, Dt));
+    // SceneViewport already converts screen-up motion to positive MouseY. Both devices feed the
+    // same up-positive convention; the saved inversion applies once to both flight and walking.
     FVector2D Look(MouseX * MouseScale + GetInputAnalogKeyState(EKeys::Gamepad_RightX) * StickScale,
-                   -MouseY * MouseScale + GetInputAnalogKeyState(EKeys::Gamepad_RightY) * StickScale);
+                   MouseY * MouseScale + GetInputAnalogKeyState(EKeys::Gamepad_RightY) * StickScale);
     if (GI->Session.settings.invertPitch)
         Look.Y = -Look.Y;
     if (auto *ShipPawn = Cast<ASSShip>(GetPawn()))

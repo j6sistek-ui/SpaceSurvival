@@ -533,7 +533,7 @@ bool FSSStationChaseCamera::RunTest(const FString &)
             TestTrue(TEXT("Station yaw applies now rather than waiting in discarded RotationInput"),
                      FMath::IsNearlyEqual(View.Yaw, 90.f, .01f));
             TestTrue(TEXT("Both vertical directions turn equally across frame rates"),
-                     FMath::IsNearlyEqual(View.Pitch, -Sign * 35.f, .01f));
+                     FMath::IsNearlyEqual(View.Pitch, Sign * 35.f, .01f));
             TestTrue(TEXT("The upright body faces camera yaw without camera pitch or roll"),
                      Walker->GetActorRotation().Equals(FRotator(0, 90, 0), .01f));
         }
@@ -556,10 +556,10 @@ bool FSSStationChaseCamera::RunTest(const FString &)
              FVector::DotProduct(Walker->Camera->GetComponentLocation() - Walker->GetActorLocation(),
                                  Walker->GetActorForwardVector()) < -100.f &&
                  Walker->Boom->bDoCollisionTest);
-    Walker->Move(FVector2D::ZeroVector, FVector2D(0, 100), false, 1.f);
+    Walker->Move(FVector2D::ZeroVector, FVector2D(0, -100), false, 1.f);
     TestEqual(TEXT("Downward view stops before flipping the camera"),
               FRotator::NormalizeAxis(F.Controller->GetControlRotation().Pitch), -55.0);
-    Walker->Move(FVector2D::ZeroVector, FVector2D(0, -100), false, 1.f);
+    Walker->Move(FVector2D::ZeroVector, FVector2D(0, 100), false, 1.f);
     TestEqual(TEXT("Upward view remains bounded"), FRotator::NormalizeAxis(F.Controller->GetControlRotation().Pitch),
               35.0);
     return true;

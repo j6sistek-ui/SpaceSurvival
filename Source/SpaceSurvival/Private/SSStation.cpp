@@ -1576,7 +1576,7 @@ void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)
     // Apply this frame's station view directly before TickActor clears that buffer.
     FRotator View = Controller->GetControlRotation();
     View.Yaw = FRotator::NormalizeAxis(View.Yaw + Look.X * 90.f * Dt);
-    View.Pitch = FMath::Clamp(FRotator::NormalizeAxis(View.Pitch) - Look.Y * 70.f * Dt, -55.f, 35.f);
+    View.Pitch = FMath::Clamp(FRotator::NormalizeAxis(View.Pitch) + Look.Y * 70.f * Dt, -55.f, 35.f);
     View.Roll = 0.f;
     Controller->SetControlRotation(View);
     const FRotator Yaw(0, View.Yaw, 0);

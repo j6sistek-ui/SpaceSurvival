@@ -3,10 +3,12 @@
 #include "SSGameMode.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
+#include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -14,6 +16,8 @@
 #include "GameFramework/WorldSettings.h"
 #include "InputKeyEventArgs.h"
 #include "Physics/Experimental/PhysScene_Chaos.h"
+#include "Slate/SceneViewport.h"
+#include "Widgets/SViewport.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 namespace
@@ -28,6 +32,9 @@ struct FSSControllerFlightWorld
     ASSGameMode *Mode = nullptr;
     ASSPlayerController *Controller = nullptr;
     ASSShip *Ship = nullptr;
+    UGameViewportClient *ViewportClient = nullptr;
+    TSharedPtr<SViewport> ViewportWidget;
+    TSharedPtr<FSceneViewport> SceneViewport;
     static constexpr float StepSeconds = 1.f / 60.f;
 
     bool Initialize(FAutomationTestBase &Test)
@@ -127,10 +134,36 @@ struct FSSControllerFlightWorld
             Step();
     }
 
+    bool AttachInertViewport(FAutomationTestBase &Test)
+    {
+        // An unattached Slate viewport exercises ApplyInputMode's actual engine branch. No SWindow,
+        // RHI frame, native focus operation or OS cursor event is created/applied by this fixture.
+        ViewportClient = NewObject<UGameViewportClient>(GEngine, NAME_None, RF_Transient);
+        ViewportClient->AddToRoot();
+        auto &Context = *GEngine->GetWorldContextFromWorld(World);
+        Context.GameViewport = ViewportClient;
+        CastChecked<ULocalPlayer>(Controller->Player)->ViewportClient = ViewportClient;
+        ViewportWidget = SNew(SViewport);
+        SceneViewport = ViewportClient->CreateViewport(ViewportWidget);
+        return Test.TestTrue(TEXT("Input mode resolves the isolated inert viewport widget"),
+                             World->GetGameViewport() == ViewportClient &&
+                                 ViewportClient->GetGameViewportWidget() == ViewportWidget);
+    }
+
     ~FSSControllerFlightWorld()
     {
         if (World)
         {
+            if (ViewportClient)
+            {
+                auto *Player = Cast<ULocalPlayer>(Controller->Player);
+                Player->ViewportClient = nullptr;
+                Player->GetSlateOperations() = FReply::Unhandled();
+                SceneViewport.Reset();
+                ViewportWidget.Reset();
+                GEngine->GetWorldContextFromWorld(World)->GameViewport = nullptr;
+                ViewportClient->RemoveFromRoot();
+            }
             World->EndPlay(EEndPlayReason::Quit);
             World->DestroyWorld(false);
             GEngine->DestroyWorldContext(World);
@@ -157,7 +190,7 @@ bool FSSControllerToFlight::RunTest(const FString &)
         for (int32 Frame = 0; Frame < 60; ++Frame)
         {
             F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, Gamepad ? .8f : 5.f);
-            F.Axis(Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY, Gamepad ? .6f : -4.f);
+            F.Axis(Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY, Gamepad ? .6f : 4.f);
             F.Step();
         }
         const FRotator Turn = (F.Ship->GetActorRotation() - BeforeTurn).GetNormalized();
@@ -302,7 +335,7 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
         for (int32 Frame = 0; Frame < 60; ++Frame)
         {
             F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, Gamepad ? .8f : 5.f);
-            F.Axis(Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY, Gamepad ? .6f : -4.f);
+            F.Axis(Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY, Gamepad ? .6f : 4.f);
             F.Step();
         }
         const FRotator Turn = (F.Ship->GetActorRotation() - BeforeTurn).GetNormalized();
@@ -313,6 +346,141 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
         TestFalse(TEXT("Re-possession fixture never entered production GameMode BeginPlay"),
                   F.Mode->HasActorBegunPlay());
     }
+    return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSControllerPitchParity, "SpaceSurvival.Flight.ControllerPitchParity",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSControllerPitchParity::RunTest(const FString &)
+{
+    for (bool Gamepad : {false, true})
+        for (bool Inverted : {false, true})
+        {
+            FSSControllerFlightWorld F;
+            if (!F.Initialize(*this))
+                return false;
+            F.Instance->Session.settings.invertPitch = Inverted;
+            const FKey Axis = Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY;
+            const float Value = Gamepad ? .6f : 4.f;
+            const double Sign = Inverted ? -1. : 1.;
+            const FString Case = FString::Printf(TEXT("%s / %s"), Gamepad ? TEXT("stick up") : TEXT("mouse up"),
+                                                 Inverted ? TEXT("inverted") : TEXT("standard"));
+            if (Gamepad)
+            {
+                F.Axis(Axis, .08f);
+                F.Step();
+                TestEqual(TEXT("Configured right-stick deadzone removes small resting drift before polling"),
+                          F.Controller->GetInputAnalogKeyState(Axis), 0.f);
+            }
+            // SceneViewport::OnMouseMove subtracts screen CursorDelta.Y, so physical mouse-up
+            // already arrives as positive MouseY. Positive stick Y has the same up convention.
+            const float BeforeFlight = F.Ship->GetActorRotation().Pitch;
+            for (int32 Frame = 0; Frame < 30; ++Frame)
+            {
+                F.Axis(Axis, Value);
+                F.Step();
+            }
+            const double FlightPitch = FMath::FindDeltaAngleDegrees(BeforeFlight, F.Ship->GetActorRotation().Pitch);
+            TestTrue(Case + TEXT(" pitches the actual flight body in the requested direction"),
+                     FlightPitch * Sign > 3.);
+            F.Axis(Axis, 0.f);
+            F.Ship->BeginMooring();
+            F.Ship->SetActorTickEnabled(false);
+            auto *Walker = F.World->SpawnActor<ASSWalker>(FVector(10000, 0, 7000), FRotator::ZeroRotator);
+            if (!TestNotNull(TEXT("Create actual station walking pawn"), Walker))
+                return false;
+            F.Controller->Possess(Walker);
+            F.Controller->SetControlRotation(FRotator::ZeroRotator);
+            for (int32 Frame = 0; Frame < 30; ++Frame)
+            {
+                F.Axis(Axis, Value);
+                F.Step();
+            }
+            const double WalkPitch = FRotator::NormalizeAxis(F.Controller->GetControlRotation().Pitch);
+            TestTrue(Case + TEXT(" points the station view in the same requested direction"), WalkPitch * Sign > 3.);
+        }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSLiveRewardInput, "SpaceSurvival.Flight.LiveRewardInput",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSLiveRewardInput::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+        return false;
+    for (bool Gamepad : {false, true})
+    {
+        F.Mode->NotifyEventCompleted(false);
+        F.Mode->OpenPanel(ESSPanel::Reward);
+        TestFalse(TEXT("Live flight reward hides the pointer to retain mouse steering"),
+                  F.Controller->bShowMouseCursor);
+        TestTrue(TEXT("Actual engine input mode requests permanent capture for live flight rewards"),
+                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CapturePermanently);
+        TestFalse(TEXT("Reward selection keeps the world live"), F.World->IsPaused());
+        TestTrue(TEXT("Captured reward explains the keyboard and controller selection controls"),
+                 F.Mode->PanelDetail.Contains(TEXT("Up/Down or D-pad")) &&
+                     F.Mode->PanelDetail.Contains(TEXT("Enter/A")));
+        const SS::Utility BeforeUtility = F.Instance->Session.run.utility;
+        const int32 Choice = Gamepad ? 0 : 1;
+        // A previously rendered cursor rectangle can still resolve to a valid action index.
+        // Exercise that exact pointer action route, independently of an OS cursor or HUD renderer.
+        F.Mode->ActivateEntry(Choice, true);
+        TestTrue(TEXT("Hidden captured pointer cannot accept a stale reward row"),
+                 F.Mode->Panel == ESSPanel::Reward && F.Instance->Session.run.pendingReward &&
+                     F.Instance->Session.run.utility == BeforeUtility);
+        F.Button(EKeys::LeftMouseButton, true);
+        F.Step();
+        F.Button(EKeys::LeftMouseButton, false);
+        F.Step();
+        TestTrue(TEXT("Hidden reward mouse clicks neither choose nor fire"),
+                 F.Mode->Panel == ESSPanel::Reward && F.Instance->Session.run.pendingReward && !F.Ship->IsFiring());
+        const float BeforeYaw = F.Ship->GetActorRotation().Yaw;
+        for (int32 Frame = 0; Frame < 30; ++Frame)
+        {
+            F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, Gamepad ? .7f : 4.f);
+            F.Step();
+        }
+        TestTrue(TEXT("Controller routing continues to steer while reward navigation is open"),
+                 FMath::FindDeltaAngleDegrees(BeforeYaw, F.Ship->GetActorRotation().Yaw) > 3.f);
+        F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, 0.f);
+        const FKey DownKey = Gamepad ? EKeys::Gamepad_DPad_Down : EKeys::Down;
+        F.Button(DownKey, true);
+        F.Step();
+        F.Button(DownKey, false);
+        F.Step();
+        TestEqual(TEXT("Arrow/D-pad navigation still chooses the next live reward row"), F.Mode->SelectedEntry, 1);
+        if (Choice == 0)
+        {
+            F.Button(EKeys::Gamepad_DPad_Up, true);
+            F.Step();
+            F.Button(EKeys::Gamepad_DPad_Up, false);
+            F.Step();
+        }
+        const FKey Confirm = Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::Enter;
+        F.Button(Confirm, true);
+        F.Step();
+        F.Button(Confirm, false);
+        F.Step();
+        TestTrue(TEXT("Enter/A accepts one reward and returns to flight without firing"),
+                 F.Mode->Panel == ESSPanel::None && !F.Instance->Session.run.pendingReward &&
+                     F.Instance->Session.run.utility != BeforeUtility && !F.Ship->IsFiring());
+        TestTrue(TEXT("Closing reward retains the flight capture mode"),
+                 !F.Controller->bShowMouseCursor &&
+                     F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CapturePermanently);
+    }
+    F.Ship->BeginMooring();
+    F.Mode->OpenPanel(ESSPanel::Depot);
+    TestTrue(TEXT("Moored depot retains its visible cursor and pointer capture policy"),
+             F.Controller->bShowMouseCursor &&
+                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CaptureDuringMouseDown);
+    F.Mode->ClosePanel();
+    F.Mode->OpenPanel(ESSPanel::Main);
+    TestTrue(TEXT("Ordinary menus retain cursor UI mode"),
+             F.Controller->bShowMouseCursor &&
+                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CaptureDuringMouseDown);
+    F.Mode->ClosePanel();
+    // Mode/cursor policy and synthetic routing are covered; no native window, real pointer focus,
+    // capture acquisition or physical-device acceptance is claimed by this inert viewport fixture.
     return true;
 }
 #endif
