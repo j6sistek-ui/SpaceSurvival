@@ -3,9 +3,11 @@
   UnrealEditor-Cmd.exe <project> -unattended -stdout -FullStdOutLogOutput \
       -DisablePlugins=UAssetBrowser -ExecutePythonScript="<abs path>/Scripts/AuthorAlienCrew.py"
 
-Everything this writes lands under /Game/SpaceSurvival/Licensed/StationAssets/AlienCrew, which is
-inside the always-cooked /Game/SpaceSurvival root. Nothing in the licensed packs is modified: the
-alien pack's own IK retargeter is duplicated out before its empty source side is filled in.
+Everything this writes lands under /Game/SpaceSurvival/Licensed/StationAssets/AlienCrew. The
+finished clips and skins cook with /Game/SpaceSurvival; Config/DefaultGame.ini excludes only the
+authoring RTG_MannequinToNyxar package so its excluded MocapSource dependency cannot break cooking.
+Nothing in the licensed packs is modified: the alien pack's own IK retargeter is duplicated out
+before its empty source side is filled in.
 
 Two things the packs already did, which is why there is no rigging here:
   - the alien ships a standard-proportion UE5 skeleton, its own IK rig (IK_Nixar) and a retargeter
