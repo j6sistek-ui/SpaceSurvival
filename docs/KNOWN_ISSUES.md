@@ -2059,6 +2059,34 @@ anything:
 Confirmed visually in that screenshot: the player is buried to roughly the knee, and the sky is a
 bright daylight-like gradient rather than space.
 
+### The "cameras" are mine, and so is the mess - identified
+
+A second PIE screenshot, inside the station, identified the objects the owner read as cameras:
+they are **`SM_Monitor`, a wall-mounted mesh, placed free-floating in open air by
+`Scripts/MakeStationRecipe.py`.** From behind, a boxy monitor on a stalk reads as a studio camera on
+a boom. Not stray capture actors - recipe output.
+
+Counted from `Artifacts/StationRecipe/station_recipe.json`, **164 props are placed at mid-air heights
+with nothing to attach to** (deck is z=0, ceiling 307):
+
+| Asset | Count | Z range | Belongs |
+|---|---|---|---|
+| `SM_CorridorCable01` | 74 | 51 .. 165 | along a wall |
+| `SM_Hook_01` | 42 | 143 .. 357 | wall or ceiling |
+| `SM_Monitor` | 22 | 144 .. 189 | **wall-mounted** |
+| `SM_Crate_Part` | 17 | 0 .. 221 | on a surface |
+| `SM_Flag_02` | 9 | 108 .. 240 | hung on a wall |
+
+The generator has a `MONITOR` constant whose own comment reads *"centred, wall-mounted"*. It was
+placed by coordinate anyway, with no check that a wall exists behind it. The same applies to the
+hooks, flags and cables.
+
+This is the direct cause of *"objects floating everywhere disorganized as hell"*, and it is a
+generator bug, not a content problem - the fix belongs in `MakeStationRecipe.py`, which must place a
+wall-mounted prop against an actual wall face or not at all.
+
+It also explains why the staged captures looked fine: every one of them was framed to avoid these.
+
 ### Why this list exists
 
 `CLAUDE.md` already says *"Treat '67 tests pass' as saying nothing about what a player receives."*
