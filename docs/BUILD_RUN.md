@@ -59,24 +59,42 @@ Example (one script at a time):
 
 Authoring backs up four private packages under `Artifacts/AsteroidDepth/<run>/`, preserves existing layout arrays and verifies vendor bytes. `-SSSkyResolution=4096` is an optional comparison; 2048 is the default. `AuthorSpaceVisualPass.py` also selects 2K BC6H for these three derivatives. A separate rendered check is required; authoring does not package or publish. Current evidence and open work remain in VALIDATION and KNOWN_ISSUES.
 
+The package command forwards `-RenderOffscreen` to the cooker and disables the two editor integration plugins there. Their project references also allow only Editor targets. The isolated reset worktree has its own ordinary `Artifacts` directory, so its `Scripts/Build.ps1 -Target Package` archive does not replace the original checkout's `Artifacts/Windows`.
+
 ## Station reset authoring (development project, unaccepted)
 
-Paraphrase of the owner's September 21 direction: an industrial steel/amber district inside the supplied hollow asteroid, with connected colony structures around it. After the Editor build, prepare the Phoenix presentation derivative described in [Content pipeline](CONTENT_PIPELINE.md#stellar-phoenix-presentation-adapter), then author the reduced asteroid before the station layout. Use one Unreal process at a time. Run each inspection first and inspect its receipt before adding its apply flag:
+Paraphrase of the owner's September 21 direction: an industrial steel/amber district inside the supplied hollow asteroid, with connected colony structures around it. After the Editor build, prepare the Phoenix presentation derivative and measured flight-hull profile described in [Content pipeline](CONTENT_PIPELINE.md#stellar-phoenix-presentation-adapter), then author the reduced asteroid and colony derivative before the station layout. Use one Unreal process at a time. Run each inspection first and inspect its receipt before adding its apply flag:
 
 ```powershell
 $ssRoot = (Get-Location).Path
 $ssEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
 $ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixFlightHull.py"
+# After inspecting Artifacts/PhoenixPresentation/flight-hull-dry-run.json:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixFlightHull.py" -SSApplyPhoenixFlightHull
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixParkedPhysics.py"
+# Inspect parked-physics-dry-run.json, then apply the owned ten-shape parked derivative:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixParkedPhysics.py" -SSApplyPhoenixParkedPhysics
 & $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroid.py"
 # After inspecting Artifacts/StationAsteroid/dry-run.json:
 & $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroid.py" -SSApplyStationAsteroid
 & $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/InspectStationAsteroidPlacement.py"
+& $ssEditor $ssProject -unattended -RenderOffscreen -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroidMaterial.py"
+# Inspect material-dry-run.json before saving the private material:
+& $ssEditor $ssProject -unattended -RenderOffscreen -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroidMaterial.py" -SSApplyStationAsteroidMaterial
+# With $ssBlender pointing to the installed Blender and $ssFigurSource to the owned space_station_kit.blend:
+& $ssBlender --background --factory-startup --python Scripts/AuthorStationColonyHabitat.py -- --source $ssFigurSource
+# Inspect Artifacts/StationReset/ColonyHabitat/source-quarter.png and dry-run.json, then export:
+& $ssBlender --background --factory-startup --python Scripts/AuthorStationColonyHabitat.py -- --apply --source $ssFigurSource
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/ImportStationColonyHabitat.py"
+# Inspect the baked preview and import-dry-run.json before saving the private assembly:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/ImportStationColonyHabitat.py" -SSApplyStationColonyHabitat
 & $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationReset.py"
 # After inspecting Artifacts/StationReset/plan.json and recipe.json:
 & $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationReset.py" -SSApplyStationReset
 ```
 
-The asteroid author preserves the 5.46-million-triangle source, targets a separate 500,000-triangle source mesh, and records actual counts and sampled shape comparisons in `Artifacts/StationAsteroid/author.json`. Uniform scale 145 gives the unit-scale roughly 2 m import a roughly 300 m design envelope; scaling does not optimize geometry. The bowl background has collision disabled so its original convex body cannot seal the cavity. Native district floor/wall/column/console/staff bodies and the circular pad own the bounded playable space; the outer asteroid and colony are not an unrestricted walkable world. The station author saves `BP_StationReset`, preserves the original `BP_StationVisualLayout`, and refuses an output whose ownership hash no longer matches. Generated assets and receipts remain private. Run the reset integration tests and render the actual home/arrival/departure experience before review; a successful author is not a visual or performance pass.
+The asteroid author's September 21 revision-3 receipt preserves the 5,464,576-triangle original and editor source in a private copy, with 500,640 stored Nanite render triangles and 150,192 collision-fallback triangles. `Artifacts/StationAsteroid/author.json` records those distinct counts and the unchanged source hash. Smaller 20k/50k/100k fallback attempts exceeded the fixed one-source-centimetre surface tolerance; the saved candidate's maximum sampled difference is 0.773376 cm, with all 175 ray hit classifications retained. Uniform scale 145 gives the unit-scale roughly 2 m import a roughly 300 m design envelope and scales that sampled difference to 112.14 cm; scaling does not optimize geometry. The private bowl removes the original convex body and uses its measured fallback triangles for non-simulated ComplexAsSimple collision, under a 160,000-triangle native budget. The native station owns that physical proxy; the visual Blueprint stays collisionless. Native district floor/wall/column/console/staff bodies and the circular pad own the bounded playable space; the outer asteroid and colony are not an unrestricted walkable world. The station author saves `BP_StationReset`, preserves the original `BP_StationVisualLayout`, and refuses an output whose ownership hash no longer matches. Generated assets and receipts remain private. Run the placement inspector, reset integration tests and render the actual home/arrival/departure experience before review; a successful author is not a visual or performance pass.
 
 ## Historical station pit stop authoring (development project, unaccepted)
 

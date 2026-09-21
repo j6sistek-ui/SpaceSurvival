@@ -86,6 +86,7 @@ void ASSStationVisualLayout::EnforcePresentationOnly()
 #include "Engine/World.h"
 #include "Kismet2/KismetEditorUtilities.h"
 #include "Materials/MaterialInterface.h"
+#include "PhysicsEngine/BodySetup.h"
 #include "Misc/PackageName.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
@@ -232,6 +233,9 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationLayoutAtPath(const FS
         Component->SetRelativeTransform(Transform);
         Component->SetMobility(EComponentMobility::Movable);
         Component->ComponentTags.Add(TEXT("StationAuthoredVisual"));
+        // Rebuilding an existing SCS can suffix component names while old templates still exist.
+        // Keep the recipe identity independent of those generated UObject names.
+        Component->ComponentTags.Add(FName(*(TEXT("StationAuthoredId:") + Name)));
         if (auto *Primitive = Cast<UPrimitiveComponent>(Component))
         {
             Primitive->SetCollisionProfileName(TEXT("NoCollision"));
@@ -359,8 +363,24 @@ UBlueprint *USSStationLayoutAuthoringLibrary::CreateStationLayoutAtPath(const FS
                 }
             bool Shadows = true;
             Object->TryGetBoolField(TEXT("cast_shadows"), Shadows);
-            if (!AddStatic(Object->GetStringField(TEXT("name")), Mesh, JsonTransform(Object), Materials, Shadows,
-                           {FName(TEXT("StationVisualDetail"))}))
+            TArray<FName> Tags{FName(TEXT("StationVisualDetail"))};
+            bool TriangleCollision = false;
+            Object->TryGetBoolField(TEXT("triangle_collision"), TriangleCollision);
+            if (TriangleCollision)
+            {
+                const auto *Body = Mesh->GetBodySetup();
+                if (!Mesh->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/Licensed/StationReset/")) || !Body ||
+                    Body->GetCollisionTraceFlag() != CTF_UseComplexAsSimple || Mesh->GetNumTriangles(0) <= 0 ||
+                    Mesh->GetNumTriangles(0) > 160000)
+                {
+                    UE_LOG(LogTemp, Error,
+                           TEXT("Station triangle collision requires a private bounded fallback mesh: %s"),
+                           *Mesh->GetPathName());
+                    return nullptr;
+                }
+                Tags.Add(TEXT("StationTriangleSolidSpec"));
+            }
+            if (!AddStatic(Object->GetStringField(TEXT("name")), Mesh, JsonTransform(Object), Materials, Shadows, Tags))
                 return nullptr;
         }
     if (Recipe->TryGetArrayField(TEXT("skeletal_meshes"), Values))

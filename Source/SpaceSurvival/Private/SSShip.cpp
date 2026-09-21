@@ -7,6 +7,7 @@
 #include "SSPhase1Data.h"
 #include "SSShipPresentation.h"
 #include "SSShipVisualRig.h"
+#include "SSFlightHull.h"
 #include "SSWorldActors.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -28,6 +29,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 #include "ThrusterManagerComp.h"
+#include "Chaos/ChaosEngineInterface.h"
 
 namespace
 {
@@ -148,37 +150,27 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     const float Limit = FMath::Max(Speed, float(Maneuver));
     Thrusters->SetMaxSpeedLimit(Limit, FMath::Max(100.f, Limit * .12f));
 
-    // Turning authority and how hard it stops turning. Response is re-homed onto the gyro's proportional
-    // gain rather than dropped: it was a rate constant on linear velocity error and there is no such dial
-    // on a rigid body, so it becomes the rate constant on ANGULAR error. That is a re-purposing and not a
-    // translation, and the Thrusters upgrade stays observable as crisper turning because of it.
+    // Response controls both angular damping here and linear velocity recovery below, so the
+    // Thrusters upgrade remains observable in turning and in the release of lateral thrust.
     Gyros->ProportionalGain = FMath::Max(.5, Response);
     const float TurnRate = FMath::DegreesToRadians(Tuning->SteeringDegrees * Authority * Interference);
     Gyros->MaxTotalTorque = FMath::Max(1.f, TurnRate * float(Gyros->ProportionalGain) * 2.f);
 
-    // Inertial dampeners: release the stick and the ship settles instead of coasting forever. This is the
-    // single biggest contributor to the feel the owner asked for, and the plugin defaults it on - but
-    // SetInertialDampeners dereferences its mesh pointer with no null check while its own _Server twin
-    // guards it, and standalone always takes the unguarded path. Only call it once the body is confirmed.
-    if (Collision->IsSimulatingPhysics())
-        Thrusters->SetInertialDampeners(true);
-
-    // Input. Throttle is a TRIM, not a thrust direction, and getting that wrong is what stopped the Phoenix
-    // ever reaching a landing pad. On the hand-written model throttle scales a target speed - Speed above is
-    // already max(MinimumSpeed, stat * (1 + .3 * throttle) * boost * brake) - so throttle -1 means "cruise at
-    // seventy percent", still travelling forward. Feeding that same -1 in here as an axis meant "full
-    // reverse", so the classic hull closed on the pad while the Phoenix backed away from it, and the
-    // dampener then braked at the full thrust clamp on top because input and velocity disagreed in sign.
-    //
-    // So drive the error instead: thrust forward when under the trimmed speed, back when over it. That is
-    // what a throttle trim IS on a body that has to be pushed, it gives the same meaning to the same input
-    // on both paths, and it is the settle-into-a-cruise behaviour the flight feel is aiming at. The band is
-    // a share of the target rather than a constant so it scales with the Engine upgrade instead of going
-    // stale, and the floor keeps it sane when the target approaches zero in the station zone.
-    const float ForwardSpeed = FVector::DotProduct(Collision->GetPhysicsLinearVelocity(), GetActorForwardVector());
-    const float Trim = FMath::Clamp((Speed - ForwardSpeed) / FMath::Max(100.f, Speed * .15f), -1.f, 1.f);
-    const FVector Thrust(Trim, FMath::Clamp(StrafeInput.X, -1.f, 1.f), FMath::Clamp(StrafeInput.Y, -1.f, 1.f));
-    Thrusters->SetThrustersInput(Thrust);
+    // The vendor dampener targets zero velocity. Feeding it a cruise-speed trim
+    // makes exactly-zero trim brake at full force, then positive trim release
+    // that brake on the next frame. The resulting limit cycle depends on FPS.
+    // Own the velocity target here and let ShipCore apply its bounded forces.
+    // Released strafe still damps to zero; forward flight settles at the trimmed
+    // cruise speed (or zero while stopped in the station zone).
+    Thrusters->SetInertialDampeners(false);
+    const FVector LocalVelocity =
+        GetActorTransform().InverseTransformVectorNoScale(Collision->GetPhysicsLinearVelocity());
+    const FVector DesiredVelocity(Speed, StrafeInput.X * Maneuver, StrafeInput.Y * Maneuver);
+    const float Step = FMath::Max(Dt, UE_SMALL_NUMBER);
+    const double Gain = (1.0 - FMath::Exp(-FMath::Max(.5, Response) * Step)) / Step;
+    const FVector Thrust = (DesiredVelocity - LocalVelocity) * (Gain / FMath::Max(1.0, Acceleration));
+    Thrusters->SetThrustersInput(FVector(FMath::Clamp(Thrust.X, -1.0, 1.0), FMath::Clamp(Thrust.Y, -1.0, 1.0),
+                                         FMath::Clamp(Thrust.Z, -1.0, 1.0)));
     // ShipCore accepts angular acceleration, not a turn rate. Convert the same degrees/second used by
     // input into its rate-damped solver. Banking targets an attitude; a held turn must not roll forever.
     const float BankError = FMath::FindDeltaAngleDegrees(GetActorRotation().Roll, Steer.X * 28.f);
@@ -196,6 +188,9 @@ void ASSShip::OnHullImpact(UPrimitiveComponent *, AActor *OtherActor, UPrimitive
     // The same 15 damage on the same .8 s cooldown the swept path charged, so the Phoenix is not quietly
     // invulnerable to the asteroid field every other hull has always had to respect.
     if (!ShipCoreDriven || !OtherActor || OtherActor == this || ImpactCooldown > 0)
+        return;
+    // Authored hazards own their damage value and swept-contact cooldown, including contact at a wing.
+    if (const auto *Body = Cast<ASSWorldBody>(OtherActor); Body && (Body->IsSolidHazard() || Body->IsEnemy()))
         return;
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
@@ -250,6 +245,44 @@ float ASSShip::FlightCollisionRadius()
     const auto *Default = GetDefault<ASSShip>();
     return Default && Default->Collision ? Default->Collision->GetUnscaledSphereRadius() : 105.f;
 }
+bool ASSShip::HasFlightHull() const
+{
+    return FlightHull && FlightHull->GetBodySetup();
+}
+FBox ASSShip::FlightHullBounds(const FTransform &ShipTransform) const
+{
+    return HasFlightHull() ? FlightHull->CalcBounds(ShipTransform).GetBox()
+                           : Collision->CalcBounds(ShipTransform).GetBox();
+}
+bool ASSShip::SweepFlightHull(FHitResult &Hit, const FVector &From, const FVector &To, const FQuat &Rotation,
+                              const FCollisionQueryParams &Params) const
+{
+    if (!Collision || !GetWorld())
+        return false;
+    FComponentQueryParams Query;
+    static_cast<FCollisionQueryParams &>(Query) = Params;
+    Query.AddIgnoredActor(this);
+    TArray<FHitResult> Hits;
+    GetWorld()->ComponentSweepMulti(Hits, Collision, From, To, Rotation, Query);
+    for (const FHitResult &Candidate : Hits)
+        if (Candidate.bBlockingHit)
+        {
+            Hit = Candidate;
+            return true;
+        }
+    return false;
+}
+bool ASSShip::SweepFlightContact(FHitResult &Hit, const FVector &From, const FVector &To, float Radius) const
+{
+    if (!Collision)
+        return false;
+    // UE's older FCollisionShape overload filters welded child shapes out of the root body.
+    // The geometry overload queries all shapes of its single Chaos physics object instead.
+    const FPhysicsShapeAdapter Shape(FQuat::Identity, FCollisionShape::MakeSphere(FMath::Max(.1f, Radius)));
+    return Collision->SweepComponent(
+        Hit, From, To, FQuat::Identity, Shape.GetGeometry(), ECC_Pawn, FCollisionQueryParams::DefaultQueryParam,
+        FCollisionResponseParams::DefaultResponseParam, FCollisionObjectQueryParams::DefaultObjectQueryParam);
+}
 const TCHAR *ASSShip::HullAssetPath(SS::Ship Kind)
 {
     if (Kind == SS::Ship::Starter && FParse::Param(FCommandLine::Get(), TEXT("SSShipRefresh")) &&
@@ -274,6 +307,24 @@ void ASSShip::RefreshPaint()
     if (const auto *GI = GetGameInstance<USSGameInstance>();
         GI && HullMesh && HullMesh->IsVisible() && (!SkeletalHull || !SkeletalHull->GetSkeletalMeshAsset()))
         SSPaint::Apply(HullMesh, GI->Session.account);
+}
+void ASSShip::RefreshFlightPresentation()
+{
+    // The parked home-hangar pawn predates loadout selection. Reusing it for launch must still
+    // apply the selected static hull and its fittings without rebuilding the pawn or flight body.
+    if (const auto *GI = GetGameInstance<USSGameInstance>())
+        HullMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, HullAssetPath(GI->Session.run.ship)));
+    Presentation->SetHull(HullMesh);
+    const auto *LoadedHull = HullMesh->GetStaticMesh().Get();
+    const bool ClosedCockpit =
+        LoadedHull &&
+        (LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/ShipRefresh/")) ||
+         LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/")));
+    // A Phoenix hides the static hull and pilot; an open Classic cockpit resumes its seated pilot.
+    Pilot->SetVisibility(HullMesh->IsVisible() && !ClosedCockpit);
+    if (auto *ReadabilityLight = FindComponentByClass<UPointLightComponent>())
+        ReadabilityLight->SetVisibility(true);
+    RefreshPaint();
 }
 void ASSShip::BeginPlay()
 {
@@ -309,13 +360,6 @@ void ASSShip::BeginPlay()
     Pilot->SetRelativeLocation(PilotHero.PilotMountOffset);
     Pilot->SetRelativeRotation(FRotator(0, PilotHero.MeshYaw, 0));
     Pilot->SetRelativeScale3D(FVector(PilotHero.RenderedScale(PilotMesh)));
-    const auto *LoadedHull = HullMesh->GetStaticMesh().Get();
-    const bool ClosedCockpit =
-        LoadedHull &&
-        (LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/ShipRefresh/")) ||
-         LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/")));
-    // Preserve the animated component and its exit-pose handoff under the closed hull.
-    Pilot->SetVisibility(!ClosedCockpit);
     Pilot->PlayAnimation(PilotClip, true);
     // A skeletal hull, if this build has one. The static hull stays loaded and simply stops being drawn:
     // the module presentation and the chase-framing test still read it, and neither has to
@@ -412,12 +456,38 @@ void ASSShip::BeginPlay()
             Collision->SetSimulatePhysics(true);
             if (Collision->IsSimulatingPhysics())
             {
+                if (VisualRig && VisualRig->HasBlueprintRig())
+                {
+                    auto *Profile = LoadObject<USSFlightHullProfile>(
+                        nullptr, TEXT("/Game/SpaceSurvival/Licensed/PhoenixPresentation/"
+                                      "DA_PhoenixFlightHull.DA_PhoenixFlightHull"));
+                    auto *Compound = NewObject<USSFlightHullComponent>(this, TEXT("AuthoredFlightHull"));
+                    if (Compound->Initialize(Profile))
+                    {
+                        Compound->SetupAttachment(Collision);
+                        AddInstanceComponent(Compound);
+                        Compound->RegisterComponent();
+                        if (!Compound->IsWelded())
+                            Compound->WeldTo(Collision);
+                        Compound->OnComponentHit.AddDynamic(this, &ASSShip::OnHullImpact);
+                        FlightHull = Compound;
+                    }
+                    else
+                        UE_LOG(LogTemp, Error,
+                               TEXT("Phoenix flight collision profile is missing; author it before play."));
+                }
                 // bAutoActivate BEFORE registering, on both. Neither constructor sets it and neither
                 // TickComponent checks IsActive(), so a component added from C++ sits there inactive while
                 // looking perfectly configured - invisible in the Blueprint workflow the plugin was
                 // written for, where the editor activates components for you.
                 Thrusters = NewObject<UThrusterManagerComp>(this, TEXT("ShipCoreThrusters"));
                 Thrusters->bAutoActivate = true;
+                // DriveShipCore computes this frame's trim before physics. The vendor defaults to
+                // PostPhysics, which applies that stale trim after velocity has already changed and
+                // queues its force for the next frame. Near the brake floor that can add a second
+                // reverse impulse. Feed the current trim and force into the same physics step.
+                Thrusters->SetTickGroup(TG_PrePhysics);
+                Thrusters->AddTickPrerequisiteActor(this);
                 // This is a space game. The plugin disables gravity on the body and then re-applies WORLD
                 // gravity by hand as a force every frame, so leaving this alone makes the ship fall.
                 Thrusters->bCustomGravity = true;
@@ -440,7 +510,7 @@ void ASSShip::BeginPlay()
                    Hull.ScaledLength(), HullChaseScale);
         }
     }
-    RefreshPaint();
+    RefreshFlightPresentation();
     EngineAudio->SetSound(SSAudio::PresentationSound(TEXT("Engine")));
     UpdateEngineMix();
     EngineAudio->Play();
@@ -496,6 +566,12 @@ void ASSShip::HoldBody(bool Hold)
         // whatever it was carrying when it was frozen - which, after a stay at the station, is a stale
         // approach velocity pointing at the pad.
         Collision->SetSimulatePhysics(true);
+        if (FlightHull && FlightHull->GetCollisionEnabled() == ECollisionEnabled::NoCollision)
+        {
+            FlightHull->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+            if (!FlightHull->IsWelded())
+                FlightHull->WeldTo(Collision);
+        }
         Collision->SetPhysicsLinearVelocity(Velocity);
         Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
     }
@@ -511,12 +587,15 @@ void ASSShip::SetDockingTarget(FVector Target, FRotator Rotation, float Duration
     Docking = true;
     TakingOff = false;
     Moored = false;
+    if (FlightHull)
+        FlightHull->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     HoldBody(true);
     if (VisualRig)
         VisualRig->PlayLanding(TransitionDuration);
 }
 void ASSShip::BeginTakeoff(FVector HoverTarget, FRotator Rotation, float Duration)
 {
+    RefreshFlightPresentation();
     TransitionStart = GetActorLocation();
     TransitionRotation = GetActorRotation();
     TransitionElapsed = 0.f;
@@ -526,6 +605,8 @@ void ASSShip::BeginTakeoff(FVector HoverTarget, FRotator Rotation, float Duratio
     TakingOff = true;
     Docking = Moored = false;
     Velocity = Forces = FVector::ZeroVector;
+    if (FlightHull)
+        FlightHull->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     HoldBody(true);
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SetActorTickEnabled(true);
@@ -548,16 +629,10 @@ bool ASSShip::BeginMooring()
 }
 void ASSShip::EndMooring()
 {
-    // Wings back out and gear back up on leaving the pad, which is the same clip flight starts in. The
-    // docking clip left the ship in its landing configuration, and nothing else would ever undo it.
-    if (VisualRig && VisualRig->HasBlueprintRig())
-        VisualRig->PlayTakeoff();
-    else if (ShipCoreDriven && SkeletalHull && SkeletalHull->IsVisible())
-        if (const FSSHullDefinition Hull(ESSHullIdentity::StellarPhoenix); !Hull.FlightPoseClipPath.IsEmpty())
-            if (auto *Pose = LoadObject<UAnimSequence>(nullptr, *Hull.FlightPoseClipPath))
-                SkeletalHull->PlayAnimation(Pose, false);
     if (!Moored)
         return;
+    // A depot holds the ship in its existing flight configuration. Only a pad departure begins
+    // the landing-gear and battle-mode animation sequence, through BeginTakeoff.
     Moored = false;
     Forces = FVector::ZeroVector;
     const auto *GI = GetGameInstance<USSGameInstance>();
@@ -584,6 +659,8 @@ void ASSShip::FinishDocking()
     EngineAudio->Stop();
     if (VisualRig)
         VisualRig->UpdateFlight(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+    if (FlightHull)
+        FlightHull->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Velocity = Forces = FVector::ZeroVector;
     HoldBody(true);
@@ -641,8 +718,10 @@ void ASSShip::Tick(float Dt)
         const FVector Position = TakingOff  ? FMath::Lerp(TransitionStart, DockTarget, Smooth(T))
                                  : T < .55f ? FMath::Lerp(TransitionStart, Hover, Smooth(T / .55f))
                                             : FMath::Lerp(Hover, DockTarget, Smooth((T - .55f) / .45f));
+        // Finish docking alignment above the deck; the descent must not swing a full-size wing through it.
+        const float RotationAlpha = TakingOff ? Smooth(T) : Smooth(FMath::Min(T / .55f, 1.f));
         SetActorLocationAndRotation(
-            Position, FQuat::Slerp(TransitionRotation.Quaternion(), DockRotation.Quaternion(), Smooth(T)));
+            Position, FQuat::Slerp(TransitionRotation.Quaternion(), DockRotation.Quaternion(), RotationAlpha));
         Velocity = FVector::ZeroVector;
         DrivePresentationPower = .18f;
         DrivePresentationBoosting = DrivePresentationBraking = false;
@@ -880,17 +959,11 @@ void ASSShip::ReceiveImpact(float Amount, FVector AwayFromContact)
     // integrated over time; treating a single impact that way weakened it at high FPS.
     const FVector Push = AwayFromContact.GetSafeNormal() * FMath::Min(1400.f, Amount * 20.f);
     Velocity += Push;
-    // And give it to the body, which is the thing that moves under ShipCore. This is the third time the
-    // same gap has been found: GetVelocity read a member the solver never writes, collision damage came
-    // off a swept hit a simulating body never performs, and this - the only push hazards ever apply - was
-    // landing in a member the solver never reads. The Phoenix took the damage and did not move. A wave of
-    // asteroids would have hurt it and never once shoved it, which is the kind of defect that reads as
-    // "the collisions feel weightless" rather than as anything a test named.
-    //
-    // bVelChange is what makes it the same push rather than a similar one: the kinematic line above adds
-    // centimetres per second directly, and an impulse scaled by mass would be a different quantity wearing
-    // the same number. Hazard contact does not arrive through OnComponentHit - ASSWorldBody does its own
-    // analytic closest-approach test and calls this - so nothing else covers it.
+    // World-body contact is resolved after physics so both swept paths cover the
+    // same frame. Apply this velocity change now: AddImpulse would queue it for
+    // the next solver step, delaying feedback and letting the next trim command
+    // observe the pre-impact velocity. The additive setter preserves the same
+    // mass-independent cm/s push as the classic movement path.
     if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
-        Collision->AddImpulse(Push, NAME_None, true);
+        Collision->SetPhysicsLinearVelocity(Push, true);
 }

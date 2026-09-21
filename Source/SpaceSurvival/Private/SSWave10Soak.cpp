@@ -829,7 +829,12 @@ void ASSWave10Soak::Tick(float Dt)
         ApproachHasLastRotation = false;
     if (Station5 && S.run.phase == SS::Phase::Approach && IsValid(GM->Hub))
     {
-        const FRotator Desired = (GM->Hub->PadDockPosition() - GM->Ship->GetActorLocation()).Rotation();
+        // Aim above the deck: the measured parked pivot is only2.5cm above it, so flying toward that
+        // point would put the hull into the rim before the ordinary docking assist can take over.
+        const FVector ApproachTarget =
+            GM->Hub->PadDockPosition() + GM->Hub->GetActorUpVector() * FMath::Min(1600.f, GM->GetDockingRadius() * .7f);
+        const float DistanceToApproach = FVector::Distance(GM->Ship->GetActorLocation(), ApproachTarget);
+        const FRotator Desired = (ApproachTarget - GM->Ship->GetActorLocation()).Rotation();
         const FRotator Current = GM->Ship->GetActorRotation();
         // Steer like a pilot, not like a thermostat. This used to be pure proportional - clamp(error/30) -
         // which converges on the kinematic hull because heading there follows the input directly. On a
@@ -857,11 +862,14 @@ void ASSWave10Soak::Tick(float Dt)
             FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw) * Kp - YawRate * Kd, -.75f, .75f),
             FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Pitch, Desired.Pitch) * Kp - PitchRate * Kd, -.75f,
                          .75f));
-        const float DistanceToPad = FVector::Distance(GM->Ship->GetActorLocation(), GM->GetLandingTarget());
-        // Station throttle is a persistent trim now. Holding S for the whole approach would park the
-        // fixture far from the pad. Retain cruise until the final braking window, then deliberately dock.
-        GM->Ship->SetFlightInput(Steering, FVector2D::ZeroVector, 0.f, false,
-                                 DistanceToPad < GM->GetDockingRadius() * 2.f);
+        // Station throttle is persistent. A one-way brake window can stop outside admission forever;
+        // use ordinary throttle/brake feedback so the scripted pilot can continue toward its waypoint.
+        const float WantedSpeed = DistanceToApproach < 300.f
+                                      ? 0.f
+                                      : FMath::Min(float(S.Stats().speed), FMath::Max(250.f, DistanceToApproach * .5f));
+        const float ActualSpeed = GM->Ship->GetVelocity().Size();
+        GM->Ship->SetFlightInput(Steering, FVector2D::ZeroVector, ActualSpeed < WantedSpeed - 50.f ? .5f : 0.f, false,
+                                 ActualSpeed > WantedSpeed + 50.f);
         FString DockingMessage;
         if (!RequestedDocking && GM->DockingStatus(DockingMessage))
         {
@@ -885,20 +893,20 @@ void ASSWave10Soak::Tick(float Dt)
             FHitResult Block;
             FCollisionQueryParams Q(SCENE_QUERY_STAT(SSSoakApproachProbe), false, GM->Ship);
             const bool Blocked =
-                GM->Ship->Collision && GetWorld()->SweepSingleByChannel(Block, GM->Ship->GetActorLocation(), Dock,
-                                                                        GM->Ship->Collision->GetComponentQuat(),
-                                                                        GM->Ship->Collision->GetCollisionObjectType(),
-                                                                        GM->Ship->Collision->GetCollisionShape(), Q);
+                GM->Ship->SweepFlightHull(Block, GM->Ship->GetActorLocation(),
+                                          Dock + GM->Hub->GetActorUpVector() * 700.f, GM->Ship->GetActorQuat(), Q);
             UE_LOG(LogTemp, Display,
                    TEXT("SOAK_APPROACH t=%.0f local=(%.0f,%.0f,%.0f) toDock=%.0f radius=%.0f speed=%.0f physV=%.0f "
-                        "sim=%d yawErr=%.1f pitchErr=%.1f steer=(%.2f,%.2f) assist=%d blocked=%d by=%s/%s"),
+                        "sim=%d yawErr=%.1f pitchErr=%.1f steer=(%.2f,%.2f) assist=%d "
+                        "compoundHoverProbeBlocked=%d by=%s/%s toApproach=%.0f status=%s"),
                    ApproachSeconds, Local.X, Local.Y, Local.Z, FVector::Dist(GM->Ship->GetActorLocation(), Dock),
                    GM->GetDockingRadius(), GM->Ship->GetVelocity().Size(), PhysV.Size(), Sim ? 1 : 0,
                    FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw),
                    FMath::FindDeltaAngleDegrees(Current.Pitch, Desired.Pitch), Steering.X, Steering.Y,
                    GM->Hub->CanAssistDocking(GM->Ship) ? 1 : 0, Blocked ? 1 : 0,
                    Blocked && Block.GetActor() ? *Block.GetActor()->GetName() : TEXT("-"),
-                   Blocked && Block.GetComponent() ? *Block.GetComponent()->GetName() : TEXT("-"));
+                   Blocked && Block.GetComponent() ? *Block.GetComponent()->GetName() : TEXT("-"), DistanceToApproach,
+                   *DockingMessage);
         }
     }
     else if (!Station5 || (S.run.phase != SS::Phase::Docking && S.run.phase != SS::Phase::Station))

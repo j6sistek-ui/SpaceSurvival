@@ -1,5 +1,6 @@
 #include "SSShipVisualRig.h"
 #include "SSShip.h"
+#include "SSFlightHull.h"
 #include "SSGameInstance.h"
 #include "SSPhase1Data.h"
 #include "SSStation.h"
@@ -10,21 +11,28 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/SkeletalMesh.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
 #include "Misc/AutomationTest.h"
+#include "Misc/CommandLine.h"
 #include "NiagaraSystem.h"
 #include "PhysicsEngine/PhysicsThrusterComponent.h"
 #include "PhysicsEngine/PhysicsAsset.h"
 #include "PhysicsEngine/SkeletalBodySetup.h"
+#include "PhysicsEngine/BodySetup.h"
+#include "ThrusterManagerComp.h"
+#include "GyroManagerComp.h"
 #if WITH_EDITOR
 #include "Rendering/SkeletalMeshModel.h"
 #include "Animation/AnimSequence.h"
@@ -44,9 +52,17 @@ struct FSSVisualRigWorld
     ASSShip *Ship = nullptr;
     APlayerController *Controller = nullptr;
     USSShipVisualRig *Rig = nullptr;
+    FString SavedCommandLine;
+    bool RestoreCommandLine = false;
 
-    bool Initialize(FAutomationTestBase &Test)
+    bool Initialize(FAutomationTestBase &Test, bool Classic = false)
     {
+        if (Classic)
+        {
+            SavedCommandLine = FCommandLine::Get();
+            RestoreCommandLine = true;
+            FCommandLine::Append(TEXT(" -SSClassic"));
+        }
         World = UWorld::CreateWorld(EWorldType::Game, false);
         if (!Test.TestNotNull(TEXT("Create isolated presentation world"), World))
             return false;
@@ -79,8 +95,11 @@ struct FSSVisualRigWorld
         World->BeginPlay();
         Controller->SetActorTickEnabled(false);
         Rig = Ship->GetVisualRig();
-        if (!Test.TestNotNull(TEXT("Native pawn owns visual adapter"), Rig) ||
-            !Test.TestTrue(TEXT("Licensed Phoenix Blueprint actually loaded"), Rig->HasBlueprintRig()))
+        if (!Test.TestNotNull(TEXT("Native pawn owns visual adapter"), Rig))
+            return false;
+        if (Classic ? !Test.TestFalse(TEXT("Explicit Classic fixture does not load the Phoenix rig"),
+                                      Rig->HasBlueprintRig())
+                    : !Test.TestTrue(TEXT("Licensed Phoenix Blueprint actually loaded"), Rig->HasBlueprintRig()))
             return false;
         // Hold only the native flight body. Real world/component/animation ticks still execute, even
         // when ASSShip itself is stopped, exactly as they must after landing at a station.
@@ -110,6 +129,8 @@ struct FSSVisualRigWorld
         }
         if (Instance)
             Instance->RemoveFromRoot();
+        if (RestoreCommandLine)
+            FCommandLine::Set(*SavedCommandLine);
     }
 };
 
@@ -144,7 +165,7 @@ bool AnimationNamed(FAutomationTestBase &Test, USkeletalMeshComponent *Mesh, con
 
 float ClipSeconds(USkeletalMeshComponent *Mesh)
 {
-    const UAnimSingleNodeInstance *Animation = Mesh->GetSingleNodeInstance();
+    UAnimSingleNodeInstance *Animation = Mesh->GetSingleNodeInstance();
     return Animation->GetLength() / Animation->GetPlayRate();
 }
 
@@ -161,6 +182,84 @@ void CheckAdvancingPose(FAutomationTestBase &Test, FSSVisualRigWorld &Fixture, U
     Test.TestTrue(TEXT("Real bone transforms change while the authored clip plays"),
                   PoseChanged(Before, Mesh->GetBoneSpaceTransforms()));
 }
+#if WITH_EDITOR
+// Clip the actual posed triangles against a vertical column. A bone's whole-part bounds can
+// reach below standing height far away from the walking path and cannot prove local headroom.
+double LowestPosedSurfaceInColumn(USkeletalMeshComponent *Hull, const FBox2D &Column)
+{
+    USkeletalMesh *Mesh = Hull->GetSkeletalMeshAsset();
+    const FSkeletalMeshModel *Model = Mesh->GetImportedModel();
+    if (!Model || Model->LODModels.IsEmpty())
+        return -DBL_MAX;
+    const auto &Skeleton = Mesh->GetRefSkeleton();
+    TArray<FTransform> Bind = Skeleton.GetRefBonePose();
+    TArray<FTransform> Skin;
+    Skin.SetNum(Bind.Num());
+    for (int32 Bone = 0; Bone < Bind.Num(); ++Bone)
+    {
+        const int32 Parent = Skeleton.GetParentIndex(Bone);
+        if (Parent != INDEX_NONE)
+            Bind[Bone] *= Bind[Parent];
+        Skin[Bone] = Bind[Bone].Inverse() * Hull->GetBoneTransform(Bone);
+    }
+    const FSkeletalMeshLODModel &LOD = Model->LODModels[0];
+    if (LOD.IndexBuffer.IsEmpty() || LOD.NumVertices == 0)
+        return -DBL_MAX;
+    TArray<FVector> Posed;
+    Posed.Init(FVector::ZeroVector, LOD.NumVertices);
+    int32 PosedVertices = 0;
+    for (const FSkelMeshSection &Section : LOD.Sections)
+        for (int32 Index = 0; Index < Section.SoftVertices.Num(); ++Index)
+        {
+            const FSoftSkinVertex &Vertex = Section.SoftVertices[Index];
+            FVector Position = FVector::ZeroVector;
+            for (int32 Influence = 0; Influence < MAX_TOTAL_INFLUENCES; ++Influence)
+                if (Vertex.InfluenceWeights[Influence])
+                {
+                    const int32 Bone = Section.BoneMap[Vertex.InfluenceBones[Influence]];
+                    Position += Skin[Bone].TransformPosition(FVector(Vertex.Position)) *
+                                (double(Vertex.InfluenceWeights[Influence]) / MAX_uint16);
+                }
+            Posed[Section.BaseVertexIndex + Index] = Position;
+            ++PosedVertices;
+        }
+    if (PosedVertices != int32(LOD.NumVertices))
+        return -DBL_MAX;
+    double Lowest = DBL_MAX;
+    for (int32 Index = 0; Index + 2 < LOD.IndexBuffer.Num(); Index += 3)
+    {
+        TArray<FVector> Polygon = {Posed[LOD.IndexBuffer[Index]], Posed[LOD.IndexBuffer[Index + 1]],
+                                   Posed[LOD.IndexBuffer[Index + 2]]};
+        for (int32 Side = 0; Side < 4 && !Polygon.IsEmpty(); ++Side)
+        {
+            const int32 Axis = Side / 2;
+            const bool Minimum = (Side % 2) == 0;
+            const double Plane = Minimum ? Column.Min[Axis] : Column.Max[Axis];
+            auto Distance = [Axis, Minimum, Plane](const FVector &Point)
+            { return Minimum ? Point[Axis] - Plane : Plane - Point[Axis]; };
+            TArray<FVector> Clipped;
+            FVector Previous = Polygon.Last();
+            double PreviousDistance = Distance(Previous);
+            for (const FVector &Current : Polygon)
+            {
+                const double CurrentDistance = Distance(Current);
+                if ((CurrentDistance >= 0.) != (PreviousDistance >= 0.))
+                    Clipped.Add(
+                        FMath::Lerp(Previous, Current, PreviousDistance / (PreviousDistance - CurrentDistance)));
+                if (CurrentDistance >= 0.)
+                    Clipped.Add(Current);
+                Previous = Current;
+                PreviousDistance = CurrentDistance;
+            }
+            Polygon = MoveTemp(Clipped);
+        }
+        for (const FVector &Vertex : Polygon)
+            Lowest = FMath::Min(Lowest, Vertex.Z);
+    }
+    return Lowest;
+}
+#endif
+
 } // namespace
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSPhoenixBlueprintRig, "SpaceSurvival.Presentation.PhoenixBlueprintRig",
@@ -314,6 +413,93 @@ bool FSSPhoenixAnimationTransitions::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSPhoenixMooringPose, "SpaceSurvival.Presentation.PhoenixMooringPose",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSPhoenixMooringPose::RunTest(const FString &)
+{
+    FSSVisualRigWorld Fixture;
+    if (!Fixture.Initialize(*this))
+        return false;
+    USkeletalMeshComponent *Hull = Fixture.Rig->GetHull();
+    Fixture.Seconds(ClipSeconds(Hull) + .1f);
+    if (!AnimationNamed(*this, Hull, TEXT("BattleMode_Enter")))
+        return false;
+    Fixture.Seconds(ClipSeconds(Hull) + .1f);
+    const TArray<FTransform> FlightPose = Hull->GetBoneSpaceTransforms();
+    const float SettledTime = Hull->GetSingleNodeInstance()->GetCurrentTime();
+    TestTrue(TEXT("Actual flight pawn begins this release in a magnetic hold"), Fixture.Ship->IsMoored());
+
+    Fixture.Ship->EndMooring();
+    TestFalse(TEXT("Native release clears the magnetic hold"), Fixture.Ship->IsMoored());
+    TestTrue(TEXT("Native release resumes forward flight"), Fixture.Ship->GetVelocity().X > 1000.f);
+    AnimationNamed(*this, Hull, TEXT("BattleMode_Enter"));
+    TestEqual(TEXT("Depot release does not rewind the authored flight animation"),
+              Hull->GetSingleNodeInstance()->GetCurrentTime(), SettledTime);
+    Fixture.Seconds(.2f);
+    TestFalse(TEXT("Evaluated gear and ramp stay stowed after depot release"),
+              PoseChanged(FlightPose, Hull->GetBoneSpaceTransforms()));
+
+    Fixture.Ship->EndMooring();
+    Fixture.Seconds(.2f);
+    AnimationNamed(*this, Hull, TEXT("BattleMode_Enter"));
+    TestFalse(TEXT("Repeated release cannot redeploy the evaluated gear and ramp"),
+              PoseChanged(FlightPose, Hull->GetBoneSpaceTransforms()));
+
+    // A real pad departure still owns the authored takeoff sequence after depot release loses it.
+    Fixture.Ship->SetDockingTarget(Fixture.Ship->GetActorLocation(), FRotator::ZeroRotator);
+    Fixture.Ship->FinishDocking();
+    const TArray<FTransform> LandedPose = Hull->GetBoneSpaceTransforms();
+    TestTrue(TEXT("Positive control: the settled pad pose differs from flight"), PoseChanged(FlightPose, LandedPose));
+    Fixture.Ship->BeginTakeoff(Fixture.Ship->GetActorLocation() + FVector(0, 0, 700), FRotator::ZeroRotator);
+    if (!AnimationNamed(*this, Hull, TEXT("Landing_Off")))
+        return false;
+    Fixture.Seconds(.5f);
+    TestTrue(TEXT("Native station takeoff still advances the actual gear and ramp pose"),
+             PoseChanged(LandedPose, Hull->GetBoneSpaceTransforms()));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSClassicLaunchPresentation, "SpaceSurvival.Presentation.ClassicLaunchPresentation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSClassicLaunchPresentation::RunTest(const FString &)
+{
+    FSSVisualRigWorld Fixture;
+    if (!Fixture.Initialize(*this, true))
+        return false;
+    ASSShip *Ship = Fixture.Ship;
+    auto *Fill = Ship->FindComponentByClass<UPointLightComponent>();
+    if (!TestNotNull(TEXT("Classic flight fill exists"), Fill) ||
+        !TestNotNull(TEXT("Classic parked ship has its initial static hull"), Ship->HullMesh->GetStaticMesh().Get()))
+        return false;
+    TestEqual(TEXT("Parked pawn initially displays the previous Starter selection"),
+              Ship->HullMesh->GetStaticMesh()->GetPathName(), FString(ASSShip::HullAssetPath(SS::Ship::Starter)));
+    Ship->SetDockingTarget(Ship->GetActorLocation(), FRotator::ZeroRotator);
+    Ship->FinishDocking();
+    TestFalse(TEXT("Parked pilot leaves the cockpit"), Ship->Pilot->IsVisible());
+    TestFalse(TEXT("Parked flight fill is off"), Fill->IsVisible());
+
+    // Seed the committed loadout without invoking persistence. This is the same native launch entry
+    // GameMode calls after StartNewRun has accepted and saved the new selection.
+    auto &Run = Fixture.Instance->Session.run;
+    Run.ship = SS::Ship::Agile;
+    Run.tiers[0] = 3;
+    const std::string RunId = Run.id;
+    Ship->BeginTakeoff(Ship->GetActorLocation() + FVector(0, 0, 700), FRotator::ZeroRotator);
+    TestEqual(TEXT("The existing pawn refreshes to the selected Agile hull"),
+              Ship->HullMesh->GetStaticMesh()->GetPathName(), FString(ASSShip::HullAssetPath(SS::Ship::Agile)));
+    TestTrue(TEXT("Agile open-cockpit pilot is visible again"), Ship->Pilot->IsVisible());
+    TestTrue(TEXT("Classic takeoff restores its flight fill"), Fill->IsVisible());
+    TestTrue(TEXT("Loadout presentation leaves run identity and upgrades intact"),
+             Run.id == RunId && Run.tiers[0] == 3);
+    TestTrue(TEXT("The selected hull remains on the same possessed flight pawn"),
+             Ship == Fixture.Controller->GetPawn() && Ship->HullMesh->IsVisible() && !Ship->HasFlightHull());
+    const FVector Before = Ship->GetActorLocation();
+    Fixture.Seconds(.5f);
+    TestTrue(TEXT("The reused Classic pawn actually lifts while its pilot remains visible"),
+             Ship->GetActorLocation().Z > Before.Z && Ship->Pilot->IsVisible());
+    return true;
+}
+
 #if WITH_EDITOR
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSPhoenixGearGeometry, "SpaceSurvival.Presentation.PhoenixGearGeometry",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -445,8 +631,17 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
     TestTrue(TEXT("Whole authored landing sequence completes during the production three-second descent"),
              Hull->GetSingleNodeInstance()->GetCurrentTime() >= Hull->GetSingleNodeInstance()->GetLength() - .025f);
     UPhysicsAsset *Physics = Hull->GetPhysicsAsset();
-    if (!TestNotNull(TEXT("Parked hull retains its supplied physics asset"), Physics))
+    if (!TestNotNull(TEXT("Parked hull resolves its private supplied-geometry derivative"), Physics))
         return false;
+    TestTrue(TEXT("Rig uses the private parked physics asset instead of the coarse vendor feet"),
+             Physics->GetPathName() ==
+                 TEXT("/Game/SpaceSurvival/Licensed/PhoenixPresentation/PA_PhoenixParked.PA_PhoenixParked"));
+    UPhysicsAsset *Original = Hull->GetSkeletalMeshAsset()->GetPhysicsAsset();
+    TestTrue(TEXT("Licensed skeletal mesh keeps its original thirteen-shape physics asset"),
+             Original && Original != Physics && Original->SkeletalBodySetups.Num() == 1 &&
+                 Original->SkeletalBodySetups[0]->AggGeom.GetElementCount() == 13);
+    TestTrue(TEXT("Private parked hull retains ten source shapes, including its cargo ramp"),
+             Physics->SkeletalBodySetups.Num() == 1 && Physics->SkeletalBodySetups[0]->AggGeom.GetElementCount() == 10);
     AddInfo(FString::Printf(TEXT("Phoenix parked physics asset %s has %d authored bodies"), *Physics->GetPathName(),
                             Physics->SkeletalBodySetups.Num()));
     Fixture.Rig->SetStationCollision(true);
@@ -481,21 +676,53 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
                  Bounds.Min.Z >= -.1f && Bounds.Min.Z < 5.f);
         FVector Center = Bounds.GetCenter();
         Center.Z = HalfHeight;
-        const FVector Side = Fixture.Ship->GetActorRightVector();
+        // Approach each rear foot from the centre aisle. The right nacelle overhangs its outer
+        // approach; starting inside that real obstacle would test the engine, not walking into gear.
+        const FVector Side = Fixture.Ship->GetActorRightVector() * (Center.Y > 100.f ? -1.f : 1.f);
         const float Travel = Bounds.GetExtent().Y + Radius * 2.f;
         LastStart = Center + Side * Travel;
         LastEnd = Center - Side * Travel;
+        TestFalse(TEXT("The walking approach starts in reachable space outside all ship geometry"),
+                  Fixture.World->OverlapBlockingTestByChannel(LastStart, FQuat::Identity, ECC_Pawn, Capsule, Query));
         FHitResult Hit;
         const bool Blocked =
             Fixture.World->SweepSingleByChannel(Hit, LastStart, LastEnd, FQuat::Identity, ECC_Pawn, Capsule, Query);
         const bool HitAuthoredGear = Blocked && Hit.GetComponent() == Box;
         if (HitAuthoredGear)
             ++GearHits;
-        AddInfo(FString::Printf(TEXT("Phoenix walker sweep bone=%s center=%s hit=%s blocking=%d"), Gear.Bone,
-                                *Center.ToString(), *GetNameSafe(Hit.GetComponent()), Blocked));
+        AddInfo(FString::Printf(TEXT("Phoenix walker sweep bone=%s center=%s hit=%s blocking=%d penetrating=%d"),
+                                Gear.Bone, *Center.ToString(), *GetNameSafe(Hit.GetComponent()), Blocked,
+                                Hit.bStartPenetrating));
     }
     TestEqual(TEXT("All three separate landing feet are measured and present"), GearBodies, 3);
     TestEqual(TEXT("Walking capsule is blocked at all three actual animated landing feet"), GearHits, 3);
+#if WITH_EDITOR
+    const double FrontFootFloor = LowestPosedSurfaceInColumn(Hull, FBox2D(FVector2D(610, -48), FVector2D(825, 48)));
+    TestTrue(TEXT("Posed triangle measurement finds the actual front foot at deck height"),
+             FrontFootFloor >= -.1f && FrontFootFloor < 5.f);
+    const double FrontHeadroom = LowestPosedSurfaceInColumn(
+        Hull, FBox2D(FVector2D(650 - Radius, 300 - Radius), FVector2D(780 + Radius, 300 + Radius)));
+    AddInfo(FrontHeadroom == DBL_MAX
+                ? TEXT("Front-side walking path has no posed hull triangles anywhere above its capsule envelope")
+                : FString::Printf(TEXT("Front-side path lowest posed surface: %.3f cm; standing height: %.3f cm"),
+                                  FrontHeadroom, HalfHeight * 2.f));
+    TestTrue(TEXT("Actual posed hull triangles leave standing headroom beside the front foot"),
+             FrontHeadroom > HalfHeight * 2.f);
+#endif
+    FHitResult FrontGap;
+    TestFalse(
+        TEXT("Real standing capsule passes beside the front foot where its old nine-metre box blocked empty floor"),
+        Fixture.World->SweepSingleByChannel(FrontGap, FVector(650, 300, HalfHeight), FVector(780, 300, HalfHeight),
+                                            FQuat::Identity, ECC_Pawn, Capsule, Query));
+    FHitResult BodyHit, RampHit;
+    TestTrue(
+        TEXT("Parked nose remains solid above the actual gear"),
+        Fixture.World->LineTraceSingleByChannel(BodyHit, FVector(700, 0, 800), FVector(700, 0, 300), ECC_Pawn, Query) &&
+            BodyHit.GetComponent() == Hull);
+    TestTrue(TEXT("Supplied deployed cargo ramp remains solid"),
+             Fixture.World->LineTraceSingleByChannel(RampHit, FVector(-1150, 0, 400), FVector(-1150, 0, 100), ECC_Pawn,
+                                                     Query) &&
+                 RampHit.GetComponent() == Hull);
     // The real fuselage has less than standing headroom along parts of its centreline. Only the new
     // gear proxies promise an open gap; the actual low hull must retain its own blocking collision.
     FCollisionQueryParams GearOnly = Query;
@@ -522,4 +749,100 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
     }
     return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSPhoenixFlightHull, "SpaceSurvival.Flight.PhoenixHullCollision",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSPhoenixFlightHull::RunTest(const FString &)
+{
+    FSSVisualRigWorld Fixture;
+    if (!Fixture.Initialize(*this) ||
+        !TestTrue(TEXT("Default Phoenix has its authored flight compound"), Fixture.Ship->HasFlightHull()))
+        return false;
+    ASSShip *Ship = Fixture.Ship;
+    auto *Compound = Ship->FindComponentByClass<USSFlightHullComponent>();
+    if (!TestNotNull(TEXT("Fixed native collision component exists"), Compound))
+        return false;
+    TestTrue(TEXT("Authored hull is welded into the original native root"),
+             Compound->IsWelded() && Compound->GetAttachParent() == Ship->Collision);
+    TestEqual(TEXT("Deployment envelopes are excluded while rigid hull and both nacelles remain"),
+              Compound->GetBodySetup()->AggGeom.ConvexElems.Num(), 11);
+    for (const auto &Shape : Compound->GetBodySetup()->AggGeom.ConvexElems)
+        TestFalse(TEXT("Contact geometry does not silently change the flight body's mass or inertia"),
+                  Shape.GetContributeToMass());
+    Ship->EndMooring();
+    const FVector Origin = Ship->GetActorLocation();
+    TestTrue(TEXT("Compound preserves the calibrated native body mass"),
+             FMath::IsNearlyEqual(Ship->Collision->GetMass(), 4687.5f, .1f));
+    TestTrue(TEXT("Compound leaves the original centre of mass at the native pivot"),
+             Ship->Collision->GetCenterOfMass().Equals(Origin, .1f));
+    const double SphereInertia = .4 * 4687.5 * 105. * 105.;
+    TestTrue(TEXT("Added shapes preserve the calibrated inertia tensor"),
+             Ship->Collision->GetInertiaTensor().Equals(FVector(SphereInertia), SphereInertia * .01));
+    Ship->BeginMooring();
+    auto Contact = [&](const FVector &From, const FVector &To, float Radius = 15.f)
+    {
+        FHitResult Hit;
+        return Ship->SweepFlightContact(Hit, Origin + From, Origin + To, Radius);
+    };
+    TestTrue(TEXT("A nose strike reaches the visible ship long before the old origin sphere"),
+             Contact(FVector(1450, 0, 480), FVector(800, 0, 480)));
+    TestTrue(TEXT("The left authored nacelle is solid in flight"),
+             Contact(FVector(-650, -1500, 350), FVector(-650, -600, 350)));
+    TestTrue(TEXT("The right authored nacelle is solid in flight"),
+             Contact(FVector(-650, 1500, 350), FVector(-650, 600, 350)));
+    TestFalse(TEXT("Empty space beside the forward hull remains clear inside its overall bounding box"),
+              Contact(FVector(400, 750, 900), FVector(400, 750, -100)));
+    TestFalse(TEXT("Retracted front gear does not leave the supplied deployed-foot envelope in flight"),
+              Contact(FVector(700, 0, -50), FVector(700, 0, 70), 10.f));
+
+    // Exercise a real off-centre Chaos collision, not just our query wrapper. This obstacle misses
+    // the old origin sphere; a wing contact must produce damage and remain recoverable by the gyro.
+    Ship->EndMooring();
+    Ship->SetActorTickEnabled(false);
+    Ship->FindComponentByClass<UThrusterManagerComp>()->SetComponentTickEnabled(false);
+    Ship->FindComponentByClass<UGyroManagerComp>()->SetComponentTickEnabled(false);
+    auto *Obstacle = Fixture.World->SpawnActor<AActor>();
+    auto *Box = NewObject<UBoxComponent>(Obstacle);
+    Obstacle->SetRootComponent(Box);
+    Box->SetBoxExtent(FVector(140, 30, 140));
+    Box->SetCollisionObjectType(ECC_WorldStatic);
+    Box->SetCollisionResponseToAllChannels(ECR_Block);
+    Box->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    Box->RegisterComponent();
+    Obstacle->SetActorLocation(Origin + FVector(-650, -1200, 350));
+    Ship->Collision->SetPhysicsLinearVelocity(FVector(0, -1600, 0));
+    Ship->Collision->SetPhysicsAngularVelocityInRadians(FVector::ZeroVector);
+    const double Vitality = Fixture.Instance->Session.run.hull + Fixture.Instance->Session.run.shield;
+    Fixture.Seconds(.4f);
+    TestTrue(TEXT("A physical wing collision reaches the native damage authority"),
+             Fixture.Instance->Session.run.hull + Fixture.Instance->Session.run.shield < Vitality);
+    const FVector ImpactSpin = Ship->Collision->GetPhysicsAngularVelocityInRadians();
+    TestTrue(TEXT("Off-centre impact produces finite angular response"),
+             !ImpactSpin.ContainsNaN() && ImpactSpin.Size() > .01f);
+    AddInfo(FString::Printf(TEXT("Measured wing impact angular speed %.2f degrees/sec"),
+                            FMath::RadiansToDegrees(ImpactSpin.Size())));
+    Obstacle->Destroy();
+    Ship->FindComponentByClass<UThrusterManagerComp>()->SetComponentTickEnabled(true);
+    Ship->FindComponentByClass<UGyroManagerComp>()->SetComponentTickEnabled(true);
+    Ship->SetActorTickEnabled(true);
+    Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0, false, false);
+    Fixture.Seconds(3.f);
+    TestTrue(TEXT("Existing gyro recovers control after a glancing full-hull impact"),
+             Ship->Collision->GetPhysicsAngularVelocityInRadians().Size() < FMath::DegreesToRadians(10.f));
+
+    Ship->SetDockingTarget(Origin, FRotator::ZeroRotator);
+    TestEqual(TEXT("Scripted descent disables the fixed flight compound"), Compound->GetCollisionEnabled(),
+              ECollisionEnabled::NoCollision);
+    Fixture.Seconds(3.f);
+    Ship->FinishDocking();
+    Ship->BeginTakeoff(Origin + FVector(0, 0, 700), FRotator::ZeroRotator);
+    TestEqual(TEXT("Flight geometry remains disabled through controlled lift"), Compound->GetCollisionEnabled(),
+              ECollisionEnabled::NoCollision);
+    Fixture.Seconds(3.1f);
+    TestTrue(TEXT("Lift completion restores the same welded collision body without changing mass"),
+             Compound->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics && Compound->IsWelded() &&
+                 FMath::IsNearlyEqual(Ship->Collision->GetMass(), 4687.5f, .1f));
+    return true;
+}
+
 #endif

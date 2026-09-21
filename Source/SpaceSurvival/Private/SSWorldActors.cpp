@@ -147,6 +147,11 @@ bool SelectContent(const UObject *Context, const TArray<ESSWorldKind> &Candidate
 ASSWorldBody::ASSWorldBody()
 {
     PrimaryActorTick.bCanEverTick = true;
+    // Contacts compare both actors at the end of the same frame. The Phoenix
+    // moves in Chaos; a pre-physics hazard tick advances only the hazard and
+    // invents one frame of relative travel (and a frame-dependent impact normal).
+    // Projectiles inherit this ordering for their relative-motion sweeps too.
+    PrimaryActorTick.TickGroup = TG_PostPhysics;
     Collision = CreateDefaultSubobject<USphereComponent>(TEXT("ThreatVolume"));
     SetRootComponent(Collision);
     Collision->InitSphereRadius(BodyRadius);
@@ -168,6 +173,11 @@ void ASSWorldBody::BeginPlay()
 {
     Super::BeginPlay();
     LocalRandom.Initialize(GetUniqueID() ^ 0x51A7);
+    if (const ASSShip *Ship = FindShip())
+    {
+        PreviousShipPosition = Ship->GetActorLocation();
+        bHasPreviousShipPosition = true;
+    }
     UpdateVisual();
 }
 
@@ -530,18 +540,36 @@ void ASSWorldBody::Tick(float DeltaSeconds)
         {
             const FVector PreviousRelative =
                 bHasPreviousShipPosition ? PreviousShipPosition - PreviousBodyPosition : Offset;
-            const FVector RelativePath = Offset - PreviousRelative;
-            const float ClosestTime =
-                RelativePath.IsNearlyZero()
-                    ? 1.f
-                    : static_cast<float>(FMath::Clamp(
-                          -FVector::DotProduct(PreviousRelative, RelativePath) / RelativePath.SizeSquared(), 0.0, 1.0));
-            const float SweptDistance = (PreviousRelative + RelativePath * ClosestTime).Size();
-            if (SweptDistance < BodyRadius + ShipRadius() && ShipContactRemaining <= 0.f)
+            FVector ContactNormal = FVector::ZeroVector;
+            bool bContact = false;
+            if (ShipContactRemaining <= 0.f && Ship->HasFlightHull())
             {
-                FVector ContactNormal = (PreviousRelative + RelativePath * ClosestTime).GetSafeNormal();
+                // Move the relative path into the ship's current pose so both
+                // actors' translation is swept, including a full-frame crossing.
+                FHitResult Hit;
+                bContact = Ship->SweepFlightContact(Hit, Ship->GetActorLocation() - PreviousRelative,
+                                                    GetActorLocation(), BodyRadius);
+                ContactNormal = -Hit.Normal;
                 if (ContactNormal.IsNearlyZero())
                     ContactNormal = PreviousRelative.GetSafeNormal();
+            }
+            else if (ShipContactRemaining <= 0.f)
+            {
+                // Preserve the classic hull's original contact and deflection.
+                const FVector RelativePath = Offset - PreviousRelative;
+                const float ClosestTime =
+                    RelativePath.IsNearlyZero()
+                        ? 1.f
+                        : static_cast<float>(FMath::Clamp(-FVector::DotProduct(PreviousRelative, RelativePath) /
+                                                              RelativePath.SizeSquared(),
+                                                          0.0, 1.0));
+                bContact = (PreviousRelative + RelativePath * ClosestTime).Size() < BodyRadius + ShipRadius();
+                ContactNormal = (PreviousRelative + RelativePath * ClosestTime).GetSafeNormal();
+                if (ContactNormal.IsNearlyZero())
+                    ContactNormal = PreviousRelative.GetSafeNormal();
+            }
+            if (bContact)
+            {
                 Ship->ReceiveImpact(CollisionDamage, ContactNormal);
                 ShipContactRemaining = 1.1f;
             }
@@ -925,20 +953,30 @@ void ASSProjectile::Tick(float DeltaSeconds)
         {
             // Solve first contact between simultaneous paths. A sweep against the
             // ship's final position alone can reward a dodge with a false hit.
-            const FVector RelativeStart = Start - ShipStart;
-            const FVector RelativeTravel = Travel - ShipTravel;
-            const double Radius = BodyRadius + Ship->Collision->GetScaledSphereRadius();
-            const double C = RelativeStart.SizeSquared() - Radius * Radius;
-            const double A = RelativeTravel.SizeSquared();
-            const double B = FVector::DotProduct(RelativeStart, RelativeTravel);
-            const double Discriminant = B * B - A * C;
-            if (C <= 0.0)
-                ShipHitTime = 0.0;
-            else if (A > UE_SMALL_NUMBER && B < 0.0 && Discriminant >= 0.0)
+            if (Ship->HasFlightHull())
             {
-                const double Contact = (-B - FMath::Sqrt(Discriminant)) / A;
-                if (Contact >= 0.0 && Contact <= 1.0)
-                    ShipHitTime = Contact;
+                FHitResult Hit;
+                const FVector PoseOffset = Ship->GetActorLocation() - ShipStart;
+                if (Ship->SweepFlightContact(Hit, Start + PoseOffset, End + PoseOffset - ShipTravel, BodyRadius))
+                    ShipHitTime = Hit.Time;
+            }
+            else
+            {
+                const FVector RelativeStart = Start - ShipStart;
+                const FVector RelativeTravel = Travel - ShipTravel;
+                const double Radius = BodyRadius + Ship->Collision->GetScaledSphereRadius();
+                const double C = RelativeStart.SizeSquared() - Radius * Radius;
+                const double A = RelativeTravel.SizeSquared();
+                const double B = FVector::DotProduct(RelativeStart, RelativeTravel);
+                const double Discriminant = B * B - A * C;
+                if (C <= 0.0)
+                    ShipHitTime = 0.0;
+                else if (A > UE_SMALL_NUMBER && B < 0.0 && Discriminant >= 0.0)
+                {
+                    const double Contact = (-B - FMath::Sqrt(Discriminant)) / A;
+                    if (Contact >= 0.0 && Contact <= 1.0)
+                        ShipHitTime = Contact;
+                }
             }
         }
         PreviousShipPosition = Ship->GetActorLocation();

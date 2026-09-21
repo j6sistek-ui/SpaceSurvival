@@ -189,23 +189,39 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
     FHitResult Hit;
     const FVector Forward = Hub->GetActorForwardVector();
     const FVector Dock = Hub->PadDockPosition();
-    Test.TestFalse(TEXT("The pad approach is clear before assistance"),
-                   Fixture.World->SweepSingleByObjectType(
-                       Hit, Dock - Forward * 3000.f, Dock - Forward * 1250.f, FQuat::Identity, StaticObjects,
-                       FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius()), Query));
+    const float ApproachHeight = Ship->HasFlightHull() ? 1600.f : 500.f;
+    const FVector Approach = Dock - Forward * 1000.f + Hub->GetActorUpVector() * ApproachHeight;
+    const FVector ApproachStart = Approach - Forward * 2000.f;
+    const bool ApproachBlocked = Ship->SweepFlightHull(Hit, ApproachStart, Approach, Hub->GetActorQuat(), Query);
+    if (!Test.TestFalse(TEXT("The complete flight hull has a clear elevated approach before assistance"),
+                        ApproachBlocked))
+    {
+        Test.AddError(FString::Printf(TEXT("Journey approach blocked by %s/%s at %s"), *GetNameSafe(Hit.GetActor()),
+                                      *GetNameSafe(Hit.GetComponent()), *Hit.ImpactPoint.ToString()));
+        return false;
+    }
     Test.TestTrue(TEXT("Walker spawn has a physical station floor beneath it"),
                   Fixture.World->LineTraceSingleByObjectType(
                       Hit, Hub->WalkSpawn(), Hub->WalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&
                       Hit.GetActor() == Hub);
     // The pad is where the hero is actually put down now, so it needs the same proof the interior deck
     // has always had: something solid under the spawn, belonging to the station rather than to nothing.
+    const bool PadFloorHit = Fixture.World->LineTraceSingleByObjectType(
+        Hit, Hub->PadWalkSpawn(), Hub->PadWalkSpawn() - FVector(0, 0, 500), StaticObjects, Query);
+    const auto *Pad = Hub->GetLandingPad();
+    Test.AddInfo(FString::Printf(
+        TEXT("JOURNEY_PAD_FLOOR wave=%d hit=%d actor=%s component=%s point=%s normal=%s spawn=%s "
+             "hub=%s pad=%s deck=%s physics=%d origin=%s"),
+        Fixture.Instance->Session.run.wave, PadFloorHit, *GetNameSafe(Hit.GetActor()), *GetNameSafe(Hit.GetComponent()),
+        *Hit.ImpactPoint.ToString(), *Hit.ImpactNormal.ToString(), *Hub->PadWalkSpawn().ToString(),
+        *Hub->GetActorTransform().ToString(), Pad ? *Pad->GetActorTransform().ToString() : TEXT("none"),
+        Pad && Pad->GetDeck() ? *Pad->GetDeck()->GetComponentTransform().ToString() : TEXT("none"),
+        Pad && Pad->GetDeck() && Pad->GetDeck()->IsPhysicsStateCreated(), *Fixture.World->OriginLocation.ToString()));
     Test.TestTrue(TEXT("The landing pad has a physical deck beneath where the hero is set down, and it is the pad"),
-                  Fixture.World->LineTraceSingleByObjectType(
-                      Hit, Hub->PadWalkSpawn(), Hub->PadWalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&
-                      Hit.GetActor() == Hub->GetLandingPad());
+                  PadFloorHit && Hit.GetActor() == Pad);
     // Fixture places the player in the assist admission band. Natural manual
     // approach/input precision and high-speed flight feel require separate playtests.
-    Ship->SetActorLocation(Dock - Forward * 1000.f, false, nullptr, ETeleportType::TeleportPhysics);
+    Ship->SetActorLocation(Approach, false, nullptr, ETeleportType::TeleportPhysics);
     Ship->SetActorRotation(Hub->GetActorRotation());
     if (Ship->Collision->IsSimulatingPhysics())
     {

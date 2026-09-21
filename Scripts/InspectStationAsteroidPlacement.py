@@ -1,4 +1,4 @@
-"""Read-only reduced-asteroid clearance probes for the station's measured pose.
+"""Read-only asteroid collision-fallback probes for the station's measured pose.
 
 Run in the lead's serialized offscreen Unreal session after AuthorStationAsteroid.
 No asset, map or actor is saved or changed. These are sampled geometry checks, not
@@ -24,17 +24,21 @@ def main():
               "pose": {"location_cm": [7500, 0, 5300], "rotation_pitch_yaw_roll": [34.319873, -22.187753, -6.929723],
                        "uniform_scale": 145},
               "limits": ["Only sampled points/rays are checked, not whole boxes or continuous geometry.",
-                         "Scenery collision remains disabled; native district collision is tested separately.",
+                         "Native collision uses this built fallback; actual world sweeps are tested separately.",
                          "Camera rays are advisory; they test rock occlusion, not other scene props or framing."]}
     try:
         mesh = u.load_asset(ASSET)
         assert mesh, "Reduced station asteroid is not installed"
         dynamic = u.DynamicMesh()
-        lod = u.GeometryScriptMeshReadLOD(lod_type=u.GeometryScriptLODType.SOURCE_MODEL, lod_index=0)
+        lod = u.GeometryScriptMeshReadLOD(lod_type=u.GeometryScriptLODType.RENDER_DATA, lod_index=0)
         _, outcome = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh_v2(
             mesh, dynamic, u.GeometryScriptCopyMeshFromAssetOptions(apply_build_settings=False), lod)
         assert outcome == u.GeometryScriptOutcomePins.SUCCESS
-        record["actual_source_triangles"] = dynamic.get_triangle_count()
+        record["actual_source_triangles"] = mesh.get_static_mesh_description(0).get_triangle_count()
+        record["actual_nanite_triangles"] = mesh.get_num_nanite_triangles()
+        record["actual_fallback_triangles"] = dynamic.get_triangle_count()
+        assert record["actual_fallback_triangles"] == mesh.get_num_triangles(0), "Inspection did not read built LOD0"
+        record["inspected_geometry"] = "built_lod0_collision_fallback"
         spatial = u.GeometryScript_MeshSpatial
         _, bvh = spatial.build_bvh_for_mesh(dynamic)
         options = u.GeometryScriptSpatialQueryOptions(max_distance=500.)
@@ -87,7 +91,8 @@ def main():
         assert not record["inside_samples"], "Reduced asteroid intersects sampled room/terrace points"
         record["status"] = "sampled-clearance-pass"
         print("STATION_ASTEROID_PLACEMENT " + json.dumps(
-            {"status": record["status"], "triangles": record["actual_source_triangles"],
+            {"status": record["status"], "fallback_triangles": record["actual_fallback_triangles"],
+             "nanite_triangles": record["actual_nanite_triangles"], "source_triangles": record["actual_source_triangles"],
              "samples": len(record["samples"]), "inside": len(record["inside_samples"])}))
     except Exception as error:
         record["status"], record["error"] = "failed", str(error)

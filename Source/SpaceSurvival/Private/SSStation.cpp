@@ -34,6 +34,7 @@
 #include "EngineUtils.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "PhysicsEngine/BodySetup.h"
 #include "UObject/ConstructorHelpers.h"
 
 #include "SSStationRefresh.inl"
@@ -164,35 +165,53 @@ bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
     // Clear the same two legs the ship flies: settle above the pad, then descend vertically.
     if (Local.Z < PadDeckTop + Radius)
         return false;
-    FHitResult Hit;
-    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockAdmission), false, Ship);
-    const FCollisionResponseParams Responses(Ship->Collision->GetCollisionResponseToChannels());
-    // Check the actual flight collision body, including the physical station. Do not
-    // admit a path merely because its center line misses a rib or another blocker.
+    const FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockAdmission), false, Ship);
     const FVector Dock = PadDockPosition();
     const FVector Hover = Dock + (LandingPad ? LandingPad->GetActorUpVector() : GetActorUpVector()) * 700.f;
-    const auto ClearLeg = [&](const FVector &From, const FVector &To)
+    const FVector Start = Ship->GetActorLocation();
+    const FQuat StartRotation = Ship->GetActorQuat(), EndRotation = PadDockRotation().Quaternion();
+    const auto Smooth = [](float T) { return T * T * (3.f - 2.f * T); };
+    // Match ASSShip's actual position and quaternion curves, including the hover boundary at55%.
+    // A sweep at the initial heading alone misses rotating wings and aft nacelles during alignment.
+    const auto PositionAt = [&](float T)
     {
-        return !GetWorld()->SweepSingleByChannel(Hit, From, To, Ship->Collision->GetComponentQuat(),
-                                                 Ship->Collision->GetCollisionObjectType(),
-                                                 Ship->Collision->GetCollisionShape(), Query, Responses);
+        return T < .55f ? FMath::Lerp(Start, Hover, Smooth(T / .55f))
+                        : FMath::Lerp(Hover, Dock, Smooth((T - .55f) / .45f));
     };
-    if (!ClearLeg(Ship->GetActorLocation(), Hover))
-        return false;
-    if (ClearLeg(Hover, Dock))
-        return true;
-    // The flight sphere is centred on the ship's origin, while the deployed Phoenix feet sit almost
-    // exactly at that origin. During touchdown only, the small flight proxy therefore intersects the
-    // intended floor before the real feet reach it. Verify that precise top-face contact, then repeat
-    // the whole descent with ONLY that deck component ignored: kerbs, hulls and other blockers remain.
-    if (!LandingPad || Hit.GetComponent() != LandingPad->GetDeck() || Hit.bStartPenetrating ||
-        FVector::DotProduct(Hit.ImpactNormal, LandingPad->GetActorUpVector()) < .98f)
-        return false;
-    const FVector PadContact = LandingPad->GetActorTransform().InverseTransformPosition(Hit.ImpactPoint);
-    if (FMath::Abs(PadContact.Z) > 2.f || PadContact.SizeSquared2D() > FMath::Square(Radius + 2.f))
-        return false;
-    Query.AddIgnoredComponent(Hit.GetComponent());
-    return ClearLeg(Hover, Dock);
+    const auto RotationAt = [&](float T)
+    { return FQuat::Slerp(StartRotation, EndRotation, Smooth(FMath::Min(T / .55f, 1.f))); };
+    const auto ClearPoseSweep = [&](const FVector &From, const FVector &To, const FQuat &Rotation, bool Descent)
+    {
+        FHitResult Hit;
+        if (!Ship->SweepFlightHull(Hit, From, To, Rotation, Query))
+            return true;
+        // Only intentional contact with this pad's top face may be exempted during lowering. The
+        // fixed nacelle envelope can touch outside the old105cm origin sphere. Its complete footprint
+        // is checked; other station bodies and rails remain blocking in the repeated compound sweep.
+        if (!Descent || !LandingPad || Hit.GetComponent() != LandingPad->GetDeck() || Hit.bStartPenetrating ||
+            FVector::DotProduct(Hit.ImpactNormal, LandingPad->GetActorUpVector()) < .98f)
+            return false;
+        const FVector PadContact = LandingPad->GetActorTransform().InverseTransformPosition(Hit.ImpactPoint);
+        if (FMath::Abs(PadContact.Z) > 2.f || !LandingPad->Covers(Hit.ImpactPoint, -5.f))
+            return false;
+        FCollisionQueryParams TouchdownQuery(Query);
+        TouchdownQuery.AddIgnoredComponent(LandingPad->GetDeck());
+        return !Ship->SweepFlightHull(Hit, From, To, Rotation, TouchdownQuery);
+    };
+    TFunction<bool(float, float, int32)> ClearInterval;
+    ClearInterval = [&](float FromT, float ToT, int32 Depth)
+    {
+        const float MidT = (FromT + ToT) * .5f;
+        const FQuat FromRotation = RotationAt(FromT), ToRotation = RotationAt(ToT);
+        // Bounded refinement: at most128 intervals per phase; typical level arrivals need only two.
+        if (Depth < 7 && FromRotation.AngularDistance(ToRotation) > FMath::DegreesToRadians(4.f))
+            return ClearInterval(FromT, MidT, Depth + 1) && ClearInterval(MidT, ToT, Depth + 1);
+        const FVector From = PositionAt(FromT), To = PositionAt(ToT);
+        const bool Descent = FromT >= .55f;
+        return ClearPoseSweep(From, To, FromRotation, Descent) && ClearPoseSweep(From, To, RotationAt(MidT), Descent) &&
+               ClearPoseSweep(From, To, ToRotation, Descent);
+    };
+    return ClearInterval(0.f, .55f, 0) && ClearPoseSweep(Hover, Dock, EndRotation, true);
 }
 bool ASSStation::BuildEditableLayout()
 {
@@ -225,6 +244,45 @@ bool ASSStation::IsUsingFunctionalLayout() const
 
 void ASSStation::BuildFunctionalHub()
 {
+    auto CopyAuthoredIdentity = [](const UActorComponent *Source, UActorComponent *Target)
+    {
+        for (const FName Tag : Source->ComponentTags)
+            if (Tag.ToString().StartsWith(TEXT("StationAuthoredId:")))
+                Target->ComponentTags.AddUnique(Tag);
+    };
+    TInlineComponentArray<UStaticMeshComponent *> TriangleSpecs(VisualLayout);
+    for (const auto *Spec : TriangleSpecs)
+    {
+        if (!Spec->ComponentHasTag(TEXT("StationTriangleSolidSpec")))
+            continue;
+        auto *Mesh = Spec->GetStaticMesh().Get();
+        const auto *Body = Mesh ? Mesh->GetBodySetup() : nullptr;
+        if (!Body || Body->GetCollisionTraceFlag() != CTF_UseComplexAsSimple || Mesh->GetNumTriangles(0) <= 0 ||
+            Mesh->GetNumTriangles(0) > 160000)
+        {
+            UE_LOG(LogTemp, Error, TEXT("STATION_TRIANGLE_COLLISION_INVALID %s"), *GetNameSafe(Mesh));
+            continue;
+        }
+        // ComplexAsSimple cooks the built LOD0 fallback, not the high-resolution Nanite source. Keep
+        // the presentation actor collisionless and mirror its exact transform in native authority.
+        auto *Solid = NewObject<UStaticMeshComponent>(this, FName(*(TEXT("Solid_") + Spec->GetName())));
+        Solid->SetupAttachment(RootComponent);
+        Solid->SetRelativeTransform(Spec->GetComponentTransform().GetRelativeTransform(GetActorTransform()));
+        Solid->SetStaticMesh(Mesh);
+        Solid->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Solid->SetCollisionObjectType(ECC_WorldStatic);
+        Solid->SetCollisionResponseToAllChannels(ECR_Block);
+        Solid->SetSimulatePhysics(false);
+        Solid->SetGenerateOverlapEvents(false);
+        Solid->SetVisibility(false);
+        Solid->SetCastShadow(false);
+        Solid->SetCanEverAffectNavigation(false);
+        Solid->ComponentTags.Add(TEXT("StationFunctionalTriangleSolid"));
+        CopyAuthoredIdentity(Spec, Solid);
+        AddInstanceComponent(Solid);
+        Solid->RegisterComponent();
+        Geometry.Add(Solid);
+    }
     TInlineComponentArray<UCapsuleComponent *> StaffSpecs(VisualLayout);
     for (const auto *Spec : StaffSpecs)
     {
@@ -241,6 +299,7 @@ void ASSStation::BuildFunctionalHub()
         Body->SetHiddenInGame(true);
         Body->SetCanEverAffectNavigation(false);
         Body->ComponentTags.Add(TEXT("StationFunctionalStaffSolid"));
+        CopyAuthoredIdentity(Spec, Body);
         AddInstanceComponent(Body);
         Body->RegisterComponent();
     }
@@ -260,6 +319,7 @@ void ASSStation::BuildFunctionalHub()
         Solid->SetHiddenInGame(true);
         Solid->SetCanEverAffectNavigation(false);
         Solid->ComponentTags.Add(TEXT("StationFunctionalSolid"));
+        CopyAuthoredIdentity(Spec, Solid);
         AddInstanceComponent(Solid);
         Solid->RegisterComponent();
         if (Spec->ComponentHasTag(TEXT("StationWalkFloorSpec")))

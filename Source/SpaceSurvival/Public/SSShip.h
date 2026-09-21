@@ -13,6 +13,7 @@ class UCameraComponent;
 class UAudioComponent;
 class USSPhase1Data;
 class USSShipPresentation;
+struct FCollisionQueryParams;
 
 UCLASS()
 class SPACESURVIVAL_API ASSShip : public APawn
@@ -33,6 +34,13 @@ public:
      *  able to disagree. */
     static ESSHullIdentity SelectedHullIdentity();
     static float FlightCollisionRadius();
+    /** Fixed authored compound when available; the small legacy sphere remains the Classic fallback. */
+    bool HasFlightHull() const;
+    FBox FlightHullBounds(const FTransform &ShipTransform) const;
+    bool SweepFlightHull(FHitResult &Hit, const FVector &From, const FVector &To, const FQuat &Rotation,
+                         const FCollisionQueryParams &Params) const;
+    /** Sweep a world-space hazard/projectile sphere against this ship at its current pose. */
+    bool SweepFlightContact(FHitResult &Hit, const FVector &From, const FVector &To, float Radius) const;
     /** The stick as ShipCore's gyro sees it: (yaw, pitch) stick to the plugin's (roll, pitch, yaw) body torque,
      *  axes and signs. Pure and static so the translation is pinned by a test that needs no physics world;
      *  the plugin's own convention is pinned separately by ShipCoreGyroAxes, and between them the whole chain
@@ -122,6 +130,7 @@ public:
 
 private:
     void UpdateEngineMix();
+    void RefreshFlightPresentation();
     FSSHeroDefinition PilotHero = FSSHeroDefinition::Fallback();
     /** How much further back the chase boom sits, because the hull is that many times longer than the one
      *  the 900 cm arm was framed for. One while the classic hull flies, which is every build today. */
@@ -140,6 +149,8 @@ private:
      *  written integrator below runs exactly as it always has, which is now the classic hull: a build run
      *  with -SSClassic, or one without the licensed pack installed. */
     bool ShipCoreDriven = false;
+    UPROPERTY()
+    TObjectPtr<class USSFlightHullComponent> FlightHull;
     UPROPERTY()
     TObjectPtr<class UThrusterManagerComp> Thrusters;
     UPROPERTY()

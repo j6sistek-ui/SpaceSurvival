@@ -98,6 +98,10 @@ struct FSSDockingWorld
         const auto Transform = Hub->GetActorTransform();
         Ship->SetActorLocationAndRotation(Transform.TransformPosition(LocalPosition),
                                           Transform.TransformVectorNoScale(LocalDirection).Rotation());
+        // Each admission case starts with the real compound re-enabled after the previous case put
+        // the ship into its docking hold. A disabled child body would make the new query test a sphere.
+        Ship->BeginTakeoff(Ship->GetActorLocation(), Ship->GetActorRotation(), .1f);
+        Ship->Tick(.11f);
         // And leave it there. Every case in this suite means "a ship is at this spot, pointing this way -
         // is it offered docking?", which on a kinematic pawn is the whole of it: put it down and it stays.
         // A ShipCore hull is a simulating body carrying its BeginPlay cruise speed, so it drifts between
@@ -161,10 +165,12 @@ bool FSSDockingAdmission::RunTest(const FString &)
             F.Hub->GetLandingPad()->GetActorTransform().InverseTransformPosition(F.Hub->PadDockPosition());
         TestEqual(TEXT("Actual Phoenix touchdown uses measured foot clearance above the deck"), DockLocal.Z, 2.5, .01);
     }
-    for (const auto &Case : {TPair<FVector, FVector>(Pad + FVector(-900, 0, 0), FVector(1, 0, 0)),
-                             TPair<FVector, FVector>(Pad + FVector(0, 0, 900), FVector(0, 0, -1)),
-                             TPair<FVector, FVector>(Pad + FVector(0, 900, 0), FVector(0, -1, 0)),
-                             TPair<FVector, FVector>(Pad + FVector(700, 0, 0), FVector(-1, 0, 0))})
+    const FVector ClearPad = Pad + FVector(0, 0, F.Ship->HasFlightHull() ? 1380.f : 0.f);
+    for (const auto &Case :
+         {TPair<FVector, FVector>(ClearPad + FVector(-700, 0, 0), FVector(1, 0, 0)),
+          TPair<FVector, FVector>(F.Ship->HasFlightHull() ? ClearPad : Pad + FVector(0, 0, 900), FVector(0, 0, -1)),
+          TPair<FVector, FVector>(ClearPad + FVector(0, 700, 0), FVector(0, -1, 0)),
+          TPair<FVector, FVector>(ClearPad + FVector(700, 0, 0), FVector(-1, 0, 0))})
     {
         F.Instance->Session.run.phase = SS::Phase::Approach;
         F.Instance->Session.run.phaseDuration = 0.0;
@@ -215,6 +221,24 @@ bool FSSDockingAdmission::RunTest(const FString &)
     Obstacle->SetActorLocation(F.Hub->GetLandingPad()->DeckPoint() + F.Hub->GetActorUpVector() * 40.f);
     F.Reject(*this, TEXT("A solid obstacle above the touchdown patch remains blocking"), Pad + FVector(-900, 0, 0),
              FVector(1, 0, 0));
+    if (F.Ship->HasFlightHull())
+    {
+        Box->SetBoxExtent(FVector(60));
+        F.Place(Pad + FVector(-900, 0, 0), FVector(1, 0, 0));
+        const FVector Start = F.Ship->GetActorLocation();
+        const FVector Hover = F.Hub->PadDockPosition() + F.Hub->GetActorUpVector() * 700.f;
+        const FQuat HalfTurn = FQuat::Slerp(F.Ship->GetActorQuat(), F.Hub->PadDockRotation().Quaternion(), .5f);
+        Obstacle->SetActorLocation(FMath::Lerp(Start, Hover, .5f) + HalfTurn.RotateVector(FVector(1100, 0, 480)));
+        TestFalse(TEXT("A rotating-nose obstacle is outside the old origin-sphere path"),
+                  F.World->SweepSingleByChannel(Hit, Start, Hover, FQuat::Identity, ECC_Pawn,
+                                                FCollisionShape::MakeSphere(105.f), Query));
+        TestTrue(TEXT("Measured compound detects the intermediate aligned nose obstacle"),
+                 F.Ship->SweepFlightHull(Hit, FMath::Lerp(Start, Hover, .5f), FMath::Lerp(Start, Hover, .5f), HalfTurn,
+                                         Query) &&
+                     Hit.GetActor() == Obstacle);
+        F.Reject(*this, TEXT("Intermediate hull rotation blocks docking despite a clear origin path"),
+                 Pad + FVector(-900, 0, 0), FVector(1, 0, 0));
+    }
     Obstacle->SetActorEnableCollision(false);
     Obstacle->Destroy();
 

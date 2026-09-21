@@ -3,7 +3,8 @@
 Run through the installed Unreal editor with -NullRHI or -RenderOffscreen.
 Inspection is the default; -SSApplyStationAsteroid (or --apply) authors the derivative.
 Source assets are never saved. Existing output requires a matching ownership receipt.
-The output is scenery: station-native floors/walls own playable collision.
+The editor source stays intact in the private copy. Nanite stores a reduced render
+representation; a measured fallback mesh provides static bowl collision.
 """
 from datetime import datetime, timezone
 import hashlib
@@ -21,7 +22,7 @@ SOURCE = "/Game/Fab/High_Poly_Asteroid_Detailed_Free_3D_Model/SM_High_Poly_Aster
 BASE = "/Game/SpaceSurvival/Licensed/StationReset"
 TARGET = BASE + "/SM_StationAsteroid"
 APPLY = "-SSApplyStationAsteroid" in u.SystemLibrary.get_command_line() or "--apply" in sys.argv
-REVISION = 1
+REVISION = 3
 TARGET_TRIANGLES = 500000
 LIB = u.EditorAssetLibrary
 
@@ -53,7 +54,9 @@ def metadata(mesh):
                       "vertices": mesh.get_num_vertices(i)} for i in range(mesh.get_num_lods())],
             "materials": [slot.material_interface.get_path_name() if slot.material_interface else None
                           for slot in mesh.get_editor_property("static_materials")],
-            "simple_collision_count": subsystem.get_simple_collision_count(mesh)}
+            "simple_collision_count": subsystem.get_simple_collision_count(mesh),
+            "collision_complexity": str(subsystem.get_collision_complexity(mesh)),
+            "double_sided_collision": mesh.get_editor_property("body_setup").get_editor_property("double_sided_geometry")}
 
 
 def probes(mesh):
@@ -104,17 +107,25 @@ def main():
     source_hash = digest(SOURCE)
     assert source_hash, "Owned asteroid source is not installed"
     prior = json.loads(RECEIPT.read_text(encoding="utf-8")) if RECEIPT.is_file() else None
+    if APPLY and prior and prior.get("status") != "complete":
+        # Retain the failed expensive source-reduction attempt and any subsequent failed build.
+        attempts = OUT / "Attempts"
+        attempts.mkdir(parents=True, exist_ok=True)
+        (attempts / (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + ".json")).write_text(
+            json.dumps(prior, indent=2) + "\n", encoding="utf-8")
     current = digest(TARGET)
     if current:
         assert prior and prior.get("outputs", {}).get(TARGET) == current, "Refusing unrecognized/edited asteroid derivative"
         assert prior.get("source_sha256") == source_hash, "Source changed; review before replacing the derivative"
     record = {"utc": datetime.now(timezone.utc).isoformat(), "mode": "apply" if APPLY else "dry-run",
               "revision": REVISION, "status": "inspecting", "source": SOURCE, "source_sha256": source_hash,
-              "target": TARGET, "target_triangles": TARGET_TRIANGLES, "outputs": {}, "source_preserved": False,
+              "target": TARGET, "target_nanite_triangles": TARGET_TRIANGLES, "outputs": {}, "source_preserved": False,
+              "method": "private source copy with Nanite trim and measured static collision fallback",
               "limits": ["Shape probes are sampled, not a complete Hausdorff/visual acceptance test.",
                          "No rendered appearance, packaged performance or owner acceptance is implied.",
-                         "World scale changes dimensions only; this script reduces actual source geometry.",
-                         "No collision is authored on the scenery mesh; the native district owns physical boundaries."]}
+                         "World scale changes dimensions only; Nanite trimming reduces cooked render geometry.",
+                         "Editor source triangles are retained; source count is not the reduced render count.",
+                         "Static collision uses the measured render LOD0 fallback, not the full editor source."]}
     try:
         source = u.load_asset(SOURCE)
         assert source, "Could not load the exact Photo 5 source"
@@ -136,46 +147,70 @@ def main():
         record["source_uv_channels"] = u.GeometryScript_MeshQueries.get_num_uv_sets(dynamic)
         before_bounds = u.GeometryScript_MeshQueries.get_mesh_bounding_box(dynamic)
         record["source_probes"] = probes(dynamic)
-        print("STATION_ASTEROID_SIMPLIFY_BEGIN " + str(dynamic.get_triangle_count()), flush=True)
-        u.GeometryScript_MeshSimplification.apply_editor_simplify_to_triangle_count(dynamic, TARGET_TRIANGLES)
-        count = dynamic.get_triangle_count()
-        assert TARGET_TRIANGLES // 2 <= count <= TARGET_TRIANGLES * 1.1, "Unexpected simplified triangle count: " + str(count)
-        record["simplified_dynamic_triangles"] = count
-        record["output_uv_channels"] = u.GeometryScript_MeshQueries.get_num_uv_sets(dynamic)
-        assert record["output_uv_channels"] == record["source_uv_channels"], "Simplification removed UV channels"
-        after_bounds = u.GeometryScript_MeshQueries.get_mesh_bounding_box(dynamic)
-        bound_deltas = [abs(a - b) for a, b in zip(xyz(before_bounds.min) + xyz(before_bounds.max),
-                                                   xyz(after_bounds.min) + xyz(after_bounds.max))]
-        record["bounds_max_delta_cm"] = max(bound_deltas)
-        assert max(bound_deltas) <= 1., "Simplification changed outer bounds by more than 1 source cm"
-        record["output_probes"] = probes(dynamic)
-        record["shape_comparison"] = compare_probes(record["source_probes"], record["output_probes"])
-        # Create only after the transient geometry passes inspection. No source duplication/save is necessary.
-        target = u.load_asset(TARGET) if current else u.AssetToolsHelpers.get_asset_tools().create_asset(
-            "SM_StationAsteroid", BASE, u.StaticMesh, u.StaticMeshFactoryNew())
+        target = u.load_asset(TARGET) if current else LIB.duplicate_asset(SOURCE, TARGET)
         assert target, "Could not create private asteroid mesh"
-        target.set_editor_property("static_materials", source.get_editor_property("static_materials"))
         subsystem = u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
+        subsystem.remove_collisions(target)
+        target.set_editor_property("lod_for_collision", 0)
+        target.set_editor_property("complex_collision_mesh", None)
+        body = target.get_editor_property("body_setup")
+        body.set_editor_property("collision_trace_flag", u.CollisionTraceFlag.CTF_USE_COMPLEX_AS_SIMPLE)
+        body.set_editor_property("double_sided_geometry", True)
+        for section in range(target.get_num_sections(0)):
+            if not subsystem.is_section_collision_enabled(target, 0, section):
+                subsystem.enable_section_collision(target, True, 0, section)
         nanite = subsystem.get_nanite_settings(source)
         nanite.enabled = True
-        nanite.keep_percent_triangles = 1.
+        nanite.keep_percent_triangles = TARGET_TRIANGLES / record["source_measurement"]["source_triangles"]
         nanite.trim_relative_error = 0.
         nanite.fallback_target = u.NaniteFallbackTarget.PERCENT_TRIANGLES
-        nanite.fallback_percent_triangles = min(1., 20000. / count)
         nanite.fallback_relative_error = 0.
-        write = u.GeometryScriptCopyMeshToAssetOptions(apply_nanite_settings=True, new_nanite_settings=nanite,
-                                                       enable_recompute_tangents=True, emit_transaction=False)
-        _, outcome = u.GeometryScript_AssetUtils.copy_mesh_to_static_mesh(
-            dynamic, target, write, u.GeometryScriptMeshWriteLOD(lod_index=0))
-        assert outcome == u.GeometryScriptOutcomePins.SUCCESS, "Private simplified mesh copy failed"
-        subsystem.remove_collisions(target)
+        record["fallback_attempts"] = []
+        # UE5.8 applies fallback percentage AFTER the Nanite trim. Increase geometric fidelity if
+        # needed; never loosen the original one-centimetre sampled shape tolerance to claim a pass.
+        # Revision 2 measured 20k/50k/100k at 7.18/1.67/1.10 cm maximum surface error.
+        # Preserve those failed receipts and raise detail, not the fidelity tolerance.
+        for fallback_budget in (150000, 250000):
+            nanite.fallback_percent_triangles = min(1., fallback_budget / TARGET_TRIANGLES)
+            print("STATION_ASTEROID_NANITE_BUILD " + str(fallback_budget), flush=True)
+            subsystem.set_nanite_settings(target, nanite, apply_changes=True)
+            actual = target.get_num_nanite_triangles()
+            assert TARGET_TRIANGLES * .8 <= actual <= TARGET_TRIANGLES * 1.1, "Unexpected Nanite count: " + str(actual)
+            fallback = u.DynamicMesh()
+            render_lod = u.GeometryScriptMeshReadLOD(lod_type=u.GeometryScriptLODType.RENDER_DATA, lod_index=0)
+            _, outcome = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh_v2(target, fallback, options, render_lod)
+            assert outcome == u.GeometryScriptOutcomePins.SUCCESS, "Fallback geometry copy failed"
+            count = fallback.get_triangle_count()
+            assert count == target.get_num_triangles(0) and 0 < count <= fallback_budget * 1.1
+            after_bounds = u.GeometryScript_MeshQueries.get_mesh_bounding_box(fallback)
+            bound_deltas = [abs(a - b) for a, b in zip(xyz(before_bounds.min) + xyz(before_bounds.max),
+                                                       xyz(after_bounds.min) + xyz(after_bounds.max))]
+            attempt = {"requested_triangles": fallback_budget, "actual_triangles": count,
+                       "bounds_max_delta_cm": max(bound_deltas)}
+            record["fallback_attempts"].append(attempt)
+            output_probes = probes(fallback)
+            try:
+                assert max(bound_deltas) <= 1., "Fallback outer bounds exceed one source centimetre"
+                comparison = compare_probes(record["source_probes"], output_probes)
+            except AssertionError as error:
+                attempt["shape_error"] = str(error)
+                if fallback_budget == 250000:
+                    raise
+                continue
+            record["output_uv_channels"] = u.GeometryScript_MeshQueries.get_num_uv_sets(fallback)
+            assert record["output_uv_channels"] >= record["source_uv_channels"], "Fallback removed UV channels"
+            record["output_probes"], record["shape_comparison"] = output_probes, comparison
+            record["collision_fallback_triangles"] = count
+            record["bounds_max_delta_cm"] = max(bound_deltas)
+            break
         LIB.set_metadata_tag(target, "SpaceSurvivalAuthor", "AuthorStationAsteroid.py")
         LIB.set_metadata_tag(target, "SpaceSurvivalSourceSHA256", source_hash)
         assert LIB.save_loaded_asset(target, only_if_is_dirty=False), "Private asteroid save failed"
         record["output_measurement"] = metadata(target)
-        assert record["output_measurement"]["source_triangles"] <= TARGET_TRIANGLES * 1.1
+        assert record["output_measurement"]["source_triangles"] == record["source_measurement"]["source_triangles"]
         assert record["output_measurement"]["materials"] == record["source_measurement"]["materials"]
         assert record["output_measurement"]["simple_collision_count"] == 0
+        assert subsystem.get_collision_complexity(target) == u.CollisionTraceFlag.CTF_USE_COMPLEX_AS_SIMPLE
         record["status"] = "complete"
         print("STATION_ASTEROID_COMPLETE " + json.dumps(record["output_measurement"]), flush=True)
     except Exception as error:

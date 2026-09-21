@@ -96,7 +96,7 @@ public:
                           : FMath::Abs(Local.X) <= HalfExtent + Margin && FMath::Abs(Local.Y) <= HalfExtent + Margin;
         return Inside && Local.Z >= -240.f;
     }
-    /** The lit disc at the dock point. On while the pad is waiting for a ship, off once one is down. */
+    /** Landing markings show while the pad is waiting for a ship and hide once one is down. */
     void ShowIndicator(bool Visible);
     bool IsIndicatorVisible() const;
 
@@ -110,6 +110,8 @@ private:
     TObjectPtr<UStaticMeshComponent> Deck;
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> Indicator;
+    UPROPERTY()
+    TArray<TObjectPtr<UStaticMeshComponent>> IndicatorParts;
     UPROPERTY()
     TArray<TObjectPtr<UStaticMeshComponent>> Dressing;
     UStaticMeshComponent *AddMesh(FVector Position, FVector Scale, const TCHAR *Mesh, const TCHAR *Material, bool Solid,

@@ -2,6 +2,12 @@
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed package audit and packaged capture validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
+## September 21 asteroid colony reset (performance unmeasured)
+
+The private station asteroid retains its 5,464,576-triangle editor source but trims the cooked Nanite representation to 500,640 triangles. Its separate static collision fallback contains 150,192 triangles and 212,660 vertices, with no convex hull sealing the bowl. The native loader caps this fallback at 160,000 triangles. These are measured resource counts, not frame-time results. Uniform scale 145 places the roughly 2 m source at a roughly 300 m world envelope; scaling does not reduce triangles.
+
+Lower collision targets of 20k, 50k and 100k failed the fixed 1 cm source-space sampled fidelity tolerance. The 150k target preserved all 175 sampled ray hit states, with maximum sampled surface displacement of 0.7734 cm in source space (about 112 cm at the selected world scale). The room/terrace placement and camera probes passed separately. Native triangle-collision checks passed and the first integrated scene rendered, but its art was rejected. Texture memory, streaming, packaged resource use and representative frame time still require their own validation. See the [reset receipt](validation/2026-09-21-flight-loop-reset.md); owner acceptance remains in [KNOWN_ISSUES](KNOWN_ISSUES.md).
+
 ## September 16 spatial areas and gallery (performance unmeasured)
 
 The new spatial path retains 27 neighboring cells, up to 64 shadowed major placements and a configured 384 regional-clutter allowance. The distant field now defaults to 2,048 instances; far and regional clutter share a 3,072 ceiling. Three merged alien assemblies contain 20/20/21 source pieces with original detail material graphs; merging does not prove reduced GPU cost. Larger apparent rocks, shadowed masses and the 6km fog grid require a separate representative timing pass. Bound counts are guardrails, not a 60 FPS finding. The shared cap describes steady state: live console changes can briefly rebuild the far field before the regional 0.05-second budget update catches up.

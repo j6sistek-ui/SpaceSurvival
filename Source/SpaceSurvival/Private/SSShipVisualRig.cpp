@@ -21,6 +21,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 #include "PhysicsEngine/PhysicsThrusterComponent.h"
+#include "PhysicsEngine/PhysicsAsset.h"
 
 namespace
 {
@@ -148,6 +149,17 @@ bool USSShipVisualRig::Initialize(ASSShip *Ship, const FSSHullDefinition &Defini
         ReleaseRig();
         return false;
     }
+    UPhysicsAsset *ParkedPhysics = LoadObject<UPhysicsAsset>(
+        nullptr, TEXT("/Game/SpaceSurvival/Licensed/PhoenixPresentation/PA_PhoenixParked.PA_PhoenixParked"));
+    if (!ParkedPhysics)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Phoenix parked physics is missing; run AuthorPhoenixParkedPhysics.py"));
+        ReleaseRig();
+        return false;
+    }
+    // The source PA's three foot boxes span empty floor as far as 4.85 metres from the centreline.
+    // Its private derivative retains the hull and ramp; the animated part bounds below own the gear.
+    Hull->SetPhysicsAsset(ParkedPhysics, true);
     RigPawn->AttachToComponent(Ship->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
     RigPawn->SetActorRelativeTransform(
         FTransform(FRotator(0.f, Definition.MeshYaw, 0.f), FVector::ZeroVector, FVector(Definition.HullScale)));
@@ -355,9 +367,9 @@ void USSShipVisualRig::TickComponent(float DeltaTime, ELevelTick TickType,
     }
     // Nacelles rotate around the Blueprint's pivot arrows, preserving the mesh's authored offset.
     // Rotating the baked mesh at zero would swing the entire engine around the centre of the ship.
-    const FQuat Tilt =
-        FRotator(0.f, -SteeringInput.X * 8.f - StrafeInput.X * 10.f, SteeringInput.Y * 10.f + StrafeInput.Y * 12.f)
-            .Quaternion();
+    const FQuat Tilt = FRotator(0.f, FMath::Clamp(-SteeringInput.X * 8.f - StrafeInput.X * 10.f, -12.f, 12.f),
+                                FMath::Clamp(SteeringInput.Y * 10.f + StrafeInput.Y * 12.f, -12.f, 12.f))
+                           .Quaternion();
     for (int32 Index = 0; Index < EnginePivots.Num(); ++Index)
         EnginePivots[Index]->SetRelativeRotation(
             FMath::QInterpTo(EnginePivots[Index]->GetRelativeRotation().Quaternion(), EngineRestRotations[Index] * Tilt,

@@ -38,12 +38,11 @@ bool FSSStationServiceLabelView::RunTest(const FString &)
         InitialText.Add(Text->Text.ToString());
         ServiceCount += Text->ComponentHasTag(TEXT("StationServiceLabel")) ? 1 : 0;
     }
-    // Nine inside, plus the two on the exterior landing pad - a pit stop's worth of services where the
-    // ship actually parks, so arriving does not mean walking inside before anything can be done.
-    // Twelve since the crew wardrobe joined them. The count is pinned rather than just "more than
-    // zero" because a service whose label silently stops facing the player is invisible in exactly
-    // the way this test exists to catch.
-    TestEqual(TEXT("All twelve live service labels participate in view-facing presentation"), ServiceCount, 12);
+    // The functional district has ten distinct service zones. The preserved legacy station additionally
+    // repeats repair/upgrades on its exterior pad. Pin the complete count for whichever layout is active;
+    // the checks below still require every label to face the view and retain its actual interaction.
+    TestEqual(TEXT("Every live service label in the active layout participates in view-facing presentation"),
+              ServiceCount, Hub->IsUsingFunctionalLayout() ? 10 : 12);
     for (auto *Camera : {FrontCamera, RearCamera})
     {
         Controller->SetViewTarget(Camera);

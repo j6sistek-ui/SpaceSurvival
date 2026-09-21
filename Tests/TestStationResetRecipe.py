@@ -60,21 +60,74 @@ class StationResetRecipe(unittest.TestCase):
 
     def test_visual_solids_have_matching_explicit_colliders(self):
         by_name = {b["name"]: b for b in self.recipe["collision_boxes"]}
+        meshes = {m["name"]: m for m in self.recipe["static_meshes"]}
         for p in self.placements:
             if p["solid"]:
+                if meshes[p["name"]].get("triangle_collision"):
+                    self.assertEqual(p["name"], "AsteroidHabitat")
+                    self.assertEqual(meshes[p["name"]]["asset"], MODULE.ASTEROID)
+                    self.assertNotIn("Collision_" + p["name"], by_name,
+                                     "A solid bounding box would seal the asteroid's real cavity")
+                    continue
                 collider = by_name["Collision_" + p["name"]]
                 self.assertEqual(collider["location"], p["center"])
                 self.assertEqual([v * 2 for v in collider["extent"]], p["size"])
 
-    def test_asteroid_is_private_uniform_and_excluded_from_walk_collision(self):
+    def test_asteroid_is_private_uniform_and_uses_its_triangle_surface(self):
         asteroid = next(m for m in self.recipe["static_meshes"] if m["name"] == "AsteroidHabitat")
         self.assertEqual(asteroid["asset"], "/Game/SpaceSurvival/Licensed/StationReset/SM_StationAsteroid")
         self.assertEqual(asteroid["scale"], [145, 145, 145])
+        self.assertTrue(asteroid.get("triangle_collision"))
+        self.assertEqual([m["name"] for m in self.recipe["static_meshes"] if m.get("triangle_collision")],
+                         ["AsteroidHabitat"], "Only the reviewed private asteroid uses triangle collision")
         self.assertFalse(any("Asteroid" in b["name"] for b in self.recipe["collision_boxes"]))
         direction = MODULE.rotated_vector([-.76475, -.31190, .56381], asteroid["rotation"])
         self.assertAlmostEqual(direction[0], -1, places=4)
         self.assertAlmostEqual(direction[1], 0, places=4)
         self.assertAlmostEqual(direction[2], 0, places=4)
+
+    def test_control_consoles_keep_the_authored_display_transform(self):
+        meshes = {m["name"]: m for m in self.recipe["static_meshes"]}
+        self.assertFalse(any("Info_Terminal" in m["asset"] for m in meshes.values()),
+                         "The rejected glowing light sculpture is not a usable control-console asset")
+        for anchor in self.recipe["service_anchors"]:
+            kind = anchor["service"]
+            body, display = meshes["Console_" + kind], meshes["ConsoleDisplay_" + kind]
+            self.assertEqual(body["asset"], MODULE.TERMINAL)
+            self.assertEqual(display["asset"], MODULE.TERMINAL_UI)
+            for key in ("location", "rotation", "scale"):
+                self.assertEqual(display[key], body[key],
+                                 "Re-fitting the offset UI bounds would detach the display from its console")
+            self.assertAlmostEqual(body["scale"][0], body["scale"][1])
+            self.assertAlmostEqual(body["scale"][1], body["scale"][2])
+
+    def test_staff_standing_bodies_clear_the_service_bay_structure(self):
+        for body in self.recipe["collision_capsules"]:
+            x, y, z = body["location"]
+            radius, half_height = body["radius"], body["half_height"]
+            self.assertAlmostEqual(z - half_height, MODULE.FLOOR_Z)
+            for solid in self.recipe["collision_boxes"]:
+                if solid.get("walk_floor"):
+                    continue
+                cx, cy, cz = solid["location"]
+                ex, ey, ez = solid["extent"]
+                overlaps = (abs(x - cx) < ex + radius and abs(y - cy) < ey + radius and
+                            abs(z - cz) < ez + half_height)
+                self.assertFalse(overlaps, (body["name"], solid["name"]))
+
+    def test_habitats_fit_the_measured_terraces_with_uniform_scale(self):
+        meshes = {m["name"]: m for m in self.recipe["static_meshes"]}
+        habitats = [p for p in self.placements if p["name"].startswith("ColonyHabitat_")]
+        self.assertEqual(len(habitats), 2)
+        self.assertFalse(any("Ultimate_Space_Colony_Outpost_Pack" in m["asset"] for m in meshes.values()),
+                         "Cycle1 equipment cases must not silently return as substitute colony buildings")
+        for habitat in habitats:
+            mesh = meshes[habitat["name"]]
+            self.assertEqual(mesh["asset"], MODULE.COLONY_HABITAT)
+            self.assertEqual(len(set(mesh["scale"])), 1)
+            self.assertAlmostEqual(habitat["center"][2] - habitat["size"][2] / 2, 750)
+            self.assertLessEqual(max(habitat["size"][:2]), 1800.000001)
+            self.assertLessEqual(habitat["size"][2], 4500)
 
 
 if __name__ == "__main__":

@@ -13,13 +13,17 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/MeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/SkeletalMesh.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
+#include "Interfaces/Interface_CollisionDataProvider.h"
 #include "Physics/Experimental/PhysScene_Chaos.h"
+#include "PhysicsEngine/BodySetup.h"
 #include "UObject/UnrealType.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -113,11 +117,12 @@ struct FSSFunctionalStationWorld
                Test.TestEqual(TEXT("Station retains the requested home/service context"), Hub->IsHome(), Home);
     }
 
-    UPrimitiveComponent *Solid(const TCHAR *Name) const
+    UPrimitiveComponent *Solid(const TCHAR *AuthoredId) const
     {
+        const FName Identity(*(FString(TEXT("StationAuthoredId:")) + AuthoredId));
         TInlineComponentArray<UPrimitiveComponent *> Bodies(Hub);
         for (auto *Body : Bodies)
-            if (Body->GetFName() == FName(Name) && (Body->ComponentHasTag(TEXT("StationFunctionalSolid")) ||
+            if (Body->ComponentHasTag(Identity) && (Body->ComponentHasTag(TEXT("StationFunctionalSolid")) ||
                                                     Body->ComponentHasTag(TEXT("StationFunctionalStaffSolid"))))
                 return Body;
         return nullptr;
@@ -167,13 +172,10 @@ bool FSSStationResetCollision::RunTest(const FString &)
         if (!F.Initialize(*this, Home))
             return false;
         const float FeetClear = F.Walker->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 20.f;
-        F.Sweep(*this, TEXT("Solid_Collision_Floor_Main"), FVector(0, 0, FeetClear + 200),
-                FVector(0, 0, FeetClear - 100));
-        F.Sweep(*this, TEXT("Solid_Collision_Wall_North"), FVector(500, 1350, FeetClear),
-                FVector(500, 1700, FeetClear));
-        F.Sweep(*this, TEXT("Solid_Collision_Column_NE"), FVector(1400, 1350, FeetClear),
-                FVector(1800, 1350, FeetClear));
-        F.Sweep(*this, TEXT("Solid_Collision_Console_Wardrobe"), FVector(-1100, 1100, FeetClear),
+        F.Sweep(*this, TEXT("Collision_Floor_Main"), FVector(0, 0, FeetClear + 200), FVector(0, 0, FeetClear - 100));
+        F.Sweep(*this, TEXT("Collision_Wall_North"), FVector(500, 1350, FeetClear), FVector(500, 1700, FeetClear));
+        F.Sweep(*this, TEXT("Collision_Column_NE"), FVector(1500, 1350, FeetClear), FVector(1800, 1350, FeetClear));
+        F.Sweep(*this, TEXT("Collision_Console_Wardrobe"), FVector(-1100, 1100, FeetClear),
                 FVector(-1450, 1100, FeetClear));
         TestTrue(TEXT("Visible main-deck floor remains inside rescue walkable space"),
                  F.Hub->Walkable(F.Hub->GetActorTransform().TransformPosition(FVector(0, 0, FeetClear))));
@@ -183,6 +185,39 @@ bool FSSStationResetCollision::RunTest(const FString &)
             return false;
         TestFalse(TEXT("Square corners outside the circular deck cannot satisfy pad support"),
                   Pad->Covers(HubTransform.TransformPosition(FVector(ASSStation::PadCenterX + 1500, 1500, 100))));
+        const FTransform PadTransform = Pad->GetActorTransform();
+        const FCollisionShape StandingCapsule = FCollisionShape::MakeCapsule(42.f, 96.f);
+        const FCollisionObjectQueryParams StationSolids(ECC_WorldStatic);
+        FCollisionQueryParams JunctionQuery(SCENE_QUERY_STAT(SSFunctionalBridgeBarrier), false, F.Walker);
+        // Test actual authored/native station boundaries, excluding the separately tested parked ship rig.
+        for (float Degrees : {-26.f, -22.f, -18.f, -14.f, 14.f, 18.f, 22.f, 26.f})
+        {
+            const float Radians = FMath::DegreesToRadians(Degrees);
+            const FVector Direction(FMath::Cos(Radians), FMath::Sin(Radians), 0);
+            FHitResult Barrier;
+            const bool Blocked = F.World->SweepSingleByObjectType(
+                Barrier, PadTransform.TransformPosition(Direction * 1200.f + FVector(0, 0, 100)),
+                PadTransform.TransformPosition(Direction * 1900.f + FVector(0, 0, 100)), Pad->GetActorQuat(),
+                StationSolids, StandingCapsule, JunctionQuery);
+            const auto *Body = Barrier.GetComponent();
+            const bool CorrectBarrier =
+                Body && ((Barrier.GetActor() == Pad && Body->ComponentHasTag(TEXT("StationLandingKerb"))) ||
+                         (Barrier.GetActor() == F.Hub &&
+                          (Body->ComponentHasTag(TEXT("StationAuthoredId:Collision_BridgeRail_n445")) ||
+                           Body->ComponentHasTag(TEXT("StationAuthoredId:Collision_BridgeRail_445")))));
+            TestTrue(FString::Printf(TEXT("Standing capsule cannot escape the real bridge junction at %.0f degrees"),
+                                     Degrees),
+                     Blocked && !Barrier.bStartPenetrating && CorrectBarrier);
+        }
+        for (float Side : {-350.f, 0.f, 350.f})
+        {
+            FHitResult Barrier;
+            TestFalse(
+                TEXT("The center and both walking lanes through the bridge remain clear"),
+                F.World->SweepSingleByObjectType(Barrier, PadTransform.TransformPosition(FVector(1200, Side, 100)),
+                                                 PadTransform.TransformPosition(FVector(2200, Side, 100)),
+                                                 Pad->GetActorQuat(), StationSolids, StandingCapsule, JunctionQuery));
+        }
         for (float Side : {-350.f, 350.f})
         {
             const FVector Junction(ASSStation::PadCenterX + ASSStation::PadHalfExtent - 25, Side, 0);
@@ -235,7 +270,11 @@ bool FSSStationResetStaff::RunTest(const FString &)
                 continue;
             ++PhysicalStaff;
             const FVector Center = F.Hub->GetActorTransform().InverseTransformPosition(Body->GetComponentLocation());
-            F.Sweep(*this, *Body->GetName(), Center - FVector(180, 0, 0), Center);
+            const auto *Identity = Body->ComponentTags.FindByPredicate(
+                [](FName Tag) { return Tag.ToString().StartsWith(TEXT("StationAuthoredId:")); });
+            if (TestNotNull(TEXT("Native staff body retains its authored recipe identity"), Identity))
+                F.Sweep(*this, *Identity->ToString().RightChop(FString(TEXT("StationAuthoredId:")).Len()),
+                        Center - FVector(180, 0, 0), Center);
             const FVector Foot =
                 Body->GetComponentLocation() - F.Hub->GetActorUpVector() * Body->GetScaledCapsuleHalfHeight();
             FCollisionQueryParams Query(SCENE_QUERY_STAT(SSFunctionalStaffSupport), false, F.Walker);
@@ -250,6 +289,63 @@ bool FSSStationResetStaff::RunTest(const FString &)
                          FVector::Dist(Foot, Floor.ImpactPoint) < 1.f);
         }
         TestEqual(TEXT("Both visible staff have their own native blocking capsule"), PhysicalStaff, 2);
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationAsteroidCollision, "SpaceSurvival.Integration.StationAsteroidCollision",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSStationAsteroidCollision::RunTest(const FString &)
+{
+    for (bool Home : {true, false})
+    {
+        FSSFunctionalStationWorld F;
+        if (!F.Initialize(*this, Home))
+            return false;
+        UStaticMeshComponent *Rock = nullptr;
+        TInlineComponentArray<UStaticMeshComponent *> Bodies(F.Hub);
+        for (auto *Body : Bodies)
+            if (Body->ComponentHasTag(TEXT("StationFunctionalTriangleSolid")))
+            {
+                TestNull(TEXT("The asteroid has one native triangle collision proxy"), Rock);
+                Rock = Body;
+            }
+        if (!TestNotNull(TEXT("Visible asteroid has native physical collision"), Rock))
+            return false;
+        auto *Mesh = Rock->GetStaticMesh().Get();
+        if (!TestNotNull(TEXT("Native rock uses the private asteroid mesh"), Mesh) ||
+            !TestNotNull(TEXT("Private asteroid has a cooked body setup"), Mesh->GetBodySetup()))
+            return false;
+        TestEqual(TEXT("ComplexAsSimple preserves the open bowl for ordinary sweeps"),
+                  Mesh->GetBodySetup()->GetCollisionTraceFlag(), CTF_UseComplexAsSimple);
+        TestEqual(TEXT("No inherited convex hull seals the bowl"), Mesh->GetBodySetup()->AggGeom.GetElementCount(), 0);
+        FTriMeshCollisionData CollisionData;
+        TestTrue(TEXT("Actual mesh collision provider returns triangle data"),
+                 Mesh->GetPhysicsTriMeshData(&CollisionData, Mesh->GetBodySetup()->bMeshCollideAll));
+        TestEqual(TEXT("CPU collision uses built fallback triangles rather than the render source"),
+                  CollisionData.Indices.Num(), Mesh->GetNumTriangles(0));
+        TestTrue(TEXT("CPU fallback is bounded to 160,000 triangles for the measured cavity tolerance"),
+                 CollisionData.Indices.Num() > 0 && CollisionData.Indices.Num() <= 160000);
+        TestTrue(TEXT("Nanite keeps a separate reduced render budget above collision detail"),
+                 Mesh->GetNumNaniteTriangles() > CollisionData.Indices.Num() &&
+                     Mesh->GetNumNaniteTriangles() <= 600000);
+        TestFalse(TEXT("The asteroid never simulates its own physics body"), Rock->IsSimulatingPhysics());
+        const FTransform Frame = F.Hub->GetActorTransform();
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(SSAsteroidBowlCollision), false, F.Walker);
+        const FCollisionShape ShipBody = FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius());
+        FHitResult Hit;
+        TestFalse(TEXT("A ship sphere can enter the actual open mouth above the pad"),
+                  F.World->SweepSingleByChannel(Hit, Frame.TransformPosition(FVector(-20000, 0, 1600)),
+                                                Frame.TransformPosition(FVector(-2000, 0, 1600)), FQuat::Identity,
+                                                ECC_Pawn, ShipBody, Query));
+        for (const FVector Destination : {FVector(20000, 0, 2500), FVector(0, 20000, 2500), FVector(0, -20000, 2500)})
+        {
+            const bool Blocked = F.World->SweepSingleByChannel(Hit, Frame.TransformPosition(FVector(0, 0, 2500)),
+                                                               Frame.TransformPosition(Destination), FQuat::Identity,
+                                                               ECC_Pawn, ShipBody, Query);
+            TestTrue(TEXT("The same ship sphere is blocked by the visible rock's back and side walls"),
+                     Blocked && !Hit.bStartPenetrating && Hit.GetActor() == F.Hub && Hit.GetComponent() == Rock);
+        }
     }
     return true;
 }

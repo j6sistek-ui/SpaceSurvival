@@ -40,11 +40,39 @@ The reset recipe extends the legacy schema below:
   transform. `collision_capsules` supplies deliberate body blockers. Engineer Mica and the dockmaster
   stand on the actual floor, away from the central aisle; decoration does not substitute for staff.
 
+Every authored component carries `StationAuthoredId:<recipe name>`. Native collision mirrors retain
+that identity, and physical regression checks select the intended body by this tag. Unreal can suffix
+SCS/UObject names when rebuilding an existing Blueprint (observed `Collision_Floor_Main1` and
+`Collision_BridgeRail_n446`); those generated names are not durable layout IDs. After adding this
+metadata in C++, rebuild the Editor and re-author only `BP_StationReset` before running the reset
+collision/staff tests. A body still must block the actual walking capsule in the expected place; an
+identity tag alone does not satisfy those tests.
+
 The visible reset is an industrial 40 × 30 m concourse with an unobstructed central aisle, ten separated
-service zones, metal panels, attached ribs/conduits, warm perimeter lighting and restrained cyan guides.
+service zones, metal panels, attached ribs/conduits, warm task lighting and restrained cyan guides.
+The first rendered cycle exposed an asset-selection error: `Sci_Fi_Info_Terminal` appeared as a blank
+light sculpture, and the four selected `Ultimate_Space_Colony_Outpost_Pack` meshes appeared as equipment
+cases. That capture is rejected as a visual target; a successful capture run did not imply acceptance.
+The revised service recipe uses the actual `ModularSci_Comm/SM_Terminal_A` body with its matching
+`SM_Terminal_A_UI` at the same authored transform and one uniform scale. Re-fitting the offset UI mesh
+independently would detach it from the console. Lower canopies, grounded dividers, wardrobe lockers and
+scoped storage give the service bays physical definition. Broad ceiling fill is reduced in favor of
+local warm task pools. The east wall faces rock, so it is a bulkhead; the west entrance provides the
+real view through the pad to space. Rendering of these revisions remains a separate gate.
+
+The two outer terraces reference the private
+`StationReset/ColonyHabitat/SM_ColonyHabitat` derivative of object `3` from the owned Figur station kit.
+`Scripts/AuthorStationColonyHabitat.py` measures and previews the actual source geometry before export.
+The full source has a hanging lower mast; the private derivative trims and caps it at the measured
+ring underside, preserving the rounded base and upper structures. The measured candidate footprint is
+15.24 × 18 m and its height is 10.67 m, with centered XY and base Z0. The layout places one uniformly
+scaled instance on each existing 20 × 20 m terrace at Z750. These are supported exterior scenery,
+not new accessible rooms. Preserve the original blend and bind the import to its author receipt;
+Blender preview suitability does not establish Unreal material or visual acceptance.
 The pad is circular with physical 110 cm segmented guardrails that reject walker step-up. Angled return
 guards overlap the straight bridge rails, closing the diagonal gaps while leaving the eight-metre bridge
-clear. Its cantilever cradle
+clear. Its textured deck uses narrow painted landing marks rather than the rejected eighteen-metre
+emissive disc; markings still hide while occupied. Its cantilever cradle
 returns into the rock-embedded layered foundation. Mesh bounds
 determine placement, so the visible floor and physical floor share the pad's Z=-10 plane. The native hub
 skips the original station's interior/exterior dressing when using this functional layout. Character
@@ -52,13 +80,27 @@ customization is available in both the home hangar and arrival stations. The act
 is parked on the home pad and is reused for takeoff.
 
 The asteroid is the private `/Game/SpaceSurvival/Licensed/StationReset/SM_StationAsteroid` derivative;
-the original owned Fab mesh and material remain untouched. The source mesh has 5,464,576 triangles,
-even though its rendering fallback has only 23,194. World scale changes placement, not source cost.
+the recipe overrides only its appearance with the private `StationReset/Materials/MI_StationAsteroid`.
+The original owned Fab mesh and material remain untouched. The original source has 5,464,576 triangles,
+even though its rendering fallback has only 23,194. The private author retains the editor source but
+trims Nanite render geometry and generates a separate fallback triangle surface; record the actual
+author receipt counts rather than assuming the requested budgets were met. World scale changes
+placement, not geometry cost.
 The source-triangle audit established the candidate pose `(7500,0,5300)`, rotation
 `(34.319873,-22.187753,-6.929723)`, uniform scale145: the cavity faces local -X and the playable room
-grid clears rock. This is a measured composition starting point, not rendered acceptance. The asteroid
-has no gameplay collision because the vendor's convex shell fills its cavity. Intentional station solids
-bound the playable district; outer colony modules are scenery, not additional traversable rooms.
+grid clears rock. This is a measured composition starting point, not rendered acceptance. The recipe's
+`triangle_collision` flag on this private mesh creates a separate non-simulated native WorldStatic proxy,
+`Solid_AsteroidHabitat`, using its reviewed ComplexAsSimple fallback. The original convex shell would
+fill the cavity and must not be reused. The visual Blueprint still has no collision. Intentional room,
+pad and bridge solids bound the playable district; outer colony modules are scenery, not additional
+traversable rooms.
+
+Dock admission queries the actual welded flight compound along the assist's position and orientation
+curves. Angular subdivisions check the starting, midpoint and ending orientations. Alignment finishes
+at the hover point, before the fixed-heading descent. Only verified contact with the exact pad's top
+surface may be exempted during touchdown; that descent is repeated ignoring only the deck component,
+so rails, props and the asteroid remain blockers. The Phoenix uses its measured 2.5 cm parked pivot
+clearance. These checks do not authorize teleporting a hull through a blocked approach.
 
 For the bounded offscreen exterior review, after rebuilding the native fixture and authoring the reset:
 

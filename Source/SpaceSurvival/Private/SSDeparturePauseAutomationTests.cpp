@@ -15,6 +15,7 @@
 #include "GameFramework/WorldSettings.h"
 #include "Physics/Experimental/PhysScene_Chaos.h"
 #include "UObject/UnrealType.h"
+#include "UObject/GarbageCollection.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 namespace
@@ -26,6 +27,7 @@ struct FSSDeparturePauseWorld
     USSGameInstance *Instance = nullptr;
     ASSGameMode *Mode = nullptr;
     ASSShip *Ship = nullptr;
+    ULocalPlayer *LocalPlayer = nullptr;
 
     bool Initialize(FAutomationTestBase &Test)
     {
@@ -68,7 +70,15 @@ struct FSSDeparturePauseWorld
         if (!Test.TestNotNull(TEXT("Create departure controller"), Controller) ||
             !Test.TestNotNull(TEXT("Create station anchor"), Hub))
             return false;
-        Controller->SetPlayer(NewObject<ULocalPlayer>(GEngine, NAME_None, RF_Transient));
+        LocalPlayer = NewObject<ULocalPlayer>(GEngine, NAME_None, RF_Transient);
+        Instance->AddLocalPlayer(LocalPlayer, FPlatformUserId::CreateFromInternalId(0));
+        Controller->SetPlayer(LocalPlayer);
+        // GameplayStatics routes pause through the game instance's local-player registry, not the
+        // world's controller list. A bare SetPlayer fixture never reaches the real SetPause call.
+        if (!Test.TestTrue(TEXT("Pause resolves the registered local departure controller"),
+                           Instance->GetFirstLocalPlayerController() == Controller) ||
+            !Test.TestNotNull(TEXT("The engine has a player state that can own pause"), Controller->PlayerState.Get()))
+            return false;
         Controller->SetActorTickEnabled(false);
         World->AddController(Controller);
         Ship = World->SpawnActor<ASSShip>(Hub->PadDockPosition(), Hub->PadDockRotation());
@@ -98,19 +108,40 @@ struct FSSDeparturePauseWorld
         }
     }
 
-    ~FSSDeparturePauseWorld()
+    bool Shutdown()
     {
+        bool PlayersReleased = true;
         if (World)
         {
             if (Mode)
                 Mode->ClosePanel();
+            // AddLocalPlayer initializes local-player subsystems. Release them while their owner,
+            // controller and world are alive; waiting for the UObject destructor is too late in GC.
+            if (Instance && LocalPlayer)
+            {
+                Instance->RemoveLocalPlayer(LocalPlayer);
+                PlayersReleased = Instance->GetNumLocalPlayers() == 0;
+                LocalPlayer = nullptr;
+            }
             World->EndPlay(EEndPlayReason::Quit);
             World->DestroyWorld(false);
             GEngine->DestroyWorldContext(World);
             GWorld = PreviousWorld;
+            World = nullptr;
+            Mode = nullptr;
+            Ship = nullptr;
         }
         if (Instance)
+        {
             Instance->RemoveFromRoot();
+            Instance = nullptr;
+        }
+        return PlayersReleased;
+    }
+
+    ~FSSDeparturePauseWorld()
+    {
+        Shutdown();
     }
 };
 } // namespace
@@ -163,6 +194,13 @@ bool FSSStationDeparturePause::RunTest(const FString &)
     TestTrue(TEXT("Departure flight resumes on the same pawn after settings"),
              FVector::Dist(Fixture.Ship->GetActorLocation(), DuringFlight.GetLocation()) > 25.f &&
                  Fixture.Mode->GetPlayerShip() == Fixture.Ship);
+    const TWeakObjectPtr<ULocalPlayer> RegisteredPlayer(Fixture.LocalPlayer);
+    TestTrue(TEXT("Fixture removes its initialized local player before destroying the world"), Fixture.Shutdown());
+    // The failure previously surfaced during a later gallery test's collection. Exercise that
+    // boundary here so a passing pause test cannot leave a deferred subsystem-destruction crash.
+    CollectGarbage(RF_NoFlags, true);
+    TestFalse(TEXT("Registered pause player is released cleanly through garbage collection"),
+              RegisteredPlayer.IsValid());
     return true;
 }
 #endif

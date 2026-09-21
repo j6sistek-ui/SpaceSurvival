@@ -17,8 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 PROPS = "/Game/StarterBundle/ModularScifiProps/Meshes/"
 COMM = "/Game/StarterBundle/ModularSci_Comm/Meshes/"
 INDUSTRIAL = "/Game/SciFiCorridor/Meshes/"
-TERMINAL = "/Game/Sci_Fi_Light/Static_Meshes/SM_Sci_Fi_Info_Terminal/Mesh/SM_Sci_Fi_Info_Terminal"
-COLONY = "/Game/Ultimate_Space_Colony_Outpost_Pack/Mesh/SM_N_0_node_0_"
+TERMINAL = COMM + "SM_Terminal_A"
+TERMINAL_UI = COMM + "SM_Terminal_A_UI"
+COLONY_HABITAT = "/Game/SpaceSurvival/Licensed/StationReset/ColonyHabitat/SM_ColonyHabitat"
 ASTEROID = "/Game/SpaceSurvival/Licensed/StationReset/SM_StationAsteroid"
 FLOOR_Z = -10.0
 
@@ -66,17 +67,19 @@ def build_recipe(measure):
         placements.append(dict(name=name, asset=asset, center=list(center), size=list(size), solid=solid))
         if solid:
             box(name, center, size)
+        return meshes[-1]
 
-    def placed(name, asset, location, scale, rotation):
+    def placed(name, asset, location, scale, rotation, triangle_collision=False, materials=None):
         row = inventory(asset)
         origin = rotated_vector([row["origin"][i] * scale[i] for i in range(3)], rotation)
         axes = [rotated_vector([row["extent"][i] * scale[i] if i == axis else 0 for i in range(3)], rotation)
                 for axis in range(3)]
         size = [2 * sum(abs(axes[axis][i]) for axis in range(3)) for i in range(3)]
         meshes.append(dict(name=name, asset=asset, location=list(location), rotation=list(rotation), scale=list(scale),
-                           materials=row["materials"], cast_shadows=True))
+                           materials=materials or row["materials"], cast_shadows=True,
+                           triangle_collision=triangle_collision))
         placements.append(dict(name=name, asset=asset, center=[location[i] + origin[i] for i in range(3)],
-                               size=size, solid=False))
+                               size=size, solid=triangle_collision))
 
     def grounded_uniform(name, asset, x, y, floor, height, yaw):
         row = inventory(asset)
@@ -114,19 +117,11 @@ def build_recipe(measure):
             fitted(f"WallPanel_{label}_{ix}", INDUSTRIAL + "SM_Wall_03",
                    (-1650 + ix * 500, side * 1530, 250), (500, 60, 520), yaw=180 if side > 0 else 0)
         box(f"Wall_{label}", (100, side * 1530, 250), (4000, 60, 520))
+    # This bulkhead faces the asteroid interior. The real view to space is through the west pad portal;
+    # placing an observation window here only framed the rock a few metres beyond it in visual cycle1.
     for iy in range(6):
-        if iy in (2, 3):
-            # A genuine dark-space sightline faces away from the landing pad. Glass remains solid to
-            # walkers; the underlying full wall spec is its intentional invisible collision plane.
-            fitted(f"ObservationGlass_{iy}", PROPS + "SM_Wall_A_Glass",
-                   (2130, -1250 + iy * 500, 245), (20, 500, 360), yaw=90)
-            fitted(f"ObservationSill_{iy}", cube, (2130, -1250 + iy * 500, 27.5),
-                   (70, 500, 75), materials=hull)
-            fitted(f"ObservationHeader_{iy}", cube, (2130, -1250 + iy * 500, 467.5),
-                   (70, 500, 85), materials=hull)
-        else:
-            fitted(f"WallPanel_East_{iy}", INDUSTRIAL + "SM_Wall_03", (2130, -1250 + iy * 500, 250),
-                   (60, 500, 520), yaw=90)
+        fitted(f"WallPanel_East_{iy}", INDUSTRIAL + "SM_Wall_03", (2130, -1250 + iy * 500, 250),
+               (60, 500, 520), yaw=90)
     box("Wall_East", (2130, 0, 250), (60, 3000, 520))
     for y in (-1250, -750, 750, 1250):
         fitted(f"WallPanel_Entry_{y}", INDUSTRIAL + "SM_Wall_03", (-1930, y, 250),
@@ -164,22 +159,53 @@ def build_recipe(measure):
         ("Gallery", 1800, -500, 90, (-190, 0)), ("Beacon", 1800, 500, 90, (-190, 0)),
     ]
     for kind, x, y, yaw, offset in services:
-        size = (160, 100, 160) if yaw % 180 == 0 else (100, 160, 160)
-        fitted(f"Console_{kind}", TERMINAL, (x, y, FLOOR_Z + 80), size, yaw=yaw, solid=True)
+        # The first reviewed recipe accidentally chose a luminous display sculpture. This is the
+        # supplied curved command console and its matching UI overlay, kept at one uniform scale and
+        # the exact shared authored transform. Source +X is the open operator side, facing the aisle.
+        measured = inventory(TERMINAL)
+        scale = 110.0 / (2 * measured["extent"][2])
+        heading = yaw + 90
+        size = [2 * e * scale for e in measured["extent"]]
+        if int(round(heading / 90)) % 2:
+            size[0], size[1] = size[1], size[0]
+        console = fitted(f"Console_{kind}", TERMINAL, (x, y, FLOOR_Z + 55), size,
+                         yaw=heading, solid=True)
+        placed(f"ConsoleDisplay_{kind}", TERMINAL_UI, console["location"], console["scale"], console["rotation"])
         # A thin, grounded base belongs to its terminal and reinforces the intentional service zone.
         fitted(f"ConsoleBase_{kind}", cube, (x, y, FLOOR_Z + 2), (size[0] + 18, size[1] + 18, 4),
                materials=gold if kind == "Launch" else hull)
         anchors.append(dict(name=f"Service_{kind}", service=kind,
                             location=[x + offset[0], y + offset[1], FLOOR_Z],
                             rotation=[0, 0, 0], scale=[1, 1, 1]))
-    # Recessed lighting, at consistent ceiling locations; pool intensity is comparable to the existing
-    # readable station at the same distance, not the old tiny high-mounted lamps that lit nothing.
+    # Human-scale bays articulate the large service hall. Each lower canopy meets the perimeter wall
+    # and has grounded narrow dividers outside every service approach and the central circulation lane.
+    for side in (-1, 1):
+        for x in (-1800, -1000, -200, 600, 1400):
+            fitted(f"BayDivider_{side}_{x}", INDUSTRIAL + "SM_Pilar", (x, side * 1340, 150),
+                   (60, 300, 320), solid=True)
+        for x in (-1400, -600, 200, 1000):
+            fitted(f"BayCanopy_{side}_{x}", INDUSTRIAL + "SM_Celling_01", (x, side * 1310, 322),
+                   (740, 420, 35))
+            fitted(f"BayFascia_{side}_{x}", PROPS + "SM_Wall_A", (x, side * 1105, 313),
+                   (710, 35, 55))
+            fitted(f"BayTaskStrip_{side}_{x}", cube, (x, side * 1220, 300), (260, 12, 4), materials=gold)
+            lights.append(dict(name=f"BayTaskLight_{side}_{x}", location=[x, side * 1200, 280],
+                               rotation=[0, 0, 0], scale=[1, 1, 1], color=[1.0, .77, .48],
+                               intensity=14000, attenuation_radius=620, cast_shadows=False))
+    # Fixtures serve a named purpose and sit against supported bay walls, with matching body blockers.
+    for x in (-1530, -1270):
+        fitted(f"WardrobeLocker_{x}", PROPS + "SM_WallCab_2D", (x, 1440, 145),
+               (220, 110, 310), solid=True)
+    fitted("RepairStorage", PROPS + "SM_Cabinet_A", (-600, -1410, 70), (430, 140, 160), solid=True)
+    fitted("PaintSupplyRack", PROPS + "SM_Shelf_A_v2", (-1400, -1410, 100), (430, 120, 220), solid=True)
+    fitted("SystemsStorage", PROPS + "SM_Cabinet_B", (200, 1420, 70), (430, 140, 160), solid=True)
+    # Background fill supports the warm pools instead of illuminating every metal panel equally.
     for x in (-1300, -300, 700, 1700):
         for y in (-950, 0, 950):
             fitted(f"Luminaire_{x}_{y}", cube, (x, y, 502), (180, 60, 8), materials=cyan if y == 0 else gold)
             lights.append(dict(name=f"Light_{x}_{y}", location=[x, y, 445], rotation=[0, 0, 0], scale=[1, 1, 1],
                                color=[.62, .80, 1.0] if y == 0 else [1.0, .65, .32],
-                               intensity=42000 if y == 0 else 65000, attenuation_radius=1050, cast_shadows=False))
+                               intensity=18000 if y == 0 else 9000, attenuation_radius=850, cast_shadows=False))
     # The inside and pad are separated by a roofed, readable doorway, while pad flight clearance stays
     # untouched. Four low rails protect the sides of the connecting walkway but leave its full width.
     for y in (-445, 445):
@@ -198,17 +224,18 @@ def build_recipe(measure):
 
     # Measured against all 5,464,576 source triangles before authoring: this pose turns the cavity
     # axis to -X and leaves the complete 40x30m concourse clear. The derived mesh preserves that frame.
-    # The vendor's single convex shell fills the hole, so this background has no gameplay collision.
+    # The private mesh uses its measured Nanite fallback triangles for collision. The original convex
+    # shell is removed so the bowl stays open; the station owns a separate non-simulated native proxy.
     placed("AsteroidHabitat", ASTEROID, [7500, 0, 5300], [145, 145, 145],
-           [34.319873, -22.187753, -6.929723])
+           [34.319873, -22.187753, -6.929723], triangle_collision=True,
+           materials=["/Game/SpaceSurvival/Licensed/StationReset/Materials/MI_StationAsteroid.MI_StationAsteroid"])
 
-    # Two compact side terraces carry actual owned rounded colony modules. Source-triangle corner
+    # Two compact side terraces carry the measured owned Figur habitat derivative. Source-triangle corner
     # probes place them forward of the closing back wall: x[-2000,0], |y|[4500,6500]. The highest
     # probed rock floor is554cm, so a750cm terrace clears it. Their outer/front corners have no rock;
     # paired cantilever beams return to measured rock-supported rear anchors instead of floating legs.
     plate = "/Game/Megastructure_Scifi_World/Meshes/Floor/SM_floor_module_01"
-    for side, label, keys in ((1, "North", ("3f257365", "2c8f5471")),
-                              (-1, "South", ("2d53a3ce", "cd3e7dc4"))):
+    for side, label in ((1, "North"), (-1, "South")):
         fitted(f"ColonyTerrace_{label}", plate, (-1000, side * 5500, 650), (2000, 2000, 200))
         for distance, rock_floor in ((4500, -1017.3 if side > 0 else -1936.7),
                                      (6500, 554.0 if side > 0 else -148.6)):
@@ -226,16 +253,15 @@ def build_recipe(measure):
             fitted(f"ColonyBridgeLight_{label}_{edge}", cube, (edge, side * 2950, 851),
                    (8, 3060, 2), materials=cyan)
         fitted(f"ColonyBridgeRoot_{label}", cube, (-1000, side * 1470, 470), (600, 120, 360), materials=hull)
-        for index, key in enumerate(keys):
-            asset = COLONY + key
-            measured = inventory(asset)
-            height = min(1800, 850 * measured["extent"][2] / max(measured["extent"][:2]))
-            grounded_uniform(f"ColonyModule_{label}_{index}", asset, -1000, side * (5000 + index * 1000),
-                             750, height, 270 if side > 0 else 90)
+        measured = inventory(COLONY_HABITAT)
+        height = min(4500, 1800 * measured["extent"][2] / max(measured["extent"][:2]))
+        grounded_uniform(f"ColonyHabitat_{label}", COLONY_HABITAT, -1000, side * 5500,
+                         750, height, 270 if side > 0 else 90)
+        for index, distance in enumerate((4950, 6050)):
             lights.append(dict(name=f"ColonyLight_{label}_{index}",
-                               location=[-1550, side * (5000 + index * 1000), 1250],
-                               rotation=[0, 0, 0], scale=[1, 1, 1], color=[.5, .75, 1], intensity=90000,
-                               attenuation_radius=1800, cast_shadows=False))
+                               location=[-1950, side * distance, 1150],
+                               rotation=[0, 0, 0], scale=[1, 1, 1], color=[.5, .75, 1], intensity=65000,
+                               attenuation_radius=2200, cast_shadows=False))
 
     # Two purposeful staff replace the previous scattered crowd. Body meshes preserve uniform scale,
     # a matching authored idle, measured sole placement and a native capsule at that exact body position.

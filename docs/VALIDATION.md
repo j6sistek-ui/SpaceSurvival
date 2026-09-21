@@ -2,6 +2,10 @@
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed authoring, package audit and both packaged capture fixtures. Package 3's scripted/package evidence remains a separate checkpoint. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
+## September 21 flight and asteroid-station reset
+
+The isolated reset candidate and retained failed attempts are recorded in the [September21 receipt](validation/2026-09-21-flight-loop-reset.md). Build12 and the first eight focused hull/station tests passed, but the following full run failed eight of86 tests; that gate is not accepted. Corrections and rendered validation are in progress. Current projectile timing coverage explicitly separates `SpaceSurvival.Flight.ClassicProjectileRelativeMotion`, using the actual classic105cm sphere, from `HullProjectileContacts`, using the initialized default Phoenix compound. Historical tables below retain the test names and results executed at their recorded revisions.
+
 ## September 17 station pit stop, ship painter and prefab tooling
 
 Commits `bd250ed`, `c0a4006` and `8e90995` replace the station exterior with one composed pit stop body, populate the hangar, add the PAINT BAY service and add the editor prefab library with its live-link endpoint. No sanitized receipt under `docs/validation` was written for this pass; the evidence is the local report and private capture directories named below. It is grouped by kind because none of it is natural play or owner acceptance.

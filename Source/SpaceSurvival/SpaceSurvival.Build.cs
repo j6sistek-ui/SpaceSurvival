@@ -10,6 +10,7 @@ public class SpaceSurvival : ModuleRules
         // not link against it. This line is what makes it reachable from C++.
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Slate", "SlateCore", "Json", "JsonUtilities", "Niagara", "ShipCore" });
         PublicIncludePaths.Add(ModuleDirectory);
+        PrivateDependencyModuleNames.Add("PhysicsCore");
         if (Target.bBuildEditor)
             PrivateDependencyModuleNames.Add("UnrealEd");
     }

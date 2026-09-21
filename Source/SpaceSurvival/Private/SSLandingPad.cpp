@@ -3,6 +3,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
+#include "Engine/OverlapResult.h"
 #include "Materials/MaterialInterface.h"
 
 ASSLandingPad::ASSLandingPad()
@@ -48,6 +49,9 @@ void ASSLandingPad::Build()
                    bCircularDeck ? TEXT("/Engine/BasicShapes/Cylinder.Cylinder") : Cube, Hull, true,
                    TEXT("StationLandingPad"));
     Deck->SetCastShadow(true);
+    if (bCircularDeck)
+        Deck->SetMaterial(0, LoadObject<UMaterialInterface>(
+                                 nullptr, TEXT("/Game/SpaceSurvival/Materials/M_StationDeck.M_StationDeck")));
     // The colony perimeter is a genuine walking guardrail. The bridge is the intended exit; a short
     // step-over kerb would let CharacterMovement walk straight off the circular deck into rescue.
     if (bCircularDeck)
@@ -99,14 +103,34 @@ void ASSLandingPad::Build()
             Dressing.Add(AddMesh(FVector(0, Side * (HalfExtent - 60.f), 12.f),
                                  FVector(HalfExtent * 2.f / 100.f, 1.2f, .24f), Cube, Cyan, false,
                                  TEXT("StationLandingKerb")));
-    // Where to put it down. A lit disc on the deck at the dock point, so a pilot can see where the ship
-    // will end up before committing. The engine's own cylinder and the cyan the kerbs already use - no
-    // new asset. Flattened rather than a plane so it reads from a low approach angle as well as from above.
-    Indicator = AddMesh(FVector(0, 0, 3.f), FVector(18.f, 18.f, .04f), TEXT("/Engine/BasicShapes/Cylinder.Cylinder"),
-                        Cyan, false, TEXT("StationPadIndicator"));
+    // The colony deck uses narrow painted landing marks. An eighteen-metre emissive disc washed out
+    // both the approach and the parked hull; the physical deck and restrained perimeter lights suffice.
+    if (bCircularDeck)
+    {
+        const TCHAR *Paint =
+            TEXT("/Game/SpaceSurvival/Materials/M_StationShell_SafetyOchre.M_StationShell_SafetyOchre");
+        Indicator =
+            AddMesh(FVector(0, 0, .8f), FVector(.20f, 8.f, .016f), Cube, Paint, false, TEXT("StationPadIndicator"));
+        for (float Side : {-1.f, 1.f})
+            IndicatorParts.Add(AddMesh(FVector(0, Side * 400.f, .8f), FVector(10.f, .20f, .016f), Cube, Paint, false,
+                                       TEXT("StationPadIndicator")));
+        for (int32 Index = 0; Index < 24; ++Index)
+        {
+            const float Radians = FMath::DegreesToRadians(Index * 15.f);
+            auto *Mark = AddMesh(FVector(FMath::Cos(Radians) * 1180.f, FMath::Sin(Radians) * 1180.f, .8f),
+                                 FVector(1.8f, .18f, .016f), Cube, Paint, false, TEXT("StationPadIndicator"));
+            Mark->SetRelativeRotation(FRotator(0, Index * 15.f + 90.f, 0));
+            IndicatorParts.Add(Mark);
+        }
+    }
+    else
+        Indicator = AddMesh(FVector(0, 0, 3.f), FVector(18.f, 18.f, .04f),
+                            TEXT("/Engine/BasicShapes/Cylinder.Cylinder"), Cyan, false, TEXT("StationPadIndicator"));
     for (UStaticMeshComponent *Plate : Dressing)
         Plate->SetCastShadow(false);
     Indicator->SetCastShadow(false);
+    for (UStaticMeshComponent *Part : IndicatorParts)
+        Part->SetCastShadow(false);
 }
 bool ASSLandingPad::ConfigureWalkExit(const FBox &HullBounds, float CapsuleRadius, float CapsuleHalfHeight,
                                       const AActor *ParkedShip)
@@ -127,20 +151,48 @@ bool ASSLandingPad::ConfigureWalkExit(const FBox &HullBounds, float CapsuleRadiu
     for (const float Y : {float(HullBounds.Min.Y) - LocalRadius - 60.f, float(HullBounds.Max.Y) + LocalRadius + 60.f})
     {
         if (FMath::Abs(Y) > Edge)
+        {
+            UE_LOG(LogTemp, Display, TEXT("SS_PAD_EXIT_REJECT reason=Edge y=%.2f edge=%.2f hull=%s pad=%s"), Y, Edge,
+                   *HullBounds.ToString(), *GetActorTransform().ToString());
             continue;
+        }
         const FVector Above = GetActorTransform().TransformPosition(FVector(X, Y, 300.f));
         FHitResult Floor;
-        if (!GetWorld()->LineTraceSingleByObjectType(Floor, Above, Above - GetActorUpVector() * 600.f, StaticObjects,
-                                                     Query) ||
-            Floor.GetActor() != this || FVector::DotProduct(Floor.ImpactNormal, FVector::UpVector) < .7f)
+        const bool FloorHit = GetWorld()->LineTraceSingleByObjectType(Floor, Above, Above - GetActorUpVector() * 600.f,
+                                                                      StaticObjects, Query);
+        if (!FloorHit || Floor.GetActor() != this || FVector::DotProduct(Floor.ImpactNormal, FVector::UpVector) < .7f)
+        {
+            UE_LOG(LogTemp, Display,
+                   TEXT("SS_PAD_EXIT_REJECT reason=Floor y=%.2f hit=%d actor=%s component=%s point=%s normal=%s "
+                        "above=%s pad=%s deck=%s physics=%d hull=%s"),
+                   Y, FloorHit, *GetNameSafe(Floor.GetActor()), *GetNameSafe(Floor.GetComponent()),
+                   *Floor.ImpactPoint.ToString(), *Floor.ImpactNormal.ToString(), *Above.ToString(),
+                   *GetActorTransform().ToString(), *Deck->GetComponentTransform().ToString(),
+                   Deck->IsPhysicsStateCreated(), *HullBounds.ToString());
             continue;
+        }
         const FVector Candidate = Floor.ImpactPoint + FVector::UpVector * (CapsuleHalfHeight + 2.5f);
         if (!Covers(Candidate, -LocalRadius - 60.f))
+        {
+            UE_LOG(LogTemp, Display, TEXT("SS_PAD_EXIT_REJECT reason=Coverage local=%s hull=%s"),
+                   *GetActorTransform().InverseTransformPosition(Candidate).ToString(), *HullBounds.ToString());
             continue;
+        }
         if (GetWorld()->OverlapBlockingTestByChannel(Candidate, FQuat::Identity, ECC_Pawn,
                                                      FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleHalfHeight),
                                                      Query))
+        {
+            TArray<FOverlapResult> Overlaps;
+            GetWorld()->OverlapMultiByChannel(Overlaps, Candidate, FQuat::Identity, ECC_Pawn,
+                                              FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleHalfHeight), Query);
+            for (const FOverlapResult &Overlap : Overlaps)
+                if (Overlap.bBlockingHit)
+                    UE_LOG(LogTemp, Display,
+                           TEXT("SS_PAD_EXIT_REJECT reason=Blocked candidate=%s actor=%s component=%s hull=%s"),
+                           *Candidate.ToString(), *GetNameSafe(Overlap.GetActor()),
+                           *GetNameSafe(Overlap.GetComponent()), *HullBounds.ToString());
             continue;
+        }
         WalkSpawnOffset = ExitOffset = GetActorTransform().InverseTransformPosition(Candidate);
         return true;
     }
@@ -161,6 +213,8 @@ void ASSLandingPad::ShowIndicator(bool Visible)
 {
     if (Indicator)
         Indicator->SetVisibility(Visible);
+    for (UStaticMeshComponent *Part : IndicatorParts)
+        Part->SetVisibility(Visible);
 }
 bool ASSLandingPad::IsIndicatorVisible() const
 {
