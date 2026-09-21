@@ -1,6 +1,10 @@
 # Performance findings
 
-Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed package audit and packaged capture validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
+Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The current gameplay follow-up has passed package audit and packaged capture validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
+
+## September 21 gameplay follow-up (scripted timing only)
+
+Package4/source `79553fc` passed the hidden Station5 female capture `d7b9eb28986e4259b0d3529ccc7ec693`. Its generated `performance.json` records frame-time median 15.4848 ms, p95 16.0893 ms and maximum 300.6282 ms during the selected post-warmup gameplay interval. The maximum game-thread sample is 277.3329 ms. Screenshot readbacks, seeded assistance, scripted input, disabled audio and the owner's separate running editor make this unsuitable for representative 60 FPS acceptance; the aggregate must not hide these spikes. No separate natural performance pass was performed for this follow-up. The exact package and capture guards are in the [follow-up receipt](validation/2026-09-21-gameplay-followup.md).
 
 ## September 21 asteroid colony reset (performance unmeasured)
 

@@ -252,13 +252,18 @@ The flight system supports:
 - momentum/inertia
 - contextual maneuvering
 
-Normal traversal has strong forward momentum.
+Normal traversal has strong forward momentum. Owner clarification, September 21, 2026: normal throttle,
+engine-off coasting and boost are distinct. Releasing throttle cuts main-engine thrust while preserving
+world momentum; braking can bring the ship to a stop. This supersedes the earlier mandatory wave speed
+floor. Waves and hazards still encourage forward travel. The same model applies beside a station.
 
-**Inside a wave**, the player should be progressing through space rather than freely parking or backtracking.
+Controller mapping approved on that date: RT analog throttle, B boost, LT brake and RB fire. D-pad is
+reserved for later ship features; those features are not implemented by this clarification.
 
-**Inside the station zone** (see below), the ship may slow to a stop. That is the same flight model with the
-speed floor lifted for a scheduled break, not a second model - and a ship that must always cruise cannot be
-lowered onto a pad.
+The owner also authorized a casual **Free Flight** option at the home launch panel, alongside **Start
+Survival** and **Continue Survival**. It uses the existing ship and station without advancing survival
+waves or awarding persistent progress. It preserves the account and suspended survival checkpoint and
+returns safely to the home hangar. This testing mode does not change the survival station cadence.
 
 There should not be a visible switch between "forward survival mode" and "combat mode."
 

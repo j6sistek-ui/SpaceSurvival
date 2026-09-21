@@ -4,6 +4,12 @@ Current source/build status is in [Project State](PROJECT_STATE.md); open accept
 
 ## September 21 flight and asteroid-station reset
 
+The subsequent owner playtest produced RPT-20260921-03. The separate
+[gameplay follow-up receipt](validation/2026-09-21-gameplay-followup.md) records
+walking/boarding, independent throttle/boost, wardrobe visibility, shot feedback
+and Free Flight save protection. Its evidence does not retroactively change the
+earlier Package3 identities or establish physical-device acceptance.
+
 The isolated reset candidate and retained failed attempts are recorded in the [September 21 receipt](validation/2026-09-21-flight-loop-reset.md). **Build 21 passed in 22.70 seconds; the complete suite passed 91/91 at 07:56:30 UTC, then passed 91/91 again with the final station assets at 08:18:03 UTC, with zero test warnings, failures or omitted cases.** The reports record 34.282787 and 34.394348 seconds respectively. Full suite 4's repeated arrival failure exposed a deck mesh still compiling without a collision body. Build 20's editor-only readiness fix directly observed pending Cylinder/Cube compilation complete, physics become available, and the unchanged Wave 5/10 deck and exit assertions pass in the full sequence. Earlier failed and crashed runs remain in the receipt.
 
 Current projectile timing coverage explicitly separates `SpaceSurvival.Flight.ClassicProjectileRelativeMotion`, using the actual classic 105cm sphere, from `HullProjectileContacts`, using the initialized default Phoenix compound. Station tests exercise actual floor/guardrail/staff collision, both-context wardrobe access, and supported arrival/departure. New pose coverage checks magnetic release without gear redeployment and classic loadout presentation on the reused pawn. Build 21 and the 91-test report bind to native source **`0768e2c8d76e974ff56b6414edbadbd177c4ccf0`**, committed unchanged after execution; later authoring/material/packaging checkpoints are separate. Source/core/documentation CI subsequently passed at `7572c13`; this does not establish packaging success.

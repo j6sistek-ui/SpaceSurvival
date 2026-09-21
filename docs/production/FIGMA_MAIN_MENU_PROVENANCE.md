@@ -85,4 +85,3 @@ These are source references for existing behavior, not instructions to import ev
 Design contexts and screenshots were retrieved for Ship Systems, Controls, Pause and Event Reward. Their receipts are alongside the main-menu extraction. No page-11 artwork was imported as part of this extraction.
 
 The sample Controls and HUD text still assigns RT to boost, and the station sample assigns A to interaction. The approved current bindings are RT throttle, B boost, LT brake, RB fire; on foot E/Y interact and Space/A jump. Keep the live reward panel's captured steering and keyboard/controller selection semantics when applying its layout. The current boarding launch choice has no dedicated page-11 frame. Page-13 scene plates remain proposed artwork and do not replace actual gameplay backgrounds through this handoff.
-

@@ -38,6 +38,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/Build.ps1 -Target Ed
 
 **`-Target Test` does not rebuild.** Run `-Target Editor` first or you are testing the previous binary.
 
+Run the process-owning `Scripts/TestSaveLifecycle.ps1` in the installed PowerShell7
+(`pwsh`, verified7.6.5 on September21). Windows PowerShell5.1 returned a null
+`Process.ExitCode` after a successful Preflight child and the harness correctly
+failed closed. The same harness passed its four FreeFlightIsolation stages in7.6.5;
+do not weaken exit-code validation to accept null.
+
 The test gate demands *all* of: `succeeded >= 1`, `failed == 0`, `notRun == 0`, `succeededWithWarnings == 0`.
 **Engine warnings fail it**, and they are easy to produce without failing a single assertion.
 

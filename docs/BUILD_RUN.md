@@ -2,7 +2,7 @@
 
 **Start with [Project State](PROJECT_STATE.md#source-build-and-release) for the current source, local package and separately published itch identity.** Older package receipts below are historical evidence, not the current contents of the shared archive. Phase 1 remains PARTIAL.
 
-Play the September 21 reset candidate with **`C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/Play Packaged Review.cmd`**. Package 3 at source `7a63b03` has passed its archive audit and packaged Station5/Wave10 fixtures; [Project State](PROJECT_STATE.md#september-21-gameplay-reset-candidate) records its identity and remaining acceptance gaps. The original checkout at `C:/Users/j6sis/SpaceSurvival` and its `Artifacts/Windows` package remain older and unchanged. Do not open the `.uproject` just to play: it starts Unreal Editor and may offer a conversion copy. See [your next review](KNOWN_ISSUES.md#what-to-personally-review-next) and [local-versus-GitHub storage](PROJECT_STATE.md#where-files-live).
+Play the September 21 reset candidate with **`C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/Play Packaged Review.cmd`**. Package 4 at source `79553fc` includes the gameplay follow-up and approved main menu and has passed its archive audit; [Project State](PROJECT_STATE.md#september-21-gameplay-reset-candidate) records its identity and remaining acceptance gaps. The original checkout at `C:/Users/j6sis/SpaceSurvival` and its `Artifacts/Windows` package remain older and unchanged. Do not open the `.uproject` just to play: it starts Unreal Editor and may offer a conversion copy. See [your next review](KNOWN_ISSUES.md#what-to-personally-review-next) and [local-versus-GitHub storage](PROJECT_STATE.md#where-files-live).
 
 **`Play Packaged Review.cmd`** opens only its checkout's `Artifacts/Windows/SpaceSurvival.exe` at 1600×900 with a separate persistent profile in `Artifacts/PackagedReviewUser`; it does not import existing saves, build, install prerequisites or apply ship-refresh/account changes. `Scripts/PlayPackagedReview.ps1 -DryRun` checks the paths and prints the command without opening the game or writing files. The final candidate passed that dry run; the agent did not open an interactive game window. Keep the whole packaged directory together.
 
@@ -19,6 +19,26 @@ Run commands from the checkout being built or inspected. The reset review checko
 
 The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomplete installation location. Use the complete engine above or pass an explicit `-EngineRoot`.
 
+## Locked startup menu authoring
+
+Package 4 includes the September 21 owner-approved Figma main menu; later source edits still require a new package. Only the locked main page is integrated. Page 11 remains a source of later references, and active-run pause/settings/station panels retain their current implementation. Exact source PNGs and measured placement/provenance are under [ContentSource/FigmaMainMenu](../ContentSource/FigmaMainMenu/README.md); [the source record](production/FIGMA_MAIN_MENU_PROVENANCE.md) explains normal/hover and export limits.
+
+Run this narrow import after the Editor module is built, one owned offscreen Unreal process at a time:
+
+```powershell
+python Scripts/ImportFigmaMainMenu.py --validate-only
+$ssRoot = (Get-Location).Path
+$ssEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
+& $ssEditor $ssProject -unattended -nosplash -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/ImportFigmaMainMenu.py"
+# Inspect Artifacts/FigmaMainMenu/author-dry-run.json, then create the 19 named textures:
+& $ssEditor $ssProject -unattended -nosplash -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/ImportFigmaMainMenu.py" -SSApplyFigmaMainMenu
+```
+
+The importer creates only `/Game/SpaceSurvival/UI/MainMenu` assets, preserves the committed source bytes and rejects unknown or changed prior outputs. Matching recorded textures can be reused unchanged. `Artifacts/FigmaMainMenu/author.json` records output hashes; the existing SpaceSurvival cook root covers this family. Do not run the baseline Content author to install this menu. Import, native build, input, rendered fidelity and cooked inclusion have separate checks in the validation record.
+
+On this title screen, Continue resumes a saved survival checkpoint and stays visibly disabled when one is unavailable; New Game opens home for boarding and the Start/Continue/Free Flight choice; Settings opens the current settings panel; Exit Game quits. W/S or arrows/D-pad navigate, Enter/A confirms, pointer hit areas follow the same four native indices, and Escape quits from the title only. The old Figma sample-version caption is retained in provenance but the live panel says `DEVELOPMENT REVIEW` without an unwired release-log link. Missing imported artwork falls back to the functional native panel. At other aspect ratios the composition is letterboxed; the half-scale button exports target 1920×1080 and do not establish 4K or shader-animation acceptance.
+
 ## Orbital wreck authoring and comparison (target unaccepted)
 
 `PrepareOrbitalWreck.py` runs in the installed Blender background process and writes private broken Station3 sections plus a Figur kit beam. `PreviewOrbitalWreck.py` produces a Blender-only contact sheet. Both preserve supplied sources. After a successful Editor build, execute `AuthorOrbitalWreck.py` through the same Unreal Python runner shown below. It backs up the private look/cloud/sky, imports three derivatives, persists private Nanite material usage, then authors twelve placements and trial lighting/volume settings. It writes private content hashes in `Artifacts/OrbitalWreck/<id>/report.json`. Rerunning resets this trial composition: do not run over unsaved or owner-edited layouts without preserving them. Integration and rendering have run; the concept is still unaccepted under ACT-03.
@@ -29,7 +49,7 @@ The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomp
 
 The four spatial area recipes and **ALIEN WORLD** review doorway remain in the reset candidate. Its cooked archive contains both gallery maps and their cook label. Use `Play Packaged Review.cmd` for the package or `Play Development Build.cmd` for uncooked development; consult [Project State](PROJECT_STATE.md#source-build-and-release) for the exact build. Historical packaged gallery round trips were verified at `a77010e`; the reset's final Station5/Wave10 fixtures did not rerun the gallery.
 
-In the hangar/station, approach **ALIEN WORLD** and press E/A. The development launcher uses a separate persistent profile under `Artifacts/DevelopmentReviewUser` and requires the local Editor DLL and private content. The packaged-review launcher uses `Artifacts/PackagedReviewUser` and the complete review archive. Neither builds or downloads content.
+In the hangar/station, approach **ALIEN WORLD** and press E/Y in Package 4 (the historical Package 3 used E/A). The development launcher uses a separate persistent profile under `Artifacts/DevelopmentReviewUser` and requires the local Editor DLL and private content. The packaged-review launcher uses `Artifacts/PackagedReviewUser` and the complete review archive. Neither builds or downloads content.
 
 After `./Scripts/Build.ps1 -Target Editor`, run these scripts **in order**, one completed Unreal editor Python process at a time, using the `-ExecutePythonScript` runner below:
 
@@ -81,9 +101,9 @@ $ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
 # After inspecting Artifacts/StationAsteroid/dry-run.json:
 & $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroid.py" -SSApplyStationAsteroid
 & $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/InspectStationAsteroidPlacement.py"
-& $ssEditor $ssProject -unattended -RenderOffscreen -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroidMaterial.py"
+& $ssEditor $ssProject -unattended -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroidMaterial.py"
 # Inspect material-dry-run.json before saving the private material:
-& $ssEditor $ssProject -unattended -RenderOffscreen -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroidMaterial.py" -SSApplyStationAsteroidMaterial
+& $ssEditor $ssProject -unattended -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroidMaterial.py" -SSApplyStationAsteroidMaterial
 # With $ssBlender pointing to the installed Blender and $ssFigurSource to the owned space_station_kit.blend:
 & $ssBlender --background --factory-startup --python Scripts/AuthorStationColonyHabitat.py -- --source $ssFigurSource
 # Inspect Artifacts/StationReset/ColonyHabitat/source-quarter.png and dry-run.json, then export:
@@ -267,35 +287,48 @@ The dry run binds the current built/archive executable and link response file; u
 
 ## Controls
 
+The following mappings describe the owner-approved follow-up source after Package 3. Final engine verification and an updated package are pending; the running Package 3 does not acquire these changes from source edits. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
+
 | Capability | Keyboard/mouse | Controller |
 | --- | --- | --- |
 | Flight steering / on-foot look | Mouse | Right stick |
 | Flight lateral / vertical | A/D and R/F | Left stick |
-| Throttle / station speed trim | W/S | D-pad up/down |
+| Throttle, 0–100% | W/S raises/lowers the setting | Right trigger; release to coast |
 | Fire | Left mouse | Right bumper |
-| Boost | Shift | Right trigger |
+| Boost | Shift | B |
 | Brake (wave heat / station stop) | Space | Left trigger |
 | Directional dodge | Q with movement direction | Left bumper with left-stick direction |
 | Walk / run | WASD / Shift | Left stick / X |
-| Interact / choose | E / Enter | A |
+| Jump on foot | Space | A |
+| Interact on foot | E | Y |
+| Flight encounter interaction | E | A |
+| Confirm menu choice | Enter | A |
 | Dock when the pad says ready | E | A |
-| Shell / back | Escape | Menu / B |
+| Shell / back | Escape | Menu; B while a menu is open |
 
-Banking follows steering/lateral movement. Mouse-up and right-stick-up both look/pitch upward by default, in flight and on foot; pitch inversion reverses both. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
+Banking follows steering/lateral movement. Mouse-up and right-stick-up both look/pitch upward by default, in flight and on foot; pitch inversion reverses both. On foot, movement follows the camera direction and the character turns toward travel; the right stick/mouse can orbit the camera independently. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
+
+RT directly controls normal engine power. Releasing it cuts forward thrust and preserves momentum; turning the hull alone does not redirect that coast. Use LT/Space to brake. W/S changes a persistent keyboard throttle setting from zero to full over two seconds; lower it to zero to coast. Possession changes reset that setting. Boost uses the existing resource limit, and brake suppresses boost. Outside the station zone, braking still obeys its heat limit; inside it, brake can bring the ship to a stop without overheating. There is no automatic minimum cruise in this follow-up.
+
+When mixing devices, a fresh W/S press selects keyboard throttle; pressing, deliberately adjusting or releasing RT selects analog throttle. Mouse look, controller look and unrelated buttons only change their own controls and HUD prompts. They cannot restore an old keyboard power setting after RT is released.
 
 The uncooked developer build of the flight reset requires the rebuilt project DLL and the private Phoenix presentation derivative described in [the content pipeline](CONTENT_PIPELINE.md#stellar-phoenix-presentation-adapter), together with the installed ShipCore plugin and licensed Phoenix content. The packaged review uses its complete archive and does not require the Editor DLL. Rebuild/authoring does not update an older packaged executable; confirm the [source/build/package identity](PROJECT_STATE.md) before comparing controls. `-SSClassic` selects the previous hull path for comparison.
 
-On station approach, follow the exterior landing-pad marker. Within the 180 m station zone, W/S or D-pad adjusts a persistent speed trim; brake reduces it to zero without overheating. Slow to unboosted cruise speed or below, approach above the deck and use the HUD's hull-aware distance/clearance message. Press E/controller A when ready to begin the three-second align-and-lower sequence. Entering the radius by itself does not dock. Firing is disabled during docking and lift-off.
+On station approach, follow the exterior landing-pad marker. Release throttle, then apply brake to slow to unboosted cruise speed or below; approach above the deck and use the HUD's hull-aware distance/clearance message. Press E/controller A when ready to begin the three-second align-and-lower sequence. Entering the radius by itself does not dock. Firing is disabled during docking and lift-off.
 
-The launch service returns control to the same parked ship and lifts it 7 m before handing back steering and thrust. Increase the station trim with W/D-pad up and fly clear of the 180 m zone to resume the wave clock and encounter spawning. Initial departure preserves Wave 1's time; Station 1 departure starts Wave 6 at that boundary. Station 2 remains the Phase 1 service/save boundary and does not start Wave 11.
+Walk up the parked Phoenix's rear ramp and into its cabin to open the launch choices. At home, Start Survival begins a new run, Continue Survival loads an available station checkpoint, and Free Flight starts casual flying without survival progress. During a survival station visit, Continue Survival keeps the current run; Free Flight is unavailable until home. Closing the choices inside the cabin keeps them closed until you leave and enter again. The launch console remains another entry point, including on the preserved fallback layout.
+
+Launch returns control to the same parked ship and lifts it 7 m before handing back steering and thrust at zero throttle. Apply RT or raise the keyboard setting with W, then fly clear of the 180 m zone to resume the survival wave clock and encounter spawning. Initial departure preserves Wave 1's time; Station 1 departure starts Wave 6 at that boundary. Station 2 remains the Phase 1 service/save boundary and does not start Wave 11. Free Flight instead retains the home pad, spawns no survival waves, and offers Return to home hangar; it cannot overwrite a survival checkpoint or grant progression.
 
 The [station reset](CONTENT_PIPELINE.md#functional-station-reset) uses the separate `BP_StationReset` layout in both the home hangar and station visits. Its floor, walls, columns and consoles have native blocking bodies; service prompts are at usable points beside the consoles. CREW WARDROBE opens the installed body choices at home as well as mid-run and changes the actual walking character. This requires the authored/saved reset asset; if it is absent, the original layout remains the fallback. Check the active layout when reviewing the redesign.
 
 `SpaceSurvival.Flight.ControllerToPhysics` and `SpaceSurvival.Flight.ControllerAfterTakeoff` exercise injected raw keyboard/mouse and gamepad events through the actual controller and movement body, including possession and lift-off. `ControllerPitchParity` covers both pitch-inversion settings in flight and on foot. `LiveRewardInput` checks steering, menu selection and hidden-pointer rejection, with an unattached Slate viewport to exercise the engine input-mode branch. `StationArrivalPause` and `StationDeparturePause` cover the real landing/lift sequences across menu pause and resume. `SpaceSurvival.Flight.CrosshairTargetDamage` covers native target damage with both weapons. Their run results belong in the validation record; these synthetic checks do not establish physical-device response, OS focus/capture acquisition, rendered animation quality or owner acceptance.
 
+The follow-up adds `SpaceSurvival.Integration.PhoenixWalkBoarding` for real CharacterMovement across deck/ramp/cabin at home and a rotated station, `WalkerDirectionalMovement` for turning and jump/landing, and `SpaceSurvival.Flight.FreeFlightLifecycle` for practice launch/return. Directional movement passed Focused1; after correcting its ramp box-selector defect, Build2/Focused2 passed boarding, parked collision and Free Flight lifecycle (3/3, no warnings or failures). Final evidence belongs in [VALIDATION.md](VALIDATION.md). Ramp support is native and uses the existing Phoenix assets; no additional ramp authoring or installation is required after rebuilding. Preserve the supplied/private asset dependencies and run the updated package before judging the physical fixes.
+
 Package 6 native clicks saved mouse/controller sensitivity 1.2. After normal close/relaunch the isolated Controls menu displayed both 1.2. This verifies persistence, not comfortable steering response.
 
-Normal shell/settings menus pause flight, incoming docking and station departure. The depot uses an aboard-ship magnetic service lock (up to 20 seconds) and a visible cursor; closing its panel releases the ship, and mooring grants no wave progress. Reward panels retain live flight and captured mouse steering with the pointer hidden. Use Up/Down or D-pad to choose, Enter/A to confirm, and Esc/B to close; mouse clicks cannot select a hidden reward row or fire while the panel is open. Physical-device menu behavior remains open in ISS-13 / PT-08 and PT-16.
+Normal shell/settings menus pause flight, incoming docking and station departure. The depot uses an aboard-ship magnetic service lock (up to 20 seconds) and a visible cursor; closing its panel releases the ship, and mooring grants no wave progress. Reward panels retain live flight and captured mouse steering with the pointer hidden. Use Up/Down or D-pad to choose, Enter/A to confirm, and Esc/B to close; mouse clicks cannot select a hidden reward row or fire while the panel is open. After using B to close a menu, release it before a fresh boost press. Physical-device menu behavior remains open in ISS-13 / PT-08 and PT-16.
 
 ## Local saves
 
