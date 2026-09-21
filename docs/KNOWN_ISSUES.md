@@ -2087,26 +2087,44 @@ wall-mounted prop against an actual wall face or not at all.
 
 It also explains why the staged captures looked fine: every one of them was framed to avoid these.
 
-### The wardrobe kiosk cannot be used
+### The wardrobe kiosk does not exist in the home hangar
 
-Reported 2026-09-20: *"kiosk blocked by something."* Not diagnosed.
+Reported 2026-09-20 as *"kiosk blocked by something."* **Resolved 2026-09-21: it is not blocked, it
+is absent.** Diagnosed live in PIE.
 
-`CREW WARDROBE` is added at world **(-1400, 500, 0)** (`SSStation.cpp:387`) and triggered by
-`ASSGameMode::Interact()` -> `ASSStation::NearestService(Walker->GetActorLocation())`, which picks
-whichever of the twelve kiosks is closest.
+`CREW WARDROBE` is added only at a station (`SSStation.cpp:385`):
 
-**Ruled out:** the recipe is not obstructing it. Only two props sit within 2.5 m - a corridor cable
-at 117 cm and a bollard light at 144 cm - and neither is on the kiosk. So this is not the
-floating-props bug.
+```cpp
+if (!Home)
+    AddService(FVector(-1400, 500, 0), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
+```
 
-Worth checking first, in order: whether `NearestService` is resolving to a *different* kiosk (there
-are three on the same x = -1400 line - `PAINT BAY` at y=-1000, `BEACON LOG` at y=0, wardrobe at
-y=500); whether the player can physically reach that spot at all given the collision report; and
-whether the panel opens but lists nothing, which would point at `Installed(Slot)` rejecting bodies on
-an asset path rather than at the kiosk.
+The owner was in the **home hangar**, confirmed two ways: the deck showed `PILOT RECORD`, which is
+the home-only label for the kiosk that reads `CONTRACT BOARD` at a station (`:379`); and the station
+actor sat at the world origin, which is where the home path spawns it (`SSGameMode.cpp:301`) rather
+than at `StationTarget` (`:424`). So the kiosk was never in `Services`, and Interact at its
+coordinates resolved to Pilot Record instead - the nearest service that exists.
 
-The eighth body added today has **never been seen in the wardrobe panel.** The automation proves the
-roster holds eight and that the alien fits the deck; it does not prove the panel opens or lists them.
+**This is working as written.** The comment above the gate states the intent: the home hangar is
+where a run is prepared, not where the crew get changed. Whether that is the right call is an open
+design question, not a defect. **Not changed.**
+
+**What is a defect** is that it is indistinguishable from a broken kiosk. Three things compound:
+
+- Interact gives **no feedback when nothing is in range.** `NearestService` uses a 280 cm radius
+  (`SSStation.cpp:577`) and returns `ESSPanel::None` silently past it.
+- There is **no proximity prompt** on a service, so a kiosk that is 6 m away and one that does not
+  exist look identical - the player is standing in the right area either way.
+- The walkable box is **35 x 29 m** (`:554`) while the station art is 108 x 86 m, so hunting for a
+  service across what looks like open deck teleports the player to spawn with no message.
+
+Measured during the same session: the owner believed they were at `LAUNCH CONTROL` while standing at
+(950, 140); it is at (950, -450). Same x, **5.9 m off on y** - more than twice the interact radius,
+with nothing on screen to say so.
+
+The eighth body wired in on 2026-09-20 therefore **still has never been seen in the wardrobe panel.**
+The automation proves the roster holds eight and that the alien fits the deck; it does not prove the
+panel opens or lists them. That check needs a station, not the hangar.
 
 ### Why this list exists
 
