@@ -137,7 +137,7 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                     : Pause  ? (Mode.IsTitleMenu() ? TEXT("SPACE SURVIVAL") : TEXT("JOURNEY / PAUSED"))
                              : TEXT("STATION / SHIP SERVICES"),
                     72, 52, 19, UICyan);
-    RefreshText(UsingGamepad() ? TEXT("D-PAD  NAVIGATE       A  SELECT       B  BACK")
+    RefreshText(UsingGamepad() ? TEXT("LEFT STICK / D-PAD  NAVIGATE       A  SELECT       B  BACK")
                                : TEXT("ARROWS  NAVIGATE       ENTER / CLICK  SELECT       ESC  BACK"),
                 72, 1003, 20, UIWhite);
 

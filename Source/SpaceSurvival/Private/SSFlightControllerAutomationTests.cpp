@@ -751,6 +751,47 @@ bool FSSMenuBackBoostRelease::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSControllerMenuStick, "SpaceSurvival.UI.ControllerMenuStick",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSControllerMenuStick::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+        return false;
+    for (ESSPanel Panel : {ESSPanel::Main, ESSPanel::Settings, ESSPanel::Wardrobe})
+    {
+        F.Mode->OpenPanel(Panel);
+        F.Axis(EKeys::Gamepad_LeftY, 0.f);
+        F.Step();
+        TestTrue(TEXT("Canvas menu retains viewport input"), !F.ViewportClient->IgnoreInput());
+        const int32 Initial = F.Mode->SelectedEntry;
+        F.Axis(EKeys::Gamepad_LeftY, -.8f);
+        F.Step();
+        TestEqual(TEXT("Stick down selects the next row"), F.Mode->SelectedEntry, Initial + 1);
+        for (int32 Frame = 0; Frame < 8; ++Frame)
+        {
+            F.Axis(EKeys::Gamepad_LeftY, -.8f);
+            F.Step();
+        }
+        TestEqual(TEXT("Held stick does not race through rows immediately"), F.Mode->SelectedEntry, Initial + 1);
+        for (int32 Frame = 0; Frame < 18; ++Frame)
+        {
+            F.Axis(EKeys::Gamepad_LeftY, -.8f);
+            F.Step();
+        }
+        TestTrue(TEXT("Held stick repeats after the initial delay"), F.Mode->SelectedEntry > Initial + 1);
+        const int32 Before = F.Mode->SelectedEntry;
+        F.Axis(EKeys::Gamepad_LeftY, .8f);
+        F.Step();
+        TestEqual(TEXT("Reversing stick responds immediately"), F.Mode->SelectedEntry, Before - 1);
+        F.Axis(EKeys::Gamepad_LeftY, .1f);
+        F.Frames(30);
+        TestEqual(TEXT("Neutral drift does not change focus"), F.Mode->SelectedEntry, Before - 1);
+        F.Mode->ClosePanel();
+    }
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSTitleMenuNavigation, "SpaceSurvival.UI.TitleMenuNavigation",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSTitleMenuNavigation::RunTest(const FString &)

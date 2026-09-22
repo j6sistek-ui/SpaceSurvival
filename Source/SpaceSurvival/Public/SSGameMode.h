@@ -225,6 +225,8 @@ public:
 
 private:
     void UpdateLastInputDevice();
+    int32 LastMenuStickDirection = 0;
+    float MenuRepeatSeconds = 0.f;
     bool BoostLatch = false, BrakeLatch = false;
     /** A menu Back press must be released before B can become a new boost command. */
     bool SuppressGamepadBoostUntilRelease = false;

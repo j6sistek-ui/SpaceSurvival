@@ -1,3 +1,5 @@
+> September22 release update: Package8 upload was stopped after owner density feedback. The repair archive currently holds intermediate Package9; a final replacement with denser mixed structures plus controller-menu/HUD corrections is being packaged. Existing live itch remains0.1.20-alpha. Use the final release identity in PROJECT_STATE before playing; older package references below are historical.
+
 # Build and run
 
 **Earlier Package7 UI follow-up (retained in Package8), September22:** The isolated review launcher now opens source `25cf794`: aligned preference sliders, large scrolling wardrobe, and a walking radar showing actual crew, services and landing pad. Walking has no flight vitals/weapon panel. The prior approved HUD/settings/pause and locked main remain. Two affected menu tests, six packaged frames and archive inclusion pass. [Exact receipt](validation/2026-09-22-ui-refresh.md). Earlier GPU-memory warnings remain open; this is not performance acceptance. Unique service/wardrobe portrait layouts remain lead-owned; presets/remapping deferred.

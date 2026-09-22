@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**September22 replacement candidate in progress:** Package8 density was rejected; its itch upload was stopped. Live remains0.1.20-alpha/build1993461. The local archive is intermediate Package9/sourceacaf5fb; final mixed structures and controller-menu/HUD fixes are source/editor-only until the replacement package below is recorded. PR59 remains draft/unmerged. Earlier Package8 rows are historical evidence, not the current release.
+
 **Earlier Package7 UI follow-up, September22 (superseded by Package8 below):** The isolated review launcher now opens source `25cf794`: aligned preference sliders, large scrolling wardrobe, and a walking radar showing actual crew, services and landing pad. Walking has no flight vitals/weapon panel. The prior approved HUD/settings/pause and locked main remain. Two affected menu tests, six packaged frames and archive inclusion pass. [Exact receipt](validation/2026-09-22-ui-refresh.md). Earlier GPU-memory warnings remain open; this is not performance acceptance. Unique service/wardrobe portrait layouts remain lead-owned; presets/remapping deferred.
 
 **September 22 arcade preset (supersedes prior stick mappings):** Left stick steers the nose in yaw/pitch; right stick controls the camera independently. LB/RB tap: sideways evade with a sharp bank and level recovery; hold: fast continuous roll, retaining attitude on release. RT throttle, LT brake, B boost, A fire, X interaction/landing. Engine-off coasting and keyboard controls remain. Walking unchanged; remapping deferred.

@@ -1135,10 +1135,10 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     if (PC)
     {
         PC->bShowMouseCursor = !CaptureFlightLook;
-        if (CaptureFlightLook)
-            PC->SetInputMode(FInputModeGameOnly());
-        else
-            PC->SetInputMode(FInputModeGameAndUI());
+        // These menus are painted on Canvas and handled by PlayerInput. There is no
+        // focusable Slate menu to receive GameAndUI navigation before the controller.
+        // Keep the first click available to the Canvas hit test when capturing focus.
+        PC->SetInputMode(FInputModeGameOnly().SetConsumeCaptureMouseDown(false));
     }
     // Station departure retains the domain's Station phase until the ship leaves the safe zone,
     // and arrival retains the piloted pawn during Docking. Both scripted moves pause with menus.
@@ -2132,6 +2132,11 @@ void ASSPlayerController::PlayerTick(float Dt)
             GM->OpenPanel(ESSPanel::Main);
     }
     const bool MenuInput = GM->IsMenuOpen();
+    if (!MenuInput)
+    {
+        LastMenuStickDirection = 0;
+        MenuRepeatSeconds = 0.f;
+    }
     if (MenuInput && Down(EKeys::Gamepad_FaceButton_Bottom))
         SuppressGamepadFireUntilRelease = true;
     const bool LiveFlightMenu =
@@ -2140,9 +2145,19 @@ void ASSPlayerController::PlayerTick(float Dt)
     {
         if (auto *WalkPawn = Cast<ASSWalker>(GetPawn()))
             WalkPawn->StopJumping();
-        if (Pressed(EKeys::Up) || Pressed(EKeys::Gamepad_DPad_Up) || (GM->IsTitleMenu() && Pressed(EKeys::W)))
+        const float MenuY = GetInputAnalogKeyState(EKeys::Gamepad_LeftY);
+        const int32 StickDirection = MenuY > .55f ? -1 : MenuY < -.55f ? 1 : 0;
+        MenuRepeatSeconds = FMath::Max(0.f, MenuRepeatSeconds - Dt);
+        const bool StickStep =
+            StickDirection != 0 && (StickDirection != LastMenuStickDirection || MenuRepeatSeconds <= 0.f);
+        if (StickStep)
+            MenuRepeatSeconds = StickDirection == LastMenuStickDirection ? .13f : .38f;
+        LastMenuStickDirection = StickDirection;
+        if (Pressed(EKeys::Up) || Pressed(EKeys::Gamepad_DPad_Up) || (GM->IsTitleMenu() && Pressed(EKeys::W)) ||
+            (StickStep && StickDirection < 0))
             GM->SelectedEntry = FMath::Max(0, GM->SelectedEntry - 1);
-        if (Pressed(EKeys::Down) || Pressed(EKeys::Gamepad_DPad_Down) || (GM->IsTitleMenu() && Pressed(EKeys::S)))
+        if (Pressed(EKeys::Down) || Pressed(EKeys::Gamepad_DPad_Down) || (GM->IsTitleMenu() && Pressed(EKeys::S)) ||
+            (StickStep && StickDirection > 0))
             GM->SelectedEntry = FMath::Min(GM->Entries.Num() - 1, GM->SelectedEntry + 1);
         if (Pressed(EKeys::Enter) || Pressed(EKeys::Gamepad_FaceButton_Bottom))
             GM->ActivateEntry(GM->SelectedEntry);

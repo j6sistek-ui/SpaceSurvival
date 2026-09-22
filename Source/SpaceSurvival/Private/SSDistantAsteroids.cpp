@@ -72,9 +72,18 @@ void ASSDistantAsteroids::BeginPlay()
     // Restore the owned wreck/panel/beam mix in the traversable field, not only kilometre-scale regions.
     if (SpaceLook)
         for (const auto &Recipe : SpaceLook->AreaRecipes)
+        {
             for (const auto &Candidate : Recipe.Clutter)
                 if (Candidate.Mesh && !Candidate.Mesh->GetName().Contains(TEXT("Asteroid")))
                     AddMeshBatch(Candidate.Mesh);
+            for (const auto &Placement : Recipe.Landmarks)
+                if (Placement.Mesh && !Placement.Mesh->GetName().Contains(TEXT("Asteroid")))
+                {
+                    const int32 Batch = AddMeshBatch(Placement.Mesh);
+                    // Large silhouettes retire farther from their nearest visible surface.
+                    Batches[Batch]->SetCullDistances(60000, 75000);
+                }
+        }
 }
 
 int32 ASSDistantAsteroids::AddMeshBatch(UStaticMesh *Mesh)
@@ -157,6 +166,23 @@ void ASSDistantAsteroids::AddCell(const FIntVector &Cell)
     {
         int32 BatchIndex = Random.RandRange(0, RockBatchCount - 1);
         double DebrisRadius = 0;
+        bool Landmark = false;
+        if (Index == 0 && Cell != FIntVector::ZeroValue && SpaceLook && !SpaceLook->AreaRecipes.IsEmpty())
+        {
+            const auto Blend = ASSSpaceScenery::SampleAreaStyle(SpaceLook, FVector(Cell) * CellSize);
+            const auto &Recipe = SpaceLook->AreaRecipes[Random.FRand() < Blend.Alpha ? Blend.Second : Blend.First];
+            TArray<const FSSSceneryPlacement *> Pieces;
+            for (const auto &Placement : Recipe.Landmarks)
+                if (Placement.Mesh && !Placement.Mesh->GetName().Contains(TEXT("Asteroid")))
+                    Pieces.Add(&Placement);
+            if (!Pieces.IsEmpty())
+            {
+                const auto *Selected = Pieces[Random.RandRange(0, Pieces.Num() - 1)];
+                BatchIndex = MeshBatches.FindChecked(Selected->Mesh);
+                DebrisRadius = FMath::Clamp(Selected->Radius * .12f, 3500.f, 11000.f);
+                Landmark = true;
+            }
+        }
         if (Index % 3 == 1 && SpaceLook && !SpaceLook->AreaRecipes.IsEmpty())
         {
             const auto Blend = ASSSpaceScenery::SampleAreaStyle(SpaceLook, FVector(Cell) * CellSize);
@@ -204,7 +230,7 @@ void ASSDistantAsteroids::AddCell(const FIntVector &Cell)
                                                        Random.FRandRange(-.49f, .49f)) *
                                                    CellSize;
             ++Attempt;
-        } while (Center.SizeSquared() < FMath::Square(MinimumAnchorDistance));
+        } while (Center.SizeSquared() < FMath::Square(MinimumAnchorDistance + (Landmark ? Radius : 0.)));
         const double Scale = Radius / FMath::Max(1.0, double(Bounds.SphereRadius));
         const FQuat Rotation = FRotator(Random.FRandRange(-180.f, 180.f), Random.FRandRange(-180.f, 180.f),
                                         Random.FRandRange(-180.f, 180.f))

@@ -1353,6 +1353,7 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     Field->GetComponents(Batches);
     TArray<FTransform> Initial;
     int32 DebrisInstances = 0;
+    int32 ArchitectureInstances = 0;
     int32 NearInstances = 0;
     for (const auto *Batch : Batches)
     {
@@ -1361,7 +1362,13 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
                      Batch->GetCollisionResponseToChannel(ECC_Visibility) == ECR_Block &&
                      Batch->GetCollisionResponseToChannel(ECC_PhysicsBody) == ECR_Block);
         if (!Batch->GetStaticMesh()->GetName().Contains(TEXT("Asteroid")))
+        {
             DebrisInstances += Batch->GetInstanceCount();
+            const FString Name = Batch->GetStaticMesh()->GetName();
+            if (Name.Contains(TEXT("Station")) || Name.Contains(TEXT("Arch")) || Name.Contains(TEXT("arch")) ||
+                Name.Contains(TEXT("Spine")) || Name.Contains(TEXT("Buttress")))
+                ArchitectureInstances += Batch->GetInstanceCount();
+        }
         for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
         {
             FTransform T;
@@ -1374,6 +1381,8 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     if (!TestTrue(TEXT("Real mesh population loaded"), Initial.Num() == 512 && !Batches.IsEmpty()))
         return false;
     TestTrue(TEXT("The field includes owned non-asteroid wreckage, not just rocks"), DebrisInstances > 0);
+    TestTrue(TEXT("Reachable field includes recognizable architecture, not only flat debris"),
+             ArchitectureInstances > 0);
     TestTrue(TEXT("The scaled test field has substantial density inside 700m"), NearInstances >= 10);
     const FVector Center = Initial[0].TransformPosition(Batches[0]->GetStaticMesh()->GetBounds().Origin);
     const FVector Start = Fixture.Ship->GetActorLocation();

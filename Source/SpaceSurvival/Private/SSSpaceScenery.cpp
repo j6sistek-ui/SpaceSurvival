@@ -24,8 +24,8 @@ uint32 CellSeed(const FIntVector &Cell, int32 Seed)
 // through rather than around. The owner's rule is that anything mid-size or larger should hurt. The
 // smallest clutter rock authored here has radius 850 and the largest landmark 19000, against a largest
 // Director hazard of 650, so by that rule every piece of it qualifies; the grain-sized dust field is the
-// tier that stays passable. Query only: none of this ever simulates, it is only swept against by the
-// ship's sphere, which already blocks WorldStatic and already damages and deflects on a blocking hit.
+// tier that stays passable. Scenery never simulates, but participates in both kinematic sweeps
+// and Phoenix physics contacts; the ship owns impact damage and deflection.
 // On. The meshes the scenery places are now collision-bearing derivatives authored by
 // AuthorSolidScenery.py; the vendor originals ship CTF_UseComplexAsSimple, which makes the engine
 // ignore their hulls, and an instanced static mesh component cannot use complex collision at all.
@@ -39,10 +39,11 @@ void ApplySceneryCollision(UPrimitiveComponent *Part)
         Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         return;
     }
-    Part->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Part->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     Part->SetCollisionObjectType(ECC_WorldStatic);
     Part->SetCollisionResponseToAllChannels(ECR_Ignore);
     Part->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+    Part->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
     // Visibility too, so shots stop at a rock and soft aim cannot lock through one.
     Part->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 }

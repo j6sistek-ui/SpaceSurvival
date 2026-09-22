@@ -553,7 +553,7 @@ void ASSHUD::DrawHUD()
     {
         DrawRefreshVitals(*GM, Walker != nullptr);
         if (S.run.criticalSeconds > 0)
-            Text(TEXT("! SUBSYSTEM IMPAIRED / REPAIR AVAILABLE"), Margin, 100 * Scale, .9f, FLinearColor(1, .7f, .2f));
+            Text(TEXT("! SUBSYSTEM IMPAIRED / REPAIR AVAILABLE"), Margin, 205 * Scale, .7f, FLinearColor(1, .7f, .2f));
         if (S.run.contract != SS::Contract::None)
         {
             const bool Hunter = S.run.contract == SS::Contract::Objective;
@@ -798,8 +798,10 @@ void ASSHUD::DrawHUD()
     }
     if (GM->IsAnnouncementVisible())
     {
-        DrawRect(FLinearColor(.02f, .025f, .05f, .88f), Margin, 65 * Scale, W - 2 * Margin, 48 * Scale);
-        Text(GM->Announcement, Margin + 12 * Scale, 77 * Scale, .75f);
+        // Keep transient messages in their own column, clear of the wave/location
+        // heading on the left and the station radar on the right. Use the same
+        // reference layout as those widgets instead of a full-width legacy bar.
+        RefreshText(GM->Announcement, 600, 52, 23, FLinearColor(.8f, .94f, 1.f), 820);
     }
     if (GM->IsMenuOpen())
         DrawRefreshMenu(*GM);
