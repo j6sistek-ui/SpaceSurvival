@@ -7,6 +7,7 @@
 
 class UInstancedStaticMeshComponent;
 class USSSpaceLookData;
+class UStaticMesh;
 
 /** Persistent solid asteroid belt, independent of wave pressure and the viewer transform. */
 UCLASS()
@@ -39,6 +40,9 @@ private:
     void BuildField(int32 Count);
     void StreamCells();
     void AddCell(const FIntVector &Cell);
+    int32 AddMeshBatch(UStaticMesh *Mesh);
+    int32 RockBatchCount = 0;
+    TMap<UStaticMesh *, int32> MeshBatches;
     struct FRockInstance
     {
         int32 Batch;

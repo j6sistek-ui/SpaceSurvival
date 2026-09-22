@@ -1342,31 +1342,39 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     {
         Count->Set(PreviousCount, Priority);
     };
-    Count->Set(128, Priority);
+    Count->Set(512, Priority);
     auto *Field = Fixture.World->SpawnActor<ASSDistantAsteroids>();
     Field->Follow(Fixture.Ship);
     Field->SetFlightVisible(true);
     TestFalse(TEXT("World rocks are independent of Director pressure and lifetime"),
               Field->IsA(ASSWorldBody::StaticClass()));
-    TestEqual(TEXT("Bounded instance population"), Field->GetRockCount(), 128);
+    TestEqual(TEXT("Bounded instance population"), Field->GetRockCount(), 512);
     TArray<UInstancedStaticMeshComponent *> Batches;
     Field->GetComponents(Batches);
     TArray<FTransform> Initial;
+    int32 DebrisInstances = 0;
+    int32 NearInstances = 0;
     for (const auto *Batch : Batches)
     {
         TestTrue(TEXT("Real rocks block ship physics and weapon queries"),
                  Batch->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
                      Batch->GetCollisionResponseToChannel(ECC_Visibility) == ECR_Block &&
                      Batch->GetCollisionResponseToChannel(ECC_PhysicsBody) == ECR_Block);
+        if (!Batch->GetStaticMesh()->GetName().Contains(TEXT("Asteroid")))
+            DebrisInstances += Batch->GetInstanceCount();
         for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
         {
             FTransform T;
             Batch->GetInstanceTransform(I, T, true);
             Initial.Add(T);
+            if (FVector::Distance(T.GetLocation(), Fixture.Ship->GetActorLocation()) < 70000.)
+                ++NearInstances;
         }
     }
-    if (!TestTrue(TEXT("Real mesh population loaded"), Initial.Num() == 128 && !Batches.IsEmpty()))
+    if (!TestTrue(TEXT("Real mesh population loaded"), Initial.Num() == 512 && !Batches.IsEmpty()))
         return false;
+    TestTrue(TEXT("The field includes owned non-asteroid wreckage, not just rocks"), DebrisInstances > 0);
+    TestTrue(TEXT("The scaled test field has substantial density inside 700m"), NearInstances >= 10);
     const FVector Center = Initial[0].TransformPosition(Batches[0]->GetStaticMesh()->GetBounds().Origin);
     const FVector Start = Fixture.Ship->GetActorLocation();
     auto FindPose = [&](const FTransform &Pose)
@@ -1386,7 +1394,7 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
         Fixture.Ship->SetActorLocation(FMath::Lerp(Start, Center, Step / 60.f));
         Field->Tick(1.f / 60.f);
         TestTrue(TEXT("Approaching an original rock never recycles or moves it"), FindPose(Initial[0]));
-        TestEqual(TEXT("Streaming keeps the population budget bounded"), Field->GetRockCount(), 128);
+        TestEqual(TEXT("Streaming keeps the population budget bounded"), Field->GetRockCount(), 512);
     }
     Field->SetFlightVisible(false);
     Field->SetFlightVisible(true);
@@ -1426,7 +1434,7 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
             }
         for (int32 Number : Directions)
             TestTrue(TEXT("Long travel keeps reachable rocks ahead, behind, sideways and vertically"), Number > 0);
-        TestEqual(TEXT("Long-distance streaming remains bounded"), Field->GetRockCount(), 128);
+        TestEqual(TEXT("Long-distance streaming remains bounded"), Field->GetRockCount(), 512);
     }
     Fixture.Ship->SetActorLocation(Start);
     Field->Tick(.25f);

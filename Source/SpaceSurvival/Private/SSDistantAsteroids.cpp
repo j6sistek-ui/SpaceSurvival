@@ -1,5 +1,6 @@
 #include "SSDistantAsteroids.h"
 #include "SSSpaceLookData.h"
+#include "SSSpaceScenery.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Engine/StaticMesh.h"
@@ -18,8 +19,8 @@ TAutoConsoleVariable<int32>
                          ECVF_Scalability);
 constexpr double MinimumAnchorDistance = 32000.0;
 constexpr double MaximumRockRadius = 4800.0;
-// Five cells per axis keep the nearest eviction beyond the 1.4 km draw distance.
-constexpr double CellSize = 80000.0;
+// Five cells per axis keep the nearest eviction beyond the 900 m draw distance.
+constexpr double CellSize = 50000.0;
 constexpr int32 CellRadius = 2;
 constexpr int32 CellCount = 125;
 FIntVector CellAt(const FVector &Position)
@@ -65,35 +66,46 @@ void ASSDistantAsteroids::BeginPlay()
                                            TEXT("/Game/SpaceSurvival/Meshes/SM_AsteroidMedium.SM_AsteroidMedium"));
         if (!Mesh)
             continue;
-#if WITH_EDITOR
-        // As with the landing pad, an asynchronously compiling mesh cannot create collision yet.
-        // Wait only for the meshes being registered; packaged meshes are already compiled.
-        if (Mesh->IsCompiling())
-        {
-            UStaticMesh *RequiredMeshes[] = {Mesh};
-            FStaticMeshCompilingManager::Get().FinishCompilation(RequiredMeshes);
-        }
-#endif
-        auto *Batch =
-            NewObject<UInstancedStaticMeshComponent>(this, FName(*FString::Printf(TEXT("DistantRock_%d"), Index)));
-        Batch->SetupAttachment(RootComponent);
-        Batch->SetStaticMesh(Mesh);
-        // Use the owned library's private simple-collision derivatives. These are world objects,
-        // independent of the Director; ship sweeps and weapons must both hit them.
-        Batch->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-        Batch->SetCollisionObjectType(ECC_WorldStatic);
-        Batch->SetCollisionResponseToAllChannels(ECR_Ignore);
-        Batch->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
-        Batch->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
-        Batch->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-        Batch->SetGenerateOverlapEvents(false);
-        Batch->SetCanEverAffectNavigation(false);
-        Batch->SetCastShadow(false);
-        Batch->SetCullDistances(120000, 140000);
-        Batch->SetMobility(EComponentMobility::Movable);
-        Batch->RegisterComponent();
-        Batches.Add(Batch);
+        AddMeshBatch(Mesh);
     }
+    RockBatchCount = Batches.Num();
+    // Restore the owned wreck/panel/beam mix in the traversable field, not only kilometre-scale regions.
+    if (SpaceLook)
+        for (const auto &Recipe : SpaceLook->AreaRecipes)
+            for (const auto &Candidate : Recipe.Clutter)
+                if (Candidate.Mesh && !Candidate.Mesh->GetName().Contains(TEXT("Asteroid")))
+                    AddMeshBatch(Candidate.Mesh);
+}
+
+int32 ASSDistantAsteroids::AddMeshBatch(UStaticMesh *Mesh)
+{
+    if (const int32 *Existing = MeshBatches.Find(Mesh))
+        return *Existing;
+#if WITH_EDITOR
+    if (Mesh->IsCompiling())
+    {
+        UStaticMesh *RequiredMeshes[] = {Mesh};
+        FStaticMeshCompilingManager::Get().FinishCompilation(RequiredMeshes);
+    }
+#endif
+    auto *Batch = NewObject<UInstancedStaticMeshComponent>(this);
+    Batch->SetupAttachment(RootComponent);
+    Batch->SetStaticMesh(Mesh);
+    Batch->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    Batch->SetCollisionObjectType(ECC_WorldStatic);
+    Batch->SetCollisionResponseToAllChannels(ECR_Ignore);
+    Batch->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+    Batch->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
+    Batch->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+    Batch->SetGenerateOverlapEvents(false);
+    Batch->SetCanEverAffectNavigation(false);
+    Batch->SetCastShadow(false);
+    Batch->SetCullDistances(75000, 90000);
+    Batch->SetMobility(EComponentMobility::Movable);
+    Batch->RegisterComponent();
+    const int32 Index = Batches.Add(Batch);
+    MeshBatches.Add(Mesh, Index);
+    return Index;
 }
 
 void ASSDistantAsteroids::Follow(AActor *InViewer)
@@ -143,17 +155,55 @@ void ASSDistantAsteroids::AddCell(const FIntVector &Cell)
     FRandomStream Random(int32(HashCombineFast(GetTypeHash(Cell), 740127u)));
     for (int32 Index = 0; Index < Count; ++Index)
     {
-        const int32 BatchIndex = Random.RandRange(0, Batches.Num() - 1);
+        int32 BatchIndex = Random.RandRange(0, RockBatchCount - 1);
+        double DebrisRadius = 0;
+        if (Index % 3 == 1 && SpaceLook && !SpaceLook->AreaRecipes.IsEmpty())
+        {
+            const auto Blend = ASSSpaceScenery::SampleAreaStyle(SpaceLook, FVector(Cell) * CellSize);
+            const auto &Recipe = SpaceLook->AreaRecipes[Random.FRand() < Blend.Alpha ? Blend.Second : Blend.First];
+            TArray<const FSSSceneryCandidate *> Debris;
+            for (const auto &Candidate : Recipe.Clutter)
+                if (Candidate.Mesh && !Candidate.Mesh->GetName().Contains(TEXT("Asteroid")))
+                    Debris.Add(&Candidate);
+            if (!Debris.IsEmpty())
+            {
+                const auto *Selected = Debris[Random.RandRange(0, Debris.Num() - 1)];
+                BatchIndex = MeshBatches.FindChecked(Selected->Mesh);
+                DebrisRadius = Random.FRandRange(600.f, 3500.f);
+            }
+        }
         auto *Batch = Batches[BatchIndex].Get();
         const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
-        const double Radius =
-            Index % 11 == 0 ? Random.FRandRange(2300.f, float(MaximumRockRadius)) : Random.FRandRange(450.f, 1800.f);
+        const double Radius = DebrisRadius > 0 ? DebrisRadius
+                                               : (Index % 11 == 0 ? Random.FRandRange(2300.f, float(MaximumRockRadius))
+                                                                  : Random.FRandRange(450.f, 1800.f));
+        FRandomStream GroupRandom(int32(HashCombineFast(GetTypeHash(Cell), uint32(Index / 8 + 317))));
+        const FVector GroupCenter = FVector(GroupRandom.FRandRange(-.2f, .2f), GroupRandom.FRandRange(-.2f, .2f),
+                                            GroupRandom.FRandRange(-.2f, .2f)) *
+                                    CellSize;
+        const FQuat GroupRotation = GroupRandom.VRand().ToOrientationQuat();
+        const TArray<FVector> *Samples = !SpaceLook ? nullptr
+                                                    : (Index / 8 % 3 == 0   ? &SpaceLook->AsteroidArchSamples
+                                                       : Index / 8 % 3 == 1 ? &SpaceLook->AsteroidGlobularSamples
+                                                                            : &SpaceLook->AsteroidLinearSamples);
         FVector Center;
+        int32 Attempt = 0;
         do
         {
-            Center = FVector(Cell) * CellSize + FVector(Random.FRandRange(-.49f, .49f), Random.FRandRange(-.49f, .49f),
-                                                        Random.FRandRange(-.49f, .49f)) *
-                                                    CellSize;
+            if (Samples && !Samples->IsEmpty() && Attempt < 8)
+            {
+                // Preserve the owned construction-script silhouettes in world-fixed small groups.
+                const FVector Detail = (*Samples)[(Index % 8 * Samples->Num() / 8 + Attempt) % Samples->Num()];
+                Center = FVector(Cell) * CellSize + GroupCenter +
+                         GroupRotation.RotateVector(Detail.GetClampedToMaxSize(1.) * CellSize * .24) +
+                         Random.VRand() * CellSize * .025;
+            }
+            else
+                Center =
+                    FVector(Cell) * CellSize + FVector(Random.FRandRange(-.49f, .49f), Random.FRandRange(-.49f, .49f),
+                                                       Random.FRandRange(-.49f, .49f)) *
+                                                   CellSize;
+            ++Attempt;
         } while (Center.SizeSquared() < FMath::Square(MinimumAnchorDistance));
         const double Scale = Radius / FMath::Max(1.0, double(Bounds.SphereRadius));
         const FQuat Rotation = FRotator(Random.FRandRange(-180.f, 180.f), Random.FRandRange(-180.f, 180.f),
