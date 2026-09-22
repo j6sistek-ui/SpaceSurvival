@@ -56,7 +56,7 @@ try {
         $packageLogs = Join-Path $root 'Artifacts\BuildLogs'
         New-Item -ItemType Directory -Path $packageLogs -Force | Out-Null
         $packageLog = Join-Path $packageLogs ("WindowsPackage-" + [Guid]::NewGuid().ToString('N') + '.log')
-        & $uat BuildCookRun "-project=$project" -noP4 -platform=Win64 -clientconfig=Development '-ubtargs=-NoHotReloadFromIDE' -build -cook -stage -pak -iostore -prereqs -archive "-archivedirectory=$root\Artifacts\Windows" -utf8output 2>&1 | Tee-Object -FilePath $packageLog -Encoding utf8
+        & $uat BuildCookRun "-project=$project" -noP4 -platform=Win64 -clientconfig=Development '-ubtargs=-NoHotReloadFromIDE' '-AdditionalCookerOptions=-RenderOffscreen -DisablePlugins=UAssetBrowser,NwiroIntegrationKit' -build -cook -stage -pak -iostore -prereqs -archive "-archivedirectory=$root\Artifacts\Windows" -utf8output 2>&1 | Tee-Object -FilePath $packageLog -Encoding utf8
         if ($LASTEXITCODE -ne 0) { throw "Package failed with exit code $LASTEXITCODE; inspect $packageLog." }
         & "$PSScriptRoot\BundlePrerequisites.ps1" -BuildLog $packageLog
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TryNewShip.cmd') -Destination (Join-Path $root 'Artifacts\Windows\Try New Ship.cmd') -Force

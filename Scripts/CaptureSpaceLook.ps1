@@ -1,5 +1,5 @@
 <#
-Capture the normal-stat Wave1 visual fixture in a hidden editor game process.
+Capture normal-stat Wave1 or the inactive startup title in a hidden game process.
 No build, package, publication or save operation is performed. Screenshots are not FPS evidence.
 #>
 param(
@@ -7,6 +7,10 @@ param(
     [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
     [switch]$Packaged,
     [switch]$Sequence,
+    [switch]$WeaponReadability,
+    [switch]$MainMenu,
+    [switch]$UIRefresh,
+    [switch]$UIFollowup,
     [ValidateRange(-1,3)][int]$Area = -1,
     [ValidateRange(0,10000)][int]$Variation = 0,
     # Owner review aid for RPT-20260915-08: capture thruster candidates without an editor session.
@@ -17,10 +21,15 @@ param(
     [switch]$ThrusterLayered,
     [ValidateRange(0,5)][double]$ThrusterTrailScale = 0,
     [ValidateRange(-400,400)][double]$ThrusterTrailHeight = 0,
-    [ValidateRange(-400,400)][double]$ThrusterHeight = 0
+    [ValidateRange(-400,400)][double]$ThrusterHeight = 0,
+    [string[]]$ExtraArgs = @()
 )
+if ($UIFollowup) { $UIRefresh = $true }
+if ($UIRefresh) { $MainMenu = $true }
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($WeaponReadability -and $Sequence) { throw 'Weapon readability captures its four named stages; do not combine it with the cruise sequence.' }
+if ($MainMenu -and ($WeaponReadability -or $Sequence)) { throw 'Main-menu capture is separate from flight and weapon review.' }
 $repo = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 function Assert-NoReparsePath([string]$Path) {
     $candidate = [IO.Path]::GetFullPath($Path)
@@ -116,11 +125,15 @@ New-Item -ItemType Directory -Path $slotsRoot | Out-Null
 New-Item -ItemType Directory -Path $pointerRoot -Force | Out-Null
 $token | Set-Content -LiteralPath (Join-Path $root '.ss-endgame-soak') -Encoding utf8
 $arguments = if ($Packaged) { @() } else { @((Join-Path $repo 'SpaceSurvival.uproject'), '-game') }
-$arguments += @('-SSWave10Soak', '-SSSoakScenario=Wave1',
+$scenario = if ($MainMenu) { 'MainMenu' } else { 'Wave1' }
+$arguments += @('-SSWave10Soak', "-SSSoakScenario=$scenario",
     '-SSSoakVisuals', '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$root", '-RenderOffscreen',
     '-ForceRes', '-windowed', '-ResX=1920', '-ResY=1080', '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
     '-nosound', '-unattended', "-abslog=$(Join-Path $root 'Rendered.log')")
+if ($UIRefresh) { $arguments += '-SSUIRefreshReview' }
+if ($UIFollowup) { $arguments += '-SSUIFollowupReview' }
 if ($Sequence) { $arguments += '-SSSoakSequence' }
+if ($WeaponReadability) { $arguments += '-SSWeaponReadability' }
 $execCmds = "ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
 if ($ThrusterShape -ge 0) { $execCmds += ",ss.ThrusterShape $ThrusterShape" }
 if ($ThrusterEmission -gt 0) { $execCmds += ",ss.ThrusterEmission $ThrusterEmission" }
@@ -131,8 +144,10 @@ if ($ThrusterTrailScale -gt 0) { $execCmds += ",ss.ThrusterTrailScale $ThrusterT
 if ($ThrusterTrailHeight -ne 0) { $execCmds += ",ss.ThrusterTrailHeight $ThrusterTrailHeight" }
 if ($ThrusterHeight -ne 0) { $execCmds += ",ss.ThrusterHeight $ThrusterHeight" }
 $arguments += "-ExecCmds=$execCmds"
+$arguments += $ExtraArgs
+$evidenceType = if ($UIRefresh) { 'UI_REFRESH_RENDERED_REVIEW' } elseif ($MainMenu) { 'TITLE_MENU_RENDERED_REVIEW' } elseif ($WeaponReadability) { 'WEAPON_READABILITY_SCRIPTED_NORMAL_STATS' } else { 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' }
 $metadata = [ordered]@{
-    evidenceType = 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS'; status = 'starting'; success = $false
+    evidenceType = $evidenceType; status = 'starting'; success = $false
     root = $root; label = $Label; token = $token; pid = $null; processStartUtc = $null; processExit = $null
     startedUtc = [DateTime]::UtcNow.ToString('o'); finishedUtc = $null; timeoutSeconds = 120
     mode = $(if ($Packaged) { 'WindowsDevelopmentPackage' } else { 'UncookedEditorGame' })
@@ -141,8 +156,20 @@ $metadata = [ordered]@{
     noTestSaveSlotsWritten = $false; requestedResolution = @(1920, 1080); images = @(); fixture = $null
     suitableForPerformanceFinding = $false
     sequenceRequested = [bool]$Sequence
+    weaponReadabilityRequested = [bool]$WeaponReadability
+    mainMenuRequested = [bool]$MainMenu
     areaPreview = $Area; areaVariation = $Variation
-    limits = 'Hidden rendered game; 29 seconds of scripted normal-stat cruise/turn/boost/brake and no fire. PNG headers/dimensions/hashes are verified, not visual quality. No FPS, physical input, natural balance or complete run claim.'
+    limits = $(if ($UIFollowup) {
+        'Hidden six-frame changed-UI batch: aligned audio/controls sliders, wardrobe top/end/drag, actual walking HUD with crew/services radar. Synthetic menu navigation and pointer drag; read-only account/run guards. No physical input, natural gameplay or performance acceptance.'
+    } elseif ($UIRefresh) {
+        'Hidden seven-screen native UI render with synthetic focus and read-only HUD sample values. Menu centers map to native actions; run/account/settings are preserved. No physical input, natural gameplay, FPS or save-operation acceptance.'
+    } elseif ($MainMenu) {
+        'Hidden startup title with actual imported Figma textures; synthetic no-selection/NewGame/Settings focus. Real rendered button centers must map to existing actions. No StartRun, menu activation, OS pointer movement, physical input, FPS or save operation.'
+    } elseif ($WeaponReadability) {
+        'Hidden rendered game; normal-stat straight powered flight and both weapons fired through the actual ship/camera. One normal-health Pursuer target at a time with AI/director paused. Four shot/hit frames require real hit feedback. PNG identity is verified, not visual quality. No unlock, FPS, physical input, natural balance, audio or complete run claim.'
+    } else {
+        'Hidden rendered game; 29 seconds of scripted normal-stat cruise/turn/boost/brake and no fire. PNG headers/dimensions/hashes are verified, not visual quality. No FPS, physical input, natural balance or complete run claim.'
+    })
     failures = @()
 }
 $metadataPath = Join-Path $root 'capture.json'
@@ -161,7 +188,7 @@ try {
     $metadata | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $metadataPath -Encoding utf8
     @{ root = $root; pid = $process.Id; label = $Label; metadata = $metadataPath; status = 'running' } |
         ConvertTo-Json | Set-Content -LiteralPath $pointer -Encoding utf8
-    Write-Output "Owned hidden Wave1 capture $($process.Id): $root"
+    Write-Output "Owned hidden $scenario capture $($process.Id): $root"
     $timer = [Diagnostics.Stopwatch]::StartNew()
     while (-not $process.WaitForExit(1000)) {
         if ($timer.Elapsed.TotalSeconds -ge 120) { throw 'Owned visual capture exceeded its 120-second timeout.' }
@@ -173,14 +200,47 @@ try {
     $fixture = Get-Content -LiteralPath $fixturePath -Raw | ConvertFrom-Json
     $metadata.fixture = $fixture
     if (-not $fixture.success -or -not $fixture.noSaveSlotsWritten -or
-        $fixture.evidenceType -cne 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' -or $fixture.scenario -cne 'Wave1' -or
-        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or -not $fixture.sawWave1 -or
+        $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $scenario -or
+        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $MainMenu -and -not $fixture.sawWave1) -or
         -not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or $fixture.suitableForPerformanceFinding -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine $savedRoot.TrimEnd('\', '/') -or
         [IO.Path]::GetFullPath($fixture.csv) -ine (Join-Path $root 'Endgame.csv')) { throw 'Fixture identity, visibility or save isolation receipt failed.' }
     $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
     $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
-    if (($names -join ',') -cne 'Cruise,Turn,Boost,Brake') { throw 'Fixture did not capture the four required stages in order.' }
+    $expectedNames = if ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } else { 'Cruise,Turn,Boost,Brake' }
+    if (($names -join ',') -cne $expectedNames) { throw 'Fixture did not capture the required named stages in order.' }
+    if ($UIRefresh -and (-not $fixture.uiRefreshReview -or -not $fixture.mainMenuStatePreserved)) { throw 'UI frame state checks failed.' }
+    if ($MainMenu -and -not $UIRefresh) {
+        if (-not $fixture.mainMenuReview -or -not $fixture.mainMenuStatePreserved -or $fixture.sawWave1) { throw 'Title-only state preservation failed.' }
+        $expectedFocus = @(-1, 1, 2)
+        for ($i = 0; $i -lt 3; ++$i) {
+            $row = $fixture.visualRequests[$i]
+            if (-not $row.actualFigmaTitleDrawn -or $row.selectedEntry -ne $expectedFocus[$i] -or
+                $row.renderedFocusEntry -ne $expectedFocus[$i] -or @($row.titleRows).Count -ne 4) {
+                throw 'Title frame used fallback art or an unintended focus state.'
+            }
+            if (($row.titleRows.action -join ',') -cne '2,4,5,7' -or $row.titleRows[0].enabled) { throw 'Title frame lost existing actions or disabled Continue.' }
+            for ($index = 0; $index -lt 4; ++$index) {
+                $button = $row.titleRows[$index]
+                if ($button.index -ne $index -or $button.centerHitIndex -ne $index -or
+                    $button.minX -lt 0 -or $button.minY -lt 0 -or $button.maxX -gt 1920 -or $button.maxY -gt 1080 -or
+                    $button.maxX -le $button.minX -or $button.maxY -le $button.minY) { throw 'Rendered title button has invalid bounds or hit mapping.' }
+            }
+        }
+    }
+    if ($WeaponReadability) {
+        if (-not $fixture.weaponReadabilityReview) { throw 'Fixture did not confirm the requested weapon review mode.' }
+        if ($fixture.weaponUncapturedWarmupShots -ne 2 -or $fixture.weaponRenderingReadyAtSeconds -lt 0) { throw 'Weapon rendering warmup was not completed.' }
+        foreach ($row in $fixture.visualRequests) {
+            if ($row.uncapturedWarmupShots -ne 2 -or $row.requestStageSeconds -lt $fixture.weaponRenderingReadyAtSeconds) { throw 'Weapon frame preceded the recorded rendering warmup.' }
+        }
+        foreach ($row in @($fixture.visualRequests | Where-Object { $_.name -in @('RapidHit', 'CannonHit') })) {
+            if ($row.confirmedHitFeedbackSeconds -le 0) { throw 'Weapon hit frame has no actual hit confirmation.' }
+        }
+        $rapid = @($fixture.visualRequests | Where-Object { $_.name -ceq 'RapidShot' })[0]
+        $cannon = @($fixture.visualRequests | Where-Object { $_.name -ceq 'CannonShot' })[0]
+        if ($rapid.liveLaserPulses -le 0 -or $cannon.liveProjectiles -le 0) { throw 'Weapon shot frame has no corresponding live visual.' }
+    }
     if ($Sequence -and @($allNames | Where-Object { $_ -like 'Sequence_*' }).Count -lt 40) { throw 'Dense sequence did not produce enough real frames.' }
     $metadata.images = @($allNames | ForEach-Object { PngIdentity (Join-Path $root "$_.png") })
     $captureValid = $true

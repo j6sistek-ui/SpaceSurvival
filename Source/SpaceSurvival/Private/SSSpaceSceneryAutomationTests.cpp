@@ -119,9 +119,11 @@ bool FSSScenerySafety::RunTest(const FString &)
         TestTrue(TEXT("Every decorative part belongs to its registered scenery actor"),
                  Part->IsRegistered() && Part->GetOwner() == Fixture.Scenery &&
                      Part->GetAttachParent() == Fixture.Scenery->GetRootComponent());
-        TestEqual(TEXT("Scenery is query-only and never simulates"), Part->GetCollisionEnabled(),
-                  ECollisionEnabled::QueryOnly);
+        TestEqual(TEXT("Scenery participates in sweeps and Phoenix physics"), Part->GetCollisionEnabled(),
+                  ECollisionEnabled::QueryAndPhysics);
         TestEqual(TEXT("Scenery answers as world static"), Part->GetCollisionObjectType(), ECC_WorldStatic);
+        TestEqual(TEXT("Scenery blocks the Phoenix body"), Part->GetCollisionResponseToChannel(ECC_PhysicsBody),
+                  ECR_Block);
         TestEqual(TEXT("Scenery blocks the ship"), Part->GetCollisionResponseToChannel(ECC_Pawn), ECR_Block);
         TestEqual(TEXT("Scenery blocks weapon and sight traces"), Part->GetCollisionResponseToChannel(ECC_Visibility),
                   ECR_Block);
@@ -296,8 +298,8 @@ bool FSSSceneryRegions::RunTest(const FString &)
         for (auto *Part : Parts)
         {
             // Solid, but query-only: the field is swept against and never simulates.
-            TestEqual(TEXT("World-stable scenery is swept against, never simulated"), Part->GetCollisionEnabled(),
-                      ECollisionEnabled::QueryOnly);
+            TestEqual(TEXT("World-stable scenery supports queries and physics"), Part->GetCollisionEnabled(),
+                      ECollisionEnabled::QueryAndPhysics);
             TestEqual(TEXT("World-stable scenery blocks the ship"), Part->GetCollisionResponseToChannel(ECC_Pawn),
                       ECR_Block);
             TestFalse(TEXT("Scenery never modifies navigation"), Part->CanEverAffectNavigation());

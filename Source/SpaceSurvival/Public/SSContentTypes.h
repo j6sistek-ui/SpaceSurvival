@@ -985,12 +985,11 @@ struct FSSHullDefinition
             // Its own exhausts ride its own nozzle bones; the fitted-module presentation is measured against a
             // different mesh entirely and would hang casings in mid air.
             UsesModulePresentation = false;
-            // PROVISIONAL, and the one number here that is not measured. OriginToBelly is 0.25 - this hull
-            // stands on its own pivot - so the belly wants to sit at the deck plus whatever the landing gear
-            // holds it up by, and that extension has never been measured. Parking at the classic hull's 230
-            // leaves it hanging; this is a deliberate under-correction until the gear is measured rather than
-            // a guess dressed as a figure.
-            DockClearanceAboveDeck = 230.f;
+            // Settled Landing_On LOD0 foot vertices reach -2.433 cm relative to the ship origin;
+            // the rear feet reach +1.875 cm. PhoenixGearGeometry records the actual rigid skin
+            // influences and final bone transforms. The old 230 cm value floated this hull above
+            // the pad; 2.5 cm places the lowest authored foot on it without burying the mesh.
+            DockClearanceAboveDeck = 2.5f;
             // Measured at 30, 60 and 144 Hz against a 120 Hz reference of the same scripted flight. Worst
             // observed: 108.0 cm, 71.9 cm/s, 0.574 degrees of yaw - all three at 30 Hz, all three shrinking
             // as the rate rises (60 Hz: 33.9, 23.2, 0.178; 144 Hz: 23.6, 28.9, 0.104). Declared at roughly
@@ -1167,6 +1166,9 @@ struct FSSHeroDefinition
     static bool AssetInstalled(const FString &ObjectPath);
     /** True when this build actually contains the mesh and the clip this slot plays. */
     bool Installed(ESSHeroSlot Slot) const;
+    /** Resolve only the known broken female import when its complete private replacement is installed.
+     *  Does not change serialized assets, custom mesh/clip choices, fit or other authored tuning. */
+    FSSHeroDefinition ResolvedPresentation() const;
     /** The scale this hero renders at once its mesh is loaded; FitHeight needs the imported bounds. */
     float RenderedScale(const USkeletalMesh *Mesh) const;
     /** Centimetres from the mesh origin down to the sole, already scaled. Double, because a fitted
@@ -1410,14 +1412,10 @@ struct FSSHeroDefinition
         }
         else if (Identity == ESSHeroIdentity::AlienFemale)
         {
-            // Tripo-generated, and rigged by Tripo to the UE4 mannequin: three spine bones, one neck
-            // bone, fingers straight onto the hand. That is why it could never join SKEL_Nyxar, whose
-            // UE5 rig has five spine bones, two neck bones and metacarpals - all 61 bone NAMES matched
-            // and twelve of their PARENTS did not, which is what Assign Skeleton actually compares.
-            // It is bound by hand to Robot_scout's UE4_Mannequin_Skeleton, the same copy its clips are
-            // authored against, so it borrows that pack's locomotion exactly as the robot does. There
-            // are six UE4_Mannequin_Skeleton assets in this project and only that one carries the
-            // clips; binding to any other copy puts the body back to silently falling through.
+            // Preserve the original import identity. Its matching UE4 bone names masked a 100x bind
+            // scale mismatch: direct mannequin playback collapses the body below two centimetres.
+            // ResolvedPresentation selects the normalized private rig and baked clips as one set;
+            // old DA_Phase1 arrays use that same lookup without rewriting the owner's data asset.
             Id = TEXT("AlienFemale");
             MeshPath = TEXT("/Game/TripoModels/AlienFemale/SK_AlienFemale.SK_AlienFemale");
             WalkClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonWalk.ThirdPersonWalk");

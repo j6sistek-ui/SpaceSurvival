@@ -134,9 +134,16 @@ bool FSSAudioFirstState::RunTest(const FString &Parameters)
         auto *Ship = Fixture.SpawnShip();
         if (!TestNotNull(TEXT("Actual ship BeginPlay creates engine audio"), Ship))
             return false;
-        TestTrue(TEXT("Engine begins at persisted effects mix with explicit activation"),
-                 FMath::IsNearlyEqual(Ship->EngineAudio->VolumeMultiplier, float(Master * .6 * .35)) &&
-                     !Ship->EngineAudio->bAutoActivate);
+        TestTrue(TEXT("Engine begins silent with zero throttle and explicit activation"),
+                 FMath::IsNearlyZero(Ship->EngineAudio->VolumeMultiplier) && !Ship->EngineAudio->bAutoActivate);
+        Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, false, false);
+        Ship->Tick(1.f / 60.f);
+        TestTrue(TEXT("Powered engine honors the persisted effects mix"),
+                 FMath::IsNearlyEqual(Ship->EngineAudio->VolumeMultiplier, float(Master * .6 * .35)));
+        Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+        Ship->Tick(1.f / 60.f);
+        TestTrue(TEXT("Releasing throttle silences the main engine"),
+                 FMath::IsNearlyZero(Ship->EngineAudio->VolumeMultiplier));
         S.settings.masterVolume = .5;
         Mode->Director->Configure(8, false);
         Mode->Director->SetActive(true);

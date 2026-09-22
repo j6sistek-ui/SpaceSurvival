@@ -5,6 +5,7 @@
 #include "SSStationVisualLayout.h"
 #include "SSShipPresentation.h"
 #include "SSShip.h"
+#include "SSShipVisualRig.h"
 #include "SSPhase1Data.h"
 #include "Misc/PackageName.h"
 #include "SSStationPoseTransition.h"
@@ -17,6 +18,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
 #include "HAL/IConsoleManager.h"
@@ -32,6 +34,7 @@
 #include "EngineUtils.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "PhysicsEngine/BodySetup.h"
 #include "UObject/ConstructorHelpers.h"
 
 #include "SSStationRefresh.inl"
@@ -47,8 +50,8 @@ ASSStation::ASSStation()
             TEXT("/Engine/EngineMaterials/UnlitText.UnlitText"));
         ServiceLabelMaterial = UnlitText.Get();
     }
-    VisualLayoutAsset = FSoftObjectPath(
-        TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout.BP_StationVisualLayout_C"));
+    VisualLayoutAsset =
+        FSoftObjectPath(TEXT("/Game/SpaceSurvival/Licensed/StationReset/BP_StationReset.BP_StationReset_C"));
     ShellAsset =
         FSoftObjectPath(TEXT("/Game/SpaceSurvival/Meshes/SM_StationShellCandidateV1.SM_StationShellCandidateV1"));
 }
@@ -85,6 +88,7 @@ void ASSStation::BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hul
                                                        GetActorRotation(), Params);
     if (LandingPad)
     {
+        LandingPad->bCircularDeck = IsUsingFunctionalLayout();
         LandingPad->HalfExtent = PadHalfExtent;
         LandingPad->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
         LandingPad->Build();
@@ -98,7 +102,10 @@ void ASSStation::BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hul
     // Bow_Sill's top face is -10, so the walk from pad to deck is already one continuous plane. An earlier
     // pass here added a half-step for a 70 cm lip measured off Keel_Floor - which is the exterior hull box,
     // not the floor the hero stands on.
-    const float Bottom = -280.f, LowX = PadCenterX + PadHalfExtent, HighX = PadWalkwayInnerX;
+    // A circular pad recedes from its tangent at the walkway edges. Overlap the actual disc so the
+    // whole eight metre bridge has floor support, including its two outer walking lanes.
+    const float Bottom = -280.f, LowX = PadCenterX + PadHalfExtent - (IsUsingFunctionalLayout() ? 150.f : 0.f),
+                HighX = PadWalkwayInnerX;
     auto *Walkway =
         AddMesh(FVector((LowX + HighX) * .5f, 0, (Bottom + PadDeckTop) * .5f),
                 FVector((HighX - LowX) / 100.f, 800.f / 100.f, (PadDeckTop - Bottom) / 100.f), Cube, Hull, true);
@@ -110,12 +117,15 @@ void ASSStation::BuildLandingPad(bool bHome, const TCHAR *Cube, const TCHAR *Hul
     AddService(FVector(PadCenterX - 700.f, -900.f, PadDeckTop + 80.f), TEXT("DOCK REPAIR"), ESSPanel::Repair);
     AddService(FVector(PadCenterX - 700.f, 900.f, PadDeckTop + 80.f), TEXT("DOCK UPGRADES I - V"), ESSPanel::Upgrades);
 }
-void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Panel)
+void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Panel, bool BuildStand)
 {
-    auto *Stand = AddMesh(Position, FVector(1), TEXT("/Game/SpaceSurvival/Meshes/SM_Console.SM_Console"),
-                          TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"), true);
-    Stand->SetVisibility(!VisualLayout);
-    Stand->SetCastShadow(!VisualLayout);
+    if (BuildStand)
+    {
+        auto *Stand = AddMesh(Position, FVector(1), TEXT("/Game/SpaceSurvival/Meshes/SM_Console.SM_Console"),
+                              TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull"), true);
+        Stand->SetVisibility(!VisualLayout);
+        Stand->SetCastShadow(!VisualLayout);
+    }
     auto *Text = NewObject<UTextRenderComponent>(this);
     Text->SetupAttachment(RootComponent);
     Text->SetRelativeLocation(Position + FVector(-55, 0, 190));
@@ -152,20 +162,65 @@ bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
     // the ship can be there at all rather than about how it chose to arrive:
     //   - the whole flight body has to be clear above the pad deck, not buried in it or under the station
     //   - and the swept body has to actually reach the dock point without hitting anything
-    // Range is the caller's business: ASSGameMode admits within 1200 cm of PadDockPosition.
+    // Clear the same two legs the ship flies: settle above the pad, then descend vertically.
     if (Local.Z < PadDeckTop + Radius)
         return false;
-    FHitResult Hit;
-    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockAdmission), false, Ship);
-    const FCollisionResponseParams Responses(Ship->Collision->GetCollisionResponseToChannels());
-    // Check the actual flight collision body, including the physical station. Do not
-    // admit a path merely because its center line misses a rib or another blocker.
-    return !GetWorld()->SweepSingleByChannel(
-        Hit, Ship->GetActorLocation(), PadDockPosition(), Ship->Collision->GetComponentQuat(),
-        Ship->Collision->GetCollisionObjectType(), Ship->Collision->GetCollisionShape(), Query, Responses);
+    const FCollisionQueryParams Query(SCENE_QUERY_STAT(SSDockAdmission), false, Ship);
+    const FVector Dock = PadDockPosition();
+    const FVector Hover = Dock + (LandingPad ? LandingPad->GetActorUpVector() : GetActorUpVector()) * 700.f;
+    const FVector Start = Ship->GetActorLocation();
+    const FQuat StartRotation = Ship->GetActorQuat(), EndRotation = PadDockRotation().Quaternion();
+    const auto Smooth = [](float T) { return T * T * (3.f - 2.f * T); };
+    // Match ASSShip's actual position and quaternion curves, including the hover boundary at55%.
+    // A sweep at the initial heading alone misses rotating wings and aft nacelles during alignment.
+    const auto PositionAt = [&](float T)
+    {
+        return T < .55f ? FMath::Lerp(Start, Hover, Smooth(T / .55f))
+                        : FMath::Lerp(Hover, Dock, Smooth((T - .55f) / .45f));
+    };
+    const auto RotationAt = [&](float T)
+    { return FQuat::Slerp(StartRotation, EndRotation, Smooth(FMath::Min(T / .55f, 1.f))); };
+    const auto ClearPoseSweep = [&](const FVector &From, const FVector &To, const FQuat &Rotation, bool Descent)
+    {
+        FHitResult Hit;
+        if (!Ship->SweepFlightHull(Hit, From, To, Rotation, Query))
+            return true;
+        // Only intentional contact with this pad's top face may be exempted during lowering. The
+        // fixed nacelle envelope can touch outside the old105cm origin sphere. Its complete footprint
+        // is checked; other station bodies and rails remain blocking in the repeated compound sweep.
+        if (!Descent || !LandingPad || Hit.GetComponent() != LandingPad->GetDeck() || Hit.bStartPenetrating ||
+            FVector::DotProduct(Hit.ImpactNormal, LandingPad->GetActorUpVector()) < .98f)
+            return false;
+        const FVector PadContact = LandingPad->GetActorTransform().InverseTransformPosition(Hit.ImpactPoint);
+        if (FMath::Abs(PadContact.Z) > 2.f || !LandingPad->Covers(Hit.ImpactPoint, -5.f))
+            return false;
+        FCollisionQueryParams TouchdownQuery(Query);
+        TouchdownQuery.AddIgnoredComponent(LandingPad->GetDeck());
+        return !Ship->SweepFlightHull(Hit, From, To, Rotation, TouchdownQuery);
+    };
+    TFunction<bool(float, float, int32)> ClearInterval;
+    ClearInterval = [&](float FromT, float ToT, int32 Depth)
+    {
+        const float MidT = (FromT + ToT) * .5f;
+        const FQuat FromRotation = RotationAt(FromT), ToRotation = RotationAt(ToT);
+        // Bounded refinement: at most128 intervals per phase; typical level arrivals need only two.
+        if (Depth < 7 && FromRotation.AngularDistance(ToRotation) > FMath::DegreesToRadians(4.f))
+            return ClearInterval(FromT, MidT, Depth + 1) && ClearInterval(MidT, ToT, Depth + 1);
+        const FVector From = PositionAt(FromT), To = PositionAt(ToT);
+        const bool Descent = FromT >= .55f;
+        return ClearPoseSweep(From, To, FromRotation, Descent) && ClearPoseSweep(From, To, RotationAt(MidT), Descent) &&
+               ClearPoseSweep(From, To, ToRotation, Descent);
+    };
+    return ClearInterval(0.f, .55f, 0) && ClearPoseSweep(Hover, Dock, EndRotation, true);
 }
 bool ASSStation::BuildEditableLayout()
 {
+    const FSoftObjectPath ResetPath(
+        TEXT("/Game/SpaceSurvival/Licensed/StationReset/BP_StationReset.BP_StationReset_C"));
+    if (VisualLayoutAsset.ToSoftObjectPath() == ResetPath &&
+        !FPackageName::DoesPackageExist(ResetPath.GetLongPackageName()))
+        VisualLayoutAsset = FSoftObjectPath(
+            TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout.BP_StationVisualLayout_C"));
     if (!bUseEditableLayout || !bUseLicensedPresentation || VisualLayoutAsset.IsNull() ||
         !FPackageName::DoesPackageExist(VisualLayoutAsset.ToSoftObjectPath().GetLongPackageName()))
         return false;
@@ -181,6 +236,138 @@ bool ASSStation::BuildEditableLayout()
     VisualLayout->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
     VisualLayout->EnforcePresentationOnly();
     return true;
+}
+bool ASSStation::IsUsingFunctionalLayout() const
+{
+    return VisualLayout && VisualLayout->bFunctionalLayout;
+}
+
+void ASSStation::BuildFunctionalHub()
+{
+    auto CopyAuthoredIdentity = [](const UActorComponent *Source, UActorComponent *Target)
+    {
+        for (const FName Tag : Source->ComponentTags)
+            if (Tag.ToString().StartsWith(TEXT("StationAuthoredId:")))
+                Target->ComponentTags.AddUnique(Tag);
+    };
+    TInlineComponentArray<UStaticMeshComponent *> TriangleSpecs(VisualLayout);
+    for (const auto *Spec : TriangleSpecs)
+    {
+        if (!Spec->ComponentHasTag(TEXT("StationTriangleSolidSpec")))
+            continue;
+        auto *Mesh = Spec->GetStaticMesh().Get();
+        const auto *Body = Mesh ? Mesh->GetBodySetup() : nullptr;
+        if (!Body || Body->GetCollisionTraceFlag() != CTF_UseComplexAsSimple || Mesh->GetNumTriangles(0) <= 0 ||
+            Mesh->GetNumTriangles(0) > 160000)
+        {
+            UE_LOG(LogTemp, Error, TEXT("STATION_TRIANGLE_COLLISION_INVALID %s"), *GetNameSafe(Mesh));
+            continue;
+        }
+        // ComplexAsSimple cooks the built LOD0 fallback, not the high-resolution Nanite source. Keep
+        // the presentation actor collisionless and mirror its exact transform in native authority.
+        auto *Solid = NewObject<UStaticMeshComponent>(this, FName(*(TEXT("Solid_") + Spec->GetName())));
+        Solid->SetupAttachment(RootComponent);
+        Solid->SetRelativeTransform(Spec->GetComponentTransform().GetRelativeTransform(GetActorTransform()));
+        Solid->SetStaticMesh(Mesh);
+        Solid->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Solid->SetCollisionObjectType(ECC_WorldStatic);
+        Solid->SetCollisionResponseToAllChannels(ECR_Block);
+        Solid->SetSimulatePhysics(false);
+        Solid->SetGenerateOverlapEvents(false);
+        Solid->SetVisibility(false);
+        Solid->SetCastShadow(false);
+        Solid->SetCanEverAffectNavigation(false);
+        Solid->ComponentTags.Add(TEXT("StationFunctionalTriangleSolid"));
+        CopyAuthoredIdentity(Spec, Solid);
+        AddInstanceComponent(Solid);
+        Solid->RegisterComponent();
+        Geometry.Add(Solid);
+    }
+    TInlineComponentArray<UCapsuleComponent *> StaffSpecs(VisualLayout);
+    for (const auto *Spec : StaffSpecs)
+    {
+        if (!Spec->ComponentHasTag(TEXT("StationStaffSolidSpec")))
+            continue;
+        auto *Body = NewObject<UCapsuleComponent>(this, FName(*(TEXT("Solid_") + Spec->GetName())));
+        Body->SetupAttachment(RootComponent);
+        Body->SetRelativeTransform(Spec->GetComponentTransform().GetRelativeTransform(GetActorTransform()));
+        Body->SetCapsuleSize(Spec->GetUnscaledCapsuleRadius(), Spec->GetUnscaledCapsuleHalfHeight());
+        Body->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Body->SetCollisionObjectType(ECC_WorldStatic);
+        Body->SetCollisionResponseToAllChannels(ECR_Block);
+        Body->SetGenerateOverlapEvents(false);
+        Body->SetHiddenInGame(true);
+        Body->SetCanEverAffectNavigation(false);
+        Body->ComponentTags.Add(TEXT("StationFunctionalStaffSolid"));
+        CopyAuthoredIdentity(Spec, Body);
+        AddInstanceComponent(Body);
+        Body->RegisterComponent();
+    }
+    TInlineComponentArray<UBoxComponent *> Specs(VisualLayout);
+    for (const auto *Spec : Specs)
+    {
+        if (!Spec->ComponentHasTag(TEXT("StationSolidSpec")))
+            continue;
+        auto *Solid = NewObject<UBoxComponent>(this, FName(*(TEXT("Solid_") + Spec->GetName())));
+        Solid->SetupAttachment(RootComponent);
+        Solid->SetRelativeTransform(Spec->GetComponentTransform().GetRelativeTransform(GetActorTransform()));
+        Solid->SetBoxExtent(Spec->GetUnscaledBoxExtent());
+        Solid->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Solid->SetCollisionObjectType(ECC_WorldStatic);
+        Solid->SetCollisionResponseToAllChannels(ECR_Block);
+        Solid->SetGenerateOverlapEvents(false);
+        Solid->SetHiddenInGame(true);
+        Solid->SetCanEverAffectNavigation(false);
+        Solid->ComponentTags.Add(TEXT("StationFunctionalSolid"));
+        CopyAuthoredIdentity(Spec, Solid);
+        AddInstanceComponent(Solid);
+        Solid->RegisterComponent();
+        if (Spec->ComponentHasTag(TEXT("StationWalkFloorSpec")))
+        {
+            const FBox Floor =
+                Spec->CalcBounds(Spec->GetComponentTransform().GetRelativeTransform(GetActorTransform())).GetBox();
+            AuthoredWalkDecks.Add(Floor);
+            Solid->ComponentTags.Add(TEXT("StationFunctionalFloor"));
+        }
+    }
+    const TCHAR *Cube = TEXT("/Engine/BasicShapes/Cube.Cube");
+    const TCHAR *Hull = TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull");
+    BuildLandingPad(true, Cube, Hull); // The exterior ship pad remains one shared docking implementation.
+    auto Service = [this](const TCHAR *Kind, const TCHAR *Label, ESSPanel Panel)
+    {
+        const FName Tag(*(FString(TEXT("StationService:")) + Kind));
+        TInlineComponentArray<USceneComponent *> Components(VisualLayout);
+        for (const auto *Component : Components)
+            if (Component->ComponentHasTag(Tag))
+            {
+                const FVector Position =
+                    GetActorTransform().InverseTransformPosition(Component->GetComponentLocation());
+                AddService(Position, Label, Panel, false);
+                return;
+            }
+        UE_LOG(LogTemp, Error, TEXT("STATION_RESET_MISSING_SERVICE %s"), Kind);
+    };
+    Service(TEXT("Loadout"), Home ? TEXT("LOADOUT / WEAPON") : TEXT("CORE UPGRADES I - V"),
+            Home ? ESSPanel::Weapon : ESSPanel::Upgrades);
+    Service(TEXT("Repair"), Home ? TEXT("SHIP BAY") : TEXT("REPAIR BAY"), Home ? ESSPanel::Ship : ESSPanel::Repair);
+    Service(TEXT("Contracts"), Home ? TEXT("PILOT RECORD") : TEXT("CONTRACT BOARD"),
+            Home ? ESSPanel::Progression : ESSPanel::Contracts);
+    Service(TEXT("Systems"), Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"),
+            Home ? ESSPanel::Settings : ESSPanel::Save);
+    Service(TEXT("Launch"), TEXT("LAUNCH CONTROL"), ESSPanel::Launch);
+    Service(TEXT("Wardrobe"), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
+    Service(TEXT("Paint"), TEXT("PAINT BAY"), ESSPanel::Paint);
+    // Gallery evaluation is retired; supplied assets remain available for authoring.
+    Service(TEXT("Modules"), Home ? TEXT("ENGINEER MICA / RECORD") : TEXT("ENGINEER MICA / MODULES"),
+            Home ? ESSPanel::Progression : ESSPanel::Vendor);
+    Service(TEXT("Beacon"), TEXT("BEACON LOG / LOST CREW"), Home ? ESSPanel::History : ESSPanel::Reward);
+    Ambience = NewObject<UAudioComponent>(this);
+    Ambience->SetAutoActivate(false);
+    Ambience->SetupAttachment(RootComponent);
+    Ambience->SetSound(SSAudio::PresentationSound(TEXT("Station")));
+    Ambience->SetVolumeMultiplier(SSAudio::EffectsGain(this, .25f));
+    Ambience->RegisterComponent();
+    Ambience->Play();
 }
 
 void ASSStation::DestroyVisualLayout()
@@ -214,6 +401,12 @@ void ASSStation::BuildHub(bool bHome)
     const TCHAR *Cyan = TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan");
     const TCHAR *Gold = TEXT("/Game/SpaceSurvival/Materials/M_Gold.M_Gold");
     const bool EditableLayout = BuildEditableLayout();
+    if (IsUsingFunctionalLayout())
+    {
+        BuildFunctionalHub();
+        return;
+    }
+    BuildAuthoredWalkDeck();
     const bool LicensedShell = EditableLayout || (bUseLicensedPresentation && BuildLicensedShell());
     UStaticMesh *ShellMesh = LicensedShell || ShellAsset.IsNull() ? nullptr : ShellAsset.LoadSynchronous();
     if (ShellMesh)
@@ -269,7 +462,10 @@ void ASSStation::BuildHub(bool bHome)
     }
     auto AddBoundary = [this, Cube, Hull, ShellMesh, LicensedShell](FVector Position, FVector Scale)
     {
-        auto *Boundary = AddMesh(Position, Scale, Cube, Hull, true);
+        // The original 34 x 28 m room walls sit across the expanded authored main deck. Keep them for
+        // the native room, but do not leave invisible barriers across a measured continuous floor.
+        auto *Boundary = AddMesh(Position, Scale, Cube, Hull, AuthoredWalkDecks.IsEmpty());
+        Boundary->ComponentTags.Add(TEXT("StationLegacyRoomBoundary"));
         if (ShellMesh || LicensedShell)
         {
             Boundary->SetVisibility(false);
@@ -381,15 +577,13 @@ void ASSStation::BuildHub(bool bHome)
     AddService(FVector(0, 1000, 0), Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"),
                Home ? ESSPanel::Settings : ESSPanel::Save);
     AddService(FVector(950, -450, 0), TEXT("LAUNCH CONTROL"), ESSPanel::Launch);
-    // The crew wardrobe: the station's own kiosk, and the only place a body can be changed. Stations
-    // only - the home hangar is where a run is prepared, not where the crew get changed.
-    if (!Home)
-        AddService(FVector(-1400, 500, 0), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
+    // Owner requested customization in both the home hangar and arrival stations.
+    AddService(FVector(-1400, 500, 0), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
     // The paint bay: a lift stand on the starboard wall; the editable layout dresses it with a platform and arch.
     AddService(FVector(-1400, -1000, 0), TEXT("PAINT BAY"), ESSPanel::Paint);
     // A separate review doorway: available in home hangar and both stations, never a run destination.
     BuildLandingPad(Home, Cube, Hull);
-    AddService(FVector(450, 1000, 0), TEXT("ALIEN WORLD"), ESSPanel::AlienGallery);
+    // No playable gallery service.
     ServiceLabels.Last()->SetRelativeLocation(FVector(450, 1160, 265));
     ServiceLabels.Last()->SetWorldSize(20);
     for (float Side : {-1.f, 1.f})
@@ -528,12 +722,45 @@ void ASSStation::ShowPadIndicator(bool Visible)
     if (LandingPad)
         LandingPad->ShowIndicator(Visible);
 }
+FRotator ASSStation::PadDockRotation() const
+{
+    return IsUsingFunctionalLayout() ? (GetActorQuat() * FQuat(FVector::UpVector, PI)).Rotator() : GetActorRotation();
+}
 FVector ASSStation::PadDockPosition() const
 {
-    // 230 above the deck is the classic hull's clearance, and the deck is at -10, so this is the same
-    // Z 220 the bay has always parked at. The hull-specific clearance belongs to the ship and is the
-    // next thing to move here; until it does, both hulls park where they parked yesterday.
-    return LandingPad ? LandingPad->DockPoint() : GetActorTransform().TransformPosition(FVector(PadCenterX, 0, 220.f));
+    const float Clearance = FSSHullDefinition(ASSShip::SelectedHullIdentity()).DockClearanceAboveDeck;
+    return LandingPad ? LandingPad->DockPoint(Clearance)
+                      : GetActorTransform().TransformPosition(FVector(PadCenterX, 0, PadDeckTop + Clearance));
+}
+void ASSStation::BuildAuthoredWalkDeck()
+{
+    AuthoredWalkDecks.Reset();
+    if (!VisualLayout)
+        return;
+    TInlineComponentArray<UStaticMeshComponent *> Meshes(VisualLayout);
+    for (const auto *Mesh : Meshes)
+    {
+        // MakeStationRecipe's deck_<number> pieces are the continuous ground floor. Upper walkways,
+        // rooms, roof tiles and decorative exterior foundations are deliberately excluded.
+        const FString Name = Mesh->GetName();
+        if (!Name.StartsWith(TEXT("deck_")) || Name.Len() <= 5 || !FChar::IsDigit(Name[5]) || !Mesh->GetStaticMesh())
+            continue;
+        const FBox Bounds =
+            Mesh->CalcBounds(Mesh->GetComponentTransform().GetRelativeTransform(GetActorTransform())).GetBox();
+        const FVector Size = Bounds.GetSize();
+        if (!Bounds.IsValid || Size.X < 100.f || Size.Y < 100.f || Size.Z > 100.f || Bounds.Max.Z < -40.f ||
+            Bounds.Max.Z > 60.f)
+            continue;
+        AuthoredWalkDecks.Add(Bounds);
+        // One floor proxy per measured tile preserves authored gaps and never creates a floor across
+        // the full art bounds. Collision stays native; the owner's layout remains presentation-only.
+        auto *Floor =
+            AddMesh(FVector(Bounds.GetCenter().X, Bounds.GetCenter().Y, Bounds.Max.Z - 50.f),
+                    FVector(Size.X / 100.f, Size.Y / 100.f, 1.f), TEXT("/Engine/BasicShapes/Cube.Cube"), nullptr, true);
+        Floor->SetVisibility(false);
+        Floor->SetCastShadow(false);
+        Floor->ComponentTags.Add(TEXT("StationAuthoredDeckCollision"));
+    }
 }
 FVector ASSStation::PadWalkSpawn() const
 {
@@ -545,12 +772,34 @@ FVector ASSStation::PadExit() const
     return LandingPad ? LandingPad->ExitPoint()
                       : GetActorTransform().TransformPosition(FVector(PadCenterX + 200.f, -350.f, 100.f));
 }
+bool ASSStation::ConfigurePadExit(const ASSShip *Ship, float CapsuleRadius, float CapsuleHalfHeight)
+{
+    if (!Ship || !LandingPad)
+        return false;
+    const FTransform Frame = LandingPad->GetActorTransform();
+    FBox HullBounds(ForceInit);
+    if (auto *Rig = Ship->GetVisualRig())
+        HullBounds = Rig->GetHullBoundsInSpace(Frame);
+    if (!HullBounds.IsValid)
+    {
+        const UPrimitiveComponent *Hull = Ship->SkeletalHull && Ship->SkeletalHull->IsVisible()
+                                              ? Cast<UPrimitiveComponent>(Ship->SkeletalHull)
+                                              : Cast<UPrimitiveComponent>(Ship->HullMesh);
+        if (Hull)
+            HullBounds = Hull->CalcBounds(Hull->GetComponentTransform().GetRelativeTransform(Frame)).GetBox();
+    }
+    return LandingPad->ConfigureWalkExit(HullBounds, CapsuleRadius, CapsuleHalfHeight, Ship);
+}
 bool ASSStation::Walkable(const FVector &World) const
 {
     const FVector Local = GetActorTransform().InverseTransformPosition(World);
     if (Local.Z < -250.f)
         return false;
-    // The interior deck, exactly as it always was.
+    for (const FBox &Deck : AuthoredWalkDecks)
+        if (Local.X >= Deck.Min.X - 40.f && Local.X <= Deck.Max.X + 40.f && Local.Y >= Deck.Min.Y - 40.f &&
+            Local.Y <= Deck.Max.Y + 40.f)
+            return true;
+    // The native interior remains the fallback when the optional authored main deck is absent.
     if (FMath::Abs(Local.X) <= 1750.f && FMath::Abs(Local.Y) <= 1450.f)
         return true;
     // The walkway, from the pad's near edge in through the mouth, overlapping the interior box past the
@@ -587,6 +836,55 @@ ESSPanel ASSStation::NearestService(FVector Position, FString &Label) const
         }
     }
     return Result;
+}
+bool ASSStation::ServicePosition(ESSPanel Panel, FVector &WorldPosition) const
+{
+    for (const auto &Service : Services)
+        if (Service.Panel == Panel)
+        {
+            WorldPosition = GetActorTransform().TransformPosition(Service.Location);
+            return true;
+        }
+    return false;
+}
+void ASSStation::RadarContacts(TArray<FVector> &ServicePositions, TArray<FVector> &CrewPositions) const
+{
+    ServicePositions.Reset();
+    CrewPositions.Reset();
+    for (const auto &Service : Services)
+        ServicePositions.Add(GetActorTransform().TransformPosition(Service.Location));
+    auto GatherCrew = [&](const AActor *CrewOwner)
+    {
+        if (!CrewOwner || CrewOwner->IsHidden())
+            return;
+        TInlineComponentArray<USkeletalMeshComponent *> Meshes;
+        CrewOwner->GetComponents(Meshes);
+        for (const auto *Mesh : Meshes)
+            if (Mesh->IsVisible() && !Mesh->bHiddenInGame && Mesh->GetSkeletalMeshAsset() &&
+                (Mesh->ComponentHasTag(TEXT("StationRobotStaff")) || Mesh->ComponentHasTag(TEXT("StationAlienCrew")) ||
+                 Mesh->ComponentHasTag(TEXT("StationFunctionalStaff"))))
+                CrewPositions.Add(Mesh->GetComponentLocation());
+    };
+    GatherCrew(this);
+    GatherCrew(VisualLayout);
+}
+
+FString ASSStation::ServiceGuidance(FVector Position) const
+{
+    float Nearest = MAX_flt;
+    const FService *Target = nullptr;
+    for (const auto &Service : Services)
+    {
+        const float Distance = FVector::Dist2D(Position, GetActorTransform().TransformPosition(Service.Location));
+        if (Distance < Nearest)
+        {
+            Nearest = Distance;
+            Target = &Service;
+        }
+    }
+    if (!Target)
+        return TEXT("No station service is available here.");
+    return FString::Printf(TEXT("Move closer to %s / %.1f m / use within 2.8 m"), *Target->Label, Nearest / 100.f);
 }
 namespace
 {
@@ -633,7 +931,7 @@ ASSWalker::ASSWalker()
 {
     PrimaryActorTick.bCanEverTick = true;
     bUseControllerRotationYaw = false;
-    GetCharacterMovement()->bOrientRotationToMovement = false;
+    GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0, 540, 0);
     GetCharacterMovement()->MaxWalkSpeed = 320;
     Boom = CreateDefaultSubobject<USpringArmComponent>(TEXT("WalkCameraBoom"));
@@ -1247,6 +1545,7 @@ void ASSWalker::Tick(float Dt)
         // Which clip this hero should be in, and how fast it should run.
         UpdateHeroAnimation(Dt);
         UpdateFootsteps(Dt);
+        // Boarding is an explicit interaction; crossing the ramp must not seize movement.
     }
 }
 void ASSWalker::UpdateFootsteps(float Dt)
@@ -1300,12 +1599,12 @@ void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)
     // Apply this frame's station view directly before TickActor clears that buffer.
     FRotator View = Controller->GetControlRotation();
     View.Yaw = FRotator::NormalizeAxis(View.Yaw + Look.X * 90.f * Dt);
-    View.Pitch = FMath::Clamp(FRotator::NormalizeAxis(View.Pitch) - Look.Y * 70.f * Dt, -55.f, 35.f);
+    View.Pitch = FMath::Clamp(FRotator::NormalizeAxis(View.Pitch) + Look.Y * 70.f * Dt, -55.f, 35.f);
     View.Roll = 0.f;
     Controller->SetControlRotation(View);
     const FRotator Yaw(0, View.Yaw, 0);
-    // Forward, back and strafe share this facing: the chase view stays behind the body.
-    SetActorRotation(Yaw);
+    // Movement is camera-relative; CharacterMovement turns the body toward actual travel at its
+    // configured rotation rate. Orbiting the camera alone does not spin the standing character.
     GetCharacterMovement()->MaxWalkSpeed = Run ? 560.f : 320.f;
     AddMovementInput(Yaw.Vector(), Direction.Y);
     AddMovementInput(FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y), Direction.X);

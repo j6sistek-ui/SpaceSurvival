@@ -113,7 +113,7 @@ struct FSSJourneyWorld
     void Step(float Seconds = .05f)
     {
         if (auto *Ship = Cast<ASSShip>(Controller->GetPawn()))
-            Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+            Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, false, false);
         // TickTaskManager deduplicates by the engine frame counter. Each manually
         // driven step is a new synthetic frame; keep the global counter monotonic.
         ++GFrameCounter;
@@ -189,25 +189,87 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
     FHitResult Hit;
     const FVector Forward = Hub->GetActorForwardVector();
     const FVector Dock = Hub->PadDockPosition();
-    Test.TestFalse(TEXT("The pad approach is clear before assistance"),
-                   Fixture.World->SweepSingleByObjectType(
-                       Hit, Dock - Forward * 3000.f, Dock - Forward * 1250.f, FQuat::Identity, StaticObjects,
-                       FCollisionShape::MakeSphere(ASSShip::FlightCollisionRadius()), Query));
+    const float ApproachHeight = Ship->HasFlightHull() ? 1600.f : 500.f;
+    const FVector Approach = Dock - Forward * 1000.f + Hub->GetActorUpVector() * ApproachHeight;
+    const FVector ApproachStart = Approach - Forward * 2000.f;
+    const bool ApproachBlocked = Ship->SweepFlightHull(Hit, ApproachStart, Approach, Hub->GetActorQuat(), Query);
+    if (!Test.TestFalse(TEXT("The complete flight hull has a clear elevated approach before assistance"),
+                        ApproachBlocked))
+    {
+        Test.AddError(FString::Printf(TEXT("Journey approach blocked by %s/%s at %s"), *GetNameSafe(Hit.GetActor()),
+                                      *GetNameSafe(Hit.GetComponent()), *Hit.ImpactPoint.ToString()));
+        return false;
+    }
     Test.TestTrue(TEXT("Walker spawn has a physical station floor beneath it"),
                   Fixture.World->LineTraceSingleByObjectType(
                       Hit, Hub->WalkSpawn(), Hub->WalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&
                       Hit.GetActor() == Hub);
     // The pad is where the hero is actually put down now, so it needs the same proof the interior deck
     // has always had: something solid under the spawn, belonging to the station rather than to nothing.
+    const bool PadFloorHit = Fixture.World->LineTraceSingleByObjectType(
+        Hit, Hub->PadWalkSpawn(), Hub->PadWalkSpawn() - FVector(0, 0, 500), StaticObjects, Query);
+    const auto *Pad = Hub->GetLandingPad();
+    Test.AddInfo(FString::Printf(
+        TEXT("JOURNEY_PAD_FLOOR wave=%d hit=%d actor=%s component=%s point=%s normal=%s spawn=%s "
+             "hub=%s pad=%s deck=%s physics=%d origin=%s"),
+        Fixture.Instance->Session.run.wave, PadFloorHit, *GetNameSafe(Hit.GetActor()), *GetNameSafe(Hit.GetComponent()),
+        *Hit.ImpactPoint.ToString(), *Hit.ImpactNormal.ToString(), *Hub->PadWalkSpawn().ToString(),
+        *Hub->GetActorTransform().ToString(), Pad ? *Pad->GetActorTransform().ToString() : TEXT("none"),
+        Pad && Pad->GetDeck() ? *Pad->GetDeck()->GetComponentTransform().ToString() : TEXT("none"),
+        Pad && Pad->GetDeck() && Pad->GetDeck()->IsPhysicsStateCreated(), *Fixture.World->OriginLocation.ToString()));
     Test.TestTrue(TEXT("The landing pad has a physical deck beneath where the hero is set down, and it is the pad"),
-                  Fixture.World->LineTraceSingleByObjectType(
-                      Hit, Hub->PadWalkSpawn(), Hub->PadWalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&
-                      Hit.GetActor() == Hub->GetLandingPad());
+                  PadFloorHit && Hit.GetActor() == Pad);
     // Fixture places the player in the assist admission band. Natural manual
     // approach/input precision and high-speed flight feel require separate playtests.
-    Ship->SetActorLocation(Dock - Forward * 1000.f);
+    Ship->SetActorLocation(Approach, false, nullptr, ETeleportType::TeleportPhysics);
     Ship->SetActorRotation(Hub->GetActorRotation());
-    return true;
+    if (Ship->Collision->IsSimulatingPhysics())
+    {
+        Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+        Ship->Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+    }
+    Test.TestTrue(TEXT("Entering the assist band alone leaves docking under player control"),
+                  Fixture.Instance->Session.run.phase == SS::Phase::Approach);
+    FString Status;
+    if (!Test.TestTrue(TEXT("The ordinary docking prompt accepts the prepared approach"),
+                       Fixture.Mode->DockingStatus(Status)))
+    {
+        Test.AddError(Status);
+        return false;
+    }
+    Fixture.Mode->Interact();
+    return Test.TestTrue(TEXT("Explicit interaction begins the real assisted landing"),
+                         Fixture.Instance->Session.run.phase == SS::Phase::Docking);
+}
+
+bool CheckDeparture(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
+{
+    ASSShip *DockedShip = Fixture.Mode->GetPlayerShip();
+    ASSStation *Hub = Fixture.Station();
+    const int32 Wave = Fixture.Instance->Session.run.wave;
+    Fixture.Mode->LaunchFromHub();
+    if (!Test.TestTrue(TEXT("Departure retains the parked ship and station during takeoff"),
+                       Fixture.Controller->GetPawn() == DockedShip && Fixture.Mode->GetPlayerShip() == DockedShip &&
+                           Fixture.Station() == Hub && Fixture.Mode->IsDepartingStation() && DockedShip->IsTakingOff()))
+        return false;
+    Test.TestFalse(TEXT("Takeoff keeps the survival Director paused"), Fixture.Mode->Director->IsActive());
+    for (int32 Frame = 0; Frame < 100 && DockedShip->IsTakingOff(); ++Frame)
+        Fixture.Step();
+    if (!Test.TestFalse(TEXT("Continuous takeoff completes through normal world ticks"), DockedShip->IsTakingOff()))
+        return false;
+    Test.TestTrue(TEXT("Lifting off inside the zone does not advance the wave"),
+                  Fixture.Mode->IsInStationZone() && Fixture.Instance->Session.run.wave == Wave &&
+                      Fixture.Instance->Session.run.phase == SS::Phase::Station);
+    const auto *Pad = Hub->GetLandingPad();
+    // As with the prepared assist-band placement above, this is an actor-integration fixture, not a
+    // natural flight test. Move across the boundary, then let production GameMode commit the next block.
+    DockedShip->SetActorLocation(Pad->DockPoint() - Pad->GetActorForwardVector() * (Pad->StationZoneRadius + 1000.f),
+                                 false, nullptr, ETeleportType::TeleportPhysics);
+    Fixture.Step();
+    return Test.TestTrue(TEXT("Crossing the zone boundary starts the next block and resumes the Director"),
+                         Fixture.Instance->Session.run.wave == Wave + 1 &&
+                             Fixture.Instance->Session.run.phase == SS::Phase::Flight &&
+                             !Fixture.Mode->IsDepartingStation() && Fixture.Mode->Director->IsActive());
 }
 
 bool CheckStation(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
@@ -243,7 +305,11 @@ bool CheckStation(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
     Test.TestEqual(TEXT("The station starts an authored exit exactly when this hero has one to start"),
                    Walker->IsDisembarking(), ClimbsOut);
     const int32 ArrivalWave = Fixture.Instance->Session.run.wave;
-    const FVector Console = Hub->GetActorTransform().TransformPosition(FVector(200, -800, 100));
+    FVector Console;
+    if (!Test.TestTrue(TEXT("The current layout exposes its real upgrade service anchor"),
+                       Hub->ServicePosition(ESSPanel::Upgrades, Console)))
+        return false;
+    Console += Hub->GetActorUpVector() * 110.f;
     const FVector Exit = Hub->GetActorTransform().TransformPosition(FVector(650, -350, 100));
 
     // Services stay shut while a transition is running and the shell cannot skip it. That gate reads one
@@ -314,9 +380,9 @@ bool CheckStation(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
         // In plan, because the pawn settles onto the deck vertically: it is where the station puts a
         // walker, not dragged to the seat and not left at the authored exit target.
         Test.TestTrue(TEXT("It stands where the station puts a walker down on the pad, clear of its own ship"),
-                      FVector2D(Hub->GetActorTransform().InverseTransformPosition(Walker->GetActorLocation()))
-                              .Equals(FVector2D(ASSStation::PadCenterX + 400.f, 0), 1.f) &&
-                          FVector::Dist2D(Walker->GetActorLocation(), Hub->PadDockPosition()) > 300.);
+                      FVector::Dist2D(Walker->GetActorLocation(), Hub->PadWalkSpawn()) <= 1.f &&
+                          Hub->GetLandingPad()->IsOutsideParkedHull(
+                              Walker->GetActorLocation(), Walker->GetCapsuleComponent()->GetScaledCapsuleRadius()));
     }
     for (int32 Index = 0; Index < 60 && Walker->IsDisembarking(); ++Index)
         Fixture.Step();
@@ -343,7 +409,8 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSAcceleratedJourney, "SpaceSurvival.Integrati
 bool FSSAcceleratedJourney::RunTest(const FString &Parameters)
 {
     AddInfo(TEXT("Accelerated actor integration: 12-second waves/climaxes, shortened transitions, enlarged durability, "
-                 "fixture flight bootstrap, forced objective acquisition/defeat and assist-band positioning. "
+                 "fixture flight bootstrap, forced objective acquisition/defeat, assist-band and departure-boundary "
+                 "positioning. "
                  "This does not validate natural balance, fairness, flight feel, controller input, performance, "
                  "or disk-backed New Run/death/restart transactions."));
     if (!CheckPublishedBackdropCollision(*this))
@@ -513,13 +580,9 @@ bool FSSAcceleratedJourney::RunTest(const FString &Parameters)
                 return false;
             if (Stations == 1)
             {
-                ASSShip *DockedShip = Fixture.Mode->GetPlayerShip();
-                Fixture.Mode->LaunchFromHub();
-                TestEqual(TEXT("Real station departure advances to Wave 6"), Session.run.wave, 6);
-                TestTrue(TEXT("Departure possesses a fresh flying pawn"),
-                         Fixture.Controller->GetPawn() == Fixture.Mode->GetPlayerShip() &&
-                             Fixture.Mode->GetPlayerShip() != DockedShip);
-                TestTrue(TEXT("Departure reactivates the Director"), Fixture.Mode->Director->IsActive());
+                if (!CheckDeparture(*this, Fixture))
+                    return false;
+                TestEqual(TEXT("Station 1 boundary exit advances to Wave 6"), Session.run.wave, 6);
                 TestTrue(TEXT("Station departure preserves the deliberate event module"),
                          Session.run.utility == SS::Utility::VectorThrusters);
             }

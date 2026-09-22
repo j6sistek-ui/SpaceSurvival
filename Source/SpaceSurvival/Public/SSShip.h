@@ -13,6 +13,7 @@ class UCameraComponent;
 class UAudioComponent;
 class USSPhase1Data;
 class USSShipPresentation;
+struct FCollisionQueryParams;
 
 UCLASS()
 class SPACESURVIVAL_API ASSShip : public APawn
@@ -33,6 +34,13 @@ public:
      *  able to disagree. */
     static ESSHullIdentity SelectedHullIdentity();
     static float FlightCollisionRadius();
+    /** Fixed authored compound when available; the small legacy sphere remains the Classic fallback. */
+    bool HasFlightHull() const;
+    FBox FlightHullBounds(const FTransform &ShipTransform) const;
+    bool SweepFlightHull(FHitResult &Hit, const FVector &From, const FVector &To, const FQuat &Rotation,
+                         const FCollisionQueryParams &Params) const;
+    /** Sweep a world-space hazard/projectile sphere against this ship at its current pose. */
+    bool SweepFlightContact(FHitResult &Hit, const FVector &From, const FVector &To, float Radius) const;
     /** The stick as ShipCore's gyro sees it: (yaw, pitch) stick to the plugin's (roll, pitch, yaw) body torque,
      *  axes and signs. Pure and static so the translation is pinned by a test that needs no physics world;
      *  the plugin's own convention is pinned separately by ShipCoreGyroAxes, and between them the whole chain
@@ -44,13 +52,29 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     virtual FVector GetVelocity() const override;
-    void SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake);
-    void RequestDodge();
+    void SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake, float Roll = 0.f,
+                        bool ManualRoll = false);
+    /** Camera-only input: never feeds steering, thrust or the flight body's transform. */
+    void SetFreeLookInput(FVector2D Input)
+    {
+        FreeLookInput = Input.GetClampedToMaxSize(1.f);
+    }
+    /** Ordinary engine command, 0 = coast and 1 = full normal power; boost remains separate. */
+    float GetThrottle() const
+    {
+        return ThrottleInput;
+    }
+    void RequestDodge(float Side = 0.f);
     void Fire();
     void ReceiveDamage(float Amount, SS::DamageType Type = SS::DamageType::Kinetic);
     void ReceiveImpact(float Amount, FVector AwayFromContact);
     void AddExternalForce(FVector Force);
-    void SetDockingTarget(FVector Target, FRotator Rotation);
+    void SetDockingTarget(FVector Target, FRotator Rotation, float Duration = 3.f);
+    void BeginTakeoff(FVector HoverTarget, FRotator Rotation, float Duration = 3.f);
+    bool IsTakingOff() const
+    {
+        return TakingOff;
+    }
     void FinishDocking();
     bool BeginMooring();
     void EndMooring();
@@ -82,6 +106,11 @@ public:
     }
     static float SoftAssistWeight(float Alignment, float ConeDegrees, float MaximumStrength);
     FVector AimDirection() const;
+    FVector MuzzleWorldPosition() const;
+    class USSShipVisualRig *GetVisualRig() const
+    {
+        return VisualRig;
+    }
     AActor *SoftTarget = nullptr;
     UPROPERTY(EditAnywhere, Category = "Flight|Aim", meta = (ClampMin = "0.0", ClampMax = "0.4"))
     float MaximumSoftAssist = .20f;
@@ -105,11 +134,21 @@ public:
     TObjectPtr<UAudioComponent> EngineAudio;
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<USSShipPresentation> Presentation;
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<class USSShipVisualRig> VisualRig;
     UPROPERTY(EditAnywhere)
     TObjectPtr<USSPhase1Data> Tuning;
 
 private:
+    float BumperHeldSeconds = 0.f, EvadeSeconds = 0.f, EvadeSide = 0.f;
+    bool bLevelAfterEvade = false;
+    FVector EvadeVelocity = FVector::ZeroVector;
+    float RollCommandDegrees() const;
+
+    friend class FSSDirectorAsteroidReadability;
+    friend class FSSControllerTestingPreset;
     void UpdateEngineMix();
+    void RefreshFlightPresentation();
     FSSHeroDefinition PilotHero = FSSHeroDefinition::Fallback();
     /** How much further back the chase boom sits, because the hull is that many times longer than the one
      *  the 900 cm arm was framed for. One while the classic hull flies, which is every build today. */
@@ -129,6 +168,8 @@ private:
      *  with -SSClassic, or one without the licensed pack installed. */
     bool ShipCoreDriven = false;
     UPROPERTY()
+    TObjectPtr<class USSFlightHullComponent> FlightHull;
+    UPROPERTY()
     TObjectPtr<class UThrusterManagerComp> Thrusters;
     UPROPERTY()
     TObjectPtr<class UGyroManagerComp> Gyros;
@@ -136,6 +177,7 @@ private:
      *  Replaces the substepped integrator entirely while it is driving; the two never both run. */
     void DriveShipCore(float Dt, double Acceleration, double Maneuver, double Response, float Speed, float Authority,
                        float Interference);
+    FVector FlightVelocityTarget(float Speed, float Maneuver, const FVector &CurrentVelocity) const;
     /** Stop or restart the physics body around a scripted move. Only does anything while ShipCore drives. */
     void HoldBody(bool Hold);
 
@@ -153,6 +195,10 @@ private:
     void OnHullImpact(UPrimitiveComponent *HitComp, AActor *OtherActor, UPrimitiveComponent *OtherComp,
                       FVector NormalImpulse, const FHitResult &Hit);
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
+    float RollInput = 0.f;
+    bool bManualRoll = false;
+    FVector2D FreeLookInput = FVector2D::ZeroVector, FreeLookAngles = FVector2D::ZeroVector;
+    FRotator BaseCameraBoomRotation = FRotator::ZeroRotator;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f, FireVisualSeconds = 0.f;
     /** Impact shake phase and severity. Presentation only; neither reaches thrust or shot origin. */
@@ -160,9 +206,12 @@ private:
     /** Decays from one when boost engages, so acceleration has a transient the sustained levels do not give it. */
     float BoostPunch = 0.f;
     bool WasBoosting = false;
-    float DrivePresentationPower = .45f, DrivePresentationDamage = 0.f;
+    float DrivePresentationPower = 0.f, DrivePresentationDamage = 0.f;
     bool DrivePresentationBoosting = false, DrivePresentationBraking = false;
-    bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false;
+    bool BoostInput = false, BrakeInput = false, Docking = false, Moored = false, TakingOff = false;
+    float TransitionElapsed = 0.f, TransitionDuration = 3.f;
+    FVector TransitionStart = FVector::ZeroVector;
+    FRotator TransitionRotation = FRotator::ZeroRotator;
     FVector DockTarget = FVector::ZeroVector;
     FRotator DockRotation = FRotator::ZeroRotator;
 };

@@ -107,9 +107,8 @@ bool FSSHeroRoster::RunTest(const FString &)
     // The five selectable bodies sit between the squirrel and the two fallbacks. Position is not the
     // point - being reachable only by name is, because anything ahead of the squirrel would take the
     // deck on a new game and the squirrel is what a new game is supposed to wear.
-    for (ESSHeroIdentity Selectable :
-         {ESSHeroIdentity::Nyxar, ESSHeroIdentity::AlienFemale, ESSHeroIdentity::Soldier,
-          ESSHeroIdentity::RobotScout, ESSHeroIdentity::HeavyTrooper})
+    for (ESSHeroIdentity Selectable : {ESSHeroIdentity::Nyxar, ESSHeroIdentity::AlienFemale, ESSHeroIdentity::Soldier,
+                                       ESSHeroIdentity::RobotScout, ESSHeroIdentity::HeavyTrooper})
     {
         const int32 Index = Content->Heroes.IndexOfByPredicate([Selectable](const FSSHeroDefinition &Entry)
                                                                { return Entry.Identity == Selectable; });

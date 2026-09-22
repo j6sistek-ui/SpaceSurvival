@@ -211,10 +211,8 @@ void USSCombatVFXSubsystem::PlayMuzzle(AActor *Source, FVector Position, FVector
 {
     const ESSCombatVFX Kind =
         !bFromPlayer ? ESSCombatVFX::EnemyMuzzle : (bHeavy ? ESSCombatVFX::CannonMuzzle : ESSCombatVFX::RapidMuzzle);
-    if (bFromPlayer)
-        if (const auto *Ship = Cast<ASSShip>(Source))
-            if (Ship->Presentation)
-                Ship->Presentation->TryGetMuzzleWorldPosition(Position);
+    // Launch supplies the same physical mount used by the damage trace/projectile. Moving only
+    // the flash to a cosmetic fitting separates what the player sees from where the shot starts.
     Spawn(Kind, Position, Direction.Rotation(), Source);
     const FLinearColor Color = !bFromPlayer ? FLinearColor(1.f, .04f, .01f)
                                : bHeavy     ? FLinearColor(1.f, .32f, .02f)

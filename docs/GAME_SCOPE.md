@@ -1,5 +1,11 @@
 # SpaceSurvival
 
+**September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
+
+## Owner amendment — September 21, 2026 evening
+
+Reachable asteroid scenery is a persistent world-space population independent of the Director's encounter-pressure budget. Its visible objects must not shrink, follow the player or recycle on approach. Preserve the environment through station landing and departure. Boarding's acceptance target is walking to the cockpit chair, sitting and taking flight without a rear-entry popup. Remove the playable alien gallery while retaining owned assets, retire the original Acornaut wardrobe option while retaining the current Squirrel, and distinguish pause from the startup/explicit-return title screen. These later explicit owner decisions supersede older contradictory implementation assumptions; progression, every-five-wave stations and Phase 1 content limits are unchanged. Owner additionally approved a 60 m/s ordinary-flight baseline with matching acceleration, 3x incoming Director asteroids and distinct hazard material/color. Zero-throttle coasting and separate boost remain required. Implementation/remaining gaps live in RPT-20260921-05, not this specification.
+
 ## Game Scope and Phase 1 Implementation Specification
 
 **Status:** Initial game direction locked for Phase 1  
@@ -252,13 +258,18 @@ The flight system supports:
 - momentum/inertia
 - contextual maneuvering
 
-Normal traversal has strong forward momentum.
+Normal traversal has strong forward momentum. Owner clarification, September 21, 2026: normal throttle,
+engine-off coasting and boost are distinct. Releasing throttle cuts main-engine thrust while preserving
+world momentum; braking can bring the ship to a stop. This supersedes the earlier mandatory wave speed
+floor. Waves and hazards still encourage forward travel. The same model applies beside a station.
 
-**Inside a wave**, the player should be progressing through space rather than freely parking or backtracking.
+Controller mapping approved on that date: RT analog throttle, B boost, LT brake and RB fire. D-pad is
+reserved for later ship features; those features are not implemented by this clarification.
 
-**Inside the station zone** (see below), the ship may slow to a stop. That is the same flight model with the
-speed floor lifted for a scheduled break, not a second model - and a ship that must always cruise cannot be
-lowered onto a pad.
+The owner also authorized a casual **Free Flight** option at the home launch panel, alongside **Start
+Survival** and **Continue Survival**. It uses the existing ship and station without advancing survival
+waves or awarding persistent progress. It preserves the account and suspended survival checkpoint and
+returns safely to the home hangar. This testing mode does not change the survival station cadence.
 
 There should not be a visible switch between "forward survival mode" and "combat mode."
 

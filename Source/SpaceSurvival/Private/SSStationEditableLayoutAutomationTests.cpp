@@ -70,6 +70,8 @@ bool FSSStationEditableLayout::RunTest(const FString &)
         return true;
     }
     auto *PreviewHub = Fixture.World->SpawnActor<ASSStation>();
+    PreviewHub->VisualLayoutAsset = FSoftObjectPath(
+        TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout.BP_StationVisualLayout_C"));
     PreviewHub->BuildHub(false);
     auto *PreviewLayout = PreviewHub->GetVisualLayout();
     TestNotNull(TEXT("Pre-play station has an authored layout to clean up"), PreviewLayout);
@@ -83,6 +85,10 @@ bool FSSStationEditableLayout::RunTest(const FString &)
     {
         const FTransform Transform(FRotator(0, 75, 0), FVector(16000, -8000, 5000), FVector(1.25));
         auto *Hub = Fixture.World->SpawnActor<ASSStation>(ASSStation::StaticClass(), Transform);
+        // This suite retains the original editable layout's regression coverage. StationResetRuntime
+        // separately exercises the new default's deliberately different structure and service anchors.
+        Hub->VisualLayoutAsset = FSoftObjectPath(
+            TEXT("/Game/SpaceSurvival/Licensed/StationVisualPass/BP_StationVisualLayout.BP_StationVisualLayout_C"));
         auto *Fallback = Fixture.World->SpawnActor<ASSStation>(FVector(-16000, 8000, 5000), FRotator(0, 75, 0));
         Fallback->bUseEditableLayout = false;
         Fallback->SetActorScale3D(FVector(1.25));
@@ -94,10 +100,38 @@ bool FSSStationEditableLayout::RunTest(const FString &)
         TestTrue(TEXT("Layout belongs to and follows the transformed station"),
                  Layout->GetOwner() == Hub && Layout->GetAttachParentActor() == Hub &&
                      Layout->GetActorTransform().Equals(Hub->GetActorTransform(), .01));
-        const auto AuthoredCollision = CollisionComponents(Hub);
+        auto AuthoredCollision = CollisionComponents(Hub);
         auto UnmatchedCollision = CollisionComponents(Fallback);
-        TestEqual(TEXT("Blueprint replacement preserves the native collision shape count"), AuthoredCollision.Num(),
-                  UnmatchedCollision.Num());
+        const bool ExpandedDeck = AuthoredCollision.ContainsByPredicate(
+            [](const UStaticMeshComponent *Component)
+            { return Component->ComponentHasTag(TEXT("StationAuthoredDeckCollision")); });
+        if (ExpandedDeck)
+        {
+            for (const auto *Floor : AuthoredCollision)
+                if (Floor->ComponentHasTag(TEXT("StationAuthoredDeckCollision")))
+                {
+                    const FVector Top = Floor->GetComponentTransform().TransformPosition(FVector(0, 0, 50));
+                    TestTrue(TEXT("Every measured floor proxy belongs to the walker rescue envelope"),
+                             Hub->Walkable(Top + FVector(0, 0, 100)));
+                    FHitResult FloorHit;
+                    TestTrue(TEXT("Every measured floor has actual support at its visible surface"),
+                             Fixture.World->LineTraceSingleByObjectType(FloorHit, Top + FVector(0, 0, 25),
+                                                                        Top - FVector(0, 0, 25),
+                                                                        FCollisionObjectQueryParams(ECC_WorldStatic)) &&
+                                 FloorHit.GetActor() == Hub && FMath::Abs(FloorHit.ImpactPoint.Z - Top.Z) < 1.f);
+                }
+            AuthoredCollision.RemoveAll([](const UStaticMeshComponent *Component)
+                                        { return Component->ComponentHasTag(TEXT("StationAuthoredDeckCollision")); });
+            UnmatchedCollision.RemoveAll([](const UStaticMeshComponent *Component)
+                                         { return Component->ComponentHasTag(TEXT("StationLegacyRoomBoundary")); });
+            TInlineComponentArray<UStaticMeshComponent *> NativeComponents(Hub);
+            for (const auto *Component : NativeComponents)
+                if (Component->ComponentHasTag(TEXT("StationLegacyRoomBoundary")))
+                    TestTrue(TEXT("Old room walls do not invisibly cross the expanded authored deck"),
+                             Component->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
+        }
+        TestEqual(TEXT("Layout preserves native collision apart from measured floor and obsolete room boundaries"),
+                  AuthoredCollision.Num(), UnmatchedCollision.Num());
         for (auto *Component : AuthoredCollision)
         {
             const int32 Match = UnmatchedCollision.IndexOfByPredicate(

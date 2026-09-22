@@ -10,6 +10,10 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
 #include "HAL/IConsoleManager.h"
+#include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 namespace
@@ -108,6 +112,59 @@ struct FSSWreckageBudgetWorld
     }
 };
 } // namespace
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDirectorAsteroidReadability,
+                                 "SpaceSurvival.Integration.DirectorAsteroidReadability",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDirectorAsteroidReadability::RunTest(const FString &)
+{
+    FSSWreckageBudgetWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    ASSShip *Ship = F.Director->FindShip();
+    if (!TestNotNull(TEXT("Resolve ship for faster approach admission"), Ship))
+        return false;
+    Ship->Velocity = FVector(6000.f, 0.f, 0.f);
+    for (auto Kind : {ESSWorldKind::SmallAsteroid, ESSWorldKind::MediumAsteroid, ESSWorldKind::MassiveAsteroid})
+    {
+        auto *Body = F.Director->SpawnHazard(Kind, -1.f);
+        if (!TestNotNull(TEXT("Admit actual enlarged Director asteroid"), Body))
+            return false;
+        const float Radius = F.Mode->Tuning->Hazard(Kind).Radius * 3.f;
+        TestEqual(TEXT("Director body is three times the catalog radius"), Body->GetBodyRadius(), Radius);
+        TestEqual(TEXT("Collision uses the enlarged radius"), Body->Collision->GetUnscaledSphereRadius(), Radius);
+        const float VisualRadius =
+            Body->Visual->GetStaticMesh()->GetBounds().BoxExtent.GetMax() * Body->Visual->GetRelativeScale3D().X;
+        TestTrue(TEXT("Visible surface scales with collision"), FMath::IsNearlyEqual(VisualRadius, Radius, 1.f));
+        TestTrue(TEXT("Faster approach retains the reaction-time corridor"),
+                 Body->GetActorLocation().X - Radius - F.Director->PlayerClearanceRadius >=
+                     6000.f * F.Director->MinimumReactionSeconds);
+        const FVector Location = Body->GetActorLocation();
+        TestTrue(TEXT("Enlarged body remains outside the protected lane"),
+                 FVector2D::Distance(FVector2D(Location.Y, Location.Z), F.Director->SafeLane) >=
+                     Radius + F.Director->PlayerClearanceRadius + 320.f);
+        for (int32 Slot = 0; Slot < Body->Visual->GetNumMaterials(); ++Slot)
+        {
+            auto *Material = Cast<UMaterialInstanceDynamic>(Body->Visual->GetMaterial(Slot));
+            if (!TestNotNull(TEXT("Every Director rock material slot has its distinct surface"), Material))
+                return false;
+            const FLinearColor Tint = Material->K2_GetVectorParameterValue(TEXT("Tint"));
+            TestTrue(TEXT("Director surface is orange rather than the world belt's authored rock"),
+                     Tint.R > .9f && Tint.G < .3f && Tint.B < .03f);
+        }
+        Body->KeepAdmittedAt(Ship->GetActorLocation());
+        TestTrue(TEXT("Fast approach spawn survives distance retirement"),
+                 Body->RetireDistance > FVector::Dist(Body->GetActorLocation(), Ship->GetActorLocation()));
+        Body->SetActorLocation(FVector(-1000000, 0, 0));
+        Body->Destroy();
+    }
+    auto *WorldRock = F.World->SpawnActor<ASSWorldBody>();
+    WorldRock->Configure(ESSWorldKind::SmallAsteroid, F.Mode->Tuning->Hazard(ESSWorldKind::SmallAsteroid).Radius, 0.f);
+    TestFalse(TEXT("Non-Director rocks retain their own size/material contract"), WorldRock->bDirectorAsteroid);
+    TestEqual(TEXT("Non-Director radius is not multiplied"), WorldRock->GetBodyRadius(),
+              F.Mode->Tuning->Hazard(ESSWorldKind::SmallAsteroid).Radius);
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSWreckageBudgetAdmission, "SpaceSurvival.Integration.WreckageBudgetAdmission",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

@@ -215,7 +215,7 @@ public:
 
     bool StartRun(const std::string &id, Ship ship = Ship::Starter, Weapon weapon = Weapon::RapidLaser);
     void Tick(double dt, bool danger);
-    void TickFlight(double dt, bool boostHeld, bool brakeHeld);
+    void TickFlight(double dt, bool boostHeld, bool brakeHeld, bool stationDeparture = false);
     bool Dodge();
     void ApplyDamage(double amount, DamageType type = DamageType::Kinetic);
     bool Purchase(Upgrade upgrade, double discount = 1.0);

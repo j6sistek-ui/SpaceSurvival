@@ -116,7 +116,10 @@ bool FSSSettingsRefreshFocus::RunTest(const FString &)
     }
     F.Mode->OpenPanel(ESSPanel::Main);
     F.Mode->OpenPanel(ESSPanel::Controls);
-    TestEqual(TEXT("Entering a different panel still starts at its first row"), F.Mode->SelectedEntry, 0);
+    TestEqual(TEXT("Entering controls focuses the first setting after four navigation tabs"), F.Mode->SelectedEntry, 4);
+    for (int32 Tab = 0; Tab < 4; ++Tab)
+        TestEqual(TEXT("Settings tabs preserve native destinations"), F.Mode->Entries[Tab].Action,
+                  Tab == 0 ? 5 : 9 + Tab);
     AddInfo(TEXT("No settings action, persistence API, disk-backed GI initialization or physical input was used; "
                  "this regression exercises the real focus-losing panel rebuild."));
     return true;

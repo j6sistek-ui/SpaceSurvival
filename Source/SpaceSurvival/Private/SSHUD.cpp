@@ -14,13 +14,42 @@
 #include "Fonts/FontMeasure.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Engine/Engine.h"
-#include "Engine/Texture2D.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/UnrealType.h"
+#include "Misc/Paths.h"
 
 namespace
 {
+// Measured rendered bounds from ContentSource/FigmaMainMenu/provenance.json, in its 3840x2160
+// canvas. The button halo is deliberately larger than its logical pointer rectangle.
+struct FSSTitleTextureSource
+{
+    const TCHAR *Name;
+    float X, Y, Width, Height;
+};
+const FSSTitleTextureSource TitleSources[] = {
+    {TEXT("T_MainBackground"), 0.f, 0.f, 3840.f, 2160.f},
+    {TEXT("T_MainTitle"), 710.f, 93.5f, 2619.9585f, 230.4f},
+    {TEXT("T_MainHeroLeft"), 273.f, 482.f, 583.f, 1374.f},
+    {TEXT("T_MainHeroRight"), 2792.f, 383.f, 1048.f, 1572.f},
+    {TEXT("T_ContinueNormal"), 1149.f, 525.f, 1586.f, 385.f},
+    {TEXT("T_ContinueHover"), 1138.f, 514.f, 1608.f, 407.f},
+    {TEXT("T_NewGameNormal"), 1149.f, 854.f, 1586.f, 385.f},
+    {TEXT("T_NewGameHover"), 1138.f, 843.f, 1608.f, 407.f},
+    {TEXT("T_SettingsNormal"), 1149.f, 1183.f, 1586.f, 385.f},
+    {TEXT("T_SettingsHover"), 1138.f, 1172.f, 1608.f, 407.f},
+    {TEXT("T_ExitNormal"), 1149.f, 1512.f, 1586.f, 385.f},
+    {TEXT("T_ExitHover"), 1138.f, 1501.f, 1608.f, 407.f},
+    {TEXT("T_FooterPanel"), 86.f, 1936.f, 516.f, 146.f},
+    {TEXT("T_HintEnter"), 1462.9803f, 2021.4563f, 144.0181f, 33.2581f},
+    {TEXT("T_HintSelect"), 1631.5144f, 2025.7943f, 115.6309f, 28.9200f},
+    {TEXT("T_HintMoveKeys"), 1840.9343f, 2021.4563f, 114.6007f, 39.6980f},
+    {TEXT("T_HintMove"), 1981.0343f, 2034.7144f, 96.6226f, 20.f},
+    {TEXT("T_HintEscape"), 2172.9803f, 2021.4563f, 81.7457f, 33.2581f},
+    {TEXT("T_HintQuit"), 2279.7544f, 2025.7943f, 71.7034f, 37.8401f},
+};
+
 // Ring radius measured on each source texture. The four states were authored at slightly different
 // scales, so drawing them at one bitmap size makes the ring itself jump by up to 14% between
 // states. Fitting each to a shared ring radius instead leaves the tick marks as the only thing
@@ -67,7 +96,7 @@ UTexture2D *FindKeyIcon(const UObject *Mapping, const FKey &Key)
 
 FSlateFontInfo ASSHUD::HudFont(float Size) const
 {
-    FSlateFontInfo Font = GEngine->GetMediumFont()->GetLegacySlateFontInfo();
+    FSlateFontInfo Font(RefreshFont, 16);
     // Request glyphs at their displayed size. Scaling a cached 10pt atlas quad
     // magnifies the bitmap and made the HUD/menu lettering visibly soft.
     Font.Size = FMath::Clamp(FMath::RoundToFloat(Font.Size * Size * Scale * 1.65f * 4.f) * .25f, 6.f, 64.f);
@@ -150,7 +179,24 @@ void ASSHUD::DrawCrosshair(ASSShip *Ship, float CentreX, float CentreY)
         State = 1;
     else if (Boosting)
         State = 3;
-    UTexture2D *Texture = CrosshairTextures.IsValidIndex(State) ? CrosshairTextures[State].Get() : nullptr;
+    if (State == 2)
+    {
+        const FLinearColor HitColor(1.f, .95f, .45f);
+        for (int32 XSign : {-1, 1})
+            for (int32 YSign : {-1, 1})
+            {
+                const float X0 = CentreX + XSign * 10.f * Scale;
+                const float Y0 = CentreY + YSign * 10.f * Scale;
+                const float X1 = CentreX + XSign * 23.f * Scale;
+                const float Y1 = CentreY + YSign * 23.f * Scale;
+                DrawLine(X0, Y0, X1, Y1, FLinearColor::Black, 5.f * Scale);
+                DrawLine(X0, Y0, X1, Y1, HitColor, 2.5f * Scale);
+            }
+        Text(TEXT("HIT"), CentreX - MeasureText(TEXT("HIT"), .7f).X * .5f, CentreY + 35.f * Scale, .7f, HitColor);
+    }
+    UTexture2D *Texture = State == 0                              ? RefreshTexture(TEXT("Crosshair"))
+                          : CrosshairTextures.IsValidIndex(State) ? CrosshairTextures[State].Get()
+                                                                  : nullptr;
     if (!Texture || !Texture->GetResource())
     {
         // The art is absent from this build; the original three ticks still mark the aim point.
@@ -161,7 +207,8 @@ void ASSHUD::DrawCrosshair(ASSShip *Ship, float CentreX, float CentreY)
     }
     const float Ring = FMath::Max(4.f, CrosshairRingRadius.GetValueOnGameThread()) * Scale;
     const float Fit = Ring / CrosshairSources[State].NativeRingRadius;
-    const FVector2D Size(Texture->GetSizeX() * Fit, Texture->GetSizeY() * Fit);
+    const FVector2D Size =
+        State == 0 ? FVector2D(80.8f, 80.8f) * Scale : FVector2D(Texture->GetSizeX() * Fit, Texture->GetSizeY() * Fit);
     FCanvasTileItem Item(FVector2D(CentreX - Size.X * .5f, CentreY - Size.Y * .5f), Texture->GetResource(), Size,
                          FLinearColor::White);
     // Straight-alpha over. The kit's glow keeps full-saturation colour as alpha falls off, so a
@@ -254,29 +301,19 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
         return;
     const float W = Canvas->SizeX, H = Canvas->SizeY;
     const FVector2D Centre(W * .5f, H * .5f);
-    const FVector2D Radar(W - 107.f * Scale, 210.f * Scale);
-    const float RadarRadius = 63.f * Scale, RadarRange = 10000.f;
+    BeginRefreshLayout();
+    const FVector2D Radar = RefreshOrigin + FVector2D(1672.f, 266.f) * RefreshScale;
+    const float RadarRadius = 142.f * RefreshScale, RadarRange = 10000.f;
     const FLinearColor Grid(.18f, .33f, .4f, .65f);
     const FRotator ViewRotation = PlayerOwner->PlayerCameraManager->GetCameraRotation();
     const FVector ViewRight = FRotationMatrix(ViewRotation).GetUnitAxis(EAxis::Y);
     if (ShowRadar)
     {
-        DrawRect(FLinearColor(.008f, .018f, .03f, .72f), Radar.X - 78.f * Scale, Radar.Y - 92.f * Scale, 156.f * Scale,
-                 180.f * Scale);
-        Text(TEXT("HOSTILES"), Radar.X - 44.f * Scale, Radar.Y - 85.f * Scale, .52f, FLinearColor(.65f, .83f, .9f));
-        for (int32 Ring = 1; Ring <= 2; ++Ring)
-            for (int32 Segment = 0; Segment < 32; ++Segment)
-            {
-                const float A = 2.f * PI * Segment / 32.f, B = 2.f * PI * (Segment + 1) / 32.f;
-                const float R = RadarRadius * Ring * .5f;
-                DrawLine(Radar.X + FMath::Cos(A) * R, Radar.Y + FMath::Sin(A) * R, Radar.X + FMath::Cos(B) * R,
-                         Radar.Y + FMath::Sin(B) * R, Grid, Scale);
-            }
-        DrawLine(Radar.X - RadarRadius, Radar.Y, Radar.X + RadarRadius, Radar.Y, Grid, Scale);
-        DrawLine(Radar.X, Radar.Y - RadarRadius, Radar.X, Radar.Y + RadarRadius, Grid, Scale);
-        Stroke(Radar + FVector2D(-4.f, 5.f) * Scale, Radar + FVector2D(0.f, -5.f) * Scale, FLinearColor::White);
-        Stroke(Radar + FVector2D(0.f, -5.f) * Scale, Radar + FVector2D(4.f, 5.f) * Scale, FLinearColor::White);
-        Text(TEXT("100 m"), Radar.X - 23.f * Scale, Radar.Y + 70.f * Scale, .48f, FLinearColor(.65f, .75f, .8f));
+        for (const TCHAR *Layer : {TEXT("RadarBack"), TEXT("RadarRings"), TEXT("RadarTicks"), TEXT("RadarRim")})
+            RefreshImage(Layer, 1510, 104, 324, 324);
+        RefreshImage(TEXT("RadarBezel"), 1492, 86, 361, 361);
+        RefreshImage(TEXT("You"), 1653, 247, 38, 38);
+        RefreshText(TEXT("CONTACTS / 100 m"), 1585, 59, 20, FLinearColor(.65f, .83f, .9f));
     }
     for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
     {
@@ -292,7 +329,8 @@ void ASSHUD::DrawCombatCues(ASSShip *Ship, bool ShowRadar)
             // Radial clamp denotes a contact beyond range without warping its bearing.
             const FVector2D Offset =
                 FVector2D(Local.Y, -Local.X).GetClampedToMaxSize(RadarRange) / RadarRange * RadarRadius;
-            ThreatGlyph(Radar + Offset, Flanker, Charging, 4.f, Color);
+            const FVector2D At = (Radar + Offset - RefreshOrigin) / RefreshScale;
+            RefreshImage(TEXT("Enemy"), At.X - 15, At.Y - 15, 30, 30);
         }
         FVector2D Screen;
         const bool InFront = PlayerOwner->ProjectWorldLocationToScreen(Position, Screen);
@@ -360,26 +398,130 @@ void ASSHUD::Meter(const FString &Name, double Value, double Maximum, float X, f
 int32 ASSHUD::MenuIndexAt(FVector2D Point) const
 {
     for (int I = 0; I < MenuBounds.Num(); ++I)
-        if (MenuBounds[I].IsInside(Point))
+        if (MenuBounds[I].bIsValid && MenuBounds[I].IsInside(Point))
             return I;
     return INDEX_NONE;
+}
+bool ASSHUD::DrawFigmaMainMenu(const ASSGameMode &Mode)
+{
+    // A changed native menu or absent local artwork must remain usable through the standard panel.
+    const int32 Actions[] = {2, 4, 5, 7};
+    if (!Canvas || !Mode.IsTitleMenu() || Mode.Entries.Num() != UE_ARRAY_COUNT(Actions))
+        return false;
+    for (int32 Index = 0; Index < UE_ARRAY_COUNT(Actions); ++Index)
+        if (Mode.Entries[Index].Action != Actions[Index])
+            return false;
+    if (!bTitleAssetsRequested)
+    {
+        bTitleAssetsRequested = true;
+        for (const FSSTitleTextureSource &Source : TitleSources)
+        {
+            const FString Path =
+                FString::Printf(TEXT("/Game/SpaceSurvival/UI/MainMenu/%s.%s"), Source.Name, Source.Name);
+            TitleTextures.Add(LoadObject<UTexture2D>(nullptr, *Path, nullptr, LOAD_NoWarn | LOAD_Quiet));
+        }
+    }
+    if (TitleTextures.Num() != UE_ARRAY_COUNT(TitleSources))
+        return false;
+    for (const auto &Texture : TitleTextures)
+        if (!Texture || !Texture->GetResource())
+            return false;
+
+    const float Fit = FMath::Min(Canvas->SizeX / 3840.f, Canvas->SizeY / 2160.f);
+    const FVector2D Origin((Canvas->SizeX - 3840.f * Fit) * .5f, (Canvas->SizeY - 2160.f * Fit) * .5f);
+    // Gameplay UI scaling must not move the locked composition or separate its art from its hit boxes.
+    TGuardValue<float> TitleScale(Scale, Fit * 2.f);
+    DrawRect(FLinearColor::Black, 0.f, 0.f, Canvas->SizeX, Canvas->SizeY);
+    auto DrawSource = [&](int32 Index, FLinearColor Tint = FLinearColor::White)
+    {
+        const FSSTitleTextureSource &Source = TitleSources[Index];
+        FCanvasTileItem Item(Origin + FVector2D(Source.X, Source.Y) * Fit, TitleTextures[Index]->GetResource(),
+                             FVector2D(Source.Width, Source.Height) * Fit, Tint);
+        Item.BlendMode = SE_BLEND_Translucent;
+        Canvas->DrawItem(Item);
+    };
+    DrawSource(0);
+    DrawSource(2);
+    DrawSource(3);
+    DrawSource(1);
+    for (int32 Index = 0; Index < UE_ARRAY_COUNT(Actions); ++Index)
+    {
+        const FVector2D Min = Origin + FVector2D(1207.f, 583.f + Index * 329.f) * Fit;
+        MenuBounds.Add(FBox2D(Min, Min + FVector2D(1470.f, 269.f) * Fit));
+    }
+
+    float PointerX = 0.f, PointerY = 0.f;
+    const bool HasPointer = PlayerOwner && PlayerOwner->GetMousePosition(PointerX, PointerY);
+    const FVector2D Pointer(PointerX, PointerY);
+    if (!bTitleWasOpen)
+    {
+        LastTitlePointer = Pointer;
+        LastTitleSelection = Mode.SelectedEntry;
+        bTitleNavigationFocus = UsingGamepad();
+    }
+    else
+    {
+        if (HasPointer && FVector2D::DistSquared(Pointer, LastTitlePointer) > 1.f)
+            bTitleNavigationFocus = false;
+        if (LastTitleSelection != Mode.SelectedEntry)
+            bTitleNavigationFocus = true;
+    }
+    LastTitlePointer = Pointer;
+    LastTitleSelection = Mode.SelectedEntry;
+    bTitleWasOpen = true;
+    const int32 Highlight =
+        UsingGamepad() || bTitleNavigationFocus ? Mode.SelectedEntry : (HasPointer ? MenuIndexAt(Pointer) : INDEX_NONE);
+    RenderedTitleFocus =
+        Mode.Entries.IsValidIndex(Highlight) && Mode.Entries[Highlight].Enabled ? Highlight : INDEX_NONE;
+    for (int32 Index = 0; Index < UE_ARRAY_COUNT(Actions); ++Index)
+    {
+        const bool Enabled = Mode.Entries[Index].Enabled;
+        DrawSource(4 + Index * 2 + (Enabled && Highlight == Index ? 1 : 0),
+                   Enabled ? FLinearColor::White : FLinearColor(.45f, .45f, .45f, 1.f));
+    }
+    DrawSource(12);
+    const FString BuildLabel(TEXT("DEVELOPMENT REVIEW"));
+    const FVector2D LabelSize = MeasureText(BuildLabel, .64f);
+    Text(BuildLabel, Origin.X + 344.f * Fit - LabelSize.X * .5f, Origin.Y + 2009.f * Fit - LabelSize.Y * .5f, .64f,
+         FLinearColor(.93f, .9f, .9f));
+    for (int32 Index = 13; Index < UE_ARRAY_COUNT(TitleSources); ++Index)
+        DrawSource(Index);
+
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (GI && !GI->LastSaveError.IsEmpty() && Mode.Announcement == GI->LastSaveError && Mode.IsAnnouncementVisible())
+    {
+        const float X = Origin.X + 1207.f * Fit, Y = Origin.Y + 390.f * Fit, Width = 1470.f * Fit;
+        const float Height =
+            Paragraph(Mode.Announcement, 0.f, 0.f, Width - 24.f * Scale, .7f, FLinearColor::White, false);
+        DrawRect(FLinearColor(.015f, .025f, .04f, .96f), X, Y, Width, Height + 16.f * Scale);
+        Paragraph(Mode.Announcement, X + 12.f * Scale, Y + 8.f * Scale, Width - 24.f * Scale, .7f,
+                  FLinearColor(1.f, .8f, .65f));
+    }
+    return true;
 }
 void ASSHUD::DrawHUD()
 {
     Super::DrawHUD();
     MenuBounds.Empty();
     if (!Canvas)
+    {
+        bTitleWasOpen = false;
         return;
+    }
     auto *GI = GetGameInstance<USSGameInstance>();
     auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
     if (!GI || !GM)
+    {
+        bTitleWasOpen = false;
         return;
+    }
+    BeginRefreshLayout();
     const auto &S = GI->Session;
-    const auto Stats = S.Stats();
     Scale = FMath::Clamp(float(Canvas->SizeY) / 1080.f * float(S.settings.uiScale), .65f, 1.6f);
     const float W = Canvas->SizeX, H = Canvas->SizeY, Margin = 30 * Scale;
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {
+        bTitleWasOpen = false;
         DrawRect(FLinearColor(.01f, .015f, .025f, .9f), Margin - 10, Margin - 8, W - 2 * Margin + 20, 120 * Scale);
         Text(GM->AlienGallery->Status(), Margin, Margin, .8f, FLinearColor(.55f, .95f, 1));
         Paragraph(TEXT("WASD / left stick: fly | mouse / right stick: look | E Q / bumpers: rise & fall | Shift / RT: "
@@ -389,29 +531,29 @@ void ASSHUD::DrawHUD()
              Margin, Margin + 78 * Scale, .55f);
         return;
     }
-    const bool MenuOpen = GM->IsMenuOpen();
-    const auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0));
-    if (S.run.active)
+    if (bReviewFlightHUD)
     {
-        const FString Location =
-            Walker ? (GM->InHangar() ? TEXT("HOME HANGAR")
-                                     : FString::Printf(TEXT("STATION %02d"), FMath::Max(1, S.run.wave / 5)))
-                   : FString::Printf(TEXT("WAVE %02d"), S.run.wave);
-        Text(Location, Margin, Margin, 1.5f);
-        Text(FString::Printf(TEXT("%d CREDITS"), S.run.credits), W - 250 * Scale, Margin, 1.f,
-             FLinearColor(1, .78f, .35f));
-        Meter(TEXT("HULL"), S.run.hull, Stats.maxHull, Margin, H - 150 * Scale, FLinearColor(.35f, .9f, .65f));
-        Meter(TEXT("SHIELD"), S.run.shield, Stats.maxShield, Margin, H - 112 * Scale, FLinearColor(.25f, .7f, 1));
-        if (!Walker)
+        DrawRefreshVitals(*GM, false);
+        if (auto *ReviewShip = GM->GetPlayerShip())
         {
-            Meter(TEXT("BOOST"), S.run.boost, 100, Margin, H - 74 * Scale, FLinearColor(.7f, .4f, 1));
-            Meter(S.run.brakeOverheated ? TEXT("BRAKE OVERHEAT") : TEXT("BRAKE HEAT"), S.run.brakeHeat, 100,
-                  W - 250 * Scale, H - 112 * Scale, FLinearColor(1, .6f, .25f));
-            Text(S.run.weapon == SS::Weapon::RapidLaser ? TEXT("RAPID LASER") : TEXT("HEAVY CANNON"), W - 250 * Scale,
-                 H - 68 * Scale, .9f);
+            DrawCrosshair(ReviewShip, Canvas->SizeX * .5f, Canvas->SizeY * .5f);
+            DrawCombatCues(ReviewShip, true);
         }
+        return;
+    }
+    const bool MenuOpen = GM->IsMenuOpen();
+    if (MenuOpen && DrawFigmaMainMenu(*GM))
+        return;
+    bTitleWasOpen = false;
+    const bool LiveMenu = S.IsFlying() && (GM->Panel == ESSPanel::Depot || GM->Panel == ESSPanel::Reward);
+    if (MenuOpen && !LiveMenu && DrawRefreshMenu(*GM))
+        return;
+    const auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0));
+    if (S.run.active || Walker)
+    {
+        DrawRefreshVitals(*GM, Walker != nullptr);
         if (S.run.criticalSeconds > 0)
-            Text(TEXT("! SUBSYSTEM IMPAIRED / REPAIR AVAILABLE"), Margin, 100 * Scale, .9f, FLinearColor(1, .7f, .2f));
+            Text(TEXT("! SUBSYSTEM IMPAIRED / REPAIR AVAILABLE"), Margin, 205 * Scale, .7f, FLinearColor(1, .7f, .2f));
         if (S.run.contract != SS::Contract::None)
         {
             const bool Hunter = S.run.contract == SS::Contract::Objective;
@@ -472,7 +614,7 @@ void ASSHUD::DrawHUD()
                 Reticle = Projected;
         }
         DrawCrosshair(Ship, Reticle.X, Reticle.Y);
-        DrawCombatCues(Ship, GM->Director && GM->Director->GetActiveThreatCount() > 3);
+        DrawCombatCues(Ship, true);
         if (Ship->IsMoored())
             Text(TEXT("MAGNETIC LOCK / Close services to release"), Margin, H - 195.f * Scale, .7f,
                  FLinearColor(.55f, .95f, 1.f));
@@ -516,7 +658,7 @@ void ASSHUD::DrawHUD()
             Paragraph(Label, Screen.X + Padding, Screen.Y + Padding, TextW, .7f, LabelColor);
             if (ShowPrompt)
             {
-                const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, Screen.X + Padding,
+                const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Left, Screen.X + Padding,
                                            Screen.Y + Padding + LabelH, .7f);
                 Paragraph(TEXT("INTERACT"), Screen.X + Padding + GlyphW + GlyphGap, Screen.Y + Padding + LabelH,
                           TextW - GlyphW - GlyphGap, .7f, FLinearColor::White);
@@ -524,17 +666,33 @@ void ASSHUD::DrawHUD()
         }
         if (S.run.phase == SS::Phase::Approach)
         {
+            const FVector LandingTarget = GM->GetLandingTarget();
             FVector2D Screen(W * .5f, 130 * Scale);
-            if (!PlayerOwner->ProjectWorldLocationToScreen(GM->StationTarget, Screen))
+            if (!PlayerOwner->ProjectWorldLocationToScreen(LandingTarget, Screen))
             {
-                const FVector Local = Ship->GetActorTransform().InverseTransformPosition(GM->StationTarget);
+                const FVector Local = Ship->GetActorTransform().InverseTransformPosition(LandingTarget);
                 Screen = FVector2D(Local.Y < 0 ? 100 * Scale : W - 300 * Scale, H * .5f);
             }
-            Screen.X = FMath::Clamp(Screen.X, 100 * Scale, W - 300 * Scale);
+            Screen.X = FMath::Clamp(Screen.X, 60 * Scale, FMath::Max(60 * Scale, W - 520 * Scale));
             Screen.Y = FMath::Clamp(Screen.Y, 130 * Scale, H - 180 * Scale);
-            Text(TEXT("[ STATION ]  APPROACH"), Screen.X, Screen.Y, .9f, FLinearColor(.45f, .9f, 1));
+            FString Status;
+            const bool Ready = GM->DockingStatus(Status);
+            const float StatusHeight = Paragraph(Status, Screen.X, Screen.Y, 500 * Scale, .75f,
+                                                 Ready ? FLinearColor(.4f, 1.f, .65f) : FLinearColor(.45f, .9f, 1));
+            if (Ready)
+            {
+                const float KeyWidth = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Left, Screen.X,
+                                             Screen.Y + StatusHeight + 8 * Scale, .75f);
+                Text(TEXT("ENGAGE DOCKING"), Screen.X + KeyWidth + 8 * Scale, Screen.Y + StatusHeight + 8 * Scale, .75f,
+                     FLinearColor::White);
+            }
         }
     }
+    if (GM->IsDepartingStation())
+        Text(GM->GetPlayerShip() && GM->GetPlayerShip()->IsTakingOff()
+                 ? TEXT("TAKEOFF  |  Gear stowing; controls return after lift-off")
+                 : TEXT("STATION ZONE  |  Fly clear of the pad to begin the next wave"),
+             W * .22f, 130 * Scale, .85f, FLinearColor(.45f, .9f, 1));
     if (auto *Ship = GM->GetPlayerShip(); Ship && S.IsFlying() && GM->ThreatWarningSeconds > 0.f)
     {
         const float AlertW = FMath::Min(620.f * Scale, W - 2.f * Margin);
@@ -594,14 +752,22 @@ void ASSHUD::DrawHUD()
                         Service == ESSPanel::Reward && S.run.pendingReward ? TEXT("CHOOSE SECURED REWARD") : Label;
                     break;
                 }
+                InteractionHint = It->ServiceGuidance(Walker->GetActorLocation());
+                HintColor = FLinearColor(.68f, .82f, .9f);
             }
-            if (InteractionHint.IsEmpty() && S.run.pendingReward)
+            if (GM->IsWalkerInsideShip(Walker))
+            {
+                GlyphBeforeHint = true;
+                InteractionHint = TEXT("FLIGHT OPTIONS");
+            }
+            if (!GlyphBeforeHint && S.run.pendingReward)
             {
                 InteractionHint = TEXT("REWARD SECURED / visit the Beacon Log");
                 HintColor = FLinearColor(1, .8f, .4f);
             }
-            Text(TEXT("WASD / left stick: walk | Mouse / right stick: turn | Shift / X: run | Esc / Menu: shell"),
-                 Margin, H - 35 * Scale, .65f);
+            Text(TEXT("WASD / left stick: walk | mouse / right stick: camera | Shift / X: run | Space / A: jump | E / "
+                      "Y: use"),
+                 Margin, H - 35 * Scale, .6f);
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
         {
@@ -614,7 +780,9 @@ void ASSHUD::DrawHUD()
         const float GlyphGap = 6.f * Scale;
         if (GlyphBeforeHint)
         {
-            const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, HintX, HintY, HintSize, HintColor);
+            const float GlyphW =
+                Glyph(EKeys::E, Walker ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left, HintX, HintY,
+                      HintSize, HintColor);
             Text(InteractionHint, HintX + GlyphW + GlyphGap, HintY, HintSize, HintColor);
         }
         else if (GlyphInsideHint)
@@ -622,7 +790,7 @@ void ASSHUD::DrawHUD()
             Text(HintPrefix, HintX, HintY, HintSize, HintColor);
             const float PrefixW = MeasureText(HintPrefix, HintSize).X;
             const float GlyphW =
-                Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, HintX + PrefixW, HintY, HintSize, HintColor);
+                Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Left, HintX + PrefixW, HintY, HintSize, HintColor);
             Text(HintSuffix, HintX + PrefixW + GlyphW + GlyphGap, HintY, HintSize, HintColor);
         }
         else if (!InteractionHint.IsEmpty())
@@ -630,42 +798,11 @@ void ASSHUD::DrawHUD()
     }
     if (GM->IsAnnouncementVisible())
     {
-        DrawRect(FLinearColor(.02f, .025f, .05f, .88f), Margin, 65 * Scale, W - 2 * Margin, 48 * Scale);
-        Text(GM->Announcement, Margin + 12 * Scale, 77 * Scale, .75f);
+        // Keep transient messages in their own column, clear of the wave/location
+        // heading on the left and the station radar on the right. Use the same
+        // reference layout as those widgets instead of a full-width legacy bar.
+        RefreshText(GM->Announcement, 600, 52, 23, FLinearColor(.8f, .94f, 1.f), 820);
     }
     if (GM->IsMenuOpen())
-    {
-        const bool Live = S.IsFlying() && (GM->Panel == ESSPanel::Depot || GM->Panel == ESSPanel::Reward);
-        const float PW = Live ? FMath::Min(530.f * Scale, W * .43f) : FMath::Min(840.f * Scale, W - 80.f * Scale);
-        const float X = Live ? W - PW - Margin : (W - PW) * .5f;
-        const float DetailHeight = Paragraph(GM->PanelDetail, 0, 0, PW - 60.f * Scale, .7f, FLinearColor::White, false);
-        const float MaxHeight = H - 100.f * Scale;
-        const float RowH =
-            FMath::Min(44.f * Scale, (MaxHeight - 136.f * Scale - DetailHeight) / FMath::Max(1, GM->Entries.Num()));
-        const float PH = 136.f * Scale + DetailHeight + RowH * GM->Entries.Num();
-        const float Y = (H - PH) * .5f;
-        if (!Live)
-            DrawRect(FLinearColor(0, 0, .015f, .32f), 0, 0, W, H);
-        DrawRect(FLinearColor(.012f, .02f, .04f, .95f), X, Y, PW, PH);
-        DrawRect(FLinearColor(.4f, .8f, .9f), X, Y, 4.f * Scale, PH);
-        DrawRect(FLinearColor(.12f, .24f, .3f), X + 28.f * Scale, Y + 61.f * Scale, PW - 56.f * Scale, Scale);
-        Text(GM->PanelTitle, X + 30.f * Scale, Y + 20.f * Scale, 1.25f, FLinearColor(.8f, .92f, 1));
-        Paragraph(GM->PanelDetail, X + 30.f * Scale, Y + 78.f * Scale, PW - 60.f * Scale, .7f,
-                  FLinearColor(.68f, .75f, .85f));
-        float RowY = Y + 101.f * Scale + DetailHeight;
-        for (int I = 0; I < GM->Entries.Num(); ++I)
-        {
-            const auto &Entry = GM->Entries[I];
-            const bool Selected = I == GM->SelectedEntry;
-            DrawRect(Selected ? FLinearColor(.075f, .18f, .25f) : FLinearColor(.025f, .045f, .07f), X + 25.f * Scale,
-                     RowY, PW - 50.f * Scale, RowH - 4.f * Scale);
-            if (Selected)
-                DrawRect(FLinearColor(.4f, .8f, .9f), X + 25.f * Scale, RowY, 3.f * Scale, RowH - 4.f * Scale);
-            Text((Selected ? TEXT(">  ") : TEXT("   ")) + Entry.Label, X + 34.f * Scale, RowY + 7.f * Scale, .76f,
-                 Entry.Enabled ? FLinearColor(.92f, .95f, 1) : FLinearColor(.36f, .4f, .47f));
-            MenuBounds.Add(
-                FBox2D(FVector2D(X + 25.f * Scale, RowY), FVector2D(X + PW - 25.f * Scale, RowY + RowH - 4.f * Scale)));
-            RowY += RowH;
-        }
-    }
+        DrawRefreshMenu(*GM);
 }

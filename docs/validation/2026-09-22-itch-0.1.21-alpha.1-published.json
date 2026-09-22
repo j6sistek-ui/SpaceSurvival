@@ -1,0 +1,22 @@
+{
+  "recorded_utc": "2026-09-22T05:28:14.742604+00:00",
+  "status": "ITCH_BUILD_READY",
+  "version": "0.1.21-alpha.1",
+  "target": "j6sistek-ui/space-survival:windows-alpha",
+  "upload_id": 19226459,
+  "build_id": 2003058,
+  "previous_build_id": 1993461,
+  "source_commit": "4fd02930dbc0e13fb52aca4626e1147a4c8d60b8",
+  "package_receipt": "docs/validation/2026-09-22-itch-0.1.21-alpha.1-package.json",
+  "package_receipt_sha256": "aa0cc392a69893fae567c84540260f8b5b41b5f676cd126a29d049f3412074b1",
+  "payload_files": 51,
+  "payload_bytes": 5223860220,
+  "payload_manifest": "Artifacts/Releases/0.1.21-alpha.1/release.json",
+  "publish_log": "Artifacts/ArcadeResponse/ItchPublishFinal.log",
+  "status_evidence": "+---------------+-----------+----------------------------+----------------+\n|    CHANNEL    |  UPLOAD   |           BUILD            |    VERSION     |\n+---------------+-----------+----------------------------+----------------+\n| windows-alpha | #19226459 | \u221a #2003058 (from #1993461) | 0.1.21-alpha.1 |\n+---------------+-----------+----------------------------+----------------+",
+  "owner_authority": "Explicit publish; after stars concern, explicit still upload / just logging concerns.",
+  "limitations": [
+    "Server-ready release confirmed; no fresh download, install or physical-input acceptance claimed.",
+    "Source PR59 remains draft/unmerged; existing gameplay/visual/performance concerns stay open."
+  ]
+}

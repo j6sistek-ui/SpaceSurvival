@@ -48,10 +48,10 @@ public:
         // Squirrel stays first, so a new game with no preference saved still wears it: SelectHero
         // returns the first installed entry and nothing below it can displace that. The four
         // selectable bodies sit behind it and are reachable only by asking for one by name.
-        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel),     FSSHeroDefinition(ESSHeroIdentity::Nyxar),
-                  FSSHeroDefinition(ESSHeroIdentity::AlienFemale),  FSSHeroDefinition(ESSHeroIdentity::Soldier),
-                  FSSHeroDefinition(ESSHeroIdentity::RobotScout),   FSSHeroDefinition(ESSHeroIdentity::HeavyTrooper),
-                  FSSHeroDefinition(ESSHeroIdentity::Trooper),      FSSHeroDefinition(ESSHeroIdentity::Acornaut)};
+        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel),    FSSHeroDefinition(ESSHeroIdentity::Nyxar),
+                  FSSHeroDefinition(ESSHeroIdentity::AlienFemale), FSSHeroDefinition(ESSHeroIdentity::Soldier),
+                  FSSHeroDefinition(ESSHeroIdentity::RobotScout),  FSSHeroDefinition(ESSHeroIdentity::HeavyTrooper),
+                  FSSHeroDefinition(ESSHeroIdentity::Trooper),     FSSHeroDefinition(ESSHeroIdentity::Acornaut)};
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy")
     FSSEconomyContentTuning Economy;
@@ -202,8 +202,8 @@ public:
     {
         for (const auto &Entry : Heroes)
             if (Entry.Identity == Identity)
-                return Entry;
-        return FSSHeroDefinition(Identity);
+                return Entry.ResolvedPresentation();
+        return FSSHeroDefinition(Identity).ResolvedPresentation();
     }
     /** The authored entry for the hero the pawns are built with, whatever else is installed. */
     FSSHeroDefinition FallbackHero() const
@@ -215,8 +215,11 @@ public:
     FSSHeroDefinition SelectHero(ESSHeroSlot Slot) const
     {
         for (const auto &Entry : Heroes)
-            if (Entry.Installed(Slot))
-                return Entry;
+        {
+            const FSSHeroDefinition Resolved = Entry.ResolvedPresentation();
+            if (Resolved.Installed(Slot))
+                return Resolved;
+        }
         return FallbackHero();
     }
     /** The same walk, but a named hero gets first refusal. A preference that is empty, unknown, or
@@ -227,8 +230,12 @@ public:
     {
         if (!PreferredId.IsNone())
             for (const auto &Entry : Heroes)
-                if (Entry.Id == PreferredId && Entry.Installed(Slot))
-                    return Entry;
+                if (Entry.Id == PreferredId)
+                {
+                    const FSSHeroDefinition Resolved = Entry.ResolvedPresentation();
+                    if (Resolved.Installed(Slot))
+                        return Resolved;
+                }
         return SelectHero(Slot);
     }
     /** Every hero this build could actually put on the deck, in roster order. What the wardrobe lists. */
@@ -236,20 +243,54 @@ public:
     {
         TArray<FSSHeroDefinition> Available;
         for (const auto &Entry : Heroes)
-            if (Entry.Installed(Slot))
-                Available.Add(Entry);
+        {
+            const FSSHeroDefinition Resolved = Entry.ResolvedPresentation();
+            if (Resolved.Installed(Slot))
+                Available.Add(Resolved);
+        }
         return Available;
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float CruiseSpeed = 2400.f;
+    // New multiplier also applies to existing serialized DA_Phase1 values.
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0.1"))
+    float ArcadeFlightScale = 2.5f;
+    float FlightCruiseSpeed() const
+    {
+        return CruiseSpeed * FMath::Max(.1f, ArcadeFlightScale);
+    }
+    float FlightAcceleration() const
+    {
+        return Acceleration * FMath::Max(.1f, ArcadeFlightScale) * ArcadeAccelerationResponse;
+    }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float MinimumSpeed = 1000.f;
+    // Response multipliers also affect the already-authored Phase1 asset without rewriting it.
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Arcade", meta = (ClampMin = "0.1"))
+    float ArcadeAccelerationResponse = 1.5f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Arcade", meta = (ClampMin = "0.1"))
+    float ArcadeTurnResponse = 1.7f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Arcade", meta = (ClampMin = "0.1"))
+    float ArcadeControlResponse = 2.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Arcade", meta = (ClampMin = "0.1"))
+    float ArcadeRollResponse = 5.f;
+    float FlightSteeringDegrees() const
+    {
+        return SteeringDegrees * ArcadeTurnResponse;
+    }
+    float FlightRollDegrees() const
+    {
+        return ManualRollDegrees * ArcadeRollResponse;
+    }
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float BoostMultiplier = 1.85f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float LateralSpeed = 1700.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float SteeringDegrees = 65.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    float ManualRollDegrees = 40.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float Response = 4.2f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
@@ -280,6 +321,8 @@ public:
     int32 MaximumActiveThreats = 24;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Director")
     float BaseBudgetPerSecond = 1.5f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Director", meta = (ClampMin = "1"))
+    float DirectorAsteroidScale = 3.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy", meta = (ClampMin = "0", ClampMax = "99999955"))
     int32 WaveCredits = 75;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy", meta = (ClampMin = "1", ClampMax = "25000000"))

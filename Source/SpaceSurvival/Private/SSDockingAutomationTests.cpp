@@ -4,6 +4,7 @@
 #include "SSPhase1Data.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSLandingPad.h"
 #include "SSWorldActors.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -97,6 +98,10 @@ struct FSSDockingWorld
         const auto Transform = Hub->GetActorTransform();
         Ship->SetActorLocationAndRotation(Transform.TransformPosition(LocalPosition),
                                           Transform.TransformVectorNoScale(LocalDirection).Rotation());
+        // Each admission case starts with the real compound re-enabled after the previous case put
+        // the ship into its docking hold. A disabled child body would make the new query test a sphere.
+        Ship->BeginTakeoff(Ship->GetActorLocation(), Ship->GetActorRotation(), .1f);
+        Ship->Tick(.11f);
         // And leave it there. Every case in this suite means "a ship is at this spot, pointing this way -
         // is it offered docking?", which on a kinematic pawn is the whole of it: put it down and it stays.
         // A ShipCore hull is a simulating body carrying its BeginPlay cruise speed, so it drifts between
@@ -115,6 +120,7 @@ struct FSSDockingWorld
         Place(LocalPosition, LocalDirection);
         const FVector Before = Ship->GetActorLocation();
         Mode->Tick(0.f);
+        Mode->Interact();
         Test.TestTrue(FString::Printf(TEXT("%s: no assistance or teleport"), Name),
                       Instance->Session.run.phase == SS::Phase::Approach &&
                           Ship->GetActorLocation().Equals(Before, .001) && Controller->GetPawn() == Ship);
@@ -153,15 +159,26 @@ bool FSSDockingAdmission::RunTest(const FString &)
     // the pad, and your hull has to be able to reach it without hitting something. Heading is not a rule any
     // more, which is why the four headings below are ADMITTED rather than refused.
     const FVector Pad(ASSStation::PadCenterX, 0, 220);
-    for (const auto &Case : {TPair<FVector, FVector>(Pad + FVector(-900, 0, 0), FVector(1, 0, 0)),
-                             TPair<FVector, FVector>(Pad + FVector(0, 0, 900), FVector(0, 0, -1)),
-                             TPair<FVector, FVector>(Pad + FVector(0, 900, 0), FVector(0, -1, 0)),
-                             TPair<FVector, FVector>(Pad + FVector(700, 0, 0), FVector(-1, 0, 0))})
+    if (ASSShip::SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix)
+    {
+        const FVector DockLocal =
+            F.Hub->GetLandingPad()->GetActorTransform().InverseTransformPosition(F.Hub->PadDockPosition());
+        TestEqual(TEXT("Actual Phoenix touchdown uses measured foot clearance above the deck"), DockLocal.Z, 2.5, .01);
+    }
+    const FVector ClearPad = Pad + FVector(0, 0, F.Ship->HasFlightHull() ? 1380.f : 0.f);
+    for (const auto &Case :
+         {TPair<FVector, FVector>(ClearPad + FVector(-700, 0, 0), FVector(1, 0, 0)),
+          TPair<FVector, FVector>(F.Ship->HasFlightHull() ? ClearPad : Pad + FVector(0, 0, 900), FVector(0, 0, -1)),
+          TPair<FVector, FVector>(ClearPad + FVector(0, 700, 0), FVector(0, -1, 0)),
+          TPair<FVector, FVector>(ClearPad + FVector(700, 0, 0), FVector(-1, 0, 0))})
     {
         F.Instance->Session.run.phase = SS::Phase::Approach;
         F.Instance->Session.run.phaseDuration = 0.0;
         F.Place(Case.Key, Case.Value);
         F.Mode->Tick(0.f);
+        TestTrue(TEXT("Proximity offers docking without engaging it automatically"),
+                 F.Instance->Session.run.phase == SS::Phase::Approach);
+        F.Mode->Interact();
         TestTrue(TEXT("Any heading is admitted near the pad, including straight down and from behind"),
                  F.Instance->Session.run.phase == SS::Phase::Docking);
     }
@@ -180,7 +197,7 @@ bool FSSDockingAdmission::RunTest(const FString &)
     auto *Box = NewObject<UBoxComponent>(Obstacle);
     Obstacle->SetRootComponent(Box);
     Obstacle->AddInstanceComponent(Box);
-    Box->SetBoxExtent(FVector(30, 80, 150));
+    Box->SetBoxExtent(FVector(30, 80, 700));
     Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     Box->SetCollisionObjectType(ECC_WorldStatic);
     Box->SetCollisionResponseToAllChannels(ECR_Block);
@@ -198,12 +215,43 @@ bool FSSDockingAdmission::RunTest(const FString &)
                                            ECC_Pawn, F.Ship->Collision->GetCollisionShape(), Query) &&
                  Hit.GetActor() == Obstacle);
     F.Reject(*this, TEXT("Swept body blocked despite clear center line"), Pad + FVector(-900, 0, 0), FVector(1, 0, 0));
+    // Ground contact exemption is only the deck component. A real small obstacle on the touchdown
+    // patch must still reject the descent, even when the flight proxy is allowed to touch its floor.
+    Box->SetBoxExtent(FVector(35, 35, 40));
+    Obstacle->SetActorLocation(F.Hub->GetLandingPad()->DeckPoint() + F.Hub->GetActorUpVector() * 40.f);
+    F.Reject(*this, TEXT("A solid obstacle above the touchdown patch remains blocking"), Pad + FVector(-900, 0, 0),
+             FVector(1, 0, 0));
+    if (F.Ship->HasFlightHull())
+    {
+        Box->SetBoxExtent(FVector(60));
+        F.Place(Pad + FVector(-900, 0, 0), FVector(1, 0, 0));
+        const FVector Start = F.Ship->GetActorLocation();
+        const FVector Hover = F.Hub->PadDockPosition() + F.Hub->GetActorUpVector() * 700.f;
+        const FQuat HalfTurn = FQuat::Slerp(F.Ship->GetActorQuat(), F.Hub->PadDockRotation().Quaternion(), .5f);
+        Obstacle->SetActorLocation(FMath::Lerp(Start, Hover, .5f) + HalfTurn.RotateVector(FVector(1100, 0, 480)));
+        TestFalse(TEXT("A rotating-nose obstacle is outside the old origin-sphere path"),
+                  F.World->SweepSingleByChannel(Hit, Start, Hover, FQuat::Identity, ECC_Pawn,
+                                                FCollisionShape::MakeSphere(105.f), Query));
+        TestTrue(TEXT("Measured compound detects the intermediate aligned nose obstacle"),
+                 F.Ship->SweepFlightHull(Hit, FMath::Lerp(Start, Hover, .5f), FMath::Lerp(Start, Hover, .5f), HalfTurn,
+                                         Query) &&
+                     Hit.GetActor() == Obstacle);
+        F.Reject(*this, TEXT("Intermediate hull rotation blocks docking despite a clear origin path"),
+                 Pad + FVector(-900, 0, 0), FVector(1, 0, 0));
+    }
     Obstacle->SetActorEnableCollision(false);
     Obstacle->Destroy();
 
     F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
     const FVector AdmissionPosition = F.Ship->GetActorLocation();
     F.Mode->Tick(0.f);
+    TestTrue(TEXT("Guidance points at the actual pad, not the station origin"),
+             F.Mode->GetLandingTarget().Equals(F.Hub->PadDockPosition()) &&
+                 !F.Mode->GetLandingTarget().Equals(F.Mode->StationTarget, 1000.f));
+    FString ReadyMessage;
+    TestTrue(TEXT("The same eligibility used by interaction offers a readable ready state"),
+             F.Mode->DockingStatus(ReadyMessage) && ReadyMessage.Contains(TEXT("Ready")));
+    F.Mode->Interact();
     TestTrue(TEXT("Centered inbound lane admits the actual rotated station"),
              F.Instance->Session.run.phase == SS::Phase::Docking);
     TestEqual(TEXT("Admission preserves the three second docking duration"), F.Instance->Session.run.phaseDuration,
@@ -214,12 +262,13 @@ bool FSSDockingAdmission::RunTest(const FString &)
     // the distance that has to be closing is the distance to where it is actually going. Stated as a share
     // of the gap rather than as a band in centimetres: the old 800..1000 window only meant "a tenth of the
     // way, smoothly" for one particular dock distance, and silently stopped meaning it when the dock moved.
-    const double BeforeDistance = FVector::Dist(F.Ship->GetActorLocation(), F.Hub->PadDockPosition());
+    const FVector Hover = F.Hub->PadDockPosition() + F.Hub->GetActorUpVector() * 700.f;
+    const double BeforeDistance = FVector::Dist(F.Ship->GetActorLocation(), Hover);
     F.Ship->Tick(.05f);
-    const double RemainingDistance = FVector::Dist(F.Ship->GetActorLocation(), F.Hub->PadDockPosition());
+    const double RemainingDistance = FVector::Dist(F.Ship->GetActorLocation(), Hover);
     const double Closed = (BeforeDistance - RemainingDistance) / FMath::Max(BeforeDistance, 1.0);
     TestTrue(TEXT("Existing assistance advances smoothly along the cleared path, without teleporting"),
-             Closed > .02 && Closed < .25);
+             Closed > 0. && Closed < .25);
     return true;
 }
 
@@ -245,6 +294,7 @@ bool FSSContractArrivalFeedback::RunTest(const FString &)
         Run.credits = Run.totalCreditsEarned = 300;
         F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
         F.Mode->Tick(0.f);
+        F.Mode->Interact();
         if (!TestTrue(TEXT("Contract arrival uses actual docking admission"), Run.phase == SS::Phase::Docking))
             return false;
         F.Mode->Tick(3.01f);
@@ -289,6 +339,125 @@ bool FSSContractArrivalFeedback::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDockingSpeedFeedback, "SpaceSurvival.Integration.DockingSpeedFeedback",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDockingSpeedFeedback::RunTest(const FString &)
+{
+    FSSDockingWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
+    const FVector Position = F.Ship->GetActorLocation();
+    if (F.Ship->Collision->IsSimulatingPhysics())
+        F.Ship->Collision->SetPhysicsLinearVelocity(F.Ship->GetActorForwardVector() *
+                                                    float(F.Instance->Session.Stats().speed * 1.5));
+    else
+    {
+        F.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, true, false);
+        F.Ship->Tick(.75f);
+        F.Ship->SetActorLocation(Position);
+    }
+    FString Message;
+    TestFalse(TEXT("Cruising too fast cannot engage docking"), F.Mode->DockingStatus(Message));
+    TestTrue(TEXT("Speed rejection tells the pilot what to do"), Message.Contains(TEXT("Brake below")));
+    F.Mode->Interact();
+    TestTrue(TEXT("A rejected use press preserves control, phase and position"),
+             F.Instance->Session.run.phase == SS::Phase::Approach && F.Controller->GetPawn() == F.Ship &&
+                 F.Ship->GetActorLocation().Equals(Position));
+    TestTrue(TEXT("Rejected interaction shows the same reason as the HUD"), F.Mode->Announcement == Message);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationServiceFeedback, "SpaceSurvival.Integration.StationServiceFeedback",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSStationServiceFeedback::RunTest(const FString &)
+{
+    FSSDockingWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
+    F.Mode->Interact();
+    F.Ship->Tick(3.01f);
+    F.Mode->Tick(3.01f);
+    auto *Walker = Cast<ASSWalker>(F.Controller->GetPawn());
+    if (!TestNotNull(TEXT("Service feedback starts after the actual walker handoff"), Walker))
+        return false;
+    Walker->Tick(3.f);
+    // Reproduce the measured owner distance, relative to this layout's authored launch anchor.
+    FVector Launch;
+    if (!TestTrue(TEXT("The current layout provides a launch service"),
+                  F.Hub->ServicePosition(ESSPanel::Launch, Launch)))
+        return false;
+    Launch += F.Hub->GetActorUpVector() * 110.f;
+    const FVector OutsideRange = Launch + F.Hub->GetActorRightVector() * 590.f;
+    Walker->SetActorLocation(OutsideRange);
+    FString Label;
+    TestTrue(TEXT("Standing 5.9 m from launch is honestly out of service range"),
+             F.Hub->NearestService(OutsideRange, Label) == ESSPanel::None);
+    F.Mode->Interact();
+    TestTrue(TEXT("An out-of-range use press explains the same distance and target as the HUD"),
+             !F.Mode->IsMenuOpen() && F.Mode->Announcement == F.Hub->ServiceGuidance(OutsideRange) &&
+                 F.Mode->Announcement.Contains(TEXT("5.9 m")));
+    Walker->SetActorLocation(Launch);
+    F.Mode->Interact();
+    TestTrue(TEXT("Walking into the existing launch radius opens its real service"), F.Mode->IsMenuOpen());
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationDepartureBoundary, "SpaceSurvival.Integration.StationDepartureBoundary",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSStationDepartureBoundary::RunTest(const FString &)
+{
+    FSSDockingWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
+    F.Mode->Interact();
+    F.Ship->Tick(3.01f);
+    F.Mode->Tick(3.01f);
+    auto &Run = F.Instance->Session.run;
+    if (!TestTrue(TEXT("Departure starts from the real Station 1 arrival"), Run.phase == SS::Phase::Station))
+        return false;
+    if (auto *Walker = Cast<ASSWalker>(F.Controller->GetPawn()))
+        Walker->Tick(3.f);
+    const int32 Credits = Run.credits;
+    const double BeforeSeconds = Run.phaseSeconds;
+    F.Mode->LaunchFromHub();
+    TestTrue(TEXT("Launch reuses the parked ship and keeps the physical station"),
+             F.Mode->GetPlayerShip() == F.Ship && F.Controller->GetPawn() == F.Ship && IsValid(F.Hub) &&
+                 !F.Hub->IsActorBeingDestroyed() && F.Mode->IsDepartingStation() && F.Ship->IsTakingOff());
+    F.Mode->Tick(.5f);
+    TestTrue(TEXT("Takeoff spends no next-wave time or credits"), Run.wave == 5 && Run.phase == SS::Phase::Station &&
+                                                                      Run.phaseSeconds == BeforeSeconds &&
+                                                                      Run.credits == Credits);
+    F.Ship->Tick(3.01f);
+    TestFalse(TEXT("The lift returns flight control after its timed transition"), F.Ship->IsTakingOff());
+    TestTrue(TEXT("Departure retains the pad's authored outward heading"),
+             F.Ship->GetActorRotation().Equals(F.Hub->PadDockRotation(), .01f));
+    F.Mode->Tick(.5f);
+    TestTrue(TEXT("Hovering inside the zone still does not start Wave 6"),
+             F.Mode->IsInStationZone() && Run.wave == 5 && Run.phase == SS::Phase::Station);
+    const double BeforeBoost = Run.boost;
+    F.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, true, false);
+    F.Ship->Tick(.1f);
+    F.Mode->Tick(.1f);
+    TestTrue(TEXT("Departure boost consumes its real meter while survival remains paused"),
+             Run.boosting && Run.boost < BeforeBoost && Run.wave == 5 && Run.phase == SS::Phase::Station &&
+                 Run.phaseSeconds == BeforeSeconds);
+    F.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+    const auto *Pad = F.Hub->GetLandingPad();
+    const FVector Outside = Pad->DockPoint() - Pad->GetActorForwardVector() * (Pad->StationZoneRadius + 1000.f);
+    F.Ship->SetActorLocation(Outside, false, nullptr, ETeleportType::TeleportPhysics);
+    F.Mode->Tick(0.f);
+    TestTrue(TEXT("Crossing the boundary starts exactly the next wave and retires the old station"),
+             !F.Mode->IsDepartingStation() && Run.wave == 6 && Run.phase == SS::Phase::Flight &&
+                 F.Hub->IsActorBeingDestroyed());
+    F.Mode->Tick(0.f);
+    TestTrue(TEXT("Repeated boundary processing cannot advance again or pay again"),
+             Run.wave == 6 && Run.credits == Credits);
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationChaseCamera, "SpaceSurvival.Integration.StationChaseCamera",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSStationChaseCamera::RunTest(const FString &)
@@ -298,6 +467,7 @@ bool FSSStationChaseCamera::RunTest(const FString &)
         return false;
     F.Place(FVector(ASSStation::PadCenterX - 900.f, 0, 220), FVector(1, 0, 0));
     F.Mode->Tick(0.f);
+    F.Mode->Interact();
     F.Mode->Tick(3.01f);
     auto *Walker = Cast<ASSWalker>(F.Controller->GetPawn());
     if (!TestNotNull(TEXT("Actual station arrival supplies the third-person walker"), Walker))
@@ -313,14 +483,8 @@ bool FSSStationChaseCamera::RunTest(const FString &)
     const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
     AddInfo(FString::Printf(TEXT("STATION_ARRIVAL hero=%s climbsOut=%d"), *Walker->GetHero().Id.ToString(),
                             ClimbsOut ? 1 : 0));
-    // Read before Move, which sets the body's rotation itself. This fixture flies in on a heading of 73
-    // degrees and the station is built at it, so the hub's yaw here is nothing like world north - which
-    // is the whole point. A hero with no exit clip is placed by the spawn and by nothing else: it does
-    // not orient to movement and does not follow the controller, and the authored exit that used to
-    // reconcile body and camera by slerping to the hub's rotation on its last tick never runs. So the
-    // spawn has to have turned it, or the player meets the hero 73 degrees side-on for the whole arrival
-    // and the body snaps through that angle on the first input. A climbing hero is mid-clip here and
-    // wears the seated pose instead; its facing is checked below, where the exit has finished.
+    // Arrival supplies the initial facing before CharacterMovement receives travel input.
+    // This station is rotated 73 degrees, so a world-north default cannot pass.
     const double HubYaw = F.Hub->GetActorRotation().Yaw;
     if (!ClimbsOut)
         TestEqual(TEXT("A hero with no exit clip arrives turned the way the station faces"),
@@ -346,11 +510,11 @@ bool FSSStationChaseCamera::RunTest(const FString &)
                  Walker->GetCapsuleComponent()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
     // The climb-out's own last tick slerps the body to the station's facing, which is the behaviour the
     // spawn above now has to reproduce for a hero that never runs it. Asserted here rather than with the
-    // other one because it is only true once the clip has finished. The walking hero has been driven by
-    // Move since, so its facing is its view's and is no longer the arrival's to check.
+    // other one because it is only true once the clip has finished.
     if (ClimbsOut)
         TestEqual(TEXT("A climb-out ends turned the way the station faces"),
                   double(FMath::Abs(FMath::FindDeltaAngleDegrees(Walker->GetActorRotation().Yaw, HubYaw))), 0., 1e-3);
+    const FRotator StandingFacing = Walker->GetActorRotation();
     for (int32 Rate : {30, 60, 144})
     {
         const float Dt = 1.f / Rate;
@@ -363,33 +527,32 @@ bool FSSStationChaseCamera::RunTest(const FString &)
             TestTrue(TEXT("Station yaw applies now rather than waiting in discarded RotationInput"),
                      FMath::IsNearlyEqual(View.Yaw, 90.f, .01f));
             TestTrue(TEXT("Both vertical directions turn equally across frame rates"),
-                     FMath::IsNearlyEqual(View.Pitch, -Sign * 35.f, .01f));
-            TestTrue(TEXT("The upright body faces camera yaw without camera pitch or roll"),
-                     Walker->GetActorRotation().Equals(FRotator(0, 90, 0), .01f));
+                     FMath::IsNearlyEqual(View.Pitch, Sign * 35.f, .01f));
+            TestTrue(TEXT("Orbiting the view does not rotate the stationary body"),
+                     Walker->GetActorRotation().Equals(StandingFacing, .01f));
         }
     }
     F.Controller->SetControlRotation(FRotator(-12, 73, 0));
     Walker->Move(FVector2D(0, -1), FVector2D::ZeroVector, false, 1.f / 60.f);
-    TestTrue(TEXT("Backward walking stays behind-facing rather than rotating toward the viewer"),
-             Walker->GetActorRotation().Equals(FRotator(0, 73, 0), .01f) &&
-                 FVector::DotProduct(Walker->GetPendingMovementInputVector(), Walker->GetActorForwardVector()) <
-                     -.99f &&
-                 !Walker->GetCharacterMovement()->bOrientRotationToMovement);
+    TestTrue(TEXT("Backward input is camera-relative and CharacterMovement faces travel"),
+             FVector::DotProduct(Walker->GetPendingMovementInputVector(), FRotator(0, 73, 0).Vector()) < -.99f &&
+                 Walker->GetCharacterMovement()->bOrientRotationToMovement);
     Walker->ConsumeMovementInputVector();
     Walker->Move(FVector2D(1, 0), FVector2D::ZeroVector, true, 1.f / 60.f);
     TestTrue(TEXT("Strafe uses the same view direction and retains run speed"),
-             FVector::DotProduct(Walker->GetPendingMovementInputVector(), Walker->GetActorRightVector()) > .99f &&
+             FVector::DotProduct(Walker->GetPendingMovementInputVector(),
+                                 FRotationMatrix(FRotator(0, 73, 0)).GetUnitAxis(EAxis::Y)) > .99f &&
                  Walker->GetCharacterMovement()->MaxWalkSpeed == 560.f);
     Walker->ConsumeMovementInputVector();
     Walker->Boom->TickComponent(1.f / 60.f, LEVELTICK_All, nullptr);
-    TestTrue(TEXT("Actual camera remains behind the facing body with collision protection enabled"),
+    TestTrue(TEXT("Actual camera remains behind the view direction with collision protection enabled"),
              FVector::DotProduct(Walker->Camera->GetComponentLocation() - Walker->GetActorLocation(),
-                                 Walker->GetActorForwardVector()) < -100.f &&
+                                 FRotator(0, 73, 0).Vector()) < -100.f &&
                  Walker->Boom->bDoCollisionTest);
-    Walker->Move(FVector2D::ZeroVector, FVector2D(0, 100), false, 1.f);
+    Walker->Move(FVector2D::ZeroVector, FVector2D(0, -100), false, 1.f);
     TestEqual(TEXT("Downward view stops before flipping the camera"),
               FRotator::NormalizeAxis(F.Controller->GetControlRotation().Pitch), -55.0);
-    Walker->Move(FVector2D::ZeroVector, FVector2D(0, -100), false, 1.f);
+    Walker->Move(FVector2D::ZeroVector, FVector2D(0, 100), false, 1.f);
     TestEqual(TEXT("Upward view remains bounded"), FRotator::NormalizeAxis(F.Controller->GetControlRotation().Pitch),
               35.0);
     return true;

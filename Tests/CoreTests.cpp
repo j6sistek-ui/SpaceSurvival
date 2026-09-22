@@ -156,6 +156,18 @@ void FlightMetersAndUtilities()
     for (int i = 0; i < 180; ++i)
         b.Tick(1.0 / 60.0, false);
     CHECK(Near(a.run.hull, b.run.hull));
+    auto departing = Fresh("station-departure");
+    FastTuning(departing);
+    ReachStation(departing, 5);
+    const int departureWave = departing.run.wave;
+    departing.TickFlight(1.0, true, false);
+    CHECK(!departing.run.boosting && Near(departing.run.boost, 100.0));
+    departing.TickFlight(1.0, true, false, true);
+    CHECK(departing.run.boosting && Near(departing.run.boost, 72.0));
+    CHECK(departing.run.phase == SS::Phase::Station && departing.run.wave == departureWave);
+    departing.run.active = false;
+    departing.TickFlight(1.0, true, false, true);
+    CHECK(!departing.run.boosting && Near(departing.run.boost, 72.0));
 }
 
 void WaveLifecycleAndEconomy()
