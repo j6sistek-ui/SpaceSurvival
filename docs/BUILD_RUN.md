@@ -2,7 +2,7 @@
 
 **Package7 UI follow-up, September22:** The isolated review launcher now opens source `25cf794`: aligned preference sliders, large scrolling wardrobe, and a walking radar showing actual crew, services and landing pad. Walking has no flight vitals/weapon panel. The prior approved HUD/settings/pause and locked main remain. Two affected menu tests, six packaged frames and archive inclusion pass. [Exact receipt](validation/2026-09-22-ui-refresh.md). Earlier GPU-memory warnings remain open; this is not performance acceptance. Unique service/wardrobe portrait layouts remain lead-owned; presets/remapping deferred.
 
-**September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
+**September 22 arcade preset (supersedes prior stick mappings):** Left stick steers the nose in yaw/pitch; right stick controls the camera independently. LB/RB tap: sideways evade with a sharp bank and level recovery; hold: fast continuous roll, retaining attitude on release. RT throttle, LT brake, B boost, A fire, X interaction/landing. Engine-off coasting and keyboard controls remain. Walking unchanged; remapping deferred.
 
 **Package 5 follow-up, 2026-09-22 UTC:** The isolated review launcher now opens source `0004810`: world-fixed solid belt, continuous environment routing, distinct home pause, retired gallery/Acornaut selections, explicit cabin interaction, beacon feedback, 60 m/s cruise and 3x orange Director asteroids. The temporary controller preset above is included. Editor Build9 and nine directly affected input/physics tests pass; the Windows package, actual archive audit and one packaged startup smoke pass. [Exact evidence and retained failures](validation/2026-09-22-world-feedback.md). Full cockpit seating, natural atmosphere/field travel and the reported beacon scenario remain lead-owned open work. No merge or publication occurred. Ramp crossing no longer opens a popup; E/Y in the supported rear cabin still opens flight options until the full cockpit flow is implemented.
 
@@ -297,9 +297,9 @@ The following mappings describe Package5/source `0004810`, retained in Package7/
 
 | Capability | Keyboard/mouse | Controller |
 | --- | --- | --- |
-| Flight yaw / pitch | Mouse | Left stick up/down pitches; no yaw axis |
+| Flight yaw / pitch | Mouse | Left stick left/right yaw; up/down pitch |
 | On-foot look | Mouse | Right stick |
-| Flight sideways / vertical | A/D and R/F | Left stick left/right; no vertical strafe |
+| Flight sideways / vertical | A/D and R/F | No stick strafe; LB/RB evasive dash |
 | Flight roll | — | LB / RB |
 | Flight free-look | — | Right stick |
 | Throttle, 0–100% | W/S raises/lowers the setting | Right trigger; release to coast |
@@ -315,7 +315,7 @@ The following mappings describe Package5/source `0004810`, retained in Package7/
 | Dock when the pad says ready | E | X |
 | Shell / back | Escape | Menu; B while a menu is open |
 
-In the controller testing preset, LB/RB apply manual roll and release retains the rolled attitude. Mouse-up, flight left-stick-up and walking right-stick-up pitch upward by default; pitch inversion reverses the relevant view/steering axis. On foot, movement follows the camera direction and the character turns toward travel; the right stick/mouse can orbit the camera independently. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
+In the controller testing preset, LB/RB tap for a sideways dash/bank with level recovery; hold for fast roll, retaining attitude on release. Mouse-up, flight left-stick-up and walking right-stick-up pitch upward by default; pitch inversion reverses the relevant view/steering axis. On foot, movement follows the camera direction and the character turns toward travel; the right stick/mouse can orbit the camera independently. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
 
 The approved arcade baseline multiplies existing authored cruise/acceleration by 2.5: 6000 cm/s (60 m/s) and 8000 cm/s squared. Boost remains separate. RT directly controls normal engine power. Releasing it cuts forward thrust and preserves momentum; turning the hull alone does not redirect that coast. Use LT/Space to brake. W/S changes a persistent keyboard throttle setting from zero to full over two seconds; lower it to zero to coast. Possession changes reset that setting. Boost uses the existing resource limit, and brake suppresses boost. Outside the station zone, braking still obeys its heat limit; inside it, brake can bring the ship to a stop without overheating. There is no automatic minimum cruise in this follow-up.
 

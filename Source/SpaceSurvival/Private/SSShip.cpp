@@ -141,7 +141,8 @@ FVector ASSShip::FlightVelocityTarget(float Speed, float Maneuver, const FVector
         return FVector::ZeroVector;
     if (ThrottleInput > .01f || DrivePresentationBoosting)
         return GetActorForwardVector() * Speed +
-               (GetActorRightVector() * StrafeInput.X + GetActorUpVector() * StrafeInput.Y) * Maneuver;
+               (GetActorRightVector() * StrafeInput.X + GetActorUpVector() * StrafeInput.Y) * Maneuver +
+               EvadeVelocity * FMath::Clamp(EvadeSeconds / .2f, 0.f, 1.f);
     // Engine off preserves world-space momentum even while the pilot turns the ship.
     // A deliberately commanded maneuvering axis still has its own small thrusters.
     FVector Desired = CurrentVelocity;
@@ -158,6 +159,7 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
 {
     if (!Thrusters || !Gyros || !Collision)
         return;
+    Response *= Tuning->ArcadeControlResponse;
     const float Mass = FMath::Max(1.f, Collision->GetMass());
 
     // Thrust from the upgraded stat, so buying Engine tiers still moves the ship. All six axes get the
@@ -175,8 +177,11 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     // Response controls both angular damping here and linear velocity recovery below, so the
     // Thrusters upgrade remains observable in turning and in the release of lateral thrust.
     Gyros->ProportionalGain = FMath::Max(.5, Response);
-    const float TurnRate = FMath::DegreesToRadians(Tuning->SteeringDegrees * Authority * Interference);
-    Gyros->MaxTotalTorque = FMath::Max(1.f, TurnRate * float(Gyros->ProportionalGain) * 2.f);
+    Gyros->RollMultiplier = 1.f; // Our authored roll rate already includes the arcade tuning.
+    const float TurnRate = FMath::DegreesToRadians(Tuning->FlightSteeringDegrees() * Authority * Interference);
+    Gyros->MaxTotalTorque =
+        FMath::Max(1.f, FMath::Max(TurnRate, FMath::DegreesToRadians(Tuning->FlightRollDegrees()) * Authority) *
+                            float(Gyros->ProportionalGain) * 2.f);
 
     // Own the velocity target and let ShipCore apply its bounded forces. The vendor's
     // zero-velocity dampener would brake when the owner releases the throttle; engine-off
@@ -193,10 +198,7 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
                                          FMath::Clamp(Thrust.Z, -1.0, 1.0)));
     // ShipCore accepts angular acceleration, not a turn rate. Convert the same degrees/second used by
     // input into its rate-damped solver. Banking targets an attitude; a held turn must not roll forever.
-    const float BankError = FMath::FindDeltaAngleDegrees(GetActorRotation().Roll, Steer.X * 28.f);
-    const float RollRate =
-        bManualRoll ? -RollInput * FMath::DegreesToRadians(Tuning->ManualRollDegrees) * Authority * Interference
-                    : -FMath::DegreesToRadians(BankError) * 3.f;
+    const float RollRate = -FMath::DegreesToRadians(RollCommandDegrees()) * Authority * Interference;
     const FVector TargetRate(RollRate, -Steer.Y * TurnRate, Steer.X * TurnRate);
     Gyros->SetGyrosInput(TargetRate * float(Gyros->ProportionalGain / Gyros->MaxTotalTorque));
 
@@ -205,6 +207,19 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     if (!Forces.IsNearlyZero())
         Collision->AddForce(Forces.GetClampedToMaxSize(4500.f) * Mass);
 }
+float ASSShip::RollCommandDegrees() const
+{
+    if (BumperHeldSeconds >= .22f)
+        return RollInput * Tuning->FlightRollDegrees();
+    if (bLevelAfterEvade || !bManualRoll)
+    {
+        const float TargetBank = EvadeSeconds > .12f ? EvadeSide * 45.f : (bManualRoll ? 0.f : Steer.X * 28.f);
+        return FMath::Clamp(FMath::FindDeltaAngleDegrees(GetActorRotation().Roll, TargetBank) * 8.f,
+                            -Tuning->FlightRollDegrees(), Tuning->FlightRollDegrees());
+    }
+    return 0.f;
+}
+
 void ASSShip::OnHullImpact(UPrimitiveComponent *, AActor *OtherActor, UPrimitiveComponent *, FVector,
                            const FHitResult &)
 {
@@ -552,6 +567,8 @@ void ASSShip::SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttl
 {
     RollInput = FMath::Clamp(Roll, -1.f, 1.f);
     bManualRoll = ManualRoll;
+    if (FMath::IsNearlyZero(RollInput))
+        BumperHeldSeconds = 0.f;
     Steer = Steering.GetClampedToMaxSize(1.f);
     StrafeInput = Strafe.GetClampedToMaxSize(1.f);
     ThrottleInput = FMath::Clamp(Throttle, 0.f, 1.f);
@@ -564,6 +581,12 @@ void ASSShip::AddExternalForce(FVector Force)
 }
 void ASSShip::HoldBody(bool Hold)
 {
+    if (Hold)
+    {
+        BumperHeldSeconds = EvadeSeconds = EvadeSide = 0.f;
+        EvadeVelocity = FVector::ZeroVector;
+        bLevelAfterEvade = false;
+    }
     if (!ShipCoreDriven || !Collision)
         return;
     // ShipCore's managers are components with their own tick, and they push into the body on their own
@@ -779,6 +802,10 @@ void ASSShip::Tick(float Dt)
         S.run.brakeHeat = FMath::Max(0.0, S.run.brakeHeat - Dt * 20.0);
         S.run.brakeOverheated = false;
     }
+    BumperHeldSeconds = FMath::Abs(RollInput) > .01f ? BumperHeldSeconds + Dt : 0.f;
+    EvadeSeconds = FMath::Max(0.f, EvadeSeconds - Dt);
+    if (BumperHeldSeconds >= .22f)
+        bLevelAfterEvade = false; // Holding chooses free roll; a short tap returns toward level.
     const auto Stats = S.Stats();
     const float BoostFactor = S.run.boosting ? Tuning->BoostMultiplier : 1.f;
     const float EnginePower = S.run.boosting ? 1.f : ThrottleInput;
@@ -812,20 +839,23 @@ void ASSShip::Tick(float Dt)
         {
             if (bManualRoll)
                 AddActorLocalRotation(
-                    FRotator(Steer.Y * Tuning->SteeringDegrees * Authority * Interference * Step,
-                             Steer.X * Tuning->SteeringDegrees * Authority * Interference * Step,
-                             RollInput * Tuning->ManualRollDegrees * Authority * Interference * Step));
+                    FRotator(Steer.Y * Tuning->FlightSteeringDegrees() * Authority * Interference * Step,
+                             Steer.X * Tuning->FlightSteeringDegrees() * Authority * Interference * Step,
+                             RollCommandDegrees() * Authority * Interference * Step));
             else
             {
                 auto Rotation = GetActorRotation();
-                Rotation.Yaw += Steer.X * Tuning->SteeringDegrees * Authority * Interference * Step;
-                Rotation.Pitch = FMath::Clamp(
-                    Rotation.Pitch + Steer.Y * Tuning->SteeringDegrees * Authority * Interference * Step, -85.f, 85.f);
+                Rotation.Yaw += Steer.X * Tuning->FlightSteeringDegrees() * Authority * Interference * Step;
+                Rotation.Pitch = FMath::Clamp(Rotation.Pitch + Steer.Y * Tuning->FlightSteeringDegrees() * Authority *
+                                                                   Interference * Step,
+                                              -85.f, 85.f);
                 Rotation.Roll = 0;
                 SetActorRotation(Rotation);
             }
             const FVector Desired = FlightVelocityTarget(Speed, float(Stats.maneuver), Velocity);
-            const FVector ResponseDelta = (Desired - Velocity) * (1.f - FMath::Exp(-float(Stats.response) * Step));
+            const FVector ResponseDelta =
+                (Desired - Velocity) *
+                (1.f - FMath::Exp(-float(Stats.response) * Tuning->ArcadeControlResponse * Step));
             Velocity += ResponseDelta.GetClampedToMaxSize(float(Stats.acceleration) * Step);
             Velocity += Forces.GetClampedToMaxSize(4500.f) * Step;
             FHitResult Hit;
@@ -940,17 +970,25 @@ void ASSShip::Tick(float Dt)
         }
     }
 }
-void ASSShip::RequestDodge()
+void ASSShip::RequestDodge(float Side)
 {
     auto *GI = GetGameInstance<USSGameInstance>();
     if (Moored || Docking || TakingOff || !GI || !GI->Session.Dodge())
         return;
-    FVector2D Direction = StrafeInput.IsNearlyZero() ? Steer : StrafeInput;
+    FVector2D Direction =
+        FMath::Abs(Side) > .01f ? FVector2D(FMath::Sign(Side), 0) : (StrafeInput.IsNearlyZero() ? Steer : StrafeInput);
     if (Direction.IsNearlyZero())
         Direction = FVector2D(1, 0);
     Direction.Normalize();
-    const FVector Dodge =
-        (GetActorRightVector() * Direction.X + GetActorUpVector() * Direction.Y) * Tuning->DodgeImpulse;
+    const FVector Dodge = (GetActorRightVector() * Direction.X + GetActorUpVector() * Direction.Y) *
+                          Tuning->DodgeImpulse * (FMath::Abs(Side) > .01f ? 1.5f : 1.f);
+    if (FMath::Abs(Side) > .01f)
+    {
+        EvadeSeconds = .45f;
+        EvadeSide = FMath::Sign(Side);
+        EvadeVelocity = Dodge;
+        bLevelAfterEvade = true;
+    }
     Velocity += Dodge;
     // The same member-versus-body gap that swallowed collision damage and hazard shoves, and the same fix:
     // the line above moves the hand-kept integrator's velocity, which a simulating body never reads, so on

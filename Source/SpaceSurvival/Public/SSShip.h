@@ -64,7 +64,7 @@ public:
     {
         return ThrottleInput;
     }
-    void RequestDodge();
+    void RequestDodge(float Side = 0.f);
     void Fire();
     void ReceiveDamage(float Amount, SS::DamageType Type = SS::DamageType::Kinetic);
     void ReceiveImpact(float Amount, FVector AwayFromContact);
@@ -140,6 +140,11 @@ public:
     TObjectPtr<USSPhase1Data> Tuning;
 
 private:
+    float BumperHeldSeconds = 0.f, EvadeSeconds = 0.f, EvadeSide = 0.f;
+    bool bLevelAfterEvade = false;
+    FVector EvadeVelocity = FVector::ZeroVector;
+    float RollCommandDegrees() const;
+
     friend class FSSDirectorAsteroidReadability;
     friend class FSSControllerTestingPreset;
     void UpdateEngineMix();

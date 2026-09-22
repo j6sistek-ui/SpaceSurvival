@@ -261,10 +261,28 @@ public:
     }
     float FlightAcceleration() const
     {
-        return Acceleration * FMath::Max(.1f, ArcadeFlightScale);
+        return Acceleration * FMath::Max(.1f, ArcadeFlightScale) * ArcadeAccelerationResponse;
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float MinimumSpeed = 1000.f;
+    // Response multipliers also affect the already-authored Phase1 asset without rewriting it.
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Arcade", meta = (ClampMin = "0.1"))
+    float ArcadeAccelerationResponse = 1.5f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Arcade", meta = (ClampMin = "0.1"))
+    float ArcadeTurnResponse = 1.7f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Arcade", meta = (ClampMin = "0.1"))
+    float ArcadeControlResponse = 2.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight|Arcade", meta = (ClampMin = "0.1"))
+    float ArcadeRollResponse = 5.f;
+    float FlightSteeringDegrees() const
+    {
+        return SteeringDegrees * ArcadeTurnResponse;
+    }
+    float FlightRollDegrees() const
+    {
+        return ManualRollDegrees * ArcadeRollResponse;
+    }
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float BoostMultiplier = 1.85f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")

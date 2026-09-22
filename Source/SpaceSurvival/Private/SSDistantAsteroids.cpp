@@ -18,19 +18,19 @@ TAutoConsoleVariable<int32>
                          ECVF_Scalability);
 constexpr double MinimumAnchorDistance = 32000.0;
 constexpr double MaximumRockRadius = 4800.0;
-struct FDepthBand
+// Five cells per axis keep the nearest eviction beyond the 1.4 km draw distance.
+constexpr double CellSize = 80000.0;
+constexpr int32 CellRadius = 2;
+constexpr int32 CellCount = 125;
+FIntVector CellAt(const FVector &Position)
 {
-    float MinimumDistance;
-    float MaximumDistance;
-    float MinimumRadius;
-    float MaximumRadius;
-};
-// The pack's examples build scale from sparse large bodies through many small fragments.
-// Seed four depth bands once; every object remains reachable at its original world position.
-const FDepthBand DepthBands[] = {{42000.f, 62000.f, 2300.f, float(MaximumRockRadius)},
-                                 {float(MinimumAnchorDistance), 51000.f, 450.f, 1000.f},
-                                 {68000.f, 95000.f, 1200.f, 3400.f},
-                                 {115000.f, 175000.f, 400.f, 1600.f}};
+    return FIntVector(FMath::FloorToInt(Position.X / CellSize + .5), FMath::FloorToInt(Position.Y / CellSize + .5),
+                      FMath::FloorToInt(Position.Z / CellSize + .5));
+}
+int32 CellResidue(int32 Coordinate)
+{
+    return (Coordinate % 5 + 5) % 5;
+}
 
 } // namespace
 
@@ -89,6 +89,7 @@ void ASSDistantAsteroids::BeginPlay()
         Batch->SetGenerateOverlapEvents(false);
         Batch->SetCanEverAffectNavigation(false);
         Batch->SetCastShadow(false);
+        Batch->SetCullDistances(120000, 140000);
         Batch->SetMobility(EComponentMobility::Movable);
         Batch->RegisterComponent();
         Batches.Add(Batch);
@@ -104,10 +105,8 @@ void ASSDistantAsteroids::Follow(AActor *InViewer)
     Viewer = InViewer;
     if (IsValid(InViewer))
     {
-        PreviousViewerPosition = InViewer->GetActorLocation();
-        FieldBasis = InViewer->GetActorQuat();
-        if (BuiltCount < 0)
-            SetActorLocation(PreviousViewerPosition);
+        if (ConfiguredCount < 0)
+            SetActorLocation(InViewer->GetActorLocation());
         AddTickPrerequisiteActor(InViewer);
         SetActorHiddenInGame(!bFlightVisible);
     }
@@ -126,83 +125,75 @@ void ASSDistantAsteroids::SetFlightVisible(bool bVisible)
 void ASSDistantAsteroids::BuildField(int32 Count)
 {
     for (const auto &Batch : Batches)
-    {
         Batch->ClearInstances();
-        Batch->SetRelativeLocation(FVector::ZeroVector);
-    }
+    Cells.Reset();
+    ResidentCenter = FIntVector(MAX_int32);
+    ConfiguredCount = Count;
     BuiltCount = 0;
     MinimumAnchorSurface = MinimumAnchorDistance - MaximumRockRadius;
-    if (Batches.IsEmpty())
-        return;
-    // Five forward/lateral clusters and three rear clusters surround the viewer.
-    // Persistent clusters and varied angular sizes; never reseed as the camera turns.
-    const FVector Clusters[] = {FVector(1, -.65, .24), FVector(1, .7, .4),   FVector(1, -.15, -.65),
-                                FVector(1, .18, .65),  FVector(1, .05, .06), FVector(-.5, -1, .2),
-                                FVector(-.5, 1, -.3),  FVector(-1, 0, .45)};
-    // The persistent distant belts also occupy lateral and vertical headings.
-    // A broad turn must reveal another field, rather than the gap between two
-    // launch-facing clusters. These directions never follow camera rotation.
-    const FVector DistantClusters[] = {FVector(1, -.65, .24), FVector(1, .7, .4),   FVector(1, -.15, -.65),
-                                       FVector(1, .18, .65),  FVector(1, .05, .06), FVector(.1, -1, .25),
-                                       FVector(.1, 1, -.2),   FVector(-.7, -1, .2), FVector(-.7, 1, -.3),
-                                       FVector(-1, 0, .45),   FVector(0, 0, 1),     FVector(0, 0, -1)};
-    FRandomStream Random(740127);
-    int32 BandOrdinals[4] = {};
+    StreamCells();
+}
+
+void ASSDistantAsteroids::AddCell(const FIntVector &Cell)
+{
+    auto &Instances = Cells.Add(Cell);
+    // A modulo-5 allocation gives every resident 5x5x5 region the same bounded population.
+    const int32 Residue = CellResidue(Cell.X) + 5 * CellResidue(Cell.Y) + 25 * CellResidue(Cell.Z);
+    const int32 Count = ConfiguredCount / CellCount + (Residue < ConfiguredCount % CellCount ? 1 : 0);
+    FRandomStream Random(int32(HashCombineFast(GetTypeHash(Cell), 740127u)));
     for (int32 Index = 0; Index < Count; ++Index)
     {
-        // Band 3 is the far, near-static shell. The old split put 86% of the budget there, so the
-        // field read as a painted backdrop with a sparse near zone. Weight the near and middle
-        // bands instead: those carry real parallax and are what the player actually flies through.
-        const int32 BandIndex = Index % 32 == 0 ? 0 : (Index % 4 == 0 ? 1 : (Index % 2 == 0 ? 2 : 3));
-        const FDepthBand &Band = DepthBands[BandIndex];
-        const int32 Ordinal = BandOrdinals[BandIndex]++;
-        const int32 BatchIndex = (BandIndex == 0   ? Ordinal % 8
-                                  : BandIndex == 1 ? 4 + Ordinal % 8
-                                  : BandIndex == 2 ? Ordinal % 8
-                                                   : Ordinal % 15) %
-                                 Batches.Num();
+        const int32 BatchIndex = Random.RandRange(0, Batches.Num() - 1);
         auto *Batch = Batches[BatchIndex].Get();
         const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
-        const int32 ClusterIndex =
-            Random.RandRange(0, BandIndex >= 2 ? UE_ARRAY_COUNT(DistantClusters) - 1 : UE_ARRAY_COUNT(Clusters) - 1);
-        FVector Detail = Random.VRand();
-        if (SpaceLook)
+        const double Radius =
+            Index % 11 == 0 ? Random.FRandRange(2300.f, float(MaximumRockRadius)) : Random.FRandRange(450.f, 1800.f);
+        FVector Center;
+        do
         {
-            const auto &Samples = ClusterIndex % 3 == 0   ? SpaceLook->AsteroidArchSamples
-                                  : ClusterIndex % 3 == 1 ? SpaceLook->AsteroidGlobularSamples
-                                                          : SpaceLook->AsteroidLinearSamples;
-            if (!Samples.IsEmpty())
-                Detail =
-                    (Samples[Random.RandRange(0, Samples.Num() - 1)] + Random.VRand() * .18).GetClampedToMaxSize(1.0);
-        }
-        FVector Direction =
-            ((BandIndex >= 2 ? DistantClusters[ClusterIndex] : Clusters[ClusterIndex]) + Detail * .65).GetSafeNormal();
-        // A continuous distant population supports the authored belts. Increasing
-        // belt density alone leaves the same empty headings during broad turns.
-        // This direction is seeded once, never derived from the live camera.
-        if (BandIndex == 3 && Index % 3 != 0)
-            Direction = Random.VRand();
-        // Move the largest silhouettes to the sides of the entry view, rather than
-        // letting a backdrop rock conceal targets directly ahead of the launch heading.
-        if (BandIndex == 0 && Direction.X > .9)
-        {
-            Direction.Y += Direction.Y < 0 ? -.45 : .45;
-            Direction.Normalize();
-        }
-        const double Distance = Random.FRandRange(Band.MinimumDistance + 3500.f, Band.MaximumDistance - 3500.f);
-        double Radius = Random.FRandRange(Band.MinimumRadius, Band.MaximumRadius);
-        if (BandIndex < 2 && Direction.X > .97)
-            Radius = FMath::Min(Radius, 220.0);
+            Center = FVector(Cell) * CellSize + FVector(Random.FRandRange(-.49f, .49f), Random.FRandRange(-.49f, .49f),
+                                                        Random.FRandRange(-.49f, .49f)) *
+                                                    CellSize;
+        } while (Center.SizeSquared() < FMath::Square(MinimumAnchorDistance));
         const double Scale = Radius / FMath::Max(1.0, double(Bounds.SphereRadius));
         const FQuat Rotation = FRotator(Random.FRandRange(-180.f, 180.f), Random.FRandRange(-180.f, 180.f),
                                         Random.FRandRange(-180.f, 180.f))
                                    .Quaternion();
-        const FVector Center = FieldBasis.RotateVector(Direction * Distance);
         const FVector Pivot = Center - Rotation.RotateVector(Bounds.Origin * Scale);
-        const FTransform Pose(Rotation, Pivot, FVector(Scale));
-        Batch->AddInstance(Pose);
+        Instances.Add({BatchIndex, Batch->AddInstanceById(FTransform(Rotation, Pivot, FVector(Scale)))});
         ++BuiltCount;
     }
+}
+
+void ASSDistantAsteroids::StreamCells()
+{
+    if (!Viewer.IsValid() || Batches.IsEmpty())
+        return;
+    const FIntVector Center = CellAt(Viewer->GetActorLocation() - GetActorLocation());
+    if (Center == ResidentCenter)
+        return;
+    ResidentCenter = Center;
+    // Remove only remote cells. Stable engine instance IDs preserve every retained body's pose.
+    for (auto It = Cells.CreateIterator(); It; ++It)
+    {
+        const FIntVector Delta = It.Key() - Center;
+        if (FMath::Abs(Delta.X) <= CellRadius && FMath::Abs(Delta.Y) <= CellRadius && FMath::Abs(Delta.Z) <= CellRadius)
+            continue;
+        for (const auto &Rock : It.Value())
+        {
+            Batches[Rock.Batch]->RemoveInstanceById(Rock.Id);
+            --BuiltCount;
+        }
+        It.RemoveCurrent();
+    }
+    for (int32 X = -CellRadius; X <= CellRadius; ++X)
+        for (int32 Y = -CellRadius; Y <= CellRadius; ++Y)
+            for (int32 Z = -CellRadius; Z <= CellRadius; ++Z)
+            {
+                const FIntVector Cell = Center + FIntVector(X, Y, Z);
+                if (!Cells.Contains(Cell))
+                    AddCell(Cell);
+            }
 }
 
 void ASSDistantAsteroids::Tick(float DeltaSeconds)
@@ -213,15 +204,15 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
         SetActorHiddenInGame(true);
         return;
     }
-    // Player motion, camera rotation and docking never move, shrink or recycle a rock.
-    // The initial belt remains anchored; SpaceScenery supplies deterministic world cells beyond it.
     const int32 Wanted = FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 3072);
-    if (Wanted != BuiltCount && !Batches.IsEmpty())
+    if (Wanted != ConfiguredCount && !Batches.IsEmpty())
         BuildField(Wanted);
+    else
+        StreamCells();
 }
 
 void ASSDistantAsteroids::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 {
     Super::ApplyWorldOffset(InOffset, bWorldShift);
-    PreviousViewerPosition += InOffset;
+    // Local cell coordinates stay unchanged when the engine rebases actor and viewer together.
 }

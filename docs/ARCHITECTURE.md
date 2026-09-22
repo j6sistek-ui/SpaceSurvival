@@ -1,5 +1,10 @@
 # SpaceSurvival Phase 1 architecture
 
+September22 arcade response: existing authored data receives 1.5x acceleration, 1.7x steering, 2x response and 5x roll multipliers (60 m/s cruise unchanged). The ShipCore adapter removes vendor roll attenuation because the game already owns its roll rate. Bumper evades use the existing dodge cooldown/resource rules; no immunity or wave tuning changes.
+
+`ASSDistantAsteroids` now streams deterministic 800 m world cells in a bounded 5x5x5 neighbourhood (default2048 rocks across15 mesh batches). Retained cells keep stable engine instance IDs and transforms. Outgoing cells are beyond the1.4km draw limit before retirement; revisiting regenerates identical poses. The initial320m centre clearance stays anchored to launch. Camera, Director pressure and docking visibility do not reposition rocks. Separate authored scenery/landmarks remain.
+
+
 ## Page 11 native UI — September22
 
 `SSHUDRefresh.cpp` owns a1920x1080 aspect-fit Canvas layout for General/Graphics/Audio/existing Controls, distinct Pause, flight/walking headers, segmented hull/shield/brake bars, weapon/speed/boost and KIT radar/reticle. The locked title art remains separate. UPROPERTY caches hold imported textures and the runtime UFont provider; the latter is required by Canvas even though a raw file-backed Slate font can be measured. Existing game/session data drives values, availability, actions and threat positions. Vitals have no backing panel or percentages per owner instruction.
@@ -8,7 +13,7 @@ Settings prepend four native tab actions and retain selected action across refre
 
 `CaptureSpaceLook.ps1 -UIRefresh` renders seven representative frames in an isolated offscreen process. HUD-only sample values never mutate the actual run; native menu bounds are checked before capture. The fixture is visual/action-layout evidence, not natural gameplay or physical input.
 
-**September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
+**September 22 arcade preset (supersedes prior stick mappings):** Left stick steers the nose in yaw/pitch; right stick controls the camera independently. LB/RB tap: sideways evade with a sharp bank and level recovery; hold: fast continuous roll, retaining attitude on release. RT throttle, LT brake, B boost, A fire, X interaction/landing. Engine-off coasting and keyboard controls remain. Walking unchanged; remapping deferred.
 
 **September 22 source amendment:** environment visibility now follows an existing ship rather than Flight-only phase, preserving atmosphere/scenery across docking, walking and takeoff. Home creates presentation before departure. Title state is explicit (`bAtTitleScreen`); an inactive survival run at home no longer implies startup UI. Explicit return-to-title abandons only unsuspended in-memory run state, retaining saved account/checkpoint data. Gallery service registration is removed; stable enum/assets remain for compatibility. Wardrobe excludes original Acornaut and resolves its old saved preference to the current default. Automatic rear-cabin launch popup is removed; explicit E/Y interaction remains provisional until actual cockpit seating is implemented.
 

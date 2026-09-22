@@ -1368,25 +1368,30 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     if (!TestTrue(TEXT("Real mesh population loaded"), Initial.Num() == 128 && !Batches.IsEmpty()))
         return false;
     const FVector Center = Initial[0].TransformPosition(Batches[0]->GetStaticMesh()->GetBounds().Origin);
-    // Approach all the way to the original rock center: the former shell teleported it away.
     const FVector Start = Fixture.Ship->GetActorLocation();
+    auto FindPose = [&](const FTransform &Pose)
+    {
+        for (const auto *Batch : Batches)
+            for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
+            {
+                FTransform T;
+                Batch->GetInstanceTransform(I, T, true);
+                if (T.Equals(Pose, .01f))
+                    return true;
+            }
+        return false;
+    };
     for (int32 Step = 1; Step <= 60; ++Step)
     {
         Fixture.Ship->SetActorLocation(FMath::Lerp(Start, Center, Step / 60.f));
         Field->Tick(1.f / 60.f);
+        TestTrue(TEXT("Approaching an original rock never recycles or moves it"), FindPose(Initial[0]));
+        TestEqual(TEXT("Streaming keeps the population budget bounded"), Field->GetRockCount(), 128);
     }
     Field->SetFlightVisible(false);
     Field->SetFlightVisible(true);
     Field->Follow(Fixture.Ship);
-    int32 Flat = 0;
-    for (const auto *Batch : Batches)
-        for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
-        {
-            FTransform T;
-            Batch->GetInstanceTransform(I, T, true);
-            TestTrue(TEXT("Approach, docking visibility and refollow preserve position, rotation and scale"),
-                     T.Equals(Initial[Flat++], .01f));
-        }
+    TestTrue(TEXT("Docking visibility and refollow preserve the nearby rock"), FindPose(Initial[0]));
     Fixture.Ship->SetActorLocation(Start); // Keep its attached visual-rig actor outside the trace.
     Fixture.Step();
     FHitResult Hit;
@@ -1400,12 +1405,40 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
              Fixture.World->LineTraceSingleByChannel(Hit, Center - FVector(Radius * 2, 0, 0),
                                                      Center + FVector(Radius * 2, 0, 0), ECC_Visibility, Query) &&
                  Hit.GetActor() == Field);
+    // Travel well outside the launch belt: all six directions must still contain world geometry.
+    for (const FVector Destination : {FVector(900000, 0, 0), FVector(-900000, 600000, 400000)})
+    {
+        Fixture.Ship->SetActorLocation(Start + Destination);
+        Field->Tick(.25f);
+        int32 Directions[6] = {};
+        for (const auto *Batch : Batches)
+            for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
+            {
+                FTransform T;
+                Batch->GetInstanceTransform(I, T, true);
+                const FVector Delta =
+                    T.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) - Fixture.Ship->GetActorLocation();
+                if (Delta.Size() > 160000.)
+                    continue;
+                for (int32 Axis = 0; Axis < 3; ++Axis)
+                    if (FMath::Abs(Delta[Axis]) > Delta.Size() * .7)
+                        ++Directions[Axis * 2 + (Delta[Axis] > 0 ? 1 : 0)];
+            }
+        for (int32 Number : Directions)
+            TestTrue(TEXT("Long travel keeps reachable rocks ahead, behind, sideways and vertically"), Number > 0);
+        TestEqual(TEXT("Long-distance streaming remains bounded"), Field->GetRockCount(), 128);
+    }
+    Fixture.Ship->SetActorLocation(Start);
+    Field->Tick(.25f);
+    for (const auto &Pose : Initial)
+        TestTrue(TEXT("Returning to a cell regenerates its exact world transforms"), FindPose(Pose));
     const FVector Shift(-700000, -100000, -60000);
     Field->ApplyWorldOffset(Shift, true);
-    FTransform Rebased;
-    Batches[0]->GetInstanceTransform(0, Rebased, true);
-    TestTrue(TEXT("World rebasing preserves the same rock identity"),
-             Rebased.GetLocation().Equals(Initial[0].GetLocation() + Shift, .01f));
+    Fixture.Ship->SetActorLocation(Start + Shift);
+    Field->Tick(.25f);
+    FTransform Rebased = Initial[0];
+    Rebased.AddToTranslation(Shift);
+    TestTrue(TEXT("World rebasing preserves rock identity"), FindPose(Rebased));
     return true;
 }
 

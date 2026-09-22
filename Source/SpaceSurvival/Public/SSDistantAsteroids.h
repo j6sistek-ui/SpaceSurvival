@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InstanceDataTypes.h"
 #include "SSDistantAsteroids.generated.h"
 
 class UInstancedStaticMeshComponent;
@@ -36,13 +37,21 @@ protected:
 
 private:
     void BuildField(int32 Count);
+    void StreamCells();
+    void AddCell(const FIntVector &Cell);
+    struct FRockInstance
+    {
+        int32 Batch;
+        FPrimitiveInstanceId Id;
+    };
+    TMap<FIntVector, TArray<FRockInstance>> Cells;
+    FIntVector ResidentCenter = FIntVector(MAX_int32);
+    int32 ConfiguredCount = -1;
     UPROPERTY()
     TArray<TObjectPtr<UInstancedStaticMeshComponent>> Batches;
     UPROPERTY()
     TObjectPtr<USSSpaceLookData> SpaceLook;
     TWeakObjectPtr<AActor> Viewer;
-    FVector PreviousViewerPosition = FVector::ZeroVector;
-    FQuat FieldBasis = FQuat::Identity;
     double MinimumAnchorSurface = 0.0;
     int32 BuiltCount = -1;
     bool bFlightVisible = false;

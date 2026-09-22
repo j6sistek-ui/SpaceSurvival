@@ -224,11 +224,8 @@ bool FSSControllerToFlight::RunTest(const FString &)
         const FVector StrafeVelocity = F.Ship->GetActorTransform().InverseTransformVectorNoScale(F.Ship->GetVelocity());
         AddInfo(FString::Printf(TEXT("STRAFE %s local=%s deltaUp=%.3f"), *Device, *StrafeVelocity.ToString(),
                                 FVector::DotProduct(F.Ship->GetVelocity() - BeforeStrafeVelocity, BeforeStrafeUp)));
-        TestTrue(Device + TEXT(" raw strafe respects controller horizontal-only versus keyboard vertical thrust"),
-                 StrafeVelocity.Y > 50.f &&
-                     (Gamepad ? FMath::Abs(FVector::DotProduct(F.Ship->GetVelocity() - BeforeStrafeVelocity,
-                                                               BeforeStrafeUp)) < 20.f
-                              : StrafeVelocity.Z > 50.f));
+        TestTrue(Device + TEXT(" controller steering adds no lateral thrust; keyboard retains maneuvering thrusters"),
+                 Gamepad ? StrafeVelocity.Size() < 1.f : (StrafeVelocity.Y > 50.f && StrafeVelocity.Z > 50.f));
         if (Gamepad)
         {
             F.Axis(EKeys::Gamepad_LeftX, 0.f);
@@ -649,39 +646,48 @@ bool FSSControllerTestingPreset::RunTest(const FString &)
     F.Frames(90);
     TestTrue(TEXT("Releasing free-look gently restores the chase view"),
              FMath::Abs((F.Ship->CameraBoom->GetRelativeRotation() - ViewBefore).Yaw) < 2.f);
-    auto *Gyro = F.Ship->FindComponentByClass<UGyroManagerComp>();
-    AddInfo(FString::Printf(TEXT("ROLL gyro count/name=%s rollMultiplier=%.3f maxTorque=%.3f"), *Gyro->GetName(),
-                            Gyro->RollMultiplier, Gyro->MaxTotalTorque));
+    const double YawStart = F.Ship->GetActorRotation().Yaw;
+    for (int32 Frame = 0; Frame < 30; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_LeftX, 1.f);
+        F.Step();
+    }
+    F.Axis(EKeys::Gamepad_LeftX, 0.f);
+    const double YawTurn = FMath::FindDeltaAngleDegrees(YawStart, F.Ship->GetActorRotation().Yaw);
+    AddInfo(FString::Printf(TEXT("ARCADE half-second nose yaw=%.2f"), YawTurn));
+    TestTrue(TEXT("Left stick turns the actual nose promptly without sideways thrust"),
+             YawTurn > 25. && F.Ship->GetVelocity().Size() < 1.f);
+    F.Frames(30);
+    const FVector DashStart = F.Ship->GetActorLocation();
+    const FVector DashRight = F.Ship->GetActorRightVector();
+    F.Button(EKeys::Gamepad_RightShoulder, true);
+    F.Frames(4);
+    F.Button(EKeys::Gamepad_RightShoulder, false);
+    F.Frames(12);
+    const double TapBank = F.Ship->GetActorRotation().Roll;
+    const double DashTravel = FVector::DotProduct(F.Ship->GetActorLocation() - DashStart, DashRight);
+    AddInfo(FString::Printf(TEXT("ARCADE tap bank=%.2f lateralTravel=%.2f"), TapBank, DashTravel));
+    TestTrue(TEXT("Bumper tap quickly moves sideways and banks the actual hull"), TapBank > 10. && DashTravel > 300.);
+    F.Frames(100);
+    TestTrue(TEXT("A short evasive tap returns toward level"), FMath::Abs(F.Ship->GetActorRotation().Roll) < 3.);
+    F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
     const double RightStart = F.Ship->GetActorRotation().Roll;
     F.Button(EKeys::Gamepad_RightShoulder, true);
-    for (int32 Frame = 0; Frame < 45; ++Frame)
-    {
-        F.Step();
-        if (Frame == 0 || Frame == 20 || Frame == 44)
-            AddInfo(FString::Printf(TEXT("ROLL input frame%d down=%d manual=%d command=%.3f rate=%.3f actual=%.3f"),
-                                    Frame, F.Controller->IsInputKeyDown(EKeys::Gamepad_RightShoulder),
-                                    F.Ship->bManualRoll, F.Ship->RollInput, F.Ship->Tuning->ManualRollDegrees,
-                                    F.Ship->GetActorRotation().Roll));
-    }
-    AddInfo(FString::Printf(TEXT("ROLL solver input=%s awake=%d"), *Gyro->ControlInputLocal.ToString(),
-                            F.Ship->Collision->IsAnyRigidBodyAwake()));
+    F.Frames(45);
     F.Button(EKeys::Gamepad_RightShoulder, false);
     const double RightRoll = FMath::FindDeltaAngleDegrees(RightStart, F.Ship->GetActorRotation().Roll);
-    AddInfo(FString::Printf(TEXT("ROLL RB start=%.3f delta=%.3f angular=%s"), RightStart, RightRoll,
-                            *F.Ship->Collision->GetPhysicsAngularVelocityInDegrees().ToString()));
-    TestTrue(TEXT("RB rolls the actual hull right at a controlled rate"), RightRoll > 10. && RightRoll < 40.);
-    TestFalse(TEXT("RB roll is not weapon fire"), F.Ship->IsFiring());
+    AddInfo(FString::Printf(TEXT("ARCADE held RB delta=%.2f"), RightRoll));
+    TestTrue(TEXT("Holding RB transitions into fast arcade roll"), RightRoll > 70. && RightRoll < 180.);
+    TestFalse(TEXT("RB is not weapon fire"), F.Ship->IsFiring());
     F.Frames(90);
     const double HeldRoll = F.Ship->GetActorRotation().Roll;
-    AddInfo(FString::Printf(TEXT("ROLL release held=%.3f"), HeldRoll));
-    TestTrue(TEXT("Released roll does not auto-level the chosen orientation"), FMath::Abs(HeldRoll) > 10.);
+    TestTrue(TEXT("Released sustained roll retains the chosen attitude"), FMath::Abs(HeldRoll) > 70.);
     F.Button(EKeys::Gamepad_LeftShoulder, true);
     F.Frames(45);
     F.Button(EKeys::Gamepad_LeftShoulder, false);
-    AddInfo(FString::Printf(TEXT("ROLL LB end=%.3f"), F.Ship->GetActorRotation().Roll));
-    TestTrue(TEXT("LB rolls the actual hull left"),
-             FMath::FindDeltaAngleDegrees(HeldRoll, F.Ship->GetActorRotation().Roll) < -10.);
-    TestTrue(TEXT("LB roll does not spend the dodge resource"), F.Instance->Session.run.boost >= 99.9);
+    const double LeftRoll = FMath::FindDeltaAngleDegrees(HeldRoll, F.Ship->GetActorRotation().Roll);
+    AddInfo(FString::Printf(TEXT("ARCADE held LB delta=%.2f"), LeftRoll));
+    TestTrue(TEXT("Holding LB rolls the hull left at the same arcade rate"), LeftRoll < -70.);
     F.Frames(60);
     // All gamepad flight interaction moved to X; A is fire. A newly confirmed menu
     // press remains gated until release in LiveRewardInput; direct flight A must fire.

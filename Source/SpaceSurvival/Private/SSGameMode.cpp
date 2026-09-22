@@ -878,7 +878,8 @@ void ASSGameMode::Tick(float Dt)
     if (S.IsFlying() && S.run.wave <= 3 && AnnouncementSeconds <= 0)
     {
         const TCHAR *Prompts[] = {
-            TEXT("FLIGHT: left stick sideways / pitch. LB/RB roll. Right stick is camera-only free-look."),
+            TEXT("FLIGHT: left stick nose steering. LB/RB dash and bank; hold to roll. Right stick is camera-only "
+                 "free-look."),
             TEXT(
                 "THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. Left stick moves sideways."),
             TEXT("BOOST: Shift / B. Separate from normal throttle; release to recharge."),
@@ -1226,13 +1227,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         break;
     case ESSPanel::Controls:
         PanelTitle = TEXT("FLIGHT / WALK CONTROLS");
-        PanelDetail = TEXT("FLIGHT: Left stick sideways / pitch | LB/RB: roll | Right stick: free-look.\nMouse: steer "
-                           "| A D / R F: lateral / vertical thrust.\n"
-                           "RT: normal throttle. W/S: set keyboard throttle. Zero power coasts.\n"
-                           "Shift / B: boost | Space / LT: brake | Left click / A: fire | Q: keyboard dodge\n"
-                           "E / X: flight interaction / landing.\n"
-                           "WALK: WASD / left stick moves and faces travel. Mouse / right stick orbits camera.\n"
-                           "Shift / X: run | Space / A: jump | E / Y: use | Esc / Menu: pause");
+        PanelDetail =
+            TEXT("FLIGHT: Left stick: nose steering | LB/RB: dash / hold roll | Right stick: free-look.\nMouse: steer "
+                 "| A D / R F: lateral / vertical thrust.\n"
+                 "RT: normal throttle. W/S: set keyboard throttle. Zero power coasts.\n"
+                 "Shift / B: boost | Space / LT: brake | Left click / A: fire | Q: keyboard dodge\n"
+                 "E / X: flight interaction / landing.\n"
+                 "WALK: WASD / left stick moves and faces travel. Mouse / right stick orbits camera.\n"
+                 "Shift / X: run | Space / A: jump | E / Y: use | Esc / Menu: pause");
         AddEntry(FString::Printf(TEXT("Mouse sensitivity: %.1f"), S.settings.mouseSensitivity), 22);
         AddEntry(FString::Printf(TEXT("Controller sensitivity: %.1f"), S.settings.controllerSensitivity), 23);
         AddEntry(
@@ -2176,7 +2178,7 @@ void ASSPlayerController::PlayerTick(float Dt)
     float MouseX = 0, MouseY = 0;
     GetInputMouseDelta(MouseX, MouseY);
     const float MouseDegrees = GM->Tuning ? GM->Tuning->MouseSensitivity : .143f;
-    const float SteeringDegrees = GM->Tuning ? GM->Tuning->SteeringDegrees : 65.f;
+    const float SteeringDegrees = GM->Tuning ? GM->Tuning->FlightSteeringDegrees() : 110.5f;
     const float StickScale =
         (GM->Tuning ? GM->Tuning->ControllerSensitivity : 1.f) * float(GI->Session.settings.controllerSensitivity);
     const float MouseScale = float(GI->Session.settings.mouseSensitivity) * MouseDegrees /
@@ -2184,7 +2186,7 @@ void ASSPlayerController::PlayerTick(float Dt)
     // SceneViewport already converts screen-up motion to positive MouseY. Both devices feed the
     // same up-positive convention; the saved inversion applies once to both flight and walking.
     const bool bFlightControls = Cast<ASSShip>(GetPawn()) != nullptr;
-    const float StickYaw = bFlightControls ? 0.f : GetInputAnalogKeyState(EKeys::Gamepad_RightX);
+    const float StickYaw = GetInputAnalogKeyState(bFlightControls ? EKeys::Gamepad_LeftX : EKeys::Gamepad_RightX);
     const FKey SteerY = bFlightControls ? EKeys::Gamepad_LeftY : EKeys::Gamepad_RightY;
     FVector2D Look(MouseX * MouseScale + StickYaw * StickScale,
                    MouseY * MouseScale + GetInputAnalogKeyState(SteerY) * StickScale);
@@ -2199,8 +2201,7 @@ void ASSPlayerController::PlayerTick(float Dt)
             BoostLatch = !BoostLatch;
         if (Pressed(EKeys::SpaceBar) || Pressed(EKeys::Gamepad_LeftTrigger))
             BrakeLatch = !BrakeLatch;
-        FVector2D Strafe(float(Down(EKeys::D)) - float(Down(EKeys::A)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftX),
-                         float(Down(EKeys::R)) - float(Down(EKeys::F)));
+        FVector2D Strafe(float(Down(EKeys::D)) - float(Down(EKeys::A)), float(Down(EKeys::R)) - float(Down(EKeys::F)));
         KeyboardThrottle =
             FMath::Clamp(KeyboardThrottle + (float(Down(EKeys::W)) - float(Down(EKeys::S))) * Dt * .5f, 0.f, 1.f);
         const float RightTrigger = FMath::Clamp(GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis), 0.f, 1.f);
@@ -2247,6 +2248,9 @@ void ASSPlayerController::PlayerTick(float Dt)
         ShipPawn->SetFreeLookInput(CameraLook);
         if (Pressed(EKeys::Q))
             ShipPawn->RequestDodge();
+        else if (!MenuInput && (Pressed(EKeys::Gamepad_LeftShoulder) || Pressed(EKeys::Gamepad_RightShoulder)) &&
+                 !FMath::IsNearlyZero(Roll))
+            ShipPawn->RequestDodge(Roll);
         if (FireHeld)
             ShipPawn->Fire();
     }

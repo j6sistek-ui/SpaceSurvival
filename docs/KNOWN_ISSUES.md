@@ -1,6 +1,11 @@
 # Open work and owner review
 
-**September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
+## September22 flight baseline — RPT-20260922-01
+
+**OPEN; lead owns implementation and release, owner owns subsequent feel feedback.** Owner reports slow steering/roll and a dense field left behind at launch. Approved LS nose steering, independent RS camera, bumper tap dash/bank and hold fast roll. Implemented arcade response and bounded deterministic world-cell asteroids. Four focused cases pass across two batches; the first roll check exposed vendor attenuation, corrected rather than relaxing the assertion. Character evaluation/cleanup is now deferred; imports and current hero untouched. Owner confirms the Survival map change removes automatically dropped Tripo actors; preserve it. Owner authorizes packaging and updating the existing itch channel as the week's play baseline, with limited changed-path validation. Package/release evidence pending in [arcade receipt](validation/2026-09-22-arcade-baseline.md). No full-suite or overall Phase1 acceptance claim.
+
+
+**September 22 arcade preset (supersedes prior stick mappings):** Left stick steers the nose in yaw/pitch; right stick controls the camera independently. LB/RB tap: sideways evade with a sharp bank and level recovery; hold: fast continuous roll, retaining attitude on release. RT throttle, LT brake, B boost, A fire, X interaction/landing. Engine-off coasting and keyboard controls remain. Walking unchanged; remapping deferred.
 
 ## September 21 evening playtest — RPT-20260921-05
 
