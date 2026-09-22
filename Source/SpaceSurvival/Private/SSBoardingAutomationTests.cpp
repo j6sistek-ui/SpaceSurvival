@@ -155,7 +155,7 @@ bool FSSPhoenixWalkBoarding::RunTest(const FString &)
         bool ToeContact = false, MainContact = false;
         double LargestHeightStep = 0;
         FVector Previous = F.Local();
-        for (int32 Frame = 0; Frame < 240 && !F.Mode->IsMenuOpen(); ++Frame)
+        for (int32 Frame = 0; Frame < 240 && !F.Mode->IsWalkerInsideShip(F.Walker); ++Frame)
         {
             F.Frame(FVector2D(0, 1));
             const FVector Now = F.Local();
@@ -176,7 +176,9 @@ bool FSSPhoenixWalkBoarding::RunTest(const FString &)
         TestTrue(TEXT("Ramp and cabin seams stay below the ordinary step height without teleporting"),
                  LargestHeightStep < 25.);
         TestEqual(TEXT("Boarding route needs no off-deck rescue"), F.Walker->OffDeckRecoveries(), 0);
-        if (!TestTrue(TEXT("Walking into the supported rear cabin opens the actual launch-choice panel"),
+        TestFalse(TEXT("Walking up the ramp never opens a popup"), F.Mode->IsMenuOpen());
+        F.Mode->Interact();
+        if (!TestTrue(TEXT("Explicit cabin interaction opens flight options"),
                       F.Mode->Panel == ESSPanel::Launch && F.Mode->IsWalkerInsideShip(F.Walker)))
             continue;
         TestTrue(TEXT("Boarding retains the walker until a launch choice is confirmed"),
@@ -188,9 +190,11 @@ bool FSSPhoenixWalkBoarding::RunTest(const FString &)
             F.Frame(FVector2D(0, -1));
         TestTrue(TEXT("Walker can turn and walk back down the real ramp"),
                  F.Local().X < -1450 && F.Walker->GetCharacterMovement()->IsMovingOnGround());
-        for (int32 Frame = 0; Frame < 240 && !F.Mode->IsMenuOpen(); ++Frame)
+        for (int32 Frame = 0; Frame < 240 && !F.Mode->IsWalkerInsideShip(F.Walker); ++Frame)
             F.Frame(FVector2D(0, 1));
-        TestTrue(TEXT("Leaving and re-entering the cabin offers boarding again"), F.Mode->Panel == ESSPanel::Launch);
+        TestFalse(TEXT("Re-entering still leaves movement uninterrupted"), F.Mode->IsMenuOpen());
+        F.Mode->Interact();
+        TestTrue(TEXT("Explicit interaction remains available on re-entry"), F.Mode->Panel == ESSPanel::Launch);
     }
     return true;
 }

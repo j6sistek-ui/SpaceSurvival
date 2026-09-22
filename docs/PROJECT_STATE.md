@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**Source-only follow-up, 2026-09-22 UTC:** RPT-20260921-05 now tracks the owner's next gameplay batch. World-stable solid belt, continuous environment routing, distinct home pause, retired gallery/Acornaut selections, explicit cabin interaction and beacon feedback are in the repair branch after Package 4. Editor Build3 passed; four distinct changed-path cases passed across focused runs (see [receipt](validation/2026-09-22-world-feedback.md)). **The packaged-review launcher still opens Package 4/source `79553fc`; no replacement package or upload has occurred.** Cockpit seating, input/speed decisions, visual atmosphere/field acceptance and the reported beacon scenario remain open in [KNOWN_ISSUES](KNOWN_ISSUES.md).
+
 **Phase 1: PARTIAL.** The owner played the isolated September 21 reset candidate and reported that the major failures felt improved. Current work repairs the remaining controls, wardrobe visibility, boarding and weapon feedback and adds the approved Free Flight option. Station composition is on hold. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities and acceptance. The dated September 14–17 records below are historical; their use of “current” identifies the state at that checkpoint, not today's executable.
 
 ## September 21 gameplay reset candidate

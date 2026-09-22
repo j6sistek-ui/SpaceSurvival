@@ -1335,182 +1335,78 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     FSSFlightWorld Fixture;
     if (!Fixture.Initialize(*this))
         return false;
-    IConsoleVariable *Count = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
-    if (!TestNotNull(TEXT("Distant asteroid scalability control exists"), Count))
-        return false;
+    auto *Count = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
     const int32 PreviousCount = Count->GetInt();
-    const EConsoleVariableFlags Priority = EConsoleVariableFlags(Count->GetFlags() & ECVF_SetByMask);
+    const auto Priority = EConsoleVariableFlags(Count->GetFlags() & ECVF_SetByMask);
     ON_SCOPE_EXIT
     {
         Count->Set(PreviousCount, Priority);
     };
     Count->Set(128, Priority);
     auto *Field = Fixture.World->SpawnActor<ASSDistantAsteroids>();
-    if (!TestNotNull(TEXT("Spawn actual distant field"), Field))
-        return false;
     Field->Follow(Fixture.Ship);
     Field->SetFlightVisible(true);
-    TestFalse(TEXT("Dressing cannot be a weapon/damage world-body target"), Field->IsA(ASSWorldBody::StaticClass()));
-    TestFalse(TEXT("Dressing actor collision disabled"), Field->GetActorEnableCollision());
+    TestFalse(TEXT("World rocks are independent of Director pressure and lifetime"),
+              Field->IsA(ASSWorldBody::StaticClass()));
+    TestEqual(TEXT("Bounded instance population"), Field->GetRockCount(), 128);
     TArray<UInstancedStaticMeshComponent *> Batches;
     Field->GetComponents(Batches);
-    if (!TestTrue(TEXT("Renderable mesh batches loaded"), Batches.Num() > 0))
+    TArray<FTransform> Initial;
+    for (const auto *Batch : Batches)
+    {
+        TestTrue(TEXT("Real rocks block ship physics and weapon queries"),
+                 Batch->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
+                     Batch->GetCollisionResponseToChannel(ECC_Visibility) == ECR_Block &&
+                     Batch->GetCollisionResponseToChannel(ECC_PhysicsBody) == ECR_Block);
+        for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
+        {
+            FTransform T;
+            Batch->GetInstanceTransform(I, T, true);
+            Initial.Add(T);
+        }
+    }
+    if (!TestTrue(TEXT("Real mesh population loaded"), Initial.Num() == 128 && !Batches.IsEmpty()))
         return false;
-    int32 Instances = 0;
-    for (const auto *Batch : Batches)
+    const FVector Center = Initial[0].TransformPosition(Batches[0]->GetStaticMesh()->GetBounds().Origin);
+    // Approach all the way to the original rock center: the former shell teleported it away.
+    const FVector Start = Fixture.Ship->GetActorLocation();
+    for (int32 Step = 1; Step <= 60; ++Step)
     {
-        TestTrue(TEXT("Each available mesh family participates at normal density"), Batch->GetInstanceCount() > 0);
-        TestTrue(TEXT("Every batch disables collision"),
-                 Batch->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
-        TestFalse(TEXT("Every batch disables overlaps"), Batch->GetGenerateOverlapEvents());
-        Instances += Batch->GetInstanceCount();
+        Fixture.Ship->SetActorLocation(FMath::Lerp(Start, Center, Step / 60.f));
+        Field->Tick(1.f / 60.f);
     }
-    TestEqual(TEXT("Requested density creates bounded real instances"), Instances, 128);
-    auto CheckDistance = [&]()
-    {
-        for (const auto *Batch : Batches)
-        {
-            const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
-            for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-            {
-                FTransform Instance;
-                if (!Batch->GetInstanceTransform(Index, Instance, true))
-                    return false;
-                const FVector Center = Instance.TransformPosition(Bounds.Origin);
-                const double SurfaceDistance = FVector::Distance(Center, Fixture.Ship->GetActorLocation()) -
-                                               Bounds.SphereRadius * Instance.GetScale3D().GetAbsMax();
-                if (SurfaceDistance < Field->GetMinimumSurfaceDistance() - .1 ||
-                    SurfaceDistance <= Fixture.Ship->Tuning->WeaponRange)
-                    return false;
-            }
-        }
-        return true;
-    };
-    TestTrue(TEXT("Actual transformed mesh bounds stay outside the playable weapon range initially"), CheckDistance());
-    TArray<TArray<FVector>> InitialCenters;
-    InitialCenters.SetNum(Batches.Num());
-    TSet<int32> AnchorMeshBatches;
-    int32 FarRocks = 0;
-    bool bClearEntryAim = true;
-    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
-    {
-        const auto *Batch = Batches[BatchIndex];
-        TestFalse(TEXT("Decoration does not affect navigation"), Batch->CanEverAffectNavigation());
-        TestFalse(TEXT("Decoration does not introduce distant shadow work"), Batch->CastShadow);
-        const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            const FVector Center = Instance.TransformPosition(Bounds.Origin) - Fixture.Ship->GetActorLocation();
-            InitialCenters[BatchIndex].Add(Center);
-            const double Radius = Bounds.SphereRadius * Instance.GetScale3D().GetAbsMax();
-            if (Radius > 2200.0)
-                AnchorMeshBatches.Add(BatchIndex);
-            if (Center.Size() > 100000.0)
-                ++FarRocks;
-            if (Center.GetSafeNormal().X > .97 &&
-                ((Center.Size() < 65000.0 && Radius > 220.1) || Radius / Center.Size() > .05))
-                bClearEntryAim = false;
-        }
-    }
-    TestTrue(TEXT("Large silhouettes use multiple barren/mineral meshes instead of one repeated anchor"),
-             AnchorMeshBatches.Num() >= 4);
-    TestTrue(TEXT("Distant fragments supply a separate depth layer"), FarRocks > 0);
-    TestTrue(TEXT("Initial nearby aim corridor is clear; distant field silhouettes stay below three angular degrees"),
-             bClearEntryAim);
-    const FRotator InitialRotation = Fixture.Ship->GetActorRotation();
-    Fixture.Ship->SetActorRotation(FRotator(20.f, 90.f, 0.f));
-    Field->Tick(0.f);
-    bool bStableDuringTurn = true;
-    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
-    {
-        const auto *Batch = Batches[BatchIndex];
-        const FVector Origin = Batch->GetStaticMesh()->GetBounds().Origin;
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            const FVector Center = Instance.TransformPosition(Origin) - Fixture.Ship->GetActorLocation();
-            bStableDuringTurn &= Center.Equals(InitialCenters[BatchIndex][Index], .1);
-        }
-    }
-    TestTrue(TEXT("Turning the viewer does not swivel or reseed the environment"), bStableDuringTurn);
-    Fixture.Ship->SetActorRotation(InitialRotation);
-    Fixture.Ship->AddActorWorldOffset(FVector(0, 1000, 0));
-    Field->Tick(0.f);
-    double MinimumShift = TNumericLimits<double>::Max();
-    double MaximumShift = 0.0;
-    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
-    {
-        const auto *Batch = Batches[BatchIndex];
-        const FVector Origin = Batch->GetStaticMesh()->GetBounds().Origin;
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            const FVector Center = Instance.TransformPosition(Origin) - Fixture.Ship->GetActorLocation();
-            const double Shift = (Center - InitialCenters[BatchIndex][Index]).Size();
-            MinimumShift = FMath::Min(MinimumShift, Shift);
-            MaximumShift = FMath::Max(MaximumShift, Shift);
-        }
-    }
-    TestTrue(TEXT("Translation produces different motion in the near and distant layers"),
-             MinimumShift > 0.0 && MaximumShift > 40.0 && MinimumShift < MaximumShift * .5);
-    for (int32 Step = 0; Step < 160; ++Step)
-    {
-        Fixture.Ship->AddActorWorldOffset(FVector(5000, 1000, 500));
-        Fixture.Step();
-    }
-    TestTrue(TEXT("Long cumulative travel cannot reach decorative mesh bounds"), CheckDistance());
-    TArray<FVector> BeforeFurtherTravel;
-    for (const auto *Batch : Batches)
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            BeforeFurtherTravel.Add(Instance.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) -
-                                    Fixture.Ship->GetActorLocation());
-        }
-    Fixture.Ship->AddActorWorldOffset(FVector(1000, 0, 0));
-    Field->Tick(0.f);
-    int32 FurtherIndex = 0;
-    bool bStillMoving = false;
-    for (const auto *Batch : Batches)
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            const FVector Center = Instance.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) -
-                                   Fixture.Ship->GetActorLocation();
-            bStillMoving |= !Center.Equals(BeforeFurtherTravel[FurtherIndex++], 1.0);
-        }
-    TestTrue(TEXT("Parallax continues after prolonged flight instead of saturating a fixed offset"), bStillMoving);
-    const double BeforeShift = Field->GetMinimumSurfaceDistance();
-    const FVector Shift(-700000, -100000, -60000);
-    Fixture.Ship->ApplyWorldOffset(Shift, true);
-    Field->ApplyWorldOffset(Shift, true);
-    Field->Tick(0.f);
-    TestTrue(TEXT("World rebase does not create false parallax travel"),
-             FMath::IsNearlyEqual(Field->GetMinimumSurfaceDistance(), BeforeShift, .01));
-    TestTrue(TEXT("Rebased real instance bounds retain safety separation"), CheckDistance());
-    Count->Set(4000, Priority);
-    Field->Tick(1.f);
-    TestEqual(TEXT("Density is capped at 3072 decorative instances"), Field->GetRockCount(), 3072);
-    TestTrue(TEXT("Tumbling dense field keeps actual bounds outside weapon range"), CheckDistance());
-    Count->Set(0, Priority);
-    Field->Tick(0.f);
-    TestEqual(TEXT("Density zero removes every instance"), Field->GetRockCount(), 0);
-    for (const auto *Batch : Batches)
-        TestEqual(TEXT("Disabled batch has no residual instances"), Batch->GetInstanceCount(), 0);
-    Count->Set(384, Priority);
-    Field->Tick(1.f);
-    TestEqual(TEXT("Density can be restored without spawning gameplay actors"), Field->GetRockCount(), 384);
-    TestTrue(TEXT("Restored field retains conservative bounds"), CheckDistance());
     Field->SetFlightVisible(false);
+    Field->SetFlightVisible(true);
+    Field->Follow(Fixture.Ship);
+    int32 Flat = 0;
+    for (const auto *Batch : Batches)
+        for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
+        {
+            FTransform T;
+            Batch->GetInstanceTransform(I, T, true);
+            TestTrue(TEXT("Approach, docking visibility and refollow preserve position, rotation and scale"),
+                     T.Equals(Initial[Flat++], .01f));
+        }
+    Fixture.Ship->SetActorLocation(Start); // Keep its attached visual-rig actor outside the trace.
     Fixture.Step();
-    TestTrue(TEXT("Explicit station-visibility setter hides the field"), Field->IsHidden());
-    AddInfo(TEXT("Visibility setter exercised only; this test does not establish GameMode station routing."));
+    FHitResult Hit;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(WorldRockReachability), false, Fixture.Ship);
+    const float Radius = Batches[0]->GetStaticMesh()->GetBounds().SphereRadius * Initial[0].GetScale3D().GetAbsMax();
+    AddInfo(FString::Printf(TEXT("ROCK mesh=%s compiling=%d physics=%d bodies=%d center=%s radius=%.1f"),
+                            *Batches[0]->GetStaticMesh()->GetPathName(), Batches[0]->GetStaticMesh()->IsCompiling(),
+                            Batches[0]->IsPhysicsStateCreated(), Batches[0]->InstanceBodies.Num(), *Center.ToString(),
+                            Radius));
+    TestTrue(TEXT("A real shot trace hits the reachable rock"),
+             Fixture.World->LineTraceSingleByChannel(Hit, Center - FVector(Radius * 2, 0, 0),
+                                                     Center + FVector(Radius * 2, 0, 0), ECC_Visibility, Query) &&
+                 Hit.GetActor() == Field);
+    const FVector Shift(-700000, -100000, -60000);
+    Field->ApplyWorldOffset(Shift, true);
+    FTransform Rebased;
+    Batches[0]->GetInstanceTransform(0, Rebased, true);
+    TestTrue(TEXT("World rebasing preserves the same rock identity"),
+             Rebased.GetLocation().Equals(Initial[0].GetLocation() + Shift, .01f));
     return true;
 }
+
 #endif

@@ -1,5 +1,9 @@
 # SpaceSurvival
 
+## Owner amendment — September 21, 2026 evening
+
+Reachable asteroid scenery is a persistent world-space population independent of the Director's encounter-pressure budget. Its visible objects must not shrink, follow the player or recycle on approach. Preserve the environment through station landing and departure. Boarding's acceptance target is walking to the cockpit chair, sitting and taking flight without a rear-entry popup. Remove the playable alien gallery while retaining owned assets, retire the original Acornaut wardrobe option while retaining the current Squirrel, and distinguish pause from the startup/explicit-return title screen. These later explicit owner decisions supersede older contradictory implementation assumptions; progression, every-five-wave stations and Phase 1 content limits are unchanged. Implementation/remaining gaps live in RPT-20260921-05, not this specification.
+
 ## Game Scope and Phase 1 Implementation Specification
 
 **Status:** Initial game direction locked for Phase 1  

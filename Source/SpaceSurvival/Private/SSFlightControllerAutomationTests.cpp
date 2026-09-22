@@ -720,6 +720,19 @@ bool FSSTitleMenuNavigation::RunTest(const FString &)
         TestTrue(Device + TEXT(" New Game opens the real home walker without starting survival"),
                  F.Mode->InHangar() && IsValid(F.Mode->Walker) && F.Controller->GetPawn() == F.Mode->Walker &&
                      !F.Mode->IsMenuOpen() && !F.Instance->Session.run.active && !F.Instance->IsFreeFlight());
+        F.Mode->OpenPanel(ESSPanel::Main);
+        TestFalse(TEXT("Pausing the home station cannot reopen title art"), F.Mode->IsTitleMenu());
+        TestEqual(TEXT("Home pause is distinctly labeled"), F.Mode->PanelTitle, FString(TEXT("PAUSED")));
+        TestTrue(TEXT("Home pause resumes walking"),
+                 F.Mode->Entries.ContainsByPredicate([](const FSSMenuEntry &Entry) { return Entry.Action == 1; }));
+        F.Mode->ClosePanel();
+        const auto Bodies = F.Mode->WardrobeBodies();
+        TestFalse(TEXT("Original Acornaut is retired from wardrobe"),
+                  Bodies.ContainsByPredicate([](const FSSHeroDefinition &Body)
+                                             { return Body.Identity == ESSHeroIdentity::Acornaut; }));
+        F.Instance->Session.account.hero = static_cast<int32>(ESSHeroIdentity::Acornaut);
+        TestEqual(TEXT("Legacy Acornaut selection safely resolves to current default"), F.Mode->WornHeroId(),
+                  F.Mode->Tuning->SelectHero(ESSHeroSlot::Walker).Id);
         // Ordinary in-game Settings still closes back to play. StartRun is the pure
         // domain operation; GameMode.StartNewRun and all persistence APIs are excluded.
         if (!TestTrue(TEXT("Seed only memory for ordinary in-game Settings"),

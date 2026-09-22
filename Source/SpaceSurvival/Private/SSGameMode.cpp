@@ -176,6 +176,7 @@ void ASSGameMode::BeginPlay()
                 Light->SetIntensity(SpaceLook->KeyIntensity);
             }
     ShowHangar();
+    bAtTitleScreen = true;
     // The approved main menu is the entry screen. New Game opens this home hangar;
     // walking into the ship then offers Survival or Free Flight.
     OpenPanel(ESSPanel::Main);
@@ -283,6 +284,7 @@ void ASSGameMode::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 }
 void ASSGameMode::ShowHangar()
 {
+    bAtTitleScreen = false;
     bDepartingStation = bStartNextBlockOnExit = false;
     ThreatWarningSeconds = PilotReactionSeconds = 0.f;
     Director->SetActive(false);
@@ -316,6 +318,7 @@ void ASSGameMode::ShowHangar()
     PreviousPhase = int32(GetGameInstance<USSGameInstance>()->Session.run.phase);
     PreviousWave = -1;
     ClosePanel();
+    FollowFlightPresentation();
 }
 void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation, bool PreserveHub)
 {
@@ -348,13 +351,16 @@ void ASSGameMode::FollowFlightPresentation()
         AmbientPresentation = GetWorld()->SpawnActor<ASSAmbientPresentation>();
     AmbientPresentation->Follow(Ship);
     if (!SpaceScenery)
+    {
         SpaceScenery = GetWorld()->SpawnActor<ASSSpaceScenery>();
-    if (const auto *GI = GetGameInstance<USSGameInstance>())
-        SpaceScenery->SetRunSeed(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str()))));
+        if (const auto *GI = GetGameInstance<USSGameInstance>())
+            SpaceScenery->SetRunSeed(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str()))));
+    }
     SpaceScenery->Follow(Ship);
 }
 void ASSGameMode::StartNewRun()
 {
+    bAtTitleScreen = false;
     bStartNextBlockOnExit = false;
     bWormholeArrived = false;
     ArrivalColorBlend = 0.f;
@@ -667,9 +673,8 @@ void ASSGameMode::Tick(float Dt)
     if (!GI)
         return;
     auto &S = GI->Session;
-    const bool FlightSceneryVisible = S.run.phase == SS::Phase::Flight || S.run.phase == SS::Phase::Breathing ||
-                                      S.run.phase == SS::Phase::Climax ||
-                                      (GI->IsFreeFlight() && S.run.phase == SS::Phase::Approach);
+    // The station occupies the same space. Landing and possession cannot switch the region off.
+    const bool FlightSceneryVisible = IsValid(Ship);
     if (DistantField)
         DistantField->SetFlightVisible(FlightSceneryVisible);
     if (AmbientPresentation)
@@ -741,7 +746,7 @@ void ASSGameMode::Tick(float Dt)
         if (SpaceMaterial)
         {
             // Long gradual visual drift, independent of wave and station cadence.
-            const uint32 RegionSeed = GetTypeHash(FString(UTF8_TO_TCHAR(S.run.id.c_str())));
+            const uint32 RegionSeed = 740127; // Continuous world identity across boarding and takeoff.
             const float Blend = .5f + .5f * FMath::Sin(RegionTime * .006f + float(RegionSeed % 1000) * .01f);
             if (SpaceLook && SpaceLook->RegionSkies.Num() > 1)
             {
@@ -960,6 +965,8 @@ void ASSGameMode::Interact()
     {
         if (Walker->IsDisembarking())
             return;
+        if (TryBoardShip(Walker))
+            return;
         FString Label;
         const auto Service = Hub->NearestService(Walker->GetActorLocation(), Label);
         if (Service == ESSPanel::AlienGallery)
@@ -981,6 +988,18 @@ void ASSGameMode::Interact()
             return;
         }
         ASSEncounterBeacon *Closest = nullptr;
+        ASSEncounterBeacon *Nearest = nullptr;
+        float NearestDistance = MAX_flt;
+        for (TActorIterator<ASSEncounterBeacon> It(GetWorld()); It; ++It)
+            if (!It->IsResolved())
+            {
+                const float D = FVector::DistSquared(Ship->GetActorLocation(), It->GetActorLocation());
+                if (D < NearestDistance)
+                {
+                    Nearest = *It;
+                    NearestDistance = D;
+                }
+            }
         float Distance = MAX_flt;
         for (TActorIterator<ASSEncounterBeacon> It(GetWorld()); It; ++It)
             if (It->IsPlayerInRange() && !It->IsResolved())
@@ -1000,6 +1019,8 @@ void ASSGameMode::Interact()
                 if (Closest->TryAccept())
                     OpenPanel(ESSPanel::Depot);
             }
+            else if (Closest->IsAccepted())
+                Announce(Closest->GetEncounterLabel());
             else if (Closest->TryAccept())
             {
                 if (auto *GI = GetGameInstance<USSGameInstance>())
@@ -1010,6 +1031,11 @@ void ASSGameMode::Interact()
                 Announce(Closest->GetEncounterLabel());
             }
         }
+        else if (Nearest)
+            Announce(FString::Printf(TEXT("SIGNAL OUT OF RANGE / %.0f m away; move closer and press E / A"),
+                                     FMath::Sqrt(NearestDistance) / 100.f));
+        else
+            Announce(TEXT("No active signal nearby."));
     }
 }
 void ASSGameMode::AddEntry(const FString &Label, int32 Action, bool Enabled)
@@ -1049,7 +1075,9 @@ void ASSGameMode::ClosePanel()
 }
 TArray<FSSHeroDefinition> ASSGameMode::WardrobeBodies() const
 {
-    return Tuning ? Tuning->InstalledHeroes(ESSHeroSlot::Walker) : TArray<FSSHeroDefinition>();
+    auto Bodies = Tuning ? Tuning->InstalledHeroes(ESSHeroSlot::Walker) : TArray<FSSHeroDefinition>();
+    Bodies.RemoveAll([](const FSSHeroDefinition &Body) { return Body.Identity == ESSHeroIdentity::Acornaut; });
+    return Bodies;
 }
 
 FName ASSGameMode::WornHeroId() const
@@ -1060,7 +1088,7 @@ FName ASSGameMode::WornHeroId() const
     const auto &S = GI->Session;
     // No choice saved is the ordinary case for a new game, and it must stay the ordinary answer:
     // roster order, which puts the squirrel on the deck.
-    if (S.account.hero < 0)
+    if (S.account.hero < 0 || S.account.hero == static_cast<int32>(ESSHeroIdentity::Acornaut))
         return Tuning->SelectHero(ESSHeroSlot::Walker).Id;
     // A saved choice is a request, not a guarantee. SelectHero's preference overload falls through to
     // roster order when the named body is not installed, so a save made on a machine with a pack that
@@ -1078,7 +1106,7 @@ void ASSGameMode::WearHero()
 bool ASSGameMode::IsTitleMenu() const
 {
     const auto *GI = GetGameInstance<USSGameInstance>();
-    return Panel == ESSPanel::Main && GI && !GI->Session.run.active && !GI->IsFreeFlight();
+    return Panel == ESSPanel::Main && bAtTitleScreen && GI && !GI->Session.run.active && !GI->IsFreeFlight();
 }
 
 void ASSGameMode::OpenPanel(ESSPanel NewPanel)
@@ -1117,13 +1145,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     switch (Panel)
     {
     case ESSPanel::Main:
-        PanelTitle = TEXT("SPACE SURVIVAL");
+        PanelTitle = IsTitleMenu() ? TEXT("SPACE SURVIVAL") : TEXT("PAUSED");
         PanelDetail = TEXT("How far will this journey take you?");
         if (GI->IsFreeFlight())
         {
             PanelDetail = TEXT("Free Flight / Your survival progress is unchanged.");
             AddEntry(TEXT("Return to Free Flight"), 1);
             AddEntry(TEXT("Return to home hangar"), 53);
+            AddEntry(TEXT("Exit to main menu"), 54);
             AddEntry(TEXT("Settings"), 5);
             AddEntry(TEXT("Quit"), 7);
             break;
@@ -1134,7 +1163,7 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             if (S.AtSliceBoundary())
                 AddEntry(TEXT("Abandon this suspended-capable slice and start a new run (no death XP)"), 51);
         }
-        else
+        else if (IsTitleMenu())
         {
             AddEntry(TEXT("Continue"), 2, GI->HasSuspendedRun());
             AddEntry(TEXT("New Game"), 4);
@@ -1142,8 +1171,11 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             AddEntry(TEXT("Exit Game"), 7);
             break;
         }
+        if (!S.run.active)
+            AddEntry(TEXT("Resume walking"), 1);
         AddEntry(TEXT("Settings"), 5);
         AddEntry(TEXT("Run stats / progression"), 6);
+        AddEntry(TEXT("Exit to main menu (unsuspended run progress is lost)"), 54);
         AddEntry(S.run.active ? TEXT("Quit (unsuspended progress will be lost)") : TEXT("Quit"), 7);
         break;
     case ESSPanel::Results:
@@ -1493,6 +1525,16 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
         StartFreeFlight();
         return;
     }
+    if (A == 54)
+    {
+        if (GI->IsFreeFlight() && !GI->EndFreeFlight())
+            return;
+        S.run = {};
+        ShowHangar();
+        bAtTitleScreen = true;
+        OpenPanel(ESSPanel::Main);
+        return;
+    }
     if (A == 53)
     {
         EndFreeFlight();
@@ -1507,6 +1549,7 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
     {
         if (GI->ResumeRun())
         {
+            bAtTitleScreen = false;
             bWormholeArrived = S.run.wave >= 5;
             ArrivalColorBlend = bWormholeArrived ? 1.f : 0.f;
             StationTarget = FVector::ZeroVector;

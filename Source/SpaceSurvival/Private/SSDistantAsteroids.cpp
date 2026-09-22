@@ -5,17 +5,16 @@
 #include "Engine/StaticMesh.h"
 #include "HAL/IConsoleManager.h"
 #include "Misc/PackageName.h"
+#if WITH_EDITOR
+#include "StaticMeshCompiler.h"
+#endif
 
 namespace
 {
-// 2048, not 3072. ASSSpaceScenery takes its own clutter budget as whatever is left of a shared 3072
-// instance cap, so setting this to the cap starves the only near-field system that is world-stable and
-// direction-independent, which is precisely the content a player sees when they turn around. The density
-// that raising this was meant to buy came instead from fixing the shell recycle, which made the instances
-// that already existed visible rather than adding more.
+// Share a bounded population with the separately streamed, world-stable scenery cells.
 TAutoConsoleVariable<int32>
     DistantAsteroidCount(TEXT("ss.DistantAsteroidCount"), 2048,
-                         TEXT("Visual-only distant asteroid count, clamped 0..3072. Does not alter hazards."),
+                         TEXT("World-space asteroid count, clamped 0..3072. Does not alter hazards."),
                          ECVF_Scalability);
 constexpr double MinimumAnchorDistance = 32000.0;
 constexpr double MaximumRockRadius = 4800.0;
@@ -25,30 +24,22 @@ struct FDepthBand
     float MaximumDistance;
     float MinimumRadius;
     float MaximumRadius;
-    double Parallax;
-    double Tumble;
 };
 // The pack's examples build scale from sparse large bodies through many small fragments.
-// Keep that hierarchy in four bounded visual layers; none enters the playable hazard volume.
-const FDepthBand DepthBands[] = {{42000.f, 62000.f, 2300.f, float(MaximumRockRadius), .7, .25},
-                                 {float(MinimumAnchorDistance), 51000.f, 450.f, 1000.f, 1.0, 1.0},
-                                 {68000.f, 95000.f, 1200.f, 3400.f, .35, .5},
-                                 {115000.f, 175000.f, 400.f, 1600.f, .12, .1}};
+// Seed four depth bands once; every object remains reachable at its original world position.
+const FDepthBand DepthBands[] = {{42000.f, 62000.f, 2300.f, float(MaximumRockRadius)},
+                                 {float(MinimumAnchorDistance), 51000.f, 450.f, 1000.f},
+                                 {68000.f, 95000.f, 1200.f, 3400.f},
+                                 {115000.f, 175000.f, 400.f, 1600.f}};
 
-float ShellFade(const FVector &Center, const FDepthBand &Band)
-{
-    const double Distance = Center.Size();
-    const double Edge = FMath::Min(Distance - Band.MinimumDistance, Band.MaximumDistance - Distance);
-    const float Alpha = FMath::Clamp(float(Edge / 3500.0), 0.f, 1.f);
-    return Alpha * Alpha * (3.f - 2.f * Alpha);
-}
 } // namespace
 
 ASSDistantAsteroids::ASSDistantAsteroids()
 {
     PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.TickInterval = .25f;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DistantFieldRoot"));
-    SetActorEnableCollision(false);
+    SetActorEnableCollision(true);
     SetActorHiddenInGame(true);
 }
 
@@ -58,14 +49,15 @@ void ASSDistantAsteroids::BeginPlay()
     const TCHAR *LookPath = TEXT("/Game/SpaceSurvival/Licensed/Atmosphere/DA_DeepSpaceLook");
     SpaceLook = FPackageName::DoesPackageExist(LookPath) ? LoadObject<USSSpaceLookData>(nullptr, LookPath) : nullptr;
     // Large bodies use barren/mineral families; fragments/debris keep their smaller role.
-    const TCHAR *Names[] = {TEXT("SM_Asteroid_Barren_1"),  TEXT("SM_Asteroid_Barren_2"),  TEXT("SM_Asteroid_Barren_3"),
-                            TEXT("SM_AsteroidBarren_4"),   TEXT("SM_AsteroidMineral_1"),  TEXT("SM_AsteroidMineral_2"),
-                            TEXT("SM_AsteroidMineral_3"),  TEXT("SM_AsteroidMineral_4"),  TEXT("SM_AsteroidFragment_1"),
-                            TEXT("SM_AsteroidFragment_2"), TEXT("SM_AsteroidFragment_3"), TEXT("SM_AsteroidFragment_4"),
-                            TEXT("SM_Debris_1"),           TEXT("SM_Debris_2"),           TEXT("SM_Debris_3")};
+    const TCHAR *Names[] = {
+        TEXT("SM_Asteroid_Barren_1"),  TEXT("SM_Asteroid_Barren_2"),  TEXT("SM_Asteroid_Barren_3"),
+        TEXT("SM_AsteroidBarren_4"),   TEXT("SM_AsteroidMineral_1"),  TEXT("SM_AsteroidMineral_2"),
+        TEXT("SM_AsteroidMineral_3"),  TEXT("SM_AsteroidMineral_4"),  TEXT("SM_AsteroidFragment_1"),
+        TEXT("SM_AsteroidFragment_2"), TEXT("SM_AsteroidFragment_3"), TEXT("SM_AsteroidFragment_4"),
+        TEXT("SM_AsteroidFragment_1"), TEXT("SM_AsteroidFragment_2"), TEXT("SM_AsteroidFragment_3")};
     for (int32 Index = 0; Index < UE_ARRAY_COUNT(Names); ++Index)
     {
-        const FString Package = FString::Printf(TEXT("/Game/Asteroid_Library/Static_Meshes/%s"), Names[Index]);
+        const FString Package = FString::Printf(TEXT("/Game/SpaceSurvival/Licensed/SolidScenery/%s"), Names[Index]);
         UStaticMesh *Mesh =
             FPackageName::DoesPackageExist(Package) ? LoadObject<UStaticMesh>(nullptr, *Package) : nullptr;
         if (!Mesh)
@@ -73,12 +65,27 @@ void ASSDistantAsteroids::BeginPlay()
                                            TEXT("/Game/SpaceSurvival/Meshes/SM_AsteroidMedium.SM_AsteroidMedium"));
         if (!Mesh)
             continue;
+#if WITH_EDITOR
+        // As with the landing pad, an asynchronously compiling mesh cannot create collision yet.
+        // Wait only for the meshes being registered; packaged meshes are already compiled.
+        if (Mesh->IsCompiling())
+        {
+            UStaticMesh *RequiredMeshes[] = {Mesh};
+            FStaticMeshCompilingManager::Get().FinishCompilation(RequiredMeshes);
+        }
+#endif
         auto *Batch =
             NewObject<UInstancedStaticMeshComponent>(this, FName(*FString::Printf(TEXT("DistantRock_%d"), Index)));
         Batch->SetupAttachment(RootComponent);
         Batch->SetStaticMesh(Mesh);
-        Batch->SetCollisionProfileName(TEXT("NoCollision"));
-        Batch->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        // Use the owned library's private simple-collision derivatives. These are world objects,
+        // independent of the Director; ship sweeps and weapons must both hit them.
+        Batch->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Batch->SetCollisionObjectType(ECC_WorldStatic);
+        Batch->SetCollisionResponseToAllChannels(ECR_Ignore);
+        Batch->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+        Batch->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
+        Batch->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
         Batch->SetGenerateOverlapEvents(false);
         Batch->SetCanEverAffectNavigation(false);
         Batch->SetCastShadow(false);
@@ -86,7 +93,6 @@ void ASSDistantAsteroids::BeginPlay()
         Batch->RegisterComponent();
         Batches.Add(Batch);
     }
-    BuildField(FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 3072));
 }
 
 void ASSDistantAsteroids::Follow(AActor *InViewer)
@@ -100,11 +106,13 @@ void ASSDistantAsteroids::Follow(AActor *InViewer)
     {
         PreviousViewerPosition = InViewer->GetActorLocation();
         FieldBasis = InViewer->GetActorQuat();
-        SetActorLocation(PreviousViewerPosition);
+        if (BuiltCount < 0)
+            SetActorLocation(PreviousViewerPosition);
         AddTickPrerequisiteActor(InViewer);
         SetActorHiddenInGame(!bFlightVisible);
     }
-    BuildField(FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 3072));
+    if (BuiltCount < 0)
+        BuildField(FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 3072));
 }
 
 void ASSDistantAsteroids::SetFlightVisible(bool bVisible)
@@ -113,11 +121,6 @@ void ASSDistantAsteroids::SetFlightVisible(bool bVisible)
         return;
     bFlightVisible = bVisible;
     SetActorHiddenInGame(!bVisible);
-    if (Viewer.IsValid())
-    {
-        PreviousViewerPosition = Viewer->GetActorLocation();
-        SetActorLocation(PreviousViewerPosition);
-    }
 }
 
 void ASSDistantAsteroids::BuildField(int32 Count)
@@ -127,15 +130,6 @@ void ASSDistantAsteroids::BuildField(int32 Count)
         Batch->ClearInstances();
         Batch->SetRelativeLocation(FVector::ZeroVector);
     }
-    InstanceBands.SetNum(Batches.Num());
-    RestTransforms.SetNum(Batches.Num());
-    AnimatedTransforms.SetNum(Batches.Num());
-    for (auto &Bands : InstanceBands)
-        Bands.Reset();
-    for (auto &Transforms : RestTransforms)
-        Transforms.Reset();
-    for (auto &Transforms : AnimatedTransforms)
-        Transforms.Reset();
     BuiltCount = 0;
     MinimumAnchorSurface = MinimumAnchorDistance - MaximumRockRadius;
     if (Batches.IsEmpty())
@@ -206,11 +200,7 @@ void ASSDistantAsteroids::BuildField(int32 Count)
         const FVector Center = FieldBasis.RotateVector(Direction * Distance);
         const FVector Pivot = Center - Rotation.RotateVector(Bounds.Origin * Scale);
         const FTransform Pose(Rotation, Pivot, FVector(Scale));
-        FTransform Animated = Pose;
-        Batch->AddInstance(Animated);
-        RestTransforms[BatchIndex].Add(Pose);
-        AnimatedTransforms[BatchIndex].Add(Animated);
-        InstanceBands[BatchIndex].Add(uint8(BandIndex));
+        Batch->AddInstance(Pose);
         ++BuiltCount;
     }
 }
@@ -223,58 +213,11 @@ void ASSDistantAsteroids::Tick(float DeltaSeconds)
         SetActorHiddenInGame(true);
         return;
     }
-    const FVector Position = Viewer->GetActorLocation();
-    const FVector Travel = Position - PreviousViewerPosition;
-    PreviousViewerPosition = Position;
-    SetActorLocation(Position, false, nullptr, ETeleportType::TeleportPhysics);
-    if (!bFlightVisible)
-        return;
+    // Player motion, camera rotation and docking never move, shrink or recycle a rock.
+    // The initial belt remains anchored; SpaceScenery supplies deterministic world cells beyond it.
     const int32 Wanted = FMath::Clamp(DistantAsteroidCount.GetValueOnGameThread(), 0, 3072);
     if (Wanted != BuiltCount && !Batches.IsEmpty())
         BuildField(Wanted);
-    // Keep parallax moving during sustained travel. Each shell recycles only at its
-    // faded radial edge, never into reachable collision/weapon space. Teleports and
-    // world rebases must not look like movement through the field.
-    const FVector FieldTravel =
-        !Travel.ContainsNaN() && Travel.SizeSquared() < FMath::Square(8000.0) ? Travel : FVector::ZeroVector;
-    // Slow individual tumble around each mesh bound center, not its imported pivot.
-    // Bounded batched submissions, no per-rock actors, collision, or gameplay Tick.
-    SpinSeconds = FMath::Fmod(SpinSeconds + FMath::Max(0.f, DeltaSeconds), 36000.0);
-    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
-    {
-        auto *Batch = Batches[BatchIndex].Get();
-        Batch->SetRelativeLocation(FVector::ZeroVector);
-        const FVector Origin = Batch->GetStaticMesh()->GetBounds().Origin;
-        for (int32 Index = 0; Index < RestTransforms[BatchIndex].Num(); ++Index)
-        {
-            const FDepthBand &Band = DepthBands[InstanceBands[BatchIndex][Index]];
-            FTransform &Rest = RestTransforms[BatchIndex][Index];
-            FVector Center = Rest.TransformPosition(Origin) - FieldTravel * Band.Parallax;
-            const double Distance = Center.Size();
-            // Re-enter through the edge it left through. Sending a rock that drifted past the OUTER edge back
-            // in at the INNER one is what made the field behind the player empty and made rocks appear close:
-            // sustained travel pushed every instance out of the back, and each one returned to the near edge in
-            // front, where ShellFade scales it to nothing until it drifts outward far enough to be seen. A 90
-            // second cruise simulation of the old rule left bands 0 to 2 with zero visible instances ahead and
-            // every one of them piled at the inner edge; re-entering at the same edge holds the field even.
-            if (Distance < Band.MinimumDistance)
-                Center = -Center.GetSafeNormal() * Band.MinimumDistance;
-            else if (Distance > Band.MaximumDistance)
-                Center = -Center.GetSafeNormal() * Band.MaximumDistance;
-            Rest.SetLocation(Center - Rest.GetRotation().RotateVector(Origin * Rest.GetScale3D()));
-            const FVector Axis = FVector(1.0, .3 + BatchIndex, .2 + Index % 3).GetSafeNormal();
-            const double Rate = (.2 + .1 * ((Index + BatchIndex) % 7)) * Band.Tumble;
-            const FQuat Rotation = FQuat(Axis, FMath::DegreesToRadians(SpinSeconds * Rate)) * Rest.GetRotation();
-            FTransform &Pose = AnimatedTransforms[BatchIndex][Index];
-            Pose.SetRotation(Rotation);
-            Pose.SetScale3D(Rest.GetScale3D() * ShellFade(Center, Band));
-            Pose.SetLocation(Center - Rotation.RotateVector(Origin * Pose.GetScale3D()));
-        }
-        if (!AnimatedTransforms[BatchIndex].IsEmpty())
-            // bMarkRenderStateDirty takes RecreateRenderState_Concurrent and skips the incremental
-            // instance-data path, rebuilding every batch's scene proxy each frame for no visual gain.
-            Batch->BatchUpdateInstancesTransforms(0, AnimatedTransforms[BatchIndex], false, false, false);
-    }
 }
 
 void ASSDistantAsteroids::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)

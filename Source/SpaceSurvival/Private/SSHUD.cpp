@@ -769,6 +769,11 @@ void ASSHUD::DrawHUD()
                 InteractionHint = It->ServiceGuidance(Walker->GetActorLocation());
                 HintColor = FLinearColor(.68f, .82f, .9f);
             }
+            if (GM->IsWalkerInsideShip(Walker))
+            {
+                GlyphBeforeHint = true;
+                InteractionHint = TEXT("FLIGHT OPTIONS");
+            }
             if (!GlyphBeforeHint && S.run.pendingReward)
             {
                 InteractionHint = TEXT("REWARD SECURED / visit the Beacon Log");

@@ -38,11 +38,11 @@ bool FSSStationServiceLabelView::RunTest(const FString &)
         InitialText.Add(Text->Text.ToString());
         ServiceCount += Text->ComponentHasTag(TEXT("StationServiceLabel")) ? 1 : 0;
     }
-    // The functional district has ten distinct service zones. The preserved legacy station additionally
-    // repeats repair/upgrades on its exterior pad. Pin the complete count for whichever layout is active;
+    // The functional district has nine service zones after retiring the gallery. The preserved legacy station
+    // additionally repeats repair/upgrades on its exterior pad. Pin the complete count for whichever layout is active;
     // the checks below still require every label to face the view and retain its actual interaction.
     TestEqual(TEXT("Every live service label in the active layout participates in view-facing presentation"),
-              ServiceCount, Hub->IsUsingFunctionalLayout() ? 10 : 12);
+              ServiceCount, Hub->IsUsingFunctionalLayout() ? 9 : 11);
     for (auto *Camera : {FrontCamera, RearCamera})
     {
         Controller->SetViewTarget(Camera);

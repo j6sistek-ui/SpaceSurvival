@@ -357,7 +357,7 @@ void ASSStation::BuildFunctionalHub()
     Service(TEXT("Launch"), TEXT("LAUNCH CONTROL"), ESSPanel::Launch);
     Service(TEXT("Wardrobe"), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
     Service(TEXT("Paint"), TEXT("PAINT BAY"), ESSPanel::Paint);
-    Service(TEXT("Gallery"), TEXT("ALIEN WORLD"), ESSPanel::AlienGallery);
+    // Gallery evaluation is retired; supplied assets remain available for authoring.
     Service(TEXT("Modules"), Home ? TEXT("ENGINEER MICA / RECORD") : TEXT("ENGINEER MICA / MODULES"),
             Home ? ESSPanel::Progression : ESSPanel::Vendor);
     Service(TEXT("Beacon"), TEXT("BEACON LOG / LOST CREW"), Home ? ESSPanel::History : ESSPanel::Reward);
@@ -583,7 +583,7 @@ void ASSStation::BuildHub(bool bHome)
     AddService(FVector(-1400, -1000, 0), TEXT("PAINT BAY"), ESSPanel::Paint);
     // A separate review doorway: available in home hangar and both stations, never a run destination.
     BuildLandingPad(Home, Cube, Hull);
-    AddService(FVector(450, 1000, 0), TEXT("ALIEN WORLD"), ESSPanel::AlienGallery);
+    // No playable gallery service.
     ServiceLabels.Last()->SetRelativeLocation(FVector(450, 1160, 265));
     ServiceLabels.Last()->SetWorldSize(20);
     for (float Side : {-1.f, 1.f})
@@ -1523,13 +1523,7 @@ void ASSWalker::Tick(float Dt)
         // Which clip this hero should be in, and how fast it should run.
         UpdateHeroAnimation(Dt);
         UpdateFootsteps(Dt);
-        if (ASSGameMode *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
-        {
-            if (!Mode->IsWalkerInsideShip(this) && GetCharacterMovement()->IsMovingOnGround())
-                BoardingOffered = false;
-            else if (!BoardingOffered && GetCharacterMovement()->IsMovingOnGround())
-                BoardingOffered = Mode->TryBoardShip(this);
-        }
+        // Boarding is an explicit interaction; crossing the ramp must not seize movement.
     }
 }
 void ASSWalker::UpdateFootsteps(float Dt)

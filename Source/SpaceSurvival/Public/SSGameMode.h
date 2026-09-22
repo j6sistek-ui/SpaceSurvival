@@ -179,6 +179,7 @@ private:
     bool LowHullAlerted = false;
     bool bDepartingStation = false;
     bool bStartNextBlockOnExit = false;
+    bool bAtTitleScreen = true;
     void UpdateMusicMix();
     void UpdateThreatFeedback(float DeltaSeconds);
     void EnterStation();

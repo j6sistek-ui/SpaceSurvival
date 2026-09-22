@@ -1,5 +1,7 @@
 # Phase 1 content pipeline
 
+**2026-09-22 runtime-only update:** asteroid belt rendering now uses the already-authored `/Game/SpaceSurvival/Licensed/SolidScenery` barren/mineral/fragment derivatives for query/physics collision. No vendor asset was edited or newly authored. Alien gallery and original Acornaut are retired from player selection; their assets remain available for authoring/provenance and existing offline fixtures. The owner-planned replacement Squirrel (<80k equipped triangles, editable segments) has not been supplied/imported.
+
 Status and storage: [PROJECT_STATE.md](PROJECT_STATE.md). Active work and owner acceptance: [KNOWN_ISSUES.md](KNOWN_ISSUES.md). This document describes the selected licensed authoring workflow and retains the original pipeline and dated evidence; it is not a current build inventory or task queue. Earlier licensed presentation is documented in [ASSET_REFRESH.md](ASSET_REFRESH.md) and [combined space look](production/COMBINED_SPACE_LOOK.md). A Git checkout alone omits licensed inputs and derivatives.
 
 **Historical Package 10 checkpoint:** Package 10/source `0fc4f7a7eb032f010cce1899e0ca279bd9e6ee80` contains 88 project packages and passed independent cooked-index/source/artifact checks, plus separate rendered Station 5 and Wave 10 fixtures. Later font, enemy and pose source is outside that archive. Current source/build identity is tracked in [PROJECT_STATE.md](PROJECT_STATE.md); [VALIDATION.md](VALIDATION.md) and immutable receipts retain their tested source identities.
