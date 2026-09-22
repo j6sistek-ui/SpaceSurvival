@@ -11,6 +11,8 @@ class SPACESURVIVAL_API ASSHUD : public AHUD
 public:
     virtual void DrawHUD() override;
     int32 MenuIndexAt(FVector2D Point) const;
+    bool ScrollMenu(int32 Rows);
+    bool HandleMenuScrollPointer(FVector2D Point, bool Pressed, bool Held);
     const TArray<FBox2D> &GetMenuBounds() const
     {
         return MenuBounds;
@@ -40,6 +42,11 @@ private:
     float RefreshText(const FString &Value, float X, float Y, float Pixels, FLinearColor Color, float Width = 0.f);
     bool DrawRefreshMenu(const class ASSGameMode &Mode);
     void DrawRefreshVitals(const class ASSGameMode &Mode, bool Walking);
+    void DrawStationRadar();
+    int32 ScrollFirst = 0, ScrollVisible = 6, ScrollCount = 0;
+    bool bScrollDragging = false;
+    float ScrollDragOffset = 0;
+    FBox2D ScrollTrackBounds, ScrollThumbBounds, ScrollUpBounds, ScrollDownBounds;
     TArray<FBox2D> MenuBounds;
     float Scale = 1.f;
     FString FeedbackRun;

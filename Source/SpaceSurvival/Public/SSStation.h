@@ -59,6 +59,8 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     ESSPanel NearestService(FVector Position, FString &Label) const;
     bool ServicePosition(ESSPanel Panel, FVector &WorldPosition) const;
+    /** Read-only world positions from functional services and currently visible station crew. */
+    void RadarContacts(TArray<FVector> &ServicePositions, TArray<FVector> &CrewPositions) const;
     /** Guidance to an existing service, including when no console is in interaction range. */
     FString ServiceGuidance(FVector Position) const;
     /** Select a floor-supported pad exit outside this ship's actual rendered footprint. */

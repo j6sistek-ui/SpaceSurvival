@@ -810,12 +810,19 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
     }
     FlightSeconds += Dt;
     ++CapturedFrames;
-    const ESSPanel Panels[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
-                               ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
-    const TCHAR *Names[] = {TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
-                            TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
+    const bool Followup = FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview"));
+    const TArray<ESSPanel> Panels =
+        Followup ? TArray<ESSPanel>{ESSPanel::Audio,    ESSPanel::Controls, ESSPanel::Wardrobe,
+                                    ESSPanel::Wardrobe, ESSPanel::Wardrobe, ESSPanel::None}
+                 : TArray<ESSPanel>{ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
+                                    ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
+    const TArray<const TCHAR *> Names =
+        Followup ? TArray<const TCHAR *>{TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
+                                         TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")}
+                 : TArray<const TCHAR *>{TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
+                                         TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
     const int32 Index = MainMenuStage / 2;
-    if (Index >= UE_ARRAY_COUNT(Panels))
+    if (Index >= Panels.Num())
     {
         HUD->bReviewFlightHUD = false;
         Stop(TEXT(""));
@@ -825,9 +832,27 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
     {
         GM->bAtTitleScreen = false;
         GM->bTitleSettingsNavigation = false;
-        HUD->bReviewFlightHUD = Panels[Index] == ESSPanel::None;
-        if (!HUD->bReviewFlightHUD)
+        HUD->bReviewFlightHUD = !Followup && Panels[Index] == ESSPanel::None;
+        if (Followup && Index == 3)
+        {
+            // The same index change used by D-pad navigation must reveal the final character.
+            GM->SelectedEntry = GM->Entries.Num() - 2;
+        }
+        else if (Followup && Index == 4)
+        {
+            // Wheel, arrows and dragging change focus only, never the saved character.
+            HUD->ScrollMenu(-100);
+            HUD->ScrollMenu(100);
+            const FVector2D Thumb = HUD->ScrollThumbBounds.GetCenter();
+            HUD->HandleMenuScrollPointer(Thumb, true, true);
+            HUD->HandleMenuScrollPointer(FVector2D(Thumb.X, HUD->ScrollTrackBounds.Min.Y + HUD->ScrollDragOffset),
+                                         false, true);
+            HUD->HandleMenuScrollPointer(Thumb, false, false);
+        }
+        else if (Panels[Index] != ESSPanel::None)
             GM->OpenPanel(Panels[Index]);
+        else if (Followup)
+            GM->ClosePanel();
         MainMenuStageAt = FlightSeconds;
         ++MainMenuStage;
         return;
@@ -841,21 +866,47 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
         MainMenuStageAt = FlightSeconds;
     if (FlightSeconds - MainMenuStageAt < 1. || FScreenshotRequest::IsScreenshotRequested())
         return;
-    if (!HUD->bReviewFlightHUD)
+    if (!HUD->bReviewFlightHUD && Panels[Index] != ESSPanel::None)
     {
         const auto &Bounds = HUD->GetMenuBounds();
+        const bool Wardrobe = GM->Panel == ESSPanel::Wardrobe;
         if (Bounds.Num() != GM->Entries.Num())
         {
             Stop(TEXT("UI frame lost native action bounds."));
             return;
         }
+        int32 Visible = 0;
         for (int32 I = 0; I < Bounds.Num(); ++I)
+        {
+            if (Wardrobe && !Bounds[I].bIsValid)
+                continue;
+            ++Visible;
             if (!Bounds[I].bIsValid || Bounds[I].Min.X < 0 || Bounds[I].Min.Y < 0 || Bounds[I].Max.X > 1920 ||
                 Bounds[I].Max.Y > 1080 || HUD->MenuIndexAt(Bounds[I].GetCenter()) != I)
             {
                 Stop(TEXT("UI frame has overlapping, offscreen or mismapped action bounds."));
                 return;
             }
+        }
+        if (Wardrobe &&
+            (Visible != FMath::Min(HUD->ScrollCount, HUD->ScrollVisible) + 1 || !Bounds[GM->SelectedEntry].bIsValid ||
+             (Followup && Index == 3 && HUD->ScrollFirst != HUD->ScrollCount - HUD->ScrollVisible) ||
+             (Followup && Index == 4 && HUD->ScrollFirst != 0)))
+        {
+            Stop(TEXT("Wardrobe focus, clipping or pointer scrolling failed."));
+            return;
+        }
+    }
+    else if (Followup)
+    {
+        TArray<FVector> Services, Crew;
+        if (GM->Hub)
+            GM->Hub->RadarContacts(Services, Crew);
+        if (!Cast<ASSWalker>(PC->GetPawn()) || GM->IsMenuOpen() || Services.IsEmpty() || Crew.IsEmpty())
+        {
+            Stop(TEXT("Walking HUD requires the actual walker and real service/crew contacts."));
+            return;
+        }
     }
     CaptureVisual(Names[Index], float(FlightSeconds));
     ++MainMenuStage;
@@ -1571,7 +1622,10 @@ void ASSWave10Soak::WriteResultAndExit()
     if (CaptureVisuals && Failure.IsEmpty())
     {
         TArray<FString> Expected;
-        if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
+        if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview")))
+            Expected = {TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
+                        TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")};
+        else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
             Expected = {TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
                         TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
         else if (MainMenu)

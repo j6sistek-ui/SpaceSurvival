@@ -10,6 +10,7 @@ param(
     [switch]$WeaponReadability,
     [switch]$MainMenu,
     [switch]$UIRefresh,
+    [switch]$UIFollowup,
     [ValidateRange(-1,3)][int]$Area = -1,
     [ValidateRange(0,10000)][int]$Variation = 0,
     # Owner review aid for RPT-20260915-08: capture thruster candidates without an editor session.
@@ -23,6 +24,7 @@ param(
     [ValidateRange(-400,400)][double]$ThrusterHeight = 0,
     [string[]]$ExtraArgs = @()
 )
+if ($UIFollowup) { $UIRefresh = $true }
 if ($UIRefresh) { $MainMenu = $true }
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -129,6 +131,7 @@ $arguments += @('-SSWave10Soak', "-SSSoakScenario=$scenario",
     '-ForceRes', '-windowed', '-ResX=1920', '-ResY=1080', '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
     '-nosound', '-unattended', "-abslog=$(Join-Path $root 'Rendered.log')")
 if ($UIRefresh) { $arguments += '-SSUIRefreshReview' }
+if ($UIFollowup) { $arguments += '-SSUIFollowupReview' }
 if ($Sequence) { $arguments += '-SSSoakSequence' }
 if ($WeaponReadability) { $arguments += '-SSWeaponReadability' }
 $execCmds = "ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
@@ -156,7 +159,9 @@ $metadata = [ordered]@{
     weaponReadabilityRequested = [bool]$WeaponReadability
     mainMenuRequested = [bool]$MainMenu
     areaPreview = $Area; areaVariation = $Variation
-    limits = $(if ($UIRefresh) {
+    limits = $(if ($UIFollowup) {
+        'Hidden six-frame changed-UI batch: aligned audio/controls sliders, wardrobe top/end/drag, actual walking HUD with crew/services radar. Synthetic menu navigation and pointer drag; read-only account/run guards. No physical input, natural gameplay or performance acceptance.'
+    } elseif ($UIRefresh) {
         'Hidden seven-screen native UI render with synthetic focus and read-only HUD sample values. Menu centers map to native actions; run/account/settings are preserved. No physical input, natural gameplay, FPS or save-operation acceptance.'
     } elseif ($MainMenu) {
         'Hidden startup title with actual imported Figma textures; synthetic no-selection/NewGame/Settings focus. Real rendered button centers must map to existing actions. No StartRun, menu activation, OS pointer movement, physical input, FPS or save operation.'
@@ -202,7 +207,7 @@ try {
         [IO.Path]::GetFullPath($fixture.csv) -ine (Join-Path $root 'Endgame.csv')) { throw 'Fixture identity, visibility or save isolation receipt failed.' }
     $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
     $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
-    $expectedNames = if ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } else { 'Cruise,Turn,Boost,Brake' }
+    $expectedNames = if ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } else { 'Cruise,Turn,Boost,Brake' }
     if (($names -join ',') -cne $expectedNames) { throw 'Fixture did not capture the required named stages in order.' }
     if ($UIRefresh -and (-not $fixture.uiRefreshReview -or -not $fixture.mainMenuStatePreserved)) { throw 'UI frame state checks failed.' }
     if ($MainMenu -and -not $UIRefresh) {

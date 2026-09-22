@@ -398,7 +398,7 @@ void ASSHUD::Meter(const FString &Name, double Value, double Maximum, float X, f
 int32 ASSHUD::MenuIndexAt(FVector2D Point) const
 {
     for (int I = 0; I < MenuBounds.Num(); ++I)
-        if (MenuBounds[I].IsInside(Point))
+        if (MenuBounds[I].bIsValid && MenuBounds[I].IsInside(Point))
             return I;
     return INDEX_NONE;
 }

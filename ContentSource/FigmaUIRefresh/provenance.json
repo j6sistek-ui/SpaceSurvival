@@ -298,6 +298,72 @@
       "alphaMax": 255,
       "sha256": "3909752ac8124f8803970c58b83812d319b6a2f63fbf0f0145d65ab31dc7bae2",
       "sizeBytes": 5843250
+    },
+    {
+      "name": "ScrollTrack",
+      "nodeId": "80:58",
+      "file": "ScrollTrack.png",
+      "width": 34,
+      "height": 260,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "sha256": "5f4416439ba9903b123671266daa837cd6103cea8472cc185ad23bc3864ff92e",
+      "sizeBytes": 2895
+    },
+    {
+      "name": "ScrollThumb",
+      "nodeId": "80:59",
+      "file": "ScrollThumb.png",
+      "width": 44,
+      "height": 144,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "sha256": "c64a2a66cfef04442df17dadc6efeedcb545ad0c6ad72a07fadda90602e98230",
+      "sizeBytes": 7569
+    },
+    {
+      "name": "ScrollUp",
+      "nodeId": "80:60",
+      "file": "ScrollUp.png",
+      "width": 33,
+      "height": 28,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "sha256": "7d4e1f8523696538a59521d0ecc6774062c40607dfa30a501e86fe545e7a45ae",
+      "sizeBytes": 1677
+    },
+    {
+      "name": "ScrollDown",
+      "nodeId": "80:61",
+      "file": "ScrollDown.png",
+      "width": 33,
+      "height": 28,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "sha256": "421f096538191f193ccd612d8421587a762a0e2c67925f40b31c8e0071e6cd35",
+      "sizeBytes": 1676
+    },
+    {
+      "name": "Ally",
+      "nodeId": "45:10",
+      "file": "Ally.png",
+      "width": 104,
+      "height": 104,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "sha256": "5de1affdd664e42d0881af8437013ef10fb5ccbb3421ea855cb45eddc01f07f7",
+      "sizeBytes": 10064
+    },
+    {
+      "name": "POI",
+      "nodeId": "45:25",
+      "file": "POI.png",
+      "width": 104,
+      "height": 104,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "sha256": "c4e784a2ac87d74dec2a61ac652a0c02712ee507b3e7f5c393797dfe3266a2c1",
+      "sizeBytes": 11288
     }
   ],
   "retrievedUtc": "2026-09-22",

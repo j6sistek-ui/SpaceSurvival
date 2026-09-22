@@ -5,6 +5,7 @@
 #include "SSStation.h"
 #include "CanvasItem.h"
 #include "Engine/Canvas.h"
+#include "EngineUtils.h"
 #include "Engine/Font.h"
 #include "Engine/Texture2D.h"
 #include "EngineFontServices.h"
@@ -122,6 +123,11 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
         RefreshImage(TEXT("Background"), 0, 0, 1920, 1080, FLinearColor(.6f, .6f, .6f, 1));
     }
     MenuBounds.Init(FBox2D(EForceInit::ForceInit), Mode.Entries.Num());
+    if (Mode.Panel != ESSPanel::Wardrobe)
+    {
+        ScrollFirst = ScrollCount = 0;
+        bScrollDragging = false;
+    }
     const bool Settings = IsSettingsPanel(Mode.Panel);
     const bool Pause = Mode.Panel == ESSPanel::Main;
     const float HeadingX = Live ? 1280.f : 72.f;
@@ -202,11 +208,23 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                                      : Entry.Action == 22 ? (V.mouseSensitivity - .3) / 2.6
                                                           : (V.controllerSensitivity - .3) / 2.6;
                 const float Start = Mode.Panel == ESSPanel::Controls ? 646.f : 540.f;
-                RefreshImage(TEXT("Track"), Start, Y, 270, 40);
+                // Exact export padding: track core x20..640/y20..34; fill x20..320.
+                // Preserve one scale for all three assets so rail, fill and knob share a centreline.
+                constexpr float SliderScale = 270.f / 660.f;
+                constexpr float Rail = 620.f * SliderScale;
+                const float CentreY = Y + 20.f;
+                const float RailX = Start + 20.f * SliderScale;
+                RefreshImage(TEXT("Track"), Start, CentreY - 27.f * SliderScale, 270, 54.f * SliderScale);
                 const float Fill = FMath::Clamp(Amount, 0.f, 1.f);
                 if (Fill > 0)
-                    RefreshImage(TEXT("Fill"), Start + 8, Y, 254 * Fill, 40);
-                RefreshImage(TEXT("Knob"), Start + 8 + 254 * Fill - 14, Y, 28, 28);
+                {
+                    const float FillWidth = (Rail * Fill) * 340.f / 300.f;
+                    RefreshImage(TEXT("Fill"), RailX - FillWidth * 20.f / 340.f, CentreY - 27.f * SliderScale,
+                                 FillWidth, 54.f * SliderScale);
+                }
+                const float KnobSize = 74.f * SliderScale;
+                RefreshImage(TEXT("Knob"), RailX + Rail * Fill - KnobSize * .5f, CentreY - KnobSize * .5f, KnobSize,
+                             KnobSize);
             }
             else if (Entry.Action == 16 || Entry.Action == 17)
                 RefreshImage(TEXT("Dropdown"), 744, Y - 22, 300, 84);
@@ -236,6 +254,50 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                         Entry.Enabled ? UIWhite : FLinearColor(.3f, .3f, .3f), 465);
             Bound(I, 685, Y + 32, 530, FMath::Min(116.f, Step - 6));
         }
+    }
+    else if (Mode.Panel == ESSPanel::Wardrobe)
+    {
+        RefreshImage(TEXT("Frame"), 70, 200, 1250, 760);
+        RefreshText(Mode.PanelDetail, 1400, 420, 23, UIWhite, 425);
+        ScrollCount = Mode.Entries.Num() - 1; // Native Back remains pinned below the character list.
+        ScrollVisible = 6;
+        if (Mode.SelectedEntry < ScrollCount)
+        {
+            if (Mode.SelectedEntry < ScrollFirst)
+                ScrollFirst = Mode.SelectedEntry;
+            else if (Mode.SelectedEntry >= ScrollFirst + ScrollVisible)
+                ScrollFirst = Mode.SelectedEntry - ScrollVisible + 1;
+        }
+        ScrollFirst = FMath::Clamp(ScrollFirst, 0, FMath::Max(0, ScrollCount - ScrollVisible));
+        for (int32 Row = 0; Row < ScrollVisible && ScrollFirst + Row < ScrollCount; ++Row)
+        {
+            const int32 I = ScrollFirst + Row;
+            const float Y = 410.f + Row * 64.f;
+            Focus(I, 226, Y, 866, 60);
+            Bound(I, 226, Y, 866, 60);
+            RefreshText(Mode.Entries[I].Label, 240, Y + 9, 32, UIWhite, 835);
+        }
+        const int32 Back = Mode.Entries.Num() - 1;
+        Bound(Back, 226, 904, 866, 58);
+        Focus(Back, 226, 904, 866, 58);
+        RefreshText(TEXT("Back"), 240, 912, 30, UIWhite);
+        RefreshText(TEXT("CHOOSE YOUR CHARACTER"), 1400, 300, 29, UICyan, 425);
+        RefreshText(FString::Printf(TEXT("%d - %d / %d"), ScrollFirst + 1,
+                                    FMath::Min(ScrollCount, ScrollFirst + ScrollVisible), ScrollCount),
+                    1400, 355, 32, UIWhite);
+        RefreshText(TEXT("Mouse wheel or D-pad / arrows to scroll.\nSelect to wear."), 1400, 660, 24, UIWhite, 420);
+        const float TrackY = 410.f, TrackHeight = 384.f;
+        const float ThumbHeight = TrackHeight * FMath::Min(1.f, float(ScrollVisible) / FMath::Max(1, ScrollCount));
+        const float Fraction = float(ScrollFirst) / FMath::Max(1, ScrollCount - ScrollVisible);
+        const float ThumbY = TrackY + Fraction * (TrackHeight - ThumbHeight);
+        ScrollTrackBounds = RefreshBounds(1138, TrackY, 34, TrackHeight);
+        ScrollThumbBounds = RefreshBounds(1145, ThumbY, 20, ThumbHeight);
+        ScrollUpBounds = RefreshBounds(1134, 372, 42, 36);
+        ScrollDownBounds = RefreshBounds(1134, 798, 42, 36);
+        RefreshImage(TEXT("ScrollTrack"), 1138, TrackY, 34, TrackHeight);
+        RefreshImage(TEXT("ScrollThumb"), 1133, ThumbY - 12, 44, ThumbHeight + 24);
+        RefreshImage(TEXT("ScrollUp"), 1138, 376, 33, 28);
+        RefreshImage(TEXT("ScrollDown"), 1138, 802, 33, 28);
     }
     else
     {
@@ -291,7 +353,8 @@ void ASSHUD::DrawRefreshVitals(const ASSGameMode &Mode, bool Walking)
                 64, Walking ? 115.f : 96.f, 18, UICyan);
     if (Walking)
     {
-        RefreshText(FString::Printf(TEXT("%d CR"), S.run.credits), 1560, 82, 34, UIAmber);
+        RefreshText(FString::Printf(TEXT("%d CR"), S.run.credits), 64, 160, 30, UIAmber);
+        DrawStationRadar();
         return;
     }
     // Owner amendment: floating labels and bars only. No blue chassis or numeric percentages.
@@ -324,4 +387,104 @@ void ASSHUD::DrawRefreshVitals(const ASSGameMode &Mode, bool Walking)
             RefreshImage(Pip < FMath::CeilToInt(S.run.boost / 10.) ? TEXT("PipBlue") : TEXT("PipOff"),
                          1450.f + Pip * 29.f, 1000, 47, 32);
     }
+}
+
+void ASSHUD::DrawStationRadar()
+{
+    const auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0));
+    if (!Walker)
+        return;
+    const ASSStation *Station = nullptr;
+    float Nearest = FMath::Square(20000.f);
+    for (TActorIterator<ASSStation> It(GetWorld()); It; ++It)
+    {
+        const float Distance = FVector::DistSquared(It->GetActorLocation(), Walker->GetActorLocation());
+        if (!It->IsHidden() && Distance < Nearest)
+        {
+            Nearest = Distance;
+            Station = *It;
+        }
+    }
+    if (!Station)
+        return;
+    for (const TCHAR *Layer : {TEXT("RadarBack"), TEXT("RadarRings"), TEXT("RadarTicks"), TEXT("RadarRim")})
+        RefreshImage(Layer, 1510, 104, 324, 324);
+    RefreshImage(TEXT("RadarBezel"), 1492, 86, 361, 361);
+    RefreshText(TEXT("STATION / 60 m"), 1520, 54, 22, UICyan);
+    const FRotator Heading(0, Walker->GetActorRotation().Yaw, 0);
+    auto Marker = [&](FName Symbol, FVector World, float Size)
+    {
+        const FVector Local = Heading.UnrotateVector(World - Walker->GetActorLocation());
+        FVector2D Offset(Local.Y, -Local.X);
+        Offset *= 142.f / 6000.f;
+        if (Offset.SizeSquared() > 142.f * 142.f)
+            Offset = Offset.GetSafeNormal() * 142.f;
+        RefreshImage(Symbol, 1672.f + Offset.X - Size * .5f, 266.f + Offset.Y - Size * .5f, Size, Size);
+    };
+    TArray<FVector> Services, Crew;
+    Station->RadarContacts(Services, Crew);
+    for (const FVector &Position : Services)
+        Marker(TEXT("POI"), Position, 34);
+    for (const FVector &Position : Crew)
+        Marker(TEXT("Ally"), Position, 26);
+    Marker(TEXT("Station"), Station->PadDockPosition(), 42);
+    RefreshImage(TEXT("You"), 1653, 247, 38, 38);
+    const TCHAR *Symbols[] = {TEXT("Ally"), TEXT("POI"), TEXT("Station")};
+    const TCHAR *Labels[] = {TEXT("CREW"), TEXT("SERVICES"), TEXT("LANDING PAD")};
+    for (int32 I = 0; I < 3; ++I)
+    {
+        RefreshImage(Symbols[I], 1520, 452.f + I * 32.f, 28, 28);
+        RefreshText(Labels[I], 1560, 456.f + I * 32.f, 19, UIWhite);
+    }
+}
+
+// Scrolling changes UI focus only; choosing a character still uses ActivateEntry.
+bool ASSHUD::ScrollMenu(int32 Rows)
+{
+    auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+    if (!GM || GM->Panel != ESSPanel::Wardrobe || ScrollCount <= 0)
+        return false;
+    ScrollFirst = FMath::Clamp(ScrollFirst + Rows, 0, FMath::Max(0, ScrollCount - ScrollVisible));
+    if (GM->SelectedEntry < ScrollCount)
+        GM->SelectedEntry =
+            FMath::Clamp(GM->SelectedEntry, ScrollFirst, FMath::Min(ScrollCount - 1, ScrollFirst + ScrollVisible - 1));
+    return true;
+}
+
+bool ASSHUD::HandleMenuScrollPointer(FVector2D Point, bool Pressed, bool Held)
+{
+    auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+    if (!GM || GM->Panel != ESSPanel::Wardrobe || ScrollCount <= ScrollVisible)
+    {
+        bScrollDragging = false;
+        return false;
+    }
+    if (bScrollDragging)
+    {
+        if (Held)
+        {
+            const float Travel = ScrollTrackBounds.GetSize().Y - ScrollThumbBounds.GetSize().Y;
+            const float Fraction = FMath::Clamp(
+                float(Point.Y - ScrollDragOffset - ScrollTrackBounds.Min.Y) / FMath::Max(1.f, Travel), 0.f, 1.f);
+            ScrollMenu(FMath::RoundToInt(Fraction * (ScrollCount - ScrollVisible)) - ScrollFirst);
+        }
+        else
+            bScrollDragging = false;
+        return true;
+    }
+    if (!Pressed)
+        return false;
+    if (ScrollUpBounds.IsInside(Point))
+        return ScrollMenu(-1);
+    if (ScrollDownBounds.IsInside(Point))
+        return ScrollMenu(1);
+    if (ScrollThumbBounds.IsInside(Point))
+    {
+        bScrollDragging = true;
+        ScrollDragOffset = Point.Y - ScrollThumbBounds.Min.Y;
+        return true;
+    }
+    if (ScrollTrackBounds.IsInside(Point))
+        return ScrollMenu(Point.Y < ScrollThumbBounds.Min.Y ? -ScrollVisible : ScrollVisible);
+    return false;
 }

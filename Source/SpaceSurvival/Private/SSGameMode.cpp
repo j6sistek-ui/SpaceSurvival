@@ -2150,11 +2150,18 @@ void ASSPlayerController::PlayerTick(float Dt)
             if (!GM->IsTitleMenu())
                 GM->ClosePanel();
         }
-        if (bShowMouseCursor && Pressed(EKeys::LeftMouseButton))
+        if (bShowMouseCursor)
             if (auto *HUD = Cast<ASSHUD>(GetHUD()))
             {
+                if (Pressed(EKeys::MouseScrollUp))
+                    HUD->ScrollMenu(-1);
+                if (Pressed(EKeys::MouseScrollDown))
+                    HUD->ScrollMenu(1);
                 float X, Y;
-                if (GetMousePosition(X, Y))
+                if (GetMousePosition(X, Y) &&
+                    !HUD->HandleMenuScrollPointer(FVector2D(X, Y), Pressed(EKeys::LeftMouseButton),
+                                                  Down(EKeys::LeftMouseButton)) &&
+                    Pressed(EKeys::LeftMouseButton))
                     GM->ActivateEntry(HUD->MenuIndexAt(FVector2D(X, Y)), true);
             }
         if (!LiveFlightMenu || !GI->Session.IsFlying())

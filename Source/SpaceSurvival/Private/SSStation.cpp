@@ -847,6 +847,28 @@ bool ASSStation::ServicePosition(ESSPanel Panel, FVector &WorldPosition) const
         }
     return false;
 }
+void ASSStation::RadarContacts(TArray<FVector> &ServicePositions, TArray<FVector> &CrewPositions) const
+{
+    ServicePositions.Reset();
+    CrewPositions.Reset();
+    for (const auto &Service : Services)
+        ServicePositions.Add(GetActorTransform().TransformPosition(Service.Location));
+    auto GatherCrew = [&](const AActor *CrewOwner)
+    {
+        if (!CrewOwner || CrewOwner->IsHidden())
+            return;
+        TInlineComponentArray<USkeletalMeshComponent *> Meshes;
+        CrewOwner->GetComponents(Meshes);
+        for (const auto *Mesh : Meshes)
+            if (Mesh->IsVisible() && !Mesh->bHiddenInGame && Mesh->GetSkeletalMeshAsset() &&
+                (Mesh->ComponentHasTag(TEXT("StationRobotStaff")) || Mesh->ComponentHasTag(TEXT("StationAlienCrew")) ||
+                 Mesh->ComponentHasTag(TEXT("StationFunctionalStaff"))))
+                CrewPositions.Add(Mesh->GetComponentLocation());
+    };
+    GatherCrew(this);
+    GatherCrew(VisualLayout);
+}
+
 FString ASSStation::ServiceGuidance(FVector Position) const
 {
     float Nearest = MAX_flt;
