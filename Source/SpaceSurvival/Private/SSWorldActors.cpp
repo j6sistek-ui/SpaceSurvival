@@ -316,7 +316,8 @@ void ASSWorldBody::UpdateVisual()
     Visual->SetRelativeLocation(SelectedMesh ? -Visual->GetRelativeRotation().RotateVector(
                                                    SelectedMesh->GetBounds().Origin * Visual->GetRelativeScale3D())
                                              : FVector::ZeroVector);
-    const bool bPreserveAuthoredMaterial = Visual->GetStaticMesh() &&
+    const bool bDirectorRock = bDirectorAsteroid && bRock;
+    const bool bPreserveAuthoredMaterial = !bDirectorRock && Visual->GetStaticMesh() &&
                                            Visual->GetStaticMesh()->GetPathName().StartsWith(TEXT("/Game/")) &&
                                            (IsSolidHazard() || IsEnemy());
     ThreatIndicator->SetVisibility(IsEnemy());
@@ -360,10 +361,19 @@ void ASSWorldBody::UpdateVisual()
     if (Material)
     {
         DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
-        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), BodyColor(Kind));
+        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"),
+                                                 bDirectorRock ? FLinearColor(1.f, .18f, .015f) : BodyColor(Kind));
         DynamicMaterial->SetVectorParameterValue(TEXT("Color"), FLinearColor::White);
         DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), IsEnvironmentalField() ? .25f : 1.f);
-        FeedbackMesh->SetMaterial(0, DynamicMaterial);
+        if (bDirectorRock)
+        {
+            DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), .35f);
+            DynamicMaterial->SetScalarParameterValue(TEXT("Roughness"), .7f);
+            for (int32 Slot = 0; Slot < FeedbackMesh->GetNumMaterials(); ++Slot)
+                FeedbackMesh->SetMaterial(Slot, DynamicMaterial);
+        }
+        else
+            FeedbackMesh->SetMaterial(0, DynamicMaterial);
     }
     Visual->SetCastShadow(!IsEnvironmentalField());
 }
@@ -718,6 +728,7 @@ void ASSWorldBody::OnDefeated()
                 }
                 if (ASSWorldBody *Fragment = GetWorld()->SpawnActor<ASSWorldBody>(Position, FRotator::ZeroRotator))
                 {
+                    Fragment->bDirectorAsteroid = bDirectorAsteroid;
                     Fragment->Configure(ESSWorldKind::SmallAsteroid, Definition.FragmentRadius,
                                         CollisionDamage * Definition.FragmentDamageFraction, Wave);
                     Fragment->SetLinearVelocity(Velocity);
@@ -1678,7 +1689,10 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
     const float Lead = FMath::Max(9000.f, ClosingSpeed * MinimumReactionSeconds + Radius + PlayerClearanceRadius);
     for (int32 Attempt = 0; Attempt < 16; ++Attempt)
     {
-        const FVector2D Offset(Random.FRandRange(-2600.f, 2600.f), Random.FRandRange(-1700.f, 1700.f));
+        // Larger rocks need room beside the protected corridor, not only a longer approach lead.
+        const float Spread = bField ? 1.f : FMath::Max(1.f, (Radius + PlayerClearanceRadius + 320.f) / 1800.f);
+        const FVector2D Offset(Random.FRandRange(-2600.f, 2600.f) * Spread,
+                               Random.FRandRange(-1700.f, 1700.f) * Spread);
         if (!bField && FVector2D::Distance(Offset, SafeLane) < Radius + PlayerClearanceRadius + 320.f)
             continue;
         const FVector Candidate = Ship->GetActorLocation() + Forward * (Lead + Random.FRandRange(0.f, 5500.f)) +
@@ -1698,6 +1712,10 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
         return nullptr;
     const auto Definition = Content(this)->Hazard(Kind);
     Radius = Radius > 0.f ? Radius : Definition.Radius;
+    const bool bAsteroid = Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
+                           Kind == ESSWorldKind::MassiveAsteroid;
+    if (bAsteroid)
+        Radius *= FMath::Max(1.f, Content(this)->DirectorAsteroidScale);
     FVector Location;
     const bool bField = Kind == ESSWorldKind::ElectricalStorm || Kind == ESSWorldKind::GravityAnomaly;
     if (!FindSafeSpawn(Radius, Location, bField))
@@ -1706,6 +1724,7 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     if (!Body)
         return nullptr;
     const float Damage = Definition.DamageBase + Wave * Definition.DamagePerWave;
+    Body->bDirectorAsteroid = bAsteroid;
     Body->Configure(Kind, Radius, Damage, Wave);
     Body->TelegraphSeconds = FMath::Max(MinimumReactionSeconds, Definition.TelegraphSeconds);
     if (ASSShip *Ship = FindShip())

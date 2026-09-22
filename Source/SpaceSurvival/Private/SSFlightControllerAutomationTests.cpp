@@ -13,6 +13,8 @@
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerInput.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GyroManagerComp.h"
 #include "GameFramework/WorldSettings.h"
 #include "InputKeyEventArgs.h"
 #include "Physics/Experimental/PhysScene_Chaos.h"
@@ -70,10 +72,10 @@ struct FSSControllerFlightWorld
         auto &Tuning = Instance->Session.tuning;
         Tuning.baseHull = Content->BaseHull;
         Tuning.baseShield = Content->BaseShield;
-        Tuning.baseSpeed = Content->CruiseSpeed;
+        Tuning.baseSpeed = Content->FlightCruiseSpeed();
         Tuning.baseManeuver = Content->LateralSpeed;
         Tuning.baseResponse = Content->Response;
-        Tuning.baseAcceleration = Content->Acceleration;
+        Tuning.baseAcceleration = Content->FlightAcceleration();
         Tuning.baseWeaponDamage = Content->BaseWeaponDamage;
         if (!Test.TestTrue(TEXT("Start an isolated in-memory run"), Instance->Session.StartRun("raw-input-fixture")))
             return false;
@@ -189,19 +191,22 @@ bool FSSControllerToFlight::RunTest(const FString &)
         const FRotator BeforeTurn = F.Ship->GetActorRotation();
         for (int32 Frame = 0; Frame < 60; ++Frame)
         {
-            F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, Gamepad ? .8f : 5.f);
-            F.Axis(Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY, Gamepad ? .6f : 4.f);
+            F.Axis(Gamepad ? EKeys::Gamepad_LeftX : EKeys::MouseX, Gamepad ? 0.f : 5.f);
+            F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, Gamepad ? .6f : 4.f);
             F.Step();
         }
         const FRotator Turn = (F.Ship->GetActorRotation() - BeforeTurn).GetNormalized();
         AddInfo(
             FString::Printf(TEXT("%s raw look produced yaw %.2f pitch %.2f degrees"), *Device, Turn.Yaw, Turn.Pitch));
-        TestTrue(Device + TEXT(" raw look rotates the physical ship in both commanded directions"),
-                 Turn.Yaw > 5.f && Turn.Pitch > 5.f);
-        F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, 0.f);
-        F.Axis(Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY, 0.f);
+        TestTrue(Device + TEXT(" raw steering rotates the physical ship on the assigned axes"),
+                 (Gamepad ? FMath::Abs(Turn.Yaw) < 1.f : Turn.Yaw > 5.f) && Turn.Pitch > 5.f);
+        F.Axis(Gamepad ? EKeys::Gamepad_LeftX : EKeys::MouseX, 0.f);
+        F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, 0.f);
         F.Frames(30);
 
+        F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+        const FVector BeforeStrafeVelocity = F.Ship->GetVelocity();
+        const FVector BeforeStrafeUp = F.Ship->GetActorUpVector();
         if (!Gamepad)
         {
             F.Button(EKeys::D, true);
@@ -212,17 +217,22 @@ bool FSSControllerToFlight::RunTest(const FString &)
             if (Gamepad)
             {
                 F.Axis(EKeys::Gamepad_LeftX, .8f);
-                F.Axis(EKeys::Gamepad_LeftY, .8f);
+                F.Axis(EKeys::Gamepad_RightY, 0.f);
             }
             F.Step();
         }
         const FVector StrafeVelocity = F.Ship->GetActorTransform().InverseTransformVectorNoScale(F.Ship->GetVelocity());
-        TestTrue(Device + TEXT(" raw strafe changes actual lateral and vertical velocity"),
-                 StrafeVelocity.Y > 50.f && StrafeVelocity.Z > 50.f);
+        AddInfo(FString::Printf(TEXT("STRAFE %s local=%s deltaUp=%.3f"), *Device, *StrafeVelocity.ToString(),
+                                FVector::DotProduct(F.Ship->GetVelocity() - BeforeStrafeVelocity, BeforeStrafeUp)));
+        TestTrue(Device + TEXT(" raw strafe respects controller horizontal-only versus keyboard vertical thrust"),
+                 StrafeVelocity.Y > 50.f &&
+                     (Gamepad ? FMath::Abs(FVector::DotProduct(F.Ship->GetVelocity() - BeforeStrafeVelocity,
+                                                               BeforeStrafeUp)) < 20.f
+                              : StrafeVelocity.Z > 50.f));
         if (Gamepad)
         {
             F.Axis(EKeys::Gamepad_LeftX, 0.f);
-            F.Axis(EKeys::Gamepad_LeftY, 0.f);
+            F.Axis(EKeys::Gamepad_RightY, 0.f);
         }
         else
         {
@@ -276,11 +286,11 @@ bool FSSControllerToFlight::RunTest(const FString &)
         F.Ship->Tuning->SoftAimDegrees = 0.f;
         F.Ship->SoftTarget = nullptr;
         F.Instance->Session.tuning.baseWeaponDamage = 30;
-        F.Button(Gamepad ? EKeys::Gamepad_RightShoulder : EKeys::LeftMouseButton, true);
+        F.Button(Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::LeftMouseButton, true);
         F.Step();
         TestTrue(Device + TEXT(" raw fire trigger deals native damage and starts feedback"),
                  Target->IsActorBeingDestroyed() && F.Ship->IsFiring() && F.Mode->PlayerHitFlashSeconds > 0.f);
-        F.Button(Gamepad ? EKeys::Gamepad_RightShoulder : EKeys::LeftMouseButton, false);
+        F.Button(Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::LeftMouseButton, false);
         TestFalse(TEXT("Fixture never entered production GameMode BeginPlay"), F.Mode->HasActorBegunPlay());
     }
     return true;
@@ -312,7 +322,7 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
         const FVector Hover = Pad + FVector(0, 0, 700.f);
         F.Ship->BeginTakeoff(Hover, Facing, 1.f);
         const double DodgeCooldownBeforeLift = F.Instance->Session.run.dodgeCooldown;
-        F.Button(Gamepad ? EKeys::Gamepad_RightShoulder : EKeys::LeftMouseButton, true);
+        F.Button(Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::LeftMouseButton, true);
         F.Button(Gamepad ? EKeys::Gamepad_LeftShoulder : EKeys::Q, true);
         F.Frames(30);
         int32 ShotsDuringLift = 0;
@@ -323,7 +333,7 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
                  F.Ship->IsTakingOff() && !F.Ship->IsFiring() && ShotsDuringLift == 0);
         TestEqual(Device + TEXT(" raw dodge cannot consume cooldown during the scripted lift"),
                   F.Instance->Session.run.dodgeCooldown, DodgeCooldownBeforeLift);
-        F.Button(Gamepad ? EKeys::Gamepad_RightShoulder : EKeys::LeftMouseButton, false);
+        F.Button(Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::LeftMouseButton, false);
         F.Button(Gamepad ? EKeys::Gamepad_LeftShoulder : EKeys::Q, false);
         F.Frames(31);
         TestTrue(Device + TEXT(" lift hands back the same possessed ship and restores its drive"),
@@ -339,8 +349,8 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
         {
             if (Gamepad)
                 F.Axis(EKeys::Gamepad_RightTriggerAxis, 1.f);
-            F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, Gamepad ? .8f : 5.f);
-            F.Axis(Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY, Gamepad ? .6f : 4.f);
+            F.Axis(Gamepad ? EKeys::Gamepad_LeftX : EKeys::MouseX, Gamepad ? 0.f : 5.f);
+            F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, Gamepad ? .6f : 4.f);
             F.Step();
         }
         if (!Gamepad)
@@ -348,8 +358,8 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
         else
             F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
         const FRotator Turn = (F.Ship->GetActorRotation() - BeforeTurn).GetNormalized();
-        TestTrue(Device + TEXT(" raw look still rotates both axes after re-possession and lift"),
-                 Turn.Yaw > 5.f && Turn.Pitch > 5.f);
+        TestTrue(Device + TEXT(" assigned steering still responds after re-possession and lift"),
+                 (Gamepad ? FMath::Abs(Turn.Yaw) < 1.f : Turn.Yaw > 5.f) && Turn.Pitch > 5.f);
         TestTrue(Device + TEXT(" restored drive moves the ship away from the lift endpoint"),
                  FVector::Dist(F.Ship->GetActorLocation(), Hover) > 100.f);
         TestFalse(TEXT("Re-possession fixture never entered production GameMode BeginPlay"),
@@ -368,7 +378,7 @@ bool FSSControllerPitchParity::RunTest(const FString &)
             if (!F.Initialize(*this))
                 return false;
             F.Instance->Session.settings.invertPitch = Inverted;
-            const FKey Axis = Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY;
+            FKey Axis = Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY;
             const float Value = Gamepad ? .6f : 4.f;
             const double Sign = Inverted ? -1. : 1.;
             const FString Case = FString::Printf(TEXT("%s / %s"), Gamepad ? TEXT("stick up") : TEXT("mouse up"),
@@ -377,7 +387,7 @@ bool FSSControllerPitchParity::RunTest(const FString &)
             {
                 F.Axis(Axis, .08f);
                 F.Step();
-                TestEqual(TEXT("Configured right-stick deadzone removes small resting drift before polling"),
+                TestEqual(TEXT("Configured steering-stick deadzone removes small resting drift before polling"),
                           F.Controller->GetInputAnalogKeyState(Axis), 0.f);
             }
             // SceneViewport::OnMouseMove subtracts screen CursorDelta.Y, so physical mouse-up
@@ -398,6 +408,7 @@ bool FSSControllerPitchParity::RunTest(const FString &)
             if (!TestNotNull(TEXT("Create actual station walking pawn"), Walker))
                 return false;
             F.Controller->Possess(Walker);
+            Axis = Gamepad ? EKeys::Gamepad_RightY : EKeys::MouseY;
             F.Controller->SetControlRotation(FRotator::ZeroRotator);
             for (int32 Frame = 0; Frame < 30; ++Frame)
             {
@@ -443,15 +454,15 @@ bool FSSLiveRewardInput::RunTest(const FString &)
         F.Step();
         TestTrue(TEXT("Hidden reward mouse clicks neither choose nor fire"),
                  F.Mode->Panel == ESSPanel::Reward && F.Instance->Session.run.pendingReward && !F.Ship->IsFiring());
-        const float BeforeYaw = F.Ship->GetActorRotation().Yaw;
+        const float BeforePitch = F.Ship->GetActorRotation().Pitch;
         for (int32 Frame = 0; Frame < 30; ++Frame)
         {
-            F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, Gamepad ? .7f : 4.f);
+            F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, Gamepad ? .7f : 4.f);
             F.Step();
         }
         TestTrue(TEXT("Controller routing continues to steer while reward navigation is open"),
-                 FMath::FindDeltaAngleDegrees(BeforeYaw, F.Ship->GetActorRotation().Yaw) > 3.f);
-        F.Axis(Gamepad ? EKeys::Gamepad_RightX : EKeys::MouseX, 0.f);
+                 FMath::FindDeltaAngleDegrees(BeforePitch, F.Ship->GetActorRotation().Pitch) > 3.f);
+        F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, 0.f);
         const FKey DownKey = Gamepad ? EKeys::Gamepad_DPad_Down : EKeys::Down;
         F.Button(DownKey, true);
         F.Step();
@@ -468,6 +479,8 @@ bool FSSLiveRewardInput::RunTest(const FString &)
         const FKey Confirm = Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::Enter;
         F.Button(Confirm, true);
         F.Step();
+        F.Frames(15);
+        TestFalse(TEXT("Held menu confirm cannot leak into weapon fire"), F.Ship->IsFiring());
         F.Button(Confirm, false);
         F.Step();
         TestTrue(TEXT("Enter/A accepts one reward and returns to flight without firing"),
@@ -527,17 +540,19 @@ bool FSSAnalogThrottleAndCoast::RunTest(const FString &)
     }
     TestTrue(TEXT("Full normal trigger is faster than half power without boosting"),
              F.Ship->GetVelocity().Size() > HalfSpeed * 1.3f && !F.Instance->Session.run.boosting);
+    TestTrue(TEXT("Normal full throttle reaches the approved 60 m/s baseline"),
+             F.Ship->GetVelocity().Size() > 5500.f && F.Ship->GetVelocity().Size() <= 6100.f);
     const FVector Momentum = F.Ship->GetVelocity();
     F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
     for (int32 Frame = 0; Frame < 45; ++Frame)
     {
-        F.Axis(EKeys::Gamepad_RightX, .4f);
+        F.Axis(EKeys::Gamepad_LeftY, .4f);
         F.Step();
     }
     TestTrue(TEXT("Engine-off turning retains world-space momentum"),
              FVector::Distance(F.Ship->GetVelocity(), Momentum) < 5.f &&
-                 FMath::Abs(F.Ship->GetActorRotation().Yaw) > 1.f);
-    F.Axis(EKeys::Gamepad_RightX, 0.f);
+                 FMath::Abs(F.Ship->GetActorRotation().Pitch) > 1.f);
+    F.Axis(EKeys::Gamepad_LeftY, 0.f);
     F.Axis(EKeys::MouseX, 5.f);
     F.Step();
     F.Button(EKeys::LeftControl, true);
@@ -571,11 +586,11 @@ bool FSSAnalogThrottleAndCoast::RunTest(const FString &)
     const float KeyboardPower = F.Ship->GetThrottle();
     TestTrue(TEXT("A fresh S command deliberately resumes the retained keyboard setting"),
              KeyboardPower > .9f && KeyboardPower < 1.f);
-    F.Axis(EKeys::Gamepad_RightX, .4f);
+    F.Axis(EKeys::Gamepad_LeftY, .4f);
     F.Step();
     TestTrue(TEXT("Controller look changes HUD device without changing keyboard throttle ownership"),
              F.Controller->bLastInputWasGamepad && FMath::IsNearlyEqual(F.Ship->GetThrottle(), KeyboardPower));
-    F.Axis(EKeys::Gamepad_RightX, 0.f);
+    F.Axis(EKeys::Gamepad_LeftY, 0.f);
     F.Axis(EKeys::Gamepad_RightTriggerAxis, .35f);
     F.Step();
     TestTrue(TEXT("A fresh trigger press takes normal throttle ownership"),
@@ -601,6 +616,80 @@ bool FSSAnalogThrottleAndCoast::RunTest(const FString &)
     F.Step();
     TestTrue(TEXT("Actually lifting the held trigger takes ownership and cuts thrust again"),
              F.Ship->GetThrottle() == 0.f);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSControllerTestingPreset, "SpaceSurvival.Flight.ControllerTestingPreset",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSControllerTestingPreset::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
+    F.Frames(30);
+    const FQuat BodyBefore = F.Ship->GetActorQuat();
+    const FVector CrosshairBefore = F.Ship->CrosshairWorldPoint();
+    const FRotator ViewBefore = F.Ship->CameraBoom->GetRelativeRotation();
+    for (int32 Frame = 0; Frame < 45; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_RightX, .8f);
+        F.Axis(EKeys::Gamepad_RightY, .4f);
+        F.Step();
+    }
+    const FRotator View = F.Ship->CameraBoom->GetRelativeRotation() - ViewBefore;
+    TestTrue(TEXT("Right stick independently looks sideways and upward"), View.Yaw > 20.f && View.Pitch > 8.f);
+    TestTrue(TEXT("Free-look cannot steer the ship or create strafe thrust"),
+             BodyBefore.AngularDistance(F.Ship->GetActorQuat()) < .005f && F.Ship->GetVelocity().Size() < 1.f);
+    TestTrue(TEXT("Free-look leaves the ship's weapon anchor in place"),
+             FVector::Distance(CrosshairBefore, F.Ship->CrosshairWorldPoint()) < 1.f);
+    F.Axis(EKeys::Gamepad_RightX, 0.f);
+    F.Axis(EKeys::Gamepad_RightY, 0.f);
+    F.Frames(90);
+    TestTrue(TEXT("Releasing free-look gently restores the chase view"),
+             FMath::Abs((F.Ship->CameraBoom->GetRelativeRotation() - ViewBefore).Yaw) < 2.f);
+    auto *Gyro = F.Ship->FindComponentByClass<UGyroManagerComp>();
+    AddInfo(FString::Printf(TEXT("ROLL gyro count/name=%s rollMultiplier=%.3f maxTorque=%.3f"), *Gyro->GetName(),
+                            Gyro->RollMultiplier, Gyro->MaxTotalTorque));
+    const double RightStart = F.Ship->GetActorRotation().Roll;
+    F.Button(EKeys::Gamepad_RightShoulder, true);
+    for (int32 Frame = 0; Frame < 45; ++Frame)
+    {
+        F.Step();
+        if (Frame == 0 || Frame == 20 || Frame == 44)
+            AddInfo(FString::Printf(TEXT("ROLL input frame%d down=%d manual=%d command=%.3f rate=%.3f actual=%.3f"),
+                                    Frame, F.Controller->IsInputKeyDown(EKeys::Gamepad_RightShoulder),
+                                    F.Ship->bManualRoll, F.Ship->RollInput, F.Ship->Tuning->ManualRollDegrees,
+                                    F.Ship->GetActorRotation().Roll));
+    }
+    AddInfo(FString::Printf(TEXT("ROLL solver input=%s awake=%d"), *Gyro->ControlInputLocal.ToString(),
+                            F.Ship->Collision->IsAnyRigidBodyAwake()));
+    F.Button(EKeys::Gamepad_RightShoulder, false);
+    const double RightRoll = FMath::FindDeltaAngleDegrees(RightStart, F.Ship->GetActorRotation().Roll);
+    AddInfo(FString::Printf(TEXT("ROLL RB start=%.3f delta=%.3f angular=%s"), RightStart, RightRoll,
+                            *F.Ship->Collision->GetPhysicsAngularVelocityInDegrees().ToString()));
+    TestTrue(TEXT("RB rolls the actual hull right at a controlled rate"), RightRoll > 10. && RightRoll < 40.);
+    TestFalse(TEXT("RB roll is not weapon fire"), F.Ship->IsFiring());
+    F.Frames(90);
+    const double HeldRoll = F.Ship->GetActorRotation().Roll;
+    AddInfo(FString::Printf(TEXT("ROLL release held=%.3f"), HeldRoll));
+    TestTrue(TEXT("Released roll does not auto-level the chosen orientation"), FMath::Abs(HeldRoll) > 10.);
+    F.Button(EKeys::Gamepad_LeftShoulder, true);
+    F.Frames(45);
+    F.Button(EKeys::Gamepad_LeftShoulder, false);
+    AddInfo(FString::Printf(TEXT("ROLL LB end=%.3f"), F.Ship->GetActorRotation().Roll));
+    TestTrue(TEXT("LB rolls the actual hull left"),
+             FMath::FindDeltaAngleDegrees(HeldRoll, F.Ship->GetActorRotation().Roll) < -10.);
+    TestTrue(TEXT("LB roll does not spend the dodge resource"), F.Instance->Session.run.boost >= 99.9);
+    F.Frames(60);
+    // All gamepad flight interaction moved to X; A is fire. A newly confirmed menu
+    // press remains gated until release in LiveRewardInput; direct flight A must fire.
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+    F.Step();
+    TestTrue(TEXT("A fires the ship's weapon"), F.Ship->IsFiring());
+    TestEqual(TEXT("A fire does not open a flight interaction panel"), F.Mode->Panel, ESSPanel::None);
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
     return true;
 }
 

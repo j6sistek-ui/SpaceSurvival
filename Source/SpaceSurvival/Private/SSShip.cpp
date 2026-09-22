@@ -49,6 +49,10 @@ ASSShip::ASSShip()
     PrimaryActorTick.bCanEverTick = true;
     Collision = CreateDefaultSubobject<USphereComponent>(TEXT("FlightCollision"));
     Collision->InitSphereRadius(105.f);
+    // Set before component registration creates the Chaos actor, including query-only state.
+    // This single player-controlled body must not sleep through low-rate engine-off roll.
+    Collision->BodyInstance.SleepFamily = ESleepFamily::Custom;
+    Collision->BodyInstance.CustomSleepThresholdMultiplier = 0.f;
     RootComponent = Collision;
     Collision->SetCollisionObjectType(ECC_Pawn);
     Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -190,7 +194,10 @@ void ASSShip::DriveShipCore(float Dt, double Acceleration, double Maneuver, doub
     // ShipCore accepts angular acceleration, not a turn rate. Convert the same degrees/second used by
     // input into its rate-damped solver. Banking targets an attitude; a held turn must not roll forever.
     const float BankError = FMath::FindDeltaAngleDegrees(GetActorRotation().Roll, Steer.X * 28.f);
-    const FVector TargetRate(-FMath::DegreesToRadians(BankError) * 3.f, -Steer.Y * TurnRate, Steer.X * TurnRate);
+    const float RollRate =
+        bManualRoll ? -RollInput * FMath::DegreesToRadians(Tuning->ManualRollDegrees) * Authority * Interference
+                    : -FMath::DegreesToRadians(BankError) * 3.f;
+    const FVector TargetRate(RollRate, -Steer.Y * TurnRate, Steer.X * TurnRate);
     Gyros->SetGyrosInput(TargetRate * float(Gyros->ProportionalGain / Gyros->MaxTotalTorque));
 
     // Gravity wells and the wormhole still push, but their numbers were accelerations integrated by hand.
@@ -530,7 +537,8 @@ void ASSShip::BeginPlay()
     EngineAudio->SetSound(SSAudio::PresentationSound(TEXT("Engine")));
     UpdateEngineMix();
     EngineAudio->Play();
-    Velocity = GetActorForwardVector() * Tuning->CruiseSpeed;
+    BaseCameraBoomRotation = CameraBoom->GetRelativeRotation();
+    Velocity = GetActorForwardVector() * Tuning->FlightCruiseSpeed();
     // And give the same cruise to the body, when there is one. GetVelocity reads the physics body under
     // ShipCore, so seeding only the member above left the ship reporting a dead stop at BeginPlay while
     // looking correct in every other respect - the Director spawn lead, the enemy aim lead and eleven
@@ -539,8 +547,11 @@ void ASSShip::BeginPlay()
     if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
         Collision->SetPhysicsLinearVelocity(Velocity);
 }
-void ASSShip::SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake)
+void ASSShip::SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake, float Roll,
+                             bool ManualRoll)
 {
+    RollInput = FMath::Clamp(Roll, -1.f, 1.f);
+    bManualRoll = ManualRoll;
     Steer = Steering.GetClampedToMaxSize(1.f);
     StrafeInput = Strafe.GetClampedToMaxSize(1.f);
     ThrottleInput = FMath::Clamp(Throttle, 0.f, 1.f);
@@ -799,12 +810,20 @@ void ASSShip::Tick(float Dt)
         const float Step = Dt / Steps;
         for (int32 I = 0; I < Steps; ++I)
         {
-            auto Rotation = GetActorRotation();
-            Rotation.Yaw += Steer.X * Tuning->SteeringDegrees * Authority * Interference * Step;
-            Rotation.Pitch = FMath::Clamp(
-                Rotation.Pitch + Steer.Y * Tuning->SteeringDegrees * Authority * Interference * Step, -85.f, 85.f);
-            Rotation.Roll = 0;
-            SetActorRotation(Rotation);
+            if (bManualRoll)
+                AddActorLocalRotation(
+                    FRotator(Steer.Y * Tuning->SteeringDegrees * Authority * Interference * Step,
+                             Steer.X * Tuning->SteeringDegrees * Authority * Interference * Step,
+                             RollInput * Tuning->ManualRollDegrees * Authority * Interference * Step));
+            else
+            {
+                auto Rotation = GetActorRotation();
+                Rotation.Yaw += Steer.X * Tuning->SteeringDegrees * Authority * Interference * Step;
+                Rotation.Pitch = FMath::Clamp(
+                    Rotation.Pitch + Steer.Y * Tuning->SteeringDegrees * Authority * Interference * Step, -85.f, 85.f);
+                Rotation.Roll = 0;
+                SetActorRotation(Rotation);
+            }
             const FVector Desired = FlightVelocityTarget(Speed, float(Stats.maneuver), Velocity);
             const FVector ResponseDelta = (Desired - Velocity) * (1.f - FMath::Exp(-float(Stats.response) * Step));
             Velocity += ResponseDelta.GetClampedToMaxSize(float(Stats.acceleration) * Step);
@@ -860,6 +879,15 @@ void ASSShip::Tick(float Dt)
                                 FMath::Cos(ShakeSeconds * 27.f) * Amplitude * .6f);
     }
     Camera->SetRelativeLocation(CameraOffset);
+    // Free-look orbits the view only; a released stick gently returns behind the ship.
+    if (!FreeLookInput.IsNearlyZero())
+    {
+        FreeLookAngles.X = FMath::Clamp(FreeLookAngles.X + FreeLookInput.X * 100.f * Dt, -150.f, 150.f);
+        FreeLookAngles.Y = FMath::Clamp(FreeLookAngles.Y + FreeLookInput.Y * 80.f * Dt, -65.f, 65.f);
+    }
+    else
+        FreeLookAngles = FMath::Vector2DInterpTo(FreeLookAngles, FVector2D::ZeroVector, Dt, 3.f);
+    CameraBoom->SetRelativeRotation(BaseCameraBoomRotation + FRotator(FreeLookAngles.Y, FreeLookAngles.X, 0.f));
     if (SpeedPostFX.GetValueOnGameThread() != 0)
     {
         // Follows the boost punch and the held boost, not the damage clock: these are speed cues, and a hit

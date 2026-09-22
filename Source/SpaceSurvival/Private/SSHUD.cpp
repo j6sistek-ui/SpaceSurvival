@@ -672,7 +672,7 @@ void ASSHUD::DrawHUD()
             Paragraph(Label, Screen.X + Padding, Screen.Y + Padding, TextW, .7f, LabelColor);
             if (ShowPrompt)
             {
-                const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, Screen.X + Padding,
+                const float GlyphW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Left, Screen.X + Padding,
                                            Screen.Y + Padding + LabelH, .7f);
                 Paragraph(TEXT("INTERACT"), Screen.X + Padding + GlyphW + GlyphGap, Screen.Y + Padding + LabelH,
                           TextW - GlyphW - GlyphGap, .7f, FLinearColor::White);
@@ -695,7 +695,7 @@ void ASSHUD::DrawHUD()
                                                  Ready ? FLinearColor(.4f, 1.f, .65f) : FLinearColor(.45f, .9f, 1));
             if (Ready)
             {
-                const float KeyWidth = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, Screen.X,
+                const float KeyWidth = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Left, Screen.X,
                                              Screen.Y + StatusHeight + 8 * Scale, .75f);
                 Text(TEXT("ENGAGE DOCKING"), Screen.X + KeyWidth + 8 * Scale, Screen.Y + StatusHeight + 8 * Scale, .75f,
                      FLinearColor::White);
@@ -795,7 +795,7 @@ void ASSHUD::DrawHUD()
         if (GlyphBeforeHint)
         {
             const float GlyphW =
-                Glyph(EKeys::E, Walker ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Bottom, HintX, HintY,
+                Glyph(EKeys::E, Walker ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left, HintX, HintY,
                       HintSize, HintColor);
             Text(InteractionHint, HintX + GlyphW + GlyphGap, HintY, HintSize, HintColor);
         }
@@ -804,7 +804,7 @@ void ASSHUD::DrawHUD()
             Text(HintPrefix, HintX, HintY, HintSize, HintColor);
             const float PrefixW = MeasureText(HintPrefix, HintSize).X;
             const float GlyphW =
-                Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Bottom, HintX + PrefixW, HintY, HintSize, HintColor);
+                Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Left, HintX + PrefixW, HintY, HintSize, HintColor);
             Text(HintSuffix, HintX + PrefixW + GlyphW + GlyphGap, HintY, HintSize, HintColor);
         }
         else if (!InteractionHint.IsEmpty())

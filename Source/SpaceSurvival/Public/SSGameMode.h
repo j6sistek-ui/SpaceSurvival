@@ -228,6 +228,7 @@ private:
     bool BoostLatch = false, BrakeLatch = false;
     /** A menu Back press must be released before B can become a new boost command. */
     bool SuppressGamepadBoostUntilRelease = false;
+    bool SuppressGamepadFireUntilRelease = false;
     float KeyboardThrottle = 0.f;
     /** Only a throttle command changes ownership; look, fire and UI glyph changes cannot restore thrust. */
     bool bAnalogThrottle = false;

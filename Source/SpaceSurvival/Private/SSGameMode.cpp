@@ -112,10 +112,10 @@ void ASSGameMode::BeginPlay()
         auto &T = GetGameInstance<USSGameInstance>()->Session.tuning;
         T.baseHull = Data->BaseHull;
         T.baseShield = Data->BaseShield;
-        T.baseSpeed = Data->CruiseSpeed;
+        T.baseSpeed = Data->FlightCruiseSpeed();
         T.baseManeuver = Data->LateralSpeed;
         T.baseResponse = Data->Response;
-        T.baseAcceleration = Data->Acceleration;
+        T.baseAcceleration = Data->FlightAcceleration();
         T.baseWeaponDamage = Data->BaseWeaponDamage;
         T.waveSecondsMin = Data->WaveSecondsMin;
         T.waveSecondsMax = Data->WaveSecondsMax;
@@ -878,14 +878,15 @@ void ASSGameMode::Tick(float Dt)
     if (S.IsFlying() && S.run.wave <= 3 && AnnouncementSeconds <= 0)
     {
         const TCHAR *Prompts[] = {
-            TEXT("STEER: mouse / right stick. The ship carries momentum while its hull banks."),
-            TEXT("THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. Left stick maneuvers."),
+            TEXT("FLIGHT: left stick sideways / pitch. LB/RB roll. Right stick is camera-only free-look."),
+            TEXT(
+                "THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. Left stick moves sideways."),
             TEXT("BOOST: Shift / B. Separate from normal throttle; release to recharge."),
             TEXT("BRAKE: Space / left trigger. Partial braking builds heat; give it time to cool."),
             TEXT("DODGE: Q / left bumper with a movement direction. Obstacles still hurt during a dodge."),
-            TEXT("FIRE: left mouse / right bumper. Aim manually; brackets provide soft targeting assistance."),
+            TEXT("FIRE: left mouse / A. Aim manually; brackets provide soft targeting assistance."),
             TEXT("PICKUPS: collect shaped rewards. Hull regenerates after damage; shield does not."),
-            TEXT("OPTIONAL SIGNALS: approach, then E / A to accept. Passing nearby does not commit you.")};
+            TEXT("OPTIONAL SIGNALS: approach, then E / X to accept. Passing nearby does not commit you.")};
         const int Limit = S.run.wave == 1 ? 5 : S.run.wave == 2 ? 7 : 8;
         for (int I = 0; I < Limit; ++I)
         {
@@ -1032,7 +1033,7 @@ void ASSGameMode::Interact()
             }
         }
         else if (Nearest)
-            Announce(FString::Printf(TEXT("SIGNAL OUT OF RANGE / %.0f m away; move closer and press E / A"),
+            Announce(FString::Printf(TEXT("SIGNAL OUT OF RANGE / %.0f m away; move closer and press E / X"),
                                      FMath::Sqrt(NearestDistance) / 100.f));
         else
             Announce(TEXT("No active signal nearby."));
@@ -1227,10 +1228,11 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         break;
     case ESSPanel::Controls:
         PanelTitle = TEXT("FLIGHT / WALK CONTROLS");
-        PanelDetail = TEXT("FLIGHT: Mouse / right stick steers. A D, R F / left stick maneuvers.\n"
+        PanelDetail = TEXT("FLIGHT: Left stick sideways / pitch | LB/RB: roll | Right stick: free-look.\nMouse: steer "
+                           "| A D / R F: lateral / vertical thrust.\n"
                            "RT: normal throttle. W/S: set keyboard throttle. Zero power coasts.\n"
-                           "Shift / B: boost | Space / LT: brake | Left click / RB: fire | Q / LB: dodge\n"
-                           "E / A: flight interaction.\n"
+                           "Shift / B: boost | Space / LT: brake | Left click / A: fire | Q: keyboard dodge\n"
+                           "E / X: flight interaction / landing.\n"
                            "WALK: WASD / left stick moves and faces travel. Mouse / right stick orbits camera.\n"
                            "Shift / X: run | Space / A: jump | E / Y: use | Esc / Menu: pause");
         AddEntry(FString::Printf(TEXT("Mouse sensitivity: %.1f"), S.settings.mouseSensitivity), 22);
@@ -2085,6 +2087,8 @@ void ASSPlayerController::PlayerTick(float Dt)
         return; // Guarded fixture owns scripted input; Super still updates the normal camera.
     if (!IsInputKeyDown(EKeys::Gamepad_FaceButton_Right))
         SuppressGamepadBoostUntilRelease = false;
+    if (!IsInputKeyDown(EKeys::Gamepad_FaceButton_Bottom))
+        SuppressGamepadFireUntilRelease = false;
     if (LastInputPawn.Get() != GetPawn())
     {
         // Reset gameplay latches on possession, but preserve a consumed, still-held Back press.
@@ -2120,6 +2124,8 @@ void ASSPlayerController::PlayerTick(float Dt)
             GM->OpenPanel(ESSPanel::Main);
     }
     const bool MenuInput = GM->IsMenuOpen();
+    if (MenuInput && Down(EKeys::Gamepad_FaceButton_Bottom))
+        SuppressGamepadFireUntilRelease = true;
     const bool LiveFlightMenu =
         MenuInput && GI->Session.IsFlying() && (GM->Panel == ESSPanel::Depot || GM->Panel == ESSPanel::Reward);
     if (MenuInput)
@@ -2164,8 +2170,11 @@ void ASSPlayerController::PlayerTick(float Dt)
                              (FMath::Max(1.f, SteeringDegrees) * FMath::Max(.001f, Dt));
     // SceneViewport already converts screen-up motion to positive MouseY. Both devices feed the
     // same up-positive convention; the saved inversion applies once to both flight and walking.
-    FVector2D Look(MouseX * MouseScale + GetInputAnalogKeyState(EKeys::Gamepad_RightX) * StickScale,
-                   MouseY * MouseScale + GetInputAnalogKeyState(EKeys::Gamepad_RightY) * StickScale);
+    const bool bFlightControls = Cast<ASSShip>(GetPawn()) != nullptr;
+    const float StickYaw = bFlightControls ? 0.f : GetInputAnalogKeyState(EKeys::Gamepad_RightX);
+    const FKey SteerY = bFlightControls ? EKeys::Gamepad_LeftY : EKeys::Gamepad_RightY;
+    FVector2D Look(MouseX * MouseScale + StickYaw * StickScale,
+                   MouseY * MouseScale + GetInputAnalogKeyState(SteerY) * StickScale);
     if (GI->Session.settings.invertPitch)
         Look.Y = -Look.Y;
     if (auto *ShipPawn = Cast<ASSShip>(GetPawn()))
@@ -2178,7 +2187,7 @@ void ASSPlayerController::PlayerTick(float Dt)
         if (Pressed(EKeys::SpaceBar) || Pressed(EKeys::Gamepad_LeftTrigger))
             BrakeLatch = !BrakeLatch;
         FVector2D Strafe(float(Down(EKeys::D)) - float(Down(EKeys::A)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftX),
-                         float(Down(EKeys::R)) - float(Down(EKeys::F)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftY));
+                         float(Down(EKeys::R)) - float(Down(EKeys::F)));
         KeyboardThrottle =
             FMath::Clamp(KeyboardThrottle + (float(Down(EKeys::W)) - float(Down(EKeys::S))) * Dt * .5f, 0.f, 1.f);
         const float RightTrigger = FMath::Clamp(GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis), 0.f, 1.f);
@@ -2198,7 +2207,8 @@ void ASSPlayerController::PlayerTick(float Dt)
             LastRightTriggerCommand = RightTrigger;
         }
         const float Throttle = bAnalogThrottle ? RightTrigger : KeyboardThrottle;
-        const bool FireHeld = !MenuInput && (Down(EKeys::LeftMouseButton) || Down(EKeys::Gamepad_RightShoulder));
+        const bool FireHeld = !MenuInput && (Down(EKeys::LeftMouseButton) || (!SuppressGamepadFireUntilRelease &&
+                                                                              Down(EKeys::Gamepad_FaceButton_Bottom)));
         const uint32 Before = GI->Session.account.tutorialFlags;
         if (!Look.IsNearlyZero())
             GI->Session.account.tutorialFlags |= 1u;
@@ -2208,15 +2218,21 @@ void ASSPlayerController::PlayerTick(float Dt)
             GI->Session.account.tutorialFlags |= 4u;
         if (Brake)
             GI->Session.account.tutorialFlags |= 8u;
-        if (Pressed(EKeys::Q) || Pressed(EKeys::Gamepad_LeftShoulder))
+        if (Pressed(EKeys::Q))
             GI->Session.account.tutorialFlags |= 16u;
         if (FireHeld)
             GI->Session.account.tutorialFlags |= 32u;
         if (Before != GI->Session.account.tutorialFlags && !GI->IsFreeFlight())
             GI->PersistAccount();
+        const float Roll = float(Down(EKeys::Gamepad_RightShoulder)) - float(Down(EKeys::Gamepad_LeftShoulder));
         ShipPawn->SetFlightInput(Look, Strafe, Throttle, GI->Session.settings.toggleBoost ? BoostLatch : Boost,
-                                 GI->Session.settings.toggleBrake ? BrakeLatch : Brake);
-        if (Pressed(EKeys::Q) || Pressed(EKeys::Gamepad_LeftShoulder))
+                                 GI->Session.settings.toggleBrake ? BrakeLatch : Brake, Roll, bLastInputWasGamepad);
+        FVector2D CameraLook(GetInputAnalogKeyState(EKeys::Gamepad_RightX) * StickScale,
+                             GetInputAnalogKeyState(EKeys::Gamepad_RightY) * StickScale);
+        if (GI->Session.settings.invertPitch)
+            CameraLook.Y = -CameraLook.Y;
+        ShipPawn->SetFreeLookInput(CameraLook);
+        if (Pressed(EKeys::Q))
             ShipPawn->RequestDodge();
         if (FireHeld)
             ShipPawn->Fire();
@@ -2233,7 +2249,7 @@ void ASSPlayerController::PlayerTick(float Dt)
             WalkPawn->StopJumping();
     }
     const FKey InteractButton =
-        Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Bottom;
+        Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;
     if (!MenuInput && (Pressed(EKeys::E) || Pressed(InteractButton)))
         GM->Interact();
 }

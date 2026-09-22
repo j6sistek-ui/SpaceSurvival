@@ -90,10 +90,10 @@ struct FSSFlightWorld
         // Match the production GameMode's content-to-domain setup, without running that GameMode.
         Tuning.baseHull = Content->BaseHull;
         Tuning.baseShield = Content->BaseShield;
-        Tuning.baseSpeed = Content->CruiseSpeed;
+        Tuning.baseSpeed = Content->FlightCruiseSpeed();
         Tuning.baseManeuver = Content->LateralSpeed;
         Tuning.baseResponse = Content->Response;
-        Tuning.baseAcceleration = Content->Acceleration;
+        Tuning.baseAcceleration = Content->FlightAcceleration();
         Tuning.baseWeaponDamage = Content->BaseWeaponDamage;
         if (!Test.TestTrue(TEXT("Start fresh in-memory flight"),
                            Instance->Session.StartRun("flight-adapter-fixture", ShipKind, Weapon)))

@@ -52,7 +52,13 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     virtual FVector GetVelocity() const override;
-    void SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake);
+    void SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake, float Roll = 0.f,
+                        bool ManualRoll = false);
+    /** Camera-only input: never feeds steering, thrust or the flight body's transform. */
+    void SetFreeLookInput(FVector2D Input)
+    {
+        FreeLookInput = Input.GetClampedToMaxSize(1.f);
+    }
     /** Ordinary engine command, 0 = coast and 1 = full normal power; boost remains separate. */
     float GetThrottle() const
     {
@@ -134,6 +140,8 @@ public:
     TObjectPtr<USSPhase1Data> Tuning;
 
 private:
+    friend class FSSDirectorAsteroidReadability;
+    friend class FSSControllerTestingPreset;
     void UpdateEngineMix();
     void RefreshFlightPresentation();
     FSSHeroDefinition PilotHero = FSSHeroDefinition::Fallback();
@@ -182,6 +190,10 @@ private:
     void OnHullImpact(UPrimitiveComponent *HitComp, AActor *OtherActor, UPrimitiveComponent *OtherComp,
                       FVector NormalImpulse, const FHitResult &Hit);
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
+    float RollInput = 0.f;
+    bool bManualRoll = false;
+    FVector2D FreeLookInput = FVector2D::ZeroVector, FreeLookAngles = FVector2D::ZeroVector;
+    FRotator BaseCameraBoomRotation = FRotator::ZeroRotator;
     FVector2D Steer = FVector2D::ZeroVector, StrafeInput = FVector2D::ZeroVector;
     float ThrottleInput = 0.f, FireCooldown = 0.f, ImpactCooldown = 0.f, FireVisualSeconds = 0.f;
     /** Impact shake phase and severity. Presentation only; neither reaches thrust or shot origin. */

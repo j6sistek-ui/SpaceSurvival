@@ -252,6 +252,17 @@ public:
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float CruiseSpeed = 2400.f;
+    // New multiplier also applies to existing serialized DA_Phase1 values.
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight", meta = (ClampMin = "0.1"))
+    float ArcadeFlightScale = 2.5f;
+    float FlightCruiseSpeed() const
+    {
+        return CruiseSpeed * FMath::Max(.1f, ArcadeFlightScale);
+    }
+    float FlightAcceleration() const
+    {
+        return Acceleration * FMath::Max(.1f, ArcadeFlightScale);
+    }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float MinimumSpeed = 1000.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
@@ -260,6 +271,8 @@ public:
     float LateralSpeed = 1700.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float SteeringDegrees = 65.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
+    float ManualRollDegrees = 40.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
     float Response = 4.2f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flight")
@@ -290,6 +303,8 @@ public:
     int32 MaximumActiveThreats = 24;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Director")
     float BaseBudgetPerSecond = 1.5f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Director", meta = (ClampMin = "1"))
+    float DirectorAsteroidScale = 3.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy", meta = (ClampMin = "0", ClampMax = "99999955"))
     int32 WaveCredits = 75;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy", meta = (ClampMin = "1", ClampMax = "25000000"))

@@ -71,6 +71,9 @@ public:
     float GravityAcceleration = 650.f;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tuning")
     bool bPersistentAcrossWaves = false;
+    // Set by the Director before Configure. World scenery retains its authored rock surface.
+    UPROPERTY(Transient)
+    bool bDirectorAsteroid = false;
     /** How far from the ship this body may be before it retires. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tuning")
     float RetireDistance = 22000.f;
@@ -340,6 +343,7 @@ public:
 
 private:
     ASSShip *FindShip() const;
+    friend class FSSDirectorAsteroidReadability;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
     ASSWorldBody *SpawnHazard(ESSWorldKind Kind, float Radius);
     ASSEnemy *SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective = nullptr);

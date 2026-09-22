@@ -1,6 +1,8 @@
 # Build and run
 
-**Unpackaged follow-up:** the repair branch now keeps asteroid belt transforms fixed, preserves environment visibility during landing, separates home pause from the startup title, and removes the alien-gallery service/original Acornaut selection. Ramp entry leaves walking uninterrupted; E/Y in the supported rear cabin currently opens flight options. Walking fully to the chair and sitting is still pending and must not be described as implemented. These changes require the new repair Editor DLL or a future package; the existing packaged-review launcher still opens Package 4. Controller stick roles/speed remain the Package 4 layout until the owner's pending choices are answered.
+**September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
+
+**Unpackaged follow-up:** the repair branch now keeps asteroid belt transforms fixed, preserves environment visibility during landing, separates home pause from the startup title, and removes the alien-gallery service/original Acornaut selection. Ramp entry leaves walking uninterrupted; E/Y in the supported rear cabin currently opens flight options. Walking fully to the chair and sitting is still pending and must not be described as implemented. These changes require the new repair Editor DLL or a future package; the existing packaged-review launcher still opens Package 4. The next source batch adds approved 60 m/s normal flight, proportional acceleration and 3x orange Director asteroids. The final testing preset above supersedes the first stick choice. Package 4 retains its older controls until replaced.
 
 **Start with [Project State](PROJECT_STATE.md#source-build-and-release) for the current source, local package and separately published itch identity.** Older package receipts below are historical evidence, not the current contents of the shared archive. Phase 1 remains PARTIAL.
 
@@ -289,28 +291,31 @@ The dry run binds the current built/archive executable and link response file; u
 
 ## Controls
 
-The following mappings describe the owner-approved follow-up source after Package 3. Final engine verification and an updated package are pending; the running Package 3 does not acquire these changes from source edits. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
+The following mappings describe the September 22 repair source, including the first approved stick swap. The final testing preset above supersedes the first stick choice. Package 4 retains right-stick steering/left-stick strafe until a new package replaces it. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
 
 | Capability | Keyboard/mouse | Controller |
 | --- | --- | --- |
-| Flight steering / on-foot look | Mouse | Right stick |
-| Flight lateral / vertical | A/D and R/F | Left stick |
+| Flight yaw / pitch | Mouse | Left stick up/down pitches; no yaw axis |
+| On-foot look | Mouse | Right stick |
+| Flight sideways / vertical | A/D and R/F | Left stick left/right; no vertical strafe |
+| Flight roll | — | LB / RB |
+| Flight free-look | — | Right stick |
 | Throttle, 0–100% | W/S raises/lowers the setting | Right trigger; release to coast |
-| Fire | Left mouse | Right bumper |
+| Fire | Left mouse | A |
 | Boost | Shift | B |
 | Brake (wave heat / station stop) | Space | Left trigger |
-| Directional dodge | Q with movement direction | Left bumper with left-stick direction |
+| Directional dodge | Q with movement direction | Unbound in this testing preset |
 | Walk / run | WASD / Shift | Left stick / X |
 | Jump on foot | Space | A |
 | Interact on foot | E | Y |
-| Flight encounter interaction | E | A |
+| Flight encounter interaction | E | X |
 | Confirm menu choice | Enter | A |
-| Dock when the pad says ready | E | A |
+| Dock when the pad says ready | E | X |
 | Shell / back | Escape | Menu; B while a menu is open |
 
-Banking follows steering/lateral movement. Mouse-up and right-stick-up both look/pitch upward by default, in flight and on foot; pitch inversion reverses both. On foot, movement follows the camera direction and the character turns toward travel; the right stick/mouse can orbit the camera independently. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
+Banking follows steering/lateral movement. Mouse-up, flight left-stick-up and walking right-stick-up pitch upward by default; pitch inversion reverses the relevant view/steering axis. On foot, movement follows the camera direction and the character turns toward travel; the right stick/mouse can orbit the camera independently. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
 
-RT directly controls normal engine power. Releasing it cuts forward thrust and preserves momentum; turning the hull alone does not redirect that coast. Use LT/Space to brake. W/S changes a persistent keyboard throttle setting from zero to full over two seconds; lower it to zero to coast. Possession changes reset that setting. Boost uses the existing resource limit, and brake suppresses boost. Outside the station zone, braking still obeys its heat limit; inside it, brake can bring the ship to a stop without overheating. There is no automatic minimum cruise in this follow-up.
+The approved arcade baseline multiplies existing authored cruise/acceleration by 2.5: 6000 cm/s (60 m/s) and 8000 cm/s squared. Boost remains separate. RT directly controls normal engine power. Releasing it cuts forward thrust and preserves momentum; turning the hull alone does not redirect that coast. Use LT/Space to brake. W/S changes a persistent keyboard throttle setting from zero to full over two seconds; lower it to zero to coast. Possession changes reset that setting. Boost uses the existing resource limit, and brake suppresses boost. Outside the station zone, braking still obeys its heat limit; inside it, brake can bring the ship to a stop without overheating. There is no automatic minimum cruise in this follow-up.
 
 When mixing devices, a fresh W/S press selects keyboard throttle; pressing, deliberately adjusting or releasing RT selects analog throttle. Mouse look, controller look and unrelated buttons only change their own controls and HUD prompts. They cannot restore an old keyboard power setting after RT is released.
 
