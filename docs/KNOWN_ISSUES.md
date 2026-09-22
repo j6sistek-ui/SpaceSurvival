@@ -1,8 +1,14 @@
 # Open work and owner review
 
+**Current playable baseline:**0.1.21-alpha.1 / itch build2003058 READY, Package10/source4fd0293. Update through the itch app. Open [release receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json); check flight response, sustained mixed-field travel and menu navigation. Reports below remain open pending their own verification; publication is not acceptance.
+
+## September22 star visibility — RPT-20260922-03
+
+**OPEN; concern logged only, no further investigation this release.** Owner asks where the stars are in the latest flight view, then explicitly says still upload and just logging concerns. The shown frame has a dominant blue-gray nebula and weak discrete-star visibility. Cause UNCONFIRMED; no missing-asset/fog diagnosis or correction claimed. Lead owns a bounded star-layer/background visibility check in a later authorized batch. Do not interrupt or modify the approved0.1.21-alpha.1 payload for this concern.
+
 ## September22 menu follow-up — RPT-20260922-02
 
-**OPEN; lead owns repair and packaged verification, owner retest pending.** Owner reports the top HUD competing with normal messages and controller menus not navigating. Legacy full-width announcement overlapped the new wave/location header; messages now wrap in a dedicated center column using the HUD reference layout. Canvas menus explicitly retain viewport input; left stick adds immediate movement, delayed repeat and neutral deadzone alongside existing D-pad/A/B. Three focused input cases pass in MenuInputTests2 after correcting a fixture assumption about the Settings initial selection. First-click pointer activation remains available. Physical-device focus and rendered packaged placement still require verification; do not equate synthetic input with owner acceptance.
+**OPEN; lead owns repair and packaged verification, owner retest pending.** Owner reports the top HUD competing with normal messages and controller menus not navigating. Legacy full-width announcement overlapped the new wave/location header; messages now wrap in a dedicated center column using the HUD reference layout. Canvas menus explicitly retain viewport input; left stick adds immediate movement, delayed repeat and neutral deadzone alongside existing D-pad/A/B. Three focused input cases pass in MenuInputTests2 after correcting a fixture assumption about the Settings initial selection. First-click pointer activation remains available. Package10/source4fd0293 Turn frame confirms the message clears wave heading/radar. Physical-device focus still requires owner retest; do not equate synthetic input with owner acceptance.
 
 ## Deferred owner concept — CONCEPT-20260922-01
 
@@ -23,7 +29,7 @@
 
 **Still open / next actions:** lead must replace the Phoenix's coarse cockpit/interior collision envelopes and implement the actual seat approach/pose/possession flow; explicit rear-cabin interaction is only removal of the interruption, not completion. The four-frame hidden flight capture shows distinct orange hazards but FAILED when its scripted non-evasive path died before29s; no survival/balance pass. FinalAffected9/9 verifies source input/physics, not player feel. Lead must verify atmosphere continuity and solid field in natural travel, and reproduce the owner's beacon scenario; feedback text alone is not closure. Owner approved 60 m/s ordinary flight with matching acceleration and **3x** Director asteroid size, plus a visibly distinct material/color. Source now uses effective 6000 cm/s cruise, 8000 cm/s squared acceleration and orange Director rocks with matching collision/admission clearance. World rocks retain their authored surfaces. Left-stick steering/right-stick strafe was approved and implemented; the final testing preset above supersedes that initial implementation. No change to walking controls. Keep jump-clip acquisition and low-priority enemy lock separate; controller dodge is unbound in this preset (keyboard Q retained). Station composition remains on hold. Package 5 now includes this batch; its audit and startup smoke pass. Use the isolated review launcher, not the original checkout.
 
-**Start here. This is the single active issues, follow-up, action and priority log.** Latest owner direction: September 21, 2026. Phase 1 remains PARTIAL. Older dated records below retain their original evidence and are superseded where explicitly noted.
+**Start here. This is the single active issues, follow-up, action and priority log.** Latest owner direction: September22, 2026. Phase 1 remains PARTIAL. Older dated records below retain their original evidence and are superseded where explicitly noted.
 
 ## September 21: rebuild the flight-to-station loop
 
