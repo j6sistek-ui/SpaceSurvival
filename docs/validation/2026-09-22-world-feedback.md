@@ -65,3 +65,14 @@ Root cause of the roll failure: the held command reached the real gyroscope, but
 The lateral-only fixture now starts the strafe segment at rest, distinguishing commanded acceleration from pre-existing coasting momentum. It measures Y1275.815cm/s and zero induced vertical velocity. The failed histories Focused2–7 remain preserved. Focused8 first passed roll/coast2/2 in1.550456s; FinalAffected then checked the directly affected paths after the shared body initialization change. This is synthetic raw input/physics evidence, not physical-controller feel acceptance.
 
 Source37, canonical documentation navigation, changed-file native formatting and diff whitespace checks pass. Packaging is the next checkpoint; this paragraph does not itself replace Package4.
+
+
+## Package 5 and startup handoff — 2026-09-22 01:58 UTC
+
+Frozen source `0004810652d326beb0880010f0fbc45f017fabb0` was packaged through `Scripts/Build.ps1 -Target Package`: BUILD SUCCESSFUL, UAT3m2s,3027 cooked plus8 skipped,0cook errors/1known ShipCore startup warning. Engine-header deprecation warnings remain baseline. Wrapper log: `Artifacts/BuildLogs/ArcadeFeedback-Package5.log`. Inner EXE SHA256 `37152dc2c4012fb1b3918ec0bc822e9ebc5af8cbc7e1e57cdac057e73786a270`. The complete isolated `Artifacts/Windows` archive replaces Package4; original checkout/itch remain unchanged.
+
+Actual IoStore audit `9f82872ba1964e49bb5de218c0de3744` PASS:277 frozen inputs,3027 described/exported packages,125 selected exports,339-package dependency closure,53files/5619611321bytes. No missing/forbidden packages, missing dependencies or import warnings; audit leaves archive payload unchanged. Manifest `Expected-512a5d8381604545bfd1eb816400b4fc.json` is under `Artifacts/GameplayFollowup/PackageAudit`.
+
+Only one new packaged smoke was run: `CaptureSpaceLook.ps1 -Packaged -MainMenu -Label ArcadePackage5Startup`, receipt `Artifacts/EndgameSoak/4becc60814e441dd86b2c34bae146e01/capture.json`. PASS,3images,process0,artifact/production-save preservation and no test saves. Rendered.log has0 Error/Fatal and3 baseline warnings: ShipCore startup, motion-blur priority and motion-vector render-thread flag. This verifies startup/title, not flight balance, physical controller feel or complete-loop acceptance. Launcher DryRun passes1600x900/separate `Artifacts/PackagedReviewUser`; no visible window was opened. Source/core/documentation CI passes at0004810; following handoff changes are docs only.
+
+Open `Play Packaged Review.cmd` in the repair checkout; use Free Flight to test the temporary controller preset and stable world rocks. Full cockpit walk/sit, beacon reproduction, natural atmosphere continuity and the failed non-evasive flight balance check remain open. Controls selection/remapping stays deferred. Draft PR59 remains unmerged; no upload/publication.
