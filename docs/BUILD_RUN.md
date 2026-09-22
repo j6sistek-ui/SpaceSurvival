@@ -1,6 +1,6 @@
 # Build and run
 
-**Package6 UI update, September22:** The isolated review launcher now opens source `63f0996`, with approved page11 HUD/settings/pause and common service frames. Hull/shield/brake vitals have labels and bars only: no blue panel or percentages. Five affected menu tests, seven packaged UI frames and archive inclusion pass. Existing settings activate/cycle with Enter/A or click; arrows/D-pad select, Escape/B returns. Raw captures show texture-pool/video-memory warnings; performance remains open. Unique service/wardrobe portrait layouts remain lead-owned; presets/remapping deferred.
+**Package7 UI follow-up, September22:** The isolated review launcher now opens source `25cf794`: aligned preference sliders, large scrolling wardrobe, and a walking radar showing actual crew, services and landing pad. Walking has no flight vitals/weapon panel. The prior approved HUD/settings/pause and locked main remain. Two affected menu tests, six packaged frames and archive inclusion pass. [Exact receipt](validation/2026-09-22-ui-refresh.md). Earlier GPU-memory warnings remain open; this is not performance acceptance. Unique service/wardrobe portrait layouts remain lead-owned; presets/remapping deferred.
 
 **September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
 
@@ -8,7 +8,7 @@
 
 **Start with [Project State](PROJECT_STATE.md#source-build-and-release) for the current source, local package and separately published itch identity.** Older package receipts below are historical evidence, not the current contents of the shared archive. Phase 1 remains PARTIAL.
 
-Play the September 21 reset candidate with **`C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/Play Packaged Review.cmd`**. Package6 at source `63f0996` retains the gameplay follow-up and adds approved HUD/settings/pause; its archive audit and seven-frame packaged UI check pass; [Project State](PROJECT_STATE.md#september-21-gameplay-reset-candidate) records its identity and remaining acceptance gaps. The original checkout at `C:/Users/j6sis/SpaceSurvival` and its `Artifacts/Windows` package remain older and unchanged. Do not open the `.uproject` just to play: it starts Unreal Editor and may offer a conversion copy. See [your next review](KNOWN_ISSUES.md#what-to-personally-review-next) and [local-versus-GitHub storage](PROJECT_STATE.md#where-files-live).
+Play the September 21 reset candidate with **`C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/Play Packaged Review.cmd`**. Package7 at source `25cf794` retains the gameplay/UI follow-up and adds aligned sliders, scrolling wardrobe and actual walking radar; its archive audit and six-frame changed-UI check pass; [Project State](PROJECT_STATE.md#september-21-gameplay-reset-candidate) records its identity and remaining acceptance gaps. The original checkout at `C:/Users/j6sis/SpaceSurvival` and its `Artifacts/Windows` package remain older and unchanged. Do not open the `.uproject` just to play: it starts Unreal Editor and may offer a conversion copy. See [your next review](KNOWN_ISSUES.md#what-to-personally-review-next) and [local-versus-GitHub storage](PROJECT_STATE.md#where-files-live).
 
 **`Play Packaged Review.cmd`** opens only its checkout's `Artifacts/Windows/SpaceSurvival.exe` at 1600×900 with a separate persistent profile in `Artifacts/PackagedReviewUser`; it does not import existing saves, build, install prerequisites or apply ship-refresh/account changes. `Scripts/PlayPackagedReview.ps1 -DryRun` checks the paths and prints the command without opening the game or writing files. The final candidate passed that dry run; the agent did not open an interactive game window. Keep the whole packaged directory together.
 
@@ -27,7 +27,7 @@ The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomp
 
 ## Locked startup menu authoring
 
-Package 5 retains the September 21 owner-approved Figma main menu. The September22 source extension also maps page11 HUD/settings/pause and the common service frame; see ContentSource/FigmaUIRefresh/README.md. Package6 includes this UI; Package5 remains the historical gameplay checkpoint. Exact source PNGs and measured placement/provenance are under [ContentSource/FigmaMainMenu](../ContentSource/FigmaMainMenu/README.md); [the source record](production/FIGMA_MAIN_MENU_PROVENANCE.md) explains normal/hover and export limits.
+Package 5 retains the September 21 owner-approved Figma main menu. The September22 source extension also maps page11 HUD/settings/pause and the common service frame; see ContentSource/FigmaUIRefresh/README.md. Package7 includes this UI and the scrollbar/slider/walking-radar follow-up; Package5 remains the historical gameplay checkpoint. Exact source PNGs and measured placement/provenance are under [ContentSource/FigmaMainMenu](../ContentSource/FigmaMainMenu/README.md); [the source record](production/FIGMA_MAIN_MENU_PROVENANCE.md) explains normal/hover and export limits.
 
 Run this narrow import after the Editor module is built, one owned offscreen Unreal process at a time:
 
@@ -293,7 +293,7 @@ The dry run binds the current built/archive executable and link response file; u
 
 ## Controls
 
-The following mappings describe Package5/source `0004810`, retained in Package6/source `63f0996`, the temporary September 22 testing preset. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
+The following mappings describe Package5/source `0004810`, retained in Package7/source `25cf794`, the temporary September 22 testing preset. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
 
 | Capability | Keyboard/mouse | Controller |
 | --- | --- | --- |
