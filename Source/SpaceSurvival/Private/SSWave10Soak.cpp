@@ -239,7 +239,7 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         Row->SetNumberField(TEXT("combatSecondsSinceKill"), GetWorld()->GetTimeSeconds() - CombatKilledAt);
         Row->SetBoolField(TEXT("normalWeaponKill"), true);
     }
-    if (MainMenu)
+    if (MainMenu && !FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
     {
         const auto *GM = Mode.Get();
         const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
@@ -782,8 +782,93 @@ void ASSWave10Soak::TickWeaponReadability()
     }
 #endif
 }
+void ASSWave10Soak::TickUIRefresh(float Dt)
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    auto *GM = Mode.Get();
+    auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    auto *HUD = PC ? Cast<ASSHUD>(PC->GetHUD()) : nullptr;
+    if (!GI || !HUD || !NoSaveSlots() || FlightSeconds > 60.)
+    {
+        Stop(TEXT("UI review lost isolated state or exceeded its bounded window."));
+        return;
+    }
+    const FString Run(UTF8_TO_TCHAR(SS::EncodeRun(GI->Session.run).c_str()));
+    const FString Account(UTF8_TO_TCHAR(SS::EncodeAccount(GI->Session.account).c_str()));
+    if (!Started)
+    {
+        MainMenuRunBefore = Run;
+        MainMenuAccountBefore = Account;
+        Started = true;
+    }
+    MainMenuStatePreserved = Run == MainMenuRunBefore && Account == MainMenuAccountBefore;
+    if (!MainMenuStatePreserved)
+    {
+        Stop(TEXT("UI review changed the actual account or run."));
+        return;
+    }
+    FlightSeconds += Dt;
+    ++CapturedFrames;
+    const ESSPanel Panels[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
+                               ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
+    const TCHAR *Names[] = {TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
+                            TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
+    const int32 Index = MainMenuStage / 2;
+    if (Index >= UE_ARRAY_COUNT(Panels))
+    {
+        HUD->bReviewFlightHUD = false;
+        Stop(TEXT(""));
+        return;
+    }
+    if (MainMenuStage % 2 == 0)
+    {
+        GM->bAtTitleScreen = false;
+        GM->bTitleSettingsNavigation = false;
+        HUD->bReviewFlightHUD = Panels[Index] == ESSPanel::None;
+        if (!HUD->bReviewFlightHUD)
+            GM->OpenPanel(Panels[Index]);
+        MainMenuStageAt = FlightSeconds;
+        ++MainMenuStage;
+        return;
+    }
+    int32 Pending = 0;
+#if WITH_EDITOR
+    Pending = FAssetCompilingManager::Get().GetNumRemainingAssets() +
+              (GShaderCompilingManager ? GShaderCompilingManager->GetNumRemainingJobs() : 0);
+#endif
+    if (Pending)
+        MainMenuStageAt = FlightSeconds;
+    if (FlightSeconds - MainMenuStageAt < 1. || FScreenshotRequest::IsScreenshotRequested())
+        return;
+    if (!HUD->bReviewFlightHUD)
+    {
+        const auto &Bounds = HUD->GetMenuBounds();
+        if (Bounds.Num() != GM->Entries.Num())
+        {
+            Stop(TEXT("UI frame lost native action bounds."));
+            return;
+        }
+        for (int32 I = 0; I < Bounds.Num(); ++I)
+            if (!Bounds[I].bIsValid || Bounds[I].Min.X < 0 || Bounds[I].Min.Y < 0 || Bounds[I].Max.X > 1920 ||
+                Bounds[I].Max.Y > 1080 || HUD->MenuIndexAt(Bounds[I].GetCenter()) != I)
+            {
+                Stop(TEXT("UI frame has overlapping, offscreen or mismapped action bounds."));
+                return;
+            }
+    }
+    CaptureVisual(Names[Index], float(FlightSeconds));
+    ++MainMenuStage;
+#endif
+}
+
 void ASSWave10Soak::TickMainMenu(float Dt)
 {
+    if (FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
+    {
+        TickUIRefresh(Dt);
+        return;
+    }
 #if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
     auto *GM = Mode.Get();
     auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
@@ -1486,7 +1571,10 @@ void ASSWave10Soak::WriteResultAndExit()
     if (CaptureVisuals && Failure.IsEmpty())
     {
         TArray<FString> Expected;
-        if (MainMenu)
+        if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
+            Expected = {TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
+                        TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
+        else if (MainMenu)
             Expected = {TEXT("MainMenuNormal"), TEXT("MainMenuNewGame"), TEXT("MainMenuSettings")};
         else if (Gallery)
             Expected = {TEXT("GalleryDoorway"), TEXT("GalleryShowcase"), TEXT("GalleryAssets"), TEXT("GalleryReturn")};
@@ -1531,7 +1619,9 @@ void ASSWave10Soak::WriteResultAndExit()
     const bool Success =
         Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && (AllFramesForeground || OffscreenVisuals);
     auto Result = MakeShared<FJsonObject>();
-    Result->SetStringField(TEXT("evidenceType"), MainMenu            ? TEXT("TITLE_MENU_RENDERED_REVIEW")
+    Result->SetStringField(TEXT("evidenceType"), FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview"))
+                                                     ? TEXT("UI_REFRESH_RENDERED_REVIEW")
+                                                 : MainMenu          ? TEXT("TITLE_MENU_RENDERED_REVIEW")
                                                  : Gallery           ? TEXT("ALIEN_GALLERY_SCRIPTED_VISUAL_REVIEW")
                                                  : WeaponReadability ? TEXT("WEAPON_READABILITY_SCRIPTED_NORMAL_STATS")
                                                  : Wave1             ? TEXT("WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS")
@@ -1542,6 +1632,7 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("stationExteriorReview"), CaptureStationExterior);
     Result->SetBoolField(TEXT("weaponReadabilityReview"), WeaponReadability);
     Result->SetBoolField(TEXT("mainMenuReview"), MainMenu);
+    Result->SetBoolField(TEXT("uiRefreshReview"), FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")));
     Result->SetBoolField(TEXT("mainMenuStatePreserved"), MainMenuStatePreserved);
     if (WeaponReadability)
     {

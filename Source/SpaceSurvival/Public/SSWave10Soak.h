@@ -63,6 +63,7 @@ private:
     double MainMenuStageAt = 0;
     FString MainMenuRunBefore, MainMenuAccountBefore;
     void TickMainMenu(float DeltaSeconds);
+    void TickUIRefresh(float DeltaSeconds);
     bool Gallery = false, GalleryRunPreserved = false, GalleryReturned = false;
     int32 GalleryStage = 0;
     double GalleryStageAt = 0, GalleryReadyAt = 0;

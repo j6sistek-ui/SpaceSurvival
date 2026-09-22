@@ -25,6 +25,21 @@ public:
     }
 
 private:
+    friend class ASSWave10Soak;
+    bool bReviewFlightHUD = false;
+    UPROPERTY()
+    TMap<FName, TObjectPtr<UTexture2D>> RefreshTextures;
+    UPROPERTY()
+    TObjectPtr<class UFont> RefreshFont;
+    float RefreshScale = 1.f;
+    FVector2D RefreshOrigin = FVector2D::ZeroVector;
+    void BeginRefreshLayout();
+    UTexture2D *RefreshTexture(FName Name);
+    FBox2D RefreshBounds(float X, float Y, float Width, float Height) const;
+    void RefreshImage(FName Name, float X, float Y, float Width, float Height, FLinearColor Tint = FLinearColor::White);
+    float RefreshText(const FString &Value, float X, float Y, float Pixels, FLinearColor Color, float Width = 0.f);
+    bool DrawRefreshMenu(const class ASSGameMode &Mode);
+    void DrawRefreshVitals(const class ASSGameMode &Mode, bool Walking);
     TArray<FBox2D> MenuBounds;
     float Scale = 1.f;
     FString FeedbackRun;

@@ -1197,13 +1197,11 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         break;
     case ESSPanel::Settings:
         PanelTitle = TEXT("SETTINGS");
-        AddEntry(TEXT("Graphics"), 10);
-        AddEntry(TEXT("Audio"), 11);
-        AddEntry(TEXT("Controls"), 12);
-        AddEntry(TEXT("Asset acknowledgements"), 9);
+
         AddEntry(FString::Printf(TEXT("Subtitles: %s"), S.settings.subtitles ? TEXT("On") : TEXT("Off")), 13);
         AddEntry(FString::Printf(TEXT("UI scale: %.0f%%"), S.settings.uiScale * 100), 14);
         AddEntry(FString::Printf(TEXT("Camera shake: %s"), S.settings.cameraShake ? TEXT("On") : TEXT("Off")), 15);
+        AddEntry(TEXT("Asset acknowledgements"), 9);
         break;
     case ESSPanel::Acknowledgements:
         PanelTitle = TEXT("ASSET ACKNOWLEDGEMENTS");
@@ -1494,6 +1492,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     default:
         break;
     }
+    if (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics || Panel == ESSPanel::Audio ||
+        Panel == ESSPanel::Controls)
+    {
+        const TArray<FSSMenuEntry> Tabs = {
+            {TEXT("General"), 5}, {TEXT("Graphics"), 10}, {TEXT("Audio"), 11}, {TEXT("Controls"), 12}};
+        Entries.Insert(Tabs, 0);
+        SelectedEntry = Tabs.Num();
+    }
     if (!IsTitleMenu() && (NewPanel != ESSPanel::Launch || !S.AtSliceBoundary()))
         AddEntry(TEXT("Back"), 0);
     if (SelectedAction != INDEX_NONE)
@@ -1575,7 +1581,7 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
     }
     if (A == 5)
     {
-        bTitleSettingsNavigation = IsTitleMenu();
+        bTitleSettingsNavigation = bTitleSettingsNavigation || IsTitleMenu();
         OpenPanel(ESSPanel::Settings);
         return;
     }

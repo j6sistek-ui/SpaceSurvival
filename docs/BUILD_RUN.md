@@ -1,5 +1,7 @@
 # Build and run
 
+**September22 UI build in progress:** General/Graphics/Audio/current Controls, distinct Pause and HUD now use approved page11/KIT art. Hull/shield/brake vitals show labels and bars only. Existing settings activate/cycle with Enter/A or click; arrows/D-pad select, Escape/B returns. Control presets/remapping remain deferred. `CaptureSpaceLook.ps1 -UIRefresh` is a seven-frame isolated hidden render; add `-Packaged` only after the new package is available. It does not open an owner-visible window.
+
 **September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
 
 **Package 5 follow-up, 2026-09-22 UTC:** The isolated review launcher now opens source `0004810`: world-fixed solid belt, continuous environment routing, distinct home pause, retired gallery/Acornaut selections, explicit cabin interaction, beacon feedback, 60 m/s cruise and 3x orange Director asteroids. The temporary controller preset above is included. Editor Build9 and nine directly affected input/physics tests pass; the Windows package, actual archive audit and one packaged startup smoke pass. [Exact evidence and retained failures](validation/2026-09-22-world-feedback.md). Full cockpit seating, natural atmosphere/field travel and the reported beacon scenario remain lead-owned open work. No merge or publication occurred. Ramp crossing no longer opens a popup; E/Y in the supported rear cabin still opens flight options until the full cockpit flow is implemented.
@@ -25,7 +27,7 @@ The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomp
 
 ## Locked startup menu authoring
 
-Package 5 retains the September 21 owner-approved Figma main menu. Only the locked main page is integrated. Page 11 remains a source of later references, and active-run pause/settings/station panels retain their current implementation. Exact source PNGs and measured placement/provenance are under [ContentSource/FigmaMainMenu](../ContentSource/FigmaMainMenu/README.md); [the source record](production/FIGMA_MAIN_MENU_PROVENANCE.md) explains normal/hover and export limits.
+Package 5 retains the September 21 owner-approved Figma main menu. The September22 source extension also maps page11 HUD/settings/pause and the common service frame; see ContentSource/FigmaUIRefresh/README.md. Package6 is being prepared; until its recorded handoff, Package5 lacks this new UI. Exact source PNGs and measured placement/provenance are under [ContentSource/FigmaMainMenu](../ContentSource/FigmaMainMenu/README.md); [the source record](production/FIGMA_MAIN_MENU_PROVENANCE.md) explains normal/hover and export limits.
 
 Run this narrow import after the Editor module is built, one owned offscreen Unreal process at a time:
 

@@ -1,5 +1,11 @@
 # SpaceSurvival asset acknowledgements
 
+## Approved page 11 UI and Keania One
+
+The September22 extension uses exact owner-supplied KIT PNGs for HUD/settings/pause and common service frames, recorded in `ContentSource/FigmaUIRefresh/provenance.json`. This supersedes the earlier main-menu-only integration boundary below. Figma itself remains unchanged.
+
+Keania One Regular: Copyright (c)2012 Julia Petretta, Reserved Font Name Keania. Unmodified font redistributed under SIL Open Font License1.1; full copyright and license accompany the font in `SpaceSurvival/Content/SpaceSurvival/UI/Fonts/OFL.txt` inside the packaged UFS content and in the source family. Original source: https://github.com/google/fonts/tree/main/ofl/keaniaone. No endorsement is implied.
+
 ## Owner-supplied main-menu composition
 
 The September21 main menu uses the owner's approved [SpaceSurvival UI Kit](https://www.figma.com/design/6M3VvUB7jsPDd3E41YpKM0/SpaceSurvival-UI-Kit?node-id=142-1059): its background, character portraits, title, normal/hover button artwork and footer hints. The game preserves the supplied composition and connects it to native actions. These are exact raster exports; no font files are redistributed by this integration. Per-node source identities, hashes, crop provenance and the static-shader limitation are recorded in `ContentSource/FigmaMainMenu/provenance.json` and `docs/production/FIGMA_MAIN_MENU_PROVENANCE.md`. Figma pages outside the approved main menu are not claimed as integrated.
