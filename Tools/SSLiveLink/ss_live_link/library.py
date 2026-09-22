@@ -423,6 +423,8 @@ class SSPartItem(bpy.types.PropertyGroup):
 
 
 class SSLinkState(bpy.types.PropertyGroup):
+    auto_refresh_library: BoolProperty(name='Auto-refresh library', default=True,
+                                      description='Detect saved Unreal mesh changes and refresh the local browser; offline copies refresh by Import Library')
     parts: CollectionProperty(type=SSPartItem)
     part_index: IntProperty(default=0, update=index_changed)
     part_pick: EnumProperty(name='Part', items=pick_items, update=pick_changed)

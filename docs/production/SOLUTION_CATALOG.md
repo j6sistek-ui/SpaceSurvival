@@ -384,3 +384,16 @@ The catalog milestone did not update the game package, itch release or Phase 1 a
 - **A33 follow-up, 2026-09-22:** Six exact KIT scrollbar/crew/service exports extend the approved UI family to33. Large scrolling wardrobe, measured slider alignment and actual walking radar were rendered in one six-frame batch74f2b473; native scrolling preserves the equipped identity. Existing Station/You icons reused. Package7 archivef853f1ef and six-frame packaged reviewa5a5c0a8 pass; owner/performance acceptance remains separate. No acquisition, Figma modification or new framework.
 
 - **September22 reuse, RPT-20260922-01:** A01/E14 baked Blueprint layouts feed fixed nearby clusters; E15 wreck beams/arcs and the existing alien/station recipe pieces also populate the traversable layer. Supplied source assets are unchanged; private SolidScenery meshes retain physical collision. This is reuse of acquired art/layout data, not live ownership of the vendor generator Blueprint or a new purchase. Three focused field/scenery cases pass; four mixed-field frames exist, but the non-evasive survival capture failed and artistic/owner/performance acceptance remains open. See [arcade baseline evidence](../validation/2026-09-22-arcade-baseline.md).
+
+### September 22 extension of E16: portable Blender authoring library
+
+Existing owned assets and the in-repository SS Link tool now supply a native pop-out Asset Browser,
+private portable Export/Import, incremental saved-mesh refresh and six simple per-placement material
+properties. No new acquisition or paid service. Full local static-mesh inventory: 677 exported meshes,
+665 engine thumbnails plus 12 clay fallbacks. This removes the earlier curated pack exclusions for
+library discovery; it does not put every mesh in the game or integrate skeletal rigs/Blueprint behavior.
+Whole-project value: reusable station, exterior and prop composition on desktop or offline laptop,
+with stable `/Game` references for later explicit Unreal placement. Native library/data and licensed
+ZIP remain private under ignored Artifacts; source and instructions are tracked. Current acquisition
+status remains owned/installed; interactive acceptance remains pending under RPT-20260922-04.
+[Focused evidence](../validation/2026-09-22-blender-library.md) records the tested scope and failures.

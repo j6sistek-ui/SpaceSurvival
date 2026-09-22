@@ -35,7 +35,7 @@ sl.core.SENT = '_selftest_no_sent_rows.json'
 # ---------------------------------------------------------------- the package and its registration
 assert Path(sl.__file__).name == '__init__.py', f'expected the package, got {sl.__file__}'
 names = [m.__name__.split('.')[-1] for m in sl.MODULES]
-assert names == ['core', 'editor_link', 'library', 'prefabs', 'browser', 'groups', 'send', 'scenes', 'panel'], names
+assert names == ['core', 'surfaces', 'editor_link', 'library', 'prefabs', 'browser', 'popout', 'transfer', 'groups', 'send', 'scenes', 'panel'], names
 for module in sl.MODULES:
     assert callable(getattr(module, 'register', None)) and callable(getattr(module, 'unregister', None)), module.__name__
 for feature in (sl.groups, sl.send, sl.scenes):

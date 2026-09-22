@@ -438,6 +438,10 @@ def apply_station_recipe(path, target=None, force=False):
             raise RuntimeError('stop Play before applying: the station in the running game is built from this Blueprint')
     except AttributeError:
         pass   # no level editor in a commandlet, and so no Play
+    if any(row.get('surface_overrides') for row in recipe.get('static_meshes', [])):
+        import ss_surfaces
+        recipe['static_meshes'] = ss_surfaces.resolve_rows(recipe['static_meshes'])
+        recipe_text = json.dumps(recipe)
     filled, disagree = fill_transforms(recipe)
     if filled:
         # Only then is the text changed; an untouched recipe is handed over byte for byte, so its hash is the file's.

@@ -1,5 +1,14 @@
 # SpaceSurvival project state
 
+**September22 authoring tools:** SS Link v0.4.0 adds the large native Blender library window, offline
+Export/Import, incremental saved-mesh refresh and per-placement simple materials. Desktop Blender 5.2.2
+installation passed; current local library has 677 static meshes/677 thumbnails. Source is on
+`codex/blender-library-popout`, with a scoped local deployment to the original checkout (backed up under
+`Artifacts/LiveLink/Backups/Library-0.4.0-20260922`), not a branch merge. Portable files and licensed mesh
+previews remain local/ignored. [Validation](validation/2026-09-22-blender-library.md) separates tested
+data/material behavior from pending live-window/refresh/render acceptance. See RPT-20260922-04 in
+[KNOWN_ISSUES](KNOWN_ISSUES.md). No gameplay binary, map or published itch payload changed.
+
 **September22 merge authorization:** Owner authorizes PR59 into its existing `docs/station-authoring-process` base. PR58 to `main` remains separate and is not included in this authorization. Pre-approval unmerged statements below are historical; [PR59](https://github.com/j6sistek-ui/SpaceSurvival/pull/59) records the completed merge status. This source operation does not rebuild or change the published itch payload.
 
 **September22 published baseline:0.1.21-alpha.1 / itch build2003058 READY.** Package10/source`4fd0293` includes responsive flight, denser world-fixed mixed rocks/wreckage/architecture, controller stick menu navigation and separated HUD messages. [Published receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json). The local isolated launcher opens the same package. Package8 was rejected and its upload stopped. PR59 remains draft/unmerged. Star visibility is logged only; owner requested upload continue unchanged.

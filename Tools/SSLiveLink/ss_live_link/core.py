@@ -55,7 +55,8 @@ def prefs():
 def project_root():
     p = prefs()
     for candidate in ((p.project_root if p else ''), read_config().get('project_root', ''), os.environ.get('SS_PROJECT_ROOT', '')):
-        if candidate and (Path(candidate) / 'SpaceSurvival.uproject').exists():
+        if candidate and ((Path(candidate) / 'SpaceSurvival.uproject').exists()
+                          or (Path(candidate) / 'SSPortableLibrary.json').exists()):
             return Path(candidate)
     return None
 
@@ -426,8 +427,8 @@ def add_part(asset, matrix=None, collection=None, name=None, link=None, material
     obj = bpy.data.objects.new(name or entry['name'], me)
     obj[PROP_ASSET] = asset
     obj[PROP_LINK] = link or uuid.uuid4().hex
-    if materials:
-        obj[PROP_MATERIALS] = json.dumps(materials)
+    if materials or (entry.get('materials') and all(entry['materials'])):
+        obj[PROP_MATERIALS] = json.dumps(materials or entry['materials'])
     obj.matrix_world = matrix or Matrix.Translation(bpy.context.scene.cursor.location)
     (collection or ensure_collection('SS Parts')).objects.link(obj)
     return obj
@@ -479,7 +480,7 @@ def linked_objects(selected_only=False):
 class SSLinkPrefs(bpy.types.AddonPreferences):
     bl_idname = __package__
     project_root: StringProperty(name='Project root', subtype='DIR_PATH', default=read_config().get('project_root', ''),
-                                 description='The folder holding SpaceSurvival.uproject')
+                                 description='The folder holding SpaceSurvival.uproject or SSPortableLibrary.json')
     engine_root: StringProperty(name='Engine root', subtype='DIR_PATH', default=read_config().get('engine_root', ''),
                                 description='The UE_5.8 install; found automatically when empty')
 

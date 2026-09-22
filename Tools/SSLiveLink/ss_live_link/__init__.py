@@ -36,7 +36,7 @@ A module imports only modules listed above it, and reaches them as 'from . impor
 bl_info = {
     'name': 'SpaceSurvival Live Link',
     'author': 'SpaceSurvival',
-    'version': (0, 3, 0),
+    'version': (0, 4, 0),
     'blender': (4, 2, 0),
     'location': '3D Viewport > Sidebar > SS Link',
     'description': 'Unreal asset library as proxies with thumbnails, prefab save/load, live push/pull to the open editor',
@@ -47,10 +47,10 @@ bl_info = {
 # reloaded by hand below, or an edit to any of them would only show after a restart.
 _reloading = 'MODULES' in globals()
 
-from . import core, editor_link, library, prefabs, browser, groups, send, scenes, panel  # noqa: E402
+from . import core, surfaces, editor_link, library, prefabs, browser, popout, transfer, groups, send, scenes, panel  # noqa: E402
 
 # Registration order, which is also a valid import order. Unregistering runs it backwards.
-MODULES = [core, editor_link, library, prefabs, browser, groups, send, scenes, panel]
+MODULES = [core, surfaces, editor_link, library, prefabs, browser, popout, transfer, groups, send, scenes, panel]
 
 if _reloading:
     import importlib

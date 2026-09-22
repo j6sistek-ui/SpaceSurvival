@@ -2,6 +2,19 @@
 
 **Current playable baseline:**0.1.21-alpha.1 / itch build2003058 READY, Package10/source4fd0293. Update through the itch app. Open [release receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json); check flight response, sustained mixed-field travel and menu navigation. Reports below remain open pending their own verification; publication is not acceptance.
 
+## September22 Blender library — RPT-20260922-04
+
+**PARTIAL; lead owns live-window/refresh verification, owner review pending.** Owner requests a large
+pop-out catalog, current owned meshes, automatic refresh, editable placement materials and Export/Import
+for an offline laptop. SS Link v0.4.0 is installed in desktop Blender 5.2.2; 677 real mesh assets and
+677 thumbnails replace the old 458-entry cache, which is backed up. Portable ZIP and native library
+retain `/Game` identity. Focused data roundtrips, archive rejection, incremental native build and actual
+Unreal material isolation pass; [receipt](validation/2026-09-22-blender-library.md). No working Blueprint
+or skeletal-rig export is claimed. Blender MCP returned unavailable/429, so separate-window dragging,
+interactive auto-refresh and glass/reflection appearance still need a live session. Open Blender,
+SS Link > Pop Out Library; check browsing/placement, then Export on desktop and Import on laptop.
+Source PR remains unmerged; local authoring-tool deployment is distinct from Git merge and game release.
+
 ## September22 star visibility — RPT-20260922-03
 
 **OPEN; concern logged only, no further investigation this release.** Owner asks where the stars are in the latest flight view, then explicitly says still upload and just logging concerns. The shown frame has a dominant blue-gray nebula and weak discrete-star visibility. Cause UNCONFIRMED; no missing-asset/fog diagnosis or correction claimed. Lead owns a bounded star-layer/background visibility check in a later authorized batch. Do not interrupt or modify the approved0.1.21-alpha.1 payload for this concern.
