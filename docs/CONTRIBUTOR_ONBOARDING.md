@@ -2,6 +2,8 @@
 
 This is a navigation and working-method guide, not another backlog. Verified against the local checkout on September 16, 2026. Read current owner instructions and refresh Git state before relying on a dated snapshot. A chat opened in another project does not automatically inherit this repository's instructions or local assets.
 
+**Known stale since verification:** the owner bought the Stellar Phoenix Shuttle and made it the new main ship (September 18); the Havolk hull named below as "current" is superseded, and `ASSShip::SelectedHullIdentity()` is now the single place that decides which hull a build flies. Ship Core Pro, described below as compatibility-blocked, was ported to 5.8 the same day and now drives the Phoenix's flight behind a `-SSPhoenix` flag. Read [KNOWN_ISSUES](KNOWN_ISSUES.md) and [PROJECT_STATE](PROJECT_STATE.md) for the current hull/flight state before trusting either claim in this file.
+
 ## Start here
 
 1. Use **`C:/Users/j6sis/SpaceSurvival`**, remote **`https://github.com/j6sistek-ui/SpaceSurvival.git`**. The surrounding Codex task may default to `C:/Users/j6sis/acornaut`; that is a different project. Set an explicit working directory before every project command.

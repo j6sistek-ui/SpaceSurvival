@@ -2,6 +2,8 @@
 
 This document describes current source ownership and data flow. [PROJECT_STATE.md](PROJECT_STATE.md) owns the latest build, commit and package boundary; [VALIDATION.md](VALIDATION.md) retains exact evidence. **Phase 1 remains PARTIAL.** The [active issue ledger](KNOWN_ISSUES.md) owns unfinished work and owner acceptance. The earlier [asset refresh](ASSET_REFRESH.md) and [combined look](production/COMBINED_SPACE_LOOK.md) records retain their own validation boundaries; they do not validate subsequent presentation changes.
 
+**Out of date as of September 18:** the hull-selection and flight-drive description below (`ASSShip::HullAssetPath` picking the Havolk hull, the substepped kinematic integrator) predates the Stellar Phoenix hull and the ShipCore rigid-body drive recorded in [KNOWN_ISSUES](KNOWN_ISSUES.md). Hull choice now runs through `ASSShip::SelectedHullIdentity()`, and two flight drives exist behind a command-line flag: the classic kinematic integrator and the ShipCore force solver on a simulating Chaos body. This section has not been rewritten to describe that split.
+
 ## Ownership
 
 The UE 5.8 project has one C++20 runtime module. Its deterministic domain also compiles independently as C++17 for portable tests. Durable rules live in C++; tunable hazard/enemy/pickup/encounter/utility content lives in a reflected Data Asset.

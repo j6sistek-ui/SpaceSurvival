@@ -1,6 +1,8 @@
 # Open work and owner review
 
-**Start here. This is the single active issues, follow-up, action and priority log.** Updated September 16, 2026. Phase 1 remains PARTIAL.
+**Start here. This is the single active issues, follow-up, action and priority log.** Last edited September 18, 2026 (the Stellar Phoenix/Ship Core entries below that date). Phase 1 remains PARTIAL.
+
+**Not yet reflected below, and this header date was previously wrong by two days:** PR #57 (`16ff502`..`1b3f2af`, merged `a11dc20` on September 19) changed hero selection (`SSGameMode.cpp`, `SSStation.h/.cpp`), added `Scripts/AuthorStationLarge.py`/`Scripts/RenderStationLarge.py` to compose a larger station from the kitbash library, tracked a remastered squirrel hero, and added new automation coverage (`SSHeroSlotAutomationTests.cpp`, `SSPaintAutomationTests.cpp`, `Tests/CoreTests.cpp`) — 37 files, +1532/-57. None of that work has an ISS/RPT/ACT entry here yet, and `docs/PROJECT_STATE.md` was not touched by it either. Read the actual commits before treating the "Current instruction" section below as current; it predates both that PR and the September 18 Ship Core/Stellar Phoenix pivot recorded further down this file.
 
 ## Current instruction: ACT-11 purchased-module execution pass, hero first; ACT-03 hold lifted by new owner direction
 
