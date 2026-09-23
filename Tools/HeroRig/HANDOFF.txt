@@ -1,0 +1,34 @@
+REPLACEMENT SQUIRREL RIG - 2026-09-23
+
+Open SquirrelHero_Rigged.blend in Blender. Press Space in the viewport to preview
+the idle tail. The Action Editor contains Tail_Idle, Tail_Walk, Tail_Run,
+Tail_JumpStart, Tail_JumpAir, Tail_JumpLand and Rig_Check_Not_Gameplay.
+Preview GIFs isolate the tail on a stationary body; they are not body locomotion.
+
+The selected source is the owner's Tripo sci-fi_squirrel_3d_model from Unreal:
+75,183 triangles, one material, original UVs and geometry preserved. The rig has
+69 bones: the existing 60-bone mannequin-style body plus root, seven tail bones,
+and backpack. Tail weights no longer include thighs. The rigid backpack core is
+blended into its attached straps/cloth. The source import remains unchanged.
+
+FBX is supplied for Unreal; GLB and the packed Blender file include textures.
+The two TGA files are supplied alongside FBX. Prefer the existing Unreal material
+when importing a review copy so material settings match the original import.
+
+The six Tail_ FBX files contain reference-pose body tracks and tail motion.
+They must be composed as local-space additive animation against the reference
+pose, or layered on tail_01 and descendants after body retargeting. Do not play
+them as full-body walking/running clips. JumpStart -> JumpAir loop -> JumpLand
+have matching endpoint poses. Blend between gait/idle layers rather than cutting.
+
+Mannequin-style bone names make retarget setup easier, but this is not the exact
+Epic mannequin skeleton or proportions. It requires an IK retarget setup.
+No gameplay assets, current hero selection, package, or itch build were replaced.
+Native Unreal import/retargeting, actual locomotion integration, collision with
+the cockpit/ship, landing timing, and in-game owner acceptance remain open.
+
+Focused checks: stride/crouch/twist poses, normalized maximum-four weights,
+source geometry/UV hash, no thigh influence on the tail, rigid pack core shape,
+FBX/GLB reimport counts and bone presence, tail loop/transition endpoint checks.
+These do not prove production locomotion, automatic obstacle-aware tail physics,
+fur simulation, finger-grip quality, or final jump animation quality.

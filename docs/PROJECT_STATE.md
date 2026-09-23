@@ -152,3 +152,11 @@ Unreal can [monitor source folders and automatically reimport](https://dev.epicg
 - Build/run owns commands; this page owns the latest source/package/release pointer.
 - Validation receipts retain immutable history; old package numbers do not identify a shared path after it is rebuilt.
 - Every PR reconciles these boundaries and gives the owner an explicit open/check/still-open handoff.
+
+## September 23 replacement hero rig — local review files only
+
+`.agent/local/ReplacementHero/` contains the private 75,183-triangle squirrel rig,
+Blender/FBX/GLB package and six tail-animation layers. Reproducible scripts and sanitized
+evidence are tracked; art, textures, previews and ZIP remain private. This does not change
+the active hero or any published build. [RPT-20260923-01](KNOWN_ISSUES.md#rpt-20260923-01--replacement-squirrel-rig-and-tail-layers)
+owns native import/retarget/runtime integration and owner acceptance.

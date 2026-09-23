@@ -243,3 +243,12 @@ AuthorContent reapplies this material after ordinary geometry authoring; Validat
 ### Star contrast follow-up
 
 The owner found the uniform bright stars overpowering the ship and station on September 14. `AuthorSpaceVisualPass.py` now exposes a separate `StarBrightness` scalar (0.30, formerly a fixed 0.55), raises the star texture to 1.45 and modulates it by a single-level Fast Gradient 3D directional gain from 0.18 to 1.0. The direction matches the cubemap, with no time input, so brightness variation stays fixed as the camera turns. Nebula brightness, object lighting and spawn counts are unchanged. The separate authored material/cook/capture evidence is in the current visual receipt; the earlier C++ test suite is not a test of star appearance.
+
+## September 23 replacement squirrel rig candidate
+
+The owner-selected first-party Tripo import `sci-fi_squirrel_3d_model` has a private
+replacement rig and separate tail-animation layers. [Tools/HeroRig](../Tools/HeroRig/README.md)
+contains the repeatable export/repair/preview workflow. Its mesh remains 75,183 triangles
+and its UVs/textures are preserved. This is a 69-bone custom target with mannequin-style
+names, not a skeleton assignment shortcut. New IK retargeting and runtime layering are
+still required. Source imports, active game references and release assets are unchanged.

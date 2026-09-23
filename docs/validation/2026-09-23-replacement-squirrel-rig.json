@@ -1,0 +1,186 @@
+{
+  "date": "2026-09-23",
+  "status": "PRIVATE_RIG_AND_TAIL_LAYER_REVIEW_CANDIDATE_NOT_GAME_INTEGRATION",
+  "source": "/Game/TripoModels/sci-fi_squirrel_3d_model/sci-fi_squirrel_3d_model",
+  "rig": {
+    "tail_vertices": 19375,
+    "backpack_vertices": 2792,
+    "tail_centerline": [
+      [
+        0.0,
+        -0.14000000059604645,
+        0.3970000147819519
+      ],
+      [
+        0.03223658353090286,
+        -0.07500000298023224,
+        0.35946279764175415
+      ],
+      [
+        0.11675714701414108,
+        0.0,
+        0.29755130410194397
+      ],
+      [
+        0.1749894917011261,
+        0.07500000298023224,
+        0.3346365690231323
+      ],
+      [
+        0.2061367928981781,
+        0.15000000596046448,
+        0.3726443648338318
+      ],
+      [
+        0.2365339994430542,
+        0.22499999403953552,
+        0.40767019987106323
+      ],
+      [
+        0.30507147312164307,
+        0.30000001192092896,
+        0.408772349357605
+      ],
+      [
+        0.30507147312164307,
+        0.3449999988079071,
+        0.36877235770225525
+      ]
+    ],
+    "rig_bones": 69
+  },
+  "deformation": {
+    "mesh_vertices": 50508,
+    "triangles": 75183,
+    "poses": [
+      {
+        "name": "stride",
+        "backpack_max_distance_error_m": 1.2509232016899574e-07
+      },
+      {
+        "name": "crouch",
+        "backpack_max_distance_error_m": 1.3324795028468728e-07
+      },
+      {
+        "name": "twist",
+        "backpack_max_distance_error_m": 3.5880984057545806e-07
+      }
+    ],
+    "mesh_and_uv_unchanged_during_poses": true,
+    "max_weight_sum_error": 5.21540641784668e-08,
+    "tail_has_no_thigh_weights": true,
+    "max_influences": 4
+  },
+  "roundtrip": {
+    "source_geometry_and_uv_sha256": "058a9729926713ce1e063445f28ad96f816525112e8ea0e93b54a0ae3a1e4c0f",
+    "source_geometry_and_uv_preserved": true,
+    "clips": {
+      "Idle": {
+        "loop_endpoint_quaternion_error": 0.0
+      },
+      "Walk": {
+        "loop_endpoint_quaternion_error": 0.0
+      },
+      "Run": {
+        "loop_endpoint_quaternion_error": 0.0
+      },
+      "JumpAir": {
+        "loop_endpoint_quaternion_error": 0.0
+      },
+      "JumpStart_to_JumpAir": {
+        "transition_quaternion_error": 0.0
+      },
+      "JumpAir_to_JumpLand": {
+        "transition_quaternion_error": 0.0
+      }
+    },
+    "fbx": {
+      "triangles": 75183,
+      "bones": 69,
+      "root_present": true,
+      "tail_and_backpack_present": true
+    },
+    "glb": {
+      "triangles": 75183,
+      "bones": 69,
+      "root_present": true,
+      "tail_and_backpack_present": true
+    }
+  },
+  "tail_clips": [
+    {
+      "clip": "Tail_Idle",
+      "seconds": 12,
+      "frames": 361,
+      "body_motion": "reference pose; compose as an additive layer",
+      "loop": true
+    },
+    {
+      "clip": "Tail_Walk",
+      "seconds": 1.0,
+      "frames": 31,
+      "body_motion": "reference pose; compose as an additive layer",
+      "loop": true
+    },
+    {
+      "clip": "Tail_Run",
+      "seconds": 0.6,
+      "frames": 19,
+      "body_motion": "reference pose; compose as an additive layer",
+      "loop": true
+    },
+    {
+      "clip": "Tail_JumpStart",
+      "seconds": 0.3,
+      "frames": 10,
+      "body_motion": "reference pose; compose as an additive layer",
+      "loop": false
+    },
+    {
+      "clip": "Tail_JumpAir",
+      "seconds": 0.8,
+      "frames": 25,
+      "body_motion": "reference pose; compose as an additive layer",
+      "loop": true
+    },
+    {
+      "clip": "Tail_JumpLand",
+      "seconds": 0.85,
+      "frames": 27,
+      "body_motion": "reference pose; compose as an additive layer",
+      "loop": false
+    }
+  ],
+  "artifact_sha256": {
+    "SquirrelHero_Rigged.blend": "9ce32a822d275a7870b98033e87cada63a5e508e66369df47524cacb70e54108",
+    "SquirrelHero_Rigged.fbx": "8b92079ada5b94057a92d543b2093a452bccbdbb8875c396ead6d2d47c214602",
+    "SquirrelHero_Rigged.glb": "69b486e34eb8752622b9d2a5f40b7c31401836aed14f1d4aedcc326805318a62",
+    "README.txt": "7440276187a68ddae5303b609a99b785841e76061e245d5b3f017d98eeec3620",
+    "sci-fi_squirrel_3d_model_basecolor.tga": "8a37b26adcd41716c9791af8e31b9e1edd1d3c35b31958704b92e5bbb5f0b35a",
+    "sci-fi_squirrel_3d_model_normal.tga": "8166f61da9013fdb36490eb0e177b745712ce1cd51d3a75e2af1f7564e9668c9",
+    "validation.json": "2fca7b70818a3d137524c5188c7cd4921d95ed3019ea758a5002a17836236b86",
+    "roundtrip.json": "d4ece0339421222d986f12fee2e6a3138b56b0340c5d91ddaf8d154703c3bff1",
+    "tail_clips.json": "d35ee45840e1453c9330ef3419e6e9b6dc68a78f624d6bbf7cf15757b5abdc3b",
+    "Tail_Idle.fbx": "4c00b1d3cc71c8250a3ded17ab574e586b64c482b9fa1dc06f50909a11f6b34d",
+    "Tail_Walk.fbx": "b42969a613e44c61874564699e9ebc9e7bdee2b81aa70321007885b477ad0ad5",
+    "Tail_Run.fbx": "f2a2f6a4c59429472e021956b830c3cbcf818f48f7e4468b375ee0ecf45655a6",
+    "Tail_JumpStart.fbx": "734651e898abb94b2ed0975d05c0b0edf03a3f4ab935385963dd0eec87ce7f80",
+    "Tail_JumpAir.fbx": "e0791ff13db130cf34fa6982d5774e7041d653f84e577113a6e24ea843df24c0",
+    "Tail_JumpLand.fbx": "ae99ee6227a36723fe565500290952e80e2bfb9dd8edbf727828f2099bf4b1df",
+    "Preview_Idle.gif": "c2888d4eeb8fc446a5c34d0bfb908ab34bfefc67b5157b148c6bee744c4c7fcf",
+    "Preview_Walk.gif": "6328cbaaee084a87005fa7111bb0aa58d5032cf3b39bedfd8a53e181e28e83b9",
+    "Preview_Run.gif": "33afb9ff7147177be6d4c3468c858eb7b3658186dca0bb5adc5df1c6a36e075a",
+    "Preview_Jump.gif": "3a1ae202c278ed574c487025af58b0d8350cb3f6cd7f88f318e54f3aeba7915e"
+  },
+  "limitations": [
+    "Unreal native import, IK retargeting and actual locomotion/jump layering not performed.",
+    "No current hero, package, itch release or owner source import changed.",
+    "GIF previews hold the body still and demonstrate tail layers only.",
+    "No fur simulation or obstacle-aware tail collision is claimed."
+  ],
+  "failed_checks_repaired": [
+    "NullRHI skeletal FBX export asserted MeshObject; offscreen rendering and disabled material baking succeeded.",
+    "Initial hard backpack boundary pulled the collar during head twist; feathered attachment corrected the visible discontinuity.",
+    "Tail authoring now replaces prior generated actions, preventing stale suffixed action selection."
+  ]
+}
