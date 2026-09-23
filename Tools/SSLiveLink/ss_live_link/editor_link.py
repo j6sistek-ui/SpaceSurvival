@@ -144,6 +144,8 @@ def link_payload(objects):
 
 def push(objects, remove=()):
     payload = {'objects': link_payload(objects), 'remove': list(remove)}
+    if bpy.context.scene.get('ss_target_map'):
+        payload['target_map'] = bpy.context.scene['ss_target_map']
     summary = link.call('ss_prefabs.apply_link(' + repr(json.dumps(payload)) + ')')
     for row in payload['objects']:
         _last_sent[row['link']] = signature(row)

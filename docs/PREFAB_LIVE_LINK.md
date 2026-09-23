@@ -14,15 +14,15 @@ In **SS Link > Parts library**, press **Pop Out Library**. It opens Blender's na
 in a separate window with large thumbnails, categories and search. Move it to another monitor and
 drag a mesh into the main 3D viewport. **Prepare Large Library** builds this view in the background
 when it is missing; the status line reports completion. Preparing does not save or replace your scene.
-The September 22 desktop snapshot contains **677 static meshes with 677 thumbnails** (665 Unreal
-previews and 12 clay fallbacks). It includes all `/Game` static-mesh packs, including newer colony,
+The September 22 desktop snapshot contains **1,325 static meshes with 1,325 thumbnails** (1,301 Unreal
+previews and 24 clay fallbacks). It includes all `/Game` static-mesh packs, including newer colony,
 Tripo and lighting assets; old 458-entry examples below are historical. Skeletal meshes, working
 Blueprint assemblies and Niagara effects are not exported as functioning Blender assets.
 
 **Export Library** makes one private ZIP of the prepared library. Copy it to the laptop and use
 **Import Library** in SS Link. Import checks the ZIP, creates a fresh library folder and switches the
 browser to it. The previous library and open `.blend` stay intact. Export refuses a stale prepared
-catalog: wait for preparation to finish and retry. Both computers should use SS Link v0.4.0 and Blender
+catalog: wait for preparation to finish and retry. Both computers should use SS Link v0.4.1 or newer and Blender
 5.2; native `.blend` library files are built with 5.2.2. Older-version compatibility is unverified.
 
 For the first laptop installation, extract the supplied ZIP and run its
@@ -69,7 +69,7 @@ interactive editor refresh and final material appearance remain unverified; see 
    - Historical status on 2026-09-17: this had **not** been done on the owner's machine yet. Both Blenders held
      the old single-file add-on (v0.1.0), which has none of Types, Send to Unreal, Edit Mesh or Scenes.
      The installer removes that old file.
-   - The panel's last line shows the version (`SS Live Link v0.4.0`). When the project's copy is newer
+   - The panel's last line shows the version (`SS Live Link v0.4.1`). When the project's copy is newer
      than the installed one, a red note at the top of the panel says so: run the installer again. Run it
      again whenever these tools are updated.
    - By hand instead: zip the folder `Tools/SSLiveLink/ss_live_link` (the folder itself), then in Blender
@@ -389,3 +389,9 @@ Props, Misc. Each belongs to one type (the buttons): Building, Decoration, Exter
 Characters & Robots, Game Objects, Misc. A mesh sent from Blender takes the category of the folder it was
 filed in. Effects demo packs and engine samples are left out (`EXCLUDED_PACKS` in `ss_prefabs.py`). A wrong
 category is a one-line change to `CATEGORIES` followed by **Rebuild Catalogue (no proxies)**.
+
+## Building examples sandbox
+
+The owned Genesis and companion examples use a separate editable authoring level and a linked Blender
+scene. See [Building sandbox workflow](BUILDING_SANDBOX.md) for walking, placement round trips, the
+destination-map safeguard, laptop transfer and the boundary between Blender proxies and Unreal visuals.

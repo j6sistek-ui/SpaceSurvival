@@ -629,6 +629,11 @@ def apply_link(payload):
     """
     if isinstance(payload, str):
         payload = json.loads(payload)
+    target = payload.get('target_map')
+    if target:
+        current = _world().get_path_name().split('.')[0]
+        if current != target:
+            raise RuntimeError(f'Open {target} in Unreal before pushing this sandbox (currently {current})')
     import ss_surfaces
     payload = dict(payload, objects=ss_surfaces.resolve_rows(payload.get('objects', [])))
     existing = _linked_actors()

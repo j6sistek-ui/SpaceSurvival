@@ -36,7 +36,7 @@ A module imports only modules listed above it, and reaches them as 'from . impor
 bl_info = {
     'name': 'SpaceSurvival Live Link',
     'author': 'SpaceSurvival',
-    'version': (0, 4, 0),
+    'version': (0, 4, 1),
     'blender': (4, 2, 0),
     'location': '3D Viewport > Sidebar > SS Link',
     'description': 'Unreal asset library as proxies with thumbnails, prefab save/load, live push/pull to the open editor',

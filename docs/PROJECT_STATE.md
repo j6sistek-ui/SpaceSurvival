@@ -1,13 +1,16 @@
 # SpaceSurvival project state
 
-**September22 authoring tools:** SS Link v0.4.0 adds the large native Blender library window, offline
-Export/Import, incremental saved-mesh refresh and per-placement simple materials. Desktop Blender 5.2.2
-installation passed; current local library has 677 static meshes/677 thumbnails. Source is on
-`codex/blender-library-popout`, with a scoped local deployment to the original checkout (backed up under
-`Artifacts/LiveLink/Backups/Library-0.4.0-20260922`), not a branch merge. Portable files and licensed mesh
-previews remain local/ignored. [Validation](validation/2026-09-22-blender-library.md) separates tested
-data/material behavior from pending live-window/refresh/render acceptance. See RPT-20260922-04 in
-[KNOWN_ISSUES](KNOWN_ISSUES.md). No gameplay binary, map or published itch payload changed.
+**September23 authoring delivery:** SS Link0.4.1 installed in Blender5.2.2;1,325 static meshes with
+1,325 thumbnails. Private `/Game/Blender/Sandbox/BuildingSandbox_20260922` combines the five owned
+building demos around a solid connecting platform. `Artifacts/BuildingSandbox/BuildingSandbox.blend`
+contains7,431 linked placements; portable library `SpaceSurvival-Library-0.4.1-final.zip` is separate.
+Artifacts resolves to `M:/SpaceSurvival/Artifacts`. Source is `codex/blender-library-popout` / PR60,
+locally deployed to the original project with backups, unmerged.23 checksum-verified duplicate native
+cache folders removed with owner authorization (54,980,195,863 bytes);7,771 project content copies and
+unique sources retained. Manifests/receipts remain in ignored `Artifacts/VaultRefresh-20260922`.
+[Sandbox guide](BUILDING_SANDBOX.md) and [validation](validation/2026-09-23-building-sandbox.md) separate
+scripted checks from pending visual/walking acceptance. RPT-20260922-04 owns follow-up. Gameplay station,
+binaries and published itch payload unchanged. The older677-entry/0.4.0 snapshot is historical.
 
 **September22 merge authorization:** Owner authorizes PR59 into its existing `docs/station-authoring-process` base. PR58 to `main` remains separate and is not included in this authorization. Pre-approval unmerged statements below are historical; [PR59](https://github.com/j6sistek-ui/SpaceSurvival/pull/59) records the completed merge status. This source operation does not rebuild or change the published itch payload.
 

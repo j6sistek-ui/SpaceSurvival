@@ -19,6 +19,8 @@ The game has the ten-wave system foundation, two weapons/enemies, four hazard fa
 
 **Station authoring:** the reset uses its own recipe and matching physical solids; see [Station authoring](docs/STATION_AUTHORING.md). `Open Station Workshop.cmd` and the [Station Workshop guide](docs/STATION_EDITING.md) still edit the preserved legacy layout, and have not been migrated to the reset. Existing packages update only after a later build.
 
+**Try the building examples:** the [Building sandbox workflow](docs/BUILDING_SANDBOX.md) covers the separate Genesis/companion-scene workbench, walking launcher, Blender placement round trip and laptop handoff.
+
 ## Development
 
 From the repository root, use existing tooling; no host package installation is implied:

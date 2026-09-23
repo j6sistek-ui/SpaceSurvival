@@ -397,3 +397,26 @@ with stable `/Game` references for later explicit Unreal placement. Native libra
 ZIP remain private under ignored Artifacts; source and instructions are tracked. Current acquisition
 status remains owned/installed; interactive acceptance remains pending under RPT-20260922-04.
 [Focused evidence](../validation/2026-09-22-blender-library.md) records the tested scope and failures.
+
+### A34 - Sci-Fi Bundle: Cinematographic result (2026-09-22)
+
+- **Acquisition:** owner-supplied downloaded native Fab pack, listing
+  `ab681166-d60e-41cd-882c-2ec5208b1f1e`; local launcher manifest title and identity verified.
+  Original download `User downloaded assets/VaultCache/SciFiBunba43dc9a11d8V1/data/Content`
+  was removed with owner authorization after full checksum verification; retained assets are in Content.
+- **Installation:** already present at `Content/P1toP5_Bundle` and its matching external-actor/object
+  roots. All4,944 files match source by SHA256 (45,213,232,393 bytes). Preserved in place, without copying the45GB again.
+- **Evaluation/use:** Unreal5.8 registry identifies648 static meshes across P1 WorkStation,
+  P2 StarterPack, P3 ComputerStation, P4 Genesis Vol1 and P5 FruitSeller. Useful for station shells,
+  furniture, consoles, service identity and dressing (WBS8.1,8.2,10.3); reusable environmental art
+  throughout the project. No active station redesign, vendor Blueprint integration, NPC behavior or
+  increased gameplay content count is implied by library availability.
+- **Timing/next check:**1,325 meshes/thumbnails exported; owner-selected Genesis High Settings and
+  the other four examples copied into the separate editable sandbox. Review lighting, walking and
+  one Blender Push before considering gameplay station integration. Keep native material/Blueprint behavior and runtime collision/performance as separate
+  later integration checks. RPT-20260922-04 owns acceptance. Licensed assets and generated previews/ZIP
+  remain ignored; new Git exclusions cover the exact native pack and external-data roots.
+- **Storage:** the existing Artifacts junction targets `M:/SpaceSurvival/Artifacts`, so refreshed GLBs,
+  thumbnails, native Blender files and portable ZIP stay on M:. 23 fully duplicated native downloads, including this bundle, were removed after7,771 SHA256
+  matches; unique/partial/changed sources retained.54,980,195,863 bytes reclaimed. Manifests archived
+  under `Artifacts/VaultRefresh-20260922/RetainedManifests`. Project asset paths remain unchanged.

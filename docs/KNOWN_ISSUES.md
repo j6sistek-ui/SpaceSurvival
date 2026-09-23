@@ -4,16 +4,29 @@
 
 ## September22 Blender library — RPT-20260922-04
 
-**PARTIAL; lead owns live-window/refresh verification, owner review pending.** Owner requests a large
-pop-out catalog, current owned meshes, automatic refresh, editable placement materials and Export/Import
-for an offline laptop. SS Link v0.4.0 is installed in desktop Blender 5.2.2; 677 real mesh assets and
-677 thumbnails replace the old 458-entry cache, which is backed up. Portable ZIP and native library
-retain `/Game` identity. Focused data roundtrips, archive rejection, incremental native build and actual
-Unreal material isolation pass; [receipt](validation/2026-09-22-blender-library.md). No working Blueprint
-or skeletal-rig export is claimed. Blender MCP returned unavailable/429, so separate-window dragging,
-interactive auto-refresh and glass/reflection appearance still need a live session. Open Blender,
-SS Link > Pop Out Library; check browsing/placement, then Export on desktop and Import on laptop.
-Source PR remains unmerged; local authoring-tool deployment is distinct from Git merge and game release.
+**Library and editable sandbox delivered; visual/walking acceptance remains PARTIAL.** SS Link0.4.1
+is installed in Blender5.2.2. Current library:1,325 real meshes/1,325 thumbnails, including648 new
+Sci-Fi Bundle meshes. Owner reports the large browser works pretty well. Genesis High Settings,
+WorkStation, StarterPack, ComputerStation and FruitSeller are copied into a separate sandbox with a
+connecting floor, ramps and First Person start. The saved Blender scene reopens with7,431 linked
+placements. Wrong-map Push is rejected before mutation; an actual Unreal move/restore check passes.
+
+Open **Open Building Sandbox.cmd**, then Play. Follow [Building sandbox](BUILDING_SANDBOX.md) for
+Blender editing and explicit Push. The offline0.4.1 ZIP and `.blend` are separate private files in
+`Artifacts/BuildingSandbox`. The project retains native materials, lights, effects and Blueprint
+actors; Blender carries static-mesh placements. No full shader, Blueprint or rig translation claimed.
+
+**Cleanup completed with owner authorization:**23 duplicate native-download folders removed after
+7,771 content files matched retained project copies by SHA256.54,980,195,863 bytes removed, including
+the original42GiB bundle cache. Unique sources, partial/changed packs and project content preserved;
+metadata archived under `Artifacts/VaultRefresh-20260922/RetainedManifests`.
+
+**Still open (lead):** live pop-out dragging, idle refresh, final glass/reflection appearance and the
+sandbox's lighting/walkable passage quality. Three bounded offscreen capture cycles did not establish
+visual acceptance; no further exposure change saved. Owner's next check: open the sandbox, walk from
+Genesis to the other scenes, then move one Blender prop and Push it to this map. No station replacement,
+new game package, itch update or merge. [Focused evidence](validation/2026-09-23-building-sandbox.md).
+Source [PR60](https://github.com/j6sistek-ui/SpaceSurvival/pull/60) remains open/draft.
 
 ## September22 star visibility — RPT-20260922-03
 

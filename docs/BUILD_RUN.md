@@ -401,3 +401,10 @@ Visual runs also request ListTextures and are excluded from performance findings
 ## Station Workshop editor setup
 
 After restoring the private station content, run `Scripts/Build.ps1 -Target Editor`, then `Scripts/OpenStationWorkshop.ps1 -Prepare` once. Double-click `Open Station Workshop.cmd` for subsequent editing; an already-open editor is reused through Tools > Station Workshop. Preparation preserves existing presets and the saved map. See [Station editing](STATION_EDITING.md) for the source-map/derived-Blueprint and package boundaries. `Scripts/ValidateStationWorkshop.py` is a bounded integration fixture for a freshly prepared development workshop, not a command owners need for routine edits.
+
+## Owned building examples sandbox
+
+See [Building sandbox workflow](BUILDING_SANDBOX.md). `Open Building Sandbox.cmd` opens the generated
+private map identified by `Artifacts/BuildingSandbox/build.json`; `Scripts/OpenBuildingSandbox.ps1 -CheckOnly`
+validates its presence without opening Unreal. This authoring map and its template pawn do not change
+the gameplay default map or a published package.
