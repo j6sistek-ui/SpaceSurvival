@@ -15,7 +15,10 @@ def reset():
 def shape_digest():
     return hashlib.sha256(str(([tuple(v.co) for v in mesh.data.vertices],[tuple(p.vertices) for p in mesh.data.polygons],[tuple(v.uv) for v in mesh.data.uv_layers.active.data])).encode()).hexdigest()
 baseline=shape_digest();report={'mesh_vertices':len(mesh.data.vertices),'triangles':len(mesh.data.polygons),'poses':[]}
-rig.animation_data_create();rig.animation_data.action=bpy.data.actions.new('Rig_Check_Not_Gameplay')
+rig.animation_data_create();rig.animation_data.action=None
+for action in list(bpy.data.actions):
+    if action.name.startswith('Rig_Check_Not_Gameplay'):bpy.data.actions.remove(action)
+rig.animation_data.action=bpy.data.actions.new('Rig_Check_Not_Gameplay')
 scene.render.fps=24;scene.frame_start=1;scene.frame_end=101
 def keypose(frame):
     for pb in rig.pose.bones:pb.keyframe_insert(data_path='rotation_quaternion',frame=frame)

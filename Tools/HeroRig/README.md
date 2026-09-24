@@ -15,10 +15,11 @@ before rerunning if it contains manual edits; these scripts overwrite their own 
    Do not use NullRHI for this export: the skeletal exporter required a render mesh.
    No asset packages are saved or overwritten by the export script.
 2. Run Blender `--background --factory-startup --python <script>` for `Inspect.py`,
-   `Survey.py`, `Repair.py`, `Validate.py`, `AnimateTail.py`, then `Roundtrip.py`.
+   `Survey.py`, `Repair.py`, `ReweightTail.py`, `Validate.py`, `AnimateTail.py`, then `Roundtrip.py`.
    Require the corresponding success marker/report; Blender can exit zero after a Python exception.
-3. `PreviewTail.py` renders the separate tail-layer previews. Existing Python with Pillow
-   runs `Package.py` to assemble the ZIP/GIFs. No production/game animations are overwritten.
+3. `SoftenFur.py` creates the optional tail-only derivative; `ValidateFur.py` checks both exports.
+   `PreviewTail.py` renders the original-surface previews; rerun with `-- --soft-fur` for
+   the fur derivative. Existing Python with Pillow runs `Package.py` to assemble ZIP/GIFs. No production/game animations are overwritten.
 
 The source mesh uses a T pose, custom proportions and mannequin-style names. Keep a
 new target skeleton/IK retargeter; do not assume assigning Epic's skeleton makes it compatible.
@@ -34,3 +35,10 @@ Jump timing, body retargeting and runtime layering are not implemented by these 
 Validation is confined to this asset: source geometry/UV identity, three posed deformation
 checks, FBX/GLB round trips and loop/transition endpoints. The glTF importer creates a helper
 bone-shape mesh; round-trip counts intentionally cover skinned meshes only.
+
+The jump revision uncoils the tail downward and delays tip recovery for the landing rebound.
+`ReweightTail.py` assigns weights along connected surface distance, fixing the tip fold
+caused by nearest-segment ambiguity around the source hook. Rebuild all six clips after
+changing the rest chain. The optional fur derivative adds 180 cards (1,440 triangles),
+limits tail smoothing to 3 mm and preserves non-tail vertices: 76,623 triangles total.
+It needs native Unreal masked-material setup; the original sculpted tufts remain visible.

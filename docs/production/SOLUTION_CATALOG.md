@@ -364,3 +364,11 @@ station hero, pilot and reusable body retarget target within the existing hero s
 Local derivative: seven tail bones, root and backpack bone plus isolated tail layers.
 Native gameplay integration/acceptance remains unverified; next check is body retarget
 and movement-state layering, tracked in RPT-20260923-01, not a new feature proposal.
+
+Tail revision (September 24 UTC): downward jump uncoiling and delayed landing rebound;
+connected-surface skin weights repair the hooked-tip fold reported by the owner. The
+optional `SquirrelHero_SoftFur` derivative has 76,623 triangles with 180 skinned cards,
+tail-only smoothing capped at 3 mm and three material slots. Original geometry remains
+in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
+and `SoftFur_Back.png`. [Focused revision evidence](../validation/2026-09-24-squirrel-tail-revision.json)
+passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.

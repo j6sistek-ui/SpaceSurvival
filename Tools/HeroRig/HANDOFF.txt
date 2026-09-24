@@ -1,5 +1,17 @@
 REPLACEMENT SQUIRREL RIG - 2026-09-23
 
+TAIL REVISION: use FurPreview_Jump.gif to review the corrected uncoiling and
+landing rebound. The previous tip notch was a skin-weight fold; surface-following
+weights now continue around the hooked tip. The source mesh has no deleted faces.
+
+OPTIONAL FUR: SquirrelHero_SoftFur.blend / FBX / GLB include the same corrected rig,
+180 lightweight hair cards and tail-only smoothing capped at 3 mm. Total: 76,623
+triangles, three material slots. Body vertices outside the tail are unchanged.
+The core still uses the original sculpted tufts; this is a subtle surface/silhouette
+improvement, not a strand groom. Two Tail_ PNGs provide the diffuse tint and strand
+alpha. Native Unreal masked fur material setup and visual checks remain open.
+SquirrelHero_Rigged files retain the exact original mesh geometry/UVs for comparison.
+
 Open SquirrelHero_Rigged.blend in Blender. Press Space in the viewport to preview
 the idle tail. The Action Editor contains Tail_Idle, Tail_Walk, Tail_Run,
 Tail_JumpStart, Tail_JumpAir, Tail_JumpLand and Rig_Check_Not_Gameplay.

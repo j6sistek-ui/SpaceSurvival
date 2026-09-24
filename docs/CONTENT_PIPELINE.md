@@ -252,3 +252,11 @@ contains the repeatable export/repair/preview workflow. Its mesh remains 75,183 
 and its UVs/textures are preserved. This is a 69-bone custom target with mannequin-style
 names, not a skeleton assignment shortcut. New IK retargeting and runtime layering are
 still required. Source imports, active game references and release assets are unchanged.
+
+Tail revision (September 24 UTC): downward jump uncoiling and delayed landing rebound;
+connected-surface skin weights repair the hooked-tip fold reported by the owner. The
+optional `SquirrelHero_SoftFur` derivative has 76,623 triangles with 180 skinned cards,
+tail-only smoothing capped at 3 mm and three material slots. Original geometry remains
+in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
+and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
+passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.

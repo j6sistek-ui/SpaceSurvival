@@ -1,0 +1,180 @@
+{
+  "timestamp_utc": "2026-09-24T00:57Z",
+  "status": "PRIVATE_TAIL_REVISION_REVIEW_NOT_GAME_INTEGRATION",
+  "supersedes_tail_poses_and_exports": "2026-09-23-replacement-squirrel-rig.json",
+  "weight_repair": {
+    "tail_centerline": [
+      [
+        0.0,
+        -0.14000000059604645,
+        0.3970000147819519
+      ],
+      [
+        0.06970546394586563,
+        -0.021999966353178024,
+        0.32316696643829346
+      ],
+      [
+        0.11600350588560104,
+        0.03738543763756752,
+        0.29390907287597656
+      ],
+      [
+        0.17098350822925568,
+        0.09744428843259811,
+        0.33126842975616455
+      ],
+      [
+        0.20719221234321594,
+        0.16978751122951508,
+        0.39041629433631897
+      ],
+      [
+        0.26946601271629333,
+        0.22561374306678772,
+        0.42343980073928833
+      ],
+      [
+        0.32809188961982727,
+        0.28681468963623047,
+        0.4070584774017334
+      ],
+      [
+        0.3655276596546173,
+        0.3293240964412689,
+        0.3649960458278656
+      ]
+    ],
+    "surface_path_length_m": 0.6266415258270747,
+    "tail_vertices": 19375,
+    "all_tail_vertices_connected": true,
+    "assignment": "continuous root-to-tip geodesic distance; no nearest-segment ambiguity at hook"
+  },
+  "deformation": {
+    "mesh_vertices": 50508,
+    "triangles": 75183,
+    "poses": [
+      {
+        "name": "stride",
+        "backpack_max_distance_error_m": 1.2509232016899574e-07
+      },
+      {
+        "name": "crouch",
+        "backpack_max_distance_error_m": 1.3324795028468728e-07
+      },
+      {
+        "name": "twist",
+        "backpack_max_distance_error_m": 3.5880984057545806e-07
+      }
+    ],
+    "mesh_and_uv_unchanged_during_poses": true,
+    "max_weight_sum_error": 5.21540641784668e-08,
+    "tail_has_no_thigh_weights": true,
+    "max_influences": 4
+  },
+  "roundtrip": {
+    "source_geometry_and_uv_sha256": "058a9729926713ce1e063445f28ad96f816525112e8ea0e93b54a0ae3a1e4c0f",
+    "source_geometry_and_uv_preserved": true,
+    "clips": {
+      "Idle": {
+        "loop_endpoint_quaternion_error": 0.0
+      },
+      "Walk": {
+        "loop_endpoint_quaternion_error": 0.0
+      },
+      "Run": {
+        "loop_endpoint_quaternion_error": 0.0
+      },
+      "JumpAir": {
+        "loop_endpoint_quaternion_error": 0.0
+      },
+      "JumpStart_to_JumpAir": {
+        "transition_quaternion_error": 0.0
+      },
+      "JumpAir_to_JumpLand": {
+        "transition_quaternion_error": 0.0
+      }
+    },
+    "fbx": {
+      "triangles": 75183,
+      "bones": 69,
+      "root_present": true,
+      "tail_and_backpack_present": true
+    },
+    "glb": {
+      "triangles": 75183,
+      "bones": 69,
+      "root_present": true,
+      "tail_and_backpack_present": true
+    }
+  },
+  "fur": {
+    "base_triangles": 75183,
+    "cards": 180,
+    "card_triangles": 1440,
+    "total_triangles": 76623,
+    "body_vertices_outside_tail_unchanged": true,
+    "maximum_tail_vertex_shift_m": 0.003000068567540232,
+    "material_slots": 3,
+    "source_rig_unchanged": true,
+    "native_Unreal_fur_material_not_yet_created": true
+  },
+  "fur_checks": {
+    "max_weight_error": 5.21540641784668e-08,
+    "max_influences": 4,
+    "all_jump_frames_finite": true,
+    "fbx": {
+      "triangles": 76623,
+      "bones": 69
+    },
+    "glb": {
+      "triangles": 76623,
+      "bones": 69
+    }
+  },
+  "artifact_sha256": {
+    "SquirrelHero_Rigged.blend": "9b2e7084bb7b4de6dc8740f84c9a57292c19d379477ddfd5ba3c36186a72d899",
+    "SquirrelHero_Rigged.fbx": "03e8be5d9ed9bc38c09c9efdb005f4385e5372386c879837ada68767a5a3fded",
+    "SquirrelHero_Rigged.glb": "d52674f9ef430f3859fbb7dcc7213addb787837c7610b7e8b2e5411e60e0a0ab",
+    "README.txt": "e3248958f85c8118c7edb358debae506977d04e06eb1442483c220b7874f67b4",
+    "sci-fi_squirrel_3d_model_basecolor.tga": "8a37b26adcd41716c9791af8e31b9e1edd1d3c35b31958704b92e5bbb5f0b35a",
+    "sci-fi_squirrel_3d_model_normal.tga": "8166f61da9013fdb36490eb0e177b745712ce1cd51d3a75e2af1f7564e9668c9",
+    "validation.json": "2fca7b70818a3d137524c5188c7cd4921d95ed3019ea758a5002a17836236b86",
+    "roundtrip.json": "d4ece0339421222d986f12fee2e6a3138b56b0340c5d91ddaf8d154703c3bff1",
+    "tail_clips.json": "d35ee45840e1453c9330ef3419e6e9b6dc68a78f624d6bbf7cf15757b5abdc3b",
+    "Tail_Idle.fbx": "952738c16d170e55272c08a657218a86fb3bdd1a0bab22c108e5d3aa58d2bd59",
+    "Tail_Walk.fbx": "98f76532dcac3a43fd5e5871f6e3e6e3a9000537bb60dc3abeb401d21537b3f5",
+    "Tail_Run.fbx": "eae3208355bade949aa54bd0fe5d87fa830a89dfa60941a78fd67d1922aaa4b0",
+    "Tail_JumpStart.fbx": "6af8ebf3c091f9928460ae3ef7b6a60e894b406f10f176c9e7e3fe93b5fd973b",
+    "Tail_JumpAir.fbx": "55185c0065b8a3d9f798ed5334285436a41bcd68726cd1144a00de0d7647939d",
+    "Tail_JumpLand.fbx": "37447148c4c0da9a400f18a28f0a238b167863260868753a67693b37c26e43b3",
+    "Preview_Idle.gif": "2ec674c4baf046bd513cde9dd26665b422df7f3cddc1fb5ecbd01be7424b02fb",
+    "Preview_Walk.gif": "bdd144509810b3ecb18fd842db222bb1e6bba74cd0938da504e8c0e7d6ebeb42",
+    "Preview_Run.gif": "edd566d34ba3399121c5088d2417ad5bea39f7c149ad9fdabf6e0c9bc1032bc1",
+    "Preview_Jump.gif": "10a98a24f1aee06309255a3f21b189010acf98f68a31d11ac4d71bc08e2a16ce",
+    "FurPreview_Idle.gif": "9807758fc62d36ba0e352c0d2d35f426ccf2905789ac3b5feb4dd2d15b7903ab",
+    "FurPreview_Walk.gif": "f5253994c4c3cc88b8ffd8944c9c579e6f4a5b8b3f2cab74d289d6931edfd0ef",
+    "FurPreview_Run.gif": "ed7c94e4e4c9a59a38c3b464fb5b702d62a6a0a02c1a0cdf4af4e5590b766d0a",
+    "FurPreview_Jump.gif": "1cdbc70f9348f0a5a45dbd3ccf7b99237dd8e843cd1ab0f60d0dbd87f7341afc",
+    "SquirrelHero_SoftFur.blend": "e55dcc958bdd6b578bcdf710726cefcae191061ab0c7353a7681d65eb343d5d5",
+    "SquirrelHero_SoftFur.fbx": "f1f4d6b07c3ca9e5e07b9057c79b08d4d22987799a697e7a3c2222030eddc208",
+    "SquirrelHero_SoftFur.glb": "63913c696f216e8a485f2888be7191c1c96154411316a2ef6743c040e9d280c6",
+    "Tail_FineFibers_RGBA.png": "d65c287d638d8aca593a71b10e67a6fbd3c9a3f40459f413c964dfd91597c1bd",
+    "Tail_SoftCore_Color.png": "13975590fe2fcf8efdd90512f0f07d2230641332893f48e0ad52b24dcf220de7",
+    "fur_revision.json": "efc6c144c4eb7e4681c85c3f2b31f166e245c9ae4cc6539c27e81d86827e4dbc",
+    "fur_validation.json": "ecc64b77b859d606139de8985cf2741c49632850c300f45e30f86f95dd455f2a",
+    "tail_weight_revision.json": "a42450456be2b8ed489aacbc7ed539f66259daff98fe028a5084aa7a8c075247",
+    "SoftFur_Back.png": "87d69adca86612d17c29414a569452d4f866ff71cca1299e5c79868ad292c7a6"
+  },
+  "visual_review": "Updated downward jump pose removes the deep tip notch. The optional fur softens the silhouette but retains sculpted tufts. Owner acceptance remains open.",
+  "limits": [
+    "Body held still in previews; native retarget/layering not validated.",
+    "No game hero, package or itch release changed.",
+    "No strand simulation or tail collision authored."
+  ],
+  "repaired_failures": [
+    "Nearest-segment tail weights folded the hooked tip during straightening; connected surface distance replaces them.",
+    "Initial fur material looked gray; separate baked diffuse tint is now used for consistent export."
+  ],
+  "nonblocking_tool_warning": "Concurrent Blender runs reported extension-cache directory already exists; final outputs and success markers verified."
+}
