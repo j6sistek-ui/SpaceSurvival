@@ -162,3 +162,19 @@ Unreal can [monitor source folders and automatically reimport](https://dev.epicg
 - Build/run owns commands; this page owns the latest source/package/release pointer.
 - Validation receipts retain immutable history; old package numbers do not identify a shared path after it is rebuilt.
 - Every PR reconciles these boundaries and gives the owner an explicit open/check/still-open handoff.
+
+## September 23 replacement hero rig — local review files only
+
+`.agent/local/ReplacementHero/` contains the private 75,183-triangle squirrel rig,
+Blender/FBX/GLB package and six tail-animation layers. Reproducible scripts and sanitized
+evidence are tracked; art, textures, previews and ZIP remain private. This does not change
+the active hero or any published build. [RPT-20260923-01](KNOWN_ISSUES.md#rpt-20260923-01--replacement-squirrel-rig-and-tail-layers)
+owns native import/retarget/runtime integration and owner acceptance.
+
+Tail revision (September 24 UTC): downward jump uncoiling and delayed landing rebound;
+connected-surface skin weights repair the hooked-tip fold reported by the owner. The
+optional `SquirrelHero_SoftFur` derivative has 76,623 triangles with 180 skinned cards,
+tail-only smoothing capped at 3 mm and three material slots. Original geometry remains
+in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
+and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
+passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.

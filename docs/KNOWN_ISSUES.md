@@ -1992,3 +1992,30 @@ On closure retain the item with **Closed**, date, revision/build and evidence; o
 Closed/superseded work at this consolidation: no open acceptance case was closed. Earlier technical repairs and their exact test limits remain in [validation records](VALIDATION.md) and immutable `docs/validation/` receipts. Removed stale running commentary remains recoverable in Git history.
 
 Other documents have distinct roles: [Project State](PROJECT_STATE.md) for build/storage status; [solution catalog](production/SOLUTION_CATALOG.md) for candidate resources; [work packages](production/WORK_PACKAGES.md) for needs/dependencies; [game scope](GAME_SCOPE.md) and [IMPLEMENT](../IMPLEMENT.md) for authority. None is a second active task list.
+
+## RPT-20260923-01 — replacement squirrel rig and tail layers
+
+Owner: lead implementation; status: **asset review candidate, runtime integration open**.
+The owner selected the darker Tripo squirrel at 75–80k triangles and asked for a
+mannequin-friendly rig, independent tail, rigid backpack, walking/running wobble,
+casual idle sway and jump follow-through. The selected import is exactly 75,183
+triangles with one material; the nine-material segmented alternative is preserved.
+
+Local `.agent/local/ReplacementHero/SquirrelHero_Rigged.blend` and
+`SquirrelHero_Rig_Package.zip` contain the 69-bone rig, preserved source geometry/UVs,
+FBX/GLB, six tail-layer FBXs and four motion GIFs. [Recipe](../Tools/HeroRig/README.md)
+and [receipt](validation/2026-09-23-replacement-squirrel-rig.json) record focused evidence.
+Original imports and the active game hero remain untouched. No package/itch update.
+
+Next action (lead): import a separate native review candidate, retarget body locomotion,
+layer the tail by movement/jump state, and check actual walk/run/jump, pilot seating and
+ship clearance before switching the game hero. The owner reviews tail weight and softness
+in the GIFs; stationary-body tail previews are not evidence of finished locomotion.
+
+Tail revision (September 24 UTC): downward jump uncoiling and delayed landing rebound;
+connected-surface skin weights repair the hooked-tip fold reported by the owner. The
+optional `SquirrelHero_SoftFur` derivative has 76,623 triangles with 180 skinned cards,
+tail-only smoothing capped at 3 mm and three material slots. Original geometry remains
+in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
+and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
+passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.
