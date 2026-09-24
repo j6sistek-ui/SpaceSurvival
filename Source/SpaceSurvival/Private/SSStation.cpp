@@ -1081,6 +1081,12 @@ void ASSWalker::ApplyHero(FName PreferredId)
     // it was authored against, exactly as above, and here a mismatch is not a reason to give the slot
     // away - it is a reason for this hero to stand the way heroes stood before any of these existed.
     IdleAnimation = nullptr;
+    JumpStartAnimation = nullptr;
+    JumpAirAnimation = nullptr;
+    JumpLandAnimation = nullptr;
+    JumpPose = EJumpPose::Grounded;
+    JumpPoseSeconds = 0.f;
+    LandingTailSeconds = -1.f;
     FidgetAnimations.Reset();
     // Rung zero is the walk, always, installed or not - every other rung is measured against it and
     // UpdateHeroAnimation reads GaitAnimations[0] where it used to read WalkAnimation.
@@ -1099,6 +1105,9 @@ void ASSWalker::ApplyHero(FName PreferredId)
             return Clip && Clip->GetSkeleton() == Skeleton ? Clip : nullptr;
         };
         IdleAnimation = LoadClip(Hero.IdleClipPath);
+        JumpStartAnimation = LoadClip(Hero.JumpStartClipPath);
+        JumpAirAnimation = LoadClip(Hero.JumpAirClipPath);
+        JumpLandAnimation = LoadClip(Hero.JumpLandClipPath);
         // Only alongside an idle: a fidget is a clip you cut away from and come back to, so one with
         // nowhere to come back to would be a hero left holding a pose once its fidget second passed.
         if (IdleAnimation)
@@ -1180,7 +1189,7 @@ void ASSWalker::PlayClip(UAnimSequence *Clip, float Seconds, bool Loop, float Ra
     if (CarryPose && GetMesh()->GetSkeletalMeshAsset() && GetMesh()->GetAnimInstance())
         GetMesh()->SnapshotPose(Outgoing);
     CutSeconds = -1.f;
-    if (Outgoing.bIsValid)
+    if (Outgoing.bIsValid || LandingTailSeconds >= 0.f)
     {
         // Not PlayAnimation: that would switch the component back to a plain single-node instance and
         // throw away the very object holding the pose being blended from.
@@ -1207,6 +1216,7 @@ void ASSWalker::PlayClip(UAnimSequence *Clip, float Seconds, bool Loop, float Ra
         }
     }
     GetMesh()->GlobalAnimRateScale = RateScale;
+    UpdateLandingTail();
     GetMesh()->TickAnimation(0.f, false);
     GetMesh()->RefreshBoneTransforms();
     GetMesh()->SetComponentTickEnabled(true);
@@ -1230,6 +1240,8 @@ int32 ASSWalker::ChooseGait(float Speed) const
 }
 void ASSWalker::StartStandingAnimation(bool CarryPose)
 {
+    JumpPose = EJumpPose::Grounded;
+    JumpPoseSeconds = 0.f;
     Moving = false;
     StandingSeconds = 0.f;
     FidgetSecondsLeft = 0.f;
@@ -1242,6 +1254,67 @@ void ASSWalker::StartStandingAnimation(bool CarryPose)
         PlayClip(IdleAnimation, 0.f, true, 1.f, CarryPose);
     else
         PlayClip(WalkAnimation, Hero.WalkHandoffSeconds, true, 0.f, false);
+}
+bool ASSWalker::UpdateJumpAnimation(float Step)
+{
+    if (!JumpStartAnimation || !JumpAirAnimation || !JumpLandAnimation)
+        return false;
+    const auto *Movement = GetCharacterMovement();
+    const bool Falling = Movement && Movement->IsFalling();
+    auto Enter = [this](EJumpPose Pose, UAnimSequence *Clip, bool Loop)
+    {
+        JumpPose = Pose;
+        JumpPoseSeconds = 0.f;
+        Moving = false;
+        StandingSeconds = 0.f;
+        FidgetSecondsLeft = 0.f;
+        PlayClip(Clip, 0.f, Loop, 1.f, true);
+    };
+    JumpPoseSeconds += Step;
+    if (Falling)
+    {
+        LandingTailSeconds = -1.f;
+        if (JumpPose == EJumpPose::Grounded || JumpPose == EJumpPose::Land)
+        {
+            // Walking off an edge goes straight to the airborne loop, without a false takeoff.
+            if (GetVelocity().Z > 0.f)
+                Enter(EJumpPose::Start, JumpStartAnimation, false);
+            else
+                Enter(EJumpPose::Air, JumpAirAnimation, true);
+        }
+        else if (JumpPose == EJumpPose::Start &&
+                 (JumpPoseSeconds >= JumpStartAnimation->GetPlayLength() || GetVelocity().Z <= 0.f))
+            Enter(EJumpPose::Air, JumpAirAnimation, true);
+        GetMesh()->GlobalAnimRateScale = 1.f;
+        return true;
+    }
+    if (JumpPose == EJumpPose::Grounded)
+        return false;
+    if (Movement && Movement->IsMovingOnGround())
+    {
+        if (JumpPose != EJumpPose::Land)
+        {
+            if (!Hero.TailRootBone.IsNone())
+                LandingTailSeconds = 0.f;
+            Enter(EJumpPose::Land, JumpLandAnimation, false);
+            return true;
+        }
+        // A landing is presentation, never an input lock. Resume locomotion as soon as the player
+        // moves; a second jump above similarly interrupts this one-shot immediately.
+        const bool MovingAgain = GetVelocity().Size2D() > Hero.WalkSpeed * MoveEnterFraction ||
+                                 !GetPendingMovementInputVector().IsNearlyZero() ||
+                                 !Movement->GetCurrentAcceleration().IsNearlyZero();
+        if (!MovingAgain && JumpPoseSeconds < JumpLandAnimation->GetPlayLength())
+            return true;
+    }
+    JumpPose = EJumpPose::Grounded;
+    StartStandingAnimation();
+    return false;
+}
+void ASSWalker::UpdateLandingTail()
+{
+    if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+        Transition->SetLandingTail(JumpLandAnimation, Hero.TailRootBone, LandingTailSeconds);
 }
 void ASSWalker::UpdateHeroAnimation(float Dt)
 {
@@ -1264,16 +1337,15 @@ void ASSWalker::UpdateHeroAnimation(float Dt)
     // band change is a cut, taken through the same pose carry as every other cut here, and the
     // hysteresis in ChooseGait is what stops a pawn sitting on a boundary cutting every frame.
     const float Speed = GetVelocity().Size2D();
-    if (!IdleAnimation)
-    {
-        // Unchanged, and deliberately still one line: for a hero with no idle this is the whole of
-        // its animation, standing and walking alike, exactly as it was before any of this existed.
-        GetMesh()->GlobalAnimRateScale = Speed / FMath::Max(1.f, Hero.WalkSpeed);
-        return;
-    }
     // One sane step, used by everything below it. A frame that reports no time, or reports a NaN,
     // must not be able to run a blend out, bring a fidget forward, or push one away for ever.
     const float Step = FMath::IsFinite(Dt) && Dt > 0.f ? Dt : 0.f;
+    if (LandingTailSeconds >= 0.f)
+    {
+        LandingTailSeconds += Step;
+        if (!JumpLandAnimation || LandingTailSeconds >= JumpLandAnimation->GetPlayLength())
+            LandingTailSeconds = -1.f;
+    }
     if (CutSeconds >= 0.f)
     {
         CutSeconds += Step;
@@ -1283,6 +1355,14 @@ void ASSWalker::UpdateHeroAnimation(float Dt)
             Transition->SetExitTime(CutSeconds);
         if (CutSeconds >= USSStationPoseTransition::BlendDuration)
             CutSeconds = -1.f;
+    }
+    if (UpdateJumpAnimation(Step))
+        return;
+    if (!IdleAnimation)
+    {
+        // Heroes without an optional jump set or an idle retain their original walk-rate fallback.
+        GetMesh()->GlobalAnimRateScale = Speed / FMath::Max(1.f, Hero.WalkSpeed);
+        return;
     }
     // Held input, not just measured speed. GetVelocity on a walking pawn is what it managed to move,
     // so a hero pressed into a bulkhead reports nearly zero and would drop into the idle - and then,
@@ -1398,6 +1478,8 @@ bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector En
     }
     ExitElapsed = 0.0;
     Disembarking = true;
+    LandingTailSeconds = -1.f;
+    UpdateLandingTail();
     GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->DisableMovement();
     ConsumeMovementInputVector();
@@ -1544,6 +1626,7 @@ void ASSWalker::Tick(float Dt)
         }
         // Which clip this hero should be in, and how fast it should run.
         UpdateHeroAnimation(Dt);
+        UpdateLandingTail();
         UpdateFootsteps(Dt);
         // Boarding is an explicit interaction; crossing the ramp must not seize movement.
     }

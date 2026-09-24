@@ -1068,6 +1068,14 @@ struct FSSHeroDefinition
     FString JogClipPath;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
     FString RunClipPath;
+    /** Optional in-place jump set. All three must load on this hero's skeleton; otherwise the
+     *  existing locomotion remains in charge. CharacterMovement still owns takeoff and landing. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString JumpStartClipPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString JumpAirClipPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString JumpLandClipPath;
     /** Centimetres from the mesh origin down to the sole at WalkHandoffSeconds, before scale.
      *  Measured, not guessed: the Acornaut's boot sole sits 62.90269494 cm below its mesh origin. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit")
@@ -1157,6 +1165,10 @@ struct FSSHeroDefinition
     FName LeftHandBone = TEXT("L_Wrist");
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
     FName RightHandBone = TEXT("R_Wrist");
+    /** Optional landing follow-through root. Only this bone and its descendants keep the landing
+     *  clip while the body resumes locomotion; None leaves every existing hero unchanged. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    FName TailRootBone = NAME_None;
 
     /** Whether this build actually holds the package behind an object path. An empty path is not a
      *  missing file, it is a hero saying it has none of that thing, and both answer false. Anything

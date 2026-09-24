@@ -1471,4 +1471,209 @@ bool FSSHeroIdleSwitch::RunTest(const FString &)
     }
     return true;
 }
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSHeroJumpClips, "SpaceSurvival.Integration.HeroJumpClips",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSHeroJumpClips::RunTest(const FString &)
+{
+    FSSHeroTestWorld Fixture;
+    if (!TestNotNull(TEXT("Create the jump presentation fixture"), Fixture.World))
+        return false;
+    auto *LandingClip = LoadObject<UAnimSequence>(nullptr, AcornautExit);
+    if (!TestNotNull(TEXT("The tracked landing stand-in is installed"), LandingClip))
+        return false;
+    // Existing tracked clips stand in for the jump motions. This tests runtime selection and
+    // interruption against real skeletons; the replacement hero's motion quality needs a render.
+    for (int32 Variant = 0; Variant < 4; ++Variant)
+    {
+        auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+        if (!TestNotNull(TEXT("Spawn the walker"), Walker))
+            return false;
+        auto *Roster = NewObject<USSPhase1Data>(Walker);
+        FSSHeroDefinition Hero(ESSHeroIdentity::Acornaut);
+        Hero.IdleClipPath = AcornautPilot;
+        Hero.JumpStartClipPath = AcornautJogStandIn;
+        Hero.JumpAirClipPath = AcornautRunStandIn;
+        Hero.JumpLandClipPath = AcornautExit;
+        TestTrue(TEXT("Existing heroes do not opt into a tail layer"), Hero.TailRootBone.IsNone());
+        Hero.TailRootBone = Hero.LeftFootBone; // A tracked subtree stands in for the replacement tail.
+        if (Variant == 1)
+            Hero.JumpLandClipPath = NoSuchWalk;
+        else if (Variant == 2)
+            Hero.JumpAirClipPath = SquirrelWalk;
+        else if (Variant == 3)
+        {
+            Hero.JumpStartClipPath.Empty();
+            Hero.JumpAirClipPath.Empty();
+            Hero.JumpLandClipPath.Empty();
+        }
+        Roster->Heroes = {Hero};
+        Walker->Tuning = Roster;
+        Walker->DispatchBeginPlay();
+        if (!TestEqual(TEXT("Fixture selected the intended skeleton"), Walker->GetHero().MeshPath, Hero.MeshPath))
+            return false;
+        auto *Movement = Walker->GetCharacterMovement();
+        auto Playing = [Walker]() -> FString
+        {
+            auto *Node = Walker->GetMesh()->GetSingleNodeInstance();
+            return Node && Node->GetCurrentAsset() ? Node->GetCurrentAsset()->GetPathName() : FString();
+        };
+        Movement->SetMovementMode(MOVE_Falling);
+        Movement->Velocity = FVector(0, 0, 300);
+        Walker->Tick(.016f);
+        if (Variant != 0)
+        {
+            TestEqual(TEXT("Incomplete, incompatible or absent jump sets retain normal locomotion"), Playing(),
+                      Hero.IdleClipPath);
+            continue;
+        }
+        TestEqual(TEXT("Vertical takeoff plays the start despite zero horizontal speed"), Playing(),
+                  Hero.JumpStartClipPath);
+        TestEqual(TEXT("Jump playback does not freeze at zero ground speed"), Walker->GetMesh()->GlobalAnimRateScale,
+                  1.f);
+        Walker->Tick(USSStationPoseTransition::BlendDuration + .01f);
+        const auto *Blend = Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance());
+        TestTrue(TEXT("The outgoing pose blend progresses while airborne"), Blend && Blend->GetExitBlend() == 1.f);
+        Movement->Velocity.Z = -20;
+        Walker->Tick(.016f);
+        TestEqual(TEXT("Descending transitions into the airborne loop"), Playing(), Hero.JumpAirClipPath);
+        TestTrue(TEXT("Airborne clip loops"), Walker->GetMesh()->GetSingleNodeInstance()->IsLooping());
+        Movement->SetMovementMode(MOVE_Walking);
+        Movement->Velocity = FVector::ZeroVector;
+        Walker->Tick(.016f);
+        TestEqual(TEXT("Actual ground contact starts the landing"), Playing(), Hero.JumpLandClipPath);
+        TestFalse(TEXT("Landing is a one-shot"), Walker->GetMesh()->GetSingleNodeInstance()->IsLooping());
+        Walker->Tick(LandingClip->GetPlayLength() + .01f);
+        TestEqual(TEXT("Landing completes into idle"), Playing(), Hero.IdleClipPath);
+        Movement->SetMovementMode(MOVE_Falling);
+        Movement->Velocity.Z = -20;
+        Walker->Tick(.016f);
+        TestEqual(TEXT("Walking off an edge skips the takeoff clip"), Playing(), Hero.JumpAirClipPath);
+        Movement->SetMovementMode(MOVE_Walking);
+        Movement->Velocity = FVector::ZeroVector;
+        Walker->Tick(.016f);
+        Movement->SetMovementMode(MOVE_Falling);
+        Movement->Velocity.Z = 300;
+        Walker->Tick(.016f);
+        TestEqual(TEXT("A second jump interrupts landing"), Playing(), Hero.JumpStartClipPath);
+        auto *Transition = Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance());
+        TestTrue(TEXT("Re-jumping clears the previous landing's tail layer"),
+                 Transition && !Transition->GetLandingTailClip());
+        Movement->SetMovementMode(MOVE_Walking);
+        Movement->Velocity = FVector::ZeroVector;
+        Walker->Tick(.016f);
+        Movement->Velocity.X = Hero.WalkSpeed;
+        Walker->Tick(.016f);
+        TestEqual(TEXT("Movement interrupts landing into locomotion"), Playing(), Hero.WalkClipPath);
+        Transition = Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance());
+        TestTrue(TEXT("The landing subtree continues while the body walks"),
+                 Transition && Transition->GetLandingTailClip() == LandingClip &&
+                     Transition->GetLandingTailWeight() > 0.f);
+        Walker->Tick(LandingClip->GetPlayLength());
+        TestTrue(TEXT("The continuation clears at the landing clip end"), !Transition->GetLandingTailClip());
+        Movement->SetMovementMode(MOVE_Falling);
+        Movement->Velocity = FVector(0, 0, -20);
+        Walker->Tick(.016f);
+        Movement->SetMovementMode(MOVE_Walking);
+        Movement->Velocity = FVector::ZeroVector;
+        Walker->Tick(.016f);
+        Walker->ApplyHero();
+        Transition = Cast<USSStationPoseTransition>(Walker->GetMesh()->GetAnimInstance());
+        TestTrue(TEXT("Changing heroes clears the previous landing's tail layer"),
+                 !Transition || !Transition->GetLandingTailClip());
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSHeroLandingTail, "SpaceSurvival.Integration.HeroLandingTail",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSHeroLandingTail::RunTest(const FString &)
+{
+    FSSHeroTestWorld Fixture;
+    if (!TestNotNull(TEXT("Create the subtree pose fixture"), Fixture.World))
+        return false;
+    auto *Walker = Fixture.World->SpawnActor<ASSWalker>();
+    if (!TestNotNull(TEXT("Spawn the subtree pose walker"), Walker))
+        return false;
+    FSSHeroDefinition Hero(ESSHeroIdentity::Acornaut);
+    auto *Roster = NewObject<USSPhase1Data>(Walker);
+    Roster->Heroes = {Hero};
+    Walker->Tuning = Roster;
+    Walker->DispatchBeginPlay();
+    auto *Mesh = Walker->GetMesh();
+    auto *BodyClip = LoadObject<UAnimSequence>(nullptr, AcornautPilot);
+    auto *TailClip = LoadObject<UAnimSequence>(nullptr, AcornautWalk);
+    if (!TestNotNull(TEXT("Base clip installed"), BodyClip) || !TestNotNull(TEXT("Overlay clip installed"), TailClip) ||
+        !TestNotNull(TEXT("Mesh installed"), Mesh->GetSkeletalMeshAsset()))
+        return false;
+    const FReferenceSkeleton &Reference = Mesh->GetSkeletalMeshAsset()->GetRefSkeleton();
+    const int32 Foot = Reference.FindBoneIndex(Hero.LeftFootBone);
+    if (!TestTrue(TEXT("The tracked fixture has a foot branch"), Foot > 0))
+        return false;
+    // Use the leg branch of tracked content to prove hierarchy masking without depending on the
+    // replacement's private tail assets. The runtime uses the authored tail_01 name in precisely this slot.
+    int32 Root = Reference.GetParentIndex(Foot);
+    if (Root > 0)
+        Root = Reference.GetParentIndex(Root);
+    if (!TestTrue(TEXT("The test branch excludes the skeleton root"), Root > 0))
+        return false;
+    const FName RootName = Reference.GetBoneName(Root);
+    Mesh->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
+    auto *Transition = Cast<USSStationPoseTransition>(Mesh->GetAnimInstance());
+    if (!TestNotNull(TEXT("Install the native pose proxy"), Transition))
+        return false;
+    const float Time = FMath::Min(.1f, TailClip->GetPlayLength() * .25f);
+    auto Sample = [&](UAnimSequence *Clip, float Seconds)
+    {
+        Transition->SetAnimationAsset(Clip, true, 1.f);
+        Transition->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+        Transition->SetPosition(Seconds, false);
+        Transition->SetExitTime(USSStationPoseTransition::BlendDuration);
+        Mesh->TickAnimation(0.f, false);
+        Mesh->RefreshBoneTransforms();
+        FPoseSnapshot Pose;
+        Mesh->SnapshotPose(Pose);
+        return Pose;
+    };
+    const FPoseSnapshot Body = Sample(BodyClip, Time);
+    const FPoseSnapshot Tail = Sample(TailClip, Time);
+    if (!TestTrue(TEXT("Both complete poses are available"), Body.bIsValid && Tail.bIsValid &&
+                                                                 Body.LocalTransforms.Num() == Reference.GetNum() &&
+                                                                 Tail.LocalTransforms.Num() == Reference.GetNum()))
+        return false;
+    TestTrue(TEXT("Accept a matching absolute clip and named subtree"),
+             Transition->SetLandingTail(TailClip, RootName, Time));
+    const FPoseSnapshot Layered = Sample(BodyClip, Time);
+    int32 Changed = 0, Preserved = 0;
+    for (int32 Bone = 0; Bone < Reference.GetNum(); ++Bone)
+    {
+        const bool InSubtree = Bone == Root || Reference.BoneIsChildOf(Bone, Root);
+        const FTransform &Expected = InSubtree ? Tail.LocalTransforms[Bone] : Body.LocalTransforms[Bone];
+        TestTrue(FString::Printf(TEXT("Layer keeps the correct local transform for %s"),
+                                 *Reference.GetBoneName(Bone).ToString()),
+                 Layered.LocalTransforms[Bone].Equals(Expected, 1.e-3f));
+        if (InSubtree && !Tail.LocalTransforms[Bone].Equals(Body.LocalTransforms[Bone], 1.e-3f))
+            ++Changed;
+        if (!InSubtree)
+            ++Preserved;
+    }
+    TestTrue(TEXT("The test exercises actual changed overlay bones and preserved body bones"),
+             Changed > 0 && Preserved > 0);
+    TestTrue(TEXT("The continuation remains active near the clip end"),
+             Transition->SetLandingTail(TailClip, RootName,
+                                        TailClip->GetPlayLength() - USSStationPoseTransition::BlendDuration * .5f));
+    TestEqual(TEXT("Final half-fade has half weight"), Transition->GetLandingTailWeight(), .5f, 1.e-4f);
+    TestFalse(TEXT("Clip end clears the layer"),
+              Transition->SetLandingTail(TailClip, RootName, TailClip->GetPlayLength()));
+    const FPoseSnapshot Cleared = Sample(BodyClip, Time);
+    for (int32 Bone = 0; Bone < Reference.GetNum(); ++Bone)
+        TestTrue(TEXT("Clearing restores the complete base pose"),
+                 Cleared.LocalTransforms[Bone].Equals(Body.LocalTransforms[Bone], 1.e-3f));
+    TestFalse(TEXT("Missing subtree is rejected"), Transition->SetLandingTail(TailClip, TEXT("NoSuchTail"), Time));
+    TestFalse(TEXT("None opts out"), Transition->SetLandingTail(TailClip, NAME_None, Time));
+    auto *OtherRig = LoadObject<UAnimSequence>(nullptr, SquirrelWalk);
+    if (TestNotNull(TEXT("The tracked incompatible rig fixture is installed"), OtherRig))
+        TestFalse(TEXT("A clip from another skeleton is rejected"),
+                  Transition->SetLandingTail(OtherRig, RootName, Time));
+    return true;
+}
 #endif

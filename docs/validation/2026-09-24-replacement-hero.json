@@ -1,0 +1,102 @@
+{
+  "date_utc": "2026-09-24",
+  "status": "IMPLEMENTED_LOCAL_SCRIPTED_REVIEW_OWNER_ACCEPTANCE_OPEN",
+  "base_commit": "9a8755b",
+  "branch": "codex/replacement-hero-in-game",
+  "target_project": "C:\\Users\\j6sis\\.codex\\worktrees\\flight-loop-reset\\SpaceSurvival\\SpaceSurvival.uproject",
+  "geometry": {
+    "triangles": 76623,
+    "bones": 69,
+    "tail_bones": 7,
+    "fur_cards": 180,
+    "fit_height_cm": 135
+  },
+  "build": {
+    "result": "Succeeded",
+    "seconds": 43.78,
+    "binary_sha256": "cebcee94974d8a98c6c6edc64c05cddfdaad5dee8ffe5ffc9b5670188bb197a3",
+    "warnings": "Installed UE5.8 headers emit existing C4996 deprecations; not new hero errors."
+  },
+  "automation": {
+    "succeeded": 2,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0
+  },
+  "suites": [
+    "SpaceSurvival.Integration.HeroJumpClips",
+    "SpaceSurvival.Integration.HeroLandingTail"
+  ],
+  "native_game_review": {
+    "map": "/Game/SpaceSurvival/Maps/Survival",
+    "mesh": "/Game/SpaceSurvival/Licensed/HeroReplacement/Final/SK_SquirrelHeroReplacement",
+    "independent_profile": true,
+    "controller_tick_disabled_for_scripted_jump": true,
+    "minimum_capsule_z": 80.14999993881834,
+    "maximum_capsule_z": 169.11786873425936,
+    "falling_samples": 62,
+    "returned_to_floor": true,
+    "screenshots": {
+      "FinalMainHeroIdle.png": "59ff3b5ef51586426ef16b98fa83eda4f8925fbacf68c98656c4a78b4c828f97",
+      "FinalMainHeroJumpAir.png": "f651e43eac3fd4d65425bd5cb9cbec3a33b6084fdfee3484c184076cd43ce74a",
+      "FinalMainHeroLanding.png": "f67ef39dd4c7526c1f8fa7c6f717d07815e0dfb5b1ece3b7ccc0b9ed8012937d",
+      "FinalMainHeroWalking.png": "74f1e5c0fe56d73d6f6f363496835dd813d738191e65f018a246936e7a549348"
+    }
+  },
+  "assets_private": {
+    "A_Idle.uasset": "4db3928d034b3fbb24e3bbf2989746350c037b6966f4dcede5809d92f8391af2",
+    "A_Jog.uasset": "cf7fbde6ad758ce90649feeb27ec67e0f8e7e5949f70274a0dc900b35068a7d3",
+    "A_JumpAir.uasset": "2b2448539dff289ecc4155249a165f5f46783677341cf1e6a55b57960e04b665",
+    "A_JumpLand.uasset": "c4d01c237c157106ddfc4c7984cdf734247d46900f1d87765581c65ca8683a1e",
+    "A_JumpStart.uasset": "f0accd5601dd2e5c965a4978d482e653ef2d20dd09e1f8f396a79abc89c9b210",
+    "A_Pilot.uasset": "bd8d12296b3f25aeab94a210042ea2a2516144cd3cea12f882f831c70e02facf",
+    "A_Run.uasset": "353481ca02b68c4c963ade498c61af7887fba18b02b2d21713ce4e254c543316",
+    "A_Walk.uasset": "4784bb169d8781c709c176dc0c4ba5c163c70f67f45b30ba8014369ca961028f",
+    "Body_Air.uasset": "3f735fa0f2305ffa30ac6eb629766606164008a97230bffc05a703bcf6a23529",
+    "Body_Idle.uasset": "55a757f228006aa259dd6a9e1d3d6067dee3784ddb62a8064cbb7f4fb4ec6b94",
+    "Body_Jog.uasset": "0c579281c7c7d9f1aff4245f4c36d0b9d7b429b30cfd68eee35417ee58ec34eb",
+    "Body_Jump.uasset": "d7049135fa973ab71c1e27c6db0afa3268e5f9f731216eb0312aaaa814dc4f17",
+    "Body_Land.uasset": "85ce3af9366dfbbcdcacb6d2bad0b8a13310ca157b93459f4a0f52d9784f21bd",
+    "Body_Pilot.uasset": "bcd33d9bb29c68de69a3f637cd72ad15baa0088833ee38c9fcfa4a1ae3e42f49",
+    "Body_Run.uasset": "71f4c4161b457f6572f46be0efa6f256a885948b21a4ac5ff7e983f48e5e6612",
+    "Body_Walk.uasset": "fcf3d455c80f41fc5b9001caae8b4d96bdb73e546ca2d6542ae7e3c59e94261b",
+    "IK_Replacement.uasset": "2cfa3561154d721e660e56f913db85e779ed623aa39db6cf358058edeba48f85",
+    "M_TailFur.uasset": "b195710b861c2f1ffe2e0896d03776eed3c38e11c67a45b366b0a91c8112aa38",
+    "MI_TailSoftCore.uasset": "e3fdf6bc1f0b04b8de67917d58597647a9b0938aa4f4054644d8f7c1356b4725",
+    "RTG_Body.uasset": "9298e8456121d132f6cb7de34ff70f6bf608550caf2786e2146422f96fbcf031",
+    "RTG_Body_Source.uasset": "47a70523280915a0d4524e81f083ba0a037ed4245d9b8a9c7915d4726283ae91",
+    "RTG_Jump.uasset": "77c60774daa7587dbae380a4e9ddb7a48e1d287a5318dd378a76fdd495db7563",
+    "RTG_Jump_Source.uasset": "6c58846abf1e6386e80bca999904d9579fdec3df65cb8dabfb5d8ca5259d8bd1",
+    "RTG_Land.uasset": "8185da886b74a7759897c699da61f4cfa4a5fe31adee73b90e672ae16be7dda9",
+    "RTG_Land_Source.uasset": "a9de8942549d19a9f905fef45fcdb6a893f06c62b34ff4e86a63fed816d4ef19",
+    "RTG_Pilot.uasset": "74cd9214a86fcdba15126e6d76f498bc7fc91c442c9dcd4ef8f33d96cd40979d",
+    "RTG_Pilot_Source.uasset": "3a39fef712fc8c7076e9916b278acc2d2e82be1a255b72cacfdfd734fea12b03",
+    "SK_SquirrelHeroReplacement.uasset": "025796fe61ee38e4be6d04bdcfd12d0693b3c774618ade7cbf9b4e403ca39323",
+    "SK_SquirrelHeroReplacement_PhysicsAsset.uasset": "527d1926f9378cbb074c254aa8f455541b7dc89934a1bd3d0bcd38f5429cb0f9",
+    "SK_SquirrelHeroReplacement_Skeleton.uasset": "fe39edc6f16db46912a1ec0ae4ab3c346b49ebbf70f5ff33f31db78e6a26aa08",
+    "T_TailFibers.uasset": "a61d5b4d764dae6f84d13a171229f162c6b9b74df4dcbda50b958edb9e5acfdd",
+    "T_TailSoftCore.uasset": "7e374d7a9357c7f7557180b2b39e37d37cd4f9c21721d8039bbc641041411125",
+    "Tail_Idle.uasset": "1de64716de7a373f7e7ef61be3684a18db1088fd6b2cb811c2296f7a2a722849",
+    "Tail_JumpAir.uasset": "73547490524689e9c76d19d7b70dbf0dee9c8eca5e5e3cf3260cd4a65ec920a7",
+    "Tail_JumpLand.uasset": "b72743d3d116f018b9b09c251b21d9f3584328931cf258c93936bc1de1d7512f",
+    "Tail_JumpStart.uasset": "82065c2ee0e7f90f314980dfd7722286cd39e202d056b1a43c6970eb2431b565",
+    "Tail_Run.uasset": "4af060ada6530783bf05bcdc99d9f73642f62f2c083a581df5ab4fc57ea17572",
+    "Tail_Walk.uasset": "9ad998f613f59b6841dd24350144ff9717a783f6d8cc7ead1f0898451cda1ee7"
+  },
+  "tuning_asset_sha256": "5ddbfb7cfc2d2c6ac99791bce38396f395cc59bcae1dcd2d66239cfdaa634e66",
+  "limits": [
+    "Scripted offscreen inspection, not physical controller or owner acceptance.",
+    "Pilot seated pose retargeted and pelvis anchor preserved mathematically; fresh cockpit boarding/seat visual acceptance remains open.",
+    "No new package, itch upload or merge.",
+    "Original hero remains available; licensed/generated candidate art stays private/local.",
+    "Pre-existing station material InstancedStaticMeshes usage warning remains outside this hero task."
+  ],
+  "runtime_source_sha256": {
+    "Public/SSContentTypes.h": "85d3c1985bac460f0084b2ab280f4232c7d5c7723982416cd2a34e6afb9028c2",
+    "Public/SSStation.h": "d18447f53f444882bb52e68c8a6e7e4df9b973cd9e9efc84cb14c215b84bdd67",
+    "Public/SSStationPoseTransition.h": "3661fa096a06b94015ed12364007b1d2573ef05a89095aafd844f58aca69131b",
+    "Private/SSStation.cpp": "e997db3eb3039257c8b8c42e258f3f233738fddc1d7c32b0ad7114f0b5898f36",
+    "Private/SSStationPoseTransition.cpp": "5f585a121b153a79d2389094da8dd68f7ea07633e908fcfe5e4c77c411e8da08",
+    "Private/SSHeroSlotAutomationTests.cpp": "e8376828887d0d31ce82d49099d1c7f8bfe2973cb2e42208c67d3e7d45297f2f"
+  }
+}

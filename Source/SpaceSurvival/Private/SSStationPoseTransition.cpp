@@ -1,5 +1,7 @@
 #include "SSStationPoseTransition.h"
 #include "Animation/AnimSingleNodeInstanceProxy.h"
+#include "Animation/AnimSequence.h"
+#include "Animation/AnimationPoseData.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
 
@@ -11,12 +13,20 @@ struct FSSStationPoseProxy : FAnimSingleNodeInstanceProxy
     FPoseSnapshot Source;
     uint32 Revision = MAX_uint32;
     float Blend = 1.f;
+    UAnimSequence *LandingTail = nullptr;
+    FName TailRoot = NAME_None;
+    float TailTime = 0.f;
+    float TailWeight = 0.f;
 
     virtual void PreUpdate(UAnimInstance *Instance, float DeltaSeconds) override
     {
         FAnimSingleNodeInstanceProxy::PreUpdate(Instance, DeltaSeconds);
         const auto *Transition = CastChecked<USSStationPoseTransition>(Instance);
         Blend = Transition->GetExitBlend();
+        LandingTail = Transition->GetLandingTailClip();
+        TailRoot = Transition->GetLandingTailRoot();
+        TailTime = Transition->GetLandingTailTime();
+        TailWeight = Transition->GetLandingTailWeight();
         if (Revision != Transition->GetSourceRevision())
         {
             Source = Transition->GetSourcePose();
@@ -26,17 +36,37 @@ struct FSSStationPoseProxy : FAnimSingleNodeInstanceProxy
     virtual bool Evaluate(FPoseContext &Output) override
     {
         const bool Result = FAnimSingleNodeInstanceProxy::Evaluate(Output);
-        if (!Result || Blend >= 1.f || !Source.bIsValid)
+        if (!Result)
             return Result;
         const FBoneContainer &Bones = Output.Pose.GetBoneContainer();
-        for (FCompactPoseBoneIndex Index : Output.Pose.ForEachBoneIndex())
-        {
-            const int32 MeshIndex = Bones.MakeMeshPoseIndex(Index).GetInt();
-            if (Source.LocalTransforms.IsValidIndex(MeshIndex))
+        if (Blend < 1.f && Source.bIsValid)
+            for (FCompactPoseBoneIndex Index : Output.Pose.ForEachBoneIndex())
             {
-                const FTransform Target = Output.Pose[Index];
-                Output.Pose[Index].Blend(Source.LocalTransforms[MeshIndex], Target, Blend);
-                Output.Pose[Index].NormalizeRotation();
+                const int32 MeshIndex = Bones.MakeMeshPoseIndex(Index).GetInt();
+                if (Source.LocalTransforms.IsValidIndex(MeshIndex))
+                {
+                    const FTransform Target = Output.Pose[Index];
+                    Output.Pose[Index].Blend(Source.LocalTransforms[MeshIndex], Target, Blend);
+                    Output.Pose[Index].NormalizeRotation();
+                }
+            }
+        if (LandingTail && TailWeight > 0.f)
+        {
+            FPoseContext TailPose(Output);
+            FAnimationPoseData TailData(TailPose);
+            LandingTail->GetAnimationPose(TailData, FAnimExtractContext(static_cast<double>(TailTime), false));
+            const FReferenceSkeleton &Reference = Bones.GetReferenceSkeleton();
+            const int32 RootIndex = Reference.FindBoneIndex(TailRoot);
+            for (FCompactPoseBoneIndex Index : Output.Pose.ForEachBoneIndex())
+            {
+                const int32 MeshIndex = Bones.MakeMeshPoseIndex(Index).GetInt();
+                if (RootIndex != INDEX_NONE &&
+                    (MeshIndex == RootIndex || Reference.BoneIsChildOf(MeshIndex, RootIndex)))
+                {
+                    const FTransform Body = Output.Pose[Index];
+                    Output.Pose[Index].Blend(Body, TailPose.Pose[Index], TailWeight);
+                    Output.Pose[Index].NormalizeRotation();
+                }
             }
         }
         return Result;
@@ -47,6 +77,26 @@ struct FSSStationPoseProxy : FAnimSingleNodeInstanceProxy
 FAnimInstanceProxy *USSStationPoseTransition::CreateAnimInstanceProxy()
 {
     return new FSSStationPoseProxy(this);
+}
+
+bool USSStationPoseTransition::SetLandingTail(UAnimSequence *Clip, FName RootBone, float Seconds)
+{
+    LandingTailClip = nullptr;
+    LandingTailWeight = 0.f;
+    LandingTailRoot = NAME_None;
+    LandingTailTime = 0.f;
+    const auto *Component = GetSkelMeshComponent();
+    const auto *Mesh = Component ? Component->GetSkeletalMeshAsset() : nullptr;
+    if (!Mesh || !Clip || RootBone.IsNone() || !FMath::IsFinite(Seconds) || Seconds < 0.f ||
+        Seconds >= Clip->GetPlayLength() || Clip->GetSkeleton() != Mesh->GetSkeleton() || Clip->IsValidAdditive() ||
+        Mesh->GetRefSkeleton().FindBoneIndex(RootBone) == INDEX_NONE)
+        return false;
+    LandingTailClip = Clip;
+    LandingTailRoot = RootBone;
+    LandingTailTime = Seconds;
+    const float Alpha = FMath::Clamp((Clip->GetPlayLength() - Seconds) / BlendDuration, 0.f, 1.f);
+    LandingTailWeight = Alpha * Alpha * (3.f - 2.f * Alpha);
+    return true;
 }
 
 const TCHAR *USSStationPoseTransition::RefusalReason(ESSPoseRefusal Refusal)
