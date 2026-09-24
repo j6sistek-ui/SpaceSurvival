@@ -7,10 +7,10 @@ type is the first thing the library is for, and three boxes further down it filt
 """
 import bpy
 
-from . import core, library, groups, send, scenes
+from . import core, library, groups, send, scenes, surfaces
 
 # Feature modules in the order their boxes appear: (module, box title, title icon).
-FEATURES = ((send, 'Send to Unreal', 'EXPORT'), (scenes, 'Scenes', 'SCENE_DATA'))
+FEATURES = ((surfaces, 'Surface overrides', 'MATERIAL'), (send, 'Send to Unreal', 'EXPORT'), (scenes, 'Scenes', 'SCENE_DATA'))
 
 
 class LazyBox:
@@ -91,6 +91,12 @@ class SSLINK_PT_panel(bpy.types.Panel):
         box.label(text=st.status)
         box = lay.box()
         box.label(text='Parts library', icon='ASSET_MANAGER')
+        box.operator('ss_link.popout_library', icon='WINDOW')
+        box.operator('ss_link.prepare_library', icon='FILE_REFRESH')
+        box.prop(st, 'auto_refresh_library')
+        row = box.row(align=True)
+        row.operator('ss_link.export_library', icon='EXPORT')
+        row.operator('ss_link.import_library', icon='IMPORT')
         box.operator('ss_link.load_catalog', icon='FILE_REFRESH')
         try:
             groups.draw(box, context)   # the type buttons, the name field and '79 of 458 parts'; nothing before a catalogue is loaded

@@ -1,0 +1,199 @@
+{
+  "date_utc": "2026-09-24T01:46Z",
+  "issue": "RPT-20260922-04",
+  "map": "/Game/Blender/Sandbox/BuildingSandbox_20260922",
+  "scope": "Private authoring sandbox only; source vendor maps and published game unchanged",
+  "removed": {
+    "canyon_mesh_actors": 1897,
+    "vertical_enclosure_planes": 8,
+    "obsolete_ramps": 7
+  },
+  "flat_platform": {
+    "top_cm": 0,
+    "size_cm": [
+      26000,
+      11000,
+      50
+    ],
+    "source_floor_z_offsets_cm": {
+      "Genesis": -50,
+      "WorkStation": -2.28,
+      "StarterPack": -52.28,
+      "ComputerStation": -10.61,
+      "FruitSeller": -198.82
+    }
+  },
+  "lighting": {
+    "sky": "Sandbox child of owned M_RegionSky; stars, no nebula; terrestrial atmosphere/cloud/fog disabled",
+    "computer_light_count": 38,
+    "computer_light_factor": 0.0001,
+    "computer_emissive_children": 20,
+    "emission_factor": 1e-05,
+    "reflection_probe_brightness_before": 10000,
+    "reflection_probe_brightness_after": 1,
+    "acceptance": "PARTIAL: screenshot after normalization still appears bright; final settled appearance needs owner review and further lead diagnosis if needed"
+  },
+  "saved": true,
+  "exported_linked_meshes": 5522,
+  "vendor_source_map_hashes_unchanged": true,
+  "capsule_cm": {
+    "radius": 34,
+    "half_height": 96,
+    "step_height": 45
+  },
+  "routes": [
+    {
+      "area": "Genesis",
+      "start": [
+        180,
+        -70,
+        120
+      ],
+      "end": [
+        750,
+        -70,
+        120
+      ],
+      "clear": true,
+      "actor": [],
+      "ground": [
+        {
+          "hit": true,
+          "point": [
+            "X=180.000000,Y=-70.000000,Z=0.000000"
+          ]
+        },
+        {
+          "hit": true,
+          "point": [
+            "X=750.000000,Y=-70.000000,Z=0.000000"
+          ]
+        }
+      ]
+    },
+    {
+      "area": "WorkStation",
+      "start": [
+        8319,
+        -611,
+        100
+      ],
+      "end": [
+        8319,
+        -11,
+        100
+      ],
+      "clear": true,
+      "actor": [],
+      "ground": [
+        {
+          "hit": true,
+          "point": [
+            "X=8319.000000,Y=-611.000000,Z=0.000000"
+          ]
+        },
+        {
+          "hit": true,
+          "point": [
+            "X=8319.000000,Y=-11.000000,Z=0.000000"
+          ]
+        }
+      ]
+    },
+    {
+      "area": "StarterPack",
+      "start": [
+        12105,
+        -611,
+        100
+      ],
+      "end": [
+        12105,
+        -11,
+        100
+      ],
+      "clear": true,
+      "actor": [],
+      "ground": [
+        {
+          "hit": true,
+          "point": [
+            "X=12105.000000,Y=-611.000000,Z=0.000000"
+          ]
+        },
+        {
+          "hit": true,
+          "point": [
+            "X=12105.000000,Y=-11.000000,Z=0.000000"
+          ]
+        }
+      ]
+    },
+    {
+      "area": "ComputerStation",
+      "start": [
+        15290,
+        -650,
+        100
+      ],
+      "end": [
+        15290,
+        -200,
+        100
+      ],
+      "clear": true,
+      "actor": [],
+      "ground": [
+        {
+          "hit": true,
+          "point": [
+            "X=15290.000000,Y=-650.000000,Z=0.000000"
+          ]
+        },
+        {
+          "hit": true,
+          "point": [
+            "X=15290.000000,Y=-200.000000,Z=0.266105"
+          ]
+        }
+      ]
+    },
+    {
+      "area": "FruitSeller",
+      "start": [
+        17900,
+        4080,
+        100
+      ],
+      "end": [
+        17900,
+        4480,
+        100
+      ],
+      "clear": true,
+      "actor": [],
+      "ground": [
+        {
+          "hit": true,
+          "point": [
+            "X=17900.000000,Y=4080.000000,Z=0.000000"
+          ]
+        },
+        {
+          "hit": true,
+          "point": [
+            "X=17900.000000,Y=4480.000000,Z=0.000000"
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Capsule sweeps and ground traces are not a natural walking test. Genesis needs a roughly22cm threshold step; sweep passes at capsule center120cm.",
+    "Door meshes remain static; no automatic opening or button interaction implemented.",
+    "Reflection-capture rebuild and VSM overlapping-light warnings remain unresolved; no warning suppression or global budget increase.",
+    "Existing BuildingSandbox.blend is the original7431-placement layout. Updated scene.json has5522 placements; regenerate a new blend or pull current actors before pushing old placements.",
+    "Owner requested editor closure after saved changes; no further native editor operations."
+  ],
+  "hologram_inspection": "MI_Hologram_01 exposes Emissive_1/2/3 textures plus scrolling/period controls; several Goliath screens also expose replaceable layers. Actual video/live UI requires separate setup."
+}

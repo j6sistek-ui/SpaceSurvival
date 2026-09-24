@@ -18,28 +18,61 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-cooked = re.findall(r'^\+DirectoriesToAlwaysCook=\(Path="([^"]+)"\)',
-                    (ROOT / "Config/DefaultGame.ini").read_text(encoding="utf-8"), re.MULTILINE)
-if not cooked:
-    raise SystemExit("FAIL: Config/DefaultGame.ini declares no cook directories")
 
-referenced = {}
-for source in sorted((ROOT / "Source").rglob("*.cpp")) + sorted((ROOT / "Source").rglob("*.h")):
-    exempt = False
-    for line in source.read_text(encoding="utf-8").splitlines():
-        if "NOTCOOKED-BEGIN" in line:
-            exempt = True
-        elif "NOTCOOKED-END" in line:
-            exempt = False
-        elif not exempt:
-            for found in re.findall(r'"(/Game/[A-Za-z0-9_/.\-]+)"', line):
-                # A trailing slash is a directory prefix used for matching, not an asset being loaded.
-                if not found.endswith("/"):
-                    referenced.setdefault(found, source.name)
 
-missing = {path: where for path, where in referenced.items()
-           if not any(path == root or path.startswith(root + "/") for root in cooked)}
-print(f"{len(cooked)} cook roots; {len(referenced)} string-loaded paths; {len(missing)} not covered.")
-for path in sorted(missing):
-    print(f"  NOT COOKED  {path}   ({missing[path]})")
-sys.exit(1 if missing else 0)
+def cook_rules(text):
+    """Read explicit directory rules and nonrecursive, exact primary-asset exclusions."""
+    cooked = re.findall(r'^\+DirectoriesToAlwaysCook=\(Path="([^"]+)"\)', text, re.MULTILINE)
+    never = re.findall(r'^\+DirectoriesToNeverCook=\(Path="([^"]+)"\)', text, re.MULTILINE)
+    exact = set()
+    for line in text.splitlines():
+        if line.startswith("+PrimaryAssetTypesToScan=") and "CookRule=NeverCook" in line:
+            if "bApplyRecursively=False" not in line or "Directories=()" not in line:
+                raise ValueError("Coverage checker requires exact, nonrecursive primary-asset exclusions")
+            assets = re.search(r'SpecificAssets=\((.*?)\),Rules=', line)
+            if not assets:
+                raise ValueError("NeverCook rule has no explicit SpecificAssets list")
+            exact.update(path.split(".", 1)[0] for path in re.findall(r'"([^"]+)"', assets[1]))
+    return cooked, never, exact
+
+
+def is_covered(path, cooked, never, exact):
+    package = path.split(".", 1)[0].casefold()
+
+    def beneath(root):
+        root = root.casefold().rstrip("/")
+        return package == root or package.startswith(root + "/")
+
+    return (package not in {p.casefold() for p in exact}
+            and not any(beneath(root) for root in never)
+            and any(beneath(root) for root in cooked))
+
+
+def main():
+    cooked, never, exact = cook_rules((ROOT / "Config/DefaultGame.ini").read_text(encoding="utf-8"))
+    if not cooked:
+        raise SystemExit("FAIL: Config/DefaultGame.ini declares no cook directories")
+    referenced = {}
+    for source in sorted((ROOT / "Source").rglob("*.cpp")) + sorted((ROOT / "Source").rglob("*.h")):
+        exempt = False
+        for line in source.read_text(encoding="utf-8").splitlines():
+            if "NOTCOOKED-BEGIN" in line:
+                exempt = True
+            elif "NOTCOOKED-END" in line:
+                exempt = False
+            elif not exempt:
+                for found in re.findall(r'"(/Game/[A-Za-z0-9_/.\-]+)"', line):
+                    # A trailing slash is a matching prefix, not an asset being loaded.
+                    if not found.endswith("/"):
+                        referenced.setdefault(found, source.name)
+    missing = {path: where for path, where in referenced.items()
+               if not is_covered(path, cooked, never, exact)}
+    print(f"{len(cooked)} cook roots; {len(never)} excluded directories; {len(exact)} excluded packages; "
+          f"{len(referenced)} string-loaded paths; {len(missing)} not covered.")
+    for path in sorted(missing):
+        print(f"  NOT COOKED  {path}   ({missing[path]})")
+    return 1 if missing else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -36,9 +36,18 @@ public:
     bool PersistDeath();
     bool DiscardSliceRun();
     bool InvalidateSuspend();
+    /** Practice starts only from home, with no live survival run to lose on quit. */
+    bool BeginFreeFlight(SS::Ship Ship, SS::Weapon Weapon);
+    bool EndFreeFlight();
+    bool IsFreeFlight() const
+    {
+        return SurvivalBeforeFreeFlight.IsSet();
+    }
     void ApplySettings();
 
 private:
+    TOptional<SS::Session> SurvivalBeforeFreeFlight;
+    bool RejectFreeFlightSave();
     bool WriteDomain(const FString &Slot, const std::string &Payload, bool Valid = true);
     bool ReadDomain(const FString &Slot, std::string &Payload) const;
 };

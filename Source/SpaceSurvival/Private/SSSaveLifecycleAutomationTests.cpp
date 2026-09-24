@@ -183,6 +183,18 @@ struct FSSLifecycleIsolation
             Object->SetBoolField(TEXT("discardedCheckpointUnavailable"), true);
             Object->SetBoolField(TEXT("noDeathProgressionAwarded"), true);
         }
+        if (Phase == TEXT("FreeFlight"))
+        {
+            Object->SetBoolField(TEXT("practiceWritesRejected"), true);
+            Object->SetBoolField(TEXT("accountAndCheckpointBytesPreserved"), true);
+            Object->SetBoolField(TEXT("practiceSettingsPersisted"), true);
+            Object->SetBoolField(TEXT("survivalSessionRestored"), true);
+        }
+        if (Phase == TEXT("FreshAfterFreeFlight"))
+        {
+            Object->SetBoolField(TEXT("originalCheckpointResumedOnce"), true);
+            Object->SetBoolField(TEXT("practiceProgressAbsent"), true);
+        }
         if (Phase == TEXT("FailedDiscardStation2") || Phase == TEXT("DiscardStation2") ||
             Phase == TEXT("FreshAfterDiscard"))
             Object->SetStringField(TEXT("evidenceType"), TEXT("STATION2_DISCARD_AUTOMATION"));
@@ -350,6 +362,8 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
     }
     const FString Prior = (Phase == TEXT("Suspend") || Phase == TEXT("SeedCorruptAccount") || PreparedWave != 0)
                               ? TEXT("Preflight")
+                          : Phase == TEXT("FreeFlight")                ? TEXT("Suspend")
+                          : Phase == TEXT("FreshAfterFreeFlight")      ? TEXT("FreeFlight")
                           : Phase == TEXT("FailedDiscardStation2")     ? TEXT("Suspend")
                           : Phase == TEXT("DiscardStation2")           ? TEXT("FailedDiscardStation2")
                           : Phase == TEXT("FreshAfterDiscard")         ? TEXT("DiscardStation2")
@@ -444,6 +458,86 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
     if (!TestFalse(TEXT("Isolated account initializes without a storage error"), Instance->AccountStorageBlocked))
         return false;
     const std::string RunId = "lifecycle-" + std::string(TCHAR_TO_UTF8(*Isolation.Token));
+    if (Phase == TEXT("FreeFlight") || Phase == TEXT("FreshAfterFreeFlight"))
+    {
+        if (!TestTrue(TEXT("Practice storage test requires explicit harness mode"),
+                      FParse::Param(FCommandLine::Get(), TEXT("SSFreeFlightIsolation"))))
+            return false;
+        TestEqual(TEXT("A fresh process retains the survival account, without practice progression"),
+                  FString(UTF8_TO_TCHAR(SS::EncodeAccount(Session.account).c_str())),
+                  Previous->GetStringField(TEXT("accountPayload")));
+        TestTrue(TEXT("Original suspended survival run remains available"), Instance->HasSuspendedRun());
+        if (Phase == TEXT("FreshAfterFreeFlight"))
+        {
+            TestEqual(TEXT("Practice settings alone survived the fresh process"),
+                      FString(UTF8_TO_TCHAR(SS::EncodeSettings(Session.settings).c_str())),
+                      Previous->GetStringField(TEXT("settingsPayload")));
+            TestTrue(TEXT("Original survival checkpoint still resumes normally"), Instance->ResumeRun());
+            TestEqual(TEXT("Resume restores the original survival identity"),
+                      FString(UTF8_TO_TCHAR(Session.run.id.c_str())), FString(UTF8_TO_TCHAR(RunId.c_str())));
+            TestTrue(TEXT("The original station transaction state survives practice"),
+                     Session.run.phase == SS::Phase::Station && Session.run.wave == 5 && Session.run.pendingReward);
+            TestFalse(TEXT("Checkpoint is consumed once after the normal resume"), Instance->HasSuspendedRun());
+            return Isolation.Receipt(Phase, *this, Instance);
+        }
+        const SS::Session Original = Session;
+        const FString SuspendPath = Isolation.Saved / TEXT("SaveGames/SS_Suspend_v1.sav");
+        TArray<uint8> AccountBefore, SuspendBefore;
+        if (!TestTrue(TEXT("Read original isolated survival account and checkpoint bytes"),
+                      FFileHelper::LoadFileToArray(AccountBefore, *AccountPath) &&
+                          FFileHelper::LoadFileToArray(SuspendBefore, *SuspendPath)))
+            return false;
+        Session.run.active = true;
+        Session.run.phase = SS::Phase::Station;
+        const std::string ActiveRun = SS::EncodeRun(Session.run);
+        TestFalse(TEXT("Practice cannot replace an active station survival run"),
+                  Instance->BeginFreeFlight(SS::Ship::Starter, SS::Weapon::RapidLaser));
+        TestTrue(TEXT("Rejected active entry leaves survival state intact and explains the reason"),
+                 !Instance->IsFreeFlight() && SS::EncodeRun(Session.run) == ActiveRun &&
+                     Instance->LastSaveError.Contains(TEXT("home")));
+        Session = Original;
+        TestTrue(TEXT("Practice starts from home without consuming the suspended run"),
+                 Instance->BeginFreeFlight(SS::Ship::Starter, SS::Weapon::RapidLaser));
+        TestTrue(TEXT("Practice uses a distinct active in-memory run"),
+                 Instance->IsFreeFlight() && Session.run.active && Session.run.id.rfind("practice-", 0) == 0);
+        TestFalse(TEXT("Nested practice cannot replace its survival snapshot"),
+                  Instance->BeginFreeFlight(SS::Ship::Starter, SS::Weapon::RapidLaser));
+        Session.run.phase = SS::Phase::Station;
+        TestFalse(TEXT("Practice cannot save a station checkpoint"), Instance->SuspendRun());
+        TestFalse(TEXT("Practice cannot consume the existing survival checkpoint"), Instance->InvalidateSuspend());
+        TestFalse(TEXT("Practice cannot resume over its temporary session"), Instance->ResumeRun());
+        Session.account.hero = 5;
+        Session.account.paint[0] = 6;
+        Session.run.phase = SS::Phase::Approach;
+        for (int32 Kill = 0; Kill < 20; ++Kill)
+            Session.RecordKill();
+        Session.EndRun();
+        TestTrue(TEXT("Fixture exercises actual temporary death progression"),
+                 Session.run.kills == 20 && Session.account.xp > Original.account.xp &&
+                     Session.account.runs == Original.account.runs + 1 && Session.run.xpAwarded);
+        TestFalse(TEXT("Practice progression cannot persist account XP or choices"), Instance->PersistAccount());
+        TestFalse(TEXT("Practice death cannot persist or invalidate survival"), Instance->PersistDeath());
+        TestFalse(TEXT("Practice cannot discard the survival slice checkpoint"), Instance->DiscardSliceRun());
+        TestTrue(TEXT("Storage rejection identifies practice protection instead of pretending success"),
+                 Instance->LastSaveError.Contains(TEXT("practice")));
+        Session.settings.mouseSensitivity = 1.35;
+        TestTrue(TEXT("Real settings write remains available in practice"), Instance->PersistSettings());
+        const std::string PracticeSettings = SS::EncodeSettings(Session.settings);
+        TestTrue(TEXT("Practice returns to the preserved survival session"), Instance->EndFreeFlight());
+        TestTrue(TEXT("Original account and inactive home run are restored exactly"),
+                 !Instance->IsFreeFlight() &&
+                     SS::EncodeAccount(Session.account) == SS::EncodeAccount(Original.account) &&
+                     SS::EncodeRun(Session.run) == SS::EncodeRun(Original.run));
+        TestTrue(TEXT("Changed input settings survive returning home"),
+                 SS::EncodeSettings(Session.settings) == PracticeSettings);
+        TArray<uint8> AccountAfter, SuspendAfter;
+        TestTrue(TEXT("All practice operations preserved the exact original account and checkpoint bytes"),
+                 FFileHelper::LoadFileToArray(AccountAfter, *AccountPath) && AccountAfter == AccountBefore &&
+                     FFileHelper::LoadFileToArray(SuspendAfter, *SuspendPath) && SuspendAfter == SuspendBefore);
+        TestTrue(TEXT("Suspended survival remains available after returning home"), Instance->HasSuspendedRun());
+        TestFalse(TEXT("A second practice exit cannot restore a stale snapshot"), Instance->EndFreeFlight());
+        return Isolation.Receipt(Phase, *this, Instance);
+    }
     if (DiscardPhase)
     {
         const auto Seed = Isolation.Read(TEXT("Suspend"), *this);

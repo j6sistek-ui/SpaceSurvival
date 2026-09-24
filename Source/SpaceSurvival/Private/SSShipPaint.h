@@ -3,6 +3,7 @@
 #include "Domain/SurvivalCore.h"
 
 class UStaticMeshComponent;
+class ASSShip;
 
 // Private to the module: nothing outside it paints a hull.
 // The paint bay: ten flat finishes over four hull sections, kept on the account. A section is found from the
@@ -22,6 +23,9 @@ const TCHAR *ColourName(int32 Colour);
 FLinearColor Colour(int32 Colour);
 // The section a material belongs to from its name, or INDEX_NONE for surfaces that are never painted.
 int32 SectionForMaterial(const FString &MaterialName);
+// The active visible hull must support the selected section. A null ship denotes the legacy indoor
+// display. The supplied Phoenix materials expose no safe colour controls, so its factory finish stays intact.
+bool SupportsSection(const ASSShip *Ship, int32 Section, SS::Ship LegacyBayShip = SS::Ship::Starter);
 // Repaints a hull from the account. A painted section gets a dynamic instance of the mesh's own material with its
 // colour parameter set; everything else returns to the mesh's default material, so repainting is idempotent.
 void Apply(UStaticMeshComponent *Hull, const SS::Account &Account);

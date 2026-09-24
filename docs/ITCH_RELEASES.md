@@ -9,6 +9,14 @@ PR, CI run, or prepare command uploads automatically. Source PRs remain unmerged
 - First upload verified: upload 19226459, build 1975861, version 0.1.14-alpha; page displays 471 MB.
 - Phase 1 remains PARTIAL. Distribution readiness does not establish gameplay acceptance.
 
+## September22:0.1.21-alpha.1 published
+
+The owner explicitly approved publishing the mixed-field baseline and later asked that a star-visibility concern be logged without interrupting upload. Official butler validation and dry-run passed; upload completed and fresh status confirms **windows-alpha build2003058 READY**, version0.1.21-alpha.1, upload19226459, replacing1993461. The patch is2.17GiB, with51.45percent old-data reuse. Payload51files/5223860220bytes; source4fd02930dbc0e13fb52aca4626e1147a4c8d60b8. [Published receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json) and [package receipt](validation/2026-09-22-itch-0.1.21-alpha.1-package.json).
+
+Includes responsive left-stick nose steering, bumper dash/bank/fast roll, persistent mixed physical scenery, approved UI, controller-stick menu navigation and separated HUD messages. Free Flight remains unrestricted. Characters and future Director chase/PvP work are deferred. Package8/0.1.21-alpha was rejected for density; its partial upload was stopped and was never the ready channel version.
+
+Source PR59 stays draft/unmerged. The failed non-evasive29s survival capture, physical-controller feel, stars, boarding, natural play and performance limits remain in KNOWN_ISSUES. Server-ready verification is not a clean-PC installation or full-game acceptance test.
+
 ## Owner workflow
 
 Run from the repository root with existing Python 3.11+ and portable official butler.

@@ -6,6 +6,8 @@
 #include "SSGameInstance.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
+#include "SSFlightHull.h"
+#include "PhysicsEngine/BodySetup.h"
 #include "SSShipPresentation.h"
 #include "SSDistantAsteroids.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -34,11 +36,24 @@ namespace
 /** Real pawn/component ticks, without the Director, user input, or disk-backed GameInstance Init. */
 struct FSSFlightWorld
 {
+    explicit FSSFlightWorld(bool bClassicHull = false) : bRestoreCommandLine(bClassicHull)
+    {
+        // This opt-in fixture uses the existing public launch option. Keep the
+        // production default unchanged and restore every character on all exits.
+        if (bRestoreCommandLine)
+        {
+            SavedCommandLine = FCommandLine::Get();
+            FCommandLine::Append(TEXT(" -SSClassic"));
+        }
+    }
+
     UWorld *World = nullptr;
     UWorld *PreviousWorld = GWorld;
     USSGameInstance *Instance = nullptr;
     ASSShip *Ship = nullptr;
     APlayerController *Controller = nullptr;
+    bool bRestoreCommandLine = false;
+    FString SavedCommandLine;
 
     bool Initialize(FAutomationTestBase &Test, SS::Weapon Weapon = SS::Weapon::RapidLaser,
                     SS::Ship ShipKind = SS::Ship::Starter)
@@ -75,10 +90,10 @@ struct FSSFlightWorld
         // Match the production GameMode's content-to-domain setup, without running that GameMode.
         Tuning.baseHull = Content->BaseHull;
         Tuning.baseShield = Content->BaseShield;
-        Tuning.baseSpeed = Content->CruiseSpeed;
+        Tuning.baseSpeed = Content->FlightCruiseSpeed();
         Tuning.baseManeuver = Content->LateralSpeed;
         Tuning.baseResponse = Content->Response;
-        Tuning.baseAcceleration = Content->Acceleration;
+        Tuning.baseAcceleration = Content->FlightAcceleration();
         Tuning.baseWeaponDamage = Content->BaseWeaponDamage;
         if (!Test.TestTrue(TEXT("Start fresh in-memory flight"),
                            Instance->Session.StartRun("flight-adapter-fixture", ShipKind, Weapon)))
@@ -103,6 +118,18 @@ struct FSSFlightWorld
     {
         for (int32 Index = 0; Index < Count; ++Index)
             Step(DeltaSeconds);
+    }
+
+    // A visible target under the HUD reticle, constructed from the camera independently of
+    // AimDirection. Putting targets on AimDirection itself previously concealed parallax misses.
+    FVector ReticleTarget(float MuzzleRange) const
+    {
+        const FVector Eye = Ship->Camera->GetComponentLocation();
+        const FVector Ray = (Ship->CrosshairWorldPoint() - Eye).GetSafeNormal();
+        const FVector Delta = Ship->MuzzleWorldPosition() - Eye;
+        const double Along = FVector::DotProduct(Delta, Ray);
+        const double AcrossSquared = FMath::Max(0., Delta.SizeSquared() - Along * Along);
+        return Eye + Ray * (Along + FMath::Sqrt(FMath::Max(0., double(MuzzleRange) * MuzzleRange - AcrossSquared)));
     }
 
     ASSWorldBody *Target(FVector Offset)
@@ -136,6 +163,8 @@ struct FSSFlightWorld
         }
         if (Instance)
             Instance->RemoveFromRoot();
+        if (bRestoreCommandLine)
+            FCommandLine::Set(*SavedCommandLine);
     }
 };
 
@@ -159,8 +188,13 @@ bool RecordFlight(FAutomationTestBase &Test, int32 Hertz, TArray<FSSFlightSample
         else if (Second < 3)
             Fixture.Ship->SetFlightInput(FVector2D(.65, .3), FVector2D(.25, .2), 1.f, false, false);
         else
-            Fixture.Ship->SetFlightInput(FVector2D(-.3, -.15), FVector2D(-.2, .1), -.5f, false, false);
+            // Throttle is absolute power: half power remains driven; zero coasts.
+            Fixture.Ship->SetFlightInput(FVector2D(-.3, -.15), FVector2D(-.2, .1), .5f, false, false);
         Fixture.Frames(Hertz, 1.f / Hertz);
+        if (Second == 0)
+            Test.TestTrue(FString::Printf(TEXT("%d Hz full normal power holds configured cruise without boost"), Hertz),
+                          FMath::Abs(Fixture.Ship->GetVelocity().X - Fixture.Instance->Session.Stats().speed) < 5. &&
+                              !Fixture.Instance->Session.run.boosting);
         Samples.Add(
             {Fixture.Ship->GetActorLocation() - Origin, Fixture.Ship->GetVelocity(), Fixture.Ship->GetActorRotation()});
     }
@@ -200,8 +234,12 @@ bool FSSShipPresentationSelection::RunTest(const FString &)
         TestTrue(Label + TEXT(" display hull and pilot cannot add blocking collision"),
                  Hull->GetCollisionEnabled() == ECollisionEnabled::NoCollision &&
                      Pilot->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
-        TestEqual(Label + TEXT(" only the private closed starter hides its flight pilot"), Pilot->IsVisible(),
-                  !(Index == 0 && HasPrivateStarter));
+        const bool bPhoenix = ASSShip::SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix;
+        TestEqual(Label + TEXT(" the selected closed Phoenix hides the surrogate pilot for either stat selection"),
+                  Pilot->IsVisible(), !bPhoenix && !(Index == 0 && HasPrivateStarter));
+        if (bPhoenix)
+            TestTrue(Label + TEXT(" the actual Phoenix hull is visible while the static surrogate is hidden"),
+                     Fixture.Ship->SkeletalHull && Fixture.Ship->SkeletalHull->IsVisible() && !Hull->IsVisible());
         // The mount is the seated hero's own measurement of this cushion, not a constant of the ship, and
         // the ship's whole job with it is to apply it unchanged. Each hero's is written out here rather
         // than read back off the definition the ship just used, which would only assert that the ship had
@@ -309,7 +347,9 @@ bool FSSShipPresentationSelection::RunTest(const FString &)
         auto *Station = Fixture.World->SpawnActor<ASSStation>();
         if (!TestNotNull(Label + TEXT(" creates an actual station actor"), Station))
             return false;
-        // Exercise the home hangar and station construction paths once each.
+        // Retained native bay-display regression. The functional reset uses the actual exterior
+        // player ship and is covered separately by StationResetCollision/StationDepartureBoundary.
+        Station->bUseEditableLayout = false;
         Station->BuildHub(Index == 0);
         TArray<UStaticMeshComponent *> Components;
         Station->GetComponents<UStaticMeshComponent>(Components);
@@ -363,7 +403,6 @@ bool FSSFlightFrameRates::RunTest(const FString &)
     AddInfo(FString::Printf(TEXT("Hull under test: %s (position %.0f cm, velocity %.0f cm/s, heading %.2f deg)"),
                             *Tolerances.Id.ToString(), Tolerances.FrameRatePositionCm, Tolerances.FrameRateVelocityCmS,
                             Tolerances.FrameRateHeadingDeg));
-    TestTrue(TEXT("Throttle accelerates the real pawn above cruise"), Reference[0].Velocity.X > 2800.f);
     TestTrue(TEXT("Steer and strafe produce substantial lateral and vertical travel"),
              Reference[2].Position.Y > 1000.f && Reference[2].Position.Z > 500.f);
     for (int32 I = 1; I < Reference.Num(); ++I)
@@ -446,47 +485,23 @@ bool FSSFlightBoostBrake::RunTest(const FString &)
              Fixture.Ship->GetActorLocation().X - Origin.X > Cruise * 1.2);
     Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
     Fixture.Frames(60);
-    TestTrue(TEXT("Release recharges boost while the pawn returns toward cruise"),
-             !Run.boosting && Run.boost > DrainedBoost && Fixture.Ship->GetVelocity().Size() < BoostSpeed * .8);
-
-    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, -1.f, false, true);
-    const double Minimum = Fixture.Ship->Tuning->MinimumSpeed;
-    double LowestForwardSpeed = Fixture.Ship->GetVelocity().X;
-    for (int32 Index = 0; Index < 150; ++Index)
-    {
-        Fixture.Step();
-        LowestForwardSpeed = FMath::Min(LowestForwardSpeed, Fixture.Ship->GetVelocity().X);
-    }
-    TestTrue(TEXT("Held brake builds heat and physically slows to the nonzero minimum"),
-             Run.braking && Run.brakeHeat > 60.0 && Fixture.Ship->GetVelocity().X <= Minimum + 5.f);
+    TestTrue(TEXT("Release recharges boost while an engine-off ship coasts"),
+             !Run.boosting && Run.boost > DrainedBoost &&
+                 FMath::Abs(Fixture.Ship->GetVelocity().Size() - BoostSpeed) < 5.f);
+    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, true);
+    Fixture.Frames(150);
+    TestTrue(TEXT("Held brake builds heat and slows the ship"),
+             Run.braking && Run.brakeHeat > 60.0 && Fixture.Ship->GetVelocity().Size() < BoostSpeed * .5);
     for (int32 Index = 0; Index < 120 && !Run.brakeOverheated; ++Index)
-    {
         Fixture.Step();
-        LowestForwardSpeed = FMath::Min(LowestForwardSpeed, Fixture.Ship->GetVelocity().X);
-    }
-    AddInfo(FString::Printf(TEXT("Brake floor %.1f cm/s; lowest forward speed reached %.1f (undershoot %.1f)"), Minimum,
-                            LowestForwardSpeed, Minimum - LowestForwardSpeed));
-    // The claim in the name, asserted as the name states it, with no slack for any hull: a held brake slows
-    // the ship and never brings it to a stop or pushes it backwards. This is the WAVE-zone rule - per
-    // GAME_SCOPE section 6b the station zone deliberately lifts it, where stopping and a slow reverse on a
-    // held brake are the specification - so when zones exist this assertion belongs to the wave and its
-    // opposite belongs to the station.
-    TestTrue(TEXT("Braking never stops or reverses forward travel"), LowestForwardSpeed > 0.);
-    // And separately, how closely this hull settles onto the floor it was told to hold. A kinematic hull
-    // resolves speed by assignment and lands on 1000 exactly; a force drive decelerates onto it and dips
-    // under before settling - 924.1 measured on the Phoenix, 7.6 percent low, nowhere near stopping. That
-    // is what deceleration does, not a ship disobeying, so it is the hull's own figure.
-    const FSSHullDefinition BrakeHull(ASSShip::SelectedHullIdentity());
-    TestTrue(FString::Printf(TEXT("A held brake settles onto the floor within %.0f cm/s"),
-                             BrakeHull.BrakeFloorUndershootCmS),
-             LowestForwardSpeed >= Minimum - BrakeHull.BrakeFloorUndershootCmS);
     TestTrue(TEXT("Continued braking overheats and releases the brake"), Run.brakeOverheated && !Run.braking);
+    const FVector CoastingVelocity = Fixture.Ship->GetVelocity();
     Fixture.Frames(30);
-    TestTrue(TEXT("Overheat physically restores speed despite the held brake"),
-             !Run.braking && Fixture.Ship->GetVelocity().X > Minimum * 1.25);
-    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, -1.f, false, false);
+    TestTrue(TEXT("Brake overheat does not turn the released engine back on"),
+             !Run.braking && FVector::Distance(Fixture.Ship->GetVelocity(), CoastingVelocity) < 5.f);
+    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
     Fixture.Frames(240);
-    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, -1.f, false, true);
+    Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, true);
     Fixture.Step();
     TestTrue(TEXT("Cooling permits braking again"), !Run.brakeOverheated && Run.braking);
     return true;
@@ -536,37 +551,63 @@ bool FSSFlightDodgeCollision::RunTest(const FString &)
     Box->SetCollisionObjectType(ECC_WorldStatic);
     Box->SetCollisionResponseToAllChannels(ECR_Block);
     Box->RegisterComponent();
-    Wall->SetActorLocation(Fixture.Ship->GetActorLocation() + FVector(0, 200, 0));
+    // AggGeom.CalcAABB rotates each convex's local bounding box. Its corners
+    // are not hull vertices, so collision-induced rotation can move that broad
+    // box through the wall while the actual convex remains clear. Measure the
+    // support plane directly from the profile's transformed vertices instead.
+    const auto PositiveYSupport = [](ASSShip *Ship)
+    {
+        double Support = Ship->GetActorLocation().Y + Ship->Collision->GetScaledSphereRadius();
+        if (auto *Compound = Ship->FindComponentByClass<USSFlightHullComponent>())
+            if (const UBodySetup *Body = Compound->GetBodySetup())
+                for (const FKConvexElem &Convex : Body->AggGeom.ConvexElems)
+                {
+                    const FTransform ToWorld = Convex.GetTransform() * Compound->GetComponentTransform();
+                    for (const FVector &Vertex : Convex.VertexData)
+                        Support = FMath::Max(Support, ToWorld.TransformPosition(Vertex).Y);
+                }
+        return Support;
+    };
+    const double InitialSupport = PositiveYSupport(Fixture.Ship);
+    // Preserve the classic fixture's 85 cm approach gap, measured from the actual
+    // hull surface. Y=200 started inside the new compound's wing and engine.
+    const double WallFace = InitialSupport + 85.f;
+    Wall->SetActorLocation(
+        FVector(Fixture.Ship->GetActorLocation().X, WallFace + 10.f, Fixture.Ship->GetActorLocation().Z));
     const double ShieldBefore = Fixture.Instance->Session.run.shield;
     Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D(1, 0), 0.f, false, false);
     Fixture.Ship->RequestDodge();
     // Track the furthest the ship gets rather than where it comes to rest. Where it ends up is the drive's
     // business - a swept kinematic move stops dead against the face, a simulating body is resolved by the
     // physics scene and rebounds off it - and neither is the claim being made here.
-    double Furthest = Fixture.Ship->GetActorLocation().Y;
+    double FurthestHullSurface = InitialSupport;
+    double FurthestBroadBounds = InitialSupport;
+    FRotator ContactRotation = Fixture.Ship->GetActorRotation();
     for (int32 Frame = 0; Frame < 6; ++Frame)
     {
         Fixture.Frames(1);
-        Furthest = FMath::Max(Furthest, Fixture.Ship->GetActorLocation().Y);
+        const double Surface = PositiveYSupport(Fixture.Ship);
+        if (Surface > FurthestHullSurface)
+        {
+            FurthestHullSurface = Surface;
+            ContactRotation = Fixture.Ship->GetActorRotation();
+        }
+        FurthestBroadBounds =
+            FMath::Max(FurthestBroadBounds, Fixture.Ship->FlightHullBounds(Fixture.Ship->GetActorTransform()).Max.Y);
     }
-    // Where the wall stops the ship, worked out from the wall and the hull rather than written down. The
-    // face is 190 (placed at 200, ten thick) and a ship is held off it by its own flight collision, so the
-    // literal 86 this once read was the classic sphere's 105 cm radius spelled as a constant - a number
-    // that silently means something else the moment a hull is fitted with a different one.
-    const float WallFace = 200.f - 10.f;
-    const float Reach = ASSShip::FlightCollisionRadius();
     const FSSHullDefinition WallHull(ASSShip::SelectedHullIdentity());
-    AddInfo(FString::Printf(
-        TEXT("Dodge into the wall reached Y %.2f and came to rest at %.2f; face %.0f less a %.0f cm hull reach"),
-        Furthest, Fixture.Ship->GetActorLocation().Y, WallFace, Reach));
+    AddInfo(FString::Printf(TEXT("Dodge convex support Y %.2f; broad bounds Y %.2f; wall face %.2f; "
+                                 "contact gap %.2f cm; rotation %s"),
+                            FurthestHullSurface, FurthestBroadBounds, WallFace, WallFace - FurthestHullSurface,
+                            *ContactRotation.ToString()));
     // Both halves of "swept against it rather than through it", and both true of any drive: the ship is
     // carried all the way onto the wall, and it is not carried into or past it.
     // Never into it or past it, of any hull and with no allowance at all.
     TestTrue(TEXT("Dodge is swept against a blocking wall rather than tunnelling through it"),
-             Furthest <= WallFace - Reach + 1.f);
+             FurthestHullSurface <= WallFace + 1.f);
     // And carried all the way onto it, to within the standoff this hull's drive settles at.
     TestTrue(FString::Printf(TEXT("The wall is what stops the dodge, within %.0f cm"), WallHull.ContactStandoffCm),
-             Furthest >= WallFace - Reach - WallHull.ContactStandoffCm);
+             FurthestHullSurface >= WallFace - WallHull.ContactStandoffCm);
     TestTrue(TEXT("The physical impact still damages shield during dodge cooldown"),
              Fixture.Instance->Session.run.dodgeCooldown > 0.0 &&
                  Fixture.Instance->Session.run.shield < ShieldBefore - 1.0);
@@ -590,6 +631,8 @@ bool FSSImpactFrameRates::RunTest(const FString &)
         FSSFlightWorld Fixture;
         if (!Fixture.Initialize(*this))
             return false;
+        // Recovery means powered flight. Engine-off coasting deliberately retains an impact's momentum.
+        Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, false, false);
         auto *Body = Fixture.Target(FVector(0, 180, 0));
         if (!TestNotNull(TEXT("Create a real grazing asteroid contact"), Body))
             return false;
@@ -602,31 +645,9 @@ bool FSSImpactFrameRates::RunTest(const FString &)
         TestEqual(Label + TEXT(" routes a single 30-point impact through shield"), Fixture.Instance->Session.run.shield,
                   Shield - 30.0);
         const FVector Impulse = Fixture.Ship->GetVelocity() - Before;
-        // What this asserts: the contact shoved the ship outward, hard, and nothing else moved it.
-        //
-        // It used to spell "nothing else" as |Impulse.X| < 1 cm/s and a total under 601. Both are facts
-        // about a fixed-substep integrator sitting exactly on its own fixed point - the kinematic hull is
-        // seeded at precisely cruise, so Desired - Velocity is zero and the substep loop adds no
-        // longitudinal change at all. A force drive has no such fixed point: DriveShipCore feeds a trim
-        // ERROR to the thrusters every frame, so there is always some legitimate thrust inside the measured
-        // step, and at this game's 3200 cm/s^2 that is up to ~107 cm/s at 30 Hz. The old bound is not tight,
-        // it is unreachable in principle.
-        //
-        // So the allowance is one frame of THIS ship's own acceleration - a quantity both drives have, and
-        // which is ~0 for the kinematic hull because it is already at its target. The outward push and its
-        // dominance are unchanged, because those are the actual claim.
-        // The push is the right size, points outward, and is dominated by outward.
-        //
-        // It used to require |Impulse.X| < 1 cm/s, which is not a fact about impacts: it is a fact about a
-        // fixed-substep integrator seeded exactly at cruise, whose relative motion against an asteroid
-        // given that same velocity is nil, so the contact normal comes out exactly perpendicular. A force
-        // drive accelerates during the frame, a little relative drift accumulates, and the normal tilts -
-        // measured at .12 of the outward component at 144 Hz and .44 at 30 Hz, while the magnitude stayed
-        // exactly 600 cm/s at every rate. The shove is correct; its direction breathes with the frame.
-        //
-        // An earlier attempt allowed one frame of thrust here. That was the wrong mechanism - the tilt is
-        // geometric amplification of the drift, not the drift itself - and it failed by roughly 2.3x,
-        // which is how it got caught.
+        // Both bodies are sampled after physics. A co-moving side contact must
+        // produce the same outward velocity change at every rate; ordinary
+        // bounded thrust is the only permitted additional change in this step.
         const double ThrustPerFrame = double(Fixture.Instance->Session.Stats().acceleration) / Hertz;
         TestTrue(Label + TEXT(" causes an immediate bounded outward deflection"),
                  Impulse.Y < -450.f && Impulse.Size() <= 601.f + ThrustPerFrame &&
@@ -690,18 +711,8 @@ bool FSSImpactCrossing::RunTest(const FString &)
     const FSSHullDefinition Hull(ASSShip::SelectedHullIdentity());
     Fixture.Ship->AddActorWorldOffset(FVector(800, 0, 0));
     Body->Tick(.1f);
-    // A force drive needs one step before the push exists. ASSWorldBody::Tick calls ReceiveImpact, which on
-    // a kinematic hull writes the velocity member and is readable immediately - but on a simulating body it
-    // adds an impulse, and an impulse does nothing until physics runs. Without this the Phoenix measured a
-    // deflection of exactly (0, 0, 0) while still taking the damage: the shove had been issued and never
-    // integrated.
-    //
-    // Conditional, because stepping is not free for the other drive: a kinematic hull's Tick integrates
-    // velocity back toward its target, so the same step spends part of the deflection before it is read and
-    // the classic hull fails its own assertion. The step is an artifact of how an impulse becomes velocity,
-    // so it belongs only to the drive that needs it. Caught by the classic gate, which is what it is for.
-    if (Hull.Drive == ESSHullDrive::ForceSolver)
-        Fixture.Step(1.f / 240.f);
+    // Contact applies its velocity change immediately on either drive, so the
+    // next physics step starts with the impacted velocity and matching trim.
     const FVector Deflection = Fixture.Ship->GetVelocity() - Before;
     TestEqual(TEXT("Continuous crossing still applies exactly one kinetic hit"), Fixture.Instance->Session.run.shield,
               Shield - 30.0);
@@ -735,41 +746,14 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         // Deliberately nondefault damage also verifies Fire consumes the session's weapon stat.
         Fixture.Instance->Session.tuning.baseWeaponDamage = 10;
         Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
-        // Hold station for the three shots, because this suite is about what a weapon does to a target and
-        // not about what cruising does to a sight picture.
-        //
-        // A chase camera whose pitch differs from the direction of travel cannot keep a fixed point on its
-        // ray: flying level translates the lens level while the ray still points down, so the point slides
-        // off the reticle. The classic boom sits near the ship's axis, so travel and ray very nearly agree
-        // and the drift is invisible; the Phoenix looks 27 degrees down, and measured, a target 3866 cm
-        // ahead left the crosshair inside a quarter second - the first shot hit, the sight ray found nothing
-        // at all by the second. That is a camera dial worth knowing about, but it is not a weapon defect,
-        // and a weapon suite should not be the thing that reports it.
-        Fixture.Instance->Session.tuning.baseSpeed = 0;
-        // Settle the actual default chase view; do not flatten its pitch or use the aiming helper.
         Fixture.Frames(30);
-        // Where a target has to sit for this to be a shooting test at all, derived from the camera that is
-        // actually fitted instead of from a distance that only ever suited one of them. It stays ON the sight
-        // ray, because proving the shot converges from the muzzle onto the crosshair is the whole point of
-        // the suite - but it is placed a fixed reach beyond THE SHIP rather than beyond the lens.
-        //
-        // Camera height, pitch and arm length are per-hull dials and will be tuned further, so a constant
-        // measured from the lens stops meaning the same thing the moment one is turned. At a flat 5000 cm it
-        // put a target 3811 past the classic nose and 730 SHORT of the Phoenix's, at a muzzle sight dot of
-        // -0.29: behind the firing direction, where no correctly aimed shot could reach it.
-        const FVector CameraRay = Fixture.Ship->Camera->GetForwardVector();
-        const FVector Eye = Fixture.Ship->Camera->GetComponentLocation();
-        const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
-        const float ShipAlongRay = FMath::Max(0.f, FVector::DotProduct(Muzzle - Eye, CameraRay));
-        const float EngagementReach = 3800.f;
-        // The sight is traced from the lens, so a camera dialled far enough back could put a target that is
-        // merely in front of the hull outside weapon range. Say that in those words if it ever happens,
-        // rather than letting it arrive later disguised as a missed shot.
-        TestTrue(TEXT("A target in front of the hull is within weapon range"),
-                 ShipAlongRay + EngagementReach < Fixture.Ship->Tuning->WeaponRange);
-        // On the line the ship is actually aiming down, which is the reticle's line and no longer the
-        // lens's. ShipAlongRay survives only in the range check above, which is still about the sight trace.
-        const FVector TargetPosition = Muzzle + Fixture.Ship->AimDirection() * EngagementReach;
+        const FVector Muzzle = Fixture.Ship->MuzzleWorldPosition();
+        const FVector CameraRay =
+            (Fixture.Ship->CrosshairWorldPoint() - Fixture.Ship->Camera->GetComponentLocation()).GetSafeNormal();
+        const FVector TargetPosition = Fixture.ReticleTarget(3800.f);
+        TestTrue(TEXT("Target visibly lies under the projected reticle"),
+                 FVector::DotProduct((TargetPosition - Fixture.Ship->Camera->GetComponentLocation()).GetSafeNormal(),
+                                     CameraRay) > .99999);
         auto *Target = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation());
         auto *Miss = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation() +
                                     Fixture.Ship->Camera->GetRightVector() * 1200.f);
@@ -789,9 +773,9 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
         // between the three of them and only the third one is asserted.
         auto ReportShot = [&](const TCHAR *When)
         {
-            const FVector Now = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
+            const FVector Now = Fixture.Ship->MuzzleWorldPosition();
             const FVector Lens = Fixture.Ship->Camera->GetComponentLocation();
-            const FVector Sight = Fixture.Ship->Camera->GetForwardVector();
+            const FVector Sight = (Fixture.Ship->CrosshairWorldPoint() - Lens).GetSafeNormal();
             FHitResult SightHit;
             FCollisionQueryParams Query(SCENE_QUERY_STAT(SSTestAim), false, Fixture.Ship);
             Fixture.Ship->GetWorld()->LineTraceSingleByChannel(
@@ -823,6 +807,9 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
             // remaining two shots leave on one frame, so all three are fired at one sight picture and the
             // claim under test is the damage they add up to rather than how far the ship flew between them.
             Fixture.Ship->Tuning->LaserInterval = 0.f;
+            // The live ship has moved since the first shot; preserve the same target's remaining
+            // health but put it under the current reticle before testing the next two damage hits.
+            Target->SetActorLocation(Fixture.ReticleTarget(3800.f));
             ReportShot(TEXT("Shot 2"));
             Fixture.Ship->Fire();
             TestFalse(TEXT("Two tuned laser hits leave the target alive"), Target->IsActorBeingDestroyed());
@@ -843,6 +830,55 @@ bool FSSFlightManualWeapons::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSCrosshairTargetDamage, "SpaceSurvival.Flight.CrosshairTargetDamage",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSCrosshairTargetDamage::RunTest(const FString &)
+{
+    for (SS::Weapon Weapon : {SS::Weapon::RapidLaser, SS::Weapon::HeavyCannon})
+        for (ESSWorldKind Kind : {ESSWorldKind::Pursuer, ESSWorldKind::Flanker, ESSWorldKind::MediumAsteroid,
+                                  ESSWorldKind::MassiveAsteroid})
+        {
+            FSSFlightWorld Fixture;
+            if (!Fixture.Initialize(*this, Weapon))
+                return false;
+            Fixture.Instance->Session.tuning.baseWeaponDamage = 500;
+            Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
+            Fixture.Frames(30);
+            const FVector Position = Fixture.ReticleTarget(6000.f);
+            const bool Enemy = Kind == ESSWorldKind::Pursuer || Kind == ESSWorldKind::Flanker;
+            ASSWorldBody *Target = Enemy ? Fixture.World->SpawnActor<ASSEnemy>(Position, FRotator::ZeroRotator)
+                                         : Fixture.World->SpawnActor<ASSWorldBody>(Position, FRotator::ZeroRotator);
+            if (!TestNotNull(TEXT("Spawn a native combat target under the actual HUD reticle"), Target))
+                return false;
+            Target->Configure(Kind, 120.f, 0.f);
+            Target->SetActorTickEnabled(false);
+            Fixture.Ship->SoftTarget = nullptr;
+            const bool Destructible = Kind != ESSWorldKind::MassiveAsteroid;
+            const FString Label = FString::Printf(TEXT("weapon=%d kind=%d"), int32(Weapon), int32(Kind));
+            TestFalse(Label + TEXT(" starts without a firing presentation pulse"), Fixture.Ship->IsFiring());
+            Fixture.Ship->Fire();
+            TestTrue(Label + TEXT(" manual trigger starts its firing presentation pulse"), Fixture.Ship->IsFiring());
+            ASSProjectile *Round = nullptr;
+            for (TActorIterator<ASSProjectile> It(Fixture.World); It; ++It)
+                Round = *It;
+            if (!TestNotNull(Label + TEXT(" creates the visible shot"), Round))
+                return false;
+            TestTrue(Label + TEXT(" visible shot starts at the authoritative hull muzzle"),
+                     Round->GetActorLocation().Equals(Fixture.Ship->MuzzleWorldPosition(), .01));
+            if (Weapon == SS::Weapon::HeavyCannon)
+            {
+                TestFalse(Label + TEXT(" cannon waits for physical projectile contact"),
+                          Target->IsActorBeingDestroyed());
+                // Test the actual sweep against a fixed target without enemy manoeuvres or ship travel
+                // changing this sight picture. Motion/hitch behaviour has its own existing suite.
+                Round->Tick(.5f);
+            }
+            TestEqual(Label + TEXT(" native damage defeats scoped targets while massive rock remains cover"),
+                      Target->IsActorBeingDestroyed(), Destructible);
+        }
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSWeaponRange, "SpaceSurvival.Flight.CannonRangeAndHitch",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSWeaponRange::RunTest(const FString &)
@@ -856,12 +892,9 @@ bool FSSWeaponRange::RunTest(const FString &)
             Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
             Fixture.Ship->Tuning->WeaponRange = 4000.f;
             Fixture.Frames(30);
-            const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
-            // Down the ship's own sight line. Reconstructing it from the camera was the same assumption the
-            // suite above made, and it stops being true the moment the reticle leaves screen centre.
-            const FVector Direction = Fixture.Ship->AimDirection();
+            const FVector Muzzle = Fixture.Ship->MuzzleWorldPosition();
             auto *Target =
-                Fixture.Target(Muzzle + Direction * (BeyondRange ? 4500.f : 3500.f) - Fixture.Ship->GetActorLocation());
+                Fixture.Target(Fixture.ReticleTarget(BeyondRange ? 4500.f : 3500.f) - Fixture.Ship->GetActorLocation());
             if (!TestNotNull(TEXT("Create isolated range target"), Target))
                 return false;
             Fixture.Ship->Fire();
@@ -897,9 +930,8 @@ bool FSSFlightMuzzleObstruction::RunTest(const FString &)
         Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
         Fixture.Frames(30);
         const FVector CameraOrigin = Fixture.Ship->Camera->GetComponentLocation();
-        const FVector CameraForward = Fixture.Ship->Camera->GetForwardVector();
-        const FVector TargetPosition = CameraOrigin + CameraForward * 5000.f;
-        const FVector Muzzle = Fixture.Ship->GetActorLocation() + Fixture.Ship->GetActorForwardVector() * 240.f;
+        const FVector TargetPosition = Fixture.ReticleTarget(5000.f);
+        const FVector Muzzle = Fixture.Ship->MuzzleWorldPosition();
         auto *Target = Fixture.Target(TargetPosition - Fixture.Ship->GetActorLocation());
         auto *Blocker = Fixture.Target(FMath::Lerp(Muzzle, TargetPosition, .2f) - Fixture.Ship->GetActorLocation());
         if (!TestNotNull(Label + TEXT(" creates a camera-visible target"), Target) ||
@@ -937,17 +969,164 @@ bool FSSFlightMuzzleObstruction::RunTest(const FString &)
     }
     return true;
 }
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSProjectileRelativeMotion, "SpaceSurvival.Flight.ProjectileRelativeMotion",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSHullHazardContacts, "SpaceSurvival.Flight.HullHazardContacts",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSHullHazardContacts::RunTest(const FString &)
+{
+    for (ESSWorldKind Kind : {ESSWorldKind::SmallAsteroid, ESSWorldKind::Pursuer})
+    {
+        FSSFlightWorld Fixture;
+        if (!Fixture.Initialize(*this))
+            return false;
+        const bool bPhoenix = ASSShip::SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix;
+        if (!TestEqual(TEXT("The actual selected Phoenix installs its flight collision profile"),
+                       Fixture.Ship->HasFlightHull(), bPhoenix))
+            return false;
+        // Independent imported-vertex evidence: native left-engine bounds are
+        // X[-1021,-252], Y[-857,-323], Z[65,634]. This point is inside that engine,
+        // far outside the old origin sphere; classic keeps its own origin contact.
+        const FVector LocalContact = bPhoenix ? FVector(-650, -600, 350) : FVector::ZeroVector;
+        Fixture.Ship->SetActorRotation(FRotator(0, 37, 0));
+        const FTransform Pose = Fixture.Ship->GetActorTransform();
+        const FVector Contact = Pose.TransformPosition(LocalContact);
+        const FVector Up = Pose.GetUnitAxis(EAxis::Z);
+        const FVector ShipTravel = Pose.TransformVectorNoScale(FVector(900, 800, 0));
+        auto *Body = Fixture.World->SpawnActor<ASSWorldBody>(Contact + Up * 2000.f, FRotator::ZeroRotator);
+        if (!TestNotNull(TEXT("Spawn actual contact actor"), Body))
+            return false;
+        Body->Configure(Kind, 30.f, 30.f);
+        Body->SetLinearVelocity(FVector::ZeroVector);
+        const double Shield = Fixture.Instance->Session.run.shield;
+        Body->Tick(0.f);
+        TestEqual(TEXT("A separated hazard does not damage the ship"), Fixture.Instance->Session.run.shield, Shield);
+
+        // A real physics callback for this body must not charge the generic hull
+        // impact as well as its own configured domain contact damage.
+        FHitResult PhysicalHit;
+        Fixture.Ship->Collision->OnComponentHit.Broadcast(Fixture.Ship->Collision, Body, Body->Collision,
+                                                          FVector::ZeroVector, PhysicalHit);
+        TestEqual(TEXT("Hazard damage has one authority before its swept contact"),
+                  Fixture.Instance->Session.run.shield, Shield);
+        Fixture.Ship->AddActorWorldOffset(ShipTravel);
+        Body->SetLinearVelocity((-Up * 4000.f + ShipTravel) / .1f);
+        Body->Tick(.1f);
+        TestEqual(TEXT("Both clear endpoints crossing the moving engine cause one configured hit"),
+                  Fixture.Instance->Session.run.shield, Shield - 30.0);
+        Fixture.Ship->Collision->OnComponentHit.Broadcast(Fixture.Ship->Collision, Body, Body->Collision,
+                                                          FVector::ZeroVector, PhysicalHit);
+        TestEqual(TEXT("The physical callback cannot duplicate domain damage after contact"),
+                  Fixture.Instance->Session.run.shield, Shield - 30.0);
+
+        Body->SetLinearVelocity(FVector::ZeroVector);
+        Body->SetActorLocation(Contact + ShipTravel);
+        Body->Tick(.5f);
+        TestEqual(TEXT("A continued hull overlap respects the contact cooldown"), Fixture.Instance->Session.run.shield,
+                  Shield - 30.0);
+        Body->Tick(.61f);
+        TestEqual(TEXT("Contact can damage again only after the existing cooldown"),
+                  Fixture.Instance->Session.run.shield, Shield - 60.0);
+        Body->Destroy();
+
+        const FBox Bounds = Fixture.Ship->FlightHullBounds(Fixture.Ship->GetActorTransform());
+        const FVector ClearStart(Bounds.Min.X - 1500.f, Bounds.GetCenter().Y, Bounds.Max.Z + 1000.f);
+        auto *ClearBody = Fixture.World->SpawnActor<ASSWorldBody>(ClearStart, FRotator::ZeroRotator);
+        if (!TestNotNull(TEXT("Spawn actual empty-space crossing"), ClearBody))
+            return false;
+        ClearBody->Configure(Kind, 30.f, 30.f);
+        ClearBody->Tick(0.f);
+        ClearBody->SetLinearVelocity(FVector(Bounds.GetSize().X + 3000.f, 0, 0) / .1f);
+        const double BeforeClear = Fixture.Instance->Session.run.shield;
+        ClearBody->Tick(.1f);
+        TestEqual(TEXT("A path above the actual hull remains empty space"), Fixture.Instance->Session.run.shield,
+                  BeforeClear);
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSHullProjectileContacts, "SpaceSurvival.Flight.HullProjectileContacts",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSHullProjectileContacts::RunTest(const FString &)
+{
+    // Direct engine contact, early/late cover, lifetime/range expiry, empty space,
+    // player shot immunity, and a ship that has left before the projectile arrives.
+    for (int32 Case = 0; Case < 8; ++Case)
+    {
+        FSSFlightWorld Fixture;
+        if (!Fixture.Initialize(*this))
+            return false;
+        const bool bPhoenix = ASSShip::SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix;
+        if (!TestEqual(TEXT("Projectile fixture uses the selected pawn's real collision profile"),
+                       Fixture.Ship->HasFlightHull(), bPhoenix))
+            return false;
+        Fixture.Ship->SetActorRotation(FRotator(0, 37, 0));
+        const FTransform Pose = Fixture.Ship->GetActorTransform();
+        const FVector LocalContact = bPhoenix ? FVector(-650, -600, 350) : FVector::ZeroVector;
+        const FVector Up = Pose.GetUnitAxis(EAxis::Z);
+        FVector Start = Pose.TransformPosition(LocalContact) + Up * 1500.f;
+        const FVector ShipTravel = Pose.TransformVectorNoScale(Case == 7 ? FVector(0, 10000, 0) : FVector(900, 800, 0));
+        const FVector ShotTravel = -Up * 3000.f + (Case == 7 ? FVector::ZeroVector : ShipTravel);
+        if (Case == 5)
+            Start += Pose.TransformVectorNoScale(FVector(6000, 0, 0));
+        auto *Source = Fixture.World->SpawnActor<AActor>(Start + Up * 2000.f, FRotator::ZeroRotator);
+        auto *Shot = Fixture.World->SpawnActor<ASSProjectile>(Start, FRotator::ZeroRotator);
+        if (!TestNotNull(TEXT("Spawn actual incoming projectile"), Shot) ||
+            !TestNotNull(TEXT("Spawn actual firing source"), Source))
+            return false;
+        Shot->Launch(ShotTravel.GetSafeNormal(), ShotTravel.Size() / .1f, 40.f, Case == 6, Source,
+                     Case == 4 ? ShotTravel.Size() * .2f : -1.f);
+        if (Case == 3)
+            Shot->LifetimeSeconds = .02f;
+        ASSWorldBody *Cover = nullptr;
+        if (Case == 1 || Case == 2)
+        {
+            Cover = Fixture.World->SpawnActor<ASSWorldBody>(Start + ShotTravel * (Case == 1 ? .1f : .9f),
+                                                            FRotator::ZeroRotator);
+            if (!TestNotNull(TEXT("Spawn physical cover on the projectile's actual path"), Cover))
+                return false;
+            Cover->Configure(ESSWorldKind::SmallAsteroid, 25.f, 0.f);
+        }
+        const double Shield = Fixture.Instance->Session.run.shield;
+        Fixture.Ship->AddActorWorldOffset(ShipTravel);
+        Shot->Tick(.1f);
+        const FString Label = FString::Printf(TEXT("Hull projectile case %d"), Case);
+        const bool bExpectedHit = Case == 0 || Case == 2;
+        TestEqual(Label + TEXT(" applies the unchanged energy damage only at synchronized hull contact"),
+                  Fixture.Instance->Session.run.shield, Shield - (bExpectedHit ? 54.0 : 0.0));
+        TestEqual(Label + TEXT(" consumes only a contact or expired shot"), Shot->IsActorBeingDestroyed(), Case < 5);
+        if (Cover)
+            TestEqual(Label + TEXT(" earlier cover wins and later cover cannot erase a hit"),
+                      Cover->IsActorBeingDestroyed(), Case == 1);
+        if (Shot->IsActorBeingDestroyed())
+        {
+            const double After = Fixture.Instance->Session.run.shield;
+            Shot->Tick(.1f);
+            TestEqual(Label + TEXT(" cannot damage twice after consumption"), Fixture.Instance->Session.run.shield,
+                      After);
+        }
+        else
+            TestTrue(Label + TEXT(" keeps the clear shot on its original world path"),
+                     Shot->GetActorLocation().Equals(Start + ShotTravel, .01f));
+    }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSProjectileRelativeMotion, "SpaceSurvival.Flight.ClassicProjectileRelativeMotion",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSProjectileRelativeMotion::RunTest(const FString &)
 {
+    // Explicit legacy-sphere oracle: these paths assume the original 105 cm hull.
+    // Default Phoenix compound contact is exercised by HullProjectileContacts.
     // The two synchronized trajectories cross at different times in case 0,
     // and at the same time in the others. Endpoint-only world sweeps confuse them.
     for (float Step : {1.f / 30.f, 1.f / 60.f, 1.f / 144.f, .1f})
         for (int32 Case = 0; Case < 9; ++Case)
         {
-            FSSFlightWorld Fixture;
+            FSSFlightWorld Fixture(true);
             if (!Fixture.Initialize(*this))
+                return false;
+            if (!TestTrue(TEXT("Legacy timing oracle uses the actual classic pawn and no compound profile"),
+                          ASSShip::SelectedHullIdentity() == ESSHullIdentity::Classic &&
+                              !Fixture.Ship->HasFlightHull() && !Fixture.Ship->Collision->IsSimulatingPhysics()))
                 return false;
             FVector Origin(0, 0, 7000);
             const FVector ShipStart(0, Case == 0 ? -800.f : -400.f, 0);
@@ -1130,10 +1309,12 @@ bool FSSFlightChaseFraming::RunTest(const FString &)
                 // the screen. It used to be, and "camera forward" meant "where the player is pointing" for
                 // exactly as long as the hull was small enough to leave the centre of frame empty. On a hull
                 // that fills it, camera forward points at the ship's own nose.
-                const FVector SightMuzzle = Ship->GetActorLocation() + Ship->GetActorForwardVector() * 240.f;
-                if (!TestTrue(TEXT("Manual weapon sight points at the reticle this hull draws"),
-                              Ship->AimDirection().Equals((Ship->CrosshairWorldPoint() - SightMuzzle).GetSafeNormal(),
-                                                          .0001)))
+                const FVector SightEnd = Ship->MuzzleWorldPosition() + Ship->AimDirection() * Ship->Tuning->WeaponRange;
+                const FVector Eye = Ship->Camera->GetComponentLocation();
+                if (!TestTrue(TEXT("Manual weapon sight converges onto the camera ray under the drawn reticle"),
+                              (SightEnd - Eye)
+                                  .GetSafeNormal()
+                                  .Equals((Ship->CrosshairWorldPoint() - Eye).GetSafeNormal(), .0001)))
                     return false;
             }
             AddInfo(FString::Printf(TEXT("%dHz scenario%d: hull came within %.3f of the frame edge"), Hertz, Scenario,
@@ -1154,182 +1335,128 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     FSSFlightWorld Fixture;
     if (!Fixture.Initialize(*this))
         return false;
-    IConsoleVariable *Count = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
-    if (!TestNotNull(TEXT("Distant asteroid scalability control exists"), Count))
-        return false;
+    auto *Count = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
     const int32 PreviousCount = Count->GetInt();
-    const EConsoleVariableFlags Priority = EConsoleVariableFlags(Count->GetFlags() & ECVF_SetByMask);
+    const auto Priority = EConsoleVariableFlags(Count->GetFlags() & ECVF_SetByMask);
     ON_SCOPE_EXIT
     {
         Count->Set(PreviousCount, Priority);
     };
-    Count->Set(128, Priority);
+    Count->Set(512, Priority);
     auto *Field = Fixture.World->SpawnActor<ASSDistantAsteroids>();
-    if (!TestNotNull(TEXT("Spawn actual distant field"), Field))
-        return false;
     Field->Follow(Fixture.Ship);
     Field->SetFlightVisible(true);
-    TestFalse(TEXT("Dressing cannot be a weapon/damage world-body target"), Field->IsA(ASSWorldBody::StaticClass()));
-    TestFalse(TEXT("Dressing actor collision disabled"), Field->GetActorEnableCollision());
+    TestFalse(TEXT("World rocks are independent of Director pressure and lifetime"),
+              Field->IsA(ASSWorldBody::StaticClass()));
+    TestEqual(TEXT("Bounded instance population"), Field->GetRockCount(), 512);
     TArray<UInstancedStaticMeshComponent *> Batches;
     Field->GetComponents(Batches);
-    if (!TestTrue(TEXT("Renderable mesh batches loaded"), Batches.Num() > 0))
-        return false;
-    int32 Instances = 0;
+    TArray<FTransform> Initial;
+    int32 DebrisInstances = 0;
+    int32 ArchitectureInstances = 0;
+    int32 NearInstances = 0;
     for (const auto *Batch : Batches)
     {
-        TestTrue(TEXT("Each available mesh family participates at normal density"), Batch->GetInstanceCount() > 0);
-        TestTrue(TEXT("Every batch disables collision"),
-                 Batch->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
-        TestFalse(TEXT("Every batch disables overlaps"), Batch->GetGenerateOverlapEvents());
-        Instances += Batch->GetInstanceCount();
+        TestTrue(TEXT("Real rocks block ship physics and weapon queries"),
+                 Batch->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics &&
+                     Batch->GetCollisionResponseToChannel(ECC_Visibility) == ECR_Block &&
+                     Batch->GetCollisionResponseToChannel(ECC_PhysicsBody) == ECR_Block);
+        if (!Batch->GetStaticMesh()->GetName().Contains(TEXT("Asteroid")))
+        {
+            DebrisInstances += Batch->GetInstanceCount();
+            const FString Name = Batch->GetStaticMesh()->GetName();
+            if (Name.Contains(TEXT("Station")) || Name.Contains(TEXT("Arch")) || Name.Contains(TEXT("arch")) ||
+                Name.Contains(TEXT("Spine")) || Name.Contains(TEXT("Buttress")))
+                ArchitectureInstances += Batch->GetInstanceCount();
+        }
+        for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
+        {
+            FTransform T;
+            Batch->GetInstanceTransform(I, T, true);
+            Initial.Add(T);
+            if (FVector::Distance(T.GetLocation(), Fixture.Ship->GetActorLocation()) < 70000.)
+                ++NearInstances;
+        }
     }
-    TestEqual(TEXT("Requested density creates bounded real instances"), Instances, 128);
-    auto CheckDistance = [&]()
+    if (!TestTrue(TEXT("Real mesh population loaded"), Initial.Num() == 512 && !Batches.IsEmpty()))
+        return false;
+    TestTrue(TEXT("The field includes owned non-asteroid wreckage, not just rocks"), DebrisInstances > 0);
+    TestTrue(TEXT("Reachable field includes recognizable architecture, not only flat debris"),
+             ArchitectureInstances > 0);
+    TestTrue(TEXT("The scaled test field has substantial density inside 700m"), NearInstances >= 10);
+    const FVector Center = Initial[0].TransformPosition(Batches[0]->GetStaticMesh()->GetBounds().Origin);
+    const FVector Start = Fixture.Ship->GetActorLocation();
+    auto FindPose = [&](const FTransform &Pose)
     {
         for (const auto *Batch : Batches)
-        {
-            const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
-            for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+            for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
             {
-                FTransform Instance;
-                if (!Batch->GetInstanceTransform(Index, Instance, true))
-                    return false;
-                const FVector Center = Instance.TransformPosition(Bounds.Origin);
-                const double SurfaceDistance = FVector::Distance(Center, Fixture.Ship->GetActorLocation()) -
-                                               Bounds.SphereRadius * Instance.GetScale3D().GetAbsMax();
-                if (SurfaceDistance < Field->GetMinimumSurfaceDistance() - .1 ||
-                    SurfaceDistance <= Fixture.Ship->Tuning->WeaponRange)
-                    return false;
+                FTransform T;
+                Batch->GetInstanceTransform(I, T, true);
+                if (T.Equals(Pose, .01f))
+                    return true;
             }
-        }
-        return true;
+        return false;
     };
-    TestTrue(TEXT("Actual transformed mesh bounds stay outside the playable weapon range initially"), CheckDistance());
-    TArray<TArray<FVector>> InitialCenters;
-    InitialCenters.SetNum(Batches.Num());
-    TSet<int32> AnchorMeshBatches;
-    int32 FarRocks = 0;
-    bool bClearEntryAim = true;
-    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
+    for (int32 Step = 1; Step <= 60; ++Step)
     {
-        const auto *Batch = Batches[BatchIndex];
-        TestFalse(TEXT("Decoration does not affect navigation"), Batch->CanEverAffectNavigation());
-        TestFalse(TEXT("Decoration does not introduce distant shadow work"), Batch->CastShadow);
-        const FBoxSphereBounds Bounds = Batch->GetStaticMesh()->GetBounds();
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            const FVector Center = Instance.TransformPosition(Bounds.Origin) - Fixture.Ship->GetActorLocation();
-            InitialCenters[BatchIndex].Add(Center);
-            const double Radius = Bounds.SphereRadius * Instance.GetScale3D().GetAbsMax();
-            if (Radius > 2200.0)
-                AnchorMeshBatches.Add(BatchIndex);
-            if (Center.Size() > 100000.0)
-                ++FarRocks;
-            if (Center.GetSafeNormal().X > .97 &&
-                ((Center.Size() < 65000.0 && Radius > 220.1) || Radius / Center.Size() > .05))
-                bClearEntryAim = false;
-        }
+        Fixture.Ship->SetActorLocation(FMath::Lerp(Start, Center, Step / 60.f));
+        Field->Tick(1.f / 60.f);
+        TestTrue(TEXT("Approaching an original rock never recycles or moves it"), FindPose(Initial[0]));
+        TestEqual(TEXT("Streaming keeps the population budget bounded"), Field->GetRockCount(), 512);
     }
-    TestTrue(TEXT("Large silhouettes use multiple barren/mineral meshes instead of one repeated anchor"),
-             AnchorMeshBatches.Num() >= 4);
-    TestTrue(TEXT("Distant fragments supply a separate depth layer"), FarRocks > 0);
-    TestTrue(TEXT("Initial nearby aim corridor is clear; distant field silhouettes stay below three angular degrees"),
-             bClearEntryAim);
-    const FRotator InitialRotation = Fixture.Ship->GetActorRotation();
-    Fixture.Ship->SetActorRotation(FRotator(20.f, 90.f, 0.f));
-    Field->Tick(0.f);
-    bool bStableDuringTurn = true;
-    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
-    {
-        const auto *Batch = Batches[BatchIndex];
-        const FVector Origin = Batch->GetStaticMesh()->GetBounds().Origin;
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            const FVector Center = Instance.TransformPosition(Origin) - Fixture.Ship->GetActorLocation();
-            bStableDuringTurn &= Center.Equals(InitialCenters[BatchIndex][Index], .1);
-        }
-    }
-    TestTrue(TEXT("Turning the viewer does not swivel or reseed the environment"), bStableDuringTurn);
-    Fixture.Ship->SetActorRotation(InitialRotation);
-    Fixture.Ship->AddActorWorldOffset(FVector(0, 1000, 0));
-    Field->Tick(0.f);
-    double MinimumShift = TNumericLimits<double>::Max();
-    double MaximumShift = 0.0;
-    for (int32 BatchIndex = 0; BatchIndex < Batches.Num(); ++BatchIndex)
-    {
-        const auto *Batch = Batches[BatchIndex];
-        const FVector Origin = Batch->GetStaticMesh()->GetBounds().Origin;
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            const FVector Center = Instance.TransformPosition(Origin) - Fixture.Ship->GetActorLocation();
-            const double Shift = (Center - InitialCenters[BatchIndex][Index]).Size();
-            MinimumShift = FMath::Min(MinimumShift, Shift);
-            MaximumShift = FMath::Max(MaximumShift, Shift);
-        }
-    }
-    TestTrue(TEXT("Translation produces different motion in the near and distant layers"),
-             MinimumShift > 0.0 && MaximumShift > 40.0 && MinimumShift < MaximumShift * .5);
-    for (int32 Step = 0; Step < 160; ++Step)
-    {
-        Fixture.Ship->AddActorWorldOffset(FVector(5000, 1000, 500));
-        Fixture.Step();
-    }
-    TestTrue(TEXT("Long cumulative travel cannot reach decorative mesh bounds"), CheckDistance());
-    TArray<FVector> BeforeFurtherTravel;
-    for (const auto *Batch : Batches)
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            BeforeFurtherTravel.Add(Instance.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) -
-                                    Fixture.Ship->GetActorLocation());
-        }
-    Fixture.Ship->AddActorWorldOffset(FVector(1000, 0, 0));
-    Field->Tick(0.f);
-    int32 FurtherIndex = 0;
-    bool bStillMoving = false;
-    for (const auto *Batch : Batches)
-        for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
-        {
-            FTransform Instance;
-            Batch->GetInstanceTransform(Index, Instance, true);
-            const FVector Center = Instance.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) -
-                                   Fixture.Ship->GetActorLocation();
-            bStillMoving |= !Center.Equals(BeforeFurtherTravel[FurtherIndex++], 1.0);
-        }
-    TestTrue(TEXT("Parallax continues after prolonged flight instead of saturating a fixed offset"), bStillMoving);
-    const double BeforeShift = Field->GetMinimumSurfaceDistance();
-    const FVector Shift(-700000, -100000, -60000);
-    Fixture.Ship->ApplyWorldOffset(Shift, true);
-    Field->ApplyWorldOffset(Shift, true);
-    Field->Tick(0.f);
-    TestTrue(TEXT("World rebase does not create false parallax travel"),
-             FMath::IsNearlyEqual(Field->GetMinimumSurfaceDistance(), BeforeShift, .01));
-    TestTrue(TEXT("Rebased real instance bounds retain safety separation"), CheckDistance());
-    Count->Set(4000, Priority);
-    Field->Tick(1.f);
-    TestEqual(TEXT("Density is capped at 3072 decorative instances"), Field->GetRockCount(), 3072);
-    TestTrue(TEXT("Tumbling dense field keeps actual bounds outside weapon range"), CheckDistance());
-    Count->Set(0, Priority);
-    Field->Tick(0.f);
-    TestEqual(TEXT("Density zero removes every instance"), Field->GetRockCount(), 0);
-    for (const auto *Batch : Batches)
-        TestEqual(TEXT("Disabled batch has no residual instances"), Batch->GetInstanceCount(), 0);
-    Count->Set(384, Priority);
-    Field->Tick(1.f);
-    TestEqual(TEXT("Density can be restored without spawning gameplay actors"), Field->GetRockCount(), 384);
-    TestTrue(TEXT("Restored field retains conservative bounds"), CheckDistance());
     Field->SetFlightVisible(false);
+    Field->SetFlightVisible(true);
+    Field->Follow(Fixture.Ship);
+    TestTrue(TEXT("Docking visibility and refollow preserve the nearby rock"), FindPose(Initial[0]));
+    Fixture.Ship->SetActorLocation(Start); // Keep its attached visual-rig actor outside the trace.
     Fixture.Step();
-    TestTrue(TEXT("Explicit station-visibility setter hides the field"), Field->IsHidden());
-    AddInfo(TEXT("Visibility setter exercised only; this test does not establish GameMode station routing."));
+    FHitResult Hit;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(WorldRockReachability), false, Fixture.Ship);
+    const float Radius = Batches[0]->GetStaticMesh()->GetBounds().SphereRadius * Initial[0].GetScale3D().GetAbsMax();
+    AddInfo(FString::Printf(TEXT("ROCK mesh=%s compiling=%d physics=%d bodies=%d center=%s radius=%.1f"),
+                            *Batches[0]->GetStaticMesh()->GetPathName(), Batches[0]->GetStaticMesh()->IsCompiling(),
+                            Batches[0]->IsPhysicsStateCreated(), Batches[0]->InstanceBodies.Num(), *Center.ToString(),
+                            Radius));
+    TestTrue(TEXT("A real shot trace hits the reachable rock"),
+             Fixture.World->LineTraceSingleByChannel(Hit, Center - FVector(Radius * 2, 0, 0),
+                                                     Center + FVector(Radius * 2, 0, 0), ECC_Visibility, Query) &&
+                 Hit.GetActor() == Field);
+    // Travel well outside the launch belt: all six directions must still contain world geometry.
+    for (const FVector Destination : {FVector(900000, 0, 0), FVector(-900000, 600000, 400000)})
+    {
+        Fixture.Ship->SetActorLocation(Start + Destination);
+        Field->Tick(.25f);
+        int32 Directions[6] = {};
+        for (const auto *Batch : Batches)
+            for (int32 I = 0; I < Batch->GetInstanceCount(); ++I)
+            {
+                FTransform T;
+                Batch->GetInstanceTransform(I, T, true);
+                const FVector Delta =
+                    T.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin) - Fixture.Ship->GetActorLocation();
+                if (Delta.Size() > 160000.)
+                    continue;
+                for (int32 Axis = 0; Axis < 3; ++Axis)
+                    if (FMath::Abs(Delta[Axis]) > Delta.Size() * .7)
+                        ++Directions[Axis * 2 + (Delta[Axis] > 0 ? 1 : 0)];
+            }
+        for (int32 Number : Directions)
+            TestTrue(TEXT("Long travel keeps reachable rocks ahead, behind, sideways and vertically"), Number > 0);
+        TestEqual(TEXT("Long-distance streaming remains bounded"), Field->GetRockCount(), 512);
+    }
+    Fixture.Ship->SetActorLocation(Start);
+    Field->Tick(.25f);
+    for (const auto &Pose : Initial)
+        TestTrue(TEXT("Returning to a cell regenerates its exact world transforms"), FindPose(Pose));
+    const FVector Shift(-700000, -100000, -60000);
+    Field->ApplyWorldOffset(Shift, true);
+    Fixture.Ship->SetActorLocation(Start + Shift);
+    Field->Tick(.25f);
+    FTransform Rebased = Initial[0];
+    Rebased.AddToTranslation(Shift);
+    TestTrue(TEXT("World rebasing preserves rock identity"), FindPose(Rebased));
     return true;
 }
+
 #endif

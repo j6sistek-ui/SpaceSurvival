@@ -69,16 +69,32 @@ public:
     void React(const FString &Message);
     void Interact();
     void OpenPanel(ESSPanel Panel);
+    /** Approved front-end screen; active-run pause menus retain their existing actions. */
+    bool IsTitleMenu() const;
     void ClosePanel();
-    void ActivateEntry(int32 Index);
+    void ActivateEntry(int32 Index, bool FromPointer = false);
     void StartNewRun();
+    void StartFreeFlight();
+    void EndFreeFlight();
     void LaunchFromHub();
+    bool IsWalkerInsideShip(const ASSWalker *Candidate) const;
+    bool TryBoardShip(ASSWalker *Candidate);
     void ShowHangar();
     bool IsMenuOpen() const
     {
         return Panel != ESSPanel::None;
     }
     bool InHangar() const;
+    bool IsInStationZone() const;
+    bool IsDepartingStation() const
+    {
+        return bDepartingStation;
+    }
+    FVector GetLandingTarget() const;
+    float GetDockingRadius() const;
+    /** Shared eligibility and feedback for the HUD and the actual use-button transaction. */
+    bool DockingStatus(FString &Message) const;
+    bool RequestDocking();
     FString PanelTitle, PanelDetail, Announcement;
     FString ThreatWarning, PilotReaction;
     FVector ThreatPosition = FVector::ZeroVector;
@@ -112,7 +128,9 @@ private:
     friend class ASSHUD; // DrawPrompt reads the glyph sets; main did not build without this.
     friend class ASSWave10Soak;
     friend class FSSAudioFirstState;
+    friend class FSSTitleMenuNavigation;
     bool bAutomatedSoakInput = false;
+    bool bTitleSettingsNavigation = false;
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
     UPROPERTY()
@@ -159,10 +177,15 @@ private:
     bool bWormholeArrived = false;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
     bool LowHullAlerted = false;
+    bool bDepartingStation = false;
+    bool bStartNextBlockOnExit = false;
+    bool bAtTitleScreen = true;
     void UpdateMusicMix();
     void UpdateThreatFeedback(float DeltaSeconds);
     void EnterStation();
-    void SpawnFlight(FVector Location, FRotator Rotation);
+    void SpawnFlight(FVector Location, FRotator Rotation, bool PreserveHub = false);
+    void FollowFlightPresentation();
+    void BeginDeparture();
     void AddEntry(const FString &Label, int32 Action, bool Enabled = true);
     void RepaintShips();
 };
@@ -202,7 +225,16 @@ public:
 
 private:
     void UpdateLastInputDevice();
+    int32 LastMenuStickDirection = 0;
+    float MenuRepeatSeconds = 0.f;
     bool BoostLatch = false, BrakeLatch = false;
+    /** A menu Back press must be released before B can become a new boost command. */
+    bool SuppressGamepadBoostUntilRelease = false;
+    bool SuppressGamepadFireUntilRelease = false;
+    float KeyboardThrottle = 0.f;
+    /** Only a throttle command changes ownership; look, fire and UI glyph changes cannot restore thrust. */
+    bool bAnalogThrottle = false;
+    float LastRightTriggerCommand = 0.f;
     TWeakObjectPtr<APawn> LastInputPawn;
     ESSInputFamily InputFamily = ESSInputFamily::KeyboardMouse;
 };

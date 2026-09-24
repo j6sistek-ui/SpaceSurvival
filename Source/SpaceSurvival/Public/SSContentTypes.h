@@ -502,6 +502,12 @@ enum class ESSHeroIdentity : uint8
     Squirrel,
     /** Licensed alien, already the station's crew. Its clips are retarget results on its own skeleton. */
     Nyxar,
+    /** Tripo-generated alien on the UE4 mannequin rig, hand-bound to Robot_scout's copy of
+     *  UE4_Mannequin_Skeleton so it borrows that pack's locomotion. Carries no clips of its own.
+     *  Skeleton is read-only to script, so that binding cannot be automated or restored by code: a
+     *  re-import that leaves the import dialog's Skeleton field empty puts it back on an orphan
+     *  skeleton, and ApplyHero will then hand the slot straight back to the shipped hero. */
+    AlienFemale,
     /** Licensed soldier on the Unreal mannequin rig, carrying its own eight-way locomotion. */
     Soldier,
     /** Licensed robot on the UE4 mannequin rig, so the MoCap library plays on it untouched. */
@@ -979,12 +985,11 @@ struct FSSHullDefinition
             // Its own exhausts ride its own nozzle bones; the fitted-module presentation is measured against a
             // different mesh entirely and would hang casings in mid air.
             UsesModulePresentation = false;
-            // PROVISIONAL, and the one number here that is not measured. OriginToBelly is 0.25 - this hull
-            // stands on its own pivot - so the belly wants to sit at the deck plus whatever the landing gear
-            // holds it up by, and that extension has never been measured. Parking at the classic hull's 230
-            // leaves it hanging; this is a deliberate under-correction until the gear is measured rather than
-            // a guess dressed as a figure.
-            DockClearanceAboveDeck = 230.f;
+            // Settled Landing_On LOD0 foot vertices reach -2.433 cm relative to the ship origin;
+            // the rear feet reach +1.875 cm. PhoenixGearGeometry records the actual rigid skin
+            // influences and final bone transforms. The old 230 cm value floated this hull above
+            // the pad; 2.5 cm places the lowest authored foot on it without burying the mesh.
+            DockClearanceAboveDeck = 2.5f;
             // Measured at 30, 60 and 144 Hz against a 120 Hz reference of the same scripted flight. Worst
             // observed: 108.0 cm, 71.9 cm/s, 0.574 degrees of yaw - all three at 30 Hz, all three shrinking
             // as the rate rises (60 Hz: 33.9, 23.2, 0.178; 144 Hz: 23.6, 28.9, 0.104). Declared at roughly
@@ -1063,6 +1068,14 @@ struct FSSHeroDefinition
     FString JogClipPath;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
     FString RunClipPath;
+    /** Optional in-place jump set. All three must load on this hero's skeleton; otherwise the
+     *  existing locomotion remains in charge. CharacterMovement still owns takeoff and landing. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString JumpStartClipPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString JumpAirClipPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Assets")
+    FString JumpLandClipPath;
     /** Centimetres from the mesh origin down to the sole at WalkHandoffSeconds, before scale.
      *  Measured, not guessed: the Acornaut's boot sole sits 62.90269494 cm below its mesh origin. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fit")
@@ -1152,6 +1165,10 @@ struct FSSHeroDefinition
     FName LeftHandBone = TEXT("L_Wrist");
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
     FName RightHandBone = TEXT("R_Wrist");
+    /** Optional landing follow-through root. Only this bone and its descendants keep the landing
+     *  clip while the body resumes locomotion; None leaves every existing hero unchanged. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    FName TailRootBone = NAME_None;
 
     /** Whether this build actually holds the package behind an object path. An empty path is not a
      *  missing file, it is a hero saying it has none of that thing, and both answer false. Anything
@@ -1161,6 +1178,9 @@ struct FSSHeroDefinition
     static bool AssetInstalled(const FString &ObjectPath);
     /** True when this build actually contains the mesh and the clip this slot plays. */
     bool Installed(ESSHeroSlot Slot) const;
+    /** Resolve only the known broken female import when its complete private replacement is installed.
+     *  Does not change serialized assets, custom mesh/clip choices, fit or other authored tuning. */
+    FSSHeroDefinition ResolvedPresentation() const;
     /** The scale this hero renders at once its mesh is loaded; FitHeight needs the imported bounds. */
     float RenderedScale(const USkeletalMesh *Mesh) const;
     /** Centimetres from the mesh origin down to the sole, already scaled. Double, because a fitted
@@ -1394,6 +1414,37 @@ struct FSSHeroDefinition
             // Dark plates with emissive panels at the hands, eyes and spine. Left at 1 because nothing
             // has been measured on the deck yet - unlike the trooper's 0.5, which two captures argued
             // about before it was settled.
+            ReadabilityLightScale = 1.f;
+            RootBone = TEXT("root");
+            PelvisBone = TEXT("pelvis");
+            LeftFootBone = TEXT("foot_l");
+            RightFootBone = TEXT("foot_r");
+            LeftHandBone = TEXT("hand_l");
+            RightHandBone = TEXT("hand_r");
+        }
+        else if (Identity == ESSHeroIdentity::AlienFemale)
+        {
+            // Preserve the original import identity. Its matching UE4 bone names masked a 100x bind
+            // scale mismatch: direct mannequin playback collapses the body below two centimetres.
+            // ResolvedPresentation selects the normalized private rig and baked clips as one set;
+            // old DA_Phase1 arrays use that same lookup without rewriting the owner's data asset.
+            Id = TEXT("AlienFemale");
+            MeshPath = TEXT("/Game/TripoModels/AlienFemale/SK_AlienFemale.SK_AlienFemale");
+            WalkClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonWalk.ThirdPersonWalk");
+            IdleClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonIdle.ThirdPersonIdle");
+            // Same pack, so the same gap: no jog, and the ladder goes walk straight to run.
+            JogClipPath = FString();
+            RunClipPath = TEXT("/Game/Robot_scout_R_21/Demo/Animations/ThirdPersonRun.ThirdPersonRun");
+            // Never seated, like the alien crew it stands among. The ship keeps its own pilot.
+            PilotClipPath = FString();
+            DisembarkClipPath = FString();
+            SoleOffset = 0.f;
+            // Imports at 97.9 cm against the robot's 178.6, so it is fitted to a height rather than
+            // scaled by a guessed factor - the same treatment the trooper gets.
+            FitHeight = 178.f;
+            WalkSpeed = 180.f;
+            RunSpeed = 450.f;
+            // Untested under the station's own lights. Left at 1 rather than guessed.
             ReadabilityLightScale = 1.f;
             RootBone = TEXT("root");
             PelvisBone = TEXT("pelvis");

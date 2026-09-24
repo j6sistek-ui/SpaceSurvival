@@ -1,12 +1,26 @@
+> September22: **0.1.21-alpha.1 / build2003058 is ready on itch**. Update SpaceSurvival in the itch app, then Play; Unreal Editor is not required. The isolated local launcher opens the same Package10/source4fd0293. Responsive flight, mixed physical field, controller menu navigation and HUD message fixes are included. Earlier package references below are historical.
+
+**Current desktop defaults (2026-09-24):** `Unreal Engine` opens UE5.8 with the repaired project at `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/SpaceSurvival.uproject`. `Play SpaceSurvival - Current` opens that checkout's `Play Development Build.cmd`. To launch directly from the repaired checkout, use [Open Repaired Game Editor.cmd](../Open%20Repaired%20Game%20Editor.cmd) or [Play Development Build.cmd](../Play%20Development%20Build.cmd). The original `C:/Users/j6sis/SpaceSurvival` authoring checkout and `Artifacts/Windows/SpaceSurvival.exe` are not the current development gameplay build. Desktop shortcut changes do not rebuild a package. [Replacement hero receipt](validation/2026-09-24-replacement-hero.md).
+
 # Build and run
+
+**Earlier Package7 UI follow-up (retained in Package8), September22:** The earlier isolated review launcher opened source `25cf794`: aligned preference sliders, large scrolling wardrobe, and a walking radar showing actual crew, services and landing pad. Walking has no flight vitals/weapon panel. The prior approved HUD/settings/pause and locked main remain. Two affected menu tests, six packaged frames and archive inclusion pass. [Exact receipt](validation/2026-09-22-ui-refresh.md). Earlier GPU-memory warnings remain open; this is not performance acceptance. Unique service/wardrobe portrait layouts remain lead-owned; presets/remapping deferred.
+
+**September 22 arcade preset (supersedes prior stick mappings):** Left stick steers the nose in yaw/pitch; right stick controls the camera independently. LB/RB tap: sideways evade with a sharp bank and level recovery; hold: fast continuous roll, retaining attitude on release. RT throttle, LT brake, B boost, A fire, X interaction/landing. Engine-off coasting and keyboard controls remain. Walking unchanged; remapping deferred.
+
+**Package 5 follow-up, 2026-09-22 UTC:** The isolated review launcher now opens source `0004810`: world-fixed solid belt, continuous environment routing, distinct home pause, retired gallery/Acornaut selections, explicit cabin interaction, beacon feedback, 60 m/s cruise and 3x orange Director asteroids. The temporary controller preset above is included. Editor Build9 and nine directly affected input/physics tests pass; the Windows package, actual archive audit and one packaged startup smoke pass. [Exact evidence and retained failures](validation/2026-09-22-world-feedback.md). Full cockpit seating, natural atmosphere/field travel and the reported beacon scenario remain lead-owned open work. No merge or publication occurred. Ramp crossing no longer opens a popup; E/Y in the supported rear cabin still opens flight options until the full cockpit flow is implemented.
 
 **Start with [Project State](PROJECT_STATE.md#source-build-and-release) for the current source, local package and separately published itch identity.** Older package receipts below are historical evidence, not the current contents of the shared archive. Phase 1 remains PARTIAL.
 
-Play the packaged game at `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`, keeping its entire folder. Do not open the `.uproject` just to play: it starts Unreal Editor and may offer a conversion copy. The authoritative project folder is `C:/Users/j6sis/SpaceSurvival`. See [your next review](KNOWN_ISSUES.md#what-to-personally-review-next) and [local-versus-GitHub storage](PROJECT_STATE.md#where-files-live).
+Play **Package8/source89b1f3c** with `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/Play Packaged Review.cmd`. It includes the accumulated gameplay/UI repairs plus arcade nose steering, bumper evasion/roll and streamed world asteroids. The original checkout and its package remain older; do not open the `.uproject` just to play. The authorized itch baseline is `0.1.21-alpha`; see [Project State](PROJECT_STATE.md) and [release history](ITCH_RELEASES.md) for publication status. Use Free Flight for casual controls/field testing or Start/Continue Survival for the run.
+
+**`Play Packaged Review.cmd`** opens only its checkout's `Artifacts/Windows/SpaceSurvival.exe` at 1600×900 with a separate persistent profile in `Artifacts/PackagedReviewUser`; it does not import existing saves, build, install prerequisites or apply ship-refresh/account changes. `Scripts/PlayPackagedReview.ps1 -DryRun` checks the paths and prints the command without opening the game or writing files. The final candidate passed that dry run; the agent did not open an interactive game window. Keep the whole packaged directory together.
+
+`Play Development Build.cmd` remains the separate editor-game entry point. It uses `Artifacts/DevelopmentReviewUser` and disables `UAssetBrowser` and the secondary `NwiroIntegrationKit` server. Neither launcher replaces the installed game's saves. An older executable or the already-open owner editor does not contain this reset merely because its source is present.
 
 ## Tooling and repository
 
-Run commands from the repository root, currently `C:/Users/j6sis/SpaceSurvival`.
+Run commands from the checkout being built or inspected. The reset review checkout is `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`; the preserved original checkout is `C:/Users/j6sis/SpaceSurvival`.
 
 - Owner-installed Unreal Engine 5.8.2: `C:/Program Files/EpicGames2/UE_5.8`.
 - Owner-installed Visual Studio 2026 C++ toolchain: MSVC 14.51.36257, Windows SDK 10.0.26100.0. Builds have succeeded; UBT reports that this compiler is newer than its preferred version. Consult the installed engine's `Engine/Config/Windows/Windows_SDK.json` if changing toolchains.
@@ -15,23 +29,43 @@ Run commands from the repository root, currently `C:/Users/j6sis/SpaceSurvival`.
 
 The similarly named `C:/Program Files/Epic Games/UE_5.8` directory was an incomplete installation location. Use the complete engine above or pass an explicit `-EngineRoot`.
 
+## Locked startup menu authoring
+
+Package 5 retains the September 21 owner-approved Figma main menu. The September22 source extension also maps page11 HUD/settings/pause and the common service frame; see ContentSource/FigmaUIRefresh/README.md. Package7 includes this UI and the scrollbar/slider/walking-radar follow-up; Package5 remains the historical gameplay checkpoint. Exact source PNGs and measured placement/provenance are under [ContentSource/FigmaMainMenu](../ContentSource/FigmaMainMenu/README.md); [the source record](production/FIGMA_MAIN_MENU_PROVENANCE.md) explains normal/hover and export limits.
+
+Run this narrow import after the Editor module is built, one owned offscreen Unreal process at a time:
+
+```powershell
+python Scripts/ImportFigmaMainMenu.py --validate-only
+$ssRoot = (Get-Location).Path
+$ssEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
+& $ssEditor $ssProject -unattended -nosplash -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/ImportFigmaMainMenu.py"
+# Inspect Artifacts/FigmaMainMenu/author-dry-run.json, then create the 19 named textures:
+& $ssEditor $ssProject -unattended -nosplash -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/ImportFigmaMainMenu.py" -SSApplyFigmaMainMenu
+```
+
+The importer creates only `/Game/SpaceSurvival/UI/MainMenu` assets, preserves the committed source bytes and rejects unknown or changed prior outputs. Matching recorded textures can be reused unchanged. `Artifacts/FigmaMainMenu/author.json` records output hashes; the existing SpaceSurvival cook root covers this family. Do not run the baseline Content author to install this menu. Import, native build, input, rendered fidelity and cooked inclusion have separate checks in the validation record.
+
+On this title screen, Continue resumes a saved survival checkpoint and stays visibly disabled when one is unavailable; New Game opens home for boarding and the Start/Continue/Free Flight choice; Settings opens the current settings panel; Exit Game quits. W/S or arrows/D-pad navigate, Enter/A confirms, pointer hit areas follow the same four native indices, and Escape quits from the title only. The old Figma sample-version caption is retained in provenance but the live panel says `DEVELOPMENT REVIEW` without an unwired release-log link. Missing imported artwork falls back to the functional native panel. At other aspect ratios the composition is letterboxed; the half-scale button exports target 1920×1080 and do not establish 4K or shader-animation acceptance.
+
 ## Orbital wreck authoring and comparison (target unaccepted)
 
 `PrepareOrbitalWreck.py` runs in the installed Blender background process and writes private broken Station3 sections plus a Figur kit beam. `PreviewOrbitalWreck.py` produces a Blender-only contact sheet. Both preserve supplied sources. After a successful Editor build, execute `AuthorOrbitalWreck.py` through the same Unreal Python runner shown below. It backs up the private look/cloud/sky, imports three derivatives, persists private Nanite material usage, then authors twelve placements and trial lighting/volume settings. It writes private content hashes in `Artifacts/OrbitalWreck/<id>/report.json`. Rerunning resets this trial composition: do not run over unsaved or owner-edited layouts without preserving them. Integration and rendering have run; the concept is still unaccepted under ACT-03.
 
 `./Scripts/CaptureSpaceLook.ps1 -Label OrbitalWreckReview -Sequence` additionally records nominal quarter-second game-view samples from six seconds into the standard fixture. Four required Cruise/Turn/Boost/Brake images remain present. Actual request times/FOV/camera transforms are in `fixture.json`; image hashes and save isolation are checked in `capture.json`. Readbacks perturb frame time and sampling intervals: this is visual sequence evidence, not real-time motion smoothness, FPS or natural-play acceptance. Omit `-Sequence` for the established four-image comparison.
 
-## Spatial areas and alien gallery (development project)
+## Spatial areas and alien gallery
 
-The current source adds four spatial area recipes and an **ALIEN WORLD** review doorway in the home hangar and stations. Use a freshly built Editor game with the owned private content. The existing packaged EXE and published itch build do **not** contain this doorway or these changes; consult [Project State](PROJECT_STATE.md#source-build-and-release) before choosing a build.
+The four spatial area recipes and owned gallery assets remain available for development. Package 5 removes the broken **ALIEN WORLD** doorway/service; retained maps and cook labels do not mean the gallery is playable. Use `Play Packaged Review.cmd` for the package or `Play Development Build.cmd` for uncooked development; consult [Project State](PROJECT_STATE.md#source-build-and-release) for the exact build. Historical packaged gallery round trips were verified at `a77010e`; the reset's final Station5/Wave10 fixtures did not rerun the gallery.
 
-Double-click `Play Development Build.cmd` to open the rebuilt game directly. It uses a separate persistent profile under `Artifacts/DevelopmentReviewUser`, preserving the installed game's saves. In the hangar/station, approach **ALIEN WORLD** and press E/A. This launcher requires the local Editor DLL and private content; it does not build or download them.
+The ALIEN WORLD service is removed in Package 5. The following authoring notes are retained for the owned asset library; they are not a current playable gallery entry point. The development launcher uses a separate persistent profile under `Artifacts/DevelopmentReviewUser` and requires the local Editor DLL and private content. The packaged-review launcher uses `Artifacts/PackagedReviewUser` and the complete review archive. Neither builds or downloads content.
 
 After `./Scripts/Build.ps1 -Target Editor`, run these scripts **in order**, one completed Unreal editor Python process at a time, using the `-ExecutePythonScript` runner below:
 
 1. `Scripts/AuthorWreckAssemblies.py` — creates private three-dimensional assemblies from owned megastructure meshes in a disposable unsaved map.
 2. `Scripts/AuthorSpaceAreas.py` — backs up the private look asset and authors the four recipes using those assemblies and the existing owned asteroid/atmosphere content.
-3. `Scripts/AuthorAlienGallery.py` — authors `/Game/SpaceSurvival/Licensed/AlienGallery/DA_AlienGalleryCook`, selecting both complete vendor maps and recursive dependencies for a future licensed cook.
+3. `Scripts/AuthorAlienGallery.py` — authors `/Game/SpaceSurvival/Licensed/AlienGallery/DA_AlienGalleryCook`, selecting both complete vendor maps and recursive dependencies for licensed cooks.
 
 Keep `Content/Megastructure_Scifi_World` intact, including `Level/L_Showcase_level` and `Level/L_assets`. The scripts preserve vendor packages; generated assets and the cook label remain private. Existing Asteroid Library, atmosphere and orbital-wreck derivatives are prerequisites. These authoring scripts intentionally update their private outputs; preserve manual changes before rerunning. Do not run them over an owner's unsaved editor session. A label is cook intent, not evidence that an existing package contains either map.
 
@@ -43,7 +77,7 @@ Keep `Content/Megastructure_Scifi_World` intact, including `Level/L_Showcase_lev
 
 For area comparisons, repeat `CaptureSpaceLook.ps1` with `-Area 0`, `1`, `2` and `3`; `-Variation` selects a repeatable review variation, and `-Sequence` adds sampled motion frames. `-Area -1` retains automatic area selection. These are scripted visual fixtures, not representative performance or physical-input evidence.
 
-The gallery fixture uses a fresh isolated home hangar, the ordinary service interaction, full showcase, asset-layout switch and return. It requires `GalleryDoorway`, `GalleryShowcase`, `GalleryAssets` and `GalleryReturn` PNGs, unchanged encoded run/account state, restored pawn/transform, production-save preservation and exact process/artifact identities. The first capture framed empty floor; corrected capture `3bc9ba3b7f2a42c8a3899b57ae024b38` visibly includes the inventory and passed independent bounded review. Physical input and packaged execution remain unverified. Acceptance belongs in [the active log](KNOWN_ISSUES.md), not the fixture's success flag. See [gallery controls](STATION_EDITING.md#inspect-the-complete-alien-world) for manual inspection.
+The gallery fixture uses a fresh isolated home hangar, the ordinary service interaction, full showcase, asset-layout switch and return. It requires `GalleryDoorway`, `GalleryShowcase`, `GalleryAssets` and `GalleryReturn` PNGs, unchanged encoded run/account state, restored pawn/transform, production-save preservation and exact process/artifact identities. The first capture framed empty floor; corrected capture `3bc9ba3b7f2a42c8a3899b57ae024b38` visibly includes the inventory and passed independent bounded review. Packaged execution was unverified at that initial uncooked checkpoint; the later [packaged gallery receipt](validation/2026-09-16-gallery-input-isolation.json) records its own source and limits. Physical input and reset-candidate gallery acceptance remain separate. Acceptance belongs in [the active log](KNOWN_ISSUES.md), not the fixture's success flag. See [gallery controls](STATION_EDITING.md#inspect-the-complete-alien-world) for manual inspection.
 
 ## Owned asteroid presentation authoring
 
@@ -57,9 +91,46 @@ Example (one script at a time):
 
 Authoring backs up four private packages under `Artifacts/AsteroidDepth/<run>/`, preserves existing layout arrays and verifies vendor bytes. `-SSSkyResolution=4096` is an optional comparison; 2048 is the default. `AuthorSpaceVisualPass.py` also selects 2K BC6H for these three derivatives. A separate rendered check is required; authoring does not package or publish. Current evidence and open work remain in VALIDATION and KNOWN_ISSUES.
 
-## Station pit stop authoring (development project, unaccepted)
+The package command forwards `-RenderOffscreen` to the cooker and disables the two editor integration plugins there. Their project references also allow only Editor targets. The isolated reset worktree has its own ordinary `Artifacts` directory, so its `Scripts/Build.ps1 -Target Package` archive does not replace the original checkout's `Artifacts/Windows`.
 
-Added 2026-09-17. The current source composes the station exterior as one body the hangar is cut into and dresses the hangar interior. Nothing here has been packaged or published, and the look is not owner-accepted: the installed package in `Artifacts/Windows` predates this work and still shows the old exterior. Generated outputs under `Artifacts/`, `.agent/local/` and `Content/SpaceSurvival/Licensed/` are git-ignored; only the scripts and the generated collision include are tracked. Open work stays in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+## Station reset authoring (development project, unaccepted)
+
+Paraphrase of the owner's September 21 direction: an industrial steel/amber district inside the supplied hollow asteroid, with connected colony structures around it. After the Editor build, prepare the Phoenix presentation derivative and measured flight-hull profile described in [Content pipeline](CONTENT_PIPELINE.md#stellar-phoenix-presentation-adapter), then author the reduced asteroid and colony derivative before the station layout. Use one Unreal process at a time. Run each inspection first and inspect its receipt before adding its apply flag:
+
+```powershell
+$ssRoot = (Get-Location).Path
+$ssEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe'
+$ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixFlightHull.py"
+# After inspecting Artifacts/PhoenixPresentation/flight-hull-dry-run.json:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixFlightHull.py" -SSApplyPhoenixFlightHull
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixParkedPhysics.py"
+# Inspect parked-physics-dry-run.json, then apply the owned ten-shape parked derivative:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorPhoenixParkedPhysics.py" -SSApplyPhoenixParkedPhysics
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroid.py"
+# After inspecting Artifacts/StationAsteroid/dry-run.json:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroid.py" -SSApplyStationAsteroid
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/InspectStationAsteroidPlacement.py"
+& $ssEditor $ssProject -unattended -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroidMaterial.py"
+# Inspect material-dry-run.json before saving the private material:
+& $ssEditor $ssProject -unattended -RenderOffscreen '-DisablePlugins=UAssetBrowser,NwiroIntegrationKit' "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationAsteroidMaterial.py" -SSApplyStationAsteroidMaterial
+# With $ssBlender pointing to the installed Blender and $ssFigurSource to the owned space_station_kit.blend:
+& $ssBlender --background --factory-startup --python Scripts/AuthorStationColonyHabitat.py -- --source $ssFigurSource
+# Inspect Artifacts/StationReset/ColonyHabitat/source-quarter.png and dry-run.json, then export:
+& $ssBlender --background --factory-startup --python Scripts/AuthorStationColonyHabitat.py -- --apply --source $ssFigurSource
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/ImportStationColonyHabitat.py"
+# Inspect the baked preview and import-dry-run.json before saving the private assembly:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/ImportStationColonyHabitat.py" -SSApplyStationColonyHabitat
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationReset.py"
+# After inspecting Artifacts/StationReset/plan.json and recipe.json:
+& $ssEditor $ssProject -unattended -NullRHI -DisablePlugins=UAssetBrowser,NwiroIntegrationKit "-ExecutePythonScript=$ssRoot/Scripts/AuthorStationReset.py" -SSApplyStationReset
+```
+
+The asteroid author's September 21 revision-3 receipt preserves the 5,464,576-triangle original and editor source in a private copy, with 500,640 stored Nanite render triangles and 150,192 collision-fallback triangles. `Artifacts/StationAsteroid/author.json` records those distinct counts and the unchanged source hash. Smaller 20k/50k/100k fallback attempts exceeded the fixed one-source-centimetre surface tolerance; the saved candidate's maximum sampled difference is 0.773376 cm, with all 175 ray hit classifications retained. Uniform scale 145 gives the unit-scale roughly 2 m import a roughly 300 m design envelope and scales that sampled difference to 112.14 cm; scaling does not optimize geometry. The private bowl removes the original convex body and uses its measured fallback triangles for non-simulated ComplexAsSimple collision, under a 160,000-triangle native budget. The native station owns that physical proxy; the visual Blueprint stays collisionless. Native district floor/wall/column/console/staff bodies and the circular pad own the bounded playable space; the outer asteroid and colony are not an unrestricted walkable world. The station author saves `BP_StationReset`, preserves the original `BP_StationVisualLayout`, and refuses an output whose ownership hash no longer matches. Generated assets and receipts remain private. Run the placement inspector, reset integration tests and render the actual home/arrival/departure experience before review; a successful author is not a visual or performance pass.
+
+## Historical station pit stop authoring (development project, unaccepted)
+
+At the initial September 17 authoring checkpoint, the source composed the station exterior as one body with the hangar cut into it and dressed the interior. That checkpoint had not yet been packaged or published; its then-installed package showed the preceding exterior. These preserved authoring steps now describe the legacy layout, superseded as the active reset by `StationReset/BP_StationReset`. Generated outputs under `Artifacts/`, `.agent/local/` and `Content/SpaceSurvival/Licensed/` are git-ignored; only the scripts and the generated collision include are tracked. Open work stays in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 Run the steps **in order**, one completed process at a time:
 
@@ -94,9 +165,22 @@ In editor Python, `unreal.Rotator` positional order is (roll, pitch, yaw); pass 
 
 ## Prefab catalogue, thumbnails and vault imports
 
-Added 2026-09-17. [PREFAB_LIVE_LINK.md](PREFAB_LIVE_LINK.md) describes the prefab library, the **SS Prefabs** editor menu and the Blender add-on; these are its headless entry points. Everything generated lands under `Artifacts/PrefabLibrary` or `Artifacts/VaultImport` (git-ignored). Imported listings are licensed content and stay out of git; see the `ImportVaultGlb.py` note below for where they land, because one of the two locations is not ignored yet. Prefab recipes are tracked as `Prefabs/<Category>/<Name>.json`; none exist yet. The add-on under `Tools/SSLiveLink` is a package (`ss_live_link/`, v0.3.0) with Types, Send to Unreal, Edit Mesh and Open Scene / Apply; that document is its owner-facing guide, and says what was and was not tested. Install it with `Tools/SSLiveLink/Install Blender Add-on.cmd` (double-click; it runs `install.py` in every Blender under Program Files), then restart Blender; restart the Unreal editor once as well, because `bRemoteExecution` and `Content/Python/init_unreal.py` are read only at start-up.
+Added 2026-09-17. [PREFAB_LIVE_LINK.md](PREFAB_LIVE_LINK.md) describes the prefab library, the **SS Prefabs** editor menu and the Blender add-on; these are its headless entry points. Everything generated lands under `Artifacts/PrefabLibrary` or `Artifacts/VaultImport` (git-ignored). Imported listings are licensed content and stay out of git; see the `ImportVaultGlb.py` note below for its historical and current import locations, both git-ignored. Prefab recipes are tracked as `Prefabs/<Category>/<Name>.json`; none exist yet. The add-on under `Tools/SSLiveLink` is a package (`ss_live_link/`, v0.4.0) with Types, Send to Unreal, Edit Mesh and Open Scene / Apply; that document is its owner-facing guide, and says what was and was not tested. Install it with `Tools/SSLiveLink/Install Blender Add-on.cmd` (double-click; it runs `install.py` in every Blender under Program Files), then restart Blender; restart the Unreal editor once as well, because `bRemoteExecution` and `Content/Python/init_unreal.py` are read only at start-up.
 
-Meshes sent from Blender land in `/Game/Blender/<Category>/` (`Content/Blender`), outside the always-cooked `/Game/SpaceSurvival` for the same reason as `/Game/Fab`: they ship only when something in the game references them. `Content/Blender/` and the test folder `Content/_SSSelfTest/` are **not git-ignored yet**; until those two lines are added to `.gitignore`, do not `git add -A`. Every asset file an import goes over is first copied to `Artifacts/LiveLink/Backups/<time>/`, and every recipe file Blender's Apply replaces to `Artifacts/LiveLink/Backups/Scenes/`.
+SS Link v0.4.0 adds **Pop Out Library**, **Prepare Large Library**, **Export Library** and **Import Library**.
+The native browser is prepared from actual GLB meshes into `Artifacts/PrefabLibrary/BlenderAssets`;
+a laptop needs Blender 5.2 and the exported private ZIP, not Unreal. Export checks for a current prepared
+catalog and free disk space; incomplete archives stay temporary and are removed on failure. Import
+validates checksums and extracts into a new folder. Per-object simple surfaces are resolved into private
+Unreal materials; original mesh defaults are preserved. Saved-mesh auto-refresh requires the updated
+Unreal Python scripts, an editor outside PIE and Blender's checkbox enabled. Restart both applications
+after updating. [Usage and limits](PREFAB_LIVE_LINK.md#large-window-and-laptop-library-v040-september-22).
+Focused checks: `Tools/SSLiveLink/test_library_workflow.py` in background Blender and
+`Scripts/TestBlenderSurfaces.py` through the offscreen Unreal Python runner. The latter creates/removes
+only its two isolated test materials; do not run it concurrently with another Unreal authoring command.
+The library ZIP and native mesh previews remain private ignored artifacts, never repository payloads.
+
+Meshes sent from Blender land in `/Game/Blender/<Category>/` (`Content/Blender`), outside the always-cooked `/Game/SpaceSurvival` for the same reason as `/Game/Fab`: they ship only when something in the game references them. `Content/Blender/` and the test folder `Content/_SSSelfTest/` are git-ignored. Stage only intended source changes; other licensed import folders can still be untracked. Every asset file an import goes over is first copied to `Artifacts/LiveLink/Backups/<time>/`, and every recipe file Blender's Apply replaces to `Artifacts/LiveLink/Backups/Scenes/`.
 
 Once Blender's Apply has written `Prefabs/Scenes/StationInterior.json`, that file is the station interior's recipe: Blender opens it in place of `PitStopLayout.json`. Step 6 of the pit stop pipeline above (`AuthorStationEditableLayout.py --layout-recipe .../PitStopLayout.json --reset-layout`) then rebuilds the layout from the older generated recipe and discards what was applied from Blender, while Blender goes on showing its own file. Pass `Prefabs/Scenes/StationInterior.json` to step 6 instead, or delete that file on purpose to start again from the generator. In the open editor, `ss_scenes.apply_station_recipe` refuses to rebuild a layout that something other than a recipe has saved since the last build (the Station Workshop, the Blueprint editor) unless called with `force=True` (Blender's Apply Anyway); the headless author script has no such check.
 
@@ -115,7 +199,7 @@ python Tools/SSLiveLink/build_gallery.py
 ```
 
 - **`ImportVaultGlb.py`** imports each Fab listing that exists only as `User downloaded assets/VaultCache/FabLibrary/<Listing>-<hash>/glb/converted/*.glb` as one static mesh, with a receipt in `Artifacts/VaultImport`; rigged listings are forced static. The script committed in `8e90995` targets `/Game/SpaceSurvival/Licensed/Fab/<Name>/SM_<Name>` (git-ignored); a later 2026-09-17 edit changes the target to `/Game/Fab/<Name>/SM_<Name>` because `/Game/SpaceSurvival` is always cooked, and the ten meshes and receipts on disk are at that second location. `Content/Fab/` is git-ignored. An existing target is kept unless `-- --force`; `-- --only <text>` and `-- --skip <text>` filter by name. Of the eleven GLB-only listings in the vault on 2026-09-17, ten have import receipts and Space Station 4 is left alone because it was already imported as `SM_StationExterior`. Success logs `VAULT_GLB_IMPORTED`. Run it before the catalogue export so the new meshes are catalogued. Owned Unreal-format listings whose vault entry is only a launcher manifest cannot be imported this way; only the owner can add them through Fab/Epic.
-- **`ExportPrefabCatalog.py`** writes `Artifacts/PrefabLibrary/catalog.json` and glTF proxies under `proxies/<pack>/` (458 meshes on 2026-09-17). The first run takes minutes; existing proxies are kept, so reruns add only what is new. `-- --no-proxies` is the quick variant and `-- --limit N` bounds a trial. It needs the GLTFExporter plugin, which is enabled for the Editor target only. Success logs `PREFAB_CATALOG`. The editor equivalent is SS Prefabs > Rebuild Catalogue.
+- **`ExportPrefabCatalog.py`** writes `Artifacts/PrefabLibrary/catalog.json` and glTF proxies under `proxies/<pack>/` (458 meshes on 2026-09-17). The first run takes minutes; reruns update new meshes and saved mesh changes incrementally. The September 22 full scan exports 677 meshes, superseding the historical 458 count. `-- --no-proxies` is the quick variant and `-- --limit N` bounds a trial. It needs the GLTFExporter plugin, which is enabled for the Editor target only. Success logs `PREFAB_CATALOG`. The editor equivalent is SS Prefabs > Rebuild Catalogue.
 - **Thumbnails come from the engine.** `ExportPrefabCatalog.py` writes each part's real textured preview through `USSThumbnailLibrary` (`Source/SpaceSurvivalEditor`): textures pinned resident, a full turn of camera yaws tried so one-sided walls face the viewer, drawn at 512 and averaged to 256, exposure lifted, flat `#1b1d22` backdrop. Rows record `"thumb_source": "unreal"` and are kept on later runs; `-- --force-thumbnails` redraws them all. The Blender renderer below is the fallback for a machine without the editor build: its proxies carry no textures, so its pictures are clay shapes.
 - **`render_thumbnails.py`** renders a 256x256 PNG per proxy into `Artifacts/PrefabLibrary/thumbs` in one Blender session and rewrites `catalog.json` with the `thumb` entries. Existing thumbnails are kept unless `--force`; `--limit N` and `--only <text>` go after the bare `--`. The last line printed is `THUMBNAILS_OK` with rendered/skipped/failed counts.
 - **`build_gallery.py`** is plain Python (no Blender, no Unreal) and writes the offline page `Artifacts/PrefabLibrary/index.html` from the catalogue and any prefab recipes; it fails clearly when no catalogue exists.
@@ -168,7 +252,7 @@ $ssProject = Join-Path (Get-Location) 'SpaceSurvival.uproject'
 
 This runs the project through the installed editor executable. It is not a packaged build.
 
-For manual station composition, open the populated `BP_StationVisualLayout` Blueprint described in [STATION_EDITING.md](STATION_EDITING.md). Its mesh and light components drive the live station presentation; the create-once authoring script preserves saved manual edits.
+The reset candidate selects `StationReset/BP_StationReset` when installed; [Station authoring](STATION_AUTHORING.md#functional-reset-layout--september-21-owner-redesign) describes its recipe, ownership checks and matching solids. The preserved `BP_StationVisualLayout` Blueprint and workshop described in [STATION_EDITING.md](STATION_EDITING.md) remain the legacy/fallback authoring route. Workshop Save + Apply does not modify the active reset layout.
 
 ## Windows package
 
@@ -178,14 +262,14 @@ For manual station composition, open the populated `BP_StationVisualLayout` Blue
 
 The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Historical Package 14 succeeded (UAT log: 0h 2m 8s, exit 0; native build 69.48 seconds).
 
-Archive: `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows`. Packaging replaces this shared path. Match the receipt linked from [Project State](PROJECT_STATE.md#source-build-and-release), including the inner game and containers; the launcher alone is not a build identity.
+Archive: `Artifacts/Windows` under the selected checkout. Packaging replaces that checkout's archive. The reset candidate is in the isolated review checkout named above; packaging it did not replace the original checkout's archive. Match the receipt linked from [Project State](PROJECT_STATE.md#source-build-and-release), including the inner game and containers; the launcher alone is not a build identity.
 
 The historical Package 13 receipt also binds all five .pak/.utoc/.ucas containers, all 120 project packages plus Engine Cube, 2,184 index rows, prerequisite provenance and copied acknowledgements. Package 13 Wave 10 passed its normal-timing fixture. Package 12 separately retains the preceding Station 1 transition benchmark; that earlier capture does not establish a new Package 13 Station 1 measurement. Exact measurements and their limits belong in [PERFORMANCE.md](PERFORMANCE.md); earlier package results remain historical.
 
-Keep the entire archive directory together; the launcher alone is not the game. Launch from the repository root:
+Keep the entire archive directory together; the executable alone is not the game. For the current review candidate, launch from the review checkout root with the separate-profile wrapper:
 
 ```powershell
-& './Artifacts/Windows/SpaceSurvival.exe' -windowed -ResX=1280 -ResY=720
+& './Play Packaged Review.cmd'
 ```
 
 ## Historical package checks
@@ -226,28 +310,55 @@ The dry run binds the current built/archive executable and link response file; u
 
 ## Controls
 
+The following mappings describe Package5/source `0004810`, retained in Package7/source `25cf794`, the temporary September 22 testing preset. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
+
 | Capability | Keyboard/mouse | Controller |
 | --- | --- | --- |
-| Flight steering / on-foot look | Mouse | Right stick |
-| Flight lateral / vertical | A/D and R/F | Left stick |
-| Throttle | W/S | D-pad up/down |
-| Fire | Left mouse | Right bumper |
-| Boost | Shift | Right trigger |
-| Heat-limited brake | Space | Left trigger |
-| Directional dodge | Q with movement direction | Left bumper with left-stick direction |
+| Flight yaw / pitch | Mouse | Left stick left/right yaw; up/down pitch |
+| On-foot look | Mouse | Right stick |
+| Flight sideways / vertical | A/D and R/F | No stick strafe; LB/RB evasive dash |
+| Flight roll | — | LB / RB |
+| Flight free-look | — | Right stick |
+| Throttle, 0–100% | W/S raises/lowers the setting | Right trigger; release to coast |
+| Fire | Left mouse | A |
+| Boost | Shift | B |
+| Brake (wave heat / station stop) | Space | Left trigger |
+| Directional dodge | Q with movement direction | Unbound in this testing preset |
 | Walk / run | WASD / Shift | Left stick / X |
-| Interact / choose | E / Enter | A |
-| Shell / back | Escape | Menu / B |
+| Jump on foot | Space | A |
+| Interact on foot | E | Y |
+| Flight encounter interaction | E | X |
+| Confirm menu choice | Enter | A |
+| Dock when the pad says ready | E | X |
+| Shell / back | Escape | Menu; B while a menu is open |
 
-Banking follows steering/lateral movement. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
+In the controller testing preset, LB/RB tap for a sideways dash/bank with level recovery; hold for fast roll, retaining attitude on release. Mouse-up, flight left-stick-up and walking right-stick-up pitch upward by default; pitch inversion reverses the relevant view/steering axis. On foot, movement follows the camera direction and the character turns toward travel; the right stick/mouse can orbit the camera independently. Settings expose independent mouse/controller sensitivity dials from 0.3–2.9 in 0.2 steps (upper clamp, then wrap), pitch inversion, boost/brake hold/toggle, subtitles, UI scale, camera shake, blur, volumes, scalability and frame cap. Full remapping is absent; it is not an explicit Phase 1 acceptance requirement.
+
+The approved arcade baseline multiplies existing authored cruise/acceleration by 2.5: 6000 cm/s (60 m/s) and 8000 cm/s squared. Boost remains separate. RT directly controls normal engine power. Releasing it cuts forward thrust and preserves momentum; turning the hull alone does not redirect that coast. Use LT/Space to brake. W/S changes a persistent keyboard throttle setting from zero to full over two seconds; lower it to zero to coast. Possession changes reset that setting. Boost uses the existing resource limit, and brake suppresses boost. Outside the station zone, braking still obeys its heat limit; inside it, brake can bring the ship to a stop without overheating. There is no automatic minimum cruise in this follow-up.
+
+When mixing devices, a fresh W/S press selects keyboard throttle; pressing, deliberately adjusting or releasing RT selects analog throttle. Mouse look, controller look and unrelated buttons only change their own controls and HUD prompts. They cannot restore an old keyboard power setting after RT is released.
+
+The uncooked developer build of the flight reset requires the rebuilt project DLL and the private Phoenix presentation derivative described in [the content pipeline](CONTENT_PIPELINE.md#stellar-phoenix-presentation-adapter), together with the installed ShipCore plugin and licensed Phoenix content. The packaged review uses its complete archive and does not require the Editor DLL. Rebuild/authoring does not update an older packaged executable; confirm the [source/build/package identity](PROJECT_STATE.md) before comparing controls. `-SSClassic` selects the previous hull path for comparison.
+
+On station approach, follow the exterior landing-pad marker. Release throttle, then apply brake to slow to unboosted cruise speed or below; approach above the deck and use the HUD's hull-aware distance/clearance message. Press E/controller X when ready to begin the three-second align-and-lower sequence. Entering the radius by itself does not dock. Firing is disabled during docking and lift-off.
+
+Walk up the parked Phoenix's rear ramp and into its cabin to open the launch choices. At home, Start Survival begins a new run, Continue Survival loads an available station checkpoint, and Free Flight starts casual flying without survival progress. During a survival station visit, Continue Survival keeps the current run; Free Flight is unavailable until home. Closing the choices inside the cabin keeps them closed until you leave and enter again. The launch console remains another entry point, including on the preserved fallback layout.
+
+Launch returns control to the same parked ship and lifts it 7 m before handing back steering and thrust at zero throttle. Apply RT or raise the keyboard setting with W, then fly clear of the 180 m zone to resume the survival wave clock and encounter spawning. Initial departure preserves Wave 1's time; Station 1 departure starts Wave 6 at that boundary. Station 2 remains the Phase 1 service/save boundary and does not start Wave 11. Free Flight instead retains the home pad, spawns no survival waves, and offers Return to home hangar; it cannot overwrite a survival checkpoint or grant progression.
+
+The [station reset](CONTENT_PIPELINE.md#functional-station-reset) uses the separate `BP_StationReset` layout in both the home hangar and station visits. Its floor, walls, columns and consoles have native blocking bodies; service prompts are at usable points beside the consoles. CREW WARDROBE opens the installed body choices at home as well as mid-run and changes the actual walking character. This requires the authored/saved reset asset; if it is absent, the original layout remains the fallback. Check the active layout when reviewing the redesign.
+
+`SpaceSurvival.Flight.ControllerToPhysics` and `SpaceSurvival.Flight.ControllerAfterTakeoff` exercise injected raw keyboard/mouse and gamepad events through the actual controller and movement body, including possession and lift-off. `ControllerPitchParity` covers both pitch-inversion settings in flight and on foot. `LiveRewardInput` checks steering, menu selection and hidden-pointer rejection, with an unattached Slate viewport to exercise the engine input-mode branch. `StationArrivalPause` and `StationDeparturePause` cover the real landing/lift sequences across menu pause and resume. `SpaceSurvival.Flight.CrosshairTargetDamage` covers native target damage with both weapons. Their run results belong in the validation record; these synthetic checks do not establish physical-device response, OS focus/capture acquisition, rendered animation quality or owner acceptance.
+
+The follow-up adds `SpaceSurvival.Integration.PhoenixWalkBoarding` for real CharacterMovement across deck/ramp/cabin at home and a rotated station, `WalkerDirectionalMovement` for turning and jump/landing, and `SpaceSurvival.Flight.FreeFlightLifecycle` for practice launch/return. Directional movement passed Focused1; after correcting its ramp box-selector defect, Build2/Focused2 passed boarding, parked collision and Free Flight lifecycle (3/3, no warnings or failures). Final evidence belongs in [VALIDATION.md](VALIDATION.md). Ramp support is native and uses the existing Phoenix assets; no additional ramp authoring or installation is required after rebuilding. Preserve the supplied/private asset dependencies and run the updated package before judging the physical fixes.
 
 Package 6 native clicks saved mouse/controller sensitivity 1.2. After normal close/relaunch the isolated Controls menu displayed both 1.2. This verifies persistence, not comfortable steering response.
 
-Normal shell/settings menus pause flight. The depot now uses an aboard-ship magnetic service lock (up to 20 seconds); closing its panel releases the ship, and mooring grants no wave progress. Reward panels retain live flight. Physical-device menu behavior remains open in ISS-13 / PT-08 and PT-16.
+Normal shell/settings menus pause flight, incoming docking and station departure. The depot uses an aboard-ship magnetic service lock (up to 20 seconds) and a visible cursor; closing its panel releases the ship, and mooring grants no wave progress. Reward panels retain live flight and captured mouse steering with the pointer hidden. Use Up/Down, left stick or D-pad to choose, Enter/A to confirm, and Esc/B to close; mouse clicks cannot select a hidden reward row or fire while the panel is open. After using B to close a menu, release it before a fresh boost press. Physical-device menu behavior remains open in ISS-13 / PT-08 and PT-16.
 
 ## Local saves
 
-Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 3, which appends the four paint-bay choices (-1 for factory finish, 0-9 for a colour; out-of-range values are refused), and still reads versions 2 and 1 as the factory finish; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
+Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 4, retaining the four paint-bay choices from version 3 (-1 for factory finish, 0-9 for a colour) and appending the walking-hero choice. Older account versions remain readable, with absent paint/hero choices taking their defaults; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
 
 Save & Quit is available at stations. Continue consumes the suspension before exposing restored play; death persists XP/run identity and invalidates suspension. Unreadable account data is protected from overwrite and requires a known-good backup for recovery. Use isolated test profiles for failure tests and preserve existing personal saves.
 
@@ -283,12 +394,19 @@ For a normal-frame scripted benchmark, use `CaptureEndgame.ps1` without visual r
 
 `-Editor` uses the installed editor's uncooked game mode and current project DLL; omitting it selects the current packaged inner executable. Each launch owns a fresh GUID under Artifacts/EndgameSoak, records exact source/artifact/production-save identities and requires complete fixture output. Visual captures launch hidden with `-RenderOffscreen -ForceRes` and do not require focus. Runs without `-CaptureVisuals` still require foreground: focus the owned game window within 60 seconds and keep it foreground for the timing fixture. Station 5 defaults to 330 seconds timeout, Wave 10 to 240 seconds; cleanup only terminates the owned process. No build, install or package occurs in this wrapper.
 
-As of 2026-09-17 both switches matter for the station pit stop work. The default mode runs the packaged build in `Artifacts/Windows`, which predates that work and still shows the old exterior, so only `-Editor` (receipt mode `UncookedEditorGame`) renders the current source. Without `-CaptureVisuals` the wrapper opens a window that asks for focus, which an unattended run cannot give. Two `-Editor -Scenario Station5 -CaptureVisuals` runs reported success that day: `Artifacts/EndgameSoak/a495a8bb393243dfa7f9349e2d5df40f`, then `Artifacts/EndgameSoak/df3bbc149c764c9995700b5ae0e19182` after the lane/frame lights were dimmed and the gantry legs removed. They are rendered fixture evidence only: not natural play, not 60 FPS acceptance and not owner acceptance of the look.
+**Historical September 17 capture behavior:** that checkout's then-packaged build predated the pit stop, so `-Editor` (receipt mode `UncookedEditorGame`) was needed to render its new source. Two `-Editor -Scenario Station5 -CaptureVisuals` runs reported success that day: `Artifacts/EndgameSoak/a495a8bb393243dfa7f9349e2d5df40f`, then `Artifacts/EndgameSoak/df3bbc149c764c9995700b5ae0e19182` after the lane/frame lights were dimmed and the gantry legs removed. The September 21 review checkout's Package 3 contains the reset and passed packaged Station5/Wave10 captures without `-Editor`. These are rendered fixture results, not natural play, 60 FPS or owner acceptance.
 
-Current `-CaptureVisuals` source requires exactly **16 Station 5 images**: Flight, Climax, Wormhole, Approach, Docking, Exit0-Exit6, StationIdle, StationServices, StationOverview and CombatImpact. Wave 10 requires exactly four: Flight, Climax, Compound and Approach. The wrapper checks names, PNG dimensions and request metadata. StationServices and StationOverview use labeled fixture review cameras without changing possession; the other frames retain the normal viewport/HUD. CombatImpact must identify a live enemy-explosion effect 0.15-0.65 seconds after an actual weapon kill. Pose requests do not override animation, and requested exit times are not proof of the rendered pose.
+Current `-CaptureVisuals` requires nine base Station5 images: Flight, Climax, Wormhole, Approach, Docking, StationIdle, StationServices, StationOverview and CombatImpact. Heroes with a supplied climb-out sequence add Exit0–Exit6; `-StationExterior` adds StationPadMouth and StationColonyOverview. The final squirrel/exterior capture therefore has 11 images. Wave10 requires four: Flight, Climax, Compound and Approach. The wrapper checks names, PNG dimensions and request metadata. StationServices, StationOverview and the exterior frames use labeled fixture review cameras without changing possession. CombatImpact must identify a live enemy-explosion effect 0.15–0.65 seconds after an actual weapon kill. Pose requests do not override animation, and requested exit times are not proof of the rendered pose.
 
 Visual runs also request ListTextures and are excluded from performance findings even when a CSV/performance.json is produced. The executable must contain the matching capture implementation; these current-source instructions do not establish which historical package supports the complete image set. Package 12 introduced the earlier visual switch, and its normal-timing Station 5 fixture does not establish a visual readback. See [ENDGAME_CAPTURE.md](ENDGAME_CAPTURE.md) for the underlying fixture and historical receipts, and [PERFORMANCE.md](PERFORMANCE.md) for benchmark limits.
 
 ## Station Workshop editor setup
 
 After restoring the private station content, run `Scripts/Build.ps1 -Target Editor`, then `Scripts/OpenStationWorkshop.ps1 -Prepare` once. Double-click `Open Station Workshop.cmd` for subsequent editing; an already-open editor is reused through Tools > Station Workshop. Preparation preserves existing presets and the saved map. See [Station editing](STATION_EDITING.md) for the source-map/derived-Blueprint and package boundaries. `Scripts/ValidateStationWorkshop.py` is a bounded integration fixture for a freshly prepared development workshop, not a command owners need for routine edits.
+
+## Owned building examples sandbox
+
+See [Building sandbox workflow](BUILDING_SANDBOX.md). `Open Building Sandbox.cmd` opens the generated
+private map identified by `Artifacts/BuildingSandbox/build.json`; `Scripts/OpenBuildingSandbox.ps1 -CheckOnly`
+validates its presence without opening Unreal. This authoring map and its template pawn do not change
+the gameplay default map or a published package.

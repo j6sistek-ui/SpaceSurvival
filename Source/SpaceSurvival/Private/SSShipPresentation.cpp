@@ -15,7 +15,10 @@ USSShipPresentation::USSShipPresentation()
 void USSShipPresentation::SetHull(UStaticMeshComponent *InHull)
 {
     if (Hull == InHull && Modules.Num() == 6)
+    {
+        Refresh();
         return;
+    }
     for (auto &Module : Modules)
         if (Module)
             Module->DestroyComponent();

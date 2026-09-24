@@ -8,15 +8,68 @@ apply it back.
 This page is written for the person using the tools. Button names are in **bold** exactly as they appear.
 The last sections (pieces, transport, tests) are for whoever maintains them.
 
+## Large window and laptop library (v0.4.0, September 22)
+
+In **SS Link > Parts library**, press **Pop Out Library**. It opens Blender's native Asset Browser
+in a separate window with large thumbnails, categories and search. Move it to another monitor and
+drag a mesh into the main 3D viewport. **Prepare Large Library** builds this view in the background
+when it is missing; the status line reports completion. Preparing does not save or replace your scene.
+The September 22 desktop snapshot contains **1,325 static meshes with 1,325 thumbnails** (1,301 Unreal
+previews and 24 clay fallbacks). It includes all `/Game` static-mesh packs, including newer colony,
+Tripo and lighting assets; old 458-entry examples below are historical. Skeletal meshes, working
+Blueprint assemblies and Niagara effects are not exported as functioning Blender assets.
+
+**Export Library** makes one private ZIP of the prepared library. Copy it to the laptop and use
+**Import Library** in SS Link. Import checks the ZIP, creates a fresh library folder and switches the
+browser to it. The previous library and open `.blend` stay intact. Export refuses a stale prepared
+catalog: wait for preparation to finish and retry. Both computers should use SS Link v0.4.1 or newer and Blender
+5.2; native `.blend` library files are built with 5.2.2. Older-version compatibility is unverified.
+
+For the first laptop installation, extract the supplied ZIP and run its
+`SpaceSurvivalLibrary/Tools/SSLiveLink/Install Blender Add-on.cmd` with Blender closed. The extracted
+folder is its project root; Unreal is not required. On another OS, install the zipped `ss_live_link`
+folder manually and set the extracted library folder in preferences. Keep the folder structure.
+Save your arrangement as `.blend` and open that file on the desktop: placed meshes and `/Game` asset
+references travel together. Opening it does not push changes into Unreal; use the existing explicit
+Push/Apply commands. Keep Live off until you want synchronization.
+
+**Auto-refresh Library** enables saved-mesh scanning in the desktop Unreal editor, about every
+30 seconds while outside Play. It processes one catalog entry per editor tick, then Blender notices
+the catalog change and rebuilds only changed native asset files. An individual large mesh export can
+still briefly stall the editor. Turning the checkbox off disables subsequent scans. Unreal must be
+restarted after the Python update; Blender must remain open to pick up changes. Laptop libraries are
+offline snapshots: refresh them with Export/Import. Dependency-only texture/material edits are not
+detected by mesh timestamps; rebuild with forced thumbnails when those previews need updating.
+
+### Per-object materials
+
+Select a placed mesh and use **Surface**, **Glass** or **Mirror finish** under **Surface overrides**.
+Edit the displayed color, metallic, roughness, alpha, transmission and IOR controls. These overrides
+belong to that object, so another wall using the same mesh retains its material. Push, prefab saves
+and Scene Apply carry the values; **Export Placement + Materials JSON** writes a separate handoff.
+Unreal generates private materials under `/Game/SpaceSurvival/Licensed/BlenderSurfaces`, assigns them
+to the placed component, and preserves vendor materials and mesh defaults.
+
+This transfers six constant PBR properties, not arbitrary Blender shader graphs, textures or every
+Principled setting. Complex connected nodes are rejected. Glass is a simple translucent approximation;
+Mirror finish needs suitable Unreal reflections and is not a planar-mirror system. Verify their look
+in Unreal before using them broadly. These controls apply to placements, not the separate **Edit Mesh**
+geometry-replacement workflow.
+
+The desktop v0.4.0 installation and focused data/material checks passed. Live pop-out dragging,
+interactive editor refresh and final material appearance remain unverified; see the
+[focused validation record](validation/2026-09-22-blender-library.md) and
+[RPT-20260922-04](KNOWN_ISSUES.md#september22-blender-library--rpt-20260922-04).
+
 ## Before the first use (one time)
 
 1. **Install the add-on into Blender.** Close Blender. In the project folder open `Tools/SSLiveLink` and
    double-click **Install Blender Add-on.cmd**. It installs into every Blender it finds (5.2 and 5.1
    here) and prints `Installed into Blender 5.2.` for each. Start Blender again.
-   - Status on 2026-09-17: this has **not** been done on the owner's machine yet. Both Blenders still hold
+   - Historical status on 2026-09-17: this had **not** been done on the owner's machine yet. Both Blenders held
      the old single-file add-on (v0.1.0), which has none of Types, Send to Unreal, Edit Mesh or Scenes.
      The installer removes that old file.
-   - The panel's last line shows the version (`SS Live Link v0.3.0`). When the project's copy is newer
+   - The panel's last line shows the version (`SS Live Link v0.4.1`). When the project's copy is newer
      than the installed one, a red note at the top of the panel says so: run the installer again. Run it
      again whenever these tools are updated.
    - By hand instead: zip the folder `Tools/SSLiveLink/ss_live_link` (the folder itself), then in Blender
@@ -243,7 +296,7 @@ Main menu bar, **SS Prefabs**.
   placed prefab stands on the point you place it at.
 - **Open Prefabs Folder** opens `Prefabs/` in Explorer.
 - **Rebuild Catalogue (with Blender proxies)** scans the asset registry, exports proxies and draws the
-  thumbnails (minutes the first time; reruns only add what is new). **Rebuild Catalogue (no proxies)** is
+  thumbnails (minutes the first time; reruns update new or saved mesh changes). **Rebuild Catalogue (no proxies)** is
   the quick variant. A mesh sent from Blender is catalogued under the category folder it was filed in, and
   gets its row as soon as it is imported, without a rebuild.
 - **Open Visual Browser** / **Rebuild Visual Browser**: the gallery page.
@@ -336,3 +389,9 @@ Props, Misc. Each belongs to one type (the buttons): Building, Decoration, Exter
 Characters & Robots, Game Objects, Misc. A mesh sent from Blender takes the category of the folder it was
 filed in. Effects demo packs and engine samples are left out (`EXCLUDED_PACKS` in `ss_prefabs.py`). A wrong
 category is a one-line change to `CATEGORIES` followed by **Rebuild Catalogue (no proxies)**.
+
+## Building examples sandbox
+
+The owned Genesis and companion examples use a separate editable authoring level and a linked Blender
+scene. See [Building sandbox workflow](BUILDING_SANDBOX.md) for walking, placement round trips, the
+destination-map safeguard, laptop transfer and the boundary between Blender proxies and Unreal visuals.

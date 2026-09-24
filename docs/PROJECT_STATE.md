@@ -1,6 +1,72 @@
 # SpaceSurvival project state
 
-**Phase 1: PARTIAL.** The visual pass is merged and itch **0.1.16-alpha.1 / build 1979965** is ready on windows-alpha (verified September 15 UTC / September 14 local). [PRs #11–16](https://github.com/j6sistek-ui/SpaceSurvival/pulls?q=is%3Apr+is%3Amerged+11..16) are merged; PR #14's Station Workshop merge is `e44decdd`, and PR #15's owned audio/character/staff merge is `4aa4656`. These source changes do not alter the published game binaries. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities, systematic action IDs, owner checks and closure status. This page owns the source/build/release and storage explanation.
+**2026-09-24 source consolidation:** Owner authorized merging the open PRs. PR62, PR60 and PR63 are merged into their respective bases; PR58 now consolidates repaired gameplay, replacement hero and authoring tools into main, pending final checks/merge. Runtime source/configuration and selected tuning/map are identical to built hero commit `3d2ff3c`; this is not a new gameplay build. Desktop launchers continue using the repaired checkout. Older unmerged/import-pending notes below are historical.
+
+**Blender refresh complete:** `Artifacts/BuildingSandbox/BuildingSandbox.blend` now has5,522 placements matching the saved flat-space Unreal export. Reopened in Blender5.2.2 and checked every link, mesh path and transform; old7,431-placement scene preserved as `BuildingSandbox-before-refresh-20260924.blend`. No Unreal map or library rebuild, package or itch change. [Receipt](validation/2026-09-24-pr-consolidation.md).
+
+**2026-09-24 replacement hero / current local game:** branch `codex/replacement-hero-in-game`, repaired checkout `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, now uses the76623-triangle replacement for Squirrel. Editor build and2 focused jump/tail tests pass; actual Survival-level scripted walking/jump/landing captures pass after fixing fur material usage. Owner feel and cockpit fit acceptance remain open. Desktop Unreal Engine opens UE5.8 with this repaired project; Play SpaceSurvival - Current opens its development launcher. Original authoring source and old package remain separate. No new package, itch upload or merge. [Evidence](validation/2026-09-24-replacement-hero.md).
+
+**September24 flat sandbox update:** The saved editor sandbox now uses one flat platform and a
+space backdrop, with canyon/display barriers removed. Current scene.json has5,522 linked placements;
+the existing7,431-placement Blender file is historical and must be refreshed before Push.
+ComputerStation-only light/emission/reflection normalization is saved but final brightness acceptance
+is still PARTIAL. Five approach sweeps/ground checks pass; natural walking, door controls, reflection
+rebuild and VSM warnings remain open. See [flat-space evidence](validation/2026-09-24-sandbox-flat-space.json).
+No game build, package, itch update or PR merge occurred.
+
+
+**September23 authoring delivery:** SS Link0.4.1 installed in Blender5.2.2;1,325 static meshes with
+1,325 thumbnails. Private `/Game/Blender/Sandbox/BuildingSandbox_20260922` combines the five owned
+building demos around a solid connecting platform. `Artifacts/BuildingSandbox/BuildingSandbox.blend`
+contains7,431 linked placements; portable library `SpaceSurvival-Library-0.4.1-final.zip` is separate.
+Artifacts resolves to `M:/SpaceSurvival/Artifacts`. Source is `codex/blender-library-popout` / PR60,
+locally deployed to the original project with backups, unmerged.23 checksum-verified duplicate native
+cache folders removed with owner authorization (54,980,195,863 bytes);7,771 project content copies and
+unique sources retained. Manifests/receipts remain in ignored `Artifacts/VaultRefresh-20260922`.
+[Sandbox guide](BUILDING_SANDBOX.md) and [validation](validation/2026-09-23-building-sandbox.md) separate
+scripted checks from pending visual/walking acceptance. RPT-20260922-04 owns follow-up. Gameplay station,
+binaries and published itch payload unchanged. The older677-entry/0.4.0 snapshot is historical.
+
+**September22 merge authorization:** Owner authorizes PR59 into its existing `docs/station-authoring-process` base. PR58 to `main` remains separate and is not included in this authorization. Pre-approval unmerged statements below are historical; [PR59](https://github.com/j6sistek-ui/SpaceSurvival/pull/59) records the completed merge status. This source operation does not rebuild or change the published itch payload.
+
+**September22 published baseline:0.1.21-alpha.1 / itch build2003058 READY.** Package10/source`4fd0293` includes responsive flight, denser world-fixed mixed rocks/wreckage/architecture, controller stick menu navigation and separated HUD messages. [Published receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json). The local isolated launcher opens the same package. Package8 was rejected and its upload stopped. PR59 remains draft/unmerged. Star visibility is logged only; owner requested upload continue unchanged.
+
+**Earlier Package7 UI follow-up, September22 (superseded by Package8 below):** The earlier isolated review launcher opened source `25cf794`: aligned preference sliders, large scrolling wardrobe, and a walking radar showing actual crew, services and landing pad. Walking has no flight vitals/weapon panel. The prior approved HUD/settings/pause and locked main remain. Two affected menu tests, six packaged frames and archive inclusion pass. [Exact receipt](validation/2026-09-22-ui-refresh.md). Earlier GPU-memory warnings remain open; this is not performance acceptance. Unique service/wardrobe portrait layouts remain lead-owned; presets/remapping deferred.
+
+**September 22 arcade preset (supersedes prior stick mappings):** Left stick steers the nose in yaw/pitch; right stick controls the camera independently. LB/RB tap: sideways evade with a sharp bank and level recovery; hold: fast continuous roll, retaining attitude on release. RT throttle, LT brake, B boost, A fire, X interaction/landing. Engine-off coasting and keyboard controls remain. Walking unchanged; remapping deferred.
+
+**Retained Package5 gameplay, September22:** Source0004810 introduced the following behavior, retained in Package7: world-fixed solid belt, continuous environment routing, distinct home pause, retired gallery/Acornaut selections, explicit cabin interaction, beacon feedback, 60 m/s cruise and 3x orange Director asteroids. The temporary controller preset above is included. Editor Build9 and nine directly affected input/physics tests pass; the Windows package, actual archive audit and one packaged startup smoke pass. [Exact evidence and retained failures](validation/2026-09-22-world-feedback.md). Full cockpit seating, natural atmosphere/field travel and the reported beacon scenario remain lead-owned open work. No merge or publication occurred.
+
+**Phase 1: PARTIAL.** The owner played the isolated September 21 reset candidate and reported that the major failures felt improved. Current work repairs the remaining controls, wardrobe visibility, boarding and weapon feedback and adds the approved Free Flight option. Station composition is on hold. [Open work and your next review](KNOWN_ISSUES.md) owns active priorities and acceptance. The dated September 14–17 records below are historical; their use of “current” identifies the state at that checkpoint, not today's executable.
+
+## September 21 gameplay reset candidate
+
+The [gameplay follow-up receipt](validation/2026-09-21-gameplay-followup.md) records
+the approved controls, boarding/Free Flight, AlienFemale repair and locked Figma
+main menu first included in Package 4 and retained in Package 5. Package 4 has its own historical menu, weapon and female
+station captures; Package 5 adds the bounded checks below without repeating those unaffected panels.
+
+**Review checkout:** `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, branch `codex/flight-loop-reset`, [draft PR #59](https://github.com/j6sistek-ui/SpaceSurvival/pull/59), stacked on [PR #58](https://github.com/j6sistek-ui/SpaceSurvival/pull/58) at base `684db34`. The original checkout, running editor and uncommitted owner work are preserved. The repair owns its binaries and copied ShipCore plugin. Its Content junction uses the original licensed library; new PhoenixPresentation/StationReset derivatives have ownership receipts and preserved originals. Git alone does not reproduce those licensed assets or the plugin.
+
+**Open** `Play Packaged Review.cmd` in the review checkout. It opens only that checkout's `Artifacts/Windows/SpaceSurvival.exe`, using a separate persistent `Artifacts/PackagedReviewUser` profile. Keep the full package directory together. The launcher dry run passed; the agent did not open an interactive window. The original checkout's package remains older. Package10 is the new local baseline; itch publication is tracked above. PR59 remains unmerged.
+
+| Evidence layer | Current identity and result |
+| --- | --- |
+| Native gameplay | Package10/source4fd0293 retains89b1f3c flight: responsive LS nose steering, RS camera, bumper tap dash/bank and hold roll. Editor builds1/2 pass; four directly affected controller/world cases pass across Focused1/2. Initial roll failure retained and corrected. |
+| Authored station / wardrobe | Station geometry and art remain the earlier reset: Blueprint SHA `995ddffa1c00e5bfbedf0aaf9922b8ac25c7e45bde377618b1a838f7edd341f6`. AlienFemale Repair7 preserves all 18 originals and owns 12 private outputs; eight runtime assets ship, three authoring assets and the unused legacy material are excluded. Supplied geometry and rig remain preserved. |
+| Approved menu | Locked main19 textures unchanged; page11/KIT supplies33 textures plus Keania One. Large wardrobe scrollbar, aligned sliders and actual walking radar included. Flight vitals omit box/percentages; walking omits vitals/weapons. Unique service portraits/layouts remain open. |
+| Windows candidate | **Package10, source4fd0293**, Development Win64. UAT2m12s,3060cooked+8skipped,0cook errors/1known warning. EXE SHA `1904b117a28d693914c598731e2126cd9d0015943194a568d2d9264d40844c92`. |
+| Actual archive | Auditbdbf8a6689884158acf62a37a11e3952 PASS;350frozen inputs,158selected exports/372dependencies,53archive files. [Final package receipt](validation/2026-09-22-itch-0.1.21-alpha.1-package.json). Upload payload51files/5223860220bytes. |
+| Runtime presentation | Packaged74fc3cf0 rendered4frames; Turn inspected for corrected HUD. Message clears heading/radar. Overall non-firing/non-evasive29s survival fixture FAILED by death; process0/save/artifact guards pass. Earlier mixed-field frame shown to owner, who approved publication. |
+| Source checks | Local source37, changed-file format and documentation checks pass. MenuInputTests2 passes3/3; StructureTests3/3. Earlier four focused flight cases retain evidence. Docker unavailable locally; GitHub source/documentation workflows pass packaged source4fd0293. |
+
+The reset reconnects native controller/ShipCore motion, the full purchased Phoenix scene hierarchy, authored animations, camera-to-muzzle weapons, explicit pad admission, landing and continuous same-pawn departure. Native code owns input/motion/damage; a private presentation Blueprint avoids the supplied demo's missing projectile/occupant dependencies. Both station stops, wardrobe access, measured flight/parked hulls, physical routes and incoming/departure pause have integration evidence. These tests do not establish physical-device feel or natural gameplay.
+
+The rebuilt station is a bounded industrial concourse and circular dock inside the owned bowl asteroid, with supported surrounding habitat terraces. The asteroid's 5,464,576-triangle original/editor source is preserved; its private representation uses 500,640 Nanite triangles and 150,192 static collision-fallback triangles. World scale and geometry reduction are separate; sampled fidelity/collision checks passed, but frame-time performance is unmeasured.
+
+**Visual target remains NOT MET.** Final artistic cycle 3 shows clearer pad/bridge surfaces, repaired colony materials, solid trim, readable service consoles and dark space. Lead and independent review still find a sparse hall/two-habitat exterior, repeated interior composition, oversized floating labels and dark areas beneath the ship. The design remains an owner-review candidate, not reference-matched art. The active [owner reports](KNOWN_ISSUES.md#september-21-rebuild-the-flight-to-station-loop) retain those lead-owned gaps plus physical keyboard/mouse/controller, natural Waves 1–10, listening, representative 60 FPS and clean-PC launch requirements. Phoenix section paint remains factory finish until compatible material controls are authored.
+
+Package 1's editor-retargeter cook failure and Package 2's missing portal material are retained in the validation record. The compatible signed Microsoft runtime is bundled, not installed or clean-PC tested. Package10 is now published as0.1.21-alpha.1; distribution and automation success do not complete Phase1.
 
 ## September 18–19, not yet reconciled here: Stellar Phoenix hull, Ship Core flight, and an undocumented station/hero pass
 
@@ -163,7 +229,31 @@ Unreal can [monitor source folders and automatically reimport](https://dev.epicg
 - Validation receipts retain immutable history; old package numbers do not identify a shared path after it is rebuilt.
 - Every PR reconciles these boundaries and gives the owner an explicit open/check/still-open handoff.
 
-## September 23 replacement hero rig — local review files only
+### September 24 UTC: sandbox whiteout and editor camera drift
+
+Owner reported an unreadable exterior and doors without usable controls. The open sandbox
+inherited manual physical exposure compensation +10.7 and FFT bloom intensity8/size4.
+Sandbox-only histogram exposure, zero compensation and moderate standard bloom were applied
+and saved after a dry run and private map backup. Overview and ground-level captures show
+the exterior again. Fog visibility was restored after an inconclusive diagnostic.
+Editor joystick navigation was separately disabled and persisted in local user preferences:
+the camera had drifted from roughly16m to1.6km high. Gameplay controller input is unchanged.
+
+All60 door-labelled placements inspected are static meshes. Lit lock graphics are materials;
+the sandbox builder adds no opening control. Genesis level-script interaction remains
+unverified. No door animation/interaction was added. Next: owner Play check outside/inside.
+See [repair evidence](validation/2026-09-24-sandbox-visibility.json).
+
+Color follow-up: the owner rejected the amber cast. The sandbox's full-strength Kodak02
+film LUT and depth-fog post-process material were disabled, white balance/tint reset, warm
+4250K sunlight disabled and Rayleigh scattering returned to the engine default. Native
+materials and original vendor scenes remain intact. Candidate saved; owner color and
+interior-walking acceptance still open. Editor joystick navigation remains disabled only
+in local editor preferences.
+
+## September 23 replacement hero rig — historical authoring checkpoint
+
+Superseded for runtime status by the September 24 integrated-hero entry above. Preserve the following source provenance; do not repeat the completed native import.
 
 `.agent/local/ReplacementHero/` contains the private 75,183-triangle squirrel rig,
 Blender/FBX/GLB package and six tail-animation layers. Reproducible scripts and sanitized

@@ -2,12 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InstanceDataTypes.h"
 #include "SSDistantAsteroids.generated.h"
 
 class UInstancedStaticMeshComponent;
 class USSSpaceLookData;
+class UStaticMesh;
 
-/** Unreachable background dressing, deliberately outside the damage/target actor hierarchy. */
+/** Persistent solid asteroid belt, independent of wave pressure and the viewer transform. */
 UCLASS()
 class SPACESURVIVAL_API ASSDistantAsteroids : public AActor
 {
@@ -19,13 +21,13 @@ public:
 
     /** Call after spawning/replacing the flight pawn. Does not read or modify run state. */
     void Follow(AActor *InViewer);
-    /** Lead must disable for station approach, docking and on-foot/hangar views. */
+    /** Visibility is presentation-only; it never recenters the field. */
     void SetFlightVisible(bool bVisible);
     int32 GetRockCount() const
     {
         return BuiltCount;
     }
-    /** Conservative world-space distance from viewer to the nearest rendered mesh bound. */
+    /** Initial spawn clearance; travel can reach any rock afterward. */
     double GetMinimumSurfaceDistance() const
     {
         return MinimumAnchorSurface;
@@ -36,18 +38,25 @@ protected:
 
 private:
     void BuildField(int32 Count);
+    void StreamCells();
+    void AddCell(const FIntVector &Cell);
+    int32 AddMeshBatch(UStaticMesh *Mesh);
+    int32 RockBatchCount = 0;
+    TMap<UStaticMesh *, int32> MeshBatches;
+    struct FRockInstance
+    {
+        int32 Batch;
+        FPrimitiveInstanceId Id;
+    };
+    TMap<FIntVector, TArray<FRockInstance>> Cells;
+    FIntVector ResidentCenter = FIntVector(MAX_int32);
+    int32 ConfiguredCount = -1;
     UPROPERTY()
     TArray<TObjectPtr<UInstancedStaticMeshComponent>> Batches;
     UPROPERTY()
     TObjectPtr<USSSpaceLookData> SpaceLook;
     TWeakObjectPtr<AActor> Viewer;
-    FVector PreviousViewerPosition = FVector::ZeroVector;
-    FQuat FieldBasis = FQuat::Identity;
     double MinimumAnchorSurface = 0.0;
-    TArray<TArray<uint8>> InstanceBands;
-    TArray<TArray<FTransform>> RestTransforms;
-    TArray<TArray<FTransform>> AnimatedTransforms;
-    double SpinSeconds = 0.0;
     int32 BuiltCount = -1;
     bool bFlightVisible = false;
 };

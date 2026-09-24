@@ -98,3 +98,21 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 /Content/ParagonSevarog/
 /Content/ParagonYin/
 /Content/RamsterZ_FreeAnims_Volume1/
+
+# Owned Sci-Fi Bundle and its external example-level data; private authoring content.
+/Content/P1toP5_Bundle/
+/Content/__ExternalActors__/ARStudio_SciFi_P01/
+/Content/__ExternalActors__/JUPITER_SciFi_Kit/
+/Content/__ExternalActors__/P1toP5_Bundle/
+/Content/__ExternalActors__/SciFi_StarterPack/
+/Content/__ExternalObjects__/ARStudio_SciFi_P01/
+/Content/__ExternalObjects__/JUPITER_SciFi_Kit/
+/Content/__ExternalObjects__/P1toP5_Bundle/
+
+/Content/FirstPerson/
+/Content/Input/
+/Content/Characters/
+
+/Content/__ExternalActors__/Blender/
+
+/Content/__ExternalObjects__/Blender/

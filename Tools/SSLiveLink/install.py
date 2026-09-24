@@ -17,6 +17,7 @@ folder (the add-on reads them when its own preferences are empty), and enables t
 user preferences. A Blender that is already open picks it up the next time it starts.
 """
 from pathlib import Path
+from datetime import datetime, timezone
 import json
 import shutil
 import sys
@@ -30,6 +31,15 @@ ROOT = HERE.parents[1]
 source = HERE / MODULE
 addons = Path(bpy.utils.user_resource('SCRIPTS', path='addons', create=True))
 target = addons / MODULE
+config = Path(bpy.utils.user_resource('CONFIG', create=True)) / 'ss_live_link.json'
+# Keep a reversible copy before upgrading. It lives outside addons so Blender cannot load it twice.
+backup = Path(bpy.utils.user_resource('CONFIG', create=True)) / 'SSLinkBackups' / datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+backup.mkdir(parents=True)
+if target.exists():
+    shutil.copytree(target, backup / MODULE)
+for previous in (addons / (MODULE + '.py'), config, config.parent / 'userpref.blend'):
+    if previous.is_file():
+        shutil.copy2(previous, backup / previous.name)
 
 # Without --factory-startup the saved preferences have already loaded whatever copy was installed. Take it
 # out of this session first, or enabling below would find the old module in sys.modules and register that.
@@ -46,15 +56,20 @@ if old_file.exists():
 for pyc in (addons / '__pycache__').glob(MODULE + '.*.pyc'):
     pyc.unlink()
 if target.exists():
+    if target.resolve().parent != addons.resolve() or target.name != MODULE:
+        raise RuntimeError('Refusing to replace an add-on outside the expected user add-ons directory')
     shutil.rmtree(target)
 shutil.copytree(source, target, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
 
-config = Path(bpy.utils.user_resource('CONFIG', create=True)) / 'ss_live_link.json'
 engine = next((r for r in (r'C:\Program Files\EpicGames2\UE_5.8', r'C:\Program Files\Epic Games\UE_5.8')
                if (Path(r) / 'Engine/Plugins/Experimental/PythonScriptPlugin/Content/Python/remote_execution.py').exists()), '')
 config.write_text(json.dumps({'project_root': str(ROOT), 'engine_root': engine}, indent=1), encoding='utf-8')
 bpy.ops.preferences.addon_refresh()
 bpy.ops.preferences.addon_enable(module=MODULE)
+bpy.context.preferences.addons[MODULE].preferences.project_root = str(ROOT)
+from ss_live_link import popout
+if (ROOT / 'Artifacts/PrefabLibrary/BlenderAssets/build.json').is_file():
+    popout.attach_library()
 bpy.ops.wm.save_userpref()
 enabled = MODULE in bpy.context.preferences.addons and hasattr(bpy.types, 'SSLINK_PT_panel')
 print(json.dumps({'installed': str(target), 'files': sorted(p.name for p in target.glob('*.py')), 'removed': removed, 'enabled': enabled,

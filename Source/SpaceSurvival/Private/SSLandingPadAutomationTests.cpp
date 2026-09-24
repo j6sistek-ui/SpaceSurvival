@@ -1,8 +1,10 @@
 #include "Misc/AutomationTest.h"
 #include "SSLandingPad.h"
+#include "SSStation.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSLandingPadStandsAlone, "SpaceSurvival.Station.LandingPadStandsAlone",
@@ -63,9 +65,80 @@ bool FSSLandingPadStandsAlone::RunTest(const FString &)
     TestFalse(TEXT("Far below the deck is not on it, so a fall is still a fall"),
               Pad->Covers(T.TransformPosition(FVector(0, 0, -300))));
 
+    // Measured Phoenix hull at the docked transform: the previous centreline and -350 side exit both
+    // fall inside this 2484 x 1244 footprint. Capsule clearance and floor support must be independent of
+    // the small flight collision sphere, and must still hold on a rotated standalone pad.
+    const FBox Phoenix(FVector(-1383.16, -623.92, 230.25), FVector(1100.84, 619.96, 935.05));
+    TestTrue(TEXT("Measured Phoenix admits a supported exterior exit"),
+             Pad->ConfigureWalkExit(Phoenix, 42.f, 96.f, nullptr));
+    TestTrue(TEXT("Both standing and animated exits clear the complete rendered footprint"),
+             Pad->IsOutsideParkedHull(Pad->WalkSpawn(), 42.f) && Pad->IsOutsideParkedHull(Pad->ExitPoint(), 42.f));
+    TestTrue(TEXT("The selected exterior exit has the pad directly beneath it"),
+             World->LineTraceSingleByObjectType(Hit, Pad->ExitPoint(), Pad->ExitPoint() - FVector(0, 0, 500),
+                                                StaticObjects, Query) &&
+                 Hit.GetActor() == Pad && FMath::IsNearlyEqual((Pad->ExitPoint() - Hit.ImpactPoint).Z, 98.5, .1));
+    TestTrue(TEXT("Measured safe exit remains on the pad"), Pad->Covers(Pad->ExitPoint(), -42.f));
+    TestFalse(TEXT("A hull covering the entire pad cannot claim a safe exit"),
+              Pad->ConfigureWalkExit(FBox(FVector(-2000, -2000, 0), FVector(2000, 2000, 1000)), 42.f, 96.f, nullptr));
+
     TestTrue(TEXT("The landing indicator starts lit, waiting for a ship"), Pad->IsIndicatorVisible());
     Pad->ShowIndicator(false);
     TestFalse(TEXT("And goes out when told the ship is down"), Pad->IsIndicatorVisible());
+
+    // The reset uses a real circular support surface and solid guardrails, with a deliberate open
+    // bridge sector. Test physics independently of Covers so a square collider cannot pass as a disc.
+    auto *Circle = World->SpawnActor<ASSLandingPad>(Where + FVector(0, 10000, 0), Facing);
+    if (TestNotNull(TEXT("Spawn circular reset pad"), Circle))
+    {
+        Circle->bCircularDeck = true;
+        Circle->Build();
+        const FTransform CircleSpace = Circle->GetActorTransform();
+        const auto At = [&CircleSpace](float X, float Y, float Z)
+        { return CircleSpace.TransformPosition(FVector(X, Y, Z)); };
+        TestTrue(TEXT("Circular pad supports its centre"),
+                 World->LineTraceSingleByObjectType(Hit, At(0, 0, 100), At(0, 0, -500), StaticObjects, Query) &&
+                     Hit.GetActor() == Circle);
+        TestFalse(TEXT("Circular coverage excludes old square corners"), Circle->Covers(At(1500, 1500, 50)));
+        TestFalse(
+            TEXT("Circular physics excludes old square corners"),
+            World->LineTraceSingleByObjectType(Hit, At(1500, 1500, 100), At(1500, 1500, -500), StaticObjects, Query));
+        TestTrue(TEXT("A standing walking capsule is blocked by the visible side guardrail"),
+                 World->SweepSingleByObjectType(Hit, At(0, 1450, 100), At(0, 1650, 100), CircleSpace.GetRotation(),
+                                                StaticObjects, FCollisionShape::MakeCapsule(42.f, 96.f), Query) &&
+                     Hit.GetComponent()->ComponentHasTag(TEXT("StationLandingKerb")));
+        const float StepHeight = GetDefault<ASSWalker>()->GetCharacterMovement()->MaxStepHeight;
+        TInlineComponentArray<UStaticMeshComponent *> CircleMeshes(Circle);
+        for (const auto *Rail : CircleMeshes)
+            if (Rail->ComponentHasTag(TEXT("StationLandingKerb")))
+            {
+                const FBox Bounds =
+                    Rail->CalcBounds(Rail->GetComponentTransform().GetRelativeTransform(CircleSpace)).GetBox();
+                TestTrue(TEXT("Every perimeter guard reaches 110cm and exceeds actual walker step height"),
+                         FMath::IsNearlyEqual(Bounds.Min.Z, 0., .01) && FMath::IsNearlyEqual(Bounds.Max.Z, 110., .01) &&
+                             Bounds.Max.Z > StepHeight);
+                TestTrue(TEXT("Perimeter guards explicitly reject CharacterMovement step-up"),
+                         Rail->CanCharacterStepUpOn == ECB_No);
+            }
+        TestFalse(TEXT("A standing capsule crosses the bridge opening without an invisible barrier"),
+                  World->SweepSingleByObjectType(Hit, At(1200, 0, 100), At(1700, 0, 100), CircleSpace.GetRotation(),
+                                                 StaticObjects, FCollisionShape::MakeCapsule(42.f, 96.f), Query));
+        for (float Side : {-1.f, 1.f})
+            for (float Degrees : {15.f, 18.f, 22.f, 26.f, 30.f})
+            {
+                const float Angle = FMath::DegreesToRadians(Degrees) * Side;
+                const FVector Direction(FMath::Cos(Angle), FMath::Sin(Angle), 0);
+                const FVector Start = CircleSpace.TransformPosition(Direction * 1200.f + FVector(0, 0, 100));
+                const FVector End = CircleSpace.TransformPosition(Direction * 1900.f + FVector(0, 0, 100));
+                TestTrue(FString::Printf(TEXT("Standing capsule cannot escape the bridge return at %.0f degrees"),
+                                         Degrees * Side),
+                         World->SweepSingleByObjectType(Hit, Start, End, CircleSpace.GetRotation(), StaticObjects,
+                                                        FCollisionShape::MakeCapsule(42.f, 96.f), Query) &&
+                             !Hit.bStartPenetrating && Hit.GetComponent()->ComponentHasTag(TEXT("StationLandingKerb")));
+            }
+        TestTrue(TEXT("Circular pad still provides a clear supported Phoenix exit"),
+                 Circle->ConfigureWalkExit(Phoenix, 42.f, 96.f, nullptr));
+        Circle->Destroy();
+    }
 
     Pad->Destroy();
     GEngine->DestroyWorldContext(World);

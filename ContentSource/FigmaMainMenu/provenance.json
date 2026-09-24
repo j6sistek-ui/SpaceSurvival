@@ -1,0 +1,681 @@
+{
+  "fileKey": "6M3VvUB7jsPDd3E41YpKM0",
+  "pageId": "142:1059",
+  "pageName": "01 \u00b7 MAIN MENU",
+  "sourceURL": "https://www.figma.com/design/6M3VvUB7jsPDd3E41YpKM0/SpaceSurvival-UI-Kit?node-id=142-1059",
+  "canvas4K": {
+    "x": -501,
+    "y": -681,
+    "width": 3840,
+    "height": 2160
+  },
+  "policy": "Read-only Figma. Locked normal composition preserved; controller focus uses authored Hover. No canvas mutations. Exact PNG/source extraction only; no artwork generation.",
+  "knownLimits": [
+    "Native button/title/text exports at 0.5 authored scale for 1920x1080. 4K acceptance remains pending.",
+    "Button shader is captured static native frame; animated SSStardust WGSL source retained in design context. No claim of runtime shader animation.",
+    "Fullpage screenshot includes other approved button-state examples left of main canvas. Background-only render is not full composition.",
+    "Discard connector default white-matted PNG renders; native PNG states here have transparency."
+  ],
+  "assets": [
+    {
+      "file": "continue-normal.png",
+      "nodeId": "160:1124",
+      "sourceRenderBounds": {
+        "x": 648,
+        "y": -156,
+        "width": 1586,
+        "height": 385
+      },
+      "drawRect4K": {
+        "x": 1149,
+        "y": 525,
+        "width": 1586,
+        "height": 385
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "notes": "Exact authored static shader frame; native transparent padding preserved.",
+      "sha256": "0fdf34977cce1711dc3c213c78cbb4ce0f91099e68a9c2bc370147818201a633",
+      "sizeBytes": 97380,
+      "width": 793,
+      "height": 193,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 574.5,
+        "y": 262.5,
+        "width": 793.0,
+        "height": 192.5
+      }
+    },
+    {
+      "file": "new-game-normal.png",
+      "nodeId": "160:1135",
+      "sourceRenderBounds": {
+        "x": 648,
+        "y": 173,
+        "width": 1586,
+        "height": 385
+      },
+      "drawRect4K": {
+        "x": 1149,
+        "y": 854,
+        "width": 1586,
+        "height": 385
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "notes": "Exact authored static shader frame; native transparent padding preserved.",
+      "sha256": "aabc622639380f6beaf0655955a02cea7d8f48aef859e23a4b89f361c044dc76",
+      "sizeBytes": 89351,
+      "width": 793,
+      "height": 193,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 574.5,
+        "y": 427.0,
+        "width": 793.0,
+        "height": 192.5
+      }
+    },
+    {
+      "file": "settings-normal.png",
+      "nodeId": "160:1146",
+      "sourceRenderBounds": {
+        "x": 648,
+        "y": 502,
+        "width": 1586,
+        "height": 385
+      },
+      "drawRect4K": {
+        "x": 1149,
+        "y": 1183,
+        "width": 1586,
+        "height": 385
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "notes": "Exact authored static shader frame; native transparent padding preserved.",
+      "sha256": "748c92c0a7228956a596f2192a6c72db88f8fbe35c10a9428bb313ac8a244a7b",
+      "sizeBytes": 93809,
+      "width": 793,
+      "height": 193,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 574.5,
+        "y": 591.5,
+        "width": 793.0,
+        "height": 192.5
+      }
+    },
+    {
+      "file": "exit-normal.png",
+      "nodeId": "160:1157",
+      "sourceRenderBounds": {
+        "x": 648,
+        "y": 831,
+        "width": 1586,
+        "height": 385
+      },
+      "drawRect4K": {
+        "x": 1149,
+        "y": 1512,
+        "width": 1586,
+        "height": 385
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "notes": "Exact authored static shader frame; native transparent padding preserved.",
+      "sha256": "0ef47ce1631bbbe5ae92eb51a7980f12a1dc3dba3f99749891daa60563e13465",
+      "sizeBytes": 90778,
+      "width": 793,
+      "height": 193,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 574.5,
+        "y": 756.0,
+        "width": 793.0,
+        "height": 192.5
+      }
+    },
+    {
+      "file": "continue-hover.png",
+      "nodeId": "161:1158",
+      "sourceRenderBounds": {
+        "x": -4199,
+        "y": 103,
+        "width": 1608,
+        "height": 407
+      },
+      "drawRect4K": {
+        "x": 1138,
+        "y": 514,
+        "width": 1608,
+        "height": 407
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "notes": "Exact authored static shader frame; native transparent padding preserved.",
+      "sha256": "a92aa4fa21dd9014d7f8cb1a77b6072e93ca5741ee7b610b1a609fafcbc6412c",
+      "sizeBytes": 118278,
+      "width": 804,
+      "height": 204,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 569.0,
+        "y": 257.0,
+        "width": 804.0,
+        "height": 203.5
+      }
+    },
+    {
+      "file": "new-game-hover.png",
+      "nodeId": "161:1168",
+      "sourceRenderBounds": {
+        "x": -4199,
+        "y": 482,
+        "width": 1608,
+        "height": 407
+      },
+      "drawRect4K": {
+        "x": 1138,
+        "y": 843,
+        "width": 1608,
+        "height": 407
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "notes": "Exact authored static shader frame; native transparent padding preserved.",
+      "sha256": "c88031510e39d942d6ffb7fd7cf7985b17d91156acd9e5240cfe60e92337f942",
+      "sizeBytes": 115395,
+      "width": 804,
+      "height": 204,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 569.0,
+        "y": 421.5,
+        "width": 804.0,
+        "height": 203.5
+      }
+    },
+    {
+      "file": "settings-hover.png",
+      "nodeId": "161:1178",
+      "sourceRenderBounds": {
+        "x": -4199,
+        "y": 861,
+        "width": 1608,
+        "height": 407
+      },
+      "drawRect4K": {
+        "x": 1138,
+        "y": 1172,
+        "width": 1608,
+        "height": 407
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "notes": "Exact authored static shader frame; native transparent padding preserved.",
+      "sha256": "85d6ca3828188de00a157b67bd013b4e7134a46a04735933f9cc7c9c95f32318",
+      "sizeBytes": 120060,
+      "width": 804,
+      "height": 204,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 569.0,
+        "y": 586.0,
+        "width": 804.0,
+        "height": 203.5
+      }
+    },
+    {
+      "file": "exit-hover.png",
+      "nodeId": "161:1188",
+      "sourceRenderBounds": {
+        "x": -4199,
+        "y": 1240,
+        "width": 1608,
+        "height": 407
+      },
+      "drawRect4K": {
+        "x": 1138,
+        "y": 1501,
+        "width": 1608,
+        "height": 407
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "notes": "Exact authored static shader frame; native transparent padding preserved.",
+      "sha256": "d0fcafbd37c4525f15bbeab1e27063cc84bcbc9e4e3ff1b720c93f6a76507ea5",
+      "sizeBytes": 118043,
+      "width": 804,
+      "height": 204,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 569.0,
+        "y": 750.5,
+        "width": 804.0,
+        "height": 203.5
+      }
+    },
+    {
+      "file": "main-title.png",
+      "nodeId": "144:1130",
+      "sourceRenderBounds": {
+        "x": 209,
+        "y": -587.5,
+        "width": 2619.95849609375,
+        "height": 230.39999389648438
+      },
+      "drawRect4K": {
+        "x": 710,
+        "y": 93.5,
+        "width": 2619.95849609375,
+        "height": 230.39999389648438
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "sha256": "b6724f9f1ab8c8cce568a5189af24124dd445cd16c2228bd76af609669751c54",
+      "sizeBytes": 8807,
+      "width": 1310,
+      "height": 116,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 355.0,
+        "y": 46.75,
+        "width": 1309.979248046875,
+        "height": 115.19999694824219
+      }
+    },
+    {
+      "file": "footer-panel-outer.png",
+      "nodeId": "144:1150",
+      "sourceRenderBounds": {
+        "x": -501,
+        "y": 1240,
+        "width": 596,
+        "height": 231
+      },
+      "drawRect4K": {
+        "x": 0,
+        "y": 1921,
+        "width": 596,
+        "height": 231
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": false,
+      "notes": "Authored outer instance is fully transparent; retain provenance, omit runtime draw.",
+      "sha256": "e4148051dca10ff92cdd21eb15c237c1264379f31c5cd8bab7a3a1561deccf61",
+      "sizeBytes": 290,
+      "width": 298,
+      "height": 116,
+      "alphaMin": 0,
+      "alphaMax": 0,
+      "drawRect1080": {
+        "x": 0.0,
+        "y": 960.5,
+        "width": 298.0,
+        "height": 115.5
+      }
+    },
+    {
+      "file": "footer-panel-inner.png",
+      "nodeId": "144:1164",
+      "sourceRenderBounds": {
+        "x": -415,
+        "y": 1255,
+        "width": 516,
+        "height": 146
+      },
+      "drawRect4K": {
+        "x": 86,
+        "y": 1936,
+        "width": 516,
+        "height": 146
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "sha256": "bdfbd0fad0903856c74705626a1ec745263c8bdd493850c738beceb1b2693bdd",
+      "sizeBytes": 17437,
+      "width": 258,
+      "height": 73,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 43.0,
+        "y": 968.0,
+        "width": 258.0,
+        "height": 73.0
+      }
+    },
+    {
+      "file": "hint-enter.png",
+      "nodeId": "147:1262",
+      "sourceRenderBounds": {
+        "x": 961.9803466796875,
+        "y": 1340.456298828125,
+        "width": 144.01806640625,
+        "height": 33.258056640625
+      },
+      "drawRect4K": {
+        "x": 1462.9803466796875,
+        "y": 2021.456298828125,
+        "width": 144.01806640625,
+        "height": 33.258056640625
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "sha256": "e6d77c3b3eaf8ad9c56356cdce7bbc3326f093cdf02a03839f79a44371306b81",
+      "sizeBytes": 945,
+      "width": 72,
+      "height": 17,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 731.4901733398438,
+        "y": 1010.7281494140625,
+        "width": 72.009033203125,
+        "height": 16.6290283203125
+      }
+    },
+    {
+      "file": "hint-select.png",
+      "nodeId": "147:1263",
+      "sourceRenderBounds": {
+        "x": 1130.514404296875,
+        "y": 1344.7943115234375,
+        "width": 115.630859375,
+        "height": 28.9200439453125
+      },
+      "drawRect4K": {
+        "x": 1631.514404296875,
+        "y": 2025.7943115234375,
+        "width": 115.630859375,
+        "height": 28.9200439453125
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "sha256": "709b10c410c95c663a1e8e79b892e67fa0b149d4e92f57dacb224c18154b593d",
+      "sizeBytes": 930,
+      "width": 58,
+      "height": 15,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 815.7572021484375,
+        "y": 1012.8971557617188,
+        "width": 57.8154296875,
+        "height": 14.46002197265625
+      }
+    },
+    {
+      "file": "hint-move-keys.png",
+      "nodeId": "147:1264",
+      "sourceRenderBounds": {
+        "x": 1339.934326171875,
+        "y": 1340.456298828125,
+        "width": 114.6007080078125,
+        "height": 39.697998046875
+      },
+      "drawRect4K": {
+        "x": 1840.934326171875,
+        "y": 2021.456298828125,
+        "width": 114.6007080078125,
+        "height": 39.697998046875
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "sha256": "e6806cc02befa6e7ffa30b5b24403d2fca18b6050cd80b3a041f8268cdc61658",
+      "sizeBytes": 830,
+      "width": 58,
+      "height": 20,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 920.4671630859375,
+        "y": 1010.7281494140625,
+        "width": 57.30035400390625,
+        "height": 19.8489990234375
+      }
+    },
+    {
+      "file": "hint-move.png",
+      "nodeId": "147:1265",
+      "sourceRenderBounds": {
+        "x": 1480.0343017578125,
+        "y": 1353.71435546875,
+        "width": 96.62255859375,
+        "height": 20
+      },
+      "drawRect4K": {
+        "x": 1981.0343017578125,
+        "y": 2034.71435546875,
+        "width": 96.62255859375,
+        "height": 20
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "sha256": "507890eb69cdcaf460a7784d743ab2d173c6270f6ada353eab77b4a35bd5b8d5",
+      "sizeBytes": 617,
+      "width": 49,
+      "height": 10,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 990.5171508789062,
+        "y": 1017.357177734375,
+        "width": 48.311279296875,
+        "height": 10.0
+      }
+    },
+    {
+      "file": "hint-escape.png",
+      "nodeId": "147:1266",
+      "sourceRenderBounds": {
+        "x": 1671.9803466796875,
+        "y": 1340.456298828125,
+        "width": 81.7457275390625,
+        "height": 33.258056640625
+      },
+      "drawRect4K": {
+        "x": 2172.9803466796875,
+        "y": 2021.456298828125,
+        "width": 81.7457275390625,
+        "height": 33.258056640625
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "sha256": "1ac373b2a3e36b40896205e591172cc6251dc18662b1fde5bde3832036ddf18e",
+      "sizeBytes": 804,
+      "width": 41,
+      "height": 17,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 1086.4901733398438,
+        "y": 1010.7281494140625,
+        "width": 40.87286376953125,
+        "height": 16.6290283203125
+      }
+    },
+    {
+      "file": "hint-quit.png",
+      "nodeId": "147:1267",
+      "sourceRenderBounds": {
+        "x": 1778.75439453125,
+        "y": 1344.7943115234375,
+        "width": 71.703369140625,
+        "height": 37.840087890625
+      },
+      "drawRect4K": {
+        "x": 2279.75439453125,
+        "y": 2025.7943115234375,
+        "width": 71.703369140625,
+        "height": 37.840087890625
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": true,
+      "sha256": "195d5cd554a4424d0da9f4a1ad07cbbdc7ce5e5eedb8ad044d1c5f9f1221b8e9",
+      "sizeBytes": 642,
+      "width": 36,
+      "height": 19,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 1139.877197265625,
+        "y": 1012.8971557617188,
+        "width": 35.8516845703125,
+        "height": 18.9200439453125
+      }
+    },
+    {
+      "file": "version-label-legacy.png",
+      "nodeId": "144:1153",
+      "sourceRenderBounds": {
+        "x": -365.7247009277344,
+        "y": 1292.9720458984375,
+        "width": 417.47430419921875,
+        "height": 70.0279541015625
+      },
+      "drawRect4K": {
+        "x": 135.27529907226562,
+        "y": 1973.9720458984375,
+        "width": 417.47430419921875,
+        "height": 70.0279541015625
+      },
+      "exportScale": 0.5,
+      "exportMethod": "Figma Plugin API exportAsync PNG contentsOnly true useAbsoluteBounds false",
+      "runtime": false,
+      "notes": "Historical V1.02 sample version string; provenance only. Lead should draw current truthful build identity.",
+      "sha256": "a736c4e4c001ef3ed5fd5d94108c0f155e5dce4a668c0471ae6b02f0f62d2c69",
+      "sizeBytes": 2968,
+      "width": 209,
+      "height": 36,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 67.63764953613281,
+        "y": 986.9860229492188,
+        "width": 208.73715209960938,
+        "height": 35.01397705078125
+      }
+    },
+    {
+      "file": "main-background.png",
+      "nodeId": "144:1103",
+      "drawRect4K": {
+        "x": 0,
+        "y": 0,
+        "width": 3840,
+        "height": 2160
+      },
+      "exportMethod": "Figma download_assets original node PNG render; expected opaque",
+      "runtime": true,
+      "sha256": "e11f3e74a5c80841546a3ff09ac3fb1dc2ba8a74c7a39474b8540d279395f296",
+      "sizeBytes": 6662048,
+      "width": 3840,
+      "height": 2160,
+      "alphaMin": 255,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1920.0,
+        "height": 1080.0
+      }
+    },
+    {
+      "file": "main-hero-right.png",
+      "nodeId": "144:1167",
+      "drawRect4K": {
+        "x": 2792,
+        "y": 383,
+        "width": 1048,
+        "height": 1572
+      },
+      "exportMethod": "Exact source PNG bytes from get_design_context visible image fill",
+      "runtime": true,
+      "sha256": "dbd1d4af4ab00275afe43e4bf4080a7aa0247ac1b37a37687528ab49986f49ab",
+      "sizeBytes": 2048324,
+      "width": 1152,
+      "height": 1728,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 1396.0,
+        "y": 191.5,
+        "width": 524.0,
+        "height": 786.0
+      }
+    },
+    {
+      "file": "main-hero-left.png",
+      "nodeId": "145:1169",
+      "drawRect4K": {
+        "x": 273,
+        "y": 482,
+        "width": 583,
+        "height": 1374
+      },
+      "exportMethod": "Lossless crop of exact visible source PNG using authored Figma imageTransform",
+      "sourceFile": "main-hero-left-source.png",
+      "sourceCropPixels": {
+        "left": 678,
+        "top": 0,
+        "right": 1106,
+        "bottom": 1008
+      },
+      "imageTransform": [
+        [
+          0.2388392984867096,
+          0,
+          0.3783482313156128
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "runtime": true,
+      "sha256": "65822e008a2b3f664ff105ce59d1b7ec88e0266d66c19d4eae17f092a8035125",
+      "sizeBytes": 285182,
+      "width": 428,
+      "height": 1008,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "drawRect1080": {
+        "x": 136.5,
+        "y": 241.0,
+        "width": 291.5,
+        "height": 687.0
+      }
+    }
+  ],
+  "sourcePortraitSHA256": "b598bf748fbef8b496981b3ac5e54beaf7ef726960984003ebaf8cbe9accd13a"
+}

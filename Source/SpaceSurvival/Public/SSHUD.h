@@ -11,8 +11,42 @@ class SPACESURVIVAL_API ASSHUD : public AHUD
 public:
     virtual void DrawHUD() override;
     int32 MenuIndexAt(FVector2D Point) const;
+    bool ScrollMenu(int32 Rows);
+    bool HandleMenuScrollPointer(FVector2D Point, bool Pressed, bool Held);
+    const TArray<FBox2D> &GetMenuBounds() const
+    {
+        return MenuBounds;
+    }
+    bool IsDrawingFigmaMainMenu() const
+    {
+        return bTitleWasOpen;
+    }
+    int32 GetFigmaMainMenuFocus() const
+    {
+        return bTitleWasOpen ? RenderedTitleFocus : INDEX_NONE;
+    }
 
 private:
+    friend class ASSWave10Soak;
+    bool bReviewFlightHUD = false;
+    UPROPERTY()
+    TMap<FName, TObjectPtr<UTexture2D>> RefreshTextures;
+    UPROPERTY()
+    TObjectPtr<class UFont> RefreshFont;
+    float RefreshScale = 1.f;
+    FVector2D RefreshOrigin = FVector2D::ZeroVector;
+    void BeginRefreshLayout();
+    UTexture2D *RefreshTexture(FName Name);
+    FBox2D RefreshBounds(float X, float Y, float Width, float Height) const;
+    void RefreshImage(FName Name, float X, float Y, float Width, float Height, FLinearColor Tint = FLinearColor::White);
+    float RefreshText(const FString &Value, float X, float Y, float Pixels, FLinearColor Color, float Width = 0.f);
+    bool DrawRefreshMenu(const class ASSGameMode &Mode);
+    void DrawRefreshVitals(const class ASSGameMode &Mode, bool Walking);
+    void DrawStationRadar();
+    int32 ScrollFirst = 0, ScrollVisible = 6, ScrollCount = 0;
+    bool bScrollDragging = false;
+    float ScrollDragOffset = 0;
+    FBox2D ScrollTrackBounds, ScrollThumbBounds, ScrollUpBounds, ScrollDownBounds;
     TArray<FBox2D> MenuBounds;
     float Scale = 1.f;
     FString FeedbackRun;
@@ -24,6 +58,14 @@ private:
     TObjectPtr<UObject> GamepadIcons;
     UPROPERTY()
     TArray<TObjectPtr<UTexture2D>> CrosshairTextures;
+    UPROPERTY()
+    TArray<TObjectPtr<UTexture2D>> TitleTextures;
+    bool bTitleAssetsRequested = false, bTitleWasOpen = false, bTitleNavigationFocus = false;
+    int32 LastTitleSelection = INDEX_NONE;
+    int32 RenderedTitleFocus = INDEX_NONE;
+    FVector2D LastTitlePointer = FVector2D::ZeroVector;
+    /** Exact Figma artwork, with the same native entry indices used by pointer/controller input. */
+    bool DrawFigmaMainMenu(const class ASSGameMode &Mode);
     FSlateFontInfo HudFont(float Size) const;
     FVector2D MeasureText(const FString &Value, float Size) const;
     void Text(const FString &Value, float X, float Y, float Size = 1.f, FLinearColor Color = FLinearColor::White);

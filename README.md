@@ -1,5 +1,7 @@
 # SpaceSurvival
 
+**Current local game:** use **Play SpaceSurvival - Current** or **Unreal Engine** on the desktop; both now point to the repaired game checkout. The latter opens UE5.8 directly into the game. [Launch paths and package distinction](docs/BUILD_RUN.md); [replacement hero review](docs/validation/2026-09-24-replacement-hero.md).
+
 Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains PARTIAL.**
 
 **[Open work and your next review](docs/KNOWN_ISSUES.md)** is the single active task and priority log. Start there; it contains the owner review queue, all hands-on acceptance checks, unresolved problems and closure evidence.
@@ -11,11 +13,15 @@ Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains P
 - [Solution catalog](docs/production/SOLUTION_CATALOG.md): owned assets and possible solutions across Phase 1; catalog value is not the work schedule.
 - [Game scope](docs/GAME_SCOPE.md) and [implementation contract](IMPLEMENT.md): authoritative design and completion requirements.
 
-The local packaged game is at `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe`; keep its entire folder. The [project state](docs/PROJECT_STATE.md#source-build-and-release) identifies source `cf6296f`, audited Package 4 with verified star-adjusted captures, and the separately verified itch release. Package 3's receipt remains a separate checkpoint. A source merge does not rebuild the executable or publish an update.
+The **September 21 reset candidate** is at `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`. Use **`Play Packaged Review.cmd` in that checkout** to open its verified Windows package with a separate review save profile. Package 4 source is `79553fc`; its archive/dependency audit passed. It includes the approved main menu, ordinary throttle/engine-off coasting, repaired walking and ramp boarding, Start/Continue Survival and Free Flight, visible shots/hits and the corrected AlienFemale. Current rendered checks and remaining acceptance are in [project state](docs/PROJECT_STATE.md#september-21-gameplay-reset-candidate) and the [gameplay follow-up receipt](docs/validation/2026-09-21-gameplay-followup.md).
+
+The original checkout's `C:/Users/j6sis/SpaceSurvival/Artifacts/Windows/SpaceSurvival.exe` and the published itch build are separate, older builds. Keep each package's entire folder. A source merge does not rebuild an executable or publish an update.
 
 The game has the ten-wave system foundation, two weapons/enemies, four hazard families, stations, progression and local saves. Automated and scripted checks exist; natural play, controller comfort, near-alpha presentation/audio and representative performance still need acceptance. Current art is provisional.
 
-**Arrange the station yourself:** double-click `Open Station Workshop.cmd` in the working project. The [Station Workshop guide](docs/STATION_EDITING.md) covers asset placement, ten material presets, Save + Apply and layout export. Existing packaged builds update only after a later package/release.
+**Station authoring:** the reset uses its own recipe and matching physical solids; see [Station authoring](docs/STATION_AUTHORING.md). `Open Station Workshop.cmd` and the [Station Workshop guide](docs/STATION_EDITING.md) still edit the preserved legacy layout, and have not been migrated to the reset. Existing packages update only after a later build.
+
+**Try the building examples:** the [Building sandbox workflow](docs/BUILDING_SANDBOX.md) covers the separate Genesis/companion-scene workbench, walking launcher, Blender placement round trip and laptop handoff.
 
 ## Development
 

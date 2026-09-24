@@ -1,8 +1,118 @@
 # Open work and owner review
 
-**Start here. This is the single active issues, follow-up, action and priority log.** Last edited September 18, 2026 (the Stellar Phoenix/Ship Core entries below that date). Phase 1 remains PARTIAL.
+**September24 consolidation update:** The stale-Blender-file portion of RPT-20260922-04 is resolved: canonical `BuildingSandbox.blend` now matches all5,522 exported placements; prior scene backed up. This supersedes the stale7,431-placement warnings below. Source PR consolidation does not close gameplay/visual acceptance cases. [Focused receipt](validation/2026-09-24-pr-consolidation.md).
 
-**Not yet reflected below, and this header date was previously wrong by two days:** PR #57 (`16ff502`..`1b3f2af`, merged `a11dc20` on September 19) changed hero selection (`SSGameMode.cpp`, `SSStation.h/.cpp`), added `Scripts/AuthorStationLarge.py`/`Scripts/RenderStationLarge.py` to compose a larger station from the kitbash library, tracked a remastered squirrel hero, and added new automation coverage (`SSHeroSlotAutomationTests.cpp`, `SSPaintAutomationTests.cpp`, `Tests/CoreTests.cpp`) — 37 files, +1532/-57. None of that work has an ISS/RPT/ACT entry here yet, and `docs/PROJECT_STATE.md` was not touched by it either. Read the actual commits before treating the "Current instruction" section below as current; it predates both that PR and the September 18 Ship Core/Stellar Phoenix pivot recorded further down this file.
+**2026-09-24 hero follow-up — RPT-20260921-05 / ISS-16; IMPLEMENTED LOCALLY, OWNER REVIEW OPEN; lead owns remaining verification.** Replacement Squirrel is imported, skinned, retargeted and active in the repaired game, superseding the earlier statement that the below80k candidate had not arrived. Tail idle/gaits and jump start/air/land are wired; landing tail continues during resumed locomotion. Body and rigid backpack were rendered; fur checkerboard usage failure was repaired and rechecked. Build and2 scoped suites pass. Next: owner checks Squirrel walking/run and jump/land feel; lead retains cockpit boarding/fit verification and any packaging work. Existing save identity and original art preserved. Repaired project is now the desktop Unreal default (UE5.8 instead of the old UE5.6 shortcut). [Exact source/assets/evidence and limitations](validation/2026-09-24-replacement-hero.md).
+
+**Current playable baseline:**0.1.21-alpha.1 / itch build2003058 READY, Package10/source4fd0293. Update through the itch app. Open [release receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json); check flight response, sustained mixed-field travel and menu navigation. Reports below remain open pending their own verification; publication is not acceptance.
+
+## September22 Blender library — RPT-20260922-04
+
+September24 follow-up: canyon1,897 placements and eight enclosure walls removed; seven ramps
+superseded by a flat platform/main-floor alignment. Star backdrop and ComputerStation-only light,
+emission and reflection-gain changes saved. Approach capsule/ground checks pass for five areas,
+but no natural walk acceptance; Genesis sill requires a small step. Final ComputerStation brightness
+still needs review. Reflection rebuild/VSM warnings and functional doors remain open. Current export
+has5,522 meshes; old7,431-placement .blend is stale and must be refreshed before Push.
+Owner closes editor for a break; lead next action is settled computer-section lighting review and
+remaining warnings/passages. Evidence: docs/validation/2026-09-24-sandbox-flat-space.json.
+
+
+**Library and editable sandbox delivered; visual/walking acceptance remains PARTIAL.** SS Link0.4.1
+is installed in Blender5.2.2. Current library:1,325 real meshes/1,325 thumbnails, including648 new
+Sci-Fi Bundle meshes. Owner reports the large browser works pretty well. Genesis High Settings,
+WorkStation, StarterPack, ComputerStation and FruitSeller are copied into a separate sandbox with a
+connecting floor, ramps and First Person start. The saved Blender scene reopens with7,431 linked
+placements. Wrong-map Push is rejected before mutation; an actual Unreal move/restore check passes.
+
+Open **Open Building Sandbox.cmd**, then Play. Follow [Building sandbox](BUILDING_SANDBOX.md) for
+Blender editing and explicit Push. The offline0.4.1 ZIP and `.blend` are separate private files in
+`Artifacts/BuildingSandbox`. The project retains native materials, lights, effects and Blueprint
+actors; Blender carries static-mesh placements. No full shader, Blueprint or rig translation claimed.
+
+**Cleanup completed with owner authorization:**23 duplicate native-download folders removed after
+7,771 content files matched retained project copies by SHA256.54,980,195,863 bytes removed, including
+the original42GiB bundle cache. Unique sources, partial/changed packs and project content preserved;
+metadata archived under `Artifacts/VaultRefresh-20260922/RetainedManifests`.
+
+**Still open (lead):** live pop-out dragging, idle refresh, final glass/reflection appearance and the
+sandbox's lighting/walkable passage quality. Three bounded offscreen capture cycles did not establish
+visual acceptance at that checkpoint; the September24 repair below supersedes the unsaved exposure state. Owner's next check: open the sandbox, walk from
+Genesis to the other scenes, then move one Blender prop and Push it to this map. No station replacement,
+new game package, itch update or merge. [Focused evidence](validation/2026-09-23-building-sandbox.md).
+Source [PR60](https://github.com/j6sistek-ui/SpaceSurvival/pull/60) remains open/draft.
+
+### September 24 UTC: sandbox whiteout and editor camera drift
+
+Owner reported an unreadable exterior and doors without usable controls. The open sandbox
+inherited manual physical exposure compensation +10.7 and FFT bloom intensity8/size4.
+Sandbox-only histogram exposure, zero compensation and moderate standard bloom were applied
+and saved after a dry run and private map backup. Overview and ground-level captures show
+the exterior again. Fog visibility was restored after an inconclusive diagnostic.
+Editor joystick navigation was separately disabled and persisted in local user preferences:
+the camera had drifted from roughly16m to1.6km high. Gameplay controller input is unchanged.
+
+All60 door-labelled placements inspected are static meshes. Lit lock graphics are materials;
+the sandbox builder adds no opening control. Genesis level-script interaction remains
+unverified. No door animation/interaction was added. Next: owner Play check outside/inside.
+See [repair evidence](validation/2026-09-24-sandbox-visibility.json).
+
+Color follow-up: the owner rejected the amber cast. The sandbox's full-strength Kodak02
+film LUT and depth-fog post-process material were disabled, white balance/tint reset, warm
+4250K sunlight disabled and Rayleigh scattering returned to the engine default. Native
+materials and original vendor scenes remain intact. Candidate saved; owner color and
+interior-walking acceptance still open. Owner subsequently reports interiors and close-up assets look good, but rejects the exterior colors; asks to try it before further changes. Exterior atmosphere/color remains unresolved; no more scene edits during this playtest. Editor joystick navigation remains disabled only
+in local editor preferences.
+
+
+## September22 star visibility — RPT-20260922-03
+
+**OPEN; concern logged only, no further investigation this release.** Owner asks where the stars are in the latest flight view, then explicitly says still upload and just logging concerns. The shown frame has a dominant blue-gray nebula and weak discrete-star visibility. Cause UNCONFIRMED; no missing-asset/fog diagnosis or correction claimed. Lead owns a bounded star-layer/background visibility check in a later authorized batch. Do not interrupt or modify the approved0.1.21-alpha.1 payload for this concern.
+
+## September22 menu follow-up — RPT-20260922-02
+
+**OPEN; lead owns repair and packaged verification, owner retest pending.** Owner reports the top HUD competing with normal messages and controller menus not navigating. Legacy full-width announcement overlapped the new wave/location header; messages now wrap in a dedicated center column using the HUD reference layout. Canvas menus explicitly retain viewport input; left stick adds immediate movement, delayed repeat and neutral deadzone alongside existing D-pad/A/B. Three focused input cases pass in MenuInputTests2 after correcting a fixture assumption about the Settings initial selection. First-click pointer activation remains available. Package10/source4fd0293 Turn frame confirms the message clears wave heading/radar. Physical-device focus still requires owner retest; do not equate synthetic input with owner acceptance.
+
+## Deferred owner concept — CONCEPT-20260922-01
+
+**Exploratory, not a locked mechanic or active implementation task.** Owner describes a visible distant Director antagonist being chased while visibly launching wave attacks, like an ongoing boss encounter. Possible later playable sides/PvP motivate considering a mostly forward Survival route. Keep Free Flight unrestricted. Supplied caped character is reserved; no integration, multiplayer or Phase1 scope change is authorized today. Owner owns future design decision; lead preserves this context and does not implement it in the baseline release.
+
+## September22 flight baseline — RPT-20260922-01
+
+**OPEN; lead owns implementation and release, owner owns subsequent feel feedback.** Owner reports slow steering/roll and a dense field left behind at launch. Approved LS nose steering, independent RS camera, bumper tap dash/bank and hold fast roll. Implemented arcade response and bounded deterministic world-cell asteroids. Four focused cases pass across two batches; the first roll check exposed vendor attenuation, corrected rather than relaxing the assertion. Character evaluation/cleanup is now deferred; imports and current hero untouched. Owner confirms the Survival map change removes automatically dropped Tripo actors; preserve it. Owner authorizes packaging and updating the existing itch channel as the week's play baseline, with limited changed-path validation. Initial Package8 density was rejected and its upload stopped before publication. Replacement uses denser500m cells, owned Blueprint cluster samples and nearby debris. Forward-route fallback applies only to Survival; Free Flight remains unrestricted. Density/quality tradeoffs must be presented first. Package8 build/archive evidence and the failed scripted survival check are recorded in [arcade receipt](validation/2026-09-22-arcade-baseline.md). No full-suite or overall Phase1 acceptance claim.
+
+
+**September 22 arcade preset (supersedes prior stick mappings):** Left stick steers the nose in yaw/pitch; right stick controls the camera independently. LB/RB tap: sideways evade with a sharp bank and level recovery; hold: fast continuous roll, retaining attitude on release. RT throttle, LT brake, B boost, A fire, X interaction/landing. Engine-off coasting and keyboard controls remain. Walking unchanged; remapping deferred.
+
+## September 21 evening playtest — RPT-20260921-05
+
+**OPEN; lead owns integration and verification.** Owner feedback, paraphrased: asteroid rocks shrink/recycle ahead of the ship instead of being reachable world objects; incoming debris is too small; ordinary flight is too slow; remove the broken alien gallery but keep its assets; boarding must allow walking to the cockpit, sitting and taking off rather than a rear-door popup; landing/takeoff must preserve surrounding atmosphere; replace the stiff jump animation when a suitable clip is supplied; pause must differ from the title menu; beacon interaction gave no useful result; explain the joystick difference from No Man's Sky. Enemy-follow camera lock is explicitly lowest priority. The original **Acornaut** wardrobe character is retired; retain the current **Squirrel** and the locked main-menu artwork. A better segmented hero below 80k total equipped triangles is owner-planned, not delivered/imported.
+
+**Package 5/source `0004810`, 2026-09-22 UTC:** `ASSDistantAsteroids` now seeds a finite world-space belt once, with private SolidScenery collision derivatives and no viewer-relative translation, shrink or recycle. The separate existing regional cell system supplies farther scenery; neither population consumes Director pressure. Atmosphere/scenery visibility no longer switches off at Approach/Docking/Station, and starting a survival run no longer reseeds the sky/scenery at takeoff. Home pause has its own state/PAUSED presentation and explicit Exit to main menu. Gallery service and original Acornaut wardrobe selection are removed, preserving source assets and stable saved IDs. Legacy Acornaut preference resolves to the current default. Ramp crossing no longer auto-opens a menu; E/Y in the supported rear cabin temporarily opens flight options. Out-of-range/no-signal/already-accepted beacon interactions now explain their state.
+
+**Still open / next actions:** lead must replace the Phoenix's coarse cockpit/interior collision envelopes and implement the actual seat approach/pose/possession flow; explicit rear-cabin interaction is only removal of the interruption, not completion. The four-frame hidden flight capture shows distinct orange hazards but FAILED when its scripted non-evasive path died before29s; no survival/balance pass. FinalAffected9/9 verifies source input/physics, not player feel. Lead must verify atmosphere continuity and solid field in natural travel, and reproduce the owner's beacon scenario; feedback text alone is not closure. Owner approved 60 m/s ordinary flight with matching acceleration and **3x** Director asteroid size, plus a visibly distinct material/color. Source now uses effective 6000 cm/s cruise, 8000 cm/s squared acceleration and orange Director rocks with matching collision/admission clearance. World rocks retain their authored surfaces. Left-stick steering/right-stick strafe was approved and implemented; the final testing preset above supersedes that initial implementation. No change to walking controls. Keep jump-clip acquisition and low-priority enemy lock separate; controller dodge is unbound in this preset (keyboard Q retained). Station composition remains on hold. Package 5 now includes this batch; its audit and startup smoke pass. Use the isolated review launcher, not the original checkout.
+
+**Start here. This is the single active issues, follow-up, action and priority log.** Latest owner direction: September22, 2026. Phase 1 remains PARTIAL. Older dated records below retain their original evidence and are superseded where explicitly noted.
+
+## September 21: rebuild the flight-to-station loop
+
+**RPT-20260921-04 — OPEN; lead owns approved Figma integration.** Owner requests the locked main menu in [SpaceSurvival UI Kit](https://www.figma.com/design/6M3VvUB7jsPDd3E41YpKM0/SpaceSurvival-UI-Kit?node-id=142-1059). The full composition uses normal button states; the separate set is hover. Page11 UI REFRESH is the approved source for subsequent needed menus; KIT and pages12/13 may supply assets/handoff context. Other mockups are stale. Read-only extraction preserves actual normal/hover art and transparency. Current scope inserts the main menu while preserving real Continue, home/boarding launch choices, Settings and Exit behavior. Package4/source `79553fc` imports all19 textures and passes title navigation plus packaged normal/NewGame/Settings rendering. September22 owner explicitly requested the rest of the active UI, especially HUD/settings, before the next playtest. Package6 imported27 exact KIT textures and Keania One for General/Graphics/Audio/current Controls, separate Pause and HUD, plus common service frames. Owner removes the blue hull/shield/brake box and percentages; labels/segmented bars remain. Five focused menu cases, seven editor frames and seven packaged UI frames pass. Package6/source63f0996 includes the new UI. Packaged Pause/HUD show texture-pool/video-memory warnings (roughly1897MiB streaming excess and248MB video-memory excess in those frames); cause/persistence and ordinary-play impact are UNCONFIRMED. Lead owns that performance follow-up; no unrelated profiling sweep was run. Lead still owns mockup-specific service/wardrobe portrait compositions, responsive visual acceptance and any reported mismatch. Existing control settings remain; preset selection/remapping stays deferred. Animated shader and every page11 layout are not claimed. September22 follow-up requested: large scrolling wardrobe with KIT scrollbar, aligned preference sliders, walking without flight vitals/weapons, and station radar symbols for NPCs/services/pad. Package7/source25cf794 implements these corrections with33 exact textures. Two affected menu cases and six packaged frames pass; wardrobe top/end/drag preserve account choice, sliders align, and the actual walking HUD shows real crew/services/pad without flight vitals/weapons. Package6 predates these corrections. Figma remains unchanged.
+
+**RPT-20260921-03 — OPEN; lead owns gameplay follow-up.** Owner playtest of isolated Package3 on September21: the major failures feel much better. Remaining reports, paraphrased: the walker slides sideways instead of facing travel; wardrobe hero **AlienFemale** is invisible (the later photos show it selected and wearing; the owner confirms the blank display means the missing body); ordinary throttle/engine-off behavior is missing; bullets/hits are unreadable; the ramp toe is non-solid and its first solid surface too high to enter; jump is absent. Owner holds further station-layout work. Approved controller layout: RT analog throttle, B boost, LT brake, RB fire; released throttle cuts engine thrust while momentum carries the ship. Requested boarding choices: Start Survival, Continue Survival and casual Free Flight for testing, with survival progress preserved. Package4/source `79553fc` implements these paths and passed98 native tests, save-isolation lifecycle and cooked dependency checks. Corrected editor renders restore silver/dark/cyan AlienFemale, standing grounding and visible weapon feedback; fresh packaged checks are recorded in the follow-up receipt. Next: owner checks wardrobe appearance, walks the ramp to choose Free Flight, then tries RT release/coast, boost/brake and firing. Lead owns any remaining defects; reports stay open for real play and feel.
+
+**RPT-20260921-01 — OPEN; lead owns implementation and verification, owner supplies feel acceptance.** Owner feedback, paraphrased: only boost seems to work; ship turning and supplied animations are absent; weapons have no convincing firing/damage; landing ends in crashes/death; the run feels like passive coasting. The owner explicitly requested setting up the entire gameplay loop from scratch. This supersedes earlier capture-only/paused instructions for flight, combat, landing and station arrival. Preserve the locked Phase 1 mechanics, five-wave cadence, progression, saves and supplied hero content.
+
+Source review confirmed that the native pawn bypassed the purchased ship Blueprint, held the flight clip at its last frame, used an obsolete muzzle inside the larger hull, marked the station hub instead of the pad, retained a minimum forward speed while landing, and respawned on launch. Raw boost also added force after the domain rejected it. The first new input-path test reached real mouse/gamepad rotation but exposed the vendor Blueprint's missing demo projectile/occupant references. These are separate findings; they do not prove the owner's exact original input failure, whose runtime/build remains unconfirmed.
+
+The repair is isolated on `codex/flight-loop-reset` in the [candidate checkout](PROJECT_STATE.md#september-21-gameplay-reset-candidate). It integrates a clean derivative of the full authored ship hierarchy; native steering/aim/damage; explicit pad admission with shared guidance (now E/X in Package5); hover/descent; a safe walker handoff; and takeoff in the same ship, with the next wave held until station-zone exit. Validation is recorded in [the reset receipt](validation/2026-09-21-flight-loop-reset.md). An automated pass does not close this report.
+
+**Package8 is the current local baseline; reports remain OPEN.** Source89b1f3c, inner EXE SHA `b23859ceff3286c7e8e341aa5139218f14659882105a753e40e5e561b4462e87`. Open `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/Play Packaged Review.cmd` or the0.1.21-alpha itch update once published. Check: (1) LS nose response and bumper tap/hold, (2) approaching rocks and turning after travelling away from launch. [Arcade receipt](validation/2026-09-22-arcade-baseline.md). Four focused cases and archive audit pass; packaged scripted flight rendered four reviewed frames but died before29s without firing/dodging. **Still open:** natural balance/physical input, full cockpit walk/sit, beacon reproduction, atmosphere continuity, earlier GPU-memory warnings and representative performance. Character work, station art, remapping and enemy lock are deferred.
+
+**RPT-20260921-02 — OPEN; lead owns the station and asteroid-colony redesign.** Later owner feedback, paraphrased: the entire station can be walked through, assets are ungrounded, ship legs are non-solid, services/customization are missing, the layout looks like random scrap rather than a high-tech station, and the sky is white. The owner explicitly requests a total station redesign. This supersedes preserving the old layout as the active design and keeping wardrobe unavailable at home; the old layout/assets remain backups. The replacement is a separately authored `StationReset/BP_StationReset` with a coherent concourse, grounded service bays, shared physical/visual geometry, and customization in home and midrun hubs. Prices, progression and scoped service transactions remain unchanged. The latest owner direction supersedes a separate white-sky investigation: integrate the atmosphere into the rebuilt composition. Five supplied references establish an industrial steel/grated interior with amber task lights, a circular illuminated landing pad, connected colony buildings/bridges and a distant skyline, inside or supported by the hollow asteroid already in the asset library. The playable district needs physical boundaries; surrounding colony massing may provide background scale. Measure the large, high-triangle asteroid before placement; world scale alone does not reduce geometry cost. Preserve the original and author an optimized private derivative if required.
+
+**Rendered outcome, September 21 08:41 UTC: improved, reference target NOT MET.** Lead and independent review of packaged capture `76061c816e81494899f2c1cb5eda502f` confirm clearer pad/bridge surfaces, corrected colony materials, solid roof/entry trim, readable amber consoles and dark space. The exterior still has a sparse, symmetric hall and two small ring habitats against a large empty rock face; it lacks the layered building heights and connected colony skyline in the references. The broad hall uses repeated panels/consoles, floating labels are oversized, and the floor under the ship remains dark. These are **lead-owned art/design gaps**, not acceptance work delegated to the owner. Three artistic assessment cycles are recorded, with no further lighting/design iteration in this pass. Next art work must address the composition and signage as a coherent design, preserving the verified physical routes and services. Package2 also exposed a missing portal light-mask asset: the exact cook fix is in source `7a63b03`; Package3 and both final runtime fixtures passed with that error absent. No fixture success closes this owner report.
+**Historical documentation audit (PR #61):** older sections below predate PR #57 and the Ship Core pivot. The dated September 21-24 repair, hero and authoring entries above supersede that old current-state summary; earlier acceptance gaps remain recorded.
+
 
 ## Current instruction: ACT-11 purchased-module execution pass, hero first; ACT-03 hold lifted by new owner direction
 
@@ -1993,9 +2103,150 @@ Closed/superseded work at this consolidation: no open acceptance case was closed
 
 Other documents have distinct roles: [Project State](PROJECT_STATE.md) for build/storage status; [solution catalog](production/SOLUTION_CATALOG.md) for candidate resources; [work packages](production/WORK_PACKAGES.md) for needs/dependencies; [game scope](GAME_SCOPE.md) and [IMPLEMENT](../IMPLEMENT.md) for authority. None is a second active task list.
 
+## 2026-09-20 owner playtest — unactioned, several game-breaking
+
+Reported by the owner after playing. **Nothing here was investigated, reproduced or fixed** — logged
+verbatim so it survives the session. Ordered as reported, not by severity.
+
+### Flight
+
+- **Cannot tell whether the ship is firing.** No readable feedback that a shot happened.
+- **Controls are wrong.** *"there's no pitch or rotation in flight or i don't understand the
+  controls"* — either the axes are missing or they are undiscoverable. Both are failures.
+- The owner's own diagnosis, and it should be the first thing checked:
+  **"this is like the should have used the blueprint thing again."** `BP_Spaceship` ships a
+  128-node EventGraph, nine tunable flight variables and its own input mappings
+  (`Thrust`, `MoveRight`, `Roll`, `MoveUp`, `TakeOff`, `BattleMode`, `Landing`, `EnterExitShip`),
+  none of which are registered in project input settings. `ASSShip` re-implements flight in C++.
+  See the Phoenix section of the blueprint-first rule.
+
+### Approaching the station
+
+- **Very hard to slow down** on approach.
+- **The background went 100% white** near the station — a full white sky, not the space backdrop.
+- **No way to tell how to land.** No affordance, prompt or cue.
+- Outcome: **crashed and died.**
+
+### Inside the station
+
+- Floor coverage is fine; the dressing is not. **"an absolute MESS. objects floating everywhere,
+  disorganized as hell."**
+- Note this contradicts the staged captures taken the same day. Those were composed shots with an
+  added light rig at chosen angles; they are not evidence about the station a player walks into.
+  The owner: *"how you had one good cinematic scene earlier blows my mind."* Treat every previous
+  capture of the station interior as unrepresentative until a playthrough says otherwise.
+
+- **Cameras visible everywhere** in the station. Source unknown - not investigated. Worth ruling out
+  first: the capture actors used for development were removed from `Survival` and the map was saved
+  clean at six actors, so these are more likely to be coming from a pack's demo content or from
+  something the station spawns at runtime.
+- **The player stands half inside the floor.**
+
+  A measured lead, found the same day while placing characters and never applied to the player:
+  **the deck surface is not at z=0.** `SM_Floor_C` is placed at z=0 but its geometry spans
+  `-10.00 .. +10.70`, and `SM_FloorDiv_A` reaches `+11.46`. A character grounded to z=0 is buried to
+  roughly the ankle. That is smaller than "half in the floor", so it is a contributing cause at most
+  and something else is likely wrong as well - but it is a real number and the first thing to check.
+  `ASSWalker::MeshLift` computes its lift from `ScaledSoleOffset`, the capsule half height and the
+  walking floor gap, with no term for the floor mesh sitting above its own placement Z.
+
+- **Most objects have no collision - the player walks through them, almost nothing is attached.**
+
+### What a live PIE session ruled out
+
+Observed directly in a running PIE session, 31 actors. These narrow the search rather than solve
+anything:
+
+- **There is no `SkyAtmosphere` actor in the level.** The white sky is therefore not a stray sky
+  actor. The remaining candidates are `ReadableSpaceExposure` auto-adapting to a dark station and
+  blowing out the backdrop, or the backdrop material itself.
+- **There are no camera actors in the level.** "Cameras everywhere" is not stray capture or cine
+  actors - it is meshes that read as cameras, or HUD.
+- `DeepSpaceBackdrop` and `DistantStarfield` sit at the player's exact position and track the viewer,
+  which is how a skybox is supposed to behave. Not a bug.
+- The screenshot was taken on the **landing pad** (`SSLandingPad_3`, z = -10), not on the station
+  deck, so the sunk-player and floating-prop reports should be confirmed in both places separately.
+- The station itself is present and built: `SSStation_3` with `BP_StationVisualLayout_C_3`.
+
+Confirmed visually in that screenshot: the player is buried to roughly the knee, and the sky is a
+bright daylight-like gradient rather than space.
+
+### The "cameras" are mine, and so is the mess - identified
+
+A second PIE screenshot, inside the station, identified the objects the owner read as cameras:
+they are **`SM_Monitor`, a wall-mounted mesh, placed free-floating in open air by
+`Scripts/MakeStationRecipe.py`.** From behind, a boxy monitor on a stalk reads as a studio camera on
+a boom. Not stray capture actors - recipe output.
+
+Counted from `Artifacts/StationRecipe/station_recipe.json`, **164 props are placed at mid-air heights
+with nothing to attach to** (deck is z=0, ceiling 307):
+
+| Asset | Count | Z range | Belongs |
+|---|---|---|---|
+| `SM_CorridorCable01` | 74 | 51 .. 165 | along a wall |
+| `SM_Hook_01` | 42 | 143 .. 357 | wall or ceiling |
+| `SM_Monitor` | 22 | 144 .. 189 | **wall-mounted** |
+| `SM_Crate_Part` | 17 | 0 .. 221 | on a surface |
+| `SM_Flag_02` | 9 | 108 .. 240 | hung on a wall |
+
+The generator has a `MONITOR` constant whose own comment reads *"centred, wall-mounted"*. It was
+placed by coordinate anyway, with no check that a wall exists behind it. The same applies to the
+hooks, flags and cables.
+
+This is the direct cause of *"objects floating everywhere disorganized as hell"*, and it is a
+generator bug, not a content problem - the fix belongs in `MakeStationRecipe.py`, which must place a
+wall-mounted prop against an actual wall face or not at all.
+
+It also explains why the staged captures looked fine: every one of them was framed to avoid these.
+
+### The wardrobe kiosk does not exist in the home hangar
+
+Reported 2026-09-20 as *"kiosk blocked by something."* **Resolved 2026-09-21: it is not blocked, it
+is absent.** Diagnosed live in PIE.
+
+`CREW WARDROBE` is added only at a station (`SSStation.cpp:385`):
+
+```cpp
+if (!Home)
+    AddService(FVector(-1400, 500, 0), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
+```
+
+The owner was in the **home hangar**, confirmed two ways: the deck showed `PILOT RECORD`, which is
+the home-only label for the kiosk that reads `CONTRACT BOARD` at a station (`:379`); and the station
+actor sat at the world origin, which is where the home path spawns it (`SSGameMode.cpp:301`) rather
+than at `StationTarget` (`:424`). So the kiosk was never in `Services`, and Interact at its
+coordinates resolved to Pilot Record instead - the nearest service that exists.
+
+**This is working as written.** The comment above the gate states the intent: the home hangar is
+where a run is prepared, not where the crew get changed. Whether that is the right call is an open
+design question, not a defect. **Not changed.**
+
+**What is a defect** is that it is indistinguishable from a broken kiosk. Three things compound:
+
+- Interact gives **no feedback when nothing is in range.** `NearestService` uses a 280 cm radius
+  (`SSStation.cpp:577`) and returns `ESSPanel::None` silently past it.
+- There is **no proximity prompt** on a service, so a kiosk that is 6 m away and one that does not
+  exist look identical - the player is standing in the right area either way.
+- The walkable box is **35 x 29 m** (`:554`) while the station art is 108 x 86 m, so hunting for a
+  service across what looks like open deck teleports the player to spawn with no message.
+
+Measured during the same session: the owner believed they were at `LAUNCH CONTROL` while standing at
+(950, 140); it is at (950, -450). Same x, **5.9 m off on y** - more than twice the interact radius,
+with nothing on screen to say so.
+
+The eighth body wired in on 2026-09-20 therefore **still has never been seen in the wardrobe panel.**
+The automation proves the roster holds eight and that the alien fits the deck; it does not prove the
+panel opens or lists them. That check needs a station, not the hangar.
+
+### Why this list exists
+
+`CLAUDE.md` already says *"Treat '67 tests pass' as saying nothing about what a player receives."*
+This is that, demonstrated: the suite was green, the build succeeded, and the game was unplayable.
+Playtest before claiming any of this works.
+
 ## RPT-20260923-01 — replacement squirrel rig and tail layers
 
-Owner: lead implementation; status: **asset review candidate, runtime integration open**.
+Owner: lead implementation; status: **implemented locally; owner feel and cockpit verification open**. Native integration is recorded in the September 24 hero follow-up above; the following authoring-stage notes are historical and do not request a second import.
 The owner selected the darker Tripo squirrel at 75–80k triangles and asked for a
 mannequin-friendly rig, independent tail, rigid backpack, walking/running wobble,
 casual idle sway and jump follow-through. The selected import is exactly 75,183

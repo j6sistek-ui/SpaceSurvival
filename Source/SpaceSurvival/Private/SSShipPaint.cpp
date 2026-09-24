@@ -1,4 +1,6 @@
 #include "SSShipPaint.h"
+#include "SSShip.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -97,6 +99,32 @@ int32 SSPaint::SectionForMaterial(const FString &MaterialName)
     if (Has(Name, {TEXT("weapon"), TEXT("gun"), TEXT("laser"), TEXT("cannon"), TEXT("turret")}))
         return Weapons;
     return Body;
+}
+
+bool SSPaint::SupportsSection(const ASSShip *Ship, int32 Section, SS::Ship LegacyBayShip)
+{
+    if (Section < 0 || Section >= SS::PaintSections)
+        return false;
+    // The rig and its mesh-only fallback use the same authored materials. Neither offers exposed paint
+    // parameters for the four sections; substituting M_Hull would discard their textures.
+    if (Ship && ((Ship->SkeletalHull && Ship->SkeletalHull->GetSkeletalMeshAsset()) || !Ship->HullMesh ||
+                 !Ship->HullMesh->IsVisible()))
+        return false;
+    const UStaticMesh *Mesh = Ship ? Ship->HullMesh->GetStaticMesh().Get()
+                                   : LoadObject<UStaticMesh>(nullptr, ASSShip::HullAssetPath(LegacyBayShip));
+    if (!Mesh)
+        return false;
+    for (const auto &Slot : Mesh->GetStaticMaterials())
+    {
+        auto *Material = Slot.MaterialInterface.Get();
+        if (!Material || SectionForMaterial(Material->GetName()) != Section)
+            continue;
+        FName Parameter;
+        if (ColourParameter(Material, Parameter) ||
+            ColourParameter(LoadObject<UMaterialInterface>(nullptr, FallbackMaterial), Parameter))
+            return true;
+    }
+    return false;
 }
 
 void SSPaint::Apply(UStaticMeshComponent *Hull, const SS::Account &Account)

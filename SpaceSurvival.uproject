@@ -59,6 +59,9 @@
 		{
 			"Name": "UAssetBrowser",
 			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			],
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/648d582688654f7db09939af111c45b5"
 		},
 		{
@@ -72,6 +75,13 @@
 		{
 			"Name": "ShipCore",
 			"Enabled": true
+		},
+		{
+			"Name": "NwiroIntegrationKit",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
 		}
 	]
 }

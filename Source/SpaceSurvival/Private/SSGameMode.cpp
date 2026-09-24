@@ -4,6 +4,8 @@
 #include "SSWave10Soak.h"
 #include "SSGameInstance.h"
 #include "SSShip.h"
+#include "SSShipVisualRig.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "SSDistantAsteroids.h"
 #include "SSAmbientPresentation.h"
 #include "SSSpaceLookData.h"
@@ -13,6 +15,7 @@
 #include "Engine/TextureCube.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
+#include "SSLandingPad.h"
 #include "SSShipPaint.h"
 #include "Animation/PoseSnapshot.h"
 #include "SSHUD.h"
@@ -20,6 +23,7 @@
 #include "SSPhase1Data.h"
 #include "Components/AudioComponent.h"
 #include "Components/SceneComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EngineUtils.h"
@@ -108,10 +112,10 @@ void ASSGameMode::BeginPlay()
         auto &T = GetGameInstance<USSGameInstance>()->Session.tuning;
         T.baseHull = Data->BaseHull;
         T.baseShield = Data->BaseShield;
-        T.baseSpeed = Data->CruiseSpeed;
+        T.baseSpeed = Data->FlightCruiseSpeed();
         T.baseManeuver = Data->LateralSpeed;
         T.baseResponse = Data->Response;
-        T.baseAcceleration = Data->Acceleration;
+        T.baseAcceleration = Data->FlightAcceleration();
         T.baseWeaponDamage = Data->BaseWeaponDamage;
         T.waveSecondsMin = Data->WaveSecondsMin;
         T.waveSecondsMax = Data->WaveSecondsMax;
@@ -172,13 +176,10 @@ void ASSGameMode::BeginPlay()
                 Light->SetIntensity(SpaceLook->KeyIntensity);
             }
     ShowHangar();
-    // The hangar is always the first thing on screen. The main menu only interrupts it when
-    // there is a suspended run to offer resuming; otherwise the player is straight into the
-    // hangar with no panel up, and reaches the menu the same way as any later pause, via Escape.
-    if (GetGameInstance<USSGameInstance>()->HasSuspendedRun())
-        OpenPanel(ESSPanel::Main);
-    else
-        ClosePanel();
+    bAtTitleScreen = true;
+    // The approved main menu is the entry screen. New Game opens this home hangar;
+    // walking into the ship then offers Survival or Free Flight.
+    OpenPanel(ESSPanel::Main);
     ASSWave10Soak::TryStart(this);
 }
 bool ASSGameMode::InHangar() const
@@ -229,7 +230,7 @@ void ASSGameMode::NotifyPlayerShotHit()
 {
     // Re-armed on every connecting shot, so sustained fire holds the hit reticle rather than
     // strobing between it and the firing one.
-    PlayerHitFlashSeconds = .14f;
+    PlayerHitFlashSeconds = .28f;
 }
 void ASSGameMode::UpdateThreatFeedback(float Dt)
 {
@@ -283,6 +284,8 @@ void ASSGameMode::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 }
 void ASSGameMode::ShowHangar()
 {
+    bAtTitleScreen = false;
+    bDepartingStation = bStartNextBlockOnExit = false;
     ThreatWarningSeconds = PilotReactionSeconds = 0.f;
     Director->SetActive(false);
     Director->ResetEncounter();
@@ -301,6 +304,12 @@ void ASSGameMode::ShowHangar()
     Hub = GetWorld()->SpawnActor<ASSStation>(FVector::ZeroVector, FRotator::ZeroRotator);
     Hub->BuildHub(true);
     Hub->SetBayShip(SelectedShip);
+    if (Hub->IsUsingFunctionalLayout())
+    {
+        Ship = GetWorld()->SpawnActor<ASSShip>(Hub->PadDockPosition(), Hub->PadDockRotation());
+        Ship->SetDockingTarget(Hub->PadDockPosition(), Hub->PadDockRotation());
+        Ship->FinishDocking();
+    }
     Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator::ZeroRotator);
     WearHero();
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
@@ -309,15 +318,16 @@ void ASSGameMode::ShowHangar()
     PreviousPhase = int32(GetGameInstance<USSGameInstance>()->Session.run.phase);
     PreviousWave = -1;
     ClosePanel();
+    FollowFlightPresentation();
 }
-void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
+void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation, bool PreserveHub)
 {
     if (Walker)
     {
         Walker->Destroy();
         Walker = nullptr;
     }
-    if (Hub)
+    if (Hub && !PreserveHub)
     {
         Hub->Destroy();
         Hub = nullptr;
@@ -325,6 +335,15 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
     if (Ship)
         Ship->Destroy();
     Ship = GetWorld()->SpawnActor<ASSShip>(Location, Rotation);
+    FollowFlightPresentation();
+    UGameplayStatics::GetPlayerController(this, 0)->Possess(Ship);
+    Director->SetActive(!PreserveHub);
+    ClosePanel();
+}
+void ASSGameMode::FollowFlightPresentation()
+{
+    if (!Ship)
+        return;
     if (!DistantField)
         DistantField = GetWorld()->SpawnActor<ASSDistantAsteroids>();
     DistantField->Follow(Ship);
@@ -332,16 +351,17 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation)
         AmbientPresentation = GetWorld()->SpawnActor<ASSAmbientPresentation>();
     AmbientPresentation->Follow(Ship);
     if (!SpaceScenery)
+    {
         SpaceScenery = GetWorld()->SpawnActor<ASSSpaceScenery>();
-    if (const auto *GI = GetGameInstance<USSGameInstance>())
-        SpaceScenery->SetRunSeed(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str()))));
+        if (const auto *GI = GetGameInstance<USSGameInstance>())
+            SpaceScenery->SetRunSeed(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str()))));
+    }
     SpaceScenery->Follow(Ship);
-    UGameplayStatics::GetPlayerController(this, 0)->Possess(Ship);
-    Director->SetActive(true);
-    ClosePanel();
 }
 void ASSGameMode::StartNewRun()
 {
+    bAtTitleScreen = false;
+    bStartNextBlockOnExit = false;
     bWormholeArrived = false;
     ArrivalColorBlend = 0.f;
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -379,13 +399,26 @@ void ASSGameMode::StartNewRun()
     Director->ResetEncounter();
     PreviousPhase = -1;
     PreviousWave = -1;
-    SpawnFlight(FVector(0, 0, 7000), FRotator::ZeroRotator);
-    Announce(TEXT("Acornaut: One more journey. Steer, weave, and keep moving."));
+    if (Hub)
+        BeginDeparture();
+    else
+        SpawnFlight(FVector(0, 0, 7000), FRotator::ZeroRotator);
+    Announce(TEXT("Departure ready. Lift off, then fly clear of the station zone to begin Wave 1."));
 }
 void ASSGameMode::LaunchFromHub()
 {
+    if (bDepartingStation)
+        return;
     if (Walker && Walker->IsDisembarking())
         return;
+    if (auto *Instance = GetGameInstance<USSGameInstance>(); Instance && Instance->IsFreeFlight())
+    {
+        Instance->Session.run.phase = SS::Phase::Approach;
+        bStartNextBlockOnExit = false;
+        BeginDeparture();
+        Announce(TEXT("FREE FLIGHT / Use throttle to fly out. Return to this pad whenever you like."));
+        return;
+    }
     if (InHangar())
     {
         StartNewRun();
@@ -394,19 +427,159 @@ void ASSGameMode::LaunchFromHub()
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
-    if (!GI->Session.LaunchFromStation())
+    if (!Hub || GI->Session.run.phase != SS::Phase::Station || GI->Session.run.wave >= 10)
     {
         Announce(TEXT("Phase 1 flight content ends at Station 2. This live run can be suspended here."));
         return;
     }
-    const FVector Location =
-        Hub ? Hub->GetActorTransform().TransformPosition(FVector(3500, 0, 1800)) : FVector(0, 0, 7000);
-    const FRotator Rotation = Hub ? Hub->GetActorRotation() : FRotator::ZeroRotator;
-    SpawnFlight(Location, Rotation);
-    Announce(TEXT("Dockmaster: Departure clear. Good hunting, Acornaut."));
+    bStartNextBlockOnExit = true;
+    BeginDeparture();
+    Announce(TEXT("Departure ready. Lift off, then fly clear of the station zone to begin the next wave."));
+}
+void ASSGameMode::StartFreeFlight()
+{
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || bDepartingStation || !InHangar())
+        return;
+    if (!GI->BeginFreeFlight(SS::Ship(SelectedShip), SS::Weapon(SelectedWeapon)))
+    {
+        Announce(GI->LastSaveError);
+        return;
+    }
+    Director->ResetEncounter();
+    GI->Session.run.phase = SS::Phase::Approach;
+    GI->Session.run.phaseSeconds = 0;
+    PreviousPhase = int32(SS::Phase::Approach);
+    PreviousWave = GI->Session.run.wave;
+    bStartNextBlockOnExit = false;
+    BeginDeparture();
+    Announce(TEXT("FREE FLIGHT / No waves or survival progress. Use throttle to fly out; return to the pad to land."));
+}
+void ASSGameMode::EndFreeFlight()
+{
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || !GI->EndFreeFlight())
+        return;
+    ShowHangar();
+    OpenPanel(ESSPanel::Launch);
+}
+bool ASSGameMode::IsWalkerInsideShip(const ASSWalker *Candidate) const
+{
+    if (!Candidate || Candidate != Walker || !Hub || !Ship || Candidate->IsDisembarking())
+        return false;
+    const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    const auto *Capsule = Candidate->GetCapsuleComponent();
+    const auto *Rig = Ship->GetVisualRig();
+    return PC && PC->GetPawn() == Candidate && Capsule && Rig &&
+           Candidate->GetCharacterMovement()->IsMovingOnGround() &&
+           Rig->CanBoardAt(Candidate->GetActorLocation(), Capsule->GetScaledCapsuleRadius(),
+                           Capsule->GetScaledCapsuleHalfHeight());
+}
+bool ASSGameMode::TryBoardShip(ASSWalker *Candidate)
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || IsMenuOpen() || bDepartingStation || !IsWalkerInsideShip(Candidate) ||
+        (!InHangar() && GI->Session.run.phase != SS::Phase::Station))
+        return false;
+    OpenPanel(ESSPanel::Launch);
+    return true;
+}
+void ASSGameMode::BeginDeparture()
+{
+    if (!Hub)
+        return;
+    bDepartingStation = true;
+    Director->SetActive(false);
+    Hub->ShowBayShip(false);
+    Hub->ShowPadIndicator(false);
+    const FVector Dock = Hub->PadDockPosition();
+    const FRotator Facing = Hub->PadDockRotation();
+    if (!Ship)
+        SpawnFlight(Dock, Facing, true);
+    else
+    {
+        if (Walker)
+        {
+            Walker->Destroy();
+            Walker = nullptr;
+        }
+        auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        PC->Possess(Ship);
+        PC->SetViewTargetWithBlend(Ship, .4f);
+        ClosePanel();
+    }
+    if (Ship)
+    {
+        FollowFlightPresentation();
+        Ship->BeginTakeoff(Dock + Hub->GetActorUpVector() * 700.f, Facing);
+    }
+}
+
+FVector ASSGameMode::GetLandingTarget() const
+{
+    return Hub ? Hub->PadDockPosition() : StationTarget;
+}
+float ASSGameMode::GetDockingRadius() const
+{
+    const auto *Pad = Hub ? Hub->GetLandingPad() : nullptr;
+    return FMath::Max(Pad ? Pad->ApproachRadius : 1200.f, Ship ? Ship->DockApproachRadius() : 1200.f);
+}
+bool ASSGameMode::IsInStationZone() const
+{
+    if (!Hub)
+        return false;
+    const auto *Pad = Hub->GetLandingPad();
+    const APawn *Pawn = Ship ? static_cast<const APawn *>(Ship.Get()) : static_cast<const APawn *>(Walker.Get());
+    return Pawn && FVector::DistSquared(Pawn->GetActorLocation(), GetLandingTarget()) <=
+                       FMath::Square(Pad ? Pad->StationZoneRadius : 18000.f);
+}
+bool ASSGameMode::DockingStatus(FString &Message) const
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || !Ship || !Hub || GI->Session.run.phase != SS::Phase::Approach || bDepartingStation)
+    {
+        Message = TEXT("Docking is unavailable.");
+        return false;
+    }
+    const float Distance = FVector::Distance(Ship->GetActorLocation(), GetLandingTarget());
+    if (Distance > GetDockingRadius())
+    {
+        Message = FString::Printf(TEXT("LANDING PAD  %.0f m  |  Approach within %.0f m"), Distance / 100.f,
+                                  GetDockingRadius() / 100.f);
+        return false;
+    }
+    const float Limit = float(GI->Session.Stats().speed);
+    if (Ship->GetVelocity().Size() > Limit)
+    {
+        Message = FString::Printf(TEXT("LANDING PAD  |  Brake below %.0f m/s"), Limit / 100.f);
+        return false;
+    }
+    if (!Hub->CanAssistDocking(Ship))
+    {
+        Message = TEXT("LANDING PAD  |  Path blocked: move clear above the pad");
+        return false;
+    }
+    Message = TEXT("LANDING PAD  |  Ready to dock");
+    return true;
+}
+bool ASSGameMode::RequestDocking()
+{
+    FString Status;
+    if (!DockingStatus(Status))
+    {
+        Announce(Status);
+        return false;
+    }
+    auto &Session = GetGameInstance<USSGameInstance>()->Session;
+    if (!Session.BeginDocking())
+        return false;
+    Ship->SetDockingTarget(GetLandingTarget(), Hub->PadDockRotation(), float(Session.run.phaseDuration));
+    Announce(TEXT("Docking engaged. Holding over the pad, then lowering to land."));
+    return true;
 }
 void ASSGameMode::EnterStation()
 {
+    bDepartingStation = bStartNextBlockOnExit = false;
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Walker)
@@ -414,7 +587,7 @@ void ASSGameMode::EnterStation()
         Walker->Destroy();
         Walker = nullptr;
     }
-    if (Hub && Hub->IsHome())
+    if (Hub && Hub->IsHome() && !GetGameInstance<USSGameInstance>()->IsFreeFlight())
     {
         Hub->Destroy();
         Hub = nullptr;
@@ -430,6 +603,17 @@ void ASSGameMode::EnterStation()
     // actual ship sits on the pad outside. Hide it unconditionally here. The home hangar keeps it, because
     // there it is the ship-selection display and showing each hull is its whole job.
     Hub->ShowBayShip(false);
+    bool SafePadExit = true;
+    if (Ship)
+    {
+        Ship->SetActorLocation(Hub->PadDockPosition());
+        Ship->SetActorRotation(Hub->PadDockRotation());
+        const auto *Capsule = GetDefault<ASSWalker>()->GetCapsuleComponent();
+        SafePadExit =
+            Hub->ConfigurePadExit(Ship, Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight());
+        if (!SafePadExit)
+            UE_LOG(LogTemp, Warning, TEXT("STATION_EXIT_FALLBACK: no supported exterior capsule space on pad."));
+    }
     // Facing the station, not world north. Unlike the home hub above, this one is spawned at whatever
     // heading the ship happened to be flying on the Approach transition, so its yaw is arbitrary - and
     // the walker neither orients to movement nor follows the controller. The authored exit reconciled
@@ -441,7 +625,8 @@ void ASSGameMode::EnterStation()
     // station there's a clean landing area and you get out and walk inside", and this is the line that
     // decides it: the hero is put down beside its ship on the pad, and the way in is a walk through the
     // hangar mouth rather than a cut. The bay is still built and still holds the display ship.
-    Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->PadWalkSpawn(), FRotator(0, Hub->GetActorRotation().Yaw, 0));
+    Walker = GetWorld()->SpawnActor<ASSWalker>(SafePadExit ? Hub->PadWalkSpawn() : Hub->WalkSpawn(),
+                                               FRotator(0, Hub->GetActorRotation().Yaw, 0));
     WearHero();
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     const bool AutoCamera = PC->bAutoManageActiveCameraTarget;
@@ -454,14 +639,12 @@ void ASSGameMode::EnterStation()
         // Match both the outgoing component and its actual current bone pose before
         // hiding it. A short actor-clock blend hands this pose to the authored exit.
         Ship->SetActorLocation(Hub->PadDockPosition());
-        Ship->SetActorRotation(Hub->GetActorRotation());
-        const FVector Exit = Hub->PadExit();
+        Ship->SetActorRotation(Hub->PadDockRotation());
+        const FVector Exit = SafePadExit ? Hub->PadExit() : Hub->WalkSpawn();
         FPoseSnapshot SeatedPose;
         Ship->Pilot->SnapshotPose(SeatedPose);
-        // A hero only climbs out if it has a clip for it. The ship has no door, so the one authored
-        // exit lifts the pawn 125 cm over its own hull; a hero without an exit clip is simply standing
-        // outside when the docking motion finishes, which is where the walker already spawned
-        // (RPT-20260917-01).
+        // Only heroes with an authored exit clip use the seated-pose transition. Other heroes receive
+        // control at the same measured exterior endpoint as soon as docking finishes.
         const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
         const bool ExitStarted = ClimbsOut && Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit,
                                                                      Hub->GetActorRotation(), &SeatedPose);
@@ -490,15 +673,14 @@ void ASSGameMode::Tick(float Dt)
     if (!GI)
         return;
     auto &S = GI->Session;
+    // The station occupies the same space. Landing and possession cannot switch the region off.
+    const bool FlightSceneryVisible = IsValid(Ship);
     if (DistantField)
-        DistantField->SetFlightVisible(S.run.phase == SS::Phase::Flight || S.run.phase == SS::Phase::Breathing ||
-                                       S.run.phase == SS::Phase::Climax);
+        DistantField->SetFlightVisible(FlightSceneryVisible);
     if (AmbientPresentation)
-        AmbientPresentation->SetFlightVisible(S.run.phase == SS::Phase::Flight || S.run.phase == SS::Phase::Breathing ||
-                                              S.run.phase == SS::Phase::Climax);
+        AmbientPresentation->SetFlightVisible(FlightSceneryVisible);
     if (SpaceScenery)
-        SpaceScenery->SetFlightVisible(S.run.phase == SS::Phase::Flight || S.run.phase == SS::Phase::Breathing ||
-                                       S.run.phase == SS::Phase::Climax);
+        SpaceScenery->SetFlightVisible(FlightSceneryVisible);
     AnnouncementSeconds = FMath::Max(0.f, AnnouncementSeconds - Dt);
     bool Danger = false;
     if (Ship && S.IsFlying())
@@ -513,7 +695,27 @@ void ASSGameMode::Tick(float Dt)
     const SS::Contract ArrivingContract = S.run.contract;
     const int32 CreditsBeforeStep = S.run.credits;
     const int32 ContractsBeforeStep = S.run.contractsCompleted;
-    S.Tick(Ship && Ship->IsMoored() ? 0.f : Dt, Danger); // Service time grants no wave progress or free regeneration.
+    // Launch does not spend the next wave while the ship is still on or beside its pad.
+    // Only crossing the station boundary commits the existing domain launch transaction.
+    const bool DepartureFrame = bDepartingStation;
+    if (bDepartingStation && Ship && !Ship->IsTakingOff() && !IsInStationZone())
+    {
+        const bool MayLeave = !bStartNextBlockOnExit || S.LaunchFromStation();
+        if (MayLeave)
+        {
+            bDepartingStation = bStartNextBlockOnExit = false;
+            if (Hub && !GI->IsFreeFlight())
+            {
+                Hub->Destroy();
+                Hub = nullptr;
+            }
+            Director->SetActive(!GI->IsFreeFlight());
+            Announce(GI->IsFreeFlight() ? TEXT("FREE FLIGHT / No waves. Esc / Menu to return to the hangar.")
+                                        : FString::Printf(TEXT("STATION ZONE CLEAR  |  WAVE %d"), S.run.wave));
+        }
+    }
+    // Free Flight stays in Approach, which advances cooldowns without advancing waves.
+    S.Tick((DepartureFrame && !GI->IsFreeFlight()) || (Ship && Ship->IsMoored()) ? 0.f : Dt, Danger);
 #if CSV_PROFILER && !CSV_PROFILER_MINIMAL
     // Sample after the domain step; avoid the threat actor scan outside an enabled capture.
     if (FCsvProfiler::IsCapturing() && FCsvProfiler::Get()->IsCategoryEnabled(CSV_CATEGORY_INDEX(SpaceSurvival)))
@@ -544,7 +746,7 @@ void ASSGameMode::Tick(float Dt)
         if (SpaceMaterial)
         {
             // Long gradual visual drift, independent of wave and station cadence.
-            const uint32 RegionSeed = GetTypeHash(FString(UTF8_TO_TCHAR(S.run.id.c_str())));
+            const uint32 RegionSeed = 740127; // Continuous world identity across boarding and takeoff.
             const float Blend = .5f + .5f * FMath::Sin(RegionTime * .006f + float(RegionSeed % 1000) * .01f);
             if (SpaceLook && SpaceLook->RegionSkies.Num() > 1)
             {
@@ -572,6 +774,21 @@ void ASSGameMode::Tick(float Dt)
     PendingReward = S.run.pendingReward;
     RewardCombat = S.run.rewardCombat;
     UpdateMusicMix();
+    if (GI->IsFreeFlight())
+    {
+        Director->SetActive(false);
+        if (S.run.phase == SS::Phase::Station && PreviousPhase != int32(SS::Phase::Station))
+            EnterStation();
+        PreviousPhase = int32(S.run.phase);
+        PreviousWave = S.run.wave;
+        if (Ship && Ship->GetActorLocation().Size() > 1000000.f)
+        {
+            const FIntVector Shift(Ship->GetActorLocation());
+            StationTarget -= FVector(Shift);
+            GetWorld()->SetNewWorldOrigin(GetWorld()->OriginLocation + Shift);
+        }
+        return;
+    }
     if (S.run.phase == SS::Phase::Dead)
     {
         if (PreviousPhase != int32(S.run.phase))
@@ -592,7 +809,8 @@ void ASSGameMode::Tick(float Dt)
         if (S.run.wave != PreviousWave)
         {
             Director->Configure(S.run.wave, S.run.phase == SS::Phase::Climax);
-            Announce(FString::Printf(TEXT("WAVE %d  |  Keep surviving"), S.run.wave));
+            if (!bDepartingStation)
+                Announce(FString::Printf(TEXT("WAVE %d  |  Keep surviving"), S.run.wave));
         }
         Director->SetBreathing(S.run.phase == SS::Phase::Breathing);
         if (S.run.phase == SS::Phase::Wormhole)
@@ -617,14 +835,9 @@ void ASSGameMode::Tick(float Dt)
         }
         if (S.run.phase == SS::Phase::Approach && Ship)
         {
-            Director->SetActive(false);
-            // Deactivating the Director stops further admission but leaves spawned hostiles alive,
-            // so the station became reachable with wave enemies still flying. The five-wave cadence
-            // is locked, so this is a correctness repair. Destroy, never OnDefeated: the defeat path
-            // awards kills, credits, XP and objective progress the player never earned.
-            for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
-                if (It->IsEnemy() && !It->IsActorBeingDestroyed())
-                    It->Destroy();
+            // The scheduled station break is safe to stop in. Retire lingering hazards as well as enemies,
+            // without defeat callbacks or unearned kill/reward credit.
+            Director->ResetEncounter();
             const FRotator Arrival(0, Ship->GetActorRotation().Yaw, 0);
             const FVector Dock = Ship->GetActorLocation() + Ship->GetActorForwardVector() * 18000.f;
             StationTarget = Dock - Arrival.Vector() * 850.f - FVector(0, 0, 220);
@@ -633,8 +846,7 @@ void ASSGameMode::Tick(float Dt)
             Hub = GetWorld()->SpawnActor<ASSStation>(StationTarget, Arrival);
             Hub->BuildHub(false);
             Hub->ShowBayShip(false);
-            Announce(TEXT(
-                "STATION DETECTED  |  Approach the marked corridor. Final landing assistance engages inside 12 m."));
+            Announce(TEXT("STATION ZONE  |  Follow LANDING PAD. Brake, then press Interact when docking is ready."));
         }
         if (S.run.phase == SS::Phase::Station)
         {
@@ -656,30 +868,6 @@ void ASSGameMode::Tick(float Dt)
         PreviousPhase = int32(S.run.phase);
         PreviousWave = S.run.wave;
     }
-    if (S.run.phase == SS::Phase::Approach && Ship && Hub)
-    {
-        // Admission is proximity to the PAD and a clear path to it, from any heading. The old rule also
-        // required Dot(forward, toDock) > .45, which said "come in level, centred, through the hangar
-        // mouth" - a corridor. Against an open pad that is not a safety rule, it is an arbitrary one: a
-        // ship descending vertically onto a landing pad is landing, not diving through a roof. The owner
-        // asked that you not be forced to approach a certain way, so heading is no longer part of the
-        // decision. What remains is the part that was always physical - whether this hull can actually
-        // get there without hitting anything.
-        const FVector ToDock = Hub->PadDockPosition() - Ship->GetActorLocation();
-        // Close enough, slow enough, and able to get there. Speed is a real condition rather than dressing:
-        // without it you could hold full thrust through the pad and still be handed a landing, which is the
-        // one way an approach with no heading rule could feel like nothing at all. The threshold is this
-        // run's own cruise speed, so it scales with the Engine upgrade instead of going stale, and it lands
-        // where the owner put it - you cannot dock boosting, you can dock at a normal cruise or slower.
-        // This is the intended dial; the number is expected to come down once it has been flown.
-        const float ApproachSpeed = Ship->GetVelocity().Size();
-        if (ToDock.Size() < Ship->DockApproachRadius() && ApproachSpeed <= float(S.Stats().speed) &&
-            Hub->CanAssistDocking(Ship) && S.BeginDocking())
-        {
-            Ship->SetDockingTarget(Hub->PadDockPosition(), Hub->GetActorRotation());
-            Announce(TEXT("Docking assistance engaged. Welcome to port."));
-        }
-    }
     // Unreal origin rebasing keeps the uninterrupted journey numerically stable.
     if (Ship && Ship->GetActorLocation().Size() > 1000000.f)
     {
@@ -690,14 +878,16 @@ void ASSGameMode::Tick(float Dt)
     if (S.IsFlying() && S.run.wave <= 3 && AnnouncementSeconds <= 0)
     {
         const TCHAR *Prompts[] = {
-            TEXT("STEER: mouse / right stick. The ship carries momentum while its hull banks."),
-            TEXT("THROTTLE: W S / D-pad up down. A D and R F / left stick weave around hazards."),
-            TEXT("BOOST: Shift / right trigger. Release to recharge the meter."),
+            TEXT("FLIGHT: left stick nose steering. LB/RB dash and bank; hold to roll. Right stick is camera-only "
+                 "free-look."),
+            TEXT(
+                "THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. Left stick moves sideways."),
+            TEXT("BOOST: Shift / B. Separate from normal throttle; release to recharge."),
             TEXT("BRAKE: Space / left trigger. Partial braking builds heat; give it time to cool."),
             TEXT("DODGE: Q / left bumper with a movement direction. Obstacles still hurt during a dodge."),
-            TEXT("FIRE: left mouse / right bumper. Aim manually; brackets provide soft targeting assistance."),
+            TEXT("FIRE: left mouse / A. Aim manually; brackets provide soft targeting assistance."),
             TEXT("PICKUPS: collect shaped rewards. Hull regenerates after damage; shield does not."),
-            TEXT("OPTIONAL SIGNALS: approach, then E / A to accept. Passing nearby does not commit you.")};
+            TEXT("OPTIONAL SIGNALS: approach, then E / X to accept. Passing nearby does not commit you.")};
         const int Limit = S.run.wave == 1 ? 5 : S.run.wave == 2 ? 7 : 8;
         for (int I = 0; I < Limit; ++I)
         {
@@ -768,9 +958,16 @@ void ASSGameMode::Interact()
         return;
     if (IsMenuOpen())
         return;
+    if (const auto *GI = GetGameInstance<USSGameInstance>(); Ship && GI && GI->Session.run.phase == SS::Phase::Approach)
+    {
+        RequestDocking();
+        return;
+    }
     if (Walker && Hub)
     {
         if (Walker->IsDisembarking())
+            return;
+        if (TryBoardShip(Walker))
             return;
         FString Label;
         const auto Service = Hub->NearestService(Walker->GetActorLocation(), Label);
@@ -781,6 +978,8 @@ void ASSGameMode::Interact()
         }
         else if (Service != ESSPanel::None)
             OpenPanel(Service);
+        else
+            Announce(Hub->ServiceGuidance(Walker->GetActorLocation()));
         return;
     }
     if (Ship)
@@ -791,6 +990,18 @@ void ASSGameMode::Interact()
             return;
         }
         ASSEncounterBeacon *Closest = nullptr;
+        ASSEncounterBeacon *Nearest = nullptr;
+        float NearestDistance = MAX_flt;
+        for (TActorIterator<ASSEncounterBeacon> It(GetWorld()); It; ++It)
+            if (!It->IsResolved())
+            {
+                const float D = FVector::DistSquared(Ship->GetActorLocation(), It->GetActorLocation());
+                if (D < NearestDistance)
+                {
+                    Nearest = *It;
+                    NearestDistance = D;
+                }
+            }
         float Distance = MAX_flt;
         for (TActorIterator<ASSEncounterBeacon> It(GetWorld()); It; ++It)
             if (It->IsPlayerInRange() && !It->IsResolved())
@@ -810,6 +1021,8 @@ void ASSGameMode::Interact()
                 if (Closest->TryAccept())
                     OpenPanel(ESSPanel::Depot);
             }
+            else if (Closest->IsAccepted())
+                Announce(Closest->GetEncounterLabel());
             else if (Closest->TryAccept())
             {
                 if (auto *GI = GetGameInstance<USSGameInstance>())
@@ -820,6 +1033,11 @@ void ASSGameMode::Interact()
                 Announce(Closest->GetEncounterLabel());
             }
         }
+        else if (Nearest)
+            Announce(FString::Printf(TEXT("SIGNAL OUT OF RANGE / %.0f m away; move closer and press E / X"),
+                                     FMath::Sqrt(NearestDistance) / 100.f));
+        else
+            Announce(TEXT("No active signal nearby."));
     }
 }
 void ASSGameMode::AddEntry(const FString &Label, int32 Action, bool Enabled)
@@ -835,6 +1053,15 @@ void ASSGameMode::RepaintShips()
 }
 void ASSGameMode::ClosePanel()
 {
+    if (bTitleSettingsNavigation &&
+        (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics || Panel == ESSPanel::Audio ||
+         Panel == ESSPanel::Controls || Panel == ESSPanel::Acknowledgements))
+    {
+        bTitleSettingsNavigation = false;
+        OpenPanel(ESSPanel::Main);
+        return;
+    }
+    bTitleSettingsNavigation = false;
     if (Ship && Ship->IsMoored())
         Ship->EndMooring();
     Panel = ESSPanel::None;
@@ -850,7 +1077,9 @@ void ASSGameMode::ClosePanel()
 }
 TArray<FSSHeroDefinition> ASSGameMode::WardrobeBodies() const
 {
-    return Tuning ? Tuning->InstalledHeroes(ESSHeroSlot::Walker) : TArray<FSSHeroDefinition>();
+    auto Bodies = Tuning ? Tuning->InstalledHeroes(ESSHeroSlot::Walker) : TArray<FSSHeroDefinition>();
+    Bodies.RemoveAll([](const FSSHeroDefinition &Body) { return Body.Identity == ESSHeroIdentity::Acornaut; });
+    return Bodies;
 }
 
 FName ASSGameMode::WornHeroId() const
@@ -861,7 +1090,7 @@ FName ASSGameMode::WornHeroId() const
     const auto &S = GI->Session;
     // No choice saved is the ordinary case for a new game, and it must stay the ordinary answer:
     // roster order, which puts the squirrel on the deck.
-    if (S.account.hero < 0)
+    if (S.account.hero < 0 || S.account.hero == static_cast<int32>(ESSHeroIdentity::Acornaut))
         return Tuning->SelectHero(ESSHeroSlot::Walker).Id;
     // A saved choice is a request, not a guarantee. SelectHero's preference overload falls through to
     // roster order when the named body is not installed, so a save made on a machine with a pack that
@@ -874,6 +1103,12 @@ void ASSGameMode::WearHero()
 {
     if (Walker)
         Walker->ApplyHero(WornHeroId());
+}
+
+bool ASSGameMode::IsTitleMenu() const
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    return Panel == ESSPanel::Main && bAtTitleScreen && GI && !GI->Session.run.active && !GI->IsFreeFlight();
 }
 
 void ASSGameMode::OpenPanel(ESSPanel NewPanel)
@@ -894,32 +1129,55 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     Entries.Empty();
     SelectedEntry = 0;
     PanelDetail.Empty();
-    if (auto *PC = UGameplayStatics::GetPlayerController(this, 0))
-    {
-        PC->bShowMouseCursor = true;
-        PC->SetInputMode(FInputModeGameAndUI());
-    }
     const bool LivePanel = (Panel == ESSPanel::Depot || Panel == ESSPanel::Reward) && S.IsFlying();
-    UGameplayStatics::SetGamePaused(this, S.IsFlying() && !LivePanel);
+    const bool CaptureFlightLook = Panel == ESSPanel::Reward && LivePanel;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (PC)
+    {
+        PC->bShowMouseCursor = !CaptureFlightLook;
+        // These menus are painted on Canvas and handled by PlayerInput. There is no
+        // focusable Slate menu to receive GameAndUI navigation before the controller.
+        // Keep the first click available to the Canvas hit test when capturing focus.
+        PC->SetInputMode(FInputModeGameOnly().SetConsumeCaptureMouseDown(false));
+    }
+    // Station departure retains the domain's Station phase until the ship leaves the safe zone,
+    // and arrival retains the piloted pawn during Docking. Both scripted moves pause with menus.
+    const bool PilotedDocking = S.run.phase == SS::Phase::Docking && Ship && PC && PC->GetPawn() == Ship;
+    UGameplayStatics::SetGamePaused(this, (S.IsFlying() || bDepartingStation || PilotedDocking) && !LivePanel);
     switch (Panel)
     {
     case ESSPanel::Main:
-        PanelTitle = TEXT("SPACE SURVIVAL");
+        PanelTitle = IsTitleMenu() ? TEXT("SPACE SURVIVAL") : TEXT("PAUSED");
         PanelDetail = TEXT("How far will this journey take you?");
+        if (GI->IsFreeFlight())
+        {
+            PanelDetail = TEXT("Free Flight / Your survival progress is unchanged.");
+            AddEntry(TEXT("Return to Free Flight"), 1);
+            AddEntry(TEXT("Return to home hangar"), 53);
+            AddEntry(TEXT("Exit to main menu"), 54);
+            AddEntry(TEXT("Settings"), 5);
+            AddEntry(TEXT("Quit"), 7);
+            break;
+        }
         if (S.run.active)
         {
             AddEntry(TEXT("Return to the journey"), 1);
             if (S.AtSliceBoundary())
                 AddEntry(TEXT("Abandon this suspended-capable slice and start a new run (no death XP)"), 51);
         }
-        else
+        else if (IsTitleMenu())
         {
-            AddEntry(TEXT("Continue suspended run"), 2, GI->HasSuspendedRun());
-            AddEntry(TEXT("New run"), 3);
-            AddEntry(TEXT("Home hangar"), 4);
+            AddEntry(TEXT("Continue"), 2, GI->HasSuspendedRun());
+            AddEntry(TEXT("New Game"), 4);
+            AddEntry(TEXT("Settings"), 5);
+            AddEntry(TEXT("Exit Game"), 7);
+            break;
         }
+        if (!S.run.active)
+            AddEntry(TEXT("Resume walking"), 1);
         AddEntry(TEXT("Settings"), 5);
         AddEntry(TEXT("Run stats / progression"), 6);
+        AddEntry(TEXT("Exit to main menu (unsuspended run progress is lost)"), 54);
         AddEntry(S.run.active ? TEXT("Quit (unsuspended progress will be lost)") : TEXT("Quit"), 7);
         break;
     case ESSPanel::Results:
@@ -940,13 +1198,11 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         break;
     case ESSPanel::Settings:
         PanelTitle = TEXT("SETTINGS");
-        AddEntry(TEXT("Graphics"), 10);
-        AddEntry(TEXT("Audio"), 11);
-        AddEntry(TEXT("Controls"), 12);
-        AddEntry(TEXT("Asset acknowledgements"), 9);
+
         AddEntry(FString::Printf(TEXT("Subtitles: %s"), S.settings.subtitles ? TEXT("On") : TEXT("Off")), 13);
         AddEntry(FString::Printf(TEXT("UI scale: %.0f%%"), S.settings.uiScale * 100), 14);
         AddEntry(FString::Printf(TEXT("Camera shake: %s"), S.settings.cameraShake ? TEXT("On") : TEXT("Off")), 15);
+        AddEntry(TEXT("Asset acknowledgements"), 9);
         break;
     case ESSPanel::Acknowledgements:
         PanelTitle = TEXT("ASSET ACKNOWLEDGEMENTS");
@@ -971,10 +1227,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         break;
     case ESSPanel::Controls:
         PanelTitle = TEXT("FLIGHT / WALK CONTROLS");
-        PanelDetail = TEXT(
-            "Mouse / right stick: steer or look   |   A D, R F / left stick: lateral + vertical\nW S / D-pad up down: "
-            "throttle   |   Left click / RB: fire\nShift / RT: boost   |   Space / LT: brake   |   Q / LB: directional "
-            "dodge\nE / A: interact   |   Esc / Menu: shell   |   Walk: W A S D / left stick, Shift / X run");
+        PanelDetail =
+            TEXT("FLIGHT: Left stick: nose steering | LB/RB: dash / hold roll | Right stick: free-look.\nMouse: steer "
+                 "| A D / R F: lateral / vertical thrust.\n"
+                 "RT: normal throttle. W/S: set keyboard throttle. Zero power coasts.\n"
+                 "Shift / B: boost | Space / LT: brake | Left click / A: fire | Q: keyboard dodge\n"
+                 "E / X: flight interaction / landing.\n"
+                 "WALK: WASD / left stick moves and faces travel. Mouse / right stick orbits camera.\n"
+                 "Shift / X: run | Space / A: jump | E / Y: use | Esc / Menu: pause");
         AddEntry(FString::Printf(TEXT("Mouse sensitivity: %.1f"), S.settings.mouseSensitivity), 22);
         AddEntry(FString::Printf(TEXT("Controller sensitivity: %.1f"), S.settings.controllerSensitivity), 23);
         AddEntry(
@@ -1129,17 +1389,20 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     case ESSPanel::Paint:
     {
         PanelTitle = TEXT("PAINT BAY");
-        PanelDetail = TEXT("Ten finishes over four hull sections, kept on your account across runs. Cycle the "
-                           "section, then pick a finish; the bay ship shows it at once.");
+        const bool Supported = SSPaint::SupportsSection(Ship, PaintSection, static_cast<SS::Ship>(SelectedShip));
+        PanelDetail =
+            Supported ? TEXT("Choose a finish for this hull section. Your colours stay on your account across runs.")
+                      : TEXT("This ship keeps its factory finish for this section. Custom paint is unavailable. "
+                             "Your saved colours remain available for compatible ships.");
         const int32 Current = S.account.paint[PaintSection];
         AddEntry(FString::Printf(TEXT("Section: %s / %s  (next section)"), SSPaint::SectionName(PaintSection),
-                                 SSPaint::ColourName(Current)),
+                                 Supported ? SSPaint::ColourName(Current) : TEXT("Factory finish / paint unavailable")),
                  120);
         for (int32 Colour = 0; Colour < SS::PaintColours; ++Colour)
             AddEntry(FString::Printf(TEXT("%s%s"), SSPaint::ColourName(Colour),
-                                     Current == Colour ? TEXT(" / current") : TEXT("")),
-                     121 + Colour, Current != Colour);
-        AddEntry(TEXT("Factory finish for this section"), 131, Current >= 0);
+                                     Supported && Current == Colour ? TEXT(" / current") : TEXT("")),
+                     121 + Colour, Supported && Current != Colour);
+        AddEntry(TEXT("Factory finish for this section"), 131, Supported && Current >= 0);
         break;
     }
     case ESSPanel::Wardrobe:
@@ -1167,6 +1430,8 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                                  "replaces the active weapon.")
                           : TEXT("OPTIONAL STATION TASK: repair this lost-crew beacon with the button below to collect "
                                  "a one-time credit reward. No flight objective; safe to skip.");
+        if (CaptureFlightLook)
+            PanelDetail += TEXT("\nKeep flying. Up/Down or D-pad: choose. Enter/A: confirm. Esc/B: close.");
         if (PendingReward)
         {
             AddEntry(S.run.utility == SS::Utility::VectorThrusters ? TEXT("Vector Thrusters / already fitted")
@@ -1186,7 +1451,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                      49, !S.run.stationRewardClaimed);
         break;
     case ESSPanel::Launch:
-        if (S.AtSliceBoundary())
+        if (GI->IsFreeFlight())
+        {
+            PanelTitle = TEXT("FREE FLIGHT");
+            PanelDetail = TEXT("Fly casually. This mode does not change survival saves or progression.");
+            AddEntry(TEXT("Continue Free Flight"), 50);
+            AddEntry(TEXT("Return to home hangar"), 53);
+        }
+        else if (S.AtSliceBoundary())
         {
             PanelTitle = TEXT("STATION 2 / FLIGHT LIMIT REACHED");
             PanelDetail = FString::Printf(
@@ -1205,13 +1477,32 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                                                        SelectedShip ? TEXT("Acorn Swift") : TEXT("Acorn Voyager"),
                                                        *WeaponName(SS::Weapon(SelectedWeapon)))
                                      : TEXT("Continue with your current ship, credits and upgrades.");
-            AddEntry(TEXT("Launch"), 50);
+            if (InHangar() && !S.run.active)
+            {
+                PanelDetail += TEXT("\nStart Survival begins a fresh run. Continue loads a saved station checkpoint.");
+                AddEntry(TEXT("Start Survival"), 3);
+                AddEntry(TEXT("Continue Survival"), 2, GI->HasSuspendedRun());
+                AddEntry(TEXT("Free Flight"), 52);
+            }
+            else
+            {
+                AddEntry(TEXT("Continue Survival"), 50);
+                AddEntry(TEXT("Free Flight / available from home hangar"), 52, false);
+            }
         }
         break;
     default:
         break;
     }
-    if (NewPanel != ESSPanel::Launch || !S.AtSliceBoundary())
+    if (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics || Panel == ESSPanel::Audio ||
+        Panel == ESSPanel::Controls)
+    {
+        const TArray<FSSMenuEntry> Tabs = {
+            {TEXT("General"), 5}, {TEXT("Graphics"), 10}, {TEXT("Audio"), 11}, {TEXT("Controls"), 12}};
+        Entries.Insert(Tabs, 0);
+        SelectedEntry = Tabs.Num();
+    }
+    if (!IsTitleMenu() && (NewPanel != ESSPanel::Launch || !S.AtSliceBoundary()))
         AddEntry(TEXT("Back"), 0);
     if (SelectedAction != INDEX_NONE)
     {
@@ -1221,8 +1512,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             SelectedEntry = Restored;
     }
 }
-void ASSGameMode::ActivateEntry(int32 Index)
+void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
 {
+    if (FromPointer)
+    {
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        if (!PC || !PC->bShowMouseCursor)
+            return;
+    }
     if (!Entries.IsValidIndex(Index) || !Entries[Index].Enabled)
         return;
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -1233,6 +1530,26 @@ void ASSGameMode::ActivateEntry(int32 Index)
     // Mouse activation and keyboard/controller activation refresh the same selected action.
     SelectedEntry = Index;
     const ESSPanel Current = Panel;
+    if (A == 52)
+    {
+        StartFreeFlight();
+        return;
+    }
+    if (A == 54)
+    {
+        if (GI->IsFreeFlight() && !GI->EndFreeFlight())
+            return;
+        S.run = {};
+        ShowHangar();
+        bAtTitleScreen = true;
+        OpenPanel(ESSPanel::Main);
+        return;
+    }
+    if (A == 53)
+    {
+        EndFreeFlight();
+        return;
+    }
     if (A == 0 || A == 1)
     {
         ClosePanel();
@@ -1242,6 +1559,7 @@ void ASSGameMode::ActivateEntry(int32 Index)
     {
         if (GI->ResumeRun())
         {
+            bAtTitleScreen = false;
             bWormholeArrived = S.run.wave >= 5;
             ArrivalColorBlend = bWormholeArrived ? 1.f : 0.f;
             StationTarget = FVector::ZeroVector;
@@ -1265,6 +1583,7 @@ void ASSGameMode::ActivateEntry(int32 Index)
     }
     if (A == 5)
     {
+        bTitleSettingsNavigation = bTitleSettingsNavigation || IsTitleMenu();
         OpenPanel(ESSPanel::Settings);
         return;
     }
@@ -1314,8 +1633,9 @@ void ASSGameMode::ActivateEntry(int32 Index)
     if (A == 139 || (A >= 140 && A <= 147))
     {
         const TArray<FSSHeroDefinition> Bodies = WardrobeBodies();
-        const int32 Index = A - 140;
-        S.account.hero = A == 139 || !Bodies.IsValidIndex(Index) ? -1 : static_cast<int>(Bodies[Index].Identity);
+        const int32 HeroIndex = A - 140;
+        S.account.hero =
+            A == 139 || !Bodies.IsValidIndex(HeroIndex) ? -1 : static_cast<int>(Bodies[HeroIndex].Identity);
         if (!GI->PersistAccount())
             Announce(GI->LastSaveError);
         WearHero();
@@ -1330,6 +1650,12 @@ void ASSGameMode::ActivateEntry(int32 Index)
     }
     if (A >= 121 && A <= 131)
     {
+        // Recheck at activation as well as rendering: stale entries must not alter a different hull's colours.
+        if (!SSPaint::SupportsSection(Ship, PaintSection, static_cast<SS::Ship>(SelectedShip)))
+        {
+            OpenPanel(ESSPanel::Paint);
+            return;
+        }
         S.account.paint[PaintSection] = A == 131 ? -1 : A - 121;
         if (!GI->PersistAccount())
             Announce(GI->LastSaveError);
@@ -1581,11 +1907,11 @@ void ASSPlayerController::SSReviewExit()
         !IsValid(GM->Hub) || !IsValid(GM->Walker) || GetPawn() != GM->Walker || GM->Walker->IsDisembarking())
         return;
     if (!IsValid(GM->Ship))
-        GM->Ship = GetWorld()->SpawnActor<ASSShip>(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
+        GM->Ship = GetWorld()->SpawnActor<ASSShip>(GM->Hub->PadDockPosition(), GM->Hub->PadDockRotation());
     if (!IsValid(GM->Ship))
         return;
-    GM->Ship->SetActorLocationAndRotation(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
-    GM->Ship->SetDockingTarget(GM->Hub->PadDockPosition(), GM->Hub->GetActorRotation());
+    GM->Ship->SetActorLocationAndRotation(GM->Hub->PadDockPosition(), GM->Hub->PadDockRotation());
+    GM->Ship->SetDockingTarget(GM->Hub->PadDockPosition(), GM->Hub->PadDockRotation());
     GM->Ship->Pilot->SetVisibility(true);
     SetViewTarget(GM->Ship);
     if (PlayerCameraManager)
@@ -1683,8 +2009,8 @@ void ASSPlayerController::UpdateLastInputDevice()
         FMath::Abs(GetInputAnalogKeyState(EKeys::Gamepad_LeftY)) > Deadzone ||
         FMath::Abs(GetInputAnalogKeyState(EKeys::Gamepad_RightX)) > Deadzone ||
         FMath::Abs(GetInputAnalogKeyState(EKeys::Gamepad_RightY)) > Deadzone ||
-        GetInputAnalogKeyState(EKeys::Gamepad_LeftTriggerAxis) > Deadzone ||
-        GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis) > Deadzone)
+        GetInputAnalogKeyState(EKeys::Gamepad_LeftTriggerAxis) > .01f ||
+        GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis) > .01f)
     {
         bLastInputWasGamepad = true;
         return;
@@ -1767,10 +2093,19 @@ void ASSPlayerController::PlayerTick(float Dt)
     }
     if (GM->bAutomatedSoakInput)
         return; // Guarded fixture owns scripted input; Super still updates the normal camera.
+    if (!IsInputKeyDown(EKeys::Gamepad_FaceButton_Right))
+        SuppressGamepadBoostUntilRelease = false;
+    if (!IsInputKeyDown(EKeys::Gamepad_FaceButton_Bottom))
+        SuppressGamepadFireUntilRelease = false;
     if (LastInputPawn.Get() != GetPawn())
     {
+        // Reset gameplay latches on possession, but preserve a consumed, still-held Back press.
+        // Otherwise a menu-driven pawn change could turn that same press into boost.
         LastInputPawn = GetPawn();
         BoostLatch = BrakeLatch = false;
+        KeyboardThrottle = 0.f;
+        bAnalogThrottle = false;
+        LastRightTriggerCommand = 0.f;
     }
     if (auto *WalkPawn = Cast<ASSWalker>(GetPawn()); WalkPawn && WalkPawn->IsDisembarking())
         return;
@@ -1778,30 +2113,73 @@ void ASSPlayerController::PlayerTick(float Dt)
     const auto Down = [this](FKey K) { return IsInputKeyDown(K); };
     if (Pressed(EKeys::Escape) || Pressed(EKeys::Gamepad_Special_Right))
     {
+        if (GM->IsTitleMenu())
+        {
+            // The approved title footer advertises Escape to quit. Controller Menu
+            // leaves the title in place; Back must not bypass New Game into the world.
+            if (Pressed(EKeys::Escape))
+                for (int32 Index = 0; Index < GM->Entries.Num(); ++Index)
+                    if (GM->Entries[Index].Action == 7)
+                    {
+                        GM->ActivateEntry(Index);
+                        break;
+                    }
+            return;
+        }
         if (GM->IsMenuOpen())
             GM->ClosePanel();
         else
             GM->OpenPanel(ESSPanel::Main);
     }
     const bool MenuInput = GM->IsMenuOpen();
+    if (!MenuInput)
+    {
+        LastMenuStickDirection = 0;
+        MenuRepeatSeconds = 0.f;
+    }
+    if (MenuInput && Down(EKeys::Gamepad_FaceButton_Bottom))
+        SuppressGamepadFireUntilRelease = true;
     const bool LiveFlightMenu =
         MenuInput && GI->Session.IsFlying() && (GM->Panel == ESSPanel::Depot || GM->Panel == ESSPanel::Reward);
     if (MenuInput)
     {
-        if (Pressed(EKeys::Up) || Pressed(EKeys::Gamepad_DPad_Up))
+        if (auto *WalkPawn = Cast<ASSWalker>(GetPawn()))
+            WalkPawn->StopJumping();
+        const float MenuY = GetInputAnalogKeyState(EKeys::Gamepad_LeftY);
+        const int32 StickDirection = MenuY > .55f ? -1 : MenuY < -.55f ? 1 : 0;
+        MenuRepeatSeconds = FMath::Max(0.f, MenuRepeatSeconds - Dt);
+        const bool StickStep =
+            StickDirection != 0 && (StickDirection != LastMenuStickDirection || MenuRepeatSeconds <= 0.f);
+        if (StickStep)
+            MenuRepeatSeconds = StickDirection == LastMenuStickDirection ? .13f : .38f;
+        LastMenuStickDirection = StickDirection;
+        if (Pressed(EKeys::Up) || Pressed(EKeys::Gamepad_DPad_Up) || (GM->IsTitleMenu() && Pressed(EKeys::W)) ||
+            (StickStep && StickDirection < 0))
             GM->SelectedEntry = FMath::Max(0, GM->SelectedEntry - 1);
-        if (Pressed(EKeys::Down) || Pressed(EKeys::Gamepad_DPad_Down))
+        if (Pressed(EKeys::Down) || Pressed(EKeys::Gamepad_DPad_Down) || (GM->IsTitleMenu() && Pressed(EKeys::S)) ||
+            (StickStep && StickDirection > 0))
             GM->SelectedEntry = FMath::Min(GM->Entries.Num() - 1, GM->SelectedEntry + 1);
         if (Pressed(EKeys::Enter) || Pressed(EKeys::Gamepad_FaceButton_Bottom))
             GM->ActivateEntry(GM->SelectedEntry);
         if (Pressed(EKeys::Gamepad_FaceButton_Right))
-            GM->ClosePanel();
-        if (Pressed(EKeys::LeftMouseButton))
+        {
+            SuppressGamepadBoostUntilRelease = true;
+            if (!GM->IsTitleMenu())
+                GM->ClosePanel();
+        }
+        if (bShowMouseCursor)
             if (auto *HUD = Cast<ASSHUD>(GetHUD()))
             {
+                if (Pressed(EKeys::MouseScrollUp))
+                    HUD->ScrollMenu(-1);
+                if (Pressed(EKeys::MouseScrollDown))
+                    HUD->ScrollMenu(1);
                 float X, Y;
-                if (GetMousePosition(X, Y))
-                    GM->ActivateEntry(HUD->MenuIndexAt(FVector2D(X, Y)));
+                if (GetMousePosition(X, Y) &&
+                    !HUD->HandleMenuScrollPointer(FVector2D(X, Y), Pressed(EKeys::LeftMouseButton),
+                                                  Down(EKeys::LeftMouseButton)) &&
+                    Pressed(EKeys::LeftMouseButton))
+                    GM->ActivateEntry(HUD->MenuIndexAt(FVector2D(X, Y)), true);
             }
         if (!LiveFlightMenu || !GI->Session.IsFlying())
         {
@@ -1815,28 +2193,51 @@ void ASSPlayerController::PlayerTick(float Dt)
     float MouseX = 0, MouseY = 0;
     GetInputMouseDelta(MouseX, MouseY);
     const float MouseDegrees = GM->Tuning ? GM->Tuning->MouseSensitivity : .143f;
-    const float SteeringDegrees = GM->Tuning ? GM->Tuning->SteeringDegrees : 65.f;
+    const float SteeringDegrees = GM->Tuning ? GM->Tuning->FlightSteeringDegrees() : 110.5f;
     const float StickScale =
         (GM->Tuning ? GM->Tuning->ControllerSensitivity : 1.f) * float(GI->Session.settings.controllerSensitivity);
     const float MouseScale = float(GI->Session.settings.mouseSensitivity) * MouseDegrees /
                              (FMath::Max(1.f, SteeringDegrees) * FMath::Max(.001f, Dt));
-    FVector2D Look(MouseX * MouseScale + GetInputAnalogKeyState(EKeys::Gamepad_RightX) * StickScale,
-                   -MouseY * MouseScale + GetInputAnalogKeyState(EKeys::Gamepad_RightY) * StickScale);
+    // SceneViewport already converts screen-up motion to positive MouseY. Both devices feed the
+    // same up-positive convention; the saved inversion applies once to both flight and walking.
+    const bool bFlightControls = Cast<ASSShip>(GetPawn()) != nullptr;
+    const float StickYaw = GetInputAnalogKeyState(bFlightControls ? EKeys::Gamepad_LeftX : EKeys::Gamepad_RightX);
+    const FKey SteerY = bFlightControls ? EKeys::Gamepad_LeftY : EKeys::Gamepad_RightY;
+    FVector2D Look(MouseX * MouseScale + StickYaw * StickScale,
+                   MouseY * MouseScale + GetInputAnalogKeyState(SteerY) * StickScale);
     if (GI->Session.settings.invertPitch)
         Look.Y = -Look.Y;
     if (auto *ShipPawn = Cast<ASSShip>(GetPawn()))
     {
-        const bool Boost = Down(EKeys::LeftShift) || GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis) > .3f;
+        const bool GamepadBoostAllowed = !MenuInput && !SuppressGamepadBoostUntilRelease;
+        const bool Boost = Down(EKeys::LeftShift) || (GamepadBoostAllowed && Down(EKeys::Gamepad_FaceButton_Right));
         const bool Brake = Down(EKeys::SpaceBar) || GetInputAnalogKeyState(EKeys::Gamepad_LeftTriggerAxis) > .3f;
-        if (Pressed(EKeys::LeftShift) || Pressed(EKeys::Gamepad_RightTrigger))
+        if (Pressed(EKeys::LeftShift) || (GamepadBoostAllowed && Pressed(EKeys::Gamepad_FaceButton_Right)))
             BoostLatch = !BoostLatch;
         if (Pressed(EKeys::SpaceBar) || Pressed(EKeys::Gamepad_LeftTrigger))
             BrakeLatch = !BrakeLatch;
-        FVector2D Strafe(float(Down(EKeys::D)) - float(Down(EKeys::A)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftX),
-                         float(Down(EKeys::R)) - float(Down(EKeys::F)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftY));
-        const float Throttle = float(Down(EKeys::W) || (!MenuInput && Down(EKeys::Gamepad_DPad_Up))) -
-                               float(Down(EKeys::S) || (!MenuInput && Down(EKeys::Gamepad_DPad_Down)));
-        const bool FireHeld = !MenuInput && (Down(EKeys::LeftMouseButton) || Down(EKeys::Gamepad_RightShoulder));
+        FVector2D Strafe(float(Down(EKeys::D)) - float(Down(EKeys::A)), float(Down(EKeys::R)) - float(Down(EKeys::F)));
+        KeyboardThrottle =
+            FMath::Clamp(KeyboardThrottle + (float(Down(EKeys::W)) - float(Down(EKeys::S))) * Dt * .5f, 0.f, 1.f);
+        const float RightTrigger = FMath::Clamp(GetInputAnalogKeyState(EKeys::Gamepad_RightTriggerAxis), 0.f, 1.f);
+        // Releasing RT must keep the engine off even if the pilot then looks with the mouse.
+        // A fresh W/S command takes over from a held trigger; only another deliberate trigger
+        // change (including release) takes it back. Ignore sub-one-percent axis noise.
+        if (Pressed(EKeys::W) || Pressed(EKeys::S))
+        {
+            bAnalogThrottle = false;
+            LastRightTriggerCommand = RightTrigger;
+        }
+        else if ((RightTrigger > .01f && LastRightTriggerCommand <= .01f) ||
+                 (RightTrigger <= .01f && LastRightTriggerCommand > .01f) ||
+                 FMath::Abs(RightTrigger - LastRightTriggerCommand) > .01f)
+        {
+            bAnalogThrottle = true;
+            LastRightTriggerCommand = RightTrigger;
+        }
+        const float Throttle = bAnalogThrottle ? RightTrigger : KeyboardThrottle;
+        const bool FireHeld = !MenuInput && (Down(EKeys::LeftMouseButton) || (!SuppressGamepadFireUntilRelease &&
+                                                                              Down(EKeys::Gamepad_FaceButton_Bottom)));
         const uint32 Before = GI->Session.account.tutorialFlags;
         if (!Look.IsNearlyZero())
             GI->Session.account.tutorialFlags |= 1u;
@@ -1846,24 +2247,41 @@ void ASSPlayerController::PlayerTick(float Dt)
             GI->Session.account.tutorialFlags |= 4u;
         if (Brake)
             GI->Session.account.tutorialFlags |= 8u;
-        if (Pressed(EKeys::Q) || Pressed(EKeys::Gamepad_LeftShoulder))
+        if (Pressed(EKeys::Q))
             GI->Session.account.tutorialFlags |= 16u;
         if (FireHeld)
             GI->Session.account.tutorialFlags |= 32u;
-        if (Before != GI->Session.account.tutorialFlags)
+        if (Before != GI->Session.account.tutorialFlags && !GI->IsFreeFlight())
             GI->PersistAccount();
+        const float Roll = float(Down(EKeys::Gamepad_RightShoulder)) - float(Down(EKeys::Gamepad_LeftShoulder));
         ShipPawn->SetFlightInput(Look, Strafe, Throttle, GI->Session.settings.toggleBoost ? BoostLatch : Boost,
-                                 GI->Session.settings.toggleBrake ? BrakeLatch : Brake);
-        if (Pressed(EKeys::Q) || Pressed(EKeys::Gamepad_LeftShoulder))
+                                 GI->Session.settings.toggleBrake ? BrakeLatch : Brake, Roll, bLastInputWasGamepad);
+        FVector2D CameraLook(GetInputAnalogKeyState(EKeys::Gamepad_RightX) * StickScale,
+                             GetInputAnalogKeyState(EKeys::Gamepad_RightY) * StickScale);
+        if (GI->Session.settings.invertPitch)
+            CameraLook.Y = -CameraLook.Y;
+        ShipPawn->SetFreeLookInput(CameraLook);
+        if (Pressed(EKeys::Q))
             ShipPawn->RequestDodge();
+        else if (!MenuInput && (Pressed(EKeys::Gamepad_LeftShoulder) || Pressed(EKeys::Gamepad_RightShoulder)) &&
+                 !FMath::IsNearlyZero(Roll))
+            ShipPawn->RequestDodge(Roll);
         if (FireHeld)
             ShipPawn->Fire();
     }
     else if (auto *WalkPawn = Cast<ASSWalker>(GetPawn()))
+    {
         WalkPawn->Move(
             FVector2D(float(Down(EKeys::D)) - float(Down(EKeys::A)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftX),
                       float(Down(EKeys::W)) - float(Down(EKeys::S)) + GetInputAnalogKeyState(EKeys::Gamepad_LeftY)),
             Look, Down(EKeys::LeftShift) || Down(EKeys::Gamepad_FaceButton_Left), Dt);
-    if (!MenuInput && (Pressed(EKeys::E) || Pressed(EKeys::Gamepad_FaceButton_Bottom)))
+        if (Pressed(EKeys::SpaceBar) || Pressed(EKeys::Gamepad_FaceButton_Bottom))
+            WalkPawn->Jump();
+        if (!Down(EKeys::SpaceBar) && !Down(EKeys::Gamepad_FaceButton_Bottom))
+            WalkPawn->StopJumping();
+    }
+    const FKey InteractButton =
+        Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;
+    if (!MenuInput && (Pressed(EKeys::E) || Pressed(InteractButton)))
         GM->Interact();
 }

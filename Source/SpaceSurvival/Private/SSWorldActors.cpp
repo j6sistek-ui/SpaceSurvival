@@ -9,6 +9,7 @@
 #include "SSShip.h"
 #include "SSPhase1Data.h"
 #include "Components/SphereComponent.h"
+#include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Engine/StaticMesh.h"
@@ -53,6 +54,19 @@ UStaticMesh *Mesh(const TCHAR *Name, const TCHAR *Fallback = TEXT("/Engine/Basic
     if (UStaticMesh *Authored = LoadObject<UStaticMesh>(nullptr, *Path))
         return Authored;
     return LoadObject<UStaticMesh>(nullptr, Fallback);
+}
+
+void SizeShotCore(UStaticMeshComponent *Core, const FVector &Dimensions)
+{
+    if (!Core || !Core->GetStaticMesh())
+        return;
+    const FBoxSphereBounds Bounds = Core->GetStaticMesh()->GetBounds();
+    const FVector Size = Bounds.BoxExtent * 2.;
+    const FVector Scale(Dimensions.X / FMath::Max(1., Size.X), Dimensions.Y / FMath::Max(1., Size.Y),
+                        Dimensions.Z / FMath::Max(1., Size.Z));
+    Core->SetRelativeScale3D(Scale);
+    Core->SetRelativeLocation(-Bounds.Origin * Scale);
+    Core->SetCastShadow(false);
 }
 
 FLinearColor BodyColor(ESSWorldKind Kind)
@@ -147,6 +161,11 @@ bool SelectContent(const UObject *Context, const TArray<ESSWorldKind> &Candidate
 ASSWorldBody::ASSWorldBody()
 {
     PrimaryActorTick.bCanEverTick = true;
+    // Contacts compare both actors at the end of the same frame. The Phoenix
+    // moves in Chaos; a pre-physics hazard tick advances only the hazard and
+    // invents one frame of relative travel (and a frame-dependent impact normal).
+    // Projectiles inherit this ordering for their relative-motion sweeps too.
+    PrimaryActorTick.TickGroup = TG_PostPhysics;
     Collision = CreateDefaultSubobject<USphereComponent>(TEXT("ThreatVolume"));
     SetRootComponent(Collision);
     Collision->InitSphereRadius(BodyRadius);
@@ -168,6 +187,11 @@ void ASSWorldBody::BeginPlay()
 {
     Super::BeginPlay();
     LocalRandom.Initialize(GetUniqueID() ^ 0x51A7);
+    if (const ASSShip *Ship = FindShip())
+    {
+        PreviousShipPosition = Ship->GetActorLocation();
+        bHasPreviousShipPosition = true;
+    }
     UpdateVisual();
 }
 
@@ -292,7 +316,8 @@ void ASSWorldBody::UpdateVisual()
     Visual->SetRelativeLocation(SelectedMesh ? -Visual->GetRelativeRotation().RotateVector(
                                                    SelectedMesh->GetBounds().Origin * Visual->GetRelativeScale3D())
                                              : FVector::ZeroVector);
-    const bool bPreserveAuthoredMaterial = Visual->GetStaticMesh() &&
+    const bool bDirectorRock = bDirectorAsteroid && bRock;
+    const bool bPreserveAuthoredMaterial = !bDirectorRock && Visual->GetStaticMesh() &&
                                            Visual->GetStaticMesh()->GetPathName().StartsWith(TEXT("/Game/")) &&
                                            (IsSolidHazard() || IsEnemy());
     ThreatIndicator->SetVisibility(IsEnemy());
@@ -336,10 +361,19 @@ void ASSWorldBody::UpdateVisual()
     if (Material)
     {
         DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
-        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), BodyColor(Kind));
+        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"),
+                                                 bDirectorRock ? FLinearColor(1.f, .18f, .015f) : BodyColor(Kind));
         DynamicMaterial->SetVectorParameterValue(TEXT("Color"), FLinearColor::White);
         DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), IsEnvironmentalField() ? .25f : 1.f);
-        FeedbackMesh->SetMaterial(0, DynamicMaterial);
+        if (bDirectorRock)
+        {
+            DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), .35f);
+            DynamicMaterial->SetScalarParameterValue(TEXT("Roughness"), .7f);
+            for (int32 Slot = 0; Slot < FeedbackMesh->GetNumMaterials(); ++Slot)
+                FeedbackMesh->SetMaterial(Slot, DynamicMaterial);
+        }
+        else
+            FeedbackMesh->SetMaterial(0, DynamicMaterial);
     }
     Visual->SetCastShadow(!IsEnvironmentalField());
 }
@@ -530,18 +564,36 @@ void ASSWorldBody::Tick(float DeltaSeconds)
         {
             const FVector PreviousRelative =
                 bHasPreviousShipPosition ? PreviousShipPosition - PreviousBodyPosition : Offset;
-            const FVector RelativePath = Offset - PreviousRelative;
-            const float ClosestTime =
-                RelativePath.IsNearlyZero()
-                    ? 1.f
-                    : static_cast<float>(FMath::Clamp(
-                          -FVector::DotProduct(PreviousRelative, RelativePath) / RelativePath.SizeSquared(), 0.0, 1.0));
-            const float SweptDistance = (PreviousRelative + RelativePath * ClosestTime).Size();
-            if (SweptDistance < BodyRadius + ShipRadius() && ShipContactRemaining <= 0.f)
+            FVector ContactNormal = FVector::ZeroVector;
+            bool bContact = false;
+            if (ShipContactRemaining <= 0.f && Ship->HasFlightHull())
             {
-                FVector ContactNormal = (PreviousRelative + RelativePath * ClosestTime).GetSafeNormal();
+                // Move the relative path into the ship's current pose so both
+                // actors' translation is swept, including a full-frame crossing.
+                FHitResult Hit;
+                bContact = Ship->SweepFlightContact(Hit, Ship->GetActorLocation() - PreviousRelative,
+                                                    GetActorLocation(), BodyRadius);
+                ContactNormal = -Hit.Normal;
                 if (ContactNormal.IsNearlyZero())
                     ContactNormal = PreviousRelative.GetSafeNormal();
+            }
+            else if (ShipContactRemaining <= 0.f)
+            {
+                // Preserve the classic hull's original contact and deflection.
+                const FVector RelativePath = Offset - PreviousRelative;
+                const float ClosestTime =
+                    RelativePath.IsNearlyZero()
+                        ? 1.f
+                        : static_cast<float>(FMath::Clamp(-FVector::DotProduct(PreviousRelative, RelativePath) /
+                                                              RelativePath.SizeSquared(),
+                                                          0.0, 1.0));
+                bContact = (PreviousRelative + RelativePath * ClosestTime).Size() < BodyRadius + ShipRadius();
+                ContactNormal = (PreviousRelative + RelativePath * ClosestTime).GetSafeNormal();
+                if (ContactNormal.IsNearlyZero())
+                    ContactNormal = PreviousRelative.GetSafeNormal();
+            }
+            if (bContact)
+            {
                 Ship->ReceiveImpact(CollisionDamage, ContactNormal);
                 ShipContactRemaining = 1.1f;
             }
@@ -676,6 +728,7 @@ void ASSWorldBody::OnDefeated()
                 }
                 if (ASSWorldBody *Fragment = GetWorld()->SpawnActor<ASSWorldBody>(Position, FRotator::ZeroRotator))
                 {
+                    Fragment->bDirectorAsteroid = bDirectorAsteroid;
                     Fragment->Configure(ESSWorldKind::SmallAsteroid, Definition.FragmentRadius,
                                         CollisionDamage * Definition.FragmentDamageFraction, Wave);
                     Fragment->SetLinearVelocity(Velocity);
@@ -826,6 +879,55 @@ void ASSEnemy::OnDefeated()
             Pickup->ConfigurePickup(0, Definition.CreditDropAmount);
 }
 
+ASSWeaponTracePulse::ASSWeaponTracePulse()
+{
+    PrimaryActorTick.bCanEverTick = true;
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("TraceOrigin"));
+    Core = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LaserTrace"));
+    Core->SetupAttachment(RootComponent);
+    Core->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Core->SetGenerateOverlapEvents(false);
+    Core->SetCastShadow(false);
+    SetActorEnableCollision(false);
+}
+
+void ASSWeaponTracePulse::Configure(FVector Start, FVector End)
+{
+    const FVector Segment = End - Start;
+    if (Start.ContainsNaN() || End.ContainsNaN() || Segment.SizeSquared() < 1.)
+    {
+        Destroy();
+        return;
+    }
+    SetActorLocationAndRotation((Start + End) * .5, Segment.Rotation());
+    Core->SetStaticMesh(Mesh(TEXT("SM_Projectile")));
+    // Fit each actual mesh axis. The source is 200 x 14 x 14 cm: scaling every axis
+    // by its longest extent had made the nominal 28 cm projectile only 1.5 cm wide.
+    SizeShotCore(Core, FVector(Segment.Size(), 20., 20.));
+    if (auto *Base =
+            LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/SpaceSurvival/Materials/M_Emissive.M_Emissive")))
+    {
+        Material = UMaterialInstanceDynamic::Create(Base, this);
+        Material->SetVectorParameterValue(TEXT("Tint"), FLinearColor(.15f, .8f, 1.f));
+        Material->SetVectorParameterValue(TEXT("Color"), FLinearColor::White);
+        Material->SetScalarParameterValue(TEXT("Emission"), 8.f);
+        Core->SetMaterial(0, Material);
+    }
+}
+
+void ASSWeaponTracePulse::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    Age += FMath::Max(0.f, DeltaSeconds);
+    // An actual close hitscan tracer can reach its endpoint before one rendered frame.
+    // Retain the already resolved segment for a few frames, without another collision query.
+    constexpr float Duration = .08f;
+    if (Age >= Duration)
+        Destroy();
+    else if (Material)
+        Material->SetScalarParameterValue(TEXT("Emission"), 8.f * (1.f - Age / Duration));
+}
+
 ASSProjectile::ASSProjectile()
 {
     Kind = ESSWorldKind::Projectile;
@@ -855,10 +957,10 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
         FX->PlayMuzzle(Source, GetActorLocation(), Direction, bFromPlayer, Heavy);
     }
     // A distinct native core and compact light remain readable if scalability culls Niagara.
-    const FVector CoreShape = !bFromPlayer ? FVector(2.8f, .46f, .46f)
-                              : Heavy      ? FVector(2.2f, .72f, .72f)
-                                           : FVector(5.4f, .38f, .38f);
-    Visual->SetRelativeScale3D(Visual->GetRelativeScale3D() * CoreShape);
+    const FVector CoreDimensions = !bFromPlayer ? FVector(160., 16., 16.)
+                                   : Heavy      ? FVector(220., 32., 32.)
+                                                : FVector(600., 20., 20.);
+    SizeShotCore(Visual, CoreDimensions);
     const FLinearColor LightColor = !bFromPlayer ? FLinearColor(1.f, .04f, .01f)
                                     : Heavy      ? FLinearColor(1.f, .34f, .025f)
                                                  : FLinearColor(.04f, .8f, 1.f);
@@ -876,8 +978,19 @@ void ASSProjectile::Launch(FVector Direction, float Speed, float Damage, bool bF
         AddTickPrerequisiteActor(TrackedShip.Get());
     }
     if (DynamicMaterial)
-        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), bPlayerShot ? FLinearColor(.3f, 1.f, 1.f)
-                                                                           : FLinearColor(1.f, .2f, .05f));
+    {
+        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), LightColor);
+        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), Heavy ? 12.f : 8.f);
+    }
+    if (bPlayerShot && !Heavy && TravelRemaining > 0.f)
+    {
+        int32 ActivePulses = 0;
+        for (TActorIterator<ASSWeaponTracePulse> It(GetWorld()); It; ++It)
+            ActivePulses += !It->IsActorBeingDestroyed() ? 1 : 0;
+        if (ActivePulses < 12)
+            if (auto *Pulse = GetWorld()->SpawnActor<ASSWeaponTracePulse>())
+                Pulse->Configure(GetActorLocation(), GetActorLocation() + Direction.GetSafeNormal() * TravelRemaining);
+    }
 }
 
 void ASSProjectile::Tick(float DeltaSeconds)
@@ -925,20 +1038,30 @@ void ASSProjectile::Tick(float DeltaSeconds)
         {
             // Solve first contact between simultaneous paths. A sweep against the
             // ship's final position alone can reward a dodge with a false hit.
-            const FVector RelativeStart = Start - ShipStart;
-            const FVector RelativeTravel = Travel - ShipTravel;
-            const double Radius = BodyRadius + Ship->Collision->GetScaledSphereRadius();
-            const double C = RelativeStart.SizeSquared() - Radius * Radius;
-            const double A = RelativeTravel.SizeSquared();
-            const double B = FVector::DotProduct(RelativeStart, RelativeTravel);
-            const double Discriminant = B * B - A * C;
-            if (C <= 0.0)
-                ShipHitTime = 0.0;
-            else if (A > UE_SMALL_NUMBER && B < 0.0 && Discriminant >= 0.0)
+            if (Ship->HasFlightHull())
             {
-                const double Contact = (-B - FMath::Sqrt(Discriminant)) / A;
-                if (Contact >= 0.0 && Contact <= 1.0)
-                    ShipHitTime = Contact;
+                FHitResult Hit;
+                const FVector PoseOffset = Ship->GetActorLocation() - ShipStart;
+                if (Ship->SweepFlightContact(Hit, Start + PoseOffset, End + PoseOffset - ShipTravel, BodyRadius))
+                    ShipHitTime = Hit.Time;
+            }
+            else
+            {
+                const FVector RelativeStart = Start - ShipStart;
+                const FVector RelativeTravel = Travel - ShipTravel;
+                const double Radius = BodyRadius + Ship->Collision->GetScaledSphereRadius();
+                const double C = RelativeStart.SizeSquared() - Radius * Radius;
+                const double A = RelativeTravel.SizeSquared();
+                const double B = FVector::DotProduct(RelativeStart, RelativeTravel);
+                const double Discriminant = B * B - A * C;
+                if (C <= 0.0)
+                    ShipHitTime = 0.0;
+                else if (A > UE_SMALL_NUMBER && B < 0.0 && Discriminant >= 0.0)
+                {
+                    const double Contact = (-B - FMath::Sqrt(Discriminant)) / A;
+                    if (Contact >= 0.0 && Contact <= 1.0)
+                        ShipHitTime = Contact;
+                }
             }
         }
         PreviousShipPosition = Ship->GetActorLocation();
@@ -983,10 +1106,11 @@ void ASSProjectile::Tick(float DeltaSeconds)
     {
         if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
             FX->PlayImpact(WorldHit->ImpactPoint, WorldHit->ImpactNormal, bPlayerShot, bPlayerShot);
-        if (ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor()))
+        ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor());
+        if (Body)
             if (bPlayerShot || Body->IsSolidHazard())
                 Body->ReceiveWeaponHit(CollisionDamage);
-        if (bPlayerShot)
+        if (bPlayerShot && CollisionDamage > 0.f && Body && Body->IsWeaponTarget())
             if (auto *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
                 Mode->NotifyPlayerShotHit();
         Destroy();
@@ -1565,7 +1689,10 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
     const float Lead = FMath::Max(9000.f, ClosingSpeed * MinimumReactionSeconds + Radius + PlayerClearanceRadius);
     for (int32 Attempt = 0; Attempt < 16; ++Attempt)
     {
-        const FVector2D Offset(Random.FRandRange(-2600.f, 2600.f), Random.FRandRange(-1700.f, 1700.f));
+        // Larger rocks need room beside the protected corridor, not only a longer approach lead.
+        const float Spread = bField ? 1.f : FMath::Max(1.f, (Radius + PlayerClearanceRadius + 320.f) / 1800.f);
+        const FVector2D Offset(Random.FRandRange(-2600.f, 2600.f) * Spread,
+                               Random.FRandRange(-1700.f, 1700.f) * Spread);
         if (!bField && FVector2D::Distance(Offset, SafeLane) < Radius + PlayerClearanceRadius + 320.f)
             continue;
         const FVector Candidate = Ship->GetActorLocation() + Forward * (Lead + Random.FRandRange(0.f, 5500.f)) +
@@ -1585,6 +1712,10 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
         return nullptr;
     const auto Definition = Content(this)->Hazard(Kind);
     Radius = Radius > 0.f ? Radius : Definition.Radius;
+    const bool bAsteroid = Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
+                           Kind == ESSWorldKind::MassiveAsteroid;
+    if (bAsteroid)
+        Radius *= FMath::Max(1.f, Content(this)->DirectorAsteroidScale);
     FVector Location;
     const bool bField = Kind == ESSWorldKind::ElectricalStorm || Kind == ESSWorldKind::GravityAnomaly;
     if (!FindSafeSpawn(Radius, Location, bField))
@@ -1593,6 +1724,7 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     if (!Body)
         return nullptr;
     const float Damage = Definition.DamageBase + Wave * Definition.DamagePerWave;
+    Body->bDirectorAsteroid = bAsteroid;
     Body->Configure(Kind, Radius, Damage, Wave);
     Body->TelegraphSeconds = FMath::Max(MinimumReactionSeconds, Definition.TelegraphSeconds);
     if (ASSShip *Ship = FindShip())

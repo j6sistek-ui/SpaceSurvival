@@ -61,7 +61,8 @@ bool FSSMooringFeedback::RunTest(const FString &)
         TestTrue(TEXT("Mooring provides no damage immunity"), Instance->Session.run.shield < Shield);
         Ship->EndMooring();
         TestFalse(TEXT("Release clears mooring"), Ship->IsMoored());
-        TestTrue(TEXT("Release restores forward cruise"), Ship->GetVelocity().X > 1000.f);
+        TestTrue(TEXT("Release leaves the stopped ship ready for explicit throttle"),
+                 Ship->GetVelocity().IsNearlyZero());
         const FVector Released = Ship->GetVelocity();
         Ship->EndMooring();
         TestTrue(TEXT("Repeated release is harmless"), Ship->GetVelocity().Equals(Released));

@@ -30,6 +30,12 @@ jobs:
         run: python3 Scripts/TestFreshCheckout.py
       - name: Python syntax
         run: python3 -m compileall -q Scripts ContentSource
+      - name: Station recipe geometry and service placement
+        run: python3 Tests/TestStationResetRecipe.py
+      - name: Runtime cook coverage and exact exclusions
+        run: |
+          python3 Tests/TestCookCoverage.py
+          python3 Scripts/CheckCookCoverage.py
       - name: Release payload safety
         run: python3 Scripts/TestItchRelease.py
       - name: C++ formatting in container

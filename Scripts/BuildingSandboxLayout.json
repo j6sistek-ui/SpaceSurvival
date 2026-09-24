@@ -1,0 +1,162 @@
+{
+  "target_map": "/Game/Blender/Sandbox/BuildingSandbox_20260922",
+  "areas": [
+    {
+      "name": "Genesis",
+      "map": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Maps/DemoLevel_HighSettings",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "placement_bounds": [
+        [
+          -4191.09,
+          6640.02
+        ],
+        [
+          -361.09,
+          4620.0
+        ],
+        [
+          -350.0,
+          705.34
+        ]
+      ]
+    },
+    {
+      "name": "WorkStation",
+      "map": "/Game/P1toP5_Bundle/P1_WorkStation/Maps/DemoLevel",
+      "offset": [
+        8479.02,
+        344.21,
+        0
+      ],
+      "placement_bounds": [
+        [
+          -339.0,
+          895.0
+        ],
+        [
+          -705.3,
+          580.89
+        ],
+        [
+          -48.24000000000001,
+          1088.24
+        ]
+      ],
+      "ramp": {
+        "x": 8919.02,
+        "front_y": -361.09,
+        "top_z": 2.28,
+        "run": 300
+      }
+    },
+    {
+      "name": "StarterPack",
+      "map": "/Game/P1toP5_Bundle/P2_StarterPack/Maps/Demonstration_ClassicAtmosphere",
+      "offset": [
+        11154.02,
+        408.01,
+        0
+      ],
+      "placement_bounds": [
+        [
+          -280.0,
+          2029.1
+        ],
+        [
+          -769.0999999999999,
+          1529.1
+        ],
+        [
+          -28.45999999999998,
+          590.0
+        ]
+      ],
+      "ramp": {
+        "x": 11224.02,
+        "front_y": -361.09,
+        "top_z": 52.28,
+        "run": 410.48
+      }
+    },
+    {
+      "name": "ComputerStation",
+      "map": "/Game/P1toP5_Bundle/P3_ComputerStation/Map/Demonstration_ComputerStation",
+      "offset": [
+        15391.79,
+        -86.53,
+        0
+      ],
+      "placement_bounds": [
+        [
+          -708.67,
+          310.36
+        ],
+        [
+          -274.56,
+          150.44
+        ],
+        [
+          -24.889999999999997,
+          334.78999999999996
+        ]
+      ],
+      "ramp": {
+        "x": 14696.890000000001,
+        "front_y": -361.09,
+        "top_z": 10.61,
+        "run": 300
+      }
+    },
+    {
+      "name": "FruitSeller",
+      "map": "/Game/P1toP5_Bundle/P5_FruitSeller/Maps/DemoLevel_FruitSeller",
+      "offset": [
+        17959.1,
+        6086.09,
+        0
+      ],
+      "placement_bounds": [
+        [
+          -756.95,
+          1063.3999999999999
+        ],
+        [
+          -6447.179999999999,
+          0.0
+        ],
+        [
+          0.0,
+          967.76
+        ]
+      ],
+      "ramp": {
+        "x": 17553.6,
+        "front_y": -361.09,
+        "top_z": 198.82,
+        "run": 923.37
+      }
+    }
+  ],
+  "platform_top": -65,
+  "platform_center": [
+    7415.705,
+    2012.5,
+    -90
+  ],
+  "platform_size": [
+    24213.59,
+    9147.18,
+    50
+  ],
+  "start": [
+    1030.8,
+    -2061.09,
+    35
+  ],
+  "start_yaw": 90,
+  "notes": "Genesis retains original origin and world settings. Other original vertical layouts remain intact; 15m gaps and gentle access ramps join the common platform. Distant FruitSeller canyon backdrop is preserved but excluded from walkable-footprint spacing."
+}

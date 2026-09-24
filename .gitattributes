@@ -20,3 +20,8 @@ ContentSource/Meshes/*.obj linguist-generated=true
 ContentSource/Meshes/Palette.mtl linguist-generated=true
 ContentSource/AcornShipCandidate/*.obj linguist-generated=true
 ContentSource/AcornShipCandidate/*.mtl linguist-generated=true
+
+# Preserve the exact upstream font and license bytes used by the provenance check.
+*.ttf binary
+ContentSource/FigmaUIRefresh/OFL.txt -text whitespace=-blank-at-eol
+Content/SpaceSurvival/UI/Fonts/OFL.txt -text whitespace=-blank-at-eol

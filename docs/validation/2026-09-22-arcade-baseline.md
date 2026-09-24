@@ -1,0 +1,41 @@
+# September22 arcade flight baseline
+
+Owner approved left-stick nose steering, right-stick camera, bumper tap sideways dash/bank and hold fast roll. Acceleration/steering/response increased; ordinary cruise remains60m/s and engine-off coasting remains. Asteroid launch-only belt replaced by deterministic500m cells:2048 rocks/debris in shared mesh batches,125 resident cells,900m draw distance, stable nearby instances, exact regeneration on revisit, solid physics/shot collision. Director budget/difficulty and orange3x hazards unchanged.
+
+Editor builds1/2 passed. Focused1: ControllerToPhysics, DistantAsteroidIsolation and MenuBackBoostRelease pass; ControllerTestingPreset initially failed because vendor roll shaping attenuated the authored rate. Adapter now sets roll multiplier1; Focused2 passes that case. First failure retained under Artifacts/ArcadeResponse. The test observes actual physics movement, tap bank/return, sustained roll, camera independence,9km world travel/all six directions, reachable shot collision, deterministic revisit and rebasing. Synthetic input is not physical-controller feel acceptance.
+
+Owner defers character work. Read-only light review found combined squirrel50508vertices/1section, segmented110734vertices/9sections, neither with tail bones; no rig, selection or deletion performed. Caped character remains reserved. Owner map actor-removal edit is retained in this baseline.
+
+Package8/source89b1f3c built successfully in2m16s (0cook errors/1known warning). Inner EXE SHA b23859ceff3286c7e8e341aa5139218f14659882105a753e40e5e561b4462e87. Auditf877c6ced1a34860b803d7c1e9bac2ea passes350frozen inputs,158exports/372dependency closure;53archive files/5628135247bytes.
+
+Single packaged flight capture1a84862919ce444fafdf1092580781fe produced four reviewed frames at5/12/19/25s: gray world rocks visible ahead and through the turn, orange Director hazards distinct, Phoenix rig and prior HUD present. Capture FAILED: the scripted pilot never fires/dodges and died before the29s endpoint (wall26.887s). No crash; process0, save preservation and artifact identity guards pass. This failure remains a balance/acceptance limitation, not a passing survival test. No repeated capture or full-panel validation was used to hide it.
+
+Final controller measurements:40.44degrees yaw in0.5s, bumper tap29.16degree bank/10m lateral travel; held right80.12degrees and left79.73degrees over0.75s. Tap levels afterward; sustained roll holds attitude. These are fixture measurements, not owner feel acceptance.
+
+Authorized itch release0.1.21-alpha payload prepared as51files/5223849464bytes; dry-run passes. Publication is being recorded separately. No full-suite rerun, natural ten-wave acceptance, listening or representative performance claim. Earlier GPU-memory warnings and boarding/art/animation follow-ups remain open in KNOWN_ISSUES.
+
+## Density correction before publication
+
+Owner rejected the first sparse field and requires tradeoffs before density/quality changes. The0.1.21-alpha upload was interrupted at about10percent; butler status still reported live0.1.20-alpha/build1993461. Prepared0.1.21 payload remains immutable and is not the replacement candidate.
+
+The correction shrinks field cells from800m to500m at the same2048-object budget (about4.1x objects per spatial volume), restores baked Arch/Globular/Linear Blueprint patterns and places the existing regional debris/panel/beam assets into approximately one third of nearby slots. Fixed position/scale, collision and deterministic revisit remain. The rendering tradeoff is more on-screen coverage; no representative FPS acceptance is claimed. Focused field regression passes after both debris and cluster changes. Raw editor frames eee7488a show nearby grouped rocks and wreckage across cruise/turn, including large close silhouettes. This is an improvement over the rejected uniform scatter, not owner approval or a claim of exact restoration of the old composition. The non-firing/non-evasive29s survival capture again failed by death; preserved as failed evidence.
+
+Owner accepts a mostly forward Survival route if necessary to preserve challenging wave quality. Free Flight must remain unrestricted, and both modes need a field solution; wave quality first. No steering restriction has been imposed in this candidate. Character work remains deferred. Replacement release is0.1.21-alpha.1; build/publication pending.
+
+## Mixed structures and reported menu defects
+
+Nearby cells now also contain non-rock architectural pieces from the existing owned regional recipes (roughly one per cell outside the launch cell), scaled to35–110m radius. Separate distant regional structures now block simulated PhysicsBody as well as Pawn/Visibility; they previously only supported queries. StructureBuild passes and StructureTests passes3/3 (DistantAsteroidIsolation, DistantStructureSafety, WorldStableAreaRecipes). These assertions establish fixed transforms and collision setup, not artistic acceptance or continuous collision performance.
+
+Editor capture b6c5700dde8c497696d2cf037b13b4f9 produced four frames; raw cruise/turn/boost reviewed. More varied nearby rocks, beams, panels and architecture are visible; open center sightlines remain. Non-firing/non-evasive29s survival again FAILED. The Turn frame was shown to the owner before publication. No camera-relative spawning, steering restriction, character change or multiplayer was added. Further artistic iteration is paused at the skill's three-cycle review boundary; owner field choice is pending.
+
+The reported top HUD conflict was the legacy full-width announcement at y65 crossing the new wave/header at y52–115. Replacement wraps messages in reference coordinates x600–1420, y52, clear of the left heading and right radar. Canvas menu input now uses GameOnly with visible cursor and first click preserved, rather than expecting a Slate UI to forward controller input. Left-stick menu navigation adds a0.55 deadzone,0.38s initial hold delay and0.13s repeat. D-pad/A/B remain. MenuInputBuild2 passes; MenuInputTests2 passes3/3. Initial MenuInputTests had2passes/1failure because the new fixture assumed Settings starts at row0; its intentional initial row4 is now respected, with the original failure retained. No production selection behavior was changed to satisfy that assertion. Packaged capture and physical-device retest remain pending.
+
+## Final Package10, approved for publication
+
+Source4fd02930dbc0e13fb52aca4626e1147a4c8d60b8; Windows package succeeds2m12s,3060cooked+8skipped,0cook errors/1known warning. InnerEXE SHA1904b117a28d693914c598731e2126cd9d0015943194a568d2d9264d40844c92. Auditbdbf8a6689884158acf62a37a11e3952 passes350frozen inputs,158exports/372dependency closure and53archive files. Final package receipt:2026-09-22-itch-0.1.21-alpha.1-package.json.
+
+Packaged capture74fc3cf0858342ceb427c2b303043cf9 renders four frames; lead inspected Turn specifically for the changed HUD. Wrapped center message, left heading and right radar are separated. Overall scripted survival remains FAILED (non-firing/non-evasive pilot dies before29s); process0 and production-save/artifact guards pass. No art refinement or full-panel repeat accompanied this check.
+
+Owner explicitly approved publish after the mixed-field image and menu/HUD explanation. Immutable0.1.21-alpha.1 payload prepared51files/5223860220bytes; official butler validation/dry-run pass and upload started. This supersedes the pending field choice. Owner then logged weak star visibility and explicitly requested upload continue unchanged; cause remains unconfirmed and no new visual iteration was undertaken. Source PR59 remains draft/unmerged.
+
+Publication confirmed at2026-09-22T05:28:14.742604+00:00: itch windows-alpha **0.1.21-alpha.1/build2003058 READY**, upload19226459,2.17GiB patch. See final published receipt. Source/documentation GitHub workflows pass4fd0293; launcher DryRun passes. No merge, fresh download/clean-PC installation, physical-input or natural-run acceptance claimed.

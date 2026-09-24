@@ -38,6 +38,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Scripts/Build.ps1 -Target Ed
 
 **`-Target Test` does not rebuild.** Run `-Target Editor` first or you are testing the previous binary.
 
+Run the process-owning `Scripts/TestSaveLifecycle.ps1` in the installed PowerShell7
+(`pwsh`, verified7.6.5 on September21). Windows PowerShell5.1 returned a null
+`Process.ExitCode` after a successful Preflight child and the harness correctly
+failed closed. The same harness passed its four FreeFlightIsolation stages in7.6.5;
+do not weaken exit-code validation to accept null.
+
 The test gate demands *all* of: `succeeded >= 1`, `failed == 0`, `notRun == 0`, `succeededWithWarnings == 0`.
 **Engine warnings fail it**, and they are easy to produce without failing a single assertion.
 
@@ -110,6 +116,26 @@ would have shipped the **wrong hull entirely**. All three visible. None needed a
 would have shown up in one offscreen capture.
 
 **"67 tests green" was never the thing worth buying.**
+
+## Before starting any task: read the nwiro skill library
+
+**If the nwiro MCP is active, `ue_agentskilltoolset_listskills` is the first call of a task** — before
+planning, before writing anything. Then `ue_agentskilltoolset_getskills` (the parameter is
+`skillPaths`) for every skill whose trigger matches. They are authoritative instructions from the
+people who built the tooling.
+
+The four present on 2026-09-20 trigger broadly: Blueprint work **including review**, any lighting
+(sun/sky/cloud/fog/exposure), any material choice, and skill authoring itself. A session was spent
+re-deriving things they state outright — lighting properties live on the **component** and never the
+actor; exposure behaves differently depending on whether the Post Process min/max overrides are
+active, so read them before choosing a bias; screenshot assessment is capped at **three cycles, then
+stop and report**; a Blueprint must be **compiled** before structural changes reach the CDO.
+
+**Check each skill's premise before using its numbers.** `DefaultOutdoorLightingSkill` is terrestrial:
+its lux table assumes a sun and an atmosphere scattering into a sky. This game is deep space far from
+a star — no scattering, no sky fill — so a dim hard key with black shadows is correct, and **the owner
+does not want true daylight.** The station's own `BayLight`, `120000 / 650^2 = 0.284` illuminance, is
+the reference here, not a lux figure. Terrestrial rules apply again only for a shot near a planet.
 
 ## Hard rules
 

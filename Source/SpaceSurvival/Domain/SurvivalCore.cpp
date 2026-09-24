@@ -204,8 +204,9 @@ bool NormalizeUtilityDefinitions(const std::array<UtilityDefinition, 2> &input,
         const auto index = entry.kind == Utility::VectorThrusters ? 0u : 1u;
         const double values[] = {entry.maneuverMultiplier, entry.responseMultiplier, entry.boostEfficiency,
                                  entry.coolingEfficiency};
-        if (entry.price < 1 || std::any_of(std::begin(values), std::end(values),
-                                           [](double value) { return !std::isfinite(value) || value < 1.0; }))
+        const bool invalidValues = std::any_of(std::begin(values), std::end(values),
+                                               [](double value) { return !std::isfinite(value) || value < 1.0; });
+        if (entry.price < 1 || invalidValues)
         {
             unchanged = false;
             continue;
@@ -377,11 +378,13 @@ void Session::Tick(double dt, bool danger)
     }
 }
 
-void Session::TickFlight(double dt, bool boostHeld, bool brakeHeld)
+void Session::TickFlight(double dt, bool boostHeld, bool brakeHeld, bool stationDeparture)
 {
     if (!Finite(dt, 0.0, 120.0))
         return;
-    if (!IsFlying())
+    // The Unreal adapter retains Station until the ship clears the safe departure zone.
+    // Resource use must work during that controlled flight without advancing the next wave.
+    if (!IsFlying() && !(stationDeparture && run.active && run.phase == Phase::Station))
     {
         run.boosting = false;
         run.braking = false;

@@ -71,6 +71,9 @@ public:
     float GravityAcceleration = 650.f;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tuning")
     bool bPersistentAcrossWaves = false;
+    // Set by the Director before Configure. World scenery retains its authored rock surface.
+    UPROPERTY(Transient)
+    bool bDirectorAsteroid = false;
     /** How far from the ship this body may be before it retires. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tuning")
     float RetireDistance = 22000.f;
@@ -140,6 +143,24 @@ private:
     float SteeringPhase = 0.f;
     FVector ShotDirection = FVector::ForwardVector;
     TWeakObjectPtr<ASSEncounterBeacon> ObjectiveOwner;
+};
+
+/** Brief world-space laser trace. Cosmetic only; hitscan remains the sole damage authority. */
+UCLASS()
+class SPACESURVIVAL_API ASSWeaponTracePulse : public AActor
+{
+    GENERATED_BODY()
+public:
+    ASSWeaponTracePulse();
+    void Configure(FVector Start, FVector End);
+    virtual void Tick(float DeltaSeconds) override;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Presentation")
+    TObjectPtr<UStaticMeshComponent> Core;
+
+private:
+    UPROPERTY(Transient)
+    TObjectPtr<UMaterialInstanceDynamic> Material;
+    float Age = 0.f;
 };
 
 /** World-space projectile: dodging or intervening geometry can defeat a shot. */
@@ -322,6 +343,7 @@ public:
 
 private:
     ASSShip *FindShip() const;
+    friend class FSSDirectorAsteroidReadability;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
     ASSWorldBody *SpawnHazard(ESSWorldKind Kind, float Radius);
     ASSEnemy *SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective = nullptr);

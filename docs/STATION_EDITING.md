@@ -1,5 +1,7 @@
 # Station Workshop
 
+**September 21 reset candidate:** gameplay selects the separate `StationReset/BP_StationReset` when installed. This workshop and the legacy Blueprint/Blender instructions below still write `StationVisualPass/BP_StationVisualLayout`; applying them does not change the active reset layout. Keep those original layouts as preserved authoring sources. The reset's recipe, ownership checks and matching physical solids are documented in [Station authoring](STATION_AUTHORING.md#functional-reset-layout--september-21-owner-redesign). Use that process for the new station; the workshop has not been migrated to it.
+
 **Open `C:/Users/j6sis/SpaceSurvival/Open Station Workshop.cmd`.** It opens the working Unreal project directly into the saved workshop. If the editor is already open, use **Tools > Station Workshop**, then **Open Workshop**. No additional plugin purchase is needed.
 
 This is an editor authoring tool. It uses the normal Unreal viewport for selection, movement and undo, with a focused asset/material panel. It is not an in-game construction mechanic. The workshop becomes the source for visual station placement; gameplay collision and interaction locations are still separate and their reported bugs remain open.

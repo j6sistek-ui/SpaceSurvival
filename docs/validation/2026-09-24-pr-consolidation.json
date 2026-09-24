@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-09-24T04:49Z",
+  "runtime_identity": "Source, Config, ContentSource, SpaceSurvival.uproject, DA_Phase1.uasset and Survival.umap match 3d2ff3c exactly",
+  "blender_refresh": {
+    "objects": 5522,
+    "target_map": "/Game/Blender/Sandbox/BuildingSandbox_20260922",
+    "exact_link_ids_and_assets": true,
+    "max_matrix_error": 1.2576580047607422e-05,
+    "source_sha256": "52c6f74198896d25eb699656c2ad5215378a1a8b57dbba5f652676178d6d2368",
+    "blend_sha256": "2a8d9387e4590f1dd4d901e0eef66a2b280af4671b88cf39c62e987732c4298d"
+  },
+  "previous_blend_sha256": "see private backup receipt; backup verified byte-identical before replacement"
+}
