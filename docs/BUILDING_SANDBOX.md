@@ -114,10 +114,10 @@ The layout operation backs up the map and uses an undo transaction; area tags pr
 Z shifts. Inspect and save the map explicitly. Never run against a vendor map.
 
 The current `Artifacts/BuildingSandbox/scene.json` contains5,522 linked mesh placements.
-**The existing BuildingSandbox.blend is the older7,431-placement layout.** Preserve it, and
-regenerate into a new filename with `build_sandbox_scene.py`, or pull the current placements
-before editing. Do not push the old full scene into the repaired map: that can restore the canyon
-and old elevations. The star sphere remains Unreal-only. Original library assets remain available.
+**BuildingSandbox.blend was refreshed on September24 and now matches all5,522 placements.**
+The old7,431-placement layout is preserved as `BuildingSandbox-before-refresh-20260924.blend`.
+Use the canonical refreshed file; do not push the historical backup into the repaired map,
+because that can restore the canyon and old elevations. The star sphere remains Unreal-only. Original library assets remain available.
 
 Kit hologram graphics are replaceable: inspected hologram and Goliath screen instances expose
 texture layers and scrolling/timing controls. Duplicate materials for per-screen artwork; real

@@ -1,5 +1,9 @@
 # SpaceSurvival project state
 
+**2026-09-24 source consolidation:** Owner authorized merging the open PRs. PR62, PR60 and PR63 are merged into their respective bases; PR58 now consolidates repaired gameplay, replacement hero and authoring tools into main, pending final checks/merge. Runtime source/configuration and selected tuning/map are identical to built hero commit `3d2ff3c`; this is not a new gameplay build. Desktop launchers continue using the repaired checkout. Older unmerged/import-pending notes below are historical.
+
+**Blender refresh complete:** `Artifacts/BuildingSandbox/BuildingSandbox.blend` now has5,522 placements matching the saved flat-space Unreal export. Reopened in Blender5.2.2 and checked every link, mesh path and transform; old7,431-placement scene preserved as `BuildingSandbox-before-refresh-20260924.blend`. No Unreal map or library rebuild, package or itch change. [Receipt](validation/2026-09-24-pr-consolidation.md).
+
 **2026-09-24 replacement hero / current local game:** branch `codex/replacement-hero-in-game`, repaired checkout `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, now uses the76623-triangle replacement for Squirrel. Editor build and2 focused jump/tail tests pass; actual Survival-level scripted walking/jump/landing captures pass after fixing fur material usage. Owner feel and cockpit fit acceptance remain open. Desktop Unreal Engine opens UE5.8 with this repaired project; Play SpaceSurvival - Current opens its development launcher. Original authoring source and old package remain separate. No new package, itch upload or merge. [Evidence](validation/2026-09-24-replacement-hero.md).
 
 **September24 flat sandbox update:** The saved editor sandbox now uses one flat platform and a
@@ -63,6 +67,16 @@ The rebuilt station is a bounded industrial concourse and circular dock inside t
 **Visual target remains NOT MET.** Final artistic cycle 3 shows clearer pad/bridge surfaces, repaired colony materials, solid trim, readable service consoles and dark space. Lead and independent review still find a sparse hall/two-habitat exterior, repeated interior composition, oversized floating labels and dark areas beneath the ship. The design remains an owner-review candidate, not reference-matched art. The active [owner reports](KNOWN_ISSUES.md#september-21-rebuild-the-flight-to-station-loop) retain those lead-owned gaps plus physical keyboard/mouse/controller, natural Waves 1–10, listening, representative 60 FPS and clean-PC launch requirements. Phoenix section paint remains factory finish until compatible material controls are authored.
 
 Package 1's editor-retargeter cook failure and Package 2's missing portal material are retained in the validation record. The compatible signed Microsoft runtime is bundled, not installed or clean-PC tested. Package10 is now published as0.1.21-alpha.1; distribution and automation success do not complete Phase1.
+
+## September 18–19, not yet reconciled here: Stellar Phoenix hull, Ship Core flight, and an undocumented station/hero pass
+
+**This section flags a gap; it does not close one.** Everything below this line was written September 17 or earlier, and still names the H-shaped kitbash exterior and the squirrel hero as the newest work. Two later, larger changes on `main` are not reflected anywhere else in this file.
+
+**September 18, recorded in [KNOWN_ISSUES](KNOWN_ISSUES.md):** the owner bought the Stellar Phoenix Shuttle (24.8 m, 5.2x the `SM_SwiftCandidateV1` hull the project was calibrated around) and made it the new main ship. Flight moved onto the ShipCore plugin's rigid-body solver behind a `-SSPhoenix` command-line flag; `-SSClassic` still flies the old kinematic hull unchanged, and `ASSShip::SelectedHullIdentity()` is the single place that decides. A stick-to-gyro axis mismatch (`GyroManagerComp`'s documented axis order did not match its actual behavior) was found and fixed via `ASSShip::GyroInputFor`, and a landing-pad actor was introduced. 63/63 automation tests pass and a rendered Wave 10 capture shows `ShipCore driving`. **Still open per that same record:** walkable ship-interior collision does not exist, wing-deploy animation is unauthored, collision damage under the new physics path is wired but "not yet proven at runtime" (the soak run never collided), and nobody has flown it with hands on a controller.
+
+**September 19, PR #57 (`16ff502`..`1b3f2af`, merged `a11dc20`), not recorded in KNOWN_ISSUES or here:** hero-selection logic changed in `SSGameMode.cpp`/`SSStation.cpp`, a larger station is composed from the kitbash library via new `Scripts/AuthorStationLarge.py`/`RenderStationLarge.py`, a remastered squirrel hero is tracked, and new automation was added to `SSHeroSlotAutomationTests.cpp`, `SSPaintAutomationTests.cpp` and `Tests/CoreTests.cpp` (37 files, +1532/-57 lines). No build, test or capture evidence for this pass is written up anywhere yet.
+
+**Do not treat the "Source, build and release" table below, or the hull/hero described throughout the rest of this page, as current.** The next session that works in this area should read the `16ff502..a11dc20` diff and the September 18 KNOWN_ISSUES entries directly, then write the state up properly here, rather than building on the September 17 description that follows.
 
 ## September 17 station pit stop, paint bay and prefab library: merged, and published as 0.1.18-alpha
 
@@ -236,3 +250,21 @@ film LUT and depth-fog post-process material were disabled, white balance/tint r
 materials and original vendor scenes remain intact. Candidate saved; owner color and
 interior-walking acceptance still open. Editor joystick navigation remains disabled only
 in local editor preferences.
+
+## September 23 replacement hero rig — historical authoring checkpoint
+
+Superseded for runtime status by the September 24 integrated-hero entry above. Preserve the following source provenance; do not repeat the completed native import.
+
+`.agent/local/ReplacementHero/` contains the private 75,183-triangle squirrel rig,
+Blender/FBX/GLB package and six tail-animation layers. Reproducible scripts and sanitized
+evidence are tracked; art, textures, previews and ZIP remain private. This does not change
+the active hero or any published build. [RPT-20260923-01](KNOWN_ISSUES.md#rpt-20260923-01--replacement-squirrel-rig-and-tail-layers)
+owns native import/retarget/runtime integration and owner acceptance.
+
+Tail revision (September 24 UTC): downward jump uncoiling and delayed landing rebound;
+connected-surface skin weights repair the hooked-tip fold reported by the owner. The
+optional `SquirrelHero_SoftFur` derivative has 76,623 triangles with 180 skinned cards,
+tail-only smoothing capped at 3 mm and three material slots. Original geometry remains
+in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
+and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
+passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.

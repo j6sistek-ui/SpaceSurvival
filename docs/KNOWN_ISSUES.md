@@ -1,5 +1,7 @@
 # Open work and owner review
 
+**September24 consolidation update:** The stale-Blender-file portion of RPT-20260922-04 is resolved: canonical `BuildingSandbox.blend` now matches all5,522 exported placements; prior scene backed up. This supersedes the stale7,431-placement warnings below. Source PR consolidation does not close gameplay/visual acceptance cases. [Focused receipt](validation/2026-09-24-pr-consolidation.md).
+
 **2026-09-24 hero follow-up — RPT-20260921-05 / ISS-16; IMPLEMENTED LOCALLY, OWNER REVIEW OPEN; lead owns remaining verification.** Replacement Squirrel is imported, skinned, retargeted and active in the repaired game, superseding the earlier statement that the below80k candidate had not arrived. Tail idle/gaits and jump start/air/land are wired; landing tail continues during resumed locomotion. Body and rigid backpack were rendered; fur checkerboard usage failure was repaired and rechecked. Build and2 scoped suites pass. Next: owner checks Squirrel walking/run and jump/land feel; lead retains cockpit boarding/fit verification and any packaging work. Existing save identity and original art preserved. Repaired project is now the desktop Unreal default (UE5.8 instead of the old UE5.6 shortcut). [Exact source/assets/evidence and limitations](validation/2026-09-24-replacement-hero.md).
 
 **Current playable baseline:**0.1.21-alpha.1 / itch build2003058 READY, Package10/source4fd0293. Update through the itch app. Open [release receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json); check flight response, sustained mixed-field travel and menu navigation. Reports below remain open pending their own verification; publication is not acceptance.
@@ -109,6 +111,8 @@ The repair is isolated on `codex/flight-loop-reset` in the [candidate checkout](
 **RPT-20260921-02 — OPEN; lead owns the station and asteroid-colony redesign.** Later owner feedback, paraphrased: the entire station can be walked through, assets are ungrounded, ship legs are non-solid, services/customization are missing, the layout looks like random scrap rather than a high-tech station, and the sky is white. The owner explicitly requests a total station redesign. This supersedes preserving the old layout as the active design and keeping wardrobe unavailable at home; the old layout/assets remain backups. The replacement is a separately authored `StationReset/BP_StationReset` with a coherent concourse, grounded service bays, shared physical/visual geometry, and customization in home and midrun hubs. Prices, progression and scoped service transactions remain unchanged. The latest owner direction supersedes a separate white-sky investigation: integrate the atmosphere into the rebuilt composition. Five supplied references establish an industrial steel/grated interior with amber task lights, a circular illuminated landing pad, connected colony buildings/bridges and a distant skyline, inside or supported by the hollow asteroid already in the asset library. The playable district needs physical boundaries; surrounding colony massing may provide background scale. Measure the large, high-triangle asteroid before placement; world scale alone does not reduce geometry cost. Preserve the original and author an optimized private derivative if required.
 
 **Rendered outcome, September 21 08:41 UTC: improved, reference target NOT MET.** Lead and independent review of packaged capture `76061c816e81494899f2c1cb5eda502f` confirm clearer pad/bridge surfaces, corrected colony materials, solid roof/entry trim, readable amber consoles and dark space. The exterior still has a sparse, symmetric hall and two small ring habitats against a large empty rock face; it lacks the layered building heights and connected colony skyline in the references. The broad hall uses repeated panels/consoles, floating labels are oversized, and the floor under the ship remains dark. These are **lead-owned art/design gaps**, not acceptance work delegated to the owner. Three artistic assessment cycles are recorded, with no further lighting/design iteration in this pass. Next art work must address the composition and signage as a coherent design, preserving the verified physical routes and services. Package2 also exposed a missing portal light-mask asset: the exact cook fix is in source `7a63b03`; Package3 and both final runtime fixtures passed with that error absent. No fixture success closes this owner report.
+**Historical documentation audit (PR #61):** older sections below predate PR #57 and the Ship Core pivot. The dated September 21-24 repair, hero and authoring entries above supersede that old current-state summary; earlier acceptance gaps remain recorded.
+
 
 ## Current instruction: ACT-11 purchased-module execution pass, hero first; ACT-03 hold lifted by new owner direction
 
@@ -2239,3 +2243,30 @@ panel opens or lists them. That check needs a station, not the hangar.
 `CLAUDE.md` already says *"Treat '67 tests pass' as saying nothing about what a player receives."*
 This is that, demonstrated: the suite was green, the build succeeded, and the game was unplayable.
 Playtest before claiming any of this works.
+
+## RPT-20260923-01 — replacement squirrel rig and tail layers
+
+Owner: lead implementation; status: **implemented locally; owner feel and cockpit verification open**. Native integration is recorded in the September 24 hero follow-up above; the following authoring-stage notes are historical and do not request a second import.
+The owner selected the darker Tripo squirrel at 75–80k triangles and asked for a
+mannequin-friendly rig, independent tail, rigid backpack, walking/running wobble,
+casual idle sway and jump follow-through. The selected import is exactly 75,183
+triangles with one material; the nine-material segmented alternative is preserved.
+
+Local `.agent/local/ReplacementHero/SquirrelHero_Rigged.blend` and
+`SquirrelHero_Rig_Package.zip` contain the 69-bone rig, preserved source geometry/UVs,
+FBX/GLB, six tail-layer FBXs and four motion GIFs. [Recipe](../Tools/HeroRig/README.md)
+and [receipt](validation/2026-09-23-replacement-squirrel-rig.json) record focused evidence.
+Original imports and the active game hero remain untouched. No package/itch update.
+
+Next action (lead): import a separate native review candidate, retarget body locomotion,
+layer the tail by movement/jump state, and check actual walk/run/jump, pilot seating and
+ship clearance before switching the game hero. The owner reviews tail weight and softness
+in the GIFs; stationary-body tail previews are not evidence of finished locomotion.
+
+Tail revision (September 24 UTC): downward jump uncoiling and delayed landing rebound;
+connected-surface skin weights repair the hooked-tip fold reported by the owner. The
+optional `SquirrelHero_SoftFur` derivative has 76,623 triangles with 180 skinned cards,
+tail-only smoothing capped at 3 mm and three material slots. Original geometry remains
+in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
+and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
+passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.

@@ -420,3 +420,24 @@ status remains owned/installed; interactive acceptance remains pending under RPT
   thumbnails, native Blender files and portable ZIP stay on M:. 23 fully duplicated native downloads, including this bundle, were removed after7,771 SHA256
   matches; unique/partial/changed sources retained.54,980,195,863 bytes reclaimed. Manifests archived
   under `Artifacts/VaultRefresh-20260922/RetainedManifests`. Project asset paths remain unchanged.
+
+## E-HERO-75K — owner-created replacement squirrel (2026-09-23)
+
+September 24 update: this candidate is now integrated locally as Squirrel; see HERO-20260921 and the replacement-hero receipt. The following authoring-stage evaluation is historical; owner feel and cockpit fit remain open.
+
+Acquisition: already imported from the owner's Tripo output, not a purchased character.
+Evaluation: `sci-fi_squirrel_3d_model`, 75,183 triangles, one material, 60 original
+mannequin-style bones; selected over the 76,369-triangle nine-material alternative
+for simpler skin/material handling. Neither source was deleted. Whole-project value:
+station hero, pilot and reusable body retarget target within the existing hero scope.
+Local derivative: seven tail bones, root and backpack bone plus isolated tail layers.
+Native gameplay integration/acceptance remains unverified; next check is body retarget
+and movement-state layering, tracked in RPT-20260923-01, not a new feature proposal.
+
+Tail revision (September 24 UTC): downward jump uncoiling and delayed landing rebound;
+connected-surface skin weights repair the hooked-tip fold reported by the owner. The
+optional `SquirrelHero_SoftFur` derivative has 76,623 triangles with 180 skinned cards,
+tail-only smoothing capped at 3 mm and three material slots. Original geometry remains
+in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
+and `SoftFur_Back.png`. [Focused revision evidence](../validation/2026-09-24-squirrel-tail-revision.json)
+passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.
