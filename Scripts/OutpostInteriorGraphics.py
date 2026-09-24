@@ -1,9 +1,11 @@
-"""Assign owned readable graphics to ten exact existing interior glass panes.
+"""Assign owned readable graphics to ten exact interior glass panes.
 
-Seven diagnostic/data panes retain their native frame geometry. Three wardrobe
-BACK panes become clear glass; their west fronts are already open. Six capsule
-side panes, native P3 computer screens and all market content remain untouched.
-Only private instance parameters and these component material slots may change.
+Three Operations archive frame pairs migrate into a ceiling-mounted status
+band before assignment; the four other data panes retain their geometry. Three
+wardrobe BACK panes become clear glass; their west fronts are already open.
+Six capsule side panes, native P3 computer screens and market remain untouched.
+The separate guarded migration owns geometry; assignments only edit material
+slots and private instance parameters.
 """
 import hashlib
 import json
@@ -34,8 +36,9 @@ def layout():
             'required_slots': 2})
 
     for i, variant in enumerate(('Graph1', 'DigitalPanel', 'Graph2'), 1):
-        add('Operations/HoloArchive' + str(i) + '/AnimatedGlass', '400X200', variant,
-            ['MI_DigitalGlass_Window400X200'], 'Decorative operations archive data')
+        add('Operations/HoloArchive' + str(i) + '/AnimatedGlass', '300X100', variant,
+            ['MI_DigitalGlass_Window400X200', 'MI_DigitalGlass_Window300X100'],
+            'Decorative operations archive data in the mounted upper status band')
     for i, variant in enumerate(('Graph1', 'Graph2'), 1):
         add('Operations/SuspendedTelemetry' + str(i) + '/AnimatedGlass', '300X100', variant,
             ['MI_DigitalGlass_Window300X100'], 'Decorative overhead telemetry graphic')
@@ -118,6 +121,11 @@ def apply(api):
     fresh = package.startswith('/Temp/Untitled') and api.get('TARGET') == TARGET
     if package != TARGET and not fresh:
         raise RuntimeError('Interior graphics are restricted to the private outpost map')
+    # Fresh authoring already uses the raised native window recipe. Existing
+    # saved maps migrate the exact six old frame/pane actors before slot checks.
+    # This also installs ceiling brackets, after the dense banks and quiet roof.
+    import OutpostOperationsStatusBand
+    status_band = OutpostOperationsStatusBand.apply(api)
     rows = layout()
     actors = {}
     for actor in api['EAS'].get_all_level_actors():
@@ -227,10 +235,14 @@ def apply(api):
         if hashlib.sha256(record['file'].read_bytes()).hexdigest() != record['sha256']:
             raise RuntimeError('Native vendor material changed on disk: ' + path)
     receipt = {'assignments': assignments, 'recipes': recipes, 'native_shader': graph,
+        'operations_status_band': status_band,
         'source_hashes': {path: record['sha256'] for path, record in source_hashes.items()},
-        'vendor_sources_unchanged': True, 'geometry_changed': False, 'new_lights': 0,
+        'vendor_sources_unchanged': True,
+        'geometry_changed': any(p['migrated'] for p in status_band['placements']) or
+                            any(p['created'] for p in status_band['mountings']),
+        'new_lights': 0,
         'decorative_graphics_only': True,
-        'untouched': 'Native P3 computer screens, all market content, six wardrobe side panes and every frame.',
+        'untouched': 'Native P3 computer screens/banks, all market content, six wardrobe side panes; only three archive frame pairs migrate.',
         'validation': 'Native source/slot checks; rendered legibility and character visibility still need capture.'}
     (out/'interior-graphics.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')
     return receipt

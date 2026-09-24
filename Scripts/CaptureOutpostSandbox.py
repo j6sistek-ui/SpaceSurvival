@@ -3,6 +3,7 @@
 Run ONLY in a dedicated UnrealEditor-Cmd process with -RenderOffscreen and
 -ExecutePythonScript=Scripts/CaptureOutpostSandbox.py. The lead owns launching.
 Thirteen raw 1600x900 PNGs and a manifest are written under Artifacts/Outpost/Captures.
+Add -OutpostWalkthrough for 31 room-by-room and detail views at 1920x1080.
 No exposure correction, material replacement, asset saving, PIE or HUD is used.
 """
 import hashlib
@@ -36,10 +37,14 @@ SHOTS = [
 
 
 def main():
+    global SHOTS, WIDTH, HEIGHT
     command_line = u.SystemLibrary.get_command_line()
     if '-renderoffscreen' not in command_line.lower():
         raise RuntimeError('Outpost capture requires a dedicated -RenderOffscreen editor process')
     root = Path(u.Paths.convert_relative_path_to_full(u.Paths.project_dir()))
+    if '-outpostwalkthrough' in command_line.lower():
+        SHOTS = json.loads((root/'Scripts/OutpostWalkthroughShots.json').read_text(encoding='utf-8-sig'))
+        WIDTH, HEIGHT = 1920, 1080
     captures = root / 'Artifacts/Outpost/Captures'
     run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     output = captures / run_id

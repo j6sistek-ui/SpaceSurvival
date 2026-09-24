@@ -62,6 +62,14 @@ def apply(api):
     import OutpostInteriorReadability,OutpostReadability
     report['interior_readability']=OutpostInteriorReadability.apply(api)
     report['text_readability']=OutpostReadability.apply(api)
+    import OutpostFrontLighting
+    report['front_lighting']=OutpostFrontLighting.apply(api)
+    import OutpostBlueSignage,OutpostPublicLighting,OutpostSkylineAtmosphere
+    report['blue_signage']=OutpostBlueSignage.apply(api)
+    report['public_lighting']=OutpostPublicLighting.apply(api)
+    report['skyline_atmosphere']=OutpostSkylineAtmosphere.apply(api)
+    import OutpostPadTrim
+    report['pad_trim']=OutpostPadTrim.apply(api)
     report['promenade_native']=OutpostPromenadeDetails.audit_native(api)
     if report['promenade_native']['failures']:
         raise RuntimeError('New promenade clearance audit failed; map not saved')

@@ -147,11 +147,12 @@ def build(api):
         receipt['display_assemblies'].append({'name': name, 'location': location,
             'yaw': yaw, 'scale': scale, 'mounting': mounting, 'native_animation': True})
 
-    # Three separate mission/data windows: rear wall has a deliberate rhythm,
-    # with open gaps rather than one giant stretched screen across the room.
-    for index, y in enumerate((-650, 0, 650)):
-        framed('Operations/HoloArchive' + str(index + 1), '400X200',
-               (9130, y, 150), mounting='RearWall')
+    # Forward of the east equipment, native 300x100 windows form a readable
+    # upper status band. InteriorGraphics adds measured ceiling brackets once
+    # the banks/quiet ceiling exist, and migrates old saved placements safely.
+    from OutpostOperationsStatusBand import layout as status_band_layout
+    for row in status_band_layout():
+        framed(row['name'], row['dimensions'], row['location'], mounting='Ceiling')
     # Shallow double-sided station-status windows hang from the ceiling above
     # the console side aisles. Their 295cm bottom clears people and machinery.
     for index, y in enumerate((-650, 650)):
