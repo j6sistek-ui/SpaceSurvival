@@ -88,3 +88,37 @@ film LUT and depth-fog post-process material were disabled, white balance/tint r
 materials and original vendor scenes remain intact. Candidate saved; owner color and
 interior-walking acceptance still open. Editor joystick navigation remains disabled only
 in local editor preferences.
+
+### September 24 UTC: flat space sandbox
+
+Owner requested removal of canyon scenery and a flat shared surface. The saved private map now
+has a 260m by110m platform at Z0, with each scene's main floor aligned to it. Removed1,897
+RedCanyon placements, eight one-sided blocking showcase planes and seven obsolete ramps.
+Fog display meshes no longer block walking. Original vendor examples remain hash-identical.
+The terrestrial sky/cloud/fog is disabled here and an owned starfield supplies the backdrop.
+
+ComputerStation used lights up to1,000,000 candela, emission parameters up to3,707,671 and
+reflection-probe gain10,000. Its38 lights were reduced locally,20 sandbox-only material children
+reduce screen emission, and two probe gains are now1. The final capture still appears bright;
+settled appearance and any remaining cause need review, not a claim of finished lighting.
+
+Focused capsule sweeps found a clear approach for all five areas with ground at Z0 (ComputerStation
+endpoint0.27cm). Genesis has a roughly22cm door sill, below the pawn's45cm step height; the
+stepped sweep passes. Natural walking, all interior passages and door interaction remain open.
+Reflection-capture rebuild and VSM light-overlap warnings also remain open. No warnings hidden.
+See [focused evidence](validation/2026-09-24-sandbox-flat-space.json).
+
+`Scripts/RepairBuildingSandboxAccess.py`: call `run()` and `balance_computer()` for previews;
+then `run(apply=True)` followed by `balance_computer(apply=True)` in the idle target editor.
+The layout operation backs up the map and uses an undo transaction; area tags prevent repeated
+Z shifts. Inspect and save the map explicitly. Never run against a vendor map.
+
+The current `Artifacts/BuildingSandbox/scene.json` contains5,522 linked mesh placements.
+**The existing BuildingSandbox.blend is the older7,431-placement layout.** Preserve it, and
+regenerate into a new filename with `build_sandbox_scene.py`, or pull the current placements
+before editing. Do not push the old full scene into the repaired map: that can restore the canyon
+and old elevations. The star sphere remains Unreal-only. Original library assets remain available.
+
+Kit hologram graphics are replaceable: inspected hologram and Goliath screen instances expose
+texture layers and scrolling/timing controls. Duplicate materials for per-screen artwork; real
+video or live game information requires additional setup, which this repair does not implement.

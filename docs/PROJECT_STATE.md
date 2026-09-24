@@ -1,5 +1,14 @@
 # SpaceSurvival project state
 
+**September24 flat sandbox update:** The saved editor sandbox now uses one flat platform and a
+space backdrop, with canyon/display barriers removed. Current scene.json has5,522 linked placements;
+the existing7,431-placement Blender file is historical and must be refreshed before Push.
+ComputerStation-only light/emission/reflection normalization is saved but final brightness acceptance
+is still PARTIAL. Five approach sweeps/ground checks pass; natural walking, door controls, reflection
+rebuild and VSM warnings remain open. See [flat-space evidence](validation/2026-09-24-sandbox-flat-space.json).
+No game build, package, itch update or PR merge occurred.
+
+
 **September23 authoring delivery:** SS Link0.4.1 installed in Blender5.2.2;1,325 static meshes with
 1,325 thumbnails. Private `/Game/Blender/Sandbox/BuildingSandbox_20260922` combines the five owned
 building demos around a solid connecting platform. `Artifacts/BuildingSandbox/BuildingSandbox.blend`

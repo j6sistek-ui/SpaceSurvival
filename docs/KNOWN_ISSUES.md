@@ -4,6 +4,16 @@
 
 ## September22 Blender library — RPT-20260922-04
 
+September24 follow-up: canyon1,897 placements and eight enclosure walls removed; seven ramps
+superseded by a flat platform/main-floor alignment. Star backdrop and ComputerStation-only light,
+emission and reflection-gain changes saved. Approach capsule/ground checks pass for five areas,
+but no natural walk acceptance; Genesis sill requires a small step. Final ComputerStation brightness
+still needs review. Reflection rebuild/VSM warnings and functional doors remain open. Current export
+has5,522 meshes; old7,431-placement .blend is stale and must be refreshed before Push.
+Owner closes editor for a break; lead next action is settled computer-section lighting review and
+remaining warnings/passages. Evidence: docs/validation/2026-09-24-sandbox-flat-space.json.
+
+
 **Library and editable sandbox delivered; visual/walking acceptance remains PARTIAL.** SS Link0.4.1
 is installed in Blender5.2.2. Current library:1,325 real meshes/1,325 thumbnails, including648 new
 Sci-Fi Bundle meshes. Owner reports the large browser works pretty well. Genesis High Settings,
