@@ -1,5 +1,7 @@
 # SpaceSurvival
 
+**Current local game:** use **Play SpaceSurvival - Current** or **Unreal Engine** on the desktop; both now point to the repaired game checkout. The latter opens UE5.8 directly into the game. [Launch paths and package distinction](docs/BUILD_RUN.md); [replacement hero review](docs/validation/2026-09-24-replacement-hero.md).
+
 Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains PARTIAL.**
 
 **[Open work and your next review](docs/KNOWN_ISSUES.md)** is the single active task and priority log. Start there; it contains the owner review queue, all hands-on acceptance checks, unresolved problems and closure evidence.

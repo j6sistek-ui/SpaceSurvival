@@ -241,6 +241,22 @@ private:
     UPROPERTY()
     TObjectPtr<UAnimSequence> IdleAnimation;
     UPROPERTY()
+    TObjectPtr<UAnimSequence> JumpStartAnimation;
+    UPROPERTY()
+    TObjectPtr<UAnimSequence> JumpAirAnimation;
+    UPROPERTY()
+    TObjectPtr<UAnimSequence> JumpLandAnimation;
+    enum class EJumpPose : uint8
+    {
+        Grounded,
+        Start,
+        Air,
+        Land
+    };
+    EJumpPose JumpPose = EJumpPose::Grounded;
+    float JumpPoseSeconds = 0.f;
+    float LandingTailSeconds = -1.f;
+    UPROPERTY()
     TArray<TObjectPtr<UAnimSequence>> FidgetAnimations;
     /** The gaits this hero owns, ascending by the speed each was authored to travel at. Element 0 is
      *  always the walk, so this is never empty and a hero with no fast clips has exactly one entry -
@@ -268,6 +284,8 @@ private:
      *  hero's first tenth of a second a fade out of a T-pose. */
     void StartStandingAnimation(bool CarryPose = true);
     void UpdateHeroAnimation(float DeltaSeconds);
+    bool UpdateJumpAnimation(float DeltaSeconds);
+    void UpdateLandingTail();
     void UpdateFootsteps(float DeltaSeconds);
     void UpdateReadabilityLighting();
     /** Whether each boot was down last frame, so a step sounds on the way down and not every frame

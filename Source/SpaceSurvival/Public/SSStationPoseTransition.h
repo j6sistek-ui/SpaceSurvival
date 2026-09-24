@@ -37,6 +37,24 @@ public:
     bool SetSourcePose(const FPoseSnapshot &Pose, ESSPoseRefusal *OutRefusal = nullptr);
     static const TCHAR *RefusalReason(ESSPoseRefusal Refusal);
     void SetExitTime(float Seconds);
+    /** Continue a non-additive landing clip on one subtree only. Negative time clears the layer. */
+    bool SetLandingTail(UAnimSequence *Clip, FName RootBone, float Seconds);
+    UAnimSequence *GetLandingTailClip() const
+    {
+        return LandingTailClip;
+    }
+    FName GetLandingTailRoot() const
+    {
+        return LandingTailRoot;
+    }
+    float GetLandingTailTime() const
+    {
+        return LandingTailTime;
+    }
+    float GetLandingTailWeight() const
+    {
+        return LandingTailWeight;
+    }
     const FPoseSnapshot &GetSourcePose() const
     {
         return SourcePose;
@@ -54,6 +72,11 @@ protected:
     virtual FAnimInstanceProxy *CreateAnimInstanceProxy() override;
 
 private:
+    UPROPERTY(Transient)
+    TObjectPtr<UAnimSequence> LandingTailClip;
+    FName LandingTailRoot = NAME_None;
+    float LandingTailTime = 0.f;
+    float LandingTailWeight = 0.f;
     UPROPERTY(Transient)
     FPoseSnapshot SourcePose;
     float ExitBlend = 1.f;
