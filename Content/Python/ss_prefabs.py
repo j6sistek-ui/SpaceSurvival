@@ -144,9 +144,6 @@ def _static_meshes():
     rows = []
     for data in ar.get_assets(flt):
         path = str(data.package_name) + '.' + str(data.asset_name)
-        pack = pack_of(path)
-        if any(pack.startswith(x) for x in EXCLUDED_PACKS):
-            continue
         rows.append(path)
     return sorted(rows)
 
@@ -193,7 +190,13 @@ def export_thumbnail(asset, out_path, size=256):
     return bool(library.export_asset_thumbnail(asset, str(out_path), size)) and out_path.exists()
 
 
-def build_catalog(export_proxies=True, limit=0, engine_thumbnails=True, force_thumbnails=False):
+def _source_stamp(path):
+    disk = ROOT / 'Content' / (path.split('.')[0][len('/Game/'):] + '.uasset')
+    siblings = [disk, disk.with_suffix('.ubulk'), disk.with_suffix('.uexp')]
+    return ':'.join(f'{p.stat().st_mtime_ns}/{p.stat().st_size}' if p.exists() else '-' for p in siblings)
+
+
+def catalog_steps(export_proxies=True, limit=0, engine_thumbnails=True, force_thumbnails=False):
     """Scan every owned static mesh, classify it, measure it and (optionally) export a proxy and a thumbnail.
 
     Returns the catalogue dict. Proxies already on disk are kept, so reruns are cheap. The catalogue is
@@ -204,14 +207,27 @@ def build_catalog(export_proxies=True, limit=0, engine_thumbnails=True, force_th
     """
     LIBRARY.mkdir(parents=True, exist_ok=True)
     previous = {m['asset']: m for m in (load_catalog() or {}).get('meshes', [])}
+    u.AssetRegistryHelpers.get_asset_registry().search_all_assets(True)
     paths = _static_meshes()
     if limit:
         paths = paths[:limit]
     meshes, failed = [], []
     t0 = time.time()
     for i, path in enumerate(paths):
+        stamp = _source_stamp(path)
+        old = previous.get(path, {})
+        cached_proxy = LIBRARY / old.get('proxy', '')
+        cached_thumb = LIBRARY / old.get('thumb', '')
+        unchanged = old.get('source_stamp') == stamp
+        if (unchanged and not force_thumbnails and (not export_proxies or cached_proxy.is_file())
+                and (not engine_thumbnails or cached_thumb.is_file())):
+            meshes.append(old)
+            yield None
+            continue
         mesh = u.load_asset(path)
         if not isinstance(mesh, u.StaticMesh):
+            failed.append(path)
+            yield None
             continue
         b = mesh.get_bounds()
         name = path.split('.')[-1]
@@ -220,14 +236,18 @@ def build_catalog(export_proxies=True, limit=0, engine_thumbnails=True, force_th
         row = {'asset': path, 'name': name, 'pack': pack, 'group': group_of(category), 'category': category,
                'origin': [b.origin.x, b.origin.y, b.origin.z], 'extent': [b.box_extent.x, b.box_extent.y, b.box_extent.z],
                'radius': b.sphere_radius, 'triangles': mesh.get_num_triangles(0),
-               'materials': [s.material_interface.get_path_name() if s.material_interface else '' for s in mesh.static_materials]}
+               'materials': [s.material_interface.get_path_name() if s.material_interface else '' for s in mesh.static_materials],
+               'source_stamp': stamp, 'geometry': 'LOD0 static mesh'}
         # Mirror the package path under the pack, so two meshes with one name in different folders
         # (the scenery meshes and their solid derivatives, for one) do not share a proxy.
         rel = path.split('.')[0][len('/Game/' + pack) + 1:]
         proxy = PROXIES / pack.replace('/', '_') / (rel + '.glb')
-        if export_proxies and not proxy.exists():
+        if export_proxies and (not proxy.exists() or not unchanged):
             try:
-                if not export_proxy(mesh, proxy):
+                pending = proxy.with_name(proxy.stem + '.pending.glb')
+                if export_proxy(mesh, pending):
+                    pending.replace(proxy)
+                else:
                     failed.append(path)
             except Exception as e:
                 failed.append(path)
@@ -235,11 +255,11 @@ def build_catalog(export_proxies=True, limit=0, engine_thumbnails=True, force_th
         # The row says what is on disk, not what this run did: a rebuild without proxies still lists the
         # GLBs an earlier run exported, and every rebuild keeps the thumbnails the renderer has written.
         # Same rule as the renderer's own pass, so the two writers agree: no proxy, no thumb.
-        if proxy.exists():
+        if proxy.exists() and path not in failed:
             row['proxy'] = str(proxy.relative_to(LIBRARY)).replace('\\', '/')
             thumb = thumb_rel(row['proxy'])
             source = previous.get(path, {}).get('thumb_source', 'blender')
-            if thumb and engine_thumbnails and (force_thumbnails or source != 'unreal' or not (LIBRARY / thumb).exists()):
+            if thumb and engine_thumbnails and (force_thumbnails or not unchanged or source != 'unreal' or not (LIBRARY / thumb).exists()):
                 try:
                     if export_thumbnail(mesh, LIBRARY / thumb):
                         source = 'unreal'
@@ -251,6 +271,7 @@ def build_catalog(export_proxies=True, limit=0, engine_thumbnails=True, force_th
         meshes.append(row)
         if i % 50 == 0:
             _log(f'catalogued {i + 1}/{len(paths)} ({time.time() - t0:.0f}s)')
+        yield None
     categories, groups = {}, {}
     for m in meshes:
         categories[m['category']] = categories.get(m['category'], 0) + 1
@@ -259,10 +280,20 @@ def build_catalog(export_proxies=True, limit=0, engine_thumbnails=True, force_th
                'units': 'cm; proxies are glTF in metres', 'groups': dict(sorted(groups.items())),
                'group_categories': {g: list(c) for g, c in GROUPS}, 'categories': dict(sorted(categories.items())),
                'proxies_failed': failed, 'meshes': meshes}
-    CATALOG.write_text(json.dumps(catalog, indent=1), encoding='utf-8')
+    pending_catalog = CATALOG.with_suffix('.pending.json')
+    pending_catalog.write_text(json.dumps(catalog, indent=1), encoding='utf-8')
+    pending_catalog.replace(CATALOG)
     _log(f'catalogue: {len(meshes)} meshes, {len(categories)} categories, {sum(1 for m in meshes if "proxy" in m)} proxies, '
          f'{sum(1 for m in meshes if "thumb" in m)} thumbnails, {len(failed)} proxies failed -> {CATALOG}')
-    return catalog
+    yield catalog
+
+
+def build_catalog(export_proxies=True, limit=0, engine_thumbnails=True, force_thumbnails=False):
+    result = None
+    for update in catalog_steps(export_proxies, limit, engine_thumbnails, force_thumbnails):
+        if update is not None:
+            result = update
+    return result
 
 
 def load_catalog():
@@ -435,6 +466,8 @@ def place_prefab(ref, location=None, yaw=0.0, folder=None):
     """Spawn a prefab recipe into the open level at location (cm) with a yaw; returns the actors."""
     path = prefab_path(ref)
     recipe = json.loads(path.read_text(encoding='utf-8'))
+    import ss_surfaces
+    recipe['static_meshes'] = ss_surfaces.resolve_rows(recipe.get('static_meshes', []))
     name = path.stem
     if location is None:
         location = placement_point()
@@ -518,6 +551,9 @@ def describe_actor(actor, origin=None):
             default = slot.material_interface.get_path_name() if slot.material_interface else ''
             overrides.append(path)
             changed = changed or path != default
+            surface = u.EditorAssetLibrary.get_metadata_tag(m, 'SSSurface') if m else ''
+            if surface:
+                row.setdefault('surface_overrides', {})[str(i)] = json.loads(surface)
         if changed:
             row['materials'] = overrides
         if not comp.cast_shadow:
@@ -593,6 +629,13 @@ def apply_link(payload):
     """
     if isinstance(payload, str):
         payload = json.loads(payload)
+    target = payload.get('target_map')
+    if target:
+        current = _world().get_path_name().split('.')[0]
+        if current != target:
+            raise RuntimeError(f'Open {target} in Unreal before pushing this sandbox (currently {current})')
+    import ss_surfaces
+    payload = dict(payload, objects=ss_surfaces.resolve_rows(payload.get('objects', [])))
     existing = _linked_actors()
     created = moved = removed = 0
     errors = []
@@ -604,6 +647,10 @@ def apply_link(payload):
             if a and isinstance(a, u.StaticMeshActor) and a.static_mesh_component.static_mesh and \
                     a.static_mesh_component.static_mesh.get_path_name() == obj['asset']:
                 a.set_actor_transform(t, False, False)
+                for slot, path in enumerate(obj.get('materials') or []):
+                    material = u.load_asset(path) if path else a.static_mesh_component.static_mesh.get_material(slot)
+                    if material:
+                        a.static_mesh_component.set_material(slot, material)
                 moved += 1
             else:
                 if a:

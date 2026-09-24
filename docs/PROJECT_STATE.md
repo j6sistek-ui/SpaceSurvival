@@ -1,5 +1,26 @@
 # SpaceSurvival project state
 
+**September24 flat sandbox update:** The saved editor sandbox now uses one flat platform and a
+space backdrop, with canyon/display barriers removed. Current scene.json has5,522 linked placements;
+the existing7,431-placement Blender file is historical and must be refreshed before Push.
+ComputerStation-only light/emission/reflection normalization is saved but final brightness acceptance
+is still PARTIAL. Five approach sweeps/ground checks pass; natural walking, door controls, reflection
+rebuild and VSM warnings remain open. See [flat-space evidence](validation/2026-09-24-sandbox-flat-space.json).
+No game build, package, itch update or PR merge occurred.
+
+
+**September23 authoring delivery:** SS Link0.4.1 installed in Blender5.2.2;1,325 static meshes with
+1,325 thumbnails. Private `/Game/Blender/Sandbox/BuildingSandbox_20260922` combines the five owned
+building demos around a solid connecting platform. `Artifacts/BuildingSandbox/BuildingSandbox.blend`
+contains7,431 linked placements; portable library `SpaceSurvival-Library-0.4.1-final.zip` is separate.
+Artifacts resolves to `M:/SpaceSurvival/Artifacts`. Source is `codex/blender-library-popout` / PR60,
+locally deployed to the original project with backups, unmerged.23 checksum-verified duplicate native
+cache folders removed with owner authorization (54,980,195,863 bytes);7,771 project content copies and
+unique sources retained. Manifests/receipts remain in ignored `Artifacts/VaultRefresh-20260922`.
+[Sandbox guide](BUILDING_SANDBOX.md) and [validation](validation/2026-09-23-building-sandbox.md) separate
+scripted checks from pending visual/walking acceptance. RPT-20260922-04 owns follow-up. Gameplay station,
+binaries and published itch payload unchanged. The older677-entry/0.4.0 snapshot is historical.
+
 **September22 merge authorization:** Owner authorizes PR59 into its existing `docs/station-authoring-process` base. PR58 to `main` remains separate and is not included in this authorization. Pre-approval unmerged statements below are historical; [PR59](https://github.com/j6sistek-ui/SpaceSurvival/pull/59) records the completed merge status. This source operation does not rebuild or change the published itch payload.
 
 **September22 published baseline:0.1.21-alpha.1 / itch build2003058 READY.** Package10/source`4fd0293` includes responsive flight, denser world-fixed mixed rocks/wreckage/architecture, controller stick menu navigation and separated HUD messages. [Published receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json). The local isolated launcher opens the same package. Package8 was rejected and its upload stopped. PR59 remains draft/unmerged. Star visibility is logged only; owner requested upload continue unchanged.
@@ -191,3 +212,25 @@ Unreal can [monitor source folders and automatically reimport](https://dev.epicg
 - Build/run owns commands; this page owns the latest source/package/release pointer.
 - Validation receipts retain immutable history; old package numbers do not identify a shared path after it is rebuilt.
 - Every PR reconciles these boundaries and gives the owner an explicit open/check/still-open handoff.
+
+### September 24 UTC: sandbox whiteout and editor camera drift
+
+Owner reported an unreadable exterior and doors without usable controls. The open sandbox
+inherited manual physical exposure compensation +10.7 and FFT bloom intensity8/size4.
+Sandbox-only histogram exposure, zero compensation and moderate standard bloom were applied
+and saved after a dry run and private map backup. Overview and ground-level captures show
+the exterior again. Fog visibility was restored after an inconclusive diagnostic.
+Editor joystick navigation was separately disabled and persisted in local user preferences:
+the camera had drifted from roughly16m to1.6km high. Gameplay controller input is unchanged.
+
+All60 door-labelled placements inspected are static meshes. Lit lock graphics are materials;
+the sandbox builder adds no opening control. Genesis level-script interaction remains
+unverified. No door animation/interaction was added. Next: owner Play check outside/inside.
+See [repair evidence](validation/2026-09-24-sandbox-visibility.json).
+
+Color follow-up: the owner rejected the amber cast. The sandbox's full-strength Kodak02
+film LUT and depth-fog post-process material were disabled, white balance/tint reset, warm
+4250K sunlight disabled and Rayleigh scattering returned to the engine default. Native
+materials and original vendor scenes remain intact. Candidate saved; owner color and
+interior-walking acceptance still open. Editor joystick navigation remains disabled only
+in local editor preferences.

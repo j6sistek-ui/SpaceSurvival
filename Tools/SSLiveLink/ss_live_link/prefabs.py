@@ -9,7 +9,7 @@ import math
 import bpy
 from mathutils import Matrix, Vector
 
-from . import core, library
+from . import core, library, surfaces
 
 
 def save_prefab(objects, category, name, purpose=''):
@@ -32,7 +32,7 @@ def save_prefab(objects, category, name, purpose=''):
         part = {'name': o.name, 'asset': o[core.PROP_ASSET], 'matrix': [[round(v, 6) for v in r] for r in rows]}
         if o.get(core.PROP_MATERIALS):
             part['materials'] = json.loads(o[core.PROP_MATERIALS])
-        parts.append(part)
+        parts.append(surfaces.add_to_record(o, part))
     lights = []
     for o in bpy.context.selected_objects:
         if o.type == 'LIGHT' and o.data.type == 'POINT':
@@ -64,6 +64,7 @@ def load_prefab(ref, at=None):
             scl = scl if isinstance(scl, (list, tuple)) else [scl] * 3
             local = core.from_ue_rows(core.rows_from_rotator(part.get('location', [0, 0, 0]), part.get('rotation', [0, 0, 0]), scl))
         obj = core.add_part(part['asset'], origin @ local, col, name=part.get('name'), materials=part.get('materials'))
+        surfaces.restore(obj, part.get('surface_overrides'))
         made.append(obj)
     for light in recipe.get('point_lights', []):
         data = bpy.data.lights.new(light.get('name', 'Light'), 'POINT')

@@ -125,18 +125,27 @@ def hook_file_loads(on):
 
 def link_payload(objects):
     out = []
+    owners = {}
+    for candidate in sorted(core.tagged_objects(), key=lambda obj: obj.name):
+        if candidate.get(core.PROP_LINK):
+            owners.setdefault(candidate[core.PROP_LINK], candidate)
     for o in objects:
-        if not o.get(core.PROP_LINK):
+        if not o.get(core.PROP_LINK) or owners.get(o[core.PROP_LINK], o) != o:
             o[core.PROP_LINK] = uuid.uuid4().hex
+            owners[o[core.PROP_LINK]] = o
         row = {'link': o[core.PROP_LINK], 'asset': o[core.PROP_ASSET], 'name': o.name, 'matrix': core.to_ue_rows(o.matrix_world)}
         if o.get(core.PROP_MATERIALS):
             row['materials'] = json.loads(o[core.PROP_MATERIALS])
+        from . import surfaces
+        surfaces.add_to_record(o, row)
         out.append(row)
     return out
 
 
 def push(objects, remove=()):
     payload = {'objects': link_payload(objects), 'remove': list(remove)}
+    if bpy.context.scene.get('ss_target_map'):
+        payload['target_map'] = bpy.context.scene['ss_target_map']
     summary = link.call('ss_prefabs.apply_link(' + repr(json.dumps(payload)) + ')')
     for row in payload['objects']:
         _last_sent[row['link']] = signature(row)
@@ -146,10 +155,12 @@ def push(objects, remove=()):
 
 
 def signature(row):
-    return (row['asset'], tuple(round(v, 4) for r in row['matrix'] for v in r), row.get('name'))
+    return (row['asset'], tuple(round(v, 4) for r in row['matrix'] for v in r), row.get('name'),
+            json.dumps(row.get('materials', []), sort_keys=True), json.dumps(row.get('surface_overrides', {}), sort_keys=True))
 
 
 def pull():
+    from . import surfaces
     data = link.call('ss_prefabs.pull_selection()')
     # Every tagged object, a game scene's included: an actor pulled back must move the part that carries its
     # link, not arrive as a second copy of it.
@@ -163,10 +174,15 @@ def pull():
             o.matrix_world = m
             moved += 1
         else:
-            core.add_part(row['asset'], m, col, name=row.get('name'), link=row['link'], materials=row.get('materials'))
+            o = core.add_part(row['asset'], m, col, name=row.get('name'), link=row['link'], materials=row.get('materials'))
             made += 1
+        o[core.PROP_MATERIALS] = json.dumps(row.get('materials') or [])
+        for slot in o.material_slots:
+            if slot.material and slot.material.get(surfaces.MARKER):
+                slot.link = 'DATA'
+        surfaces.restore(o, row.get('surface_overrides'))
     for row in data.get('objects', []):
-        _last_sent[row['link']] = signature({'asset': row['asset'], 'matrix': core.to_ue_rows(core.from_ue_rows(row['matrix'])), 'name': row.get('name')})
+        _last_sent[row['link']] = signature(dict(row, matrix=core.to_ue_rows(core.from_ue_rows(row['matrix']))))
     return {'created': made, 'moved': moved}
 
 

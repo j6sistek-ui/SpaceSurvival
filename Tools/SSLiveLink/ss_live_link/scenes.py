@@ -575,6 +575,8 @@ def fill_scene(scene, recipe, placed, context_data, native=()):
     parts = []
     for order, (part, matrix) in enumerate(placed):
         obj = core.add_part(part['asset'], matrix, cols['parts'], name=part.get('name'), materials=part.get('materials'))
+        from . import surfaces
+        surfaces.restore(obj, part.get('surface_overrides'))
         obj[PROP_SOURCE] = json.dumps(part)
         obj[PROP_ORDER] = order
         obj[PROP_LOADED_AS] = obj.name
@@ -701,7 +703,7 @@ def scene_objects(scene):
     return sorted(parts, key=order), sorted(lights, key=order), skipped
 
 
-def empty_slot(asset, materials):
+def empty_slot(asset, materials, surface_overrides=None):
     """The first material slot the mesh ships empty and materials leaves empty, or None.
 
     The layout library refuses such a part (SM_MonitorScreen is one). The catalogue lists a mesh's slots,
@@ -709,7 +711,7 @@ def empty_slot(asset, materials):
     """
     entry = core.catalog_entry(asset or '')
     for slot, material in enumerate((entry or {}).get('materials', [])):
-        if not material and not (slot < len(materials) and materials[slot]):
+        if not material and not (slot < len(materials) and materials[slot]) and str(slot) not in (surface_overrides or {}):
             return slot
     return None
 
@@ -738,6 +740,7 @@ def part_materials(obj, scene):
 
 def validate(scene, kind, rules):
     """[(object, reason)] for everything that stops Apply. An empty list means the scene may be written."""
+    from . import surfaces
     parts, lights, _ = scene_objects(scene)
     lane = rules.get('flight_lane') if kind == 'recipe' else None
     problems = []
@@ -754,7 +757,7 @@ def validate(scene, kind, rules):
             problems.append((obj, 'skewed or squashed flat, which Unreal cannot hold: clear its parent (Alt+P) or apply its scale (Ctrl+A, Scale)'))
         elif lane and in_lane(*part_bounds_ue(obj), lane):
             problems.append((obj, 'in the flight lane, the wire box a docking ship flies through: move it out to the side, or above it'))
-        elif kind == 'recipe' and empty_slot(obj[core.PROP_ASSET], part_materials(obj, scene)) is not None:
+        elif kind == 'recipe' and empty_slot(obj[core.PROP_ASSET], part_materials(obj, scene), surfaces.describe(obj)) is not None:
             # Caught here, by name, before the layout library meets it with the Blueprint already cleared.
             problems.append((obj, 'its mesh has a material slot with nothing in it, which the station refuses: use another part here'))
     return problems
@@ -849,7 +852,8 @@ def part_record(obj, name, kind, scene):
         record['materials'] = materials
     # Whatever else the recipe said about the part (cast_shadows today) goes back as it came.
     record.update({k: v for k, v in source.items() if k not in record and k not in TRANSFORM_KEYS and k != 'materials'})
-    return record
+    from . import surfaces
+    return surfaces.add_to_record(obj, record)
 
 
 def near(a, b, slack):
