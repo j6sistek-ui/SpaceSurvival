@@ -203,3 +203,25 @@ Unreal can [monitor source folders and automatically reimport](https://dev.epicg
 - Build/run owns commands; this page owns the latest source/package/release pointer.
 - Validation receipts retain immutable history; old package numbers do not identify a shared path after it is rebuilt.
 - Every PR reconciles these boundaries and gives the owner an explicit open/check/still-open handoff.
+
+### September 24 UTC: sandbox whiteout and editor camera drift
+
+Owner reported an unreadable exterior and doors without usable controls. The open sandbox
+inherited manual physical exposure compensation +10.7 and FFT bloom intensity8/size4.
+Sandbox-only histogram exposure, zero compensation and moderate standard bloom were applied
+and saved after a dry run and private map backup. Overview and ground-level captures show
+the exterior again. Fog visibility was restored after an inconclusive diagnostic.
+Editor joystick navigation was separately disabled and persisted in local user preferences:
+the camera had drifted from roughly16m to1.6km high. Gameplay controller input is unchanged.
+
+All60 door-labelled placements inspected are static meshes. Lit lock graphics are materials;
+the sandbox builder adds no opening control. Genesis level-script interaction remains
+unverified. No door animation/interaction was added. Next: owner Play check outside/inside.
+See [repair evidence](validation/2026-09-24-sandbox-visibility.json).
+
+Color follow-up: the owner rejected the amber cast. The sandbox's full-strength Kodak02
+film LUT and depth-fog post-process material were disabled, white balance/tint reset, warm
+4250K sunlight disabled and Rayleigh scattering returned to the engine default. Native
+materials and original vendor scenes remain intact. Candidate saved; owner color and
+interior-walking acceptance still open. Editor joystick navigation remains disabled only
+in local editor preferences.

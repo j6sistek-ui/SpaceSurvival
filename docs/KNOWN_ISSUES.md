@@ -23,10 +23,33 @@ metadata archived under `Artifacts/VaultRefresh-20260922/RetainedManifests`.
 
 **Still open (lead):** live pop-out dragging, idle refresh, final glass/reflection appearance and the
 sandbox's lighting/walkable passage quality. Three bounded offscreen capture cycles did not establish
-visual acceptance; no further exposure change saved. Owner's next check: open the sandbox, walk from
+visual acceptance at that checkpoint; the September24 repair below supersedes the unsaved exposure state. Owner's next check: open the sandbox, walk from
 Genesis to the other scenes, then move one Blender prop and Push it to this map. No station replacement,
 new game package, itch update or merge. [Focused evidence](validation/2026-09-23-building-sandbox.md).
 Source [PR60](https://github.com/j6sistek-ui/SpaceSurvival/pull/60) remains open/draft.
+
+### September 24 UTC: sandbox whiteout and editor camera drift
+
+Owner reported an unreadable exterior and doors without usable controls. The open sandbox
+inherited manual physical exposure compensation +10.7 and FFT bloom intensity8/size4.
+Sandbox-only histogram exposure, zero compensation and moderate standard bloom were applied
+and saved after a dry run and private map backup. Overview and ground-level captures show
+the exterior again. Fog visibility was restored after an inconclusive diagnostic.
+Editor joystick navigation was separately disabled and persisted in local user preferences:
+the camera had drifted from roughly16m to1.6km high. Gameplay controller input is unchanged.
+
+All60 door-labelled placements inspected are static meshes. Lit lock graphics are materials;
+the sandbox builder adds no opening control. Genesis level-script interaction remains
+unverified. No door animation/interaction was added. Next: owner Play check outside/inside.
+See [repair evidence](validation/2026-09-24-sandbox-visibility.json).
+
+Color follow-up: the owner rejected the amber cast. The sandbox's full-strength Kodak02
+film LUT and depth-fog post-process material were disabled, white balance/tint reset, warm
+4250K sunlight disabled and Rayleigh scattering returned to the engine default. Native
+materials and original vendor scenes remain intact. Candidate saved; owner color and
+interior-walking acceptance still open. Owner subsequently reports interiors and close-up assets look good, but rejects the exterior colors; asks to try it before further changes. Exterior atmosphere/color remains unresolved; no more scene edits during this playtest. Editor joystick navigation remains disabled only
+in local editor preferences.
+
 
 ## September22 star visibility — RPT-20260922-03
 
