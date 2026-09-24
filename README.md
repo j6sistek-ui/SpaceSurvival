@@ -21,6 +21,8 @@ The game has the ten-wave system foundation, two weapons/enemies, four hazard fa
 
 **Station authoring:** the reset uses its own recipe and matching physical solids; see [Station authoring](docs/STATION_AUTHORING.md). `Open Station Workshop.cmd` and the [Station Workshop guide](docs/STATION_EDITING.md) still edit the preserved legacy layout, and have not been migrated to the reset. Existing packages update only after a later build.
 
+**Explore the new asteroid outpost:** use [Play Outpost Sandbox.cmd](Play%20Outpost%20Sandbox.cmd) to walk through Wayfarer Exchange or [Edit Outpost Sandbox.cmd](Edit%20Outpost%20Sandbox.cmd) to open its separate editable map. The [outpost guide](docs/OUTPOST_SANDBOX.md) explains rooms, controls, preview-only paint/wardrobe and departure handoffs. This design scene does not replace the current gameplay station or update the published build.
+
 **Try the building examples:** the [Building sandbox workflow](docs/BUILDING_SANDBOX.md) covers the separate Genesis/companion-scene workbench, walking launcher, Blender placement round trip and laptop handoff.
 
 ## Development

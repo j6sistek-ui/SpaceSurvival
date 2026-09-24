@@ -1,0 +1,4450 @@
+{
+  "schema_version": 1,
+  "source_map": "/Game/P1toP5_Bundle/P3_ComputerStation/Map/Demonstration_ComputerStation",
+  "provenance": "Native actor export after loading World Partition actors; 2026-09-24. Full transforms and source material overrides. No vendor edits.",
+  "source_floor_z": 10,
+  "bank_anchor": [
+    -200,
+    150,
+    10
+  ],
+  "console_anchor": [
+    -420,
+    90,
+    10
+  ],
+  "chair_anchor": [
+    -419.349978,
+    -54.324905,
+    10.0
+  ],
+  "excluded": "Original floors/walls/environment, detached cable sockets and spline actors without control points. Complete furniture and display layers retained.",
+  "console_names": [
+    "SM_SciFiScreen_V1_Part4",
+    "SM_SciFiBottle_V1_Part1",
+    "SM_TitaniumIndustrySeat_V1_Part1",
+    "SM_TitaniumIndustrySeat_V1_Part2",
+    "SM_TitaniumCore_V29",
+    "SM_TitaniumIndustryStation_V1_Part1",
+    "SM_SciFiBottle_V1_Part2",
+    "SM_TitaniumIndustrySeat_V1_Part3",
+    "SM_SciFiScreen_V1_Part3",
+    "SM_SciFiBottle_V1_Part3",
+    "SM_TitaniumIndustryStation_V1_Part2",
+    "SM_SciFiScreen_V1_Part2",
+    "SM_TitaniumCore_V26"
+  ],
+  "chair_names": [
+    "SM_TitaniumIndustrySeat_V1_Part1",
+    "SM_TitaniumIndustrySeat_V1_Part2",
+    "SM_TitaniumIndustrySeat_V1_Part3"
+  ],
+  "actors": [
+    {
+      "name": "SM_SciFiBottle_V1_Part31",
+      "location": [
+        -189.42033499776184,
+        104.57867489858559,
+        131.58237812226716
+      ],
+      "rotation": [
+        0.0,
+        149.99999852819028,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -194.85229797142472,
+        99.90511965516065,
+        111.19094822114411
+      ],
+      "bounds_max": [
+        -181.91165173511916,
+        112.84576554239719,
+        132.9614160985321
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part1.SM_SciFiBottle_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal08_Iron.MI_Metal08_Iron",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Metal07_1.MI_Metal07_1"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part4",
+      "location": [
+        -419.999998,
+        110.0,
+        160.0
+      ],
+      "rotation": [
+        2.4212563902633983e-07,
+        179.99999862683728,
+        9.999999922536327
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -501.9882416172324,
+        79.64830434431536,
+        149.08252179904156
+      ],
+      "bounds_max": [
+        -338.0117547200163,
+        118.43902681201524,
+        215.3850292713867
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part1",
+      "location": [
+        -498.94544019537267,
+        2.8883496539896214,
+        150.93860816980947
+      ],
+      "rotation": [
+        0.0,
+        42.04327318666494,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -504.2459726542835,
+        -5.3430264977047415,
+        130.54717826868642
+      ],
+      "bounds_max": [
+        -490.86666466689906,
+        8.036281420111454,
+        152.31764614607442
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part1.SM_SciFiBottle_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal08_Iron.MI_Metal08_Iron",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Metal07_1.MI_Metal07_1"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part14",
+      "location": [
+        -20.0,
+        110.0,
+        160.0
+      ],
+      "rotation": [
+        0.0,
+        179.9999986056539,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -101.98824361723247,
+        88.87053290159042,
+        152.63979721069336
+      ],
+      "bounds_max": [
+        61.98824327998376,
+        117.27141007631485,
+        214.9572868347168
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part26",
+      "location": [
+        277.428433,
+        -152.70398,
+        180.063836
+      ],
+      "rotation": [
+        -1.0000000103151128e-06,
+        90.00000100000001,
+        89.99999800000002
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        282.08663514746877,
+        -244.29466354525766,
+        143.21346891590707
+      ],
+      "bounds_max": [
+        300.3603543960419,
+        -61.11327337838924,
+        200.10540047001456
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part30",
+      "location": [
+        277.942359,
+        -153.033011,
+        178.41391599999997
+      ],
+      "rotation": [
+        -1.158455915642663e-06,
+        89.99999918884038,
+        30.000000077463667
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        232.1650608241326,
+        -235.02125429964812,
+        161.4750591784068
+      ],
+      "bounds_max": [
+        287.9196856785733,
+        -71.04476650018668,
+        229.64402819153258
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V27",
+      "location": [
+        -231.7169054711691,
+        104.46540109517632,
+        95.03144800725012
+      ],
+      "rotation": [
+        0.0,
+        20.0,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -237.16392391570133,
+        98.91981587848136,
+        95.02865845585792
+      ],
+      "bounds_max": [
+        -226.22512461609568,
+        109.88953201357265,
+        97.63993370595007
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part19",
+      "location": [
+        277.942359,
+        36.966989,
+        178.413916
+      ],
+      "rotation": [
+        -9.999999991831714e-07,
+        89.999999,
+        20.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        239.29065601045264,
+        -45.02125434352646,
+        164.27088363746202
+      ],
+      "bounds_max": [
+        287.2925865603596,
+        118.95523355283663,
+        232.54384236202446
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V11",
+      "location": [
+        232.86791923230678,
+        75.53960177434692,
+        125.00857509367283
+      ],
+      "rotation": [
+        0.0,
+        -69.99999945775424,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        227.80084484362862,
+        70.47173473139114,
+        125.0086705239833
+      ],
+      "bounds_max": [
+        237.93519591260048,
+        80.60690814604831,
+        127.11839522116001
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part25",
+      "location": [
+        277.942359,
+        -153.033011,
+        258.413916
+      ],
+      "rotation": [
+        -9.999999944123394e-07,
+        89.99999899999999,
+        40.00000000000001
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        230.68801281750342,
+        -210.289526572183,
+        244.50061427652602
+      ],
+      "bounds_max": [
+        280.1416614954987,
+        -95.77647892878159,
+        298.33305355767334
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_2.MI_Glass02_2"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V10",
+      "location": [
+        224.51941376844815,
+        70.32009720455673,
+        125.01882936517073
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        220.25931864897183,
+        65.96915650021103,
+        125.01603981377853
+      ],
+      "bounds_max": [
+        228.780031978287,
+        74.54159855495956,
+        127.62731506387068
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part33",
+      "location": [
+        -189.42033499776184,
+        104.57867489858559,
+        131.58237812226716
+      ],
+      "rotation": [
+        0.0,
+        149.99999852819028,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -194.92644970056963,
+        99.84058389370355,
+        112.30367252534333
+      ],
+      "bounds_max": [
+        -181.8374806656503,
+        112.9102747207967,
+        129.961443635878
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part2.SM_SciFiBottle_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_1.MI_Glass01_1"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part16",
+      "location": [
+        -630.429115,
+        -149.014162,
+        67.002505
+      ],
+      "rotation": [
+        -7.951386703658792e-16,
+        -49.99999999999997,
+        12.437149999999995
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -676.6342667560605,
+        -195.6679485537359,
+        72.64281581265868
+      ],
+      "bounds_max": [
+        -573.9273095644273,
+        -93.71949107310334,
+        122.92855235550672
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part3.SM_Storage3000Series_V2_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part33",
+      "location": [
+        -20.137270114437456,
+        117.398362,
+        240.95037531080817
+      ],
+      "rotation": [
+        9.999999974752425e-07,
+        180.0,
+        90.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -111.72797662917968,
+        122.05656703234864,
+        204.1000090271906
+      ],
+      "bounds_max": [
+        71.45341321875223,
+        140.3302810979004,
+        260.99193994342517
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V6",
+      "location": [
+        -15.32390277151255,
+        51.28870928307929,
+        146.35072683816344
+      ],
+      "rotation": [
+        0.0,
+        39.99999969014534,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -21.300853724579827,
+        45.217358977813475,
+        146.34793728677124
+      ],
+      "bounds_max": [
+        -9.263349095593902,
+        57.26123952608792,
+        148.9592125368634
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V18",
+      "location": [
+        -260.44633145394863,
+        102.64028750322713,
+        125.02879316798007
+      ],
+      "rotation": [
+        0.0,
+        29.99999976760899,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -265.8469184903706,
+        97.23984205250521,
+        125.02888859829054
+      ],
+      "bounds_max": [
+        -255.04522739169488,
+        108.04102953183501,
+        127.13861329546725
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustrySeat_V1_Part1",
+      "location": [
+        -419.349978,
+        -54.324905,
+        10.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -472.52389004833987,
+        -107.16728933837891,
+        5.07995080947876
+      ],
+      "bounds_max": [
+        -366.1760659516602,
+        -1.482448182373048,
+        22.091094970703125
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustrySeat_V1_Part1.SM_TitaniumIndustrySeat_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part18",
+      "location": [
+        -180.0937867488566,
+        80.27104835647998,
+        118.38525045575395
+      ],
+      "rotation": [
+        -62.65340412209314,
+        -95.95273552543796,
+        64.81123400182803
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -200.38841004132314,
+        73.66627217932887,
+        109.23087141369
+      ],
+      "bounds_max": [
+        -179.8929064052349,
+        93.56138132444136,
+        125.18040644291993
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part2.SM_SciFiBottle_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_1.MI_Glass01_1"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part10",
+      "location": [
+        -223.769385894005,
+        117.39836235469213,
+        173.82185177224116
+      ],
+      "rotation": [
+        -6.971727657401059e-07,
+        180.0,
+        90.00000039434563
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -315.36009200945193,
+        122.05656724910207,
+        136.9714860047712
+      ],
+      "bounds_max": [
+        -132.17870246221287,
+        140.33028170621995,
+        193.86341607860246
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part3",
+      "location": [
+        -207.25423,
+        37.404002,
+        10.713686
+      ],
+      "rotation": [
+        0.0,
+        -150.000002,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -254.79475788999713,
+        -10.045787375321623,
+        24.14493275750732
+      ],
+      "bounds_max": [
+        -159.77953802467067,
+        84.96930263631,
+        60.29898263085937
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part3.SM_Storage3000Series_V2_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part30",
+      "location": [
+        -197.99490520727534,
+        108.47268191692649,
+        131.5823779959079
+      ],
+      "rotation": [
+        0.0,
+        -40.000000457754425,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -206.07572197029378,
+        100.14056213881227,
+        112.30367239898408
+      ],
+      "bounds_max": [
+        -192.58328393349075,
+        113.62650835609358,
+        129.96144350951874
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part2.SM_SciFiBottle_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_1.MI_Glass01_1"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V8",
+      "location": [
+        201.27282863364223,
+        90.86742401122618,
+        125.02123173766847
+      ],
+      "rotation": [
+        0.0,
+        139.99999891550857,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        195.29547695805684,
+        84.89522999083701,
+        125.01844218627627
+      ],
+      "bounds_max": [
+        207.3329816135656,
+        96.93911056386074,
+        127.62971743636842
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part2",
+      "location": [
+        -630.429115,
+        -149.014162,
+        67.002505
+      ],
+      "rotation": [
+        0.0,
+        -49.99999999999996,
+        12.437149999999994
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -678.3286356804442,
+        -198.66921130572428,
+        60.941731648770144
+      ],
+      "bounds_max": [
+        -575.7608907878557,
+        -93.67949605727777,
+        113.22294930658731
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part8",
+      "location": [
+        -245.78270758084696,
+        100.27518973195977,
+        120.11269650831113
+      ],
+      "rotation": [
+        0.0,
+        -179.99999860565364,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -269.48533336938186,
+        81.40462564805416,
+        120.11269391355845
+      ],
+      "bounds_max": [
+        -222.08035269046184,
+        121.39115329095644,
+        125.09965167417417
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part2.SM_Storage3000Series_V3_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part3",
+      "location": [
+        213.36487238614723,
+        82.14001120498051,
+        120.10468402526445
+      ],
+      "rotation": [
+        0.0,
+        120.000002,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        185.17117198078262,
+        52.17788822778711,
+        120.10468143051176
+      ],
+      "bounds_max": [
+        243.50301031763996,
+        113.22506854495295,
+        125.09163919112748
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part2.SM_Storage3000Series_V3_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part1",
+      "location": [
+        -620.0,
+        -140.00000000000006,
+        10.0
+      ],
+      "rotation": [
+        0.0,
+        -50.000002401373706,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -703.0120410492009,
+        -228.82069385737105,
+        5.084214687347412
+      ],
+      "bounds_max": [
+        -533.6300437427872,
+        -48.36164113202142,
+        133.06987762451172
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part1.SM_Storage3000Series_V2_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part12",
+      "location": [
+        277.42843300000004,
+        37.29602,
+        180.063836
+      ],
+      "rotation": [
+        -9.9999998805123e-07,
+        90.0000006971729,
+        89.99999799999998
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        282.08663563155596,
+        -54.2946635698778,
+        143.21346891590707
+      ],
+      "bounds_max": [
+        300.3603539119549,
+        128.88672650040803,
+        200.10540047001456
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V1",
+      "location": [
+        51.12096621289306,
+        21.95819196575644,
+        135.34851672807306
+      ],
+      "rotation": [
+        0.0,
+        -109.99999914789944,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        45.575202126168655,
+        16.510682014394614,
+        135.34572717668087
+      ],
+      "bounds_max": [
+        56.544918185786194,
+        27.449481237540514,
+        137.95700242677302
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part28",
+      "location": [
+        277.942359,
+        -153.033011,
+        178.41391599999997
+      ],
+      "rotation": [
+        -1.158455915642663e-06,
+        89.99999918884038,
+        30.000000077463667
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        236.22889695104234,
+        -210.28952657218304,
+        166.84337405506145
+      ],
+      "bounds_max": [
+        279.80113066980925,
+        -95.77647892878154,
+        223.41893287508847
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_5.MI_Glass02_5"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part13",
+      "location": [
+        63.029043,
+        -202.110086,
+        11.228667
+      ],
+      "rotation": [
+        0.0,
+        20.0,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        14.177666186550184,
+        -242.85092798657638,
+        11.228662535054497
+      ],
+      "bounds_max": [
+        111.88745477367324,
+        -161.38857240778424,
+        52.34888718432617
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustrySeat_V1_Part2",
+      "location": [
+        -419.349978,
+        -54.324905,
+        10.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -454.1238732636719,
+        -114.3250270703125,
+        15.639459133148193
+      ],
+      "bounds_max": [
+        -384.5660920441895,
+        21.284767546386718,
+        185.11376953125
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustrySeat_V1_Part2.SM_TitaniumIndustrySeat_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal04_Copper.MI_Metal04_Copper",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part13",
+      "location": [
+        213.37444353476917,
+        82.1234335599489,
+        90.10468445775456
+      ],
+      "rotation": [
+        0.0,
+        120.000002,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        189.85168256424265,
+        55.063377172703184,
+        94.19243918416447
+      ],
+      "bounds_max": [
+        243.33391057228073,
+        112.89598452396004,
+        96.42545519826359
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part3.SM_Storage3000Series_V3_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_11.MI_Glass02_11"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part23",
+      "location": [
+        -211.47799613408003,
+        89.82097550058384,
+        131.5823782800424
+      ],
+      "rotation": [
+        -9.112607217861122e-11,
+        -39.99999969014937,
+        82.90609287088579
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -213.38665403671763,
+        88.04349380733461,
+        131.39282123334965
+      ],
+      "bounds_max": [
+        -208.693080950284,
+        92.64274367728174,
+        136.7971712993571
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part3.SM_SciFiBottle_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part14",
+      "location": [
+        213.36487238614723,
+        82.14001120498051,
+        120.10468402526445
+      ],
+      "rotation": [
+        0.0,
+        120.000002,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        189.8421114156207,
+        55.0799548177348,
+        124.19243875167436
+      ],
+      "bounds_max": [
+        243.32433942365878,
+        112.91256216899166,
+        126.42545476577348
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part3.SM_Storage3000Series_V3_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_11.MI_Glass02_11"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part24",
+      "location": [
+        -211.47799613408003,
+        89.82097550058384,
+        131.5823782800424
+      ],
+      "rotation": [
+        0.0,
+        -39.999999690145394,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -219.55881286815128,
+        81.48885571274354,
+        112.30367268311858
+      ],
+      "bounds_max": [
+        -206.0663748466621,
+        94.97480191371696,
+        129.96144379365325
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part2.SM_SciFiBottle_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_1.MI_Glass01_1"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part21",
+      "location": [
+        277.942359,
+        36.966989,
+        178.413916
+      ],
+      "rotation": [
+        -9.999999991831714e-07,
+        89.999999,
+        20.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        243.037223213545,
+        -20.289526570577408,
+        169.53769921575903
+      ],
+      "bounds_max": [
+        279.4041224039132,
+        94.2235211085287,
+        227.13735731437922
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_7.MI_Glass02_7"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part5",
+      "location": [
+        -581.9883611107331,
+        117.26658781875551,
+        230.00000011535812
+      ],
+      "rotation": [
+        8.962683345601937e-07,
+        179.99999893186904,
+        39.9999996901453
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -663.9766047279654,
+        65.75461407683336,
+        210.7799980801928
+      ],
+      "bounds_max": [
+        -500.0001178307493,
+        127.56785825388751,
+        276.7736967669117
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V20",
+      "location": [
+        -231.70509009721576,
+        103.4978814220591,
+        125.03402238698891
+      ],
+      "rotation": [
+        0.0,
+        -69.99999945775424,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -236.7721644858939,
+        98.43001437910331,
+        125.03411781729938
+      ],
+      "bounds_max": [
+        -226.63781341692206,
+        108.56518779376049,
+        127.14384251447609
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustrySeat_V1_Part5",
+      "location": [
+        -20.504296,
+        -60.965566,
+        10.000002
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -73.67820804833984,
+        -113.8079503383789,
+        5.079952809478762
+      ],
+      "bounds_max": [
+        32.66961604833985,
+        -8.123109182373042,
+        22.091096970703127
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustrySeat_V1_Part1.SM_TitaniumIndustrySeat_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V29",
+      "location": [
+        -518.3188867096276,
+        14.94416583526197,
+        130.55077939152318
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -522.5789818291039,
+        10.593225130916267,
+        130.54798984013098
+      ],
+      "bounds_max": [
+        -514.0582684997887,
+        19.1656671856648,
+        133.15926509022313
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V1_Part4",
+      "location": [
+        200.0,
+        -130.0,
+        10.0
+      ],
+      "rotation": [
+        0.0,
+        49.99999961268167,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        113.63002228200855,
+        -224.07286830324387,
+        5.084214687347412
+      ],
+      "bounds_max": [
+        289.2712947223098,
+        -38.36166559629925,
+        133.06987762451172
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V1_Part1.SM_Storage3000Series_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part24",
+      "location": [
+        277.942359,
+        36.966989,
+        258.413916
+      ],
+      "rotation": [
+        -5.976725112592742e-07,
+        89.9999987182873,
+        39.99999984507269
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        226.4303848753375,
+        -45.021254343526515,
+        239.19391436114034
+      ],
+      "bounds_max": [
+        288.24362974336736,
+        118.95523355283669,
+        305.1876121438144
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part4",
+      "location": [
+        213.3744437152301,
+        82.12343317804914,
+        90.1046840158422
+      ],
+      "rotation": [
+        0.0,
+        120.000002,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        185.18074330986548,
+        52.16131020085574,
+        90.10468142108951
+      ],
+      "bounds_max": [
+        243.51258164672282,
+        113.20849051802158,
+        95.09163918170523
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part2.SM_Storage3000Series_V3_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part6",
+      "location": [
+        -581.9883611107331,
+        117.26658781875551,
+        230.00000011535812
+      ],
+      "rotation": [
+        8.962683345601937e-07,
+        179.99999893186904,
+        39.9999996901453
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -639.2448923189152,
+        70.01224171837856,
+        216.08669856192347
+      ],
+      "bounds_max": [
+        -524.7318455944694,
+        119.46589037277374,
+        269.91913774664965
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_14.MI_Glass02_14"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustrySeat_V1_Part4",
+      "location": [
+        -20.504296,
+        -60.965566,
+        10.000002
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -55.27819126367187,
+        -120.9656880703125,
+        15.639461133148188
+      ],
+      "bounds_max": [
+        14.27958995581055,
+        14.644106546386723,
+        185.11377153125
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustrySeat_V1_Part2.SM_TitaniumIndustrySeat_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal04_Copper.MI_Metal04_Copper",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part7",
+      "location": [
+        -223.6640703529782,
+        118.45729969894535,
+        250.00000001874736
+      ],
+      "rotation": [
+        1.158455931487497e-06,
+        179.9999991888404,
+        49.999999922536304
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -305.65231399138634,
+        62.77581600784231,
+        229.08284188568672
+      ],
+      "bounds_max": [
+        -141.67582695292987,
+        128.7695143272744,
+        290.896086520544
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustryStation_V1_Part1",
+      "location": [
+        -420.0,
+        90.0,
+        10.0
+      ],
+      "rotation": [
+        0.0,
+        179.9999986056539,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -532.3019728193764,
+        33.136357435484484,
+        9.999997317712086
+      ],
+      "bounds_max": [
+        -307.6980427025045,
+        136.05280195782643,
+        147.4288330078125
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustryStation_V1_Part1.SM_TitaniumIndustryStation_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part29",
+      "location": [
+        -197.99490520727534,
+        108.47268191692649,
+        131.5823779959079
+      ],
+      "rotation": [
+        0.0,
+        -40.000000457754425,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -202.61180174222176,
+        103.46764713480195,
+        131.42120557612145
+      ],
+      "bounds_max": [
+        -196.47522887040554,
+        109.78659716996145,
+        133.71692856734956
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part3.SM_SciFiBottle_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V4",
+      "location": [
+        79.38099702340054,
+        16.33735606852173,
+        135.32512498389167
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        75.4273498867123,
+        12.38409803095459,
+        135.32522041420214
+      ],
+      "bounds_max": [
+        83.33524020653653,
+        20.290612437158813,
+        137.43494511137885
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part27",
+      "location": [
+        -209.10524981756674,
+        113.9068927826867,
+        131.5823780213618
+      ],
+      "rotation": [
+        0.0,
+        29.999999457754335,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -214.61288418995815,
+        105.57441560584708,
+        112.30367242443796
+      ],
+      "bounds_max": [
+        -201.52391527696744,
+        118.64410630848248,
+        129.96144353497263
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part2.SM_SciFiBottle_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_1.MI_Glass01_1"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part18",
+      "location": [
+        -20.0,
+        117.51921071711942,
+        240.00000001221383
+      ],
+      "rotation": [
+        8.660254168603904e-07,
+        179.99999949999997,
+        59.99999953521785
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -77.25653108191419,
+        63.61522614780308,
+        222.72776294413416
+      ],
+      "bounds_max": [
+        37.25651551249253,
+        120.19078357849321,
+        266.2999970272857
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_12.MI_Glass02_12"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V2",
+      "location": [
+        48.675193011047135,
+        12.57711580285958,
+        135.3369949080641
+      ],
+      "rotation": [
+        0.0,
+        29.99999976760899,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        42.87509174603008,
+        6.679043068938565,
+        135.3342053566719
+      ],
+      "bounds_max": [
+        54.54046696212447,
+        18.36335231293356,
+        137.94548060676405
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part15",
+      "location": [
+        -20.0,
+        110.0,
+        160.0
+      ],
+      "rotation": [
+        0.0,
+        179.9999986056539,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -77.25653120818205,
+        91.65414861576471,
+        157.23147177696228
+      ],
+      "bounds_max": [
+        37.25651551626363,
+        110.54791458709366,
+        211.6509780883789
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_9.MI_Glass02_9"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part7",
+      "location": [
+        -18.765786,
+        -202.110086,
+        10.600011
+      ],
+      "rotation": [
+        0.0,
+        9.999999999999998,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -59.0434136876346,
+        -242.46428012011796,
+        24.031257757507326
+      ],
+      "bounds_max": [
+        21.534200037366585,
+        -161.88695416764068,
+        60.18530763085938
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part3.SM_Storage3000Series_V2_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part2",
+      "location": [
+        -498.94544019537267,
+        2.8883496539896214,
+        150.93860816980947
+      ],
+      "rotation": [
+        0.0,
+        42.04327318666494,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -504.3186412687936,
+        -5.413763583598962,
+        131.65990257288564
+      ],
+      "bounds_max": [
+        -490.79402730317076,
+        8.107008303274965,
+        149.3176736834203
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part2.SM_SciFiBottle_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_1.MI_Glass01_1"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V3",
+      "location": [
+        48.0758035903031,
+        2.7605251998791687,
+        135.33809417090805
+      ],
+      "rotation": [
+        0.0,
+        -49.99999961268156,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        42.004453279358614,
+        -3.300028483271401,
+        135.33530461951585
+      ],
+      "bounds_max": [
+        54.0483338400077,
+        8.73747615897593,
+        137.946579869608
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part15",
+      "location": [
+        -18.765786,
+        -202.110086,
+        11.228667
+      ],
+      "rotation": [
+        0.0,
+        9.999999999999998,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -64.7622252662446,
+        -237.09295181733194,
+        11.228662535054497
+      ],
+      "bounds_max": [
+        27.234225009156805,
+        -167.14747654331046,
+        52.34888718432617
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part5",
+      "location": [
+        244.853812,
+        62.766667,
+        10.600011
+      ],
+      "rotation": [
+        0.0,
+        139.999998,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        195.90050897956348,
+        13.821058258592373,
+        24.031257757507326
+      ],
+      "bounds_max": [
+        293.8931428910343,
+        111.8136484426426,
+        60.18530763085938
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part3.SM_Storage3000Series_V2_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustrySeat_V1_Part6",
+      "location": [
+        -20.504296,
+        -60.965566,
+        10.000002
+      ],
+      "rotation": [
+        0.0,
+        -3.017321593819986,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -43.83985694660976,
+        -68.33801034678021,
+        137.53180894580078
+      ],
+      "bounds_max": [
+        2.7317643224855033,
+        -55.476910239684884,
+        183.52987870898437
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustrySeat_V1_Part3.SM_TitaniumIndustrySeat_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_2.MI_Glass01_2"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V5",
+      "location": [
+        -4.058234341144946,
+        49.35579335718308,
+        146.3498289241513
+      ],
+      "rotation": [
+        0.0,
+        -49.9999996126815,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -10.129584652089443,
+        43.2952396740325,
+        146.3470393727591
+      ],
+      "bounds_max": [
+        1.9142959085596516,
+        55.33274431627984,
+        148.95831462285125
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part10",
+      "location": [
+        -245.782708,
+        100.27519,
+        90.112697
+      ],
+      "rotation": [
+        0.0,
+        -179.999999,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -269.4853336432013,
+        81.40462607923108,
+        90.11269440524731
+      ],
+      "bounds_max": [
+        -222.08035323949423,
+        121.39115339586185,
+        95.09965216586303
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part2.SM_Storage3000Series_V3_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part1",
+      "location": [
+        -20.0,
+        110.0,
+        160.0
+      ],
+      "rotation": [
+        0.0,
+        179.99999860565413,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -111.59070676836973,
+        73.14963308599732,
+        137.0680809020996
+      ],
+      "bounds_max": [
+        71.59068347112839,
+        130.04156526300227,
+        155.34179496765137
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part2",
+      "location": [
+        217.58905931549526,
+        54.882905123568996,
+        9.999999954172551
+      ],
+      "rotation": [
+        0.0,
+        120.000002,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        139.11178381668577,
+        -39.239447933034256,
+        5.084214641519964
+      ],
+      "bounds_max": [
+        295.0121105818821,
+        148.39656624806636,
+        133.06987757868427
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part1.SM_Storage3000Series_V3_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part1",
+      "location": [
+        -220.0,
+        90.0,
+        10.0
+      ],
+      "rotation": [
+        0.0,
+        179.9999986056539,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -304.5473795573855,
+        48.19569954158126,
+        5.084214687347412
+      ],
+      "bounds_max": [
+        -135.45258995466128,
+        130.58696952580078,
+        133.06987762451172
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part1.SM_Storage3000Series_V3_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part23",
+      "location": [
+        287.428433,
+        37.29602,
+        260.06383600000004
+      ],
+      "rotation": [
+        -1.0000000103151128e-06,
+        90.00000100000001,
+        89.99999800000002
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        292.08663514746877,
+        -54.294663545257656,
+        223.21346891590713
+      ],
+      "bounds_max": [
+        310.3603543960419,
+        128.88672662161076,
+        280.1054004700146
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part14",
+      "location": [
+        -296.646286,
+        -202.110086,
+        11.228667
+      ],
+      "rotation": [
+        0.0,
+        -9.999999999999998,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -336.9470008455944,
+        -242.46415161156364,
+        24.659913757507326
+      ],
+      "bounds_max": [
+        -256.3693871205933,
+        -161.88682565908636,
+        60.81396363085938
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part3.SM_Storage3000Series_V2_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part8",
+      "location": [
+        -223.6640703529782,
+        118.45729969894535,
+        250.00000001874736
+      ],
+      "rotation": [
+        1.158455931487497e-06,
+        179.9999991888404,
+        49.999999922536304
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -280.92060157175433,
+        67.0978691046825,
+        234.16668679554425
+      ],
+      "bounds_max": [
+        -166.40755472546255,
+        120.93030798068276,
+        283.6203358301764
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_3.MI_Glass02_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part5",
+      "location": [
+        63.349562,
+        6.186394,
+        130.421845
+      ],
+      "rotation": [
+        0.0,
+        170.000001,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        37.985963528315864,
+        -11.344877829285041,
+        134.5095997264099
+      ],
+      "bounds_max": [
+        90.00665966580414,
+        31.03481423628665,
+        136.74261574050902
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part3.SM_Storage3000Series_V3_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_11.MI_Glass02_11"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part34",
+      "location": [
+        -187.060521695652,
+        -200.47969515356894,
+        47.260962615968474
+      ],
+      "rotation": [
+        0.0,
+        -40.00000000000001,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -195.0681934230601,
+        -208.7419377544265,
+        26.869532714845427
+      ],
+      "bounds_max": [
+        -181.7220310016832,
+        -195.39577545059643,
+        48.64000059223343
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part1.SM_SciFiBottle_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal08_Iron.MI_Metal08_Iron",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Metal07_1.MI_Metal07_1"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part26",
+      "location": [
+        -209.10524981756674,
+        113.9068927826867,
+        131.5823780213618
+      ],
+      "rotation": [
+        0.0,
+        29.999999457754335,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -210.78451627330594,
+        108.66579212619038,
+        131.42120560157534
+      ],
+      "bounds_max": [
+        -205.01677728011418,
+        114.97512124017723,
+        133.71692859280344
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part3.SM_SciFiBottle_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustrySeat_V1_Part3",
+      "location": [
+        -419.349978,
+        -54.324905,
+        10.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -442.39280942089846,
+        -60.49298580673218,
+        137.53180694580078
+      ],
+      "bounds_max": [
+        -396.3073506654053,
+        -50.04323872116089,
+        183.52987670898438
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustrySeat_V1_Part3.SM_TitaniumIndustrySeat_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_2.MI_Glass01_2"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V1_Part2",
+      "location": [
+        -584.2666920670754,
+        18.26788380763181,
+        79.99999999999974
+      ],
+      "rotation": [
+        0.0,
+        -133.04444657032417,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -649.1156472360187,
+        -32.701929899263675,
+        81.61720430850957
+      ],
+      "bounds_max": [
+        -534.5217200847571,
+        83.34431100929046,
+        94.93100643157933
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V1_Part2.SM_Storage3000Series_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_5.MI_Glass01_5"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part28",
+      "location": [
+        -197.99490520727534,
+        108.47268191692649,
+        131.5823779959079
+      ],
+      "rotation": [
+        0.0,
+        -40.000000457754425,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -206.00257695204408,
+        100.2104393220671,
+        111.19094809478486
+      ],
+      "bounds_max": [
+        -192.6564145213385,
+        113.55660163522579,
+        132.96141597217286
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part1.SM_SciFiBottle_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal08_Iron.MI_Metal08_Iron",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Metal07_1.MI_Metal07_1"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part3",
+      "location": [
+        -419.999998,
+        110.0,
+        160.0
+      ],
+      "rotation": [
+        -8.962684319158137e-07,
+        179.99999893186902,
+        9.999999922534371
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -477.2565300115982,
+        82.9637654707222,
+        154.08780765098112
+      ],
+      "bounds_max": [
+        -362.74348243688746,
+        111.02034010572774,
+        210.96142870675652
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_10.MI_Glass02_10"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V23",
+      "location": [
+        -260.523358,
+        113.326072,
+        95.06485
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -264.4770051366882,
+        109.37281396243286,
+        95.06494543031047
+      ],
+      "bounds_max": [
+        -256.569114816864,
+        117.27932836863708,
+        97.17467012748719
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part3",
+      "location": [
+        -498.94544019537267,
+        2.8883496539896214,
+        150.93860816980947
+      ],
+      "rotation": [
+        7.951386703658792e-14,
+        42.04327318666448,
+        67.19021856927533
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -501.67423828200515,
+        0.10910552477336388,
+        150.71853409062618
+      ],
+      "bounds_max": [
+        -496.1838854348297,
+        5.631265460132865,
+        156.365309268099
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part3.SM_SciFiBottle_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part10",
+      "location": [
+        19.902587,
+        -202.110086,
+        60.352595
+      ],
+      "rotation": [
+        0.0,
+        139.999999,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -29.05071594650768,
+        -251.05569466583904,
+        73.78384175750733
+      ],
+      "bounds_max": [
+        68.94191781533617,
+        -153.0631046314245,
+        109.93789163085938
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part3.SM_Storage3000Series_V2_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part4",
+      "location": [
+        -207.25423,
+        37.404002,
+        10.713686
+      ],
+      "rotation": [
+        -6.725713319610804e-08,
+        -150.000002,
+        4.443183561968873e-23
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -257.4865043390317,
+        -7.8391123966987095,
+        10.71368148605304
+      ],
+      "bounds_max": [
+        -157.03224012597707,
+        82.66492951751994,
+        51.833906233327625
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V19",
+      "location": [
+        -231.27332630009428,
+        113.09497564118502,
+        125.01584674420542
+      ],
+      "rotation": [
+        0.0,
+        39.99999969014534,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -236.8430999282481,
+        107.52524889939215,
+        125.01594217451589
+      ],
+      "bounds_max": [
+        -225.70309500110167,
+        118.66508423577224,
+        127.1256668716926
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part11",
+      "location": [
+        -223.66407000000004,
+        117.31351670408358,
+        172.21773699165487
+      ],
+      "rotation": [
+        5.976724562751768e-07,
+        179.99999871828732,
+        30.000000154927317
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -280.9206013239339,
+        75.60005413682086,
+        160.64719558750687
+      ],
+      "bounds_max": [
+        -166.40755447764212,
+        119.17228884699466,
+        217.22275327206995
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_6.MI_Glass02_6"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part9",
+      "location": [
+        63.029043,
+        -202.110086,
+        11.228667
+      ],
+      "rotation": [
+        0.0,
+        20.0,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        18.476022455185444,
+        -246.74798356463296,
+        24.659913757507326
+      ],
+      "bounds_max": [
+        107.62684094840532,
+        -157.59737710579267,
+        60.81396363085938
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part3.SM_Storage3000Series_V2_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part22",
+      "location": [
+        277.942359,
+        36.966989,
+        258.413916
+      ],
+      "rotation": [
+        -5.976725112592742e-07,
+        89.9999987182873,
+        39.99999984507269
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        230.6880126110857,
+        -20.28952657057745,
+        244.50061471176707
+      ],
+      "bounds_max": [
+        280.14166177223603,
+        94.22352110852871,
+        298.3330532442608
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_8.MI_Glass02_8"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part19",
+      "location": [
+        -180.0937867488566,
+        80.27104835647998,
+        118.38525045575395
+      ],
+      "rotation": [
+        -62.65340412209314,
+        -95.95273552543796,
+        64.81123400182803
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -201.32418193657526,
+        72.31433874666874,
+        109.0857247579414
+      ],
+      "bounds_max": [
+        -177.33255147760286,
+        94.02657437241345,
+        125.69450712526078
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part1.SM_SciFiBottle_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal08_Iron.MI_Metal08_Iron",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Metal07_1.MI_Metal07_1"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V1_Part5",
+      "location": [
+        177.0186668367876,
+        -110.71637155405047,
+        80.0
+      ],
+      "rotation": [
+        0.0,
+        49.99999961268167,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        128.3878328013218,
+        -175.76006248665556,
+        81.61720430850983
+      ],
+      "bounds_max": [
+        241.48137767596882,
+        -58.95720279066404,
+        94.93100643157959
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V1_Part2.SM_Storage3000Series_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_5.MI_Glass01_5"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V28",
+      "location": [
+        -231.26102567212575,
+        94.59411441620209,
+        95.03023299165066
+      ],
+      "rotation": [
+        0.0,
+        -149.99999930282684,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -237.12629964977333,
+        88.80787788050961,
+        95.02744344025847
+      ],
+      "bounds_max": [
+        -225.46092438235286,
+        100.49218717468423,
+        97.63871869035061
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V25",
+      "location": [
+        -231.273326,
+        113.094976,
+        95.015847
+      ],
+      "rotation": [
+        0.0,
+        40.00000000000001,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -236.8430996307876,
+        107.5252492555704,
+        95.01594243031046
+      ],
+      "bounds_max": [
+        -225.7030946983757,
+        118.66508459722641,
+        97.12566712748718
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part17",
+      "location": [
+        19.902587,
+        -202.110086,
+        60.352595
+      ],
+      "rotation": [
+        0.0,
+        139.999999,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -30.16404633434051,
+        -250.50011377732523,
+        60.3525905350545
+      ],
+      "bounds_max": [
+        69.98244173503448,
+        -153.70430157145705,
+        101.47281518432618
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part35",
+      "location": [
+        -187.060521695652,
+        -200.47969515356894,
+        47.260962615968474
+      ],
+      "rotation": [
+        0.0,
+        -40.000000000000014,
+        82.906093
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -188.9691795879705,
+        -202.2571768432266,
+        47.07140556959148
+      ],
+      "bounds_max": [
+        -184.2756065092547,
+        -197.65792697652137,
+        52.47575563189544
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part3.SM_SciFiBottle_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V15",
+      "location": [
+        210.01984418321817,
+        94.94663322169089,
+        95.01882899032191
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        205.75974906374185,
+        90.59569251734519,
+        95.01603943892971
+      ],
+      "bounds_max": [
+        214.28046239305704,
+        99.16813457209372,
+        97.62731468902186
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part29",
+      "location": [
+        277.428433,
+        -152.70398,
+        260.063836
+      ],
+      "rotation": [
+        -1.0000000103151128e-06,
+        90.00000100000001,
+        89.99999800000002
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        282.08663514746877,
+        -244.29466354525766,
+        223.21346891590707
+      ],
+      "bounds_max": [
+        300.3603543960419,
+        -61.11327337838924,
+        280.10540047001456
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustryStation_V1_Part4",
+      "location": [
+        -20.0,
+        30.0,
+        130.0
+      ],
+      "rotation": [
+        0.0,
+        -179.999999,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -125.93904183245654,
+        -22.817872942735065,
+        127.54207134246826
+      ],
+      "bounds_max": [
+        86.05941864645509,
+        69.8068904314083,
+        146.34665489196777
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustryStation_V1_Part2.SM_TitaniumIndustryStation_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_9.MI_Glass01_9"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part16",
+      "location": [
+        -20.0,
+        117.51921071711942,
+        240.00000001221383
+      ],
+      "rotation": [
+        8.660254168603904e-07,
+        179.99999949999997,
+        59.99999953521785
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -101.98824347180599,
+        59.360071002597365,
+        218.0212438645986
+      ],
+      "bounds_max": [
+        61.98824322993729,
+        127.52903808690387,
+        273.77586914489297
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part13",
+      "location": [
+        -582.1723858279386,
+        117.09083136923238,
+        230.06383809385287
+      ],
+      "rotation": [
+        -6.971731068006193e-07,
+        180.0,
+        90.00000039434514
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -673.7630919433857,
+        121.74903626364254,
+        193.21347232638232
+      ],
+      "bounds_max": [
+        -490.58170239614606,
+        140.02275072075986,
+        250.10540240021453
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part25",
+      "location": [
+        -209.10524981756674,
+        113.9068927826867,
+        131.5823780213618
+      ],
+      "rotation": [
+        0.0,
+        29.999999457754335,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -214.53870644478957,
+        105.6389398033318,
+        111.19094812023874
+      ],
+      "bounds_max": [
+        -201.59806033037097,
+        118.57958556868135,
+        132.96141599762674
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part1.SM_SciFiBottle_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal08_Iron.MI_Metal08_Iron",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Metal07_1.MI_Metal07_1"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V1_Part1",
+      "location": [
+        -613.4996691603752,
+        45.570503650104975,
+        9.999999999999744
+      ],
+      "rotation": [
+        0.0,
+        -133.04444657032417,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -704.5283383366029,
+        -44.75295759165115,
+        5.084214687347156
+      ],
+      "bounds_max": [
+        -525.2389225935951,
+        138.47915349149545,
+        133.06987762451146
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V1_Part1.SM_Storage3000Series_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part22",
+      "location": [
+        -211.47799613408003,
+        89.82097550058384,
+        131.5823782800424
+      ],
+      "rotation": [
+        0.0,
+        -39.999999690145394,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -219.48566784973673,
+        81.55873289566614,
+        111.19094837891936
+      ],
+      "bounds_max": [
+        -206.13950543467433,
+        94.90489519318163,
+        132.96141625630736
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part1.SM_SciFiBottle_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal08_Iron.MI_Metal08_Iron",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Metal07_2.MI_Metal07_2"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part9",
+      "location": [
+        -223.66407000000004,
+        117.31351670408358,
+        172.21773699165487
+      ],
+      "rotation": [
+        5.976724562751768e-07,
+        179.99999871828732,
+        30.000000154927317
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -305.65231374080076,
+        71.53621780480736,
+        155.2788809527588
+      ],
+      "bounds_max": [
+        -141.6758267023443,
+        127.29084405970409,
+        223.4478483520889
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part18",
+      "location": [
+        -458.6083179734085,
+        -202.1100859999998,
+        21.337885660608258
+      ],
+      "rotation": [
+        16.877847390375585,
+        31.500532403448876,
+        10.088470904637978
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -519.7094004991229,
+        -247.3710141685632,
+        4.501120773700777
+      ],
+      "bounds_max": [
+        -411.2829663018281,
+        -156.8669709760888,
+        76.91870152327502
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V13",
+      "location": [
+        -260.5233584152546,
+        113.32607225694221,
+        125.06484969398122
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -264.47700555194285,
+        109.37281421937507,
+        125.06494512429168
+      ],
+      "bounds_max": [
+        -256.56911523211863,
+        117.2793286255793,
+        127.1746698214684
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part11",
+      "location": [
+        -296.646286,
+        -202.110086,
+        11.228667
+      ],
+      "rotation": [
+        0.0,
+        -9.999999999999998,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -342.6462970091568,
+        -237.09295181733194,
+        11.228662535054497
+      ],
+      "bounds_max": [
+        -250.64984673375537,
+        -167.14747654331046,
+        52.34888718432617
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustryStation_V1_Part2",
+      "location": [
+        -420.0,
+        30.0,
+        130.0
+      ],
+      "rotation": [
+        0.0,
+        -179.9999986056538,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -525.939042106433,
+        -22.817873671875322,
+        127.54207134246826
+      ],
+      "bounds_max": [
+        -313.9405809900185,
+        69.80689116137707,
+        146.34665489196777
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustryStation_V1_Part2.SM_TitaniumIndustryStation_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_9.MI_Glass01_9"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part32",
+      "location": [
+        -189.42033499776184,
+        104.57867489858559,
+        131.58237812226716
+      ],
+      "rotation": [
+        0.0,
+        149.99999852819028,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -191.09959936159424,
+        103.51044519598241,
+        131.4212057024807
+      ],
+      "bounds_max": [
+        -185.33186027600078,
+        109.8197743313205,
+        133.7169286937088
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part3.SM_SciFiBottle_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V16",
+      "location": [
+        232.867919,
+        75.539602,
+        95.008575
+      ],
+      "rotation": [
+        0.0,
+        -69.99999899999999,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        227.80084459244216,
+        70.47173493817012,
+        95.00867043031046
+      ],
+      "bounds_max": [
+        237.93519569917788,
+        80.60690839057712,
+        97.11839512748718
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumIndustryStation_V1_Part3",
+      "location": [
+        -20.0,
+        90.0,
+        10.0
+      ],
+      "rotation": [
+        0.0,
+        179.999999,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -132.30197242800458,
+        33.13635820841815,
+        9.999997317712086
+      ],
+      "bounds_max": [
+        92.30195698053075,
+        136.05280118489267,
+        147.4288330078125
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustryStation_V1_Part1.SM_TitaniumIndustryStation_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V14",
+      "location": [
+        215.27867,
+        65.629002,
+        95.021547
+      ],
+      "rotation": [
+        0.0,
+        -99.99999900000002,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        210.25398133363646,
+        60.7000561974567,
+        95.0187574486078
+      ],
+      "bounds_max": [
+        220.1757949529842,
+        70.57990956480289,
+        97.63003269869995
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part6",
+      "location": [
+        205.658542,
+        -134.925479,
+        116.562371
+      ],
+      "rotation": [
+        0.0,
+        69.99999899999999,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        164.93702789113996,
+        -183.78389098636455,
+        116.56236653505448
+      ],
+      "bounds_max": [
+        246.3993845030979,
+        -86.0741019741962,
+        157.68259118432616
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part12",
+      "location": [
+        205.658542,
+        -134.925479,
+        116.562371
+      ],
+      "rotation": [
+        0.0,
+        69.99999899999999,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        161.14557963016537,
+        -179.52397273298953,
+        129.9936177575073
+      ],
+      "bounds_max": [
+        250.29618681457194,
+        -90.37315351421131,
+        166.14766763085936
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part3.SM_Storage3000Series_V2_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_6.MI_Glass01_6",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_7.MI_Glass01_7"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part36",
+      "location": [
+        -187.060521695652,
+        -200.47969515356894,
+        47.260962615968474
+      ],
+      "rotation": [
+        0.0,
+        -40.00000000000001,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -195.14133844140815,
+        -208.8118149374832,
+        27.982257019044646
+      ],
+      "bounds_max": [
+        -181.64890041373735,
+        -195.3258687299269,
+        45.64002812957931
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part2.SM_SciFiBottle_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_1.MI_Glass01_1"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V1_Part6",
+      "location": [
+        184.67911122452506,
+        -117.14424770270031,
+        100.0
+      ],
+      "rotation": [
+        0.0,
+        49.99999961268167,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        136.04827718905926,
+        -182.18793863530541,
+        101.61720430850983
+      ],
+      "bounds_max": [
+        249.1418220637063,
+        -65.38507893931387,
+        114.93100643157959
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V1_Part2.SM_Storage3000Series_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_5.MI_Glass01_5"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part6",
+      "location": [
+        63.349562,
+        6.186394,
+        130.421845
+      ],
+      "rotation": [
+        0.0,
+        170.000001,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        36.73019415073449,
+        -16.51335354865929,
+        130.4218424052473
+      ],
+      "bounds_max": [
+        90.35857260887101,
+        31.097475398626777,
+        135.40880016586303
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part2.SM_Storage3000Series_V3_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part2",
+      "location": [
+        -420.0,
+        110.0,
+        160.0
+      ],
+      "rotation": [
+        0.0,
+        179.99999860565396,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -511.59070676836984,
+        73.14963308599701,
+        137.0680809020996
+      ],
+      "bounds_max": [
+        -328.4093165288715,
+        130.04156526300255,
+        155.34179496765137
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part20",
+      "location": [
+        277.428433,
+        37.29602,
+        260.06383600000004
+      ],
+      "rotation": [
+        -1.0000000103151128e-06,
+        90.00000100000001,
+        89.99999800000002
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        282.08663514746877,
+        -54.294663545257656,
+        223.21346891590713
+      ],
+      "bounds_max": [
+        300.3603543960419,
+        128.88672662161076,
+        280.1054004700146
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V2_Part8",
+      "location": [
+        244.853812,
+        62.766667,
+        10.600011
+      ],
+      "rotation": [
+        0.0,
+        139.999998,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        194.7871787577243,
+        14.37663898027003,
+        10.600006535054497
+      ],
+      "bounds_max": [
+        294.9336666432447,
+        111.17245167071688,
+        51.720231184326174
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V2_Part2.SM_Storage3000Series_V2_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part17",
+      "location": [
+        -223.7693860000001,
+        117.39836188083574,
+        250.95037535177664
+      ],
+      "rotation": [
+        6.971728794269438e-07,
+        180.0,
+        89.99999999999977
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -315.360092319976,
+        122.0565669131842,
+        214.10000955224598
+      ],
+      "bounds_max": [
+        -132.1787027727367,
+        140.3302809787362,
+        270.9919395003065
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Plastic04_Brown.MI_Plastic04_Brown"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V17",
+      "location": [
+        200.67655502083306,
+        90.29930757098583,
+        95.00857480311613
+      ],
+      "rotation": [
+        0.0,
+        -119.99999861268165,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        195.275811576074,
+        84.89820437235456,
+        95.0086702334266
+      ],
+      "bounds_max": [
+        206.0769989970449,
+        95.6998954127093,
+        97.11839493060332
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V9",
+      "location": [
+        215.27866968938136,
+        65.62900199233756,
+        125.02154687982068
+      ],
+      "rotation": [
+        0.0,
+        -99.99999922536314,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        210.25398100948576,
+        60.70005617635205,
+        125.01875732842848
+      ],
+      "bounds_max": [
+        220.17579465598396,
+        70.57990957108443,
+        127.63003257852063
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiScreen_V1_Part27",
+      "location": [
+        277.942359,
+        -153.033011,
+        258.413916
+      ],
+      "rotation": [
+        -9.999999944123394e-07,
+        89.99999899999999,
+        40.00000000000001
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        226.43038520134613,
+        -235.0212542996481,
+        239.19391375444945
+      ],
+      "bounds_max": [
+        288.24362934285386,
+        -71.04476650018678,
+        305.18761263907186
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V26",
+      "location": [
+        -490.3618916557288,
+        -5.117841885291156,
+        130.55381092818902
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -494.62198677520513,
+        -9.46878258963686,
+        130.55102137679683
+      ],
+      "bounds_max": [
+        -486.10127344588994,
+        -0.8963405348883242,
+        133.16229662688897
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part9",
+      "location": [
+        -245.782708,
+        100.27519,
+        90.112697
+      ],
+      "rotation": [
+        0.0,
+        -179.999999,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -269.1244823553595,
+        86.58982486940363,
+        94.20045172640991
+      ],
+      "bounds_max": [
+        -222.4376950963504,
+        121.39115338962506,
+        96.43346774050903
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part3.SM_Storage3000Series_V3_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_11.MI_Glass02_11"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V21",
+      "location": [
+        -231.2245970878697,
+        94.0028093424906,
+        125.03144798250331
+      ],
+      "rotation": [
+        0.0,
+        19.999999845072658,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -236.67161552561527,
+        88.45722413259635,
+        125.02865843111111
+      ],
+      "bounds_max": [
+        -225.73281623991136,
+        99.42694025396516,
+        127.63993368120326
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V1_Part3",
+      "location": [
+        -613.4996691603752,
+        45.570503650104975,
+        99.99999999999974
+      ],
+      "rotation": [
+        0.0,
+        -133.04444673227925,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -678.3486243450038,
+        -5.39931001095087,
+        101.61720430850957
+      ],
+      "bounds_max": [
+        -563.754697122497,
+        110.64693084861767,
+        114.93100643157933
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V1_Part2.SM_Storage3000Series_V1_Part2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_5.MI_Glass01_5"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V24",
+      "location": [
+        -260.04145954916964,
+        94.07072371450077,
+        95.02879306027731
+      ],
+      "rotation": [
+        0.0,
+        79.99999961268163,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -264.6212007127523,
+        89.49066528586808,
+        95.02888849058778
+      ],
+      "bounds_max": [
+        -255.4616132396283,
+        98.651368844489,
+        97.13861318776449
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V2.SM_TitaniumCore_V2",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V12",
+      "location": [
+        218.347748,
+        100.832628,
+        95.048328
+      ],
+      "rotation": [
+        0.0,
+        69.99999899999999,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        212.9237959443755,
+        95.34133864315174,
+        95.0455384486078
+      ],
+      "bounds_max": [
+        223.89351216804056,
+        106.2801380324884,
+        97.65681369869995
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V22",
+      "location": [
+        -260.7545680721924,
+        93.91330466628271,
+        125.03023310175486
+      ],
+      "rotation": [
+        0.0,
+        -59.99999953521796,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -266.6526408245343,
+        88.0480306952777,
+        125.02744355036266
+      ],
+      "bounds_max": [
+        -254.9683315429046,
+        99.71340594986663,
+        127.63871880045481
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_TitaniumCore_V7",
+      "location": [
+        218.34774751086712,
+        100.83262784069711,
+        125.04832844733954
+      ],
+      "rotation": [
+        0.0,
+        69.99999945775427,
+        -0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        212.92379547569,
+        95.34133850487282,
+        125.04553889594735
+      ],
+      "bounds_max": [
+        223.89351165881007,
+        106.28013785313473,
+        127.6568141460395
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumCore_V1.SM_TitaniumCore_V1",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal01_OxydizedSteel1_Stains.MI_Metal01_OxydizedSteel1_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal07_ParkerizedSteel_Stains.MI_Metal07_ParkerizedSteel_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal02_AnodizedAluminium_Stains.MI_Metal02_AnodizedAluminium_Stains",
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass01_3.MI_Glass01_3"
+      ]
+    },
+    {
+      "name": "SM_SciFiBottle_V1_Part17",
+      "location": [
+        -180.0937867488566,
+        80.27104835647998,
+        118.38525045575395
+      ],
+      "rotation": [
+        -62.65340412209324,
+        -95.95273552543826,
+        114.81123400182801
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -180.3902573235237,
+        75.16747511994804,
+        116.26782183492048
+      ],
+      "bounds_max": [
+        -176.33130968298195,
+        81.84682096651245,
+        122.13141460005579
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiBottle_V1_Part3.SM_SciFiBottle_V1_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/MI_Metal09_Silver_Stains.MI_Metal09_Silver_Stains"
+      ]
+    },
+    {
+      "name": "SM_Storage3000Series_V3_Part7",
+      "location": [
+        -245.78270758084696,
+        100.27518973195977,
+        120.11269650831113
+      ],
+      "rotation": [
+        0.0,
+        -179.99999860565364,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounds_min": [
+        -269.12448208154007,
+        86.58982444071032,
+        124.20045123472104
+      ],
+      "bounds_max": [
+        -222.4376945830059,
+        121.3911532822602,
+        126.43346724882016
+      ],
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V3_Part3.SM_Storage3000Series_V3_Part3",
+      "materials": [
+        "/Game/P1toP5_Bundle/P3_ComputerStation/Materials/Instances/Base/EmissiveInstances_DEMOLEVEL/MI_Glass02_11.MI_Glass02_11"
+      ]
+    }
+  ]
+}
