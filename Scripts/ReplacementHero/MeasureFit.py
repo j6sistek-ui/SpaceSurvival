@@ -20,6 +20,3 @@ oldpose=P.get_anim_pose_at_time(old,0,opt);newpose=P.get_anim_pose_at_time(u.loa
 pold=P.get_bone_pose(oldpose,hero.pelvis_bone,u.AnimPoseSpaces.WORLD).translation*oldscale;pnew=P.get_bone_pose(newpose,'pelvis',u.AnimPoseSpaces.WORLD).translation*scale
 rot=u.Rotator(yaw=hero.mesh_yaw);mount=u.MathLibrary.quat_rotate_vector(rot.quaternion(),pold-pnew)+hero.pilot_mount_offset;out['pilot_mount']=[mount.x,mount.y,mount.z]
 (Path(os.environ['SS_HERO_SOURCE'])/'fit_measurements.json').write_text(json.dumps(out,indent=2));print(json.dumps(out))
-
-
-

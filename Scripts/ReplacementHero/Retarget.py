@@ -69,4 +69,3 @@ print('BODY_RETARGET_READY')
 
 clip('/Game/SampleAnimationPack/Demo/Characters/Mannequins/Animations/Manny/MM_Fall_Loop','Body_Air',jump,rtjump)
 rtland=retargeter('RTG_Land',jump,jpairs,ground=True);clip('/Game/SampleAnimationPack/Demo/Characters/Mannequins/Animations/Manny/MM_Land','Body_Land',jump,rtland)
-

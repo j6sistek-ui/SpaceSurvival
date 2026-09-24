@@ -33,4 +33,3 @@ for name,bodyname,tailname,duration in recipes:
  report.append({'name':name,'body':body.get_path_name(),'tail':tail.get_path_name() if tail else None,'duration':seq.sequence_length,'bones':len(bones)})
  print('COMPOSED',name,seq.sequence_length)
 (Path(os.environ['SS_HERO_SOURCE'])/'composed_clips.json').write_text(json.dumps(report,indent=2))
-

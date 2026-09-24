@@ -16,5 +16,3 @@ mesh=u.load_asset(BASE+'/SK_SquirrelHeroReplacement');materials=mesh.materials
 for i,slot in enumerate(materials):slot.material_interface=[body,soft,m][i];materials[i]=slot
 mesh.set_editor_property('materials',materials);L.save_loaded_asset(mesh,False)
 print('MATERIALS_READY',[s.material_interface.get_path_name() for s in mesh.materials])
-
-

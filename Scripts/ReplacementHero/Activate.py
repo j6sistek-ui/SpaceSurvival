@@ -20,4 +20,3 @@ for n in ['Walk','Jog','Run']:values[n.lower()+'_speed']=fit['gaits'][n]['median
 for k,v in values.items():h.set_editor_property(k,v)
 rows[idx]=h;da.set_editor_property('heroes',rows);assert L.save_loaded_asset(da,False)
 (OUT/'activated_hero_definition.txt').write_text(h.export_text());print('ACTIVATED',h.id,h.mesh_path,h.tail_root_bone)
-

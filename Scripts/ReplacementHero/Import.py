@@ -38,4 +38,3 @@ for name in ['Idle','Walk','Run','JumpStart','JumpAir','JumpLand']:
  clip=do_import('Tail_'+name,'Tail_'+name+'.fbx',True,mesh.skeleton)
  print('TAIL',clip.get_name(),clip.sequence_length)
 print('STAGE_OK')
-
