@@ -1,5 +1,7 @@
 # Open work and owner review
 
+**2026-09-24 hero follow-up — RPT-20260921-05 / ISS-16; IMPLEMENTED LOCALLY, OWNER REVIEW OPEN; lead owns remaining verification.** Replacement Squirrel is imported, skinned, retargeted and active in the repaired game, superseding the earlier statement that the below80k candidate had not arrived. Tail idle/gaits and jump start/air/land are wired; landing tail continues during resumed locomotion. Body and rigid backpack were rendered; fur checkerboard usage failure was repaired and rechecked. Build and2 scoped suites pass. Next: owner checks Squirrel walking/run and jump/land feel; lead retains cockpit boarding/fit verification and any packaging work. Existing save identity and original art preserved. Repaired project is now the desktop Unreal default (UE5.8 instead of the old UE5.6 shortcut). [Exact source/assets/evidence and limitations](validation/2026-09-24-replacement-hero.md).
+
 **Current playable baseline:**0.1.21-alpha.1 / itch build2003058 READY, Package10/source4fd0293. Update through the itch app. Open [release receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json); check flight response, sustained mixed-field travel and menu navigation. Reports below remain open pending their own verification; publication is not acceptance.
 
 ## September22 Blender library — RPT-20260922-04

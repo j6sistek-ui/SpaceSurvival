@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**2026-09-24 replacement hero / current local game:** branch `codex/replacement-hero-in-game`, repaired checkout `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, now uses the76623-triangle replacement for Squirrel. Editor build and2 focused jump/tail tests pass; actual Survival-level scripted walking/jump/landing captures pass after fixing fur material usage. Owner feel and cockpit fit acceptance remain open. Desktop Unreal Engine opens UE5.8 with this repaired project; Play SpaceSurvival - Current opens its development launcher. Original authoring source and old package remain separate. No new package, itch upload or merge. [Evidence](validation/2026-09-24-replacement-hero.md).
+
 **September24 flat sandbox update:** The saved editor sandbox now uses one flat platform and a
 space backdrop, with canyon/display barriers removed. Current scene.json has5,522 linked placements;
 the existing7,431-placement Blender file is historical and must be refreshed before Push.
