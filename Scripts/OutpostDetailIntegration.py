@@ -70,6 +70,11 @@ def apply(api):
     report['skyline_atmosphere']=OutpostSkylineAtmosphere.apply(api)
     import OutpostPadTrim
     report['pad_trim']=OutpostPadTrim.apply(api)
+    # Latest owner direction: normal room illumination, working street lamps,
+    # and large blue graphic walls. These run after the older accent recipes.
+    import OutpostHologramWalls,OutpostUsableLighting
+    report['hologram_walls']=OutpostHologramWalls.apply(api)
+    report['usable_lighting']=OutpostUsableLighting.apply(api)
     report['promenade_native']=OutpostPromenadeDetails.audit_native(api)
     if report['promenade_native']['failures']:
         raise RuntimeError('New promenade clearance audit failed; map not saved')
