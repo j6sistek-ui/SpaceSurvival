@@ -1,5 +1,7 @@
 # Phase 1 validation record
 
+**September 24 outpost sandbox:** The [dated outpost receipt](validation/2026-09-24-outpost-sandbox.md) records the isolated map's native build, targeted automation, scripted traversal/local-preview checks and retained visual failures/comparisons. Results apply to their recorded snapshots; subsequent detail integration, terminal travel, physical input, representative performance and visual acceptance remain separate gates. The [sandbox guide](OUTPOST_SANDBOX.md) describes the current source workflow and review launchers.
+
 **September22 UI extension:** [Focused receipt](validation/2026-09-22-ui-refresh.md) records the approved HUD/settings/pause batch, five affected menu passes, seven rendered frames and the retained font/capture failures. This is separate from full gameplay acceptance.
 
 Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The star-brightness follow-up has passed authoring, package audit and both packaged capture fixtures. Package 3's scripted/package evidence remains a separate checkpoint. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.

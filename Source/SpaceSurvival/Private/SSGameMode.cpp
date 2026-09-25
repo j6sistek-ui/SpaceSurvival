@@ -176,6 +176,18 @@ void ASSGameMode::BeginPlay()
                 Light->SetIntensity(SpaceLook->KeyIntensity);
             }
     ShowHangar();
+    // Explicit authoring-sandbox exit only. The ordinary game still opens its approved title screen.
+    // Survival opens the existing choices so a saved run is never reset merely by using a terminal.
+    const FString OutpostEntry = UGameplayStatics::ParseOption(OptionsString, TEXT("OutpostEntry"));
+    if (OutpostEntry == TEXT("LaunchMenu") || OutpostEntry == TEXT("FreeFlight"))
+    {
+        bAtTitleScreen = false;
+        if (OutpostEntry == TEXT("FreeFlight"))
+            StartFreeFlight();
+        else
+            OpenPanel(ESSPanel::Launch);
+        return;
+    }
     bAtTitleScreen = true;
     // The approved main menu is the entry screen. New Game opens this home hangar;
     // walking into the ship then offers Survival or Free Flight.

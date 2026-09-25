@@ -1,0 +1,1658 @@
+{
+  "assets": {
+    "floor_main": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_UniversalPanel400X200_V2.SM_UniversalPanel400X200_V2"
+    },
+    "floor_accent": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_UniversalPanel400X200_V3_Hexagon.SM_UniversalPanel400X200_V3_Hexagon"
+    },
+    "floor_grid": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_UniversalPanel400X20_V1_HexagonGrid.SM_UniversalPanel400X20_V1_HexagonGrid"
+    },
+    "wall_main": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_WallPanel400X200_V1_SmartStorageUnit.SM_WallPanel400X200_V1_SmartStorageUnit"
+    },
+    "wall_small": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_WallPanel200X200_V1_SmartStorageUnit.SM_WallPanel200X200_V1_SmartStorageUnit"
+    },
+    "floor_wall_trim": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_CornerWallFloor400X70_V1_ElectricalEquipment.SM_CornerWallFloor400X70_V1_ElectricalEquipment"
+    },
+    "floor_wall_lit_trim": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_CornerWallFloor400X70_V11_Lights_Part1.SM_CornerWallFloor400X70_V11_Lights_Part1"
+    },
+    "ceiling_main": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_CeilingPanel400X200_V1.SM_CeilingPanel400X200_V1"
+    },
+    "ceiling_alt": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_CeilingPanel400X200_V2.SM_CeilingPanel400X200_V2"
+    },
+    "ceiling_cove": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_CornerWallCeiling400X70_V1_ElectricalEquipment.SM_CornerWallCeiling400X70_V1_ElectricalEquipment"
+    },
+    "ceiling_cable": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_CornerWallCeiling400X70_V2_ElectricalCableRouting.SM_CornerWallCeiling400X70_V2_ElectricalCableRouting"
+    },
+    "window_frame_4m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X250_V1_Part1.SM_Window400X250_V1_Part1"
+    },
+    "window_glass_4m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X250_V1_Part2.SM_Window400X250_V1_Part2"
+    },
+    "window_holo_4m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X250_V2_Part2_DigitalWindow.SM_Window400X250_V2_Part2_DigitalWindow"
+    },
+    "window_frame_6m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window600X250_V1_Part1.SM_Window600X250_V1_Part1"
+    },
+    "window_glass_6m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window600X250_V1_Part2.SM_Window600X250_V1_Part2"
+    },
+    "door_frame_4m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Door400X250_V1_Part1_SM_Door400X250_V1_Part1.SM_Door400X250_V1_Part1_SM_Door400X250_V1_Part1"
+    },
+    "door_leaf_4m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Door400X250_V1_Part1_SM_Door400X250_V1_Part2.SM_Door400X250_V1_Part1_SM_Door400X250_V1_Part2"
+    },
+    "door_frame_3m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Door300X250_V1_Part1.SM_Door300X250_V1_Part1"
+    },
+    "door_leaf_3m": {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Door300X250_V1_Part2_SM_Door300X250_V1_Part2.SM_Door300X250_V1_Part2_SM_Door300X250_V1_Part2"
+    },
+    "bench": {
+      "asset": "/Game/P1toP5_Bundle/P2_StarterPack/Meshes/Classic/SM_Bench_V1.SM_Bench_V1"
+    },
+    "chair_pedestal": {
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustrySeat_V1_Part1.SM_TitaniumIndustrySeat_V1_Part1"
+    },
+    "chair_back": {
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustrySeat_V1_Part2.SM_TitaniumIndustrySeat_V1_Part2"
+    },
+    "ops_console_base": {
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustryStation_V1_Part1.SM_TitaniumIndustryStation_V1_Part1"
+    },
+    "ops_console_keyboard": {
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_TitaniumIndustryStation_V1_Part2.SM_TitaniumIndustryStation_V1_Part2"
+    },
+    "ops_screen_base": {
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part1.SM_SciFiScreen_V1_Part1"
+    },
+    "ops_screen_middle": {
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part2.SM_SciFiScreen_V1_Part2"
+    },
+    "ops_screen_top": {
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_SciFiScreen_V1_Part3.SM_SciFiScreen_V1_Part3"
+    },
+    "ops_storage": {
+      "asset": "/Game/P1toP5_Bundle/P3_ComputerStation/Meshes/SM_Storage3000Series_V1_Part1.SM_Storage3000Series_V1_Part1"
+    },
+    "market_awning": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Cloth450x200_V1.SM_Cloth450x200_V1"
+    },
+    "market_awning_alt": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Cloth460x210_V2.SM_Cloth460x210_V2"
+    },
+    "market_counter": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_Support02.SM_Props_Support02"
+    },
+    "market_box": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_Box03.SM_Props_Box03"
+    },
+    "market_tray": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_Tray02.SM_Props_Tray02"
+    },
+    "market_fruit_01": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_Fruit01.SM_Props_Fruit01"
+    },
+    "market_fruit_02": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_Fruit02.SM_Props_Fruit02"
+    },
+    "market_fruit_03": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_Fruit03.SM_Props_Fruit03"
+    },
+    "market_fruit_07": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_Fruit07.SM_Props_Fruit07"
+    },
+    "holo_sign": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_Hologram01.SM_Props_Hologram01"
+    },
+    "holo_projector": {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Meshes/SM_Props_HologramProjector01.SM_Props_HologramProjector01"
+    },
+    "arcade": {
+      "asset": "/Game/Fab/Space_hunt_Arcade_Machine/SM_Space_hunt_Arcade_Machine.SM_Space_hunt_Arcade_Machine"
+    }
+  },
+  "workstation": {
+    "parts": [
+      {
+        "name": "SM_GoliathTable02_Clean",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathTable02.SM_GoliathTable02",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Table02_Clean_slot1.MI_Table02_Clean_slot1",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Table02_Clean_slot2.MI_Table02_Clean_slot2",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Table02_Clean_slot3.MI_Table02_Clean_slot3",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Table02_Clean_slot4.MI_Table02_Clean_slot4",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Table02_Clean_slot5.MI_Table02_Clean_slot5",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Table02_Clean_slot6.MI_Table02_Clean_slot6",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Table02_Clean_slot7.MI_Table02_Clean_slot7",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Table02_Clean_slot8.MI_Table02_Clean_slot8"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "GoliathChair01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathChair01.SM_GoliathChair01",
+        "location_cm": [
+          -60.0,
+          100.0,
+          0.0
+        ],
+        "yaw_deg": -120.0,
+        "matrix": [
+          [
+            -0.4999933040424016,
+            -0.8660292696628457,
+            0.0,
+            0.0
+          ],
+          [
+            0.8660292696628457,
+            -0.4999933040424016,
+            -0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -60.0,
+            100.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Chair01_Cleaned_slot1.MI_Chair01_Cleaned_slot1",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Chair01_Cleaned_slot2.MI_Chair01_Cleaned_slot2"
+        ],
+        "scale_xyz": [
+          0.9999999999999997,
+          0.9999999999999997,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": 0.0
+      },
+      {
+        "name": "SM_GoliathFrontSupport01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathFrontSupport01.SM_GoliathFrontSupport01",
+        "location_cm": [
+          0.0,
+          -20.0,
+          110.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            -20.0,
+            110.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_FrontSup_Cleaned_slot1.MI_FrontSup_Cleaned_slot1",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_FrontSup_Cleaned_slot2.MI_FrontSup_Cleaned_slot2"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftSupport01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftSupport01.SM_GoliathLeftSupport01",
+        "location_cm": [
+          -90.0,
+          20.0,
+          110.0
+        ],
+        "yaw_deg": -50.0,
+        "matrix": [
+          [
+            0.6427862325757323,
+            -0.7660455986500389,
+            0.0,
+            0.0
+          ],
+          [
+            0.7660455986500389,
+            0.6427862325757323,
+            -0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -90.0,
+            20.0,
+            110.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_LeftSupport01_Cleaned_slot1.MI_LeftSupport01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          0.9999999999999999,
+          0.9999999999999999,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": 0.0
+      },
+      {
+        "name": "SM_GoliathWorkPlan01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathWorkPlan01.SM_GoliathWorkPlan01",
+        "location_cm": [
+          0.0,
+          0.0,
+          110.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            110.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_WorkPlan01_Cleaned_slot1_1.MI_WorkPlan01_Cleaned_slot1_1",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_WorkPlan01_Damaged_slot2_4.MI_WorkPlan01_Damaged_slot2_4"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightSupport01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightSupport01.SM_GoliathRightSupport01",
+        "location_cm": [
+          90.0,
+          20.0,
+          110.0
+        ],
+        "yaw_deg": 50.0,
+        "matrix": [
+          [
+            0.6427868475963496,
+            0.766045082587929,
+            0.0,
+            0.0
+          ],
+          [
+            -0.766045082587929,
+            0.6427868475963496,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -0.0,
+            1.0,
+            0.0
+          ],
+          [
+            90.0,
+            20.0,
+            110.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_RightSupport01_Cleaned_slot1.MI_RightSupport01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          0.9999999999999999,
+          0.9999999999999999,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathPowerSupply01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathPowerSupply01.SM_GoliathPowerSupply01",
+        "location_cm": [
+          0.0,
+          -30.0,
+          110.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            -30.0,
+            110.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_PowerSupply01_Cleaned_slot1.MI_PowerSupply01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathPowerAlimSocketCables01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathPowerAlimSocketCables01.SM_GoliathPowerAlimSocketCables01",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_PowerAlim01_Cleaned_slot1.MI_PowerAlim01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftMagneticLight01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftMagneticLight01.SM_GoliathLeftMagneticLight01",
+        "location_cm": [
+          -80.0,
+          0.0,
+          70.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -80.0,
+            0.0,
+            70.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_MagneticLight01_Cleaned_slot1.MI_MagneticLight01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightMagneticLight01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightMagneticLight01.SM_GoliathRightMagneticLight01",
+        "location_cm": [
+          80.0,
+          0.0,
+          70.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            80.0,
+            0.0,
+            70.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_MagneticLight01_Cleaned_slot1.MI_MagneticLight01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftSideLight2",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftSideLight01.SM_GoliathLeftSideLight01",
+        "location_cm": [
+          -80.0,
+          0.0,
+          170.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -80.0,
+            0.0,
+            170.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Light01_Cleaned_slot1.MI_Light01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightSideLight01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightSideLight01.SM_GoliathRightSideLight01",
+        "location_cm": [
+          80.0,
+          0.0,
+          170.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            80.0,
+            0.0,
+            170.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Light01_Cleaned_slot1.MI_Light01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLargeScreen01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLargeScreen01.SM_GoliathLargeScreen01",
+        "location_cm": [
+          0.0,
+          -10.0,
+          130.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            -10.0,
+            130.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_LargeScreen01_slot1.MI_LargeScreen01_slot1",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_LargeScreen01_slot2_Access01.MI_LargeScreen01_slot2_Access01"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftScreenCable",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftScreenCable.SM_GoliathLeftScreenCable",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_LeftScreenCable01_Cleaned_slot1.MI_LeftScreenCable01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightSideTopLightCable_Connected",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightSideTopLightCable_Connected.SM_GoliathRightSideTopLightCable_Connected",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_RightSideTopLightCable_Connected_Cleaned_slot1.MI_RightSideTopLightCable_Connected_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightScreenCable",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightScreenCable.SM_GoliathRightScreenCable",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_RightScreenCable01_Cleaned_slot1.MI_RightScreenCable01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftSideTopLightCable_Connected",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftSideTopLightCable_Connected.SM_GoliathLeftSideTopLightCable_Connected",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_LeftSideTopLightCable_Connected_Cleaned_slot1.MI_LeftSideTopLightCable_Connected_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathMediumScreen01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathMediumScreen01.SM_GoliathMediumScreen01",
+        "location_cm": [
+          90.0,
+          20.0,
+          130.0
+        ],
+        "yaw_deg": 50.0,
+        "matrix": [
+          [
+            0.6427864866060375,
+            0.7660453854940099,
+            0.0,
+            0.0
+          ],
+          [
+            -0.7660453854940099,
+            0.6427864866060375,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -0.0,
+            1.0,
+            0.0
+          ],
+          [
+            90.0,
+            20.0,
+            130.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_MediumScreen01_Damaged_slot1.MI_MediumScreen01_Damaged_slot1",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_MediumScreen01_Damaged_slot2_Technology03.MI_MediumScreen01_Damaged_slot2_Technology03"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathMediumScreen2",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathMediumScreen01.SM_GoliathMediumScreen01",
+        "location_cm": [
+          -90.0,
+          20.0,
+          130.0
+        ],
+        "yaw_deg": -50.0,
+        "matrix": [
+          [
+            0.6427863796459179,
+            -0.7660454752439269,
+            0.0,
+            0.0
+          ],
+          [
+            0.7660454752439269,
+            0.6427863796459179,
+            -0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -90.0,
+            20.0,
+            130.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_MediumScreen01_Damaged_slot1.MI_MediumScreen01_Damaged_slot1",
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_MediumScreen01_Damaged_slot2_Technology03.MI_MediumScreen01_Damaged_slot2_Technology03"
+        ],
+        "scale_xyz": [
+          0.9999999999999999,
+          0.9999999999999999,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": 0.0
+      },
+      {
+        "name": "SM_GoliathLeftFrontLight01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftFrontLight01.SM_GoliathLeftFrontLight01",
+        "location_cm": [
+          -20.0,
+          -20.0,
+          170.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -20.0,
+            -20.0,
+            170.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Light01_Cleaned_slot1.MI_Light01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftFrontLight3",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftFrontLight01.SM_GoliathLeftFrontLight01",
+        "location_cm": [
+          -20.0,
+          -20.0,
+          160.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -20.0,
+            -20.0,
+            160.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Light01_Cleaned_slot1.MI_Light01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftFrontLight4",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftFrontLight01.SM_GoliathLeftFrontLight01",
+        "location_cm": [
+          -20.0,
+          -20.0,
+          150.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -20.0,
+            -20.0,
+            150.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Light01_Cleaned_slot1.MI_Light01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftFrontLightCables_Connected",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftFrontLightCables_Connected.SM_GoliathLeftFrontLightCables_Connected",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_LeftFrontLightCables01_Connected_Cleaned_slot1.MI_LeftFrontLightCables01_Connected_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightFrontLightCables_connected",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightFrontLightCables_connected.SM_GoliathRightFrontLightCables_connected",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_RightFrontLightCables01_Connected_Cleaned_slot1.MI_RightFrontLightCables01_Connected_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightFrontLight01",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightFrontLight01.SM_GoliathRightFrontLight01",
+        "location_cm": [
+          20.0,
+          -20.0,
+          170.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            20.0,
+            -20.0,
+            170.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Light01_Cleaned_slot1.MI_Light01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightFrontLight2",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightFrontLight01.SM_GoliathRightFrontLight01",
+        "location_cm": [
+          20.0,
+          -20.0,
+          150.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            20.0,
+            -20.0,
+            150.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Light01_Cleaned_slot1.MI_Light01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightFrontLight3",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightFrontLight01.SM_GoliathRightFrontLight01",
+        "location_cm": [
+          20.0,
+          -20.0,
+          160.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            20.0,
+            -20.0,
+            160.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_Light01_Cleaned_slot1.MI_Light01_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathRightSideLightCables_Connected",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathRightSideLightCables_Connected.SM_GoliathRightSideLightCables_Connected",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_RightSideLightCables_Connected_Cleaned_slot1.MI_RightSideLightCables_Connected_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      },
+      {
+        "name": "SM_GoliathLeftSideLightCables_Connected",
+        "asset": "/Game/P1toP5_Bundle/P1_WorkStation/Meshes/SM_GoliathLeftSideLightCables_Connected.SM_GoliathLeftSideLightCables_Connected",
+        "location_cm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "yaw_deg": 0.0,
+        "matrix": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "default_materials": [
+          "/Game/P1toP5_Bundle/P1_WorkStation/Materials/Instances/MI_LeftSideLightCables_Connected_Cleaned_slot1.MI_LeftSideLightCables_Connected_Cleaned_slot1"
+        ],
+        "scale_xyz": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pitch_deg": 0.0,
+        "roll_deg": -0.0
+      }
+    ]
+  },
+  "visitor_ships": {
+    "basis": "Visually inspected catalog thumbnail contact sheet; no new generation needed for two visitor berths. Five bounded choices.",
+    "forward": "Assembled Havolk derivatives +X forward +Z up, confirmed Scripts/AssembleShipVisualPass.py export contract. Raw SM_Spacecraft_2 is not that contract.",
+    "placement": "Native Havolk units are small 3-5m vessels; uniform scale2.6/3 produces 10-12m visitors in28m berths, preserving Phoenix primary dominance. Place on low fitted magnetic/service cradles if no landing gear is modelled; do not leave bodies floating or bury lower wings. Derive bottom from actor bounds afteryaw/scale.",
+    "choices": [
+      {
+        "name": "SM_PlayerHavolkStarter",
+        "asset": "/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/Meshes/SM_PlayerHavolkStarter.SM_PlayerHavolkStarter",
+        "reason": "Recommended visitor A: assembled white/orange courier; largest coherent owned static ship.",
+        "recommended_uniform_scale": 2.6,
+        "recommended": true,
+        "native_dimensions_cm": [
+          460.0,
+          371.0,
+          115.0
+        ],
+        "placed_dimensions_cm": [
+          1196.0,
+          964.6,
+          299.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          -1.9073486328125e-06
+        ],
+        "extent": [
+          230.0,
+          185.5,
+          57.50000190734863
+        ],
+        "triangles": 15189,
+        "materials": [
+          "/Game/Spacecraft_Pack/Material/White_Material/MI_White_Spacecraft_02.MI_White_Spacecraft_02",
+          "/Game/Spacecraft_Pack/Material/White_Material/MI_White_Wing.MI_White_Wing",
+          "/Game/Spacecraft_Pack/Material/White_Material/MI_White_Engine.MI_White_Engine",
+          "/Game/Spacecraft_Pack/Material/Blue_Material/MI_Blue_Wing.MI_Blue_Wing",
+          "/Game/Spacecraft_Pack/Material/Base_Material/MI_Weapon.MI_Weapon"
+        ]
+      },
+      {
+        "name": "SM_FlankerHavolk",
+        "asset": "/Game/SpaceSurvival/Licensed/ShipVisualPass/Meshes/SM_FlankerHavolk.SM_FlankerHavolk",
+        "reason": "Recommended visitor B: assembled wide blue patrol craft, visibly different silhouette.",
+        "recommended_uniform_scale": 3.0,
+        "recommended": true,
+        "native_dimensions_cm": [
+          283.5,
+          350.0,
+          126.0
+        ],
+        "placed_dimensions_cm": [
+          850.5,
+          1050.0,
+          378.0
+        ],
+        "origin": [
+          14.25,
+          0.0,
+          3.999998092651367
+        ],
+        "extent": [
+          141.75,
+          175.0,
+          63.00000190734863
+        ],
+        "triangles": 14782,
+        "materials": [
+          "/Game/Spacecraft_Pack/Material/Blue_Material/MI_Blue_Spacecraft_02.MI_Blue_Spacecraft_02",
+          "/Game/Spacecraft_Pack/Material/Blue_Material/MI_Blue_Wing.MI_Blue_Wing",
+          "/Game/Spacecraft_Pack/Material/Blue_Material/MI_Blue_Engine.MI_Blue_Engine",
+          "/Game/Spacecraft_Pack/Material/Base_Material/MI_Weapon.MI_Weapon"
+        ]
+      },
+      {
+        "name": "SM_PursuerHavolk",
+        "asset": "/Game/SpaceSurvival/Licensed/ShipVisualPass/Meshes/SM_PursuerHavolk.SM_PursuerHavolk",
+        "reason": "Alternative visitor B: assembled red compact shuttle, less silhouette separation than blue Flanker.",
+        "recommended_uniform_scale": 3.4,
+        "recommended": true,
+        "native_dimensions_cm": [
+          283.5,
+          206.0,
+          126.0
+        ],
+        "placed_dimensions_cm": [
+          963.9,
+          700.4,
+          428.4
+        ],
+        "origin": [
+          14.25,
+          0.0,
+          3.999998092651367
+        ],
+        "extent": [
+          141.75,
+          103.0,
+          63.00000190734863
+        ],
+        "triangles": 14174,
+        "materials": [
+          "/Game/Spacecraft_Pack/Material/Red_Material/MI_Red_Spacecraft_02.MI_Red_Spacecraft_02",
+          "/Game/Spacecraft_Pack/Material/Red_Material/MI_Red_Wing.MI_Red_Wing",
+          "/Game/Spacecraft_Pack/Material/Red_Material/MI_Red_Engine.MI_Red_Engine",
+          "/Game/Spacecraft_Pack/Material/Base_Material/MI_Weapon.MI_Weapon"
+        ]
+      },
+      {
+        "name": "SM_AcornShipV2",
+        "asset": "/Game/SpaceSurvival/Meshes/SM_AcornShipV2.SM_AcornShipV2",
+        "reason": "Intact alternative; smooth gold/white older art reads less aligned with new station/Phoenix.",
+        "recommended_uniform_scale": 2.0,
+        "recommended": false,
+        "native_dimensions_cm": [
+          454.8,
+          285.569,
+          163.178
+        ],
+        "placed_dimensions_cm": [
+          909.6,
+          571.137,
+          326.355
+        ],
+        "origin": [
+          -17.400001525878906,
+          0.0,
+          16.21126937866211
+        ],
+        "extent": [
+          227.39998626708984,
+          142.78431701660156,
+          81.58880996704102
+        ],
+        "triangles": 134262,
+        "materials": [
+          "/Game/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.M_AcornV2_GraphiteStructure",
+          "/Game/SpaceSurvival/Materials/M_AcornV2_WarmCeramic.M_AcornV2_WarmCeramic",
+          "/Game/SpaceSurvival/Materials/M_AcornV2_IvoryPanels.M_AcornV2_IvoryPanels",
+          "/Game/SpaceSurvival/Materials/M_AcornV2_BurnishedBronze.M_AcornV2_BurnishedBronze",
+          "/Game/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.M_AcornV2_ChampagneEdges",
+          "/Game/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.M_AcornV2_MachinedTitanium",
+          "/Game/SpaceSurvival/Materials/M_AcornV2_IonAndNav.M_AcornV2_IonAndNav",
+          "/Game/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.M_AcornV2_CockpitPadding",
+          "/Game/SpaceSurvival/Materials/M_AcornV2_Windscreen.M_AcornV2_Windscreen"
+        ]
+      },
+      {
+        "name": "SM_Spacecraft_2",
+        "asset": "/Game/Spacecraft_Pack/Static_Meshes/SM_Spacecraft_2.SM_Spacecraft_2",
+        "reason": "Reject standalone: visually a central fuselage without wings/engines, modular source, not a finished visitor ship.",
+        "recommended_uniform_scale": 1.0,
+        "recommended": false,
+        "native_dimensions_cm": [
+          151.936,
+          321.522,
+          203.313
+        ],
+        "placed_dimensions_cm": [
+          151.936,
+          321.522,
+          203.313
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          101.62841365858912
+        ],
+        "extent": [
+          75.96776580810547,
+          160.76083374023438,
+          101.65634586289525
+        ],
+        "triangles": 4958,
+        "materials": [
+          "/Game/Spacecraft_Pack/Material/White_Material/MI_White_Spacecraft_02.MI_White_Spacecraft_02"
+        ]
+      }
+    ]
+  }
+}

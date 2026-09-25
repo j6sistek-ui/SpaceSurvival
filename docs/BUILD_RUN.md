@@ -18,6 +18,16 @@ Play **Package8/source89b1f3c** with `C:/Users/j6sis/.codex/worktrees/flight-loo
 
 `Play Development Build.cmd` remains the separate editor-game entry point. It uses `Artifacts/DevelopmentReviewUser` and disables `UAssetBrowser` and the secondary `NwiroIntegrationKit` server. Neither launcher replaces the installed game's saves. An older executable or the already-open owner editor does not contain this reset merely because its source is present.
 
+## Reimagined asteroid outpost sandbox
+
+For the new downloads and one-placement windows/screens/workstations, see [Building library](BUILDING_LIBRARY.md). Use this same isolated editor checkout: `Content/BuildingLibrary/Assembled` holds 42 complete placements and the installed ULAT palette has 1,150 individual mesh entries. These additions are private authoring content; gameplay and the packaged build are unchanged.
+
+Use [Play Outpost Sandbox.cmd](../Play%20Outpost%20Sandbox.cmd) in the isolated outpost checkout to walk through `/Game/OutpostSandbox/L_AsteroidOutpost`, or [Edit Outpost Sandbox.cmd](../Edit%20Outpost%20Sandbox.cmd) to edit it in Unreal. Current local location: `C:/Users/j6sis/SpaceSurvival/Artifacts/Worktrees/asteroid-outpost`. Both use [LaunchOutpostSandbox.ps1](../Scripts/LaunchOutpostSandbox.ps1), require the private map and this checkout's compiled Editor DLL, and do not build or download content.
+
+The sandbox has a dedicated `Artifacts/Outpost/PlayerProfile`. Paint and wardrobe consoles are local visual previews. The pad/hub Survival boards open the existing gameplay choices; the cockpit Free Flight terminal explicitly travels to the current gameplay map. That travel retains the isolated profile. A new sit-down animation or seamless takeoff from the sandbox is not claimed. The ordinary startup map, active gameplay station, packaged executable and itch build are unchanged by authoring this scene.
+
+See [the outpost owner guide](OUTPOST_SANDBOX.md) for controls, the suggested walk, functional versus informational displays, editing boundaries and evidence locations. Agent captures use `-RenderOffscreen`; the two visible launchers are for the owner to open deliberately.
+
 ## Tooling and repository
 
 Run commands from the checkout being built or inspected. The reset review checkout is `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`; the preserved original checkout is `C:/Users/j6sis/SpaceSurvival`.
