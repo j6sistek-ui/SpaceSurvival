@@ -1,5 +1,13 @@
 # SpaceSurvival whole-project solution catalog
 
+### Resource update — 2026-09-24 building library
+
+| Stable ID | Acquisition and evaluation | Whole-project use and next check |
+| --- | --- | --- |
+| LIB-20260924-DOWN | Local source evidenced: 16 packages under owner-specified `Downloads/down`; native Content imported privately into the outpost checkout, not purchased by this task. CargoShip, Nova Space Burgers/CyberpunkRestaurant, furniture/lights/props, Solar and Portal helpers. Shared-name Solar/Portal dependencies relocated natively to isolated roots. | High value for station, market, ship interiors and dressing (WBS station/content presentation); imported is not gameplay-integrated. Preserve sources and evaluate collision, animation and performance as each asset is placed. Solar/Portal helper content does not imply an included physical mesh. |
+| LIB-20260924-ASSEMBLED | Reuses owned Genesis/P3/Goliath source transforms and materials: 41 static assembly Blueprints, plus a 2,078-actor Cargo Level Instance. Local generated assets; no extra acquisition. | Reduces placement effort across station rooms. Native geometry/group/pivot evidence and bounds audit in the [receipt](../validation/2026-09-24-building-library.md); artistic/gate/collision acceptance remains separate. Full Cargo is a high-detail source, not an optimized gameplay ship. |
+| TOOL-20260924-ULAT | Installed Ultimate Level Art Tool1.3.1, owner-enabled in project. Six mesh type labels and 1,150 rows configured after verified backup. Native palette accepts StaticMesh assets, not Actor Blueprints. | Use ULAT for individual kit parts and Content Browser for complete assemblies. Engine-global palette needs project assets to resolve; collections/private generated assets require local backup. [Owner workflow](../BUILDING_LIBRARY.md). |
+
 ### Resource update — 2026-09-22 UTC
 
 - **HERO-20260921 (updated2026-09-24):** owner-generated replacement squirrel evaluated and locally integrated:76623 triangles including180 fur cards,69 bones,7-joint tail and rigid backpack. Original source retained; centimeter-normalized derivative fixes root-scale retarget failure. Eight body+tail clips and existing Squirrel identity are wired in the repaired game. Useful for walker/wardrobe/pilot; no new acquisition or character mechanics. Build/two focused tests and actual-game scripted render pass; owner feel and fresh cockpit fit remain open. Source art/retargeted clips remain private; [recipe](../../Scripts/ReplacementHero/README.md), [receipt](../validation/2026-09-24-replacement-hero.md).

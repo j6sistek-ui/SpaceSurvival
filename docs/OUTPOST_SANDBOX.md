@@ -1,5 +1,7 @@
 # Wayfarer Exchange: asteroid outpost sandbox
 
+**Owner editing and new assets:** [Building library](BUILDING_LIBRARY.md) explains the complete window/display/workstation Blueprints, Cargo Level Instance, categorized ULAT parts and how to save your own assembly. The September24 library pass adds assets without loading, regenerating or saving this station map. Preserve owner layout changes; do not rerun the station generator to refresh the library.
+
 This is a separately authored station design scene for walking, visual review and later editing. It preserves the asteroid setting and adds a five-group market promenade, a circular concourse, engineering, crew quarters, operations, detailed visitor berths, a large planetary archive with seven welcome displays, and a walkable glass observation gallery. It does not replace the current gameplay station, change the normal startup map, update a packaged executable or publish to itch.
 
 The scene is `/Game/OutpostSandbox/L_AsteroidOutpost`. Its current local checkout is `C:/Users/j6sis/SpaceSurvival/Artifacts/Worktrees/asteroid-outpost`. The saved map and licensed assets are local; a Git clone alone cannot reproduce them.

@@ -129,3 +129,11 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 /Content/Sayantan/
 /Content/Sci_Fi_Light/
 /Content/Ultimate_Space_Colony_Outpost_Pack/
+
+# Private downloaded building packs and generated placement assemblies.
+/Content/BuildingLibrary/
+/Content/CargoShip/
+/Content/CyberpunkRestaurant/
+/Content/StarterContent/
+/Content/Rocket/
+/Content/ImportedLibrary/
