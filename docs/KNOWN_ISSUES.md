@@ -8,6 +8,7 @@
 
 - **D1 — Threats are thrown at the player.** Every Director threat is aimed at the ship's current trajectory: doing nothing means being hit, and avoiding it needs an intervention — steer, boost, brake, dodge or shoot. They should be difficult to avoid. Fairness is kept by timing, not by a guaranteed clear lane: every threat still arrives after the 3.5 s reaction floor, and direct shots are spaced apart. This retires the passive `SafeLane` protection for asteroids (recorded September 16 as "L2, named, not done") and supersedes "Threats are placed to miss you" as acceptable behaviour.
 - **D2 — The Director is a villain the player chases.** A visible character flying ahead of the player, and the threats read as *his*, used against you. Character: the caped knight reserved on September 22. Craft: the owner's candidate ship. **This supersedes CONCEPT-20260922-01's "no integration authorized".**
+- **D4 — The ship shows its damage, and every hit is felt.** Sparks where a rock strikes, scars that stay, smoke and fire as the hull fails, and real weight to each impact. This is presentation only: it changes no gameplay number, so it needs no balance sign-off (September 16 ruling). The design is in the ship-damage paragraph below the queue.
 - **D3 — A player-controlled villain or PvP is deferred, not designed out.** Phase 1 stays single-player with no networking. The villain keeps *where he goes* separate from *what is drawn*, so steering can later be handed to a person.
 
 **ACT-12 — Villain and aimed threats. Next actions, in order:**
@@ -20,6 +21,16 @@
 | 4 | Admission fall-through: a refused enemy or field attempt admits an asteroid instead of wasting the slot. Stops the wave 5 climax going quiet once 5 enemies are alive. | lead | not started — provably broken, no sign-off needed |
 | 5 | Enemies launched *from* the villain, then enemy attack runs (approach, committed run, break-off) instead of flying in formation 17 m ahead. | lead; owner approves the behaviour | not started |
 | 6 | Resize Director distances to the Phoenix hull, shape each wave (build, peak, release), then add telemetry and tune. | lead; owner approves the dials | not started |
+| 7 | Ship damage you can see and feel (D4): shield flare vs hull sparks, persistent scars, condition effects by hull %, rumble. Design below. | lead builds; owner judges the look | **sparks at the rock contact point are on PR #65**; the rest not started |
+
+**Ship damage design (D4).** The Stellar Phoenix is a licensed skeletal mesh with three material slots and no damage content — its only "damage" is an impact flash. So damage is built in layers that need no UVs and no edit to the vendor mesh. Derivatives go under `Licensed/`, as the project already does for purchased content.
+1. *Shield hit* (shield above 0): a shield-shell flare at the hit point, blue-white, and no sparks. The player can see the shield took it.
+2. *Hull hit*: sparks thrown from the real hull contact point (the flight hull's sweep already returns it), chips, a hot emissive flash at the point, plus the existing shake, rumble and layered metal audio scaled by damage.
+3. *Scars*: the last 8 hit points, stored in ship-local space, fed to the hull material as `HitPoint0..7` (xyz, w = heat). A material function draws glowing scorch that cools to permanent scarring, computed from object-space distance — the same no-UV approach as the September 17 station plating. The ship paint system already owns per-slot dynamic materials, so the parameters ride on those. Scars clear at a station repair, not by hull regeneration: they record the run.
+4. *Condition*, driven by current hull % and heals with regeneration: below 70%, intermittent sparks and arcs from the most-hit zone (owned Nerves); below 40%, a smoke trail and flickering running lights; below 20%, fire from the worst zone, red emergency light and engine sputter (also shown while `criticalSeconds` is above 0). Zones — nose, port wing, starboard wing, belly, engines — are chosen by local hit position against the Phoenix's own bones.
+5. *Optional mesh work, later*: a Blender derivative with detachable armour plates that break away at thresholds, exposing lit under-structure. This is the only step that edits geometry.
+
+Content picks come from the 193 owned Niagara systems (Pyro, Sci-Fi Weapons VFX, Nerves). **Check it with offscreen captures at 100 / 60 / 30 / 15% hull — never with an assertion that counts Niagara components, which reads 0 under `-NullRHI`.**
 
 **Not changed by these decisions:** waves stay hidden timers (GAME_SCOPE §4); the Phase 1 roster stays at two enemy types, four hazard families and two events; the station is out of scope for this track.
 

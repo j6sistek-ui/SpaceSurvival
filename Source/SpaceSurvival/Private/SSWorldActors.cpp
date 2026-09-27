@@ -566,6 +566,8 @@ void ASSWorldBody::Tick(float DeltaSeconds)
             const FVector PreviousRelative =
                 bHasPreviousShipPosition ? PreviousShipPosition - PreviousBodyPosition : Offset;
             FVector ContactNormal = FVector::ZeroVector;
+            FVector ContactPoint = FVector::ZeroVector;
+            bool bHullPoint = false;
             bool bContact = false;
             if (ShipContactRemaining <= 0.f && Ship->HasFlightHull())
             {
@@ -574,6 +576,8 @@ void ASSWorldBody::Tick(float DeltaSeconds)
                 FHitResult Hit;
                 bContact = Ship->SweepFlightContact(Hit, Ship->GetActorLocation() - PreviousRelative,
                                                     GetActorLocation(), BodyRadius);
+                bHullPoint = bContact && Hit.bBlockingHit;
+                ContactPoint = Hit.ImpactPoint;
                 ContactNormal = -Hit.Normal;
                 if (ContactNormal.IsNearlyZero())
                     ContactNormal = PreviousRelative.GetSafeNormal();
@@ -597,6 +601,12 @@ void ASSWorldBody::Tick(float DeltaSeconds)
             {
                 Ship->ReceiveImpact(CollisionDamage, ContactNormal);
                 ShipContactRemaining = 1.1f;
+                // Sparks where the rock struck, thrown back toward it. The flight hull's sweep gives the real
+                // point on the hull; the classic sphere uses the rock's surface facing the ship.
+                if (!bHullPoint)
+                    ContactPoint = GetActorLocation() + ContactNormal * BodyRadius;
+                if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
+                    FX->PlayImpact(ContactPoint, -ContactNormal, false, CollisionDamage >= 25.f);
             }
         }
         else if (IsEnvironmentalField())
