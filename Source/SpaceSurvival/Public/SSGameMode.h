@@ -140,6 +140,8 @@ private:
     UPROPERTY()
     TObjectPtr<class ASSSpaceScenery> SpaceScenery;
     UPROPERTY()
+    TObjectPtr<class ASSDirectorVillain> Villain;
+    UPROPERTY()
     TObjectPtr<class USSSpaceLookData> SpaceLook;
     int32 ActiveSkyIndex = -1;
     UPROPERTY()

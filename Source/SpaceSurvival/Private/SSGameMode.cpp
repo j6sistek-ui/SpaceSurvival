@@ -20,6 +20,8 @@
 #include "Animation/PoseSnapshot.h"
 #include "SSHUD.h"
 #include "SSWorldActors.h"
+#include "SSDirectorVillain.h"
+#include "HAL/IConsoleManager.h"
 #include "SSPhase1Data.h"
 #include "Components/AudioComponent.h"
 #include "Components/SceneComponent.h"
@@ -49,6 +51,8 @@ CSV_DEFINE_CATEGORY(SpaceSurvival, true);
 
 namespace
 {
+TAutoConsoleVariable<int32>
+    VillainEnabled(TEXT("ss.Villain"), 1, TEXT("1 shows the Director as a rival flying ahead during survival flight."));
 const TCHAR *UpgradeNames[] = {TEXT("Hull"), TEXT("Shield"), TEXT("Engine"), TEXT("Thrusters"), TEXT("Weapon")};
 FString WeaponName(SS::Weapon W)
 {
@@ -681,6 +685,15 @@ void ASSGameMode::Tick(float Dt)
         AmbientPresentation->SetFlightVisible(FlightSceneryVisible);
     if (SpaceScenery)
         SpaceScenery->SetFlightVisible(FlightSceneryVisible);
+    // The Director is a rival the player chases through open survival flight. He is absent from free flight,
+    // the station approach and docking, and everything on foot, where there is nothing for him to throw.
+    const bool VillainPresent = VillainEnabled.GetValueOnGameThread() != 0 && IsValid(Ship) && S.IsFlying() &&
+                                !GI->IsFreeFlight() && S.run.phase != SS::Phase::Approach &&
+                                S.run.phase != SS::Phase::Docking;
+    if (VillainPresent && !IsValid(Villain))
+        Villain = GetWorld()->SpawnActor<ASSDirectorVillain>();
+    if (IsValid(Villain))
+        Villain->SetPresent(VillainPresent);
     AnnouncementSeconds = FMath::Max(0.f, AnnouncementSeconds - Dt);
     bool Danger = false;
     if (Ship && S.IsFlying())

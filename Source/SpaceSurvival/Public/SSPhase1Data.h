@@ -323,6 +323,8 @@ public:
     float BaseBudgetPerSecond = 1.5f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Director", meta = (ClampMin = "1"))
     float DirectorAsteroidScale = 3.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Director")
+    FSSVillainDefinition Villain;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy", meta = (ClampMin = "0", ClampMax = "99999955"))
     int32 WaveCredits = 75;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy", meta = (ClampMin = "1", ClampMax = "25000000"))

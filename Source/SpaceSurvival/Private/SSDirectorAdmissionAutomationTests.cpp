@@ -125,6 +125,8 @@ bool FSSDirectorAsteroidReadability::RunTest(const FString &)
     if (!TestNotNull(TEXT("Resolve ship for faster approach admission"), Ship))
         return false;
     Ship->Velocity = FVector(6000.f, 0.f, 0.f);
+    const IConsoleVariable *Trajectory = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HazardTrajectory"));
+    const bool bAimed = Trajectory && Trajectory->GetInt() != 0;
     for (auto Kind : {ESSWorldKind::SmallAsteroid, ESSWorldKind::MediumAsteroid, ESSWorldKind::MassiveAsteroid})
     {
         auto *Body = F.Director->SpawnHazard(Kind, -1.f);
@@ -140,9 +142,23 @@ bool FSSDirectorAsteroidReadability::RunTest(const FString &)
                  Body->GetActorLocation().X - Radius - F.Director->PlayerClearanceRadius >=
                      6000.f * F.Director->MinimumReactionSeconds);
         const FVector Location = Body->GetActorLocation();
-        TestTrue(TEXT("Enlarged body remains outside the protected lane"),
-                 FVector2D::Distance(FVector2D(Location.Y, Location.Z), F.Director->SafeLane) >=
-                     Radius + F.Director->PlayerClearanceRadius + 320.f);
+        if (bAimed)
+        {
+            // Owner decision, September 27: rocks are thrown at the pilot. Its path crosses the ship's predicted
+            // path near enough to demand an answer, and not before the reaction floor.
+            const FVector Relative = Location - Ship->GetActorLocation();
+            const FVector Closing = Body->GetVelocity() - Ship->GetVelocity();
+            const double Time = -FVector::DotProduct(Relative, Closing) / FMath::Max(1.0, Closing.SizeSquared());
+            const double Pass = (Relative + Closing * Time).Size();
+            TestTrue(TEXT("Aimed rock reaches the ship's path no sooner than the reaction floor"),
+                     Time >= F.Director->MinimumReactionSeconds);
+            TestTrue(TEXT("Aimed rock passes within a few hull widths of the ship's predicted path"),
+                     Pass <= Radius + 3.5f * ASSShip::FlightCollisionRadius() + 1.f);
+        }
+        else
+            TestTrue(TEXT("Enlarged body remains outside the protected lane"),
+                     FVector2D::Distance(FVector2D(Location.Y, Location.Z), F.Director->SafeLane) >=
+                         Radius + F.Director->PlayerClearanceRadius + 320.f);
         for (int32 Slot = 0; Slot < Body->Visual->GetNumMaterials(); ++Slot)
         {
             auto *Material = Cast<UMaterialInstanceDynamic>(Body->Visual->GetMaterial(Slot));

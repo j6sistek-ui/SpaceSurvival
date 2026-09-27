@@ -345,6 +345,8 @@ private:
     ASSShip *FindShip() const;
     friend class FSSDirectorAsteroidReadability;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
+    /** Places a body so it crosses the ship's predicted path after at least the reaction floor. */
+    bool FindTrajectorySpawn(float Radius, float Speed, FVector &Location, FVector &Velocity);
     ASSWorldBody *SpawnHazard(ESSWorldKind Kind, float Radius);
     ASSEnemy *SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective = nullptr);
     bool SpawnWreckagePassage();
@@ -367,6 +369,8 @@ private:
     float SpawnCooldown = 0.f;
     float WaveAge = 0.f;
     FVector2D SafeLane = FVector2D::ZeroVector;
+    /** World time at which the last direct shot reaches the ship's path; spaces direct shots apart. */
+    float LastDirectArrival = -1000.f;
     mutable FRandomStream Random;
     TArray<TWeakObjectPtr<ASSWorldBody>> Spawned;
 };
