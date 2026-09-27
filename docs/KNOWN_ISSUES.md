@@ -14,8 +14,8 @@
 
 | # | Action | Owner | State |
 | --- | --- | --- | --- |
-| 1 | Asteroids admitted onto the ship's predicted path (D1). 60% strike the hull if unanswered and the rest fence the escape; direct shots are 2 s apart at wave 1, 1 s apart at wave 10. Dials: `ss.HazardTrajectory` (0 = old behaviour), `ss.HazardDirectShare`, `ss.HazardArrivalSpacing`. | lead | **Code on the ACT-12 PR, not yet compiled** — the cloud session has no Unreal |
-| 2 | Villain holds about 450 m ahead and above, sways, and flares at every throw (D2). Falls back to an enlarged `SM_PursuerCandidateV1` until `USSPhase1Data::Villain` names the knight and his craft. Dial: `ss.Villain`. | lead; **owner supplies the knight and craft asset paths** | **Code on the ACT-12 PR, not yet compiled** |
+| 1 | Asteroids admitted onto the ship's predicted path (D1). 60% strike the hull if unanswered and the rest fence the escape; direct shots are 2 s apart at wave 1, 1 s apart at wave 10. Dials: `ss.HazardTrajectory` (0 = old behaviour), `ss.HazardDirectShare`, `ss.HazardArrivalSpacing`. | lead | **Code on PR #65, not yet compiled** — the cloud session has no Unreal |
+| 2 | Villain holds about 450 m ahead and above, sways, and flares at every throw (D2). Falls back to an enlarged `SM_PursuerCandidateV1` until `USSPhase1Data::Villain` names the knight and his craft. Dial: `ss.Villain`. | lead; **owner supplies the knight and craft asset paths** | **Code on PR #65, not yet compiled** |
 | 3 | Build, run one suite, fly waves 1–3: `Build.ps1 -Target Editor`, then `SpaceSurvival.Integration.DirectorAsteroidReadability`, then play. | owner + lead | next session |
 | 4 | Admission fall-through: a refused enemy or field attempt admits an asteroid instead of wasting the slot. Stops the wave 5 climax going quiet once 5 enemies are alive. | lead | not started — provably broken, no sign-off needed |
 | 5 | Enemies launched *from* the villain, then enemy attack runs (approach, committed run, break-off) instead of flying in formation 17 m ahead. | lead; owner approves the behaviour | not started |
