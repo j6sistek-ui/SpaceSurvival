@@ -1,5 +1,7 @@
 # Phase 1 validation record
 
+**September27 home/library extension:** [Focused receipt](validation/2026-09-27-home-library.md) records the five-pack import, preserved ULAT rows, complete apartment Level Instance and 68 passing sampled geometry/walking/door/persistence checks on the saved annex. Four changed-area views passed independent visual review. This extends the separate outpost only; no full gameplay suite, C++ build, package or representative performance claim.
+
 **September 24 outpost sandbox:** The [dated outpost receipt](validation/2026-09-24-outpost-sandbox.md) records the isolated map's native build, targeted automation, scripted traversal/local-preview checks and retained visual failures/comparisons. Results apply to their recorded snapshots; subsequent detail integration, terminal travel, physical input, representative performance and visual acceptance remain separate gates. The [sandbox guide](OUTPOST_SANDBOX.md) describes the current source workflow and review launchers.
 
 **September22 UI extension:** [Focused receipt](validation/2026-09-22-ui-refresh.md) records the approved HUD/settings/pause batch, five affected menu passes, seven rendered frames and the retained font/capture failures. This is separate from full gameplay acceptance.
