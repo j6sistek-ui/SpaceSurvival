@@ -1,5 +1,26 @@
 # SpaceSurvival Phase 1 architecture
 
+## Aimed Director threats — September28
+
+`SpawnHazard` aims Director asteroids in the actual ship/rock relative-motion
+frame. `ss.HazardDirectShare` requests direct candidates; spacing/clearance can
+reduce the admitted share. The 3.5-second floor is measured to first surface
+contact using a conservative envelope of the actual hull. Near misses lie in
+the plane perpendicular to relative travel and clear that envelope. Shots that
+would expire before passing are rejected before budget spending. Weak actor
+reservations separate full possible contact windows, including earlier-arriving
+shots, and are released on destruction/expiry/reset. The old protected-lane
+asteroid path remains available through `ss.HazardTrajectory=0`; fields, enemies
+and wreckage retain their existing admission. See the [audit](validation/2026-09-28-pr65-audit.md).
+
+`ASSGameMode` owns a collision-free `ASSDirectorVillain`, shown in survival flight
+and hidden in free flight, station/approach/docking. `USSPhase1Data::Villain`
+supplies craft/rider assets and presentation tuning; current defaults use a
+fallback craft with no rider. Admission notifies its launch flare without giving
+the actor threat-budget authority. World-body contacts call the existing combat
+VFX subsystem at the hull sweep's impact point. This does not implement the
+future shield/scar/condition-damage layers.
+
 September22 arcade response: existing authored data receives 1.5x acceleration, 1.7x steering, 2x response and 5x roll multipliers (60 m/s cruise unchanged). The ShipCore adapter removes vendor roll attenuation because the game already owns its roll rate. Bumper evades use the existing dodge cooldown/resource rules; no immunity or wave tuning changes.
 
 `ASSDistantAsteroids` now streams deterministic 500 m world cells in a bounded 5x5x5 neighbourhood (default2048 rocks/debris across shared mesh batches). Retained cells keep stable engine instance IDs and transforms. Outgoing cells are beyond the900m draw limit before retirement; revisiting regenerates identical poses. The initial320m centre clearance stays anchored to launch. Camera, Director pressure and docking visibility do not reposition rocks. Separate authored scenery/landmarks remain.
@@ -17,7 +38,7 @@ Settings prepend four native tab actions and retain selected action across refre
 
 **September 22 source amendment:** environment visibility now follows an existing ship rather than Flight-only phase, preserving atmosphere/scenery across docking, walking and takeoff. Home creates presentation before departure. Title state is explicit (`bAtTitleScreen`); an inactive survival run at home no longer implies startup UI. Explicit return-to-title abandons only unsuspended in-memory run state, retaining saved account/checkpoint data. Gallery service registration is removed; stable enum/assets remain for compatibility. Wardrobe excludes original Acornaut and resolves its old saved preference to the current default. Automatic rear-cabin launch popup is removed; explicit E/Y interaction remains provisional until actual cockpit seating is implemented.
 
-The approved arcade baseline is an added `USSPhase1Data::ArcadeFlightScale` (2.5), so existing serialized cruise/acceleration values migrate without editing the private Data Asset. Production and controller/physics fixtures use the same effective getters. `DirectorAsteroidScale` defaults to 3 and applies only to small/medium/massive asteroids spawned through `SpawnHazard`, before spatial admission. Clearance, visible scale and collision therefore agree; larger bodies widen the candidate envelope beside the safe lane. Director bodies receive an orange `M_Hazard` dynamic material on every slot; world scenery keeps vendor surfaces. Authored wreckage passages, fields and enemy sizes are unchanged.
+The approved arcade baseline is an added `USSPhase1Data::ArcadeFlightScale` (2.5), so existing serialized cruise/acceleration values migrate without editing the private Data Asset. Production and controller/physics fixtures use the same effective getters. `DirectorAsteroidScale` defaults to 3 and applies only to small/medium/massive asteroids spawned through `SpawnHazard`, before spatial admission. Clearance, visible scale and collision therefore agree; larger bodies widen the collision/clearance envelope (the protected safe lane applies only in legacy asteroid mode). Director bodies receive an orange `M_Hazard` dynamic material on every slot; world scenery keeps vendor surfaces. Authored wreckage passages, fields and enemy sizes are unchanged.
 
 This document describes current source ownership and data flow. [PROJECT_STATE.md](PROJECT_STATE.md) owns the latest build, commit and package boundary; [VALIDATION.md](VALIDATION.md) retains exact evidence. **Phase 1 remains PARTIAL.** The [active issue ledger](KNOWN_ISSUES.md) owns unfinished work and owner acceptance. The earlier [asset refresh](ASSET_REFRESH.md) and [combined look](production/COMBINED_SPACE_LOOK.md) records retain their own validation boundaries; they do not validate subsequent presentation changes.
 

@@ -8,6 +8,7 @@
 #include "SSGameMode.h"
 #include "SSShip.h"
 #include "SSPhase1Data.h"
+#include "SSDirectorVillain.h"
 #include "Components/SphereComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -565,6 +566,8 @@ void ASSWorldBody::Tick(float DeltaSeconds)
             const FVector PreviousRelative =
                 bHasPreviousShipPosition ? PreviousShipPosition - PreviousBodyPosition : Offset;
             FVector ContactNormal = FVector::ZeroVector;
+            FVector ContactPoint = FVector::ZeroVector;
+            bool bHullPoint = false;
             bool bContact = false;
             if (ShipContactRemaining <= 0.f && Ship->HasFlightHull())
             {
@@ -573,6 +576,8 @@ void ASSWorldBody::Tick(float DeltaSeconds)
                 FHitResult Hit;
                 bContact = Ship->SweepFlightContact(Hit, Ship->GetActorLocation() - PreviousRelative,
                                                     GetActorLocation(), BodyRadius);
+                bHullPoint = bContact && Hit.bBlockingHit;
+                ContactPoint = Hit.ImpactPoint;
                 ContactNormal = -Hit.Normal;
                 if (ContactNormal.IsNearlyZero())
                     ContactNormal = PreviousRelative.GetSafeNormal();
@@ -596,6 +601,12 @@ void ASSWorldBody::Tick(float DeltaSeconds)
             {
                 Ship->ReceiveImpact(CollisionDamage, ContactNormal);
                 ShipContactRemaining = 1.1f;
+                // Sparks where the rock struck, thrown back toward it. The flight hull's sweep gives the real
+                // point on the hull; the classic sphere uses the rock's surface facing the ship.
+                if (!bHullPoint)
+                    ContactPoint = GetActorLocation() + ContactNormal * BodyRadius;
+                if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
+                    FX->PlayImpact(ContactPoint, -ContactNormal, false, CollisionDamage >= 25.f);
             }
         }
         else if (IsEnvironmentalField())
@@ -1662,6 +1673,17 @@ TAutoConsoleVariable<float> HazardSpeed(TEXT("ss.HazardSpeed"), 3.f,
 TAutoConsoleVariable<float> HazardAim(TEXT("ss.HazardAim"), .55f,
                                       TEXT("0 fires along the ship's heading at spawn, 1 leads the ship."));
 TAutoConsoleVariable<int32> HazardCount(TEXT("ss.HazardCount"), 40, TEXT("Active hazard and enemy cap."));
+// Owner decision, September 27: threats are thrown at the pilot. An asteroid is placed on the ship's predicted
+// path, so doing nothing means being hit and every rock asks for a steer, a boost, a brake, a dodge or a shot.
+// Fairness moves from a protected hole to timing: every rock still arrives after the reaction floor, and two
+// direct shots never land inside the same spacing window. 0 restores the old forward window and safe lane.
+TAutoConsoleVariable<int32>
+    HazardTrajectory(TEXT("ss.HazardTrajectory"), 1,
+                     TEXT("1 aims asteroids at the ship's predicted path; 0 is the old window."));
+TAutoConsoleVariable<float> HazardDirectShare(TEXT("ss.HazardDirectShare"), .6f,
+                                              TEXT("Share of aimed asteroids that strike the hull if unanswered."));
+TAutoConsoleVariable<float> HazardArrivalSpacing(TEXT("ss.HazardArrivalSpacing"), 1.f,
+                                                 TEXT("Seconds between direct shots at wave 10; wave 1 doubles it."));
 
 /** How fast a hazard may travel, after the dial. Shared so the spawn distance and the velocity cannot
  *  disagree: reaction time is computed from closing speed, and a faster hazard that spawned at the old
@@ -1706,6 +1728,76 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
     return false;
 }
 
+bool USSSurvivalDirectorComponent::FindTrajectorySpawn(float Radius, float Speed, float Lifetime, FVector &Location,
+                                                       FVector &Velocity, FVector2D &ContactWindow)
+{
+    ASSShip *Ship = FindShip();
+    if (!Ship)
+        return false;
+    const FVector Forward = Ship->GetActorForwardVector();
+    const FVector Right = Ship->GetActorRightVector();
+    const FVector Up = Ship->GetActorUpVector();
+    const FVector ShipVelocity = Ship->GetVelocity();
+    // Enclose the actual compound hull, not only the legacy 105 cm root sphere. Local bounds keep this
+    // envelope invariant as the ship rolls. A miss outside it cannot clip an outlying wing or engine.
+    const FBox Hull = Ship->FlightHullBounds(FTransform(FQuat::Identity, FVector::ZeroVector, Ship->GetActorScale3D()));
+    const float HullRadius = Ship->HasFlightHull() ? Hull.GetCenter().Size() + Hull.GetExtent().Size()
+                                                   : Ship->Collision->GetScaledSphereRadius();
+    const float Contact = Radius + HullRadius;
+    const float Now = GetWorld()->GetTimeSeconds();
+    const float Spacing = FMath::Max(0.f, HazardArrivalSpacing.GetValueOnGameThread()) *
+                          FMath::Lerp(2.f, 1.f, FMath::Clamp((Wave - 1) / 9.f, 0.f, 1.f));
+    DirectArrivals.RemoveAll(
+        [Now, Spacing](const FDirectArrival &Entry)
+        { return !Entry.Body.IsValid() || Entry.Body->IsActorBeingDestroyed() || Entry.Window.Y + Spacing < Now; });
+    ContactWindow = FVector2D(-1.f, -1.f);
+    for (int32 Attempt = 0; Attempt < 16; ++Attempt)
+    {
+        const FVector Incoming =
+            (-Forward + Right * Random.FRandRange(-.35f, .35f) + Up * Random.FRandRange(-.25f, .25f)).GetSafeNormal();
+        const FVector RockVelocity = Incoming * Speed;
+        const FVector RelativeVelocity = RockVelocity - ShipVelocity;
+        const double Closing = RelativeVelocity.Size();
+        if (Closing < 1.)
+            continue;
+        FVector MissAxis, OtherMissAxis;
+        (RelativeVelocity / Closing).FindBestAxisVectors(MissAxis, OtherMissAxis);
+        bool bDirect = Random.FRand() < FMath::Clamp(HazardDirectShare.GetValueOnGameThread(), 0.f, 1.f);
+        // Cover the ship origin for a direct shot. Use the full hull envelope for the miss and timing.
+        float Miss = bDirect ? Random.FRandRange(0.f, .5f * Radius)
+                             : Random.FRandRange(Contact + 150.f, Contact + 2.5f * HullRadius);
+        double HalfContactTime =
+            bDirect ? FMath::Sqrt(FMath::Max(0., double(Contact) * Contact - Miss * Miss)) / Closing : 0.;
+        // Time is to closest approach. The leading SURFACE must respect the reaction floor as well.
+        const double Arrival = FMath::Max(MinimumReactionSeconds + HalfContactTime + Random.FRandRange(0.f, 1.5f),
+                                          (9000. + Contact) / Closing);
+        // A nearly parallel or very slow shot cannot reach the pilot before expiry. Do not spend budget or
+        // reserve a future hit for it; a later spawn tick can choose a viable velocity.
+        if (Lifetime > 0.f && Arrival + HalfContactTime + 1. >= Lifetime)
+            continue;
+        FVector2D Window(Now + Arrival - HalfContactTime, Now + Arrival + HalfContactTime);
+        if (bDirect && DirectArrivals.ContainsByPredicate(
+                           [&](const FDirectArrival &Entry)
+                           { return Window.X < Entry.Window.Y + Spacing && Window.Y > Entry.Window.X - Spacing; }))
+        {
+            bDirect = false;
+            Miss = Random.FRandRange(Contact + 150.f, Contact + 2.5f * HullRadius);
+        }
+        const float Angle = Random.FRandRange(0.f, 2.f * PI);
+        const FVector Offset = (MissAxis * FMath::Cos(Angle) + OtherMissAxis * FMath::Sin(Angle)) * Miss;
+        const FVector Candidate = Ship->GetActorLocation() - RelativeVelocity * Arrival + Offset;
+        if (HasSpatialClearance(this, Candidate, Candidate, Radius, false))
+        {
+            Location = Candidate;
+            Velocity = RockVelocity;
+            if (bDirect)
+                ContactWindow = Window;
+            return true;
+        }
+    }
+    return false;
+}
+
 ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float Radius)
 {
     if (GetActiveThreatCount() >= FMath::Max(1, HazardCount.GetValueOnGameThread()))
@@ -1718,7 +1810,18 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
         Radius *= FMath::Max(1.f, Content(this)->DirectorAsteroidScale);
     FVector Location;
     const bool bField = Kind == ESSWorldKind::ElectricalStorm || Kind == ESSWorldKind::GravityAnomaly;
-    if (!FindSafeSpawn(Radius, Location, bField))
+    const bool bTrajectory = bAsteroid && HazardTrajectory.GetValueOnGameThread() != 0;
+    FVector TrajectoryVelocity = FVector::ZeroVector;
+    FVector2D ContactWindow(-1.f, -1.f);
+    if (bTrajectory)
+    {
+        const float Speed = Random.FRandRange(Definition.DriftSpeedMin,
+                                              FMath::Max(Definition.DriftSpeedMin, Definition.DriftSpeedMax)) *
+                            HazardSpeedScale();
+        if (!FindTrajectorySpawn(Radius, Speed, Definition.Lifetime, Location, TrajectoryVelocity, ContactWindow))
+            return nullptr;
+    }
+    else if (!FindSafeSpawn(Radius, Location, bField))
         return nullptr;
     ASSWorldBody *Body = GetWorld()->SpawnActor<ASSWorldBody>(Location, FRotator::ZeroRotator);
     if (!Body)
@@ -1740,6 +1843,8 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
             Body->SetLinearVelocity(Carried *
                                     (bClimax ? Definition.ClimaxVelocityFraction : Definition.FieldVelocityFraction));
         }
+        else if (bTrajectory)
+            Body->SetLinearVelocity(TrajectoryVelocity);
         else
         {
             const float Speed = Random.FRandRange(Definition.DriftSpeedMin,
@@ -1764,6 +1869,10 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
         }
     }
     Spawned.Add(Body);
+    if (ContactWindow.X >= 0.f)
+        DirectArrivals.Add({Body, ContactWindow});
+    if (!bField)
+        ASSDirectorVillain::NotifyLaunch(GetWorld(), Body->GetActorLocation());
     return Body;
 }
 
@@ -1790,6 +1899,7 @@ ASSEnemy *USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncount
         if (ASSShip *Ship = FindShip())
             Enemy->SetLinearVelocity(Ship->GetVelocity());
         Spawned.Add(Enemy);
+        ASSDirectorVillain::NotifyLaunch(GetWorld(), Enemy->GetActorLocation());
         return Enemy;
     }
     return nullptr;
@@ -2001,6 +2111,7 @@ void USSSurvivalDirectorComponent::ResetEncounter()
     for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
         It->Destroy();
     Spawned.Empty();
+    DirectArrivals.Empty();
     AvailableBudget = 0.f;
     Pressure = 0.f;
     WaveAge = 0.f;

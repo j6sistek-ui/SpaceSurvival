@@ -146,6 +146,7 @@ private:
     float RollCommandDegrees() const;
 
     friend class FSSDirectorAsteroidReadability;
+    friend class FSSDirectorTrajectoryFairness;
     friend class FSSControllerTestingPreset;
     void UpdateEngineMix();
     void RefreshFlightPresentation();

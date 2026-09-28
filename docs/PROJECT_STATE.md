@@ -1,5 +1,13 @@
 # SpaceSurvival project state
 
+**2026-09-28 PR65 audit:** native Editor build and two targeted Director tests pass
+after repairing coasting trajectory fairness and stale arrival reservations.
+The original PR compiled and its old test passed, but the new regression failed
+28 expectations before the repair. Build/test evidence is confined to
+`C:/Users/j6sis/.codex/worktrees/pr65-review/SpaceSurvival`; desktop gameplay,
+private assets, PR64 outpost, package and itch release are unchanged. No merge or
+natural-play/visual acceptance. [Audit and limitations](validation/2026-09-28-pr65-audit.md).
+
 **2026-09-24 source consolidation:** Owner authorized merging the open PRs. PR62, PR60 and PR63 are merged into their respective bases; PR58 now consolidates repaired gameplay, replacement hero and authoring tools into main, pending final checks/merge. Runtime source/configuration and selected tuning/map are identical to built hero commit `3d2ff3c`; this is not a new gameplay build. Desktop launchers continue using the repaired checkout. Older unmerged/import-pending notes below are historical.
 
 **Blender refresh complete:** `Artifacts/BuildingSandbox/BuildingSandbox.blend` now has5,522 placements matching the saved flat-space Unreal export. Reopened in Blender5.2.2 and checked every link, mesh path and transform; old7,431-placement scene preserved as `BuildingSandbox-before-refresh-20260924.blend`. No Unreal map or library rebuild, package or itch change. [Receipt](validation/2026-09-24-pr-consolidation.md).

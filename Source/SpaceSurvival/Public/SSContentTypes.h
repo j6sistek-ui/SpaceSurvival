@@ -1563,3 +1563,55 @@ struct FSSDirectorContentTuning
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int32 ClimaxEnemyCap = 5;
 };
+
+/** The Director as a character the player chases. Paths name the owner's own assets; an empty or missing
+ *  path falls back to a tracked mesh, so a clone without the licensed packs still shows who is throwing. */
+USTRUCT(BlueprintType)
+struct FSSVillainDefinition
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FString CraftMeshPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    float CraftScale = 1.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FRotator CraftRotation = FRotator::ZeroRotator;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FString FallbackCraftMeshPath = TEXT("/Game/SpaceSurvival/Meshes/SM_PursuerCandidateV1.SM_PursuerCandidateV1");
+    /** The fallback is an enemy fighter; at this size it cannot be mistaken for one. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    float FallbackCraftScale = 12.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FString RiderMeshPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FString RiderClipPath;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FVector RiderOffset = FVector(0.f, 0.f, 150.f);
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FRotator RiderRotation = FRotator(0.f, -90.f, 0.f);
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    float RiderScale = 1.f;
+    /** Where he holds, measured from the player along the player's heading, in cm. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pursuit")
+    float LeadDistance = 45000.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pursuit")
+    float HeightOffset = 5000.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pursuit")
+    float SwayAmplitude = 6000.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pursuit", meta = (ClampMin = "1"))
+    float SwayPeriod = 11.f;
+    /** Low values let a hard turn briefly outrun him, so he visibly swings back into the lead. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pursuit", meta = (ClampMin = "0.1"))
+    float FollowResponse = 1.2f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presence")
+    FLinearColor GlowColor = FLinearColor(1.f, .16f, .06f);
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presence")
+    float GlowLumens = 250000.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presence")
+    float GlowRadius = 8000.f;
+    /** Peak brightness of the flare that marks each thrown threat, as a multiple of the resting glow. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presence", meta = (ClampMin = "1"))
+    float LaunchFlare = 4.f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presence", meta = (ClampMin = "0.05"))
+    float LaunchFlareSeconds = .45f;
+};

@@ -125,6 +125,8 @@ bool FSSDirectorAsteroidReadability::RunTest(const FString &)
     if (!TestNotNull(TEXT("Resolve ship for faster approach admission"), Ship))
         return false;
     Ship->Velocity = FVector(6000.f, 0.f, 0.f);
+    const IConsoleVariable *Trajectory = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HazardTrajectory"));
+    const bool bAimed = Trajectory && Trajectory->GetInt() != 0;
     for (auto Kind : {ESSWorldKind::SmallAsteroid, ESSWorldKind::MediumAsteroid, ESSWorldKind::MassiveAsteroid})
     {
         auto *Body = F.Director->SpawnHazard(Kind, -1.f);
@@ -136,13 +138,37 @@ bool FSSDirectorAsteroidReadability::RunTest(const FString &)
         const float VisualRadius =
             Body->Visual->GetStaticMesh()->GetBounds().BoxExtent.GetMax() * Body->Visual->GetRelativeScale3D().X;
         TestTrue(TEXT("Visible surface scales with collision"), FMath::IsNearlyEqual(VisualRadius, Radius, 1.f));
-        TestTrue(TEXT("Faster approach retains the reaction-time corridor"),
-                 Body->GetActorLocation().X - Radius - F.Director->PlayerClearanceRadius >=
-                     6000.f * F.Director->MinimumReactionSeconds);
         const FVector Location = Body->GetActorLocation();
-        TestTrue(TEXT("Enlarged body remains outside the protected lane"),
-                 FVector2D::Distance(FVector2D(Location.Y, Location.Z), F.Director->SafeLane) >=
-                     Radius + F.Director->PlayerClearanceRadius + 320.f);
+        if (bAimed)
+        {
+            // Owner decision, September 27: rocks are thrown at the pilot. Its path crosses the ship's predicted
+            // path near enough to demand an answer, and not before the reaction floor.
+            const FVector Relative = Location - Ship->GetActorLocation();
+            const FVector Closing = Body->GetVelocity() - Ship->GetVelocity();
+            const double Time = -FVector::DotProduct(Relative, Closing) / FMath::Max(1.0, Closing.SizeSquared());
+            const double Pass = (Relative + Closing * Time).Size();
+            TestTrue(TEXT("Aimed rock reaches the ship's path no sooner than the reaction floor"),
+                     Time >= F.Director->MinimumReactionSeconds);
+            TestTrue(TEXT("Aimed rock passes within a few hull widths of the ship's predicted path"),
+                     Pass <= Radius + 3.5f * ASSShip::FlightCollisionRadius() + 1.f);
+            const double Contact = Radius + Ship->Collision->GetScaledSphereRadius();
+            if (Pass < Contact && Closing.SizeSquared() > UE_SMALL_NUMBER)
+            {
+                const double FirstContact =
+                    Time - FMath::Sqrt((Contact * Contact - Pass * Pass) / Closing.SizeSquared());
+                TestTrue(TEXT("Aimed rock's first surface contact respects the reaction floor"),
+                         FirstContact + .001 >= F.Director->MinimumReactionSeconds);
+            }
+        }
+        else
+        {
+            TestTrue(TEXT("Legacy approach retains the forward reaction-time corridor"),
+                     Location.X - Radius - F.Director->PlayerClearanceRadius >=
+                         6000.f * F.Director->MinimumReactionSeconds);
+            TestTrue(TEXT("Enlarged body remains outside the protected lane"),
+                     FVector2D::Distance(FVector2D(Location.Y, Location.Z), F.Director->SafeLane) >=
+                         Radius + F.Director->PlayerClearanceRadius + 320.f);
+        }
         for (int32 Slot = 0; Slot < Body->Visual->GetNumMaterials(); ++Slot)
         {
             auto *Material = Cast<UMaterialInstanceDynamic>(Body->Visual->GetMaterial(Slot));
@@ -163,6 +189,221 @@ bool FSSDirectorAsteroidReadability::RunTest(const FString &)
     TestFalse(TEXT("Non-Director rocks retain their own size/material contract"), WorldRock->bDirectorAsteroid);
     TestEqual(TEXT("Non-Director radius is not multiplied"), WorldRock->GetBodyRadius(),
               F.Mode->Tuning->Hazard(ESSWorldKind::SmallAsteroid).Radius);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDirectorTrajectoryFairness, "SpaceSurvival.Integration.DirectorTrajectoryFairness",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDirectorTrajectoryFairness::RunTest(const FString &)
+{
+    struct FScopedDial
+    {
+        IConsoleVariable *Variable;
+        FString Saved;
+        explicit FScopedDial(const TCHAR *Name)
+            : Variable(IConsoleManager::Get().FindConsoleVariable(Name)),
+              Saved(Variable ? Variable->GetString() : FString())
+        {
+        }
+        ~FScopedDial()
+        {
+            if (Variable)
+                Variable->SetWithCurrentPriority(*Saved);
+        }
+        void Set(float Value) const
+        {
+            Variable->SetWithCurrentPriority(Value);
+        }
+    };
+    FScopedDial Trajectory(TEXT("ss.HazardTrajectory")), Speed(TEXT("ss.HazardSpeed")),
+        DirectShare(TEXT("ss.HazardDirectShare")), Spacing(TEXT("ss.HazardArrivalSpacing"));
+    if (!TestNotNull(TEXT("Resolve trajectory mode"), Trajectory.Variable) ||
+        !TestNotNull(TEXT("Resolve hazard speed"), Speed.Variable) ||
+        !TestNotNull(TEXT("Resolve direct share"), DirectShare.Variable) ||
+        !TestNotNull(TEXT("Resolve arrival spacing"), Spacing.Variable))
+        return false;
+    Trajectory.Set(1.f);
+    Speed.Set(3.f);
+    Spacing.Set(2.f);
+
+    struct FApproach
+    {
+        double ClosestTime = 0.;
+        double ClosestDistance = 0.;
+        double FirstContact = 0.;
+        double LastContact = 0.;
+        bool bHit = false;
+    };
+    // Independent sphere-surface intersection, not the placer's selected arrival time. This fixture has
+    // no BeginPlay/physics hull; its actual contact geometry is the ship's classic collision sphere.
+    auto Approach = [](const ASSWorldBody *Body, const ASSShip *Ship)
+    {
+        FApproach Result;
+        const FVector Relative = Body->GetActorLocation() - Ship->GetActorLocation();
+        const FVector Velocity = Body->GetVelocity() - Ship->GetVelocity();
+        const double Contact = Body->GetBodyRadius() + Ship->Collision->GetScaledSphereRadius();
+        const double A = Velocity.SizeSquared();
+        const double B = 2. * FVector::DotProduct(Relative, Velocity);
+        const double C = Relative.SizeSquared() - Contact * Contact;
+        Result.ClosestTime = A > UE_SMALL_NUMBER ? FMath::Max(0., -B / (2. * A)) : 0.;
+        Result.ClosestDistance = (Relative + Velocity * Result.ClosestTime).Size();
+        if (C <= 0.)
+            Result.bHit = true;
+        else if (A > UE_SMALL_NUMBER)
+        {
+            const double Discriminant = B * B - 4. * A * C;
+            if (Discriminant >= 0.)
+            {
+                const double First = (-B - FMath::Sqrt(Discriminant)) / (2. * A);
+                Result.bHit = First >= 0.;
+                Result.FirstContact = First;
+                Result.LastContact = (-B + FMath::Sqrt(Discriminant)) / (2. * A);
+            }
+        }
+        return Result;
+    };
+    auto SetDrift = [](FSSWreckageBudgetWorld &F, float WorldSpeed)
+    {
+        for (auto &Hazard : F.Mode->Tuning->Hazards)
+            if (Hazard.Kind == ESSWorldKind::SmallAsteroid)
+                Hazard.DriftSpeedMin = Hazard.DriftSpeedMax = WorldSpeed / 3.f;
+    };
+
+    for (bool bDirect : {true, false})
+        for (int32 Scenario = 0; Scenario < 4; ++Scenario)
+        {
+            FSSWreckageBudgetWorld F;
+            if (!F.Initialize(*this))
+                return false;
+            ASSShip *Ship = F.Director->FindShip();
+            if (!TestNotNull(TEXT("Resolve trajectory fixture ship"), Ship))
+                return false;
+            const FVector Motion = Scenario == 0   ? FVector(-600.f, 0.f, 0.f)
+                                   : Scenario == 1 ? FVector(0.f, 6000.f, 0.f)
+                                                   : FVector(6000.f, 0.f, 0.f);
+            const float HullRadius = Scenario == 3 ? 700.f : 105.f;
+            Ship->Collision->SetSphereRadius(HullRadius);
+            Ship->Velocity = Motion;
+            DirectShare.Set(bDirect ? 1.f : 0.f);
+            SetDrift(F, 600.f);
+            int32 Admitted = 0;
+            for (int32 Seed = 1; Seed <= 8; ++Seed)
+            {
+                F.Director->ResetEncounter();
+                F.Director->Configure(1, false);
+                F.Director->Random.Initialize(Seed);
+                ASSWorldBody *Body = F.Director->SpawnHazard(ESSWorldKind::SmallAsteroid, -1.f);
+                if (!Body)
+                    continue; // Unsafe/too-slow relative trajectories may be rejected before admission.
+                ++Admitted;
+                const FApproach Pass = Approach(Body, Ship);
+                const FString Label =
+                    FString::Printf(TEXT("%s hull %.0f velocity %s seed %d"), bDirect ? TEXT("Direct") : TEXT("Miss"),
+                                    HullRadius, *Motion.ToString(), Seed);
+                if (bDirect)
+                {
+                    TestTrue(Label + TEXT(" hits an unanswered constant-velocity ship"), Pass.bHit);
+                    if (Pass.bHit)
+                        TestTrue(Label + TEXT(" first surface contact respects the reaction floor"),
+                                 Pass.FirstContact + .001 >= F.Director->MinimumReactionSeconds);
+                }
+                else
+                    TestFalse(Label + TEXT(" stays outside the collision surface"), Pass.bHit);
+                TestTrue(Label + TEXT(" remains alive through closest approach"),
+                         Body->LifetimeSeconds <= 0.f || Body->LifetimeSeconds + .001 >= Pass.ClosestTime);
+            }
+            if (Motion.X >= 0.f)
+                TestTrue(TEXT("Normal forward/lateral motion still admits a viable trajectory"), Admitted > 0);
+        }
+
+    DirectShare.Set(1.f);
+    for (int32 Removal = 0; Removal < 4; ++Removal)
+    {
+        FSSWreckageBudgetWorld F;
+        if (!F.Initialize(*this))
+            return false;
+        ASSShip *Ship = F.Director->FindShip();
+        if (!TestNotNull(TEXT("Resolve stopped fixture ship"), Ship))
+            return false;
+        Ship->Velocity = FVector::ZeroVector;
+        F.Director->Configure(1, false);
+        F.Director->Random.Initialize(17);
+        // The 120 cm/s shot cannot reach a stopped ship during the authored 65-second lifetime. The
+        // 200 cm/s shot can, and tests releasing its reservation on destruction and encounter reset.
+        SetDrift(F, Removal == 0 ? 120.f : 200.f);
+        ASSWorldBody *Slow = F.Director->SpawnHazard(ESSWorldKind::SmallAsteroid, -1.f);
+        if (Slow)
+        {
+            const FApproach Pass = Approach(Slow, Ship);
+            TestTrue(TEXT("An admitted slow direct shot reaches the unanswered ship"), Pass.bHit);
+            TestTrue(TEXT("An admitted slow shot lives through closest approach"),
+                     Slow->LifetimeSeconds <= 0.f || Slow->LifetimeSeconds + .001 >= Pass.ClosestTime);
+        }
+        else if (Removal != 0)
+            AddError(TEXT("A viable stopped-ship shot is required to exercise reservation removal."));
+        if (Removal == 1 && Slow)
+        {
+            Slow->SetActorLocation(FVector(-1000000, 0, 0));
+            Slow->Destroy();
+        }
+        if (Removal == 2)
+        {
+            F.Director->ResetEncounter();
+            F.Director->Configure(1, false);
+        }
+        SetDrift(F, 900.f);
+        F.Director->Random.Initialize(29);
+        ASSWorldBody *Fast = F.Director->SpawnHazard(ESSWorldKind::SmallAsteroid, -1.f);
+        if (TestNotNull(TEXT("A later faster shot remains admissible"), Fast))
+            TestTrue(Removal == 0   ? TEXT("A rejected or much later shot does not suppress an earlier direct shot")
+                     : Removal == 1 ? TEXT("Destroyed shot releases its direct-arrival reservation")
+                     : Removal == 2 ? TEXT("Encounter reset releases its direct-arrival reservation")
+                                    : TEXT("A live later shot permits a safely separated earlier direct shot"),
+                     Approach(Fast, Ship).bHit);
+    }
+
+    // Distinguish surface windows from centre timestamps: these centres pass more than ten seconds
+    // apart, but the large body's leading surface follows the small body's trailing surface too closely.
+    FSSWreckageBudgetWorld F, Control;
+    if (!F.Initialize(*this) || !Control.Initialize(*this))
+        return false;
+    ASSShip *Ship = F.Director->FindShip();
+    ASSShip *ControlShip = Control.Director->FindShip();
+    if (!TestNotNull(TEXT("Resolve surface-window fixture ship"), Ship) ||
+        !TestNotNull(TEXT("Resolve unreserved comparison ship"), ControlShip))
+        return false;
+    Ship->Velocity = ControlShip->Velocity = FVector::ZeroVector;
+    F.Director->Configure(1, false);
+    F.Director->Random.Initialize(23);
+    SetDrift(F, 300.f);
+    ASSWorldBody *Large = F.Director->SpawnHazard(ESSWorldKind::SmallAsteroid, 650.f);
+    Control.Director->Configure(1, false);
+    Control.Director->Random.Initialize(1);
+    SetDrift(Control, 350.f);
+    ASSWorldBody *Unreserved = Control.Director->SpawnHazard(ESSWorldKind::SmallAsteroid, -1.f);
+    if (!TestNotNull(TEXT("Admit the large reserved shot"), Large) ||
+        !TestNotNull(TEXT("Admit a direct comparison shot without a conflicting reservation"), Unreserved))
+        return false;
+    const FApproach LargePass = Approach(Large, Ship), SmallPass = Approach(Unreserved, ControlShip);
+    TestTrue(TEXT("Both unopposed shots really intersect the ship"), LargePass.bHit && SmallPass.bHit);
+    TestTrue(TEXT("Centre timestamps alone appear safely separated"),
+             LargePass.ClosestTime - SmallPass.ClosestTime > 4.);
+    TestTrue(TEXT("Actual surface-contact intervals violate the four-second spacing"),
+             LargePass.FirstContact - SmallPass.LastContact < 4.);
+    SetDrift(F, 350.f);
+    int32 WindowCandidates = 0;
+    for (int32 Seed = 1; Seed <= 8; ++Seed)
+    {
+        F.Director->Random.Initialize(Seed);
+        ASSWorldBody *Candidate = F.Director->SpawnHazard(ESSWorldKind::SmallAsteroid, -1.f);
+        if (!Candidate)
+            continue;
+        ++WindowCandidates;
+        TestFalse(TEXT("A conflicting surface window is changed to a genuine miss"), Approach(Candidate, Ship).bHit);
+        Candidate->SetActorLocation(FVector(-1000000, 0, 0));
+        Candidate->Destroy();
+    }
+    TestTrue(TEXT("The surface-window case exercises an admitted alternative"), WindowCandidates > 0);
     return true;
 }
 
