@@ -1,6 +1,6 @@
 # SpaceSurvival project state
 
-**2026-09-29 PR66, source only:** wave 5 admission fall-through, enemies launched from the villain, a stand-in rider and the villain's voice. Not compiled or played; the cloud session has no Unreal. Desktop gameplay, package and itch release are unchanged until the owner builds, runs the four Director regressions and flies waves 1-5. ACT-12 rows 2, 4, 5 and 8 in [KNOWN_ISSUES](KNOWN_ISSUES.md) carry the state.
+**2026-09-29 PR66 native repair:** the harder D7 tuning is retained. Native compilation, 13 distinct affected tests across two batches, and a five-frame offscreen render pass after fixing the unity-build collision, volley cost/lifetime handling and story-caption queue/menu timing. Actual DA_Phase1 loads enemy chance .26, caps 3/5 and budget growth .16. Desktop integration is in progress; the source checkpoint and final playable build will be recorded in the [native receipt](validation/2026-09-29-pr66-native-polish.md). PR66 remains open; PR64 station, package and itch are unchanged. Natural play, physical controls and final difficulty fairness remain unverified.
 
 **2026-09-28 PR65 audit:** native Editor build and two targeted Director tests pass
 after repairing coasting trajectory fairness and stale arrival reservations.

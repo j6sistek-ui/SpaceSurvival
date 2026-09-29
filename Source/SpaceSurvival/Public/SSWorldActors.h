@@ -348,6 +348,7 @@ private:
     friend class FSSDirectorAdmissionFallThrough;
     friend class FSSDirectorVillainLaunch;
     friend class FSSDirectorVolley;
+    friend class FSSDirectorVolleyAdmission;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
     /** Where the villain can throw an enemy from: his craft, while it is ahead of the ship by at least the
      *  reaction lead along the heading and has clear room. False sends the enemy to FindSafeSpawn as before. */
@@ -360,8 +361,9 @@ private:
     ASSWorldBody *SpawnHazard(ESSWorldKind Kind, float Radius);
     /** A volley of Count rocks thrown together: a small one aimed dead at the pilot inside a ring of rocks that
      *  fences the path with one slot left open. Never a guaranteed hit: shoot the centre and fly straight on,
-     *  or steer out past the ring. Returns the rocks admitted; 0 when the centre could not be placed fairly. */
-    int32 SpawnVolley(int32 Count);
+     *  or steer out past the ring. Plans affordable, live-through-arrival members before spawning. Returns the
+     *  rocks admitted and their actual cost; 0 leaves budget and reservations untouched for ordinary admission. */
+    int32 SpawnVolley(int32 Count, float Budget = MAX_flt, float *Spent = nullptr);
     ASSEnemy *SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective = nullptr);
     bool SpawnWreckagePassage();
     void OfferEncounter(ESSEncounterKind Kind);

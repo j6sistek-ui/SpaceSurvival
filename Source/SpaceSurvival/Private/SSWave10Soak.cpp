@@ -1,5 +1,7 @@
 #include "SSWave10Soak.h"
 #include "SSGameMode.h"
+#include "SSDirectorVillain.h"
+#include "SSPhase1Data.h"
 #include "SSGameInstance.h"
 #include "SSHUD.h"
 #include "SSShip.h"
@@ -179,6 +181,7 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     Soak->Gallery = Scenario == TEXT("Gallery");
     Soak->MainMenu = Scenario == TEXT("MainMenu");
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
+    Soak->DirectorReview = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview"));
     Soak->WeaponReadability = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability"));
     Soak->CaptureStationExterior = FParse::Param(FCommandLine::Get(), TEXT("SSStationExteriorReview"));
     Soak->CaptureSequence = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence"));
@@ -266,6 +269,26 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         }
         Row->SetArrayField(TEXT("titleRows"), Rows);
     }
+    if (DirectorReview)
+    {
+        const auto *GM = Mode.Get();
+        Row->SetStringField(TEXT("loadedTuning"), GetPathNameSafe(GM->Tuning));
+        Row->SetNumberField(TEXT("enemyChance"), GM->Tuning->DirectorContent.EnemyChance);
+        Row->SetNumberField(TEXT("earlyEnemyCap"), GM->Tuning->DirectorContent.EarlyEnemyCap);
+        Row->SetNumberField(TEXT("lateEnemyCap"), GM->Tuning->DirectorContent.LateEnemyCap);
+        Row->SetNumberField(TEXT("budgetGrowthPerWave"), GM->Tuning->DirectorContent.BudgetGrowthPerWave);
+        Row->SetBoolField(TEXT("transientReviewCamera"), FCString::Strcmp(Name, TEXT("VillainCloseup")) == 0);
+        for (TActorIterator<ASSDirectorVillain> It(GetWorld()); It; ++It)
+        {
+            Row->SetStringField(TEXT("villainRiderMesh"), GetPathNameSafe(It->Rider->GetSkeletalMeshAsset()));
+            Row->SetStringField(TEXT("villainRiderTransform"),
+                                It->Rider->GetComponentTransform().ToHumanReadableString());
+            Row->SetBoolField(TEXT("villainRiderVisible"), It->IsPresent() && It->Rider->IsVisible());
+            if (auto *Animation = It->Rider->GetSingleNodeInstance())
+                Row->SetStringField(TEXT("villainRiderAnimation"), GetPathNameSafe(Animation->GetCurrentAsset()));
+            break;
+        }
+    }
     if (auto *GM = Mode.Get(); GM && !Gallery && !MainMenu)
     {
         if (WeaponReadability)
@@ -332,7 +355,7 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             Row->SetNumberField(TEXT("horizontalFov"), PC->PlayerCameraManager->GetFOVAngle());
         }
         const bool ReviewView = IsValid(StationReviewCamera) && PC && PC->GetViewTarget() == StationReviewCamera;
-        Row->SetBoolField(TEXT("scriptedStationReviewCamera"), ReviewView);
+        Row->SetBoolField(TEXT("scriptedStationReviewCamera"), ReviewView && !DirectorReview);
         if (ReviewView)
         {
             Row->SetStringField(TEXT("cameraTransform"),
@@ -340,7 +363,9 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             Row->SetNumberField(TEXT("horizontalFov"), StationReviewCamera->GetCameraComponent()->FieldOfView);
             Row->SetStringField(
                 TEXT("reviewCameraLimit"),
-                TEXT("Scripted visual inspection viewpoint; the actual walking pawn remains possessed."));
+                DirectorReview
+                    ? TEXT("Scripted villain inspection viewpoint; the actual ship remains possessed.")
+                    : TEXT("Scripted visual inspection viewpoint; the actual walking pawn remains possessed."));
         }
         Row->SetBoolField(TEXT("pilotVisible"), GM->Ship->Pilot->IsVisible());
         Row->SetStringField(TEXT("pilotTransform"), Mesh->GetComponentTransform().ToHumanReadableString());
@@ -439,6 +464,62 @@ void ASSWave10Soak::CaptureCombatAfterKill()
     CaptureVisual(TEXT("CombatImpact"), float(FlightSeconds));
 #endif
 }
+void ASSWave10Soak::CaptureDirectorReview()
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    if (!DirectorReview || FlightSeconds < 26. || FScreenshotRequest::IsScreenshotRequested())
+        return;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (!PC)
+        return;
+    if (VisualNames.Contains(TEXT("VillainCloseup")))
+    {
+        if (PreviousReviewViewTarget.IsValid())
+        {
+            PC->SetViewTarget(PreviousReviewViewTarget.Get());
+            PreviousReviewViewTarget.Reset();
+            if (auto *HUD = PC->GetHUD())
+                HUD->bShowHUD = DirectorReviewHUDWasVisible;
+        }
+        return;
+    }
+    for (TActorIterator<ASSDirectorVillain> It(GetWorld()); It; ++It)
+    {
+        if (!It->IsPresent() || !It->Rider->GetSkeletalMeshAsset())
+        {
+            Stop(TEXT("Director review requires the actual visible rider."));
+            return;
+        }
+        if (!StationReviewCamera)
+        {
+            PreviousReviewViewTarget = PC->GetViewTarget();
+            FActorSpawnParameters Parameters;
+            Parameters.ObjectFlags |= RF_Transient;
+            StationReviewCamera = GetWorld()->SpawnActor<ACameraActor>(Parameters);
+            if (!StationReviewCamera)
+                return;
+            StationReviewCamera->GetCameraComponent()->SetFieldOfView(60.f);
+            PC->SetViewTarget(StationReviewCamera);
+            if (auto *HUD = PC->GetHUD())
+            {
+                DirectorReviewHUDWasVisible = HUD->bShowHUD;
+                HUD->bShowHUD = false;
+            }
+            ReviewCameraReadyAt = FlightSeconds + 1.;
+        }
+        const FVector Target = It->Rider->Bounds.Origin;
+        const float Size = FMath::Max(1500.f, It->Rider->Bounds.BoxExtent.Z * 2.f);
+        const FVector Camera = Target - It->GetActorForwardVector() * Size * 1.8f +
+                               It->GetActorRightVector() * Size * .8f + FVector(0, 0, Size * .15f);
+        StationReviewCamera->SetActorLocationAndRotation(Camera, (Target - Camera).Rotation());
+        if (FlightSeconds >= ReviewCameraReadyAt)
+            CaptureVisual(TEXT("VillainCloseup"), float(FlightSeconds));
+        return;
+    }
+    Stop(TEXT("Director review did not find the runtime villain."));
+#endif
+}
+
 void ASSWave10Soak::CaptureStationReview(const TCHAR *Name, FVector LocalCamera, FVector LocalTarget)
 {
 #if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
@@ -1288,6 +1369,7 @@ void ASSWave10Soak::Tick(float Dt)
             // Actual request timestamps remain in the receipt; no fixed timestep or interpolation.
             NextSequenceSeconds = FlightSeconds + .25;
         }
+        CaptureDirectorReview();
         if (Threats > GM->Director->MaximumActiveThreats)
             Stop(TEXT("Director active threat cap exceeded during Wave 1 visual fixture."));
         else if (FlightSeconds >= 29)
@@ -1650,6 +1732,8 @@ void ASSWave10Soak::WriteResultAndExit()
         }
         else if (WeaponReadability)
             Expected = {TEXT("RapidShot"), TEXT("RapidHit"), TEXT("CannonShot"), TEXT("CannonHit")};
+        else if (DirectorReview)
+            Expected = {TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake"), TEXT("VillainCloseup")};
         else if (Wave1)
             Expected = {TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")};
         else

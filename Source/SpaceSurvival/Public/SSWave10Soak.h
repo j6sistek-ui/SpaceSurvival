@@ -32,6 +32,9 @@ private:
     bool CaptureVisuals = false;
     bool CaptureStationExterior = false;
     bool CaptureSequence = false;
+    bool DirectorReview = false;
+    bool DirectorReviewHUDWasVisible = true;
+    void CaptureDirectorReview();
     double NextSequenceSeconds = 6; // Let normal rendering/texture streaming settle before repeated readbacks.
     int32 SequenceIndex = 0;
     bool OffscreenVisuals = false;

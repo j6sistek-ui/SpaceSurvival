@@ -58,11 +58,13 @@ TAutoConsoleVariable<int32> VillainVoice(TEXT("ss.VillainVoice"), 1,
                                          TEXT("1 lets the villain speak on his own caption line; 0 silences him."));
 /** Every villain line stays up at least this long before another replaces it. */
 constexpr float VillainMinimumLineSeconds = 2.f;
+/** More than the distinct story beats in one five-wave block; never retain unbounded dialogue. */
+constexpr int32 MaximumVillainPendingCues = 16;
 /** He speaks only in survival, and only while both of his dials allow it. */
 bool VillainVoiceOn(const ASSGameMode *Mode)
 {
     const auto *GI = Mode->GetGameInstance<USSGameInstance>();
-    return GI && !GI->IsFreeFlight() && VillainEnabled.GetValueOnGameThread() != 0 &&
+    return GI && !GI->IsFreeFlight() && GI->Session.settings.subtitles && VillainEnabled.GetValueOnGameThread() != 0 &&
            VillainVoice.GetValueOnGameThread() != 0;
 }
 const TCHAR *UpgradeNames[] = {TEXT("Hull"), TEXT("Shield"), TEXT("Engine"), TEXT("Thrusters"), TEXT("Weapon")};
@@ -228,37 +230,52 @@ bool ASSGameMode::VillainSpeak(ESSVillainCue Cue)
     const FSSVillainDefinition &Data = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain;
     const bool bChatter = Cue == ESSVillainCue::Launch || Cue == ESSVillainCue::Hit || Cue == ESSVillainCue::Kill ||
                           Cue == ESSVillainCue::Volley;
-    // Every line gets a moment on screen before another replaces it. Chatter that comes too soon goes unsaid;
-    // a story cue waits, and UpdateThreatFeedback delivers it once the line before has been read.
+    // Hidden or overlapping story beats wait in order. Chatter is only relevant to the current moment and
+    // never enters that queue. Capture the wave now, not when a menu closes after the next wave has begun.
     const bool bFresh = VillainLineSeconds > 0.f && VillainLineShown < VillainMinimumLineSeconds;
+    const bool bWaiting = IsMenuOpen() || bFresh || !VillainPendingCues.IsEmpty();
+    const int32 Wave = GetGameInstance<USSGameInstance>()->Session.run.wave;
     if (bChatter)
     {
-        if (bFresh || VillainChatterCooldown > 0.f || VillainRandom.FRand() >= Data.ChatterChance)
+        if (bWaiting || VillainChatterCooldown > 0.f || VillainRandom.FRand() >= Data.ChatterChance)
             return false;
     }
-    else if (bFresh)
+    else if (bWaiting)
     {
-        bVillainCuePending = true;
-        VillainPendingCue = Cue;
+        const bool bQueued = VillainPendingCues.ContainsByPredicate(
+            [Cue, Wave](const FVillainPendingCue &Pending) { return Pending.Cue == Cue && Pending.Wave == Wave; });
+        if (!bQueued && VillainPendingCues.Num() < MaximumVillainPendingCues)
+            VillainPendingCues.Add({Cue, Wave});
         return false;
     }
-    const FString Line = VillainLineFor(Cue);
+    return ShowVillainLine(Cue, Wave);
+}
+bool ASSGameMode::ShowVillainLine(ESSVillainCue Cue, int32 Wave)
+{
+    const FString Line = VillainLineFor(Cue, Wave);
     if (Line.IsEmpty())
         return false;
     VillainLine = Line;
     VillainLineSeconds = FMath::Clamp(2.5f + .06f * Line.Len(), 3.5f, 7.f);
     VillainLineShown = 0.f;
     // Chatter never lands on top of a line he has just said, story or not.
-    VillainChatterCooldown = Data.ChatterCooldown;
+    VillainChatterCooldown = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain.ChatterCooldown;
     return true;
 }
-FString ASSGameMode::VillainLineFor(ESSVillainCue Cue)
+void ASSGameMode::ClearVillainDialogue()
+{
+    VillainLine.Empty();
+    VillainLineSeconds = VillainLineShown = VillainChatterCooldown = 0.f;
+    VillainPendingCues.Reset();
+}
+FString ASSGameMode::VillainLineFor(ESSVillainCue Cue, int32 Wave)
 {
     const auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI || !VillainVoiceOn(this))
         return FString();
     const FSSVillainDefinition &Data = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain;
-    const FString Line = Data.LineFor(Cue, GI->Session.run.wave, VillainRandom, VillainLastLine);
+    const FString Line =
+        Data.LineFor(Cue, Wave == INDEX_NONE ? GI->Session.run.wave : Wave, VillainRandom, VillainLastLine);
     if (Line.IsEmpty())
         return FString();
     VillainLastLine = Line;
@@ -303,13 +320,23 @@ void ASSGameMode::UpdateThreatFeedback(float Dt)
     ReactionCooldown = FMath::Max(0.f, ReactionCooldown - Dt);
     ThreatWarningSeconds = FMath::Max(0.f, ThreatWarningSeconds - Dt);
     PilotReactionSeconds = FMath::Max(0.f, PilotReactionSeconds - Dt);
-    VillainLineSeconds = FMath::Max(0.f, VillainLineSeconds - Dt);
-    VillainLineShown += Dt;
-    VillainChatterCooldown = FMath::Max(0.f, VillainChatterCooldown - Dt);
-    if (bVillainCuePending && (VillainLineSeconds <= 0.f || VillainLineShown >= VillainMinimumLineSeconds))
+    if (!VillainVoiceOn(this))
+        ClearVillainDialogue();
+    else if (!IsMenuOpen())
     {
-        bVillainCuePending = false;
-        VillainSpeak(VillainPendingCue);
+        // Reward and depot panels leave the world live but hide this caption. Only visible time counts as
+        // reading time, and no story beat is consumed behind those panels.
+        VillainLineSeconds = FMath::Max(0.f, VillainLineSeconds - Dt);
+        VillainLineShown += Dt;
+        VillainChatterCooldown = FMath::Max(0.f, VillainChatterCooldown - Dt);
+        while (!VillainPendingCues.IsEmpty() &&
+               (VillainLineSeconds <= 0.f || VillainLineShown >= VillainMinimumLineSeconds))
+        {
+            const FVillainPendingCue Pending = VillainPendingCues[0];
+            VillainPendingCues.RemoveAt(0);
+            if (ShowVillainLine(Pending.Cue, Pending.Wave))
+                break;
+        }
     }
     PlayerHitFlashSeconds = FMath::Max(0.f, PlayerHitFlashSeconds - Dt);
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -360,8 +387,8 @@ void ASSGameMode::ShowHangar()
 {
     bAtTitleScreen = false;
     bDepartingStation = bStartNextBlockOnExit = false;
-    ThreatWarningSeconds = PilotReactionSeconds = VillainLineSeconds = 0.f;
-    bVillainCuePending = false;
+    ThreatWarningSeconds = PilotReactionSeconds = 0.f;
+    ClearVillainDialogue();
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Ship)
@@ -471,8 +498,7 @@ void ASSGameMode::StartNewRun()
     ReactionCooldown = 12.f;
     VillainEpitaph.Empty();
     VillainLastLine.Empty();
-    VillainChatterCooldown = 0.f;
-    bVillainCuePending = false;
+    ClearVillainDialogue();
     VillainRandom.Initialize(int32(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str())))));
     PendingReward = false;
     WeaponBuffSeconds = 0;
@@ -660,8 +686,7 @@ bool ASSGameMode::RequestDocking()
 void ASSGameMode::EnterStation()
 {
     bDepartingStation = bStartNextBlockOnExit = false;
-    VillainLineSeconds = 0.f;
-    bVillainCuePending = false;
+    ClearVillainDialogue();
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Walker)

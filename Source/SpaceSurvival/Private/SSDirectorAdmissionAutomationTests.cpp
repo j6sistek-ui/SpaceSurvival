@@ -955,7 +955,7 @@ bool FSSDirectorVillainVoice::RunTest(const FString &)
     F.Mode->UpdateThreatFeedback(1.1f);
     TestTrue(TEXT("The waiting story cue is delivered once the line before has been read"),
              F.Mode->VillainLine != First && F.Mode->VillainLine.StartsWith(Villain.DisplayName + TEXT(": ")));
-    TestFalse(TEXT("A delivered cue is not delivered twice"), F.Mode->bVillainCuePending);
+    TestTrue(TEXT("A delivered cue is not delivered twice"), F.Mode->VillainPendingCues.IsEmpty());
     // Chatter speaks only once the line is no longer fresh, the cooldown has run out and the chance allows it.
     F.Mode->UpdateThreatFeedback(2.5f);
     F.Mode->VillainChatterCooldown = 0.f;
@@ -967,7 +967,85 @@ bool FSSDirectorVillainVoice::RunTest(const FString &)
     Dial->SetWithCurrentPriority(0.f);
     F.Mode->UpdateThreatFeedback(10.f);
     TestFalse(TEXT("The voice dial silences even a story cue"), F.Mode->VillainSpeak(ESSVillainCue::Climax));
-    TestFalse(TEXT("A silenced cue is not saved for later"), F.Mode->bVillainCuePending);
+    TestTrue(TEXT("A silenced cue is not saved for later"), F.Mode->VillainPendingCues.IsEmpty());
+
+    // Distinct story events can occur in the same frame. Their order and original wave must survive a later
+    // wave change; repeated notifications for the same queued event and chatter must not create a backlog.
+    Dial->SetWithCurrentPriority(1.f);
+    const auto SavedLines = Villain.Lines;
+    const int32 SavedWave = F.Instance->Session.run.wave;
+    Villain.Lines = {FSSVillainLine(ESSVillainCue::RunStart, 0, TEXT("opening")),
+                     FSSVillainLine(ESSVillainCue::WaveStart, 3, TEXT("third wave")),
+                     FSSVillainLine(ESSVillainCue::WaveStart, 4, TEXT("fourth wave")),
+                     FSSVillainLine(ESSVillainCue::LowHull, 0, TEXT("hull warning")),
+                     FSSVillainLine(ESSVillainCue::Kill, 0, TEXT("kill chatter"))};
+    Villain.ChatterChance = 1.f;
+    F.Instance->Session.run.wave = 3;
+    F.Mode->ClearVillainDialogue();
+    TestTrue(TEXT("The overlapping-cue sequence opens visibly"), F.Mode->VillainSpeak(ESSVillainCue::RunStart));
+    F.Mode->VillainSpeak(ESSVillainCue::WaveStart);
+    F.Mode->VillainSpeak(ESSVillainCue::LowHull);
+    F.Mode->VillainSpeak(ESSVillainCue::WaveStart);
+    F.Mode->VillainSpeak(ESSVillainCue::Kill);
+    TestEqual(TEXT("Two distinct story cues wait, without duplicates or chatter"), F.Mode->VillainPendingCues.Num(), 2);
+    F.Instance->Session.run.wave = 4;
+    F.Mode->UpdateThreatFeedback(2.1f);
+    TestTrue(TEXT("The first queued line retains the wave when its event happened"),
+             F.Mode->VillainLine.EndsWith(TEXT("third wave")));
+    F.Mode->UpdateThreatFeedback(2.1f);
+    TestTrue(TEXT("The second overlapping story cue is delivered next"),
+             F.Mode->VillainLine.EndsWith(TEXT("hull warning")));
+    TestTrue(TEXT("The story queue drains exactly once"), F.Mode->VillainPendingCues.IsEmpty());
+
+    // These real panels intentionally leave flight live. Time spent with the caption hidden cannot expire the
+    // current line or consume a waiting one, and closing the panel resumes the remaining visible reading time.
+    for (ESSPanel LivePanel : {ESSPanel::Reward, ESSPanel::Depot})
+    {
+        F.Mode->ClearVillainDialogue();
+        F.Instance->Session.run.wave = 3;
+        F.Mode->VillainSpeak(ESSVillainCue::RunStart);
+        F.Mode->UpdateThreatFeedback(.5f);
+        const float Remaining = F.Mode->VillainLineSeconds;
+        F.Mode->PendingReward = true;
+        F.Mode->OpenPanel(LivePanel);
+        TestTrue(TEXT("The live panel hides flight captions"), F.Mode->IsMenuOpen());
+        F.Mode->VillainSpeak(ESSVillainCue::WaveStart);
+        F.Mode->VillainSpeak(ESSVillainCue::LowHull);
+        F.Mode->VillainChatterCooldown = 0.f;
+        TestFalse(TEXT("Hidden chatter is discarded even with its cooldown clear"),
+                  F.Mode->VillainSpeak(ESSVillainCue::Kill));
+        F.Mode->UpdateThreatFeedback(20.f);
+        TestEqual(TEXT("A hidden line retains its remaining reading time"), F.Mode->VillainLineSeconds, Remaining);
+        TestEqual(TEXT("No hidden time counts toward minimum readability"), F.Mode->VillainLineShown, .5f);
+        TestEqual(TEXT("Story cues stay queued throughout the live panel"), F.Mode->VillainPendingCues.Num(), 2);
+        F.Mode->ClosePanel();
+        F.Mode->UpdateThreatFeedback(1.f);
+        TestTrue(TEXT("The interrupted line finishes its minimum visible time"),
+                 F.Mode->VillainLine.EndsWith(TEXT("opening")));
+        F.Mode->UpdateThreatFeedback(.6f);
+        TestTrue(TEXT("The first hidden story cue appears after the panel closes"),
+                 F.Mode->VillainLine.EndsWith(TEXT("third wave")));
+        F.Mode->UpdateThreatFeedback(2.1f);
+        TestTrue(TEXT("The second hidden story cue also survives the panel"),
+                 F.Mode->VillainLine.EndsWith(TEXT("hull warning")));
+    }
+    F.Mode->PendingReward = false;
+    F.Mode->VillainSpeak(ESSVillainCue::WaveStart);
+    F.Mode->ClearVillainDialogue(); // The same reset used by hangar, station arrival and a new run.
+    F.Mode->UpdateThreatFeedback(10.f);
+    TestTrue(TEXT("A lifecycle reset cannot replay the previous flight's queued story"),
+             F.Mode->VillainPendingCues.IsEmpty() && F.Mode->VillainLine.IsEmpty() &&
+                 F.Mode->VillainLineSeconds == 0.f);
+    F.Mode->VillainSpeak(ESSVillainCue::RunStart);
+    F.Mode->VillainSpeak(ESSVillainCue::WaveStart);
+    F.Instance->Session.settings.subtitles = false;
+    F.Mode->UpdateThreatFeedback(.1f);
+    F.Instance->Session.settings.subtitles = true;
+    F.Mode->UpdateThreatFeedback(10.f);
+    TestTrue(TEXT("Subtitles off clears text-only dialogue instead of banking unseen lines"),
+             F.Mode->VillainPendingCues.IsEmpty() && F.Mode->VillainLineSeconds == 0.f);
+    Villain.Lines = SavedLines;
+    F.Instance->Session.run.wave = SavedWave;
     Dial->SetWithCurrentPriority(*SavedDial);
     F.Mode->VillainEpitaph = TEXT("Sable: As promised.");
     F.Mode->OpenPanel(ESSPanel::Results);
@@ -980,8 +1058,8 @@ bool FSSDirectorVillainVoice::RunTest(const FString &)
 // Every placer derives its lead from the ship's speed; retirement was one fixed radius. Tripling hazard speed
 // moved the lead for a 4,300 climax gravity field to 17,775-23,275 at cruise, so the packaged Wave 10 fixture saw
 // its required gravity well admitted, charged for and deleted on its first tick, and the compound front never
-// formed. Boost did the same to asteroids, enemies, salvage caches and distress attackers. The pawn in this world
-// has not begun play and cannot be given a velocity, so the dial and the authored lead stand in for ship speed.
+// formed. Boost did the same to asteroids, enemies, salvage caches and distress attackers. This fixture uses
+// actual authored asteroid drift plus the speed dial to guarantee distant admission even with aimed trajectories.
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSAdmittedBodiesOutliveAdmission,
                                  "SpaceSurvival.Integration.AdmittedBodiesOutliveAdmission",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -1027,6 +1105,12 @@ bool FSSAdmittedBodiesOutliveAdmission::RunTest(const FString &)
         {
             const ASSShip *Ship = Cast<ASSShip>(F.World->GetFirstPlayerController()->GetPawn());
             F.Director->BaseBudgetPerSecond = 100.f;
+            // Aimed trajectories use actual drift, not FindSafeSpawn's 450 cm/s floor. Make this fixture's
+            // asteroid drift match the dial calculation so it really exercises the distant-retirement case.
+            for (auto &Hazard : F.Mode->Tuning->Hazards)
+                if (Hazard.Kind == ESSWorldKind::SmallAsteroid || Hazard.Kind == ESSWorldKind::MediumAsteroid ||
+                    Hazard.Kind == ESSWorldKind::MassiveAsteroid)
+                    Hazard.DriftSpeedMin = Hazard.DriftSpeedMax = 450.f;
             F.Director->Configure(10, true);
             // The compound block admits gravity, then an asteroid, then a pursuer, one per spawn tick.
             ASSWorldBody *Gravity = nullptr, *Asteroid = nullptr, *Pursuer = nullptr;

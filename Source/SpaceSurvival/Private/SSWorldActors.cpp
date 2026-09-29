@@ -1956,8 +1956,10 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     return Body;
 }
 
-int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count)
+int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count, float Budget, float *Spent)
 {
+    if (Spent)
+        *Spent = 0.f;
     ASSShip *Ship = FindShip();
     const int32 Room =
         FMath::Min(MaximumActiveThreats, FMath::Max(1, HazardCount.GetValueOnGameThread())) - GetActiveThreatCount();
@@ -2008,30 +2010,32 @@ int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count)
                        Window.X < Entry.Window.Y + Spacing && Window.Y > Entry.Window.X - Spacing;
             }))
         return 0;
-    auto Place = [&](ESSWorldKind Kind, const FVector &Location) -> ASSWorldBody *
+    struct FVolleyMember
     {
-        const auto Definition = Data->Hazard(Kind);
+        FSSHazardDefinition Definition;
+        FVector Location;
+        float Radius;
+        float Cost;
+    };
+    TArray<FVolleyMember, TInlineAllocator<8>> Formation;
+    auto PlanMember = [&](ESSWorldKind Kind, const FVector &Location)
+    {
+        const FSSHazardDefinition Definition = Data->Hazard(Kind);
         const float Radius = Definition.Radius * Scale;
         if (!HasSpatialClearance(this, Location, Location, Radius, false))
-            return nullptr;
-        ASSWorldBody *Body = GetWorld()->SpawnActor<ASSWorldBody>(Location, FRotator::ZeroRotator);
-        if (!Body)
-            return nullptr;
-        Body->bDirectorAsteroid = true;
-        Body->Configure(Kind, Radius, Definition.DamageBase + Wave * Definition.DamagePerWave, Wave);
-        Body->TelegraphSeconds = FMath::Max(MinimumReactionSeconds, Definition.TelegraphSeconds);
-        Body->SetLinearVelocity(RockVelocity);
-        Spawned.Add(Body);
-        return Body;
+            return false;
+        // Match sequential admission clearance without creating actors before cost/lifetime validation.
+        for (const FVolleyMember &Other : Formation)
+            if (FVector::DistSquared(Location, Other.Location) < FMath::Square(Radius + Other.Radius + 420.f))
+                return false;
+        Formation.Add({Definition, Location, Radius, FMath::Max(.1f, Definition.PressureCost)});
+        return true;
     };
     const FVector Path = Ship->GetActorLocation() - RelativeVelocity * Arrival;
     const float MissAngle = Random.FRandRange(0.f, 2.f * PI);
-    ASSWorldBody *Target = Place(ESSWorldKind::SmallAsteroid,
-                                 Path + (AxisA * FMath::Cos(MissAngle) + AxisB * FMath::Sin(MissAngle)) * Miss);
-    if (!Target)
+    if (!PlanMember(ESSWorldKind::SmallAsteroid,
+                    Path + (AxisA * FMath::Cos(MissAngle) + AxisB * FMath::Sin(MissAngle)) * Miss))
         return 0;
-    DirectArrivals.Add({Target, Window});
-    int32 Admitted = 1;
     // Count slots around the ring, one left open. Rocks grow heavier with the waves; none is indestructible.
     const int32 Open = Random.RandRange(0, Count - 1);
     const float Base = Random.FRandRange(0.f, 2.f * PI);
@@ -2042,8 +2046,43 @@ int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count)
         const float Angle = Base + 2.f * PI * Slot / Count;
         const ESSWorldKind Kind =
             Random.FRand() < .2f + .04f * Wave ? ESSWorldKind::MediumAsteroid : ESSWorldKind::SmallAsteroid;
-        if (Place(Kind, Path + (AxisA * FMath::Cos(Angle) + AxisB * FMath::Sin(Angle)) * Ring))
-            ++Admitted;
+        PlanMember(Kind, Path + (AxisA * FMath::Cos(Angle) + AxisB * FMath::Sin(Angle)) * Ring);
+    }
+    float FormationCost = 0.f;
+    for (const FVolleyMember &Member : Formation)
+    {
+        // The ring must still exist through this formation's pass, just like its centre. Authored member
+        // lifetimes stay authoritative; a short-lived member refuses the volley rather than disappearing early.
+        if (Member.Definition.Lifetime > 0.f && Arrival + HalfContactTime + 1. >= Member.Definition.Lifetime)
+            return 0;
+        FormationCost += Member.Cost;
+    }
+    if (FormationCost > Budget)
+        return 0;
+    int32 Admitted = 0;
+    for (int32 Index = 0; Index < Formation.Num(); ++Index)
+    {
+        const FVolleyMember &Member = Formation[Index];
+        ASSWorldBody *Body = HasSpatialClearance(this, Member.Location, Member.Location, Member.Radius, false)
+                                 ? GetWorld()->SpawnActor<ASSWorldBody>(Member.Location, FRotator::ZeroRotator)
+                                 : nullptr;
+        if (!Body)
+        {
+            if (Index == 0)
+                return 0;
+            continue;
+        }
+        Body->bDirectorAsteroid = true;
+        Body->Configure(Member.Definition.Kind, Member.Radius,
+                        Member.Definition.DamageBase + Wave * Member.Definition.DamagePerWave, Wave);
+        Body->TelegraphSeconds = FMath::Max(MinimumReactionSeconds, Member.Definition.TelegraphSeconds);
+        Body->SetLinearVelocity(RockVelocity);
+        Spawned.Add(Body);
+        if (Index == 0)
+            DirectArrivals.Add({Body, Window});
+        if (Spent)
+            *Spent += Member.Cost;
+        ++Admitted;
     }
     ASSDirectorVillain::NotifyLaunch(GetWorld());
     if (ASSGameMode *Mode = GameMode(this))
@@ -2305,11 +2344,12 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
             const int32 VolleySize = FMath::Clamp(3 + Wave / 2, 3, 8);
             const float VolleyBase = HazardVolley.GetValueOnGameThread();
             int32 Volley = 0;
-            if (VolleyBase > 0.f && HazardTrajectory.GetValueOnGameThread() != 0 && AvailableBudget >= VolleySize &&
+            float VolleyCost = 0.f;
+            if (VolleyBase > 0.f && HazardTrajectory.GetValueOnGameThread() != 0 &&
                 Random.FRand() < VolleyBase + .012f * Wave)
-                Volley = SpawnVolley(VolleySize);
+                Volley = SpawnVolley(VolleySize, AvailableBudget, &VolleyCost);
             if (Volley > 0)
-                AvailableBudget -= Volley;
+                AvailableBudget -= VolleyCost;
             else
                 AdmitHazard(Selected);
         }

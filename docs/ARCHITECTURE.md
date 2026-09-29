@@ -27,15 +27,21 @@ small rock on target inside a ring of rocks that shares its velocity, placed in 
 plane perpendicular to relative travel at a radius that clears the hull envelope,
 one slot left open. The target keeps the ordinary direct-shot reservation and lands
 at least a second after the reaction floor, so shooting it or steering out past the
-ring always answers the volley. It is paid for rock by rock; one that cannot be
-placed fairly leaves the single rock to go instead.
+ring provides an answer to this formation in isolation. Combined encounter fairness
+still needs play evidence. Admission first plans the clear members, verifies each
+member survives through its pass, and totals their actual authored costs before
+spawning. Only successfully spawned members are charged. A refused formation
+falls back to an ordinary asteroid; it does not extend authored lifetimes.
 
 `ASSGameMode::VillainSpeak` owns his voice: `FSSVillainDefinition::Lines` picks a
 line by cue and wave, story cues always speak, chatter (launch, hit, kill) waits
 out `ChatterCooldown` and `ChatterChance`, and the HUD draws his line on its own
 caption above the pilot's. Every line stays up at least 2 s: chatter that comes
 sooner goes unsaid, and a story cue waits its turn rather than flashing the last
-line off the screen or being lost. Nothing he says writes `Announcement` or
+line off the screen or being lost. A bounded 16-cue FIFO captures each story cue
+with its original wave; identical pending cues coalesce and chatter never queues.
+Hidden live menus freeze reading time and queue delivery. Leaving the run, starting
+a new run or disabling dialogue clears the queue. Nothing he says writes `Announcement` or
 `PilotReaction`. A death leaves his last word on the results panel when
 subtitles are on, like the rest of his dialogue.
 

@@ -21,8 +21,8 @@ constexpr double MinimumAnchorDistance = 32000.0;
 constexpr double MaximumRockRadius = 4800.0;
 // Five cells per axis keep the nearest eviction beyond the 900 m draw distance.
 constexpr double CellSize = 50000.0;
-constexpr int32 CellRadius = 2;
-constexpr int32 CellCount = 125;
+constexpr int32 AsteroidCellRadius = 2;
+constexpr int32 AsteroidCellCount = 125;
 FIntVector CellAt(const FVector &Position)
 {
     return FIntVector(FMath::FloorToInt(Position.X / CellSize + .5), FMath::FloorToInt(Position.Y / CellSize + .5),
@@ -160,7 +160,7 @@ void ASSDistantAsteroids::AddCell(const FIntVector &Cell)
     auto &Instances = Cells.Add(Cell);
     // A modulo-5 allocation gives every resident 5x5x5 region the same bounded population.
     const int32 Residue = CellResidue(Cell.X) + 5 * CellResidue(Cell.Y) + 25 * CellResidue(Cell.Z);
-    const int32 Count = ConfiguredCount / CellCount + (Residue < ConfiguredCount % CellCount ? 1 : 0);
+    const int32 Count = ConfiguredCount / AsteroidCellCount + (Residue < ConfiguredCount % AsteroidCellCount ? 1 : 0);
     FRandomStream Random(int32(HashCombineFast(GetTypeHash(Cell), 740127u)));
     for (int32 Index = 0; Index < Count; ++Index)
     {
@@ -253,7 +253,8 @@ void ASSDistantAsteroids::StreamCells()
     for (auto It = Cells.CreateIterator(); It; ++It)
     {
         const FIntVector Delta = It.Key() - Center;
-        if (FMath::Abs(Delta.X) <= CellRadius && FMath::Abs(Delta.Y) <= CellRadius && FMath::Abs(Delta.Z) <= CellRadius)
+        if (FMath::Abs(Delta.X) <= AsteroidCellRadius && FMath::Abs(Delta.Y) <= AsteroidCellRadius &&
+            FMath::Abs(Delta.Z) <= AsteroidCellRadius)
             continue;
         for (const auto &Rock : It.Value())
         {
@@ -262,9 +263,9 @@ void ASSDistantAsteroids::StreamCells()
         }
         It.RemoveCurrent();
     }
-    for (int32 X = -CellRadius; X <= CellRadius; ++X)
-        for (int32 Y = -CellRadius; Y <= CellRadius; ++Y)
-            for (int32 Z = -CellRadius; Z <= CellRadius; ++Z)
+    for (int32 X = -AsteroidCellRadius; X <= AsteroidCellRadius; ++X)
+        for (int32 Y = -AsteroidCellRadius; Y <= AsteroidCellRadius; ++Y)
+            for (int32 Z = -AsteroidCellRadius; Z <= AsteroidCellRadius; ++Z)
             {
                 const FIntVector Cell = Center + FIntVector(X, Y, Z);
                 if (!Cells.Contains(Cell))

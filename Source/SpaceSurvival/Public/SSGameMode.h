@@ -189,9 +189,15 @@ private:
     float VillainChatterCooldown = 0.f;
     /** How long his current line has been up, so the next cannot replace it before it can be read. */
     float VillainLineShown = 0.f;
-    /** A story cue that arrived while his last line was still being read, delivered once it has been. */
-    bool bVillainCuePending = false;
-    ESSVillainCue VillainPendingCue = ESSVillainCue::WaveStart;
+    /** Story beats retain their original wave while a line is fresh or a live menu hides the caption. */
+    struct FVillainPendingCue
+    {
+        ESSVillainCue Cue;
+        int32 Wave;
+    };
+    TArray<FVillainPendingCue> VillainPendingCues;
+    bool ShowVillainLine(ESSVillainCue Cue, int32 Wave);
+    void ClearVillainDialogue();
     FString VillainLastLine;
     FRandomStream VillainRandom;
     /** Wave 1 opens with his introduction, every later flight wave with that wave's line. A climax, Wave 10's
@@ -199,7 +205,7 @@ private:
     void VillainSpeakWave();
     /** His next line for this cue, headed by his name, or empty when he is silenced or has nothing to say. Picks
      *  and remembers it so the one after is not a repeat; shows nothing. */
-    FString VillainLineFor(ESSVillainCue Cue);
+    FString VillainLineFor(ESSVillainCue Cue, int32 Wave = INDEX_NONE);
     bool LowHullAlerted = false;
     bool bDepartingStation = false;
     bool bStartNextBlockOnExit = false;

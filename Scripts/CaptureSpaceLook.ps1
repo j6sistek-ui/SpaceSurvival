@@ -8,6 +8,7 @@ param(
     [switch]$Packaged,
     [switch]$Sequence,
     [switch]$WeaponReadability,
+    [switch]$DirectorReview,
     [switch]$MainMenu,
     [switch]$UIRefresh,
     [switch]$UIFollowup,
@@ -24,6 +25,7 @@ param(
     [ValidateRange(-400,400)][double]$ThrusterHeight = 0,
     [string[]]$ExtraArgs = @()
 )
+if ($DirectorReview -and ($WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $Sequence)) { throw 'Director review uses ordinary Wave1 captures plus one close camera.' }
 if ($UIFollowup) { $UIRefresh = $true }
 if ($UIRefresh) { $MainMenu = $true }
 Set-StrictMode -Version Latest
@@ -134,6 +136,7 @@ if ($UIRefresh) { $arguments += '-SSUIRefreshReview' }
 if ($UIFollowup) { $arguments += '-SSUIFollowupReview' }
 if ($Sequence) { $arguments += '-SSSoakSequence' }
 if ($WeaponReadability) { $arguments += '-SSWeaponReadability' }
+if ($DirectorReview) { $arguments += '-SSDirectorReview' }
 $execCmds = "ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
 if ($ThrusterShape -ge 0) { $execCmds += ",ss.ThrusterShape $ThrusterShape" }
 if ($ThrusterEmission -gt 0) { $execCmds += ",ss.ThrusterEmission $ThrusterEmission" }
@@ -156,10 +159,13 @@ $metadata = [ordered]@{
     noTestSaveSlotsWritten = $false; requestedResolution = @(1920, 1080); images = @(); fixture = $null
     suitableForPerformanceFinding = $false
     sequenceRequested = [bool]$Sequence
+    directorReviewRequested = [bool]$DirectorReview
     weaponReadabilityRequested = [bool]$WeaponReadability
     mainMenuRequested = [bool]$MainMenu
     areaPreview = $Area; areaVariation = $Variation
-    limits = $(if ($UIFollowup) {
+    limits = $(if ($DirectorReview) {
+        'Normal-stat scripted flight with a final transient camera for the runtime villain. No physical input, natural balance or FPS acceptance. Loaded tuning, actual rider mesh and animation are recorded.'
+    } elseif ($UIFollowup) {
         'Hidden six-frame changed-UI batch: aligned audio/controls sliders, wardrobe top/end/drag, actual walking HUD with crew/services radar. Synthetic menu navigation and pointer drag; read-only account/run guards. No physical input, natural gameplay or performance acceptance.'
     } elseif ($UIRefresh) {
         'Hidden seven-screen native UI render with synthetic focus and read-only HUD sample values. Menu centers map to native actions; run/account/settings are preserved. No physical input, natural gameplay, FPS or save-operation acceptance.'
@@ -207,7 +213,7 @@ try {
         [IO.Path]::GetFullPath($fixture.csv) -ine (Join-Path $root 'Endgame.csv')) { throw 'Fixture identity, visibility or save isolation receipt failed.' }
     $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
     $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
-    $expectedNames = if ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } else { 'Cruise,Turn,Boost,Brake' }
+    $expectedNames = if ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
     if (($names -join ',') -cne $expectedNames) { throw 'Fixture did not capture the required named stages in order.' }
     if ($UIRefresh -and (-not $fixture.uiRefreshReview -or -not $fixture.mainMenuStatePreserved)) { throw 'UI frame state checks failed.' }
     if ($MainMenu -and -not $UIRefresh) {
