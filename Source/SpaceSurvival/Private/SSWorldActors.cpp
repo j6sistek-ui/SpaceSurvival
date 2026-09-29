@@ -1683,10 +1683,16 @@ TAutoConsoleVariable<int32> HazardCount(TEXT("ss.HazardCount"), 40, TEXT("Active
 TAutoConsoleVariable<int32>
     HazardTrajectory(TEXT("ss.HazardTrajectory"), 1,
                      TEXT("1 aims asteroids at the ship's predicted path; 0 is the old window."));
-TAutoConsoleVariable<float> HazardDirectShare(TEXT("ss.HazardDirectShare"), .6f,
+// Owner direction, September 29: the first ten waves are much harder. The rule is only that no moment is a
+// guaranteed kill; a steer or a shot always gets through. Before it: .6 share, 1 s spacing.
+TAutoConsoleVariable<float> HazardDirectShare(TEXT("ss.HazardDirectShare"), .7f,
                                               TEXT("Share of aimed asteroids that strike the hull if unanswered."));
-TAutoConsoleVariable<float> HazardArrivalSpacing(TEXT("ss.HazardArrivalSpacing"), 1.f,
+TAutoConsoleVariable<float> HazardArrivalSpacing(TEXT("ss.HazardArrivalSpacing"), .75f,
                                                  TEXT("Seconds between direct shots at wave 10; wave 1 doubles it."));
+// The Director's volley: a rock aimed dead at the pilot inside a ring that fences the path. Its chance grows
+// by 1.2 points a wave on top of this base, so later waves see more of them. 0 turns volleys off.
+TAutoConsoleVariable<float> HazardVolley(TEXT("ss.HazardVolley"), .06f,
+                                         TEXT("Base chance an asteroid admission becomes a volley; 0 disables."));
 // A refused enemy, field or wreckage attempt used to end its spawn interval. The Wave 5 climax asks for an
 // enemy every interval, so once its five were alive it admitted nothing for the rest of the climax; every
 // later wave lost the intervals its full enemy cap refused in the same way. Saving for something too dear is
@@ -1716,6 +1722,15 @@ enum class EAdmission : uint8
 float HazardSpeedScale()
 {
     return FMath::Max(0.f, HazardSpeed.GetValueOnGameThread());
+}
+
+/** A sphere enclosing the ship's actual compound hull, not only the legacy 105 cm root sphere. Local bounds keep
+ *  it invariant as the ship rolls, so a rock that misses it cannot clip an outlying wing or engine. */
+float ShipHullRadius(const ASSShip *Ship)
+{
+    const FBox Hull = Ship->FlightHullBounds(FTransform(FQuat::Identity, FVector::ZeroVector, Ship->GetActorScale3D()));
+    return Ship->HasFlightHull() ? Hull.GetCenter().Size() + Hull.GetExtent().Size()
+                                 : Ship->Collision->GetScaledSphereRadius();
 }
 
 /** How far from the ship a body must be admitted so the player has the whole reaction floor to see it,
@@ -1807,11 +1822,7 @@ bool USSSurvivalDirectorComponent::FindTrajectorySpawn(float Radius, float Speed
     const FVector Right = Ship->GetActorRightVector();
     const FVector Up = Ship->GetActorUpVector();
     const FVector ShipVelocity = Ship->GetVelocity();
-    // Enclose the actual compound hull, not only the legacy 105 cm root sphere. Local bounds keep this
-    // envelope invariant as the ship rolls. A miss outside it cannot clip an outlying wing or engine.
-    const FBox Hull = Ship->FlightHullBounds(FTransform(FQuat::Identity, FVector::ZeroVector, Ship->GetActorScale3D()));
-    const float HullRadius = Ship->HasFlightHull() ? Hull.GetCenter().Size() + Hull.GetExtent().Size()
-                                                   : Ship->Collision->GetScaledSphereRadius();
+    const float HullRadius = ShipHullRadius(Ship);
     const float Contact = Radius + HullRadius;
     const float Now = GetWorld()->GetTimeSeconds();
     const float Spacing = FMath::Max(0.f, HazardArrivalSpacing.GetValueOnGameThread()) *
@@ -1943,6 +1954,101 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     if (!bField)
         ASSDirectorVillain::NotifyLaunch(GetWorld());
     return Body;
+}
+
+int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count)
+{
+    ASSShip *Ship = FindShip();
+    const int32 Room =
+        FMath::Min(MaximumActiveThreats, FMath::Max(1, HazardCount.GetValueOnGameThread())) - GetActiveThreatCount();
+    Count = FMath::Min(Count, Room);
+    if (!Ship || Count < 1)
+        return 0;
+    const auto *Data = Content(this);
+    const float Scale = FMath::Max(1.f, Data->DirectorAsteroidScale);
+    const auto Centre = Data->Hazard(ESSWorldKind::SmallAsteroid);
+    const float CentreRadius = Centre.Radius * Scale;
+    const float LargestRadius = FMath::Max(CentreRadius, Data->Hazard(ESSWorldKind::MediumAsteroid).Radius * Scale);
+    const float HullRadius = ShipHullRadius(Ship);
+    // One speed for the whole volley, so it holds its shape all the way in.
+    const float Speed =
+        Random.FRandRange(Centre.DriftSpeedMin, FMath::Max(Centre.DriftSpeedMin, Centre.DriftSpeedMax)) *
+        HazardSpeedScale();
+    const FVector Incoming =
+        (-Ship->GetActorForwardVector() + Ship->GetActorRightVector() * Random.FRandRange(-.35f, .35f) +
+         Ship->GetActorUpVector() * Random.FRandRange(-.25f, .25f))
+            .GetSafeNormal();
+    const FVector RockVelocity = Incoming * Speed;
+    const FVector RelativeVelocity = RockVelocity - Ship->GetVelocity();
+    const double Closing = RelativeVelocity.Size();
+    if (Closing < 1.)
+        return 0;
+    FVector AxisA, AxisB;
+    (RelativeVelocity / Closing).FindBestAxisVectors(AxisA, AxisB);
+    // The ring sits far enough off the path that a pilot holding course is missed by all of it, and far enough
+    // from the centre rock that neither crowds the other. Only the centre is on target.
+    const float Ring = FMath::Max(LargestRadius + HullRadius + 150.f, 1.3f * CentreRadius + LargestRadius + 450.f);
+    const float Miss = Random.FRandRange(0.f, .3f * CentreRadius);
+    const double Contact = CentreRadius + HullRadius;
+    const double HalfContactTime = FMath::Sqrt(FMath::Max(0., Contact * Contact - double(Miss) * Miss)) / Closing;
+    // A second beyond the reaction floor to choose: shoot the centre, or steer out past the ring.
+    const double Arrival = FMath::Max(MinimumReactionSeconds + 1. + HalfContactTime + Random.FRandRange(0.f, 1.f),
+                                      (9000. + Ring + LargestRadius + HullRadius) / Closing);
+    if (Centre.Lifetime > 0.f && Arrival + HalfContactTime + 1. >= Centre.Lifetime)
+        return 0;
+    // The centre is a direct shot like any other, so it keeps the same spacing from the others.
+    const float Now = GetWorld()->GetTimeSeconds();
+    const float Spacing = FMath::Max(0.f, HazardArrivalSpacing.GetValueOnGameThread()) *
+                          FMath::Lerp(2.f, 1.f, FMath::Clamp((Wave - 1) / 9.f, 0.f, 1.f));
+    const FVector2D Window(Now + Arrival - HalfContactTime, Now + Arrival + HalfContactTime);
+    if (DirectArrivals.ContainsByPredicate(
+            [&](const FDirectArrival &Entry)
+            {
+                return Entry.Body.IsValid() && !Entry.Body->IsActorBeingDestroyed() &&
+                       Window.X < Entry.Window.Y + Spacing && Window.Y > Entry.Window.X - Spacing;
+            }))
+        return 0;
+    auto Place = [&](ESSWorldKind Kind, const FVector &Location) -> ASSWorldBody *
+    {
+        const auto Definition = Data->Hazard(Kind);
+        const float Radius = Definition.Radius * Scale;
+        if (!HasSpatialClearance(this, Location, Location, Radius, false))
+            return nullptr;
+        ASSWorldBody *Body = GetWorld()->SpawnActor<ASSWorldBody>(Location, FRotator::ZeroRotator);
+        if (!Body)
+            return nullptr;
+        Body->bDirectorAsteroid = true;
+        Body->Configure(Kind, Radius, Definition.DamageBase + Wave * Definition.DamagePerWave, Wave);
+        Body->TelegraphSeconds = FMath::Max(MinimumReactionSeconds, Definition.TelegraphSeconds);
+        Body->SetLinearVelocity(RockVelocity);
+        Spawned.Add(Body);
+        return Body;
+    };
+    const FVector Path = Ship->GetActorLocation() - RelativeVelocity * Arrival;
+    const float MissAngle = Random.FRandRange(0.f, 2.f * PI);
+    ASSWorldBody *Target = Place(ESSWorldKind::SmallAsteroid,
+                                 Path + (AxisA * FMath::Cos(MissAngle) + AxisB * FMath::Sin(MissAngle)) * Miss);
+    if (!Target)
+        return 0;
+    DirectArrivals.Add({Target, Window});
+    int32 Admitted = 1;
+    // Count slots around the ring, one left open. Rocks grow heavier with the waves; none is indestructible.
+    const int32 Open = Random.RandRange(0, Count - 1);
+    const float Base = Random.FRandRange(0.f, 2.f * PI);
+    for (int32 Slot = 0; Slot < Count && Count > 1; ++Slot)
+    {
+        if (Slot == Open)
+            continue;
+        const float Angle = Base + 2.f * PI * Slot / Count;
+        const ESSWorldKind Kind =
+            Random.FRand() < .2f + .04f * Wave ? ESSWorldKind::MediumAsteroid : ESSWorldKind::SmallAsteroid;
+        if (Place(Kind, Path + (AxisA * FMath::Cos(Angle) + AxisB * FMath::Sin(Angle)) * Ring))
+            ++Admitted;
+    }
+    ASSDirectorVillain::NotifyLaunch(GetWorld());
+    if (ASSGameMode *Mode = GameMode(this))
+        Mode->VillainSpeak(ESSVillainCue::Volley);
+    return Admitted;
 }
 
 ASSEnemy *USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective)
@@ -2193,7 +2299,20 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
         if (SelectContent(this,
                           {ESSWorldKind::MassiveAsteroid, ESSWorldKind::MediumAsteroid, ESSWorldKind::SmallAsteroid},
                           Wave, Random, false, Selected))
-            AdmitHazard(Selected);
+        {
+            // Now and then the villain throws a volley in place of the single rock, more often each wave. It is
+            // paid for rock by rock; one that cannot be placed fairly leaves the single rock to go instead.
+            const int32 VolleySize = FMath::Clamp(3 + Wave / 2, 3, 8);
+            const float VolleyBase = HazardVolley.GetValueOnGameThread();
+            int32 Volley = 0;
+            if (VolleyBase > 0.f && HazardTrajectory.GetValueOnGameThread() != 0 && AvailableBudget >= VolleySize &&
+                Random.FRand() < VolleyBase + .012f * Wave)
+                Volley = SpawnVolley(VolleySize);
+            if (Volley > 0)
+                AvailableBudget -= Volley;
+            else
+                AdmitHazard(Selected);
+        }
     }
 }
 

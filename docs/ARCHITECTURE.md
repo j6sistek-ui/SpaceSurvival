@@ -22,6 +22,14 @@ bounds and stood on the top of the craft's bounds; the heavy trooper stands in
 until `RiderMeshPath` names the knight. This supersedes the September 28 "no
 rider" default below.
 
+The asteroid admission can become a volley (`SpawnVolley`, `ss.HazardVolley`): one
+small rock on target inside a ring of rocks that shares its velocity, placed in the
+plane perpendicular to relative travel at a radius that clears the hull envelope,
+one slot left open. The target keeps the ordinary direct-shot reservation and lands
+at least a second after the reaction floor, so shooting it or steering out past the
+ring always answers the volley. It is paid for rock by rock; one that cannot be
+placed fairly leaves the single rock to go instead.
+
 `ASSGameMode::VillainSpeak` owns his voice: `FSSVillainDefinition::Lines` picks a
 line by cue and wave, story cues always speak, chatter (launch, hit, kill) waits
 out `ChatterCooldown` and `ChatterChance`, and the HUD draws his line on its own

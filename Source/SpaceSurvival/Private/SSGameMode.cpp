@@ -226,7 +226,8 @@ bool ASSGameMode::VillainSpeak(ESSVillainCue Cue)
     if (!VillainVoiceOn(this))
         return false;
     const FSSVillainDefinition &Data = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain;
-    const bool bChatter = Cue == ESSVillainCue::Launch || Cue == ESSVillainCue::Hit || Cue == ESSVillainCue::Kill;
+    const bool bChatter = Cue == ESSVillainCue::Launch || Cue == ESSVillainCue::Hit || Cue == ESSVillainCue::Kill ||
+                          Cue == ESSVillainCue::Volley;
     // Every line gets a moment on screen before another replaces it. Chatter that comes too soon goes unsaid;
     // a story cue waits, and UpdateThreatFeedback delivers it once the line before has been read.
     const bool bFresh = VillainLineSeconds > 0.f && VillainLineShown < VillainMinimumLineSeconds;

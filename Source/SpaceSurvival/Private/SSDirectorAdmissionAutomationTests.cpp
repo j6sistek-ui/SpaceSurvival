@@ -496,8 +496,14 @@ bool FSSDirectorAdmissionFallThrough::RunTest(const FString &)
     if (!TestNotNull(TEXT("Resolve the fall-through dial"), FallThrough) ||
         !TestNotNull(TEXT("Resolve trajectory mode"), Trajectory))
         return false;
-    const FString SavedFallThrough = FallThrough->GetString(), SavedTrajectory = Trajectory->GetString();
+    IConsoleVariable *Volley = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HazardVolley"));
+    if (!TestNotNull(TEXT("Resolve the volley dial"), Volley))
+        return false;
+    const FString SavedFallThrough = FallThrough->GetString(), SavedTrajectory = Trajectory->GetString(),
+                  SavedVolley = Volley->GetString();
     Trajectory->SetWithCurrentPriority(1.f);
+    // One rock per refused interval is the claim here; a volley in its place is DirectorVolley's to check.
+    Volley->SetWithCurrentPriority(0.f);
     auto Count = [](UWorld *World, std::initializer_list<ESSWorldKind> Kinds)
     {
         int32 Result = 0;
@@ -608,6 +614,107 @@ bool FSSDirectorAdmissionFallThrough::RunTest(const FString &)
         }
     }
     FallThrough->SetWithCurrentPriority(*SavedFallThrough);
+    Trajectory->SetWithCurrentPriority(*SavedTrajectory);
+    Volley->SetWithCurrentPriority(*SavedVolley);
+    return bResult;
+}
+
+// Owner direction, September 29: the Director may make any moment hard but never a guaranteed kill. A volley
+// throws one small rock dead at the pilot inside a ring that fences the path. Checked independently of the placer,
+// per seed and per motion: exactly one rock is on target, it can be shot, and it lands a full second after the
+// reaction floor; every other rock misses a pilot who holds course, so shooting the centre clears the way. The
+// dial decides whether admission throws volleys at all.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDirectorVolley, "SpaceSurvival.Integration.DirectorVolley",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDirectorVolley::RunTest(const FString &)
+{
+    IConsoleVariable *Dial = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HazardVolley"));
+    IConsoleVariable *Trajectory = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HazardTrajectory"));
+    if (!TestNotNull(TEXT("Resolve the volley dial"), Dial) ||
+        !TestNotNull(TEXT("Resolve trajectory mode"), Trajectory))
+        return false;
+    const FString SavedDial = Dial->GetString(), SavedTrajectory = Trajectory->GetString();
+    Trajectory->SetWithCurrentPriority(1.f);
+    // Sphere-surface intersection of a constant-velocity rock and ship, the same test the fairness check uses.
+    auto Hits = [](const ASSWorldBody *Body, const ASSShip *Ship, double &FirstContact)
+    {
+        const FVector Relative = Body->GetActorLocation() - Ship->GetActorLocation();
+        const FVector Velocity = Body->GetVelocity() - Ship->GetVelocity();
+        const double Contact = Body->GetBodyRadius() + Ship->Collision->GetScaledSphereRadius();
+        const double A = Velocity.SizeSquared(), B = 2. * FVector::DotProduct(Relative, Velocity);
+        const double C = Relative.SizeSquared() - Contact * Contact;
+        const double Discriminant = B * B - 4. * A * C;
+        if (A <= UE_SMALL_NUMBER || Discriminant < 0.)
+            return false;
+        FirstContact = (-B - FMath::Sqrt(Discriminant)) / (2. * A);
+        return FirstContact >= 0.;
+    };
+    bool bResult = true;
+    int32 Volleys = 0;
+    for (int32 Scenario = 0; Scenario < 3 && bResult; ++Scenario)
+        for (int32 Seed = 1; Seed <= 6 && bResult; ++Seed)
+        {
+            FSSWreckageBudgetWorld F;
+            bResult = F.Initialize(*this);
+            if (!bResult)
+                break;
+            ASSShip *Ship = F.Director->FindShip();
+            Ship->Velocity = Scenario == 0   ? FVector(6000.f, 0.f, 0.f)
+                             : Scenario == 1 ? FVector(0.f, 6000.f, 0.f)
+                                             : FVector(2000.f, 0.f, 0.f);
+            if (Scenario == 2)
+                Ship->Collision->SetSphereRadius(700.f);
+            F.Director->MaximumActiveThreats = 24;
+            F.Director->Random.Initialize(Seed);
+            const int32 Admitted = F.Director->SpawnVolley(6);
+            if (Admitted == 0)
+                continue; // One that cannot be placed fairly is refused, never forced.
+            ++Volleys;
+            const FString Label = FString::Printf(TEXT("Motion %d seed %d"), Scenario, Seed);
+            int32 Rocks = 0, OnTarget = 0;
+            for (TActorIterator<ASSWorldBody> It(F.World); It; ++It)
+            {
+                if (It->IsActorBeingDestroyed() || !It->IsSolidHazard())
+                    continue;
+                ++Rocks;
+                double First = 0.;
+                if (!Hits(*It, Ship, First))
+                    continue;
+                ++OnTarget;
+                TestTrue(Label + TEXT(": the rock on target can be shot"),
+                         It->GetKind() == ESSWorldKind::SmallAsteroid && It->IsWeaponTarget());
+                TestTrue(Label + TEXT(": it lands a full second after the reaction floor"),
+                         First + .001 >= F.Director->MinimumReactionSeconds + 1.);
+            }
+            TestEqual(Label + TEXT(": every admitted rock is counted"), Rocks, Admitted);
+            TestEqual(Label + TEXT(": exactly one rock is on target; shooting it clears the way"), OnTarget, 1);
+        }
+    TestTrue(TEXT("Volleys were admitted to check"), Volleys > 0);
+    for (float Setting : {1.f, 0.f})
+    {
+        if (!bResult)
+            break;
+        // Admission itself: only asteroids on offer, budget to spare, a cruising pilot.
+        Dial->SetWithCurrentPriority(Setting);
+        FSSWreckageBudgetWorld F;
+        bResult = F.Initialize(*this);
+        if (!bResult)
+            break;
+        F.Director->FindShip()->Velocity = FVector(6000.f, 0.f, 0.f);
+        F.Mode->Tuning->DirectorContent.WreckageSelectionStart = 1.f;
+        F.Director->MaximumActiveThreats = 24;
+        F.Director->BaseBudgetPerSecond = 100.f;
+        F.Step(1.f);
+        int32 Rocks = 0;
+        for (TActorIterator<ASSWorldBody> It(F.World); It; ++It)
+            if (!It->IsActorBeingDestroyed() && It->IsSolidHazard())
+                ++Rocks;
+        if (Setting > 0.f)
+            TestTrue(TEXT("With the dial up, an asteroid admission throws a volley"), Rocks >= 2);
+        else
+            TestEqual(TEXT("With the dial at 0, an asteroid admission throws one rock"), Rocks, 1);
+    }
+    Dial->SetWithCurrentPriority(*SavedDial);
     Trajectory->SetWithCurrentPriority(*SavedTrajectory);
     return bResult;
 }
@@ -809,7 +916,7 @@ bool FSSDirectorVillainVoice::RunTest(const FString &)
     for (ESSVillainCue Cue :
          {ESSVillainCue::RunStart, ESSVillainCue::WaveStart, ESSVillainCue::Wormhole, ESSVillainCue::Climax,
           ESSVillainCue::Compound, ESSVillainCue::Retreat, ESSVillainCue::Finale, ESSVillainCue::LowHull,
-          ESSVillainCue::Death, ESSVillainCue::Launch, ESSVillainCue::Hit, ESSVillainCue::Kill})
+          ESSVillainCue::Death, ESSVillainCue::Launch, ESSVillainCue::Hit, ESSVillainCue::Kill, ESSVillainCue::Volley})
         TestFalse(FString::Printf(TEXT("Cue %d has an authored line"), int32(Cue)),
                   Script.LineFor(Cue, 1, Random, FString()).IsEmpty());
     for (int32 Wave = 2; Wave <= 9; ++Wave)

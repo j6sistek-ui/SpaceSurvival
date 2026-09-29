@@ -1532,8 +1532,10 @@ USTRUCT(BlueprintType)
 struct FSSDirectorContentTuning
 {
     GENERATED_BODY()
+    /** September 29, owner: the first ten waves are much harder. Before it: .20 enemy chance, caps 2 and 4,
+     *  budget growth .13. The pre-change values are what to dial back to when Phase 2 softens the opening. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    float EnemyChance = .20f;
+    float EnemyChance = .26f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float ClimaxEnemyChance = .42f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -1549,7 +1551,7 @@ struct FSSDirectorContentTuning
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float BudgetBaseMultiplier = .65f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    float BudgetGrowthPerWave = .13f;
+    float BudgetGrowthPerWave = .16f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float PressureBase = .18f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -1557,9 +1559,9 @@ struct FSSDirectorContentTuning
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float ClimaxPressureBonus = .18f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    int32 EarlyEnemyCap = 2;
+    int32 EarlyEnemyCap = 3;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    int32 LateEnemyCap = 4;
+    int32 LateEnemyCap = 5;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int32 ClimaxEnemyCap = 5;
 };
@@ -1580,7 +1582,8 @@ enum class ESSVillainCue : uint8
     Death,
     Launch,
     Hit,
-    Kill
+    Kill,
+    Volley
 };
 
 USTRUCT(BlueprintType)

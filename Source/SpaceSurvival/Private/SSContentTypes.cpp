@@ -106,6 +106,9 @@ FSSVillainDefinition::FSSVillainDefinition()
         {Cue::Kill, 0, TEXT("One hunter. I have a fleet.")},
         {Cue::Kill, 0, TEXT("Enjoy that. It will cost you.")},
         {Cue::Kill, 0, TEXT("Cheap. Unlike you.")},
+        {Cue::Volley, 0, TEXT("Shoot, or steer. Choose quickly.")},
+        {Cue::Volley, 0, TEXT("A wall, just for you.")},
+        {Cue::Volley, 0, TEXT("Thread that, little one.")},
     };
     Lines.Append(Authored, UE_ARRAY_COUNT(Authored));
 }

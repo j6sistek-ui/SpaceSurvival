@@ -149,6 +149,7 @@ private:
     friend class FSSDirectorTrajectoryFairness;
     friend class FSSDirectorAdmissionFallThrough;
     friend class FSSDirectorVillainLaunch;
+    friend class FSSDirectorVolley;
     friend class FSSControllerTestingPreset;
     void UpdateEngineMix();
     void RefreshFlightPresentation();
