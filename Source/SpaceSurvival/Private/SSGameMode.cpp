@@ -56,6 +56,15 @@ TAutoConsoleVariable<int32>
 // Owner decision, September 29: the villain talks. Story beats and a little chatter on his own caption line.
 TAutoConsoleVariable<int32> VillainVoice(TEXT("ss.VillainVoice"), 1,
                                          TEXT("1 lets the villain speak on his own caption line; 0 silences him."));
+/** Every villain line stays up at least this long before another replaces it. */
+constexpr float VillainMinimumLineSeconds = 2.f;
+/** He speaks only in survival, and only while both of his dials allow it. */
+bool VillainVoiceOn(const ASSGameMode *Mode)
+{
+    const auto *GI = Mode->GetGameInstance<USSGameInstance>();
+    return GI && !GI->IsFreeFlight() && VillainEnabled.GetValueOnGameThread() != 0 &&
+           VillainVoice.GetValueOnGameThread() != 0;
+}
 const TCHAR *UpgradeNames[] = {TEXT("Hull"), TEXT("Shield"), TEXT("Engine"), TEXT("Thrusters"), TEXT("Weapon")};
 FString WeaponName(SS::Weapon W)
 {
@@ -214,23 +223,45 @@ void ASSGameMode::React(const FString &Message)
 }
 bool ASSGameMode::VillainSpeak(ESSVillainCue Cue)
 {
-    auto *GI = GetGameInstance<USSGameInstance>();
-    if (!GI || GI->IsFreeFlight() || VillainEnabled.GetValueOnGameThread() == 0 ||
-        VillainVoice.GetValueOnGameThread() == 0)
+    if (!VillainVoiceOn(this))
         return false;
     const FSSVillainDefinition &Data = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain;
     const bool bChatter = Cue == ESSVillainCue::Launch || Cue == ESSVillainCue::Hit || Cue == ESSVillainCue::Kill;
-    if (bChatter && (VillainChatterCooldown > 0.f || VillainRandom.FRand() >= Data.ChatterChance))
+    // Every line gets a moment on screen before another replaces it. Chatter that comes too soon goes unsaid;
+    // a story cue waits, and UpdateThreatFeedback delivers it once the line before has been read.
+    const bool bFresh = VillainLineSeconds > 0.f && VillainLineShown < VillainMinimumLineSeconds;
+    if (bChatter)
+    {
+        if (bFresh || VillainChatterCooldown > 0.f || VillainRandom.FRand() >= Data.ChatterChance)
+            return false;
+    }
+    else if (bFresh)
+    {
+        bVillainCuePending = true;
+        VillainPendingCue = Cue;
         return false;
-    const FString Line = Data.LineFor(Cue, GI->Session.run.wave, VillainRandom, VillainLastLine);
+    }
+    const FString Line = VillainLineFor(Cue);
     if (Line.IsEmpty())
         return false;
-    VillainLastLine = Line;
-    VillainLine = Data.DisplayName.IsEmpty() ? Line : Data.DisplayName + TEXT(": ") + Line;
+    VillainLine = Line;
     VillainLineSeconds = FMath::Clamp(2.5f + .06f * Line.Len(), 3.5f, 7.f);
+    VillainLineShown = 0.f;
     // Chatter never lands on top of a line he has just said, story or not.
     VillainChatterCooldown = Data.ChatterCooldown;
     return true;
+}
+FString ASSGameMode::VillainLineFor(ESSVillainCue Cue)
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || !VillainVoiceOn(this))
+        return FString();
+    const FSSVillainDefinition &Data = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain;
+    const FString Line = Data.LineFor(Cue, GI->Session.run.wave, VillainRandom, VillainLastLine);
+    if (Line.IsEmpty())
+        return FString();
+    VillainLastLine = Line;
+    return Data.DisplayName.IsEmpty() ? Line : Data.DisplayName + TEXT(": ") + Line;
 }
 void ASSGameMode::VillainSpeakWave()
 {
@@ -272,7 +303,13 @@ void ASSGameMode::UpdateThreatFeedback(float Dt)
     ThreatWarningSeconds = FMath::Max(0.f, ThreatWarningSeconds - Dt);
     PilotReactionSeconds = FMath::Max(0.f, PilotReactionSeconds - Dt);
     VillainLineSeconds = FMath::Max(0.f, VillainLineSeconds - Dt);
+    VillainLineShown += Dt;
     VillainChatterCooldown = FMath::Max(0.f, VillainChatterCooldown - Dt);
+    if (bVillainCuePending && (VillainLineSeconds <= 0.f || VillainLineShown >= VillainMinimumLineSeconds))
+    {
+        bVillainCuePending = false;
+        VillainSpeak(VillainPendingCue);
+    }
     PlayerHitFlashSeconds = FMath::Max(0.f, PlayerHitFlashSeconds - Dt);
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI || !Ship || !GI->Session.IsFlying())
@@ -323,6 +360,7 @@ void ASSGameMode::ShowHangar()
     bAtTitleScreen = false;
     bDepartingStation = bStartNextBlockOnExit = false;
     ThreatWarningSeconds = PilotReactionSeconds = VillainLineSeconds = 0.f;
+    bVillainCuePending = false;
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Ship)
@@ -433,6 +471,7 @@ void ASSGameMode::StartNewRun()
     VillainEpitaph.Empty();
     VillainLastLine.Empty();
     VillainChatterCooldown = 0.f;
+    bVillainCuePending = false;
     VillainRandom.Initialize(int32(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str())))));
     PendingReward = false;
     WeaponBuffSeconds = 0;
@@ -621,6 +660,7 @@ void ASSGameMode::EnterStation()
 {
     bDepartingStation = bStartNextBlockOnExit = false;
     VillainLineSeconds = 0.f;
+    bVillainCuePending = false;
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Walker)
@@ -850,8 +890,9 @@ void ASSGameMode::Tick(float Dt)
             Director->SetActive(false);
             Director->ResetEncounter();
             DeathPersisted = GI->PersistDeath();
-            // His last word goes on the results panel, since the flight caption leaves with the hangar.
-            VillainEpitaph = VillainSpeak(ESSVillainCue::Death) ? VillainLine : FString();
+            // His last word goes on the results panel, since the flight caption leaves with the hangar. It is
+            // dialogue, so it follows the subtitles setting like his caption and the pilot's.
+            VillainEpitaph = S.settings.subtitles ? VillainLineFor(ESSVillainCue::Death) : FString();
             ShowHangar();
             OpenPanel(ESSPanel::Results);
         }

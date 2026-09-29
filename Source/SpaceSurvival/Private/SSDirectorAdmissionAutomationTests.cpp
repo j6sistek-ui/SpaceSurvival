@@ -679,41 +679,58 @@ bool FSSDirectorVillainLaunch::RunTest(const FString &)
                     Rock->Configure(ESSWorldKind::MassiveAsteroid, 650.f, 0.f, 6);
                     ASSEnemy *Beside = F.Director->SpawnEnemy(ESSWorldKind::Pursuer);
                     if (TestNotNull(TEXT("A crowded craft still admits the hunter"), Beside))
+                    {
                         TestTrue(TEXT("A hunter never starts inside a rock"),
                                  FVector::Dist(Beside->GetActorLocation(), Rock->GetActorLocation()) >=
                                      Beside->GetBodyRadius() + Rock->GetBodyRadius() + 420.f - 1.f);
+                        TestTrue(TEXT("A hunter launched beside his craft still starts ahead, beyond the lead"),
+                                 FVector::DotProduct(Beside->GetActorLocation() - Ship->GetActorLocation(),
+                                                     Ship->GetActorForwardVector()) >= 9000.f - 1.f);
+                    }
                 }
             }
         }
     }
-    for (int32 Case = 0; Case < 2 && bResult; ++Case)
+    for (int32 Case = 0; Case < 4 && bResult; ++Case)
     {
-        // 0: a tuning that brings him inside the reaction lead. 1: the dial off. Both place as before.
+        // 0: a tuning that brings him inside the reaction lead. 1: the dial off. 2: a hard turn has swung him out
+        // beside the ship. 3: just beyond the lead with a rock on his craft, so some tries beside it fall inside the
+        // lead. Every hunter still starts ahead of the ship, beyond the lead, and never on his craft.
         FSSWreckageBudgetWorld F;
         ASSShip *Ship = nullptr;
         ASSDirectorVillain *Villain = nullptr;
         bResult = F.Initialize(*this);
         if (!bResult)
             break;
-        if (Case == 0)
+        auto &Data = F.Mode->Tuning->Villain;
+        if (Case == 0 || Case == 3)
         {
-            F.Mode->Tuning->Villain.LeadDistance = 3000.f;
-            F.Mode->Tuning->Villain.HeightOffset = F.Mode->Tuning->Villain.SwayAmplitude = 0.f;
+            Data.LeadDistance = Case == 0 ? 3000.f : 9500.f;
+            Data.HeightOffset = Data.SwayAmplitude = 0.f;
         }
-        else
+        if (Case == 1)
             Launch->SetWithCurrentPriority(0.f);
         bResult = Stage(F, Ship, Villain);
+        if (bResult && Case == 2)
+            Villain->SetActorLocation(Ship->GetActorLocation() + Ship->GetActorRightVector() * 45000.f);
         FVector Point;
         if (bResult && TestTrue(TEXT("The villain is on station"), ASSDirectorVillain::FindLaunchPoint(F.World, Point)))
         {
+            if (Case == 3)
+                if (auto *Rock = F.World->SpawnActor<ASSWorldBody>(Point, FRotator::ZeroRotator))
+                    Rock->Configure(ESSWorldKind::MassiveAsteroid, 650.f, 0.f, 6);
             ASSEnemy *Enemy = F.Director->SpawnEnemy(ESSWorldKind::Pursuer);
-            const TCHAR *Why = Case == 0 ? TEXT("inside the reaction lead") : TEXT("with the launch dial off");
+            const TCHAR *Why = Case == 0   ? TEXT("inside the reaction lead")
+                               : Case == 1 ? TEXT("with the launch dial off")
+                               : Case == 2 ? TEXT("while he is out beside the ship")
+                                           : TEXT("with his craft crowded just beyond the lead");
             if (TestNotNull(FString::Printf(TEXT("A hunter is still admitted %s"), Why), Enemy))
             {
-                TestFalse(FString::Printf(TEXT("No hunter leaves his craft %s"), Why),
+                TestFalse(FString::Printf(TEXT("No hunter starts on his craft %s"), Why),
                           Enemy->GetActorLocation().Equals(Point, 1.));
-                TestTrue(FString::Printf(TEXT("The ordinary placer keeps its reaction lead %s"), Why),
-                         FVector::Dist(Enemy->GetActorLocation(), Ship->GetActorLocation()) >= 9000.f - 1.f);
+                TestTrue(FString::Printf(TEXT("The hunter starts ahead, beyond the reaction lead, %s"), Why),
+                         FVector::DotProduct(Enemy->GetActorLocation() - Ship->GetActorLocation(),
+                                             Ship->GetActorForwardVector()) >= 9000.f - 1.f);
             }
         }
         Launch->SetWithCurrentPriority(1.f);
@@ -813,23 +830,37 @@ bool FSSDirectorVillainVoice::RunTest(const FString &)
     F.Mode->React(TEXT("Steady."));
     const FString Announcement = F.Mode->Announcement, Reaction = F.Mode->PilotReaction;
     TestTrue(TEXT("A story cue speaks"), F.Mode->VillainSpeak(ESSVillainCue::Wormhole));
-    TestTrue(TEXT("His caption is headed by his name"),
-             F.Mode->VillainLine.StartsWith(Villain.DisplayName + TEXT(": ")));
+    const FString First = F.Mode->VillainLine;
+    TestTrue(TEXT("His caption is headed by his name"), First.StartsWith(Villain.DisplayName + TEXT(": ")));
     TestTrue(TEXT("His line stays up long enough to read"), F.Mode->VillainLineSeconds >= 3.5f);
     TestEqual(TEXT("He does not displace the announcement"), F.Mode->Announcement, Announcement);
     TestEqual(TEXT("He does not displace the pilot"), F.Mode->PilotReaction, Reaction);
     TestFalse(TEXT("Chatter waits out the cooldown after any line"), F.Mode->VillainSpeak(ESSVillainCue::Kill));
-    TestTrue(TEXT("Story cues ignore the chatter cooldown"), F.Mode->VillainSpeak(ESSVillainCue::LowHull));
+    // A story cue that lands while his last line is still being read waits for it, instead of flashing that line
+    // off the screen or being lost.
+    TestFalse(TEXT("A story cue does not cut off a line still being read"),
+              F.Mode->VillainSpeak(ESSVillainCue::LowHull));
+    TestEqual(TEXT("The line being read stays up"), F.Mode->VillainLine, First);
     const float Shown = F.Mode->VillainLineSeconds;
     F.Mode->UpdateThreatFeedback(1.f);
     TestEqual(TEXT("His caption counts down with the flight feedback"), F.Mode->VillainLineSeconds, Shown - 1.f, .001f);
+    TestEqual(TEXT("The waiting cue still waits a second in"), F.Mode->VillainLine, First);
+    F.Mode->UpdateThreatFeedback(1.1f);
+    TestTrue(TEXT("The waiting story cue is delivered once the line before has been read"),
+             F.Mode->VillainLine != First && F.Mode->VillainLine.StartsWith(Villain.DisplayName + TEXT(": ")));
+    TestFalse(TEXT("A delivered cue is not delivered twice"), F.Mode->bVillainCuePending);
+    // Chatter speaks only once the line is no longer fresh, the cooldown has run out and the chance allows it.
+    F.Mode->UpdateThreatFeedback(2.5f);
     F.Mode->VillainChatterCooldown = 0.f;
     TestTrue(TEXT("Chatter speaks once the cooldown has run out"), F.Mode->VillainSpeak(ESSVillainCue::Kill));
+    F.Mode->UpdateThreatFeedback(2.5f);
     F.Mode->VillainChatterCooldown = 0.f;
     Villain.ChatterChance = 0.f;
     TestFalse(TEXT("A chatter chance of zero never speaks"), F.Mode->VillainSpeak(ESSVillainCue::Hit));
     Dial->SetWithCurrentPriority(0.f);
+    F.Mode->UpdateThreatFeedback(10.f);
     TestFalse(TEXT("The voice dial silences even a story cue"), F.Mode->VillainSpeak(ESSVillainCue::Climax));
+    TestFalse(TEXT("A silenced cue is not saved for later"), F.Mode->bVillainCuePending);
     Dial->SetWithCurrentPriority(*SavedDial);
     F.Mode->VillainEpitaph = TEXT("Sable: As promised.");
     F.Mode->OpenPanel(ESSPanel::Results);

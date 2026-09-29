@@ -1765,16 +1765,20 @@ bool USSSurvivalDirectorComponent::FindVillainLaunch(float Radius, FVector &Loca
     FVector Origin;
     if (!Ship || VillainLaunch.GetValueOnGameThread() == 0 || !ASSDirectorVillain::FindLaunchPoint(GetWorld(), Origin))
         return false;
-    // His authored lead is several times the reaction lead. A tuning that brings him closer must not bring
-    // his hunters inside the player's reaction time, so the ordinary placer takes over there.
-    if (FVector::DistSquared(Origin, Ship->GetActorLocation()) <
-        FMath::Square(ReactionLead(this, Ship, Radius, MinimumReactionSeconds, PlayerClearanceRadius)))
+    // Only while he is ahead, beyond the lead the ordinary placer keeps, measured along the heading for every
+    // candidate. A hard turn that swings him wide, a tuning that brings him close or a try beside his craft must
+    // never start a hunter off to the side or inside the player's reaction time; the ordinary placer takes over.
+    const FVector ShipLocation = Ship->GetActorLocation();
+    const FVector Heading = Ship->GetActorForwardVector();
+    const float Lead = ReactionLead(this, Ship, Radius, MinimumReactionSeconds, PlayerClearanceRadius);
+    if (FVector::DotProduct(Origin - ShipLocation, Heading) < Lead)
         return false;
     // Launched off his hull, not inside something already there: a few tries around the craft.
     for (int32 Attempt = 0; Attempt < 4; ++Attempt)
     {
         const FVector Candidate = Attempt == 0 ? Origin : Origin + Random.VRand() * ((Radius + 900.f) * Attempt);
-        if (HasSpatialClearance(this, Candidate, Candidate, Radius))
+        if (FVector::DotProduct(Candidate - ShipLocation, Heading) >= Lead &&
+            HasSpatialClearance(this, Candidate, Candidate, Radius))
         {
             Location = Candidate;
             return true;
@@ -1937,7 +1941,7 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     if (ContactWindow.X >= 0.f)
         DirectArrivals.Add({Body, ContactWindow});
     if (!bField)
-        ASSDirectorVillain::NotifyLaunch(GetWorld(), Body->GetActorLocation());
+        ASSDirectorVillain::NotifyLaunch(GetWorld());
     return Body;
 }
 
@@ -1960,9 +1964,8 @@ ASSEnemy *USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncount
         if (Ship)
             Enemy->SetLinearVelocity(Ship->GetVelocity());
         Spawned.Add(Enemy);
-        // Thrown from his craft, he turns toward the pilot it was thrown at. One placed ahead still flares him.
-        ASSDirectorVillain::NotifyLaunch(GetWorld(),
-                                         bFromVillain && Ship ? Ship->GetActorLocation() : Enemy->GetActorLocation());
+        // Every hunter flares him, whether it left his craft or was placed ahead.
+        ASSDirectorVillain::NotifyLaunch(GetWorld());
         if (ASSGameMode *Mode = GameMode(this); Mode && bFromVillain)
             Mode->VillainSpeak(ESSVillainCue::Launch);
         return Enemy;

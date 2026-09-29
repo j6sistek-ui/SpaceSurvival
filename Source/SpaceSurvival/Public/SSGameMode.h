@@ -187,11 +187,19 @@ private:
     bool bWormholeArrived = false;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
     float VillainChatterCooldown = 0.f;
+    /** How long his current line has been up, so the next cannot replace it before it can be read. */
+    float VillainLineShown = 0.f;
+    /** A story cue that arrived while his last line was still being read, delivered once it has been. */
+    bool bVillainCuePending = false;
+    ESSVillainCue VillainPendingCue = ESSVillainCue::WaveStart;
     FString VillainLastLine;
     FRandomStream VillainRandom;
     /** Wave 1 opens with his introduction, every later flight wave with that wave's line. A climax, Wave 10's
      *  included, is spoken to by its own cue instead. */
     void VillainSpeakWave();
+    /** His next line for this cue, headed by his name, or empty when he is silenced or has nothing to say. Picks
+     *  and remembers it so the one after is not a repeat; shows nothing. */
+    FString VillainLineFor(ESSVillainCue Cue);
     bool LowHullAlerted = false;
     bool bDepartingStation = false;
     bool bStartNextBlockOnExit = false;

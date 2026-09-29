@@ -348,8 +348,8 @@ private:
     friend class FSSDirectorAdmissionFallThrough;
     friend class FSSDirectorVillainLaunch;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
-    /** Where the villain can throw an enemy from: his craft, when he is on station ahead and at least the
-     *  reaction lead away. False sends the enemy to FindSafeSpawn as before. */
+    /** Where the villain can throw an enemy from: his craft, while it is ahead of the ship by at least the
+     *  reaction lead along the heading and has clear room. False sends the enemy to FindSafeSpawn as before. */
     bool FindVillainLaunch(float Radius, FVector &Location) const;
     /** The live enemy count is below this wave's cap. Saving budget cannot make room, so a full cap refuses. */
     bool HasEnemyRoom() const;

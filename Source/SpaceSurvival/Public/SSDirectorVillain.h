@@ -31,10 +31,11 @@ public:
     {
         return bPresent;
     }
-    /** A throw: flares the villain's light so an admission reads as his doing. */
-    void Launch(const FVector &Target);
+    /** A throw: flares the villain's light so an admission reads as his doing. His rider already faces the
+     *  pilot, where every throw lands, so the craft holds its heading instead of swinging toward each one. */
+    void Launch();
     /** Tells the world's villain, if there is one, that the Director just threw something. */
-    static void NotifyLaunch(UWorld *World, const FVector &Target);
+    static void NotifyLaunch(UWorld *World);
     /** Where his craft is, for a throw that leaves from it. False while he is hidden or has not yet taken his
      *  place this appearance, so nothing is ever launched from where he was parked. */
     static bool FindLaunchPoint(UWorld *World, FVector &Out);

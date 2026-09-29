@@ -130,25 +130,21 @@ void ASSDirectorVillain::SetPresent(bool bValue)
     }
 }
 
-void ASSDirectorVillain::Launch(const FVector &Target)
+void ASSDirectorVillain::Launch()
 {
-    if (!bPresent)
-        return;
-    FlareSeconds = VillainData(this).LaunchFlareSeconds;
-    // He turns toward what he threw only for the flare, then resumes facing along the chase.
-    const FVector ToTarget = Target - GetActorLocation();
-    if (!ToTarget.IsNearlyZero())
-        SetActorRotation(FMath::RInterpTo(GetActorRotation(), ToTarget.Rotation(), 1.f, .35f));
+    // Turning the craft toward each throw swung his rider away from the pilot, once a second.
+    if (bPresent)
+        FlareSeconds = VillainData(this).LaunchFlareSeconds;
 }
 
-void ASSDirectorVillain::NotifyLaunch(UWorld *World, const FVector &Target)
+void ASSDirectorVillain::NotifyLaunch(UWorld *World)
 {
     if (!World)
         return;
     for (TActorIterator<ASSDirectorVillain> It(World); It; ++It)
         if (!It->IsActorBeingDestroyed())
         {
-            It->Launch(Target);
+            It->Launch();
             return;
         }
 }

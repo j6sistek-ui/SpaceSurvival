@@ -11,9 +11,12 @@ climax no longer goes silent once its five enemies are alive.
 `ss.AdmissionFallThrough=0` restores the old chain.
 
 `SpawnEnemy` launches from `ASSDirectorVillain::FindLaunchPoint` when he is shown,
-placed, farther than the shared `ReactionLead` and his craft has clear room;
-otherwise `FindSafeSpawn` places the enemy as before (`ss.VillainLaunch`). The
-villain still has no collision, budget or threat count. His rider sits on the
+placed and ahead of the ship by at least the shared `ReactionLead` along its
+heading, with clear room; every try beside a crowded craft meets the same test.
+Otherwise `FindSafeSpawn` places the enemy as before (`ss.VillainLaunch`). A throw
+only flares him: the craft no longer swings toward each target, which had turned
+his rider away from the pilot once a second. The villain still has no collision,
+budget or threat count. His rider sits on the
 root rather than the scaled craft, fitted to `RiderHeight` from the body's own
 bounds and stood on the top of the craft's bounds; the heavy trooper stands in
 until `RiderMeshPath` names the knight. This supersedes the September 28 "no
@@ -22,8 +25,11 @@ rider" default below.
 `ASSGameMode::VillainSpeak` owns his voice: `FSSVillainDefinition::Lines` picks a
 line by cue and wave, story cues always speak, chatter (launch, hit, kill) waits
 out `ChatterCooldown` and `ChatterChance`, and the HUD draws his line on its own
-caption above the pilot's. Nothing he says writes `Announcement` or
-`PilotReaction`. A death leaves his last word on the results panel.
+caption above the pilot's. Every line stays up at least 2 s: chatter that comes
+sooner goes unsaid, and a story cue waits its turn rather than flashing the last
+line off the screen or being lost. Nothing he says writes `Announcement` or
+`PilotReaction`. A death leaves his last word on the results panel when
+subtitles are on, like the rest of his dialogue.
 
 ## Aimed Director threats — September28
 
