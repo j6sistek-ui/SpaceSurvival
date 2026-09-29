@@ -22,7 +22,7 @@ Worktree: `C:/Users/j6sis/.codex/worktrees/pr65-review/SpaceSurvival`. UE5.8.2, 
 - Other passing cases: DirectorAdmissionFallThrough, DirectorAsteroidReadability, DirectorSustainedPressure, DirectorTrajectoryFairness, DirectorVillainLaunch, DirectorVillainVoice, DirectorVolley, WreckageBudgetAdmission, RequiredClimaxAdmission, AcceleratedTenWaveJourney, JourneyDeathAndFreshRun.
 - Real-tick 39.5 s climax: Wave5 admitted44 Director asteroids, longest admission gap5.45 s, peak24 threats; Wave10 admitted33, gap4.00 s, peak24. The fixture uses high hull/shields to stay alive and measure continuity; this is not a balance or natural survival result.
 - Actual `ASSShip::Fire` cannon projectile/sweep destroys the central volley rock; two actual starter-laser traces also destroy it while leaving the ring. Synthetic aim and fixture-only zero laser interval isolate damage/trace behavior; no claim about physical trigger input, aiming skill or natural firing cadence.
-- CheckProject:38 structural checks pass; TestSourceDigests:13 pass. Changed-file native format and diff whitespace checks pass. Documentation/CI and final desktop build are recorded below when finished.
+- CheckProject:38 structural checks pass; TestSourceDigests:13 pass. Changed-file native format and diff whitespace checks pass. Documentation gate passes; current-head GitHub CI is tracked on PR66. Final desktop build is recorded below.
 
 Local logs: `Artifacts/PR66Audit/Build*.log`, `Tests/index.json`, `Tests-Focused/index.json`. The original C4459 log, initial failed native case and all reruns are retained.
 
@@ -36,9 +36,13 @@ Lead inspected actual Phoenix, dense varied world asteroids/debris, distinct ora
 
 ## Playable integration
 
-Pending at this source checkpoint. Intended existing desktop target is `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, through `Play SpaceSurvival - Current` / `Play Development Build.cmd` or `Open Repaired Game Editor.cmd`. Final source/module identity and smoke receipt must be added before owner handoff.
+**Ready for owner playtest:** existing desktop target `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, branch `codex/pr66-playtest`, gameplay source `c68941bd90226005186be323ebc98783992619c7`. The subsequent commit changes documentation only. Native Editor build succeeded in36.07 s (`Artifacts/PR66Integration/Build.log`). Module SHA256: `496882822de663e30ff3a894282440529e92eb11346627af26dfbe53aebecb0c`.
 
-Five existing modified/untracked Content/Python files in that checkout already byte-match the incoming PR versions; preserve them and all private asset folders during branch advancement. No rebuild/reimport of private art is required. The standalone packaged EXE and itch remain the September22 release.
+Both existing desktop shortcuts were inspected: `Unreal Engine` names this repaired project and Survival map; `Play SpaceSurvival - Current` resolves to its existing `Play Development Build.cmd` under the real owner account. No shortcut change or visible launch was required. Direct alternatives are that checkout's `Play Development Build.cmd` and `Open Repaired Game Editor.cmd`.
+
+Final offscreen smoke from this exact playable checkout: `1f96dbeccc964d858c7a54bf26976011`, label `PR66Playable`. All five images and fixture pass, process0,29.27 s wall time, peak17 threats; source HEAD/binaries/production saves preserved and zero fixture save slots. Actual Phoenix, incoming rocks, flight caption and braking presentation inspected. Legacy camera metadata label is corrected. Artifacts: `Artifacts/EndgameSoak/1f96dbeccc964d858c7a54bf26976011/{capture,fixture}.json` and five PNGs. This is the final normal-health scripted flight smoke, not a complete natural survival run.
+
+Five existing modified/untracked Content/Python files byte-matched the incoming PR versions. Git correctly refused an overwrite, so the five were backed up under `Artifacts/PR66Integration/ExistingPython` and preserved in a path-scoped stash before switching. All five Git object hashes match afterward. The stash is retained for recovery; no asset folders or unrelated edits were stashed or deleted. No rebuild/reimport of private art is required. The standalone packaged EXE and itch remain the September22 release.
 
 ## Acceptance limits
 
