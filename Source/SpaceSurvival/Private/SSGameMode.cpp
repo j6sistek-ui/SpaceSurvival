@@ -53,6 +53,9 @@ namespace
 {
 TAutoConsoleVariable<int32>
     VillainEnabled(TEXT("ss.Villain"), 1, TEXT("1 shows the Director as a rival flying ahead during survival flight."));
+// Owner decision, September 29: the villain talks. Story beats and a little chatter on his own caption line.
+TAutoConsoleVariable<int32> VillainVoice(TEXT("ss.VillainVoice"), 1,
+                                         TEXT("1 lets the villain speak on his own caption line; 0 silences him."));
 const TCHAR *UpgradeNames[] = {TEXT("Hull"), TEXT("Shield"), TEXT("Engine"), TEXT("Thrusters"), TEXT("Weapon")};
 FString WeaponName(SS::Weapon W)
 {
@@ -209,6 +212,32 @@ void ASSGameMode::React(const FString &Message)
     PilotReactionSeconds = 4.f;
     ReactionCooldown = 18.f;
 }
+bool ASSGameMode::VillainSpeak(ESSVillainCue Cue)
+{
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!GI || GI->IsFreeFlight() || VillainEnabled.GetValueOnGameThread() == 0 ||
+        VillainVoice.GetValueOnGameThread() == 0)
+        return false;
+    const FSSVillainDefinition &Data = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain;
+    const bool bChatter = Cue == ESSVillainCue::Launch || Cue == ESSVillainCue::Hit || Cue == ESSVillainCue::Kill;
+    if (bChatter && (VillainChatterCooldown > 0.f || VillainRandom.FRand() >= Data.ChatterChance))
+        return false;
+    const FString Line = Data.LineFor(Cue, GI->Session.run.wave, VillainRandom, VillainLastLine);
+    if (Line.IsEmpty())
+        return false;
+    VillainLastLine = Line;
+    VillainLine = Data.DisplayName.IsEmpty() ? Line : Data.DisplayName + TEXT(": ") + Line;
+    VillainLineSeconds = FMath::Clamp(2.5f + .06f * Line.Len(), 3.5f, 7.f);
+    // Chatter never lands on top of a line he has just said, story or not.
+    VillainChatterCooldown = Data.ChatterCooldown;
+    return true;
+}
+void ASSGameMode::VillainSpeakWave()
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (GI && GI->Session.run.phase == SS::Phase::Flight)
+        VillainSpeak(GI->Session.run.wave <= 1 ? ESSVillainCue::RunStart : ESSVillainCue::WaveStart);
+}
 void ASSGameMode::WarnThreat(const FString &Message, FVector Position, float Duration)
 {
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -242,6 +271,8 @@ void ASSGameMode::UpdateThreatFeedback(float Dt)
     ReactionCooldown = FMath::Max(0.f, ReactionCooldown - Dt);
     ThreatWarningSeconds = FMath::Max(0.f, ThreatWarningSeconds - Dt);
     PilotReactionSeconds = FMath::Max(0.f, PilotReactionSeconds - Dt);
+    VillainLineSeconds = FMath::Max(0.f, VillainLineSeconds - Dt);
+    VillainChatterCooldown = FMath::Max(0.f, VillainChatterCooldown - Dt);
     PlayerHitFlashSeconds = FMath::Max(0.f, PlayerHitFlashSeconds - Dt);
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI || !Ship || !GI->Session.IsFlying())
@@ -255,6 +286,7 @@ void ASSGameMode::UpdateThreatFeedback(float Dt)
         LowHullAlerted = true;
         WarnThreat(TEXT("HULL CRITICAL / FIND CLEAR SPACE"), Ship->GetActorLocation(), 5.f);
         React(TEXT("Hull's hurting. Give me a little room."));
+        VillainSpeak(ESSVillainCue::LowHull);
     }
     // Warn for a predicted near collision, not every visible rock or nearby enemy.
     ASSWorldBody *UrgentBody = nullptr;
@@ -290,7 +322,7 @@ void ASSGameMode::ShowHangar()
 {
     bAtTitleScreen = false;
     bDepartingStation = bStartNextBlockOnExit = false;
-    ThreatWarningSeconds = PilotReactionSeconds = 0.f;
+    ThreatWarningSeconds = PilotReactionSeconds = VillainLineSeconds = 0.f;
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Ship)
@@ -398,6 +430,10 @@ void ASSGameMode::StartNewRun()
     LowHullAlerted = false;
     AlarmCooldown = 0.f;
     ReactionCooldown = 12.f;
+    VillainEpitaph.Empty();
+    VillainLastLine.Empty();
+    VillainChatterCooldown = 0.f;
+    VillainRandom.Initialize(int32(GetTypeHash(FString(UTF8_TO_TCHAR(GI->Session.run.id.c_str())))));
     PendingReward = false;
     WeaponBuffSeconds = 0;
     Director->ResetEncounter();
@@ -584,6 +620,7 @@ bool ASSGameMode::RequestDocking()
 void ASSGameMode::EnterStation()
 {
     bDepartingStation = bStartNextBlockOnExit = false;
+    VillainLineSeconds = 0.f;
     Director->SetActive(false);
     Director->ResetEncounter();
     if (Walker)
@@ -725,6 +762,10 @@ void ASSGameMode::Tick(float Dt)
             Director->SetActive(!GI->IsFreeFlight());
             Announce(GI->IsFreeFlight() ? TEXT("FREE FLIGHT / No waves. Esc / Menu to return to the hangar.")
                                         : FString::Printf(TEXT("STATION ZONE CLEAR  |  WAVE %d"), S.run.wave));
+            // A new run's Wave 1 began silently on the pad, so he greets the pilot here. A relaunch changes the
+            // wave in this frame instead, and the wave-change block below speaks for it.
+            if (S.run.wave == PreviousWave)
+                VillainSpeakWave();
         }
     }
     // Free Flight stays in Approach, which advances cooldowns without advancing waves.
@@ -809,6 +850,8 @@ void ASSGameMode::Tick(float Dt)
             Director->SetActive(false);
             Director->ResetEncounter();
             DeathPersisted = GI->PersistDeath();
+            // His last word goes on the results panel, since the flight caption leaves with the hangar.
+            VillainEpitaph = VillainSpeak(ESSVillainCue::Death) ? VillainLine : FString();
             ShowHangar();
             OpenPanel(ESSPanel::Results);
         }
@@ -823,12 +866,16 @@ void ASSGameMode::Tick(float Dt)
         {
             Director->Configure(S.run.wave, S.run.phase == SS::Phase::Climax);
             if (!bDepartingStation)
+            {
                 Announce(FString::Printf(TEXT("WAVE %d  |  Keep surviving"), S.run.wave));
+                VillainSpeakWave();
+            }
         }
         Director->SetBreathing(S.run.phase == SS::Phase::Breathing);
         if (S.run.phase == SS::Phase::Wormhole)
         {
             Announce(TEXT("WORMHOLE DISTURBANCE  |  Maintain control. The pull is increasing."));
+            VillainSpeak(ESSVillainCue::Wormhole);
             if (Ship)
             {
                 auto *Passage =
@@ -845,6 +892,7 @@ void ASSGameMode::Tick(float Dt)
             Announce(S.run.wave == 5
                          ? TEXT("WORMHOLE EXIT / Unknown space. Recover your heading; hostile contacts ahead.")
                          : TEXT("COMPOUND FRONT  |  Gravity, asteroids and enemy pressure."));
+            VillainSpeak(S.run.wave == 5 ? ESSVillainCue::Climax : ESSVillainCue::Compound);
         }
         if (S.run.phase == SS::Phase::Approach && Ship)
         {
@@ -860,6 +908,7 @@ void ASSGameMode::Tick(float Dt)
             Hub->BuildHub(false);
             Hub->ShowBayShip(false);
             Announce(TEXT("STATION ZONE  |  Follow LANDING PAD. Brake, then press Interact when docking is ready."));
+            VillainSpeak(S.run.wave >= 10 ? ESSVillainCue::Finale : ESSVillainCue::Retreat);
         }
         if (S.run.phase == SS::Phase::Station)
         {
@@ -916,6 +965,7 @@ void ASSGameMode::NotifyEnemyKilled()
 {
     if (auto *GI = GetGameInstance<USSGameInstance>())
         GI->Session.RecordKill();
+    VillainSpeak(ESSVillainCue::Kill);
 }
 void ASSGameMode::NotifyEventCompleted(bool bCombat)
 {
@@ -1195,10 +1245,12 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         break;
     case ESSPanel::Results:
         PanelTitle = TEXT("THE JOURNEY ENDS");
-        PanelDetail = FString::Printf(TEXT("Wave %d  |  Score %d  |  +%d XP  |  Account level %d\n%s"),
-                                      S.account.lastWave, S.account.lastScore, S.account.lastXP, S.account.level,
-                                      DeathPersisted ? TEXT("Your next launch starts fresh. Your unlocks remain.")
-                                                     : TEXT("Progression save failed. Retry before continuing."));
+        if (!VillainEpitaph.IsEmpty())
+            PanelDetail = VillainEpitaph + TEXT("\n\n");
+        PanelDetail += FString::Printf(TEXT("Wave %d  |  Score %d  |  +%d XP  |  Account level %d\n%s"),
+                                       S.account.lastWave, S.account.lastScore, S.account.lastXP, S.account.level,
+                                       DeathPersisted ? TEXT("Your next launch starts fresh. Your unlocks remain.")
+                                                      : TEXT("Progression save failed. Retry before continuing."));
         if (S.account.xp - S.account.lastXP < 150 && S.account.HeavyCannonUnlocked())
             PanelDetail += TEXT("\nNEW STARTING WEAPON: HEAVY CANNON / select it at the hangar loadout.");
         if (S.account.xp - S.account.lastXP < 450 && S.account.AgileShipUnlocked())

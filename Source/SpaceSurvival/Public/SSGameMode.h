@@ -67,6 +67,9 @@ public:
     bool IsAnnouncementVisible() const;
     void WarnThreat(const FString &Message, FVector Position, float Duration = 4.f);
     void React(const FString &Message);
+    /** The villain's transmissions, on his own caption so no announcement, reaction or warning is displaced.
+     *  Story cues always speak; Launch, Hit and Kill wait out his chatter cooldown and chance. True if he spoke. */
+    bool VillainSpeak(ESSVillainCue Cue);
     void Interact();
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
@@ -99,6 +102,10 @@ public:
     FString ThreatWarning, PilotReaction;
     FVector ThreatPosition = FVector::ZeroVector;
     float ThreatWarningSeconds = 0.f, PilotReactionSeconds = 0.f;
+    FString VillainLine;
+    float VillainLineSeconds = 0.f;
+    /** His last word on a run that ended in death, for the results panel. Cleared when the next run starts. */
+    FString VillainEpitaph;
     /** Counts down after a player shot connects, so the reticle can flash its hit state. */
     float PlayerHitFlashSeconds = 0.f;
     TArray<FSSMenuEntry> Entries;
@@ -129,6 +136,7 @@ private:
     friend class ASSWave10Soak;
     friend class FSSAudioFirstState;
     friend class FSSTitleMenuNavigation;
+    friend class FSSDirectorVillainVoice;
     bool bAutomatedSoakInput = false;
     bool bTitleSettingsNavigation = false;
     UPROPERTY()
@@ -178,6 +186,12 @@ private:
     float ArrivalColorBlend = 0.f;
     bool bWormholeArrived = false;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
+    float VillainChatterCooldown = 0.f;
+    FString VillainLastLine;
+    FRandomStream VillainRandom;
+    /** Wave 1 opens with his introduction, every later flight wave with that wave's line. A climax, Wave 10's
+     *  included, is spoken to by its own cue instead. */
+    void VillainSpeakWave();
     bool LowHullAlerted = false;
     bool bDepartingStation = false;
     bool bStartNextBlockOnExit = false;

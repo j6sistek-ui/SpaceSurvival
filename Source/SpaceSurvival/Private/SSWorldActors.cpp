@@ -607,6 +607,9 @@ void ASSWorldBody::Tick(float DeltaSeconds)
                     ContactPoint = GetActorLocation() + ContactNormal * BodyRadius;
                 if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
                     FX->PlayImpact(ContactPoint, -ContactNormal, false, CollisionDamage >= 25.f);
+                // One of his own rocks landing a real blow is the villain's cue to gloat, if he has room to.
+                if (ASSGameMode *Mode = GameMode(this); Mode && bDirectorAsteroid && CollisionDamage >= 20.f)
+                    Mode->VillainSpeak(ESSVillainCue::Hit);
             }
         }
         else if (IsEnvironmentalField())
@@ -1684,6 +1687,28 @@ TAutoConsoleVariable<float> HazardDirectShare(TEXT("ss.HazardDirectShare"), .6f,
                                               TEXT("Share of aimed asteroids that strike the hull if unanswered."));
 TAutoConsoleVariable<float> HazardArrivalSpacing(TEXT("ss.HazardArrivalSpacing"), 1.f,
                                                  TEXT("Seconds between direct shots at wave 10; wave 1 doubles it."));
+// A refused enemy, field or wreckage attempt used to end its spawn interval. The Wave 5 climax asks for an
+// enemy every interval, so once its five were alive it admitted nothing for the rest of the climax; every
+// later wave lost the intervals its full enemy cap refused in the same way. Saving for something too dear is
+// not a refusal: that interval still waits, so enemies keep their share of the budget.
+TAutoConsoleVariable<int32>
+    AdmissionFallThrough(TEXT("ss.AdmissionFallThrough"), 1,
+                         TEXT("1 admits an asteroid when an enemy, field or wreckage attempt is refused; 0 wastes "
+                              "the interval."));
+// Owner decision, September 29: the villain launches the enemies. A hunter leaves his craft and flies back at
+// the player, so the fight visibly starts with him. 0 places enemies ahead of the ship as before.
+TAutoConsoleVariable<int32> VillainLaunch(TEXT("ss.VillainLaunch"), 1,
+                                          TEXT("1 launches Director enemies from the villain's craft; 0 places "
+                                               "them ahead of the ship."));
+
+enum class EAdmission : uint8
+{
+    Admitted,
+    /** Saving for what was chosen. The interval passes; the budget keeps growing toward it. */
+    Holding,
+    /** Could not be placed: a full cap, or no clear room. The interval may admit something else instead. */
+    Refused
+};
 
 /** How fast a hazard may travel, after the dial. Shared so the spawn distance and the velocity cannot
  *  disagree: reaction time is computed from closing speed, and a faster hazard that spawned at the old
@@ -1691,6 +1716,18 @@ TAutoConsoleVariable<float> HazardArrivalSpacing(TEXT("ss.HazardArrivalSpacing")
 float HazardSpeedScale()
 {
     return FMath::Max(0.f, HazardSpeed.GetValueOnGameThread());
+}
+
+/** How far from the ship a body must be admitted so the player has the whole reaction floor to see it,
+ *  closing at the ship's own speed plus the fastest authored drift, rather than judged by distance alone. */
+float ReactionLead(const UObject *Context, const ASSShip *Ship, float Radius, float ReactionSeconds, float Clearance)
+{
+    float MaximumDrift = 450.f;
+    for (const auto &Hazard : Content(Context)->Hazards)
+        MaximumDrift = FMath::Max(MaximumDrift, Hazard.DriftSpeedMax);
+    MaximumDrift *= HazardSpeedScale();
+    const float ClosingSpeed = Ship->GetVelocity().Size() + MaximumDrift;
+    return FMath::Max(9000.f, ClosingSpeed * ReactionSeconds + Radius + Clearance);
 }
 } // namespace
 
@@ -1702,13 +1739,7 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
     const FVector Forward = Ship->GetActorForwardVector();
     const FVector Right = Ship->GetActorRightVector();
     const FVector Up = Ship->GetActorUpVector();
-    // Use closing speed, including a maximum approach drift, rather than distance alone.
-    float MaximumDrift = 450.f;
-    for (const auto &Hazard : Content(this)->Hazards)
-        MaximumDrift = FMath::Max(MaximumDrift, Hazard.DriftSpeedMax);
-    MaximumDrift *= HazardSpeedScale();
-    const float ClosingSpeed = Ship->GetVelocity().Size() + MaximumDrift;
-    const float Lead = FMath::Max(9000.f, ClosingSpeed * MinimumReactionSeconds + Radius + PlayerClearanceRadius);
+    const float Lead = ReactionLead(this, Ship, Radius, MinimumReactionSeconds, PlayerClearanceRadius);
     for (int32 Attempt = 0; Attempt < 16; ++Attempt)
     {
         // Larger rocks need room beside the protected corridor, not only a longer approach lead.
@@ -1726,6 +1757,40 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
         }
     }
     return false;
+}
+
+bool USSSurvivalDirectorComponent::FindVillainLaunch(float Radius, FVector &Location) const
+{
+    const ASSShip *Ship = FindShip();
+    FVector Origin;
+    if (!Ship || VillainLaunch.GetValueOnGameThread() == 0 || !ASSDirectorVillain::FindLaunchPoint(GetWorld(), Origin))
+        return false;
+    // His authored lead is several times the reaction lead. A tuning that brings him closer must not bring
+    // his hunters inside the player's reaction time, so the ordinary placer takes over there.
+    if (FVector::DistSquared(Origin, Ship->GetActorLocation()) <
+        FMath::Square(ReactionLead(this, Ship, Radius, MinimumReactionSeconds, PlayerClearanceRadius)))
+        return false;
+    // Launched off his hull, not inside something already there: a few tries around the craft.
+    for (int32 Attempt = 0; Attempt < 4; ++Attempt)
+    {
+        const FVector Candidate = Attempt == 0 ? Origin : Origin + Random.VRand() * ((Radius + 900.f) * Attempt);
+        if (HasSpatialClearance(this, Candidate, Candidate, Radius))
+        {
+            Location = Candidate;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool USSSurvivalDirectorComponent::HasEnemyRoom() const
+{
+    int32 EnemyCount = 0;
+    for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
+        ++EnemyCount;
+    const auto &DirectorData = Content(this)->DirectorContent;
+    return EnemyCount < (bClimax ? DirectorData.ClimaxEnemyCap
+                                 : (Wave < 6 ? DirectorData.EarlyEnemyCap : DirectorData.LateEnemyCap));
 }
 
 bool USSSurvivalDirectorComponent::FindTrajectorySpawn(float Radius, float Speed, float Lifetime, FVector &Location,
@@ -1878,28 +1943,28 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
 
 ASSEnemy *USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective)
 {
-    if (GetActiveThreatCount() >= FMath::Max(1, HazardCount.GetValueOnGameThread()))
+    if (GetActiveThreatCount() >= FMath::Max(1, HazardCount.GetValueOnGameThread()) || !HasEnemyRoom())
         return nullptr;
-    int32 EnemyCount = 0;
-    for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
-        ++EnemyCount;
-    const auto &DirectorData = Content(this)->DirectorContent;
     const auto Definition = Content(this)->Enemy(Kind);
-    if (EnemyCount >=
-        (bClimax ? DirectorData.ClimaxEnemyCap : (Wave < 6 ? DirectorData.EarlyEnemyCap : DirectorData.LateEnemyCap)))
-        return nullptr;
     FVector Location;
-    if (!FindSafeSpawn(Definition.Radius, Location))
+    const bool bFromVillain = FindVillainLaunch(Definition.Radius, Location);
+    if (!bFromVillain && !FindSafeSpawn(Definition.Radius, Location))
         return nullptr;
-    if (ASSEnemy *Enemy = GetWorld()->SpawnActor<ASSEnemy>(Location, FRotator::ZeroRotator))
+    ASSShip *Ship = FindShip();
+    const FRotator Facing = Ship ? (Ship->GetActorLocation() - Location).Rotation() : FRotator::ZeroRotator;
+    if (ASSEnemy *Enemy = GetWorld()->SpawnActor<ASSEnemy>(Location, Facing))
     {
         Enemy->Configure(Kind, Definition.Radius,
                          Definition.CollisionDamageBase + Wave * Definition.CollisionDamagePerWave, Wave);
         Enemy->SetObjectiveOwner(Objective);
-        if (ASSShip *Ship = FindShip())
+        if (Ship)
             Enemy->SetLinearVelocity(Ship->GetVelocity());
         Spawned.Add(Enemy);
-        ASSDirectorVillain::NotifyLaunch(GetWorld(), Enemy->GetActorLocation());
+        // Thrown from his craft, he turns toward the pilot it was thrown at. One placed ahead still flares him.
+        ASSDirectorVillain::NotifyLaunch(GetWorld(),
+                                         bFromVillain && Ship ? Ship->GetActorLocation() : Enemy->GetActorLocation());
+        if (ASSGameMode *Mode = GameMode(this); Mode && bFromVillain)
+            Mode->VillainSpeak(ESSVillainCue::Launch);
         return Enemy;
     }
     return nullptr;
@@ -2025,6 +2090,7 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
     // has to be asked for again or the front is asteroids and enemies for the rest of it.
     if (bClimax && Wave == 10 && bCompoundGravitySpawned && !CompoundGravity.IsValid())
         bCompoundGravitySpawned = false;
+    const bool bFallThrough = AdmissionFallThrough.GetValueOnGameThread() != 0;
     if (bClimax && Wave == 10 && (!bCompoundGravitySpawned || !bCompoundAsteroidSpawned || !bCompoundEnemySpawned))
     {
         // Establish each required component before random composition resumes.
@@ -2036,7 +2102,8 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
         const bool bEnemy = Required == ESSWorldKind::Pursuer;
         const float Cost =
             FMath::Max(.1f, bEnemy ? Data->Enemy(Required).PressureCost : Data->Hazard(Required).PressureCost);
-        if (AvailableBudget >= Cost)
+        bool bRefused = bEnemy && !HasEnemyRoom();
+        if (!bRefused && AvailableBudget >= Cost)
         {
             ASSWorldBody *SpawnedRequired =
                 bEnemy ? SpawnEnemy(Required)
@@ -2054,21 +2121,46 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
                 else
                     bCompoundEnemySpawned = true;
             }
+            else
+                bRefused = true;
         }
-        return;
+        // Admitted, or saving for it. A refused piece is asked for again next interval; this one goes to the
+        // random composition below, so a full enemy cap or a crowded front cannot silence the whole climax.
+        if (!bRefused || !bFallThrough)
+            return;
     }
+    auto AdmitEnemy = [this, Data](ESSWorldKind Kind)
+    {
+        if (!HasEnemyRoom())
+            return EAdmission::Refused;
+        const float Cost = FMath::Max(.1f, Data->Enemy(Kind).PressureCost);
+        if (AvailableBudget < Cost)
+            return EAdmission::Holding;
+        if (!SpawnEnemy(Kind))
+            return EAdmission::Refused;
+        AvailableBudget -= Cost;
+        return EAdmission::Admitted;
+    };
+    auto AdmitHazard = [this, Data](ESSWorldKind Kind)
+    {
+        const float Cost = FMath::Max(.1f, Data->Hazard(Kind).PressureCost);
+        if (AvailableBudget < Cost)
+            return EAdmission::Holding;
+        if (!SpawnHazard(Kind, -1.f))
+            return EAdmission::Refused;
+        AvailableBudget -= Cost;
+        return EAdmission::Admitted;
+    };
     const float Roll = Random.FRand();
+    EAdmission Outcome = EAdmission::Refused;
+    bool bChosen = true;
     if ((bClimax && Wave == 5) || (Wave >= FMath::Min(Data->Enemy(ESSWorldKind::Pursuer).MinimumWave,
                                                       Data->Enemy(ESSWorldKind::Flanker).MinimumWave) &&
                                    Roll < (bClimax ? DirectorData.ClimaxEnemyChance : DirectorData.EnemyChance)))
     {
         ESSWorldKind Selected = ESSWorldKind::Pursuer;
         if (SelectContent(this, {ESSWorldKind::Pursuer, ESSWorldKind::Flanker}, Wave, Random, true, Selected))
-        {
-            const float Cost = FMath::Max(.1f, Data->Enemy(Selected).PressureCost);
-            if (AvailableBudget >= Cost && SpawnEnemy(Selected))
-                AvailableBudget -= Cost;
-        }
+            Outcome = AdmitEnemy(Selected);
     }
     else if (Wave >= FMath::Min(Storm.MinimumWave, Gravity.MinimumWave) && !bClimax &&
              Roll > 1.f - DirectorData.FieldChance &&
@@ -2077,30 +2169,28 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
         ESSWorldKind Selected = ESSWorldKind::ElectricalStorm;
         if (SelectContent(this, {ESSWorldKind::ElectricalStorm, ESSWorldKind::GravityAnomaly}, Wave, Random, false,
                           Selected))
-        {
-            const float Cost = FMath::Max(.1f, Data->Hazard(Selected).PressureCost);
-            if (AvailableBudget >= Cost && SpawnHazard(Selected, -1.f))
-                AvailableBudget -= Cost;
-        }
+            Outcome = AdmitHazard(Selected);
     }
     else if (Wave >= Wreckage.MinimumWave && Roll > DirectorData.WreckageSelectionStart &&
              Roll < DirectorData.WreckageSelectionStart + Wreckage.SelectionWeight &&
              AvailableBudget >= Wreckage.PressureCost)
     {
         if (SpawnWreckagePassage())
+        {
             AvailableBudget -= FMath::Max(.1f, Wreckage.PressureCost);
+            Outcome = EAdmission::Admitted;
+        }
     }
-    else if (AvailableBudget >= 1.f)
+    else
+        bChosen = false;
+    // Asteroids are the ordinary admission, and what a refused choice falls through to.
+    if ((!bChosen || (bFallThrough && Outcome == EAdmission::Refused)) && AvailableBudget >= 1.f)
     {
         ESSWorldKind Selected = ESSWorldKind::SmallAsteroid;
         if (SelectContent(this,
                           {ESSWorldKind::MassiveAsteroid, ESSWorldKind::MediumAsteroid, ESSWorldKind::SmallAsteroid},
                           Wave, Random, false, Selected))
-        {
-            const float Cost = FMath::Max(.1f, Data->Hazard(Selected).PressureCost);
-            if (AvailableBudget >= Cost && SpawnHazard(Selected, -1.f))
-                AvailableBudget -= Cost;
-        }
+            AdmitHazard(Selected);
     }
 }
 

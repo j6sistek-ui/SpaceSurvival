@@ -147,6 +147,8 @@ private:
 
     friend class FSSDirectorAsteroidReadability;
     friend class FSSDirectorTrajectoryFairness;
+    friend class FSSDirectorAdmissionFallThrough;
+    friend class FSSDirectorVillainLaunch;
     friend class FSSControllerTestingPreset;
     void UpdateEngineMix();
     void RefreshFlightPresentation();

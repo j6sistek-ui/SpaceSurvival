@@ -35,6 +35,9 @@ public:
     void Launch(const FVector &Target);
     /** Tells the world's villain, if there is one, that the Director just threw something. */
     static void NotifyLaunch(UWorld *World, const FVector &Target);
+    /** Where his craft is, for a throw that leaves from it. False while he is hidden or has not yet taken his
+     *  place this appearance, so nothing is ever launched from where he was parked. */
+    static bool FindLaunchPoint(UWorld *World, FVector &Out);
     /** Where he wants to be for this ship, before smoothing. */
     FVector DesiredLocation(const ASSShip *Ship) const;
 
@@ -48,6 +51,7 @@ public:
     TObjectPtr<UPointLightComponent> Glow;
 
 private:
+    friend class FSSDirectorVillainLaunch;
     void ApplyDefinition();
     ASSShip *FindShip() const;
     bool bPresent = false;

@@ -345,7 +345,14 @@ private:
     ASSShip *FindShip() const;
     friend class FSSDirectorAsteroidReadability;
     friend class FSSDirectorTrajectoryFairness;
+    friend class FSSDirectorAdmissionFallThrough;
+    friend class FSSDirectorVillainLaunch;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
+    /** Where the villain can throw an enemy from: his craft, when he is on station ahead and at least the
+     *  reaction lead away. False sends the enemy to FindSafeSpawn as before. */
+    bool FindVillainLaunch(float Radius, FVector &Location) const;
+    /** The live enemy count is below this wave's cap. Saving budget cannot make room, so a full cap refuses. */
+    bool HasEnemyRoom() const;
     /** Places a body so it crosses the ship's predicted path after at least the reaction floor. */
     bool FindTrajectorySpawn(float Radius, float Speed, float Lifetime, FVector &Location, FVector &Velocity,
                              FVector2D &ContactWindow);

@@ -1,5 +1,30 @@
 # SpaceSurvival Phase 1 architecture
 
+## Admission fall-through, villain launches and voice — September29
+
+`USSSurvivalDirectorComponent::TickComponent` sorts every attempt into admitted,
+holding (the budget is short of what was chosen; the interval waits so enemies
+keep their share) or refused (a full enemy cap or no clear room). A refused
+enemy, field or wreckage attempt, and a refused Wave 10 required piece, falls
+through to the ordinary asteroid admission in the same interval, so the Wave 5
+climax no longer goes silent once its five enemies are alive.
+`ss.AdmissionFallThrough=0` restores the old chain.
+
+`SpawnEnemy` launches from `ASSDirectorVillain::FindLaunchPoint` when he is shown,
+placed, farther than the shared `ReactionLead` and his craft has clear room;
+otherwise `FindSafeSpawn` places the enemy as before (`ss.VillainLaunch`). The
+villain still has no collision, budget or threat count. His rider sits on the
+root rather than the scaled craft, fitted to `RiderHeight` from the body's own
+bounds and stood on the top of the craft's bounds; the heavy trooper stands in
+until `RiderMeshPath` names the knight. This supersedes the September 28 "no
+rider" default below.
+
+`ASSGameMode::VillainSpeak` owns his voice: `FSSVillainDefinition::Lines` picks a
+line by cue and wave, story cues always speak, chatter (launch, hit, kill) waits
+out `ChatterCooldown` and `ChatterChance`, and the HUD draws his line on its own
+caption above the pilot's. Nothing he says writes `Announcement` or
+`PilotReaction`. A death leaves his last word on the results panel.
+
 ## Aimed Director threats — September28
 
 `SpawnHazard` aims Director asteroids in the actual ship/rock relative-motion

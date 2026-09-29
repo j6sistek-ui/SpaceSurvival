@@ -733,6 +733,19 @@ void ASSHUD::DrawHUD()
         Paragraph(GM->PilotReaction, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, CaptionW - 24.f * Scale, .75f,
                   FLinearColor(.9f, .94f, 1.f));
     }
+    if (S.settings.subtitles && GM->VillainLineSeconds > 0.f && !MenuOpen)
+    {
+        // The villain's own line, above the pilot's so the two can trade words. Ember on near-black marks it
+        // as his; the box grows with a wrapped line, and its bottom edge stays clear of the pilot caption.
+        const float CaptionW = FMath::Min(700.f * Scale, W - 2.f * Margin);
+        const float TextW = CaptionW - 24.f * Scale;
+        const float CaptionH =
+            Paragraph(GM->VillainLine, 0.f, 0.f, TextW, .75f, FLinearColor::White, false) + 20.f * Scale;
+        const float CaptionX = (W - CaptionW) * .5f, CaptionY = H - 225.f * Scale - CaptionH;
+        DrawRect(FLinearColor(.07f, .012f, .008f, .9f), CaptionX, CaptionY, CaptionW, CaptionH);
+        Paragraph(GM->VillainLine, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, TextW, .75f,
+                  FLinearColor(1.f, .56f, .4f));
+    }
     if (!MenuOpen && (!Walker || !Walker->IsDisembarking()))
     {
         FString InteractionHint, HintPrefix, HintSuffix;

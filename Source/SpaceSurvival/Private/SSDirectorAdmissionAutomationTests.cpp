@@ -4,6 +4,7 @@
 #include "SSPhase1Data.h"
 #include "SSShip.h"
 #include "SSWorldActors.h"
+#include "SSDirectorVillain.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -11,7 +12,9 @@
 #include "GameFramework/WorldSettings.h"
 #include "HAL/IConsoleManager.h"
 #include "Components/SphereComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/SkeletalMesh.h"
 #include "Engine/StaticMesh.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
@@ -411,11 +414,22 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSWreckageBudgetAdmission, "SpaceSurvival.Inte
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSWreckageBudgetAdmission::RunTest(const FString &)
 {
+    // Only wreckage is on offer here. A refused passage now falls through to an asteroid, which is a separate
+    // admission paid from the same budget; DirectorAdmissionFallThrough covers that. With no asteroid weight
+    // the fall-through finds nothing, so this still measures what a refused passage itself costs.
+    auto OfferOnlyWreckage = [](FSSWreckageBudgetWorld &F)
+    {
+        for (auto &Hazard : F.Mode->Tuning->Hazards)
+            if (Hazard.Kind == ESSWorldKind::SmallAsteroid || Hazard.Kind == ESSWorldKind::MediumAsteroid ||
+                Hazard.Kind == ESSWorldKind::MassiveAsteroid)
+                Hazard.SelectionWeight = 0.f;
+    };
     for (bool SpatialBlock : {false, true})
     {
         FSSWreckageBudgetWorld F;
         if (!F.Initialize(*this))
             return false;
+        OfferOnlyWreckage(F);
         ASSWorldBody *Blocker = nullptr;
         const FString Label = SpatialBlock ? TEXT("Spatially blocked passage") : TEXT("Four-slot capacity rejection");
         if (SpatialBlock)
@@ -451,6 +465,7 @@ bool FSSWreckageBudgetAdmission::RunTest(const FString &)
     FSSWreckageBudgetWorld Partial;
     if (!Partial.Initialize(*this))
         return false;
+    OfferOnlyWreckage(Partial);
     for (auto &Hazard : Partial.Mode->Tuning->Hazards)
         if (Hazard.Kind == ESSWorldKind::Wreckage)
         {
@@ -464,6 +479,363 @@ bool FSSWreckageBudgetAdmission::RunTest(const FString &)
     Partial.RemoveWreckage();
     Partial.Step();
     TestEqual(TEXT("A partial passage still spends its normal one-unit cost"), Partial.WreckageCount(), 0);
+    return true;
+}
+
+// The Wave 5 climax asks for an enemy every interval. Once its five were alive every request was refused, each
+// refusal ended its interval, and the rest of the climax admitted nothing: 0 asteroids in roughly 35 of its 40
+// seconds. A refusal now passes its interval to an asteroid. Saving for an enemy it cannot yet afford still
+// waits, so the climax keeps its hunters. The dial-off rows are the old chain, and prove the check can fail.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDirectorAdmissionFallThrough,
+                                 "SpaceSurvival.Integration.DirectorAdmissionFallThrough",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDirectorAdmissionFallThrough::RunTest(const FString &)
+{
+    IConsoleVariable *FallThrough = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.AdmissionFallThrough"));
+    IConsoleVariable *Trajectory = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.HazardTrajectory"));
+    if (!TestNotNull(TEXT("Resolve the fall-through dial"), FallThrough) ||
+        !TestNotNull(TEXT("Resolve trajectory mode"), Trajectory))
+        return false;
+    const FString SavedFallThrough = FallThrough->GetString(), SavedTrajectory = Trajectory->GetString();
+    Trajectory->SetWithCurrentPriority(1.f);
+    auto Count = [](UWorld *World, std::initializer_list<ESSWorldKind> Kinds)
+    {
+        int32 Result = 0;
+        for (TActorIterator<ASSWorldBody> It(World); It; ++It)
+            for (ESSWorldKind Kind : Kinds)
+                if (!It->IsActorBeingDestroyed() && It->GetKind() == Kind)
+                    ++Result;
+        return Result;
+    };
+    const std::initializer_list<ESSWorldKind> Rocks = {ESSWorldKind::SmallAsteroid, ESSWorldKind::MediumAsteroid,
+                                                       ESSWorldKind::MassiveAsteroid};
+    const std::initializer_list<ESSWorldKind> Hunters = {ESSWorldKind::Pursuer, ESSWorldKind::Flanker};
+    // A cruising pilot, so an aimed rock can reach the flight path inside its lifetime; five live hunters far
+    // off the path fill the climax cap without standing in the way of anything admitted.
+    auto Prepare = [&](FSSWreckageBudgetWorld &F, int32 Wave, int32 Hunting)
+    {
+        F.Director->FindShip()->Velocity = FVector(6000.f, 0.f, 0.f);
+        F.Director->Configure(Wave, true);
+        F.Director->MaximumActiveThreats = 24;
+        for (int32 Index = 0; Index < Hunting; ++Index)
+            F.World->SpawnActor<ASSEnemy>(FVector(-400000.f, Index * 6000.f, 0.f), FRotator::ZeroRotator);
+    };
+    bool bResult = true;
+    for (int32 Dial : {1, 0})
+    {
+        FallThrough->SetWithCurrentPriority(float(Dial));
+        const FString Label = Dial ? TEXT("With the fall-through") : TEXT("Old chain");
+        {
+            FSSWreckageBudgetWorld F;
+            if (!F.Initialize(*this))
+            {
+                bResult = false;
+                break;
+            }
+            Prepare(F, 5, 5);
+            F.Director->BaseBudgetPerSecond = 100.f;
+            TestFalse(Label + TEXT(": five live hunters fill the Wave 5 climax cap"), F.Director->HasEnemyRoom());
+            int32 Admitted = 0;
+            for (int32 Interval = 0; Interval < 4; ++Interval)
+            {
+                F.Step(1.f);
+                Admitted += Count(F.World, Rocks);
+                // Nothing ticks in this world, so admitted rocks would stay on the path and crowd out the next
+                // one. Clearing them keeps each interval about the refusal, not about the room left.
+                for (TActorIterator<ASSWorldBody> It(F.World); It; ++It)
+                    if (It->GetKind() == ESSWorldKind::SmallAsteroid || It->GetKind() == ESSWorldKind::MediumAsteroid ||
+                        It->GetKind() == ESSWorldKind::MassiveAsteroid)
+                    {
+                        It->SetActorLocation(FVector(-1000000, 0, 0));
+                        It->Destroy();
+                    }
+            }
+            if (Dial)
+                TestEqual(Label + TEXT(": every refused climax enemy admits an asteroid in its own interval"), Admitted,
+                          4);
+            else
+                TestEqual(Label + TEXT(": a full climax cap silences the interval (the September 28 stall)"), Admitted,
+                          0);
+            TestEqual(Label + TEXT(": no hunter is admitted past the climax cap"), Count(F.World, Hunters), 5);
+        }
+        {
+            // The Wave 10 front asks for its required pursuer first, and returned on refusal as well.
+            FSSWreckageBudgetWorld F;
+            if (!F.Initialize(*this))
+            {
+                bResult = false;
+                break;
+            }
+            Prepare(F, 10, 5);
+            F.Director->BaseBudgetPerSecond = 100.f;
+            auto *Field = F.World->SpawnActor<ASSWorldBody>(FVector(-400000.f, 0.f, 60000.f), FRotator::ZeroRotator);
+            if (!TestNotNull(TEXT("Create the front's live gravity field"), Field))
+            {
+                bResult = false;
+                break;
+            }
+            Field->Configure(ESSWorldKind::GravityAnomaly, 4300.f, 0.f, 10);
+            F.Director->bCompoundGravitySpawned = F.Director->bCompoundAsteroidSpawned = true;
+            F.Director->CompoundGravity = Field;
+            const int32 Before = Count(F.World, Rocks) + Count(F.World, {ESSWorldKind::Wreckage});
+            F.Step(1.f);
+            const int32 Admitted = Count(F.World, Rocks) + Count(F.World, {ESSWorldKind::Wreckage}) - Before;
+            if (Dial)
+                TestTrue(Label + TEXT(": a required pursuer the cap refuses passes its interval on"), Admitted > 0);
+            else
+                TestEqual(Label + TEXT(": a refused required pursuer silenced the Wave 10 interval"), Admitted, 0);
+            TestFalse(Label + TEXT(": the refused pursuer is still owed to the front"),
+                      F.Director->bCompoundEnemySpawned);
+        }
+    }
+    if (bResult)
+    {
+        // Saving is not a refusal: a free slot the budget cannot yet buy keeps the interval for the hunter.
+        FallThrough->SetWithCurrentPriority(1.f);
+        FSSWreckageBudgetWorld F;
+        bResult = F.Initialize(*this);
+        if (bResult)
+        {
+            Prepare(F, 5, 0);
+            F.Director->BaseBudgetPerSecond = 0.f;
+            F.Step(1.f);
+            TestEqual(TEXT("Saving for a hunter admits no asteroid in its place"), Count(F.World, Rocks), 0);
+            TestEqual(TEXT("Saving for a hunter keeps the whole budget"), F.Director->AvailableBudget, 1.f);
+            F.Director->AvailableBudget = 3.f;
+            F.Step(1.f);
+            TestEqual(TEXT("The saved budget buys the hunter"), Count(F.World, Hunters), 1);
+            TestEqual(TEXT("The hunter is bought instead of a rock, not beside one"), Count(F.World, Rocks), 0);
+        }
+    }
+    FallThrough->SetWithCurrentPriority(*SavedFallThrough);
+    Trajectory->SetWithCurrentPriority(*SavedTrajectory);
+    return bResult;
+}
+
+// Owner decision, September 29: the villain launches the enemies, and an existing character rides his craft
+// until the knight's files are named. A launch keeps every placement rule: a hidden or unplaced villain launches
+// nothing, one inside the reaction lead hands the enemy to the ordinary placer, nothing starts inside a rock,
+// and a hunter launched from his distance survives its first tick there. The rider is fitted in the world and
+// stands on the craft, so the craft's scale never resizes him.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDirectorVillainLaunch, "SpaceSurvival.Integration.DirectorVillainLaunch",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDirectorVillainLaunch::RunTest(const FString &)
+{
+    IConsoleVariable *Launch = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.VillainLaunch"));
+    if (!TestNotNull(TEXT("Resolve the villain launch dial"), Launch))
+        return false;
+    const FString SavedLaunch = Launch->GetString();
+    Launch->SetWithCurrentPriority(1.f);
+    // A villain on station ahead of the fixture ship, placed by his own first tick.
+    auto Stage = [this](FSSWreckageBudgetWorld &F, ASSShip *&Ship, ASSDirectorVillain *&Villain)
+    {
+        Ship = F.Director->FindShip();
+        Villain = F.World->SpawnActor<ASSDirectorVillain>();
+        if (!TestNotNull(TEXT("Resolve the fixture ship"), Ship) || !TestNotNull(TEXT("Spawn the villain"), Villain))
+            return false;
+        Villain->SetPresent(true);
+        Villain->Tick(.05f);
+        return true;
+    };
+    bool bResult = true;
+    {
+        FSSWreckageBudgetWorld F;
+        ASSShip *Ship = nullptr;
+        ASSDirectorVillain *Villain = nullptr;
+        bResult = F.Initialize(*this) && Stage(F, Ship, Villain);
+        FVector Point;
+        if (bResult)
+        {
+            Villain->SetPresent(false);
+            TestFalse(TEXT("A hidden villain launches nothing"), ASSDirectorVillain::FindLaunchPoint(F.World, Point));
+            Villain->SetPresent(true);
+            TestFalse(TEXT("A villain not yet in his place launches nothing"),
+                      ASSDirectorVillain::FindLaunchPoint(F.World, Point));
+            Villain->Tick(.05f);
+            bResult = TestTrue(TEXT("A placed villain offers his craft as the launch point"),
+                               ASSDirectorVillain::FindLaunchPoint(F.World, Point));
+        }
+        if (bResult)
+        {
+            TestTrue(TEXT("The launch point is his craft"), Point.Equals(Villain->GetActorLocation(), 1.));
+            ASSEnemy *Enemy = F.Director->SpawnEnemy(ESSWorldKind::Pursuer);
+            bResult = TestNotNull(TEXT("Admit a launched hunter"), Enemy);
+            if (bResult)
+            {
+                TestTrue(TEXT("The hunter leaves from his craft"), Enemy->GetActorLocation().Equals(Point, 1.));
+                const double Distance = FVector::Dist(Enemy->GetActorLocation(), Ship->GetActorLocation());
+                TestTrue(TEXT("His craft is beyond the default retirement radius"),
+                         Distance > GetDefault<ASSWorldBody>()->RetireDistance);
+                Enemy->Tick(0.f);
+                Enemy->Tick(.1f);
+                TestFalse(TEXT("A hunter launched from his distance survives its first ticks"),
+                          Enemy->IsActorBeingDestroyed());
+                TestTrue(TEXT("Its retirement radius covers where it was launched"), Enemy->RetireDistance > Distance);
+                // A rock parked on his craft: the next hunter leaves beside it or is placed as before, never
+                // inside it.
+                auto *Rock = F.World->SpawnActor<ASSWorldBody>(Point, FRotator::ZeroRotator);
+                if (TestNotNull(TEXT("Park a rock on the launch point"), Rock))
+                {
+                    Rock->Configure(ESSWorldKind::MassiveAsteroid, 650.f, 0.f, 6);
+                    ASSEnemy *Beside = F.Director->SpawnEnemy(ESSWorldKind::Pursuer);
+                    if (TestNotNull(TEXT("A crowded craft still admits the hunter"), Beside))
+                        TestTrue(TEXT("A hunter never starts inside a rock"),
+                                 FVector::Dist(Beside->GetActorLocation(), Rock->GetActorLocation()) >=
+                                     Beside->GetBodyRadius() + Rock->GetBodyRadius() + 420.f - 1.f);
+                }
+            }
+        }
+    }
+    for (int32 Case = 0; Case < 2 && bResult; ++Case)
+    {
+        // 0: a tuning that brings him inside the reaction lead. 1: the dial off. Both place as before.
+        FSSWreckageBudgetWorld F;
+        ASSShip *Ship = nullptr;
+        ASSDirectorVillain *Villain = nullptr;
+        bResult = F.Initialize(*this);
+        if (!bResult)
+            break;
+        if (Case == 0)
+        {
+            F.Mode->Tuning->Villain.LeadDistance = 3000.f;
+            F.Mode->Tuning->Villain.HeightOffset = F.Mode->Tuning->Villain.SwayAmplitude = 0.f;
+        }
+        else
+            Launch->SetWithCurrentPriority(0.f);
+        bResult = Stage(F, Ship, Villain);
+        FVector Point;
+        if (bResult && TestTrue(TEXT("The villain is on station"), ASSDirectorVillain::FindLaunchPoint(F.World, Point)))
+        {
+            ASSEnemy *Enemy = F.Director->SpawnEnemy(ESSWorldKind::Pursuer);
+            const TCHAR *Why = Case == 0 ? TEXT("inside the reaction lead") : TEXT("with the launch dial off");
+            if (TestNotNull(FString::Printf(TEXT("A hunter is still admitted %s"), Why), Enemy))
+            {
+                TestFalse(FString::Printf(TEXT("No hunter leaves his craft %s"), Why),
+                          Enemy->GetActorLocation().Equals(Point, 1.));
+                TestTrue(FString::Printf(TEXT("The ordinary placer keeps its reaction lead %s"), Why),
+                         FVector::Dist(Enemy->GetActorLocation(), Ship->GetActorLocation()) >= 9000.f - 1.f);
+            }
+        }
+        Launch->SetWithCurrentPriority(1.f);
+    }
+    if (bResult)
+    {
+        FSSWreckageBudgetWorld F;
+        bResult = F.Initialize(*this);
+        auto *Villain = bResult ? F.World->SpawnActor<ASSDirectorVillain>() : nullptr;
+        bResult = bResult && TestNotNull(TEXT("Spawn the villain for his rider"), Villain);
+        if (bResult)
+        {
+            // A tracked body stands in for the stand-in, so this holds on a clone without the licensed packs.
+            auto &Data = F.Mode->Tuning->Villain;
+            Data.RiderMeshPath = TEXT("/Game/SpaceSurvival/Character/SK_AcornautTailV2.SK_AcornautTailV2");
+            Data.RiderClipPath.Empty();
+            for (float CraftScale : {12.f, 3.f})
+            {
+                Data.FallbackCraftScale = CraftScale;
+                Villain->ApplyDefinition();
+                const USkeletalMesh *Body = Villain->Rider->GetSkeletalMeshAsset();
+                if (!TestNotNull(TEXT("The named rider is worn"), Body))
+                    break;
+                TestTrue(TEXT("The rider is shown"), Villain->Rider->IsVisible());
+                const FBoxSphereBounds Craft = Villain->Craft->Bounds;
+                const FBoxSphereBounds Rider = Body->GetBounds().TransformBy(Villain->Rider->GetComponentTransform());
+                const FString Scale = FString::Printf(TEXT(" (craft scale %.0f)"), CraftScale);
+                TestTrue(TEXT("He stands his fitted height whatever the craft's scale") + Scale,
+                         FMath::IsNearlyEqual(Rider.BoxExtent.Z * 2., double(Data.RiderHeight), 1.));
+                TestTrue(
+                    TEXT("His soles are on the top of the craft") + Scale,
+                    FMath::IsNearlyEqual(Rider.Origin.Z - Rider.BoxExtent.Z, Craft.Origin.Z + Craft.BoxExtent.Z, 1.));
+                TestTrue(TEXT("He stands over the craft's centre") + Scale,
+                         FMath::Abs(Rider.Origin.X - Craft.Origin.X) <= 1. &&
+                             FMath::Abs(Rider.Origin.Y - Craft.Origin.Y) <= 1.);
+            }
+            // Neither the knight nor a stand-in installed: the craft flies alone, with no empty or broken body.
+            Data.RiderMeshPath.Empty();
+            Data.StandInRiderMeshPath.Empty();
+            Villain->ApplyDefinition();
+            TestNull(TEXT("With no rider installed nobody is worn"), Villain->Rider->GetSkeletalMeshAsset());
+            TestFalse(TEXT("With no rider installed nothing is shown"), Villain->Rider->IsVisible());
+        }
+    }
+    Launch->SetWithCurrentPriority(*SavedLaunch);
+    return bResult;
+}
+
+// Owner decision, September 29: the villain talks. Story beats always speak; chatter waits out his cooldown and
+// chance; his caption never displaces an announcement or the pilot; the dial silences him; and the results
+// panel carries his last word above the run's numbers.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDirectorVillainVoice, "SpaceSurvival.Integration.DirectorVillainVoice",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDirectorVillainVoice::RunTest(const FString &)
+{
+    // Selection, on lines written here so editing the authored script cannot break it.
+    FSSVillainDefinition Voice;
+    Voice.Lines = {FSSVillainLine(ESSVillainCue::WaveStart, 0, TEXT("any wave")),
+                   FSSVillainLine(ESSVillainCue::WaveStart, 3, TEXT("wave three")),
+                   FSSVillainLine(ESSVillainCue::Kill, 0, TEXT("first")),
+                   FSSVillainLine(ESSVillainCue::Kill, 0, TEXT("second"))};
+    FRandomStream Random(7);
+    TestEqual(TEXT("A wave's own line replaces the any-wave line"),
+              Voice.LineFor(ESSVillainCue::WaveStart, 3, Random, FString()), FString(TEXT("wave three")));
+    TestEqual(TEXT("Other waves fall back to the any-wave line"),
+              Voice.LineFor(ESSVillainCue::WaveStart, 4, Random, FString()), FString(TEXT("any wave")));
+    TestTrue(TEXT("A cue with nothing written stays silent"),
+             Voice.LineFor(ESSVillainCue::Retreat, 5, Random, FString()).IsEmpty());
+    for (int32 Draw = 0; Draw < 8; ++Draw)
+        TestEqual(TEXT("He never repeats the line he just said"),
+                  Voice.LineFor(ESSVillainCue::Kill, 1, Random, TEXT("first")), FString(TEXT("second")));
+    TestEqual(TEXT("Unless it is all he has for the moment"),
+              Voice.LineFor(ESSVillainCue::WaveStart, 3, Random, TEXT("wave three")), FString(TEXT("wave three")));
+    // The authored script: something for every cue, and every line short enough for one caption line.
+    const FSSVillainDefinition Script;
+    for (ESSVillainCue Cue :
+         {ESSVillainCue::RunStart, ESSVillainCue::WaveStart, ESSVillainCue::Wormhole, ESSVillainCue::Climax,
+          ESSVillainCue::Compound, ESSVillainCue::Retreat, ESSVillainCue::Finale, ESSVillainCue::LowHull,
+          ESSVillainCue::Death, ESSVillainCue::Launch, ESSVillainCue::Hit, ESSVillainCue::Kill})
+        TestFalse(FString::Printf(TEXT("Cue %d has an authored line"), int32(Cue)),
+                  Script.LineFor(Cue, 1, Random, FString()).IsEmpty());
+    for (int32 Wave = 2; Wave <= 9; ++Wave)
+        TestFalse(FString::Printf(TEXT("Wave %d opens with a line"), Wave),
+                  Script.LineFor(ESSVillainCue::WaveStart, Wave, Random, FString()).IsEmpty());
+    for (const FSSVillainLine &Line : Script.Lines)
+        TestTrue(FString::Printf(TEXT("\"%s\" fits one caption line"), *Line.Text), Line.Text.Len() <= 64);
+
+    IConsoleVariable *Dial = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.VillainVoice"));
+    FSSWreckageBudgetWorld F;
+    if (!TestNotNull(TEXT("Resolve the villain voice dial"), Dial) || !F.Initialize(*this))
+        return false;
+    const FString SavedDial = Dial->GetString();
+    Dial->SetWithCurrentPriority(1.f);
+    auto &Villain = F.Mode->Tuning->Villain;
+    Villain.ChatterChance = 1.f;
+    F.Mode->Announce(TEXT("WAVE 3  |  Keep surviving"));
+    F.Mode->React(TEXT("Steady."));
+    const FString Announcement = F.Mode->Announcement, Reaction = F.Mode->PilotReaction;
+    TestTrue(TEXT("A story cue speaks"), F.Mode->VillainSpeak(ESSVillainCue::Wormhole));
+    TestTrue(TEXT("His caption is headed by his name"),
+             F.Mode->VillainLine.StartsWith(Villain.DisplayName + TEXT(": ")));
+    TestTrue(TEXT("His line stays up long enough to read"), F.Mode->VillainLineSeconds >= 3.5f);
+    TestEqual(TEXT("He does not displace the announcement"), F.Mode->Announcement, Announcement);
+    TestEqual(TEXT("He does not displace the pilot"), F.Mode->PilotReaction, Reaction);
+    TestFalse(TEXT("Chatter waits out the cooldown after any line"), F.Mode->VillainSpeak(ESSVillainCue::Kill));
+    TestTrue(TEXT("Story cues ignore the chatter cooldown"), F.Mode->VillainSpeak(ESSVillainCue::LowHull));
+    const float Shown = F.Mode->VillainLineSeconds;
+    F.Mode->UpdateThreatFeedback(1.f);
+    TestEqual(TEXT("His caption counts down with the flight feedback"), F.Mode->VillainLineSeconds, Shown - 1.f, .001f);
+    F.Mode->VillainChatterCooldown = 0.f;
+    TestTrue(TEXT("Chatter speaks once the cooldown has run out"), F.Mode->VillainSpeak(ESSVillainCue::Kill));
+    F.Mode->VillainChatterCooldown = 0.f;
+    Villain.ChatterChance = 0.f;
+    TestFalse(TEXT("A chatter chance of zero never speaks"), F.Mode->VillainSpeak(ESSVillainCue::Hit));
+    Dial->SetWithCurrentPriority(0.f);
+    TestFalse(TEXT("The voice dial silences even a story cue"), F.Mode->VillainSpeak(ESSVillainCue::Climax));
+    Dial->SetWithCurrentPriority(*SavedDial);
+    F.Mode->VillainEpitaph = TEXT("Sable: As promised.");
+    F.Mode->OpenPanel(ESSPanel::Results);
+    TestTrue(TEXT("The results panel carries his last word above the run's numbers"),
+             F.Mode->PanelDetail.StartsWith(F.Mode->VillainEpitaph) && F.Mode->PanelDetail.Contains(TEXT("Score")));
+    F.Mode->ClosePanel();
     return true;
 }
 
