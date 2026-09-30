@@ -1,5 +1,5 @@
 <#
-Capture normal-stat Wave1 or the inactive startup title in a hidden game process.
+Capture normal-stat Wave1, the seeded Wave5 wormhole, or the inactive startup title in a hidden game process.
 No build, package, publication or save operation is performed. Screenshots are not FPS evidence.
 #>
 param(
@@ -9,6 +9,7 @@ param(
     [switch]$Sequence,
     [switch]$WeaponReadability,
     [switch]$DirectorReview,
+    [switch]$WormholeReview,
     [switch]$MainMenu,
     [switch]$UIRefresh,
     [switch]$UIFollowup,
@@ -25,6 +26,7 @@ param(
     [ValidateRange(-400,400)][double]$ThrusterHeight = 0,
     [string[]]$ExtraArgs = @()
 )
+if ($WormholeReview -and ($DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup)) { throw 'Wormhole review is a separate seeded transition; only the optional sequence may be combined.' }
 if ($DirectorReview -and ($WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $Sequence)) { throw 'Director review uses ordinary Wave1 captures plus one close camera.' }
 if ($UIFollowup) { $UIRefresh = $true }
 if ($UIRefresh) { $MainMenu = $true }
@@ -127,7 +129,7 @@ New-Item -ItemType Directory -Path $slotsRoot | Out-Null
 New-Item -ItemType Directory -Path $pointerRoot -Force | Out-Null
 $token | Set-Content -LiteralPath (Join-Path $root '.ss-endgame-soak') -Encoding utf8
 $arguments = if ($Packaged) { @() } else { @((Join-Path $repo 'SpaceSurvival.uproject'), '-game') }
-$scenario = if ($MainMenu) { 'MainMenu' } else { 'Wave1' }
+$scenario = if ($WormholeReview) { 'WormholeReview' } elseif ($MainMenu) { 'MainMenu' } else { 'Wave1' }
 $arguments += @('-SSWave10Soak', "-SSSoakScenario=$scenario",
     '-SSSoakVisuals', '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$root", '-RenderOffscreen',
     '-ForceRes', '-windowed', '-ResX=1920', '-ResY=1080', '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
@@ -148,7 +150,7 @@ if ($ThrusterTrailHeight -ne 0) { $execCmds += ",ss.ThrusterTrailHeight $Thruste
 if ($ThrusterHeight -ne 0) { $execCmds += ",ss.ThrusterHeight $ThrusterHeight" }
 $arguments += "-ExecCmds=$execCmds"
 $arguments += $ExtraArgs
-$evidenceType = if ($UIRefresh) { 'UI_REFRESH_RENDERED_REVIEW' } elseif ($MainMenu) { 'TITLE_MENU_RENDERED_REVIEW' } elseif ($WeaponReadability) { 'WEAPON_READABILITY_SCRIPTED_NORMAL_STATS' } else { 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' }
+$evidenceType = if ($WormholeReview) { 'WORMHOLE_SEEDED_VISUAL_REVIEW_NORMAL_STATS' } elseif ($UIRefresh) { 'UI_REFRESH_RENDERED_REVIEW' } elseif ($MainMenu) { 'TITLE_MENU_RENDERED_REVIEW' } elseif ($WeaponReadability) { 'WEAPON_READABILITY_SCRIPTED_NORMAL_STATS' } else { 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' }
 $metadata = [ordered]@{
     evidenceType = $evidenceType; status = 'starting'; success = $false
     root = $root; label = $Label; token = $token; pid = $null; processStartUtc = $null; processExit = $null
@@ -160,10 +162,13 @@ $metadata = [ordered]@{
     suitableForPerformanceFinding = $false
     sequenceRequested = [bool]$Sequence
     directorReviewRequested = [bool]$DirectorReview
+    wormholeReviewRequested = [bool]$WormholeReview
     weaponReadabilityRequested = [bool]$WeaponReadability
     mainMenuRequested = [bool]$MainMenu
     areaPreview = $Area; areaVariation = $Variation
-    limits = $(if ($DirectorReview) {
+    limits = $(if ($WormholeReview) {
+        'Seeded Wave5 Flight with 2 seconds remaining after asset warmup; fresh normal starter stats, no durability increase or invulnerability. Real Session/GameMode transition through the normal 8-second wormhole and 3 seconds of climax exit. Four normal chase-camera stages plus optional 8fps-target readbacks with actual timestamps. Ordinary SetFlightInput steering/brake attempts; no physical input, ten-wave journey, cold-first-transition, natural balance, audio or FPS acceptance. PNG identity and runtime receipt guards do not establish visual quality.'
+    } elseif ($DirectorReview) {
         'Normal-stat scripted flight with a final transient camera for the runtime villain. No physical input, natural balance or FPS acceptance. Loaded tuning, actual rider mesh and animation are recorded.'
     } elseif ($UIFollowup) {
         'Hidden six-frame changed-UI batch: aligned audio/controls sliders, wardrobe top/end/drag, actual walking HUD with crew/services radar. Synthetic menu navigation and pointer drag; read-only account/run guards. No physical input, natural gameplay or performance acceptance.'
@@ -207,13 +212,13 @@ try {
     $metadata.fixture = $fixture
     if (-not $fixture.success -or -not $fixture.noSaveSlotsWritten -or
         $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $scenario -or
-        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $MainMenu -and -not $fixture.sawWave1) -or
+        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $MainMenu -and -not $WormholeReview -and -not $fixture.sawWave1) -or
         -not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or $fixture.suitableForPerformanceFinding -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine $savedRoot.TrimEnd('\', '/') -or
         [IO.Path]::GetFullPath($fixture.csv) -ine (Join-Path $root 'Endgame.csv')) { throw 'Fixture identity, visibility or save isolation receipt failed.' }
     $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
     $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
-    $expectedNames = if ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
+    $expectedNames = if ($WormholeReview) { 'Entrance,Transit,DeepTransit,Exit' } elseif ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
     if (($names -join ',') -cne $expectedNames) { throw 'Fixture did not capture the required named stages in order.' }
     if ($UIRefresh -and (-not $fixture.uiRefreshReview -or -not $fixture.mainMenuStatePreserved)) { throw 'UI frame state checks failed.' }
     if ($MainMenu -and -not $UIRefresh) {
@@ -234,6 +239,38 @@ try {
             }
         }
     }
+    if ($WormholeReview) {
+        if (-not $fixture.wormholeReview -or -not $fixture.wormholeSeededFlight -or
+            -not $fixture.sawWave5 -or -not $fixture.sawWormhole -or -not $fixture.sawClimax -or
+            $fixture.sawWave1 -or $fixture.wormholeRenderingReadyAtSeconds -lt 3 -or
+            $fixture.startingMaxHull -le 0 -or $fixture.startingMaxShield -le 0) {
+            throw 'Wormhole fixture did not record the actual seeded normal-stat transition and rendering warmup.'
+        }
+        $stages = @($fixture.visualRequests | Where-Object { $_.name -notlike 'Sequence_*' })
+        $earliest = @(.25, 2.0, 5.5, 2.5)
+        $latest = @(1.5, 3.5, 7.7, 4.0)
+        for ($i = 0; $i -lt 4; ++$i) {
+            $row = $stages[$i]
+            if ($row.wave -ne 5 -or -not $row.normalChaseCamera -or -not $row.tunnelMaterialLoaded -or
+                $row.phaseSeconds -lt $earliest[$i] -or $row.phaseSeconds -gt $latest[$i] -or
+                $row.actualCameraFov -le 0 -or $row.shipSpeedCmPerSecond -le 0 -or $row.hullHealth -le 0) {
+                throw "Wormhole stage $($row.name) lost its normal camera, loaded material or bounded phase window."
+            }
+            if ($i -lt 3) {
+                if ($row.phaseName -cne 'Wormhole' -or -not $row.shipInWormholeTransit -or
+                    -not $row.tunnelVisible -or -not $row.tunnelMaterialMatchesExpected -or
+                    -not $row.scriptedBrake -or [Math]::Abs($row.phaseDuration - 8) -gt .001) {
+                    throw "Wormhole stage $($row.name) lacks the real visible tunnel or locked-transit input attempt."
+                }
+            } elseif ($row.phaseName -cne 'Climax' -or $row.shipInWormholeTransit -or $row.scriptedBrake -or
+                [Math]::Abs($row.phaseDuration - 40) -gt .001) {
+                throw 'Wormhole exit did not restore ordinary flight in the real climax phase.'
+            }
+        }
+        if ($Sequence -and ($fixture.sequenceTargetFps -ne 8 -or $fixture.sequenceFrames -lt 16)) {
+            throw 'Wormhole sequence did not record its target interval and actual frame count.'
+        }
+    }
     if ($WeaponReadability) {
         if (-not $fixture.weaponReadabilityReview) { throw 'Fixture did not confirm the requested weapon review mode.' }
         if ($fixture.weaponUncapturedWarmupShots -ne 2 -or $fixture.weaponRenderingReadyAtSeconds -lt 0) { throw 'Weapon rendering warmup was not completed.' }
@@ -247,7 +284,8 @@ try {
         $cannon = @($fixture.visualRequests | Where-Object { $_.name -ceq 'CannonShot' })[0]
         if ($rapid.liveLaserPulses -le 0 -or $cannon.liveProjectiles -le 0) { throw 'Weapon shot frame has no corresponding live visual.' }
     }
-    if ($Sequence -and @($allNames | Where-Object { $_ -like 'Sequence_*' }).Count -lt 40) { throw 'Dense sequence did not produce enough real frames.' }
+    $minimumSequenceFrames = if ($WormholeReview) { 16 } else { 40 }
+    if ($Sequence -and @($allNames | Where-Object { $_ -like 'Sequence_*' }).Count -lt $minimumSequenceFrames) { throw 'Dense sequence did not produce enough real frames.' }
     $metadata.images = @($allNames | ForEach-Object { PngIdentity (Join-Path $root "$_.png") })
     $captureValid = $true
 } catch {

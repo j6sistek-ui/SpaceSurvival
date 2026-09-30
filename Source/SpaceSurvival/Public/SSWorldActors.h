@@ -184,7 +184,7 @@ private:
     TWeakObjectPtr<ASSShip> TrackedShip;
 };
 
-/** Authored Wave 5 passage presentation. The game mode alone owns phase progression. */
+/** Wave 5 transport presentation. The game mode alone owns phase progression. */
 UCLASS(Blueprintable)
 class SPACESURVIVAL_API ASSWormholePassage : public ASSWorldBody
 {
@@ -193,22 +193,22 @@ public:
     ASSWormholePassage();
     void BeginPassage(ASSShip *Ship, float Duration);
     virtual void Tick(float DeltaSeconds) override;
-    virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void ReceiveWeaponHit(float Damage) override {}
     virtual FString GetLabel() const override
     {
-        return TEXT("WORMHOLE PASSAGE · MAINTAIN CONTROL");
+        return TEXT("WORMHOLE TRANSIT / HOLD STEADY");
     }
 
 private:
+    void RestoreEnvironment();
     UPROPERTY()
-    TArray<TObjectPtr<UStaticMeshComponent>> PassageRings;
+    TObjectPtr<UPointLightComponent> TunnelLight;
     TWeakObjectPtr<ASSShip> PassageShip;
+    TArray<TPair<TWeakObjectPtr<AActor>, bool>> SuspendedCollision;
     FVector PassageForward = FVector::ForwardVector;
-    FVector EntryPoint = FVector::ZeroVector;
     float PassageDuration = 8.f;
     float PassageElapsed = 0.f;
-    float CourseLength = 18000.f;
 };
 
 /** Pickup kinds: 0 credits, 1 hull repair, 2 shield, 3 temporary weapon buff. */

@@ -781,7 +781,7 @@ void ASSGameMode::Tick(float Dt)
         return;
     auto &S = GI->Session;
     // The station occupies the same space. Landing and possession cannot switch the region off.
-    const bool FlightSceneryVisible = IsValid(Ship);
+    const bool FlightSceneryVisible = IsValid(Ship) && !Ship->IsInWormholeTransit();
     if (DistantField)
         DistantField->SetFlightVisible(FlightSceneryVisible);
     if (AmbientPresentation)
@@ -791,8 +791,8 @@ void ASSGameMode::Tick(float Dt)
     // The Director is a rival the player chases through open survival flight. He is absent from free flight,
     // the station approach and docking, and everything on foot, where there is nothing for him to throw.
     const bool VillainPresent = VillainEnabled.GetValueOnGameThread() != 0 && IsValid(Ship) && S.IsFlying() &&
-                                !GI->IsFreeFlight() && S.run.phase != SS::Phase::Approach &&
-                                S.run.phase != SS::Phase::Docking;
+                                !GI->IsFreeFlight() && S.run.phase != SS::Phase::Wormhole &&
+                                S.run.phase != SS::Phase::Approach && S.run.phase != SS::Phase::Docking;
     if (VillainPresent && !IsValid(Villain))
         Villain = GetWorld()->SpawnActor<ASSDirectorVillain>();
     if (IsValid(Villain))
@@ -941,7 +941,8 @@ void ASSGameMode::Tick(float Dt)
         Director->SetBreathing(S.run.phase == SS::Phase::Breathing);
         if (S.run.phase == SS::Phase::Wormhole)
         {
-            Announce(TEXT("WORMHOLE DISTURBANCE  |  Maintain control. The pull is increasing."));
+            Director->ResetEncounter();
+            Announce(TEXT("WORMHOLE TRANSIT  |  Hold steady. The current has control."));
             VillainSpeak(ESSVillainCue::Wormhole);
             if (Ship)
             {
@@ -956,6 +957,7 @@ void ASSGameMode::Tick(float Dt)
             if (S.run.wave == 5)
                 bWormholeArrived = true;
             Director->Configure(S.run.wave, true);
+            Director->SetActive(true);
             Announce(S.run.wave == 5
                          ? TEXT("WORMHOLE EXIT / Unknown space. Recover your heading; hostile contacts ahead.")
                          : TEXT("COMPOUND FRONT  |  Gravity, asteroids and enemy pressure."));

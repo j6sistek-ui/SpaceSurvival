@@ -1,12 +1,15 @@
 #include "SSWorldActors.h"
 #include "SSAsteroidBurst.h"
 #include "SSVFXPresentation.h"
+#include "NiagaraComponent.h"
 #include "SSWave10Soak.h"
 #include "SSAudio.h"
 #include "Components/AudioComponent.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSShip.h"
+#include "SSDistantAsteroids.h"
+#include "SSSpaceScenery.h"
 #include "SSPhase1Data.h"
 #include "SSDirectorVillain.h"
 #include "Components/SphereComponent.h"
@@ -1145,115 +1148,139 @@ ASSWormholePassage::ASSWormholePassage()
 {
     Kind = ESSWorldKind::Event;
     LifetimeSeconds = 0.f;
+    PrimaryActorTick.TickGroup = TG_PostPhysics;
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    for (int32 Index = 0; Index < 5; ++Index)
-    {
-        UStaticMeshComponent *Ring =
-            CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("PassageRing%d"), Index));
-        Ring->SetupAttachment(RootComponent);
-        Ring->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        PassageRings.Add(Ring);
-    }
+    Visual->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Visual->SetCastShadow(false);
+    TunnelLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("TunnelLight"));
+    TunnelLight->SetupAttachment(RootComponent);
+    TunnelLight->SetRelativeLocation(FVector(1800.f, 0.f, 1800.f));
+    TunnelLight->SetLightColor(FLinearColor(1.f, .35f, .55f));
+    TunnelLight->SetIntensity(180000.f);
+    TunnelLight->SetAttenuationRadius(16000.f);
+    TunnelLight->SetCastShadows(false);
 }
 
 void ASSWormholePassage::BeginPassage(ASSShip *Ship, float Duration)
 {
-    if (!Ship)
+    if (!Ship || !Ship->BeginWormholeTransit(Ship->GetActorForwardVector(), Duration))
     {
         Destroy();
         return;
     }
     PassageShip = Ship;
-    PassageDuration = FMath::Max(1.f, Duration);
-    PassageElapsed = 0.f;
+    PassageDuration = Duration;
     PassageForward = Ship->GetActorForwardVector();
-    EntryPoint = Ship->GetActorLocation();
-    CourseLength = FMath::Max(10000.f, static_cast<float>(Ship->GetVelocity().Size()) * PassageDuration * 1.08f);
-    SetActorLocation(EntryPoint + PassageForward * 2500.f);
-    SetActorRotation(PassageForward.Rotation());
+    SetActorLocationAndRotation(Ship->GetActorLocation(), PassageForward.Rotation());
+    AddTickPrerequisiteActor(Ship);
     if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+    {
         FX->AttachAnomaly(this);
-    UStaticMesh *RingMesh = Mesh(TEXT("SM_GravityRing"));
-    Visual->SetStaticMesh(RingMesh);
-    const float MeshExtent = RingMesh ? RingMesh->GetBounds().BoxExtent.GetMax() : 50.f;
-    const float UnitScale = 1.f / FMath::Max(1.f, MeshExtent);
-    Visual->SetRelativeScale3D(FVector(1800.f * UnitScale));
-    if (DynamicMaterial)
-    {
-        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), FLinearColor(.15f, .55f, 1.f));
-        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 2.5f);
+        TInlineComponentArray<UNiagaraComponent *> Mouths(this);
+        for (auto *Mouth : Mouths)
+            Mouth->SetRelativeLocation(FVector(15000.f, 0.f, 0.f));
     }
-    for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
+    // Only the normal-space scenery is suspended. The ship's own collision and damage
+    // remain intact; no run durability, wave duration or post-exit pressure is changed.
+    for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+        if (It->IsA<ASSDistantAsteroids>() || It->IsA<ASSSpaceScenery>())
+        {
+            SuspendedCollision.Emplace(*It, It->GetActorEnableCollision());
+            It->SetActorEnableCollision(false);
+        }
+    const TCHAR *TunnelPath = TEXT("/Game/SpaceSurvival/Meshes/SM_WormholeTunnel");
+    const TCHAR *MaterialPath = TEXT("/Game/SpaceSurvival/Materials/M_WormholeTransit");
+    UStaticMesh *Tunnel =
+        FPackageName::DoesPackageExist(TunnelPath) ? LoadObject<UStaticMesh>(nullptr, TunnelPath) : nullptr;
+    UMaterialInterface *Surface =
+        FPackageName::DoesPackageExist(MaterialPath) ? LoadObject<UMaterialInterface>(nullptr, MaterialPath) : nullptr;
+    Visual->SetStaticMesh(Tunnel);
+    Visual->SetRelativeTransform(FTransform::Identity);
+    Visual->SetCastShadow(false);
+    ThreatIndicator->SetVisibility(false);
+    if (Surface)
     {
-        UStaticMeshComponent *Ring = PassageRings[Index];
-        Ring->SetStaticMesh(RingMesh);
-        const float Alpha = float(Index + 1) / float(PassageRings.Num());
-        Ring->SetRelativeLocation(FVector(CourseLength * Alpha, 0.f, 0.f));
-        Ring->SetRelativeScale3D(FVector(FMath::Lerp(1700.f, 2300.f, Alpha) * UnitScale));
-        if (DynamicMaterial)
-            Ring->SetMaterial(0, DynamicMaterial);
-        Ring->SetCastShadow(false);
+        DynamicMaterial = UMaterialInstanceDynamic::Create(Surface, this);
+        Visual->SetMaterial(0, DynamicMaterial);
     }
+    if (!Tunnel || !Surface)
+        UE_LOG(
+            LogTemp, Warning,
+            TEXT(
+                "Wormhole transit assets missing; run Scripts/AuthorWormholeTransit.py before visual review or cook."));
+}
+
+void ASSWormholePassage::RestoreEnvironment()
+{
+    if (SuspendedCollision.IsEmpty())
+        return;
+    for (const auto &State : SuspendedCollision)
+        if (State.Key.IsValid())
+            State.Key->SetActorEnableCollision(State.Value);
+    SuspendedCollision.Reset();
+    ASSShip *Ship = PassageShip.Get();
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!Ship || !GI || !GI->Session.IsFlying())
+        return;
+    // The field kept its world positions while hidden. Do not materialise a nearly
+    // locked ship inside a rock at the reveal: find a hull-sized clear exit and lead.
+    const FVector Origin = Ship->GetActorLocation();
+    const FQuat Rotation = Ship->GetActorQuat();
+    const FVector Right = Rotation.GetRightVector(), Up = Rotation.GetUpVector();
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(WormholeExit), false, Ship);
+    for (int32 Index = 0; Index < 129; ++Index)
+    {
+        const float Radius = Index == 0 ? 0.f : 4000.f * FMath::Pow(2.f, float((Index - 1) / 16));
+        const float Angle = (Index - 1) * (2.f * PI / 16.f);
+        const FVector Candidate = Origin + (Right * FMath::Cos(Angle) + Up * FMath::Sin(Angle)) * Radius;
+        FHitResult Hit;
+        if (!Ship->SweepFlightHull(Hit, Candidate, Candidate + PassageForward * 12000.f, Rotation, Query))
+        {
+            if (Index != 0)
+                Ship->SetActorLocation(Candidate, false, nullptr, ETeleportType::TeleportPhysics);
+            return;
+        }
+    }
+    UE_LOG(LogTemp, Warning, TEXT("Wormhole exit clearance search exhausted; normal collision retained."));
 }
 
 void ASSWormholePassage::Tick(float DeltaSeconds)
 {
-    // Deliberately bypass the environmental-field tick: this sequence never deals
-    // damage, spawns a fifth hazard family, teleports, or advances the run state.
-    PassageElapsed += DeltaSeconds;
-    if (!PassageShip.IsValid())
+    // No environmental-field Tick: this is a finite presentation, never a damage dealer.
+    auto *Ship = PassageShip.Get();
+    auto *GI = GetGameInstance<USSGameInstance>();
+    PassageElapsed += FMath::Max(0.f, DeltaSeconds);
+    if (!Ship || !GI || GI->Session.run.phase != SS::Phase::Wormhole || !GI->Session.run.active ||
+        PassageElapsed >= PassageDuration)
     {
         Destroy();
         return;
     }
-    ASSShip *Ship = PassageShip.Get();
-    const float Alpha = FMath::Clamp(PassageElapsed / PassageDuration, 0.f, 1.f);
-    const FVector Relative = Ship->GetActorLocation() - EntryPoint;
-    const FVector Lateral = Relative - PassageForward * FVector::DotProduct(Relative, PassageForward);
-    const FVector Centring = -Lateral.GetClampedToMaxSize(2000.f) * (.12f + .22f * Alpha);
-    // A bounded exit turbulence envelope gives the transition a physical release,
-    // without reversing input or adding immunity. Forward control remains available.
-    const float ExitTime = PassageElapsed - PassageDuration;
-    if (ExitTime < 0.f)
+    SetActorLocation(Ship->GetActorLocation());
+    if (PassageElapsed > .65f)
     {
-        // The entrance is behind the camera soon after transit begins. Keep
-        // the one bounded Niagara mouth ahead while the native course stays
-        // anchored to its original world positions. Forces use EntryPoint.
-        SetActorLocation(Ship->GetActorLocation() + PassageForward * 3500.f);
-        const FVector CourseStart = GetActorTransform().InverseTransformPosition(EntryPoint + PassageForward * 2500.f);
-        Visual->SetRelativeLocation(CourseStart);
-        for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
-            PassageRings[Index]->SetRelativeLocation(
-                CourseStart + FVector(CourseLength * float(Index + 1) / float(PassageRings.Num()), 0.f, 0.f));
+        TInlineComponentArray<UNiagaraComponent *> Mouths(this);
+        for (auto *Mouth : Mouths)
+            Mouth->SetVisibility(false);
     }
-    const float ExitEnvelope =
-        ExitTime >= 0.f ? FMath::Max(0.f, 1.f - ExitTime / 2.f) : FMath::Clamp((Alpha - .75f) * 4.f, 0.f, 1.f);
-    const FVector Turbulence = Ship->GetActorRightVector() * FMath::Sin(PassageElapsed * 7.f) * 650.f +
-                               Ship->GetActorUpVector() * FMath::Cos(PassageElapsed * 5.f) * 420.f;
-    Ship->AddExternalForce(
-        (ExitTime < 0.f ? PassageForward * (600.f + 1600.f * Alpha) + Centring : FVector::ZeroVector) +
-        Turbulence * ExitEnvelope);
-    if (ExitTime >= 0.f)
-    {
-        Visual->SetVisibility(false);
-        for (UStaticMeshComponent *Ring : PassageRings)
-            Ring->SetVisibility(false);
-    }
-    Visual->AddLocalRotation(FRotator(0.f, 0.f, 40.f * DeltaSeconds));
-    for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
-        PassageRings[Index]->AddLocalRotation(
-            FRotator(0.f, 0.f, (Index % 2 ? -1.f : 1.f) * (35.f + 20.f * Alpha) * DeltaSeconds));
+    const float Entrance = FMath::SmoothStep(0.f, .65f, PassageElapsed);
+    const float Exit = FMath::SmoothStep(PassageDuration - .8f, PassageDuration, PassageElapsed);
     if (DynamicMaterial)
-        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"),
-                                                 1.8f + Alpha * 2.f + .3f * FMath::Sin(PassageElapsed * 8.f));
-    if (PassageElapsed >= PassageDuration + 2.f)
-        Destroy();
+    {
+        DynamicMaterial->SetScalarParameterValue(TEXT("TransitTime"), PassageElapsed);
+        DynamicMaterial->SetScalarParameterValue(TEXT("TransitBlend"), .75f + .25f * Entrance);
+        DynamicMaterial->SetScalarParameterValue(TEXT("Speed"), 1.f + Entrance * .6f);
+        DynamicMaterial->SetScalarParameterValue(TEXT("ExitFlash"), Exit);
+    }
+    TunnelLight->SetIntensity(180000.f * (.6f + .4f * Entrance + .3f * Exit));
 }
 
-void ASSWormholePassage::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
+void ASSWormholePassage::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    Super::ApplyWorldOffset(InOffset, bWorldShift);
-    EntryPoint += InOffset;
+    RestoreEnvironment();
+    if (PassageShip.IsValid())
+        PassageShip->EndWormholeTransit();
+    Super::EndPlay(EndPlayReason);
 }
 
 ASSPickup::ASSPickup()
@@ -2361,7 +2388,7 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
 void USSSurvivalDirectorComponent::ResetEncounter()
 {
     SetActive(false);
-    // Called only for station/death transitions. Ordinary Configure never clears the universe.
+    // Called for station/death and the Wave 5 transport boundary. Ordinary Configure never clears the universe.
     for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
         It->Destroy();
     Spawned.Empty();
