@@ -1964,7 +1964,8 @@ int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count, float Budget, float
     const int32 Room =
         FMath::Min(MaximumActiveThreats, FMath::Max(1, HazardCount.GetValueOnGameThread())) - GetActiveThreatCount();
     Count = FMath::Min(Count, Room);
-    if (!Ship || Count < 1)
+    // A cap-limited single rock or pair is an ordinary admission, not a fencing volley.
+    if (!Ship || Count < 3)
         return 0;
     const auto *Data = Content(this);
     const float Scale = FMath::Max(1.f, Data->DirectorAsteroidScale);
@@ -2085,8 +2086,9 @@ int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count, float Budget, float
         ++Admitted;
     }
     ASSDirectorVillain::NotifyLaunch(GetWorld());
-    if (ASSGameMode *Mode = GameMode(this))
-        Mode->VillainSpeak(ESSVillainCue::Volley);
+    if (Admitted >= 2)
+        if (ASSGameMode *Mode = GameMode(this))
+            Mode->VillainSpeak(ESSVillainCue::Volley);
     return Admitted;
 }
 

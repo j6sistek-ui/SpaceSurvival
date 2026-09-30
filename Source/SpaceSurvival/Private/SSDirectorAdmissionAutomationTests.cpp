@@ -3,6 +3,7 @@
 #include "SSGameMode.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
+#include "SSFlightHull.h"
 #include "SSWorldActors.h"
 #include "SSDirectorVillain.h"
 #include "Engine/Engine.h"
@@ -17,6 +18,7 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine/StaticMesh.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "PhysicsEngine/BodySetup.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 namespace
@@ -635,12 +637,20 @@ bool FSSDirectorVolley::RunTest(const FString &)
         return false;
     const FString SavedDial = Dial->GetString(), SavedTrajectory = Trajectory->GetString();
     Trajectory->SetWithCurrentPriority(1.f);
-    // Sphere-surface intersection of a constant-velocity rock and ship, the same test the fairness check uses.
-    auto Hits = [](const ASSWorldBody *Body, const ASSShip *Ship, double &FirstContact)
+    // Match the production conservative envelope, including an off-centre compound and actor scale. The
+    // intersection calculation remains independent of the placer; the legacy root sphere alone misses wings.
+    auto HullEnvelope = [](const ASSShip *Ship)
+    {
+        const FBox Hull =
+            Ship->FlightHullBounds(FTransform(FQuat::Identity, FVector::ZeroVector, Ship->GetActorScale3D()));
+        return Ship->HasFlightHull() ? Hull.GetCenter().Size() + Hull.GetExtent().Size()
+                                     : double(Ship->Collision->GetScaledSphereRadius());
+    };
+    auto Hits = [&HullEnvelope](const ASSWorldBody *Body, const ASSShip *Ship, double &FirstContact)
     {
         const FVector Relative = Body->GetActorLocation() - Ship->GetActorLocation();
         const FVector Velocity = Body->GetVelocity() - Ship->GetVelocity();
-        const double Contact = Body->GetBodyRadius() + Ship->Collision->GetScaledSphereRadius();
+        const double Contact = Body->GetBodyRadius() + HullEnvelope(Ship);
         const double A = Velocity.SizeSquared(), B = 2. * FVector::DotProduct(Relative, Velocity);
         const double C = Relative.SizeSquared() - Contact * Contact;
         const double Discriminant = B * B - 4. * A * C;
@@ -651,6 +661,7 @@ bool FSSDirectorVolley::RunTest(const FString &)
     };
     bool bResult = true;
     int32 Volleys = 0;
+    int32 ScenarioVolleys[3] = {};
     for (int32 Scenario = 0; Scenario < 3 && bResult; ++Scenario)
         for (int32 Seed = 1; Seed <= 6 && bResult; ++Seed)
         {
@@ -663,13 +674,41 @@ bool FSSDirectorVolley::RunTest(const FString &)
                              : Scenario == 1 ? FVector(0.f, 6000.f, 0.f)
                                              : FVector(2000.f, 0.f, 0.f);
             if (Scenario == 2)
-                Ship->Collision->SetSphereRadius(700.f);
+            {
+                const double FallbackEnvelope = HullEnvelope(Ship);
+                const float RootRadius = Ship->Collision->GetScaledSphereRadius();
+                // No BeginPlay or private Phoenix assets in this fixture: install a real transient compound
+                // whose bounds are wider and off-centre while leaving the legacy root sphere unchanged.
+                auto *Profile = NewObject<USSFlightHullProfile>(Ship);
+                Profile->Body = NewObject<UBodySetup>(Profile);
+                FKConvexElem HullShape;
+                const FVector Centre(600.f, 0.f, 0.f), Extent(1200.f, 900.f, 500.f);
+                for (int32 X : {-1, 1})
+                    for (int32 Y : {-1, 1})
+                        for (int32 Z : {-1, 1})
+                            HullShape.VertexData.Add(Centre + Extent * FVector(X, Y, Z));
+                HullShape.UpdateElemBox();
+                Profile->Body->AggGeom.ConvexElems.Add(MoveTemp(HullShape));
+                Ship->FlightHull = NewObject<USSFlightHullComponent>(Ship);
+                bResult = TestTrue(TEXT("The larger case initializes a real compound hull"),
+                                   Ship->FlightHull->Initialize(Profile)) &&
+                          TestTrue(TEXT("The larger case uses the compound branch"), Ship->HasFlightHull());
+                if (!bResult)
+                    break;
+                TestEqual(TEXT("The compound scenario leaves the legacy root sphere unchanged"),
+                          Ship->Collision->GetScaledSphereRadius(), RootRadius);
+                TestTrue(TEXT("The larger flight hull materially increases the measured production envelope"),
+                         HullEnvelope(Ship) > FallbackEnvelope + 1000.);
+                TestTrue(TEXT("The compound envelope includes its offset as well as its half diagonal"),
+                         FMath::IsNearlyEqual(HullEnvelope(Ship), Centre.Size() + Extent.Size(), .01));
+            }
             F.Director->MaximumActiveThreats = 24;
             F.Director->Random.Initialize(Seed);
             const int32 Admitted = F.Director->SpawnVolley(6);
             if (Admitted == 0)
                 continue; // One that cannot be placed fairly is refused, never forced.
             ++Volleys;
+            ++ScenarioVolleys[Scenario];
             const FString Label = FString::Printf(TEXT("Motion %d seed %d"), Scenario, Seed);
             int32 Rocks = 0, OnTarget = 0;
             for (TActorIterator<ASSWorldBody> It(F.World); It; ++It)
@@ -690,6 +729,9 @@ bool FSSDirectorVolley::RunTest(const FString &)
             TestEqual(Label + TEXT(": exactly one rock is on target; shooting it clears the way"), OnTarget, 1);
         }
     TestTrue(TEXT("Volleys were admitted to check"), Volleys > 0);
+    for (int32 Scenario = 0; Scenario < 3; ++Scenario)
+        TestTrue(FString::Printf(TEXT("Motion/hull scenario %d admitted a volley; no vacuous hull check"), Scenario),
+                 ScenarioVolleys[Scenario] > 0);
     for (float Setting : {1.f, 0.f})
     {
         if (!bResult)

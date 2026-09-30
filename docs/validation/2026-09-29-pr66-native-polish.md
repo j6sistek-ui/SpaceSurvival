@@ -47,3 +47,14 @@ Five existing modified/untracked Content/Python files byte-matched the incoming 
 ## Acceptance limits
 
 The formation has tested timing, clearance and weapon responses; this does not mathematically guarantee that every randomized combination with scenery/enemies is survivable. Physical controller feel, normal-health Waves1-10 and final difficulty acceptance remain open in ACT-12. Knight/craft replacement, attack runs and damage scars are separate existing work. No merge or publication performed.
+
+## September30 follow-up: truthful volley presentation, unchanged shoot-through pressure
+
+Owner supplied a secondary audit and explicitly retained the need to shoot out of dense encounters. No ring-count cap, widened gap, weaker rock, lower spawn chance or lower budget was added. The omitted ring position is now documented as an empty placement, not a guaranteed Phoenix-width flight corridor.
+
+- Fewer than three free threat slots refuses `SpawnVolley` before spawning/reserving/spending; the existing ordinary asteroid path remains available in the same admission interval.
+- If spatial clearance leaves only the central attack, it remains shootable and dangerous but does not trigger a volley caption. A volley caption needs at least two actual rocks. The normal throw flare is retained for an actual attack.
+- The older 'larger hull' fixture had no BeginPlay/private Phoenix, so it exercised the sphere fallback, not a compound flight hull. The corrected test installs a transient off-centre compound and asserts that the actual production bounds envelope increases by over1000cm while the root sphere stays unchanged. Each motion/hull scenario must admit at least one volley; the test cannot pass through only refusals. This measures geometry/admission, not registered Chaos contacts.
+- Added occupied-cap regressions for one/two remaining slots, zero cost/reservation on refusal and actual Tick fallback spending. A fully blocked ring verifies the lone centre has no volley caption; a complete formation verifies captions are enabled.
+
+Native `DirectorVolley` and `DirectorVolleyAdmission`: **2/2 success, zero warnings/failures/not-run**, report `Artifacts/PR66Followup/Tests/index.json`. Editor build passed4.75s (`Build2.log`) after correcting a nonexistent asteroid enum in the new test fixture; failed `Build.log` is retained. CheckProject38, changed-file clang-format22, documentation gate and whitespace pass. No broad suite or new rendered pass: existing art, camera and difficulty values are unchanged. Current desktop follow-up build is pending at this source checkpoint.

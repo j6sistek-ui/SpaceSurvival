@@ -25,7 +25,11 @@ rider" default below.
 The asteroid admission can become a volley (`SpawnVolley`, `ss.HazardVolley`): one
 small rock on target inside a ring of rocks that shares its velocity, placed in the
 plane perpendicular to relative travel at a radius that clears the hull envelope,
-one slot left open. The target keeps the ordinary direct-shot reservation and lands
+one ring position left empty, which does not promise a Phoenix-width corridor.
+Late-wave formations may require shooting the centre; the owner retains their density.
+Fewer than three available threat slots skips the volley and uses ordinary admission;
+clearance can still reduce a planned formation, but a lone centre emits no volley caption.
+The target keeps the ordinary direct-shot reservation and lands
 at least a second after the reaction floor, so shooting it or steering out past the
 ring provides an answer to this formation in isolation. Combined encounter fairness
 still needs play evidence. Admission first plans the clear members, verifies each

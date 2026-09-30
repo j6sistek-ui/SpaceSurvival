@@ -137,25 +137,36 @@ bool FSSDirectorVolleyAdmission::RunTest(const FString &)
         }
     };
     FScopedDial Volley(TEXT("ss.HazardVolley")), Trajectory(TEXT("ss.HazardTrajectory")), Speed(TEXT("ss.HazardSpeed")),
-        Count(TEXT("ss.HazardCount"));
+        Count(TEXT("ss.HazardCount")), Voice(TEXT("ss.VillainVoice")), Villain(TEXT("ss.Villain"));
     if (!TestNotNull(TEXT("Resolve volley chance"), Volley.Variable) ||
         !TestNotNull(TEXT("Resolve trajectory dial"), Trajectory.Variable) ||
         !TestNotNull(TEXT("Resolve speed dial"), Speed.Variable) ||
-        !TestNotNull(TEXT("Resolve threat cap"), Count.Variable))
+        !TestNotNull(TEXT("Resolve threat cap"), Count.Variable) ||
+        !TestNotNull(TEXT("Resolve villain captions"), Voice.Variable) ||
+        !TestNotNull(TEXT("Resolve villain presence"), Villain.Variable))
         return false;
     Volley.Variable->SetWithCurrentPriority(1.f);
     Trajectory.Variable->SetWithCurrentPriority(1);
     Speed.Variable->SetWithCurrentPriority(3.f);
     Count.Variable->SetWithCurrentPriority(40);
+    Voice.Variable->SetWithCurrentPriority(1);
+    Villain.Variable->SetWithCurrentPriority(1);
     FSSVolleyAdmissionWorld F;
     if (!F.Initialize(*this))
         return false;
     F.Tune(2.25f, 4.5f);
+    F.Mode->Tuning->Villain.ChatterChance = 1.f;
+    F.Instance->Session.settings.subtitles = true;
     F.Director->Random.Initialize(1);
     float Spent = -1.f;
     const int32 FullCount = F.Director->SpawnVolley(3, 30.f, &Spent);
     if (!TestEqual(TEXT("A clear three-slot formation is admitted whole"), FullCount, 3))
         return false;
+    TestFalse(TEXT("A real formation can deliver its volley caption"), F.Mode->VillainLine.IsEmpty());
+    TArray<FVector> RingLocations;
+    for (ASSWorldBody *Body : F.Rocks())
+        if (Body != F.Director->DirectArrivals[0].Body.Get())
+            RingLocations.Add(Body->GetActorLocation());
     const float FullCost = F.RockCost();
     TestEqual(TEXT("Returned cost equals the authored cost of actual spawned kinds"), Spent, FullCost);
     TestTrue(TEXT("The regression uses costs that differ from one unit per rock"), FullCost > FullCount);
@@ -289,6 +300,50 @@ bool FSSDirectorVolleyAdmission::RunTest(const FString &)
     Laser.Ship->Fire();
     TestTrue(TEXT("Two actual starter-laser traces destroy the centre"), LaserTarget->IsActorBeingDestroyed());
     TestEqual(TEXT("The laser clears the centre while preserving the ring"), Laser.Rocks().Num(), 2);
+    // Exercise real occupied slots, not only a reduced requested count. Refusal must leave the ordinary
+    // admission path available so presentation correctness does not create another quiet interval.
+    for (int32 FreeSlots : {1, 2})
+    {
+        FSSVolleyAdmissionWorld Cap;
+        if (!Cap.Initialize(*this))
+            return false;
+        Cap.Tune(2.25f, 4.5f);
+        Cap.Director->MaximumActiveThreats = FreeSlots + 1;
+        auto *Occupant = Cap.World->SpawnActor<ASSWorldBody>(FVector(-100000., 0., 0.), FRotator::ZeroRotator);
+        if (!TestNotNull(TEXT("Occupy a real threat slot"), Occupant))
+            return false;
+        Occupant->Configure(ESSWorldKind::MediumAsteroid, 10.f, 0.f);
+        TestEqual(TEXT("Cap setup leaves the requested free slots"),
+                  Cap.Director->MaximumActiveThreats - Cap.Director->GetActiveThreatCount(), FreeSlots);
+        Cap.Director->Random.Initialize(1);
+        TestEqual(TEXT("Fewer than three free slots refuses a volley"), Cap.Director->SpawnVolley(8, 30.f, &Spent), 0);
+        TestEqual(TEXT("Cap refusal spends nothing"), Spent, 0.f);
+        TestEqual(TEXT("Cap refusal leaves the existing threat alone"), Cap.Director->GetActiveThreatCount(), 1);
+        TestTrue(TEXT("Cap refusal creates no direct reservation"), Cap.Director->DirectArrivals.IsEmpty());
+        Cap.Reset(1);
+        Cap.Director->AvailableBudget = 2.25f;
+        Cap.Director->Random.Initialize(1);
+        Cap.Director->TickComponent(1.f, LEVELTICK_All, nullptr);
+        TestEqual(TEXT("Near-cap refusal still admits an ordinary asteroid through Tick"), Cap.Rocks().Num(), 1);
+        TestEqual(TEXT("Ordinary near-cap fallback spends its actual cost"), Cap.Director->AvailableBudget, 0.f);
+    }
+    // Clearance may still remove every ring member after the slot-cap check. The centre remains a valid
+    // attack, but must not advertise a wall. The earlier full-formation assertion proves captions are enabled.
+    FSSVolleyAdmissionWorld Solo;
+    if (!Solo.Initialize(*this))
+        return false;
+    Solo.Mode->Tuning->Villain.ChatterChance = 1.f;
+    Solo.Instance->Session.settings.subtitles = true;
+    for (const FVector &Position : RingLocations)
+    {
+        auto *Cover = Solo.World->SpawnActor<ASSWorldBody>(Position, FRotator::ZeroRotator);
+        if (!TestNotNull(TEXT("Block a would-be ring member"), Cover))
+            return false;
+        Cover->Configure(ESSWorldKind::Wreckage, 10.f, 0.f);
+    }
+    Solo.Director->Random.Initialize(1);
+    TestEqual(TEXT("Blocked ring can leave its valid central attack"), Solo.Director->SpawnVolley(3), 1);
+    TestTrue(TEXT("A lone central attack does not claim a volley wall"), Solo.Mode->VillainLine.IsEmpty());
     return true;
 }
 #endif
