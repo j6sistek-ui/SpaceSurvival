@@ -21,6 +21,12 @@ Feature checkout: `C:/Users/j6sis/.codex/worktrees/pr65-review/SpaceSurvival`. L
 - Render2 (`4990984b10ba4e94966f1646a0f827bd`) has four actual normal-chase-camera stages and47 timestamped sequence frames; runtime fixture succeeds through the real Wave5 Flight→Wormhole→Climax. Softer twisting vapor and reduced filaments were visually inspected. Wrapper initially rejects duplicate `hull` health/asset metadata; numeric field renamed `hullHealth` for final validation.
 - Changed C++ formatting and Python syntax pass; CheckProject38 structural checks and canonical documentation navigation pass. Portable Docker checks were not rerun for this Unreal-only change (Docker Desktop stopped).
 
+## Final current-game delivery
+
+Gameplay source `8ee8260` adopted in `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, branch `codex/wormhole-playtest`. Native current-checkout Editor build passes in31.56 s. Editor module SHA256 `a04d8feca36ecd5daedece6f6a5bfc6cfabe7b2c333e0045ea76d038c37f438f`. Existing desktop game/editor launchers still use this checkout; no owner compile needed.
+
+Final hidden capture `8207c03d21d24668a4c79bbc1b48f74d` from that exact current build reports both fixture and wrapper success, zero failures,4required stages plus48timestamped sequence frames, process exit0, no fixture saves and production-save preservation. It observes actual Flight→Wormhole→Climax, loaded original tunnel/material, near-locked input and restored flight. `DeepTransit.png` and `Exit.png` were visually checked across the final/refined captures. Final source handoff is documentation-only after8ee8260.
+
 ## Delivery limits
 
-Final current-checkout build and corrected wrapper receipt pending. This is seeded scripted visual and native physics evidence, not a natural Waves1–5 journey, physical-controller acceptance, representative60FPS profiling, audio acceptance or a packaged release. No merge or itch upload. Owner should review tunnel motion/brightness, nearly locked wobble, and return to hostile combat.
+This is seeded scripted visual and native physics evidence, not a natural Waves1–5 journey, physical-controller acceptance, representative60FPS profiling, audio acceptance or a packaged release. No merge or itch upload. Owner should review tunnel motion/brightness, nearly locked wobble, and return to hostile combat.

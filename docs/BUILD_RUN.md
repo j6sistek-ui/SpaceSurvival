@@ -412,3 +412,10 @@ See [Building sandbox workflow](BUILDING_SANDBOX.md). `Open Building Sandbox.cmd
 private map identified by `Artifacts/BuildingSandbox/build.json`; `Scripts/OpenBuildingSandbox.ps1 -CheckOnly`
 validates its presence without opening Unreal. This authoring map and its template pawn do not change
 the gameplay default map or a published package.
+
+
+### September30 wormhole playtest
+
+The existing **Play SpaceSurvival - Current** and **Unreal Engine** desktop shortcuts use the repaired checkout at `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, now `codex/wormhole-playtest`, gameplay source `8ee8260`, rebuilt and ready. Start Survival: the new passage occurs at the end of Wave5 before hostile combat. Ordinary free-flight controls and the harder survival baseline remain intact.
+
+For isolated offscreen visual evidence only, `Scripts/CaptureSpaceLook.ps1 -WormholeReview -Sequence` captures the normal chase camera through a seeded Wave5 entrance/transit/exit, with protected save isolation. It does not publish, package or run a natural five-wave journey. See [the wormhole receipt](validation/2026-09-30-wormhole-transit.md) for exact final build/capture identity.
