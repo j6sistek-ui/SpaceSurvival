@@ -45,6 +45,8 @@ public:
      *  BeginPlay because the automation worlds that spawn stations never run BeginPlay, and a pad that only
      *  exists once play starts is a pad the tests cannot see. */
     void Build();
+    /** Reuse an authored physical deck without manufacturing overlapping pad geometry. */
+    void AdoptDeck(UStaticMeshComponent *ExistingDeck, float Radius);
     bool IsBuilt() const
     {
         return Deck != nullptr;

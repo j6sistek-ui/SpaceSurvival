@@ -54,10 +54,18 @@ public:
     virtual FVector GetVelocity() const override;
     void SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake, float Roll = 0.f,
                         bool ManualRoll = false);
+    /** A bounded transport along Forward. Collision and damage remain live; only the pilot's flight
+     *  authority is reduced. The passage owns Begin/End, with phase changes and Duration as cleanup guards. */
+    bool BeginWormholeTransit(FVector Forward, float Duration);
+    void EndWormholeTransit();
+    bool IsInWormholeTransit() const
+    {
+        return WormholeDuration > 0.f;
+    }
     /** Camera-only input: never feeds steering, thrust or the flight body's transform. */
     void SetFreeLookInput(FVector2D Input)
     {
-        FreeLookInput = Input.GetClampedToMaxSize(1.f);
+        FreeLookInput = IsInWormholeTransit() ? FVector2D::ZeroVector : Input.GetClampedToMaxSize(1.f);
     }
     /** Ordinary engine command, 0 = coast and 1 = full normal power; boost remains separate. */
     float GetThrottle() const
@@ -140,6 +148,10 @@ public:
     TObjectPtr<USSPhase1Data> Tuning;
 
 private:
+    float WormholeDuration = 0.f, WormholeElapsed = 0.f, WormholeExitSpeed = 0.f;
+    FVector WormholeOrigin = FVector::ZeroVector, WormholeForward = FVector::ForwardVector;
+    FVector WormholeRight = FVector::RightVector, WormholeUp = FVector::UpVector;
+    FVector2D WormholeInput = FVector2D::ZeroVector;
     float BumperHeldSeconds = 0.f, EvadeSeconds = 0.f, EvadeSide = 0.f;
     bool bLevelAfterEvade = false;
     FVector EvadeVelocity = FVector::ZeroVector;
@@ -147,6 +159,9 @@ private:
 
     friend class FSSDirectorAsteroidReadability;
     friend class FSSDirectorTrajectoryFairness;
+    friend class FSSDirectorAdmissionFallThrough;
+    friend class FSSDirectorVillainLaunch;
+    friend class FSSDirectorVolley;
     friend class FSSControllerTestingPreset;
     void UpdateEngineMix();
     void RefreshFlightPresentation();

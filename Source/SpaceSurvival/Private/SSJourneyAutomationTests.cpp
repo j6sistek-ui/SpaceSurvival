@@ -404,6 +404,55 @@ bool CheckStation(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
 }
 } // namespace
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDirectorSustainedPressure, "SpaceSurvival.Integration.DirectorSustainedPressure",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDirectorSustainedPressure::RunTest(const FString &)
+{
+    // Keep real world ticks, actor lifetimes, normal budgets/caps and the actual flight hull. Extra hull from
+    // the journey fixture isolates pressure continuity from pilot survival; this is not a balance proof.
+    for (int32 Wave : {5, 10})
+    {
+        FSSJourneyWorld Fixture;
+        if (!Fixture.Initialize(*this) || !Fixture.BootstrapFlight(*this, "qa-director-pressure"))
+            return false;
+        auto &Session = Fixture.Instance->Session;
+        Session.run.wave = Wave;
+        Session.run.phase = SS::Phase::Climax;
+        Session.run.phaseSeconds = 0.;
+        Session.run.phaseDuration = 40.;
+        Session.tuning.climaxSeconds = 40.;
+        Fixture.Mode->Director->Configure(Wave, true);
+        TSet<uint32> Seen;
+        int32 Asteroids = 0, Peak = 0;
+        float LastAdmission = 0.f, LongestQuiet = 0.f;
+        for (int32 Frame = 0; Frame < 790; ++Frame)
+        {
+            Fixture.Step(.05f);
+            const float Seconds = (Frame + 1) * .05f;
+            bool Admitted = false;
+            for (TActorIterator<ASSWorldBody> It(Fixture.World); It; ++It)
+                if (It->bDirectorAsteroid && !It->IsActorBeingDestroyed() && !Seen.Contains(It->GetUniqueID()))
+                {
+                    Seen.Add(It->GetUniqueID());
+                    ++Asteroids;
+                    Admitted = true;
+                }
+            LongestQuiet = FMath::Max(LongestQuiet, Seconds - LastAdmission);
+            if (Admitted)
+                LastAdmission = Seconds;
+            Peak = FMath::Max(Peak, Fixture.Mode->Director->GetActiveThreatCount());
+        }
+        AddInfo(FString::Printf(
+            TEXT("Wave %d real-tick climax: %d admitted asteroids, %.2fs maximum admission gap, peak %d"), Wave,
+            Asteroids, LongestQuiet, Peak));
+        TestTrue(TEXT("Full-length climax continues admitting asteroids without fixture deletion"), Asteroids >= 10);
+        TestTrue(TEXT("No return to the reported 35-second admission stall"), LongestQuiet < 12.f);
+        TestTrue(TEXT("Mixed pressure stays inside the actual Director cap"),
+                 Peak <= Fixture.Mode->Director->MaximumActiveThreats);
+    }
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSAcceleratedJourney, "SpaceSurvival.Integration.AcceleratedTenWaveJourney",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSAcceleratedJourney::RunTest(const FString &Parameters)

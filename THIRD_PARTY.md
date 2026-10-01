@@ -71,3 +71,15 @@ The inspected [Sci Fi SPACE STATION Kitbash — Figur Assets](https://www.fab.co
 The robot and electronic-prop selection is integrated in station source and listed in an authored cook label; rendered acceptance and actual cook/archive verification remain open. The inspected [Sci-fi Container Game Free 04 — CGGame](https://www.fab.com/listings/977a1785-14ce-4aa3-becd-39957e429dbe) remains a source-only candidate. Downloaded files and the word "Free" in a title do not change source licensing or establish active-game integration.
 
 These assets were supplied from the owner's local Fab library. Original packages and licensed derivatives remain outside public Git. Source roots include the ignored `User downloaded assets/VaultCache` and staged `Content/Spacecraft_Pack`, `Content/SpaceNebulaFantasy`, `Content/Sci_Fi_Weapons_VFX_AIO`, `Content/PyroVFX`, `Content/Robot_scout_R_21`, `Content/Defect`, `Content/SciFITrooper_Man_03`, `Content/Heavy_space_trooper`, `Content/CosmicMaterial`, `Content/Stellar_Phoenix`, the ignored `Plugins/ShipCore` and the selected `Content/StarterBundle` folders above. New project derivatives, including selected audio, drone and cook labels, remain under ignored `Content/SpaceSurvival/Licensed`; private preparation files and source hash records stay in ignored `Artifacts` and `.agent/local`. These paths identify storage, not a license grant or a public download. Their respective licenses remain applicable; these credits do not grant redistribution rights to raw asset files. License tier, purchase price and entitlement records are not published here. RPG Environment VFX and Free Galaxy Shader were inspected but are not claimed as adopted runtime content.
+
+## Wayfarer Exchange tester environment — October 2026
+
+The owner-supplied P1toP5 building bundle (WorkStation, StarterPack,
+ComputerStation, Genesis Vol1 and FruitSeller), Planet Project, and the
+Cyberpunk Room apartment contribute cooked meshes, materials, textures and
+selected authored assemblies to Wayfarer Exchange. Private source packs and
+entitlements remain local. The game adds its own composition, lighting,
+collision repairs, doors, service bindings and ambient routes. Original pack
+archives, editable source scenes, the Cargo building-library demonstration and
+editor tools are not release payloads. Dependency cooking includes only assets
+referenced by the runtime station/apartment and existing gameplay cook rules.

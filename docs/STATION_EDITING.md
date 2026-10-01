@@ -1,10 +1,20 @@
-# Station Workshop
+# Station editing and preserved Workshop
 
-**September 21 reset candidate:** gameplay selects the separate `StationReset/BP_StationReset` when installed. This workshop and the legacy Blueprint/Blender instructions below still write `StationVisualPass/BP_StationVisualLayout`; applying them does not change the active reset layout. Keep those original layouts as preserved authoring sources. The reset's recipe, ownership checks and matching physical solids are documented in [Station authoring](STATION_AUTHORING.md#functional-reset-layout--september-21-owner-redesign). Use that process for the new station; the workshop has not been migrated to it.
+**Current Wayfarer layout work:** open `M:/SpaceSurvival/Artifacts/Worktrees/asteroid-outpost/Edit Outpost Sandbox.cmd`, then edit `/Game/OutpostSandbox/L_AsteroidOutpost` with Play stopped. This authoring checkout retains ULAT, categorized parts, 43 assembled assets and the furnished apartment. See [Outpost guide](OUTPOST_SANDBOX.md) and [Building library](BUILDING_LIBRARY.md).
+
+The current game integrates a separate `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime` copy. Refreshing that copy and packaging are deliberate follow-up operations; saving the original scene does not update itch. The apartment level `/Game/BuildingLibrary/Home/L_CrewApartment` remains shared by its instances: duplicate both its level and Blueprint before making an independent interior variant. Preserve door attachments and connector alignment. [Project State](PROJECT_STATE.md) records the current build/release identity; publication is pending at this October1 integration checkpoint.
+
+The purchased-kit studio `/Game/Blender/Sandbox/BuildingSandbox_20260922` remains available for your own building, on the repaired flat platform with a space backdrop. It has not been replaced by the station. Existing edit/play shortcuts and production save profiles are preserved. ULAT is disabled only in the current gameplay checkout because its installed-engine rules prevent compilation; use the original outpost checkout for ULAT placement.
+
+## Legacy Station Workshop
+
+The instructions below preserve the older Workshop workflow. **Save + Apply writes `BP_StationVisualLayout`; it does not update Wayfarer or the separate building sandbox.**
+
+**Historical September21 reset:** gameplay selected the separate `StationReset/BP_StationReset` when installed. This workshop and the legacy Blueprint/Blender instructions below still write `StationVisualPass/BP_StationVisualLayout`; applying them does not change the active reset layout. Keep those original layouts as preserved authoring sources. The reset's recipe, ownership checks and matching physical solids are documented in [Station authoring](STATION_AUTHORING.md#functional-reset-layout--september-21-owner-redesign). That recipe remains the older fallback; it is not the Wayfarer editing process. The Workshop has not been migrated to Wayfarer.
 
 **Open `C:/Users/j6sis/SpaceSurvival/Open Station Workshop.cmd`.** It opens the working Unreal project directly into the saved workshop. If the editor is already open, use **Tools > Station Workshop**, then **Open Workshop**. No additional plugin purchase is needed.
 
-This is an editor authoring tool. It uses the normal Unreal viewport for selection, movement and undo, with a focused asset/material panel. It is not an in-game construction mechanic. The workshop becomes the source for visual station placement; gameplay collision and interaction locations are still separate and their reported bugs remain open.
+This is an editor authoring tool. It uses the normal Unreal viewport for selection, movement and undo, with a focused asset/material panel. It is not an in-game construction mechanic. The workshop is the source for legacy visual station placement; gameplay collision and interaction locations are still separate and their reported bugs remain open.
 
 The panel can be undocked by dragging its tab beside the viewport, or resized to show more thumbnails. Search narrows the imported asset catalog; preset materials remain a separate ten-choice list.
 
@@ -12,13 +22,13 @@ The panel can be undocked by dragging its tab beside the viewport, or resized to
 
 1. In the workshop panel, search for a mesh and drag it into the viewport, or double-click its thumbnail to place it in front of the camera. Existing furnishings are individually selectable too. Press **F** to focus the selected object.
 2. Use **W** to move, **E** to rotate and **R** to scale. Every supported mesh can be scaled on individual axes. Use the Details panel for exact numbers, **Alt+drag** to duplicate, **Delete** to remove and **Ctrl+Z** to undo. Grid/rotation/scale snapping is in the viewport toolbar.
-3. Click **Save + Apply**. This saves the workshop and updates the station visual Blueprint used by the game. The previous saved map/Blueprint is backed up before application. A result message confirms success or explains why nothing was applied.
+3. Click **Save + Apply**. This saves the workshop and updates its legacy station visual Blueprint. The previous saved map/Blueprint is backed up before application. A result message confirms success or explains why nothing was applied.
 
-**Save + Apply changes the project, not the already-packaged executable or itch.** To see it in editor gameplay, open `Content/SpaceSurvival/Maps/Survival`, start Play and enter the home hangar. A later package/update includes the saved layout. Stop Play before returning to the workshop. Playing the workshop map itself is only an editing preview, with the base GameMode and no survival loop.
+**Save + Apply changes the legacy authoring assets, not Wayfarer, a packaged executable or itch.** Normal Survival now prefers the runtime Wayfarer copy, so restarting Play is not a way to apply Workshop edits to the new station. Playing the Workshop map remains an editing preview with the base GameMode and no survival loop.
 
 ## Inspect the complete alien world
 
-In the current development project, play `/Game/SpaceSurvival/Maps/Survival`, close the opening menu and approach the cyan **ALIEN WORLD** doorway in the home hangar or a station. Press **E / A** at its prompt. This opens the complete owned `L_Showcase_level` for visual inspection. **Tab / Y** switches to the pack's complete `L_assets` layout; **Esc / B** returns to the station and original walker position.
+**Historical gallery instructions:** the ALIEN WORLD gameplay service was removed on September22; the owned maps remain library resources. The following describes the earlier viewer and is not a current game entry point. In that older implementation, players could play `/Game/SpaceSurvival/Maps/Survival`, close the opening menu and approach the cyan **ALIEN WORLD** doorway in the home hangar or a station. Press **E / A** at its prompt. This opens the complete owned `L_Showcase_level` for visual inspection. **Tab / Y** switches to the pack's complete `L_assets` layout; **Esc / B** returns to the station and original walker position.
 
 | Gallery action | Keyboard/mouse | Controller |
 | --- | --- | --- |
@@ -31,7 +41,7 @@ In the current development project, play `/Game/SpaceSurvival/Maps/Survival`, cl
 
 The labeled evaluation camera flies without collision so you can inspect large structures from any side. Run progression stops during review, and the existing station and session remain in memory for return. This is a viewer: movement does not edit, export or save vendor placements. Use the Workshop to arrange selected assets in your own station. If the owned map is missing, entry reports that it is unavailable and leaves the station in place.
 
-**The old packaged EXE and itch build have no gallery doorway.** Open `Play Development Build.cmd` with the installed private megastructure maps; see [authoring and capture setup](BUILD_RUN.md#spatial-areas-and-alien-gallery-development-project). The first asset view showed empty floor. Corrected capture `3bc9ba3b7f2a42c8a3899b57ae024b38` shows the modular inventory and has independent acceptance for the scripted entry/switch/return path. Ordinary navigation, physical controls, detailed inspection and packaged behavior remain unverified.
+The September16 capture `3bc9ba3b7f2a42c8a3899b57ae024b38` belongs to that retired scripted viewer. It is retained as asset-inspection history, not evidence that the current game has a gallery doorway. See [owned gallery authoring](BUILD_RUN.md#spatial-areas-and-alien-gallery) for the preserved maps.
 
 ## Assets and ten material choices
 
@@ -70,7 +80,7 @@ The Blueprint contains ordinary mesh components, two idle skeletal staff compone
 1. With **BP_StationVisualLayout → Viewport** open, select **LayoutRoot** in the **Components** panel. Click **Add**, search for **Static Mesh**, and add that component.
 2. Rename it to something recognizable, such as `Owner_StorageBox`. In **Details → Static Mesh**, use the asset picker to select **SM_ArmoryBox** from **Content → SciFiCorridor → Meshes**. The existing mesh brings its assigned materials with it.
 3. Select the new component and press **F** to frame it. Use **W / E / R** to move, rotate or scale it, or enter numbers under **Details → Transform**. Put it beside existing storage, outside the cyan docking-lane guide described below.
-4. Click **Compile**, then **Save** in the Blueprint editor. Stop and restart **Play** to see that saved change in the station from the normal game camera.
+4. Click **Compile**, then **Save** in the Blueprint editor. Review this legacy asset in its own preview; normal gameplay now selects Wayfarer, so restarting Survival does not apply these edits to the current station.
 
 After that first saved prop, use the same process for another asset. Duplicate selected components for repeated objects, delete unwanted dressing, or add a **Point Light** component for local illumination. Make lasting changes in the Blueprint's **Components/Viewport**. An object dragged into the temporary Play level does not become part of this saved station layout.
 
@@ -180,6 +190,8 @@ Locations place the source mesh's pivot in station-local centimeters. Scales are
 
 The licensed Blueprint and its dependencies remain local private content and are cooked with the game. Public source reproduces the workflow but does not distribute raw pack assets. Without the Blueprint or licensed content, the existing native presentation fallbacks remain available.
 
-## Verify a saved layout
+## Verify a saved legacy layout
 
-Restart Play and check the approach, exit path, every service and launch from the normal game camera. Confirm that removed native props have not reappeared, the staff and screens resolve, and the scene contains the edited furniture and lights. Native `SpaceSurvival.Integration.StationEditableLayout` automation checks actual Blueprint loading, fallback, nonblocking components, unchanged collision/service anchors and ownership cleanup. The separate native visual-clearance and exterior tests continue to cover fallback presentation. Rendered art quality, owner edits and representative performance still require review in the game.
+These checks concern the legacy Blueprint, not the current Wayfarer runtime copy. Use the scoped [OutpostReview fixture](BUILD_RUN.md#wayfarer-gameplay-and-preserved-building-areas) for the latter, keeping scripted service/geometry evidence separate from actual walking and physical input.
+
+Restart the legacy preview and check the approach, exit path, every service and launch from the normal game camera. Confirm that removed native props have not reappeared, the staff and screens resolve, and the scene contains the edited furniture and lights. Native `SpaceSurvival.Integration.StationEditableLayout` automation checks actual Blueprint loading, fallback, nonblocking components, unchanged collision/service anchors and ownership cleanup. The separate native visual-clearance and exterior tests continue to cover fallback presentation. Rendered art quality, owner edits and representative performance still require review in the game.

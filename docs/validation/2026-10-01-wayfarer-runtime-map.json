@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "source": "/Game/OutpostSandbox/L_AsteroidOutpost",
+  "target": "/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime",
+  "tagged_actors": 7782,
+  "source_maps_preserved": {
+    "L_AsteroidOutpost.umap": "aa6f7e5fa9d4ea42f3d14f818ee7ff701a7cdf64a413a3657dbac62c64f0e44a",
+    "L_CrewApartment.umap": "dbac3d7c9a0e73bc90bd641966e46bbb57f16aaad74b4d2de2cf6e4374f1081a",
+    "BuildingSandbox_20260922.umap": "b0d444fe5ba473eccd85f3c21bdeb83878aa558ba0b123e42d20d4e72c2cde57"
+  },
+  "runtime_sha256": "9c83968d9765467a05b104eaadc65dd44ff06dbfdbe797c8a38a58645756ca9c"
+}

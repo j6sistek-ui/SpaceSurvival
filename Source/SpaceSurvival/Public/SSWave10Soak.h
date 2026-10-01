@@ -8,6 +8,8 @@ class ACameraActor;
 class ASSEnemy;
 class UNiagaraComponent;
 class FJsonValue;
+class UMaterialInterface;
+class UStaticMesh;
 
 /** Explicit isolated Development capture. Never used by ordinary gameplay. */
 UCLASS(NotBlueprintable, Transient)
@@ -32,6 +34,29 @@ private:
     bool CaptureVisuals = false;
     bool CaptureStationExterior = false;
     bool CaptureSequence = false;
+    bool DirectorReview = false;
+    bool WormholeReview = false, WormholeReviewSeeded = false;
+    bool OutpostReview = false, OutpostReviewComplete = false;
+    bool OutpostDepartureVerified = false, OutpostReturnVerified = false;
+    bool OutpostPitStopSupported = false;
+    int32 OutpostReviewStage = 0, OutpostServicesChecked = 0, OutpostFloorChecks = 0, OutpostPitStopServicesChecked = 0;
+    double OutpostStageAt = 0;
+    FVector OutpostFlightStart = FVector::ZeroVector;
+    FString OutpostRunBefore, OutpostAccountBefore;
+    void TickOutpostReview(float DeltaSeconds);
+
+    double WormholeWarmQuietSeconds = 0, WormholeRenderingReadyAt = -1, WormholeReviewSeconds = 0;
+    int32 WormholeWarmupPeakAssets = 0, WormholeWarmupPeakShaders = 0;
+    FVector2D WormholeRequestedSteering = FVector2D::ZeroVector;
+    bool WormholeRequestedBrake = false;
+    float WormholeStartingMaxHull = 0, WormholeStartingMaxShield = 0;
+    UPROPERTY(Transient)
+    TObjectPtr<UStaticMesh> WormholeReviewMesh;
+    UPROPERTY(Transient)
+    TObjectPtr<UMaterialInterface> WormholeReviewMaterial;
+    void TickWormholeReview(float DeltaSeconds);
+    bool DirectorReviewHUDWasVisible = true;
+    void CaptureDirectorReview();
     double NextSequenceSeconds = 6; // Let normal rendering/texture streaming settle before repeated readbacks.
     int32 SequenceIndex = 0;
     bool OffscreenVisuals = false;

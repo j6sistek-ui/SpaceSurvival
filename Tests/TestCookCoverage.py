@@ -13,7 +13,7 @@ class CookCoverageTests(unittest.TestCase):
         self.rules = cook_rules((ROOT / "Config/DefaultGame.ini").read_text(encoding="utf-8"))
 
     def test_author_assets_are_excluded_despite_parent_cook_root(self):
-        self.assertEqual(len(self.rules[2]), 10)
+        self.assertEqual(len(self.rules[2]), 14)
         for package in self.rules[2]:
             with self.subTest(package=package):
                 self.assertFalse(is_covered(package + "." + package.rsplit("/", 1)[1], *self.rules))
@@ -47,6 +47,21 @@ class CookCoverageTests(unittest.TestCase):
         self.assertTrue(is_covered("/Game/TripoModels/Materials/M_Tripo_PBR_Master", *self.rules))
         for suffix in ("BaseColor", "Normal", "Metallic", "Roughness"):
             self.assertTrue(is_covered("/Game/TripoModels/AlienFemale/T_AlienFemale_" + suffix, *self.rules))
+
+    def test_hero_authoring_exclusions_keep_runtime_mesh_and_clips(self):
+        base = "/Game/SpaceSurvival/Licensed/HeroReplacement/"
+        expected = {base + folder + name
+                    for folder in ("", "Final/")
+                    for name in ("RTG_Body", "RTG_Body_Source")}
+        self.assertEqual({path for path in self.rules[2] if path.startswith(base)}, expected)
+        for package in expected:
+            with self.subTest(package=package):
+                self.assertFalse(is_covered(package + "." + package.rsplit("/", 1)[1], *self.rules))
+        # These are the mesh and finished clips used by ReplacementHero/Activate.py.
+        for name in ("SK_SquirrelHeroReplacement", "A_Idle", "A_Walk", "A_Jog", "A_Run",
+                     "A_Pilot", "A_JumpStart", "A_JumpAir", "A_JumpLand"):
+            with self.subTest(runtime=name):
+                self.assertTrue(is_covered(base + "Final/" + name, *self.rules))
 
     def test_plugin_runtime_light_mask_is_explicitly_cooked(self):
         # The installed plugin's UWPPortalLightTransmissionSubsystem loads this literal

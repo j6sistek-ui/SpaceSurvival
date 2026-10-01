@@ -1,12 +1,15 @@
 #include "SSWorldActors.h"
 #include "SSAsteroidBurst.h"
 #include "SSVFXPresentation.h"
+#include "NiagaraComponent.h"
 #include "SSWave10Soak.h"
 #include "SSAudio.h"
 #include "Components/AudioComponent.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSShip.h"
+#include "SSDistantAsteroids.h"
+#include "SSSpaceScenery.h"
 #include "SSPhase1Data.h"
 #include "SSDirectorVillain.h"
 #include "Components/SphereComponent.h"
@@ -607,6 +610,9 @@ void ASSWorldBody::Tick(float DeltaSeconds)
                     ContactPoint = GetActorLocation() + ContactNormal * BodyRadius;
                 if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
                     FX->PlayImpact(ContactPoint, -ContactNormal, false, CollisionDamage >= 25.f);
+                // One of his own rocks landing a real blow is the villain's cue to gloat, if he has room to.
+                if (ASSGameMode *Mode = GameMode(this); Mode && bDirectorAsteroid && CollisionDamage >= 20.f)
+                    Mode->VillainSpeak(ESSVillainCue::Hit);
             }
         }
         else if (IsEnvironmentalField())
@@ -1142,115 +1148,139 @@ ASSWormholePassage::ASSWormholePassage()
 {
     Kind = ESSWorldKind::Event;
     LifetimeSeconds = 0.f;
+    PrimaryActorTick.TickGroup = TG_PostPhysics;
     Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    for (int32 Index = 0; Index < 5; ++Index)
-    {
-        UStaticMeshComponent *Ring =
-            CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("PassageRing%d"), Index));
-        Ring->SetupAttachment(RootComponent);
-        Ring->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        PassageRings.Add(Ring);
-    }
+    Visual->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Visual->SetCastShadow(false);
+    TunnelLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("TunnelLight"));
+    TunnelLight->SetupAttachment(RootComponent);
+    TunnelLight->SetRelativeLocation(FVector(1800.f, 0.f, 1800.f));
+    TunnelLight->SetLightColor(FLinearColor(1.f, .35f, .55f));
+    TunnelLight->SetIntensity(180000.f);
+    TunnelLight->SetAttenuationRadius(16000.f);
+    TunnelLight->SetCastShadows(false);
 }
 
 void ASSWormholePassage::BeginPassage(ASSShip *Ship, float Duration)
 {
-    if (!Ship)
+    if (!Ship || !Ship->BeginWormholeTransit(Ship->GetActorForwardVector(), Duration))
     {
         Destroy();
         return;
     }
     PassageShip = Ship;
-    PassageDuration = FMath::Max(1.f, Duration);
-    PassageElapsed = 0.f;
+    PassageDuration = Duration;
     PassageForward = Ship->GetActorForwardVector();
-    EntryPoint = Ship->GetActorLocation();
-    CourseLength = FMath::Max(10000.f, static_cast<float>(Ship->GetVelocity().Size()) * PassageDuration * 1.08f);
-    SetActorLocation(EntryPoint + PassageForward * 2500.f);
-    SetActorRotation(PassageForward.Rotation());
+    SetActorLocationAndRotation(Ship->GetActorLocation(), PassageForward.Rotation());
+    AddTickPrerequisiteActor(Ship);
     if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+    {
         FX->AttachAnomaly(this);
-    UStaticMesh *RingMesh = Mesh(TEXT("SM_GravityRing"));
-    Visual->SetStaticMesh(RingMesh);
-    const float MeshExtent = RingMesh ? RingMesh->GetBounds().BoxExtent.GetMax() : 50.f;
-    const float UnitScale = 1.f / FMath::Max(1.f, MeshExtent);
-    Visual->SetRelativeScale3D(FVector(1800.f * UnitScale));
-    if (DynamicMaterial)
-    {
-        DynamicMaterial->SetVectorParameterValue(TEXT("Tint"), FLinearColor(.15f, .55f, 1.f));
-        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), 2.5f);
+        TInlineComponentArray<UNiagaraComponent *> Mouths(this);
+        for (auto *Mouth : Mouths)
+            Mouth->SetRelativeLocation(FVector(15000.f, 0.f, 0.f));
     }
-    for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
+    // Only the normal-space scenery is suspended. The ship's own collision and damage
+    // remain intact; no run durability, wave duration or post-exit pressure is changed.
+    for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+        if (It->IsA<ASSDistantAsteroids>() || It->IsA<ASSSpaceScenery>())
+        {
+            SuspendedCollision.Emplace(*It, It->GetActorEnableCollision());
+            It->SetActorEnableCollision(false);
+        }
+    const TCHAR *TunnelPath = TEXT("/Game/SpaceSurvival/Meshes/SM_WormholeTunnel");
+    const TCHAR *MaterialPath = TEXT("/Game/SpaceSurvival/Materials/M_WormholeTransit");
+    UStaticMesh *Tunnel =
+        FPackageName::DoesPackageExist(TunnelPath) ? LoadObject<UStaticMesh>(nullptr, TunnelPath) : nullptr;
+    UMaterialInterface *Surface =
+        FPackageName::DoesPackageExist(MaterialPath) ? LoadObject<UMaterialInterface>(nullptr, MaterialPath) : nullptr;
+    Visual->SetStaticMesh(Tunnel);
+    Visual->SetRelativeTransform(FTransform::Identity);
+    Visual->SetCastShadow(false);
+    ThreatIndicator->SetVisibility(false);
+    if (Surface)
     {
-        UStaticMeshComponent *Ring = PassageRings[Index];
-        Ring->SetStaticMesh(RingMesh);
-        const float Alpha = float(Index + 1) / float(PassageRings.Num());
-        Ring->SetRelativeLocation(FVector(CourseLength * Alpha, 0.f, 0.f));
-        Ring->SetRelativeScale3D(FVector(FMath::Lerp(1700.f, 2300.f, Alpha) * UnitScale));
-        if (DynamicMaterial)
-            Ring->SetMaterial(0, DynamicMaterial);
-        Ring->SetCastShadow(false);
+        DynamicMaterial = UMaterialInstanceDynamic::Create(Surface, this);
+        Visual->SetMaterial(0, DynamicMaterial);
     }
+    if (!Tunnel || !Surface)
+        UE_LOG(
+            LogTemp, Warning,
+            TEXT(
+                "Wormhole transit assets missing; run Scripts/AuthorWormholeTransit.py before visual review or cook."));
+}
+
+void ASSWormholePassage::RestoreEnvironment()
+{
+    if (SuspendedCollision.IsEmpty())
+        return;
+    for (const auto &State : SuspendedCollision)
+        if (State.Key.IsValid())
+            State.Key->SetActorEnableCollision(State.Value);
+    SuspendedCollision.Reset();
+    ASSShip *Ship = PassageShip.Get();
+    auto *GI = GetGameInstance<USSGameInstance>();
+    if (!Ship || !GI || !GI->Session.IsFlying())
+        return;
+    // The field kept its world positions while hidden. Do not materialise a nearly
+    // locked ship inside a rock at the reveal: find a hull-sized clear exit and lead.
+    const FVector Origin = Ship->GetActorLocation();
+    const FQuat Rotation = Ship->GetActorQuat();
+    const FVector Right = Rotation.GetRightVector(), Up = Rotation.GetUpVector();
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(WormholeExit), false, Ship);
+    for (int32 Index = 0; Index < 129; ++Index)
+    {
+        const float Radius = Index == 0 ? 0.f : 4000.f * FMath::Pow(2.f, float((Index - 1) / 16));
+        const float Angle = (Index - 1) * (2.f * PI / 16.f);
+        const FVector Candidate = Origin + (Right * FMath::Cos(Angle) + Up * FMath::Sin(Angle)) * Radius;
+        FHitResult Hit;
+        if (!Ship->SweepFlightHull(Hit, Candidate, Candidate + PassageForward * 12000.f, Rotation, Query))
+        {
+            if (Index != 0)
+                Ship->SetActorLocation(Candidate, false, nullptr, ETeleportType::TeleportPhysics);
+            return;
+        }
+    }
+    UE_LOG(LogTemp, Warning, TEXT("Wormhole exit clearance search exhausted; normal collision retained."));
 }
 
 void ASSWormholePassage::Tick(float DeltaSeconds)
 {
-    // Deliberately bypass the environmental-field tick: this sequence never deals
-    // damage, spawns a fifth hazard family, teleports, or advances the run state.
-    PassageElapsed += DeltaSeconds;
-    if (!PassageShip.IsValid())
+    // No environmental-field Tick: this is a finite presentation, never a damage dealer.
+    auto *Ship = PassageShip.Get();
+    auto *GI = GetGameInstance<USSGameInstance>();
+    PassageElapsed += FMath::Max(0.f, DeltaSeconds);
+    if (!Ship || !GI || GI->Session.run.phase != SS::Phase::Wormhole || !GI->Session.run.active ||
+        PassageElapsed >= PassageDuration)
     {
         Destroy();
         return;
     }
-    ASSShip *Ship = PassageShip.Get();
-    const float Alpha = FMath::Clamp(PassageElapsed / PassageDuration, 0.f, 1.f);
-    const FVector Relative = Ship->GetActorLocation() - EntryPoint;
-    const FVector Lateral = Relative - PassageForward * FVector::DotProduct(Relative, PassageForward);
-    const FVector Centring = -Lateral.GetClampedToMaxSize(2000.f) * (.12f + .22f * Alpha);
-    // A bounded exit turbulence envelope gives the transition a physical release,
-    // without reversing input or adding immunity. Forward control remains available.
-    const float ExitTime = PassageElapsed - PassageDuration;
-    if (ExitTime < 0.f)
+    SetActorLocation(Ship->GetActorLocation());
+    if (PassageElapsed > .65f)
     {
-        // The entrance is behind the camera soon after transit begins. Keep
-        // the one bounded Niagara mouth ahead while the native course stays
-        // anchored to its original world positions. Forces use EntryPoint.
-        SetActorLocation(Ship->GetActorLocation() + PassageForward * 3500.f);
-        const FVector CourseStart = GetActorTransform().InverseTransformPosition(EntryPoint + PassageForward * 2500.f);
-        Visual->SetRelativeLocation(CourseStart);
-        for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
-            PassageRings[Index]->SetRelativeLocation(
-                CourseStart + FVector(CourseLength * float(Index + 1) / float(PassageRings.Num()), 0.f, 0.f));
+        TInlineComponentArray<UNiagaraComponent *> Mouths(this);
+        for (auto *Mouth : Mouths)
+            Mouth->SetVisibility(false);
     }
-    const float ExitEnvelope =
-        ExitTime >= 0.f ? FMath::Max(0.f, 1.f - ExitTime / 2.f) : FMath::Clamp((Alpha - .75f) * 4.f, 0.f, 1.f);
-    const FVector Turbulence = Ship->GetActorRightVector() * FMath::Sin(PassageElapsed * 7.f) * 650.f +
-                               Ship->GetActorUpVector() * FMath::Cos(PassageElapsed * 5.f) * 420.f;
-    Ship->AddExternalForce(
-        (ExitTime < 0.f ? PassageForward * (600.f + 1600.f * Alpha) + Centring : FVector::ZeroVector) +
-        Turbulence * ExitEnvelope);
-    if (ExitTime >= 0.f)
-    {
-        Visual->SetVisibility(false);
-        for (UStaticMeshComponent *Ring : PassageRings)
-            Ring->SetVisibility(false);
-    }
-    Visual->AddLocalRotation(FRotator(0.f, 0.f, 40.f * DeltaSeconds));
-    for (int32 Index = 0; Index < PassageRings.Num(); ++Index)
-        PassageRings[Index]->AddLocalRotation(
-            FRotator(0.f, 0.f, (Index % 2 ? -1.f : 1.f) * (35.f + 20.f * Alpha) * DeltaSeconds));
+    const float Entrance = FMath::SmoothStep(0.f, .65f, PassageElapsed);
+    const float Exit = FMath::SmoothStep(PassageDuration - .8f, PassageDuration, PassageElapsed);
     if (DynamicMaterial)
-        DynamicMaterial->SetScalarParameterValue(TEXT("Emission"),
-                                                 1.8f + Alpha * 2.f + .3f * FMath::Sin(PassageElapsed * 8.f));
-    if (PassageElapsed >= PassageDuration + 2.f)
-        Destroy();
+    {
+        DynamicMaterial->SetScalarParameterValue(TEXT("TransitTime"), PassageElapsed);
+        DynamicMaterial->SetScalarParameterValue(TEXT("TransitBlend"), .75f + .25f * Entrance);
+        DynamicMaterial->SetScalarParameterValue(TEXT("Speed"), 1.f + Entrance * .6f);
+        DynamicMaterial->SetScalarParameterValue(TEXT("ExitFlash"), Exit);
+    }
+    TunnelLight->SetIntensity(180000.f * (.6f + .4f * Entrance + .3f * Exit));
 }
 
-void ASSWormholePassage::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
+void ASSWormholePassage::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    Super::ApplyWorldOffset(InOffset, bWorldShift);
-    EntryPoint += InOffset;
+    RestoreEnvironment();
+    if (PassageShip.IsValid())
+        PassageShip->EndWormholeTransit();
+    Super::EndPlay(EndPlayReason);
 }
 
 ASSPickup::ASSPickup()
@@ -1680,10 +1710,38 @@ TAutoConsoleVariable<int32> HazardCount(TEXT("ss.HazardCount"), 40, TEXT("Active
 TAutoConsoleVariable<int32>
     HazardTrajectory(TEXT("ss.HazardTrajectory"), 1,
                      TEXT("1 aims asteroids at the ship's predicted path; 0 is the old window."));
-TAutoConsoleVariable<float> HazardDirectShare(TEXT("ss.HazardDirectShare"), .6f,
+// Owner direction, September 29: the first ten waves are much harder. The rule is only that no moment is a
+// guaranteed kill; a steer or a shot always gets through. Before it: .6 share, 1 s spacing.
+TAutoConsoleVariable<float> HazardDirectShare(TEXT("ss.HazardDirectShare"), .7f,
                                               TEXT("Share of aimed asteroids that strike the hull if unanswered."));
-TAutoConsoleVariable<float> HazardArrivalSpacing(TEXT("ss.HazardArrivalSpacing"), 1.f,
+TAutoConsoleVariable<float> HazardArrivalSpacing(TEXT("ss.HazardArrivalSpacing"), .75f,
                                                  TEXT("Seconds between direct shots at wave 10; wave 1 doubles it."));
+// The Director's volley: a rock aimed dead at the pilot inside a ring that fences the path. Its chance grows
+// by 1.2 points a wave on top of this base, so later waves see more of them. 0 turns volleys off.
+TAutoConsoleVariable<float> HazardVolley(TEXT("ss.HazardVolley"), .06f,
+                                         TEXT("Base chance an asteroid admission becomes a volley; 0 disables."));
+// A refused enemy, field or wreckage attempt used to end its spawn interval. The Wave 5 climax asks for an
+// enemy every interval, so once its five were alive it admitted nothing for the rest of the climax; every
+// later wave lost the intervals its full enemy cap refused in the same way. Saving for something too dear is
+// not a refusal: that interval still waits, so enemies keep their share of the budget.
+TAutoConsoleVariable<int32>
+    AdmissionFallThrough(TEXT("ss.AdmissionFallThrough"), 1,
+                         TEXT("1 admits an asteroid when an enemy, field or wreckage attempt is refused; 0 wastes "
+                              "the interval."));
+// Owner decision, September 29: the villain launches the enemies. A hunter leaves his craft and flies back at
+// the player, so the fight visibly starts with him. 0 places enemies ahead of the ship as before.
+TAutoConsoleVariable<int32> VillainLaunch(TEXT("ss.VillainLaunch"), 1,
+                                          TEXT("1 launches Director enemies from the villain's craft; 0 places "
+                                               "them ahead of the ship."));
+
+enum class EAdmission : uint8
+{
+    Admitted,
+    /** Saving for what was chosen. The interval passes; the budget keeps growing toward it. */
+    Holding,
+    /** Could not be placed: a full cap, or no clear room. The interval may admit something else instead. */
+    Refused
+};
 
 /** How fast a hazard may travel, after the dial. Shared so the spawn distance and the velocity cannot
  *  disagree: reaction time is computed from closing speed, and a faster hazard that spawned at the old
@@ -1691,6 +1749,27 @@ TAutoConsoleVariable<float> HazardArrivalSpacing(TEXT("ss.HazardArrivalSpacing")
 float HazardSpeedScale()
 {
     return FMath::Max(0.f, HazardSpeed.GetValueOnGameThread());
+}
+
+/** A sphere enclosing the ship's actual compound hull, not only the legacy 105 cm root sphere. Local bounds keep
+ *  it invariant as the ship rolls, so a rock that misses it cannot clip an outlying wing or engine. */
+float ShipHullRadius(const ASSShip *Ship)
+{
+    const FBox Hull = Ship->FlightHullBounds(FTransform(FQuat::Identity, FVector::ZeroVector, Ship->GetActorScale3D()));
+    return Ship->HasFlightHull() ? Hull.GetCenter().Size() + Hull.GetExtent().Size()
+                                 : Ship->Collision->GetScaledSphereRadius();
+}
+
+/** How far from the ship a body must be admitted so the player has the whole reaction floor to see it,
+ *  closing at the ship's own speed plus the fastest authored drift, rather than judged by distance alone. */
+float ReactionLead(const UObject *Context, const ASSShip *Ship, float Radius, float ReactionSeconds, float Clearance)
+{
+    float MaximumDrift = 450.f;
+    for (const auto &Hazard : Content(Context)->Hazards)
+        MaximumDrift = FMath::Max(MaximumDrift, Hazard.DriftSpeedMax);
+    MaximumDrift *= HazardSpeedScale();
+    const float ClosingSpeed = Ship->GetVelocity().Size() + MaximumDrift;
+    return FMath::Max(9000.f, ClosingSpeed * ReactionSeconds + Radius + Clearance);
 }
 } // namespace
 
@@ -1702,13 +1781,7 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
     const FVector Forward = Ship->GetActorForwardVector();
     const FVector Right = Ship->GetActorRightVector();
     const FVector Up = Ship->GetActorUpVector();
-    // Use closing speed, including a maximum approach drift, rather than distance alone.
-    float MaximumDrift = 450.f;
-    for (const auto &Hazard : Content(this)->Hazards)
-        MaximumDrift = FMath::Max(MaximumDrift, Hazard.DriftSpeedMax);
-    MaximumDrift *= HazardSpeedScale();
-    const float ClosingSpeed = Ship->GetVelocity().Size() + MaximumDrift;
-    const float Lead = FMath::Max(9000.f, ClosingSpeed * MinimumReactionSeconds + Radius + PlayerClearanceRadius);
+    const float Lead = ReactionLead(this, Ship, Radius, MinimumReactionSeconds, PlayerClearanceRadius);
     for (int32 Attempt = 0; Attempt < 16; ++Attempt)
     {
         // Larger rocks need room beside the protected corridor, not only a longer approach lead.
@@ -1728,6 +1801,44 @@ bool USSSurvivalDirectorComponent::FindSafeSpawn(float Radius, FVector &Location
     return false;
 }
 
+bool USSSurvivalDirectorComponent::FindVillainLaunch(float Radius, FVector &Location) const
+{
+    const ASSShip *Ship = FindShip();
+    FVector Origin;
+    if (!Ship || VillainLaunch.GetValueOnGameThread() == 0 || !ASSDirectorVillain::FindLaunchPoint(GetWorld(), Origin))
+        return false;
+    // Only while he is ahead, beyond the lead the ordinary placer keeps, measured along the heading for every
+    // candidate. A hard turn that swings him wide, a tuning that brings him close or a try beside his craft must
+    // never start a hunter off to the side or inside the player's reaction time; the ordinary placer takes over.
+    const FVector ShipLocation = Ship->GetActorLocation();
+    const FVector Heading = Ship->GetActorForwardVector();
+    const float Lead = ReactionLead(this, Ship, Radius, MinimumReactionSeconds, PlayerClearanceRadius);
+    if (FVector::DotProduct(Origin - ShipLocation, Heading) < Lead)
+        return false;
+    // Launched off his hull, not inside something already there: a few tries around the craft.
+    for (int32 Attempt = 0; Attempt < 4; ++Attempt)
+    {
+        const FVector Candidate = Attempt == 0 ? Origin : Origin + Random.VRand() * ((Radius + 900.f) * Attempt);
+        if (FVector::DotProduct(Candidate - ShipLocation, Heading) >= Lead &&
+            HasSpatialClearance(this, Candidate, Candidate, Radius))
+        {
+            Location = Candidate;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool USSSurvivalDirectorComponent::HasEnemyRoom() const
+{
+    int32 EnemyCount = 0;
+    for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
+        ++EnemyCount;
+    const auto &DirectorData = Content(this)->DirectorContent;
+    return EnemyCount < (bClimax ? DirectorData.ClimaxEnemyCap
+                                 : (Wave < 6 ? DirectorData.EarlyEnemyCap : DirectorData.LateEnemyCap));
+}
+
 bool USSSurvivalDirectorComponent::FindTrajectorySpawn(float Radius, float Speed, float Lifetime, FVector &Location,
                                                        FVector &Velocity, FVector2D &ContactWindow)
 {
@@ -1738,11 +1849,7 @@ bool USSSurvivalDirectorComponent::FindTrajectorySpawn(float Radius, float Speed
     const FVector Right = Ship->GetActorRightVector();
     const FVector Up = Ship->GetActorUpVector();
     const FVector ShipVelocity = Ship->GetVelocity();
-    // Enclose the actual compound hull, not only the legacy 105 cm root sphere. Local bounds keep this
-    // envelope invariant as the ship rolls. A miss outside it cannot clip an outlying wing or engine.
-    const FBox Hull = Ship->FlightHullBounds(FTransform(FQuat::Identity, FVector::ZeroVector, Ship->GetActorScale3D()));
-    const float HullRadius = Ship->HasFlightHull() ? Hull.GetCenter().Size() + Hull.GetExtent().Size()
-                                                   : Ship->Collision->GetScaledSphereRadius();
+    const float HullRadius = ShipHullRadius(Ship);
     const float Contact = Radius + HullRadius;
     const float Now = GetWorld()->GetTimeSeconds();
     const float Spacing = FMath::Max(0.f, HazardArrivalSpacing.GetValueOnGameThread()) *
@@ -1872,34 +1979,169 @@ ASSWorldBody *USSSurvivalDirectorComponent::SpawnHazard(ESSWorldKind Kind, float
     if (ContactWindow.X >= 0.f)
         DirectArrivals.Add({Body, ContactWindow});
     if (!bField)
-        ASSDirectorVillain::NotifyLaunch(GetWorld(), Body->GetActorLocation());
+        ASSDirectorVillain::NotifyLaunch(GetWorld());
     return Body;
+}
+
+int32 USSSurvivalDirectorComponent::SpawnVolley(int32 Count, float Budget, float *Spent)
+{
+    if (Spent)
+        *Spent = 0.f;
+    ASSShip *Ship = FindShip();
+    const int32 Room =
+        FMath::Min(MaximumActiveThreats, FMath::Max(1, HazardCount.GetValueOnGameThread())) - GetActiveThreatCount();
+    Count = FMath::Min(Count, Room);
+    // A cap-limited single rock or pair is an ordinary admission, not a fencing volley.
+    if (!Ship || Count < 3)
+        return 0;
+    const auto *Data = Content(this);
+    const float Scale = FMath::Max(1.f, Data->DirectorAsteroidScale);
+    const auto Centre = Data->Hazard(ESSWorldKind::SmallAsteroid);
+    const float CentreRadius = Centre.Radius * Scale;
+    const float LargestRadius = FMath::Max(CentreRadius, Data->Hazard(ESSWorldKind::MediumAsteroid).Radius * Scale);
+    const float HullRadius = ShipHullRadius(Ship);
+    // One speed for the whole volley, so it holds its shape all the way in.
+    const float Speed =
+        Random.FRandRange(Centre.DriftSpeedMin, FMath::Max(Centre.DriftSpeedMin, Centre.DriftSpeedMax)) *
+        HazardSpeedScale();
+    const FVector Incoming =
+        (-Ship->GetActorForwardVector() + Ship->GetActorRightVector() * Random.FRandRange(-.35f, .35f) +
+         Ship->GetActorUpVector() * Random.FRandRange(-.25f, .25f))
+            .GetSafeNormal();
+    const FVector RockVelocity = Incoming * Speed;
+    const FVector RelativeVelocity = RockVelocity - Ship->GetVelocity();
+    const double Closing = RelativeVelocity.Size();
+    if (Closing < 1.)
+        return 0;
+    FVector AxisA, AxisB;
+    (RelativeVelocity / Closing).FindBestAxisVectors(AxisA, AxisB);
+    // The ring sits far enough off the path that a pilot holding course is missed by all of it, and far enough
+    // from the centre rock that neither crowds the other. Only the centre is on target.
+    const float Ring = FMath::Max(LargestRadius + HullRadius + 150.f, 1.3f * CentreRadius + LargestRadius + 450.f);
+    const float Miss = Random.FRandRange(0.f, .3f * CentreRadius);
+    const double Contact = CentreRadius + HullRadius;
+    const double HalfContactTime = FMath::Sqrt(FMath::Max(0., Contact * Contact - double(Miss) * Miss)) / Closing;
+    // A second beyond the reaction floor to choose: shoot the centre, or steer out past the ring.
+    const double Arrival = FMath::Max(MinimumReactionSeconds + 1. + HalfContactTime + Random.FRandRange(0.f, 1.f),
+                                      (9000. + Ring + LargestRadius + HullRadius) / Closing);
+    if (Centre.Lifetime > 0.f && Arrival + HalfContactTime + 1. >= Centre.Lifetime)
+        return 0;
+    // The centre is a direct shot like any other, so it keeps the same spacing from the others.
+    const float Now = GetWorld()->GetTimeSeconds();
+    const float Spacing = FMath::Max(0.f, HazardArrivalSpacing.GetValueOnGameThread()) *
+                          FMath::Lerp(2.f, 1.f, FMath::Clamp((Wave - 1) / 9.f, 0.f, 1.f));
+    const FVector2D Window(Now + Arrival - HalfContactTime, Now + Arrival + HalfContactTime);
+    if (DirectArrivals.ContainsByPredicate(
+            [&](const FDirectArrival &Entry)
+            {
+                return Entry.Body.IsValid() && !Entry.Body->IsActorBeingDestroyed() &&
+                       Window.X < Entry.Window.Y + Spacing && Window.Y > Entry.Window.X - Spacing;
+            }))
+        return 0;
+    struct FVolleyMember
+    {
+        FSSHazardDefinition Definition;
+        FVector Location;
+        float Radius;
+        float Cost;
+    };
+    TArray<FVolleyMember, TInlineAllocator<8>> Formation;
+    auto PlanMember = [&](ESSWorldKind Kind, const FVector &Location)
+    {
+        const FSSHazardDefinition Definition = Data->Hazard(Kind);
+        const float Radius = Definition.Radius * Scale;
+        if (!HasSpatialClearance(this, Location, Location, Radius, false))
+            return false;
+        // Match sequential admission clearance without creating actors before cost/lifetime validation.
+        for (const FVolleyMember &Other : Formation)
+            if (FVector::DistSquared(Location, Other.Location) < FMath::Square(Radius + Other.Radius + 420.f))
+                return false;
+        Formation.Add({Definition, Location, Radius, FMath::Max(.1f, Definition.PressureCost)});
+        return true;
+    };
+    const FVector Path = Ship->GetActorLocation() - RelativeVelocity * Arrival;
+    const float MissAngle = Random.FRandRange(0.f, 2.f * PI);
+    if (!PlanMember(ESSWorldKind::SmallAsteroid,
+                    Path + (AxisA * FMath::Cos(MissAngle) + AxisB * FMath::Sin(MissAngle)) * Miss))
+        return 0;
+    // Count slots around the ring, one left open. Rocks grow heavier with the waves; none is indestructible.
+    const int32 Open = Random.RandRange(0, Count - 1);
+    const float Base = Random.FRandRange(0.f, 2.f * PI);
+    for (int32 Slot = 0; Slot < Count && Count > 1; ++Slot)
+    {
+        if (Slot == Open)
+            continue;
+        const float Angle = Base + 2.f * PI * Slot / Count;
+        const ESSWorldKind Kind =
+            Random.FRand() < .2f + .04f * Wave ? ESSWorldKind::MediumAsteroid : ESSWorldKind::SmallAsteroid;
+        PlanMember(Kind, Path + (AxisA * FMath::Cos(Angle) + AxisB * FMath::Sin(Angle)) * Ring);
+    }
+    float FormationCost = 0.f;
+    for (const FVolleyMember &Member : Formation)
+    {
+        // The ring must still exist through this formation's pass, just like its centre. Authored member
+        // lifetimes stay authoritative; a short-lived member refuses the volley rather than disappearing early.
+        if (Member.Definition.Lifetime > 0.f && Arrival + HalfContactTime + 1. >= Member.Definition.Lifetime)
+            return 0;
+        FormationCost += Member.Cost;
+    }
+    if (FormationCost > Budget)
+        return 0;
+    int32 Admitted = 0;
+    for (int32 Index = 0; Index < Formation.Num(); ++Index)
+    {
+        const FVolleyMember &Member = Formation[Index];
+        ASSWorldBody *Body = HasSpatialClearance(this, Member.Location, Member.Location, Member.Radius, false)
+                                 ? GetWorld()->SpawnActor<ASSWorldBody>(Member.Location, FRotator::ZeroRotator)
+                                 : nullptr;
+        if (!Body)
+        {
+            if (Index == 0)
+                return 0;
+            continue;
+        }
+        Body->bDirectorAsteroid = true;
+        Body->Configure(Member.Definition.Kind, Member.Radius,
+                        Member.Definition.DamageBase + Wave * Member.Definition.DamagePerWave, Wave);
+        Body->TelegraphSeconds = FMath::Max(MinimumReactionSeconds, Member.Definition.TelegraphSeconds);
+        Body->SetLinearVelocity(RockVelocity);
+        Spawned.Add(Body);
+        if (Index == 0)
+            DirectArrivals.Add({Body, Window});
+        if (Spent)
+            *Spent += Member.Cost;
+        ++Admitted;
+    }
+    ASSDirectorVillain::NotifyLaunch(GetWorld());
+    if (Admitted >= 2)
+        if (ASSGameMode *Mode = GameMode(this))
+            Mode->VillainSpeak(ESSVillainCue::Volley);
+    return Admitted;
 }
 
 ASSEnemy *USSSurvivalDirectorComponent::SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective)
 {
-    if (GetActiveThreatCount() >= FMath::Max(1, HazardCount.GetValueOnGameThread()))
+    if (GetActiveThreatCount() >= FMath::Max(1, HazardCount.GetValueOnGameThread()) || !HasEnemyRoom())
         return nullptr;
-    int32 EnemyCount = 0;
-    for (TActorIterator<ASSEnemy> It(GetWorld()); It; ++It)
-        ++EnemyCount;
-    const auto &DirectorData = Content(this)->DirectorContent;
     const auto Definition = Content(this)->Enemy(Kind);
-    if (EnemyCount >=
-        (bClimax ? DirectorData.ClimaxEnemyCap : (Wave < 6 ? DirectorData.EarlyEnemyCap : DirectorData.LateEnemyCap)))
-        return nullptr;
     FVector Location;
-    if (!FindSafeSpawn(Definition.Radius, Location))
+    const bool bFromVillain = FindVillainLaunch(Definition.Radius, Location);
+    if (!bFromVillain && !FindSafeSpawn(Definition.Radius, Location))
         return nullptr;
-    if (ASSEnemy *Enemy = GetWorld()->SpawnActor<ASSEnemy>(Location, FRotator::ZeroRotator))
+    ASSShip *Ship = FindShip();
+    const FRotator Facing = Ship ? (Ship->GetActorLocation() - Location).Rotation() : FRotator::ZeroRotator;
+    if (ASSEnemy *Enemy = GetWorld()->SpawnActor<ASSEnemy>(Location, Facing))
     {
         Enemy->Configure(Kind, Definition.Radius,
                          Definition.CollisionDamageBase + Wave * Definition.CollisionDamagePerWave, Wave);
         Enemy->SetObjectiveOwner(Objective);
-        if (ASSShip *Ship = FindShip())
+        if (Ship)
             Enemy->SetLinearVelocity(Ship->GetVelocity());
         Spawned.Add(Enemy);
-        ASSDirectorVillain::NotifyLaunch(GetWorld(), Enemy->GetActorLocation());
+        // Every hunter flares him, whether it left his craft or was placed ahead.
+        ASSDirectorVillain::NotifyLaunch(GetWorld());
+        if (ASSGameMode *Mode = GameMode(this); Mode && bFromVillain)
+            Mode->VillainSpeak(ESSVillainCue::Launch);
         return Enemy;
     }
     return nullptr;
@@ -2025,6 +2267,7 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
     // has to be asked for again or the front is asteroids and enemies for the rest of it.
     if (bClimax && Wave == 10 && bCompoundGravitySpawned && !CompoundGravity.IsValid())
         bCompoundGravitySpawned = false;
+    const bool bFallThrough = AdmissionFallThrough.GetValueOnGameThread() != 0;
     if (bClimax && Wave == 10 && (!bCompoundGravitySpawned || !bCompoundAsteroidSpawned || !bCompoundEnemySpawned))
     {
         // Establish each required component before random composition resumes.
@@ -2036,7 +2279,8 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
         const bool bEnemy = Required == ESSWorldKind::Pursuer;
         const float Cost =
             FMath::Max(.1f, bEnemy ? Data->Enemy(Required).PressureCost : Data->Hazard(Required).PressureCost);
-        if (AvailableBudget >= Cost)
+        bool bRefused = bEnemy && !HasEnemyRoom();
+        if (!bRefused && AvailableBudget >= Cost)
         {
             ASSWorldBody *SpawnedRequired =
                 bEnemy ? SpawnEnemy(Required)
@@ -2054,21 +2298,46 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
                 else
                     bCompoundEnemySpawned = true;
             }
+            else
+                bRefused = true;
         }
-        return;
+        // Admitted, or saving for it. A refused piece is asked for again next interval; this one goes to the
+        // random composition below, so a full enemy cap or a crowded front cannot silence the whole climax.
+        if (!bRefused || !bFallThrough)
+            return;
     }
+    auto AdmitEnemy = [this, Data](ESSWorldKind Kind)
+    {
+        if (!HasEnemyRoom())
+            return EAdmission::Refused;
+        const float Cost = FMath::Max(.1f, Data->Enemy(Kind).PressureCost);
+        if (AvailableBudget < Cost)
+            return EAdmission::Holding;
+        if (!SpawnEnemy(Kind))
+            return EAdmission::Refused;
+        AvailableBudget -= Cost;
+        return EAdmission::Admitted;
+    };
+    auto AdmitHazard = [this, Data](ESSWorldKind Kind)
+    {
+        const float Cost = FMath::Max(.1f, Data->Hazard(Kind).PressureCost);
+        if (AvailableBudget < Cost)
+            return EAdmission::Holding;
+        if (!SpawnHazard(Kind, -1.f))
+            return EAdmission::Refused;
+        AvailableBudget -= Cost;
+        return EAdmission::Admitted;
+    };
     const float Roll = Random.FRand();
+    EAdmission Outcome = EAdmission::Refused;
+    bool bChosen = true;
     if ((bClimax && Wave == 5) || (Wave >= FMath::Min(Data->Enemy(ESSWorldKind::Pursuer).MinimumWave,
                                                       Data->Enemy(ESSWorldKind::Flanker).MinimumWave) &&
                                    Roll < (bClimax ? DirectorData.ClimaxEnemyChance : DirectorData.EnemyChance)))
     {
         ESSWorldKind Selected = ESSWorldKind::Pursuer;
         if (SelectContent(this, {ESSWorldKind::Pursuer, ESSWorldKind::Flanker}, Wave, Random, true, Selected))
-        {
-            const float Cost = FMath::Max(.1f, Data->Enemy(Selected).PressureCost);
-            if (AvailableBudget >= Cost && SpawnEnemy(Selected))
-                AvailableBudget -= Cost;
-        }
+            Outcome = AdmitEnemy(Selected);
     }
     else if (Wave >= FMath::Min(Storm.MinimumWave, Gravity.MinimumWave) && !bClimax &&
              Roll > 1.f - DirectorData.FieldChance &&
@@ -2077,29 +2346,41 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
         ESSWorldKind Selected = ESSWorldKind::ElectricalStorm;
         if (SelectContent(this, {ESSWorldKind::ElectricalStorm, ESSWorldKind::GravityAnomaly}, Wave, Random, false,
                           Selected))
-        {
-            const float Cost = FMath::Max(.1f, Data->Hazard(Selected).PressureCost);
-            if (AvailableBudget >= Cost && SpawnHazard(Selected, -1.f))
-                AvailableBudget -= Cost;
-        }
+            Outcome = AdmitHazard(Selected);
     }
     else if (Wave >= Wreckage.MinimumWave && Roll > DirectorData.WreckageSelectionStart &&
              Roll < DirectorData.WreckageSelectionStart + Wreckage.SelectionWeight &&
              AvailableBudget >= Wreckage.PressureCost)
     {
         if (SpawnWreckagePassage())
+        {
             AvailableBudget -= FMath::Max(.1f, Wreckage.PressureCost);
+            Outcome = EAdmission::Admitted;
+        }
     }
-    else if (AvailableBudget >= 1.f)
+    else
+        bChosen = false;
+    // Asteroids are the ordinary admission, and what a refused choice falls through to.
+    if ((!bChosen || (bFallThrough && Outcome == EAdmission::Refused)) && AvailableBudget >= 1.f)
     {
         ESSWorldKind Selected = ESSWorldKind::SmallAsteroid;
         if (SelectContent(this,
                           {ESSWorldKind::MassiveAsteroid, ESSWorldKind::MediumAsteroid, ESSWorldKind::SmallAsteroid},
                           Wave, Random, false, Selected))
         {
-            const float Cost = FMath::Max(.1f, Data->Hazard(Selected).PressureCost);
-            if (AvailableBudget >= Cost && SpawnHazard(Selected, -1.f))
-                AvailableBudget -= Cost;
+            // Now and then the villain throws a volley in place of the single rock, more often each wave. It is
+            // paid for rock by rock; one that cannot be placed fairly leaves the single rock to go instead.
+            const int32 VolleySize = FMath::Clamp(3 + Wave / 2, 3, 8);
+            const float VolleyBase = HazardVolley.GetValueOnGameThread();
+            int32 Volley = 0;
+            float VolleyCost = 0.f;
+            if (VolleyBase > 0.f && HazardTrajectory.GetValueOnGameThread() != 0 &&
+                Random.FRand() < VolleyBase + .012f * Wave)
+                Volley = SpawnVolley(VolleySize, AvailableBudget, &VolleyCost);
+            if (Volley > 0)
+                AvailableBudget -= VolleyCost;
+            else
+                AdmitHazard(Selected);
         }
     }
 }
@@ -2107,7 +2388,7 @@ void USSSurvivalDirectorComponent::TickComponent(float DeltaSeconds, ELevelTick 
 void USSSurvivalDirectorComponent::ResetEncounter()
 {
     SetActive(false);
-    // Called only for station/death transitions. Ordinary Configure never clears the universe.
+    // Called for station/death and the Wave 5 transport boundary. Ordinary Configure never clears the universe.
     for (TActorIterator<ASSWorldBody> It(GetWorld()); It; ++It)
         It->Destroy();
     Spawned.Empty();

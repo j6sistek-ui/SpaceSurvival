@@ -39,6 +39,7 @@ namespace
 // this should land there rather than as a console variable left for someone to find.
 TAutoConsoleVariable<int32> SpeedPostFX(TEXT("ss.SpeedPostFX"), 1,
                                         TEXT("Chromatic fringe and vignette under thrust (0 disables)."));
+constexpr float WormholeTransitSpeed = 30000.f;
 } // namespace
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
@@ -137,6 +138,15 @@ FVector ASSShip::GyroInputFor(FVector2D Steer, float Turn)
 }
 FVector ASSShip::FlightVelocityTarget(float Speed, float Maneuver, const FVector &CurrentVelocity) const
 {
+    if (IsInWormholeTransit())
+    {
+        // Input selects a small offset, not a turn rate that can eventually steer out of the passage.
+        // Keep the centreline in world space so lateral authority cannot accumulate with ship rotation.
+        const FVector Offset = WormholeRight * (WormholeInput.X * 120.f + FMath::Sin(WormholeElapsed * 2.1f) * 65.f) +
+                               WormholeUp * (WormholeInput.Y * 90.f + FMath::Sin(WormholeElapsed * 1.7f) * 45.f);
+        const FVector Across = FVector::VectorPlaneProject(GetActorLocation() - WormholeOrigin, WormholeForward);
+        return WormholeForward * WormholeTransitSpeed + ((Offset - Across) * 5.f).GetClampedToMaxSize(600.f);
+    }
     if (DrivePresentationBraking)
         return FVector::ZeroVector;
     if (ThrottleInput > .01f || DrivePresentationBoosting)
@@ -565,6 +575,11 @@ void ASSShip::BeginPlay()
 void ASSShip::SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttle, bool Boost, bool Brake, float Roll,
                              bool ManualRoll)
 {
+    if (IsInWormholeTransit())
+    {
+        WormholeInput = (Steering + Strafe).GetClampedToMaxSize(1.f);
+        return;
+    }
     RollInput = FMath::Clamp(Roll, -1.f, 1.f);
     bManualRoll = ManualRoll;
     if (FMath::IsNearlyZero(RollInput))
@@ -574,6 +589,61 @@ void ASSShip::SetFlightInput(FVector2D Steering, FVector2D Strafe, float Throttl
     ThrottleInput = FMath::Clamp(Throttle, 0.f, 1.f);
     BoostInput = Boost;
     BrakeInput = Brake;
+}
+bool ASSShip::BeginWormholeTransit(FVector Forward, float Duration)
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (IsInWormholeTransit() || !GI || !GI->Session.run.active || GI->Session.run.phase != SS::Phase::Wormhole ||
+        !Tuning || Moored || Docking || TakingOff || Forward.ContainsNaN() || Forward.IsNearlyZero() ||
+        !FMath::IsFinite(Duration) || Duration <= 0.f)
+        return false;
+    WormholeExitSpeed = FMath::Min(float(GetVelocity().Size()), float(GI->Session.Stats().speed));
+    WormholeOrigin = GetActorLocation();
+    WormholeForward = Forward.GetSafeNormal();
+    const FRotator Rotation = WormholeForward.Rotation();
+    WormholeRight = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
+    WormholeUp = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Z);
+    WormholeElapsed = 0.f;
+    WormholeDuration = Duration;
+    WormholeInput = Steer = StrafeInput = FVector2D::ZeroVector;
+    ThrottleInput = 1.f;
+    BoostInput = BrakeInput = false;
+    RollInput = BumperHeldSeconds = EvadeSeconds = EvadeSide = 0.f;
+    EvadeVelocity = Forces = FVector::ZeroVector;
+    bManualRoll = bLevelAfterEvade = true;
+    FreeLookInput = FreeLookAngles = FVector2D::ZeroVector;
+    CameraBoom->SetRelativeRotation(BaseCameraBoomRotation);
+    SetActorRotation(Rotation, ETeleportType::TeleportPhysics);
+    Velocity = WormholeForward * WormholeTransitSpeed;
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+    {
+        Collision->SetPhysicsLinearVelocity(Velocity);
+        Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+    }
+    return true;
+}
+void ASSShip::EndWormholeTransit()
+{
+    if (!IsInWormholeTransit())
+        return;
+    WormholeDuration = WormholeElapsed = 0.f;
+    WormholeInput = FVector2D::ZeroVector;
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    Velocity = GI && GI->Session.IsFlying() ? WormholeForward * WormholeExitSpeed : FVector::ZeroVector;
+    WormholeExitSpeed = 0.f;
+    Forces = EvadeVelocity = FVector::ZeroVector;
+    BumperHeldSeconds = EvadeSeconds = EvadeSide = 0.f;
+    bLevelAfterEvade = false;
+    SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+    if (Thrusters)
+        Thrusters->SetThrustersInput(FVector::ZeroVector);
+    if (Gyros)
+        Gyros->SetGyrosInput(FVector::ZeroVector);
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+    {
+        Collision->SetPhysicsLinearVelocity(Velocity);
+        Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+    }
 }
 void ASSShip::AddExternalForce(FVector Force)
 {
@@ -628,6 +698,7 @@ void ASSShip::HoldBody(bool Hold)
 }
 void ASSShip::SetDockingTarget(FVector Target, FRotator Rotation, float Duration)
 {
+    EndWormholeTransit();
     TransitionStart = GetActorLocation();
     TransitionRotation = GetActorRotation();
     TransitionElapsed = 0.f;
@@ -645,6 +716,7 @@ void ASSShip::SetDockingTarget(FVector Target, FRotator Rotation, float Duration
 }
 void ASSShip::BeginTakeoff(FVector HoverTarget, FRotator Rotation, float Duration)
 {
+    EndWormholeTransit();
     RefreshFlightPresentation();
     TransitionStart = GetActorLocation();
     TransitionRotation = GetActorRotation();
@@ -670,6 +742,7 @@ bool ASSShip::BeginMooring()
     const auto *GI = GetGameInstance<USSGameInstance>();
     if (Docking || !GI || !GI->Session.IsFlying())
         return false;
+    EndWormholeTransit();
     Moored = true;
     Velocity = Forces = FVector::ZeroVector;
     HoldBody(true);
@@ -698,6 +771,7 @@ float ASSShip::SoftAssistWeight(float Alignment, float ConeDegrees, float Maximu
 }
 void ASSShip::FinishDocking()
 {
+    EndWormholeTransit();
     SetActorLocation(DockTarget);
     SetActorRotation(DockRotation);
     Pilot->SetVisibility(false);
@@ -732,12 +806,16 @@ void ASSShip::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
     if (Docking || TakingOff)
         DockTarget += InOffset;
     TransitionStart += InOffset;
+    WormholeOrigin += InOffset;
 }
 void ASSShip::Tick(float Dt)
 {
     Super::Tick(Dt);
     UpdateEngineMix();
     auto *GI = GetGameInstance<USSGameInstance>();
+    if (IsInWormholeTransit() && (!GI || !GI->Session.run.active || GI->Session.run.phase != SS::Phase::Wormhole ||
+                                  Moored || Docking || TakingOff))
+        EndWormholeTransit();
     if (!GI || !Tuning)
         return;
     auto &S = GI->Session;
@@ -795,6 +873,30 @@ void ASSShip::Tick(float Dt)
         DrivePresentationDamage = float(S.run.damageFeedback);
         return;
     }
+    if (IsInWormholeTransit())
+    {
+        WormholeElapsed += FMath::Max(0.f, Dt);
+        // GameMode owns the live phase clock; entry-frame tick order must not release
+        // control one frame early. Standalone callers retain the duration failsafe.
+        if (!GM && WormholeElapsed >= WormholeDuration)
+            EndWormholeTransit();
+        else
+        {
+            // A tiny attitude response follows the same bounded nudge. Real gyro damping still owns
+            // the physics hull, and the classic hull keeps its swept movement and local rotation path.
+            const FVector DesiredDirection =
+                (WormholeForward +
+                 WormholeRight * (WormholeInput.X * .012f + FMath::Sin(WormholeElapsed * 2.1f) * .004f) +
+                 WormholeUp * (WormholeInput.Y * .009f + FMath::Sin(WormholeElapsed * 1.7f) * .003f))
+                    .GetSafeNormal();
+            const FVector LocalDirection = GetActorTransform().InverseTransformVectorNoScale(DesiredDirection);
+            const float Turn = FMath::Max(1.f, Tuning->FlightSteeringDegrees());
+            Steer = FVector2D(FMath::RadiansToDegrees(FMath::Atan2(LocalDirection.Y, LocalDirection.X)),
+                              FMath::RadiansToDegrees(FMath::Atan2(LocalDirection.Z, LocalDirection.X))) *
+                    (4.f / Turn);
+            Steer = Steer.GetClampedToMaxSize(.12f);
+        }
+    }
     S.TickFlight(Dt, BoostInput && !BrakeInput, InStationZone ? false : BrakeInput, GM && GM->IsDepartingStation());
     if (InStationZone)
     {
@@ -809,7 +911,7 @@ void ASSShip::Tick(float Dt)
     const auto Stats = S.Stats();
     const float BoostFactor = S.run.boosting ? Tuning->BoostMultiplier : 1.f;
     const float EnginePower = S.run.boosting ? 1.f : ThrottleInput;
-    const float Speed = float(Stats.speed) * EnginePower * BoostFactor;
+    const float Speed = IsInWormholeTransit() ? WormholeTransitSpeed : float(Stats.speed) * EnginePower * BoostFactor;
     DrivePresentationPower = S.run.braking ? 0.f : EnginePower;
     DrivePresentationBoosting = S.run.boosting;
     DrivePresentationBraking = S.run.braking;
@@ -875,13 +977,21 @@ void ASSShip::Tick(float Dt)
     const float Bank = -Steer.X * 28.f - StrafeInput.X * 12.f;
     HullMesh->SetRelativeRotation(
         FMath::RInterpTo(HullMesh->GetRelativeRotation(), FRotator(-StrafeInput.Y * 5.f, 0, Bank), Dt, 6.f));
-    CameraBoom->TargetArmLength = FMath::FInterpTo(
-        CameraBoom->TargetArmLength,
-        (FMath::Max(900.f, Tuning->ChaseDistance) + (S.run.boosting ? 110.f : 0.f)) * HullChaseScale, Dt, 3.f);
+    CameraBoom->TargetArmLength =
+        FMath::FInterpTo(CameraBoom->TargetArmLength,
+                         (FMath::Max(900.f, Tuning->ChaseDistance) + (IsInWormholeTransit() ? 180.f
+                                                                      : S.run.boosting      ? 110.f
+                                                                                            : 0.f)) *
+                             HullChaseScale,
+                         Dt, 3.f);
     // Relative to whatever this hull is framed at, rather than to the one hull the 80/86 pair was chosen
     // for - otherwise a wider hull snaps back to the narrow framing on its first frame of boost.
     const float BaseFov = FSSHullDefinition(SelectedHullIdentity()).ChaseFov;
-    Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView, S.run.boosting ? BaseFov + 6.f : BaseFov, Dt, 3.f);
+    Camera->FieldOfView = FMath::FInterpTo(Camera->FieldOfView,
+                                           BaseFov + (IsInWormholeTransit() ? 12.f
+                                                      : S.run.boosting      ? 6.f
+                                                                            : 0.f),
+                                           Dt, 3.f);
     // Boost engaging is an event, but every drive effect in the game is a sustained level, so acceleration
     // reads as a state change rather than as a shove. This is the transient: full on the frame boost is pressed,
     // gone in about a third of a second.
@@ -922,7 +1032,8 @@ void ASSShip::Tick(float Dt)
     {
         // Follows the boost punch and the held boost, not the damage clock: these are speed cues, and a hit
         // already has its own louder language in the shake and the red drive pulse.
-        const float Push = FMath::Clamp(BoostPunch * .6f + (S.run.boosting ? .5f : 0.f), 0.f, 1.f);
+        const float Push =
+            IsInWormholeTransit() ? .8f : FMath::Clamp(BoostPunch * .6f + (S.run.boosting ? .5f : 0.f), 0.f, 1.f);
         Camera->PostProcessBlendWeight = 1.f;
         Camera->PostProcessSettings.bOverride_SceneFringeIntensity = true;
         Camera->PostProcessSettings.SceneFringeIntensity = 1.6f * Push;
@@ -973,7 +1084,7 @@ void ASSShip::Tick(float Dt)
 void ASSShip::RequestDodge(float Side)
 {
     auto *GI = GetGameInstance<USSGameInstance>();
-    if (Moored || Docking || TakingOff || !GI || !GI->Session.Dodge())
+    if (IsInWormholeTransit() || Moored || Docking || TakingOff || !GI || !GI->Session.Dodge())
         return;
     FVector2D Direction =
         FMath::Abs(Side) > .01f ? FVector2D(FMath::Sign(Side), 0) : (StrafeInput.IsNearlyZero() ? Steer : StrafeInput);
@@ -1013,6 +1124,8 @@ void ASSShip::ReceiveDamage(float Amount, SS::DamageType Type)
     ShakeSeconds = 0.f;
     ShakeSeverity = FMath::Clamp((Amount - 8.f) / 60.f, .15f, 1.f);
     GI->Session.ApplyDamage(Amount, Type);
+    if (IsInWormholeTransit() && !GI->Session.IsFlying())
+        EndWormholeTransit();
     UGameplayStatics::PlaySoundAtLocation(
         this, SSAudio::PresentationSound(TEXT("Impact")), GetActorLocation(),
         float(GI->Session.settings.masterVolume * GI->Session.settings.effectsVolume));

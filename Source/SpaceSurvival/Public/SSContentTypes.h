@@ -1532,8 +1532,10 @@ USTRUCT(BlueprintType)
 struct FSSDirectorContentTuning
 {
     GENERATED_BODY()
+    /** September 29, owner: the first ten waves are much harder. Before it: .20 enemy chance, caps 2 and 4,
+     *  budget growth .13. The pre-change values are what to dial back to when Phase 2 softens the opening. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    float EnemyChance = .20f;
+    float EnemyChance = .26f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float ClimaxEnemyChance = .42f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -1549,7 +1551,7 @@ struct FSSDirectorContentTuning
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float BudgetBaseMultiplier = .65f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    float BudgetGrowthPerWave = .13f;
+    float BudgetGrowthPerWave = .16f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float PressureBase = .18f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -1557,11 +1559,46 @@ struct FSSDirectorContentTuning
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float ClimaxPressureBonus = .18f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    int32 EarlyEnemyCap = 2;
+    int32 EarlyEnemyCap = 3;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    int32 LateEnemyCap = 4;
+    int32 LateEnemyCap = 5;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int32 ClimaxEnemyCap = 5;
+};
+
+/** A moment the villain speaks to. Story cues speak whenever they happen; Launch, Hit and Kill are chatter and
+ *  wait out the villain's cooldown and chance, so he never talks over the fight. */
+UENUM(BlueprintType)
+enum class ESSVillainCue : uint8
+{
+    RunStart,
+    WaveStart,
+    Wormhole,
+    Climax,
+    Compound,
+    Retreat,
+    Finale,
+    LowHull,
+    Death,
+    Launch,
+    Hit,
+    Kill,
+    Volley
+};
+
+USTRUCT(BlueprintType)
+struct FSSVillainLine
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    ESSVillainCue Cue = ESSVillainCue::WaveStart;
+    /** 0 speaks at any wave. A wave number speaks only on that wave, and replaces the 0 lines there. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", ClampMax = "10"))
+    int32 Wave = 0;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FString Text;
+    FSSVillainLine() = default;
+    FSSVillainLine(ESSVillainCue InCue, int32 InWave, const TCHAR *InText) : Cue(InCue), Wave(InWave), Text(InText) {}
 };
 
 /** The Director as a character the player chases. Paths name the owner's own assets; an empty or missing
@@ -1570,6 +1607,9 @@ USTRUCT(BlueprintType)
 struct FSSVillainDefinition
 {
     GENERATED_BODY()
+    FSSVillainDefinition();
+    /** A line for this cue on this wave, never Avoid when another will do. Empty when he has nothing to say. */
+    FString LineFor(ESSVillainCue Cue, int32 Wave, FRandomStream &Random, const FString &Avoid) const;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
     FString CraftMeshPath;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
@@ -1581,14 +1621,28 @@ struct FSSVillainDefinition
     /** The fallback is an enemy fighter; at this size it cannot be mistaken for one. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
     float FallbackCraftScale = 12.f;
+    /** The caped knight, once the owner names his files. Empty or missing rides the stand-in below. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
     FString RiderMeshPath;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
     FString RiderClipPath;
+    /** Until then an existing character rides: the heavy trooper the station already stands, and cooks. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
-    FVector RiderOffset = FVector(0.f, 0.f, 150.f);
+    FString StandInRiderMeshPath =
+        TEXT("/Game/Heavy_space_trooper/character/mesh/Heavy_space_trooper_A_Pose.Heavy_space_trooper_A_Pose");
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
-    FRotator RiderRotation = FRotator(0.f, -90.f, 0.f);
+    FString StandInRiderClipPath = TEXT("/Game/Heavy_space_trooper/Demo/animations/ThirdPersonIdle.ThirdPersonIdle");
+    /** From the top centre of the craft's bounds to his soles, in the villain's frame: X along the chase. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FVector RiderOffset = FVector::ZeroVector;
+    /** Mannequin-rigged bodies face +Y; a quarter turn this way faces back down the chase, at the player. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
+    FRotator RiderRotation = FRotator(0.f, 90.f, 0.f);
+    /** His height in the world, in cm, fitted from the body's own bounds. Not carried by the craft's scale,
+     *  so swapping the craft never resizes him. Giant on purpose: a man-sized figure 450 m away is a speck. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body", meta = (ClampMin = "0"))
+    float RiderHeight = 1500.f;
+    /** Used only when RiderHeight is 0: a plain world scale on the body as imported. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
     float RiderScale = 1.f;
     /** Where he holds, measured from the player along the player's heading, in cm. */
@@ -1614,4 +1668,16 @@ struct FSSVillainDefinition
     float LaunchFlare = 4.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Presence", meta = (ClampMin = "0.05"))
     float LaunchFlareSeconds = .45f;
+    /** A placeholder until the owner names him; it heads every caption. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Voice")
+    FString DisplayName = TEXT("Sable");
+    /** What he says, by cue and wave. The constructor authors the defaults; the data asset may replace them. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Voice")
+    TArray<FSSVillainLine> Lines;
+    /** Seconds after any line before chatter may speak again. Story cues ignore it. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Voice", meta = (ClampMin = "0"))
+    float ChatterCooldown = 22.f;
+    /** The chance a chatter cue speaks once the cooldown allows it. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Voice", meta = (ClampMin = "0", ClampMax = "1"))
+    float ChatterChance = .5f;
 };

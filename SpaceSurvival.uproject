@@ -82,6 +82,15 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "UltimateLevelArtTool",
+			"Enabled": false,
+			"TargetAllowList": [
+				"Editor"
+			],
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/ec0988f250ef49ebaf7852cdfe3e6516",
+			"Comment": "Enabled in the separate outpost authoring checkout; this game consumes its baked assets without the editor plugin."
 		}
 	]
 }

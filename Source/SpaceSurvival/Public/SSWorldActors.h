@@ -184,7 +184,7 @@ private:
     TWeakObjectPtr<ASSShip> TrackedShip;
 };
 
-/** Authored Wave 5 passage presentation. The game mode alone owns phase progression. */
+/** Wave 5 transport presentation. The game mode alone owns phase progression. */
 UCLASS(Blueprintable)
 class SPACESURVIVAL_API ASSWormholePassage : public ASSWorldBody
 {
@@ -193,22 +193,22 @@ public:
     ASSWormholePassage();
     void BeginPassage(ASSShip *Ship, float Duration);
     virtual void Tick(float DeltaSeconds) override;
-    virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void ReceiveWeaponHit(float Damage) override {}
     virtual FString GetLabel() const override
     {
-        return TEXT("WORMHOLE PASSAGE · MAINTAIN CONTROL");
+        return TEXT("WORMHOLE TRANSIT / HOLD STEADY");
     }
 
 private:
+    void RestoreEnvironment();
     UPROPERTY()
-    TArray<TObjectPtr<UStaticMeshComponent>> PassageRings;
+    TObjectPtr<UPointLightComponent> TunnelLight;
     TWeakObjectPtr<ASSShip> PassageShip;
+    TArray<TPair<TWeakObjectPtr<AActor>, bool>> SuspendedCollision;
     FVector PassageForward = FVector::ForwardVector;
-    FVector EntryPoint = FVector::ZeroVector;
     float PassageDuration = 8.f;
     float PassageElapsed = 0.f;
-    float CourseLength = 18000.f;
 };
 
 /** Pickup kinds: 0 credits, 1 hull repair, 2 shield, 3 temporary weapon buff. */
@@ -345,11 +345,25 @@ private:
     ASSShip *FindShip() const;
     friend class FSSDirectorAsteroidReadability;
     friend class FSSDirectorTrajectoryFairness;
+    friend class FSSDirectorAdmissionFallThrough;
+    friend class FSSDirectorVillainLaunch;
+    friend class FSSDirectorVolley;
+    friend class FSSDirectorVolleyAdmission;
     bool FindSafeSpawn(float Radius, FVector &Location, bool bField = false) const;
+    /** Where the villain can throw an enemy from: his craft, while it is ahead of the ship by at least the
+     *  reaction lead along the heading and has clear room. False sends the enemy to FindSafeSpawn as before. */
+    bool FindVillainLaunch(float Radius, FVector &Location) const;
+    /** The live enemy count is below this wave's cap. Saving budget cannot make room, so a full cap refuses. */
+    bool HasEnemyRoom() const;
     /** Places a body so it crosses the ship's predicted path after at least the reaction floor. */
     bool FindTrajectorySpawn(float Radius, float Speed, float Lifetime, FVector &Location, FVector &Velocity,
                              FVector2D &ContactWindow);
     ASSWorldBody *SpawnHazard(ESSWorldKind Kind, float Radius);
+    /** A volley of Count rocks thrown together: a small one aimed dead at the pilot inside a ring of rocks that
+     *  fences the path with one slot left open. Never a guaranteed hit: shoot the centre and fly straight on,
+     *  or steer out past the ring. Plans affordable, live-through-arrival members before spawning. Returns the
+     *  rocks admitted and their actual cost; 0 leaves budget and reservations untouched for ordinary admission. */
+    int32 SpawnVolley(int32 Count, float Budget = MAX_flt, float *Spent = nullptr);
     ASSEnemy *SpawnEnemy(ESSWorldKind Kind, ASSEncounterBeacon *Objective = nullptr);
     bool SpawnWreckagePassage();
     void OfferEncounter(ESSEncounterKind Kind);

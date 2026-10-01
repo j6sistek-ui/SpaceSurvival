@@ -1,5 +1,62 @@
 # SpaceSurvival Phase 1 architecture
 
+## Wayfarer station integration — October1
+
+`ASSStation::BuildOutpostHub` streams a tagged runtime copy of the authored Wayfarer Exchange into the existing Survival world for the home hangar and mid-run stations. The apartment remains a nested Level Instance. It adopts the authored physical berth deck through `ASSLandingPad::AdoptDeck`; the real player ship owns boarding geometry, flight, paint and docking. Display-only Phoenix geometry and its stationary cabin proxies are removed from the runtime instance. No authored source actor is deleted on disk.
+
+Mapped outpost terminals route to existing `ESSPanel` services. Home loadout and active-run upgrades/contracts/repair/save retain their existing economy and session rules; informational merchants remain placeholders. The existing every-five-wave cadence, difficulty, save schema and Free Flight isolation do not change. The station waits for initial streaming before exposing walking support. Walkability uses the real authored collision, including the apartment and upper gallery; cleanup disables the outgoing station while streaming unloads it. Ambient routes follow world-origin offsets.
+
+Authored station global lighting and unbound exposure fade with distance, restoring the flight environment outside the outpost. The station sky sphere is hidden so the flight background is shared. Missing private runtime content falls back to the legacy station with an explicit `SS_OUTPOST_FALLBACK` log; `-SSLegacyStation` also selects the legacy station for diagnosis. Focused capture evidence and its physical-input/performance limits belong in the October1 validation receipt and active issue RPT-20260924-01.
+
+## Admission fall-through, villain launches and voice — September29
+
+`USSSurvivalDirectorComponent::TickComponent` sorts every attempt into admitted,
+holding (the budget is short of what was chosen; the interval waits so enemies
+keep their share) or refused (a full enemy cap or no clear room). A refused
+enemy, field or wreckage attempt, and a refused Wave 10 required piece, falls
+through to the ordinary asteroid admission in the same interval, so the Wave 5
+climax no longer goes silent once its five enemies are alive.
+`ss.AdmissionFallThrough=0` restores the old chain.
+
+`SpawnEnemy` launches from `ASSDirectorVillain::FindLaunchPoint` when he is shown,
+placed and ahead of the ship by at least the shared `ReactionLead` along its
+heading, with clear room; every try beside a crowded craft meets the same test.
+Otherwise `FindSafeSpawn` places the enemy as before (`ss.VillainLaunch`). A throw
+only flares him: the craft no longer swings toward each target, which had turned
+his rider away from the pilot once a second. The villain still has no collision,
+budget or threat count. His rider sits on the
+root rather than the scaled craft, fitted to `RiderHeight` from the body's own
+bounds and stood on the top of the craft's bounds; the heavy trooper stands in
+until `RiderMeshPath` names the knight. This supersedes the September 28 "no
+rider" default below.
+
+The asteroid admission can become a volley (`SpawnVolley`, `ss.HazardVolley`): one
+small rock on target inside a ring of rocks that shares its velocity, placed in the
+plane perpendicular to relative travel at a radius that clears the hull envelope,
+one ring position left empty, which does not promise a Phoenix-width corridor.
+Late-wave formations may require shooting the centre; the owner retains their density.
+Fewer than three available threat slots skips the volley and uses ordinary admission;
+clearance can still reduce a planned formation, but a lone centre emits no volley caption.
+The target keeps the ordinary direct-shot reservation and lands
+at least a second after the reaction floor, so shooting it or steering out past the
+ring provides an answer to this formation in isolation. Combined encounter fairness
+still needs play evidence. Admission first plans the clear members, verifies each
+member survives through its pass, and totals their actual authored costs before
+spawning. Only successfully spawned members are charged. A refused formation
+falls back to an ordinary asteroid; it does not extend authored lifetimes.
+
+`ASSGameMode::VillainSpeak` owns his voice: `FSSVillainDefinition::Lines` picks a
+line by cue and wave, story cues always speak, chatter (launch, hit, kill) waits
+out `ChatterCooldown` and `ChatterChance`, and the HUD draws his line on its own
+caption above the pilot's. Every line stays up at least 2 s: chatter that comes
+sooner goes unsaid, and a story cue waits its turn rather than flashing the last
+line off the screen or being lost. A bounded 16-cue FIFO captures each story cue
+with its original wave; identical pending cues coalesce and chatter never queues.
+Hidden live menus freeze reading time and queue delivery. Leaving the run, starting
+a new run or disabling dialogue clears the queue. Nothing he says writes `Announcement` or
+`PilotReaction`. A death leaves his last word on the results panel when
+subtitles are on, like the rest of his dialogue.
+
 ## Aimed Director threats — September28
 
 `SpawnHazard` aims Director asteroids in the actual ship/rock relative-motion
@@ -62,7 +119,7 @@ The UE 5.8 project has one C++20 runtime module and a separate editor module for
 | `USSSurvivalDirectorComponent` | Budget/composition, spatial admission, eligible content, guaranteed encounters and threat cleanup; it does not advance the authoritative wave timer |
 | `ASSWorldBody` | Physical radius, lifetime, relative swept contact, fields, target contract, fragmentation and drops |
 | `ASSEnemy`, `ASSProjectile` | Pursuer/flanker behavior, committed shot telegraph, shared environmental interaction and swept projectile delivery |
-| `ASSWormholePassage` | Wave 5 ring/force presentation and an optional cosmetic Niagara mouth. GameMode/domain own phase transition |
+| `ASSWormholePassage` | Wave 5 enclosed flowing tunnel and entry accent; owns transit lifetime and scenery collision restoration. GameMode/domain own phase transition |
 | `ASSPickup`, `ASSEncounterBeacon` | Physical collection; explicit event/depot acceptance; actual salvage/combat objectives, timeout and reward eligibility |
 | `ASSStation`, `ASSWalker` | Compact native hub/service geometry, selected ship, servicing/vendor motion; third-person movement, authored disembark/deck recovery |
 | `USSAlienGallery`, `ASSGalleryCamera` | Station-only owned-map inspection, asynchronous streaming, temporary noclip camera and original scene/pawn restoration; no save, damage, reward or progression authority |
@@ -79,7 +136,7 @@ The boundaries are real but initial. GameMode still combines substantial UI/orch
 
 GameInstance loads account/settings; GameMode loads `DA_Phase1`, applies its values, starts aligned music layers and opens the home hangar/shell. Starting a run validates a candidate loadout/run ID and durably invalidates an older suspension before exposing the fresh run.
 
-Normal waves follow `Flight → Breathing → next Flight`. Hidden durations vary and breathing is bounded to 20 seconds. Wave 5 follows `Flight → Wormhole → Climax → Approach → Docking → Station`; Wave 10 starts in `Climax` and then uses the same station path. Ordinary wave changes retain world actors. Stations/death reset the encounter.
+Normal waves follow `Flight → Breathing → next Flight`. Hidden durations vary and breathing is bounded to 20 seconds. Wave 5 follows `Flight → Wormhole → Climax → Approach → Docking → Station`; Wave 10 starts in `Climax` and then uses the same station path. Ordinary wave changes retain world actors. Stations/death and the Wave 5 wormhole boundary reset the encounter; the exit explicitly reactivates the Director.
 
 Station approach retains player control until an explicit E/controller A request. The HUD and action share `ASSGameMode::DockingStatus`: the ship must be inside its hull-aware pad radius, at or below unboosted cruise speed, above the deck and clear of both swept legs from its current position to the hover point and then the dock. `ASSStation::CanAssistDocking` uses the actual flight collision shape and includes station collision. Heading is aligned by the admitted three-second transition; proximity alone does not begin docking. ShipCore thrusters, gyros and body simulation are held during that transition. The retained ship finishes with engine/collision/actor tick stopped while its visual rig can complete the landing sequence; the pilot hands off to the walker and possession changes.
 
@@ -203,7 +260,7 @@ The classic path's provisional Starter replacement remains `PlayerShipVisualPass
 
 `DA_CombatVisuals` exposes each role's system, scale, rotation, fixed bounds, lifetime and active limit, plus a shared distance and capacity budget. The authored shared limit is 48 effects within 22,000 cm of the player, with a runtime ceiling of 64; each role is capped at 32 or less and each instance at eight seconds or less. Bolts are capped at six seconds, destruction at 3.2 seconds/four instances and the anomaly at eight seconds/one instance. Manual-release pooling retires effects on completion, expiry, attached-owner destruction or world teardown; if Niagara pooling is disabled, components are destroyed. Components have no collision, overlaps, shadows or decals. Attached effects follow their owner; detached impacts/explosions attach to an actor-owned origin anchor, so world rebasing moves them coherently. Optional particle-scale bindings are validated once; the Sidearm explosion uses its inspected `User.scale` float without applying the size factor twice.
 
-Authoring inspects real Niagara parameters, renderer ownership and dependencies before duplicating selected systems. Only private emitter/material copies are edited: dynamic-light renderers are disabled, chosen weapon systems are local-space, and the explosion retains world-space emission and its original palette. The selected systems contain no particle-collision modules. During passage, the single bounded mouth stays 35 m ahead along the passage direction; counter-offsets preserve the native rings' original world positions, while forces still use the original entry point. Team Beaver's installed Wormhole Portal plugin remains outside project activation: its custom renderer and transit subsystems are not used by the cosmetic mouth, which comes from the inspected Pautinka pack.
+Authoring inspects real Niagara parameters, renderer ownership and dependencies before duplicating selected systems. Only private emitter/material copies are edited: dynamic-light renderers are disabled, chosen weapon systems are local-space, and the explosion retains world-space emission and its original palette. The selected systems contain no particle-collision modules. The Wave 5 passage uses an original inward-facing tunnel mesh and animated unlit material, with a short Pautinka entrance accent. Ship transit fixes forward transport at 300 m/s with small bounded steering/wobble; roll, dodge, brake, boost and free-look cannot derail the passage. Entry/exit update the actual ShipCore body velocity. Ordinary scenery retains its world transforms but is hidden and collision-suspended only while enclosed; exact prior collision flags restore on teardown. A compound-hull sweep selects a clear exit with a 120 m forward lead when the default reveal would intersect scenery. The ship itself retains collision and damage; death, phase changes, timeout and station handoff release transit. The Team Beaver plugin is enabled locally, but its linked-portal renderer is not used by this original tube presentation.
 
 `USSSpaceLookData::AreaRecipes` enables world-stable regional scenery in `ASSSpaceScenery`. Each recipe supplies a complete `FSSSceneryPlacement` landmark group, weighted small/middle mesh candidates, density, anisotropic cluster dimensions, fixed clearance, haze and lighting values. The authored look has four drafts: ObsidianWreck, MineralReach, AlienCauseway and AmberDerelict. A 3×3×3 window retains 27 logical cells around the viewer; the private authoring uses 650,000 cm cells. Returning to a cell reconstructs its original choices. Turns do not move or reseed scenery, and origin rebases preserve logical identity. The scenery seed is assigned when the environment is first created and retained across home departure and docking, so starting a run does not reconstruct the visible region. `ss.SpaceAreaPreview=-1` selects normal spatial styles; 0–3 fixes a recipe independently of run identity. `ss.SpaceAreaVariation` provides reproducible comparison variations.
 

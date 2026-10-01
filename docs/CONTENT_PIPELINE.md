@@ -1,5 +1,11 @@
 # Phase 1 content pipeline
 
+## Wayfarer runtime copy — October1
+
+After building the current Editor, run `Scripts/PrepareWayfarerRuntime.py` with `-RenderOffscreen -ExecutePythonScript=...`. It duplicates `/Game/OutpostSandbox/L_AsteroidOutpost` into `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, retaining the furnished `/Game/BuildingLibrary/Home/L_CrewApartment` instance, and adds stable `OutpostLabel:` actor tags because editor labels are not available in a cooked game. It hashes the original outpost, apartment and flat BuildingSandbox before/after and saves only the runtime duplicate. Do not regenerate `AuthorOutpostSandbox.py` over the owner's composition. The runtime copy and its vendor dependencies remain private local content, not Git source assets.
+
+The cook selects the runtime station and apartment maps explicitly; it does not blanket-cook every newly imported vendor pack. `Content` in the repaired gameplay checkout still shares the owner's local library. Missing vendor roots are linked to the preserved outpost checkout. The original outpost's ULAT authoring plugin remains enabled there; the playable project disables that editor plugin because its installed-engine module rules prevent native builds. Baked runtime meshes/materials do not require ULAT. Keep both authoring maps and their launchers for later owner editing; changes to the source station require an explicitly refreshed runtime copy and package.
+
 ## Approved page 11 UI extension — September22
 
 The owner subsequently authorized native HUD/settings integration beyond the locked main menu. [Exact sources and import workflow](../ContentSource/FigmaUIRefresh/README.md) retain27 PNGs, Keania One TTF/license and source hashes. The guarded importer creates `/Game/SpaceSurvival/UI/Refresh`; original licensed art and main-menu assets stay unchanged. `DirectoriesToAlwaysStageAsUFS` includes only the new Fonts folder. HUD is transparent over the real world; blue vitals chassis/percentage labels are deliberately omitted. Settings/pause use approved layout assets; current service actions reuse the frame without claiming every mockup-specific portrait/composition. Preset selection/remapping remains deferred.
@@ -340,3 +346,10 @@ tail-only smoothing capped at 3 mm and three material slots. Original geometry r
 in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
 and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
 passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.
+
+
+## Original wormhole transit assets
+
+`ContentSource/WormholeTransit/Generate.py` and its HLSL source reproduce the original tube geometry and flowing material. `Scripts/AuthorWormholeTransit.py` imports only `/Game/SpaceSurvival/Meshes/SM_WormholeTunnel` and `/Game/SpaceSurvival/Materials/M_WormholeTransit`; it does not regenerate the rest of the game or alter vendor assets. The generated Unreal assets are tracked and covered by the existing `/Game/SpaceSurvival` cook directory. The optional entrance accent still uses the existing private combat VFX assets.
+
+Run the author script with the installed editor using `-RenderOffscreen -unattended -ExecutePythonScript=<absolute script path>`. Use `Scripts/CaptureSpaceLook.ps1 -WormholeReview -Sequence` for an isolated normal-stat, scripted Wave 5 entrance/transit/exit visual review. Its evidence is a seeded transition and normal chase camera, not a full Wave 5 journey, physical-input, audio or performance acceptance. No additional marketplace purchase or plugin is required.

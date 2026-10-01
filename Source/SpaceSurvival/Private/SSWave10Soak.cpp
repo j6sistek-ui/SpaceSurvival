@@ -1,5 +1,7 @@
 #include "SSWave10Soak.h"
 #include "SSGameMode.h"
+#include "SSDirectorVillain.h"
+#include "SSPhase1Data.h"
 #include "SSGameInstance.h"
 #include "SSHUD.h"
 #include "SSShip.h"
@@ -19,6 +21,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Materials/MaterialInterface.h"
 #include "Engine/SkeletalMesh.h"
 #include "UnrealClient.h"
 #include "Kismet/GameplayStatics.h"
@@ -63,7 +66,7 @@ bool ReadScenario(bool &Station5, bool &Wave1)
     Station5 = Scenario == TEXT("Station5");
     Wave1 = Scenario == TEXT("Wave1");
     return Station5 || Wave1 || Scenario == TEXT("Wave10") || Scenario == TEXT("Gallery") ||
-           Scenario == TEXT("MainMenu");
+           Scenario == TEXT("MainMenu") || Scenario == TEXT("WormholeReview") || Scenario == TEXT("OutpostReview");
 }
 bool IsIsolatedSoak(FString &Root, FString &Token)
 {
@@ -85,6 +88,19 @@ bool IsIsolatedSoak(FString &Root, FString &Token)
         return false;
     FString Scenario;
     FParse::Value(FCommandLine::Get(), TEXT("SSSoakScenario="), Scenario);
+    if (Scenario == TEXT("OutpostReview") && (!FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview"))))
+        return false;
+    if (Scenario == TEXT("WormholeReview") && (!FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals")) ||
+                                               FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability")) ||
+                                               FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview")) ||
+                                               FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")) ||
+                                               FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview"))))
+        return false;
     if (Scenario == TEXT("MainMenu") && (!FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals")) ||
                                          FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence"))))
         return false;
@@ -178,10 +194,14 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     FParse::Value(FCommandLine::Get(), TEXT("SSSoakScenario="), Scenario);
     Soak->Gallery = Scenario == TEXT("Gallery");
     Soak->MainMenu = Scenario == TEXT("MainMenu");
+    Soak->WormholeReview = Scenario == TEXT("WormholeReview");
+    Soak->OutpostReview = Scenario == TEXT("OutpostReview");
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
+    Soak->DirectorReview = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview"));
     Soak->WeaponReadability = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability"));
     Soak->CaptureStationExterior = FParse::Param(FCommandLine::Get(), TEXT("SSStationExteriorReview"));
-    Soak->CaptureSequence = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence"));
+    Soak->CaptureSequence =
+        (Soak->Wave1 || Soak->WormholeReview) && FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence"));
     Soak->OffscreenVisuals = Soak->CaptureVisuals && FParse::Param(FCommandLine::Get(), TEXT("RenderOffscreen"));
     FParse::Value(FCommandLine::Get(), TEXT("SSSoakWalker="), Soak->RequestedWalkerId);
     if (!Soak->RequestedWalkerId.IsEmpty())
@@ -266,7 +286,75 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         }
         Row->SetArrayField(TEXT("titleRows"), Rows);
     }
-    if (auto *GM = Mode.Get(); GM && !Gallery && !MainMenu)
+    if (WormholeReview)
+    {
+        const auto *GM = Mode.Get();
+        const auto *GI = GM->GetGameInstance<USSGameInstance>();
+        const auto *Ship = GM->Ship.Get();
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        Row->SetNumberField(TEXT("wave"), GI->Session.run.wave);
+        Row->SetNumberField(TEXT("phase"), int32(GI->Session.run.phase));
+        Row->SetStringField(TEXT("phaseName"), GI->Session.run.phase == SS::Phase::Wormhole ? TEXT("Wormhole")
+                                               : GI->Session.run.phase == SS::Phase::Climax ? TEXT("Climax")
+                                                                                            : TEXT("Flight"));
+        Row->SetNumberField(TEXT("phaseSeconds"), GI->Session.run.phaseSeconds);
+        Row->SetNumberField(TEXT("phaseDuration"), GI->Session.run.phaseDuration);
+        Row->SetNumberField(TEXT("wormholeReviewSeconds"), WormholeReviewSeconds);
+        Row->SetBoolField(TEXT("shipInWormholeTransit"), Ship->IsInWormholeTransit());
+        Row->SetNumberField(TEXT("shipSpeedCmPerSecond"), Ship->GetVelocity().Size());
+        Row->SetStringField(TEXT("shipTransform"), Ship->GetActorTransform().ToHumanReadableString());
+        Row->SetNumberField(TEXT("hullHealth"), GI->Session.run.hull);
+        Row->SetNumberField(TEXT("shield"), GI->Session.run.shield);
+        Row->SetBoolField(TEXT("normalChaseCamera"), PC && PC->GetViewTarget() == Ship);
+        if (PC && PC->PlayerCameraManager)
+        {
+            Row->SetStringField(TEXT("actualCameraLocation"), PC->PlayerCameraManager->GetCameraLocation().ToString());
+            Row->SetStringField(TEXT("actualCameraRotation"), PC->PlayerCameraManager->GetCameraRotation().ToString());
+            Row->SetNumberField(TEXT("actualCameraFov"), PC->PlayerCameraManager->GetFOVAngle());
+        }
+        Row->SetStringField(TEXT("scriptedSteering"), WormholeRequestedSteering.ToString());
+        Row->SetBoolField(TEXT("scriptedBrake"), WormholeRequestedBrake);
+        Row->SetBoolField(TEXT("tunnelMaterialLoaded"), IsValid(WormholeReviewMaterial));
+        Row->SetStringField(TEXT("expectedTunnelMaterial"), GetPathNameSafe(WormholeReviewMaterial));
+        bool TunnelVisible = false, MaterialMatches = false;
+        for (TActorIterator<ASSWormholePassage> It(GetWorld()); It; ++It)
+            if (!It->IsActorBeingDestroyed())
+            {
+                const auto *Tunnel = It->Visual.Get();
+                auto *Material = Tunnel ? Tunnel->GetMaterial(0) : nullptr;
+                TunnelVisible =
+                    Tunnel && Tunnel->IsVisible() && !It->IsHidden() && Tunnel->GetStaticMesh() == WormholeReviewMesh;
+                MaterialMatches = Material && WormholeReviewMaterial &&
+                                  Material->GetMaterial() == WormholeReviewMaterial->GetMaterial();
+                Row->SetStringField(TEXT("tunnelMesh"), Tunnel ? GetPathNameSafe(Tunnel->GetStaticMesh()) : FString());
+                Row->SetStringField(TEXT("tunnelMaterial"), GetPathNameSafe(Material));
+                Row->SetStringField(TEXT("tunnelActor"), It->GetName());
+                break;
+            }
+        Row->SetBoolField(TEXT("tunnelVisible"), TunnelVisible);
+        Row->SetBoolField(TEXT("tunnelMaterialMatchesExpected"), MaterialMatches);
+    }
+    if (DirectorReview)
+    {
+        const auto *GM = Mode.Get();
+        Row->SetStringField(TEXT("loadedTuning"), GetPathNameSafe(GM->Tuning));
+        Row->SetNumberField(TEXT("enemyChance"), GM->Tuning->DirectorContent.EnemyChance);
+        Row->SetNumberField(TEXT("earlyEnemyCap"), GM->Tuning->DirectorContent.EarlyEnemyCap);
+        Row->SetNumberField(TEXT("lateEnemyCap"), GM->Tuning->DirectorContent.LateEnemyCap);
+        Row->SetNumberField(TEXT("budgetGrowthPerWave"), GM->Tuning->DirectorContent.BudgetGrowthPerWave);
+        Row->SetBoolField(TEXT("transientReviewCamera"), FCString::Strcmp(Name, TEXT("VillainCloseup")) == 0);
+        for (TActorIterator<ASSDirectorVillain> It(GetWorld()); It; ++It)
+        {
+            Row->SetStringField(TEXT("villainRiderMesh"), GetPathNameSafe(It->Rider->GetSkeletalMeshAsset()));
+            Row->SetStringField(TEXT("villainRiderTransform"),
+                                It->Rider->GetComponentTransform().ToHumanReadableString());
+            Row->SetBoolField(TEXT("villainRiderVisible"), It->IsPresent() && It->Rider->IsVisible());
+            if (auto *Animation = It->Rider->GetSingleNodeInstance())
+                Row->SetStringField(TEXT("villainRiderAnimation"), GetPathNameSafe(Animation->GetCurrentAsset()));
+            break;
+        }
+    }
+    if (auto *GM = Mode.Get(); GM && !Gallery && !MainMenu && !OutpostReview)
     {
         if (WeaponReadability)
         {
@@ -332,7 +420,7 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             Row->SetNumberField(TEXT("horizontalFov"), PC->PlayerCameraManager->GetFOVAngle());
         }
         const bool ReviewView = IsValid(StationReviewCamera) && PC && PC->GetViewTarget() == StationReviewCamera;
-        Row->SetBoolField(TEXT("scriptedStationReviewCamera"), ReviewView);
+        Row->SetBoolField(TEXT("scriptedStationReviewCamera"), ReviewView && !DirectorReview);
         if (ReviewView)
         {
             Row->SetStringField(TEXT("cameraTransform"),
@@ -340,7 +428,9 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             Row->SetNumberField(TEXT("horizontalFov"), StationReviewCamera->GetCameraComponent()->FieldOfView);
             Row->SetStringField(
                 TEXT("reviewCameraLimit"),
-                TEXT("Scripted visual inspection viewpoint; the actual walking pawn remains possessed."));
+                DirectorReview
+                    ? TEXT("Scripted villain inspection viewpoint; the actual ship remains possessed.")
+                    : TEXT("Scripted visual inspection viewpoint; the actual walking pawn remains possessed."));
         }
         Row->SetBoolField(TEXT("pilotVisible"), GM->Ship->Pilot->IsVisible());
         Row->SetStringField(TEXT("pilotTransform"), Mesh->GetComponentTransform().ToHumanReadableString());
@@ -364,6 +454,30 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         };
         RecordBone(TEXT("leftWrist"), Hero.LeftHandBone);
         RecordBone(TEXT("rightWrist"), Hero.RightHandBone);
+    }
+    if (OutpostReview)
+    {
+        const auto *GM = Mode.Get();
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        Row->SetBoolField(TEXT("runtimeOutpost"), GM && GM->Hub && GM->Hub->IsUsingOutpost());
+        Row->SetStringField(TEXT("possessedPawn"), PC ? GetPathNameSafe(PC->GetPawn()) : TEXT("None"));
+        Row->SetNumberField(TEXT("panel"), GM ? int32(GM->Panel) : -1);
+        Row->SetNumberField(TEXT("floorAndClearanceSamples"), OutpostFloorChecks);
+        Row->SetNumberField(TEXT("servicePanelsOpened"), OutpostServicesChecked);
+        Row->SetNumberField(TEXT("pitStopPanelsOpened"), OutpostPitStopServicesChecked);
+        if (const auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr)
+        {
+            Row->SetNumberField(TEXT("wave"), GI->Session.run.wave);
+            Row->SetBoolField(TEXT("activeRun"), GI->Session.run.active);
+            Row->SetBoolField(TEXT("stationPhase"), GI->Session.run.phase == SS::Phase::Station);
+        }
+        Row->SetBoolField(TEXT("scriptedInspectionCamera"),
+                          StationReviewCamera && PC && PC->GetViewTarget() == StationReviewCamera);
+        if (PC && PC->PlayerCameraManager)
+        {
+            Row->SetStringField(TEXT("cameraLocation"), PC->PlayerCameraManager->GetCameraLocation().ToString());
+            Row->SetStringField(TEXT("cameraRotation"), PC->PlayerCameraManager->GetCameraRotation().ToString());
+        }
     }
     if (Gallery)
     {
@@ -439,6 +553,62 @@ void ASSWave10Soak::CaptureCombatAfterKill()
     CaptureVisual(TEXT("CombatImpact"), float(FlightSeconds));
 #endif
 }
+void ASSWave10Soak::CaptureDirectorReview()
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    if (!DirectorReview || FlightSeconds < 26. || FScreenshotRequest::IsScreenshotRequested())
+        return;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (!PC)
+        return;
+    if (VisualNames.Contains(TEXT("VillainCloseup")))
+    {
+        if (PreviousReviewViewTarget.IsValid())
+        {
+            PC->SetViewTarget(PreviousReviewViewTarget.Get());
+            PreviousReviewViewTarget.Reset();
+            if (auto *HUD = PC->GetHUD())
+                HUD->bShowHUD = DirectorReviewHUDWasVisible;
+        }
+        return;
+    }
+    for (TActorIterator<ASSDirectorVillain> It(GetWorld()); It; ++It)
+    {
+        if (!It->IsPresent() || !It->Rider->GetSkeletalMeshAsset())
+        {
+            Stop(TEXT("Director review requires the actual visible rider."));
+            return;
+        }
+        if (!StationReviewCamera)
+        {
+            PreviousReviewViewTarget = PC->GetViewTarget();
+            FActorSpawnParameters Parameters;
+            Parameters.ObjectFlags |= RF_Transient;
+            StationReviewCamera = GetWorld()->SpawnActor<ACameraActor>(Parameters);
+            if (!StationReviewCamera)
+                return;
+            StationReviewCamera->GetCameraComponent()->SetFieldOfView(60.f);
+            PC->SetViewTarget(StationReviewCamera);
+            if (auto *HUD = PC->GetHUD())
+            {
+                DirectorReviewHUDWasVisible = HUD->bShowHUD;
+                HUD->bShowHUD = false;
+            }
+            ReviewCameraReadyAt = FlightSeconds + 1.;
+        }
+        const FVector Target = It->Rider->Bounds.Origin;
+        const float Size = FMath::Max(1500.f, It->Rider->Bounds.BoxExtent.Z * 2.f);
+        const FVector Camera = Target - It->GetActorForwardVector() * Size * 1.8f +
+                               It->GetActorRightVector() * Size * .8f + FVector(0, 0, Size * .15f);
+        StationReviewCamera->SetActorLocationAndRotation(Camera, (Target - Camera).Rotation());
+        if (FlightSeconds >= ReviewCameraReadyAt)
+            CaptureVisual(TEXT("VillainCloseup"), float(FlightSeconds));
+        return;
+    }
+    Stop(TEXT("Director review did not find the runtime villain."));
+#endif
+}
+
 void ASSWave10Soak::CaptureStationReview(const TCHAR *Name, FVector LocalCamera, FVector LocalTarget)
 {
 #if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
@@ -1128,6 +1298,157 @@ void ASSWave10Soak::TickWalkerMotion(float Dt)
     }
 #endif
 }
+void ASSWave10Soak::TickWormholeReview(float Dt)
+{
+#if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
+    auto *GM = Mode.Get();
+    auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (!GI || !PC || !GM->Director || !NoSaveSlots())
+    {
+        Stop(TEXT("Wormhole review lost its isolated session or player."));
+        return;
+    }
+    auto &S = GI->Session;
+    if (!Started)
+    {
+        // Preload the actual passage assets. The GameMode still owns spawning and BeginPassage.
+        WormholeReviewMesh =
+            LoadObject<UStaticMesh>(nullptr, TEXT("/Game/SpaceSurvival/Meshes/SM_WormholeTunnel.SM_WormholeTunnel"));
+        WormholeReviewMaterial = LoadObject<UMaterialInterface>(
+            nullptr, TEXT("/Game/SpaceSurvival/Materials/M_WormholeTransit.M_WormholeTransit"));
+        if (!WormholeReviewMesh || !WormholeReviewMaterial || !S.StartRun("5eade000000000000000000000000005"))
+        {
+            Stop(TEXT("Wormhole review requires the authored tunnel assets and a fresh normal run."));
+            return;
+        }
+        WormholeStartingMaxHull = S.Stats().maxHull;
+        WormholeStartingMaxShield = S.Stats().maxShield;
+        GM->PreviousPhase = GM->PreviousWave = -1;
+        GM->Director->ResetEncounter();
+        GM->SpawnFlight(FVector(0, 0, 7000), FRotator::ZeroRotator);
+        GM->Director->SetActive(false);
+        Started = true;
+        return;
+    }
+    auto *Ship = GM->Ship.Get();
+    if (!S.run.active || !IsValid(Ship) || PC->GetViewTarget() != Ship ||
+        !FMath::IsNearlyEqual(S.tuning.wormholeSeconds, 8.0) || !FMath::IsNearlyEqual(S.tuning.climaxSeconds, 40.0) ||
+        !FMath::IsNearlyEqual(float(S.Stats().maxHull), WormholeStartingMaxHull) ||
+        !FMath::IsNearlyEqual(float(S.Stats().maxShield), WormholeStartingMaxShield))
+    {
+        Stop(TEXT("Wormhole review died, lost the normal camera or changed normal stats/durations."));
+        return;
+    }
+    ++CapturedFrames;
+    AllFramesForeground &= FApp::HasFocus();
+    FlightSeconds += Dt;
+    int32 PendingAssets = 0, PendingShaders = 0;
+#if WITH_EDITOR
+    PendingAssets = FAssetCompilingManager::Get().GetNumRemainingAssets();
+    PendingShaders = GShaderCompilingManager ? GShaderCompilingManager->GetNumRemainingJobs() : 0;
+#endif
+    if (!WormholeReviewSeeded)
+    {
+        // Warm rendering without admitting enemies or consuming the flight phase. No durability boost.
+        GM->Director->SetActive(false);
+        Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+        S.run.phaseSeconds = 0;
+        WormholeWarmupPeakAssets = FMath::Max(WormholeWarmupPeakAssets, PendingAssets);
+        WormholeWarmupPeakShaders = FMath::Max(WormholeWarmupPeakShaders, PendingShaders);
+        WormholeWarmQuietSeconds = PendingAssets + PendingShaders == 0 ? WormholeWarmQuietSeconds + Dt : 0;
+        if (FlightSeconds > 60)
+        {
+            Stop(TEXT("Wormhole asset warmup exceeded its bounded window."));
+            return;
+        }
+        if (FlightSeconds < 3 || WormholeWarmQuietSeconds < 1)
+            return;
+        WormholeRenderingReadyAt = FlightSeconds;
+        // Preserve StartRun's normal random duration, adding the same per-wave growth as BeginWave.
+        S.run.wave = 5;
+        S.run.wavesCompleted = 4;
+        S.run.phaseDuration += FMath::Max(0.0, S.tuning.waveSecondsGrowth) * 4;
+        S.run.phaseSeconds = FMath::Max(0.0, S.run.phaseDuration - 2.0);
+        GM->PreviousPhase = int32(SS::Phase::Flight);
+        GM->PreviousWave = -1;
+        GM->bWormholeArrived = false;
+        GM->Director->ResetEncounter();
+        GM->Director->Configure(5, false);
+        GM->Director->SetActive(true);
+        WormholeReviewSeeded = true;
+        NextSequenceSeconds = 0;
+        return;
+    }
+    WormholeReviewSeconds += Dt;
+    const auto Phase = S.run.phase;
+    if (S.run.wave != 5 || (Phase != SS::Phase::Flight && Phase != SS::Phase::Wormhole && Phase != SS::Phase::Climax))
+    {
+        Stop(TEXT("Wormhole review left its seeded Wave 5 transition."));
+        return;
+    }
+    const bool InTransit = Phase == SS::Phase::Wormhole;
+    if (Ship->IsInWormholeTransit() != InTransit)
+    {
+        Stop(TEXT("Real GameMode phase and ship transit control disagreed."));
+        return;
+    }
+    SawFlightWave |= Phase == SS::Phase::Flight;
+    SawWormhole |= InTransit;
+    SawClimax |= Phase == SS::Phase::Climax;
+    WormholeSeconds += InTransit ? Dt : 0;
+    ClimaxSeconds += Phase == SS::Phase::Climax ? Dt : 0;
+    // Ordinary input attempts are intentionally nonzero during near-locked transit, then on exit.
+    WormholeRequestedSteering = InTransit                    ? FVector2D(.7f, -.4f)
+                                : Phase == SS::Phase::Climax ? FVector2D(.35f, .12f)
+                                                             : FVector2D::ZeroVector;
+    WormholeRequestedBrake = InTransit || (Phase == SS::Phase::Climax && S.run.phaseSeconds < 1.5);
+    Ship->SetFlightInput(WormholeRequestedSteering, FVector2D::ZeroVector, 1.f, false, WormholeRequestedBrake);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, Scenario, 5, ECsvCustomStatOp::Set);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, Phase, int32(Phase), ECsvCustomStatOp::Set);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, Fixture, 1, ECsvCustomStatOp::Set);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, SimulationDeltaMs, Dt * 1000.f, ECsvCustomStatOp::Set);
+
+    const TCHAR *Names[] = {TEXT("Entrance"), TEXT("Transit"), TEXT("DeepTransit"), TEXT("Exit")};
+    const double Times[] = {.25, 2., 5.5, 2.5};
+    const double Deadlines[] = {1.5, 3.5, 7.7, 4.};
+    for (int32 Index = 0; Index < 4; ++Index)
+    {
+        if (VisualNames.Contains(Names[Index]))
+            continue;
+        if ((Index < 3 && Phase == SS::Phase::Climax) ||
+            ((Index < 3 ? InTransit : Phase == SS::Phase::Climax) && S.run.phaseSeconds > Deadlines[Index]))
+        {
+            Stop(TEXT("Wormhole screenshot missed its phase window; shader/readback stalls are not accepted."));
+            return;
+        }
+        if ((Index < 3 ? InTransit : Phase == SS::Phase::Climax) && S.run.phaseSeconds >= Times[Index] &&
+            PendingAssets + PendingShaders == 0)
+            CaptureVisual(Names[Index], float(S.run.phaseSeconds));
+    }
+    if (CaptureSequence && (Phase != SS::Phase::Climax || S.run.phaseSeconds < 3) &&
+        WormholeReviewSeconds >= NextSequenceSeconds && PendingAssets + PendingShaders == 0 &&
+        !FScreenshotRequest::IsScreenshotRequested())
+    {
+        const FString Name = FString::Printf(TEXT("Sequence_%03d"), SequenceIndex);
+        CaptureVisual(*Name, float(S.run.phaseSeconds));
+        if (VisualNames.Contains(Name))
+        {
+            ++SequenceIndex;
+            // A target interval, never fixed timestep or catch-up duplicate frames.
+            NextSequenceSeconds = WormholeReviewSeconds + .125;
+        }
+    }
+    if (Phase == SS::Phase::Climax && S.run.phaseSeconds >= 3 && !FScreenshotRequest::IsScreenshotRequested())
+    {
+        const bool Covered = SawFlightWave && SawWormhole && SawClimax && VisualNames.Contains(TEXT("Entrance")) &&
+                             VisualNames.Contains(TEXT("Transit")) && VisualNames.Contains(TEXT("DeepTransit")) &&
+                             VisualNames.Contains(TEXT("Exit")) &&
+                             IFileManager::Get().FileExists(*(Root / TEXT("Exit.png")));
+        Stop(Covered ? TEXT("") : TEXT("Wormhole review did not complete all four real transition stages."));
+    }
+#endif
+}
 void ASSWave10Soak::Tick(float Dt)
 {
     Super::Tick(Dt);
@@ -1164,10 +1485,11 @@ void ASSWave10Soak::Tick(float Dt)
     auto *GM = Mode.Get();
     auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
     if (!GI ||
-        FPlatformTime::Seconds() - StartedAt > (Gallery    ? 240
-                                                : Wave1    ? 90
-                                                : Station5 ? 240
-                                                           : 180) ||
+        FPlatformTime::Seconds() - StartedAt > (OutpostReview ? 300
+                                                : Gallery     ? 240
+                                                : Wave1       ? 90
+                                                : Station5    ? 240
+                                                              : 180) ||
         !FMath::IsNearlyEqual(GetWorld()->GetWorldSettings()->GetEffectiveTimeDilation(), 1.f) ||
         FApp::UseFixedTimeStep() || (GEngine && GEngine->bUseFixedFrameRate))
     {
@@ -1184,6 +1506,16 @@ void ASSWave10Soak::Tick(float Dt)
     if (MainMenu)
     {
         TickMainMenu(Dt);
+        return;
+    }
+    if (OutpostReview)
+    {
+        TickOutpostReview(Dt);
+        return;
+    }
+    if (WormholeReview)
+    {
+        TickWormholeReview(Dt);
         return;
     }
     auto &S = GI->Session;
@@ -1288,6 +1620,7 @@ void ASSWave10Soak::Tick(float Dt)
             // Actual request timestamps remain in the receipt; no fixed timestep or interpolation.
             NextSequenceSeconds = FlightSeconds + .25;
         }
+        CaptureDirectorReview();
         if (Threats > GM->Director->MaximumActiveThreats)
             Stop(TEXT("Director active threat cap exceeded during Wave 1 visual fixture."));
         else if (FlightSeconds >= 29)
@@ -1632,6 +1965,11 @@ void ASSWave10Soak::WriteResultAndExit()
             Expected = {TEXT("MainMenuNormal"), TEXT("MainMenuNewGame"), TEXT("MainMenuSettings")};
         else if (Gallery)
             Expected = {TEXT("GalleryDoorway"), TEXT("GalleryShowcase"), TEXT("GalleryAssets"), TEXT("GalleryReturn")};
+        else if (OutpostReview)
+            Expected = {TEXT("OutpostPad"),    TEXT("OutpostServices"), TEXT("OutpostApartment"),
+                        TEXT("OutpostFlight"), TEXT("OutpostReturn"),   TEXT("OutpostPitStop")};
+        else if (WormholeReview)
+            Expected = {TEXT("Entrance"), TEXT("Transit"), TEXT("DeepTransit"), TEXT("Exit")};
         else if (Station5)
         {
             Expected = {TEXT("Flight"), TEXT("Climax"), TEXT("Wormhole"), TEXT("Approach"), TEXT("Docking")};
@@ -1650,11 +1988,14 @@ void ASSWave10Soak::WriteResultAndExit()
         }
         else if (WeaponReadability)
             Expected = {TEXT("RapidShot"), TEXT("RapidHit"), TEXT("CannonShot"), TEXT("CannonHit")};
+        else if (DirectorReview)
+            Expected = {TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake"), TEXT("VillainCloseup")};
         else if (Wave1)
             Expected = {TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")};
         else
             Expected = {TEXT("Flight"), TEXT("Climax"), TEXT("Compound"), TEXT("Approach")};
-        if (VisualRecords.Num() != Expected.Num() + SequenceIndex || (CaptureSequence && SequenceIndex < 40))
+        if (VisualRecords.Num() != Expected.Num() + SequenceIndex ||
+            (CaptureSequence && SequenceIndex < (WormholeReview ? 16 : 40)))
             Failure = TEXT("Visual fixture did not request every required scene stage.");
         for (const FString &Name : Expected)
             if (!VisualNames.Contains(Name))
@@ -1669,14 +2010,18 @@ void ASSWave10Soak::WriteResultAndExit()
         Failure = TEXT("Gallery return/session checks failed.");
     if (Failure.IsEmpty() && MainMenu && !MainMenuStatePreserved)
         Failure = TEXT("Title menu account/session preservation failed.");
+    if (Failure.IsEmpty() && OutpostReview && !OutpostReviewComplete)
+        Failure = TEXT("Outpost integration did not complete all scene, service, departure and return checks.");
     const FString Csv = CaptureResult.Get();
     const bool Success =
         Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && (AllFramesForeground || OffscreenVisuals);
     auto Result = MakeShared<FJsonObject>();
     Result->SetStringField(TEXT("evidenceType"), FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview"))
                                                      ? TEXT("UI_REFRESH_RENDERED_REVIEW")
-                                                 : MainMenu          ? TEXT("TITLE_MENU_RENDERED_REVIEW")
-                                                 : Gallery           ? TEXT("ALIEN_GALLERY_SCRIPTED_VISUAL_REVIEW")
+                                                 : MainMenu       ? TEXT("TITLE_MENU_RENDERED_REVIEW")
+                                                 : Gallery        ? TEXT("ALIEN_GALLERY_SCRIPTED_VISUAL_REVIEW")
+                                                 : OutpostReview  ? TEXT("OUTPOST_SCRIPTED_INTEGRATION_REVIEW")
+                                                 : WormholeReview ? TEXT("WORMHOLE_SEEDED_VISUAL_REVIEW_NORMAL_STATS")
                                                  : WeaponReadability ? TEXT("WEAPON_READABILITY_SCRIPTED_NORMAL_STATS")
                                                  : Wave1             ? TEXT("WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS")
                                                  : Station5 ? TEXT("RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY")
@@ -1686,6 +2031,31 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("stationExteriorReview"), CaptureStationExterior);
     Result->SetBoolField(TEXT("weaponReadabilityReview"), WeaponReadability);
     Result->SetBoolField(TEXT("mainMenuReview"), MainMenu);
+    Result->SetBoolField(TEXT("wormholeReview"), WormholeReview);
+    if (OutpostReview)
+    {
+        Result->SetBoolField(TEXT("outpostReviewComplete"), OutpostReviewComplete);
+        Result->SetBoolField(TEXT("outpostFreeFlightDeparture"), OutpostDepartureVerified);
+        Result->SetBoolField(TEXT("outpostFreeFlightReturn"), OutpostReturnVerified);
+        Result->SetNumberField(TEXT("outpostServicesChecked"), OutpostServicesChecked);
+        Result->SetNumberField(TEXT("outpostPitStopServicesChecked"), OutpostPitStopServicesChecked);
+        Result->SetBoolField(TEXT("outpostSeededPitStopSupported"), OutpostPitStopSupported);
+        Result->SetNumberField(TEXT("outpostFloorAndClearanceSamples"), OutpostFloorChecks);
+    }
+    if (WormholeReview)
+    {
+        Result->SetBoolField(TEXT("wormholeSeededFlight"), WormholeReviewSeeded);
+        Result->SetNumberField(TEXT("wormholeRenderingReadyAtSeconds"), WormholeRenderingReadyAt);
+        Result->SetNumberField(TEXT("wormholeWarmupPeakPendingAssets"), WormholeWarmupPeakAssets);
+        Result->SetNumberField(TEXT("wormholeWarmupPeakPendingShaders"), WormholeWarmupPeakShaders);
+        Result->SetNumberField(TEXT("startingMaxHull"), WormholeStartingMaxHull);
+        Result->SetNumberField(TEXT("startingMaxShield"), WormholeStartingMaxShield);
+        Result->SetNumberField(TEXT("sequenceTargetFps"), CaptureSequence ? 8 : 0);
+        Result->SetNumberField(TEXT("sequenceFrames"), SequenceIndex);
+        Result->SetStringField(TEXT("wormholeInputPath"),
+                               TEXT("Scripted Ship.SetFlightInput: steering/brake during transit, steering/brake "
+                                    "then brake release after exit. No physical input or camera override."));
+    }
     Result->SetBoolField(TEXT("uiRefreshReview"), FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")));
     Result->SetBoolField(TEXT("mainMenuStatePreserved"), MainMenuStatePreserved);
     if (WeaponReadability)
@@ -1713,16 +2083,18 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("allFixtureFramesForeground"), AllFramesForeground);
     Result->SetBoolField(TEXT("offscreenVisualOnly"), OffscreenVisuals);
     Result->SetBoolField(TEXT("suitableForPerformanceFinding"), !Wave1 && !CaptureVisuals && AllFramesForeground);
-    Result->SetStringField(TEXT("scenario"), MainMenu   ? TEXT("MainMenu")
-                                             : Gallery  ? TEXT("Gallery")
-                                             : Wave1    ? TEXT("Wave1")
-                                             : Station5 ? TEXT("Station5")
-                                                        : TEXT("Wave10"));
+    Result->SetStringField(TEXT("scenario"), MainMenu         ? TEXT("MainMenu")
+                                             : Gallery        ? TEXT("Gallery")
+                                             : OutpostReview  ? TEXT("OutpostReview")
+                                             : WormholeReview ? TEXT("WormholeReview")
+                                             : Wave1          ? TEXT("Wave1")
+                                             : Station5       ? TEXT("Station5")
+                                                              : TEXT("Wave10"));
     Result->SetBoolField(TEXT("galleryReturned"), GalleryReturned);
     Result->SetBoolField(TEXT("galleryRunPreserved"), GalleryRunPreserved);
     Result->SetBoolField(TEXT("sawWave1"), Wave1 && SawFlightWave);
-    Result->SetBoolField(TEXT("sawWave9"), !Wave1 && !Station5 && SawFlightWave);
-    Result->SetBoolField(TEXT("sawWave5"), Station5 && SawFlightWave);
+    Result->SetBoolField(TEXT("sawWave9"), !Wave1 && !Station5 && !WormholeReview && SawFlightWave);
+    Result->SetBoolField(TEXT("sawWave5"), (Station5 || WormholeReview) && SawFlightWave);
     Result->SetBoolField(TEXT("sawWormhole"), SawWormhole);
     Result->SetBoolField(TEXT("sawDocking"), SawDocking);
     Result->SetBoolField(TEXT("requestedDocking"), RequestedDocking);
@@ -1757,7 +2129,17 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetNumberField(TEXT("approachSimulationSeconds"), ApproachSeconds);
     Result->SetNumberField(TEXT("peakThreats"), PeakThreats);
     Result->SetNumberField(TEXT("wallSeconds"), FPlatformTime::Seconds() - StartedAt);
-    if (MainMenu)
+    if (OutpostReview)
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("Fresh isolated home. Scripted walker placements at real service approaches, normal Interact panel "
+                 "openings; sampled floor and upper-capsule clearance along the apartment route (doors excluded from "
+                 "geometry probes). Authored cameras, ordinary StartFreeFlight/takeoff and EndFreeFlight return, exact "
+                 "account/run roundtrip. Then isolated Wave5 Station seeding, EnterStation and four active-run service "
+                 "panels without selecting any save/purchase action. No physical input, actual apartment traversal, "
+                 "landing approach, full run or "
+                 "performance claim."));
+    else if (MainMenu)
         Result->SetStringField(TEXT("fixture"),
                                TEXT("Fresh inactive startup title, exact imported Figma textures required. "
                                     "Synthetic no-selection/NewGame/Settings focus; real rendered button centers "
@@ -1784,6 +2166,15 @@ void ASSWave10Soak::WriteResultAndExit()
                  "Screenshot-only evidence, not physical input, natural balance or performance acceptance. "
                  "SSShipRefresh optionally selects candidate hull; each screenshot records actual asset and pilot "
                  "visibility."));
+    else if (WormholeReview)
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("Normal fresh starter stats, no upgrades, utility, hull/shield increase or invulnerability. "
+                 "Flight pre-roll pauses Director/phase age for asset warmup, then seeds Wave 5 Flight with 2s "
+                 "remaining and restores normal admission. Real Session/GameMode enters the 8s wormhole and "
+                 "climax; capture ends after 3s of exit. Four normal chase-camera stages; optional 8fps-target "
+                 "readbacks retain actual timestamps. No completed 10-wave journey, cold-first-transition, "
+                 "natural balance, physical input, audio or performance claim."));
     else if (Station5)
         Result->SetStringField(
             TEXT("fixture"),

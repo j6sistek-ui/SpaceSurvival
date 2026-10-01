@@ -34,9 +34,12 @@ ASSDirectorVillain::ASSDirectorVillain()
     Craft->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Craft->SetGenerateOverlapEvents(false);
     Rider = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rider"));
-    Rider->SetupAttachment(Craft);
+    // On the root, not the craft: a rider carried by the craft's scale would change size with every craft.
+    Rider->SetupAttachment(Root);
     Rider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Rider->SetGenerateOverlapEvents(false);
+    Rider->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+    Rider->bEnableUpdateRateOptimizations = true;
     Glow = CreateDefaultSubobject<UPointLightComponent>(TEXT("Glow"));
     Glow->SetupAttachment(Root);
     Glow->SetIntensityUnits(ELightUnits::Lumens);
@@ -64,23 +67,36 @@ void ASSDirectorVillain::ApplyDefinition()
     Craft->SetRelativeRotation(Data.CraftRotation);
     Craft->SetRelativeScale3D(FVector(bOwnCraft && Mesh ? Data.CraftScale : Data.FallbackCraftScale));
 
-    USkeletalMesh *Body = FSSHeroDefinition::AssetInstalled(Data.RiderMeshPath)
-                              ? LoadObject<USkeletalMesh>(nullptr, *Data.RiderMeshPath)
-                              : nullptr;
-    Rider->SetSkeletalMesh(Body);
+    // The knight once his files are named; until then an existing character rides in his place. Either is
+    // fitted to a height in the world and stood on the top of the craft's bounds, so swapping the craft moves
+    // his feet but never resizes him.
+    const bool bKnight = FSSHeroDefinition::AssetInstalled(Data.RiderMeshPath);
+    const FString &BodyPath = bKnight ? Data.RiderMeshPath : Data.StandInRiderMeshPath;
+    const FString &ClipPath = bKnight ? Data.RiderClipPath : Data.StandInRiderClipPath;
+    USkeletalMesh *Body =
+        FSSHeroDefinition::AssetInstalled(BodyPath) ? LoadObject<USkeletalMesh>(nullptr, *BodyPath) : nullptr;
+    const FBoxSphereBounds BodyBounds = Body ? Body->GetBounds() : FBoxSphereBounds(ForceInit);
+    const float NativeHeight = BodyBounds.BoxExtent.Z * 2.f;
+    if (!FMath::IsFinite(NativeHeight) || NativeHeight <= 1.f)
+        Body = nullptr;
+    Rider->SetSkeletalMeshAsset(Body);
     Rider->SetVisibility(Body != nullptr);
     if (Body)
     {
-        // The rider is placed against the craft's unscaled geometry, so the craft's scale carries him with it.
-        Rider->SetRelativeLocation(Data.RiderOffset);
-        Rider->SetRelativeRotation(Data.RiderRotation);
-        Rider->SetRelativeScale3D(FVector(Data.RiderScale));
-        if (FSSHeroDefinition::AssetInstalled(Data.RiderClipPath))
-            if (auto *Clip = LoadObject<UAnimSequence>(nullptr, *Data.RiderClipPath))
-            {
-                Rider->SetAnimationMode(EAnimationMode::AnimationSingleNode);
-                Rider->PlayAnimation(Clip, true);
-            }
+        const float Scale =
+            Data.RiderHeight > 0.f ? Data.RiderHeight / NativeHeight : FMath::Max(.01f, Data.RiderScale);
+        const FBoxSphereBounds Deck =
+            Mesh ? Mesh->GetBounds().TransformBy(Craft->GetRelativeTransform()) : FBoxSphereBounds(ForceInit);
+        const FVector Top(Deck.Origin.X, Deck.Origin.Y, Deck.Origin.Z + Deck.BoxExtent.Z);
+        const FVector Soles(BodyBounds.Origin.X, BodyBounds.Origin.Y, BodyBounds.Origin.Z - BodyBounds.BoxExtent.Z);
+        Rider->SetRelativeTransform(FTransform(Data.RiderRotation,
+                                               Top - Data.RiderRotation.RotateVector(Soles * Scale) + Data.RiderOffset,
+                                               FVector(Scale)));
+        UAnimSequence *Clip =
+            FSSHeroDefinition::AssetInstalled(ClipPath) ? LoadObject<UAnimSequence>(nullptr, *ClipPath) : nullptr;
+        // A clip from another skeleton would only warn and leave him frozen in his bind pose.
+        if (Clip && Clip->GetSkeleton() == Body->GetSkeleton())
+            Rider->PlayAnimation(Clip, true);
     }
     Glow->SetLightColor(Data.GlowColor);
     Glow->SetAttenuationRadius(Data.GlowRadius);
@@ -114,27 +130,36 @@ void ASSDirectorVillain::SetPresent(bool bValue)
     }
 }
 
-void ASSDirectorVillain::Launch(const FVector &Target)
+void ASSDirectorVillain::Launch()
 {
-    if (!bPresent)
-        return;
-    FlareSeconds = VillainData(this).LaunchFlareSeconds;
-    // He turns toward what he threw only for the flare, then resumes facing along the chase.
-    const FVector ToTarget = Target - GetActorLocation();
-    if (!ToTarget.IsNearlyZero())
-        SetActorRotation(FMath::RInterpTo(GetActorRotation(), ToTarget.Rotation(), 1.f, .35f));
+    // Turning the craft toward each throw swung his rider away from the pilot, once a second.
+    if (bPresent)
+        FlareSeconds = VillainData(this).LaunchFlareSeconds;
 }
 
-void ASSDirectorVillain::NotifyLaunch(UWorld *World, const FVector &Target)
+void ASSDirectorVillain::NotifyLaunch(UWorld *World)
 {
     if (!World)
         return;
     for (TActorIterator<ASSDirectorVillain> It(World); It; ++It)
         if (!It->IsActorBeingDestroyed())
         {
-            It->Launch(Target);
+            It->Launch();
             return;
         }
+}
+
+bool ASSDirectorVillain::FindLaunchPoint(UWorld *World, FVector &Out)
+{
+    if (!World)
+        return false;
+    for (TActorIterator<ASSDirectorVillain> It(World); It; ++It)
+        if (!It->IsActorBeingDestroyed() && It->bPresent && It->bPlaced)
+        {
+            Out = It->GetActorLocation();
+            return true;
+        }
+    return false;
 }
 
 void ASSDirectorVillain::Tick(float DeltaSeconds)
