@@ -373,6 +373,8 @@ If supplied, use the existing rigged Acornaut source asset as the visual startin
 
 Custom hero identity elements should be prioritized. Curated high-quality external assets may be used for secondary environmental dressing if licensing permits and the result is visually unified.
 
+The October 1, 2026 [narrative amendment](docs/GAME_SCOPE.md#owner-amendment--october-1-2026-character-voices-and-remembered-events) adds audible hero, enemy/Director and NPC dialogue, driven by actual events and bounded run memory. Treat this as presentation work within the existing roster; it does not change gameplay counts or station cadence. The gate below requires listening evidence as well as deterministic checks.
+
 ### 20. Performance and polish
 
 Before declaring implementation complete:
@@ -461,6 +463,15 @@ Do not report Phase 1 complete until all applicable gates pass.
 - contract board works;
 - Save & Quit works;
 - relaunch works.
+
+### Character voice and presentation gate
+
+- Custom lines are audibly played for player heroes, enemies/Director and station NPCs; speaker identity follows the selected character and assigned NPC role.
+- Event reactions fire from actual outcomes. Station recall distinguishes a survived close encounter from no encounter, an unrelated hazard or a different run, and avoids repeated acknowledgements.
+- Subtitles and audio settings work independently; captions match the chosen line and playback, with readable fallback when a clip is unavailable.
+- Priority, cooldown and concurrency rules prevent chatter spam and overlapping important lines; effects playback cannot arbitrarily evict dialogue.
+- Pause/resume, death, new run, Free Flight, station/world teardown and Save & Quit/resume preserve or clear the correct facts and pending lines. Older saves load safely without fabricated history.
+- The packaged build contains the selected voice banks and clips and handles missing optional assets safely. Listen to hero, enemy and NPC lines in quiet station and busy combat conditions for identity, intelligibility, timing, clipping and mix balance; headless tests do not establish audible quality.
 
 ### Progression gate
 - death ends run;

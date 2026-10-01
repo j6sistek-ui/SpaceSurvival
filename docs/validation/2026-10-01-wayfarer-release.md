@@ -1,6 +1,6 @@
 # Wayfarer tester release — October1
 
-Owner authorizes the current station and furnished apartment in the game, preservation of the separate build area, and an itch update for testers with known unfinished behavior. This is not owner acceptance or Phase1 completion. No GitHub merge is authorized.
+Owner authorizes the current station and furnished apartment in the game, preservation of the separate build area, and an itch update for testers with known unfinished behavior. This is not owner acceptance or Phase1 completion. The later owner instruction explicitly authorizes merging completed work and carrying outstanding tests into one new PR; this supersedes the initial no-merge boundary.
 
 ## Integration
 
@@ -39,8 +39,14 @@ The packaged `OutpostReview` capture `bf48cdc01570484fb59278620460a277` succeeds
 
 Known material limitations remain: the cook reports unset Frame Material / Material / Rope Material reads on apartment `BP_Blinds` actors `HorisontalBlind2_5`, `HorisontalBlind3` and `HorisontalBlind_2`. Packaged `Rendered.log:1067` reports missing `InstancedStaticMeshes` usage on `/Game/SpaceSurvival/Licensed/OrbitalWreck/KitBeam/M_Figur_0`, so affected instances use the default material. The inspected run has no fatal/runtime error, but is not warning-free. No texture-pool/VRAM-overflow warning appeared in this particular run; that absence is not a performance qualification.
 
-**Publication remains pending at this checkpoint.** [Project State](../PROJECT_STATE.md) owns the eventual release version, itch build identity and publication receipt. These results satisfy the focused tester-build smoke, not Phase1 completion.
+**Later server verification confirms publication:0.1.22-alpha / build2048604 READY.** [Project State](../PROJECT_STATE.md) owns the eventual release version, itch build identity and publication receipt. These results satisfy the focused tester-build smoke, not Phase1 completion.
 
 Native executable provenance: `WayfarerPackage2.log` records compilation of the changed SpaceSurvival modules and linking SpaceSurvival.exe (116.89seconds, build succeeded) before its later cook failure. From integration commit a69b559 to packaged commit e6c2a87, only Config/DefaultGame.ini and this receipt changed; gameplay C++ is identical. Package4 therefore correctly reused those up-to-date native binaries, then recooked/staged/archived with the repaired cook exclusions. The [package receipt](2026-10-01-itch-0.1.22-alpha-package.json) binds every archived file and the stable packaged capture to e6c2a87.
 
 CI follow-up: source workflow36924199375 failed only because TestCookCoverage still asserted10 exact authoring exclusions. The test now expects14, explicitly verifies the four root/Final retargeter packages and confirms the final hero mesh/eight animation clips stay covered. All8 cook-coverage tests pass and CheckCookCoverage reports143string-loaded paths with0uncovered. This is test/documentation-only after packaging; game source, configuration and payload bytes are unchanged.
+
+## Owner-authorized consolidation and tester upload
+
+On October1 the owner explicitly accepted completion of the initial task and requested all completed PRs merged, with testing/revisions in one new PR. PR68 merged at e4489d5; PR64/66 were marked merged through their included ancestry. PR67 then merged into its original stacked parent; its full head was already in main. All four are confirmed merged and no older PR remains open. A fresh comparison of Source, Config, Content and the project file between packaged e6c2a87 and origin/main e4489d5 is empty. The new codex/phase1-test-and-audio-followup branch starts at that main. This source consolidation changes no package bytes and establishes no new natural-play acceptance.
+
+Butler validation, dry-run and upload succeed: 51files/8772436373bytes, 3.43GiB patch, 58.02percent savings, 55.55percent old-data reuse. Fresh server status verifies itch build2048604 READY, version0.1.22-alpha, replacing2003058 on upload19226459. [Immutable published receipt](2026-10-01-itch-0.1.22-alpha-published.json).

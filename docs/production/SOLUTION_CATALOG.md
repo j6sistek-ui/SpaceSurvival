@@ -1,5 +1,12 @@
 # SpaceSurvival whole-project solution catalog
 
+### TOOL-20261001-QWEN3-TTS — optional offline character voice authoring
+
+- **Evidence:** official [Qwen3-TTS repository](https://github.com/QwenLM/Qwen3-TTS), reviewed 2026-10-01, records the 2026-01-22 release and 0.6B/1.7B variants, including description-based VoiceDesign and CustomVoice generation. These are publisher capabilities, not local results.
+- **Acquisition/evaluation:** reference evaluated only; not installed, selected, downloaded or auditioned by this work. Local VRAM use, speed and voice consistency are UNCONFIRMED. No new tool or plugin is required for Unreal playback.
+- **Whole-project value:** optional source of offline authored clips for existing hero, enemy/Director and NPC presentation (WBS 7.3, 8.4, 8.5, 10.1). Ship accepted recordings, not a runtime model dependency; this adds no dialogue tree or character count.
+- **Next check:** if voice authoring is selected, compare a small recorded/generated sample for identity, pronunciation, emotion and mix; retain source/model revision and verify the applicable model/voice rights before production use. Gameplay event selection, truthful station recall, subtitles and lifecycle remain project work under the October 1 narrative amendment and presentation gate. No installation or quality acceptance is implied.
+
 ### Resource update — 2026-09-24 building library
 
 | Stable ID | Acquisition and evaluation | Whole-project use and next check |

@@ -8,6 +8,18 @@ Mapped outpost terminals route to existing `ESSPanel` services. Home loadout and
 
 Authored station global lighting and unbound exposure fade with distance, restoring the flight environment outside the outpost. The station sky sphere is hidden so the flight background is shared. Missing private runtime content falls back to the legacy station with an explicit `SS_OUTPOST_FALLBACK` log; `-SSLegacyStation` also selects the legacy station for diagnosis. Focused capture evidence and its physical-input/performance limits belong in the October1 validation receipt and active issue RPT-20260924-01.
 
+## Planned character speech and event recall — October 1, 2026
+
+**PLANNED, not implemented by this documentation change.** Existing `FSSVillainLine`/`VillainSpeak` provide caption cues and a bounded queue, not recorded speech. `ASSGameMode::React` prefixes its text with Acornaut, and the current villain eligibility gate includes the subtitle setting. Outpost NPC gestures are animation-only. These are integration points, not evidence that the voice requirement already works.
+
+The smallest planned extension uses authored voice banks with stable speaker/line IDs, event eligibility, localized text, optional soft sound references, priority, cooldown and variants. Resolve the player's speaker from `WornHeroId`; assign NPC/enemy identities explicitly. Keep the existing villain cue ordering, but separate speech eligibility from subtitle visibility and share the chosen line/clip between both outputs. Clip completion/duration should drive caption timing, with a bounded text fallback for unavailable audio.
+
+A world-owned speech coordinator should use dedicated foreground/ambient concurrency, interrupt priorities and owner/world cleanup. Hero/radio lines and nearby spatial NPC speech need distinct attenuation rules. Do not route dialogue unchanged through `USSWorldAudioSubsystem`'s effects one-shot pool: it applies shot pitch variation, distance rejection, oldest-effect eviction and a ten-second duration cap. Existing Unreal sound assets, audio components and concurrency are sufficient; no new runtime AI/plugin dependency is required. Verify implementation against installed engine APIs; Epic's [Sound Concurrency reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/sound-concurrency-reference-guide) was reviewed on 2026-10-01.
+
+Authoritative gameplay events should record a small, bounded run fact set keyed by run identity. A gravity close-call fact needs actual active-field exposure and a survived exit, not a Director spawn or wave label. On docking, select eligible station remarks and record acknowledgement so repeated proximity cannot replay them. Keep transient playback queues out of saves; preserve only the facts/acknowledgements needed for truthful resume through an explicitly validated, backward-compatible save extension. Missing legacy data means no remembered encounter. New runs/death clear the relevant facts; Free Flight cannot contaminate survival memory. Speech must never award rewards, advance waves or own save transactions.
+
+Focused validation covers event positive/negative cases, speaker selection, repetition limits, subtitle/audio independence, pause/teardown/resume and cooked soft-reference closure. Packaged listening remains mandatory under the [presentation gate](../IMPLEMENT.md#character-voice-and-presentation-gate). Optional offline voice creation is catalogued as `TOOL-20261001-QWEN3-TTS`; no model, generated bank or voice quality has been selected or tested here.
+
 ## Admission fall-through, villain launches and voice — September29
 
 `USSSurvivalDirectorComponent::TickComponent` sorts every attempt into admitted,
