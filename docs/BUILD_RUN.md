@@ -1,6 +1,6 @@
 # Build and run
 
-**October 1 station integration:** the current development checkout combines the repaired game with Wayfarer Exchange and its furnished apartment. The editable station and separate building sandbox remain preserved. Package/itch publication is pending at this integration checkpoint; [Project State](PROJECT_STATE.md#source-build-and-release) owns the final source, build and published identity. Source presence or a desktop shortcut does not prove an updated itch installation.
+**October 1 station integration:** the current development checkout combines the repaired game with Wayfarer Exchange and its furnished apartment. The editable station and separate building sandbox remain preserved. The Windows package and focused packaged station smoke pass at e6c2a87; itch0.1.22-alpha upload is in progress. [Project State](PROJECT_STATE.md#source-build-and-release) owns the final source, build and published identity. Source presence or a desktop shortcut does not prove an updated itch installation.
 
 **Historical September22 release:** `0.1.21-alpha.1 / build2003058` shipped the responsive flight, mixed physical field, controller menu navigation and HUD fixes. Its Package10/source4fd0293 identity does not describe the current development build.
 
