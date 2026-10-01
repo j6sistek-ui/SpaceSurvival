@@ -18,6 +18,10 @@ class UTextRenderComponent;
 class UMaterialInterface;
 class ASSStationVisualLayout;
 class ASSLandingPad;
+class ASSOutpostTerminal;
+class ULevelStreamingDynamic;
+class ULightComponentBase;
+class APostProcessVolume;
 struct FPoseSnapshot;
 
 UCLASS()
@@ -38,6 +42,10 @@ public:
         return VisualLayout;
     }
     bool IsUsingFunctionalLayout() const;
+    /** The authored station is instanced for gameplay; its separate edit map remains untouched. */
+    bool IsUsingOutpost() const;
+    ASSOutpostTerminal *OutpostTerminalAt(const APawn *User) const;
+    ESSPanel OutpostPanel(const ASSOutpostTerminal *Terminal) const;
     // Optional presentation asset; the physical hub remains authoritative when it is absent.
     UPROPERTY(EditAnywhere, Category = "Presentation")
     TSoftObjectPtr<UStaticMesh> ShellAsset;
@@ -67,7 +75,7 @@ public:
     bool ConfigurePadExit(const ASSShip *Ship, float CapsuleRadius, float CapsuleHalfHeight);
     FVector WalkSpawn() const
     {
-        return GetActorTransform().TransformPosition(FVector(-300, 0, 180));
+        return GetActorTransform().TransformPosition(IsUsingOutpost() ? FVector(-1550, 0, 100) : FVector(-300, 0, 180));
     }
     FVector DockPosition() const
     {
@@ -103,7 +111,23 @@ public:
     }
 
 private:
+    bool BuildOutpostHub();
+    void DestroyOutpostHub();
+    bool OutpostWalkable(const FVector &World) const;
+    void UpdateOutpostEnvironment();
     void BuildFunctionalHub();
+    UPROPERTY()
+    TObjectPtr<ULevelStreamingDynamic> OutpostLevel;
+    TArray<TWeakObjectPtr<ASSOutpostTerminal>> OutpostTerminals;
+    TArray<TWeakObjectPtr<AActor>> OutpostCrew;
+    struct FOutpostGlobalLight
+    {
+        TWeakObjectPtr<ULightComponentBase> Component;
+        float Intensity = 0.f;
+    };
+    TArray<FOutpostGlobalLight> OutpostGlobalLights, WorldGlobalLights;
+    TArray<TWeakObjectPtr<APostProcessVolume>> OutpostExposure;
+    float OutpostEnvironmentWeight = -1.f;
     /** Measured main-deck tiles; these share the native floor proxies, never the decorative hull bounds. */
     TArray<FBox> AuthoredWalkDecks;
     void BuildAuthoredWalkDeck();
@@ -117,6 +141,7 @@ private:
         FVector Location;
         FString Label;
         ESSPanel Panel;
+        TWeakObjectPtr<ASSOutpostTerminal> Terminal;
     };
     TArray<FService> Services;
     UPROPERTY()

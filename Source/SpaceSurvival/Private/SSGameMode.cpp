@@ -15,6 +15,7 @@
 #include "Engine/TextureCube.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
+#include "SSOutpostSandbox.h"
 #include "SSLandingPad.h"
 #include "SSShipPaint.h"
 #include "Animation/PoseSnapshot.h"
@@ -1122,6 +1123,8 @@ void ASSGameMode::Interact()
         }
         else if (Service != ESSPanel::None)
             OpenPanel(Service);
+        else if (auto *Terminal = Hub->OutpostTerminalAt(Walker))
+            Announce(Terminal->Use(UGameplayStatics::GetPlayerController(this, 0)));
         else
             Announce(Hub->ServiceGuidance(Walker->GetActorLocation()));
         return;

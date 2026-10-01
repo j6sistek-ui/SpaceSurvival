@@ -1,5 +1,6 @@
 #include "SSStation.h"
 #include "SSLandingPad.h"
+#include "SSOutpostSandbox.h"
 #include "SSShipPaint.h"
 #include "SSGameInstance.h"
 #include "SSStationVisualLayout.h"
@@ -140,7 +141,7 @@ void ASSStation::AddService(FVector Position, const FString &Label, ESSPanel Pan
     Text->ComponentTags.Add(TEXT("StationServiceLabel"));
     Text->RegisterComponent();
     ServiceLabels.Add(Text);
-    Services.Add({Position, Label, Panel});
+    Services.Add({Position, Label, Panel, {}});
 }
 bool ASSStation::CanAssistDocking(const ASSShip *Ship) const
 {
@@ -239,7 +240,7 @@ bool ASSStation::BuildEditableLayout()
 }
 bool ASSStation::IsUsingFunctionalLayout() const
 {
-    return VisualLayout && VisualLayout->bFunctionalLayout;
+    return IsUsingOutpost() || (VisualLayout && VisualLayout->bFunctionalLayout);
 }
 
 void ASSStation::BuildFunctionalHub()
@@ -381,6 +382,7 @@ void ASSStation::DestroyVisualLayout()
 void ASSStation::Destroyed()
 {
     // EndPlay is not routed for an uninitialized actor destroyed in an authoring/preview world.
+    DestroyOutpostHub();
     DestroyVisualLayout();
     DestroyLandingPad();
     Super::Destroyed();
@@ -388,6 +390,7 @@ void ASSStation::Destroyed()
 
 void ASSStation::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    DestroyOutpostHub();
     DestroyVisualLayout();
     DestroyLandingPad();
     Super::EndPlay(EndPlayReason);
@@ -396,6 +399,8 @@ void ASSStation::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ASSStation::BuildHub(bool bHome)
 {
     Home = bHome;
+    if (BuildOutpostHub())
+        return;
     const TCHAR *Cube = TEXT("/Engine/BasicShapes/Cube.Cube");
     const TCHAR *Hull = TEXT("/Game/SpaceSurvival/Materials/M_Hull.M_Hull");
     const TCHAR *Cyan = TEXT("/Game/SpaceSurvival/Materials/M_Cyan.M_Cyan");
@@ -677,6 +682,7 @@ void ASSStation::Tick(float Dt)
 {
     SSStationPresentation::PaceAlienCrew(this);
     Super::Tick(Dt);
+    UpdateOutpostEnvironment();
     if (auto *Controller = GetWorld()->GetFirstPlayerController())
     {
         FVector ViewLocation;
@@ -792,6 +798,8 @@ bool ASSStation::ConfigurePadExit(const ASSShip *Ship, float CapsuleRadius, floa
 }
 bool ASSStation::Walkable(const FVector &World) const
 {
+    if (IsUsingOutpost())
+        return OutpostWalkable(World);
     const FVector Local = GetActorTransform().InverseTransformPosition(World);
     if (Local.Z < -250.f)
         return false;
@@ -827,7 +835,11 @@ ESSPanel ASSStation::NearestService(FVector Position, FString &Label) const
     ESSPanel Result = ESSPanel::None;
     for (const auto &Service : Services)
     {
-        const float Distance = FVector::Dist2D(Position, GetActorTransform().TransformPosition(Service.Location));
+        const FVector Target = GetActorTransform().TransformPosition(Service.Location);
+        const float Distance = IsUsingOutpost() ? FVector::Dist(Position, Target) : FVector::Dist2D(Position, Target);
+        const auto *Controller = GetWorld()->GetFirstPlayerController();
+        if (Service.Terminal.IsValid() && !Service.Terminal->CanUse(Controller ? Controller->GetPawn() : nullptr))
+            continue;
         if (Distance < Nearest)
         {
             Nearest = Distance;
@@ -867,6 +879,9 @@ void ASSStation::RadarContacts(TArray<FVector> &ServicePositions, TArray<FVector
     };
     GatherCrew(this);
     GatherCrew(VisualLayout);
+    for (const auto &Member : OutpostCrew)
+        if (const AActor *Actor = Member.Get(); Actor && !Actor->IsHidden())
+            CrewPositions.Add(Actor->GetActorLocation());
 }
 
 FString ASSStation::ServiceGuidance(FVector Position) const

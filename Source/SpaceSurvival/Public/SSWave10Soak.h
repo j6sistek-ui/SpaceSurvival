@@ -36,6 +36,15 @@ private:
     bool CaptureSequence = false;
     bool DirectorReview = false;
     bool WormholeReview = false, WormholeReviewSeeded = false;
+    bool OutpostReview = false, OutpostReviewComplete = false;
+    bool OutpostDepartureVerified = false, OutpostReturnVerified = false;
+    bool OutpostPitStopSupported = false;
+    int32 OutpostReviewStage = 0, OutpostServicesChecked = 0, OutpostFloorChecks = 0, OutpostPitStopServicesChecked = 0;
+    double OutpostStageAt = 0;
+    FVector OutpostFlightStart = FVector::ZeroVector;
+    FString OutpostRunBefore, OutpostAccountBefore;
+    void TickOutpostReview(float DeltaSeconds);
+
     double WormholeWarmQuietSeconds = 0, WormholeRenderingReadyAt = -1, WormholeReviewSeconds = 0;
     int32 WormholeWarmupPeakAssets = 0, WormholeWarmupPeakShaders = 0;
     FVector2D WormholeRequestedSteering = FVector2D::ZeroVector;

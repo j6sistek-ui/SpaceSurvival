@@ -1,5 +1,13 @@
 # SpaceSurvival Phase 1 architecture
 
+## Wayfarer station integration — October1
+
+`ASSStation::BuildOutpostHub` streams a tagged runtime copy of the authored Wayfarer Exchange into the existing Survival world for the home hangar and mid-run stations. The apartment remains a nested Level Instance. It adopts the authored physical berth deck through `ASSLandingPad::AdoptDeck`; the real player ship owns boarding geometry, flight, paint and docking. Display-only Phoenix geometry and its stationary cabin proxies are removed from the runtime instance. No authored source actor is deleted on disk.
+
+Mapped outpost terminals route to existing `ESSPanel` services. Home loadout and active-run upgrades/contracts/repair/save retain their existing economy and session rules; informational merchants remain placeholders. The existing every-five-wave cadence, difficulty, save schema and Free Flight isolation do not change. The station waits for initial streaming before exposing walking support. Walkability uses the real authored collision, including the apartment and upper gallery; cleanup disables the outgoing station while streaming unloads it. Ambient routes follow world-origin offsets.
+
+Authored station global lighting and unbound exposure fade with distance, restoring the flight environment outside the outpost. The station sky sphere is hidden so the flight background is shared. Missing private runtime content falls back to the legacy station with an explicit `SS_OUTPOST_FALLBACK` log; `-SSLegacyStation` also selects the legacy station for diagnosis. Focused capture evidence and its physical-input/performance limits belong in the October1 validation receipt and active issue RPT-20260924-01.
+
 ## Admission fall-through, villain launches and voice — September29
 
 `USSSurvivalDirectorComponent::TickComponent` sorts every attempt into admitted,

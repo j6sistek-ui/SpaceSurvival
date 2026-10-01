@@ -1,5 +1,6 @@
 #include "SSOutpostSandbox.h"
 #include "SSStation.h"
+#include "SSGameMode.h"
 #include "SSPhase1Data.h"
 #include "Animation/AnimSequence.h"
 #include "Components/BoxComponent.h"
@@ -155,6 +156,18 @@ FString ASSOutpostTerminal::Use(APlayerController *User)
 {
     if (!User || !CanUse(User->GetPawn()))
         return TEXT("Move closer to the console and keep the access point in view.");
+    if (auto *Game = GetWorld()->GetAuthGameMode<ASSGameMode>();
+        Game && Game->GetStation() && Game->GetStation()->IsUsingOutpost())
+    {
+        // Real game services use the existing account/run transactions. Sandbox previews stay local.
+        const ESSPanel Panel = Game->GetStation()->OutpostPanel(this);
+        if (Panel != ESSPanel::None)
+        {
+            Game->OpenPanel(Panel);
+            return FString();
+        }
+        return Description;
+    }
     switch (Action)
     {
     case ESSOutpostAction::CycleShipPaint:
@@ -448,6 +461,12 @@ void ASSOutpostAmbientActor::BeginPlay()
             CharacterMesh->SetPosition(FMath::Fmod(FMath::Abs(PhaseOffset), ActiveAnimation->GetPlayLength()), false);
     }
 }
+void ASSOutpostAmbientActor::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
+{
+    Super::ApplyWorldOffset(InOffset, bWorldShift);
+    RouteOrigin.AddToTranslation(InOffset);
+}
+
 void ASSOutpostAmbientActor::Tick(float Dt)
 {
     Super::Tick(Dt);

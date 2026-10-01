@@ -55,6 +55,14 @@ UStaticMeshComponent *ASSLandingPad::AddMesh(FVector Position, FVector Scale, co
 #endif
     return C;
 }
+void ASSLandingPad::AdoptDeck(UStaticMeshComponent *ExistingDeck, float Radius)
+{
+    if (!ExistingDeck || IsBuilt())
+        return;
+    Deck = ExistingDeck;
+    HalfExtent = FMath::Max(100.f, Radius);
+    bCircularDeck = true;
+}
 void ASSLandingPad::Build()
 {
     if (IsBuilt())
@@ -182,7 +190,8 @@ bool ASSLandingPad::ConfigureWalkExit(const FBox &HullBounds, float CapsuleRadiu
         FHitResult Floor;
         const bool FloorHit = GetWorld()->LineTraceSingleByObjectType(Floor, Above, Above - GetActorUpVector() * 600.f,
                                                                       StaticObjects, Query);
-        if (!FloorHit || Floor.GetActor() != this || FVector::DotProduct(Floor.ImpactNormal, FVector::UpVector) < .7f)
+        if (!FloorHit || Floor.GetComponent() != Deck ||
+            FVector::DotProduct(Floor.ImpactNormal, FVector::UpVector) < .7f)
         {
             UE_LOG(LogTemp, Display,
                    TEXT("SS_PAD_EXIT_REJECT reason=Floor y=%.2f hit=%d actor=%s component=%s point=%s normal=%s "

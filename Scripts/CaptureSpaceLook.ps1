@@ -10,6 +10,7 @@ param(
     [switch]$WeaponReadability,
     [switch]$DirectorReview,
     [switch]$WormholeReview,
+    [switch]$OutpostReview,
     [switch]$MainMenu,
     [switch]$UIRefresh,
     [switch]$UIFollowup,
@@ -26,6 +27,7 @@ param(
     [ValidateRange(-400,400)][double]$ThrusterHeight = 0,
     [string[]]$ExtraArgs = @()
 )
+if ($OutpostReview -and ($WormholeReview -or $DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $Sequence)) { throw 'Outpost review is a separate isolated integration scenario.' }
 if ($WormholeReview -and ($DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup)) { throw 'Wormhole review is a separate seeded transition; only the optional sequence may be combined.' }
 if ($DirectorReview -and ($WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $Sequence)) { throw 'Director review uses ordinary Wave1 captures plus one close camera.' }
 if ($UIFollowup) { $UIRefresh = $true }
@@ -129,7 +131,7 @@ New-Item -ItemType Directory -Path $slotsRoot | Out-Null
 New-Item -ItemType Directory -Path $pointerRoot -Force | Out-Null
 $token | Set-Content -LiteralPath (Join-Path $root '.ss-endgame-soak') -Encoding utf8
 $arguments = if ($Packaged) { @() } else { @((Join-Path $repo 'SpaceSurvival.uproject'), '-game') }
-$scenario = if ($WormholeReview) { 'WormholeReview' } elseif ($MainMenu) { 'MainMenu' } else { 'Wave1' }
+$scenario = if ($OutpostReview) { 'OutpostReview' } elseif ($WormholeReview) { 'WormholeReview' } elseif ($MainMenu) { 'MainMenu' } else { 'Wave1' }
 $arguments += @('-SSWave10Soak', "-SSSoakScenario=$scenario",
     '-SSSoakVisuals', '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$root", '-RenderOffscreen',
     '-ForceRes', '-windowed', '-ResX=1920', '-ResY=1080', '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
@@ -150,11 +152,12 @@ if ($ThrusterTrailHeight -ne 0) { $execCmds += ",ss.ThrusterTrailHeight $Thruste
 if ($ThrusterHeight -ne 0) { $execCmds += ",ss.ThrusterHeight $ThrusterHeight" }
 $arguments += "-ExecCmds=$execCmds"
 $arguments += $ExtraArgs
-$evidenceType = if ($WormholeReview) { 'WORMHOLE_SEEDED_VISUAL_REVIEW_NORMAL_STATS' } elseif ($UIRefresh) { 'UI_REFRESH_RENDERED_REVIEW' } elseif ($MainMenu) { 'TITLE_MENU_RENDERED_REVIEW' } elseif ($WeaponReadability) { 'WEAPON_READABILITY_SCRIPTED_NORMAL_STATS' } else { 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' }
+$evidenceType = if ($OutpostReview) { 'OUTPOST_SCRIPTED_INTEGRATION_REVIEW' } elseif ($WormholeReview) { 'WORMHOLE_SEEDED_VISUAL_REVIEW_NORMAL_STATS' } elseif ($UIRefresh) { 'UI_REFRESH_RENDERED_REVIEW' } elseif ($MainMenu) { 'TITLE_MENU_RENDERED_REVIEW' } elseif ($WeaponReadability) { 'WEAPON_READABILITY_SCRIPTED_NORMAL_STATS' } else { 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' }
+$timeoutSeconds = if ($OutpostReview) { 300 } else { 120 }
 $metadata = [ordered]@{
     evidenceType = $evidenceType; status = 'starting'; success = $false
     root = $root; label = $Label; token = $token; pid = $null; processStartUtc = $null; processExit = $null
-    startedUtc = [DateTime]::UtcNow.ToString('o'); finishedUtc = $null; timeoutSeconds = 120
+    startedUtc = [DateTime]::UtcNow.ToString('o'); finishedUtc = $null; timeoutSeconds = $timeoutSeconds
     mode = $(if ($Packaged) { 'WindowsDevelopmentPackage' } else { 'UncookedEditorGame' })
     sourceBefore = $sourceBefore; sourceAfter = $null; artifacts = $artifactsBefore; artifactsUnchanged = $false
     productionBefore = $productionBefore; productionAfter = $null; productionPreserved = $false
@@ -163,10 +166,13 @@ $metadata = [ordered]@{
     sequenceRequested = [bool]$Sequence
     directorReviewRequested = [bool]$DirectorReview
     wormholeReviewRequested = [bool]$WormholeReview
+    outpostReviewRequested = [bool]$OutpostReview
     weaponReadabilityRequested = [bool]$WeaponReadability
     mainMenuRequested = [bool]$MainMenu
     areaPreview = $Area; areaVariation = $Variation
-    limits = $(if ($WormholeReview) {
+    limits = $(if ($OutpostReview) {
+        'Protected fresh home profile; scripted walker placements at real services, normal Interact panels, 27 sampled apartment-route floor and upper-capsule checks excluding doors, authored cameras, real StartFreeFlight takeoff/powered movement and EndFreeFlight return. Exact account/run roundtrip, then isolated seeded Wave5 Station with real EnterStation, supported walker and Upgrades/Repair/Contracts/Save panel openings; no save/purchase actions. No physical input, actual apartment traversal, landing approach, complete run or FPS claim.'
+    } elseif ($WormholeReview) {
         'Seeded Wave5 Flight with 2 seconds remaining after asset warmup; fresh normal starter stats, no durability increase or invulnerability. Real Session/GameMode transition through the normal 8-second wormhole and 3 seconds of climax exit. Four normal chase-camera stages plus optional 8fps-target readbacks with actual timestamps. Ordinary SetFlightInput steering/brake attempts; no physical input, ten-wave journey, cold-first-transition, natural balance, audio or FPS acceptance. PNG identity and runtime receipt guards do not establish visual quality.'
     } elseif ($DirectorReview) {
         'Normal-stat scripted flight with a final transient camera for the runtime villain. No physical input, natural balance or FPS acceptance. Loaded tuning, actual rider mesh and animation are recorded.'
@@ -202,7 +208,7 @@ try {
     Write-Output "Owned hidden $scenario capture $($process.Id): $root"
     $timer = [Diagnostics.Stopwatch]::StartNew()
     while (-not $process.WaitForExit(1000)) {
-        if ($timer.Elapsed.TotalSeconds -ge 120) { throw 'Owned visual capture exceeded its 120-second timeout.' }
+        if ($timer.Elapsed.TotalSeconds -ge $timeoutSeconds) { throw "Owned visual capture exceeded its $timeoutSeconds-second timeout." }
     }
     $process.Refresh()
     if ($process.ExitCode -ne 0) { throw "Visual capture exited $($process.ExitCode)." }
@@ -212,13 +218,13 @@ try {
     $metadata.fixture = $fixture
     if (-not $fixture.success -or -not $fixture.noSaveSlotsWritten -or
         $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $scenario -or
-        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $MainMenu -and -not $WormholeReview -and -not $fixture.sawWave1) -or
+        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $MainMenu -and -not $WormholeReview -and -not $OutpostReview -and -not $fixture.sawWave1) -or
         -not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or $fixture.suitableForPerformanceFinding -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine $savedRoot.TrimEnd('\', '/') -or
         [IO.Path]::GetFullPath($fixture.csv) -ine (Join-Path $root 'Endgame.csv')) { throw 'Fixture identity, visibility or save isolation receipt failed.' }
     $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
     $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
-    $expectedNames = if ($WormholeReview) { 'Entrance,Transit,DeepTransit,Exit' } elseif ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
+    $expectedNames = if ($OutpostReview) { 'OutpostPad,OutpostServices,OutpostApartment,OutpostFlight,OutpostReturn,OutpostPitStop' } elseif ($WormholeReview) { 'Entrance,Transit,DeepTransit,Exit' } elseif ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
     if (($names -join ',') -cne $expectedNames) { throw 'Fixture did not capture the required named stages in order.' }
     if ($UIRefresh -and (-not $fixture.uiRefreshReview -or -not $fixture.mainMenuStatePreserved)) { throw 'UI frame state checks failed.' }
     if ($MainMenu -and -not $UIRefresh) {
@@ -237,6 +243,21 @@ try {
                     $button.minX -lt 0 -or $button.minY -lt 0 -or $button.maxX -gt 1920 -or $button.maxY -gt 1080 -or
                     $button.maxX -le $button.minX -or $button.maxY -le $button.minY) { throw 'Rendered title button has invalid bounds or hit mapping.' }
             }
+        }
+    }
+    if ($OutpostReview) {
+        if (-not $fixture.outpostReviewComplete -or -not $fixture.outpostFreeFlightDeparture -or
+            -not $fixture.outpostFreeFlightReturn -or $fixture.outpostServicesChecked -ne 4 -or
+            $fixture.outpostFloorAndClearanceSamples -ne 27 -or -not $fixture.outpostSeededPitStopSupported -or
+            $fixture.outpostPitStopServicesChecked -ne 4) {
+            throw 'Runtime station, home/pit-stop services, apartment probes or free-flight roundtrip did not pass.'
+        }
+        $pitStop = @($fixture.visualRequests | Where-Object { $_.name -ceq 'OutpostPitStop' })[0]
+        if ($pitStop.wave -ne 5 -or -not $pitStop.activeRun -or -not $pitStop.stationPhase -or $pitStop.pitStopPanelsOpened -ne 4) {
+            throw 'Pit-stop frame did not retain seeded active Wave5 Station with four real service panels opened.'
+        }
+        foreach ($row in $fixture.visualRequests) {
+            if (-not $row.runtimeOutpost) { throw 'Outpost capture used the legacy station or lost the runtime outpost.' }
         }
     }
     if ($WormholeReview) {

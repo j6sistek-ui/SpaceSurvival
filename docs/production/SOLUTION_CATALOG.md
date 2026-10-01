@@ -429,6 +429,10 @@ status remains owned/installed; interactive acceptance remains pending under RPT
   matches; unique/partial/changed sources retained.54,980,195,863 bytes reclaimed. Manifests archived
   under `Artifacts/VaultRefresh-20260922/RetainedManifests`. Project asset paths remain unchanged.
 
+### October1 runtime adoption: A34 and E-HOME-LIBRARY-20260927
+
+The owner now authorizes the current Wayfarer station and apartment in the tester game. A private tagged runtime copy consumes the owned station assemblies and furnished apartment; the original outpost and flat building sandbox remain editable and unchanged. This supersedes the earlier separation-only boundary below, without approving every imported pack or adding new housing/economy mechanics. Runtime service/boarding integration and package checks are scoped to RPT-20260924-01; current build, release and remaining acceptance are recorded in [Project State](../PROJECT_STATE.md). ULAT remains an authoring tool in the original isolated checkout; the playable project consumes baked assets without that editor module.
+
 ### September 24 outpost reuse: A34, A26, A29, A31 and C17
 
 **Acquisition remains unchanged: these are already installed, owned assets.** The owner authorized a separate aesthetic station redesign at `/Game/OutpostSandbox/L_AsteroidOutpost`; the active gameplay station and published package are not replaced. [Owner guide](../OUTPOST_SANDBOX.md).

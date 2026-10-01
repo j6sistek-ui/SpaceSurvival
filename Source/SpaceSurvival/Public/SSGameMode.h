@@ -55,6 +55,10 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
+    ASSStation *GetStation() const
+    {
+        return Hub;
+    }
     ASSShip *GetPlayerShip() const
     {
         return Ship;

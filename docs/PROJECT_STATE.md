@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**2026-10-01 tester release integration (in progress):** Owner authorizes Wayfarer Exchange and its furnished apartment as the active station in the current game, plus a packaged itch update even with open playtest issues. `codex/outpost-live-release` combines PR64/66/67 in the existing repaired checkout. Runtime uses a derived tagged map; the original outpost, separate flat BuildingSandbox and apartment source are preserved. Publication/build verification pending; older dated release and separation statements below remain historical.
+
 **2026-09-30 wormhole playtest:** `codex/wormhole-transit-polish` builds on PR66 db05ca4 without changing difficulty tuning. Original flowing tube/material, near-locked 300 m/s transport, bounded wobble and restored controls replace the rings. The existing repaired desktop checkout is rebuilt on `codex/wormhole-playtest`, gameplay source `8ee8260`; no owner compile is needed. Two focused native tests and final current-game offscreen entrance/transit/exit capture `8207c03d21d24668a4c79bbc1b48f74d` pass (four stages plus48 timestamped sequence frames, isolated save profile). Existing shortcuts remain valid. The existing package/itch release and unaccepted station PR64 are unchanged. [Wormhole evidence](validation/2026-09-30-wormhole-transit.md).
 
 **2026-09-30 PR66 follow-up:** current repaired desktop game is rebuilt at gameplay source `13ad4e5` (`codex/pr66-playtest`); two affected volley tests pass cleanly. Low-cap attempts use ordinary asteroid fallback, lone attacks no longer claim a volley, and the larger-hull test now uses an actual compound. Shoot-through difficulty, ring counts and tuning stay unchanged. This supersedes the September29 playable source/module below; existing shortcuts remain valid. [Evidence](validation/2026-09-29-pr66-native-polish.md#september30-follow-up-truthful-volley-presentation-unchanged-shoot-through-pressure). PR66 stays open; no station/package/itch change.
@@ -144,6 +146,12 @@ PR17 now implements four owned-content area recipes, deterministic world-space r
 Editor build and 51/51 Unreal tests pass. First flight compositions were rejected and revised; independent review remains NOT MET, with the lead agreeing. Final mesh-family selection no longer aliases with depth-band strides; that correction does not close visual acceptance. The corrected gallery's rendered round trip is independently accepted within its scripted scope. Natural input, long-zone boundary/near-surface traversal, performance and packaged behavior remain unverified. [Current evidence](validation/2026-09-16-space-areas-gallery.json); [sole active queue](KNOWN_ISSUES.md). Earlier [orbital review](validation/2026-09-16-orbital-wreck-review.json) remains historical evidence.
 
 ## Source, build and release
+
+**October1 current integration:** the repaired checkout `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, branch `codex/outpost-live-release`, combines PR64/66/67 and streams the private Wayfarer runtime map and apartment. Editor build passes. Original outpost/flat BuildingSandbox remain unchanged and independently editable. Focused runtime, package and itch publication are in progress; the last published build remains0.1.21-alpha.1 until the release receipt below is updated. No GitHub merge is authorized for this task.
+
+### Historical September14–17 delivery layers
+
+The following snapshots retain their original evidence and do not identify the current executable.
 
 Owned `Content/Megastructure_Scifi_World` contains 84 unchanged vendor files, including both streamed maps. New meshes/materials/region data and a gallery cook label are private derivatives under ignored `Content/SpaceSurvival/Licensed`. Authoring scripts and sanitized receipts are tracked; source-only Git does not contain the licensed scenes. The vendor showcase has been opened and rendered, and its assets are used by the new area recipes (catalog A24). A local package now exists and its packaged validation passes; the `0.1.17-alpha` payload is prepared locally and has not been published.
 

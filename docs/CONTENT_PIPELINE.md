@@ -1,5 +1,11 @@
 # Phase 1 content pipeline
 
+## Wayfarer runtime copy — October1
+
+After building the current Editor, run `Scripts/PrepareWayfarerRuntime.py` with `-RenderOffscreen -ExecutePythonScript=...`. It duplicates `/Game/OutpostSandbox/L_AsteroidOutpost` into `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, retaining the furnished `/Game/BuildingLibrary/Home/L_CrewApartment` instance, and adds stable `OutpostLabel:` actor tags because editor labels are not available in a cooked game. It hashes the original outpost, apartment and flat BuildingSandbox before/after and saves only the runtime duplicate. Do not regenerate `AuthorOutpostSandbox.py` over the owner's composition. The runtime copy and its vendor dependencies remain private local content, not Git source assets.
+
+The cook selects the runtime station and apartment maps explicitly; it does not blanket-cook every newly imported vendor pack. `Content` in the repaired gameplay checkout still shares the owner's local library. Missing vendor roots are linked to the preserved outpost checkout. The original outpost's ULAT authoring plugin remains enabled there; the playable project disables that editor plugin because its installed-engine module rules prevent native builds. Baked runtime meshes/materials do not require ULAT. Keep both authoring maps and their launchers for later owner editing; changes to the source station require an explicitly refreshed runtime copy and package.
+
 ## Approved page 11 UI extension — September22
 
 The owner subsequently authorized native HUD/settings integration beyond the locked main menu. [Exact sources and import workflow](../ContentSource/FigmaUIRefresh/README.md) retain27 PNGs, Keania One TTF/license and source hashes. The guarded importer creates `/Game/SpaceSurvival/UI/Refresh`; original licensed art and main-menu assets stay unchanged. `DirectoriesToAlwaysStageAsUFS` includes only the new Fonts folder. HUD is transparent over the real world; blue vitals chassis/percentage labels are deliberately omitted. Settings/pause use approved layout assets; current service actions reuse the frame without claiming every mockup-specific portrait/composition. Preset selection/remapping remains deferred.

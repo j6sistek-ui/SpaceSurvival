@@ -167,6 +167,7 @@ public:
     ASSOutpostAmbientActor();
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ambient")
     TObjectPtr<UCapsuleComponent> Body;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ambient")

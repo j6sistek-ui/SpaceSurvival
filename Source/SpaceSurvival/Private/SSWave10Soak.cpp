@@ -66,7 +66,7 @@ bool ReadScenario(bool &Station5, bool &Wave1)
     Station5 = Scenario == TEXT("Station5");
     Wave1 = Scenario == TEXT("Wave1");
     return Station5 || Wave1 || Scenario == TEXT("Wave10") || Scenario == TEXT("Gallery") ||
-           Scenario == TEXT("MainMenu") || Scenario == TEXT("WormholeReview");
+           Scenario == TEXT("MainMenu") || Scenario == TEXT("WormholeReview") || Scenario == TEXT("OutpostReview");
 }
 bool IsIsolatedSoak(FString &Root, FString &Token)
 {
@@ -88,6 +88,13 @@ bool IsIsolatedSoak(FString &Root, FString &Token)
         return false;
     FString Scenario;
     FParse::Value(FCommandLine::Get(), TEXT("SSSoakScenario="), Scenario);
+    if (Scenario == TEXT("OutpostReview") && (!FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")) ||
+                                              FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview"))))
+        return false;
     if (Scenario == TEXT("WormholeReview") && (!FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals")) ||
                                                FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability")) ||
                                                FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview")) ||
@@ -188,6 +195,7 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     Soak->Gallery = Scenario == TEXT("Gallery");
     Soak->MainMenu = Scenario == TEXT("MainMenu");
     Soak->WormholeReview = Scenario == TEXT("WormholeReview");
+    Soak->OutpostReview = Scenario == TEXT("OutpostReview");
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
     Soak->DirectorReview = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview"));
     Soak->WeaponReadability = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability"));
@@ -346,7 +354,7 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             break;
         }
     }
-    if (auto *GM = Mode.Get(); GM && !Gallery && !MainMenu)
+    if (auto *GM = Mode.Get(); GM && !Gallery && !MainMenu && !OutpostReview)
     {
         if (WeaponReadability)
         {
@@ -446,6 +454,30 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         };
         RecordBone(TEXT("leftWrist"), Hero.LeftHandBone);
         RecordBone(TEXT("rightWrist"), Hero.RightHandBone);
+    }
+    if (OutpostReview)
+    {
+        const auto *GM = Mode.Get();
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        Row->SetBoolField(TEXT("runtimeOutpost"), GM && GM->Hub && GM->Hub->IsUsingOutpost());
+        Row->SetStringField(TEXT("possessedPawn"), PC ? GetPathNameSafe(PC->GetPawn()) : TEXT("None"));
+        Row->SetNumberField(TEXT("panel"), GM ? int32(GM->Panel) : -1);
+        Row->SetNumberField(TEXT("floorAndClearanceSamples"), OutpostFloorChecks);
+        Row->SetNumberField(TEXT("servicePanelsOpened"), OutpostServicesChecked);
+        Row->SetNumberField(TEXT("pitStopPanelsOpened"), OutpostPitStopServicesChecked);
+        if (const auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr)
+        {
+            Row->SetNumberField(TEXT("wave"), GI->Session.run.wave);
+            Row->SetBoolField(TEXT("activeRun"), GI->Session.run.active);
+            Row->SetBoolField(TEXT("stationPhase"), GI->Session.run.phase == SS::Phase::Station);
+        }
+        Row->SetBoolField(TEXT("scriptedInspectionCamera"),
+                          StationReviewCamera && PC && PC->GetViewTarget() == StationReviewCamera);
+        if (PC && PC->PlayerCameraManager)
+        {
+            Row->SetStringField(TEXT("cameraLocation"), PC->PlayerCameraManager->GetCameraLocation().ToString());
+            Row->SetStringField(TEXT("cameraRotation"), PC->PlayerCameraManager->GetCameraRotation().ToString());
+        }
     }
     if (Gallery)
     {
@@ -1453,10 +1485,11 @@ void ASSWave10Soak::Tick(float Dt)
     auto *GM = Mode.Get();
     auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
     if (!GI ||
-        FPlatformTime::Seconds() - StartedAt > (Gallery    ? 240
-                                                : Wave1    ? 90
-                                                : Station5 ? 240
-                                                           : 180) ||
+        FPlatformTime::Seconds() - StartedAt > (OutpostReview ? 300
+                                                : Gallery     ? 240
+                                                : Wave1       ? 90
+                                                : Station5    ? 240
+                                                              : 180) ||
         !FMath::IsNearlyEqual(GetWorld()->GetWorldSettings()->GetEffectiveTimeDilation(), 1.f) ||
         FApp::UseFixedTimeStep() || (GEngine && GEngine->bUseFixedFrameRate))
     {
@@ -1473,6 +1506,11 @@ void ASSWave10Soak::Tick(float Dt)
     if (MainMenu)
     {
         TickMainMenu(Dt);
+        return;
+    }
+    if (OutpostReview)
+    {
+        TickOutpostReview(Dt);
         return;
     }
     if (WormholeReview)
@@ -1927,6 +1965,9 @@ void ASSWave10Soak::WriteResultAndExit()
             Expected = {TEXT("MainMenuNormal"), TEXT("MainMenuNewGame"), TEXT("MainMenuSettings")};
         else if (Gallery)
             Expected = {TEXT("GalleryDoorway"), TEXT("GalleryShowcase"), TEXT("GalleryAssets"), TEXT("GalleryReturn")};
+        else if (OutpostReview)
+            Expected = {TEXT("OutpostPad"),    TEXT("OutpostServices"), TEXT("OutpostApartment"),
+                        TEXT("OutpostFlight"), TEXT("OutpostReturn"),   TEXT("OutpostPitStop")};
         else if (WormholeReview)
             Expected = {TEXT("Entrance"), TEXT("Transit"), TEXT("DeepTransit"), TEXT("Exit")};
         else if (Station5)
@@ -1969,6 +2010,8 @@ void ASSWave10Soak::WriteResultAndExit()
         Failure = TEXT("Gallery return/session checks failed.");
     if (Failure.IsEmpty() && MainMenu && !MainMenuStatePreserved)
         Failure = TEXT("Title menu account/session preservation failed.");
+    if (Failure.IsEmpty() && OutpostReview && !OutpostReviewComplete)
+        Failure = TEXT("Outpost integration did not complete all scene, service, departure and return checks.");
     const FString Csv = CaptureResult.Get();
     const bool Success =
         Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && (AllFramesForeground || OffscreenVisuals);
@@ -1977,6 +2020,7 @@ void ASSWave10Soak::WriteResultAndExit()
                                                      ? TEXT("UI_REFRESH_RENDERED_REVIEW")
                                                  : MainMenu       ? TEXT("TITLE_MENU_RENDERED_REVIEW")
                                                  : Gallery        ? TEXT("ALIEN_GALLERY_SCRIPTED_VISUAL_REVIEW")
+                                                 : OutpostReview  ? TEXT("OUTPOST_SCRIPTED_INTEGRATION_REVIEW")
                                                  : WormholeReview ? TEXT("WORMHOLE_SEEDED_VISUAL_REVIEW_NORMAL_STATS")
                                                  : WeaponReadability ? TEXT("WEAPON_READABILITY_SCRIPTED_NORMAL_STATS")
                                                  : Wave1             ? TEXT("WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS")
@@ -1988,6 +2032,16 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("weaponReadabilityReview"), WeaponReadability);
     Result->SetBoolField(TEXT("mainMenuReview"), MainMenu);
     Result->SetBoolField(TEXT("wormholeReview"), WormholeReview);
+    if (OutpostReview)
+    {
+        Result->SetBoolField(TEXT("outpostReviewComplete"), OutpostReviewComplete);
+        Result->SetBoolField(TEXT("outpostFreeFlightDeparture"), OutpostDepartureVerified);
+        Result->SetBoolField(TEXT("outpostFreeFlightReturn"), OutpostReturnVerified);
+        Result->SetNumberField(TEXT("outpostServicesChecked"), OutpostServicesChecked);
+        Result->SetNumberField(TEXT("outpostPitStopServicesChecked"), OutpostPitStopServicesChecked);
+        Result->SetBoolField(TEXT("outpostSeededPitStopSupported"), OutpostPitStopSupported);
+        Result->SetNumberField(TEXT("outpostFloorAndClearanceSamples"), OutpostFloorChecks);
+    }
     if (WormholeReview)
     {
         Result->SetBoolField(TEXT("wormholeSeededFlight"), WormholeReviewSeeded);
@@ -2031,6 +2085,7 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("suitableForPerformanceFinding"), !Wave1 && !CaptureVisuals && AllFramesForeground);
     Result->SetStringField(TEXT("scenario"), MainMenu         ? TEXT("MainMenu")
                                              : Gallery        ? TEXT("Gallery")
+                                             : OutpostReview  ? TEXT("OutpostReview")
                                              : WormholeReview ? TEXT("WormholeReview")
                                              : Wave1          ? TEXT("Wave1")
                                              : Station5       ? TEXT("Station5")
@@ -2074,7 +2129,17 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetNumberField(TEXT("approachSimulationSeconds"), ApproachSeconds);
     Result->SetNumberField(TEXT("peakThreats"), PeakThreats);
     Result->SetNumberField(TEXT("wallSeconds"), FPlatformTime::Seconds() - StartedAt);
-    if (MainMenu)
+    if (OutpostReview)
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("Fresh isolated home. Scripted walker placements at real service approaches, normal Interact panel "
+                 "openings; sampled floor and upper-capsule clearance along the apartment route (doors excluded from "
+                 "geometry probes). Authored cameras, ordinary StartFreeFlight/takeoff and EndFreeFlight return, exact "
+                 "account/run roundtrip. Then isolated Wave5 Station seeding, EnterStation and four active-run service "
+                 "panels without selecting any save/purchase action. No physical input, actual apartment traversal, "
+                 "landing approach, full run or "
+                 "performance claim."));
+    else if (MainMenu)
         Result->SetStringField(TEXT("fixture"),
                                TEXT("Fresh inactive startup title, exact imported Figma textures required. "
                                     "Synthetic no-selection/NewGame/Settings focus; real rendered button centers "
