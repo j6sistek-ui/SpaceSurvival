@@ -340,3 +340,10 @@ tail-only smoothing capped at 3 mm and three material slots. Original geometry r
 in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
 and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
 passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.
+
+
+## Original wormhole transit assets
+
+`ContentSource/WormholeTransit/Generate.py` and its HLSL source reproduce the original tube geometry and flowing material. `Scripts/AuthorWormholeTransit.py` imports only `/Game/SpaceSurvival/Meshes/SM_WormholeTunnel` and `/Game/SpaceSurvival/Materials/M_WormholeTransit`; it does not regenerate the rest of the game or alter vendor assets. The generated Unreal assets are tracked and covered by the existing `/Game/SpaceSurvival` cook directory. The optional entrance accent still uses the existing private combat VFX assets.
+
+Run the author script with the installed editor using `-RenderOffscreen -unattended -ExecutePythonScript=<absolute script path>`. Use `Scripts/CaptureSpaceLook.ps1 -WormholeReview -Sequence` for an isolated normal-stat, scripted Wave 5 entrance/transit/exit visual review. Its evidence is a seeded transition and normal chase camera, not a full Wave 5 journey, physical-input, audio or performance acceptance. No additional marketplace purchase or plugin is required.
