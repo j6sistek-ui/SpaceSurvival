@@ -9,6 +9,12 @@ PR, CI run, or prepare command uploads automatically. Source PRs remain unmerged
 - First upload verified: upload 19226459, build 1975861, version 0.1.14-alpha; page displays 471 MB.
 - Phase 1 remains PARTIAL. Distribution readiness does not establish gameplay acceptance.
 
+## October1:0.1.22-alpha published
+
+Owner authorized the current Wayfarer station and furnished apartment in the game and an itch tester update with known issues. Windows Development package at e6c2a87 and focused six-stage packaged smoke pass. Official butler validation/dry-run/upload succeed; fresh status confirms build2048604 (from2003058) READY on upload19226459, version0.1.22-alpha. [Published receipt](validation/2026-10-01-itch-0.1.22-alpha-published.json). Payload51files/8772436373bytes; patch3.43GiB,58.02percent savings,55.55percent reuse. [Package receipt](validation/2026-10-01-itch-0.1.22-alpha-package.json) and [integration evidence/limits](validation/2026-10-01-wayfarer-release.md).
+
+Includes the new station/apartment, replacement hero, harder survival and wormhole work. Original station and second flat BuildingSandbox remain editable. Owner subsequently approved source consolidation: PR64/66/67/68 merged; main e4489d5 matches packaged runtime/configuration. Pending testing and voice scope move to one follow-up PR. Material warnings, physical walkthrough/controller, natural ten-wave run, listening, clean-PC/update-save safety and representative60FPS remain open. Merge/upload is not Phase1 acceptance.
+
 ## September22:0.1.21-alpha.1 published
 
 The owner explicitly approved publishing the mixed-field baseline and later asked that a star-visibility concern be logged without interrupting upload. Official butler validation and dry-run passed; upload completed and fresh status confirms **windows-alpha build2003058 READY**, version0.1.21-alpha.1, upload19226459, replacing1993461. The patch is2.17GiB, with51.45percent old-data reuse. Payload51files/5223860220bytes; source4fd02930dbc0e13fb52aca4626e1147a4c8d60b8. [Published receipt](validation/2026-09-22-itch-0.1.21-alpha.1-published.json) and [package receipt](validation/2026-09-22-itch-0.1.21-alpha.1-package.json).

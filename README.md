@@ -2,6 +2,8 @@
 
 **Current local game:** use **Play SpaceSurvival - Current** or **Unreal Engine** on the desktop; both now point to the repaired game checkout. The latter opens UE5.8 directly into the game. [Launch paths and package distinction](docs/BUILD_RUN.md); [replacement hero review](docs/validation/2026-09-24-replacement-hero.md).
 
+**Tester update:** [itch0.1.22-alpha](https://j6sistek-ui.itch.io/space-survival) is published (build2048604), with Wayfarer Exchange, its apartment and current gameplay. Completed PRs are merged; [remaining testing and Phase1 gaps](docs/KNOWN_ISSUES.md#october1-consolidated-phase1-follow-up) stay open.
+
 Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains PARTIAL.**
 
 **[Open work and your next review](docs/KNOWN_ISSUES.md)** is the single active task and priority log. Start there; it contains the owner review queue, all hands-on acceptance checks, unresolved problems and closure evidence.

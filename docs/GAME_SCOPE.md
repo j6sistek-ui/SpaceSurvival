@@ -1,6 +1,6 @@
 # SpaceSurvival
 
-**September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
+**Historical September 22 control proposal — superseded by the later owner-approved arcade preset:** Retained for provenance only; current controls are in [Build and run](BUILD_RUN.md) and the acceptance record in [Known issues](KNOWN_ISSUES.md). The later preset uses left-stick nose steering and bumper tap dash/bank with hold-to-roll. Earlier temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
 
 ## Owner amendment — September 21, 2026 evening
 
@@ -1136,6 +1136,16 @@ Delivery methods include:
 - Acornaut reactions
 
 Avoid long dialogue trees and major campaign dependencies in Phase 1.
+
+## Owner amendment — October 1, 2026: character voices and remembered events
+
+Player heroes, enemies including the Director, and station NPCs should have custom authored, audible dialogue with a consistent voice identity. Short reactions should respond to actual gameplay: danger, damage, kills, rewards, arrival and noteworthy survived encounters. Hero lines must follow the selected character rather than always naming Acornaut.
+
+Station chatter may remember a bounded set of facts from the player's current run. For example, a remark about barely escaping a black hole requires a recorded close encounter with, and survival of, the existing gravity anomaly; a spawned hazard or wave number alone is insufficient. This example does not add a black-hole hazard family. Do not invent a past encounter on resume or replay the same acknowledgement on every approach.
+
+Keep speech occasional and readable through priorities, cooldowns and limited simultaneous playback. Optional subtitles accompany the selected line, but turning subtitles off must not mute voices. Authored recordings and event rules are sufficient; no runtime language model, online service, long dialogue tree or extra gameplay roster is required. The five-wave station cadence and other locked Phase 1 counts remain unchanged.
+
+This is an authorized presentation requirement, not a claim that voice assets or event memory are implemented or accepted. The [implementation gates](../IMPLEMENT.md#character-voice-and-presentation-gate) define verification; [Known issues](KNOWN_ISSUES.md) owns remaining work.
 
 ---
 

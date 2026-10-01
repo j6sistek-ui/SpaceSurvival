@@ -1,0 +1,39 @@
+{
+  "status": "READY",
+  "verified_utc": "2026-10-01T21:14:26.245832+00:00",
+  "version": "0.1.22-alpha",
+  "target": "j6sistek-ui/space-survival:windows-alpha",
+  "page": "https://j6sistek-ui.itch.io/space-survival",
+  "upload_id": 19226459,
+  "build_id": 2048604,
+  "previous_build_id": 2003058,
+  "source_commit": "e6c2a87ca3971749b7a19ace848faa10d4f237fd",
+  "consolidated_main": "e4489d5cf8652896ba9825be956969936b530ec5",
+  "merged_prs": [
+    64,
+    66,
+    67,
+    68
+  ],
+  "payload_files": 51,
+  "payload_bytes": 8772436373,
+  "release_manifest": "Artifacts/Releases/0.1.22-alpha/release.json",
+  "release_manifest_sha256": "371b01ddb417632f6532aec641e63816d0b57c11bb72d0aa2c3097bb950ff279",
+  "package_receipt": "docs/validation/2026-10-01-itch-0.1.22-alpha-package.json",
+  "package_receipt_sha256": "0b4a7cae02e4bf0d2bb70fb7ab34f7e5e78006e2b869495b1e113cd902b390a3",
+  "butler_validation": "PASS",
+  "butler_dry_run": "PASS",
+  "butler_upload": "PASS",
+  "patch_gib_reported": 3.43,
+  "savings_percent_reported": 58.02,
+  "old_data_reuse_percent_reported": 55.55,
+  "fresh_data_gib_reported": 3.63,
+  "server_status_sha256": "65fa55a1eee3f892e41a6713efaba219df001cbf778862a561de9b1e7b6bad3c",
+  "packaged_capture": "bf48cdc01570484fb59278620460a277",
+  "limitations": [
+    "Phase1 remains PARTIAL; merge and publication do not establish owner acceptance.",
+    "Natural full run, physical input, traversal/docking, listening, clean-PC/update-save and performance remain open.",
+    "Known blind material warnings and instanced-material fallback retained.",
+    "Follow-up voice/event-memory work is scoped only; no speech clips or implementation shipped."
+  ]
+}
