@@ -3,17 +3,43 @@
 ## October6 owner station refinement
 
 **RPT-20261006-04 — Lead-owned layout/material/design pass; owner approval pending per room.**
-**Superseding status, October6 21:16UTC:** TableSettings2 and BarPresentation4 are
-saved; latest preview SHA3b28fe63c673256b295eb974bd6b1d3c605b48120502e456dc1100e21a4f3752.
-Their native author and three/four-view capture processes exit0. Counter and shelf
-finishes are cleaner, but the four rustic stools and broad flat front panels still
-miss the owner's space-station bar references. Lead and independent bar-only review
-is about6/10; this is not owner acceptance. A bounded furniture correction is next.
-Three Bar Counter People clips now retarget to the verified existing female-alien
-asset without a wholesale rebuild. Eleven private assets and six corrected pose
-captures exist; actual room fit is being tested unsaved. Nyxar remains in the saved
-bar until female placement passes review. Natural motion, prop contact and final
-integration remain lead-owned. Label every shared photo current saved, unsaved
+**Superseding status, October6 23:14UTC:** Furniture1 replaces four stools with fitted
+owned chair meshes; FemaleBartender1 saves the verified female-alien staff actor.
+Latest preview SHAab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64.
+Both authors exit0. ChairFinish2 replaces the rustic finish with private graphite/satin;
+Lighting1 increases dedicated bar illumination and adds two housed counter washes.
+Those authors and matching three-view Before/After captures exit0. The female is
+readable now; broad counter panels and simple shelving still need material depth.
+The existing cyan ceiling/general lights remain unchanged. The new Type02 leg-only correction
+repairs the buried feet without lifting the whole actor or changing hand gestures.
+Its save fixture passes but its process crashes after LogExit; fresh actual-room and
+saved-actor verification subsequently exit0. The saved actor completes33.357seconds
+of natural idle playback, with sampled sole/hand contact and loop checks. This is one
+conversational idle, not the requested varied prop-handling bartender routine.
+**Owner feedback:** bar/bartender are too dark and insufficiently futuristic. Add
+local face/hand light, illuminated shelving and recessed housed counter accents;
+preserve the approved brighter ceiling/general lighting. Owner also requests glass
+ordering tablets and image-led fictional ship-repair, FUI-lawyer, warranty and bounty
+ads. Generic text boards are unfinished and must be replaced with designed artwork,
+logos and readable hierarchy. Six local Qwen illustrations and four distinct ad
+layouts are saved, with illustrated food/drinks menus and mounted glass tablets.
+The owner supplied three poster standards and requests comparison after implementation.
+BarDisplays3 saves thirteen private assets and nineteen supported display actors,
+with two owned TVs, two glass menus and replacements for five plain text labels;
+native author exits0. Actual SIE capture verifies all four ads and their return after
+48.202seconds. Initial native dimness is rejected despite technical success.
+Readability1 adds seven private display-gain/opacity derivatives and retires four
+overlapping old graphics; eight fresh views confirm readability without changing
+general or ceiling lighting. Its first capture failed before SIE on an incorrect
+transient-editor-visibility assertion; corrected capture exits0. TabletPlacement1
+moves only ten existing menu/support actors onto two measured dry counter patches,
+correcting the visually rejected sink/faucet placement. Fresh four-view capture exits0,
+preserving436guardedfiles/3saves and confirming supported docks and readable glass.
+Lead/independent comparison: artwork8/10, native display presentation7.5/10, bar7/10;
+whole lounge remains6.5–7/10 and owner-unapproved. Remaining display gaps are cleaner,
+less distinctive typography/detail than the poster references and simple dock hardware.
+No order/economy gameplay is claimed. Lead owns further implementation and visual review.
+Label every shared photo current saved, unsaved
 test or older comparison, with temporary characters/unfinished elements stated first.
 
 **Earlier verified status, October6 20:15UTC:** PickupV3 repairs the behind-body carrying
@@ -31,7 +57,7 @@ and general lighting; reconsider only after furnishing and actual gameplay revie
 Owner selects the female alien as bartender with varied Bar Counter People mocap.
 Arcade circulation has since passed91.365m of ordinary movement with no falling,
 unsupported steps or discontinuities; table settings are saved. Next: improve the
-bar furniture, finish female bartender fit and continue room composition. No room
+bar panel/material depth, varied female bartender prop service and room composition. No room
 approval, canonical replacement or new package.
 
 **Owner direction, October6 14:34UTC:** overall4/10 vs previous2/10; cleanup and

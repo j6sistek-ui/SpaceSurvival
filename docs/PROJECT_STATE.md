@@ -36,13 +36,17 @@ front of the torso. ArcadePresentation2 moves Credit Exchange to the perimeter,
 lights cabinet faces locally and gives two center fixtures a visible diffuser.
 The owner explicitly likes the brighter cyan trim/general lighting; it is preserved.
 Latest saved preview SHA is
-`3b28fe63c673256b295eb974bd6b1d3c605b48120502e456dc1100e21a4f3752`.
+`ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`.
 TableSettings2 adds three supported table props and repositions one cup stack;
 its author and three-view capture exit0. BarPresentation4 saves private metal
 finishes, framed bottle shelving and supported counter props while preserving the
 counter height, furniture footprint and approved ceiling lighting. Its author and
-four-view capture exit0. Actual visual review still finds rustic stools and overly
-flat front panels; the futuristic bar is not accepted. Earlier bar attempts stopped
+four-view capture exit0. Furniture1 then fits four owned chair meshes, with native
+author/capture exits0. ChairFinish2 saves a private graphite/satin material, and
+Lighting1 improves female face/suit visibility and local shelving/counter illumination.
+Both authors and matched three-view Before/After captures exit0. Approved ceiling and
+general lights are unchanged. Broad front panels remain flat; the futuristic bar is not
+accepted. Earlier bar attempts stopped
 before saves on prop support and a reflection API error; those failures remain recorded.
 Both earlier native author processes and the fresh13view V3 capture exit0. Those13views
 are paused-pose/room evidence, not another natural playback test. Earlier import
@@ -55,8 +59,30 @@ clips have been retargeted to the existing female-alien presentation, with11priv
 assets saved and six corrected native pose captures. No complete animation rebuild
 is indicated. The initial capture is rejected for a fixture orientation error;
 the corrected neutral poses do not establish counter contact or final lighting.
-Nyxar is still the saved bartender; female placement and motion are being tested
-unsaved in the actual room. Room acceptance remains open.
+FemaleBartender1 now replaces only the saved staff actor's presentation with the
+verified female and a grounded conversational Type02 idle. Its native save and fresh
+33.357second natural playback verification exit0. The earlier grounding asset save
+retains a shutdown crash; fresh processes successfully reload and verify that clip.
+Varied service actions and hand props remain unfinished. Owner rejects the dark bar
+lighting and requests glass order tablets and image-led humorous fictional ads;
+local lighting is saved and six local Qwen illustrations have been composed into
+four distinct fictional campaigns plus image-led hospitality graphics. Native
+screen/tablet integration saves thirteen private assets, two owned TV frames,
+two supported glass menus and replacements for five plain labels; native author
+exits0. Actual SIE capture verifies the full48.202second four-ad cycle; initial
+dimness/overlapping labels are visually rejected. Readability1 saves seven private
+gain/opacity materials and retires four old graphics; eight fresh views confirm readable
+art and menus with unchanged general/ceiling lighting. Retained Capture1 fails before SIE
+on an incorrect transient-editor-visibility assertion; corrected Capture3 exits0.
+TabletPlacement1 then moves ten existing menu/support actors to measured dry countertop
+patches, with no new assets/lights. Its fresh four-view capture exits0 and preserves
+436files/3saves, confirming grounded docks with the sink/faucet overlap removed.
+The final TV/materials remain those verified in ReadabilityCapture3. Artwork is8/10,
+native displays7.5/10 and bar7/10 against owner references; these are lead/independent
+ratings, not owner acceptance. Full-room composition, material depth and serving motion
+remain unfinished. Earlier two import attempts fail before saving and are retained.
+The current bar/lounges remain unapproved, and no new order/economy gameplay or
+new Windows package is implied.
 [Arcade evidence](validation/2026-10-06-local-arcade.md).
 Build28 is the
 latest Editor build; Build26 added seamless Phoenix seating/camera/parked cabin lights.

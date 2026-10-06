@@ -843,3 +843,277 @@ Earlier room images are older evidence, and the six bartender
 studio poses are unsaved staging; neither should be presented as the newly saved
 bar. Current saved / unsaved staging / older image identity and exceptions must
 precede images sent for owner review. Whole-room acceptance remains open.
+
+## Measured owned chair replacement, October 6
+
+`StationBarFurnitureProbe1.json` succeeds with lead-observed native exit0 and
+unchanged map/sources/saves. Winding-independent central triangle sampling finds
+the original stool seat at89.7382cm. The owned `SM_CyberChair01` has local central
+seat59.3978cm and minimumZ−33.2747cm; its total bounding height is not the seat
+height. Uniform scale0.9683368384 preserves the original sitting height while
+grounding the imported negative pivot. Measured backrest orientation determines
+yaw90, facing the bar.
+
+`StationBarFurniture1.json` saves only the owner map; the lead observes native
+exit0. Receipt SHA256 is
+`15de19cdbfb4ddeab9b580c767df4e454fedd58bd13ab663144cde7cddfd0425`;
+preview SHA becomes
+`860dc3325ba8a1df83062ff074d35a98eb9b888394256791f97bba78c749a391`.
+Only four existing empty stool actors receive the owned chair mesh, its original
+material, fitted scale and pivot correction. Bounds centers, actual sitting
+height, counter worktop, ceiling and every existing light are preserved. Native
+floor support, wider-volume and frontage capsule queries pass. All344protected
+packages, other maps and three production saves remain unchanged; no new asset
+package is saved.
+
+`StationBarFurnitureCapture1/manifest.json` passes three matched saved-editor
+views with lead-observed native exit0. All365guarded files and three saves remain
+unchanged; PIE never starts. Lead and independent actual-image reviews confirm
+grounding, orientation and clear circulation, but the native chair finish still
+reads as brown/distressed metal and upholstery. Geometry replacement alone does
+not resolve the owner's western-style concern. Bar quality remains about6/10,
+whole lounge6.5–7/10, unapproved. Counter-front detailing is deferred while a
+bounded private chair-finish candidate is inspected; no further material save or
+accepted improvement is implied by this checkpoint.
+
+`StationBarChairFinishProbe1.json` retains a failed read-only assumption: roughness
+was expected to have a direct texture input, but it is disconnected. No texture
+export or source/scene save occurred; preservation passes. Versioned Probe2 records
+arbitrary/unconnected outputs instead, exports the three actual Base/ORM/Normal
+textures, and succeeds with lead-observed native exit0. Source/map/save hashes
+remain unchanged. Native links are BaseRGB, NormalRGB, ORM Bmetallic and Rambient
+occlusion; roughness is unconnected.
+
+Offline UV-region sampling confirms that B is an exposed-metal/wear mask, not a
+uniform frame selector: the central seat is almost zero, while lower-frame samples
+span0–255. A high-contrast dark-fabric/bright-steel remap would reproduce the chips.
+The prepared private finish therefore keeps the endpoints close, retains texture
+luminance/normal/AO detail and explicitly connects bounded Groughness. This is an
+authoring candidate, not yet a saved or visually accepted material. The owner's
+additional request for local bar/bartender illumination is separate and preserves
+the approved ceiling/general lights.
+
+ChairFinish1 stops during preflight, before report/map/asset saves, because the
+helper/wrapper copied the probe digest with one extra character. The actual Probe2
+file is unchanged; this is a65-character constant error, not stale evidence. The
+lead observes native exit0. Failed helper, wrapper, capture recipe and launch error
+are preserved under `FrozenChairFinish1`. Attempt2 changes only the tracked helper's
+digest using the file's computed64-character SHA256, with new wrapper/output names;
+365package and11recipe preflight checks pass. Native author/render outcome is still
+pending at this repair checkpoint.
+
+## Grounded female bartender candidate, October 6
+
+`StationBartenderGrounding1.json` saves one new private Type02 clip while retaining
+the owner map860dc332 and original assets. The leg-only correction has991keys,
+34native pose readbacks and66midpoint checks. Receipt SHA256 is
+`5b8b234eef0800028771e8411f585a31bbbb938b7edb6aa5ce0f23e458b28ca8`.
+The report succeeds and preservation passes, but the lead observes0xc0000005
+after LogExit; this late native-process failure is retained rather than reported
+as a clean author exit.
+
+A fresh process loads that saved clip for
+`StationBartenderGroundedRoomCapture1/manifest.json`, SHA256
+`d28a8c4b31d6e87b524b1285db920b9dd48f029f488773861e65608ab15d5d6d`.
+Two actual room images and a3.2538second natural wrap segment pass, with sampled
+bone discrepancy at most0.0268cm and feet approximately0.03–0.106cm above the floor.
+The lead observes native exit0 and visually grounded feet. Files, saves and ship
+state remain unchanged; PIE stops. Existing BP_Blinds/VSM warnings remain noted.
+These are **unsaved candidate actor views**: the clip is saved, but the female
+bartender has not yet replaced the saved Nyxar. No held-object service routine,
+full-loop visual acceptance or owner approval is established.
+
+`StationFemaleBartender1.json` subsequently integrates the grounded Type02 into
+the existing ambient staff actor and succeeds with lead-observed native exit0.
+Receipt SHA256 is
+`5e7e2d14902ed2f6b1aaed4ec646891409a49807f1046bec59b23bf2903fc83d`;
+the owner preview becomes
+`47cc69ee2c4f4833289dcda0eb46e5c7150747ce6303ee94114532fbbbbba1a8`.
+This supersedes the preceding candidate-only boundary for that saved actor.
+The existing role/root is retained with the normalized female mesh and private
+grounded idle; no counter or room-light change is included. Source/map/save
+preservation passes. Fresh saved full-loop playback is a separate pending check
+at this author checkpoint; one saved actor does not establish varied service
+actions, held props or owner acceptance.
+
+`StationFemaleBartenderSavedPlayback1/manifest.json`, SHA256
+`144a773ac441425f49d6577929cae45507f4ac4ee840f4e28bd9f0a7a3f329c9`,
+then passes33.357seconds of actual playback covering a full cycle and produces
+two native images; the lead observes native exit0. Maps, saves and ships remain
+unchanged. This closes the pending saved-cycle fixture above, not the remaining
+bar lighting, varied activity, held-prop or owner-quality acceptance gaps.
+
+## Saved chair finish and local bar lighting, October 6
+
+`StationBarChairFinish2.json` supersedes the pending author result above: success,
+preservation pass and lead-observed native exit0. Receipt SHA256 is
+`e27c35f3c949099157b31025b589a987a39637b90331367901e699796b127caa`;
+the owner preview becomes
+`3edd4e752c6559003dc602789271933755f7f03b6db9abaa4b63632e538b50fc`.
+It saves one private `M_BarChairGraphiteSatin` derivative and overrides the four
+chair components while retaining their meshes, transforms and measured seat
+height. The subdued graphite/satin graph retains normal, AO and metallic detail
+and connects bounded ORM-G roughness. All365 protected packages, six other maps
+and three production saves remain unchanged. ChairFinish1's failed digest
+preflight remains recorded; the source probe itself did not change.
+
+`StationBarLightingBeforeCapture1/manifest.json`, SHA256
+`ecaa8479cada13e2aa39ffb9fc5c60c308890888e3e7ffbad11217ee3a9dd2b2`,
+then succeeds with lead-observed native exit0. Its three actual saved-editor
+views show the new chair finish with the previous bar lighting; they substitute
+for the prepared, unrun ChairFinishCapture2. All388 guarded files and three saves
+are unchanged; PIE never starts. This is a saved-scene baseline, not a lighting
+After comparison or visual acceptance.
+
+`StationBarLighting1.json` subsequently succeeds with lead-observed native exit0.
+Receipt SHA256 is
+`c9f69f1384460d60519c48b86cc571814e784a9a387ead01c4dc1344c15da2c4`;
+the saved owner preview becomes
+`af4b03a41a285812e4127b560a5544ff92d21180db059d46d05a0a64ae0cf312`.
+Four existing bar lights are retuned/reaimed, two short-range shadowless counter
+washes and supported shelf hoods/lenses are added, and only the map is saved.
+All367 protected source packages, six other maps and three production saves
+remain unchanged. The approved ceiling/general lights, furniture and saved
+female bartender remain intact. Matched After images and visual review are
+pending at this checkpoint. Canonical Wayfarer, packaging and publication are
+unchanged; no room, gameplay or Phase1 acceptance is claimed.
+
+`StationBarLightingAfterCapture1/manifest.json`, SHA256
+`130f3c660ff9d809b05594d377d371f82767acd902eea5d0b252bb074a1d3b35`,
+then passes with lead-observed native exit0. Three actual saved-editor After
+images use the same cameras as Before; all386 guarded files and three saves stay
+unchanged, and PIE never starts. The lead and independent reviewer inspect all
+six matched images: the female face/suit reads more clearly, the private chair
+finish remains, and the approved ceiling is preserved. The hands remain behind
+the counter in these views. Shelf/fascia glare remains a visible limitation and
+is held for review alongside the upcoming displays, rather than adjusted again
+from this fixture alone. Bar assessment is approximately6.5–7/10; complete-room
+and owner acceptance remain open. This supersedes only the pending After capture
+above, not the wider quality or gameplay gaps.
+
+## Local illustrated bar displays, October 6
+
+Six illustrations were generated locally with the existing ComfyUI Qwen-Image-2.1
+workflow. Successful generation histories, API graphs, source PNGs, typography
+recipe and exact hashes remain under `.agent/local/StationRefinement/BarDisplays1`.
+The final art manifest SHA256 is
+`db4c74c112670f0da65532d0f8c35727b7212e7de76e28a61779d7ad8f4f1446`.
+Four original fictional campaigns cover Bent Orbit ship repair, Vel & Void FUI
+counsel, Hull Assured warranty and Port Authority's stolen-latte notice. Two
+additional illustrations supply drinks/food menus and glass tablet layouts;
+venue branding and a four-frame atlas complete the authored graphics. The lead
+approved the final image-led compositions for import. This is local decorative
+art, not a purchase, communication service, ordering system or bounty mechanic.
+
+Two failed native author attempts are retained before the successful save:
+
+- `StationBarDisplays1.json`, SHA256
+  `b96237a89a3bf92abf730b6b129720e7c664552b107048223ec3d07518daea8d`,
+  fails because the floor query's dictionary is used as a scalar height. Attempt2
+  explicitly reads the returned hit point's Z coordinate.
+- `StationBarDisplays2.json`, SHA256
+  `dea78efb44faf898654da738824acde93aa50eab9af8df67cda084f2d1bd17fd`,
+  rejects the first tablet footprint because its actual flat support is the
+  92.24733 cm recess, not the 107.55418 cm broad worktop. Attempt3 uses that measured
+  recess with a continuous physical pedestal to the common glass height; the
+  0.08 cm flatness tolerance and prop-clearance checks remain.
+
+Both failed attempts have lead-observed native exit0, empty saved-asset lists,
+preservation pass and unchanged owner map `af4b03a4…cf312`. Their frozen inputs and
+errors remain evidence. Material graph compilation had succeeded before these
+placement failures; it did not establish saved assets or accepted pixels.
+
+`StationBarDisplays3.json` then succeeds with lead-observed native exit0 and
+preservation pass. Receipt SHA256 is
+`b240150ae2d43b27b00866ad7da9eec6bb082504c662a56dbc5d821a24a24d14`;
+the saved owner preview becomes
+`3233f92819ff6eb306393b2306676516a11b883306228b89896742ac7c060064`.
+Thirteen new private packages contain six textures and seven materials. Nineteen
+placed actors add two owned articulated TV assemblies, two grounded tablet docks
+with physical glass supports, menu graphics and a venue banner; five old text
+labels are hidden. TV screen slot5 is replaced while the other seven native
+frame slots remain intact. Both tablet support footprints measure 92.24733 cm.
+All376 protected source packages, six other maps and three production saves
+remain unchanged; no new lights, furniture moves or animation edits are included.
+The TV material is designed to change advertisements every12 seconds over a
+48-second cycle, but natural playback, orientation, contrast and actual in-room
+readability still require the pending capture. This saved-preview result does
+not replace canonical Wayfarer, update the package or establish room acceptance.
+
+`StationBarDisplaysCapture3/manifest.json`, SHA256
+`a67316730484b9468e3c9b05f16e091019edcc83299cf0b9b921a7192746c8c3`,
+then passes with lead-observed native exit0: 13 actual SIE images and
+48.2016368 seconds between the first and fifth views of the same TV. The lead's
+pixel review identifies Repair → Lawyer → Warranty → Bounty → Repair, confirming
+the natural material cycle rather than merely elapsed time. All423 guarded files,
+three production saves and ship state remain unchanged; PIE stops.
+
+**Visual result rejected:** the new TV advertisements, glass tablets, menus and
+venue banner are too dim under the unchanged room exposure. The capture's technical
+pass does not establish suitable readability or accepted display quality. A new
+private display-gain correction and removal of the obsolete left blue board behind
+the TV are being prepared. Ceiling/general lighting and global exposure remain
+protected. This correction has not yet saved or passed a fresh visual review at
+this checkpoint; earlier author/capture evidence remains intact.
+
+`StationBarDisplayReadability1.json` subsequently saves seven new private material
+derivatives and the owner preview, with preservation pass and lead-observed native
+exit0. Receipt SHA256 is
+`c103b0b6ef7db9ee6f38d37502d49c5232429d82de1e893eeeaad43ba8f0270f`;
+the preview becomes
+`0f74e6ee19f8e384a56b8df58ce14c7c40475c6d29a7eafdb38d853b04e3e2fa`.
+Opaque displays use effective linear gain6; the two glass materials use gain7
+with a0.68 minimum opacity. Original artwork, UVs and Time-driven ad shader remain
+unchanged. Four obsolete graphics retire: the S1 digital pane and heading behind
+the left TV, and the old arcade identity name/backing. Existing frames, posts and
+collision remain. No actors or lights are created, and no global exposure,
+ceiling/general lighting, furniture or animation is changed. All398 protected
+source packages, six other maps and three production saves remain unchanged.
+
+`StationBarDisplayReadabilityCapture1/manifest.json`, SHA256
+`f9e6eb6417cde08dc0c6ff4fe8644a1a9ffd449eb95dbf5320e2e3a1e6a4d3ac`,
+fails a capture guard before SIE or images: it incorrectly treats the transient
+editor-hidden flag as persisted state. Installed `Actor.h` marks that flag
+`Transient`; the saved actor/component visibility is a different check. The lead
+observes exit0, files/saves remain unchanged, and this failed fixture is retained.
+Capture2 is prepared but never run. Version3 checks persisted actor-hidden plus
+primitive visibility/hidden-in-game flags and records the transient flag only as
+a diagnostic; it also surveys actual dry counter support without edits or saves.
+
+`StationBarDisplayReadabilityCapture3/manifest.json`, SHA256
+`2332d7e1a20f99d299b27383ff56e860231e405642991acce29e01e0e3ae6961`,
+then passes with lead-observed native exit0. Eight actual SIE images confirm the
+saved display assignments/retirements; all433 guarded files, three saves and ship
+state remain unchanged, and PIE stops. This is a two-ad-phase readability review,
+**not a repeat of the complete48-second cycle**; the unchanged Time shader retains
+the prior full-cycle evidence. The lead finds the corrected TVs readable, while
+the tablets remain physically supported but visually awkward in the sink-like
+counter recesses. Relocation to measured dry worktop positions is in progress,
+with a fresh placement/capture result still pending. Room and owner acceptance
+remain open; this does not replace canonical Wayfarer or update a package.
+
+`StationBarTabletPlacement1.json` completes the bounded dry-counter correction
+with preservation pass and lead-observed native exit0. Receipt SHA256 is
+`8df4793c2f63c80b8add7f46a54c3eacf91cc0847a2e80ee5ac5b06a90089900`;
+the saved owner preview becomes
+`ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`.
+Frozen helper `RefineStationBarTabletPlacement.py`, SHA256
+`289359e5ef45dbe7c26b2ee8b7d6b20b0ce88803e759db2c2e98907aaa7be04d`,
+changes ten existing actor transforms, including shortened stems. The two dock
+centers move to measured dry worktop positions (3840,-4055) and (4265,-4055),
+with actual support107.55418 cm and unchanged glass center height126 cm. No new
+assets, materials, lights or animations are saved. All407 protected source
+packages, six other maps and three production saves remain unchanged.
+
+`StationBarTabletPlacementCapture1/manifest.json`, SHA256
+`bbe4b13c1d1a234e2c9446008bf8a98667f3057c677b0e6ea65a59a1fd37d080`,
+then passes with lead-observed native exit0. Four actual SIE views cover the two
+tablet details, bar quarter and wider lounge; all436 guarded files, three saves
+and ship state remain unchanged, and PIE stops. Lead pixel review confirms clearly
+grounded docks on dry worktops, clear of the sink/faucet areas, readable glass
+and no visible overlap. The unchanged TVs use ReadabilityCapture3 evidence;
+this run does not repeat the full ad cycle or any animation test. Current review
+estimates are source art8/10, native displays7.5/10, bar7/10 and full lounge6.5–7/10.
+These are quality assessments, not owner approval: the complete lounge remains
+below its target and unaccepted. Canonical Wayfarer and the published package
+remain unchanged. Earlier placement/visibility failures remain recorded above.

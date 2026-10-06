@@ -69,8 +69,14 @@
   rig. It retains the game's 178 cm fit, rather than reshaping the skeleton. Thirteen
   native samples per clip and six corrected paused studio views provide candidate
   evidence; the first studio capture is rejected for a transient actor orientation
-  error despite fixture success. Source/map/save preservation passes. No bartender
-  actor replacement or working-hand/prop contact has been integrated by this step.
+  error despite fixture success. Source/map/save preservation passes. A later private
+  Type02 leg-grounding derivative saves successfully but the author process crashes
+  after LogExit; a fresh native process reloads it, renders two room views and a short
+  natural wrap segment, and exits0 with grounded feet. FemaleBartender1 subsequently
+  saves the normalized female/grounded idle into the existing ambient staff role
+  with native exit0 and preserved sources. Fresh saved33.357second full-cycle playback
+  plus two native images passes with exit0 and unchanged maps/saves/ships. Working-hand/
+  prop contact and varied service actions remain unintegrated; bar quality is unaccepted.
 - **Owned furnishing fit:** native inspection resolves current CyberPunkBarAssetSet01
   counters and CyberpunkRestaurant stools/tableware. Exact serving surfaces are
   107.554 cm broad / 92.247 cm recessed; the 116.01 cm bounding box and earlier positive-face
@@ -82,8 +88,24 @@
   after three retained failed attempts. Native author exits 0; counter height,
   vendor sources, ceiling and existing lights are preserved. Four fresh saved-editor
   views confirm cleaner counter/shelves and grounded props, but the rustic stool
-  silhouette and flat fascia still fall short of the references. Finished room
-  quality remains unaccepted; an owned sci-fi chair alternative is being assessed.
+  silhouette and flat fascia still fall short of the references. BarFurniture1
+  then replaces the four empty seats with owned SM_CyberChair01 at uniform0.968337,
+  preserving actual89.738cm seat height and bounds centers. Native author and three
+  matched saved-editor captures exit0 and preserve source packages/saves. The native
+  brown/distressed chair texture remained a visible western cue. Native texture
+  inspection establishes ORM-B as exposed-metal/wear rather than a clean frame
+  mask. ChairFinish2 saves a private graphite/satin derivative retaining normal/AO
+  detail and bounded G roughness, preserving the four meshes and seat heights;
+  native exit0 and source/map/save preservation pass. Three saved-editor Before
+  views substitute for a separate chair capture. BarLighting1 then retunes four
+  local lights and adds two short-range washes plus shelf housings/lenses, saving
+  only the owner preview with native exit0 and protected content unchanged.
+  Approved ceiling/general lighting stays intact. Three matched After views pass
+  with native exit0 and unchanged files/saves. Review of all six Before/After
+  images confirms better face/suit readability and retained chair finish; hands
+  remain behind the counter, and shelf/fascia glare still needs visual judgment
+  with the displays. Bar assessment is approximately6.5–7/10, with room and owner
+  acceptance still open.
 - **Whole-project use:** high-value reuse for the existing station's ambient service
   activity and social dressing, WBS 7.3/8.4/8.5. No dialogue system, new gameplay role,
   tool installation or animation-package acquisition is introduced. Preserve the
@@ -94,6 +116,54 @@
   [Native authoring, failed fixtures and captures](../validation/2026-10-06-owner-platform-preview.md)
   retain the evidence; RPT-20261006-04 owns acceptance.
 
+### LIB-20261006-BAR-DISPLAYS — local illustrated campaigns and owned display hardware
+
+- **Acquisition/provenance:** six new local ComfyUI Qwen-Image-2.1 illustrations,
+  using the existing installation. Exact generation graphs/histories, source PNG
+  hashes and typography recipe remain in `.agent/local/StationRefinement/BarDisplays1`;
+  final manifest SHA256 is
+  `db4c74c112670f0da65532d0f8c35727b7212e7de76e28a61779d7ad8f4f1446`.
+  Four fictional repair/FUI-lawyer/warranty/bounty campaigns and two drinks/food
+  illustrations are original compositions inspired by the owner's image-led
+  examples. Existing CyberpunkRestaurant TV02 and Cyberpunk_Room tablet meshes
+  supply detailed hardware; no new purchase or installation is claimed.
+- **Evaluation,2026-10-06:** the lead approved the composed graphics for import.
+  BarDisplays3 saves six textures/seven private materials and the owner preview
+  with native exit0; all protected sources, other maps and production saves remain
+  unchanged. Two articulated monitors preserve seven native frame material slots,
+  two glass menus stand on measured recessed counter docks, and five old text
+  labels retire. Two earlier attempts failed before any save on a floor-result
+  schema error and a broad-top/recess support mismatch; their receipts remain.
+  Capture3 then passes 13 actual SIE views and a 48.2016-second natural ad cycle
+  with native exit0 and unchanged files/saves/ships. Pixel review confirms all
+  four campaigns and the return to Repair, but rejects the new displays' low
+  brightness under the room exposure. A technical pass is not visual acceptance.
+  Readability1 then saves seven private gain/opacity derivatives and retires four
+  obsolete graphics without changing global exposure or approved room lighting.
+  Native author and eight-image Capture3 both exit0 with protected content/saves
+  unchanged. The capture corrects an earlier false assumption that a transient
+  editor-hidden flag persists; failed Capture1 is retained, and Capture2 was not
+  run. The complete48-second cycle is not repeated because its shader is unchanged.
+  Corrected TVs read well, but the supported tablets look unnatural in recessed
+  sink-like areas and need a dry-worktop placement correction.
+  TabletPlacement1 subsequently moves ten existing actor transforms onto measured
+  dry worktop positions and shortens their stems, saving only the owner map with
+  native exit0. Four fresh SIE views also pass with native exit0 and unchanged
+  files/saves/ships. Docks are visibly grounded, clear of sink/faucet areas, and
+  their glass menus are readable; no further material, lighting or animation
+  change is included. The unchanged TV/cycle evidence is retained without another
+  full-cycle claim. Review estimates: source art8/10, native displays7.5/10, bar7/10,
+  complete lounge6.5–7/10; the owner has not approved the room.
+- **Whole-project use:** cohesive bar identity, humorous worldbuilding and future
+  reusable station signage, WBS 8.4/8.5. These displays remain decorative: no
+  ordering, communication, contract, reward or other gameplay system is introduced.
+  Existing room lighting, furniture, bartender and pool animations are preserved.
+- **Next check:** owner review of the improved bar and complete lounge composition;
+  the full room remains below target. Preserve ceiling/general lighting and
+  global exposure; no gameplay interaction or room approval is inferred.
+  [Saved-preview evidence and retained failures](../validation/2026-10-06-owner-platform-preview.md)
+  records the implementation; RPT-20261006-04 owns room acceptance.
+
 ### TOOL-20261006-ADAPTIVE-PATHFINDING — optional station NPC route candidate
 
 - **Listing evidence,2026-10-06:** the lead reviewed NordVader's
@@ -103,19 +173,25 @@
   compatibility text does not establish the contents of a newer local package.
   The [Fab promotion page](https://www.fab.com/limited-time-free) gives an October20,
   9:59 a.m. Eastern end for the free offer. These are dated listing claims.
-- **Acquisition/evaluation:** the owner now reports installation in progress and
-  a native UE5.8 version, and authorizes a live local review. Exact installed
-  manifest/version, enabled state and UE5.8 compatibility are pending verification;
-  do not infer either incompatibility or successful installation from the older
-  listing. No agent purchase, installation, integration or runtime acceptance is
-  claimed here.
+- **Acquisition/evaluation:** owner-installed local package verified at
+  `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins/Marketplace/Adaptive64768b7cb9a5V14/AdaptivePathfindingSystem.uplugin`.
+  The descriptor states VersionName2.06, EngineVersion5.8.0 and Win64; BuildId55116800
+  matches the installed engine, and its source includes the UE5.8 TArray compatibility
+  shim. The owner's Vault manifest also targets UE5.8. This supersedes the older
+  listing's compatibility limit. EnabledByDefault is omitted and the project has no
+  plugin entry; installed UBT treats an omitted engine-plugin default as disabled.
+  No engine-load or runtime test has been performed. The owner authorized live review,
+  not automatic gameplay adoption.
 - **Whole-project value/timing:** conditional later station NPC circulation and
   ambient activity support, WBS 8.4/8.5. It is separate from the current bar furniture
   refinement and is not a dependency of that work or a replacement for enemy-flight
-  behavior. Compare its actual components to existing Recast/CharacterMovement
-  routes before adopting any runtime code.
-- **Next check:** read the owner's installed descriptor/source first, then assess a
-  bounded existing station route if the package is compatible. Curved-path capability
+  behavior. Local source supplies a custom AI controller/crowd follower and Recast
+  ground paths; constructor default is LowLevelArc, with crowd corridor creation off.
+  No local Content/examples were found. Current decorative SkeletalMeshActor patrons
+  are not controlled moving AI; later use needs deliberate navmesh/controller/module
+  integration. Compare that work to existing CharacterMovement routes before adoption.
+- **Next check:** assess a bounded existing station route if integration is selected.
+  The verified descriptor/build identity is not an engine-load test. Curved-path capability
   alone does not establish animation quality, traversal clearance or room acceptance.
 
 ### October6 survival presentation evaluation
