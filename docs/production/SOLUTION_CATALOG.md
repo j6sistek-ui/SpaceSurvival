@@ -10,16 +10,113 @@
 - **Evaluation,2026-10-06:** native dimensions/materials and an unsaved lounge
   render confirm the table fits the east social corner. Existing Nyxar and
   Heavy Space Trooper meshes/compatible clips supply the ambient cast. The
-  private measured Nyxar shot, synchronized cue/balls and magnetic return are
-  authoring work; native playback and rendered contact acceptance remain separate.
+  owner superseded the magnetic return with a grounded alternating match. Saved
+  StationPoolMatch1 uses private Nyxar/trooper clips, a60second sequence, enclosed
+  return trays and visible hand pickup/placement. Native two-loop playback passes.
+  The owner rejected the first grounded pickup's extreme lean/cue penetration;
+  saved PickupV2 corrects those silhouettes. PickupV3 corrects the behind-body
+  carrying arm; eight actual paused poses confirm the improvement, with ball/grip
+  readability and natural transition feel still unaccepted.
 - **Whole-project use:** station social presentation and activity, within the
   owner's one-room aesthetic pass. This introduces no playable pool system,
   progression reward, extra combat character or new dependency. Original meshes,
   materials and animations stay unchanged; derivative content remains private.
-- **Next check:** verify actual cue/hand/ball contact, planted stance, looping
-  playback and room circulation in the saved owner preview. See the
+- **Next check:** judge carried-ball visibility and natural motion without another
+  geometry redesign. The return finish is corrected. Earlier51.87m room circulation passes; whole-room quality remains
+  unapproved and cannot be closed from the pool sequence. See the
   [owner-preview receipt](../validation/2026-10-06-owner-platform-preview.md)
   and RPT-20261006-04 for evidence and acceptance status.
+
+### LIB-20261006-LOCALARCADE — local generated lounge arcade props
+
+- **Acquisition:** owner's existing local ComfyUI/Hunyuan3D v2, BiRefNet and Blender;
+  no new model download, hosted generation or tool installation. Owner supplied
+  seven cabinet/pinball/rhythm/racer/token references and two alien-crane references.
+- **Evaluation,2026-10-06:** three local image-to-3D jobs supply cleaned upright,
+  pinball and kiosk meshes. Seven frozen Blender exports import to104newprivate
+  packages with measured native bounds/UVs/material slots; process exits1 despite
+  successful receipt, with tangent warnings retained. Rebuilt V2 hard-surface
+  credit/crane props and five other cabinets are now placed in the owner preview;
+  155arcade packages include the V2 imports and two landscape screen-card variants.
+  ArcadePresentation2 adds local face lighting, relocates the terminal to the east
+  perimeter and corrects center fixture diffusers. Fresh actual views confirm
+  readable cabinet faces and an unobstructed pool view; owner-approved brighter
+  cyan trim/general lighting are preserved. Arcade/Hyper Run artwork
+  uses the nested AcornautSandbox checkout at a0c9a0d; Normal/Debris use owner images.
+  Raw receipts and frozen file hashes remain in .agent/local/ArcadeGeneration.
+- **Whole-project use:** distinctive decorative props for the existing lounge arcade
+  corner. No playable minigame, currency transaction or new progression system.
+  Local generation does not itself establish redistribution rights; model/source
+  provenance accompanies any accepted export.
+- **Next check:** ordinary91.365m walking through the revised arcade approaches
+  passes with native exit0 and unchanged maps/saves. More inhabited social
+  composition and fine prop detail remain to assess. Model renders and static clearance passes are not room
+  acceptance. [Local generation/integration evidence](../validation/2026-10-06-local-arcade.md)
+  retains original failures, provenance and frozen-output rerun guards.
+  RPT-20261006-04 owns acceptance.
+
+### LIB-20261006-BARCOUNTER — owned bar dressing and bartender mocap
+
+- **Acquisition:** existing local `Bar_Counter_People-1622ca48/fbx/aa_bar_counter_people.fbx`
+  in the owner's downloaded-assets vault; SHA256
+  `7e806df360623839aceeb54d170f3db2cab58b61d22824a1ddd60c13562e07d9`.
+  Native inspection finds 45 takes: 10 bartender and 35 customer, on a 67-bone source rig.
+  Exact storefront revision/publisher/license tier were not refreshed. The owner’s
+  three TirgamesAssets Sci-Fi Bar Props images are style references only; no new
+  purchase, download or entitlement is claimed.
+- **Evaluation,2026-10-06:** Candidates2 saves 11 new private source/retarget/preview
+  assets for bartender Types 01/02/03 on the existing 61-bone Alien Female presentation
+  rig. It retains the game's 178 cm fit, rather than reshaping the skeleton. Thirteen
+  native samples per clip and six corrected paused studio views provide candidate
+  evidence; the first studio capture is rejected for a transient actor orientation
+  error despite fixture success. Source/map/save preservation passes. No bartender
+  actor replacement or working-hand/prop contact has been integrated by this step.
+- **Owned furnishing fit:** native inspection resolves current CyberPunkBarAssetSet01
+  counters and CyberpunkRestaurant stools/tableware. Exact serving surfaces are
+  107.554 cm broad / 92.247 cm recessed; the 116.01 cm bounding box and earlier positive-face
+  band estimate are not usable worktop heights. TableSettings2 adds three existing
+  props and repositions one cup asset, with three fresh renders and no new resource.
+  BarPresentation4 saves four private finish materials plus supported fascia,
+  shelving and venue lettering. A measured 4 cm forward correction grounds the
+  coffee machine on the broad worktop, preserving the original support tolerances
+  after three retained failed attempts. Native author exits 0; counter height,
+  vendor sources, ceiling and existing lights are preserved. Four fresh saved-editor
+  views confirm cleaner counter/shelves and grounded props, but the rustic stool
+  silhouette and flat fascia still fall short of the references. Finished room
+  quality remains unaccepted; an owned sci-fi chair alternative is being assessed.
+- **Whole-project use:** high-value reuse for the existing station's ambient service
+  activity and social dressing, WBS 7.3/8.4/8.5. No dialogue system, new gameplay role,
+  tool installation or animation-package acquisition is introduced. Preserve the
+  approved ceiling and general room lighting.
+- **Next check:** fit selected mocap to the measured bar and held props, inspect
+  actual room animation/lighting, and judge the complete lounge. Three clips in a
+  studio do not establish a varied natural bartender loop or owner acceptance.
+  [Native authoring, failed fixtures and captures](../validation/2026-10-06-owner-platform-preview.md)
+  retain the evidence; RPT-20261006-04 owns acceptance.
+
+### TOOL-20261006-ADAPTIVE-PATHFINDING — optional station NPC route candidate
+
+- **Listing evidence,2026-10-06:** the lead reviewed NordVader's
+  [Adaptive Pathfinding System 2.06](https://www.fab.com/listings/e57ff036-fb84-4c86-af7d-8c2a75965c73),
+  which describes Recast-based curved paths and configurable path settings. The
+  listing states UE 4.27–5.7 and an update date literally `05.06.2026`; that web
+  compatibility text does not establish the contents of a newer local package.
+  The [Fab promotion page](https://www.fab.com/limited-time-free) gives an October20,
+  9:59 a.m. Eastern end for the free offer. These are dated listing claims.
+- **Acquisition/evaluation:** the owner now reports installation in progress and
+  a native UE5.8 version, and authorizes a live local review. Exact installed
+  manifest/version, enabled state and UE5.8 compatibility are pending verification;
+  do not infer either incompatibility or successful installation from the older
+  listing. No agent purchase, installation, integration or runtime acceptance is
+  claimed here.
+- **Whole-project value/timing:** conditional later station NPC circulation and
+  ambient activity support, WBS 8.4/8.5. It is separate from the current bar furniture
+  refinement and is not a dependency of that work or a replacement for enemy-flight
+  behavior. Compare its actual components to existing Recast/CharacterMovement
+  routes before adopting any runtime code.
+- **Next check:** read the owner's installed descriptor/source first, then assess a
+  bounded existing station route if the package is compatible. Curved-path capability
+  alone does not establish animation quality, traversal clearance or room acceptance.
 
 ### October6 survival presentation evaluation
 

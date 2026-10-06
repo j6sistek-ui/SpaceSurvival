@@ -18,14 +18,47 @@ crew archive, reception, market and a full enterable cargo berth. The private
 foundation collision repair and four actual room-walking routes pass. The connected
 cargo route also passes ordinary movement into the ship and back; its process retains
 the existing apartment Blueprint errors. RoomPass7Retry1 has13actual revised views;
-the owner rates the whole station4/10 and now prioritizes L lounge. OrbitLounge3 adds
-the owned pool set, two aliens/two troopers, private14second shot/levitating ball return,
-scoreboard and local lighting. Two native playback loops and51.87m ordinary circulation
-pass; subsequent GripV3 corrects the previously omitted rear finger chains. The owner
-has now superseded the floating reset with a grounded alternating scratch/pickup match,
-which is being authored; the last saved candidate still contains the obsolete return.
-Fresh full-room renders verify
-green foliage and improved local light, not approved room quality. Build28 is the
+the owner rates the whole station4/10 and now prioritizes L lounge. The saved
+StationPoolMatch1 preview replaces the old floating reset with a60second alternating
+scratch, enclosed ball return, hand pickup/placement and conversation sequence.
+Native playback observes two actual loops;16 actual screenshots include four matched
+whole-room views. The original table stays intact. Two supported aisle fixtures,
+three additional seated guests and two distinct owned display graphics improve the
+room, independently rated6–6.5/10 against the target. SocialVisualFinish1 corrects
+mirrored COSMOS text, headings and return finish. Its closer view exposes an extreme
+pickup lean and cue penetration explicitly rejected by the owner. PickupV2 saves
+the corrected squat/cue clearance; two native loops and12actual views confirm the
+improvement but expose an awkward carrying arm. Seven local Comfy/Blender arcade
+props are saved, including rebuilt hard-surface Credit Exchange/crane assets and
+four decorative Acornaut modes, two ceiling coffers and landscape screen cards;
+155private arcade packages are imported. PickupV3 keeps the carrying forearms in
+front of the torso. ArcadePresentation2 moves Credit Exchange to the perimeter,
+lights cabinet faces locally and gives two center fixtures a visible diffuser.
+The owner explicitly likes the brighter cyan trim/general lighting; it is preserved.
+Latest saved preview SHA is
+`3b28fe63c673256b295eb974bd6b1d3c605b48120502e456dc1100e21a4f3752`.
+TableSettings2 adds three supported table props and repositions one cup stack;
+its author and three-view capture exit0. BarPresentation4 saves private metal
+finishes, framed bottle shelving and supported counter props while preserving the
+counter height, furniture footprint and approved ceiling lighting. Its author and
+four-view capture exit0. Actual visual review still finds rustic stools and overly
+flat front panels; the futuristic bar is not accepted. Earlier bar attempts stopped
+before saves on prop support and a reflection API error; those failures remain recorded.
+Both earlier native author processes and the fresh13view V3 capture exit0. Those13views
+are paused-pose/room evidence, not another natural playback test. Earlier import
+exit1 and post-save placement crash remain recorded. Lead/independent review is
+about6.5–7/10: readable arcade and unobstructed pool, but sparse central social
+activity, blank wall composition and crane/terminal detail remain below target.
+Carried ball readability and natural animation feel remain open. The owned
+Bar Counter People FBX contains ten bartender and35customer takes. Three bartender
+clips have been retargeted to the existing female-alien presentation, with11private
+assets saved and six corrected native pose captures. No complete animation rebuild
+is indicated. The initial capture is rejected for a fixture orientation error;
+the corrected neutral poses do not establish counter contact or final lighting.
+Nyxar is still the saved bartender; female placement and motion are being tested
+unsaved in the actual room. Room acceptance remains open.
+[Arcade evidence](validation/2026-10-06-local-arcade.md).
+Build28 is the
 latest Editor build; Build26 added seamless Phoenix seating/camera/parked cabin lights.
 Boarding5 and WeaponQuality24 provide actual camera/damage evidence. The isolated
 FreeFlight resume fixture still fails its final phase; natural gameplay, listening and

@@ -551,3 +551,295 @@ therefore has authoring/readback evidence, not fresh rendered acceptance.
 The currently saved map still contains the superseded return behavior until that
 replacement is authored and validated; no room, live-build or package acceptance
 is implied.
+
+## Grounded match and whole-lounge follow-up, October 6 at 18:03 UTC
+
+`StationPoolMatch1.json` succeeds and the lead observes native process exit0.
+The owner preview is saved as
+`2e64c159a545d45f58386e6f9007c680a6877300952d1e55ba4eb993eeb8b711`.
+Canonical Wayfarer remains unchanged. Five private assets are saved: two native
+character clips, the new60second sequence and two lounge display instances.
+The original table, characters, animations and material sources remain unchanged.
+
+The new ambient sequence alternates Nyxar and a heavy trooper: shot, scratch,
+enclosed return to an exterior tray, visible hand pickup and placement, then the
+opponent's turn. Both characters retain their cues; unequal conversational pauses
+break up the turns. The old sequence, four return lights and four magnetic emitters
+are removed from this preview. Original assets and earlier receipts remain intact.
+The opaque return hardware encloses the decorative bags and internal ball transfer;
+this is authored scenic movement, not a simulated or playable pool table. There is
+no visible floating reset or scale/visibility teleport in the authored path.
+
+Both clips pass10 native raw-pose readbacks, maximum discrepancies0.0000633cm and
+0.0000536cm. The complete offline3602-pose fit and two121-frame held streams pass;
+sampled recovery poses clear the original wood. Exact placement retains less than
+0.1cm fingertip contact with the felt. These measured checks do not establish
+rendered hand quality or full-speed animation acceptance.
+
+The same save adds two physically supported1150-lumen,3800K aisle fixtures, three
+seated guests in the existing facing sofas, and distinct owned Cosmo/DigitalPanel
+graphics on two formerly repeated advertising panes. Native source/material
+readbacks and numeric preservation checks pass. All8230 existing actor transforms
+remain unchanged during that room pass. The three central aisle capsule traces
+remain clear before/after; this is a static check, not a repeat walking pass.
+
+An earlier17cm-pocket derivative was abandoned before any private mesh or level
+save. Four retained author receipts exit0 but report failure: unsupported optional
+StaticMaterial access, then bounded subdivision failures while correcting long
+rail faces. The original11.39cm pockets and table mesh remain intact. The final
+return tray solution avoids that geometry change. No failed author attempt is
+counted as a successful mesh edit.
+
+`StationPoolMatchPlayback1/manifest.json` subsequently succeeds, with actual native
+process exit0 observed separately. Ordinary autoplay runs120.107553game seconds,
+1148native samples and two natural60second wraps. Across both turns,77Nyxar and
+78trooper held-ball samples track the native left hand within0.038026cm and
+0.045347cm respectively. The two other balls remain static; retired return lights
+remain off. Source, saved assets, map and production saves remain unchanged.
+
+The16 screenshots are paused evaluations of the actual PIE sequence after those
+natural loops, not an uninterrupted video. Both independent reviews inspect all
+four room views and rate the whole lounge6–6.5/10. Bar/occupied booths improve;
+mirrored COSMOS graphics, faint headings, dark ceiling/unlit-looking central lamps
+and pale return hardware remain visible defects. Shot/release poses read coherently;
+pickup/carry cameras obscure the hand/ball, so those motions remain visually
+unverified despite the contact measurements. A lower free-hand-side capture is
+needed; another table geometry pass is not justified by this evidence.
+
+The log still contains existing apartment BP_Blinds material access errors and
+VSM light-overlap warnings. Fixture success/process0 do not establish a clean
+engine, representative performance or natural owner gameplay. The owner has not
+approved any room. No new package, upload or merge is implied.
+
+## Display and fixture correction, October 6 at 18:25 UTC
+
+`StationSocialVisualFinish1.json` succeeds; actual native author process exits0.
+Saved owner preview SHA is
+`a93824711de0ddae9f7283b404bd0324616a93f5fec8c05e8d97e52982fec148`.
+Three new private materials mirror the COSMOS emission UV chains and activate
+the existing lamp texture mask. Two private headings face inward with the existing
+readable text material. Two110-lumen upward keys reveal the ceiling; all32return
+parts use the existing room graphite material. Previous clip/sequence/display
+assets and canonical Wayfarer remain byte-identical. Only the two headings change
+existing actor transforms.
+
+`StationSocialVisualFinishCapture1` captures four matched room views and four
+paused pickup/carry views. Its fixture succeeds with eight images and unchanged
+guarded files/saves, but the actual process exits1; apartment BP_Blinds errors
+remain in the log. This is capture-only evidence, not another natural playback run.
+The COSMOS lettering and headings now read correctly; return hardware has the
+intended dark finish. Ceiling light reveals overly plain panels/hotspots, and
+central fixture presentation remains weak.
+
+The new pickup views still obscure hand/ball contact. More importantly, the owner
+rejects the visible sideways lean and cue penetrating the character. This is a
+real pose defect, not a camera-only issue. The65degree sideways pelvis rotation
+and inherited cue displacement are being replaced in a separate private revision
+with a modest squat/step and cue outside the hip. Existing successful numerical
+contact checks do not close that visual failure. Room/arcade work continues in
+parallel; no owner approval is recorded.
+
+## Grounded pickup V2 and arcade integration, October 6 at 19:33 UTC
+
+`StationPoolPickupV2_1.json` saves only two new private animation clips and a
+versioned sequence; native author exits0. The earlier sequence is retained with
+autoplay disabled. Saved map SHA becomes
+`fa94a32ad8b7ee4a22aa5a243d6b62eb879cc37b10fa5021e004149f16996b79`.
+The65degree sideways pickup becomes a modest forward squat with a step; cues are
+parked laterally outside the actual pelvis. Original table/room/assets stay intact.
+
+Arcade import/placement and a fresh ceiling/card finish subsequently save preview
+`38ade2223778bf2b425eae624bc8748683b73ab395788a02146afc7b1fc7ad50`.
+Seven decorative props include four distinct Acornaut modes, pinball, rebuilt
+Credit Exchange and an alien salvage crane. The two rejected prototypes remain
+unplaced. Two native ceiling coffers and two landscape screen cards join the room.
+The [separate arcade receipt](2026-10-06-local-arcade.md) records exact package counts,
+private provenance, static circulation checks, failed/mixed process outcomes and
+the clean fresh native reload. No minigame or credit transaction is implemented.
+
+`StationPoolPickupV2Playback1/manifest.json` observes120.106870game seconds,
+two natural60second loops and1148native samples before12paused actual PIE views.
+Maximum held-ball error is0.0489cm. Fixture succeeds; the lead separately observes
+native process exit0. All214guardedfiles and3production saves remain unchanged;
+PIE stops. Existing apartment Blueprint material errors are retained.
+
+Lead and independent image reviews find the extreme lean and visible cue-through-
+torso defect repaired, but carry frames03/07 still bend the free arm behind the body.
+Neither small measured hand error nor process0 establishes natural animation.
+The whole room remains6–6.5/10: cabinet fronts are dark, Credit Exchange's rear
+blocks the reverse pool view, and cyan coffer trim dominates the composition.
+Those findings trigger bounded carry-path and arcade-presentation follow-ups.
+This is not owner room approval, natural gameplay, audio or performance acceptance.
+
+## Forward carry and arcade presentation, October 6 at 20:19 UTC
+
+`StationPoolPickupV3_1.json` saves two private clips and a versioned sequence;
+native process exits0. Map becomes
+`ecb4ec3206c54b43fc9ff7e057ef2bd0ca891cfa5511fc319f1c03687850d050`.
+Only the carrying arm/held-ball path changes; V2 timing, grounded body/feet and
+cue placement remain intact. The first offline fit's abrupt elbow swivel is
+retained as a failure; interpolated poles reduce the maximum frame displacement
+to4.18/3.84cm at30Hz. Native hand/contact checks pass; they are not visual acceptance.
+
+`StationArcadePresentation2.json` subsequently saves map
+`66e4fe29816ba4e12f052df64f903b19b67e04819d4ac5baf068ceea70458427`,
+one private two-sided diffuser material, perimeter Credit Exchange placement and
+three supported local arcade RectLights. Native process exits0. Owner explicitly
+likes the brighter ceiling trim/general light; those properties remain unchanged.
+The abandoned Presentation1 coffer edit failed before saving, followed by a native
+post-LogExit crash; its receipt/log are retained. No rejected dimming reaches disk.
+
+`StationPoolPickupV3Capture1/manifest.json` passes13actual rendered views: eight
+paused pickup/carry/release poses and five room/arcade/prop views. Native process
+exits0;218guardedfiles,3production saves and ship population remain unchanged,
+and PIE stops. This is paused-pose evidence, not a new natural two-loop run.
+Lead/independent reviews confirm forward carrying arms, readable arcade fronts,
+unobstructed pool sightline and visible diffuser faces. The carried cue ball remains
+hard to distinguish from gloves/bright hands; stance and timing need natural-motion
+judgment. Room rating is6.5–7/10; sparse social floor, blank wall composition and
+crane/terminal detail remain below the approved target. Owner approval is open.
+
+`StationArcadeWalk1.json` passes an ordinary91.365m CharacterMovement route to all
+four mode cabinets, pinball, crane, relocated credit terminal and back out.
+Native process exits0; zero falling, unsupported time, off-deck observations or
+movement discontinuities; maps/saves remain unchanged. This does not exercise
+arcade gameplay, transactions, physical devices or representative performance.
+Existing apartment Blueprint errors remain recorded rather than suppressed.
+
+Owner's new bar references favor futuristic metal/glass and framed practicals
+while preserving the ceiling. The real downloaded Bar Counter People FBX has10
+bartender and35customer clips on a different rig; retargeting to the selected
+female alien is being assessed. No animation integration or complete rebuild is
+claimed from the file inventory.
+
+## Occupied table settings and bar inventory, October 6 at 20:38 UTC
+
+`StationLoungeTableSettings2.json` saves three existing-kit table props and moves
+one coffee-cup asset, leaving furniture, crew, lighting and original assets intact.
+Actual native process exits0; map SHA becomes
+`75421e6bb0ee55f75189a136b6c44a2a7e7ac4578f2ce3fb2ce9913bacda69f3`.
+The first wrapper failed before backup/save because its resolved-path check rejected
+the legitimate Rocket content junction. Version2 validates the exact Rocket,
+CyberpunkRestaurant and CyberPunkBarAssetSet01 mounts and all201protected assets;
+it does not allow arbitrary external roots. Attempt1's failure and original scripts
+remain retained.
+
+`StationLoungeTableSettingsCapture2/manifest.json` has three fresh actual editor
+images at1600x900, all238guardedfiles/3production saves unchanged and no PIE.
+Actual process exits0. Root and
+independent review see supported, non-intersecting table settings. The purchased
+CoffeeGlasses mesh is visibly a stack of cups; it reads as service supplies rather
+than two individual drinks. This modest detail addition does not resolve the broad
+empty floor or repetitive seated silhouettes.
+
+Read-only bar probes preserve sources/map. Exact triangle intersections in
+`StationBarNativeProbe2.json` identify the broad serving surface at107.55418cm and
+recessed points at92.24733cm. Earlier bounding-box116.01cm and upward-face-band
+~82cm interpretations are not the usable broad worktop; do not lift the bar based
+on either. Existing counter props were grounded to bounding-box height and need
+surface correction. The owner wants futuristic metal/glass/framed practicals and
+explicitly approves the current ceiling.
+
+The embedded female-rig probe confirms61normalized bones and a current Nyxar
+placeholder behind the bar. The repaired female asset needs the game's intended
+178cm presentation scale, not a skeleton reshaped to reach the counter.
+`StationBartenderCandidates1.json` fails before saving at imported-object counting,
+despite native logs parsing/compressing all45takes. Actual process exits0; all
+protected sources/maps/saves are unchanged. The in-memory asset enumeration is
+corrected by the separate Candidates2 attempt below; no bartender replacement is
+saved to the station by either candidate author.
+
+## Female bartender candidates and corrected pose fixture, October 6
+
+`StationBartenderCandidates2.json` succeeds; the lead observes native process
+exit 0. Eleven new private assets under `BartenderCandidates20261006_V2` contain
+the source mesh/skeleton, three selected source takes, two IK rigs, one retargeter
+and three female preview clips. All 257 protected original/private source packages,
+target character files, maps and 3 production saves remain unchanged. The owner
+preview stays at 75421e6b; this is candidate authoring, not a saved NPC replacement.
+The other 42 imported takes remain unsaved. No source skeleton is reshaped.
+
+The native female mesh height 97.928821 cm uses the game's existing 178 cm presentation
+fit, uniform scale 1.817646714. Types 01/02/03 retain durations 31.8333/33/31 seconds;
+each has 13 native pose samples. Sampled working-hand heights span approximately
+81.83–122.62cm across the three clips. That supports assessing the existing
+107.554 cm worktop, not changing body proportions or raising the counter. Individual
+working contacts, held objects, feet and loop transitions still require fitting.
+
+`StationBartenderCandidatesCapture1/manifest.json` reports six captures and
+preservation success, but its images are rejected. A positional `Rotator` argument
+rotates the transient review actor out of its intended upright orientation; the
+first image shows an empty floor and the recorded head height is near the floor.
+The fixture's successful numeric pose comparison did not catch that shared
+orientation error. Original receipt/images remain intact and are not quality
+evidence for the animation.
+
+The corrected `StationBartenderCandidatesCapture2/manifest.json` succeeds with
+six actual paused PIE poses, two phases of each clip. Explicit pitch0/yaw−90/roll0
+and native world head-above-feet checks now guard the review actor. Maximum sampled
+bone discrepancy is 0.012322 cm; all 297 guarded files and 3 production saves remain
+unchanged, and PIE stops. The lead observes actual process exit 0. These are
+transient studio views, not six views of an integrated bartender. Bright studio
+highlights and cropped feet limit shading/contact judgment. Full clips, selected
+actions, prop attachment and actual room placement remain unaccepted.
+
+Owner direction remains a futuristic metal/glass bar with framed bottle shelving
+and practical trim using owned resources. The existing brighter ceiling and room
+lighting are approved and preserved. Whole-room review remains6.5–7/10, not owner
+approval. No new package, canonical-map replacement or release is established.
+
+The first bounded `StationBarPresentation1.json` author attempt stops before any
+material or map save because the coffee-machine footprint fails the unchanged
+0.08cm flatness/top guard. Preservation passes; map 75421e6b remains unchanged.
+The lead observes a native 0xc0000005 exit after LogExit; the cause of that late
+process crash is unconfirmed. Failed scripts/receipt are retained. Attempt 2 also
+refuses before saves, with native exit 0 and preservation success. Its measured
+support search exposes the rear lip at 112.27235 cm while the machine's center/front
+sit over 107.55418 cm, a 4.71817 cm mismatch. Attempt 3 searches forward on actual
+triangles, keeping the same 0.08 cm tolerances, full-footprint containment and 13 cm
+maximum adjustment. Support passes in Attempt 3, which then fails before saves on
+an unsupported direct scalar-parameter property read; native exit 0 and preservation
+pass. Attempt 4 uses the already-probed editor-property accessor and also checks
+the remaining text/material reads. Failed recipes remain frozen.
+
+## Saved bar presentation, October 6 author checkpoint
+
+`StationBarPresentation4.json` succeeds; the lead observes actual native exit 0.
+Receipt SHA256 is
+`7698fc88e3c96d3750ca1f1de197886cd5e8401e9e80e0dce8b12ba8f55b6b39`.
+The saved owner preview becomes
+`3b28fe63c673256b295eb974bd6b1d3c605b48120502e456dc1100e21a4f3752`.
+Four new private bar materials and the map are saved. All 321 protected source
+packages, six other maps and three production saves remain unchanged; canonical
+Wayfarer retains9c83968d. No bartender actor is replaced by this pass.
+
+The pass applies graphite/satin finishes to the existing counter and stools,
+adds 39 attached fascia/display/sign parts, including two shelf legs resting on the
+actual Engineering floor, and refreshes the existing venue lettering. The six
+existing actor moves are four countertop props and two seam pieces. Counter/stool
+transforms, owner architecture, existing lights and approved ceiling are preserved.
+Center-aisle and bar-frontage capsule queries pass; these are static clearance
+checks, not another ordinary walking or performance pass.
+
+All four prop footprints meet the original 0.08 cm support tolerance. The coffee
+machine's horizontal adjustment is 4 cm forward, and its base is lowered from
+116.01 cm to the actual 107.554 cm worktop. The measured five-point height spread
+is under0.000005cm. Its previous rear corners landed on the112.272cm lip. Both
+native counters keep their original height.
+The actual highest worktop triangles have local normal Z−1, confirming why a
+positive-winding-only surface-band estimate missed them. The seam cap is flush
+with the broad worktop. No support tolerance was weakened to obtain this result.
+
+`StationBarPresentationCapture4/manifest.json` subsequently passes four actual
+saved-editor views; the lead observes native exit 0. All 346 guarded files and
+three production saves remain unchanged; PIE is never started. Fresh views show
+cleaner counter/shelving, visible strips and supported coffee-machine placement.
+Lead and independent reviews still identify distressed/plank-style stools and
+broad flat front inserts as weak matches to the sci-fi references. Independent
+bar assessment is about6/10; the whole room remains6.5–7/10 and unapproved.
+Source/material readbacks and process success do not close these visible gaps.
+
+Earlier room images are older evidence, and the six bartender
+studio poses are unsaved staging; neither should be presented as the newly saved
+bar. Current saved / unsaved staging / older image identity and exceptions must
+precede images sent for owner review. Whole-room acceptance remains open.

@@ -3,6 +3,37 @@
 ## October6 owner station refinement
 
 **RPT-20261006-04 — Lead-owned layout/material/design pass; owner approval pending per room.**
+**Superseding status, October6 21:16UTC:** TableSettings2 and BarPresentation4 are
+saved; latest preview SHA3b28fe63c673256b295eb974bd6b1d3c605b48120502e456dc1100e21a4f3752.
+Their native author and three/four-view capture processes exit0. Counter and shelf
+finishes are cleaner, but the four rustic stools and broad flat front panels still
+miss the owner's space-station bar references. Lead and independent bar-only review
+is about6/10; this is not owner acceptance. A bounded furniture correction is next.
+Three Bar Counter People clips now retarget to the verified existing female-alien
+asset without a wholesale rebuild. Eleven private assets and six corrected pose
+captures exist; actual room fit is being tested unsaved. Nyxar remains in the saved
+bar until female placement passes review. Natural motion, prop contact and final
+integration remain lead-owned. Label every shared photo current saved, unsaved
+test or older comparison, with temporary characters/unfinished elements stated first.
+
+**Earlier verified status, October6 20:15UTC:** PickupV3 repairs the behind-body carrying
+arm; ArcadePresentation2 moves Credit Exchange to the east perimeter, lights the
+cabinet faces locally and corrects the center fixture diffusers. All three native
+author/capture processes exit0. Fresh13view capture shows a readable arcade and
+unobstructed pool group; eight poses are paused evaluations, not new natural-loop
+evidence. Its historical preview SHA66e4fe29816ba4e12f052df64f903b19b67e04819d4ac5baf068ceea70458427
+is superseded by the saved bar revision above.
+Lead/independent whole-room rating is6.5–7/10; broad empty social floor, sparse
+table activity and blank wall composition still fall short of the target. Fine
+crane/terminal detail and carried-ball readability remain lead-owned gaps.
+**Owner preference supersedes ceiling criticism:** keep the brighter cyan trim
+and general lighting; reconsider only after furnishing and actual gameplay review.
+Owner selects the female alien as bartender with varied Bar Counter People mocap.
+Arcade circulation has since passed91.365m of ordinary movement with no falling,
+unsupported steps or discontinuities; table settings are saved. Next: improve the
+bar furniture, finish female bartender fit and continue room composition. No room
+approval, canonical replacement or new package.
+
 **Owner direction, October6 14:34UTC:** overall4/10 vs previous2/10; cleanup and
 direction improved, finished quality not accepted. Focus only L social lounge to
 establish the room standard first. Add the owned pool table as an alien-style match
@@ -50,13 +81,77 @@ Whole-room quality remains about6/10 against the target: dark central transition
 repeated advertisements and sparse social occupancy remain visible gaps.
 **Owner supersession, October6 16:17UTC:** replace the floating/magnetic reset with
 a scratch, visible hand pickup/placement, opposing character shot/scratch and unequal
-conversational pauses. The current saved candidate still has the obsolete reset;
-earlier playback passes are historical evidence, not acceptance of that behavior.
-**Next:** lead authors and renders the grounded alternating match using the corrected
-cue grips, then refines remaining L lounge gaps with scoped checks. Other rooms and
-owner approval remain open; sequence/walking fixtures do not close room acceptance.
+conversational pauses. Earlier floating-return playback passes are historical
+evidence, not acceptance of the superseding behavior.
+**Superseding status, October6 18:18UTC:** StationPoolMatch1 saves the grounded
+60second alternating match and replaces the obsolete return. Native Playback1
+observes120.108seconds/two actual loops, then16paused views including the full room;
+fixture succeeds and process exits0, with existing BP_Blinds errors/VSM overflow
+still present in the log. Two supported aisle lights, three additional seated guests
+and two distinct owned graphics improve the room to6–6.5/10 in both independent
+reviews. Pickup/carry views obscure the hand; numerical contact is not visual proof.
+**Next, lead-owned:** correct the mirrored COSMOS pane/dark headings, visibly light
+the fixture diffusers and reveal ceiling structure, darken pale pool-return hardware,
+then capture the full room and unobscured pickup. No more pool geometry refinement
+is justified by current images. Owner also authorizes local-only AI arcade props
+and custom crane machines from supplied references; generation is in progress,
+placement/finish acceptance pending. Other rooms and owner approval remain open;
+sequence/walking fixtures do not close room acceptance.
 [Detailed receipts and retained failures](validation/2026-10-06-owner-platform-preview.md).
 No new package, canonical live-map replacement, publication or merge is implied.
+
+**Owner arcade direction, October6:** custom cabinets and a functional alien salvage
+crane are desired, while the asset/room pass remains first. Preserve separately named
+carriage/claw/prize/bin parts for later interaction. Original minigames could grant
+temporary wave perks, with persistent records/permanent unlocks undecided. Acornaut's
+existing HTML Normal, Debris Field and Hyper Run are another cabinet option; native
+embedding, controller focus, audio and packaged execution need a feasibility check.
+Four distinct decorative cabinets are now specified: Normal, Debris Field, Arcade,
+and Hyper Run. Future play opens a HUD-style overlay and returns to the lounge;
+it does not need to render on the cabinet's mesh. The token machine is a separate
+credit exchange service terminal, with no currency transaction currently implemented.
+These are lead-owned follow-ups, not implemented arcade gameplay or reward promises.
+
+**Owner visual rejection, October6 18:38UTC:** the new lower pickup view exposes
+an extreme sideways lean and cue penetration through the player. Numeric hand/ball
+contact did not catch this. The lead assigned a bounded native pose/cue repair for
+both players, to be judged from actual full-body renders; arcade/room work continues.
+SocialVisualFinish1 saves corrected COSMOS orientation/readable headings, two native
+lamp-emission overrides and graphite returns. Eight new captures preserve maps/assets
+but actual process exits1 with retained apartment errors. Ceiling composition and
+fixture appearance remain unfinished; no owner room acceptance is implied.
+
+**Owner arcade rejection, October6 18:57UTC:** crane interior prizes are subpar;
+the credit terminal looks weak/rubbery. Supplied AI pictures are optional ideas,
+and additional local generation is authorized without repeated approval. Lead owns
+versioned geometry/material repairs: crisp terminal panels/recessed controls and
+credible articulated claw/varied salvage prizes. No model upgrade is currently needed.
+The first seven exports pass native import/unit/bounds/material-slot checks as104new
+private packages; no arcade props have been placed in the preview. The import process
+exits1 despite its successful receipt; cause is unconfirmed, with tangent warnings
+retained. Rejected prototypes will stay out of room placement. Four Acornaut units
+and pinball are candidates for actual room review, not accepted finished art.
+
+**Superseding review, October6 19:33UTC:** seven arcade props are now saved,
+including rebuilt hard-surface Credit Exchange and an articulated-looking crane
+with varied contained prizes. The original rejected prototypes remain unplaced.
+Latest preview38ade222 also has two purchased ceiling coffers and landscape Arcade/
+Hyper Run screen cards. Fresh reload/finish and PickupV2Playback1 both exit0;
+the earlier placement process crashed after saving and normal LogExit, retained
+in the receipt. Two actual pool loops and12images preserve214guardedfiles/3saves.
+Both visual reviews still rate the whole lounge6–6.5/10. The extreme sideways
+pickup and visible cue penetration are corrected, but the carry arm bends behind
+the torso. Cabinets are too dark; the free-standing terminal blocks the pool view;
+new cyan ceiling trim competes with the room. **Next, lead-owned:** bounded carry
+path correction, perimeter terminal placement, localized cabinet lighting and
+subdued ceiling trim, then actual rendered review. No model upgrade is indicated
+by these integration defects. [Arcade evidence](validation/2026-10-06-local-arcade.md).
+
+**Owner lighting preference, October6 19:53UTC:** keep the current trim and brighter
+general lighting. The owner considers the room previously too dark; screenshots
+may feel different from play. This explicitly supersedes the lead's proposal to
+dim the coffer trim. Preserve its native material/intensity; improve local arcade
+readability and revisit broader balance only after furnishing and gameplay review.
 
 ## October6 Waves1-10 survival quality repair
 

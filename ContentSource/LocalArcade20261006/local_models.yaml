@@ -1,0 +1,7 @@
+arcade_existing_local_models:
+  base_path: "M:/Local AI"
+  checkpoints: checkpoints
+  background_removal: background_removal
+  text_encoders: text_encoders
+  vae: vae
+  diffusion_models: qwen-image-2.1-uncensored
