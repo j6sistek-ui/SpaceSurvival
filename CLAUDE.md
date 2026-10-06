@@ -44,6 +44,13 @@ Run the process-owning `Scripts/TestSaveLifecycle.ps1` in the installed PowerShe
 failed closed. The same harness passed its four FreeFlightIsolation stages in7.6.5;
 do not weaken exit-code validation to accept null.
 
+If `Artifacts` is redirected by a junction, use the explicit
+`-WorkspaceLocalArtifacts` switch for this harness. It selects
+`.agent/local/SaveLifecycle/<GUID>` instead of `Artifacts/SaveLifecycle/<GUID>`;
+native and C# fault gates require the matching explicit mode. All token, marker,
+production-save and no-reparse-path checks still apply. Do not bypass the junction
+check or supply an arbitrary scratch root. Build the changed native test first.
+
 The test gate demands *all* of: `succeeded >= 1`, `failed == 0`, `notRun == 0`, `succeededWithWarnings == 0`.
 **Engine warnings fail it**, and they are easy to produce without failing a single assertion.
 

@@ -1,6 +1,61 @@
 # Performance findings
 
-Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The current gameplay follow-up has passed package audit and packaged capture validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
+## October6 final field measurement, other game closed
+
+`EndgameSoak/d20651d21a2642cc9aa8ccaf505edc1a` repeats the 6,144-rock
+environment-only contract at1080p High, uncapped, with15seconds warmup and60seconds
+measured. Call of Duty is closed; the owner's Blender remains open. All6,792
+measured frames, including hitches, are retained. Population is6,143–6,144,
+125resident cells, zero contacts and unchanged normal hull/shield.
+
+| Counter | Mean | p95 | p99 | Maximum |
+| --- | ---: | ---: | ---: | ---: |
+| Frame | 8.835ms (113.19FPS) | 9.237ms | 33.348ms | 304.583ms |
+| Game thread | 3.037ms | 3.589ms | 4.614ms | 71.582ms |
+| GPU | 4.517ms | 4.431ms | 21.431ms | 286.990ms |
+
+1.56percent of frames exceed16.667ms and0.56percent exceed50ms. Several largest
+stalls occur early in measured cruise, not on the exact observed cell-transition
+frame; their source is not established by these counters. This shows substantial
+steady-state headroom without thinning the field, but does not establish hitch-free
+60FPS, combat performance or an optimization ratio against the GPU-contended pair.
+The analyzer output is `.agent/local/SurvivalQuality/Final6144Benchmark.json`;
+raw CSV, fixture contract and file hashes remain with the capture.
+
+## October6 dense-field measurements, shared GPU
+
+The seeded environment-only comparison retains normal collision/stats, 1080p High,
+15-second warmup and 60 seconds of cruise, turning and boost. Neither run touched an
+obstacle or lost health. Director attacks are excluded to isolate environment cost.
+Call of Duty was also running, using the same GPU; average FPS/GPU costs are therefore
+observations under contention, not a clean density comparison or 60 FPS acceptance.
+
+| Population | Average FPS | Frame p95 / p99 | Game thread mean / p95 | GPU mean / p95 |
+| --- | --- | --- | --- | --- |
+| 2,048 | 56.01 | 36.44 / 38.77 ms | 3.55 / 4.37 ms | 8.61 / 20.62 ms |
+| 6,144 | 41.61 | 43.02 / 47.04 ms | 3.54 / 4.58 ms | 16.87 / 37.07 ms |
+
+All eight cell crossings cost 19.41–23.62 ms on the game thread at 2,048 and
+46.65–60.18 ms at 6,144. These repeated synchronous instance/physics turnover spikes
+justify spreading outer-cell work across frames while retaining density, visibility
+deadlines and stable world positions. First powered frames also include 98.85/91.67 ms
+hitches; they remain in the measurements.
+Raw tokens: `bd1ecd121d6f43dfb35948f3471ba614` and
+`d5a6273131b14a2c81572eaee7e78b0c` under `Artifacts/EndgameSoak`.
+The [quality receipt](validation/2026-10-06-survival-quality.md) owns related verification.
+
+**Incremental repair:** `d85a0e28f66d40c7a0904bc0d41bd2b8` passes the same normal-stat
+6,144-rock contract. On the seven matching X2–8 crossings, handoff game-thread mean
+falls from 55.14 to 11.14 ms and maximum from 60.18 to 13.49 ms. All replacement-work
+frames, including deferred batches, stay at or below 17.48 ms; no deferred 55 ms spike
+appears in the following two seconds. The same 1,228–1,229 replacements per crossing
+complete within 0.17–0.38 seconds. Population stays 6,143–6,144 across exactly125 cells,
+with zero contacts and unchanged health. Total CPU cost is not reduced: comparable
+26-frame windows average 5.46 versus 5.88 ms. GPU contention remains, so the observed
+48.34 average FPS and 56.73/119.95 ms frame p95/p99 cannot establish overall improvement
+or representative 60 FPS acceptance.
+
+Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The October6 gameplay candidate still requires current packaged validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
 ## October1 Wayfarer tester integration
 

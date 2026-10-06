@@ -3,6 +3,8 @@ Runs one read-only engine preflight followed by three fresh Unreal processes usi
 USSGameInstance storage methods, including real Windows locked-file replacement failures
 and retries for suspension consumption and death progression. Every invocation creates a
 new GUID directory under Artifacts/SaveLifecycle; production storage is never modified.
+Use -WorkspaceLocalArtifacts when that default is redirected: this explicitly selects only
+repo/.agent/local/SaveLifecycle/<GUID>, with the same no-reparse and production-save guards.
 
 UE 5.8 source contract, checked when authored:
   Core/Private/Misc/Paths.cpp: UserDir -> ProjectUserDir -> ProjectSavedDir (User/Saved).
@@ -36,7 +38,8 @@ param(
     [switch]$StorageFaults,
     [switch]$CorruptAccount,
     [switch]$Station2Discard,
-    [switch]$FreeFlightIsolation
+    [switch]$FreeFlightIsolation,
+    [switch]$WorkspaceLocalArtifacts
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -186,7 +189,7 @@ if ($StorageFaults -and -not ('SpaceSurvival.SaveFaults.ReplacementGate' -as [ty
 }
 
 $token = [Guid]::NewGuid().ToString('N')
-$artifactParent = Join-Path $repoRoot 'Artifacts\SaveLifecycle'
+$artifactParent = Join-Path $repoRoot $(if ($WorkspaceLocalArtifacts) { '.agent\local\SaveLifecycle' } else { 'Artifacts\SaveLifecycle' })
 $runRoot = [IO.Path]::GetFullPath((Join-Path $artifactParent $token))
 Assert-NoReparsePath $runRoot
 if (Test-Path -LiteralPath $runRoot) { throw 'Unexpected GUID directory collision; existing data is untouched.' }
@@ -237,6 +240,7 @@ try {
             if ($CorruptAccount) { $arguments += '-SSCorruptAccount' }
             if ($Station2Discard) { $arguments += '-SSStation2Discard' }
             if ($FreeFlightIsolation) { $arguments += '-SSFreeFlightIsolation' }
+            if ($WorkspaceLocalArtifacts) { $arguments += '-SSSaveLifecycleWorkspaceLocalArtifacts' }
             if ($Station2Discard -and $phase -in @('FailedDiscardStation2', 'DiscardStation2', 'FreshAfterDiscard')) {
                 if (($discardFixtureSlots | ConvertTo-Json -Compress) -cne
                     (@(Get-IsolatedSaveManifest) | ConvertTo-Json -Compress)) {
@@ -266,7 +270,7 @@ try {
                 Enable-StagingFault $phase $phaseAclSnapshots
             }
             if ($phase -eq 'InterruptConsume') {
-                $gate = [SpaceSurvival.SaveFaults.ReplacementGate]::new($repoRoot, $runRoot, $token)
+                $gate = [SpaceSurvival.SaveFaults.ReplacementGate]::new($repoRoot, $runRoot, $token, [bool]$WorkspaceLocalArtifacts)
             }
             $nativeArguments = ($arguments | ForEach-Object { ConvertTo-NativeArgument $_ }) -join ' '
             $process = Start-Process -FilePath $editor -WorkingDirectory $repoRoot -ArgumentList $nativeArguments `
@@ -286,6 +290,7 @@ try {
                 $ready = Get-Content -LiteralPath $readyPath -Raw | ConvertFrom-Json
                 if ($ready.token -cne $token -or $ready.phase -cne 'InterruptConsumeReady' -or -not $ready.success -or
                     -not $ready.genericBackendVerified -or -not $ready.gameInstanceInitialized -or $ready.processId -ne $process.Id -or
+                    $ready.workspaceLocalArtifacts -ne [bool]$WorkspaceLocalArtifacts -or
                     [IO.Path]::GetFullPath($ready.savedDir) -ne [IO.Path]::GetFullPath($savedRoot)) {
                     throw 'Interrupted writer did not reach the guarded real ResumeRun call.'
                 }
@@ -313,6 +318,7 @@ try {
                 $receipt = [ordered]@{
                     phase = $phase; token = $token; savedDir = $savedRoot; processId = $process.Id
                     success = $true; genericBackendVerified = $true; gameInstanceInitialized = $true
+                    workspaceLocalArtifacts = [bool]$WorkspaceLocalArtifacts
                     evidenceType = 'OWNED_PROCESS_TERMINATED_BEFORE_REPLACEMENT'
                     accountPayload = $seed.accountPayload; settingsPayload = $seed.settingsPayload; runPayload = $seed.runPayload
                     stagingName = $staging[0].Name; stagingSha256 = $stagingHash; expectedSha256 = $expectedHash
@@ -352,6 +358,7 @@ try {
             $receipt = Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
             if ($receipt.token -ne $token -or $receipt.phase -ne $phase -or -not $receipt.success -or
                 -not $receipt.genericBackendVerified -or $receipt.processId -ne $process.Id -or
+                $receipt.workspaceLocalArtifacts -ne [bool]$WorkspaceLocalArtifacts -or
                 [IO.Path]::GetFullPath($receipt.savedDir) -ne [IO.Path]::GetFullPath($savedRoot) -or
                 -not $processIds.Add([int]$receipt.processId)) {
                 throw "Lifecycle $phase receipt failed path, backend, token, or distinct-process verification."
@@ -531,6 +538,7 @@ try {
         corruptAccount = [bool]$CorruptAccount
         station2Discard = [bool]$Station2Discard
         freeFlightIsolation = [bool]$FreeFlightIsolation
+        workspaceLocalArtifacts = [bool]$WorkspaceLocalArtifacts
         testAccountCopySha256 = $corruptFixtureHashes
         preparedStationWave = if ($prepareStation) { $PreparePackagedStation } else { $null }
         evidenceType = if ($prepareStation) { 'PREPARED_FIXTURE_NOT_GAMEPLAY' } elseif ($StorageFaults) { 'STORAGE_FAULT_AUTOMATION' } elseif ($CorruptAccount) { 'CORRUPT_ACCOUNT_PROTECTION_AUTOMATION' } elseif ($Station2Discard) { 'STATION2_DISCARD_AUTOMATION' } elseif ($FreeFlightIsolation) { 'FREE_FLIGHT_STORAGE_ISOLATION' } else { 'STORAGE_LIFECYCLE_AUTOMATION' }

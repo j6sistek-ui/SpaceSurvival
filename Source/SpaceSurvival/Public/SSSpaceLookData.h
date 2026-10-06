@@ -92,6 +92,9 @@ class SPACESURVIVAL_API USSSpaceLookData : public UDataAsset
 public:
     UPROPERTY(EditAnywhere, Category = "Sky")
     TObjectPtr<UMaterialInterface> SkyMaterial;
+    /** Private distance-faded derivatives for streamed flight scenery; vendor surfaces stay unchanged. */
+    UPROPERTY(EditAnywhere, Category = "Dressing")
+    TMap<TObjectPtr<UMaterialInterface>, TObjectPtr<UMaterialInterface>> FieldMaterialOverrides;
     UPROPERTY(EditAnywhere, Category = "Sky")
     TObjectPtr<UTextureCube> AmbientCubemap;
     UPROPERTY(EditAnywhere, Category = "Sky", meta = (ClampMin = "0"))
@@ -123,8 +126,8 @@ public:
     float AreaCellSize = 500000.f;
     UPROPERTY(EditAnywhere, Category = "Areas")
     int32 AreaVariationSeed = 2718;
-    /** Across all 27 resident cells, additionally bounded by 3072 minus the distant field count. */
-    UPROPERTY(EditAnywhere, Category = "Areas", meta = (ClampMin = "0", ClampMax = "768"))
+    /** Across all 27 resident region cells; independent of the traversable asteroid field budget. */
+    UPROPERTY(EditAnywhere, Category = "Areas", meta = (ClampMin = "0", ClampMax = "1024"))
     int32 AreaClutterBudget = 384;
     UPROPERTY(EditAnywhere, Category = "Areas", meta = (ClampMin = "0", ClampMax = "64"))
     int32 AreaLandmarkBudget = 64;

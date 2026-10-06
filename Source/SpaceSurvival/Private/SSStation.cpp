@@ -796,10 +796,10 @@ bool ASSStation::ConfigurePadExit(const ASSShip *Ship, float CapsuleRadius, floa
     }
     return LandingPad->ConfigureWalkExit(HullBounds, CapsuleRadius, CapsuleHalfHeight, Ship);
 }
-bool ASSStation::Walkable(const FVector &World) const
+bool ASSStation::Walkable(const FVector &World, const AActor *IgnoreActor) const
 {
     if (IsUsingOutpost())
-        return OutpostWalkable(World);
+        return OutpostWalkable(World, IgnoreActor);
     const FVector Local = GetActorTransform().InverseTransformPosition(World);
     if (Local.Z < -250.f)
         return false;
@@ -1082,6 +1082,25 @@ void ASSWalker::ApplyHero(FName PreferredId)
         HeroMesh = LoadObject<USkeletalMesh>(nullptr, *Hero.MeshPath);
         WalkAnimation = LoadObject<UAnimSequence>(nullptr, *Hero.WalkClipPath);
     }
+    // The current replacement is 138.28cm tall across sampled idle/walk/jog/run poses.
+    // A 150cm capsule contains its body/helmet height with a rounded-cap margin; the
+    // former shared 176cm capsule hit the Phoenix ceiling above the visible helmet.
+    // Keep the existing radius and every other hero's dimensions. Move the actor by
+    // the half-height delta before MeshLift so its world soles do not move at all.
+    const bool MeasuredSquirrel =
+        HeroMesh && HeroMesh->GetPathName() == TEXT("/Game/SpaceSurvival/Licensed/HeroReplacement/Final/"
+                                                    "SK_SquirrelHeroReplacement.SK_SquirrelHeroReplacement");
+    auto *Capsule = GetCapsuleComponent();
+    const float OldHalf = Capsule->GetUnscaledCapsuleHalfHeight();
+    const float NewHalf =
+        MeasuredSquirrel ? 75.f : GetDefault<ASSWalker>()->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+    if (!FMath::IsNearlyEqual(OldHalf, NewHalf))
+    {
+        const float Scale = Capsule->GetShapeScale();
+        Capsule->SetCapsuleHalfHeight(NewHalf, false);
+        AddActorWorldOffset(GetActorUpVector() * (NewHalf - OldHalf) * Scale, false, nullptr,
+                            ETeleportType::TeleportPhysics);
+    }
     // Only a hero who also flies the ship inherits the seated component transform and its live pose.
     SharesPilotRig = Tuning->SelectHero(ESSHeroSlot::Pilot).Identity == Hero.Identity;
     // Stop first. Re-applying over a hero that is mid-clip would leave the old sequence playing on a
@@ -1204,7 +1223,7 @@ void ASSWalker::PlayClip(UAnimSequence *Clip, float Seconds, bool Loop, float Ra
     if (CarryPose && GetMesh()->GetSkeletalMeshAsset() && GetMesh()->GetAnimInstance())
         GetMesh()->SnapshotPose(Outgoing);
     CutSeconds = -1.f;
-    if (Outgoing.bIsValid || LandingTailSeconds >= 0.f)
+    if (Outgoing.bIsValid || LandingTailSeconds >= 0.f || !Hero.TailFloorEnvelopes.IsEmpty())
     {
         // Not PlayAnimation: that would switch the component back to a plain single-node instance and
         // throw away the very object holding the pose being blended from.
@@ -1330,6 +1349,37 @@ void ASSWalker::UpdateLandingTail()
 {
     if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
         Transition->SetLandingTail(JumpLandAnimation, Hero.TailRootBone, LandingTailSeconds);
+    UpdateTailFloor();
+}
+void ASSWalker::UpdateTailFloor()
+{
+    auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance());
+    if (!Transition || Hero.TailFloorEnvelopes.IsEmpty())
+        return;
+    TOptional<FPlane> Plane;
+    if (!Disembarking)
+    {
+        const auto *Movement = GetCharacterMovement();
+        FHitResult Floor;
+        if (Movement->IsMovingOnGround() && Movement->CurrentFloor.IsWalkableFloor())
+            Floor = Movement->CurrentFloor.HitResult;
+        else
+        {
+            FCollisionQueryParams Query(SCENE_QUERY_STAT(SSTailFloor), false, this);
+            GetWorld()->LineTraceSingleByChannel(Floor, GetActorLocation(), GetActorLocation() - FVector(0, 0, 1400),
+                                                 ECC_Pawn, Query);
+        }
+        if (Floor.IsValidBlockingHit() && Floor.ImpactNormal.Z > .55f)
+        {
+            const FTransform &MeshWorld = GetMesh()->GetComponentTransform();
+            // One world centimetre above collision covers interpolation/skin precision without lifting
+            // the entire character or replacing the tail's natural airborne drag with a fixed pose.
+            const FVector Point = MeshWorld.InverseTransformPosition(Floor.ImpactPoint + Floor.ImpactNormal);
+            const FVector Normal = MeshWorld.InverseTransformVectorNoScale(Floor.ImpactNormal).GetSafeNormal();
+            Plane = FPlane(Point, Normal);
+        }
+    }
+    Transition->SetTailFloor(Hero.TailRootBone, Hero.TailFloorEnvelopes, Plane);
 }
 void ASSWalker::UpdateHeroAnimation(float Dt)
 {
@@ -1463,6 +1513,79 @@ void ASSWalker::SampleExitPose(float Seconds)
     GetMesh()->TickAnimation(0.f, false);
     GetMesh()->RefreshBoneTransforms();
 }
+bool ASSWalker::BeginBoarding(const FTransform &SeatPelvisWorld)
+{
+    if (Boarding || Disembarking || !GetCharacterMovement()->IsMovingOnGround() || Hero.PilotClipPath.IsEmpty() ||
+        !GetMesh()->GetSkeletalMeshAsset())
+        return false;
+    UAnimSequence *Pose = LoadObject<UAnimSequence>(nullptr, *Hero.PilotClipPath);
+    if (!Pose || Pose->GetSkeleton() != GetMesh()->GetSkeletalMeshAsset()->GetSkeleton() ||
+        GetMesh()->GetBoneIndex(Hero.PelvisBone) == INDEX_NONE)
+        return false;
+    FPoseSnapshot Standing;
+    GetMesh()->SnapshotPose(Standing);
+    if (!Standing.bIsValid)
+        return false;
+    BoardingStart = GetActorTransform();
+    GetMesh()->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
+    auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance());
+    if (!Transition)
+    {
+        StartStandingAnimation();
+        return false;
+    }
+    Transition->SetAnimationAsset(Pose, false, 1.f);
+    Transition->SetPlaying(false);
+    Transition->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
+    // Evaluate the target before installing the standing snapshot, to locate the real hip.
+    Transition->SetPosition(0.f, false);
+    GetMesh()->TickAnimation(0.f, false);
+    GetMesh()->RefreshBoneTransforms();
+    const FVector Hip = GetMesh()->GetSocketTransform(Hero.PelvisBone, RTS_Component).GetLocation();
+    FTransform TargetMesh(SeatPelvisWorld.GetRotation() * FRotator(0.f, Hero.MeshYaw, 0.f).Quaternion(),
+                          FVector::ZeroVector, GetMesh()->GetComponentScale());
+    TargetMesh.SetLocation(SeatPelvisWorld.GetLocation() - TargetMesh.TransformVector(Hip));
+    BoardingTarget = GetMesh()->GetRelativeTransform().Inverse() * TargetMesh;
+    if (!Transition->SetSourcePose(Standing))
+    {
+        StartStandingAnimation();
+        return false;
+    }
+    BoardingAnimation = Pose;
+    BoardingElapsed = 0.f;
+    Boarding = true;
+    BoardingCameraRelativeLocation = Boom->GetRelativeLocation();
+    LandingTailSeconds = -1.f;
+    GetCharacterMovement()->StopMovementImmediately();
+    GetCharacterMovement()->DisableMovement();
+    ConsumeMovementInputVector();
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    GetMesh()->SetComponentTickEnabled(false);
+    GetMesh()->GlobalAnimRateScale = 0.f;
+    Transition->SetExitTime(0.f);
+    GetMesh()->TickAnimation(0.f, false);
+    GetMesh()->RefreshBoneTransforms();
+    return true;
+}
+
+void ASSWalker::CancelBoarding()
+{
+    if (!Boarding)
+        return;
+    Boarding = false;
+    BoardingElapsed = 0.f;
+    BoardingAnimation = nullptr;
+    SetActorTransform(BoardingStart, false, nullptr, ETeleportType::TeleportPhysics);
+    Boom->SetRelativeLocation(BoardingCameraRelativeLocation);
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+    GetCharacterMovement()->StopMovementImmediately();
+    ConsumeMovementInputVector();
+    GetMesh()->SetComponentTickEnabled(true);
+    GetMesh()->GlobalAnimRateScale = 1.f;
+    StartStandingAnimation();
+}
+
 bool ASSWalker::BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing,
                                const FPoseSnapshot *SourcePose)
 {
@@ -1568,6 +1691,10 @@ void ASSWalker::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
     Super::ApplyWorldOffset(InOffset, bWorldShift);
     ExitStart += InOffset;
     ExitEnd += InOffset;
+    BoardingStart.AddToTranslation(InOffset);
+    BoardingTarget.AddToTranslation(InOffset);
+    if (LastSupportedLocation.IsSet())
+        LastSupportedLocation.GetValue() += InOffset;
 }
 void ASSWalker::Tick(float Dt)
 {
@@ -1575,6 +1702,30 @@ void ASSWalker::Tick(float Dt)
     // Before the early returns below: the exit is the other shot the owner looks at, and a dial that
     // only took effect while standing still would be a dial that lies.
     UpdateReadabilityLighting();
+    if (Boarding)
+    {
+        if (!FMath::IsFinite(Dt) || Dt <= 0.f)
+            return;
+        BoardingElapsed = FMath::Min(BoardingElapsed + Dt, BoardingDuration);
+        const float Alpha = BoardingElapsed / BoardingDuration;
+        const float Ease = Alpha * Alpha * (3.f - 2.f * Alpha);
+        FTransform Pose;
+        Pose.Blend(BoardingStart, BoardingTarget, Ease);
+        SetActorTransform(Pose, false, nullptr, ETeleportType::TeleportPhysics);
+        // Keep the colliding spring arm at the standing approach during the sit.
+        // Following the pelvis into the chair puts its sweep origin beyond the
+        // backrest, collapsing the camera into the hero. Only the origin stays
+        // behind: the normal camera rotation, arm and obstruction checks remain.
+        Boom->SetWorldLocation(BoardingStart.TransformPosition(BoardingCameraRelativeLocation));
+        if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+        {
+            Transition->SetExitTime(Ease * USSStationPoseTransition::BlendDuration);
+            Transition->SetPosition(0.f, false);
+            GetMesh()->TickAnimation(0.f, false);
+            GetMesh()->RefreshBoneTransforms();
+        }
+        return;
+    }
     if (Disembarking)
     {
         if (!FMath::IsFinite(Dt) || Dt <= 0.f)
@@ -1608,6 +1759,8 @@ void ASSWalker::Tick(float Dt)
     {
         if (!RecoveryHub.IsValid())
         {
+            LastSupportedLocation.Reset();
+            UnsupportedSeconds = 0.f;
             float Nearest = MAX_flt;
             for (TActorIterator<ASSStation> It(GetWorld()); It; ++It)
             {
@@ -1621,22 +1774,47 @@ void ASSWalker::Tick(float Dt)
         }
         if (const ASSStation *Hub = RecoveryHub.Get())
         {
-            // The ship's inbound corridor stays open. A walker who leaves the
-            // finite deck is returned to its safe spawn without ending the run.
-            // The deck is no longer only the interior: it now includes the exterior landing pad and the
-            // walkway between them, which is what makes "land outside and walk in" possible at all. Before
-            // this the envelope stopped at X -1750 and the hangar mouth is at -1800, so the hero was fenced
-            // in fifty centimetres short of its own doorway.
-            if (!Hub->Walkable(GetActorLocation()))
+            auto *Movement = GetCharacterMovement();
+            bool Grounded = false;
+            // The rescue query must never overrule CharacterMovement's actual capsule support. A centre
+            // ray can strike apartment furniture or miss a threshold that the capsule can stand on.
+            FFindFloorResult Floor;
+            if (Movement->IsMovingOnGround())
             {
-                // Counted, because this restores the very state an arrival is asked to prove and would
-                // otherwise let a broken arrival pose as a good one that simply started off the deck.
+                Movement->FindFloor(GetActorLocation(), Floor, false);
+                Grounded =
+                    Floor.IsWalkableFloor() && Floor.FloorDist <= UCharacterMovementComponent::MAX_FLOOR_DIST + 2.f;
+            }
+            const bool Supported = (Hub->IsUsingOutpost() && Grounded) || Hub->Walkable(GetActorLocation(), this);
+            if (Supported && Grounded)
+                LastSupportedLocation = GetActorLocation();
+            if (Supported)
+                UnsupportedSeconds = 0.f;
+            else if (FMath::IsFinite(Dt) && Dt > 0.f)
+                UnsupportedSeconds += Dt;
+            // One transient miss, a jump across a seam, or a component registering this frame is not a
+            // fall. Genuine unsupported departures still recover after a short bounded grace period.
+            if (UnsupportedSeconds >= .4f)
+            {
+                FVector Destination = Hub->WalkSpawn();
+                if (LastSupportedLocation.IsSet())
+                {
+                    FFindFloorResult RecoveryFloor;
+                    Movement->FindFloor(LastSupportedLocation.GetValue(), RecoveryFloor, false);
+                    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSWalkerRecovery), false, this);
+                    if (RecoveryFloor.IsWalkableFloor() &&
+                        RecoveryFloor.FloorDist <= UCharacterMovementComponent::MAX_FLOOR_DIST + 2.f &&
+                        !GetWorld()->OverlapBlockingTestByChannel(LastSupportedLocation.GetValue(), GetActorQuat(),
+                                                                  ECC_Pawn, GetCapsuleComponent()->GetCollisionShape(),
+                                                                  Query))
+                        Destination = LastSupportedLocation.GetValue();
+                }
                 ++OffDeckRescues;
-                GetCharacterMovement()->StopMovementImmediately();
+                UnsupportedSeconds = 0.f;
+                Movement->StopMovementImmediately();
                 ConsumeMovementInputVector();
-                SetActorLocation(Hub->WalkSpawn(), false, nullptr, ETeleportType::TeleportPhysics);
-                SetActorRotation(Hub->GetActorRotation());
-                GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+                SetActorLocation(Destination, false, nullptr, ETeleportType::TeleportPhysics);
+                Movement->SetMovementMode(MOVE_Walking);
             }
         }
         // Which clip this hero should be in, and how fast it should run.
@@ -1689,7 +1867,7 @@ void ASSWalker::UpdateFootsteps(float Dt)
 }
 void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)
 {
-    if (Disembarking)
+    if (Disembarking || Boarding)
         return;
     if (!Controller || !FMath::IsFinite(Dt) || Dt <= 0.f || Look.ContainsNaN())
         return;

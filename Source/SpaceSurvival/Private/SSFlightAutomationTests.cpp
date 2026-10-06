@@ -9,6 +9,7 @@
 #include "SSFlightHull.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "SSShipPresentation.h"
+#include "SSAsteroidBurst.h"
 #include "SSDistantAsteroids.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "HAL/IConsoleManager.h"
@@ -853,14 +854,34 @@ bool FSSCrosshairTargetDamage::RunTest(const FString &)
             Target->Configure(Kind, 120.f, 0.f);
             Target->SetActorTickEnabled(false);
             Fixture.Ship->SoftTarget = nullptr;
-            const bool Destructible = Kind != ESSWorldKind::MassiveAsteroid;
             const FString Label = FString::Printf(TEXT("weapon=%d kind=%d"), int32(Weapon), int32(Kind));
             TestFalse(Label + TEXT(" starts without a firing presentation pulse"), Fixture.Ship->IsFiring());
+            if (Kind == ESSWorldKind::MassiveAsteroid)
+            {
+                TestTrue(Label + TEXT(" massive rock accepts ordinary player weapon damage"), Target->IsWeaponTarget());
+                Fixture.Instance->Session.tuning.baseWeaponDamage = 12;
+                // Keep both triggers on this exact sight picture. Cooldown behaviour has its own test.
+                Fixture.Ship->Tuning->LaserInterval = Fixture.Ship->Tuning->CannonInterval = 0.f;
+                Fixture.Ship->Fire();
+                ASSProjectile *WeakRound = nullptr;
+                for (TActorIterator<ASSProjectile> It(Fixture.World); It; ++It)
+                    if (!It->IsActorBeingDestroyed())
+                        WeakRound = *It;
+                if (!TestNotNull(Label + TEXT(" weak manual shot creates a real projectile or tracer"), WeakRound))
+                    return false;
+                WeakRound->Tick(.5f);
+                TestFalse(Label + TEXT(" massive rock survives a weak hit and its visual tracer"),
+                          Target->IsActorBeingDestroyed());
+                TestEqual(Label + TEXT(" weak hit does not produce destruction debris"),
+                          TActorIterator<ASSAsteroidBurst>(Fixture.World) ? 1 : 0, 0);
+                Fixture.Instance->Session.tuning.baseWeaponDamage = 500;
+            }
             Fixture.Ship->Fire();
             TestTrue(Label + TEXT(" manual trigger starts its firing presentation pulse"), Fixture.Ship->IsFiring());
             ASSProjectile *Round = nullptr;
             for (TActorIterator<ASSProjectile> It(Fixture.World); It; ++It)
-                Round = *It;
+                if (!It->IsActorBeingDestroyed())
+                    Round = *It;
             if (!TestNotNull(Label + TEXT(" creates the visible shot"), Round))
                 return false;
             TestTrue(Label + TEXT(" visible shot starts at the authoritative hull muzzle"),
@@ -873,8 +894,35 @@ bool FSSCrosshairTargetDamage::RunTest(const FString &)
                 // changing this sight picture. Motion/hitch behaviour has its own existing suite.
                 Round->Tick(.5f);
             }
-            TestEqual(Label + TEXT(" native damage defeats scoped targets while massive rock remains cover"),
-                      Target->IsActorBeingDestroyed(), Destructible);
+            TestTrue(Label + TEXT(" sufficient native weapon damage defeats the traced target"),
+                     Target->IsActorBeingDestroyed());
+            if (Kind == ESSWorldKind::MassiveAsteroid)
+            {
+                ASSAsteroidBurst *Burst = nullptr;
+                int32 BurstCount = 0;
+                for (TActorIterator<ASSAsteroidBurst> It(Fixture.World); It; ++It)
+                    if (!It->IsActorBeingDestroyed())
+                    {
+                        Burst = *It;
+                        ++BurstCount;
+                    }
+                if (!TestEqual(Label + TEXT(" massive destruction creates one breakup burst"), BurstCount, 1) ||
+                    !TestNotNull(Label + TEXT(" breakup contains actual rock geometry"),
+                                 Burst->Chips->GetStaticMesh().Get()))
+                    return false;
+                TestTrue(Label + TEXT(" breakup originates at the destroyed rock and contains multiple pieces"),
+                         Burst->GetActorLocation().Equals(Position, .01) && Burst->Chips->GetInstanceCount() >= 6);
+                TestTrue(Label + TEXT(" cosmetic fragments do not create new contact hazards"),
+                         Burst->Chips->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
+                FTransform Before, After;
+                Burst->Chips->GetInstanceTransform(0, Before, true);
+                Burst->Tick(.2f);
+                Burst->Chips->GetInstanceTransform(0, After, true);
+                const FVector MeshCenter = Burst->Chips->GetStaticMesh()->GetBounds().Origin;
+                TestTrue(Label + TEXT(" breakup visibly expands away from the original rock"),
+                         FVector::Dist(Before.TransformPosition(MeshCenter), After.TransformPosition(MeshCenter)) >
+                             40.);
+            }
         }
     return true;
 }
@@ -1456,6 +1504,176 @@ bool FSSDistantAsteroidIsolation::RunTest(const FString &)
     FTransform Rebased = Initial[0];
     Rebased.AddToTranslation(Shift);
     TestTrue(TEXT("World rebasing preserves rock identity"), FindPose(Rebased));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSSceneryImpactDamage, "SpaceSurvival.Flight.SceneryImpactDamage",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSSceneryImpactDamage::RunTest(const FString &)
+{
+    TArray<double> Damage;
+    for (float Speed : {750.f, 6000.f})
+    {
+        FSSFlightWorld Fixture;
+        if (!Fixture.Initialize(*this))
+            return false;
+        if (!TestTrue(TEXT("Scenery-impact fixture exercises the actual simulating hull"),
+                      Fixture.Ship->Collision->IsSimulatingPhysics()))
+            return false;
+        Fixture.Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 0.f, false, false);
+        Fixture.Ship->Collision->SetPhysicsLinearVelocity(FVector(Speed, 0, 0));
+        const FVector Start = Fixture.Ship->GetActorLocation();
+        double Support = Start.X + Fixture.Ship->Collision->GetScaledSphereRadius();
+        if (auto *Compound = Fixture.Ship->FindComponentByClass<USSFlightHullComponent>())
+            if (const UBodySetup *Body = Compound->GetBodySetup())
+                for (const FKConvexElem &Convex : Body->AggGeom.ConvexElems)
+                {
+                    const FTransform ToWorld = Convex.GetTransform() * Compound->GetComponentTransform();
+                    for (const FVector &Vertex : Convex.VertexData)
+                        Support = FMath::Max(Support, ToWorld.TransformPosition(Vertex).X);
+                }
+        auto *Wall = Fixture.World->SpawnActor<AActor>();
+        auto *Box = NewObject<UBoxComponent>(Wall);
+        Wall->SetRootComponent(Box);
+        Wall->AddInstanceComponent(Box);
+        Box->SetBoxExtent(FVector(20, 10000, 10000));
+        Box->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Box->SetCollisionObjectType(ECC_WorldStatic);
+        Box->SetCollisionResponseToAllChannels(ECR_Block);
+        Box->RegisterComponent();
+        Wall->SetActorLocation(FVector(Support + 120, Start.Y, Start.Z));
+        const double Before = Fixture.Instance->Session.run.shield;
+        for (int32 Frame = 0; Frame < 120 && Fixture.Instance->Session.run.shield == Before; ++Frame)
+            Fixture.Step(1.f / 120.f);
+        const double Applied = Before - Fixture.Instance->Session.run.shield;
+        Damage.Add(Applied);
+        TestTrue(TEXT("A real physics scenery collision routes impact damage"), Applied > 1.);
+        const FVector Contact = Fixture.Ship->GetActorLocation();
+        const FVector ContactVelocity = Fixture.Ship->GetVelocity();
+        const FRotator ContactRotation = Fixture.Ship->GetActorRotation();
+        Fixture.Frames(30, 1.f / 120.f);
+        AddInfo(FString::Printf(
+            TEXT("SCENERY_CONTACT speed=%.1f damage=%.3f contactVelocity=%s contactPosition=%s "
+                 "contactRotation=%s afterVelocity=%s afterPosition=%s afterRotation=%s travel=%s"),
+            Speed, Applied, *ContactVelocity.ToString(), *Contact.ToString(), *ContactRotation.ToString(),
+            *Fixture.Ship->GetVelocity().ToString(), *Fixture.Ship->GetActorLocation().ToString(),
+            *Fixture.Ship->GetActorRotation().ToString(), *(Fixture.Ship->GetActorLocation() - Contact).ToString()));
+        TestTrue(TEXT("The impact changes the solver's velocity and produces real outward displacement"),
+                 Fixture.Ship->GetVelocity().X < -50. && Fixture.Ship->GetActorLocation().X < Contact.X - 10.);
+        TestEqual(TEXT("Immediate contact response does not stack extra damage"), Fixture.Instance->Session.run.shield,
+                  Before - Applied, .001);
+
+        // Let the damage cooldown expire, then provide a genuinely stationary contact at the wall.
+        // A shallow overlap lets Chaos resolve the hull; no simulated hit or direct damage call supplies it.
+        Fixture.Frames(100, 1.f / 120.f);
+        Fixture.Ship->SetActorLocationAndRotation(Start + FVector(102, 0, 0), FRotator::ZeroRotator, false, nullptr,
+                                                  ETeleportType::TeleportPhysics);
+        Fixture.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+        Fixture.Ship->Collision->SetPhysicsAngularVelocityInRadians(FVector::ZeroVector);
+        const double RestShield = Fixture.Instance->Session.run.shield;
+        Fixture.Frames(120, 1.f / 120.f);
+        TestEqual(TEXT("Idle scenery contact remains harmless after the impact cooldown expires"),
+                  Fixture.Instance->Session.run.shield, RestShield, .001);
+        AddInfo(FString::Printf(TEXT("SCENERY_IMPACT speed=%.1f damage=%.3f outgoing=%s displacement=%s"), Speed,
+                                Applied, *Fixture.Ship->GetVelocity().ToString(), *(Contact - Start).ToString()));
+    }
+    TestTrue(TEXT("Cruise-speed scenery collision is meaningfully stronger than a slow bump"),
+             Damage.Num() == 2 && Damage[1] > Damage[0] * 2.);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSFieldManualWeapons, "SpaceSurvival.Flight.FieldManualWeapons",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSFieldManualWeapons::RunTest(const FString &)
+{
+    auto *Count = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
+    const int32 PreviousCount = Count->GetInt();
+    const auto Priority = EConsoleVariableFlags(Count->GetFlags() & ECVF_SetByMask);
+    ON_SCOPE_EXIT
+    {
+        Count->Set(PreviousCount, Priority);
+    };
+    Count->Set(512, Priority);
+    for (SS::Weapon Weapon : {SS::Weapon::RapidLaser, SS::Weapon::HeavyCannon})
+    {
+        FSSFlightWorld Fixture;
+        if (!Fixture.Initialize(*this, Weapon))
+            return false;
+        Fixture.Instance->Session.tuning.baseWeaponDamage = 1000;
+        Fixture.Ship->Tuning->SoftAimDegrees = 0.f;
+        auto *Field = Fixture.World->SpawnActor<ASSDistantAsteroids>();
+        Field->Follow(Fixture.Ship);
+        Field->SetFlightVisible(true);
+        Field->SetActorTickEnabled(false);
+        // Isolate weapon travel from flight input using public actor/component lifecycle controls.
+        // Stop the force-producing components before disabling their solver body.
+        for (UActorComponent *Component : Fixture.Ship->GetComponents())
+            Component->SetComponentTickEnabled(false);
+        Fixture.Ship->Collision->SetSimulatePhysics(false);
+        Fixture.Ship->SetActorTickEnabled(false);
+        Fixture.Ship->CameraBoom->bEnableCameraLag = false;
+        Fixture.Ship->CameraBoom->bEnableCameraRotationLag = false;
+        TArray<UInstancedStaticMeshComponent *> Batches;
+        Field->GetComponents(Batches);
+        FHitResult Target;
+        for (auto *Batch : Batches)
+        {
+            if (!Batch->GetStaticMesh()->GetName().Contains(TEXT("Asteroid")))
+                continue;
+            for (int32 Index = 0; Index < Batch->GetInstanceCount(); ++Index)
+            {
+                FTransform Pose;
+                Batch->GetInstanceTransform(Index, Pose, true);
+                const FVector Center = Pose.TransformPosition(Batch->GetStaticMesh()->GetBounds().Origin);
+                Fixture.Ship->SetActorLocationAndRotation(Center - FVector(10000, 0, 0), FRotator::ZeroRotator, false,
+                                                          nullptr, ETeleportType::TeleportPhysics);
+                // Move only the observing ship; the selected real streamed instance keeps its identity
+                // and registered collision. Put its centre under the independently computed camera ray.
+                Fixture.Ship->CameraBoom->TickComponent(0.f, LEVELTICK_All, nullptr);
+                Fixture.Ship->AddActorWorldOffset(Center - Fixture.ReticleTarget(9000.f));
+                Fixture.Ship->CameraBoom->TickComponent(0.f, LEVELTICK_All, nullptr);
+                const FVector Muzzle = Fixture.Ship->MuzzleWorldPosition();
+                FCollisionQueryParams Query(SCENE_QUERY_STAT(SSFieldWeaponFixture), false, Fixture.Ship);
+                FHitResult Hit;
+                if (Fixture.World->LineTraceSingleByChannel(
+                        Hit, Muzzle, Muzzle + Fixture.Ship->AimDirection() * Fixture.Ship->Tuning->WeaponRange,
+                        ECC_Visibility, Query) &&
+                    Hit.GetActor() == Field && Hit.Item >= 0)
+                    if (auto *HitBatch = Cast<UInstancedStaticMeshComponent>(Hit.GetComponent());
+                        HitBatch && HitBatch->GetStaticMesh()->GetName().Contains(TEXT("Asteroid")))
+                    {
+                        Target = Hit;
+                        break;
+                    }
+            }
+            if (Target.bBlockingHit)
+                break;
+        }
+        if (!TestTrue(TEXT("An actual owned asteroid is reachable through the live muzzle/reticle path"),
+                      Target.bBlockingHit))
+            return false;
+        auto *TargetBatch = CastChecked<UInstancedStaticMeshComponent>(Target.GetComponent());
+        FTransform TargetPose;
+        TargetBatch->GetInstanceTransform(Target.Item, TargetPose, true);
+        const int32 Before = Field->GetRockCount();
+        Fixture.Ship->Fire();
+        if (Weapon == SS::Weapon::HeavyCannon)
+            TestEqual(TEXT("Cannon leaves the field rock intact until its actual round arrives"), Field->GetRockCount(),
+                      Before);
+        Fixture.Frames(90);
+        TestEqual(TEXT("Manual weapon destroys exactly one actual field instance"), Field->GetRockCount(), Before - 1);
+        bool StillPresent = false;
+        for (int32 Index = 0; Index < TargetBatch->GetInstanceCount(); ++Index)
+        {
+            FTransform Pose;
+            TargetBatch->GetInstanceTransform(Index, Pose, true);
+            StillPresent |= Pose.Equals(TargetPose, .01);
+        }
+        TestFalse(TEXT("The traced asteroid, not an unrelated neighbouring instance, was removed"), StillPresent);
+        AddInfo(FString::Printf(TEXT("FIELD_WEAPON weapon=%s before=%d after=%d surface=%s"),
+                                Weapon == SS::Weapon::RapidLaser ? TEXT("Laser") : TEXT("Cannon"), Before,
+                                Field->GetRockCount(), *Target.ImpactPoint.ToString()));
+    }
     return true;
 }
 

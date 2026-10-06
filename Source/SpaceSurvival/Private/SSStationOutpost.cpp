@@ -175,14 +175,25 @@ bool ASSStation::BuildOutpostHub()
     }
     LandingPad->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
     LandingPad->AdoptDeck(PadDeck, 3000.f);
+    // Authored equipment may move with a room refinement. Old maps keep their exact service positions.
+    const auto ServiceAnchor = [this, &Actors](const TCHAR *Key, const FVector &Fallback)
+    {
+        const FName Tag(*FString::Printf(TEXT("OutpostServiceAnchor:%s"), Key));
+        for (const AActor *Actor : Actors)
+            if (IsValid(Actor) && Actor->ActorHasTag(Tag))
+                return GetActorTransform().InverseTransformPosition(Actor->GetActorLocation());
+        return Fallback;
+    };
     // Supplement the existing authored consoles with the Phase1 services the preview never simulated.
     // These are use points and labels at equipment, not replacement stands or invisible building geometry.
-    AddService(FVector(3685, -3240, 100), Home ? TEXT("SHIP LOADOUT") : TEXT("REPAIR BAY"),
-               Home ? ESSPanel::Ship : ESSPanel::Repair, false);
-    AddService(FVector(4715, -3240, 100), Home ? TEXT("PILOT RECORD") : TEXT("ENGINEERING MODULES"),
+    AddService(ServiceAnchor(TEXT("ShipLoadout"), FVector(3685, -3240, 100)),
+               Home ? TEXT("SHIP LOADOUT") : TEXT("REPAIR BAY"), Home ? ESSPanel::Ship : ESSPanel::Repair, false);
+    AddService(ServiceAnchor(TEXT("Modules"), FVector(4715, -3240, 100)),
+               Home ? TEXT("PILOT RECORD") : TEXT("ENGINEERING MODULES"),
                Home ? ESSPanel::Progression : ESSPanel::Vendor, false);
-    AddService(FVector(8120, 600, 100), Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"),
-               Home ? ESSPanel::Settings : ESSPanel::Save, false);
+    AddService(ServiceAnchor(TEXT("Systems"), FVector(8120, 600, 100)),
+               Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"), Home ? ESSPanel::Settings : ESSPanel::Save,
+               false);
     AddService(FVector(5000, -1100, 100), TEXT("BEACON LOG"), Home ? ESSPanel::History : ESSPanel::Reward, false);
     for (TActorIterator<AActor> It(GetWorld()); It; ++It)
     {
@@ -264,20 +275,22 @@ void ASSStation::DestroyOutpostHub()
     Stream->SetIsRequestingUnloadAndRemoval(true);
 }
 
-bool ASSStation::OutpostWalkable(const FVector &World) const
+bool ASSStation::OutpostWalkable(const FVector &World, const AActor *IgnoreActor) const
 {
     const FVector Local = GetActorTransform().InverseTransformPosition(World);
     if (Local.Z < -650.f || FMath::Abs(Local.X - 4000.f) > 18000.f || FMath::Abs(Local.Y) > 14000.f)
         return false;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SSOutpostWalkGround), false, this);
+    Query.AddIgnoredActor(IgnoreActor);
     if (const auto *Controller = GetWorld()->GetFirstPlayerController())
         Query.AddIgnoredActor(Controller->GetPawn());
     FHitResult Floor;
-    // Ground comes from actual authored collision, including the apartment Level Instance and the upper
-    // gallery. The longer ray admits the jump arc; it does not manufacture support across an empty gap.
-    return GetWorld()->LineTraceSingleByObjectType(Floor, World + FVector(0, 0, 20), World - FVector(0, 0, 1400),
-                                                   FCollisionObjectQueryParams(ECC_WorldStatic), Query) &&
-           Floor.ImpactNormal.Z > .55f;
+    // Ask what blocks a walking pawn, not every WorldStatic decoration. The narrow sweep also admits
+    // support beneath the capsule's edge at apartment thresholds where a centre ray can miss the floor.
+    // The reach admits the jump arc but still requires actual collision under the pawn.
+    return GetWorld()->SweepSingleByChannel(Floor, World + FVector(0, 0, 20), World - FVector(0, 0, 1400),
+                                            FQuat::Identity, ECC_Pawn, FCollisionShape::MakeSphere(28.f), Query) &&
+           !Floor.bStartPenetrating && Floor.ImpactNormal.Z > .55f;
 }
 
 ASSOutpostTerminal *ASSStation::OutpostTerminalAt(const APawn *User) const

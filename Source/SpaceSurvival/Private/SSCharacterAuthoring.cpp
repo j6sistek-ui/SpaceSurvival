@@ -13,6 +13,7 @@
 #include "Engine/World.h"
 #include "Misc/PackageName.h"
 #include "Rendering/SkeletalMeshRenderData.h"
+#include "Rendering/SkeletalMeshModel.h"
 #include "Rendering/SkinWeightVertexBuffer.h"
 #include "Serialization/JsonSerializer.h"
 #include "UObject/Package.h"
@@ -266,5 +267,94 @@ FString USSCharacterAuthoringLibrary::GroundAlienFemaleClip(USkeletalMesh *Priva
     return Finish();
 #else
     return TEXT("{\"success\":false,\"error\":\"Editor-only authoring operation.\"}");
+#endif
+}
+
+FString USSCharacterAuthoringLibrary::MeasureReplacementTailEnvelopes(USkeletalMesh *PrivateMesh)
+{
+#if WITH_EDITOR
+    const TSharedRef<FJsonObject> Report = MakeShared<FJsonObject>();
+    Report->SetBoolField(TEXT("success"), false);
+    auto Finish = [&Report](const FString &Error = FString())
+    {
+        if (!Error.IsEmpty())
+            Report->SetStringField(TEXT("error"), Error);
+        FString Json;
+        FJsonSerializer::Serialize(Report, TJsonWriterFactory<>::Create(&Json));
+        return Json;
+    };
+    if (!PrivateMesh || PrivateMesh->GetPathName() != TEXT("/Game/SpaceSurvival/Licensed/HeroReplacement/Final/"
+                                                           "SK_SquirrelHeroReplacement.SK_SquirrelHeroReplacement"))
+        return Finish(TEXT("Only the preserved private replacement squirrel mesh is accepted."));
+    UObject *Assets[] = {PrivateMesh};
+    FAssetCompilingManager::Get().FinishCompilationForObjects(Assets);
+    const auto *Model = PrivateMesh->GetImportedModel();
+    if (!Model || Model->LODModels.IsEmpty())
+        return Finish(TEXT("The mesh has no imported reference geometry."));
+    const auto &LOD = Model->LODModels[0];
+    const FReferenceSkeleton &Reference = PrivateMesh->GetRefSkeleton();
+    const auto &InverseReference = PrivateMesh->GetRefBasesInvMatrix();
+    const int32 Root = Reference.FindBoneIndex(TEXT("tail_01"));
+    if (Root <= 0 || Reference.GetNum() != 69 || InverseReference.Num() != Reference.GetNum())
+        return Finish(TEXT("The expected 69-bone replacement rig is not present."));
+    TMap<int32, FBox> Bounds;
+    for (int32 Bone = 0; Bone < Reference.GetNum(); ++Bone)
+        if (Bone == Root || Reference.BoneIsChildOf(Bone, Root))
+            Bounds.Add(Bone, FBox(ForceInit));
+    if (Bounds.Num() != 7)
+        return Finish(TEXT("Expected exactly seven connected tail bones."));
+    int32 TailVertices = 0, MixedBodyVertices = 0;
+    for (const auto &Section : LOD.Sections)
+        for (const FSoftSkinVertex &Vertex : Section.SoftVertices)
+        {
+            bool HasTail = false, HasBody = false;
+            for (int32 Influence = 0; Influence < MAX_TOTAL_INFLUENCES; ++Influence)
+            {
+                if (!Vertex.InfluenceWeights[Influence])
+                    continue;
+                const int32 SectionBone = Vertex.InfluenceBones[Influence];
+                if (!Section.BoneMap.IsValidIndex(SectionBone))
+                    return Finish(TEXT("A skin influence does not resolve through its render section bone map."));
+                const int32 Bone = Section.BoneMap[SectionBone];
+                if (FBox *Envelope = Bounds.Find(Bone))
+                {
+                    // Include even small seam weights. Tail-only vertices are convex combinations of
+                    // these boxes; the deformed-surface regression also checks the fixed pelvis seam.
+                    *Envelope += FVector(InverseReference[Bone].TransformPosition(Vertex.Position));
+                    HasTail = true;
+                }
+                else
+                    HasBody = true;
+            }
+            TailVertices += HasTail;
+            MixedBodyVertices += HasTail && HasBody;
+        }
+    TArray<TSharedPtr<FJsonValue>> Entries;
+    for (int32 Bone = Root; Bone < Reference.GetNum(); ++Bone)
+        if (const FBox *Envelope = Bounds.Find(Bone))
+        {
+            if (!Envelope->IsValid || Envelope->Min.ContainsNaN() || Envelope->Max.ContainsNaN() ||
+                Envelope->GetSize().GetMax() > 200.)
+                return Finish(TEXT("A tail surface envelope is empty, malformed or exceeds the bounded mesh scale."));
+            const TSharedRef<FJsonObject> Entry = MakeShared<FJsonObject>();
+            Entry->SetStringField(TEXT("bone"), Reference.GetBoneName(Bone).ToString());
+            for (const auto &Pair : {TPair<FString, FVector>(TEXT("min"), Envelope->Min),
+                                     TPair<FString, FVector>(TEXT("max"), Envelope->Max)})
+            {
+                TArray<TSharedPtr<FJsonValue>> Values;
+                for (int32 Axis = 0; Axis < 3; ++Axis)
+                    Values.Add(MakeShared<FJsonValueNumber>(Pair.Value[Axis]));
+                Entry->SetArrayField(Pair.Key, Values);
+            }
+            Entries.Add(MakeShared<FJsonValueObject>(Entry));
+        }
+    Report->SetStringField(TEXT("mesh"), PrivateMesh->GetPathName());
+    Report->SetNumberField(TEXT("tail_surface_vertices"), TailVertices);
+    Report->SetNumberField(TEXT("tail_body_seam_vertices"), MixedBodyVertices);
+    Report->SetArrayField(TEXT("envelopes"), Entries);
+    Report->SetBoolField(TEXT("success"), TailVertices > 0);
+    return Finish();
+#else
+    return TEXT("{\"success\":false,\"error\":\"Editor-only measurement operation.\"}");
 #endif
 }

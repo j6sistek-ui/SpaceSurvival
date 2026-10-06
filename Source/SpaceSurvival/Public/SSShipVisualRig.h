@@ -8,8 +8,10 @@ class ASSShip;
 class UAnimSequence;
 class UBoxComponent;
 class UNiagaraComponent;
+class UPointLightComponent;
 class USceneComponent;
 class USkeletalMeshComponent;
+class UStaticMeshComponent;
 struct FSSHullDefinition;
 
 /** Adapts the supplied ship Blueprint's complete component rig to the native ship.
@@ -30,6 +32,10 @@ public:
     void SetStationCollision(bool Enabled);
     /** A standing capsule inside the rear cabin, supported by this parked ship's floor. */
     bool CanBoardAt(FVector WorldCapsuleLocation, float Radius, float HalfHeight) const;
+    /** A grounded capsule on the actual cockpit floor, within reach of the pilot chair. */
+    bool CanUsePilotSeatAt(FVector WorldCapsuleLocation, float Radius, float HalfHeight) const;
+    /** Measured chair cushion plus the current pilot's seated hip clearance, in ship space. */
+    FTransform GetPilotSeatPelvisWorld() const;
     void UpdateFlight(FVector2D Steering, FVector2D Strafe, float Power, bool Boost, bool Brake);
     void PlayLanding(float Duration = 3.f);
     void PlayTakeoff(float Duration = 3.f);
@@ -52,6 +58,10 @@ private:
     TArray<TObjectPtr<UBoxComponent>> GearColliders;
     UPROPERTY(Transient)
     TArray<TObjectPtr<UBoxComponent>> RampColliders;
+    UPROPERTY(Transient)
+    TObjectPtr<UStaticMeshComponent> InteriorCollider;
+    UPROPERTY(Transient)
+    TArray<TObjectPtr<UPointLightComponent>> CabinLights;
     UPROPERTY(Transient)
     TArray<TObjectPtr<USkeletalMeshComponent>> AirBrakes;
     UPROPERTY(Transient)

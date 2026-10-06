@@ -40,6 +40,33 @@ For the laptop, use
 It contains the current addon and the full prepared mesh library. Copy the working
 `.blend` separately if you also want the placed station on the laptop.
 
+**Room editing, October6:** the owner's active Downloads working file was organized
+into16 area collections with nested bays, market shops and workstations. Use the eye
+beside an area such as `07 Engineering` or `08 Crew lounge` to show/hide that room.
+This includes its editable placements and locked references; selection locks and
+Unreal identity properties are preserved.11 entirely hidden areas transferred their
+individual hide flags to collection visibility; mixed preexisting hiding remains.
+The operation preserved12,333 objects, including19 owner additions, with unchanged
+transforms, meshes, materials, export properties, selection and viewport. A separate
+`Artifacts/WayfarerBlender/Wayfarer-Rooms-20261006.blend` copy is saved; the active
+Downloads file was not overwritten. Save that working file explicitly with Ctrl+S.
+This is organization of the current working scene, not a change to the importer or
+portable asset library. No full-station FPS improvement is claimed: hiding areas
+reduces the visible workload, and owner feedback confirmed that helps.
+
+**Rendered appearance:** current library GLBs are geometry proxies. Material baking
+and texture export are disabled; material paths are metadata for Unreal, not full
+Blender shader graphs. A lit Blender render can therefore remain white/clay. Use
+Unreal to judge the original finishes, animated displays, glass and lighting.
+
+The owner's final `Downloads/Wayfarer-Working-20261006.blend` platform revision is
+available through **Edit Owner Platform Preview.cmd**, in a separate map
+`/Game/OutpostSandbox/OwnerPreview/L_OwnerPlatformPreview_20261006`. This includes
+the actual sculpted foundation shape, its native material, and24 added parts.
+It does not replace the live station. Normal Push still refuses deletion and
+does not transmit sculpted vertex changes; this transfer used a guarded private
+mesh import and isolated map copy. [Preview evidence and limits](validation/2026-10-06-owner-platform-preview.md).
+
 Full-library and native round-trip verification is recorded in the
 [October6 consolidation receipt](validation/2026-10-06-unified-editor-library.md);
 older catalog and ZIP counts below are historical snapshots, not today's coverage.

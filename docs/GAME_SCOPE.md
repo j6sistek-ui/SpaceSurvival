@@ -488,7 +488,11 @@ Can usually be destroyed.
 Can be destroyed with sufficient weapon power.
 
 **Massive asteroids**  
-Function as environmental geometry and must be avoided.
+Function as substantial navigation obstacles, but ordinary asteroid bodies can also be
+destroyed with sustained fire. The owner's October 6, 2026 playtest direction explicitly
+supersedes the earlier avoid-only rule: a reachable asteroid must respond to shooting,
+including rocks in the persistent field. Structural wreckage and station architecture
+are not made destructible by this change.
 
 Destroyed medium asteroids can produce controlled fragmentation.
 

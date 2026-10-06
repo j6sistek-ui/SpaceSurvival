@@ -10,7 +10,7 @@ The cook selects the runtime station and apartment maps explicitly; it does not 
 
 The owner subsequently authorized native HUD/settings integration beyond the locked main menu. [Exact sources and import workflow](../ContentSource/FigmaUIRefresh/README.md) retain27 PNGs, Keania One TTF/license and source hashes. The guarded importer creates `/Game/SpaceSurvival/UI/Refresh`; original licensed art and main-menu assets stay unchanged. `DirectoriesToAlwaysStageAsUFS` includes only the new Fonts folder. HUD is transparent over the real world; blue vitals chassis/percentage labels are deliberately omitted. Settings/pause use approved layout assets; current service actions reuse the frame without claiming every mockup-specific portrait/composition. Preset selection/remapping remains deferred.
 
-**2026-09-22 runtime-only update:** asteroid belt rendering now uses the already-authored `/Game/SpaceSurvival/Licensed/SolidScenery` barren/mineral/fragment derivatives for query/physics collision. No vendor asset was edited or newly authored. Director asteroids use a runtime orange instance of existing `M_Hazard` (Tint 1/.18/.015, Emission .35, Roughness .7) on all slots; their radii are 3x catalog values before admission. The world field retains authored rock materials. New Data Asset multiplier defaults apply to older serialized DA_Phase1 without a private content rewrite. Alien gallery and original Acornaut are retired from player selection; their assets remain available for authoring/provenance and existing offline fixtures. The owner-planned replacement Squirrel (<80k equipped triangles, editable segments) has not been supplied/imported.
+**Historical 2026-09-22 runtime-only update:** asteroid belt rendering adopted the already-authored `/Game/SpaceSurvival/Licensed/SolidScenery` barren/mineral/fragment derivatives for query/physics collision. No vendor asset was edited or newly authored by that update. Director asteroids received a runtime orange `M_Hazard` instance; the [October 6 private photographic arrival workflow](#october-6-survival-presentation-derivatives) supersedes that surface. Their radii remain 3x catalog values before admission. New Data Asset multiplier defaults apply to older serialized DA_Phase1 without a private content rewrite. Alien gallery and original Acornaut were retired from player selection while preserving assets for authoring/provenance and offline fixtures. The replacement Squirrel was still pending at that checkpoint; its later rig record is below.
 
 Status and storage: [PROJECT_STATE.md](PROJECT_STATE.md). Active work and owner acceptance: [KNOWN_ISSUES.md](KNOWN_ISSUES.md). This document describes the selected licensed authoring workflow and retains the original pipeline and dated evidence; it is not a current build inventory or task queue. Earlier licensed presentation is documented in [ASSET_REFRESH.md](ASSET_REFRESH.md) and [combined space look](production/COMBINED_SPACE_LOOK.md). A Git checkout alone omits licensed inputs and derivatives.
 
@@ -23,6 +23,53 @@ Generated geometry, much of the material palette and synthesized audio remain or
 ## Selected licensed visual workflow
 
 This workflow extends an already authored project using the owner's supplied packs and existing UE 5.8/Blender installations. **Do not run `Build.ps1 -Target Content` or regenerate baseline sources for this visual pass.** Build the Editor module to expose the new reflected presentation classes, then run only the inspection and authoring scripts below. The integration lead serializes Editor processes, builds and captures. Do not launch an overlapping import, run vendor example maps or activate plugins as a side effect of inspection.
+
+### October 6 survival presentation derivatives
+
+The dense traversable field reuses the owned `SolidScenery` collision derivatives and the
+evaluated Arch/Globular/Linear samples retained by `AuthorAsteroidDepth.py`. Native code owns
+the 6,144-instance target across 125 resident 500 m cells; no generator Blueprint actors or
+additional paid assets are required. Ordinary changes replace cells incrementally with a 4 ms
+soft work budget. Incoming cells within 1,000 m of the camera take priority over that budget;
+outgoing cells wait beyond 975 m, outside the 950 m fade horizon. Initial construction and
+teleports exceeding one logical cell remain synchronous. See [architecture](ARCHITECTURE.md#survival-quality-repair--october-6)
+for ownership and the distinction between a work budget and measured frame time.
+
+After compiling the reflected `FieldMaterialOverrides` property, run
+[AuthorFieldDistanceFade.py](../Scripts/AuthorFieldDistanceFade.py) through the integration
+lead's serialized offscreen Editor Python invocation. Default execution inventories source
+materials without asset writes; `-SSAuthorFieldFade` backs up the look and existing private
+targets, recursively duplicates complete material parent chains under
+`/Game/SpaceSurvival/Licensed/FieldFade`, and assigns the override map on `DA_DeepSpaceLook`.
+Private masked materials retain source surface inputs and use the engine's native blue-noise
+opacity masking, including compatible instance overrides. The author removes its earlier
+added `DitherTemporalAA` nodes before installing the native mask, preserving original cutouts
+and their effective clipping thresholds. This avoids dithering twice. Runtime sets the field's 700–950 m fade
+and the regional 0.75–0.95-cell fade separately. Hard culling retains a geometry-radius margin.
+The author preserves original material hashes and mesh assignments, so station uses and vendor
+surfaces do not inherit the fade. Receipts/backups stay under `Artifacts/SurvivalQuality/FieldFade`.
+
+[AuthorDirectorRockArrival.py](../Scripts/AuthorDirectorRockArrival.py) defaults to an asset
+read-only dry run. The explicit `-SSAuthorDirectorArrival` apply creates or updates only
+`/Game/SpaceSurvival/Licensed/DirectorArrival/M_DirectorRockArrival` and
+`MI_DirectorRockArrival`, backing up existing targets under
+`Artifacts/SurvivalQuality/DirectorArrival/<GUID>`. It duplicates the existing photographic
+rock material, preserves and verifies the original package hash, and adds native masked
+temporal dithering driven by `SpawnVisibility`. The runtime parameter rises from 0.15 to 1
+over 0.30 seconds while collision, admission, damage and actor age retain their ordinary rules.
+The private material keeps the textured warm Director cue; missing arrival content falls back
+to the photographic surface. Compile, saved material readback, actual arrival rendering and
+cooked dependency inclusion remain separate verification steps.
+
+Breakup uses the existing `SM_AsteroidSmall` mesh without asset reimport. Native cosmetic
+bursts have twelve proportional rotating chips, at most eight active bursts and a 2.4-second
+maximum lifetime. Field/regional destruction places two of those chips near the actual hit
+surface and plays breakup audio there; the remaining silhouette-scale chips originate around
+the destroyed body's center. These noncolliding effects leave the existing dangerous
+medium-hazard fragments and admission rules intact. Final native and rendered validation is
+pending; source implementation and author receipts do not establish appearance or performance.
+Record outcomes only in the [quality receipt](validation/2026-10-06-survival-quality.md),
+[project state](PROJECT_STATE.md) and [active issue log](KNOWN_ISSUES.md).
 
 ### Locked Figma startup menu
 

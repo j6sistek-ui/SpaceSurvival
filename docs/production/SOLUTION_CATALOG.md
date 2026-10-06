@@ -1,5 +1,38 @@
 # SpaceSurvival whole-project solution catalog
 
+### LIB-20261006-ORBITPOOL — owned lounge pool set and crew
+
+- **Acquisition:** already installed, not purchased or downloaded by this pass.
+  `Downloads/down/MLR_PoolTable_fb187e14.zip` matches all34 installed private
+  Rocket packages byte for byte. Native probes resolve the table, separate base,
+  cue, rack, triangle and ball to the existing4K material. The source contains
+  no pool-playing animation.
+- **Evaluation,2026-10-06:** native dimensions/materials and an unsaved lounge
+  render confirm the table fits the east social corner. Existing Nyxar and
+  Heavy Space Trooper meshes/compatible clips supply the ambient cast. The
+  private measured Nyxar shot, synchronized cue/balls and magnetic return are
+  authoring work; native playback and rendered contact acceptance remain separate.
+- **Whole-project use:** station social presentation and activity, within the
+  owner's one-room aesthetic pass. This introduces no playable pool system,
+  progression reward, extra combat character or new dependency. Original meshes,
+  materials and animations stay unchanged; derivative content remains private.
+- **Next check:** verify actual cue/hand/ball contact, planted stance, looping
+  playback and room circulation in the saved owner preview. See the
+  [owner-preview receipt](../validation/2026-10-06-owner-platform-preview.md)
+  and RPT-20261006-04 for evidence and acceptance status.
+
+### October6 survival presentation evaluation
+
+Reuses the acquired A01 asteroid geometry/layouts, existing owned sky/planet textures,
+replacement squirrel and audio sources. No new model, plugin, pack or service was acquired.
+The near field now has a separate 6,144-instance budget, real collision and persistent
+weapon damage. Private material copies add distance fades without modifying vendor assets
+or their station uses. A fixed distant moon uses the owned `Planet_Project` texture.
+Four private combat-audio derivatives have import/hash and native role checks; listening
+acceptance remains open. Native and rendered evidence, including failed attempts and
+remaining dither/benchmark checks, is in the
+[quality receipt](../validation/2026-10-06-survival-quality.md).
+
 ### October6 authoring-tool consolidation
 
 Existing owned resources are consolidated into the canonical game project;
@@ -99,7 +132,7 @@ Acquisition below follows project records or owner messages, not a fresh account
 
 | ID | Resource / source | Acquisition and evaluation evidence | Whole-project value / timing | Remaining needs and next sample |
 | --- | --- | --- | --- | --- |
-| A01 | Asteroid Library - Makemake | Acquired/local; E14 constructs and renders Arch/Globular/Linear (336 instances each), preserving vendor bytes. Normalized layouts feed private presentation data; runtime selects all 15 barren/mineral/fragment/debris meshes. | High; current ACT-03. WBS 3.1, 3.2, 10.3; possible 3.3 | September22 candidate replaces the launch-only belt with 2,048 world-fixed physical rocks/debris across streamed500m cells, reusing baked Arch/Globular/Linear patterns. Larger regional recipes remain separately bounded; Director hazards unchanged. Motion, close-pass surfaces, scale fading, frame cost and target acceptance remain open; not wholesale native Blueprint adoption. |
+| A01 | Asteroid Library - Makemake | Acquired/local; E14 constructs and renders Arch/Globular/Linear (336 instances each), preserving vendor bytes. Normalized layouts feed private presentation data; runtime selects the owned barren/mineral/fragment/debris meshes. | High; current ACT-03. WBS 3.1, 3.2, 10.3; possible 3.3 | October6 candidate expands the separately budgeted world-fixed field to 6,144 rocks/debris across streamed500m cells, with private distance fades, collision and run-persistent destruction. Native placement/hit tests and moving renders exist. Temporal fade appearance, frame cost and final owner acceptance remain separate checks; this is reuse of baked Blueprint patterns, not thousands of ticking Blueprint actors. |
 | A02 | [Sci-Fi / Futuristic Corridor - Leartes](https://www.fab.com/listings/f2f045e8-bbc3-46be-bfcf-f6b3920ac17e) | Acquired/local source; station shell integrated (E1). E8 authors additional reactor, pipes/cables, cases, controls and frame dressing from the same local pack | High; station Phase 1. WBS 8.2, 8.3, 8.5; possible 3.4, 6.6 | Verify the new dressing in the actual station/camera; existing services and physical layout remain authoritative |
 | A03 | Space Station 4 - Gerardo Justel (owner library title) | Supplied local GLB; exterior derivative integrated (E2). Exact listing/license revision unpinned at E2. E16: local Fab metadata gives title Space Station 4, seller Gerardo Justel and listing prefix `a50ebf13`; license revision still unpinned. `Scripts/ImportVaultGlb.py` recognises the existing `SM_StationExterior` and does not import the GLB a second time | High; exterior review. WBS 8.1, 8.2; possible 6.6 | E16: now the fallback exterior only, placed with its single proxy collider when the C16 pit stop body is absent. Fix existing material usage fallback; approach silhouette; conservative collider does not make mesh gaps traversable |
 | A04 | Space Station - Gerardo Justel, blue ring preview | Owner screenshot shows on disk; exact screenshot-to-listing mapping remains unconfirmed. E16: a Gerardo Justel listing titled Space Station (local prefix `9042d765`) sits in the vault as a converted GLB whose local thumbnail shows a blue-lit ring around a central tower, consistent with this lead; it was not compared with the owner's original screenshot. Whole GLB imported as `/Game/Fab/Space_Station_9042/SM_Space_Station_9042` | Conditional; later Phase 1. WBS 6.6, 8.1, 10.3 | Compare against identified local A16 before recommending another source; do not infer a walkable interior |

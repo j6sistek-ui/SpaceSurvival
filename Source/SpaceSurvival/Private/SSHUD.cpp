@@ -746,7 +746,7 @@ void ASSHUD::DrawHUD()
         Paragraph(GM->VillainLine, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, TextW, .75f,
                   FLinearColor(1.f, .56f, .4f));
     }
-    if (!MenuOpen && (!Walker || !Walker->IsDisembarking()))
+    if (!MenuOpen && (!Walker || (!Walker->IsDisembarking() && !Walker->IsBoarding() && !Walker->IsSeated())))
     {
         FString InteractionHint, HintPrefix, HintSuffix;
         FLinearColor HintColor = FLinearColor::White;
@@ -761,17 +761,27 @@ void ASSHUD::DrawHUD()
                 if (Service != ESSPanel::None)
                 {
                     GlyphBeforeHint = true;
-                    InteractionHint =
-                        Service == ESSPanel::Reward && S.run.pendingReward ? TEXT("CHOOSE SECURED REWARD") : Label;
+                    InteractionHint = Service == ESSPanel::Launch ? TEXT("FLIGHT MODE")
+                                      : Service == ESSPanel::Reward && S.run.pendingReward
+                                          ? TEXT("CHOOSE SECURED REWARD")
+                                          : Label;
                     break;
                 }
                 InteractionHint = It->ServiceGuidance(Walker->GetActorLocation());
                 HintColor = FLinearColor(.68f, .82f, .9f);
             }
-            if (GM->IsWalkerInsideShip(Walker))
+            if (GM->IsWalkerAtPilotSeat(Walker))
             {
                 GlyphBeforeHint = true;
-                InteractionHint = TEXT("FLIGHT OPTIONS");
+                HintColor = FLinearColor::White;
+                InteractionHint = GM->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight
+                                      ? TEXT("SIT / DEPART / FREE FLIGHT")
+                                      : TEXT("SIT / DEPART / WAVES");
+            }
+            else if (GM->IsWalkerInsideShip(Walker))
+            {
+                GlyphBeforeHint = false;
+                InteractionHint = TEXT("WALK FORWARD TO THE COCKPIT CHAIR");
             }
             if (!GlyphBeforeHint && S.run.pendingReward)
             {

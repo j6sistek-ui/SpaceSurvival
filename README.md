@@ -2,7 +2,7 @@
 
 **Current local project:** use `C:/Users/j6sis/SpaceSurvival` for both the game and authoring. Open [Edit Current Station.cmd](Edit%20Current%20Station.cmd) to edit the Wayfarer station used by the game, or [Play Development Build.cmd](Play%20Development%20Build.cmd) to play. The normal editor opens Wayfarer; Play routes through the Survival game map. [Launch paths and package distinction](docs/BUILD_RUN.md).
 
-**Tester update:** [itch0.1.22-alpha](https://j6sistek-ui.itch.io/space-survival) is published (build2048604), with Wayfarer Exchange, its apartment and current gameplay. Completed PRs are merged; [remaining testing and Phase1 gaps](docs/KNOWN_ISSUES.md#october1-consolidated-phase1-follow-up) stay open.
+**Tester update:** [itch0.1.22-alpha](https://j6sistek-ui.itch.io/space-survival) is published (build2048604), with the October1 Wayfarer Exchange, apartment and gameplay baseline. The October6 survival-quality repairs are newer local work in [PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69), not that published download. [Current build identity](docs/PROJECT_STATE.md) and [remaining testing and Phase1 gaps](docs/KNOWN_ISSUES.md#october1-consolidated-phase1-follow-up) separate implementation from release and acceptance.
 
 Unreal Engine 5 single-player space survival for Windows PC. **Phase 1 remains PARTIAL.**
 

@@ -14,6 +14,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/SkeletalMesh.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "GameFramework/MovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -24,6 +25,9 @@
 #include "PhysicsEngine/PhysicsAsset.h"
 #include "PhysicsEngine/BodyInstance.h"
 #include "PhysicsEngine/SkeletalBodySetup.h"
+#if WITH_EDITOR
+#include "StaticMeshCompiler.h"
+#endif
 
 namespace
 {
@@ -220,6 +224,69 @@ bool USSShipVisualRig::Initialize(ASSShip *Ship, const FSSHullDefinition &Defini
     LandingOn = LoadClip(Definition.LandingDeployClipPath, Hull);
     LandingOff = LoadClip(Definition.LandingStowClipPath, Hull);
     BattleEnter = LoadClip(Definition.FlightPoseClipPath, Hull);
+    // This private mesh contains the supplied landed interior/chair/door triangles, not a
+    // hull-sized primitive. It is never rendered or used for the simulated flight body.
+    if (auto *Interior = LoadObject<UStaticMesh>(nullptr,
+                                                 TEXT("/Game/SpaceSurvival/Licensed/PhoenixPresentation/"
+                                                      "SM_PhoenixParkedInterior.SM_PhoenixParkedInterior"),
+                                                 nullptr, LOAD_NoWarn | LOAD_Quiet))
+    {
+#if WITH_EDITOR
+        // Editor cold loads can return before this mesh's physics data is ready. Unreal skips
+        // creating physics for compiling static meshes; do not open the measured interior and
+        // disable its old coarse envelopes before its real floor can support the walking pilot.
+        // Cooked builds already have this data and never enter the editor compilation path.
+        if (Interior->IsCompiling())
+        {
+            UE_LOG(LogTemp, Display, TEXT("SS_PHOENIX_INTERIOR_WAIT mesh=%s compiling=%d"), *Interior->GetPathName(),
+                   Interior->IsCompiling());
+            UStaticMesh *RequiredMeshes[] = {Interior};
+            FStaticMeshCompilingManager::Get().FinishCompilation(RequiredMeshes);
+            UE_LOG(LogTemp, Display, TEXT("SS_PHOENIX_INTERIOR_COMPILED mesh=%s compiling=%d"),
+                   *Interior->GetPathName(), Interior->IsCompiling());
+        }
+#endif
+        InteriorCollider = NewObject<UStaticMeshComponent>(RigPawn, TEXT("ParkedInterior"));
+        InteriorCollider->SetupAttachment(Ship->GetRootComponent());
+        InteriorCollider->SetStaticMesh(Interior);
+        InteriorCollider->SetVisibility(false);
+        InteriorCollider->SetHiddenInGame(true);
+        InteriorCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        InteriorCollider->SetGenerateOverlapEvents(false);
+        InteriorCollider->SetCanEverAffectNavigation(false);
+        InteriorCollider->CanCharacterStepUpOn = ECB_Yes;
+        RigPawn->AddInstanceComponent(InteriorCollider);
+        InteriorCollider->RegisterComponent();
+    }
+
+    // Posed interior measurements put the rear/cockpit ceilings at Z494.446/569.002 cm.
+    // Mount just below those surfaces, above their Z230.207/389.275 floors. Shadows keep
+    // this boarding light inside the hull; the supplied exterior fill remains unchanged.
+    const auto AddCabinLight = [this, Ship](const TCHAR *Name, FVector Location, float Lumens, float Radius)
+    {
+        UPointLightComponent *Light = NewObject<UPointLightComponent>(RigPawn, FName(Name));
+        Light->SetupAttachment(Ship->GetRootComponent());
+        Light->SetMobility(EComponentMobility::Movable);
+        Light->SetRelativeLocation(Location);
+        Light->SetUseInverseSquaredFalloff(true);
+        Light->SetIntensityUnits(ELightUnits::Lumens);
+        Light->SetIntensity(Lumens);
+        Light->SetAttenuationRadius(Radius);
+        Light->SetLightColor(FLinearColor(1.f, .88f, .72f));
+        Light->SetSourceRadius(4.f);
+        Light->SetCastShadows(true);
+        Light->SetVolumetricScatteringIntensity(0.f);
+        Light->SetVisibility(false);
+        RigPawn->AddInstanceComponent(Light);
+        Light->RegisterComponent();
+        CabinLights.Add(Light);
+        return Light;
+    };
+    AddCabinLight(TEXT("BoardingRearCabinLight"), FVector(-600, 0, 480), 1200.f, 750.f);
+    // The narrow cockpit's glossy ceiling otherwise overwhelms the actual boarding view.
+    // Reduce only this lamp's highlight contribution, retaining its light on the pilot and steps.
+    AddCabinLight(TEXT("BoardingCockpitLight"), FVector(650, 0, 555), 700.f, 450.f)->SetSpecularScale(.15f);
+
     BattleExit = LoadClip(TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/BattleMode_Exit.BattleMode_Exit"), Hull);
     if (!AirBrakes.IsEmpty())
         AirBrakeClip =
@@ -275,6 +342,8 @@ void USSShipVisualRig::SetStationCollision(bool Enabled)
     Parked = Enabled;
     if (!HasBlueprintRig())
         return;
+    for (UPointLightComponent *Light : CabinLights)
+        Light->SetVisibility(Enabled);
     if (Enabled && LandingOn)
     {
         // Also handles initial hangar display, which has no incoming flight/descent to animate.
@@ -301,7 +370,7 @@ void USSShipVisualRig::SetStationCollision(bool Enabled)
         }
     if (Enabled)
     {
-        // Disable only the coarse ramp envelope on this body instance. The asset's box geometry
+        // Disable the coarse ramp and measured interior envelopes on this body instance. The asset's box geometry
         // remains untouched; UE intersects this per-shape filter with the component filter.
         // Classify the measured shape in ship space rather than assuming an array index forever.
         UPhysicsAsset *Physics = Hull->GetPhysicsAsset();
@@ -323,19 +392,62 @@ void USSShipVisualRig::SetStationCollision(bool Enabled)
                         FBox Bounds(ForceInit);
                         for (const FVector &Vertex : Measurement.VertexData)
                             Bounds += BoneToShip.TransformPosition(Vertex);
-                        if (Bounds.Min.X < -1250.f && Bounds.Max.X < -900.f && Bounds.Min.Z < 10.f &&
-                            Bounds.Max.Z < 250.f)
+                        const bool RampEnvelope = Bounds.Min.X < -1250.f && Bounds.Max.X < -900.f &&
+                                                  Bounds.Min.Z < 10.f && Bounds.Max.Z < 250.f;
+                        // Original source shapes 5/6/7 enclose the passage, cockpit and dividing
+                        // bulkhead. Exact landed triangles replace them only when available.
+                        const bool InteriorEnvelope =
+                            InteriorCollider &&
+                            ((Bounds.Min.X > -90.f && Bounds.Min.X < -80.f && Bounds.Max.X > 720.f &&
+                              Bounds.Max.X < 730.f && Bounds.Min.Z > 320.f && Bounds.Max.Z > 650.f) ||
+                             (Bounds.Min.X > 250.f && Bounds.Min.X < 255.f && Bounds.Max.X > 1070.f &&
+                              Bounds.Max.X < 1085.f && Bounds.Max.Z > 665.f) ||
+                             (Bounds.Min.X > -50.f && Bounds.Min.X < -45.f && Bounds.Max.X > 110.f &&
+                              Bounds.Max.X < 120.f && Bounds.Min.Y < -520.f && Bounds.Max.Y > 520.f));
+                        if (RampEnvelope || InteriorEnvelope)
                         {
                             Body->SetShapeCollisionEnabled(Index, ECollisionEnabled::NoCollision);
                             ++Replaced;
                         }
                     }
             }
-        ensureMsgf(
-            Replaced == 1 && RampColliders.Num() == 2,
-            TEXT("Phoenix boarding expects one measured ramp envelope and two authored panels; replaced=%d panels=%d"),
-            Replaced, RampColliders.Num());
+        ensureMsgf(Replaced == (InteriorCollider ? 4 : 1) && RampColliders.Num() == 2,
+                   TEXT("Phoenix boarding expects measured ramp/interior replacements and two authored panels; "
+                        "replaced=%d panels=%d"),
+                   Replaced, RampColliders.Num());
     }
+}
+
+FTransform USSShipVisualRig::GetPilotSeatPelvisWorld() const
+{
+    // The cushion at ship X850..875 is Z423.276..429.375; the measured replacement
+    // pilot's hip is ~20cm above its seated lower thigh. This is not the cockpit bone pivot.
+    return FTransform(FQuat::Identity, FVector(860.f, 0.f, 446.f)) * GetOwner()->GetActorTransform();
+}
+
+bool USSShipVisualRig::CanUsePilotSeatAt(FVector Position, float Radius, float HalfHeight) const
+{
+    if (!Parked || !InteriorCollider || !InteriorCollider->IsCollisionEnabled() || Position.ContainsNaN() ||
+        !FMath::IsFinite(Radius) || !FMath::IsFinite(HalfHeight) || Radius <= 0.f || HalfHeight <= Radius ||
+        !GetWorld())
+        return false;
+    const FVector Local = GetOwner()->GetActorTransform().InverseTransformPosition(Position);
+    const float Feet = Local.Z - HalfHeight;
+    if (Local.X < 720.f || Local.X > 940.f || FMath::Abs(Local.Y) > 100.f || Feet < 365.f || Feet > 402.f)
+        return false;
+    FHitResult Floor;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(PhoenixPilotChair), false, GetOwner());
+    const FVector Up = GetOwner()->GetActorUpVector();
+    const FVector Foot = Position - Up * HalfHeight;
+    // The chair approach has two narrow descending treads. A supported capsule can straddle an edge
+    // while a centre-only ray sees the lower tread more than 5cm away. Query its actual rounded base,
+    // keeping the same 5cm support tolerance. Visibility ignores the querying walker's Pawn capsule;
+    // ECC_Pawn would hit that capsule from inside before reaching this ship's floor.
+    const FVector BaseCenter = Foot + Up * Radius;
+    return GetWorld()->SweepSingleByChannel(Floor, BaseCenter + Up * 5.f, BaseCenter - Up * 5.f, FQuat::Identity,
+                                            ECC_Visibility, FCollisionShape::MakeSphere(Radius), Query) &&
+           !Floor.bStartPenetrating && Floor.GetComponent() == InteriorCollider &&
+           FVector::DotProduct(Floor.ImpactNormal, Up) > .7f;
 }
 
 bool USSShipVisualRig::CanBoardAt(FVector Position, float Radius, float HalfHeight) const
@@ -354,7 +466,7 @@ bool USSShipVisualRig::CanBoardAt(FVector Position, float Radius, float HalfHeig
     const FVector Feet = Position - FVector(0, 0, HalfHeight);
     return GetWorld()->LineTraceSingleByChannel(Floor, Feet + FVector(0, 0, 5), Feet - FVector(0, 0, 12),
                                                 ECC_Visibility, Query) &&
-           Floor.GetComponent() == Hull && Floor.ImpactNormal.Z > .7f &&
+           (Floor.GetComponent() == Hull || Floor.GetComponent() == InteriorCollider) && Floor.ImpactNormal.Z > .7f &&
            FMath::Abs(Feet.Z - Floor.ImpactPoint.Z) <= 5.f;
 }
 
@@ -496,6 +608,8 @@ void USSShipVisualRig::ReleaseRig()
     Hull = nullptr;
     GearColliders.Reset();
     RampColliders.Reset();
+    InteriorCollider = nullptr;
+    CabinLights.Reset();
     AirBrakes.Reset();
     EnginePivots.Reset();
     EngineRestRotations.Reset();

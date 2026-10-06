@@ -1,5 +1,38 @@
 # SpaceSurvival project state
 
+**October6 survival quality candidate (in progress):** The canonical checkout and
+Editor are being updated beyond the consolidation below on `codex/unified-editor-library`
+for RPT-20261006-02. It includes the dense persistent asteroid field, real rock
+destruction/impact response, dark space sky, apartment support recovery, tail floor
+clearance and controller overlay repairs. The canonical live station is preserved;
+the separate owner preview is being refined as described below.
+Native checks and offscreen review are in progress; the existing local Windows
+archive and published itch 0.1.22-alpha still contain the previous gameplay.
+Do not infer a new package from the rebuilt Editor. [Current evidence and limits](validation/2026-10-06-survival-quality.md).
+
+**October6 owner platform preview:** the final Downloads Blender revision is saved
+in a separate `L_OwnerPlatformPreview_20261006` map, opened by
+`Edit Owner Platform Preview.cmd`. Subsequent owner-saved edits are preserved while
+the approved room targets are implemented: Social bar/lounge, staffed Operations,
+crew archive, reception, market and a full enterable cargo berth. The private
+foundation collision repair and four actual room-walking routes pass. The connected
+cargo route also passes ordinary movement into the ship and back; its process retains
+the existing apartment Blueprint errors. RoomPass7Retry1 has13actual revised views;
+the owner rates the whole station4/10 and now prioritizes L lounge. OrbitLounge3 adds
+the owned pool set, two aliens/two troopers, private14second shot/levitating ball return,
+scoreboard and local lighting. Two native playback loops and51.87m ordinary circulation
+pass; subsequent GripV3 corrects the previously omitted rear finger chains. The owner
+has now superseded the floating reset with a grounded alternating scratch/pickup match,
+which is being authored; the last saved candidate still contains the obsolete return.
+Fresh full-room renders verify
+green foliage and improved local light, not approved room quality. Build28 is the
+latest Editor build; Build26 added seamless Phoenix seating/camera/parked cabin lights.
+Boarding5 and WeaponQuality24 provide actual camera/damage evidence. The isolated
+FreeFlight resume fixture still fails its final phase; natural gameplay, listening and
+representative performance remain open. The
+canonical station and all original guarded assets remain unchanged; this preview
+is neither a live-station replacement nor an itch update. [Receipt](validation/2026-10-06-owner-platform-preview.md).
+
 **October6 canonical project repair (implemented and verified):** The normal
 `C:/Users/j6sis/SpaceSurvival` checkout had remained at old source `684db34` with a
 September20 Editor DLL. This explains the owner's old-station launch despite the

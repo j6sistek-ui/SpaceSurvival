@@ -9,6 +9,7 @@
 #include "SSShipVisualRig.h"
 #include "SSFlightHull.h"
 #include "SSWorldActors.h"
+#include "SSStation.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -230,20 +231,43 @@ float ASSShip::RollCommandDegrees() const
     return 0.f;
 }
 
-void ASSShip::OnHullImpact(UPrimitiveComponent *, AActor *OtherActor, UPrimitiveComponent *, FVector,
-                           const FHitResult &)
+void ASSShip::OnHullImpact(UPrimitiveComponent *, AActor *OtherActor, UPrimitiveComponent *, FVector NormalImpulse,
+                           const FHitResult &Hit)
 {
-    // The same 15 damage on the same .8 s cooldown the swept path charged, so the Phoenix is not quietly
-    // invulnerable to the asteroid field every other hull has always had to respect.
     if (!ShipCoreDriven || !OtherActor || OtherActor == this || ImpactCooldown > 0)
         return;
     // Authored hazards own their damage value and swept-contact cooldown, including contact at a wing.
     if (const auto *Body = Cast<ASSWorldBody>(OtherActor); Body && (Body->IsSolidHazard() || Body->IsEnemy()))
         return;
+    // Physics may still tick a body when the actor tick is disabled. Estimate its
+    // closing speed from the solver's velocity change in that case, never stale cruise.
+    const FVector Incoming = IsActorTickEnabled() ? PrePhysicsVelocity
+                                                  : -Hit.ImpactNormal.GetSafeNormal() *
+                                                        (NormalImpulse.Size() / FMath::Max(1.f, Collision->GetMass()));
+    ResolveSceneryImpact(Hit, Incoming);
+}
+void ASSShip::ResolveSceneryImpact(const FHitResult &Hit, const FVector &IncomingVelocity)
+{
     auto *GI = GetGameInstance<USSGameInstance>();
-    if (!GI)
+    const FVector Normal = Hit.ImpactNormal.GetSafeNormal();
+    const float ClosingSpeed = -FVector::DotProduct(IncomingVelocity, Normal);
+    if (!GI || Moored || Docking || TakingOff || ImpactCooldown > 0.f || !GI->Session.IsFlying() ||
+        Normal.IsNearlyZero() || !FMath::IsFinite(ClosingSpeed) || ClosingSpeed < 100.f)
         return;
-    ReceiveDamage(15.f * float(GI->Session.DamageScale()));
+    // A scrape and a boost-speed head-on strike must not charge the same flat 15.
+    const float Damage = FMath::Clamp(6.f + ClosingSpeed * .0075f, 6.f, 90.f) * float(GI->Session.DamageScale());
+    if (ShipCoreDriven && Collision && Collision->IsSimulatingPhysics())
+    {
+        // A nose/wing contact can convert momentum into rotation without arresting
+        // the body's inward velocity. Remove only that inward component before
+        // adding recoil; otherwise a small shove is swallowed by cruise momentum.
+        const FVector Current = Collision->GetPhysicsLinearVelocity();
+        const float Inward = FMath::Min(0.f, FVector::DotProduct(Current, Normal));
+        Collision->SetPhysicsLinearVelocity(Current - Normal * Inward);
+    }
+    ReceiveImpact(Damage, Normal);
+    if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
+        FX->PlayImpact(Hit.ImpactPoint, Normal, false, true);
     ImpactCooldown = .8f;
 }
 FVector ASSShip::GetVelocity() const
@@ -368,12 +392,36 @@ void ASSShip::RefreshFlightPresentation()
         LoadedHull &&
         (LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/ShipRefresh/")) ||
          LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/")));
-    // A Phoenix hides the static hull and pilot; an open Classic cockpit resumes its seated pilot.
-    Pilot->SetVisibility(HullMesh->IsVisible() && !ClosedCockpit);
+    Pilot->SetVisibility(bBoardedPilot || (HullMesh->IsVisible() && !ClosedCockpit));
     if (auto *ReadabilityLight = FindComponentByClass<UPointLightComponent>())
         ReadabilityLight->SetVisibility(true);
     RefreshPaint();
 }
+bool ASSShip::CanAdoptBoardedPilot(const ASSWalker *Walker) const
+{
+    return Walker && Walker->IsSeated() && Walker->GetMesh()->GetSkeletalMeshAsset() &&
+           Walker->GetBoardingAnimation() &&
+           Walker->GetBoardingAnimation()->GetSkeleton() == Walker->GetMesh()->GetSkeletalMeshAsset()->GetSkeleton();
+}
+
+void ASSShip::AdoptBoardedPilot(ASSWalker *Walker)
+{
+    check(CanAdoptBoardedPilot(Walker));
+    USkeletalMeshComponent *Source = Walker->GetMesh();
+    PilotHero = Walker->GetHero();
+    Pilot->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+    Pilot->SetSkeletalMesh(Source->GetSkeletalMeshAsset());
+    for (int32 Index = 0; Index < Source->GetNumMaterials(); ++Index)
+        Pilot->SetMaterial(Index, Source->GetMaterial(Index));
+    Pilot->SetWorldTransform(Source->GetComponentTransform());
+    Pilot->PlayAnimation(Walker->GetBoardingAnimation(), true);
+    Pilot->SetPosition(0.f, false);
+    Pilot->TickAnimation(0.f, false);
+    Pilot->RefreshBoneTransforms();
+    bBoardedPilot = true;
+    Pilot->SetVisibility(true);
+}
+
 void ASSShip::BeginPlay()
 {
     Super::BeginPlay();
@@ -771,6 +819,7 @@ float ASSShip::SoftAssistWeight(float Alignment, float ConeDegrees, float Maximu
 }
 void ASSShip::FinishDocking()
 {
+    bBoardedPilot = false;
     EndWormholeTransit();
     SetActorLocation(DockTarget);
     SetActorRotation(DockRotation);
@@ -819,6 +868,7 @@ void ASSShip::Tick(float Dt)
     if (!GI || !Tuning)
         return;
     auto &S = GI->Session;
+    PrePhysicsVelocity = GetVelocity();
     FireCooldown = FMath::Max(0.f, FireCooldown - Dt);
     ImpactCooldown = FMath::Max(0.f, ImpactCooldown - Dt);
     FireVisualSeconds = FMath::Max(0.f, FireVisualSeconds - Dt);
@@ -964,12 +1014,9 @@ void ASSShip::Tick(float Dt)
             AddActorWorldOffset(Velocity * Step, true, &Hit);
             if (Hit.bBlockingHit)
             {
-                if (ImpactCooldown <= 0)
-                {
-                    ReceiveDamage(15.f * float(S.DamageScale()));
-                    ImpactCooldown = .8f;
-                }
+                const FVector Incoming = Velocity;
                 Velocity = FVector::VectorPlaneProject(Velocity, Hit.Normal) * .65f;
+                ResolveSceneryImpact(Hit, Incoming);
             }
         }
     }

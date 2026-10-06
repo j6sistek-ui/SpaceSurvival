@@ -136,7 +136,8 @@ Implement exactly four hazard families:
    - multiple sizes;
    - small debris destructible;
    - medium asteroids destructible with controlled fragmentation;
-   - massive bodies treated as navigation obstacles;
+   - massive asteroids remain navigation obstacles but accept sustained weapon damage,
+     following the October 6, 2026 owner revision in GAME_SCOPE section 10;
    - destroyed medium bodies may reveal useful drops or create additional debris.
 
 2. Wreckage/Debris

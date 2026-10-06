@@ -7,6 +7,7 @@
 #include "SSShipVisualRig.h"
 #include "SSVFXPresentation.h"
 #include "SSWorldActors.h"
+#include "SSWeaponDamage.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
@@ -109,14 +110,9 @@ void ASSShip::Fire()
         if (Hit.bBlockingHit)
             if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>())
                 FX->PlayImpact(Hit.ImpactPoint, Hit.ImpactNormal, true, false);
-        if (auto *Body = Cast<ASSWorldBody>(Hit.GetActor()))
-        {
-            const bool Damageable = Body->IsWeaponTarget();
-            Body->ReceiveWeaponHit(Damage);
-            if (Damageable)
-                if (auto *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
-                    Mode->NotifyPlayerShotHit();
-        }
+        if (SSWeaponDamage::Apply(Hit, Damage))
+            if (auto *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
+                Mode->NotifyPlayerShotHit();
         auto *Trace = GetWorld()->SpawnActor<ASSProjectile>(Start, Direction.Rotation());
         if (Trace)
             Trace->Launch(Direction, 55000.f, 0.f, true, this, Hit.bBlockingHit ? Hit.Distance : Tuning->WeaponRange);

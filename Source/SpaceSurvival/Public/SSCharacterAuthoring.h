@@ -21,4 +21,9 @@ public:
      *  Returns a JSON measurement/invariant receipt. Never saves assets; Python owns backups and hashes. */
     UFUNCTION(BlueprintCallable, Category = "Character Authoring")
     static FString GroundAlienFemaleClip(USkeletalMesh *PrivateMesh, UAnimSequence *PrivateClip, bool Apply = false);
+
+    /** Read the actual replacement tail's weighted surface into seven bone-local envelopes.
+     *  Returns JSON only; the caller owns review, tuning updates, backups and saves. */
+    UFUNCTION(BlueprintCallable, Category = "Character Authoring")
+    static FString MeasureReplacementTailEnvelopes(USkeletalMesh *PrivateMesh);
 };

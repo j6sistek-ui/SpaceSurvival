@@ -1,5 +1,11 @@
 # Phase 1 validation record
 
+**October6 survival quality:** [Current focused repair record](validation/2026-10-06-survival-quality.md)
+separates native physics/input/destruction checks, rendered field/tail/menu captures,
+actual apartment traversal and performance measurements. Earlier failed gates are
+retained. Concurrent GPU use prevents treating the initial benchmark pair as clean
+performance acceptance. This candidate is not the published 0.1.22-alpha game.
+
 **October1 station tester integration:** [Focused build/capture/package record](validation/2026-10-01-wayfarer-release.md) distinguishes the derived runtime map, source preservation and scripted home/apartment/departure/active-station checks from natural play and performance acceptance. This intentionally avoids rerunning the full panel. Published0.1.22-alpha is build2048604 READY; source consolidation matches its game/configuration. The [consolidated follow-up](KNOWN_ISSUES.md#october1-consolidated-phase1-follow-up) keeps natural-play gates and planned voice work distinct from these passes.
 
 **September27 home/library extension:** [Focused receipt](validation/2026-09-27-home-library.md) records the five-pack import, preserved ULAT rows, complete apartment Level Instance and 68 passing sampled geometry/walking/door/persistence checks on the saved annex. Four changed-area views passed independent visual review. This extends the separate outpost only; no full gameplay suite, C++ build, package or representative performance claim.

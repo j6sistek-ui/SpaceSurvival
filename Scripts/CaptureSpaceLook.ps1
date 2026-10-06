@@ -7,13 +7,22 @@ param(
     [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
     [switch]$Packaged,
     [switch]$Sequence,
+    [switch]$OfflineSequence,
     [switch]$WeaponReadability,
     [switch]$DirectorReview,
     [switch]$WormholeReview,
     [switch]$OutpostReview,
+    [switch]$ApartmentWalk,
+    [switch]$TailReview,
+    [switch]$QualityBenchmark,
+    [ValidateSet(2048,6144)][int]$DistantCount = 6144,
     [switch]$MainMenu,
     [switch]$UIRefresh,
     [switch]$UIFollowup,
+    [switch]$UIFlightMenus,
+    [ValidateRange(640,7680)][int]$Width = 1920,
+    [ValidateRange(480,4320)][int]$Height = 1080,
+    [ValidateRange(0.8,1.4)][double]$UIScale = 1.0,
     [ValidateRange(-1,3)][int]$Area = -1,
     [ValidateRange(0,10000)][int]$Variation = 0,
     # Owner review aid for RPT-20260915-08: capture thruster candidates without an editor session.
@@ -27,10 +36,18 @@ param(
     [ValidateRange(-400,400)][double]$ThrusterHeight = 0,
     [string[]]$ExtraArgs = @()
 )
+if ($OfflineSequence -and (-not $Sequence -or $QualityBenchmark -or $TailReview -or $OutpostReview -or $ApartmentWalk -or $WormholeReview -or $DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $UIFlightMenus -or $Packaged -or $ExtraArgs.Count -ne 0)) { throw 'OfflineSequence requires only the editor Wave1 Sequence scenario and accepts no other review modes or extra arguments.' }
+if ($ApartmentWalk -and -not $OutpostReview) { throw 'Apartment walking is an opt-in part of the isolated OutpostReview scenario.' }
+if (($QualityBenchmark -or $TailReview) -and ($OutpostReview -or $WormholeReview -or $DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $UIFlightMenus -or $Sequence)) { throw 'Benchmark and tail review are separate isolated scenarios.' }
+if ($QualityBenchmark -and $TailReview) { throw 'The benchmark cannot capture tail review screenshots.' }
+if ($QualityBenchmark -and ($Width -ne 1920 -or $Height -ne 1080 -or $Area -ne -1 -or $Variation -ne 0 -or $ExtraArgs.Count -ne 0)) { throw 'The comparison benchmark requires 1920x1080, ordinary region selection, and no extra arguments.' }
+if ($QualityBenchmark -and ($ThrusterShape -ne -1 -or $ThrusterEmission -ne 0 -or $ThrusterScale -ne 0 -or $ThrusterMaterial -ne -1 -or $ThrusterLayered -or $ThrusterTrailScale -ne 0 -or $ThrusterTrailHeight -ne 0 -or $ThrusterHeight -ne 0)) { throw 'The comparison benchmark retains the default ship presentation.' }
+if ($TailReview -and $Packaged) { throw 'Exact rendered tail-surface measurement requires the installed editor mesh source.' }
 if ($OutpostReview -and ($WormholeReview -or $DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $Sequence)) { throw 'Outpost review is a separate isolated integration scenario.' }
 if ($WormholeReview -and ($DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup)) { throw 'Wormhole review is a separate seeded transition; only the optional sequence may be combined.' }
 if ($DirectorReview -and ($WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $Sequence)) { throw 'Director review uses ordinary Wave1 captures plus one close camera.' }
-if ($UIFollowup) { $UIRefresh = $true }
+if ($UIFlightMenus -and $UIFollowup) { throw 'Flight pause and walking wardrobe are separate UI contexts.' }
+if ($UIFollowup -or $UIFlightMenus) { $UIRefresh = $true }
 if ($UIRefresh) { $MainMenu = $true }
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -105,11 +122,11 @@ function PngIdentity([string]$Path) {
         if ($stream.Read($header, 0, 24) -ne 24 -or
             [BitConverter]::ToString([byte[]]$header[0..7]).Replace('-', '') -cne '89504E470D0A1A0A' -or
             [Text.Encoding]::ASCII.GetString($header, 12, 4) -cne 'IHDR') { throw "Invalid PNG header: $Path" }
-        $width = [uint32]$header[16] * 16777216 + [uint32]$header[17] * 65536 + [uint32]$header[18] * 256 + [uint32]$header[19]
-        $height = [uint32]$header[20] * 16777216 + [uint32]$header[21] * 65536 + [uint32]$header[22] * 256 + [uint32]$header[23]
-        if ($width -ne 1920 -or $height -ne 1080) { throw "Unexpected screenshot size ${width}x${height}: $Path" }
-        $identity.width = $width
-        $identity.height = $height
+        $imageWidth = [uint32]$header[16] * 16777216 + [uint32]$header[17] * 65536 + [uint32]$header[18] * 256 + [uint32]$header[19]
+        $imageHeight = [uint32]$header[20] * 16777216 + [uint32]$header[21] * 65536 + [uint32]$header[22] * 256 + [uint32]$header[23]
+        if ($imageWidth -ne $Width -or $imageHeight -ne $Height) { throw "Unexpected screenshot size ${imageWidth}x${imageHeight}: $Path" }
+        $identity.width = $imageWidth
+        $identity.height = $imageHeight
         return $identity
     } finally { $stream.Dispose() }
 }
@@ -155,17 +172,25 @@ New-Item -ItemType Directory -Path $slotsRoot | Out-Null
 New-Item -ItemType Directory -Path $pointerRoot -Force | Out-Null
 $token | Set-Content -LiteralPath (Join-Path $root '.ss-endgame-soak') -Encoding utf8
 $arguments = if ($Packaged) { @() } else { @((Join-Path $repo 'SpaceSurvival.uproject'), '-game') }
-$scenario = if ($OutpostReview) { 'OutpostReview' } elseif ($WormholeReview) { 'WormholeReview' } elseif ($MainMenu) { 'MainMenu' } else { 'Wave1' }
+$scenario = if ($QualityBenchmark) { 'QualityBenchmark' } elseif ($TailReview) { 'TailReview' } elseif ($OutpostReview) { 'OutpostReview' } elseif ($WormholeReview) { 'WormholeReview' } elseif ($MainMenu) { 'MainMenu' } else { 'Wave1' }
 $arguments += @('-SSWave10Soak', "-SSSoakScenario=$scenario",
-    '-SSSoakVisuals', '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$root", '-RenderOffscreen',
-    '-ForceRes', '-windowed', '-ResX=1920', '-ResY=1080', '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
+    '-SaveToUserDir', "-UserDir=$userRoot", "-SSWave10SoakRoot=$root", '-RenderOffscreen',
+    '-ForceRes', '-windowed', "-ResX=$Width", "-ResY=$Height", '-NoSplash', '-NoLiveCoding', '-csvGpuStats',
     '-nosound', '-unattended', "-abslog=$(Join-Path $root 'Rendered.log')")
-if ($UIRefresh) { $arguments += '-SSUIRefreshReview' }
+if ($QualityBenchmark) { $arguments += '-SSQualityBenchmark' } else { $arguments += '-SSSoakVisuals' }
+if ($TailReview -or $OfflineSequence) { $arguments += @('-UseFixedTimeStep', '-FPS=60') }
+if ($OfflineSequence) { $arguments += '-SSOfflineSequence' }
+if ($ApartmentWalk) { $arguments += '-SSSoakApartmentWalk' }
+if ($UIRefresh) { $arguments += @('-SSUIRefreshReview', "-SSUIReviewScale=$($UIScale.ToString([Globalization.CultureInfo]::InvariantCulture))") }
 if ($UIFollowup) { $arguments += '-SSUIFollowupReview' }
+if ($UIFlightMenus) { $arguments += '-SSUIFlightMenus' }
 if ($Sequence) { $arguments += '-SSSoakSequence' }
 if ($WeaponReadability) { $arguments += '-SSWeaponReadability' }
 if ($DirectorReview) { $arguments += '-SSDirectorReview' }
-$execCmds = "ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
+# Engine diagnostic messages include the green CSV counter. Keep the actual Canvas player HUD visible.
+$execCmds = "DisableAllScreenMessages,csv.AlwaysShowFrameCount 0,ss.SpaceAreaPreview $Area,ss.SpaceAreaVariation $Variation"
+if ($QualityBenchmark) { $execCmds += ",ss.DistantAsteroidCount $DistantCount,t.IdleWhenNotForeground 0,r.VSync 0,t.MaxFPS 0,r.ScreenPercentage 100" }
+else { $execCmds += ',t.MaxFPS 30' } # Visual review shares the owner's GPU; timing evidence uses the uncapped benchmark.
 if ($ThrusterShape -ge 0) { $execCmds += ",ss.ThrusterShape $ThrusterShape" }
 if ($ThrusterEmission -gt 0) { $execCmds += ",ss.ThrusterEmission $ThrusterEmission" }
 if ($ThrusterScale -gt 0) { $execCmds += ",ss.ThrusterScale $ThrusterScale" }
@@ -176,8 +201,8 @@ if ($ThrusterTrailHeight -ne 0) { $execCmds += ",ss.ThrusterTrailHeight $Thruste
 if ($ThrusterHeight -ne 0) { $execCmds += ",ss.ThrusterHeight $ThrusterHeight" }
 $arguments += "-ExecCmds=$execCmds"
 $arguments += $ExtraArgs
-$evidenceType = if ($OutpostReview) { 'OUTPOST_SCRIPTED_INTEGRATION_REVIEW' } elseif ($WormholeReview) { 'WORMHOLE_SEEDED_VISUAL_REVIEW_NORMAL_STATS' } elseif ($UIRefresh) { 'UI_REFRESH_RENDERED_REVIEW' } elseif ($MainMenu) { 'TITLE_MENU_RENDERED_REVIEW' } elseif ($WeaponReadability) { 'WEAPON_READABILITY_SCRIPTED_NORMAL_STATS' } else { 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' }
-$timeoutSeconds = if ($OutpostReview) { 300 } else { 120 }
+$evidenceType = if ($QualityBenchmark) { 'ENVIRONMENT_FLIGHT_COST_BENCHMARK' } elseif ($OfflineSequence) { 'OFFLINE_WAVE1_VISUAL_REVIEW_NOT_PERFORMANCE' } elseif ($TailReview) { 'SQUIRREL_JUMP_RENDERED_REVIEW' } elseif ($OutpostReview) { 'OUTPOST_SCRIPTED_INTEGRATION_REVIEW' } elseif ($WormholeReview) { 'WORMHOLE_SEEDED_VISUAL_REVIEW_NORMAL_STATS' } elseif ($UIRefresh) { 'UI_REFRESH_RENDERED_REVIEW' } elseif ($MainMenu) { 'TITLE_MENU_RENDERED_REVIEW' } elseif ($WeaponReadability) { 'WEAPON_READABILITY_SCRIPTED_NORMAL_STATS' } else { 'WAVE1_VISUAL_ONLY_SCRIPTED_NORMAL_STATS' }
+$timeoutSeconds = if ($OfflineSequence) { 600 } elseif ($OutpostReview) { 300 } elseif ($QualityBenchmark -or $TailReview) { 240 } else { 120 }
 $metadata = [ordered]@{
     evidenceType = $evidenceType; status = 'starting'; success = $false
     root = $root; label = $Label; token = $token; pid = $null; processStartUtc = $null; processExit = $null
@@ -185,21 +210,35 @@ $metadata = [ordered]@{
     mode = $(if ($Packaged) { 'WindowsDevelopmentPackage' } else { 'UncookedEditorGame' })
     sourceBefore = $sourceBefore; sourceAfter = $null; artifacts = $artifactsBefore; artifactsUnchanged = $false
     productionBefore = $productionBefore; productionAfter = $null; productionPreserved = $false
-    noTestSaveSlotsWritten = $false; requestedResolution = @(1920, 1080); images = @(); fixture = $null
+    noTestSaveSlotsWritten = $false; requestedResolution = @($Width, $Height); requestedUIScale = $UIScale; images = @(); fixture = $null
     suitableForPerformanceFinding = $false
+    qualityBenchmarkRequested = [bool]$QualityBenchmark
+    benchmarkDistantCount = $(if ($QualityBenchmark) { $DistantCount } else { $null })
+    tailReviewRequested = [bool]$TailReview
     sequenceRequested = [bool]$Sequence
+    offlineSequenceRequested = [bool]$OfflineSequence
+    requestedSimulationClock = $(if ($TailReview -or $OfflineSequence) { 'Engine UseFixedTimeStep/FPS60; 1/60 simulation second per rendered frame, independent of wall time.' } else { 'Ordinary variable timestep; fixed timestep and time dilation are forbidden.' })
     directorReviewRequested = [bool]$DirectorReview
     wormholeReviewRequested = [bool]$WormholeReview
     outpostReviewRequested = [bool]$OutpostReview
+    apartmentWalkRequested = [bool]$ApartmentWalk
     weaponReadabilityRequested = [bool]$WeaponReadability
     mainMenuRequested = [bool]$MainMenu
     areaPreview = $Area; areaVariation = $Variation
-    limits = $(if ($OutpostReview) {
+    limits = $(if ($QualityBenchmark) {
+        'Environment/flight cost only: fixed seed, 1920x1080 High/100%, uncapped offscreen rendering, normal starter stats and damage, Director disabled and wave phase age held. At least 15s quiet warmup plus 60s ordinary physics cruise/turn/boost via scripted SetFlightInput. Swept-hull route probes included in CPU cost; collisions/damage invalidate comparison. No PNG readbacks, immunity, refills, natural combat, audio, physical input or packaged performance acceptance.'
+    } elseif ($OfflineSequence) {
+        'OFFLINE_WAVE1_VISUAL_REVIEW_NOT_PERFORMANCE. Existing 29-second simulated Wave1 trajectory, normal stats/collision/damage and scripted cruise/turn/boost/brake. Explicit engine UseFixedTimeStep/FPS60, actual 1/60-second ticks and time dilation 1 required. Minimum40/maximum80 sequence images and eight viewport frames between all PNG requests; no interpolated images. Simulation time is independent of wall time; screenshot readbacks and the offline clock invalidate performance and real-time smoothness claims. No physical input, natural balance, audio or complete run acceptance.'
+    } elseif ($TailReview) {
+        'Fresh isolated home; actual possessed Squirrel Jump/StopJumping and Move, fixed side camera, two jumps including landing into movement, sampled real floor/tail envelope and exact run/account preservation. No physical input, performance or natural gameplay acceptance.'
+    } elseif ($OutpostReview) {
         'Protected fresh home profile; scripted walker placements at real services, normal Interact panels, 27 sampled apartment-route floor and upper-capsule checks excluding doors, authored cameras, real StartFreeFlight takeoff/powered movement and EndFreeFlight return. Exact account/run roundtrip, then isolated seeded Wave5 Station with real EnterStation, supported walker and Upgrades/Repair/Contracts/Save panel openings; no save/purchase actions. No physical input, actual apartment traversal, landing approach, complete run or FPS claim.'
     } elseif ($WormholeReview) {
         'Seeded Wave5 Flight with 2 seconds remaining after asset warmup; fresh normal starter stats, no durability increase or invulnerability. Real Session/GameMode transition through the normal 8-second wormhole and 3 seconds of climax exit. Four normal chase-camera stages plus optional 8fps-target readbacks with actual timestamps. Ordinary SetFlightInput steering/brake attempts; no physical input, ten-wave journey, cold-first-transition, natural balance, audio or FPS acceptance. PNG identity and runtime receipt guards do not establish visual quality.'
     } elseif ($DirectorReview) {
         'Normal-stat scripted flight with a final transient camera for the runtime villain. No physical input, natural balance or FPS acceptance. Loaded tuning, actual rider mesh and animation are recorded.'
+    } elseif ($UIFlightMenus) {
+        'Actual StartFreeFlight, normal takeoff and scripted powered departure followed by four paused Canvas menus over the possessed ship camera. Exact paused account/run/settings conservation; isolated fresh profile and production-save hashes. No physical controller, natural play, balance or FPS acceptance.'
     } elseif ($UIFollowup) {
         'Hidden six-frame changed-UI batch: aligned audio/controls sliders, wardrobe top/end/drag, actual walking HUD with crew/services radar. Synthetic menu navigation and pointer drag; read-only account/run guards. No physical input, natural gameplay or performance acceptance.'
     } elseif ($UIRefresh) {
@@ -242,15 +281,44 @@ try {
     $metadata.fixture = $fixture
     if (-not $fixture.success -or -not $fixture.noSaveSlotsWritten -or
         $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $scenario -or
-        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $MainMenu -and -not $WormholeReview -and -not $OutpostReview -and -not $fixture.sawWave1) -or
-        -not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or $fixture.suitableForPerformanceFinding -or
+        $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $QualityBenchmark -and -not $TailReview -and -not $MainMenu -and -not $WormholeReview -and -not $OutpostReview -and -not $fixture.sawWave1) -or
         [IO.Path]::GetFullPath($fixture.savedDir).TrimEnd('\', '/') -ine $savedRoot.TrimEnd('\', '/') -or
         [IO.Path]::GetFullPath($fixture.csv) -ine (Join-Path $root 'Endgame.csv')) { throw 'Fixture identity, visibility or save isolation receipt failed.' }
+    if ($QualityBenchmark) {
+        if ($fixture.visualCaptureEnabled -or $fixture.offscreenVisualOnly -or -not $fixture.suitableForPerformanceFinding -or
+            -not $fixture.qualityBenchmark -or $fixture.benchmarkWarmupSeconds -lt 15 -or $fixture.benchmarkMeasuredSeconds -lt 60 -or
+            $fixture.benchmarkContactCount -ne 0 -or $fixture.benchmarkDistantAsteroidCount -ne $DistantCount -or
+            @(Get-ChildItem -LiteralPath $root -Recurse -Filter '*.png' -File).Count -ne 0) { throw 'Benchmark timing, contact or no-screenshot contract failed.' }
+        $metadata.suitableForPerformanceFinding = $true
+    } elseif (-not $fixture.visualCaptureEnabled -or -not $fixture.offscreenVisualOnly -or $fixture.suitableForPerformanceFinding) {
+        throw 'Visual capture identity was replaced by an unintended benchmark mode.'
+    }
+    if ($OfflineSequence -and (-not $fixture.offlineSequence -or -not $fixture.useFixedTimeStep -or
+        [Math]::Abs($fixture.fixedDeltaSeconds - 1.0 / 60.0) -gt 0.00000001 -or
+        [Math]::Abs($fixture.effectiveTimeDilation - 1.0) -gt 0.000001 -or
+        $fixture.flightSimulationSeconds -lt 29 -or $fixture.fixtureFrames -lt 1740)) {
+        throw 'Offline sequence did not retain its explicit 60 Hz simulation clock and complete 29-second flight.'
+    }
     $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
     $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
-    $expectedNames = if ($OutpostReview) { 'OutpostPad,OutpostServices,OutpostApartment,OutpostFlight,OutpostReturn,OutpostPitStop' } elseif ($WormholeReview) { 'Entrance,Transit,DeepTransit,Exit' } elseif ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
+    $expectedNames = if ($OutpostReview) { 'OutpostPad,OutpostServices,OutpostApartment,OutpostFlight,OutpostReturn,OutpostPitStop' } elseif ($WormholeReview) { 'Entrance,Transit,DeepTransit,Exit' } elseif ($UIFlightMenus) { 'UIPauseFlight,UIGraphicsFlight,UIAudioFlight,UIControlsFlight' } elseif ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
+    if ($QualityBenchmark) { $expectedNames = '' }
+    if ($ApartmentWalk) { $expectedNames = 'OutpostPad,OutpostServices,ApartmentWalkIn,ApartmentWalkBack,OutpostApartment,OutpostFlight,OutpostReturn,OutpostPitStop' }
+    if ($TailReview) {
+        if (-not $fixture.tailReviewComplete -or $fixture.tailJumpCount -ne 2 -or $fixture.tailOffDeckRescues -ne 0 -or $names.Count -lt 45) { throw 'Tail review did not complete two real jumps and the required rendered sequence.' }
+        $expectedNames = ((0..($names.Count - 1)) | ForEach-Object { 'Tail_{0:d3}' -f $_ }) -join ','
+    }
     if (($names -join ',') -cne $expectedNames) { throw 'Fixture did not capture the required named stages in order.' }
     if ($UIRefresh -and (-not $fixture.uiRefreshReview -or -not $fixture.mainMenuStatePreserved)) { throw 'UI frame state checks failed.' }
+    if ($UIRefresh) {
+        foreach ($row in $fixture.visualRequests) {
+            if ($row.viewportWidth -ne $Width -or $row.viewportHeight -ne $Height -or
+                [Math]::Abs($row.uiScale - $UIScale) -gt 0.001) { throw 'UI frame resolution or scale did not match the request.' }
+            if ($UIFlightMenus -and (-not $row.actualFlightCamera -or -not $row.worldPaused)) {
+                throw 'Flight pause frame did not retain the actual ship camera and paused world.'
+            }
+        }
+    }
     if ($MainMenu -and -not $UIRefresh) {
         if (-not $fixture.mainMenuReview -or -not $fixture.mainMenuStatePreserved -or $fixture.sawWave1) { throw 'Title-only state preservation failed.' }
         $expectedFocus = @(-1, 1, 2)
@@ -264,12 +332,15 @@ try {
             for ($index = 0; $index -lt 4; ++$index) {
                 $button = $row.titleRows[$index]
                 if ($button.index -ne $index -or $button.centerHitIndex -ne $index -or
-                    $button.minX -lt 0 -or $button.minY -lt 0 -or $button.maxX -gt 1920 -or $button.maxY -gt 1080 -or
+                    $button.minX -lt 0 -or $button.minY -lt 0 -or $button.maxX -gt $Width -or $button.maxY -gt $Height -or
                     $button.maxX -le $button.minX -or $button.maxY -le $button.minY) { throw 'Rendered title button has invalid bounds or hit mapping.' }
             }
         }
     }
     if ($OutpostReview) {
+        if ($ApartmentWalk -and (-not $fixture.apartmentWalkComplete -or $fixture.apartmentWalkPasses -ne 2 -or
+            $fixture.apartmentOffDeckRescues -ne 0 -or $fixture.apartmentSetupPlacements -ne 1 -or
+            $fixture.apartmentDoorClosures -ne 1)) { throw 'Actual apartment out/back movement, door closure or rescue guards failed.' }
         if (-not $fixture.outpostReviewComplete -or -not $fixture.outpostFreeFlightDeparture -or
             -not $fixture.outpostFreeFlightReturn -or $fixture.outpostServicesChecked -ne 4 -or
             $fixture.outpostFloorAndClearanceSamples -ne 27 -or -not $fixture.outpostSeededPitStopSupported -or
@@ -331,6 +402,21 @@ try {
     }
     $minimumSequenceFrames = if ($WormholeReview) { 16 } else { 40 }
     if ($Sequence -and @($allNames | Where-Object { $_ -like 'Sequence_*' }).Count -lt $minimumSequenceFrames) { throw 'Dense sequence did not produce enough real frames.' }
+    if ($Sequence -and -not $WormholeReview) {
+        if ($fixture.sequenceFrames -gt 80) { throw 'Wave1 sequence exceeded its 80-image cap.' }
+        if ($fixture.sequenceMinimumRenderFrames -ne 8 -or $fixture.sequenceObservedMinimumRenderFrames -lt 8) { throw 'Wave1 sequence did not retain eight viewport frames between screenshot requests.' }
+        for ($index = 1; $index -lt $fixture.visualRequests.Count; ++$index) {
+            $spacing = $fixture.visualRequests[$index].requestFrame - $fixture.visualRequests[$index - 1].requestFrame
+            if ($spacing -lt 8 -or $fixture.visualRequests[$index].renderFramesSincePreviousScreenshot -ne $spacing) { throw 'Wave1 screenshot spacing metadata disagrees with its actual request frame counter.' }
+        }
+    }
+    if ($scenario -ceq 'Wave1' -and -not $WeaponReadability) {
+        $boost = @($fixture.visualRequests | Where-Object { $_.name -ceq 'Boost' })[0]
+        if (-not $boost.scriptedBoostRequested -or -not $boost.actualBoosting -or
+            $boost.requestStageSeconds -lt 15.5 -or $boost.requestStageSeconds -ge 21) {
+            throw 'The named Boost image did not record active ordinary boost during its scripted input interval.'
+        }
+    }
     $metadata.images = @($allNames | ForEach-Object { PngIdentity (Join-Path $root "$_.png") })
     $captureValid = $true
 } catch {
@@ -366,7 +452,7 @@ try {
         if (-not $metadata.noTestSaveSlotsWritten) { $failures.Add('Isolated fixture wrote save slots.') }
     } catch { $failures.Add($_.Exception.Message) }
     $metadata.success = $captureValid -and $failures.Count -eq 0
-    $metadata.status = if ($metadata.success) { 'validated_visual_capture' } else { 'failed' }
+    $metadata.status = if (-not $metadata.success) { 'failed' } elseif ($QualityBenchmark) { 'validated_environment_benchmark' } else { 'validated_visual_capture' }
     $metadata.finishedUtc = [DateTime]::UtcNow.ToString('o')
     $metadata.failures = @($failures.ToArray())
     $metadata | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $metadataPath -Encoding utf8

@@ -13,6 +13,8 @@ public:
     int32 MenuIndexAt(FVector2D Point) const;
     bool ScrollMenu(int32 Rows);
     bool HandleMenuScrollPointer(FVector2D Point, bool Pressed, bool Held);
+    /** Move Canvas focus using the visible layout without activating a gameplay transaction. */
+    bool NavigateMenu(int32 Horizontal, int32 Vertical);
     const TArray<FBox2D> &GetMenuBounds() const
     {
         return MenuBounds;
@@ -35,15 +37,18 @@ private:
     TObjectPtr<class UFont> RefreshFont;
     float RefreshScale = 1.f;
     FVector2D RefreshOrigin = FVector2D::ZeroVector;
-    void BeginRefreshLayout();
+    void BeginRefreshLayout(bool FullViewport = false);
     UTexture2D *RefreshTexture(FName Name);
     FBox2D RefreshBounds(float X, float Y, float Width, float Height) const;
     void RefreshImage(FName Name, float X, float Y, float Width, float Height, FLinearColor Tint = FLinearColor::White);
-    float RefreshText(const FString &Value, float X, float Y, float Pixels, FLinearColor Color, float Width = 0.f);
+    float RefreshText(const FString &Value, float X, float Y, float Pixels, FLinearColor Color, float Width = 0.f,
+                      bool Render = true);
     bool DrawRefreshMenu(const class ASSGameMode &Mode);
     void DrawRefreshVitals(const class ASSGameMode &Mode, bool Walking);
     void DrawStationRadar();
     int32 ScrollFirst = 0, ScrollVisible = 6, ScrollCount = 0;
+    int32 ScrollPanel = INDEX_NONE;
+    TArray<int32> ScrollEntries;
     bool bScrollDragging = false;
     float ScrollDragOffset = 0;
     FBox2D ScrollTrackBounds, ScrollThumbBounds, ScrollUpBounds, ScrollDownBounds;

@@ -1169,6 +1169,10 @@ struct FSSHeroDefinition
      *  clip while the body resumes locomotion; None leaves every existing hero unchanged. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
     FName TailRootBone = NAME_None;
+    /** Optional mesh-space skin envelopes expressed in each tail bone's local reference frame.
+     *  Baked once from the actual weighted surface; no runtime CPU skinning or other-hero fallback. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bones")
+    TMap<FName, FBox> TailFloorEnvelopes;
 
     /** Whether this build actually holds the package behind an object path. An empty path is not a
      *  missing file, it is a hero saying it has none of that thing, and both answer false. Anything

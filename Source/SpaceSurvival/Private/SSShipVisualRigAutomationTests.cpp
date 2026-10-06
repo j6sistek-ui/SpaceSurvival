@@ -647,6 +647,16 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
         return false;
     USkeletalMeshComponent *Hull = Fixture.Rig->GetHull();
     const FSSHullDefinition Definition(ESSHullIdentity::StellarPhoenix);
+    auto *RearCabinLight = NamedComponent<UPointLightComponent>(Hull->GetOwner(), TEXT("BoardingRearCabinLight"));
+    auto *CockpitLight = NamedComponent<UPointLightComponent>(Hull->GetOwner(), TEXT("BoardingCockpitLight"));
+    if (!TestNotNull(TEXT("Rear boarding cabin has its local ceiling lamp"), RearCabinLight) ||
+        !TestNotNull(TEXT("Cockpit has its separate local ceiling lamp"), CockpitLight))
+        return false;
+    TestFalse(TEXT("Boarding lamps begin off while the ship is in flight presentation"),
+              RearCabinLight->IsVisible() || CockpitLight->IsVisible());
+    TestTrue(TEXT("Cockpit lamp limits close ceiling highlights without reducing diffuse navigation light"),
+             CockpitLight->SpecularScale > 0.f && CockpitLight->SpecularScale <= .25f &&
+                 CockpitLight->DiffuseScale == 1.f && RearCabinLight->SpecularScale == 1.f);
     Fixture.Ship->SetActorLocation(FVector(0, 0, Definition.DockClearanceAboveDeck));
     Fixture.Rig->PlayLanding(3.f);
     Fixture.Seconds(3.f);
@@ -670,6 +680,15 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
                             Physics->SkeletalBodySetups.Num()));
     Fixture.Rig->SetStationCollision(true);
     Fixture.Seconds(.05f);
+    for (UPointLightComponent *Light : {RearCabinLight, CockpitLight})
+    {
+        TestTrue(TEXT("Parking enables the mounted interior lamp"),
+                 Light->IsVisible() && Light->GetAttachParent() == Fixture.Ship->GetRootComponent());
+        TestTrue(TEXT("Cabin lamps use physical lumens and shadows without volumetric fill"),
+                 Light->IntensityUnits == ELightUnits::Lumens && Light->Intensity > 0.f &&
+                     Light->bUseInverseSquaredFalloff && Light->CastShadows &&
+                     Light->VolumetricScatteringIntensity == 0.f);
+    }
     int32 DisabledShapes = 0;
     const FBodyInstance *ParkedBody = Hull->GetBodyInstance(TEXT("Body_Bone"));
     if (!TestNotNull(TEXT("Parked hull keeps the supplied body instance"), ParkedBody))
@@ -678,10 +697,21 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
               Physics->SkeletalBodySetups[0]->AggGeom.BoxElems.Num(), 10);
     for (int32 Index = 0; Index < Physics->SkeletalBodySetups[0]->AggGeom.GetElementCount(); ++Index)
         DisabledShapes += ParkedBody->GetShapeCollisionEnabled(Index) == ECollisionEnabled::NoCollision ? 1 : 0;
-    TestEqual(TEXT("Only the obsolete ramp box is disabled on this parked instance"), DisabledShapes, 1);
+    TestEqual(TEXT("Only the measured ramp and three enclosing interior boxes are replaced on this instance"),
+              DisabledShapes, 4);
     TestTrue(TEXT("Parked hull queries block walkers without another simulated body"),
              Hull->GetCollisionEnabled() == ECollisionEnabled::QueryOnly && !Hull->IsSimulatingPhysics() &&
                  Hull->GetCollisionResponseToChannel(ECC_Pawn) == ECR_Block);
+    auto *Interior = NamedComponent<UStaticMeshComponent>(Hull->GetOwner(), TEXT("ParkedInterior"));
+    if (!TestNotNull(TEXT("Measured private interior owns the replaced cockpit collision"), Interior))
+        return false;
+    TestTrue(TEXT("Actual interior triangles remain a parked query blocker for walkers"),
+             Interior->GetStaticMesh() &&
+                 Interior->GetStaticMesh()->GetPathName() ==
+                     TEXT("/Game/SpaceSurvival/Licensed/PhoenixPresentation/"
+                          "SM_PhoenixParkedInterior.SM_PhoenixParkedInterior") &&
+                 Interior->GetCollisionEnabled() == ECollisionEnabled::QueryOnly && !Interior->IsSimulatingPhysics() &&
+                 Interior->GetCollisionResponseToChannel(ECC_Pawn) == ECR_Block);
 
     const UCapsuleComponent *WalkerCapsule = GetDefault<ASSWalker>()->GetCapsuleComponent();
     const float Radius = WalkerCapsule->GetUnscaledCapsuleRadius();
@@ -709,23 +739,44 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
                  Bounds.Min.Z >= -.1f && Bounds.Min.Z < 5.f);
         FVector Center = Bounds.GetCenter();
         Center.Z = HalfHeight;
-        // Approach each rear foot from the centre aisle. The right nacelle overhangs its outer
-        // approach; starting inside that real obstacle would test the engine, not walking into gear.
-        const FVector Side = Fixture.Ship->GetActorRightVector() * (Center.Y > 100.f ? -1.f : 1.f);
-        const float Travel = Bounds.GetExtent().Y + Radius * 2.f;
-        LastStart = Center + Side * Travel;
-        LastEnd = Center - Side * Travel;
-        TestFalse(TEXT("The walking approach starts in reachable space outside all ship geometry"),
-                  Fixture.World->OverlapBlockingTestByChannel(LastStart, FQuat::Identity, ECC_Pawn, Capsule, Query));
-        FHitResult Hit;
-        const bool Blocked =
-            Fixture.World->SweepSingleByChannel(Hit, LastStart, LastEnd, FQuat::Identity, ECC_Pawn, Capsule, Query);
-        const bool HitAuthoredGear = Blocked && Hit.GetComponent() == Box;
-        if (HitAuthoredGear)
+        // The old centre-aisle starts are inside the newly measured interior walls. Find a clear
+        // exterior capsule pose around each actual foot, without ignoring any hull/interior part.
+        // This checks local contact geometry, not a complete walking route from the station pad.
+        bool HitAuthoredGear = false;
+        int32 ClearStarts = 0;
+        FString FirstOtherHit;
+        for (int32 Direction = 0; Direction < 16 && !HitAuthoredGear; ++Direction)
+        {
+            const float Angle = Direction * 2.f * PI / 16.f;
+            const FVector Side(FMath::Cos(Angle), FMath::Sin(Angle), 0);
+            const float Travel =
+                Bounds.GetExtent().X * FMath::Abs(Side.X) + Bounds.GetExtent().Y * FMath::Abs(Side.Y) + Radius * 2.f;
+            const FVector Start = Center + Side * Travel;
+            if (Fixture.World->OverlapBlockingTestByChannel(Start, FQuat::Identity, ECC_Pawn, Capsule, Query))
+                continue;
+            ++ClearStarts;
+            FHitResult Hit;
+            const bool Blocked =
+                Fixture.World->SweepSingleByChannel(Hit, Start, Center, FQuat::Identity, ECC_Pawn, Capsule, Query);
+            HitAuthoredGear = Blocked && !Hit.bStartPenetrating && Hit.GetComponent() == Box;
+            if (HitAuthoredGear)
+            {
+                LastStart = Start;
+                LastEnd = Center;
+                AddInfo(FString::Printf(TEXT("Phoenix gear approach bone=%s start=%s impact=%s hit=%s"), Gear.Bone,
+                                        *Start.ToString(), *Hit.ImpactPoint.ToString(),
+                                        *GetNameSafe(Hit.GetComponent())));
+            }
+            else if (FirstOtherHit.IsEmpty())
+                FirstOtherHit = GetNameSafe(Hit.GetComponent());
+        }
+        if (TestTrue(
+                FString::Printf(TEXT("A clear full-world capsule approach first contacts actual gear %s"), Gear.Bone),
+                HitAuthoredGear))
             ++GearHits;
-        AddInfo(FString::Printf(TEXT("Phoenix walker sweep bone=%s center=%s hit=%s blocking=%d penetrating=%d"),
-                                Gear.Bone, *Center.ToString(), *GetNameSafe(Hit.GetComponent()), Blocked,
-                                Hit.bStartPenetrating));
+        else
+            AddInfo(FString::Printf(TEXT("Phoenix gear approach failed bone=%s center=%s clearStarts=%d firstOther=%s"),
+                                    Gear.Bone, *Center.ToString(), ClearStarts, *FirstOtherHit));
     }
     TestEqual(TEXT("All three separate landing feet are measured and present"), GearBodies, 3);
     TestEqual(TEXT("Walking capsule is blocked at all three actual animated landing feet"), GearHits, 3);
@@ -751,7 +802,7 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
     TestTrue(
         TEXT("Parked nose remains solid above the actual gear"),
         Fixture.World->LineTraceSingleByChannel(BodyHit, FVector(700, 0, 800), FVector(700, 0, 300), ECC_Pawn, Query) &&
-            BodyHit.GetComponent() == Hull);
+            BodyHit.GetComponent() == Interior && !BodyHit.bStartPenetrating);
     TestTrue(TEXT("Bone-attached walking face replaces the coarse cargo ramp envelope"),
              Fixture.World->LineTraceSingleByChannel(RampHit, FVector(-1150, 0, 400), FVector(-1150, 0, 100), ECC_Pawn,
                                                      Query) &&
@@ -773,13 +824,17 @@ bool FSSPhoenixParkedCollision::RunTest(const FString &)
     TestTrue(TEXT("Takeoff removes parked collision before native flight resumes"),
              !Hull->GetOwner()->GetActorEnableCollision() &&
                  Hull->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
-    if (GearBodies > 0)
+    TestFalse(TEXT("Native takeoff disables both boarding lamps before flight resumes"),
+              RearCabinLight->IsVisible() || CockpitLight->IsVisible());
+    if (GearHits > 0)
     {
         FHitResult Hit;
         TestFalse(
             TEXT("Previously blocked leg path no longer leaves an invisible flight obstacle"),
             Fixture.World->SweepSingleByChannel(Hit, LastStart, LastEnd, FQuat::Identity, ECC_Pawn, Capsule, Query));
     }
+    Fixture.Rig->SetStationCollision(true);
+    TestTrue(TEXT("Parking again restores both cabin lamps"), RearCabinLight->IsVisible() && CockpitLight->IsVisible());
     return true;
 }
 

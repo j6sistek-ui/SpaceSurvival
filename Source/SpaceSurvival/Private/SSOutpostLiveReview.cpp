@@ -13,6 +13,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/App.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "UnrealClient.h"
 
@@ -86,7 +88,10 @@ void ASSWave10Soak::TickOutpostReview(float Dt)
     }
     // Practice and seeded runs deliberately update the scratch account last-run identity.
     // Require exact untouched home state before departure and exact restoration at stage6.
-    if (OutpostReviewStage < 4 && (Account() != OutpostAccountBefore || Run() != OutpostRunBefore))
+    const bool BoardingRequested = FParse::Param(FCommandLine::Get(), TEXT("SSSoakBoardingReview"));
+    const bool ExpectedBoardingCommit = BoardingRequested && OutpostReviewStage == 3 && BoardingReviewAwaitingDeparture;
+    if (OutpostReviewStage < 4 && !ExpectedBoardingCommit &&
+        (Account() != OutpostAccountBefore || Run() != OutpostRunBefore))
     {
         Stop(TEXT("Outpost service inspection altered account or survival run."));
         return;
@@ -192,9 +197,10 @@ void ASSWave10Soak::TickOutpostReview(float Dt)
             {
                 GM->ClosePanel();
                 if (PitStop)
-                    OutpostReviewComplete = OutpostServicesChecked == 4 && OutpostPitStopServicesChecked == 4 &&
-                                            OutpostFloorChecks == 27 && OutpostDepartureVerified &&
-                                            OutpostReturnVerified && OutpostPitStopSupported;
+                    OutpostReviewComplete =
+                        OutpostServicesChecked == 4 && OutpostPitStopServicesChecked == 4 && OutpostFloorChecks == 27 &&
+                        OutpostDepartureVerified && OutpostReturnVerified && OutpostPitStopSupported &&
+                        (!ApartmentWalk || (ApartmentWalkPasses == 2 && ApartmentDoorClosures == 1));
                 Next();
             }
         }
@@ -225,6 +231,8 @@ void ASSWave10Soak::TickOutpostReview(float Dt)
                          {6700, 4380, -145},
                          {6700, 4500, -170},
                          {6700, 4660, -170}});
+            if (ApartmentWalk)
+                ApartmentRoute = Feet;
             FCollisionQueryParams Query(SCENE_QUERY_STAT(OutpostHomeReview), false, GM->Walker);
             for (TActorIterator<ASSOutpostDoor> It(GetWorld()); It; ++It)
                 Query.AddIgnoredActor(*It); // Geometry probes exclude moving doors; no door traversal claim.
@@ -255,12 +263,23 @@ void ASSWave10Soak::TickOutpostReview(float Dt)
                 ++OutpostFloorChecks;
             }
         }
+        if (ApartmentWalk && !TickApartmentWalk(Dt, ApartmentRoute))
+            return;
         if (Frame(TEXT("OutpostApartment"), FVector(6450, 4570, 5), FVector(7650, 4850, 30)))
             Next();
         return;
     }
     if (OutpostReviewStage == 3)
     {
+        if (BoardingRequested)
+        {
+            if (TickBoardingReview(Dt))
+            {
+                PC->SetViewTarget(GM->Ship);
+                Next();
+            }
+            return;
+        }
         // BeginFreeFlight only creates an in-memory Session backup, but refuses a blocked account.
         // Restore the guard synchronously; no persistence API is invoked or enabled across a tick.
         {

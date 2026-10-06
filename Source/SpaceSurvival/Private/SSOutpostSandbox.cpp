@@ -169,6 +169,11 @@ FString ASSOutpostTerminal::Use(APlayerController *User)
     {
         // Real game services use the existing account/run transactions. Sandbox previews stay local.
         const ESSPanel Panel = Game->GetStation()->OutpostPanel(this);
+        if (Panel == ESSPanel::Launch)
+        {
+            Game->OpenPanel(ESSPanel::Launch);
+            return FString();
+        }
         if (Panel != ESSPanel::None)
         {
             Game->OpenPanel(Panel);

@@ -25,7 +25,7 @@ bool IsSettingsPanel(ESSPanel Panel)
 }
 } // namespace
 
-void ASSHUD::BeginRefreshLayout()
+void ASSHUD::BeginRefreshLayout(bool FullViewport)
 {
     if (!RefreshFont)
     {
@@ -36,9 +36,9 @@ void ASSHUD::BeginRefreshLayout()
         RefreshFont->FontCacheType = EFontCacheType::Runtime;
         RefreshFont->GetMutableInternalCompositeFont() = *Source.GetCompositeFont();
     }
-    RefreshScale = FMath::Min(Canvas->SizeX / 1920.f, Canvas->SizeY / 1080.f);
-    RefreshOrigin =
-        FVector2D((Canvas->SizeX - 1920.f * RefreshScale) * .5f, (Canvas->SizeY - 1080.f * RefreshScale) * .5f);
+    RefreshScale = FMath::Min(Canvas->SizeX / (FullViewport ? 1440.f : 1920.f), Canvas->SizeY / 1080.f);
+    RefreshOrigin = FVector2D(FullViewport ? 0.f : (Canvas->SizeX - 1920.f * RefreshScale) * .5f,
+                              (Canvas->SizeY - 1080.f * RefreshScale) * .5f);
 }
 
 UTexture2D *ASSHUD::RefreshTexture(FName Name)
@@ -68,11 +68,12 @@ void ASSHUD::RefreshImage(FName Name, float X, float Y, float Width, float Heigh
     }
 }
 
-float ASSHUD::RefreshText(const FString &Value, float X, float Y, float Pixels, FLinearColor Color, float Width)
+float ASSHUD::RefreshText(const FString &Value, float X, float Y, float Pixels, FLinearColor Color, float Width,
+                          bool Render)
 {
     float TextScale = 1.f;
     if (const auto *GI = GetGameInstance<USSGameInstance>())
-        TextScale = FMath::Clamp(float(GI->Session.settings.uiScale), .85f, 1.25f);
+        TextScale = FMath::Clamp(float(GI->Session.settings.uiScale), .8f, 1.4f);
     FSlateFontInfo Font(RefreshFont, FMath::Max(8, FMath::RoundToInt(Pixels * RefreshScale * .75f * TextScale)));
     const auto Measure = FEngineFontServices::Get().GetFontMeasure();
     const float Dpi = FMath::Max(.1f, Canvas->GetDPIScale());
@@ -87,10 +88,13 @@ float ASSHUD::RefreshText(const FString &Value, float X, float Y, float Pixels, 
         FString Pending;
         auto Emit = [&]()
         {
-            FCanvasTextItem Item(RefreshOrigin + FVector2D(X, CursorY) * RefreshScale, FText::FromString(Pending), Font,
-                                 Color);
-            Item.EnableShadow(FLinearColor(0, 0, 0, .9f), FVector2D(1, 1));
-            Canvas->DrawItem(Item);
+            if (Render)
+            {
+                FCanvasTextItem Item(RefreshOrigin + FVector2D(X, CursorY) * RefreshScale, FText::FromString(Pending),
+                                     Font, Color);
+                Item.EnableShadow(FLinearColor(0, 0, 0, .9f), FVector2D(1, 1));
+                Canvas->DrawItem(Item);
+            }
             CursorY += LineHeight;
             Pending.Empty();
         };
@@ -114,33 +118,79 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return false;
-    BeginRefreshLayout();
+    BeginRefreshLayout(true);
     const auto &S = GI->Session;
     const bool Live = S.IsFlying() && (Mode.Panel == ESSPanel::Depot || Mode.Panel == ESSPanel::Reward);
-    if (!Live)
-    {
-        DrawRect(FLinearColor(.001f, .004f, .01f), 0, 0, Canvas->SizeX, Canvas->SizeY);
-        RefreshImage(TEXT("Background"), 0, 0, 1920, 1080, FLinearColor(.6f, .6f, .6f, 1));
-    }
-    MenuBounds.Init(FBox2D(EForceInit::ForceInit), Mode.Entries.Num());
-    if (Mode.Panel != ESSPanel::Wardrobe)
-    {
-        ScrollFirst = ScrollCount = 0;
-        bScrollDragging = false;
-    }
     const bool Settings = IsSettingsPanel(Mode.Panel);
+    const bool Wardrobe = Mode.Panel == ESSPanel::Wardrobe;
     const bool Pause = Mode.Panel == ESSPanel::Main;
-    const float HeadingX = Live ? 1280.f : 72.f;
-    RefreshText(Mode.PanelTitle, HeadingX, Live ? 165.f : 86.f, Live ? 28.f : 54.f, UIWhite, Live ? 550.f : 1730.f);
+    const bool FullScreen = Settings || Wardrobe;
+    const bool SaveError =
+        !GI->LastSaveError.IsEmpty() && Mode.Announcement == GI->LastSaveError && Mode.IsAnnouncementVisible();
+    const float ViewWidth = Canvas->SizeX / RefreshScale;
+    // The world remains the backdrop for every in-game panel. Only the separately owned,
+    // locked title menu draws its static artwork. Full pages use the actual viewport width.
     if (!Live)
-        RefreshText(Settings ? TEXT("PREFERENCES")
-                    : Pause  ? (Mode.IsTitleMenu() ? TEXT("SPACE SURVIVAL") : TEXT("JOURNEY / PAUSED"))
-                             : TEXT("STATION / SHIP SERVICES"),
-                    72, 52, 19, UICyan);
-    RefreshText(UsingGamepad() ? TEXT("LEFT STICK / D-PAD  NAVIGATE       A  SELECT       B  BACK")
-                               : TEXT("ARROWS  NAVIGATE       ENTER / CLICK  SELECT       ESC  BACK"),
-                72, 1003, 20, UIWhite);
-
+        DrawRect(FLinearColor(.001f, .004f, .01f, FullScreen ? .72f : .42f), 0, 0, Canvas->SizeX, Canvas->SizeY);
+    MenuBounds.Init(FBox2D(EForceInit::ForceInit), Mode.Entries.Num());
+    if (ScrollPanel != static_cast<int32>(Mode.Panel))
+    {
+        ScrollFirst = 0;
+        bScrollDragging = false;
+        ScrollPanel = static_cast<int32>(Mode.Panel);
+    }
+    ScrollCount = 0;
+    ScrollEntries.Reset();
+    const float PanelW = FullScreen ? ViewWidth - 96.f : FMath::Min(Live ? 650.f : 1280.f, ViewWidth - 96.f);
+    const float PanelX = Live ? ViewWidth - PanelW - 32.f : (ViewWidth - PanelW) * .5f;
+    float PauseRowStep = 72.f;
+    int32 PauseRows = 0;
+    if (Pause)
+        for (const FSSMenuEntry &Entry : Mode.Entries)
+            if (Entry.Action != 0)
+            {
+                ++PauseRows;
+                PauseRowStep = FMath::Max(PauseRowStep,
+                                          RefreshText(Entry.Label, 0, 0, 26.f, UIWhite, PanelW - 164.f, false) + 30.f);
+            }
+    // The pause frame's inner top rim extends below the old eyebrow position.
+    const float PauseHeadingOffset =
+        Pause ? 64.f + RefreshText(TEXT("JOURNEY / PAUSED"), 0, 0, 18.f, UICyan, PanelW - 128.f, false) + 10.f : 72.f;
+    const float PauseHeight = Pause ? PauseHeadingOffset +
+                                          RefreshText(Mode.PanelTitle, 0, 0, 42.f, UIWhite, PanelW - 128.f, false) +
+                                          32.f + PauseRows * PauseRowStep + 140.f
+                                    : 0.f;
+    const float PanelH = FullScreen ? 772.f : Live ? 780.f : Pause ? FMath::Clamp(PauseHeight, 460.f, 930.f) : 930.f;
+    const float PanelY = FullScreen ? 202.f : Live ? 180.f : Pause ? (1080.f - PanelH) * .5f : 74.f;
+    // Nine-slice the approved frame: growing a page must not grow its ornamental border
+    // until the usable content is squeezed into a small central box.
+    if (auto *Frame = RefreshTexture(TEXT("Frame")))
+    {
+        const float SourceW = Frame->GetSizeX(), SourceH = Frame->GetSizeY();
+        constexpr float Corner = 84.f, SourceCorner = 128.f;
+        const float X[] = {PanelX, PanelX + Corner, PanelX + PanelW - Corner, PanelX + PanelW};
+        const float Y[] = {PanelY, PanelY + Corner, PanelY + PanelH - Corner, PanelY + PanelH};
+        const float U[] = {0, SourceCorner / SourceW, 1.f - SourceCorner / SourceW, 1};
+        const float V[] = {0, SourceCorner / SourceH, 1.f - SourceCorner / SourceH, 1};
+        for (int32 Row = 0; Row < 3; ++Row)
+            for (int32 Col = 0; Col < 3; ++Col)
+            {
+                FCanvasTileItem Item(RefreshOrigin + FVector2D(X[Col], Y[Row]) * RefreshScale, Frame->GetResource(),
+                                     FVector2D(X[Col + 1] - X[Col], Y[Row + 1] - Y[Row]) * RefreshScale,
+                                     FVector2D(U[Col], V[Row]), FVector2D(U[Col + 1], V[Row + 1]), FLinearColor::White);
+                Item.BlendMode = SE_BLEND_Translucent;
+                Canvas->DrawItem(Item);
+            }
+    }
+    const float InnerX = PanelX + 64.f, InnerW = PanelW - 128.f;
+    const float HeadingY = FullScreen ? 73.f : PanelY + PauseHeadingOffset;
+    RefreshText(Settings ? TEXT("PREFERENCES")
+                : Pause  ? TEXT("JOURNEY / PAUSED")
+                         : TEXT("SHIP / STATION"),
+                InnerX, FullScreen ? 35.f : PanelY + (Pause ? 64.f : 43.f), 18, UICyan);
+    const float HeadingH = RefreshText(Mode.PanelTitle, InnerX, HeadingY, Live ? 28.f : 42.f, UIWhite, InnerW);
+    const float BodyY = FullScreen ? 310.f : HeadingY + HeadingH + 32.f;
+    const float BackY = PanelY + PanelH - 112.f;
     auto Bound = [&](int32 Index, float X, float Y, float Width, float Height)
     { MenuBounds[Index] = RefreshBounds(X, Y, Width, Height); };
     auto Focus = [&](int32 Index, float X, float Y, float Width, float Height)
@@ -152,13 +202,54 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
             DrawRect(UICyan, B.Min.X, B.Min.Y, 3.f * RefreshScale, B.GetSize().Y);
         }
     };
+    auto Button = [&](int32 I, float X, float Y, float Width, float Height, float Pixels)
+    {
+        const auto &Entry = Mode.Entries[I];
+        const FBox2D B = RefreshBounds(X, Y, Width, Height);
+        DrawRect(FLinearColor(.07f, .12f, .17f, .65f), B.Min.X, B.Min.Y, B.GetSize().X, B.GetSize().Y);
+        Focus(I, X, Y, Width, Height);
+        Bound(I, X, Y, Width, Height);
+        RefreshText(Entry.Label, X + 18.f, Y + 12.f, Pixels,
+                    Entry.Enabled ? (Mode.SelectedEntry == I ? UICyan : UIWhite) : FLinearColor(.38f, .44f, .5f),
+                    Width - 36.f);
+    };
+    const int32 Back = Mode.Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry) { return Entry.Action == 0; });
+    if (Back != INDEX_NONE)
+        Button(Back, InnerX, BackY, FullScreen ? 260.f : InnerW, 58.f, 24.f);
+    if (!SaveError)
+        RefreshText(UsingGamepad() ? (Live       ? TEXT("D-PAD: CHOOSE | A: SELECT | B: CLOSE")
+                                      : Settings ? TEXT("LEFT STICK / D-PAD: MOVE / ADJUST | A: SELECT | B: BACK")
+                                                 : TEXT("LEFT STICK / D-PAD: MOVE | A: SELECT | B: BACK"))
+                                   : TEXT("ARROWS: MOVE | ENTER / CLICK: SELECT | ESC: BACK"),
+                    Live    ? PanelX
+                    : Pause ? InnerX
+                            : 64.f,
+                    Live    ? 990.f
+                    : Pause ? PanelY + PanelH + 28.f
+                            : 1024.f,
+                    Live ? 16.f : 19.f, UIWhite,
+                    Live    ? PanelW
+                    : Pause ? InnerW
+                            : ViewWidth - 128.f);
     if (Settings)
     {
-        RefreshImage(TEXT("Frame"), 54, 214, 1150, 740);
         const int Actions[] = {5, 10, 11, 12};
         const TCHAR *Names[] = {TEXT("GENERAL"), TEXT("GRAPHICS"), TEXT("AUDIO"), TEXT("CONTROLS")};
         const ESSPanel Panels[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls};
         const auto &V = S.settings;
+        const bool Controls = Mode.Panel == ESSPanel::Controls;
+        const float TabW = InnerW / 4.f;
+        const float TabTextScale = FMath::Clamp(float(V.uiScale), .8f, 1.4f);
+        const FSlateFontInfo TabFont(RefreshFont,
+                                     FMath::Max(8, FMath::RoundToInt(23.f * RefreshScale * .75f * TabTextScale)));
+        const float RowW = Controls ? InnerW * .61f : InnerW;
+        const float LabelW = Controls ? RowW * .45f : RowW * .4f;
+        const float ValueW = Controls ? 145.f : 235.f;
+        const float ValueX = InnerX + RowW - ValueW - 18.f;
+        const float ControlX = InnerX + LabelW + 30.f;
+        const float ControlW = FMath::Max(140.f, ValueX - ControlX - 18.f);
+        const float RowPixels = Controls ? 24.f : 28.f;
+        const float RowStep = Controls ? 90.f : 114.f;
         int32 Row = 0;
         for (int32 I = 0; I < Mode.Entries.Num(); ++I)
         {
@@ -169,22 +260,26 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                     Tab = T;
             if (Tab != INDEX_NONE)
             {
-                const float X = 72.f + Tab * 236.f;
+                const float X = InnerX + Tab * TabW;
                 RefreshImage(Mode.Panel == Panels[Tab] || Mode.SelectedEntry == I ? TEXT("TabActive") : TEXT("Tab"), X,
-                             189, 226, 92);
-                RefreshText(Names[Tab], X + 44, 219, 21, UIWhite);
-                Bound(I, X + 18, 207, 190, 56);
+                             172.f, TabW - 12.f, 92.f);
+                const FBox2D TabBounds = RefreshBounds(X + 18.f, 187.f, TabW - 48.f, 58.f);
+                FCanvasTextItem TabLabel(TabBounds.GetCenter(), FText::FromString(Names[Tab]), TabFont, UIWhite);
+                TabLabel.bCentreX = true;
+                TabLabel.bCentreY = true;
+                TabLabel.EnableShadow(FLinearColor(0, 0, 0, .9f), FVector2D(1, 1));
+                Canvas->DrawItem(TabLabel);
+                Bound(I, X + 18.f, 187.f, TabW - 48.f, 58.f);
+                Focus(I, X + 18.f, 187.f, TabW - 48.f, 58.f);
                 continue;
             }
             if (Entry.Action == 0)
             {
-                Bound(I, 60, 982, 270, 60);
-                Focus(I, 60, 982, 270, 60);
                 continue;
             }
-            const float Y = 390.f + Row++ * (Mode.Panel == ESSPanel::Controls ? 62.f : 102.f);
-            Focus(I, 194, Y - 10, 848, 54);
-            Bound(I, 194, Y - 10, 848, 54);
+            const float Y = BodyY + Row++ * RowStep;
+            Focus(I, InnerX, Y - 10.f, RowW, RowStep - 6.f);
+            Bound(I, InnerX, Y - 10.f, RowW, RowStep - 6.f);
             FString Label, Value;
             if (!Entry.Label.Split(TEXT(":"), &Label, &Value))
             {
@@ -192,13 +287,13 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                 Value = Entry.Action == 9 ? TEXT("VIEW") : TEXT("REPLAY NEXT RUN");
             }
             Value.TrimStartAndEndInline();
-            RefreshText(Label, 210, Y, Mode.Panel == ESSPanel::Controls ? 25.f : 28.f, UIWhite, 430);
+            RefreshText(Label, InnerX + 18.f, Y, RowPixels, UIWhite, LabelW - 18.f);
             const bool Toggle = Entry.Action == 13 || Entry.Action == 15 || Entry.Action == 18;
             const bool Slider = (Entry.Action >= 19 && Entry.Action <= 23);
             if (Toggle)
             {
                 const bool On = Entry.Action == 13 ? V.subtitles : Entry.Action == 15 ? V.cameraShake : V.motionBlur;
-                RefreshImage(On ? TEXT("ToggleOn") : TEXT("ToggleOff"), 650, Y - 20, 162, 88);
+                RefreshImage(On ? TEXT("ToggleOn") : TEXT("ToggleOff"), ControlX, Y - 20, 162, 88);
             }
             else if (Slider)
             {
@@ -207,14 +302,15 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                                      : Entry.Action == 21 ? V.effectsVolume
                                      : Entry.Action == 22 ? (V.mouseSensitivity - .3) / 2.6
                                                           : (V.controllerSensitivity - .3) / 2.6;
-                const float Start = Mode.Panel == ESSPanel::Controls ? 646.f : 540.f;
+                const float Start = ControlX;
                 // Exact export padding: track core x20..640/y20..34; fill x20..320.
                 // Preserve one scale for all three assets so rail, fill and knob share a centreline.
-                constexpr float SliderScale = 270.f / 660.f;
-                constexpr float Rail = 620.f * SliderScale;
+                const float SliderWidth = FMath::Min(360.f, ControlW);
+                const float SliderScale = SliderWidth / 660.f;
+                const float Rail = 620.f * SliderScale;
                 const float CentreY = Y + 20.f;
                 const float RailX = Start + 20.f * SliderScale;
-                RefreshImage(TEXT("Track"), Start, CentreY - 27.f * SliderScale, 270, 54.f * SliderScale);
+                RefreshImage(TEXT("Track"), Start, CentreY - 27.f * SliderScale, SliderWidth, 54.f * SliderScale);
                 const float Fill = FMath::Clamp(Amount, 0.f, 1.f);
                 if (Fill > 0)
                 {
@@ -226,112 +322,76 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                 RefreshImage(TEXT("Knob"), RailX + Rail * Fill - KnobSize * .5f, CentreY - KnobSize * .5f, KnobSize,
                              KnobSize);
             }
-            else if (Entry.Action == 16 || Entry.Action == 17)
-                RefreshImage(TEXT("Dropdown"), 744, Y - 22, 300, 84);
-            RefreshText(Value.ToUpper(), Mode.Panel == ESSPanel::Controls ? 945.f : 822.f, Y,
-                        Mode.Panel == ESSPanel::Controls ? 22.f : 28.f, Slider || Entry.Action == 14 ? UIAmber : UICyan,
-                        Mode.Panel == ESSPanel::Controls ? 145.f : 210.f);
+            RefreshText(Value.ToUpper(), ValueX, Y, Controls ? 21.f : 28.f,
+                        Slider || Entry.Action == 14 ? UIAmber : UICyan, ValueW);
         }
-        if (Mode.Panel == ESSPanel::Controls)
+        if (Controls)
         {
-            RefreshText(TEXT("CURRENT FLIGHT PRESET"), 1250, 345, 30, UICyan, 590);
-            RefreshText(Mode.PanelDetail, 1250, 415, 21, UIWhite, 565);
+            const float GuideX = InnerX + RowW + 44.f, GuideW = InnerW - RowW - 44.f;
+            const float GuideH = RefreshText(TEXT("CURRENT FLIGHT PRESET"), GuideX, BodyY, 26, UICyan, GuideW);
+            RefreshText(Mode.PanelDetail, GuideX, BodyY + GuideH + 22.f, 20, UIWhite, GuideW);
         }
-    }
-    else if (Pause)
-    {
-        int32 Row = 0;
-        const float Step = FMath::Min(156.f, 700.f / FMath::Max(1, Mode.Entries.Num()));
-        for (int32 I = 0; I < Mode.Entries.Num(); ++I)
-        {
-            const auto &Entry = Mode.Entries[I];
-            const float Y = 208.f + Row++ * Step;
-            RefreshImage(Mode.SelectedEntry == I ? TEXT("ButtonFocus") : TEXT("Button"), 610, Y - 25, 680,
-                         FMath::Min(267.f, Step * 1.95f),
-                         Entry.Enabled ? FLinearColor::White : FLinearColor(.35f, .35f, .35f, 1));
-            Focus(I, 716, Y + 48, 480, 55);
-            RefreshText(Entry.Label, 730, Y + 58, Entry.Label.Len() > 45 ? 20.f : 27.f,
-                        Entry.Enabled ? UIWhite : FLinearColor(.3f, .3f, .3f), 465);
-            Bound(I, 685, Y + 32, 530, FMath::Min(116.f, Step - 6));
-        }
-    }
-    else if (Mode.Panel == ESSPanel::Wardrobe)
-    {
-        RefreshImage(TEXT("Frame"), 70, 200, 1250, 760);
-        RefreshText(Mode.PanelDetail, 1400, 420, 23, UIWhite, 425);
-        ScrollCount = Mode.Entries.Num() - 1; // Native Back remains pinned below the character list.
-        ScrollVisible = 6;
-        if (Mode.SelectedEntry < ScrollCount)
-        {
-            if (Mode.SelectedEntry < ScrollFirst)
-                ScrollFirst = Mode.SelectedEntry;
-            else if (Mode.SelectedEntry >= ScrollFirst + ScrollVisible)
-                ScrollFirst = Mode.SelectedEntry - ScrollVisible + 1;
-        }
-        ScrollFirst = FMath::Clamp(ScrollFirst, 0, FMath::Max(0, ScrollCount - ScrollVisible));
-        for (int32 Row = 0; Row < ScrollVisible && ScrollFirst + Row < ScrollCount; ++Row)
-        {
-            const int32 I = ScrollFirst + Row;
-            const float Y = 410.f + Row * 64.f;
-            Focus(I, 226, Y, 866, 60);
-            Bound(I, 226, Y, 866, 60);
-            RefreshText(Mode.Entries[I].Label, 240, Y + 9, 32, UIWhite, 835);
-        }
-        const int32 Back = Mode.Entries.Num() - 1;
-        Bound(Back, 226, 904, 866, 58);
-        Focus(Back, 226, 904, 866, 58);
-        RefreshText(TEXT("Back"), 240, 912, 30, UIWhite);
-        RefreshText(TEXT("CHOOSE YOUR CHARACTER"), 1400, 300, 29, UICyan, 425);
-        RefreshText(FString::Printf(TEXT("%d - %d / %d"), ScrollFirst + 1,
-                                    FMath::Min(ScrollCount, ScrollFirst + ScrollVisible), ScrollCount),
-                    1400, 355, 32, UIWhite);
-        RefreshText(TEXT("Mouse wheel or D-pad / arrows to scroll.\nSelect to wear."), 1400, 660, 24, UIWhite, 420);
-        const float TrackY = 410.f, TrackHeight = 384.f;
-        const float ThumbHeight = TrackHeight * FMath::Min(1.f, float(ScrollVisible) / FMath::Max(1, ScrollCount));
-        const float Fraction = float(ScrollFirst) / FMath::Max(1, ScrollCount - ScrollVisible);
-        const float ThumbY = TrackY + Fraction * (TrackHeight - ThumbHeight);
-        ScrollTrackBounds = RefreshBounds(1138, TrackY, 34, TrackHeight);
-        ScrollThumbBounds = RefreshBounds(1145, ThumbY, 20, ThumbHeight);
-        ScrollUpBounds = RefreshBounds(1134, 372, 42, 36);
-        ScrollDownBounds = RefreshBounds(1134, 798, 42, 36);
-        RefreshImage(TEXT("ScrollTrack"), 1138, TrackY, 34, TrackHeight);
-        RefreshImage(TEXT("ScrollThumb"), 1133, ThumbY - 12, 44, ThumbHeight + 24);
-        RefreshImage(TEXT("ScrollUp"), 1138, 376, 33, 28);
-        RefreshImage(TEXT("ScrollDown"), 1138, 802, 33, 28);
+        else if (!Mode.PanelDetail.IsEmpty())
+            RefreshText(Mode.PanelDetail, InnerX + 18.f, BackY - 70.f, 21, UIWhite, InnerW);
     }
     else
     {
-        // Current service actions retain their native transactions and availability. The approved
-        // kit supplies the common frame; dynamic content replaces illustrative Figma sample values.
-        const float X = Live ? 1250.f : 70.f, Y = Live ? 220.f : 200.f;
-        const float Width = Live ? 600.f : 1250.f, Height = Live ? 710.f : 760.f;
-        RefreshImage(TEXT("Frame"), X, Y, Width, Height);
-        const float InnerX = X + Width * .135f, InnerWidth = Width * .73f;
-        const float DetailY = Y + Height * .17f;
-        const float DetailHeight =
-            RefreshText(Mode.PanelDetail, InnerX, DetailY, Live ? 18.f : 23.f, UIWhite, InnerWidth);
-        const float RowStart = DetailY + DetailHeight + 30.f;
-        const float RowStep = FMath::Min(78.f, (Y + Height * .84f - RowStart) / FMath::Max(1, Mode.Entries.Num()));
+        const float TextPixels = Wardrobe ? 30.f : Live ? 21.f : 26.f;
+        const float ListW = Wardrobe ? InnerW * .68f : Pause ? InnerW : InnerW - 50.f;
+        float RowStart = BodyY;
+        if (Wardrobe)
+        {
+            const float InfoX = InnerX + ListW + 64.f, InfoW = InnerW - ListW - 64.f;
+            const float InfoH = RefreshText(TEXT("CHOOSE YOUR CHARACTER"), InfoX, BodyY, 26, UICyan, InfoW);
+            RefreshText(Mode.PanelDetail, InfoX, BodyY + InfoH + 24.f, 23, UIWhite, InfoW);
+        }
+        else if (!Pause && !Mode.PanelDetail.IsEmpty())
+            RowStart += RefreshText(Mode.PanelDetail, InnerX, BodyY, Live ? 19.f : 23.f, UIWhite, InnerW) + 26.f;
+        float RowStep = Wardrobe ? 82.f : Pause ? PauseRowStep : 72.f;
         for (int32 I = 0; I < Mode.Entries.Num(); ++I)
         {
-            const auto &Entry = Mode.Entries[I];
-            const float RowY = RowStart + I * RowStep;
-            Focus(I, InnerX - 12, RowY - 7, InnerWidth + 24, RowStep - 3);
-            RefreshText(Entry.Label, InnerX, RowY, Live ? 18.f : FMath::Min(25.f, RowStep * .47f),
-                        Entry.Enabled ? (Mode.SelectedEntry == I ? UICyan : UIWhite) : FLinearColor(.25f, .3f, .35f),
-                        InnerWidth);
-            Bound(I, InnerX - 12, RowY - 7, InnerWidth + 24, RowStep - 3);
+            if (I == Back)
+                continue;
+            ScrollEntries.Add(I);
+            RowStep = FMath::Max(
+                RowStep, RefreshText(Mode.Entries[I].Label, 0, 0, TextPixels, UIWhite, ListW - 36.f, false) + 30.f);
         }
-        if (!Live)
+        ScrollCount = ScrollEntries.Num();
+        const float ListBottom = Back != INDEX_NONE ? BackY - 24.f : PanelY + PanelH - 72.f;
+        ScrollVisible = FMath::Max(1, FMath::FloorToInt((ListBottom - RowStart) / RowStep));
+        const int32 SelectedRow = ScrollEntries.IndexOfByKey(Mode.SelectedEntry);
+        if (SelectedRow != INDEX_NONE)
         {
-            RefreshText(S.run.active ? TEXT("RUN CREDITS") : TEXT("ACCOUNT"), 1420, 280, 25, UICyan);
-            RefreshText(S.run.active ? FString::Printf(TEXT("%d CR"), S.run.credits)
-                                     : FString::Printf(TEXT("LEVEL %d"), S.account.level),
-                        1420, 325, 46, UIAmber, 420);
+            if (SelectedRow < ScrollFirst)
+                ScrollFirst = SelectedRow;
+            else if (SelectedRow >= ScrollFirst + ScrollVisible)
+                ScrollFirst = SelectedRow - ScrollVisible + 1;
+        }
+        ScrollFirst = FMath::Clamp(ScrollFirst, 0, FMath::Max(0, ScrollCount - ScrollVisible));
+        for (int32 Row = 0; Row < ScrollVisible && ScrollFirst + Row < ScrollCount; ++Row)
+            Button(ScrollEntries[ScrollFirst + Row], InnerX, RowStart + Row * RowStep, ListW, RowStep - 8.f,
+                   TextPixels);
+        if (ScrollCount > ScrollVisible)
+        {
+            const float TrackX = InnerX + ListW + 12.f, TrackY = RowStart + 34.f;
+            const float TrackHeight = FMath::Max(80.f, ScrollVisible * RowStep - 76.f);
+            const float ThumbHeight = FMath::Max(28.f, TrackHeight * float(ScrollVisible) / ScrollCount);
+            const float Fraction = float(ScrollFirst) / FMath::Max(1, ScrollCount - ScrollVisible);
+            const float ThumbY = TrackY + Fraction * (TrackHeight - ThumbHeight);
+            ScrollTrackBounds = RefreshBounds(TrackX, TrackY, 34, TrackHeight);
+            ScrollThumbBounds = RefreshBounds(TrackX + 7.f, ThumbY, 20, ThumbHeight);
+            ScrollUpBounds = RefreshBounds(TrackX - 4.f, TrackY - 38.f, 42, 36);
+            ScrollDownBounds = RefreshBounds(TrackX - 4.f, TrackY + TrackHeight + 4.f, 42, 36);
+            RefreshImage(TEXT("ScrollTrack"), TrackX, TrackY, 34, TrackHeight);
+            RefreshImage(TEXT("ScrollThumb"), TrackX - 5.f, ThumbY - 12.f, 44, ThumbHeight + 24.f);
+            RefreshImage(TEXT("ScrollUp"), TrackX, TrackY - 34.f, 33, 28);
+            RefreshImage(TEXT("ScrollDown"), TrackX, TrackY + TrackHeight + 8.f, 33, 28);
         }
     }
-    if (Mode.IsAnnouncementVisible())
-        RefreshText(Mode.Announcement, Live ? 1250.f : 72.f, 945, 22, UIAmber, Live ? 590.f : 1750.f);
+    if (SaveError)
+        RefreshText(Mode.Announcement, InnerX, FMath::Min(1000.f, PanelY + PanelH + 28.f), 18, UIAmber, InnerW);
+    else if (!Pause && !FullScreen && Mode.IsAnnouncementVisible())
+        RefreshText(Mode.Announcement, InnerX, PanelY + PanelH - 43.f, 18, UIAmber, InnerW);
     return true;
 }
 
@@ -438,23 +498,60 @@ void ASSHUD::DrawStationRadar()
     }
 }
 
-// Scrolling changes UI focus only; choosing a character still uses ActivateEntry.
+bool ASSHUD::NavigateMenu(int32 Horizontal, int32 Vertical)
+{
+    auto *GM = GetWorld() ? GetWorld()->GetAuthGameMode<ASSGameMode>() : nullptr;
+    if (!GM || !GM->IsMenuOpen() || GM->Entries.IsEmpty())
+        return false;
+    const auto Enabled = [&](int32 Index) { return GM->Entries.IsValidIndex(Index) && GM->Entries[Index].Enabled; };
+    const int32 Current = FMath::Clamp(GM->SelectedEntry, 0, GM->Entries.Num() - 1);
+    const bool Settings = IsSettingsPanel(GM->Panel) && GM->Entries.Num() > 4;
+    if (Settings && Current < 4)
+    {
+        if (Horizontal != 0)
+            GM->SelectedEntry = FMath::Clamp(Current + FMath::Sign(Horizontal), 0, 3);
+        else if (Vertical > 0)
+            GM->SelectedEntry = 4;
+        return true;
+    }
+    if (Settings && Current == 4 && Vertical < 0)
+    {
+        GM->SelectedEntry = GM->Panel == ESSPanel::Settings   ? 0
+                            : GM->Panel == ESSPanel::Graphics ? 1
+                            : GM->Panel == ESSPanel::Audio    ? 2
+                                                              : 3;
+        return true;
+    }
+    if (Vertical == 0)
+        return true;
+    const int32 Step = FMath::Sign(Vertical);
+    for (int32 Next = Current + Step; GM->Entries.IsValidIndex(Next); Next += Step)
+        if (Enabled(Next))
+        {
+            GM->SelectedEntry = Next;
+            break;
+        }
+    return true;
+}
+
+// Scrolling changes UI focus only; transactions remain in ActivateEntry.
 bool ASSHUD::ScrollMenu(int32 Rows)
 {
     auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
-    if (!GM || GM->Panel != ESSPanel::Wardrobe || ScrollCount <= 0)
+    if (!GM || static_cast<int32>(GM->Panel) != ScrollPanel || ScrollCount <= 0 || ScrollEntries.IsEmpty())
         return false;
     ScrollFirst = FMath::Clamp(ScrollFirst + Rows, 0, FMath::Max(0, ScrollCount - ScrollVisible));
-    if (GM->SelectedEntry < ScrollCount)
-        GM->SelectedEntry =
-            FMath::Clamp(GM->SelectedEntry, ScrollFirst, FMath::Min(ScrollCount - 1, ScrollFirst + ScrollVisible - 1));
+    const int32 SelectedRow = ScrollEntries.IndexOfByKey(GM->SelectedEntry);
+    if (SelectedRow != INDEX_NONE)
+        GM->SelectedEntry = ScrollEntries[FMath::Clamp(SelectedRow, ScrollFirst,
+                                                       FMath::Min(ScrollCount - 1, ScrollFirst + ScrollVisible - 1))];
     return true;
 }
 
 bool ASSHUD::HandleMenuScrollPointer(FVector2D Point, bool Pressed, bool Held)
 {
     auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
-    if (!GM || GM->Panel != ESSPanel::Wardrobe || ScrollCount <= ScrollVisible)
+    if (!GM || static_cast<int32>(GM->Panel) != ScrollPanel || ScrollCount <= ScrollVisible)
     {
         bScrollDragging = false;
         return false;

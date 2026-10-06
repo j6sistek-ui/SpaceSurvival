@@ -1,6 +1,7 @@
 #include "Misc/AutomationTest.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
+#include "SSHUD.h"
 #include "SSPhase1Data.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -78,6 +79,53 @@ struct FSSMenuWorld
     }
 };
 } // namespace
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSSpatialMenuNavigation, "SpaceSurvival.Menu.SpatialNavigation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSSpatialMenuNavigation::RunTest(const FString &)
+{
+    FSSMenuWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    auto *HUD = F.World->SpawnActor<ASSHUD>();
+    if (!TestNotNull(TEXT("Create actual Canvas HUD navigation owner"), HUD))
+        return false;
+    const std::string SettingsBefore = SS::EncodeSettings(F.Instance->Session.settings);
+    const std::string RunBefore = SS::EncodeRun(F.Instance->Session.run);
+    const std::string AccountBefore = SS::EncodeAccount(F.Instance->Session.account);
+    const ESSPanel Panels[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls};
+    for (int32 Tab = 0; Tab < UE_ARRAY_COUNT(Panels); ++Tab)
+    {
+        F.Mode->OpenPanel(Panels[Tab]);
+        TestEqual(TEXT("Entering settings focuses its first setting"), F.Mode->SelectedEntry, 4);
+        HUD->NavigateMenu(0, -1);
+        TestEqual(TEXT("Up reaches the visible active category instead of an unrelated last tab"),
+                  F.Mode->SelectedEntry, Tab);
+        HUD->NavigateMenu(1, 0);
+        TestEqual(TEXT("Right follows the horizontal tab row"), F.Mode->SelectedEntry, FMath::Min(Tab + 1, 3));
+        HUD->NavigateMenu(0, 1);
+        TestEqual(TEXT("Down enters the setting rows directly"), F.Mode->SelectedEntry, 4);
+        HUD->NavigateMenu(0, 1);
+        TestEqual(TEXT("Down advances within the vertical setting list"), F.Mode->SelectedEntry, 5);
+        HUD->NavigateMenu(0, -1);
+        TestEqual(TEXT("Up returns within the vertical setting list"), F.Mode->SelectedEntry, 4);
+    }
+    F.Mode->OpenPanel(ESSPanel::Ship);
+    const int32 Locked = F.Entry(31), Back = F.Entry(0);
+    TestFalse(TEXT("Unowned agile ship remains locked"), F.Mode->Entries[Locked].Enabled);
+    F.Mode->SelectedEntry = F.Entry(30);
+    HUD->NavigateMenu(0, 1);
+    TestEqual(TEXT("Controller skips the unavailable ship to reach Back"), F.Mode->SelectedEntry, Back);
+    HUD->NavigateMenu(0, 1);
+    TestEqual(TEXT("Bottom boundary does not wrap into an unintended action"), F.Mode->SelectedEntry, Back);
+    HUD->NavigateMenu(0, -1);
+    TestEqual(TEXT("Up skips the unavailable ship in the reverse direction"), F.Mode->SelectedEntry, F.Entry(30));
+    TestTrue(TEXT("Navigation alone preserves settings, run and account exactly"),
+             SS::EncodeSettings(F.Instance->Session.settings) == SettingsBefore &&
+                 SS::EncodeRun(F.Instance->Session.run) == RunBefore &&
+                 SS::EncodeAccount(F.Instance->Session.account) == AccountBefore);
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSSettingsRefreshFocus, "SpaceSurvival.Menu.SettingsRefreshFocus",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

@@ -1,5 +1,63 @@
 # SpaceSurvival Phase 1 architecture
 
+## Survival quality repair — October 6
+
+`ASSDistantAsteroids` owns a separate 6,144-instance target budget across 125 deterministic
+500 m resident cells. It samples the owned Arch/Globular/Linear Blueprint layouts, avoids repeated
+neighboring meshes and intersecting comparable boulders, and preserves fixed curved openings.
+Regional architecture/clutter retains its independent budget. World shifts and revisits keep
+logical identity. Damaged/destroyed instance state belongs to a run seed; rebinding the same run
+does not reset it. Neither field spends the Director's threat budget.
+
+Ordinary cell changes queue incoming cells nearest the camera first and replace the outgoing
+cell with the same modulo-five slot. Work has a 4 ms soft budget per tick: an atomic cell build
+can exceed it, and admission within 1,000 m takes priority over it. Retirement waits until the
+outgoing cell's bounding box is farther than 975 m from the camera, beyond the 950 m material
+fade. Initial construction and jumps of more than one logical cell complete synchronously.
+Retained instance IDs/transforms are unchanged; these bounds are implementation rules, not a
+measured frame-time guarantee.
+
+`SSWeaponDamage::Apply` routes the actual first trace/sweep hit to a Director body or a particular
+field/scenery instance. Laser and traveling cannon share this routing; visual tracers do not apply
+damage twice. All ordinary asteroid sizes can break under the owner's revised scope. Fragment
+presentation is noncolliding and bounded to eight simultaneous bursts of twelve chips, with
+lifetimes capped at 2.4 seconds. Main chips and their initial offsets remain proportional to the
+destroyed radius. For field/scenery hits, two of those twelve chips originate near the traced
+surface and destruction audio plays at that impact point, keeping feedback close to the player
+even when a large rock's center is distant. Cosmetic debris does not replace the existing admitted
+medium-hazard fragments or their gameplay safety checks.
+
+Flight scenery uses `USSSpaceLookData::FieldMaterialOverrides`: private copies of complete material
+parent chains preserve source texture/parameter choices and add masked, temporally dithered
+camera-distance fading. The near field fades across 700–950 m; hard culling has an additional
+geometry-radius margin, and changed cells are beyond the fade horizon. Source mesh/material
+assets and station uses of those assets are unchanged. Native render/performance checks are
+required after authoring; setting cull distances alone never established a fade.
+
+Director rocks prefer the private `DirectorArrival/MI_DirectorRockArrival` derivative of
+`M_RockPhotographic`, retaining textured warm rock surfaces. `SpawnVisibility` increases from
+0.15 to 1 over the actor's first 0.30 seconds through a masked temporal dither. This changes only
+material coverage: collision, damage, admission and the shared age clock remain authoritative.
+Missing private arrival content falls back to the photographic material without delaying gameplay.
+Final native/rendered evidence for these survival changes belongs in the linked quality receipt;
+this architecture description does not establish a pass.
+
+Scenery impacts use pre-physics closing speed for damage, remove residual inward normal velocity,
+then apply recoil to the actual solver body. Tangential motion remains. Authored hazard/enemy
+contacts retain their existing damage authority, avoiding duplicate charges. The approved stick,
+camera and bumper mappings are unchanged.
+
+Walker support uses actual Pawn-blocking floor support and a short grace period, with last valid
+footing used for genuine falls. The Squirrel row contains seven measured tail bone-local surface
+envelopes; the pose proxy only rotates the tail root when that surface would cross a nearby floor.
+Clear-air poses and body animation remain unchanged.
+
+Controller menu directions distinguish settings tabs, adjustments and scrolling rows. The first
+enabled action receives focus. Pause/services retain the dimmed current world; the locked title
+composition is separate. Live reward/depot offers use D-pad selection so left-stick steering does
+not also change the selected offer. Validation and current limitations are recorded in the
+[October 6 quality receipt](validation/2026-10-06-survival-quality.md).
+
 ## Wayfarer station integration — October1
 
 `ASSStation::BuildOutpostHub` streams a tagged runtime copy of the authored Wayfarer Exchange into the existing Survival world for the home hangar and mid-run stations. The apartment remains a nested Level Instance. It adopts the authored physical berth deck through `ASSLandingPad::AdoptDeck`; the real player ship owns boarding geometry, flight, paint and docking. Display-only Phoenix geometry and its stationary cabin proxies are removed from the runtime instance. No authored source actor is deleted on disk.
@@ -92,7 +150,7 @@ future shield/scar/condition-damage layers.
 
 September22 arcade response: existing authored data receives 1.5x acceleration, 1.7x steering, 2x response and 5x roll multipliers (60 m/s cruise unchanged). The ShipCore adapter removes vendor roll attenuation because the game already owns its roll rate. Bumper evades use the existing dodge cooldown/resource rules; no immunity or wave tuning changes.
 
-`ASSDistantAsteroids` now streams deterministic 500 m world cells in a bounded 5x5x5 neighbourhood (default2048 rocks/debris across shared mesh batches). Retained cells keep stable engine instance IDs and transforms. Outgoing cells are beyond the900m draw limit before retirement; revisiting regenerates identical poses. The initial320m centre clearance stays anchored to launch. Camera, Director pressure and docking visibility do not reposition rocks. Separate authored scenery/landmarks remain.
+The September 22 field introduced deterministic 500 m cells and stable instance identities. Its original 2,048-object budget, 900 m draw limit and 320 m launch clearance are superseded by the [October 6 survival implementation](#survival-quality-repair--october-6). Camera, Director pressure and docking visibility do not reposition retained rocks; authored regional scenery remains separate.
 
 
 ## Page 11 native UI — September22
@@ -107,7 +165,7 @@ Settings prepend four native tab actions and retain selected action across refre
 
 **September 22 source amendment:** environment visibility now follows an existing ship rather than Flight-only phase, preserving atmosphere/scenery across docking, walking and takeoff. Home creates presentation before departure. Title state is explicit (`bAtTitleScreen`); an inactive survival run at home no longer implies startup UI. Explicit return-to-title abandons only unsuspended in-memory run state, retaining saved account/checkpoint data. Gallery service registration is removed; stable enum/assets remain for compatibility. Wardrobe excludes original Acornaut and resolves its old saved preference to the current default. Automatic rear-cabin launch popup is removed; explicit E/Y interaction remains provisional until actual cockpit seating is implemented.
 
-The approved arcade baseline is an added `USSPhase1Data::ArcadeFlightScale` (2.5), so existing serialized cruise/acceleration values migrate without editing the private Data Asset. Production and controller/physics fixtures use the same effective getters. `DirectorAsteroidScale` defaults to 3 and applies only to small/medium/massive asteroids spawned through `SpawnHazard`, before spatial admission. Clearance, visible scale and collision therefore agree; larger bodies widen the collision/clearance envelope (the protected safe lane applies only in legacy asteroid mode). Director bodies receive an orange `M_Hazard` dynamic material on every slot; world scenery keeps vendor surfaces. Authored wreckage passages, fields and enemy sizes are unchanged.
+The approved arcade baseline is an added `USSPhase1Data::ArcadeFlightScale` (2.5), so existing serialized cruise/acceleration values migrate without editing the private Data Asset. Production and controller/physics fixtures use the same effective getters. `DirectorAsteroidScale` defaults to 3 and applies only to small/medium/massive asteroids spawned through `SpawnHazard`, before spatial admission. Clearance, visible scale and collision therefore agree; larger bodies widen the collision/clearance envelope (the protected safe lane applies only in legacy asteroid mode). The original orange `M_Hazard` Director surface is superseded by the October 6 photographic arrival material above. Authored wreckage passages, fields and enemy sizes are unchanged.
 
 This document describes current source ownership and data flow. [PROJECT_STATE.md](PROJECT_STATE.md) owns the latest build, commit and package boundary; [VALIDATION.md](VALIDATION.md) retains exact evidence. **Phase 1 remains PARTIAL.** The [active issue ledger](KNOWN_ISSUES.md) owns unfinished work and owner acceptance. The earlier [asset refresh](ASSET_REFRESH.md) and [combined look](production/COMBINED_SPACE_LOOK.md) records retain their own validation boundaries; they do not validate subsequent presentation changes.
 
@@ -276,11 +334,11 @@ Authoring inspects real Niagara parameters, renderer ownership and dependencies 
 
 `USSSpaceLookData::AreaRecipes` enables world-stable regional scenery in `ASSSpaceScenery`. Each recipe supplies a complete `FSSSceneryPlacement` landmark group, weighted small/middle mesh candidates, density, anisotropic cluster dimensions, fixed clearance, haze and lighting values. The authored look has four drafts: ObsidianWreck, MineralReach, AlienCauseway and AmberDerelict. A 3×3×3 window retains 27 logical cells around the viewer; the private authoring uses 650,000 cm cells. Returning to a cell reconstructs its original choices. Turns do not move or reseed scenery, and origin rebases preserve logical identity. The scenery seed is assigned when the environment is first created and retained across home departure and docking, so starting a run does not reconstruct the visible region. `ss.SpaceAreaPreview=-1` selects normal spatial styles; 0–3 fixes a recipe independently of run identity. `ss.SpaceAreaVariation` provides reproducible comparison variations.
 
-Whole landmark groups occupy fixed even/even/even cells: at most eight groups of eight placements, with a separate 64-landmark cap. Groups exceeding their allowance or violating the cell-center clearance of at least 40,000 cm plus each mesh's radius are rejected intact. Major landmarks cast shadows; regional instanced clutter does not. Fixed cell identities receive clutter allowances, with larger allocations around authored groups and stable quieter pockets elsewhere. The private regional budget is 384; runtime also limits it to `3072 - distantFieldCount`, so the combined regional/far small-object cap is 3,072, not an allowance per cell. Cell-boundary admission/removal remains abrupt and has not passed long-travel visual acceptance. The installed private SolidScenery derivatives are query-solid to Pawn/Visibility and can be approached; they are independent of Director hazards. Navigable wreck interiors are not implied. The old unreachable-shell guarantee does not apply to this path. With empty `AreaRecipes`, the previous at-most-12 authored placements or four mesh-list silhouettes retain their bounded camera-following fallback; missing optional licensed content remains omitted.
+Whole landmark groups occupy fixed even/even/even cells: at most eight groups of eight placements, with a separate 64-landmark cap. Groups exceeding their allowance or violating the authored cell-center clearance of at least 40,000 cm plus each mesh's radius are rejected intact, then valid compositions are uniformly fitted inside 0.45 cell. Major landmarks cast shadows; regional instanced clutter does not. Fixed cell identities receive clutter allowances, with larger allocations around authored groups and stable quieter pockets elsewhere. `AreaClutterBudget` is independently bounded to 1,024 across the 27 regional cells; it is no longer reduced by the distant field count. Regional material fading spans 0.75–0.95 cell, with geometry contained inside its owner cell and a hard-cull margin. Regional cells still build synchronously; the 4 ms incremental policy belongs only to the separate traversable field. The installed private SolidScenery derivatives block PhysicsBody, Pawn and Visibility and can be approached independently of Director hazards. Navigable wreck interiors are not implied. The old unreachable-shell guarantee does not apply to this path. With empty `AreaRecipes`, the previous at-most-12 authored placements or four mesh-list silhouettes retain their bounded camera-following fallback; missing optional licensed content remains omitted. Long-travel rendering and representative performance require their own evidence.
 
 `AuthorWreckAssemblies.py` merges the owned megastructure kit into private `SM_BrokenHullSpine`, `SM_ButtressedChunk` and `SM_FragmentedArch` assets using 20, 20 and 21 pieces respectively. Uniform scales preserve native proportions and the merge preserves source material slots without a material bake. Volumetric pillar modules supply thickness; the vendor's effectively zero-thickness panels are subordinate fins rather than giant walls. These meshes have been authored successfully; scene adoption, private charcoal/sky grading and rendered art iteration remain separate from visual acceptance. Source files, private backups and authoring receipts retain provenance. ACT-03 in [KNOWN_ISSUES](KNOWN_ISSUES.md) alone tracks remaining acceptance.
 
-`ASSDistantAsteroids` uses 15 shared batches (12 distinct owned barren/mineral/fragment meshes) and a default 2,048-object budget. `AuthorAsteroidDepth.py` retains the evaluated Arch/Globular/Linear Blueprint samples; the field now uses those samples to form nearby fixed groups, with one third of slots taking the regional non-asteroid wreckage/panel/beam mix. Placement is native and deterministic; generator Blueprint actors are not spawned at runtime. Private `SolidScenery` collision derivatives block ship physics and weapon traces. Nearby cells preserve instance IDs; remote cells retire outside the 900 m draw limit and regenerate exact transforms on revisit. No camera-relative shell or launch-only population remains. World origin shifts preserve identity. Separate regional scenery and landmarks remain; rendered performance and natural travel still require acceptance.
+`ASSDistantAsteroids` shares batches by mesh across the owned barren/mineral/fragment families and the regional non-asteroid wreckage/panel/beam mix. `AuthorAsteroidDepth.py` retains the evaluated Arch/Globular/Linear Blueprint samples used for fixed groups; generator Blueprint actors are not spawned at runtime. Private `SolidScenery` collision derivatives block ship physics and weapon traces. The current 6,144-instance target, 125-cell residency, incremental replacement and material horizons are specified in the [October 6 implementation](#survival-quality-repair--october-6). World-origin shifts and revisits preserve logical identity. Separate regional scenery and landmarks remain; rendered performance and natural travel still require acceptance.
 
 `USSSpaceLookData` retains three private NebulaFantasy cubemaps, the star layer and the earlier presentation-clock/run-ID sky selection. The new spatial style sampler supplies continuous neighboring recipe weights to `ASSAmbientPresentation`, which smooths haze color/density, key color/intensity, ambient intensity and sky tint. This is spatial palette blending over existing cubemap/volume layers, not procedural volumetric sky generation or a wave-duration change. Optional `bOverrideFlightKeyDirection` still applies `FlightKeyRotation` to the priority-2 scene light only during flight and restores its previous direction on station entry; unrelated fill lights remain unchanged. Station3 is scenery; Station4 remains the service destination. The two cloud banks/two engine trails and 320 dust grains retain their cosmetic controls; `ss.SpaceStructures` independently hides regional or fallback geometry. Four area drafts and their fog/lighting are implemented inputs, but the requested visual target remains NOT MET pending new captures and independent agreement.
 

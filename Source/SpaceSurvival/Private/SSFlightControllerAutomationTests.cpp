@@ -1,6 +1,7 @@
 #include "Misc/AutomationTest.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
+#include "SSHUD.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
 #include "SSStation.h"
@@ -17,6 +18,12 @@
 #include "GyroManagerComp.h"
 #include "GameFramework/WorldSettings.h"
 #include "InputKeyEventArgs.h"
+#include "HAL/FileManager.h"
+#include "HAL/PlatformFileManager.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Guid.h"
+#include "Misc/Parse.h"
+#include "Misc/Paths.h"
 #include "Physics/Experimental/PhysScene_Chaos.h"
 #include "Slate/SceneViewport.h"
 #include "Widgets/SViewport.h"
@@ -100,9 +107,11 @@ struct FSSControllerFlightWorld
         Controller->SetDisableHaptics(true);
         World->AddController(Controller);
         Controller->Possess(Ship);
+        Controller->ClientSetHUD(ASSHUD::StaticClass());
         Controller->SetActorTickEnabled(false);
         Ship->Tuning = DuplicateObject<USSPhase1Data>(Content, Ship);
         return Test.TestNotNull(TEXT("SetPlayer supplied a real PlayerInput"), Controller->PlayerInput.Get()) &&
+               Test.TestNotNull(TEXT("Controller owns the real Canvas focus handler"), Controller->GetHUD()) &&
                Test.TestTrue(TEXT("Actual ship began play, is possessed and moving"),
                              Ship->HasActorBegunPlay() && Controller->GetPawn() == Ship &&
                                  Ship->GetVelocity().Size() > 1000.f);
@@ -309,17 +318,24 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
         const FRotator Facing = F.Ship->GetActorRotation();
         F.Ship->SetDockingTarget(Pad, Facing);
         F.Ship->FinishDocking();
-        auto *OtherPawn = F.World->SpawnActor<APawn>();
-        if (!TestNotNull(TEXT("Create another pawn for the possession handoff"), OtherPawn))
+        auto *OtherPawn = F.World->SpawnActor<ASSWalker>();
+        if (!TestNotNull(TEXT("Create the actual walker for the possession handoff"), OtherPawn))
             return false;
         F.Controller->Possess(OtherPawn);
         F.Step();
         TestFalse(Device + TEXT(" parked hull no longer integrates physics"), F.Ship->Collision->IsSimulatingPhysics());
+        if (Gamepad)
+        {
+            F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+            F.Step(); // The actual walking adapter receives A before possession changes.
+        }
         F.Controller->Possess(F.Ship);
+        OtherPawn->Destroy(); // Match departure: the old weak pawn is invalid before the next controller tick.
         const FVector Hover = Pad + FVector(0, 0, 700.f);
         F.Ship->BeginTakeoff(Hover, Facing, 1.f);
         const double DodgeCooldownBeforeLift = F.Instance->Session.run.dodgeCooldown;
-        F.Button(Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::LeftMouseButton, true);
+        if (!Gamepad)
+            F.Button(EKeys::LeftMouseButton, true);
         F.Button(Gamepad ? EKeys::Gamepad_LeftShoulder : EKeys::Q, true);
         F.Frames(30);
         int32 ShotsDuringLift = 0;
@@ -330,13 +346,26 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
                  F.Ship->IsTakingOff() && !F.Ship->IsFiring() && ShotsDuringLift == 0);
         TestEqual(Device + TEXT(" raw dodge cannot consume cooldown during the scripted lift"),
                   F.Instance->Session.run.dodgeCooldown, DodgeCooldownBeforeLift);
-        F.Button(Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::LeftMouseButton, false);
+        if (!Gamepad)
+            F.Button(EKeys::LeftMouseButton, false);
         F.Button(Gamepad ? EKeys::Gamepad_LeftShoulder : EKeys::Q, false);
         F.Frames(31);
         TestTrue(Device + TEXT(" lift hands back the same possessed ship and restores its drive"),
                  !F.Ship->IsTakingOff() && F.Controller->GetPawn() == F.Ship &&
                      F.Ship->Collision->IsSimulatingPhysics() == UsedPhysics &&
                      F.Ship->Collision->GetCollisionEnabled() != ECollisionEnabled::NoCollision);
+        if (Gamepad)
+        {
+            TestFalse(TEXT("A held from walking cannot become fire after the lift finishes"), F.Ship->IsFiring());
+            F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+            F.Step();
+            TestFalse(TEXT("Releasing the walking A press does not fire"), F.Ship->IsFiring());
+            F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+            F.Step();
+            TestTrue(TEXT("A fresh A press after release fires the actual ship weapon"), F.Ship->IsFiring());
+            F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+            F.Step();
+        }
 
         const FRotator BeforeTurn = F.Ship->GetActorRotation();
         // Takeoff leaves the engine off. The pilot must explicitly request ordinary power.
@@ -431,8 +460,9 @@ bool FSSLiveRewardInput::RunTest(const FString &)
         F.Mode->OpenPanel(ESSPanel::Reward);
         TestFalse(TEXT("Live flight reward hides the pointer to retain mouse steering"),
                   F.Controller->bShowMouseCursor);
-        TestTrue(TEXT("Actual engine input mode requests permanent capture for live flight rewards"),
-                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CapturePermanently);
+        TestTrue(TEXT("Canvas input keeps permanent capture and the initial mouse event for live offers"),
+                 F.ViewportClient->GetMouseCaptureMode() ==
+                     EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
         TestFalse(TEXT("Reward selection keeps the world live"), F.World->IsPaused());
         TestTrue(TEXT("Captured reward explains the keyboard and controller selection controls"),
                  F.Mode->PanelDetail.Contains(TEXT("Up/Down or D-pad")) &&
@@ -452,6 +482,7 @@ bool FSSLiveRewardInput::RunTest(const FString &)
         TestTrue(TEXT("Hidden reward mouse clicks neither choose nor fire"),
                  F.Mode->Panel == ESSPanel::Reward && F.Instance->Session.run.pendingReward && !F.Ship->IsFiring());
         const float BeforePitch = F.Ship->GetActorRotation().Pitch;
+        const int32 BeforeSteeringChoice = F.Mode->SelectedEntry;
         for (int32 Frame = 0; Frame < 30; ++Frame)
         {
             F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, Gamepad ? .7f : 4.f);
@@ -459,13 +490,27 @@ bool FSSLiveRewardInput::RunTest(const FString &)
         }
         TestTrue(TEXT("Controller routing continues to steer while reward navigation is open"),
                  FMath::FindDeltaAngleDegrees(BeforePitch, F.Ship->GetActorRotation().Pitch) > 3.f);
+        TestEqual(TEXT("Flight steering cannot also navigate a live reward"), F.Mode->SelectedEntry,
+                  BeforeSteeringChoice);
+        if (Gamepad)
+        {
+            for (int32 Frame = 0; Frame < 30; ++Frame)
+            {
+                F.Axis(EKeys::Gamepad_LeftY, -.7f);
+                F.Step();
+            }
+            TestEqual(TEXT("Pitching down cannot silently change the chosen live reward"), F.Mode->SelectedEntry,
+                      BeforeSteeringChoice);
+        }
         F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, 0.f);
         const FKey DownKey = Gamepad ? EKeys::Gamepad_DPad_Down : EKeys::Down;
         F.Button(DownKey, true);
         F.Step();
         F.Button(DownKey, false);
         F.Step();
-        TestEqual(TEXT("Arrow/D-pad navigation still chooses the next live reward row"), F.Mode->SelectedEntry, 1);
+        TestTrue(TEXT("Arrow/D-pad selects Cooling initially, then skips the already-fitted Cooling to Back"),
+                 F.Mode->Entries.IsValidIndex(F.Mode->SelectedEntry) &&
+                     F.Mode->Entries[F.Mode->SelectedEntry].Action == (Gamepad ? 0 : 47));
         if (Choice == 0)
         {
             F.Button(EKeys::Gamepad_DPad_Up, true);
@@ -489,14 +534,14 @@ bool FSSLiveRewardInput::RunTest(const FString &)
     }
     F.Ship->BeginMooring();
     F.Mode->OpenPanel(ESSPanel::Depot);
-    TestTrue(TEXT("Moored depot retains its visible cursor and pointer capture policy"),
-             F.Controller->bShowMouseCursor &&
-                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CaptureDuringMouseDown);
+    TestTrue(TEXT("Moored depot retains its visible cursor and the first Canvas click"),
+             F.Controller->bShowMouseCursor && F.ViewportClient->GetMouseCaptureMode() ==
+                                                   EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
     F.Mode->ClosePanel();
     F.Mode->OpenPanel(ESSPanel::Main);
-    TestTrue(TEXT("Ordinary menus retain cursor UI mode"),
-             F.Controller->bShowMouseCursor &&
-                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CaptureDuringMouseDown);
+    TestTrue(TEXT("Ordinary Canvas menus retain their visible cursor and the first click"),
+             F.Controller->bShowMouseCursor && F.ViewportClient->GetMouseCaptureMode() ==
+                                                   EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
     F.Mode->ClosePanel();
     // Mode/cursor policy and synthetic routing are covered; no native window, real pointer focus,
     // capture acquisition or physical-device acceptance is claimed by this inert viewport fixture.
@@ -792,6 +837,168 @@ bool FSSControllerMenuStick::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSRawMenuDirections, "SpaceSurvival.UI.RawMenuDirections",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSRawMenuDirections::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+        return false;
+    const std::string SettingsBefore = SS::EncodeSettings(F.Instance->Session.settings);
+    auto Tap = [&](FKey Key)
+    {
+        F.Button(Key, true);
+        F.Step();
+        F.Button(Key, false);
+        F.Step();
+    };
+    F.Mode->OpenPanel(ESSPanel::Controls);
+    Tap(EKeys::Gamepad_DPad_Up);
+    TestEqual(TEXT("Raw D-pad up reaches the active Controls tab"), F.Mode->SelectedEntry, 3);
+    F.Axis(EKeys::Gamepad_LeftX, -.8f);
+    F.Axis(EKeys::Gamepad_LeftY, .6f);
+    F.Step();
+    TestEqual(TEXT("A diagonal stick takes only its dominant horizontal step"), F.Mode->SelectedEntry, 2);
+    F.Axis(EKeys::Gamepad_LeftX, 0.f);
+    F.Axis(EKeys::Gamepad_LeftY, 0.f);
+    F.Step();
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestEqual(TEXT("Raw D-pad right moves across tabs"), F.Mode->SelectedEntry, 3);
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestEqual(TEXT("Raw D-pad left returns across tabs"), F.Mode->SelectedEntry, 2);
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+    F.Step();
+    F.Frames(8);
+    TestTrue(TEXT("A opens Audio and its held press does not activate the new first setting"),
+             F.Mode->Panel == ESSPanel::Audio && F.Mode->SelectedEntry == 4 &&
+                 SS::EncodeSettings(F.Instance->Session.settings) == SettingsBefore);
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+    F.Step();
+    Tap(EKeys::Gamepad_DPad_Down);
+    TestEqual(TEXT("Raw D-pad down enters the next actual setting row"), F.Mode->SelectedEntry, 5);
+    Tap(EKeys::Gamepad_DPad_Up);
+    TestEqual(TEXT("Raw D-pad up returns to the previous actual setting row"), F.Mode->SelectedEntry, 4);
+    F.Button(EKeys::Gamepad_FaceButton_Right, true);
+    F.Step();
+    F.Frames(12);
+    TestTrue(TEXT("B closes Audio while a held Back cannot become flight boost"),
+             !F.Mode->IsMenuOpen() && !F.Instance->Session.run.boosting);
+    F.Button(EKeys::Gamepad_FaceButton_Right, false);
+    F.Step();
+    F.Mode->OpenPanel(ESSPanel::Main);
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+    F.Step();
+    F.Frames(12);
+    TestTrue(TEXT("A resumes the actual paused menu but cannot fire until released"),
+             !F.Mode->IsMenuOpen() && !F.Ship->IsFiring());
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+    F.Step();
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+    F.Step();
+    TestTrue(TEXT("A fresh post-release press fires normally"), F.Ship->IsFiring());
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+    TestTrue(TEXT("Navigation and panel activation did not change or persist a setting"),
+             SS::EncodeSettings(F.Instance->Session.settings) == SettingsBefore);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSIsolatedControllerSettings, "SpaceSurvival.UI.IsolatedControllerSettings",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSIsolatedControllerSettings::RunTest(const FString &)
+{
+    auto Normalize = [](FString Path)
+    {
+        Path = FPaths::ConvertRelativePathToFull(Path);
+        FPaths::NormalizeDirectoryName(Path);
+        FPaths::CollapseRelativeDirectories(Path);
+        return Path;
+    };
+    FString UserArgument;
+    const FString User = Normalize(FPaths::ProjectUserDir());
+    const FString Root = FPaths::GetPath(User), Token = FPaths::GetCleanFilename(Root);
+    const FString Parent = FPaths::GetPath(Root);
+    FGuid Guid;
+    if (!TestTrue(TEXT("Value-changing input requires explicit protected, unattended NullRHI opt-in"),
+                  FParse::Param(FCommandLine::Get(), TEXT("SSMenuSettingsTest")) &&
+                      FParse::Param(FCommandLine::Get(), TEXT("unattended")) &&
+                      FParse::Param(FCommandLine::Get(), TEXT("NullRHI")) && FPaths::ShouldSaveToUserDir() &&
+                      FParse::Value(FCommandLine::Get(), TEXT("UserDir="), UserArgument) &&
+                      Normalize(UserArgument) == User && FPaths::GetCleanFilename(User) == TEXT("User") &&
+                      FGuid::ParseExact(Token, EGuidFormats::Digits, Guid) &&
+                      FPaths::GetCleanFilename(Parent) == TEXT("MenuSettings") &&
+                      FPaths::GetCleanFilename(FPaths::GetPath(Parent)) == TEXT("Artifacts") &&
+                      Normalize(FPaths::ProjectSavedDir()) == User / TEXT("Saved")))
+        return false;
+    auto &Files = FPlatformFileManager::Get().GetPlatformFile();
+    for (FString Path = Normalize(FPaths::ProjectSavedDir()) / TEXT("SaveGames"); !Path.IsEmpty();)
+    {
+        if (!TestTrue(TEXT("Protected settings paths cannot redirect through a junction or symlink"),
+                      Files.IsSymlink(*Path) == ESymlinkResult::NonSymlink))
+            return false;
+        const FString Next = FPaths::GetPath(Path);
+        if (Next == Path)
+            break;
+        Path = Next;
+    }
+    TArray<FString> Existing;
+    IFileManager::Get().FindFiles(Existing, *(FPaths::ProjectSavedDir() / TEXT("SaveGames/*")), true, false);
+    if (!TestTrue(TEXT("Protected settings profile starts without any save slot"), Existing.IsEmpty()))
+        return false;
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+        return false;
+    const std::string AccountBefore = SS::EncodeAccount(F.Instance->Session.account);
+    auto Tap = [&](FKey Key)
+    {
+        F.Button(Key, true);
+        F.Step();
+        F.Button(Key, false);
+        F.Step();
+    };
+    auto &Settings = F.Instance->Session.settings;
+    Settings.masterVolume = .5;
+    F.Mode->OpenPanel(ESSPanel::Audio);
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestTrue(TEXT("Actual D-pad left decreases the selected volume"), FMath::IsNearlyEqual(Settings.masterVolume, .4));
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestTrue(TEXT("Actual D-pad right increases the selected volume"), FMath::IsNearlyEqual(Settings.masterVolume, .5));
+    Settings.masterVolume = 0.;
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestEqual(TEXT("Left at minimum volume cannot wrap to maximum"), Settings.masterVolume, 0.);
+    Settings.masterVolume = 1.;
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestEqual(TEXT("Right at maximum volume cannot wrap to minimum"), Settings.masterVolume, 1.);
+    TestEqual(TEXT("Repeated value rebuild retains the actual selected row"), F.Mode->SelectedEntry, 4);
+    F.Mode->OpenPanel(ESSPanel::Graphics);
+    Tap(EKeys::Gamepad_DPad_Down);
+    Settings.frameLimit = 60;
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestEqual(TEXT("Frame limit clamps at the lower end"), Settings.frameLimit, 60);
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestEqual(TEXT("Right reaches the next supported frame limit"), Settings.frameLimit, 120);
+    Tap(EKeys::Gamepad_DPad_Right);
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestEqual(TEXT("Frame limit clamps at the upper end"), Settings.frameLimit, 144);
+    F.Mode->OpenPanel(ESSPanel::Controls);
+    Tap(EKeys::Gamepad_DPad_Down);
+    Settings.controllerSensitivity = .3;
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestTrue(TEXT("Sensitivity clamps at its minimum"), FMath::IsNearlyEqual(Settings.controllerSensitivity, .3));
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestTrue(TEXT("Sensitivity increases through the actual input path"),
+             FMath::IsNearlyEqual(Settings.controllerSensitivity, .5));
+    Settings.controllerSensitivity = 2.9;
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestTrue(TEXT("Sensitivity clamps at its maximum"), FMath::IsNearlyEqual(Settings.controllerSensitivity, 2.9));
+    TestTrue(TEXT("Value adjustment never changes the account"),
+             SS::EncodeAccount(F.Instance->Session.account) == AccountBefore);
+    TestTrue(TEXT("Only the protected settings slot is written"),
+             IFileManager::Get().FileExists(*(FPaths::ProjectSavedDir() / TEXT("SaveGames/SS_Settings_v1.sav"))) &&
+                 !IFileManager::Get().FileExists(*(FPaths::ProjectSavedDir() / TEXT("SaveGames/SS_Account_v1.sav"))) &&
+                 !IFileManager::Get().FileExists(*(FPaths::ProjectSavedDir() / TEXT("SaveGames/SS_Suspend_v1.sav"))));
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSTitleMenuNavigation, "SpaceSurvival.UI.TitleMenuNavigation",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSTitleMenuNavigation::RunTest(const FString &)
@@ -823,6 +1030,8 @@ bool FSSTitleMenuNavigation::RunTest(const FString &)
         const FKey Confirm = Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::Enter;
         const FKey Up = Gamepad ? EKeys::Gamepad_DPad_Up : EKeys::W;
         const FKey Down = Gamepad ? EKeys::Gamepad_DPad_Down : EKeys::S;
+        TestEqual(TEXT("Title initially focuses the first enabled New Game action"), F.Mode->SelectedEntry, 1);
+        F.Mode->SelectedEntry = 0; // Verify the disabled action itself remains protected from activation.
         Tap(Confirm);
         TestTrue(Device + TEXT(" disabled Continue cannot start or dismiss the title"),
                  F.Mode->IsTitleMenu() && !F.Instance->Session.run.active);
@@ -834,8 +1043,7 @@ bool FSSTitleMenuNavigation::RunTest(const FString &)
         Tap(Down);
         TestEqual(Device + TEXT(" down selects New Game"), F.Mode->SelectedEntry, 1);
         Tap(Up);
-        TestEqual(Device + TEXT(" up returns to Continue"), F.Mode->SelectedEntry, 0);
-        Tap(Down);
+        TestEqual(Device + TEXT(" up cannot focus unavailable Continue"), F.Mode->SelectedEntry, 1);
         Tap(Down);
         TestEqual(Device + TEXT(" second down selects Settings"), F.Mode->SelectedEntry, 2);
         Tap(Confirm);
@@ -851,7 +1059,6 @@ bool FSSTitleMenuNavigation::RunTest(const FString &)
         TestTrue(TEXT("Settings opens asset acknowledgements"), F.Mode->Panel == ESSPanel::Acknowledgements);
         F.Mode->ClosePanel();
         TestTrue(TEXT("Closing title-origin acknowledgements returns to the title"), F.Mode->IsTitleMenu());
-        Tap(Down);
         Tap(Confirm);
         TestTrue(Device + TEXT(" New Game opens the real home walker without starting survival"),
                  F.Mode->InHangar() && IsValid(F.Mode->Walker) && F.Controller->GetPawn() == F.Mode->Walker &&

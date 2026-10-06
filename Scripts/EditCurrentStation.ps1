@@ -1,6 +1,7 @@
 <# Open the station used by the current game in this project's normal editor. #>
 param(
     [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
+    [switch]$OwnerPlatformPreview,
     [switch]$Offscreen,
     [switch]$DryRun
 )
@@ -8,10 +9,11 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $project = Join-Path $root 'SpaceSurvival.uproject'
 $map = '/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime'
+if ($OwnerPlatformPreview) { $map = '/Game/OutpostSandbox/OwnerPreview/L_OwnerPlatformPreview_20261006' }
 $binaryName = if ($Offscreen) { 'UnrealEditor-Cmd.exe' } else { 'UnrealEditor.exe' }
 $editor = Join-Path $EngineRoot ('Engine/Binaries/Win64/' + $binaryName)
 $module = Join-Path $root 'Binaries/Win64/UnrealEditor-SpaceSurvival.dll'
-$mapFile = Join-Path $root 'Content/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime.umap'
+$mapFile = Join-Path $root ('Content/' + $map.Substring('/Game/'.Length) + '.umap')
 foreach ($required in @($editor, $project, $module, $mapFile)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
         throw "Current station editor input is missing: $required. Restore the current content and build the Editor target first."

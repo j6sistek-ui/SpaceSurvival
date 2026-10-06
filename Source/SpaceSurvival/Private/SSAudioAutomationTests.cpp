@@ -14,6 +14,7 @@
 #include "Sound/SoundAttenuation.h"
 #include "Sound/SoundBase.h"
 #include "Sound/SoundConcurrency.h"
+#include "Misc/PackageName.h"
 #include <limits>
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -302,6 +303,16 @@ bool FSSWorldAudioHooks::RunTest(const FString &Parameters)
              FMath::IsNearlyEqual(Bounded->VolumeMultiplier, .5f * .6f));
     TestNull(TEXT("Inaudible distant shots allocate no component"),
              Audio->PlayOneShot(Override, TEXT("EnemyFire"), Ship->GetActorLocation() + FVector(9000, 0, 0)));
+    FSSAudioCueDefinition RockCue;
+    auto *DistantBreak =
+        Audio->PlayOneShot(RockCue, TEXT("DebrisBreak"), Ship->GetActorLocation() + FVector(30000, 0, 0));
+    if (TestNotNull(TEXT("Breaking a reachable world rock at 300m remains audible"), DistantBreak))
+        TestTrue(TEXT("Only rock breakup selects the 600m spatial attenuation"),
+                 DistantBreak->AttenuationSettings == Audio->RockBreakAttenuation &&
+                     DistantBreak->AttenuationSettings != Audio->Attenuation &&
+                     Audio->RockBreakAttenuation->Attenuation.FalloffDistance == 59350.f);
+    TestNull(TEXT("Rock breakup outside its separate 600m range allocates no voice"),
+             Audio->PlayOneShot(RockCue, TEXT("DebrisBreak"), Ship->GetActorLocation() + FVector(61000, 0, 0)));
     for (int32 Index = 0; Index < 40; ++Index)
         Audio->PlayOneShot(Override, TEXT("EnemyFire"), Ship->GetActorLocation());
     int32 Shots = 0;
@@ -319,6 +330,35 @@ bool FSSWorldAudioHooks::RunTest(const FString &Parameters)
     TestEqual(TEXT("Destroyed field owners and bounded one-shots leave no retained voices"), Audio->Voices.Num(), 0);
     AddInfo(TEXT("Real actor hooks/component bounds verified; NullRHI does not prove renderer voice count, spatial "
                  "perception or listening quality."));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSCombatAudioPalette, "SpaceSurvival.Presentation.CombatAudioPalette",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSCombatAudioPalette::RunTest(const FString &)
+{
+    const TCHAR *Roles[] = {TEXT("Laser"), TEXT("Cannon"), TEXT("Impact"), TEXT("DebrisBreak")};
+    const float Durations[] = {.115f, .46f, .44f, .60f};
+    TSet<USoundBase *> Distinct;
+    for (int32 Index = 0; Index < UE_ARRAY_COUNT(Roles); ++Index)
+    {
+        const FString Path = FString::Printf(TEXT("/Game/SpaceSurvival/Licensed/Audio/CombatPolish1/%s"), Roles[Index]);
+        if (!TestTrue(TEXT("Prepared short combat palette was actually imported"),
+                      FPackageName::DoesPackageExist(Path)))
+            return false;
+        auto *Sound = SSAudio::PresentationSound(Roles[Index]);
+        if (!TestNotNull(TEXT("Runtime role resolves to a real sound"), Sound))
+            return false;
+        TestTrue(TEXT("Runtime selects the new derivative without replacing originals"),
+                 Sound->GetPathName().StartsWith(Path));
+        TestFalse(TEXT("Combat cue is finite, never looping"), Sound->IsLooping());
+        TestTrue(TEXT("Imported cue preserves the measured short release"),
+                 FMath::IsNearlyEqual(Sound->GetDuration(), Durations[Index], .01f));
+        Distinct.Add(Sound);
+    }
+    TestEqual(TEXT("Laser, cannon, hull impact and breakup have four distinct source cues"), Distinct.Num(), 4);
+    AddInfo(TEXT("Imported role routing and duration only. PCM headroom/band evidence is in the preparation receipt; "
+                 "listening and live mix acceptance remain separate."));
     return true;
 }
 #endif

@@ -106,6 +106,9 @@ public:
     }
     /** Reapplies the account's paint bay choices to the hull: after the hull loads, and when paint changes. */
     void RefreshPaint();
+    bool CanAdoptBoardedPilot(const class ASSWalker *Walker) const;
+    /** Carry the same visible seated hero into the ship before releasing the walking pawn. */
+    void AdoptBoardedPilot(class ASSWalker *Walker);
     /** The hero in the seat. Not always the one walking the deck: a stand-in that has never been
      *  seated wins the walker slot without taking this one. */
     const FSSHeroDefinition &GetPilotHero() const
@@ -148,6 +151,7 @@ public:
     TObjectPtr<USSPhase1Data> Tuning;
 
 private:
+    bool bBoardedPilot = false;
     float WormholeDuration = 0.f, WormholeElapsed = 0.f, WormholeExitSpeed = 0.f;
     FVector WormholeOrigin = FVector::ZeroVector, WormholeForward = FVector::ForwardVector;
     FVector WormholeRight = FVector::RightVector, WormholeUp = FVector::UpVector;
@@ -204,12 +208,12 @@ public:
     FVector CrosshairWorldPoint() const;
 
 private:
-    /** Hull impact while ShipCore drives. The old integrator took its hits off the swept move's
-     *  FHitResult, and a simulating body never runs that path - so without this, ramming an asteroid in
-     *  the Phoenix is free. Physics handles the bounce; this only carries the damage across. */
+    /** Scenery contacts use closing speed, share a cooldown and feed the actual solver body. */
     UFUNCTION()
     void OnHullImpact(UPrimitiveComponent *HitComp, AActor *OtherActor, UPrimitiveComponent *OtherComp,
                       FVector NormalImpulse, const FHitResult &Hit);
+    void ResolveSceneryImpact(const FHitResult &Hit, const FVector &IncomingVelocity);
+    FVector PrePhysicsVelocity = FVector::ZeroVector;
     FVector Velocity = FVector::ZeroVector, Forces = FVector::ZeroVector;
     float RollInput = 0.f;
     bool bManualRoll = false;

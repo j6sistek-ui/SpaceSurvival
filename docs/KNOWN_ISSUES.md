@@ -1,5 +1,142 @@
 # Open work and owner review
 
+## October6 owner station refinement
+
+**RPT-20261006-04 — Lead-owned layout/material/design pass; owner approval pending per room.**
+**Owner direction, October6 14:34UTC:** overall4/10 vs previous2/10; cleanup and
+direction improved, finished quality not accepted. Focus only L social lounge to
+establish the room standard first. Add the owned pool table as an alien-style match
+between aliens and heavy troopers, with cue/stance/ball animation that actually
+matches. Locate native assets before implementing; no playable minigame implied.
+Flat cyan rings/beam strips are explicitly rejected: retain the circular idea but
+later use physical housings, diffusers and believable light spill. The owner-replaced
+fixtures are straight/vertical lights, not circular fixtures. Preserve those edits.
+Owner saved All and quit at10:40UTC. Start from saved
+`/Game/OutpostSandbox/OwnerPreview/L_OwnerPlatformPreview_20261006` (SHA7b91bf54;
+verified local backup), preserving their moved layout and later material saves.
+Fix flickering large floor panels and visually busy entrance hologram backing first.
+Looking inward from the pad: L becomes a social bar/lounge; T becomes organized
+Operations with a central terminal and a few seated operators; R keeps the character
+hologram theme and basement apartment. Add a circular reception desk below Earth,
+distinct integrated market frontages, inhabited station lighting, and a berth with
+walkable entry into the existing complete cargo ship. Owner authorizes additional
+station design/depth, grounded visual targets from owned-kit examples and iterative
+actual Unreal screenshots until each room is approved. Concepts are targets, not
+runtime evidence. Preserve service mappings and apartment route; verify grounded
+placements, doorway/circulation collision, materials, lights and real camera views.
+**Status, October6 13:57UTC:** saved room/floor/material passes and actual cargo
+placement exist in the preview. RoomWalk3 passes ordinary movement through Social,
+Operations, reception and the apartment out/back, preserving saves and map bytes.
+The cargo-start gap is repaired by a supported3m-wide connection; RoomWalk4 walks
+81.46m into the actual ship and back without unsupported time. Its process exits1
+because of existing apartment BP_Blinds errors, so it is a route pass rather than
+a clean engine pass. Two Operations groups are moved intact and lounge NPCs now
+use a measured seated loop. RoomPass6 renders13actual views with unchanged map
+bytes; current service capsule approaches pass. The retained static apartment probe
+hits a sofa on its final segment, separate from the successful earlier actual walk.
+Rooms remain below the approved targets: bar/menu occlusion, sparse furnishing,
+service-label composition and room light balance need further work. The cargo brings
+325enabled shadow casters; four oversized radii reach across the station.
+**Superseding status, October6 15:54UTC:** RoomPass7Retry1 reviews13revised views;
+service/cargo light fixes and moved Operations approaches are tested. L lounge now has
+the owned pool table, two aliens/two heavy troopers, wall scoreboard and magnetic ball
+return. OrbitLounge3 saves only private derivatives/owner preview; OrbitPlayback1
+observes two normal sequence loops then8paused rendered poses. The hand contact is
+visually wrong (bridge palm up/open rear grip) despite the original proximity checks:
+lead is correcting actual palm/finger orientation before accepting this animation.
+OrbitRoomSaved1 verifies green foliage and local lighting. RoomWalk6 passes51.87m
+around the pool and back via the bar with zero unsupported time; process exits0.
+Whole-room quality remains about6/10 against the target: dark central transition,
+repeated advertisements and sparse social occupancy remain visible gaps.
+**Owner supersession, October6 16:17UTC:** replace the floating/magnetic reset with
+a scratch, visible hand pickup/placement, opposing character shot/scratch and unequal
+conversational pauses. The current saved candidate still has the obsolete reset;
+earlier playback passes are historical evidence, not acceptance of that behavior.
+**Next:** lead authors and renders the grounded alternating match using the corrected
+cue grips, then refines remaining L lounge gaps with scoped checks. Other rooms and
+owner approval remain open; sequence/walking fixtures do not close room acceptance.
+[Detailed receipts and retained failures](validation/2026-10-06-owner-platform-preview.md).
+No new package, canonical live-map replacement, publication or merge is implied.
+
+## October6 Waves1-10 survival quality repair
+
+**RPT-20261006-02 — Owner rates current gameplay 2/10.** Lead owns the repair:
+apartment intermittent rescue to pad; jump tail through floor; sparse/popping rocks;
+colored fog instead of deep space; weak collisions and weapons; controller menu
+layout/navigation. Preserve the currently liked nose steering and evasive rolls.
+Regular reachable field asteroids must accept weapon damage and break; this explicit
+owner direction supersedes the older indestructible-field assumption. Keep the
+station foundation and distant celestial scenery outside combat targeting.
+
+**Working acceptance standard:** no rescue while supported inside the apartment;
+tail surface clears nearby floors while retaining airborne drag; owned asteroid
+formations create dense traversable corridors and stable world-space silhouettes
+through cruise/boost/turns; stars and distant celestial landmarks remain readable;
+actual first-hit rocks respond to both weapons and retain destroyed state across
+cell reload; impacts change solver velocity and health with readable feedback;
+pause/services retain the game background and controller focus/scroll remain inside
+720p and 1080p viewports. Waves1-10 must progress through both station stops without
+new unavoidable spawn kills. Benchmark the same warmed scene/settings before and
+after against the existing 60fps target; report CPU/GPU/frame percentiles and limits.
+**Status:** implementation and validation in progress. Baseline source40c4321.
+**Next:** lead integrates bounded repairs, builds, runs affected native tests and
+motion captures, independently audits the renders, and records unresolved acceptance.
+No Phase1 completion or owner feel acceptance is implied by automated checks.
+
+**Earlier owner follow-up, October6:** no intentional station edits. Layout changes would be
+requested after the core-loop repair. The saved Blender transfer preserves the
+authored 240×220×170 m foundation and separate 65×155×85 m rear rock; their size
+difference predates this transfer. Center all four settings-tab labels; do not alter
+tab navigation or the approved title screen. Lead owns the narrow alignment fix.
+
+**Later owner instruction, October6:** after the platform preview below, implement
+walking through the Phoenix cockpit, sitting in its chair and launching without
+the launch menu. Select Free Flight or Waves at a physical station terminal.
+Preserve suspended-run safeguards and the Wave5-to-Wave6 station transition. Lead
+owns measured passage collision, seated hero/camera presentation and focused
+walk/sit/departure validation. Build26 contains the current implementation;
+CockpitTests24 and CockpitLightsTests25/26 pass their affected tests without warnings. PhoenixBoarding2 exposed
+a real camera collapse into the seated hero; the bounded fix holds the colliding
+camera boom at the standing approach during sitting. Boarding3 verifies the stable
+actual player camera; Boarding4 verifies the parked lamps but reveals excess cockpit
+specular glare. Build26 reduces only that lamp's specular contribution; Boarding5
+visual acceptance and affected save-lifecycle checks remain pending. The existing
+Windows/itch package is older. WeaponQuality24 passes actual normal-health target
+damage and four feedback images; physical input, listening and natural combat remain open.
+
+**Blender usability, October6:** owner reports approximately1fps while editing the
+full station. Live inspection found7,345 visible meshes/about19million faces in
+Solid mode, Live Sync off. The scene has two flat collections, not room groups.
+Shading/overlay/reference-bounds trials did not establish an improvement and were
+restored; geometry, transforms and the owner's active Downloads blend were preserved.
+Local View (`/` over the viewport, again to restore) isolates only selected objects.
+Owner then requested area collections and confirmed hiding geometry improves
+responsiveness. The live scene now has16 area groups with bay/shop/workstation
+children. Preservation checks cover all12,333 objects and their geometry, matrices,
+materials and export properties.11 homogeneous hidden areas use collection eyes;
+mixed hiding is preserved. Separate Rooms blend saved, active Downloads file not
+overwritten. Next: owner saves current file and uses room eyes; whole-station FPS
+remains unverified. No mesh decimation or importer/export contract change.
+
+## October6 owner platform preview
+
+**RPT-20261006-03 — Owner intentionally replaced the dual-rock layout with a platform
+in Blender and could not judge the textureless render.** This later instruction
+supersedes the earlier no-intentional-layout-edits statement. Lead imported the final
+saved Downloads file into a separate Unreal preview: one moved/sculpted foundation,
+one removed rear massif and24 new library placements. Original station, apartment,
+sandbox, source rock and material hashes remain unchanged. Four Unreal views and
+independent transform/geometry review are available in the
+[preview receipt](validation/2026-10-06-owner-platform-preview.md).
+
+**Open:** `Edit Owner Platform Preview.cmd`. **Check:** layout with real Unreal
+materials; the outer ring and rear blue cube are holographic assets. **Still open:**
+owner appearance review, new-piece walking/collision clearance, and any deliberate
+adoption into the live station. The preview is not the live-game map. Saved-map
+reload/render succeeded, but the two author/capture processes ended with the
+previously observed shutdown access violation after their output receipts; no
+clean process-exit claim. Lead retains core-loop/cockpit work while owner reviews.
+
 ## October6 current project and authoring consolidation
 
 **RPT-20261006-01 — Normal Unreal launch opened the old station. Owner requests all
