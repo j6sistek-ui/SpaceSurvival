@@ -165,6 +165,7 @@ Canonical briefing, compacted 2026-10-06. Read AGENTS.md, CLAUDE.md and onboardi
   terminate owner apps. Preserve failed/assisted receipts.
 
 [OUTCOMES]
+- 2026-10-06T23:19Z [TOOL] Bar implementation checkpoint8c17b299ec087ff0b78d7d442d7d0ab332a7c116 committed and pushed after successful dry-run; same PR69 body updated/attached, verified OPEN DRAFT/unmerged. Includes eight bar author helpers and five reviewed records; all owner material/UI/MCP changes remain unstaged. Prepared-body documentation gate, source structural39, Python compile, source-format and scoped diff checks pass. Final mapab263462 confirmed; saved images ready for owner comparison. Canonical/runtime package unchanged. Supersedes older bc3b11 source checkpoint only; room/game acceptance still open.
 - 2026-10-06T13:18Z [TOOL] Survival receipt: docs/validation/2026-10-06-survival-quality.md.
   Centered 720p/UI1.4 and 1080p/UI1 reviewed; pause 526465534 clears frame. Moving
   field bdc9de0c: 84 images/29 simulation seconds/1673.86m/zero pre-brake stall, ordinary damage/Director, offline
