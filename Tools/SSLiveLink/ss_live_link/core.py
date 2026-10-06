@@ -347,9 +347,10 @@ def placeholder_mesh(entry):
     return me
 
 
-def proxy_mesh(entry):
+def proxy_mesh(entry, cache_key=None, require_geometry=False):
     """The mesh datablock standing in for an Unreal asset: the glTF proxy, joined and cached, or a bounds box."""
-    key = 'SSProxy:' + entry['asset']
+    # Keep meshes in older scenes intact when rebuilding snapshots with this importer.
+    key = cache_key + ':2' if cache_key else 'SSProxy:' + entry['asset']
     me = bpy.data.meshes.get(key)
     if me:
         return me
@@ -357,28 +358,52 @@ def proxy_mesh(entry):
     glb = (lib / entry['proxy']) if entry.get('proxy') and lib else None
     if glb and glb.exists():
         before = set(bpy.data.objects)
-        bpy.ops.import_scene.gltf(filepath=str(glb))
+        bpy.ops.import_scene.gltf(filepath=str(glb), disable_bone_shape=True)
         new = [o for o in bpy.data.objects if o not in before]
-        meshes = [o for o in new if o.type == 'MESH']
-        if meshes:
-            deselect_all(bpy.context)
-            for o in meshes:
-                o.select_set(True)
-            bpy.context.view_layer.objects.active = meshes[0]
-            if len(meshes) > 1:
-                bpy.ops.object.join()
-            joined = bpy.context.view_layer.objects.active
-            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-            me = joined.data
-            me.name = key
-            for o in new:
-                if o.name in bpy.data.objects and o is not joined:
-                    bpy.data.objects.remove(o, do_unlink=True)
-            bpy.data.objects.remove(joined, do_unlink=True)
-            me.use_fake_user = True
-            return me
-        for o in new:
-            bpy.data.objects.remove(o, do_unlink=True)
+        # Bone widgets are disabled above: their hidden MESH objects are not
+        # asset geometry and cannot be an active selected object for join.
+        bpy.context.view_layer.update()
+        bone_shapes = {bone.custom_shape for obj in new if obj.type == 'ARMATURE'
+                       for bone in obj.pose.bones if bone.custom_shape is not None}
+        meshes = [o for o in new if o.type == 'MESH'
+                  and o not in bone_shapes and bpy.context.view_layer.objects.get(o.name) is o]
+        names = [o.name for o in new]  # join invalidates the other object references
+        try:
+            if meshes:
+                # A skin's visible reference pose can differ from its raw vertex
+                # positions (Phoenix has a 100x root bone). Freeze that evaluated
+                # geometry before removing the armature or joining other skins.
+                for o in meshes:
+                    if o.modifiers or o.data.shape_keys:
+                        depsgraph = bpy.context.evaluated_depsgraph_get()
+                        source = o.data
+                        o.data = bpy.data.meshes.new_from_object(
+                            o.evaluated_get(depsgraph), preserve_all_data_layers=True, depsgraph=depsgraph)
+                        o.modifiers.clear()
+                        if source.users == 0:
+                            bpy.data.meshes.remove(source)
+                bpy.context.view_layer.update()
+                deselect_all(bpy.context)
+                for o in meshes:
+                    o.select_set(True)
+                bpy.context.view_layer.objects.active = meshes[0]
+                if len(meshes) > 1 and 'FINISHED' not in bpy.ops.object.join():
+                    raise RuntimeError(f'Could not join proxy geometry for {entry["asset"]}')
+                joined = bpy.context.view_layer.objects.active
+                me = joined.data
+                # Bake parent transforms too: skeletal glTF geometry can be
+                # parented to an armature which is removed after this import.
+                me.transform(joined.matrix_world)
+                me.name = key
+                me.use_fake_user = True
+                return me
+        finally:
+            for name in names:
+                obj = bpy.data.objects.get(name)
+                if obj is not None:
+                    bpy.data.objects.remove(obj, do_unlink=True)
+    if require_geometry:
+        raise RuntimeError(f'No real mesh geometry in proxy for {entry["asset"]}: {glb}')
     me = placeholder_mesh(entry)
     me.use_fake_user = True
     return me
@@ -453,7 +478,7 @@ def game_scene_objects():
     """The objects that live in opened game scenes (PROP_SCENE) and in no ordinary scene."""
     game, ordinary = set(), set()
     for scene in bpy.data.scenes:
-        (game if scene.get(PROP_SCENE) else ordinary).update(scene.objects)
+        (game if scene.get(PROP_SCENE) or scene.get('ss_wayfarer_snapshot') else ordinary).update(scene.objects)
     return game - ordinary
 
 
@@ -468,6 +493,8 @@ def linked_objects(selected_only=False):
     count as deleted. A part an ordinary scene uses as well is that scene's, and is pushed as before.
     """
     objects = tagged_objects(selected_only)
+    if bpy.context.scene.get('ss_wayfarer_snapshot'):
+        return [obj for obj in objects if obj.name in bpy.context.scene.objects]
     if selected_only:
         return objects
     theirs = game_scene_objects()

@@ -739,6 +739,16 @@ def _open_folder(path):
     os.startfile(str(path))
 
 
+def _export_station_to_blender():
+    import ss_wayfarer
+    result = ss_wayfarer.export_scene(dry_run=False)
+    _log('Wayfarer snapshot: ' + json.dumps(result))
+    u.EditorDialog.show_message('Station exported to Blender',
+        f'Exported {result["placements"]} mesh placements.\n'
+        'In Blender use SS Link > Scenes > Open Current Wayfarer.\n'
+        'Save your Unreal level and Blender working file when ready.', u.AppMsgType.OK)
+
+
 def register_menus():
     """Build the SS Prefabs menu from the Prefabs directory and the catalogue. Safe to call again."""
     menus = _menus()
@@ -794,6 +804,9 @@ def register_menus():
            'Write Artifacts/PrefabLibrary/index.html from the catalogue, the thumbnails Blender has rendered and the prefabs '
            '(Tools/SSLiveLink/build_gallery.py)', build_gallery)
     _entry(top_name, 'Live', 'SSPrefabs.SelectLinked', 'Select Blender-linked Actors', '', select_linked)
+    _entry(top_name, 'Live', 'SSPrefabs.ExportStation', 'Export Current Station to Blender',
+           'Snapshot the loaded Wayfarer station after checking its streamed rooms; preserve the Unreal map',
+           _export_station_to_blender)
     _entry(top_name, 'Live', 'SSPrefabs.Refresh', 'Refresh Menus', 'Re-read the Prefabs folder and catalogue', register_menus)
     menus.refresh_all_widgets()
     _log(f'menus: {sum(len(v) for v in prefabs.values())} prefabs, {len(catalog["meshes"]) if catalog else 0} parts')

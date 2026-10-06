@@ -1,5 +1,31 @@
 # SpaceSurvival project state
 
+**October6 canonical project repair (implemented and verified):** The normal
+`C:/Users/j6sis/SpaceSurvival` checkout had remained at old source `684db34` with a
+September20 Editor DLL. This explains the owner's old-station launch despite the
+October1 itch publication. The normal checkout now starts from current `731e9316`
+on `codex/unified-editor-library`; old edits and conflicting files are preserved in
+`.agent/local/consolidation-20261006` and a scoped Git stash. Current station,
+apartment and private content remain on disk. Native Editor build succeeds with
+ULAT enabled after moving its existing installation into the engine Marketplace
+folder. Desktop launchers now target this canonical project. Its editor startup
+opens the editable current Wayfarer map; Play routes into Survival. The original
+outpost and flat asset sandbox remain separate experiments. SS Link 0.5.0 is
+installed in live Blender with its previous scene backed up and retained. Native
+verification passes 12/12 checks, including normal Play, a real placement move and
+restore, stale-edit rejection, and preservation of all four authored maps. The
+current station is open in Blender as `Wayfarer station`: 12,315 mesh placements,
+7,172 editable and 5,143 locked references. The complete static-mesh library has
+2,825 proxies, thumbnails and native Blender assets; ULAT exposes 2,617 of those,
+with all 208 unsupported names available through native collections and Blender.
+The saved working file is `Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend`.
+The final portable library is
+`Artifacts/BuildingSandbox/SpaceSurvival-Library-0.5.0-20261006-final.zip`.
+The existing latest Windows package has been copied to canonical `Artifacts/Windows`,
+with the older package preserved. No new itch publication or gameplay acceptance
+is implied. [Verification and limits](validation/2026-10-06-unified-editor-library.md).
+This paragraph supersedes older current-checkout instructions below.
+
 **2026-10-01 merged tester baseline:** Owner authorizes Wayfarer Exchange and its furnished apartment as the active station in the current game, plus a packaged itch update even with open playtest issues. `codex/outpost-live-release` combines PR64/66/67 in the existing repaired checkout. Runtime uses a derived tagged map; the original outpost, separate flat BuildingSandbox and apartment source are preserved. Windows Development package and focused packaged station review pass at e6c2a87. PR64/66/67/68 are merged at owner request; main is e4489d5 and its runtime source/configuration match packaged e6c2a87. 0.1.22-alpha is published and verified READY as itch build2048604, replacing2003058. [Published receipt](validation/2026-10-01-itch-0.1.22-alpha-published.json). [PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69) is the single open draft follow-up carrying tests, station review, genuine Phase1 gaps and event-driven voice scope; merge is not acceptance. Older dated release and separation statements below remain historical.
 
 **2026-09-30 wormhole playtest:** `codex/wormhole-transit-polish` builds on PR66 db05ca4 without changing difficulty tuning. Original flowing tube/material, near-locked 300 m/s transport, bounded wobble and restored controls replace the rings. The existing repaired desktop checkout is rebuilt on `codex/wormhole-playtest`, gameplay source `8ee8260`; no owner compile is needed. Two focused native tests and final current-game offscreen entrance/transit/exit capture `8207c03d21d24668a4c79bbc1b48f74d` pass (four stages plus48 timestamped sequence frames, isolated save profile). Existing shortcuts remain valid. The existing package/itch release and unaccepted station PR64 are unchanged. [Wormhole evidence](validation/2026-09-30-wormhole-transit.md).

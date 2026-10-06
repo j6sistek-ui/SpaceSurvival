@@ -49,6 +49,30 @@ function Assert-NoReparsePath([string]$Path) {
         $candidate = if ($null -ne $parent) { $parent.FullName } else { $null }
     }
 }
+function Resolve-ArtifactRoot([string]$RepoRoot) {
+    Assert-NoReparsePath $RepoRoot
+    $artifactRoot = [IO.Path]::GetFullPath((Join-Path $RepoRoot 'Artifacts'))
+    if (Test-Path -LiteralPath $artifactRoot) {
+        $item = Get-Item -LiteralPath $artifactRoot -Force
+        if (-not $item.PSIsContainer) { throw "Expected an artifact directory: $artifactRoot" }
+        if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            $targets = @($item.Target)
+            if ($item.LinkType -ne 'Junction' -or $targets.Count -ne 1 -or
+                $targets[0] -notmatch '^[A-Za-z]:[\\/]') {
+                throw "Expected one absolute directory target for the Artifacts junction: $artifactRoot"
+            }
+            # Resolve only the approved top-level storage junction. Source/save checks
+            # stay on the checkout; nested capture and package redirects remain refused.
+            $artifactRoot = [IO.Path]::GetFullPath($targets[0])
+            if (-not (Test-Path -LiteralPath $artifactRoot -PathType Container)) {
+                throw "Artifact junction target is missing: $artifactRoot"
+            }
+        }
+    }
+    Assert-NoReparsePath $artifactRoot
+    return $artifactRoot
+}
+$artifactRoot = Resolve-ArtifactRoot $repo
 function FileIdentity([string]$Path) {
     Assert-NoReparsePath $Path
     $item = Get-Item -LiteralPath $Path
@@ -94,7 +118,7 @@ function NativeArgument([string]$Value) {
     '"' + $Value + '"'
 }
 $token = [Guid]::NewGuid().ToString('N')
-$parentRoot = [IO.Path]::GetFullPath((Join-Path $repo 'Artifacts/EndgameSoak'))
+$parentRoot = [IO.Path]::GetFullPath((Join-Path $artifactRoot 'EndgameSoak'))
 $root = [IO.Path]::GetFullPath((Join-Path $parentRoot $token))
 if ([IO.Directory]::GetParent($root).FullName -ine $parentRoot -or
     [IO.Path]::GetFileName($root) -cne $token -or $token -cnotmatch '^[0-9a-f]{32}$') { throw 'Unexpected fixture root.' }
@@ -103,17 +127,17 @@ if (Test-Path -LiteralPath $root) { throw 'Fresh fixture root already exists.' }
 $userRoot = Join-Path $root 'User'
 $savedRoot = Join-Path $userRoot 'Saved'
 $slotsRoot = Join-Path $savedRoot 'SaveGames'
-$pointerRoot = Join-Path $repo 'Artifacts/EnvironmentRefresh'
+$pointerRoot = Join-Path $artifactRoot 'EnvironmentRefresh'
 Assert-NoReparsePath $pointerRoot
 $pointer = Join-Path $pointerRoot "$Label.json"
 Assert-NoReparsePath $pointer
 $exe = if ($Packaged) {
-    [IO.Path]::GetFullPath((Join-Path $repo 'Artifacts/Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe'))
+    [IO.Path]::GetFullPath((Join-Path $artifactRoot 'Windows/SpaceSurvival/Binaries/Win64/SpaceSurvival.exe'))
 } else { [IO.Path]::GetFullPath((Join-Path $EngineRoot 'Engine/Binaries/Win64/UnrealEditor.exe')) }
 function CaptureArtifacts {
     FileIdentity $exe
     if ($Packaged) {
-        $paksRoot = Join-Path $repo 'Artifacts/Windows/SpaceSurvival/Content/Paks'
+        $paksRoot = Join-Path $artifactRoot 'Windows/SpaceSurvival/Content/Paks'
         Assert-NoReparsePath $paksRoot
         foreach ($extension in @('pak', 'utoc', 'ucas')) {
             if (-not (Test-Path -LiteralPath (Join-Path $paksRoot "SpaceSurvival-Windows.$extension") -PathType Leaf)) {

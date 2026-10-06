@@ -1,10 +1,16 @@
 # Station editing and preserved Workshop
 
-**Current Wayfarer layout work:** open `M:/SpaceSurvival/Artifacts/Worktrees/asteroid-outpost/Edit Outpost Sandbox.cmd`, then edit `/Game/OutpostSandbox/L_AsteroidOutpost` with Play stopped. This authoring checkout retains ULAT, categorized parts, 43 assembled assets and the furnished apartment. See [Outpost guide](OUTPOST_SANDBOX.md) and [Building library](BUILDING_LIBRARY.md).
+**Current Wayfarer layout work:** open `C:/Users/j6sis/SpaceSurvival/Edit Current Station.cmd`. It opens `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, the station used by the current game, in the canonical project's normal Unreal editor. This is also the editor startup map. Stop Play before editing, save the map, then press Play to review through the normal Survival game. [Building library](BUILDING_LIBRARY.md) covers ULAT, native collections and complete assemblies in this project.
 
-The current game integrates a separate `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime` copy. Refreshing that copy and packaging are deliberate follow-up operations; saving the original scene does not update itch. The apartment level `/Game/BuildingLibrary/Home/L_CrewApartment` remains shared by its instances: duplicate both its level and Blueprint before making an independent interior variant. Preserve door attachments and connector alignment. [Project State](PROJECT_STATE.md) records the current build/release identity; publication is pending at this October1 integration checkpoint.
+The current station was derived from the original outpost, but routine current-station edits now go directly into this Wayfarer map. Play redirects to `/Game/SpaceSurvival/Maps/Survival` so the game creates its player and streams the station once. Preserve service actors, doors, connectors and the player berth when dressing the scene. The apartment level `/Game/BuildingLibrary/Home/L_CrewApartment` is shared by its instances: duplicate both its level and Blueprint before making an independent interior variant. Saving local changes does not update an existing Windows package or itch. [Project State](PROJECT_STATE.md) owns build/release and verification status.
 
-The purchased-kit studio `/Game/Blender/Sandbox/BuildingSandbox_20260922` remains available for your own building, on the repaired flat platform with a space backdrop. It has not been replaced by the station. Existing edit/play shortcuts and production save profiles are preserved. ULAT is disabled only in the current gameplay checkout because its installed-engine rules prevent compilation; use the original outpost checkout for ULAT placement.
+The original `/Game/OutpostSandbox/L_AsteroidOutpost` remains a separate experiment, opened by `Edit Outpost Sandbox.cmd`. The purchased-kit studio `/Game/Blender/Sandbox/BuildingSandbox_20260922` remains available through `Open Building Sandbox.cmd`, on its flat platform with a space backdrop. Both live in the canonical project alongside the current station. Edits in either sandbox do not automatically replace Wayfarer. The verified native library here covers 16,051 assets and 2,617 ULAT entries; use the native collections for complete assemblies and the 208 meshes skipped by ULAT registration. [Building library](BUILDING_LIBRARY.md) records the complete 2,825-mesh Blender cache and thumbnails.
+
+The native `CurrentStationVerification5` check confirms Play reaches Survival/SSGameMode with one current station and its loaded apartment; all 12 checks pass and four protected map files remain unchanged. It does not establish physical-controller or visual acceptance.
+
+## Current station in Blender
+
+Use **SS Prefabs > Export Current Station to Blender**, then **SS Link > Scenes > Open Current Wayfarer** in Blender. The loaded snapshot has 12,315 mesh placements: 7,172 editable direct placements and 5,143 locked references, including 924 apartment placements, from 423 unique assets. Move direct placements with **Push Selected**; edit the functional Blueprint assemblies, doors, lighting and animation in Unreal. See [Prefab live link](PREFAB_LIVE_LINK.md#current-station-workflow-ss-link-050) for the preservation checks. The full station is open in Blender and saved as `Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend`; the previous Blender scene remains in that file.
 
 ## Legacy Station Workshop
 
@@ -18,7 +24,9 @@ This is an editor authoring tool. It uses the normal Unreal viewport for selecti
 
 The panel can be undocked by dragging its tab beside the viewport, or resized to show more thumbnails. Search narrows the imported asset catalog; preset materials remain a separate ten-choice list.
 
-## First edit
+<a id="first-edit"></a>
+
+## First legacy Workshop edit
 
 1. In the workshop panel, search for a mesh and drag it into the viewport, or double-click its thumbnail to place it in front of the camera. Existing furnishings are individually selectable too. Press **F** to focus the selected object.
 2. Use **W** to move, **E** to rotate and **R** to scale. Every supported mesh can be scaled on individual axes. Use the Details panel for exact numbers, **Alt+drag** to duplicate, **Delete** to remove and **Ctrl+Z** to undo. Grid/rotation/scale snapping is in the viewport toolbar.

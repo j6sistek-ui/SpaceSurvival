@@ -8,15 +8,51 @@ apply it back.
 This page is written for the person using the tools. Button names are in **bold** exactly as they appear.
 The last sections (pieces, transport, tests) are for whoever maintains them.
 
+## Current station workflow (SS Link 0.5.0)
+
+Use the canonical `C:/Users/j6sis/SpaceSurvival` project for both gameplay and authoring.
+**Edit Current Station.cmd** opens `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`.
+Save minor layout changes there and the game uses them on its next station load. The original
+`L_AsteroidOutpost` and flat `BuildingSandbox_20260922` remain separate experimental maps.
+
+In Unreal, **SS Prefabs > Export Current Station to Blender** snapshots the loaded current station.
+In Blender, **SS Link > Scenes > Open Current Wayfarer** opens that snapshot in a new scene and keeps
+your existing scenes. Direct static-mesh placements are editable. Blueprint parts, instances,
+apartment child geometry and skeletal reference poses are locked context; edit their functional
+assemblies directly in Unreal. Hidden collision surfaces and sky shells remain hidden in the Blender
+view. Lights, animation, effects and complex Unreal material graphs are not simulated by these proxies.
+
+Move selected editable parts or add parts from the library, then use **Push Selected**. It previews the
+request before applying, checks the project/map and original actor state, and preserves original
+actors. A stale edit is refused: export and open a fresh snapshot after changing those actors in
+Unreal. Push does not delete actors or save the level automatically. Review in Unreal and save there.
+Material surface overrides remain supported for editable placements. Keep Live off for this scene.
+
+The older **Station interior** recipe and its Apply operation below describe the legacy station
+Blueprint; they are not the Wayfarer editing path. The Wayfarer scene hides those Apply controls.
+The full station is loaded in Blender and saved as
+`Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend`: 12,315 placements,
+including the apartment, with the previous Blender scene retained. The large asset
+browser is open with all 2,825 static meshes. SS Link 0.5.0 is installed and library
+auto-refresh is enabled; Live placement synchronization remains off.
+For the laptop, use
+`Artifacts/BuildingSandbox/SpaceSurvival-Library-0.5.0-20261006-final.zip`.
+It contains the current addon and the full prepared mesh library. Copy the working
+`.blend` separately if you also want the placed station on the laptop.
+
+Full-library and native round-trip verification is recorded in the
+[October6 consolidation receipt](validation/2026-10-06-unified-editor-library.md);
+older catalog and ZIP counts below are historical snapshots, not today's coverage.
+
 ## Large window and laptop library (v0.4.0, September 22)
 
 In **SS Link > Parts library**, press **Pop Out Library**. It opens Blender's native Asset Browser
 in a separate window with large thumbnails, categories and search. Move it to another monitor and
 drag a mesh into the main 3D viewport. **Prepare Large Library** builds this view in the background
 when it is missing; the status line reports completion. Preparing does not save or replace your scene.
-The September 22 desktop snapshot contains **1,325 static meshes with 1,325 thumbnails** (1,301 Unreal
-previews and 24 clay fallbacks). It includes all `/Game` static-mesh packs, including newer colony,
-Tripo and lighting assets; old 458-entry examples below are historical. Skeletal meshes, working
+The historical September 22 desktop snapshot contained **1,325 static meshes with 1,325 thumbnails** (1,301 Unreal
+previews and 24 clay fallbacks). That snapshot predates the later Cyberpunk, apartment and cargo imports.
+The refresh scans every current `/Game` static mesh; old 458-entry examples below are also historical. Skeletal meshes, working
 Blueprint assemblies and Niagara effects are not exported as functioning Blender assets.
 
 **Export Library** makes one private ZIP of the prepared library. Copy it to the laptop and use

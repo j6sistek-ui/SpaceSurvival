@@ -1,6 +1,8 @@
 # Contributor and other-chat onboarding
 
-This is a navigation and working-method guide, not another backlog. Verified against the local checkout on September 16, 2026. Read current owner instructions and refresh Git state before relying on a dated snapshot. A chat opened in another project does not automatically inherit this repository's instructions or local assets.
+This is a navigation and working-method guide, not another backlog. Current project entry points were updated October6, 2026; the owned-resource survey below retains its September16 context. Read current owner instructions and refresh Git state before relying on a dated snapshot. A chat opened in another project does not automatically inherit this repository's instructions or local assets.
+
+**Canonical game and authoring project:** `C:/Users/j6sis/SpaceSurvival`. `Edit Current Station.cmd` opens the current `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime` station, also the editor startup map. Play redirects to `/Game/SpaceSurvival/Maps/Survival`; `Play Development Build.cmd` launches the development game directly. The original Outpost and BuildingSandbox remain separate experiment maps in this project. Previous worktrees are retained history, not the normal game/library destination. [Build/run](BUILD_RUN.md) and [Station editing](STATION_EDITING.md) describe the current paths.
 
 **Known stale since verification:** the owner bought the Stellar Phoenix Shuttle and made it the new main ship (September 18); the Havolk hull named below as "current" is superseded, and `ASSShip::SelectedHullIdentity()` is now the single place that decides which hull a build flies. Ship Core Pro, described below as compatibility-blocked, was ported to 5.8 the same day and now drives the Phoenix's flight behind a `-SSPhoenix` flag. Read [KNOWN_ISSUES](KNOWN_ISSUES.md) and [PROJECT_STATE](PROJECT_STATE.md) for the current hull/flight state before trusting either claim in this file.
 
@@ -12,7 +14,7 @@ This is a navigation and working-method guide, not another backlog. Verified aga
 4. Read [PROJECT_STATE](PROJECT_STATE.md) for source versus local development build versus packaged/itch state. Select one authorized ACT item and the relevant catalog IDs. Do not start a second audit or priority list.
 5. Load one or two relevant skills, inspect the actual implementation and asset dependencies, then reproduce the issue or capture a baseline before editing.
 
-At this handoff, PR17 is the draft `codex/flight-combat-space-slice` branch. **The owner has paused ACT-03 environment iteration; the target remains NOT MET.** Current improvements are retained. ACT-01 is next in the existing production order, not a blanket authorization for every later issue. Consult the log for subsequent direction. Do not infer approval to merge, package, publish, install tools or delete caches.
+The September16 handoff referenced draft PR17 and a hold on ACT-03. That is historical context, not today's branch or task queue. [KNOWN_ISSUES](KNOWN_ISSUES.md) and the latest owner instruction own current work. Do not infer approval to merge, package, publish, install tools or delete caches.
 
 ## Files, tools and storage
 
@@ -31,7 +33,11 @@ Paths below are local unless explicitly identified as GitHub. Relative paths els
 | `Artifacts/EndgameSoak/<id>` | Actual game captures, fixture/capture receipts and logs. `Artifacts/EnvironmentRefresh/<label>.json` points to runs. Read receipt identities, not just a convenient filename. |
 | `docs/validation` | Tracked, sanitized historical evidence and hashes; no raw licensed assets. [Area/gallery receipt](validation/2026-09-16-space-areas-gallery.json) records final candidate/reviewer findings. |
 | `Play Development Build.cmd` | Launches the current Editor game using a separate persistent review profile under `Artifacts/DevelopmentReviewUser`. Does not compile or package. |
-| `Open Station Workshop.cmd` | Opens the authoring Workshop. Saved source: `Content/SpaceSurvival/Licensed/StationWorkshop/L_StationWorkshop.umap`; Save + Apply derives the private station Blueprint. |
+| `Edit Current Station.cmd` | Opens the current Wayfarer map used by home and survival visits. Save authoring changes with Play stopped. |
+| `Edit Outpost Sandbox.cmd`, `Open Building Sandbox.cmd` | Retained separate experiment maps; saving them does not replace the current Wayfarer station. |
+| `Open Station Workshop.cmd` | Legacy authoring only: `L_StationWorkshop` derives `BP_StationVisualLayout`. Save + Apply does not update current Wayfarer. |
+| `Saved/Collections`, `Artifacts/PrefabLibrary` | Verified October6: 16,051 assets across 70 refreshed native collections, 2,617 ULAT rows and 2,825 exported proxies, thumbnails and native Blender cache assets, with zero unavailable meshes. ULAT's skipped names remain in native collections. Its palette is engine-plugin data shared across projects. [Building library](BUILDING_LIBRARY.md) records evidence and backup boundaries. |
+| `Artifacts/WayfarerBlender` | Current station snapshot: 12,315 placements from 423 unique assets, including editable direct placements and locked assembly references. Follow [Prefab live link](PREFAB_LIVE_LINK.md#current-station-workflow-ss-link-050); live Blender opening has a separate verification gate. |
 | `Artifacts/Windows/SpaceSurvival.exe` | Existing packaged game; keep its whole folder. It does not receive source/asset edits automatically. Current package and itch identity belong only in PROJECT_STATE/ITCH_RELEASES. |
 | `Saved/SaveGames` and `%LOCALAPPDATA%/SpaceSurvival/Saved/SaveGames` | Potential player save locations depending on launch mode. Preserve them. Use isolated profiles for destructive lifecycle tests. |
 
@@ -88,7 +94,7 @@ This is a locator and role assessment, not another full catalog or purchase list
 | **A18 Robot Scout; temporary hero/heavy trooper/drone** | `Content/Robot_scout_R_21`, `SciFITrooper_Man_03`, `Heavy_space_trooper`; `Licensed/OwnedCharacters`, `Licensed/StationAssets/Drone` | Compatible locomotion/idle/work roles and station life. Existing staff are provisional; verify mesh/skeleton, placement, collision and motion. Do not infer patrol/AI from a mesh or idle animation. |
 | **Audio and B23 input glyphs** | Staging `User downloaded assets/SpaceSurvival/Content/{cplomedia_spaceship,cplomedia_SciFiSoundFX,IndieSounds-SciFi,EasyInputPrompts}`; selected audio `Content/SpaceSurvival/Licensed/Audio` | Audition engine loops, weapons, impacts, station cues and device prompts. The ten selected roles come from `cplomedia_spaceship`; do not conflate it with the separately inventoried SciFiSoundFX pack. Glyphs remain unintegrated. Names/header parsing are not listening tests. |
 
-**Tools already available:** UAsset Browser is installed at `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins/Marketplace/UAssetBr561f579a4fe2V15` (project enablement/UI not independently exercised). It indexes external content and imports dependencies; it does not integrate gameplay. Wormhole Portal lives beside it under `Wormhole8c083dd18940V1`; the recorded project pilot is unperformed. Ship Core Pro is owner-reported owned but compatibility-blocked at the last check; do not downgrade the engine. The existing Station Workshop is the owner composition entry point. No additional purchase is needed just to continue evaluation.
+**Tools and current editing:** use `Edit Current Station.cmd` for composition; the Station Workshop is legacy. ULAT is enabled in the canonical project at `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins/Marketplace/UltimateLevelArtTool`; the native build passed after correcting its installed folder. UAsset Browser remains installed under `Marketplace/UAssetBr561f579a4fe2V15`; it indexes external content/imports dependencies and does not integrate gameplay. Wormhole Portal is under `Wormhole8c083dd18940V1`. Ship Core Pro's earlier compatibility block was superseded by the installed 5.8 port. Consult current [Project State](PROJECT_STATE.md) for implementation evidence; no additional purchase is implied by these entry points.
 
 ## Failures to avoid repeating
 

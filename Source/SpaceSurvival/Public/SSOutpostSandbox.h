@@ -13,13 +13,14 @@ class UMaterialInterface;
 class USkeletalMeshComponent;
 class UStaticMeshComponent;
 
-/** Isolated presentation-map rules. No economy or progression is simulated here. */
+/** Presentation-map rules; the current station authoring map enters the full game on Play. */
 UCLASS(Blueprintable)
 class SPACESURVIVAL_API ASSOutpostSandboxGameMode : public AGameModeBase
 {
     GENERATED_BODY()
 public:
     ASSOutpostSandboxGameMode();
+    virtual void BeginPlay() override;
     virtual void HandleStartingNewPlayer_Implementation(APlayerController *NewPlayer) override;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Outpost")
     FName PreferredHeroId = TEXT("Squirrel");

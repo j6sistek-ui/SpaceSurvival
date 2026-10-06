@@ -37,6 +37,14 @@ ASSOutpostSandboxGameMode::ASSOutpostSandboxGameMode()
     PlayerControllerClass = ASSOutpostSandboxController::StaticClass();
     HUDClass = ASSOutpostSandboxHUD::StaticClass();
 }
+void ASSOutpostSandboxGameMode::BeginPlay()
+{
+    Super::BeginPlay();
+    // The current station is editable directly, but Play must use the full game world.
+    // A streamed station uses SSGameMode; the original sandbox keeps its preview rules.
+    if (UGameplayStatics::GetCurrentLevelName(this, true) == TEXT("L_WayfarerRuntime"))
+        UGameplayStatics::OpenLevel(this, GameplayMap);
+}
 void ASSOutpostSandboxGameMode::HandleStartingNewPlayer_Implementation(APlayerController *NewPlayer)
 {
     Super::HandleStartingNewPlayer_Implementation(NewPlayer);

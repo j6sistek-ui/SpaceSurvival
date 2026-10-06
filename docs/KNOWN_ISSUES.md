@@ -1,5 +1,28 @@
 # Open work and owner review
 
+## October6 current project and authoring consolidation
+
+**RPT-20261006-01 — Normal Unreal launch opened the old station. Owner requests all
+implemented gameplay, assets and minor station editing in the canonical project,
+with independent experimental maps, plus the complete current station and refreshed
+library in Blender.** Lead owns this repair. Root source was `684db34` and the
+Editor DLL was from September20; the published October1 game was in another checkout.
+Canonical root now contains current source and a successful native rebuild. Existing
+maps, private assets, earlier edits and the older package are preserved. Current
+entrypoint is **Edit Current Station.cmd**, not the legacy Workshop recipe.
+**Repair verified:** native launch/round-trip checks pass 12/12; current station is
+open in Blender with 12,315 placements and all 2,825 mesh assets in its library.
+ULAT lists 2,617; its 208 naming exceptions remain available in native collections
+and Blender. Original scenes/maps and saves are preserved. The live Blender file
+and final portable ZIP are in [Project State](PROJECT_STATE.md); the
+[dated receipt](validation/2026-10-06-unified-editor-library.md) records evidence.
+**Next:** owner reviews the current map using Edit Current Station, and lead handles
+any reproduced launch or transfer regression under this ID. Natural play, physical
+controls, visual acceptance and performance remain open in the existing queue.
+No other Phase1 acceptance item closes from this consolidation.
+The old Workshop Save/Apply instructions below concern only
+the legacy Blueprint; use the current-map workflow for Wayfarer.
+
 ## ▶ Owner decisions and next actions — September 27 (keep at the top until closed)
 
 **These decisions supersede anything older below that conflicts with them.** Full reasoning and the ten-wave plan they come from: the owner's *Ten-Wave Flow Plan* review (private artifact, September 27).

@@ -1,5 +1,20 @@
 # SpaceSurvival whole-project solution catalog
 
+### October6 authoring-tool consolidation
+
+Existing owned resources are consolidated into the canonical game project;
+no assets, models or third-party tools were acquired. ULAT's existing installation
+was relocated into the engine's Marketplace plugin directory, which fixes native
+module-rule discovery while retaining its palette. SS Link 0.5.0 adds an explicit
+current-Wayfarer map snapshot and guarded placement return path. Native checks pass
+12/12 and the current station is loaded in Blender. The full library contains 2,825
+mesh proxies/previews/native Blender assets; ULAT lists 2,617 and native collections
+retain all naming exceptions. Final paths and evidence are in
+[Project State](../PROJECT_STATE.md).
+Unreal remains authoritative for Blueprint logic, animation, effects and complex
+material graphs; Blender meshes are placement representations, not an equivalent
+game runtime. Existing resource evaluations and future options below remain valid.
+
 ### TOOL-20261001-QWEN3-TTS — optional offline character voice authoring
 
 - **Evidence:** official [Qwen3-TTS repository](https://github.com/QwenLM/Qwen3-TTS), reviewed 2026-10-01, records the 2026-01-22 release and 0.6B/1.7B variants, including description-based VoiceDesign and CustomVoice generation. These are publisher capabilities, not local results.
