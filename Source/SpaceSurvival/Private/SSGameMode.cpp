@@ -436,6 +436,7 @@ void ASSGameMode::ShowHangar()
     PreviousPhase = int32(GetGameInstance<USSGameInstance>()->Session.run.phase);
     PreviousWave = -1;
     ClosePanel();
+    Hub->InstallWarpPair(Ship, Walker);
     FollowFlightPresentation();
 }
 void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation, bool PreserveHub)
@@ -939,6 +940,7 @@ void ASSGameMode::EnterStation()
     }
     PC->bAutoManageActiveCameraTarget = AutoCamera;
     ClosePanel();
+    Hub->InstallWarpPair(Ship, Walker);
     Announce(TEXT("Dockmaster: Pad is yours. Walk in when you are ready."));
     React(TEXT("Docked. Easy on the way down."));
 }

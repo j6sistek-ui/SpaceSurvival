@@ -99,9 +99,43 @@ derived properties. Failed reads are retained and are not asset-load failures.
 The current owner preview uses `ASSOutpostSandboxGameMode`, derived from
 `AGameModeBase`. It is not an actual moored `ASSGameMode` station visit. Its
 decorative Phoenix cannot establish runtime warp endpoints or travel behavior.
-Actual runtime integration, natural travel both ways, cancellation, obstruction,
+Actual runtime verification, natural travel both ways, cancellation, obstruction,
 pause, controls, visual quality and performance remain unverified. No package or
 publication changed.
+
+## Runtime placement source
+
+The six-file source integration adds `SSStationWarpPlacement.cpp`, station-owned
+pair lifetime, two post-docking game-mode hooks and a read-only landed-ramp query.
+Both home hangar and mid-run station entry use the real mode-owned Phoenix after
+`FinishDocking`. No decorative preview ship is treated as a runtime endpoint.
+The rig query requires the two existing registered bone-attached ramp colliders.
+
+Placement checks the loaded welcome floor and adopted berth deck, the assembled
+hull envelope, each frame footprint and jamb support, both approaches, arrival
+floor and the actual capsule passage through the original frame. Deferred gates
+remain disabled until both validate. Peer review identified that a component's
+physics-state flag alone was insufficient; the final code also requires a valid
+actual frame `BodyInstance`. A failed check destroys the incomplete pair and
+preserves ordinary walking. No original frame, Niagara or station-map asset was
+edited by this integration.
+
+Root and independent source review pass. Native checks still required after the
+editor is available: original frame aperture and both placements, portal scale
+and moving mesh effects, natural transfer each way, exit latch, occupied arrival,
+leave/pause/menu cancellation and teardown. A compile cannot prove any of these.
+The current station map and owner-preview map are different review contexts.
+
+Build46 `-NoLink` succeeds with14 actions in196.00seconds; log SHA
+`98a431b9e51d0d6b7ceb21a4ad6514b6492536f87e2f797ac5a1627492d93b75`.
+This includes the new placement unit and affected station, game mode and rig
+units. Engine deprecations, newer-than-preferred MSVC, the existing Tripo
+Interchange dependency warning and existing `SSFlightAutomationTests` /
+`SSHUDRefresh` deprecations remain. No error is reported. The six affected files
+pass installed clang-format `--dry-run --Werror`;41 structural checks, Python
+compileall and diff checks also pass. Mainc45 and the Build39 DLL582 are verified
+byte-unchanged afterward. There is no linked, loaded, rendered or packaged result
+for this integration yet, and no Unreal invocation was made during closure.
 
 ## Temporary editor closure
 

@@ -28,6 +28,8 @@ public:
     USkeletalMeshComponent *GetHull() const;
     /** Bounds of the assembled visible hull in the requested space, excluding VFX and demo helpers. */
     FBox GetHullBoundsInSpace(const FTransform &Space) const;
+    /** Actual landed toe upper endpoint and clear width; unavailable for a flying or fallback rig. */
+    bool GetParkedRampLanding(FTransform &LandingFrame, float &HalfWidth) const;
     /** Parked hull and measured bone-attached gear shapes query only; never another simulated body. */
     void SetStationCollision(bool Enabled);
     /** A standing capsule inside the rear cabin, supported by this parked ship's floor. */

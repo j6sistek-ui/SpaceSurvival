@@ -385,6 +385,33 @@ FBox USSShipVisualRig::GetHullBoundsInSpace(const FTransform &Space) const
     return Bounds;
 }
 
+bool USSShipVisualRig::GetParkedRampLanding(FTransform &LandingFrame, float &HalfWidth) const
+{
+    if (!Parked || !HasBlueprintRig() || RampColliders.Num() != 2)
+        return false;
+    const UBoxComponent *Toe = RampColliders[0];
+    const UBoxComponent *Main = RampColliders[1];
+    if (!IsValid(Toe) || !IsValid(Main) || !Toe->IsRegistered() || !Main->IsRegistered() ||
+        !Toe->IsQueryCollisionEnabled() || !Main->IsQueryCollisionEnabled() || Toe->GetAttachParent() != Hull ||
+        Main->GetAttachParent() != Hull || Toe->GetAttachSocketName() != FName(TEXT("Cargo_Door_A_Mesh")) ||
+        Main->GetAttachSocketName() != FName(TEXT("Cargo_Door_Mesh")))
+        return false;
+    const FTransform ToePose = Toe->GetComponentTransform();
+    const FVector Extent = Toe->GetUnscaledBoxExtent();
+    const FVector Foot = ToePose.TransformPosition(FVector(0, Extent.Y, Extent.Z));
+    FVector Outward = ToePose.GetUnitAxis(EAxis::Y);
+    if (Foot.ContainsNaN() || FVector::DotProduct(ToePose.GetUnitAxis(EAxis::Z), FVector::UpVector) < .7f)
+        return false;
+    Outward.Z = 0.f;
+    if (!Outward.Normalize())
+        return false;
+    HalfWidth = float(Toe->GetScaledBoxExtent().X);
+    if (!FMath::IsFinite(HalfWidth) || HalfWidth <= 0.f)
+        return false;
+    LandingFrame = FTransform(FRotationMatrix::MakeFromXZ(Outward, FVector::UpVector).ToQuat(), Foot);
+    return true;
+}
+
 void USSShipVisualRig::SetStationCollision(bool Enabled)
 {
     Parked = Enabled;

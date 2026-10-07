@@ -382,6 +382,7 @@ void ASSStation::DestroyVisualLayout()
 void ASSStation::Destroyed()
 {
     // EndPlay is not routed for an uninitialized actor destroyed in an authoring/preview world.
+    DestroyWarpPair();
     DestroyOutpostHub();
     DestroyVisualLayout();
     DestroyLandingPad();
@@ -390,6 +391,7 @@ void ASSStation::Destroyed()
 
 void ASSStation::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    DestroyWarpPair();
     DestroyOutpostHub();
     DestroyVisualLayout();
     DestroyLandingPad();

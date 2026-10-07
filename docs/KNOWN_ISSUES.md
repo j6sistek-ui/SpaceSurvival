@@ -125,9 +125,12 @@ passes; it is preserved in the separate22:18 recovery copy. This does not accept
 sole or hand contact. Warp bursts
 now attach to the live walker mesh in source and clean up on transfer/cancel/
 teardown. The station-parking eligibility correction passes Build45 `-NoLink`;
-Build39 is unchanged. Next: restore and verify the narrow visibility fix when
-the editor reopens, fit a supported service action, then integrate and
-test reciprocal warp endpoints in actual gameplay. The sandbox preview cannot
+Build39 is unchanged. Runtime placement is now implemented in source for both
+home-hangar and mid-run station entry, using the actual landed rig/deck and
+original frame collision. Native placement remains unverified. Next: restore
+and verify the narrow visibility fix when the editor reopens, fit a supported
+service action, then test reciprocal warp endpoints in actual gameplay.
+The sandbox preview cannot
 prove that travel. [Evidence](validation/2026-10-07-bartender-and-warp.md).
 
 **October7 15:24UTC owner clarification:** unique room ads were already requested;
@@ -165,7 +168,9 @@ unverified. Both temporary editor lights were removed exactly after the test;
 common ambient-actor implementation now passes Build43 `-NoLink` compilation,
 with shared defaults, automatic head attachment and optional model overrides.
 The loaded Build39 DLL is unchanged; further variants and normal native integration
-remain unverified. The paired warp actor also compiles but is unlinked/unplaced.
+remain unverified. [NPC adoption instructions](STATION_EDITING.md#reusing-the-npc-lighting-preset)
+cover reusable model children and the common fill settings. The paired warp actor
+and runtime placement remain unlinked and unverified in gameplay.
 Six purposeful desk
 props/labels and two separated staff poses remain unsaved. Their plaques were
 cropped by the review camera, so label legibility and owner acceptance stay open.

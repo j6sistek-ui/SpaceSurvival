@@ -84,7 +84,7 @@ Mapped outpost terminals route to existing `ESSPanel` services. Home loadout and
 
 Authored station global lighting and unbound exposure fade with distance, restoring the flight environment outside the outpost. The station sky sphere is hidden so the flight background is shared. Missing private runtime content falls back to the legacy station with an explicit `SS_OUTPOST_FALLBACK` log; `-SSLegacyStation` also selects the legacy station for diagnosis. Focused capture evidence and its physical-input/performance limits belong in the October1 validation receipt and active issue RPT-20260924-01.
 
-`ASSStationWarpGate` is compiled source awaiting native integration. Two reciprocal
+`ASSStationWarpGate` has source integration awaiting a linked runtime check. Two reciprocal
 endpoints must belong to the same runtime station and use authored physical
 frames and supported arrival points. Only the locally controlled grounded walker
 can activate a pad while the real station ship is parked and no menu, boarding or departure
@@ -96,9 +96,24 @@ leaves both pads. Owned teleport bursts use Default skeletal-source lookup:
 their components attach to the live walker mesh before reinitialization, without
 editing the shared Niagara interfaces. Departure detaches before teleport;
 cancellation, walker/gate teardown and arrival expiry restore the authored gate
-attachments. Optional portal/arrival systems and endpoint placement remain content
-work. Build45 compiled the updated object files without linking; no placed pair,
-natural traversal, visual effects or performance acceptance is claimed.
+attachments.
+
+After `FinishDocking` and menu closure, both `ShowHangar` and `EnterStation` call
+`ASSStation::InstallWarpPair`. The station owns and destroys both gates before
+unloading its layout. A read-only rig query supplies the real landed ramp toe;
+the ship-side gate sits outside the assembled hull on the adopted landing deck.
+The central candidate uses a station-local welcome anchor. Both footprints,
+frame jambs and approaches require real walkable support. The original owned P4
+frame must have authored collision and a valid physics body; the actual player
+capsule is swept through its opening before activation. Both gates stay disabled
+until both placements pass. Missing assets or invalid placement omit the pair
+and retain ordinary walking, with refusal reasons in the log. No replacement
+frame collision, extra Tick, new rewards or progression are introduced.
+
+The integration selects the owned portal and player teleport systems without
+editing their source assets. Original aperture collision, placement, effect fit,
+natural reciprocal traversal and performance remain unverified. The owner-preview
+sandbox does not run the real station game mode and cannot prove those checks.
 
 ## Planned character speech and event recall — October 1, 2026
 

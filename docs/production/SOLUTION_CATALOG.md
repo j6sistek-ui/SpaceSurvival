@@ -12,6 +12,26 @@ log; this catalog records resource evaluation rather than a separate task queue.
 October7 15:18 owner direction supersedes the earlier T advancement gate: finish
 its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
 
+### LIB-20261007-STATION-WARP — physical portal frames and player effects
+
+- **Acquisition:** reuse owned P4 Genesis `SM_Door300X250_V1_Part1`,
+  `ImportedLibrary/Portal/NS1_Portals/NS_NS1_TeleportPortal` and
+  `NiagaraExamples/FX_Player/NS_Player_Teleport_Out` / `_In`. No purchase,
+  plugin activation or vendor-asset edits.
+- **Evaluation,2026-10-07T22:36Z:** native inspection confirms the original frame
+  is42.185×300×250cm with seven materials. Both burst systems use Default skeletal
+  sourcing; source now supplies the actual walking pilot mesh. Source placement
+  connects the real Phoenix berth and central welcome after docking, with floor,
+  original-body collision and capsule-passage checks. It has not run in gameplay.
+- **Whole-project value:** the requested bidirectional station transport reuses
+  physical kit hardware and character-shaped effects. Ordinary walking remains
+  available. No new progression or economy behavior.
+- **Limits/next checks:** original collision aperture, real docked placement,
+  portal scale/appearance, moving mesh sampling, natural reciprocal travel,
+  cancellation/teardown and performance. Missing or invalid inputs currently
+  refuse the pair; compilation cannot establish a usable installation.
+  [Evidence](../validation/2026-10-07-bartender-and-warp.md).
+
 ### LIB-20261007-WELCOME-INFORMATION — reception tools and useful room guidance
 
 - **Acquisition:** reuse owned `Cyberpunk_Room/Mesh/SM_Laptop` and `SM_Tablet`,

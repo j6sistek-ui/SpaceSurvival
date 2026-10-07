@@ -8,6 +8,32 @@ The original `/Game/OutpostSandbox/L_AsteroidOutpost` remains a separate experim
 
 The native `CurrentStationVerification5` check confirms Play reaches Survival/SSGameMode with one current station and its loaded apartment; all 12 checks pass and four protected map files remain unchanged. It does not establish physical-controller or visual acceptance.
 
+## Reusing the NPC lighting preset
+
+Use an editor module containing `ASSOutpostAmbientActor::RefreshReadabilityLighting`;
+the current link/reload status is in [Project State](PROJECT_STATE.md). The October7
+working scene is a separate owner-preview recovery copy, not the normal Wayfarer map.
+
+1. Create a Blueprint child of **SSOutpostAmbientActor** for the model. Select its
+   **CharacterMesh** component and assign the **Skeletal Mesh**, then choose a
+   skeleton-compatible **Idle Animation**. Place the bottom of **Body** on the
+   floor; its origin is the capsule center (default half-height85cm). Adjust the
+   mesh's relative position/scale until its animated soles meet the floor.
+   Reuse this child wherever that variant is needed.
+2. Keep **Ambient > Readability** defaults. Change **Head Fill Socket** only if the
+   model uses a different head bone/socket; adjust **Head Fill Offset** only if
+   the face needs it. The shared lamp and lighting channel are configured for you.
+3. Check the moving face from the actual player camera. Construction and BeginPlay
+   refresh the lamp automatically; after runtime mesh, material, socket or preset changes, call
+   **Refresh Readability Lighting**. Keep channel2 off room geometry.
+
+Start with40lumens and100cm reach. Drones, actors tagged `OutpostRole:Hologram`,
+actors with **Animation Managed Externally** enabled, missing head anchors and
+wholly translucent meshes skip the fill.
+Additional models still need a visual/performance check. The bartender's separate
+bounds-scale4 workaround is specific to her measured rig/clip; do not copy it to
+every NPC.
+
 ## Current station in Blender
 
 Use **SS Prefabs > Export Current Station to Blender**, then **SS Link > Scenes > Open Current Wayfarer** in Blender. The loaded snapshot has 12,315 mesh placements: 7,172 editable direct placements and 5,143 locked references, including 924 apartment placements, from 423 unique assets. Move direct placements with **Push Selected**; edit the functional Blueprint assemblies, doors, lighting and animation in Unreal. See [Prefab live link](PREFAB_LIVE_LINK.md#current-station-workflow-ss-link-050) for the preservation checks. The full station is open in Blender and saved as `Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend`; the previous Blender scene remains in that file.

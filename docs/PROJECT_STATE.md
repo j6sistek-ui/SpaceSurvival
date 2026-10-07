@@ -10,6 +10,13 @@ Native dirty flags are now clear. This is a recovery checkpoint, not approval
 of held T or a published scene. Restore/reload validation remains pending;
 source work continues while the editor is closed.
 
+**October7 22:38UTC source check:** runtime warp placement now passes Build46
+`-NoLink` (14 actions,196seconds), source peer review and formatting. It is still
+unlinked/unloaded; real station placement and travel have not been observed.
+Mainc45 and DLL582 remain byte-identical. The NPC adoption guide now provides
+the reusable model-child, floor alignment and head-fill steps. No editor was
+opened or restarted for this work.
+
 **October7 22:10UTC pre-closure checkpoint:** saved owner preview remains Mainc45,
 the loaded module remains Build39, and published0.1.22-alpha/build2048604 is
 unchanged. The owner holds only T wall/display replacement while selecting from
@@ -37,7 +44,8 @@ temporary test lights were then removed. The reusable ambient-actor lighting and
 paired warp-gate source passed Build43 `-NoLink` compilation. This produces object
 files only: it does not update the loaded Build39 DLL, place warp endpoints or
 verify other NPC variants. Adoption instructions are in
-[Architecture](ARCHITECTURE.md). Native integration and owner approval remain open.
+[Station editing](STATION_EDITING.md#reusing-the-npc-lighting-preset).
+Native integration and owner approval remain open.
 
 The bartender's natural93-second observation exposed incorrect render bounds:
 she disappeared from the low foot camera despite her feet being in view. A
@@ -46,7 +54,9 @@ the side-view comparison. Its bounds settings are now in the recovery copy; hand
 miss the counter and continuous sole contact remains unaccepted. The warp burst
 source now binds to the actual walker mesh instead of relying on an editor-only
 Manny preview. The corrected station-parking gate passes Build45 `-NoLink`,
-with the DLL unchanged. Actual
+with the DLL unchanged. Runtime placement source now connects both real docking
+entry paths to a reciprocal pair using the landed ramp, deck, original frame
+collision and full capsule passage checks. Actual
 warp endpoints and travel remain untested; the owner-preview sandbox is not a
 moored gameplay station. See the [focused evidence](validation/2026-10-07-bartender-and-warp.md).
 

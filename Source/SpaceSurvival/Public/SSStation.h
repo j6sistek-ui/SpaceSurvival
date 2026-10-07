@@ -6,6 +6,8 @@
 #include "SSContentTypes.h"
 #include "SSStation.generated.h"
 class ASSShip;
+class ASSWalker;
+class ASSStationWarpGate;
 class USSPhase1Data;
 class UStaticMesh;
 class UStaticMeshComponent;
@@ -73,6 +75,8 @@ public:
     FString ServiceGuidance(FVector Position) const;
     /** Select a floor-supported pad exit outside this ship's actual rendered footprint. */
     bool ConfigurePadExit(const ASSShip *Ship, float CapsuleRadius, float CapsuleHalfHeight);
+    /** Install the optional pair only after the real Phoenix has landed; failure preserves normal walking. */
+    bool InstallWarpPair(ASSShip *Ship, const ASSWalker *Walker);
     FVector WalkSpawn() const
     {
         return GetActorTransform().TransformPosition(IsUsingOutpost() ? FVector(-1550, 0, 100) : FVector(-300, 0, 180));
@@ -114,6 +118,11 @@ private:
     friend class FSSWalkerSupportRecovery;
     bool BuildOutpostHub();
     void DestroyOutpostHub();
+    void DestroyWarpPair();
+    UPROPERTY(Transient)
+    TObjectPtr<ASSStationWarpGate> ShipWarpGate;
+    UPROPERTY(Transient)
+    TObjectPtr<ASSStationWarpGate> WelcomeWarpGate;
     bool OutpostWalkable(const FVector &World, const AActor *IgnoreActor) const;
     void UpdateOutpostEnvironment();
     void BuildFunctionalHub();
