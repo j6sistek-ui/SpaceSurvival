@@ -1117,3 +1117,22 @@ estimates are source art8/10, native displays7.5/10, bar7/10 and full lounge6.5â
 These are quality assessments, not owner approval: the complete lounge remains
 below its target and unaccepted. Canonical Wayfarer and the published package
 remain unchanged. Earlier placement/visibility failures remain recorded above.
+
+## Owner lounge review and Operations transition, October 6
+
+The owner subsequently rates the **L social lounge8/10 â€” pass for now**, describing
+it as a strong, convincing environment. This explicit visual acceptance applies
+to saved preview
+`ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`
+at source checkpoint `de2befe`. It supersedes the earlier owner-unapproved status
+for this room and snapshot, while retaining the earlier technical failures and
+review estimates as history. Finer detail, station-wide finishing and more varied
+NPC behavior remain later work, rather than blockers to this visual pass.
+
+This approval is **not gameplay, interaction, FPS, packaged-build or Phase1
+acceptance** and does not accept other station rooms. Canonical Wayfarer and the
+published package are unchanged. The owner's active room focus now moves to
+**T Operations**: an identifiable central terminal, useful displays, a few staffed
+workstations and organized technical storage. Existing service behavior and the
+owner's architecture remain the baseline; this transition does not authorize
+additional gameplay systems.

@@ -2,7 +2,18 @@
 
 ## October6 owner station refinement
 
-**RPT-20261006-04 — Lead-owned layout/material/design pass; owner approval pending per room.**
+**RPT-20261006-04 — Lead-owned layout/material/design pass; owner approval tracked per room.**
+**Owner decision, October7 00:12UTC (October6 evening locally):** L social lounge
+receives an **8/10 pass for now**. The owner considers it a strong real environment;
+finer detail, station-wide touches and NPC behavior are deferred. Preserve the accepted
+saved presentation at SHAab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64.
+This supersedes the earlier L visual-approval-pending statements below, not their
+historical implementation findings. It is not gameplay, performance or release acceptance.
+**Active next room: T Operations.** Lead owns a current saved-room baseline, then
+coherent central service terminal, a few staffed workstations, useful displays,
+organized technical storage, material/lighting refinement and clear circulation.
+Keep existing service identities and owner architecture; broader NPC behavior is later.
+
 **Superseding status, October6 23:14UTC:** Furniture1 replaces four stools with fitted
 owned chair meshes; FemaleBartender1 saves the verified female-alien staff actor.
 Latest preview SHAab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64.

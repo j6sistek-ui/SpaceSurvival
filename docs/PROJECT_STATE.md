@@ -1,5 +1,12 @@
 # SpaceSurvival project state
 
+**October7 00:12UTC owner review (October6 evening locally):** L social lounge is
+accepted **8/10 for now** at saved preview SHA
+`ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`.
+Finer detail, station-wide touches and NPC behavior are deferred. T Operations is
+the next active room. This supersedes earlier L visual-approval-pending language;
+it does not close gameplay/performance/package gates or approve other rooms.
+
 **October6 survival quality candidate (in progress):** The canonical checkout and
 Editor are being updated beyond the consolidation below on `codex/unified-editor-library`
 for RPT-20261006-02. It includes the dense persistent asteroid field, real rock

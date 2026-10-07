@@ -1,5 +1,15 @@
 # SpaceSurvival whole-project solution catalog
 
+**Owner review,2026-10-06:** L social lounge is **8/10, pass for now** at saved
+preview `ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`
+and source checkpoint `de2befe`. This supersedes the earlier unapproved lounge
+assessments below. Finer detail, station-wide touches and richer NPC behavior are
+later work. Acceptance is visual and specific to this room/snapshot; it does not
+establish gameplay, FPS, package or Phase1 acceptance. Active design focus moves
+to T Operations, retaining its central service terminal, useful displays, limited
+staffed workstations and organized storage. KNOWN_ISSUES remains the work/acceptance
+log; this catalog records resource evaluation rather than a separate task queue.
+
 ### LIB-20261006-ORBITPOOL — owned lounge pool set and crew
 
 - **Acquisition:** already installed, not purchased or downloaded by this pass.
@@ -21,9 +31,11 @@
   owner's one-room aesthetic pass. This introduces no playable pool system,
   progression reward, extra combat character or new dependency. Original meshes,
   materials and animations stay unchanged; derivative content remains private.
-- **Next check:** judge carried-ball visibility and natural motion without another
-  geometry redesign. The return finish is corrected. Earlier51.87m room circulation passes; whole-room quality remains
-  unapproved and cannot be closed from the pool sequence. See the
+- **Next check:** retain the owner's accepted lounge presentation; later NPC-detail
+  work can revisit carried-ball visibility and natural motion without another
+  geometry redesign. The return finish is corrected and earlier51.87m room
+  circulation passes; neither pool animation nor walking establishes gameplay
+  acceptance. See the
   [owner-preview receipt](../validation/2026-10-06-owner-platform-preview.md)
   and RPT-20261006-04 for evidence and acceptance status.
 
@@ -153,14 +165,15 @@
   their glass menus are readable; no further material, lighting or animation
   change is included. The unchanged TV/cycle evidence is retained without another
   full-cycle claim. Review estimates: source art8/10, native displays7.5/10, bar7/10,
-  complete lounge6.5–7/10; the owner has not approved the room.
+  complete lounge6.5–7/10 at that review checkpoint. The owner's subsequent8/10
+  "pass for now" accepts this saved lounge visually, as recorded above.
 - **Whole-project use:** cohesive bar identity, humorous worldbuilding and future
   reusable station signage, WBS 8.4/8.5. These displays remain decorative: no
   ordering, communication, contract, reward or other gameplay system is introduced.
   Existing room lighting, furniture, bartender and pool animations are preserved.
-- **Next check:** owner review of the improved bar and complete lounge composition;
-  the full room remains below target. Preserve ceiling/general lighting and
-  global exposure; no gameplay interaction or room approval is inferred.
+- **Next check:** preserve the accepted visual result during work on other rooms;
+  later fine detail and NPC activity can build on it. Keep ceiling/general lighting
+  and global exposure intact. Decorative display approval adds no gameplay system.
   [Saved-preview evidence and retained failures](../validation/2026-10-06-owner-platform-preview.md)
   records the implementation; RPT-20261006-04 owns room acceptance.
 
