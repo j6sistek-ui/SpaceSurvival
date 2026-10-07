@@ -1,6 +1,6 @@
 # Operations human and robot seated candidates — 2026-10-07
 
-Status: **PARTIAL**. The accepted Preview6 motion is now saved as two private clips on three existing Operations operators, producing two humans, one robot and one retained alien. All121×12 installed keys per model pass native readback without refitting; other actors, source files and saves are preserved. Native shutdown `0xC0000005` remains separate. Fresh saved appearance, owner acceptance and Operations9/10 remain unverified. The female-alien lounge bartender is unchanged.
+Status: **PARTIAL**. The accepted Preview6 motion is now saved as two private clips on three existing Operations operators, producing two humans, one robot and one retained alien. All121×12 installed keys per model pass native readback without refitting; other actors, source files and saves are preserved. A fresh saved reload verifies all three installed lifecycles and one ordinary1600×900 room image with clean native exit0. The authoring shutdown `0xC0000005` remains separate. Saved whole-body appearance, owner acceptance and Operations9/10 remain unverified. The female-alien lounge bartender is unchanged.
 
 ## Scope and actual saved evidence
 
@@ -133,8 +133,12 @@ The lead and both specialists independently review all six **unsaved test** imag
 
 Independent receipt/disk verification confirms both saved clip hashes, actual Main hash, three placements and typed installed lifecycles. The fourth alien and female-alien lounge bartender remain unchanged. The accepted six photos are still **unsaved Preview6 comparison evidence**; fresh saved game appearance/playback remains pending. The source/helper and root wrapper are `da90be11e5856d36b1d553e1f424b243faa3455e6ce498182f8e4248964d1c74` and `6f0a3545475d172a157d86927ed690f57663cc87d76bb90e650545062ffbaac9`; earlier prepared bytes and failures remain immutable.
 
+2026-10-07T10:14Z [TOOL] Root collects Ordinary3 native process73300 exit0. Manifest `1fbd3e0ff1ecba368a2878b6a4b439ca29195f31da68cfcb81d1654991e81835` reports success, complete renderer observation, exact viewport restoration,0 editor deltas and unchanged protected files, production saves, ships and quality settings. Actual saved Main remains `13787cce1fba901869556676fb14b3f2aff57bc76fd00325d2b439d1f3d824dc`. Before camera setup and after PIE, all three fresh loaded operator lifecycles match the saved installation exactly, with0 field differences at both stages. This establishes saved lifecycle persistence; it does not add a full-loop contact claim.
+
+The single **current saved-preview** ordinary image is1600×900, SHA256 `7d189a7ef171ce79d9945b0775ebe55e2daa15bb6441e7a8532b35638f4c56d6`. Native rendered rectangles are1600×900 at fraction1 with AA4, enabled temporal-AA flags and a persistent view state. The original1014×344 viewport restores exactly before PIE stops. The lead and specialist find this room view cleaner than the earlier high-resolution captures, but white reflective desk hardware and bright floor/dark ceiling contrast remain unfinished. This camera does not expose all seated bodies, so the accepted six whole-body photos remain unsaved Preview6 comparison evidence. Operations9/10 and owner acceptance remain open; no settings, assets or maps are changed by Ordinary3.
+
 ## Remaining acceptance
 
-Review fresh saved game images and playback. Preserve the fourth alien and female-alien bartender. The accepted cosmetic seating is not continuous collision proof; overhanging thighs and lap-idle hands need not touch the cushion.
+Review saved whole-body game images and playback. Fresh saved lifecycle readback and one room image now pass; preserve the fourth alien and female-alien bartender. The accepted cosmetic seating is not continuous collision proof; overhanging thighs and lap-idle hands need not touch the cushion.
 
 Root alone owns native execution, saves, integration and visual acceptance. This work is not packaged or published and does not satisfy the Operations 9/10 gate.

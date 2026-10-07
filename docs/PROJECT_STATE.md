@@ -1,15 +1,89 @@
 # SpaceSurvival project state
 
-**October7 10:04UTC latest saved preview:** CrewCaptured1 installs the exact
+**October7 11:49UTC latest saved preview:** CentralCaptured1 saves the selected
+darker central-frame finish through twelve private material copies and twelve
+existing slots on four actors. Current Main is
+`03852cf1ff951c41779c99e4c74a2e3f7c82728c9ae57e41d8208ebc54068214`;
+receipt `b0ef717cd2021de999a13c5187618461c7013ae0cb09b3cae40ad1cc8df22bff`.
+Every native material snapshot matches the reviewed Contrast2 result; source
+materials, all other scene fields, saved crew and player saves are preserved.
+One map load/save, no new actors, lights or masters. Native shutdown exits
+0xC0000005 separately. Fresh nine-view saved appearance is next; whole-T9,
+owner approval and a new published build remain unclaimed.
+
+**October7 11:36UTC historical saved preview:** FlightAuthor2 saves the accepted
+gain5 display through one private MIC and one existing material slot, with one
+map load/save. Current Main is
+`cedb6acddc7f1eaf334df3ca1847ddf50c70e6c850b2a718dd2257c988ea799d`;
+receipt`ce32d2ea35920b16f2b13592f2264a4c1e07bb8d522275809ff12ee292bc2d61`.
+Complete typed scene, source master/artwork, three saved crew lifecycles, files
+and player saves are preserved. Before-scene deltas are zero; the allowed
+material-slot delta count is one. Native shutdown exits0xC0000005 separately;
+fresh saved appearance is pending. The failed first save remains history.
+The second central-frame comparison is accepted as a modest local improvement
+by lead and two peers, about8 for its podium angle, not whole-T9. Its temporary
+restoration passes with zero deltas; native shutdown also exits0xC0000005.
+A captured12-leaf private save and fresh whole-room review are next.
+Published build and owner acceptance are unchanged.
+
+**October7 10:04UTC historical saved preview:** CrewCaptured1 installs the exact
 reviewed121-key motion through two fresh private clips on three existing
 operators: two humans, one scout robot and one retained alien. Current Main is
 `13787cce1fba901869556676fb14b3f2aff57bc76fd00325d2b439d1f3d824dc`;
 receipt`9b68ab66e02aae7bf2035911c04a08d0a23f589ccbb074b63d520e32508780cd`.
 Native readbacks have zero local position error and exact unit scales; no source
 pose or fitter reevaluation occurs. Scene/non-target/lifecycle/file/save
-preservation passes; native shutdown exits0xC0000005 separately. Fresh saved
-appearance, continuous chair contact, T9 and owner acceptance remain open.
+preservation passes; native shutdown exits0xC0000005 separately. Ordinary3's
+fresh saved reload then finishes cleanly/native0: all three typed crew lifecycles
+match before/after PIE, complete scene deltas are zero, and renderer/viewport/
+file/save/ship/quality preservation passes. One ordinary1600×900 image is cleaner
+than earlier HighRes views; hardware brightness and floor/ceiling contrast remain
+unfinished. That podium angle does not prove fresh fullbody chair contact.
+Continuous chair contact, T9 and owner acceptance remain open.
 Female lounge bartender and the published build are unchanged.
+
+October7 10:36UTC: the matched ordinary P3 normal-strength comparison finishes
+cleanly/native0, receipt`13b920779302d7fb9534a719e65e404a5670836b67e910f8b6213be0071d6308`.
+The temporary four-slot test restores exactly, with zero scene deltas and
+unchanged files/saves/ships/quality/crew. Lead finds no meaningful visual benefit
+and retains the saved original strengths. Normal2's unavailable-property
+preflight failure remains history; its before-scene snapshot was uninitialized.
+Next is an unsaved central-console contrast comparison, with lighting and white
+floors preserved. No further normal test or saved-normal change is planned.
+
+October7 10:44UTC: CentralContrast1's two ordinary views show no meaningful
+visible workstation improvement. Receipt`20b72bdf` verifies exact twelve-slot
+restoration, zero scene deltas and unchanged files/saves/crew/ships/quality;
+native shutdown exits0xC0000005 separately. The candidate is not saved. Actual
+positions place the selected Goliath at the visible right desk, and native dark
+colors/scalars read correctly; its effective render route remains unconfirmed.
+Those tests are superseded by the actual outcomes below. Saved Main stays`13787cce`.
+
+October7 11:12UTC: Route2 finishes cleanly/native0 and excludes Nanite and Front
+Material bypasses on the actual central workstation. The white-floor depth pair
+also finishes cleanly/native0, receipt`d3af4311`, with exact420-slot restoration,
+zero scene deltas and unchanged files/saves/crew/ships/quality. Lead and peer
+reject the additional18percent luminance blend: it weakens some native wear
+without improving the room. The saved textured white floor is retained.
+Flight's unsaved3.5→5 gain pair shows ship luma up26.7percent and brighter title
+strokes without clipped pixels, while control hardware stays stable. Lead accepts
+the bounded gain5 improvement for a private one-slot save, not yet applied.
+Its receipt`e9bfa067` verifies restoration; native shutdown exits0xC0000005
+separately. Generic material-instance propagation failure is not proved.
+Whole-room T9, owner acceptance and published-build changes remain open.
+October7 11:21UTC: Flight save1 stops before either asset or map save on a
+same-loaded scene-snapshot mismatch. Files/player saves and Main`13787cce` are
+unchanged, with zero private packages written. Its rollback comparison also
+fails, so full editor-scene preservation is not claimed; native shutdown
+exits0xC0000005. The two collection APIs differ, but the exact returned-helper
+snapshot was not retained and the cause remains unconfirmed. A new bounded
+wrapper will retain raw snapshots before comparison; the failed recipe is frozen.
+Bounded pixel analysis corrects the broad central-console no-change impression:
+its graphite housing patches darken20–33percent, while the upper satin frame
+brightens3.6–7.1percent and unchanged floor/podium controls remain stable. The
+next temporary finish will darken the satin frame colour while retaining its
+original metallic response and functional worktop/displays. Manual image ROIs
+do not establish per-pixel material identity; actual paired views remain the gate.
 
 **October7 09:35UTC historical saved preview:** Mounted6 cleanly saves four attached
 illustrated service monitors and a private brighter Flight display, native0.
@@ -89,7 +163,7 @@ files/saves/ships. Native shutdown still exits0xC0000005. Actual full-loop chair
 seat/back/armrest contact is pending; no crew substitution is saved. Whole T
 remains about7/10, not its9/10 gate. Physical markers are prepared offline only.
 The earlier Art1/2, capture and support failures remain immutable history.
-Source checkpoint`169e82d465d5f27b202666405e46742303c5e3ab` is pushed to existing
+Source checkpoint`2ae13ee1ccb1fe469951c92efc52f30fd8acd6ec` is pushed to existing
 open draft[PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69), unmerged.
 Latest local recipes/evidence are not all checkpointed; no new package is published.
 

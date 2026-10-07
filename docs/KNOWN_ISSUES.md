@@ -258,8 +258,67 @@ small private desk-normal comparison. October7 10:04UTC: CrewCaptured1 saves
 those exact tracks on three existing operators through two fresh private clips;
 Main`13787cce`/receipt`9b68ab66`. Local position error is zero; exact unit scale,
 scene/non-target/lifecycle/files/saves preservation pass. Native shutdown crashes
-separately. Fresh saved appearance and continuous chair contact remain open.
-No T9 or published-build change.
+separately. October7 10:17UTC: Ordinary3 fresh reload finishes cleanly/native0;
+all three installed typed lifecycles match before/after PIE, complete scene
+deltas are zero, and renderer/viewport/files/saves/ships/quality checks pass.
+The ordinary1600×900 podium view is noticeably cleaner than HighRes views,
+about8/10 for that angle; it does not establish fresh fullbody chair contact or
+whole-room9. Existing apartment BP_Blinds material errors remain in the raw log.
+October7 10:36UTC: Normal3 cleanly produces two matched ordinary views, native0/
+receipt`13b92077`, exactly restoring the four temporary P3slots and preserving
+scene/files/saves/ships/quality/crew. Lead finds no meaningful visual improvement:
+retain original normal strengths and stop that test branch. Normal2 failed before
+map load; its uninitialized before-snapshot does not prove aggregate scene
+preservation. Next compare central Goliath opaque hardware contrast without
+changing floor or lighting. T9 and published-build change remain unclaimed.
+October7 10:44UTC: CentralContrast1 produces the matched pair and exact protected
+state/12-slot restoration, receipt`20b72bdf`; native shutdown crashes separately.
+Lead finds no meaningful visible change and does not save it. Spatial evidence
+places its Goliath body at image-right; native role values are correct, but the
+effective render route is unconfirmed. Inspect that bounded route before another
+console edit; prepare separate neutral-white floor-depth and one-slot Flight
+readability comparisons. Main`13787cce` and published build remain unchanged.
+October7 11:12UTC: actual Route2 cleanly excludes Nanite and Front Material
+bypasses on the selected workstation. FloorDepth2's clean matched pair restores
+all420 T-floor slots and preserves scene/files/saves/crew/ships/quality. Lead and
+peer reject the extra luminance blend because native wear becomes weaker without
+meaningful room improvement; retain the saved textured white floor. FlightGain5
+does brighten its ship/title without clipped pixels or global control drift;
+lead accepts a private one-slot save for preparation, not yet applied. Its
+temporary restoration passes but native shutdown crashes separately. Effective
+material propagation is not broadly broken. T remains below9; next is the
+accepted display gain and stronger central-frame contrast based on actual ROI.
+The bounded ROI review supersedes the broad no-change impression: graphite
+housing darkens20–33percent, but upper satin supports brighten3.6–7.1percent.
+Retained floor/podium controls stay stable. Test a darker satin role colour with
+its original metallic response, keeping the functional top and displays intact;
+the previous candidate is still unsaved and whole-room acceptance remains open.
+October7 11:21UTC: the selected Flight gain save stops before any file write on
+a scene-snapshot mismatch; receipt`11877786`. Main`13787cce`, protected assets
+and player saves are unchanged, with zero new private packages. The rollback
+snapshot comparison also fails; do not infer aggregate editor-scene preservation.
+Different enumeration APIs are implicated but exact helper raw data was not
+retained, so the cause remains unconfirmed. Prepare a new wrapper using one
+canonical world-actor collection and retain actual snapshots before predicates.
+The failed save recipe and shutdown0xC0000005 remain history. Run the independent
+unsaved darker-frame comparison before retrying this save.
+October7 11:36UTC: Contrast2 verifies exact twelve-slot restoration and complete
+preservation, receipt`ac5c7dfe`, with native shutdown0xC0000005 separate. Lead and
+two peers accept darker housing/frame separation as a modest local improvement;
+the functional top still dominates highlights and whole-T9 remains open.
+FlightAuthor2 then saves exactly one private gain5 MIC/one existing slot,
+receipt`ce32d2ea`, currentMain`cedb6acd`. Typed scene/three crew lifecycles/files/
+player saves pass, with zero before deltas and one allowed slot delta; native
+shutdown0xC0000005 is separate. Only PresentationTarget is serialized as native
+actor path/class/None; raw proxy representations are retained, without a broad
+comparison waiver. Fresh saved appearance remains pending. Next install exact
+reviewed central leaf values and review fresh whole-room ordinary views.
+October7 11:49UTC: CentralCaptured1 saves exactly twelve private leaves and
+twelve existing references on four actors, receipt`b0ef717c`, currentMain`03852cf1`.
+Captured native metadata, complete scene, original sources, crew and saved
+progress pass preservation. Native shutdown0xC0000005 remains separate.
+Next review fresh nine-view ordinary saved-room images; no whole-T9 or owner
+acceptance is inferred from this saved material implementation.
 
 **October7 08:29UTC historical saved-preview update:** Art3 saves five fitted
 illustrated service displays/ten private assets with successful saved and

@@ -1,8 +1,8 @@
 # Operations display integration — 2026-10-06 owner session
 
-Recorded at 2026-10-07T02:03Z; actual saved Art3 visual failures updated at 2026-10-07T08:36Z.
-**PARTIAL: saved displays, supported density and graphite podium pass their
-implementation/preservation checks; actual Art3 room remains about7/10 with mirrored/obstructed side art and T remains owner-unapproved.** This is a T Operations presentation
+Recorded at 2026-10-07T02:03Z; latest saved-state update at 2026-10-07T11:51Z.
+**PARTIAL: mounted service illustrations now pass fresh upright/full-image review;
+the saved mixed crew and white floors remain, but whole T has not met the lead9/10 gate or owner approval.** This is a T Operations presentation
 pass on the separate owner preview. The accepted L lounge, canonical runtime map,
 published build and gameplay service behavior are not changed.
 
@@ -1077,15 +1077,303 @@ save and actual ordinary1600 baseline; no new material change is authored yet.
 
 ## Open / Check / Still open
 
-- **Open:** the separate owner preview at the saved Mounted6 hash above; this is not a
-  canonical-game or itch update.
-- **Check:** the saved Mounted6 service identities now pass fresh visual review;
-  review the next ordinary1600 desk comparison and fitted mixed crew before judging
-  the entire T room.
-  alongside the saved white-floor coverage before judging the revised T room.
-- **Still open:** T room visual acceptance, noisy workstation/rendered highlights,
-  broad-panel detail, clear service desks/rings, fitted illustration capture and
-  the remaining full-station white-floor coverage.
-  Pre-finish T was6.5–7/10; current T is about7–7.5/10 against the lead9/10 goal. The owner accepted L8/10 for now;
-  this display pass does not extend that acceptance to T. RPT-20261006-04 in
+- **Open:** the separate owner preview now saved by CentralCaptured1 at
+  `03852cf1ff951c41779c99e4c74a2e3f7c82728c9ae57e41d8208ebc54068214`.
+  Flight gain5 and the selected twelve central material references are saved;
+  this is not a canonical-game or published-build update.
+- **Check:** fresh nine ordinary1600x900 views will verify the newly saved finish,
+  Flight artwork, all five service identities and the retained mixed crew.
+  The save/readback checks pass; both selected authors retain shutdown native
+  `-1073741819` separately, and fresh saved appearance is pending.
+- **Still open:** whole-T visual9/10, owner approval, workstation highlights,
+  broad-panel detail and remaining full-station floor acceptance. The previously
+  reviewed whole room was about7–7.5/10; the selected local darker-frame angle
+  was about8/10, which does not establish whole-room acceptance. L remains the
+  owner's8/10 pass for now. RPT-20261006-04 in
   [KNOWN_ISSUES](../KNOWN_ISSUES.md) remains the authoritative owner-acceptance log.
+
+## Ordinary saved baseline / unsaved normal comparison preparation — 2026-10-07T10:21Z
+
+CrewCaptured1 saves two exact reviewed clips and changes three existing operators;
+receipt `9b68ab66e02aae7bf2035911c04a08d0a23f589ccbb074b63d520e32508780cd`
+advances the editable preview to historical Main `13787cce`, later superseded
+by the selected Flight and central saves below. Its saved/preservation checks
+pass, with a separately collected nativeA5 shutdown. The earlier Capture7 photos
+continue to show the original four alien operators; they are historical saved
+preview comparisons. The subsequent ordinary image shows the chosen saved crew.
+
+Ordinary3 is collected CLEAN native0. Manifest
+`1fbd3e0ff1ecba368a2878b6a4b439ca29195f31da68cfcb81d1654991e81835`
+and actual1600×900 PNG
+`7d189a7ef171ce79d9945b0775ebe55e2daa15bb6441e7a8532b35638f4c56d6`
+verify actual full-size ordinary viewport rendering, restored original viewport,
+fresh exact three-operator lifecycles, unchanged files/saves/ships/quality and zero
+editor deltas. The lead finds this ordinary view substantially cleaner and
+sharper than the previous high-resolution views. This does not prove why the
+remaining bright workstation detail occurs or meet the whole-room9/10 gate.
+
+The next test is prepared, **UNRUN and UNSAVED**. On the single measured PortSouth
+P3 body it duplicates four current material-instance leaves and changes only the
+existing `Normal Intensity` scalar to float32 `.15/.20/.15/.15`. All inherited
+parents, local overrides, effective colors/metal/roughness/textures/switches,
+original normal textures/AO/UV/emission and source bytes are protected. The body
+has six slots: only0–3 receive temporary PIE references; native mirror/light
+slots4–5 stay exact. Two matched ordinary desk-front views use the same camera,
+90-frame/six-second warmup,1600×900 viewport and unchanged rendering settings;
+exact references restore before Play ends. No material, map or source asset is saved.
+
+Independent review catches the existing UE5.8 scalar-setter return trap before
+native: a false return can follow a successful write. Original prepared helper1,
+wrapper1 and audits remain immutable/unrun. NEW helper2 records that bool only
+diagnostically and requires exact post-update native parameter/local readbacks.
+Helper `36609939db4c3d6e2bd46da994ba3dcfaa08daa664c2785d6e048564e8e04490`,
+wrapper `73e77d22b4d0b77a5a0ec0b3a45b87b40365c389e6b641cf037caabb5e605afd`
+and source audit `40143117c44d4c1d51bee90e95963f4c420b8c2f109a8927317ad263a56e3cc7`
+bind the actual baseline/crew and2,179 classified input files. CPU checks accept
+the four intended normal changes and reject28 unrelated parameter/local changes;
+projected body/display bounds fit the proposed camera. These checks are source
+evidence only. Native material reflection, paired pixels, restoration, clean
+process exit and visual acceptance remain required before any saved normal change.
+
+## Normal2 early failure / exact scalar-export repair3 — 2026-10-07T10:30Z
+
+Normal2 fails in the before-load scalar preflight: Python cannot read
+ScalarParameterValue.expression_guid, although the native header declares the
+field. Root collects nativeA5 shutdown. Receipt
+b44d6348c757d105315fe3ae6b96b9abc66e07a07375110e2d5ac9953a4cf551
+contains no images or material preparation. Files and saves remain unchanged,
+Play is stopped and the temporary namespace is absent. Its editor-before
+snapshot was never initialized; the 7,782 recorded raw differences compare an
+empty snapshot with the existing scene. They do not prove actor edits and
+provide no aggregate scene-preservation claim. The failure and original2 inputs
+remain immutable.
+
+NEW3 preserves full native scalar export_text() before any metadata predicate.
+It masks exactly one ParameterValue numeric token and compares every other
+serialized field/character, including GUID, atlas data and parameter identity.
+The actual native float32 value and typed name/association/index remain exact.
+No guessed alternative GUID getter, field dropping or numeric tolerance is used.
+This retains the same four temporary MICs, four PIE assignments, matched ordinary
+images and exact restoration; no saved normal change is made.
+
+Helper 6a7dbaf8c5c5eb6c927c91f6513ec5dfbaea07d27d619034af38ed9209f7abe0,
+wrapper f3eafd75561e5e15fd0a99b05643f5e1c65a41ac9d1ad9fb36fc62f8e1a2446d
+and source audit 189a054e983a6839069b453772ec3059acc4277606c35f503d295bd1d1bf9f79
+protect 2,187 exact input files and bind the actual failure/baseline/chosen crew.
+Offline metadata audit
+2214e3f7614b8cac59601016ec680904e925895b019e4e92a8f3e0f84327e822
+accepts four intended value changes, rejects 20 other metadata changes and four
+malformed export examples, and executes the actual failed2 parser successfully.
+Its local export examples are synthetic and explicitly labeled. Native exported
+format, material readbacks, paired images, restoration and collected exit remain
+pending; the material-noise hypothesis and whole T9/10 are still unproved.
+
+## Normal3 matched comparison rejected for saving — 2026-10-07T10:38Z
+
+Root collects session67405 CLEAN native0. Actual manifest
+`13b920779302d7fb9534a719e65e404a5670836b67e910f8b6213be0071d6308`
+passes both ordinary1600×900 pixel captures, matching camera/render settings,
+four-slot material restoration, original viewport restoration, unchanged
+files/saves/ships/quality, stopped Play and exact editor equality with zero deltas.
+The temporary material namespace remains absent on disk. Full native scalar
+exports and exact parameter readbacks pass; the earlier2 failure is retained.
+
+The first image is the **current saved preview with original normals**:
+`01_OriginalNormals.png`, SHA
+`89f6e6669ad00bdd0d926cf97fec651172ca8fb0c7a7fb4b689f33f05427484b`.
+The second is an **unsaved four-slot test, restored afterward**:
+`02_ReducedNormals.png`, SHA
+`37fccc54fa9bfb7f4c7db0b7cabcacffa872398ffa1d05b26d9198e603eddff2`.
+Both use the same active camera and six-second warmup. Animated window imagery
+differs between captures and is not evidence of a material improvement.
+
+Lead and independent review find only a subtle fine-surface change, without a
+meaningful visual benefit. The native front board also obscures much of this P3
+body. **The lead rejects saving the reduced-normal candidate:** original strength
+is retained, no new material/map author is needed, and no normal-noise cause is
+proved. Saved preview13787 remains unchanged. The next bounded comparison targets
+the separately measured central Goliath opaque roles; whole-room9/10, owner
+acceptance and a published build remain open.
+
+## Flight readability proposal, source only — 2026-10-07T10:41Z
+
+The saved Mounted6 Flight shader is opaque/unlit and exposes DisplayGain3.5.
+The actual Capture7 close view fits the full Phoenix and title without frame
+occlusion; the ship's finer detail remains dim. The retained source illustration
+is suitable and does not require new image generation. Capture7 still shows the
+older staff and uses the older high-resolution capture path.
+
+Proposal `OperationsFlightReadabilityProposal1.json`, SHA
+`038a13a5cfbe2807f5c8dafbb166d1653a1faac59e60947c5102d54731c430bf`,
+recommends a single unsaved private material-instance leaf with only DisplayGain5.0,
+temporarily assigned to the existing Flight slot0. Two matched ordinary1600 close
+views would reuse camera7718,0,178 toward7808.9,0,156/FOV55. This is source-only
+preparation after the central contrast decision, with no author or native run.
+Uniform gain cannot improve the ship-to-title brightness ratio or remove blur;
+the candidate should be rejected if title bloom or local spill outweighs clearer
+ship detail. Room lighting, trim brightness, white floors and rendering settings
+are preserved. No visual/save/owner acceptance is inferred from this proposal.
+
+## Flight1 matched comparison prepared — 2026-10-07T11:01Z
+
+The lead authorizes source preparation after rejecting the unsaved central
+contrast candidate. Flight1 remains **UNRUN/UNSAVED**: one new private MIC is
+parented to the exact saved Mounted6 opaque/unlit Flight master; only inherited
+DisplayGain3.5 is overridden to5.0. The existing supported actor7616, plane,
+64x24cm pose/visibility/collision and artwork are checked against the retained
+actual Normal3 snapshot. Only its slot0 receives a temporary PIE reference.
+No master/texture/graph, editor reference, room light, floor, crew or renderer
+setting is changed. Exact reference restoration precedes ending Play.
+
+Helper `0e3db93f144ff0a6c51bd3bbf38c0b2f45ccd7c8ab3ad4f5e266a22ea1ce0637`,
+wrapper `99dbf071caeb13ee584c2b51d342bc412a3a4e2b713da168fcf65107a8f02930`
+and source audit
+`7a62252b7576c60d5d6286041832b40b3cad141c0262fe437dd531aa44e992db`
+bind2,199 exact classified inputs, chosenCrewCaptured1/current13787, actual
+Ordinary3 and restored Normal3. The wrapper reuses the successful ordinary pair's
+active camera, 90-frame/six-second warmup,1600x900 viewport/restore, exact scene,
+native scalar-export metadata and saved crew lifecycle checks. Python compilation
+and independent full source/hash review pass. Root alone may launch; real
+instance inheritance, paired pixels, restoration and native exit remain gates.
+
+## Flight1 rendered gain response and selected save preparation — 2026-10-07T11:11Z
+
+Root collects native exit `-1073741819` after shutdown. Actual manifest
+`e9bfa067d3a005dd99986a8f13e1b886f7118a231f7a6a0ec4a149e8a8530e2b`
+reports success, two ordinary1600x900 images, exact one-slot restoration,
+unchanged files/saves/ships/quality/editor scene, zero deltas, stopped Play,
+restored viewport and absent candidate packages. These preserved image/readback
+checks are separate from the failed native-process exit; this is not a clean
+aggregate native pass. The preview remains CrewCaptured1 at13787 unchanged.
+
+The first image is the **current saved preview, DisplayGain3.5**:
+`01_SavedFlightGain35.png`, SHA
+`bd9b35e504c23116bb47a4bfc8eefaf505f07f18da3d0ea5438fd8ae103ac407`.
+The second is an **unsaved one-slot DisplayGain5 test, restored afterward**:
+`02_UnsavedFlightGain50.png`, SHA
+`ad80bcd5c7ae238c18dec45d03f7847084396683c21fa7cc7d78c5439914d67f`.
+The actual camera/quality match; warmups are468/477 frames and6.031 seconds.
+
+Independent static-screen pixel comparison uses encoded RGB weights
+0.2126/0.7152/0.0722 on the0..255 PNG values; these are image metrics, not
+scene-linear radiometry or a calibrated contrast/accessibility measurement.
+At ship crop `[548,344,705,602]`, mean rises46.69 to59.16 (+26.7%) and P90
+110.21 to136.57. At title crop `[1002,370,1264,476]`, P90175.01 rises to196.22;
+the same saved-image title-stroke mask above80 rises161.61 to183.76 (+13.7%).
+Neither crop contains255-clipped RGB channels; candidate maxima are192/201.
+Black backing `[802,325,950,480]` rises only0.627 to1.115. Two static mounts and
+an outer-body control change at most0.067 mean units, versus ship+12.47 and
+title strokes+22.15. Moving hologram/surrounding effects are excluded from these
+screen metrics. The gain does propagate to rendered pixels: a total unsaved
+MIC no-op is contradicted. The full-image visual improvement remains modest.
+
+The candidate's full native scalar export records DisplayGain5, global
+association/index-1 and nonzero ExpressionGUID
+`2E39EB6B4A2F7D2163B789BFDA0AA5B5`. Original master expression GUID was not
+retained, so exact GUID equality is UNCONFIRMED. Installed5.8 headers declare
+the used scalar setter and UpdateMaterialInstance; the latter is a recompile/
+update entry point, not a documented completion fence. Their private cpp
+implementations are absent from this Launcher installation. The warmups and
+actual brightness response provide no evidence of a stale render proxy here.
+Ordinary scalar instances do not generally require recompiling the parent
+shader, per [Epic's5.8 material-instance documentation](https://dev.epicgames.com/documentation/unreal-engine/instanced-materials-in-unreal-engine?lang=en-US)
+(checked October7). Nonlinear response is consistent with the
+[filmic HDR-to-display transform](https://dev.epicgames.com/documentation/unreal-engine/color-grading-and-the-filmic-tonemapper-in-unreal-engine)
+(checked October7); actual exposure/tone-curve values were not measured, so
+this is an inference rather than a diagnosed exposure defect.
+
+The lead selects exact DisplayGain5 for a narrow private-MIC save preparation:
+one new MIC/one existing Flight slot0, original master/art and room retained.
+No author has run or saved yet. Whole-T9/10, owner acceptance, runtime comfort,
+representative performance and published build remain open. No renderer,
+lighting, white-floor, normal-strength or source-art change is justified by
+this comparison.
+
+## Selected Flight author1 failed before saving; bounded repair2 — 2026-10-07T11:30Z
+
+Actual author1 receipt
+`1187778664d91047dc6b8beb4bb8e3a708c37552a745205739b716d024e47ad6`
+reports failure at ASSIGN_ONE_EXISTING_FLIGHT_SLOT, before either save. Root
+collects native `-1073741819` separately. Main remains CrewCaptured1 at13787;
+all protected source/save bytes match and no private Flight package was written.
+The original slot setter ran during rollback, but its full-scene equality failed;
+aggregate scene preservation is **not established**. Do not infer it from
+unchanged disk files. Original author1/helper/receipt/snapshot are immutable.
+
+The wrapper's retained Before95d3 and the previous rendered comparison's
+EditorBeforef2bc have the identical 8,432 actor-path set. Their only two differences
+are cross-run UObject memory addresses in terminal presentation_target strings,
+with the same referenced actor paths/classes. This does not explain the
+same-loaded author failure: the helper-returned Before was not persisted before
+the predicate, so the exact cause remains UNCONFIRMED. Installed EditorActorSubsystem
+GetAllLevelActors searches editor-loaded actors with exclusions; GameplayStatics
+GetAllActorsOfClass accepts an explicit world. Merely using different enumerators
+does not prove different actor sets in this run.
+
+NEW repair2 uses the actual world's GameplayStatics Actor collection consistently
+for baseline, assignment, private save, Main save, crew and rollback checks.
+It serializes only SSOutpostTerminal.PresentationTarget, declared
+TObjectPtr&lt;AActor&gt; at SSOutpostSandbox.h57, as actual target path/class or None.
+Every other scene field remains exact. Full legacy presentation-target repr
+sidecars are retained before each comparison; full helper-returned Before/After
+and exact raw deltas are persisted before the wrapper equality predicate. No
+address regex, float tolerance, actor omission or preservation waiver is added.
+The same one-private-MIC/one-Flight-slot/one-Main-save scope and rendered gain5
+metadata remain; real saved appearance and whole-T9 are still open.
+
+Helper9aed805b/wrapper2573b636 have root and independent source-review PASS,
+but remain UNRUN. CPU checks
+verify all 2,212 protected byte hashes and ten recipes. A narrow typed-field
+stub retains all other fields, accepts Actor/None and rejects changed target
+path/class, None substitution and non-Actor objects; this is not native proof.
+The latest eligible saved producer remains CrewCaptured1; no prospective lineage
+or successful author is inferred. Contrast2 runs first on that existing producer.
+
+## Selected Flight gain5 saved; fresh room pictures pending — 2026-10-07T11:39Z
+
+Actual author2 receipt
+`ce32d2ea35920b16f2b13592f2264a4c1e07bb8d522275809ff12ee292bc2d61`
+reports success, saved and preservation checks passing. One new private MIC
+`OperationsFlightReadabilitySaved20261007/MI_FlightGain5` and exactly the existing
+Flight insert's slot0 are saved; one Main load/save produces current map
+`cedb6acddc7f1eaf334df3ca1847ddf50c70e6c850b2a718dd2257c988ea799d`.
+Its package SHA is50cef4b7. Before/HelperBefore exact deltas are empty; the single
+allowed scene delta is that slot's original master reference to the new MIC.
+All three native saved crew lifecycles match before/after, source master/art
+match, protected files/saves match, no new actors/lights and no errors. The
+setter returned false diagnostically, while exact native Gain5/metadata
+readbacks pass; the setter return is not a write-failure gate. Full legacy
+PresentationTarget sidecars and actual typed scene snapshots are retained.
+
+Root collects session5822 native `-1073741819` after shutdown separately. The
+saved author/readback/preservation result is verified; a clean native-process
+exit is **not** established. Fresh saved Flight appearance and whole-T9 remain
+pending. The earlier failed author1's missing helper snapshot cannot be
+reconstructed from this successful run; its exact cause remains UNCONFIRMED.
+
+The next source-only capture uses the nine previously accepted screen/room
+viewpoints with ordinary1600x900 native viewport screenshots,90 frames/six
+seconds at each camera, typed PresentationTarget and saved-crew checks, exact
+scene/file/save preservation and deferred viewport restoration. It waits for
+the actual selected central-finish save before freezing a new lineage; prior
+lineage3 and all historical wrappers remain immutable. This is a local editable
+preview, with owner acceptance and published build unchanged.
+
+
+## Selected central finish saved; fresh ordinary room review pending — 2026-10-07T11:51Z
+
+Actual CentralCaptured1 receipt
+`b0ef717cd2021de999a13c5187618461c7013ae0cb09b3cae40ad1cc8df22bff`
+saves twelve new private MICs and twelve material references on four existing
+actors. One Main load/save produces03852cf1 above, superseding Flight2'scedb6a
+as the current saved preview. Captured native Contrast2 metadata is installed
+without reevaluating proposed values or changing original masters. Source chains,
+full typed scene, three saved crew lifecycles, protected files and saves pass;
+no new actors, lights or masters and no errors are reported.
+
+Root collects session74602 native `-1073741819` after shutdown separately. This
+verifies the saved author/readback result, not a clean process exit. The new
+nine-view ordinary capture and lineage bind this actual save plus Flight2 and
+CrewCaptured1; no fresh appearance, whole-T9, owner approval or published-build
+claim follows from the save alone. Earlier UNRUN and superseded preparation
+sections remain dated history.

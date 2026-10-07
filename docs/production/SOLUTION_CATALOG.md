@@ -310,7 +310,37 @@ KNOWN_ISSUES owns priority and acceptance.
   recorded separately. Captured1 then saves those exact tracks through two new
   private clips and three existing operators, preserving unrelated scene/files/
   saves. Native local position error is zero, unit scale exact, no refit; native
-  shutdown crashes separately. Fresh saved appearance remains pending.
+  shutdown crashes separately. Ordinary3 verifies all three fresh saved typed
+  lifecycles and full preservation with native0/zero scene deltas. Its ordinary
+  podium view is cleaner, while whole-room finish and chair contact remain open.
+  The clean Normal3 matched pair preserves all saved state; reducing the P3
+  normal intensity provides no meaningful visual benefit, so the lead retains
+  the original strengths. Central opaque-console contrast is the next bounded
+  material comparison; no lighting or floor change is part of that test.
+  CentralContrast1 then verifies exact temporary restoration but supplies no
+  meaningful visible improvement; it is not saved. Native values and physical
+  location are correct, effective render route remains unconfirmed, and native
+  shutdown crashes separately. This result does not justify a blanket tint edit.
+  Route2 later cleanly excludes Nanite and Front Material bypasses. FloorDepth2
+  finishes cleanly/native0 with420-slot restoration and complete preservation;
+  lead and peer reject its additional luminance blend, retaining the saved white
+  panel finish. Flight3.5→5 yields measurable ship/title brightness without
+  clipped pixels or control-hardware drift; lead accepts a bounded private
+  one-slot save for preparation. No general material-propagation failure or
+  whole-room9 is established, and the saved preview is still unchanged.
+  Superseded October7 11:36UTC: the bounded darker-satin Contrast2 pair earns
+  lead/two-peer acceptance as a modest local improvement, not whole-room9.
+  Restoration/preservation passes; native shutdown crashes separately. Flight
+  save1 fails before writes on an unretained helper snapshot mismatch; native
+  pointer representations differ across the retained historical snapshots.
+  Save2 serializes only that actor reference by path/class/None and retains raw
+  representations, then saves one private gain5 MIC/one existing slot with
+  complete typed scene/file/save/crew preservation. Native shutdown crashes
+  separately. Current preview is`cedb6acd`; fresh saved appearance is pending.
+  Superseded October7 11:49UTC: CentralCaptured1 saves the exact reviewed darker
+  frame through twelve private leaves/twelve references with complete metadata,
+  scene, source, crew and player-save preservation. Current preview`03852cf1`;
+  native shutdown crashes separately and fresh whole-room review remains pending.
   Ring2 saves five segmented standing markers
   through nine private assets, native0/exact preservation. Nine actual saved
   views confirm normal service selection and subtle brightness variation;

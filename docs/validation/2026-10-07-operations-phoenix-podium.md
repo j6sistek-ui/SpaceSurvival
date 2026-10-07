@@ -742,13 +742,11 @@ desk surfaces, a washed-out floor and dark ceiling still limit the finish.
 These saved views retain the original alien operators; the corrected crew
 preview below is separate unsaved evidence.
 
-Root's required 9/10 room gate remains open. A new ordinary
-1600x900 capture template also retains the existing Build39 observer and raw
-scene comparisons. Its viewport restoration proof is read on later ticks;
-the prior full-size failure and its raw deltas remain unchanged. This template
-is unrun and awaits the actual final screen/crew save lineage.
+Root's required 9/10 room gate remains open. The ordinary capture below uses
+the final saved crew lineage. Earlier full-size failures and their raw deltas
+remain unchanged.
 
-## Corrected crew preview reviewed; installation pending
+## Corrected crew preview reviewed and captured tracks installed
 
 The six actual unsaved CrewPreview6 images are independently checked against
 manifest `72718460afd7ebdb51fb9fa81b0c813688bab354b2e9b5609f8dddafd757051f`;
@@ -763,8 +761,173 @@ not a claim of desk-working animation or continuous furniture contact. Hands
 remain in a lap/rest idle. The preview saves no assets and restores the three
 original animation lifecycles exactly; file/save/ship preservation and zero
 editor deltas pass. Root separately collects a shutdown access violation.
-Saved crew installation and fresh whole-room/ordinary-resolution review remain
-pending. No current 9/10 room acceptance is inferred from these close views.
+No current 9/10 room acceptance is inferred from these close views.
+
+Captured1 subsequently saves exactly the reviewed Human and Robot tracks in
+two private animation clips, changing three existing operators and saving the
+main preview once. Receipt
+`9b68ab66e02aae7bf2035911c04a08d0a23f589ccbb074b63d520e32508780cd`
+binds the accepted preview and its two captured 121-key, twelve-track artifacts;
+source poses and the fitter are not reevaluated. Native local-position readback
+error is zero, quaternion agreement exceeds 0.99999995, and all unit scales
+match exactly. Full scene, other actors, lifecycle, source files and saved
+progress are preserved. The current saved preview becomes
+`13787cce1fba901869556676fb14b3f2aff57bc76fd00325d2b439d1f3d824dc`.
+Root separately collects a shutdown access violation; the saved receipt is
+valid evidence, not a clean process-exit claim.
+
+## Ordinary full-size saved-room verification
+
+At 2026-10-07T10:14Z Ordinary3 completes with manifest
+`1fbd3e0ff1ecba368a2878b6a4b439ca29195f31da68cfcb81d1654991e81835`;
+root collects native exit 0. The actual ordinary viewport screenshot is
+1600x900, SHA
+`7d189a7ef171ce79d9945b0775ebe55e2daa15bb6441e7a8532b35638f4c56d6`.
+It uses the active player camera at the existing podium-side position after
+six seconds of warmup, with no renderer-quality or lighting changes and no
+high-resolution screenshot request. Native renderer samples verify the full
+viewport and output rectangle. Deferred later-tick proof confirms restoration
+of the original viewport and fixed-size state. All three freshly loaded saved
+crew lifecycles match before and after Play; the complete editor snapshots
+match exactly with zero deltas. Files, saved progress, ships and quality
+settings remain unchanged, and Play stops.
+
+Independent actual-pixel review finds substantially cleaner podium surfaces,
+glass edges and ceiling structure than the earlier high-resolution views.
+The saved mixed crew and Phoenix focal point read coherently. This angle is
+approximately 8/10; the bright central desk and floor against almost-black
+ceiling recesses still prevent whole-room 9/10 acceptance. One view does not
+prove all service close views, continuous crew contact, owner-resolution
+performance or the cause of the earlier sparkling pixels. Native
+`BP_Blinds` AccessedNone messages remain in the raw log separately from the
+successful capture and preservation checks.
+
+## Bounded normal comparison and central finish candidate
+
+Normal2 fails before loading the map because the native scalar override does
+not expose the assumed Python `expression_guid` property. No material
+preparation, image or disk edit occurs. Receipt
+`b44d6348c757d105315fe3ae6b96b9abc66e07a07375110e2d5ac9953a4cf551`
+retains the failure and separately collected shutdown access violation. Its
+editor baseline is uninitialized; the 7,782 raw deltas do not establish scene
+preservation. Normal3 replaces that getter with the complete native scalar
+export, masking only its single numeric `ParameterValue` token and retaining
+all other metadata exactly. Raw native exports are written before predicates.
+
+Normal3 then completes cleanly with root-collected native exit 0 and receipt
+`13b920779302d7fb9534a719e65e404a5670836b67e910f8b6213be0071d6308`.
+Two matched ordinary 1600x900 images compare the saved PortSouth P3 body with
+four unsaved leaf copies whose normal intensity alone is reduced. Both other
+body slots remain unchanged. All four original references restore, complete
+editor snapshots have zero deltas, and files, saved progress, ships, quality
+and fresh saved crew lifecycles remain unchanged. Root and independent pixel
+reviews find little meaningful visual benefit. The original saved normals
+remain; no normal material is authored or saved.
+
+The next candidate is an unsaved twelve-slot comparison on the four existing
+central Goliath body/support actors. It increases only the active private
+graphite/satin coating mix and softens metallic response through four role
+scalars. Existing normal/AO/UV, textures, role colors, glass, emissive, lighting
+and white floor remain exact. Its source review and 2,198-file classifier audit
+pass. Contrast1 subsequently records two ordinary views in receipt
+`20b72bdf24ad366ebe9e2cda6cfc3c3f778741f3a3cea42a2599e11c441094f3`:
+all twelve temporary references restore, full editor snapshots match with zero
+deltas, and files, saved progress, ships, quality and saved crew lifecycles are
+preserved. Root separately collects a shutdown access violation.
+
+Actual pixel review finds the right-hand white workstation apparently
+unchanged, despite native readbacks of the declared dark role colors and four
+changed scalars. No saved finish is accepted. The current raw scene and prior
+measured bounds identify that visible body as the intended P1 Goliath table at
+(7800,0,0), projecting to the right of the podium from this camera; it is not
+another room. The effective render route and the contribution of other
+assembly surfaces remain unconfirmed. Route1 exits cleanly but rejects its
+incorrect assumption that the twelve immediate MIC parents are two masters,
+before creating its result. The failed source and launch error remain intact.
+Route2 follows the actual measured inheritance instead and completes with
+root-collected native exit 0 and receipt
+`aad2d44d83594980321d9ad0dd8631e338a058408627b0390be966f9778ab276`.
+This Entry-only readback loads no preview or Play session and changes no
+material, setting or package. All twenty-one inherited MICs and both ultimate
+private masters have no Nanite override material; the body mesh has Nanite
+disabled, and both masters have no Front Material connection. Protected files
+and saved progress remain exact. Those alternate-render-route hypotheses are
+excluded for this body.
+
+The retained native graph connects BaseColor to the declared role Lerp: native
+color in A, role color in B and the actual TintMix parameter in Alpha. Metal
+and roughness connections also match live outputs. Disabled body emissive
+selects an unconnected zero branch. The remaining assembly audit identifies
+twenty-five other actors with thirty slots: twenty-five already use saved
+graphite roles and five retain functional emissive/service display surfaces,
+including the thin workplan top. No missing broad body-material whitelist is
+proved. No further finish is saved from these getter checks, and they alone
+do not establish appearance or a 9/10 result.
+
+The subsequent bounded pixel analysis supersedes the initial whole-image
+judgment of an apparently unchanged workstation. Its retained record is
+`OperationsCentralContrastPixelRegions1.json`, SHA
+`03d0f567edb6d78be376922eb459f3b1a48a7cb5cd81ba2d65eb0813e397fd78`.
+Two graphite front-housing rectangles darken by 33.3% and 20.1% in gamma-encoded
+weighted RGB; a lower-leg rectangle darkens 30.2%, though its slot is unknown.
+Three upper satin-frame rectangles instead brighten 3.6–7.1%. The unchanged
+floor/podium controls change less than 0.15%, and the functional worktop changes
+about 1%. The sampled family rectangles agree with measured projected bounds;
+they are not per-triangle material segmentation, scene radiance, or BRDF proof.
+Natural animated objects and indirect light remain comparison limitations.
+These pixels establish a rendered graphite response; a general temporary-MIC
+update failure is not supported. The pale upper satin frame still dominates.
+
+The next unsaved Contrast2 preserves the tested six graphite recipes and
+changes only six satin leaf colors to linear RGBA (.12,.15,.19,1) with TintMix .95.
+It retains their saved MetalScale .65 / RoughMin .55 / RoughMax .77. Each previously
+inherited color receives one declared local override on a temporary clone;
+native metadata is retained while only its RGBA value changes. Twelve original
+slot references and all source materials must restore exactly. No lighting,
+floor, texture, normal/AO/UV, functional emissive or geometry change is proposed.
+Contrast2 subsequently produces the two actual ordinary images in receipt
+`ac5c7dfe3dc33c1f9ceecc4c17b32cf29eaa70178bf58f394c2d0beba536892f`.
+The twelve exact references restore, complete scene snapshots have zero deltas,
+and files, saved progress, ships, crew lifecycles, quality and the viewport are
+preserved. Root separately collects another shutdown access violation; this
+is not a clean native process pass. Root and two independent actual image
+reviews find a modest local improvement: the housing and upper support
+recesses separate better from the white floor. Original functional worktop
+brightness and specular edges still dominate. The local finish is selected
+for a narrow saved implementation, with no whole-room 9/10 or owner acceptance.
+
+The prepared captured installation duplicates twelve existing leaves into a
+new private namespace and compares their complete native before, inherited
+color seed and after snapshots directly with the rendered Contrast2 records.
+It installs recorded values without reevaluating proposed material values;
+parents and existing metadata remain exact, and no master changes. Root alone
+saves the leaves and twelve existing references after source, full scene and
+crew checks. The current producer is the separately saved Flight2 gain5 MIC;
+its actual receipt is `ce32d2ea35920b16f2b13592f2264a4c1e07bb8d522275809ff12ee292bc2d61`,
+with another shutdown access violation retained separately.
+
+CentralCaptured1 now saves that selected finish, receipt
+`b0ef717cd2021de999a13c5187618461c7013ae0cb09b3cae40ad1cc8df22bff`.
+The current editable preview is
+`03852cf1ff951c41779c99e4c74a2e3f7c82728c9ae57e41d8208ebc54068214`.
+Independent receipt/file verification confirms all 2,244 protected bytes and
+the twelve new private MIC files, all twelve complete captured before/seed/after
+metadata records, and the complete same-loaded scene with only twelve allowed
+material references changed on four existing actors. Sources, parents, normals,
+textures, emissive, glass, lights, floors, saved progress and crew are preserved;
+there are no new actors, lights or masters. Main loads and saves once, with no
+reported author errors or proposed-value reevaluation. Root separately collects
+a shutdown access violation after this saved result; it is not a clean native
+process pass. Fresh nine-view saved room appearance, owner acceptance and the
+whole-room 9/10 gate remain open. Published build state is unchanged.
+
+FloorDepth2 meanwhile completes with clean native exit 0 and actual receipt
+`d3af43118e6cb01c1fb53352d93432832922a5ab90991571e369ba3826dceefe`.
+Both matched ordinary 1600 images and exact 420-reference restoration pass;
+files, saves, ships, crew lifecycles, quality and viewport are preserved with
+zero scene deltas. Root and independent actual pixel review reject saving the
+18% native-albedo luminance blend: its benefit is slight and some native wear
+and seam contrast becomes weaker. The saved textured white floor remains.
 
 ## Still open
 
@@ -791,5 +954,6 @@ identity and pulsing standing rings. Staff need a less alien-heavy model mix.
 Those follow the floor check; exact service actions and access remain intact.
 No new rotation mechanism, light or geometry belongs to the saved material finish.
 Saved implementation, visual quality, owner approval and published build remain
-separate; the latest independent saved T assessment is7–7.5/10, and the lead's
-required9/10 gate remains open. No9/10 room or gameplay/package pass is claimed.
+separate; the latest ordinary saved angle is approximately8/10, while the prior
+nine-view whole-room assessment is7–7.5/10. The lead's required9/10 gate remains
+open. No9/10 room or gameplay/package pass is claimed.
