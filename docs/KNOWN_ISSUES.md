@@ -319,6 +319,30 @@ Captured native metadata, complete scene, original sources, crew and saved
 progress pass preservation. Native shutdown0xC0000005 remains separate.
 Next review fresh nine-view ordinary saved-room images; no whole-T9 or owner
 acceptance is inferred from this saved material implementation.
+October7 12:03UTC: nine actual ordinary room views verify the new materials,
+five mounted service identities and saved mixed crew. Receipt`c0f3e007` passes
+pixel/renderer/viewport/files/saves/ship/quality checks but remains aggregate
+PARTIAL:2,821 child-interior actor paths arrive after the baseline; none of the
+original actor fields changes or disappears. Native shutdown crashes separately.
+Lead/peer whole-T score remains7.5–8. Next wait for loaded child paths before
+the complete baseline, then add restrained upper-room fill and clear the
+Phoenix's entrance silhouette. White floor and owner trim remain retained.
+October7 12:15UTC: OrdinaryRoom2 waits for both known child interiors before
+its complete11,260-actor baseline. Receipt`53505701` and native exit0 verify
+nine saved-room views, all preservation/rendering/crew checks and zero editor
+deltas or errors. This supersedes the first capture's aggregate preservation
+status; its failed receipt remains history. Lead and peer reviewed allnine:
+wholeT is still7.5–8, not9. Next compare three upward fixture fills, a30cm raise
+of allfour Phoenix children and two quieter decorative WorkPlan slots in PIE;
+retain the saved white floor, rotation, controls and original assets.
+October7 12:57UTC: UpperFill3 produces six ordinary comparison views with exact
+temporary restoration, zero editor deltas and passing scene/file/save/crew/
+rendering checks, receipt`a26fa718`; native shutdown0xC0000005 remains separate.
+Lead and two peers reject the added uplights for negligible ceiling improvement.
+The30cm Phoenix raise and quieter decorative WorkPlan are modest unsaved
+improvements. Whole T remains about8, not9; Main03852 is unchanged. Next compare
+a coherent satin finish on the native ceiling panels, save only accepted
+display/finish changes and review the complete room before advancing after-T.
 
 **October7 08:29UTC historical saved-preview update:** Art3 saves five fitted
 illustrated service displays/ten private assets with successful saved and

@@ -1377,3 +1377,112 @@ nine-view ordinary capture and lineage bind this actual save plus Flight2 and
 CrewCaptured1; no fresh appearance, whole-T9, owner approval or published-build
 claim follows from the save alone. Earlier UNRUN and superseded preparation
 sections remain dated history.
+
+
+## Fresh ordinary nine views: pixels complete, child-load preservation fails — 2026-10-07T11:59Z
+
+Actual RoomOrdinaryCapture1 receipt
+`c0f3e0073fb782ab22abef5f829edc4ba7dbd45e051bb37a3a41b25540ced9c4`
+contains all nine current saved1600x900 ordinary screenshots. Renderer rows,
+viewport restoration, files, saves, ships, quality, three saved crew lifecycles
+and stopped PIE checks pass. Root collects native `-1073741819` separately.
+Aggregate capture success is **false**: the complete editor universe grows from
+8,439 to11,260 actors, producing2,821 exact deltas. Every delta is a top-level
+addition:2,076 actors from the saved CargoThreshold level instance and745 from
+the saved ApartmentWhiteFloors instance. No earlier actor is removed or changed.
+
+These are actual loading additions, not permission to omit child actors from
+preservation. The failed receipt, nine images and full Before/After/raw deltas
+remain immutable. A new source-only capture will await those exact measured
+child actor paths/populations before its complete stabilized same-world baseline,
+then retain the original exact post-PIE equality guard. It does not assert
+historical cross-load physical equality or change renderer/settings/assets.
+Fresh whole-room quality and the full preservation gate remain separate; no T9
+or owner-acceptance claim is made from these images alone.
+
+## Fresh ordinary nine views: complete scene preserved — 2026-10-07T12:14Z
+
+Actual RoomOrdinaryCapture2 receipt
+`53505701bef8438cd0685e8755504aa785c50025c34c71a54ce0ef6316588833`
+passes all nine saved-preview1600x900 ordinary screenshots, renderer checks,
+viewport restoration, files, saves, ships, quality, three saved crew lifecycles
+and stopped PIE. Root collects session30292 native **exit0**. The exact measured
+CargoThreshold and ApartmentWhiteFloors child populations are loaded before
+the complete11,260-actor baseline; the same-world after snapshot has **zero**
+actor/property deltas and no errors. Capture2 supersedes the earlier failed
+capture's preservation result; Capture1's2,821 additions and mixed process
+outcome remain immutable history. No asset or map is saved by either capture.
+
+Independent review of all nine images finds the five service titles/heroes
+upright, complete and readable, with clear mounted frames and a visible Flight
+ship. Whole-room quality remains approximately7.5–8/10, below the required9:
+the upper walls/canopies remain dark against the bright white floor/worktops,
+and the podium base is still plain. This clean capture verifies the current
+saved Central03852/Flight2/crew preview and preservation; it does not establish
+owner approval, gameplay/performance acceptance or a published build change.
+The next bounded upper-fill/Phoenix/worktop comparison is an unsaved test.
+
+## Upper-fill comparison1 fails before lights or images — 2026-10-07T12:30Z
+
+Actual UpperFillPreview1 receipt
+`01a475f489a5ac24b71666782a7539ca53b1b4d9d3bcd7e8873f7d7d7b25c116`
+fails while reading every baseline actor's bounds:69 of the1,465 recorded
+actors have no bounds field. The three intended housing rows have complete
+measured bounds, so a new bounded repair selects only those exact rows before
+reading bounds. The original helper, wrapper and failed receipt stay immutable.
+The previous source peer missed this schema error; hash and syntax checks did
+not establish correct runtime input handling.
+
+No preview lights or images are produced and no scene/content is saved. The
+two private WorkPlan MICs were prepared only in memory; their directory remains
+absent. Exact editor deltas are zero, and protected files, saves and saved crew
+checks pass. Preview restoration is false because the comparison never starts.
+Root collects session57206 native `-1073741819` separately; this is a failed
+attempt with no visual conclusion. Current Main03852 and whole-T quality remain
+unchanged.
+
+## Upper-fill comparison2: four views, precise PIE restoration fails — 2026-10-07T12:47Z
+
+Actual UpperFillPreview2 receipt
+`14d39eb7c947d12e55e91aec5f812c9f78e8b5d44a60c7119c827b26fd6572ff`
+contains four ordinary1600x900 baseline/fill-only images. The combined raised
+Phoenix/quiet WorkPlan views are absent. One Phoenix child's movement setter
+returns tiny relative XY round-trip differences, approximately1e-13cm; its Z
+and all other recorded local fields match. Raise and restore predicates fail,
+so preview restoration and aggregate success remain **false**. The exact full
+editor after-PIE snapshot has zero deltas; protected files, saves, ships, quality,
+three crew lifecycles, stopped PIE and absence of private disk packages pass.
+Root collects session34780 native `-1073741819` separately. No scene is saved.
+
+Independent review of all four images agrees with root: three700-lumen upward
+sources produce almost no useful ceiling/upper-wall improvement; floor brightness
+is similar and small source slivers appear at the fixtures. This candidate is
+rejected for saving; no ship-height/console visual result can be claimed. NEW3
+is an unsaved1400-lumen/specular1/radius1300 candidate on the same three measured
+housings. Its direct native relative field and warmed world-Z/enclosure checks
+retain exact local-state gates without adding a numeric tolerance. Actual NEW3
+appearance and restoration remain unverified.
+
+## Upper-fill comparison3: six UNSAVED views restored, lamps rejected — 2026-10-07T12:58Z
+
+Actual UpperFillPreview3 receipt
+`a26fa718754ff2ee189ddcf5144ac3e50564310b02256a86baeb1687fa679ae9`
+passes six ordinary1600x900 pictures and precise preview restoration. Full
+editor deltas are zero; protected files, saves, ships, quality, three saved crew
+lifecycles, stopped PIE, temporary disk-package absence, renderer and viewport
+restoration pass. Direct native relative-field readbacks are exact, and warmed
+world-Z/four-part enclosure checks pass before the six images. No scene or
+content is saved. Root collects session99193 native `-1073741819` separately:
+manifest checks pass, while a clean native process exit is not established.
+
+All six images were independently viewed. The three1400-lumen upward lamps
+still give almost no useful ceiling/upper-wall separation, so root and peers
+reject saving them. The combined Phoenix+30cm/quiet primary WorkPlan direction
+is accepted as a modest composition improvement: the entrance ship separates
+above the console, and its podium-side silhouette reads more clearly within
+the glass. Natural rotation differs between views; this is qualitative visual
+review, not an identical-yaw comparison. These remain **UNSAVED, restored test**
+images. Whole-room quality is approximately8/10, below9; current Main03852,
+owner acceptance and published build remain unchanged. A selected saved author
+and fresh saved-state pictures are still required before calling these changes
+implemented. Earlier failed comparisons remain retained without waivers.

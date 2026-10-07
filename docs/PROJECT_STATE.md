@@ -1,5 +1,39 @@
 # SpaceSurvival project state
 
+**October7 12:57UTC latest comparison:** UpperFill3 produces six ordinary
+1600×900 views, receipt
+`a26fa718754ff2ee189ddcf5144ac3e50564310b02256a86baeb1687fa679ae9`.
+Temporary changes restore exactly; scene, files, saves, ships, crew, renderer
+and viewport checks pass with zero editor deltas or recorded errors. Native
+shutdown exits0xC0000005 separately. Lead and two peers reject the three added
+uplights because useful ceiling detail barely improves. Raising all four
+Phoenix parts30cm and quieting two decorative WorkPlan slots modestly improves
+the focal point; this remains an unsaved candidate. Whole T remains about8,
+not9. Next compare a satin finish on the existing dark ceiling panels, then
+save accepted display changes and review the complete room. Current Main03852,
+owner acceptance and the published build remain unchanged.
+
+**October7 12:15UTC saved-room review:** OrdinaryRoom2 captures nine fresh ordinary
+1600×900 saved-room images, receipt
+`53505701bef8438cd0685e8755504aa785c50025c34c71a54ce0ef6316588833`.
+Native exit is zero; renderer, viewport restoration, source files, player saves,
+ships, quality settings, three crew lifecycles and complete same-world scene
+preservation pass, with zero editor deltas or errors. The baseline includes all
+11,260 actors after both known child interiors stabilize. Main03852 below is
+unchanged. Lead and peer reviewed all nine views: whole T remains about7.5–8,
+not9. The subsequent unsaved comparison is recorded above. Owner
+acceptance and published build remain unchanged.
+
+**October7 12:03UTC historical review:** nine ordinary1600×900 saved-room images
+are captured, receipt `c0f3e0073fb782ab22abef5f829edc4ba7dbd45e051bb37a3a41b25540ced9c4`.
+Renderer, viewport restoration, files/saves/ships/quality and three saved crew
+lifecycles pass. Aggregate state verification is PARTIAL: two child interiors
+finish loading after the baseline, adding2,821 actor paths with no changed or
+removed fields among the original8,439 actors. Native shutdown0xC0000005 is
+separate. Main03852 below is unchanged. Lead and peer rate whole T about7.5–8,
+not9; upper-room lighting and the obstructing central overlay need finishing.
+The next capture waits for the known child interiors before its full baseline.
+
 **October7 11:49UTC latest saved preview:** CentralCaptured1 saves the selected
 darker central-frame finish through twelve private material copies and twelve
 existing slots on four actors. Current Main is
@@ -8,7 +42,7 @@ receipt `b0ef717cd2021de999a13c5187618461c7013ae0cb09b3cae40ad1cc8df22bff`.
 Every native material snapshot matches the reviewed Contrast2 result; source
 materials, all other scene fields, saved crew and player saves are preserved.
 One map load/save, no new actors, lights or masters. Native shutdown exits
-0xC0000005 separately. Fresh nine-view saved appearance is next; whole-T9,
+0xC0000005 separately. The fresh saved review above is now available; whole-T9,
 owner approval and a new published build remain unclaimed.
 
 **October7 11:36UTC historical saved preview:** FlightAuthor2 saves the accepted
@@ -163,7 +197,7 @@ files/saves/ships. Native shutdown still exits0xC0000005. Actual full-loop chair
 seat/back/armrest contact is pending; no crew substitution is saved. Whole T
 remains about7/10, not its9/10 gate. Physical markers are prepared offline only.
 The earlier Art1/2, capture and support failures remain immutable history.
-Source checkpoint`2ae13ee1ccb1fe469951c92efc52f30fd8acd6ec` is pushed to existing
+Source checkpoint`f02d98a5539669e090cadeebe4fd118640e4379e` is pushed to existing
 open draft[PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69), unmerged.
 Latest local recipes/evidence are not all checkpointed; no new package is published.
 

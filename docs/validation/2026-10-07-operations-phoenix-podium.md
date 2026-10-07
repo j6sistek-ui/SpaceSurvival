@@ -931,6 +931,72 @@ and seam contrast becomes weaker. The saved textured white floor remains.
 
 ## Still open
 
+At 2026-10-07T11:58Z, the nine fresh ordinary 1600x900 saved-room images in
+`StationOperationsRoomOrdinaryCapture1` complete, manifest
+`c0f3e0073fb782ab22abef5f829edc4ba7dbd45e051bb37a3a41b25540ced9c4`.
+All nine PNG hashes, actual cameras, renderer observations, viewport restoration,
+fresh three-crew lifecycles, files, saves, ships and quality settings pass.
+Full editor-state preservation remains PARTIAL: the retained comparison adds
+2,076 private Cargo and 745 private Apartment LevelInstance actor paths after
+PIE; the original 8,439 snapshot rows do not change. These population differences
+are retained rather than excluded. Root separately collects shutdown access
+violation exit -1073741819; this is not a clean process or aggregate pass.
+
+The NEW saved-room capture2 supersedes that baseline timing failure with actual
+receipt `53505701bef8438cd0685e8755504aa785c50025c34c71a54ce0ef6316588833`
+and root-collected native exit 0. Before PIE, the two measured child populations
+and complete actor-path set stabilize; both full snapshots contain 11,260 actors
+with zero exact deltas. All nine ordinary images, renderer/viewport restoration,
+fresh crew and file/save/ship/quality guards pass. The original failure and raw
+additions remain retained; this verifies the fresh loaded-world comparison,
+not global streaming completion or a gameplay/performance pass.
+
+Root and independent review of all nine actual images rate the furnished T room
+approximately 7.5–8/10. The five mounted service titles and complete illustrated
+subjects read clearly, darker hardware separates from the textured white floor,
+and the glass Phoenix remains a strong side-view focal point. The upper room is
+too dark compared with the floor, and the busy central control assembly competes
+with the ship from the entrance. Gentle upward fill from existing fixture
+housings and a separately bounded decorative-worktop cleanup are proposals;
+neither is saved or visually accepted. A six-view UNSAVED comparison is prepared
+to isolate three upward fills, then those fills with all four Phoenix children
+30 cm higher and two subdued decorative WorkPlan slots. The neutral yaw pivot,
+functional Flight plate and service actions remain intact; measured ship
+geometry leaves 19.6 cm below the glass ceiling. Actual bounce, hotspots and
+hero visibility still require the comparison pixels. The editable map remains `03852cf1…`,
+and the owner/whole-room 9/10, gameplay, canonical promotion and published build
+gates remain open.
+
+UpperFillPreview1 then fails before lights or images on a broad bounds lookup;
+its native shutdown access violation and exact unchanged saved scene are retained.
+UpperFillPreview2 corrects the lookup to the three measured housing rows and
+produces four ordinary baseline/fill-only images, receipt
+`14d39eb7c947d12e55e91aec5f812c9f78e8b5d44a60c7119c827b26fd6572ff`.
+Actual pixel review rejects the 700-lumen/specular-zero fill as negligible.
+The combined comparison stops on tiny native relative-XY roundtrip changes
+while raising/restoring one attached ship part; precise PIE restoration fails,
+although the final editor has zero deltas and files, saves, ships, crew and
+quality remain unchanged. Root separately collects shutdown exit -1073741819.
+Neither attempt is saved or reported as an aggregate pass.
+
+NEW3 completes six actual ordinary images, receipt
+`a26fa718754ff2ee189ddcf5144ac3e50564310b02256a86baeb1687fa679ae9`.
+The same three physical mounts use
+1,400 lumens, specular scale 1 and 1,300 cm attenuation. Direct native relative
+property writes now retain exact local ship fields and restoration. All six
+warmed native world-height checks pass; raised geometry spans Z174.64–260.90
+within the glass. Full editor comparison has zero deltas, and files, saves,
+ships, crew, quality, renderer and viewport restoration pass. Root separately
+collects shutdown exit -1073741819; this remains an aggregate process limitation.
+Root and two independent actual pixel reviews reject saving the lamps: upper
+room gain is negligible, with mainly the pendant stems brighter. No major new
+floor hotspot is visible. The higher Phoenix and quieter decorative WorkPlan
+give modest useful focal-point separation and remain selected unsaved candidates.
+Whole T is approximately 8/10, below 9; the editable map remains unchanged.
+The next architectural finish candidate targets the existing canopy surfaces,
+whose native dark aluminium and black mirror slots remain unchanged. The exact
+dominant visible material role and an accepted satin finish are not yet proved.
+
 At2026-10-07T04:49Z the owner supersedes the04:23 comparison-only scope and chooses
 textured low-gloss white across the full station; rust must go beyond T. The
 retained comparison remains unchanged. Main1 now saves the measured1,022 main
@@ -955,5 +1021,6 @@ Those follow the floor check; exact service actions and access remain intact.
 No new rotation mechanism, light or geometry belongs to the saved material finish.
 Saved implementation, visual quality, owner approval and published build remain
 separate; the latest ordinary saved angle is approximately8/10, while the prior
-nine-view whole-room assessment is7–7.5/10. The lead's required9/10 gate remains
+nine-view whole-room assessment is superseded by the current7.5–8/10 assessment
+above. The lead's required9/10 gate remains
 open. No9/10 room or gameplay/package pass is claimed.
