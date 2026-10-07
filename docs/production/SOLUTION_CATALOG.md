@@ -56,6 +56,15 @@ its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
 
 ### LIB-20261007-ROOM-AD-CAROUSEL — five illustrated campaigns per room
 
+- **L/source tooling update,2026-10-07T23:36Z:** five L families are packaged as
+  eight unchanged source files in `LoungeCampaigns20261007`; Spousal Abduction and
+  Dock Drink Dock remain owner originals, with three existing illustrated families.
+  Aspect alternatives count once. The saved L loop still has four. R/Market/L
+  source inspection and guarded unsaved texture staging now have a reusable helper;
+  nine source/test-double checks pass, native staging remains unrun. Ship & Parts
+  belongs to T, so no separate showroom campaign job is established. No acquisition,
+  installation, physical fit or owner-approval claim follows.
+
 - **Market source update,2026-10-07T23:10Z:** unchanged Cosmic Tacos plus new
   Moonjar Pantry, Anchor & Saucer, Relatively Good Clocks and Rock Solid Companions
   fill five distinct retail-ad source slots. The four builtin-imagegen outputs,

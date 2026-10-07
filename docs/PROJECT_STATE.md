@@ -1,5 +1,14 @@
 # SpaceSurvival project state
 
+**October7 23:36UTC source staging:** L now has a packaged five-campaign source set
+(two unchanged owner originals plus three existing families, eight files including
+variants). Its installed loop remains four. The new import-inert source checker
+and explicit five-texture staging helper pass nine targeted tests and all three
+R/Market/L manifest inspections; native staging is UNRUN. The helper never assigns
+or saves assets. T and central are excluded. This adds no saved scene or linked build.
+[Usage](STATION_EDITING.md#preparing-a-rooms-five-ad-sources) and
+[source receipt](validation/2026-10-07-room-ad-source-sets.md).
+
 **October7 23:10UTC source artwork:** R customization and Market now each have
 five distinct campaign sources. R preserves three owner originals and adds
 Vacuum Valet/First Contact Photo Co.; Market preserves Cosmic Tacos and adds

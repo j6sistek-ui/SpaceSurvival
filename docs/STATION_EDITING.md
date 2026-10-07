@@ -34,6 +34,36 @@ Additional models still need a visual/performance check. The bartender's separat
 bounds-scale4 workaround is specific to her measured rig/clip; do not copy it to
 every NPC.
 
+## Preparing a room's five ad sources
+
+`Scripts/StationAdCampaignSet.py` checks a manually reviewed five-campaign manifest
+without importing Unreal or changing files. With the existing Python runtime, run:
+
+```powershell
+python -B Scripts/StationAdCampaignSet.py <manifest5.json> <reviewed-SHA256> --room R
+```
+
+Use `--room Market` or `--room L` for those rooms. The prepared private folders are
+`.agent/local/StationRefinement/CustomizationCampaigns20261007`,
+`MarketCampaigns20261007` and `LoungeCampaigns20261007`; their exact reviewed hashes
+are in the [source-set receipt](validation/2026-10-07-room-ad-source-sets.md).
+The checker verifies the selected files and declared campaign identities. Different
+hashes or IDs do not prove different campaigns; that still requires artwork review.
+Aspect variants count once. Changing the selected variant requires a new manifest
+review and hash. The current lounge selection is portrait; its landscape alternatives
+are preserved separately, and neither selection establishes physical screen fit.
+
+When native work is authorized, the lead may explicitly call
+`stage_textures(unreal, manifest_path, reviewed_sha256, room_id, stage_id)`.
+It creates five **unsaved** textures in a fresh room-specific folder beneath
+`/Game/OutpostSandbox/StationRefinement/`, using sRGB/BC7 and clamped texture edges.
+All destinations must be absent before the first import. It excludes T and central,
+never overwrites, assigns a screen, changes an actor or saves a package. On failure,
+preserve `StageError.report` and inspect partial imports before choosing the next
+action; do not retry under a new name to hide them. Texture compilation, native
+dimensions, screen ratio/readability, all five cycle transitions and explicit saving
+are separate subsequent checks. Native staging is unrun at this source checkpoint.
+
 ## Current station in Blender
 
 Use **SS Prefabs > Export Current Station to Blender**, then **SS Link > Scenes > Open Current Wayfarer** in Blender. The loaded snapshot has 12,315 mesh placements: 7,172 editable direct placements and 5,143 locked references, including 924 apartment placements, from 423 unique assets. Move direct placements with **Push Selected**; edit the functional Blueprint assemblies, doors, lighting and animation in Unreal. See [Prefab live link](PREFAB_LIVE_LINK.md#current-station-workflow-ss-link-050) for the preservation checks. The full station is open in Blender and saved as `Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend`; the previous Blender scene remains in that file.

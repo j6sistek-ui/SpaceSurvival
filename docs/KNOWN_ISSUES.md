@@ -179,6 +179,16 @@ No new display import/assignment/fit/cycling or owner acceptance is claimed.
 Lead still owns native integration and remaining room allocations; the source
 files do not implement the fictional advertised services.
 
+**October7 23:36UTC source integration preparation:** L's five-campaign set is
+packaged without changing its accepted room or four-campaign saved loop. Together
+with R/Market, each confirmed room now has five source families; Ship & Parts is
+inside T, not a separately established showroom. The guarded source checker and
+unsaved-texture staging helper pass nine targeted tests; native staging remains
+unrun. Next lead action after editor access resumes is recovery readback, actual
+R/Market ad-host selection and ratio/readability/cycle verification. Preserve
+functional controls; Home/Cargo screen advertising purpose is still unconfirmed.
+T choice stays held, and all room/owner acceptance remains open.
+
 ## October6 owner station refinement
 
 **October7 20:20UTC owner refinement — lead-owned, OPEN:** central reception needs
