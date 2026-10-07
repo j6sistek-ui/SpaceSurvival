@@ -1,8 +1,8 @@
 # Operations display integration — 2026-10-06 owner session
 
-Recorded at 2026-10-07T02:03Z; partial service and offline-art evidence updated at 2026-10-07T06:36Z.
+Recorded at 2026-10-07T02:03Z; actual saved Art3 visual failures updated at 2026-10-07T08:36Z.
 **PARTIAL: saved displays, supported density and graphite podium pass their
-implementation/preservation checks; whole T room rates6–6.5/10 and remains owner-unapproved.** This is a T Operations presentation
+implementation/preservation checks; actual Art3 room remains about7/10 with mirrored/obstructed side art and T remains owner-unapproved.** This is a T Operations presentation
 pass on the separate owner preview. The accepted L lounge, canonical runtime map,
 published build and gameplay service behavior are not changed.
 
@@ -757,16 +757,167 @@ service or hardware. Native shader compilation, fit, orientation and readability
 remain distinct pending gates. The earlier fullsize ordinary image at actual
 1600×900 was rated6.5–7/10 before this opaque save; it does not rate the new finish.
 
+## Preserved display-fit and capture failures — 2026-10-07T08:05Z
+
+Art1 is now a native exit0 failure before imports/saves, superseding its prepared
+status above. Receipt `4d996c293e710a6980925de04f7a5a3067579511933d982a67eaeb767ab7e15e`
+preserves the current Opaque2 map/private assets and saves. The actual Part3
+source has7668 triangles/3836 vertices, within the unchanged20k/40k bounds.
+The assumed coordinate-axis projection selected a narrow bevel; it did not
+establish a useful LCD. All original Art1 inputs remain immutable.
+
+Art2 also fails before imports/saves with root-collected native exit0 and
+preservation PASS, receipt
+`00a6044c4a6898332301e2a5eddc0c4f84ea75e6a9b28a247921269863a2d81f`.
+It records complete bounded native geometry before fitting, then measures the
+dominant actual triangle plane and per-display upright viewer basis. The
+proposed image-square edge samples cross real surface cutouts, so the strict
+121-point support guard rejects them. No image is imported and the private
+artwork namespace remains empty. Art3 preparation uses those retained triangles
+offline to find a supported inner rectangle; no wider budget or repeated
+inventory is authorized by this repair. Actual shader/orientation/readability
+remain pending.
+
+FinishCapture1 fails before map load/images/editor snapshot on an unclassified
+exact EngineResources/Black.uasset dependency. The root collects an access-
+violation shutdown exit; there is no clean native capture or aggregate editor
+preservation pass. Its launch-error SHA256 is
+`0902c233438f62d2bee82029353c018ed8f076da5c0a37d55b4e10d9dbee16d1`.
+NEW Capture2 source audit
+`a7bd73be6a6aceaef3405eab1cb9ef5e1240070ae0189c26df18ce028878b640`
+independently classifies and verifies all1602 current/prospective protected
+paths: six exact Engine dependencies, four exact owner art references, two
+fonts and seven verified content junctions. It grants no blanket Engine or
+external-folder exception. Wrapper
+`e613060a0682f3a36d7a203952699f133f2f7a118eeeb761df0b49bc4ab8a593`
+retains the six actual-PC views and exact same-loaded typed scene guards.
+Only the successful Opaque2 branch is currently eligible; native images remain
+pending. This source/audit pass does not rate the new room finish.
+
+## Saved opaque finish pixels and supported inner rectangles — 2026-10-07T08:19Z
+
+FinishCapture2 supersedes the pending capture status above. The root collects
+native exit0 and success: six actual-PC1600×900 views, all1573 protected files,
+three saves, ship poses and the exact same-loaded editor scene remain unchanged.
+The persisted delta artifact has count0 and PIE stops. Manifest SHA256 is
+`c709af07f2b33adc0e830c423858b57bcb52d71ba1c54a1634383bf997150587`;
+the saved map remains Opaque2 `f8b49d938...`. These are current saved-preview
+images with temporary cameras; all four original alien operators remain, the
+new mixed crew is uninstalled, physical rings are unfinished and the new five
+service illustrations remain unimported.
+
+The root inspects all six images and rates the room about7/10. Graphite/satin
+side hardware and the clean podium improve the presentation. The under-ceiling
+area remains dark relative to the selected white floor. The specialist checks
+the actual Flight and Pilot close-ups: competing native diagrams are visible
+through the translucent central insert, while the side screen shows a busy
+generic native visualization. T has not reached the lead9/10 gate; the floor
+choice, room lighting and published build are not changed by this assessment.
+
+NEW Art3 is prepared against that exact saved Opaque2 producer, not a future
+floor save. Immutable Art2's complete7668-triangle/3836-vertex source is reused
+without another native inventory/export. Exact source bytes, plane/face IDs,
+four native placements and original material slots are revalidated before
+imports. Three supported square image regions measure50.55cm and the fourth
+51.40cm. Full illustration aspect is preserved with letterboxing. In addition
+to121 actual triangle samples, a continuous projected-triangle union check
+covers every vertex/edge-intersection/rectangle-crossing interval. An offline
+0.001cm slit test passes the sparse samples but is correctly rejected by this
+continuous guard. Strict20k/40k limits remain unchanged.
+
+The retained inner-fit plan is
+`dc3ed7a1103219d483d225df1460462241f8633563dbb46d0ce0c5de3812bfcd`.
+The author source/receipt gate verifies1617 protected files using the actual
+producer schemas. This is a CPU check, not native import or save evidence.
+Area-summation diagnostics differ at machine precision between Python runtimes;
+both records remain, while exact physical plane/face identities and independent
+strict support predicates remain mandatory. No generic scene tolerance is added.
+
+The central existing64×24cm mount receives only a private artwork material copy:
+opaque instead of translucent, gain1.5 instead of6, unchanged UV/custom code and
+all other native graph connections/defaults. The original source stays intact.
+Art3 remains exactly ten proposed private assets/five existing slots, zero new
+actors/lights/services. Native shader compilation, actual rendered orientation,
+readability, save preservation and whole-room quality remain separate pending
+gates. Failed Art1/2 and FinishCapture1 inputs/receipts are preserved.
+
+## Art3 saved author and failed shutdown — 2026-10-07T08:27Z
+
+This supersedes the prepared Art3 status above. Root and independent source
+reviews pass, followed by a saved author receipt with success/preservation true,
+exactly ten private assets/five existing slots and no Python errors. Receipt
+SHA256 is
+`5eac150f83215f6ac3a97f741b77537bd5623f5b11282874f70e0358331c7121`;
+the saved preview is
+`eeffd79b164aa1d868f9f4935b6b9e8be272734a9a2bdca98f5964d1bf7ae54b`.
+All1617 protected files, original sources, Floor6 child maps/materials, private
+Opaque2 finish assets and three saves remain unchanged. Independent CPU
+readback verifies every saved asset hash and the exact five-slot count.
+
+Actual UE support readbacks pass121 samples and continuous coverage for all
+four inner rectangles. Four side shader compile-error arrays are empty; the
+central private graph and compilation pass their exact output/default checks.
+Only that private Flight material becomes opaque/gain1.5, with the original
+translucent/gain6 source and UV/custom code retained. No mesh, actor, collision,
+light, service/action, floor or NPC change occurs.
+
+The root collects native exit-1073741819 after normal subsystem/log shutdown.
+This is a saved author verification with a failed native-process outcome, not
+a clean aggregate PASS. NEW Capture3 reloads the actual Art3 producer and its
+assets for six same-angle actual-PC images. Wrapper
+`be341a3085e94ccf8475a90e6b7bc5b30d09eb94dd48162d78987c0a46a75f21`
+and classifier audit
+`91636e8c86087bec13a24835368f50f0c2966dbd897e89681826b079ed27b441`
+pass independent source review/full1620-path classification and digest checks.
+Fresh orientation, readable whole illustrations, competing-underlay removal
+and whole-room quality remain pending; the previous about7/10 rating applies
+to Opaque2 before this artwork save. No T9/10, owner approval or publication
+is inferred from the save or source review.
+
+## Saved Art3 actual visual review — 2026-10-07T08:36Z
+
+Capture3 reloads Art3 and delivers all six actual1600×900 images. Manifest
+SHA256 is `f54f5fabbbda731198b6db50a87090c5555b5fd40abcd77600a2e85b63cc707e`;
+files/saves/ships and exact same-loaded editor state are unchanged, with zero
+scene deltas. Root again collects nativeA5 after shutdown. The preserved
+rendered/readback evidence is distinct from the failed native-process exit.
+
+Root and independent reviewers inspect all six images. Flight's opaque insert
+removes the competing underlay and its title reads, but the Phoenix illustration
+is dim. Pilot close view06 clearly mirrors the title horizontally; top/bottom
+hardware rails obscure the square composition. A vertical inversion is not
+proved. The source plate is upright. The measured projection used
+`cross(up,normalTowardViewer)`, which is opposite UE camera-right: the actual
+north-facing close camera has world-right−X while that shader's basis points+X.
+Continuous LCD triangle support did not establish visibility through the frame.
+Whole T remains about7/10, not the lead9/10 gate or owner acceptance.
+
+NEW Art4 is preparing correct viewer handedness and a complete illustration-led
+4:1 strip inside the clear upper window, reusing the retained native LCD data.
+Each complete source hero is uniformly scaled, with the existing service name
+and subtitle beside it; no crop, silhouette warp, fake stats or new service.
+Native whole-frame BVH footprint checks are bounded author preflight, not a new
+inventory or raised export budget. Original Art3 packages and the white floors
+remain protected. Private display gain may increase from1.5 to3.5; actual
+brightness/readability and frame clearance still require new saved pixels.
+
+Current saved producer is the unrelated one-threshold floor repair2, receipt
+`67bf51f6ce0629c6d719c7b9b0bb42039ed07be8ea91919ff50c8c7fd2a8b0a2`,
+preview `fb3d5ed7ee58afc3e90044cec21a4428022a7224f9d7b1fa71e0d65bab3ff3b2`.
+It retains every Art3 package. Future Art4 must bind that actual producer rather
+than mutate the stale Art3 map hash. Four original alien operators remain in the
+saved scene; mixed-crew previews and physical standing rings are unfinished.
+
 ## Open / Check / Still open
 
-- **Open:** the separate owner preview at the saved Opaque2 hash above; this is not a
+- **Open:** the separate owner preview at the saved Threshold2 hash above; this is not a
   canonical-game or itch update.
-- **Check:** validate the actual Part3 display fit, then review
+- **Check:** repair mirrored/rail-obscured illustration mapping, then review
   actually fitted service graphics, saved private desk finish and standing-ring pixels
   alongside the saved white-floor coverage before judging the revised T room.
 - **Still open:** T room visual acceptance, noisy workstation/rendered highlights,
-  broad-panel detail, clear service desks/rings, a clean post-floor capture and
+  broad-panel detail, clear service desks/rings, fitted illustration capture and
   the remaining full-station white-floor coverage.
-  Pre-finish T was6.5–7/10; the current opaque finish is unrated against the lead9/10 goal. The owner accepted L8/10 for now;
+  Pre-finish T was6.5–7/10; current saved opaque finish is about7/10 against the lead9/10 goal. The owner accepted L8/10 for now;
   this display pass does not extend that acceptance to T. RPT-20261006-04 in
   [KNOWN_ISSUES](../KNOWN_ISSUES.md) remains the authoritative owner-acceptance log.

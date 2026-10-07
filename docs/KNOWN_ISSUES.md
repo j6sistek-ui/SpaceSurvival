@@ -197,7 +197,39 @@ read-only/native0 and proves the selected glass slot is a narrow light strip;
 artwork must fit a proper screen face. T9, saved crew fitting and service-marker
 completion remain open.
 
-**October7 08:03UTC saved-preview update:** Opaque2 passes/native exit0,
+**October7 08:58UTC floor and crew update:** Threshold2 passes/native0 and saves
+the omitted cargo entrance Cube in white through one private child slot and one
+main instance reference (receipt67bf51f6/Mainfb3d5ed7). Exact materials, scene,
+source files, player saves, geometry and collision are preserved. Two fresh views
+confirm the rusty floor is white; capture preservation/zero-delta checks pass,
+but native shutdown exits0xC0000005. This closes that specific brown-floor defect,
+not full-station final visual acceptance. Art3's six actual views also preserve
+all files/saves/ships/scene, with failed native shutdown retained: Pilot art is
+mirrored/frame-obstructed and Flight is dim. Art4 rejects the actual frame window
+before any imports/saves, with native0/preservation true and the map unchanged;
+four physical framed overlay screens are being prepared instead. Crew4's six
+unsaved views show complete heads/boots and natural human/robot silhouettes,
+with all three animation lifecycles restored, zero scene deltas and unchanged
+files/saves/ships; native shutdown fails separately. Actual full-loop furniture
+contact, saved mixed crew and physical service markers remain open.
+Lead's T review stays about7/10; no T9 or published-build change.
+
+**October7 08:29UTC historical saved-preview update:** Art3 saves five fitted
+illustrated service displays/ten private assets with successful saved and
+preservation evidence, preview`eeffd79b`/receipt`5eac150f`. Native shutdown exits
+`0xC0000005`; retain that failure separately from the verified save. Fresh-reload
+Capture3 is running and artwork appearance remains unaccepted. The previous clean
+Capture2 confirms satin/graphite hardware improvement and exact scene/file/save/
+ship preservation; lead and independent T review is about7/10. One omitted brown
+cargo entrance floor remains: Threshold1 made no changes, rejecting an original-
+versus-private-clone graph comparison; Threshold2 uses actual same-loaded evidence
+and is ready after the display capture. CrewPreview3 produces six temporary
+human/robot views, but camera cropping and animation-restoration failure prevent
+contact or preservation acceptance. Lead owns full-body Crew4 review, actual
+contact, saved mixed crew, standing markers and final T review. No T9/10 or
+full-station visual completion is claimed; published build remains unchanged.
+
+**October7 08:03UTC historical saved-preview update:** Opaque2 passes/native exit0,
 saving58 private satin/graphite materials on57 existing actors/145 hardware slots
 with geometry, lighting, services, original content and saves preserved. FloorCapture7
 passes/native0 with nine actual views; apartment/cargo panels and stair detail are

@@ -1,24 +1,50 @@
 # SpaceSurvival project state
 
-**October7 07:49UTC latest saved preview:** Opaque2 passes/native exit0 and saves
-`f8b49d938fa53f93e5fb5ca666108185bcd41419682257003cdec8c851afbd89`
-(receipt7368247a5ebfbe77842a2cd0777eeb6ac236c5230729c8521327032f1ef70123):
-58 private satin/graphite materials,57 existing hardware actors/145 opaque slots,
-no geometry, lighting or service changes, floors/originals/saves preserved. Fresh
-whole-room appearance is pending. FloorCapture7 passes/native exit0 with nine
-actual saved-floor views and scene/file/save/ship preservation. Apartment/cargo
-floor detail and stair treads are white; one brown cargo entrance threshold is
-identified as an omitted floor cube and awaits a targeted repair. Art1 fails
-before import/save on the actual LCD projection axes; no panel integration is
-claimed. SeatSupport3 preserves the scene/files/saves but fails its seat-centre
-predicate, then crashes during shutdown. Human/robot seating remains unsaved.
-October7 08:03UTC: FinishCapture1 fails before map load on an omitted exact
-EngineBlack source classification and crashes during shutdown; it produces no
-images or saves. A new complete path-audited capture is prepared. Art2 exits0 but
-fails its measured image-footprint check before imports/saves; actual rounded
-screen edges require a smaller supported rectangle. Complete native geometry is
-retained for an offline repair; the saved preview remains unchanged. The brown
-cargo threshold and mixed-crew fit remain open.
+**October7 08:58UTC latest saved preview:** Threshold2 repairs the one omitted
+cargo entrance floor with native exit0 and exact scene/material/file/save
+preservation. Main preview is
+`fb3d5ed7ee58afc3e90044cec21a4428022a7224f9d7b1fa71e0d65bab3ff3b2`;
+receipt`67bf51f6ce0629c6d719c7b9b0bb42039ed07be8ea91919ff50c8c7fd2a8b0a2`.
+One existing material slot changes in a new private cargo child, and one existing
+main-map instance reference changes; no material, geometry or collision is added.
+Two fresh views confirm the rusty threshold is white. Their preservation checks
+pass with zero scene deltas; native capture shutdown exits0xC0000005, retained
+separately. Full-station scoped material implementation is advanced, while dark
+foundation coverage and final owner appearance acceptance remain incomplete.
+
+**October7 08:29UTC display update:** Art3 saves five illustrated existing
+service displays through ten private assets at preview
+`eeffd79b164aa1d868f9f4935b6b9e8be272734a9a2bdca98f5964d1bf7ae54b`;
+receipt`5eac150f83215f6ac3a97f741b77537bd5623f5b11282874f70e0358331c7121`
+reports saved/success/preservation true. Native shutdown nevertheless exits
+`0xC0000005` after normal subsystem/log shutdown; this is retained as a failed
+process exit, not a clean aggregate pass. Fresh-reload six-view Capture3 confirms
+the save with exact scene/file/save/ship preservation and zero deltas, but also
+exits0xC0000005 during shutdown. Actual Pilot artwork is mirrored and obstructed
+by the physical frame; Flight is readable but too dim. Art4 then rejects the
+measured front-frame window before importing anything: native exit0, preservation
+true, zero assets saved and Main remains the Threshold2 hash above. Raw candidate
+rays are retained. Four physical satin-framed overlay displays with known UVs are
+being prepared on the existing hardware; artwork appearance remains unaccepted.
+The previous clean Capture2 shows
+improved satin/graphite hardware and the intact Phoenix podium, with exact scene,
+file, save and ship preservation. Lead and independent review rate that T view
+about7/10; native graph underlays, crew and physical service markers still need work.
+FloorCapture7 passes/native0 with nine saved-floor views. Apartment/cargo panels
+and stairs retain white detail; its omitted brown threshold is repaired above.
+Threshold1 stops before changes on an original-versus-private-clone graph identity
+comparison; its failure remains history.
+CrewPreview4 supersedes the cropped Crew3 views: six unsaved human/robot images
+show complete heads/boots and natural bent-knee silhouettes. Its receipt
+`854e3d6f7a388ec1750f5759870b27b60f6a05422430bf7413d66b98a752bafb`
+verifies all three animation lifecycles restored, zero scene deltas and unchanged
+files/saves/ships. Native shutdown still exits0xC0000005. Actual full-loop chair
+seat/back/armrest contact is pending; no crew substitution is saved. Whole T
+remains about7/10, not its9/10 gate. Physical markers are prepared offline only.
+The earlier Art1/2, capture and support failures remain immutable history.
+Source checkpoint`2a7c60e1bb5d74ec71664c682f58219e1b642e67` is pushed to existing
+open draft[PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69), unmerged.
+Latest local recipes/evidence are not all checkpointed; no new package is published.
 
 **October7 07:32UTC working update:** Final6 saves the white-floor main preview at
 `c0c25d69e16342dadc274976b1e4c81b8d46130ee98b7b8bc3310f03d5058f50`;

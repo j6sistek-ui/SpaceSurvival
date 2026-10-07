@@ -534,6 +534,106 @@ open until this threshold is saved and its actual pixels are checked.
 | Capture7 exact editor-scene deltas (zero changes) | `a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f` |
 | Capture7 Cargo07 actual brown threshold image | `638b44ba4900f05d16e0fd501c3a3a4ab36dde2ebcaae286a299063ab86be4b5` |
 
+## Saved opaque finish and six-view review
+
+At2026-10-07T08:07Z FinishCapture2 completes six actual1600x900 player-camera
+PNGs and root collects native exit0. Its manifest is
+`c709af07f2b33adc0e830c423858b57bcb52d71ba1c54a1634383bf997150587`;
+source files, saves, ships and the editor scene remain exact, with zero editor
+deltas. It shows the saved Opaque2 preview`f8b49d93`, whose native0 author
+receipt`7368247a` records58 private assets and145 material slots on57 actors.
+All six images are independently inspected. The graphite podium now reads
+as clean metal with a recognizable complete Phoenix focal point; the white
+floor retains panel seams and relief. Desk finishes improve, but the native
+cyan screen graphics remain busy and obscure service identity, especially
+the Pilot close view. The two bank overviews show hardware layout but do not
+prove fine-copy readability. The bright floor and dark ceiling still create
+strong contrast. Both lead and specialist rate the room about7/10; the9/10
+gate remains open. Floor and light settings are retained.
+
+FinishCapture1's omitted exact EngineResources/Black source classification,
+zero images and native shutdown crash remain retained. Art1 and Art2 fail
+before import/save on actual LCD plane/footprint guards; no new fitted
+five-service artwork is shown by this successful capture. The next visual
+correction is clear mounted illustrated service identity, followed by the
+actual mixed-crew fit/contact and standing rings; that is not inferred from
+the saved material finish.
+
+Art3 subsequently saves all ten private assets and five existing display slots,
+with source/save preservation passing and preview hash`eeffd79b`. Its saved
+receipt is`5eac150f83215f6ac3a97f741b77537bd5623f5b11282874f70e0358331c7121`.
+Root collects a native access-violation exit after shutdown; this is retained
+and the run is not called an aggregate clean native pass. Its fit reuses the
+retained complete7,668-triangle/3,836-vertex source and checks four supported
+inner rectangles using121 samples and continuous native triangle coverage.
+The central supported insert's private copy is opaque with gain1.5 to suppress
+the observed competing underlay; its original shader/UV connections and source
+bytes remain protected. Fresh saved player-camera pixels are pending; the
+previous room score is not raised from these authoring checks.
+
+At2026-10-07T08:11Z the one-threshold author stops before loading a child or
+saving any asset/map. Its receipt`14fe9e4e` preserves all source/save files and
+the saved Opaque2 preview; native shutdown fails separately. The failed guard
+compared the source master directly with Main1's historical private-clone
+``before`` graph, including different asset/node paths. Main1's saved material
+bytes and parameters are unchanged. New attempt2 retains the failure and
+uses exact four material-file digests, current inherited parameter/parent
+readbacks and typed graph snapshots before/after the same session. It creates
+no material and still changes only the measured Cube and one Main instance
+reference. Native save and matched threshold pixels remain pending.
+
+At2026-10-07T08:28Z FinishCapture3 completes all six fresh saved-Art3
+1600x900 PNGs, manifest`f54f5fabbbda731198b6db50a87090c5555b5fd40abcd77600a2e85b63cc707e`.
+Files, saves, ships and the same-loaded editor scene remain exact, with zero
+deltas. Root collects a shutdown access violation separately; this is not an
+aggregate clean native pass. Independent inspection verifies all six PNG
+hashes/dimensions and agrees with the lead's approximately7/10 assessment.
+Flight's competing underlay is removed and its title reads more clearly, but
+the illustrated subject is dim. Pilot's close view is horizontally mirrored
+and its title/footer are obstructed by existing hardware. Triangle support
+does not establish unobstructed visibility through that hardware. Other panels
+are also dark at room distance; the white floor/dark ceiling contrast, sparkling
+edges and soft image remain. Private material orientation/visible-window and
+brightness corrections are next; no geometry, floor or lighting rollback is
+justified by this review.
+
+The corrected Threshold2 author then passes, and root collects native exit0.
+Receipt`67bf51f6ce0629c6d719c7b9b0bb42039ed07be8ea91919ff50c8c7fd2a8b0a2`
+saves one new private Cargo map with only the exact Cube's material reference
+changed, then one existing Main LevelInstance world reference. The preview is
+`fb3d5ed7ee58afc3e90044cec21a4428022a7224f9d7b1fa71e0d65bab3ff3b2`;
+the new Cargo map is`65362fa46045cfe3bbe40ef0ee88ac9d91ad04a09fc5fdfa1a31d70bd2fce9fa`.
+No material is created or rewritten. All115 native parameters, the three white
+values, parents and current same-session graphs remain exact; original child,
+asset, save, geometry, collision, light and source-CDO guards pass.
+
+At2026-10-07T08:33Z ThresholdFloorCapture2 completes both actual1600x900
+player-camera images, manifest`2ad29370868bbba89ac17be00dec0f3cc84f7e9c1cd591202c508c55e9798cad`.
+All protected files/saves/ships and the same-loaded editor scene remain unchanged,
+with zero deltas. Root again collects a shutdown access violation separately.
+Root and specialist independently inspect both matched hatch and threshold-close
+views: the previously brown walking plane is now diffuse white, while bulkhead
+wear, frame colors and the interior grilles remain. The original Cube has no
+authored panel texture; its plain surface is not evidence of lost panel detail.
+The measured omission is corrected and saved. These two views do not establish
+complete mixed-foundation lighting/mask visibility, owner-device performance or
+T9 acceptance.
+
+The bounded read-only capture audit records current`r.HighResScreenshotDelay=4`
+before/after every FinishCapture3 frame. Warmup occurs at1014x344; capture requests
+1600x900. The prior paired native observer's actual high-res draw records TSR
+method4, enabled AA/TemporalAA flags, a ViewState, nonzero jitter and no camera
+cut. AA is therefore not shown to be disabled by this path. Epic's current5.8
+[console-variable reference](https://dev.epicgames.com/documentation/unreal-engine/unreal-engine-console-variables-reference)
+documents a default delay4 and disables TemporalAA below that default. Installed
+headers expose the capture interfaces but the private implementation is absent;
+history-reset/convergence behavior is unconfirmed, not an established cause.
+The retained ordinary1600x900 draw is also noisy. Keep identical high-res frames
+for bounded comparisons; future acceptance should use the existing full-size
+ordinary Shot route warmed at its actual output resolution, with its known
+next-tick log-flush proof repaired. No new renderer run or quality/light/source
+change belongs to this audit.
+
 ## Still open
 
 At2026-10-07T04:49Z the owner supersedes the04:23 comparison-only scope and chooses
@@ -546,8 +646,10 @@ parameters. Only floor BaseColor/Metallic/Roughness changes. Mixed owner
 foundations and both private child interiors now have saved white-floor
 assignments; the preview references those interiors, and all34 remainder
 materials are saved. Nine remainder views now pass capture preservation and
-are reviewed; one uncovered Cargo walking threshold remains brown and requires
-the bounded correction described above. No full-station
+are reviewed; the one uncovered Cargo walking threshold subsequently receives
+the bounded saved correction and both actual comparison views show white.
+Foundation visibility and station-wide lighting quality remain limited by the
+recorded views. No full-station
 visual completion, current9/10 room
 acceptance, canonical-map promotion or packaged release is claimed.
 

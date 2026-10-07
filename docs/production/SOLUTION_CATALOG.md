@@ -276,16 +276,27 @@ KNOWN_ISSUES owns priority and acceptance.
   measured floor references:90 apartment/cargo components in completed private
   children plus four masked foundation tops, connected through two existing
   instances. Native exit0/preservation pass; nine-view Capture7 passes/native0.
-  Apartment/cargo panels and stairs retain white detail, but one omitted cargo
-  entrance floor cube remains brown and foundation angles give limited coverage.
+  Apartment/cargo panels and stairs retain white detail. Threshold2 separately
+  repairs the omitted cargo entrance Cube through one private child slot and one
+  main instance reference, with native exit0 and exact preservation. Two actual
+  views confirm white; their preservation passes but native shutdown crashes.
+  Foundation angles still give limited coverage and final visual acceptance is open.
   Opaque2 saves58 private satin/graphite materials on57 existing actors/145 slots,
-  preserving native texture variation and other channels; fresh appearance is
-  pending. Earlier4/5 partial-save failures remain documented. Local installed Qwen-Image2.1
+  preserving native texture variation and other channels; six actual saved views
+  confirm improved hardware, while the whole room remains about7/10. Earlier4/5
+  partial-save failures remain documented. Local installed Qwen-Image2.1
   produces five original image-led service plates with real font overlays,
-  prepared/unimported. Actual workstation geometry identifies slot4 as a narrow
-  light strip, so it cannot be treated as an image screen. Existing SciFITrooper
+  prepared as real-font plates. Art3 saves five fitted displays/ten private assets,
+  but actual pixels show mirrored/frame-obstructed Pilot art and dim Flight art.
+  Its save/preservation are verified separately from a native shutdown crash.
+  Art4 rejects the actual frame window before imports/saves, native0 and map
+  unchanged. Four physical satin-framed overlay units with known UVs are being
+  prepared; the original slot4 is a light strip, not an image screen. Existing SciFITrooper
   Man03 and Robot scout R21 supply two saved private seated clips/rig derivatives;
-  actual skin/furniture contact and operator replacement remain unverified.
+  six Crew4 unsaved views confirm natural mixed silhouettes and whole-body
+  framing, with exact lifecycle/scene/file/save restoration. Native shutdown
+  crashes separately. Full-loop skin/furniture contact and saved operator
+  replacement remain unverified; prepared physical standing markers are unrun.
 - **Next check:** preserve the sharp rear displays and accepted L while fitting
   proper service screens, opaque satin hardware and the supplied crew. The active
   owner queue and acceptance gates remain in KNOWN_ISSUES, not this catalog.
