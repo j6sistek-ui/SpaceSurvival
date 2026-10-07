@@ -494,7 +494,9 @@ def main():
         ('SHIP & PARTS',(3450,-4230,130),'Ship merchant display preview. Permanent ship and part purchases are not enabled in this sandbox.')]:
         terminal('Services/'+labelname,pos,u.SSOutpostAction.INFORMATION,desc,yaw=180 if pos[0]>8000 else -90)
     for name,pos in [('PAD / SURVIVAL DEPARTURES',(-1850,-1150,110)),('HUB / SURVIVAL DEPARTURES',(3250,-1030,110))]:
-        terminal('Services/'+name,pos,u.SSOutpostAction.SURVIVAL_BOARDING,'Open the current game departure menu to start or continue Survival.',yaw=180)
+        terminal('Services/'+name,pos,u.SSOutpostAction.SURVIVAL_BOARDING,
+                 'At home, choose Waves or Free Flight at the Phoenix cockpit chair, then sit to depart. '
+                 'At Survival stops, sit in the cockpit chair to continue your current run.',yaw=180)
 
     # Social islands face one another, with roaming crews kept on clear loop routes.
     for name,x,y,yaw,skin in [('Trader A',290,1535,0,'Amber'),('Trader B',790,1700,180,'Jade'),('Botanist',-530,-870,180,'Rose'),('Buyer',1040,-780,0,'Teal'),('Produce shopper',-1170,590,90,'Pale'),('Weighing shopper',50,-600,-90,'Rose'),('Machinery attendant',1850,-1100,180,'Violet'),('Atrium A',4700,750,-90,'Violet'),('Atrium B',4880,610,150,'Amber'),('Lounge guest',3800,3000,180,'Rose'),('Ops officer',8400,-500,130,'Teal'),('Engineer',4400,-3000,-90,'Jade'),('Pilot berth02',-300,-3200,90,'Pale'),('Pilot berth03',-300,3200,-90,'Amber')]:crew('Crew/'+name,(x,y),yaw,skin=skin)

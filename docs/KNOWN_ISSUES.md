@@ -140,6 +140,29 @@ or two posters; larger outer-wall boards prioritize directions, implemented
 mechanics and useful tips. The P1-P5 T display selection remains held for desktop
 review; poor module visibility is owner feedback, not accepted quality. Other
 work continues. Next: reception composition and source-verified information boards.
+Owner also reports all NPC heads are dark and asks for subtle local illumination
+without reflections or spill onto the room. Lead will inspect existing lighting
+channels and test character-only fill using Nwiro's component/visual workflow;
+preserve skin materials and global room exposure. No station-wide lighting pass
+is accepted or saved yet. Owner additionally requires easy adoption for at least10
+future variants: shared defaults and minimal head-anchor/offset overrides.
+At20:53UTC four actual OFF/ON views support the two-staff fill profile and show
+no obvious room spill; the second face points away and other variants remain
+unverified. Both temporary editor lights were removed exactly after the test;
+common ambient-actor implementation now passes Build43 `-NoLink` compilation,
+with shared defaults, automatic head attachment and optional model overrides.
+The loaded Build39 DLL is unchanged; further variants and normal native integration
+remain unverified. The paired warp actor also compiles but is unlinked/unplaced.
+Six purposeful desk
+props/labels and two separated staff poses remain unsaved. Their plaques were
+cropped by the review camera, so label legibility and owner acceptance stay open.
+Two source-verified information boards now have four actors retained unsaved and
+five new private assets saved. The placement guard failure was isolated to scale
+roundoff; all physical points matched. Actual views show full text fits the
+native cases and solid wall hosts. Root and independent review accept the
+brighter two-material-only comparison and the unobstructed overview. Owner
+approval, natural walk-up use and saved level placement remain open.
+See the [central trial record](validation/2026-10-07-central-welcome.md).
 
 **October7 19:51UTC independent work — lead-owned, OPEN:** central welcome's
 unsaved seating/vendor trial now includes four accepted shrubs and two accepted

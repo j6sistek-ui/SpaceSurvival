@@ -283,7 +283,9 @@ def _atrium(ctx, actors):
         ('FLIGHT ENGINEERING', 'SOCIAL  /  LEFT', 'Social lounge: bar, booths and arcade in the left wing.'),
         ('CREW ARCHIVE', 'ARCHIVE  /  RIGHT', 'Crew wardrobe and character archive are in the right wing. Home is through the lower passage.'),
         ('OPERATIONS', 'OPERATIONS  /  AHEAD', 'Flight upgrades, pilot records, contracts and ship services are in Operations, straight ahead.'),
-        ('SURVIVAL DEPARTURES', 'PAD  /  DEPARTURES', 'Choose Waves or Free Flight at the flight mode terminal, then enter the Phoenix cockpit and sit to depart.'),
+        ('SURVIVAL DEPARTURES', 'PAD  /  DEPARTURES',
+         'At home, choose Waves or Free Flight at the Phoenix cockpit chair, then sit to depart. '
+         'At Survival stops, sit in the cockpit chair to continue your current run.'),
         ('OBSERVATION GALLERY', 'OBSERVATION GALLERY', 'Use the existing observation route to the glass gallery above the station.'),
         ('MARKET / BERTHS', 'MARKET  /  BERTHS', 'The market and ship berths are back along the arrival concourse.'),
     )

@@ -1,5 +1,124 @@
 # Central welcome furnishing and vendor trial
 
+2026-10-07T21:32Z [TOOL] Both durable recipes pass actual read-only adoption
+checks against the retained preview. `RootReceptionDurable2_CheckResult.json`
+confirms six props and two staff, including ten countertop support samples;
+`RootInformationDurable1_CheckResult.json` confirms four board actors, five
+existing private assets and brightness8. Board recipe SHA
+`5a0c063cfbda8d9e867e9eee84fca425e4e5206fc5c563f51bd24272caf4d519`.
+These checks leave actors/tags unchanged; fresh replay, mutating adoption and
+level save remain unrun. Two SVG/PNG sources, their deterministic generator and
+provenance are retained in `ContentSource/CentralInformationBoards`. Native
+packages remain private/local. Source and independent reviews pass.
+
+2026-10-07T21:29Z [TOOL] The second actual board comparison is accepted locally.
+Root session97651 exits0 with three2742x781 images in
+`LiveOperationsPIEReview1_CentralInformationBoards5`, manifest SHA
+`1f1b02d3e2d0b9de43ecd9150233828c53ebc2c1424ebaa6ec3bc4a77c3c187c`.
+Only two private material brightness values change2-to8; both close cameras,
+source text, native hardware and placement stay fixed. The overview moves clear
+of the closed door. Root and independent review find complete readable headings,
+cards and footers, no aperture cropping or obvious glare, and an appropriate
+wall-mounted display in the reception context. Natural walk-up interaction,
+owner acceptance and whole-room quality remain open; NPC head-fill source is
+not loaded in these photographs.
+
+Targeted scene/source/map/saves/dirties, camera/axis/view and quality preservation
+pass. `RootCentralBoards5_SaveAssetsResult.json` subsequently confirms exactly
+five new private board assets saved, all eight held T packages still dirty and
+the shared level unsaved/Mainc45 unchanged. This supersedes the capture's earlier
+all-assets-unsaved status; it does not save the four placed actors. The initial
+profile5 rollback had a source-review defect: resetting the inherited value2
+would leave an added scalar override. A separate exact-array restoration
+successor is prepared; it is not invoked because the accepted profile8 is kept.
+
+2026-10-07T21:10Z [TOOL] Shared NPC lighting now lives on
+`ASSOutpostAmbientActor`, with Blueprint-visible defaults, an adjustable head
+anchor/offset, automatic construction/BeginPlay refresh and a callable refresh
+after runtime model changes. Build43 `-NoLink` exits0 after eight compile actions
+in119.97 seconds, including `SSOutpostSandbox.cpp` and the new
+`SSStationWarpGate.cpp`. UHT generates `RefreshReadabilityLighting`. Installed
+UBT source confirms that this mode returns compiled objects before the linker.
+The log remains in `.agent/local/Build43NoLink/Build.log`; existing engine API
+deprecations, newer-than-preferred MSVC and two pre-existing project warnings
+remain. Saved Main SHA `c45dd77376d5a90c90df410ffd733e528c1177d5a05d1c17264799e41037e8b9`
+and loaded/on-disk Build39 DLL SHA
+`582d1fb955480af2d399d19bd393de0340d87657f02f7dafa1f0c658e7472390`
+are unchanged. This is compilation evidence, not linked/native integration,
+all-NPC fit, warp gameplay or release evidence.
+
+`Scripts/RefineStationCentralReception.py`, SHA
+`14ca02cfb0f9dcb4b7da87c652c0b6ac3cf596e613a9b4f1fcf1fdceb4bf0c51`,
+retains the accepted six-prop/two-pose composition. The welcome pass must run
+first, followed by reception with its original welcome rollback state. The
+combined verifier allows exactly the two accepted staff poses while preserving
+the base thirteen roles, four vendor properties, source assets and held-T state.
+Standalone adoption inspection is read-only. Root and peer source review pass;
+native mutating adoption, fresh replay and map save remain unrun. The initial
+read-only adoption check failed its color expectation without changing the scene.
+Actual native readback proves both labels are R245/G235/B220/A255: Unreal's
+positional `Color` arguments use B/G/R/A order. The successor verifies the actual
+accepted warm white and creates it with explicit named fields. This supersedes
+source54b266e8; original failed/read receipts remain retained.
+
+Central information boards remain a separate trial. First preparation rejected
+an oversized Blueprint aggregate bound before mutation. Revision2 checks actual
+populated mesh/instance bounds and successfully compiles five private assets.
+Its first placement fails a composite native state guard and removes all four
+new board actors with no cleanup errors. Assets remain staged unsaved; the
+failure does not identify which field differed and supplies no visual evidence.
+Receipts: `RootCentralBoards1_PrepareResult.json`,
+`RootCentralBoards2_ApplyResult.json` and `CentralInformationBoardsTrial2` under
+the ignored local authoring directories. A diagnostic successor must reuse that
+prepared state and retain actual fields before evaluating the guard.
+
+2026-10-07T21:24Z [TOOL] Revision3 retains all four actual fields: only Y scale
+differs (`2.9999999999999996` versus3); every other field matches and maximum
+physical vertex error is4.547e-13cm. It rolls back cleanly. Revision4 removes
+that redundant tuple equality while retaining the original0.0001cm full-vertex
+placement guard. Apply passes and root capture32709 exits0 with three actual
+2742x781 images, manifest
+`23da45069541602f3c70e9f9172b0aa709837e4bdf6d1f25bb6c94c99d68e31a`
+at `LiveOperationsPIEReview1_CentralInformationBoards2`. Targeted originals,
+source/map/saves/dirties and temporary camera/view/settings are preserved.
+Both complete layouts fit their original monitor apertures and solid-wall hosts,
+but text is too dim. The arrival camera is blocked by a closed door and provides
+no overview evidence. Root and independent review request one bounded gain2-to8
+comparison on the two private material leaves and move only that camera clear
+of the doorway. Four board actors and five private assets remain unsaved.
+
+2026-10-07T20:53Z [TOOL] Purposeful reception and isolated NPC fill trial: root
+session80665 exits0 with four actual2742x781 **UNSAVED_EDITOR_TEST** images in
+`LiveOperationsPIEReview1_ReceptionNPCFill1_OwnerReview1/manifest.json`, SHA
+`12e6be79bf0fecd27e383022df7e07014eb6e8d4733baa0afa473e457044e69a`.
+Two matched cameras observe fill OFF then ON in one natural animation epoch;
+poses and passing NPCs differ. Root and independent visual review accept the
+subtle face/eye-socket/neck improvement without obvious added illumination on
+the counter, floor or walls. The second receptionist faces away, so its frontal
+fit and all other character variants remain unverified. No all-renderer
+reflection exclusion or performance claim follows from these pictures.
+
+The candidate profile uses one head-attached40lm point light per NPC,100cm
+radius and12cm source radius, positioned45cm forward/15cm up in actor axes before
+attachment. Channel2 isolates its direct light; specular, indirect, volumetric,
+reflection/GI flags and shadows are disabled. Only the two PIE character copies
+gain channel2 during the test; player channel1 is unchanged. Runtime receivers,
+light intensities, camera/view/axis, quality, map bytes, dirty packages and saves
+restore exactly. Root subsequently removes both owned editor lights in
+`RootNPCHeadFill1_RestoreResult.json`; the successful manifest's earlier retained
+light state is superseded by that removal. Reusable source integration is next,
+not yet linked, saved into the level or accepted across future models.
+
+The same images show two separated existing staff at check-in/help positions,
+one owned laptop and one owned tablet, plus two mounted role plaques/labels.
+Ten actual countertop triangle samples support both complete tool footprints at
+Z106cm; original materials, conversational clips and existing consoles remain.
+The six additions and two staff poses are retained UNSAVED. Root and peer find
+two plausible service positions; there is no typing/palm-contact claim. Camera
+framing cuts off the role plaques, so room-scale label legibility stays open.
+The owner requests easy adoption for at least10 future NPC variants: shared
+defaults and a configurable head anchor/offset, not separate authored rigs.
+
 2026-10-07T20:20Z [TOOL] `Scripts/RefineStationCentralWelcome.py` preserves the
 accepted composition as an import-inert authoring recipe. It can adopt the13
 existing furniture/shrub/key roles, uses stable tags to prevent duplicates, and

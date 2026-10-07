@@ -5,6 +5,7 @@
 #include "Animation/AnimSequence.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -156,6 +157,8 @@ FString ASSOutpostTerminal::CycleWardrobe()
     if (FSSHeroDefinition::AssetInstalled(Hero.IdleClipPath))
         if (auto *Idle = LoadObject<UAnimSequence>(nullptr, *Hero.IdleClipPath); CompatibleClip(Mesh, Idle))
             Mesh->PlayAnimation(Idle, true);
+    if (auto *Ambient = Cast<ASSOutpostAmbientActor>(PresentationTarget))
+        Ambient->RefreshReadabilityLighting();
     PreviewIndex = Next;
     return FString::Printf(TEXT("CREW APPEARANCE / %s. Hologram preview only; your equipped character is unchanged."),
                            *Hero.Id.ToString());
@@ -480,6 +483,68 @@ ASSOutpostAmbientActor::ASSOutpostAmbientActor()
     DroneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DroneMesh"));
     DroneMesh->SetupAttachment(Body);
     DroneMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    HeadFillLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("NPCHeadFill"));
+    HeadFillLight->SetupAttachment(CharacterMesh);
+    HeadFillLight->SetMobility(EComponentMobility::Movable);
+    HeadFillLight->SetIntensityUnits(ELightUnits::Lumens);
+    HeadFillLight->SetIntensity(HeadFillLumens);
+    HeadFillLight->SetUseInverseSquaredFalloff(true);
+    HeadFillLight->SetAttenuationRadius(HeadFillRadius);
+    HeadFillLight->SetSourceRadius(HeadFillSourceRadius);
+    HeadFillLight->SetLightColor(FLinearColor(1.f, .95f, .9f));
+    HeadFillLight->SetLightingChannels(false, false, true);
+    HeadFillLight->SetSpecularScale(0.f);
+    HeadFillLight->SetIndirectLightingIntensity(0.f);
+    HeadFillLight->SetVolumetricScatteringIntensity(0.f);
+    HeadFillLight->SetAffectReflection(false);
+    HeadFillLight->SetAffectGlobalIllumination(false);
+    HeadFillLight->SetCastShadows(false);
+    HeadFillLight->SetVisibility(false);
+}
+void ASSOutpostAmbientActor::OnConstruction(const FTransform &Transform)
+{
+    Super::OnConstruction(Transform);
+    RefreshReadabilityLighting();
+}
+void ASSOutpostAmbientActor::RefreshReadabilityLighting()
+{
+    if (!HeadFillLight || !CharacterMesh)
+        return;
+    HeadFillLight->SetVisibility(false);
+    if (bHeadFillOwnsChannel)
+    {
+        CharacterMesh->SetLightingChannels(CharacterMesh->LightingChannels.bChannel0,
+                                           CharacterMesh->LightingChannels.bChannel1, bHeadFillPreviousChannel2);
+        bHeadFillOwnsChannel = false;
+    }
+    if (!bEnableHeadFill || bDrone || bAnimationManagedExternally || ActorHasTag(TEXT("OutpostRole:Hologram")) ||
+        !CharacterMesh->GetSkeletalMeshAsset() || HeadFillSocket.IsNone() ||
+        !CharacterMesh->DoesSocketExist(HeadFillSocket) || HeadFillOffset.ContainsNaN() ||
+        !FMath::IsFinite(HeadFillLumens) || HeadFillLumens <= 0.f || !FMath::IsFinite(HeadFillRadius) ||
+        !FMath::IsFinite(HeadFillSourceRadius))
+        return;
+    bool bOpaqueReceiver = false;
+    for (int32 Slot = 0; Slot < CharacterMesh->GetNumMaterials(); ++Slot)
+        if (const UMaterialInterface *Material = CharacterMesh->GetMaterial(Slot))
+            bOpaqueReceiver |= Material->GetBlendMode() == BLEND_Opaque || Material->GetBlendMode() == BLEND_Masked;
+    if (!bOpaqueReceiver)
+        return;
+    if (!HeadFillLight->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepWorldTransform, HeadFillSocket))
+        return;
+    const FTransform HeadTransform = CharacterMesh->GetSocketTransform(HeadFillSocket);
+    const FVector WorldOffset = GetActorTransform().TransformVectorNoScale(HeadFillOffset);
+    HeadFillLight->SetRelativeLocation(
+        HeadTransform.InverseTransformPosition(HeadTransform.GetLocation() + WorldOffset));
+    // Keep physical emitter dimensions when the model's mesh has an authored scale.
+    HeadFillLight->SetWorldScale3D(FVector::OneVector);
+    HeadFillLight->SetIntensity(FMath::Clamp(HeadFillLumens, 0.f, 100.f));
+    HeadFillLight->SetAttenuationRadius(FMath::Clamp(HeadFillRadius, 60.f, 140.f));
+    HeadFillLight->SetSourceRadius(FMath::Clamp(HeadFillSourceRadius, 0.f, 20.f));
+    bHeadFillPreviousChannel2 = CharacterMesh->LightingChannels.bChannel2;
+    CharacterMesh->SetLightingChannels(CharacterMesh->LightingChannels.bChannel0,
+                                       CharacterMesh->LightingChannels.bChannel1, true);
+    bHeadFillOwnsChannel = true;
+    HeadFillLight->SetVisibility(true);
 }
 void ASSOutpostAmbientActor::PlayClip(UAnimSequence *Clip, bool bLoop)
 {
@@ -508,6 +573,7 @@ void ASSOutpostAmbientActor::BeginPlay()
         if (ActiveAnimation && ActiveAnimation->GetPlayLength() > .01f)
             CharacterMesh->SetPosition(FMath::Fmod(FMath::Abs(PhaseOffset), ActiveAnimation->GetPlayLength()), false);
     }
+    RefreshReadabilityLighting();
 }
 void ASSOutpostAmbientActor::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 {

@@ -1,6 +1,6 @@
 # SpaceSurvival project state
 
-**October7 20:20UTC current checkpoint:** saved owner preview remains Mainc45,
+**October7 21:29UTC current checkpoint:** saved owner preview remains Mainc45,
 the loaded module remains Build39, and published0.1.22-alpha/build2048604 is
 unchanged. The owner holds only T wall/display replacement while selecting from
 the complete P1-P5 picker: `.agent/local/Outpost/HoloAssetCatalog1/index.html`,
@@ -12,7 +12,22 @@ trial is unsaved and rejected, not a replacement accepted by the owner.
 The owner now directs central reception toward purposeful check-in/greeting
 activity with fitting tablet/desk props. Central alone permits only one or two
 ad posters; larger outer-wall boards should explain actual mechanics and station
-directions. These new details are being prepared, not yet placed or approved.
+directions. Six desk props/labels and two separated check-in/help staff poses
+are now placed unsaved. Their physical support and service arrangement passed
+review; cropped role labels and hand contact remain unverified. The two helpful
+boards are placed unsaved and their full layouts fit the original monitor cases
+on solid walls. The brighter two-material comparison is accepted by root and
+independent visual review; only its five new private assets are saved. Board
+placement and reception changes remain unsaved. An earlier guard failure was isolated to
+floating-point scale roundoff and repaired without widening physical placement
+or changing the original actors. The held eight T content packages stay dirty.
+
+The shared NPC head-fill defaults passed a two-staff OFF/ON visual trial;
+temporary test lights were then removed. The reusable ambient-actor lighting and
+paired warp-gate source passed Build43 `-NoLink` compilation. This produces object
+files only: it does not update the loaded Build39 DLL, place warp endpoints or
+verify other NPC variants. Adoption instructions are in
+[Architecture](ARCHITECTURE.md). Native integration and owner approval remain open.
 
 Central welcome retains its **unsaved** six-furnishing/two-vendor trial and now
 four shrubs plus three ceiling-ring lights. Root and independent review accept

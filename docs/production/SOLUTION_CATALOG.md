@@ -12,6 +12,28 @@ log; this catalog records resource evaluation rather than a separate task queue.
 October7 15:18 owner direction supersedes the earlier T advancement gate: finish
 its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
 
+### LIB-20261007-WELCOME-INFORMATION — reception tools and useful room guidance
+
+- **Acquisition:** reuse owned `Cyberpunk_Room/Mesh/SM_Laptop` and `SM_Tablet`,
+  their original material, and `SciFiCorridor/Meshes/SM_Monitor` with its separate
+  `SM_MonitorScreen`. No new purchase or vendor-source edit.
+- **Evaluation,2026-10-07T21:18Z:** six desk props/labels and two purposeful staff
+  poses are retained unsaved; actual countertop triangles support both tools.
+  Two complete information panels fit the original monitor apertures and solid
+  wall hosts in actual images. The first text gain was too dim; the second
+  comparison at gain8 is accepted by root and independent review, with five
+  private assets saved and placement still unsaved. These are directory/flight boards, with
+  deterministic text and no generated ad copy.
+- **Whole-project value:** shared reception composition, station directions and
+  accurate home-versus-Survival departure instructions. Central alone permits
+  only one or two ad posters; the five-campaign requirement still applies to
+  other rooms. New NPC variants can use the common ambient-actor head-fill
+  preset described in [Architecture](../ARCHITECTURE.md).
+- **Limits/next checks:** verify role plaques
+  and natural walk-up use, then save the accepted composition only after the
+  held T trial is resolved. Source compilation does not establish all-NPC fit;
+  no current saved station, package or owner approval includes these trials.
+
 ### LIB-20261007-ROOM-AD-CAROUSEL — five illustrated campaigns per room
 
 - **Related interior reuse,2026-10-07T20:06Z:** owned P5 benches/planter bases,

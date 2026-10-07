@@ -80,7 +80,21 @@ not also change the selected offer. Validation and current limitations are recor
 
 Mapped outpost terminals route to existing `ESSPanel` services. Home loadout and active-run upgrades/contracts/repair/save retain their existing economy and session rules; informational merchants remain placeholders. The existing every-five-wave cadence, difficulty, save schema and Free Flight isolation do not change. The station waits for initial streaming before exposing walking support. Walkability uses the real authored collision, including the apartment and upper gallery; cleanup disables the outgoing station while streaming unloads it. Ambient routes follow world-origin offsets.
 
+`ASSOutpostAmbientActor` owns one shared NPC head-fill preset. To adopt it, use this actor or a Blueprint child with a compatible mesh and valid `HeadFillSocket` (default `head`); keep the40lm/100cm reach/12cm source defaults, overriding the socket or actor-frame(45,0,15)cm offset only when needed; call `RefreshReadabilityLighting` after runtime mesh/material swaps. Construction and BeginPlay refresh automatically, as does wardrobe replacement. The actor-owned lamp follows the head attachment without an extra Tick. Disabled fills, drones, hologram-tagged actors, all externally animation-managed actors, missing anchors and meshes without opaque/masked materials skip the fill. Only the character mesh adds reserved channel2, preserving channels0/1 and restoring its previous channel2 when disabled; player lighting retains channel1. Specular, indirect and volumetric intensity are zero, with reflection/GI flags disabled. The temporary two-receptionist OFF/ON trial supports the preset. Build43 `-NoLink` compiled the source into object files only: it is unlinked and unloaded, with the Build39 DLL unchanged. Other model fits and performance remain unverified.
+
 Authored station global lighting and unbound exposure fade with distance, restoring the flight environment outside the outpost. The station sky sphere is hidden so the flight background is shared. Missing private runtime content falls back to the legacy station with an explicit `SS_OUTPOST_FALLBACK` log; `-SSLegacyStation` also selects the legacy station for diagnosis. Focused capture evidence and its physical-input/performance limits belong in the October1 validation receipt and active issue RPT-20260924-01.
+
+`ASSStationWarpGate` is compiled source awaiting native integration. Two reciprocal
+endpoints must belong to the same runtime station and use authored physical
+frames and supported arrival points. Only the locally controlled grounded walker
+can activate a pad while the ship is moored and no menu, boarding or departure
+transition is active. A game-time delay plays optional departure effects; leaving
+the pad cancels without disabling input. Destination capsule clearance and
+walkable floor support are checked both before and after the delay. Arrival keeps
+the same pawn, stops residual movement and latches the pair until the player
+leaves both pads. Optional portal/arrival Niagara systems and endpoint placement
+remain content work. Build43 compiled the object files without linking; no placed
+pair, natural traversal, visual effects or performance acceptance is claimed.
 
 ## Planned character speech and event recall — October 1, 2026
 

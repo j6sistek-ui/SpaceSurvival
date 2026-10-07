@@ -10,6 +10,7 @@ class UAnimSequence;
 class UBoxComponent;
 class UCapsuleComponent;
 class UMaterialInterface;
+class UPointLightComponent;
 class USkeletalMeshComponent;
 class UStaticMeshComponent;
 
@@ -166,6 +167,7 @@ class SPACESURVIVAL_API ASSOutpostAmbientActor : public AActor
     GENERATED_BODY()
 public:
     ASSOutpostAmbientActor();
+    virtual void OnConstruction(const FTransform &Transform) override;
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
@@ -175,6 +177,28 @@ public:
     TObjectPtr<USkeletalMeshComponent> CharacterMesh;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ambient")
     TObjectPtr<UStaticMeshComponent> DroneMesh;
+    /** Shared NPC-only fill; channel 1 remains reserved for the player. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ambient|Readability")
+    TObjectPtr<UPointLightComponent> HeadFillLight;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient|Readability")
+    bool bEnableHeadFill = true;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient|Readability")
+    FName HeadFillSocket = TEXT("head");
+    /** Actor-frame centimetres from the animated head, independent of the model's mesh yaw/scale. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient|Readability")
+    FVector HeadFillOffset = FVector(45.f, 0.f, 15.f);
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient|Readability",
+              meta = (ClampMin = "0", ClampMax = "100"))
+    float HeadFillLumens = 40.f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient|Readability",
+              meta = (ClampMin = "60", ClampMax = "140"))
+    float HeadFillRadius = 100.f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient|Readability",
+              meta = (ClampMin = "0", ClampMax = "20"))
+    float HeadFillSourceRadius = 12.f;
+    /** Call after changing mesh, materials, socket or profile at runtime; no separate light Tick. */
+    UFUNCTION(BlueprintCallable, Category = "Ambient|Readability")
+    void RefreshReadabilityLighting();
     /** Positions relative to placed actor transform; origin is capsule centre, not feet. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")
     TArray<FVector> RoutePoints;
@@ -199,6 +223,11 @@ public:
     float PhaseOffset = 0.f;
 
 private:
+    // Preserve ownership with the component's saved/PIE-duplicated channel mask.
+    UPROPERTY()
+    bool bHeadFillOwnsChannel = false;
+    UPROPERTY()
+    bool bHeadFillPreviousChannel2 = false;
     FTransform RouteOrigin;
     int32 RouteIndex = 0, GestureIndex = 0;
     float WaitRemaining = 0.f, Elapsed = 0.f, GestureRemaining = 0.f, NextGesture = 6.f, BlockedSeconds = 0.f;
