@@ -961,10 +961,12 @@ struct FSSHullDefinition
             // off the bottom edge. Steepened to put the whole hull inside the frame through all five
             // scripted manoeuvres. The eye stays high, which is what the owner asked for; it now looks
             // where it is flying rather than slightly over it.
-            // Both halves of the pack's own rig, kept apart because they do different jobs: the arm is
-            // pitched down 18 to put the eye above and behind, the camera tipped back 5 from there.
+            // The arm retains the pack's -18 degree elevation. The bank-independent chase frame needs
+            // the camera aimed 3 degrees farther down, rather than 5 up: a rolling Phoenix otherwise
+            // sweeps its aft hull off the bottom edge. With the same 3800 cm arm, ChaseFraming measured
+            // minimum margins .155/.152/.151 at 30/60/144 Hz, above the unchanged .04 requirement.
             ChaseArmPitch = -18.f;
-            ChasePitch = 5.f;
+            ChasePitch = -3.f;
             // Measured at .1198 of a 4050 cm arm - 485.2 cm - against the classic hull's .0389. Three
             // times the classic's share, and that figure took three attempts to get right, so it is worth
             // saying how: a bound that aborts the run on its first breach truncates the very maximum it is

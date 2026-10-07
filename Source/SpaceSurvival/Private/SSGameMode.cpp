@@ -593,8 +593,21 @@ bool ASSGameMode::IsWalkerInsideShip(const ASSWalker *Candidate) const
     const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     const auto *Capsule = Candidate->GetCapsuleComponent();
     const auto *Rig = Ship->GetVisualRig();
-    return PC && PC->GetPawn() == Candidate && Capsule && Rig &&
-           Candidate->GetCharacterMovement()->IsMovingOnGround() &&
+    const auto *Movement = Candidate->GetCharacterMovement();
+    if (!PC || PC->GetPawn() != Candidate || !Capsule || !Rig || !Movement->IsMovingOnGround())
+        return false;
+    // The middle cabin at X=-638 rests on the supplied Hull, while stairs rest on
+    // ParkedInterior. Recognize actual floor support rather than only the rear
+    // entry gate; this changes guidance, never the separate pilot-seat authority.
+    const auto *Support = Movement->CurrentFloor.HitResult.GetComponent();
+    const FVector Local = Ship->GetActorTransform().InverseTransformPosition(Candidate->GetActorLocation());
+    const float Feet = Local.Z - Capsule->GetScaledCapsuleHalfHeight();
+    const bool OnCabinHull = Support && Support == Rig->GetHull() && Local.X >= -940.f && Local.X <= 940.f &&
+                             FMath::Abs(Local.Y) + Capsule->GetScaledCapsuleRadius() <= 180.f && Feet >= 210.f &&
+                             Feet <= 405.f;
+    return (Support && Support->GetFName() == TEXT("ParkedInterior") &&
+            Support->GetAttachParent() == Ship->GetRootComponent()) ||
+           OnCabinHull ||
            Rig->CanBoardAt(Candidate->GetActorLocation(), Capsule->GetScaledCapsuleRadius(),
                            Capsule->GetScaledCapsuleHalfHeight());
 }
@@ -652,20 +665,36 @@ void ASSGameMode::CycleDepartureMode()
     SelectDepartureMode(SelectedDepartureMode == ESSDepartureMode::Waves ? ESSDepartureMode::FreeFlight
                                                                          : ESSDepartureMode::Waves);
 }
+bool ASSGameMode::CanChooseDepartureMode() const
+{
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    return GI && !bBoardingFlight && !bDepartingStation && InHangar() &&
+           (!GI->Session.run.active || GI->IsFreeFlight());
+}
+bool ASSGameMode::HandleCockpitModeInput(bool KeyboardJustPressed, bool GamepadJustPressed)
+{
+    if ((!KeyboardJustPressed && !GamepadJustPressed) || IsMenuOpen() || bBoardingFlight || bDepartingStation ||
+        !IsWalkerAtPilotSeat(Walker))
+        return false;
+    // The controller passes press edges, not held state. Two devices pressed on
+    // the same frame still perform one preference change, and consume no use action.
+    CycleDepartureMode();
+    return true;
+}
 void ASSGameMode::SelectDepartureMode(ESSDepartureMode Mode)
 {
     const auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI || bBoardingFlight || bDepartingStation)
         return;
-    if (!InHangar() || (GI->Session.run.active && !GI->IsFreeFlight()))
+    if (!CanChooseDepartureMode())
     {
         Announce(TEXT("This is an active Survival stop. Continue with your current ship and progress."));
         return;
     }
     SelectedDepartureMode = Mode;
     Announce(SelectedDepartureMode == ESSDepartureMode::FreeFlight
-                 ? TEXT("FREE FLIGHT selected. Walk to the cockpit chair and sit to depart.")
-                 : TEXT("WAVES selected. Walk to the cockpit chair and sit to depart."));
+                 ? TEXT("FREE FLIGHT selected. Sit in the cockpit chair to depart; Survival progress is protected.")
+                 : TEXT("WAVES selected. Sit in the cockpit chair to depart."));
 }
 bool ASSGameMode::TryBoardShip(ASSWalker *Candidate)
 {
@@ -1760,16 +1789,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         }
         else
         {
-            PanelTitle = TEXT("FLIGHT MODE");
-            PanelDetail = TEXT("Select a mode, then walk to the cockpit chair and sit to depart. "
-                               "Selecting a mode does not start a flight or replace a saved run.");
+            PanelTitle = TEXT("FLIGHT BRIEFING");
+            PanelDetail = FString::Printf(
+                TEXT("Selected departure: %s.\nChoose Waves or Free Flight inside the ship at the cockpit chair. "
+                     "The cockpit display shows your selection before you sit and depart. "
+                     "Choosing a mode does not start a flight or replace a saved run."),
+                SelectedDepartureMode == ESSDepartureMode::FreeFlight ? TEXT("FREE FLIGHT") : TEXT("WAVES"));
             if (InHangar() && (!S.run.active || GI->IsFreeFlight()))
             {
-                AddEntry(SelectedDepartureMode == ESSDepartureMode::Waves ? TEXT("Waves / selected") : TEXT("Waves"),
-                         155);
-                AddEntry(SelectedDepartureMode == ESSDepartureMode::FreeFlight ? TEXT("Free Flight / selected")
-                                                                               : TEXT("Free Flight"),
-                         156);
                 if (GI->HasSuspendedRun())
                 {
                     PanelDetail += TEXT("\nContinue restores your saved station checkpoint before boarding.");
@@ -1780,8 +1807,6 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             {
                 PanelDetail = TEXT("This Survival stop keeps your current ship, credits and upgrades. "
                                    "Sit in the cockpit chair to continue the next wave block.");
-                AddEntry(TEXT("Waves / active run"), 155, false);
-                AddEntry(TEXT("Free Flight / available from home hangar"), 156, false);
             }
         }
         break;
@@ -1894,12 +1919,6 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
     // Mouse activation and keyboard/controller activation refresh the same selected action.
     SelectedEntry = Index;
     const ESSPanel Current = Panel;
-    if ((A == 155 || A == 156) && Current == ESSPanel::Launch)
-    {
-        SelectDepartureMode(A == 155 ? ESSDepartureMode::Waves : ESSDepartureMode::FreeFlight);
-        ClosePanel();
-        return;
-    }
     if (A == 52)
     {
         StartFreeFlight();
@@ -2347,6 +2366,8 @@ const FKey GamepadProbeKeys[] = {EKeys::Gamepad_FaceButton_Bottom,
                                  EKeys::Gamepad_FaceButton_Left,
                                  EKeys::Gamepad_DPad_Up,
                                  EKeys::Gamepad_DPad_Down,
+                                 EKeys::Gamepad_DPad_Left,
+                                 EKeys::Gamepad_DPad_Right,
                                  EKeys::Gamepad_LeftShoulder,
                                  EKeys::Gamepad_RightShoulder,
                                  EKeys::Gamepad_LeftTrigger,
@@ -2681,6 +2702,8 @@ void ASSPlayerController::PlayerTick(float Dt)
             WalkPawn->Jump();
         if (!Down(EKeys::SpaceBar) && !Down(EKeys::Gamepad_FaceButton_Bottom))
             WalkPawn->StopJumping();
+        if (GM->HandleCockpitModeInput(Pressed(EKeys::R), Pressed(EKeys::Gamepad_DPad_Left)))
+            return; // A mode press cannot also sit/launch on this frame.
     }
     const FKey InteractButton =
         Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;

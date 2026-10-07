@@ -1,5 +1,22 @@
 # Performance findings
 
+## October7 native resolution and station presentation
+
+The unmodified runtime settings probe observes quality2 with resolution scale87,
+texture pool800MB and TSR history100. The new GameInstance setting retains native100
+after applying the selected quality tier. Build34's two focused native tests pass
+cleanly; actual SIE Probe3 observes r.ScreenPercentage100,sg.ResolutionQuality100
+and user scale100 without a console override. Its aggregate result remains FAIL
+because its stale uniform-tier assertion expects2; the mixed native100/tier2
+profile legitimately reports custom−1. Preservation and native process exit0 pass.
+
+That SIE viewport is1014×344, with effective SceneView fraction unmeasured. It does
+not establish the owner's full-resolution texture demand, pool pressure or60FPS.
+No pool, texture bias, shader-cache or global exposure setting was changed. The
+1920×1080 Modes34 images establish appearance/route evidence only. Cabin steps are
+still visually dark; T composition and selected new resource costs remain pending.
+See [native-resolution/cabin evidence](validation/2026-10-07-native-resolution-and-phoenix-cabin.md).
+
 ## October6 final field measurement, other game closed
 
 `EndgameSoak/d20651d21a2642cc9aa8ccaf505edc1a` repeats the 6,144-rock

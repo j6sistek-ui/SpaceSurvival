@@ -355,7 +355,7 @@ void ASSStation::BuildFunctionalHub()
             Home ? ESSPanel::Progression : ESSPanel::Contracts);
     Service(TEXT("Systems"), Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"),
             Home ? ESSPanel::Settings : ESSPanel::Save);
-    Service(TEXT("Launch"), TEXT("LAUNCH CONTROL"), ESSPanel::Launch);
+    Service(TEXT("Launch"), TEXT("FLIGHT BRIEFING"), ESSPanel::Launch);
     Service(TEXT("Wardrobe"), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
     Service(TEXT("Paint"), TEXT("PAINT BAY"), ESSPanel::Paint);
     // Gallery evaluation is retired; supplied assets remain available for authoring.
@@ -581,7 +581,7 @@ void ASSStation::BuildHub(bool bHome)
                Home ? ESSPanel::Progression : ESSPanel::Contracts);
     AddService(FVector(0, 1000, 0), Home ? TEXT("SYSTEMS") : TEXT("SUSPEND / SAVE & QUIT"),
                Home ? ESSPanel::Settings : ESSPanel::Save);
-    AddService(FVector(950, -450, 0), TEXT("LAUNCH CONTROL"), ESSPanel::Launch);
+    AddService(FVector(950, -450, 0), TEXT("FLIGHT BRIEFING"), ESSPanel::Launch);
     // Owner requested customization in both the home hangar and arrival stations.
     AddService(FVector(-1400, 500, 0), TEXT("CREW WARDROBE"), ESSPanel::Wardrobe);
     // The paint bay: a lift stand on the starboard wall; the editable layout dresses it with a platform and arch.

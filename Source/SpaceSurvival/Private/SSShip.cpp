@@ -8,6 +8,7 @@
 #include "SSShipPresentation.h"
 #include "SSShipVisualRig.h"
 #include "SSFlightHull.h"
+#include "SSChaseCameraArm.h"
 #include "SSWorldActors.h"
 #include "SSStation.h"
 #include "Components/SphereComponent.h"
@@ -79,7 +80,7 @@ ASSShip::ASSShip()
     Pilot->SetRelativeLocation(PilotHero.PilotMountOffset);
     Pilot->SetRelativeRotation(FRotator(0, PilotHero.MeshYaw, 0));
     Pilot->SetRelativeScale3D(FVector(PilotHero.RenderedScale(nullptr)));
-    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ChaseBoom"));
+    CameraBoom = CreateDefaultSubobject<USSChaseCameraArm>(TEXT("ChaseBoom"));
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 900.f;
     CameraBoom->SocketOffset = FVector(0, 0, 125);
@@ -93,7 +94,6 @@ ASSShip::ASSShip()
     CameraBoom->CameraLagMaxDistance = 35.f;
     CameraBoom->bUseCameraLagSubstepping = true;
     CameraBoom->CameraLagMaxTimeStep = 1.f / 120.f;
-    CameraBoom->bInheritRoll = false;
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ChaseCamera"));
     Camera->SetupAttachment(CameraBoom);
     Camera->FieldOfView = 80.f;
@@ -611,6 +611,8 @@ void ASSShip::BeginPlay()
     UpdateEngineMix();
     EngineAudio->Play();
     BaseCameraBoomRotation = CameraBoom->GetRelativeRotation();
+    if (ShipCoreDriven)
+        CastChecked<USSChaseCameraArm>(CameraBoom)->EnableBankIndependentFollow();
     Velocity = GetActorForwardVector() * Tuning->FlightCruiseSpeed();
     // And give the same cruise to the body, when there is one. GetVelocity reads the physics body under
     // ShipCore, so seeding only the member above left the ship reporting a dead stop at BeginPlay while
@@ -823,6 +825,7 @@ void ASSShip::FinishDocking()
     EndWormholeTransit();
     SetActorLocation(DockTarget);
     SetActorRotation(DockRotation);
+    CastChecked<USSChaseCameraArm>(CameraBoom)->ResetFollowFrame();
     Pilot->SetVisibility(false);
     if (auto *ReadabilityLight = FindComponentByClass<UPointLightComponent>())
         ReadabilityLight->SetVisibility(false);

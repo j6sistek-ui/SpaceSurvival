@@ -1,5 +1,71 @@
 # SpaceSurvival project state
 
+**October7 04:21UTC working update:** Editor Build35 succeeds after a small
+decorative-cabin collision exclusion; its focused native departure regression
+passes cleanly (one success, zero warnings/errors/not-run, native exit0).
+Build34's two exact focused
+native tests pass cleanly (native resolution across quality tiers and Phoenix
+cockpit departure). Build31's four clean camera/preset/cockpit checks remain
+valid for unchanged camera source. The old Build30 framing failure, Build32
+test-API compile failure and Build33 scalability warning result remain history.
+Four parked-only cabin lamps and two mounted illustrated panes are implemented;
+CabinDisplays3 saves the two private materials with native exit0. Native plane
+geometry proves their corrected inward-facing orientation. Modes34's nine actual
+views confirm the left pane and improved cabin structure, but stairs/floor remain
+dark and the right pane's readability is unproved; lead/agent appearance estimate
+is5.5–6/10. Build35 excludes these decorative details from the generic collision loop.
+Physical camera comfort and final cabin appearance remain owner-unaccepted.
+See [camera evidence](validation/2026-10-06-phoenix-camera-comfort.md),
+[cockpit evidence](validation/2026-10-06-cockpit-mode-selector.md) and
+[native-resolution/cabin evidence](validation/2026-10-07-native-resolution-and-phoenix-cabin.md).
+
+An actual unmodified SIE probe confirms the game reapplies High2 quality with
+resolution scale87 and texture pool800MB. Build34 retains native100 across quality
+tiers and repairs the owned motion-blur/scalability priority warning. Actual
+SceneView fraction and texture pressure at the owner's full resolution remain
+unmeasured; no pool increase or shader-cache setting change is claimed. Probe3's
+samples confirm native100 without a console override, but its aggregate result
+fails a stale overall-tier assertion: native100/High2 correctly reports Custom−1.
+Corrected read-only Probe4 passes/native exit0 with preservation intact; it
+confirms native100 and the intentional mixed profile without rendering overrides.
+
+T's current saved owner preview is
+`c1f62aed453362a1eacc20faeb6f9d589bae5e9f42f03053a28dd3e2c5f1371c`.
+Displays3 saves four resident graphics and offsets three rear frame/pane pairs;
+Capture2's blur/intersections were rejected, while Capture3's six fresh views
+exit0 and show sharp, clear artwork. PromptVisibility2 then saves six precise
+floating-label retirements; its successful preservation receipt retains a native
+shutdown crash after normal LogExit. Composition5 then saves the glass-enclosed
+4.8m podium, all four supplied Phoenix mesh parts and a60second rotation sequence,
+60new actors/five private assets, with native exit0 and preservation pass.
+Composition attempts1–4 fail before saves and remain history. Capture5 fails before
+images on a Python sequence-player accessor; corrected Capture6 passes/native
+exit0: six actual views and69.681game seconds/418.085degrees/one natural wrap,
+with files/saves/ships unchanged. Lead/independent review finds clear glass and a
+complete ship, but rejects the concrete-looking base at about5/10. MaterialFinish2
+then saves ten private materials on37 actors/52slots, with native exit0 and no
+light/geometry/sequence change. Density4 saves20 fitted ceiling/storage/TV actors
+and four private assets, with native exit0. Eleven ceiling panels retain an opening
+for the original pendant; actual fixture-triangle contact checks prevent intersecting
+supports. Earlier density probes/authors stop before saves and remain history.
+Fresh DensityCapture3 passes/native exit0 with eight actual saved-room views,
+unchanged protected files/saves/ships and short natural autoplay. Lead review finds
+readable illustrated ads and an improved graphite base/ceiling, but whole-room
+quality is only6–6.5/10: the base is plain and desk/floor reflections remain noisy.
+The cause of that noise and screenshot-versus-runtime contribution is unconfirmed.
+The accepted L presentation is preserved; T owner approval remains open.
+See [podium evidence](validation/2026-10-07-operations-phoenix-podium.md).
+The owner finds T too empty. Its layout, material and local-lighting pass remains
+active and unapproved; the podium, ceiling, storage and side displays are saved,
+while lead visual refinement and room approval remain open.
+The owner specifies a glass-enclosed central podium with a slowly rotating Phoenix;
+its composition, fitted signage and contextual prompt cleanup are implemented in
+this separate local preview. The owner authorizes continued overnight work in later
+areas after lead review while owner validation remains pending.
+The latest directional-Waves, warp-pad, ship support, bartender contact and market
+physics requests are explicitly queued after T in RPT-20261007-01.
+The canonical gameplay station and published0.1.22-alpha/build2048604 are unchanged.
+
 **October7 00:12UTC owner review (October6 evening locally):** L social lounge is
 accepted **8/10 for now** at saved preview SHA
 `ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`.
@@ -25,7 +91,8 @@ crew archive, reception, market and a full enterable cargo berth. The private
 foundation collision repair and four actual room-walking routes pass. The connected
 cargo route also passes ordinary movement into the ship and back; its process retains
 the existing apartment Blueprint errors. RoomPass7Retry1 has13actual revised views;
-the owner rates the whole station4/10 and now prioritizes L lounge. The saved
+the owner initially rated the whole station4/10 and prioritized L lounge, since
+accepted at8/10 as recorded above. The saved
 StationPoolMatch1 preview replaces the old floating reset with a60second alternating
 scratch, enclosed ball return, hand pickup/placement and conversation sequence.
 Native playback observes two actual loops;16 actual screenshots include four matched
@@ -42,7 +109,7 @@ four decorative Acornaut modes, two ceiling coffers and landscape screen cards;
 front of the torso. ArcadePresentation2 moves Credit Exchange to the perimeter,
 lights cabinet faces locally and gives two center fixtures a visible diffuser.
 The owner explicitly likes the brighter cyan trim/general lighting; it is preserved.
-Latest saved preview SHA is
+L acceptance saved preview SHA is
 `ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`.
 TableSettings2 adds three supported table props and repositions one cup stack;
 its author and three-view capture exit0. BarPresentation4 saves private metal

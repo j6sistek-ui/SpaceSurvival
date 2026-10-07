@@ -127,17 +127,19 @@ bool FSSFreeFlightLifecycle::RunTest(const FString &)
     APawn *WalkingPawn = F.Controller->GetPawn();
     ASSShip *ParkedShip = F.Mode->GetPlayerShip();
     F.Mode->OpenPanel(ESSPanel::Launch);
-    const int32 Waves = F.Entry(155), Practice = F.Entry(156);
-    if (!TestTrue(TEXT("Home computer offers Waves and Free Flight departure preferences"),
-                  Waves != INDEX_NONE && Practice != INDEX_NONE && F.Mode->Entries[Waves].Enabled &&
-                      F.Mode->Entries[Practice].Enabled && F.Mode->Entries[Waves].Label == TEXT("Waves / selected") &&
-                      F.Mode->Entries[Practice].Label == TEXT("Free Flight")))
+    if (!TestTrue(TEXT("Home computer reports current departure and directs selection into the cockpit"),
+                  F.Entry(155) == INDEX_NONE && F.Entry(156) == INDEX_NONE &&
+                      F.Mode->PanelDetail.Contains(TEXT("WAVES")) &&
+                      F.Mode->PanelDetail.Contains(TEXT("cockpit chair"))))
         return false;
     TestTrue(TEXT("Mode selection has no immediate departure or unavailable checkpoint action"),
              F.Entry(3) == INDEX_NONE && F.Entry(50) == INDEX_NONE && F.Entry(52) == INDEX_NONE &&
                  F.Entry(2) == INDEX_NONE);
-    F.Mode->ActivateEntry(Practice);
-    TestTrue(TEXT("Selecting Free Flight closes the computer and retains the same walking pawn and parked ship"),
+    F.Mode->ClosePanel();
+    // This lifecycle fixture sets the existing preference directly; the actual
+    // grounded cockpit input path is covered by PhoenixCockpitDeparture.
+    F.Mode->CycleDepartureMode();
+    TestTrue(TEXT("Selecting Free Flight retains the same walking pawn and parked ship"),
              F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight && !F.Mode->IsMenuOpen() &&
                  !F.Mode->IsDepartingStation() && !F.Instance->IsFreeFlight() &&
                  F.Controller->GetPawn() == WalkingPawn && F.Mode->GetPlayerShip() == ParkedShip && F.Hub() == Home);
@@ -159,6 +161,8 @@ bool FSSFreeFlightLifecycle::RunTest(const FString &)
     const int32 Wave = F.Instance->Session.run.wave;
     F.Frames(210);
     TestFalse(TEXT("Real takeoff finishes without starting survival waves"), Ship->IsTakingOff());
+    TestFalse(TEXT("Mode input while possessing the flying ship cannot select another departure mode"),
+              F.Mode->HandleCockpitModeInput(true, true));
     TestTrue(TEXT("Zero throttle after launch is an engine-off command"), FMath::IsNearlyZero(Ship->GetThrottle()));
     Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, false, false);
     F.Frames(45);
@@ -232,10 +236,10 @@ bool FSSFreeFlightLifecycle::RunTest(const FString &)
     TestTrue(TEXT("Return ends walking at home without an automatic launch popup"),
              F.Mode->InHangar() && !F.Mode->IsMenuOpen() && Cast<ASSWalker>(F.Controller->GetPawn()) != nullptr);
     F.Mode->OpenPanel(ESSPanel::Launch);
-    TestTrue(TEXT("The home computer still offers preferences when deliberately opened"),
-             F.Entry(155) != INDEX_NONE && F.Entry(156) != INDEX_NONE && F.Entry(52) == INDEX_NONE);
+    TestTrue(TEXT("The home computer remains informational when deliberately opened"),
+             F.Entry(155) == INDEX_NONE && F.Entry(156) == INDEX_NONE && F.Entry(52) == INDEX_NONE);
     F.Mode->ClosePanel();
-    AddInfo(TEXT("Actual mode selector and GameMode/session/ship/Director integration with a direct departure "
+    AddInfo(TEXT("Actual GameMode/session/ship/Director integration with a direct mode preference and departure "
                  "transaction, scripted input and arrival. No GI Init, StartNewRun, disk save, physical chair "
                  "navigation, rendering or natural-play acceptance."));
     return true;

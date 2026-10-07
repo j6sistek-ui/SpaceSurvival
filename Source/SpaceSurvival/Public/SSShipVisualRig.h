@@ -63,6 +63,8 @@ private:
     UPROPERTY(Transient)
     TArray<TObjectPtr<UPointLightComponent>> CabinLights;
     UPROPERTY(Transient)
+    TArray<TObjectPtr<UStaticMeshComponent>> CabinDetails;
+    UPROPERTY(Transient)
     TArray<TObjectPtr<USkeletalMeshComponent>> AirBrakes;
     UPROPERTY(Transient)
     TArray<TObjectPtr<USceneComponent>> EnginePivots;

@@ -56,11 +56,14 @@ void ASSWave10Soak::WriteBoardingReviewResult(const FString &Error)
     Result->SetStringField(TEXT("heroMesh"), BoardingReviewHeroMesh);
     Result->SetStringField(TEXT("pilotClip"), BoardingReviewPilotClip);
     Result->SetStringField(TEXT("selectedMode"), TEXT("FreeFlight"));
+    Result->SetStringField(TEXT("modeSelectionLocation"), TEXT("SUPPORTED_COCKPIT_CHAIR"));
     Result->SetStringField(TEXT("cameraSource"), TEXT("POSSESSED_PAWN_NATIVE_CAMERA"));
     Result->SetStringField(TEXT("storageScope"), Root / TEXT("User/Saved"));
     Result->SetStringField(
         TEXT("limits"),
-        TEXT("One disclosed placement at the rear ramp; ordinary Move/CharacterMovement thereafter. Physical "
+        TEXT("One disclosed placement at the rear ramp; ordinary Move/CharacterMovement thereafter. Waves and Free "
+             "Flight cards are photographed at the supported chair around one scripted contextual mode-input edge. "
+             "Physical "
              "controller polling is disabled only for scripted input. GameMode ticking is held during the real 1.4s "
              "sit so intermediate/seated poses can be photographed; walker ticking is briefly held at those "
              "photographed poses. Both resume before native chair commit/takeoff. AccountStorageBlocked is temporarily "
@@ -126,8 +129,8 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         BoardingReviewWalkerTick = Walker->IsActorTickEnabled();
         BoardingReviewHeroMesh = GetPathNameSafe(Walker->GetMesh()->GetSkeletalMeshAsset());
         BoardingReviewPilotClip = Walker->GetHero().PilotClipPath;
-        if (GM->GetSelectedDepartureMode() != ESSDepartureMode::FreeFlight)
-            GM->CycleDepartureMode();
+        if (GM->GetSelectedDepartureMode() != ESSDepartureMode::Waves)
+            return Fail(TEXT("Boarding review must begin with the default Waves preference."));
         PC->SetActorTickEnabled(false);
         PC->SetControlRotation(Ship->GetActorRotation());
         BoardingReviewDock = Ship->GetActorTransform();
@@ -140,7 +143,8 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         BoardingReviewStage = 1;
         return false;
     }
-    if (GM->IsMenuOpen() || GM->GetSelectedDepartureMode() != ESSDepartureMode::FreeFlight)
+    const auto ExpectedMode = BoardingReviewRouteShot >= 4 ? ESSDepartureMode::FreeFlight : ESSDepartureMode::Waves;
+    if (GM->IsMenuOpen() || GM->GetSelectedDepartureMode() != ExpectedMode)
         return Fail(TEXT("Walking/boarding opened a menu or changed the selected departure mode."));
     if (BoardingReviewStage < 5 && (!Walker || PC->GetPawn() != Walker || GI->IsFreeFlight() || GI->Session.run.active))
         return Fail(TEXT("Departure changed possession or run state before the completed sit."));
@@ -155,6 +159,10 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
     Sample->SetBoolField(TEXT("menuOpen"), GM->IsMenuOpen());
     Sample->SetBoolField(TEXT("freeFlight"), GI->IsFreeFlight());
     Sample->SetBoolField(TEXT("activeRun"), GI->Session.run.active);
+    Sample->SetStringField(TEXT("selectedDepartureMode"), GM->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight
+                                                              ? TEXT("FreeFlight")
+                                                              : TEXT("Waves"));
+    Sample->SetBoolField(TEXT("cockpitModeContext"), GM->IsWalkerAtPilotSeat(Walker));
     Sample->SetNumberField(TEXT("wave"), GI->Session.run.wave);
     Sample->SetNumberField(TEXT("phase"), int32(GI->Session.run.phase));
     Sample->SetBoolField(TEXT("takingOff"), Ship->IsTakingOff());
@@ -286,11 +294,23 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         {
             Walker->Move(FVector2D::ZeroVector, FVector2D::ZeroVector, false, Dt);
             const TCHAR *Names[] = {TEXT("BoardingRamp"), TEXT("BoardingCabin"), TEXT("BoardingStairs"),
-                                    TEXT("BoardingChair")};
+                                    TEXT("BoardingChair"), TEXT("BoardingModeSelected")};
             if (Frame(Names[BoardingReviewRouteShot]))
             {
                 ++BoardingReviewRouteShot;
                 if (BoardingReviewRouteShot == 4)
+                {
+                    const auto AccountBefore = SS::EncodeAccount(GI->Session.account);
+                    const auto RunBefore = SS::EncodeRun(GI->Session.run);
+                    if (!Chair || !GM->HandleCockpitModeInput(true, false) ||
+                        GM->GetSelectedDepartureMode() != ESSDepartureMode::FreeFlight ||
+                        SS::EncodeAccount(GI->Session.account) != AccountBefore ||
+                        SS::EncodeRun(GI->Session.run) != RunBefore || Walker->IsBoarding() ||
+                        GM->IsDepartingStation() || GM->IsMenuOpen() || PC->GetPawn() != Walker)
+                        return Fail(
+                            TEXT("Cockpit mode edge did not change only the departure preference at the chair."));
+                }
+                else if (BoardingReviewRouteShot == 5)
                 {
                     if (!Chair || !BoardingReviewToe || !BoardingReviewRamp || BoardingReviewTravelCm < 2200.)
                         return Fail(TEXT("Full measured ramp/interior route did not reach the actual chair."));
@@ -366,7 +386,7 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         if (FVector::Distance(Ship->GetActorLocation(), BoardingReviewDock.GetLocation()) > 20. &&
             Frame(TEXT("BoardingTakeoff")))
         {
-            BoardingReviewComplete = BoardingReviewFrames.Num() == 8;
+            BoardingReviewComplete = BoardingReviewFrames.Num() == 9;
             RestoreBoardingReviewGuards();
             WriteBoardingReviewResult(BoardingReviewComplete ? FString() : TEXT("Missing required boarding images."));
             return BoardingReviewComplete;

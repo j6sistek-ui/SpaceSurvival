@@ -72,6 +72,12 @@ private:
     /** Exact Figma artwork, with the same native entry indices used by pointer/controller input. */
     bool DrawFigmaMainMenu(const class ASSGameMode &Mode);
     FSlateFontInfo HudFont(float Size) const;
+    /** Station instructions use the readable engine font; the flight/menu typeface stays unchanged. */
+    FSlateFontInfo StationFont(float Size) const;
+    FVector2D MeasureStationText(const FString &Value, float Size) const;
+    void StationText(const FString &Value, float X, float Y, float Size = 1.f,
+                     FLinearColor Color = FLinearColor::White);
+    void StationAction(const FString &Value, bool HasUseKey, FLinearColor Color);
     FVector2D MeasureText(const FString &Value, float Size) const;
     void Text(const FString &Value, float X, float Y, float Size = 1.f, FLinearColor Color = FLinearColor::White);
     float Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color,

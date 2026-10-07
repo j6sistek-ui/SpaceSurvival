@@ -783,16 +783,17 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
             TestTrue(TEXT("Discard leaves settings bytes unchanged"),
                      FFileHelper::LoadFileToArray(Actual, *SettingsPath) && Actual == SettingsBefore);
             const auto ClearedRun = SS::EncodeRun(Session.run);
-            const int32 FreeFlight = Mode->Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry)
-                                                                      { return Entry.Action == 156 && Entry.Enabled; });
-            if (!TestTrue(TEXT("After discard the home computer offers mode selection without immediate launch"),
-                          FreeFlight != INDEX_NONE &&
-                              !Mode->Entries.ContainsByPredicate(
-                                  [](const FSSMenuEntry &Entry)
-                                  { return Entry.Action == 3 || Entry.Action == 50 || Entry.Action == 52; })))
+            if (!TestTrue(TEXT("After discard the home briefing has no competing mode switch or immediate launch"),
+                          !Mode->Entries.ContainsByPredicate(
+                              [](const FSSMenuEntry &Entry)
+                              {
+                                  return Entry.Action == 3 || Entry.Action == 50 || Entry.Action == 52 ||
+                                         Entry.Action == 155 || Entry.Action == 156;
+                              })))
                 return false;
             APawn *WalkingPawn = Controller->GetPawn();
-            Mode->ActivateEntry(FreeFlight);
+            Mode->ClosePanel();
+            Mode->CycleDepartureMode(); // Preference-only transaction; physical cockpit reach is tested separately.
             TestTrue(TEXT("Mode selection after discard cannot restart or replace the cleared run"),
                      Mode->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight && !Instance->IsFreeFlight() &&
                          !Mode->IsDepartingStation() && !Mode->IsMenuOpen() && Controller->GetPawn() == WalkingPawn &&

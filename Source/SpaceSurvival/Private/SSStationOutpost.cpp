@@ -134,7 +134,8 @@ bool ASSStation::BuildOutpostHub()
             }
             if (Panel != ESSPanel::None)
                 Services.Add({GetActorTransform().InverseTransformPosition(Terminal->GetActorLocation()),
-                              Terminal->DisplayName, Panel, Terminal});
+                              Panel == ESSPanel::Launch ? TEXT("FLIGHT BRIEFING") : Terminal->DisplayName, Panel,
+                              Terminal});
         }
         if (const auto *Crew = Cast<ASSOutpostAmbientActor>(Actor);
             Crew && !Crew->bDrone && !Crew->ActorHasTag(TEXT("OutpostRole:Hologram")))

@@ -1,5 +1,94 @@
 # Open work and owner review
 
+## October6 evening flight feedback
+
+**RPT-20261006-05 — Camera comfort and clear in-ship mode selection. OPEN.**
+Owner reports that turning and bumper maneuvers make the camera spin around the
+ship and cause dizziness; flight feels very difficult. Owner also requests moving
+the confusing Waves/Free Flight selection into the Phoenix. Lead owns a targeted
+repair of the active Phoenix camera/input path and a clearly labelled cockpit
+selector that shows the chosen mode before takeoff. Selecting a mode must preserve
+the existing chair/departure sequence and must not launch or reset by itself.
+Editor Build31 succeeds and four focused native tests pass without warnings:
+actual bumper roll/camera isolation, unchanged full-hull framing requirements,
+controller preset and the cockpit selection/departure path. Modes30's nine-image
+capture passed traversal and save preservation but exposed cramped card text and
+stale cabin guidance. Modes31 exits0 and fixes the card overlap, but its actual cabin
+image still directs toward the remote Flight Briefing service. Owner also rejects
+cluttered floating prompts and the dark Phoenix passage. Lead delegates readable,
+contextual action prompts, correct cabin guidance, recessed route/stair lighting
+and a restrained mounted display/gear scene. Preserve chair/input semantics and
+passage clearance. Physical controller comfort and owner acceptance remain open.
+October7 03:38UTC: Build34 and its two exact native settings/cockpit tests pass
+cleanly. Modes34 exits0, captures nine actual route/seat views and preserves
+saves. The prompt/card fit and inward cabin pane improve; independent visual
+rating remains5.5–6/10 because stair treads/floor are still dark and the right pane
+is not visibly proved by those angles. Build35 compiles the small decorative-case
+collision exclusion; its fresh native departure regression passes cleanly/native0.
+The runtime probe observes native100; its stale uniform-tier expectation fails on
+custom−1 and is retained as history. Corrected Probe4 passes/native0 with native100,
+all11 High2 groups and the intentional custom profile, with preservation intact.
+Neither result establishes full-resolution performance or owner acceptance.
+Next: finish T first, then local stair/floor coverage and a close side-screen
+view, followed by physical controller comfort review. L stays accepted for now.
+
+**Director presentation follow-up — October7 02:58UTC; RPT-20261006-03/05, OPEN / lead.**
+Owner says the visible Director looks like an ordinary enemy near the crosshair
+with similar colors. The desired rival should visibly taunt, animate and speak,
+retreat/return and signal attack windups. This is presentation feedback within
+the existing survival chase; the later killable-boss idea remains TBD, with no
+new boss progression, rewards, arena or station-cadence change implemented.
+Read-only source review finds an ordinary fighter fallback, one looping rider
+idle, sinusoidal following and instant hide/re-place transitions. The existing
+Launch light flare occurs after threat admission, so it is not an advance windup.
+Villain dialogue currently sets captions only; subtitles gate that path, which
+must be separated before implementing the already-authorized audible voices.
+The new raw Paragon Manny download contains5,370 FBX files including variants;
+selected taunt/cast candidates require actual-rider retarget/contact review.
+No animation or speech integration is claimed from that download.
+
+Next, after T and cockpit clarity: inspect the actual tuning assets and rival in
+normal Phoenix flight, establish a distinct silhouette/material identity, then
+fit a tiny gesture set and bounded approach/taunt/retreat/return presentation.
+True pre-release windup timing must retain admission and reaction-lead fairness;
+post-launch animation alone cannot close it. Lead must review moving gameplay
+and audible dialogue, with subtitles off, before acceptance. Captions, source
+presence or staged stills do not establish design quality or an epic duel feel.
+Current core loop remains unchanged by this read-only audit; owner approval is open.
+
+## October7 deferred owner follow-ups
+
+**RPT-20261007-01 — After-T presentation and physical-coherence review. OPEN / lead.**
+**October7 04:07UTC owner direction:** keep working overnight until directed to
+stop. After the lead fixes and visually reviews T, advance other areas while
+owner validation remains pending; once the areas are addressed, continue bounded
+refinement and optimization. ComfyUI custom assets/art are authorized in any room.
+This supersedes waiting for the owner's next room-validation reply; it does not
+turn lead review into owner acceptance, authorize merge/publication, or expand
+locked gameplay/progression scope.
+The owner explicitly schedules these changes **after T room fixes**:
+
+- Waves should keep a mostly forward course and forward push. Obstacles must
+  create close passes and require dodging; simply turning away currently evades
+  danger. Evaluate fewer spawns far behind, above or below the usable route.
+  Preserve scoped threat admission, reaction lead, escape routes and Free Flight.
+- Ship-to-center fast travel must work both ways through substantial physical
+  warp pads, with animated step-in portal, teleport and arrival effects. Flat
+  colored circles are explicitly rejected.
+- Remove the ugly literal support blocks beneath displayed ships and seat the
+  ships on their actual landing pads, using measured hull/pad contact.
+- Correct the female bartender's phantom hand/bar contact and apparent floating
+  feet. Review moving contact against the actual counter and floor; the earlier
+  single idle/contact fixture does not accept the newly reported behavior.
+- Improve player animations and interaction effects. Reproduce the market's
+  floating paper-like objects and the feeling of phasing through scenery; repair
+  support/collision/physical response where the actual player path proves a gap.
+
+These are requested changes, not diagnosed causes or an approved new core loop.
+Next: finish T, then reproduce each through the actual saved game and make bounded
+repairs with its own moving/native/owner evidence. No flight, warp, physics or
+animation change is made by this note; downloads do not establish integration.
+
 ## October6 owner station refinement
 
 **RPT-20261006-04 — Lead-owned layout/material/design pass; owner approval tracked per room.**
@@ -13,6 +102,43 @@ historical implementation findings. It is not gameplay, performance or release a
 coherent central service terminal, a few staffed workstations, useful displays,
 organized technical storage, material/lighting refinement and clear circulation.
 Keep existing service identities and owner architecture; broader NPC behavior is later.
+**October7 02:10UTC owner feedback:** T looks super empty compared with the target.
+Lead agrees current room is about4/10. First display save d2ce5b1a is real native
+progress, not a completed room. Next: coherent central command assembly, grouped
+staffed stations, organized storage and ceiling/local-lighting depth. Current rear
+display blur and wall-hardware intersections are rejected and being corrected.
+Owner then specifies a substantial glass-enclosed central podium with a slowly
+rotating Phoenix hologram. Replace redundant floating labels with fitted displays
+and clear nearby interaction guidance. The4.8m podium, grouped workstations and
+material/lighting finish are active work, not yet saved or accepted. Displays3 saves
+four resident graphic derivatives and moves three rear pairs15cm clear of hardware;
+its fresh capture exits0 and the lead confirms sharp, unobstructed rear artwork.
+The whole room still awaits its composition/finish pass. L remains accepted and preserved.
+
+**October7 04:21UTC superseding status:** Composition5 saves the complete four-part original Phoenix
+on a neutral rotating pivot, framed octagonal glass podium,54 hardware pieces and
+five private assets;60 added actors, zero new lights. Native exit0/preservation
+pass. Its original snapshot remains in the dated receipt.
+Earlier attempts1–4 stop before saves, with the last exposing discarded Blueprint
+construction components; the supplied ship parts are now used directly. Fresh
+Capture6 proves one natural60second rotation wrap/native0. The lead rejects its
+concrete-looking base. MaterialFinish2 saves ten private metal materials on37 actors/
+52slots; Density4 saves20 supported ceiling/storage/TV actors and four private
+assets. Both native exits0 and preserve the original lighting, ship parts, services
+and accepted L. Latest preview SHA
+`c1f62aed453362a1eacc20faeb6f9d589bae5e9f42f03053a28dd3e2c5f1371c`.
+DensityCapture3 passes/native0 with eight actual views, preserved files/saves/ships
+and short autoplay. Lead rates the illustrated ads about8/10 and room6–6.5/10:
+graphite base/ceiling depth improve, but plain panels and noisy desk/floor reflections
+remain. Next determine capture-versus-runtime rendering contribution, then make a
+bounded visual correction; no global quality/material change from guessed causes.
+Owner validation remains open while later authorized areas may progress overnight.
+**October7 04:23UTC owner direction:** compare a clean pure-white station floor
+with a metallic-silver finish; the current rusty color clashes with the sci-fi
+palette. Lead delegates actual unsaved material comparisons on the same existing
+T floor, retaining plate detail, lighting, geometry, support and collision. Include
+a white/silver mixed option. Compare before selecting a saved finish; no new
+whole-station floor approval is implied by these local tests.
 
 **Superseding status, October6 23:14UTC:** Furniture1 replaces four stools with fitted
 owned chair meshes; FemaleBartender1 saves the verified female-alien staff actor.

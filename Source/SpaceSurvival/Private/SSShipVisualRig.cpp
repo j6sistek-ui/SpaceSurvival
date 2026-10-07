@@ -18,6 +18,7 @@
 #include "Engine/World.h"
 #include "GameFramework/MovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Materials/MaterialInterface.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
@@ -259,10 +260,11 @@ bool USSShipVisualRig::Initialize(ASSShip *Ship, const FSSHullDefinition &Defini
         InteriorCollider->RegisterComponent();
     }
 
-    // Posed interior measurements put the rear/cockpit ceilings at Z494.446/569.002 cm.
-    // Mount just below those surfaces, above their Z230.207/389.275 floors. Shadows keep
-    // this boarding light inside the hull; the supplied exterior fill remains unchanged.
-    const auto AddCabinLight = [this, Ship](const TCHAR *Name, FVector Location, float Lumens, float Radius)
+    // Native landed triangles put the rear floor/ceiling at Z230/494 and cockpit at
+    // Z389/569 cm. Lower diffuse pools make the boarding route readable without the
+    // old ceiling highlights. Shadow containment and parked-only visibility remain.
+    const auto AddCabinLight =
+        [this, Ship](const TCHAR *Name, FVector Location, float Lumens, float Radius, FLinearColor Color)
     {
         UPointLightComponent *Light = NewObject<UPointLightComponent>(RigPawn, FName(Name));
         Light->SetupAttachment(Ship->GetRootComponent());
@@ -272,8 +274,9 @@ bool USSShipVisualRig::Initialize(ASSShip *Ship, const FSSHullDefinition &Defini
         Light->SetIntensityUnits(ELightUnits::Lumens);
         Light->SetIntensity(Lumens);
         Light->SetAttenuationRadius(Radius);
-        Light->SetLightColor(FLinearColor(1.f, .88f, .72f));
-        Light->SetSourceRadius(4.f);
+        Light->SetLightColor(Color);
+        Light->SetSourceRadius(9.f);
+        Light->SetSpecularScale(.025f);
         Light->SetCastShadows(true);
         Light->SetVolumetricScatteringIntensity(0.f);
         Light->SetVisibility(false);
@@ -282,10 +285,55 @@ bool USSShipVisualRig::Initialize(ASSShip *Ship, const FSSHullDefinition &Defini
         CabinLights.Add(Light);
         return Light;
     };
-    AddCabinLight(TEXT("BoardingRearCabinLight"), FVector(-600, 0, 480), 1200.f, 750.f);
-    // The narrow cockpit's glossy ceiling otherwise overwhelms the actual boarding view.
-    // Reduce only this lamp's highlight contribution, retaining its light on the pilot and steps.
-    AddCabinLight(TEXT("BoardingCockpitLight"), FVector(650, 0, 555), 700.f, 450.f)->SetSpecularScale(.15f);
+    AddCabinLight(TEXT("BoardingThresholdLight"), FVector(-900, 0, 415), 450.f, 325.f, FLinearColor(.78f, .88f, 1.f));
+    AddCabinLight(TEXT("BoardingRearCabinLight"), FVector(-600, 0, 420), 850.f, 460.f, FLinearColor(1.f, .90f, .78f));
+    AddCabinLight(TEXT("BoardingStairApproachLight"), FVector(180, 0, 425), 550.f, 320.f,
+                  FLinearColor(.78f, .88f, 1.f));
+    AddCabinLight(TEXT("BoardingCockpitLight"), FVector(650, 0, 520), 700.f, 350.f, FLinearColor(1.f, .90f, .78f));
+
+    UStaticMesh *DisplayPlane = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Plane.Plane"));
+    UStaticMesh *DisplayCase = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+    UMaterialInterface *CaseFinish = LoadObject<UMaterialInterface>(
+        nullptr, TEXT("/Game/OutpostSandbox/Materials/M_OutpostGraphite.M_OutpostGraphite"));
+    UMaterialInterface *NavigationDisplay = LoadObject<UMaterialInterface>(
+        nullptr, TEXT("/Game/SpaceSurvival/Licensed/PhoenixCabin/M_CabinNavigation.M_CabinNavigation"));
+    UMaterialInterface *SystemsDisplay = LoadObject<UMaterialInterface>(
+        nullptr, TEXT("/Game/SpaceSurvival/Licensed/PhoenixCabin/M_CabinSystems.M_CabinSystems"));
+    if (DisplayPlane && DisplayCase && CaseFinish && NavigationDisplay && SystemsDisplay)
+    {
+        const auto AddCabinDetail = [this, Ship](const TCHAR *Name, UStaticMesh *Mesh, UMaterialInterface *Material,
+                                                 FVector Location, FVector Scale, FRotator Rotation)
+        {
+            UStaticMeshComponent *Detail = NewObject<UStaticMeshComponent>(RigPawn, FName(Name));
+            Detail->SetupAttachment(Ship->GetRootComponent());
+            Detail->SetMobility(EComponentMobility::Movable);
+            Detail->SetStaticMesh(Mesh);
+            Detail->SetMaterial(0, Material);
+            Detail->SetRelativeLocation(Location);
+            Detail->SetRelativeScale3D(Scale);
+            Detail->SetRelativeRotation(Rotation);
+            Detail->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            Detail->SetGenerateOverlapEvents(false);
+            Detail->SetCanEverAffectNavigation(false);
+            Detail->SetCastShadow(false);
+            Detail->SetVisibility(false);
+            RigPawn->AddInstanceComponent(Detail);
+            Detail->RegisterComponent();
+            CabinDetails.Add(Detail);
+        };
+        // Both rear walls are measured flat at Y +/-183.158 cm. Cases end at
+        // +/-182.5, with panes 5 cm inside the wall; the 3.5 m passage stays clear.
+        for (int32 Index = 0; Index < 2; ++Index)
+        {
+            const float Side = Index == 0 ? -1.f : 1.f;
+            const float X = Index == 0 ? -650.f : -400.f;
+            AddCabinDetail(Index == 0 ? TEXT("CabinNavigationCase") : TEXT("CabinSystemsCase"), DisplayCase, CaseFinish,
+                           FVector(X, Side * 180.5f, 380.f), FVector(.86f, .04f, .54f), FRotator::ZeroRotator);
+            AddCabinDetail(Index == 0 ? TEXT("CabinNavigationDisplay") : TEXT("CabinSystemsDisplay"), DisplayPlane,
+                           Index == 0 ? NavigationDisplay : SystemsDisplay, FVector(X, Side * 178.1f, 380.f),
+                           FVector(.8f, .48f, 1.f), FRotator(0.f, Index == 0 ? 0.f : 180.f, 90.f));
+        }
+    }
 
     BattleExit = LoadClip(TEXT("/Game/Stellar_Phoenix/Spaceship/Animation/BattleMode_Exit.BattleMode_Exit"), Hull);
     if (!AirBrakes.IsEmpty())
@@ -344,6 +392,8 @@ void USSShipVisualRig::SetStationCollision(bool Enabled)
         return;
     for (UPointLightComponent *Light : CabinLights)
         Light->SetVisibility(Enabled);
+    for (UStaticMeshComponent *Detail : CabinDetails)
+        Detail->SetVisibility(Enabled);
     if (Enabled && LandingOn)
     {
         // Also handles initial hangar display, which has no incoming flight/descent to animate.
@@ -360,6 +410,9 @@ void USSShipVisualRig::SetStationCollision(bool Enabled)
         if (Cast<USkeletalMeshComponent>(Component) || Cast<UStaticMeshComponent>(Component) ||
             GearColliders.Contains(Component) || RampColliders.Contains(Component))
         {
+            // Cabin display cases and panes remain decorative during the parked collision transition.
+            if (auto *Detail = Cast<UStaticMeshComponent>(Component); Detail && CabinDetails.Contains(Detail))
+                continue;
             Component->SetSimulatePhysics(false);
             Component->SetCollisionObjectType(ECC_WorldDynamic);
             Component->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -610,6 +663,7 @@ void USSShipVisualRig::ReleaseRig()
     RampColliders.Reset();
     InteriorCollider = nullptr;
     CabinLights.Reset();
+    CabinDetails.Reset();
     AirBrakes.Reset();
     EnginePivots.Reset();
     EngineRestRotations.Reset();

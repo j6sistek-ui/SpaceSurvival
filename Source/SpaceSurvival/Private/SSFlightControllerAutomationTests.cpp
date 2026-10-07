@@ -4,11 +4,14 @@
 #include "SSHUD.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
+#include "SSChaseCameraArm.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Engine/Engine.h"
+#include "Engine/SkeletalMesh.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
@@ -741,6 +744,159 @@ bool FSSControllerTestingPreset::RunTest(const FString &)
     TestTrue(TEXT("A fires the ship's weapon"), F.Ship->IsFiring());
     TestEqual(TEXT("A fire does not open a flight interaction panel"), F.Mode->Panel, ESSPanel::None);
     F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSControllerChaseRollIsolation, "SpaceSurvival.Flight.ControllerChaseRollIsolation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSControllerChaseRollIsolation::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) ||
+        !TestTrue(TEXT("Exercise the actual default Phoenix physics hull"),
+                  ASSShip::SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix &&
+                      F.Ship->Collision->IsSimulatingPhysics()) ||
+        !TestNotNull(TEXT("The active chase component owns bank-independent follow"),
+                     Cast<USSChaseCameraArm>(F.Ship->CameraBoom)))
+        return false;
+
+    const FVector AuthoredAnchor = F.Ship->CameraBoom->GetRelativeLocation();
+    const USkeletalMeshComponent *DrawnHull = F.Ship->SkeletalHull;
+    const USkeletalMesh *HullAsset = DrawnHull ? DrawnHull->GetSkeletalMeshAsset() : nullptr;
+    if (!TestNotNull(TEXT("Project the actual visible Phoenix mesh during full rolls"), HullAsset))
+        return false;
+    const FBox HullBounds = HullAsset->GetBounds().GetBox();
+    const double RequiredMargin = FSSHullDefinition(ASSShip::SelectedHullIdentity()).FrameMarginShare;
+    auto HullMargin = [&]()
+    {
+        const FTransform View = F.Ship->Camera->GetComponentTransform();
+        const double TanHalfHorizontal = FMath::Tan(FMath::DegreesToRadians(F.Ship->Camera->FieldOfView * .5));
+        const double TanHalfVertical = TanHalfHorizontal / (16. / 9.);
+        double Margin = 1.;
+        for (int32 Corner = 0; Corner < 8; ++Corner)
+        {
+            const FVector Point(Corner & 1 ? HullBounds.Max.X : HullBounds.Min.X,
+                                Corner & 2 ? HullBounds.Max.Y : HullBounds.Min.Y,
+                                Corner & 4 ? HullBounds.Max.Z : HullBounds.Min.Z);
+            const FVector Local =
+                View.InverseTransformPosition(DrawnHull->GetComponentTransform().TransformPosition(Point));
+            if (Local.X <= 0.)
+                return -1.;
+            const double X = .5 + Local.Y / (2. * Local.X * TanHalfHorizontal);
+            const double Y = .5 - Local.Z / (2. * Local.X * TanHalfVertical);
+            Margin = FMath::Min3(Margin, FMath::Min(X, 1. - X), FMath::Min(Y, 1. - Y));
+        }
+        return Margin;
+    };
+    F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
+    F.Frames(30);
+    const FQuat EyeBefore = F.Ship->Camera->GetComponentQuat();
+    const FVector NoseBefore = F.Ship->GetActorForwardVector();
+    const FVector RelativeEyeBefore = F.Ship->Camera->GetComponentLocation() - F.Ship->GetActorLocation();
+    FQuat PreviousBody = F.Ship->GetActorQuat();
+    double BodyTravel = 0., WorstViewTurn = 0., WorstEyeDisplacement = 0., WorstNoseTurn = 0.;
+    double MinimumRollMargin = 1.;
+    // Raw held bumpers exercise the real adapter, evade impulse and ShipCore body.
+    // The camera must not orbit when only the hull spins around its nose.
+    for (FKey Bumper : {EKeys::Gamepad_RightShoulder, EKeys::Gamepad_LeftShoulder})
+    {
+        F.Button(Bumper, true);
+        for (int32 Frame = 0; Frame < 150; ++Frame)
+        {
+            F.Step();
+            const FQuat Body = F.Ship->GetActorQuat();
+            BodyTravel += FMath::RadiansToDegrees(PreviousBody.AngularDistance(Body));
+            PreviousBody = Body;
+            MinimumRollMargin = FMath::Min(MinimumRollMargin, HullMargin());
+            WorstViewTurn = FMath::Max(
+                WorstViewTurn, FMath::RadiansToDegrees(EyeBefore.AngularDistance(F.Ship->Camera->GetComponentQuat())));
+            WorstNoseTurn = FMath::Max(
+                WorstNoseTurn, FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(
+                                   FVector::DotProduct(NoseBefore, F.Ship->GetActorForwardVector()), -1., 1.))));
+            WorstEyeDisplacement = FMath::Max(
+                WorstEyeDisplacement, FVector::Distance(RelativeEyeBefore, F.Ship->Camera->GetComponentLocation() -
+                                                                               F.Ship->GetActorLocation()));
+        }
+        F.Button(Bumper, false);
+        F.Frames(30);
+    }
+    AddInfo(FString::Printf(TEXT("CHASE bumper body travel=%.2f deg; nose=%.3f deg; view=%.3f deg; orbit=%.2f cm"),
+                            BodyTravel, WorstNoseTurn, WorstViewTurn, WorstEyeDisplacement));
+    TestTrue(TEXT("Held bumpers still produce more than a complete physical roll"), BodyTravel > 360.);
+    TestTrue(TEXT("A bumper roll leaves the nose direction essentially unchanged"), WorstNoseTurn < 3.);
+    TestTrue(TEXT("A bumper roll does not revolve the camera around that nose"), WorstViewTurn < 3.);
+    TestTrue(TEXT("Elevated chase anchor does not circle the rolling hull; only bounded position lag remains"),
+             WorstEyeDisplacement < 100.);
+    AddInfo(FString::Printf(TEXT("CHASE complete held-roll hull margin=%.4f; required=%.4f"), MinimumRollMargin,
+                            RequiredMargin));
+    TestTrue(TEXT("Every actual hull corner retains the existing framing margin throughout both held rolls"),
+             MinimumRollMargin >= RequiredMargin);
+
+    // Isolate the component transform from integration here, retaining the actual
+    // Phoenix/boom/camera. Sweep both vertical poles and inverted attitudes while
+    // changing body bank three times as fast; no new camera math helper is tested.
+    F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+    F.Ship->Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+    F.Ship->CameraBoom->bEnableCameraLag = false;
+    double WorstPoleStep = 0.;
+    FQuat PreviousEye = F.Ship->Camera->GetComponentQuat();
+    for (int32 Pitch = 0; Pitch <= 360; Pitch += 2)
+    {
+        F.Ship->SetActorRotation(FRotator(Pitch, 23.f, Pitch * 3.f).Quaternion(), ETeleportType::TeleportPhysics);
+        F.Ship->CameraBoom->TickComponent(FSSControllerFlightWorld::StepSeconds, LEVELTICK_All, nullptr);
+        const FQuat Eye = F.Ship->Camera->GetComponentQuat();
+        if (Pitch > 0)
+            WorstPoleStep = FMath::Max(WorstPoleStep, FMath::RadiansToDegrees(PreviousEye.AngularDistance(Eye)));
+        PreviousEye = Eye;
+    }
+    AddInfo(FString::Printf(TEXT("CHASE full pitch loop with simultaneous bank: largest actual view step=%.3f deg"),
+                            WorstPoleStep));
+    TestTrue(TEXT("Crossing both pitch poles cannot introduce a camera yaw/roll flip"), WorstPoleStep < 2.2);
+
+    const FQuat BeforeLookBody = F.Ship->GetActorQuat();
+    const FQuat BeforeLookEye = F.Ship->Camera->GetComponentQuat();
+    for (int32 Frame = 0; Frame < 30; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_RightX, .8f);
+        F.Step();
+    }
+    TestTrue(TEXT("Explicit right-stick free-look still turns the actual camera"),
+             FMath::RadiansToDegrees(BeforeLookEye.AngularDistance(F.Ship->Camera->GetComponentQuat())) > 15.);
+    TestTrue(TEXT("Free-look still cannot steer the actual physics hull"),
+             BeforeLookBody.AngularDistance(F.Ship->GetActorQuat()) < .005);
+    F.Axis(EKeys::Gamepad_RightX, 0.f);
+    F.Frames(120);
+    TestTrue(TEXT("Released free-look returns to its continuous chase frame"),
+             FMath::RadiansToDegrees(BeforeLookEye.AngularDistance(F.Ship->Camera->GetComponentQuat())) < 1.);
+
+    // A non-coplanar flight path leaves a transported frame banked even after the
+    // nose returns home. Docking is an explicit shot boundary; the next departure
+    // must recover authored framing without recapturing the compensated anchor.
+    for (const FRotator Pose : {FRotator(0, 90, 35), FRotator(90, 90, 120), FRotator(0, 0, -80)})
+    {
+        F.Ship->SetActorRotation(Pose.Quaternion(), ETeleportType::TeleportPhysics);
+        F.Ship->CameraBoom->TickComponent(FSSControllerFlightWorld::StepSeconds, LEVELTICK_All, nullptr);
+    }
+    const FQuat LocalView =
+        F.Ship->CameraBoom->GetRelativeRotation().Quaternion() * F.Ship->Camera->GetRelativeRotation().Quaternion();
+    TestTrue(TEXT("The docking regression actually starts with a path-dependent banked camera frame"),
+             FMath::RadiansToDegrees(LocalView.AngularDistance(F.Ship->Camera->GetComponentQuat())) > 45.);
+    const FVector Pad = F.Ship->GetActorLocation();
+    const FRotator Facing(0, 17, 0);
+    const FQuat DockView = Facing.Quaternion() * LocalView;
+    F.Ship->SetDockingTarget(Pad, Facing);
+    F.Ship->FinishDocking();
+    F.Ship->CameraBoom->TickComponent(FSSControllerFlightWorld::StepSeconds, LEVELTICK_All, nullptr);
+    TestTrue(TEXT("Completed docking clears transported camera bank"),
+             FMath::RadiansToDegrees(DockView.AngularDistance(F.Ship->Camera->GetComponentQuat())) < .1);
+    TestTrue(TEXT("Docking retains the original authored chase anchor"),
+             (F.Ship->CameraBoom->GetComponentLocation() - Pad).Equals(Facing.RotateVector(AuthoredAnchor), .1));
+    F.Ship->BeginTakeoff(Pad + FVector(0, 0, 700), Facing, 1.f);
+    F.Frames(66);
+    TestTrue(TEXT("The next takeoff retains stable authored framing"),
+             !F.Ship->IsTakingOff() &&
+                 FMath::RadiansToDegrees(DockView.AngularDistance(F.Ship->Camera->GetComponentQuat())) < .1);
     return true;
 }
 

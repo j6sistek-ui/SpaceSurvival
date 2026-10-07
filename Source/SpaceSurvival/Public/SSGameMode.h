@@ -94,9 +94,12 @@ public:
     bool IsWalkerInsideShip(const ASSWalker *Candidate) const;
     bool IsWalkerAtPilotSeat(const ASSWalker *Candidate) const;
     bool TryBoardShip(ASSWalker *Candidate);
-    /** Physical launch terminal: preference only; sitting commits the existing transaction. */
+    /** Cockpit preference only; sitting commits the existing transaction. */
     void CycleDepartureMode();
     void SelectDepartureMode(ESSDepartureMode Mode);
+    bool CanChooseDepartureMode() const;
+    /** Consumes a new mode-button press only at the supported cockpit chair; never launches. */
+    bool HandleCockpitModeInput(bool KeyboardJustPressed, bool GamepadJustPressed);
     ESSDepartureMode GetSelectedDepartureMode() const
     {
         return SelectedDepartureMode;

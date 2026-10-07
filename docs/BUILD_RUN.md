@@ -40,7 +40,7 @@ Keep these authoring destinations separate:
 
 **ULAT is enabled in the canonical project.** Its installed folder is now `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins/Marketplace/UltimateLevelArtTool`; moving the existing plugin into Marketplace resolved the native rules-discovery failure. The native refresh verifies 16,051 assets across 70 refreshed collections and 2,617 ULAT rows. All 2,825 mesh proxies, thumbnails and native Blender cache assets are prepared, with zero failed proxies or unavailable cache meshes. The 204 name collisions and four unsupported names remain in native collections. The complete station is verified in Blender and saved as Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend; see [Building library](BUILDING_LIBRARY.md) and [Project State](PROJECT_STATE.md).
 
-Current station consoles route to existing gameplay panels: ship paint, wardrobe, launch choices, engineering, contracts, repair and save services. The original sandbox's paint/wardrobe previews and map-travel terminals retain their own behaviors. [Outpost guide](OUTPOST_SANDBOX.md) distinguishes them. Save edits directly to the current Wayfarer map with Play stopped, then restart Play to review them. Changes to the preserved outpost experiment require a deliberate transfer; changes reach testers only through a later package/publication.
+Current station consoles route to existing gameplay panels: ship paint, wardrobe, flight briefing, engineering, contracts, repair and save services. Waves / Free Flight selection belongs at the Phoenix cockpit chair in the October 6 source revision; the briefing reports the choice and retains explicit saved-run continuation. The original sandbox's paint/wardrobe previews and map-travel terminals retain their own behaviors. [Outpost guide](OUTPOST_SANDBOX.md) distinguishes them. Save edits directly to the current Wayfarer map with Play stopped, then restart Play to review them. Changes to the preserved outpost experiment require a deliberate transfer; changes reach testers only through a later package/publication.
 
 For the focused integration smoke, rebuild the current Editor module first, then run one offscreen process at a time:
 
@@ -81,7 +81,7 @@ $ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
 
 The importer creates only `/Game/SpaceSurvival/UI/MainMenu` assets, preserves the committed source bytes and rejects unknown or changed prior outputs. Matching recorded textures can be reused unchanged. `Artifacts/FigmaMainMenu/author.json` records output hashes; the existing SpaceSurvival cook root covers this family. Do not run the baseline Content author to install this menu. Import, native build, input, rendered fidelity and cooked inclusion have separate checks in the validation record.
 
-On this title screen, Continue resumes a saved survival checkpoint and stays visibly disabled when one is unavailable; New Game opens home for boarding and the Start/Continue/Free Flight choice; Settings opens the current settings panel; Exit Game quits. W/S or arrows/D-pad navigate, Enter/A confirms, pointer hit areas follow the same four native indices, and Escape quits from the title only. The old Figma sample-version caption is retained in provenance but the live panel says `DEVELOPMENT REVIEW` without an unwired release-log link. Missing imported artwork falls back to the functional native panel. At other aspect ratios the composition is letterboxed; the half-scale button exports target 1920×1080 and do not establish 4K or shader-animation acceptance.
+On this title screen, Continue resumes a saved survival checkpoint and stays visibly disabled when one is unavailable; New Game opens home, where the pilot chooses Waves / Free Flight at the cockpit chair before sitting to depart; Settings opens the current settings panel; Exit Game quits. The station's flight briefing also retains explicit Continue saved Survival when a checkpoint is available. W/S or arrows/D-pad navigate, Enter/A confirms, pointer hit areas follow the same four native indices, and Escape quits from the title only. The old Figma sample-version caption is retained in provenance but the live panel says `DEVELOPMENT REVIEW` without an unwired release-log link. Missing imported artwork falls back to the functional native panel. At other aspect ratios the composition is letterboxed; the half-scale button exports target 1920×1080 and do not establish 4K or shader-animation acceptance.
 
 ## Orbital wreck authoring and comparison (target unaccepted)
 
@@ -344,7 +344,7 @@ The dry run binds the current built/archive executable and link response file; u
 
 ## Controls
 
-The following mappings describe Package5/source `0004810`, retained in Package7/source `25cf794`, the temporary September 22 testing preset. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
+The following mappings retain the September 22 testing preset and add the October 6 source revision's cockpit mode selector. The latter requires a matching rebuilt executable; earlier Package5/source `0004810` and Package7/source `25cf794` do not contain it. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
 
 | Capability | Keyboard/mouse | Controller |
 | --- | --- | --- |
@@ -361,6 +361,7 @@ The following mappings describe Package5/source `0004810`, retained in Package7/
 | Walk / run | WASD / Shift | Left stick / X |
 | Jump on foot | Space | A |
 | Interact on foot | E | Y |
+| Choose departure mode at the cockpit chair | R, one press per change | D-pad Left, one press per change |
 | Flight encounter interaction | E | X |
 | Confirm menu choice | Enter | A |
 | Dock when the pad says ready | E | X |
@@ -376,7 +377,9 @@ The uncooked developer build of the flight reset requires the rebuilt project DL
 
 On station approach, follow the exterior landing-pad marker. Release throttle, then apply brake to slow to unboosted cruise speed or below; approach above the deck and use the HUD's hull-aware distance/clearance message. Press E/controller X when ready to begin the three-second align-and-lower sequence. Entering the radius by itself does not dock. Firing is disabled during docking and lift-off.
 
-Walk up the parked Phoenix's rear ramp and into its cabin to open the launch choices. At home, Start Survival begins a new run, Continue Survival loads an available station checkpoint, and Free Flight starts casual flying without survival progress. During a survival station visit, Continue Survival keeps the current run; Free Flight is unavailable until home. Closing the choices inside the cabin keeps them closed until you leave and enter again. The launch console remains another entry point, including on the preserved fallback layout.
+Walk up the parked Phoenix's rear ramp, through the cabin and to the cockpit chair. A compact cockpit card shows **WAVES / FREE FLIGHT** and marks the selected departure. Press **R / D-pad Left** once to change the selection, then **E / Y** to sit and depart. Holding the mode button does not repeat; pressing mode and sit together changes only the mode. Choosing alone does not start a flight, restart a run or replace a saved checkpoint. The card and mode control are available only at the supported chair, not elsewhere in the station or during flight. An active Survival station stop keeps its current mode and progress and shows **MODE LOCKED**. The station **Flight Briefing** reports the selection and directs the pilot to the ship; explicit **Continue saved Survival** remains available for an existing checkpoint.
+
+The October 6 selector changes are implemented in source with [focused verification requirements](validation/2026-10-06-cockpit-mode-selector.md); native build, card rendering and physical-play acceptance require their own results. `SpaceSurvival.Integration.PhoenixCockpitDeparture` exercises raw keyboard/controller input at the walked chair. The updated boarding render fixture requires nine views, including Waves and selected Free Flight at the chair before sitting; the earlier eight-frame boarding captures are historical.
 
 Launch returns control to the same parked ship and lifts it 7 m before handing back steering and thrust at zero throttle. Apply RT or raise the keyboard setting with W, then fly clear of the 180 m zone to resume the survival wave clock and encounter spawning. Initial departure preserves Wave 1's time; Station 1 departure starts Wave 6 at that boundary. Station 2 remains the Phase 1 service/save boundary and does not start Wave 11. Free Flight instead retains the home pad, spawns no survival waves, and offers Return to home hangar; it cannot overwrite a survival checkpoint or grant progression.
 

@@ -17,8 +17,10 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerInput.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/WorldSettings.h"
+#include "InputKeyEventArgs.h"
 #include "Physics/Experimental/PhysScene_Chaos.h"
 #include "UObject/UnrealType.h"
 
@@ -37,7 +39,7 @@ struct FSSBoardingWorld
     APlayerController *Controller = nullptr;
     ULocalPlayer *LocalPlayer = nullptr;
 
-    bool Initialize(FAutomationTestBase &Test, bool Home)
+    bool Initialize(FAutomationTestBase &Test, bool Home, bool NativeController = false)
     {
         World = UWorld::CreateWorld(EWorldType::Game, false);
         if (!Test.TestNotNull(TEXT("Create isolated actual-movement boarding world"), World))
@@ -73,11 +75,17 @@ struct FSSBoardingWorld
         // Skip account/startup BeginPlay, retaining real actor, physics and CharacterMovement ticks.
         World->SetBegunPlay(true);
         World->GetPhysicsScene()->OnWorldBeginPlay();
-        Controller = World->SpawnActor<APlayerController>();
+        Controller = NativeController ? static_cast<APlayerController *>(World->SpawnActor<ASSPlayerController>())
+                                      : World->SpawnActor<APlayerController>();
         // Production pause routes through the game instance's local-player registry.
         LocalPlayer = NewObject<ULocalPlayer>(GEngine, NAME_None, RF_Transient);
         Instance->AddLocalPlayer(LocalPlayer, FPlatformUserId::CreateFromInternalId(0));
         Controller->SetPlayer(LocalPlayer);
+        Controller->bForceFeedbackEnabled = false;
+        Controller->SetDisableHaptics(true);
+        if (NativeController &&
+            !Test.TestNotNull(TEXT("Cockpit input uses real PlayerInput"), Controller->PlayerInput.Get()))
+            return false;
         if (!Test.TestNotNull(TEXT("Real boarding pause has a registered owning player state"),
                               Controller->PlayerState.Get()))
             return false;
@@ -127,6 +135,18 @@ struct FSSBoardingWorld
     {
         for (int32 Index = 0; Index < Count; ++Index)
             Frame(Direction);
+    }
+    void Button(FKey Key, bool Pressed)
+    {
+        CastChecked<ASSPlayerController>(Controller)
+            ->InputKey(
+                FInputKeyEventArgs::CreateSimulated(Key, Pressed ? IE_Pressed : IE_Released, Pressed ? 1.f : 0.f));
+    }
+    void InputFrame()
+    {
+        ++GFrameCounter;
+        CastChecked<ASSPlayerController>(Controller)->PlayerTick(1.f / 60.f);
+        World->Tick(LEVELTICK_All, 1.f / 60.f);
     }
     ~FSSBoardingWorld()
     {
@@ -222,7 +242,7 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
     for (const bool Home : {true, false})
     {
         FSSBoardingWorld F;
-        if (!F.Initialize(*this, Home))
+        if (!F.Initialize(*this, Home, true))
             return false;
         // Initialize constructs the already-entered station without running startup/session ticks.
         // Match that history once: a first Tick at chair commit must not treat the existing Station
@@ -233,7 +253,6 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
                  F.Mode->PreviousPhase == int32(F.Instance->Session.run.phase) &&
                      F.Mode->PreviousWave == F.Instance->Session.run.wave);
         const std::string RunId = F.Instance->Session.run.id;
-        const int32 Wave = F.Instance->Session.run.wave;
         TestEqual(TEXT("Current measured squirrel retains radius and receives its body-height collision fit"),
                   F.Walker->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight(), 75.f);
         TestEqual(TEXT("The measured height correction never reduces the horizontal body clearance"),
@@ -251,21 +270,17 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
         if (Home)
         {
             F.Mode->OpenPanel(ESSPanel::Launch);
-            const int32 FreeFlight =
-                F.Mode->Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry) { return Entry.Action == 156; });
-            if (!TestTrue(TEXT("Station computer exposes an explicit Free Flight preference"),
-                          FreeFlight != INDEX_NONE))
-                return false;
-            TestFalse(TEXT("The computer has no immediate start/depart command"),
+            TestFalse(TEXT("Station briefing has no competing mode switch or immediate departure"),
                       F.Mode->Entries.ContainsByPredicate(
                           [](const FSSMenuEntry &Entry)
-                          { return Entry.Action == 3 || Entry.Action == 50 || Entry.Action == 52; }));
-            F.Mode->ActivateEntry(FreeFlight);
-            TestTrue(TEXT("Terminal changes only the departure preference"),
-                     F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight &&
-                         !F.Instance->IsFreeFlight() && F.Instance->Session.run.id == RunId &&
-                         F.Instance->Session.run.wave == Wave && !F.Mode->IsMenuOpen());
-            F.Mode->CycleDepartureMode();
+                          {
+                              return Entry.Action == 3 || Entry.Action == 50 || Entry.Action == 52 ||
+                                     Entry.Action == 155 || Entry.Action == 156;
+                          }));
+            TestTrue(TEXT("Station briefing points to the cockpit and reports the current mode"),
+                     F.Mode->PanelDetail.Contains(TEXT("cockpit chair")) &&
+                         F.Mode->PanelDetail.Contains(TEXT("WAVES")));
+            F.Mode->ClosePanel();
         }
         else
         {
@@ -274,6 +289,14 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
                      F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves &&
                          F.Instance->Session.run.id == RunId && F.Instance->Session.run.wave == 5);
         }
+        TestFalse(TEXT("Mode input outside the ship cannot change the departure preference"),
+                  F.Mode->HandleCockpitModeInput(true, true));
+        F.Button(EKeys::R, true);
+        F.InputFrame();
+        TestTrue(TEXT("Raw R outside the cockpit leaves Waves selected"),
+                 F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves);
+        F.Button(EKeys::R, false);
+        F.InputFrame();
         const auto SeatAt = [&](FVector Local)
         {
             return F.Ship->GetVisualRig()->CanUsePilotSeatAt(F.Ship->GetActorTransform().TransformPosition(Local), 34.f,
@@ -333,6 +356,7 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
         TestFalse(TEXT("Standing beside the cockpit outside the chair reach cannot use the seat"),
                   SeatAt(FVector(766.912, 150, 454.273)));
         TestFalse(TEXT("The rear cabin cannot become a remote chair interaction"), SeatAt(FVector(-850, 0, 313)));
+        bool SawMiddleCabinHull = false, MiddleCabinGuidanceContinuous = true;
         for (int32 Frame = 0; Frame < 900 && !F.Mode->IsWalkerAtPilotSeat(F.Walker); ++Frame)
         {
             // Actual paired capsule queries show a one-sided console trim at X110..150.
@@ -341,7 +365,18 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
             const FVector Local = F.Local();
             const float TargetY = -10.f * (1.f - FMath::Clamp((float(Local.X) - 180.f) / 70.f, 0.f, 1.f));
             F.Frame(FVector2D(FMath::Clamp((TargetY - float(Local.Y)) * .15f, -.35f, .35f), 1.f));
+            const FVector Walked = F.Local();
+            const auto *Support = F.Walker->GetCharacterMovement()->CurrentFloor.HitResult.GetComponent();
+            if (Walked.X > -650.f && Walked.X < -150.f && Support == F.Ship->GetVisualRig()->GetHull() &&
+                F.Walker->GetCharacterMovement()->IsMovingOnGround())
+            {
+                SawMiddleCabinHull = true;
+                MiddleCabinGuidanceContinuous &= F.Mode->IsWalkerInsideShip(F.Walker);
+            }
         }
+        TestTrue(TEXT("The middle cabin is actually traversed on the supplied Phoenix hull floor"), SawMiddleCabinHull);
+        TestTrue(TEXT("Cabin guidance remains active beyond the rear entry while grounded on that hull"),
+                 MiddleCabinGuidanceContinuous);
         AddInfo(FString::Printf(
             TEXT("COCKPIT home=%d local=%s floor=%s grounded=%d floorGap=%.3f rescues=%d"), Home, *F.Local().ToString(),
             *GetNameSafe(F.Walker->GetCharacterMovement()->CurrentFloor.HitResult.GetComponent()),
@@ -353,6 +388,63 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
             continue;
         TestEqual(TEXT("The complete ramp, passage and stairs need no rescue"), F.Walker->OffDeckRecoveries(), 0);
         TestFalse(TEXT("Walking to the cockpit never opens a launch menu"), F.Mode->IsMenuOpen());
+        TestTrue(TEXT("Cockpit support retains ship guidance beyond the old rear-cabin entry region"),
+                 F.Mode->IsWalkerInsideShip(F.Walker));
+        const auto AccountAtChair = SS::EncodeAccount(F.Instance->Session.account);
+        const auto RunAtChair = SS::EncodeRun(F.Instance->Session.run);
+        F.Mode->OpenPanel(ESSPanel::Main);
+        TestFalse(TEXT("A mode input while paused is consumed by the menu, not the cockpit"),
+                  F.Mode->HandleCockpitModeInput(true, false));
+        F.Mode->ClosePanel();
+        F.Button(EKeys::R, true);
+        F.InputFrame();
+        if (Home)
+        {
+            TestTrue(TEXT("Raw R at the supported chair selects Free Flight without sitting or launching"),
+                     F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight && !F.Walker->IsBoarding() &&
+                         !F.Mode->IsDepartingStation() && !F.Instance->IsFreeFlight());
+            for (int32 HeldFrame = 0; HeldFrame < 30; ++HeldFrame)
+                F.InputFrame();
+            TestTrue(TEXT("Holding raw R across thirty controller ticks does not repeat the toggle"),
+                     F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight);
+            F.Button(EKeys::R, false);
+            F.InputFrame();
+            F.Button(EKeys::Gamepad_DPad_Left, true);
+            F.InputFrame();
+            TestTrue(TEXT("A raw D-pad Left press selects Waves and the controller prompt family"),
+                     F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves &&
+                         CastChecked<ASSPlayerController>(F.Controller)->GetInputFamily() == ESSInputFamily::Gamepad);
+            for (int32 HeldFrame = 0; HeldFrame < 30; ++HeldFrame)
+                F.InputFrame();
+            TestTrue(TEXT("Holding raw D-pad Left does not repeat the toggle"),
+                     F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves);
+            F.Button(EKeys::Gamepad_DPad_Left, false);
+            F.InputFrame();
+            F.Button(EKeys::R, true);
+            F.Button(EKeys::Gamepad_DPad_Left, true);
+            F.InputFrame();
+            TestTrue(TEXT("Simultaneous device press edges toggle once, not twice"),
+                     F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight);
+            F.Button(EKeys::R, false);
+            F.Button(EKeys::Gamepad_DPad_Left, false);
+            F.InputFrame();
+            F.Button(EKeys::R, true);
+            F.Button(EKeys::E, true);
+            F.InputFrame();
+            TestTrue(TEXT("A mode press and use on the same frame changes mode without starting the sit"),
+                     F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves && !F.Walker->IsBoarding());
+            F.Button(EKeys::E, false);
+        }
+        else
+            TestTrue(TEXT("An active Survival stop handles the input but keeps Waves locked"),
+                     !F.Mode->CanChooseDepartureMode() &&
+                         F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves);
+        F.Button(EKeys::R, false);
+        F.InputFrame();
+        TestTrue(TEXT("Cockpit preference changes preserve the entire run/account and walking possession"),
+                 SS::EncodeAccount(F.Instance->Session.account) == AccountAtChair &&
+                     SS::EncodeRun(F.Instance->Session.run) == RunAtChair && F.Controller->GetPawn() == F.Walker &&
+                     !F.Mode->IsMenuOpen());
         const FTransform Standing = F.Walker->GetActorTransform();
         const FVector StandingCamera = F.Walker->Camera->GetComponentLocation();
         const FVector StandingBoom = F.Walker->Boom->GetComponentLocation();
@@ -362,6 +454,8 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
                  F.Walker->IsBoarding() && !F.Walker->IsSeated() && F.Walker->GetMesh()->IsVisible() &&
                      F.Controller->GetPawn() == F.Walker && !F.Mode->IsDepartingStation() && !F.Mode->IsMenuOpen());
         TestFalse(TEXT("Repeated chair use cannot restart the transition"), F.Mode->TryBoardShip(F.Walker));
+        TestFalse(TEXT("Mode input cannot change preference after the sit has begun"),
+                  F.Mode->HandleCockpitModeInput(true, true));
         F.Frames(30);
         TestTrue(TEXT("Half-second sample retains a visible intermediate seated blend"),
                  F.Walker->IsBoarding() && !F.Walker->IsSeated() && F.Walker->GetMesh()->IsVisible() &&

@@ -10,6 +10,68 @@ to T Operations, retaining its central service terminal, useful displays, limite
 staffed workstations and organized storage. KNOWN_ISSUES remains the work/acceptance
 log; this catalog records resource evaluation rather than a separate task queue.
 
+### October7 owner downloads — selected evaluation only
+
+Disk inventory at2026-10-07T02:57Z confirms the resources below. Acquisition and
+evaluation are separate: project-present assets have not been rendered or accepted
+by this inventory. Owner-added folders remain unstaged; no whole-pack import,
+sample-map transplant or new gameplay service is authorized by these entries.
+WBS uses refer to existing station, presentation and transit work.
+
+| Stable ID / resource | Acquisition evidence | Whole-project value, timing and next bounded check |
+| --- | --- | --- |
+| LIB-20261007-CLINIC / Medical Clinic and Laboratory Futuristic Sci-Fi | Content/Clinic:257 packages+3 maps,184.74MiB; matching vault payload. | Selected technical cabinets/devices could improve T/R and later infirmary scenery. Inspect a few prop bounds/materials natively before placement; no healing mechanic. |
+| LIB-20261007-LASER-BEAMS / Stylized Laser Beam VFX Free | Content/FreeStylizedLaserBeamVFX:52 packages+1 map,19.67MiB; two beam BPs and hit/muzzle materials. | Later existing weapon/equipment effects. Evaluate one beam/emitter in motion against the combat palette; straight beams do not finish curved reception fixtures. |
+| LIB-20261007-GYM-EQUIPMENT / Gym Equipment Assets Pack | Content/GymEAP:180 packages+2 maps+26 FBX,508.98MiB. | Later restrained crew conditioning or mounted gear. Probe selected furniture; no new gym room/exercise system or large-animation-library claim. |
+| LIB-20261007-PLANTS-SAMPLE / Nanite Plants Sample Collection | Content/Nanite_Plants_Sample_Collection:119 packages+1 map,99.70MiB, six geometry packages. No generator found in payload. | Later sparse contained hydroponics/reception contrast. Check selected mesh/material/Nanite compatibility and measured cost before use. |
+| LIB-20261007-CLOUD-TUNNEL / Clouds Tunnel VDB Effects Pack Loop | Content/Clouds_Tunnel_Loop:21 packages+10 maps,12.63GiB; VDB loops/sparse-volume materials. | Existing transit/electrical-field presentation candidate, after T. Inspect one volume's dimensions/frame/storage cost then render; do not cook the whole pack. |
+| LIB-20261007-RIGGED-LIFT / Rigged Sci-Fi Lift Mobile Platform Elevator | Raw BLEND/converted GLB+17 textures,23 files/222.74MiB in owner FabLibrary; native import UNCONFIRMED. | Later cargo/service hardware if needed. Blender rig/topology/material/clip inspection first; GLB conversion does not establish animation preservation or traversal integration. |
+| LIB-20261007-PARAGON-MANNY / Paragon animations retargeted to Manny | Raw5,370 FBX variants/9.89GiB in owner FabLibrary; no proven matching native import. | Later tiny Director/player/NPC gesture set. Confirm skeleton/root-motion/additive/prop requirements and retarget to the actual character; no thousands-of-clips import or plug-and-play claim. |
+
+Native5.8 compatibility, integration, visual acceptance and runtime cost remain
+UNCONFIRMED for all seven. Private inventory receipts:NewStationAssetsInventory1
+SHA4a017e2999e286d0a12021f3d790d00028132471725749a4654186ce4f35bf38;
+NewStationDownloadsInventory2 SHA4a76895f2f1df11073433d500eab780bd8022d7c040681cb5b229abbd8674a6d.
+The detailed raw-file/provenance review remains private under StationRefinement;
+KNOWN_ISSUES owns priority and acceptance.
+
+### ART-20261007-ROOM-ADS — owner regional poster references
+
+- **Acquisition/evidence,2026-10-07T04:16Z:** ten owner-uploaded images, viewed in
+  this conversation: Galactic Docking Authority, Thruster Clinic, Zero-G Massage
+  Parlor, Cosmic Food Truck, Spousal Abduction Services, Hologram Doctor,
+  Used UFO Sales, Morph Clinic/Tentacle Reassignment, Alien Fix-It travel/legal
+  services and orbital hospitality ("Dock. Drink. Dock Again.").
+  Local attachment folders5264F7C5,3FC4A746,682BE831,E6AF401B andA33C0363;
+  these are illustration/layout references, not acquired3D assets or new services.
+  All ten are853×1280 portrait. The two newest files were independently opened
+  and their file bytes verified before this catalog update:
+
+  | Reference / local attachment relative to the conversation folder | Dimensions | SHA256 |
+  | --- | --- | --- |
+  | Alien Fix-It / `A33C0363-5278-4129-BBC2-417913AA03BB/1-Photo-1.jpg` | 853×1280 | `5bea34773c3c22feb3bc05769e3d56e42b8722dd38cfcfca938879847a36d6bf` |
+  | Orbital hospitality / `A33C0363-5278-4129-BBC2-417913AA03BB/2-Photo-2.jpg` | 853×1280 | `7455c0f962d6ac91c7616f8f4b901a52a4c7f9e3c17fe9950fb2388adf4d8eba` |
+
+- **Whole-project use/timing:** after T, docking artwork suits the cargo berth;
+  engine repair suits ship-service screens, wellness the crew area and food the
+  market; the abduction parody suits the lounge rotation and Hologram Doctor the
+  crew-service display rotation. Used UFO Sales suits the hangar; Morph Clinic
+  is another crew-area illustration option, not a new customization or medical
+  service. Alien Fix-It suits reception travel/legal advertisements. The orbital
+  hospitality image supplies a cheeky alien with cocktail, lime/pink neon palette
+  and energetic composition for lounge or visitor imagery; use toned original copy
+  where appropriate, not an added venue or gameplay system. Preserve unique room
+  campaigns and illustrated subjects. These suggested
+  destinations remain adaptable, consistent with the owner's references-as-ideas
+  direction; no extra service, alternate-payment system or minigame is implied.
+- **Evaluation/next check:** strong image-led hierarchy and humorous station
+  character. Native import/placement/readability UNCONFIRMED. Portrait artwork
+  needs a fitted portrait surface or a composed landscape variant; do not squeeze
+  all small copy onto a distant TV or crop away the subject. T's two original
+  local landscape ads remain the current bounded integration pass. The owner
+  explicitly permits adapting or discarding elements that do not fit the game;
+  no native import is claimed for these references.
+
 ### LIB-20261006-ORBITPOOL — owned lounge pool set and crew
 
 - **Acquisition:** already installed, not purchased or downloaded by this pass.
@@ -176,6 +238,44 @@ log; this catalog records resource evaluation rather than a separate task queue.
   and global exposure intact. Decorative display approval adds no gameplay system.
   [Saved-preview evidence and retained failures](../validation/2026-10-06-owner-platform-preview.md)
   records the implementation; RPT-20261006-04 owns room acceptance.
+
+### LIB-20261006-OPERATIONS-DISPLAYS — owned workstation hardware and useful briefing art
+
+- **Acquisition/provenance:** existing P4 Genesis rear panes and P1 Goliath
+  workstation; no purchase, download or install. Four CPU-authored compositions
+  use the actual owned Phoenix/Havolk imagery, real fonts, retained NASA/Gaia
+  Milky Way source and CC0 Poly Haven Rock Face textures. Source manifests and
+  exact recipes remain in `.agent/local/StationRefinement/OperationsGraphics1`.
+- **Evaluation,2026-10-06 owner session /2026-10-07 UTC:** the lead approves
+  Navigation, System Diagnostics, Contract Status and Flight Upgrades artwork
+  for native evaluation. The focused native probe reveals the central slot is a
+  cutout circuit panel; its source material stays intact. A compact64×24cm insert
+  uses four physically supported clips, with no change to existing collision.
+  Author2 saves four textures/four materials and the owner preview at
+  `d2ce5b1a100fd0ca684e5d81619a07551e0e9f3f07fc801015ec0a00d7904563`;
+  fixture/source/map/save preservation passes, with lead-observed native exit0.
+  Capture2 also passes with native exit0 and six actual saved-room views, but
+  independent review rejects blurry rear graphics and old suspended bars crossing
+  Diagnostics/Contracts. The mounted central insert reads correctly. Native
+  author3 saves four private resident copies and moves each complete rear pane/
+  frame pair15cm clear of the actual wall hardware; saved preview
+  `d545cbeafcc346704bdeb9ff0c19fc6cd7f6fe0ce1a3e333151a2ee504ada8da`.
+  Author3/Capture3 both pass, with lead-observed native exit0; independent review
+  of all six matched images confirms sharper rear artwork and clear headings.
+  Whole T remains about4/10 and owner-unapproved. Attempt1 failed before import/save;
+  the later read-only geometry probe passed its fixture but crashed after LogExit.
+- **Whole-project use:** reusable image-led station engineering briefings and
+  service identity, WBS8.4/8.5. These displays add no purchasing, contract,
+  navigation, tier ownership or live-telemetry system. The preview's existing
+  Information actions, all native bodies/frames, room lights and accepted lounge
+  remain intact. Private derivatives preserve the purchased source packages.
+- **Next check:** integrate/review the separately authorized glass Phoenix podium,
+  coherent room finishes and contextual prompt cleanup. Preserve the sharp rear
+  displays and accepted L while assessing the whole room against its target.
+  [Operations integration evidence](../validation/2026-10-06-operations-displays.md)
+  distinguishes saved content, retained failed attempts and pending visual
+  acceptance. RPT-20261006-04 remains the owner-acceptance log; this catalog does
+  not declare the T room complete.
 
 ### TOOL-20261006-ADAPTIVE-PATHFINDING — optional station NPC route candidate
 

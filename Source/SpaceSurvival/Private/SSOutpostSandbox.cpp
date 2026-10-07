@@ -304,8 +304,7 @@ void ASSOutpostSandboxHUD::DrawHUD()
     const float Margin = 32.f * Scale;
     auto Text = [&](const FString &Value, float X, float Y, FLinearColor Colour, float Size)
     { DrawText(Value, Colour, X, Y, GEngine->GetSmallFont(), Size * Scale); };
-    Text(TEXT("WAYFARER / ASTEROID OUTPOST"), Margin, Margin, FLinearColor(.55f, .9f, 1.f), 1.3f);
-    Text(TEXT("DESIGN SANDBOX"), Margin, Margin + 26.f * Scale, FLinearColor(.6f, .7f, .76f), .85f);
+    Text(TEXT("Wayfarer / Design preview"), Margin, Margin, FLinearColor(.6f, .7f, .76f), .95f);
     if (Controller->IsReviewPaused())
     {
         DrawRect(FLinearColor(0.f, .008f, .015f, .72f), 0, 0, Canvas->ClipX, Canvas->ClipY);
@@ -325,15 +324,51 @@ void ASSOutpostSandboxHUD::DrawHUD()
     }
     float NoticeY = Canvas->ClipY - 58.f * Scale - NoticeHeight;
     if (auto *Terminal = Controller->FocusedTerminal())
-        Text(TEXT("E / X  ") + Terminal->DisplayName, Margin,
-             FMath::Min(Canvas->ClipY - 110.f * Scale, NoticeY - 35.f * Scale), FLinearColor(.5f, .95f, 1.f), 1.3f);
+    {
+        // The preview's Information action is not a working purchase. Keep its
+        // access/identity intact while describing what this action really does.
+        FString Action = TEXT("Read station information");
+        switch (Terminal->Action)
+        {
+        case ESSOutpostAction::CycleShipPaint:
+            Action = TEXT("Preview next ship color");
+            break;
+        case ESSOutpostAction::CycleWardrobe:
+            Action = TEXT("Preview next character");
+            break;
+        case ESSOutpostAction::SurvivalBoarding:
+            Action = TEXT("Open flight game");
+            break;
+        case ESSOutpostAction::FreeFlight:
+            Action = TEXT("Open free flight");
+            break;
+        default:
+            if (Terminal->DisplayName.Contains(TEXT("FLIGHT UPGRADES")))
+                Action = TEXT("Read upgrade overview");
+            else if (Terminal->DisplayName.Contains(TEXT("CONTRACT EXCHANGE")))
+                Action = TEXT("Read contract overview");
+            else if (Terminal->DisplayName.Contains(TEXT("SHIP & PARTS")))
+                Action = TEXT("Read ship information");
+            else if (Terminal->DisplayName.Contains(TEXT("PILOT LEADERBOARD")))
+                Action = TEXT("Read pilot information");
+            else if (Terminal->DisplayName.Contains(TEXT("TRADE NETWORK")))
+                Action = TEXT("Read trade information");
+            break;
+        }
+        const FString Prompt = TEXT("E / X   ") + Action;
+        float Width = 0.f, Height = 0.f;
+        GetTextSize(Prompt, Width, Height, GEngine->GetSmallFont(), 1.3f * Scale);
+        const float X = FMath::Max(Margin, (Canvas->ClipX - Width) * .5f);
+        const float Y = FMath::Min(Canvas->ClipY - 74.f * Scale, NoticeY - Height - 22.f * Scale);
+        DrawRect(FLinearColor(.01f, .022f, .032f, .9f), X - 12.f * Scale, Y - 10.f * Scale, Width + 24.f * Scale,
+                 Height + 20.f * Scale);
+        Text(Prompt, X, Y, FLinearColor(.75f, .95f, 1.f), 1.3f);
+    }
     for (const auto &Line : NoticeLines)
     {
         Text(Line.Value, Margin, NoticeY, FLinearColor::White, .95f);
         NoticeY += FMath::Max(float(Line.LineExtent.Y), 14.f * Scale) + 4.f * Scale;
     }
-    Text(TEXT("WASD / LS  MOVE     MOUSE / RS  LOOK     SPACE / A  JUMP     SHIFT / L3  RUN     E / X  USE"), Margin,
-         Canvas->ClipY - 35.f * Scale, FLinearColor(.65f, .74f, .8f), .8f);
 }
 
 ASSOutpostDoor::ASSOutpostDoor()
