@@ -1,6 +1,6 @@
 # SpaceSurvival project state
 
-**October7 19:09UTC current checkpoint:** saved owner preview remains Mainc45,
+**October7 20:20UTC current checkpoint:** saved owner preview remains Mainc45,
 the loaded module remains Build39, and published0.1.22-alpha/build2048604 is
 unchanged. The owner holds only T wall/display replacement while selecting from
 the complete P1-P5 picker: `.agent/local/Outpost/HoloAssetCatalog1/index.html`,
@@ -9,23 +9,36 @@ Its71 hardware entries all have pictures;60 parts and116 effects are separated,
 with missing static previews explicitly marked. The latest sideways-wall-panel
 trial is unsaved and rejected, not a replacement accepted by the owner.
 
-Central welcome now has an **unsaved** six-furnishing/two-vendor trial. Six matched
-room images and six vendor images pass targeted source/map/save/camera
-preservation;37.355 actual game seconds of natural vendor motion were observed.
-Benches face inward, but the original digital planters read as circuit boxes,
-and two boot views are blocked by the counter. Lighting, planter presentation,
-skin contact and final approval remain open; see the
+The owner now directs central reception toward purposeful check-in/greeting
+activity with fitting tablet/desk props. Central alone permits only one or two
+ad posters; larger outer-wall boards should explain actual mechanics and station
+directions. These new details are being prepared, not yet placed or approved.
+
+Central welcome retains its **unsaved** six-furnishing/two-vendor trial and now
+four shrubs plus three ceiling-ring lights. Root and independent review accept
+the planted finish, two waiting-bay lights and the modest reception aim/reach fix.
+Reception remains dark from a distance; whole-room approval is still open.
+Two corrected boot views show no definite sole gap, but continuous skin contact
+remains unverified. Prior37.355 seconds of natural vendor motion and the later
+three finish images remain separate evidence. No owner approval or saved central
+revision is established; see the
 [central trial record](validation/2026-10-07-central-welcome.md).
 
-Phoenix6 produced five temporary gameplay-camera images with exact restoration.
-Root and independent review accept the14cm inboard screen clearance: both panes
-are now unobscured. Lighting remains rejected because the stairs and cockpit
-are too dark. Earlier Phoenix5 stopped before mutation on sub-picometre
-constructor/transform roundoff; the correction records exact native component
-locations for restoration. No new linked cabin binary, durable lighting,
-walked traversal or owner approval is established. The
+Phoenix7 produced five temporary gameplay-camera images with exact restoration.
+Root and independent review retain the accepted14cm inboard screen clearance.
+Lighting remains rejected: stairs/passage improve but nearby walls glare and
+the cockpit floor remains dark. The three unaccepted source lamps are removed;
+original four lamp settings remain unchanged, and only the accepted pane offset
+remains in the local Rig diff. No new linked cabin binary, walked traversal or
+owner approval is established. The
 [cabin record](validation/2026-10-07-native-resolution-and-phoenix-cabin.md)
 separates these results from technical capture success.
+
+The two decorative visitor ships now sit lower without their four literal Cube
+supports in an unsaved trial. Four matched before/after views support the visual
+improvement; contact, walking clearance and owner acceptance remain open. The
+functional Phoenix supports are untouched. See the
+[visitor-pad record](validation/2026-10-07-visitor-ship-pads.md).
 
 **October7 17:24UTC display correction:** all18 recovered packages pass native
 class, source, dimensions, material-parent, skeleton/duration and preservation
@@ -106,7 +119,7 @@ Each room needs its own set of at least five illustrated campaigns; ad audio is 
 Post-save native readback confirms a clean map, PIE stopped, and unchanged central
 staff/source assets. Central artwork/layout/vendor previews are prepared, unplaced.
 
-**Phoenix source versus loaded build:** three cabin lamps and diagnostic coverage
+**Earlier Phoenix source versus loaded build:** three trial cabin lamps and diagnostic coverage
 compile after a private diagnostic variable rename fixes a unity-build name collision.
 Build40's compile error is retained; Build41 compiles but cannot link because the
 owner's open editor holds its DLL (`LNK1104`). The loaded DLL remains Build39,

@@ -1,6 +1,48 @@
 # Native resolution and Phoenix cabin refinement
 
-2026-10-07T19:09Z [TOOL] PARTIAL. The second actual visual candidate clears both cabin displays, accepted by root and independent review. Passage lighting improves, but stairs and cockpit remain too dark; lighting is rejected. Five temporary ordinary PIE images and exact restoration pass. The owner editor retains Build39; no new linked binary, durable lighting, walked traversal or owner acceptance is established. No package was published. Earlier evidence below is historical.
+2026-10-07T19:51Z [TOOL] PARTIAL. Three actual visual candidates are now reviewed.
+The14cm inboard screen clearance is accepted by root and independent review;
+lighting remains rejected. Phoenix7 makes stairs and passage readable but washes
+out nearby walls with specular glare, while the cockpit floor/seat remain dark.
+The owner editor retains Build39; no new linked binary, walked traversal, owner
+approval or published package is established. Earlier evidence below is historical.
+
+## Third visual candidate and source disposition
+
+Root session38303 exits0. `PhoenixCabinLive7_OwnerReview1/manifest.json` SHA
+`4d50ffe99405f31ead6a013b9948bd2a37e8fadde6a2fc12a5f9512cc1c223f5`
+records five ordinary2742x781 **UNSAVED_PIE_CABIN_METAL_RESPONSE_CAMERA_ONLY**
+images and exact restoration of four original lamps, displays, camera/view/HUD,
+quality, settings, dirty packages, saved Main and player saves. Three temporary
+lights use1600/1100/1400lm,15cm source radius and specular.5; the four original
+lamps change only specular to.5 during this test. Original materials and exposure
+inputs remain unchanged. Root and independent reviewers reject overall lighting
+for broad wall glare and the dark cockpit, despite improved passage/stairs.
+Both panes remain complete and unobscured. No fourth visual lighting candidate
+is started in this review cycle.
+
+The three unaccepted lamp additions are removed from local `SSShipVisualRig.cpp`.
+SHA `b7e2c481c47e115b72d83493ee4bb7a971bcc5299af9090b20c2df771d1b4b98`
+retains only the accepted pane/case clearance change relative to the current
+committed file; original four lamp parameters match HEAD exactly. Installed
+clang-format dry-run/Werror, scoped diff and40 structural checks pass. This latest
+source is unbuilt. The earlier Build41/42 editor-held DLL block remains; no build
+retry is made while the editor holds unsaved work. Cabin lighting remains an open
+visual defect for a later coherent fixture/material-response review.
+
+## Actual material and exposure diagnosis
+
+2026-10-07T19:26Z [TOOL] A read-only check in the actual parked Phoenix completes
+with root session90672 exit0 and eight preservation checks passing.
+`PhoenixCabinLive6_MaterialRead1/manifest.json` SHA
+`158cbab9659f7f5a0df0bbeae1e6f5531daba492ee4514518c4fe5588cd9a604`
+binds the three original licensed masters with no material overrides. Both opaque
+masters use a Metallic texture input; original cabin lights have specular scale.025.
+Streamed Wayfarer exposure inputs are unbound, priority50, weight1, fixed brightness8,
+while the walker camera has no exposure overrides. This does not measure the final
+blended SceneView or per-pixel metallic values. No images, temporary lights, source
+material changes or exposure changes were made. The final candidate tests cabin
+light response while preserving those original inputs.
 
 ## Second visual candidate: clear panes, lighting still rejected
 

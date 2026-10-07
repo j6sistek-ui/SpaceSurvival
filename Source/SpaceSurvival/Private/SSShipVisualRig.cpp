@@ -321,16 +321,16 @@ bool USSShipVisualRig::Initialize(ASSShip *Ship, const FSSHullDefinition &Defini
             Detail->RegisterComponent();
             CabinDetails.Add(Detail);
         };
-        // Both rear walls are measured flat at Y +/-183.158 cm. Cases end at
-        // +/-182.5, with panes 5 cm inside the wall; the 3.5 m passage stays clear.
+        // Rear ribs project to Y +/-168.845 cm. Move cases and panes 14 cm
+        // inward so both complete displays sit in front of the ribs.
         for (int32 Index = 0; Index < 2; ++Index)
         {
             const float Side = Index == 0 ? -1.f : 1.f;
             const float X = Index == 0 ? -650.f : -400.f;
             AddCabinDetail(Index == 0 ? TEXT("CabinNavigationCase") : TEXT("CabinSystemsCase"), DisplayCase, CaseFinish,
-                           FVector(X, Side * 180.5f, 380.f), FVector(.86f, .04f, .54f), FRotator::ZeroRotator);
+                           FVector(X, Side * 166.5f, 380.f), FVector(.86f, .04f, .54f), FRotator::ZeroRotator);
             AddCabinDetail(Index == 0 ? TEXT("CabinNavigationDisplay") : TEXT("CabinSystemsDisplay"), DisplayPlane,
-                           Index == 0 ? NavigationDisplay : SystemsDisplay, FVector(X, Side * 178.1f, 380.f),
+                           Index == 0 ? NavigationDisplay : SystemsDisplay, FVector(X, Side * 164.1f, 380.f),
                            FVector(.8f, .48f, 1.f), FRotator(0.f, Index == 0 ? 0.f : 180.f, 90.f));
         }
     }

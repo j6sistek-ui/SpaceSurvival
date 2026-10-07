@@ -194,7 +194,7 @@ struct FSession
     bool bSizeChanged = false;
 };
 
-TUniquePtr<FSession> Session;
+TUniquePtr<FSession> RenderedViewSession;
 TUniquePtr<FAutoConsoleCommandWithWorldAndArgs> BeginCommand;
 TUniquePtr<FAutoConsoleCommandWithWorldAndArgs> StageCommand;
 TUniquePtr<FAutoConsoleCommandWithWorldAndArgs> EndCommand;
@@ -204,36 +204,37 @@ TUniquePtr<FAutoConsoleCommandWithWorldAndArgs> RestoreSizeCommand;
 bool RestoreViewportSize()
 {
     check(IsInGameThread());
-    if (!Session || !Session->bSizeChanged)
+    if (!RenderedViewSession || !RenderedViewSession->bSizeChanged)
         return true;
-    UWorld *OwningWorld = Session->World.Get();
-    UGameViewportClient *Client = Session->SizedClient.Get();
+    UWorld *OwningWorld = RenderedViewSession->World.Get();
+    UGameViewportClient *Client = RenderedViewSession->SizedClient.Get();
     if (!OwningWorld || OwningWorld->WorldType != EWorldType::PIE || !Client ||
-        OwningWorld->GetGameViewport() != Client || Client->GetGameViewport() != Session->SizedViewport ||
-        Client->Viewport != Session->SizedViewport)
+        OwningWorld->GetGameViewport() != Client || Client->GetGameViewport() != RenderedViewSession->SizedViewport ||
+        Client->Viewport != RenderedViewSession->SizedViewport)
     {
         UE_LOG(LogSSRenderedViewDiagnostic, Error,
                TEXT("SSVIEWSIZE2 restore rejected: exact owning PIE client/viewport no longer live"));
         return false;
     }
     FSceneViewport *ActualViewport = Client->GetGameViewport();
-    if (Session->bOriginalFixed)
-        ActualViewport->SetFixedViewportSize(Session->OriginalSize.X, Session->OriginalSize.Y);
+    if (RenderedViewSession->bOriginalFixed)
+        ActualViewport->SetFixedViewportSize(RenderedViewSession->OriginalSize.X, RenderedViewSession->OriginalSize.Y);
     else
     {
         // Installed implementation is unavailable; verify this public API's native unfix behavior below.
         ActualViewport->SetFixedViewportSize(0, 0);
-        ActualViewport->SetViewportSize(Session->OriginalSize.X, Session->OriginalSize.Y);
+        ActualViewport->SetViewportSize(RenderedViewSession->OriginalSize.X, RenderedViewSession->OriginalSize.Y);
     }
     const FIntPoint ActualSize = ActualViewport->GetSizeXY();
     const bool bActualFixed = ActualViewport->HasFixedSize();
-    const bool bRestored = ActualSize == Session->OriginalSize && bActualFixed == Session->bOriginalFixed;
+    const bool bRestored =
+        ActualSize == RenderedViewSession->OriginalSize && bActualFixed == RenderedViewSession->bOriginalFixed;
     UE_LOG(LogSSRenderedViewDiagnostic, Log,
            TEXT("SSVIEWSIZE2 restore original=%d,%d original_fixed=%d actual=%d,%d actual_fixed=%d verified=%d"),
-           Session->OriginalSize.X, Session->OriginalSize.Y, Session->bOriginalFixed, ActualSize.X, ActualSize.Y,
-           bActualFixed, bRestored);
+           RenderedViewSession->OriginalSize.X, RenderedViewSession->OriginalSize.Y,
+           RenderedViewSession->bOriginalFixed, ActualSize.X, ActualSize.Y, bActualFixed, bRestored);
     if (bRestored)
-        Session->bSizeChanged = false;
+        RenderedViewSession->bSizeChanged = false;
     else
         UE_LOG(LogSSRenderedViewDiagnostic, Error,
                TEXT("SSVIEWSIZE2 native original size/fixed-state restoration failed"));
@@ -243,8 +244,8 @@ bool RestoreViewportSize()
 void ResizeOwnedViewport(const TArray<FString> &Args, UWorld *World)
 {
     check(IsInGameThread());
-    if (!Args.IsEmpty() || !SizeCommand || !Session || Session->World.Get() != World || !World ||
-        World->WorldType != EWorldType::PIE || Session->bSizeChanged)
+    if (!Args.IsEmpty() || !SizeCommand || !RenderedViewSession || RenderedViewSession->World.Get() != World ||
+        !World || World->WorldType != EWorldType::PIE || RenderedViewSession->bSizeChanged)
     {
         UE_LOG(LogSSRenderedViewDiagnostic, Error,
                TEXT("SSVIEWSIZE2 resize rejected: require inactive resize in exact owning PIE session and no args"));
@@ -257,22 +258,22 @@ void ResizeOwnedViewport(const TArray<FString> &Args, UWorld *World)
         UE_LOG(LogSSRenderedViewDiagnostic, Error, TEXT("SSVIEWSIZE2 resize rejected: no exact typed game viewport"));
         return;
     }
-    Session->SizedClient = Client;
-    Session->SizedViewport = ActualViewport;
-    Session->OriginalSize = ActualViewport->GetSizeXY();
-    Session->bOriginalFixed = ActualViewport->HasFixedSize();
-    Session->bSizeChanged = true;
+    RenderedViewSession->SizedClient = Client;
+    RenderedViewSession->SizedViewport = ActualViewport;
+    RenderedViewSession->OriginalSize = ActualViewport->GetSizeXY();
+    RenderedViewSession->bOriginalFixed = ActualViewport->HasFixedSize();
+    RenderedViewSession->bSizeChanged = true;
     ActualViewport->SetFixedViewportSize(1600, 900);
     const FIntPoint ActualSize = ActualViewport->GetSizeXY();
     UE_LOG(LogSSRenderedViewDiagnostic, Log,
            TEXT("SSVIEWSIZE2 request original=%d,%d original_fixed=%d requested=1600,900 actual=%d,%d actual_fixed=%d"),
-           Session->OriginalSize.X, Session->OriginalSize.Y, Session->bOriginalFixed, ActualSize.X, ActualSize.Y,
-           ActualViewport->HasFixedSize());
+           RenderedViewSession->OriginalSize.X, RenderedViewSession->OriginalSize.Y,
+           RenderedViewSession->bOriginalFixed, ActualSize.X, ActualSize.Y, ActualViewport->HasFixedSize());
 }
 
 void RestoreOwnedViewport(const TArray<FString> &Args, UWorld *World)
 {
-    if (Args.IsEmpty() && Session && Session->World.Get() == World)
+    if (Args.IsEmpty() && RenderedViewSession && RenderedViewSession->World.Get() == World)
         RestoreViewportSize();
     else
         UE_LOG(LogSSRenderedViewDiagnostic, Error, TEXT("SSVIEWSIZE2 restore rejected: require exact owning session"));
@@ -281,12 +282,12 @@ void RestoreOwnedViewport(const TArray<FString> &Args, UWorld *World)
 void Drain()
 {
     check(IsInGameThread());
-    if (!Session)
+    if (!RenderedViewSession)
         return;
     FSample Sample;
-    while (Session->Buffer->Queue.Dequeue(Sample))
+    while (RenderedViewSession->Buffer->Queue.Dequeue(Sample))
     {
-        ++Session->Logged;
+        ++RenderedViewSession->Logged;
         UE_LOG(LogSSRenderedViewDiagnostic, Log,
                TEXT("SSVIEW1 frame=%u counter=%llu stage=%d owner=%u expected_owner=%u current_owner=%u highres=%d "
                     "shot=%d requested=%u,%u "
@@ -310,27 +311,27 @@ void Drain()
 void Stop(const TCHAR *Reason, bool bFromTicker = false)
 {
     check(IsInGameThread());
-    if (!Session)
+    if (!RenderedViewSession)
         return;
-    Session->Buffer->Recording.store(false);
+    RenderedViewSession->Buffer->Recording.store(false);
     RestoreViewportSize();
-    Session->Observer.Reset();
+    RenderedViewSession->Observer.Reset();
     // Frame references can outlive the extension owner; drain before releasing its session/queue.
     FlushRenderingCommands();
     Drain();
     // RemoveTicker may wait for a running delegate. This callback removes itself by returning false.
     if (!bFromTicker)
-        FTSTicker::RemoveTicker(Session->Ticker);
-    FWorldDelegates::OnWorldCleanup.Remove(Session->Cleanup);
+        FTSTicker::RemoveTicker(RenderedViewSession->Ticker);
+    FWorldDelegates::OnWorldCleanup.Remove(RenderedViewSession->Cleanup);
     UE_LOG(LogSSRenderedViewDiagnostic, Log, TEXT("SSVIEW1 end reason=%s logged=%d invalid=%d limit=%d"), Reason,
-           Session->Logged, Session->Buffer->InvalidCount.load(), MaxSamples);
-    Session.Reset();
+           RenderedViewSession->Logged, RenderedViewSession->Buffer->InvalidCount.load(), MaxSamples);
+    RenderedViewSession.Reset();
 }
 
 void Begin(const TArray<FString> &Args, UWorld *World)
 {
     check(IsInGameThread());
-    if (!Args.IsEmpty() || Session || !World || World->WorldType != EWorldType::PIE)
+    if (!Args.IsEmpty() || RenderedViewSession || !World || World->WorldType != EWorldType::PIE)
     {
         UE_LOG(LogSSRenderedViewDiagnostic, Error,
                TEXT("SSVIEW1 begin rejected: require one inactive actual PIE session and no args"));
@@ -344,26 +345,27 @@ void Begin(const TArray<FString> &Args, UWorld *World)
                TEXT("SSVIEW1 begin rejected: no actual player camera/game viewport"));
         return;
     }
-    Session = MakeUnique<FSession>();
-    Session->World = World;
-    Session->Buffer->ExpectedOwner = Target->GetUniqueID();
-    Session->Started = FPlatformTime::Seconds();
-    Session->Observer = FSceneViewExtensions::NewExtension<FObserver>(World, Session->Buffer);
-    Session->Cleanup = FWorldDelegates::OnWorldCleanup.AddLambda(
+    RenderedViewSession = MakeUnique<FSession>();
+    RenderedViewSession->World = World;
+    RenderedViewSession->Buffer->ExpectedOwner = Target->GetUniqueID();
+    RenderedViewSession->Started = FPlatformTime::Seconds();
+    RenderedViewSession->Observer = FSceneViewExtensions::NewExtension<FObserver>(World, RenderedViewSession->Buffer);
+    RenderedViewSession->Cleanup = FWorldDelegates::OnWorldCleanup.AddLambda(
         [](UWorld *CleaningWorld, bool, bool)
         {
-            if (Session && Session->World.Get() == CleaningWorld)
+            if (RenderedViewSession && RenderedViewSession->World.Get() == CleaningWorld)
                 Stop(TEXT("world_cleanup"));
         });
-    Session->Ticker = FTSTicker::GetCoreTicker().AddTicker(
+    RenderedViewSession->Ticker = FTSTicker::GetCoreTicker().AddTicker(
         FTickerDelegate::CreateLambda(
             [](float)
             {
-                if (!Session)
+                if (!RenderedViewSession)
                     return false;
                 Drain();
-                if (!Session->World.IsValid() || FPlatformTime::Seconds() - Session->Started >= MaxSeconds ||
-                    !Session->Buffer->Recording.load())
+                if (!RenderedViewSession->World.IsValid() ||
+                    FPlatformTime::Seconds() - RenderedViewSession->Started >= MaxSeconds ||
+                    !RenderedViewSession->Buffer->Recording.load())
                 {
                     Stop(TEXT("bounded_auto_stop"), true);
                     return false;
@@ -372,27 +374,27 @@ void Begin(const TArray<FString> &Args, UWorld *World)
             }),
         .1f);
     UE_LOG(LogSSRenderedViewDiagnostic, Log, TEXT("SSVIEW1 begin world=%s expected_owner=%u max_seconds=%.0f limit=%d"),
-           *World->GetPathName(), Session->Buffer->ExpectedOwner, MaxSeconds, MaxSamples);
+           *World->GetPathName(), RenderedViewSession->Buffer->ExpectedOwner, MaxSeconds, MaxSamples);
 }
 
 void Stage(const TArray<FString> &Args, UWorld *World)
 {
     check(IsInGameThread());
     int32 Value = -1;
-    if (!Session || Session->World.Get() != World || Args.Num() != 1 || !LexTryParseString(Value, *Args[0]) ||
-        Value < 0 || Value >= StageCount)
+    if (!RenderedViewSession || RenderedViewSession->World.Get() != World || Args.Num() != 1 ||
+        !LexTryParseString(Value, *Args[0]) || Value < 0 || Value >= StageCount)
     {
         UE_LOG(LogSSRenderedViewDiagnostic, Error,
                TEXT("SSVIEW1 stage rejected: require owning PIE world and integer0..3"));
         return;
     }
-    Session->Buffer->Stage = Value;
+    RenderedViewSession->Buffer->Stage = Value;
     UE_LOG(LogSSRenderedViewDiagnostic, Log, TEXT("SSVIEW1 stage=%d"), Value);
 }
 
 void End(const TArray<FString> &Args, UWorld *World)
 {
-    if (Args.IsEmpty() && Session && Session->World.Get() == World)
+    if (Args.IsEmpty() && RenderedViewSession && RenderedViewSession->World.Get() == World)
         Stop(TEXT("explicit_end"));
 }
 } // namespace

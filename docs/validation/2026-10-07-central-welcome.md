@@ -1,5 +1,43 @@
 # Central welcome furnishing and vendor trial
 
+2026-10-07T20:20Z [TOOL] `Scripts/RefineStationCentralWelcome.py` preserves the
+accepted composition as an import-inert authoring recipe. It can adopt the13
+existing furniture/shrub/key roles, uses stable tags to prevent duplicates, and
+assigns only four vendor animation properties. It preserves source assets and
+original central actors, includes rollback, and never loads or saves a map.
+Root and independent source review pass. Native adoption/replay/save is unrun;
+the shared map must not save the held T display trial. The owner's new purposeful
+desk-prop and helpful information-board direction remains separate unfinished work.
+
+2026-10-07T20:04Z [TOOL] The focused reception correction completes with root
+session34299 exit0. `LiveOperationsPIEReview1_CentralWelcomeFinish3/manifest.json`
+SHA `8d7a26d565b18a746b4a36bdc8a1939af4b63071c89461dfc1a7d88ebc24f022`
+contains two actual2742x781 **UNSAVED_EDITOR_TEST** views, with targeted scene,
+source, staff, T, map, saves, dirty packages, camera and quality preservation passing.
+Only the existing East key changes aim, reach950→1400cm and intensity1200→1500lm.
+Root and independent review accept the modest improvement: staff faces/suits and
+gesture detail read better, without an obvious new hotspot or lost floor detail.
+Reception still reads dark in the wide view; a roaming alien partly occludes the
+close view. This is not whole-room9/10, continuous contact or owner acceptance.
+The corrected key, accepted greenery/bay keys and original furniture/vendor trial
+remain unsaved. The earlier Reception2 attempt stopped before writes or PIE on
+an exact floating-point sum comparison, with no cleanup errors. Revision3 derives
+the same physical target from the retained152 head/pelvis observations using
+`math.fsum`, finite/count and staff-bounds checks. That failure is not a visual pass.
+
+2026-10-07T19:33Z [TOOL] The unsaved finish trial adds four owned shrubs and
+three ceiling-ring lights. Root session11847 exits0; three ordinary2742x781
+views in `LiveOperationsPIEReview1_CentralWelcomeFinish1/manifest.json`, SHA
+`c8f6da364b727c58cb0df9324ef4dd5b6ee09d1f8dd14f4d42f6f485460ce1f2`,
+pass targeted actor/source, view/settings, dirty-package, saved-map and player-save
+preservation. Root and independent visual review accept the shrubs and two bay
+lights: bench fronts and containers read better and the white floor retains its
+texture. Reception remains too dark and is not accepted. The East key has950cm
+reach; retained head/pelvis observations lie987–1032cm away. A focused aim/reach
+correction is prepared, not yet visually verified. All seven finish actors remain
+unsaved; no owner approval, whole-room contact/walkability or published change is
+claimed. Earlier furniture and vendor receipts below remain separate evidence.
+
 2026-10-07T18:57Z [TOOL] PARTIAL, UNSAVED_EDITOR_TEST. The root-owned existing
 Unreal session applied two owned benches, four whole owned planters and four
 animation properties on the two existing receptionists. No display hardware,

@@ -14,6 +14,18 @@ its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
 
 ### LIB-20261007-ROOM-AD-CAROUSEL — five illustrated campaigns per room
 
+- **Related interior reuse,2026-10-07T20:06Z:** owned P5 benches/planter bases,
+  `CyberpunkRestaurant/Meshes/SM_Shrub_With_LODs_01`, the existing private green
+  lounge shrub material and recovered vendor clips form the unsaved central finish.
+  Root and independent review accept greenery, bay lighting and a modest
+  reception-light correction; whole-room contact, owner approval and persistence
+  remain open. The two existing decorative Havolk ships are also lowered without
+  their four Cube supports in a separate unsaved trial. No new acquisition or
+  source-asset alteration. These resources serve station welcome/market dressing;
+  [central](../validation/2026-10-07-central-welcome.md) and
+  [pad](../validation/2026-10-07-visitor-ship-pads.md) records separate visual
+  improvement from physical acceptance.
+
 - **Owner choice,2026-10-07T18:17Z:** the rotated P4 wall-panel trial is rejected.
   The complete P1-P5 visual picker is ready under
   `.agent/local/Outpost/HoloAssetCatalog1/index.html`:71 pictured hardware entries,

@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraTypes.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Dom/JsonObject.h"
 #include "Engine/SkeletalMesh.h"
@@ -69,7 +70,9 @@ void ASSWave10Soak::WriteBoardingReviewResult(const FString &Error)
              "photographed poses. Both resume before native chair commit/takeoff. AccountStorageBlocked is temporarily "
              "lifted only for that commit in the validated scratch UserDir, then restored. No natural-input, "
              "uninterrupted-transition timing, or performance claim. Every image uses the possessed pawn's native "
-             "camera, including spring-arm collision; clearance/line-of-sight queries are diagnostic and do not "
+             "camera, including spring-arm collision. One stopped cabin view turns toward the existing right display, "
+             "then restores forward view before walking resumes. Clearance/line-of-sight queries are diagnostic and do "
+             "not "
              "replace visual review."));
     Result->SetArrayField(TEXT("frames"), BoardingReviewFrames);
     Result->SetArrayField(TEXT("samples"), BoardingReviewSamples);
@@ -143,7 +146,7 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         BoardingReviewStage = 1;
         return false;
     }
-    const auto ExpectedMode = BoardingReviewRouteShot >= 4 ? ESSDepartureMode::FreeFlight : ESSDepartureMode::Waves;
+    const auto ExpectedMode = BoardingReviewRouteShot >= 5 ? ESSDepartureMode::FreeFlight : ESSDepartureMode::Waves;
     if (GM->IsMenuOpen() || GM->GetSelectedDepartureMode() != ExpectedMode)
         return Fail(TEXT("Walking/boarding opened a menu or changed the selected departure mode."));
     if (BoardingReviewStage < 5 && (!Walker || PC->GetPawn() != Walker || GI->IsFreeFlight() || GI->Session.run.active))
@@ -239,6 +242,30 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
             Row->SetStringField(TEXT("cameraLocal"),
                                 BoardingReviewDock.InverseTransformPosition(View.Location).ToString());
             Row->SetStringField(TEXT("cameraSource"), TEXT("POSSESSED_PAWN_NATIVE_CAMERA"));
+            // Observe actual registered lights at each photograph, including departure.
+            TArray<TSharedPtr<FJsonValue>> CabinLightReadback;
+            if (const auto *Rig = Ship->GetVisualRig(); Rig && Rig->GetHull())
+            {
+                TInlineComponentArray<UPointLightComponent *> Lights(Rig->GetHull()->GetOwner());
+                for (const auto *Light : Lights)
+                {
+                    if (!Light->GetName().StartsWith(TEXT("Boarding")))
+                        continue;
+                    auto Lamp = MakeShared<FJsonObject>();
+                    Lamp->SetStringField(TEXT("name"), Light->GetName());
+                    Lamp->SetBoolField(TEXT("visible"), Light->IsVisible());
+                    Lamp->SetStringField(
+                        TEXT("shipLocal"),
+                        Ship->GetActorTransform().InverseTransformPosition(Light->GetComponentLocation()).ToString());
+                    Lamp->SetNumberField(TEXT("lumens"), Light->Intensity);
+                    Lamp->SetNumberField(TEXT("radiusCm"), Light->AttenuationRadius);
+                    Lamp->SetNumberField(TEXT("sourceRadiusCm"), Light->SourceRadius);
+                    Lamp->SetNumberField(TEXT("specularScale"), Light->SpecularScale);
+                    Lamp->SetBoolField(TEXT("castShadows"), Light->CastShadows);
+                    CabinLightReadback.Add(MakeShared<FJsonValueObject>(Lamp));
+                }
+            }
+            Row->SetArrayField(TEXT("cabinLights"), CabinLightReadback);
             Row->SetStringField(TEXT("viewTarget"), GetPathNameSafe(PC->GetViewTarget()));
             Row->SetStringField(TEXT("renderViewLocation"), RenderLocation.ToString());
             Row->SetStringField(TEXT("renderViewRotation"), RenderRotation.ToString());
@@ -281,7 +308,8 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         const bool Chair = GM->IsWalkerAtPilotSeat(Walker);
         const bool Ready = BoardingReviewRouteShot == 0   ? Local.X > -1270
                            : BoardingReviewRouteShot == 1 ? Local.X > -650
-                           : BoardingReviewRouteShot == 2 ? Local.X > 450
+                           : BoardingReviewRouteShot == 2 ? Local.X > -500
+                           : BoardingReviewRouteShot == 3 ? Local.X > 450
                                                           : Chair;
         if (!Ready)
         {
@@ -292,13 +320,25 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         }
         else
         {
+            // Inspect the existing right-hand pane through the player's actual spring arm.
+            // Stop on the ordinary route beside it; no placement, custom camera or collision bypass.
+            if (BoardingReviewRouteShot == 2)
+            {
+                FRotator SideView = Ship->GetActorRotation();
+                SideView.Yaw = FRotator::NormalizeAxis(SideView.Yaw + 90.f);
+                SideView.Pitch = -6.f;
+                SideView.Roll = 0.f;
+                PC->SetControlRotation(SideView);
+            }
             Walker->Move(FVector2D::ZeroVector, FVector2D::ZeroVector, false, Dt);
-            const TCHAR *Names[] = {TEXT("BoardingRamp"), TEXT("BoardingCabin"), TEXT("BoardingStairs"),
-                                    TEXT("BoardingChair"), TEXT("BoardingModeSelected")};
+            const TCHAR *Names[] = {TEXT("BoardingRamp"),   TEXT("BoardingCabin"), TEXT("BoardingSystemsDisplay"),
+                                    TEXT("BoardingStairs"), TEXT("BoardingChair"), TEXT("BoardingModeSelected")};
             if (Frame(Names[BoardingReviewRouteShot]))
             {
                 ++BoardingReviewRouteShot;
-                if (BoardingReviewRouteShot == 4)
+                if (BoardingReviewRouteShot == 3)
+                    PC->SetControlRotation(Ship->GetActorRotation());
+                if (BoardingReviewRouteShot == 5)
                 {
                     const auto AccountBefore = SS::EncodeAccount(GI->Session.account);
                     const auto RunBefore = SS::EncodeRun(GI->Session.run);
@@ -310,7 +350,7 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
                         return Fail(
                             TEXT("Cockpit mode edge did not change only the departure preference at the chair."));
                 }
-                else if (BoardingReviewRouteShot == 5)
+                else if (BoardingReviewRouteShot == 6)
                 {
                     if (!Chair || !BoardingReviewToe || !BoardingReviewRamp || BoardingReviewTravelCm < 2200.)
                         return Fail(TEXT("Full measured ramp/interior route did not reach the actual chair."));
@@ -386,7 +426,7 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         if (FVector::Distance(Ship->GetActorLocation(), BoardingReviewDock.GetLocation()) > 20. &&
             Frame(TEXT("BoardingTakeoff")))
         {
-            BoardingReviewComplete = BoardingReviewFrames.Num() == 9;
+            BoardingReviewComplete = BoardingReviewFrames.Num() == 10;
             RestoreBoardingReviewGuards();
             WriteBoardingReviewResult(BoardingReviewComplete ? FString() : TEXT("Missing required boarding images."));
             return BoardingReviewComplete;

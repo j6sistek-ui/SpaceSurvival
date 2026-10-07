@@ -132,18 +132,33 @@ and two handle central welcome layout/arrival and imagery. Other fixes remain OP
 
 ## October6 owner station refinement
 
-**October7 19:09UTC independent work — lead-owned, OPEN:** central welcome's
-two benches, four planters and four vendor animation properties are applied only
-in an unsaved editor trial. Twelve ordinary photos and37.355 actual game seconds
-of vendor motion pass targeted preservation checks. Planter appearance, front
-lighting and counter-obscured foot views still need correction; no contact or
-owner acceptance. Phoenix6 clears both cabin panes with a14cm inboard offset,
-accepted by root and independent visual review, but stairs/cockpit remain too
-dark. Its five temporary photos pass exact restoration; the loaded module is
-still Build39 and saved preview Mainc45 is unchanged. Lead owns these fixes while
-the owner chooses T display hardware below. See the
+**October7 20:20UTC owner refinement — lead-owned, OPEN:** central reception needs
+scene-fitting tablets and desk items with clear staff check-in, greeting or
+conversation roles. Review actual poses, hand/worktop relation and player-facing
+purpose. Central alone is exempt from the five-unique-ad rule: use at most one
+or two posters; larger outer-wall boards prioritize directions, implemented
+mechanics and useful tips. The P1-P5 T display selection remains held for desktop
+review; poor module visibility is owner feedback, not accepted quality. Other
+work continues. Next: reception composition and source-verified information boards.
+
+**October7 19:51UTC independent work — lead-owned, OPEN:** central welcome's
+unsaved seating/vendor trial now includes four accepted shrubs and two accepted
+bay lights. The subsequent one-key aim/reach correction modestly improves staff
+readability, but the wide reception remains dark. Two unobscured boot views
+show no definite gap but do not prove continuous contact. Phoenix7's five actual
+views improve passage/stairs but show broad wall glare and a dark cockpit; root
+and independent review reject lighting after the third visual candidate. Its
+temporary changes restore exactly. Three rejected source lamps are removed,
+leaving the accepted14cm pane clearance in the local Rig diff. Loaded Build39,
+saved preview Mainc45 and published build remain unchanged. The decorative ships'
+four visible blocks are removed in an unsaved lower-placement trial; four matched
+views show visual improvement, with contact/walking still open. Lead next preserves
+these accepted edits through focused authoring while T hardware awaits owner choice.
+Cabin lighting, contact/walking and owner acceptance remain open. See the
 [central](validation/2026-10-07-central-welcome.md) and
 [cabin](validation/2026-10-07-native-resolution-and-phoenix-cabin.md) receipts.
+The [visitor-pad receipt](validation/2026-10-07-visitor-ship-pads.md) records the
+separate unsaved block-removal trial and its remaining physical checks.
 
 **October7 18:17UTC display selection — lead-owned, awaiting owner choice:**
 The owner rejects the rotated wall-window hardware because its controls face
