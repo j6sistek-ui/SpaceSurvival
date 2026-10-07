@@ -908,16 +908,184 @@ It retains every Art3 package. Future Art4 must bind that actual producer rather
 than mutate the stale Art3 map hash. Four original alien operators remain in the
 saved scene; mixed-crew previews and physical standing rings are unfinished.
 
+## Art4 preimport rejection and physical redesign — 2026-10-07T08:58Z
+
+Art4's bounded native author preflight rejects every useful upper strip on the
+first actual frame. All twelve candidate rectangles have complete supported
+LCD surfaces, but native frame rays still hit the upper rail or its centre
+hardware. Actual raw ray records are written before each predicate. This
+supersedes the preparing status above: root collects native exit0 with a failed
+manifest, receipt
+`d09c674ed2be3ef9bdef81bb01d5d005f0ea211f9d7e8363cc5f94605878474f`.
+No texture/material import, assignment or save occurs; saved assets are empty,
+preservation is true and the current Threshold2 preview remains `fb3d5ed7…`.
+All frozen Art4 helpers/wrapper and the earlier failures remain intact.
+
+The lead directs a reversible physical replacement instead of another dense
+native-screen fitting loop. The offline plan proposes four new mounted monitor
+units, one shared small mesh and four actors. Each complete4:1 hero/title strip
+occupies a96×24cm known-UV rectangle in a100×28×3.4cm chamfered graphite housing
+with a satin titanium rim. Two visible24.49cm brackets meet retained actual
+upper-rail ray contacts. The housing stays2cm ahead of the complete conservative
+frame envelope; its minimum separation from the existingR34 route capsule is
+114.11cm. This envelope is a separation bound, not an LCD-aperture measurement.
+Continuous clip-footprint support is explicitly unclaimed.
+
+The proposed scope privately darkens exactly four old LCD material slots, keeps
+all original Art3 packages, and gives only the existing supported Flight pane
+one private gain3.5 copy. Service identities/actions/access/anchors, desk/frame
+poses, crew, lights and white floors remain fixed. Plan
+`536090f93aba14edf9c643585d47ba56bc7dd6c22aba6a49dc53708040bf43ff`
+and a labelled offline dimensional drawing are prepared for lead review.
+No physical display has been authored or saved. Native mesh/UV/scene readback
+and nine fresh rendered views remain required before visual acceptance.
+
+## Physical mounted-display preparation — 2026-10-07T09:25Z
+
+The lead reviewed the dimensional drawing `e569d7ec…` and approved the bounded
+design at about8/10 for author preparation only. The new shared mesh contains
+140 triangles/272 vertices, three material roles and a complete two-triangle
+96×24cm image face with explicit corner UVs. The newly prepared geometry uses
+exact oriented IEEE754float32 face comparisons after native static-mesh copying,
+with full source/actual arrays written before the comparison. This preserves the
+native storage representation and winding; no decimal position bins are used.
+The original failed marker/display recipes remain immutable.
+
+The actual saved predecessor is now Ring2: receipt
+`c581987a09117dda13f00bafb0d88bdcdd0edf5da47ccee7b3443ad8313c2271`,
+clean root-collected native exit0, preview
+`8c65e4501320b65335ae016b86dee78c774580388a646bfb14063b05416e60bd`.
+It saves nine private packages and five physical NoCollision service markers;
+existing service actions/actors, lighting, floor contacts and owner saves remain
+preserved. This author receipt does not establish accepted marker appearance.
+
+The mounted-display helper `4e0f7000…`, geometry `73bde4f8…` and final wrapper
+`0534ddd3…` received independent bounded source review. The wrapper requires
+that exact Ring2 receipt/map, checks its complete nine-package population and
+retains the earlier Threshold2/Art3/opaque/floor ancestry. A CPU-only pre-map
+gate checks1,684 protected files and24 recipe hashes with the new display
+namespace absent; no Unreal load, import or save occurred during that check.
+The intended new native scope remains13 private assets, four attached monitor
+actors and exactly five private existing-slot changes. Native authoring and all
+nine actual rendered views remain pending. The current saved four original
+alien operators remain; the mixed crew is a separate unsaved contact preview.
+
+## Mounted6 saved author and capture readiness — 2026-10-07T09:40Z
+
+Mounted5's native Entry preflight fails before loading the map, importing assets
+or saving. Receipt `b335ccca080dadd739882e6cb12ef14d3d1f293968fb7342364aa908b67fe788`
+records zero saved assets and preservation; root collects native exit0. Python's
+`Transform` constructor routes the rotation argument through a native Rotator
+constructor, so the supplied Quaternion is rejected. The frozen failed inputs
+remain unchanged. Installed `NoExportTypes.h` and the existing
+`OutpostTechDisplays.py` establish the reflected Quaternion fields used by NEW6.
+Its native identity/nonidentity Entry readbacks validate the repaired setter.
+
+Mounted6 succeeds and saves with preservation true; root collects clean native
+exit0. Actual receipt is
+`d46ac4227db8281acdf813508d4796e8afaf066db2dc3ebf241e04edab887364`,
+and the saved preview is
+`5b2d7bdcefaa2f6493bc43b34cc2ce5631bb8f03f21bdb7a997c5b7f18be8d2f`.
+The bounded change saves thirteen private assets, four attached physical
+monitors and five existing material-slot changes. Four old mirrored LCDs receive
+private dark backings; Flight receives its private gain3.5 material. Complete
+image UVs, oriented float32 mesh faces, attachment/mount contacts, circulation,
+existing actors/actions/lighting, white floors, all nine Ring2 packages and owner
+saves pass native readback. No new lamps are added. The source namespace retains
+the design's `Displays5` suffix intentionally; producer6 is the actual save.
+
+Fresh Capture6 is frozen at
+`7602a0dede45d4fd0383f54b321f15b64ce7a35d254c950a9b6d3dbcda5438f6`.
+Its source audit
+`a6b7c330cc4978bcf869bee8e474af61dc37f7695ebaed4e93768343aa0735b5`
+classifies and verifies all1,710 protected files, including nine exact Engine
+files, four owner references, two fonts and seven verified mounts. Independent
+review reproduces the actual producer/schema and all source digests. Nine
+actual-PC1600×900 views will check the entire room and each service illustration,
+with90-frame/six-second view warmup and no quality/settings changes. Capture is
+pending; author readback is not visual acceptance. Saved operators are still
+the four original aliens; corrected mixed-crew previews remain unsaved.
+
+## Capture6 reload representation and bounded repair — 2026-10-07T09:46Z
+
+Capture6 fails before images on exact new-monitor pose comparison; root collects
+nativeA5 during shutdown. Manifest
+`3a49160d731a244ab25e18478f6d856562958214f879a335b1ec6e5f3cb75e16`
+retains unchanged files/saves and exact same-loaded editor state with zero
+deltas. No ship comparison or aggregate capture-preservation pass is claimed
+for that early failure. The saved Mounted6 content remains unchanged.
+
+Its actual before-camera snapshot records all8,432 actors. All four new monitor
+locations/scales exactly match the author receipt. Both north Quaternion values
+match exactly; each south Quaternion is exactly the component-wise negative of
+its authored value. Quaternion `q` and `−q` encode the same physical rotation.
+CPU audit `34c4643753c9177abc7e1830490b245db96886a29f13854a83933f9d4040bda5`
+uses the actual saved native272-vertex mesh and eight bounding corners: every
+transformed point is exactly equal, with zero centimetre difference. Changed
+location/scale/rotation and an unobserved north sign-flip case are rejected.
+The failed snapshot does not include attachment parents; no parent pass is
+inferred from this CPU audit.
+
+NEW Capture7 retains all four actual native parents/raw poses before predicates.
+It requires exact label, parent, location and scale, permitting only the two
+observed south identities' exact Quaternion negation. Original actor comparisons
+remain exact within the same loaded scene; no numeric tolerance or global
+normalization is introduced. Frozen wrapper
+`b252634e342ba9b87ad8767721bf661c17aaef58b159638d703e49da151163f4`
+and source audit
+`a7da6b086d2b58b2d0f4d2c6103ad9e284ed624bd7308744f2b8bf97907cd057`
+protect1,720 source/evidence files, including the frozen failed6 and its raw
+snapshots. Nine actual images/native exit/visual quality remain pending.
+
+## Actual saved mounted-display review — 2026-10-07T10:00Z
+
+Capture7 succeeds and root collects clean native exit0. Its manifest is
+`4e259652f66fde0c3c6da6f04024fd2d8e397244b584412396d23e74c751908b`.
+All nine actual1600×900 images are produced; `files_unchanged`,
+`saves_unchanged`, `ships_unchanged`, `editor_scene_unchanged` and `pie_stopped`
+are true, with zero exact editor deltas and no errors. This capture schema has
+no aggregate `preservation_pass` field; these explicit checks are the evidence.
+Fresh native parent/pose readback passes on all four monitors, including the
+two exact Quaternion sign-equivalent south rotations. The saved Mounted6 map
+and thirteen packages remain unchanged.
+
+The lead and independent specialist inspect all nine views. All four side
+service titles/subtitles are upright and nonmirrored, with complete hero
+illustrations and no front-rail clipping. The thin physical housings read as
+mounted units; the old mirrored LCD imagery does not compete. Flight's title
+and full Phoenix silhouette read, although the image remains dim. The lead
+accepts this display presentation at about8/10; the specialist rates the
+displays8–8.5/10. This is separate from whole T, still about7–7.5/10 against
+the required lead9/10 gate, and from owner acceptance.
+
+Independent review artifact
+`4963887a69c10b01853ca8021840dc29cdf80c2ea02644b134bac54fb3c3b34c`
+verifies every PNG hash/dimension and records observations for each view. It was
+written before root collected the exit, so its process-status line remains
+explicitly pending as historical evidence; the clean collected exit above
+supersedes that status. Current photos show the saved preview with an unsaved
+diagnostic camera, not a published build. Four original alien operators remain.
+
+Remaining room concerns are noisy bright fine workstation/ceiling highlights,
+bright-floor/dark-upper-room balance, plain podium base detail and the separately
+unfinished mixed crew. White-floor colour and trim brightness remain owner
+decisions. A CPU-only proposal binds the active P3 material graph and four
+PortSouth desk-body slots: a private unsaved normal-strength comparison can
+isolate retained micro-normal detail while leaving current roughness, metalness,
+colour, textures, AO, UV, emission and lighting fixed. It awaits the chosen crew
+save and actual ordinary1600 baseline; no new material change is authored yet.
+
 ## Open / Check / Still open
 
-- **Open:** the separate owner preview at the saved Threshold2 hash above; this is not a
+- **Open:** the separate owner preview at the saved Mounted6 hash above; this is not a
   canonical-game or itch update.
-- **Check:** repair mirrored/rail-obscured illustration mapping, then review
-  actually fitted service graphics, saved private desk finish and standing-ring pixels
+- **Check:** the saved Mounted6 service identities now pass fresh visual review;
+  review the next ordinary1600 desk comparison and fitted mixed crew before judging
+  the entire T room.
   alongside the saved white-floor coverage before judging the revised T room.
 - **Still open:** T room visual acceptance, noisy workstation/rendered highlights,
   broad-panel detail, clear service desks/rings, fitted illustration capture and
   the remaining full-station white-floor coverage.
-  Pre-finish T was6.5–7/10; current saved opaque finish is about7/10 against the lead9/10 goal. The owner accepted L8/10 for now;
+  Pre-finish T was6.5–7/10; current T is about7–7.5/10 against the lead9/10 goal. The owner accepted L8/10 for now;
   this display pass does not extend that acceptance to T. RPT-20261006-04 in
   [KNOWN_ISSUES](../KNOWN_ISSUES.md) remains the authoritative owner-acceptance log.

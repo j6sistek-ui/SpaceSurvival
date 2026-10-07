@@ -213,6 +213,53 @@ with all three animation lifecycles restored, zero scene deltas and unchanged
 files/saves/ships; native shutdown fails separately. Actual full-loop furniture
 contact, saved mixed crew and physical service markers remain open.
 Lead's T review stays about7/10; no T9 or published-build change.
+October7 09:11UTC: Contact4 completes all121-key raw samples with native0 and
+exact scene/lifecycle/file/save preservation, but its strict clearance result is
+failed or unknown. Large negative projections hit rails above thighs; actual
+cushion support remains unproved, so no model is raised or saved. A small
+near-body support check is preparing. Marker1 also exits0 but fails its native
+mesh-face readback before any asset/map save; preservation passes and the map
+above remains current. Marker2 will retain copied geometry before testing exact
+native float32 positions; no visual marker completion is claimed.
+October7 09:26UTC supersedes that pending marker state: Ring2 saves nine private
+assets/five segmented standing markers with native0 and exact preservation;
+current preview is`8c65e450`/receipt`c581987a`. Nine actual saved views prove the
+five normal service focuses and subtle brightness variation. Capture preserves
+files/saves/ships/scene with zero deltas, but native shutdown fails separately.
+Lead/peer rate markers about8 and full T about7: shiny/noisy desks, bright floor,
+dark ceiling, dim/frame-obscured Art3 and the original alien crew still hold T9.
+Contact5's bounded near-body check finishes native0/read-only/preservation true;
+physical interpretation remains pending. Four supported illustrated monitors
+are authoring next; crew replacement has not been saved.
+The first physical-monitor pass exits0 but fails its quaternion constructor
+preflight before loading/importing/saving; zero assets are saved and preservation
+passes. Lead retains the failure and prepares the reflected quaternion-property
+correction against installed engine source. Contact5 supports a practical seated
+robot and small human/back placement corrections; limited misses remain unknown,
+with corrected unsaved whole-body views next. No T9 or crew-save claim.
+October7 09:35UTC: the corrected Mounted6 author saves four attached image-led
+monitors and a private brighter Flight pane, native0/preservation pass;
+current preview`5b2d7bdc`/receipt`d46ac422`. Thirteen private assets/five old
+LCD slots only; original actors/actions/floors/rings/saves remain intact. Actual
+mesh UVs/mounts/route clearance pass, while fresh nine-view visual review is next.
+Crew remains the original saved mix. October7 09:53UTC: corrected Crew6 yields
+six unsaved fullbody views; lead and two peers accept cosmetic sitting and boot
+placement. Hands remain lap/rest idle and continuous furniture contact is
+unverified. Exact scene/lifecycle/file/save/ship restoration passes, with native
+shutdown crash recorded separately. Install the captured121-key tracks directly,
+without refitting. Capture6 produces no images because two saved quaternion signs
+negate on reload; all272 vertices/eight corners remain physically identical.
+October7 09:57UTC: bounded Capture7 finishes cleanly/native0 with nine actual
+views, exact native parents/physical poses and zero scene deltas. Files/saves/
+ships remain unchanged. Lead and peer accept the four unobstructed side screens,
+about8–8.5/10; Flight's hero remains dim. Whole T still rates7–7.5/10;
+finish the saved crew/screens and review one ordinary fullsize view before a
+small private desk-normal comparison. October7 10:04UTC: CrewCaptured1 saves
+those exact tracks on three existing operators through two fresh private clips;
+Main`13787cce`/receipt`9b68ab66`. Local position error is zero; exact unit scale,
+scene/non-target/lifecycle/files/saves preservation pass. Native shutdown crashes
+separately. Fresh saved appearance and continuous chair contact remain open.
+No T9 or published-build change.
 
 **October7 08:29UTC historical saved-preview update:** Art3 saves five fitted
 illustrated service displays/ten private assets with successful saved and

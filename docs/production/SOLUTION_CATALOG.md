@@ -290,13 +290,34 @@ KNOWN_ISSUES owns priority and acceptance.
   but actual pixels show mirrored/frame-obstructed Pilot art and dim Flight art.
   Its save/preservation are verified separately from a native shutdown crash.
   Art4 rejects the actual frame window before imports/saves, native0 and map
-  unchanged. Four physical satin-framed overlay units with known UVs are being
-  prepared; the original slot4 is a light strip, not an image screen. Existing SciFITrooper
+  unchanged. Mounted6 cleanly saves four physical satin-framed overlay units
+  with known UVs through13 private assets/four attached units and five
+  existing LCD slots. Exact mesh/UV/mount/route preservation passes.
+  Capture7 cleanly produces nine actual views/native0, preserving scene/files/
+  saves/ships. Lead and peer accept full upright artwork and clear mounts on
+  the four side units, about8–8.5/10; Flight remains dim and whole T7–7.5/10.
+  Capture6 stops before images on exact quaternion sign representation; bounded
+  Capture7 verifies all physical vertices and actual parents. The original slot4
+  is a light strip, not an image screen. Existing SciFITrooper
   Man03 and Robot scout R21 supply two saved private seated clips/rig derivatives;
   six Crew4 unsaved views confirm natural mixed silhouettes and whole-body
   framing, with exact lifecycle/scene/file/save restoration. Native shutdown
-  crashes separately. Full-loop skin/furniture contact and saved operator
-  replacement remain unverified; prepared physical standing markers are unrun.
+  crashes separately. Crew4 leaves full-loop skin/furniture contact and saved
+  operator replacement unverified. Corrected Crew6 supplies six unsaved fullbody
+  views and exact captured121-key tracks; lead and peers accept cosmetic sitting
+  and boot placement, retaining lap/rest idle and continuous contact limits.
+  Exact lifecycle/scene/file/save preservation passes with native shutdown crash
+  recorded separately. Captured1 then saves those exact tracks through two new
+  private clips and three existing operators, preserving unrelated scene/files/
+  saves. Native local position error is zero, unit scale exact, no refit; native
+  shutdown crashes separately. Fresh saved appearance remains pending.
+  Ring2 saves five segmented standing markers
+  through nine private assets, native0/exact preservation. Nine actual saved
+  views confirm normal service selection and subtle brightness variation;
+  their preservation passes but native shutdown crashes separately. Rings
+  rate about8/10 while full T remains about7/10. The first physical-screen
+  author fails its transform preflight before imports/saves; the installed
+  quaternion property contract supports a bounded correction, not new artwork.
 - **Next check:** preserve the sharp rear displays and accepted L while fitting
   proper service screens, opaque satin hardware and the supplied crew. The active
   owner queue and acceptance gates remain in KNOWN_ISSUES, not this catalog.

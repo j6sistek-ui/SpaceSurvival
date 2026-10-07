@@ -634,6 +634,138 @@ ordinary Shot route warmed at its actual output resolution, with its known
 next-tick log-flush proof repaired. No new renderer run or quality/light/source
 change belongs to this audit.
 
+## Five physical service rings: saved, appearance pending
+
+At 2026-10-07T09:10Z Marker1 stops before saving any asset or map. Root collects
+native exit 0; receipt `9c0a9fb96eb7f3f2a95457fd9c9308ac17c4d8858d376bcc3d61e4c1e1a82b4d`
+retains the failed decimal face-comparison predicate and complete source/save
+preservation. Its raw created mesh was not retained and is not reconstructed
+as evidence. The original source, wrapper and failure remain immutable.
+
+Marker2 uses the installed source-model `FVector3f` representation explicitly,
+then compares all oriented triangle faces and material roles exactly. It accepts
+cyclic corner reordering; reversed winding, material changes and coordinate
+changes fail the CPU regressions. Full copied positions, triangles and material
+IDs are persisted before the native predicate. Actual raw artifact
+`4ee0fae0a576c695aa1bb019f6398d730854874bfb616e37879434a24fad59cf`
+contains 5,768 vertices and 2,980 triangles, with no missing or unexpected faces.
+Normal/UV buffer readbacks and all three material sections pass. This actual
+float32 result supports the precision explanation without waiving geometry.
+
+Root collects Marker2 native exit 0. Successful saved/preserved receipt
+`c581987a09117dda13f00bafb0d88bdcdd0edf5da47ccee7b3443ad8313c2271`
+saves nine new private assets and five cosmetic NoCollision actors; the owner
+preview is `8c65e4501320b65335ae016b86dee78c774580388a646bfb14063b05416e60bd`.
+The shared chamfered segmented mesh has a graphite body, titanium fasteners and
+five service accent children. A five-second material pulse varies emission from
+0.75 to 1.15; no light is added. All original actors, service identities/actions,
+materials, floor contacts, source files and saved progress remain unchanged.
+These are presentation markers; no gameplay action or purchase is called.
+
+Capture2 completes nine actual 1600x900 player-camera images and all five initial
+standing/FocusedTerminal checks. Manifest
+`2069f6e647f7bdc1a81b2913fbebebb8d84acf99108a8be760966be293d1c510`
+passes exact scene/service/ship/file/save/quality preservation with zero deltas.
+Root separately collects a shutdown access violation; this is a successful
+capture receipt, not a clean native process. The original alien crew remains;
+model substitutions are still separate unsaved tests. No gameplay action is
+called by the initial selection checks.
+
+Root and specialist inspect all nine images: the segmented graphite markers
+and distinct accents visibly identify the five standing positions. Their narrow
+lenses contrast clearly with the white walking surface; marker quality is about
+7.5–8/10. The original desks still look shiny/noisy and their old images remain
+dim or frame-obscured. The dark ceiling, bright floor and unchanged alien-heavy
+staff hold whole-room quality near 7/10, below the required 9/10 gate.
+
+The three fixed views span 5.207 natural game seconds. Pixel audit
+`ef42b16bc2920f82ea692b21e333bd7c2393601ea84580eac0ca19530a4d068b`
+compares 14,463 common cyan lens interior pixels after one-pixel erosion, without
+editing images or time/material settings. Mean linear luminance is 0.16595,
+0.15395 and 0.16840; the middle lens is 7.23% darker than the first, and the third
+is 1.48% brighter. Adjacent floor luminance varies less than 0.026%. This supports
+subtle captured brightness modulation; elapsed time alone is not the evidence.
+Three stills do not establish continuous smoothness, exact shader phase or
+owner-device comfort. The matched high-resolution pipeline still has the known
+noise/softness limitation; a warmed ordinary full-size view remains needed for
+final room judgment.
+
+## Mounted service displays saved and fresh views reviewed
+
+Mounted5 stops before map load on the quaternion argument to Python's
+`Transform` constructor; its native process exits 0, but receipt
+`b335ccca080dadd739882e6cb12ef14d3d1f293968fb7342364aa908b67fe788`
+is a preserved failure with no saved assets. Mounted6 uses the installed
+reflected quaternion fields, matching the existing native kit authoring helper,
+and checks identity and nonidentity transforms before loading content.
+
+Root collects Mounted6 native exit 0. Receipt
+`d46ac4227db8281acdf813508d4796e8afaf066db2dc3ebf241e04edab887364`
+saves thirteen private assets, four small NoCollision monitors and five private
+material references; the preview becomes
+`5b2d7bdcefaa2f6493bc43b34cc2ce5631bb8f03f21bdb7a997c5b7f18be8d2f`.
+Known screen UVs present the full illustrations in shallow graphite/titanium
+housings attached to existing hardware. The five markers, original actors,
+service actions, walking floors, lights, source assets and saved progress are
+preserved. This saved implementation does not establish visual acceptance.
+
+The nine-view Capture6 source and exact classifier receive independent review:
+1,710 protected files are hashed and classified, including nine exact engine
+files, four art references, two fonts and seven verified content junctions.
+Capture6 subsequently stops before images on its exact mounted-parent/pose
+readback. File/save/editor preservation passes with zero scene deltas; root
+separately collects a shutdown access violation. The retained before-camera
+snapshot shows exact positions and scales for all four monitors, exact north
+quaternions, and componentwise sign-reversed south quaternions. Quaternion sign
+reversal represents the same rotation; the parent was not recorded before that
+predicate, so parent validation remains unconfirmed. The failure is preserved;
+no saved geometry or material is changed to repair the capture guard.
+
+Capture7's bounded repair receives independent offline review. Both observed
+south sign reversals transform all 272 native vertices and eight bound corners
+exactly; north poses remain exact. Tiny position, scale or rotation changes and
+an unobserved north sign reversal are rejected. All 1,720 protected inputs are
+hashed and classified against the exact engine, art, font and content-junction
+allowlists. Capture7 records all four raw parents and poses before predicates;
+parent identity and the original scene comparison remain exact. This source
+review is not a native capture or appearance pass.
+
+Root subsequently collects Capture7 native exit 0. Manifest
+`4e259652f66fde0c3c6da6f04024fd2d8e397244b584412396d23e74c751908b`
+passes all preservation checks and records zero editor deltas. All nine actual
+1600x900 PNGs are independently hashed and reviewed. The four mounted service
+titles read correctly, their complete hero images remain visible, and the
+frames no longer obscure the art. The display presentation is approximately
+8/10. Flight's ship image and heading remain comparatively dim. The whole room
+is approximately 7–7.5/10: the podium and Phoenix focal point work, but sparkling
+desk surfaces, a washed-out floor and dark ceiling still limit the finish.
+These saved views retain the original alien operators; the corrected crew
+preview below is separate unsaved evidence.
+
+Root's required 9/10 room gate remains open. A new ordinary
+1600x900 capture template also retains the existing Build39 observer and raw
+scene comparisons. Its viewport restoration proof is read on later ticks;
+the prior full-size failure and its raw deltas remain unchanged. This template
+is unrun and awaits the actual final screen/crew save lineage.
+
+## Corrected crew preview reviewed; installation pending
+
+The six actual unsaved CrewPreview6 images are independently checked against
+manifest `72718460afd7ebdb51fb9fa81b0c813688bab354b2e9b5609f8dddafd757051f`;
+all are 1600x900. Whole heads and bodies remain visible. Human knees and pelvis
+read as seated, boots rest on the support blocks, and the robot fits the chair
+footprint without gross visible penetration. The human correction is relative
+to the actual previously rendered origin; the robot receives the declared
+chair-axis correction. The mixed silhouettes improve the prior all-alien set.
+
+This is cosmetic placement approval for the exact captured 121-key tracks,
+not a claim of desk-working animation or continuous furniture contact. Hands
+remain in a lap/rest idle. The preview saves no assets and restores the three
+original animation lifecycles exactly; file/save/ship preservation and zero
+editor deltas pass. Root separately collects a shutdown access violation.
+Saved crew installation and fresh whole-room/ordinary-resolution review remain
+pending. No current 9/10 room acceptance is inferred from these close views.
+
 ## Still open
 
 At2026-10-07T04:49Z the owner supersedes the04:23 comparison-only scope and chooses
@@ -659,5 +791,5 @@ identity and pulsing standing rings. Staff need a less alien-heavy model mix.
 Those follow the floor check; exact service actions and access remain intact.
 No new rotation mechanism, light or geometry belongs to the saved material finish.
 Saved implementation, visual quality, owner approval and published build remain
-separate; the independent post-white T assessment is6.5–7/10, and the lead's
+separate; the latest independent saved T assessment is7–7.5/10, and the lead's
 required9/10 gate remains open. No9/10 room or gameplay/package pass is claimed.

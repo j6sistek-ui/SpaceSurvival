@@ -1,6 +1,53 @@
 # SpaceSurvival project state
 
-**October7 08:58UTC latest saved preview:** Threshold2 repairs the one omitted
+**October7 10:04UTC latest saved preview:** CrewCaptured1 installs the exact
+reviewed121-key motion through two fresh private clips on three existing
+operators: two humans, one scout robot and one retained alien. Current Main is
+`13787cce1fba901869556676fb14b3f2aff57bc76fd00325d2b439d1f3d824dc`;
+receipt`9b68ab66e02aae7bf2035911c04a08d0a23f589ccbb074b63d520e32508780cd`.
+Native readbacks have zero local position error and exact unit scales; no source
+pose or fitter reevaluation occurs. Scene/non-target/lifecycle/file/save
+preservation passes; native shutdown exits0xC0000005 separately. Fresh saved
+appearance, continuous chair contact, T9 and owner acceptance remain open.
+Female lounge bartender and the published build are unchanged.
+
+**October7 09:35UTC historical saved preview:** Mounted6 cleanly saves four attached
+illustrated service monitors and a private brighter Flight display, native0.
+Current preview is
+`5b2d7bdcefaa2f6493bc43b34cc2ce5631bb8f03f21bdb7a997c5b7f18be8d2f`;
+receipt`d46ac4227db8281acdf813508d4796e8afaf066db2dc3ebf241e04edab887364`.
+Thirteen private assets and exactly five existing LCD slots change. Actual mesh
+faces, full-screen UVs, mount points and route clearance pass; original content,
+existing actors/actions, white floors, nine marker assets and saves are preserved.
+October7 09:57UTC: Capture7 finishes cleanly, native0, with nine actual views,
+zero scene deltas and unchanged files/saves/ships. Lead and peer accept the four
+upright, unobstructed illustrated side screens, about8–8.5/10. Flight's title and
+Phoenix are visible but its hero remains dim. Whole T remains7–7.5/10 because
+the desk highlights and floor/ceiling contrast still need refinement.
+Capture6 stops before images:
+the two south units reload with exact negated quaternions, the same physical
+rotation. Capture7 verifies exact vertex/corner equality, bounded sign
+equivalence and all four native parents from retained raw evidence.
+The failed constructor preflight made no imports/saves and remains history.
+Crew6 produces six unsaved views with exact scene/lifecycle/file/save restoration;
+native shutdown crashes separately. Lead and peers accept the cosmetic seated
+human/robot placement, with hands at rest and continuous contact unverified.
+Their full121-key tracks are retained for exact installation. The original alien
+staff is still saved. No T9 or published-build change is claimed.
+
+**October7 09:26UTC historical saved preview:** Ring2 saves nine private assets and
+five segmented service standing markers with native exit0. Current preview is
+`8c65e4501320b65335ae016b86dee78c774580388a646bfb14063b05416e60bd`;
+receipt`c581987a09117dda13f00bafb0d88bdcdd0edf5da47ccee7b3443ad8313c2271`.
+Existing actors, services, floor contacts, source files and saves are preserved.
+Nine fresh views verify the five correct service focuses and subtle ring
+brightness variation. Capture preservation passes with zero scene deltas, but
+native shutdown exits0xC0000005 separately. Lead and peer rate rings about8/10
+and the whole T room about7/10; illustrated screen replacement and saved mixed
+crew remain incomplete. Contact5 finishes cleanly/native0 with read-only
+preservation, while physical seating acceptance remains pending.
+
+**October7 08:58UTC historical saved preview:** Threshold2 repairs the one omitted
 cargo entrance floor with native exit0 and exact scene/material/file/save
 preservation. Main preview is
 `fb3d5ed7ee58afc3e90044cec21a4428022a7224f9d7b1fa71e0d65bab3ff3b2`;
@@ -42,7 +89,7 @@ files/saves/ships. Native shutdown still exits0xC0000005. Actual full-loop chair
 seat/back/armrest contact is pending; no crew substitution is saved. Whole T
 remains about7/10, not its9/10 gate. Physical markers are prepared offline only.
 The earlier Art1/2, capture and support failures remain immutable history.
-Source checkpoint`2a7c60e1bb5d74ec71664c682f58219e1b642e67` is pushed to existing
+Source checkpoint`169e82d465d5f27b202666405e46742303c5e3ab` is pushed to existing
 open draft[PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69), unmerged.
 Latest local recipes/evidence are not all checkpointed; no new package is published.
 
