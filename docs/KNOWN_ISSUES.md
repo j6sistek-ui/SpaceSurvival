@@ -159,6 +159,26 @@ model fit, feet and hand/counter contact still require moving review. The owner
 supersedes waiting for T9: finish its ad TVs, then one agent handles Phoenix interior
 and two handle central welcome layout/arrival and imagery. Other fixes remain OPEN.
 
+**October7 22:59UTC source-art progress:** R customization has five distinct
+prepared campaigns: the unchanged Morph Clinic, Hologram Doctor and Zero-G
+Massage originals plus two new matching illustrations, Vacuum Valet and First
+Contact Photo Co. Source text/composition passes root and independent review;
+none is newly imported, fitted or verified cycling. L has five source candidates
+but still only four in its saved loop; the market has Cosmic Tacos and needs four
+additional distinct campaigns. T's five selected originals and held hardware
+remain untouched. Lead next fills verified source gaps, then integrates and
+checks actual screen reading/cycling when native work resumes. Central keeps
+its later one-or-two-ad exception. [Source evidence](validation/2026-10-07-room-ad-source-sets.md).
+
+**October7 23:10UTC market source update:** four distinct retail illustrations
+now join unchanged Cosmic Tacos: Moonjar Pantry, Anchor & Saucer, Relatively Good
+Clocks and Rock Solid Companions. Both R and Market therefore have five prepared
+source campaigns. Root/independent review passes the selected files after fixing
+a missing ampersand and an extra hand; rejected variants remain excluded.
+No new display import/assignment/fit/cycling or owner acceptance is claimed.
+Lead still owns native integration and remaining room allocations; the source
+files do not implement the fictional advertised services.
+
 ## October6 owner station refinement
 
 **October7 20:20UTC owner refinement — lead-owned, OPEN:** central reception needs

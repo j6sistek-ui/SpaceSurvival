@@ -1,5 +1,15 @@
 # SpaceSurvival project state
 
+**October7 23:10UTC source artwork:** R customization and Market now each have
+five distinct campaign sources. R preserves three owner originals and adds
+Vacuum Valet/First Contact Photo Co.; Market preserves Cosmic Tacos and adds
+four retail illustrations. All six new selected images pass lead/independent
+source-text and composition review after two market defects were corrected.
+Files, exact prompts and hashes are retained privately; no import, screen
+placement, cycling or owner approval is established. T's display choice remains
+held. See the [source-set record](validation/2026-10-07-room-ad-source-sets.md).
+This does not change the saved scene, linked binary or published build.
+
 **October7 22:18UTC temporary editor closure:** the owner may close Unreal.
 The latest working map and all eight dirty display packages were saved to
 separate recovery files under `.agent/local/EditorCloseRecovery20261007T2216`.

@@ -56,6 +56,24 @@ its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
 
 ### LIB-20261007-ROOM-AD-CAROUSEL — five illustrated campaigns per room
 
+- **Market source update,2026-10-07T23:10Z:** unchanged Cosmic Tacos plus new
+  Moonjar Pantry, Anchor & Saucer, Relatively Good Clocks and Rock Solid Companions
+  fill five distinct retail-ad source slots. The four builtin-imagegen outputs,
+  exact prompts and two corrected/rejected variants are retained privately in
+  `MarketCampaigns20261007`. Root/independent source-art review passes; native
+  import, placement, screen fit, cycling and owner approval remain unverified.
+  No fictional advertised product becomes a gameplay system.
+
+- **Source preparation,2026-10-07T22:59Z:** R customization has five distinct
+  campaigns under `.agent/local/StationRefinement/CustomizationCampaigns20261007`:
+  three unchanged owner originals and two new builtin-imagegen illustrations,
+  Vacuum Valet and First Contact Photo Co. Root/independent review passes source
+  copy/composition; exact image/prompt hashes are retained. No native import,
+  assignment, screen-fit/cycling or owner approval follows. The market has only
+  Cosmic Tacos; L has five source candidates but a four-campaign saved loop.
+  These are verified gaps, not a reason to regenerate selected T originals.
+  [Source-set evidence](../validation/2026-10-07-room-ad-source-sets.md).
+
 - **Related interior reuse,2026-10-07T20:06Z:** owned P5 benches/planter bases,
   `CyberpunkRestaurant/Meshes/SM_Shrub_With_LODs_01`, the existing private green
   lounge shrub material and recovered vendor clips form the unsaved central finish.
