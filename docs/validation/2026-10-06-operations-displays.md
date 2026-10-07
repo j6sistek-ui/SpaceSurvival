@@ -1,6 +1,6 @@
 # Operations display integration — 2026-10-06 owner session
 
-Recorded at 2026-10-07T02:03Z; combined saved-room review updated at 2026-10-07T04:26Z.
+Recorded at 2026-10-07T02:03Z; partial service and offline-art evidence updated at 2026-10-07T06:36Z.
 **PARTIAL: saved displays, supported density and graphite podium pass their
 implementation/preservation checks; whole T room rates6–6.5/10 and remains owner-unapproved.** This is a T Operations presentation
 pass on the separate owner preview. The accepted L lounge, canonical runtime map,
@@ -449,13 +449,324 @@ for unsaved pure-white, metallic-silver and white-with-silver floor comparisons;
 those are not saved or accepted by this Capture3 result. No canonical runtime,
 packaged build, owner visual acceptance or performance acceptance is claimed.
 
+## Ordinary active-camera diagnostic — 2026-10-07T04:49Z
+
+NormalShot1 succeeds and the root observes native exit0. Its manifest SHA256 is
+`ac2f08e3a82458153518f405d8c4f337bcaa2836a04402fbe119c19d51a859d7`;
+wrapper SHA256 is
+`42bef9c47364dcd402551ff5d3f5e11faf6989d63e2dee8f095e14836371a04d`.
+Both screenshots are ordinary `Shot` captures of actual PIE,1014×344 pixels,
+matching the measured game viewport. Each view explicitly selects its unsaved
+CameraActor as the controller's view target, verifies the camera-manager
+location/rotation/FOV, then waits159/284 ticks and six wall seconds. This differs
+from Capture3's camera argument to the editor high-resolution API: nominal
+warmup there did not establish that the camera was the active rendered view.
+
+All1153 protected files, three saves and ship poses remain unchanged; PIE stops.
+The saved map stays `c1f62aed...`. No resolution, anti-aliasing, Lumen, material,
+lighting or scene overrides are applied. Native readbacks are resolution100%,
+anti-aliasing method4, High2 GI/reflections/AA, TSR history100% and Lumen reflection
+temporal accumulation enabled. These settings do not establish the final resolved
+SceneView flags, owner-size texture pressure or performance.
+
+Four retained LogBlueprintUserMessages warnings report that the diagnostic's
+`r.DefaultFeature.AntiAliasing` getter is unregistered. Its returned0 is an
+unavailable fallback, not disabled AA. Installed RendererSettings.h:863 uses
+`r.AntiAliasingMethod`; installed SceneUtils.h:44–51 defines method4 as TSR, and
+the current native readback is4. Future captures omit the obsolete getter; this
+frozen receipt and its warnings remain intact. This is a successful preserved
+diagnostic with warnings, not a clean automated gameplay-test pass.
+
+The root and specialist inspect both images. Fragmented/chrome workstation and
+floor highlights persist at this small viewport. High-resolution capture or
+missing camera warmup therefore cannot be established as the whole cause.
+The images are not an owner-full-resolution benchmark. A read-only native desk
+probe is prepared to verify actual output/static-switch/function connectivity
+and material-slot surface areas, alongside the five service standing/support
+checks. The prior eight scalar/vector child edits are not repeated merely
+because their write/readbacks passed. No global AA, texture pool or lighting
+change is justified by this diagnostic alone.
+
+## Superseding owner scope — 2026-10-07T04:49Z
+
+The owner selects textured, low-gloss white floors throughout the station;
+rust is rejected. This supersedes the pending floor selection above. Same-angle
+floor comparison pixels and the subsequent private full-station application are
+separate work: neither is a saved result of Density4 or NormalShot1. Existing
+panel normal/AO/detail, geometry, collision and lighting must remain intact.
+
+T stays the presentation priority until the lead's actual visual assessment
+reaches9/10. The owner requests clearer real upgrade desks/layout with a pulsing
+standing ring at each existing service. The next combined read-only probe checks
+five standing positions, native floor/capsule support, unchanged terminal
+identities and the actual controller's FocusedTerminal selection. Native CanUse
+is not exported as a UFUNCTION; invoking Use would trigger an action and is not
+part of this probe. Presentation work must preserve IDs, DisplayName mappings,
+access/anchors and service actions; the decorative Trade Network is not silently
+turned into a new economy. No new purchase, teleport or progression mechanic is
+introduced by the requested rings. Later room/cabin refinements remain held
+except the explicitly authorized full-station floor pass.
+
+## Retained service-probe failures and reflected API repair — 2026-10-07T05:31Z
+
+The combined read-only survey has not yet established any complete material,
+floor-inventory, NPC, aperture or standing-selection section. All three failed
+attempts remain immutable, and the root observes native exit0 for each:
+
+| Attempt | Exact failure and preservation | Receipt SHA256 |
+| --- | --- | --- |
+| ServicesProbe1 | Pre-map preflight rejects unreflected Controller.get_pawn. All1146 protected files/three saves remain unchanged, PIE is stopped; editor-scene/aggregate preservation are unset because no station map was loaded. | `75ca773ae96605ba5284b36a0d3ec2f7ede6b9c73d36e0b736b8bb40667c7d3d` |
+| ServicesProbe2 | Graph2 stops at its native source-area count guard before a completed collector section. Empty-versus-over-budget source count was not recorded. All1148 files/three saves and loaded editor scene remain unchanged; preservation passes. | `42c0600aef1ed5897806cb45c9011931c0168650aff09c6556fef14c41ab07cf` |
+| ServicesProbe3 | The literal Python bulk material-ID method is unavailable. Installed C++ header identity does not prove generated Python acronym spelling. All1150 files/three saves and editor scene remain unchanged; preservation passes. | `b1b47ab0dcc1072f9470391e8f6e5de5d3aec53951212032737f3bada67f8d90` |
+
+Installed Controller.h scripts K2_GetPawn as GetControlledPawn; the repaired
+probe uses the already proven GameplayStatics.get_player_pawn. NEW graph4,
+floor collector2 and wrapper4 resolve exactly one registered callable whose
+underscore-free name matches GetAllTriangleMaterialIDs, record its actual
+exported name/doc, and preflight graph/list/standing APIs in Entry before map
+loading. No guessed alternate or per-triangle fallback is called.
+
+Graph4 retains the strict200k slot-area processing limit. Empty or denser native
+sources report exact counts with slot areas unmeasured; material connectivity
+is separate evidence. Optional screen-lens export likewise retains200k source
+and20k glass limits and leaves the aperture UNKNOWN without a bounds-fit
+substitute. All five terminal identities/actions, native floor/capsule support
+and ordinary FocusedTerminal selection gates remain unchanged. The survey now
+collects the full-station floor inventory first so a later diagnostic failure
+does not discard that completed section. AST/source/hash and independent
+reviews pass; final native collector/support results remain pending.
+
+New prepared graph4 SHA256 is
+`ae058616804ad051480284b0d94a91195a8870700d4625f6d0e1bbb1d5dc1fef`;
+floor collector2 is
+`5f33d4ddd8823e10a9f2bb00158f4250e103f2de9fed0e15f50e621ad22af148`;
+final floor-first wrapper4 is
+`f5feb090de3a5af92a5817b1c443536ba84a758d4212de58e63f6f720ea55ad4`.
+No service graphics, rings, NPC replacement or desk finish saves result from
+these preparations. Earlier recipes and partial/failed evidence remain intact.
+
+## Unsaved selected-white floor evidence — 2026-10-07T05:31Z
+
+The earlier multi-option floor capture was terminated before a manifest or
+images; it does not establish a floor result. The subsequent White1 fixture
+succeeds and the root observes native exit0. Its manifest SHA256 is
+`40341b218ea8909387727a0872a63a68a28b91eae26293664de4e656f2d7f5c4`.
+It records four1600×900 images, an unsaved replacement on exactly84 T floor
+actors/420 slots,25 private inheritance-preserving MIC copies and a private
+master clone. Only BaseColor/Metallic/Roughness outputs change; all377 original
+nodes and native Normal/AO state are retained. Original references are restored,
+candidate package files are absent, and all1170 protected files/three saves,
+editor scene and ship poses remain unchanged; PIE stops.
+
+The matched podium-side pair is inspected independently: the selected white
+surface retains visible panel/seam detail and removes the rusty color. The root
+rejects the entrance control as misframed despite scripted camera checks; that
+pair is not accepted as a matched visual comparison. The slowly rotating Phoenix
+remains natural, so its orientation differs between shots. These are explicitly
+a current saved control and an UNSAVED material test, not a current white-floor
+saved build or full-station application. Root acceptance of the white-side
+material test does not establish room9/10, owner visual acceptance, performance,
+a published build or complete station floor coverage. Current saved preview
+remains `c1f62aed...`; station-wide floor authoring awaits the actual inventory.
+
+## Completed floor subsection and isolated service follow-up — 2026-10-07T05:49Z
+
+ServicesProbe4 supersedes the pending survey status above. The root observes
+native exit0; aggregate success remains false because the later graph collector
+cannot read StaticBoolParameter.dynamic_branch. All1277 protected files, three
+saves and the loaded editor scene remain unchanged; preservation passes and PIE
+is stopped. Receipt SHA256 is
+`38ba0dca69bd5d17709fe6fb923f1843e4c0771cfb789a20e4c931287e41383d`.
+The completed station_floor_inventory subsection succeeds read-only with2029
+candidate components, actual source geometry/material lineage and unchanged
+scene. It is valid partial floor evidence, not a successful combined service
+probe. The actual registered bulk method is get_all_triangle_material_i_ds;
+its documented three-value result is used by the completed collector.
+
+No completed NPC, lens, remaining-desks or standing-selection sections result
+from ServicesProbe4. NEW graph5 preflights every required property against its
+actual class default object before map loading. Installed StaticBoolParameter.h
+contains DynamicBranch as a bare UPROPERTY without editable flags; header
+presence does not prove get_editor_property access. The exact unavailable
+optional property is now recorded as UNKNOWN, never invented false. Unexpected
+read errors still fail. Required connectivity, source hashes and strict area
+budgets remain; graph5 is source-reviewed, not a native graph result.
+Graph5 SHA256 is
+`34894d608eef55dc0300cccbe88693cb3bd9f9ef8625d3b94382b8ae40a535dd`.
+The new service wrapper retains independent collector failures and runs the
+optional graph after PIE stops, so it cannot suppress unrelated NPC, lens or
+five-position native standing evidence. It reuses Floor4 instead of repeating
+the full survey. No service/standing marker or NPC content saves yet.
+
+The separate main-floor author is independently source-reviewed for1022 unique
+measured components and5017 explicit material slots,44 source leaves,49 private
+inherited MICs and four private master clones. Original hierarchy/local
+overrides, Normal/AO/UV and glass-slot exclusions remain. Only private direct
+BaseColor/Metallic/Roughness outputs change to the selected low-gloss white.
+Actual save and fresh game-view pixels remain pending at this checkpoint.
+This bounded main-map pass excludes mixed owner-deck slabs/ring and streamed
+child interiors; it must not be called complete full-station coverage.
+
+The owner-ring omission is traced to the private collision-preserving mesh
+SM_OwnerRing_AccurateCollision, whose name no longer matches the floor
+collector's Arco_Tubo condition. Three private owner-deck slabs also mix floor,
+sides and underside in one material slot; upward triangle winding alone does
+not identify their true walkable tops. A narrow read-only ring inventory is
+prepared rather than applying a whole-slot white override to these structures.
+Earlier failures remain immutable. No canonical map, packaged build or T9/10
+acceptance follows from these preparations.
+
+## Saved main floors and retained mixed capture — 2026-10-07T05:58Z
+
+This supersedes the pending main-floor save above. Main1 succeeds with
+preservation PASS and root-observed native exit0. Receipt SHA256 is
+`71bf0fb1f31e2673adb2bdd7b2c2ff28f27f727dbfacf8ccd31081ca5a84f1c2`;
+the saved owner preview is
+`211c812516fd81a71be64c6ddd3a372b3a2a94187f56790c03bc60719a077f34`.
+Exactly53 private materials save, and5017 slots on1022 measured components
+receive the selected white finish. Root verifies1281 protected files and three
+saves unchanged. Independent CPU review matches all53 saved package hashes,
+the current map identity and exact slot/component counts. Zero new actors or
+lights are recorded. Mixed owner foundation and streamed child floors remain
+excluded; full_station_complete stays false.
+
+MainCapture1 produces14 actual1600×900 room/route images, but is not a clean
+capture pass. The root observes native exit-1073741819 after shutdown; the
+manifest reports success=false and editor_scene_unchanged=false with no
+recorded Python errors. All1337 protected files, three saves and ship poses
+remain unchanged, and PIE stops. Manifest SHA256 is
+`74e428958579ef2780b7465c845a10fd57e3542f1944e8e51568fd36ca93a7b8`.
+The separate on-disk saved-floor author remains valid; this capture's editor
+state difference and native crash remain explicit failures requiring diagnosis.
+
+The specialist views both T entrance and podium-side images. White panel
+seams/normal detail remain visible and the rusty floor color is removed. The
+workstations still show fragmented glossy highlights; image softness/jagged
+edges remain. These visual observations neither establish the cause nor
+justify global AA/resolution/lighting changes. The root and cabin specialist
+continue a bounded actual-render-view diagnostic. No room9/10, complete
+full-station coverage, physical-input, performance or published-build acceptance
+is inferred from the14 files or material-source checks.
+
+## Partial native services and material connectivity — 2026-10-07T06:36Z
+
+Services5 is an aggregate failure with a root-observed native access violation
+after shutdown. Receipt SHA256 is
+`b84699a20232f73c3af6de762cb62a94fc0ea76a82ccf40051aac6e6711dce59`.
+All1364 guarded files, three saves, editor scene, ships and services remain
+unchanged, and PIE stops. Independent NPC, lens inventory, five standing samples
+and graph sections finish; only the remaining28-part collector rejects an
+immutable Engine texture namespace. These completed sections are partial
+evidence, not a clean combined/native gameplay pass.
+
+All five initial standing placements settle normally on Ground/Operations with
+feetZ2.150cm and select the expected native terminal. Full3D distances are64.204cm
+for Flight Upgrades and47.85cm for the other four, within the280cm integrated
+limit. Strict floor/capsule support passes. No Use, transaction, ring authoring,
+physical-input traversal or NPC replacement occurs. Compatible human/robot rigs
+are measured separately; actual seating, skin/hand contact and pixels remain
+required before installation.
+
+Graph5 proves that the central eight parameter changes reach active native
+base outputs; an inactive-setter defect is not established. The actual covering
+switches are false. Metallic is texture×intensity; roughness is the native
+texture interpolated between minimum/maximum. Central90,296 source triangles
+are measured, while each5,022,252-triangle side base retains UNMEASURED slot
+areas under the strict200k export budget. Native Normal/UV and the original null
+AO output remain. No global rendering or new desk material change follows from
+this connectivity diagnosis alone.
+
+The four side lenses use a318,328-triangle/159,110-vertex source. Services5
+explicitly reports OUTSIDE_STRICT_GEOMETRY_BUDGET and physical_mount_fitted=false.
+A new slot-only extraction preflight fails before map loading on its empty
+native return identity contract. Focused1 receipt SHA256 is
+`8c9a4b66a68c919e9dc8af0da50d9d0f318ee45682de935144e535de9def6a57`;
+the root observes native exit0. Disk files/saves remain equal and PIE is stopped,
+but editor_scene_unchanged is unset and aggregate preservation is false. The
+frozen failure remains. A separate Entry-only return survey and independent
+remaining-parts wrapper are peer-reviewed, unrun preparations; optional lens
+reflection must not block the useful material inventory. No aperture is fitted.
+
+## Five illustrated service identities — offline, 2026-10-07T06:36Z
+
+Exactly five authorized local Qwen jobs produce Phoenix systems, paired engines,
+an original pilot insignia, Havolk mission art and cargo-route imagery. All five
+downloaded PNGs embed the exact frozen workflow inputs, seeds2026100751–55 and28
+steps. Four original/prepared references and raw outputs remain byte-identical.
+Fresh visual comparison retains recognizable owned silhouettes and lists the
+illustrative additions; these images are not native mesh renders. No fabricated
+price, score or transaction is included. Initial model-path/schema/loopback and
+pilot-validator failures are retained, with no model installation or upgrade.
+
+Actual installed fonts compose the unchanged service titles and short subtitles,
+with6% horizontal safe borders. Central illustration pixels remain identical;
+there is no crop or silhouette warp. The root approves the offline direction at
+about8/10. Artwork quality, physical screen fit, saved-room readability and owner
+acceptance remain separate; all five plates are unimported and retain their
+generated aspect ratios until measured native fitting.
+
+Private evidence under OperationsServiceIdentity1:
+
+| Evidence | SHA256 |
+| --- | --- |
+| Frozen prepared manifest | `106090a709f0d252ae1245e6d9935761094620485af0e6f7d04d302c1db1d38c` |
+| Generation/reference review results2 | `85aba88a93254c0aba986c96238a33b20c049cb471ced40cf735b575569261b9` |
+| Font plates1 manifest | `deda7b225d2e812d18846b5329af13bb9e7552980b3674a21e83de52bc65dcf4` |
+
+The owned Comfy PID24164 is stopped and absent. A fresh06:30Z server_info confirms
+running=false/background=null before further native work. Old CLI job files
+without watchers retain stale queued statuses and are not current queue or
+completion evidence. No further GPU jobs, scene writes or native imports occur.
+
+## Actual hardware measurement and opaque save — 2026-10-07T07:43Z
+
+RemainingLens3 succeeds with root-collected native exit0 and strict read-only
+preservation. Receipt SHA256 is
+`613efbd036ed579ab72158a7e5d8f7f7377c62d636e994ad0dec4da5810152e8`.
+It measures the28 remaining primary hardware actors/34 current material slots.
+Native slot4 extraction succeeds within the unchanged20k selected-slot budget,
+but its1112 triangles form only a108.95×2.24×6.55cm light strip. This is not a
+useful LCD aperture. ScreenFace4 also succeeds as a read-only measurement/native0
+(`f022cf0aebf83521f816233a29767c11b57f0dafe9a66e0ee122b4d2607ef1d7`),
+while actual slot3 has135426 triangles and remains
+OUTSIDE_STRICT_SELECTED_SLOT_BUDGET. No dense arrays or fitted-image claim follow.
+The original whole-mesh/focused preflight failures remain above.
+
+The root saves Opaque2 with native exit0:57 existing hardware actors receive145
+opaque-slot replacements through58 private ancestry/master packages. Native
+texture variation, UV, Normal, AO and emissive outputs remain; glass/LCD/control
+slots, geometry, collision, services and lighting are unchanged. The private
+graphite-paint/satin-titanium treatment modifies active BaseColor/Metallic/
+Roughness outputs rather than repeating the earlier eight parameter edits.
+Receipt SHA256 is
+`7368247a5ebfbe77842a2cd0777eeb6ac236c5230729c8521327032f1ef70123`;
+current saved preview SHA256 is
+`f8b49d938fa53f93e5fb5ca666108185bcd41419682257003cdec8c851afbd89`.
+Original sources, successful Floor6 private materials/maps and all three saves
+are preserved. This is a saved implementation pass; new finish pixels are
+unreviewed and there is no T9/10 or owner-acceptance claim.
+
+A peer-reviewed five-display artwork helper is prepared, unrun: count-first
+measurement of the actual separate Part3 LCD/glass mesh must establish a useful
+planar surface under20k triangles/40k vertices before any import. No housing
+bounds substitute is allowed. The four square plates retain their aspect;
+the Flight illustration has a deterministic2048×768 layout for the existing
+supported64×24cm insert, preserving the original Phoenix pixels. Ten private
+assets/five existing material slots are the proposed scope; no new actor, lamp,
+service or hardware. Native shader compilation, fit, orientation and readability
+remain distinct pending gates. The earlier fullsize ordinary image at actual
+1600×900 was rated6.5–7/10 before this opaque save; it does not rate the new finish.
+
 ## Open / Check / Still open
 
-- **Open:** the separate owner preview at the Density4 hash above; this is not a
+- **Open:** the separate owner preview at the saved Opaque2 hash above; this is not a
   canonical-game or itch update.
-- **Check:** compare the ordinary-viewport diagnostic and three unsaved floor
-  options against these saved views; separate capture noise from runtime quality.
-- **Still open:** T room visual acceptance, noisy workstation/floor reflections,
-  broad-panel detail and the owner's floor selection. The owner accepted L8/10 for now;
+- **Check:** validate the actual Part3 display fit, then review
+  actually fitted service graphics, saved private desk finish and standing-ring pixels
+  alongside the saved white-floor coverage before judging the revised T room.
+- **Still open:** T room visual acceptance, noisy workstation/rendered highlights,
+  broad-panel detail, clear service desks/rings, a clean post-floor capture and
+  the remaining full-station white-floor coverage.
+  Pre-finish T was6.5–7/10; the current opaque finish is unrated against the lead9/10 goal. The owner accepted L8/10 for now;
   this display pass does not extend that acceptance to T. RPT-20261006-04 in
   [KNOWN_ISSUES](../KNOWN_ISSUES.md) remains the authoritative owner-acceptance log.

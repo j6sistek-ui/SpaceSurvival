@@ -269,9 +269,26 @@ KNOWN_ISSUES owns priority and acceptance.
   navigation, tier ownership or live-telemetry system. The preview's existing
   Information actions, all native bodies/frames, room lights and accepted lounge
   remain intact. Private derivatives preserve the purchased source packages.
-- **Next check:** integrate/review the separately authorized glass Phoenix podium,
-  coherent room finishes and contextual prompt cleanup. Preserve the sharp rear
-  displays and accepted L while assessing the whole room against its target.
+- **Evaluation update,2026-10-07:** the glass Phoenix podium and retained rear
+  displays are saved in the separate owner preview; whole T rates6.5–7/10,
+  below its lead9/10 gate. The selected low-gloss white floor retains native
+  panel detail across1022 main-floor components. Final6 saves the remaining94
+  measured floor references:90 apartment/cargo components in completed private
+  children plus four masked foundation tops, connected through two existing
+  instances. Native exit0/preservation pass; nine-view Capture7 passes/native0.
+  Apartment/cargo panels and stairs retain white detail, but one omitted cargo
+  entrance floor cube remains brown and foundation angles give limited coverage.
+  Opaque2 saves58 private satin/graphite materials on57 existing actors/145 slots,
+  preserving native texture variation and other channels; fresh appearance is
+  pending. Earlier4/5 partial-save failures remain documented. Local installed Qwen-Image2.1
+  produces five original image-led service plates with real font overlays,
+  prepared/unimported. Actual workstation geometry identifies slot4 as a narrow
+  light strip, so it cannot be treated as an image screen. Existing SciFITrooper
+  Man03 and Robot scout R21 supply two saved private seated clips/rig derivatives;
+  actual skin/furniture contact and operator replacement remain unverified.
+- **Next check:** preserve the sharp rear displays and accepted L while fitting
+  proper service screens, opaque satin hardware and the supplied crew. The active
+  owner queue and acceptance gates remain in KNOWN_ISSUES, not this catalog.
   [Operations integration evidence](../validation/2026-10-06-operations-displays.md)
   distinguishes saved content, retained failed attempts and pending visual
   acceptance. RPT-20261006-04 remains the owner-acceptance log; this catalog does

@@ -5,16 +5,37 @@
 The unmodified runtime settings probe observes quality2 with resolution scale87,
 texture pool800MB and TSR history100. The new GameInstance setting retains native100
 after applying the selected quality tier. Build34's two focused native tests pass
-cleanly; actual SIE Probe3 observes r.ScreenPercentage100,sg.ResolutionQuality100
-and user scale100 without a console override. Its aggregate result remains FAIL
-because its stale uniform-tier assertion expects2; the mixed native100/tier2
-profile legitimately reports custom−1. Preservation and native process exit0 pass.
+cleanly; actual SIE Probe4 observes r.ScreenPercentage100,sg.ResolutionQuality100
+and user scale100 without a console override. Probe4 passes preservation and native
+exit0. Probe3's earlier stale uniform-tier assertion failure remains history;
+the mixed native100/tier2 profile legitimately reports custom−1.
 
-That SIE viewport is1014×344, with effective SceneView fraction unmeasured. It does
-not establish the owner's full-resolution texture demand, pool pressure or60FPS.
+That SIE viewport is1014×344. The later opt-in Build38 renderer diagnostic measures
+an actual612×344 view inside its letterbox, and1600×900 during the high-resolution
+capture. Both measured screen fractions and the secondary fraction are1.0; all65
+rows retain TSR method4, enabled anti-aliasing/temporal flags, nonzero jitter,
+view state and no camera cut. These observations do not prove accumulated TSR
+history quality or the owner's full-resolution texture demand, pool pressure or60FPS.
 No pool, texture bias, shader-cache or global exposure setting was changed. The
 1920×1080 Modes34 images establish appearance/route evidence only. Cabin steps are
-still visually dark; T composition and selected new resource costs remain pending.
+still visually dark. Main white-floor author1 saves53 private materials on1022
+components/native0. Its14 saved-map images preserve panel detail, but retain a
+failed editor-state comparison/native shutdown0xC0000005 and soft/jagged pixels.
+The cause remains unconfirmed. Build38 and the paired renderer diagnostic exit0,
+with two actual images and unchanged saved files, game saves, ships and quality
+settings. Its aggregate result remains PARTIAL because exact editor-state equality
+fails: quaternion representation differences, reflected Color strings containing
+temporary addresses and reconstructed hidden editor billboards remain in the raw
+receipt. No tolerance waiver or clean scene-preservation claim is applied.
+Receipt6cd9b0bd72a0e0c1e8db6cb597d53cd36f4be54bbb09212efe3a24b87c78ac04
+is retained locally with the actual process-exit record. T and resource costs remain
+visually/performance unaccepted. Build39's isolated temporary viewport produces
+one ordinary1600×900 image; all41 recorded rows prove full raw/output rectangles,
+fraction1.0 and active TSR. Capture2 remains PARTIAL/native exit1 on a synchronous
+log-read race and989 exact editor deltas. Native restoration ultimately verifies
+original1014×344/fixed0; files/saves/ships/quality remain unchanged. The lead and
+independent reviewer still rate T6.5–7/10, with noisy chrome desks unresolved.
+This is an image-quality diagnostic, not a representative FPS or owner-size test.
 See [native-resolution/cabin evidence](validation/2026-10-07-native-resolution-and-phoenix-cabin.md).
 
 ## October6 final field measurement, other game closed

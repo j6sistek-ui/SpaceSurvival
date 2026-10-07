@@ -1,6 +1,56 @@
 # SpaceSurvival project state
 
-**October7 04:21UTC working update:** Editor Build35 succeeds after a small
+**October7 07:49UTC latest saved preview:** Opaque2 passes/native exit0 and saves
+`f8b49d938fa53f93e5fb5ca666108185bcd41419682257003cdec8c851afbd89`
+(receipt7368247a5ebfbe77842a2cd0777eeb6ac236c5230729c8521327032f1ef70123):
+58 private satin/graphite materials,57 existing hardware actors/145 opaque slots,
+no geometry, lighting or service changes, floors/originals/saves preserved. Fresh
+whole-room appearance is pending. FloorCapture7 passes/native exit0 with nine
+actual saved-floor views and scene/file/save/ship preservation. Apartment/cargo
+floor detail and stair treads are white; one brown cargo entrance threshold is
+identified as an omitted floor cube and awaits a targeted repair. Art1 fails
+before import/save on the actual LCD projection axes; no panel integration is
+claimed. SeatSupport3 preserves the scene/files/saves but fails its seat-centre
+predicate, then crashes during shutdown. Human/robot seating remains unsaved.
+October7 08:03UTC: FinishCapture1 fails before map load on an omitted exact
+EngineBlack source classification and crashes during shutdown; it produces no
+images or saves. A new complete path-audited capture is prepared. Art2 exits0 but
+fails its measured image-footprint check before imports/saves; actual rounded
+screen edges require a smaller supported rectangle. Complete native geometry is
+retained for an offline repair; the saved preview remains unchanged. The brown
+cargo threshold and mixed-crew fit remain open.
+
+**October7 07:32UTC working update:** Final6 saves the white-floor main preview at
+`c0c25d69e16342dadc274976b1e4c81b8d46130ee98b7b8bc3310f03d5058f50`;
+receipt627e5897c0b8c4301005471bcbda81c2e64b8ff847565a22c4e0e119711a8ec3,
+native exit0 and preservation pass. Both completed private apartment/cargo maps
+are connected through their existing instances, and four mixed foundation tops
+use masked white materials. The34 private materials and both child maps are
+reused without resaving; only six main-map references change in one loaded scene.
+Original content and player saves are preserved. Attempts4/5 retain their partial
+save/failure receipts; Final6 does not claim exact scene equality across separate
+loads. The nine-view floor capture6 fails before map load on an unrecognized CargoShip
+junction and subsequently exits3 with a shutdown assertion; no images or saves
+are produced. Corrected capture preparation is underway. RemainingLens3
+passes/native0 with actual desk-parts and narrow light-strip geometry; proper
+screen-face fitting remains pending. Full-size ordinary capture2 produces an
+actual1600×900 image with measured fraction1.0/TSR active. Its aggregate result
+remains PARTIAL/native exit1: synchronous log checking races restoration and
+989 exact editor deltas remain. Native viewport restoration ultimately verifies
+the original dimensions/fixed state; saved files/saves/ships/quality remain unchanged.
+Editor Build39 succeeds with a separately
+opted-in1600×900 temporary PIE viewport size/restoration diagnostic. Seven private human/robot seated-animation
+candidates save/native0 with original models, maps and saves unchanged, but no
+operator is replaced and skin/furniture contact is unverified. Five illustrated
+service plates are prepared/unimported. Connected-floor attempts1–3 exit0 after
+rejecting their pre-creation checks; no material or map is saved by those attempts.
+Editor Build38 succeeds with an opt-in,
+editor-only renderer observer; its paired native capture exits0 and reports actual
+612×344 letterboxed/1600×900 high-resolution views at fraction1.0 with TSR active.
+The aggregate capture remains PARTIAL on exact editor-state differences, with
+saved files, saves, ships and quality unchanged. No owner-size or performance pass
+is inferred. Builds36/37's include/shadowing compile failures are retained.
+Editor Build35 succeeds after a small
 decorative-cabin collision exclusion; its focused native departure regression
 passes cleanly (one success, zero warnings/errors/not-run, native exit0).
 Build34's two exact focused
@@ -8,6 +58,32 @@ native tests pass cleanly (native resolution across quality tiers and Phoenix
 cockpit departure). Build31's four clean camera/preset/cockpit checks remain
 valid for unchanged camera source. The old Build30 framing failure, Build32
 test-API compile failure and Build33 scalability warning result remain history.
+Source/recipes/evidence checkpoint`01a579693443239f9371a4a24e498fd251a03950`
+is pushed to the existing open draft[PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69),
+unmerged. The original white floor comparison remains an unsaved test; the subsequent
+measured main-floor author now saves53 private materials across1022 floor
+components/5017 references, with native exit0 and1281 protected files/three game
+saves unchanged. Original Normal/AO/UV, inherited material overrides, geometry,
+collision, lighting and service identities are preserved. Current preview SHA is
+`211c812516fd81a71be64c6ddd3a372b3a2a94187f56790c03bc60719a077f34`
+for that earlier Main1 author, superseded by Final6 above;
+receipt71bf0fb1f31e2673adb2bdd7b2c2ff28f27f727dbfacf8ccd31081ca5a84f1c2.
+Fourteen actual saved-map images confirm white panel detail across the main rooms
+and connectors. Capture1 remains PARTIAL: its editor-state comparison fails and
+the native process exits0xC0000005 after shutdown; files, saves and ships remain
+unchanged. Root rates T6.5–7/10, with soft/jagged imagery and shiny desks unresolved.
+The measured remainder floor references are now saved and connected by Final6;
+their rendered appearance and full-station visual coverage remain unaccepted. RemainderProbe1's three
+read-only sections and preservation pass, with the same native shutdown failure
+retained. The owner selects this textured low-gloss white direction and
+a less alien-heavy NPC mix for T. ContactProbe2 exports both full model skins
+(Human11693/Robot18850 vertices) and preserves the scene/files/saves, native exit0.
+Its aggregate result fails because one chair part exceeds the bounded native BVH
+budget; seating contact and operator replacement remain pending. T remains the
+priority until the lead's actual visual review reaches9/10. ServicesProbe5 verifies
+installed human/robot candidates, screen geometry and five standing service
+selections; it fails one Engine-dependency guard and exits0xC0000005. These partial
+measurements do not establish saved NPC, desk-marker or gameplay completion.
 Four parked-only cabin lamps and two mounted illustrated panes are implemented;
 CabinDisplays3 saves the two private materials with native exit0. Native plane
 geometry proves their corrected inward-facing orientation. Modes34's nine actual
@@ -22,15 +98,16 @@ See [camera evidence](validation/2026-10-06-phoenix-camera-comfort.md),
 An actual unmodified SIE probe confirms the game reapplies High2 quality with
 resolution scale87 and texture pool800MB. Build34 retains native100 across quality
 tiers and repairs the owned motion-blur/scalability priority warning. Actual
-SceneView fraction and texture pressure at the owner's full resolution remain
-unmeasured; no pool increase or shader-cache setting change is claimed. Probe3's
+Owner-resolution texture pressure remains unmeasured; the isolated diagnostic
+measures fraction1.0 at612×344/1600×900, without an owner-size performance pass.
+No pool increase or shader-cache setting change is claimed. Probe3's
 samples confirm native100 without a console override, but its aggregate result
 fails a stale overall-tier assertion: native100/High2 correctly reports Custom−1.
 Corrected read-only Probe4 passes/native exit0 with preservation intact; it
 confirms native100 and the intentional mixed profile without rendering overrides.
 
 T's current saved owner preview is
-`c1f62aed453362a1eacc20faeb6f9d589bae5e9f42f03053a28dd3e2c5f1371c`.
+`211c812516fd81a71be64c6ddd3a372b3a2a94187f56790c03bc60719a077f34`.
 Displays3 saves four resident graphics and offsets three rear frame/pane pairs;
 Capture2's blur/intersections were rejected, while Capture3's six fresh views
 exit0 and show sharp, clear artwork. PromptVisibility2 then saves six precise
@@ -53,7 +130,8 @@ unchanged protected files/saves/ships and short natural autoplay. Lead review fi
 readable illustrated ads and an improved graphite base/ceiling, but whole-room
 quality is only6–6.5/10: the base is plain and desk/floor reflections remain noisy.
 The cause of that noise and screenshot-versus-runtime contribution is unconfirmed.
-The accepted L presentation is preserved; T owner approval remains open.
+L's fixtures, layout and female bartender are preserved; its new white floor is
+authorized by the subsequent full-station decision. T owner approval remains open.
 See [podium evidence](validation/2026-10-07-operations-phoenix-podium.md).
 The owner finds T too empty. Its layout, material and local-lighting pass remains
 active and unapproved; the podium, ceiling, storage and side displays are saved,

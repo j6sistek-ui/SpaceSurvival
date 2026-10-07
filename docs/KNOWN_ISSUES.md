@@ -139,6 +139,93 @@ palette. Lead delegates actual unsaved material comparisons on the same existing
 T floor, retaining plate detail, lighting, geometry, support and collision. Include
 a white/silver mixed option. Compare before selecting a saved finish; no new
 whole-station floor approval is implied by these local tests.
+**October7 04:36UTC owner direction supersedes the advance-to-later-areas gate:**
+keep T active until the lead's actual visual assessment reaches9/10. Floor
+comparison comes first, then make each existing upgrade/service station unmistakable
+with a real desk/layout and a lightly pulsing standing ring. Use physical housing
+and supported local markers, retaining service identities/actions, floor collision
+and clear access; this is presentation feedback, not a teleport or new service.
+Cabin/later-room implementation is held at its prepared state until that T gate.
+**October7 04:49UTC owner decision supersedes the floor-choice boundary:** use
+textured, low-gloss white across the full station; remove rusty floor colors while
+preserving surface detail, physical support and collision. T-only tests verify the
+finish, then a measured inventory will guide private floor-only derivatives for
+the other rooms. This full-station floor change is authorized before the T gate;
+unrelated later-room work remains held. T also needs a different NPC model and a
+less alien-heavy mix. Lead owns suitable installed model/animation selection and
+actual feet/seat/desk contact verification. The lounge's female-alien bartender is
+retained. The owner says T is improving; this does not establish9/10 acceptance.
+
+**October7 05:51UTC measured main-floor save:** Main1 saves53 private materials
+on1022 exact floor components/5017 slots, retaining native Normal/AO/UV, inheritance
+and local overrides. Native exit0;1281 protected files/three saves unchanged;
+no geometry/collision/light/service changes. Saved preview211c8125, receipt71bf0fb1.
+Coverage includes the main room floors, berths and connectors. Mixed OwnerDeck/Ring
+surfaces and separate Home/cargo interior floors still need measured treatment;
+full-station completion is explicitly false. Fourteen actual saved-map floor views
+confirm white panel detail; Capture1 retains its failed editor-state comparison
+and native shutdown0xC0000005, with protected files/saves/ships unchanged. Root's
+whole-T visual rating is6.5–7/10; shiny desks and soft/jagged image quality remain.
+RemainderProbe1 measures four mixed foundations and the Home/cargo floor candidates
+without changes; native shutdown fails despite preserved read-only sections.
+ServicesProbe5 measures human/robot candidates, screen geometry and five existing
+service selections, but one dependency guard fails and native shutdown crashes.
+Lead still owns crew fitting, service-desk graphics/standing markers
+and the T9/10 visual gate; no new owner-quality, gameplay or published-build claim.
+
+**October7 06:53UTC refinement update:** Build38's paired renderer capture exits0
+and measures active TSR/fraction1.0, with an ordinary612×344 letterbox and actual
+1600×900 high-resolution view. It retains the exact editor-state failure and does
+not establish full-size sharpness. Build39 compiles the isolated owning-viewport
+resize/restoration diagnostic; native behavior remains unverified. Seven private
+human/robot seated-animation candidates save successfully/native0 with original
+maps, models and saves unchanged; actual furniture contact and operator replacement
+are pending. Five illustrated, font-labelled service panels are prepared locally,
+not imported. Connected-floor attempts1/2 save nothing and retain their exact
+label/ambiguous-height failures. Lead chooses the existing main-floor coating for
+the90 pure interior floor/stair components, with top-only masks on four mixed
+foundations; the corrected private-copy author remains pending.
+
+**October7 07:09UTC floor/desk update:** Remainder3 stops before creation on an
+incorrect direct-Material default assumption. Remainder4 correctly preserves
+native defaults and saves34 private materials and the white apartment child, but
+fails an exact copied-Cargo scene comparison before connecting either child or
+changing the four mixed foundations in the main map. Native exit1; originals,
+saves and main preview211c8125 unchanged. Lead retains the partial assets/receipt
+and owns measured scene-copy repair and actual floor pixels. RemainingLens3 passes
+read-only/native0 and proves the selected glass slot is a narrow light strip;
+artwork must fit a proper screen face. T9, saved crew fitting and service-marker
+completion remain open.
+
+**October7 08:03UTC saved-preview update:** Opaque2 passes/native exit0,
+saving58 private satin/graphite materials on57 existing actors/145 hardware slots
+with geometry, lighting, services, original content and saves preserved. FloorCapture7
+passes/native0 with nine actual views; apartment/cargo panels and stair detail are
+white, but an omitted cargo entrance floor cube remains brown. A one-floor repair
+is prepared. Fresh hardware appearance remains unreviewed: FinishCapture1 fails
+before map load on an omitted exact EngineBlack source classification and crashes
+during shutdown, producing no images. A complete path-audited new capture is being
+prepared. Art1 fails before imports/saves on its display projection axes; Art2
+exits0 but fails before imports/saves on image-footprint support at rounded LCD
+edges. Complete native geometry is retained for an offline supported-rectangle
+repair, with the current map unchanged. Contact2 completes both full
+model skins but exceeds one dense-chair BVH budget; Support3 preserves the scene
+but fails a seat-centre predicate and crashes during shutdown. Three mixed-crew
+unsaved front/side previews are prepared. No operator replacement, contact fit,
+full-station visual completion or T9/10 acceptance is claimed.
+
+**October7 07:32UTC superseding floor/crew update:** Final6 passes/native exit0
+and saves previewc0c25d69. It connects both completed white apartment/cargo
+children and coats four mixed foundation tops; the34 private materials and both
+child packages are reused unchanged. Same-loaded scene/CDO, original-file and
+save preservation pass. Attempts4/5 remain failed partial-save history, not
+retroactive passes. Floor capture6 stops before map load on a missing exact
+CargoShip mount classification, creates no images/saves, and then exits3 during
+shutdown. Lead is correcting that capture check before judging the remainder.
+ContactProbe2 preserves scene/files/saves and exits0 with both full replacement
+model skins exported, but one chair support part exceeds its bounded native BVH
+budget. Actual chair contact, three operator replacements, fitted service plates,
+satin desk hardware and physical standing markers remain open. T stays below9/10.
 
 **Superseding status, October6 23:14UTC:** Furniture1 replaces four stools with fitted
 owned chair meshes; FemaleBartender1 saves the verified female-alien staff actor.

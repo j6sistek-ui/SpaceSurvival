@@ -12,6 +12,10 @@ public class SpaceSurvival : ModuleRules
         PublicIncludePaths.Add(ModuleDirectory);
         PrivateDependencyModuleNames.Add("PhysicsCore");
         if (Target.bBuildEditor)
+        {
             PrivateDependencyModuleNames.Add("UnrealEd");
+            // Opt-in editor renderer observations use only public Renderer APIs.
+            PrivateDependencyModuleNames.AddRange(new[] { "Renderer", "RenderCore", "RHI" });
+        }
     }
 }

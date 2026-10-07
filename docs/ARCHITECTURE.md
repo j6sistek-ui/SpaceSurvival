@@ -1,5 +1,21 @@
 # SpaceSurvival Phase 1 architecture
 
+## Isolated editor rendering diagnostic — October7
+
+The private `SSRenderedViewDiagnostic` observer registers only for its explicit
+diagnostic command-line flag plus `RenderOffscreen`, in editor builds. It reads
+actual renderer view rectangles, anti-aliasing flags and camera identity into a
+bounded render-thread queue; the game thread drains numeric records. The module
+owns registration and cleanup. Renderer/RenderCore/RHI dependencies remain private
+and editor-only; ordinary launches and packaged gameplay do not register the commands.
+
+The separate `SSRenderedViewViewport2` flag additionally permits resizing only the
+exact owning temporary PIE viewport to1600×900. It records the original dimensions
+and fixed-size state and verifies their restoration. No quality, project settings,
+gameplay defaults or owner window is changed. Source compilation, native resize and
+restoration, actual image quality and performance remain separate checks in the
+[diagnostic receipt](validation/2026-10-07-rendered-view-diagnostic.md).
+
 ## Survival quality repair — October 6
 
 `ASSDistantAsteroids` owns a separate 6,144-instance target budget across 125 deterministic
