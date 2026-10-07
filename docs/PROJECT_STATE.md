@@ -1,5 +1,48 @@
 # SpaceSurvival project state
 
+**October7 14:13UTC current saved preview:** the owner identifies Flight as a
+walk-up upgrade station, so its single offset Goliath chair is removed through
+the live Nwiro editor. Both supports remain. The 43 checked adjacent console,
+display, service and marker actors are unchanged; source assets and a prior-map
+backup are retained. Current Main is
+`5029100d1aa17c3911778132873a3f890e1c4275312db9c47da53f9195492e24`;
+removal receipt `942686e4906002dd188513a554263aa5f61226b1d69dd85c6bee4e9f17eca933`.
+Saving succeeds and the live readback confirms a clean map with the chair absent.
+Two saved editor captures verify placement only: helper icons and viewport
+lighting differ from the prior play-mode review. T remains about8/10, with
+overall finish and owner acceptance open. Nwiro is active; the separate preview
+is now open in the owner's editor. Canonical/published content is unchanged.
+
+**October7 13:45UTC current visual review:** eight CanopySatinPreview2 images
+verify the saved Podium2 appearance and compare temporary satin canopy and
+decorative console-fixture cleanup. Lead and peer reviewed all eight: modest
+improvement, whole T about8/10. Candidate changes restore exactly; scene,
+files, saves, crew, ships and rendering checks pass. Native shutdown0xC0000005
+is recorded separately. Receipt
+`474451503e9d68300b625067a2757706a2c3139e7e0b41d72806ac82df0fd61e`;
+Main32469 below remains unchanged. The canopy/fixture candidate is UNSAVED.
+Owner's new asymmetry concern is the offset central chair, not a missing
+support. The subsequent owner-requested chair correction is recorded above;
+the complete T quality gate remains open.
+White floors stay. No published-build change.
+
+**October7 13:30UTC latest saved preview:** PodiumCaptured2 saves the accepted
+30cm rise of all four Phoenix display parts and two subdued WorkPlan material
+copies. Current editable preview Main is
+`32469e3a5b2afaf3170a92861f7d8cdb9efd8f93405813f2e5bec0207bfa0c19`;
+receipt `8bdb0b582bfd474f47b245d4aed9f4180fbb3831d8caf0c2bb9b33f4e89015b9`.
+Only five existing actors change; one map load/save, no new actors or lights.
+Complete scene, source materials, crew and player-save preservation pass.
+Native shutdown exits0xC0000005 separately. The first attempt's tuple error
+rolled back exactly before any saves. The corrected launch also retains an
+earlier rejected startup caused by a mistyped receipt argument.
+Fresh saved appearance was subsequently checked in the eight views above.
+Canopy1 produced six restored comparison
+views with modest detail improvement; its finish is not saved. Next compare the
+geometrically identified ceiling underside using the newly saved podium as the
+baseline, then review the final saved room. Whole T remains about8/10; owner
+acceptance and the published build remain unchanged.
+
 **October7 12:57UTC latest comparison:** UpperFill3 produces six ordinary
 1600×900 views, receipt
 `a26fa718754ff2ee189ddcf5144ac3e50564310b02256a86baeb1687fa679ae9`.

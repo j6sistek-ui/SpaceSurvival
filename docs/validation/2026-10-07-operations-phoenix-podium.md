@@ -993,9 +993,74 @@ room gain is negligible, with mainly the pendant stems brighter. No major new
 floor hotspot is visible. The higher Phoenix and quieter decorative WorkPlan
 give modest useful focal-point separation and remain selected unsaved candidates.
 Whole T is approximately 8/10, below 9; the editable map remains unchanged.
-The next architectural finish candidate targets the existing canopy surfaces,
-whose native dark aluminium and black mirror slots remain unchanged. The exact
-dominant visible material role and an accepted satin finish are not yet proved.
+CanopySatinPreview1 completes six ordinary comparison images, receipt
+`38fbd216b1dd424510684d829099739cda7007a2080204a85c9a65442f54e4fc`.
+Root separately collects shutdown exit -1073741819. Exact PIE restoration,
+full editor zero deltas, files, saves, ships, crew, quality, viewport and renderer
+checks pass; the saved map remains `03852cf1`. The source mesh stays native:
+867,568 triangles and 433,918 vertices, with no dense Python geometry export.
+Fifteen upward ray hits identify slots 1/2 on downward sloped body faces and
+slot 3 on all five flat centerline samples. Two unsaved MICs change only tint,
+metal and roughness on 22 references across the eleven panels; normal/AO/UV,
+textures, switches and emissive remain original. Slot 3 was preserved by its
+silver material name, which did not prove that it was perimeter trim.
+Actual entrance, side and upper-room reviews show modest clearer panel/brace
+relief, while the flat dark center strip and upper roof still dominate. The
+co-varied higher Phoenix and quiet WorkPlan remain useful; natural yaw differs.
+Root holds the canopy save and requests one final coherent comparison including
+the geometrically measured flat slot 3. Whole T remains approximately 8/10,
+below 9. This result does not establish full underside coverage or final lighting
+acceptance; no canopy finish, lights or map are saved by the comparison.
+
+PodiumCaptured1 fails before saving on a tuple-mutation expectation error after
+the first child assignment. Receipt `3e65ec17…` retains exact rollback of all
+temporary changes, full scene/file/save preservation and zero private files;
+root separately collects shutdown exit -1073741819. Corrected PodiumCaptured2,
+receipt `8bdb0b582bfd474f47b245d4aed9f4180fbb3831d8caf0c2bb9b33f4e89015b9`,
+saves the four accepted child local-Z increases and two quiet WorkPlan MICs.
+Five existing actors, four pose fields and two material references change;
+the neutral yaw loop, all ship parts, glass, controls and services remain.
+Full scene, source, crew, files and saves pass with no recorded errors and one
+Main load/save. Root separately collects shutdown exit -1073741819.
+The current editable Main is `32469e3a…`. CanopySatinPreview2, receipt
+`474451503e9d68300b625067a2757706a2c3139e7e0b41d72806ac82df0fd61e`,
+completes eight ordinary views: three freshly saved Podium2 baseline views,
+three temporary canopy-slot 1/2/3 satin views, then two with fourteen redundant
+decorative console fixtures temporarily hidden. Exact restoration, full scene
+zero deltas, files, saves, crew, ships, quality and viewport checks pass with
+no errors. Root separately collects shutdown exit -1073741819. The saved map
+remains unchanged; neither canopy finish nor fixture visibility is saved.
+Actual review shows modest clearer underside facets and less side-view cyan
+task-light/cable clutter. The upper void stays dark, bright console hardware
+still competes with the Phoenix, and wall-level service context remains sparse.
+Whole T remains approximately 8/10, below 9; natural ship yaw differs across
+frames. Owner acceptance, canonical promotion and the published build remain
+open.
+
+The owner then identifies the odd one-sided central-console piece and clarifies
+that Flight is a walk-up upgrade station with no chair needed. Exact native
+and owned assembly metadata identify the piece as the single offset
+`StaticMeshActor_1415` / `GoliathChair01`, at `(7700,-60,0)`, yaw -30. Both
+console supports 1417/1419 are present; this is the imported demo chair placement,
+not a missing support. The chair-reposition proposal is cancelled. A prepared
+read-only plan checks that one chair and 43 protected console/service/marker/
+mounted-display actors before and after the lead's live deletion. The lead then
+removes only chair 1415 through live Nwiro and saves the preview map.
+`StationOperationsFlightChairRemoved1.json`, receipt
+`942686e4906002dd188513a554263aa5f61226b1d69dd85c6bee4e9f17eca933`,
+records the pre-save one-actor removal and exact preservation of all 43 targeted
+actors and source bytes. The subsequent live save is independently reflected by
+the current map digest
+`5029100d1aa17c3911778132873a3f890e1c4275312db9c47da53f9195492e24`;
+the receipt's `map_saved:false` describes its earlier verification stage.
+Both current saved editor photos, `RootChairEntranceResult2_0.png` and
+`RootChairWalkupResult1_0.png`, are independently reviewed: the chair is gone,
+both console supports remain and the player-facing upgrade approach is clear.
+These are editor views with icons and different exposure, rather than PIE or
+whole-room 9/10 evidence. No replacement chair, source asset, other station,
+canopy finish or fixture visibility changes accompany the correction. The
+owner's open Unreal/Nwiro session takes precedence: no concurrent headless
+editor or map writes.
 
 At2026-10-07T04:49Z the owner supersedes the04:23 comparison-only scope and chooses
 textured low-gloss white across the full station; rust must go beyond T. The

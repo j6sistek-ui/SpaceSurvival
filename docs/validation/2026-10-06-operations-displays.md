@@ -1,6 +1,6 @@
 # Operations display integration — 2026-10-06 owner session
 
-Recorded at 2026-10-07T02:03Z; latest saved-state update at 2026-10-07T11:51Z.
+Recorded at 2026-10-07T02:03Z; latest saved-state update at 2026-10-07T14:13Z.
 **PARTIAL: mounted service illustrations now pass fresh upright/full-image review;
 the saved mixed crew and white floors remain, but whole T has not met the lead9/10 gate or owner approval.** This is a T Operations presentation
 pass on the separate owner preview. The accepted L lounge, canonical runtime map,
@@ -1077,18 +1077,21 @@ save and actual ordinary1600 baseline; no new material change is authored yet.
 
 ## Open / Check / Still open
 
-- **Open:** the separate owner preview now saved by CentralCaptured1 at
-  `03852cf1ff951c41779c99e4c74a2e3f7c82728c9ae57e41d8208ebc54068214`.
-  Flight gain5 and the selected twelve central material references are saved;
+- **Open:** the separate owner preview now saved after the live Nwiro central
+  Flight chair removal at
+  `5029100d1aa17c3911778132873a3f890e1c4275312db9c47da53f9195492e24`.
+  Flight gain5, twelve central material references, four Phoenix child heights
+  raised30cm and two quiet WorkPlan references remain saved;
   this is not a canonical-game or published-build update.
-- **Check:** fresh nine ordinary1600x900 views will verify the newly saved finish,
-  Flight artwork, all five service identities and the retained mixed crew.
-  The save/readback checks pass; both selected authors retain shutdown native
-  `-1073741819` separately, and fresh saved appearance is pending.
+- **Check:** two current saved editor views show the central walk-up desk without
+  its chair, with both supports retained. The exact43-neighbour/source check
+  passes; editor icons/exposure differ from PIE. Earlier eight ordinary views
+  test unsaved canopy/console cleanup with exact restoration. A final complete
+  saved-room gameplay/view review remains pending.
 - **Still open:** whole-T visual9/10, owner approval, workstation highlights,
   broad-panel detail and remaining full-station floor acceptance. The previously
-  reviewed whole room was about7–7.5/10; the selected local darker-frame angle
-  was about8/10, which does not establish whole-room acceptance. L remains the
+  reviewed whole room was about8/10 in restored tests, which does not establish
+  saved whole-room acceptance. L remains the
   owner's8/10 pass for now. RPT-20261006-04 in
   [KNOWN_ISSUES](../KNOWN_ISSUES.md) remains the authoritative owner-acceptance log.
 
@@ -1486,3 +1489,100 @@ images. Whole-room quality is approximately8/10, below9; current Main03852,
 owner acceptance and published build remain unchanged. A selected saved author
 and fresh saved-state pictures are still required before calling these changes
 implemented. Earlier failed comparisons remain retained without waivers.
+
+## Canopy comparison1: six UNSAVED views restored, save held — 2026-10-07T13:24Z
+
+Actual CanopySatinPreview1 receipt
+`38fbd216b1dd424510684d829099739cda7007a2080204a85c9a65442f54e4fc`
+passes six ordinary1600x900 pictures, exact preview restoration, zero editor
+deltas, renderer/viewport, files, saves, ships, quality, three crew lifecycles,
+stopped PIE and temporary disk-package absence. Root collects session29213
+native `-1073741819` separately; this is not a clean native exit. Main03852
+remains unchanged. These are **UNSAVED, restored test** images.
+
+Independent review of all six agrees with a modest cleaner underside finish;
+the entrance still has a bright floor and dark upper room. Whole-room quality
+remains approximately8/10, below9. Actual finite native underside rays select
+slots1/2; native silver slot3 is retained. Root holds the canopy save pending
+one bounded comparison including the measured underside portion of slot3.
+Natural Phoenix yaw differs; no identical-orientation comparison is claimed.
+
+The separate PodiumCaptured1 save attempt fails before any package or Main
+save: receipt `3e65ec17e5065c744ff04d6cfbe94d8f05d3efb0657a14654eca022c90c3e5bd`
+records an immutable-tuple expected-location update after the first raised
+part. Exact rollback, full scene, protected files and saves pass; root collects
+session5859 native `-1073741819` separately. Main03852 and private disk packages
+are unchanged. NEW2 replaces only the actor/component expected location tuples
+with exact `(x,y,z+30)` tuples; its native save and fresh saved pictures remain
+pending. No completion or owner acceptance is inferred from source repair.
+
+## PodiumCaptured2: selected height and quiet console saved — 2026-10-07T13:33Z
+
+Actual receipt `8bdb0b582bfd474f47b245d4aed9f4180fbb3831d8caf0c2bb9b33f4e89015b9`
+saves exactly two new private WorkPlan MICs, their two existing references and
+four existing Phoenix children at relativeZ+30cm. The pivot, sequence, native
+meshes, collision, source materials, floor, lights and three crew lifecycles
+remain unchanged. One Main load/save produces
+`32469e3a5b2afaf3170a92861f7d8cdb9efd8f93405813f2e5bec0207bfa0c19`.
+Native metadata, complete same-world scene, protected files and saves pass;
+errors are empty. Root collects session7319 native `-1073741819` separately:
+the saved-author checks pass, but a clean native process exit is not established.
+
+The new namespace is
+`/Game/OutpostSandbox/StationRefinement/OperationsPodiumCaptured2_20261007`.
+Exactly the five captured active WorkPlan emission intensities are zero; no
+uplights are installed and no proposal values are reevaluated. Earlier failed1
+and the root's pre-load mistyped-SHA launcher rejection remain retained. CPU
+Lineage5 verifies2,505 classified input digests against the actual saved producer.
+Fresh saved-room appearance, whole-T9/10 and owner acceptance remain open;
+restored test photographs do not establish acceptance of the saved result.
+
+## Canopy/console comparison2: eight actual views restored — 2026-10-07T13:45Z
+
+Actual receipt `474451503e9d68300b625067a2757706a2c3139e7e0b41d72806ac82df0fd61e`
+contains eight ordinary1600x900 images: three **CURRENT SAVED PREVIEW** baseline
+views, three **UNSAVED, restored test** canopy views and two **UNSAVED, restored
+test** canopy/console views. Eleven existing canopies use three temporary MICs
+on measured slots1/2/3; the final two views hide only42 visibility fields on
+fourteen decorative fixtures. Real lights, supports, service screens, floor,
+poses and gameplay actions remain unchanged. This comparison saves nothing.
+
+Fresh native readbacks verify all four saved Phoenix child heights, both quiet
+WorkPlan MICs and the three saved crew lifecycles before/after PIE. Precise
+preview restoration, full editor zero deltas, protected files, saves, ships,
+quality, renderer, viewport restoration, stopped PIE and temporary disk-package
+absence pass; errors are empty. Main32469 is unchanged. Root collects session28024
+ownedPID53568 native `-1073741819` separately; manifest success does not establish
+a clean process exit. Console asymmetry is under separate bounded review. No
+canopy/visibility save, whole-T9/10 or owner acceptance is claimed from these
+checks; final visual selection and fresh complete saved-room review remain open.
+
+## Live Nwiro central walk-up correction saved — 2026-10-07T14:13Z
+
+Fresh MCP initialize and live skill reads verify Nwiro is serving in the owner's
+editor. Root opens the clean owner preview, inspects the exact central chair and
+43 protected neighbours, and confirms the chair has no attached children. The
+owner specifies Flight Upgrades as a walk-up station, superseding the earlier
+chair-reposition proposal. Native `delete_actor` removes only
+`StaticMeshActor_1415`; both workstation supports, nearby consoles, displays,
+service identities and markers remain in the protected target set. Source assets remain.
+
+The targeted pre-save receipt
+`StationOperationsFlightChairRemoved1.json`, SHA
+`942686e4906002dd188513a554263aa5f61226b1d69dd85c6bee4e9f17eca933`,
+passes all43 neighbour comparisons and source preservation. Its `map_saved=false`
+records the state before the separate successful `save_level` call. The native
+saved check then confirms chair absence, no dirty maps, PIE stopped and Main
+`5029100d1aa17c3911778132873a3f890e1c4275312db9c47da53f9195492e24`.
+This supersedes Podium2's Main32469; the original map backup is retained.
+
+Two **CURRENT SAVED PREVIEW, editor viewport** images are retained under
+`.agent/local/Outpost`: `RootChairEntranceResult2_0.png` and
+`RootChairWalkupResult1_0.png`. Root reviews both: the chair is absent and the
+supports remain. Editor icons and exposure differ from the ordinary PIE review;
+these establish placement, not whole-room9/10, gameplay, performance or owner
+acceptance. Preservation is targeted to43 actors and source bytes; no new
+full-world equality claim is made. The raw `RootChair*Result*.json` calls remain
+local evidence. The owner's separate `SpaceSurvival.uproject` edit is not part
+of this correction and must remain unstaged. No packaged or published build
+changes; canopy/console test changes remain unsaved.

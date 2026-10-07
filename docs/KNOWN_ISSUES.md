@@ -343,6 +343,33 @@ The30cm Phoenix raise and quieter decorative WorkPlan are modest unsaved
 improvements. Whole T remains about8, not9; Main03852 is unchanged. Next compare
 a coherent satin finish on the native ceiling panels, save only accepted
 display/finish changes and review the complete room before advancing after-T.
+October7 13:30UTC: PodiumCaptured2 saves the selected four-part30cm Phoenix
+rise and two quiet WorkPlan material copies, receipt`8bdb0b58`, Main`32469e3a`.
+Exact scene/source/crew/file/save preservation passes; native shutdownA5 remains
+separate. Failed1 tuple mutation rolled back before any save; corrected2 retains
+a rejected startup with a root-mistyped receipt argument. Fresh saved appearance
+is pending. Canopy1's six restored views show only modest relief, so its finish
+is held. Next compare the measured flat underside plus a reversible removal of
+redundant decorative console light stacks; preserve screens, supports, services
+and original assets. Whole T remains about8; no9/owner/release closure.
+October7 13:54UTC: eight Canopy2 views now verify the saved Podium2 appearance
+and temporary canopy/14-fixture cleanup, receipt`47445150`. Exact restoration
+and scene/file/save/crew/rendering checks pass; native shutdownA5 remains
+separate. Modest improvement only, wholeT~8; canopy/cleanup is UNSAVED and
+Main32469 is unchanged. Owner flags an odd one-sided central piece. Native
+assembly and original placement identify the single offset Goliath chair1415;
+both actual monitor supports1417/1419 exist. Lead corrected its earlier
+support-leg misidentification. Owner then clarifies this is a walk-up upgrade
+station and requests no chair there, superseding the reposition proposal.
+Next: remove only central chair1415, check walk-up access and review the arrangement. Owner-approved
+white floor remains; broader T finish and owner acceptance stay open.
+October7 14:13UTC: central chair1415 is removed and saved through live Nwiro,
+Main`5029100d`, removal receipt`942686e4`. The 43 checked adjacent console,
+display, service and marker actors remain exact; both supports remain, source
+assets are untouched, and the prior map is backed up. Post-save live readback
+confirms chair absence and a clean map. Two actual editor views confirm placement
+only; their helper icons/exposure are not a fresh play-mode quality gate.
+The chair request is implemented; wholeT9 and owner room acceptance remain open.
 
 **October7 08:29UTC historical saved-preview update:** Art3 saves five fitted
 illustrated service displays/ten private assets with successful saved and
