@@ -87,14 +87,18 @@ Authored station global lighting and unbound exposure fade with distance, restor
 `ASSStationWarpGate` is compiled source awaiting native integration. Two reciprocal
 endpoints must belong to the same runtime station and use authored physical
 frames and supported arrival points. Only the locally controlled grounded walker
-can activate a pad while the ship is moored and no menu, boarding or departure
+can activate a pad while the real station ship is parked and no menu, boarding or departure
 transition is active. A game-time delay plays optional departure effects; leaving
 the pad cancels without disabling input. Destination capsule clearance and
 walkable floor support are checked both before and after the delay. Arrival keeps
 the same pawn, stops residual movement and latches the pair until the player
-leaves both pads. Optional portal/arrival Niagara systems and endpoint placement
-remain content work. Build43 compiled the object files without linking; no placed
-pair, natural traversal, visual effects or performance acceptance is claimed.
+leaves both pads. Owned teleport bursts use Default skeletal-source lookup:
+their components attach to the live walker mesh before reinitialization, without
+editing the shared Niagara interfaces. Departure detaches before teleport;
+cancellation, walker/gate teardown and arrival expiry restore the authored gate
+attachments. Optional portal/arrival systems and endpoint placement remain content
+work. Build45 compiled the updated object files without linking; no placed pair,
+natural traversal, visual effects or performance acceptance is claimed.
 
 ## Planned character speech and event recall — October 1, 2026
 

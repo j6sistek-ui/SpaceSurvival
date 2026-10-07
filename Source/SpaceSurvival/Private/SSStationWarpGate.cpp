@@ -2,6 +2,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SceneComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/CollisionProfile.h"
 #include "Engine/World.h"
@@ -49,6 +50,8 @@ void ASSStationWarpGate::BeginPlay()
     Super::BeginPlay();
     ActivationVolume->OnComponentBeginOverlap.AddDynamic(this, &ASSStationWarpGate::EnteredVolume);
     ActivationVolume->OnComponentEndOverlap.AddDynamic(this, &ASSStationWarpGate::LeftVolume);
+    DepartureRestTransform = DepartureVisual->GetRelativeTransform();
+    ArrivalRestTransform = ArrivalVisual->GetRelativeTransform();
     PortalVisual->SetAsset(PortalEffect);
     DepartureVisual->SetAsset(DepartureEffect);
     ArrivalVisual->SetAsset(ArrivalEffect);
@@ -83,9 +86,12 @@ bool ASSStationWarpGate::Eligible(const ASSWalker *Walker, FString &Reason) cons
         Reason = TEXT("Transport requires the walking pilot.");
         return false;
     }
+    // FinishDocking stops the real parked ship's actor tick; BeginTakeoff enables it again.
+    // IsMoored instead describes a depot stop during flight, not either station docking path.
     if (GateWorld->IsPaused() || Mode->IsMenuOpen() || Mode->IsDepartingStation() || !IsValid(Ship) ||
-        !Ship->IsMoored() || Ship->IsTakingOff() || Ship->IsInWormholeTransit() || Walker->IsBoarding() ||
-        Walker->IsDisembarking() || (!Mode->InHangar() && Instance->Session.run.phase != SS::Phase::Station))
+        Ship->GetWorld() != GateWorld || Ship->IsActorTickEnabled() || Ship->IsTakingOff() ||
+        Ship->IsInWormholeTransit() || Walker->IsBoarding() || Walker->IsDisembarking() ||
+        (!Mode->InHangar() && Instance->Session.run.phase != SS::Phase::Station))
     {
         Reason = TEXT("Transport is unavailable during a departure or menu transition.");
         return false;
@@ -145,6 +151,56 @@ void ASSStationWarpGate::Refuse(ASSWalker *Walker, const FString &Reason)
             Mode->Announce(Reason);
 }
 
+bool ASSStationWarpGate::AttachBurstToWalker(UNiagaraComponent *Visual, ASSWalker *Walker)
+{
+    USkeletalMeshComponent *BurstMesh = IsValid(Walker) ? Walker->GetMesh() : nullptr;
+    if (!IsValid(Visual) || !IsValid(BurstMesh) || !BurstMesh->GetSkeletalMeshAsset() ||
+        BurstMesh->GetOwner() != Walker || BurstMesh->GetWorld() != GetWorld() || !BurstMesh->IsRegistered() ||
+        !Visual->AttachToComponent(BurstMesh, FAttachmentTransformRules::KeepWorldTransform))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SS_STATION_WARP_BURST_SKIPPED gate=%s reason=no live pilot mesh attachment"),
+               *GetPathName());
+        return false;
+    }
+    // The owned bursts use Default skeletal-source lookup, with no named user mesh parameter.
+    // Keep the foot-space effect transform; the actual mesh parent supplies its animated skin.
+    Walker->OnEndPlay.AddUniqueDynamic(this, &ASSStationWarpGate::BurstWalkerEndedPlay);
+    return true;
+}
+
+void ASSStationWarpGate::RestoreBurst(UNiagaraComponent *Visual, const FTransform &RestTransform)
+{
+    if (!IsValid(Visual))
+        return;
+    USceneComponent *BurstParent = Visual->GetAttachParent();
+    AActor *BurstSourceActor = BurstParent ? BurstParent->GetOwner() : nullptr;
+    Visual->DeactivateImmediate();
+    if (IsValid(Visual))
+    {
+        Visual->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+        if (IsValid(GateRoot) && Visual->AttachToComponent(GateRoot, FAttachmentTransformRules::KeepWorldTransform))
+            Visual->SetRelativeTransform(RestTransform);
+    }
+    const auto StillSamples = [BurstSourceActor](const UNiagaraComponent *OtherVisual)
+    {
+        const USceneComponent *OtherParent = IsValid(OtherVisual) ? OtherVisual->GetAttachParent() : nullptr;
+        return OtherParent && OtherParent->GetOwner() == BurstSourceActor;
+    };
+    if (IsValid(BurstSourceActor) && BurstSourceActor != this && !StillSamples(DepartureVisual) &&
+        !StillSamples(ArrivalVisual))
+        BurstSourceActor->OnEndPlay.RemoveDynamic(this, &ASSStationWarpGate::BurstWalkerEndedPlay);
+}
+
+void ASSStationWarpGate::BurstWalkerEndedPlay(AActor *Actor, EEndPlayReason::Type EndPlayReason)
+{
+    if (IsValid(DepartureVisual) && DepartureVisual->GetAttachParent() &&
+        DepartureVisual->GetAttachParent()->GetOwner() == Actor)
+        CancelTransfer(TEXT("Transport interrupted."));
+    if (IsValid(ArrivalVisual) && ArrivalVisual->GetAttachParent() &&
+        ArrivalVisual->GetAttachParent()->GetOwner() == Actor)
+        StopArrivalVisual();
+}
+
 bool ASSStationWarpGate::TryActivate(ASSWalker *Walker)
 {
     ReleaseLatchIfOutside();
@@ -179,6 +235,8 @@ bool ASSStationWarpGate::TryActivate(ASSWalker *Walker)
         Refuse(Walker, TEXT("The transport destination is blocked or unsupported."));
         return false;
     }
+    StopArrivalVisual();
+    RestoreBurst(DepartureVisual, DepartureRestTransform);
     PendingWalker = LatchedWalker = Walker;
     PendingDestination = LatchPartner = PairedGate.Get();
     PairedGate->IncomingSource = this;
@@ -189,8 +247,12 @@ bool ASSStationWarpGate::TryActivate(ASSWalker *Walker)
     {
         DepartureVisual->SetWorldLocation(Walker->GetActorLocation() -
                                           FVector(0, 0, Walker->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
-        DepartureVisual->SetAsset(DepartureEffect);
-        DepartureVisual->Activate(true);
+        if (AttachBurstToWalker(DepartureVisual, Walker))
+        {
+            DepartureVisual->SetAsset(DepartureEffect);
+            DepartureVisual->ReinitializeSystem();
+            DepartureVisual->Activate(true);
+        }
     }
     // Game-time timers and ordinary Niagara component ticks freeze with world pause.
     GetWorldTimerManager().SetTimer(DepartureTimer, this, &ASSStationWarpGate::CompleteTransfer, DepartureDelay, false);
@@ -220,6 +282,15 @@ void ASSStationWarpGate::CompleteTransfer()
     const TWeakObjectPtr<APlayerController> TransferController = Controller;
     const FString DestinationName = Destination->GetPathName();
     const FString WalkerName = Walker->GetPathName();
+    // Kill and detach the departure skin BEFORE the pawn moves, including local-space particles.
+    RestoreBurst(DepartureVisual, DepartureRestTransform);
+    Controller = TransferController.Get();
+    if (bEndingPlay || !IsValid(Walker) || !IsValid(Destination) || Destination->bEndingPlay || !IsValid(Controller) ||
+        Controller->GetPawn() != Walker)
+    {
+        CancelTransfer(TEXT("Transport interrupted."));
+        return;
+    }
     bCompletingTransfer = true;
     const bool bMoved = Walker->TeleportTo(Location, Facing, false, true);
     // Teleport updates overlaps synchronously; an overlap callback can tear down either endpoint or possession.
@@ -231,14 +302,20 @@ void ASSStationWarpGate::CompleteTransfer()
         Controller->SetControlRotation(FRotator(PreviousView.Pitch, Facing.Yaw, PreviousView.Roll));
         if (IsValid(Destination) && !Destination->bEndingPlay && Destination->ArrivalEffect)
         {
+            Destination->StopArrivalVisual();
             Destination->ArrivalVisual->SetWorldLocation(Destination->ArrivalPoint->GetComponentLocation());
-            Destination->ArrivalVisual->SetAsset(Destination->ArrivalEffect);
-            Destination->ArrivalVisual->Activate(true);
-            const float DisplaySeconds = FMath::IsFinite(Destination->ArrivalDisplaySeconds)
-                                             ? FMath::Clamp(Destination->ArrivalDisplaySeconds, .1f, 10.f)
-                                             : 2.f;
-            Destination->GetWorldTimerManager().SetTimer(Destination->ArrivalTimer, Destination,
-                                                         &ASSStationWarpGate::StopArrivalVisual, DisplaySeconds, false);
+            if (Destination->AttachBurstToWalker(Destination->ArrivalVisual, Walker))
+            {
+                Destination->ArrivalVisual->SetAsset(Destination->ArrivalEffect);
+                Destination->ArrivalVisual->ReinitializeSystem();
+                Destination->ArrivalVisual->Activate(true);
+                const float DisplaySeconds = FMath::IsFinite(Destination->ArrivalDisplaySeconds)
+                                                 ? FMath::Clamp(Destination->ArrivalDisplaySeconds, .1f, 10.f)
+                                                 : 2.f;
+                Destination->GetWorldTimerManager().SetTimer(Destination->ArrivalTimer, Destination,
+                                                             &ASSStationWarpGate::StopArrivalVisual, DisplaySeconds,
+                                                             false);
+            }
         }
         UE_LOG(LogTemp, Display, TEXT("SS_STATION_WARP_ARRIVED source=%s destination=%s walker=%s"), *GetPathName(),
                *DestinationName, *WalkerName);
@@ -250,7 +327,7 @@ void ASSStationWarpGate::CompleteTransfer()
 void ASSStationWarpGate::CancelTransfer(const FString &Reason)
 {
     GetWorldTimerManager().ClearTimer(DepartureTimer);
-    DepartureVisual->DeactivateImmediate();
+    RestoreBurst(DepartureVisual, DepartureRestTransform);
     ASSWalker *Walker = PendingWalker.Get();
     if (auto *Destination = PendingDestination.Get(); Destination && Destination->IncomingSource == this)
         Destination->IncomingSource.Reset();
@@ -301,7 +378,8 @@ void ASSStationWarpGate::LeftVolume(UPrimitiveComponent *Component, AActor *Othe
 
 void ASSStationWarpGate::StopArrivalVisual()
 {
-    ArrivalVisual->DeactivateImmediate();
+    GetWorldTimerManager().ClearTimer(ArrivalTimer);
+    RestoreBurst(ArrivalVisual, ArrivalRestTransform);
 }
 
 void ASSStationWarpGate::EndPlay(const EEndPlayReason::Type EndPlayReason)

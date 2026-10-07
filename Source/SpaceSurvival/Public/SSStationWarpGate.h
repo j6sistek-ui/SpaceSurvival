@@ -79,8 +79,14 @@ private:
     void CancelTransfer(const FString &Reason = FString());
     void ReleaseLatchIfOutside();
     void StopArrivalVisual();
+    bool AttachBurstToWalker(UNiagaraComponent *Visual, ASSWalker *Walker);
+    void RestoreBurst(UNiagaraComponent *Visual, const FTransform &RestTransform);
+    UFUNCTION()
+    void BurstWalkerEndedPlay(AActor *Actor, EEndPlayReason::Type EndPlayReason);
     void Refuse(ASSWalker *Walker, const FString &Reason);
 
+    FTransform DepartureRestTransform = FTransform::Identity;
+    FTransform ArrivalRestTransform = FTransform::Identity;
     TWeakObjectPtr<ASSWalker> PendingWalker;
     TWeakObjectPtr<ASSStationWarpGate> PendingDestination;
     TWeakObjectPtr<ASSStationWarpGate> IncomingSource;

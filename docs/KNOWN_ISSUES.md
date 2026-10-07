@@ -117,6 +117,19 @@ Next: finish T, then reproduce each through the actual saved game and make bound
 repairs with its own moving/native/owner evidence. No flight, warp, physics or
 animation change is made by this note; downloads do not establish integration.
 
+**October7 22:10UTC lead evidence:** natural93-second bartender observation
+confirms hands remain46–51cm short of the counter and exposes a render-bounds
+failure in the low foot view. The female-only fixed-bounds/scale4 trial restores
+visibility in the same camera, with an intact side view and targeted preservation
+passes; it is preserved in the separate22:18 recovery copy. This does not accept
+sole or hand contact. Warp bursts
+now attach to the live walker mesh in source and clean up on transfer/cancel/
+teardown. The station-parking eligibility correction passes Build45 `-NoLink`;
+Build39 is unchanged. Next: restore and verify the narrow visibility fix when
+the editor reopens, fit a supported service action, then integrate and
+test reciprocal warp endpoints in actual gameplay. The sandbox preview cannot
+prove that travel. [Evidence](validation/2026-10-07-bartender-and-warp.md).
+
 **October7 15:24UTC owner clarification:** unique room ads were already requested;
 retain the full after-T queue above and the cockpit, Director and graphics/loading
 follow-ups rather than treating a new message as a replacement. The owner now

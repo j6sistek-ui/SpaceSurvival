@@ -287,6 +287,12 @@ KNOWN_ISSUES owns priority and acceptance.
   activity and social dressing, WBS 7.3/8.4/8.5. No dialogue system, new gameplay role,
   tool installation or animation-package acquisition is introduced. Preserve the
   approved ceiling and general room lighting.
+- **October7 follow-up:**93seconds/three natural wraps of the saved female Type02
+  show hands still short of the counter and expose a low-camera render-bounds
+  failure. A female-component-only fixed-bounds/scale4 trial restores visibility
+  in two actual views; no source mesh/clip/material changes. It is preserved in
+  the separate22:18 editor-closure recovery copy, without establishing continuous
+  skin contact or useful prop handling.
 - **Next check:** fit selected mocap to the measured bar and held props, inspect
   actual room animation/lighting, and judge the complete lounge. Three clips in a
   studio do not establish a varied natural bartender loop or owner acceptance.

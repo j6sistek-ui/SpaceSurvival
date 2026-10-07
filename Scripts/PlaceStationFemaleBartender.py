@@ -6,6 +6,7 @@ saves the map. This helper never loads/saves a level or modifies an asset.
 import hashlib
 import json
 import math
+import struct
 from pathlib import Path
 
 MAP = '/Game/OutpostSandbox/OwnerPreview/L_OwnerPlatformPreview_20261006'
@@ -29,6 +30,37 @@ def _pose(actor):
     t = actor.get_actor_transform()
     return {'location': list(t.translation.to_tuple()), 'rotation': list(t.rotation.to_tuple()),
             'scale': list(t.scale3d.to_tuple())}
+
+
+def configure_visibility(actor, bounds_scale=4.):
+    """Adopt/replay the measured Type02 visibility fix on this female only.
+
+    The low-camera trial accepted scale4 for this rig/clip. Future variants
+    need their own motion envelope; this does not prove skin contact or cost.
+    """
+    import unreal as u
+    _require(isinstance(actor, u.SSOutpostAmbientActor) and actor.get_actor_label() == LABEL and
+             actor.get_path_name().startswith(MAP+'.'), 'Target only the owner preview female bartender')
+    _require(not u.get_editor_subsystem(u.UnrealEditorSubsystem).get_game_world(),
+             'Configure editor presentation only after PIE stops')
+    mesh = actor.get_component_by_class(u.SkeletalMeshComponent)
+    _require(mesh and mesh.get_skeletal_mesh_asset() and
+             mesh.get_skeletal_mesh_asset().get_path_name().split('.')[0] == FEMALE,
+             'Keep the owner-chosen female mesh; never apply this profile to another rig')
+    _require(math.isfinite(bounds_scale) and bounds_scale >= 1., 'Use a finite per-actor bounds scale of at least1')
+    native_scale = struct.unpack('<f', struct.pack('<f', bounds_scale))[0]
+    before = {'fixed_skel_bounds': bool(mesh.get_editor_property('component_use_fixed_skel_bounds')),
+              'bounds_scale': float(mesh.get_editor_property('bounds_scale'))}
+    if not before['fixed_skel_bounds']:
+        mesh.set_editor_property('component_use_fixed_skel_bounds', True)
+    if before['bounds_scale'] != native_scale:
+        mesh.set_bounds_scale(native_scale)
+    after = {'fixed_skel_bounds': bool(mesh.get_editor_property('component_use_fixed_skel_bounds')),
+             'bounds_scale': float(mesh.get_editor_property('bounds_scale'))}
+    _require(after == {'fixed_skel_bounds': True, 'bounds_scale': native_scale},
+             'Native female component visibility fields differ from the requested profile')
+    return {'actor': actor.get_path_name(), 'before': before, 'after': after,
+            'changed': before != after, 'source_asset_edits': 0}
 
 
 def apply(ctx, expected_map_sha256, grounding_sha256, room_manifest_sha256):
@@ -98,6 +130,7 @@ def apply(ctx, expected_map_sha256, grounding_sha256, room_manifest_sha256):
     actor.set_actor_hidden_in_game(False)
     actor.set_is_temporarily_hidden_in_editor(False)
     mesh.set_visibility(True, True)
+    visibility = configure_visibility(actor)
     actual = mesh.get_world_transform()
     _require(math.dist(actual.translation.to_tuple(), (4150., -4160., fields[5].z+presentation['sole_offset_cm'])) < .001,
              'Native staff mesh does not match the reviewed grounded world origin')
@@ -115,4 +148,5 @@ def apply(ctx, expected_map_sha256, grounding_sha256, room_manifest_sha256):
             'mesh_world_scale': list(actual.scale3d.to_tuple()), 'floor_normal': list(fields[7].to_tuple()),
             'actor_inventory_preserved': True, 'all_other_actor_transforms_preserved': True,
             'native_ambient_idle_configuration': True, 'counter_lights_layout_assets_unchanged': True,
+            'visibility_configuration': visibility,
             'limits': 'One grounded conversational idle; varied prop service and owner quality acceptance remain open.'}

@@ -1,6 +1,16 @@
 # SpaceSurvival project state
 
-**October7 21:29UTC current checkpoint:** saved owner preview remains Mainc45,
+**October7 22:18UTC temporary editor closure:** the owner may close Unreal.
+The latest working map and all eight dirty display packages were saved to
+separate recovery files under `.agent/local/EditorCloseRecovery20261007T2216`.
+Manifest SHA `5c59de491fad85a2bba00b7a272425d319853ed31a06b40fc71b46ae5f70943d`
+records all nine file hashes. Original Content files remain unchanged; the
+latest working map copy is16818b1b, while the normal saved map remainsc45.
+Native dirty flags are now clear. This is a recovery checkpoint, not approval
+of held T or a published scene. Restore/reload validation remains pending;
+source work continues while the editor is closed.
+
+**October7 22:10UTC pre-closure checkpoint:** saved owner preview remains Mainc45,
 the loaded module remains Build39, and published0.1.22-alpha/build2048604 is
 unchanged. The owner holds only T wall/display replacement while selecting from
 the complete P1-P5 picker: `.agent/local/Outpost/HoloAssetCatalog1/index.html`,
@@ -28,6 +38,17 @@ paired warp-gate source passed Build43 `-NoLink` compilation. This produces obje
 files only: it does not update the loaded Build39 DLL, place warp endpoints or
 verify other NPC variants. Adoption instructions are in
 [Architecture](ARCHITECTURE.md). Native integration and owner approval remain open.
+
+The bartender's natural93-second observation exposed incorrect render bounds:
+she disappeared from the low foot camera despite her feet being in view. A
+female-only component trial now keeps her visible in that same camera and passes
+the side-view comparison. Its bounds settings are now in the recovery copy; hands still
+miss the counter and continuous sole contact remains unaccepted. The warp burst
+source now binds to the actual walker mesh instead of relying on an editor-only
+Manny preview. The corrected station-parking gate passes Build45 `-NoLink`,
+with the DLL unchanged. Actual
+warp endpoints and travel remain untested; the owner-preview sandbox is not a
+moored gameplay station. See the [focused evidence](validation/2026-10-07-bartender-and-warp.md).
 
 Central welcome retains its **unsaved** six-furnishing/two-vendor trial and now
 four shrubs plus three ceiling-ring lights. Root and independent review accept
