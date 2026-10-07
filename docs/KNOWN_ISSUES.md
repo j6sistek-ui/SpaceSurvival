@@ -1,5 +1,33 @@
 # Open work and owner review
 
+## October7 editor recovery
+
+**RPT-20261007-02 — GPU-crash cause and sustained stability unverified. OPEN / lead.**
+The owner screenshot confirms the GPU crash dialog. The current editor log
+reports `DXGI_ERROR_DEVICE_HUNG` at2026-10-07T16:26:23Z; crashedPID5488 held
+the game DLL/Nwiro listener. Two MCP handshakes timed out before any
+new panel placement. Build42 repeated the DLL link lock. Saved preview Mainc45
+and Build39 DLL bytes are unchanged. The initially unconfirmed asset recovery
+was later verified as recorded below.
+The owner restarted Unreal; at16:51UTC host verification finds respondingPID52864
+at Restore Packages, with no Nwiro listener yet. The19 indexed autosaves, index
+and saved Mainc45 map have21 verified backup copies under
+`.agent/local/CrashRecovery20261007T164915Z` (manifestSHAa011608f).
+Recover only18 absent central/vendor assets; keep the existing map unchecked.
+Owner completed the18-asset recovery after taking over the selections; disk files
+exist and Mainc45 is unchanged. At17:05UTC Nwiro is healthy/PID52864. Owner ended
+live computer control; all Computer Use stopped. The older clean Wayfarer default
+was loaded after restart; native `open_level` restored the edited owner preview.
+Fresh5original imports/3materials and4native wall-panel actors pass localized
+native/source preservation. At17:24 all18 recovered packages pass native class,
+dimensions, material-parent, skeleton/duration and source checks. The owner
+subsequently rejects the sideways control-panel hardware and holds that choice
+pending the P1-P5 visual picker. At18:57 root has completed Phoenix and central
+PIE captures in the recovered editor with map/save preservation. Restart,
+connection and resumed authoring are verified; the remaining issue is the
+unconfirmed GPU root cause and stability under representative use. No forced
+process close, driver change or renderer downgrade was made.
+
 ## October6 evening flight feedback
 
 **RPT-20261006-05 — Camera comfort and clear in-ship mode selection. OPEN.**
@@ -89,7 +117,59 @@ Next: finish T, then reproduce each through the actual saved game and make bound
 repairs with its own moving/native/owner evidence. No flight, warp, physics or
 animation change is made by this note; downloads do not establish integration.
 
+**October7 15:24UTC owner clarification:** unique room ads were already requested;
+retain the full after-T queue above and the cockpit, Director and graphics/loading
+follow-ups rather than treating a new message as a replacement. The owner now
+requires each room's ad TVs to cycle a unique set of at least five illustrated
+campaigns, lightly themed to that room: ship purchases/upgrades/parts in engineering,
+massage/appearance humor near character customization, and different welcome/lounge/
+market sets. Proximity-audible ad sound is expressly future work. The additional
+used-shop trade-in joke is "High body count? No problem. We accept anything that
+moves." Existing owned vendor animations should support central reception; actual
+model fit, feet and hand/counter contact still require moving review. The owner
+supersedes waiting for T9: finish its ad TVs, then one agent handles Phoenix interior
+and two handle central welcome layout/arrival and imagery. Other fixes remain OPEN.
+
 ## October6 owner station refinement
+
+**October7 19:09UTC independent work — lead-owned, OPEN:** central welcome's
+two benches, four planters and four vendor animation properties are applied only
+in an unsaved editor trial. Twelve ordinary photos and37.355 actual game seconds
+of vendor motion pass targeted preservation checks. Planter appearance, front
+lighting and counter-obscured foot views still need correction; no contact or
+owner acceptance. Phoenix6 clears both cabin panes with a14cm inboard offset,
+accepted by root and independent visual review, but stairs/cockpit remain too
+dark. Its five temporary photos pass exact restoration; the loaded module is
+still Build39 and saved preview Mainc45 is unchanged. Lead owns these fixes while
+the owner chooses T display hardware below. See the
+[central](validation/2026-10-07-central-welcome.md) and
+[cabin](validation/2026-10-07-native-resolution-and-phoenix-cabin.md) receipts.
+
+**October7 18:17UTC display selection — lead-owned, awaiting owner choice:**
+The owner rejects the rotated wall-window hardware because its controls face
+sideways. “Wait” applies only to display replacement; central welcome and Phoenix
+continue independently. Review original P1–P5 options before further placement
+or artwork changes. The local visual picker is
+`.agent/local/Outpost/HoloAssetCatalog1/index.html` (SHAf4601ca7d221070aa3188d4041150ab433c21c972737ffeb838adf6d35842a63):
+71 pictured hardware entries, 60 companion parts and 116 effect variants;
+25 glass-part/effect records lack usable static previews and are labeled.
+All15 digital-window sizes include their upright matching frame previews.
+Search, selection and enlarged previews pass an isolated browser check; these
+are library previews, not installed room changes or animation validation.
+Next: owner selects IDs, then root fits the chosen hardware and intact originals.
+Mainc45 remains unchanged; the rejected replacement trial is unsaved.
+
+**October7 16:17UTC T display rejection — lead-owned, OPEN:** owner flags a typo
+in the generated warranty ad and poor TV placement over windows despite empty
+solid wall sections. The previous8.5 lead/peer ad assessment is superseded by this
+owner rejection; savedMainc45 still needs repair. Use the owner's hand-picked ads
+as the baseline and the original five kits' architectural display panels. If a
+window is used, its graphics must be a translucent embedded hologram rather than
+a physical TV/sticker. Next: larger proportion-matched panels on verified visible
+wall backing, five distinct intact originals, actual reading/fit/cycling review,
+then a bounded save. Central's ten unreviewed trial actors are rolled back exactly;
+its prepared art and the full after-T queue remain. Owner-provided alternate ratios
+of one campaign do not count as multiple unique ads.
 
 **RPT-20261006-04 — Lead-owned layout/material/design pass; owner approval tracked per room.**
 **Owner decision, October7 00:12UTC (October6 evening locally):** L social lounge
@@ -98,10 +178,19 @@ finer detail, station-wide touches and NPC behavior are deferred. Preserve the a
 saved presentation at SHAab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64.
 This supersedes the earlier L visual-approval-pending statements below, not their
 historical implementation findings. It is not gameplay, performance or release acceptance.
-**Active next room: T Operations.** Lead owns a current saved-room baseline, then
+**Earlier active room: T Operations.** Lead owns a current saved-room baseline, then
 coherent central service terminal, a few staffed workstations, useful displays,
 organized technical storage, material/lighting refinement and clear circulation.
 Keep existing service identities and owner architecture; broader NPC behavior is later.
+**October7 16:03UTC advancement:** T's two TVs now have five unique illustrated
+engineering ads saved in Mainc45dd773 (receipt96ce33a4). Seven actual test views
+show all five campaigns; ad quality~8.5, wholeT~8–8.5. The owner supersedes the
+T9 advancement gate, so central welcome and Phoenix are next. Keep remaining T
+polish open for later. Every room still requires five unique campaigns; proximity
+ad audio remains future. Central five artworks and owned bench/planter/TV layout
+are prepared; vendor clips are identified, with actual assignment/contact unverified.
+Phoenix three-lamp source compiles, but Build41 cannot link against the open editor's
+DLL; loaded Build39 has not changed. No new cabin runtime/owner acceptance claimed.
 **October7 02:10UTC owner feedback:** T looks super empty compared with the target.
 Lead agrees current room is about4/10. First display save d2ce5b1a is real native
 progress, not a completed room. Next: coherent central command assembly, grouped
@@ -370,6 +459,27 @@ assets are untouched, and the prior map is backed up. Post-save live readback
 confirms chair absence and a clean map. Two actual editor views confirm placement
 only; their helper icons/exposure are not a fresh play-mode quality gate.
 The chair request is implemented; wholeT9 and owner room acceptance remain open.
+October7 14:48UTC: two fitted owned storage banks,11 satin canopies/33 material
+slots and14 decorative-fixture visibility changes are now saved in Main`c6f76875`,
+combined receipt`b8fd4b10`. The174-target finish guard preserves services,
+real lamps, podium and banks; saved-map readback is clean/PIE stopped.
+Two six-view live play tests preserve the actual owner's2742x781 viewport,
+render settings, player view and save files. Photos remain labelled pre-save
+UNSAVED tests, with BP_Blinds startup errors recorded separately. Root and peers
+accept the improvement at wholeT8–8.5, below9. Actor1415 now names the north
+SmartStorage bank, so identify the removed chair by original label/mesh.
+Next: fit a solid native front enclosure beneath Flight's existing worktop,
+then measure mounted upper-room light placement before another lighting trial.
+Keep the white floor. Owner approval, natural play, performance and packaging
+remain separate open gates; no new release.
+October7 15:18UTC owner direction supersedes that next action and the T9
+advancement prerequisite: T is much improved; finish illustrated ads/TVs, then
+move on and revisit polish later. Root removes only the unsaved bright front
+housing7707;50 protected existing actors/source/map checks pass. No housing or
+new upper lights are saved. Two new wide Thruster Clinic/Galactic Motors images
+are prepared, native import and actual TV review pending. One agent now owns
+Phoenix interior, two own central welcome layout/arrival and artwork/displays.
+Remaining T finish is deferred, not closed or rated9; white floor is retained.
 
 **October7 08:29UTC historical saved-preview update:** Art3 saves five fitted
 illustrated service displays/ten private assets with successful saved and

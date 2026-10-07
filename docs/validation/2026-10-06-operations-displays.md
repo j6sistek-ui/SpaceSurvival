@@ -1,8 +1,15 @@
 # Operations display integration — 2026-10-06 owner session
 
-Recorded at 2026-10-07T02:03Z; latest saved-state update at 2026-10-07T14:13Z.
-**PARTIAL: mounted service illustrations now pass fresh upright/full-image review;
-the saved mixed crew and white floors remain, but whole T has not met the lead9/10 gate or owner approval.** This is a T Operations presentation
+Recorded at 2026-10-07T02:03Z; latest owner choice boundary at 2026-10-07T17:40Z.
+**The owner rejects the saved generated T ads: warranty wording/typo and TVs
+placed against windows while suitable wall bays remain empty. Earlier lead
+and peer8.5/10 ad ratings are superseded by this rejection. Saved Mainc45 still
+contains those ads until the original-art/wall-display repair is reviewed and
+saved. Recovery is now verified, and a later unsaved P4 portrait-panel trial uses
+the five intact originals. The owner rejects its sideways controls and poster-like
+fit, and will pick from the complete P1-P5 asset catalog before further display
+changes. The latest trial remains unsaved; the picker is ready and independent
+central/Phoenix work continues.** This is a T Operations presentation
 pass on the separate owner preview. The accepted L lounge, canonical runtime map,
 published build and gameplay service behavior are not changed.
 
@@ -1077,21 +1084,27 @@ save and actual ordinary1600 baseline; no new material change is authored yet.
 
 ## Open / Check / Still open
 
-- **Open:** the separate owner preview now saved after the live Nwiro central
-  Flight chair removal at
-  `5029100d1aa17c3911778132873a3f890e1c4275312db9c47da53f9195492e24`.
-  Flight gain5, twelve central material references, four Phoenix child heights
-  raised30cm and two quiet WorkPlan references remain saved;
-  this is not a canonical-game or published-build update.
-- **Check:** two current saved editor views show the central walk-up desk without
-  its chair, with both supports retained. The exact43-neighbour/source check
-  passes; editor icons/exposure differ from PIE. Earlier eight ordinary views
-  test unsaved canopy/console cleanup with exact restoration. A final complete
-  saved-room gameplay/view review remains pending.
-- **Still open:** whole-T visual9/10, owner approval, workstation highlights,
-  broad-panel detail and remaining full-station floor acceptance. The previously
-  reviewed whole room was about8/10 in restored tests, which does not establish
-  saved whole-room acceptance. L remains the
+- **Open:** the separate owner preview still saves the now owner-rejected five
+  generated campaigns on the two existing T TVs at
+  `c45dd77376d5a90c90df410ffd733e528c1177d5a05d1c17264799e41037e8b9`.
+  Storage/canopy cleanup, chair-free Flight/gain5, twelve central material refs,
+  four Phoenix child heights raised30cm and two quiet WorkPlan refs remain saved.
+  This is not a canonical-game or published-build update.
+- **Check:** owner chooses hardware from the complete P1-P5 picker before further
+  display replacement. Fit the five intact originals to that selected host;
+  inspect complete headlines/heroes,
+  support, orientation and all five timed phases before saving. Historical seven
+  owner2742x781 photos show the previous timed phases and entrance. They were
+  captured BEFORE saving and remain **UNSAVED_EDITOR_TEST**. Eight private assets
+  and the new Main hash match the saved receipt; fresh reloaded saved pixels and
+  a full100-second production-dwell watch are not established by this review.
+- **Still open:** original-art/wall-display repair and actual acceptance first;
+  later exposed-workstation/upper-room polish, owner hands-on
+  approval, remaining full-station floor acceptance and the unique five-ad sets
+  for other rooms. Central welcome and Phoenix continue independently while
+  T display choice is held; proximity ad audio is future work.
+  The owner defers the whole-T9/10 gate rather than declaring it achieved.
+  Earlier T/ad scores do not override the owner's rejection. L remains the
   owner's8/10 pass for now. RPT-20261006-04 in
   [KNOWN_ISSUES](../KNOWN_ISSUES.md) remains the authoritative owner-acceptance log.
 
@@ -1586,3 +1599,178 @@ full-world equality claim is made. The raw `RootChair*Result*.json` calls remain
 local evidence. The owner's separate `SpaceSurvival.uproject` edit is not part
 of this correction and must remain unstaged. No packaged or published build
 changes; canopy/console test changes remain unsaved.
+
+## Live storage trial: six game views, unsaved — 2026-10-07T14:37Z
+
+Root uses the existing owner editor and Nwiro to run in-viewport PIE after the
+paired storage banks are applied temporarily. The actual receipt at
+`.agent/local/Outpost/LiveOperationsPIEReview1_StorageTrial1/manifest.json`, SHA
+`ee6ff207ef60f275a9aec32b15cbbd29258bdb09d108f376f4329e78b701ff04`,
+records six **UNSAVED_EDITOR_TEST** ordinary game photographs at the unchanged
+owner viewport size, 2742x781. Each view warms for at least six seconds; all six
+image hashes and PNG dimensions are independently checked. This is a live game
+capture, not an editor viewport or a saved-storage result.
+
+The original SSWalker view is restored, the temporary PIE camera is absent and
+PIE is stopped. Owner resolution and recorded quality settings, SaveGames,
+saved Main502910 bytes, editor world and original dirty-package lists remain
+unchanged; receipt success is true and capture errors are empty. The preview
+remains dirty from the storage trial. `full_world_equality_claimed=false` is an
+explicit limit. The initial start-PIE response contains the known BP_Blinds
+AccessedNone errors; root verifies PIE actually running without retrying startup.
+This receipt does not establish a clean startup, source build or packaged run.
+
+Independent review of all six photos finds useful side-wall density and a clear
+Phoenix focal point, service illustrations and chair-free Flight walk-up. The
+banks are worth retaining as a candidate, but whole T remains about8/10: the
+upper room is dark, repeated large storage faces dominate the side walls, and
+the central workstation's exposed bright frames/cables still compete with the
+hero. The owner's white floor is retained. Whole-room9/10, saved storage,
+canopy/console selection, hands-on gameplay and owner acceptance remain open.
+
+## Live combined storage/canopy/console finish saved — 2026-10-07T14:48Z
+
+Root saves the reviewed paired storage banks, three private canopy MICs on
+33 material references across eleven existing canopies, and42 visibility fields
+on fourteen measured decorative fixtures. No real lamp is hidden or added.
+The combined receipt at
+`.agent/local/StationRefinement/RootLiveFinish1_62_CombinedSavedReceipt.json`, SHA
+`b8fd4b10044afe2da4f722d268d29d2ba73cad8bcedc510aea22b3307ad034dd`,
+reports174 protected actors with targeted/source preservation passing, three private
+asset saves and one map save. The two banks were created in the earlier trial;
+the finish stage creates no additional actors. Main becomes
+`c6f76875030ab11ce2fb688e9cc2f2ee45874a7fdc73f1f11d8d1beea8cc501d`,
+superseding Main502910. Current disk Main and all three private MIC hashes are
+independently verified against the receipt. The original map backup is retained.
+
+The finalized six-view finish capture at
+`.agent/local/Outpost/LiveOperationsPIEReview1_StorageFinish2/manifest.json`, SHA
+`291b08188082723443685834e6edebf8fc88ace089dc951fc33a63c2bd5dbd29`,
+passes camera/view restoration, stopped PIE, unchanged owner2742x781 resolution
+and recorded quality settings, SaveGames, editor world, dirty-package lists and
+then-saved Main502910 bytes; capture errors are empty. Its six camera poses/FOVs
+match StorageTrial1. All twelve photos were captured BEFORE the combined save
+and remain **UNSAVED_EDITOR_TEST** permanently. No new saved-result photograph
+exists yet. The known BP_Blinds startup AccessedNone errors remain separate;
+active PIE was verified without a blind startup retry. Neither the capture nor
+the targeted author receipt claims complete world equality or clean startup.
+
+Independent review accepts the moderate change: quieting the console decoration
+clears Flight's silhouette, and satin canopy undersides show more panel shape.
+Whole T is about8–8.5/10, below the lead9/10 gate. Exposed bright desk frames and
+cables, dark upper-room edges and repeated storage faces remain visible gaps.
+The rotating Phoenix has different natural yaw between views; there is no
+matched-yaw comparison claim. Owner white floors, existing service actions,
+support geometry and saved crew remain. Fresh saved-state visual review,
+hands-on gameplay, owner approval and publication remain open.
+
+Retained live setup failures are not passes: `RootStoragePrepareResult1.json`
+fails on a floor-hit `KeyError: 'label'` before actor changes, and
+`RootLiveFinish1_ApplyResult.json` fails while writing a material-path-based
+receipt filename before private MIC creation or scene assignment. Their raw
+receipts and original sources remain. Corrected live requests reach the actual
+combined save above. Unreal reuses `StaticMeshActor_1415` for the north
+SmartStorage bank; the original chair label/mesh is removed, so actor-name
+  absence is not a valid current chair-removal check. No packaged or published
+  build is changed by this save.
+
+## Five engineering campaigns: actual timed review and save — 2026-10-07T16:02Z
+
+The owner requires at least five unique, slightly room-themed illustrated ads
+per room and explicitly directs work beyond T after its TVs are finished.
+T's1672x941 landscape set is Thruster Clinic, Galactic Motors/Used UFOs, Orbital
+Oddments/parts, Voidproof/ship warranty and Galactic Trade-Ins. Each has a distinct
+mechanic, dealer, ship or parts hero and short fictional copy; no transaction,
+price, audio or service behavior is added. Complete imagery fits the measured
+native TV02 aperture without stretching a portrait. Exact prompts, supplied
+reference hashes and original generated/source pixels remain in
+`OperationsEngineeringAds2/manifest5.json`, SHA
+`af6a06c65d1ff8d915b83ce70dc71bbd2b462ed9d56337f8acf312cc3eede7de`.
+The original density artwork and original material packages are preserved.
+
+The first import's immediate32x32 native size readback was an asynchronous
+placeholder: a later read reports the exact1672x941/source filename. The raw
+`RootOperationsAds1_3_CampaignTexture0.json` (`d95a39b0…`), ImportResult
+(`084c97b8…`) and TextureReadResult (`43da8fe0…`) remain retained. Helper2 resumes
+only that verified first staged texture and flushes native compilation before
+strict dimensions for the remaining four; it does not reimport/delete it.
+Timed capture1 also fails before images on exact `.2` float readback. Its receipt
+`e75055fd473a268763f60b48663c8178af9e9fd2a67287c5f579bd9188bc8b89`
+retains the failed predicate and restored temporary MID refs. Root stops PIE;
+the incomplete manifest alone has no aggregate preservation claim. Corrected2
+uses the actual float32 representation, without a numeric tolerance.
+
+The finalized live receipt at
+`.agent/local/Outpost/LiveOperationsPIEReview1_EngineeringCarousel2/manifest.json`,
+SHA `562c815d945ec87b7c47bc3c92bbd05f9fdd83d77c60795d64cafb890674c897`,
+passes seven ordinary2742x781 photos, actual timed port phases0–4, original view
+and MID restoration, temporary camera removal, stopped PIE, unchanged resolution/
+recorded quality, SaveGames, saved Mainc6 bytes, editor world and dirty packages;
+errors are empty. Full-world equality is explicitly unclaimed. All seven photos
+are **UNSAVED_EDITOR_TEST**, captured before the subsequent save. Temporary PIE
+MIDs use6-second cycles/.2-second crossfade to observe the five native-clock
+phases. Production20-second cycles/.6-second crossfade are native readbacks,
+not a reviewed100-second production watch. Nearby audio remains future work.
+
+Root and independent review inspect all seven pictures: all five port heroes
+and primary jokes are upright, complete and readable, with no visible UV crop,
+stretch, mirrored copy or frame interference. Starboard's Used UFOs also fits.
+Ads are about8.5/10; smaller secondary copy requires closer viewing. The whole
+entrance remains about8–8.5/10 with dark upper edges; the nearby side TVs are
+outside that entrance composition. The owner defers further T polish and its
+former9/10 advancement gate; this is not a claim that9/10 has been reached.
+
+Actual `RootOperationsAds1_41_SavedReceipt.json`, SHA
+`96ce33a4f13a0c07a3467394dc18030de7e67696c12b4f381456d557d35b885a`,
+saves exactly five textures, one private measured-projection carousel master,
+two private MICs and one existing Main. Only the two TV screen slot5 references
+change; original body refs, supports and source packages pass targeted/source
+preservation, and SaveGames remain unchanged. Current Main is
+`c45dd77376d5a90c90df410ffd733e528c1177d5a05d1c17264799e41037e8b9`,
+supersedingc6. All eight private package hashes and Main bytes independently
+match; the subsequent live editor read confirms PIE stopped and no dirty maps.
+No fresh post-save/reload PNG, gameplay/performance pass or publication is
+claimed. Central welcome's five distinct travel/help campaigns are prepared
+separately; other room sets remain queued in KNOWN_ISSUES. Historical failures
+and pre-save photographs stay immutable.
+
+## Owner rejects generated T ads; original-art repair prepared — 2026-10-07T16:12Z
+
+The owner identifies a wording/typo defect in the warranty display and rejects
+using generated replacements while the supplied originals remain unused. The
+window-backed TV placement also fails the owner's room composition: substantial
+wall bays are empty. Root accepts this correction. The prior8.5/10 graphic
+assessment is superseded, not defended as owner approval. Screenshot
+`0F38B03E-0B91-4B06-8A1D-D00E8BCCA83C/1-Photo-1.jpg` is retained as rejection
+evidence only. The exact intended spelling is not invented or regenerated.
+
+Saved Main remains `c45dd773…` with the rejected generated set. The historical
+eight packages, timed receipts and source files remain preserved. PR staging/body
+refresh is held until its current state records the rejection accurately.
+
+Five distinct original portrait campaigns are hand-picked: Thruster Clinic,
+Galactic Docking Authority, Galactic Motors Used UFOs, the focused Fragilon
+high-end fighter/finance poster, and the named Vantaburre flagship poster. The
+cleaner19B5 fighter portrait replaces the earlier busier Tiny Ship selection.
+Its wide3:1 billboard and other Fragilon format alternatives are not counted as
+extra unique campaigns. FUI/bar campaigns are not copied into this room.
+
+`OperationsOwnerOriginals1/manifest5-selected2.json`, SHA
+`78c4579035335183b39053697f57e5daa88a0df728dab780415c3c57110c456f`,
+records complete upload paths/hashes and five local JPEG copies verified
+byte-identical to the originals. Three are853x1280 and two784x1168. A2:3 portrait
+aperture contains every full image with less0.04% total width padding for the
+former and about0.68% total height padding for the latter; no crop, stretch,
+retyping or bitmap edit is required. Physical frame/aperture/support and native
+readability remain live gates. Owner originals are the baseline; generation is
+reserved for useful missing content rather than replacing them unnecessarily.
+
+The import-inert `import_operations_owner_originals1.py`, SHA
+`2f516ca22543ac5f5f8b0e187ce0e9e41b16b4522bb81b06450eb0489c0cd5f2`,
+prepares only five fresh textures under `OperationsOwnerCampaigns20261007`.
+It uses the proven native compile flush before exact original size checks and
+requires explicit verified-source resume after partial staging. Fifteen input
+files and all eight rejected saved packages match their digests. This source
+check does not import, assign materials, move actors, save Main or establish
+visual acceptance. Minimum five unique campaigns per room and future proximity
+audio remain; other room work continues in the canonical owner queue.

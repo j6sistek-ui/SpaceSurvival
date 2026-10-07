@@ -1062,6 +1062,44 @@ canopy finish or fixture visibility changes accompany the correction. The
 owner's open Unreal/Nwiro session takes precedence: no concurrent headless
 editor or map writes.
 
+The lead then previews two owned four-metre SmartStorage banks between the
+existing side desks. Actual live preparation measures ten Operations floor
+contacts at Z0 and preserves 112 targeted original actors. Both inward-facing
+door/handle sides are confirmed in editor and game views; the banks read as
+grounded technical storage with no obvious desk overlap. Native actor-name
+reuse assigns `StaticMeshActor_1415` to the **new north bank**, so chair absence
+must use the original Goliath chair label/mesh, never that numeric name.
+The first preparation fails before mutation on a floor-hit schema key; the
+corrected helper uses the proven `actor` field and succeeds.
+
+`LiveOperationsPIEReview1_StorageTrial1` and the matched
+`LiveOperationsPIEReview1_StorageFinish2` each produce six independently reviewed
+ordinary game-camera images at the owner's actual 2742-by-781 viewport. The
+latter manifest is `291b08188082723443685834e6edebf8fc88ace089dc951fc33a63c2bd5dbd29`.
+It adds temporary canopy-slot 1/2/3 satin assignments and fourteen decorative
+console-fixture visibility changes while retaining the banks. Both runs stop
+PIE and restore the player camera, viewport/settings and prior dirty state;
+saved map bytes and three save files remain unchanged. Full-world equality is
+explicitly not claimed. The actual finish improves canopy facets and reduces
+console cable/task-light clutter; whole T remains approximately 8/10, below 9.
+The open silver Flight chassis remains the next visible composition gap.
+All bank/canopy/fixture changes are **unsaved tests** at this point, with saved
+Main still `5029100d...`. This ultrawide review is not matched vertical coverage
+against earlier 1600-by-900 images, a walk-through collision test or performance
+acceptance. No floor, renderer or light change accompanies the comparison.
+
+At 14:48 UTC the lead saves that reviewed coherent finish and both banks through
+the active editor. `RootLiveFinish1_62_CombinedSavedReceipt.json`, digest
+`b8fd4b10044afe2da4f722d268d29d2ba73cad8bcedc510aea22b3307ad034dd`,
+records exact preservation of 174 targeted actors/source bytes, three saved
+private canopy MICs, 33 canopy references, fourteen decorative visibility
+changes and both reviewed storage banks in one map save. The current saved
+preview becomes `c6f76875030ab11ce2fb688e9cc2f2ee45874a7fdc73f1f11d8d1beea8cc501d`;
+that map digest and all three saved material digests are independently checked.
+This supersedes the unsaved implementation state above; those twelve photos
+remain correctly labeled as the earlier unsaved test epoch. Fresh-load saved
+appearance, whole-room 9/10, owner acceptance and publication remain open.
+
 At2026-10-07T04:49Z the owner supersedes the04:23 comparison-only scope and chooses
 textured low-gloss white across the full station; rust must go beyond T. The
 retained comparison remains unchanged. Main1 now saves the measured1,022 main
@@ -1088,4 +1126,21 @@ Saved implementation, visual quality, owner approval and published build remain
 separate; the latest ordinary saved angle is approximately8/10, while the prior
 nine-view whole-room assessment is superseded by the current7.5–8/10 assessment
 above. The lead's required9/10 gate remains
-open. No9/10 room or gameplay/package pass is claimed.
+open at that historical point. No9/10 room or gameplay/package pass is claimed.
+
+At 2026-10-07T15:14Z the three actual `ConsoleHousing3` game views are checked
+against final manifest `855af1cbb414a97f6fee77f973d5f6ae4ddcb76f788350c4513f11605a26321c`.
+This is an **unsaved test** of one native front enclosure, actor7707, on saved
+Main `c6f76875...`. Its physical fit gives the open Flight chassis a clearer
+lower front, but its bright worn finish conflicts with the graphite podium.
+The review remains roughly8–8.25/10, with no9/10 claim. The final live capture
+reports stopped PIE and restored camera/viewport/quality, unchanged map/save
+bytes and dirty packages; it explicitly does not claim full-world equality.
+No housing material or collision candidate was implemented or saved.
+
+The owner's later direction supersedes the T9 gate: finish the illustrated T
+ads/TVs, then advance to the central welcome area. Further housing/ceiling work
+is deferred; the lead will remove only the unsaved enclosure with its retained
+restore helper. Saved banks, canopy finish and console cleanup remain in
+`c6f76875...`. That steering is a scope decision, not9/10 visual acceptance,
+canonical-map promotion or a published build.

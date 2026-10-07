@@ -1,5 +1,140 @@
 # SpaceSurvival project state
 
+**October7 19:09UTC current checkpoint:** saved owner preview remains Mainc45,
+the loaded module remains Build39, and published0.1.22-alpha/build2048604 is
+unchanged. The owner holds only T wall/display replacement while selecting from
+the complete P1-P5 picker: `.agent/local/Outpost/HoloAssetCatalog1/index.html`,
+SHA `f4601ca7d221070aa3188d4041150ab433c21c972737ffeb838adf6d35842a63`.
+Its71 hardware entries all have pictures;60 parts and116 effects are separated,
+with missing static previews explicitly marked. The latest sideways-wall-panel
+trial is unsaved and rejected, not a replacement accepted by the owner.
+
+Central welcome now has an **unsaved** six-furnishing/two-vendor trial. Six matched
+room images and six vendor images pass targeted source/map/save/camera
+preservation;37.355 actual game seconds of natural vendor motion were observed.
+Benches face inward, but the original digital planters read as circuit boxes,
+and two boot views are blocked by the counter. Lighting, planter presentation,
+skin contact and final approval remain open; see the
+[central trial record](validation/2026-10-07-central-welcome.md).
+
+Phoenix6 produced five temporary gameplay-camera images with exact restoration.
+Root and independent review accept the14cm inboard screen clearance: both panes
+are now unobscured. Lighting remains rejected because the stairs and cockpit
+are too dark. Earlier Phoenix5 stopped before mutation on sub-picometre
+constructor/transform roundoff; the correction records exact native component
+locations for restoration. No new linked cabin binary, durable lighting,
+walked traversal or owner approval is established. The
+[cabin record](validation/2026-10-07-native-resolution-and-phoenix-cabin.md)
+separates these results from technical capture success.
+
+**October7 17:24UTC display correction:** all18 recovered packages pass native
+class, source, dimensions, material-parent, skeleton/duration and preservation
+checks after pending texture compilation finished; the first32px placeholder
+readback is retained as a failed observation. The first13 display photos preserve
+settings/map/saves and record five phases per pane, but show blank faces and were
+rejected visually. Enabling two-sided rendering only on the new private master
+restores upright original artwork in a separate three-view comparison, with all
+preview state restored. That comparison exposes frame clipping and dim text;
+the owner also rejects the cut-off text. A smaller aspect-preserving artwork area
+inside the asymmetric frame, brighter private screen instances and an explicit
+temporary-camera projection are being prepared. Neither trial is saved or a
+whole-room acceptance. The old saved Mainc45 remains the exact recoverable base.
+
+**October7 17:05UTC recovered preview and display trial:** owner completed recovery;
+all18 new central/vendor files are present and saved Mainc45 bytes are preserved.
+Nwiro is healthy on5353/PID52864. The owner requested ending live computer control;
+all Computer Use stopped. Native inspection found the older clean Wayfarer map
+loaded after restart, explaining the owner's old-station report; `open_level`
+successfully loaded the edited owner preview. Runtime recovered-asset metadata
+validation remains pending. Fresh five-original imports and three private display
+materials passed native checks; the material compiled with13 expressions/no errors.
+Four actors form two large ownedP4 portrait displays on solid service-wall bays;
+58 protected actors/source bytes are preserved and four old window-TV/post actors
+are temporarily hidden. This is an UNSAVED trial. Thirteen actual in-game views
+are underway at the unchanged2742x781 owner viewport; fit/readability and both
+five-campaign cycles must pass before any save. Build39/publication are unchanged.
+
+**October7 16:51UTC historical recovery checkpoint:** the owner restarted Unreal; host verification finds
+PID52864 responding at the Restore Packages dialog. Nwiro is not yet listening.
+All19 indexed autosaves, the recovery index and the known saved Mainc45 map have
+verified backups (21 files); receipt `.agent/local/CrashRecovery20261007T164915Z/manifest.json`,
+SHA `a011608facae4725a03c65ace0614595f2ed471d297fef18af3b7fdfa88f3f82`.
+The intended recovery selects18 previously absent central/vendor assets and
+leaves the existing preview map unchecked. No recovery action has occurred yet.
+Computer Use selects the correct Unreal modal, but its captured pixels show
+ChatGPT occluding it despite raising/refreshing the window. The owner has been
+asked only to bring the modal forward; no blind clicks were issued.
+
+**October7 16:41UTC historical live-editor blocker:** the owner editor logged a GPU crash
+at16:26UTC and remained running asPID5488, holding the game DLL and Nwiro listener.
+Two connection handshakes timed out. No replacement panels or materials were
+applied or saved. Five intact original textures imported before the crash, but
+their recovery from memory is unconfirmed. Saved Mainc45 and Build39 DLL bytes
+are unchanged. The sandbox process list initially hid the host editor; the
+closed-editor inference was corrected by an authorized host check. Build42
+repeated the same link lock, with no new compile or successful link. The owner
+has been asked to restart the crashed editor; no process was killed. The actual
+installed engine is now5.8.3, verified from Build.version and the crash log.
+
+**October7 16:17UTC owner correction:** the savedT ad set below is rejected:
+the owner identifies a text defect and TVs over windows rather than using empty
+wall bays. Earlier lead/peer8.5 ad acceptance is superseded. Replace these with
+the owner's hand-picked original art on the original five kits' substantial
+display panels. Window graphics, if used, must be embedded holographic layers.
+Mainc45 still contains the rejected set; no replacement save yet. Central's ten
+waiting-bay actors passed localized fit checks but were removed exactly before
+this correction; five central textures/two instances remain prepared in memory.
+Three actual owned merchant clips imported and retargeted as private previews
+(11 in-memory assets), with no staff assignments, asset saves or map saves.
+Their appearance/contact remains unverified. Cabin and publication status below
+are unchanged. Current priority is theT display correction, then central/Phoenix.
+
+**October7 16:03UTC current saved owner preview:** T's two existing TVs now cycle
+five distinct illustrated engineering campaigns, using a private common material,
+two room instances and five textures. Eight private packages and one preview-map
+save produce Main `c45dd77376d5a90c90df410ffd733e528c1177d5a05d1c17264799e41037e8b9`.
+Save receipt `96ce33a4f13a0c07a3467394dc18030de7e67696c12b4f381456d557d35b885a`
+verifies the two allowed screen references, original assets and player saves.
+Seven actual in-game views show all five ads, with the temporary timing/materials,
+camera, settings and dirty-package state restored. Those photos remain pre-save
+UNSAVED tests: six-second cycling was observed; the saved setting is20 seconds
+with a .6-second crossfade. A100-second production watch was not performed.
+Root and independent review rate ads about8.5/10; wholeT stays8–8.5, not9.
+The owner expressly permits advancing after these TVs; central welcome and Phoenix
+are active, while T's brighter housing/upper-light trials remain deferred.
+Each room needs its own set of at least five illustrated campaigns; ad audio is future.
+Post-save native readback confirms a clean map, PIE stopped, and unchanged central
+staff/source assets. Central artwork/layout/vendor previews are prepared, unplaced.
+
+**Phoenix source versus loaded build:** three cabin lamps and diagnostic coverage
+compile after a private diagnostic variable rename fixes a unity-build name collision.
+Build40's compile error is retained; Build41 compiles but cannot link because the
+owner's open editor holds its DLL (`LNK1104`). The loaded DLL remains Build39,
+SHA `582d1fb955480af2d399d19bd393de0340d87657f02f7dafa1f0c658e7472390`.
+No new cabin runtime, natural walking, owner approval or packaged-build pass follows
+from those compiles. Close the editor before the next normal link; do not kill it.
+Canonical station and published0.1.22-alpha/build2048604 remain unchanged.
+
+**October7 14:48UTC earlier saved owner preview:** live Nwiro saves two fitted
+owned SmartStorage banks, three private canopy material copies on33 existing
+slots, and visibility cleanup of14 decorative console fixtures. Source assets,
+real lamps, services, Phoenix enclosure and both new banks pass the174-target
+finish check. One preview map save includes the banks; current Main
+`c6f76875030ab11ce2fb688e9cc2f2ee45874a7fdc73f1f11d8d1beea8cc501d`
+supersedes502910 below. Combined save receipt
+`b8fd4b10044afe2da4f722d268d29d2ba73cad8bcedc510aea22b3307ad034dd`;
+post-save live readback verifies a clean map, PIE stopped and the original chair
+label absent. Unreal recycled actor name1415 for the north storage bank; that
+name alone no longer identifies the removed chair.
+Two six-view play tests at the owner's unchanged2742x781 viewport verified the
+candidate, player-camera restoration, saved-file and settings preservation.
+Their photos were captured before saving and remain labelled UNSAVED tests.
+Lead and independent visual review accept a modest gain, whole T8–8.5/10.
+Central console housing and upper-room lighting remain lead-owned next work;
+T9 and owner acceptance are open. Existing BP_Blinds startup errors are retained
+separately from the successful capture/restoration checks. Editor Build39,
+canonical station and published0.1.22-alpha/build2048604 remain unchanged.
+
 **October7 14:13UTC current saved preview:** the owner identifies Flight as a
 walk-up upgrade station, so its single offset Goliath chair is removed through
 the live Nwiro editor. Both supports remain. The 43 checked adjacent console,

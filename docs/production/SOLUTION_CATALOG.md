@@ -9,6 +9,75 @@ establish gameplay, FPS, package or Phase1 acceptance. Active design focus moves
 to T Operations, retaining its central service terminal, useful displays, limited
 staffed workstations and organized storage. KNOWN_ISSUES remains the work/acceptance
 log; this catalog records resource evaluation rather than a separate task queue.
+October7 15:18 owner direction supersedes the earlier T advancement gate: finish
+its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
+
+### LIB-20261007-ROOM-AD-CAROUSEL — five illustrated campaigns per room
+
+- **Owner choice,2026-10-07T18:17Z:** the rotated P4 wall-panel trial is rejected.
+  The complete P1-P5 visual picker is ready under
+  `.agent/local/Outpost/HoloAssetCatalog1/index.html`:71 pictured hardware entries,
+  60 matching parts and116 effects;25 static previews unavailable and labeled.
+  Native inventory plus original graphic masks support the catalog; a material
+  thumbnail is not an assembled or animated display. Only display selection is
+  held for the owner; independent central/Phoenix work continues.
+- **Acquisition:** five intact owner originals are now the T baseline: Thruster
+  Clinic, Galactic Docking, Used UFO Sales, Fragilon fighter finance and Vantaburre.
+  All are byte-identical copies of the uploads. Generated expansions remain an
+  option for missing campaigns; aspect variants do not count as unique campaigns.
+- **Integrated,2026-10-07T16:03Z:** two T TV screen references, five textures,
+  one private common material and two instances saved (receipt96ce33a4/Mainc45dd773).
+  Seven actual play-test pictures showed all five generated campaigns. The owner
+  rejected the text and window placement at16:17; this supersedes lead/peer8.5.
+- **Replacement preparation,2026-10-07T16:26Z:** five original textures imported
+  at native dimensions in a fresh private namespace, without scene assignment or
+  saving. Native P4 frame/pane geometry and visible north/south solid-wall backing
+  are measured. Large portrait display fit and actual cycling remain pending.
+  The subsequent GPU crash initially left recovery unconfirmed. Native checks
+  at17:24 verify all18 recovered central/vendor packages; the five intact T
+  originals were reimported and applied only to an unsaved replacement trial.
+  Original JPEG copies and reviewed recipes are retained.
+- **Whole-project use:** WBS station imagery and atmosphere. Reuse the common
+  timing with five different campaigns per room; central art is staged privately
+  but unassigned. Use architectural hardware from the original five kits. Window
+  imagery requires an embedded translucent hologram. Preserve functional screens.
+- **Limit/next check:** temporary six-second timing was visually observed; saved
+  dwell is20 seconds/.6 crossfade, without a100-second production watch. Proximity
+  audio remains future; no whole-station quality, NPC or performance acceptance.
+
+### LIB-20261007-MERCHANT-VENDOR — actual owned reception gestures
+
+- **Acquisition:** owner FabLibrary Merchant Vendor Animation contains UE4/UE5
+  source variants. Three clips are shortlisted: IdleBartering, TalkLoop and
+  ShowBoothFull_Lt, with their actual source rig; no bulk import.
+- **Evaluation:** current two reception staff share the native Nyxar skeleton.
+  Targeted source/current-clip readback preserves28 reception/action/display/staff
+  actors. Listening/low-key gestures remain the saved baseline.
+- **Whole-project use:** bounded vendor/reception presentation, with later market
+  reuse if fit is good. Actual private import/retarget produced11 in-memory assets
+  with five-phase target joint readbacks. The17:24 native verification confirms
+  all11 recovered vendor packages. A later unsaved trial assigns only four
+  idle/gesture properties across the two existing staff; six photographs and
+  37.355 actual game seconds of natural motion pass targeted preservation.
+- **Limit/next check:** continuous motion, skin sole and hand/counter contact
+  remain unverified. Successful retargeting does not establish accepted vendor
+  presentation. Two boot views were blocked by the counter; corrected views
+  are pending. No saved central map or published revision contains this trial.
+
+### LIB-20261007-OPERATIONS-STORAGE — owned fitted technical storage
+
+- **Acquisition:** existing P4 Genesis SmartStorage400x200 mesh and its eight
+  native materials; no purchase, new pack import or source modification.
+- **Evaluated and integrated,2026-10-07T14:48Z:** two inward-facing, grounded
+  unit-scale banks fill the intervals between T's staffed desks. Actual ten
+  localized floor contacts and six play views establish fit/readability within
+  this presentation scope. Combined save`b8fd4b10`, Main`c6f76875`.
+- **Whole-project use:** WBS station service-room furnishing; coherent enclosed
+  equipment storage can support later technical interiors. The related200x100
+  mesh is a prepared Flight housing candidate, not yet integrated or accepted.
+- **Limit/next check:** closed panels improve wall rhythm but remain repetitive;
+  T8–8.5/10; the owner now defers its9 gate and the smaller enclosure. Revisit front/table fit
+  in context. No storage mechanic, NPC behavior or performance acceptance.
 
 ### October7 owner downloads — selected evaluation only
 

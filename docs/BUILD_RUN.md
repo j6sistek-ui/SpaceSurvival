@@ -1,5 +1,12 @@
 # Build and run
 
+**Installed engine, October7:** `Engine/Build/Build.version` reports UE5.8.3.
+Earlier version numbers in dated receipts describe those historical checks.
+The existing owner editor retains Build39; the earlier cabin candidate compiled
+but could not link while that editor held the module DLL. The latest screen
+clearance source change has not been rebuilt. Do not repeat the blocked link or
+close the owner's editor merely to validate a scene-only trial.
+
 **Current project, October6:** use `C:/Users/j6sis/SpaceSurvival` for gameplay, station editing and the imported library. [Edit Current Station.cmd](../Edit%20Current%20Station.cmd) opens the current Wayfarer map in the normal editor. [Play Development Build.cmd](../Play%20Development%20Build.cmd) launches the development game. The canonical Editor rebuild passed in 35.74 seconds with ULAT enabled. `CurrentStationVerification5` passes all 12 native checks: editor Play travels to Survival/SSGameMode, loads one current station with 7,775 tagged outpost actors and 744 apartment children, and preserves all four protected saved maps. These are scripted checks; physical input and visual acceptance remain separate. [Project State](PROJECT_STATE.md) records verification and package location.
 
 **October 1 station integration:** the current development checkout combines the repaired game with Wayfarer Exchange and its furnished apartment. The editable station and separate building sandbox remain preserved. The Windows package and focused packaged station smoke pass at e6c2a87; itch0.1.22-alpha is published and build2048604 is verified READY. [Project State](PROJECT_STATE.md#source-build-and-release) owns the final source, build and published identity. Source presence or a desktop shortcut does not prove an updated itch installation.
