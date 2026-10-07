@@ -113,6 +113,19 @@ The owner explicitly schedules these changes **after T room fixes**:
   support/collision/physical response where the actual player path proves a gap.
 
 These are requested changes, not diagnosed causes or an approved new core loop.
+**October7 22:42UTC source finding:** default asteroid trajectory placement
+(`SSWorldActors.cpp`, `FindTrajectorySpawn`) and volleys combine the current nose
+direction with the independent actual ship velocity. Unlike `FindSafeSpawn`,
+they have no forward-projection gate. Engine-off flight preserves world momentum
+while the nose turns, so the resulting spawn can lie behind the nose. The
+Director has no stored Waves course; existing fairness tests cover constant
+velocity, not natural turning. This identifies a possible contributor, not the
+live frequency or proof of the reported exploit. Next native check: compare
+straight flight and one turn in the actual Phoenix, recording heading, velocity,
+new-threat positions and closest approach. Preserve reaction floors, hull
+clearance, admission budgets, shootable escape paths and Free Flight isolation;
+do not change density or steering merely from this source finding.
+
 Next: finish T, then reproduce each through the actual saved game and make bounded
 repairs with its own moving/native/owner evidence. No flight, warp, physics or
 animation change is made by this note; downloads do not establish integration.
