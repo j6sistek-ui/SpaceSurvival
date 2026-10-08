@@ -1,5 +1,16 @@
 # SpaceSurvival project state
 
+**October8 CPU-only central/R preparation:** the owner reprioritizes central and
+R layout/atmosphere ahead of future NPC variants/behaviors, which are outside this
+pass. While AI/Blender occupy VRAM, six obsolete cook/staging folders were removed
+(13.45GB) and the existing room recipes/assets/references checked for a focused
+finishing pass. [Receipt and preparation manifest](validation/2026-10-08-central-r-preparation.md).
+Maps/project/player saves match before/after cleanup. At cleanup, saved live map
+SHA`e3ed61ba` differs from the historical promotion `76e3c8c2`; previewe795 remains
+unchanged. These later saved edits were not made by this pass and need fresh native
+inspection. Existing preview-only helpers cannot safely replay on current live
+Wayfarer. No new loaded-build, native visual, NPC, package or publication result.
+
 **October7 evening owner references / October8 UTC documentation update:** twelve
 [holographic display examples](validation/2026-10-07-owner-holographic-display-references.md)
 are now tracked for the next pass. The owner likes most options and emphasizes

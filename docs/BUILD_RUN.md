@@ -400,6 +400,19 @@ Package 6 native clicks saved mouse/controller sensitivity 1.2. After normal clo
 
 Normal shell/settings menus pause flight, incoming docking and station departure. The depot uses an aboard-ship magnetic service lock (up to 20 seconds) and a visible cursor; closing its panel releases the ship, and mooring grants no wave progress. Reward panels retain live flight and captured mouse steering with the pointer hidden. Use Up/Down, left stick or D-pad to choose, Enter/A to confirm, and Esc/B to close; mouse clicks cannot select a hidden reward row or fire while the panel is open. After using B to close a menu, release it before a fresh boost press. Physical-device menu behavior remains open in ISS-13 / PT-08 and PT-16.
 
+## Obsolete cook-output housekeeping
+
+After package work, retain the audited archive/release receipts and review old
+temporary outputs with `./Scripts/CleanCookTemp.ps1`. It previews only
+`Saved/Cooked`, `Saved/StagedBuilds` and `Intermediate/Staging`; add `-Apply` to
+remove eligible outputs older than48hours after reviewing the preview.
+An explicit `-ProjectRoot` selects a different SpaceSurvival checkout. Active
+cooks, tracked files, linked paths, save/source-like files and changed preflight
+data stop removal. It preserves shader/build caches, saves, autosaves, Content,
+Blender/AI outputs, backups and packaged/release archives. Receipts are saved in
+the canonical project's ignored `.agent/local/CookCleanup`. Do not delete Saved
+or Intermediate wholesale. [October8 cleanup and interior preparation](validation/2026-10-08-central-r-preparation.md).
+
 ## Local saves
 
 Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 4, retaining the four paint-bay choices from version 3 (-1 for factory finish, 0-9 for a colour) and appending the walking-hero choice. Older account versions remain readable, with absent paint/hero choices taking their defaults; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.

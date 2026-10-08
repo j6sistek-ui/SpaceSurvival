@@ -1,5 +1,12 @@
 # SpaceSurvival whole-project solution catalog
 
+**October8 use priority:** owned central furnishings/guides and R archive/wardrobe
+hardware are the next interior-layout focus, before future NPC variants/behaviors.
+CPU-only preparation reuses A34's existing display options and five R campaign
+families; no new acquisition/generation gap is established. Availability/source
+identities and the [scoped finishing preparation](../validation/2026-10-08-central-r-preparation.md)
+do not establish current live-scene fit or room approval. KNOWN_ISSUES owns order.
+
 **Owner review,2026-10-06:** L social lounge is **8/10, pass for now** at saved
 preview `ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`
 and source checkpoint `de2befe`. This supersedes the earlier unapproved lounge

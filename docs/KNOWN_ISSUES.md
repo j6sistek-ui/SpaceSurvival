@@ -1,5 +1,31 @@
 # Open work and owner review
 
+## October8 central/R priority and housekeeping
+
+**RPT-20261007-01 / RPT-20261006-04 — OPEN / lead:** the owner now prioritizes
+finishing central arrival/reception and R wardrobe/customization to establish the
+station's layout and vibe before incoming NPCs/custom behaviors. Those NPC tasks
+are outside this pass. This supersedes the broad pause only for housekeeping and
+CPU-only central/R preparation while local AI/Blender use VRAM; native visual work
+requires a fresh protected baseline and available GPU capacity. Other room/gameplay
+work and the progress-report automation remain paused.
+
+[Preparation and cleanup receipt](validation/2026-10-08-central-r-preparation.md)
+records the inspected scripts/assets, scoped review sequence and retained owner
+hologram references. Six obsolete cook/staging folders in the canonical and old
+flight-loop checkout were removed:13,445,225,796bytes. Current maps/project/saves
+matched before/after hashes; current working caches, originals, autosaves, backups,
+AI/Blender outputs and archives are preserved. The reusable cleanup helper previews
+by default. Current saved Wayfarer at cleanup is `e3ed61ba`, superseding `76e3c8c2`
+as a disk baseline only; the later scene's actor changes/quality are UNCONFIRMED.
+No Unreal edits or new room-acceptance claim from this preparation.
+
+Next lead action when native review is appropriate: inspect actual live labels,
+tags, dirty state and placements, then review central arrival/routes/guides and R
+entry/services/display together. Existing preview-only helpers must not be replayed
+over current Wayfarer or duplicated into it. Keep new NPC variants/behavior outside
+scope; no new art generation is required merely to prepare this pass.
+
 ## October8 close-out and handoff
 
 **Owner pause after live-project/GitHub delivery.** RPT-20261006-01 and
