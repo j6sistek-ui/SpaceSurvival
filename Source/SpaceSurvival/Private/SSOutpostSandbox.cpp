@@ -1,4 +1,5 @@
 #include "SSOutpostSandbox.h"
+#include "SSNPCHeadFillComponent.h"
 #include "SSStation.h"
 #include "SSGameMode.h"
 #include "SSPhase1Data.h"
@@ -500,6 +501,9 @@ ASSOutpostAmbientActor::ASSOutpostAmbientActor()
     HeadFillLight->SetAffectGlobalIllumination(false);
     HeadFillLight->SetCastShadows(false);
     HeadFillLight->SetVisibility(false);
+    HeadFillConfiguration = CreateDefaultSubobject<USSNPCHeadFillComponent>(TEXT("NPCHeadFillConfiguration"));
+    HeadFillConfiguration->ReceiverMesh = CharacterMesh;
+    HeadFillConfiguration->HeadFillLight = HeadFillLight;
 }
 void ASSOutpostAmbientActor::OnConstruction(const FTransform &Transform)
 {
@@ -508,43 +512,25 @@ void ASSOutpostAmbientActor::OnConstruction(const FTransform &Transform)
 }
 void ASSOutpostAmbientActor::RefreshReadabilityLighting()
 {
-    if (!HeadFillLight || !CharacterMesh)
+    if (!HeadFillLight || !CharacterMesh || !HeadFillConfiguration)
         return;
-    HeadFillLight->SetVisibility(false);
     if (bHeadFillOwnsChannel)
     {
         CharacterMesh->SetLightingChannels(CharacterMesh->LightingChannels.bChannel0,
                                            CharacterMesh->LightingChannels.bChannel1, bHeadFillPreviousChannel2);
         bHeadFillOwnsChannel = false;
     }
-    if (!bEnableHeadFill || bDrone || bAnimationManagedExternally || ActorHasTag(TEXT("OutpostRole:Hologram")) ||
-        !CharacterMesh->GetSkeletalMeshAsset() || HeadFillSocket.IsNone() ||
-        !CharacterMesh->DoesSocketExist(HeadFillSocket) || HeadFillOffset.ContainsNaN() ||
-        !FMath::IsFinite(HeadFillLumens) || HeadFillLumens <= 0.f || !FMath::IsFinite(HeadFillRadius) ||
-        !FMath::IsFinite(HeadFillSourceRadius))
-        return;
-    bool bOpaqueReceiver = false;
-    for (int32 Slot = 0; Slot < CharacterMesh->GetNumMaterials(); ++Slot)
-        if (const UMaterialInterface *Material = CharacterMesh->GetMaterial(Slot))
-            bOpaqueReceiver |= Material->GetBlendMode() == BLEND_Opaque || Material->GetBlendMode() == BLEND_Masked;
-    if (!bOpaqueReceiver)
-        return;
-    if (!HeadFillLight->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepWorldTransform, HeadFillSocket))
-        return;
-    const FTransform HeadTransform = CharacterMesh->GetSocketTransform(HeadFillSocket);
-    const FVector WorldOffset = GetActorTransform().TransformVectorNoScale(HeadFillOffset);
-    HeadFillLight->SetRelativeLocation(
-        HeadTransform.InverseTransformPosition(HeadTransform.GetLocation() + WorldOffset));
-    // Keep physical emitter dimensions when the model's mesh has an authored scale.
-    HeadFillLight->SetWorldScale3D(FVector::OneVector);
-    HeadFillLight->SetIntensity(FMath::Clamp(HeadFillLumens, 0.f, 100.f));
-    HeadFillLight->SetAttenuationRadius(FMath::Clamp(HeadFillRadius, 60.f, 140.f));
-    HeadFillLight->SetSourceRadius(FMath::Clamp(HeadFillSourceRadius, 0.f, 20.f));
-    bHeadFillPreviousChannel2 = CharacterMesh->LightingChannels.bChannel2;
-    CharacterMesh->SetLightingChannels(CharacterMesh->LightingChannels.bChannel0,
-                                       CharacterMesh->LightingChannels.bChannel1, true);
-    bHeadFillOwnsChannel = true;
-    HeadFillLight->SetVisibility(true);
+    HeadFillConfiguration->ReceiverMesh = CharacterMesh;
+    HeadFillConfiguration->HeadFillLight = HeadFillLight;
+    HeadFillConfiguration->OffsetFrame = nullptr;
+    HeadFillConfiguration->bEnableHeadFill =
+        bEnableHeadFill && !bDrone && !bAnimationManagedExternally && !ActorHasTag(TEXT("OutpostRole:Hologram"));
+    HeadFillConfiguration->HeadFillSocket = HeadFillSocket;
+    HeadFillConfiguration->HeadFillOffset = HeadFillOffset;
+    HeadFillConfiguration->HeadFillLumens = HeadFillLumens;
+    HeadFillConfiguration->HeadFillRadius = HeadFillRadius;
+    HeadFillConfiguration->HeadFillSourceRadius = HeadFillSourceRadius;
+    HeadFillConfiguration->RefreshReadabilityLighting();
 }
 void ASSOutpostAmbientActor::PlayClip(UAnimSequence *Clip, bool bLoop)
 {

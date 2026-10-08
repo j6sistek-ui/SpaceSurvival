@@ -11,6 +11,7 @@ class UBoxComponent;
 class UCapsuleComponent;
 class UMaterialInterface;
 class UPointLightComponent;
+class USSNPCHeadFillComponent;
 class USkeletalMeshComponent;
 class UStaticMeshComponent;
 
@@ -180,6 +181,8 @@ public:
     /** Shared NPC-only fill; channel 1 remains reserved for the player. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ambient|Readability")
     TObjectPtr<UPointLightComponent> HeadFillLight;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ambient|Readability")
+    TObjectPtr<USSNPCHeadFillComponent> HeadFillConfiguration;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient|Readability")
     bool bEnableHeadFill = true;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient|Readability")
@@ -223,7 +226,7 @@ public:
     float PhaseOffset = 0.f;
 
 private:
-    // Preserve ownership with the component's saved/PIE-duplicated channel mask.
+    // Legacy ownership is restored once before handing the mask to HeadFillConfiguration.
     UPROPERTY()
     bool bHeadFillOwnsChannel = false;
     UPROPERTY()

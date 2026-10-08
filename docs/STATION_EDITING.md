@@ -10,9 +10,21 @@ The native `CurrentStationVerification5` check confirms Play reaches Survival/SS
 
 ## Reusing the NPC lighting preset
 
-Use an editor module containing `ASSOutpostAmbientActor::RefreshReadabilityLighting`;
-the current link/reload status is in [Project State](PROJECT_STATE.md). The October7
-working scene is a separate owner-preview recovery copy, not the normal Wayfarer map.
+October8: the refined preview checkpoint is also saved/reloaded in the live
+Wayfarer map76e3c8c2. Sourcepreviewe795 stays unchanged. Use the current-station
+entry above for live edits. Old preview recipes require new baselines/guard review
+before reuse there. `Scripts/PromoteStationPreview.py` is the explicit promotion
+adapter; the older `PrepareWayfarerRuntime.py` starts from the original outpost.
+[Promotion/rollback receipt](validation/2026-10-08-live-station-closeout.md).
+
+The shared `USSNPCHeadFillComponent` enrollment API is linked and loaded in Build49;
+its focused native lifecycle case passes. Seven existing plain NPC enrollments are
+saved and pass native reload. A matched Trooper/alien comparison supports keeping
+the shared preset; full variant appearance and performance remain unverified. See the
+[component receipt](validation/2026-10-08-npc-headfill-component.md) and
+[Project State](PROJECT_STATE.md) before using it in the editor. The October7
+owner-preview source is preserved; its October8 checkpoint is now also adopted
+into the normal Wayfarer map.
 
 1. Create a Blueprint child of **SSOutpostAmbientActor** for the model. Select its
    **CharacterMesh** component and assign the **Skeletal Mesh**, then choose a
@@ -27,12 +39,42 @@ working scene is a separate owner-preview recovery copy, not the normal Wayfarer
    refresh the lamp automatically; after runtime mesh, material, socket or preset changes, call
    **Refresh Readability Lighting**. Keep channel2 off room geometry.
 
-Start with40lumens and100cm reach. Drones, actors tagged `OutpostRole:Hologram`,
-actors with **Animation Managed Externally** enabled, missing head anchors and
-wholly translucent meshes skip the fill.
-Additional models still need a visual/performance check. The bartender's separate
-bounds-scale4 workaround is specific to her measured rig/clip; do not copy it to
-every NPC.
+The shared defaults are40lumens,100cm reach,12cm source radius and an actor-frame
+offset of(45,0,15)cm from the head. Ambient actors retain their original
+`NPCHeadFill` point-light subobject, settings and **Refresh Readability Lighting** API.
+
+For an existing plain **SkeletalMeshActor** NPC, call the Blueprint-callable
+`USSNPCHeadFillComponent::EnrollNPCMesh`
+with that actor's skeletal mesh component. It returns the reusable configuration;
+set **Head Fill Socket** or **Head Fill Offset** only when the model needs it, then
+call its **Refresh Readability Lighting**. Repeated enrollment reuses the same
+configuration. The caller owns saving; enrollment does not replace the actor,
+sequence, mesh or animation. Known runtime staff builders enroll their explicitly
+selected staff components automatically; there is no world-wide skeletal scan.
+The seven current plain actors use their mesh as **Offset Frame** and(0,45,15)cm
+**Head Fill Offset** for their mesh-forward orientation; this preserves the common
+40lm profile. Do not copy that orientation override to an unreviewed model.
+
+To undo a plain actor's enrollment, call **Disable And Restore Receiver**, then
+destroy its configuration component. Disable restores the receiver's prior
+channel2 and hides the light; destruction removes only a light created by that
+configuration. An Ambient actor's borrowed original light is retained. Channels0/1
+remain unchanged; player lighting keeps channel1. The head attachment needs no
+additional Tick.
+
+All `APawn` owners, including the player and ship, are excluded. Receivers named or
+tagged `StationCompanionDrone`, `OutpostRole:Hologram` actors/receivers, missing head
+anchors and meshes without opaque/masked materials also skip the fill. Ambient
+actors retain their **Drone** and **Animation Managed Externally** exclusions;
+other drone/projection models require those explicit tags. Reload readback finds
+one configuration on each of34 existing Ambient actors:25 lights visible and9
+excluded. The seven new plain-actor enrollments preserve pose, animation and bounds
+and pass idempotence. Saved reload verifies one configuration/visible head-attached
+light per actor, the same profile/frame/offset and unchanged pose/animation/bounds.
+Fresh saved-scene Play appearance and full variant coverage remain unverified.
+Check each new variant's moving face, room spill and performance. Preserve the
+bartender's existing model/clip/grounding and measured bounds-scale4 workaround;
+do not copy that workaround to every NPC.
 
 ## Preparing a room's five ad sources
 
@@ -67,6 +109,21 @@ native source/dimension/settings readback and were saved in private folders with
 suffix `20261008A`. No screen assignments or cycling checks followed from those
 imports. Do not rerun the helper against those occupied destinations. See the
 [native checkpoint](validation/2026-10-08-editor-recovery.md).
+
+R's later upright P4 frame/pane and two campaign materials are now saved in the
+separate owner-preview map. The corrected eleven-shot capture passes preservation,
+and root/independent peer identify all five upright, contained campaigns. Build49
+reload exposed a restored BlockAll profile on the two added actors; only their
+profiles were repaired to persistent **NoCollision**, saved and reloaded with
+read-only adoption PASS. R adoption also passes after the later seven-NPC map save.
+Post-reload playback, continuous crossfade review and owner
+approval are still pending. See the
+[display receipt](validation/2026-10-08-customization-display.md).
+`Scripts/RefineStationCustomizationDisplays.py::check_adoption` checks the existing
+saved pair with the reviewed **current** map hash and its loaded `MI_R_WestBay`.
+It does not assign, save or prove playback. Do not call `apply` over those existing
+roles or reuse old trial globals after reopening. Market/L texture imports do not
+imply corresponding display assignments, and T's hardware choice remains held.
 
 ## Current station in Blender
 

@@ -56,6 +56,17 @@ its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
 
 ### LIB-20261007-ROOM-AD-CAROUSEL — five illustrated campaigns per room
 
+- **Native R evaluation,2026-10-08T01:56Z:** owned P4
+  `SM_Window200X250_V1_Part1` plus `SM_Window200X250_V2_Part2_DigitalWindow`
+  works upright as a134x201cm portrait display mounted on the existing solid
+  W2 backing. Full artwork fits room-facing section1/slot1; original frame/rear
+  glass remain. Five distinct campaigns are observed after integer-modulo index
+  repair. The two private materials and placement are saved, with explicit
+  NoCollision profiles surviving reload. No vendor source asset was edited.
+  This evaluates only R's solid-wall use, not the owner's held T choice or a
+  window hologram treatment. Market/L fit remains unverified; no new acquisition.
+  [Evidence](../validation/2026-10-08-customization-display.md).
+
 - **Native texture checkpoint,2026-10-08T00:37Z:** all fifteen selected R/Market/L
   campaign textures pass native source/dimension/settings verification and are
   saved privately, five per room, in the respective `*Campaigns20261008A` folders.

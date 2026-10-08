@@ -41,7 +41,7 @@ Keep these authoring destinations separate:
 | --- | --- |
 | Current game | `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. |
 | Current Wayfarer station | `C:/Users/j6sis/SpaceSurvival/Edit Current Station.cmd`, map `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`. |
-| Owner's Blender platform preview | `Edit Owner Platform Preview.cmd`, map `/Game/OutpostSandbox/OwnerPreview/L_OwnerPlatformPreview_20261006`. Separate real-material preview; not adopted into current gameplay. Play uses sandbox walking rules. |
+| Owner's Blender platform preview | `Edit Owner Platform Preview.cmd`, map `/Game/OutpostSandbox/OwnerPreview/L_OwnerPlatformPreview_20261006`. Preserved source; October8 checkpoint was copied into live Wayfarer. Later preview saves do not automatically update gameplay. Play here uses sandbox walking rules. [Promotion receipt](validation/2026-10-08-live-station-closeout.md). |
 | Original outpost experiment | `Edit Outpost Sandbox.cmd` in the canonical project, map `/Game/OutpostSandbox/L_AsteroidOutpost`. Its separate **Play Outpost Sandbox.cmd** still opens the design preview and its isolated profile. |
 | Purchased-kit building sandbox | `/Game/Blender/Sandbox/BuildingSandbox_20260922`, preserved on its flat platform with the space backdrop; the former canyon was removed. See [Building sandbox](BUILDING_SANDBOX.md). |
 

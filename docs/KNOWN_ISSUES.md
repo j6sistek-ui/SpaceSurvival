@@ -1,5 +1,19 @@
 # Open work and owner review
 
+## October8 close-out and handoff
+
+**Owner pause after live-project/GitHub delivery.** RPT-20261006-01 and
+RPT-20261007-01 now include live Wayfarer promotion: saved/reloaded map76e3c8c2,
+Build49 loaded, sourcepreviewe795 preserved. Native actor/display/NPC/pad checks
+pass; full gameplay and owner quality remain open. See the
+[close-out receipt](validation/2026-10-08-live-station-closeout.md).
+[PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69) maps unfinished topics
+to existing IDs, starter files, next actions and acceptance limits. Contributors
+take one bounded item; the integration lead owns closure. T stays held for the
+owner; other work is now paused for later continuation/assignment. No acceptance
+case is closed by this map publication. Provide private licensed assets separately
+to outsourced contributors (ISS-14); packaged publication is unchanged (ISS-11).
+
 ## October7 editor recovery
 
 **RPT-20261007-02 — GPU-crash cause and sustained stability unverified. OPEN / lead.**
@@ -104,6 +118,20 @@ Current core loop remains unchanged by this read-only audit; owner approval is o
 ## October7 deferred owner follow-ups
 
 **RPT-20261007-01 — After-T presentation and physical-coherence review. OPEN / lead.**
+October8 01:56UTC: R now has one upright owned P4 case on a solid wall, with all
+five distinct campaigns visibly verified and saved. A missing-ad index defect
+and collision-profile persistence defect were corrected; the current saved
+previewe7958758 passes display adoption after reload. Build49's reusable NPC
+component passes its native lifecycle test; seven additional lounge NPCs retain
+their models/animations and now have saved/reloaded head fills. One matched
+Trooper/alien comparison supports the preset locally; white armor was already
+bright without it. All-variant/room-wide quality, gameplay staff and60FPS remain
+open. Lead next installs Market/L displays without overwriting functional screens,
+then returns to the authorized room/warp/cabin/contact work. T stays held for
+the owner's choice; owner approval and published build are unchanged.
+[Display receipt](validation/2026-10-08-customization-display.md) and
+[NPC receipt](validation/2026-10-08-npc-headfill-component.md).
+
 October8 native ad-source checkpoint: fifteen verified textures are saved privately,
 five each for customization, Market and L. Source ancestry/hashes/dimensions and
 settings pass; the map and existing screens are unchanged. Lead next verifies an

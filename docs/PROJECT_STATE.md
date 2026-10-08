@@ -1,5 +1,30 @@
 # SpaceSurvival project state
 
+**October8 close-out / owner pause:** the latest preview is now promoted into the
+live Wayfarer map used by the local Unreal game. Saved/reloaded SHA`76e3c8c2918bcb90a630852c857ca2f0b64386840cef78c3d19795787a521703`,
+Build49 loaded;8,462 actor placements, R display, seven NPC lights, terminal
+records and berth collision pass native checks. Nine source maps including
+previewe795 are preserved with rollback copies. This supersedes preview-only
+statements below. Full gameplay/owner quality remains open. PR69 carries the
+outsourcing handoff; work and reports pause after delivery. No merge, new packaged
+EXE or itch upload. [Receipt](validation/2026-10-08-live-station-closeout.md).
+
+**October8 01:56UTC saved display and shared NPC checkpoint:** current owner-preview
+map SHA`e7958758a861d17fe189601b17b486db9ea75086080a8e1b5f17e56cbb7b18db`
+contains the upright R wall display, two saved private materials and seven added
+NPC lighting configurations/lights. Backups retain the previous16818/c059/242418
+maps. Build49 fully links DLL`e2e7b5c7` and is loaded in one offscreen editor;
+the focused NPC lifecycle test passes1/0warnings/0failures. R's five distinct
+campaigns are visible in finalized Play captures after integer-index repair;
+a saved NoCollision profile repair survives map reload. All seven NPC instances
+reload with preserved poses/animations/bounds and active head lights. Matched
+Trooper/alien images support the preset locally, not all-variant/FPS approval.
+These results supersede the unassigned R/uncompiled shared-component status below.
+Market/L placement and L's existing four-ad loop remain unchanged; T choice stays
+held. No owner approval, canonical Wayfarer replacement, package or publication.
+See [display evidence](validation/2026-10-08-customization-display.md) and
+[NPC evidence](validation/2026-10-08-npc-headfill-component.md).
+
 **October8 00:26UTC authorized editor recovery:** all nine closure packages are
 restored and checked in their normal private Content locations, with the previous
 map and Build39 DLL backed up. The saved owner-preview map is now `16818b1b`;
