@@ -1,5 +1,15 @@
 # Central and R preparation — October 8, 2026
 
+**12:28UTC follow-up:** the owner reports VRAM free. GPU readback confirms
+13,874MiB available, but another task repeatedly launches offscreen Unreal NPC
+imports with Nwiro disabled. The lead's guarded launcher refused a competing
+editor; no station/native edits occurred. Current live/preview/DLL hashes remain
+e3ed61ba/e7958758/e2e7b5c7. An eight-view saved-live-map capture helper is prepared
+privately and passes syntax; native execution is unverified. Coordinate the other
+task's import pause before the fresh baseline. The CPU-only restriction in the
+historical preparation below is superseded for central/R; the NPC scope exclusion
+and other holds remain.
+
 Owner scope: finish central reception/arrival and R wardrobe/customization first,
 establishing the interior layout and visual language before incoming NPC variants
 and custom behaviors. This pass performs cook-output housekeeping and CPU-only

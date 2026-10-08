@@ -2,6 +2,14 @@
 
 ## October8 central/R priority and housekeeping
 
+**12:28UTC resource update:** the owner reports VRAM free and authorizes the
+central/R native pass. GPU readback confirms about13.5GiB free, but a separate NPC
+task repeatedly launches Unreal imports with Nwiro disabled. The station launcher
+refused to start another editor; no station edits or current captures occurred.
+Coordinate an import pause first, then the lead opens one offscreen live Wayfarer
+editor and performs the fresh baseline below. NPC imports are not part of this
+pass and were not interrupted. Progress-report automation remains paused.
+
 **RPT-20261007-01 / RPT-20261006-04 — OPEN / lead:** the owner now prioritizes
 finishing central arrival/reception and R wardrobe/customization to establish the
 station's layout and vibe before incoming NPCs/custom behaviors. Those NPC tasks

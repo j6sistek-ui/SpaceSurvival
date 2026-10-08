@@ -1,5 +1,15 @@
 # SpaceSurvival project state
 
+**October8 12:28UTC central/R resume preflight:** owner reports VRAM free; native
+central/R finishing is authorized. A separate NPC task is repeatedly running
+offscreen Unreal imports, so the guarded station launcher refused a competing
+editor. No root editor launch, current visual capture or station change occurred.
+Coordinate that task's import pause before opening live Wayfarer. Disk hashes
+remain live`e3ed61ba`, preview`e7958758`, DLL`e2e7b5c7`; loaded native state is
+unverified. New NPC work and other room/gameplay changes remain outside this pass;
+report automation remains paused. Private capture preparation passes Python syntax
+only, not native execution or room acceptance.
+
 **October8 CPU-only central/R preparation:** the owner reprioritizes central and
 R layout/atmosphere ahead of future NPC variants/behaviors, which are outside this
 pass. While AI/Blender occupy VRAM, six obsolete cook/staging folders were removed
