@@ -1,5 +1,12 @@
 # Operations display integration — 2026-10-06 owner session
 
+**Later reference handoff, October7 evening / October8 UTC:** the owner supplied
+twelve [preferred holographic-window/display examples](2026-10-07-owner-holographic-display-references.md),
+emphasizing the many options in the original kits. Positive reference families
+are now available; exact native assets/placements remain unselected. All work is
+paused after the [live-map close-out](2026-10-08-live-station-closeout.md).
+The trial/save/continue statements below are historical, not current instructions.
+
 Recorded at 2026-10-07T02:03Z; latest owner choice boundary at 2026-10-07T17:40Z.
 **The owner rejects the saved generated T ads: warranty wording/typo and TVs
 placed against windows while suitable wall bays remain empty. Earlier lead

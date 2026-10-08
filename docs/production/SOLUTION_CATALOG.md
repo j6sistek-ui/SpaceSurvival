@@ -1004,6 +1004,15 @@ status remains owned/installed; interactive acceptance remains pending under RPT
 
 ### A34 - Sci-Fi Bundle: Cinematographic result (2026-09-22)
 
+- **Owner reference update, October7 evening (recorded October8 UTC):** twelve
+  [holographic display screenshots](../validation/2026-10-07-owner-holographic-display-references.md)
+  now preserve preferred ad-window, terminal and effect families for the next round.
+  The owner emphasizes the many existing options and likes most examples. The
+  picker recount is 71 mixed hardware / 60 parts / 116 styles, including 15 P4 V2
+  digital-window sizes with local assets verified; it is not a total of unique
+  holographic windows. Exact screenshot-to-native-asset mapping and placement
+  remain open under RPT-20261007-01. Preserve upright controls, glass-integrated
+  effects and intact ad copy. Work stays paused; no new purchase or native edit.
 - **Acquisition:** owner-supplied downloaded native Fab pack, listing
   `ab681166-d60e-41cd-882c-2ec5208b1f1e`; local launcher manifest title and identity verified.
   Original download `User downloaded assets/VaultCache/SciFiBunba43dc9a11d8V1/data/Content`

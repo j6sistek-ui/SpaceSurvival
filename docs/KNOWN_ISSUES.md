@@ -9,10 +9,26 @@ pass; full gameplay and owner quality remain open. See the
 [close-out receipt](validation/2026-10-08-live-station-closeout.md).
 [PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69) maps unfinished topics
 to existing IDs, starter files, next actions and acceptance limits. Contributors
-take one bounded item; the integration lead owns closure. T stays held for the
-owner; other work is now paused for later continuation/assignment. No acceptance
+take one bounded item; the integration lead owns closure. T implementation and
+other work remain paused for later continuation/assignment. No acceptance
 case is closed by this map publication. Provide private licensed assets separately
 to outsourced contributors (ISS-14); packaged publication is unchanged (ISS-11).
+
+**October7 evening owner display references (recorded October8 UTC) —
+RPT-20261007-01 / RPT-20261006-04, OPEN / lead:** the owner supplied 12 kit/example
+screenshots and considers most pictured holographic windows/displays excellent
+ad-display options. The kits have many suitable choices; this supersedes the
+earlier lack of positive owner references, not the pause or final placement gate.
+See the [tracked gallery and exact source manifest](validation/2026-10-07-owner-holographic-display-references.md).
+Recounted picker: 71 mixed hardware candidates, 60 companion parts, 116 effect/style
+variants, including 15 P4 digital-window sizes verified present locally. These are
+not 71 unique holographic windows or an exhaustive scene-instance count.
+Next round: lead maps the pictured families to native assets, keeps controls
+upright, fits intact originals and integrates graphics into glass with blended
+edges. Preserve useful controls, central's information-first/1–2-ad limit and
+noncentral five-campaign sets. Exact asset/material/placement approval remains
+open; do not ask the owner to recreate this shortlist. No Unreal changes in this
+reference-only handoff.
 
 ## October7 editor recovery
 

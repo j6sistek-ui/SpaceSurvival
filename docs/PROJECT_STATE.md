@@ -1,5 +1,13 @@
 # SpaceSurvival project state
 
+**October7 evening owner references / October8 UTC documentation update:** twelve
+[holographic display examples](validation/2026-10-07-owner-holographic-display-references.md)
+are now tracked for the next pass. The owner likes most options and emphasizes
+the kits' breadth. T has positive reference families; exact native asset matching,
+placement and visual approval remain open. Implementation/reports remain paused.
+This update changes documentation and reference screenshots only; live map,
+loaded build and packaged publication retain the close-out identities below.
+
 **October8 close-out / owner pause:** the latest preview is now promoted into the
 live Wayfarer map used by the local Unreal game. Saved/reloaded SHA`76e3c8c2918bcb90a630852c857ca2f0b64386840cef78c3d19795787a521703`,
 Build49 loaded;8,462 actor placements, R display, seven NPC lights, terminal
