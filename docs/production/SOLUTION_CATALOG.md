@@ -1,5 +1,19 @@
 # SpaceSurvival whole-project solution catalog
 
+### LIB-20261008-BILLBOARD — owner-suggested framed sci-fi ad board
+
+- **Evidence,2026-10-08T13:03Z:** [owner screenshot](../validation/images/2026-10-08-owner-resource-candidates/billboard-candidate.jpg) shows a broad framed cyan display, ventilation/grille details and a cropped listing title ending in `Billboard Game`. Full title, seller and exact product identity are UNCONFIRMED. Original JPEG retained byte-for-byte, SHA256 `2e59e0874cbc02e38fe5ae9f7ef599eaa3fec70bbdb4f8b4720880876ca23364`.
+- **Acquisition:** owner reports it exists somewhere in Downloads. Exact source file, format, license metadata and native import/installation are UNCONFIRMED; the screenshot alone does not prove those states.
+- **Evaluation/whole-project use:** candidate for properly mounted station ads or useful information boards (station layout/content presentation, WBS 8.1-8.5, 10.3). Its purpose-built frame may suit a large ad surface; in-scene fit, material effect, copy readability, collision and cost have not been tested. Central remains information-first with at most1-2 ads.
+- **Timing/next check:** after owner resumes the station pass, locate the existing download, identify its mesh/material and upright aperture, then compare with the owned P1-P5 options. Preserve original ad copy and functional controls; no purchase/import/placement or final hardware selection is authorized by this note.
+
+### TOOL-20261008-AI-VOICE — AI Voice No-Code Plugin, Usiku Games
+
+- **Evidence,2026-10-08T13:03Z:** [owner library screenshot](../validation/images/2026-10-08-owner-resource-candidates/ai-voice-library.jpg) identifies **AI Voice No-Code Plugin** by **Usiku Games** and shows **Saved in My Library**. Original JPEG retained byte-for-byte, SHA256 `fbb44996ccb4facd5fe2e5fd5373ca4781df10bd8a25c110534420cc365e0ca0`.
+- **Acquisition/evaluation:** library membership is screenshot-confirmed; owner believes it is installed. Local plugin path, enabled state, engine compatibility, service/provider requirements, cost, output quality and voice rights remain UNCONFIRMED. Marketing claims in the image are not evaluated capabilities.
+- **Whole-project use:** possible voice-authoring/playback option for already-scoped Director, hero/enemy and later station speech (WBS 7.3, 8.4, 8.5, 10.1); compare with existing voice options rather than adding a runtime dependency by default. This does not expand NPC counts, behaviors or dialogue systems.
+- **Timing/next check:** after owner resume and when voice work is selected, verify existing installation and documentation, then audition a small existing line for intelligibility, character consistency, latency and usable export/playback. No plugin activation, installation, credentials, external call or audition occurred; no quality recommendation yet. Central/R interiors remain first.
+
 **October8 use priority:** owned central furnishings/guides and R archive/wardrobe
 hardware are the next interior-layout focus, before future NPC variants/behaviors.
 CPU-only preparation reuses A34's existing display options and five R campaign

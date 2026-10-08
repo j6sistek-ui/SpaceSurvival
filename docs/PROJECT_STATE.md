@@ -1,5 +1,14 @@
 # SpaceSurvival project state
 
+**October8 13:03UTC owner pause:** station work is paused while the other task
+finishes imports, superseding the resume preflight below. Documentation records
+the owner's billboard and AI Voice No-Code Plugin candidates in
+[SOLUTION_CATALOG](production/SOLUTION_CATALOG.md), with two original screenshots.
+Billboard download location and voice-plugin installation/quality are unverified;
+the voice screenshot establishes library membership only. No native/editor work,
+asset import, voice audition, new build or publication in this follow-up. Await
+owner resume; central/R remains next, future NPC work excluded, reports paused.
+
 **October8 12:28UTC central/R resume preflight:** owner reports VRAM free; native
 central/R finishing is authorized. A separate NPC task is repeatedly running
 offscreen Unreal imports, so the guarded station launcher refused a competing

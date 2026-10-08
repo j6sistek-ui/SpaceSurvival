@@ -2,6 +2,17 @@
 
 ## October8 central/R priority and housekeeping
 
+**13:03UTC owner pause:** pause this station pass while the other task finishes
+its imports; this supersedes the resume instruction below. Record two later
+options in the [solution catalog](production/SOLUTION_CATALOG.md):
+**LIB-20261008-BILLBOARD**, a framed sci-fi billboard reportedly in Downloads,
+and **TOOL-20261008-AI-VOICE**, Usiku Games' AI Voice No-Code Plugin, shown saved
+in the owner's library and believed installed. Exact local paths/installation,
+display fit and voice quality remain unverified. Lead locates/evaluates these
+after owner resume; no import, plugin activation or voice generation now.
+Central/R remains the next interior priority; incoming NPCs/behaviors stay out
+of scope, and scheduled progress reports remain paused.
+
 **12:28UTC resource update:** the owner reports VRAM free and authorizes the
 central/R native pass. GPU readback confirms about13.5GiB free, but a separate NPC
 task repeatedly launches Unreal imports with Nwiro disabled. The station launcher
