@@ -1,5 +1,26 @@
 # SpaceSurvival project state
 
+**October8 00:26UTC authorized editor recovery:** all nine closure packages are
+restored and checked in their normal private Content locations, with the previous
+map and Build39 DLL backed up. The saved owner-preview map is now `16818b1b`;
+Build47 successfully links the current module (`059831f7`) and is available in the
+reopened offscreen editor. This supersedes the older Mainc45/Build39 and unlinked
+status below. Nwiro readbacks verify eight restored display assets, six reception
+props/two staff poses and four information-board actors. Two sampled staff lights
+activate automatically; the sampled drone and hologram remain excluded.
+The two-view reception Play check preserves map bytes, player saves and rendering
+settings. It is not all-NPC, gameplay-warp, performance or owner acceptance.
+T's P1-P5 choice remains held; published0.1.22-alpha/build2048604 is unchanged.
+See the [recovery and native-check receipt](validation/2026-10-08-editor-recovery.md).
+
+**October8 00:37UTC room textures:** R, Market and L's five selected campaigns each pass
+native import, source ancestry/hash, dimensions and BC7/sRGB/clamp readbacks and
+are saved in new private `CustomizationCampaigns20261008A/Textures`,
+`MarketCampaigns20261008A/Textures` and `LoungeCampaigns20261008A/Textures` folders.
+Map bytes remain16818b1b. Placement, physical fit and cycling remain unverified;
+L's existing installed four-ad loop is unchanged. This supersedes the unrun import
+status below, not the room integration or owner-acceptance limits.
+
 **October7 23:36UTC source staging:** L now has a packaged five-campaign source set
 (two unchanged owner originals plus three existing families, eight files including
 variants). Its installed loop remains four. The new import-inert source checker

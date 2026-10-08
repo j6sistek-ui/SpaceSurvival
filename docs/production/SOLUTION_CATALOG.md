@@ -56,6 +56,15 @@ its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
 
 ### LIB-20261007-ROOM-AD-CAROUSEL — five illustrated campaigns per room
 
+- **Native texture checkpoint,2026-10-08T00:37Z:** all fifteen selected R/Market/L
+  campaign textures pass native source/dimension/settings verification and are
+  saved privately, five per room, in the respective `*Campaigns20261008A` folders.
+  Independent disk/source review verifies all fifteen byte lengths and hashes.
+  This supersedes the earlier unrun import status below. No screen assignments,
+  physical fit or complete cycling are verified; L's old four-ad loop is unchanged.
+  Existing vendor controls are protected and no new display hardware is placed.
+  [Native receipt](../validation/2026-10-08-editor-recovery.md).
+
 - **L/source tooling update,2026-10-07T23:36Z:** five L families are packaged as
   eight unchanged source files in `LoungeCampaigns20261007`; Spousal Abduction and
   Dock Drink Dock remain owner originals, with three existing illustrated families.

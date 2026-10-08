@@ -62,7 +62,11 @@ never overwrites, assigns a screen, changes an actor or saves a package. On fail
 preserve `StageError.report` and inspect partial imports before choosing the next
 action; do not retry under a new name to hide them. Texture compilation, native
 dimensions, screen ratio/readability, all five cycle transitions and explicit saving
-are separate subsequent checks. Native staging is unrun at this source checkpoint.
+are separate subsequent checks. On October8, all three five-texture sets passed
+native source/dimension/settings readback and were saved in private folders with
+suffix `20261008A`. No screen assignments or cycling checks followed from those
+imports. Do not rerun the helper against those occupied destinations. See the
+[native checkpoint](validation/2026-10-08-editor-recovery.md).
 
 ## Current station in Blender
 

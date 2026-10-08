@@ -3,6 +3,15 @@
 ## October7 editor recovery
 
 **RPT-20261007-02 — GPU-crash cause and sustained stability unverified. OPEN / lead.**
+October8 recovery: owner authorizes reopening. All nine closure packages were
+restored with exact hashes and original backups; normal preview is now16818b1b.
+Build47 links successfully (DLL059831f7), and the offscreen editor/Nwiro respond.
+Eight display assets and the reception/board readbacks pass. A two-view reception
+Play capture preserves map, saves and settings; vendor BP_Blinds AccessedNone
+warnings remain. This supersedes the older Mainc45/Build39 state below, without
+establishing GPU root cause or sustained stability. T selection remains held.
+[Recovery receipt](validation/2026-10-08-editor-recovery.md).
+
 The owner screenshot confirms the GPU crash dialog. The current editor log
 reports `DXGI_ERROR_DEVICE_HUNG` at2026-10-07T16:26:23Z; crashedPID5488 held
 the game DLL/Nwiro listener. Two MCP handshakes timed out before any
@@ -75,6 +84,14 @@ The new raw Paragon Manny download contains5,370 FBX files including variants;
 selected taunt/cast candidates require actual-rider retarget/contact review.
 No animation or speech integration is claimed from that download.
 
+October7 source follow-up:30authored lines/13cues have no recorded-speech reference
+in the inspected audio registry. No ready local TTS setup was verified. Two
+three-line auditions were prepared from unchanged RunStart/Launch/Hit text; the
+generation connection returned reauthentication required, with no task or audio.
+Lead next produces/listens to matching samples once that connection works, or an
+authorized recorded/local source is available, before wiring playback. No speech
+acceptance or gameplay change follows from the source audit.
+
 Next, after T and cockpit clarity: inspect the actual tuning assets and rival in
 normal Phoenix flight, establish a distinct silhouette/material identity, then
 fit a tiny gesture set and bounded approach/taunt/retreat/return presentation.
@@ -87,6 +104,14 @@ Current core loop remains unchanged by this read-only audit; owner approval is o
 ## October7 deferred owner follow-ups
 
 **RPT-20261007-01 — After-T presentation and physical-coherence review. OPEN / lead.**
+October8 native ad-source checkpoint: fifteen verified textures are saved privately,
+five each for customization, Market and L. Source ancestry/hashes/dimensions and
+settings pass; the map and existing screens are unchanged. Lead next verifies an
+appropriate upright host and physical artwork aperture before assignment, then
+observes all five transitions. Functional vendor screens stay protected. This is
+not installed/cycling room content or owner approval; T's choice remains held.
+[Native texture evidence](validation/2026-10-08-editor-recovery.md).
+
 **October7 04:07UTC owner direction:** keep working overnight until directed to
 stop. After the lead fixes and visually reviews T, advance other areas while
 owner validation remains pending; once the areas are addressed, continue bounded
@@ -210,19 +235,23 @@ no obvious room spill; the second face points away and other variants remain
 unverified. Both temporary editor lights were removed exactly after the test;
 common ambient-actor implementation now passes Build43 `-NoLink` compilation,
 with shared defaults, automatic head attachment and optional model overrides.
-The loaded Build39 DLL is unchanged; further variants and normal native integration
-remain unverified. [NPC adoption instructions](STATION_EDITING.md#reusing-the-npc-lighting-preset)
+October8 Build47 supersedes that object-only status: the linked module is loaded,
+and two reception actors automatically light their heads while the sampled drone
+and hologram remain excluded. Further variants, spill and performance remain
+unverified. [NPC adoption instructions](STATION_EDITING.md#reusing-the-npc-lighting-preset)
 cover reusable model children and the common fill settings. The paired warp actor
-and runtime placement remain unlinked and unverified in gameplay.
+and runtime placement are linked in Build47 but remain unverified in gameplay.
 Six purposeful desk
-props/labels and two separated staff poses remain unsaved. Their plaques were
+props/labels and two separated staff poses are now in restored saved map16818b1b.
+Their plaques were
 cropped by the review camera, so label legibility and owner acceptance stay open.
-Two source-verified information boards now have four actors retained unsaved and
-five new private assets saved. The placement guard failure was isolated to scale
+Two source-verified information boards have four actors restored in that map and
+five private assets saved. The placement guard failure was isolated to scale
 roundoff; all physical points matched. Actual views show full text fits the
 native cases and solid wall hosts. Root and independent review accept the
 brighter two-material-only comparison and the unobstructed overview. Owner
-approval, natural walk-up use and saved level placement remain open.
+approval and natural walk-up use remain open; saved placement passes the reopened
+read-only adoption check. See the [recovery receipt](validation/2026-10-08-editor-recovery.md).
 See the [central trial record](validation/2026-10-07-central-welcome.md).
 
 **October7 19:51UTC independent work — lead-owned, OPEN:** central welcome's
