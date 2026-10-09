@@ -2326,3 +2326,32 @@ tail-only smoothing capped at 3 mm and three material slots. Original geometry r
 in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
 and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
 passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.
+
+## RPT-20261008-01 — Tripo crew NPCs: rigged, animated, imported; owner decisions open
+
+Owner: lead implementation; status: **20 characters imported and animated, nothing placed in any level (owner:
+import only).** How to add animations and each character's conditions: [TRIPO_CREW_ANIMATION.md](TRIPO_CREW_ANIMATION.md).
+Assets are private licensed content under `/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew`; Blender sources and
+the Elf/Cyborg return package are local in `.agent/local/CharacterAssets/` (not in Git).
+
+Open owner decisions:
+- Abyss or Kraken for the waitress (Abyss has only her tentacle clips until chosen).
+- Cyborg: the owner says the model itself may have to be redone; until then the arm-spread offset is moot.
+- Silver (PARKED by the owner, 2026-10-08): both thighs are twisted ribbons in every clip. Tripo's original model
+  has clean legs; the damage is already in the Tripo plugin's first Unreal import of `fantasy_elf_3d_model` (bind
+  pose rebuilt on import), which the crew pipeline started from. Not the leg-frame fault: `fix_leg_frames.py` alone
+  does not clear it. Silver is the same Tripo character as the Elf. Captures: `.agent/local/CharacterAssets/
+  Crew_Captures_20261008/`.
+- Dread "takes drinks with guests": no standing drink/toast clip exists in any owned pack (buy one, or author one).
+- Talking mouths: no character has jaw bones or mouth shapes; options were offered, nothing built.
+- Squirrel hero size standardisation: tabled by the owner until after the crew work.
+- Placement on the station (who stands where, lighting, Warden's zero-G mock-up): not authorized; proposals only.
+
+Known limits, recorded rather than fixed: Kraken's tentacle clips carry no visible pelvis bob (the exporter sent it
+100x too small; fixed in `tentacles/export_for_unreal.py`, a re-export and re-import is pending); Silver's hair
+strand down the leg and the cyborg chest holes are mesh defects with the repair (ComfyUI) chat; the repair chat's native `SK_Fantasy_Elf` still has the thigh-frame fault
+fixed in the crew copy; a faint hair crease at the back of the Elf's shoulder remains in a few clips; seated clips
+need chairs where they play.
+
+Next action (lead): none queued; waiting on the decisions above. Evidence: clip sheets, close-ups, hair GIFs and the
+158-clip deformation review in `.agent/local/CharacterAssets/Crew_Integration_20261008/evidence/`.
