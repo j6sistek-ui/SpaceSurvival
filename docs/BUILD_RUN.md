@@ -2,8 +2,10 @@
 
 **Installed engine, October9:** `Engine/Build/Build.version` reports UE5.8.3.
 Earlier version numbers in dated receipts describe those historical checks.
-Full Editor Build55 links successfully and is loaded in the current offscreen
-editor (DLL`7b0ea67f`), including the streamed-station BeginPlay correction.
+Full Editor Build55 links successfully and was verified loaded in the offscreen
+editor (DLL`7b0ea67f`), including the streamed-station BeginPlay correction. The
+root-owned test editor was then closed cleanly to release VRAM; open the saved
+station normally through the existing launcher below.
 Earlier DLL-lock/object-only Build39–46 receipts are historical. Verify the actual
 running editor and dirty packages before any later link/restart; do not close an
 owner session merely to validate a scene-only trial. [Current evidence](validation/2026-10-09-station-crew-central-r.md).

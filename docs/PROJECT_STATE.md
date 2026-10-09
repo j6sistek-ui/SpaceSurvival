@@ -8,8 +8,10 @@ wardrobe console are saved in live Wayfarer `433d6de1`. `DA_Phase1` is saved as
 `559cbf22` with the existing Squirrel identity pointing to the 178cm red-streak
 mesh and eight matching animations. Original source preview `e7958758` is retained.
 
-Full Editor **Build55** succeeds and is loaded in the single offscreen editor,
-DLL `7b0ea67f`. Moving station creation to `StartPlay`, after `Super::StartPlay`,
+Full Editor **Build55** succeeds and was verified loaded in the offscreen editor,
+DLL `7b0ea67f`. That root-owned test editor was gracefully closed after clean
+checks to release VRAM; saved native files and the owner's layout stayed unchanged.
+Moving station creation to `StartPlay`, after `Super::StartPlay`,
 repairs skipped BeginPlay on the streamed cast: ten actors now tick/animate and
 both route actors move. A transient real SSWalker using the new hero crossed
 central into R and switched idle/jog/idle; original possession and saved account

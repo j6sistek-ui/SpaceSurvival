@@ -12,7 +12,7 @@ held. No new gameplay mechanics, dancers, cook, upload or merge.
 | Layer | Verified result |
 | --- | --- |
 | Source | `SSGameMode` startup correction, three guarded authoring helpers, original wardrobe SVG/PNG, existing Squirrel tuning row and documentation. |
-| Loaded editor | Full Editor Build55 succeeds (10actions,28.11s), linked DLL `7b0ea67f`; one hidden UE5.8.3 editor. |
+| Native editor | Full Editor Build55 succeeds (10actions,28.11s), DLL `7b0ea67f` verified loaded in one hidden UE5.8.3 editor. Root-owned test editor then closed cleanly to release VRAM. |
 | Saved scene | Live Wayfarer `433d6de1`; Reload65 verifies8,490 actor identities, all ten cast assignments, eight persistent NoCollision prop profiles and retained wardrobe use point. PIE stopped; map/content dirty lists empty. |
 | Native Play | Ten crew tick/advance clips; patrol/courier move. Real temporary SSWalker crosses central→R using native collision. Actual wardrobe Use opens the existing menu. |
 | Visual review | Lead reviewed actual1014×344 Play images; final wardrobe text upright/readable. Images below carry their capture state. They do not establish every contact, full-room quality or owner acceptance. |
@@ -150,6 +150,8 @@ bounded map backups precede each pass. `Hero178Adoption57` retains the complete 
 DA_Phase1 and before/after Squirrel row. `Hero178Copied.json`, `Runtime56.json`,
 `HeroPassage60.json`, `WardrobeUse64.json`, `Reload65.json` and capture64's finalized
 manifest are the detailed evidence. Other owner asset/project edits stay unstaged.
+`CloseVerified66.json` confirms PID32584 exited, no editor remains, and all final
+map/data/material/texture/DLL/preview/owner-layout hashes survived closure.
 
 Failures are retained: original editor GPU crash preceded these edits; initial
 offscreen startup needed a private layout; the first pen scale was excessive;
