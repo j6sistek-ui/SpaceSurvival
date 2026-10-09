@@ -54,6 +54,8 @@ with the existing Crew Wardrobe service actor preserved. Its private screen read
 selection behavior. The source artwork is original deterministic SVG/PNG in
 `ContentSource/WardrobeConsole`, without modifying supplied ad art. The private
 material flips V and applies emissive gain8 to fit the console's native monitor UVs.
+The SVG generator and Git checkout use LF explicitly so the source-manifest hash
+is reproducible on Windows; the PNG used by Unreal is unchanged by this text fix.
 
 ## Startup defect and native checks
 

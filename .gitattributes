@@ -16,6 +16,7 @@
 *.umap binary
 *.wav binary
 *.png binary
+ContentSource/WardrobeConsole/*.svg text eol=lf
 ContentSource/Meshes/*.obj linguist-generated=true
 ContentSource/Meshes/Palette.mtl linguist-generated=true
 ContentSource/AcornShipCandidate/*.obj linguist-generated=true
