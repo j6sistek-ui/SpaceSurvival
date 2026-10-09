@@ -1,5 +1,17 @@
 # Performance findings
 
+## October9 crew and 178cm hero
+
+Ten supplied crew now occupy existing actor slots; no new background population
+or extra head-light scheme was added. The streamed BeginPlay repair activates
+their existing tick/animation/routes, so previously frozen scenes are not a valid
+performance baseline. The new squirrel delivery has169,599 triangles/12,102 fur
+cards versus the older76,623-triangle/180-card derivative. Short ordinary Play
+captures and the central→R scripted walk establish rendering and movement only.
+Representative station/cabin/flight frame-time and VRAM checks remain open; do not
+infer60FPS or GPU-crash resolution from them. No global quality, exposure, texture
+pool or owner viewport setting was changed. [Evidence](validation/2026-10-09-station-crew-central-r.md).
+
 ## October7 native resolution and station presentation
 
 The unmodified runtime settings probe observes quality2 with resolution scale87,

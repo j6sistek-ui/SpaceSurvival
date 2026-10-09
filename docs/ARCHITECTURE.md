@@ -1,5 +1,18 @@
 # SpaceSurvival Phase 1 architecture
 
+## Streamed station startup — October9
+
+`ASSGameMode::BeginPlay` initializes tuning, audio and world presentation.
+`StartPlay` first calls `Super::StartPlay`, completing the initial world BeginPlay
+dispatch, then performs the existing hangar/station and title/authoring-entry
+startup. Synchronous level streaming inside the old BeginPlay path left placed
+Wayfarer crew outside the initial dispatch: actor ticks stayed disabled and clips
+remained at time zero. Moving the existing startup block preserves its entry/menu
+decisions while allowing streamed actors to receive their normal lifecycle.
+Build55 and a fresh native boot verify all ten replaced staff ticking, clips
+advancing and the two existing routes moving. This does not establish all menu,
+save or full-game acceptance; see the [receipt](validation/2026-10-09-station-crew-central-r.md).
+
 ## Isolated editor rendering diagnostic — October7
 
 The private `SSRenderedViewDiagnostic` observer registers only for its explicit

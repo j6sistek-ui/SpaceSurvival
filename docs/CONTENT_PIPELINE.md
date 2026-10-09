@@ -377,7 +377,36 @@ AuthorContent reapplies this material after ordinary geometry authoring; Validat
 
 The owner found the uniform bright stars overpowering the ship and station on September 14. `AuthorSpaceVisualPass.py` now exposes a separate `StarBrightness` scalar (0.30, formerly a fixed 0.55), raises the star texture to 1.45 and modulates it by a single-level Fast Gradient 3D directional gain from 0.18 to 1.0. The direction matches the cubemap, with no time input, so brightness variation stays fixed as the camera turns. Nebula brightness, object lighting and spawn counts are unchanged. The separate authored material/cook/capture evidence is in the current visual receipt; the earlier C++ test suite is not a test of star appearance.
 
-## September 23 replacement squirrel rig candidate
+## October9 normalized crew and replacement hero
+
+Owner-delivered assets remain private under
+`/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/<Name>` and
+`/Game/SpaceSurvival/Licensed/HeroReplacement178`. Ten non-dancer crew are assigned
+to existing jobs through `Scripts/IntegrateStationCrew.py`; original actor IDs,
+routes, assets and shared head-fill behavior remain. Exact Skeleton identity is
+required for each chosen idle/walk/role clip; source mesh reference height178cm
+and sole0 are verified separately from animated contact.
+
+The squirrel source handoff is
+`.agent/local/CharacterAssets/HeroSquirrel_20261008/Delivery_RedStreaks/`.
+Its already-derived staging delivery in `Squirrel178_Sandbox` supplies17 packages:
+mesh, skeleton, eight clips, three materials and four textures. All68,021,764 bytes
+match the source manifest after copying. Keep the original delivery and derivation
+receipts; do not rerun imports or change the other contributor's worktree.
+`Scripts/IntegrateHero178.py` verifies these inputs and updates only the existing
+Squirrel roster row: unit mesh scale,178cm fit, sole0, derived pilot offset,
+walk/jog/run speeds and seven supplied tail surface envelopes. Other identities
+and the owner's persisted selection are preserved. The `/Game/SpaceSurvival`
+always-cook root already covers the new paths; no fresh cook was performed.
+
+The new69-bone mesh has169,599 triangles and12,102 fur cards. Materials/textures and
+red-streak identity are preserved from the supplied delivery. Native Play loads
+the mesh for walker/pilot; a temporary native walker traverses central→R with
+idle/jog/idle transitions. Physical inputs, every clip/tail contact, stairs,
+cockpit/pilot fit and performance remain separate follow-ups in the
+[current receipt](validation/2026-10-09-station-crew-central-r.md).
+
+## September 23 replacement squirrel rig candidate (historical)
 
 The owner-selected first-party Tripo import `sci-fi_squirrel_3d_model` has a private
 replacement rig and separate tail-animation layers. [Tools/HeroRig](../Tools/HeroRig/README.md)

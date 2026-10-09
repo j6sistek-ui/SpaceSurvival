@@ -1,5 +1,31 @@
 # SpaceSurvival project state
 
+**October9 resumed station pass:** the owner authorized central/R finishing,
+non-dancer crew, a new bartender, three outside merchants and the 178cm replacement
+hero. This supersedes the pause/NPC-exclusion entries below. Ten crew assignments,
+central desk dressing, R waiting/consultation layout and the complete owned
+wardrobe console are saved in live Wayfarer `433d6de1`. `DA_Phase1` is saved as
+`559cbf22` with the existing Squirrel identity pointing to the 178cm red-streak
+mesh and eight matching animations. Original source preview `e7958758` is retained.
+
+Full Editor **Build55** succeeds and is loaded in the single offscreen editor,
+DLL `7b0ea67f`. Moving station creation to `StartPlay`, after `Super::StartPlay`,
+repairs skipped BeginPlay on the streamed cast: ten actors now tick/animate and
+both route actors move. A transient real SSWalker using the new hero crossed
+central into R and switched idle/jog/idle; original possession and saved account
+selection are preserved. The real wardrobe menu also opens through native Use.
+Reload65 preserves all8,490 actor identities, ten crew assignments, eight prop
+collision profiles and the existing service point; PIE stopped/dirty lists empty.
+This is scripted native evidence, not physical-input,
+full cabin fit, 60FPS or owner visual acceptance. [Receipt](validation/2026-10-09-station-crew-central-r.md).
+
+Tracked delivery contains helpers, the startup correction, tuning, original wardrobe
+screen SVG/PNG and evidence. The map, crew, supplied character/ad source art and
+17 replacement-hero packages remain private/local;
+GitHub alone is not a complete native restore. PR69 remains draft/unmerged.
+Published **0.1.22-alpha / itch2048604 / sourcee6c2a87** is unchanged; no new cook
+or upload. T selection and dancers are excluded, reports remain paused.
+
 **October8 13:03UTC owner pause:** station work is paused while the other task
 finishes imports, superseding the resume preflight below. Documentation records
 the owner's billboard and AI Voice No-Code Plugin candidates in

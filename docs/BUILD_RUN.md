@@ -1,11 +1,12 @@
 # Build and run
 
-**Installed engine, October7:** `Engine/Build/Build.version` reports UE5.8.3.
+**Installed engine, October9:** `Engine/Build/Build.version` reports UE5.8.3.
 Earlier version numbers in dated receipts describe those historical checks.
-The existing owner editor retains Build39; the earlier cabin candidate compiled
-but could not link while that editor held the module DLL. The latest screen
-clearance source change has not been rebuilt. Do not repeat the blocked link or
-close the owner's editor merely to validate a scene-only trial.
+Full Editor Build55 links successfully and is loaded in the current offscreen
+editor (DLL`7b0ea67f`), including the streamed-station BeginPlay correction.
+Earlier DLL-lock/object-only Build39–46 receipts are historical. Verify the actual
+running editor and dirty packages before any later link/restart; do not close an
+owner session merely to validate a scene-only trial. [Current evidence](validation/2026-10-09-station-crew-central-r.md).
 
 **Current project, October6:** use `C:/Users/j6sis/SpaceSurvival` for gameplay, station editing and the imported library. [Edit Current Station.cmd](../Edit%20Current%20Station.cmd) opens the current Wayfarer map in the normal editor. [Play Development Build.cmd](../Play%20Development%20Build.cmd) launches the development game. The canonical Editor rebuild passed in 35.74 seconds with ULAT enabled. `CurrentStationVerification5` passes all 12 native checks: editor Play travels to Survival/SSGameMode, loads one current station with 7,775 tagged outpost actors and 744 apartment children, and preserves all four protected saved maps. These are scripted checks; physical input and visual acceptance remain separate. [Project State](PROJECT_STATE.md) records verification and package location.
 

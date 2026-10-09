@@ -194,6 +194,13 @@ void ASSGameMode::BeginPlay()
                 Light->SetLightColor(SpaceLook->KeyColor);
                 Light->SetIntensity(SpaceLook->KeyIntensity);
             }
+}
+void ASSGameMode::StartPlay()
+{
+    // Stream the station after NotifyBeginPlay has finished visiting the initial world.
+    // Streaming synchronously inside this mode's BeginPlay leaves the newly added level
+    // outside that initial visit: placed crew never begin play and cannot run their routines.
+    Super::StartPlay();
     ShowHangar();
     // Explicit authoring-sandbox exit only. The ordinary game still opens its approved title screen.
     // Survival opens the existing choices so a saved run is never reset merely by using a terminal.

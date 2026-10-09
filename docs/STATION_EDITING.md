@@ -8,6 +8,49 @@ The original `/Game/OutpostSandbox/L_AsteroidOutpost` remains a separate experim
 
 The native `CurrentStationVerification5` check confirms Play reaches Survival/SSGameMode with one current station and its loaded apartment; all 12 checks pass and four protected map files remain unchanged. It does not establish physical-controller or visual acceptance.
 
+## October9 crew and central/R authoring
+
+The new helpers target the **live Wayfarer map**, require PIE stopped and verify
+the expected saved-map hash before changing placed actors. Back up the exact map
+first. Do not reapply to an already adopted map: use `IntegrateStationCrew.verify`
+and inspect current placements instead. Source meshes, materials and original kits
+are preserved; the caller owns final review and saving.
+
+`Scripts/IntegrateStationCrew.py` contains ten stable-label assignments: Dread as
+bartender; Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
+security; Crest courier; Warden maintenance; Amethyst wardrobe visitor. It checks
+178cm mesh height, floor-level source soles, exact Skeleton identity for every role
+clip and material slots. It clears old per-instance material overrides, uses unit
+scale/mesh yaw−90/offsetZ−85 for these normalized deliveries and reuses the shared
+head fill. Existing routes and actor identity remain intact. The produce seller
+also moves behind the south stall. New models need an assignment and compatible
+clips, followed by actual animated contact and lighting review; normalization is
+not proof that every pose fits.
+
+`Scripts/RefineStationCentralR.py` changes only bounded furniture, guides, lights
+and props, with rollback snapshots. The complete owned Fab Sci-fi Console Game
+faces the wardrobe approach; the existing service/use point remains. Eight
+placed props use persistent NoCollision profiles. The pen is capped at14cm height
+instead of scaling a thin mesh solely by width. Keep the four remaining waiting
+chairs, guide/visitor relation, two central information boards and T hold.
+The terminal's monitor slot uses two private `WardrobeGuide20261009` assets, made
+by `stage_wardrobe_guide` from the original SVG/PNG in
+`ContentSource/WardrobeConsole`. It says "Choose your character / Interact to open";
+the real service still opens the existing wardrobe UI. Stage once, inspect any
+partial result rather than rerunning, and save/review those two assets explicitly.
+The console monitor UVs require V flipped (`UV * (1,-1) + (0,1)`); the private
+material uses gain8 and the actual saved Play view confirms upright readable copy.
+Native terminal Use opens Crew Wardrobe without changing the selected character.
+
+`Scripts/IntegrateHero178.py` adopts the separate owner's delivery without
+reimporting art. It verifies the 17-package hash manifest, mesh/skeleton/materials,
+eight clips and seven tail envelopes before editing only the existing Squirrel
+row. The private manifest/derivation inputs are required; see
+[content provenance](CONTENT_PIPELINE.md#october9-normalized-crew-and-replacement-hero).
+The saved wardrobe choice is independent: an account wearing Nyxar stays Nyxar.
+The replacement is available through Crew Wardrobe and is the default Squirrel
+presentation, including the pilot. No fresh cockpit-contact approval is implied.
+
 ## Reusing the NPC lighting preset
 
 October8: the refined preview checkpoint is also saved/reloaded in the live

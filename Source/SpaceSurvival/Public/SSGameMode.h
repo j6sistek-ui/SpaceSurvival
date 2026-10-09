@@ -58,6 +58,7 @@ class SPACESURVIVAL_API ASSGameMode : public AGameModeBase
 public:
     ASSGameMode();
     virtual void BeginPlay() override;
+    virtual void StartPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     ASSStation *GetStation() const

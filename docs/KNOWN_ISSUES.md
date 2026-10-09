@@ -1,6 +1,45 @@
 # Open work and owner review
 
-## October8 central/R priority and housekeeping
+## October9 central/R, crew and replacement hero
+
+**RPT-20261007-01 / RPT-20261006-04 / RPT-20260923-01 — OPEN / lead.**
+The owner resumed central/R work, authorized incoming non-dancer crew, specified
+one bartender and three outside merchants, and included the on-disk replacement
+hero to standardize height. This supersedes the October8 pause, NPC exclusion and
+earlier instruction to retain the female bartender for this pass. T display
+selection remains held; dancers and unrelated gameplay changes remain excluded.
+
+Ten cast replacements are saved in live Wayfarer: Dread bartends; Robe, Glyph and
+Tribal sell outside; Seer/Tendril staff reception, Olive patrols, Crest runs the
+market route, Warden inspects equipment and Amethyst visits the wardrobe guide.
+All use the shared head fill and exact-skeleton role clips at 178cm reference
+height. Central has smaller desk consoles, forms, pens and water; R has a complete
+standing wardrobe console, accurate selection guidance, four waiting chairs with
+tablets/books, a consultation pair and reduced local glare. Central's existing
+information boards and ad limit, source assets and T are preserved.
+
+Build55 fixes a streamed-level startup defect: station creation now occurs after
+the initial world BeginPlay dispatch. All ten crew tick and advance clips in Play;
+the patrol and courier move. The 178cm red-streak squirrel and eight matching clips
+are saved in the existing Squirrel tuning row. A temporary native pawn traversed
+central into R with real collision and idle/jog transitions, then the original
+Nyxar pawn was restored; the owner's saved wardrobe choice was not changed.
+
+Native wardrobe Use opens the real Crew Wardrobe menu; no selection was made and
+the account remains Nyxar. Reload65 verifies 8,490 actor identities, ten cast
+assignments, eight persistent NoCollision props, service use point and hero paths;
+PIE is stopped and both dirty-package lists are empty.
+
+Next lead checks: physical wardrobe input, full hero stairs/cockpit/pilot contact,
+continuous staff hand/prop contact and representative performance. Owner reviews
+central/R layout, cast and height together; this is not a whole-room quality or
+Phase1 acceptance claim. New hero geometry is heavier than its predecessor; no
+60FPS claim. No cook, itch publication or merge. See the
+[scoped receipt and labeled images](validation/2026-10-09-station-crew-central-r.md).
+Progress-report automation remains paused. Older topic records below are retained
+as history and are superseded where this paragraph explicitly changes scope.
+
+## October8 central/R priority and housekeeping (historical)
 
 **13:03UTC owner pause:** pause this station pass while the other task finishes
 its imports; this supersedes the resume instruction below. Record two later
