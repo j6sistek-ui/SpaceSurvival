@@ -1,5 +1,11 @@
 # Performance findings
 
+**October9 closeout:** the offscreen editor is closed and work paused. Added dock
+crew, local lighting and carried props still need representative measurement.
+Joy was temporary diagnostic content, not saved station population. No FPS/VRAM
+or crash-resolution acceptance. Open-editor statements below are historical.
+[Handoff](validation/2026-10-09-station-handoff.md).
+
 ## October9 crew and 178cm hero
 
 The17:31 market candidate has8,634 actors,19 more than candidate81. Four new

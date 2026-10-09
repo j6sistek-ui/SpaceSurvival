@@ -1,5 +1,12 @@
 # Phase 1 content pipeline
 
+**October9 Joy review import:** original source preserved. Private reference-pose
+review has corrected rest-pose hair alignment and BeforeDOF translucent eye
+rendering, fixing the observed rear-hair compositing artifact. Existing tooling
+used without installation. This is not an animated production character or
+permanent placement. Import helpers/backups/diagnostics remain local.
+[Handoff and limits](validation/2026-10-09-station-handoff.md).
+
 ## Wayfarer runtime copy — October1
 
 After building the current Editor, run `Scripts/PrepareWayfarerRuntime.py` with `-RenderOffscreen -ExecutePythonScript=...`. It duplicates `/Game/OutpostSandbox/L_AsteroidOutpost` into `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, retaining the furnished `/Game/BuildingLibrary/Home/L_CrewApartment` instance, and adds stable `OutpostLabel:` actor tags because editor labels are not available in a cooked game. It hashes the original outpost, apartment and flat BuildingSandbox before/after and saves only the runtime duplicate. Do not regenerate `AuthorOutpostSandbox.py` over the owner's composition. The runtime copy and its vendor dependencies remain private local content, not Git source assets.

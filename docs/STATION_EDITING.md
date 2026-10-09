@@ -1,5 +1,14 @@
 # Station editing and preserved Workshop
 
+**October9 handoff:** work paused with central/R unfinished and later priorities
+held. The adopted `Scripts/RefineStationDockAtmosphere.py` is preserved source;
+do not replay its creation/correction stages. Final standing workers replace
+rejected kneeling poses; original source assets remain intact. Joy's private
+reference-pose review asset has corrected hair alignment and translucency;
+animation/groom binding/behaviors are unverified. Import helpers, backups and
+diagnostics remain local. No permanent diagnostic actors were saved in the map.
+[Handoff and scope](validation/2026-10-09-station-handoff.md).
+
 **Current Wayfarer layout work:** open `C:/Users/j6sis/SpaceSurvival/Edit Current Station.cmd`. It opens `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, the station used by the current game, in the canonical project's normal Unreal editor. This is also the editor startup map. Stop Play before editing, save the map, then press Play to review through the normal Survival game. [Building library](BUILDING_LIBRARY.md) covers ULAT, native collections and complete assemblies in this project.
 
 The current station was derived from the original outpost, but routine current-station edits now go directly into this Wayfarer map. Play redirects to `/Game/SpaceSurvival/Maps/Survival` so the game creates its player and streams the station once. Preserve service actors, doors, connectors and the player berth when dressing the scene. The apartment level `/Game/BuildingLibrary/Home/L_CrewApartment` is shared by its instances: duplicate both its level and Blueprint before making an independent interior variant. Saving local changes does not update an existing Windows package or itch. [Project State](PROJECT_STATE.md) owns build/release and verification status.

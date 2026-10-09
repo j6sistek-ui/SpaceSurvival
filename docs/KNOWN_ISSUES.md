@@ -1,5 +1,20 @@
 # Open work and owner review
 
+**October9 owner correction and pause — RPT-20261007-01 / RPT-20261006-04 /
+RPT-20260923-01 remain OPEN / lead.** Central and R are far below the concept and
+have not received owner acceptance. NPC counts and scripted walks did not finish
+them. L/T's existing detail is the benchmark. This supersedes every continue-next
+statement below: central first, R second; all lower priorities held.
+
+Next lead action on resume: compare central against the actual rendered concept
+at whole-room scale, then correct wall architecture/detail, reception composition,
+lighting and furnished waiting areas as one cohesive pass. Preserve white floors,
+useful directions, L and held T choices. No new NPC imports/repairs. Joy's scoped
+reference-pose repair is saved; animation remains unverified. Other NPC defects
+belong to owner/another chat. Partial dock work is retained; lounge/cockpit remain
+held. Dread's exposed torso still requires a later common-area replacement.
+[Handoff](validation/2026-10-09-station-handoff.md). Historical checkpoints follow.
+
 ## October9 central/R, crew and replacement hero
 
 **RPT-20261007-01 / RPT-20261006-04 / RPT-20260923-01 — OPEN / lead.**

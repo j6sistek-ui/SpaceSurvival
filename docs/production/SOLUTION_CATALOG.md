@@ -1,5 +1,15 @@
 # SpaceSurvival whole-project solution catalog
 
+**October9 resource status correction:** CREW-20261009 assignments below are
+historical partial integration, not accepted room quality. Covered Olive replaces
+hidden Amethyst; exposed-torso Dread needs a later replacement. Dock atmosphere
+is saved with limited walking/pose evidence. Other NPC repairs are outside this
+lead's scope. New resource ID JOY-20261009 denotes the existing owner-supplied
+character's private reference-pose review: hair/translucency corrected, original
+source preserved, animation/behaviors/performance unverified. Its value is a later
+character option, with no purchase, runtime AI or permanent placement. Central/R
+quality is rejected; later work held. [Handoff](../validation/2026-10-09-station-handoff.md).
+
 ### TOOL-20261008-VOICEBOX — local dialogue-authoring candidate
 
 - **Evidence/acquisition,2026-10-08T13:33Z:** [Voicebox source](https://github.com/jamiepine/voicebox/tree/8af7efe62fab8d33e2a5dfbedabaa45f68a5184f), snapshot `8af7efe62fab8d33e2a5dfbedabaa45f68a5184f`, repository last pushed2026-10-07. Documentation/license reviewed only; no installation, model download, execution or audition. MIT application; model terms are separate.

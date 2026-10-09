@@ -1,5 +1,15 @@
 # SpaceSurvival project state
 
+**October9 saved handoff: paused by owner.** Central/R quality is rejected and
+unfinished; resume central first, R second, with all lower priorities held. This
+supersedes the active/continue-next statements in historical checkpoints below.
+Station/partial dock work and Joy's reference-pose review asset are saved locally.
+The agent's offscreen editor closed cleanly after stopped PIE/zero dirty packages;
+saved files, original sources and protected owner edits were verified unchanged.
+Existing Editor build and published download are unchanged; no cook/upload/merge.
+PR69 remains draft. Machine-specific records and native assets stay local; GitHub
+is not a native backup. [Handoff](validation/2026-10-09-station-handoff.md).
+
 **October9 17:31UTC market checkpoint — work remains active.** Current saved and
 reloaded Wayfarer is `4bd63687`,8,634 actors. Original stalls move toward the
 walkway, screened vendors/customers and a seated pair give them purpose, and two
