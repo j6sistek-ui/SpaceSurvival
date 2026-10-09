@@ -10,7 +10,39 @@ The native `CurrentStationVerification5` check confirms Play reaches Survival/SS
 
 ## October9 crew and central/R authoring
 
-`Scripts/RefineStationWholeRooms.py` is the later central/R-only composition
+NPC job labels are authoring conveniences, not placement restrictions. The owner
+explicitly allows vendor and worker variants to join seated conversations and
+other everyday activity. Give each group a purpose and fit its actual motion to
+the furniture. Visually screen the model before placement: graphic nudity is
+excluded from every common area, and no separate adult area currently exists.
+Dancers remain outside this pass. Retain supplied costume/material identities.
+
+The concept-detail stages are `Scripts/RefineStationConcept.py` (central),
+`Scripts/AuthorStationVisitorSeats.py` (four compatible seated derivatives) and
+`Scripts/RefineStationArchiveConcept.py` (R furniture/display composition). They
+have already been adopted: do not replay their creation stages on the live map.
+They require the inspected live state/stopped PIE; initial apply uses an exact
+map hash and clean packages. Later stages are bounded corrections, not a general
+rollback or scene generator. Keep native backups and inspect partial failures.
+The caller saves and reviews; no recipe supplies room acceptance.
+
+Private assets live under `OutpostSandbox/StationRefinement/Concept73`,
+`ArchiveConcept77` and `VisitorSeats20261009`. Native retargeting derives four
+4-second seated clips for Seer, Robe, Glyph and Tendril from the owned Nyxar loop,
+preserving source clips/skeletons. Six R chairs/three tables use two private mesh
+copies with simple BOX collision; original owned meshes lack simple collision
+and remain untouched. Two central readers have hand-attached tablets. Review
+actual seat/sole/hand positions for each new cast; a compatible skeleton alone
+does not establish contact or a usable pose.
+
+Amethyst's common-area visitor actor is hidden/NoCollision and replaced by a
+covered Olive clone. The original assignment recipe below is historical and must
+not unhide it. Elf's exposed-body preview was excluded. Source character assets
+are retained. R's wardrobe use point, source floors, five campaign display and
+T hold remain; its projector adopts the new private blue holo material.
+[Saved candidate, native checks and limits](validation/2026-10-09-central-r-concept-detail.md).
+
+`Scripts/RefineStationWholeRooms.py` is the earlier central/R-only composition
 recipe. `apply` and `refine_grouping` are separate reviewed stages; both require
 the live map, expected disk hash, stopped PIE and clean packages, return rollback
 state and never save automatically. Do not replay either on the adopted map.
@@ -30,7 +62,8 @@ are preserved; the caller owns final review and saving.
 
 `Scripts/IntegrateStationCrew.py` contains ten stable-label assignments: Dread as
 bartender; Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
-security; Crest courier; Warden maintenance; Amethyst wardrobe visitor. It checks
+security; Crest courier; Warden maintenance; the historical Amethyst wardrobe
+visitor, now hidden/replaced as described above. It checks
 178cm mesh height, floor-level source soles, exact Skeleton identity for every role
 clip and material slots. It clears old per-instance material overrides, uses unit
 scale/mesh yaw−90/offsetZ−85 for these normalized deliveries and reuses the shared
@@ -43,8 +76,9 @@ not proof that every pose fits.
 and props, with rollback snapshots. The complete owned Fab Sci-fi Console Game
 faces the wardrobe approach; the existing service/use point remains. Eight
 placed props use persistent NoCollision profiles. The pen is capped at14cm height
-instead of scaling a thin mesh solely by width. Keep the four remaining waiting
-chairs, guide/visitor relation, two central information boards and T hold.
+instead of scaling a thin mesh solely by width. Its four mechanical waiting
+chairs are now hidden in favor of the concept-detail furniture above. Keep the
+guide/use-point relation, two central information boards and T hold.
 The terminal's monitor slot uses two private `WardrobeGuide20261009` assets, made
 by `stage_wardrobe_guide` from the original SVG/PNG in
 `ContentSource/WardrobeConsole`. It says "Choose your character / Interact to open";

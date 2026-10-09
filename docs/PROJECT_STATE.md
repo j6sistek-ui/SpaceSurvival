@@ -1,21 +1,31 @@
 # SpaceSurvival project state
 
-**October9 13:15UTC correction — central/R remain unfinished.** The owner correctly
-rejected the earlier completion implication. Three whole-room review sets now
-exist; the latest saved/reloaded Wayfarer is `14a49399`, with8,502 actors, twelve
-new room-detail actors and sixteen private furniture material instances. Signs,
-consultation/waiting grouping and local lighting changed. Ordinary native walking
-reached30/30 points over146.61m; all ten crew configurations and the saved account
-remain. R's sparse composition/display wall and the dark reception rear are still
-lead-owned implementation gaps. [Current receipt and pictures](validation/2026-10-09-central-r-whole-room-review.md).
+**October9 16:23UTC concept-detail checkpoint — work remains active.** Saved and
+reloaded live Wayfarer is `f58ef8b6`, with8,615 actors. Central now has eight tall
+blue direction panels, warm rib fixtures, planted waiting bays, two seated readers
+and staffed reception. R groups three original-kit hologram assemblies with six
+owned upholstered chairs, three furnished tables and four seated visitors. The
+exposed-body Amethyst visitor is hidden and replaced by covered Olive; source
+assets remain. [Current receipt and labeled pictures](validation/2026-10-09-central-r-concept-detail.md).
 
-Build55 DLL `7b0ea67f`, tuning `559cbf22` and source preview `e7958758` are unchanged.
-The root offscreen editor closed cleanly after reload; saves, owner layout and ten
-pre-existing owner-edited files retain their hashes. One scale field reloads with
-4.91e-10 numerical roundoff; the exact-equality failure is retained and explained.
-No new C++ build, cook, upload, merge or room acceptance. PR69 remains draft;
-published0.1.22-alpha/itch2048604 is unchanged. The map and new material instances
-remain private/local; GitHub contains the recipe and evidence, not a full restore.
+Central and central-to-R native walks reached11/11 and19/19 waypoints. Ten new
+ambient/projection poses advance; nine furniture actors now have private simple
+collision. Reload81 finds no actor snapshot differences at1e-5 numeric tolerance,
+no dirty packages, and unchanged map bytes/protected files. These checks do not
+establish9/10 visual quality, continuous contact, physical input or60FPS.
+
+The expanded owner goal continues through market, dock, lounge and taller-cast
+Phoenix fit, then PR69 priorities. T remains held; no graphic nudity in common
+areas and no dancers. Root offscreen editor PID55108 remains open for that work;
+PIE is stopped at this checkpoint. Build55 DLL `7b0ea67f`, tuning `559cbf22`,
+source preview `e7958758` and owner layout `29f15587` are unchanged. No new C++
+build, cook, upload, merge or room approval. PR69 remains draft; published
+0.1.22-alpha/itch2048604 is unchanged. Maps, licensed furniture/materials and four
+native seated-clip derivatives remain private/local; GitHub is not a full restore.
+
+The earlier13:15 checkpoint `14a49399` and its failed strict scale comparison are
+retained as [historical evidence](validation/2026-10-09-central-r-whole-room-review.md),
+superseded by the scene and scope above.
 
 **Earlier October9 crew checkpoint (map identity superseded above):** the owner authorized central/R finishing,
 non-dancer crew, a new bartender, three outside merchants and the 178cm replacement

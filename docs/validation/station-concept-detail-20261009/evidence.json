@@ -1,0 +1,773 @@
+{
+  "source_baseline": "205e13181ffd8e3520d6c2247d05472b1e8dbc5f",
+  "native_reload": {
+    "map_sha256": "f58ef8b6c730cf1c81a11ba992a0dcd585fcf30442133e9cb65324428c091c1d",
+    "actor_count": 8615,
+    "changed_actor_paths": [],
+    "snapshot_position_tolerance_cm": 1e-05,
+    "map_bytes_unchanged": true,
+    "protected_files": [
+      {
+        "file": "EditorLayout.ini",
+        "sha256": "29f155870eed67b6c98987b61fb5dc547bd010dda90c863ccd1a4fbe53a43d7d",
+        "unchanged": true
+      },
+      {
+        "file": "L_OwnerPlatformPreview_20261006.umap",
+        "sha256": "e7958758a861d17fe189601b17b486db9ea75086080a8e1b5f17e56cbb7b18db",
+        "unchanged": true
+      },
+      {
+        "file": "SpaceSurvival.uproject",
+        "sha256": "9e3a4861161c1dc89988452fb9fd60a1893e03dd05785c4f0457f8ed9712ba38",
+        "unchanged": true
+      },
+      {
+        "file": "UnrealEditor-SpaceSurvival.dll",
+        "sha256": "7b0ea67fa5d6838908cacacba30af45ce3f983d5bb4a53fc75fc8d99b2ca917a",
+        "unchanged": true
+      }
+    ],
+    "new_roles": [
+      {
+        "label": "Refine/Concept73/Reader NE",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Tendril/Mesh/SK_Tendril.SK_Tendril",
+        "animation": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Tendril/A_Tendril_SeatedVisitor.A_Tendril_SeatedVisitor",
+        "hidden": false
+      },
+      {
+        "label": "Refine/Concept73/Reader SW",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Robe/Mesh/SK_Robe.SK_Robe",
+        "animation": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Robe/A_Robe_SeatedVisitor.A_Robe_SeatedVisitor",
+        "hidden": false
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Projection 1",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Seer/Mesh/SK_Seer.SK_Seer",
+        "animation": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Seer/A_Seer_Idle.A_Seer_Idle",
+        "hidden": false
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Projection 2",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Robe/Mesh/SK_Robe.SK_Robe",
+        "animation": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Robe/A_Robe_Idle.A_Robe_Idle",
+        "hidden": false
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Projection 3",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Glyph/Mesh/SK_Glyph.SK_Glyph",
+        "animation": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Glyph/A_Glyph_Idle.A_Glyph_Idle",
+        "hidden": false
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 1/South/Visitor",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Seer/Mesh/SK_Seer.SK_Seer",
+        "animation": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Seer/A_Seer_SeatedVisitor.A_Seer_SeatedVisitor",
+        "hidden": false
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 1/North/Visitor",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Robe/Mesh/SK_Robe.SK_Robe",
+        "animation": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Robe/A_Robe_SeatedVisitor.A_Robe_SeatedVisitor",
+        "hidden": false
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 2/South/Visitor",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Glyph/Mesh/SK_Glyph.SK_Glyph",
+        "animation": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Glyph/A_Glyph_SeatedVisitor.A_Glyph_SeatedVisitor",
+        "hidden": false
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 2/North/Visitor",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Tendril/Mesh/SK_Tendril.SK_Tendril",
+        "animation": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Tendril/A_Tendril_SeatedVisitor.A_Tendril_SeatedVisitor",
+        "hidden": false
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Consultation visitor",
+        "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Olive/Rig/SK_Olive.SK_Olive",
+        "animation": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Olive/A_Olive_Listen.A_Olive_Listen",
+        "hidden": false
+      }
+    ],
+    "blocking_furniture": [
+      {
+        "label": "Refine/ArchiveConcept77/Group 1/Table",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 1/South/Armchair",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 1/North/Armchair",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 2/Table",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 2/South/Armchair",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 2/North/Armchair",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 3/Table",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 3/South/Armchair",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      },
+      {
+        "label": "Refine/ArchiveConcept77/Group 3/North/Armchair",
+        "profile": "BlockAll",
+        "simple_shapes": 1
+      }
+    ],
+    "exposed_visitor_hidden": true,
+    "old_exposed_visitor_collision": false,
+    "wardrobe_presentation_target": "Lounge/Wardrobe projection",
+    "dirty_maps": [],
+    "dirty_content": [],
+    "success": true
+  },
+  "walks": [
+    {
+      "receipt": "Walk75",
+      "reached": 11,
+      "total": 11,
+      "reached_all": true,
+      "error": null,
+      "seconds": 22.296000000002095,
+      "distance_m": 64.1482154271026,
+      "modes": [
+        "<MovementMode.MOVE_WALKING: 1>"
+      ],
+      "possession_restored": true,
+      "temporary_pawn_removed": true,
+      "physical_input": false
+    },
+    {
+      "receipt": "Walk78",
+      "reached": 19,
+      "total": 19,
+      "reached_all": true,
+      "error": null,
+      "seconds": 36.046999999991385,
+      "distance_m": 108.1989455154482,
+      "modes": [
+        "<MovementMode.MOVE_WALKING: 1>"
+      ],
+      "possession_restored": true,
+      "temporary_pawn_removed": true,
+      "physical_input": false
+    }
+  ],
+  "R_motion": [
+    {
+      "label": "Refine/ArchiveConcept77/Projection 1",
+      "before": 0.0410078763961792,
+      "after": 1.156868815422058,
+      "head_displacement_cm": 0.627133131220878
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Projection 2",
+      "before": 0.0410078763961792,
+      "after": 1.156868815422058,
+      "head_displacement_cm": 0.358391859087925
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Projection 3",
+      "before": 0.0410078763961792,
+      "after": 1.156868815422058,
+      "head_displacement_cm": 0.5640788521287249
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 1/South/Visitor",
+      "before": 0.15756623446941376,
+      "after": 3.940000295639038,
+      "head_displacement_cm": 0.23468255793521786
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 1/North/Visitor",
+      "before": 2.257538080215454,
+      "after": 2.039978504180908,
+      "head_displacement_cm": 0.14039045698050745
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 2/South/Visitor",
+      "before": 1.8575420379638672,
+      "after": 1.6399813890457153,
+      "head_displacement_cm": 0.3493303385496665
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 2/North/Visitor",
+      "before": 3.9575650691986084,
+      "after": 3.739997148513794,
+      "head_displacement_cm": 0.321639738759931
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Consultation visitor",
+      "before": 8.103878021240234,
+      "after": 7.719473838806152,
+      "head_displacement_cm": 0.9017193424481661
+    }
+  ],
+  "seated_derivatives": {
+    "source_unchanged": true,
+    "source_sha256": "011d265aaba020bd70744343f7a9d8942e11aafaff378533203eca1098fb4d5b",
+    "derivatives": [
+      {
+        "name": "Seer",
+        "clip": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Seer/A_Seer_SeatedVisitor.A_Seer_SeatedVisitor",
+        "length": 4.0,
+        "bones_cm": {
+          "pelvis": [
+            1.106584633323998e-05,
+            1.353438570106391e-07,
+            92.82705367336143
+          ],
+          "head": [
+            1.6319989019698757,
+            13.310127083220973,
+            156.42776120435985
+          ],
+          "thigh_l": [
+            9.003008379214396,
+            -0.8846340948286737,
+            87.92319614335354
+          ],
+          "calf_l": [
+            9.490954964646606,
+            35.596110553577105,
+            88.5902173149348
+          ],
+          "foot_l": [
+            13.67541935465709,
+            44.747281043138855,
+            48.024389527785345
+          ],
+          "ball_l": [
+            16.46567329590509,
+            58.91891553068733,
+            37.86432240375698
+          ],
+          "thigh_r": [
+            -9.075168630722976,
+            -0.8317854712725996,
+            88.04859073475848
+          ],
+          "calf_r": [
+            -9.812867650031132,
+            35.64893622906976,
+            88.42672982469568
+          ],
+          "foot_r": [
+            -15.743156044894436,
+            44.91135551803225,
+            48.10448062783068
+          ],
+          "ball_r": [
+            -18.617138694077376,
+            59.10573652860869,
+            38.168531470039255
+          ],
+          "hand_l": [
+            12.524152641025037,
+            25.087822039249133,
+            109.14383048598398
+          ],
+          "hand_r": [
+            -12.239459575235706,
+            26.445799341398978,
+            108.88109401920204
+          ]
+        }
+      },
+      {
+        "name": "Glyph",
+        "clip": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Glyph/A_Glyph_SeatedVisitor.A_Glyph_SeatedVisitor",
+        "length": 4.0,
+        "bones_cm": {
+          "pelvis": [
+            1.672480027536949e-05,
+            4.2759588865237674e-06,
+            92.13068710744493
+          ],
+          "head": [
+            1.4500848226864012,
+            15.082557988633257,
+            150.58575440696976
+          ],
+          "thigh_l": [
+            6.2297786374618935,
+            0.2790340747293767,
+            87.92602559493265
+          ],
+          "calf_l": [
+            6.696262446847483,
+            35.154401483125326,
+            88.5636840004704
+          ],
+          "foot_l": [
+            10.99541363139933,
+            47.78755445301878,
+            47.19519170967353
+          ],
+          "ball_l": [
+            13.815004139967689,
+            61.92591518599309,
+            36.6246578901165
+          ],
+          "thigh_r": [
+            -6.285742874204793,
+            0.3156230873593504,
+            88.01281336282433
+          ],
+          "calf_r": [
+            -6.989283812315696,
+            35.107686400403786,
+            88.37344664449533
+          ],
+          "foot_r": [
+            -13.052515200117638,
+            47.84211923134064,
+            47.42264568088029
+          ],
+          "ball_r": [
+            -15.982956219565835,
+            61.92842342911892,
+            36.81272635133392
+          ],
+          "hand_l": [
+            11.919878776060102,
+            22.2015430259155,
+            109.85391171075302
+          ],
+          "hand_r": [
+            -11.687150386639454,
+            23.35480280316009,
+            109.8434480805943
+          ]
+        }
+      },
+      {
+        "name": "Robe",
+        "clip": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Robe/A_Robe_SeatedVisitor.A_Robe_SeatedVisitor",
+        "length": 4.0,
+        "bones_cm": {
+          "pelvis": [
+            1.1479569239422651e-05,
+            1.4772668244233955e-06,
+            96.29761200504227
+          ],
+          "head": [
+            1.1539163338258567,
+            10.436007836723887,
+            143.69008759665374
+          ],
+          "thigh_l": [
+            6.912132644127649,
+            0.8803316205281075,
+            90.01812986203926
+          ],
+          "calf_l": [
+            7.479658442177162,
+            43.31064183421468,
+            90.79391658432961
+          ],
+          "foot_l": [
+            11.619622629396222,
+            44.994960267052214,
+            49.93905372531229
+          ],
+          "ball_l": [
+            13.351664756440709,
+            54.91528811813842,
+            45.58483388841628
+          ],
+          "thigh_r": [
+            -6.9932966284515015,
+            0.920985755835563,
+            90.11457748428043
+          ],
+          "calf_r": [
+            -7.8512884506389895,
+            43.35123704263806,
+            90.55438287132732
+          ],
+          "foot_r": [
+            -13.667652657019033,
+            45.248317978291524,
+            49.913633717955605
+          ],
+          "ball_r": [
+            -15.410334148061894,
+            55.173531805181476,
+            45.57488359627672
+          ],
+          "hand_l": [
+            12.357720954661133,
+            23.65516164168377,
+            106.98964521129463
+          ],
+          "hand_r": [
+            -12.042031949470335,
+            23.44998353984422,
+            107.49128826606568
+          ]
+        }
+      },
+      {
+        "name": "Tendril",
+        "clip": "/Game/OutpostSandbox/StationRefinement/VisitorSeats20261009/Tendril/A_Tendril_SeatedVisitor.A_Tendril_SeatedVisitor",
+        "length": 4.0,
+        "bones_cm": {
+          "pelvis": [
+            1.1645370130599509e-05,
+            -6.566781713956971e-07,
+            97.68845069428465
+          ],
+          "head": [
+            1.471264919131668,
+            12.641856756880795,
+            155.2113710385766
+          ],
+          "thigh_l": [
+            9.00423823003358,
+            -0.21779190119105185,
+            92.76258430703216
+          ],
+          "calf_l": [
+            9.488437283857856,
+            35.98142378875888,
+            93.42445784338186
+          ],
+          "foot_l": [
+            13.708488004475875,
+            44.07457265040282,
+            52.42778674725291
+          ],
+          "ball_l": [
+            16.13913033573391,
+            57.964944853430545,
+            46.2607323968271
+          ],
+          "thigh_r": [
+            -9.072805672062042,
+            -0.16494436990312877,
+            92.88799612986037
+          ],
+          "calf_r": [
+            -9.804810977193121,
+            36.03424133325676,
+            93.26322709073715
+          ],
+          "foot_r": [
+            -15.786004209440378,
+            44.3128323988994,
+            52.5235218531882
+          ],
+          "ball_r": [
+            -18.233091415786458,
+            58.21000829613494,
+            46.378531219014135
+          ],
+          "hand_l": [
+            10.122189543998472,
+            24.838867876753675,
+            111.85926746210833
+          ],
+          "hand_r": [
+            -10.388919071171532,
+            25.737509642519573,
+            112.12286346639684
+          ]
+        }
+      }
+    ],
+    "placement_and_contact_review": "PENDING"
+  },
+  "images": [
+    {
+      "path": "81_01_Arrival.png",
+      "sha256": "3d65ac89cce9380f5d4af9ad8c502fb2ba6a733d9d19c88f0412e03772c8ef1b",
+      "state": "current saved candidate",
+      "map_sha256": "f58ef8b6c730cf1c81a11ba992a0dcd585fcf30442133e9cb65324428c091c1d",
+      "dimensions": [
+        1014,
+        344
+      ]
+    },
+    {
+      "path": "81_02_Desk.png",
+      "sha256": "d52f11c2c2c768904ca891a5f4aae7564b05f3a61ed2bcf7dd9bbe8f27c0c479",
+      "state": "current saved candidate",
+      "map_sha256": "f58ef8b6c730cf1c81a11ba992a0dcd585fcf30442133e9cb65324428c091c1d",
+      "dimensions": [
+        1014,
+        344
+      ]
+    },
+    {
+      "path": "81_01_Entry.png",
+      "sha256": "4e176b47c6d1768f2137c0420dbd4a7d29e9e0388d23887b2434cb339c1738a5",
+      "state": "current saved candidate",
+      "map_sha256": "f58ef8b6c730cf1c81a11ba992a0dcd585fcf30442133e9cb65324428c091c1d",
+      "dimensions": [
+        1014,
+        344
+      ]
+    },
+    {
+      "path": "79_03_Seating.png",
+      "sha256": "b79adb2c4146ff1c2301d0c3096d56fd5eaae94bd056c887773f69ae03a267d3",
+      "state": "earlier detail candidate; furnishings unchanged",
+      "map_sha256": "31fb3a5d7987ba9962c24ba8c56e6b755c3c3a091a6eca8aa336f408b16300bf",
+      "dimensions": [
+        1014,
+        344
+      ]
+    },
+    {
+      "path": "79_06_Wardrobe.png",
+      "sha256": "2fbcfdd14d3f8f773fa5cf0e4800201fda99dde0d914cbbad4208b28745efd2a",
+      "state": "earlier detail candidate; older headers",
+      "map_sha256": "31fb3a5d7987ba9962c24ba8c56e6b755c3c3a091a6eca8aa336f408b16300bf",
+      "dimensions": [
+        1014,
+        344
+      ]
+    }
+  ],
+  "owner_files": [
+    {
+      "file": "Content\\SpaceSurvival\\Materials\\M_AcornV2_ChampagneEdges.uasset",
+      "sha256": "c3b03ea9fe03bb0d3752516664832bc591a523ebd958e4a9201e3edf8b3eadeb",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\SpaceSurvival\\Materials\\M_AcornV2_CockpitPadding.uasset",
+      "sha256": "b9b28ff0612488145e41240a04916449046bad99d151aa68c859c8971beeec2f",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\SpaceSurvival\\Materials\\M_AcornV2_GraphiteStructure.uasset",
+      "sha256": "73f41d0a7520b91f494a46b89c437ae9dcebde20d63befcdb42730da773c34f0",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\SpaceSurvival\\Materials\\M_AcornV2_IonAndNav.uasset",
+      "sha256": "1a22e1726c03d90241ee9e23c030079da0b1d2a51aa54a7f931d13956d66b2a5",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\SpaceSurvival\\Materials\\M_AcornV2_MachinedTitanium.uasset",
+      "sha256": "7d4927137be138f7bf58c9f4173bf0b99fca5813395984f6b83bfc42f5f55833",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\SpaceSurvival\\Materials\\M_GravityFieldCandidateV3.uasset",
+      "sha256": "348108e6cccf28a03271adb75ad5328eb00f9d5ed543c33a62321ed910f50df8",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\SpaceSurvival\\Materials\\M_Hull.uasset",
+      "sha256": "fbe67c304fe03120e9e2ca81811336388db4c779151f8e9598f1b72bd092a9a6",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\SpaceSurvival\\Materials\\M_WormholeTransit.uasset",
+      "sha256": "99958fa43018631fd25172c203e78ef8fd57481217c22b0d7a82fe5bb6a5e5c1",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\SpaceSurvival\\ShipRefresh\\Material_0.uasset",
+      "sha256": "4cd6c3101c85c807d1369c02c8c459e13ea4481c820d58467c14c750b5d5b03a",
+      "unchanged": true
+    },
+    {
+      "file": "SpaceSurvival.uproject",
+      "sha256": "9e3a4861161c1dc89988452fb9fd60a1893e03dd05785c4f0457f8ed9712ba38",
+      "unchanged": true
+    }
+  ],
+  "private_packages": [
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\M_CentralGreenLeaves.uasset",
+      "sha256": "667f7ab39b08420af87b16e607500d4acc36d820f50b6690199f69951478f843"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_CentralStructure_51fd65da.uasset",
+      "sha256": "60c8193cb4f54beefad8aa539b0d6af50a0c3adca5931a6fd1bd5e7995335673"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_CentralStructure_6c6b9818.uasset",
+      "sha256": "9a3e3e29250ded46027215f344ad9cb683254a60abcbfa35450c149343712469"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_CentralStructure_b97a1cc2.uasset",
+      "sha256": "53002e09cfa257d356ac1eca6a95037e001178354911d608cc5b1f6d52a670f8"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_DirectionGlass.uasset",
+      "sha256": "d81b862d999957bd592d4b10e66f093256cee6ad419b23cb80852ea87b1244f2"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_DirectionInk.uasset",
+      "sha256": "82225d63795196681a5a89d8e6c37b5d3712b1063db1c13d36d0eb38914a3675"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_ReceptionMetal.uasset",
+      "sha256": "ad2a6362b8a23fb31b60a9d816e8f66535a9adbc58ef9bbcf9385ed90cfc926c"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_WarmPractical.uasset",
+      "sha256": "b61364906c702771b30254b68bbf05d31ba1b5fdb1958f51a034309405836bf5"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_WayfindingBlue.uasset",
+      "sha256": "4a496ec8bcc0a5224bc5316b81114387ca6fbdd1fbbb7e2a4f47f47c6dba6696"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\M_ArchiveUpholsteryTint.uasset",
+      "sha256": "a85e595f39e8fc31010cc825985f42ca55641625b669a15da262b73bea1826d3"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\M_GreenTreeBranches.uasset",
+      "sha256": "05e80dfd5a58a8d56dd52edc5abb85e17acf25b2b7da98216bb121800ece60d4"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveProjection1.uasset",
+      "sha256": "dd81e8e7d06e80384ce50a4819e6c115386df8beade80c5a20ba6dd5c49df182"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveProjection2.uasset",
+      "sha256": "a77e965d4871263deb8cfeb406a648cd1b2f9b7220af8fbcd5ac0f31060575f6"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveProjection3.uasset",
+      "sha256": "8c31de1c9397ab8b21bce805991bb33eb858d873c7bd5da8eee97698ac750a55"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveTable.uasset",
+      "sha256": "e5c8b1c3b9385373153c35965ea29acc967f07928ab11ba1e16801d87e1202b5"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveUpholstery.uasset",
+      "sha256": "d86a9abc7bd6d17ed1f436cf1f7130a0d6a91a489922f4fb7fd9017d127d27b2"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveWall_382eb49cd2a1.uasset",
+      "sha256": "45ab42f19e48c6b9090afbe7d883fe757f2725555f6337154e97353f688fa258"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveWall_75e8746cd43c.uasset",
+      "sha256": "aa33fb5f1569af0f22f30cdffc44bd6046fc40c16b474a671c9e53e1cd8be437"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveWall_7b7ccec0ddba.uasset",
+      "sha256": "6710f0191fd641b8bd4ef94a5619c7023f13aa891a9ee01dcda6c04f36e809d2"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveWall_8bab5e5dc70e.uasset",
+      "sha256": "cd3ec488473f614a3b9174645a4db1d6d3006324b1722fde4dd432b311149b2b"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_LegibleHeaders.uasset",
+      "sha256": "82581164b0772fb15ebb66fbd9eded1a13701c3911e99b11dd60dee3de55406a"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\SM_ArchiveArmchairCollidable.uasset",
+      "sha256": "ce75ad0ceb99e2ff6e3da6d1fc9399d3eb79b2ac4d184177a362153c3542411f"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\SM_ArchiveTableCollidable.uasset",
+      "sha256": "ee03e61622410aa4d765f1183b724521ab4fa67c8cf7a1fecd982978b8acc72f"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Glyph\\A_Glyph_SeatedVisitor.uasset",
+      "sha256": "ae78d9c574d884a35c681207ac7030b3b1ff5f87698e75a550c6d9143668f1f8"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Glyph\\IK_Glyph.uasset",
+      "sha256": "21bfd9bc203fb077c2f83c7b5cd3f69ab8b6a253f46d779785c4cf462019034d"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Glyph\\IK_Source.uasset",
+      "sha256": "9b56c24c5e37b19ef41a8211e8886884dd644930975e32311f89c7bfd176eca3"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Glyph\\RTG_Glyph.uasset",
+      "sha256": "599f9465bef39790d3068316104f636abb8e7db8848679ecdc768265cd26c3da"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Robe\\A_Robe_SeatedVisitor.uasset",
+      "sha256": "db5575ba31a908542ab84979e3b144fdae4d2d277600d208c08a64a31b0a041f"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Robe\\IK_Robe.uasset",
+      "sha256": "4dfd13f14ef3c00ebd864fda01d18bc3157db7c7f5c3f1c18219c9408214971b"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Robe\\IK_Source.uasset",
+      "sha256": "a4d360938824d8c949eb3d0e62434a0478ba31337f14b0a9ec3d77738f75b974"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Robe\\RTG_Robe.uasset",
+      "sha256": "8dc58dd5e54e5c2e64a834725908fff36daad57f98a422912b261fc6bbc15516"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Seer\\A_Seer_SeatedVisitor.uasset",
+      "sha256": "3393596401ae28a3d9d49a65109c3e74c7565843dca213d09968773e1188af9c"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Seer\\IK_Seer.uasset",
+      "sha256": "343a42b3245691461272c8018318d1a8fb2a8d2026446db83257d8c0e3ee288e"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Seer\\IK_Source.uasset",
+      "sha256": "791600512187cadfa95de3edcc258963464ba016d3492d61b6c9a88a94fffe1f"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Seer\\RTG_Seer.uasset",
+      "sha256": "2738c1d6229ca880ca49ddaf3281ecd999122473920374bfad0c11fc724fbfaa"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Tendril\\A_Tendril_SeatedVisitor.uasset",
+      "sha256": "45b865b3b48cf1b091556fedcd8b039f18bc9304baf2cc02a9d0f4cd065c8f72"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Tendril\\IK_Source.uasset",
+      "sha256": "8338d968b98acba454c1ee290a25a18499600834746d19f34c09ec0dce64a908"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Tendril\\IK_Tendril.uasset",
+      "sha256": "34c3474952e370fb02a27d042c9e2b53a77b882c9654dbc92e91afa2da322846"
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Tendril\\RTG_Tendril.uasset",
+      "sha256": "34f42720f78d4c76dd77e6bf272779f9954712ea70e7ad5eeaff3367a7a2a1cd"
+    }
+  ],
+  "published_build": "0.1.22-alpha / itch2048604 / sourcee6c2a87 unchanged",
+  "limitations": [
+    "No 9/10 or owner visual approval",
+    "No physical input test",
+    "No representative FPS/VRAM measurement",
+    "No new packaged build"
+  ]
+}

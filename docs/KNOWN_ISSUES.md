@@ -3,7 +3,35 @@
 ## October9 central/R, crew and replacement hero
 
 **RPT-20261007-01 / RPT-20261006-04 / RPT-20260923-01 — OPEN / lead.**
-**October9 owner correction:** center and R have not received the same whole-room
+**October9 14:20UTC expanded finish directive:** finish central against the supplied
+rendered concept, then R to at least9/10 against its concept. Continue through
+cohesive market atmosphere (vendors/ads, no vending interactions), dock workers
+and security, lounge bartender/table activity/pool-table finish, then Phoenix
+cockpit fit for taller characters. Reconcile remaining PR69 priorities afterward.
+This supersedes the corrective pass's NPC/hero restriction below; held T remains
+held. NPC job names do not restrict ambient uses such as seated conversations.
+Exclude models with graphic nudity from every common area; there is no designated
+area for them. Dancers remain excluded. Each area needs native whole-room evidence
+and appropriate contact/circulation checks before a completion claim.
+
+**16:23UTC checkpoint — PARTIAL:** saved/reloaded live map `f58ef8b6` has eight
+tall central direction panels, warm fixtures, planted waiting bays and two seated
+readers. R now has three grouped original-kit hologram bays, six upholstered
+chairs, three dressed tables and four seated conversational visitors. Covered
+Olive replaces the hidden exposed-body Amethyst visitor; Elf was screened and
+excluded. Nine furniture actors using private collision copies block ordinary walking; central
+11/11 and central-to-R19/19 waypoints pass. Both readers and all eight new R
+ambient/projection actors advance animation. Corrected label overlap/nameplate
+contrast and retained failures are in the [concept-detail receipt](validation/2026-10-09-central-r-concept-detail.md).
+These are implementation/contact/circulation checks, not9/10 visual acceptance.
+
+**Next lead actions:** continue the concept comparison and the authorized station
+sequence: cohesive market entrance with screened cast/ads, dock activity, lounge
+social groups/pool-table palette, then taller-cast Phoenix fit. Do not substitute
+owner taste review for lead correction or physical-input/performance evidence.
+Current native map remains local; source PR69 is draft and publication unchanged.
+
+**Earlier October9 owner correction (scene details superseded above):** center and R have not received the same whole-room
 finishing discipline as L/T. The cast, desk props and close-up checks below are
 partial implementation, not finished rooms. The corrective whole-room pass now
 has three saved view sets and a 146.61m native walking route, but the final views
@@ -18,7 +46,7 @@ All30 route points pass using ordinary walking input; no capsule teleports or
 collision disabling. Existing ten crew configurations, account/settings and
 source preview remain. The test editor is closed; publication is unchanged.
 
-**Next lead actions:** give R a cohesive waiting/consultation composition instead
+**Historical next actions at13:15:** give R a cohesive waiting/consultation composition instead
 of scattered mechanical furniture; integrate the display wall and its empty
 frames into that composition; balance reception's dark rear face against the
 brighter front and improve distant small headers. Review these in whole-room
@@ -32,9 +60,10 @@ hero to standardize height. This supersedes the October8 pause, NPC exclusion an
 earlier instruction to retain the female bartender for this pass. T display
 selection remains held; dancers and unrelated gameplay changes remain excluded.
 
-Ten cast replacements are saved in live Wayfarer: Dread bartends; Robe, Glyph and
+The earlier ten-role assignment was saved in live Wayfarer: Dread bartends; Robe, Glyph and
 Tribal sell outside; Seer/Tendril staff reception, Olive patrols, Crest runs the
-market route, Warden inspects equipment and Amethyst visits the wardrobe guide.
+market route, Warden inspects equipment and Amethyst visited the wardrobe guide
+(now hidden/replaced by covered Olive as recorded above).
 All use the shared head fill and exact-skeleton role clips at 178cm reference
 height. Central has smaller desk consoles, forms, pens and water; R has a complete
 standing wardrobe console, accurate selection guidance, four waiting chairs with

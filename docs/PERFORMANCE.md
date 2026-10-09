@@ -2,7 +2,14 @@
 
 ## October9 crew and 178cm hero
 
-The later whole-room candidate adds12 placed detail actors and16 material
+The16:23 concept-detail candidate has8,615 actors:113 more than the preceding
+whole-room checkpoint. New ambient duplicates, three replacement holograms,
+plants, warm fixtures and private material variants need a representative native
+frame-time/VRAM check. Two scripted walking routes and short pose/capture samples
+establish no60FPS claim. Root offscreen editor remains open while authorized
+station work continues. [Current evidence](validation/2026-10-09-central-r-concept-detail.md).
+
+The earlier whole-room candidate adds12 placed detail actors and16 material
 instances while reducing several local floods. Neither the146.61m scripted walk
 nor eight ordinary viewport captures measures a performance improvement. Current
 frame-time/VRAM acceptance remains open; the offscreen test editor was closed

@@ -243,10 +243,10 @@ WBS uses refer to existing station, presentation and transit work.
 
 | Stable ID / resource | Acquisition evidence | Whole-project value, timing and next bounded check |
 | --- | --- | --- |
-| LIB-20261007-CLINIC / Medical Clinic and Laboratory Futuristic Sci-Fi | Content/Clinic:257 packages+3 maps,184.74MiB; matching vault payload. | Selected technical cabinets/devices could improve T/R and later infirmary scenery. Inspect a few prop bounds/materials natively before placement; no healing mechanic. |
+| LIB-20261007-CLINIC / Medical Clinic and Laboratory Futuristic Sci-Fi | Content/Clinic:257 packages+3 maps,184.74MiB; matching vault payload. | October9: six instances of the owned armchair furnish R. Private textured tint preserves source maps, and one private mesh copy adds simple BOX collision; source geometry/materials unchanged. Seated contacts and native circulation reviewed. Later cabinets/devices remain candidates; no healing mechanic or whole-pack cook. |
 | LIB-20261007-LASER-BEAMS / Stylized Laser Beam VFX Free | Content/FreeStylizedLaserBeamVFX:52 packages+1 map,19.67MiB; two beam BPs and hit/muzzle materials. | Later existing weapon/equipment effects. Evaluate one beam/emitter in motion against the combat palette; straight beams do not finish curved reception fixtures. |
 | LIB-20261007-GYM-EQUIPMENT / Gym Equipment Assets Pack | Content/GymEAP:180 packages+2 maps+26 FBX,508.98MiB. | Later restrained crew conditioning or mounted gear. Probe selected furniture; no new gym room/exercise system or large-animation-library claim. |
-| LIB-20261007-PLANTS-SAMPLE / Nanite Plants Sample Collection | Content/Nanite_Plants_Sample_Collection:119 packages+1 map,99.70MiB, six geometry packages. No generator found in payload. | Later sparse contained hydroponics/reception contrast. Check selected mesh/material/Nanite compatibility and measured cost before use. |
+| LIB-20261007-PLANTS-SAMPLE / Nanite Plants Sample Collection | Content/Nanite_Plants_Sample_Collection:119 packages+1 map,99.70MiB, six geometry packages. No generator found in payload. | October9: selected Abelia geometry adds contained understory to central/R planters, paired with owned CyberPunkAssets trees. Native appearance reviewed; frame-time/VRAM cost remains unmeasured. No generator, new acquisition or full-pack import. |
 | LIB-20261007-CLOUD-TUNNEL / Clouds Tunnel VDB Effects Pack Loop | Content/Clouds_Tunnel_Loop:21 packages+10 maps,12.63GiB; VDB loops/sparse-volume materials. | Existing transit/electrical-field presentation candidate, after T. Inspect one volume's dimensions/frame/storage cost then render; do not cook the whole pack. |
 | LIB-20261007-RIGGED-LIFT / Rigged Sci-Fi Lift Mobile Platform Elevator | Raw BLEND/converted GLB+17 textures,23 files/222.74MiB in owner FabLibrary; native import UNCONFIRMED. | Later cargo/service hardware if needed. Blender rig/topology/material/clip inspection first; GLB conversion does not establish animation preservation or traversal integration. |
 | LIB-20261007-PARAGON-MANNY / Paragon animations retargeted to Manny | Raw5,370 FBX variants/9.89GiB in owner FabLibrary; no proven matching native import. | Later tiny Director/player/NPC gesture set. Confirm skeleton/root-motion/additive/prop requirements and retarget to the actual character; no thousands-of-clips import or plug-and-play claim. |
@@ -1094,7 +1094,18 @@ The owner now authorizes the current Wayfarer station and apartment in the teste
 
 ### September 24 outpost reuse: A34, A26, A29, A31 and C17
 
-**October9 A34 reuse update:** the live central/R candidate uses P1 GoliathTable02
+**October9 concept-detail reuse:** eight central blue direction panels preserve
+upright P4 window controls; R regroups three complete original-kit hologram bays
+onto its far wall with varied screened cast and private animated hologram
+materials. P1/P3 consultation/storage remain, while the earlier mechanical
+waiting chairs are hidden in favor of owned Clinic upholstery and Restaurant
+tables. Four compatible private seated clips extend the supplied cast to quiet
+conversation/reading roles; exposed-body Amethyst is hidden/replaced by covered
+Olive and Elf is excluded. Acquisition/source assets are unchanged. Native
+collision/circulation and short motion checks pass within scope; quality,
+continuous contact and performance remain separate. [Evidence](../validation/2026-10-09-central-r-concept-detail.md).
+
+**Earlier October9 A34 reuse update:** the live central/R candidate uses P1 GoliathTable02
 for consultation and two complete P3 Storage3000Series_V1 assemblies for records.
 Existing three-part chairs keep their source geometry and receive private satin
 material children. Two existing planter/foliage assemblies group the waiting
