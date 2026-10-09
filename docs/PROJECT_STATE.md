@@ -1,5 +1,20 @@
 # SpaceSurvival project state
 
+**October9 17:31UTC market checkpoint — work remains active.** Current saved and
+reloaded Wayfarer is `4bd63687`,8,634 actors. Original stalls move toward the
+walkway, screened vendors/customers and a seated pair give them purpose, and two
+upright glass displays rotate five distinct campaigns. Native walk29/29 and
+five-phase carousel checks pass; Reload85 preserves actor state and clean
+packages. [Current market receipt and images](validation/2026-10-09-market-atmosphere.md).
+The central/R work below is retained; the overall concept-quality target remains
+open. Dock, lounge and taller-cast Phoenix work continue next. No cook/upload or
+merge; existing Build55 and published0.1.22-alpha/itch2048604 are unchanged.
+Four new private material packages and the current map remain local. Root
+offscreen55108 is open, PIE stopped at this checkpoint. Physical inputs,
+continuous contact and representative FPS/VRAM remain unverified.
+
+**The following16:23 map identity is historical, superseded above.**
+
 **October9 16:23UTC concept-detail checkpoint — work remains active.** Saved and
 reloaded live Wayfarer is `f58ef8b6`, with8,615 actors. Central now has eight tall
 blue direction panels, warm rib fixtures, planted waiting bays, two seated readers

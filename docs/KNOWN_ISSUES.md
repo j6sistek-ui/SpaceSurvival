@@ -26,10 +26,20 @@ contrast and retained failures are in the [concept-detail receipt](validation/20
 These are implementation/contact/circulation checks, not9/10 visual acceptance.
 
 **Next lead actions:** continue the concept comparison and the authorized station
-sequence: cohesive market entrance with screened cast/ads, dock activity, lounge
+sequence: dock activity, lounge
 social groups/pool-table palette, then taller-cast Phoenix fit. Do not substitute
 owner taste review for lead correction or physical-input/performance evidence.
 Current native map remains local; source PR69 is draft and publication unchanged.
+
+**17:31UTC market checkpoint — PARTIAL:** candidate84 `4bd63687` saves/reloads
+closer intact stalls, visible vendors, two covered customers/two seated visitors,
+matching shop labels and two upright five-campaign holographic ad displays.
+Walk84c passes29/29,122.53m with collision retained; prior failed test waypoints
+and their existing wall/gantry/cabinet blockers remain documented. All five
+native ad phases and eight animated cast samples checked. No vending behavior,
+graphic nudity or dancers. [Market evidence](validation/2026-10-09-market-atmosphere.md).
+Dock workers/security/carrying, lounge finish, Phoenix fit and the overall
+central/R quality target remain lead work, not owner-only acceptance tasks.
 
 **Earlier October9 owner correction (scene details superseded above):** center and R have not received the same whole-room
 finishing discipline as L/T. The cast, desk props and close-up checks below are

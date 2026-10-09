@@ -1094,6 +1094,15 @@ The owner now authorizes the current Wayfarer station and apartment in the teste
 
 ### September 24 outpost reuse: A34, A26, A29, A31 and C17
 
+**October9 market reuse:** whole original P5 shop groups move closer to the
+promenade; owned Clinic/Restaurant furniture supports two covered seated
+conversational variants and a proper lamp. Two upright P4 hosts use private
+animated translucent material derivatives with the existing five market
+campaigns. Cosmic Tacos remains the unchanged owner source; the four earlier
+generated campaigns gain native display/cycle evidence, not owner art approval.
+Acquisition is unchanged. No vending system, new voice dependency or dancers.
+[Saved-scene and circulation evidence](../validation/2026-10-09-market-atmosphere.md).
+
 **October9 concept-detail reuse:** eight central blue direction panels preserve
 upright P4 window controls; R regroups three complete original-kit hologram bays
 onto its far wall with varied screened cast and private animated hologram

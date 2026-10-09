@@ -2,6 +2,12 @@
 
 ## October9 crew and 178cm hero
 
+The17:31 market candidate has8,634 actors,19 more than candidate81. Four new
+ambient characters, two translucent cycling ad panes, a lamp and local light
+need measurement with the already-active cast. The122.53m walk and five-phase
+ad capture establish no FPS or VRAM target. Original exposure/quality settings
+are preserved. [Market evidence](validation/2026-10-09-market-atmosphere.md).
+
 The16:23 concept-detail candidate has8,615 actors:113 more than the preceding
 whole-room checkpoint. New ambient duplicates, three replacement holograms,
 plants, warm fixtures and private material variants need a representative native

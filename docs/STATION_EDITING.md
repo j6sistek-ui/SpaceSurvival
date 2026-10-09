@@ -17,6 +17,16 @@ the furniture. Visually screen the model before placement: graphic nudity is
 excluded from every common area, and no separate adult area currently exists.
 Dancers remain outside this pass. Retain supplied costume/material identities.
 
+`Scripts/RefineStationMarketAtmosphere.py` is also already adopted in candidate84.
+It moves complete original market assemblies, preserves source assets and uses
+screened covered cast/compatible existing seated clips. Private animated glass
+materials preserve all five campaign images in upright original P4 frames.
+The observed ComponentMask input is `None`; after any partial graph failure,
+inspect before retrying. The `refine` stage records actual sightline/face/light
+repairs. Never replay apply/refine on the current map. See the
+[market receipt](validation/2026-10-09-market-atmosphere.md) for rollback location,
+private packages, failed/corrected walking routes and current image hashes.
+
 The concept-detail stages are `Scripts/RefineStationConcept.py` (central),
 `Scripts/AuthorStationVisitorSeats.py` (four compatible seated derivatives) and
 `Scripts/RefineStationArchiveConcept.py` (R furniture/display composition). They
