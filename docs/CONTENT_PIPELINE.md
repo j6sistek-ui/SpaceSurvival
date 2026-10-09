@@ -379,6 +379,17 @@ The owner found the uniform bright stars overpowering the ship and station on Se
 
 ## October9 normalized crew and replacement hero
 
+The later central/R composition pass reuses owned P1 `SM_GoliathTable02`, complete
+two-part P3 `SM_Storage3000Series_V1`, the existing three-part TitaniumIndustry
+chairs, Cyberpunk tablet/paper props and paired station planter/foliage actors.
+No vendor source is overwritten. Sixteen private material children in
+`/Game/OutpostSandbox/StationRefinement/WholeRooms20261009` retain source textures,
+normals, masks and emissive controls, with local roughness/specular/metalness and
+paint-tint overrides. These assets and map `14a49399` must travel together in a
+private restore; Git only contains the recipe and rendered evidence. This is
+reused art with unfinished visual evaluation, not a new acquisition or license.
+See the [whole-room receipt](validation/2026-10-09-central-r-whole-room-review.md).
+
 Owner-delivered assets remain private under
 `/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/<Name>` and
 `/Game/SpaceSurvival/Licensed/HeroReplacement178`. Ten non-dancer crew are assigned

@@ -154,6 +154,13 @@ the reference here, not a lux figure. Terrestrial rules apply again only for a s
   Fixing something that is provably broken is work; changing a dial is a decision.
 - **Never run two captures concurrently.**
 
+October9 offscreen startup recovery: the normal restored layout can crash in
+`NwiroIKPanel::OnSpawnTab`. Keep the owner layout intact and pass a verified private
+`-EditorLayoutIni` file alongside `-RenderOffscreen`; the working local file and
+retained failure receipts are in [BUILD_RUN](docs/BUILD_RUN.md). Copying the safe
+layout onto the normal profile did not resolve this launch; the explicit override
+did. Do not repeatedly retry the default layout or alter the owner's launcher.
+
 ## The ship
 
 The **Stellar Phoenix is the default hull.** `-SSClassic` flies the old kinematic hull; `-SSPhoenix` still

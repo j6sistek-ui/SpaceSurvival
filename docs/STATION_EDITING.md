@@ -10,6 +10,18 @@ The native `CurrentStationVerification5` check confirms Play reaches Survival/SS
 
 ## October9 crew and central/R authoring
 
+`Scripts/RefineStationWholeRooms.py` is the later central/R-only composition
+recipe. `apply` and `refine_grouping` are separate reviewed stages; both require
+the live map, expected disk hash, stopped PIE and clean packages, return rollback
+state and never save automatically. Do not replay either on the adopted map.
+It reuses complete owned P1/P3 furniture, preserves shared assembly pivots, caps
+thin prop width, and creates16 child instances under
+`/Game/OutpostSandbox/StationRefinement/WholeRooms20261009`. Original material
+parents/maps remain. Save the changed map and those private instances together;
+the script alone does not restore the current scene. Before/after native evidence,
+backups and the remaining visual defects are recorded in the
+[whole-room receipt](validation/2026-10-09-central-r-whole-room-review.md).
+
 The new helpers target the **live Wayfarer map**, require PIE stopped and verify
 the expected saved-map hash before changing placed actors. Back up the exact map
 first. Do not reapply to an already adopted map: use `IntegrateStationCrew.verify`

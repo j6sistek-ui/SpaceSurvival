@@ -3,6 +3,29 @@
 ## October9 central/R, crew and replacement hero
 
 **RPT-20261007-01 / RPT-20261006-04 / RPT-20260923-01 — OPEN / lead.**
+**October9 owner correction:** center and R have not received the same whole-room
+finishing discipline as L/T. The cast, desk props and close-up checks below are
+partial implementation, not finished rooms. The corrective whole-room pass now
+has three saved view sets and a 146.61m native walking route, but the final views
+still expose unfinished room composition. Preserve accepted L and held T; do not
+expand NPC/hero scope.
+
+**13:15UTC checkpoint — PARTIAL:** saved/reloaded live map `14a49399` has four
+clearer regional signs, corrected room names, a consultation desk beside the R
+waiting area, tighter chair/table groups, records storage and two planted
+dividers. Private satin furniture instances retain original kit surface detail.
+All30 route points pass using ordinary walking input; no capsule teleports or
+collision disabling. Existing ten crew configurations, account/settings and
+source preview remain. The test editor is closed; publication is unchanged.
+
+**Next lead actions:** give R a cohesive waiting/consultation composition instead
+of scattered mechanical furniture; integrate the display wall and its empty
+frames into that composition; balance reception's dark rear face against the
+brighter front and improve distant small headers. Review these in whole-room
+arrival/reverse views. These are observed implementation gaps, not an owner
+preference gate. Current pictures and the retained failed checks are in the
+[whole-room receipt](validation/2026-10-09-central-r-whole-room-review.md).
+
 The owner resumed central/R work, authorized incoming non-dancer crew, specified
 one bartender and three outside merchants, and included the on-disk replacement
 hero to standardize height. This supersedes the October8 pause, NPC exclusion and
@@ -25,15 +48,15 @@ are saved in the existing Squirrel tuning row. A temporary native pawn traversed
 central into R with real collision and idle/jog transitions, then the original
 Nyxar pawn was restored; the owner's saved wardrobe choice was not changed.
 
-Native wardrobe Use opens the real Crew Wardrobe menu; no selection was made and
-the account remains Nyxar. Reload65 verifies 8,490 actor identities, ten cast
+In the earlier crew pass, native wardrobe Use opened the real Crew Wardrobe menu;
+no selection was made and the account remains Nyxar. Reload65 verifies 8,490 actor identities, ten cast
 assignments, eight persistent NoCollision props, service use point and hero paths;
 PIE is stopped and both dirty-package lists are empty.
 
-Next lead checks: physical wardrobe input, full hero stairs/cockpit/pilot contact,
-continuous staff hand/prop contact and representative performance. Owner reviews
-central/R layout, cast and height together; this is not a whole-room quality or
-Phase1 acceptance claim. New hero geometry is heavier than its predecessor; no
+Lead still owns finishing central/R as complete rooms. Physical wardrobe input,
+full hero stairs/cockpit/pilot contact, continuous staff hand/prop contact and
+representative performance remain separate follow-ups. The rooms are not ready for a completion
+claim or acceptance handoff. New hero geometry is heavier than its predecessor; no
 60FPS claim. No cook, itch publication or merge. See the
 [scoped receipt and labeled images](validation/2026-10-09-station-crew-central-r.md).
 Progress-report automation remains paused. Older topic records below are retained

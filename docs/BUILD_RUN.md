@@ -10,6 +10,15 @@ Earlier DLL-lock/object-only Build39–46 receipts are historical. Verify the ac
 running editor and dirty packages before any later link/restart; do not close an
 owner session merely to validate a scene-only trial. [Current evidence](validation/2026-10-09-station-crew-central-r.md).
 
+**October9 offscreen recovery:** restoring the owner's normal editor layout twice
+crashed in `NwiroIKPanel::OnSpawnTab`. For agent-run room review, the successful
+launch kept `-RenderOffscreen` and passed
+`-EditorLayoutIni=C:/Users/j6sis/SpaceSurvival/.agent/local/StationRefinement/WholeRooms67/EditorLayout.offscreen.ini`.
+The original owner layout was restored byte-for-byte and never replaced by the
+test layout. Reuse a verified private layout override for later offscreen runs;
+do not change the normal owner launcher or repeatedly open the crashing tab.
+The private profile must exist before launch. [Recovery and review receipt](validation/2026-10-09-central-r-whole-room-review.md).
+
 **Current project, October6:** use `C:/Users/j6sis/SpaceSurvival` for gameplay, station editing and the imported library. [Edit Current Station.cmd](../Edit%20Current%20Station.cmd) opens the current Wayfarer map in the normal editor. [Play Development Build.cmd](../Play%20Development%20Build.cmd) launches the development game. The canonical Editor rebuild passed in 35.74 seconds with ULAT enabled. `CurrentStationVerification5` passes all 12 native checks: editor Play travels to Survival/SSGameMode, loads one current station with 7,775 tagged outpost actors and 744 apartment children, and preserves all four protected saved maps. These are scripted checks; physical input and visual acceptance remain separate. [Project State](PROJECT_STATE.md) records verification and package location.
 
 **October 1 station integration:** the current development checkout combines the repaired game with Wayfarer Exchange and its furnished apartment. The editable station and separate building sandbox remain preserved. The Windows package and focused packaged station smoke pass at e6c2a87; itch0.1.22-alpha is published and build2048604 is verified READY. [Project State](PROJECT_STATE.md#source-build-and-release) owns the final source, build and published identity. Source presence or a desktop shortcut does not prove an updated itch installation.

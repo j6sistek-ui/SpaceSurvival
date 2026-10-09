@@ -1,6 +1,23 @@
 # SpaceSurvival project state
 
-**October9 resumed station pass:** the owner authorized central/R finishing,
+**October9 13:15UTC correction — central/R remain unfinished.** The owner correctly
+rejected the earlier completion implication. Three whole-room review sets now
+exist; the latest saved/reloaded Wayfarer is `14a49399`, with8,502 actors, twelve
+new room-detail actors and sixteen private furniture material instances. Signs,
+consultation/waiting grouping and local lighting changed. Ordinary native walking
+reached30/30 points over146.61m; all ten crew configurations and the saved account
+remain. R's sparse composition/display wall and the dark reception rear are still
+lead-owned implementation gaps. [Current receipt and pictures](validation/2026-10-09-central-r-whole-room-review.md).
+
+Build55 DLL `7b0ea67f`, tuning `559cbf22` and source preview `e7958758` are unchanged.
+The root offscreen editor closed cleanly after reload; saves, owner layout and ten
+pre-existing owner-edited files retain their hashes. One scale field reloads with
+4.91e-10 numerical roundoff; the exact-equality failure is retained and explained.
+No new C++ build, cook, upload, merge or room acceptance. PR69 remains draft;
+published0.1.22-alpha/itch2048604 is unchanged. The map and new material instances
+remain private/local; GitHub contains the recipe and evidence, not a full restore.
+
+**Earlier October9 crew checkpoint (map identity superseded above):** the owner authorized central/R finishing,
 non-dancer crew, a new bartender, three outside merchants and the 178cm replacement
 hero. This supersedes the pause/NPC-exclusion entries below. Ten crew assignments,
 central desk dressing, R waiting/consultation layout and the complete owned

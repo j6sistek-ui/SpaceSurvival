@@ -2,6 +2,12 @@
 
 ## October9 crew and 178cm hero
 
+The later whole-room candidate adds12 placed detail actors and16 material
+instances while reducing several local floods. Neither the146.61m scripted walk
+nor eight ordinary viewport captures measures a performance improvement. Current
+frame-time/VRAM acceptance remains open; the offscreen test editor was closed
+after verification. [Room evidence](validation/2026-10-09-central-r-whole-room-review.md).
+
 Ten supplied crew now occupy existing actor slots; no new background population
 or extra head-light scheme was added. The streamed BeginPlay repair activates
 their existing tick/animation/routes, so previously frozen scenes are not a valid

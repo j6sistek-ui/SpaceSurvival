@@ -1094,6 +1094,15 @@ The owner now authorizes the current Wayfarer station and apartment in the teste
 
 ### September 24 outpost reuse: A34, A26, A29, A31 and C17
 
+**October9 A34 reuse update:** the live central/R candidate uses P1 GoliathTable02
+for consultation and two complete P3 Storage3000Series_V1 assemblies for records.
+Existing three-part chairs keep their source geometry and receive private satin
+material children. Two existing planter/foliage assemblies group the waiting
+area. Acquisition is unchanged; these are installed owned parts. The30-point
+native route passes, but the full-room views still need coherent grouping and
+lighting/display integration. [Dated evidence](../validation/2026-10-09-central-r-whole-room-review.md)
+and KNOWN_ISSUES own evaluation and next work; no new purchase/import is needed.
+
 **Acquisition remains unchanged: these are already installed, owned assets.** The owner authorized a separate aesthetic station redesign at `/Game/OutpostSandbox/L_AsteroidOutpost`; the active gameplay station and published package are not replaced. [Owner guide](../OUTPOST_SANDBOX.md).
 
 - **A34 / WBS 8.1-8.5, 10.3:** P1 WorkStation supplies the central engineering assembly; P2 supplies benches; P3 supplies correctly assembled diagnostic/operations consoles and seats; P4 supplies modular structure, ceiling, glass and hologram wall parts; P5 supplies five composed native market groups, stock, produce, plants, signs and two assembled drone visuals. The recipe uses selected parts and small assemblies rather than duplicating complete example rooms. Shared component pivots, local rotations and floor support must stay coherent. Moving doors, NPC routes and interaction come from the project's sandbox code, not automatically from pack ownership.
