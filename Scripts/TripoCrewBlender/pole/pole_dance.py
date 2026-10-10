@@ -305,6 +305,8 @@ def clip_bodywave(t):
     want["hand_l"] = on_pole(60, 1.24 + 0.02 * math.sin(w - 1.4)); want["hand_r"] = on_pole(120, 1.24 + 0.02 * math.sin(w - 1.4))
     E["elbow_l"].location = (0.45, 0.8, 1.0); E["elbow_r"].location = (-0.45, 0.8, 1.0)
     E["look"].location = (0.0, -1.0, 1.75)
+    # facing the pole the forearms come straight at it: a knuckles-along-the-pole grip needs the palm turned sideways
+    # (thumb up), which grip_matrix does not do yet - left as authored; check_contact flags it.
     solve(want); hand_on_pole("l"); hand_on_pole("r")
 
 
@@ -318,11 +320,12 @@ def clip_backslide(t):
     pelvis_at((0.04 * math.sin(2 * w) * down, cy - 0.02 * down, STAND_Z - 0.36 * down), pitch=6 * down, roll=4 * math.sin(2 * w) * down)
     bend("spine_01", pitch=-4 * down); bend("spine_02", pitch=-3); bend("spine_03", pitch=-5 + 2 * down, roll=-3 * math.sin(2 * w) * down)
     bend("neck_01", pitch=-6); bend("head", pitch=-4)
-    hz = 1.76 - 0.10 * down
+    hz = 1.62 - 0.10 * down
     want["hand_l"] = on_pole(30, hz); want["hand_r"] = on_pole(150, hz)
-    E["elbow_l"].location = (0.45, 0.1, 1.9); E["elbow_r"].location = (-0.45, 0.1, 1.9)
+    E["elbow_l"].location = (0.45, -0.35, 1.75 - 0.3 * down); E["elbow_r"].location = (-0.45, -0.35, 1.75 - 0.3 * down)
     E["look"].location = (0.3 * math.sin(w), -2.5, 1.5)
-    solve(want); hand_on_pole("l"); hand_on_pole("r")
+    solve(want); grip_pole(want, "l", hz); grip_pole(want, "r", hz)
+    hand_on_pole("l"); hand_on_pole("r")
 
 
 def clip_spin(t):
@@ -350,9 +353,10 @@ def clip_spin(t):
         E["foot_" + side].rotation_euler = (Matrix.Rotation(a, 4, 'Z') @ Matrix.Rotation(math.radians(-35 * lift), 4, 'X') @ REST["foot_" + side]).to_euler('XYZ')
     hz = 1.78 - 0.30 * (1 - (z - 0.56) / (STAND_Z - 0.56))
     want["hand_r"] = on_pole(theta - 10, hz + 0.08); want["hand_l"] = on_pole(theta - 40, hz - 0.08)
-    E["elbow_r"].location = pel + Vector((0, 0, 0.3)) - fwd * 0.3 - radial * 0.3; E["elbow_l"].location = pel + Vector((0, 0, 0.2)) - fwd * 0.2 + radial * 0.2
+    E["elbow_r"].location = pel + Vector((0, 0, 0.35)) - fwd * 0.25 + radial * 0.10; E["elbow_l"].location = pel + Vector((0, 0, 0.2)) + fwd * 0.2 + radial * 0.15
     E["look"].location = pel + Vector((0, 0, 0.5)) + fwd * 1.5
-    solve(want); hand_on_pole("r"); hand_on_pole("l")
+    solve(want); grip_pole(want, "r", hz + 0.08); grip_pole(want, "l", hz - 0.08)
+    hand_on_pole("r"); hand_on_pole("l")
 
 
 def clip_kick(t):
@@ -365,10 +369,10 @@ def clip_kick(t):
     E["knee_l"].location = (cx + 0.6, -0.6, 0.6 + 0.4 * lift); E["knee_r"].location = (cx - 0.15, -0.8, 0.5)
     pelvis_at((cx - 0.05 * lift, 0.0, STAND_Z - 0.03 - 0.03 * lift), yaw=-8, roll=14 * lift)
     bend("spine_01", roll=-6 * lift); bend("spine_02", roll=-5 * lift); bend("spine_03", roll=-6 * lift, yaw=6); bend("neck_01", roll=4 * lift); bend("head")
-    want["hand_r"] = on_pole(10, 1.66); E["elbow_r"].location = (-0.25, 0.3, 1.3)
+    want["hand_r"] = on_pole(10, 1.46); E["elbow_r"].location = (0.24, 0.40, 1.38)   # side hold, as the hip circle
     want["hand_l"] = Vector((cx + 0.26, 0.04, 0.88)).lerp(Vector((cx + 0.55, -0.1, 1.45)), lift); E["elbow_l"].location = (cx + 0.6, 0.5, 1.0)
     E["look"].location = (cx + 0.5 * lift, -2.5, 1.6)
-    solve(want); hand_on_pole("r"); hand_free("l", roll=-30 * lift)
+    solve(want); grip_pole(want, "r", 1.46); hand_on_pole("r"); hand_free("l", roll=-30 * lift)
 
 
 MOVES = {"Idle": (clip_idle, 4.0, True), "HipCircle": (clip_hipcircle, 4.0, True), "BodyWave": (clip_bodywave, 3.0, True),
