@@ -518,6 +518,10 @@ void USSNpcTalkSubsystem::SendToLlama(const FString &Character, const FString &Q
     if (Character == TEXT("Director") && SSNpcTalk::HasProfanity(Question))
         Framed += TEXT(" The pilot just swore at you: swear straight back, as crude as they were, in English.");
     Framed += TEXT(" Two sentences at most, no quotation marks around your words.");
+    // A question that never got its answer (server down, cancelled) must not stay in the history: the Gemma 3 and
+    // Mistral chat templates raise on two user turns in a row, and the whole request fails with a 500.
+    if (Turns.Num() && Turns.Last().Role == TEXT("user"))
+        Turns.Pop();
     Turns.Add({TEXT("user"), Framed});
     while (Turns.Num() > HistoryTurns * 2)
         Turns.RemoveAt(0);

@@ -153,7 +153,15 @@ wrong shape for a two-sentence radio line that tracks a hull number; these are t
 | Lewdiculous L3-8B-Stheno-v3.2 (owner's link) | 4.92 GB | test only | **CC BY-NC 4.0** | classic persona chat model; cannot ship in a sold build |
 | FallenMerick MN-Violet-Lotus-12B | 7.48 GB | test only | cc-by-4.0 on the card, but two inputs are **NC** (Lumimaid, Lyra v4) | best-shaped 12B for short lines; a merge inherits its inputs' terms |
 | Ministral-Instruct-2410-8B-DPO-RP | 4.91 GB | test only | **Mistral Research Licence** | the only 8B instruct in Rikotta's list; non-commercial |
-| mergekit-community Deepseek-R1-Distill-NSFW-RPv1 (owner's link) | ~4.9 GB | control | not stated | R1 distill: thinks before every reply; long-prose adapters; uncensored |
+| mergekit-community Deepseek-R1-Distill-NSFW-RPv1 (owner's link) | 4.92 GB | control | not stated | R1 distill: thinks before every reply; long-prose adapters; uncensored |
+| DavidAU Gemma-3-it-4B-Uncensored (DBL-X) | 2.71 GB | Director, sub-6B tier | Gemma Terms of Use (card says Apache, base is Google's) | the only card with a crude rant delivered on request ("f-bombs galore"); instruct kept; author says refusals still happen without his jailbreak line, "hit regen" |
+| mlabonne gemma-3-4b-it-abliterated (mradermacher GGUF) | 2.49 GB | Director or station, sub-6B tier | Gemma Terms of Use | cleanest small instruct chat model, refusals removed; nothing on the card about swearing; "fairly experimental", stray tokens |
+| DavidAU Gemma-3 4B MAX-HORROR (owner's split: dancers) | 3.50 GB | test | Gemma Terms of Use | horror-prose story tune with a horror imatrix; wants rep pen 1.1; the owner wants it tried for the dancers anyway |
+| QuantFactory NSFW-3B (owner's split: Director) | 1.71 GB | test | **none stated anywhere** (release blocker) | a 2024 StableLM-3B jailbreak tune, 4k context, ChatML, no example output; now redirects to HelpingAI/HELVETE-3B |
+
+Every Gemma 3 template has no system role (the system text is folded into the first user turn) and, like the Mistral
+templates, raises if two user turns arrive in a row, so an unanswered question is dropped from the history before
+the next one is sent. All of them advertise 128k context; the explicit `-c 4096` matters for VRAM.
 
 Rejected on the cards: Wayfarer-12B (second-person narrator, single-turn training), Violet Twilight v0.2 (weak at
 persona-and-length prompts, already inside Violet-Lotus), MN-12B-Lyra-v4 (NC), Captain-Eris_Violet (GGUF template
