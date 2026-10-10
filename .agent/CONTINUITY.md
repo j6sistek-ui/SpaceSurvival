@@ -1,5 +1,10 @@
 # SpaceSurvival continuity
 
+[MILESTONE]
+- 2026-10-10T10:16Z [USER] Joy and Cyborg are authorized in the existing private apartment beneath Room R; owner approved a simple polished-metal pole. Supersedes no-permanent-placement for these two only.
+- 2026-10-10T10:16Z [TOOL] Saved170 `7e30f69f`/9058 actors, seven additions/all9051 existing fingerprints preserved before save. Native171/240 samples finalized;173 nine clear/support probes;175 seven-addition reload clean, strict full-world comparison retains three existing attached-prop pose differences.404 protected files unchanged. Root30652 closed cleanly withRT0; current source docs/PR checkpoint pending.
+- 2026-10-10T10:16Z [TOOL] Owner Blender fitting support: delivered neutral copy retains TempMotion unassigned and head-binds previously unparented wig root. Three clothing pieces/textures imported into separate preview; no weights/native adoption. Original sources untouched. Central fixed-v2/R work stays active; other scope held.
+
 Canonical briefing compacted 2026-10-09T06:25Z. Previous full briefing: `.agent/local/StationRefinement/ContinuityBeforeCrewCloseout-20261009T0610.md`. AGENTS.md + CLAUDE.md apply; GAME_SCOPE > IMPLEMENT > assumptions. KNOWN_ISSUES owns active work/acceptance; PROJECT_STATE owns source/build/release. Dated validation receipts remain immutable.
 
 [PLANS]

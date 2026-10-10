@@ -29,12 +29,14 @@ complete cycling checks. Check R's existing display while finishing R. T's
 hardware choice stays held; ad audio is future work, and other rooms are not
 reopened by this checkpoint. Saved art does not prove current native cycling.
 
-The offscreen verification editor is now closed cleanly. One scoped NPC
-exception is authorized: Joy's lighter-blue derivative and all135 Cyborg clips
-are saved, with two groom bindings and a preview Blueprint. Fresh asset reload
-passes; rendered skin/hair, continuous motion/contact and performance remain
-unverified. Joy's stray left hair loop is now repaired, saved and freshly reloaded;
-all135 clips remain intact and the private set is149 packages. No permanent placement.
+The owner now authorizes permanent Joy and Cyborg placement in the private apartment
+beneath Room R, with a polished-metal pole. Saved170 has9058 actors; seven additions
+preserve all9051 prior actor fingerprints before save. Native171 verifies both looping
+clips and reviewed pole/hair contacts;173 clears nine player-sized probe points.
+Reload175 verifies all seven additions and clean packages, while retaining three
+existing attached-prop world-transform differences. All135 Joy clips and149 asset
+packages remain intact. The offscreen editor is closed; RT stays off.
+[Apartment placement and limits](validation/2026-10-10-apartment-residents.md).
 [Hair correction and memory baseline](validation/2026-10-10-joy-hair-and-memory.md).
 Future performance target: 4K60 or1440p90+ with maximum ray tracing, no frame
 generation. Current RT stays OFF; quality/design first. The initial editor-only

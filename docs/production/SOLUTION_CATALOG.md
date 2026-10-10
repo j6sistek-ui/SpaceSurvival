@@ -1,5 +1,7 @@
 # SpaceSurvival whole-project solution catalog
 
+October10 JOY-20261009 follow-up: light-blue Joy and canonical rigged Cyborg are now placed in the private apartment beneath Room R with an owner-approved simple polished pole. Existing Genesis nickel parent is reused; no new acquisition. Separate owner-supplied three-piece clothing FBX has textures but no skeleton/weights; fitting preview is separate from native adoption. [Evidence](../validation/2026-10-10-apartment-residents.md).
+
 **October10 JOY-20261009 update:** owner explicitly authorizes lighter-blue Joy
 and transfer of the current purple Cyborg animations. The confirmed original
 scenes remain intact.149 private derivative packages now include the corrected

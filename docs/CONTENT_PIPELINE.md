@@ -1,5 +1,7 @@
 # Phase 1 content pipeline
 
+October10 Joy/Cyborg apartment adoption reuses the saved character assets and installed Genesis nickel material parent. One private pole material and seven map actors are added; the original149 Joy packages/all135 clips remain unchanged. [Evidence and storage](validation/2026-10-10-apartment-residents.md). The separate neutral-pose Blender outfit-fitting copy is not imported or animation-ready content.
+
 **October10 hair correction:** Joy's light-blue source derivative now reversibly
 filters three malformed left-side guide bundles. New base groom/binding and the
 existing review BP are saved; all135 clips, body and original sources are intact.
