@@ -111,6 +111,18 @@ arm weights on the chest, close-up renders with backfaces in black):
   (|x| 0.09-0.17 m) arm weight goes to `spine_03`; the chest below the armpit ignores the collarbone; the band
   1.12-1.46 m is smoothed. Result: hip circle clean; back-slide reduced to one small split at the spine_02/spine_03
   joint between the breasts (arched back, both arms overhead) - not weights, left as a known limit.
+- **The grip itself (second pass, owner: "the pole grip is not" - the hand floated beside the pole, fingers in the
+  air).** Measured with `pole/measure_grip.py`: the palm sat 2-9 cm off the pole and the fingertips pointed up to
+  14 cm away. Root cause: the original clips aimed the elbow at the FAR side of the pole, so the arm hooked round it,
+  and placed the wrist ON the pole surface. Every standard grip wraps a bar that runs along the knuckles, so for a
+  vertical pole the knuckles must stack up the pole - natural only with the forearm coming in roughly level. Idle and
+  HipCircle are now a side hold at shoulder height (hand 1.44-1.46 m, elbow back and level on her side of the pole),
+  with `grip_pole()` placing the wrist so the palm of the final, wrist-limited grip lands on the pole. Wrist roll is
+  measured against a straight wrist (`wrist_roll`), never raw axes (the right hand is ~180 deg rolled at rest - the
+  first twist-share used raw axes and twisted the forearm ~87 deg). `check_contact()` now runs with every clip and
+  prints PASS/FAIL per hand: Idle and HipCircle PASS (palm on the pole, fingertips round it, wrist bend <= 27 deg,
+  roll <= 38 deg); **BodyWave, BackSlide, Spin and Kick still FAIL** (hands 1.4-9 cm off the pole) - not placed in the
+  station; they need the same elbow and grip treatment per pose.
 - Re-import without orphaning the clips: `Scripts/ReimportCrewSkin.py` replaces the skinned mesh on the EXISTING
   skeleton (ImportTripoCrew.py would delete the Rig folder and make a new skeleton). Checked: skeleton unchanged,
   `MI_CyborgBody` kept, 135 clips on it, 178 cm. Clips re-imported with `ImportCrewClips.py` (SS_CLIPS_MATCH=Pole).

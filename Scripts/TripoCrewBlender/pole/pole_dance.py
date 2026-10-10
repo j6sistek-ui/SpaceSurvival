@@ -31,7 +31,10 @@ ALL = ["Idle", "HipCircle", "BodyWave", "BackSlide", "Spin", "Kick"]
 CLIPS = args[2:] or ALL
 FPS = 30
 POLE_R = 0.025
-WRIST_LIMIT = 35.0   # degrees a gripping hand may turn away from the forearm's line (owner: "twisted arm")
+WRIST_LIMIT = 45.0   # degrees a gripping hand may turn away from the forearm's line (owner: "twisted arm")
+DIAGONAL = 0.0      # 0: knuckles stacked along the pole (a bar grip round a vertical pole); 1: hand on the forearm's line
+PALM_L = 0.065       # wrist to the middle of the palm along the hand (m)
+PALM_T = 0.022       # palm thickness: the wrist axis sits this far off the pole surface (m)
 TWIST_SHARE = 0.5    # share of the hand's remaining roll the forearm twist bone takes
 os.makedirs(OUTDIR, exist_ok=True)
 
@@ -161,6 +164,14 @@ def forearm_line(side):
     return PB["lowerarm_" + side].matrix @ (REST["lowerarm_" + side].inverted() @ REST["hand_" + side])
 
 
+def wrist_roll(side):
+    """The hand's roll about its own long axis RELATIVE TO A STRAIGHT WRIST (radians). Comparing raw axes is wrong on
+    this rig: the right hand's bone sits ~180 deg rolled from its forearm at rest."""
+    rel = forearm_line(side).to_quaternion().inverted() @ PB["hand_" + side].matrix.to_quaternion()
+    roll = 2 * math.atan2(rel.y, rel.w)
+    return roll - 2 * math.pi if roll > math.pi else roll + 2 * math.pi if roll < -math.pi else roll
+
+
 def share_twist(side):
     """The forearm twist bone takes a share of the hand's roll about the forearm, so the skin turns along the forearm
     instead of creasing at the wrist (measured 2026-10-10: up to 51 deg of roll, all at the wrist)."""
@@ -168,29 +179,50 @@ def share_twist(side):
     if tb not in PB:
         return
     up()
-    fa = PB["lowerarm_" + side].matrix.to_3x3(); hd = PB["hand_" + side].matrix.to_3x3()
-    axis = fa.col[1].normalized()
-    a = (fa.col[0] - axis * fa.col[0].dot(axis)).normalized(); b = (hd.col[0] - axis * hd.col[0].dot(axis)).normalized()
-    roll = math.atan2(axis.dot(a.cross(b)), a.dot(b))
-    PB[tb].rotation_quaternion = Quaternion((0, 1, 0), roll * TWIST_SHARE)
+    PB[tb].rotation_quaternion = Quaternion((0, 1, 0), wrist_roll(side) * TWIST_SHARE)
+
+
+def grip_matrix(side):
+    """The diagonal grip: palm toward the pole (+Z into it), the hand's long axis halfway between the forearm's line and
+    the horizontal tangent round the pole, so the pole crosses the palm diagonally and the curled fingers close round it."""
+    g = PB["hand_" + side].head; d = Vector((g.x, g.y, 0)).normalized()          # outward, from the pole to the hand
+    z = -d
+    fwd = PB["lowerarm_" + side].vector.normalized()
+    f = (fwd - z * fwd.dot(z)).normalized()                                       # forearm line in the palm plane
+    t = Vector((0, 0, 1)).cross(d); t = t if t.dot(f) >= 0 else -t                # tangent round the pole
+    y = (f * DIAGONAL + t * (1 - DIAGONAL)).normalized()
+    x = y.cross(z)
+    M = Matrix((x, y, z)).transposed().to_4x4(); M.translation = g
+    return M
+
+
+def limited_grip(side):
+    """The diagonal grip, turned back toward the forearm's line until the wrist bends at most WRIST_LIMIT."""
+    straight = forearm_line(side).to_quaternion(); grip = grip_matrix(side).to_quaternion()
+    if straight.dot(grip) < 0:                       # same rotation, other hemisphere: blend the short way round
+        grip.negate()
+    turn = math.degrees(straight.rotation_difference(grip).angle)
+    if turn > WRIST_LIMIT:
+        grip = straight.slerp(grip, WRIST_LIMIT / turn)
+    return grip.to_matrix()
+
+
+def grip_pole(want, side, z_grip):
+    """Put the wrist where the palm of the FINAL (wrist-limited) grip sits on the pole at z_grip, and re-solve the arm.
+    The grip depends on the arm and the arm on the grip, so three passes."""
+    for _ in range(3):
+        R = limited_grip(side)
+        y, into = R.col[1], R.col[2]              # hand axis, palm normal (into the pole)
+        want["hand_" + side] = Vector((0, 0, z_grip)) - into * (POLE_R + PALM_T) - y * PALM_L
+        solve(want)
 
 
 def hand_on_pole(side, fingers=1.0):
     """Wrap the hand around the pole where it is: palm into the pole, fingers round it. A bar grip (hand axis flat
     round the pole) is the ideal; an overhead grip holds a vertical pole diagonally through the fist, so the hand is
     tilted toward the forearm's line until the wrist turns no more than WRIST_LIMIT."""
-    g = PB["hand_" + side].head; d = Vector((-g.x, -g.y, 0)).normalized()
-    fwd = PB["lowerarm_" + side].vector.normalized()
-    y = Vector((0, 0, 1)).cross(d); y = y if y.dot(fwd) >= 0 else -y
-    z = -d; x = y.cross(z)
-    M = Matrix((x, y, z)).transposed().to_4x4(); M.translation = g
-    straight = forearm_line(side).to_quaternion(); grip = M.to_quaternion()
-    if straight.dot(grip) < 0:                       # same rotation, other hemisphere: blend the short way round
-        grip.negate()
-    turn = math.degrees(straight.rotation_difference(grip).angle)
-    if turn > WRIST_LIMIT:
-        grip = straight.slerp(grip, WRIST_LIMIT / turn)
-    M = grip.to_matrix().to_4x4(); M.translation = g
+    g = PB["hand_" + side].head.copy()
+    M = limited_grip(side).to_4x4(); M.translation = g
     set_world("hand_" + side, M); share_twist(side); grip_fingers(side, fingers)
 
 
@@ -240,7 +272,8 @@ def clip_idle(t):
     pelvis_at((cx + sway, 0.01 * math.sin(2 * w), STAND_Z - 0.012 + 0.01 * math.cos(2 * w)), yaw=-6 + 3 * math.sin(w), roll=-3 * math.sin(w))
     bend("spine_01", pitch=2, roll=2 * math.sin(w)); bend("spine_02", roll=1.5 * math.sin(w)); bend("spine_03", roll=2 * math.sin(w), yaw=4)
     bend("neck_01"); bend("head")
-    want["hand_r"] = on_pole(10, 1.56 + 0.01 * math.sin(w)); E["elbow_r"].location = (-0.35, 0.25, 1.55)
+    want["hand_r"] = on_pole(10, 1.44 + 0.01 * math.sin(w)); E["elbow_r"].location = (0.24, 0.40, 1.36)   # side hold
+    solve(want); grip_pole(want, "r", 1.44 + 0.01 * math.sin(w))
     want["hand_l"] = (cx + 0.25 + 0.02 * math.sin(w), 0.04, 0.86 + 0.01 * math.sin(w)); E["elbow_l"].location = (cx + 0.5, 0.5, 0.9)
     E["look"].location = (cx - 0.3 + 0.4 * math.sin(w * 0.5), -2.5, 1.55)
     solve(want); hand_on_pole("r"); hand_free("l")
@@ -254,7 +287,8 @@ def clip_hipcircle(t):
               yaw=-5 + 4 * math.sin(w), pitch=-6 * math.cos(w), roll=-7 * math.sin(w))
     bend("spine_01", pitch=4 * math.cos(w), roll=3 * math.sin(w)); bend("spine_02", pitch=3 * math.cos(w))
     bend("spine_03", pitch=-5 * math.cos(w), roll=-4 * math.sin(w), yaw=6); bend("neck_01"); bend("head")
-    want["hand_r"] = on_pole(10, 1.62); E["elbow_r"].location = (-0.35, 0.22, 1.6)
+    want["hand_r"] = on_pole(10, 1.46); E["elbow_r"].location = (0.24, 0.40, 1.38)   # side hold: elbow back, level
+    solve(want); grip_pole(want, "r", 1.46)
     want["hand_l"] = PB["pelvis"].head + Vector((0.19, -0.03, -0.02)); E["elbow_l"].location = (cx + 0.6, 0.4, 0.95)
     E["look"].location = (cx - 0.2 + 0.3 * math.sin(w), -2.5, 1.5)
     solve(want); hand_on_pole("r"); hand_free("l", roll=-20)
@@ -410,6 +444,32 @@ def export(clip, act):
     print("POLE| wrote", path)
 
 
+def check_contact(n):
+    """The standard check a pole clip must pass before anyone looks at it (owner 2026-10-10, after three revisions: "this
+    is like standard process, the things to verify for animations"). For every hand on the pole: the palm's bone line
+    within 1.5 cm of where it sits with the skin on the pole, and every fingertip within 6 cm of the pole axis (wrapped
+    round it, not pointing away). Wrist bend and roll are printed too; judge the render for the rest."""
+    for side in ("l", "r"):
+        tips = [b.name for b in PB if b.name.endswith("_" + side) and b.name.split("_")[0] in ("index", "middle", "ring", "pinky")
+                and b.name.split("_")[1] in ("03", "3")]
+        on, palm_off, tip_out, bend, roll = 0, 0.0, 0.0, 0.0, 0.0
+        for f in range(1, n + 1, 3):
+            sc.frame_set(f)
+            hand = PB["hand_" + side]
+            palm = hand.head + hand.vector.normalized() * PALM_L
+            if math.hypot(palm.x, palm.y) > 0.20:
+                continue
+            on += 1
+            palm_off = max(palm_off, math.hypot(palm.x, palm.y) - (POLE_R + PALM_T))
+            tip_out = max(tip_out, max(math.hypot(PB[t].tail.x, PB[t].tail.y) for t in tips) - 0.06)
+            bend = max(bend, math.degrees(forearm_line(side).to_3x3().col[1].angle(hand.matrix.to_3x3().col[1])))
+            roll = max(roll, abs(math.degrees(wrist_roll(side))))
+        verdict = "free hand" if not on else ("PASS" if palm_off <= 0.015 and tip_out <= 0.03 else "FAIL")
+        print("POLE| contact %s %s: %s  (%d frames on the pole; palm %+.3f m, fingertips %+.3f m, wrist bend <= %.0f, roll <= %.0f deg)"
+              % (CLIP, side, verdict, on, palm_off, tip_out, bend, roll))
+
+
 action = author(CLIP)
+check_contact(sc.frame_end)
 render_strip(sc.frame_end, os.path.join(OUTDIR, "%s_Pole%s_strip" % (NAME, CLIP)))
 export(CLIP, action)

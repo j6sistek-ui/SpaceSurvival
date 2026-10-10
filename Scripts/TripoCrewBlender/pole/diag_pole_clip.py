@@ -28,6 +28,13 @@ n = sc.frame_end
 
 
 def roll_about_forearm(side):
+    """Roll relative to a straight wrist (pole_dance.wrist_roll) and the bend between the forearm line and the hand."""
+    straight = g["forearm_line"](side)
+    bend = math.degrees(straight.to_3x3().col[1].angle(PB["hand_" + side].matrix.to_3x3().col[1]))
+    return math.degrees(g["wrist_roll"](side)), bend
+
+
+def _raw_roll_about_forearm(side):
     """Angle between the hand's X axis and the forearm's X axis, both projected onto the plane normal to the forearm."""
     fa = PB["lowerarm_" + side].matrix.to_3x3(); hd = PB["hand_" + side].matrix.to_3x3()
     axis = fa.col[1].normalized()
@@ -88,6 +95,8 @@ w = bpy.data.worlds.new("w"); sc.world = w; w.use_nodes = True; w.node_tree.node
 for rot, e in (((50, 0, -30), 3.0), ((60, 0, 150), 1.5)):
     L = bpy.data.lights.new("k", 'SUN'); L.energy = e; o = bpy.data.objects.new("k", L); sc.collection.objects.link(o)
     o.rotation_euler = [math.radians(x) for x in rot]
+bpy.ops.mesh.primitive_cylinder_add(radius=g["POLE_R"], depth=2.6, location=(0, 0, 1.3))
+pmat = bpy.data.materials.new("pole"); pmat.diffuse_color = (0.2, 0.25, 0.9, 1); bpy.context.active_object.data.materials.append(pmat)
 cam = bpy.data.cameras.new("c"); cam.lens = 50; co = bpy.data.objects.new("c", cam); sc.collection.objects.link(co); sc.camera = co
 
 
@@ -103,4 +112,6 @@ for frame, tag in ((worst_twist[0], "twist"), (worst_lean[0], "lean")):
     chest = PB["spine_03"].head.copy(); hand = PB["hand_r"].head.copy()
     shot(frame, tag + "_chest", chest + Vector((-0.35, -0.75, 0.15)), chest + Vector((-0.08, 0, 0.05)))
     shot(frame, tag + "_arm", (hand + chest) / 2 + Vector((-0.9, -0.6, 0.0)), (hand + chest) / 2)
+    shot(frame, tag + "_grip", hand + Vector((-0.35, -0.45, 0.05)), hand)
+    shot(frame, tag + "_gripback", hand + Vector((0.35, 0.45, 0.05)), hand)
 print("DIAG| renders in", OUT)
