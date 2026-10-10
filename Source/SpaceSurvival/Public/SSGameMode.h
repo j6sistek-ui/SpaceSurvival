@@ -206,6 +206,9 @@ private:
     bool bVillainHasSpoken = false; // this run; the pilot may talk back to him only after his first line
     bool bTalkBound = false;
     FSSTalkIdentity TalkingTo;
+    /** The crew member last spoken to, who keeps the conversation while near and recent (owner, 2026-10-10). */
+    FSSTalkIdentity LastPartner;
+    double LastPartnerTime = -1.0e9;
     FString NpcDigest(const FSSTalkIdentity &Who) const;
     class USSNpcTalkSubsystem *NpcTalk() const;
     void OnNpcTranscript(const FString &Character, const FString &Text);

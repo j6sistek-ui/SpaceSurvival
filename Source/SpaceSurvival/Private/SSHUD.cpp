@@ -733,6 +733,9 @@ void ASSHUD::DrawHUD()
         Paragraph(GM->PilotReaction, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, CaptionW - 24.f * Scale, .75f,
                   FLinearColor(.9f, .94f, 1.f));
     }
+    // Where the talk captions may start, growing upward: above the villain's caption whenever it is showing, so the
+    // pilot's "You:" line never lands on his answer (owner, 2026-10-10).
+    float TalkStackBottom = H - 300.f * Scale;
     if (S.settings.subtitles && GM->VillainLineSeconds > 0.f && !MenuOpen)
     {
         // The villain's own line, above the pilot's so the two can trade words. Ember on near-black marks it
@@ -745,6 +748,7 @@ void ASSHUD::DrawHUD()
         DrawRect(FLinearColor(.07f, .012f, .008f, .9f), CaptionX, CaptionY, CaptionW, CaptionH);
         Paragraph(GM->VillainLine, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, TextW, .75f,
                   FLinearColor(1.f, .56f, .4f));
+        TalkStackBottom = FMath::Min(TalkStackBottom, CaptionY - 8.f * Scale);
     }
     if (!MenuOpen && (GM->NpcLineSeconds > 0.f || GM->TalkTranscriptSeconds > 0.f || !GM->TalkStatus.IsEmpty()))
     {
@@ -753,7 +757,7 @@ void ASSHUD::DrawHUD()
         const float CaptionW = FMath::Min(760.f * Scale, W - 2.f * Margin);
         const float TextW = CaptionW - 24.f * Scale;
         const float CaptionX = (W - CaptionW) * .5f;
-        float Y = H - 300.f * Scale;
+        float Y = TalkStackBottom;
         if (GM->NpcLineSeconds > 0.f)
         {
             const FString Line = GM->NpcName + TEXT(": ") + GM->NpcLine;
