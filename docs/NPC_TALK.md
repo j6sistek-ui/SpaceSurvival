@@ -61,7 +61,7 @@ beyond one line. The core package carries `DefaultNpcTalk.ini` pointing at where
 
 ## The loop
 
-1. Key down: `BeginTalk` picks the target, refreshes the digest (second-person facts: wave, hull, credits, kills) and
+1. Key down: `BeginTalk` picks the target, refreshes the digest (second-person facts; for the villain the hull and kills are words such as "in tatters" and "a couple of dozen", never figures a player could check against the HUD a second later, plus what the pilot is, so a squirrel gets called a squirrel) and
    opens the default microphone through the engine's `FAudioCapture`.
 2. Key up: the samples are mixed to mono, resampled to 16 kHz, written as a WAV and posted to whisper-server's
    `/inference`. Under a quarter of a second of audio is rejected as "Nothing heard".

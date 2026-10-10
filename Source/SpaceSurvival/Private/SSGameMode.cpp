@@ -2530,12 +2530,33 @@ FString ASSGameMode::NpcDigest(const FSSTalkIdentity &Who) const
     const bool Run = GI && GI->Session.run.active;
     if (Who.Name == TEXT("Director"))
     {
-        FString Out = TEXT("You are mid-attack. The pilot you are talking to is flying the Stellar Phoenix against "
-                           "your forces right now.");
+        // No checkable numbers (owner: "you could say any number to me and I'd believe it, but many would check"):
+        // the hull moves between the question and the answer, so he gets the state in words and the wave, which
+        // does not move. What the pilot is comes from the body they wear, so the squirrel gets called a squirrel.
+        const float Hull = Run ? GI->Session.run.hull : 100.f;
+        const int32 Kills = Run ? GI->Session.run.kills : 0;
+        const TCHAR *HullWords = Hull > 90.f   ? TEXT("barely scratched")
+                                 : Hull > 60.f ? TEXT("holding, with the damage showing")
+                                 : Hull > 35.f ? TEXT("hurting badly")
+                                 : Hull > 15.f ? TEXT("in tatters")
+                                               : TEXT("about to come apart");
+        const TCHAR *KillWords = Kills == 0   ? TEXT("none of your machines yet")
+                                 : Kills < 5  ? TEXT("a handful of your machines")
+                                 : Kills < 15 ? TEXT("a dozen or so of your machines")
+                                 : Kills < 40 ? TEXT("a couple of dozen of your machines")
+                                              : TEXT("dozens of your machines");
+        FString Body = WornHeroId().ToString();
+        for (int32 Index = 1; Index < Body.Len(); ++Index)
+            if (FChar::IsUpper(Body[Index]) && FChar::IsLower(Body[Index - 1]))
+                Body.InsertAt(Index++, TEXT(' '));
+        FString Out =
+            FString::Printf(TEXT("You are mid-attack. The pilot you are talking to is a %s flying the Stellar "
+                                 "Phoenix against your forces right now."),
+                            *Body.ToLower());
         if (Run)
-            Out += FString::Printf(TEXT(" They are on wave %d, their hull is at %d percent, and they have destroyed %d "
-                                        "of your machines this run."),
-                                   GI->Session.run.wave, int32(GI->Session.run.hull), GI->Session.run.kills);
+            Out += FString::Printf(TEXT(" This is their wave %d. Their hull is %s. They have destroyed %s this run. "
+                                        "Never quote figures at them; you know their state, so use it to needle them."),
+                                   GI->Session.run.wave, HullWords, KillWords);
         return Out;
     }
     // The live detail of a special role ("playing pool, just scratched") rides here, so the model can talk about it.
