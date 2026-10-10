@@ -175,6 +175,13 @@ Every Llama card above wants `repeat_penalty` 1.05 or higher; llama-server defau
 (`RepeatPenalty`). The Nemo GGUFs advertise 131072 or 1024000 context, so the explicit `-c 4096` the game passes
 matters: without it the KV cache alone would blow the 16 GB.
 
+### The owner's Director criterion (2026-10-10, after reading the probes)
+
+"Swearing is not as essential as that deep articulate hatred. I'll take a poetic villain too. Just leave the prompt
+for when it slips." So the Director is judged on contempt, menace and staying in character first; swearing back is
+a bonus, and the mirror instruction stays in the framing. On that reading Gemma-3-4b-it-MAX-HORROR (3.5 GB) is the
+owner's leading Director candidate ("might be the Director's fit").
+
 ### Testing by hand in Open WebUI
 
 `M:\Local AI\NPCTalk\ollama\create_models.ps1` creates `ss-director-{qwen4b,hermes8b,mistral7b,dolphin8b}` and
