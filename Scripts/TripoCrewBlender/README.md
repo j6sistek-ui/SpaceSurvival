@@ -29,8 +29,19 @@ Per-character extras, run on the `.blend` before step 5 (each script's docstring
 - `rig_hair.py` - Elf, Silver: hair chains (hair_<azimuth>_<n>, 7 bones) where long hair hangs, joints laid ON the
   hair (a lock draped over a shoulder otherwise put its chain inside the body), and hair lying on a shoulder rides
   that shoulder. Motion is a spring/collision simulation baked per clip by `Scripts/AuthorTripoCrewHair.py`.
-- `tentacles/` - Kraken and Abyss. Humanoid clips on Kraken get her own tentacle lower body back from
-  `Scripts/AuthorTripoCrewTentacleBlend.py`.
+- `build_feet.py` then `fix_feet.py` - Warden: her Tripo model ends in a partial boot with no foot volume (owner,
+  2026-10-09: "missing feet"), and the crew skeleton fitted to her bounds pointed the foot bones down-back with the
+  feet hung on `calf_twist_01_*`. `build_feet.py` joins a blocky armoured boot per side (27 cm, flat sole, square toe
+  cap, the owner's concept) textured from her own plating; `fix_feet.py` aims foot/ball along the boot and weights
+  it. Every clip must be re-retargeted afterwards (full character rebuild in docs/TRIPO_CREW_ANIMATION.md).
+- `rig_glb_on_crew.py` - the Cyborg (2026-10-09): the owner's regenerated GLB on the previous Cyborg's crew skeleton
+  (same character, every landmark within 1 cm - measure before reusing it on anything else), bone-heat weights with
+  `root` excluded, one material renamed `<Name>Body`. `export_glb_textures.py` writes her PBR set as PNGs for
+  `Scripts/ImportCrewMaterial.py`. Then `export_for_unreal.py` + `check_weights.py` as for any crew member.
+- `pole/pole_dance.py` - six pole-dance clips authored procedurally on her rest-pose `.blend` (no owned pack has
+  pole work); the pole stands on the clip origin. Imported by `Scripts/ImportCrewClips.py`.
+- `tentacles/` - Abyss (Kraken was deleted 2026-10-09). Humanoid clips on the octopus get her own tentacle lower
+  body back from `Scripts/AuthorTripoCrewTentacleBlend.py`.
 
 Olive was replaced on 2026-10-08 by the owner's newer Tripo export (72,735 faces; the Unreal import was an older
 mesh with its textures landing on the wrong parts). Its eight `tripo_part_N` materials are renamed to the Unreal
@@ -40,5 +51,5 @@ Check renders for any clip: `validate/export_clips.py` (Unreal, -RenderOffscreen
 (Blender, CPU) -> `validate/sheets.py` (contact sheets). Adding animations: [docs/TRIPO_CREW_ANIMATION.md](../../docs/TRIPO_CREW_ANIMATION.md).
 
 Checks after any repair: `check_weights.py` (extremities on the right bones) and no vertex on `root` - both must
-read 0 before importing. On Kraken and Abyss the extremities are tentacle chains (counted as valid); their
+read 0 before importing. On the octopus (Abyss) the extremities are tentacle chains (counted as valid); her
 deformation gate is `tentacles/check_stretch.py` and `tentacles/check_floor.py`.

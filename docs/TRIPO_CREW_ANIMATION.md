@@ -63,9 +63,10 @@ old one (a surviving skeleton at the import path is silently reused and drops th
 generated folder first, or list it in `RIG_FOLDER` (in all three scripts) to import into a fresh `Rig/`. A new
 character goes into the `CREW` tables of both `ImportTripoCrew.py` and `AuthorTripoCrew.py`.
 
-Materials are never imported: Elf and Cyborg slots take the instances from the repair chat's native meshes in
-`CharacterRepairs_20261008` (their restored roughness is kept), every other character's from `/Game/TripoModels` by
-slot name. Morph targets are not imported.
+Materials are never imported by the mesh import: the Elf's slots take the instances from the repair chat's native mesh
+in `CharacterRepairs_20261008` (its restored roughness is kept), the Cyborg's one slot takes `MI_CyborgBody`, built
+from her own 4K set by `Scripts/ImportCrewMaterial.py` (`MATERIAL_SLOTS`), every other character's from
+`/Game/TripoModels` by slot name. Morph targets are not imported.
 
 ## Per-character log
 
@@ -81,8 +82,8 @@ slot name. Morph targets are not imported.
 | Olive | Security | owner's newer Tripo export, re-skinned; floor-root weights removed | - | no weapons or salutes (owner: not military) |
 | Warden | Maintenance | arrived unrigged: fitted crew skeleton, bone-heat weights; floor-root weights removed | - | zero-G and carry clips carry root motion; no helmet in vacuum |
 | Dread | Bartender | re-skinned; floor-root weights removed | - | nothing on the floor behind a bar (lying, deep squats); no standing drink or toast clip exists in any owned pack |
-| Kraken | Waitress (1-2 on the whole station) | tentacle body; her human arm bones carry almost no skin, so the long arm tentacles `LArmTent0/RArmTent0` take the arm motion (`EXTRA_CHAINS`, `EXTRA_MAP`) and the short ones keep their own wiggle | her own tentacle crawl / turn / idle replaces everything below the waist, **root included**, chosen by the clip name (`AuthorTripoCrewTentacleBlend.py`: Walk/Carry/Run/Haul = crawl, TurnL / Turn_Left = left turn, TurnR / Turn_Right = right turn, else idle) | a source clip's legs, hips and root motion are discarded, so kicks, squats, sits and travelling moves do not transfer; hand and finger gestures read weakly (no hands); her imported tentacle clips carry no visible pelvis bob (exported 100x too small; `tentacles/export_for_unreal.py` now scales it, so a re-export and re-import restores it); new tentacle-only motion is a new `make("Tent<Name>", ...)` in `tentacles/animate_tentacles.py` plus the clip name added in three places - the clip tuple in `ImportTripoCrew.py` `import_clips` (which also decides the `Kraken_<Clip>.fbx` file it looks for), `TentacleBlend`'s fixed clip list and its `source_for` - then `ImportTripoCrew.py` with `SS_TRIPOCREW_ONLY=Kraken` (re-imports her mesh) |
-| Abyss | none (owner choosing Abyss or Kraken) | tentacle body like Kraken, **but no arm-tentacle wiring yet** | none yet - her tentacle blend starts only once `TripoCrew/Abyss/Role` exists | before her first humanoid clip: add Abyss to `EXTRA_CHAINS` (AuthorTripoCrew.py) and `EXTRA_MAP` (AuthorTripoCrewRoles.py), run `AuthorTripoCrew.py` with `SS_TRIPOCREW_ONLY=Abyss`, then the roles run with `SS_ROLES_REBUILD_RTG=Abyss`; base clips alone stay on human legs |
+| ~~Kraken~~ DELETED 2026-10-09 (the owner kept Abyss; this row stays as the octopus recipe Abyss inherits) | Waitress (1-2 on the whole station) | tentacle body; the human arm bones carry almost no skin, so the long arm tentacles `LArmTent0/RArmTent0` take the arm motion (`EXTRA_CHAINS`, `EXTRA_MAP`) and the short ones keep their own wiggle | her own tentacle crawl / turn / idle replaces everything below the waist, **root included**, chosen by the clip name (`AuthorTripoCrewTentacleBlend.py`: Walk/Carry/Run/Haul = crawl, TurnL / Turn_Left = left turn, TurnR / Turn_Right = right turn, else idle) | a source clip's legs, hips and root motion are discarded, so kicks, squats, sits and travelling moves do not transfer; hand and finger gestures read weakly (no hands); her imported tentacle clips carry no visible pelvis bob (exported 100x too small; `tentacles/export_for_unreal.py` now scales it, so a re-export and re-import restores it); new tentacle-only motion is a new `make("Tent<Name>", ...)` in `tentacles/animate_tentacles.py` plus the clip name added in three places - the clip tuple in `ImportTripoCrew.py` `import_clips` (which also decides the `<Name>_<Clip>.fbx` file it looks for), `TentacleBlend`'s fixed clip list and its `source_for` - then `ImportTripoCrew.py` with `SS_TRIPOCREW_ONLY=Abyss` (re-imports her mesh) |
+| Abyss | Waitress (owner's choice 2026-10-09; Kraken deleted) | tentacle body, **but no arm-tentacle wiring yet** | none yet - her tentacle blend starts only once `TripoCrew/Abyss/Role` exists | before her first humanoid clip: add Abyss to `EXTRA_CHAINS` (AuthorTripoCrew.py) and `EXTRA_MAP` (AuthorTripoCrewRoles.py), run `AuthorTripoCrew.py` with `SS_TRIPOCREW_ONLY=Abyss`, then the roles run with `SS_ROLES_REBUILD_RTG=Abyss`; base clips alone stay on human legs |
 | Seer, Tendril | Desk | cloak / robe tails blended toward the pelvis | - | seated terminal clips need a chair; deep squats lay the cloak on the floor |
 | Violet | Dancer | re-skinned; floor-root weights removed | - | - |
 | Cyan | Dancer, Flirt | arrived unrigged: fitted crew skeleton, bone-heat weights; floor-root weights removed | - | - |
@@ -91,7 +92,21 @@ slot name. Morph targets are not imported.
 | Finhead | Lounge | - | - | `Emote_Guitar` in the lounge set is an air-guitar mime with no guitar |
 | Amethyst | Lounge | arrived unrigged: fitted crew skeleton, bone-heat weights; floor-root weights removed | - | as Finhead |
 | Elf | Dancer, Flirt, Lounge (base body, outfits later) | repair-chat rig with rebuilt pelvis/thigh frames; 7 hair chains x 7 bones; hair resting on the shoulders rides the shoulder | hair simulation baked per clip | T-pose bind; check very fast moves for hair overshoot; a faint hair crease at the back of the shoulder remains in a few clips |
-| Cyborg | Dancer, Flirt, Lounge (base body, outfits later) | repair-chat rig; mechanical hips and legs are the design | - | large bust: clips where the arms cross or the hands press the chest pass into it (the clips were made for flatter bodies; weights cannot fix it); an arm-spread retarget offset would clear most of it at the cost of looser hand contacts - owner's call, not applied. Owner (2026-10-08): the model itself may be redone |
+| Cyborg | Dancer, Flirt, Lounge (base body, outfits later) + six authored pole clips | **rebuilt 2026-10-09** from the owner's regenerated GLB (`M:/Local AI/Projects/newCYBORG`, one mesh, one 4K PBR set): the previous Cyborg's crew skeleton fitted by landmark match, bone-heat weights, floor root excluded (`rig_glb_on_crew.py`); mechanical hips and legs are the design | - | pole set `A_Cyborg_Pole{Idle,HipCircle,BodyWave,BackSlide,Spin,Kick}` is authored, not retargeted (see "Pole clips" below): THE POLE STANDS ON THE ACTOR ORIGIN, so a pole dancer is her own actor with a pole mesh placed on her origin. Clips where the arms cross the chest can still pass into the bust (made for flatter bodies) - look at the render |
+
+## Pole clips (Cyborg)
+
+No owned pack has pole work (every vault, `Content/` and `M:` were searched on 2026-10-09), so
+`Scripts/TripoCrewBlender/pole/pole_dance.py` authors them on the rigged rest-pose `.blend` (IK on wrists and ankles,
+feet held flat, hands wrapped round the pole, pelvis/spine keyed in world space, baked to FK, centimetre FBX per clip)
+and `Scripts/ImportCrewClips.py` imports them onto `SK_Cyborg`'s skeleton as `TripoCrew/Cyborg/Role/A_Cyborg_Pole*`
+(`SS_CLIPS_WHO=Cyborg SS_CLIPS_DIR=<fbx folder> SS_CLIPS_MATCH=Pole`). Idle, HipCircle, BodyWave and BackSlide loop;
+Spin (a fireman spin once and a quarter round the pole, sliding down, standing back up) and Kick are one-shots. To
+change a move edit its `clip_*` function (positions in metres, the pole on the origin, she faces -Y and her left is
++x); a new move is a function plus a `MOVES` row. Look at them in the studio with `SS_STUDIO_EXTRA=Pole
+SS_STUDIO_POLE=1 SS_STUDIO_SHOTS=none` (`CaptureStudio.py` draws a chrome pole on the origin for those shots) and
+`sheets_extra.py`. A crew rebuild leaves `Role/` alone, so the pole clips survive it; re-run the import after a
+skeleton change.
 
 ## Any character
 

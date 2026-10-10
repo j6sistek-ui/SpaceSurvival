@@ -26,9 +26,10 @@ LIB = u.EditorAssetLibrary
 TOOLS = u.AssetToolsHelpers.get_asset_tools()
 
 
-RIG_FOLDER = {"Kraken", "Abyss", "Ember", "Crest", "Olive", "Elf"}  # see ImportTripoCrew.py
-EXTRA_MAP = {"Ember": {"LeftArmLower": "LeftArm", "RightArmLower": "RightArm"},  # four-armed: lower pair follows
-             "Kraken": {"LeftArmTent": "LeftArm", "RightArmTent": "RightArm"}}  # her arms are tentacles
+RIG_FOLDER = {"Abyss", "Ember", "Crest", "Olive", "Elf", "Cyborg"}  # see ImportTripoCrew.py
+EXTRA_MAP = {"Ember": {"LeftArmLower": "LeftArm", "RightArmLower": "RightArm"}}  # four-armed: lower pair follows
+# Abyss (kept 2026-10-09; Kraken deleted) needs {"LeftArmTent": "LeftArm", "RightArmTent": "RightArm"} here, after
+# her EXTRA_CHAINS entry in AuthorTripoCrew.py, before her first humanoid clip - her arms are tentacles too.
 
 
 def mesh_path(who):
@@ -186,9 +187,10 @@ SECURITY_PROJECT = [G + "ExpressiveGestures/Animation/" + c for c in (
         "General_Worker/AS_Worker_Idle_Alert", "General_Worker/AS_Worker_Turn_Left", "General_Worker/AS_Worker_Turn_Right",
         "Maintenance/biometric_scanner/AS_Hand_Scanner_1_Loop", "Maintenance/biometric_scanner/AS_Hand_Scanner_2_Loop",
         "Computer/AS_ReadCodes_Loop")]
-# Kraken waits tables and checks on guests (owner: one or two on the whole station at most). Only her humanoid
-# upper body takes these; Scripts/AuthorTripoCrewTentacleBlend.py then puts her own tentacle crawl, turns and idle
-# back under every clip, so she never walks on borrowed human legs.
+# The waitress waits tables and checks on guests (owner: one or two on the whole station at most). The role went
+# to Kraken first; on 2026-10-09 the owner kept Abyss and deleted Kraken. Only the octopus's humanoid upper body takes
+# these; Scripts/AuthorTripoCrewTentacleBlend.py then puts her own tentacle crawl, turns and idle back under every
+# clip, so she never walks on borrowed human legs.
 WAITRESS_PROJECT = [G + "Space_Crew_Animation/Animations/" + c for c in (
     "Cargo/AS_CarryBoxWalk_Medium", "Cargo/AS_PickItem_MidShelf_Medium", "Cargo/AS_PlaceBoxShelfMid_Medium",
     "Maintenance/AS_Carry_Toolbox", "General_Worker/AS_Worker_Idle")] + \
@@ -221,7 +223,8 @@ ROLES = {
     "Desk": {"cast": ["Seer", "Tendril"], "sets": [("UE4", "Merchant", DESK_TALK), ("Manny", "Paragon", DESK_EMOTES),
                                                    ("Manny", "Project", DESK_WORK)]},
     "Maintenance": {"cast": ["Warden"], "sets": [("Manny", "Project", MAINT_ZEROG + MAINT_GROUND)]},
-    "Waitress": {"cast": ["Kraken"], "sets": [("Manny", "Paragon", WAITRESS_EMOTES), ("Manny", "Project", WAITRESS_PROJECT)]},
+    # cast Abyss here once her arm tentacles are wired (EXTRA_CHAINS + EXTRA_MAP), not before
+    "Waitress": {"cast": [], "sets": [("Manny", "Paragon", WAITRESS_EMOTES), ("Manny", "Project", WAITRESS_PROJECT)]},
     "Security": {"cast": ["Olive"], "sets": [("Manny", "Paragon", SECURITY_EMOTES), ("Manny", "Project", SECURITY_PROJECT)]},
     "Lounge": {"cast": ["Finhead", "Amethyst", "Elf", "Cyborg"],
                "sets": [("Manny", "Paragon", LOUNGE_EMOTES), ("Biped", "BarPeople", BAR_CUSTOMERS),

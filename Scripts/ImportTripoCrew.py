@@ -27,6 +27,10 @@ Elf and Cyborg (2026-10-08) are repaired base bodies delivered by the character-
 weighted, with hand-restored roughness on their native materials. Their slots take the material instances off
 the DELIVERED native meshes (MATERIAL_FROM), matched by slot name, so a re-import here never resets those
 settings; nothing under CharacterRepairs_20261008 is written.
+
+Cyborg (2026-10-09) is the owner's regenerated model (M:/Local AI/Projects/newCYBORG, one mesh, one 4K PBR set) on the
+crew skeleton of the previous Cyborg with bone-heat weights (Scripts/TripoCrewBlender/rig_glb_on_crew.py). Its one slot
+takes MI_CyborgBody, built from its own textures by Scripts/ImportCrewMaterial.py (MATERIAL_SLOTS).
 """
 import os
 
@@ -51,19 +55,20 @@ CREW = {
     "Warden": "armored_humanoid_3d_model",
     "Tribal": "fantasy_creature_3d_model",
     "Amethyst": "fantasy_elf_3d_model_Clone1",
-    "Kraken": "sci-fi_octopus_humanoid_3d_model",
-    "Abyss": "sci-fi_octopus_humanoid_3d_model_Clone1",
+    "Abyss": "sci-fi_octopus_humanoid_3d_model_Clone1",      # Kraken (sci-fi_octopus_humanoid_3d_model) deleted 2026-10-09
     "Elf": "CharacterRepairs_20261008/Elf",
-    "Cyborg": "CharacterRepairs_20261008/Cyborg",
+    "Cyborg": "newCYBORG_20261009",                            # the owner's regenerated GLB, see rig_glb_on_crew.py
 }
 REPAIRS = "/Game/SpaceSurvival/Licensed/CharacterRepairs_20261008"
-MATERIAL_FROM = {"Elf": REPAIRS + "/Elf/SK_Fantasy_Elf", "Cyborg": REPAIRS + "/Cyborg/SK_Purple_Cyborg"}
+MATERIAL_FROM = {"Elf": REPAIRS + "/Elf/SK_Fantasy_Elf"}
+# Slot -> material instance built from the character's own texture set (Scripts/ImportCrewMaterial.py).
+MATERIAL_SLOTS = {"Cyborg": {"CyborgBody": OUT + "/Cyborg/Mat/MI_CyborgBody"}}
 
 
-OCTOPUS = {"Kraken", "Abyss"}
+OCTOPUS = {"Abyss"}
 # Characters whose skeleton changed after a first import live in Rig/: a stale skeleton under Mesh/ cannot be
 # deleted while older clips reference it, and Interchange silently reuses it, dropping the new bones.
-RIG_FOLDER = OCTOPUS | {"Ember", "Crest", "Olive", "Elf"}
+RIG_FOLDER = OCTOPUS | {"Ember", "Crest", "Olive", "Elf", "Cyborg"}
 
 
 def line(s):
@@ -153,7 +158,9 @@ def import_one(short, folder, fbx):
             donor[key(str(ds.get_editor_property("material_slot_name")))] = ds.get_editor_property("material_interface")
     for slot in slots:
         name = str(slot.get_editor_property("material_slot_name"))
-        if short in MATERIAL_FROM:
+        if short in MATERIAL_SLOTS:
+            mi = LIB.load_asset(MATERIAL_SLOTS[short][name]) if name in MATERIAL_SLOTS[short] else None
+        elif short in MATERIAL_FROM:
             mi = donor.get(key(name))
         else:
             mi = LIB.load_asset("/Game/TripoModels/%s/%s" % (folder, name))

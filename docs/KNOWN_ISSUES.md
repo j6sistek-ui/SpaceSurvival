@@ -2335,8 +2335,13 @@ Assets are private licensed content under `/Game/SpaceSurvival/Licensed/StationA
 the Elf/Cyborg return package are local in `.agent/local/CharacterAssets/` (not in Git).
 
 Open owner decisions:
-- Abyss or Kraken for the waitress (Abyss has only her tentacle clips until chosen).
-- Cyborg: the owner says the model itself may have to be redone; until then the arm-spread offset is moot.
+- DECIDED 2026-10-09: Abyss stays, Kraken deleted from the project (44 assets, nothing referenced her). Abyss still
+  needs her arm-tentacle wiring and the waitress retargets before she can work tables (docs/TRIPO_CREW_ANIMATION.md).
+- DECIDED 2026-10-09: the Cyborg was redone. The owner regenerated her (`M:/Local AI/Projects/newCYBORG`, judged
+  better than the local Pixal3D attempt) and asked for that model rigged and animated; it now sits on the previous
+  Cyborg's crew skeleton (landmarks within 1 cm) with bone-heat weights and her own 4K material, with 16 base clips,
+  117 role clips (Dancer, Flirt, Lounge) and six authored pole clips (`A_Cyborg_Pole*`, pole on the actor origin;
+  no owned pack has pole work). Studio sheets sent for the owner's verdict; the arm-spread offset stays unapplied.
 - Silver (PARKED by the owner, 2026-10-08): both thighs are twisted ribbons in every clip. Tripo's original model
   has clean legs; the damage is already in the Tripo plugin's first Unreal import of `fantasy_elf_3d_model` (bind
   pose rebuilt on import), which the crew pipeline started from. Not the leg-frame fault: `fix_leg_frames.py` alone
@@ -2347,9 +2352,10 @@ Open owner decisions:
 - Squirrel hero size standardisation: tabled by the owner until after the crew work.
 - Placement on the station (who stands where, lighting, Warden's zero-G mock-up): not authorized; proposals only.
 
-Known limits, recorded rather than fixed: Kraken's tentacle clips carry no visible pelvis bob (the exporter sent it
+Known limits, recorded rather than fixed: Abyss's tentacle clips carry no visible pelvis bob (the exporter sent it
 100x too small; fixed in `tentacles/export_for_unreal.py`, a re-export and re-import is pending); Silver's hair
-strand down the leg and the cyborg chest holes are mesh defects with the repair (ComfyUI) chat; the repair chat's native `SK_Fantasy_Elf` still has the thigh-frame fault
+strand down the leg is a mesh defect with the repair (ComfyUI) chat (the old cyborg's chest holes went with the
+old cyborg); the repair chat's native `SK_Fantasy_Elf` still has the thigh-frame fault
 fixed in the crew copy; a faint hair crease at the back of the Elf's shoulder remains in a few clips; seated clips
 need chairs where they play.
 

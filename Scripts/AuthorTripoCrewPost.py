@@ -20,8 +20,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # character -> [(script, env)] in order
 POST = {
     "Crest": [("AuthorTripoCrewTail.py", {"SS_TAIL_WHO": "Crest"})],                 # tail + cord sway
-    "Kraken": [("AuthorTripoCrewTentacleBlend.py", {"SS_TENT_WHO": "Kraken"})],     # her own tentacle lower body
-    "Abyss": [("AuthorTripoCrewTentacleBlend.py", {"SS_TENT_WHO": "Abyss"})],       # only once she has humanoid clips
+    "Abyss": [("AuthorTripoCrewTentacleBlend.py", {"SS_TENT_WHO": "Abyss"})],       # her own tentacle lower body, once she has humanoid clips
     "Elf": [("AuthorTripoCrewHair.py", {"SS_HAIR_WHO": "Elf"})],                    # simulated hair
     "Silver": [("AuthorTripoCrewHair.py", {"SS_HAIR_WHO": "Silver"})],
 }

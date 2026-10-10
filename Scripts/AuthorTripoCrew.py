@@ -50,21 +50,21 @@ CREW = {
     "Warden": "armored_humanoid_3d_model",
     "Tribal": "fantasy_creature_3d_model",
     "Amethyst": "fantasy_elf_3d_model_Clone1",
-    "Kraken": "sci-fi_octopus_humanoid_3d_model",
-    "Abyss": "sci-fi_octopus_humanoid_3d_model_Clone1",
+    "Abyss": "sci-fi_octopus_humanoid_3d_model_Clone1",      # Kraken (the other octopus) was deleted 2026-10-09
     "Elf": "CharacterRepairs_20261008/Elf",
-    "Cyborg": "CharacterRepairs_20261008/Cyborg",
+    "Cyborg": "newCYBORG_20261009",
 }
-OCTOPUS = {"Kraken", "Abyss"}
-RIG_FOLDER = OCTOPUS | {"Ember", "Crest", "Olive", "Elf"}  # see ImportTripoCrew.py
+OCTOPUS = {"Abyss"}
+RIG_FOLDER = OCTOPUS | {"Ember", "Crest", "Olive", "Elf", "Cyborg"}  # see ImportTripoCrew.py
 # Ember's second pair of arms: own chains, driven by the SAME source arm chains, so every clip moves all four.
 EXTRA_CHAINS = {"Ember": {"LeftArmLower": ("upperarm_low_l", "hand_low_l", "LeftArm"),
                           "RightArmLower": ("upperarm_low_r", "hand_low_r", "RightArm")},
-                # Kraken's arms ARE tentacles (two per shoulder, off the clavicle; her humanoid arm bones carry
+                # An octopus's arms ARE tentacles (two per shoulder, off the clavicle; the humanoid arm bones carry
                 # almost no skin), so the longer tentacle on each side takes the human arm's motion - it points,
-                # waves and carries - while the other keeps its own wiggle (AuthorTripoCrewTentacleBlend.py)
-                "Kraken": {"LeftArmTent": ("LArmTent0_0", "LArmTent0_7", "LeftArm"),
-                           "RightArmTent": ("RArmTent0_0", "RArmTent0_7", "RightArm")}}
+                # waves and carries - while the other keeps its own wiggle (AuthorTripoCrewTentacleBlend.py).
+                # Kraken had {"LeftArmTent": ("LArmTent0_0", "LArmTent0_7", "LeftArm"), "RightArmTent": (...)};
+                # Abyss needs the same once her longer arm tentacle per side is confirmed (index 0 or 1).
+                }
 
 
 def mesh_path(base, short):
