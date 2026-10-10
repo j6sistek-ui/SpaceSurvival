@@ -927,7 +927,7 @@ void ASSHUD::DrawHUD()
                 {
                     GlyphBeforeHint = true;
                     bTalkHint = true;
-                    InteractionHint = TEXT("Hold to talk to ") + Crew.Name;
+                    InteractionHint = TEXT("Tap to talk to ") + Crew.Name;
                 }
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)

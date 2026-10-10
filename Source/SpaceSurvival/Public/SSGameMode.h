@@ -86,6 +86,8 @@ public:
      *  Begin on key down, End on release. */
     void BeginTalk();
     void EndTalk();
+    /** The microphone is open for a question (between the first tap and the second). */
+    bool IsTalkListening() const;
     /** Who the talk key would reach right now, by character name (crew by mesh, "Director" in flight), or empty. */
     FSSTalkIdentity TalkTarget() const;
     void OpenPanel(ESSPanel Panel);
@@ -311,7 +313,6 @@ private:
     float KeyboardThrottle = 0.f;
     /** Only a throttle command changes ownership; look, fire and UI glyph changes cannot restore thrust. */
     bool bAnalogThrottle = false;
-    bool bTalkHeld = false;
     float LastRightTriggerCommand = 0.f;
     TWeakObjectPtr<APawn> LastInputPawn;
     ESSInputFamily InputFamily = ESSInputFamily::KeyboardMouse;

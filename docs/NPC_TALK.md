@@ -1,7 +1,8 @@
 # Push-to-talk conversations (NPC talk)
 
-Owner decision, 2026-10-10: the station crew and the villain can be spoken to. Hold **T** (keyboard) or **R3** (pad),
-speak into the microphone, release. Your words appear as a caption ("You: ..."), and the character answers in a
+Owner decision, 2026-10-10: the station crew and the villain can be spoken to. Tap **T** (keyboard) or **R3** (pad),
+speak into the microphone, tap again to send (owner: R3 was hard to keep holding; a hold/tap menu option and
+remapping are later). Your words appear as a caption ("You: ..."), and the character answers in a
 caption of their own. Text only for now; voice out is "maybe later, if I like the dynamic". No cloud: both halves
 run on the player's machine as hidden sidecar processes the game starts and stops.
 
@@ -9,7 +10,7 @@ run on the player's machine as hidden sidecar processes the game starts and stop
 |---|---|---|
 | `USSNpcTalkSubsystem` | microphone, the two servers, one conversation per character, the HTTP calls | `Source/SpaceSurvival/Public/SSNpcTalk.h`, `Private/SSNpcTalk.cpp` |
 | `ASSGameMode::BeginTalk / EndTalk / TalkTarget` | who is listening, the game-state digest, the captions | `SSGameMode.cpp`, end of file |
-| `ASSPlayerController::PlayerTick` | the key: held = listening, released = send | `SSGameMode.cpp` |
+| `ASSPlayerController::PlayerTick` | the key: first tap listens, second tap sends | `SSGameMode.cpp` |
 | `ASSHUD` | the "You:" box, the crew answer box (deck teal), the status line, the walk hint | `SSHUD.cpp` |
 | `Config/DefaultNpcTalk.ini` | executables, the flight and station models, ports, reply length, memory | |
 | `Content/SpaceSurvival/NpcTalk/Personas/<Name>.txt` | one system prompt per character; `_Default.txt` for the rest; `{Name}` is substituted | |
@@ -23,7 +24,7 @@ run on the player's machine as hidden sidecar processes the game starts and stop
   crew, which are skeletal mesh components on the station actor, named and given roles by
   `SSStationPresentation::TagTalkers` through component tags (`TalkType:Nyxar`, `TalkName:Vel`, `TalkRole:CrewTalk`,
   `TalkActivity:telling two crewmates a story`). Anything on the station without a Talk tag is scenery. The walk hint
-  says "hold T / R3: talk to Vel" when someone is in range.
+  says "tap T / R3: talk to Vel" when someone is in range.
 - **In the ship:** the villain, but only after he has transmitted at least once in the current run (owner: "after the
   first time the director speaks, you can talk back"). Before that the key answers "Nobody is on the line. He talks
   first." His replies use his own ember caption, not the crew box; his persona mirrors the pilot's tone, so profanity
@@ -61,9 +62,9 @@ beyond one line. The core package carries `DefaultNpcTalk.ini` pointing at where
 
 ## The loop
 
-1. Key down: `BeginTalk` picks the target, refreshes the digest (second-person facts; for the villain the hull and kills are words such as "in tatters" and "a couple of dozen", never figures a player could check against the HUD a second later, plus what the pilot is, so a squirrel gets called a squirrel) and
+1. First tap: `BeginTalk` picks the target, refreshes the digest (second-person facts; for the villain the hull and kills are words such as "in tatters" and "a couple of dozen", never figures a player could check against the HUD a second later, plus what the pilot is, so a squirrel gets called a squirrel) and
    opens the default microphone through the engine's `FAudioCapture`.
-2. Key up: the samples are mixed to mono, resampled to 16 kHz, written as a WAV and posted to whisper-server's
+2. Second tap: the samples are mixed to mono, resampled to 16 kHz, written as a WAV and posted to whisper-server's
    `/inference`. Under a quarter of a second of audio is rejected as "Nothing heard".
 3. The transcript is shown, appended to that character's history (last `HistoryTurns` exchanges) and posted with the
    persona + digest to llama-server's `/v1/chat/completions`, `max_tokens` capped, no streaming.
