@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October10 Central follow-up188:** current Wayfarer `2a42ccb9` has9,102 actors. Reused-kit wall/portal detail and44 planting transforms are saved; Reload190 verifies the88 Central changes plus seven apartment additions. Native189 captures complete, but settings-save preservation fails; account/suspended-game files are unchanged. [Receipt and unedited views](validation/2026-10-10-central-detail.md). Root editor is closed, RT off, Build55/release unchanged. This supersedes older current-map counts/hashes below; full concept acceptance remains open.
+
 **October10 apartment follow-up:** saved170 Wayfarer `7e30f69f` has9,058 actors: Joy, rigged purple Cyborg and five polished-pole parts in the existing private apartment beneath Room R. Native171 captures and both looping clips pass scoped review; nine clearance probes pass. Reload175 verifies all seven additions and clean packages, while three pre-existing attached-prop world-transform differences keep the strict whole-world comparison open. Originals and404 other guarded files are preserved. [Receipt](validation/2026-10-10-apartment-residents.md). RT remains off, the task editor is closed, and Build55/release are unchanged. This supersedes older no-placement and current9051-actor statements below; Central/R acceptance remains open.
 
 **October10 Central concept checkpoint:** saved Wayfarer `52a5ee74`

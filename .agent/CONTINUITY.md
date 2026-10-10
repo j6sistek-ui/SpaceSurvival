@@ -1,6 +1,10 @@
 # SpaceSurvival continuity
 
 [MILESTONE]
+- 2026-10-10T10:40Z [TOOL] Central188 saved2a42ccb9/9102:44 new kit members,44 plant transforms;9014 unchanged snapshots/404 protected files. Reload190 passes95 scoped actors, RT0/clean packages; root38272 exited. Native189 three views improve wall depth/directory centers but settings-save hash changed, account/suspend unchanged; overall capture gate FAIL retained. Cause UNCONFIRMED; current settings archived, owner intent question pending, no restoration/reset. Further Play waits on that answer and byte backups. Central fixed-v2 not met; R next.
+- 2026-10-10T10:40Z [USER] Clothes are quick-fit only; second shirt/skirt set clips and has no weights. Set aside without tailoring or native adoption. Neutral fitting copy remains separate; original sources preserved.
+
+[MILESTONE]
 - 2026-10-10T10:16Z [USER] Joy and Cyborg are authorized in the existing private apartment beneath Room R; owner approved a simple polished-metal pole. Supersedes no-permanent-placement for these two only.
 - 2026-10-10T10:16Z [TOOL] Saved170 `7e30f69f`/9058 actors, seven additions/all9051 existing fingerprints preserved before save. Native171/240 samples finalized;173 nine clear/support probes;175 seven-addition reload clean, strict full-world comparison retains three existing attached-prop pose differences.404 protected files unchanged. Root30652 closed cleanly withRT0; current source docs/PR checkpoint pending.
 - 2026-10-10T10:16Z [TOOL] Owner Blender fitting support: delivered neutral copy retains TempMotion unassigned and head-binds previously unparented wig root. Three clothing pieces/textures imported into separate preview; no weights/native adoption. Original sources untouched. Central fixed-v2/R work stays active; other scope held.

@@ -1,5 +1,7 @@
 # SpaceSurvival whole-project solution catalog
 
+October10 Central188 reuses the installed Genesis electrical trim as wall braces/headers and inner portal frames; existing Nanite planting is resized for directory sightlines. No acquisition/import or vendor edits. [Native result and limitations](../validation/2026-10-10-central-detail.md). Clothing quick-fit evaluation is set aside after visible intersections and missing weights; no character outfit adoption.
+
 October10 JOY-20261009 follow-up: light-blue Joy and canonical rigged Cyborg are now placed in the private apartment beneath Room R with an owner-approved simple polished pole. Existing Genesis nickel parent is reused; no new acquisition. Separate owner-supplied three-piece clothing FBX has textures but no skeleton/weights; fitting preview is separate from native adoption. [Evidence](../validation/2026-10-10-apartment-residents.md).
 
 **October10 JOY-20261009 update:** owner explicitly authorizes lighter-blue Joy

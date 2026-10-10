@@ -1,5 +1,7 @@
 # Open work and owner review
 
+**October10 Central188 follow-up — existing RPT-20261007-01 remains OPEN / lead.** Reused wall/portal framing and lower planting are saved/reloaded. [Native189 views and evidence](validation/2026-10-10-central-detail.md) improve wall depth and directory centers; side foliage still overlaps content and the fixed concept is not met. Next: resolve the settings-save ownership question before another Play review, then finish planting/screen separation and coherent wall/material detail. Capture189 retains a failed settings-save preservation gate despite clean map/reload and unchanged account/suspend files. Current settings archived, no reset/restore performed; use verified byte backups for future reviews. Room R follows Central; other scope stays held.
+
 **October10 Central concept checkpoint — RPT-20261007-01 / RPT-20261006-04 /
 RPT-20260923-01 remain OPEN / lead.** The owner resumed Central and approved a
 stronger generated target-v2, then locked that image. Native candidate107 now
