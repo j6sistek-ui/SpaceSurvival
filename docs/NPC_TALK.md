@@ -136,6 +136,36 @@ Picks: Hermes serves the station (`StationLlamaModel`); the 4B stays in flight a
 owner: Dolphin or Mistral for the Director during waves at +2 GB VRAM over the 4B. The hint "give it back in the
 same language" made Hermes answer in Polish; it now reads "swear straight back, as crude as they were, in English".
 
+### Candidates from the owner's links (cards read 2026-10-10, not yet measured)
+
+Two card-reading passes over DavidAU's 200-model collection and Rikotta's dark-RP list (27 agents, both transcripts
+under the session's `subagents/workflows/`). Almost everything in both is a story-prose merge at 16B and up, the
+wrong shape for a two-sentence radio line that tracks a hull number; these are the chat-shaped ones that fit.
+
+| Candidate | Size (Q4) | For | Licence | Card facts that matter |
+|---|---|---|---|---|
+| DavidAU L3.1-RP-Hero-Dirty_Harry-8B | 4.92 GB | Director | Llama 3.1 community | the one card that says it prefers SHORT output; "Swearing. UNCENSORED."; four chat-RP parents |
+| DavidAU L3.1-Dark-Planet-SpinFire-Uncensored-8B | 4.92 GB | Director | Llama 3.1 community | "censorship level is controlled at the prompt level"; strongest crude register on any card; Lexi instruct base; prefers long, so the cap matters; no context shift |
+| DavidAU Daredevil-8B-abliterated (Ultra-NEO imatrix) | 4.92 GB | Director | Llama 3 community | general instruct merge with refusals removed; best bet for following the facts; swearing unproven |
+| ParasiticRogue Magnum-Instruct-DPO-12B (mradermacher GGUF) | 7.48 GB | station, Director if VRAM accepted | Apache 2.0 | author's own system prompt asks for vulgar in-character chat; Nemo [INST] template; GGUF may lack a template, then `--chat-template mistral-v3-tekken` |
+| Nitral-AI Wayfarer_Eris_Noctis-12B (mradermacher i1 GGUF) | 7.48 GB | station | not stated (risk) | ChatML in the GGUF and the author's preset; character-chat preset |
+| DavidAU MN-Dark-Planet-TITAN-12B | 7.48 GB | station | Apache 2.0 per card | only 12B in that collection with all chat-RP parents (Rocinante, magnum, Celeste); prefers shorter output |
+| Lewdiculous L3-8B-Stheno-v3.2 (owner's link) | 4.92 GB | test only | **CC BY-NC 4.0** | classic persona chat model; cannot ship in a sold build |
+| FallenMerick MN-Violet-Lotus-12B | 7.48 GB | test only | cc-by-4.0 on the card, but two inputs are **NC** (Lumimaid, Lyra v4) | best-shaped 12B for short lines; a merge inherits its inputs' terms |
+| Ministral-Instruct-2410-8B-DPO-RP | 4.91 GB | test only | **Mistral Research Licence** | the only 8B instruct in Rikotta's list; non-commercial |
+| mergekit-community Deepseek-R1-Distill-NSFW-RPv1 (owner's link) | ~4.9 GB | control | not stated | R1 distill: thinks before every reply; long-prose adapters; uncensored |
+
+Rejected on the cards: Wayfarer-12B (second-person narrator, single-turn training), Violet Twilight v0.2 (weak at
+persona-and-length prompts, already inside Violet-Lotus), MN-12B-Lyra-v4 (NC), Captain-Eris_Violet (GGUF template
+conflicts with the author's), Rivermind-12B (a joke model that pushes soft drinks mid-chat, and NC), Magnolia-Mell
+(no chat template, no licence), BigTalker (long-output sibling of Dirty Harry), Instruct-Guru ("PG-13"), the
+Unholy-Hermes R1 merge (leaks reasoning, "unhinged"), the layer-duplicated 3B "7B/9B" models, the Gutenberg and
+Gemma writers (novel prose), the Qwen3.5 9B "Aggressive" (thinking on, no card claim for chat).
+
+Every Llama card above wants `repeat_penalty` 1.05 or higher; llama-server defaults to 1.0, so the game sends 1.05
+(`RepeatPenalty`). The Nemo GGUFs advertise 131072 or 1024000 context, so the explicit `-c 4096` the game passes
+matters: without it the KV cache alone would blow the 16 GB.
+
 ### Testing by hand in Open WebUI
 
 `M:\Local AI\NPCTalk\ollama\create_models.ps1` creates `ss-director-{qwen4b,hermes8b,mistral7b,dolphin8b}` and
