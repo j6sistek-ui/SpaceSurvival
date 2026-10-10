@@ -89,7 +89,29 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
                   TEXT("{\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":\" Europa gin, cold. \"}}]}")),
               FString(TEXT("Europa gin, cold.")));
     TestEqual(TEXT("llama empty"), SSNpcTalk::ParseReply(TEXT("{\"choices\":[]}")), FString());
+    TestEqual(TEXT("a thinking model's scratchpad is dropped"),
+              SSNpcTalk::ParseReply(TEXT("{\"choices\":[{\"message\":{\"content\":\"<think>\\nhe swore, swear "
+                                         "back\\n</think>\\n\\nYou first, pilot.\"}}]}")),
+              FString(TEXT("You first, pilot.")));
+    TestEqual(TEXT("an unclosed scratchpad leaves nothing"),
+              SSNpcTalk::ParseReply(TEXT("{\"choices\":[{\"message\":{\"content\":\"<think>still thinking\"}}]}")),
+              FString());
 
+    TestEqual(TEXT("bold and quotes come off"), SSNpcTalk::TidyReply(TEXT("**\"Prepare to die.\"**"), false),
+              FString(TEXT("Prepare to die.")));
+    TestEqual(
+        TEXT("a cut-off reply keeps whole sentences"),
+        SSNpcTalk::TidyReply(TEXT("Your hull is bleeding. I will keep coming until you are nothing but a mem"), true),
+        FString(TEXT("Your hull is bleeding.")));
+    TestEqual(TEXT("a cut-off reply with no full stop keeps what there is"),
+              SSNpcTalk::TidyReply(TEXT("Your hull is bleeding and"), true),
+              FString(TEXT("Your hull is bleeding and")));
+    TestEqual(TEXT("finish_reason length trims through ParseReply"),
+              SSNpcTalk::ParseReply(
+                  TEXT("{\"choices\":[{\"finish_reason\":\"length\",\"message\":{\"content\":\"One. Two three\"}}]}")),
+              FString(TEXT("One.")));
+    TestTrue(TEXT("profanity is noticed"), SSNpcTalk::HasProfanity(TEXT("Go FUCK yourself.")));
+    TestFalse(TEXT("plain talk is not"), SSNpcTalk::HasProfanity(TEXT("Why do you even hate me?")));
     TestEqual(TEXT("crew mesh name"), SSNpcTalk::CharacterNameFromMesh(TEXT("SK_Dread")), FString(TEXT("Dread")));
     TestEqual(TEXT("other mesh name"), SSNpcTalk::CharacterNameFromMesh(TEXT("SquirrelHero")),
               FString(TEXT("SquirrelHero")));

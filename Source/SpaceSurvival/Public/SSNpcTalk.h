@@ -27,6 +27,10 @@ SPACESURVIVAL_API FString ParseTranscript(const FString &Json);
 SPACESURVIVAL_API FString ChatBody(const FString &System, const TArray<FTurn> &Turns, int32 MaxTokens,
                                    float Temperature);
 SPACESURVIVAL_API FString ParseReply(const FString &Json);
+/** Bold markers and wrapping quotes off; when the token cap cut the reply short, whole sentences only. */
+SPACESURVIVAL_API FString TidyReply(const FString &Raw, bool bCutShort);
+/** Did the pilot swear? Decides whether the villain is told to give it back. */
+SPACESURVIVAL_API bool HasProfanity(const FString &Text);
 /** "SK_Dread" -> "Dread". The crew meshes carry the character's name; nothing else on the actor does. */
 SPACESURVIVAL_API FString CharacterNameFromMesh(const FString &MeshName);
 } // namespace SSNpcTalk
@@ -108,6 +112,9 @@ public:
     float Temperature = 0.7f;
     UPROPERTY(Config)
     int32 Threads = 8;
+    /** Appended to the llama-server command line. "--reasoning off" keeps a thinking model from thinking out loud. */
+    UPROPERTY(Config)
+    FString LlamaExtraArgs = TEXT("--reasoning off");
 
 private:
     void StopServers();

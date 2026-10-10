@@ -145,8 +145,57 @@ FString ParseReply(const FString &Json)
     FString Content;
     if (Choice && Choice->TryGetObjectField(TEXT("message"), Message) && Message &&
         (*Message)->TryGetStringField(TEXT("content"), Content))
-        return Content.TrimStartAndEnd();
+    {
+        // A thinking model that was not told to stop thinking leaks its scratchpad in <think> tags; a caption
+        // never wants that, whatever the server was launched with.
+        int32 Open = Content.Find(TEXT("<think>"));
+        while (Open != INDEX_NONE)
+        {
+            const int32 Close = Content.Find(TEXT("</think>"), ESearchCase::IgnoreCase, ESearchDir::FromStart, Open);
+            Content = Close == INDEX_NONE ? Content.Left(Open) : Content.Left(Open) + Content.Mid(Close + 8);
+            Open = Content.Find(TEXT("<think>"));
+        }
+        FString Finish;
+        Choice->TryGetStringField(TEXT("finish_reason"), Finish);
+        return TidyReply(Content, Finish == TEXT("length"));
+    }
     return FString();
+}
+
+FString TidyReply(const FString &Raw, bool bCutShort)
+{
+    FString Text = Raw.TrimStartAndEnd();
+    // Models dress a line up as prose: **bold** markers and quotation marks around the whole thing.
+    Text.ReplaceInline(TEXT("**"), TEXT(""));
+    Text.TrimStartAndEndInline();
+    for (const TCHAR *Pair : {TEXT("\"\""), TEXT("“”")})
+        if (Text.Len() > 1 && Text[0] == Pair[0] && Text[Text.Len() - 1] == Pair[1])
+            Text = Text.Mid(1, Text.Len() - 2).TrimStartAndEnd();
+    if (bCutShort)
+    {
+        // The token cap fell mid-sentence: keep whole sentences only, unless that would leave nothing.
+        int32 End = INDEX_NONE;
+        for (int32 I = Text.Len() - 1; I >= 0; --I)
+            if (Text[I] == TEXT('.') || Text[I] == TEXT('!') || Text[I] == TEXT('?'))
+            {
+                End = I;
+                break;
+            }
+        if (End > 0)
+            Text = Text.Left(End + 1);
+    }
+    return Text;
+}
+
+bool HasProfanity(const FString &Text)
+{
+    static const TCHAR *Words[] = {TEXT("fuck"),  TEXT("shit"), TEXT("bitch"), TEXT("bastard"), TEXT("asshole"),
+                                   TEXT("prick"), TEXT("dick"), TEXT("damn"),  TEXT("crap"),    TEXT("piss")};
+    const FString Lower = Text.ToLower();
+    for (const TCHAR *Word : Words)
+        if (Lower.Contains(Word))
+            return true;
+    return false;
 }
 
 FString CharacterNameFromMesh(const FString &MeshName)
@@ -208,9 +257,9 @@ void USSNpcTalkSubsystem::EnsureServers()
     }
     if (!LlamaProc.IsValid() || !FPlatformProcess::IsProcRunning(LlamaProc))
     {
-        LlamaProc =
-            Launch(LlamaServerExe, FString::Printf(TEXT("-m %s -ngl %d --host 127.0.0.1 --port %d -c 4096 -t %d"),
-                                                   *Quote(LlamaModel), LlamaGpuLayers, LlamaPort, Threads));
+        LlamaProc = Launch(LlamaServerExe,
+                           FString::Printf(TEXT("-m %s -ngl %d --host 127.0.0.1 --port %d -c 4096 -t %d %s"),
+                                           *Quote(LlamaModel), LlamaGpuLayers, LlamaPort, Threads, *LlamaExtraArgs));
         UE_LOG(LogSSNpcTalk, Display, TEXT("llama-server %s on %d"),
                LlamaProc.IsValid() ? TEXT("started") : TEXT("NOT FOUND"), LlamaPort);
     }
@@ -357,11 +406,15 @@ void USSNpcTalkSubsystem::SendToLlama(const FString &Character, const FString &Q
     // The pilot's words go in as quoted radio traffic with an explicit "answer as X". Measured 2026-10-10 on the
     // stock 1.5B model: handed the bare sentence it refused the first swear ("I can't assist with that"); framed
     // this way it stayed in character on every line and answered profanity in kind. The caption shows the raw text.
-    const FString Framed =
+    FString Framed =
         Character == TEXT("Director")
             ? FString::Printf(TEXT("Radio from the pilot: \"%s\"\nAnswer them now, as the Director, over the radio."),
                               *Question)
             : FString::Printf(TEXT("The pilot says to you: \"%s\"\nAnswer them now, as %s."), *Question, *Character);
+    // The villain mirrors the pilot (owner: "if you swear at him he will swear back"); the crew do not rise to it.
+    if (Character == TEXT("Director") && SSNpcTalk::HasProfanity(Question))
+        Framed += TEXT(" The pilot just swore at you: give it straight back in the same language.");
+    Framed += TEXT(" Two sentences at most, no quotation marks around your words.");
     Turns.Add({TEXT("user"), Framed});
     while (Turns.Num() > HistoryTurns * 2)
         Turns.RemoveAt(0);

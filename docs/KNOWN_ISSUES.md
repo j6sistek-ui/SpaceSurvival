@@ -2337,8 +2337,11 @@ testing. Built as docs/NPC_TALK.md: T / R3 push-to-talk, local whisper.cpp + lla
 personas for Dread, the Director and a default. GAME_SCOPE.md lists "brief NPC conversations" and warns against long
 dialogue trees; this is brief and treeless but it is a new mechanic authorised by the owner, recorded here as such.
 
-Open: the owner's first in-game test (the microphone leg cannot be exercised headless); whether a 1.5B model keeps the
-villain's venom (swap to an abliterated model of the same size if not); typed fallback; characters who speak first;
+Model: the stock 1.5B refused the first swear until the pilot's words were framed as quoted radio traffic; the owner
+then chose an abliterated 4B (Huihui-Qwen3.5-4B-abliterated, Apache base) for the test period and had the stock
+model removed - "I'll decide later if it's a risk for release". That decision is open and gates any release.
+
+Open: the owner's first in-game test (the microphone leg cannot be exercised headless); typed fallback; characters who speak first;
 packaging the sidecars beside the executable (today's paths are M:/Local AI/NPCTalk).
 
 ## RPT-20261008-01 — Tripo crew NPCs: rigged, animated, imported; owner decisions open
