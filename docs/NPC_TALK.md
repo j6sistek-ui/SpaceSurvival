@@ -125,7 +125,7 @@ Later, when audio is layered in, the owner wants these to fire on proximity with
 | Finhead | Lounge | retired pilot regular, every story ends with "back in my day" |
 | Amethyst | Lounge | the station's gossip, knows every rumour, gives none away free |
 | Nyxar (type) | CrewTalk / Pacing / Watch | bioluminescent crew who say "we", curious about outsiders; deck names Vel, Orrin, Sable, Kett, Rue, Pim, Dax |
-| Trooper (type) | Guard | heavy-armoured dock guard Brakk, few words, trusts the Director as far as he can throw him |
+| Trooper (type) | Guard | heavy-armoured dock guard Brakk, few words, has seen a lot of pilots not come back |
 | ServiceBot (type) | ServiceBot | cheerful literal service robots Mica and Unit Seven, count things, give directions |
 
 ## Model comparison (2026-10-10, `M:\Local AI\NPCTalk\test\villain_compare.py` and `crew_compare.py`)
