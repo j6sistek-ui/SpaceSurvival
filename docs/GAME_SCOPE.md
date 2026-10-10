@@ -798,6 +798,22 @@ Stations should feel lived-in with:
 
 Factions remain mostly flavor for now rather than a reputation/diplomacy system.
 
+## Owner amendment — October 10, 2026: station room purposes
+
+Owner room plan (paraphrase): each room has a clear service category, so its environment can be designed around that purpose.
+
+| Area | Purpose and design requirement |
+| --- | --- |
+| Central hub | All core wave-game purchases and services stay up front and easy to reach, including Hull, Shield, Engine, Thrusters and Weapon upgrades. Ship repair is available here as well as at the dock. |
+| R / club | Character needs: character swapping today; outfits, additional character services and optional temporary game-mode boosts may follow. Temporary boosts belong here rather than taking over the core-service hub. Preserve the performance corner and develop the character/recovery/wellness setting around it. |
+| T / ship market | Six holographic ship displays. The Phoenix display opens that ship's stats and flight records. The other five are clearly identified placeholders for future unlockable ships. Future purchases from those displays grant permanent ship ownership. |
+| L / game room | Social activities, special challenges, leaderboards, minigames and other social features belong here as they become available. |
+| Market entrance / dock | The market primarily provides atmosphere and decoration on arrival. Quick ship repair is available at the dock, with the same repair service also accessible in Central. Other market uses may evolve later. |
+
+This supersedes conflicting earlier room-purpose assignments, including T's operations/hardware role. It is the current design plan, not a claim that six displays, per-ship records, future ship purchases, outfits, boost sales or social systems are already implemented. The five future ships remain placeholders; names, prices and purchase currency are UNCONFIRMED. Permanent ownership must persist at account level when purchasing is implemented. This amendment does not silently change the existing run-credit/XP systems or the locked Phase 1 roster and online deferrals.
+
+Preserve existing owner-created art and placements while reviewing services, signage, routes and lighting against these roles. Central's fixed target-v2 remains unchanged. Current scene/build/evidence and remaining work are recorded in [Project state](PROJECT_STATE.md) and [Known issues](KNOWN_ISSUES.md).
+
 ---
 
 # 18. Save and Death Rules

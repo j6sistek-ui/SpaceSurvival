@@ -1,5 +1,8 @@
 # Phase 1 content pipeline
 
+October10 R-stage adoption changes only Joy's four existing blue skin MIs to Metallic0.75/Roughness0.32, retains texture/tint detail, and reuses the canonical rigged Cyborg and existing PoleHipCircle sequence. Original meshes, skeletons, clips and hair identity are preserved. Three local stage lights and matched hologram housings use existing content; no new source kit/import or material parent. [R stage and native evidence](validation/2026-10-10-r-stage-characters.md) records exact recipes/private backups and confirms GitHub is not the native-content backup. Never replay the adopted authoring stages. Hair physics and long alternating choreography remain open.
+
+
 October10 Joy/Cyborg apartment adoption reuses the saved character assets and installed Genesis nickel material parent. One private pole material and seven map actors are added; the original149 Joy packages/all135 clips remain unchanged. [Evidence and storage](validation/2026-10-10-apartment-residents.md). The separate neutral-pose Blender outfit-fitting copy is not imported or animation-ready content.
 
 **October10 hair correction:** Joy's light-blue source derivative now reversibly
