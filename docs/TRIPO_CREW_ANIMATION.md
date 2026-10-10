@@ -96,6 +96,29 @@ from her own 4K set by `Scripts/ImportCrewMaterial.py` (`MATERIAL_SLOTS`), every
 
 ## Pole clips (Cyborg)
 
+**Repair, 2026-10-10 (owner, in game: "during the lean there is tearing in the breast and a twisted arm", on
+`A_Cyborg_PoleHipCircle` at PR 69's R stage).** Measured with `pole/diag_pole_clip.py` (per-frame wrist bend and roll,
+arm weights on the chest, close-up renders with backfaces in black):
+- **Twisted arm:** every pole grip was shaped like a horizontal bar, hand axis flat round the pole, so a grip above the
+  shoulder put the hand 49-83 deg off the forearm and rolled it up to 51 deg, all at the wrist (the forearm twist bone
+  was never driven). `hand_on_pole` now tilts the grip toward the forearm's line until the wrist turns at most
+  `WRIST_LIMIT` (35 deg), `lowerarm_twist_01` takes `TWIST_SHARE` (half) of the remaining roll, and the two high
+  one-hand grips raise the elbow. Measured after: wrist bend 13-22 deg. (The right hand's bone is rolled ~180 deg from
+  its forearm at rest, so a raw axis comparison reads a straight right wrist as ~170 deg; judge the render.)
+- **Flank tear:** bone-heat weights let 368 of 860 vertices on the right chest/flank carry over 25% arm weight, so a
+  22-40 deg arm raise folded the flank through itself from armpit to ribs (the overhead back-slide tore most of the
+  upper chest). `reweight_flank.py` (both sides): below the armpit line (z 1.30-1.40 m) and toward the sternum
+  (|x| 0.09-0.17 m) arm weight goes to `spine_03`; the chest below the armpit ignores the collarbone; the band
+  1.12-1.46 m is smoothed. Result: hip circle clean; back-slide reduced to one small split at the spine_02/spine_03
+  joint between the breasts (arched back, both arms overhead) - not weights, left as a known limit.
+- Re-import without orphaning the clips: `Scripts/ReimportCrewSkin.py` replaces the skinned mesh on the EXISTING
+  skeleton (ImportTripoCrew.py would delete the Rig folder and make a new skeleton). Checked: skeleton unchanged,
+  `MI_CyborgBody` kept, 135 clips on it, 178 cm. Clips re-imported with `ImportCrewClips.py` (SS_CLIPS_MATCH=Pole).
+  Before/after: `Artifacts/CharacterStudio/cyborg_pole_fix_20261010/`. The TripoCrew uassets are untracked and live
+  once in the main checkout (linked into every worktree); a copy of the Cyborg folder from before is at
+  `M:/Local AI/Projects/Cyborg_Claude/unreal_backup_20261010/`.
+
+
 No owned pack has pole work (every vault, `Content/` and `M:` were searched on 2026-10-09), so
 `Scripts/TripoCrewBlender/pole/pole_dance.py` authors them on the rigged rest-pose `.blend` (IK on wrists and ankles,
 feet held flat, hands wrapped round the pole, pelvis/spine keyed in world space, baked to FK, centimetre FBX per clip)

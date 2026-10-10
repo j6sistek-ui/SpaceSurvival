@@ -23,7 +23,7 @@ import subprocess
 import sys
 
 import bpy
-from mathutils import Matrix, Vector
+from mathutils import Matrix, Quaternion, Vector
 
 args = sys.argv[sys.argv.index("--") + 1:]
 OUTDIR, NAME = args[0], args[1]
@@ -31,6 +31,8 @@ ALL = ["Idle", "HipCircle", "BodyWave", "BackSlide", "Spin", "Kick"]
 CLIPS = args[2:] or ALL
 FPS = 30
 POLE_R = 0.025
+WRIST_LIMIT = 35.0   # degrees a gripping hand may turn away from the forearm's line (owner: "twisted arm")
+TWIST_SHARE = 0.5    # share of the hand's remaining roll the forearm twist bone takes
 os.makedirs(OUTDIR, exist_ok=True)
 
 if len(CLIPS) > 1:                       # a fresh Blender per clip: the bake and the x100 export must not leak
@@ -154,17 +156,47 @@ def solve(want):
         up()
 
 
+def forearm_line(side):
+    """Where the hand would be if the wrist were straight: the rest offset carried by the posed forearm."""
+    return PB["lowerarm_" + side].matrix @ (REST["lowerarm_" + side].inverted() @ REST["hand_" + side])
+
+
+def share_twist(side):
+    """The forearm twist bone takes a share of the hand's roll about the forearm, so the skin turns along the forearm
+    instead of creasing at the wrist (measured 2026-10-10: up to 51 deg of roll, all at the wrist)."""
+    tb = "lowerarm_twist_01_" + side
+    if tb not in PB:
+        return
+    up()
+    fa = PB["lowerarm_" + side].matrix.to_3x3(); hd = PB["hand_" + side].matrix.to_3x3()
+    axis = fa.col[1].normalized()
+    a = (fa.col[0] - axis * fa.col[0].dot(axis)).normalized(); b = (hd.col[0] - axis * hd.col[0].dot(axis)).normalized()
+    roll = math.atan2(axis.dot(a.cross(b)), a.dot(b))
+    PB[tb].rotation_quaternion = Quaternion((0, 1, 0), roll * TWIST_SHARE)
+
+
 def hand_on_pole(side, fingers=1.0):
-    """Wrap the hand around the pole where it is: palm into the pole, fingers tangent, continuing the forearm."""
+    """Wrap the hand around the pole where it is: palm into the pole, fingers round it. A bar grip (hand axis flat
+    round the pole) is the ideal; an overhead grip holds a vertical pole diagonally through the fist, so the hand is
+    tilted toward the forearm's line until the wrist turns no more than WRIST_LIMIT."""
     g = PB["hand_" + side].head; d = Vector((-g.x, -g.y, 0)).normalized()
     fwd = PB["lowerarm_" + side].vector.normalized()
     y = Vector((0, 0, 1)).cross(d); y = y if y.dot(fwd) >= 0 else -y
     z = -d; x = y.cross(z)
     M = Matrix((x, y, z)).transposed().to_4x4(); M.translation = g
-    set_world("hand_" + side, M); grip_fingers(side, fingers)
+    straight = forearm_line(side).to_quaternion(); grip = M.to_quaternion()
+    if straight.dot(grip) < 0:                       # same rotation, other hemisphere: blend the short way round
+        grip.negate()
+    turn = math.degrees(straight.rotation_difference(grip).angle)
+    if turn > WRIST_LIMIT:
+        grip = straight.slerp(grip, WRIST_LIMIT / turn)
+    M = grip.to_matrix().to_4x4(); M.translation = g
+    set_world("hand_" + side, M); share_twist(side); grip_fingers(side, fingers)
 
 
 def hand_free(side, roll=0):
+    if "lowerarm_twist_01_" + side in PB:
+        PB["lowerarm_twist_01_" + side].rotation_quaternion = Quaternion()
     M = PB["lowerarm_" + side].matrix @ (REST["lowerarm_" + side].inverted() @ REST["hand_" + side])
     set_world("hand_" + side, rot_about(M, 'Y', roll)); grip_fingers(side, 0.35)
 
@@ -208,7 +240,7 @@ def clip_idle(t):
     pelvis_at((cx + sway, 0.01 * math.sin(2 * w), STAND_Z - 0.012 + 0.01 * math.cos(2 * w)), yaw=-6 + 3 * math.sin(w), roll=-3 * math.sin(w))
     bend("spine_01", pitch=2, roll=2 * math.sin(w)); bend("spine_02", roll=1.5 * math.sin(w)); bend("spine_03", roll=2 * math.sin(w), yaw=4)
     bend("neck_01"); bend("head")
-    want["hand_r"] = on_pole(10, 1.56 + 0.01 * math.sin(w)); E["elbow_r"].location = (-0.25, 0.35, 1.2)
+    want["hand_r"] = on_pole(10, 1.56 + 0.01 * math.sin(w)); E["elbow_r"].location = (-0.35, 0.25, 1.55)
     want["hand_l"] = (cx + 0.25 + 0.02 * math.sin(w), 0.04, 0.86 + 0.01 * math.sin(w)); E["elbow_l"].location = (cx + 0.5, 0.5, 0.9)
     E["look"].location = (cx - 0.3 + 0.4 * math.sin(w * 0.5), -2.5, 1.55)
     solve(want); hand_on_pole("r"); hand_free("l")
@@ -222,7 +254,7 @@ def clip_hipcircle(t):
               yaw=-5 + 4 * math.sin(w), pitch=-6 * math.cos(w), roll=-7 * math.sin(w))
     bend("spine_01", pitch=4 * math.cos(w), roll=3 * math.sin(w)); bend("spine_02", pitch=3 * math.cos(w))
     bend("spine_03", pitch=-5 * math.cos(w), roll=-4 * math.sin(w), yaw=6); bend("neck_01"); bend("head")
-    want["hand_r"] = on_pole(10, 1.62); E["elbow_r"].location = (-0.25, 0.3, 1.3)
+    want["hand_r"] = on_pole(10, 1.62); E["elbow_r"].location = (-0.35, 0.22, 1.6)
     want["hand_l"] = PB["pelvis"].head + Vector((0.19, -0.03, -0.02)); E["elbow_l"].location = (cx + 0.6, 0.4, 0.95)
     E["look"].location = (cx - 0.2 + 0.3 * math.sin(w), -2.5, 1.5)
     solve(want); hand_on_pole("r"); hand_free("l", roll=-20)
