@@ -23,6 +23,13 @@ published0.1.22-alpha/itch2048604 are unchanged. No new C++ binary, cook, upload
 merge; PR69 stays draft. Historical paused/editor statements below are superseded
 by this source/native checkpoint, not by release or room acceptance.
 
+**CI follow-up, October10 05:29UTC:** documentation and strict/core/sanitizer
+checks pass at4547eea. The source job still fails its runtime cook-coverage gate
+on five earlier ship/portal paths, also failing atf5a2008 with identical inputs.
+Later formatting/release-payload steps were skipped in that job. This CPU
+checkpoint is not a green whole-PR or packaging acceptance result; the held
+release prerequisite is recorded in KNOWN_ISSUES.
+
 **October9 saved handoff: paused by owner.** Central/R quality is rejected and
 unfinished; resume central first, R second, with all lower priorities held. This
 supersedes the active/continue-next statements in historical checkpoints below.

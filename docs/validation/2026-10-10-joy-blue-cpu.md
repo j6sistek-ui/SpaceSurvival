@@ -68,6 +68,28 @@ shading approval or a face redesign. Bright studio highlights remain visible.
   donor review already notes some arm/body intersections. Blender's thumbnail
   permission/quit allocator warnings did not prevent the verified save/render.
 
+## CI follow-up
+
+At4547eea, [documentation CI](https://github.com/j6sistek-ui/SpaceSurvival/actions/runs/38027457803)
+and the [strict domain/core/sanitizer job](https://github.com/j6sistek-ui/SpaceSurvival/actions/runs/38027456203)
+pass. Source identity, fresh Git export, Python syntax and station-recipe tests
+also pass. The same source workflow fails `CheckCookCoverage.py` on these five
+pre-existing string references:
+
+- `/Game/ImportedLibrary/Portal/NS1_Portals/NS_NS1_TeleportPortal.NS_NS1_TeleportPortal`
+- `/Game/NiagaraExamples/FX_Player/NS_Player_Teleport_In.NS_Player_Teleport_In`
+- `/Game/NiagaraExamples/FX_Player/NS_Player_Teleport_Out.NS_Player_Teleport_Out`
+- `/Game/OutpostSandbox/Materials/M_OutpostGraphite.M_OutpostGraphite`
+- `/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Door300X250_V1_Part1.`
+
+The priorf5a2008 [source run](https://github.com/j6sistek-ui/SpaceSurvival/actions/runs/38022926288)
+has the identical five failures. Source/config/checker/workflow inputs have no
+diff across the CPU checkpoint. Local reproduction reports37 cook roots,
+one excluded directory,14 excluded packages,152 string paths/five uncovered.
+The later release-payload/format/whitespace CI steps were skipped; local
+whitespace passed separately. No exclusions or cook roots were changed to
+silence this held ship/portal prerequisite. Whole-PR CI is not green.
+
 ## Source and storage
 
 [Sanitized hash evidence](2026-10-10-joy-blue-cpu-evidence.json) covers all147

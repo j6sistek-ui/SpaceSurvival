@@ -40,6 +40,13 @@ Supplementary crew validation reports Warden height/sole outside this decor pass
 retain it with the other held NPC defects. At the next asset need, check relevant
 installed folders (including relocated M: content) and ask the owner before
 recreating assets; no library inventory or reorganization is authorized now.
+CI remains red on the pre-existing runtime cook-coverage gate: five string
+paths from held ship/portal work lack explicit cook coverage (portal VFX,
+teleport-in/out, OutpostGraphite and the P4 door). This failure exists at both
+f5a2008 and the Joy checkpoint4547eea; cook rules/runtime references are unchanged.
+It remains a lead-owned release prerequisite when that work resumes. Do not
+hide it with exclusions or expand the current CPU/Joy scope into a cook/release.
+Documentation and core/sanitizer CI pass; no whole-PR green claim.
 The older pause and continue-next statements below are historical.
 
 **October9 owner correction and pause — RPT-20261007-01 / RPT-20261006-04 /
