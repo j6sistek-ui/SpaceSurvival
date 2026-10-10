@@ -924,9 +924,15 @@ void ASSHUD::DrawHUD()
                 GlyphBeforeHint = false;
                 InteractionHint = TEXT("Walk forward to the cockpit chair");
             }
-            // Push-to-talk joins the context hint only when no station service is in reach: a desk action
-            // always wins over chatting. Nobody to talk to, or no talk pack installed: nothing is shown.
-            if (InteractionHint.IsEmpty())
+            // Talk joins the context hint. A conversation in progress names the partner and wins over everything
+            // else; otherwise the nearest person is offered only when no station service is in reach.
+            if (GM->IsTalkEngaged())
+            {
+                GlyphBeforeHint = true;
+                bTalkHint = true;
+                InteractionHint = TEXT("Talking with ") + GM->TalkPartner().Name + TEXT(" - walk away to leave");
+            }
+            else if (InteractionHint.IsEmpty())
                 if (const FSSTalkIdentity Crew = GM->TalkTarget(); Crew.IsValid())
                 {
                     GlyphBeforeHint = true;
