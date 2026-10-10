@@ -204,9 +204,11 @@ private:
     bool bTalkBound = false;
     FString TalkingTo;
     FString NpcDigest(const FString &Character) const;
+    class USSNpcTalkSubsystem *NpcTalk() const;
     void OnNpcTranscript(const FString &Character, const FString &Text);
     void OnNpcReply(const FString &Character, const FString &Text);
     void OnNpcFailure(const FString &Character, const FString &Why);
+    void OnNpcStatus(const FString &Character, const FString &Phrase);
     /** How long his current line has been up, so the next cannot replace it before it can be read. */
     float VillainLineShown = 0.f;
     /** Story beats retain their original wave while a line is fresh or a live menu hides the caption. */

@@ -1,14 +1,22 @@
 #include "SSNpcTalk.h"
 #include "AudioCaptureCore.h"
 #include "Dom/JsonObject.h"
+#include "Engine/GameInstance.h"
 #include "HAL/PlatformProcess.h"
 #include "HttpModule.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Misc/App.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "TimerManager.h"
+
+// How long after launch a refused or 503 answer still means "reading the model off the disk", and how often the
+// question is re-posted meanwhile. The station model is several gigabytes; a cold start is the normal path here.
+static constexpr double ColdStartSeconds = 120.0;
+static constexpr float ColdStartRetrySeconds = 2.f;
 
 DEFINE_LOG_CATEGORY_STATIC(LogSSNpcTalk, Log, All);
 
@@ -223,6 +231,18 @@ FProcHandle Launch(const FString &Exe, const FString &Args)
 }
 } // namespace
 
+void USSNpcTalkSubsystem::Initialize(FSubsystemCollectionBase &Collection)
+{
+    Super::Initialize(Collection);
+    // The talk pack is an optional download, not part of the game (owner: "none of this is gameplay, it's all
+    // extra"). Without it every entry point stays quiet: no hint, no servers, no error. Checked once; the HUD asks
+    // every frame.
+    bInstalled = FPaths::FileExists(WhisperServerExe) && FPaths::FileExists(WhisperModel) &&
+                 FPaths::FileExists(LlamaServerExe) && FPaths::FileExists(LlamaModel);
+    UE_LOG(LogSSNpcTalk, Display, TEXT("talk pack %s"),
+           bInstalled ? TEXT("installed") : TEXT("not installed: conversations stay off"));
+}
+
 void USSNpcTalkSubsystem::Deinitialize()
 {
     Cancel();
@@ -244,6 +264,38 @@ void USSNpcTalkSubsystem::StopServers()
         }
 }
 
+bool USSNpcTalkSubsystem::IsEnabled() const
+{
+    // Never in a headless or automation run: the game mode's arrival, departure and villain-line paths would start
+    // the sidecars under every one of the 67 suites otherwise, with nobody to talk.
+    return bEnabled && bInstalled && !FApp::IsUnattended() && !GIsAutomationTesting;
+}
+
+void USSNpcTalkSubsystem::StopLlama()
+{
+    if (LlamaProc.IsValid())
+    {
+        FPlatformProcess::TerminateProc(LlamaProc, true);
+        FPlatformProcess::CloseProc(LlamaProc);
+        LlamaProc = FProcHandle();
+        UE_LOG(LogSSNpcTalk, Display, TEXT("llama-server stopped (%s)"), *FPaths::GetCleanFilename(RunningModel));
+    }
+    RunningModel.Empty();
+}
+
+void USSNpcTalkSubsystem::SetContext(ESSTalkContext Context)
+{
+    // Owner's split: the station is talk, so the better model loads on arrival; a wave is combat, so launching kills
+    // the server and the GPU is the game's again. The flight model comes back when the villain first speaks.
+    CurrentContext = Context;
+    if (!IsEnabled())
+        return;
+    if (Context == ESSTalkContext::Station)
+        EnsureServers();
+    else
+        StopLlama();
+}
+
 void USSNpcTalkSubsystem::EnsureServers()
 {
     if (!IsEnabled())
@@ -255,13 +307,20 @@ void USSNpcTalkSubsystem::EnsureServers()
         UE_LOG(LogSSNpcTalk, Display, TEXT("whisper-server %s on %d"),
                WhisperProc.IsValid() ? TEXT("started") : TEXT("NOT FOUND"), WhisperPort);
     }
+    const bool Station = CurrentContext == ESSTalkContext::Station && FPaths::FileExists(StationLlamaModel);
+    const FString &Model = Station ? StationLlamaModel : LlamaModel;
+    const FString &Extra = Station ? StationLlamaExtraArgs : LlamaExtraArgs;
+    if (LlamaProc.IsValid() && FPlatformProcess::IsProcRunning(LlamaProc) && RunningModel != Model)
+        StopLlama();
     if (!LlamaProc.IsValid() || !FPlatformProcess::IsProcRunning(LlamaProc))
     {
-        LlamaProc = Launch(LlamaServerExe,
-                           FString::Printf(TEXT("-m %s -ngl %d --host 127.0.0.1 --port %d -c 4096 -t %d %s"),
-                                           *Quote(LlamaModel), LlamaGpuLayers, LlamaPort, Threads, *LlamaExtraArgs));
-        UE_LOG(LogSSNpcTalk, Display, TEXT("llama-server %s on %d"),
-               LlamaProc.IsValid() ? TEXT("started") : TEXT("NOT FOUND"), LlamaPort);
+        LlamaProc =
+            Launch(LlamaServerExe, FString::Printf(TEXT("-m %s -ngl %d --host 127.0.0.1 --port %d -c 4096 -t %d %s"),
+                                                   *Quote(Model), LlamaGpuLayers, LlamaPort, Threads, *Extra));
+        RunningModel = LlamaProc.IsValid() ? Model : FString();
+        LlamaStartedAt = FPlatformTime::Seconds();
+        UE_LOG(LogSSNpcTalk, Display, TEXT("llama-server %s on %d with %s"),
+               LlamaProc.IsValid() ? TEXT("started") : TEXT("NOT FOUND"), LlamaPort, *FPaths::GetCleanFilename(Model));
     }
 }
 
@@ -355,6 +414,8 @@ void USSNpcTalkSubsystem::Cancel()
         Pending->CancelRequest();
         Pending.Reset();
     }
+    if (UGameInstance *GI = GetGameInstance())
+        GI->GetTimerManager().ClearTimer(RetryTimer);
     CurrentPhase = ESSTalkPhase::Idle;
 }
 
@@ -412,18 +473,25 @@ void USSNpcTalkSubsystem::SendToLlama(const FString &Character, const FString &Q
                               *Question)
             : FString::Printf(TEXT("The pilot says to you: \"%s\"\nAnswer them now, as %s."), *Question, *Character);
     // The villain mirrors the pilot (owner: "if you swear at him he will swear back"); the crew do not rise to it.
+    // Not "in the same language": measured 2026-10-10, Hermes 8B read that literally and answered in Polish.
     if (Character == TEXT("Director") && SSNpcTalk::HasProfanity(Question))
-        Framed += TEXT(" The pilot just swore at you: give it straight back in the same language.");
+        Framed += TEXT(" The pilot just swore at you: swear straight back, as crude as they were, in English.");
     Framed += TEXT(" Two sentences at most, no quotation marks around your words.");
     Turns.Add({TEXT("user"), Framed});
     while (Turns.Num() > HistoryTurns * 2)
         Turns.RemoveAt(0);
+    LlamaRetries = 0;
+    PostToLlama(Character);
+}
+
+void USSNpcTalkSubsystem::PostToLlama(const FString &Character)
+{
     const FString System = Persona(Character) + (Digest.IsEmpty() ? FString() : TEXT("\n\nRight now: ") + Digest);
     const auto Request = FHttpModule::Get().CreateRequest();
     Request->SetURL(FString::Printf(TEXT("http://127.0.0.1:%d/v1/chat/completions"), LlamaPort));
     Request->SetVerb(TEXT("POST"));
     Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-    Request->SetContentAsString(SSNpcTalk::ChatBody(System, Turns, MaxReplyTokens, Temperature));
+    Request->SetContentAsString(SSNpcTalk::ChatBody(System, History.FindOrAdd(Character), MaxReplyTokens, Temperature));
     Request->SetTimeout(60.f);
     Request->OnProcessRequestComplete().BindWeakLambda(
         this,
@@ -431,6 +499,21 @@ void USSNpcTalkSubsystem::SendToLlama(const FString &Character, const FString &Q
         {
             if (!bOk || !Response.IsValid() || Response->GetResponseCode() != 200)
             {
+                // Refused, or 503, from a server started moments ago: it is still reading its model off the disk.
+                // The station/flight split restarts llama on every arrival, so this is the normal path, not a fault.
+                const bool Loading = LlamaProc.IsValid() && FPlatformProcess::IsProcRunning(LlamaProc) &&
+                                     FPlatformTime::Seconds() - LlamaStartedAt < ColdStartSeconds;
+                UGameInstance *GI = GetGameInstance();
+                if (Loading && GI)
+                {
+                    if (LlamaRetries++ == 0)
+                        OnStatus.Broadcast(Character, TEXT("is still waking up, hold on..."));
+                    GI->GetTimerManager().SetTimer(
+                        RetryTimer,
+                        FTimerDelegate::CreateWeakLambda(this, [this, Character] { PostToLlama(Character); }),
+                        ColdStartRetrySeconds, false);
+                    return;
+                }
                 Fail(Character, TEXT("No answer came back. Is llama-server running?"));
                 return;
             }

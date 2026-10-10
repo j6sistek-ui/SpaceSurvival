@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "AudioCaptureCore.h"
+#include "Engine/TimerHandle.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "SSNpcTalk.generated.h"
@@ -36,6 +37,13 @@ SPACESURVIVAL_API FString CharacterNameFromMesh(const FString &MeshName);
 } // namespace SSNpcTalk
 
 UENUM()
+enum class ESSTalkContext : uint8
+{
+    Flight,
+    Station
+};
+
+UENUM()
 enum class ESSTalkPhase : uint8
 {
     Idle,
@@ -50,12 +58,17 @@ class SPACESURVIVAL_API USSNpcTalkSubsystem : public UGameInstanceSubsystem
 {
     GENERATED_BODY()
 public:
+    virtual void Initialize(FSubsystemCollectionBase &Collection) override;
     virtual void Deinitialize() override;
 
-    bool IsEnabled() const
+    /** The optional talk pack was on disk at start-up: both servers, the transcriber model and the flight model. */
+    bool IsInstalled() const
     {
-        return bEnabled && !WhisperServerExe.IsEmpty() && !LlamaServerExe.IsEmpty();
+        return bInstalled;
     }
+    bool IsEnabled() const;
+    /** The station loads the better talker on arrival; launching into a wave kills the server. */
+    void SetContext(ESSTalkContext Context);
     ESSTalkPhase Phase() const
     {
         return CurrentPhase;
@@ -80,6 +93,8 @@ public:
 
     DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTalkText, const FString & /*Character*/, const FString & /*Text*/);
     FOnTalkText OnTranscript, OnReply, OnFailure;
+    /** A phrase for the status line ("is still waking up...") while a freshly started server reads its model. */
+    FOnTalkText OnStatus;
 
     /** Plain second-person sentences about the game right now; the game mode refreshes it before each question. */
     FString Digest;
@@ -115,16 +130,30 @@ public:
     /** Appended to the llama-server command line. "--reasoning off" keeps a thinking model from thinking out loud. */
     UPROPERTY(Config)
     FString LlamaExtraArgs = TEXT("--reasoning off");
+    /** The station's model, loaded on arrival and killed on launch (owner: the station is talk, a wave is combat).
+     *  Empty or missing: the flight model serves the station too. */
+    UPROPERTY(Config)
+    FString StationLlamaModel;
+    UPROPERTY(Config)
+    FString StationLlamaExtraArgs;
 
 private:
     void StopServers();
     void Fail(const FString &Character, const FString &Why);
     void SendToWhisper(const FString &Character, const TArray<uint8> &Wav);
     void SendToLlama(const FString &Character, const FString &Question);
+    /** Posts the character's history as it stands; retried on a timer while a cold llama-server is still loading. */
+    void PostToLlama(const FString &Character);
     FString BuiltInPersona(const FString &Character) const;
+    void StopLlama();
 
+    bool bInstalled = false;
     ESSTalkPhase CurrentPhase = ESSTalkPhase::Idle;
-    FString Error;
+    ESSTalkContext CurrentContext = ESSTalkContext::Flight;
+    FString Error, RunningModel;
+    double LlamaStartedAt = 0.0;
+    int32 LlamaRetries = 0;
+    FTimerHandle RetryTimer;
     FProcHandle WhisperProc, LlamaProc;
     TUniquePtr<Audio::FAudioCapture> Capture;
     bool bStreamOpen = false;

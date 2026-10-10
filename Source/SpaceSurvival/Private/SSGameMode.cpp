@@ -273,6 +273,9 @@ bool ASSGameMode::ShowVillainLine(ESSVillainCue Cue, int32 Wave)
     VillainLineSeconds = FMath::Clamp(2.5f + .06f * Line.Len(), 3.5f, 7.f);
     VillainLineShown = 0.f;
     bVillainHasSpoken = true;
+    // The pilot may talk back from here on, so the flight model starts loading now rather than on the first key.
+    if (auto *Talk = NpcTalk())
+        Talk->EnsureServers();
     // Chatter never lands on top of a line he has just said, story or not.
     VillainChatterCooldown = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain.ChatterCooldown;
     return true;
@@ -431,6 +434,8 @@ void ASSGameMode::ShowHangar()
     }
     Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator::ZeroRotator);
     WearHero();
+    if (auto *Talk = NpcTalk())
+        Talk->SetContext(ESSTalkContext::Station);
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     PC->Possess(Walker);
     PC->SetControlRotation(FRotator(-12.f, Hub->GetActorRotation().Yaw, 0.f));
@@ -610,6 +615,9 @@ bool ASSGameMode::TryBoardShip(ASSWalker *Candidate)
 }
 void ASSGameMode::BeginDeparture()
 {
+    // Leaving the station is combat from here: the station talker is unloaded and the GPU is the game's again.
+    if (auto *Talk = NpcTalk())
+        Talk->SetContext(ESSTalkContext::Flight);
     if (!Hub)
         return;
     bDepartingStation = true;
@@ -753,6 +761,9 @@ void ASSGameMode::EnterStation()
     Walker = GetWorld()->SpawnActor<ASSWalker>(SafePadExit ? Hub->PadWalkSpawn() : Hub->WalkSpawn(),
                                                FRotator(0, Hub->GetActorRotation().Yaw, 0));
     WearHero();
+    // Landed: the station is talk, not combat, so the better model loads now (owner's split, docs/NPC_TALK.md).
+    if (auto *Talk = NpcTalk())
+        Talk->SetContext(ESSTalkContext::Station);
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     const bool AutoCamera = PC->bAutoManageActiveCameraTarget;
     if (Ship)
@@ -2452,8 +2463,16 @@ void ASSPlayerController::PlayerTick(float Dt)
 // Push-to-talk (SSNpcTalk). On foot: face a crew member, hold the key, speak, release. In the ship: once the villain
 // has transmitted this run, the same key talks back to him; his answer comes through his own caption.
 
+USSNpcTalkSubsystem *ASSGameMode::NpcTalk() const
+{
+    return GetGameInstance() ? GetGameInstance()->GetSubsystem<USSNpcTalkSubsystem>() : nullptr;
+}
+
 FString ASSGameMode::TalkTarget() const
 {
+    // No talk pack installed: nobody is a target, so the HUD never mentions the key.
+    if (const auto *Talk = NpcTalk(); !Talk || !Talk->IsEnabled())
+        return FString();
     if (Walker && !Walker->IsDisembarking())
     {
         const FVector From = Walker->GetActorLocation(), Forward = Walker->GetActorForwardVector();
@@ -2507,7 +2526,7 @@ FString ASSGameMode::NpcDigest(const FString &Character) const
 
 void ASSGameMode::BeginTalk()
 {
-    auto *Talk = GetGameInstance() ? GetGameInstance()->GetSubsystem<USSNpcTalkSubsystem>() : nullptr;
+    auto *Talk = NpcTalk();
     if (!Talk || !Talk->IsEnabled() || IsMenuOpen() || !TalkingTo.IsEmpty())
         return;
     const FString Target = TalkTarget();
@@ -2522,6 +2541,7 @@ void ASSGameMode::BeginTalk()
         Talk->OnTranscript.AddUObject(this, &ASSGameMode::OnNpcTranscript);
         Talk->OnReply.AddUObject(this, &ASSGameMode::OnNpcReply);
         Talk->OnFailure.AddUObject(this, &ASSGameMode::OnNpcFailure);
+        Talk->OnStatus.AddUObject(this, &ASSGameMode::OnNpcStatus);
         bTalkBound = true;
     }
     Talk->Digest = NpcDigest(Target);
@@ -2538,7 +2558,7 @@ void ASSGameMode::BeginTalk()
 
 void ASSGameMode::EndTalk()
 {
-    auto *Talk = GetGameInstance() ? GetGameInstance()->GetSubsystem<USSNpcTalkSubsystem>() : nullptr;
+    auto *Talk = NpcTalk();
     if (!Talk || TalkingTo.IsEmpty())
         return;
     TalkStatus = TEXT("Transcribing...");
@@ -2574,4 +2594,9 @@ void ASSGameMode::OnNpcFailure(const FString &, const FString &Why)
     TalkStatus.Empty();
     TalkingTo.Empty();
     Announce(Why);
+}
+
+void ASSGameMode::OnNpcStatus(const FString &Character, const FString &Phrase)
+{
+    TalkStatus = (Character == TEXT("Director") ? TEXT("The Director") : Character) + TEXT(" ") + Phrase;
 }

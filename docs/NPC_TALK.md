@@ -11,7 +11,7 @@ run on the player's machine as hidden sidecar processes the game starts and stop
 | `ASSGameMode::BeginTalk / EndTalk / TalkTarget` | who is listening, the game-state digest, the captions | `SSGameMode.cpp`, end of file |
 | `ASSPlayerController::PlayerTick` | the key: held = listening, released = send | `SSGameMode.cpp` |
 | `ASSHUD` | the "You:" box, the crew answer box (deck teal), the status line, the walk hint | `SSHUD.cpp` |
-| `Config/DefaultNpcTalk.ini` | executables, models, ports, reply length, memory | |
+| `Config/DefaultNpcTalk.ini` | executables, the flight and station models, ports, reply length, memory | |
 | `Content/SpaceSurvival/NpcTalk/Personas/<Name>.txt` | one system prompt per character; `_Default.txt` for the rest; `{Name}` is substituted | |
 | `SpaceSurvival.NpcTalk.Encoding` | automation suite: the WAV, both request bodies, both answers, the mesh-name rule | `SSNpcTalkAutomationTests.cpp` |
 
@@ -31,6 +31,29 @@ run on the player's machine as hidden sidecar processes the game starts and stop
   Apache 2.0 base, launched with `--reasoning off` because Qwen3.5 thinks out loud otherwise (and `ParseReply` strips
   `<think>` blocks regardless). The stock 1.5B was removed from the drive at the owner's request. Before any release:
   decide this. A stock 4B or Mistral 7B Instruct (Apache 2.0) is the shippable fallback if the answer is no.
+
+## Two models, one at a time
+
+Owner's split, 2026-10-10: "the space station is less game, more chat. Load the better model at space stations;
+initiating a wave kills the server until you land at a space station again. The Director can live on the small
+model, active during waves." So:
+
+| Where | llama-server | Set by |
+|---|---|---|
+| Walker on the deck (hangar shown, or landed on the pad) | `StationLlamaModel`, started on arrival so the first question is quick | `SetContext(Station)` after the walker spawns |
+| Departure (any launch: next wave, new run, free flight) | stopped; the GPU is the game's again | `SetContext(Flight)` in `BeginDeparture` |
+| The villain's first line of the run | `LlamaModel` (the 4B), started then so he can be answered | `EnsureServers` in `ShowVillainLine` |
+
+whisper-server stays up throughout (CPU, 0.5 GB). A freshly started llama-server refuses or answers 503 while it reads
+its model off the disk; `PostToLlama` re-posts the same question every 2 s for up to two minutes with the status line
+"<Name> is still waking up, hold on...", so a question asked on arrival is answered, late, not lost.
+
+## Optional pack
+
+None of this is gameplay (owner: "it's all extra"), so the sidecars and models are an optional download, not part of
+the core package. `IsInstalled()` checks once at start-up that both executables and both models exist; without them
+`IsEnabled()` is false, `TalkTarget()` is empty, the HUD never mentions the key, no server starts and nothing is logged
+beyond one line. The core package carries `DefaultNpcTalk.ini` pointing at where the pack would go.
 
 ## The loop
 
