@@ -58,5 +58,8 @@ writes these one at a time after testing each.
 - The sidecar paths in `DefaultNpcTalk.ini` are this machine's. A package must carry `bin/` and `models/` beside the
   executable and point the ini at them; non-asset persona files need `DirectoriesToAlwaysStageAsNonUFS`.
 - Typed fallback, characters who speak first (bartender, merchants) and voice out are owner-listed follow-ups.
+- Owner ideas, not scheduled: a boast from the villain when a run ends (the `VillainEpitaph` slot exists for his last
+  word on a death); a small local player profile, how often the pilot swears across runs, so how vulgar he may get
+  tracks the player's own habit, or simply a setting. The language-mirroring today is per line only.
 - Licences: whisper.cpp and llama.cpp MIT, whisper small.en MIT, Qwen2.5-1.5B-Instruct Apache 2.0. Verify the exact
   model file before any release (docs/production/SOLUTION_CATALOG.md rule).
