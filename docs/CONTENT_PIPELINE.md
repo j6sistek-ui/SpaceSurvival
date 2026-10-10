@@ -1,5 +1,12 @@
 # Phase 1 content pipeline
 
+**October10 hair correction:** Joy's light-blue source derivative now reversibly
+filters three malformed left-side guide bundles. New base groom/binding and the
+existing review BP are saved; all135 clips, body and original sources are intact.
+149 private packages; fresh Blender/native asset reload passes. Historical recipes
+in `Scripts/StationRecipes/JoyHair139` must not be replayed. Native continuous
+motion/shading remains pending. [Receipt](validation/2026-10-10-joy-hair-and-memory.md).
+
 **October10 Joy derivative:** the owner-confirmed source pair produces a
 light-blue Joy mesh/material variant and135 Cyborg-derived clips, saved in
 JoyLightBlue117 with two groom bindings and a preview Blueprint. Originals stay

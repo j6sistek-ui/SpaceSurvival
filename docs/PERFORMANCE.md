@@ -1,5 +1,14 @@
 # Performance findings
 
+**October10 current direction:** ray tracing stays OFF. Future budget:4K60 or
+1440p90+ at maximum ray tracing without frame generation; quality/design first.
+No quality reduction or optimization has been applied. Read-only editor baseline:
+149 skeletal components/36 unique meshes, all one LOD;0 placed grooms;374 active
+lights,25 shadowed. System VRAM2313MiB before launch and11099–11146MiB warm; separate
+tracked RHI resources7210.35MB. These are editor-wide observations, not pure NPC
+cost or FPS. Limited GPU use is now allowed; verification editors exited cleanly.
+[Measurements, caveats and next profiling step](validation/2026-10-10-joy-hair-and-memory.md).
+
 **October10 Central checkpoint:** candidate107 adds401 actors, including local
 lights, modular architecture and installed Nanite foliage. Most added area
 lights have no shadow; four planting washes use local shadows. The native

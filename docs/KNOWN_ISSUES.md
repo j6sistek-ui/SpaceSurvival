@@ -9,8 +9,8 @@ acceptance is still open; do not infer it from the30/30 scripted walk or prior r
 [Current native images and evidence](validation/2026-10-10-central-hub-concept.md).
 
 CPU follow-up: the three planter end-cap fixes are saved and pass native asset
-reload. The owner now requires CPU-only work until GPU use is explicitly
-released; the one-time resume follow-up is disabled. Next rendered lead action
+reload. Limited GPU use is now allowed; keep ray tracing OFF. The one-time
+resume follow-up remains disabled. Next rendered lead action
 is to finish Central against the fixed target. The current comparison still
 shows broad plain wall panels and shallow portal detail; planting reads as a tall
 hedge and obscures some information screens. Prioritize fitted owned wall/portal
@@ -29,11 +29,17 @@ complete cycling checks. Check R's existing display while finishing R. T's
 hardware choice stays held; ad audio is future work, and other rooms are not
 reopened by this checkpoint. Saved art does not prove current native cycling.
 
-The rendered editor stays closed; CPU/NullRHI checks are allowed. One scoped NPC
+The offscreen verification editor is now closed cleanly. One scoped NPC
 exception is authorized: Joy's lighter-blue derivative and all135 Cyborg clips
 are saved, with two groom bindings and a preview Blueprint. Fresh asset reload
 passes; rendered skin/hair, continuous motion/contact and performance remain
-unverified. No permanent placement. [CPU result and preview](validation/2026-10-10-joy-blue-cpu.md).
+unverified. Joy's stray left hair loop is now repaired, saved and freshly reloaded;
+all135 clips remain intact and the private set is149 packages. No permanent placement.
+[Hair correction and memory baseline](validation/2026-10-10-joy-hair-and-memory.md).
+Future performance target: 4K60 or1440p90+ with maximum ray tracing, no frame
+generation. Current RT stays OFF; quality/design first. The initial editor-only
+inventory/memory report is not an FPS result. Measure representative frame times
+before choosing distance LOD/update-budget changes or visible compromises.
 Preserve white floors, factual directions, L, held T and the Central ad limit.
 All other rooms/cockpit/NPC repairs remain held.
 Supplementary crew validation reports Warden height/sole outside this decor pass;

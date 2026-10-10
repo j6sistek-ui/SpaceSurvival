@@ -5,7 +5,9 @@
 `RefineStationCentralCheckIn`, `RefineStationCentralLightGarden`). Do not replay
 their one-shot stages. The bounded three-mesh planter end-cap correction is now
 saved and passes CPU asset reload119/124; do not reapply it or scene actors.
-Rendered work remains held by the owner's CPU-only instruction. The fixed generated target-v2 and native pictures are in
+Limited rendered work is now allowed, with ray tracing OFF. Latest verification
+editors exited cleanly. Joy's hair-only correction passes fresh saved-asset reload;
+[hair and memory evidence](validation/2026-10-10-joy-hair-and-memory.md). The fixed generated target-v2 and native pictures are in
 the [concept receipt](validation/2026-10-10-central-hub-concept.md). Existing owned kiosk, P4/Clinic kits
 and Nanite Plants assets supply the authored scene; no new service mechanic.
 Current owner scope is Central first, R second, plus the explicit Joy color and
