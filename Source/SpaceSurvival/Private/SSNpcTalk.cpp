@@ -178,13 +178,27 @@ FString TidyReply(const FString &Raw, bool bCutShort)
     FString Text = Raw.TrimStartAndEnd();
     // Models dress a line up as prose: **bold** markers and quotation marks around the whole thing.
     Text.ReplaceInline(TEXT("**"), TEXT(""));
-    // Stage directions in asterisks (*offers a sample*) come off whole, however often the rules say not to; a lone
-    // asterisk is simply dropped.
-    for (int32 Open = Text.Find(TEXT("*")); Open != INDEX_NONE; Open = Text.Find(TEXT("*")))
+    // Stage directions in asterisks (*offers a sample*) come off whole, however often the rules say not to. Only an
+    // asterisk at a word edge delimits one: with a letter on both sides it is a censored word (measured 2026-10-10,
+    // NSFW-3B writes "f*cking" and a naive pair match deleted the text between two of them), and it stays.
+    auto InWord = [&Text](int32 I)
+    { return I > 0 && I + 1 < Text.Len() && FChar::IsAlpha(Text[I - 1]) && FChar::IsAlpha(Text[I + 1]); };
+    for (int32 Open = 0; Open < Text.Len(); ++Open)
     {
-        const int32 Close = Text.Find(TEXT("*"), ESearchCase::IgnoreCase, ESearchDir::FromStart, Open + 1);
-        Text.RemoveAt(Open, Close == INDEX_NONE ? 1 : Close - Open + 1);
+        if (Text[Open] != TEXT('*') || InWord(Open) || (Open > 0 && FChar::IsAlnum(Text[Open - 1])))
+            continue;
+        int32 Close = Open + 1;
+        while (Close < Text.Len() && (Text[Close] != TEXT('*') || InWord(Close)))
+            ++Close;
+        if (Close >= Text.Len())
+            break;
+        Text.RemoveAt(Open, Close - Open + 1);
+        --Open;
     }
+    // Whatever is left at a word edge is stray formatting ("credits* each").
+    for (int32 I = Text.Len() - 1; I >= 0; --I)
+        if (Text[I] == TEXT('*') && !InWord(I))
+            Text.RemoveAt(I);
     while (Text.Contains(TEXT("  ")))
         Text.ReplaceInline(TEXT("  "), TEXT(" "));
     Text.TrimStartAndEndInline();
