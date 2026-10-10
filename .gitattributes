@@ -26,3 +26,5 @@ ContentSource/AcornShipCandidate/*.mtl linguist-generated=true
 *.ttf binary
 ContentSource/FigmaUIRefresh/OFL.txt -text whitespace=-blank-at-eol
 Content/SpaceSurvival/UI/Fonts/OFL.txt -text whitespace=-blank-at-eol
+ContentSource/CentralCheckIn/*.svg text eol=lf
+docs/validation/images/2026-10-10-central-hub/*.txt text eol=lf

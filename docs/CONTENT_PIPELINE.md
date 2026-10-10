@@ -1,5 +1,19 @@
 # Phase 1 content pipeline
 
+**October10 Central sources:** `ContentSource/CentralCheckIn` contains the original
+factual kiosk display, editable SVG, deterministic generator and hash manifest.
+Four adopted Central scripts retain the exact native authoring stages. The
+six modular arc meshes are original generated geometry, with three corrected
+planter end caps pending native import after the VRAM pause; foliage, kiosk and
+furniture reuse installed assets. Licensed source assets stay untouched.
+The target-v2 image and complete prompt are concept provenance, separate from
+unedited native views. The existing T/R/Market/L ad manifests and Central options
+were rechecked:20 room campaigns plus two Central choices are present and hash
+verified. Reuse them on futuristic displays, including holographic glass; no new
+ad generation is needed for these sets. Source preservation is separate from
+native host/readability/cycling validation.
+[Sources, private package hashes and limits](validation/2026-10-10-central-hub-concept.md).
+
 **October9 Joy review import:** original source preserved. Private reference-pose
 review has corrected rest-pose hair alignment and BeforeDOF translucent eye
 rendering, fixing the observed rear-hair compositing artifact. Existing tooling

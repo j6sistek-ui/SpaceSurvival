@@ -1,5 +1,23 @@
 # SpaceSurvival project state
 
+**October10 Central concept checkpoint:** saved Wayfarer `52a5ee74`
+has9,051 actors. The new fixed target and requested podium, planted waiting bays,
+ceiling/portal/desk detail, removed blue circles and balanced local lighting are
+implemented for native review. [Images and evidence](validation/2026-10-10-central-hub-concept.md).
+The30/30 scripted route and prior9034-actor reload passed their scene checks.
+The editor closed cleanly for the owner's one-hour VRAM pause; all40 private
+packages, map bytes, six image hashes and78 protected content files were checked
+on disk. Three source-only planter cap fixes await native import and a final
+scene reload. Owner visual acceptance, physical input and performance remain open. R is
+second; lower priorities and NPC repairs remain held. The supplementary Warden
+height/sole check fails and is retained outside this decor scope.
+
+Four authoring recipes, original kiosk screen sources and sanitized evidence are
+tracked; the map and40 private native derivatives remain local. Build55 and
+published0.1.22-alpha/itch2048604 are unchanged. No new C++ binary, cook, upload or
+merge; PR69 stays draft. Historical paused/editor statements below are superseded
+by this source/native checkpoint, not by release or room acceptance.
+
 **October9 saved handoff: paused by owner.** Central/R quality is rejected and
 unfinished; resume central first, R second, with all lower priorities held. This
 supersedes the active/continue-next statements in historical checkpoints below.

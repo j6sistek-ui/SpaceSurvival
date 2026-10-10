@@ -1,5 +1,41 @@
 # Open work and owner review
 
+**October10 Central concept checkpoint — RPT-20261007-01 / RPT-20261006-04 /
+RPT-20260923-01 remain OPEN / lead.** The owner resumed Central and approved a
+stronger generated target-v2, then locked that image. Native candidate107 now
+includes the ceiling/portal/reception/planting composition, owned check-in podium,
+removed cyan circles and a brighter, warmer local lighting pass. Visual owner
+acceptance is still open; do not infer it from the30/30 scripted walk or prior reload.
+[Current native images and evidence](validation/2026-10-10-central-hub-concept.md).
+
+Next lead action: after the VRAM pause, import the three prepared planter end-cap
+fixes, then finish Central against the fixed target. The current comparison still
+shows broad plain wall panels and shallow portal detail; planting reads as a tall
+hedge and obscures some information screens. Prioritize fitted owned wall/portal
+pieces, varied planting with clear sightlines, and consistent reception/fixture
+detail. Review arrival, reverse and waiting views together; actor counts and
+brighter screenshots are not acceptance. Verify saved state and measure actual
+performance before making any performance claim. R remains second.
+
+Advertising uses futuristic displays, including holographic glass; ordinary TVs
+are not required. Reuse the existing art. CPU verification confirms all20 selected
+room campaigns (five each for T/R/Market/L), both Central options and the16 original
+reuploads are present with matching recorded hashes; variants are not extra ads.
+Central is information-first with at most1–2 ads. Noncentral sets retain at least
+five distinct illustrated, room-themed campaigns, upright readable hosts and
+complete cycling checks. Check R's existing display while finishing R. T's
+hardware choice stays held; ad audio is future work, and other rooms are not
+reopened by this checkpoint. Saved art does not prove current native cycling.
+
+Unreal is closed; source/check/documentation work may continue during the pause.
+Preserve white floors, factual directions, L,
+held T and the Central ad limit. All other rooms/cockpit/NPC repairs remain held.
+Supplementary crew validation reports Warden height/sole outside this decor pass;
+retain it with the other held NPC defects. At the next asset need, check relevant
+installed folders (including relocated M: content) and ask the owner before
+recreating assets; no library inventory or reorganization is authorized now.
+The older pause and continue-next statements below are historical.
+
 **October9 owner correction and pause — RPT-20261007-01 / RPT-20261006-04 /
 RPT-20260923-01 remain OPEN / lead.** Central and R are far below the concept and
 have not received owner acceptance. NPC counts and scripted walks did not finish

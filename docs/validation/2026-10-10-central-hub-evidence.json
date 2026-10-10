@@ -1,0 +1,411 @@
+{
+  "map_sha256": "52a5ee747fe7a586029c9f2ad85d782972b22c61b60bfbfcc9f7c88387dafdc7",
+  "actors_from_saved_receipt": 9051,
+  "added_actors": 401,
+  "native_packages": [
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralArchitecture97/MI_CentralWall_1b860884.uasset",
+      "sha256": "b4ba098b051c8fe291bcbc96a9c8963e50cf222aba9d8f3a5415d2198881d957",
+      "bytes": 9561
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralArchitecture97/MI_CentralWall_5d91627e.uasset",
+      "sha256": "6236be1fa9e0ee3d84c5828c9e76b2a7b3d854e0c4e2473013166ca8cb3d1fcc",
+      "bytes": 10024
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralArchitecture97/MI_CentralWall_d51c47ce.uasset",
+      "sha256": "8c70002a342d4e7c9e6809879f5345f1e243e67e443f517dc3d757a12d62cd93",
+      "bytes": 9908
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralArchitecture97/MI_CentralWall_da9e3130.uasset",
+      "sha256": "36ae5955b1df4d6df774c6e930bf27c363dcc4fbf97b1eaa9924546671d456f5",
+      "bytes": 9481
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralArchitecture97/MI_ChampagneJoinery.uasset",
+      "sha256": "eff393a26986547cbdfc257a091a420b0819f355e39e752b5b2ed8a8e0a4984a",
+      "bytes": 10155
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/MI_Champagne.uasset",
+      "sha256": "3f5769b47d19ef55f4ebc40a9587a26e58164c9db5589f2081deeed121d2b7ee",
+      "bytes": 9363
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/MI_Graphite.uasset",
+      "sha256": "ce5d1b5dedd51ce5852f4af2a1deb617d8821b7b0fdd77f58a5753e67ceb1e81",
+      "bytes": 6772
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/MI_SolidWarm.uasset",
+      "sha256": "3fd4357d7338fdb972108df0f0ac55b0bfc137a74764fe1ba41709a1e690be14",
+      "bytes": 7260
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/MI_Wall_6bb7b97e.uasset",
+      "sha256": "61516d7d179ed734580179f94a75391fbab646a1baa9b84b723d8e7265714200",
+      "bytes": 9480
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/MI_Wall_78275f72.uasset",
+      "sha256": "e7c7fdb8d7365f1a924fcde0f8d65f6b89d5ba88b177406f983ec3f77de22bec",
+      "bytes": 9597
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/MI_Wall_e2bcdeba.uasset",
+      "sha256": "52507ef0b1cef86329d7c27ad5bfd8250e8f78f683d23d1a4f029ba11078208e",
+      "bytes": 9381
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/MI_Wall_e32f1437.uasset",
+      "sha256": "cdfdd7d60f8ac7c0f219157d04558506a470c4719ab9356f947f54677131c9ce",
+      "bytes": 9471
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralCeilingRing.uasset",
+      "sha256": "4573ee79df17ef7ff698ee933b339b83e9572914846dbf420e5537d52ff2f394",
+      "bytes": 37318
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralInnerRing.uasset",
+      "sha256": "3585cb7dcc60d96d6f6a0fc3af1bc875f399932a993bfd3ad988d908ebcc45ae",
+      "bytes": 37318
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralPlanter.uasset",
+      "sha256": "eafbd81193ffcb9d54a0cc3e6a9c0d3ef4853963dcf6cdd7c9cdc649e8fecb67",
+      "bytes": 18221
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralPlanterLip.uasset",
+      "sha256": "d0cdf7d5ee9b8a791cc3d3efb8bbe9a097c8f45299937ad87887a715cc05b87d",
+      "bytes": 18146
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralPlanterSoil.uasset",
+      "sha256": "2599c6dc97a460c7f8eeeb13fc68808a6d6e9dfbfac4dca696ded33ae1e24bb9",
+      "bytes": 18116
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralSofaCollidable.uasset",
+      "sha256": "a530b4cb311dd903d0c848b658604a06834199f083fd56c290b4a296c0e48453",
+      "bytes": 79066
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralWarmRing.uasset",
+      "sha256": "f4e96a1a50ed0679147c621ff916044babaf8c10401d7751ee38348844cfa2a6",
+      "bytes": 36679
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralCheckIn100/M_CheckIn.uasset",
+      "sha256": "f6b357fa201f8012f2e63f7fcbff81ad8294851a122371ec135be5fc7b6d0c6d",
+      "bytes": 18608
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralCheckIn100/T_CheckIn.uasset",
+      "sha256": "018e8761f43fa2249c8d17a84d92646be6f23386ac6fd99c574470be6d267477",
+      "bytes": 58034
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/M_CentralFabric.uasset",
+      "sha256": "6329fb878ffe22e8ec86bf82cc4fa89b017a3c56d2c3417ebe0cbce465287852",
+      "bytes": 34981
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/M_Green_Abelia_x_grandiflora_Leaves01.uasset",
+      "sha256": "bd3000e14379585a5a6a0fa159f55385e74497b0239b09f95df9b3286d610bec",
+      "bytes": 36760
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/M_Green_Acer_buergerianum_Leaves01.uasset",
+      "sha256": "ae2be2fd8a191e48fc40dde5305d201b09d9444eca84138699bde46f659fb99d",
+      "bytes": 39960
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_CentralChair.uasset",
+      "sha256": "c605259f55ce3193c8bb8e80f3fdfa14500de410746819178e48d252154d46aa",
+      "bytes": 6653
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_CentralSofa.uasset",
+      "sha256": "156eb6c882c47e3d1ad45222f01599a9a53c3d494a2cf8957dee3b70f386ac56",
+      "bytes": 6639
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Abelia_x_grandiflora_Leaves01.uasset",
+      "sha256": "9135d80e9b70be6ae493d9334c97b66c56a7f9cb83692cab1f567de048459d12",
+      "bytes": 13399
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Abelia_x_grandiflora_Leaves02.uasset",
+      "sha256": "c30079bdf2e049acc10cc5f7294127d2d1745c34b2a30ac2f67f84951b84c2fb",
+      "bytes": 14317
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Abelia_x_grandiflora_Leaves03.uasset",
+      "sha256": "59ca26a71d6fdc31e60ff764e47f6e12a125404479a1b056654ac9505c74a43e",
+      "bytes": 14299
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Abelia_x_grandiflora_Leaves04.uasset",
+      "sha256": "9d2c5a2531e9538a270c7d0f6bbfd04043504aa6b0f4191ce62cbbcd6602393e",
+      "bytes": 14320
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Abelia_x_grandiflora_Leaves05.uasset",
+      "sha256": "adc03d0a8aaef36218ce5cf389289aae9ba0f53b4da06bb111280916d06d06b0",
+      "bytes": 14364
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Acer_buergerianum_Leaves01.uasset",
+      "sha256": "d234fe77faaad6c591c574dccc2112c09731797735efcdf2b509706234e9ba67",
+      "bytes": 13840
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Acer_buergerianum_Leaves02.uasset",
+      "sha256": "b32ce9efc3f403f250642fc6e32e8cfedc3d61828f8f02d5088c25659351c7c5",
+      "bytes": 14588
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Acer_buergerianum_Leaves03.uasset",
+      "sha256": "b621f87c8d2a54df80833f04c5914f19a80db740f388cb553a5c2ef5230e7fbf",
+      "bytes": 14607
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Green_Acer_buergerianum_Leaves04.uasset",
+      "sha256": "ffccae010e99c627ab3a5017bab41b82ca9ddff30ed548391bba59d23670db49",
+      "bytes": 14643
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_SatinGraphite.uasset",
+      "sha256": "9def64f4616a89fe58206bac1106cb4453be5808616db3db21c456093825b810",
+      "bytes": 7218
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Wall_6bb7b97e.uasset",
+      "sha256": "06ce5e4498b28a38fea67b04f0e95c5254103da0bff0bf84bac912db48410630",
+      "bytes": 12327
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Wall_78275f72.uasset",
+      "sha256": "17ac4e84a18bd104d2279a4ea1c183c1e593135447a95f7130ea3096e1194baf",
+      "bytes": 12510
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Wall_e2bcdeba.uasset",
+      "sha256": "5070e8d517d2a8bf1a126c86c0490d998af8bb82123ea690a3cddf548af03cc3",
+      "bytes": 12139
+    },
+    {
+      "file": "Content/OutpostSandbox/StationRefinement/CentralLightGarden101/MI_Wall_e32f1437.uasset",
+      "sha256": "ccbb507c54e5b66cab678f47ab71c64d22bfe715a1c79a79a451eb7f17b6ac07",
+      "bytes": 12217
+    }
+  ],
+  "images_sha256": {
+    "01_Arrival.png": "e238874004cc43c0bb5cb0a8ac0ad0bb14303983eaccaf9453191066fb77b363",
+    "02_Reverse.png": "e20c868323b5c4e0092b1e58c00bcf8234f4644b742ba153892df63b1e06a333",
+    "03_Reception.png": "a861ce887726c8cac96b35749ab565528df89628b08c86490b6c4f626948d332",
+    "04_Waiting.png": "5caffc37dc569493ac01f1f63c4773a208f180fedcdafde1adbd5b419bab6cb8",
+    "05_Podium.png": "2ad4bb3f527d3cd0ba115490a4c7c700dd6853aee59afff0d030de8bc7ccbea4",
+    "06_NewSeating.png": "77044bebf6f0e5a82786c86238a34b80e05092ef1c5c6ed64535b89a7786554a",
+    "Central-hub-target-v2.png": "239f6ed3a0565fb328a8219b28405ab72d0451a6fb51f3a6656ff9d7b0c29866",
+    "Central-hub-target-v2-prompt.txt": "57a89e3f4991db942c799d7a86ede21cd4a3fbbdd5b6df25cdc3a433c5f0e506",
+    "00_Before.png": "4cb381319cda766557404f76f0c4c28c4d5c823c0bd7334d5144a427c58be87d"
+  },
+  "walk": {
+    "reached": 30,
+    "total": 30,
+    "distance_m": 165.28,
+    "duration_seconds": 55.98,
+    "physical_input": false,
+    "original_possession_restored": true,
+    "temporary_pawn_destroyed": true
+  },
+  "verification": {
+    "final_native_reload": "pending after VRAM pause",
+    "prior_reload105_actor_count": 9034,
+    "prior_reload105_actor_snapshot_changes": [],
+    "protected_content_files_unchanged": 78,
+    "owner_layout_start_to_end_unchanged": false,
+    "owner_layout_preserved_since_readback105": true,
+    "editor_closed": true,
+    "dirty_map_and_content_packages_before_exit": 0,
+    "capture_finalization": "precondition failed; images and restoration flags verified separately after exit"
+  },
+  "geometry_source": {
+    "source_sha256_before": "e2285b1443b9c3ed95bc6f1b1824ee724c1c75f0fb06a4ff1108c2d3dd32c8c7",
+    "source_sha256_after": "4cd3a1b32b6fe1674c3ab3296cb51e3b016d5d2b2621b1af0579ec63655d4ed5",
+    "geometry": [
+      {
+        "file": "SM_CentralCeilingRing.obj",
+        "sha256": "0914d724bb950330f448e18b997e8693ab50fdf6089d3c7b947522dc1dae91ef",
+        "vertices": 1024,
+        "triangles": 2048,
+        "nonmanifold_edges": 0,
+        "inconsistent_winding_edges": 0,
+        "degenerate_triangles": 0,
+        "signed_volume_cm3": 9910696.729495304,
+        "positions_and_uvs_unchanged": true
+      },
+      {
+        "file": "SM_CentralWarmRing.obj",
+        "sha256": "f585ede62e7d35c46b4c8e6130575c8b44ecafa2d718a5bfad3e196fd5952b4a",
+        "vertices": 1024,
+        "triangles": 2048,
+        "nonmanifold_edges": 0,
+        "inconsistent_winding_edges": 0,
+        "degenerate_triangles": 0,
+        "signed_volume_cm3": 145742.77000424845,
+        "positions_and_uvs_unchanged": true
+      },
+      {
+        "file": "SM_CentralInnerRing.obj",
+        "sha256": "09905fb7d393c836da3984f34222b58ccc8bc6c22b6cdc88dae3d901e3e523f0",
+        "vertices": 1024,
+        "triangles": 2048,
+        "nonmanifold_edges": 0,
+        "inconsistent_winding_edges": 0,
+        "degenerate_triangles": 0,
+        "signed_volume_cm3": 2742451.199230784,
+        "positions_and_uvs_unchanged": true
+      },
+      {
+        "file": "SM_CentralPlanter.obj",
+        "sha256": "7fd566e2c020d652f97aa618e784d66ead7ffbbac576f992ad2534f3fc4c2d70",
+        "vertices": 136,
+        "triangles": 268,
+        "nonmanifold_edges": 0,
+        "inconsistent_winding_edges": 0,
+        "degenerate_triangles": 0,
+        "signed_volume_cm3": 4218300.039540118,
+        "positions_and_uvs_unchanged": true
+      },
+      {
+        "file": "SM_CentralPlanterSoil.obj",
+        "sha256": "432fe29430534e482a3dfbc7de67001bc44e3364b25ada2592a714db2d580596",
+        "vertices": 136,
+        "triangles": 268,
+        "nonmanifold_edges": 0,
+        "inconsistent_winding_edges": 0,
+        "degenerate_triangles": 0,
+        "signed_volume_cm3": 193916.45189975353,
+        "positions_and_uvs_unchanged": true
+      },
+      {
+        "file": "SM_CentralPlanterLip.obj",
+        "sha256": "8b25d9607a70782a57c4e3155bd2107e60df3e1a9ee598f2055cb656cc42e446",
+        "vertices": 136,
+        "triangles": 268,
+        "nonmanifold_edges": 0,
+        "inconsistent_winding_edges": 0,
+        "degenerate_triangles": 0,
+        "signed_volume_cm3": 341665.71739848086,
+        "positions_and_uvs_unchanged": true
+      }
+    ],
+    "native_assets_changed": false,
+    "remaining": "Import the three corrected planter OBJ files and verify native result after VRAM pause; do not replay scene authoring."
+  },
+  "limits": [
+    "Owner visual acceptance open",
+    "No physical keyboard/controller check",
+    "No representative FPS/VRAM result",
+    "Held NPC normalization validator reports Unnormalized height/sole: Warden",
+    "No new native binary or package",
+    "Three corrected planter end caps await native import and visual verification"
+  ],
+  "existing_ad_sources": {
+    "rooms": [
+      {
+        "room": "R",
+        "manifest_sha256": "0e1c3914f878d70b710ae06c0f3ef8ac08aab01ddf6ebd070f061a81cec5a4b7",
+        "campaigns": [
+          {
+            "campaign_id": "R01_MorphClinic",
+            "sha256": "52047c0f59154dbf6f472abb4becb05cc18822933d5eb72948f1d8922335893a"
+          },
+          {
+            "campaign_id": "R02_HologramDoctor",
+            "sha256": "4d14844a826017e6540c24db419a456add0fdcb32a3841fdd42b862196dd0195"
+          },
+          {
+            "campaign_id": "R03_ZeroGMassage",
+            "sha256": "53bfbc7d0547cae56aa572246b8d38cf0c78f7cd156990a275ece6da6f1808fe"
+          },
+          {
+            "campaign_id": "R04_VacuumValet",
+            "sha256": "37a1ac79e8cc7fb645cee8e13c432ecd07d5d9ce6dfa670cb5c6a9354b55cf56"
+          },
+          {
+            "campaign_id": "R05_FirstContactPhoto",
+            "sha256": "414ee8a9cc530c83b4ff5fd6a85ff36a6ab0831346509f6f7c7bbd00d81ce80c"
+          }
+        ]
+      },
+      {
+        "room": "Market",
+        "manifest_sha256": "4d30c1c3a3c565d1a7679d3abd7614077ceea35534ddf24367261699b946cced",
+        "campaigns": [
+          {
+            "campaign_id": "M01_CosmicTacos",
+            "sha256": "ab3d501532a723ee9e7736d02fda719820f2eb5af332ba92c2b383fce2e5636d"
+          },
+          {
+            "campaign_id": "M02_MoonjarPantry",
+            "sha256": "950e8fa46c6ecf72fde5e9e718a69ad7bd34edc7cb4fb097de1c0e4e4863b273"
+          },
+          {
+            "campaign_id": "M03_AnchorSaucer",
+            "sha256": "e1de7fc58e093cca60cfe5a1b78ad8e79d37be591fe8a6460e9ab8fa2b2919e6"
+          },
+          {
+            "campaign_id": "M04_RelativelyGoodClocks",
+            "sha256": "176e0cfd5359578187c18b893f55cd955cf1f1b98a69879c349022045c60829d"
+          },
+          {
+            "campaign_id": "M05_RockSolidCompanions",
+            "sha256": "bd89eb5cdc8ef36a1de306a4faf7fe7c7e43fcefd2d88f20115ff9161cc8c253"
+          }
+        ]
+      },
+      {
+        "room": "L",
+        "manifest_sha256": "503bb4b1e2f556dfa4f2c29614b32774d053c8cc620687b90eea69d4daca6eec",
+        "campaigns": [
+          {
+            "campaign_id": "L01_SpousalAbduction",
+            "sha256": "875ad89b977029de6cfb63e84692cd86c90c88f37dbd72030b1525f460dc83fa"
+          },
+          {
+            "campaign_id": "L02_DockDrinkDock",
+            "sha256": "7455c0f962d6ac91c7616f8f4b901a52a4c7f9e3c17fe9950fb2388adf4d8eba"
+          },
+          {
+            "campaign_id": "L03_BentOrbit",
+            "sha256": "17f458868d57527961a78929e3ee1946022aac8fca6218424b849d9cc7e8c657"
+          },
+          {
+            "campaign_id": "L04_VelVoid",
+            "sha256": "18ada2c716ac256f846f21e612b9630e4a01326d38bbeb5025f02f541ebe58dd"
+          },
+          {
+            "campaign_id": "L05_PortAuthority",
+            "sha256": "23083c21d0f94f7dffbef467164e1b6e1346989f8e673867c8f16c930026407d"
+          }
+        ]
+      }
+    ],
+    "T_manifest_sha256": "78c4579035335183b39053697f57e5daa88a0df728dab780415c3c57110c456f",
+    "T_campaigns_verified": 5,
+    "original_reuploads_verified": 16,
+    "central_options": [
+      "Alien Fix-It",
+      "Probe Support"
+    ],
+    "missing_files": [],
+    "native_cycling_checked_this_pass": false
+  }
+}
