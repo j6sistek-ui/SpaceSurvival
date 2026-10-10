@@ -6,6 +6,7 @@
 #include "HttpModule.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/App.h"
+#include "Misc/Crc.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Serialization/JsonReader.h"
@@ -82,10 +83,17 @@ TArray<uint8> EncodeWav16k(const TArray<float> &Mono)
     return Wav;
 }
 
-TArray<uint8> WhisperBody(const TArray<uint8> &Wav, FString &OutBoundary)
+TArray<uint8> WhisperBody(const TArray<uint8> &Wav, FString &OutBoundary, const FString &Prompt)
 {
     OutBoundary = TEXT("----SSNpcTalk7f3a9c2e");
+    // whisper-server's "prompt" field biases it toward the game's own words; without it "Nyxar" is heard as English.
+    const FString PromptPart =
+        Prompt.IsEmpty()
+            ? FString()
+            : FString::Printf(TEXT("--%s\r\nContent-Disposition: form-data; name=\"prompt\"\r\n\r\n%s\r\n"),
+                              *OutBoundary, *Prompt);
     const FString Head =
+        PromptPart +
         FString::Printf(TEXT("--%s\r\nContent-Disposition: form-data; name=\"response_format\"\r\n\r\njson\r\n"
                              "--%s\r\nContent-Disposition: form-data; name=\"temperature\"\r\n\r\n0.0\r\n"
                              "--%s\r\nContent-Disposition: form-data; name=\"file\"; filename=\"ask.wav\"\r\n"
@@ -242,6 +250,17 @@ FString CharacterNameFromMesh(const FString &MeshName)
             break;
         }
     return Name;
+}
+
+FString GivenName(const FString &Type, const FString &Seed)
+{
+    // Names apart from the seven deck crew TagTalkers already names, so a placed alien never shares one of theirs.
+    static const TCHAR *Nyxar[] = {TEXT("Ilo"),   TEXT("Saro"), TEXT("Tev"),  TEXT("Maru"), TEXT("Quill"),
+                                   TEXT("Nessa"), TEXT("Brin"), TEXT("Yara"), TEXT("Zeth"), TEXT("Lumi"),
+                                   TEXT("Corr"),  TEXT("Avi"),  TEXT("Thal"), TEXT("Rook"), TEXT("Esk")};
+    if (Type != TEXT("Nyxar") || Seed.IsEmpty())
+        return Type;
+    return Nyxar[FCrc::StrCrc32(*Seed) % UE_ARRAY_COUNT(Nyxar)];
 }
 
 FSSTalkIdentity IdentityFromTags(const TArray<FName> &Tags, const FString &MeshName)
@@ -439,6 +458,7 @@ void USSNpcTalkSubsystem::EndListeningAndAsk(const FSSTalkIdentity &Who)
     if (CurrentPhase != ESSTalkPhase::Listening)
         return;
     Known.Add(Who.Name, Who);
+    AskedAt = FPlatformTime::Seconds();
     const FString &Character = Who.Name;
     TArray<float> Taken;
     int32 Rate = 0, Channels = 0;
@@ -495,7 +515,8 @@ void USSNpcTalkSubsystem::Fail(const FString &Character, const FString &Why)
 void USSNpcTalkSubsystem::SendToWhisper(const FString &Character, const TArray<uint8> &Wav)
 {
     FString Boundary;
-    const TArray<uint8> Body = SSNpcTalk::WhisperBody(Wav, Boundary);
+    const TArray<uint8> Body = SSNpcTalk::WhisperBody(
+        Wav, Boundary, WhisperVocabulary + (Character.IsEmpty() ? TEXT("") : TEXT(" ") + Character));
     const auto Request = FHttpModule::Get().CreateRequest();
     Request->SetURL(FString::Printf(TEXT("http://127.0.0.1:%d/inference"), WhisperPort));
     Request->SetVerb(TEXT("POST"));
@@ -517,6 +538,9 @@ void USSNpcTalkSubsystem::SendToWhisper(const FString &Character, const TArray<u
                 Fail(Character, TEXT("Could not make out any words."));
                 return;
             }
+            // Logged so a strange answer can be read back after play (owner: "responded something weird").
+            UE_LOG(LogSSNpcTalk, Display, TEXT("%s heard: \"%s\" (%.1f s)"), *Character, *Text,
+                   FPlatformTime::Seconds() - AskedAt);
             OnTranscript.Broadcast(Character, Text);
             SendToLlama(Character, Text);
         });
@@ -597,6 +621,8 @@ void USSNpcTalkSubsystem::PostToLlama(const FString &Character)
             History.FindOrAdd(Character).Add({TEXT("assistant"), Reply});
             CurrentPhase = ESSTalkPhase::Idle;
             Pending.Reset();
+            UE_LOG(LogSSNpcTalk, Display, TEXT("%s answered after %.1f s: %s"), *Character,
+                   FPlatformTime::Seconds() - AskedAt, *Reply);
             OnReply.Broadcast(Character, Reply);
         });
     Pending = Request;

@@ -28,6 +28,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EngineUtils.h"
@@ -2449,12 +2450,8 @@ void ASSPlayerController::PlayerTick(float Dt)
     // a hold/tap menu option and remapping come later). Neither key does anything else in the ship or on foot.
     // The game mode decides who is listening: a crew member or the villain.
     if (!MenuInput && GetPawn() && (Pressed(EKeys::T) || Pressed(EKeys::Gamepad_RightThumbstick)))
-    {
-        if (GM->IsTalkListening())
-            GM->EndTalk();
-        else
-            GM->BeginTalk();
-    }
+        GM->TapTalk();
+    GM->UpdateTalkEngagement(Dt);
     const FKey InteractButton =
         Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;
     if (!MenuInput && (Pressed(EKeys::E) || Pressed(InteractButton)))
@@ -2470,34 +2467,45 @@ USSNpcTalkSubsystem *ASSGameMode::NpcTalk() const
     return GetGameInstance() ? GetGameInstance()->GetSubsystem<USSNpcTalkSubsystem>() : nullptr;
 }
 
-FSSTalkIdentity ASSGameMode::TalkTarget() const
+FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
 {
     FSSTalkIdentity Best;
+    const USceneComponent *BestMesh = nullptr;
     // No talk pack installed: nobody is a target, so the HUD never mentions the key.
     if (const auto *Talk = NpcTalk(); !Talk || !Talk->IsEnabled())
         return Best;
     if (Walker && !Walker->IsDisembarking())
     {
-        // Owner's rule: whoever speaks, the nearest active NPC answers. No facing test, only a range, so a remark
-        // across the atrium is not a conversation.
+        // The nearest crew member the pilot can actually see: on this floor, roughly in front of the camera and not
+        // behind a wall (owner: "which one was Nyxar, I didn't even see anyone near me" - a flat range picked people
+        // on other floors and behind walls). Within 5 m.
         const FVector From = Walker->GetActorLocation();
+        const FVector Eye = From + FVector(0.f, 0.f, 60.f);
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        const FVector Look =
+            (PC ? PC->GetControlRotation().Vector() : Walker->GetActorForwardVector()).GetSafeNormal2D();
+        FCollisionQueryParams Sight(SCENE_QUERY_STAT(SSTalkSight), false, Walker);
         float Nearest = 500.f;
-        // The conversation stays with whoever you were just talking to (owner: "another NPC walks up, next thing you
-        // know you're talking to someone else"): within 6 m and 90 s of the last exchange they win over anyone nearer.
-        const bool Recent = LastPartner.IsValid() && GetWorld()->GetTimeSeconds() - LastPartnerTime < 90.0;
-        FSSTalkIdentity Partner;
         auto Consider = [&](const USkeletalMeshComponent *Mesh, FSSTalkIdentity Who)
         {
             if (!Who.IsValid())
                 return;
-            const float Distance = FVector::Dist2D(Mesh->GetComponentLocation(), From);
-            if (Recent && Who.Name == LastPartner.Name && Distance <= 600.f)
-                Partner = Who;
-            if (Distance < Nearest)
-            {
-                Nearest = Distance;
-                Best = MoveTemp(Who);
-            }
+            const FVector At = Mesh->GetComponentLocation();
+            const float Distance = FVector::Dist2D(At, From);
+            if (Distance >= Nearest)
+                return;
+            const FVector Head = Mesh->Bounds.Origin + FVector(0.f, 0.f, Mesh->Bounds.BoxExtent.Z * .5f);
+            if (FMath::Abs(Head.Z - Eye.Z) > 220.f || FVector::DotProduct(Look, (At - From).GetSafeNormal2D()) < .25f)
+                return;
+            // A placed crew actor's own capsule is not a wall; the station's walls belong to the hub, so only a hit
+            // on some other actor, or on the hub itself, hides them.
+            FHitResult Hit;
+            if (GetWorld()->LineTraceSingleByChannel(Hit, Eye, Head, ECC_Visibility, Sight) &&
+                !(Hit.GetActor() && Hit.GetActor() == Mesh->GetOwner() && Mesh->GetOwner() != Hub))
+                return;
+            Nearest = Distance;
+            Best = MoveTemp(Who);
+            BestMesh = Mesh;
         };
         for (TActorIterator<ASSOutpostAmbientActor> It(GetWorld()); It; ++It)
         {
@@ -2509,6 +2517,8 @@ FSSTalkIdentity ASSGameMode::TalkTarget() const
                                                               It->CharacterMesh->GetSkeletalMeshAsset()->GetName());
             if (!It->TalkName.IsEmpty())
                 Who.Name = It->TalkName;
+            else if (Who.Name == Who.Type)
+                Who.Name = SSNpcTalk::GivenName(Who.Type, It->GetName());
             if (!It->TalkRole.IsEmpty())
                 Who.Role = It->TalkRole;
             if (!It->TalkActivity.IsEmpty())
@@ -2523,7 +2533,9 @@ FSSTalkIdentity ASSGameMode::TalkTarget() const
                     Mesh && Mesh->GetSkeletalMeshAsset() && SSNpcTalk::HasTalkTag(Mesh->ComponentTags))
                     Consider(Mesh,
                              SSNpcTalk::IdentityFromTags(Mesh->ComponentTags, Mesh->GetSkeletalMeshAsset()->GetName()));
-        return Partner.IsValid() ? Partner : Best;
+        if (OutMesh)
+            *OutMesh = BestMesh;
+        return Best;
     }
     const auto *GI = GetGameInstance<USSGameInstance>();
     if (!Walker && Ship && GI && GI->Session.run.active && bVillainHasSpoken)
@@ -2586,7 +2598,9 @@ void ASSGameMode::BeginTalk()
     auto *Talk = NpcTalk();
     if (!Talk || !Talk->IsEnabled() || IsMenuOpen() || TalkingTo.IsValid())
         return;
-    const FSSTalkIdentity Target = TalkTarget();
+    // In a conversation every question goes to the partner, whoever else wanders up (owner: "another NPC walks up,
+    // next thing you know you're talking to someone else").
+    const FSSTalkIdentity Target = EngagedWith.IsValid() ? EngagedWith : TalkTarget();
     if (!Target.IsValid())
     {
         Announce(Walker ? TEXT("No one close enough to talk to. Walk up to someone.")
@@ -2609,13 +2623,87 @@ void ASSGameMode::BeginTalk()
     }
     TalkingTo = Target;
     NpcName = Target.Name;
-    if (Target.Name != TEXT("Director"))
-    {
-        LastPartner = Target;
-        LastPartnerTime = GetWorld()->GetTimeSeconds();
-    }
     TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
                                  Target.Name == TEXT("Director") ? TEXT("the Director") : *Target.Name);
+}
+
+void ASSGameMode::TapTalk()
+{
+    if (IsTalkListening())
+    {
+        EndTalk();
+        return;
+    }
+    if (TalkingTo.IsValid())
+        return; // still answering the last question
+    if (Walker && !EngagedWith.IsValid())
+    {
+        // Formal on foot (owner, 2026-10-10): nothing starts until the key is tapped, and the tap starts a conversation
+        // with one person. The camera moves in over the pilot's shoulder and turns to them.
+        const USceneComponent *Mesh = nullptr;
+        const FSSTalkIdentity Target = TalkTarget(&Mesh);
+        if (Target.IsValid() && Mesh)
+        {
+            EngagedWith = Target;
+            EngagedMesh = Mesh;
+            EngageAnchor = Walker->GetActorLocation();
+            EngagePanSeconds = 1.2f;
+            SavedArmLength = Walker->Boom->TargetArmLength;
+            SavedSocketOffset = Walker->Boom->SocketOffset;
+            Walker->Boom->TargetArmLength = FMath::Min(SavedArmLength, 230.f);
+            Walker->Boom->SocketOffset = SavedSocketOffset + FVector(0.f, 65.f, -15.f);
+        }
+    }
+    BeginTalk();
+}
+
+void ASSGameMode::UpdateTalkEngagement(float Dt)
+{
+    if (!EngagedWith.IsValid())
+        return;
+    const USceneComponent *Mesh = EngagedMesh.Get();
+    // A few steps away ends it and the camera goes back (owner: "walking a few steps away disengages and goes back").
+    if (!Walker || Walker->IsDisembarking() || !Mesh ||
+        FVector::Dist2D(Walker->GetActorLocation(), EngageAnchor) > 250.f)
+    {
+        Disengage();
+        return;
+    }
+    if (EngagePanSeconds <= 0.f)
+        return;
+    EngagePanSeconds -= Dt;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (!PC)
+        return;
+    // Face to face: the pilot turns to them and the view settles on their head, slightly down, over the shoulder.
+    const FVector Head = Mesh->Bounds.Origin + FVector(0.f, 0.f, Mesh->Bounds.BoxExtent.Z * .55f);
+    const FVector Eye = Walker->GetActorLocation() + FVector(0.f, 0.f, 100.f);
+    FRotator Want = (Head - Eye).Rotation();
+    Want.Pitch = FMath::Clamp(Want.Pitch, -30.f, 15.f);
+    Want.Roll = 0.f;
+    PC->SetControlRotation(FMath::RInterpTo(PC->GetControlRotation(), Want, Dt, 5.f));
+    const FRotator Face(0.f, (Head - Walker->GetActorLocation()).Rotation().Yaw, 0.f);
+    Walker->SetActorRotation(FMath::RInterpTo(Walker->GetActorRotation(), Face, Dt, 6.f));
+}
+
+void ASSGameMode::Disengage()
+{
+    if (Walker && SavedArmLength > 0.f)
+    {
+        Walker->Boom->TargetArmLength = SavedArmLength;
+        Walker->Boom->SocketOffset = SavedSocketOffset;
+    }
+    SavedArmLength = -1.f;
+    // Walking away mid-question drops it: the microphone closes and no stale answer arrives later.
+    if (auto *Talk = NpcTalk(); Talk && TalkingTo.IsValid() && TalkingTo.Name == EngagedWith.Name)
+    {
+        Talk->Cancel();
+        TalkingTo = FSSTalkIdentity();
+        TalkStatus.Empty();
+    }
+    EngagedWith = FSSTalkIdentity();
+    EngagedMesh.Reset();
+    EngagePanSeconds = 0.f;
 }
 
 bool ASSGameMode::IsTalkListening() const
@@ -2643,8 +2731,6 @@ void ASSGameMode::OnNpcTranscript(const FString &Character, const FString &Text)
 
 void ASSGameMode::OnNpcReply(const FString &Character, const FString &Text)
 {
-    if (Character == LastPartner.Name)
-        LastPartnerTime = GetWorld()->GetTimeSeconds();
     TalkStatus.Empty();
     TalkingTo = FSSTalkIdentity();
     if (Character == TEXT("Director") && VillainVoiceOn(this))

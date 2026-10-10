@@ -41,7 +41,8 @@ SPACESURVIVAL_API TArray<float> ToMono16k(const TArray<float> &Interleaved, int3
 /** Mono 16 kHz float -> a complete 16-bit PCM WAV file. */
 SPACESURVIVAL_API TArray<uint8> EncodeWav16k(const TArray<float> &Mono);
 /** The multipart body whisper-server's /inference reads; the boundary comes back for the Content-Type header. */
-SPACESURVIVAL_API TArray<uint8> WhisperBody(const TArray<uint8> &Wav, FString &OutBoundary);
+SPACESURVIVAL_API TArray<uint8> WhisperBody(const TArray<uint8> &Wav, FString &OutBoundary,
+                                            const FString &Prompt = FString());
 SPACESURVIVAL_API FString ParseTranscript(const FString &Json);
 /** OpenAI-style chat request for llama-server's /v1/chat/completions. */
 SPACESURVIVAL_API FString ChatBody(const FString &System, const TArray<FTurn> &Turns, int32 MaxTokens,
@@ -51,6 +52,9 @@ SPACESURVIVAL_API FString ParseReply(const FString &Json);
 SPACESURVIVAL_API FString TidyReply(const FString &Raw, bool bCutShort);
 /** Did the pilot swear? Decides whether the villain is told to give it back. */
 SPACESURVIVAL_API bool HasProfanity(const FString &Text);
+/** A placed crew member of a shared species with no name of its own gets a stable given name from its actor name
+ *  (owner: "who's Nyxar?"). Any other type is returned unchanged. */
+SPACESURVIVAL_API FString GivenName(const FString &Type, const FString &Seed);
 /** "SK_Dread" -> "Dread", "SKM_Nyxar" -> "Nyxar". The crew meshes carry the character's name. */
 SPACESURVIVAL_API FString CharacterNameFromMesh(const FString &MeshName);
 } // namespace SSNpcTalk
@@ -136,6 +140,14 @@ public:
     /** Scenario files, one per role (Pool, Bartender, Guard), appended to the profile of whoever holds that role. */
     UPROPERTY(Config)
     FString ScenarioDirectory = TEXT("SpaceSurvival/NpcTalk/Scenarios");
+    /** Words whisper should expect: the game's invented names are otherwise heard as English ("Nyxar" came back as
+     *  "Nick's car"; with this list it comes back right). The character being spoken to is appended. */
+    UPROPERTY(Config)
+    FString WhisperVocabulary =
+        TEXT("Nyxar, the Director, Wayfarer Exchange, Stellar Phoenix, Dread, Vel, Orrin, Sable, "
+             "Kett, Rue, Pim, Dax, Brakk, Mica, Unit Seven, Cyan, Cyborg, Violet, Tribal, Seer, "
+             "Tendril, Glyph, Robe, Ember, Crest, Olive, Warden, Abyss, Silver, Elf, Crystal, "
+             "Finhead, Amethyst, synth-ale, Europa gin, Nebula.");
     UPROPERTY(Config)
     int32 WhisperPort = 8701;
     UPROPERTY(Config)
@@ -179,7 +191,7 @@ private:
     ESSTalkPhase CurrentPhase = ESSTalkPhase::Idle;
     ESSTalkContext CurrentContext = ESSTalkContext::Flight;
     FString Error, RunningModel;
-    double LlamaStartedAt = 0.0;
+    double LlamaStartedAt = 0.0, AskedAt = 0.0;
     int32 LlamaRetries = 0;
     FTimerHandle RetryTimer;
     FProcHandle WhisperProc, LlamaProc;

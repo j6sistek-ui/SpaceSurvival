@@ -156,6 +156,20 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
     TestEqual(TEXT("untagged crew: type from the mesh"), Plain.Type, FString(TEXT("Dread")));
     TestEqual(TEXT("untagged crew: name from the type"), Plain.Name, FString(TEXT("Dread")));
     TestTrue(TEXT("untagged crew holds no role"), Plain.Role.IsEmpty() && Plain.Activity.IsEmpty());
+    // Placed aliens of the shared species get stable given names; everyone else keeps their type.
+    TestEqual(TEXT("a given name is stable"), SSNpcTalk::GivenName(TEXT("Nyxar"), TEXT("Ambient_12")),
+              SSNpcTalk::GivenName(TEXT("Nyxar"), TEXT("Ambient_12")));
+    TestNotEqual(TEXT("a placed alien is not called by its species"),
+                 SSNpcTalk::GivenName(TEXT("Nyxar"), TEXT("Ambient_12")), FString(TEXT("Nyxar")));
+    TestEqual(TEXT("a named character keeps their name"), SSNpcTalk::GivenName(TEXT("Cyborg"), TEXT("Ambient_3")),
+              FString(TEXT("Cyborg")));
+    {
+        FString B;
+        const TArray<uint8> Hinted = SSNpcTalk::WhisperBody(TArray<uint8>({1, 2}), B, TEXT("Nyxar, the Director"));
+        const FString AsText(Hinted.Num(), UTF8_TO_TCHAR(reinterpret_cast<const ANSICHAR *>(Hinted.GetData())));
+        TestTrue(TEXT("the vocabulary hint travels as whisper's prompt field"),
+                 AsText.Contains(TEXT("name=\"prompt\"\r\n\r\nNyxar, the Director\r\n")));
+    }
     TestTrue(TEXT("a tagged component is someone"), SSNpcTalk::HasTalkTag(TArray<FName>({TEXT("TalkType:Nyxar")})));
     TestFalse(TEXT("scenery is not"), SSNpcTalk::HasTalkTag(TArray<FName>({TEXT("StationRobotStaff")})));
     return true;

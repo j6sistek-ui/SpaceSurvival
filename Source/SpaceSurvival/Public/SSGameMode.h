@@ -80,10 +80,24 @@ public:
      *  Begin on key down, End on release. */
     void BeginTalk();
     void EndTalk();
+    /** The talk key: on foot the first tap starts a conversation with the nearest crew member (the camera turns to
+     *  them) and opens the microphone; later taps speak to them until the pilot walks away. In the ship it talks to
+     *  the villain as before. */
+    void TapTalk();
+    /** Ends the conversation when the pilot has walked a few steps away, and turns the camera to the partner. */
+    void UpdateTalkEngagement(float DeltaSeconds);
+    bool IsTalkEngaged() const
+    {
+        return EngagedWith.IsValid();
+    }
+    const FSSTalkIdentity &TalkPartner() const
+    {
+        return EngagedWith;
+    }
     /** The microphone is open for a question (between the first tap and the second). */
     bool IsTalkListening() const;
     /** Who the talk key would reach right now, by character name (crew by mesh, "Director" in flight), or empty. */
-    FSSTalkIdentity TalkTarget() const;
+    FSSTalkIdentity TalkTarget(const USceneComponent **OutMesh = nullptr) const;
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
@@ -207,8 +221,14 @@ private:
     bool bTalkBound = false;
     FSSTalkIdentity TalkingTo;
     /** The crew member last spoken to, who keeps the conversation while near and recent (owner, 2026-10-10). */
-    FSSTalkIdentity LastPartner;
-    double LastPartnerTime = -1.0e9;
+    // The conversation in progress on foot: who, where their body is, where the pilot stood when it began, and the
+    // camera arm as it was before it moved in over the pilot's shoulder.
+    FSSTalkIdentity EngagedWith;
+    TWeakObjectPtr<const USceneComponent> EngagedMesh;
+    FVector EngageAnchor = FVector::ZeroVector;
+    float EngagePanSeconds = 0.f, SavedArmLength = -1.f;
+    FVector SavedSocketOffset = FVector::ZeroVector;
+    void Disengage();
     FString NpcDigest(const FSSTalkIdentity &Who) const;
     class USSNpcTalkSubsystem *NpcTalk() const;
     void OnNpcTranscript(const FString &Character, const FString &Text);

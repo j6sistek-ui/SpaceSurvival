@@ -18,13 +18,19 @@ run on the player's machine as hidden sidecar processes the game starts and stop
 
 ## Who you can talk to
 
-- **On foot:** owner's rule, "whenever you speak, the nearest active NPC responds". The nearest NPC within 5 m
-  answers, no facing test. Two kinds count: placed `ASSOutpostAmbientActor`s (not drones, not the wardrobe hologram),
-  identified by their mesh (`SK_Dread` is Dread) unless `TalkName` is set on the actor; and the station's own deck
-  crew, which are skeletal mesh components on the station actor, named and given roles by
-  `SSStationPresentation::TagTalkers` through component tags (`TalkType:Nyxar`, `TalkName:Vel`, `TalkRole:CrewTalk`,
-  `TalkActivity:telling two crewmates a story`). Anything on the station without a Talk tag is scenery. The walk hint
-  says "tap T / R3: talk to Vel" when someone is in range.
+- **On foot, a formal conversation** (owner, after testing: "I don't know who I'm talking to, so the engagement should
+  be more formal: face to face, camera pans, walking a few steps away disengages and goes back; only activate by
+  clicking talk"). Nothing starts until the talk key is tapped. The first tap picks the nearest crew member the pilot
+  can see: within 5 m, on the same floor, roughly in front of the camera and not behind a wall (a flat range had picked
+  people on other floors). The camera moves in over the pilot's shoulder and turns to them, the pilot turns to face
+  them, and the microphone opens. Every later tap speaks to that partner, whoever else walks up. Walking about 2.5 m
+  away ends it: the camera returns and any open question is dropped. Placed aliens without a name of their own get a
+  stable given name from their actor name (`SSNpcTalk::GivenName`; owner: "who's Nyxar?" - Nyxar is the species). The
+  station's deck crew are named by `SSStationPresentation::TagTalkers` through component tags. Every question and
+  answer is written to the log (`LogSSNpcTalk`, "heard" and "answered after N s") so an odd reply can be read back.
+- **The transcriber hears the game's words:** whisper's `prompt` field carries `WhisperVocabulary` plus the partner's
+  name. Measured with a synthesized "Who is Nyxar?": "Nazar" without it, "Nyxar" with it (the owner's own test came
+  back as "Nick's car").
 - **In the ship:** the villain, but only after he has transmitted at least once in the current run (owner: "after the
   first time the director speaks, you can talk back"). Before that the key answers "Nobody is on the line. He talks
   first." His replies use his own ember caption, not the crew box; his persona mirrors the pilot's tone, so profanity
