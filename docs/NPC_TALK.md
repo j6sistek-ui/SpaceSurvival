@@ -23,8 +23,12 @@ run on the player's machine as hidden sidecar processes the game starts and stop
 - **In the ship:** the villain, but only after he has transmitted at least once in the current run (owner: "after the
   first time the director speaks, you can talk back"). Before that the key answers "Nobody is on the line. He talks
   first." His replies use his own ember caption, not the crew box; his persona mirrors the pilot's tone, so profanity
-  is answered in kind. Whether a given small model will actually swear is a model question, not a prompt one; an
-  "abliterated" variant of the same size is the swap if he keeps his manners.
+  is answered in kind. The owner's line on this: no abliterated or "uncensored" model, ever, it must not be able to go
+  too far in a shipped game; a stock model with a persona is the ceiling. Measured 2026-10-10 on stock Qwen 1.5B
+  (`M:\Local AI\NPCTalk\test\villain_probe*.py`): handed the pilot's bare sentence it refused the first swear with
+  assistant-speak; with the sentence framed as quoted radio traffic plus "answer them now, as the Director" it stayed
+  in character on every line and swore back. That framing is what the subsystem sends. If a bigger stock model is
+  ever wanted for sharper lines, Mistral 7B Instruct (Apache 2.0, ~4.4 GB) is the candidate, not a modified one.
 
 ## The loop
 

@@ -354,7 +354,15 @@ void USSNpcTalkSubsystem::SendToLlama(const FString &Character, const FString &Q
 {
     CurrentPhase = ESSTalkPhase::Thinking;
     TArray<SSNpcTalk::FTurn> &Turns = History.FindOrAdd(Character);
-    Turns.Add({TEXT("user"), Question});
+    // The pilot's words go in as quoted radio traffic with an explicit "answer as X". Measured 2026-10-10 on the
+    // stock 1.5B model: handed the bare sentence it refused the first swear ("I can't assist with that"); framed
+    // this way it stayed in character on every line and answered profanity in kind. The caption shows the raw text.
+    const FString Framed =
+        Character == TEXT("Director")
+            ? FString::Printf(TEXT("Radio from the pilot: \"%s\"\nAnswer them now, as the Director, over the radio."),
+                              *Question)
+            : FString::Printf(TEXT("The pilot says to you: \"%s\"\nAnswer them now, as %s."), *Question, *Character);
+    Turns.Add({TEXT("user"), Framed});
     while (Turns.Num() > HistoryTurns * 2)
         Turns.RemoveAt(0);
     const FString System = Persona(Character) + (Digest.IsEmpty() ? FString() : TEXT("\n\nRight now: ") + Digest);
