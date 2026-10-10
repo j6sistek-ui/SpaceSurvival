@@ -2544,7 +2544,8 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
                 if (!Body || !Body->GetSkeletalMeshAsset())
                     continue;
                 FSSTalkIdentity Who;
-                Who.Name = Who.Type = SSNpcTalk::CharacterNameFromMesh(Body->GetSkeletalMeshAsset()->GetName());
+                Who.Name = Who.Type =
+                    Talk->ResolveAlias(SSNpcTalk::CharacterNameFromMesh(Body->GetSkeletalMeshAsset()->GetName()));
                 if (!Talk->HasPersona(Who.Name))
                     continue;
                 const UAnimationAsset *Clip =

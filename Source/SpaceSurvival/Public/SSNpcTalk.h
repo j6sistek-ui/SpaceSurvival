@@ -116,6 +116,19 @@ public:
      *  else built in; "{Name}" in the file becomes the character's name. */
     FString Persona(const FString &Character) const;
     /** A profile file exists for this name (read once at start-up): a placed character with one can be talked to. */
+    /** "Mesh=Character": a body that plays someone else (owner: the Joy body at the pole is Cyan). */
+    UPROPERTY(Config)
+    TArray<FString> CharacterAliases = {TEXT("JoyLightBlue=Cyan"), TEXT("JoyPurple=Cyan")};
+    FString ResolveAlias(const FString &Name) const
+    {
+        for (const FString &Pair : CharacterAliases)
+        {
+            FString From, To;
+            if (Pair.Split(TEXT("="), &From, &To) && From.TrimStartAndEnd() == Name)
+                return To.TrimStartAndEnd();
+        }
+        return Name;
+    }
     bool HasPersona(const FString &Name) const
     {
         return PersonaNames.Contains(Name);
