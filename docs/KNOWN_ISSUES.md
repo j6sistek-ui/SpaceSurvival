@@ -1,6 +1,6 @@
 # Open work and owner review
 
-**October10 Central188 follow-up — existing RPT-20261007-01 remains OPEN / lead.** Reused wall/portal framing and lower planting are saved/reloaded. [Native189 views and evidence](validation/2026-10-10-central-detail.md) improve wall depth and directory centers; side foliage still overlaps content and the fixed concept is not met. Next: resolve the settings-save ownership question before another Play review, then finish planting/screen separation and coherent wall/material detail. Capture189 retains a failed settings-save preservation gate despite clean map/reload and unchanged account/suspend files. Current settings archived, no reset/restore performed; use verified byte backups for future reviews. Room R follows Central; other scope stays held.
+**October10 Central188 follow-up — existing RPT-20261007-01 remains OPEN / lead.** Reused wall/portal framing and lower planting are saved/reloaded. [Native189 views and evidence](validation/2026-10-10-central-detail.md) improve wall depth and directory centers; side foliage still overlaps content and the fixed concept is not met. Next: use fresh byte-backed-up isolated profiles and verify native save paths before another lead Play review, then finish planting/screen separation and coherent wall/material detail. The prior settings change was not intentional; cause remains unconfirmed. Current saves are backed up; the guard passes CPU tests, with actual native verification pending during the owner session. Capture189 retains a failed settings-save preservation gate despite clean map/reload and unchanged account/suspend files. Current settings archived, no reset/restore performed; use verified byte backups for future reviews. Room R follows Central; other scope stays held.
 
 **October10 Central concept checkpoint — RPT-20261007-01 / RPT-20261006-04 /
 RPT-20260923-01 remain OPEN / lead.** The owner resumed Central and approved a
@@ -73,6 +73,19 @@ reference-pose repair is saved; animation remains unverified. Other NPC defects
 belong to owner/another chat. Partial dock work is retained; lounge/cockpit remain
 held. Dread's exposed torso still requires a later common-area replacement.
 [Handoff](validation/2026-10-09-station-handoff.md). Historical checkpoints follow.
+
+## October10 live observation reports
+
+Paraphrases of reported issues, with read-only observation evidence separated from unresolved causes. Existing Build55 editor/Survival Play; no runtime or scene repair during this checkpoint. [Observation/save protection limits](validation/2026-10-10-station-review-protection.md). Central remains first, R second; unrelated HUD/NPC work remains held. Current plants are positively received.
+
+| Report ID | Report and evidence | Owner, next action and closure |
+| --- | --- | --- |
+| RPT-20261010-01 | Imported Tripo models form a pile. Fourteen raw Tripo actor transforms are at origin in loaded Wayfarer; components/visibility not yet checked. | Open / lead, held cleanup. Identify exact import-only instances after Play; preserve placed animated crew and source assets. Close only with clear origin area and preserved intended cast. |
+| RPT-20261010-02 | Market paths/player are too dark beside bright stalls/floor; similar contrast is visible in R. Snapshot confirms dark character shading. Two unbound PP volumes and nearby local lights are read back; no sole cause established. | Open / lead. Review fixture/fill coverage across the actual walk path, preserve white floors and RT off, compare dark faces and bright surfaces together. Central/R lighting remains active; wider-room repair is held. |
+| RPT-20261010-03 | Seated NPC hands reach for an implied table that is too far away; moving the table alone would crowd the seating. | Open / lead, held NPC work. Later review seated clip plus chair/table spacing together in motion. Close with natural hands/limbs and comfortable circulation, not a furniture-only workaround. |
+| RPT-20261010-04 | Radar is cluttered; show useful vendors, upgrade stations and POIs, not every ambient character. Source explicitly draws crew contacts; screenshots confirm dense cyan markers. The report does not prove boxes are tracked. | Open / lead, held HUD work. Filter by useful interaction/POI role and revise legend; verify nearby and edge-of-range cases in natural play. No HUD source changed now. |
+| RPT-20261010-05 | Tablets are sideways/one misplaced; the welcome podium placement is awkward. Exact tablet transforms remain unverified. | Open / lead. Inspect current Central/R tabletop orientation/support and podium approach before the next bounded decor pass. Close with readable supported tablets, clear route and coherent reception framing. |
+| RPT-20261010-06 | Wing signage is plain and screens look broken/unfinished. The two entrance-side wall panels could host large futuristic ads using existing art. Trees/bushes are positively received. | Open / lead. Compose stronger wing information displays and assess the two exact entrance hosts without inventing directions or new ads; retain Central's1–2 ad limit and planted finish. Native whole-room/day-to-day camera review required. |
 
 ## October9 central/R, crew and replacement hero
 

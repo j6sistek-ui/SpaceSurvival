@@ -1,5 +1,10 @@
 # SpaceSurvival continuity
 
+[PROGRESS]
+- 2026-10-10T11:06Z [USER] No intentional settings change during189; protect saves and use CPU while owner uses Unreal. Later authorizes read-only Nwiro gameplay observation only, no input/camera/settings/scene/save changes. New GPU/editor work remains held.
+- 2026-10-10T11:06Z [TOOL] Current3 save slots byte-backed-up/readback in .agent/local/StationReview/2596dff36e5e453b83091ce9fd690846; production before/after match. Earlier settings not restored. StationReviewProfile helper passes8 CPU checks/one symlink privilege skip; private capture preparation now requires native profile/path guard. Actual native check pending; create fresh profile after owner save changes, never replay unisolated launches.
+- 2026-10-10T11:06Z [USER] Live reports RPT-20261010-01..06 record Tripo origin pile, dark player/path versus bright surfaces, unnatural seated hands/table spacing (held), crew radar clutter (held), tablets/podium and poor wing-display finish; entrance-side panels may use existing ads. Plants positively received. Central fixed-v2 first/R second, other repairs held.
+
 [MILESTONE]
 - 2026-10-10T10:40Z [TOOL] Central188 saved2a42ccb9/9102:44 new kit members,44 plant transforms;9014 unchanged snapshots/404 protected files. Reload190 passes95 scoped actors, RT0/clean packages; root38272 exited. Native189 three views improve wall depth/directory centers but settings-save hash changed, account/suspend unchanged; overall capture gate FAIL retained. Cause UNCONFIRMED; current settings archived, owner intent question pending, no restoration/reset. Further Play waits on that answer and byte backups. Central fixed-v2 not met; R next.
 - 2026-10-10T10:40Z [USER] Clothes are quick-fit only; second shirt/skirt set clips and has no weights. Set aside without tailoring or native adoption. Neutral fitting copy remains separate; original sources preserved.

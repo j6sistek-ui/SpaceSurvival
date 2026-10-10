@@ -427,6 +427,14 @@ or Intermediate wholesale. [October8 cleanup and interior preparation](validatio
 
 ## Local saves
 
+For lead-owned station visual reviews, prepare a fresh profile without starting Unreal:
+
+```powershell
+python Scripts/StationReviewProfile.py --editor '<installed UnrealEditor-Cmd.exe>' --layout '<verified private offscreen layout>'
+```
+
+This archives current save bytes under `.agent/local/StationReview/<GUID>` and writes an isolated User directory plus a structured `LaunchPlan.json`. No automatic launch or restore. After the owner editor is closed, inspect process/VRAM state and launch only the needed hidden offscreen editor using those isolation arguments. Import `Scripts/StationReviewProfile.py` in that editor and call `verify_before_play()` before requesting PIE; any path/profile/production-save mismatch stops review. Do not reuse old unisolated station launch commands. The private capture wrapper now enforces this guard at preparation. Actual native verification of this new helper remains pending; [CPU evidence and limits](validation/2026-10-10-station-review-protection.md).
+
 Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 4, retaining the four paint-bay choices from version 3 (-1 for factory finish, 0-9 for a colour) and appending the walking-hero choice. Older account versions remain readable, with absent paint/hero choices taking their defaults; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
 
 Save & Quit is available at stations. Continue consumes the suspension before exposing restored play; death persists XP/run identity and invalidates suspension. Unreadable account data is protected from overwrite and requires a known-good backup for recovery. Use isolated test profiles for failure tests and preserve existing personal saves.

@@ -1,6 +1,6 @@
 # Station editing and preserved Workshop
 
-October10 Central188 adds existing-kit wall/portal framing and changes44 plant transforms, with no new materials. [Saved state, native views and settings-save caveat](validation/2026-10-10-central-detail.md). Do not replay the adopted recipe. Before further Play reviews, resolve whether the settings change was intentional and back up all saves; the hash-only capture helper detected the failure but held no earlier bytes.
+October10 Central188 adds existing-kit wall/portal framing and changes44 plant transforms, with no new materials. [Saved state, native views and settings-save caveat](validation/2026-10-10-central-detail.md). Do not replay the adopted recipe. The settings change was not intentional; its cause remains unconfirmed. Future lead Play reviews require fresh byte backups and the isolated profile/native path guard described in [review protection](validation/2026-10-10-station-review-protection.md). Native verification is pending; no earlier settings restoration is claimed.
 
 October10 scoped addition: Joy and Cyborg now occupy the existing apartment beneath Room R, with a fitted polished pole. [Placement, guarded recipes and verification limits](validation/2026-10-10-apartment-residents.md). Do not replay the adopted recipes; retain private before/after map backups and the original apartment LevelInstance/furniture. No launcher or service behavior changed.
 
