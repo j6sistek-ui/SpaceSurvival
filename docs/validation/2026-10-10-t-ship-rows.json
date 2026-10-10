@@ -1,0 +1,63 @@
+{
+  "status": "SAVED_LAYOUT_PREVIEW; owner live acceptance pending",
+  "map_sha256": "b6496c2e9ae9b245cb27a6ab137190a8cdf895c6bca461e578ae6fc708a8fbe4",
+  "actor_count": 9407,
+  "rows": 2,
+  "columns": 3,
+  "display_assemblies": 6,
+  "parts_per_assembly": 60,
+  "copied_actors": 300,
+  "moved_desk_actors": 113,
+  "protected_existing_actors": 8934,
+  "all_other_pre_save_fingerprints_unchanged": true,
+  "shared_assets_unchanged": true,
+  "centres_cm": [
+    [
+      7240,
+      -400
+    ],
+    [
+      7990,
+      -400
+    ],
+    [
+      8740,
+      -400
+    ],
+    [
+      7240,
+      400
+    ],
+    [
+      7990,
+      400
+    ],
+    [
+      8740,
+      400
+    ]
+  ],
+  "saved_reload": "PASS",
+  "ordinary_play_images": 2,
+  "motion_samples": 25,
+  "six_independent_spins": true,
+  "production_saves_unchanged": true,
+  "editor_closed": true,
+  "ray_tracing": 0,
+  "source_sha256": "f26fc633247b913588b7171cd9c474fe2c0421f71c8f233bb32a9bdcbf3fac9f",
+  "images": {
+    "docs/validation/images/2026-10-10-t-ship-rows/entrance.png": "e5a0f9a7f2cee2a323267563d1f4c051b10d0f71a9dd921daaa2df30f1e1f532",
+    "docs/validation/images/2026-10-10-t-ship-rows/six-displays.png": "8b866c643f1ca96107a08aba718ca7f7163e83cd68accf1c01f614f776523508"
+  },
+  "limitations": [
+    "Five copied Phoenix displays are future-ship placeholders, not five new ships.",
+    "Ship purchase, stats and flight-record mechanics unchanged.",
+    "Desk redesign deferred; other room content/services/NPCs retained.",
+    "No new build, FPS claim, cook, release or merge."
+  ],
+  "retained_failures": [
+    "238 failed Engine hash-path lookup before duplication.",
+    "239 editor SetBinding assertion crashed before saving; disk map remained20507846.",
+    "241 uses serialized per-actor binding overrides; original shared sequence asset unchanged."
+  ]
+}

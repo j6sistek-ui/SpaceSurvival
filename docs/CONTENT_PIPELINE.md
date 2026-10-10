@@ -1,5 +1,7 @@
 # Phase 1 content pipeline
 
+**October 10 T-room layout preview:** The existing Phoenix setup now fills two rows of three, with five identical copies and six independent rotating displays. Existing desks/fittings/screens move aside; all8,934 other pre-save actor/component fingerprints and shared asset bytes are unchanged. Saved `b6496c2e`/9,407 actors passes six-bay reload and two ordinary Play views with production saves preserved; task editor closed, RT off. [T layout evidence](validation/2026-10-10-t-ship-rows.md) supersedes the current-map count below. Future ship purchases/stats/records and desk redesign remain separate; other room content, NPCs and services retained. Owner live appearance review is next.
+
 October10 R-stage adoption changes only Joy's four existing blue skin MIs to Metallic0.75/Roughness0.32, retains texture/tint detail, and reuses the canonical rigged Cyborg and existing PoleHipCircle sequence. Original meshes, skeletons, clips and hair identity are preserved. Three local stage lights and matched hologram housings use existing content; no new source kit/import or material parent. [R stage and native evidence](validation/2026-10-10-r-stage-characters.md) records exact recipes/private backups and confirms GitHub is not the native-content backup. Never replay the adopted authoring stages. Hair physics and long alternating choreography remain open.
 
 
