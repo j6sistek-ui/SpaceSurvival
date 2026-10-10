@@ -118,6 +118,12 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
               FString(TEXT("Half? No, no, my friend.")));
     TestEqual(TEXT("a lone asterisk is dropped"), SSNpcTalk::TidyReply(TEXT("Five credits* each."), false),
               FString(TEXT("Five credits each.")));
+    TestEqual(TEXT("censored words keep their asterisks and the text between them"),
+              SSNpcTalk::TidyReply(TEXT("It's a f*cking disaster, your f*cking ship."), false),
+              FString(TEXT("It's a f*cking disaster, your f*cking ship.")));
+    TestEqual(TEXT("a stage direction beside a censored word still comes off"),
+              SSNpcTalk::TidyReply(TEXT("*snarls* Your f*cking hull is done."), false),
+              FString(TEXT("Your f*cking hull is done.")));
     TestEqual(
         TEXT("a cut-off reply keeps whole sentences"),
         SSNpcTalk::TidyReply(TEXT("Your hull is bleeding. I will keep coming until you are nothing but a mem"), true),
