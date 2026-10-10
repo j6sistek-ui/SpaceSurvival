@@ -124,7 +124,7 @@ FString StationActionName(ESSPanel Panel, const FString &Fallback)
     case ESSPanel::Paint:
         return TEXT("Customize ship color");
     case ESSPanel::Wardrobe:
-        return TEXT("Choose character");
+        return TEXT("Change character");
     default:
         return Fallback;
     }
@@ -836,9 +836,9 @@ void ASSHUD::DrawHUD()
                 if (const auto *Terminal = It->OutpostTerminalAt(Walker))
                 {
                     GlyphBeforeHint = true;
-                    InteractionHint = Terminal->DisplayName.Contains(TEXT("TRADE NETWORK"))
-                                          ? TEXT("Read trade information")
-                                          : TEXT("Read station information");
+                    // Use the same action lookup as Terminal::Use, including consoles outside the service radius.
+                    InteractionHint = StationActionName(It->OutpostPanel(Terminal),
+                                                        FString::Printf(TEXT("Read %s"), *Terminal->DisplayName));
                     break;
                 }
             }
