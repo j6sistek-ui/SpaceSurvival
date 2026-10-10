@@ -16,6 +16,7 @@
 #include "Misc/PackageName.h"
 #include "SSStation.h"
 #include "SSOutpostSandbox.h"
+#include "SSNpcTalk.h"
 #include "SSLandingPad.h"
 #include "SSShipPaint.h"
 #include "Animation/PoseSnapshot.h"
@@ -271,6 +272,7 @@ bool ASSGameMode::ShowVillainLine(ESSVillainCue Cue, int32 Wave)
     VillainLine = Line;
     VillainLineSeconds = FMath::Clamp(2.5f + .06f * Line.Len(), 3.5f, 7.f);
     VillainLineShown = 0.f;
+    bVillainHasSpoken = true;
     // Chatter never lands on top of a line he has just said, story or not.
     VillainChatterCooldown = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain.ChatterCooldown;
     return true;
@@ -333,6 +335,8 @@ void ASSGameMode::UpdateThreatFeedback(float Dt)
     ReactionCooldown = FMath::Max(0.f, ReactionCooldown - Dt);
     ThreatWarningSeconds = FMath::Max(0.f, ThreatWarningSeconds - Dt);
     PilotReactionSeconds = FMath::Max(0.f, PilotReactionSeconds - Dt);
+    NpcLineSeconds = FMath::Max(0.f, NpcLineSeconds - Dt);
+    TalkTranscriptSeconds = FMath::Max(0.f, TalkTranscriptSeconds - Dt);
     if (!VillainVoiceOn(this))
         ClearVillainDialogue();
     else if (!IsMenuOpen())
@@ -475,6 +479,7 @@ void ASSGameMode::FollowFlightPresentation()
 }
 void ASSGameMode::StartNewRun()
 {
+    bVillainHasSpoken = false;
     bAtTitleScreen = false;
     bStartNextBlockOnExit = false;
     bWormholeArrived = false;
@@ -2429,8 +2434,144 @@ void ASSPlayerController::PlayerTick(float Dt)
         if (!Down(EKeys::SpaceBar) && !Down(EKeys::Gamepad_FaceButton_Bottom))
             WalkPawn->StopJumping();
     }
+    // Push-to-talk: held while speaking, released to send. T or R3 (owner, 2026-10-10); neither does anything
+    // else in the ship or on foot. The game mode decides who is listening: a crew member or the villain.
+    const bool TalkHeld = !MenuInput && GetPawn() && (Down(EKeys::T) || Down(EKeys::Gamepad_RightThumbstick));
+    if (TalkHeld && !bTalkHeld)
+        GM->BeginTalk();
+    else if (!TalkHeld && bTalkHeld)
+        GM->EndTalk();
+    bTalkHeld = TalkHeld;
     const FKey InteractButton =
         Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;
     if (!MenuInput && (Pressed(EKeys::E) || Pressed(InteractButton)))
         GM->Interact();
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Push-to-talk (SSNpcTalk). On foot: face a crew member, hold the key, speak, release. In the ship: once the villain
+// has transmitted this run, the same key talks back to him; his answer comes through his own caption.
+
+FString ASSGameMode::TalkTarget() const
+{
+    if (Walker && !Walker->IsDisembarking())
+    {
+        const FVector From = Walker->GetActorLocation(), Forward = Walker->GetActorForwardVector();
+        float Best = 350.f;
+        FString Name;
+        for (TActorIterator<ASSOutpostAmbientActor> It(GetWorld()); It; ++It)
+        {
+            if (It->bDrone || !It->CharacterMesh || !It->CharacterMesh->GetSkeletalMeshAsset())
+                continue;
+            const FVector To = It->GetActorLocation() - From;
+            const float Distance = To.Size2D();
+            if (Distance > Best || FVector::DotProduct(Forward, To.GetSafeNormal2D()) < .45f)
+                continue;
+            Best = Distance;
+            Name = SSNpcTalk::CharacterNameFromMesh(It->CharacterMesh->GetSkeletalMeshAsset()->GetName());
+        }
+        return Name;
+    }
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (!Walker && Ship && GI && GI->Session.run.active && bVillainHasSpoken)
+        return TEXT("Director");
+    return FString();
+}
+
+FString ASSGameMode::NpcDigest(const FString &Character) const
+{
+    // Second person and plain: a small model repeats what it is told, so it is told only what it may repeat.
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    const bool Run = GI && GI->Session.run.active;
+    if (Character == TEXT("Director"))
+    {
+        FString Out = TEXT("You are mid-attack. The pilot you are talking to is flying the Stellar Phoenix against "
+                           "your forces right now.");
+        if (Run)
+            Out += FString::Printf(TEXT(" They are on wave %d, their hull is at %d percent, and they have destroyed %d "
+                                        "of your machines this run."),
+                                   GI->Session.run.wave, int32(GI->Session.run.hull), GI->Session.run.kills);
+        return Out;
+    }
+    FString Out =
+        TEXT("You are on the Wayfarer Exchange station. The person talking to you is the pilot of the Stellar Phoenix, "
+             "who just walked in from the docks.");
+    if (Run)
+        Out += FString::Printf(
+            TEXT(" They are %d waves into a survival run, their hull is at %d percent, and they carry %d credits."),
+            GI->Session.run.wave, int32(GI->Session.run.hull), GI->Session.run.credits);
+    else
+        Out += TEXT(" They are between runs, resting on the station.");
+    return Out;
+}
+
+void ASSGameMode::BeginTalk()
+{
+    auto *Talk = GetGameInstance() ? GetGameInstance()->GetSubsystem<USSNpcTalkSubsystem>() : nullptr;
+    if (!Talk || !Talk->IsEnabled() || IsMenuOpen() || !TalkingTo.IsEmpty())
+        return;
+    const FString Target = TalkTarget();
+    if (Target.IsEmpty())
+    {
+        Announce(Walker ? TEXT("No one close enough to talk to. Walk up to a crew member and face them.")
+                        : TEXT("Nobody is on the line. He talks first."));
+        return;
+    }
+    if (!bTalkBound)
+    {
+        Talk->OnTranscript.AddUObject(this, &ASSGameMode::OnNpcTranscript);
+        Talk->OnReply.AddUObject(this, &ASSGameMode::OnNpcReply);
+        Talk->OnFailure.AddUObject(this, &ASSGameMode::OnNpcFailure);
+        bTalkBound = true;
+    }
+    Talk->Digest = NpcDigest(Target);
+    if (!Talk->BeginListening())
+    {
+        Announce(Talk->LastError());
+        return;
+    }
+    TalkingTo = Target;
+    NpcName = Target;
+    TalkStatus = FString::Printf(TEXT("Listening... talking to %s, release to send"),
+                                 Target == TEXT("Director") ? TEXT("the Director") : *Target);
+}
+
+void ASSGameMode::EndTalk()
+{
+    auto *Talk = GetGameInstance() ? GetGameInstance()->GetSubsystem<USSNpcTalkSubsystem>() : nullptr;
+    if (!Talk || TalkingTo.IsEmpty())
+        return;
+    TalkStatus = TEXT("Transcribing...");
+    Talk->EndListeningAndAsk(TalkingTo);
+}
+
+void ASSGameMode::OnNpcTranscript(const FString &Character, const FString &Text)
+{
+    TalkTranscript = Text;
+    TalkTranscriptSeconds = 14.f;
+    TalkStatus = (Character == TEXT("Director") ? TEXT("The Director") : Character) + TEXT(" is answering...");
+}
+
+void ASSGameMode::OnNpcReply(const FString &Character, const FString &Text)
+{
+    TalkStatus.Empty();
+    TalkingTo.Empty();
+    if (Character == TEXT("Director") && VillainVoiceOn(this))
+    {
+        // His channel, his colour; the story cue machinery is untouched, this only borrows the caption.
+        VillainLine = Text;
+        VillainLineSeconds = FMath::Clamp(4.f + .07f * Text.Len(), 6.f, 16.f);
+        VillainLineShown = 0.f;
+        return;
+    }
+    NpcName = Character;
+    NpcLine = Text;
+    NpcLineSeconds = FMath::Clamp(4.f + .07f * Text.Len(), 6.f, 16.f);
+}
+
+void ASSGameMode::OnNpcFailure(const FString &, const FString &Why)
+{
+    TalkStatus.Empty();
+    TalkingTo.Empty();
+    Announce(Why);
 }

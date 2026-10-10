@@ -1,0 +1,56 @@
+# Push-to-talk conversations (NPC talk)
+
+Owner decision, 2026-10-10: the station crew and the villain can be spoken to. Hold **T** (keyboard) or **R3** (pad),
+speak into the microphone, release. Your words appear as a caption ("You: ..."), and the character answers in a
+caption of their own. Text only for now; voice out is "maybe later, if I like the dynamic". No cloud: both halves
+run on the player's machine as hidden sidecar processes the game starts and stops.
+
+| Piece | What | Where |
+|---|---|---|
+| `USSNpcTalkSubsystem` | microphone, the two servers, one conversation per character, the HTTP calls | `Source/SpaceSurvival/Public/SSNpcTalk.h`, `Private/SSNpcTalk.cpp` |
+| `ASSGameMode::BeginTalk / EndTalk / TalkTarget` | who is listening, the game-state digest, the captions | `SSGameMode.cpp`, end of file |
+| `ASSPlayerController::PlayerTick` | the key: held = listening, released = send | `SSGameMode.cpp` |
+| `ASSHUD` | the "You:" box, the crew answer box (deck teal), the status line, the walk hint | `SSHUD.cpp` |
+| `Config/DefaultNpcTalk.ini` | executables, models, ports, reply length, memory | |
+| `Content/SpaceSurvival/NpcTalk/Personas/<Name>.txt` | one system prompt per character; `_Default.txt` for the rest; `{Name}` is substituted | |
+| `SpaceSurvival.NpcTalk.Encoding` | automation suite: the WAV, both request bodies, both answers, the mesh-name rule | `SSNpcTalkAutomationTests.cpp` |
+
+## Who you can talk to
+
+- **On foot:** the crew member within 3.5 m that the walker is facing. Characters are identified by their mesh
+  (`SK_Dread` is Dread), so a placed crew actor needs no extra property. The walk hint says "hold T / R3: talk to
+  Dread" when someone is in range. Drones are skipped.
+- **In the ship:** the villain, but only after he has transmitted at least once in the current run (owner: "after the
+  first time the director speaks, you can talk back"). Before that the key answers "Nobody is on the line. He talks
+  first." His replies use his own ember caption, not the crew box; his persona mirrors the pilot's tone, so profanity
+  is answered in kind. Whether a given small model will actually swear is a model question, not a prompt one; an
+  "abliterated" variant of the same size is the swap if he keeps his manners.
+
+## The loop
+
+1. Key down: `BeginTalk` picks the target, refreshes the digest (second-person facts: wave, hull, credits, kills) and
+   opens the default microphone through the engine's `FAudioCapture`.
+2. Key up: the samples are mixed to mono, resampled to 16 kHz, written as a WAV and posted to whisper-server's
+   `/inference`. Under a quarter of a second of audio is rejected as "Nothing heard".
+3. The transcript is shown, appended to that character's history (last `HistoryTurns` exchanges) and posted with the
+   persona + digest to llama-server's `/v1/chat/completions`, `max_tokens` capped, no streaming.
+4. The reply is shown for 6 to 16 s depending on length. Any failure is announced in plain words and the loop resets.
+
+Measured on the owner's RTX 5080 (`M:\Local AI\NPCTalk\README.md`): transcription about 1 s on the CPU, replies in
+0.1 to 0.2 s at ~400 tokens/s with 1.4 GB of VRAM for Qwen2.5 1.5B.
+
+## Adding a character
+
+Write `Content/SpaceSurvival/NpcTalk/Personas/<Name>.txt` where `<Name>` is the mesh name without `SK_`. Say who
+they are, what they know, what they do not know, and how they talk; forbid assistant phrasing explicitly, because
+a small model drifts into it otherwise. Facts that change go in the digest (`NpcDigest`), not the persona. The owner
+writes these one at a time after testing each.
+
+## Limits and later
+
+- No lip sync is possible: no crew member has jaw bones or mouth shapes. Talk gestures only.
+- The sidecar paths in `DefaultNpcTalk.ini` are this machine's. A package must carry `bin/` and `models/` beside the
+  executable and point the ini at them; non-asset persona files need `DirectoriesToAlwaysStageAsNonUFS`.
+- Typed fallback, characters who speak first (bartender, merchants) and voice out are owner-listed follow-ups.
+- Licences: whisper.cpp and llama.cpp MIT, whisper small.en MIT, Qwen2.5-1.5B-Instruct Apache 2.0. Verify the exact
+  model file before any release (docs/production/SOLUTION_CATALOG.md rule).

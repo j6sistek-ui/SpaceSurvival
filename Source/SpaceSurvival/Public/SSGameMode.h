@@ -75,6 +75,12 @@ public:
      *  Story cues always speak; Launch, Hit and Kill wait out his chatter cooldown and chance. True if he spoke. */
     bool VillainSpeak(ESSVillainCue Cue);
     void Interact();
+    /** Push-to-talk (SSNpcTalk): the crew member the walker faces, or the villain once he has spoken this run.
+     *  Begin on key down, End on release. */
+    void BeginTalk();
+    void EndTalk();
+    /** Who the talk key would reach right now, by character name (crew by mesh, "Director" in flight), or empty. */
+    FString TalkTarget() const;
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
@@ -108,6 +114,9 @@ public:
     float ThreatWarningSeconds = 0.f, PilotReactionSeconds = 0.f;
     FString VillainLine;
     float VillainLineSeconds = 0.f;
+    /** Push-to-talk captions: what the pilot was heard to say, a crew member's answer, and where the loop is. */
+    FString NpcName, NpcLine, TalkTranscript, TalkStatus;
+    float NpcLineSeconds = 0.f, TalkTranscriptSeconds = 0.f;
     /** His last word on a run that ended in death, for the results panel. Cleared when the next run starts. */
     FString VillainEpitaph;
     /** Counts down after a player shot connects, so the reticle can flash its hit state. */
@@ -191,6 +200,13 @@ private:
     bool bWormholeArrived = false;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
     float VillainChatterCooldown = 0.f;
+    bool bVillainHasSpoken = false; // this run; the pilot may talk back to him only after his first line
+    bool bTalkBound = false;
+    FString TalkingTo;
+    FString NpcDigest(const FString &Character) const;
+    void OnNpcTranscript(const FString &Character, const FString &Text);
+    void OnNpcReply(const FString &Character, const FString &Text);
+    void OnNpcFailure(const FString &Character, const FString &Why);
     /** How long his current line has been up, so the next cannot replace it before it can be read. */
     float VillainLineShown = 0.f;
     /** Story beats retain their original wave while a line is fresh or a live menu hides the caption. */
@@ -268,6 +284,7 @@ private:
     float KeyboardThrottle = 0.f;
     /** Only a throttle command changes ownership; look, fire and UI glyph changes cannot restore thrust. */
     bool bAnalogThrottle = false;
+    bool bTalkHeld = false;
     float LastRightTriggerCommand = 0.f;
     TWeakObjectPtr<APawn> LastInputPawn;
     ESSInputFamily InputFamily = ESSInputFamily::KeyboardMouse;

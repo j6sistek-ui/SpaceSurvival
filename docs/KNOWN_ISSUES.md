@@ -2327,6 +2327,20 @@ in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.
 and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
 passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.
 
+## RPT-20261010-01 - Push-to-talk NPC conversations (owner decision, local AI)
+
+Owner, 2026-10-10: "literally having pretend conversations with the AI, responding and they talk back based on what
+you say - that's more worth it"; hold a key, speak, the transcript appears, the character answers in a dialogue box;
+audio out "maybe later"; the villain can be talked back to "after the first time the director speaks" and mirrors the
+pilot's tone; seated crew answer once they have personality profiles, which the owner writes one at a time after
+testing. Built as docs/NPC_TALK.md: T / R3 push-to-talk, local whisper.cpp + llama.cpp sidecars, captions on the HUD,
+personas for Dread, the Director and a default. GAME_SCOPE.md lists "brief NPC conversations" and warns against long
+dialogue trees; this is brief and treeless but it is a new mechanic authorised by the owner, recorded here as such.
+
+Open: the owner's first in-game test (the microphone leg cannot be exercised headless); whether a 1.5B model keeps the
+villain's venom (swap to an abliterated model of the same size if not); typed fallback; characters who speak first;
+packaging the sidecars beside the executable (today's paths are M:/Local AI/NPCTalk).
+
 ## RPT-20261008-01 — Tripo crew NPCs: rigged, animated, imported; owner decisions open
 
 Owner: lead implementation; status: **20 characters imported and animated, nothing placed in any level (owner:
