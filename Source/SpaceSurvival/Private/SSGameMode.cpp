@@ -2445,14 +2445,16 @@ void ASSPlayerController::PlayerTick(float Dt)
         if (!Down(EKeys::SpaceBar) && !Down(EKeys::Gamepad_FaceButton_Bottom))
             WalkPawn->StopJumping();
     }
-    // Push-to-talk: held while speaking, released to send. T or R3 (owner, 2026-10-10); neither does anything
-    // else in the ship or on foot. The game mode decides who is listening: a crew member or the villain.
-    const bool TalkHeld = !MenuInput && GetPawn() && (Down(EKeys::T) || Down(EKeys::Gamepad_RightThumbstick));
-    if (TalkHeld && !bTalkHeld)
-        GM->BeginTalk();
-    else if (!TalkHeld && bTalkHeld)
-        GM->EndTalk();
-    bTalkHeld = TalkHeld;
+    // Talk: tap T or R3 to start listening, tap again to send (owner, 2026-10-10: R3 is hard to keep holding;
+    // a hold/tap menu option and remapping come later). Neither key does anything else in the ship or on foot.
+    // The game mode decides who is listening: a crew member or the villain.
+    if (!MenuInput && GetPawn() && (Pressed(EKeys::T) || Pressed(EKeys::Gamepad_RightThumbstick)))
+    {
+        if (GM->IsTalkListening())
+            GM->EndTalk();
+        else
+            GM->BeginTalk();
+    }
     const FKey InteractButton =
         Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;
     if (!MenuInput && (Pressed(EKeys::E) || Pressed(InteractButton)))
@@ -2460,7 +2462,7 @@ void ASSPlayerController::PlayerTick(float Dt)
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// Push-to-talk (SSNpcTalk). On foot: face a crew member, hold the key, speak, release. In the ship: once the villain
+// Talk (SSNpcTalk). On foot: near a crew member, tap the key, speak, tap again. In the ship: once the villain
 // has transmitted this run, the same key talks back to him; his answer comes through his own caption.
 
 USSNpcTalkSubsystem *ASSGameMode::NpcTalk() const
@@ -2601,14 +2603,21 @@ void ASSGameMode::BeginTalk()
     }
     TalkingTo = Target;
     NpcName = Target.Name;
-    TalkStatus = FString::Printf(TEXT("Listening... talking to %s, release to send"),
+    TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
                                  Target.Name == TEXT("Director") ? TEXT("the Director") : *Target.Name);
+}
+
+bool ASSGameMode::IsTalkListening() const
+{
+    const auto *Talk = NpcTalk();
+    return Talk && TalkingTo.IsValid() && Talk->Phase() == ESSTalkPhase::Listening;
 }
 
 void ASSGameMode::EndTalk()
 {
     auto *Talk = NpcTalk();
-    if (!Talk || !TalkingTo.IsValid())
+    // Only while the microphone is open: a second tap during "is answering..." must not relabel it.
+    if (!Talk || !IsTalkListening())
         return;
     TalkStatus = TEXT("Transcribing...");
     Talk->EndListeningAndAsk(TalkingTo);
