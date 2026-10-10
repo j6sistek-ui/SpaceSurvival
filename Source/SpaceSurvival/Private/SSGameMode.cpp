@@ -2767,11 +2767,17 @@ FSSTalkIdentity ASSGameMode::TalkTarget() const
         // across the atrium is not a conversation.
         const FVector From = Walker->GetActorLocation();
         float Nearest = 500.f;
+        // The conversation stays with whoever you were just talking to (owner: "another NPC walks up, next thing you
+        // know you're talking to someone else"): within 6 m and 90 s of the last exchange they win over anyone nearer.
+        const bool Recent = LastPartner.IsValid() && GetWorld()->GetTimeSeconds() - LastPartnerTime < 90.0;
+        FSSTalkIdentity Partner;
         auto Consider = [&](const USkeletalMeshComponent *Mesh, FSSTalkIdentity Who)
         {
             if (!Who.IsValid())
                 return;
             const float Distance = FVector::Dist2D(Mesh->GetComponentLocation(), From);
+            if (Recent && Who.Name == LastPartner.Name && Distance <= 600.f)
+                Partner = Who;
             if (Distance < Nearest)
             {
                 Nearest = Distance;
@@ -2802,7 +2808,7 @@ FSSTalkIdentity ASSGameMode::TalkTarget() const
                     Mesh && Mesh->GetSkeletalMeshAsset() && SSNpcTalk::HasTalkTag(Mesh->ComponentTags))
                     Consider(Mesh,
                              SSNpcTalk::IdentityFromTags(Mesh->ComponentTags, Mesh->GetSkeletalMeshAsset()->GetName()));
-        return Best;
+        return Partner.IsValid() ? Partner : Best;
     }
     const auto *GI = GetGameInstance<USSGameInstance>();
     if (!Walker && Ship && GI && GI->Session.run.active && bVillainHasSpoken)
@@ -2888,6 +2894,11 @@ void ASSGameMode::BeginTalk()
     }
     TalkingTo = Target;
     NpcName = Target.Name;
+    if (Target.Name != TEXT("Director"))
+    {
+        LastPartner = Target;
+        LastPartnerTime = GetWorld()->GetTimeSeconds();
+    }
     TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
                                  Target.Name == TEXT("Director") ? TEXT("the Director") : *Target.Name);
 }
@@ -2917,6 +2928,8 @@ void ASSGameMode::OnNpcTranscript(const FString &Character, const FString &Text)
 
 void ASSGameMode::OnNpcReply(const FString &Character, const FString &Text)
 {
+    if (Character == LastPartner.Name)
+        LastPartnerTime = GetWorld()->GetTimeSeconds();
     TalkStatus.Empty();
     TalkingTo = FSSTalkIdentity();
     if (Character == TEXT("Director") && VillainVoiceOn(this))
