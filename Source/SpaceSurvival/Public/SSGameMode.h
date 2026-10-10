@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "SSNpcTalk.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
 #include "SSContentTypes.h"
@@ -75,6 +76,30 @@ public:
      *  Story cues always speak; Launch, Hit and Kill wait out his chatter cooldown and chance. True if he spoke. */
     bool VillainSpeak(ESSVillainCue Cue);
     void Interact();
+    /** Push-to-talk (SSNpcTalk): the crew member the walker faces, or the villain once he has spoken this run.
+     *  Begin on key down, End on release. */
+    void BeginTalk();
+    void EndTalk();
+    /** The talk key: on foot the first tap starts a conversation with the nearest crew member (the camera turns to
+     *  them) and opens the microphone; later taps speak to them until the pilot walks away. In the ship it talks to
+     *  the villain as before. */
+    void TapTalk();
+    /** Ends the conversation when the pilot has walked a few steps away, and turns the camera to the partner. */
+    void UpdateTalkEngagement(float DeltaSeconds);
+    bool IsTalkEngaged() const
+    {
+        return EngagedWith.IsValid();
+    }
+    const FSSTalkIdentity &TalkPartner() const
+    {
+        return EngagedWith;
+    }
+    /** The microphone is open for a question (between the first tap and the second). */
+    bool IsTalkListening() const;
+    /** Who the talk key would reach right now, by character name (crew by mesh, "Director" in flight), or empty. */
+    FSSTalkIdentity TalkTarget(const USceneComponent **OutMesh = nullptr) const;
+    /** What the HUD offers: the talk target once the pilot has stood still a couple of seconds, otherwise nobody. */
+    FSSTalkIdentity TalkHint() const;
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
@@ -108,6 +133,9 @@ public:
     float ThreatWarningSeconds = 0.f, PilotReactionSeconds = 0.f;
     FString VillainLine;
     float VillainLineSeconds = 0.f;
+    /** Push-to-talk captions: what the pilot was heard to say, a crew member's answer, and where the loop is. */
+    FString NpcName, NpcLine, TalkTranscript, TalkStatus;
+    float NpcLineSeconds = 0.f, TalkTranscriptSeconds = 0.f;
     /** His last word on a run that ended in death, for the results panel. Cleared when the next run starts. */
     FString VillainEpitaph;
     /** Counts down after a player shot connects, so the reticle can flash its hit state. */
@@ -191,6 +219,27 @@ private:
     bool bWormholeArrived = false;
     float AlarmCooldown = 0.f, ReactionCooldown = 0.f;
     float VillainChatterCooldown = 0.f;
+    bool bVillainHasSpoken = false; // this run; the pilot may talk back to him only after his first line
+    bool bTalkBound = false;
+    FSSTalkIdentity TalkingTo;
+    /** The crew member last spoken to, who keeps the conversation while near and recent (owner, 2026-10-10). */
+    // The conversation in progress on foot: who, where their body is, where the pilot stood when it began, and the
+    // camera arm as it was before it moved in over the pilot's shoulder.
+    FSSTalkIdentity EngagedWith;
+    TWeakObjectPtr<const USceneComponent> EngagedMesh;
+    FVector EngageAnchor = FVector::ZeroVector;
+    float EngagePanSeconds = 0.f, SavedArmLength = -1.f;
+    FVector SavedSocketOffset = FVector::ZeroVector;
+    float WalkerStillSeconds = 0.f;
+    mutable FSSTalkIdentity CachedHint;
+    mutable double CachedHintAt = -1.0;
+    void Disengage();
+    FString NpcDigest(const FSSTalkIdentity &Who) const;
+    class USSNpcTalkSubsystem *NpcTalk() const;
+    void OnNpcTranscript(const FString &Character, const FString &Text);
+    void OnNpcReply(const FString &Character, const FString &Text);
+    void OnNpcFailure(const FString &Character, const FString &Why);
+    void OnNpcStatus(const FString &Character, const FString &Phrase);
     /** How long his current line has been up, so the next cannot replace it before it can be read. */
     float VillainLineShown = 0.f;
     /** Story beats retain their original wave while a line is fresh or a live menu hides the caption. */

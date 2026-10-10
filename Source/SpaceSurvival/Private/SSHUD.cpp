@@ -733,6 +733,9 @@ void ASSHUD::DrawHUD()
         Paragraph(GM->PilotReaction, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, CaptionW - 24.f * Scale, .75f,
                   FLinearColor(.9f, .94f, 1.f));
     }
+    // Where the talk captions may start, growing upward: above the villain's caption whenever it is showing, so the
+    // pilot's "You:" line never lands on his answer (owner, 2026-10-10).
+    float TalkStackBottom = H - 300.f * Scale;
     if (S.settings.subtitles && GM->VillainLineSeconds > 0.f && !MenuOpen)
     {
         // The villain's own line, above the pilot's so the two can trade words. Ember on near-black marks it
@@ -745,6 +748,36 @@ void ASSHUD::DrawHUD()
         DrawRect(FLinearColor(.07f, .012f, .008f, .9f), CaptionX, CaptionY, CaptionW, CaptionH);
         Paragraph(GM->VillainLine, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, TextW, .75f,
                   FLinearColor(1.f, .56f, .4f));
+        TalkStackBottom = FMath::Min(TalkStackBottom, CaptionY - 8.f * Scale);
+    }
+    if (!MenuOpen && (GM->NpcLineSeconds > 0.f || GM->TalkTranscriptSeconds > 0.f || !GM->TalkStatus.IsEmpty()))
+    {
+        // Push-to-talk: the pilot's own words on top, a crew member's answer beneath in the deck's teal. Not
+        // gated by the subtitles setting: the text is the conversation. The villain answers on his own caption.
+        const float CaptionW = FMath::Min(760.f * Scale, W - 2.f * Margin);
+        const float TextW = CaptionW - 24.f * Scale;
+        const float CaptionX = (W - CaptionW) * .5f;
+        float Y = TalkStackBottom;
+        if (GM->NpcLineSeconds > 0.f)
+        {
+            const FString Line = GM->NpcName + TEXT(": ") + GM->NpcLine;
+            const float BoxH = Paragraph(Line, 0.f, 0.f, TextW, .8f, FLinearColor::White, false) + 20.f * Scale;
+            Y -= BoxH;
+            DrawRect(FLinearColor(.01f, .06f, .07f, .92f), CaptionX, Y, CaptionW, BoxH);
+            Paragraph(Line, CaptionX + 12.f * Scale, Y + 10.f * Scale, TextW, .8f, FLinearColor(.55f, .95f, .9f));
+            Y -= 8.f * Scale;
+        }
+        if (GM->TalkTranscriptSeconds > 0.f)
+        {
+            const FString Line = TEXT("You: ") + GM->TalkTranscript;
+            const float BoxH = Paragraph(Line, 0.f, 0.f, TextW, .75f, FLinearColor::White, false) + 20.f * Scale;
+            Y -= BoxH;
+            DrawRect(FLinearColor(.015f, .025f, .04f, .9f), CaptionX, Y, CaptionW, BoxH);
+            Paragraph(Line, CaptionX + 12.f * Scale, Y + 10.f * Scale, TextW, .75f, FLinearColor(.9f, .94f, 1.f));
+            Y -= 8.f * Scale;
+        }
+        if (!GM->TalkStatus.IsEmpty())
+            Text(GM->TalkStatus, CaptionX, Y - 24.f * Scale, .7f, FLinearColor(1.f, .85f, .5f));
     }
     if (!MenuOpen && (!Walker || !Walker->IsDisembarking()))
     {
@@ -778,9 +811,15 @@ void ASSHUD::DrawHUD()
                 InteractionHint = TEXT("REWARD SECURED / visit the Beacon Log");
                 HintColor = FLinearColor(1, .8f, .4f);
             }
-            Text(TEXT("WASD / left stick: walk | mouse / right stick: camera | Shift / X: run | Space / A: jump | E / "
-                      "Y: use"),
-                 Margin, H - 35 * Scale, .6f);
+            FString WalkHelp =
+                TEXT("WASD / left stick: walk | mouse / right stick: camera | Shift / X: run | Space / A: jump | E / "
+                     "Y: use");
+            if (GM->IsTalkEngaged())
+                WalkHelp += TEXT(" | talking with ") + GM->TalkPartner().Name +
+                            TEXT(": tap T / R3 to speak, walk away to leave");
+            else if (const FSSTalkIdentity Crew = GM->TalkHint(); Crew.IsValid())
+                WalkHelp += TEXT(" | tap T / R3: talk to ") + Crew.Name;
+            Text(WalkHelp, Margin, H - 35 * Scale, .6f);
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
         {

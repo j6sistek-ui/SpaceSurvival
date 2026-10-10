@@ -16,6 +16,7 @@
 #include "Misc/PackageName.h"
 #include "SSStation.h"
 #include "SSOutpostSandbox.h"
+#include "SSNpcTalk.h"
 #include "SSLandingPad.h"
 #include "SSShipPaint.h"
 #include "Animation/PoseSnapshot.h"
@@ -27,7 +28,10 @@
 #include "Components/AudioComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Animation/AnimSingleNodeInstance.h"
+#include "Animation/SkeletalMeshActor.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EngineUtils.h"
 #include "Sound/SoundBase.h"
@@ -271,6 +275,10 @@ bool ASSGameMode::ShowVillainLine(ESSVillainCue Cue, int32 Wave)
     VillainLine = Line;
     VillainLineSeconds = FMath::Clamp(2.5f + .06f * Line.Len(), 3.5f, 7.f);
     VillainLineShown = 0.f;
+    bVillainHasSpoken = true;
+    // The pilot may talk back from here on, so the flight model starts loading now rather than on the first key.
+    if (auto *Talk = NpcTalk())
+        Talk->EnsureServers();
     // Chatter never lands on top of a line he has just said, story or not.
     VillainChatterCooldown = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain.ChatterCooldown;
     return true;
@@ -333,6 +341,8 @@ void ASSGameMode::UpdateThreatFeedback(float Dt)
     ReactionCooldown = FMath::Max(0.f, ReactionCooldown - Dt);
     ThreatWarningSeconds = FMath::Max(0.f, ThreatWarningSeconds - Dt);
     PilotReactionSeconds = FMath::Max(0.f, PilotReactionSeconds - Dt);
+    NpcLineSeconds = FMath::Max(0.f, NpcLineSeconds - Dt);
+    TalkTranscriptSeconds = FMath::Max(0.f, TalkTranscriptSeconds - Dt);
     if (!VillainVoiceOn(this))
         ClearVillainDialogue();
     else if (!IsMenuOpen())
@@ -427,6 +437,8 @@ void ASSGameMode::ShowHangar()
     }
     Walker = GetWorld()->SpawnActor<ASSWalker>(Hub->WalkSpawn(), FRotator::ZeroRotator);
     WearHero();
+    if (auto *Talk = NpcTalk())
+        Talk->SetContext(ESSTalkContext::Station);
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     PC->Possess(Walker);
     PC->SetControlRotation(FRotator(-12.f, Hub->GetActorRotation().Yaw, 0.f));
@@ -475,6 +487,7 @@ void ASSGameMode::FollowFlightPresentation()
 }
 void ASSGameMode::StartNewRun()
 {
+    bVillainHasSpoken = false;
     bAtTitleScreen = false;
     bStartNextBlockOnExit = false;
     bWormholeArrived = false;
@@ -605,6 +618,9 @@ bool ASSGameMode::TryBoardShip(ASSWalker *Candidate)
 }
 void ASSGameMode::BeginDeparture()
 {
+    // Leaving the station is combat from here: the station talker is unloaded and the GPU is the game's again.
+    if (auto *Talk = NpcTalk())
+        Talk->SetContext(ESSTalkContext::Flight);
     if (!Hub)
         return;
     bDepartingStation = true;
@@ -748,6 +764,9 @@ void ASSGameMode::EnterStation()
     Walker = GetWorld()->SpawnActor<ASSWalker>(SafePadExit ? Hub->PadWalkSpawn() : Hub->WalkSpawn(),
                                                FRotator(0, Hub->GetActorRotation().Yaw, 0));
     WearHero();
+    // Landed: the station is talk, not combat, so the better model loads now (owner's split, docs/NPC_TALK.md).
+    if (auto *Talk = NpcTalk())
+        Talk->SetContext(ESSTalkContext::Station);
     auto *PC = UGameplayStatics::GetPlayerController(this, 0);
     const bool AutoCamera = PC->bAutoManageActiveCameraTarget;
     if (Ship)
@@ -2429,8 +2448,360 @@ void ASSPlayerController::PlayerTick(float Dt)
         if (!Down(EKeys::SpaceBar) && !Down(EKeys::Gamepad_FaceButton_Bottom))
             WalkPawn->StopJumping();
     }
+    // Talk: tap T or R3 to start listening, tap again to send (owner, 2026-10-10: R3 is hard to keep holding;
+    // a hold/tap menu option and remapping come later). Neither key does anything else in the ship or on foot.
+    // The game mode decides who is listening: a crew member or the villain.
+    if (!MenuInput && GetPawn() && (Pressed(EKeys::T) || Pressed(EKeys::Gamepad_RightThumbstick)))
+        GM->TapTalk();
+    GM->UpdateTalkEngagement(Dt);
     const FKey InteractButton =
         Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;
     if (!MenuInput && (Pressed(EKeys::E) || Pressed(InteractButton)))
         GM->Interact();
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Talk (SSNpcTalk). On foot: near a crew member, tap the key, speak, tap again. In the ship: once the villain
+// has transmitted this run, the same key talks back to him; his answer comes through his own caption.
+
+USSNpcTalkSubsystem *ASSGameMode::NpcTalk() const
+{
+    return GetGameInstance() ? GetGameInstance()->GetSubsystem<USSNpcTalkSubsystem>() : nullptr;
+}
+
+FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
+{
+    FSSTalkIdentity Best;
+    const USceneComponent *BestMesh = nullptr;
+    // No talk pack installed: nobody is a target, so the HUD never mentions the key.
+    if (const auto *Talk = NpcTalk(); !Talk || !Talk->IsEnabled())
+        return Best;
+    if (Walker && !Walker->IsDisembarking())
+    {
+        // The nearest crew member the pilot can actually see: on this floor, roughly in front of the camera and not
+        // behind a wall (owner: "which one was Nyxar, I didn't even see anyone near me" - a flat range picked people
+        // on other floors and behind walls). Within 5 m.
+        const FVector From = Walker->GetActorLocation();
+        const FVector Eye = From + FVector(0.f, 0.f, 60.f);
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        const FVector Look =
+            (PC ? PC->GetControlRotation().Vector() : Walker->GetActorForwardVector()).GetSafeNormal2D();
+        FCollisionQueryParams Sight(SCENE_QUERY_STAT(SSTalkSight), false, Walker);
+        float Nearest = 500.f;
+        auto Consider = [&](const USkeletalMeshComponent *Mesh, FSSTalkIdentity Who)
+        {
+            if (!Who.IsValid())
+                return;
+            const FVector At = Mesh->GetComponentLocation();
+            const float Distance = FVector::Dist2D(At, From);
+            if (Distance >= Nearest)
+                return;
+            const FVector Head = Mesh->Bounds.Origin + FVector(0.f, 0.f, Mesh->Bounds.BoxExtent.Z * .5f);
+            if (FMath::Abs(Head.Z - Eye.Z) > 220.f || FVector::DotProduct(Look, (At - From).GetSafeNormal2D()) < .25f)
+                return;
+            // A placed crew actor's own capsule is not a wall; the station's walls belong to the hub, so only a hit
+            // on some other actor, or on the hub itself, hides them.
+            FHitResult Hit;
+            if (GetWorld()->LineTraceSingleByChannel(Hit, Eye, Head, ECC_Visibility, Sight) &&
+                !(Hit.GetActor() && Hit.GetActor() == Mesh->GetOwner() && Mesh->GetOwner() != Hub))
+                return;
+            Nearest = Distance;
+            Best = MoveTemp(Who);
+            BestMesh = Mesh;
+        };
+        for (TActorIterator<ASSOutpostAmbientActor> It(GetWorld()); It; ++It)
+        {
+            // A drone has nothing to say; a wardrobe hologram is the pilot's own reflection; someone walking a route
+            // is passing through (owner: "the hallway NPC shouldn't trigger it").
+            if (It->bDrone || It->bAnimationManagedExternally || It->RoutePoints.Num() > 1 || !It->CharacterMesh ||
+                !It->CharacterMesh->GetSkeletalMeshAsset())
+                continue;
+            FSSTalkIdentity Who = SSNpcTalk::IdentityFromTags(It->CharacterMesh->ComponentTags,
+                                                              It->CharacterMesh->GetSkeletalMeshAsset()->GetName());
+            if (!It->TalkName.IsEmpty())
+                Who.Name = It->TalkName;
+            else if (Who.Name == Who.Type)
+                Who.Name = SSNpcTalk::GivenName(Who.Type, It->GetName());
+            if (!It->TalkRole.IsEmpty())
+                Who.Role = It->TalkRole;
+            if (!It->TalkActivity.IsEmpty())
+                Who.Activity = It->TalkActivity;
+            Consider(It->CharacterMesh, Who);
+        }
+        // The station's own deck crew are components on the hub, named and given roles by
+        // SSStationPresentation::TagTalkers; its display ship and holograms carry no Talk tag and stay scenery.
+        if (Hub)
+            for (const UActorComponent *Component : Hub->GetComponents())
+                if (const auto *Mesh = Cast<USkeletalMeshComponent>(Component);
+                    Mesh && Mesh->GetSkeletalMeshAsset() && SSNpcTalk::HasTalkTag(Mesh->ComponentTags))
+                    Consider(Mesh,
+                             SSNpcTalk::IdentityFromTags(Mesh->ComponentTags, Mesh->GetSkeletalMeshAsset()->GetName()));
+        // Placed characters with a profile, such as the dancers PR 69 set on the stages as plain animated meshes.
+        if (const auto *Talk = NpcTalk())
+            for (TActorIterator<ASkeletalMeshActor> It(GetWorld()); It; ++It)
+            {
+                const USkeletalMeshComponent *Body = It->GetSkeletalMeshComponent();
+                if (!Body || !Body->GetSkeletalMeshAsset())
+                    continue;
+                FSSTalkIdentity Who;
+                Who.Name = Who.Type =
+                    Talk->ResolveAlias(SSNpcTalk::CharacterNameFromMesh(Body->GetSkeletalMeshAsset()->GetName()));
+                if (!Talk->HasPersona(Who.Name))
+                    continue;
+                const UAnimationAsset *Clip =
+                    Body->GetSingleNodeInstance() ? Body->GetSingleNodeInstance()->GetAnimationAsset() : nullptr;
+                if (Clip && Clip->GetName().Contains(TEXT("Pole")))
+                {
+                    Who.Role = TEXT("Flirt");
+                    Who.Activity = TEXT("dancing on the pole on the stage");
+                }
+                else if (Clip && Clip->GetName().Contains(TEXT("Dance")))
+                {
+                    Who.Role = TEXT("Dancer");
+                    Who.Activity = TEXT("dancing");
+                }
+                Consider(Body, Who);
+            }
+        if (OutMesh)
+            *OutMesh = BestMesh;
+        return Best;
+    }
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (!Walker && Ship && GI && GI->Session.run.active && bVillainHasSpoken)
+        Best.Name = Best.Type = TEXT("Director");
+    return Best;
+}
+
+FString ASSGameMode::NpcDigest(const FSSTalkIdentity &Who) const
+{
+    // Second person and plain: a small model repeats what it is told, so it is told only what it may repeat.
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    const bool Run = GI && GI->Session.run.active;
+    if (Who.Name == TEXT("Director"))
+    {
+        // No checkable numbers (owner: "you could say any number to me and I'd believe it, but many would check"):
+        // the hull moves between the question and the answer, so he gets the state in words and the wave, which
+        // does not move. What the pilot is comes from the body they wear, so the squirrel gets called a squirrel.
+        const float Hull = Run ? GI->Session.run.hull : 100.f;
+        const int32 Kills = Run ? GI->Session.run.kills : 0;
+        const TCHAR *HullWords = Hull > 90.f   ? TEXT("barely scratched")
+                                 : Hull > 60.f ? TEXT("holding, with the damage showing")
+                                 : Hull > 35.f ? TEXT("hurting badly")
+                                 : Hull > 15.f ? TEXT("in tatters")
+                                               : TEXT("about to come apart");
+        const TCHAR *KillWords = Kills == 0   ? TEXT("none of your machines yet")
+                                 : Kills < 5  ? TEXT("a handful of your machines")
+                                 : Kills < 15 ? TEXT("a dozen or so of your machines")
+                                 : Kills < 40 ? TEXT("a couple of dozen of your machines")
+                                              : TEXT("dozens of your machines");
+        FString Body = WornHeroId().ToString();
+        for (int32 Index = 1; Index < Body.Len(); ++Index)
+            if (FChar::IsUpper(Body[Index]) && FChar::IsLower(Body[Index - 1]))
+                Body.InsertAt(Index++, TEXT(' '));
+        FString Out =
+            FString::Printf(TEXT("You are mid-attack. The pilot you are talking to is a %s flying the Stellar "
+                                 "Phoenix against your forces right now."),
+                            *Body.ToLower());
+        if (Run)
+            Out += FString::Printf(TEXT(" This is their wave %d. Their hull is %s. They have destroyed %s this run. "
+                                        "Never quote figures at them; you know their state, so use it to needle them."),
+                                   GI->Session.run.wave, HullWords, KillWords);
+        return Out;
+    }
+    // The live detail of a special role ("playing pool, just scratched") rides here, so the model can talk about it.
+    FString Out = FString::Printf(TEXT("You are %s, on the Wayfarer Exchange station."), *Who.Name);
+    if (!Who.Activity.IsEmpty())
+        Out += FString::Printf(TEXT(" At this moment you are %s."), *Who.Activity);
+    Out += TEXT(" The person talking to you is the pilot of the Stellar Phoenix, who just walked in from the docks.");
+    // The crew must know who the villain is (panel 2026-10-10: models made him station management).
+    Out += TEXT(" The Director is the enemy: he sends the waves of machines that attack pilots like this one, and nobody on the station works for him.");
+    if (Run)
+        Out += FString::Printf(
+            TEXT(" They are %d waves into a survival run, their hull is at %d percent, and they carry %d credits."),
+            GI->Session.run.wave, int32(GI->Session.run.hull), GI->Session.run.credits);
+    else
+        Out += TEXT(" They are between runs, resting on the station.");
+    return Out;
+}
+
+void ASSGameMode::BeginTalk()
+{
+    auto *Talk = NpcTalk();
+    if (!Talk || !Talk->IsEnabled() || IsMenuOpen() || TalkingTo.IsValid())
+        return;
+    // In a conversation every question goes to the partner, whoever else wanders up (owner: "another NPC walks up,
+    // next thing you know you're talking to someone else").
+    const FSSTalkIdentity Target = EngagedWith.IsValid() ? EngagedWith : TalkTarget();
+    if (!Target.IsValid())
+    {
+        Announce(Walker ? TEXT("No one close enough to talk to. Walk up to someone.")
+                        : TEXT("Nobody is on the line. He talks first."));
+        return;
+    }
+    if (!bTalkBound)
+    {
+        Talk->OnTranscript.AddUObject(this, &ASSGameMode::OnNpcTranscript);
+        Talk->OnReply.AddUObject(this, &ASSGameMode::OnNpcReply);
+        Talk->OnFailure.AddUObject(this, &ASSGameMode::OnNpcFailure);
+        Talk->OnStatus.AddUObject(this, &ASSGameMode::OnNpcStatus);
+        bTalkBound = true;
+    }
+    Talk->Digest = NpcDigest(Target);
+    if (!Talk->BeginListening())
+    {
+        Announce(Talk->LastError());
+        return;
+    }
+    TalkingTo = Target;
+    NpcName = Target.Name;
+    TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
+                                 Target.Name == TEXT("Director") ? TEXT("the Director") : *Target.Name);
+}
+
+void ASSGameMode::TapTalk()
+{
+    if (IsTalkListening())
+    {
+        EndTalk();
+        return;
+    }
+    if (TalkingTo.IsValid())
+        return; // still answering the last question
+    if (Walker && !EngagedWith.IsValid())
+    {
+        // Formal on foot (owner, 2026-10-10): nothing starts until the key is tapped, and the tap starts a conversation
+        // with one person. The camera moves in over the pilot's shoulder and turns to them.
+        const USceneComponent *Mesh = nullptr;
+        const FSSTalkIdentity Target = TalkTarget(&Mesh);
+        if (Target.IsValid() && Mesh)
+        {
+            EngagedWith = Target;
+            EngagedMesh = Mesh;
+            EngageAnchor = Walker->GetActorLocation();
+            EngagePanSeconds = 1.2f;
+            SavedArmLength = Walker->Boom->TargetArmLength;
+            SavedSocketOffset = Walker->Boom->SocketOffset;
+            Walker->Boom->TargetArmLength = FMath::Min(SavedArmLength, 230.f);
+            Walker->Boom->SocketOffset = SavedSocketOffset + FVector(0.f, 65.f, -15.f);
+        }
+    }
+    BeginTalk();
+}
+
+FSSTalkIdentity ASSGameMode::TalkHint() const
+{
+    // Not a running reminder (owner: "like reminding someone to jump every time their feet are on the ground"):
+    // offered once the pilot has stood still a couple of seconds, at a desk or anywhere, and refreshed a few times a
+    // second rather than every frame.
+    if (!Walker || WalkerStillSeconds < 2.f)
+        return FSSTalkIdentity();
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now - CachedHintAt > .25)
+    {
+        CachedHint = TalkTarget();
+        CachedHintAt = Now;
+    }
+    return CachedHint;
+}
+
+void ASSGameMode::UpdateTalkEngagement(float Dt)
+{
+    WalkerStillSeconds = Walker && Walker->GetVelocity().Size2D() < 15.f ? WalkerStillSeconds + Dt : 0.f;
+    if (!EngagedWith.IsValid())
+        return;
+    const USceneComponent *Mesh = EngagedMesh.Get();
+    // A few steps away ends it and the camera goes back (owner: "walking a few steps away disengages and goes back").
+    if (!Walker || Walker->IsDisembarking() || !Mesh ||
+        FVector::Dist2D(Walker->GetActorLocation(), EngageAnchor) > 250.f)
+    {
+        Disengage();
+        return;
+    }
+    if (EngagePanSeconds <= 0.f)
+        return;
+    EngagePanSeconds -= Dt;
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (!PC)
+        return;
+    // Face to face: the pilot turns to them and the view settles on their head, slightly down, over the shoulder.
+    const FVector Head = Mesh->Bounds.Origin + FVector(0.f, 0.f, Mesh->Bounds.BoxExtent.Z * .55f);
+    const FVector Eye = Walker->GetActorLocation() + FVector(0.f, 0.f, 100.f);
+    FRotator Want = (Head - Eye).Rotation();
+    Want.Pitch = FMath::Clamp(Want.Pitch, -30.f, 15.f);
+    Want.Roll = 0.f;
+    PC->SetControlRotation(FMath::RInterpTo(PC->GetControlRotation(), Want, Dt, 5.f));
+    const FRotator Face(0.f, (Head - Walker->GetActorLocation()).Rotation().Yaw, 0.f);
+    Walker->SetActorRotation(FMath::RInterpTo(Walker->GetActorRotation(), Face, Dt, 6.f));
+}
+
+void ASSGameMode::Disengage()
+{
+    if (Walker && SavedArmLength > 0.f)
+    {
+        Walker->Boom->TargetArmLength = SavedArmLength;
+        Walker->Boom->SocketOffset = SavedSocketOffset;
+    }
+    SavedArmLength = -1.f;
+    // Walking away mid-question drops it: the microphone closes and no stale answer arrives later.
+    if (auto *Talk = NpcTalk(); Talk && TalkingTo.IsValid() && TalkingTo.Name == EngagedWith.Name)
+    {
+        Talk->Cancel();
+        TalkingTo = FSSTalkIdentity();
+        TalkStatus.Empty();
+    }
+    EngagedWith = FSSTalkIdentity();
+    EngagedMesh.Reset();
+    EngagePanSeconds = 0.f;
+}
+
+bool ASSGameMode::IsTalkListening() const
+{
+    const auto *Talk = NpcTalk();
+    return Talk && TalkingTo.IsValid() && Talk->Phase() == ESSTalkPhase::Listening;
+}
+
+void ASSGameMode::EndTalk()
+{
+    auto *Talk = NpcTalk();
+    // Only while the microphone is open: a second tap during "is answering..." must not relabel it.
+    if (!Talk || !IsTalkListening())
+        return;
+    TalkStatus = TEXT("Transcribing...");
+    Talk->EndListeningAndAsk(TalkingTo);
+}
+
+void ASSGameMode::OnNpcTranscript(const FString &Character, const FString &Text)
+{
+    TalkTranscript = Text;
+    TalkTranscriptSeconds = 14.f;
+    TalkStatus = (Character == TEXT("Director") ? TEXT("The Director") : Character) + TEXT(" is answering...");
+}
+
+void ASSGameMode::OnNpcReply(const FString &Character, const FString &Text)
+{
+    TalkStatus.Empty();
+    TalkingTo = FSSTalkIdentity();
+    if (Character == TEXT("Director") && VillainVoiceOn(this))
+    {
+        // His channel, his colour; the story cue machinery is untouched, this only borrows the caption.
+        VillainLine = Text;
+        VillainLineSeconds = FMath::Clamp(4.f + .07f * Text.Len(), 6.f, 16.f);
+        VillainLineShown = 0.f;
+        return;
+    }
+    NpcName = Character;
+    NpcLine = Text;
+    NpcLineSeconds = FMath::Clamp(4.f + .07f * Text.Len(), 6.f, 16.f);
+}
+
+void ASSGameMode::OnNpcFailure(const FString &, const FString &Why)
+{
+    TalkStatus.Empty();
+    TalkingTo = FSSTalkIdentity();
+    Announce(Why);
+}
+
+void ASSGameMode::OnNpcStatus(const FString &Character, const FString &Phrase)
+{
+    TalkStatus = (Character == TEXT("Director") ? TEXT("The Director") : Character) + TEXT(" ") + Phrase;
 }

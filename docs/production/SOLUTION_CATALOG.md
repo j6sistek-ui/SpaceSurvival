@@ -1,5 +1,17 @@
 # SpaceSurvival whole-project solution catalog
 
+### RUNTIME-20261010-NPCTALK - owner-required push-to-talk conversations (local whisper.cpp + llama.cpp)
+
+- **Decision, 2026-10-10:** the owner made open conversation an explicit requirement (the condition earlier entries
+  set): speak into the microphone, the transcript shows, the NPC or the villain answers in text. One NPC first
+  (Dread), the villain mid-wave after his first line, more crew as the owner writes their profiles.
+- **Acquisition:** whisper.cpp b5454 and llama.cpp b11541 Windows builds (MIT), ggml-small.en.bin (MIT),
+  Qwen2.5-1.5B-Instruct Q4_K_M (Apache 2.0), downloaded with the owner's approval to M:/Local AI/NPCTalk.
+- **Evaluation:** measured on the RTX 5080 with the editor open: transcription ~1 s on CPU, replies 0.1-0.2 s at
+  ~400 tok/s, +1.4 GB VRAM. Integrated as docs/NPC_TALK.md; the in-game microphone leg awaits the owner's own test.
+- **Limits / next check:** no lip sync (crew have no jaw bones); sidecar paths are this machine's until packaging;
+  verify the exact model file's licence before release; voice out (Voicebox / Qwen3-TTS entries) is the later step.
+
 ### Resource update — 2026-09-24 building library
 
 | Stable ID | Acquisition and evaluation | Whole-project use and next check |

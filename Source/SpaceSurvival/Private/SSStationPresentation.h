@@ -18,5 +18,7 @@ UMaterialInterface *InstancedMaterial(UMaterialInterface *Source);
 void BuildDetails(AActor *Owner, TArray<TObjectPtr<UStaticMeshComponent>> &Geometry);
 void BuildSupplementalStaff(AActor *Owner);
 void BuildAlienCrew(AActor *Owner);
+/** Names, roles and live activities for the deck crew above, as push-to-talk component tags (docs/NPC_TALK.md). */
+void TagTalkers(AActor *Owner);
 void PaceAlienCrew(AActor *Owner);
 } // namespace SSStationPresentation

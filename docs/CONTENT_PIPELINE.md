@@ -181,6 +181,13 @@ Omit `-Editor` only when deliberately validating the separately built Windows ar
 
 These offscreen captures are visual/transition evidence only. Their receipt explicitly excludes performance findings because screenshot readback, ListTextures and review viewpoints perturb the workload. Successful capture does not establish continuous motion quality, natural services/input, near-alpha art acceptance or packaged inclusion beyond the executable actually selected. Final results and remaining checks belong in the canonical validation/state/issue records, not in this reproduction guide.
 
+## Tripo crew NPCs - October 8
+
+Twenty Tripo characters are repaired, rigged and animated for the station under
+`/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew` (private licensed content; nothing is placed in a level).
+How to add animations, and what each character needs: [TRIPO_CREW_ANIMATION.md](TRIPO_CREW_ANIMATION.md). Blender
+repair steps: [Scripts/TripoCrewBlender/README.md](../Scripts/TripoCrewBlender/README.md).
+
 ## Sources and preservation
 
 - `model-rigged.glb` is the supplied rigged Acornaut source. It is preserved byte-for-byte. SHA-256: `c106b51d3463130be49e80f7e738f52be931f80dd73e15f1cfa53b07d99bfc91`.
