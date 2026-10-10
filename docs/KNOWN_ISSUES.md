@@ -2378,3 +2378,15 @@ need chairs where they play.
 
 Next action (lead): none queued; waiting on the decisions above. Evidence: clip sheets, close-ups, hair GIFs and the
 158-clip deformation review in `.agent/local/CharacterAssets/Crew_Integration_20261008/evidence/`.
+
+## RPT-20261010-02 - Three Flight suites fail on the talk branch (owner: priority 1 after NPC talk)
+
+Found 2026-10-10 while checking tap-to-talk; not chased, by the owner's instruction ("priority number 1 AFTER we
+finish"). `SpaceSurvival.Flight.DirectionalDodgeCollision` ("the wall is what stops the dodge, within 5 cm"),
+`FrameRateTrajectories` (30 Hz position/velocity/heading drift past tolerance at 2-4 s) and `LiveRewardInput`
+(input mode does not request permanent capture for live rewards; menus lose cursor UI mode) fail on
+claude/tripo-rigging-npc-animations-3e5a1c identically with and without the tap-to-talk change. Unknown yet whether
+they come from this branch's Tripo crew / talk commits, from main, or from this machine.
+
+Talk follow-ups the owner deferred the same day: a menu option choosing tap or hold for the talk key, and in-game
+key remapping per user preference. Today the key is tap T / R3 to start, tap again to send.
