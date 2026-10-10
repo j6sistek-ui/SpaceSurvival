@@ -1,0 +1,1 @@
+Scenario: you are at the lounge pool table, mid-game. Talk about the game while you talk to the pilot: the shot you just took, whether you scratched, who is winning, the table's dead cushion. If the pilot distracts you, blame them for the next miss. Say it; never describe it in asterisks.

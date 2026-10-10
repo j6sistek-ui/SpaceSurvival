@@ -17,9 +17,13 @@ run on the player's machine as hidden sidecar processes the game starts and stop
 
 ## Who you can talk to
 
-- **On foot:** the crew member within 3.5 m that the walker is facing. Characters are identified by their mesh
-  (`SK_Dread` is Dread), so a placed crew actor needs no extra property. The walk hint says "hold T / R3: talk to
-  Dread" when someone is in range. Drones are skipped.
+- **On foot:** owner's rule, "whenever you speak, the nearest active NPC responds". The nearest NPC within 5 m
+  answers, no facing test. Two kinds count: placed `ASSOutpostAmbientActor`s (not drones, not the wardrobe hologram),
+  identified by their mesh (`SK_Dread` is Dread) unless `TalkName` is set on the actor; and the station's own deck
+  crew, which are skeletal mesh components on the station actor, named and given roles by
+  `SSStationPresentation::TagTalkers` through component tags (`TalkType:Nyxar`, `TalkName:Vel`, `TalkRole:CrewTalk`,
+  `TalkActivity:telling two crewmates a story`). Anything on the station without a Talk tag is scenery. The walk hint
+  says "hold T / R3: talk to Vel" when someone is in range.
 - **In the ship:** the villain, but only after he has transmitted at least once in the current run (owner: "after the
   first time the director speaks, you can talk back"). Before that the key answers "Nobody is on the line. He talks
   first." His replies use his own ember caption, not the crew box; his persona mirrors the pilot's tone, so profanity
@@ -68,12 +72,79 @@ beyond one line. The core package carries `DefaultNpcTalk.ini` pointing at where
 Measured on the owner's RTX 5080 (`M:\Local AI\NPCTalk\README.md`): transcription about 1 s on the CPU, replies in
 0.1 to 0.2 s at ~400 tokens/s with 1.4 GB of VRAM for Qwen2.5 1.5B.
 
-## Adding a character
+## Profiles, scenarios and roles
 
-Write `Content/SpaceSurvival/NpcTalk/Personas/<Name>.txt` where `<Name>` is the mesh name without `SK_`. Say who
-they are, what they know, what they do not know, and how they talk; forbid assistant phrasing explicitly, because
-a small model drifts into it otherwise. Facts that change go in the digest (`NpcDigest`), not the persona. The owner
-writes these one at a time after testing each.
+Three layers make the system prompt, in this order:
+
+1. **The profile** (owner's): `Content/SpaceSurvival/NpcTalk/Personas/<Name>.txt`, else `<Type>.txt` (the seven Nyxar
+   crew share `Nyxar.txt`), else `_Default.txt`. `{Name}` in the file becomes the character's name. The files there
+   today for everyone but the Director and Dread are **one-line first passes** for the owner to replace (the table
+   below); the owner said they will write the main profiles.
+2. **The scenario** (mine): `Content/SpaceSurvival/NpcTalk/Scenarios/<Role>.txt`, appended when the character holds
+   that role. Roles today: Pool, Bartender, Merchant, Desk, Security, Maintenance, Worker, Dancer, Flirt, Performer,
+   Lounge, Waitress, CrewTalk, Pacing, Watch, Guard, ServiceBot. A role moves between characters without touching
+   their profile: set `TalkRole` on the placed actor, or the `TalkRole:` tag on a station component.
+3. **The digest** (live, second person): who they are, `Right now you are <TalkActivity>`, who the pilot is and the
+   run numbers. The activity is where "just scratched on the eight ball" goes, so a pool player can say "well, I
+   scratched again". Nothing changes in code to give an NPC a special role: a role and an activity string.
+
+Later, when audio is layered in, the owner wants these to fire on proximity without a key press (listed, not built).
+
+### First-pass one-liners (owner replaces each)
+
+| Name | Role | Proposal |
+|---|---|---|
+| Robe | Merchant | soft-spoken robed trader in cloth, relics and "found" salvage, never says where it was found |
+| Glyph | Merchant | glyph-marked parts-and-firmware dealer, talks in specs and warranties nobody honours |
+| Tribal | Merchant | loud produce-stall merchant with face tentacles, insulted when you won't eat a sample |
+| Ember | Worker | four-armed dock loader, hot-tempered, proud of lifting what two crews can't |
+| Crest | Worker | tailed cargo rigger, calm and methodical, checks the straps everyone skips |
+| Olive | Security | friendly atrium patrol, knows every regular, hates paperwork, never military |
+| Warden | Maintenance | laconic zero-G repair, talks about hull seams and bad docking like weather |
+| Dread | Bartender | (owner's profile exists) |
+| Abyss | Waitress | tentacled lounge waitress, quick and sly, six drinks at once, overhears everything |
+| Seer | Desk | welcome desk, serene and eerie, speaks as if she knew you were coming |
+| Tendril | Desk | operations desk, fussy and precise, sure every pilot docks wrong on purpose |
+| Violet | Dancer | bright chatty lounge dancer, in it for the music, rates pilots' dancing |
+| Cyan | Flirt | the adult lounge's star, sultry and in control, never explicit |
+| Silver | Dancer | silver-maned perfectionist, treats a compliment as a verdict to check |
+| Elf | Dancer, Lounge | elegant, dry wit, pretends not to care who's watching |
+| Cyborg | Flirt (pole) | chrome and confidence, dares you to keep up |
+| Crystal | Performer | crowned lounge performer, an artist, touchy about being called a dancer |
+| Finhead | Lounge | retired pilot regular, every story ends with "back in my day" |
+| Amethyst | Lounge | the station's gossip, knows every rumour, gives none away free |
+| Nyxar (type) | CrewTalk / Pacing / Watch | bioluminescent crew who say "we", curious about outsiders; deck names Vel, Orrin, Sable, Kett, Rue, Pim, Dax |
+| Trooper (type) | Guard | heavy-armoured dock guard Brakk, few words, trusts the Director as far as he can throw him |
+| ServiceBot (type) | ServiceBot | cheerful literal service robots Mica and Unit Seven, count things, give directions |
+
+## Model comparison (2026-10-10, `M:\Local AI\NPCTalk\test\villain_compare.py` and `crew_compare.py`)
+
+Same five pilot lines each, the game's exact framing, replies 0.1 to 0.4 s on all four, ready in 2 to 2.5 s.
+
+| Model | As the Director | As Dread |
+|---|---|---|
+| Qwen3.5 4B abliterated (flight) | in character, never swears back | poor: "the Director's a good friend", invents a weak point, offers menus |
+| Hermes-3 8B (**station**) | sharp, quotes the hull number, does not swear back | best by far: short, dry, asks back, takes an insult well |
+| Mistral 7B v0.3 | the only one that swears straight back when sworn at | stiff and generic |
+| Dolphin3.0 8B | the most vicious and witty ("How charmingly original... insolent worm"), uses the wave number, does not swear | decent, a grammar slip, "never met him" |
+
+Picks: Hermes serves the station (`StationLlamaModel`); the 4B stays in flight as the owner planned. Open for the
+owner: Dolphin or Mistral for the Director during waves at +2 GB VRAM over the 4B. The hint "give it back in the
+same language" made Hermes answer in Polish; it now reads "swear straight back, as crude as they were, in English".
+
+### Testing by hand in Open WebUI
+
+`M:\Local AI\NPCTalk\ollama\create_models.ps1` creates `ss-director-{qwen4b,hermes8b,mistral7b,dolphin8b}` and
+`ss-dread-hermes8b` in Ollama from the same GGUFs, with the persona, a sample digest and the game's per-line framing
+baked into the SYSTEM prompt, so the Open WebUI container sees them as models. Ollama copies each GGUF into its own
+store (`OLLAMA_MODELS`, by default under `C:\Users\<you>\.ollama`).
+
+### Training the Director (if the profile is not enough)
+
+A LoRA fine-tune, not a retrain: write 200 to 500 short exchanges in his voice (pilot line, Director line, including
+the brush-offs and the mirrored swearing), run QLoRA with Unsloth on the 8B for about an hour on the RTX 5080, merge,
+quantise to GGUF, drop it in `LlamaModel`. The dataset is the real work, a day of writing; the training is an hour.
+Do it only after testing shows the profile plus scenario still slips.
 
 ## Limits and later
 

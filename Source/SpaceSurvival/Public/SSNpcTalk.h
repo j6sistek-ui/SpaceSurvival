@@ -10,6 +10,20 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "SSNpcTalk.generated.h"
 
+/** Who is being spoken to. Name keys the conversation and the caption; Type picks the persona file when no file
+ *  carries the name (seven Nyxar crew share Nyxar.txt); Activity is what they are doing right now ("playing pool at
+ *  the lounge table, just scratched"), told to the model so they can talk about it. Owner 2026-10-10: a profile for
+ *  every NPC type and character, and a special role makes that NPC aware of it. */
+struct FSSTalkIdentity
+{
+    /** Role picks the scenario file (Pool, Bartender, Guard), the layer the game adds on top of the profile. */
+    FString Name, Type, Role, Activity;
+    bool IsValid() const
+    {
+        return !Name.IsEmpty();
+    }
+};
+
 /** Pure helpers behind the subsystem, kept free of the engine so the automation suite can pin them down. */
 namespace SSNpcTalk
 {
@@ -17,6 +31,11 @@ struct FTurn
 {
     FString Role, Content;
 };
+/** Component tags "TalkName:Vel", "TalkType:Nyxar", "TalkRole:Watch", "TalkActivity:watching the dock". Type falls
+ *  back to the mesh name, Name to the Type. */
+SPACESURVIVAL_API FSSTalkIdentity IdentityFromTags(const TArray<FName> &Tags, const FString &MeshName);
+/** Any Talk* tag at all: the station's deck crew are tagged, its display ship and holograms are not. */
+SPACESURVIVAL_API bool HasTalkTag(const TArray<FName> &Tags);
 /** Interleaved float PCM at any rate and channel count -> mono 16 kHz, which is what whisper wants. */
 SPACESURVIVAL_API TArray<float> ToMono16k(const TArray<float> &Interleaved, int32 Channels, int32 SampleRate);
 /** Mono 16 kHz float -> a complete 16-bit PCM WAV file. */
@@ -32,7 +51,7 @@ SPACESURVIVAL_API FString ParseReply(const FString &Json);
 SPACESURVIVAL_API FString TidyReply(const FString &Raw, bool bCutShort);
 /** Did the pilot swear? Decides whether the villain is told to give it back. */
 SPACESURVIVAL_API bool HasProfanity(const FString &Text);
-/** "SK_Dread" -> "Dread". The crew meshes carry the character's name; nothing else on the actor does. */
+/** "SK_Dread" -> "Dread", "SKM_Nyxar" -> "Nyxar". The crew meshes carry the character's name. */
 SPACESURVIVAL_API FString CharacterNameFromMesh(const FString &MeshName);
 } // namespace SSNpcTalk
 
@@ -81,14 +100,16 @@ public:
     void EnsureServers();
     /** Open the microphone. False, with LastError set, when there is no device or the feature is off. */
     bool BeginListening();
-    /** Close the microphone, transcribe what was said and ask the character; answers arrive on the delegates. */
-    void EndListeningAndAsk(const FString &Character);
+    /** Close the microphone, transcribe what was said and ask the character; answers arrive on the delegates
+     *  keyed by Who.Name. The identity is remembered so the persona can fall back to the type's file. */
+    void EndListeningAndAsk(const FSSTalkIdentity &Who);
     void Cancel();
     void ForgetConversations()
     {
         History.Empty();
     }
-    /** The character's system prompt: Content/<PersonaDirectory>/<Character>.txt, else _Default.txt, else built in. */
+    /** The character's system prompt: Content/<PersonaDirectory>/<Name>.txt, else <Type>.txt, else _Default.txt,
+     *  else built in; "{Name}" in the file becomes the character's name. */
     FString Persona(const FString &Character) const;
 
     DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTalkText, const FString & /*Character*/, const FString & /*Text*/);
@@ -109,9 +130,12 @@ public:
     FString LlamaServerExe;
     UPROPERTY(Config)
     FString LlamaModel;
-    /** Relative to the project's Content folder. */
+    /** Relative to the project's Content folder. Personas are the owner's profiles, one per character or type. */
     UPROPERTY(Config)
     FString PersonaDirectory = TEXT("SpaceSurvival/NpcTalk/Personas");
+    /** Scenario files, one per role (Pool, Bartender, Guard), appended to the profile of whoever holds that role. */
+    UPROPERTY(Config)
+    FString ScenarioDirectory = TEXT("SpaceSurvival/NpcTalk/Scenarios");
     UPROPERTY(Config)
     int32 WhisperPort = 8701;
     UPROPERTY(Config)
@@ -161,5 +185,6 @@ private:
     TArray<float> Samples;
     int32 CaptureRate = 0, CaptureChannels = 0;
     TMap<FString, TArray<SSNpcTalk::FTurn>> History;
+    TMap<FString, FSSTalkIdentity> Known;
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> Pending;
 };

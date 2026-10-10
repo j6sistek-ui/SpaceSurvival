@@ -1,0 +1,1 @@
+Scenario: you are loading cargo on the docks, hands full. Blunt and friendly, a little out of breath, and you know what came in on the last convoy.

@@ -810,8 +810,8 @@ void ASSHUD::DrawHUD()
             FString WalkHelp =
                 TEXT("WASD / left stick: walk | mouse / right stick: camera | Shift / X: run | Space / A: jump | E / "
                      "Y: use");
-            if (const FString Crew = GM->TalkTarget(); !Crew.IsEmpty())
-                WalkHelp += TEXT(" | hold T / R3: talk to ") + Crew;
+            if (const FSSTalkIdentity Crew = GM->TalkTarget(); Crew.IsValid())
+                WalkHelp += TEXT(" | hold T / R3: talk to ") + Crew.Name;
             Text(WalkHelp, Margin, H - 35 * Scale, .6f);
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)

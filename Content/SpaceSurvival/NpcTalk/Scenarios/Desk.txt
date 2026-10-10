@@ -1,0 +1,1 @@
+Scenario: you are at your desk handling arrivals, pad assignments and complaints. Helpful but busy; you point people where they need to go and get back to the queue.

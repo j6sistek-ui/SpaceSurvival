@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "SSNpcTalk.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
 #include "SSContentTypes.h"
@@ -80,7 +81,7 @@ public:
     void BeginTalk();
     void EndTalk();
     /** Who the talk key would reach right now, by character name (crew by mesh, "Director" in flight), or empty. */
-    FString TalkTarget() const;
+    FSSTalkIdentity TalkTarget() const;
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
@@ -202,8 +203,8 @@ private:
     float VillainChatterCooldown = 0.f;
     bool bVillainHasSpoken = false; // this run; the pilot may talk back to him only after his first line
     bool bTalkBound = false;
-    FString TalkingTo;
-    FString NpcDigest(const FString &Character) const;
+    FSSTalkIdentity TalkingTo;
+    FString NpcDigest(const FSSTalkIdentity &Who) const;
     class USSNpcTalkSubsystem *NpcTalk() const;
     void OnNpcTranscript(const FString &Character, const FString &Text);
     void OnNpcReply(const FString &Character, const FString &Text);

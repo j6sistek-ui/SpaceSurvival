@@ -1,4 +1,5 @@
 #include "SSStationPresentation.h"
+#include "SSNpcTalk.h"
 #include "Animation/AnimSequence.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -484,5 +485,51 @@ void BuildDetails(AActor *Owner, TArray<TObjectPtr<UStaticMeshComponent>> &Geome
          FVector(1180, 1290, 445), FVector(3.5f), FRotator(0, 0, 90));
 
     BuildStaff(Owner);
+}
+
+// Push-to-talk identities for the deck crew built above (docs/NPC_TALK.md). The owner writes each profile; Role
+// names the scenario file the game appends to it; Activity is the live detail the model may talk about. The
+// given names are a first pass for the owner to replace. The drone is left out: it has nothing to say.
+void TagTalkers(AActor *Owner)
+{
+    if (!IsValid(Owner))
+        return;
+    struct FTalker
+    {
+        const TCHAR *Component, *Type, *Name, *Role, *Activity;
+    };
+    const FTalker Talkers[] = {
+        {TEXT("StationAlienTalkerA"), TEXT("Nyxar"), TEXT("Vel"), TEXT("CrewTalk"),
+         TEXT("telling two crewmates a story by the lounge")},
+        {TEXT("StationAlienListenerA"), TEXT("Nyxar"), TEXT("Orrin"), TEXT("CrewTalk"),
+         TEXT("listening to Vel's story by the lounge")},
+        {TEXT("StationAlienListenerB"), TEXT("Nyxar"), TEXT("Sable"), TEXT("CrewTalk"),
+         TEXT("listening to Vel's story and not believing a word of it")},
+        {TEXT("StationAlienTalkerB"), TEXT("Nyxar"), TEXT("Kett"), TEXT("CrewTalk"),
+         TEXT("talking quietly with Rue near the market")},
+        {TEXT("StationAlienListenerC"), TEXT("Nyxar"), TEXT("Rue"), TEXT("CrewTalk"),
+         TEXT("listening to Kett near the market")},
+        {TEXT("StationAlienFidget"), TEXT("Nyxar"), TEXT("Pim"), TEXT("Pacing"),
+         TEXT("pacing by the service counter, waiting on a parts order that is late")},
+        {TEXT("StationAlienWatch"), TEXT("Nyxar"), TEXT("Dax"), TEXT("Watch"),
+         TEXT("standing at the dock mouth watching ships come in")},
+        {TEXT("StationHeavyTrooper"), TEXT("Trooper"), TEXT("Brakk"), TEXT("Guard"),
+         TEXT("on guard in heavy armour by the dock corridor")},
+        {TEXT("StationRobotMica"), TEXT("ServiceBot"), TEXT("Mica"), TEXT("ServiceBot"),
+         TEXT("waiting in a service alcove")},
+        {TEXT("StationRobotService"), TEXT("ServiceBot"), TEXT("Unit Seven"), TEXT("ServiceBot"),
+         TEXT("waiting in a service alcove")},
+    };
+    for (const FTalker &Talker : Talkers)
+        for (UActorComponent *Component :
+             Owner->GetComponentsByTag(USkeletalMeshComponent::StaticClass(), FName(Talker.Component)))
+        {
+            if (SSNpcTalk::HasTalkTag(Component->ComponentTags))
+                continue;
+            Component->ComponentTags.Add(FName(FString(TEXT("TalkType:")) + Talker.Type));
+            Component->ComponentTags.Add(FName(FString(TEXT("TalkName:")) + Talker.Name));
+            Component->ComponentTags.Add(FName(FString(TEXT("TalkRole:")) + Talker.Role));
+            Component->ComponentTags.Add(FName(FString(TEXT("TalkActivity:")) + Talker.Activity));
+        }
 }
 } // namespace SSStationPresentation

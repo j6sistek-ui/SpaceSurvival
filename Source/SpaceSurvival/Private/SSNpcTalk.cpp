@@ -209,9 +209,45 @@ bool HasProfanity(const FString &Text)
 FString CharacterNameFromMesh(const FString &MeshName)
 {
     FString Name = MeshName;
-    if (Name.StartsWith(TEXT("SK_")))
-        Name.RightChopInline(3);
+    for (const TCHAR *Prefix : {TEXT("SKM_"), TEXT("SK_")})
+        if (Name.StartsWith(Prefix))
+        {
+            Name.RightChopInline(FCString::Strlen(Prefix));
+            break;
+        }
     return Name;
+}
+
+FSSTalkIdentity IdentityFromTags(const TArray<FName> &Tags, const FString &MeshName)
+{
+    FSSTalkIdentity Who;
+    for (const FName &Tag : Tags)
+    {
+        FString Key, Value;
+        if (!Tag.ToString().Split(TEXT(":"), &Key, &Value))
+            continue;
+        if (Key == TEXT("TalkName"))
+            Who.Name = Value;
+        else if (Key == TEXT("TalkType"))
+            Who.Type = Value;
+        else if (Key == TEXT("TalkRole"))
+            Who.Role = Value;
+        else if (Key == TEXT("TalkActivity"))
+            Who.Activity = Value;
+    }
+    if (Who.Type.IsEmpty())
+        Who.Type = CharacterNameFromMesh(MeshName);
+    if (Who.Name.IsEmpty())
+        Who.Name = Who.Type;
+    return Who;
+}
+
+bool HasTalkTag(const TArray<FName> &Tags)
+{
+    for (const FName &Tag : Tags)
+        if (Tag.ToString().StartsWith(TEXT("Talk")))
+            return true;
+    return false;
 }
 } // namespace SSNpcTalk
 
@@ -372,10 +408,12 @@ bool USSNpcTalkSubsystem::BeginListening()
     return true;
 }
 
-void USSNpcTalkSubsystem::EndListeningAndAsk(const FString &Character)
+void USSNpcTalkSubsystem::EndListeningAndAsk(const FSSTalkIdentity &Who)
 {
     if (CurrentPhase != ESSTalkPhase::Listening)
         return;
+    Known.Add(Who.Name, Who);
+    const FString &Character = Who.Name;
     TArray<float> Taken;
     int32 Rate = 0, Channels = 0;
     if (Capture && bStreamOpen)
@@ -535,12 +573,30 @@ void USSNpcTalkSubsystem::PostToLlama(const FString &Character)
 FString USSNpcTalkSubsystem::Persona(const FString &Character) const
 {
     const FString Dir = FPaths::Combine(FPaths::ProjectContentDir(), PersonaDirectory);
-    FString Text;
-    for (const FString &Stem : {Character, FString(TEXT("_Default"))})
+    const FSSTalkIdentity *Who = Known.Find(Character);
+    // The owner's profile: this character's own file, else the file for their type (seven Nyxar share one), else
+    // the default. Then the scenario layer for the role they hold right now, kept in its own file so a role can
+    // move between characters (owner: "when they get a special role, make that NPC aware of it").
+    TArray<FString> Stems = {Character};
+    if (Who && !Who->Type.IsEmpty() && Who->Type != Character)
+        Stems.Add(Who->Type);
+    Stems.Add(TEXT("_Default"));
+    FString Text, Out;
+    for (const FString &Stem : Stems)
         if (FFileHelper::LoadFileToString(Text, *FPaths::Combine(Dir, Stem + TEXT(".txt"))) &&
             !Text.TrimStartAndEnd().IsEmpty())
-            return Text.Replace(TEXT("{Name}"), *Character);
-    return BuiltInPersona(Character);
+        {
+            Out = Text.TrimStartAndEnd();
+            break;
+        }
+    if (Out.IsEmpty())
+        Out = BuiltInPersona(Character);
+    if (Who && !Who->Role.IsEmpty() &&
+        FFileHelper::LoadFileToString(
+            Text, *FPaths::Combine(FPaths::ProjectContentDir(), ScenarioDirectory, Who->Role + TEXT(".txt"))) &&
+        !Text.TrimStartAndEnd().IsEmpty())
+        Out += TEXT("\n\n") + Text.TrimStartAndEnd();
+    return Out.Replace(TEXT("{Name}"), *Character);
 }
 
 FString USSNpcTalkSubsystem::BuiltInPersona(const FString &Character) const

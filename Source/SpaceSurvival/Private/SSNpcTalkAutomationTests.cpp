@@ -115,6 +115,24 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
     TestEqual(TEXT("crew mesh name"), SSNpcTalk::CharacterNameFromMesh(TEXT("SK_Dread")), FString(TEXT("Dread")));
     TestEqual(TEXT("other mesh name"), SSNpcTalk::CharacterNameFromMesh(TEXT("SquirrelHero")),
               FString(TEXT("SquirrelHero")));
+    TestEqual(TEXT("alien mesh name"), SSNpcTalk::CharacterNameFromMesh(TEXT("SKM_Nyxar")), FString(TEXT("Nyxar")));
+
+    // Identity from component tags: the station's deck crew are tagged by TagTalkers, placed actors usually not.
+    const FSSTalkIdentity Vel = SSNpcTalk::IdentityFromTags(
+        TArray<FName>({TEXT("StationAlienTalkerA"), TEXT("TalkType:Nyxar"), TEXT("TalkName:Vel"),
+                       TEXT("TalkRole:CrewTalk"), TEXT("TalkActivity:telling a story: the one about the dock")}),
+        TEXT("SKM_Nyxar"));
+    TestEqual(TEXT("tagged name"), Vel.Name, FString(TEXT("Vel")));
+    TestEqual(TEXT("tagged type"), Vel.Type, FString(TEXT("Nyxar")));
+    TestEqual(TEXT("tagged role"), Vel.Role, FString(TEXT("CrewTalk")));
+    TestEqual(TEXT("an activity keeps its own colons"), Vel.Activity,
+              FString(TEXT("telling a story: the one about the dock")));
+    const FSSTalkIdentity Plain = SSNpcTalk::IdentityFromTags(TArray<FName>(), TEXT("SK_Dread"));
+    TestEqual(TEXT("untagged crew: type from the mesh"), Plain.Type, FString(TEXT("Dread")));
+    TestEqual(TEXT("untagged crew: name from the type"), Plain.Name, FString(TEXT("Dread")));
+    TestTrue(TEXT("untagged crew holds no role"), Plain.Role.IsEmpty() && Plain.Activity.IsEmpty());
+    TestTrue(TEXT("a tagged component is someone"), SSNpcTalk::HasTalkTag(TArray<FName>({TEXT("TalkType:Nyxar")})));
+    TestFalse(TEXT("scenery is not"), SSNpcTalk::HasTalkTag(TArray<FName>({TEXT("StationRobotStaff")})));
     return true;
 }
 
