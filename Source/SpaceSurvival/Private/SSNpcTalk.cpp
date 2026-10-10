@@ -178,6 +178,15 @@ FString TidyReply(const FString &Raw, bool bCutShort)
     FString Text = Raw.TrimStartAndEnd();
     // Models dress a line up as prose: **bold** markers and quotation marks around the whole thing.
     Text.ReplaceInline(TEXT("**"), TEXT(""));
+    // Stage directions in asterisks (*offers a sample*) come off whole, however often the rules say not to; a lone
+    // asterisk is simply dropped.
+    for (int32 Open = Text.Find(TEXT("*")); Open != INDEX_NONE; Open = Text.Find(TEXT("*")))
+    {
+        const int32 Close = Text.Find(TEXT("*"), ESearchCase::IgnoreCase, ESearchDir::FromStart, Open + 1);
+        Text.RemoveAt(Open, Close == INDEX_NONE ? 1 : Close - Open + 1);
+    }
+    while (Text.Contains(TEXT("  ")))
+        Text.ReplaceInline(TEXT("  "), TEXT(" "));
     Text.TrimStartAndEndInline();
     for (const TCHAR *Pair : {TEXT("\"\""), TEXT("“”")})
         if (Text.Len() > 1 && Text[0] == Pair[0] && Text[Text.Len() - 1] == Pair[1])
@@ -531,7 +540,9 @@ void USSNpcTalkSubsystem::SendToLlama(const FString &Character, const FString &Q
 
 void USSNpcTalkSubsystem::PostToLlama(const FString &Character)
 {
-    const FString System = Persona(Character) + (Digest.IsEmpty() ? FString() : TEXT("\n\nRight now: ") + Digest);
+    // No "Right now:" label on the digest: measured 2026-10-10, two models copied the label back and narrated
+    // "Right now: I'm stretching..." after every line, and one recited the whole digest as its answer.
+    const FString System = Persona(Character) + (Digest.IsEmpty() ? FString() : TEXT("\n\n") + Digest);
     const auto Request = FHttpModule::Get().CreateRequest();
     Request->SetURL(FString::Printf(TEXT("http://127.0.0.1:%d/v1/chat/completions"), LlamaPort));
     Request->SetVerb(TEXT("POST"));

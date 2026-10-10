@@ -110,6 +110,14 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
 
     TestEqual(TEXT("bold and quotes come off"), SSNpcTalk::TidyReply(TEXT("**\"Prepare to die.\"**"), false),
               FString(TEXT("Prepare to die.")));
+    TestEqual(TEXT("a leading stage direction comes off"),
+              SSNpcTalk::TidyReply(TEXT("*offers a sample* Fresh today we have mangoes."), false),
+              FString(TEXT("Fresh today we have mangoes.")));
+    TestEqual(TEXT("a stage direction mid-line comes off whole"),
+              SSNpcTalk::TidyReply(TEXT("Half? *laughs heartily* No, no, my friend."), false),
+              FString(TEXT("Half? No, no, my friend.")));
+    TestEqual(TEXT("a lone asterisk is dropped"), SSNpcTalk::TidyReply(TEXT("Five credits* each."), false),
+              FString(TEXT("Five credits each.")));
     TestEqual(
         TEXT("a cut-off reply keeps whole sentences"),
         SSNpcTalk::TidyReply(TEXT("Your hull is bleeding. I will keep coming until you are nothing but a mem"), true),

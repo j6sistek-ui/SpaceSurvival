@@ -2562,7 +2562,7 @@ FString ASSGameMode::NpcDigest(const FSSTalkIdentity &Who) const
     // The live detail of a special role ("playing pool, just scratched") rides here, so the model can talk about it.
     FString Out = FString::Printf(TEXT("You are %s, on the Wayfarer Exchange station."), *Who.Name);
     if (!Who.Activity.IsEmpty())
-        Out += FString::Printf(TEXT(" Right now you are %s."), *Who.Activity);
+        Out += FString::Printf(TEXT(" At this moment you are %s."), *Who.Activity);
     Out += TEXT(" The person talking to you is the pilot of the Stellar Phoenix, who just walked in from the docks.");
     if (Run)
         Out += FString::Printf(
