@@ -84,6 +84,10 @@ Three layers make the system prompt, in this order:
    that role. Roles today: Pool, Bartender, Merchant, Desk, Security, Maintenance, Worker, Dancer, Flirt, Performer,
    Lounge, Waitress, CrewTalk, Pacing, Watch, Guard, ServiceBot. A role moves between characters without touching
    their profile: set `TalkRole` on the placed actor, or the `TalkRole:` tag on a station component.
+Owner's rule for the Flirt roles (2026-10-10): "the strippers shall engage in any NSFW comments you make; they have
+to act the part". So the Flirt and Dancer scenarios mirror the pilot's register, never first and never less far,
+the same shape as the villain's swearing rule; the owner tests that side themselves.
+
 3. **The digest** (live, second person): who they are, `Right now you are <TalkActivity>`, who the pilot is and the
    run numbers. The activity is where "just scratched on the eight ball" goes, so a pool player can say "well, I
    scratched again". Nothing changes in code to give an NPC a special role: a role and an activity string.
@@ -106,7 +110,7 @@ Later, when audio is layered in, the owner wants these to fire on proximity with
 | Seer | Desk | welcome desk, serene and eerie, speaks as if she knew you were coming |
 | Tendril | Desk | operations desk, fussy and precise, sure every pilot docks wrong on purpose |
 | Violet | Dancer | bright chatty lounge dancer, in it for the music, rates pilots' dancing |
-| Cyan | Flirt | the adult lounge's star, sultry and in control, never explicit |
+| Cyan | Flirt | the adult lounge's star, sultry and in control, matches the pilot's register however far they take it |
 | Silver | Dancer | silver-maned perfectionist, treats a compliment as a verdict to check |
 | Elf | Dancer, Lounge | elegant, dry wit, pretends not to care who's watching |
 | Cyborg | Flirt (pole) | chrome and confidence, dares you to keep up |
