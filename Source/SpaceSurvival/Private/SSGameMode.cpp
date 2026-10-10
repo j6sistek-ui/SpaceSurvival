@@ -30,6 +30,8 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Animation/AnimSingleNodeInstance.h"
+#include "Animation/SkeletalMeshActor.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EngineUtils.h"
 #include "Sound/SoundBase.h"
@@ -2509,8 +2511,9 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
         };
         for (TActorIterator<ASSOutpostAmbientActor> It(GetWorld()); It; ++It)
         {
-            // A drone has nothing to say; a wardrobe hologram is the pilot's own reflection.
-            if (It->bDrone || It->bAnimationManagedExternally || !It->CharacterMesh ||
+            // A drone has nothing to say; a wardrobe hologram is the pilot's own reflection; someone walking a route
+            // is passing through (owner: "the hallway NPC shouldn't trigger it").
+            if (It->bDrone || It->bAnimationManagedExternally || It->RoutePoints.Num() > 1 || !It->CharacterMesh ||
                 !It->CharacterMesh->GetSkeletalMeshAsset())
                 continue;
             FSSTalkIdentity Who = SSNpcTalk::IdentityFromTags(It->CharacterMesh->ComponentTags,
@@ -2533,6 +2536,31 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
                     Mesh && Mesh->GetSkeletalMeshAsset() && SSNpcTalk::HasTalkTag(Mesh->ComponentTags))
                     Consider(Mesh,
                              SSNpcTalk::IdentityFromTags(Mesh->ComponentTags, Mesh->GetSkeletalMeshAsset()->GetName()));
+        // Placed characters with a profile, such as the dancers PR 69 set on the stages as plain animated meshes.
+        if (const auto *Talk = NpcTalk())
+            for (TActorIterator<ASkeletalMeshActor> It(GetWorld()); It; ++It)
+            {
+                const USkeletalMeshComponent *Body = It->GetSkeletalMeshComponent();
+                if (!Body || !Body->GetSkeletalMeshAsset())
+                    continue;
+                FSSTalkIdentity Who;
+                Who.Name = Who.Type = SSNpcTalk::CharacterNameFromMesh(Body->GetSkeletalMeshAsset()->GetName());
+                if (!Talk->HasPersona(Who.Name))
+                    continue;
+                const UAnimationAsset *Clip =
+                    Body->GetSingleNodeInstance() ? Body->GetSingleNodeInstance()->GetAnimationAsset() : nullptr;
+                if (Clip && Clip->GetName().Contains(TEXT("Pole")))
+                {
+                    Who.Role = TEXT("Flirt");
+                    Who.Activity = TEXT("dancing on the pole on the stage");
+                }
+                else if (Clip && Clip->GetName().Contains(TEXT("Dance")))
+                {
+                    Who.Role = TEXT("Dancer");
+                    Who.Activity = TEXT("dancing");
+                }
+                Consider(Body, Who);
+            }
         if (OutMesh)
             *OutMesh = BestMesh;
         return Best;
@@ -2657,8 +2685,25 @@ void ASSGameMode::TapTalk()
     BeginTalk();
 }
 
+FSSTalkIdentity ASSGameMode::TalkHint() const
+{
+    // Not a running reminder (owner: "like reminding someone to jump every time their feet are on the ground"):
+    // offered once the pilot has stood still a couple of seconds, at a desk or anywhere, and refreshed a few times a
+    // second rather than every frame.
+    if (!Walker || WalkerStillSeconds < 2.f)
+        return FSSTalkIdentity();
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now - CachedHintAt > .25)
+    {
+        CachedHint = TalkTarget();
+        CachedHintAt = Now;
+    }
+    return CachedHint;
+}
+
 void ASSGameMode::UpdateTalkEngagement(float Dt)
 {
+    WalkerStillSeconds = Walker && Walker->GetVelocity().Size2D() < 15.f ? WalkerStillSeconds + Dt : 0.f;
     if (!EngagedWith.IsValid())
         return;
     const USceneComponent *Mesh = EngagedMesh.Get();

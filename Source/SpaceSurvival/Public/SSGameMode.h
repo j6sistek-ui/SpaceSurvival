@@ -98,6 +98,8 @@ public:
     bool IsTalkListening() const;
     /** Who the talk key would reach right now, by character name (crew by mesh, "Director" in flight), or empty. */
     FSSTalkIdentity TalkTarget(const USceneComponent **OutMesh = nullptr) const;
+    /** What the HUD offers: the talk target once the pilot has stood still a couple of seconds, otherwise nobody. */
+    FSSTalkIdentity TalkHint() const;
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
@@ -228,6 +230,9 @@ private:
     FVector EngageAnchor = FVector::ZeroVector;
     float EngagePanSeconds = 0.f, SavedArmLength = -1.f;
     FVector SavedSocketOffset = FVector::ZeroVector;
+    float WalkerStillSeconds = 0.f;
+    mutable FSSTalkIdentity CachedHint;
+    mutable double CachedHintAt = -1.0;
     void Disengage();
     FString NpcDigest(const FSSTalkIdentity &Who) const;
     class USSNpcTalkSubsystem *NpcTalk() const;

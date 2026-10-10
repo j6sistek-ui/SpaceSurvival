@@ -115,6 +115,11 @@ public:
     /** The character's system prompt: Content/<PersonaDirectory>/<Name>.txt, else <Type>.txt, else _Default.txt,
      *  else built in; "{Name}" in the file becomes the character's name. */
     FString Persona(const FString &Character) const;
+    /** A profile file exists for this name (read once at start-up): a placed character with one can be talked to. */
+    bool HasPersona(const FString &Name) const
+    {
+        return PersonaNames.Contains(Name);
+    }
 
     DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTalkText, const FString & /*Character*/, const FString & /*Text*/);
     FOnTalkText OnTranscript, OnReply, OnFailure;
@@ -188,6 +193,7 @@ private:
     void StopLlama();
 
     bool bInstalled = false;
+    TSet<FString> PersonaNames;
     ESSTalkPhase CurrentPhase = ESSTalkPhase::Idle;
     ESSTalkContext CurrentContext = ESSTalkContext::Flight;
     FString Error, RunningModel;

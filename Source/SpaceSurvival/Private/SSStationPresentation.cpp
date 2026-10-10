@@ -509,10 +509,8 @@ void TagTalkers(AActor *Owner)
          TEXT("talking quietly with Rue near the market")},
         {TEXT("StationAlienListenerC"), TEXT("Nyxar"), TEXT("Rue"), TEXT("CrewTalk"),
          TEXT("listening to Kett near the market")},
-        {TEXT("StationAlienFidget"), TEXT("Nyxar"), TEXT("Pim"), TEXT("Pacing"),
-         TEXT("pacing by the service counter, waiting on a parts order that is late")},
-        {TEXT("StationAlienWatch"), TEXT("Nyxar"), TEXT("Dax"), TEXT("Watch"),
-         TEXT("standing at the dock mouth watching ships come in")},
+        // The two pacing aliens (StationAlienFidget, StationAlienWatch) are left untagged: they walk, and the owner
+        // does not want anyone moving to be a talk target ("the hallway NPC shouldn't trigger it").
         {TEXT("StationHeavyTrooper"), TEXT("Trooper"), TEXT("Brakk"), TEXT("Guard"),
          TEXT("on guard in heavy armour by the dock corridor")},
         {TEXT("StationRobotMica"), TEXT("ServiceBot"), TEXT("Mica"), TEXT("ServiceBot"),
