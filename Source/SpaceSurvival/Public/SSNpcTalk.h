@@ -45,7 +45,7 @@ SPACESURVIVAL_API TArray<uint8> WhisperBody(const TArray<uint8> &Wav, FString &O
 SPACESURVIVAL_API FString ParseTranscript(const FString &Json);
 /** OpenAI-style chat request for llama-server's /v1/chat/completions. */
 SPACESURVIVAL_API FString ChatBody(const FString &System, const TArray<FTurn> &Turns, int32 MaxTokens,
-                                   float Temperature);
+                                   float Temperature, float RepeatPenalty = 1.f);
 SPACESURVIVAL_API FString ParseReply(const FString &Json);
 /** Bold markers and wrapping quotes off; when the token cap cut the reply short, whole sentences only. */
 SPACESURVIVAL_API FString TidyReply(const FString &Raw, bool bCutShort);
@@ -149,6 +149,10 @@ public:
     int32 HistoryTurns = 8;
     UPROPERTY(Config)
     float Temperature = 0.7f;
+    /** llama-server defaults to 1.0; every Llama roleplay card read on 2026-10-10 wants 1.05 or the reply ends in a
+     *  repeated paragraph. 1.0 sends nothing. */
+    UPROPERTY(Config)
+    float RepeatPenalty = 1.05f;
     UPROPERTY(Config)
     int32 Threads = 8;
     /** Appended to the llama-server command line. "--reasoning off" keeps a thinking model from thinking out loud. */

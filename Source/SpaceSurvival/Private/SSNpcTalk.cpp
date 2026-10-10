@@ -116,7 +116,8 @@ FString ParseTranscript(const FString &Json)
     return FString();
 }
 
-FString ChatBody(const FString &System, const TArray<FTurn> &Turns, int32 MaxTokens, float Temperature)
+FString ChatBody(const FString &System, const TArray<FTurn> &Turns, int32 MaxTokens, float Temperature,
+                 float RepeatPenalty)
 {
     const auto Root = MakeShared<FJsonObject>();
     TArray<TSharedPtr<FJsonValue>> Messages;
@@ -133,6 +134,8 @@ FString ChatBody(const FString &System, const TArray<FTurn> &Turns, int32 MaxTok
     Root->SetArrayField(TEXT("messages"), Messages);
     Root->SetNumberField(TEXT("max_tokens"), MaxTokens);
     Root->SetNumberField(TEXT("temperature"), Temperature);
+    if (RepeatPenalty != 1.f)
+        Root->SetNumberField(TEXT("repeat_penalty"), RepeatPenalty);
     Root->SetBoolField(TEXT("stream"), false);
     FString Out;
     const auto Writer = TJsonWriterFactory<>::Create(&Out);
@@ -529,7 +532,8 @@ void USSNpcTalkSubsystem::PostToLlama(const FString &Character)
     Request->SetURL(FString::Printf(TEXT("http://127.0.0.1:%d/v1/chat/completions"), LlamaPort));
     Request->SetVerb(TEXT("POST"));
     Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-    Request->SetContentAsString(SSNpcTalk::ChatBody(System, History.FindOrAdd(Character), MaxReplyTokens, Temperature));
+    Request->SetContentAsString(
+        SSNpcTalk::ChatBody(System, History.FindOrAdd(Character), MaxReplyTokens, Temperature, RepeatPenalty));
     Request->SetTimeout(60.f);
     Request->OnProcessRequestComplete().BindWeakLambda(
         this,

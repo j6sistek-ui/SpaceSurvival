@@ -82,6 +82,17 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
                       (*Messages)[2]->AsObject()->GetStringField(TEXT("content")), FString(TEXT("Synth-ale.")));
         }
         TestEqual(TEXT("bounded"), int32(ChatJson->GetNumberField(TEXT("max_tokens"))), 90);
+        TestFalse(TEXT("the server's default repeat penalty is left alone"),
+                  ChatJson->HasField(TEXT("repeat_penalty")));
+    }
+    TSharedPtr<FJsonObject> Penalised;
+    if (FJsonSerializer::Deserialize(
+            TJsonReaderFactory<>::Create(SSNpcTalk::ChatBody(TEXT("You are Dread."), Turns, 90, .7f, 1.05f)),
+            Penalised) &&
+        Penalised.IsValid())
+    {
+        TestTrue(TEXT("a repeat penalty is sent when set"),
+                 FMath::IsNearlyEqual(float(Penalised->GetNumberField(TEXT("repeat_penalty"))), 1.05f, .001f));
         TestFalse(TEXT("not streamed"), ChatJson->GetBoolField(TEXT("stream")));
     }
     TestEqual(TEXT("llama answer"),
