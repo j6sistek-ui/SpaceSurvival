@@ -2613,6 +2613,8 @@ FString ASSGameMode::NpcDigest(const FSSTalkIdentity &Who) const
     if (!Who.Activity.IsEmpty())
         Out += FString::Printf(TEXT(" At this moment you are %s."), *Who.Activity);
     Out += TEXT(" The person talking to you is the pilot of the Stellar Phoenix, who just walked in from the docks.");
+    // The crew must know who the villain is (panel 2026-10-10: models made him station management).
+    Out += TEXT(" The Director is the enemy: he sends the waves of machines that attack pilots like this one, and nobody on the station works for him.");
     if (Run)
         Out += FString::Printf(
             TEXT(" They are %d waves into a survival run, their hull is at %d percent, and they carry %d credits."),
