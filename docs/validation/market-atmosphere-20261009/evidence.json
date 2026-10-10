@@ -1,0 +1,554 @@
+{
+  "status": "PARTIAL_ACTIVE_STATION_GOAL",
+  "saved_map_sha256": "4bd636872ca8bce07cf1915cd0f187de8b5df57718d5f84d94cb1f5796b5629a",
+  "actor_count": 8634,
+  "reload_actor_differences": [],
+  "dirty_maps": [],
+  "dirty_content": [],
+  "snapshot_tolerance_cm": 1e-05,
+  "blocking_furniture_checked": [
+    {
+      "label": "Refine/ArchiveConcept77/Group 1/Table",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 1/South/Armchair",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 1/North/Armchair",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 2/Table",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 2/South/Armchair",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 2/North/Armchair",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 3/Table",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 3/South/Armchair",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/ArchiveConcept77/Group 3/North/Armchair",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/MarketAtmosphere83/Table/Table",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/MarketAtmosphere83/Table/South/Armchair",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    },
+    {
+      "label": "Refine/MarketAtmosphere83/Table/North/Armchair",
+      "profile": "BlockAll",
+      "simple_shapes": 1
+    }
+  ],
+  "walk": {
+    "passed": true,
+    "reached": 29,
+    "waypoints": 29,
+    "distance_m": 122.52971471168233,
+    "seconds": 40.28100000000268,
+    "ordinary_movement_only": true,
+    "physical_input": false,
+    "possession_restored": true,
+    "temporary_pawn_destroyed": true
+  },
+  "failed_routes": [
+    {
+      "receipt": "Walk84.json",
+      "reached": 16,
+      "reason": "Waypoint beyond existing waiting wall; route corrected."
+    },
+    {
+      "receipt": "Walk84b.json",
+      "reached": 22,
+      "reason": "Waypoint through existing gantry/cabinet; route corrected."
+    }
+  ],
+  "sampled_motion": [
+    {
+      "label": "Crew/Trader A",
+      "animation_advances": true,
+      "movement_cm": 0.0
+    },
+    {
+      "label": "Crew/Trader B",
+      "animation_advances": true,
+      "movement_cm": 0.0
+    },
+    {
+      "label": "Crew/Botanist",
+      "animation_advances": true,
+      "movement_cm": 0.0
+    },
+    {
+      "label": "Crew/Market courier",
+      "animation_advances": true,
+      "movement_cm": 405.34507697033496
+    },
+    {
+      "label": "Refine/MarketAtmosphere83/Produce customer",
+      "animation_advances": true,
+      "movement_cm": 0.0
+    },
+    {
+      "label": "Refine/MarketAtmosphere83/Botany customer",
+      "animation_advances": true,
+      "movement_cm": 0.0
+    },
+    {
+      "label": "Refine/MarketAtmosphere83/Table/South/Visitor",
+      "animation_advances": true,
+      "movement_cm": 0.0
+    },
+    {
+      "label": "Refine/MarketAtmosphere83/Table/North/Visitor",
+      "animation_advances": true,
+      "movement_cm": 0.0
+    }
+  ],
+  "ad_indices_seen": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "ad_dwell_seconds": 20.0,
+  "ad_crossfade_seconds": 0.6,
+  "south_phase_offset_seconds": 40.0,
+  "protected_files": [
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_ChampagneEdges.uasset",
+      "sha256": "c3b03ea9fe03bb0d3752516664832bc591a523ebd958e4a9201e3edf8b3eadeb",
+      "unchanged": true
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_CockpitPadding.uasset",
+      "sha256": "b9b28ff0612488145e41240a04916449046bad99d151aa68c859c8971beeec2f",
+      "unchanged": true
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_GraphiteStructure.uasset",
+      "sha256": "73f41d0a7520b91f494a46b89c437ae9dcebde20d63befcdb42730da773c34f0",
+      "unchanged": true
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_IonAndNav.uasset",
+      "sha256": "1a22e1726c03d90241ee9e23c030079da0b1d2a51aa54a7f931d13956d66b2a5",
+      "unchanged": true
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_AcornV2_MachinedTitanium.uasset",
+      "sha256": "7d4927137be138f7bf58c9f4173bf0b99fca5813395984f6b83bfc42f5f55833",
+      "unchanged": true
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_GravityFieldCandidateV3.uasset",
+      "sha256": "348108e6cccf28a03271adb75ad5328eb00f9d5ed543c33a62321ed910f50df8",
+      "unchanged": true
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_Hull.uasset",
+      "sha256": "fbe67c304fe03120e9e2ca81811336388db4c779151f8e9598f1b72bd092a9a6",
+      "unchanged": true
+    },
+    {
+      "path": "Content/SpaceSurvival/Materials/M_WormholeTransit.uasset",
+      "sha256": "99958fa43018631fd25172c203e78ef8fd57481217c22b0d7a82fe5bb6a5e5c1",
+      "unchanged": true
+    },
+    {
+      "path": "Content/SpaceSurvival/ShipRefresh/Material_0.uasset",
+      "sha256": "4cd6c3101c85c807d1369c02c8c459e13ea4481c820d58467c14c750b5d5b03a",
+      "unchanged": true
+    },
+    {
+      "path": "SpaceSurvival.uproject",
+      "sha256": "9e3a4861161c1dc89988452fb9fd60a1893e03dd05785c4f0457f8ed9712ba38",
+      "unchanged": true
+    }
+  ],
+  "other_protected_files": [
+    {
+      "file": "EditorLayout.ini",
+      "sha256": "29f155870eed67b6c98987b61fb5dc547bd010dda90c863ccd1a4fbe53a43d7d",
+      "unchanged": true
+    },
+    {
+      "file": "L_OwnerPlatformPreview_20261006.umap",
+      "sha256": "e7958758a861d17fe189601b17b486db9ea75086080a8e1b5f17e56cbb7b18db",
+      "unchanged": true
+    },
+    {
+      "file": "SpaceSurvival.uproject",
+      "sha256": "9e3a4861161c1dc89988452fb9fd60a1893e03dd05785c4f0457f8ed9712ba38",
+      "unchanged": true
+    },
+    {
+      "file": "UnrealEditor-SpaceSurvival.dll",
+      "sha256": "7b0ea67fa5d6838908cacacba30af45ce3f983d5bb4a53fc75fc8d99b2ca917a",
+      "unchanged": true
+    }
+  ],
+  "new_private_packages": [
+    {
+      "path": "Content/OutpostSandbox/StationRefinement/MarketAtmosphere83/M_MarketGlassFive.uasset",
+      "sha256": "b84881e602a29d1ae1f96a50d7a8fc7364261810ae0903fdf46f2196ee2199b3",
+      "bytes": 24239
+    },
+    {
+      "path": "Content/OutpostSandbox/StationRefinement/MarketAtmosphere83/MI_MarketNorth.uasset",
+      "sha256": "15f5551c637fcea08928b4fb2a3f28e19b4ea469c970e25d173569f3d0296617",
+      "bytes": 14229
+    },
+    {
+      "path": "Content/OutpostSandbox/StationRefinement/MarketAtmosphere83/MI_MarketSouth.uasset",
+      "sha256": "e40673a3df55bee59a15ab6a51ade8cdd1ce10cc36b5628575e6df4316cac54e",
+      "bytes": 14055
+    },
+    {
+      "path": "Content/OutpostSandbox/StationRefinement/MarketAtmosphere83/MI_StorefrontInk.uasset",
+      "sha256": "432ffc13642c3a7ed63d43dcd88f4d79eef5105dfa2c2d89816bdc2e179a267c",
+      "bytes": 7499
+    }
+  ],
+  "images": [
+    {
+      "file": "84_01_Approach.png",
+      "sha256": "93e723d615203ef35beb53275920f76d179a40c577093e8ba36933b389018838",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    },
+    {
+      "file": "84_02_Produce.png",
+      "sha256": "73c01ab679e58afd9021e1cdec8319c28dd0649ed4c44c858ca4f2d2aee7bc99",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    },
+    {
+      "file": "84_03_Botany.png",
+      "sha256": "4126f5c677228bc13df44277071bfe5a9c52c7fdde510ffa5d74375e99dd6c18",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    },
+    {
+      "file": "84_05_Table.png",
+      "sha256": "44433ffb4246a2350e0b6cae080494d3b3ef19537d4af74a7b6f9d446763f6cc",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    },
+    {
+      "file": "85_01_Carousel.png",
+      "sha256": "1eee9333a9453e00c70b24053ac2827e9f9e66ad74e974583155074b0a1ddbfb",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    },
+    {
+      "file": "85_02_Carousel.png",
+      "sha256": "b7d08b6e7bc91708eb46f9263d28e49daf7db214702ebc6a4e10d8091390548b",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    },
+    {
+      "file": "85_03_Carousel.png",
+      "sha256": "fc014f4924f627096fa275f5e8e00dd86fcfcf79b4816ea9bb99570c2a05baff",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    },
+    {
+      "file": "85_04_Carousel.png",
+      "sha256": "45e3d9132c02c09547962ea1eaa257f69191f0eaab4524eded0bc82190f85fdc",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    },
+    {
+      "file": "85_05_Carousel.png",
+      "sha256": "cd86bb7c1e145804c3fd74092ea6927af137b0b6f033b7bde627355ed172e069",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "source_state": "CURRENT_SAVED_CANDIDATE84",
+      "bytes_unchanged": true
+    }
+  ],
+  "script_sha256": "fca5a7eb8d516e09bf643644c6edfa34ce703373bbea6e3a14f6b7a292ed062e",
+  "source_baseline": "f69b581d73a4b7a06b0e5d708f16aec9c532f5e1",
+  "editor_binary": "Build55 / 7b0ea67fa5d6838908cacacba30af45ce3f983d5bb4a53fc75fc8d99b2ca917a",
+  "published": "UNCHANGED 0.1.22-alpha / itch2048604 / sourcee6c2a87",
+  "not_claimed": [
+    "central/R concept-quality completion",
+    "continuous contact",
+    "physical-input pass",
+    "60FPS/VRAM acceptance",
+    "owner approval",
+    "new package or release",
+    "complete private restore"
+  ],
+  "source_checks": {
+    "structural": 42,
+    "python_compileall": "PASS",
+    "source_meshes": 26,
+    "source_wavs": 17,
+    "documentation": "PASS",
+    "whitespace": "PASS",
+    "cpp_changed": false,
+    "new_build_attempt": "NOT_APPLICABLE_NO_CPP_CHANGE"
+  },
+  "earlier_private_packages_preserved": [
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\M_CentralGreenLeaves.uasset",
+      "sha256": "667f7ab39b08420af87b16e607500d4acc36d820f50b6690199f69951478f843",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_CentralStructure_51fd65da.uasset",
+      "sha256": "60c8193cb4f54beefad8aa539b0d6af50a0c3adca5931a6fd1bd5e7995335673",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_CentralStructure_6c6b9818.uasset",
+      "sha256": "9a3e3e29250ded46027215f344ad9cb683254a60abcbfa35450c149343712469",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_CentralStructure_b97a1cc2.uasset",
+      "sha256": "53002e09cfa257d356ac1eca6a95037e001178354911d608cc5b1f6d52a670f8",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_DirectionGlass.uasset",
+      "sha256": "d81b862d999957bd592d4b10e66f093256cee6ad419b23cb80852ea87b1244f2",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_DirectionInk.uasset",
+      "sha256": "82225d63795196681a5a89d8e6c37b5d3712b1063db1c13d36d0eb38914a3675",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_ReceptionMetal.uasset",
+      "sha256": "ad2a6362b8a23fb31b60a9d816e8f66535a9adbc58ef9bbcf9385ed90cfc926c",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_WarmPractical.uasset",
+      "sha256": "b61364906c702771b30254b68bbf05d31ba1b5fdb1958f51a034309405836bf5",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\Concept73\\MI_WayfindingBlue.uasset",
+      "sha256": "4a496ec8bcc0a5224bc5316b81114387ca6fbdd1fbbb7e2a4f47f47c6dba6696",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\M_ArchiveUpholsteryTint.uasset",
+      "sha256": "a85e595f39e8fc31010cc825985f42ca55641625b669a15da262b73bea1826d3",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\M_GreenTreeBranches.uasset",
+      "sha256": "05e80dfd5a58a8d56dd52edc5abb85e17acf25b2b7da98216bb121800ece60d4",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveProjection1.uasset",
+      "sha256": "dd81e8e7d06e80384ce50a4819e6c115386df8beade80c5a20ba6dd5c49df182",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveProjection2.uasset",
+      "sha256": "a77e965d4871263deb8cfeb406a648cd1b2f9b7220af8fbcd5ac0f31060575f6",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveProjection3.uasset",
+      "sha256": "8c31de1c9397ab8b21bce805991bb33eb858d873c7bd5da8eee97698ac750a55",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveTable.uasset",
+      "sha256": "e5c8b1c3b9385373153c35965ea29acc967f07928ab11ba1e16801d87e1202b5",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveUpholstery.uasset",
+      "sha256": "d86a9abc7bd6d17ed1f436cf1f7130a0d6a91a489922f4fb7fd9017d127d27b2",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveWall_382eb49cd2a1.uasset",
+      "sha256": "45ab42f19e48c6b9090afbe7d883fe757f2725555f6337154e97353f688fa258",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveWall_75e8746cd43c.uasset",
+      "sha256": "aa33fb5f1569af0f22f30cdffc44bd6046fc40c16b474a671c9e53e1cd8be437",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveWall_7b7ccec0ddba.uasset",
+      "sha256": "6710f0191fd641b8bd4ef94a5619c7023f13aa891a9ee01dcda6c04f36e809d2",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_ArchiveWall_8bab5e5dc70e.uasset",
+      "sha256": "cd3ec488473f614a3b9174645a4db1d6d3006324b1722fde4dd432b311149b2b",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\MI_LegibleHeaders.uasset",
+      "sha256": "82581164b0772fb15ebb66fbd9eded1a13701c3911e99b11dd60dee3de55406a",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\SM_ArchiveArmchairCollidable.uasset",
+      "sha256": "ce75ad0ceb99e2ff6e3da6d1fc9399d3eb79b2ac4d184177a362153c3542411f",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\ArchiveConcept77\\SM_ArchiveTableCollidable.uasset",
+      "sha256": "ee03e61622410aa4d765f1183b724521ab4fa67c8cf7a1fecd982978b8acc72f",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Glyph\\A_Glyph_SeatedVisitor.uasset",
+      "sha256": "ae78d9c574d884a35c681207ac7030b3b1ff5f87698e75a550c6d9143668f1f8",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Glyph\\IK_Glyph.uasset",
+      "sha256": "21bfd9bc203fb077c2f83c7b5cd3f69ab8b6a253f46d779785c4cf462019034d",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Glyph\\IK_Source.uasset",
+      "sha256": "9b56c24c5e37b19ef41a8211e8886884dd644930975e32311f89c7bfd176eca3",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Glyph\\RTG_Glyph.uasset",
+      "sha256": "599f9465bef39790d3068316104f636abb8e7db8848679ecdc768265cd26c3da",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Robe\\A_Robe_SeatedVisitor.uasset",
+      "sha256": "db5575ba31a908542ab84979e3b144fdae4d2d277600d208c08a64a31b0a041f",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Robe\\IK_Robe.uasset",
+      "sha256": "4dfd13f14ef3c00ebd864fda01d18bc3157db7c7f5c3f1c18219c9408214971b",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Robe\\IK_Source.uasset",
+      "sha256": "a4d360938824d8c949eb3d0e62434a0478ba31337f14b0a9ec3d77738f75b974",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Robe\\RTG_Robe.uasset",
+      "sha256": "8dc58dd5e54e5c2e64a834725908fff36daad57f98a422912b261fc6bbc15516",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Seer\\A_Seer_SeatedVisitor.uasset",
+      "sha256": "3393596401ae28a3d9d49a65109c3e74c7565843dca213d09968773e1188af9c",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Seer\\IK_Seer.uasset",
+      "sha256": "343a42b3245691461272c8018318d1a8fb2a8d2026446db83257d8c0e3ee288e",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Seer\\IK_Source.uasset",
+      "sha256": "791600512187cadfa95de3edcc258963464ba016d3492d61b6c9a88a94fffe1f",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Seer\\RTG_Seer.uasset",
+      "sha256": "2738c1d6229ca880ca49ddaf3281ecd999122473920374bfad0c11fc724fbfaa",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Tendril\\A_Tendril_SeatedVisitor.uasset",
+      "sha256": "45b865b3b48cf1b091556fedcd8b039f18bc9304baf2cc02a9d0f4cd065c8f72",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Tendril\\IK_Source.uasset",
+      "sha256": "8338d968b98acba454c1ee290a25a18499600834746d19f34c09ec0dce64a908",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Tendril\\IK_Tendril.uasset",
+      "sha256": "34c3474952e370fb02a27d042c9e2b53a77b882c9654dbc92e91afa2da322846",
+      "unchanged": true
+    },
+    {
+      "file": "Content\\OutpostSandbox\\StationRefinement\\VisitorSeats20261009\\Tendril\\RTG_Tendril.uasset",
+      "sha256": "34f42720f78d4c76dd77e6bf272779f9954712ea70e7ad5eeaff3367a7a2a1cd",
+      "unchanged": true
+    }
+  ]
+}

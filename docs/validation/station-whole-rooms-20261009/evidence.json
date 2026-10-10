@@ -1,0 +1,315 @@
+{
+  "status": "PARTIAL_ROOMS_UNFINISHED",
+  "map_sha256": "14a493999dac14dc429c20d0c5cb330209f221d57604826fb8a8da22033b66de",
+  "actor_count": 8502,
+  "new_actor_count": 12,
+  "saved_reload": true,
+  "exact_snapshot_check": false,
+  "exact_check_disposition": {
+    "actor": "PersistentLevel.StaticMeshActor_7739",
+    "only_changed_field": "scale",
+    "maximum_absolute_error": 4.909588291468481e-10,
+    "before": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "after": [
+      1.0000000004909588,
+      1.0000000004909588,
+      1.0000000004909588
+    ],
+    "note": "Numerical reload roundoff only; failed exact-equality receipt retained without rewriting."
+  },
+  "ten_crew_configuration_valid": true,
+  "walk": {
+    "reached": 30,
+    "total": 30,
+    "reached_all": true,
+    "error": null,
+    "seconds": 47.578000000008615,
+    "sample_count": 234,
+    "distance_cm": 14660.811311328078,
+    "z_range": [
+      90.14999777036155,
+      90.14999961853027
+    ],
+    "movement_modes": [
+      "<MovementMode.MOVE_WALKING: 1>"
+    ],
+    "original_possession_restored": true,
+    "temporary_pawn_destroyed": true,
+    "physical_input": false
+  },
+  "capture": {
+    "run": "LiveOperationsPIEReview1_WholeRooms69",
+    "images": 8,
+    "success": true,
+    "viewport": [
+      1014,
+      344
+    ],
+    "saves_preserved": true,
+    "quality_preserved": true,
+    "map_bytes_preserved": true,
+    "camera_removed": true
+  },
+  "dirty_maps": [],
+  "dirty_content": [],
+  "protected_files": [
+    {
+      "name": "L_WayfarerRuntime.umap",
+      "sha256": "14a493999dac14dc429c20d0c5cb330209f221d57604826fb8a8da22033b66de",
+      "matches_expected": true
+    },
+    {
+      "name": "L_OwnerPlatformPreview_20261006.umap",
+      "sha256": "e7958758a861d17fe189601b17b486db9ea75086080a8e1b5f17e56cbb7b18db",
+      "matches_expected": true
+    },
+    {
+      "name": "UnrealEditor-SpaceSurvival.dll",
+      "sha256": "7b0ea67fa5d6838908cacacba30af45ce3f983d5bb4a53fc75fc8d99b2ca917a",
+      "matches_expected": true
+    },
+    {
+      "name": "SpaceSurvival.uproject",
+      "sha256": "9e3a4861161c1dc89988452fb9fd60a1893e03dd05785c4f0457f8ed9712ba38",
+      "matches_expected": true
+    },
+    {
+      "name": "EditorLayout.ini",
+      "sha256": "29f155870eed67b6c98987b61fb5dc547bd010dda90c863ccd1a4fbe53a43d7d",
+      "matches_expected": true
+    },
+    {
+      "name": "DA_Phase1.uasset",
+      "sha256": "559cbf22bb8bf3e62261a2835c7667fd7485e1dfb8f0dfe852fb8a95a40ba8a3",
+      "matches_expected": true
+    }
+  ],
+  "owner_files": [
+    {
+      "name": "Content\\SpaceSurvival\\Materials\\M_AcornV2_ChampagneEdges.uasset",
+      "sha256": "c3b03ea9fe03bb0d3752516664832bc591a523ebd958e4a9201e3edf8b3eadeb",
+      "unchanged": true
+    },
+    {
+      "name": "Content\\SpaceSurvival\\Materials\\M_AcornV2_CockpitPadding.uasset",
+      "sha256": "b9b28ff0612488145e41240a04916449046bad99d151aa68c859c8971beeec2f",
+      "unchanged": true
+    },
+    {
+      "name": "Content\\SpaceSurvival\\Materials\\M_AcornV2_GraphiteStructure.uasset",
+      "sha256": "73f41d0a7520b91f494a46b89c437ae9dcebde20d63befcdb42730da773c34f0",
+      "unchanged": true
+    },
+    {
+      "name": "Content\\SpaceSurvival\\Materials\\M_AcornV2_IonAndNav.uasset",
+      "sha256": "1a22e1726c03d90241ee9e23c030079da0b1d2a51aa54a7f931d13956d66b2a5",
+      "unchanged": true
+    },
+    {
+      "name": "Content\\SpaceSurvival\\Materials\\M_AcornV2_MachinedTitanium.uasset",
+      "sha256": "7d4927137be138f7bf58c9f4173bf0b99fca5813395984f6b83bfc42f5f55833",
+      "unchanged": true
+    },
+    {
+      "name": "Content\\SpaceSurvival\\Materials\\M_GravityFieldCandidateV3.uasset",
+      "sha256": "348108e6cccf28a03271adb75ad5328eb00f9d5ed543c33a62321ed910f50df8",
+      "unchanged": true
+    },
+    {
+      "name": "Content\\SpaceSurvival\\Materials\\M_Hull.uasset",
+      "sha256": "fbe67c304fe03120e9e2ca81811336388db4c779151f8e9598f1b72bd092a9a6",
+      "unchanged": true
+    },
+    {
+      "name": "Content\\SpaceSurvival\\Materials\\M_WormholeTransit.uasset",
+      "sha256": "99958fa43018631fd25172c203e78ef8fd57481217c22b0d7a82fe5bb6a5e5c1",
+      "unchanged": true
+    },
+    {
+      "name": "Content\\SpaceSurvival\\ShipRefresh\\Material_0.uasset",
+      "sha256": "4cd6c3101c85c807d1369c02c8c459e13ea4481c820d58467c14c750b5d5b03a",
+      "unchanged": true
+    },
+    {
+      "name": "SpaceSurvival.uproject",
+      "sha256": "9e3a4861161c1dc89988452fb9fd60a1893e03dd05785c4f0457f8ed9712ba38",
+      "unchanged": true
+    }
+  ],
+  "private_materials": [
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_319d28622a.uasset",
+      "sha256": "78866f3b7ba233539d3a3536c78d83699d71ed55d6f82632bb74d00524892213"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_44e45bde31.uasset",
+      "sha256": "1ce9f5a1169de9cd45b8520f3d9697ebb9f25d1d5ede36bfd73c44846ff2a912"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_48d1fce6ad.uasset",
+      "sha256": "973e959a2de78df8d9c4dd8feee30ad1ea1eb9c24a260abfbf9eb6fb69ab8d10"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_4f749c8d70.uasset",
+      "sha256": "22879cb14153d460b419f26621ecb95fb149d543d25ea7aae5a238568adb448c"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_51fc36bf20.uasset",
+      "sha256": "ba8e08c6ee0ef493d34fe45be5acb42ca16a168d8d0273656bc28fe1da81097d"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_57cff478b1.uasset",
+      "sha256": "34a7360088f338f121fce701c7782ed48538192a9460043139e40b81976e1fc0"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_63503d5700.uasset",
+      "sha256": "01cf84b9e944642bb561af8c980cb754551e23a1b647b2ed61fdc441a3e9f40c"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_6bd27466e6.uasset",
+      "sha256": "8cc767a78f321e961f5d1b4f8bdfb5bf01ada186ee1ff1f64f2ae24dfbeaca99"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_7619de002a.uasset",
+      "sha256": "1cb1256762ade08db2446a3258005d59477b037742f661f7ac18f300b05dcd74"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_9371681059.uasset",
+      "sha256": "e979a124566c2c3aee28bc78ad3daea56b6cd4de120b22d80fd7a4f1f2e45319"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_a7934559b5.uasset",
+      "sha256": "516395dc35ed82b7ab0ad8f92d9cf1cc8eaf5c980f67d8889512507d026612d5"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_c27048fd29.uasset",
+      "sha256": "d9eb07dfd97f0fa989113c313695613b7143ffde883e3b9a0ea283f2cad8ee2c"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_da0b462186.uasset",
+      "sha256": "b44bb5babbc5ad987c6b83cb03ae61ddae73a9024023106daaa49246c7acce02"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_e1335e38ec.uasset",
+      "sha256": "5d69db530edc163e785ea6f8cec8363ec7b50cf64a1f66e9c104bc7d95905226"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_f00faf57d4.uasset",
+      "sha256": "d25134d6465b1e9d2ec0e0e8e77465368c2c7875d5a02c5115abccea9748dbc9"
+    },
+    {
+      "path": "Content\\OutpostSandbox\\StationRefinement\\WholeRooms20261009\\MI_ArchiveSatin_f99479b514.uasset",
+      "sha256": "3411f9bd574148f4eb2ca067727b616cca33e5932cac8635ffc12fd06adeffc8"
+    }
+  ],
+  "images": [
+    {
+      "file": "67_01_CentralArrival.png",
+      "source_state": "OLDER_COMPARISON",
+      "map_sha256": "433d6de1e3b02e72343ef050ee2827ba5a175917eabaaf76ad389e0e105ff371",
+      "sha256": "b7b45f37388e618c663091884bf81aaff1970e31a2a606351bf8dd5a3bb677e0",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "camera_cm": [
+        5650.0,
+        0.0,
+        185.0
+      ],
+      "fov": 88.0,
+      "source_run": "LiveOperationsPIEReview1_WholeRooms67"
+    },
+    {
+      "file": "67_07_RServices.png",
+      "source_state": "OLDER_COMPARISON",
+      "map_sha256": "433d6de1e3b02e72343ef050ee2827ba5a175917eabaaf76ad389e0e105ff371",
+      "sha256": "651daa74ae4c232de844b4f05d0128d97818b49e562f80d7084cc65e9b6ad31a",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "camera_cm": [
+        4600.0,
+        3300.0,
+        170.0
+      ],
+      "fov": 88.0,
+      "source_run": "LiveOperationsPIEReview1_WholeRooms67"
+    },
+    {
+      "file": "69_01_CentralArrival.png",
+      "source_state": "CURRENT_SAVED_CANDIDATE",
+      "map_sha256": "14a493999dac14dc429c20d0c5cb330209f221d57604826fb8a8da22033b66de",
+      "sha256": "bffc720d740d06fcdbbdcd18f89c38873da28617cb0d67f20d61d59b5acba919",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "camera_cm": [
+        5650.0,
+        0.0,
+        185.0
+      ],
+      "fov": 88.0,
+      "source_run": "LiveOperationsPIEReview1_WholeRooms69"
+    },
+    {
+      "file": "69_02_CentralReverse.png",
+      "source_state": "CURRENT_SAVED_CANDIDATE",
+      "map_sha256": "14a493999dac14dc429c20d0c5cb330209f221d57604826fb8a8da22033b66de",
+      "sha256": "b68326d7e964e425a50ad59ad5a6bed66afb3ad8a3bb96e3ae604ec738098488",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "camera_cm": [
+        2850.0,
+        0.0,
+        185.0
+      ],
+      "fov": 88.0,
+      "source_run": "LiveOperationsPIEReview1_WholeRooms69"
+    },
+    {
+      "file": "69_05_RArrival.png",
+      "source_state": "CURRENT_SAVED_CANDIDATE",
+      "map_sha256": "14a493999dac14dc429c20d0c5cb330209f221d57604826fb8a8da22033b66de",
+      "sha256": "9778c38be7216c616392f7edfe22399f1836fcd129b1cf6fe04bf7769075fcc3",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "camera_cm": [
+        4200.0,
+        2550.0,
+        175.0
+      ],
+      "fov": 88.0,
+      "source_run": "LiveOperationsPIEReview1_WholeRooms69"
+    },
+    {
+      "file": "69_07_RServices.png",
+      "source_state": "CURRENT_SAVED_CANDIDATE",
+      "map_sha256": "14a493999dac14dc429c20d0c5cb330209f221d57604826fb8a8da22033b66de",
+      "sha256": "f3dfe8d3fcd0afabbfcb6b5a3469631a49eb935dc6b4d9d347b76be53072b9c8",
+      "dimensions": [
+        1014,
+        344
+      ],
+      "camera_cm": [
+        4600.0,
+        3300.0,
+        170.0
+      ],
+      "fov": 88.0,
+      "source_run": "LiveOperationsPIEReview1_WholeRooms69"
+    }
+  ],
+  "visual_acceptance": false,
+  "published_build": "0.1.22-alpha / itch2048604 (unchanged)"
+}

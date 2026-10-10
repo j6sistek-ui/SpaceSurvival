@@ -14,7 +14,7 @@ namespace SSAudio
 {
 float EffectsGain(const UObject *Context, float Gain = 1.f);
 float MusicGain(const UObject *Context, float Gain = 1.f);
-/** Load an optional private licensed replacement, falling back to the generated role sound. */
+/** Prefer the short combat palette, then the original licensed role, then source-only audio. */
 USoundBase *PresentationSound(const TCHAR *Name);
 } // namespace SSAudio
 
@@ -58,6 +58,8 @@ private:
     friend class FSSWorldAudioHooks;
     UPROPERTY()
     TObjectPtr<USoundAttenuation> Attenuation;
+    UPROPERTY()
+    TObjectPtr<USoundAttenuation> RockBreakAttenuation;
     UPROPERTY()
     TObjectPtr<USoundConcurrency> ShotConcurrency;
     UPROPERTY()

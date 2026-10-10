@@ -44,6 +44,13 @@ Run the process-owning `Scripts/TestSaveLifecycle.ps1` in the installed PowerShe
 failed closed. The same harness passed its four FreeFlightIsolation stages in7.6.5;
 do not weaken exit-code validation to accept null.
 
+If `Artifacts` is redirected by a junction, use the explicit
+`-WorkspaceLocalArtifacts` switch for this harness. It selects
+`.agent/local/SaveLifecycle/<GUID>` instead of `Artifacts/SaveLifecycle/<GUID>`;
+native and C# fault gates require the matching explicit mode. All token, marker,
+production-save and no-reparse-path checks still apply. Do not bypass the junction
+check or supply an arbitrary scratch root. Build the changed native test first.
+
 The test gate demands *all* of: `succeeded >= 1`, `failed == 0`, `notRun == 0`, `succeededWithWarnings == 0`.
 **Engine warnings fail it**, and they are easy to produce without failing a single assertion.
 
@@ -146,6 +153,13 @@ the reference here, not a lux figure. Terrestrial rules apply again only for a s
 - **A change that affects how the game plays or feels is a conversation, not a task.** Propose it and wait.
   Fixing something that is provably broken is work; changing a dial is a decision.
 - **Never run two captures concurrently.**
+
+October9 offscreen startup recovery: the normal restored layout can crash in
+`NwiroIKPanel::OnSpawnTab`. Keep the owner layout intact and pass a verified private
+`-EditorLayoutIni` file alongside `-RenderOffscreen`; the working local file and
+retained failure receipts are in [BUILD_RUN](docs/BUILD_RUN.md). Copying the safe
+layout onto the normal profile did not resolve this launch; the explicit override
+did. Do not repeatedly retry the default layout or alter the owner's launcher.
 
 ## The ship
 

@@ -1,5 +1,679 @@
 # SpaceSurvival whole-project solution catalog
 
+October10 Central188 reuses the installed Genesis electrical trim as wall braces/headers and inner portal frames; existing Nanite planting is resized for directory sightlines. No acquisition/import or vendor edits. [Native result and limitations](../validation/2026-10-10-central-detail.md). Clothing quick-fit evaluation is set aside after visible intersections and missing weights; no character outfit adoption.
+
+October10 JOY-20261009 follow-up: light-blue Joy and canonical rigged Cyborg are now placed in the private apartment beneath Room R with an owner-approved simple polished pole. Existing Genesis nickel parent is reused; no new acquisition. Separate owner-supplied three-piece clothing FBX has textures but no skeleton/weights; fitting preview is separate from native adoption. [Evidence](../validation/2026-10-10-apartment-residents.md).
+
+**October10 JOY-20261009 update:** owner explicitly authorizes lighter-blue Joy
+and transfer of the current purple Cyborg animations. The confirmed original
+scenes remain intact.149 private derivative packages now include the corrected
+base hair groom/binding as well as135 clips, blue
+skin/dark streak materials, retarget rigs and two groom bindings. CPU save/reload
+checks pass; rendered motion/contact/groom shading and performance remain open.
+This extends the existing character option (WBS8.4/10.3), without purchase,
+runtime AI, permanent placement or reopening other NPC work.
+[Source provenance and preview](../validation/2026-10-10-joy-blue-cpu.md);
+[later hair cleanup and fresh reload](../validation/2026-10-10-joy-hair-and-memory.md).
+
+**October9 resource status correction:** CREW-20261009 assignments below are
+historical partial integration, not accepted room quality. Covered Olive replaces
+hidden Amethyst; exposed-torso Dread needs a later replacement. Dock atmosphere
+is saved with limited walking/pose evidence. Other NPC repairs are outside this
+lead's scope. New resource ID JOY-20261009 denotes the existing owner-supplied
+character's private reference-pose review: hair/translucency corrected, original
+source preserved, animation/behaviors/performance unverified. Its value is a later
+character option, with no purchase, runtime AI or permanent placement. Central/R
+quality is rejected; later work held. [Handoff](../validation/2026-10-09-station-handoff.md).
+
+### TOOL-20261008-VOICEBOX — local dialogue-authoring candidate
+
+- **Evidence/acquisition,2026-10-08T13:33Z:** [Voicebox source](https://github.com/jamiepine/voicebox/tree/8af7efe62fab8d33e2a5dfbedabaa45f68a5184f), snapshot `8af7efe62fab8d33e2a5dfbedabaa45f68a5184f`, repository last pushed2026-10-07. Documentation/license reviewed only; no installation, model download, execution or audition. MIT application; model terms are separate.
+- **Evaluation/whole-project use:** strongest first audition candidate among these three for pre-generated Director/hero and later station dialogue (WBS7.3/8.4/8.5/10.1). Documented local Qwen/Chatterbox/Kokoro options, reusable profiles, takes/effects and [WAV export](https://github.com/jamiepine/voicebox/blob/8af7efe62fab8d33e2a5dfbedabaa45f68a5184f/docs/content/docs/overview/generation-history.mdx) suit asset authoring without paid inference calls. This ranking concerns workflow fit, not heard quality or measured speed. [Qwen VoiceDesign model card](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign) identifies Apache2.0; verify the exact selected model/version and reference provenance before shipping.
+- **Timing/next check:** after voice work is resumed, compare existing short lines across two engines for pronunciation, emotion and identity consistency; log total download/disk cost, VRAM, cold/warm latency and WAV format. Published Windows/RTX50 support is not a test on this machine. Generate during a separate work session, then unload/close the tool and import ordinary audio assets; this avoids a runtime voice-plugin dependency and ongoing inference VRAM in the game. Central/R and pause unchanged.
+
+### TOOL-20261008-VOICESTUDIO — local multi-engine voice-authoring alternative
+
+- **Evidence/acquisition,2026-10-08T13:33Z:** [VoiceStudio source](https://github.com/debpalash/VoiceStudio/tree/06c6e077f0fc35149efefc3561e9be5ae835d916), snapshot `06c6e077f0fc35149efefc3561e9be5ae835d916`, repository last pushed2026-10-08. Free local generation is supported; remote services/paid extras are optional. Not installed/tested by this assessment.
+- **Evaluation/whole-project use:** alternative authoring UI for the same scoped speech work, plus later localization/dubbing; those features do not authorize additional content. [Application license notice](https://github.com/debpalash/VoiceStudio/blob/06c6e077f0fc35149efefc3561e9be5ae835d916/LICENSE-NOTICE.md) permits commercial use under AGPL terms, but its default [OmniVoice pretrained model](https://huggingface.co/k2-fsa/OmniVoice#license) is CC-BY-NC. Do not treat free application use or a paid application license as clearance of the model; select a suitable model before commercial game production.
+- **Timing/next check:** secondary audition candidate after model selection. Default-engine documentation suggests6GB VRAM; this is not a whole-workload budget. The inspected [benchmark table](https://github.com/debpalash/VoiceStudio/blob/06c6e077f0fc35149efefc3561e9be5ae835d916/docs/benchmarks.md) has no verified rows. No ElevenLabs parity, local performance or model-rights clearance claimed.
+
+### TOOL-20261008-ELEVENLABS-CLONE — self-hosted audio-service reference
+
+- **Evidence/acquisition,2026-10-08T13:33Z:** [BernieTv/ElevenLabs-Clone](https://github.com/BernieTv/ElevenLabs-Clone/tree/5c3aff322c172ae714c57e930057065982f9f8a8), snapshot `5c3aff322c172ae714c57e930057065982f9f8a8`, repository last pushed2025-04-09. MIT root; bundled models/dependencies have separate terms. README and compose reviewed, not deployed or tested.
+- **Evaluation/whole-project use:** self-hosts StyleTTS2, Seed-VC and Make-An-Audio rather than requiring ElevenLabs inference. The supplied workflow includes web accounts, credits, queues and AWS storage; compose requests GPU access for three services and supplies the same unversioned image name for each. Inference: more deployment/adaptation work than the desktop authoring candidates for our WBS7.3/8.4/8.5/10.1 audio needs. Free source does not establish zero hosting cost or useful output quality.
+- **Timing/next check:** retain only as a lower-priority service-architecture reference if that need becomes explicit. Prefer a bounded Voicebox audition first; no cloud provisioning, service creation, model downloads or new NPC scope.
+
+### LIB-20261008-BILLBOARD — owner-suggested framed sci-fi ad board
+
+- **Evidence,2026-10-08T13:03Z:** [owner screenshot](../validation/images/2026-10-08-owner-resource-candidates/billboard-candidate.jpg) shows a broad framed cyan display, ventilation/grille details and a cropped listing title ending in `Billboard Game`. Full title, seller and exact product identity are UNCONFIRMED. Original JPEG retained byte-for-byte, SHA256 `2e59e0874cbc02e38fe5ae9f7ef599eaa3fec70bbdb4f8b4720880876ca23364`.
+- **Acquisition:** owner reports it exists somewhere in Downloads. Exact source file, format, license metadata and native import/installation are UNCONFIRMED; the screenshot alone does not prove those states.
+- **Evaluation/whole-project use:** candidate for properly mounted station ads or useful information boards (station layout/content presentation, WBS 8.1-8.5, 10.3). Its purpose-built frame may suit a large ad surface; in-scene fit, material effect, copy readability, collision and cost have not been tested. Central remains information-first with at most1-2 ads.
+- **Timing/next check:** after owner resumes the station pass, locate the existing download, identify its mesh/material and upright aperture, then compare with the owned P1-P5 options. Preserve original ad copy and functional controls; no purchase/import/placement or final hardware selection is authorized by this note.
+
+### TOOL-20261008-AI-VOICE — AI Voice No-Code Plugin, Usiku Games
+
+- **Evidence,2026-10-08T13:03Z:** [owner library screenshot](../validation/images/2026-10-08-owner-resource-candidates/ai-voice-library.jpg) identifies **AI Voice No-Code Plugin** by **Usiku Games** and shows **Saved in My Library**. Original JPEG retained byte-for-byte, SHA256 `fbb44996ccb4facd5fe2e5fd5373ca4781df10bd8a25c110534420cc365e0ca0`.
+- **Acquisition/evaluation,2026-10-08T13:20Z:** library membership is screenshot-confirmed; owner believes it is installed. A read-only enumeration of all903 `.uplugin` descriptors in the canonical project `Plugins` and `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins`, plus project plugin entries, found no Usiku/Usikulabs/AI Voice match. Installation elsewhere remains UNCONFIRMED. [Fab listing](https://www.fab.com/listings/2b419ef9-3238-4875-931d-6404383e58c2) and [vendor documentation](https://github.com/UsikuGames/AIvoice) identify an ElevenLabs streaming TTS connector and require a paid ElevenLabs account. This is a cloud voice service integration; UE5.8 support is not established by the published documentation. The MetaSounds5.3+ claim does not certify5.8. Output quality, usable voice rights and project compatibility remain untested.
+- **Whole-project use:** possible voice-authoring/playback option for already-scoped Director, hero/enemy and later station speech (WBS 7.3, 8.4, 8.5, 10.1); compare with existing voice options rather than adding a runtime dependency by default. This does not expand NPC counts, behaviors or dialogue systems.
+- **Timing/next check:** after owner resume and when voice work is selected, verify the exact installed/purchased plugin version and its5.8 build support, then audition a small existing line for intelligibility, character consistency, latency and usable export/playback. Pre-generated audio played as normal Unreal sound assets remains an option without a runtime TTS dependency. No plugin activation, installation, credential use, generation call or audition occurred; no quality recommendation yet. Central/R interiors remain first.
+
+### TOOL-20261008-XSCENE — XScene Gaussian-splat reconstruction/rendering
+
+- **Evidence/acquisition,2026-10-08T13:20Z:** owner-linked [public fork](https://github.com/j6sistek-ui/XScene-UEPlugin/tree/09833b8dc439db8307785ed777ae80e6a71ce4a9), source snapshot `09833b8dc439db8307785ed777ae80e6a71ce4a9`, last repository push2025-07-30. Source/documentation reviewed only; no installation, training, model download or benchmark.
+- **Evaluation/whole-project use:** photo/video reconstruction and Niagara-based Gaussian-splat rendering, with crop/color/effect controls. Inference: possible later holographic exhibits or scanned background dressing (station/environment presentation, WBS8.1-8.5/10.3); low immediate value for owned modular central/R layouts, ad-screen materials or NPC behavior. Main README leaves physics-proxy generation and dynamic LOD as future work; do not assume ordinary mesh collision/navigation or automatic performance scaling.
+- **Compatibility/rights:** [plugin requirements](https://github.com/j6sistek-ui/XScene-UEPlugin/blob/09833b8dc439db8307785ed777ae80e6a71ce4a9/UEPlugin/README.md) list Windows and UE5.1-5.5; descriptor1.1.5 targets5.1 and runtime Build.cs requests precompiled modules. UE5.8 is UNCONFIRMED. Plugin license is Apache2.0, but the bundled [Gaussian-splat training license](https://github.com/j6sistek-ui/XScene-UEPlugin/blob/09833b8dc439db8307785ed777ae80e6a71ce4a9/Training/gaussian-splatting/LICENSE.md) restricts commercial use without permission. Keep plugin, training and input/model rights separate.
+- **Timing/next check:** optional later evaluation only if an actual scan/hologram use case appears; establish commercially usable inputs/training and5.8 compatibility before a bounded test. No acquisition/integration recommendation for the current interior pass.
+
+### TOOL-20261008-SENTIENT-NPC — offline voice-conversation research concept
+
+- **Evidence/acquisition,2026-10-08T13:20Z:** owner-linked [repository](https://github.com/nghn0/Sentient-NPC/tree/3c4fdea84ef92fa010caed3085f4f7836024d452), snapshot `3c4fdea84ef92fa010caed3085f4f7836024d452`, last repository push2026-01-30. README, application/model code, requirements and tree inspected read-only. No code executed or dependencies/models installed. No project license found in the inspected tree; reuse and bundled Skyrim-dialogue/model rights remain UNCONFIRMED.
+- **Evaluation/whole-project use:** Vosk speech recognition, small Skyrim-domain Transformer and Silero speech synthesis form a Python desktop conversation prototype. README explicitly lists single-turn/no-memory limits and future Unreal integration. Its latency/quality figures are author claims, not SpaceSurvival measurements. Conceptually relevant to later station conversations/Director reactions (WBS7.3/8.4/8.5/10.1); it supplies neither purposeful work routines nor game-state integration.
+- **Implementation limits:** [application source](https://github.com/nghn0/Sentient-NPC/blob/3c4fdea84ef92fa010caed3085f4f7836024d452/chatbot_app.py) uses seven-token input and sixteen-token output limits, no dialogue-history input, remote Torch Hub loading on setup and a disabled HTTPS certificate check. TensorFlow/PyTorch dependencies and overall machine cost are unmeasured; the small dialogue-model claim does not establish the full stack's size or VRAM use. Do not copy the certificate-verification bypass into production.
+- **Timing/next check:** retain as a later architectural reference, not a turnkey UE5.8 plugin. Recommendation: finish central/R first; then shared NPC roles, work/idle routines and authored replies from real game events. If open conversation becomes an explicit requirement, scope one NPC with controlled game facts, fallback dialogue, measured CPU/VRAM/latency and clear licenses. Incoming NPCs/behaviors remain outside this pass; nothing implemented.
+
+**October8 use priority:** owned central furnishings/guides and R archive/wardrobe
+hardware are the next interior-layout focus, before future NPC variants/behaviors.
+CPU-only preparation reuses A34's existing display options and five R campaign
+families; no new acquisition/generation gap is established. Availability/source
+identities and the [scoped finishing preparation](../validation/2026-10-08-central-r-preparation.md)
+do not establish current live-scene fit or room approval. KNOWN_ISSUES owns order.
+
+**Owner review,2026-10-06:** L social lounge is **8/10, pass for now** at saved
+preview `ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`
+and source checkpoint `de2befe`. This supersedes the earlier unapproved lounge
+assessments below. Finer detail, station-wide touches and richer NPC behavior are
+later work. Acceptance is visual and specific to this room/snapshot; it does not
+establish gameplay, FPS, package or Phase1 acceptance. Active design focus moves
+to T Operations, retaining its central service terminal, useful displays, limited
+staffed workstations and organized storage. KNOWN_ISSUES remains the work/acceptance
+log; this catalog records resource evaluation rather than a separate task queue.
+October7 15:18 owner direction supersedes the earlier T advancement gate: finish
+its ad TVs, then central welcome/Phoenix; retain later T polish in KNOWN_ISSUES.
+
+### LIB-20261007-STATION-WARP — physical portal frames and player effects
+
+- **Acquisition:** reuse owned P4 Genesis `SM_Door300X250_V1_Part1`,
+  `ImportedLibrary/Portal/NS1_Portals/NS_NS1_TeleportPortal` and
+  `NiagaraExamples/FX_Player/NS_Player_Teleport_Out` / `_In`. No purchase,
+  plugin activation or vendor-asset edits.
+- **Evaluation,2026-10-07T22:36Z:** native inspection confirms the original frame
+  is42.185×300×250cm with seven materials. Both burst systems use Default skeletal
+  sourcing; source now supplies the actual walking pilot mesh. Source placement
+  connects the real Phoenix berth and central welcome after docking, with floor,
+  original-body collision and capsule-passage checks. It has not run in gameplay.
+- **Whole-project value:** the requested bidirectional station transport reuses
+  physical kit hardware and character-shaped effects. Ordinary walking remains
+  available. No new progression or economy behavior.
+- **Limits/next checks:** original collision aperture, real docked placement,
+  portal scale/appearance, moving mesh sampling, natural reciprocal travel,
+  cancellation/teardown and performance. Missing or invalid inputs currently
+  refuse the pair; compilation cannot establish a usable installation.
+  [Evidence](../validation/2026-10-07-bartender-and-warp.md).
+
+### LIB-20261007-WELCOME-INFORMATION — reception tools and useful room guidance
+
+- **Acquisition:** reuse owned `Cyberpunk_Room/Mesh/SM_Laptop` and `SM_Tablet`,
+  their original material, and `SciFiCorridor/Meshes/SM_Monitor` with its separate
+  `SM_MonitorScreen`. No new purchase or vendor-source edit.
+- **Evaluation,2026-10-07T21:18Z:** six desk props/labels and two purposeful staff
+  poses are retained unsaved; actual countertop triangles support both tools.
+  Two complete information panels fit the original monitor apertures and solid
+  wall hosts in actual images. The first text gain was too dim; the second
+  comparison at gain8 is accepted by root and independent review, with five
+  private assets saved and placement still unsaved. These are directory/flight boards, with
+  deterministic text and no generated ad copy.
+- **Whole-project value:** shared reception composition, station directions and
+  accurate home-versus-Survival departure instructions. Central alone permits
+  only one or two ad posters; the five-campaign requirement still applies to
+  other rooms. New NPC variants can use the common ambient-actor head-fill
+  preset described in [Architecture](../ARCHITECTURE.md).
+- **Limits/next checks:** verify role plaques
+  and natural walk-up use, then save the accepted composition only after the
+  held T trial is resolved. Source compilation does not establish all-NPC fit;
+  no current saved station, package or owner approval includes these trials.
+
+### LIB-20261007-ROOM-AD-CAROUSEL — five illustrated campaigns per room
+
+- **Native R evaluation,2026-10-08T01:56Z:** owned P4
+  `SM_Window200X250_V1_Part1` plus `SM_Window200X250_V2_Part2_DigitalWindow`
+  works upright as a134x201cm portrait display mounted on the existing solid
+  W2 backing. Full artwork fits room-facing section1/slot1; original frame/rear
+  glass remain. Five distinct campaigns are observed after integer-modulo index
+  repair. The two private materials and placement are saved, with explicit
+  NoCollision profiles surviving reload. No vendor source asset was edited.
+  This evaluates only R's solid-wall use, not the owner's held T choice or a
+  window hologram treatment. Market/L fit remains unverified; no new acquisition.
+  [Evidence](../validation/2026-10-08-customization-display.md).
+
+- **Native texture checkpoint,2026-10-08T00:37Z:** all fifteen selected R/Market/L
+  campaign textures pass native source/dimension/settings verification and are
+  saved privately, five per room, in the respective `*Campaigns20261008A` folders.
+  Independent disk/source review verifies all fifteen byte lengths and hashes.
+  This supersedes the earlier unrun import status below. No screen assignments,
+  physical fit or complete cycling are verified; L's old four-ad loop is unchanged.
+  Existing vendor controls are protected and no new display hardware is placed.
+  [Native receipt](../validation/2026-10-08-editor-recovery.md).
+
+- **L/source tooling update,2026-10-07T23:36Z:** five L families are packaged as
+  eight unchanged source files in `LoungeCampaigns20261007`; Spousal Abduction and
+  Dock Drink Dock remain owner originals, with three existing illustrated families.
+  Aspect alternatives count once. The saved L loop still has four. R/Market/L
+  source inspection and guarded unsaved texture staging now have a reusable helper;
+  nine source/test-double checks pass, native staging remains unrun. Ship & Parts
+  belongs to T, so no separate showroom campaign job is established. No acquisition,
+  installation, physical fit or owner-approval claim follows.
+
+- **Market source update,2026-10-07T23:10Z:** unchanged Cosmic Tacos plus new
+  Moonjar Pantry, Anchor & Saucer, Relatively Good Clocks and Rock Solid Companions
+  fill five distinct retail-ad source slots. The four builtin-imagegen outputs,
+  exact prompts and two corrected/rejected variants are retained privately in
+  `MarketCampaigns20261007`. Root/independent source-art review passes; native
+  import, placement, screen fit, cycling and owner approval remain unverified.
+  No fictional advertised product becomes a gameplay system.
+
+- **Source preparation,2026-10-07T22:59Z:** R customization has five distinct
+  campaigns under `.agent/local/StationRefinement/CustomizationCampaigns20261007`:
+  three unchanged owner originals and two new builtin-imagegen illustrations,
+  Vacuum Valet and First Contact Photo Co. Root/independent review passes source
+  copy/composition; exact image/prompt hashes are retained. No native import,
+  assignment, screen-fit/cycling or owner approval follows. The market has only
+  Cosmic Tacos; L has five source candidates but a four-campaign saved loop.
+  These are verified gaps, not a reason to regenerate selected T originals.
+  [Source-set evidence](../validation/2026-10-07-room-ad-source-sets.md).
+
+- **Related interior reuse,2026-10-07T20:06Z:** owned P5 benches/planter bases,
+  `CyberpunkRestaurant/Meshes/SM_Shrub_With_LODs_01`, the existing private green
+  lounge shrub material and recovered vendor clips form the unsaved central finish.
+  Root and independent review accept greenery, bay lighting and a modest
+  reception-light correction; whole-room contact, owner approval and persistence
+  remain open. The two existing decorative Havolk ships are also lowered without
+  their four Cube supports in a separate unsaved trial. No new acquisition or
+  source-asset alteration. These resources serve station welcome/market dressing;
+  [central](../validation/2026-10-07-central-welcome.md) and
+  [pad](../validation/2026-10-07-visitor-ship-pads.md) records separate visual
+  improvement from physical acceptance.
+
+- **Owner choice,2026-10-07T18:17Z:** the rotated P4 wall-panel trial is rejected.
+  The complete P1-P5 visual picker is ready under
+  `.agent/local/Outpost/HoloAssetCatalog1/index.html`:71 pictured hardware entries,
+  60 matching parts and116 effects;25 static previews unavailable and labeled.
+  Native inventory plus original graphic masks support the catalog; a material
+  thumbnail is not an assembled or animated display. Only display selection is
+  held for the owner; independent central/Phoenix work continues.
+- **Acquisition:** five intact owner originals are now the T baseline: Thruster
+  Clinic, Galactic Docking, Used UFO Sales, Fragilon fighter finance and Vantaburre.
+  All are byte-identical copies of the uploads. Generated expansions remain an
+  option for missing campaigns; aspect variants do not count as unique campaigns.
+- **Integrated,2026-10-07T16:03Z:** two T TV screen references, five textures,
+  one private common material and two instances saved (receipt96ce33a4/Mainc45dd773).
+  Seven actual play-test pictures showed all five generated campaigns. The owner
+  rejected the text and window placement at16:17; this supersedes lead/peer8.5.
+- **Replacement preparation,2026-10-07T16:26Z:** five original textures imported
+  at native dimensions in a fresh private namespace, without scene assignment or
+  saving. Native P4 frame/pane geometry and visible north/south solid-wall backing
+  are measured. Large portrait display fit and actual cycling remain pending.
+  The subsequent GPU crash initially left recovery unconfirmed. Native checks
+  at17:24 verify all18 recovered central/vendor packages; the five intact T
+  originals were reimported and applied only to an unsaved replacement trial.
+  Original JPEG copies and reviewed recipes are retained.
+- **Whole-project use:** WBS station imagery and atmosphere. Reuse the common
+  timing with five different campaigns per room; central art is staged privately
+  but unassigned. Use architectural hardware from the original five kits. Window
+  imagery requires an embedded translucent hologram. Preserve functional screens.
+- **Limit/next check:** temporary six-second timing was visually observed; saved
+  dwell is20 seconds/.6 crossfade, without a100-second production watch. Proximity
+  audio remains future; no whole-station quality, NPC or performance acceptance.
+
+### LIB-20261007-MERCHANT-VENDOR — actual owned reception gestures
+
+- **Acquisition:** owner FabLibrary Merchant Vendor Animation contains UE4/UE5
+  source variants. Three clips are shortlisted: IdleBartering, TalkLoop and
+  ShowBoothFull_Lt, with their actual source rig; no bulk import.
+- **Evaluation:** current two reception staff share the native Nyxar skeleton.
+  Targeted source/current-clip readback preserves28 reception/action/display/staff
+  actors. Listening/low-key gestures remain the saved baseline.
+- **Whole-project use:** bounded vendor/reception presentation, with later market
+  reuse if fit is good. Actual private import/retarget produced11 in-memory assets
+  with five-phase target joint readbacks. The17:24 native verification confirms
+  all11 recovered vendor packages. A later unsaved trial assigns only four
+  idle/gesture properties across the two existing staff; six photographs and
+  37.355 actual game seconds of natural motion pass targeted preservation.
+- **Limit/next check:** continuous motion, skin sole and hand/counter contact
+  remain unverified. Successful retargeting does not establish accepted vendor
+  presentation. Two boot views were blocked by the counter; corrected views
+  are pending. No saved central map or published revision contains this trial.
+
+### LIB-20261007-OPERATIONS-STORAGE — owned fitted technical storage
+
+- **Acquisition:** existing P4 Genesis SmartStorage400x200 mesh and its eight
+  native materials; no purchase, new pack import or source modification.
+- **Evaluated and integrated,2026-10-07T14:48Z:** two inward-facing, grounded
+  unit-scale banks fill the intervals between T's staffed desks. Actual ten
+  localized floor contacts and six play views establish fit/readability within
+  this presentation scope. Combined save`b8fd4b10`, Main`c6f76875`.
+- **Whole-project use:** WBS station service-room furnishing; coherent enclosed
+  equipment storage can support later technical interiors. The related200x100
+  mesh is a prepared Flight housing candidate, not yet integrated or accepted.
+- **Limit/next check:** closed panels improve wall rhythm but remain repetitive;
+  T8–8.5/10; the owner now defers its9 gate and the smaller enclosure. Revisit front/table fit
+  in context. No storage mechanic, NPC behavior or performance acceptance.
+
+### October7 owner downloads — selected evaluation only
+
+Disk inventory at2026-10-07T02:57Z confirms the resources below. Acquisition and
+evaluation are separate: project-present assets have not been rendered or accepted
+by this inventory. Owner-added folders remain unstaged; no whole-pack import,
+sample-map transplant or new gameplay service is authorized by these entries.
+WBS uses refer to existing station, presentation and transit work.
+
+| Stable ID / resource | Acquisition evidence | Whole-project value, timing and next bounded check |
+| --- | --- | --- |
+| LIB-20261007-CLINIC / Medical Clinic and Laboratory Futuristic Sci-Fi | Content/Clinic:257 packages+3 maps,184.74MiB; matching vault payload. | October9: six instances of the owned armchair furnish R. Private textured tint preserves source maps, and one private mesh copy adds simple BOX collision; source geometry/materials unchanged. Seated contacts and native circulation reviewed. Later cabinets/devices remain candidates; no healing mechanic or whole-pack cook. |
+| LIB-20261007-LASER-BEAMS / Stylized Laser Beam VFX Free | Content/FreeStylizedLaserBeamVFX:52 packages+1 map,19.67MiB; two beam BPs and hit/muzzle materials. | Later existing weapon/equipment effects. Evaluate one beam/emitter in motion against the combat palette; straight beams do not finish curved reception fixtures. |
+| LIB-20261007-GYM-EQUIPMENT / Gym Equipment Assets Pack | Content/GymEAP:180 packages+2 maps+26 FBX,508.98MiB. | Later restrained crew conditioning or mounted gear. Probe selected furniture; no new gym room/exercise system or large-animation-library claim. |
+| LIB-20261007-PLANTS-SAMPLE / Nanite Plants Sample Collection | Content/Nanite_Plants_Sample_Collection:119 packages+1 map,99.70MiB, six geometry packages. No generator found in payload. | October10: Central uses green Acer01, flowering Vitex, Abelia and Ophiopogon in four layered banks; native views recorded in the Central concept receipt. Earlier bare-branch/autumn choices were replaced. Source assets remain intact; private Abelia tint retains leaf detail. Frame-time/VRAM remains unmeasured. No generator, acquisition or full-pack import. |
+| LIB-20261007-CLOUD-TUNNEL / Clouds Tunnel VDB Effects Pack Loop | Content/Clouds_Tunnel_Loop:21 packages+10 maps,12.63GiB; VDB loops/sparse-volume materials. | Existing transit/electrical-field presentation candidate, after T. Inspect one volume's dimensions/frame/storage cost then render; do not cook the whole pack. |
+| LIB-20261007-RIGGED-LIFT / Rigged Sci-Fi Lift Mobile Platform Elevator | Raw BLEND/converted GLB+17 textures,23 files/222.74MiB in owner FabLibrary; native import UNCONFIRMED. | Later cargo/service hardware if needed. Blender rig/topology/material/clip inspection first; GLB conversion does not establish animation preservation or traversal integration. |
+| LIB-20261007-PARAGON-MANNY / Paragon animations retargeted to Manny | Raw5,370 FBX variants/9.89GiB in owner FabLibrary; no proven matching native import. | Later tiny Director/player/NPC gesture set. Confirm skeleton/root-motion/additive/prop requirements and retarget to the actual character; no thousands-of-clips import or plug-and-play claim. |
+
+Native5.8 compatibility, integration, visual acceptance and runtime cost remain
+UNCONFIRMED for all seven. Private inventory receipts:NewStationAssetsInventory1
+SHA4a017e2999e286d0a12021f3d790d00028132471725749a4654186ce4f35bf38;
+NewStationDownloadsInventory2 SHA4a76895f2f1df11073433d500eab780bd8022d7c040681cb5b229abbd8674a6d.
+The detailed raw-file/provenance review remains private under StationRefinement;
+KNOWN_ISSUES owns priority and acceptance.
+
+### ART-20261007-ROOM-ADS — owner regional poster references
+
+- **Acquisition/evidence,2026-10-07T04:16Z:** ten owner-uploaded images, viewed in
+  this conversation: Galactic Docking Authority, Thruster Clinic, Zero-G Massage
+  Parlor, Cosmic Food Truck, Spousal Abduction Services, Hologram Doctor,
+  Used UFO Sales, Morph Clinic/Tentacle Reassignment, Alien Fix-It travel/legal
+  services and orbital hospitality ("Dock. Drink. Dock Again.").
+  Local attachment folders5264F7C5,3FC4A746,682BE831,E6AF401B andA33C0363;
+  these are illustration/layout references, not acquired3D assets or new services.
+  All ten are853×1280 portrait. The two newest files were independently opened
+  and their file bytes verified before this catalog update:
+
+  | Reference / local attachment relative to the conversation folder | Dimensions | SHA256 |
+  | --- | --- | --- |
+  | Alien Fix-It / `A33C0363-5278-4129-BBC2-417913AA03BB/1-Photo-1.jpg` | 853×1280 | `5bea34773c3c22feb3bc05769e3d56e42b8722dd38cfcfca938879847a36d6bf` |
+  | Orbital hospitality / `A33C0363-5278-4129-BBC2-417913AA03BB/2-Photo-2.jpg` | 853×1280 | `7455c0f962d6ac91c7616f8f4b901a52a4c7f9e3c17fe9950fb2388adf4d8eba` |
+
+- **Whole-project use/timing:** after T, docking artwork suits the cargo berth;
+  engine repair suits ship-service screens, wellness the crew area and food the
+  market; the abduction parody suits the lounge rotation and Hologram Doctor the
+  crew-service display rotation. Used UFO Sales suits the hangar; Morph Clinic
+  is another crew-area illustration option, not a new customization or medical
+  service. Alien Fix-It suits reception travel/legal advertisements. The orbital
+  hospitality image supplies a cheeky alien with cocktail, lime/pink neon palette
+  and energetic composition for lounge or visitor imagery; use toned original copy
+  where appropriate, not an added venue or gameplay system. Preserve unique room
+  campaigns and illustrated subjects. These suggested
+  destinations remain adaptable, consistent with the owner's references-as-ideas
+  direction; no extra service, alternate-payment system or minigame is implied.
+- **Evaluation/next check:** strong image-led hierarchy and humorous station
+  character. Native import/placement/readability UNCONFIRMED. Portrait artwork
+  needs a fitted portrait surface or a composed landscape variant; do not squeeze
+  all small copy onto a distant TV or crop away the subject. T's two original
+  local landscape ads remain the current bounded integration pass. The owner
+  explicitly permits adapting or discarding elements that do not fit the game;
+  no native import is claimed for these references.
+
+### LIB-20261006-ORBITPOOL — owned lounge pool set and crew
+
+- **Acquisition:** already installed, not purchased or downloaded by this pass.
+  `Downloads/down/MLR_PoolTable_fb187e14.zip` matches all34 installed private
+  Rocket packages byte for byte. Native probes resolve the table, separate base,
+  cue, rack, triangle and ball to the existing4K material. The source contains
+  no pool-playing animation.
+- **Evaluation,2026-10-06:** native dimensions/materials and an unsaved lounge
+  render confirm the table fits the east social corner. Existing Nyxar and
+  Heavy Space Trooper meshes/compatible clips supply the ambient cast. The
+  owner superseded the magnetic return with a grounded alternating match. Saved
+  StationPoolMatch1 uses private Nyxar/trooper clips, a60second sequence, enclosed
+  return trays and visible hand pickup/placement. Native two-loop playback passes.
+  The owner rejected the first grounded pickup's extreme lean/cue penetration;
+  saved PickupV2 corrects those silhouettes. PickupV3 corrects the behind-body
+  carrying arm; eight actual paused poses confirm the improvement, with ball/grip
+  readability and natural transition feel still unaccepted.
+- **Whole-project use:** station social presentation and activity, within the
+  owner's one-room aesthetic pass. This introduces no playable pool system,
+  progression reward, extra combat character or new dependency. Original meshes,
+  materials and animations stay unchanged; derivative content remains private.
+- **Next check:** retain the owner's accepted lounge presentation; later NPC-detail
+  work can revisit carried-ball visibility and natural motion without another
+  geometry redesign. The return finish is corrected and earlier51.87m room
+  circulation passes; neither pool animation nor walking establishes gameplay
+  acceptance. See the
+  [owner-preview receipt](../validation/2026-10-06-owner-platform-preview.md)
+  and RPT-20261006-04 for evidence and acceptance status.
+
+### LIB-20261006-LOCALARCADE — local generated lounge arcade props
+
+- **Acquisition:** owner's existing local ComfyUI/Hunyuan3D v2, BiRefNet and Blender;
+  no new model download, hosted generation or tool installation. Owner supplied
+  seven cabinet/pinball/rhythm/racer/token references and two alien-crane references.
+- **Evaluation,2026-10-06:** three local image-to-3D jobs supply cleaned upright,
+  pinball and kiosk meshes. Seven frozen Blender exports import to104newprivate
+  packages with measured native bounds/UVs/material slots; process exits1 despite
+  successful receipt, with tangent warnings retained. Rebuilt V2 hard-surface
+  credit/crane props and five other cabinets are now placed in the owner preview;
+  155arcade packages include the V2 imports and two landscape screen-card variants.
+  ArcadePresentation2 adds local face lighting, relocates the terminal to the east
+  perimeter and corrects center fixture diffusers. Fresh actual views confirm
+  readable cabinet faces and an unobstructed pool view; owner-approved brighter
+  cyan trim/general lighting are preserved. Arcade/Hyper Run artwork
+  uses the nested AcornautSandbox checkout at a0c9a0d; Normal/Debris use owner images.
+  Raw receipts and frozen file hashes remain in .agent/local/ArcadeGeneration.
+- **Whole-project use:** distinctive decorative props for the existing lounge arcade
+  corner. No playable minigame, currency transaction or new progression system.
+  Local generation does not itself establish redistribution rights; model/source
+  provenance accompanies any accepted export.
+- **Next check:** ordinary91.365m walking through the revised arcade approaches
+  passes with native exit0 and unchanged maps/saves. More inhabited social
+  composition and fine prop detail remain to assess. Model renders and static clearance passes are not room
+  acceptance. [Local generation/integration evidence](../validation/2026-10-06-local-arcade.md)
+  retains original failures, provenance and frozen-output rerun guards.
+  RPT-20261006-04 owns acceptance.
+
+### LIB-20261006-BARCOUNTER — owned bar dressing and bartender mocap
+
+- **Acquisition:** existing local `Bar_Counter_People-1622ca48/fbx/aa_bar_counter_people.fbx`
+  in the owner's downloaded-assets vault; SHA256
+  `7e806df360623839aceeb54d170f3db2cab58b61d22824a1ddd60c13562e07d9`.
+  Native inspection finds 45 takes: 10 bartender and 35 customer, on a 67-bone source rig.
+  Exact storefront revision/publisher/license tier were not refreshed. The owner’s
+  three TirgamesAssets Sci-Fi Bar Props images are style references only; no new
+  purchase, download or entitlement is claimed.
+- **Evaluation,2026-10-06:** Candidates2 saves 11 new private source/retarget/preview
+  assets for bartender Types 01/02/03 on the existing 61-bone Alien Female presentation
+  rig. It retains the game's 178 cm fit, rather than reshaping the skeleton. Thirteen
+  native samples per clip and six corrected paused studio views provide candidate
+  evidence; the first studio capture is rejected for a transient actor orientation
+  error despite fixture success. Source/map/save preservation passes. A later private
+  Type02 leg-grounding derivative saves successfully but the author process crashes
+  after LogExit; a fresh native process reloads it, renders two room views and a short
+  natural wrap segment, and exits0 with grounded feet. FemaleBartender1 subsequently
+  saves the normalized female/grounded idle into the existing ambient staff role
+  with native exit0 and preserved sources. Fresh saved33.357second full-cycle playback
+  plus two native images passes with exit0 and unchanged maps/saves/ships. Working-hand/
+  prop contact and varied service actions remain unintegrated; bar quality is unaccepted.
+- **Owned furnishing fit:** native inspection resolves current CyberPunkBarAssetSet01
+  counters and CyberpunkRestaurant stools/tableware. Exact serving surfaces are
+  107.554 cm broad / 92.247 cm recessed; the 116.01 cm bounding box and earlier positive-face
+  band estimate are not usable worktop heights. TableSettings2 adds three existing
+  props and repositions one cup asset, with three fresh renders and no new resource.
+  BarPresentation4 saves four private finish materials plus supported fascia,
+  shelving and venue lettering. A measured 4 cm forward correction grounds the
+  coffee machine on the broad worktop, preserving the original support tolerances
+  after three retained failed attempts. Native author exits 0; counter height,
+  vendor sources, ceiling and existing lights are preserved. Four fresh saved-editor
+  views confirm cleaner counter/shelves and grounded props, but the rustic stool
+  silhouette and flat fascia still fall short of the references. BarFurniture1
+  then replaces the four empty seats with owned SM_CyberChair01 at uniform0.968337,
+  preserving actual89.738cm seat height and bounds centers. Native author and three
+  matched saved-editor captures exit0 and preserve source packages/saves. The native
+  brown/distressed chair texture remained a visible western cue. Native texture
+  inspection establishes ORM-B as exposed-metal/wear rather than a clean frame
+  mask. ChairFinish2 saves a private graphite/satin derivative retaining normal/AO
+  detail and bounded G roughness, preserving the four meshes and seat heights;
+  native exit0 and source/map/save preservation pass. Three saved-editor Before
+  views substitute for a separate chair capture. BarLighting1 then retunes four
+  local lights and adds two short-range washes plus shelf housings/lenses, saving
+  only the owner preview with native exit0 and protected content unchanged.
+  Approved ceiling/general lighting stays intact. Three matched After views pass
+  with native exit0 and unchanged files/saves. Review of all six Before/After
+  images confirms better face/suit readability and retained chair finish; hands
+  remain behind the counter, and shelf/fascia glare still needs visual judgment
+  with the displays. Bar assessment is approximately6.5–7/10, with room and owner
+  acceptance still open.
+- **Whole-project use:** high-value reuse for the existing station's ambient service
+  activity and social dressing, WBS 7.3/8.4/8.5. No dialogue system, new gameplay role,
+  tool installation or animation-package acquisition is introduced. Preserve the
+  approved ceiling and general room lighting.
+- **October7 follow-up:**93seconds/three natural wraps of the saved female Type02
+  show hands still short of the counter and expose a low-camera render-bounds
+  failure. A female-component-only fixed-bounds/scale4 trial restores visibility
+  in two actual views; no source mesh/clip/material changes. It is preserved in
+  the separate22:18 editor-closure recovery copy, without establishing continuous
+  skin contact or useful prop handling.
+- **Next check:** fit selected mocap to the measured bar and held props, inspect
+  actual room animation/lighting, and judge the complete lounge. Three clips in a
+  studio do not establish a varied natural bartender loop or owner acceptance.
+  [Native authoring, failed fixtures and captures](../validation/2026-10-06-owner-platform-preview.md)
+  retain the evidence; RPT-20261006-04 owns acceptance.
+
+### LIB-20261006-BAR-DISPLAYS — local illustrated campaigns and owned display hardware
+
+- **Acquisition/provenance:** six new local ComfyUI Qwen-Image-2.1 illustrations,
+  using the existing installation. Exact generation graphs/histories, source PNG
+  hashes and typography recipe remain in `.agent/local/StationRefinement/BarDisplays1`;
+  final manifest SHA256 is
+  `db4c74c112670f0da65532d0f8c35727b7212e7de76e28a61779d7ad8f4f1446`.
+  Four fictional repair/FUI-lawyer/warranty/bounty campaigns and two drinks/food
+  illustrations are original compositions inspired by the owner's image-led
+  examples. Existing CyberpunkRestaurant TV02 and Cyberpunk_Room tablet meshes
+  supply detailed hardware; no new purchase or installation is claimed.
+- **Evaluation,2026-10-06:** the lead approved the composed graphics for import.
+  BarDisplays3 saves six textures/seven private materials and the owner preview
+  with native exit0; all protected sources, other maps and production saves remain
+  unchanged. Two articulated monitors preserve seven native frame material slots,
+  two glass menus stand on measured recessed counter docks, and five old text
+  labels retire. Two earlier attempts failed before any save on a floor-result
+  schema error and a broad-top/recess support mismatch; their receipts remain.
+  Capture3 then passes 13 actual SIE views and a 48.2016-second natural ad cycle
+  with native exit0 and unchanged files/saves/ships. Pixel review confirms all
+  four campaigns and the return to Repair, but rejects the new displays' low
+  brightness under the room exposure. A technical pass is not visual acceptance.
+  Readability1 then saves seven private gain/opacity derivatives and retires four
+  obsolete graphics without changing global exposure or approved room lighting.
+  Native author and eight-image Capture3 both exit0 with protected content/saves
+  unchanged. The capture corrects an earlier false assumption that a transient
+  editor-hidden flag persists; failed Capture1 is retained, and Capture2 was not
+  run. The complete48-second cycle is not repeated because its shader is unchanged.
+  Corrected TVs read well, but the supported tablets look unnatural in recessed
+  sink-like areas and need a dry-worktop placement correction.
+  TabletPlacement1 subsequently moves ten existing actor transforms onto measured
+  dry worktop positions and shortens their stems, saving only the owner map with
+  native exit0. Four fresh SIE views also pass with native exit0 and unchanged
+  files/saves/ships. Docks are visibly grounded, clear of sink/faucet areas, and
+  their glass menus are readable; no further material, lighting or animation
+  change is included. The unchanged TV/cycle evidence is retained without another
+  full-cycle claim. Review estimates: source art8/10, native displays7.5/10, bar7/10,
+  complete lounge6.5–7/10 at that review checkpoint. The owner's subsequent8/10
+  "pass for now" accepts this saved lounge visually, as recorded above.
+- **Whole-project use:** cohesive bar identity, humorous worldbuilding and future
+  reusable station signage, WBS 8.4/8.5. These displays remain decorative: no
+  ordering, communication, contract, reward or other gameplay system is introduced.
+  Existing room lighting, furniture, bartender and pool animations are preserved.
+- **Next check:** preserve the accepted visual result during work on other rooms;
+  later fine detail and NPC activity can build on it. Keep ceiling/general lighting
+  and global exposure intact. Decorative display approval adds no gameplay system.
+  [Saved-preview evidence and retained failures](../validation/2026-10-06-owner-platform-preview.md)
+  records the implementation; RPT-20261006-04 owns room acceptance.
+
+### LIB-20261006-OPERATIONS-DISPLAYS — owned workstation hardware and useful briefing art
+
+- **Acquisition/provenance:** existing P4 Genesis rear panes and P1 Goliath
+  workstation; no purchase, download or install. Four CPU-authored compositions
+  use the actual owned Phoenix/Havolk imagery, real fonts, retained NASA/Gaia
+  Milky Way source and CC0 Poly Haven Rock Face textures. Source manifests and
+  exact recipes remain in `.agent/local/StationRefinement/OperationsGraphics1`.
+- **Evaluation,2026-10-06 owner session /2026-10-07 UTC:** the lead approves
+  Navigation, System Diagnostics, Contract Status and Flight Upgrades artwork
+  for native evaluation. The focused native probe reveals the central slot is a
+  cutout circuit panel; its source material stays intact. A compact64×24cm insert
+  uses four physically supported clips, with no change to existing collision.
+  Author2 saves four textures/four materials and the owner preview at
+  `d2ce5b1a100fd0ca684e5d81619a07551e0e9f3f07fc801015ec0a00d7904563`;
+  fixture/source/map/save preservation passes, with lead-observed native exit0.
+  Capture2 also passes with native exit0 and six actual saved-room views, but
+  independent review rejects blurry rear graphics and old suspended bars crossing
+  Diagnostics/Contracts. The mounted central insert reads correctly. Native
+  author3 saves four private resident copies and moves each complete rear pane/
+  frame pair15cm clear of the actual wall hardware; saved preview
+  `d545cbeafcc346704bdeb9ff0c19fc6cd7f6fe0ce1a3e333151a2ee504ada8da`.
+  Author3/Capture3 both pass, with lead-observed native exit0; independent review
+  of all six matched images confirms sharper rear artwork and clear headings.
+  Whole T remains about4/10 and owner-unapproved. Attempt1 failed before import/save;
+  the later read-only geometry probe passed its fixture but crashed after LogExit.
+- **Whole-project use:** reusable image-led station engineering briefings and
+  service identity, WBS8.4/8.5. These displays add no purchasing, contract,
+  navigation, tier ownership or live-telemetry system. The preview's existing
+  Information actions, all native bodies/frames, room lights and accepted lounge
+  remain intact. Private derivatives preserve the purchased source packages.
+- **Evaluation update,2026-10-07:** the glass Phoenix podium and retained rear
+  displays are saved in the separate owner preview; whole T rates6.5–7/10,
+  below its lead9/10 gate. The selected low-gloss white floor retains native
+  panel detail across1022 main-floor components. Final6 saves the remaining94
+  measured floor references:90 apartment/cargo components in completed private
+  children plus four masked foundation tops, connected through two existing
+  instances. Native exit0/preservation pass; nine-view Capture7 passes/native0.
+  Apartment/cargo panels and stairs retain white detail. Threshold2 separately
+  repairs the omitted cargo entrance Cube through one private child slot and one
+  main instance reference, with native exit0 and exact preservation. Two actual
+  views confirm white; their preservation passes but native shutdown crashes.
+  Foundation angles still give limited coverage and final visual acceptance is open.
+  Opaque2 saves58 private satin/graphite materials on57 existing actors/145 slots,
+  preserving native texture variation and other channels; six actual saved views
+  confirm improved hardware, while the whole room remains about7/10. Earlier4/5
+  partial-save failures remain documented. Local installed Qwen-Image2.1
+  produces five original image-led service plates with real font overlays,
+  prepared as real-font plates. Art3 saves five fitted displays/ten private assets,
+  but actual pixels show mirrored/frame-obstructed Pilot art and dim Flight art.
+  Its save/preservation are verified separately from a native shutdown crash.
+  Art4 rejects the actual frame window before imports/saves, native0 and map
+  unchanged. Mounted6 cleanly saves four physical satin-framed overlay units
+  with known UVs through13 private assets/four attached units and five
+  existing LCD slots. Exact mesh/UV/mount/route preservation passes.
+  Capture7 cleanly produces nine actual views/native0, preserving scene/files/
+  saves/ships. Lead and peer accept full upright artwork and clear mounts on
+  the four side units, about8–8.5/10; Flight remains dim and whole T7–7.5/10.
+  Capture6 stops before images on exact quaternion sign representation; bounded
+  Capture7 verifies all physical vertices and actual parents. The original slot4
+  is a light strip, not an image screen. Existing SciFITrooper
+  Man03 and Robot scout R21 supply two saved private seated clips/rig derivatives;
+  six Crew4 unsaved views confirm natural mixed silhouettes and whole-body
+  framing, with exact lifecycle/scene/file/save restoration. Native shutdown
+  crashes separately. Crew4 leaves full-loop skin/furniture contact and saved
+  operator replacement unverified. Corrected Crew6 supplies six unsaved fullbody
+  views and exact captured121-key tracks; lead and peers accept cosmetic sitting
+  and boot placement, retaining lap/rest idle and continuous contact limits.
+  Exact lifecycle/scene/file/save preservation passes with native shutdown crash
+  recorded separately. Captured1 then saves those exact tracks through two new
+  private clips and three existing operators, preserving unrelated scene/files/
+  saves. Native local position error is zero, unit scale exact, no refit; native
+  shutdown crashes separately. Ordinary3 verifies all three fresh saved typed
+  lifecycles and full preservation with native0/zero scene deltas. Its ordinary
+  podium view is cleaner, while whole-room finish and chair contact remain open.
+  The clean Normal3 matched pair preserves all saved state; reducing the P3
+  normal intensity provides no meaningful visual benefit, so the lead retains
+  the original strengths. Central opaque-console contrast is the next bounded
+  material comparison; no lighting or floor change is part of that test.
+  CentralContrast1 then verifies exact temporary restoration but supplies no
+  meaningful visible improvement; it is not saved. Native values and physical
+  location are correct, effective render route remains unconfirmed, and native
+  shutdown crashes separately. This result does not justify a blanket tint edit.
+  Route2 later cleanly excludes Nanite and Front Material bypasses. FloorDepth2
+  finishes cleanly/native0 with420-slot restoration and complete preservation;
+  lead and peer reject its additional luminance blend, retaining the saved white
+  panel finish. Flight3.5→5 yields measurable ship/title brightness without
+  clipped pixels or control-hardware drift; lead accepts a bounded private
+  one-slot save for preparation. No general material-propagation failure or
+  whole-room9 is established, and the saved preview is still unchanged.
+  Superseded October7 11:36UTC: the bounded darker-satin Contrast2 pair earns
+  lead/two-peer acceptance as a modest local improvement, not whole-room9.
+  Restoration/preservation passes; native shutdown crashes separately. Flight
+  save1 fails before writes on an unretained helper snapshot mismatch; native
+  pointer representations differ across the retained historical snapshots.
+  Save2 serializes only that actor reference by path/class/None and retains raw
+  representations, then saves one private gain5 MIC/one existing slot with
+  complete typed scene/file/save/crew preservation. Native shutdown crashes
+  separately. Current preview is`cedb6acd`; fresh saved appearance is pending.
+  Superseded October7 11:49UTC: CentralCaptured1 saves the exact reviewed darker
+  frame through twelve private leaves/twelve references with complete metadata,
+  scene, source, crew and player-save preservation. Current preview`03852cf1`;
+  native shutdown crashes separately and fresh whole-room review remains pending.
+  Ring2 saves five segmented standing markers
+  through nine private assets, native0/exact preservation. Nine actual saved
+  views confirm normal service selection and subtle brightness variation;
+  their preservation passes but native shutdown crashes separately. Rings
+  rate about8/10 while full T remains about7/10. The first physical-screen
+  author fails its transform preflight before imports/saves; the installed
+  quaternion property contract supports a bounded correction, not new artwork.
+- **Next check:** preserve the sharp rear displays and accepted L while fitting
+  proper service screens, opaque satin hardware and the supplied crew. The active
+  owner queue and acceptance gates remain in KNOWN_ISSUES, not this catalog.
+  [Operations integration evidence](../validation/2026-10-06-operations-displays.md)
+  distinguishes saved content, retained failed attempts and pending visual
+  acceptance. RPT-20261006-04 remains the owner-acceptance log; this catalog does
+  not declare the T room complete.
+
+### TOOL-20261006-ADAPTIVE-PATHFINDING — optional station NPC route candidate
+
+- **Listing evidence,2026-10-06:** the lead reviewed NordVader's
+  [Adaptive Pathfinding System 2.06](https://www.fab.com/listings/e57ff036-fb84-4c86-af7d-8c2a75965c73),
+  which describes Recast-based curved paths and configurable path settings. The
+  listing states UE 4.27–5.7 and an update date literally `05.06.2026`; that web
+  compatibility text does not establish the contents of a newer local package.
+  The [Fab promotion page](https://www.fab.com/limited-time-free) gives an October20,
+  9:59 a.m. Eastern end for the free offer. These are dated listing claims.
+- **Acquisition/evaluation:** owner-installed local package verified at
+  `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins/Marketplace/Adaptive64768b7cb9a5V14/AdaptivePathfindingSystem.uplugin`.
+  The descriptor states VersionName2.06, EngineVersion5.8.0 and Win64; BuildId55116800
+  matches the installed engine, and its source includes the UE5.8 TArray compatibility
+  shim. The owner's Vault manifest also targets UE5.8. This supersedes the older
+  listing's compatibility limit. EnabledByDefault is omitted and the project has no
+  plugin entry; installed UBT treats an omitted engine-plugin default as disabled.
+  No engine-load or runtime test has been performed. The owner authorized live review,
+  not automatic gameplay adoption.
+- **Whole-project value/timing:** conditional later station NPC circulation and
+  ambient activity support, WBS 8.4/8.5. It is separate from the current bar furniture
+  refinement and is not a dependency of that work or a replacement for enemy-flight
+  behavior. Local source supplies a custom AI controller/crowd follower and Recast
+  ground paths; constructor default is LowLevelArc, with crowd corridor creation off.
+  No local Content/examples were found. Current decorative SkeletalMeshActor patrons
+  are not controlled moving AI; later use needs deliberate navmesh/controller/module
+  integration. Compare that work to existing CharacterMovement routes before adoption.
+- **Next check:** assess a bounded existing station route if integration is selected.
+  The verified descriptor/build identity is not an engine-load test. Curved-path capability
+  alone does not establish animation quality, traversal clearance or room acceptance.
+
+### October6 survival presentation evaluation
+
+Reuses the acquired A01 asteroid geometry/layouts, existing owned sky/planet textures,
+replacement squirrel and audio sources. No new model, plugin, pack or service was acquired.
+The near field now has a separate 6,144-instance budget, real collision and persistent
+weapon damage. Private material copies add distance fades without modifying vendor assets
+or their station uses. A fixed distant moon uses the owned `Planet_Project` texture.
+Four private combat-audio derivatives have import/hash and native role checks; listening
+acceptance remains open. Native and rendered evidence, including failed attempts and
+remaining dither/benchmark checks, is in the
+[quality receipt](../validation/2026-10-06-survival-quality.md).
+
+### October6 authoring-tool consolidation
+
+Existing owned resources are consolidated into the canonical game project;
+no assets, models or third-party tools were acquired. ULAT's existing installation
+was relocated into the engine's Marketplace plugin directory, which fixes native
+module-rule discovery while retaining its palette. SS Link 0.5.0 adds an explicit
+current-Wayfarer map snapshot and guarded placement return path. Native checks pass
+12/12 and the current station is loaded in Blender. The full library contains 2,825
+mesh proxies/previews/native Blender assets; ULAT lists 2,617 and native collections
+retain all naming exceptions. Final paths and evidence are in
+[Project State](../PROJECT_STATE.md).
+Unreal remains authoritative for Blueprint logic, animation, effects and complex
+material graphs; Blender meshes are placement representations, not an equivalent
+game runtime. Existing resource evaluations and future options below remain valid.
+
+### TOOL-20261001-QWEN3-TTS — optional offline character voice authoring
+
+- **Evidence:** official [Qwen3-TTS repository](https://github.com/QwenLM/Qwen3-TTS), reviewed 2026-10-01, records the 2026-01-22 release and 0.6B/1.7B variants, including description-based VoiceDesign and CustomVoice generation. These are publisher capabilities, not local results.
+- **Acquisition/evaluation:** reference evaluated only; not installed, selected, downloaded or auditioned by this work. Local VRAM use, speed and voice consistency are UNCONFIRMED. No new tool or plugin is required for Unreal playback.
+- **Whole-project value:** optional source of offline authored clips for existing hero, enemy/Director and NPC presentation (WBS 7.3, 8.4, 8.5, 10.1). Ship accepted recordings, not a runtime model dependency; this adds no dialogue tree or character count.
+- **Next check:** if voice authoring is selected, compare a small recorded/generated sample for identity, pronunciation, emotion and mix; retain source/model revision and verify the applicable model/voice rights before production use. Gameplay event selection, truthful station recall, subtitles and lifecycle remain project work under the October 1 narrative amendment and presentation gate. No installation or quality acceptance is implied.
+
 ### Resource update — 2026-09-24 building library
 
 | Stable ID | Acquisition and evaluation | Whole-project use and next check |
@@ -10,7 +684,8 @@
 
 ### Resource update — 2026-09-22 UTC
 
-- **HERO-20260921 (updated2026-09-24):** owner-generated replacement squirrel evaluated and locally integrated:76623 triangles including180 fur cards,69 bones,7-joint tail and rigid backpack. Original source retained; centimeter-normalized derivative fixes root-scale retarget failure. Eight body+tail clips and existing Squirrel identity are wired in the repaired game. Useful for walker/wardrobe/pilot; no new acquisition or character mechanics. Build/two focused tests and actual-game scripted render pass; owner feel and fresh cockpit fit remain open. Source art/retargeted clips remain private; [recipe](../../Scripts/ReplacementHero/README.md), [receipt](../validation/2026-09-24-replacement-hero.md).
+- **HERO-20260921 (updated2026-10-09):** owner-authorized178cm red-streak squirrel delivery is now adopted into the existing Squirrel row for walker/wardrobe/pilot.17 private packages/68,021,764bytes match their staged sources; mesh has169,599 triangles,12,102 fur cards,69bones and eight matching clips. Derived gait speeds, pilot offset and seven tail envelopes replace the old135cm presentation values. Scripted native central→R passage and idle/jog transitions pass; saved account selection is preserved. Full cabin/pilot/tail contact, natural inputs, performance and owner acceptance remain open. Whole-project value is a consistent player scale alongside178cm crew, without new mechanics or acquisition. [Current provenance](../CONTENT_PIPELINE.md#october9-normalized-crew-and-replacement-hero), [receipt](../validation/2026-10-09-station-crew-central-r.md). The September24 mesh/rig receipt remains historical.
+- **CREW-20261009:** already imported owner-generated Tripo crew, now evaluated/assigned to ten existing station jobs (WBS8.1/8.2/10.3). Dread bartends; Robe/Glyph/Tribal sell outside; Seer/Tendril receive visitors; Olive patrols; Crest delivers; Warden inspects; Amethyst consults the wardrobe guide. Reference178cm/sole0, source materials, skeleton-compatible role clips and shared head fill are verified. Native ticks/poses/routes advance after the startup correction. Acquisition is unchanged; no new downloads, purchases, dancers, population/economy system or runtime AI. Reusable assignment table makes later cast adoption straightforward. Next checks are continuous contact/lighting/performance and owner cast/layout review; [workflow](../STATION_EDITING.md#october9-crew-and-centralr-authoring).
 - Existing Asteroid Library is confirmed locally through read-only Nwiro: Arch, Globular and Linear field Blueprints, plus existing private SolidScenery collision derivatives. `AuthorAsteroidDepth.py` already extracts layout samples; the new native belt uses those samples and fixed solid instances. No plugin/purchase/new content pack is needed for this repair. Evaluate reachability, collision and continuous travel before acceptance.
 - Alien World remains an owned asset resource; its playable gallery entry is retired at the owner's request. Source assets and authoring tools are preserved. Original Acornaut character assets remain archival/test inputs, with selection retired; current Squirrel and approved title artwork remain active.
 
@@ -77,7 +752,7 @@ Acquisition below follows project records or owner messages, not a fresh account
 
 | ID | Resource / source | Acquisition and evaluation evidence | Whole-project value / timing | Remaining needs and next sample |
 | --- | --- | --- | --- | --- |
-| A01 | Asteroid Library - Makemake | Acquired/local; E14 constructs and renders Arch/Globular/Linear (336 instances each), preserving vendor bytes. Normalized layouts feed private presentation data; runtime selects all 15 barren/mineral/fragment/debris meshes. | High; current ACT-03. WBS 3.1, 3.2, 10.3; possible 3.3 | September22 candidate replaces the launch-only belt with 2,048 world-fixed physical rocks/debris across streamed500m cells, reusing baked Arch/Globular/Linear patterns. Larger regional recipes remain separately bounded; Director hazards unchanged. Motion, close-pass surfaces, scale fading, frame cost and target acceptance remain open; not wholesale native Blueprint adoption. |
+| A01 | Asteroid Library - Makemake | Acquired/local; E14 constructs and renders Arch/Globular/Linear (336 instances each), preserving vendor bytes. Normalized layouts feed private presentation data; runtime selects the owned barren/mineral/fragment/debris meshes. | High; current ACT-03. WBS 3.1, 3.2, 10.3; possible 3.3 | October6 candidate expands the separately budgeted world-fixed field to 6,144 rocks/debris across streamed500m cells, with private distance fades, collision and run-persistent destruction. Native placement/hit tests and moving renders exist. Temporal fade appearance, frame cost and final owner acceptance remain separate checks; this is reuse of baked Blueprint patterns, not thousands of ticking Blueprint actors. |
 | A02 | [Sci-Fi / Futuristic Corridor - Leartes](https://www.fab.com/listings/f2f045e8-bbc3-46be-bfcf-f6b3920ac17e) | Acquired/local source; station shell integrated (E1). E8 authors additional reactor, pipes/cables, cases, controls and frame dressing from the same local pack | High; station Phase 1. WBS 8.2, 8.3, 8.5; possible 3.4, 6.6 | Verify the new dressing in the actual station/camera; existing services and physical layout remain authoritative |
 | A03 | Space Station 4 - Gerardo Justel (owner library title) | Supplied local GLB; exterior derivative integrated (E2). Exact listing/license revision unpinned at E2. E16: local Fab metadata gives title Space Station 4, seller Gerardo Justel and listing prefix `a50ebf13`; license revision still unpinned. `Scripts/ImportVaultGlb.py` recognises the existing `SM_StationExterior` and does not import the GLB a second time | High; exterior review. WBS 8.1, 8.2; possible 6.6 | E16: now the fallback exterior only, placed with its single proxy collider when the C16 pit stop body is absent. Fix existing material usage fallback; approach silhouette; conservative collider does not make mesh gaps traversable |
 | A04 | Space Station - Gerardo Justel, blue ring preview | Owner screenshot shows on disk; exact screenshot-to-listing mapping remains unconfirmed. E16: a Gerardo Justel listing titled Space Station (local prefix `9042d765`) sits in the vault as a converted GLB whose local thumbnail shows a blue-lit ring around a central tower, consistent with this lead; it was not compared with the owner's original screenshot. Whole GLB imported as `/Game/Fab/Space_Station_9042/SM_Space_Station_9042` | Conditional; later Phase 1. WBS 6.6, 8.1, 10.3 | Compare against identified local A16 before recommending another source; do not infer a walkable interior |
@@ -408,6 +1083,15 @@ status remains owned/installed; interactive acceptance remains pending under RPT
 
 ### A34 - Sci-Fi Bundle: Cinematographic result (2026-09-22)
 
+- **Owner reference update, October7 evening (recorded October8 UTC):** twelve
+  [holographic display screenshots](../validation/2026-10-07-owner-holographic-display-references.md)
+  now preserve preferred ad-window, terminal and effect families for the next round.
+  The owner emphasizes the many existing options and likes most examples. The
+  picker recount is 71 mixed hardware / 60 parts / 116 styles, including 15 P4 V2
+  digital-window sizes with local assets verified; it is not a total of unique
+  holographic windows. Exact screenshot-to-native-asset mapping and placement
+  remain open under RPT-20261007-01. Preserve upright controls, glass-integrated
+  effects and intact ad copy. Work stays paused; no new purchase or native edit.
 - **Acquisition:** owner-supplied downloaded native Fab pack, listing
   `ab681166-d60e-41cd-882c-2ec5208b1f1e`; local launcher manifest title and identity verified.
   Original download `User downloaded assets/VaultCache/SciFiBunba43dc9a11d8V1/data/Content`
@@ -434,6 +1118,35 @@ status remains owned/installed; interactive acceptance remains pending under RPT
 The owner now authorizes the current Wayfarer station and apartment in the tester game. A private tagged runtime copy consumes the owned station assemblies and furnished apartment; the original outpost and flat building sandbox remain editable and unchanged. This supersedes the earlier separation-only boundary below, without approving every imported pack or adding new housing/economy mechanics. Runtime service/boarding integration and package checks are scoped to RPT-20260924-01; current build, release and remaining acceptance are recorded in [Project State](../PROJECT_STATE.md). ULAT remains an authoring tool in the original isolated checkout; the playable project consumes baked assets without that editor module.
 
 ### September 24 outpost reuse: A34, A26, A29, A31 and C17
+
+**October9 market reuse:** whole original P5 shop groups move closer to the
+promenade; owned Clinic/Restaurant furniture supports two covered seated
+conversational variants and a proper lamp. Two upright P4 hosts use private
+animated translucent material derivatives with the existing five market
+campaigns. Cosmic Tacos remains the unchanged owner source; the four earlier
+generated campaigns gain native display/cycle evidence, not owner art approval.
+Acquisition is unchanged. No vending system, new voice dependency or dancers.
+[Saved-scene and circulation evidence](../validation/2026-10-09-market-atmosphere.md).
+
+**October9 concept-detail reuse:** eight central blue direction panels preserve
+upright P4 window controls; R regroups three complete original-kit hologram bays
+onto its far wall with varied screened cast and private animated hologram
+materials. P1/P3 consultation/storage remain, while the earlier mechanical
+waiting chairs are hidden in favor of owned Clinic upholstery and Restaurant
+tables. Four compatible private seated clips extend the supplied cast to quiet
+conversation/reading roles; exposed-body Amethyst is hidden/replaced by covered
+Olive and Elf is excluded. Acquisition/source assets are unchanged. Native
+collision/circulation and short motion checks pass within scope; quality,
+continuous contact and performance remain separate. [Evidence](../validation/2026-10-09-central-r-concept-detail.md).
+
+**Earlier October9 A34 reuse update:** the live central/R candidate uses P1 GoliathTable02
+for consultation and two complete P3 Storage3000Series_V1 assemblies for records.
+Existing three-part chairs keep their source geometry and receive private satin
+material children. Two existing planter/foliage assemblies group the waiting
+area. Acquisition is unchanged; these are installed owned parts. The30-point
+native route passes, but the full-room views still need coherent grouping and
+lighting/display integration. [Dated evidence](../validation/2026-10-09-central-r-whole-room-review.md)
+and KNOWN_ISSUES own evaluation and next work; no new purchase/import is needed.
 
 **Acquisition remains unchanged: these are already installed, owned assets.** The owner authorized a separate aesthetic station redesign at `/Game/OutpostSandbox/L_AsteroidOutpost`; the active gameplay station and published package are not replaced. [Owner guide](../OUTPOST_SANDBOX.md).
 

@@ -53,6 +53,10 @@ public:
     virtual FString GetLabel() const;
     UFUNCTION(BlueprintPure)
     bool IsWeaponTarget() const;
+    float GetHealth() const
+    {
+        return Health;
+    }
     bool IsSolidHazard() const;
     bool IsEnemy() const;
     bool IsEnvironmentalField() const;
@@ -109,6 +113,8 @@ protected:
     bool bWarningIssued = false;
     bool bHasPreviousShipPosition = false;
     bool bAdmitted = false;
+    // Material-only birth cue; collision and the shared gameplay age remain authoritative.
+    bool bDirectorArrivalActive = false;
     // The storm's beam is culled by distance when it is requested, and a storm can be admitted past that cull.
     bool bFieldPresentationAttached = false;
     FVector PreviousShipPosition = FVector::ZeroVector;

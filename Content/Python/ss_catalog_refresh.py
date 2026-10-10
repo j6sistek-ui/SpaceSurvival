@@ -15,7 +15,8 @@ def tick(_delta):
         _state['steps'] = None
         return
     try:
-        if u.get_editor_subsystem(u.LevelEditorSubsystem).is_in_play_in_editor():
+        levels = u.get_editor_subsystem(u.LevelEditorSubsystem)
+        if levels is None or levels.is_in_play_in_editor():
             return
         if _state['steps'] is not None:
             try:
@@ -40,7 +41,10 @@ def tick(_delta):
 
 
 def register():
-    if _state['handle'] is None and u.ToolMenus.get() is not None:
+    # Editor -game may expose ToolMenus without a LevelEditorSubsystem. It must
+    # not run a catalog scan (or emit a warning every frame) during gameplay.
+    if (_state['handle'] is None and u.ToolMenus.get() is not None
+            and u.get_editor_subsystem(u.LevelEditorSubsystem) is not None):
         _state['handle'] = u.register_slate_post_tick_callback(tick)
 
 

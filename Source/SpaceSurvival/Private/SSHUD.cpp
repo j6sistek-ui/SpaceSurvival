@@ -5,6 +5,7 @@
 #include "SSInputGlyphs.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSOutpostSandbox.h"
 #include "SSWorldActors.h"
 #include "Engine/Canvas.h"
 #include "Engine/Font.h"
@@ -92,6 +93,42 @@ UTexture2D *FindKeyIcon(const UObject *Mapping, const FKey &Key)
     }
     return nullptr;
 }
+FString StationActionName(ESSPanel Panel, const FString &Fallback)
+{
+    switch (Panel)
+    {
+    case ESSPanel::Ship:
+        return TEXT("Choose ship");
+    case ESSPanel::Weapon:
+        return TEXT("Choose weapons");
+    case ESSPanel::Upgrades:
+        return TEXT("Upgrade ship");
+    case ESSPanel::Repair:
+        return TEXT("Service ship");
+    case ESSPanel::Contracts:
+        return TEXT("Choose contract");
+    case ESSPanel::Progression:
+        return TEXT("View pilot record");
+    case ESSPanel::History:
+        return TEXT("View run history");
+    case ESSPanel::Save:
+        return TEXT("Open save options");
+    case ESSPanel::Vendor:
+        return TEXT("Browse ship parts");
+    case ESSPanel::Reward:
+        return TEXT("Choose reward");
+    case ESSPanel::Launch:
+        return TEXT("View flight briefing");
+    case ESSPanel::AlienGallery:
+        return TEXT("Visit alien gallery");
+    case ESSPanel::Paint:
+        return TEXT("Customize ship color");
+    case ESSPanel::Wardrobe:
+        return TEXT("Change character");
+    default:
+        return Fallback;
+    }
+}
 } // namespace
 
 FSlateFontInfo ASSHUD::HudFont(float Size) const
@@ -115,6 +152,38 @@ void ASSHUD::Text(const FString &Value, float X, float Y, float Size, FLinearCol
     FCanvasTextItem Item(FVector2D(FMath::RoundToFloat(X), FMath::RoundToFloat(Y)), FText::FromString(Value),
                          HudFont(Size), Color);
     Canvas->DrawItem(Item);
+}
+FSlateFontInfo ASSHUD::StationFont(float Size) const
+{
+    return FSlateFontInfo(GEngine->GetSmallFont(), FMath::Max(8.f, FMath::RoundToFloat(18.f * Size * Scale)));
+}
+FVector2D ASSHUD::MeasureStationText(const FString &Value, float Size) const
+{
+    if (!FEngineFontServices::IsInitialized())
+        return FVector2D::ZeroVector;
+    const auto Measure = FEngineFontServices::Get().GetFontMeasure();
+    const float Dpi = Canvas ? FMath::Max(.1f, Canvas->GetDPIScale()) : 1.f;
+    return Measure.IsValid() ? FVector2D(Measure->Measure(Value, StationFont(Size), Dpi)) / Dpi : FVector2D::ZeroVector;
+}
+void ASSHUD::StationText(const FString &Value, float X, float Y, float Size, FLinearColor Color)
+{
+    FCanvasTextItem Item(FVector2D(FMath::RoundToFloat(X), FMath::RoundToFloat(Y)), FText::FromString(Value),
+                         StationFont(Size), Color);
+    Canvas->DrawItem(Item);
+}
+void ASSHUD::StationAction(const FString &Value, bool HasUseKey, FLinearColor Color)
+{
+    if (Value.IsEmpty())
+        return;
+    const float Padding = 14.f * Scale, KeyW = HasUseKey ? 30.f * Scale : 0.f;
+    const FVector2D Size = MeasureStationText(Value, 1.f);
+    const float Width = FMath::Min(Size.X + KeyW + Padding * 2.f, Canvas->ClipX - 32.f * Scale);
+    const float Height = FMath::Max(Size.Y, 24.f * Scale) + Padding * 2.f;
+    const float X = (Canvas->ClipX - Width) * .5f, Y = Canvas->ClipY - Height - 28.f * Scale;
+    DrawRect(FLinearColor(.01f, .022f, .032f, .9f), X, Y, Width, Height);
+    if (HasUseKey)
+        Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Top, X + Padding, Y + Padding, 1.f, Color);
+    StationText(Value, X + Padding + KeyW, Y + Padding, 1.f, Color);
 }
 bool ASSHUD::UsingGamepad() const
 {
@@ -746,7 +815,7 @@ void ASSHUD::DrawHUD()
         Paragraph(GM->VillainLine, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, TextW, .75f,
                   FLinearColor(1.f, .56f, .4f));
     }
-    if (!MenuOpen && (!Walker || !Walker->IsDisembarking()))
+    if (!MenuOpen && (!Walker || (!Walker->IsDisembarking() && !Walker->IsBoarding() && !Walker->IsSeated())))
     {
         FString InteractionHint, HintPrefix, HintSuffix;
         FLinearColor HintColor = FLinearColor::White;
@@ -761,26 +830,65 @@ void ASSHUD::DrawHUD()
                 if (Service != ESSPanel::None)
                 {
                     GlyphBeforeHint = true;
-                    InteractionHint =
-                        Service == ESSPanel::Reward && S.run.pendingReward ? TEXT("CHOOSE SECURED REWARD") : Label;
+                    InteractionHint = StationActionName(Service, Label);
                     break;
                 }
-                InteractionHint = It->ServiceGuidance(Walker->GetActorLocation());
-                HintColor = FLinearColor(.68f, .82f, .9f);
+                if (const auto *Terminal = It->OutpostTerminalAt(Walker))
+                {
+                    GlyphBeforeHint = true;
+                    // Use the same action lookup as Terminal::Use, including consoles outside the service radius.
+                    InteractionHint = StationActionName(It->OutpostPanel(Terminal),
+                                                        FString::Printf(TEXT("Read %s"), *Terminal->DisplayName));
+                    break;
+                }
             }
-            if (GM->IsWalkerInsideShip(Walker))
+            if (GM->IsWalkerAtPilotSeat(Walker))
             {
                 GlyphBeforeHint = true;
-                InteractionHint = TEXT("FLIGHT OPTIONS");
+                HintColor = FLinearColor::White;
+                InteractionHint = GM->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight
+                                      ? TEXT("Sit down and depart: Free flight")
+                                      : TEXT("Sit down and depart: Waves");
+                const float CardW = FMath::Min(510.f * Scale, W - 2.f * Margin);
+                const bool PilotCaption = S.settings.subtitles && GM->PilotReactionSeconds > 0.f;
+                const float SelectedY =
+                    FMath::Max(70.f * Scale, 45.f * Scale + MeasureStationText(TEXT("Free flight"), .92f).Y);
+                const float ChoiceH =
+                    FMath::Max(53.f * Scale, SelectedY + MeasureStationText(TEXT("Selected"), .68f).Y - 31.f * Scale);
+                const float KeyOffsetY = 49.f * Scale + ChoiceH, CardH = KeyOffsetY + 32.f * Scale;
+                const float CardX = (W - CardW) * .5f, CardY = H - CardH - (PilotCaption ? 234.f : 105.f) * Scale;
+                const FLinearColor Cyan(.45f, .9f, 1.f), Muted(.56f, .65f, .7f);
+                DrawRect(FLinearColor(.015f, .028f, .045f, .94f), CardX, CardY, CardW, CardH);
+                DrawRect(Cyan, CardX, CardY, 3.f * Scale, CardH);
+                StationText(TEXT("Choose your next flight"), CardX + 16.f * Scale, CardY + 10.f * Scale, .75f, Cyan);
+                const bool FreeFlight = GM->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight;
+                for (int32 Choice = 0; Choice < 2; ++Choice)
+                {
+                    const bool Selected = (Choice == 1) == FreeFlight;
+                    const float ChoiceW = (CardW - 42.f * Scale) * .5f;
+                    const float ChoiceX = CardX + 16.f * Scale + Choice * (ChoiceW + 10.f * Scale);
+                    DrawRect(Selected ? FLinearColor(.06f, .22f, .28f, 1.f) : FLinearColor(.025f, .045f, .06f, 1.f),
+                             ChoiceX, CardY + 36.f * Scale, ChoiceW, ChoiceH);
+                    StationText(Choice == 0 ? TEXT("Waves") : TEXT("Free flight"), ChoiceX + 10.f * Scale,
+                                CardY + 41.f * Scale, .92f, Selected ? FLinearColor::White : Muted);
+                    if (Selected)
+                        StationText(TEXT("Selected"), ChoiceX + 10.f * Scale, CardY + SelectedY, .68f, Cyan);
+                }
+                if (GM->CanChooseDepartureMode())
+                {
+                    const float KeyX = CardX + 16.f * Scale, KeyY = CardY + KeyOffsetY;
+                    const float KeyW = Glyph(EKeys::R, EKeys::Gamepad_DPad_Left, KeyX, KeyY, .65f, Cyan);
+                    StationText(TEXT("Change mode"), KeyX + KeyW + 8.f * Scale, KeyY, .78f);
+                }
+                else
+                    StationText(TEXT("Survival run in progress"), CardX + 16.f * Scale, CardY + KeyOffsetY, .78f,
+                                Muted);
             }
-            if (!GlyphBeforeHint && S.run.pendingReward)
+            else if (GM->IsWalkerInsideShip(Walker))
             {
-                InteractionHint = TEXT("REWARD SECURED / visit the Beacon Log");
-                HintColor = FLinearColor(1, .8f, .4f);
+                GlyphBeforeHint = false;
+                InteractionHint = TEXT("Walk forward to the cockpit chair");
             }
-            Text(TEXT("WASD / left stick: walk | mouse / right stick: camera | Shift / X: run | Space / A: jump | E / "
-                      "Y: use"),
-                 Margin, H - 35 * Scale, .6f);
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
         {
@@ -791,7 +899,9 @@ void ASSHUD::DrawHUD()
         }
         const float HintX = W * .5f - 200 * Scale, HintY = H - 80 * Scale, HintSize = .9f;
         const float GlyphGap = 6.f * Scale;
-        if (GlyphBeforeHint)
+        if (Walker)
+            StationAction(InteractionHint, GlyphBeforeHint, HintColor);
+        else if (GlyphBeforeHint)
         {
             const float GlyphW =
                 Glyph(EKeys::E, Walker ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left, HintX, HintY,

@@ -1,5 +1,48 @@
 # Phase 1 content pipeline
 
+**October 10 T-room layout preview:** The existing Phoenix setup now fills two rows of three, with five identical copies and six independent rotating displays. Existing desks/fittings/screens move aside; all8,934 other pre-save actor/component fingerprints and shared asset bytes are unchanged. Saved `b6496c2e`/9,407 actors passes six-bay reload and two ordinary Play views with production saves preserved; task editor closed, RT off. [T layout evidence](validation/2026-10-10-t-ship-rows.md) supersedes the current-map count below. Future ship purchases/stats/records and desk redesign remain separate; other room content, NPCs and services retained. Owner live appearance review is next.
+
+October10 R-stage adoption changes only Joy's four existing blue skin MIs to Metallic0.75/Roughness0.32, retains texture/tint detail, and reuses the canonical rigged Cyborg and existing PoleHipCircle sequence. Original meshes, skeletons, clips and hair identity are preserved. Three local stage lights and matched hologram housings use existing content; no new source kit/import or material parent. [R stage and native evidence](validation/2026-10-10-r-stage-characters.md) records exact recipes/private backups and confirms GitHub is not the native-content backup. Never replay the adopted authoring stages. Hair physics and long alternating choreography remain open.
+
+
+October10 Joy/Cyborg apartment adoption reuses the saved character assets and installed Genesis nickel material parent. One private pole material and seven map actors are added; the original149 Joy packages/all135 clips remain unchanged. [Evidence and storage](validation/2026-10-10-apartment-residents.md). The separate neutral-pose Blender outfit-fitting copy is not imported or animation-ready content.
+
+**October10 hair correction:** Joy's light-blue source derivative now reversibly
+filters three malformed left-side guide bundles. New base groom/binding and the
+existing review BP are saved; all135 clips, body and original sources are intact.
+149 private packages; fresh Blender/native asset reload passes. Historical recipes
+in `Scripts/StationRecipes/JoyHair139` must not be replayed. Native continuous
+motion/shading remains pending. [Receipt](validation/2026-10-10-joy-hair-and-memory.md).
+
+**October10 Joy derivative:** the owner-confirmed source pair produces a
+light-blue Joy mesh/material variant and135 Cyborg-derived clips, saved in
+JoyLightBlue117 with two groom bindings and a preview Blueprint. Originals stay
+intact; no scene placement. Background Blender CPU and Unreal NullRHI checks
+pass; rendered color/groom/contact review remains open. Guarded historical
+recipes in `Scripts/StationRecipes/CpuJoy121` must not be replayed on adopted
+assets. [Provenance, hashes and limits](validation/2026-10-10-joy-blue-cpu.md).
+
+**October10 Central sources:** `ContentSource/CentralCheckIn` contains the original
+factual kiosk display, editable SVG, deterministic generator and hash manifest.
+Four adopted Central scripts retain the exact native authoring stages. The
+six modular arc meshes are original generated geometry; the three corrected
+planter end caps are now saved/reloaded through CPU119/124. Foliage, kiosk and
+furniture reuse installed assets. Licensed source assets stay untouched.
+The target-v2 image and complete prompt are concept provenance, separate from
+unedited native views. The existing T/R/Market/L ad manifests and Central options
+were rechecked:20 room campaigns plus two Central choices are present and hash
+verified. Reuse them on futuristic displays, including holographic glass; no new
+ad generation is needed for these sets. Source preservation is separate from
+native host/readability/cycling validation.
+[Sources, private package hashes and limits](validation/2026-10-10-central-hub-concept.md).
+
+**October9 Joy review import:** original source preserved. Private reference-pose
+review has corrected rest-pose hair alignment and BeforeDOF translucent eye
+rendering, fixing the observed rear-hair compositing artifact. Existing tooling
+used without installation. This is not an animated production character or
+permanent placement. Import helpers/backups/diagnostics remain local.
+[Handoff and limits](validation/2026-10-09-station-handoff.md).
+
 ## Wayfarer runtime copy — October1
 
 After building the current Editor, run `Scripts/PrepareWayfarerRuntime.py` with `-RenderOffscreen -ExecutePythonScript=...`. It duplicates `/Game/OutpostSandbox/L_AsteroidOutpost` into `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, retaining the furnished `/Game/BuildingLibrary/Home/L_CrewApartment` instance, and adds stable `OutpostLabel:` actor tags because editor labels are not available in a cooked game. It hashes the original outpost, apartment and flat BuildingSandbox before/after and saves only the runtime duplicate. Do not regenerate `AuthorOutpostSandbox.py` over the owner's composition. The runtime copy and its vendor dependencies remain private local content, not Git source assets.
@@ -10,7 +53,7 @@ The cook selects the runtime station and apartment maps explicitly; it does not 
 
 The owner subsequently authorized native HUD/settings integration beyond the locked main menu. [Exact sources and import workflow](../ContentSource/FigmaUIRefresh/README.md) retain27 PNGs, Keania One TTF/license and source hashes. The guarded importer creates `/Game/SpaceSurvival/UI/Refresh`; original licensed art and main-menu assets stay unchanged. `DirectoriesToAlwaysStageAsUFS` includes only the new Fonts folder. HUD is transparent over the real world; blue vitals chassis/percentage labels are deliberately omitted. Settings/pause use approved layout assets; current service actions reuse the frame without claiming every mockup-specific portrait/composition. Preset selection/remapping remains deferred.
 
-**2026-09-22 runtime-only update:** asteroid belt rendering now uses the already-authored `/Game/SpaceSurvival/Licensed/SolidScenery` barren/mineral/fragment derivatives for query/physics collision. No vendor asset was edited or newly authored. Director asteroids use a runtime orange instance of existing `M_Hazard` (Tint 1/.18/.015, Emission .35, Roughness .7) on all slots; their radii are 3x catalog values before admission. The world field retains authored rock materials. New Data Asset multiplier defaults apply to older serialized DA_Phase1 without a private content rewrite. Alien gallery and original Acornaut are retired from player selection; their assets remain available for authoring/provenance and existing offline fixtures. The owner-planned replacement Squirrel (<80k equipped triangles, editable segments) has not been supplied/imported.
+**Historical 2026-09-22 runtime-only update:** asteroid belt rendering adopted the already-authored `/Game/SpaceSurvival/Licensed/SolidScenery` barren/mineral/fragment derivatives for query/physics collision. No vendor asset was edited or newly authored by that update. Director asteroids received a runtime orange `M_Hazard` instance; the [October 6 private photographic arrival workflow](#october-6-survival-presentation-derivatives) supersedes that surface. Their radii remain 3x catalog values before admission. New Data Asset multiplier defaults apply to older serialized DA_Phase1 without a private content rewrite. Alien gallery and original Acornaut were retired from player selection while preserving assets for authoring/provenance and offline fixtures. The replacement Squirrel was still pending at that checkpoint; its later rig record is below.
 
 Status and storage: [PROJECT_STATE.md](PROJECT_STATE.md). Active work and owner acceptance: [KNOWN_ISSUES.md](KNOWN_ISSUES.md). This document describes the selected licensed authoring workflow and retains the original pipeline and dated evidence; it is not a current build inventory or task queue. Earlier licensed presentation is documented in [ASSET_REFRESH.md](ASSET_REFRESH.md) and [combined space look](production/COMBINED_SPACE_LOOK.md). A Git checkout alone omits licensed inputs and derivatives.
 
@@ -23,6 +66,53 @@ Generated geometry, much of the material palette and synthesized audio remain or
 ## Selected licensed visual workflow
 
 This workflow extends an already authored project using the owner's supplied packs and existing UE 5.8/Blender installations. **Do not run `Build.ps1 -Target Content` or regenerate baseline sources for this visual pass.** Build the Editor module to expose the new reflected presentation classes, then run only the inspection and authoring scripts below. The integration lead serializes Editor processes, builds and captures. Do not launch an overlapping import, run vendor example maps or activate plugins as a side effect of inspection.
+
+### October 6 survival presentation derivatives
+
+The dense traversable field reuses the owned `SolidScenery` collision derivatives and the
+evaluated Arch/Globular/Linear samples retained by `AuthorAsteroidDepth.py`. Native code owns
+the 6,144-instance target across 125 resident 500 m cells; no generator Blueprint actors or
+additional paid assets are required. Ordinary changes replace cells incrementally with a 4 ms
+soft work budget. Incoming cells within 1,000 m of the camera take priority over that budget;
+outgoing cells wait beyond 975 m, outside the 950 m fade horizon. Initial construction and
+teleports exceeding one logical cell remain synchronous. See [architecture](ARCHITECTURE.md#survival-quality-repair--october-6)
+for ownership and the distinction between a work budget and measured frame time.
+
+After compiling the reflected `FieldMaterialOverrides` property, run
+[AuthorFieldDistanceFade.py](../Scripts/AuthorFieldDistanceFade.py) through the integration
+lead's serialized offscreen Editor Python invocation. Default execution inventories source
+materials without asset writes; `-SSAuthorFieldFade` backs up the look and existing private
+targets, recursively duplicates complete material parent chains under
+`/Game/SpaceSurvival/Licensed/FieldFade`, and assigns the override map on `DA_DeepSpaceLook`.
+Private masked materials retain source surface inputs and use the engine's native blue-noise
+opacity masking, including compatible instance overrides. The author removes its earlier
+added `DitherTemporalAA` nodes before installing the native mask, preserving original cutouts
+and their effective clipping thresholds. This avoids dithering twice. Runtime sets the field's 700–950 m fade
+and the regional 0.75–0.95-cell fade separately. Hard culling retains a geometry-radius margin.
+The author preserves original material hashes and mesh assignments, so station uses and vendor
+surfaces do not inherit the fade. Receipts/backups stay under `Artifacts/SurvivalQuality/FieldFade`.
+
+[AuthorDirectorRockArrival.py](../Scripts/AuthorDirectorRockArrival.py) defaults to an asset
+read-only dry run. The explicit `-SSAuthorDirectorArrival` apply creates or updates only
+`/Game/SpaceSurvival/Licensed/DirectorArrival/M_DirectorRockArrival` and
+`MI_DirectorRockArrival`, backing up existing targets under
+`Artifacts/SurvivalQuality/DirectorArrival/<GUID>`. It duplicates the existing photographic
+rock material, preserves and verifies the original package hash, and adds native masked
+temporal dithering driven by `SpawnVisibility`. The runtime parameter rises from 0.15 to 1
+over 0.30 seconds while collision, admission, damage and actor age retain their ordinary rules.
+The private material keeps the textured warm Director cue; missing arrival content falls back
+to the photographic surface. Compile, saved material readback, actual arrival rendering and
+cooked dependency inclusion remain separate verification steps.
+
+Breakup uses the existing `SM_AsteroidSmall` mesh without asset reimport. Native cosmetic
+bursts have twelve proportional rotating chips, at most eight active bursts and a 2.4-second
+maximum lifetime. Field/regional destruction places two of those chips near the actual hit
+surface and plays breakup audio there; the remaining silhouette-scale chips originate around
+the destroyed body's center. These noncolliding effects leave the existing dangerous
+medium-hazard fragments and admission rules intact. Final native and rendered validation is
+pending; source implementation and author receipts do not establish appearance or performance.
+Record outcomes only in the [quality receipt](validation/2026-10-06-survival-quality.md),
+[project state](PROJECT_STATE.md) and [active issue log](KNOWN_ISSUES.md).
 
 ### Locked Figma startup menu
 
@@ -330,7 +420,47 @@ AuthorContent reapplies this material after ordinary geometry authoring; Validat
 
 The owner found the uniform bright stars overpowering the ship and station on September 14. `AuthorSpaceVisualPass.py` now exposes a separate `StarBrightness` scalar (0.30, formerly a fixed 0.55), raises the star texture to 1.45 and modulates it by a single-level Fast Gradient 3D directional gain from 0.18 to 1.0. The direction matches the cubemap, with no time input, so brightness variation stays fixed as the camera turns. Nebula brightness, object lighting and spawn counts are unchanged. The separate authored material/cook/capture evidence is in the current visual receipt; the earlier C++ test suite is not a test of star appearance.
 
-## September 23 replacement squirrel rig candidate
+## October9 normalized crew and replacement hero
+
+The later central/R composition pass reuses owned P1 `SM_GoliathTable02`, complete
+two-part P3 `SM_Storage3000Series_V1`, the existing three-part TitaniumIndustry
+chairs, Cyberpunk tablet/paper props and paired station planter/foliage actors.
+No vendor source is overwritten. Sixteen private material children in
+`/Game/OutpostSandbox/StationRefinement/WholeRooms20261009` retain source textures,
+normals, masks and emissive controls, with local roughness/specular/metalness and
+paint-tint overrides. These assets and map `14a49399` must travel together in a
+private restore; Git only contains the recipe and rendered evidence. This is
+reused art with unfinished visual evaluation, not a new acquisition or license.
+See the [whole-room receipt](validation/2026-10-09-central-r-whole-room-review.md).
+
+Owner-delivered assets remain private under
+`/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/<Name>` and
+`/Game/SpaceSurvival/Licensed/HeroReplacement178`. Ten non-dancer crew are assigned
+to existing jobs through `Scripts/IntegrateStationCrew.py`; original actor IDs,
+routes, assets and shared head-fill behavior remain. Exact Skeleton identity is
+required for each chosen idle/walk/role clip; source mesh reference height178cm
+and sole0 are verified separately from animated contact.
+
+The squirrel source handoff is
+`.agent/local/CharacterAssets/HeroSquirrel_20261008/Delivery_RedStreaks/`.
+Its already-derived staging delivery in `Squirrel178_Sandbox` supplies17 packages:
+mesh, skeleton, eight clips, three materials and four textures. All68,021,764 bytes
+match the source manifest after copying. Keep the original delivery and derivation
+receipts; do not rerun imports or change the other contributor's worktree.
+`Scripts/IntegrateHero178.py` verifies these inputs and updates only the existing
+Squirrel roster row: unit mesh scale,178cm fit, sole0, derived pilot offset,
+walk/jog/run speeds and seven supplied tail surface envelopes. Other identities
+and the owner's persisted selection are preserved. The `/Game/SpaceSurvival`
+always-cook root already covers the new paths; no fresh cook was performed.
+
+The new69-bone mesh has169,599 triangles and12,102 fur cards. Materials/textures and
+red-streak identity are preserved from the supplied delivery. Native Play loads
+the mesh for walker/pilot; a temporary native walker traverses central→R with
+idle/jog/idle transitions. Physical inputs, every clip/tail contact, stairs,
+cockpit/pilot fit and performance remain separate follow-ups in the
+[current receipt](validation/2026-10-09-station-crew-central-r.md).
+
+## September 23 replacement squirrel rig candidate (historical)
 
 The owner-selected first-party Tripo import `sci-fi_squirrel_3d_model` has a private
 replacement rig and separate tail-animation layers. [Tools/HeroRig](../Tools/HeroRig/README.md)

@@ -79,7 +79,15 @@ def _digest(path):
 
 
 def _backup(u, output, run_id):
-    source_dir = Path(u.Paths.convert_relative_path_to_full(u.Paths.engine_plugins_dir())) / 'UltimateLevelArtTool/Content/Data'
+    plugins_dir = Path(u.Paths.convert_relative_path_to_full(u.Paths.engine_plugins_dir()))
+    candidates = [plugins_dir / folder / 'Content/Data'
+                  for folder in ('UltimateLevelArtTool', 'Marketplace/UltimateLevelArtTool')]
+    installed = [folder for folder in candidates
+                 if all((folder / (name + '.uasset')).is_file()
+                        for name in ('DT_MB_ModAssetData', 'DA_MB_ToolData'))]
+    if len(installed) != 1:
+        raise RuntimeError('Cannot uniquely locate installed ULAT data packages: ' + str(candidates))
+    source_dir = installed[0]
     backup_dir = output / 'ULATBackups' / run_id
     records = []
     for name in ('DT_MB_ModAssetData', 'DA_MB_ToolData'):

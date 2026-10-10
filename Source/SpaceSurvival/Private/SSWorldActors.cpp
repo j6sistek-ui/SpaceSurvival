@@ -1,4 +1,5 @@
 #include "SSWorldActors.h"
+#include "SSWeaponDamage.h"
 #include "SSAsteroidBurst.h"
 #include "SSVFXPresentation.h"
 #include "NiagaraComponent.h"
@@ -24,6 +25,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
+#include "Materials/Material.h"
 
 namespace
 {
@@ -209,6 +211,8 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
     const auto Hazard = Content(this)->Hazard(Kind);
     const auto Enemy = Content(this)->Enemy(Kind);
     Health = FMath::Max(1.f, IsEnemy() ? Enemy.Health : Hazard.Health);
+    if (Kind == ESSWorldKind::MassiveAsteroid)
+        Health = FMath::Clamp(120.f + BodyRadius * .02f, 120.f, 600.f);
     LifetimeSeconds = IsEnemy() ? Enemy.Lifetime : Hazard.Lifetime;
     TelegraphSeconds = FMath::Max(1.f, FMath::IsFinite(Hazard.TelegraphSeconds) ? Hazard.TelegraphSeconds : 3.5f);
     FieldPulseInterval = FMath::Max(.2, FMath::IsFinite(Hazard.PulseInterval) ? double(Hazard.PulseInterval) : 1.8);
@@ -223,11 +227,14 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
     // This one photographic family uses local triplanar coordinates, so mesh UV
     // density cannot select its mips. Pin the shared three maps only for the
     // bounded lifetime of newly admitted rocks; never disable streaming globally.
-    const bool bPhotographicAsteroid = (Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
-                                        Kind == ESSWorldKind::MassiveAsteroid) &&
-                                       Visual->GetMaterial(0) &&
-                                       Visual->GetMaterial(0)->GetPathName() ==
-                                           TEXT("/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic");
+    const UMaterial *RockMaterial = Visual->GetMaterial(0) ? Visual->GetMaterial(0)->GetMaterial() : nullptr;
+    const bool bPhotographicAsteroid =
+        (Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
+         Kind == ESSWorldKind::MassiveAsteroid) &&
+        RockMaterial &&
+        (RockMaterial->GetPathName() == TEXT("/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic") ||
+         RockMaterial->GetPathName() ==
+             TEXT("/Game/SpaceSurvival/Licensed/DirectorArrival/M_DirectorRockArrival.M_DirectorRockArrival"));
     if (bPhotographicAsteroid)
     {
         const float ResidencySeconds =
@@ -248,6 +255,7 @@ void ASSWorldBody::Configure(ESSWorldKind InKind, float InRadius, float InDamage
 
 void ASSWorldBody::UpdateVisual()
 {
+    bDirectorArrivalActive = false;
     const TCHAR *Asset = TEXT("SM_AsteroidSmall");
     switch (Kind)
     {
@@ -354,6 +362,15 @@ void ASSWorldBody::UpdateVisual()
     // slot, not the component override left by an earlier Configure/BeginPlay.
     // The existing pulse/force clocks continue to own every Emission update.
     UMaterialInterface *Material = nullptr;
+    if (bDirectorRock)
+    {
+        const TCHAR *ArrivalPackage = TEXT("/Game/SpaceSurvival/Licensed/DirectorArrival/MI_DirectorRockArrival");
+        if (FPackageName::DoesPackageExist(ArrivalPackage))
+            Material = LoadObject<UMaterialInterface>(nullptr, ArrivalPackage);
+        if (!Material)
+            Material = LoadObject<UMaterialInterface>(
+                nullptr, TEXT("/Game/SpaceSurvival/Materials/M_RockPhotographic.M_RockPhotographic"));
+    }
     if (IsEnvironmentalField() && Visual->GetStaticMesh() &&
         Visual->GetStaticMesh()->GetPathName().StartsWith(TEXT("/Game/")))
         Material = Visual->GetStaticMesh()->GetMaterial(0);
@@ -371,8 +388,19 @@ void ASSWorldBody::UpdateVisual()
         DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), IsEnvironmentalField() ? .25f : 1.f);
         if (bDirectorRock)
         {
-            DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), .35f);
+            // Keep the Director's warm color cue, with the actual rock albedo,
+            // roughness and normals instead of the flat orange diagnostic surface.
+            DynamicMaterial->SetVectorParameterValue(TEXT("RockTint"), FLinearColor(.95f, .32f, .10f));
+            DynamicMaterial->SetScalarParameterValue(TEXT("Desaturation"), .35f);
+            DynamicMaterial->SetScalarParameterValue(TEXT("Emission"), .025f);
             DynamicMaterial->SetScalarParameterValue(TEXT("Roughness"), .7f);
+            float ArrivalValue = 1.f;
+            if (DynamicMaterial->GetScalarParameterValue(FMaterialParameterInfo(TEXT("SpawnVisibility")), ArrivalValue))
+            {
+                DynamicMaterial->SetScalarParameterValue(TEXT("SpawnVisibility"),
+                                                         FMath::Lerp(.15f, 1.f, FMath::Clamp(Age / .30f, 0.f, 1.f)));
+                bDirectorArrivalActive = Age < .30f;
+            }
             for (int32 Slot = 0; Slot < FeedbackMesh->GetNumMaterials(); ++Slot)
                 FeedbackMesh->SetMaterial(Slot, DynamicMaterial);
         }
@@ -404,6 +432,11 @@ bool ASSWorldBody::IsWeaponTarget() const
 {
     if (IsEnemy())
         return true;
+    // October6 owner direction: every ordinary asteroid can be shot through.
+    // Size changes durability, not an invisible invulnerability rule.
+    if (Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
+        Kind == ESSWorldKind::MassiveAsteroid)
+        return true;
     if (!IsSolidHazard())
         return false;
     const auto Definition = Content(this)->Hazard(Kind);
@@ -420,7 +453,7 @@ FString ASSWorldBody::GetLabel() const
     case ESSWorldKind::MediumAsteroid:
         return TEXT("FRACTURABLE ASTEROID");
     case ESSWorldKind::MassiveAsteroid:
-        return TEXT("MASSIVE BODY · EVADE");
+        return TEXT("DENSE ASTEROID · BREAK OR EVADE");
     case ESSWorldKind::Wreckage:
         return IsWeaponTarget() ? TEXT("BREAKABLE WRECKAGE") : TEXT("STRUCTURAL WRECKAGE · EVADE");
     case ESSWorldKind::ElectricalStorm:
@@ -537,6 +570,12 @@ void ASSWorldBody::Tick(float DeltaSeconds)
         return;
     const FVector PreviousBodyPosition = GetActorLocation();
     Age += DeltaSeconds;
+    if (bDirectorArrivalActive && DynamicMaterial)
+    {
+        DynamicMaterial->SetScalarParameterValue(TEXT("SpawnVisibility"),
+                                                 FMath::Lerp(.15f, 1.f, FMath::Clamp(Age / .30f, 0.f, 1.f)));
+        bDirectorArrivalActive = Age < .30f;
+    }
     ShipContactRemaining = FMath::Max(0.f, ShipContactRemaining - DeltaSeconds);
     AddActorWorldOffset(LinearVelocity * DeltaSeconds, false);
     if (IsSolidHazard())
@@ -715,7 +754,8 @@ void ASSWorldBody::ReceiveWeaponHit(float Damage)
 void ASSWorldBody::OnDefeated()
 {
     PlayDestructionAudio();
-    if (Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid)
+    if (Kind == ESSWorldKind::SmallAsteroid || Kind == ESSWorldKind::MediumAsteroid ||
+        Kind == ESSWorldKind::MassiveAsteroid)
         ASSAsteroidBurst::SpawnBurst(GetWorld(), GetActorLocation(), LinearVelocity, BodyRadius);
     const auto Definition = Content(this)->Hazard(Kind);
     if (Kind == ESSWorldKind::MediumAsteroid)
@@ -1123,11 +1163,11 @@ void ASSProjectile::Tick(float DeltaSeconds)
     {
         if (auto *FX = GetWorld()->GetSubsystem<USSCombatVFXSubsystem>(); FX && CollisionDamage > 0.f)
             FX->PlayImpact(WorldHit->ImpactPoint, WorldHit->ImpactNormal, bPlayerShot, bPlayerShot);
-        ASSWorldBody *Body = Cast<ASSWorldBody>(WorldHit->GetActor());
-        if (Body)
-            if (bPlayerShot || Body->IsSolidHazard())
+        const bool Accepted = bPlayerShot && SSWeaponDamage::Apply(*WorldHit, CollisionDamage);
+        if (!bPlayerShot)
+            if (auto *Body = Cast<ASSWorldBody>(WorldHit->GetActor()); Body && Body->IsSolidHazard())
                 Body->ReceiveWeaponHit(CollisionDamage);
-        if (bPlayerShot && CollisionDamage > 0.f && Body && Body->IsWeaponTarget())
+        if (Accepted)
             if (auto *Mode = GetWorld()->GetAuthGameMode<ASSGameMode>())
                 Mode->NotifyPlayerShotHit();
         Destroy();

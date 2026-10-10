@@ -1,0 +1,165 @@
+# Native resolution and Phoenix cabin refinement
+
+2026-10-07T19:51Z [TOOL] PARTIAL. Three actual visual candidates are now reviewed.
+The14cm inboard screen clearance is accepted by root and independent review;
+lighting remains rejected. Phoenix7 makes stairs and passage readable but washes
+out nearby walls with specular glare, while the cockpit floor/seat remain dark.
+The owner editor retains Build39; no new linked binary, walked traversal, owner
+approval or published package is established. Earlier evidence below is historical.
+
+## Third visual candidate and source disposition
+
+Root session38303 exits0. `PhoenixCabinLive7_OwnerReview1/manifest.json` SHA
+`4d50ffe99405f31ead6a013b9948bd2a37e8fadde6a2fc12a5f9512cc1c223f5`
+records five ordinary2742x781 **UNSAVED_PIE_CABIN_METAL_RESPONSE_CAMERA_ONLY**
+images and exact restoration of four original lamps, displays, camera/view/HUD,
+quality, settings, dirty packages, saved Main and player saves. Three temporary
+lights use1600/1100/1400lm,15cm source radius and specular.5; the four original
+lamps change only specular to.5 during this test. Original materials and exposure
+inputs remain unchanged. Root and independent reviewers reject overall lighting
+for broad wall glare and the dark cockpit, despite improved passage/stairs.
+Both panes remain complete and unobscured. No fourth visual lighting candidate
+is started in this review cycle.
+
+The three unaccepted lamp additions are removed from local `SSShipVisualRig.cpp`.
+SHA `b7e2c481c47e115b72d83493ee4bb7a971bcc5299af9090b20c2df771d1b4b98`
+retains only the accepted pane/case clearance change relative to the current
+committed file; original four lamp parameters match HEAD exactly. Installed
+clang-format dry-run/Werror, scoped diff and40 structural checks pass. This latest
+source is unbuilt. The earlier Build41/42 editor-held DLL block remains; no build
+retry is made while the editor holds unsaved work. Cabin lighting remains an open
+visual defect for a later coherent fixture/material-response review.
+
+## Actual material and exposure diagnosis
+
+2026-10-07T19:26Z [TOOL] A read-only check in the actual parked Phoenix completes
+with root session90672 exit0 and eight preservation checks passing.
+`PhoenixCabinLive6_MaterialRead1/manifest.json` SHA
+`158cbab9659f7f5a0df0bbeae1e6f5531daba492ee4514518c4fe5588cd9a604`
+binds the three original licensed masters with no material overrides. Both opaque
+masters use a Metallic texture input; original cabin lights have specular scale.025.
+Streamed Wayfarer exposure inputs are unbound, priority50, weight1, fixed brightness8,
+while the walker camera has no exposure overrides. This does not measure the final
+blended SceneView or per-pixel metallic values. No images, temporary lights, source
+material changes or exposure changes were made. The final candidate tests cabin
+light response while preserving those original inputs.
+
+## Second visual candidate: clear panes, lighting still rejected
+
+2026-10-07T19:09Z [TOOL] Root session18337 exits0. `PhoenixCabinLive6_OwnerReview1/manifest.json` SHA `7ae1f9c7fd783769f58b102137492165d2f83a954c10fe65e22bf3ea187aac80` contains five ordinary2742x781 images, labeled **UNSAVED_PIE_CABIN_CORRECTION_CAMERA_ONLY**. The two existing pane/case pairs move14cm inboard temporarily; their artwork, mesh, scale, rotation and collision remain intact. Root and independent review find both complete displays unobscured. The three temporary lamps use450/300/300lm at local(-600,0,300), (350,0,365), (560,0,460), with radii440/280/250cm. The stair framing now includes the treads, but stairs and cockpit remain too dark. Different camera positions/FOV prevent a direct pixel-brightness comparison with Phoenix4. No lighting acceptance follows from the technical pass.
+
+Earlier Phoenix5 fails before any candidate mutation or images on constructor-location roundoff (maximum9.095e-13cm), with original receipt SHA `b887fd39999c8145d540c80a86973e7ab2c2e16ec44fc4770c234367e40ddcf2` retained. Phoenix6 uses a1e-11cm identity-only guard for the four known constructors, then captures, changes and restores exact native `RelativeLocation` values. All other identity fields and all restoration comparisons remain exact. Helper SHA `8823f214fe4e7b897a593bdc64ea7912f3cae81589907b44238caa41dc175390`; capture SHA `bfdc1493966113168d7d9c04a85f446b33ef98feb380a5dc7c67cd0f50747e2f`.
+
+Phoenix6 verifies restored view target, HUD, camera axis, four original lamps and all existing displays; all four temporary actors are absent. Viewport, quality, owner preview world, dirty packages, saved Mainc45, settings and player saves remain unchanged. PIE is stopped; the central unsaved trial and held T trial remain preserved. Known BP_Blinds startup errors are retained separately. This is the second actual visual lighting candidate, not six completed visual passes; earlier preflight failures produced no images. Next: preserve the accepted screen clearance in source and diagnose the actual cabin material/light response before one coherent final lighting trial.
+
+## Actual temporary cabin review
+
+2026-10-07T19:12Z [CODE] The accepted screen clearance is now prepared in `SSShipVisualRig.cpp`, SHA `265f7f1e09198be5d43127136b24d9d5968fd1117a1b551bde301211a8cfaf3f`: cases use Y±166.5cm and panes Y±164.1cm. Only these offsets and the explanatory comment change from the earlier unlinked candidate. Installed clang-format dry-run/Werror and40 structural checks pass. This latest source edit is unbuilt and not part of the currently loaded Build39. The older rejected three-lamp source remains unlinked pending the final lighting decision; it is not promoted by accepting the screen clearance.
+
+2026-10-07T18:41Z [TOOL] `PhoenixCabinLive4_OwnerReview1/manifest.json` SHA `830bec7637367349e16808aa3d37ac23d51a4534e46f5fbdffcd88cf9c810d91` retains five ordinary 2742x781 images of passage, stairs, cockpit and both existing cabin panes. Root collected driver session99389 exit0. The actual Survival PIE world contains the native SSShip, Phoenix presentation rig and possessed SSWalker; a temporary camera supplies the views. The title menu remains open. This is **UNSAVED_PIE_LIGHTING_TEST_CAMERA_ONLY**, not walked boarding, a new loaded binary or a saved build.
+
+The three temporary PointLights exactly match the compiled lamp settings described below. Full actor paths now distinguish the fresh persistent-level lights from identically named lights in streamed station levels. Earlier `PhoenixCabinLive3_OwnerReview1` failed that short-name check before any image or candidate-light assignment; the original failure and subsequent exact fresh-path cleanup remain retained. No original station light was claimed or changed.
+
+Phoenix4 records exact restoration of the original view target, HUD and temporary camera axis fields; absence of all four temporary actors; unchanged original four cabin lamps, viewport, quality, editor world, dirty-package lists, player saves, settings and saved Main `c45dd77376d5a90c90df410ffd733e528c1177d5a05d1c17264799e41037e8b9`. PIE is stopped. Known BP_Blinds startup errors remain separate from the successful camera capture and are not claimed fixed.
+
+2026-10-07T18:41Z [TOOL] Root inspected all five actual images and rejected visual acceptance. Passage floor and stairs are still too dark; both inward-facing panes cross broad structural ribs, obscuring their middle sections. The stair close view also aims too high for useful tread review at the owner's wide viewport. The next bounded candidate must correct lamp placement/coverage, pane clearance and tread framing together. The T wall/display asset choice remains held for the owner; this cabin correction does not replace that hardware or artwork. No new visual score, owner approval or durable lighting acceptance is inferred from the technical pass.
+
+## Resolution diagnosis
+
+Read-only `RuntimeResolutionProbe1.json` SHA `accad86acf9388758b4ab66305d72d1f68ebd10de3be7c4c6d710179fa3b8237` passed preservation and native exit0. The executed wrapper SHA is `e7e7bd876c316e6ccb62973e0cd63234504b39662124da8c5202bb9808d7d3d5`, retained as `FrozenRuntimeResolutionProbe1-e7e7bd87.py` in the ignored StationRefinement evidence folder. Its report finished at02:52:19.926Z and process closed at02:52:24.768Z, before a later x/y getter correction at02:52:33Z; that correction was not the evaluated input.
+
+- Before SIE: `r.ScreenPercentage=0` and `sg.ResolutionQuality=0` select the default, not zero rendered pixels. Desktop default mode1 selects the installed display-resolution heuristic. Editor quality3/Epic, texture pool1000MB, TSR history percentage200.
+- Actual `USSGameInstance` at0.8 and3.01 game seconds: quality2/High, `r.ScreenPercentage=87`, `sg.ResolutionQuality=87`, resolution-scale getter87, texture pool800MB, TSR history100. Dynamic resolution remained disabled. Actual controller viewport was1014×344; user settings reported1280×720. This proves production ApplySettings selects a reduced scale, not the owner's full-screen render dimensions.
+- Source default is `SS::Settings::quality=2`. `USSGameInstance::Init` reads the existing settings save and calls ApplySettings; OnStart reapplies it. ApplySettings calls `SetOverallScalabilityLevel` then `ApplyNonResolutionSettings`. Installed BaseScalability defines quality-index screen percentages50/71/87/100/100 and Native100. Installed headers expose the relevant API; private engine implementations are absent.
+- Owner-global EditorSettings separately enables high-DPI viewports and PIE screen-percentage override with ProjectDefault mode. The Python probe cannot access the effective rendered SceneView rectangle. Its actual fraction is explicitly UNMEASURED; it must not be inferred directly from a CVar when editor override applies.
+- Accepted L TabletPlacementCapture1 and newer T DisplaysCapture3 both explicitly force console screen percentage100. Their logs confirm later scalability cannot override that higher-priority setting. Both switch to High/pool800/history100 on SIE. These captures are not equivalent to an ordinary default game launch. No texture-budget deficit was measured; do not raise streaming pool merely from this evidence.
+
+## Prepared correction and gates
+
+`SSGameInstance.cpp` SHA `ee96eb4cb8191cdb106ad9ac399e1ba564e00fc6d88058c36b6a01ab28bba56a` adds `SetResolutionScaleValueEx(100.f)` after the selected quality tier. Lighting/effects quality, motion-blur preference, frame limit, startup window/resolution and owner saves retain their existing paths. No forced4K, new quality UI or global cinematic preset is introduced. Clang-format check passed; Build32 is lead-owned and pending at this record's timestamp.
+
+`SpaceSurvival.Settings.NativeResolutionAcrossQualityTiers` is a new bounded native regression in `SSGraphicsSettingsAutomationTests.cpp` SHA `38a0d22fde4548ace2e65b646337357f04a2a9304996bb4392dea8d845fac02c`. It calls the real production ApplySettings across Low/Medium/High/Epic, checks scale and runtime percentage100, and checks quality/frame/motion/window/resolution retention. It neither initializes owner storage nor saves and restores runtime settings afterward. It rejects a higher-priority console override that could mask the defect. Native execution is pending.
+
+Separate read-only `probe_runtime_resolution2.py` SHA `a9d34dc0e92b3399216f0d0f798d6ba358e949a187c28796956028aaa11fb0a3` is prepared for post-build SIE, without console overrides. It binds the source hash, requires an initial default0 sentinel and then actual r/sg/getter100 while retaining quality2. Native execution and paired visual comparison remain pending. Native100 processes about32% more scene pixels than87 at the same viewport dimensions; performance impact is UNMEASURED.
+
+## Cabin scope and retained failures
+
+Frozen `SSShipVisualRig.cpp` SHA `b50ea96d8d3c693526adcccc23a064efc9e804cd28f99c2a4028b24993bf985e` and header SHA `889de3740293da091b3e2584dc49379b1a1881926dbd8ca9b97d984da41be0da` replace two boarding lamps with four bounded parked-only warm/cool lamps, reducing glossy highlight contribution. Two physical wall cases and80×48cm panes fit measured rear walls atY±183.158, leaving over350cm passage. No camera/physics or cargo-room geometry change. Source formatting passes; build and native boarding pixels remain pending.
+
+Private materials reuse the already saved reviewed Navigation/Diagnostics textures unchanged with localUV0 and letterboxing. Attempt1 failed before saves on a fresh texture dimension readback; receipt `af7821c56c9f0bd8a70bd7e7033290454c4b71ab98399db0b6f099a2e650c5ad`, native exit0/preservationtrue. Attempt2 retained source-PNG/texture hashes, waits texture compilation and passes dimensions, then failed on the unsupported keyword CustomInput constructor; receipt `820ae24806aa1eabc45fc8d2a0c9818f79e211916306d5bf6f997c5735ee11ab`, native exit0/preservationtrue/no saves.
+
+New attempt3 uses the previously successful zero-argument CustomInput/set_editor_property pattern, explicit color sampler and layout/compile API. Helper SHA `ae6b0b3eaeb411a22f3cb16c74d7267bb3d1e3966dfdde694c820bb12badb04b`; wrapper SHA `bc7cb5d5adf7eb8dfc1abfcbc160d5619d4e3fde4f5baeb0f13e051e7a40099a`; Python compile passes.
+
+2026-10-07T02:59Z [TOOL] Author3 JSON succeeds with preservationtrue, receipt SHA `33b6befeece05e847f26e7f13a2a9bda58aba1af3c3c3056d35bc502f1d6db4b`. Navigation material saved SHA `3a4db62b6015b4efb163c3f86cbb367676b654d3532227bab8877b5d6de1b86c`; Systems SHA `836cc795a11abc9dadcb81ef64a44dd5fc9db53be382950d1eaadd3aa6c8ecae`. Both textures initially return a32×32 resource placeholder, then finish-loading returns2048×1024 matching registry/sourcePNG. Both shaders compile without errors. This establishes the fresh asynchronous-load cause of the failed dimension readback; it is not proof of general streaming degradation. Only two new private materials saved; map/textures/actors/lights remain unchanged. Native launcher exit remains lead-owned/UNCONFIRMED in this agent's evidence. UV orientation, boarding brightness, lifecycle/traversal, physical comfort and owner approval remain UNCONFIRMED. No helmet/suit prop has been added.
+
+## Superseding build and orientation evidence
+
+2026-10-07T03:11Z [TOOL] Build32 failed after90.41s with one project compiler error: the regression cleanup called nonexistent `IConsoleVariable::UnsetFlags`. The installed interface exposes `ClearFlags`; that spelling correction alone produced Build33 PASS,8.42s UBT time (lead launcher8.7s). Existing engine/plugin deprecation warnings in Build32 were retained; no engine edits were made.
+
+Tests33 native process exit0 did **not** satisfy the clean regression gate. `FlightCockpitTests33/index.json` SHA `12bce5b944e7fe8f91c951db9dd7bae79c8bf03f06765d64342a0d892527f52f` records one success-with-warnings, zero clean successes/errors/failures, with three motion-blur ownership warnings. Repeated real ApplySettings retained its previous `SetByGameSetting` preference while scalability attempted a weaker setting. The intended cockpit test was not discovered because the run supplied the wrong suite path; this run establishes no cockpit regression result.
+
+2026-10-07T03:11Z [CODE] Build34 candidate supersedes the original settings source hash. `SSGameInstance.cpp` SHA `821cc0d44c7e375aa73574e912cd7ae3a9be3e84c2a523d69a209f064526ea1b` releases the prior blur preference with the installed history-aware `Unset(ECVF_SetByGameSetting)` only when the current priority is exactly that level, applies quality with native resolution100, then reapplies the owner preference if no stronger override exists. It preserves higher project/console overrides. Regression SHA `c2768da6c30c135e10d8f0057bf1efd533db9e73c1ae4a391a454c42345267c2` releases its own preference before restoring prior settings. No warning filters or global flag clearing were introduced. New frozen Probe3 SHA `86bd988b6007bb8a635adb5faa9ff2d10038150825dd5b2d0f82b144237c1648` binds the changed source. Probe2 remains retained and unrun. Build34/native suite/Probe3 are pending; format, scoped diff and40 structural checks pass.
+
+`CabinPlaneProbe1.json` SHA `47dbaf8df6c1a4d7e453f20068cf81d0766f6b62819301b0887975d33f96c0be` passes preservation with lead-confirmed native exit0. Actual engine plane has two+Z-facing source triangles. Native transforms prove both previous cabin panes faced outward. Swapping the two yaw values while retaining Roll+90 turns both fronts into the passage and retains topV0/left-to-right UV orientation. This corrects the earlier unverified orientation, with new frozen Rig.cpp SHA `e3468cdb6d42f314028c20333638e045235b5e4cb92766b0f6927876b72f8226`; header remains unchanged. Actual displayed imagery and lighting still require fresh cabin pixels.
+
+2026-10-07T03:12Z [TOOL] Lead confirms CabinDisplays3 launcher71799 collected native exit0. This supersedes that author's process-exit UNCONFIRMED statement above; no visual or lifecycle acceptance is implied.
+
+## Prepared texture residency measurement
+
+2026-10-07T03:11Z [TOOL] Installed `Engine/Build/Build.version` now reports5.8.3, changelist58210709, superseding earlier5.8.2 observations. Epic's [UE-384736](https://issues.unrealengine.com/issue/UE-384736) (updated2026-09-04) reports the ListStreamingTextures virtual-texture-prefetch crash fixed for5.8.2. The prepared diagnostic refuses earlier engines.
+
+Frozen `probe_streaming_residency1.py` SHA `4f6ba53b69779eb901fb2bff0c594840da50815f4e0da3afffa634682eae0a21` samples actual SIE controller views at the saved T entrance and L bar, with ListStreamingTextures log markers at2/10/25 game seconds in each view. It changes only an unsaved diagnostic camera/view target, with no budget/quality/mip/cache changes and no forced preload or finish-loading call. It protects maps, reviewed assets, source, owner settings and saves. Python compile passes; native run and Current/Wanted/MaxAllowed/BudgetBias parsing are pending. JSON execution success alone will not establish adequate memory, effective render dimensions, performance or owner approval.
+
+2026-10-07T03:19Z [TOOL] Build34 succeeds in13.41s UBT time, lead-collected native exit0. Focused `FlightCockpitTests34/index.json` SHA `d08c3e523b33b9ab198d37a612d139b7390be61fbb02551dbd8937ee0dd3c4fd` reports two clean successes, zero warnings/errors/failures/not-run: `SpaceSurvival.Settings.NativeResolutionAcrossQualityTiers` and `SpaceSurvival.Integration.PhoenixCockpitDeparture`. Lead confirms native exit0. This supersedes the prepared34/native-suite state above; ordinary SIE Probe3, fresh cabin pixels, owner comfort/visual approval and representative performance remain pending.
+
+2026-10-07T03:19Z [DECISIONS] Streaming1 remains **UNRUN**. Its unconstrained PIE viewport could repeat the observed1014×344 view, which cannot establish owner2560×1369 texture demand. Exploration found no proven reflected manual SIE resize API; the existing CaptureSpaceLook route uses standalone `-game -ForceRes -ResX/-ResY`. No speculative resize API, new C++ instrumentation, pool increase or Streaming2 execution was introduced. Meaningful owner-size residency measurement is still UNCONFIRMED; graphics diagnosis must keep that limitation visible.
+
+2026-10-07T03:22Z [CODE] Read-only lifecycle review found a remaining cabin display defect: the existing SetStationCollision loop includes all RigPawn static meshes, so it re-enables QueryOnly Pawn/Visibility/Camera collision for the four new display details after their creation-time NoCollision setting. The focused departure pass does not prove these decorative components remain non-colliding. The lead authorized a minimal CabinDetails exclusion after the frozen Probe3/Modes34 captures complete; no source edit has occurred yet. Treat decorative no-collision as **NOT MET** until that correction is built and reviewed. Cabin lighting/orientation can still be judged independently from current34 pixels.
+
+2026-10-07T03:29Z [TOOL] RuntimeResolutionProbe3 finishes with preservationtrue/PIE stopped and lead-confirmed native exit0, but its whole receipt remains **FAIL**, SHA `38a97ab84a9563368f383f07090dc940bcf668aff2ce66084cd336fef62ab6ca`. Both actual SIE samples at0.8/3.001 game seconds show r.ScreenPercentage100, sg.ResolutionQuality100 and resolution-scale getter100, TextureQuality2/pool800/history100, dynamicfalse/frame120. Viewport remains1014×344. The probe incorrectly expected overall scalability2; actual GetOverallScalabilityLevel returns−1 for the intentional mixed native100/High2 profile. Installed Scalability.h includes ResolutionQuality and documents−1 Custom; GameUserSettings.h also documents that result. Private implementation bodies are absent. These samples prove the native-resolution settings applied without console masking, but do not retroactively turn the failed probe into a pass or measure effective SceneView resolution.
+
+New `probe_runtime_resolution4.py` SHA `360eb9d549c4a990e884c85cb86b752fc789cc8fd4892f8fb5b31c8a2788d1d7` retains the native100 assertions and expects the measured Custom−1 profile. It additionally reads all11 reflected quality getters and their matching runtime sg.* CVars and requires each remain High2. Source/scene/settings/save guards remain intact; no rendering override was added. Python compile passes. This attempt is **PREPARED/UNRUN**, held for a later T author/capture opportunity.
+
+2026-10-07T03:29Z [TOOL] Lead-confirmed Modes34 exit0 and capture pass produced nine1920×1080 actual-camera images under `Artifacts/EndgameSoak/4856d15519f448f8a79682fe2e46fe00`. This agent independently reviewed all nine. Cabin structure and an upright inward-facing Navigation pane are visible; the floor/ramp and stair treads remain very dark. Ordinary passage framing does not establish the right pane's readability. Waves/Free Flight cards and single cabin guidance fit without overlapping their own text; selected Free Flight and native departure are shown. Fixture assistance/paused transition timing remain disclosed in boarding-capture.json; no physical-input, uninterrupted timing, performance or owner approval is inferred. Cabin visual estimate5.5–6/10 is an agent judgment, not owner acceptance.
+
+2026-10-07T03:29Z [CODE] After Modes34 released the source freeze, the authorized Build35 candidate excludes only the four CabinDetails meshes from the generic SetStationCollision loop. Creation-time NoCollision now remains intact in source. Frozen Rig.cpp SHA `de3b49c6e2dd513443b7b0b76331078b6b3a98307b64b9415f4e1bb4b8c29310`; header SHA unchanged `889de3740293da091b3e2584dc49379b1a1881926dbd8ca9b97d984da41be0da`. No lighting, geometry, camera or physics-profile change. Native clang-format, scoped diff and40 structural checks pass. Native build and actual contact/route verification remain pending; decorative no-collision is **PREPARED**, not visually/native accepted.
+
+## Build35 and bounded native source review
+
+2026-10-07T03:52Z [TOOL] Build35 supersedes the pending-build statement above: lead-collected native exit0,10.81s. `FlightCockpitTests35/index.json` SHA `c2b535ea147c4f4ca4aeaa735fdbfc108e4f226d849b53028b94fc43fec8c7d3` reports one clean `SpaceSurvival.Integration.PhoenixCockpitDeparture` success,12.640s, zero warning/error entries, failures or not-run tests; lead collected native exit0. This verifies the production boarding/chair/departure route with the CabinDetails collision exclusion. It does not individually test every decorative case/pane contact, physical-input comfort, cabin appearance or owner acceptance. No new package was produced.
+
+2026-10-07T03:52Z [CODE] Independent read-only review of native changes since `30253b1` found no additional confirmed correctness defect. The new chase arm opts in for the physics hull, preserves its authored anchor and resets the follow frame after docking. Cockpit selection consumes press edges before Use and preserves active Survival authority. Cabin lights/details follow parked visibility and rig lifetime; the Build35 exclusion retains creation-time NoCollision for decorative panes/cases. All20 modified/new C++ files pass the installed clang-format `--dry-run --Werror`; `git diff --check 30253b1 --Source` passes. Earlier CheckProject40 and focused clean Tests34 remain their own evidence, rather than new executions. Owner materials, UI assets and configuration were not changed by this review.
+
+The exact native checkpoint scope is15 Private `.cpp` files: SSBoardingAutomationTests, SSFlightControllerAutomationTests, SSFreeFlightAutomationTests, SSGameInstance, SSGameMode, SSHUD, SSOutpostSandbox, SSSaveLifecycleAutomationTests, SSShip, SSShipVisualRig, SSStation, SSStationBoardingReview, SSStationOutpost, SSChaseCameraArm (new), SSGraphicsSettingsAutomationTests (new); and five Public `.h` files: SSContentTypes, SSGameMode, SSHUD, SSShipVisualRig, SSChaseCameraArm (new). Physics-driven camera comfort, effective SceneView fraction, representative2560×1369 streaming pressure/performance, cabin floor/stair visibility, right-pane readability and owner approval remain open.
+
+2026-10-07T04:00Z [TOOL] Corrected RuntimeResolutionProbe4 passes with preservationtrue/PIE stopped and lead-collected native exit0. Receipt SHA `ba20bb93ceec8f64eb26e00cda55d8060b78db4edc3d4413e1d32a9f9ba84a2d` binds the prepared wrapper `360eb9d549c4a990e884c85cb86b752fc789cc8fd4892f8fb5b31c8a2788d1d7`. Actual `USSGameInstance` samples at0.800/3.011 game seconds retain r.ScreenPercentage100, sg.ResolutionQuality100 and scale getter100, all11 quality getters and matching runtime sg.* values2/High, overall−1/Custom, dynamicfalse, frame120, texturepool800 and TSRhistory100. No render-scale console override is used. This supersedes only Probe4's UNRUN state; failed Probe3 remains retained. Controller viewport is still1014×344 and effective SceneView fraction remains explicitly unmeasured; representative owner-resolution texture pressure/performance and visual acceptance are not established.
+
+## Live editor cabin lamps: compiled, linking blocked
+
+2026-10-07T15:37Z [USER] The owner's15:18 decision supersedes the earlier T9 execution gate and assigns Phoenix interior to one agent. The bounded implementation preserves the hull, input, camera, flight physics, existing four lamps and two mounted cabin displays. No gear has been placed.
+
+2026-10-07T15:37Z [CODE] Applied Rig source SHA `d97c29c1f77de79d0018cfc32aec18d58d199981d7292867fa90bb73e5bf7dd0` adds these ship-local lights through the existing registered RigPawn/CabinLights ownership, parked visibility and rig teardown:
+
+| Lamp | Local position, cm | Lumens | Radius, cm | Color |
+|---|---|---:|---:|---|
+| Rear floor | −450,130,285 | 180 | 300 | 1,.90,.78 |
+| Lower tread | 350,−32,350 | 120 | 175 | .90,.94,1 |
+| Upper tread | 525,32,430 | 120 | 175 | .78,.88,1 |
+
+All three use inverse-square lumens,4cm source radius, specular.025, shadows and no volumetric scattering. Boarding-review source SHA `39197292f5977def3156f2f4fa6a7bd5729344c23e6e1444de63c4386cb3eea8` adds an opt-in tenth possessed-camera right Systems-pane view and restores forward control rotation before continuing. It does not change ordinary gameplay input. Public Rig header remains SHA `889de3740293da091b3e2584dc49379b1a1881926dbd8ca9b97d984da41be0da`.
+
+2026-10-07T15:37Z [TOOL] Root-collected Build40 launcher exit1/UBT6 failed after128.15s. Both cabin translation units compiled, but a unity translation unit reported C4459: save-test locals named Session hide the rendered-view diagnostic's anonymous global. Retained log `Editor-Cabin40-20261007T1525.log` SHA `a5058452a33262b8e1bf1a3e754ab9dd9b519260fc87f622c2852865d6084e5f` is under ignored StationRefinement evidence. The minimal prerequisite repair renames only that private global and its63 identifier references to RenderedViewSession; diagnostic source SHA `a4ce81e4e1dc0e453a75d0a82507a72a9b00cc77f5a871888e3fffeed2c77505`. No API, serialized field, log key or behavior changes.
+
+2026-10-07T15:37Z [TOOL] Build41 compiles the repair without a project compiler error, but linking fails after48.20s: UBA cannot open the module DLL for writing after20s, retries without UBA, then LNK1104 reports the DLL locked by the owner's open Unreal editor. Root collected launcher exit1/UBT6. Retained `Editor-Cabin41-20261007T1532.log` SHA `9aa6429e6f09621650586958b424c7f569d6cd02baa1aafcbf2dc69704e627c7`. Existing engine C4996 deprecation warnings remain; no engine changes were made. This is **compiled source/link blocked**, not a successful build.
+
+The on-disk module remains Build39 SHA `582d1fb955480af2d399d19bd393de0340d87657f02f7dafa1f0c658e7472390`; no new linked or loaded seven-lamp binary is established. Installed clang-format checks for the three changed files, scoped diff checks and40 structural checks pass. No automation, package, upload or merge has validated the new lamp source. Do not retry builds, enable LiveCoding or close the owner's editor without the lead's authorized integration route.
+
+2026-10-07T15:37Z [CODE] Import-inert `preview_phoenix_cabin_live_lamps1.py` SHA `c70edc21d55ec91208d46f711920b0b844862c721c3b32b4cd8099e92a0aeab6` prepares the same three lamps on the actual parked gameplay Phoenix in the existing live PIE session. It follows the original parked-lamp visibility and destroys only its three temporary actors; it does not supply durable RigPawn ownership. Status **PREPARED/UNRUN**, photos must be labeled UNSAVED_PIE_LIGHTING_TEST. `PhoenixCabinLiveRoute1.md` SHA `3cffd974f86406599107e039fbb7cf04e9ce2b55b9fc3975b3c9f7e20aa3f309` identifies normal Survival PIE travel/New Game→hangar→rear ramp without StartRun, Resume or a save reset. A camera-only fallback cannot establish walked traversal. Right-pane readability, floor/tread contrast, hotspots and departure lifecycle remain actual-review gates.
+
+2026-10-07T15:37Z [CODE] Next restrained dressing proposal is one secured rear-wall flight-boot dock using owned `/Game/SciFITrooper_Man_03/Modulars/SM/SM_Boots.SM_Boots`, source SHA `328a15984ae5bc640a3ed1210d4ebc95b4dcea291afa4fad161362f132a422b6` (197,888bytes). Native class, bounds, pivot, sole orientation and material roles are **UNCONFIRMED**. Import-inert `inspect_phoenix_cabin_boots1.py` SHA `4ad569e20510cd6413c5c90d38e34d28cbe1c6e52065db1d6a7ce6ae80555a58` prepares one asset-only class/bounds/material readback in the same later cabin session, retaining raw evidence before predicates and verifying source bytes. Python compile passes; native read remains **UNRUN**. No placement, hull binding, flight collision or optional helmet delay is authorized by that measurement alone.
+
+2026-10-07T16:40Z [TOOL] Build42 reuses the compiled objects and attempts only two link actions; it supplies no new compilation or linked binary. UBA again cannot write the module DLL after20s, retries without UBA and receives LNK1104; UBT exits6 after22.71s. Retained `Editor-Displays42-20261007T1633.log` SHA `15de1483d3d6d133a1cebf6f63c881633f7e9ff15f0828ba821c2fceda8c720c`. All three cabin/prerequisite CPP hashes above remain unchanged, as does the on-disk Build39 DLL SHA `582d1fb955480af2d399d19bd393de0340d87657f02f7dafa1f0c658e7472390`. Durable seven-lamp gameplay remains unverified; no package or publication changed.
+
+2026-10-07T16:40Z [TOOL] The lead's earlier restricted process check falsely suggested that the owner editor had closed. Authorized host inspection instead verifies UnrealEditor PID5488 and its localhost5353 listener; the lead did not close or kill it. Editor closure or loss of in-memory assets must not be inferred from that restricted check. Two30s bridge-initialization timeouts prevent further live integration; recovery of the unsaved editor state is **UNCONFIRMED**. Cabin camera/temporary-lamp and gear placement trials remain **UNRUN**. No further build, hidden editor or bridge retry is authorized until the lead verifies the owner editor's recovery.
+
+2026-10-07T16:41Z [TOOL] Subsequent owner-photo and lead log inspection confirm a GPU-crash dialog and `DXGI_ERROR_DEVICE_HUNG` at16:26:23 in `Saved/Logs/SpaceSurvival_2.log`, with installed engine5.8.3. The existing editor process still holds the DLL; the crash is a separate live-integration blocker. The reported9.45GB/15.2GB memory counter does not establish VRAM exhaustion. No driver, TDR or underlying crash-cause diagnosis is established; the lead has asked the owner to dismiss the dialog and reopen SpaceSurvival/Nwiro before further integration.

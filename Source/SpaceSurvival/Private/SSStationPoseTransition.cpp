@@ -1,4 +1,5 @@
 #include "SSStationPoseTransition.h"
+#include "SSStationTailFloor.h"
 #include "Animation/AnimSingleNodeInstanceProxy.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimationPoseData.h"
@@ -17,6 +18,9 @@ struct FSSStationPoseProxy : FAnimSingleNodeInstanceProxy
     FName TailRoot = NAME_None;
     float TailTime = 0.f;
     float TailWeight = 0.f;
+    FName FloorTailRoot = NAME_None;
+    TMap<FName, FBox> TailEnvelopes;
+    TOptional<FPlane> TailFloor;
 
     virtual void PreUpdate(UAnimInstance *Instance, float DeltaSeconds) override
     {
@@ -27,6 +31,9 @@ struct FSSStationPoseProxy : FAnimSingleNodeInstanceProxy
         TailRoot = Transition->GetLandingTailRoot();
         TailTime = Transition->GetLandingTailTime();
         TailWeight = Transition->GetLandingTailWeight();
+        FloorTailRoot = Transition->GetFloorTailRoot();
+        TailEnvelopes = Transition->GetTailFloorEnvelopes();
+        TailFloor = Transition->GetTailFloor();
         if (Revision != Transition->GetSourceRevision())
         {
             Source = Transition->GetSourcePose();
@@ -69,6 +76,42 @@ struct FSSStationPoseProxy : FAnimSingleNodeInstanceProxy
                 }
             }
         }
+        if (TailFloor.IsSet() && !TailEnvelopes.IsEmpty())
+        {
+            const FReferenceSkeleton &Reference = Bones.GetReferenceSkeleton();
+            const int32 RootIndex = Reference.FindBoneIndex(FloorTailRoot);
+            const FCompactPoseBoneIndex Root = Bones.MakeCompactPoseIndex(FMeshPoseBoneIndex(RootIndex));
+            if (Root.IsValid())
+            {
+                FCSPose<FCompactPose> ComponentPose;
+                ComponentPose.InitPose(Output.Pose);
+                const FTransform RootTransform = ComponentPose.GetComponentSpaceTransform(Root);
+                TArray<FVector> Points;
+                Points.Reserve(TailEnvelopes.Num() * 8);
+                for (const auto &Entry : TailEnvelopes)
+                {
+                    const int32 MeshIndex = Reference.FindBoneIndex(Entry.Key);
+                    const FCompactPoseBoneIndex Index = Bones.MakeCompactPoseIndex(FMeshPoseBoneIndex(MeshIndex));
+                    if (!Index.IsValid())
+                        continue;
+                    const FTransform Bone = ComponentPose.GetComponentSpaceTransform(Index);
+                    for (int32 Corner = 0; Corner < 8; ++Corner)
+                        Points.Add(Bone.TransformPosition(FVector(Corner & 1 ? Entry.Value.Max.X : Entry.Value.Min.X,
+                                                                  Corner & 2 ? Entry.Value.Max.Y : Entry.Value.Min.Y,
+                                                                  Corner & 4 ? Entry.Value.Max.Z : Entry.Value.Min.Z)));
+                }
+                const FQuat Correction = SSStationTailFloor::ClearanceRotation(
+                    Points, RootTransform.GetLocation(), RootTransform.GetRotation().GetAxisY(), TailFloor.GetValue());
+                if (!Correction.IsIdentity())
+                {
+                    const FCompactPoseBoneIndex Parent = Output.Pose.GetParentBoneIndex(Root);
+                    const FQuat ParentRotation = ComponentPose.GetComponentSpaceTransform(Parent).GetRotation();
+                    Output.Pose[Root].SetRotation(ParentRotation.Inverse() * Correction * ParentRotation *
+                                                  Output.Pose[Root].GetRotation());
+                    Output.Pose[Root].NormalizeRotation();
+                }
+            }
+        }
         return Result;
     }
 };
@@ -77,6 +120,35 @@ struct FSSStationPoseProxy : FAnimSingleNodeInstanceProxy
 FAnimInstanceProxy *USSStationPoseTransition::CreateAnimInstanceProxy()
 {
     return new FSSStationPoseProxy(this);
+}
+
+void USSStationPoseTransition::SetTailFloor(FName RootBone, const TMap<FName, FBox> &Envelopes,
+                                            const TOptional<FPlane> &ComponentFloor)
+{
+    FloorTailRoot = NAME_None;
+    TailFloor.Reset();
+    TailFloorEnvelopes.Reset();
+    const auto *Component = GetSkelMeshComponent();
+    const auto *Mesh = Component ? Component->GetSkeletalMeshAsset() : nullptr;
+    if (!Mesh || RootBone.IsNone() || Envelopes.IsEmpty() || Envelopes.Num() > 7 || !ComponentFloor.IsSet())
+        return;
+    const FPlane &Plane = ComponentFloor.GetValue();
+    if (Plane.ContainsNaN() || !FMath::IsFinite(Plane.W) || !FMath::IsNearlyEqual(Plane.SizeSquared(), 1., .001))
+        return;
+    const FReferenceSkeleton &Reference = Mesh->GetRefSkeleton();
+    const int32 RootIndex = Reference.FindBoneIndex(RootBone);
+    if (RootIndex <= 0)
+        return;
+    for (const auto &Entry : Envelopes)
+    {
+        const int32 Index = Reference.FindBoneIndex(Entry.Key);
+        if (Index == INDEX_NONE || (Index != RootIndex && !Reference.BoneIsChildOf(Index, RootIndex)) ||
+            !Entry.Value.IsValid || Entry.Value.Min.ContainsNaN() || Entry.Value.Max.ContainsNaN())
+            return;
+    }
+    FloorTailRoot = RootBone;
+    TailFloorEnvelopes = Envelopes;
+    TailFloor = ComponentFloor;
 }
 
 bool USSStationPoseTransition::SetLandingTail(UAnimSequence *Clip, FName RootBone, float Seconds)

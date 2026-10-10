@@ -1,6 +1,927 @@
 # SpaceSurvival project state
 
-**2026-10-01 tester release integration:** Owner authorizes Wayfarer Exchange and its furnished apartment as the active station in the current game, plus a packaged itch update even with open playtest issues. `codex/outpost-live-release` combines PR64/66/67 in the existing repaired checkout. Runtime uses a derived tagged map; the original outpost, separate flat BuildingSandbox and apartment source are preserved. Windows Development package and focused packaged station review pass at e6c2a87. The 0.1.22-alpha payload is prepared and upload is in progress; the last verified live channel remains0.1.21-alpha.1 until READY is recorded. Older dated release and separation statements below remain historical.
+**October 10 T-room layout preview:** The existing Phoenix setup now fills two rows of three, with five identical copies and six independent rotating displays. Existing desks/fittings/screens move aside; all8,934 other pre-save actor/component fingerprints and shared asset bytes are unchanged. Saved `b6496c2e`/9,407 actors passes six-bay reload and two ordinary Play views with production saves preserved; task editor closed, RT off. [T layout evidence](validation/2026-10-10-t-ship-rows.md) supersedes the current-map count below. Future ship purchases/stats/records and desk redesign remain separate; other room content, NPCs and services retained. Owner live appearance review is next.
+
+**October 10 room-purpose amendment (owner plan, paraphrase):** Central holds easy-access core wave purchases/services and repair; R/club holds character swapping and future outfits/optional boosts; T is a six-display ship market (Phoenix stats/flight records plus five future unlock placeholders, permanent ownership on future purchase); L holds social/challenges/leaderboards/minigames; the market is an atmospheric entrance, with quick repair at the dock and in Central. [Authoritative room plan](GAME_SCOPE.md#owner-amendment--october-10-2026-station-room-purposes) supersedes conflicting earlier T/room-role holds below. This records design requirements, not implementation of the future mechanics. Preserve owner edits. The saved R stage is ready for owner live review; no further task editor is launched for this documentation checkpoint.
+
+**October10 R performance checkpoint:** Joy retains her light-blue identity with75% metallic skin; the existing rigged Cyborg now loops its existing pole clip on the owner-created R stage, with fitted mounts and cyan/violet canopy lighting. Crew/Explorer hologram housings match Traders. Saved `20507846`/9,107 actors passes scoped reload and native review; production saves unchanged, task editor closed, RT off. [R stage and native evidence](validation/2026-10-10-r-stage-characters.md) supersedes apartment-only placement and native save-guard pending statements below. First dancer is reviewed; full alternating choreography, Joy hair physics, physical-NPC reactions and station-wide readable-character lighting remain OPEN. No room/concept/FPS/release acceptance.
+
+
+**October10 live-feedback source correction:** terminal hints now resolve the same service panel as terminal Use, including the wardrobe outside the shorter service radius; wardrobe text is Change character and informational terminals use their own names. Source-only, build/runtime verification pending while owner edits. Saved content and Build55/release are unchanged. New R/covered-connector/Joy finish-hair-practice/NPC-contact directions remain open in [canonical reports](KNOWN_ISSUES.md#october10-live-observation-reports); no native repair or acceptance claimed.
+
+**October10 review protection / CPU checkpoint:** current saves are byte-backed-up in a fresh private review profile. New preparation/path-guard source and CPU tests are ready; actual offscreen/native verification is pending while the owner uses Unreal. Read-only gameplay snapshots record lighting, radar and furniture/signage reports. No runtime/content edits in this checkpoint, no save reset/restore, no new task editor, Build55/release unchanged. [Evidence and limits](validation/2026-10-10-station-review-protection.md). Central/R acceptance remains open.
+
+**October10 Central follow-up188:** current Wayfarer `2a42ccb9` has9,102 actors. Reused-kit wall/portal detail and44 planting transforms are saved; Reload190 verifies the88 Central changes plus seven apartment additions. Native189 captures complete, but settings-save preservation fails; account/suspended-game files are unchanged. [Receipt and unedited views](validation/2026-10-10-central-detail.md). Root editor is closed, RT off, Build55/release unchanged. This supersedes older current-map counts/hashes below; full concept acceptance remains open.
+
+**October10 apartment follow-up:** saved170 Wayfarer `7e30f69f` has9,058 actors: Joy, rigged purple Cyborg and five polished-pole parts in the existing private apartment beneath Room R. Native171 captures and both looping clips pass scoped review; nine clearance probes pass. Reload175 verifies all seven additions and clean packages, while three pre-existing attached-prop world-transform differences keep the strict whole-world comparison open. Originals and404 other guarded files are preserved. [Receipt](validation/2026-10-10-apartment-residents.md). RT remains off, the task editor is closed, and Build55/release are unchanged. This supersedes older no-placement and current9051-actor statements below; Central/R acceptance remains open.
+
+**October10 Central concept checkpoint:** saved Wayfarer `52a5ee74`
+has9,051 actors. The new fixed target and requested podium, planted waiting bays,
+ceiling/portal/desk detail, removed blue circles and balanced local lighting are
+implemented for native review. [Images and evidence](validation/2026-10-10-central-hub-concept.md).
+The30/30 scripted route and prior9034-actor reload passed their scene checks.
+The owner has released limited GPU use; ray tracing remains OFF. The latest
+offscreen verification editors closed cleanly after measurement and asset reload.
+Three planter cap fixes are now imported and pass fresh NullRHI asset reload;
+the other37 Central packages and saved map bytes are unchanged. The saved9051-actor
+world loads; full actor-state comparison, visual acceptance, physical input and
+representative performance remain open. R
+is second; lower priorities and other NPC repairs remain held. The scoped Joy
+exception now has149 private packages after the hair-only correction: blue
+materials/mesh, two rigs/retargeter,
+all135 Cyborg clips, two groom bindings and a compiled idle review Blueprint.
+CPU asset reload passes; rendered motion/hair quality is still pending.
+[CPU receipt and preview](validation/2026-10-10-joy-blue-cpu.md). The supplementary Warden
+height/sole check fails and is retained outside this decor scope.
+
+Four Central authoring recipes, six CPU historical recipes, original kiosk
+screen sources and sanitized evidence are tracked; the map,40 Central packages
+and149 Joy derivatives remain local. The stray left hair loop is removed; fresh
+Blender/native reload and405 guarded hashes pass. Native continuous hair/motion
+review remains open. [Hair and memory receipt](validation/2026-10-10-joy-hair-and-memory.md). Build55 and
+published0.1.22-alpha/itch2048604 are unchanged. No new C++ binary, cook, upload or
+merge; PR69 stays draft. Historical paused/editor statements below are superseded
+by this source/native checkpoint, not by release or room acceptance.
+
+**CI follow-up, October10 05:29UTC:** documentation and strict/core/sanitizer
+checks pass at4547eea. The source job still fails its runtime cook-coverage gate
+on five earlier ship/portal paths, also failing atf5a2008 with identical inputs.
+Later formatting/release-payload steps were skipped in that job. This CPU
+checkpoint is not a green whole-PR or packaging acceptance result; the held
+release prerequisite is recorded in KNOWN_ISSUES.
+
+**October9 saved handoff: paused by owner.** Central/R quality is rejected and
+unfinished; resume central first, R second, with all lower priorities held. This
+supersedes the active/continue-next statements in historical checkpoints below.
+Station/partial dock work and Joy's reference-pose review asset are saved locally.
+The agent's offscreen editor closed cleanly after stopped PIE/zero dirty packages;
+saved files, original sources and protected owner edits were verified unchanged.
+Existing Editor build and published download are unchanged; no cook/upload/merge.
+PR69 remains draft. Machine-specific records and native assets stay local; GitHub
+is not a native backup. [Handoff](validation/2026-10-09-station-handoff.md).
+
+**October9 17:31UTC market checkpoint — work remains active.** Current saved and
+reloaded Wayfarer is `4bd63687`,8,634 actors. Original stalls move toward the
+walkway, screened vendors/customers and a seated pair give them purpose, and two
+upright glass displays rotate five distinct campaigns. Native walk29/29 and
+five-phase carousel checks pass; Reload85 preserves actor state and clean
+packages. [Current market receipt and images](validation/2026-10-09-market-atmosphere.md).
+The central/R work below is retained; the overall concept-quality target remains
+open. Dock, lounge and taller-cast Phoenix work continue next. No cook/upload or
+merge; existing Build55 and published0.1.22-alpha/itch2048604 are unchanged.
+Four new private material packages and the current map remain local. Root
+offscreen55108 is open, PIE stopped at this checkpoint. Physical inputs,
+continuous contact and representative FPS/VRAM remain unverified.
+
+**The following16:23 map identity is historical, superseded above.**
+
+**October9 16:23UTC concept-detail checkpoint — work remains active.** Saved and
+reloaded live Wayfarer is `f58ef8b6`, with8,615 actors. Central now has eight tall
+blue direction panels, warm rib fixtures, planted waiting bays, two seated readers
+and staffed reception. R groups three original-kit hologram assemblies with six
+owned upholstered chairs, three furnished tables and four seated visitors. The
+exposed-body Amethyst visitor is hidden and replaced by covered Olive; source
+assets remain. [Current receipt and labeled pictures](validation/2026-10-09-central-r-concept-detail.md).
+
+Central and central-to-R native walks reached11/11 and19/19 waypoints. Ten new
+ambient/projection poses advance; nine furniture actors now have private simple
+collision. Reload81 finds no actor snapshot differences at1e-5 numeric tolerance,
+no dirty packages, and unchanged map bytes/protected files. These checks do not
+establish9/10 visual quality, continuous contact, physical input or60FPS.
+
+The expanded owner goal continues through market, dock, lounge and taller-cast
+Phoenix fit, then PR69 priorities. T remains held; no graphic nudity in common
+areas and no dancers. Root offscreen editor PID55108 remains open for that work;
+PIE is stopped at this checkpoint. Build55 DLL `7b0ea67f`, tuning `559cbf22`,
+source preview `e7958758` and owner layout `29f15587` are unchanged. No new C++
+build, cook, upload, merge or room approval. PR69 remains draft; published
+0.1.22-alpha/itch2048604 is unchanged. Maps, licensed furniture/materials and four
+native seated-clip derivatives remain private/local; GitHub is not a full restore.
+
+The earlier13:15 checkpoint `14a49399` and its failed strict scale comparison are
+retained as [historical evidence](validation/2026-10-09-central-r-whole-room-review.md),
+superseded by the scene and scope above.
+
+**Earlier October9 crew checkpoint (map identity superseded above):** the owner authorized central/R finishing,
+non-dancer crew, a new bartender, three outside merchants and the 178cm replacement
+hero. This supersedes the pause/NPC-exclusion entries below. Ten crew assignments,
+central desk dressing, R waiting/consultation layout and the complete owned
+wardrobe console are saved in live Wayfarer `433d6de1`. `DA_Phase1` is saved as
+`559cbf22` with the existing Squirrel identity pointing to the 178cm red-streak
+mesh and eight matching animations. Original source preview `e7958758` is retained.
+
+Full Editor **Build55** succeeds and was verified loaded in the offscreen editor,
+DLL `7b0ea67f`. That root-owned test editor was gracefully closed after clean
+checks to release VRAM; saved native files and the owner's layout stayed unchanged.
+Moving station creation to `StartPlay`, after `Super::StartPlay`,
+repairs skipped BeginPlay on the streamed cast: ten actors now tick/animate and
+both route actors move. A transient real SSWalker using the new hero crossed
+central into R and switched idle/jog/idle; original possession and saved account
+selection are preserved. The real wardrobe menu also opens through native Use.
+Reload65 preserves all8,490 actor identities, ten crew assignments, eight prop
+collision profiles and the existing service point; PIE stopped/dirty lists empty.
+This is scripted native evidence, not physical-input,
+full cabin fit, 60FPS or owner visual acceptance. [Receipt](validation/2026-10-09-station-crew-central-r.md).
+
+Tracked delivery contains helpers, the startup correction, tuning, original wardrobe
+screen SVG/PNG and evidence. The map, crew, supplied character/ad source art and
+17 replacement-hero packages remain private/local;
+GitHub alone is not a complete native restore. PR69 remains draft/unmerged.
+Published **0.1.22-alpha / itch2048604 / sourcee6c2a87** is unchanged; no new cook
+or upload. T selection and dancers are excluded, reports remain paused.
+
+**October8 13:03UTC owner pause:** station work is paused while the other task
+finishes imports, superseding the resume preflight below. Documentation records
+the owner's billboard and AI Voice No-Code Plugin candidates in
+[SOLUTION_CATALOG](production/SOLUTION_CATALOG.md), with two original screenshots.
+Billboard download location and voice-plugin installation/quality are unverified;
+the voice screenshot establishes library membership only. No native/editor work,
+asset import, voice audition, new build or publication in this follow-up. Await
+owner resume; central/R remains next, future NPC work excluded, reports paused.
+
+**October8 12:28UTC central/R resume preflight:** owner reports VRAM free; native
+central/R finishing is authorized. A separate NPC task is repeatedly running
+offscreen Unreal imports, so the guarded station launcher refused a competing
+editor. No root editor launch, current visual capture or station change occurred.
+Coordinate that task's import pause before opening live Wayfarer. Disk hashes
+remain live`e3ed61ba`, preview`e7958758`, DLL`e2e7b5c7`; loaded native state is
+unverified. New NPC work and other room/gameplay changes remain outside this pass;
+report automation remains paused. Private capture preparation passes Python syntax
+only, not native execution or room acceptance.
+
+**October8 CPU-only central/R preparation:** the owner reprioritizes central and
+R layout/atmosphere ahead of future NPC variants/behaviors, which are outside this
+pass. While AI/Blender occupy VRAM, six obsolete cook/staging folders were removed
+(13.45GB) and the existing room recipes/assets/references checked for a focused
+finishing pass. [Receipt and preparation manifest](validation/2026-10-08-central-r-preparation.md).
+Maps/project/player saves match before/after cleanup. At cleanup, saved live map
+SHA`e3ed61ba` differs from the historical promotion `76e3c8c2`; previewe795 remains
+unchanged. These later saved edits were not made by this pass and need fresh native
+inspection. Existing preview-only helpers cannot safely replay on current live
+Wayfarer. No new loaded-build, native visual, NPC, package or publication result.
+
+**October7 evening owner references / October8 UTC documentation update:** twelve
+[holographic display examples](validation/2026-10-07-owner-holographic-display-references.md)
+are now tracked for the next pass. The owner likes most options and emphasizes
+the kits' breadth. T has positive reference families; exact native asset matching,
+placement and visual approval remain open. Implementation/reports remain paused.
+This update changes documentation and reference screenshots only; live map,
+loaded build and packaged publication retain the close-out identities below.
+
+**October8 close-out / owner pause:** the latest preview is now promoted into the
+live Wayfarer map used by the local Unreal game. Saved/reloaded SHA`76e3c8c2918bcb90a630852c857ca2f0b64386840cef78c3d19795787a521703`,
+Build49 loaded;8,462 actor placements, R display, seven NPC lights, terminal
+records and berth collision pass native checks. Nine source maps including
+previewe795 are preserved with rollback copies. This supersedes preview-only
+statements below. Full gameplay/owner quality remains open. PR69 carries the
+outsourcing handoff; work and reports pause after delivery. No merge, new packaged
+EXE or itch upload. [Receipt](validation/2026-10-08-live-station-closeout.md).
+
+**October8 01:56UTC saved display and shared NPC checkpoint:** current owner-preview
+map SHA`e7958758a861d17fe189601b17b486db9ea75086080a8e1b5f17e56cbb7b18db`
+contains the upright R wall display, two saved private materials and seven added
+NPC lighting configurations/lights. Backups retain the previous16818/c059/242418
+maps. Build49 fully links DLL`e2e7b5c7` and is loaded in one offscreen editor;
+the focused NPC lifecycle test passes1/0warnings/0failures. R's five distinct
+campaigns are visible in finalized Play captures after integer-index repair;
+a saved NoCollision profile repair survives map reload. All seven NPC instances
+reload with preserved poses/animations/bounds and active head lights. Matched
+Trooper/alien images support the preset locally, not all-variant/FPS approval.
+These results supersede the unassigned R/uncompiled shared-component status below.
+Market/L placement and L's existing four-ad loop remain unchanged; T choice stays
+held. No owner approval, canonical Wayfarer replacement, package or publication.
+See [display evidence](validation/2026-10-08-customization-display.md) and
+[NPC evidence](validation/2026-10-08-npc-headfill-component.md).
+
+**October8 00:26UTC authorized editor recovery:** all nine closure packages are
+restored and checked in their normal private Content locations, with the previous
+map and Build39 DLL backed up. The saved owner-preview map is now `16818b1b`;
+Build47 successfully links the current module (`059831f7`) and is available in the
+reopened offscreen editor. This supersedes the older Mainc45/Build39 and unlinked
+status below. Nwiro readbacks verify eight restored display assets, six reception
+props/two staff poses and four information-board actors. Two sampled staff lights
+activate automatically; the sampled drone and hologram remain excluded.
+The two-view reception Play check preserves map bytes, player saves and rendering
+settings. It is not all-NPC, gameplay-warp, performance or owner acceptance.
+T's P1-P5 choice remains held; published0.1.22-alpha/build2048604 is unchanged.
+See the [recovery and native-check receipt](validation/2026-10-08-editor-recovery.md).
+
+**October8 00:37UTC room textures:** R, Market and L's five selected campaigns each pass
+native import, source ancestry/hash, dimensions and BC7/sRGB/clamp readbacks and
+are saved in new private `CustomizationCampaigns20261008A/Textures`,
+`MarketCampaigns20261008A/Textures` and `LoungeCampaigns20261008A/Textures` folders.
+Map bytes remain16818b1b. Placement, physical fit and cycling remain unverified;
+L's existing installed four-ad loop is unchanged. This supersedes the unrun import
+status below, not the room integration or owner-acceptance limits.
+
+**October7 23:36UTC source staging:** L now has a packaged five-campaign source set
+(two unchanged owner originals plus three existing families, eight files including
+variants). Its installed loop remains four. The new import-inert source checker
+and explicit five-texture staging helper pass nine targeted tests and all three
+R/Market/L manifest inspections; native staging is UNRUN. The helper never assigns
+or saves assets. T and central are excluded. This adds no saved scene or linked build.
+[Usage](STATION_EDITING.md#preparing-a-rooms-five-ad-sources) and
+[source receipt](validation/2026-10-07-room-ad-source-sets.md).
+
+**October7 23:10UTC source artwork:** R customization and Market now each have
+five distinct campaign sources. R preserves three owner originals and adds
+Vacuum Valet/First Contact Photo Co.; Market preserves Cosmic Tacos and adds
+four retail illustrations. All six new selected images pass lead/independent
+source-text and composition review after two market defects were corrected.
+Files, exact prompts and hashes are retained privately; no import, screen
+placement, cycling or owner approval is established. T's display choice remains
+held. See the [source-set record](validation/2026-10-07-room-ad-source-sets.md).
+This does not change the saved scene, linked binary or published build.
+
+**October7 22:18UTC temporary editor closure:** the owner may close Unreal.
+The latest working map and all eight dirty display packages were saved to
+separate recovery files under `.agent/local/EditorCloseRecovery20261007T2216`.
+Manifest SHA `5c59de491fad85a2bba00b7a272425d319853ed31a06b40fc71b46ae5f70943d`
+records all nine file hashes. Original Content files remain unchanged; the
+latest working map copy is16818b1b, while the normal saved map remainsc45.
+Native dirty flags are now clear. This is a recovery checkpoint, not approval
+of held T or a published scene. Restore/reload validation remains pending;
+source work continues while the editor is closed.
+
+**October7 22:38UTC source check:** runtime warp placement now passes Build46
+`-NoLink` (14 actions,196seconds), source peer review and formatting. It is still
+unlinked/unloaded; real station placement and travel have not been observed.
+Mainc45 and DLL582 remain byte-identical. The NPC adoption guide now provides
+the reusable model-child, floor alignment and head-fill steps. No editor was
+opened or restarted for this work.
+
+**October7 22:10UTC pre-closure checkpoint:** saved owner preview remains Mainc45,
+the loaded module remains Build39, and published0.1.22-alpha/build2048604 is
+unchanged. The owner holds only T wall/display replacement while selecting from
+the complete P1-P5 picker: `.agent/local/Outpost/HoloAssetCatalog1/index.html`,
+SHA `f4601ca7d221070aa3188d4041150ab433c21c972737ffeb838adf6d35842a63`.
+Its71 hardware entries all have pictures;60 parts and116 effects are separated,
+with missing static previews explicitly marked. The latest sideways-wall-panel
+trial is unsaved and rejected, not a replacement accepted by the owner.
+
+The owner now directs central reception toward purposeful check-in/greeting
+activity with fitting tablet/desk props. Central alone permits only one or two
+ad posters; larger outer-wall boards should explain actual mechanics and station
+directions. Six desk props/labels and two separated check-in/help staff poses
+are now placed unsaved. Their physical support and service arrangement passed
+review; cropped role labels and hand contact remain unverified. The two helpful
+boards are placed unsaved and their full layouts fit the original monitor cases
+on solid walls. The brighter two-material comparison is accepted by root and
+independent visual review; only its five new private assets are saved. Board
+placement and reception changes remain unsaved. An earlier guard failure was isolated to
+floating-point scale roundoff and repaired without widening physical placement
+or changing the original actors. The held eight T content packages stay dirty.
+
+The shared NPC head-fill defaults passed a two-staff OFF/ON visual trial;
+temporary test lights were then removed. The reusable ambient-actor lighting and
+paired warp-gate source passed Build43 `-NoLink` compilation. This produces object
+files only: it does not update the loaded Build39 DLL, place warp endpoints or
+verify other NPC variants. Adoption instructions are in
+[Station editing](STATION_EDITING.md#reusing-the-npc-lighting-preset).
+Native integration and owner approval remain open.
+
+The bartender's natural93-second observation exposed incorrect render bounds:
+she disappeared from the low foot camera despite her feet being in view. A
+female-only component trial now keeps her visible in that same camera and passes
+the side-view comparison. Its bounds settings are now in the recovery copy; hands still
+miss the counter and continuous sole contact remains unaccepted. The warp burst
+source now binds to the actual walker mesh instead of relying on an editor-only
+Manny preview. The corrected station-parking gate passes Build45 `-NoLink`,
+with the DLL unchanged. Runtime placement source now connects both real docking
+entry paths to a reciprocal pair using the landed ramp, deck, original frame
+collision and full capsule passage checks. Actual
+warp endpoints and travel remain untested; the owner-preview sandbox is not a
+moored gameplay station. See the [focused evidence](validation/2026-10-07-bartender-and-warp.md).
+
+Central welcome retains its **unsaved** six-furnishing/two-vendor trial and now
+four shrubs plus three ceiling-ring lights. Root and independent review accept
+the planted finish, two waiting-bay lights and the modest reception aim/reach fix.
+Reception remains dark from a distance; whole-room approval is still open.
+Two corrected boot views show no definite sole gap, but continuous skin contact
+remains unverified. Prior37.355 seconds of natural vendor motion and the later
+three finish images remain separate evidence. No owner approval or saved central
+revision is established; see the
+[central trial record](validation/2026-10-07-central-welcome.md).
+
+Phoenix7 produced five temporary gameplay-camera images with exact restoration.
+Root and independent review retain the accepted14cm inboard screen clearance.
+Lighting remains rejected: stairs/passage improve but nearby walls glare and
+the cockpit floor remains dark. The three unaccepted source lamps are removed;
+original four lamp settings remain unchanged, and only the accepted pane offset
+remains in the local Rig diff. No new linked cabin binary, walked traversal or
+owner approval is established. The
+[cabin record](validation/2026-10-07-native-resolution-and-phoenix-cabin.md)
+separates these results from technical capture success.
+
+The two decorative visitor ships now sit lower without their four literal Cube
+supports in an unsaved trial. Four matched before/after views support the visual
+improvement; contact, walking clearance and owner acceptance remain open. The
+functional Phoenix supports are untouched. See the
+[visitor-pad record](validation/2026-10-07-visitor-ship-pads.md).
+
+**October7 17:24UTC display correction:** all18 recovered packages pass native
+class, source, dimensions, material-parent, skeleton/duration and preservation
+checks after pending texture compilation finished; the first32px placeholder
+readback is retained as a failed observation. The first13 display photos preserve
+settings/map/saves and record five phases per pane, but show blank faces and were
+rejected visually. Enabling two-sided rendering only on the new private master
+restores upright original artwork in a separate three-view comparison, with all
+preview state restored. That comparison exposes frame clipping and dim text;
+the owner also rejects the cut-off text. A smaller aspect-preserving artwork area
+inside the asymmetric frame, brighter private screen instances and an explicit
+temporary-camera projection are being prepared. Neither trial is saved or a
+whole-room acceptance. The old saved Mainc45 remains the exact recoverable base.
+
+**October7 17:05UTC recovered preview and display trial:** owner completed recovery;
+all18 new central/vendor files are present and saved Mainc45 bytes are preserved.
+Nwiro is healthy on5353/PID52864. The owner requested ending live computer control;
+all Computer Use stopped. Native inspection found the older clean Wayfarer map
+loaded after restart, explaining the owner's old-station report; `open_level`
+successfully loaded the edited owner preview. Runtime recovered-asset metadata
+validation remains pending. Fresh five-original imports and three private display
+materials passed native checks; the material compiled with13 expressions/no errors.
+Four actors form two large ownedP4 portrait displays on solid service-wall bays;
+58 protected actors/source bytes are preserved and four old window-TV/post actors
+are temporarily hidden. This is an UNSAVED trial. Thirteen actual in-game views
+are underway at the unchanged2742x781 owner viewport; fit/readability and both
+five-campaign cycles must pass before any save. Build39/publication are unchanged.
+
+**October7 16:51UTC historical recovery checkpoint:** the owner restarted Unreal; host verification finds
+PID52864 responding at the Restore Packages dialog. Nwiro is not yet listening.
+All19 indexed autosaves, the recovery index and the known saved Mainc45 map have
+verified backups (21 files); receipt `.agent/local/CrashRecovery20261007T164915Z/manifest.json`,
+SHA `a011608facae4725a03c65ace0614595f2ed471d297fef18af3b7fdfa88f3f82`.
+The intended recovery selects18 previously absent central/vendor assets and
+leaves the existing preview map unchecked. No recovery action has occurred yet.
+Computer Use selects the correct Unreal modal, but its captured pixels show
+ChatGPT occluding it despite raising/refreshing the window. The owner has been
+asked only to bring the modal forward; no blind clicks were issued.
+
+**October7 16:41UTC historical live-editor blocker:** the owner editor logged a GPU crash
+at16:26UTC and remained running asPID5488, holding the game DLL and Nwiro listener.
+Two connection handshakes timed out. No replacement panels or materials were
+applied or saved. Five intact original textures imported before the crash, but
+their recovery from memory is unconfirmed. Saved Mainc45 and Build39 DLL bytes
+are unchanged. The sandbox process list initially hid the host editor; the
+closed-editor inference was corrected by an authorized host check. Build42
+repeated the same link lock, with no new compile or successful link. The owner
+has been asked to restart the crashed editor; no process was killed. The actual
+installed engine is now5.8.3, verified from Build.version and the crash log.
+
+**October7 16:17UTC owner correction:** the savedT ad set below is rejected:
+the owner identifies a text defect and TVs over windows rather than using empty
+wall bays. Earlier lead/peer8.5 ad acceptance is superseded. Replace these with
+the owner's hand-picked original art on the original five kits' substantial
+display panels. Window graphics, if used, must be embedded holographic layers.
+Mainc45 still contains the rejected set; no replacement save yet. Central's ten
+waiting-bay actors passed localized fit checks but were removed exactly before
+this correction; five central textures/two instances remain prepared in memory.
+Three actual owned merchant clips imported and retargeted as private previews
+(11 in-memory assets), with no staff assignments, asset saves or map saves.
+Their appearance/contact remains unverified. Cabin and publication status below
+are unchanged. Current priority is theT display correction, then central/Phoenix.
+
+**October7 16:03UTC current saved owner preview:** T's two existing TVs now cycle
+five distinct illustrated engineering campaigns, using a private common material,
+two room instances and five textures. Eight private packages and one preview-map
+save produce Main `c45dd77376d5a90c90df410ffd733e528c1177d5a05d1c17264799e41037e8b9`.
+Save receipt `96ce33a4f13a0c07a3467394dc18030de7e67696c12b4f381456d557d35b885a`
+verifies the two allowed screen references, original assets and player saves.
+Seven actual in-game views show all five ads, with the temporary timing/materials,
+camera, settings and dirty-package state restored. Those photos remain pre-save
+UNSAVED tests: six-second cycling was observed; the saved setting is20 seconds
+with a .6-second crossfade. A100-second production watch was not performed.
+Root and independent review rate ads about8.5/10; wholeT stays8–8.5, not9.
+The owner expressly permits advancing after these TVs; central welcome and Phoenix
+are active, while T's brighter housing/upper-light trials remain deferred.
+Each room needs its own set of at least five illustrated campaigns; ad audio is future.
+Post-save native readback confirms a clean map, PIE stopped, and unchanged central
+staff/source assets. Central artwork/layout/vendor previews are prepared, unplaced.
+
+**Earlier Phoenix source versus loaded build:** three trial cabin lamps and diagnostic coverage
+compile after a private diagnostic variable rename fixes a unity-build name collision.
+Build40's compile error is retained; Build41 compiles but cannot link because the
+owner's open editor holds its DLL (`LNK1104`). The loaded DLL remains Build39,
+SHA `582d1fb955480af2d399d19bd393de0340d87657f02f7dafa1f0c658e7472390`.
+No new cabin runtime, natural walking, owner approval or packaged-build pass follows
+from those compiles. Close the editor before the next normal link; do not kill it.
+Canonical station and published0.1.22-alpha/build2048604 remain unchanged.
+
+**October7 14:48UTC earlier saved owner preview:** live Nwiro saves two fitted
+owned SmartStorage banks, three private canopy material copies on33 existing
+slots, and visibility cleanup of14 decorative console fixtures. Source assets,
+real lamps, services, Phoenix enclosure and both new banks pass the174-target
+finish check. One preview map save includes the banks; current Main
+`c6f76875030ab11ce2fb688e9cc2f2ee45874a7fdc73f1f11d8d1beea8cc501d`
+supersedes502910 below. Combined save receipt
+`b8fd4b10044afe2da4f722d268d29d2ba73cad8bcedc510aea22b3307ad034dd`;
+post-save live readback verifies a clean map, PIE stopped and the original chair
+label absent. Unreal recycled actor name1415 for the north storage bank; that
+name alone no longer identifies the removed chair.
+Two six-view play tests at the owner's unchanged2742x781 viewport verified the
+candidate, player-camera restoration, saved-file and settings preservation.
+Their photos were captured before saving and remain labelled UNSAVED tests.
+Lead and independent visual review accept a modest gain, whole T8–8.5/10.
+Central console housing and upper-room lighting remain lead-owned next work;
+T9 and owner acceptance are open. Existing BP_Blinds startup errors are retained
+separately from the successful capture/restoration checks. Editor Build39,
+canonical station and published0.1.22-alpha/build2048604 remain unchanged.
+
+**October7 14:13UTC current saved preview:** the owner identifies Flight as a
+walk-up upgrade station, so its single offset Goliath chair is removed through
+the live Nwiro editor. Both supports remain. The 43 checked adjacent console,
+display, service and marker actors are unchanged; source assets and a prior-map
+backup are retained. Current Main is
+`5029100d1aa17c3911778132873a3f890e1c4275312db9c47da53f9195492e24`;
+removal receipt `942686e4906002dd188513a554263aa5f61226b1d69dd85c6bee4e9f17eca933`.
+Saving succeeds and the live readback confirms a clean map with the chair absent.
+Two saved editor captures verify placement only: helper icons and viewport
+lighting differ from the prior play-mode review. T remains about8/10, with
+overall finish and owner acceptance open. Nwiro is active; the separate preview
+is now open in the owner's editor. Canonical/published content is unchanged.
+
+**October7 13:45UTC current visual review:** eight CanopySatinPreview2 images
+verify the saved Podium2 appearance and compare temporary satin canopy and
+decorative console-fixture cleanup. Lead and peer reviewed all eight: modest
+improvement, whole T about8/10. Candidate changes restore exactly; scene,
+files, saves, crew, ships and rendering checks pass. Native shutdown0xC0000005
+is recorded separately. Receipt
+`474451503e9d68300b625067a2757706a2c3139e7e0b41d72806ac82df0fd61e`;
+Main32469 below remains unchanged. The canopy/fixture candidate is UNSAVED.
+Owner's new asymmetry concern is the offset central chair, not a missing
+support. The subsequent owner-requested chair correction is recorded above;
+the complete T quality gate remains open.
+White floors stay. No published-build change.
+
+**October7 13:30UTC latest saved preview:** PodiumCaptured2 saves the accepted
+30cm rise of all four Phoenix display parts and two subdued WorkPlan material
+copies. Current editable preview Main is
+`32469e3a5b2afaf3170a92861f7d8cdb9efd8f93405813f2e5bec0207bfa0c19`;
+receipt `8bdb0b582bfd474f47b245d4aed9f4180fbb3831d8caf0c2bb9b33f4e89015b9`.
+Only five existing actors change; one map load/save, no new actors or lights.
+Complete scene, source materials, crew and player-save preservation pass.
+Native shutdown exits0xC0000005 separately. The first attempt's tuple error
+rolled back exactly before any saves. The corrected launch also retains an
+earlier rejected startup caused by a mistyped receipt argument.
+Fresh saved appearance was subsequently checked in the eight views above.
+Canopy1 produced six restored comparison
+views with modest detail improvement; its finish is not saved. Next compare the
+geometrically identified ceiling underside using the newly saved podium as the
+baseline, then review the final saved room. Whole T remains about8/10; owner
+acceptance and the published build remain unchanged.
+
+**October7 12:57UTC latest comparison:** UpperFill3 produces six ordinary
+1600×900 views, receipt
+`a26fa718754ff2ee189ddcf5144ac3e50564310b02256a86baeb1687fa679ae9`.
+Temporary changes restore exactly; scene, files, saves, ships, crew, renderer
+and viewport checks pass with zero editor deltas or recorded errors. Native
+shutdown exits0xC0000005 separately. Lead and two peers reject the three added
+uplights because useful ceiling detail barely improves. Raising all four
+Phoenix parts30cm and quieting two decorative WorkPlan slots modestly improves
+the focal point; this remains an unsaved candidate. Whole T remains about8,
+not9. Next compare a satin finish on the existing dark ceiling panels, then
+save accepted display changes and review the complete room. Current Main03852,
+owner acceptance and the published build remain unchanged.
+
+**October7 12:15UTC saved-room review:** OrdinaryRoom2 captures nine fresh ordinary
+1600×900 saved-room images, receipt
+`53505701bef8438cd0685e8755504aa785c50025c34c71a54ce0ef6316588833`.
+Native exit is zero; renderer, viewport restoration, source files, player saves,
+ships, quality settings, three crew lifecycles and complete same-world scene
+preservation pass, with zero editor deltas or errors. The baseline includes all
+11,260 actors after both known child interiors stabilize. Main03852 below is
+unchanged. Lead and peer reviewed all nine views: whole T remains about7.5–8,
+not9. The subsequent unsaved comparison is recorded above. Owner
+acceptance and published build remain unchanged.
+
+**October7 12:03UTC historical review:** nine ordinary1600×900 saved-room images
+are captured, receipt `c0f3e0073fb782ab22abef5f829edc4ba7dbd45e051bb37a3a41b25540ced9c4`.
+Renderer, viewport restoration, files/saves/ships/quality and three saved crew
+lifecycles pass. Aggregate state verification is PARTIAL: two child interiors
+finish loading after the baseline, adding2,821 actor paths with no changed or
+removed fields among the original8,439 actors. Native shutdown0xC0000005 is
+separate. Main03852 below is unchanged. Lead and peer rate whole T about7.5–8,
+not9; upper-room lighting and the obstructing central overlay need finishing.
+The next capture waits for the known child interiors before its full baseline.
+
+**October7 11:49UTC latest saved preview:** CentralCaptured1 saves the selected
+darker central-frame finish through twelve private material copies and twelve
+existing slots on four actors. Current Main is
+`03852cf1ff951c41779c99e4c74a2e3f7c82728c9ae57e41d8208ebc54068214`;
+receipt `b0ef717cd2021de999a13c5187618461c7013ae0cb09b3cae40ad1cc8df22bff`.
+Every native material snapshot matches the reviewed Contrast2 result; source
+materials, all other scene fields, saved crew and player saves are preserved.
+One map load/save, no new actors, lights or masters. Native shutdown exits
+0xC0000005 separately. The fresh saved review above is now available; whole-T9,
+owner approval and a new published build remain unclaimed.
+
+**October7 11:36UTC historical saved preview:** FlightAuthor2 saves the accepted
+gain5 display through one private MIC and one existing material slot, with one
+map load/save. Current Main is
+`cedb6acddc7f1eaf334df3ca1847ddf50c70e6c850b2a718dd2257c988ea799d`;
+receipt`ce32d2ea35920b16f2b13592f2264a4c1e07bb8d522275809ff12ee292bc2d61`.
+Complete typed scene, source master/artwork, three saved crew lifecycles, files
+and player saves are preserved. Before-scene deltas are zero; the allowed
+material-slot delta count is one. Native shutdown exits0xC0000005 separately;
+fresh saved appearance is pending. The failed first save remains history.
+The second central-frame comparison is accepted as a modest local improvement
+by lead and two peers, about8 for its podium angle, not whole-T9. Its temporary
+restoration passes with zero deltas; native shutdown also exits0xC0000005.
+A captured12-leaf private save and fresh whole-room review are next.
+Published build and owner acceptance are unchanged.
+
+**October7 10:04UTC historical saved preview:** CrewCaptured1 installs the exact
+reviewed121-key motion through two fresh private clips on three existing
+operators: two humans, one scout robot and one retained alien. Current Main is
+`13787cce1fba901869556676fb14b3f2aff57bc76fd00325d2b439d1f3d824dc`;
+receipt`9b68ab66e02aae7bf2035911c04a08d0a23f589ccbb074b63d520e32508780cd`.
+Native readbacks have zero local position error and exact unit scales; no source
+pose or fitter reevaluation occurs. Scene/non-target/lifecycle/file/save
+preservation passes; native shutdown exits0xC0000005 separately. Ordinary3's
+fresh saved reload then finishes cleanly/native0: all three typed crew lifecycles
+match before/after PIE, complete scene deltas are zero, and renderer/viewport/
+file/save/ship/quality preservation passes. One ordinary1600×900 image is cleaner
+than earlier HighRes views; hardware brightness and floor/ceiling contrast remain
+unfinished. That podium angle does not prove fresh fullbody chair contact.
+Continuous chair contact, T9 and owner acceptance remain open.
+Female lounge bartender and the published build are unchanged.
+
+October7 10:36UTC: the matched ordinary P3 normal-strength comparison finishes
+cleanly/native0, receipt`13b920779302d7fb9534a719e65e404a5670836b67e910f8b6213be0071d6308`.
+The temporary four-slot test restores exactly, with zero scene deltas and
+unchanged files/saves/ships/quality/crew. Lead finds no meaningful visual benefit
+and retains the saved original strengths. Normal2's unavailable-property
+preflight failure remains history; its before-scene snapshot was uninitialized.
+Next is an unsaved central-console contrast comparison, with lighting and white
+floors preserved. No further normal test or saved-normal change is planned.
+
+October7 10:44UTC: CentralContrast1's two ordinary views show no meaningful
+visible workstation improvement. Receipt`20b72bdf` verifies exact twelve-slot
+restoration, zero scene deltas and unchanged files/saves/crew/ships/quality;
+native shutdown exits0xC0000005 separately. The candidate is not saved. Actual
+positions place the selected Goliath at the visible right desk, and native dark
+colors/scalars read correctly; its effective render route remains unconfirmed.
+Those tests are superseded by the actual outcomes below. Saved Main stays`13787cce`.
+
+October7 11:12UTC: Route2 finishes cleanly/native0 and excludes Nanite and Front
+Material bypasses on the actual central workstation. The white-floor depth pair
+also finishes cleanly/native0, receipt`d3af4311`, with exact420-slot restoration,
+zero scene deltas and unchanged files/saves/crew/ships/quality. Lead and peer
+reject the additional18percent luminance blend: it weakens some native wear
+without improving the room. The saved textured white floor is retained.
+Flight's unsaved3.5→5 gain pair shows ship luma up26.7percent and brighter title
+strokes without clipped pixels, while control hardware stays stable. Lead accepts
+the bounded gain5 improvement for a private one-slot save, not yet applied.
+Its receipt`e9bfa067` verifies restoration; native shutdown exits0xC0000005
+separately. Generic material-instance propagation failure is not proved.
+Whole-room T9, owner acceptance and published-build changes remain open.
+October7 11:21UTC: Flight save1 stops before either asset or map save on a
+same-loaded scene-snapshot mismatch. Files/player saves and Main`13787cce` are
+unchanged, with zero private packages written. Its rollback comparison also
+fails, so full editor-scene preservation is not claimed; native shutdown
+exits0xC0000005. The two collection APIs differ, but the exact returned-helper
+snapshot was not retained and the cause remains unconfirmed. A new bounded
+wrapper will retain raw snapshots before comparison; the failed recipe is frozen.
+Bounded pixel analysis corrects the broad central-console no-change impression:
+its graphite housing patches darken20–33percent, while the upper satin frame
+brightens3.6–7.1percent and unchanged floor/podium controls remain stable. The
+next temporary finish will darken the satin frame colour while retaining its
+original metallic response and functional worktop/displays. Manual image ROIs
+do not establish per-pixel material identity; actual paired views remain the gate.
+
+**October7 09:35UTC historical saved preview:** Mounted6 cleanly saves four attached
+illustrated service monitors and a private brighter Flight display, native0.
+Current preview is
+`5b2d7bdcefaa2f6493bc43b34cc2ce5631bb8f03f21bdb7a997c5b7f18be8d2f`;
+receipt`d46ac4227db8281acdf813508d4796e8afaf066db2dc3ebf241e04edab887364`.
+Thirteen private assets and exactly five existing LCD slots change. Actual mesh
+faces, full-screen UVs, mount points and route clearance pass; original content,
+existing actors/actions, white floors, nine marker assets and saves are preserved.
+October7 09:57UTC: Capture7 finishes cleanly, native0, with nine actual views,
+zero scene deltas and unchanged files/saves/ships. Lead and peer accept the four
+upright, unobstructed illustrated side screens, about8–8.5/10. Flight's title and
+Phoenix are visible but its hero remains dim. Whole T remains7–7.5/10 because
+the desk highlights and floor/ceiling contrast still need refinement.
+Capture6 stops before images:
+the two south units reload with exact negated quaternions, the same physical
+rotation. Capture7 verifies exact vertex/corner equality, bounded sign
+equivalence and all four native parents from retained raw evidence.
+The failed constructor preflight made no imports/saves and remains history.
+Crew6 produces six unsaved views with exact scene/lifecycle/file/save restoration;
+native shutdown crashes separately. Lead and peers accept the cosmetic seated
+human/robot placement, with hands at rest and continuous contact unverified.
+Their full121-key tracks are retained for exact installation. The original alien
+staff is still saved. No T9 or published-build change is claimed.
+
+**October7 09:26UTC historical saved preview:** Ring2 saves nine private assets and
+five segmented service standing markers with native exit0. Current preview is
+`8c65e4501320b65335ae016b86dee78c774580388a646bfb14063b05416e60bd`;
+receipt`c581987a09117dda13f00bafb0d88bdcdd0edf5da47ccee7b3443ad8313c2271`.
+Existing actors, services, floor contacts, source files and saves are preserved.
+Nine fresh views verify the five correct service focuses and subtle ring
+brightness variation. Capture preservation passes with zero scene deltas, but
+native shutdown exits0xC0000005 separately. Lead and peer rate rings about8/10
+and the whole T room about7/10; illustrated screen replacement and saved mixed
+crew remain incomplete. Contact5 finishes cleanly/native0 with read-only
+preservation, while physical seating acceptance remains pending.
+
+**October7 08:58UTC historical saved preview:** Threshold2 repairs the one omitted
+cargo entrance floor with native exit0 and exact scene/material/file/save
+preservation. Main preview is
+`fb3d5ed7ee58afc3e90044cec21a4428022a7224f9d7b1fa71e0d65bab3ff3b2`;
+receipt`67bf51f6ce0629c6d719c7b9b0bb42039ed07be8ea91919ff50c8c7fd2a8b0a2`.
+One existing material slot changes in a new private cargo child, and one existing
+main-map instance reference changes; no material, geometry or collision is added.
+Two fresh views confirm the rusty threshold is white. Their preservation checks
+pass with zero scene deltas; native capture shutdown exits0xC0000005, retained
+separately. Full-station scoped material implementation is advanced, while dark
+foundation coverage and final owner appearance acceptance remain incomplete.
+
+**October7 08:29UTC display update:** Art3 saves five illustrated existing
+service displays through ten private assets at preview
+`eeffd79b164aa1d868f9f4935b6b9e8be272734a9a2bdca98f5964d1bf7ae54b`;
+receipt`5eac150f83215f6ac3a97f741b77537bd5623f5b11282874f70e0358331c7121`
+reports saved/success/preservation true. Native shutdown nevertheless exits
+`0xC0000005` after normal subsystem/log shutdown; this is retained as a failed
+process exit, not a clean aggregate pass. Fresh-reload six-view Capture3 confirms
+the save with exact scene/file/save/ship preservation and zero deltas, but also
+exits0xC0000005 during shutdown. Actual Pilot artwork is mirrored and obstructed
+by the physical frame; Flight is readable but too dim. Art4 then rejects the
+measured front-frame window before importing anything: native exit0, preservation
+true, zero assets saved and Main remains the Threshold2 hash above. Raw candidate
+rays are retained. Four physical satin-framed overlay displays with known UVs are
+being prepared on the existing hardware; artwork appearance remains unaccepted.
+The previous clean Capture2 shows
+improved satin/graphite hardware and the intact Phoenix podium, with exact scene,
+file, save and ship preservation. Lead and independent review rate that T view
+about7/10; native graph underlays, crew and physical service markers still need work.
+FloorCapture7 passes/native0 with nine saved-floor views. Apartment/cargo panels
+and stairs retain white detail; its omitted brown threshold is repaired above.
+Threshold1 stops before changes on an original-versus-private-clone graph identity
+comparison; its failure remains history.
+CrewPreview4 supersedes the cropped Crew3 views: six unsaved human/robot images
+show complete heads/boots and natural bent-knee silhouettes. Its receipt
+`854e3d6f7a388ec1750f5759870b27b60f6a05422430bf7413d66b98a752bafb`
+verifies all three animation lifecycles restored, zero scene deltas and unchanged
+files/saves/ships. Native shutdown still exits0xC0000005. Actual full-loop chair
+seat/back/armrest contact is pending; no crew substitution is saved. Whole T
+remains about7/10, not its9/10 gate. Physical markers are prepared offline only.
+The earlier Art1/2, capture and support failures remain immutable history.
+Source checkpoint`f02d98a5539669e090cadeebe4fd118640e4379e` is pushed to existing
+open draft[PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69), unmerged.
+Latest local recipes/evidence are not all checkpointed; no new package is published.
+
+**October7 07:32UTC working update:** Final6 saves the white-floor main preview at
+`c0c25d69e16342dadc274976b1e4c81b8d46130ee98b7b8bc3310f03d5058f50`;
+receipt627e5897c0b8c4301005471bcbda81c2e64b8ff847565a22c4e0e119711a8ec3,
+native exit0 and preservation pass. Both completed private apartment/cargo maps
+are connected through their existing instances, and four mixed foundation tops
+use masked white materials. The34 private materials and both child maps are
+reused without resaving; only six main-map references change in one loaded scene.
+Original content and player saves are preserved. Attempts4/5 retain their partial
+save/failure receipts; Final6 does not claim exact scene equality across separate
+loads. The nine-view floor capture6 fails before map load on an unrecognized CargoShip
+junction and subsequently exits3 with a shutdown assertion; no images or saves
+are produced. Corrected capture preparation is underway. RemainingLens3
+passes/native0 with actual desk-parts and narrow light-strip geometry; proper
+screen-face fitting remains pending. Full-size ordinary capture2 produces an
+actual1600×900 image with measured fraction1.0/TSR active. Its aggregate result
+remains PARTIAL/native exit1: synchronous log checking races restoration and
+989 exact editor deltas remain. Native viewport restoration ultimately verifies
+the original dimensions/fixed state; saved files/saves/ships/quality remain unchanged.
+Editor Build39 succeeds with a separately
+opted-in1600×900 temporary PIE viewport size/restoration diagnostic. Seven private human/robot seated-animation
+candidates save/native0 with original models, maps and saves unchanged, but no
+operator is replaced and skin/furniture contact is unverified. Five illustrated
+service plates are prepared/unimported. Connected-floor attempts1–3 exit0 after
+rejecting their pre-creation checks; no material or map is saved by those attempts.
+Editor Build38 succeeds with an opt-in,
+editor-only renderer observer; its paired native capture exits0 and reports actual
+612×344 letterboxed/1600×900 high-resolution views at fraction1.0 with TSR active.
+The aggregate capture remains PARTIAL on exact editor-state differences, with
+saved files, saves, ships and quality unchanged. No owner-size or performance pass
+is inferred. Builds36/37's include/shadowing compile failures are retained.
+Editor Build35 succeeds after a small
+decorative-cabin collision exclusion; its focused native departure regression
+passes cleanly (one success, zero warnings/errors/not-run, native exit0).
+Build34's two exact focused
+native tests pass cleanly (native resolution across quality tiers and Phoenix
+cockpit departure). Build31's four clean camera/preset/cockpit checks remain
+valid for unchanged camera source. The old Build30 framing failure, Build32
+test-API compile failure and Build33 scalability warning result remain history.
+Source/recipes/evidence checkpoint`01a579693443239f9371a4a24e498fd251a03950`
+is pushed to the existing open draft[PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69),
+unmerged. The original white floor comparison remains an unsaved test; the subsequent
+measured main-floor author now saves53 private materials across1022 floor
+components/5017 references, with native exit0 and1281 protected files/three game
+saves unchanged. Original Normal/AO/UV, inherited material overrides, geometry,
+collision, lighting and service identities are preserved. Current preview SHA is
+`211c812516fd81a71be64c6ddd3a372b3a2a94187f56790c03bc60719a077f34`
+for that earlier Main1 author, superseded by Final6 above;
+receipt71bf0fb1f31e2673adb2bdd7b2c2ff28f27f727dbfacf8ccd31081ca5a84f1c2.
+Fourteen actual saved-map images confirm white panel detail across the main rooms
+and connectors. Capture1 remains PARTIAL: its editor-state comparison fails and
+the native process exits0xC0000005 after shutdown; files, saves and ships remain
+unchanged. Root rates T6.5–7/10, with soft/jagged imagery and shiny desks unresolved.
+The measured remainder floor references are now saved and connected by Final6;
+their rendered appearance and full-station visual coverage remain unaccepted. RemainderProbe1's three
+read-only sections and preservation pass, with the same native shutdown failure
+retained. The owner selects this textured low-gloss white direction and
+a less alien-heavy NPC mix for T. ContactProbe2 exports both full model skins
+(Human11693/Robot18850 vertices) and preserves the scene/files/saves, native exit0.
+Its aggregate result fails because one chair part exceeds the bounded native BVH
+budget; seating contact and operator replacement remain pending. T remains the
+priority until the lead's actual visual review reaches9/10. ServicesProbe5 verifies
+installed human/robot candidates, screen geometry and five standing service
+selections; it fails one Engine-dependency guard and exits0xC0000005. These partial
+measurements do not establish saved NPC, desk-marker or gameplay completion.
+Four parked-only cabin lamps and two mounted illustrated panes are implemented;
+CabinDisplays3 saves the two private materials with native exit0. Native plane
+geometry proves their corrected inward-facing orientation. Modes34's nine actual
+views confirm the left pane and improved cabin structure, but stairs/floor remain
+dark and the right pane's readability is unproved; lead/agent appearance estimate
+is5.5–6/10. Build35 excludes these decorative details from the generic collision loop.
+Physical camera comfort and final cabin appearance remain owner-unaccepted.
+See [camera evidence](validation/2026-10-06-phoenix-camera-comfort.md),
+[cockpit evidence](validation/2026-10-06-cockpit-mode-selector.md) and
+[native-resolution/cabin evidence](validation/2026-10-07-native-resolution-and-phoenix-cabin.md).
+
+An actual unmodified SIE probe confirms the game reapplies High2 quality with
+resolution scale87 and texture pool800MB. Build34 retains native100 across quality
+tiers and repairs the owned motion-blur/scalability priority warning. Actual
+Owner-resolution texture pressure remains unmeasured; the isolated diagnostic
+measures fraction1.0 at612×344/1600×900, without an owner-size performance pass.
+No pool increase or shader-cache setting change is claimed. Probe3's
+samples confirm native100 without a console override, but its aggregate result
+fails a stale overall-tier assertion: native100/High2 correctly reports Custom−1.
+Corrected read-only Probe4 passes/native exit0 with preservation intact; it
+confirms native100 and the intentional mixed profile without rendering overrides.
+
+T's current saved owner preview is
+`211c812516fd81a71be64c6ddd3a372b3a2a94187f56790c03bc60719a077f34`.
+Displays3 saves four resident graphics and offsets three rear frame/pane pairs;
+Capture2's blur/intersections were rejected, while Capture3's six fresh views
+exit0 and show sharp, clear artwork. PromptVisibility2 then saves six precise
+floating-label retirements; its successful preservation receipt retains a native
+shutdown crash after normal LogExit. Composition5 then saves the glass-enclosed
+4.8m podium, all four supplied Phoenix mesh parts and a60second rotation sequence,
+60new actors/five private assets, with native exit0 and preservation pass.
+Composition attempts1–4 fail before saves and remain history. Capture5 fails before
+images on a Python sequence-player accessor; corrected Capture6 passes/native
+exit0: six actual views and69.681game seconds/418.085degrees/one natural wrap,
+with files/saves/ships unchanged. Lead/independent review finds clear glass and a
+complete ship, but rejects the concrete-looking base at about5/10. MaterialFinish2
+then saves ten private materials on37 actors/52slots, with native exit0 and no
+light/geometry/sequence change. Density4 saves20 fitted ceiling/storage/TV actors
+and four private assets, with native exit0. Eleven ceiling panels retain an opening
+for the original pendant; actual fixture-triangle contact checks prevent intersecting
+supports. Earlier density probes/authors stop before saves and remain history.
+Fresh DensityCapture3 passes/native exit0 with eight actual saved-room views,
+unchanged protected files/saves/ships and short natural autoplay. Lead review finds
+readable illustrated ads and an improved graphite base/ceiling, but whole-room
+quality is only6–6.5/10: the base is plain and desk/floor reflections remain noisy.
+The cause of that noise and screenshot-versus-runtime contribution is unconfirmed.
+L's fixtures, layout and female bartender are preserved; its new white floor is
+authorized by the subsequent full-station decision. T owner approval remains open.
+See [podium evidence](validation/2026-10-07-operations-phoenix-podium.md).
+The owner finds T too empty. Its layout, material and local-lighting pass remains
+active and unapproved; the podium, ceiling, storage and side displays are saved,
+while lead visual refinement and room approval remain open.
+The owner specifies a glass-enclosed central podium with a slowly rotating Phoenix;
+its composition, fitted signage and contextual prompt cleanup are implemented in
+this separate local preview. The owner authorizes continued overnight work in later
+areas after lead review while owner validation remains pending.
+The latest directional-Waves, warp-pad, ship support, bartender contact and market
+physics requests are explicitly queued after T in RPT-20261007-01.
+The canonical gameplay station and published0.1.22-alpha/build2048604 are unchanged.
+
+**October7 00:12UTC owner review (October6 evening locally):** L social lounge is
+accepted **8/10 for now** at saved preview SHA
+`ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`.
+Finer detail, station-wide touches and NPC behavior are deferred. T Operations is
+the next active room. This supersedes earlier L visual-approval-pending language;
+it does not close gameplay/performance/package gates or approve other rooms.
+
+**October6 survival quality candidate (in progress):** The canonical checkout and
+Editor are being updated beyond the consolidation below on `codex/unified-editor-library`
+for RPT-20261006-02. It includes the dense persistent asteroid field, real rock
+destruction/impact response, dark space sky, apartment support recovery, tail floor
+clearance and controller overlay repairs. The canonical live station is preserved;
+the separate owner preview is being refined as described below.
+Native checks and offscreen review are in progress; the existing local Windows
+archive and published itch 0.1.22-alpha still contain the previous gameplay.
+Do not infer a new package from the rebuilt Editor. [Current evidence and limits](validation/2026-10-06-survival-quality.md).
+
+**October6 owner platform preview:** the final Downloads Blender revision is saved
+in a separate `L_OwnerPlatformPreview_20261006` map, opened by
+`Edit Owner Platform Preview.cmd`. Subsequent owner-saved edits are preserved while
+the approved room targets are implemented: Social bar/lounge, staffed Operations,
+crew archive, reception, market and a full enterable cargo berth. The private
+foundation collision repair and four actual room-walking routes pass. The connected
+cargo route also passes ordinary movement into the ship and back; its process retains
+the existing apartment Blueprint errors. RoomPass7Retry1 has13actual revised views;
+the owner initially rated the whole station4/10 and prioritized L lounge, since
+accepted at8/10 as recorded above. The saved
+StationPoolMatch1 preview replaces the old floating reset with a60second alternating
+scratch, enclosed ball return, hand pickup/placement and conversation sequence.
+Native playback observes two actual loops;16 actual screenshots include four matched
+whole-room views. The original table stays intact. Two supported aisle fixtures,
+three additional seated guests and two distinct owned display graphics improve the
+room, independently rated6–6.5/10 against the target. SocialVisualFinish1 corrects
+mirrored COSMOS text, headings and return finish. Its closer view exposes an extreme
+pickup lean and cue penetration explicitly rejected by the owner. PickupV2 saves
+the corrected squat/cue clearance; two native loops and12actual views confirm the
+improvement but expose an awkward carrying arm. Seven local Comfy/Blender arcade
+props are saved, including rebuilt hard-surface Credit Exchange/crane assets and
+four decorative Acornaut modes, two ceiling coffers and landscape screen cards;
+155private arcade packages are imported. PickupV3 keeps the carrying forearms in
+front of the torso. ArcadePresentation2 moves Credit Exchange to the perimeter,
+lights cabinet faces locally and gives two center fixtures a visible diffuser.
+The owner explicitly likes the brighter cyan trim/general lighting; it is preserved.
+L acceptance saved preview SHA is
+`ab263462e6b4fe4150dcd4e30a42fbe5ab0f1e04204d73d1aa3eca2e33694d64`.
+TableSettings2 adds three supported table props and repositions one cup stack;
+its author and three-view capture exit0. BarPresentation4 saves private metal
+finishes, framed bottle shelving and supported counter props while preserving the
+counter height, furniture footprint and approved ceiling lighting. Its author and
+four-view capture exit0. Furniture1 then fits four owned chair meshes, with native
+author/capture exits0. ChairFinish2 saves a private graphite/satin material, and
+Lighting1 improves female face/suit visibility and local shelving/counter illumination.
+Both authors and matched three-view Before/After captures exit0. Approved ceiling and
+general lights are unchanged. Broad front panels remain flat; the futuristic bar is not
+accepted. Earlier bar attempts stopped
+before saves on prop support and a reflection API error; those failures remain recorded.
+Both earlier native author processes and the fresh13view V3 capture exit0. Those13views
+are paused-pose/room evidence, not another natural playback test. Earlier import
+exit1 and post-save placement crash remain recorded. Lead/independent review is
+about6.5–7/10: readable arcade and unobstructed pool, but sparse central social
+activity, blank wall composition and crane/terminal detail remain below target.
+Carried ball readability and natural animation feel remain open. The owned
+Bar Counter People FBX contains ten bartender and35customer takes. Three bartender
+clips have been retargeted to the existing female-alien presentation, with11private
+assets saved and six corrected native pose captures. No complete animation rebuild
+is indicated. The initial capture is rejected for a fixture orientation error;
+the corrected neutral poses do not establish counter contact or final lighting.
+FemaleBartender1 now replaces only the saved staff actor's presentation with the
+verified female and a grounded conversational Type02 idle. Its native save and fresh
+33.357second natural playback verification exit0. The earlier grounding asset save
+retains a shutdown crash; fresh processes successfully reload and verify that clip.
+Varied service actions and hand props remain unfinished. Owner rejects the dark bar
+lighting and requests glass order tablets and image-led humorous fictional ads;
+local lighting is saved and six local Qwen illustrations have been composed into
+four distinct fictional campaigns plus image-led hospitality graphics. Native
+screen/tablet integration saves thirteen private assets, two owned TV frames,
+two supported glass menus and replacements for five plain labels; native author
+exits0. Actual SIE capture verifies the full48.202second four-ad cycle; initial
+dimness/overlapping labels are visually rejected. Readability1 saves seven private
+gain/opacity materials and retires four old graphics; eight fresh views confirm readable
+art and menus with unchanged general/ceiling lighting. Retained Capture1 fails before SIE
+on an incorrect transient-editor-visibility assertion; corrected Capture3 exits0.
+TabletPlacement1 then moves ten existing menu/support actors to measured dry countertop
+patches, with no new assets/lights. Its fresh four-view capture exits0 and preserves
+436files/3saves, confirming grounded docks with the sink/faucet overlap removed.
+The final TV/materials remain those verified in ReadabilityCapture3. Artwork is8/10,
+native displays7.5/10 and bar7/10 against owner references; these are lead/independent
+ratings, not owner acceptance. Full-room composition, material depth and serving motion
+remain unfinished. Earlier two import attempts fail before saving and are retained.
+The current bar/lounges remain unapproved, and no new order/economy gameplay or
+new Windows package is implied.
+[Arcade evidence](validation/2026-10-06-local-arcade.md).
+Build28 is the
+latest Editor build; Build26 added seamless Phoenix seating/camera/parked cabin lights.
+Boarding5 and WeaponQuality24 provide actual camera/damage evidence. The isolated
+FreeFlight resume fixture still fails its final phase; natural gameplay, listening and
+representative performance remain open. The
+canonical station and all original guarded assets remain unchanged; this preview
+is neither a live-station replacement nor an itch update. [Receipt](validation/2026-10-06-owner-platform-preview.md).
+
+**October6 canonical project repair (implemented and verified):** The normal
+`C:/Users/j6sis/SpaceSurvival` checkout had remained at old source `684db34` with a
+September20 Editor DLL. This explains the owner's old-station launch despite the
+October1 itch publication. The normal checkout now starts from current `731e9316`
+on `codex/unified-editor-library`; old edits and conflicting files are preserved in
+`.agent/local/consolidation-20261006` and a scoped Git stash. Current station,
+apartment and private content remain on disk. Native Editor build succeeds with
+ULAT enabled after moving its existing installation into the engine Marketplace
+folder. Desktop launchers now target this canonical project. Its editor startup
+opens the editable current Wayfarer map; Play routes into Survival. The original
+outpost and flat asset sandbox remain separate experiments. SS Link 0.5.0 is
+installed in live Blender with its previous scene backed up and retained. Native
+verification passes 12/12 checks, including normal Play, a real placement move and
+restore, stale-edit rejection, and preservation of all four authored maps. The
+current station is open in Blender as `Wayfarer station`: 12,315 mesh placements,
+7,172 editable and 5,143 locked references. The complete static-mesh library has
+2,825 proxies, thumbnails and native Blender assets; ULAT exposes 2,617 of those,
+with all 208 unsupported names available through native collections and Blender.
+The saved working file is `Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend`.
+The final portable library is
+`Artifacts/BuildingSandbox/SpaceSurvival-Library-0.5.0-20261006-final.zip`.
+The existing latest Windows package has been copied to canonical `Artifacts/Windows`,
+with the older package preserved. No new itch publication or gameplay acceptance
+is implied. [Verification and limits](validation/2026-10-06-unified-editor-library.md).
+This paragraph supersedes older current-checkout instructions below.
+
+**2026-10-01 merged tester baseline:** Owner authorizes Wayfarer Exchange and its furnished apartment as the active station in the current game, plus a packaged itch update even with open playtest issues. `codex/outpost-live-release` combines PR64/66/67 in the existing repaired checkout. Runtime uses a derived tagged map; the original outpost, separate flat BuildingSandbox and apartment source are preserved. Windows Development package and focused packaged station review pass at e6c2a87. PR64/66/67/68 are merged at owner request; main is e4489d5 and its runtime source/configuration match packaged e6c2a87. 0.1.22-alpha is published and verified READY as itch build2048604, replacing2003058. [Published receipt](validation/2026-10-01-itch-0.1.22-alpha-published.json). [PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69) is the single open draft follow-up carrying tests, station review, genuine Phase1 gaps and event-driven voice scope; merge is not acceptance. Older dated release and separation statements below remain historical.
 
 **2026-09-30 wormhole playtest:** `codex/wormhole-transit-polish` builds on PR66 db05ca4 without changing difficulty tuning. Original flowing tube/material, near-locked 300 m/s transport, bounded wobble and restored controls replace the rings. The existing repaired desktop checkout is rebuilt on `codex/wormhole-playtest`, gameplay source `8ee8260`; no owner compile is needed. Two focused native tests and final current-game offscreen entrance/transit/exit capture `8207c03d21d24668a4c79bbc1b48f74d` pass (four stages plus48 timestamped sequence frames, isolated save profile). Existing shortcuts remain valid. The existing package/itch release and unaccepted station PR64 are unchanged. [Wormhole evidence](validation/2026-09-30-wormhole-transit.md).
 
@@ -147,7 +1068,7 @@ Editor build and 51/51 Unreal tests pass. First flight compositions were rejecte
 
 ## Source, build and release
 
-**October1 current integration:** the repaired checkout `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, branch `codex/outpost-live-release`, combines PR64/66/67 and streams the private Wayfarer runtime map and apartment. Editor build and three targeted Outpost tests pass. Windows Development package at e6c2a87 and six-stage packaged capture bf48cdc01570484fb59278620460a277 pass (eight service openings,27 collision samples, Free Flight departure/return and seeded Wave5 stop). Original outpost/flat BuildingSandbox remain unchanged and independently editable. 0.1.22-alpha is prepared,51files/8772436373bytes; upload is in progress and last verified live channel remains0.1.21-alpha.1. [Package receipt](validation/2026-10-01-itch-0.1.22-alpha-package.json), [evidence and limits](validation/2026-10-01-wayfarer-release.md). Draft PR68 remains open/unmerged. No GitHub merge is authorized for this task.
+**October1 current integration:** the repaired checkout `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, branch `codex/outpost-live-release`, combines PR64/66/67 and streams the private Wayfarer runtime map and apartment. Editor build and three targeted Outpost tests pass. Windows Development package at e6c2a87 and six-stage packaged capture bf48cdc01570484fb59278620460a277 pass (eight service openings,27 collision samples, Free Flight departure/return and seeded Wave5 stop). Original outpost/flat BuildingSandbox remain unchanged and independently editable. 0.1.22-alpha payload51files/8772436373bytes uploaded successfully; itch build2048604 is verified READY, replacing2003058 on the existing windows-alpha channel. [Published receipt](validation/2026-10-01-itch-0.1.22-alpha-published.json). [Package receipt](validation/2026-10-01-itch-0.1.22-alpha-package.json), [evidence and limits](validation/2026-10-01-wayfarer-release.md). Owner subsequently authorized all completed PRs to merge: PR64/66/67/68 now merged; origin/main e4489d5 contains every head. Current branch codex/phase1-test-and-audio-followup carries documentation/testing scope only; code/configuration remain identical to the package. [PR69](https://github.com/j6sistek-ui/SpaceSurvival/pull/69) retains outstanding acceptance and implementation work.
 
 ### Historical September14–17 delivery layers
 

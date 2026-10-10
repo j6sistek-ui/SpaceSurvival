@@ -1,10 +1,31 @@
 # Build and run
 
-**October 1 station integration:** the current development checkout combines the repaired game with Wayfarer Exchange and its furnished apartment. The editable station and separate building sandbox remain preserved. The Windows package and focused packaged station smoke pass at e6c2a87; itch0.1.22-alpha upload is in progress. [Project State](PROJECT_STATE.md#source-build-and-release) owns the final source, build and published identity. Source presence or a desktop shortcut does not prove an updated itch installation.
+**Installed engine, October9:** `Engine/Build/Build.version` reports UE5.8.3.
+Earlier version numbers in dated receipts describe those historical checks.
+Full Editor Build55 links successfully and was verified loaded in the offscreen
+editor (DLL`7b0ea67f`), including the streamed-station BeginPlay correction. The
+root-owned test editor was then closed cleanly to release VRAM; open the saved
+station normally through the existing launcher below.
+Earlier DLL-lock/object-only Build39–46 receipts are historical. Verify the actual
+running editor and dirty packages before any later link/restart; do not close an
+owner session merely to validate a scene-only trial. [Current evidence](validation/2026-10-09-station-crew-central-r.md).
+
+**October9 offscreen recovery:** restoring the owner's normal editor layout twice
+crashed in `NwiroIKPanel::OnSpawnTab`. For agent-run room review, the successful
+launch kept `-RenderOffscreen` and passed
+`-EditorLayoutIni=C:/Users/j6sis/SpaceSurvival/.agent/local/StationRefinement/WholeRooms67/EditorLayout.offscreen.ini`.
+The original owner layout was restored byte-for-byte and never replaced by the
+test layout. Reuse a verified private layout override for later offscreen runs;
+do not change the normal owner launcher or repeatedly open the crashing tab.
+The private profile must exist before launch. [Recovery and review receipt](validation/2026-10-09-central-r-whole-room-review.md).
+
+**Current project, October6:** use `C:/Users/j6sis/SpaceSurvival` for gameplay, station editing and the imported library. [Edit Current Station.cmd](../Edit%20Current%20Station.cmd) opens the current Wayfarer map in the normal editor. [Play Development Build.cmd](../Play%20Development%20Build.cmd) launches the development game. The canonical Editor rebuild passed in 35.74 seconds with ULAT enabled. `CurrentStationVerification5` passes all 12 native checks: editor Play travels to Survival/SSGameMode, loads one current station with 7,775 tagged outpost actors and 744 apartment children, and preserves all four protected saved maps. These are scripted checks; physical input and visual acceptance remain separate. [Project State](PROJECT_STATE.md) records verification and package location.
+
+**October 1 station integration:** the current development checkout combines the repaired game with Wayfarer Exchange and its furnished apartment. The editable station and separate building sandbox remain preserved. The Windows package and focused packaged station smoke pass at e6c2a87; itch0.1.22-alpha is published and build2048604 is verified READY. [Project State](PROJECT_STATE.md#source-build-and-release) owns the final source, build and published identity. Source presence or a desktop shortcut does not prove an updated itch installation.
 
 **Historical September22 release:** `0.1.21-alpha.1 / build2003058` shipped the responsive flight, mixed physical field, controller menu navigation and HUD fixes. Its Package10/source4fd0293 identity does not describe the current development build.
 
-**Current desktop entry points:** `Unreal Engine` opens UE5.8 with the repaired project at `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/SpaceSurvival.uproject`. `Play SpaceSurvival - Current` opens that checkout's `Play Development Build.cmd`. To launch directly from the repaired checkout, use [Open Repaired Game Editor.cmd](../Open%20Repaired%20Game%20Editor.cmd) or [Play Development Build.cmd](../Play%20Development%20Build.cmd). The original `C:/Users/j6sis/SpaceSurvival` authoring checkout and `Artifacts/Windows/SpaceSurvival.exe` are not the current development gameplay build. Desktop shortcut changes do not rebuild a package. [Replacement hero receipt](validation/2026-09-24-replacement-hero.md).
+**Editor entry point:** open `C:/Users/j6sis/SpaceSurvival/Edit Current Station.cmd`, or that folder's `SpaceSurvival.uproject`. The editor startup map is `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`; the game default remains `/Game/SpaceSurvival/Maps/Survival`. Play from the current station redirects to Survival so the ordinary game creates its player and station once. `Open Repaired Game Editor.cmd` remains a direct Survival-map entry in whichever checkout contains it. Use the explicit canonical launchers if a desktop shortcut still points to a previous worktree.
 
 **Historical PR66 review, September29:** native build and affected checks are handled by the lead, with evidence in the [native repair receipt](validation/2026-09-29-pr66-native-polish.md). At that checkpoint the repaired desktop checkout was rebuilt at gameplay source `13ad4e5` (September30 minor volley follow-up), branch `codex/pr66-playtest`; use **Play SpaceSurvival - Current**, then Start Survival, or open **Unreal Engine** for that repaired project. No owner compile is needed. The packaged EXE/itch build remains older. For an isolated offscreen flight/rider inspection, `Scripts/CaptureSpaceLook.ps1 -Label DirectorReview -DirectorReview` captures Cruise, Turn, Boost, Brake and a transient VillainCloseup camera. The close-up hides the HUD temporarily and restores the ship camera/HUD afterward. It does not change saved settings or gameplay tuning; it is not natural-play or performance evidence.
 
@@ -16,7 +37,7 @@
 
 **Start with [Project State](PROJECT_STATE.md#source-build-and-release) for the current source, local package and separately published itch identity.** Older package receipts below are historical evidence, not the current contents of the shared archive. Phase 1 remains PARTIAL.
 
-For packaged review, use `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival/Play Packaged Review.cmd` only after confirming its current archive in [Project State](PROJECT_STATE.md#source-build-and-release). Earlier Package8/source89b1f3c and September22 release instructions are historical. Use Free Flight for casual controls/field testing or Start/Continue Survival for the run.
+For packaged review, use `Play Packaged Review.cmd` in the checkout that holds the verified archive identified by [Project State](PROJECT_STATE.md#source-build-and-release). The October1 archive remains separate from the canonical Editor rebuild. Earlier Package8/source89b1f3c and September22 release instructions are historical. Use Free Flight for casual controls/field testing or Start/Continue Survival for the run.
 
 **`Play Packaged Review.cmd`** opens only its checkout's `Artifacts/Windows/SpaceSurvival.exe` at 1600×900 with a separate persistent profile in `Artifacts/PackagedReviewUser`; it does not import existing saves, build, install prerequisites or apply ship-refresh/account changes. `Scripts/PlayPackagedReview.ps1 -DryRun` checks the paths and prints the command without opening the game or writing files. The final candidate passed that dry run; the agent did not open an interactive game window. Keep the whole packaged directory together.
 
@@ -24,19 +45,21 @@ For packaged review, use `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/Spac
 
 ## Wayfarer gameplay and preserved building areas
 
-The current gameplay integration instances `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime` as the home and survival station. This runtime duplicate comes from the saved Wayfarer composition, including its apartment; normal startup remains `/Game/SpaceSurvival/Maps/Survival`. The runtime map and `/Game/BuildingLibrary/Home/L_CrewApartment` are explicitly selected for cooking. Actual packaged inclusion and publication require their own receipt in [Project State](PROJECT_STATE.md).
+The game instances `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime` as the home and survival station. This map is also the current editing destination and normal editor startup. Game startup and Play from that station use `/Game/SpaceSurvival/Maps/Survival`. The current station and `/Game/BuildingLibrary/Home/L_CrewApartment` are explicitly selected for cooking. Actual packaged inclusion and publication require their own receipt in [Project State](PROJECT_STATE.md).
 
 Keep these authoring destinations separate:
 
 | Destination | Open or edit |
 | --- | --- |
-| Current game | **Play SpaceSurvival - Current**, or **Unreal Engine** for the repaired gameplay checkout. |
-| Original editable Wayfarer station | `M:/SpaceSurvival/Artifacts/Worktrees/asteroid-outpost/Edit Outpost Sandbox.cmd`, map `/Game/OutpostSandbox/L_AsteroidOutpost`. Its separate **Play Outpost Sandbox.cmd** still opens the design preview and its isolated profile. |
+| Current game | `C:/Users/j6sis/SpaceSurvival/Play Development Build.cmd`. |
+| Current Wayfarer station | `C:/Users/j6sis/SpaceSurvival/Edit Current Station.cmd`, map `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`. |
+| Owner's Blender platform preview | `Edit Owner Platform Preview.cmd`, map `/Game/OutpostSandbox/OwnerPreview/L_OwnerPlatformPreview_20261006`. Preserved source; October8 checkpoint was copied into live Wayfarer. Later preview saves do not automatically update gameplay. Play here uses sandbox walking rules. [Promotion receipt](validation/2026-10-08-live-station-closeout.md). |
+| Original outpost experiment | `Edit Outpost Sandbox.cmd` in the canonical project, map `/Game/OutpostSandbox/L_AsteroidOutpost`. Its separate **Play Outpost Sandbox.cmd** still opens the design preview and its isolated profile. |
 | Purchased-kit building sandbox | `/Game/Blender/Sandbox/BuildingSandbox_20260922`, preserved on its flat platform with the space backdrop; the former canyon was removed. See [Building sandbox](BUILDING_SANDBOX.md). |
 
-The outpost authoring checkout retains **ULAT** and its 2,156-row palette plus 43 complete placement assets; see [Building library](BUILDING_LIBRARY.md). ULAT is disabled in the current playable checkout because its installed-engine module rules fail the native build. This does not delete the plugin, prepared collections, prefabs or editable areas. Existing play/edit launchers and production save locations remain unchanged.
+**ULAT is enabled in the canonical project.** Its installed folder is now `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins/Marketplace/UltimateLevelArtTool`; moving the existing plugin into Marketplace resolved the native rules-discovery failure. The native refresh verifies 16,051 assets across 70 refreshed collections and 2,617 ULAT rows. All 2,825 mesh proxies, thumbnails and native Blender cache assets are prepared, with zero failed proxies or unavailable cache meshes. The 204 name collisions and four unsupported names remain in native collections. The complete station is verified in Blender and saved as Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend; see [Building library](BUILDING_LIBRARY.md) and [Project State](PROJECT_STATE.md).
 
-Runtime consoles now route to existing gameplay panels: ship paint, wardrobe, launch choices, engineering, contracts, repair and save services. The original sandbox's paint/wardrobe previews and explicit map-travel terminals remain its own behaviors. [Outpost guide](OUTPOST_SANDBOX.md) distinguishes them. No new sit-down animation or automatic Blender-to-runtime station rebuild is claimed. Changes to the editable map require a deliberate refresh of the runtime copy and a later package to reach testers.
+Current station consoles route to existing gameplay panels: ship paint, wardrobe, flight briefing, engineering, contracts, repair and save services. Waves / Free Flight selection belongs at the Phoenix cockpit chair in the October 6 source revision; the briefing reports the choice and retains explicit saved-run continuation. The original sandbox's paint/wardrobe previews and map-travel terminals retain their own behaviors. [Outpost guide](OUTPOST_SANDBOX.md) distinguishes them. Save edits directly to the current Wayfarer map with Play stopped, then restart Play to review them. Changes to the preserved outpost experiment require a deliberate transfer; changes reach testers only through a later package/publication.
 
 For the focused integration smoke, rebuild the current Editor module first, then run one offscreen process at a time:
 
@@ -50,7 +73,7 @@ The fixture requests six frames: pad, home services, apartment, free-flight depa
 
 ## Tooling and repository
 
-Run commands from the checkout being built or inspected. The reset review checkout is `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`; the preserved original checkout is `C:/Users/j6sis/SpaceSurvival`.
+Run current build and authoring commands from `C:/Users/j6sis/SpaceSurvival`. Historical receipts may refer to the retained `flight-loop-reset` or outpost worktrees; those paths do not select the current project.
 
 - Owner-installed Unreal Engine 5.8.2: `C:/Program Files/EpicGames2/UE_5.8`.
 - Owner-installed Visual Studio 2026 C++ toolchain: MSVC 14.51.36257, Windows SDK 10.0.26100.0. Builds have succeeded; UBT reports that this compiler is newer than its preferred version. Consult the installed engine's `Engine/Config/Windows/Windows_SDK.json` if changing toolchains.
@@ -77,7 +100,7 @@ $ssProject = Join-Path $ssRoot 'SpaceSurvival.uproject'
 
 The importer creates only `/Game/SpaceSurvival/UI/MainMenu` assets, preserves the committed source bytes and rejects unknown or changed prior outputs. Matching recorded textures can be reused unchanged. `Artifacts/FigmaMainMenu/author.json` records output hashes; the existing SpaceSurvival cook root covers this family. Do not run the baseline Content author to install this menu. Import, native build, input, rendered fidelity and cooked inclusion have separate checks in the validation record.
 
-On this title screen, Continue resumes a saved survival checkpoint and stays visibly disabled when one is unavailable; New Game opens home for boarding and the Start/Continue/Free Flight choice; Settings opens the current settings panel; Exit Game quits. W/S or arrows/D-pad navigate, Enter/A confirms, pointer hit areas follow the same four native indices, and Escape quits from the title only. The old Figma sample-version caption is retained in provenance but the live panel says `DEVELOPMENT REVIEW` without an unwired release-log link. Missing imported artwork falls back to the functional native panel. At other aspect ratios the composition is letterboxed; the half-scale button exports target 1920×1080 and do not establish 4K or shader-animation acceptance.
+On this title screen, Continue resumes a saved survival checkpoint and stays visibly disabled when one is unavailable; New Game opens home, where the pilot chooses Waves / Free Flight at the cockpit chair before sitting to depart; Settings opens the current settings panel; Exit Game quits. The station's flight briefing also retains explicit Continue saved Survival when a checkpoint is available. W/S or arrows/D-pad navigate, Enter/A confirms, pointer hit areas follow the same four native indices, and Escape quits from the title only. The old Figma sample-version caption is retained in provenance but the live panel says `DEVELOPMENT REVIEW` without an unwired release-log link. Missing imported artwork falls back to the functional native panel. At other aspect ratios the composition is letterboxed; the half-scale button exports target 1920×1080 and do not establish 4K or shader-animation acceptance.
 
 ## Orbital wreck authoring and comparison (target unaccepted)
 
@@ -121,7 +144,7 @@ Example (one script at a time):
 
 Authoring backs up four private packages under `Artifacts/AsteroidDepth/<run>/`, preserves existing layout arrays and verifies vendor bytes. `-SSSkyResolution=4096` is an optional comparison; 2048 is the default. `AuthorSpaceVisualPass.py` also selects 2K BC6H for these three derivatives. A separate rendered check is required; authoring does not package or publish. Current evidence and open work remain in VALIDATION and KNOWN_ISSUES.
 
-The package command forwards `-RenderOffscreen` to the cooker and disables the two editor integration plugins there. Their project references also allow only Editor targets. The isolated reset worktree has its own ordinary `Artifacts` directory, so its `Scripts/Build.ps1 -Target Package` archive does not replace the original checkout's `Artifacts/Windows`.
+The package command forwards `-RenderOffscreen` to the cooker and disables the two editor integration plugins there. Their project references also allow only Editor targets. Each checkout has its own `Artifacts/Windows` archive. Historical packages built in the isolated reset worktree did not replace the canonical project's older archive; match the actual package path to [Project State](PROJECT_STATE.md) before launching or replacing one.
 
 ## Station reset authoring (development project, unaccepted)
 
@@ -272,7 +295,7 @@ Each target accepts `-EngineRoot 'C:/Program Files/EpicGames2/UE_5.8'`. Close pr
 
 `Scripts/ValidateScene.py`, executed by the editor Python runner, checks saved background collision and skeletal/instanced-material usage. Its `--repair` option intentionally changes those owned assets; omit it for readback validation. Results go to `Saved/Validation/SceneValidation.json`. The latest repair/readback is recorded in [VALIDATION.md](VALIDATION.md).
 
-Open `SpaceSurvival.uproject` in UE 5.8.2 and load `/Game/SpaceSurvival/Maps/Survival`. For a separate development game window:
+Open `SpaceSurvival.uproject` in UE 5.8.2 to edit the current Wayfarer station. Press Play for the normal game, or load `/Game/SpaceSurvival/Maps/Survival` directly. For a separate development game window:
 
 ```powershell
 $ueEditor = 'C:/Program Files/EpicGames2/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe'
@@ -292,7 +315,7 @@ The historical reset candidate selected `StationReset/BP_StationReset`; the curr
 
 The wrapper requires the gameplay map, then runs Win64 Development BuildCookRun with build, cook, stage, pak, IoStore, prerequisites and archive enabled. Historical Package 14 succeeded (UAT log: 0h 2m 8s, exit 0; native build 69.48 seconds).
 
-Archive: `Artifacts/Windows` under the selected checkout. Packaging replaces that checkout's archive. The reset candidate is in the isolated review checkout named above; packaging it did not replace the original checkout's archive. Match the receipt linked from [Project State](PROJECT_STATE.md#source-build-and-release), including the inner game and containers; the launcher alone is not a build identity.
+Archive: `Artifacts/Windows` under the selected checkout. Packaging replaces that checkout's archive. Consolidating the current Editor project did not copy or rebuild the October1 packaged archive. Match its location and receipt in [Project State](PROJECT_STATE.md#source-build-and-release), including the inner game and containers; the launcher alone is not a build identity.
 
 The historical Package 13 receipt also binds all five .pak/.utoc/.ucas containers, all 120 project packages plus Engine Cube, 2,184 index rows, prerequisite provenance and copied acknowledgements. Package 13 Wave 10 passed its normal-timing fixture. Package 12 separately retains the preceding Station 1 transition benchmark; that earlier capture does not establish a new Package 13 Station 1 measurement. Exact measurements and their limits belong in [PERFORMANCE.md](PERFORMANCE.md); earlier package results remain historical.
 
@@ -340,7 +363,7 @@ The dry run binds the current built/archive executable and link response file; u
 
 ## Controls
 
-The following mappings describe Package5/source `0004810`, retained in Package7/source `25cf794`, the temporary September 22 testing preset. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
+The following mappings retain the September 22 testing preset and add the October 6 source revision's cockpit mode selector. The latter requires a matching rebuilt executable; earlier Package5/source `0004810` and Package7/source `25cf794` do not contain it. Use [Project State](PROJECT_STATE.md#source-build-and-release) to identify the executable being reviewed.
 
 | Capability | Keyboard/mouse | Controller |
 | --- | --- | --- |
@@ -357,6 +380,7 @@ The following mappings describe Package5/source `0004810`, retained in Package7/
 | Walk / run | WASD / Shift | Left stick / X |
 | Jump on foot | Space | A |
 | Interact on foot | E | Y |
+| Choose departure mode at the cockpit chair | R, one press per change | D-pad Left, one press per change |
 | Flight encounter interaction | E | X |
 | Confirm menu choice | Enter | A |
 | Dock when the pad says ready | E | X |
@@ -372,7 +396,9 @@ The uncooked developer build of the flight reset requires the rebuilt project DL
 
 On station approach, follow the exterior landing-pad marker. Release throttle, then apply brake to slow to unboosted cruise speed or below; approach above the deck and use the HUD's hull-aware distance/clearance message. Press E/controller X when ready to begin the three-second align-and-lower sequence. Entering the radius by itself does not dock. Firing is disabled during docking and lift-off.
 
-Walk up the parked Phoenix's rear ramp and into its cabin to open the launch choices. At home, Start Survival begins a new run, Continue Survival loads an available station checkpoint, and Free Flight starts casual flying without survival progress. During a survival station visit, Continue Survival keeps the current run; Free Flight is unavailable until home. Closing the choices inside the cabin keeps them closed until you leave and enter again. The launch console remains another entry point, including on the preserved fallback layout.
+Walk up the parked Phoenix's rear ramp, through the cabin and to the cockpit chair. A compact cockpit card shows **WAVES / FREE FLIGHT** and marks the selected departure. Press **R / D-pad Left** once to change the selection, then **E / Y** to sit and depart. Holding the mode button does not repeat; pressing mode and sit together changes only the mode. Choosing alone does not start a flight, restart a run or replace a saved checkpoint. The card and mode control are available only at the supported chair, not elsewhere in the station or during flight. An active Survival station stop keeps its current mode and progress and shows **MODE LOCKED**. The station **Flight Briefing** reports the selection and directs the pilot to the ship; explicit **Continue saved Survival** remains available for an existing checkpoint.
+
+The October 6 selector changes are implemented in source with [focused verification requirements](validation/2026-10-06-cockpit-mode-selector.md); native build, card rendering and physical-play acceptance require their own results. `SpaceSurvival.Integration.PhoenixCockpitDeparture` exercises raw keyboard/controller input at the walked chair. The updated boarding render fixture requires nine views, including Waves and selected Free Flight at the chair before sitting; the earlier eight-frame boarding captures are historical.
 
 Launch returns control to the same parked ship and lifts it 7 m before handing back steering and thrust at zero throttle. Apply RT or raise the keyboard setting with W, then fly clear of the 180 m zone to resume the survival wave clock and encounter spawning. Initial departure preserves Wave 1's time; Station 1 departure starts Wave 6 at that boundary. Station 2 remains the Phase 1 service/save boundary and does not start Wave 11. Free Flight instead retains the home pad, spawns no survival waves, and offers Return to home hangar; it cannot overwrite a survival checkpoint or grant progression.
 
@@ -386,7 +412,28 @@ Package 6 native clicks saved mouse/controller sensitivity 1.2. After normal clo
 
 Normal shell/settings menus pause flight, incoming docking and station departure. The depot uses an aboard-ship magnetic service lock (up to 20 seconds) and a visible cursor; closing its panel releases the ship, and mooring grants no wave progress. Reward panels retain live flight and captured mouse steering with the pointer hidden. Use Up/Down, left stick or D-pad to choose, Enter/A to confirm, and Esc/B to close; mouse clicks cannot select a hidden reward row or fire while the panel is open. After using B to close a menu, release it before a fresh boost press. Physical-device menu behavior remains open in ISS-13 / PT-08 and PT-16.
 
+## Obsolete cook-output housekeeping
+
+After package work, retain the audited archive/release receipts and review old
+temporary outputs with `./Scripts/CleanCookTemp.ps1`. It previews only
+`Saved/Cooked`, `Saved/StagedBuilds` and `Intermediate/Staging`; add `-Apply` to
+remove eligible outputs older than48hours after reviewing the preview.
+An explicit `-ProjectRoot` selects a different SpaceSurvival checkout. Active
+cooks, tracked files, linked paths, save/source-like files and changed preflight
+data stop removal. It preserves shader/build caches, saves, autosaves, Content,
+Blender/AI outputs, backups and packaged/release archives. Receipts are saved in
+the canonical project's ignored `.agent/local/CookCleanup`. Do not delete Saved
+or Intermediate wholesale. [October8 cleanup and interior preparation](validation/2026-10-08-central-r-preparation.md).
+
 ## Local saves
+
+For lead-owned station visual reviews, prepare a fresh profile without starting Unreal:
+
+```powershell
+python Scripts/StationReviewProfile.py --editor '<installed UnrealEditor-Cmd.exe>' --layout '<verified private offscreen layout>'
+```
+
+This archives current save bytes under `.agent/local/StationReview/<GUID>` and writes an isolated User directory plus a structured `LaunchPlan.json`. No automatic launch or restore. After the owner editor is closed, inspect process/VRAM state and launch only the needed hidden offscreen editor using those isolation arguments. Import `Scripts/StationReviewProfile.py` in that editor and call `verify_before_play()` before requesting PIE; any path/profile/production-save mismatch stops review. Do not reuse old unisolated station launch commands. The private capture wrapper now enforces this guard at preparation. Actual native verification of this new helper remains pending; [CPU evidence and limits](validation/2026-10-10-station-review-protection.md).
 
 Slots: `SS_Account_v1`, `SS_Settings_v1`, `SS_Suspend_v1`. The account payload writes version 4, retaining the four paint-bay choices from version 3 (-1 for factory finish, 0-9 for a colour) and appending the walking-hero choice. Older account versions remain readable, with absent paint/hero choices taking their defaults; run/settings/envelope versions remain 1. Use the actual platform `Saved/SaveGames` location for the executable being tested. The Windows generic backend writes verified/flushed sibling temporary files before replacing each live slot; non-Windows or custom backends are rejected. Interrupted temporary files are ignored as saves. There is no multi-slot transaction or automatic backup manager.
 
@@ -430,9 +477,9 @@ Current `-CaptureVisuals` requires nine base Station5 images: Flight, Climax, Wo
 
 Visual runs also request ListTextures and are excluded from performance findings even when a CSV/performance.json is produced. The executable must contain the matching capture implementation; these current-source instructions do not establish which historical package supports the complete image set. Package 12 introduced the earlier visual switch, and its normal-timing Station 5 fixture does not establish a visual readback. See [ENDGAME_CAPTURE.md](ENDGAME_CAPTURE.md) for the underlying fixture and historical receipts, and [PERFORMANCE.md](PERFORMANCE.md) for benchmark limits.
 
-## Station Workshop editor setup
+## Legacy Station Workshop editor setup
 
-After restoring the private station content, run `Scripts/Build.ps1 -Target Editor`, then `Scripts/OpenStationWorkshop.ps1 -Prepare` once. Double-click `Open Station Workshop.cmd` for subsequent editing; an already-open editor is reused through Tools > Station Workshop. Preparation preserves existing presets and the saved map. See [Station editing](STATION_EDITING.md) for the source-map/derived-Blueprint and package boundaries. `Scripts/ValidateStationWorkshop.py` is a bounded integration fixture for a freshly prepared development workshop, not a command owners need for routine edits.
+Use `Edit Current Station.cmd` for current Wayfarer work. The preserved Workshop writes only the legacy `BP_StationVisualLayout`. For that legacy route, after restoring its private content, run `Scripts/Build.ps1 -Target Editor`, then `Scripts/OpenStationWorkshop.ps1 -Prepare` once. `Open Station Workshop.cmd` opens the saved workshop; an already-open editor is reused through Tools > Station Workshop. Preparation preserves existing presets and the saved map. See [Station editing](STATION_EDITING.md) for its boundaries. `Scripts/ValidateStationWorkshop.py` checks this legacy workflow only.
 
 ## Owned building examples sandbox
 

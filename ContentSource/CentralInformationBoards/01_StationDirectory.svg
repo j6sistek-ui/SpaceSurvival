@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1960" height="1000" viewBox="0 0 1960 1000" role="img" aria-label="FIND YOUR NEXT STOP">
+<rect width="1960" height="1000" fill="#08131f"/>
+<rect x="80" y="64" width="32" height="8" rx="0" fill="#70dae8" stroke="none" stroke-width="2"/>
+<text x="80" y="97" font-family="Segoe UI" font-size="27" font-weight="700" fill="#70dae8">WAYFARER / VISITOR GUIDE</text>
+<text x="80" y="175" font-family="Segoe UI" font-size="66" font-weight="700" fill="#f2f7fc">FIND YOUR NEXT STOP</text>
+<text x="80" y="227" font-family="Segoe UI" font-size="31" font-weight="400" fill="#d8e5f0">Choose a destination. Follow the existing room signs.</text>
+<text x="1765" y="97" font-family="Segoe UI" font-size="27" font-weight="700" fill="#70dae8">01 / 02</text>
+<rect x="80" y="290" width="870" height="268" rx="18" fill="#132435" stroke="#344b60" stroke-width="2"/>
+<rect x="106" y="317" width="78" height="78" rx="14" fill="#08131f" stroke="none" stroke-width="2"/>
+<rect x="120" y="336" width="52" height="36" rx="4" fill="#08131f" stroke="#70dae8" stroke-width="4"/>
+<polyline points="135,382 157,382 152,373" fill="none" stroke="#70dae8" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="131,350 141,350 141,343 150,343 150,361 162,361" fill="none" stroke="#70dae8" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="207" y="376" font-family="Segoe UI" font-size="44" font-weight="700" fill="#f2f7fc">OPERATIONS</text>
+<text x="112" y="441" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Choose ships &amp; weapons at home.</text>
+<text x="112" y="483" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Upgrades &amp; contracts at Survival stops.</text>
+<text x="112" y="525" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Check your pilot record.</text>
+<rect x="1010" y="290" width="870" height="268" rx="18" fill="#132435" stroke="#344b60" stroke-width="2"/>
+<rect x="1036" y="317" width="78" height="78" rx="14" fill="#08131f" stroke="none" stroke-width="2"/>
+<circle cx="1076" cy="344" r="12" fill="none" stroke="#70dae8" stroke-width="4"/>
+<polyline points="1055,384 1055,377 1064,364 1088,364 1097,377 1097,384" fill="none" stroke="#70dae8" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1137" y="376" font-family="Segoe UI" font-size="44" font-weight="700" fill="#f2f7fc">CREW ARCHIVE</text>
+<text x="1042" y="441" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Choose your character</text>
+<text x="1042" y="483" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">at Crew Wardrobe.</text>
+<rect x="80" y="580" width="870" height="268" rx="18" fill="#132435" stroke="#344b60" stroke-width="2"/>
+<rect x="106" y="607" width="78" height="78" rx="14" fill="#08131f" stroke="none" stroke-width="2"/>
+<polyline points="124,636 159,636 159,667 124,667 124,636" fill="none" stroke="#70dae8" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="159,641 172,641 172,656 159,656" fill="none" stroke="#70dae8" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="120,674 164,674" fill="none" stroke="#70dae8" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="207" y="666" font-family="Segoe UI" font-size="44" font-weight="700" fill="#f2f7fc">SOCIAL LOUNGE</text>
+<text x="112" y="731" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Visit the bar, booths &amp; arcade.</text>
+<rect x="1010" y="580" width="870" height="268" rx="18" fill="#132435" stroke="#344b60" stroke-width="2"/>
+<rect x="1036" y="607" width="78" height="78" rx="14" fill="#08131f" stroke="none" stroke-width="2"/>
+<polyline points="1076,623 1099,656 1083,652 1083,671 1069,671 1069,652 1053,656 1076,623" fill="none" stroke="#70dae8" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1076" cy="642" r="5" fill="none" stroke="#70dae8" stroke-width="3"/>
+<polyline points="1072,674 1072,679" fill="none" stroke="#70dae8" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="1080,674 1080,679" fill="none" stroke="#70dae8" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1137" y="666" font-family="Segoe UI" font-size="44" font-weight="700" fill="#f2f7fc">MARKET &amp; BERTHS</text>
+<text x="1042" y="731" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Back along the arrival concourse.</text>
+<rect x="80" y="883" width="1800" height="42" rx="0" fill="#08131f" stroke="none" stroke-width="2"/>
+<polyline points="80,876 1880,876" fill="none" stroke="#344b60" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="80" y="930" font-family="Segoe UI" font-size="30" font-weight="400" fill="#f2c884">HOME / THROUGH THE LOWER PASSAGE</text>
+</svg>

@@ -1,2 +1,26 @@
 #include "Modules/ModuleManager.h"
-IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, SpaceSurvival, "SpaceSurvival");
+#if WITH_EDITOR
+#include "SSRenderedViewDiagnostic.h"
+#endif
+
+class FSpaceSurvivalModule final : public FDefaultGameModuleImpl
+{
+public:
+    virtual void StartupModule() override
+    {
+        FDefaultGameModuleImpl::StartupModule();
+#if WITH_EDITOR
+        SSRenderedViewDiagnostic::Initialize();
+#endif
+    }
+
+    virtual void ShutdownModule() override
+    {
+#if WITH_EDITOR
+        SSRenderedViewDiagnostic::Shutdown();
+#endif
+        FDefaultGameModuleImpl::ShutdownModule();
+    }
+};
+
+IMPLEMENT_PRIMARY_GAME_MODULE(FSpaceSurvivalModule, SpaceSurvival, "SpaceSurvival");

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+<rect width="1024" height="768" fill="#101820"/>
+<text x="303.546875" y="88" font-family="Segoe UI" font-size="38" font-weight="700" fill="#dfb778">WAYFARER EXCHANGE</text>
+<text x="286.0234375" y="226" font-family="Segoe UI" font-size="92" font-weight="700" fill="#f2eee3">WELCOME</text>
+<text x="318.5078125" y="337" font-family="Segoe UI" font-size="92" font-weight="700" fill="#f2eee3">ABOARD</text>
+<text x="241.0234375" y="482" font-family="Segoe UI" font-size="40" font-weight="700" fill="#f2eee3">RECEPTION / INFORMATION</text>
+<text x="257.5" y="590" font-family="Segoe UI" font-size="36" font-weight="700" fill="#f2eee3">Speak with our reception staff</text>
+<text x="324.5" y="685" font-family="Segoe UI" font-size="34" font-weight="700" fill="#dfb778">FIND YOUR NEXT STOP</text>
+<path d="M80 135H944" stroke="#dfb778" stroke-width="3"/>
+<path d="M80 397H944" stroke="#dfb778" stroke-width="3"/>
+<path d="M80 727H944" stroke="#dfb778" stroke-width="3"/>
+</svg>

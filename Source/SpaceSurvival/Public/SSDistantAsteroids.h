@@ -23,9 +23,24 @@ public:
     void Follow(AActor *InViewer);
     /** Visibility is presentation-only; it never recenters the field. */
     void SetFlightVisible(bool bVisible);
+    void SetRunSeed(uint32 Seed);
+    /** Uses the trace's component and instance index; never damages a neighbouring rock. */
+    bool ApplyWeaponHit(const FHitResult &Hit, float Damage, bool &bDestroyed);
     int32 GetRockCount() const
     {
         return BuiltCount;
+    }
+    int32 GetResidentCellCount() const
+    {
+        return Cells.Num();
+    }
+    int32 GetPendingCellCount() const
+    {
+        return PendingCells.Num();
+    }
+    FIntVector GetResidentCenter() const
+    {
+        return ResidentCenter;
     }
     /** Initial spawn clearance; travel can reach any rock afterward. */
     double GetMinimumSurfaceDistance() const
@@ -40,6 +55,7 @@ private:
     void BuildField(int32 Count);
     void StreamCells();
     void AddCell(const FIntVector &Cell);
+    void RemoveCell(const FIntVector &Cell);
     int32 AddMeshBatch(UStaticMesh *Mesh);
     int32 RockBatchCount = 0;
     TMap<UStaticMesh *, int32> MeshBatches;
@@ -47,8 +63,18 @@ private:
     {
         int32 Batch;
         FPrimitiveInstanceId Id;
+        int32 Ordinal;
+        FVector Center;
+        float Radius;
+        float Health;
+        bool bAsteroid;
     };
     TMap<FIntVector, TArray<FRockInstance>> Cells;
+    // One cell per modulo-five slot keeps incremental turnover at the same resident budget.
+    TArray<FIntVector> PendingCells;
+    // Only hit identities consume memory. Destroyed and partially damaged rocks survive cell eviction.
+    TMap<FIntVector, TMap<int32, float>> DamageByCell;
+    uint32 RunSeed = 0;
     FIntVector ResidentCenter = FIntVector(MAX_int32);
     int32 ConfiguredCount = -1;
     UPROPERTY()

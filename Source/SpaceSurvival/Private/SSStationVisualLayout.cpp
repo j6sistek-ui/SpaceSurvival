@@ -1,4 +1,5 @@
 #include "SSStationVisualLayout.h"
+#include "SSNPCHeadFillComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/BoxComponent.h"
@@ -50,6 +51,16 @@ void ASSStationVisualLayout::OnConstruction(const FTransform &Transform)
 {
     Super::OnConstruction(Transform);
     EnforcePresentationOnly();
+}
+
+void ASSStationVisualLayout::BeginPlay()
+{
+    Super::BeginPlay();
+    TInlineComponentArray<USkeletalMeshComponent *> StaffComponents(this);
+    for (auto *Staff : StaffComponents)
+        if (Staff->ComponentHasTag(TEXT("StationFunctionalStaff")) ||
+            Staff->ComponentHasTag(TEXT("StationRobotStaff")) || Staff->ComponentHasTag(TEXT("StationAlienCrew")))
+            USSNPCHeadFillComponent::EnrollNPCMeshInFrame(Staff, Staff, FVector(0.f, 45.f, 15.f));
 }
 
 void ASSStationVisualLayout::EnforcePresentationOnly()

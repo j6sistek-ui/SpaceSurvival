@@ -1,13 +1,17 @@
 #include "Misc/AutomationTest.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
+#include "SSHUD.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
+#include "SSChaseCameraArm.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Engine/Engine.h"
+#include "Engine/SkeletalMesh.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
@@ -17,6 +21,12 @@
 #include "GyroManagerComp.h"
 #include "GameFramework/WorldSettings.h"
 #include "InputKeyEventArgs.h"
+#include "HAL/FileManager.h"
+#include "HAL/PlatformFileManager.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Guid.h"
+#include "Misc/Parse.h"
+#include "Misc/Paths.h"
 #include "Physics/Experimental/PhysScene_Chaos.h"
 #include "Slate/SceneViewport.h"
 #include "Widgets/SViewport.h"
@@ -100,9 +110,11 @@ struct FSSControllerFlightWorld
         Controller->SetDisableHaptics(true);
         World->AddController(Controller);
         Controller->Possess(Ship);
+        Controller->ClientSetHUD(ASSHUD::StaticClass());
         Controller->SetActorTickEnabled(false);
         Ship->Tuning = DuplicateObject<USSPhase1Data>(Content, Ship);
         return Test.TestNotNull(TEXT("SetPlayer supplied a real PlayerInput"), Controller->PlayerInput.Get()) &&
+               Test.TestNotNull(TEXT("Controller owns the real Canvas focus handler"), Controller->GetHUD()) &&
                Test.TestTrue(TEXT("Actual ship began play, is possessed and moving"),
                              Ship->HasActorBegunPlay() && Controller->GetPawn() == Ship &&
                                  Ship->GetVelocity().Size() > 1000.f);
@@ -309,17 +321,24 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
         const FRotator Facing = F.Ship->GetActorRotation();
         F.Ship->SetDockingTarget(Pad, Facing);
         F.Ship->FinishDocking();
-        auto *OtherPawn = F.World->SpawnActor<APawn>();
-        if (!TestNotNull(TEXT("Create another pawn for the possession handoff"), OtherPawn))
+        auto *OtherPawn = F.World->SpawnActor<ASSWalker>();
+        if (!TestNotNull(TEXT("Create the actual walker for the possession handoff"), OtherPawn))
             return false;
         F.Controller->Possess(OtherPawn);
         F.Step();
         TestFalse(Device + TEXT(" parked hull no longer integrates physics"), F.Ship->Collision->IsSimulatingPhysics());
+        if (Gamepad)
+        {
+            F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+            F.Step(); // The actual walking adapter receives A before possession changes.
+        }
         F.Controller->Possess(F.Ship);
+        OtherPawn->Destroy(); // Match departure: the old weak pawn is invalid before the next controller tick.
         const FVector Hover = Pad + FVector(0, 0, 700.f);
         F.Ship->BeginTakeoff(Hover, Facing, 1.f);
         const double DodgeCooldownBeforeLift = F.Instance->Session.run.dodgeCooldown;
-        F.Button(Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::LeftMouseButton, true);
+        if (!Gamepad)
+            F.Button(EKeys::LeftMouseButton, true);
         F.Button(Gamepad ? EKeys::Gamepad_LeftShoulder : EKeys::Q, true);
         F.Frames(30);
         int32 ShotsDuringLift = 0;
@@ -330,13 +349,26 @@ bool FSSControllerAfterTakeoff::RunTest(const FString &)
                  F.Ship->IsTakingOff() && !F.Ship->IsFiring() && ShotsDuringLift == 0);
         TestEqual(Device + TEXT(" raw dodge cannot consume cooldown during the scripted lift"),
                   F.Instance->Session.run.dodgeCooldown, DodgeCooldownBeforeLift);
-        F.Button(Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::LeftMouseButton, false);
+        if (!Gamepad)
+            F.Button(EKeys::LeftMouseButton, false);
         F.Button(Gamepad ? EKeys::Gamepad_LeftShoulder : EKeys::Q, false);
         F.Frames(31);
         TestTrue(Device + TEXT(" lift hands back the same possessed ship and restores its drive"),
                  !F.Ship->IsTakingOff() && F.Controller->GetPawn() == F.Ship &&
                      F.Ship->Collision->IsSimulatingPhysics() == UsedPhysics &&
                      F.Ship->Collision->GetCollisionEnabled() != ECollisionEnabled::NoCollision);
+        if (Gamepad)
+        {
+            TestFalse(TEXT("A held from walking cannot become fire after the lift finishes"), F.Ship->IsFiring());
+            F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+            F.Step();
+            TestFalse(TEXT("Releasing the walking A press does not fire"), F.Ship->IsFiring());
+            F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+            F.Step();
+            TestTrue(TEXT("A fresh A press after release fires the actual ship weapon"), F.Ship->IsFiring());
+            F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+            F.Step();
+        }
 
         const FRotator BeforeTurn = F.Ship->GetActorRotation();
         // Takeoff leaves the engine off. The pilot must explicitly request ordinary power.
@@ -431,8 +463,9 @@ bool FSSLiveRewardInput::RunTest(const FString &)
         F.Mode->OpenPanel(ESSPanel::Reward);
         TestFalse(TEXT("Live flight reward hides the pointer to retain mouse steering"),
                   F.Controller->bShowMouseCursor);
-        TestTrue(TEXT("Actual engine input mode requests permanent capture for live flight rewards"),
-                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CapturePermanently);
+        TestTrue(TEXT("Canvas input keeps permanent capture and the initial mouse event for live offers"),
+                 F.ViewportClient->GetMouseCaptureMode() ==
+                     EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
         TestFalse(TEXT("Reward selection keeps the world live"), F.World->IsPaused());
         TestTrue(TEXT("Captured reward explains the keyboard and controller selection controls"),
                  F.Mode->PanelDetail.Contains(TEXT("Up/Down or D-pad")) &&
@@ -452,6 +485,7 @@ bool FSSLiveRewardInput::RunTest(const FString &)
         TestTrue(TEXT("Hidden reward mouse clicks neither choose nor fire"),
                  F.Mode->Panel == ESSPanel::Reward && F.Instance->Session.run.pendingReward && !F.Ship->IsFiring());
         const float BeforePitch = F.Ship->GetActorRotation().Pitch;
+        const int32 BeforeSteeringChoice = F.Mode->SelectedEntry;
         for (int32 Frame = 0; Frame < 30; ++Frame)
         {
             F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, Gamepad ? .7f : 4.f);
@@ -459,13 +493,27 @@ bool FSSLiveRewardInput::RunTest(const FString &)
         }
         TestTrue(TEXT("Controller routing continues to steer while reward navigation is open"),
                  FMath::FindDeltaAngleDegrees(BeforePitch, F.Ship->GetActorRotation().Pitch) > 3.f);
+        TestEqual(TEXT("Flight steering cannot also navigate a live reward"), F.Mode->SelectedEntry,
+                  BeforeSteeringChoice);
+        if (Gamepad)
+        {
+            for (int32 Frame = 0; Frame < 30; ++Frame)
+            {
+                F.Axis(EKeys::Gamepad_LeftY, -.7f);
+                F.Step();
+            }
+            TestEqual(TEXT("Pitching down cannot silently change the chosen live reward"), F.Mode->SelectedEntry,
+                      BeforeSteeringChoice);
+        }
         F.Axis(Gamepad ? EKeys::Gamepad_LeftY : EKeys::MouseY, 0.f);
         const FKey DownKey = Gamepad ? EKeys::Gamepad_DPad_Down : EKeys::Down;
         F.Button(DownKey, true);
         F.Step();
         F.Button(DownKey, false);
         F.Step();
-        TestEqual(TEXT("Arrow/D-pad navigation still chooses the next live reward row"), F.Mode->SelectedEntry, 1);
+        TestTrue(TEXT("Arrow/D-pad selects Cooling initially, then skips the already-fitted Cooling to Back"),
+                 F.Mode->Entries.IsValidIndex(F.Mode->SelectedEntry) &&
+                     F.Mode->Entries[F.Mode->SelectedEntry].Action == (Gamepad ? 0 : 47));
         if (Choice == 0)
         {
             F.Button(EKeys::Gamepad_DPad_Up, true);
@@ -489,14 +537,14 @@ bool FSSLiveRewardInput::RunTest(const FString &)
     }
     F.Ship->BeginMooring();
     F.Mode->OpenPanel(ESSPanel::Depot);
-    TestTrue(TEXT("Moored depot retains its visible cursor and pointer capture policy"),
-             F.Controller->bShowMouseCursor &&
-                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CaptureDuringMouseDown);
+    TestTrue(TEXT("Moored depot retains its visible cursor and the first Canvas click"),
+             F.Controller->bShowMouseCursor && F.ViewportClient->GetMouseCaptureMode() ==
+                                                   EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
     F.Mode->ClosePanel();
     F.Mode->OpenPanel(ESSPanel::Main);
-    TestTrue(TEXT("Ordinary menus retain cursor UI mode"),
-             F.Controller->bShowMouseCursor &&
-                 F.ViewportClient->GetMouseCaptureMode() == EMouseCaptureMode::CaptureDuringMouseDown);
+    TestTrue(TEXT("Ordinary Canvas menus retain their visible cursor and the first click"),
+             F.Controller->bShowMouseCursor && F.ViewportClient->GetMouseCaptureMode() ==
+                                                   EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown);
     F.Mode->ClosePanel();
     // Mode/cursor policy and synthetic routing are covered; no native window, real pointer focus,
     // capture acquisition or physical-device acceptance is claimed by this inert viewport fixture.
@@ -699,6 +747,159 @@ bool FSSControllerTestingPreset::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSControllerChaseRollIsolation, "SpaceSurvival.Flight.ControllerChaseRollIsolation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSControllerChaseRollIsolation::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) ||
+        !TestTrue(TEXT("Exercise the actual default Phoenix physics hull"),
+                  ASSShip::SelectedHullIdentity() == ESSHullIdentity::StellarPhoenix &&
+                      F.Ship->Collision->IsSimulatingPhysics()) ||
+        !TestNotNull(TEXT("The active chase component owns bank-independent follow"),
+                     Cast<USSChaseCameraArm>(F.Ship->CameraBoom)))
+        return false;
+
+    const FVector AuthoredAnchor = F.Ship->CameraBoom->GetRelativeLocation();
+    const USkeletalMeshComponent *DrawnHull = F.Ship->SkeletalHull;
+    const USkeletalMesh *HullAsset = DrawnHull ? DrawnHull->GetSkeletalMeshAsset() : nullptr;
+    if (!TestNotNull(TEXT("Project the actual visible Phoenix mesh during full rolls"), HullAsset))
+        return false;
+    const FBox HullBounds = HullAsset->GetBounds().GetBox();
+    const double RequiredMargin = FSSHullDefinition(ASSShip::SelectedHullIdentity()).FrameMarginShare;
+    auto HullMargin = [&]()
+    {
+        const FTransform View = F.Ship->Camera->GetComponentTransform();
+        const double TanHalfHorizontal = FMath::Tan(FMath::DegreesToRadians(F.Ship->Camera->FieldOfView * .5));
+        const double TanHalfVertical = TanHalfHorizontal / (16. / 9.);
+        double Margin = 1.;
+        for (int32 Corner = 0; Corner < 8; ++Corner)
+        {
+            const FVector Point(Corner & 1 ? HullBounds.Max.X : HullBounds.Min.X,
+                                Corner & 2 ? HullBounds.Max.Y : HullBounds.Min.Y,
+                                Corner & 4 ? HullBounds.Max.Z : HullBounds.Min.Z);
+            const FVector Local =
+                View.InverseTransformPosition(DrawnHull->GetComponentTransform().TransformPosition(Point));
+            if (Local.X <= 0.)
+                return -1.;
+            const double X = .5 + Local.Y / (2. * Local.X * TanHalfHorizontal);
+            const double Y = .5 - Local.Z / (2. * Local.X * TanHalfVertical);
+            Margin = FMath::Min3(Margin, FMath::Min(X, 1. - X), FMath::Min(Y, 1. - Y));
+        }
+        return Margin;
+    };
+    F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+    F.Axis(EKeys::Gamepad_RightTriggerAxis, 0.f);
+    F.Frames(30);
+    const FQuat EyeBefore = F.Ship->Camera->GetComponentQuat();
+    const FVector NoseBefore = F.Ship->GetActorForwardVector();
+    const FVector RelativeEyeBefore = F.Ship->Camera->GetComponentLocation() - F.Ship->GetActorLocation();
+    FQuat PreviousBody = F.Ship->GetActorQuat();
+    double BodyTravel = 0., WorstViewTurn = 0., WorstEyeDisplacement = 0., WorstNoseTurn = 0.;
+    double MinimumRollMargin = 1.;
+    // Raw held bumpers exercise the real adapter, evade impulse and ShipCore body.
+    // The camera must not orbit when only the hull spins around its nose.
+    for (FKey Bumper : {EKeys::Gamepad_RightShoulder, EKeys::Gamepad_LeftShoulder})
+    {
+        F.Button(Bumper, true);
+        for (int32 Frame = 0; Frame < 150; ++Frame)
+        {
+            F.Step();
+            const FQuat Body = F.Ship->GetActorQuat();
+            BodyTravel += FMath::RadiansToDegrees(PreviousBody.AngularDistance(Body));
+            PreviousBody = Body;
+            MinimumRollMargin = FMath::Min(MinimumRollMargin, HullMargin());
+            WorstViewTurn = FMath::Max(
+                WorstViewTurn, FMath::RadiansToDegrees(EyeBefore.AngularDistance(F.Ship->Camera->GetComponentQuat())));
+            WorstNoseTurn = FMath::Max(
+                WorstNoseTurn, FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(
+                                   FVector::DotProduct(NoseBefore, F.Ship->GetActorForwardVector()), -1., 1.))));
+            WorstEyeDisplacement = FMath::Max(
+                WorstEyeDisplacement, FVector::Distance(RelativeEyeBefore, F.Ship->Camera->GetComponentLocation() -
+                                                                               F.Ship->GetActorLocation()));
+        }
+        F.Button(Bumper, false);
+        F.Frames(30);
+    }
+    AddInfo(FString::Printf(TEXT("CHASE bumper body travel=%.2f deg; nose=%.3f deg; view=%.3f deg; orbit=%.2f cm"),
+                            BodyTravel, WorstNoseTurn, WorstViewTurn, WorstEyeDisplacement));
+    TestTrue(TEXT("Held bumpers still produce more than a complete physical roll"), BodyTravel > 360.);
+    TestTrue(TEXT("A bumper roll leaves the nose direction essentially unchanged"), WorstNoseTurn < 3.);
+    TestTrue(TEXT("A bumper roll does not revolve the camera around that nose"), WorstViewTurn < 3.);
+    TestTrue(TEXT("Elevated chase anchor does not circle the rolling hull; only bounded position lag remains"),
+             WorstEyeDisplacement < 100.);
+    AddInfo(FString::Printf(TEXT("CHASE complete held-roll hull margin=%.4f; required=%.4f"), MinimumRollMargin,
+                            RequiredMargin));
+    TestTrue(TEXT("Every actual hull corner retains the existing framing margin throughout both held rolls"),
+             MinimumRollMargin >= RequiredMargin);
+
+    // Isolate the component transform from integration here, retaining the actual
+    // Phoenix/boom/camera. Sweep both vertical poles and inverted attitudes while
+    // changing body bank three times as fast; no new camera math helper is tested.
+    F.Ship->Collision->SetPhysicsLinearVelocity(FVector::ZeroVector);
+    F.Ship->Collision->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+    F.Ship->CameraBoom->bEnableCameraLag = false;
+    double WorstPoleStep = 0.;
+    FQuat PreviousEye = F.Ship->Camera->GetComponentQuat();
+    for (int32 Pitch = 0; Pitch <= 360; Pitch += 2)
+    {
+        F.Ship->SetActorRotation(FRotator(Pitch, 23.f, Pitch * 3.f).Quaternion(), ETeleportType::TeleportPhysics);
+        F.Ship->CameraBoom->TickComponent(FSSControllerFlightWorld::StepSeconds, LEVELTICK_All, nullptr);
+        const FQuat Eye = F.Ship->Camera->GetComponentQuat();
+        if (Pitch > 0)
+            WorstPoleStep = FMath::Max(WorstPoleStep, FMath::RadiansToDegrees(PreviousEye.AngularDistance(Eye)));
+        PreviousEye = Eye;
+    }
+    AddInfo(FString::Printf(TEXT("CHASE full pitch loop with simultaneous bank: largest actual view step=%.3f deg"),
+                            WorstPoleStep));
+    TestTrue(TEXT("Crossing both pitch poles cannot introduce a camera yaw/roll flip"), WorstPoleStep < 2.2);
+
+    const FQuat BeforeLookBody = F.Ship->GetActorQuat();
+    const FQuat BeforeLookEye = F.Ship->Camera->GetComponentQuat();
+    for (int32 Frame = 0; Frame < 30; ++Frame)
+    {
+        F.Axis(EKeys::Gamepad_RightX, .8f);
+        F.Step();
+    }
+    TestTrue(TEXT("Explicit right-stick free-look still turns the actual camera"),
+             FMath::RadiansToDegrees(BeforeLookEye.AngularDistance(F.Ship->Camera->GetComponentQuat())) > 15.);
+    TestTrue(TEXT("Free-look still cannot steer the actual physics hull"),
+             BeforeLookBody.AngularDistance(F.Ship->GetActorQuat()) < .005);
+    F.Axis(EKeys::Gamepad_RightX, 0.f);
+    F.Frames(120);
+    TestTrue(TEXT("Released free-look returns to its continuous chase frame"),
+             FMath::RadiansToDegrees(BeforeLookEye.AngularDistance(F.Ship->Camera->GetComponentQuat())) < 1.);
+
+    // A non-coplanar flight path leaves a transported frame banked even after the
+    // nose returns home. Docking is an explicit shot boundary; the next departure
+    // must recover authored framing without recapturing the compensated anchor.
+    for (const FRotator Pose : {FRotator(0, 90, 35), FRotator(90, 90, 120), FRotator(0, 0, -80)})
+    {
+        F.Ship->SetActorRotation(Pose.Quaternion(), ETeleportType::TeleportPhysics);
+        F.Ship->CameraBoom->TickComponent(FSSControllerFlightWorld::StepSeconds, LEVELTICK_All, nullptr);
+    }
+    const FQuat LocalView =
+        F.Ship->CameraBoom->GetRelativeRotation().Quaternion() * F.Ship->Camera->GetRelativeRotation().Quaternion();
+    TestTrue(TEXT("The docking regression actually starts with a path-dependent banked camera frame"),
+             FMath::RadiansToDegrees(LocalView.AngularDistance(F.Ship->Camera->GetComponentQuat())) > 45.);
+    const FVector Pad = F.Ship->GetActorLocation();
+    const FRotator Facing(0, 17, 0);
+    const FQuat DockView = Facing.Quaternion() * LocalView;
+    F.Ship->SetDockingTarget(Pad, Facing);
+    F.Ship->FinishDocking();
+    F.Ship->CameraBoom->TickComponent(FSSControllerFlightWorld::StepSeconds, LEVELTICK_All, nullptr);
+    TestTrue(TEXT("Completed docking clears transported camera bank"),
+             FMath::RadiansToDegrees(DockView.AngularDistance(F.Ship->Camera->GetComponentQuat())) < .1);
+    TestTrue(TEXT("Docking retains the original authored chase anchor"),
+             (F.Ship->CameraBoom->GetComponentLocation() - Pad).Equals(Facing.RotateVector(AuthoredAnchor), .1));
+    F.Ship->BeginTakeoff(Pad + FVector(0, 0, 700), Facing, 1.f);
+    F.Frames(66);
+    TestTrue(TEXT("The next takeoff retains stable authored framing"),
+             !F.Ship->IsTakingOff() &&
+                 FMath::RadiansToDegrees(DockView.AngularDistance(F.Ship->Camera->GetComponentQuat())) < .1);
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSMenuBackBoostRelease, "SpaceSurvival.Flight.MenuBackBoostRelease",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSMenuBackBoostRelease::RunTest(const FString &)
@@ -792,6 +993,168 @@ bool FSSControllerMenuStick::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSRawMenuDirections, "SpaceSurvival.UI.RawMenuDirections",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSRawMenuDirections::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+        return false;
+    const std::string SettingsBefore = SS::EncodeSettings(F.Instance->Session.settings);
+    auto Tap = [&](FKey Key)
+    {
+        F.Button(Key, true);
+        F.Step();
+        F.Button(Key, false);
+        F.Step();
+    };
+    F.Mode->OpenPanel(ESSPanel::Controls);
+    Tap(EKeys::Gamepad_DPad_Up);
+    TestEqual(TEXT("Raw D-pad up reaches the active Controls tab"), F.Mode->SelectedEntry, 3);
+    F.Axis(EKeys::Gamepad_LeftX, -.8f);
+    F.Axis(EKeys::Gamepad_LeftY, .6f);
+    F.Step();
+    TestEqual(TEXT("A diagonal stick takes only its dominant horizontal step"), F.Mode->SelectedEntry, 2);
+    F.Axis(EKeys::Gamepad_LeftX, 0.f);
+    F.Axis(EKeys::Gamepad_LeftY, 0.f);
+    F.Step();
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestEqual(TEXT("Raw D-pad right moves across tabs"), F.Mode->SelectedEntry, 3);
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestEqual(TEXT("Raw D-pad left returns across tabs"), F.Mode->SelectedEntry, 2);
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+    F.Step();
+    F.Frames(8);
+    TestTrue(TEXT("A opens Audio and its held press does not activate the new first setting"),
+             F.Mode->Panel == ESSPanel::Audio && F.Mode->SelectedEntry == 4 &&
+                 SS::EncodeSettings(F.Instance->Session.settings) == SettingsBefore);
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+    F.Step();
+    Tap(EKeys::Gamepad_DPad_Down);
+    TestEqual(TEXT("Raw D-pad down enters the next actual setting row"), F.Mode->SelectedEntry, 5);
+    Tap(EKeys::Gamepad_DPad_Up);
+    TestEqual(TEXT("Raw D-pad up returns to the previous actual setting row"), F.Mode->SelectedEntry, 4);
+    F.Button(EKeys::Gamepad_FaceButton_Right, true);
+    F.Step();
+    F.Frames(12);
+    TestTrue(TEXT("B closes Audio while a held Back cannot become flight boost"),
+             !F.Mode->IsMenuOpen() && !F.Instance->Session.run.boosting);
+    F.Button(EKeys::Gamepad_FaceButton_Right, false);
+    F.Step();
+    F.Mode->OpenPanel(ESSPanel::Main);
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+    F.Step();
+    F.Frames(12);
+    TestTrue(TEXT("A resumes the actual paused menu but cannot fire until released"),
+             !F.Mode->IsMenuOpen() && !F.Ship->IsFiring());
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+    F.Step();
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, true);
+    F.Step();
+    TestTrue(TEXT("A fresh post-release press fires normally"), F.Ship->IsFiring());
+    F.Button(EKeys::Gamepad_FaceButton_Bottom, false);
+    TestTrue(TEXT("Navigation and panel activation did not change or persist a setting"),
+             SS::EncodeSettings(F.Instance->Session.settings) == SettingsBefore);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSIsolatedControllerSettings, "SpaceSurvival.UI.IsolatedControllerSettings",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSIsolatedControllerSettings::RunTest(const FString &)
+{
+    auto Normalize = [](FString Path)
+    {
+        Path = FPaths::ConvertRelativePathToFull(Path);
+        FPaths::NormalizeDirectoryName(Path);
+        FPaths::CollapseRelativeDirectories(Path);
+        return Path;
+    };
+    FString UserArgument;
+    const FString User = Normalize(FPaths::ProjectUserDir());
+    const FString Root = FPaths::GetPath(User), Token = FPaths::GetCleanFilename(Root);
+    const FString Parent = FPaths::GetPath(Root);
+    FGuid Guid;
+    if (!TestTrue(TEXT("Value-changing input requires explicit protected, unattended NullRHI opt-in"),
+                  FParse::Param(FCommandLine::Get(), TEXT("SSMenuSettingsTest")) &&
+                      FParse::Param(FCommandLine::Get(), TEXT("unattended")) &&
+                      FParse::Param(FCommandLine::Get(), TEXT("NullRHI")) && FPaths::ShouldSaveToUserDir() &&
+                      FParse::Value(FCommandLine::Get(), TEXT("UserDir="), UserArgument) &&
+                      Normalize(UserArgument) == User && FPaths::GetCleanFilename(User) == TEXT("User") &&
+                      FGuid::ParseExact(Token, EGuidFormats::Digits, Guid) &&
+                      FPaths::GetCleanFilename(Parent) == TEXT("MenuSettings") &&
+                      FPaths::GetCleanFilename(FPaths::GetPath(Parent)) == TEXT("Artifacts") &&
+                      Normalize(FPaths::ProjectSavedDir()) == User / TEXT("Saved")))
+        return false;
+    auto &Files = FPlatformFileManager::Get().GetPlatformFile();
+    for (FString Path = Normalize(FPaths::ProjectSavedDir()) / TEXT("SaveGames"); !Path.IsEmpty();)
+    {
+        if (!TestTrue(TEXT("Protected settings paths cannot redirect through a junction or symlink"),
+                      Files.IsSymlink(*Path) == ESymlinkResult::NonSymlink))
+            return false;
+        const FString Next = FPaths::GetPath(Path);
+        if (Next == Path)
+            break;
+        Path = Next;
+    }
+    TArray<FString> Existing;
+    IFileManager::Get().FindFiles(Existing, *(FPaths::ProjectSavedDir() / TEXT("SaveGames/*")), true, false);
+    if (!TestTrue(TEXT("Protected settings profile starts without any save slot"), Existing.IsEmpty()))
+        return false;
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+        return false;
+    const std::string AccountBefore = SS::EncodeAccount(F.Instance->Session.account);
+    auto Tap = [&](FKey Key)
+    {
+        F.Button(Key, true);
+        F.Step();
+        F.Button(Key, false);
+        F.Step();
+    };
+    auto &Settings = F.Instance->Session.settings;
+    Settings.masterVolume = .5;
+    F.Mode->OpenPanel(ESSPanel::Audio);
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestTrue(TEXT("Actual D-pad left decreases the selected volume"), FMath::IsNearlyEqual(Settings.masterVolume, .4));
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestTrue(TEXT("Actual D-pad right increases the selected volume"), FMath::IsNearlyEqual(Settings.masterVolume, .5));
+    Settings.masterVolume = 0.;
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestEqual(TEXT("Left at minimum volume cannot wrap to maximum"), Settings.masterVolume, 0.);
+    Settings.masterVolume = 1.;
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestEqual(TEXT("Right at maximum volume cannot wrap to minimum"), Settings.masterVolume, 1.);
+    TestEqual(TEXT("Repeated value rebuild retains the actual selected row"), F.Mode->SelectedEntry, 4);
+    F.Mode->OpenPanel(ESSPanel::Graphics);
+    Tap(EKeys::Gamepad_DPad_Down);
+    Settings.frameLimit = 60;
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestEqual(TEXT("Frame limit clamps at the lower end"), Settings.frameLimit, 60);
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestEqual(TEXT("Right reaches the next supported frame limit"), Settings.frameLimit, 120);
+    Tap(EKeys::Gamepad_DPad_Right);
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestEqual(TEXT("Frame limit clamps at the upper end"), Settings.frameLimit, 144);
+    F.Mode->OpenPanel(ESSPanel::Controls);
+    Tap(EKeys::Gamepad_DPad_Down);
+    Settings.controllerSensitivity = .3;
+    Tap(EKeys::Gamepad_DPad_Left);
+    TestTrue(TEXT("Sensitivity clamps at its minimum"), FMath::IsNearlyEqual(Settings.controllerSensitivity, .3));
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestTrue(TEXT("Sensitivity increases through the actual input path"),
+             FMath::IsNearlyEqual(Settings.controllerSensitivity, .5));
+    Settings.controllerSensitivity = 2.9;
+    Tap(EKeys::Gamepad_DPad_Right);
+    TestTrue(TEXT("Sensitivity clamps at its maximum"), FMath::IsNearlyEqual(Settings.controllerSensitivity, 2.9));
+    TestTrue(TEXT("Value adjustment never changes the account"),
+             SS::EncodeAccount(F.Instance->Session.account) == AccountBefore);
+    TestTrue(TEXT("Only the protected settings slot is written"),
+             IFileManager::Get().FileExists(*(FPaths::ProjectSavedDir() / TEXT("SaveGames/SS_Settings_v1.sav"))) &&
+                 !IFileManager::Get().FileExists(*(FPaths::ProjectSavedDir() / TEXT("SaveGames/SS_Account_v1.sav"))) &&
+                 !IFileManager::Get().FileExists(*(FPaths::ProjectSavedDir() / TEXT("SaveGames/SS_Suspend_v1.sav"))));
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSTitleMenuNavigation, "SpaceSurvival.UI.TitleMenuNavigation",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSTitleMenuNavigation::RunTest(const FString &)
@@ -823,6 +1186,8 @@ bool FSSTitleMenuNavigation::RunTest(const FString &)
         const FKey Confirm = Gamepad ? EKeys::Gamepad_FaceButton_Bottom : EKeys::Enter;
         const FKey Up = Gamepad ? EKeys::Gamepad_DPad_Up : EKeys::W;
         const FKey Down = Gamepad ? EKeys::Gamepad_DPad_Down : EKeys::S;
+        TestEqual(TEXT("Title initially focuses the first enabled New Game action"), F.Mode->SelectedEntry, 1);
+        F.Mode->SelectedEntry = 0; // Verify the disabled action itself remains protected from activation.
         Tap(Confirm);
         TestTrue(Device + TEXT(" disabled Continue cannot start or dismiss the title"),
                  F.Mode->IsTitleMenu() && !F.Instance->Session.run.active);
@@ -834,8 +1199,7 @@ bool FSSTitleMenuNavigation::RunTest(const FString &)
         Tap(Down);
         TestEqual(Device + TEXT(" down selects New Game"), F.Mode->SelectedEntry, 1);
         Tap(Up);
-        TestEqual(Device + TEXT(" up returns to Continue"), F.Mode->SelectedEntry, 0);
-        Tap(Down);
+        TestEqual(Device + TEXT(" up cannot focus unavailable Continue"), F.Mode->SelectedEntry, 1);
         Tap(Down);
         TestEqual(Device + TEXT(" second down selects Settings"), F.Mode->SelectedEntry, 2);
         Tap(Confirm);
@@ -851,7 +1215,6 @@ bool FSSTitleMenuNavigation::RunTest(const FString &)
         TestTrue(TEXT("Settings opens asset acknowledgements"), F.Mode->Panel == ESSPanel::Acknowledgements);
         F.Mode->ClosePanel();
         TestTrue(TEXT("Closing title-origin acknowledgements returns to the title"), F.Mode->IsTitleMenu());
-        Tap(Down);
         Tap(Confirm);
         TestTrue(Device + TEXT(" New Game opens the real home walker without starting survival"),
                  F.Mode->InHangar() && IsValid(F.Mode->Walker) && F.Controller->GetPawn() == F.Mode->Walker &&

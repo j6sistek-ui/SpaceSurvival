@@ -6,6 +6,8 @@
 #include "SSContentTypes.h"
 #include "SSStation.generated.h"
 class ASSShip;
+class ASSWalker;
+class ASSStationWarpGate;
 class USSPhase1Data;
 class UStaticMesh;
 class UStaticMeshComponent;
@@ -73,6 +75,8 @@ public:
     FString ServiceGuidance(FVector Position) const;
     /** Select a floor-supported pad exit outside this ship's actual rendered footprint. */
     bool ConfigurePadExit(const ASSShip *Ship, float CapsuleRadius, float CapsuleHalfHeight);
+    /** Install the optional pair only after the real Phoenix has landed; failure preserves normal walking. */
+    bool InstallWarpPair(ASSShip *Ship, const ASSWalker *Walker);
     FVector WalkSpawn() const
     {
         return GetActorTransform().TransformPosition(IsUsingOutpost() ? FVector(-1550, 0, 100) : FVector(-300, 0, 180));
@@ -104,16 +108,22 @@ public:
      *  to the pad, or the pad itself. The three overlap across each threshold on purpose - a gap between
      *  any two would be a spot where crossing it teleports the hero home. Not static any more, because the
      *  pad is an actor with its own transform and the only honest answer comes from asking it. */
-    bool Walkable(const FVector &World) const;
+    bool Walkable(const FVector &World, const AActor *IgnoreActor = nullptr) const;
     bool IsHome() const
     {
         return Home;
     }
 
 private:
+    friend class FSSWalkerSupportRecovery;
     bool BuildOutpostHub();
     void DestroyOutpostHub();
-    bool OutpostWalkable(const FVector &World) const;
+    void DestroyWarpPair();
+    UPROPERTY(Transient)
+    TObjectPtr<ASSStationWarpGate> ShipWarpGate;
+    UPROPERTY(Transient)
+    TObjectPtr<ASSStationWarpGate> WelcomeWarpGate;
+    bool OutpostWalkable(const FVector &World, const AActor *IgnoreActor) const;
     void UpdateOutpostEnvironment();
     void BuildFunctionalHub();
     UPROPERTY()
@@ -183,6 +193,21 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     static constexpr float DisembarkDuration = 2.4f;
+    static constexpr float BoardingDuration = 1.4f;
+    bool BeginBoarding(const FTransform &SeatPelvisWorld);
+    void CancelBoarding();
+    bool IsBoarding() const
+    {
+        return Boarding;
+    }
+    bool IsSeated() const
+    {
+        return Boarding && BoardingElapsed >= BoardingDuration;
+    }
+    UAnimSequence *GetBoardingAnimation() const
+    {
+        return BoardingAnimation;
+    }
     bool BeginDisembark(const FTransform &PilotWorldTransform, FVector End, FRotator Facing,
                         const FPoseSnapshot *SourcePose = nullptr);
     bool IsDisembarking() const
@@ -249,10 +274,18 @@ public:
 private:
     TWeakObjectPtr<ASSStation> RecoveryHub;
     int32 OffDeckRescues = 0;
+    float UnsupportedSeconds = 0.f;
+    TOptional<FVector> LastSupportedLocation;
     FVector ExitStart = FVector::ZeroVector, ExitEnd = FVector::ZeroVector;
     FQuat ExitStartRotation = FQuat::Identity, ExitEndRotation = FQuat::Identity;
     double ExitElapsed = 0.0;
     bool Disembarking = false;
+    bool Boarding = false;
+    float BoardingElapsed = 0.f;
+    FTransform BoardingStart, BoardingTarget;
+    FVector BoardingCameraRelativeLocation = FVector::ZeroVector;
+    UPROPERTY(Transient)
+    TObjectPtr<UAnimSequence> BoardingAnimation;
     bool BoardingOffered = false;
     /** True when the seated pilot is this same hero, so its component transform and its live pose
      *  carry over to the exit. A stand-in that only walks starts the exit from the ship position. */
@@ -311,6 +344,7 @@ private:
     void UpdateHeroAnimation(float DeltaSeconds);
     bool UpdateJumpAnimation(float DeltaSeconds);
     void UpdateLandingTail();
+    void UpdateTailFloor();
     void UpdateFootsteps(float DeltaSeconds);
     void UpdateReadabilityLighting();
     /** Whether each boot was down last frame, so a step sounds on the way down and not every frame

@@ -5,6 +5,7 @@
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "GameFramework/PlayerState.h"
 #include "HAL/FileManager.h"
 #include "HAL/PlatformFileManager.h"
 #include "HAL/PlatformProcess.h"
@@ -38,6 +39,7 @@ struct FSSLifecycleIsolation
     FString Root;
     FString Token;
     FString Saved;
+    bool WorkspaceLocalArtifacts = false;
 
     bool Verify(FAutomationTestBase &Test)
     {
@@ -53,7 +55,10 @@ struct FSSLifecycleIsolation
                                FGuid::ParseExact(Token, EGuidFormats::Digits, Guid)))
             return false;
         Root = LifecyclePath(Root);
-        const FString ExpectedRoot = LifecyclePath(FPaths::ProjectDir() / TEXT("Artifacts/SaveLifecycle") / Token);
+        WorkspaceLocalArtifacts = FParse::Param(CommandLine, TEXT("SSSaveLifecycleWorkspaceLocalArtifacts"));
+        const FString ExpectedParent =
+            WorkspaceLocalArtifacts ? TEXT(".agent/local/SaveLifecycle") : TEXT("Artifacts/SaveLifecycle");
+        const FString ExpectedRoot = LifecyclePath(FPaths::ProjectDir() / ExpectedParent / Token);
         const FString ExpectedUser = Root / TEXT("User");
         Saved = LifecyclePath(FPaths::ProjectSavedDir());
         FString UserArgument;
@@ -124,6 +129,7 @@ struct FSSLifecycleIsolation
         Object->SetNumberField(TEXT("processId"), FPlatformProcess::GetCurrentProcessId());
         Object->SetBoolField(TEXT("success"), true);
         Object->SetBoolField(TEXT("genericBackendVerified"), true);
+        Object->SetBoolField(TEXT("workspaceLocalArtifacts"), WorkspaceLocalArtifacts);
         Object->SetBoolField(TEXT("gameInstanceInitialized"), Instance != nullptr);
         if (Phase == TEXT("StageCreateDenied") || Phase == TEXT("StageReadDenied"))
         {
@@ -472,12 +478,83 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
             TestEqual(TEXT("Practice settings alone survived the fresh process"),
                       FString(UTF8_TO_TCHAR(SS::EncodeSettings(Session.settings).c_str())),
                       Previous->GetStringField(TEXT("settingsPayload")));
-            TestTrue(TEXT("Original survival checkpoint still resumes normally"), Instance->ResumeRun());
+            auto *Mode = Fixture.World->SpawnActor<ASSGameMode>();
+            auto *Controller = Fixture.World->SpawnActor<APlayerController>();
+            if (!TestNotNull(TEXT("Spawn the explicit checkpoint selector owner"), Mode) ||
+                !TestNotNull(TEXT("Spawn the local walking possession target"), Controller))
+                return false;
+            Controller->SetAsLocalPlayerController();
+            Fixture.World->AddController(Controller);
+            Controller->SetActorTickEnabled(false);
+            // InitializeStandalone has no authoritative GameMode to initialize PlayerState.
+            // Match AController::InitPlayerState: otherwise replacing the hangar pawn invokes
+            // PawnPendingDestroy, which destroys this incomplete controller along with it.
+            FActorSpawnParameters PlayerStateSpawn;
+            PlayerStateSpawn.Owner = Controller;
+            PlayerStateSpawn.ObjectFlags |= RF_Transient;
+            PlayerStateSpawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+            auto *PlayerState = Fixture.World->SpawnActor<APlayerState>(Mode->PlayerStateClass, PlayerStateSpawn);
+            if (!TestNotNull(TEXT("Resume fixture initializes the controller's normal player state"), PlayerState))
+                return false;
+            Controller->SetPlayerState(PlayerState);
+            Mode->ShowHangar();
+            APawn *HomeWalker = Controller->GetPawn();
+            if (!TestNotNull(TEXT("Resume begins with a possessed home walker"), Cast<ASSWalker>(HomeWalker)))
+                return false;
+            const auto AccountBefore = SS::EncodeAccount(Session.account);
+            const auto RunBefore = SS::EncodeRun(Session.run);
+            const FString SuspendPath = Isolation.Saved / TEXT("SaveGames/SS_Suspend_v1.sav");
+            TArray<uint8> SuspendBefore, Actual;
+            if (!TestTrue(TEXT("Read the original checkpoint before selecting Continue from practice"),
+                          FFileHelper::LoadFileToArray(SuspendBefore, *SuspendPath)) ||
+                !TestTrue(TEXT("Practice admission preserves the checkpoint before the explicit Continue choice"),
+                          Instance->BeginFreeFlight(SS::Ship::Starter, SS::Weapon::RapidLaser)))
+                return false;
+            Mode->OpenPanel(ESSPanel::Launch);
+            int32 Continue = Mode->Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry)
+                                                              { return Entry.Action == 2 && Entry.Enabled; });
+            if (!TestTrue(TEXT("Practice home computer exposes the existing saved Survival checkpoint"),
+                          Continue != INDEX_NONE))
+                return false;
+            {
+                FSSLifecycleSaveLock Lock;
+                if (!TestTrue(TEXT("Hold the real checkpoint against replacement during explicit Continue"),
+                              Lock.Open(SuspendPath)))
+                    return false;
+                Mode->ActivateEntry(Continue);
+                TestTrue(TEXT("Failed Continue exits practice safely without exposing the unconsumed run"),
+                         !Instance->IsFreeFlight() && SS::EncodeRun(Session.run) == RunBefore &&
+                             SS::EncodeAccount(Session.account) == AccountBefore && Mode->InHangar() &&
+                             Mode->Panel == ESSPanel::Launch && !Mode->IsDepartingStation() &&
+                             Cast<ASSWalker>(Controller->GetPawn()) != nullptr &&
+                             Mode->Announcement == Instance->LastSaveError &&
+                             Instance->LastSaveError.Contains(TEXT("Save replacement failed")));
+                TestTrue(TEXT("Failed explicit Continue retains every checkpoint byte for retry"),
+                         FFileHelper::LoadFileToArray(Actual, *SuspendPath) && Actual == SuspendBefore &&
+                             Instance->HasSuspendedRun());
+            }
+            Mode->OpenPanel(ESSPanel::Launch);
+            Continue = Mode->Entries.IndexOfByPredicate([](const FSSMenuEntry &Entry)
+                                                        { return Entry.Action == 2 && Entry.Enabled; });
+            if (!TestTrue(TEXT("The restored home session still offers the explicit saved-run retry"),
+                          Continue != INDEX_NONE))
+                return false;
+            Mode->ActivateEntry(Continue);
+            if (!TestTrue(TEXT("The same player controller survives the real station pawn replacement"),
+                          IsValid(Controller) && UGameplayStatics::GetPlayerController(Mode, 0) == Controller &&
+                              Controller->PlayerState == PlayerState && Controller->GetPawn() != HomeWalker))
+                return false;
+            TestTrue(TEXT("Original checkpoint resumes through the actual selector and returns walking at its station"),
+                     !Instance->IsFreeFlight() && !Mode->InHangar() && !Mode->IsMenuOpen() &&
+                         !Mode->IsDepartingStation() && Cast<ASSWalker>(Controller->GetPawn()) != nullptr &&
+                         Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves &&
+                         SS::EncodeAccount(Session.account) == AccountBefore);
             TestEqual(TEXT("Resume restores the original survival identity"),
                       FString(UTF8_TO_TCHAR(Session.run.id.c_str())), FString(UTF8_TO_TCHAR(RunId.c_str())));
             TestTrue(TEXT("The original station transaction state survives practice"),
                      Session.run.phase == SS::Phase::Station && Session.run.wave == 5 && Session.run.pendingReward);
             TestFalse(TEXT("Checkpoint is consumed once after the normal resume"), Instance->HasSuspendedRun());
+            CheckNoStagingFiles(*this, Isolation);
             return Isolation.Receipt(Phase, *this, Instance);
         }
         const SS::Session Original = Session;
@@ -705,6 +782,24 @@ bool FSSSaveLifecycle::RunTest(const FString &Phase)
             CheckNoStagingFiles(*this, Isolation);
             TestTrue(TEXT("Discard leaves settings bytes unchanged"),
                      FFileHelper::LoadFileToArray(Actual, *SettingsPath) && Actual == SettingsBefore);
+            const auto ClearedRun = SS::EncodeRun(Session.run);
+            if (!TestTrue(TEXT("After discard the home briefing has no competing mode switch or immediate launch"),
+                          !Mode->Entries.ContainsByPredicate(
+                              [](const FSSMenuEntry &Entry)
+                              {
+                                  return Entry.Action == 3 || Entry.Action == 50 || Entry.Action == 52 ||
+                                         Entry.Action == 155 || Entry.Action == 156;
+                              })))
+                return false;
+            APawn *WalkingPawn = Controller->GetPawn();
+            Mode->ClosePanel();
+            Mode->CycleDepartureMode(); // Preference-only transaction; physical cockpit reach is tested separately.
+            TestTrue(TEXT("Mode selection after discard cannot restart or replace the cleared run"),
+                     Mode->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight && !Instance->IsFreeFlight() &&
+                         !Mode->IsDepartingStation() && !Mode->IsMenuOpen() && Controller->GetPawn() == WalkingPawn &&
+                         SS::EncodeRun(Session.run) == ClearedRun &&
+                         SS::EncodeAccount(Session.account) == AccountAtStation);
+            CheckConsumed(*this, Instance);
             AddInfo(TEXT("STATION2_DISCARD_FIXTURE: actual action 51 succeeded after fresh Init/retry; "
                          "no natural travel, physical UI, death or victory occurred."));
         }

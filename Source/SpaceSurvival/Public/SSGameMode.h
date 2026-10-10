@@ -39,6 +39,11 @@ enum class ESSPanel
     Paint,
     Wardrobe
 };
+enum class ESSDepartureMode : uint8
+{
+    Waves,
+    FreeFlight
+};
 struct FSSMenuEntry
 {
     FString Label;
@@ -53,6 +58,7 @@ class SPACESURVIVAL_API ASSGameMode : public AGameModeBase
 public:
     ASSGameMode();
     virtual void BeginPlay() override;
+    virtual void StartPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     ASSStation *GetStation() const
@@ -80,12 +86,25 @@ public:
     bool IsTitleMenu() const;
     void ClosePanel();
     void ActivateEntry(int32 Index, bool FromPointer = false);
+    /** Directional controller adjustment. Bounded values never wrap at their limits. */
+    bool AdjustSetting(int32 Index, int32 Direction);
     void StartNewRun();
     void StartFreeFlight();
     void EndFreeFlight();
     void LaunchFromHub();
     bool IsWalkerInsideShip(const ASSWalker *Candidate) const;
+    bool IsWalkerAtPilotSeat(const ASSWalker *Candidate) const;
     bool TryBoardShip(ASSWalker *Candidate);
+    /** Cockpit preference only; sitting commits the existing transaction. */
+    void CycleDepartureMode();
+    void SelectDepartureMode(ESSDepartureMode Mode);
+    bool CanChooseDepartureMode() const;
+    /** Consumes a new mode-button press only at the supported cockpit chair; never launches. */
+    bool HandleCockpitModeInput(bool KeyboardJustPressed, bool GamepadJustPressed);
+    ESSDepartureMode GetSelectedDepartureMode() const
+    {
+        return SelectedDepartureMode;
+    }
     void ShowHangar();
     bool IsMenuOpen() const
     {
@@ -141,6 +160,7 @@ private:
     friend class FSSAudioFirstState;
     friend class FSSTitleMenuNavigation;
     friend class FSSDirectorVillainVoice;
+    friend class FSSPhoenixCockpitDeparture;
     bool bAutomatedSoakInput = false;
     bool bTitleSettingsNavigation = false;
     UPROPERTY()
@@ -212,6 +232,10 @@ private:
     FString VillainLineFor(ESSVillainCue Cue, int32 Wave = INDEX_NONE);
     bool LowHullAlerted = false;
     bool bDepartingStation = false;
+    bool bBoardingFlight = false;
+    ESSDepartureMode SelectedDepartureMode = ESSDepartureMode::Waves;
+    bool CanCommitDeparture(FString &Reason) const;
+    void CommitBoardedDeparture();
     bool bStartNextBlockOnExit = false;
     bool bAtTitleScreen = true;
     void UpdateMusicMix();

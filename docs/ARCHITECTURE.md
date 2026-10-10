@@ -1,12 +1,146 @@
 # SpaceSurvival Phase 1 architecture
 
+## Streamed station startup — October9
+
+`ASSGameMode::BeginPlay` initializes tuning, audio and world presentation.
+`StartPlay` first calls `Super::StartPlay`, completing the initial world BeginPlay
+dispatch, then performs the existing hangar/station and title/authoring-entry
+startup. Synchronous level streaming inside the old BeginPlay path left placed
+Wayfarer crew outside the initial dispatch: actor ticks stayed disabled and clips
+remained at time zero. Moving the existing startup block preserves its entry/menu
+decisions while allowing streamed actors to receive their normal lifecycle.
+Build55 and a fresh native boot verify all ten replaced staff ticking, clips
+advancing and the two existing routes moving. This does not establish all menu,
+save or full-game acceptance; see the [receipt](validation/2026-10-09-station-crew-central-r.md).
+
+## Isolated editor rendering diagnostic — October7
+
+The private `SSRenderedViewDiagnostic` observer registers only for its explicit
+diagnostic command-line flag plus `RenderOffscreen`, in editor builds. It reads
+actual renderer view rectangles, anti-aliasing flags and camera identity into a
+bounded render-thread queue; the game thread drains numeric records. The module
+owns registration and cleanup. Renderer/RenderCore/RHI dependencies remain private
+and editor-only; ordinary launches and packaged gameplay do not register the commands.
+
+The separate `SSRenderedViewViewport2` flag additionally permits resizing only the
+exact owning temporary PIE viewport to1600×900. It records the original dimensions
+and fixed-size state and verifies their restoration. No quality, project settings,
+gameplay defaults or owner window is changed. Source compilation, native resize and
+restoration, actual image quality and performance remain separate checks in the
+[diagnostic receipt](validation/2026-10-07-rendered-view-diagnostic.md).
+
+## Survival quality repair — October 6
+
+`ASSDistantAsteroids` owns a separate 6,144-instance target budget across 125 deterministic
+500 m resident cells. It samples the owned Arch/Globular/Linear Blueprint layouts, avoids repeated
+neighboring meshes and intersecting comparable boulders, and preserves fixed curved openings.
+Regional architecture/clutter retains its independent budget. World shifts and revisits keep
+logical identity. Damaged/destroyed instance state belongs to a run seed; rebinding the same run
+does not reset it. Neither field spends the Director's threat budget.
+
+Ordinary cell changes queue incoming cells nearest the camera first and replace the outgoing
+cell with the same modulo-five slot. Work has a 4 ms soft budget per tick: an atomic cell build
+can exceed it, and admission within 1,000 m takes priority over it. Retirement waits until the
+outgoing cell's bounding box is farther than 975 m from the camera, beyond the 950 m material
+fade. Initial construction and jumps of more than one logical cell complete synchronously.
+Retained instance IDs/transforms are unchanged; these bounds are implementation rules, not a
+measured frame-time guarantee.
+
+`SSWeaponDamage::Apply` routes the actual first trace/sweep hit to a Director body or a particular
+field/scenery instance. Laser and traveling cannon share this routing; visual tracers do not apply
+damage twice. All ordinary asteroid sizes can break under the owner's revised scope. Fragment
+presentation is noncolliding and bounded to eight simultaneous bursts of twelve chips, with
+lifetimes capped at 2.4 seconds. Main chips and their initial offsets remain proportional to the
+destroyed radius. For field/scenery hits, two of those twelve chips originate near the traced
+surface and destruction audio plays at that impact point, keeping feedback close to the player
+even when a large rock's center is distant. Cosmetic debris does not replace the existing admitted
+medium-hazard fragments or their gameplay safety checks.
+
+Flight scenery uses `USSSpaceLookData::FieldMaterialOverrides`: private copies of complete material
+parent chains preserve source texture/parameter choices and add masked, temporally dithered
+camera-distance fading. The near field fades across 700–950 m; hard culling has an additional
+geometry-radius margin, and changed cells are beyond the fade horizon. Source mesh/material
+assets and station uses of those assets are unchanged. Native render/performance checks are
+required after authoring; setting cull distances alone never established a fade.
+
+Director rocks prefer the private `DirectorArrival/MI_DirectorRockArrival` derivative of
+`M_RockPhotographic`, retaining textured warm rock surfaces. `SpawnVisibility` increases from
+0.15 to 1 over the actor's first 0.30 seconds through a masked temporal dither. This changes only
+material coverage: collision, damage, admission and the shared age clock remain authoritative.
+Missing private arrival content falls back to the photographic material without delaying gameplay.
+Final native/rendered evidence for these survival changes belongs in the linked quality receipt;
+this architecture description does not establish a pass.
+
+Scenery impacts use pre-physics closing speed for damage, remove residual inward normal velocity,
+then apply recoil to the actual solver body. Tangential motion remains. Authored hazard/enemy
+contacts retain their existing damage authority, avoiding duplicate charges. The approved stick,
+camera and bumper mappings are unchanged.
+
+Walker support uses actual Pawn-blocking floor support and a short grace period, with last valid
+footing used for genuine falls. The Squirrel row contains seven measured tail bone-local surface
+envelopes; the pose proxy only rotates the tail root when that surface would cross a nearby floor.
+Clear-air poses and body animation remain unchanged.
+
+Controller menu directions distinguish settings tabs, adjustments and scrolling rows. The first
+enabled action receives focus. Pause/services retain the dimmed current world; the locked title
+composition is separate. Live reward/depot offers use D-pad selection so left-stick steering does
+not also change the selected offer. Validation and current limitations are recorded in the
+[October 6 quality receipt](validation/2026-10-06-survival-quality.md).
+
 ## Wayfarer station integration — October1
 
 `ASSStation::BuildOutpostHub` streams a tagged runtime copy of the authored Wayfarer Exchange into the existing Survival world for the home hangar and mid-run stations. The apartment remains a nested Level Instance. It adopts the authored physical berth deck through `ASSLandingPad::AdoptDeck`; the real player ship owns boarding geometry, flight, paint and docking. Display-only Phoenix geometry and its stationary cabin proxies are removed from the runtime instance. No authored source actor is deleted on disk.
 
 Mapped outpost terminals route to existing `ESSPanel` services. Home loadout and active-run upgrades/contracts/repair/save retain their existing economy and session rules; informational merchants remain placeholders. The existing every-five-wave cadence, difficulty, save schema and Free Flight isolation do not change. The station waits for initial streaming before exposing walking support. Walkability uses the real authored collision, including the apartment and upper gallery; cleanup disables the outgoing station while streaming unloads it. Ambient routes follow world-origin offsets.
 
+`USSNPCHeadFillComponent` shares the accepted NPC profile across explicitly selected skeletal mesh receivers:40lm,100cm reach,12cm source radius, default `head` anchor and actor-frame(45,0,15)cm offset. `ASSOutpostAmbientActor` preserves its original `NPCHeadFill` point-light subobject, editable properties and `RefreshReadabilityLighting` API; its additive configuration borrows that light. A compatible Ambient Blueprint child needs only a mesh and valid head anchor. Existing plain NPC actors use Blueprint-callable `EnrollNPCMesh`, then optional socket/offset overrides and refresh after mesh/material changes; actor, sequence and animation remain intact. Known presentation and functional-layout staff hooks select their own receivers without scanning the world. The attached lamp needs no extra Tick. Reserved channel2 is added only to the receiver and fill, preserving channels0/1; disable/unregister/teardown restore the receiver's prior channel2, and component destruction removes only a configuration-owned light. Player lighting retains channel1. Specular, indirect and volumetric intensity are zero, with reflection/GI flags disabled. Exclusions are all `APawn` owners, receivers named/tagged `StationCompanionDrone`, owner/receiver tags `OutpostRole:Hologram`, missing anchors and receivers without opaque/masked materials; Ambient's drone and external-animation flags remain authoritative. Other drone/projection models need explicit tagging.
+
+Build49 links the shared component and passes the focused native lifecycle case without test warnings. In the owner preview,34 Ambient configurations reload with25 eligible lights active and9 excluded; seven explicitly enrolled lounge NPCs also survive save/reload with one configuration/light each, preserved animation/pose/bounds and mesh-frame(0,45,15)cm offsets for their native +Y facing. A matched Trooper/alien OFF/ON comparison supports retaining the preset locally; the Trooper armor was already bright with fill off. Wider pool imagery shows the shooter in profile. The eight-file source/format and42 structural passes are separate from these native checks. All-variant quality, reflection/spill under other views, functional runtime staff and performance remain open. See [adoption](STATION_EDITING.md#reusing-the-npc-lighting-preset) and the [component receipt](validation/2026-10-08-npc-headfill-component.md).
+
 Authored station global lighting and unbound exposure fade with distance, restoring the flight environment outside the outpost. The station sky sphere is hidden so the flight background is shared. Missing private runtime content falls back to the legacy station with an explicit `SS_OUTPOST_FALLBACK` log; `-SSLegacyStation` also selects the legacy station for diagnosis. Focused capture evidence and its physical-input/performance limits belong in the October1 validation receipt and active issue RPT-20260924-01.
+
+`ASSStationWarpGate` is linked in Build47; actual gameplay placement and traversal remain unverified. Two reciprocal
+endpoints must belong to the same runtime station and use authored physical
+frames and supported arrival points. Only the locally controlled grounded walker
+can activate a pad while the real station ship is parked and no menu, boarding or departure
+transition is active. A game-time delay plays optional departure effects; leaving
+the pad cancels without disabling input. Destination capsule clearance and
+walkable floor support are checked both before and after the delay. Arrival keeps
+the same pawn, stops residual movement and latches the pair until the player
+leaves both pads. Owned teleport bursts use Default skeletal-source lookup:
+their components attach to the live walker mesh before reinitialization, without
+editing the shared Niagara interfaces. Departure detaches before teleport;
+cancellation, walker/gate teardown and arrival expiry restore the authored gate
+attachments.
+
+After `FinishDocking` and menu closure, both `ShowHangar` and `EnterStation` call
+`ASSStation::InstallWarpPair`. The station owns and destroys both gates before
+unloading its layout. A read-only rig query supplies the real landed ramp toe;
+the ship-side gate sits outside the assembled hull on the adopted landing deck.
+The central candidate uses a station-local welcome anchor. Both footprints,
+frame jambs and approaches require real walkable support. The original owned P4
+frame must have authored collision and a valid physics body; the actual player
+capsule is swept through its opening before activation. Both gates stay disabled
+until both placements pass. Missing assets or invalid placement omit the pair
+and retain ordinary walking, with refusal reasons in the log. No replacement
+frame collision, extra Tick, new rewards or progression are introduced.
+
+The integration selects the owned portal and player teleport systems without
+editing their source assets. Original aperture collision, placement, effect fit,
+natural reciprocal traversal and performance remain unverified. The owner-preview
+sandbox does not run the real station game mode and cannot prove those checks.
+
+## Planned character speech and event recall — October 1, 2026
+
+**PLANNED, not implemented by this documentation change.** Existing `FSSVillainLine`/`VillainSpeak` provide caption cues and a bounded queue, not recorded speech. `ASSGameMode::React` prefixes its text with Acornaut, and the current villain eligibility gate includes the subtitle setting. Outpost NPC gestures are animation-only. These are integration points, not evidence that the voice requirement already works.
+
+The smallest planned extension uses authored voice banks with stable speaker/line IDs, event eligibility, localized text, optional soft sound references, priority, cooldown and variants. Resolve the player's speaker from `WornHeroId`; assign NPC/enemy identities explicitly. Keep the existing villain cue ordering, but separate speech eligibility from subtitle visibility and share the chosen line/clip between both outputs. Clip completion/duration should drive caption timing, with a bounded text fallback for unavailable audio.
+
+A world-owned speech coordinator should use dedicated foreground/ambient concurrency, interrupt priorities and owner/world cleanup. Hero/radio lines and nearby spatial NPC speech need distinct attenuation rules. Do not route dialogue unchanged through `USSWorldAudioSubsystem`'s effects one-shot pool: it applies shot pitch variation, distance rejection, oldest-effect eviction and a ten-second duration cap. Existing Unreal sound assets, audio components and concurrency are sufficient; no new runtime AI/plugin dependency is required. Verify implementation against installed engine APIs; Epic's [Sound Concurrency reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/sound-concurrency-reference-guide) was reviewed on 2026-10-01.
+
+Authoritative gameplay events should record a small, bounded run fact set keyed by run identity. A gravity close-call fact needs actual active-field exposure and a survived exit, not a Director spawn or wave label. On docking, select eligible station remarks and record acknowledgement so repeated proximity cannot replay them. Keep transient playback queues out of saves; preserve only the facts/acknowledgements needed for truthful resume through an explicitly validated, backward-compatible save extension. Missing legacy data means no remembered encounter. New runs/death clear the relevant facts; Free Flight cannot contaminate survival memory. Speech must never award rewards, advance waves or own save transactions.
+
+Focused validation covers event positive/negative cases, speaker selection, repetition limits, subtitle/audio independence, pause/teardown/resume and cooked soft-reference closure. Packaged listening remains mandatory under the [presentation gate](../IMPLEMENT.md#character-voice-and-presentation-gate). Optional offline voice creation is catalogued as `TOOL-20261001-QWEN3-TTS`; no model, generated bank or voice quality has been selected or tested here.
 
 ## Admission fall-through, villain launches and voice — September29
 
@@ -80,7 +214,7 @@ future shield/scar/condition-damage layers.
 
 September22 arcade response: existing authored data receives 1.5x acceleration, 1.7x steering, 2x response and 5x roll multipliers (60 m/s cruise unchanged). The ShipCore adapter removes vendor roll attenuation because the game already owns its roll rate. Bumper evades use the existing dodge cooldown/resource rules; no immunity or wave tuning changes.
 
-`ASSDistantAsteroids` now streams deterministic 500 m world cells in a bounded 5x5x5 neighbourhood (default2048 rocks/debris across shared mesh batches). Retained cells keep stable engine instance IDs and transforms. Outgoing cells are beyond the900m draw limit before retirement; revisiting regenerates identical poses. The initial320m centre clearance stays anchored to launch. Camera, Director pressure and docking visibility do not reposition rocks. Separate authored scenery/landmarks remain.
+The September 22 field introduced deterministic 500 m cells and stable instance identities. Its original 2,048-object budget, 900 m draw limit and 320 m launch clearance are superseded by the [October 6 survival implementation](#survival-quality-repair--october-6). Camera, Director pressure and docking visibility do not reposition retained rocks; authored regional scenery remains separate.
 
 
 ## Page 11 native UI — September22
@@ -95,7 +229,7 @@ Settings prepend four native tab actions and retain selected action across refre
 
 **September 22 source amendment:** environment visibility now follows an existing ship rather than Flight-only phase, preserving atmosphere/scenery across docking, walking and takeoff. Home creates presentation before departure. Title state is explicit (`bAtTitleScreen`); an inactive survival run at home no longer implies startup UI. Explicit return-to-title abandons only unsuspended in-memory run state, retaining saved account/checkpoint data. Gallery service registration is removed; stable enum/assets remain for compatibility. Wardrobe excludes original Acornaut and resolves its old saved preference to the current default. Automatic rear-cabin launch popup is removed; explicit E/Y interaction remains provisional until actual cockpit seating is implemented.
 
-The approved arcade baseline is an added `USSPhase1Data::ArcadeFlightScale` (2.5), so existing serialized cruise/acceleration values migrate without editing the private Data Asset. Production and controller/physics fixtures use the same effective getters. `DirectorAsteroidScale` defaults to 3 and applies only to small/medium/massive asteroids spawned through `SpawnHazard`, before spatial admission. Clearance, visible scale and collision therefore agree; larger bodies widen the collision/clearance envelope (the protected safe lane applies only in legacy asteroid mode). Director bodies receive an orange `M_Hazard` dynamic material on every slot; world scenery keeps vendor surfaces. Authored wreckage passages, fields and enemy sizes are unchanged.
+The approved arcade baseline is an added `USSPhase1Data::ArcadeFlightScale` (2.5), so existing serialized cruise/acceleration values migrate without editing the private Data Asset. Production and controller/physics fixtures use the same effective getters. `DirectorAsteroidScale` defaults to 3 and applies only to small/medium/massive asteroids spawned through `SpawnHazard`, before spatial admission. Clearance, visible scale and collision therefore agree; larger bodies widen the collision/clearance envelope (the protected safe lane applies only in legacy asteroid mode). The original orange `M_Hazard` Director surface is superseded by the October 6 photographic arrival material above. Authored wreckage passages, fields and enemy sizes are unchanged.
 
 This document describes current source ownership and data flow. [PROJECT_STATE.md](PROJECT_STATE.md) owns the latest build, commit and package boundary; [VALIDATION.md](VALIDATION.md) retains exact evidence. **Phase 1 remains PARTIAL.** The [active issue ledger](KNOWN_ISSUES.md) owns unfinished work and owner acceptance. The earlier [asset refresh](ASSET_REFRESH.md) and [combined look](production/COMBINED_SPACE_LOOK.md) records retain their own validation boundaries; they do not validate subsequent presentation changes.
 
@@ -144,7 +278,26 @@ The classic Acornaut exit path retains `SK_AcornautTailV2`, `A_DisembarkGripFit`
 
 Launch re-possesses the retained ship, lifts it 700 cm over three seconds, then restores flight collision and body simulation with zero stale approach velocity. The player flies out of the 180 m station zone before the Director resumes and the next wave clock advances. Station 1 commits `LaunchFromStation` and Wave 6 only at that boundary; the initial hangar departure similarly preserves Wave 1's time during launch. Station 2 remains a live boundary: `AtSliceBoundary`/`LaunchFromStation` prohibit Wave 11. Its summary shows live score/counters and reuses services/save/discard actions; closing it or rejecting departure preserves run/account. `DiscardSliceRun` persists the account record before invalidating suspension and clears the live run only after both writes succeed. Historical account/checkpoint tests prove Wave 10 remains the highest-wave record with zero XP/completed runs/history; an older Wave 5 suspension cannot downgrade it. Native discard/completion appeal remains open; no victory phase or completion XP was added.
 
-The September 21 owner follow-up adds physical boarding to the functional home and station layouts. Both own a real parked `ASSShip`. `USSShipVisualRig::CanBoardAt` requires the entire walking capsule beyond the rear doorway, between the cabin walls and supported by this hull's floor. `ASSGameMode::IsWalkerInsideShip` also checks owned pawn/ship/hub, possession and grounded movement; `TryBoardShip` opens the existing launch panel. The walker offers it once per cabin entry, preserving closure until the player leaves. At inactive home the choices are Start Survival, Continue Survival (only with a checkpoint) and Free Flight. An active station run continues through its existing departure rules; Free Flight cannot replace it. The launch console remains available, including on the preserved fallback without a Phoenix cabin.
+Physical boarding uses the real parked `ASSShip` at home and stations. `USSShipVisualRig::CanBoardAt` identifies the supported cabin; the narrower `CanUsePilotSeatAt` checks the cockpit chair reach and actual interior support. `ASSGameMode::IsWalkerAtPilotSeat` additionally requires the owned grounded walker, parked ship, hub and possession, and excludes disembark/boarding. `TryBoardShip` begins the visible sit at that chair. Existing `CanCommitDeparture` / `CommitBoardedDeparture` retain the native pilot handoff, save-failure rollback and departure transaction; crossing the rear doorway opens no menu.
+
+The October 6 cockpit selector uses that same chair predicate for both its HUD card and `HandleCockpitModeInput`. The walking controller passes R / D-pad Left press edges; a held input never cycles, simultaneous device edges count once, and a consumed mode edge prevents same-frame E/Y sitting. Menus, flight and transition states reject the mode handler. Selection changes only `SelectedDepartureMode`; sitting commits the existing Waves or Free Flight transaction. Active Survival stops keep Waves locked. The station's `ESSPanel::Launch` is an informational Flight Briefing with explicit saved-checkpoint continuation where eligible, without a competing mode toggle. No save schema, ship geometry, station layout or preview-map gameplay rule changes. [Selector evidence](validation/2026-10-06-cockpit-mode-selector.md) separates source checks, prepared native input regressions and the nine-view boarding capture from physical-play acceptance.
+
+October7 presentation uses one nearby contextual action and a readable cockpit
+card. Guidance recognizes the measured Phoenix cabin floor without broadening
+the grounded chair/departure predicate. Four parked-only local lamps illuminate
+the rear route, stairs and seat; two mounted80×48cm image panes reuse approved
+navigation/system artwork. Their private resident materials and inward-facing
+plane orientation are separately verified. Actual cabin appearance and physical
+owner controls remain independent acceptance gates.
+
+GameInstance applies the selected scalability tier, then retains native100
+resolution scale. This deliberately creates a custom resolution/tier combination;
+`GetOverallScalabilityLevel()` may return-1 even when individual quality groups
+retain the selected tier. Before scalability applies, the owned motion-blur CVar
+preference is released only if its priority is exactly GameSetting, then reapplied
+when no stronger console preference exists. Window resolution, fullscreen mode,
+frame cap and save schema are unchanged. Native tests exercise quality/blur
+retention; no texture-pool budget or shader-cache tuning is implied.
 
 Free Flight uses an in-memory session copy and keeps the prior survival session for return. Its Director remains inactive, its recovery clocks continue, and the home pad remains available for ordinary docking. Return restores the prior session while retaining current settings. It cannot create a survival checkpoint or award persistent progression. Follow-up Build2 and Focused2 passed the practice lifecycle, boarding traversal and parked collision tests, with no warnings or failures. An updated package and physical-play acceptance remain separate gates in the lead's validation record.
 
@@ -163,6 +316,8 @@ Dodge adds directional velocity and never grants invulnerability. `ReceiveImpact
 Shield absorbs first and has no automatic recharge. Hull can recover fully, with delay and different safe/danger rates. Lightweight damage-type effects and temporary effective-tier impairment preserve purchased upgrade tiers. Automated adapters verify boost/brake motion, dodge collision damage and manual weapon impacts; domain tests cover the resource rules. Natural overlapping contacts/forces, contextual recovery and feel still need gameplay verification.
 
 Manual aim traces from the camera through the actual projected HUD reticle and converges from `MuzzleWorldPosition`. The Phoenix uses its authored gun-arrow transforms; fitted classic weapon modules retain their mount, with a measured nose/height fallback when either presentation source is absent. Camera hits at/behind the muzzle's forward plane cannot reverse a shot. Soft targeting measures its cone from that same camera ray, rechecks range and muzzle cover when firing, and tapers assistance from the cone edge to a default 20% maximum (hard-clamped to 40%). It does not rotate the ship. Rapid Laser traces native damage over `WeaponRange` (14000 cm by default), confirms damageable hits immediately and clips its zero-damage visual tracer to the obstruction; Heavy Cannon retains its 19000 cm/s physical projectile. Neither weapon fires while moored, docking or taking off. Camera arm, height, pitch and reticle offset come from the selected hull definition; boost pullback/FOV adaptation remains.
+
+The Phoenix opts into `USSChaseCameraArm` after its physics rig is initialized. After physics, the arm transports a continuous orientation by changes in the hull's forward direction, excluding body spin; authored arm pitch and deliberate free-look are applied afterward. The elevated anchor uses that same frame, so a bumper roll neither revolves the view nor circles its anchor. This avoids the Euler yaw flip at vertical pitch without changing ship forces or roll control. Completed docking resets the transported orientation but preserves the once-captured authored anchor; ordinary flight and world-origin shifts do not reset it. The classic hull retains the original spring-arm behavior. Phoenix camera-local pitch is now -3 degrees with the existing -18-degree arm and 3800 cm base distance, keeping its rotated silhouette in frame without roll-driven zoom. [Camera evidence](validation/2026-10-06-phoenix-camera-comfort.md) distinguishes native component/framing checks from rendered motion and owner comfort acceptance.
 
 Both player projectile paths retain configured maximum travel. The final sweep is clipped to remaining range and lifetime, preventing a long frame from hitting beyond either bound. Enemy shots test relative projectile/ship translation over that same live interval against the Phoenix's current compound hull pose, or the classic hull's original sphere. The first contact is compared against the first eligible world obstruction; earlier cover, including an equal-time tie, blocks damage. Ship-position history is seeded at launch, a tick prerequisite follows the tracked ship, and all world bodies evaluate in PostPhysics so both swept paths use completed movement from the same frame. Tracking changes reset history/prerequisites together. Hazard impact applies its mass-independent additive velocity change immediately so the next thrust calculation sees the impacted velocity. Solid hazards and enemies use the same compound contact query with their existing 1.1-second domain cooldown; their rigid-body callback cannot add a second generic impact charge. These relative sweeps cover translation between frames, not continuously changing angular poses. Six seconds remains a lifetime ceiling, not extra weapon range. Effective weapon/buff scaling is applied once. Regressions cover camera-reticle convergence, muzzle obstruction, native weapon damage, measured engine contact, empty space and cover ordering; physical aiming and rendered framing remain separate acceptance checks.
 
@@ -264,11 +419,11 @@ Authoring inspects real Niagara parameters, renderer ownership and dependencies 
 
 `USSSpaceLookData::AreaRecipes` enables world-stable regional scenery in `ASSSpaceScenery`. Each recipe supplies a complete `FSSSceneryPlacement` landmark group, weighted small/middle mesh candidates, density, anisotropic cluster dimensions, fixed clearance, haze and lighting values. The authored look has four drafts: ObsidianWreck, MineralReach, AlienCauseway and AmberDerelict. A 3×3×3 window retains 27 logical cells around the viewer; the private authoring uses 650,000 cm cells. Returning to a cell reconstructs its original choices. Turns do not move or reseed scenery, and origin rebases preserve logical identity. The scenery seed is assigned when the environment is first created and retained across home departure and docking, so starting a run does not reconstruct the visible region. `ss.SpaceAreaPreview=-1` selects normal spatial styles; 0–3 fixes a recipe independently of run identity. `ss.SpaceAreaVariation` provides reproducible comparison variations.
 
-Whole landmark groups occupy fixed even/even/even cells: at most eight groups of eight placements, with a separate 64-landmark cap. Groups exceeding their allowance or violating the cell-center clearance of at least 40,000 cm plus each mesh's radius are rejected intact. Major landmarks cast shadows; regional instanced clutter does not. Fixed cell identities receive clutter allowances, with larger allocations around authored groups and stable quieter pockets elsewhere. The private regional budget is 384; runtime also limits it to `3072 - distantFieldCount`, so the combined regional/far small-object cap is 3,072, not an allowance per cell. Cell-boundary admission/removal remains abrupt and has not passed long-travel visual acceptance. The installed private SolidScenery derivatives are query-solid to Pawn/Visibility and can be approached; they are independent of Director hazards. Navigable wreck interiors are not implied. The old unreachable-shell guarantee does not apply to this path. With empty `AreaRecipes`, the previous at-most-12 authored placements or four mesh-list silhouettes retain their bounded camera-following fallback; missing optional licensed content remains omitted.
+Whole landmark groups occupy fixed even/even/even cells: at most eight groups of eight placements, with a separate 64-landmark cap. Groups exceeding their allowance or violating the authored cell-center clearance of at least 40,000 cm plus each mesh's radius are rejected intact, then valid compositions are uniformly fitted inside 0.45 cell. Major landmarks cast shadows; regional instanced clutter does not. Fixed cell identities receive clutter allowances, with larger allocations around authored groups and stable quieter pockets elsewhere. `AreaClutterBudget` is independently bounded to 1,024 across the 27 regional cells; it is no longer reduced by the distant field count. Regional material fading spans 0.75–0.95 cell, with geometry contained inside its owner cell and a hard-cull margin. Regional cells still build synchronously; the 4 ms incremental policy belongs only to the separate traversable field. The installed private SolidScenery derivatives block PhysicsBody, Pawn and Visibility and can be approached independently of Director hazards. Navigable wreck interiors are not implied. The old unreachable-shell guarantee does not apply to this path. With empty `AreaRecipes`, the previous at-most-12 authored placements or four mesh-list silhouettes retain their bounded camera-following fallback; missing optional licensed content remains omitted. Long-travel rendering and representative performance require their own evidence.
 
 `AuthorWreckAssemblies.py` merges the owned megastructure kit into private `SM_BrokenHullSpine`, `SM_ButtressedChunk` and `SM_FragmentedArch` assets using 20, 20 and 21 pieces respectively. Uniform scales preserve native proportions and the merge preserves source material slots without a material bake. Volumetric pillar modules supply thickness; the vendor's effectively zero-thickness panels are subordinate fins rather than giant walls. These meshes have been authored successfully; scene adoption, private charcoal/sky grading and rendered art iteration remain separate from visual acceptance. Source files, private backups and authoring receipts retain provenance. ACT-03 in [KNOWN_ISSUES](KNOWN_ISSUES.md) alone tracks remaining acceptance.
 
-`ASSDistantAsteroids` uses 15 shared batches (12 distinct owned barren/mineral/fragment meshes) and a default 2,048-object budget. `AuthorAsteroidDepth.py` retains the evaluated Arch/Globular/Linear Blueprint samples; the field now uses those samples to form nearby fixed groups, with one third of slots taking the regional non-asteroid wreckage/panel/beam mix. Placement is native and deterministic; generator Blueprint actors are not spawned at runtime. Private `SolidScenery` collision derivatives block ship physics and weapon traces. Nearby cells preserve instance IDs; remote cells retire outside the 900 m draw limit and regenerate exact transforms on revisit. No camera-relative shell or launch-only population remains. World origin shifts preserve identity. Separate regional scenery and landmarks remain; rendered performance and natural travel still require acceptance.
+`ASSDistantAsteroids` shares batches by mesh across the owned barren/mineral/fragment families and the regional non-asteroid wreckage/panel/beam mix. `AuthorAsteroidDepth.py` retains the evaluated Arch/Globular/Linear Blueprint samples used for fixed groups; generator Blueprint actors are not spawned at runtime. Private `SolidScenery` collision derivatives block ship physics and weapon traces. The current 6,144-instance target, 125-cell residency, incremental replacement and material horizons are specified in the [October 6 implementation](#survival-quality-repair--october-6). World-origin shifts and revisits preserve logical identity. Separate regional scenery and landmarks remain; rendered performance and natural travel still require acceptance.
 
 `USSSpaceLookData` retains three private NebulaFantasy cubemaps, the star layer and the earlier presentation-clock/run-ID sky selection. The new spatial style sampler supplies continuous neighboring recipe weights to `ASSAmbientPresentation`, which smooths haze color/density, key color/intensity, ambient intensity and sky tint. This is spatial palette blending over existing cubemap/volume layers, not procedural volumetric sky generation or a wave-duration change. Optional `bOverrideFlightKeyDirection` still applies `FlightKeyRotation` to the priority-2 scene light only during flight and restores its previous direction on station entry; unrelated fill lights remain unchanged. Station3 is scenery; Station4 remains the service destination. The two cloud banks/two engine trails and 320 dust grains retain their cosmetic controls; `ss.SpaceStructures` independently hides regional or fallback geometry. Four area drafts and their fog/lighting are implemented inputs, but the requested visual target remains NOT MET pending new captures and independent agreement.
 

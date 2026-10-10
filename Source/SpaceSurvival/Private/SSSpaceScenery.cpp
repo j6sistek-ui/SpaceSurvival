@@ -1,11 +1,15 @@
 #include "SSSpaceScenery.h"
 #include "SSSpaceLookData.h"
+#include "SSAsteroidBurst.h"
+#include "SSAudio.h"
 #include "Algo/AllOf.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/World.h"
 #include "Misc/PackageName.h"
 #include "HAL/IConsoleManager.h"
+#include "Materials/MaterialInstanceDynamic.h"
 namespace
 {
 TAutoConsoleVariable<int32> StructuresEnabled(TEXT("ss.SpaceStructures"), 1,
@@ -62,9 +66,7 @@ ASSSpaceScenery::ASSSpaceScenery()
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.TickInterval = .05f;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneryRoot"));
-    // Actor-level collision gates every component, so this has to follow the same switch the components do;
-    // leaving it false would have made the per-component setup below silently do nothing.
-    SetActorEnableCollision(SceneryCollision.GetValueOnGameThread() != 0);
+    SetActorEnableCollision(false);
     SetActorHiddenInGame(true);
 }
 void ASSSpaceScenery::BeginPlay()
@@ -89,6 +91,7 @@ void ASSSpaceScenery::ClearGeometry()
 void ASSSpaceScenery::ConfigureLook(USSSpaceLookData *Data)
 {
     ClearGeometry();
+    DamageByCell.Reset();
     Look = Data;
     if (!Data)
         return;
@@ -136,6 +139,8 @@ void ASSSpaceScenery::ConfigureLook(USSSpaceLookData *Data)
 }
 void ASSSpaceScenery::SetRunSeed(uint32 Seed)
 {
+    if (RunSeed != Seed)
+        DamageByCell.Reset();
     RunSeed = Seed;
 }
 int32 ASSSpaceScenery::EffectiveVariation() const
@@ -163,7 +168,15 @@ void ASSSpaceScenery::Follow(AActor *Viewer)
 void ASSSpaceScenery::SetFlightVisible(bool Visible)
 {
     FlightVisible = Visible;
-    SetActorHiddenInGame(!Visible || !Followed.IsValid() || StructuresEnabled.GetValueOnGameThread() == 0);
+    const bool Active = Visible && Followed.IsValid() && StructuresEnabled.GetValueOnGameThread() != 0;
+    SetActorHiddenInGame(!Active);
+    const bool Collision = Active && SceneryCollision.GetValueOnGameThread() != 0;
+    const bool WasCollision = GetActorEnableCollision();
+    SetActorEnableCollision(Collision);
+    if (Collision && !WasCollision)
+        for (const auto &Part : Structures)
+            if (!Part->IsPhysicsStateCreated())
+                Part->RecreatePhysicsState();
 }
 void ASSSpaceScenery::Tick(float DeltaSeconds)
 {
@@ -254,16 +267,9 @@ void ASSSpaceScenery::RefreshCells()
         return;
     const int32 Preview = AreaPreview.GetValueOnGameThread();
     const int32 Variation = EffectiveVariation();
-    const auto *FarCount = IConsoleManager::Get().FindConsoleVariable(TEXT("ss.DistantAsteroidCount"));
-    // The two systems share one 3072 instance cap and this takes the remainder, so a distant count at the
-    // cap silently leaves nothing here. That happened once; say so rather than render an empty field.
-    const int32 Remaining = 3072 - FMath::Clamp(FarCount ? FarCount->GetInt() : 2048, 0, 3072);
-    const int32 Budget = FMath::Clamp(Look->AreaClutterBudget, 0, Remaining);
-    if (Look->AreaClutterBudget > 0 && Budget == 0)
-        UE_LOG(LogTemp, Warning,
-               TEXT("Scenery clutter starved: ss.DistantAsteroidCount leaves %d of the shared 3072 cap, so the "
-                    "authored budget of %d builds nothing."),
-               Remaining, Look->AreaClutterBudget);
+    // The reachable field and kilometre-scale regions have independent, explicit budgets. Increasing
+    // foreground density must not silently erase the middle/background that gives it depth.
+    const int32 Budget = FMath::Clamp(Look->AreaClutterBudget, 0, 1024);
     const FIntVector Center = CellAt(Followed->GetActorLocation() - OriginOffset, ValidCellSize(Look));
     if (Preview != LastPreview || Variation != LastVariation || Budget != LastClutterBudget)
     {
@@ -324,6 +330,20 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
         Part->SetCanEverAffectNavigation(false);
         Part->SetCastShadow(false);
         Part->SetMobility(EComponentMobility::Movable);
+        // Distance fading is per pixel, including Nanite meshes. Allow the entire bounding
+        // sphere to become transparent before a component/instance reaches its hard cutoff.
+        for (int32 Slot = 0; Slot < Part->GetNumMaterials(); ++Slot)
+            if (const auto *Override = Look->FieldMaterialOverrides.Find(Part->GetMaterial(Slot)))
+                if (Override->Get())
+                    if (auto *Material = Part->CreateDynamicMaterialInstance(Slot, Override->Get()))
+                    {
+                        Material->SetScalarParameterValue(TEXT("SSFadeStart"), float(Size * .75));
+                        Material->SetScalarParameterValue(TEXT("SSFadeEnd"), float(Size * .95));
+                    }
+        // All geometry fits within .45 cell; the visible surface horizon remains .95 cell.
+        Part->SetCullDistance(float(Size * 1.45));
+        if (auto *Batch = Cast<UInstancedStaticMeshComponent>(Part))
+            Batch->SetCullDistances(int32(Size * .95), int32(Size * 1.45));
         Part->RegisterComponent();
         Structures.Add(Part);
         Cell.Parts.Add(Part);
@@ -335,22 +355,43 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
     const bool ValidGroup = Algo::AllOf(
         Recipe.Landmarks, [&](const FSSSceneryPlacement &Placement)
         { return ValidPlacement(Placement) && Placement.Center.Size() - Placement.Radius >= LandmarkClearance; });
+    double GroupExtent = 1.0;
+    for (const auto &Placement : Recipe.Landmarks)
+        if (ValidPlacement(Placement))
+            GroupExtent = FMath::Max(GroupExtent, Placement.Center.Size() + Placement.Radius);
+    // Some authored groups extended a full cell beyond their owner, so a new cell could materialize
+    // a large rock nearby. Fit the complete composition, preserving its internal scale relationships.
+    const double GroupScale = FMath::Min(1.0, Size * .45 / GroupExtent);
+    auto RemainingHealth = [&](int32 Ordinal, double Radius)
+    {
+        const auto *PriorDamage = DamageByCell.Find(Id);
+        return FMath::Clamp(12.f + float(Radius) * .02f, 24.f, 600.f) -
+               (PriorDamage ? PriorDamage->FindRef(Ordinal) : 0.f);
+    };
     if ((Id.X % 2 == 0) && (Id.Y % 2 == 0) && (Id.Z % 2 == 0) && Recipe.Landmarks.Num() <= LandmarksPerCell &&
         ValidGroup)
     {
-        for (const auto &Placement : Recipe.Landmarks)
+        for (int32 Ordinal = 0; Ordinal < Recipe.Landmarks.Num(); ++Ordinal)
         {
+            const auto &Placement = Recipe.Landmarks[Ordinal];
             if (!ValidPlacement(Placement))
+                continue;
+            const double Radius = Placement.Radius * GroupScale;
+            const bool bAsteroid = Placement.Mesh->GetName().Contains(TEXT("Asteroid"));
+            const float Health = RemainingHealth(Ordinal, Radius);
+            if (bAsteroid && Health <= 0.f)
                 continue;
             auto *Part = NewObject<UStaticMeshComponent>(this);
             Part->SetStaticMesh(Placement.Mesh);
-            const double Scale = Placement.Radius / FMath::Max(1.0, double(Placement.Mesh->GetBounds().SphereRadius));
+            const double Scale = Radius / FMath::Max(1.0, double(Placement.Mesh->GetBounds().SphereRadius));
             const FQuat Rotation = GroupRotation * Placement.Rotation.Quaternion();
-            const FVector Location = Center + GroupRotation.RotateVector(Placement.Center) -
+            const FVector Location = Center + GroupRotation.RotateVector(Placement.Center * GroupScale) -
                                      Rotation.RotateVector(Placement.Mesh->GetBounds().Origin * Scale);
             Register(Part);
             Part->SetCastShadow(true);
             Part->SetRelativeTransform(FTransform(Rotation, Location, FVector(Scale)));
+            if (bAsteroid)
+                Cell.Rocks.Add({Part, FPrimitiveInstanceId(), Ordinal, Health, float(Radius), false});
             ++Cell.Landmarks;
         }
     }
@@ -396,12 +437,20 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
                                                              : Style.ClusterAxes.GetAbs().ComponentMin(FVector(2));
         const FVector ClusterCenter =
             FVector(.22 * Size, (Index % 2 ? -.22 : .22) * Size, (Index % 3 - 1) * .12 * Size);
-        const FVector Offset = ClusterCenter + Random.VRand() * Random.FRandRange(.15, 1.0) * Axes * ClusterRadius;
+        const FVector ProposedOffset =
+            ClusterCenter + Random.VRand() * Random.FRandRange(.15, 1.0) * Axes * ClusterRadius;
+        const FVector Offset = ProposedOffset.GetClampedToMaxSize(FMath::Max(1.0, Size * .45 - Radius));
         const double Clearance =
             FMath::IsFinite(Style.ClearRadius) ? FMath::Max(1000.0, double(Style.ClearRadius)) : 35000.0;
         if (Offset.Size() < Clearance + Radius)
             continue;
         auto *Mesh = Selected->Mesh.Get();
+        const bool bAsteroid = Mesh->GetName().Contains(TEXT("Asteroid"));
+        const float Health = RemainingHealth(Index + 64, Radius);
+        // Consume the same pose RNG even for a previously destroyed identity.
+        const FQuat Rotation = Random.VRand().ToOrientationQuat();
+        if (bAsteroid && Health <= 0.f)
+            continue;
         auto *&Batch = Batches.FindOrAdd(Mesh);
         if (!Batch)
         {
@@ -410,12 +459,69 @@ void ASSSpaceScenery::BuildCell(const FIntVector &Id, int32 ClutterPerCell, int3
             Register(Batch);
         }
         const double Scale = Radius / FMath::Max(1.0, double(Mesh->GetBounds().SphereRadius));
-        const FQuat Rotation = Random.VRand().ToOrientationQuat();
         const FVector Location =
             Center + GroupRotation.RotateVector(Offset) - Rotation.RotateVector(Mesh->GetBounds().Origin * Scale);
-        Batch->AddInstance(FTransform(Rotation, Location, FVector(Scale)));
+        const FPrimitiveInstanceId InstanceId = Batch->AddInstanceById(FTransform(Rotation, Location, FVector(Scale)));
+        if (bAsteroid)
+            Cell.Rocks.Add({Batch, InstanceId, Index + 64, Health, float(Radius), true});
         ++Cell.Clutter;
     }
     ResidentClutter += Cell.Clutter;
     ResidentLandmarks += Cell.Landmarks;
+}
+
+bool ASSSpaceScenery::ApplyWeaponHit(const FHitResult &Hit, float Damage, bool &bDestroyed)
+{
+    bDestroyed = false;
+    if (!Hit.GetComponent() || Hit.GetComponent()->GetOwner() != this || !FMath::IsFinite(Damage) || Damage <= 0.f)
+        return false;
+    for (auto &Cell : Cells)
+        for (int32 Index = 0; Index < Cell.Value.Rocks.Num(); ++Index)
+        {
+            auto &Rock = Cell.Value.Rocks[Index];
+            if (Rock.Part != Hit.GetComponent())
+                continue;
+            auto *Batch = Cast<UInstancedStaticMeshComponent>(Rock.Part);
+            FTransform Pose = Rock.Part->GetComponentTransform();
+            if (Rock.bInstanced)
+            {
+                if (!Batch || !Batch->IsValidId(Rock.Id) || Batch->GetInstanceIndexForId(Rock.Id) != Hit.Item ||
+                    !Batch->GetInstanceTransform(Hit.Item, Pose, true))
+                    continue;
+            }
+            const FVector Center = Pose.TransformPosition(Rock.Part->GetStaticMesh()->GetBounds().Origin);
+            if (Hit.ImpactPoint.ContainsNaN() ||
+                FVector::DistSquared(Hit.ImpactPoint, Center) > FMath::Square(Rock.Radius + 100.f))
+                return false;
+            Rock.Health -= Damage;
+            DamageByCell.FindOrAdd(Cell.Key).FindOrAdd(Rock.Ordinal) += Damage;
+            if (Rock.Health <= 0.f)
+            {
+                ASSAsteroidBurst::SpawnBurst(GetWorld(), Center, FVector::ZeroVector, Rock.Radius, Hit.ImpactPoint);
+                if (auto *Audio = GetWorld()->GetSubsystem<USSWorldAudioSubsystem>())
+                {
+                    FSSAudioCueDefinition Cue;
+                    Cue.Gain = .7f;
+                    Audio->PlayOneShot(Cue, TEXT("DebrisBreak"), Hit.ImpactPoint);
+                }
+                if (Rock.bInstanced)
+                {
+                    Batch->RemoveInstanceById(Rock.Id);
+                    --Cell.Value.Clutter;
+                    --ResidentClutter;
+                }
+                else
+                {
+                    Cell.Value.Parts.Remove(Rock.Part);
+                    Structures.Remove(Rock.Part);
+                    Rock.Part->DestroyComponent();
+                    --Cell.Value.Landmarks;
+                    --ResidentLandmarks;
+                }
+                Cell.Value.Rocks.RemoveAtSwap(Index);
+                bDestroyed = true;
+            }
+            return true;
+        }
+    return false;
 }

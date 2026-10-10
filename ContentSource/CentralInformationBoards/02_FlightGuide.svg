@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1960" height="1000" viewBox="0 0 1960 1000" role="img" aria-label="YOUR NEXT FLIGHT">
+<rect width="1960" height="1000" fill="#08131f"/>
+<rect x="80" y="64" width="32" height="8" rx="0" fill="#70dae8" stroke="none" stroke-width="2"/>
+<text x="80" y="97" font-family="Segoe UI" font-size="27" font-weight="700" fill="#70dae8">WAYFARER / VISITOR GUIDE</text>
+<text x="80" y="175" font-family="Segoe UI" font-size="66" font-weight="700" fill="#f2f7fc">YOUR NEXT FLIGHT</text>
+<text x="80" y="227" font-family="Segoe UI" font-size="31" font-weight="400" fill="#d8e5f0">The cockpit chair is your departure point.</text>
+<text x="1765" y="97" font-family="Segoe UI" font-size="27" font-weight="700" fill="#70dae8">02 / 02</text>
+<rect x="80" y="290" width="870" height="268" rx="18" fill="#132435" stroke="#344b60" stroke-width="2"/>
+<rect x="106" y="317" width="78" height="78" rx="14" fill="#08131f" stroke="none" stroke-width="2"/>
+<text x="127" y="373" font-family="Segoe UI" font-size="43" font-weight="700" fill="#70dae8">1</text>
+<text x="207" y="376" font-family="Segoe UI" font-size="44" font-weight="700" fill="#f2f7fc">AT HOME</text>
+<text x="112" y="441" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Choose Waves or Free Flight</text>
+<text x="112" y="483" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">at the Phoenix cockpit chair.</text>
+<text x="112" y="525" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Sit to depart.</text>
+<rect x="1010" y="290" width="870" height="268" rx="18" fill="#132435" stroke="#344b60" stroke-width="2"/>
+<rect x="1036" y="317" width="78" height="78" rx="14" fill="#08131f" stroke="none" stroke-width="2"/>
+<text x="1057" y="373" font-family="Segoe UI" font-size="43" font-weight="700" fill="#70dae8">2</text>
+<text x="1137" y="376" font-family="Segoe UI" font-size="44" font-weight="700" fill="#f2f7fc">AT A SURVIVAL STOP</text>
+<text x="1042" y="441" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Sit in the cockpit chair</text>
+<text x="1042" y="483" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">to continue your current run.</text>
+<rect x="80" y="580" width="870" height="268" rx="18" fill="#132435" stroke="#344b60" stroke-width="2"/>
+<rect x="106" y="607" width="78" height="78" rx="14" fill="#08131f" stroke="none" stroke-width="2"/>
+<text x="127" y="663" font-family="Segoe UI" font-size="43" font-weight="700" fill="#70dae8">3</text>
+<text x="207" y="666" font-family="Segoe UI" font-size="44" font-weight="700" fill="#f2f7fc">RETURNING</text>
+<text x="112" y="731" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Follow LANDING PAD. Brake.</text>
+<text x="112" y="773" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Interact when docking is ready.</text>
+<rect x="1010" y="580" width="870" height="268" rx="18" fill="#132435" stroke="#344b60" stroke-width="2"/>
+<rect x="1036" y="607" width="78" height="78" rx="14" fill="#08131f" stroke="none" stroke-width="2"/>
+<text x="1057" y="663" font-family="Segoe UI" font-size="43" font-weight="700" fill="#70dae8">4</text>
+<text x="1137" y="666" font-family="Segoe UI" font-size="44" font-weight="700" fill="#f2f7fc">SAVED RUN</text>
+<text x="1042" y="731" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">Choose Continue saved Survival</text>
+<text x="1042" y="773" font-family="Segoe UI" font-size="32" font-weight="400" fill="#d8e5f0">in Flight Briefing.</text>
+<rect x="80" y="883" width="1800" height="42" rx="0" fill="#08131f" stroke="none" stroke-width="2"/>
+<polyline points="80,876 1880,876" fill="none" stroke="#344b60" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="80" y="930" font-family="Segoe UI" font-size="30" font-weight="400" fill="#f2c884">FREE FLIGHT / AVAILABLE AT HOME / SURVIVAL PROGRESS PROTECTED</text>
+</svg>

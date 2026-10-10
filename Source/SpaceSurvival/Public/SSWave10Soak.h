@@ -8,8 +8,14 @@ class ACameraActor;
 class ASSEnemy;
 class UNiagaraComponent;
 class FJsonValue;
+class FJsonObject;
+class UPrimitiveComponent;
 class UMaterialInterface;
 class UStaticMesh;
+class ASSOutpostDoor;
+class ASSWalker;
+class USSGameInstance;
+class APlayerController;
 
 /** Explicit isolated Development capture. Never used by ordinary gameplay. */
 UCLASS(NotBlueprintable, Transient)
@@ -21,6 +27,7 @@ public:
     static void TryStart(ASSGameMode *Mode);
     static void NotifyEnemyDefeated(ASSEnemy *Enemy);
     virtual void Tick(float DeltaSeconds) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
     TWeakObjectPtr<ASSGameMode> Mode;
@@ -34,9 +41,32 @@ private:
     bool CaptureVisuals = false;
     bool CaptureStationExterior = false;
     bool CaptureSequence = false;
+    bool OfflineSequence = false;
     bool DirectorReview = false;
     bool WormholeReview = false, WormholeReviewSeeded = false;
     bool OutpostReview = false, OutpostReviewComplete = false;
+    bool QualityBenchmark = false;
+    double BenchmarkWarmupSeconds = 0, BenchmarkMeasuredSeconds = 0, BenchmarkQuietSeconds = 0;
+    double BenchmarkNextProbeAt = 0;
+    int32 BenchmarkContactCount = 0, BenchmarkClearanceProbes = 0, BenchmarkRequestedCount = 0;
+    uint32 BenchmarkRunSeed = 0;
+    FVector BenchmarkStartWorld = FVector::ZeroVector, BenchmarkFieldOrigin = FVector::ZeroVector;
+    float BenchmarkInitialHull = 0, BenchmarkInitialShield = 0;
+    FRotator BenchmarkLastRotation = FRotator::ZeroRotator;
+    void TickQualityBenchmark(float DeltaSeconds);
+    void AddQualityBenchmarkResult(const TSharedRef<FJsonObject> &Result) const;
+    UFUNCTION()
+    void BenchmarkContact(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComponent,
+                          FVector NormalImpulse, const FHitResult &Hit);
+    bool TailReview = false, TailReviewComplete = false, TailReviewSawAir = false;
+    int32 TailReviewStage = 0, TailReviewFrames = 0, TailReviewJumps = 0;
+    double TailStageSeconds = 0, TailNextFrameAt = 0;
+    double TailMinimumSurfaceCm = MAX_dbl, TailMaximumTravelCm = 0;
+    FVector TailReviewStart = FVector::ZeroVector, TailReviewDirection = FVector::ZeroVector;
+    FString TailReviewRunBefore, TailReviewAccountBefore;
+    TArray<TSharedPtr<FJsonValue>> TailReviewSamples;
+    void TickTailReview(float DeltaSeconds);
+    void AddTailReviewResult(const TSharedRef<FJsonObject> &Result) const;
     bool OutpostDepartureVerified = false, OutpostReturnVerified = false;
     bool OutpostPitStopSupported = false;
     int32 OutpostReviewStage = 0, OutpostServicesChecked = 0, OutpostFloorChecks = 0, OutpostPitStopServicesChecked = 0;
@@ -44,6 +74,38 @@ private:
     FVector OutpostFlightStart = FVector::ZeroVector;
     FString OutpostRunBefore, OutpostAccountBefore;
     void TickOutpostReview(float DeltaSeconds);
+    bool ApartmentWalk = false;
+    int32 ApartmentWaypoint = 0, ApartmentWalkPasses = 0, ApartmentDoorClosures = 0;
+    bool ApartmentWalkStarted = false, ApartmentWalkingBack = false;
+    FVector ApartmentLastPosition = FVector::ZeroVector;
+    float ApartmentDoorMaximumOpen = 0.f;
+    bool ApartmentControllerTickWasEnabled = true;
+    double ApartmentWalkSeconds = 0, ApartmentWaypointSeconds = 0, ApartmentCloseSeconds = 0, ApartmentMaxStepCm = 0;
+    TArray<FVector> ApartmentRoute;
+    TArray<TSharedPtr<FJsonValue>> ApartmentWalkSamples;
+    TWeakObjectPtr<ASSOutpostDoor> ApartmentDoor;
+    bool TickApartmentWalk(float DeltaSeconds, const TArray<FVector> &Feet);
+    void AddApartmentWalkResult(const TSharedRef<FJsonObject> &Result) const;
+    // Opt-in runtime boarding review; rendered evidence uses the existing isolated OutpostReview process.
+    bool BoardingReviewStarted = false, BoardingReviewComplete = false, BoardingReviewAwaitingDeparture = false;
+    bool BoardingReviewControllerTick = true, BoardingReviewModeTick = true, BoardingReviewWalkerTick = true;
+    bool BoardingReviewStorageBlocked = true, BoardingReviewGuardsRestored = false;
+    bool BoardingReviewToe = false, BoardingReviewRamp = false, BoardingReviewHandoff = false;
+    int32 BoardingReviewStage = 0, BoardingReviewRouteShot = 0, BoardingReviewRescues = 0;
+    double BoardingReviewSeconds = 0, BoardingReviewSitSeconds = 0, BoardingReviewShotAt = 0;
+    double BoardingReviewTravelCm = 0, BoardingReviewMaxStepCm = 0, BoardingReviewPoseErrorCm = 0;
+    FVector BoardingReviewLast = FVector::ZeroVector;
+    FTransform BoardingReviewDock, BoardingReviewSeatedRelative;
+    FString BoardingReviewHeroMesh, BoardingReviewPilotClip, BoardingReviewPendingShot;
+    bool BoardingReviewShotRequested = false;
+    TWeakObjectPtr<ASSWalker> BoardingReviewWalker;
+    TWeakObjectPtr<APlayerController> BoardingReviewController;
+    TWeakObjectPtr<USSGameInstance> BoardingReviewInstance;
+    TArray<FTransform> BoardingReviewSeatedBones;
+    TArray<TSharedPtr<FJsonValue>> BoardingReviewFrames, BoardingReviewSamples;
+    bool TickBoardingReview(float DeltaSeconds);
+    void RestoreBoardingReviewGuards();
+    void WriteBoardingReviewResult(const FString &Error);
 
     double WormholeWarmQuietSeconds = 0, WormholeRenderingReadyAt = -1, WormholeReviewSeconds = 0;
     int32 WormholeWarmupPeakAssets = 0, WormholeWarmupPeakShaders = 0;
@@ -59,6 +121,19 @@ private:
     void CaptureDirectorReview();
     double NextSequenceSeconds = 6; // Let normal rendering/texture streaming settle before repeated readbacks.
     int32 SequenceIndex = 0;
+    bool SequenceRouteInitialized = false, SequenceInitialHullClearance = false;
+    int32 SequenceSetupPlacements = 0;
+    FVector SequenceStartAbsolute = FVector::ZeroVector, SequenceLastAbsolute = FVector::ZeroVector;
+    FVector SequenceInitialFieldOriginAbsolute = FVector::ZeroVector;
+    FRotator SequenceLastRotation = FRotator::ZeroRotator;
+    double SequenceTravelCm = 0, SequenceNetTravelCm = 0, SequenceForwardProgressCm = 0;
+    double SequenceFastSeconds = 0, SequenceStallSeconds = 0, SequenceMaximumStallSeconds = 0;
+    double SequenceLaneErrorCm = 0;
+    bool BeginSequenceRoute();
+    bool TickSequenceRoute(float DeltaSeconds);
+    void AddSequenceRouteResult(const TSharedRef<FJsonObject> &Result) const;
+    uint64 LastWave1ScreenshotFrame = 0;
+    int32 MinimumWave1ScreenshotSpacing = MAX_int32;
     bool OffscreenVisuals = false;
     TArray<TSharedPtr<FJsonValue>> VisualRecords;
     TSet<FString> VisualNames;
@@ -79,14 +154,22 @@ private:
     bool WeaponReadability = false;
     int32 WeaponReviewStage = -4;
     double WeaponStageAt = 0;
+    bool WeaponStartupFramesReady = false;
+    double WeaponTargetSearchAt = -1, WeaponTargetPlacementWait = 0;
+    float WeaponTargetCameraDepth = 0;
     double WeaponRenderingReadyAt = -1;
     int32 WeaponWarmupShots = 0, WeaponWarmupPeakAssets = 0, WeaponWarmupPeakShaders = 0;
-    TWeakObjectPtr<ASSEnemy> WeaponReviewTarget;
+    UPROPERTY(Transient)
+    TObjectPtr<ASSEnemy> WeaponReviewTarget;
+    float WeaponTargetHealthBefore = 0.f, WeaponTargetHealthAfter = 0.f;
+    bool WeaponTargetDamaged = false, WeaponTargetDestroyed = false, WeaponTargetShotAttempted = false;
+    FString WeaponLastShotDiagnostic;
+    TArray<TSharedPtr<FJsonValue>> WeaponShotRecords;
     void TickWeaponReadability();
     bool MainMenu = false, MainMenuStatePreserved = false;
     int32 MainMenuStage = 0;
     double MainMenuStageAt = 0;
-    FString MainMenuRunBefore, MainMenuAccountBefore;
+    FString MainMenuRunBefore, MainMenuAccountBefore, MainMenuSettingsBefore;
     void TickMainMenu(float DeltaSeconds);
     void TickUIRefresh(float DeltaSeconds);
     bool Gallery = false, GalleryRunPreserved = false, GalleryReturned = false;

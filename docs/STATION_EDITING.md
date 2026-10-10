@@ -1,10 +1,270 @@
 # Station editing and preserved Workshop
 
-**Current Wayfarer layout work:** open `M:/SpaceSurvival/Artifacts/Worktrees/asteroid-outpost/Edit Outpost Sandbox.cmd`, then edit `/Game/OutpostSandbox/L_AsteroidOutpost` with Play stopped. This authoring checkout retains ULAT, categorized parts, 43 assembled assets and the furnished apartment. See [Outpost guide](OUTPOST_SANDBOX.md) and [Building library](BUILDING_LIBRARY.md).
+**October 10 T-room layout preview:** The existing Phoenix setup now fills two rows of three, with five identical copies and six independent rotating displays. Existing desks/fittings/screens move aside; all8,934 other pre-save actor/component fingerprints and shared asset bytes are unchanged. Saved `b6496c2e`/9,407 actors passes six-bay reload and two ordinary Play views with production saves preserved; task editor closed, RT off. [T layout evidence](validation/2026-10-10-t-ship-rows.md) supersedes the current-map count below. Future ship purchases/stats/records and desk redesign remain separate; other room content, NPCs and services retained. Owner live appearance review is next.
 
-The current game integrates a separate `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime` copy. Refreshing that copy and packaging are deliberate follow-up operations; saving the original scene does not update itch. The apartment level `/Game/BuildingLibrary/Home/L_CrewApartment` remains shared by its instances: duplicate both its level and Blueprint before making an independent interior variant. Preserve door attachments and connector alignment. [Project State](PROJECT_STATE.md) records the current build/release identity; publication is pending at this October1 integration checkpoint.
+**October 10 room-purpose amendment (owner plan, paraphrase):** Central holds easy-access core wave purchases/services and repair; R/club holds character swapping and future outfits/optional boosts; T is a six-display ship market (Phoenix stats/flight records plus five future unlock placeholders, permanent ownership on future purchase); L holds social/challenges/leaderboards/minigames; the market is an atmospheric entrance, with quick repair at the dock and in Central. [Authoritative room plan](GAME_SCOPE.md#owner-amendment--october-10-2026-station-room-purposes) supersedes conflicting earlier T/room-role holds below. This records design requirements, not implementation of the future mechanics. Preserve owner edits. The saved R stage is ready for owner live review; no further task editor is launched for this documentation checkpoint.
 
-The purchased-kit studio `/Game/Blender/Sandbox/BuildingSandbox_20260922` remains available for your own building, on the repaired flat platform with a space backdrop. It has not been replaced by the station. Existing edit/play shortcuts and production save profiles are preserved. ULAT is disabled only in the current gameplay checkout because its installed-engine rules prevent compilation; use the original outpost checkout for ULAT placement.
+**October10 R performance checkpoint:** Joy retains her light-blue identity with75% metallic skin; the existing rigged Cyborg now loops its existing pole clip on the owner-created R stage, with fitted mounts and cyan/violet canopy lighting. Crew/Explorer hologram housings match Traders. Saved `20507846`/9,107 actors passes scoped reload and native review; production saves unchanged, task editor closed, RT off. [R stage and native evidence](validation/2026-10-10-r-stage-characters.md) supersedes apartment-only placement and native save-guard pending statements below. First dancer is reviewed; full alternating choreography, Joy hair physics, physical-NPC reactions and station-wide readable-character lighting remain OPEN. No room/concept/FPS/release acceptance.
+
+**October10 live-feedback update:** Room R's authorized finish now includes an integrated wardrobe/wellness setting, cycling holo-ad windows, dressed empty edges and a compact performance nook; no bar games or new wellness transactions. Connecting paths need covered hallways and purposeful destinations. Later owner R placement supersedes apartment-only placement; first Cyborg pole practice is reviewed, while varied turns remain pending; Joy's richer light-blue metallic finish is saved; body-colliding hair simulation remains open. Physical-NPC collision/bump reactions are a new explicit exception to the earlier NPC hold; radar, unrelated seated-pose and cast/height work stay held. [Canonical reports](KNOWN_ISSUES.md#october10-live-observation-reports) own implementation/acceptance. Owner save/exit was verified before209/214. Check fresh owner process/saved state before each later launch, and use fresh isolated saves/native guard. The HUD CPU correction uses the same terminal panel resolver as actual interaction; build/runtime verification pending. Latest native stage/material changes are recorded above; hair physics and owner appearance acceptance remain open.
+
+October10 Central188 adds existing-kit wall/portal framing and changes44 plant transforms, with no new materials. [Saved state, native views and settings-save caveat](validation/2026-10-10-central-detail.md). Do not replay the adopted recipe. The settings change was not intentional; its cause remains unconfirmed. Future lead Play reviews require fresh byte backups and the isolated profile/native path guard described in [review protection](validation/2026-10-10-station-review-protection.md). Native path/save verification now passes209/214/227; no earlier settings restoration is claimed.
+
+October10 scoped addition: Joy and Cyborg now occupy the existing apartment beneath Room R, with a fitted polished pole. [Placement, guarded recipes and verification limits](validation/2026-10-10-apartment-residents.md). Do not replay the adopted recipes; retain private before/after map backups and the original apartment LevelInstance/furniture. No launcher or service behavior changed.
+
+**October10 Central authoring:** candidate107 adopts four new Central recipes
+(`RefineStationCentralArchitecture`, `RefineStationCentralFeatures`,
+`RefineStationCentralCheckIn`, `RefineStationCentralLightGarden`). Do not replay
+their one-shot stages. The bounded three-mesh planter end-cap correction is now
+saved and passes CPU asset reload119/124; do not reapply it or scene actors.
+Limited rendered work is now allowed, with ray tracing OFF. Latest verification
+editors exited cleanly. Joy's hair-only correction passes fresh saved-asset reload;
+[hair and memory evidence](validation/2026-10-10-joy-hair-and-memory.md). The fixed generated target-v2 and native pictures are in
+the [concept receipt](validation/2026-10-10-central-hub-concept.md). Existing owned kiosk, P4/Clinic kits
+and Nanite Plants assets supply the authored scene; no new service mechanic.
+Current owner scope is Central first, R second, plus the explicit Joy color and
+animation-transfer exception. JoyLightBlue117 is a private preview asset with135
+clips/two groom bindings; no permanent actor placement. Rendered motion/contact
+review remains pending. [CPU evidence](validation/2026-10-10-joy-blue-cpu.md).
+Other areas and NPC repairs remain held.
+The October9 pause below is historical.
+
+**October9 handoff:** work paused with central/R unfinished and later priorities
+held. The adopted `Scripts/RefineStationDockAtmosphere.py` is preserved source;
+do not replay its creation/correction stages. Final standing workers replace
+rejected kneeling poses; original source assets remain intact. Joy's private
+reference-pose review asset has corrected hair alignment and translucency;
+animation/groom binding/behaviors are unverified. Import helpers, backups and
+diagnostics remain local. No permanent diagnostic actors were saved in the map.
+[Handoff and scope](validation/2026-10-09-station-handoff.md).
+
+**Current Wayfarer layout work:** open `C:/Users/j6sis/SpaceSurvival/Edit Current Station.cmd`. It opens `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, the station used by the current game, in the canonical project's normal Unreal editor. This is also the editor startup map. Stop Play before editing, save the map, then press Play to review through the normal Survival game. [Building library](BUILDING_LIBRARY.md) covers ULAT, native collections and complete assemblies in this project.
+
+The current station was derived from the original outpost, but routine current-station edits now go directly into this Wayfarer map. Play redirects to `/Game/SpaceSurvival/Maps/Survival` so the game creates its player and streams the station once. Preserve service actors, doors, connectors and the player berth when dressing the scene. The apartment level `/Game/BuildingLibrary/Home/L_CrewApartment` is shared by its instances: duplicate both its level and Blueprint before making an independent interior variant. Saving local changes does not update an existing Windows package or itch. [Project State](PROJECT_STATE.md) owns build/release and verification status.
+
+The original `/Game/OutpostSandbox/L_AsteroidOutpost` remains a separate experiment, opened by `Edit Outpost Sandbox.cmd`. The purchased-kit studio `/Game/Blender/Sandbox/BuildingSandbox_20260922` remains available through `Open Building Sandbox.cmd`, on its flat platform with a space backdrop. Both live in the canonical project alongside the current station. Edits in either sandbox do not automatically replace Wayfarer. The verified native library here covers 16,051 assets and 2,617 ULAT entries; use the native collections for complete assemblies and the 208 meshes skipped by ULAT registration. [Building library](BUILDING_LIBRARY.md) records the complete 2,825-mesh Blender cache and thumbnails.
+
+The native `CurrentStationVerification5` check confirms Play reaches Survival/SSGameMode with one current station and its loaded apartment; all 12 checks pass and four protected map files remain unchanged. It does not establish physical-controller or visual acceptance.
+
+## October9 crew and central/R authoring
+
+NPC job labels are authoring conveniences, not placement restrictions. The owner
+explicitly allows vendor and worker variants to join seated conversations and
+other everyday activity. Give each group a purpose and fit its actual motion to
+the furniture. Visually screen the model before placement: graphic nudity is
+excluded from every common area, and no separate adult area currently exists.
+Dancers remain outside this pass. Retain supplied costume/material identities.
+
+`Scripts/RefineStationMarketAtmosphere.py` is also already adopted in candidate84.
+It moves complete original market assemblies, preserves source assets and uses
+screened covered cast/compatible existing seated clips. Private animated glass
+materials preserve all five campaign images in upright original P4 frames.
+The observed ComponentMask input is `None`; after any partial graph failure,
+inspect before retrying. The `refine` stage records actual sightline/face/light
+repairs. Never replay apply/refine on the current map. See the
+[market receipt](validation/2026-10-09-market-atmosphere.md) for rollback location,
+private packages, failed/corrected walking routes and current image hashes.
+
+The concept-detail stages are `Scripts/RefineStationConcept.py` (central),
+`Scripts/AuthorStationVisitorSeats.py` (four compatible seated derivatives) and
+`Scripts/RefineStationArchiveConcept.py` (R furniture/display composition). They
+have already been adopted: do not replay their creation stages on the live map.
+They require the inspected live state/stopped PIE; initial apply uses an exact
+map hash and clean packages. Later stages are bounded corrections, not a general
+rollback or scene generator. Keep native backups and inspect partial failures.
+The caller saves and reviews; no recipe supplies room acceptance.
+
+Private assets live under `OutpostSandbox/StationRefinement/Concept73`,
+`ArchiveConcept77` and `VisitorSeats20261009`. Native retargeting derives four
+4-second seated clips for Seer, Robe, Glyph and Tendril from the owned Nyxar loop,
+preserving source clips/skeletons. Six R chairs/three tables use two private mesh
+copies with simple BOX collision; original owned meshes lack simple collision
+and remain untouched. Two central readers have hand-attached tablets. Review
+actual seat/sole/hand positions for each new cast; a compatible skeleton alone
+does not establish contact or a usable pose.
+
+Amethyst's common-area visitor actor is hidden/NoCollision and replaced by a
+covered Olive clone. The original assignment recipe below is historical and must
+not unhide it. Elf's exposed-body preview was excluded. Source character assets
+are retained. R's wardrobe use point, source floors, five campaign display and
+T hold remain; its projector adopts the new private blue holo material.
+[Saved candidate, native checks and limits](validation/2026-10-09-central-r-concept-detail.md).
+
+`Scripts/RefineStationWholeRooms.py` is the earlier central/R-only composition
+recipe. `apply` and `refine_grouping` are separate reviewed stages; both require
+the live map, expected disk hash, stopped PIE and clean packages, return rollback
+state and never save automatically. Do not replay either on the adopted map.
+It reuses complete owned P1/P3 furniture, preserves shared assembly pivots, caps
+thin prop width, and creates16 child instances under
+`/Game/OutpostSandbox/StationRefinement/WholeRooms20261009`. Original material
+parents/maps remain. Save the changed map and those private instances together;
+the script alone does not restore the current scene. Before/after native evidence,
+backups and the remaining visual defects are recorded in the
+[whole-room receipt](validation/2026-10-09-central-r-whole-room-review.md).
+
+The new helpers target the **live Wayfarer map**, require PIE stopped and verify
+the expected saved-map hash before changing placed actors. Back up the exact map
+first. Do not reapply to an already adopted map: use `IntegrateStationCrew.verify`
+and inspect current placements instead. Source meshes, materials and original kits
+are preserved; the caller owns final review and saving.
+
+`Scripts/IntegrateStationCrew.py` contains ten stable-label assignments: Dread as
+bartender; Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
+security; Crest courier; Warden maintenance; the historical Amethyst wardrobe
+visitor, now hidden/replaced as described above. It checks
+178cm mesh height, floor-level source soles, exact Skeleton identity for every role
+clip and material slots. It clears old per-instance material overrides, uses unit
+scale/mesh yaw−90/offsetZ−85 for these normalized deliveries and reuses the shared
+head fill. Existing routes and actor identity remain intact. The produce seller
+also moves behind the south stall. New models need an assignment and compatible
+clips, followed by actual animated contact and lighting review; normalization is
+not proof that every pose fits.
+
+`Scripts/RefineStationCentralR.py` changes only bounded furniture, guides, lights
+and props, with rollback snapshots. The complete owned Fab Sci-fi Console Game
+faces the wardrobe approach; the existing service/use point remains. Eight
+placed props use persistent NoCollision profiles. The pen is capped at14cm height
+instead of scaling a thin mesh solely by width. Its four mechanical waiting
+chairs are now hidden in favor of the concept-detail furniture above. Keep the
+guide/use-point relation, two central information boards and T hold.
+The terminal's monitor slot uses two private `WardrobeGuide20261009` assets, made
+by `stage_wardrobe_guide` from the original SVG/PNG in
+`ContentSource/WardrobeConsole`. It says "Choose your character / Interact to open";
+the real service still opens the existing wardrobe UI. Stage once, inspect any
+partial result rather than rerunning, and save/review those two assets explicitly.
+The console monitor UVs require V flipped (`UV * (1,-1) + (0,1)`); the private
+material uses gain8 and the actual saved Play view confirms upright readable copy.
+Native terminal Use opens Crew Wardrobe without changing the selected character.
+
+`Scripts/IntegrateHero178.py` adopts the separate owner's delivery without
+reimporting art. It verifies the 17-package hash manifest, mesh/skeleton/materials,
+eight clips and seven tail envelopes before editing only the existing Squirrel
+row. The private manifest/derivation inputs are required; see
+[content provenance](CONTENT_PIPELINE.md#october9-normalized-crew-and-replacement-hero).
+The saved wardrobe choice is independent: an account wearing Nyxar stays Nyxar.
+The replacement is available through Crew Wardrobe and is the default Squirrel
+presentation, including the pilot. No fresh cockpit-contact approval is implied.
+
+## Reusing the NPC lighting preset
+
+October8: the refined preview checkpoint is also saved/reloaded in the live
+Wayfarer map76e3c8c2. Sourcepreviewe795 stays unchanged. Use the current-station
+entry above for live edits. Old preview recipes require new baselines/guard review
+before reuse there. `Scripts/PromoteStationPreview.py` is the explicit promotion
+adapter; the older `PrepareWayfarerRuntime.py` starts from the original outpost.
+[Promotion/rollback receipt](validation/2026-10-08-live-station-closeout.md).
+
+The shared `USSNPCHeadFillComponent` enrollment API is linked and loaded in Build49;
+its focused native lifecycle case passes. Seven existing plain NPC enrollments are
+saved and pass native reload. A matched Trooper/alien comparison supports keeping
+the shared preset; full variant appearance and performance remain unverified. See the
+[component receipt](validation/2026-10-08-npc-headfill-component.md) and
+[Project State](PROJECT_STATE.md) before using it in the editor. The October7
+owner-preview source is preserved; its October8 checkpoint is now also adopted
+into the normal Wayfarer map.
+
+1. Create a Blueprint child of **SSOutpostAmbientActor** for the model. Select its
+   **CharacterMesh** component and assign the **Skeletal Mesh**, then choose a
+   skeleton-compatible **Idle Animation**. Place the bottom of **Body** on the
+   floor; its origin is the capsule center (default half-height85cm). Adjust the
+   mesh's relative position/scale until its animated soles meet the floor.
+   Reuse this child wherever that variant is needed.
+2. Keep **Ambient > Readability** defaults. Change **Head Fill Socket** only if the
+   model uses a different head bone/socket; adjust **Head Fill Offset** only if
+   the face needs it. The shared lamp and lighting channel are configured for you.
+3. Check the moving face from the actual player camera. Construction and BeginPlay
+   refresh the lamp automatically; after runtime mesh, material, socket or preset changes, call
+   **Refresh Readability Lighting**. Keep channel2 off room geometry.
+
+The shared defaults are40lumens,100cm reach,12cm source radius and an actor-frame
+offset of(45,0,15)cm from the head. Ambient actors retain their original
+`NPCHeadFill` point-light subobject, settings and **Refresh Readability Lighting** API.
+
+For an existing plain **SkeletalMeshActor** NPC, call the Blueprint-callable
+`USSNPCHeadFillComponent::EnrollNPCMesh`
+with that actor's skeletal mesh component. It returns the reusable configuration;
+set **Head Fill Socket** or **Head Fill Offset** only when the model needs it, then
+call its **Refresh Readability Lighting**. Repeated enrollment reuses the same
+configuration. The caller owns saving; enrollment does not replace the actor,
+sequence, mesh or animation. Known runtime staff builders enroll their explicitly
+selected staff components automatically; there is no world-wide skeletal scan.
+The seven current plain actors use their mesh as **Offset Frame** and(0,45,15)cm
+**Head Fill Offset** for their mesh-forward orientation; this preserves the common
+40lm profile. Do not copy that orientation override to an unreviewed model.
+
+To undo a plain actor's enrollment, call **Disable And Restore Receiver**, then
+destroy its configuration component. Disable restores the receiver's prior
+channel2 and hides the light; destruction removes only a light created by that
+configuration. An Ambient actor's borrowed original light is retained. Channels0/1
+remain unchanged; player lighting keeps channel1. The head attachment needs no
+additional Tick.
+
+All `APawn` owners, including the player and ship, are excluded. Receivers named or
+tagged `StationCompanionDrone`, `OutpostRole:Hologram` actors/receivers, missing head
+anchors and meshes without opaque/masked materials also skip the fill. Ambient
+actors retain their **Drone** and **Animation Managed Externally** exclusions;
+other drone/projection models require those explicit tags. Reload readback finds
+one configuration on each of34 existing Ambient actors:25 lights visible and9
+excluded. The seven new plain-actor enrollments preserve pose, animation and bounds
+and pass idempotence. Saved reload verifies one configuration/visible head-attached
+light per actor, the same profile/frame/offset and unchanged pose/animation/bounds.
+Fresh saved-scene Play appearance and full variant coverage remain unverified.
+Check each new variant's moving face, room spill and performance. Preserve the
+bartender's existing model/clip/grounding and measured bounds-scale4 workaround;
+do not copy that workaround to every NPC.
+
+## Preparing a room's five ad sources
+
+`Scripts/StationAdCampaignSet.py` checks a manually reviewed five-campaign manifest
+without importing Unreal or changing files. With the existing Python runtime, run:
+
+```powershell
+python -B Scripts/StationAdCampaignSet.py <manifest5.json> <reviewed-SHA256> --room R
+```
+
+Use `--room Market` or `--room L` for those rooms. The prepared private folders are
+`.agent/local/StationRefinement/CustomizationCampaigns20261007`,
+`MarketCampaigns20261007` and `LoungeCampaigns20261007`; their exact reviewed hashes
+are in the [source-set receipt](validation/2026-10-07-room-ad-source-sets.md).
+The checker verifies the selected files and declared campaign identities. Different
+hashes or IDs do not prove different campaigns; that still requires artwork review.
+Aspect variants count once. Changing the selected variant requires a new manifest
+review and hash. The current lounge selection is portrait; its landscape alternatives
+are preserved separately, and neither selection establishes physical screen fit.
+
+When native work is authorized, the lead may explicitly call
+`stage_textures(unreal, manifest_path, reviewed_sha256, room_id, stage_id)`.
+It creates five **unsaved** textures in a fresh room-specific folder beneath
+`/Game/OutpostSandbox/StationRefinement/`, using sRGB/BC7 and clamped texture edges.
+All destinations must be absent before the first import. It excludes T and central,
+never overwrites, assigns a screen, changes an actor or saves a package. On failure,
+preserve `StageError.report` and inspect partial imports before choosing the next
+action; do not retry under a new name to hide them. Texture compilation, native
+dimensions, screen ratio/readability, all five cycle transitions and explicit saving
+are separate subsequent checks. On October8, all three five-texture sets passed
+native source/dimension/settings readback and were saved in private folders with
+suffix `20261008A`. No screen assignments or cycling checks followed from those
+imports. Do not rerun the helper against those occupied destinations. See the
+[native checkpoint](validation/2026-10-08-editor-recovery.md).
+
+R's later upright P4 frame/pane and two campaign materials are now saved in the
+separate owner-preview map. The corrected eleven-shot capture passes preservation,
+and root/independent peer identify all five upright, contained campaigns. Build49
+reload exposed a restored BlockAll profile on the two added actors; only their
+profiles were repaired to persistent **NoCollision**, saved and reloaded with
+read-only adoption PASS. R adoption also passes after the later seven-NPC map save.
+Post-reload playback, continuous crossfade review and owner
+approval are still pending. See the
+[display receipt](validation/2026-10-08-customization-display.md).
+`Scripts/RefineStationCustomizationDisplays.py::check_adoption` checks the existing
+saved pair with the reviewed **current** map hash and its loaded `MI_R_WestBay`.
+It does not assign, save or prove playback. Do not call `apply` over those existing
+roles or reuse old trial globals after reopening. Market/L texture imports do not
+imply corresponding display assignments, and T's hardware choice remains held.
+
+## Current station in Blender
+
+Use **SS Prefabs > Export Current Station to Blender**, then **SS Link > Scenes > Open Current Wayfarer** in Blender. The loaded snapshot has 12,315 mesh placements: 7,172 editable direct placements and 5,143 locked references, including 924 apartment placements, from 423 unique assets. Move direct placements with **Push Selected**; edit the functional Blueprint assemblies, doors, lighting and animation in Unreal. See [Prefab live link](PREFAB_LIVE_LINK.md#current-station-workflow-ss-link-050) for the preservation checks. The full station is open in Blender and saved as `Artifacts/WayfarerBlender/Wayfarer-Working-20261006.blend`; the previous Blender scene remains in that file.
 
 ## Legacy Station Workshop
 
@@ -18,7 +278,9 @@ This is an editor authoring tool. It uses the normal Unreal viewport for selecti
 
 The panel can be undocked by dragging its tab beside the viewport, or resized to show more thumbnails. Search narrows the imported asset catalog; preset materials remain a separate ten-choice list.
 
-## First edit
+<a id="first-edit"></a>
+
+## First legacy Workshop edit
 
 1. In the workshop panel, search for a mesh and drag it into the viewport, or double-click its thumbnail to place it in front of the camera. Existing furnishings are individually selectable too. Press **F** to focus the selected object.
 2. Use **W** to move, **E** to rotate and **R** to scale. Every supported mesh can be scaled on individual axes. Use the Details panel for exact numbers, **Alt+drag** to duplicate, **Delete** to remove and **Ctrl+Z** to undo. Grid/rotation/scale snapping is in the viewport toolbar.

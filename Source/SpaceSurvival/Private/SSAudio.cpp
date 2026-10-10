@@ -55,6 +55,15 @@ float MusicGain(const UObject *Context, float Gain)
 }
 USoundBase *PresentationSound(const TCHAR *Name)
 {
+    if (FCString::Strcmp(Name, TEXT("Laser")) == 0 || FCString::Strcmp(Name, TEXT("Cannon")) == 0 ||
+        FCString::Strcmp(Name, TEXT("Impact")) == 0 || FCString::Strcmp(Name, TEXT("DebrisBreak")) == 0)
+    {
+        const FString Combat =
+            FString::Printf(TEXT("/Game/SpaceSurvival/Licensed/Audio/CombatPolish1/%s.%s"), Name, Name);
+        if (FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(Combat)))
+            if (auto *Sound = LoadObject<USoundBase>(nullptr, *Combat))
+                return Sound;
+    }
     const FString Licensed = FString::Printf(TEXT("/Game/SpaceSurvival/Licensed/Audio/%s.%s"), Name, Name);
     if (FPackageName::DoesPackageExist(FPackageName::ObjectPathToPackageName(Licensed)))
         if (auto *Sound = LoadObject<USoundBase>(nullptr, *Licensed))
@@ -76,6 +85,9 @@ void USSWorldAudioSubsystem::Initialize(FSubsystemCollectionBase &Collection)
     Attenuation->Attenuation.bSpatialize = true;
     Attenuation->Attenuation.AttenuationShapeExtents = FVector(650.f, 0.f, 0.f);
     Attenuation->Attenuation.FalloffDistance = 7500.f;
+    RockBreakAttenuation = NewObject<USoundAttenuation>(this);
+    RockBreakAttenuation->Attenuation = Attenuation->Attenuation;
+    RockBreakAttenuation->Attenuation.FalloffDistance = 59350.f;
     ShotConcurrency = NewObject<USoundConcurrency>(this);
     ShotConcurrency->Concurrency.MaxCount = 12;
     ShotConcurrency->Concurrency.bLimitToOwner = false;
@@ -115,6 +127,10 @@ void USSWorldAudioSubsystem::PreloadContent(const USSPhase1Data *Content)
 {
     if (!Content)
         return;
+    // Keep player cues resident before first fire/contact, along with the existing world cues.
+    for (const TCHAR *Name : {TEXT("Laser"), TEXT("Cannon"), TEXT("Impact"), TEXT("DebrisBreak")})
+        if (auto *Sound = SSAudio::PresentationSound(Name))
+            WarmSounds.AddUnique(Sound);
     for (const auto &Hazard : Content->Hazards)
     {
         if (Hazard.Kind == ESSWorldKind::ElectricalStorm)
@@ -146,10 +162,11 @@ UAudioComponent *USSWorldAudioSubsystem::CreateVoice(AActor *Owner, const FSSAud
     USoundBase *Sound = ResolveCue(Cue, DefaultName);
     if (!Sound || Sound->IsLooping() != Loop)
         return nullptr; // A one-shot override must not become indefinite field ambience.
+    const bool RockBreak = !Loop && FCString::Strcmp(DefaultName, TEXT("DebrisBreak")) == 0;
     if (!Loop)
     {
         if (const auto *Pawn = UGameplayStatics::GetPlayerPawn(this, 0))
-            if (FVector::DistSquared(Pawn->GetActorLocation(), Position) > FMath::Square(8150.f))
+            if (FVector::DistSquared(Pawn->GetActorLocation(), Position) > FMath::Square(RockBreak ? 60000.f : 8150.f))
                 return nullptr;
         // Bound component allocation as well as the audio renderer's shared voice count.
         int32 Shots = 0, Oldest = INDEX_NONE;
@@ -180,7 +197,7 @@ UAudioComponent *USSWorldAudioSubsystem::CreateVoice(AActor *Owner, const FSSAud
     Component->bStopWhenOwnerDestroyed = Loop;
     Component->bIsUISound = false;
     Component->bAllowSpatialization = true;
-    Component->AttenuationSettings = Attenuation;
+    Component->AttenuationSettings = RockBreak ? RockBreakAttenuation : Attenuation;
     Component->ConcurrencySet.Add(Loop ? FieldConcurrency : ShotConcurrency);
     Component->SetSound(Sound);
     Component->SetVolumeMultiplier(SSAudio::EffectsGain(this, Gain * Envelope));

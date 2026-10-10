@@ -12,3 +12,11 @@ Set process environment `SS_HERO_SOURCE` to the private ReplacementHero director
 `Compose.py` samples all body tracks at 30 fps and replaces only the seven tail tracks. Idle has two body cycles per 12.267s tail cycle. Pilot keeps its rest tail to avoid broad cockpit swaying. The eight final clips share one 69-bone skeleton. `MeasureFit.py` records approximate planted-toe gait speeds and preserves the original seated pelvis anchor; those measurements do not substitute for visual contact/seat review.
 
 This recipe does not package, publish, replace source art, remove other imported assets, or edit the sandbox. The first import is intentionally non-destructive; delete/re-author only explicitly owned candidate packages when revising inputs.
+
+## Jump tail floor clearance
+
+`MeasureTailFloor.py` measures all skin-weighted tail surface vertices from the existing private mesh and produces seven bone-local bounds. Its default invocation is read-only. After reviewing `.agent/local/SurvivalQuality/TailFloor/dry-run.json`, repeat the invocation with `-ApplyTailFloor` to back up `DA_Phase1` and write only the Squirrel row's optional `tail_floor_envelopes`. The apply step refuses changed mesh/tuning inputs. No animation, mesh or map package is changed.
+
+The runtime pose proxy applies the measured bounds after body and landing-tail blending. If the tail approaches a real walkable floor, it makes the smallest upward rotation about the attached tail root needed to clear the bounds. The other tail joints keep their authored bend and recoil; the body remains unchanged. When the floor is clear below the airborne tail, the original pose is unchanged. Other heroes have no envelopes and retain their existing behavior.
+
+After the Editor build, run `SpaceSurvival.Integration.SquirrelTailFloor` for actual deformed-surface coverage of the three jump clips and landing follow-through over walk/run. It samples at 60 Hz and checks body/attachment preservation and unchanged airborne poses. Then capture ordinary takeoff, descent and landing, including movement immediately after landing; the conservative bounds and rendered fur still need visual acceptance. `SpaceSurvival.Integration.WalkerSupportRecovery` separately covers walking support/recovery at threshold edges and furniture.

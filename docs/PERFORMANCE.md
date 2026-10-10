@@ -1,6 +1,158 @@
 # Performance findings
 
-Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The current gameplay follow-up has passed package audit and packaged capture validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
+**October10 current direction:** ray tracing stays OFF. Future budget:4K60 or
+1440p90+ at maximum ray tracing without frame generation; quality/design first.
+No quality reduction or optimization has been applied. Read-only editor baseline:
+149 skeletal components/36 unique meshes, all one LOD;0 placed grooms;374 active
+lights,25 shadowed. System VRAM2313MiB before launch and11099–11146MiB warm; separate
+tracked RHI resources7210.35MB. These are editor-wide observations, not pure NPC
+cost or FPS. Limited GPU use is now allowed; verification editors exited cleanly.
+[Measurements, caveats and next profiling step](validation/2026-10-10-joy-hair-and-memory.md).
+
+**October10 Central checkpoint:** candidate107 adds401 actors, including local
+lights, modular architecture and installed Nanite foliage. Most added area
+lights have no shadow; four planting washes use local shadows. The native
+walk and screenshots establish no FPS/VRAM target. Representative performance
+still needs measurement before release. Exposure/scalability stay unchanged.
+The owner reported VRAM overuse and requested the offscreen editor close for one
+hour. It exited cleanly; this is a resource pause, not a measured leak diagnosis
+or performance fix. At the scheduled resume, about14/16GB remained in use; the
+owner extended CPU-only work until GPU use is explicitly released. Joy's135-clip
+transfer/bindings and planter repair use NullRHI; the head preview uses Blender
+Cycles CPU. These checks do not measure rendered character or station cost.
+[Current evidence](validation/2026-10-10-central-hub-concept.md); the earlier closed/paused state is historical.
+
+**October9 closeout:** the offscreen editor is closed and work paused. Added dock
+crew, local lighting and carried props still need representative measurement.
+Joy was temporary diagnostic content, not saved station population. No FPS/VRAM
+or crash-resolution acceptance. Open-editor statements below are historical.
+[Handoff](validation/2026-10-09-station-handoff.md).
+
+## October9 crew and 178cm hero
+
+The17:31 market candidate has8,634 actors,19 more than candidate81. Four new
+ambient characters, two translucent cycling ad panes, a lamp and local light
+need measurement with the already-active cast. The122.53m walk and five-phase
+ad capture establish no FPS or VRAM target. Original exposure/quality settings
+are preserved. [Market evidence](validation/2026-10-09-market-atmosphere.md).
+
+The16:23 concept-detail candidate has8,615 actors:113 more than the preceding
+whole-room checkpoint. New ambient duplicates, three replacement holograms,
+plants, warm fixtures and private material variants need a representative native
+frame-time/VRAM check. Two scripted walking routes and short pose/capture samples
+establish no60FPS claim. Root offscreen editor remains open while authorized
+station work continues. [Current evidence](validation/2026-10-09-central-r-concept-detail.md).
+
+The earlier whole-room candidate adds12 placed detail actors and16 material
+instances while reducing several local floods. Neither the146.61m scripted walk
+nor eight ordinary viewport captures measures a performance improvement. Current
+frame-time/VRAM acceptance remains open; the offscreen test editor was closed
+after verification. [Room evidence](validation/2026-10-09-central-r-whole-room-review.md).
+
+Ten supplied crew now occupy existing actor slots; no new background population
+or extra head-light scheme was added. The streamed BeginPlay repair activates
+their existing tick/animation/routes, so previously frozen scenes are not a valid
+performance baseline. The new squirrel delivery has169,599 triangles/12,102 fur
+cards versus the older76,623-triangle/180-card derivative. Short ordinary Play
+captures and the central→R scripted walk establish rendering and movement only.
+Representative station/cabin/flight frame-time and VRAM checks remain open; do not
+infer60FPS or GPU-crash resolution from them. No global quality, exposure, texture
+pool or owner viewport setting was changed. [Evidence](validation/2026-10-09-station-crew-central-r.md).
+
+## October7 native resolution and station presentation
+
+The unmodified runtime settings probe observes quality2 with resolution scale87,
+texture pool800MB and TSR history100. The new GameInstance setting retains native100
+after applying the selected quality tier. Build34's two focused native tests pass
+cleanly; actual SIE Probe4 observes r.ScreenPercentage100,sg.ResolutionQuality100
+and user scale100 without a console override. Probe4 passes preservation and native
+exit0. Probe3's earlier stale uniform-tier assertion failure remains history;
+the mixed native100/tier2 profile legitimately reports custom−1.
+
+That SIE viewport is1014×344. The later opt-in Build38 renderer diagnostic measures
+an actual612×344 view inside its letterbox, and1600×900 during the high-resolution
+capture. Both measured screen fractions and the secondary fraction are1.0; all65
+rows retain TSR method4, enabled anti-aliasing/temporal flags, nonzero jitter,
+view state and no camera cut. These observations do not prove accumulated TSR
+history quality or the owner's full-resolution texture demand, pool pressure or60FPS.
+No pool, texture bias, shader-cache or global exposure setting was changed. The
+1920×1080 Modes34 images establish appearance/route evidence only. Cabin steps are
+still visually dark. Main white-floor author1 saves53 private materials on1022
+components/native0. Its14 saved-map images preserve panel detail, but retain a
+failed editor-state comparison/native shutdown0xC0000005 and soft/jagged pixels.
+The cause remains unconfirmed. Build38 and the paired renderer diagnostic exit0,
+with two actual images and unchanged saved files, game saves, ships and quality
+settings. Its aggregate result remains PARTIAL because exact editor-state equality
+fails: quaternion representation differences, reflected Color strings containing
+temporary addresses and reconstructed hidden editor billboards remain in the raw
+receipt. No tolerance waiver or clean scene-preservation claim is applied.
+Receipt6cd9b0bd72a0e0c1e8db6cb597d53cd36f4be54bbb09212efe3a24b87c78ac04
+is retained locally with the actual process-exit record. T and resource costs remain
+visually/performance unaccepted. Build39's isolated temporary viewport produces
+one ordinary1600×900 image; all41 recorded rows prove full raw/output rectangles,
+fraction1.0 and active TSR. Capture2 remains PARTIAL/native exit1 on a synchronous
+log-read race and989 exact editor deltas. Native restoration ultimately verifies
+original1014×344/fixed0; files/saves/ships/quality remain unchanged. The lead and
+independent reviewer still rate T6.5–7/10, with noisy chrome desks unresolved.
+This is an image-quality diagnostic, not a representative FPS or owner-size test.
+See [native-resolution/cabin evidence](validation/2026-10-07-native-resolution-and-phoenix-cabin.md).
+
+## October6 final field measurement, other game closed
+
+`EndgameSoak/d20651d21a2642cc9aa8ccaf505edc1a` repeats the 6,144-rock
+environment-only contract at1080p High, uncapped, with15seconds warmup and60seconds
+measured. Call of Duty is closed; the owner's Blender remains open. All6,792
+measured frames, including hitches, are retained. Population is6,143–6,144,
+125resident cells, zero contacts and unchanged normal hull/shield.
+
+| Counter | Mean | p95 | p99 | Maximum |
+| --- | ---: | ---: | ---: | ---: |
+| Frame | 8.835ms (113.19FPS) | 9.237ms | 33.348ms | 304.583ms |
+| Game thread | 3.037ms | 3.589ms | 4.614ms | 71.582ms |
+| GPU | 4.517ms | 4.431ms | 21.431ms | 286.990ms |
+
+1.56percent of frames exceed16.667ms and0.56percent exceed50ms. Several largest
+stalls occur early in measured cruise, not on the exact observed cell-transition
+frame; their source is not established by these counters. This shows substantial
+steady-state headroom without thinning the field, but does not establish hitch-free
+60FPS, combat performance or an optimization ratio against the GPU-contended pair.
+The analyzer output is `.agent/local/SurvivalQuality/Final6144Benchmark.json`;
+raw CSV, fixture contract and file hashes remain with the capture.
+
+## October6 dense-field measurements, shared GPU
+
+The seeded environment-only comparison retains normal collision/stats, 1080p High,
+15-second warmup and 60 seconds of cruise, turning and boost. Neither run touched an
+obstacle or lost health. Director attacks are excluded to isolate environment cost.
+Call of Duty was also running, using the same GPU; average FPS/GPU costs are therefore
+observations under contention, not a clean density comparison or 60 FPS acceptance.
+
+| Population | Average FPS | Frame p95 / p99 | Game thread mean / p95 | GPU mean / p95 |
+| --- | --- | --- | --- | --- |
+| 2,048 | 56.01 | 36.44 / 38.77 ms | 3.55 / 4.37 ms | 8.61 / 20.62 ms |
+| 6,144 | 41.61 | 43.02 / 47.04 ms | 3.54 / 4.58 ms | 16.87 / 37.07 ms |
+
+All eight cell crossings cost 19.41–23.62 ms on the game thread at 2,048 and
+46.65–60.18 ms at 6,144. These repeated synchronous instance/physics turnover spikes
+justify spreading outer-cell work across frames while retaining density, visibility
+deadlines and stable world positions. First powered frames also include 98.85/91.67 ms
+hitches; they remain in the measurements.
+Raw tokens: `bd1ecd121d6f43dfb35948f3471ba614` and
+`d5a6273131b14a2c81572eaee7e78b0c` under `Artifacts/EndgameSoak`.
+The [quality receipt](validation/2026-10-06-survival-quality.md) owns related verification.
+
+**Incremental repair:** `d85a0e28f66d40c7a0904bc0d41bd2b8` passes the same normal-stat
+6,144-rock contract. On the seven matching X2–8 crossings, handoff game-thread mean
+falls from 55.14 to 11.14 ms and maximum from 60.18 to 13.49 ms. All replacement-work
+frames, including deferred batches, stay at or below 17.48 ms; no deferred 55 ms spike
+appears in the following two seconds. The same 1,228–1,229 replacements per crossing
+complete within 0.17–0.38 seconds. Population stays 6,143–6,144 across exactly125 cells,
+with zero contacts and unchanged health. Total CPU cost is not reduced: comparable
+26-frame windows average 5.46 versus 5.88 ms. GPU contention remains, so the observed
+48.34 average FPS and 56.73/119.95 ms frame p95/p99 cannot establish overall improvement
+or representative 60 FPS acceptance.
+
+Current source/build status is in [Project State](PROJECT_STATE.md); open acceptance is in [KNOWN_ISSUES](KNOWN_ISSUES.md). The October6 gameplay candidate still requires current packaged validation; representative performance remains unaccepted. Dated records below are historical evidence for their exact builds; they do not identify the current executable after a rebuild. Screenshots and offscreen resource tests do not establish representative performance.
 
 ## October1 Wayfarer tester integration
 

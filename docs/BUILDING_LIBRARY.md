@@ -1,6 +1,12 @@
 # Building library
 
-Use the outpost authoring checkout at `C:/Users/j6sis/SpaceSurvival/Artifacts/Worktrees/asteroid-outpost`. Double-click **Edit Outpost Sandbox.cmd** there. It opens that checkout and `/Game/OutpostSandbox/L_AsteroidOutpost` in Unreal Editor.
+Use `C:/Users/j6sis/SpaceSurvival` for the complete imported library and current game. Double-click **Edit Current Station.cmd** to open `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime` in the normal editor. **Edit Outpost Sandbox.cmd** and **Open Building Sandbox.cmd** retain the separate experiment maps in this same project.
+
+**October6 native refresh verified:** all **16,051 registered project assets** in the refresh inventory are covered by **70 refreshed native collections**, including **2,825 StaticMeshes**. ULAT has **2,617 verified rows**, retaining 2,156 and adding 461. Its registration skips **204 short-name collisions and four names unsupported by the helper**; those 208 meshes remain accessible in native collections with their original names. The applied receipt is `Artifacts/BuildingLibrary/Refresh/20261006T030726Z-5a317fed/refresh.json`.
+
+The full mesh catalog exported **2,825 proxies with zero failures**. All **2,825 have thumbnails**: 2,814 native Unreal previews and 11 fallback previews. Blender's native asset cache also contains **2,825 assets with zero unavailable meshes**, recorded in `Artifacts/PrefabLibrary/BlenderAssets/build.json`. The complete current station is now open in Blender with 12,315 placements and its large asset browser. See [Project State](PROJECT_STATE.md) for the saved working file, final portable ZIP and verification. Counts below retain their dated authoring context.
+
+The current Wayfarer snapshot contains **12,315 mesh placements from 423 unique assets**: 7,172 editable direct placements and 5,143 locked reference placements, including 924 apartment placements. Use [the current-station Blender workflow](PREFAB_LIVE_LINK.md#current-station-workflow-ss-link-050) for this snapshot. Complete Blueprints, doors, animation, lighting and game behavior remain in Unreal; the mesh snapshot does not turn those systems into editable Blender objects.
 
 **Saved locally as of September27:** 43 complete placement assets and the 2,156-row ULAT palette. The September24 loading/movement checks covered the prior 41 building assemblies and complete Cargo Level Instance; see that [focused receipt](validation/2026-09-24-building-library.md) for its preview evidence and limits. The newly added furnished apartment is saved as a separate Level Instance and connected to the outpost, and the focused native entry/return walk, door opening/closure and four rendered views pass review. This is sampled traversal, not unrestricted-room or physical-controller acceptance. See the [home-library receipt](validation/2026-09-27-home-library.md); raw records are under `Artifacts/ApartmentHome`.
 
@@ -27,13 +33,13 @@ These are reusable visual assemblies. New groups do not gain door movement or ot
 
 The apartment already placed in Wayfarer Exchange is reached from the east side of the Crew Lounge approach. A covered glass passage and six descending steps lead to its automatic door. See [Outpost sandbox](OUTPOST_SANDBOX.md#home-annex) for the route and validation scope. Dragging the complete Blueprint creates another apartment; it does not relocate the existing home.
 
-To edit the placed home's interior, stop Play and back up the outpost map and private apartment level first. Select the apartment Level Instance, enter its Level Instance editing mode, make the intended changes, then save/commit the private level and exit that mode before moving the whole assembly. Preserve the doorway, automatic-door actors and their attachments. Use the Blueprint actor to move the complete home; do not harvest or ungroup its interactive contents into unrelated static pieces. Recheck both entry and return passage after changing nearby furniture, the door or floor levels.
+To edit the placed home's interior, stop Play and back up the current Wayfarer map and private apartment level first. Select the apartment Level Instance, enter its Level Instance editing mode, make the intended changes, then save/commit the private level and exit that mode before moving the whole assembly. Preserve the doorway, automatic-door actors and their attachments. Use the Blueprint actor to move the complete home; do not harvest or ungroup its interactive contents into unrelated static pieces. Recheck both entry and return passage after changing nearby furniture, the door or floor levels.
 
 ## Use ULAT for individual pieces
 
 On the main toolbar after **Play**, open **Ultimate Level Art Tool → Modular Building**. Choose **Modular** for building pieces or **Props** for screens, light fixtures, furniture and other props. The prepared group names are **Buildings and Structure**, **Screens and Displays**, **Light Fixtures**, **Furniture and Workstations**, **Ships and Vehicles**, and **Props and Details**.
 
-The palette now contains **2,156 entries**: the September27 batch adds 1,006 rows and retains all 1,150 previous rows. The five new groups are **CP Apartment**, **CP Bar**, **CP Megapack**, **CP SciFi** and **CP Holograms**. Click a thumbnail, move into the viewport and left-click to place it. Press **Esc** when finished. Close and reopen the ULAT panel if it was open during configuration.
+The current palette has **2,617 entries**. The **CP Apartment**, **CP Bar**, **CP Megapack**, **CP SciFi** and **CP Holograms** groups remain alongside the categorized building/prop groups. Click a thumbnail, move into the viewport and left-click to place it. Press **Esc** when finished. Close and reopen the ULAT panel if it was open during configuration. For a skipped name, use the original pack's native collection; the 204 collisions also appear together in **SS_ULAT_Name_Collisions**.
 
 ULAT's palette accepts Static Mesh assets. Use the Content Browser collection above for complete Actor Blueprints.
 
@@ -52,7 +58,7 @@ Harvest Components preserves the selected visual components; it does not transfe
 
 ## Downloaded content and storage
 
-This import batch belongs to the outpost checkout: **Rocket** furniture/lights/props, **CyberpunkRestaurant** (Nova Space Burgers), and **CargoShip**. Their original downloads remain under `C:/Users/j6sis/Downloads/down`. Portal and Solar helper content uses separate `/Game/ImportedLibrary/Portal` and `/Game/ImportedLibrary/Solar` roots to keep their references distinct.
+The canonical project contains **Rocket** furniture/lights/props, **CyberpunkRestaurant** (Nova Space Burgers), and **CargoShip**, originally registered in the outpost checkout. Their original downloads remain under `C:/Users/j6sis/Downloads/down`. Portal and Solar helper content uses separate `/Game/ImportedLibrary/Portal` and `/Game/ImportedLibrary/Solar` roots to keep their references distinct.
 
 Some downloads are materials, textures or effect resources rather than standalone meshes. Apply a material to compatible geometry or use the supplied effect asset; a material thumbnail does not represent a complete placeable object. Only Static Mesh assets appear in ULAT's placement palette.
 
@@ -68,11 +74,13 @@ The September27 Cyberpunk import adds **3,491 files** from the owner's downloads
 | **SS_New_CP_SciFi** | `/Game/CyberPunkAssets` | **CP SciFi** |
 | **SS_New_CP_Holograms** | `/Game/CyberpunkHolograms` | **CP Holograms** |
 
-ULAT adds 1,006 of those meshes. The other **43 have short names that collide with existing rows**, so they are intentionally skipped in ULAT rather than replacing another asset. They remain available in their original folders and the native collections. The apartment is the only complete scene from this batch newly connected to the outpost; importing the other packs does not place their example scenes or add them to the packaged game. `Artifacts/ApartmentHome/library-registration.json`, `apartment-author.json` and `home-integration.json` record the registration, private assembly and station-preservation results.
+The September27 registration added 1,006 of those meshes. The other **43 had short names that collided with existing rows**, so they were skipped in ULAT rather than replacing another asset. They remain available in their original folders and the native collections. The apartment was the only complete scene from that batch newly connected to the outpost; importing the other packs does not place their example scenes or add them to the packaged game. `Artifacts/ApartmentHome/library-registration.json`, `apartment-author.json` and `home-integration.json` record that registration, private assembly and station-preservation result.
 
-The assembly assets and local collections are private local data. The collections live in `Saved/Collections`; keep them with the project's private assets when backing up the library.
+The assembly assets and local collections are private local data. Current collections live in `C:/Users/j6sis/SpaceSurvival/Saved/Collections`; keep them with the project's private assets when backing up the library. The old outpost checkout's collection files are retained as historical authoring data.
 
-ULAT's palette data is stored in the installed engine plugin and is **shared across projects using that engine**. It is not a project-private library. Configuration backs up its original data assets and table under `Artifacts/PrefabLibrary/ULATBackups/<run>/` before saving changes. Reports live beside that folder as `ULAT-<run>.json`.
+`Scripts/RefreshBuildingCollections.py` scans the current project for additive native collections: **SS_All_Project_Assets**, **SS_Pack_...**, **SS_02_Maps_and_Complete_Scenes**, the existing assembly/parts/CP groups, and **SS_ULAT_Name_Collisions**. Pack collections include materials, textures, Blueprints and maps; ULAT receives only StaticMeshes. A native dry-run reports the planned coverage without changing collections or palette assets. Run it in an empty offscreen Entry-map editor; add `-SSApplyBuildingCollections` only after reviewing the dry-run. Reports and prior collection backups are under `Artifacts/BuildingLibrary/Refresh/<run>/`. An applied receipt must confirm collection coverage and palette persistence before claiming the refresh complete.
+
+ULAT is enabled in the canonical project. Its installed location is `C:/Program Files/EpicGames2/UE_5.8/Engine/Plugins/Marketplace/UltimateLevelArtTool`; this resolved the former native rules-discovery failure. Its palette data remains **shared across projects using that engine**. Configuration backs up its data assets and table under `Artifacts/PrefabLibrary/ULATBackups/<run>/` before saving changes. Reports live beside that folder as `ULAT-<run>.json`.
 
 ULAT uses short mesh names internally. The September24 importer retained 91 same-name meshes in the Content Browser instead of overwriting another ULAT entry; the September27 batch separately skips the 43 collisions described above. Their original project folders and the categorized collections remain available.
 
