@@ -1,5 +1,14 @@
 # SpaceSurvival whole-project solution catalog
 
+**October10 JOY-20261009 update:** owner explicitly authorizes lighter-blue Joy
+and transfer of the current purple Cyborg animations. The confirmed original
+scenes remain intact.147 private derivative packages include135 clips, blue
+skin/dark streak materials, retarget rigs and two groom bindings. CPU save/reload
+checks pass; rendered motion/contact/groom shading and performance remain open.
+This extends the existing character option (WBS8.4/10.3), without purchase,
+runtime AI, permanent placement or reopening other NPC work.
+[Source provenance and preview](../validation/2026-10-10-joy-blue-cpu.md).
+
 **October9 resource status correction:** CREW-20261009 assignments below are
 historical partial integration, not accepted room quality. Covered Olive replaces
 hidden Amethyst; exposed-torso Dread needs a later replacement. Dock atmosphere

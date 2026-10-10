@@ -7,7 +7,10 @@ walk and screenshots establish no FPS/VRAM target. Representative performance
 still needs measurement before release. Exposure/scalability stay unchanged.
 The owner reported VRAM overuse and requested the offscreen editor close for one
 hour. It exited cleanly; this is a resource pause, not a measured leak diagnosis
-or performance fix. Non-VRAM source/documentation work remains allowed.
+or performance fix. At the scheduled resume, about14/16GB remained in use; the
+owner extended CPU-only work until GPU use is explicitly released. Joy's135-clip
+transfer/bindings and planter repair use NullRHI; the head preview uses Blender
+Cycles CPU. These checks do not measure rendered character or station cost.
 [Current evidence](validation/2026-10-10-central-hub-concept.md); the earlier closed/paused state is historical.
 
 **October9 closeout:** the offscreen editor is closed and work paused. Added dock

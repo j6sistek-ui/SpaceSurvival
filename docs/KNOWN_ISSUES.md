@@ -8,8 +8,10 @@ removed cyan circles and a brighter, warmer local lighting pass. Visual owner
 acceptance is still open; do not infer it from the30/30 scripted walk or prior reload.
 [Current native images and evidence](validation/2026-10-10-central-hub-concept.md).
 
-Next lead action: after the VRAM pause, import the three prepared planter end-cap
-fixes, then finish Central against the fixed target. The current comparison still
+CPU follow-up: the three planter end-cap fixes are saved and pass native asset
+reload. The owner now requires CPU-only work until GPU use is explicitly
+released; the one-time resume follow-up is disabled. Next rendered lead action
+is to finish Central against the fixed target. The current comparison still
 shows broad plain wall panels and shallow portal detail; planting reads as a tall
 hedge and obscures some information screens. Prioritize fitted owned wall/portal
 pieces, varied planting with clear sightlines, and consistent reception/fixture
@@ -27,9 +29,13 @@ complete cycling checks. Check R's existing display while finishing R. T's
 hardware choice stays held; ad audio is future work, and other rooms are not
 reopened by this checkpoint. Saved art does not prove current native cycling.
 
-Unreal is closed; source/check/documentation work may continue during the pause.
-Preserve white floors, factual directions, L,
-held T and the Central ad limit. All other rooms/cockpit/NPC repairs remain held.
+The rendered editor stays closed; CPU/NullRHI checks are allowed. One scoped NPC
+exception is authorized: Joy's lighter-blue derivative and all135 Cyborg clips
+are saved, with two groom bindings and a preview Blueprint. Fresh asset reload
+passes; rendered skin/hair, continuous motion/contact and performance remain
+unverified. No permanent placement. [CPU result and preview](validation/2026-10-10-joy-blue-cpu.md).
+Preserve white floors, factual directions, L, held T and the Central ad limit.
+All other rooms/cockpit/NPC repairs remain held.
 Supplementary crew validation reports Warden height/sole outside this decor pass;
 retain it with the other held NPC defects. At the next asset need, check relevant
 installed folders (including relocated M: content) and ask the owner before

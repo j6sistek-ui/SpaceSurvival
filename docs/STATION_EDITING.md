@@ -3,12 +3,16 @@
 **October10 Central authoring:** candidate107 adopts four new Central recipes
 (`RefineStationCentralArchitecture`, `RefineStationCentralFeatures`,
 `RefineStationCentralCheckIn`, `RefineStationCentralLightGarden`). Do not replay
-their one-shot stages. The source-only planter end-cap correction still needs a
-bounded native mesh replacement and verification after the VRAM pause; do not
-reapply scene actors. The fixed generated target-v2 and native pictures are in
+their one-shot stages. The bounded three-mesh planter end-cap correction is now
+saved and passes CPU asset reload119/124; do not reapply it or scene actors.
+Rendered work remains held by the owner's CPU-only instruction. The fixed generated target-v2 and native pictures are in
 the [concept receipt](validation/2026-10-10-central-hub-concept.md). Existing owned kiosk, P4/Clinic kits
-and Nanite Plants assets supply the authored scene; no new service mechanic or
-NPC repair. Current owner scope is Central first, R second; other areas held.
+and Nanite Plants assets supply the authored scene; no new service mechanic.
+Current owner scope is Central first, R second, plus the explicit Joy color and
+animation-transfer exception. JoyLightBlue117 is a private preview asset with135
+clips/two groom bindings; no permanent actor placement. Rendered motion/contact
+review remains pending. [CPU evidence](validation/2026-10-10-joy-blue-cpu.md).
+Other areas and NPC repairs remain held.
 The October9 pause below is historical.
 
 **October9 handoff:** work paused with central/R unfinished and later priorities

@@ -1,10 +1,18 @@
 # Phase 1 content pipeline
 
+**October10 Joy derivative:** the owner-confirmed source pair produces a
+light-blue Joy mesh/material variant and135 Cyborg-derived clips, saved in
+JoyLightBlue117 with two groom bindings and a preview Blueprint. Originals stay
+intact; no scene placement. Background Blender CPU and Unreal NullRHI checks
+pass; rendered color/groom/contact review remains open. Guarded historical
+recipes in `Scripts/StationRecipes/CpuJoy121` must not be replayed on adopted
+assets. [Provenance, hashes and limits](validation/2026-10-10-joy-blue-cpu.md).
+
 **October10 Central sources:** `ContentSource/CentralCheckIn` contains the original
 factual kiosk display, editable SVG, deterministic generator and hash manifest.
 Four adopted Central scripts retain the exact native authoring stages. The
-six modular arc meshes are original generated geometry, with three corrected
-planter end caps pending native import after the VRAM pause; foliage, kiosk and
+six modular arc meshes are original generated geometry; the three corrected
+planter end caps are now saved/reloaded through CPU119/124. Foliage, kiosk and
 furniture reuse installed assets. Licensed source assets stay untouched.
 The target-v2 image and complete prompt are concept provenance, separate from
 unedited native views. The existing T/R/Market/L ad manifests and Central options

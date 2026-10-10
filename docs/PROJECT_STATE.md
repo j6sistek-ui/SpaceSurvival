@@ -5,15 +5,20 @@ has9,051 actors. The new fixed target and requested podium, planted waiting bays
 ceiling/portal/desk detail, removed blue circles and balanced local lighting are
 implemented for native review. [Images and evidence](validation/2026-10-10-central-hub-concept.md).
 The30/30 scripted route and prior9034-actor reload passed their scene checks.
-The editor closed cleanly for the owner's one-hour VRAM pause; all40 private
-packages, map bytes, six image hashes and78 protected content files were checked
-on disk. Three source-only planter cap fixes await native import and a final
-scene reload. Owner visual acceptance, physical input and performance remain open. R is
-second; lower priorities and NPC repairs remain held. The supplementary Warden
+The rendered editor stays closed under the owner's extended CPU-only direction.
+Three planter cap fixes are now imported and pass fresh NullRHI asset reload;
+the other37 Central packages and saved map bytes are unchanged. A final world
+reload, owner visual acceptance, physical input and performance remain open. R
+is second; lower priorities and other NPC repairs remain held. The scoped Joy
+exception adds147 private packages: blue materials/mesh, two rigs/retargeter,
+all135 Cyborg clips, two groom bindings and a compiled idle review Blueprint.
+CPU asset reload passes; rendered motion/hair quality is still pending.
+[CPU receipt and preview](validation/2026-10-10-joy-blue-cpu.md). The supplementary Warden
 height/sole check fails and is retained outside this decor scope.
 
-Four authoring recipes, original kiosk screen sources and sanitized evidence are
-tracked; the map and40 private native derivatives remain local. Build55 and
+Four Central authoring recipes, six CPU historical recipes, original kiosk
+screen sources and sanitized evidence are tracked; the map,40 Central packages
+and147 Joy derivatives remain local. Build55 and
 published0.1.22-alpha/itch2048604 are unchanged. No new C++ binary, cook, upload or
 merge; PR69 stays draft. Historical paused/editor statements below are superseded
 by this source/native checkpoint, not by release or room acceptance.
