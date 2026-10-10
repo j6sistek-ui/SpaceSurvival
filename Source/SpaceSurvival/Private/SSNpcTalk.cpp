@@ -320,6 +320,11 @@ void USSNpcTalkSubsystem::Initialize(FSubsystemCollectionBase &Collection)
     // every frame.
     bInstalled = FPaths::FileExists(WhisperServerExe) && FPaths::FileExists(WhisperModel) &&
                  FPaths::FileExists(LlamaServerExe) && FPaths::FileExists(LlamaModel);
+    TArray<FString> Files;
+    IFileManager::Get().FindFiles(Files, *FPaths::Combine(FPaths::ProjectContentDir(), PersonaDirectory, TEXT("*.txt")),
+                                  true, false);
+    for (const FString &File : Files)
+        PersonaNames.Add(FPaths::GetBaseFilename(File));
     UE_LOG(LogSSNpcTalk, Display, TEXT("talk pack %s"),
            bInstalled ? TEXT("installed") : TEXT("not installed: conversations stay off"));
 }

@@ -933,7 +933,7 @@ void ASSHUD::DrawHUD()
                 InteractionHint = TEXT("Talking with ") + GM->TalkPartner().Name + TEXT(" - walk away to leave");
             }
             else if (InteractionHint.IsEmpty())
-                if (const FSSTalkIdentity Crew = GM->TalkTarget(); Crew.IsValid())
+                if (const FSSTalkIdentity Crew = GM->TalkHint(); Crew.IsValid())
                 {
                     GlyphBeforeHint = true;
                     bTalkHint = true;
