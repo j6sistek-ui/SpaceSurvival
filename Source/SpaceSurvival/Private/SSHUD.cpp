@@ -1,4 +1,5 @@
 #include "SSHUD.h"
+#include "SSNpcTalk.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSAlienGallery.h"
@@ -171,7 +172,8 @@ void ASSHUD::StationText(const FString &Value, float X, float Y, float Size, FLi
                          StationFont(Size), Color);
     Canvas->DrawItem(Item);
 }
-void ASSHUD::StationAction(const FString &Value, bool HasUseKey, FLinearColor Color)
+void ASSHUD::StationAction(const FString &Value, bool HasUseKey, FLinearColor Color, const FKey &Key,
+                           const FKey &PadKey)
 {
     if (Value.IsEmpty())
         return;
@@ -182,7 +184,7 @@ void ASSHUD::StationAction(const FString &Value, bool HasUseKey, FLinearColor Co
     const float X = (Canvas->ClipX - Width) * .5f, Y = Canvas->ClipY - Height - 28.f * Scale;
     DrawRect(FLinearColor(.01f, .022f, .032f, .9f), X, Y, Width, Height);
     if (HasUseKey)
-        Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Top, X + Padding, Y + Padding, 1.f, Color);
+        Glyph(Key, PadKey, X + Padding, Y + Padding, 1.f, Color);
     StationText(Value, X + Padding + KeyW, Y + Padding, 1.f, Color);
 }
 bool ASSHUD::UsingGamepad() const
@@ -815,11 +817,40 @@ void ASSHUD::DrawHUD()
         Paragraph(GM->VillainLine, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, TextW, .75f,
                   FLinearColor(1.f, .56f, .4f));
     }
+    if (!MenuOpen && (GM->NpcLineSeconds > 0.f || GM->TalkTranscriptSeconds > 0.f || !GM->TalkStatus.IsEmpty()))
+    {
+        // Push-to-talk: the pilot's own words on top, a crew member's answer beneath in the deck's teal. Not
+        // gated by the subtitles setting: the text is the conversation. The villain answers on his own caption.
+        const float CaptionW = FMath::Min(760.f * Scale, W - 2.f * Margin);
+        const float TextW = CaptionW - 24.f * Scale;
+        const float CaptionX = (W - CaptionW) * .5f;
+        float Y = H - 300.f * Scale;
+        if (GM->NpcLineSeconds > 0.f)
+        {
+            const FString Line = GM->NpcName + TEXT(": ") + GM->NpcLine;
+            const float BoxH = Paragraph(Line, 0.f, 0.f, TextW, .8f, FLinearColor::White, false) + 20.f * Scale;
+            Y -= BoxH;
+            DrawRect(FLinearColor(.01f, .06f, .07f, .92f), CaptionX, Y, CaptionW, BoxH);
+            Paragraph(Line, CaptionX + 12.f * Scale, Y + 10.f * Scale, TextW, .8f, FLinearColor(.55f, .95f, .9f));
+            Y -= 8.f * Scale;
+        }
+        if (GM->TalkTranscriptSeconds > 0.f)
+        {
+            const FString Line = TEXT("You: ") + GM->TalkTranscript;
+            const float BoxH = Paragraph(Line, 0.f, 0.f, TextW, .75f, FLinearColor::White, false) + 20.f * Scale;
+            Y -= BoxH;
+            DrawRect(FLinearColor(.015f, .025f, .04f, .9f), CaptionX, Y, CaptionW, BoxH);
+            Paragraph(Line, CaptionX + 12.f * Scale, Y + 10.f * Scale, TextW, .75f, FLinearColor(.9f, .94f, 1.f));
+            Y -= 8.f * Scale;
+        }
+        if (!GM->TalkStatus.IsEmpty())
+            Text(GM->TalkStatus, CaptionX, Y - 24.f * Scale, .7f, FLinearColor(1.f, .85f, .5f));
+    }
     if (!MenuOpen && (!Walker || (!Walker->IsDisembarking() && !Walker->IsBoarding() && !Walker->IsSeated())))
     {
         FString InteractionHint, HintPrefix, HintSuffix;
         FLinearColor HintColor = FLinearColor::White;
-        bool GlyphBeforeHint = false, GlyphInsideHint = false;
+        bool GlyphBeforeHint = false, GlyphInsideHint = false, bTalkHint = false;
         // Match Interact: walking always targets a service; pending rewards take priority only in the ship.
         if (Walker)
         {
@@ -889,6 +920,15 @@ void ASSHUD::DrawHUD()
                 GlyphBeforeHint = false;
                 InteractionHint = TEXT("Walk forward to the cockpit chair");
             }
+            // Push-to-talk joins the context hint only when no station service is in reach: a desk action
+            // always wins over chatting. Nobody to talk to, or no talk pack installed: nothing is shown.
+            if (InteractionHint.IsEmpty())
+                if (const FSSTalkIdentity Crew = GM->TalkTarget(); Crew.IsValid())
+                {
+                    GlyphBeforeHint = true;
+                    bTalkHint = true;
+                    InteractionHint = TEXT("Hold to talk to ") + Crew.Name;
+                }
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
         {
@@ -900,7 +940,8 @@ void ASSHUD::DrawHUD()
         const float HintX = W * .5f - 200 * Scale, HintY = H - 80 * Scale, HintSize = .9f;
         const float GlyphGap = 6.f * Scale;
         if (Walker)
-            StationAction(InteractionHint, GlyphBeforeHint, HintColor);
+            StationAction(InteractionHint, GlyphBeforeHint, HintColor, bTalkHint ? EKeys::T : EKeys::E,
+                          bTalkHint ? EKeys::Gamepad_RightThumbstick : EKeys::Gamepad_FaceButton_Top);
         else if (GlyphBeforeHint)
         {
             const float GlyphW =

@@ -1,0 +1,1 @@
+Scenario: you are at the dock mouth watching ships come in. You notice hulls, scorch marks, who limps in and who swaggers; comment on the pilot's ship if they bring it up.

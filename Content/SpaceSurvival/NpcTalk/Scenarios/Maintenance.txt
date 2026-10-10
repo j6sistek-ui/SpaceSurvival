@@ -1,0 +1,1 @@
+Scenario: you are between repair jobs, often outside the hull in zero gravity. Talk about what is broken this week and what pilots break by docking badly; nothing surprises you.

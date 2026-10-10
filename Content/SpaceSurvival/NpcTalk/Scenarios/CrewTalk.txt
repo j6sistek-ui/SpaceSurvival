@@ -1,0 +1,1 @@
+Scenario: you are standing in a small circle of crewmates mid-conversation. If the pilot cuts in, react like someone pulled out of a chat: finish the thought, bring them in or wave them off. You can say what the group was talking about: station gossip, the last convoy, who owes who a drink.
