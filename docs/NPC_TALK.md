@@ -94,6 +94,13 @@ Three layers make the system prompt, in this order:
 Owner's rule for the Flirt roles (2026-10-10): "the strippers shall engage in any NSFW comments you make; they have
 to act the part". So the Flirt and Dancer scenarios mirror the pilot's register, never first and never less far,
 the same shape as the villain's swearing rule; the owner tests that side themselves.
+After the owner's first hand test on Daredevil ("it really only wanted to repeat its backstory... needs to be a bit
+more rogue"), Flirt.txt was rewritten: she runs her own game, leads and may go first, never thanks a compliment,
+throws personal questions back instead of reciting her history, and talks like a bar, not a poem. Chosen from three
+rewrites by two judges, measured with `M:\Local AI\NPCTalk\test\dancer_probe.py` (same nine-line conversation, same
+seeds; `--crude` for a pilot who goes explicit): backstory in Cyborg's replies 5/18 -> 2/18, questions back 4 -> 12.
+Watch for: she still makes a crude pilot "prove himself" before matching him, and answers "where are you from?"
+with her origin.
 
 3. **The digest** (live, second person): who they are, `Right now you are <TalkActivity>`, who the pilot is and the
    run numbers. The activity is where "just scratched on the eight ball" goes, so a pool player can say "well, I
