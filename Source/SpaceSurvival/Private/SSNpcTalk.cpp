@@ -9,6 +9,7 @@
 #include "Misc/Crc.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "Misc/SecureHash.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
@@ -294,6 +295,61 @@ bool HasTalkTag(const TArray<FName> &Tags)
             return true;
     return false;
 }
+
+FVoiceClip VoiceClip(const TArray<uint8> &Body, const FString &RateHeader)
+{
+    FVoiceClip Clip;
+    const FString Header = RateHeader.TrimStartAndEnd();
+    const int32 Rate = Header.IsEmpty() ? 48000 : FCString::Atoi(*Header);
+    const int32 Bytes = Body.Num() & ~1;
+    if (Rate < 8000 || Rate > 48000 || Bytes < 2)
+        return Clip;
+    Clip.SampleRate = Rate;
+    Clip.Pcm.Reserve(Bytes + Rate / 2);
+    Clip.Pcm.Append(Body.GetData(), Bytes);
+    Clip.Pcm.AddZeroed(Rate / 4 * 2);
+    return Clip;
+}
+
+FString VoiceArgs(const FString &Script, const FString &Repo, const FString &Reference, float Speed, int32 Threads,
+                  const FString &Treatment, int32 Port, uint32 ParentPid)
+{
+    for (const FString *Value : {&Script, &Repo, &Reference, &Treatment})
+        if (Value->Contains(TEXT("\"")))
+            return FString();
+    // A trailing slash before the closing quote would escape it on a Windows command line.
+    const auto Q = [](FString Value)
+    {
+        while (Value.EndsWith(TEXT("/")) || Value.EndsWith(TEXT("\\")))
+            Value.LeftChopInline(1);
+        return FString::Printf(TEXT("\"%s\""), *Value);
+    };
+    return FString::Printf(
+        TEXT("%s --lux-repo %s --ref %s --speed %.2f --threads %d --treatment %s --port %d --parent-pid %u"),
+        *Q(Script), *Q(Repo), *Q(Reference), Speed, FMath::Max(1, Threads), *Q(Treatment), Port, ParentPid);
+}
+
+FString VoiceCacheName(const FString &Reference, float Speed, const FString &Treatment, const FString &Text)
+{
+    const FString Material =
+        FString::Printf(TEXT("%s|%.2f|%s|%s"), *FPaths::GetCleanFilename(Reference), Speed, *Treatment, *Text);
+    const FTCHARToUTF8 Utf8(*Material);
+    FMD5 Md5;
+    Md5.Update(reinterpret_cast<const uint8 *>(Utf8.Get()), Utf8.Length());
+    uint8 Digest[16];
+    Md5.Final(Digest);
+    return BytesToHex(Digest, 16).ToLower() + TEXT(".pcm");
+}
+
+float VoiceDeadline(const FString &Text, bool bReply)
+{
+    // He speaks ~3.3 words a second and LuxTTS with the entity treatment makes speech about as fast as he says it on
+    // four threads beside the game (2026-10-11), so a line takes about its own length to make.
+    TArray<FString> Words;
+    Text.ParseIntoArrayWS(Words);
+    const float Render = Words.Num() / 3.3f;
+    return bReply ? FMath::Min(20.f, 4.f + 3.f * Render) : FMath::Min(10.f, 2.f + 2.f * Render);
+}
 } // namespace SSNpcTalk
 
 namespace
@@ -327,6 +383,11 @@ void USSNpcTalkSubsystem::Initialize(FSubsystemCollectionBase &Collection)
         PersonaNames.Add(FPaths::GetBaseFilename(File));
     UE_LOG(LogSSNpcTalk, Display, TEXT("talk pack %s"),
            bInstalled ? TEXT("installed") : TEXT("not installed: conversations stay off"));
+    // His voice is its own optional piece: it needs none of the above, and the above does not need it.
+    bVoiceInstalled = FPaths::FileExists(VoicePython) && FPaths::FileExists(VoiceScriptPath()) &&
+                      FPaths::DirectoryExists(VoiceRepo) && FPaths::FileExists(VoiceReference);
+    UE_LOG(LogSSNpcTalk, Display, TEXT("director voice %s"),
+           bVoiceInstalled ? TEXT("installed") : TEXT("not installed: he stays text-only"));
 }
 
 void USSNpcTalkSubsystem::Deinitialize()
@@ -348,6 +409,7 @@ void USSNpcTalkSubsystem::StopServers()
             FPlatformProcess::CloseProc(*Proc);
             *Proc = FProcHandle();
         }
+    StopVoice();
 }
 
 bool USSNpcTalkSubsystem::IsEnabled() const
@@ -374,12 +436,303 @@ void USSNpcTalkSubsystem::SetContext(ESSTalkContext Context)
     // Owner's split: the station is talk, so the better model loads on arrival; a wave is combat, so launching kills
     // the server and the GPU is the game's again. The flight model comes back when the villain first speaks.
     CurrentContext = Context;
+    // His voice is flight-only, and goes before the talk-pack check: an install with only the voice must still give
+    // the card back at the station.
+    if (Context == ESSTalkContext::Station)
+        StopVoice();
     if (!IsEnabled())
         return;
     if (Context == ESSTalkContext::Station)
         EnsureServers();
     else
         StopLlama();
+}
+
+bool USSNpcTalkSubsystem::IsVoiceEnabled() const
+{
+    return bVoiceEnabled && bVoiceInstalled && VoiceCrashes <= 2 && !FApp::IsUnattended() && !GIsAutomationTesting;
+}
+
+FString USSNpcTalkSubsystem::VoiceScriptPath() const
+{
+    // Absolute: ProjectDir() is relative to the engine's Binaries folder, and python runs from the venv's folder.
+    return FPaths::IsRelative(VoiceScript)
+               ? FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), VoiceScript))
+               : VoiceScript;
+}
+
+void USSNpcTalkSubsystem::EnsureVoice()
+{
+    if (!IsVoiceEnabled() || (VoiceProc.IsValid() && FPlatformProcess::IsProcRunning(VoiceProc)))
+        return;
+    if (VoiceProc.IsValid())
+    {
+        // It died on its own. A broken install is not restarted for ever: twice, then he stays text-only.
+        FPlatformProcess::CloseProc(VoiceProc);
+        VoiceProc = FProcHandle();
+        bVoiceReady = false;
+        UE_LOG(LogSSNpcTalk, Display, TEXT("director voice: the server stopped by itself"));
+        ++VoiceCrashes;
+    }
+    if (VoiceCrashes > 2)
+        return;
+    const FString Args =
+        SSNpcTalk::VoiceArgs(VoiceScriptPath(), FPaths::ConvertRelativePathToFull(VoiceRepo),
+                             FPaths::ConvertRelativePathToFull(VoiceReference), VoiceSpeed, VoiceThreads,
+                             VoiceTreatment, VoicePort, FPlatformProcess::GetCurrentProcessId());
+    if (Args.IsEmpty())
+    {
+        UE_LOG(LogSSNpcTalk, Display, TEXT("director voice: a path or the reference text holds a double quote"));
+        return;
+    }
+    // The server leaves by itself when this process does (--parent-pid), so a crash never strands its memory.
+    VoiceProc = Launch(VoicePython, Args);
+    VoiceStartedAt = FPlatformTime::Seconds();
+    bVoiceReady = false;
+    ArmVoiceIdle();
+    UE_LOG(LogSSNpcTalk, Display, TEXT("director voice %s on %d"),
+           VoiceProc.IsValid() ? TEXT("starting") : TEXT("NOT FOUND"), VoicePort);
+}
+
+void USSNpcTalkSubsystem::StopVoice()
+{
+    if (VoicePending.IsValid())
+    {
+        VoicePending->OnProcessRequestComplete().Unbind();
+        VoicePending->CancelRequest();
+        VoicePending.Reset();
+    }
+    // Callers waiting on a line drop it by their own deadline; nothing is called back from here.
+    VoiceJobs.Reset();
+    if (UGameInstance *GI = GetGameInstance())
+    {
+        GI->GetTimerManager().ClearTimer(VoiceRetryTimer);
+        GI->GetTimerManager().ClearTimer(VoiceIdleTimer);
+    }
+    if (VoiceProc.IsValid())
+    {
+        if (!FPlatformProcess::IsProcRunning(VoiceProc))
+        {
+            UE_LOG(LogSSNpcTalk, Display, TEXT("director voice: the server stopped by itself"));
+            ++VoiceCrashes;
+        }
+        // KillTree: the venv's python.exe is a launcher with the real interpreter as its child.
+        FPlatformProcess::TerminateProc(VoiceProc, true);
+        FPlatformProcess::CloseProc(VoiceProc);
+        VoiceProc = FProcHandle();
+        UE_LOG(LogSSNpcTalk, Display, TEXT("director voice stopped"));
+    }
+    bVoiceReady = false;
+}
+
+void USSNpcTalkSubsystem::ArmVoiceIdle()
+{
+    // About 4 GB of video memory (measured): held only while there is something to say, then given back (owner:
+    // "4 GB of VRAM is a heavy tax"). Re-armed by every new start and every emptied queue.
+    if (UGameInstance *GI = GetGameInstance(); GI && VoiceProc.IsValid())
+        GI->GetTimerManager().SetTimer(VoiceIdleTimer, FTimerDelegate::CreateWeakLambda(this, [this] { StopVoice(); }),
+                                       FMath::Max(5.f, VoiceIdleSeconds), false);
+}
+
+FString USSNpcTalkSubsystem::VoiceCacheFile(const FString &Text) const
+{
+    // Named by the voice as well as the words: a new recording, speed or treatment makes every line again.
+    const FString Dir = VoiceCacheDirectory.IsEmpty()
+                            ? FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("NpcTalk"), TEXT("DirectorVoice"))
+                            : VoiceCacheDirectory;
+    return FPaths::Combine(Dir, SSNpcTalk::VoiceCacheName(VoiceReference, VoiceSpeed, VoiceTreatment, Text));
+}
+
+bool USSNpcTalkSubsystem::FindVoiceClip(const FString &Text, SSNpcTalk::FVoiceClip &Out)
+{
+    if (const SSNpcTalk::FVoiceClip *Kept = VoiceCache.Find(Text))
+    {
+        Out = *Kept;
+        return true;
+    }
+    // On disk: four bytes of sample rate, then the clip as played.
+    TArray<uint8> File;
+    if (!FFileHelper::LoadFileToArray(File, *VoiceCacheFile(Text), FILEREAD_Silent) || File.Num() < 6)
+        return false;
+    int32 Rate = 0;
+    FMemory::Memcpy(&Rate, File.GetData(), sizeof(Rate));
+    SSNpcTalk::FVoiceClip Clip;
+    Clip.SampleRate = Rate;
+    Clip.Pcm.Append(File.GetData() + sizeof(Rate), (File.Num() - int32(sizeof(Rate))) & ~1);
+    if (!Clip.IsValid() || Rate < 8000 || Rate > 48000)
+        return false;
+    Out = VoiceCache.Add(Text, MoveTemp(Clip));
+    return true;
+}
+
+bool USSNpcTalkSubsystem::Speak(const FString &Text, bool bKeep, TFunction<void(const SSNpcTalk::FVoiceClip &)> Done)
+{
+    const FString Line = Text.TrimStartAndEnd();
+    if (Line.IsEmpty() || !IsVoiceEnabled())
+        return false;
+    SSNpcTalk::FVoiceClip Clip;
+    if (FindVoiceClip(Line, Clip))
+    {
+        if (Done)
+            Done(Clip);
+        return true;
+    }
+    EnsureVoice();
+    if (!VoiceProc.IsValid())
+        return false;
+    // The same line already being made (his first line of a flight, queued ahead at departure) answers this caller.
+    const int32 Same = VoiceJobs.IndexOfByPredicate([&Line](const FVoiceJob &Job) { return Job.Text == Line; });
+    if (Same != INDEX_NONE && VoiceJobs[Same].Id == InFlightVoiceJob)
+    {
+        VoiceJobs[Same].Done = MoveTemp(Done);
+        VoiceJobs[Same].bLive = true;
+        VoiceJobs[Same].bKeep |= bKeep;
+        return true;
+    }
+    const bool bWasKept = Same != INDEX_NONE && VoiceJobs[Same].bKeep;
+    // A newer line overtakes any older one still waiting; scripted lines being made ahead keep their place behind.
+    VoiceJobs.RemoveAll([this, &Line](const FVoiceJob &Job)
+                        { return Job.Id != InFlightVoiceJob && (Job.bLive || Job.Text == Line); });
+    VoiceJobs.Insert({++NextVoiceJob, Line, MoveTemp(Done), true, bKeep || bWasKept}, 0);
+    PumpVoice();
+    return true;
+}
+
+void USSNpcTalkSubsystem::Prerender(const TArray<FString> &Lines)
+{
+    if (!IsVoiceEnabled())
+        return;
+    int32 Added = 0;
+    SSNpcTalk::FVoiceClip Clip;
+    for (const FString &Text : Lines)
+    {
+        const FString Line = Text.TrimStartAndEnd();
+        if (Line.IsEmpty() || FindVoiceClip(Line, Clip) ||
+            VoiceJobs.ContainsByPredicate([&Line](const FVoiceJob &Job) { return Job.Text == Line; }))
+            continue;
+        VoiceJobs.Add({++NextVoiceJob, Line, nullptr, false, true});
+        ++Added;
+    }
+    UE_LOG(LogSSNpcTalk, Display, TEXT("director voice: %d of %d scripted lines to make, the rest are on disk"), Added,
+           Lines.Num());
+    if (!Added)
+        return;
+    Prerendered = 0;
+    PrerenderStartedAt = FPlatformTime::Seconds();
+    EnsureVoice();
+    PumpVoice();
+}
+
+void USSNpcTalkSubsystem::PumpVoice()
+{
+    if (VoicePending.IsValid() || !VoiceProc.IsValid())
+        return;
+    // A line made since it was queued is answered from what was kept.
+    SSNpcTalk::FVoiceClip Kept;
+    while (!VoiceJobs.IsEmpty() && FindVoiceClip(VoiceJobs[0].Text, Kept))
+    {
+        FVoiceJob Job = MoveTemp(VoiceJobs[0]);
+        VoiceJobs.RemoveAt(0);
+        if (Job.Done)
+            Job.Done(Kept);
+    }
+    if (VoicePending.IsValid())
+        return; // a callback above asked for something new and sent it
+    if (VoiceJobs.IsEmpty())
+    {
+        ArmVoiceIdle();
+        return;
+    }
+    if (UGameInstance *GI = GetGameInstance())
+        GI->GetTimerManager().ClearTimer(VoiceIdleTimer);
+    const FVoiceJob &Job = VoiceJobs[0];
+    const auto Request = FHttpModule::Get().CreateRequest();
+    Request->SetURL(FString::Printf(TEXT("http://127.0.0.1:%d/speak"), VoicePort));
+    Request->SetVerb(TEXT("POST"));
+    Request->SetHeader(TEXT("Content-Type"), TEXT("text/plain; charset=utf-8"));
+    Request->SetContentAsString(Job.Text);
+    Request->SetTimeout(30.f);
+    Request->OnProcessRequestComplete().BindWeakLambda(
+        this,
+        [this, Id = Job.Id, Text = Job.Text, bKeep = Job.bKeep](FHttpRequestPtr, FHttpResponsePtr Response, bool bOk)
+        {
+            VoicePending.Reset();
+            InFlightVoiceJob = 0;
+            if (!bOk || !Response.IsValid())
+            {
+                // Refused by a server launched moments ago: it opens its port only once it is loaded and warm.
+                const bool bLoading = !bVoiceReady && VoiceProc.IsValid() &&
+                                      FPlatformProcess::IsProcRunning(VoiceProc) &&
+                                      FPlatformTime::Seconds() - VoiceStartedAt < VoiceStartupSeconds;
+                UGameInstance *GI = GetGameInstance();
+                if (bLoading && GI)
+                {
+                    GI->GetTimerManager().SetTimer(
+                        VoiceRetryTimer, FTimerDelegate::CreateWeakLambda(this, [this] { PumpVoice(); }), 1.f, false);
+                    return;
+                }
+                // Display, never Fail(): a missing voice is not the pilot's problem and must not reach the screen.
+                UE_LOG(LogSSNpcTalk, Display, TEXT("director voice: no answer, the line stays text"));
+                FinishVoiceJob(Id, Text, false, SSNpcTalk::FVoiceClip());
+                return;
+            }
+            if (!bVoiceReady && Response->GetResponseCode() == 200)
+            {
+                bVoiceReady = true;
+                UE_LOG(LogSSNpcTalk, Display, TEXT("director voice ready after %.1f s"),
+                       FPlatformTime::Seconds() - VoiceStartedAt);
+            }
+            if (Response->GetResponseCode() != 200)
+                UE_LOG(LogSSNpcTalk, Display, TEXT("director voice: %d for \"%s\""), Response->GetResponseCode(),
+                       *Text);
+            FinishVoiceJob(
+                Id, Text, bKeep,
+                Response->GetResponseCode() == 200
+                    ? SSNpcTalk::VoiceClip(Response->GetContent(), Response->GetHeader(TEXT("X-Sample-Rate")))
+                    : SSNpcTalk::FVoiceClip());
+        });
+    VoicePending = Request;
+    InFlightVoiceJob = Job.Id;
+    Request->ProcessRequest();
+}
+
+void USSNpcTalkSubsystem::FinishVoiceJob(int32 Id, const FString &Text, bool bKeep, const SSNpcTalk::FVoiceClip &Clip)
+{
+    if (Clip.IsValid() && bKeep)
+    {
+        VoiceCache.Add(Text, Clip);
+        TArray<uint8> File;
+        File.Append(reinterpret_cast<const uint8 *>(&Clip.SampleRate), sizeof(Clip.SampleRate));
+        File.Append(Clip.Pcm);
+        FFileHelper::SaveArrayToFile(File, *VoiceCacheFile(Text));
+    }
+    TFunction<void(const SSNpcTalk::FVoiceClip &)> Done;
+    bool bWasAhead = false;
+    const int32 Index = VoiceJobs.IndexOfByPredicate([Id](const FVoiceJob &Job) { return Job.Id == Id; });
+    if (Index != INDEX_NONE)
+    {
+        Done = MoveTemp(VoiceJobs[Index].Done);
+        bWasAhead = !VoiceJobs[Index].bLive;
+        VoiceJobs.RemoveAt(Index);
+    }
+    // Anyone else waiting on the same words is answered by this take.
+    TArray<TFunction<void(const SSNpcTalk::FVoiceClip &)>> Others;
+    if (Clip.IsValid())
+        for (int32 Other = VoiceJobs.Num() - 1; Other >= 0; --Other)
+            if (VoiceJobs[Other].Text == Text)
+            {
+                if (VoiceJobs[Other].Done)
+                    Others.Add(MoveTemp(VoiceJobs[Other].Done));
+                VoiceJobs.RemoveAt(Other);
+            }
+    if (bWasAhead && ++Prerendered && !VoiceJobs.ContainsByPredicate([](const FVoiceJob &Job) { return !Job.bLive; }))
+        UE_LOG(LogSSNpcTalk, Display, TEXT("director voice: made %d scripted lines in %.1f s"), Prerendered,
+               FPlatformTime::Seconds() - PrerenderStartedAt);
+    if (Done)
+        Done(Clip);
+    for (auto &Other : Others)
+        Other(Clip);
+    PumpVoice();
 }
 
 void USSNpcTalkSubsystem::EnsureServers()
@@ -569,7 +922,10 @@ void USSNpcTalkSubsystem::SendToLlama(const FString &Character, const FString &Q
     // Not "in the same language": measured 2026-10-10, Hermes 8B read that literally and answered in Polish.
     if (Character == TEXT("Director") && SSNpcTalk::HasProfanity(Question))
         Framed += TEXT(" The pilot just swore at you: swear straight back, as crude as they were, in English.");
-    Framed += TEXT(" Two sentences at most, no quotation marks around your words.");
+    // The pilot hears him while flying (owner: "his lines absolutely can't be long"); the crew are read on foot.
+    Framed += Character == TEXT("Director")
+                  ? TEXT(" One short sentence, two at most, under twenty words, no quotation marks around your words.")
+                  : TEXT(" Two sentences at most, no quotation marks around your words.");
     // A question that never got its answer (server down, cancelled) must not stay in the history: the Gemma 3 and
     // Mistral chat templates raise on two user turns in a row, and the whole request fails with a 500.
     if (Turns.Num() && Turns.Last().Role == TEXT("user"))
@@ -590,8 +946,10 @@ void USSNpcTalkSubsystem::PostToLlama(const FString &Character)
     Request->SetURL(FString::Printf(TEXT("http://127.0.0.1:%d/v1/chat/completions"), LlamaPort));
     Request->SetVerb(TEXT("POST"));
     Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-    Request->SetContentAsString(
-        SSNpcTalk::ChatBody(System, History.FindOrAdd(Character), MaxReplyTokens, Temperature, RepeatPenalty));
+    Request->SetContentAsString(SSNpcTalk::ChatBody(
+        System, History.FindOrAdd(Character),
+        Character == TEXT("Director") ? FMath::Min(MaxReplyTokens, DirectorReplyTokens) : MaxReplyTokens, Temperature,
+        RepeatPenalty));
     Request->SetTimeout(60.f);
     Request->OnProcessRequestComplete().BindWeakLambda(
         this,

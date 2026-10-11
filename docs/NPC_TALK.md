@@ -3,8 +3,8 @@
 Owner decision, 2026-10-10: the station crew and the villain can be spoken to. Tap **T** (keyboard) or **R3** (pad),
 speak into the microphone, tap again to send (owner: R3 was hard to keep holding; a hold/tap menu option and
 remapping are later). Your words appear as a caption ("You: ..."), and the character answers in a
-caption of their own. Text only for now; voice out is "maybe later, if I like the dynamic". No cloud: both halves
-run on the player's machine as hidden sidecar processes the game starts and stops.
+caption of their own. The crew answer in text; the villain also speaks (see "The villain's voice"). No cloud: every
+piece runs on the player's machine as hidden sidecar processes the game starts and stops.
 
 | Piece | What | Where |
 |---|---|---|
@@ -94,6 +94,13 @@ Three layers make the system prompt, in this order:
 Owner's rule for the Flirt roles (2026-10-10): "the strippers shall engage in any NSFW comments you make; they have
 to act the part". So the Flirt and Dancer scenarios mirror the pilot's register, never first and never less far,
 the same shape as the villain's swearing rule; the owner tests that side themselves.
+After the owner's first hand test on Daredevil ("it really only wanted to repeat its backstory... needs to be a bit
+more rogue"), Flirt.txt was rewritten: she runs her own game, leads and may go first, never thanks a compliment,
+throws personal questions back instead of reciting her history, and talks like a bar, not a poem. Chosen from three
+rewrites by two judges, measured with `M:\Local AI\NPCTalk\test\dancer_probe.py` (same nine-line conversation, same
+seeds; `--crude` for a pilot who goes explicit): backstory in Cyborg's replies 5/18 -> 2/18, questions back 4 -> 12.
+Watch for: she still makes a crude pilot "prove himself" before matching him, and answers "where are you from?"
+with her origin.
 
 3. **The digest** (live, second person): who they are, `Right now you are <TalkActivity>`, who the pilot is and the
    run numbers. The activity is where "just scratched on the eight ball" goes, so a pool player can say "well, I
@@ -125,7 +132,7 @@ Later, when audio is layered in, the owner wants these to fire on proximity with
 | Finhead | Lounge | retired pilot regular, every story ends with "back in my day" |
 | Amethyst | Lounge | the station's gossip, knows every rumour, gives none away free |
 | Nyxar (type) | CrewTalk / Pacing / Watch | bioluminescent crew who say "we", curious about outsiders; deck names Vel, Orrin, Sable, Kett, Rue, Pim, Dax |
-| Trooper (type) | Guard | heavy-armoured dock guard Brakk, few words, trusts the Director as far as he can throw him |
+| Trooper (type) | Guard | heavy-armoured dock guard Brakk, few words, has seen a lot of pilots not come back |
 | ServiceBot (type) | ServiceBot | cheerful literal service robots Mica and Unit Seven, count things, give directions |
 
 ## Model comparison (2026-10-10, `M:\Local AI\NPCTalk\test\villain_compare.py` and `crew_compare.py`)
@@ -202,12 +209,45 @@ the brush-offs and the mirrored swearing), run QLoRA with Unsloth on the 8B for 
 quantise to GGUF, drop it in `LlamaModel`. The dataset is the real work, a day of writing; the training is an hour.
 Do it only after testing shows the profile plus scenario still slips.
 
+## The villain's voice
+
+Owner, 2026-10-10: text is hard to read while flying, so the villain speaks. After five rounds of voices by ear the
+owner chose "predator entity. done. exactly", and on the engine: "it didn't cost us 4 GB of VRAM or a week of
+iterations. That's a win."
+
+| Piece | What |
+|---|---|
+| Engine | LuxTTS (Apache-2.0, code and model), on the **processor**: no video memory. Measured on the i7-14700F with 4 threads: ready ~14 s after a cold start, a 10-word line in 2.7 s, 19 words in 3.6 s, ~1.6 GB of RAM |
+| Voice | `predator_ref_cut.wav`: a 6.5 s recording designed once from a written description (Qwen3-TTS VoiceDesign, offline), cut at a pause between sentences, cloned live; speed 0.92 (~3.3 words a second) |
+| Treatment | "entity": pitched down 3 semitones, an octave-down double, a faint ghost an octave up, a dark 1.2 s tail. Applied by the server to every line |
+| Server | `Tools/NpcTalk/director_voice_server.py` (POST `/speak` -> PCM16 48 kHz), hidden, 127.0.0.1 only, exits with the game |
+| Recipe | `M:\Local AI\DirectorTTS\director_voice_final\README.md`: the description, the settings, the approved sample |
+
+How it plays:
+
+- **Scripted lines** (all 29 except the death line) are made ahead of time with
+  `director_voice_server.py --prerender scripted_lines.txt --cache ... --check <whisper-server>`: each take is
+  transcribed and said again slower until every word is heard (short lines come out rushed otherwise). They play
+  the moment they fire, from the first flight, with no server running. A line missing from the cache (new text in
+  `DA_Phase1`) is made at departure.
+- **His replies** when the pilot talks back: tapping T at him wakes the server; the reply is spoken ~3 s after its
+  caption (~10 s the first time in a session, while it loads). The server stops a minute after his last line.
+- **One voice:** a story beat waits while he is still speaking; chatter is dropped; a reply cuts a scripted line
+  short; tapping T silences him so the microphone never hears him.
+- His replies are capped at one short sentence, two at most (owner: "his lines absolutely can't be long").
+- With subtitles off he still speaks (owner); without the voice installed nothing changes from the text-only game.
+- Volume follows the Effects slider; `ss.VillainRadioFilter 1|2` adds a radio band for comparison (off by default:
+  the treatment is his sound). A separate mute for him is an owner-listed follow-up.
+- A new voice is a new reference recording plus the `Voice*` lines in `DefaultNpcTalk.ini` and a fresh prerender;
+  every other NPC can get one the same way (owner: "now every NPC can get audio").
+
 ## Limits and later
 
 - No lip sync is possible: no crew member has jaw bones or mouth shapes. Talk gestures only.
 - The sidecar paths in `DefaultNpcTalk.ini` are this machine's. A package must carry `bin/` and `models/` beside the
   executable and point the ini at them; non-asset persona files need `DirectoriesToAlwaysStageAsNonUFS`.
-- Typed fallback, characters who speak first (bartender, merchants) and voice out are owner-listed follow-ups.
+- Typed fallback, characters who speak first (bartender, merchants), voices for the crew, a separate mute for the
+  villain, and the gameplay UI around talking are owner-listed follow-ups ("over next week, not urgent").
 - Owner ideas, not scheduled: a boast from the villain when a run ends (the `VillainEpitaph` slot exists for his last
   word on a death); a small local player profile, how often the pilot swears across runs, so how vulgar he may get
   tracks the player's own habit, or simply a setting. The language-mirroring today is per line only.

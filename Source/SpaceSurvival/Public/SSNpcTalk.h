@@ -57,6 +57,36 @@ SPACESURVIVAL_API bool HasProfanity(const FString &Text);
 SPACESURVIVAL_API FString GivenName(const FString &Type, const FString &Seed);
 /** "SK_Dread" -> "Dread", "SKM_Nyxar" -> "Nyxar". The crew meshes carry the character's name. */
 SPACESURVIVAL_API FString CharacterNameFromMesh(const FString &MeshName);
+
+/** One line in the villain's voice: mono 16-bit little-endian PCM at SampleRate. */
+struct FVoiceClip
+{
+    TArray<uint8> Pcm;
+    int32 SampleRate = 0;
+    bool IsValid() const
+    {
+        return SampleRate > 0 && Pcm.Num() >= 2;
+    }
+    float Seconds() const
+    {
+        return IsValid() ? float(Pcm.Num() / 2) / float(SampleRate) : 0.f;
+    }
+};
+/** The voice server's reply body and X-Sample-Rate header as a clip ready to play: an odd trailing byte dropped and
+ *  a quarter second of silence after the last word, so the tail is never clipped. An empty body or a rate outside
+ *  8-48 kHz is no clip; no header means LuxTTS's own 48 kHz. */
+SPACESURVIVAL_API FVoiceClip VoiceClip(const TArray<uint8> &Body, const FString &RateHeader);
+/** Arguments for Tools/NpcTalk/director_voice_server.py. Empty when a path holds a double quote, which the command
+ *  line cannot carry. */
+SPACESURVIVAL_API FString VoiceArgs(const FString &Script, const FString &Repo, const FString &Reference, float Speed,
+                                    int32 Threads, const FString &Treatment, int32 Port, uint32 ParentPid);
+/** The file a line is kept in: an MD5 of "<reference file>|<speed>|<treatment>|<line>", exactly as the server's
+ *  --prerender names it, so lines made ahead of time are found. A new voice, speed or treatment is a new name. */
+SPACESURVIVAL_API FString VoiceCacheName(const FString &Reference, float Speed, const FString &Treatment,
+                                         const FString &Text);
+/** How long a line may wait for its voice before the caption carries it alone. A scripted line heard seconds after
+ *  its caption is worse than none; a reply is what the pilot asked for, so it waits longer. */
+SPACESURVIVAL_API float VoiceDeadline(const FString &Text, bool bReply);
 } // namespace SSNpcTalk
 
 UENUM()
@@ -195,6 +225,58 @@ public:
     UPROPERTY(Config)
     FString StationLlamaExtraArgs;
 
+    /** The villain's voice (owner 2026-10-10: text is hard to read while flying). LuxTTS on the processor, no video
+     *  memory. Optional like the rest: its python, the server script, the LuxTTS checkout and the voice recording
+     *  all on disk at start-up, else he stays text-only. His scripted lines are made ahead and kept on disk; the
+     *  server itself only runs while there is something new to say. */
+    bool IsVoiceEnabled() const;
+    /** Start the voice server unless it runs. Idempotent; it answers a few seconds after the first call. */
+    void EnsureVoice();
+    void StopVoice();
+    /** Say Text in his voice. Done runs on the game thread with the clip - at once when it was made before (bKeep
+     *  lines are kept, on disk too), else when the server answers, empty when it could not. False when there is
+     *  no voice: the caption carries the line alone. Only the newest unanswered line is kept waiting. */
+    bool Speak(const FString &Text, bool bKeep, TFunction<void(const SSNpcTalk::FVoiceClip &)> Done);
+    /** Make his scripted lines ahead, behind any live line, so they play the moment they fire. Lines already made
+     *  in an earlier session come off the disk instead. */
+    void Prerender(const TArray<FString> &Lines);
+    UPROPERTY(Config)
+    bool bVoiceEnabled = true;
+    /** The LuxTTS venv's python.exe (not pythonw.exe). */
+    UPROPERTY(Config)
+    FString VoicePython;
+    /** Relative to the project folder unless absolute. */
+    UPROPERTY(Config)
+    FString VoiceScript = TEXT("Tools/NpcTalk/director_voice_server.py");
+    /** The LuxTTS checkout (its zipvoice package is not pip-installed). */
+    UPROPERTY(Config)
+    FString VoiceRepo;
+    /** The voice itself: a short recording cut at a pause, its speed and the treatment on top ("entity", "none").
+     *  A new voice is these lines, never code. */
+    UPROPERTY(Config)
+    FString VoiceReference;
+    UPROPERTY(Config)
+    float VoiceSpeed = 0.92f;
+    UPROPERTY(Config)
+    FString VoiceTreatment = TEXT("entity");
+    /** Processor threads for a line made live; the game is running beside it. */
+    UPROPERTY(Config)
+    int32 VoiceThreads = 4;
+    /** Where his lines are kept, made ahead by the server's --prerender or kept as they are made. Empty: Saved/. */
+    UPROPERTY(Config)
+    FString VoiceCacheDirectory;
+    UPROPERTY(Config)
+    int32 VoicePort = 8703;
+    /** A refused connection this soon after launch means "still loading", and is retried every second. */
+    UPROPERTY(Config)
+    float VoiceStartupSeconds = 60.f;
+    /** The server is stopped this long after its last line, or after a start nothing used. */
+    UPROPERTY(Config)
+    float VoiceIdleSeconds = 60.f;
+    /** His replies are heard mid-flight, so they are capped harder than the crew's. */
+    UPROPERTY(Config)
+    int32 DirectorReplyTokens = 48;
+
 private:
     void StopServers();
     void Fail(const FString &Character, const FString &Why);
@@ -222,4 +304,27 @@ private:
     TMap<FString, TArray<SSNpcTalk::FTurn>> History;
     TMap<FString, FSSTalkIdentity> Known;
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> Pending;
+
+    struct FVoiceJob
+    {
+        int32 Id = 0;
+        FString Text;
+        TFunction<void(const SSNpcTalk::FVoiceClip &)> Done;
+        bool bLive = false, bKeep = false;
+    };
+    FString VoiceScriptPath() const;
+    FString VoiceCacheFile(const FString &Text) const;
+    bool FindVoiceClip(const FString &Text, SSNpcTalk::FVoiceClip &Out);
+    /** Send the next job; one at a time, as the server works one line at a time. */
+    void PumpVoice();
+    void FinishVoiceJob(int32 Id, const FString &Text, bool bKeep, const SSNpcTalk::FVoiceClip &Clip);
+    void ArmVoiceIdle();
+    bool bVoiceInstalled = false, bVoiceReady = false;
+    FProcHandle VoiceProc;
+    double VoiceStartedAt = 0.0, PrerenderStartedAt = 0.0;
+    int32 VoiceCrashes = 0, NextVoiceJob = 0, InFlightVoiceJob = 0, Prerendered = 0;
+    TArray<FVoiceJob> VoiceJobs;
+    TMap<FString, SSNpcTalk::FVoiceClip> VoiceCache;
+    TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> VoicePending;
+    FTimerHandle VoiceRetryTimer, VoiceIdleTimer;
 };

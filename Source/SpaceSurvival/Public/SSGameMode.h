@@ -214,6 +214,28 @@ private:
     TObjectPtr<class UAudioComponent> MusicPressure;
     UPROPERTY()
     TObjectPtr<class UAudioComponent> MusicClimax;
+    /** His voice (SSNpcTalk): one channel, so a story beat waits while he speaks and a reply cuts a line short. */
+    UPROPERTY()
+    TObjectPtr<class UAudioComponent> VillainRadio;
+    UPROPERTY()
+    TObjectPtr<class USoundWaveProcedural> VillainRadioWave;
+    SSNpcTalk::FVoiceClip VillainRadioReady;
+    /** What was last handed to his voice, enabled or not: the line alone, never the caption's "Sable: " (tests). */
+    FString LastVoiceText;
+    int32 VillainVoiceTicket = 0;
+    bool bVillainVoiceWaiting = false;
+    float VillainVoiceWait = 0.f, VillainVoiceDeadline = 0.f, VillainRadioLeft = 0.f;
+    double VillainVoiceAskedAt = 0.0;
+    /** He is saying a line, about to (made, or still being made), or the pilot's microphone is open: nothing new
+     *  starts, so the microphone never hears him. */
+    bool VillainRadioBusy() const
+    {
+        return bVillainVoiceWaiting || VillainRadioReady.IsValid() || VillainRadioLeft > 0.f || IsTalkListening();
+    }
+    void SpeakVillain(const FString &Text, bool bReply);
+    void StopVillainRadio();
+    void UpdateVillainRadio(float Dt);
+    TArray<FString> VillainLinesToVoice() const;
     UPROPERTY()
     TObjectPtr<class UMaterialInstanceDynamic> SpaceMaterial;
     UPROPERTY()

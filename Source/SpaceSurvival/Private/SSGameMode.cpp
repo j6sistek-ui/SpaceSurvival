@@ -36,6 +36,7 @@
 #include "EngineUtils.h"
 #include "Sound/SoundBase.h"
 #include "Sound/SoundAttenuation.h"
+#include "Sound/SoundWaveProcedural.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -61,16 +62,25 @@ TAutoConsoleVariable<int32>
 // Owner decision, September 29: the villain talks. Story beats and a little chatter on his own caption line.
 TAutoConsoleVariable<int32> VillainVoice(TEXT("ss.VillainVoice"), 1,
                                          TEXT("1 lets the villain speak on his own caption line; 0 silences him."));
+// Whether his voice goes out through a radio band. Off: the "entity" treatment is already his sound (owner,
+// 2026-10-10), and a radio band thins the depth he was chosen for. Switchable live in flight to compare.
+TAutoConsoleVariable<int32> VillainRadioFilter(TEXT("ss.VillainRadioFilter"), 0,
+                                               TEXT("The villain's voice: 0 as made, 1 light radio band, "
+                                                    "2 classic thin radio."));
 /** Every villain line stays up at least this long before another replaces it. */
 constexpr float VillainMinimumLineSeconds = 2.f;
 /** More than the distinct story beats in one five-wave block; never retain unbounded dialogue. */
 constexpr int32 MaximumVillainPendingCues = 16;
-/** He speaks only in survival, and only while both of his dials allow it. */
+/** He speaks only in survival, and only while both of his dials allow it - and someone can take him in: the caption
+ *  with subtitles on, his voice when it is installed (owner 2026-10-10: with subtitles off "he should still speak"). */
 bool VillainVoiceOn(const ASSGameMode *Mode)
 {
     const auto *GI = Mode->GetGameInstance<USSGameInstance>();
-    return GI && !GI->IsFreeFlight() && GI->Session.settings.subtitles && VillainEnabled.GetValueOnGameThread() != 0 &&
-           VillainVoice.GetValueOnGameThread() != 0;
+    if (!GI || GI->IsFreeFlight() || VillainEnabled.GetValueOnGameThread() == 0 ||
+        VillainVoice.GetValueOnGameThread() == 0)
+        return false;
+    const auto *Talk = GI->GetSubsystem<USSNpcTalkSubsystem>();
+    return GI->Session.settings.subtitles || (Talk && Talk->IsVoiceEnabled());
 }
 const TCHAR *UpgradeNames[] = {TEXT("Hull"), TEXT("Shield"), TEXT("Engine"), TEXT("Thrusters"), TEXT("Weapon")};
 FString WeaponName(SS::Weapon W)
@@ -110,6 +120,11 @@ ASSGameMode::ASSGameMode()
     MusicBase->SetupAttachment(RootComponent);
     MusicPressure->SetupAttachment(RootComponent);
     MusicClimax->SetupAttachment(RootComponent);
+    // His voice: not placed in the world, so it pauses with the game like the music does.
+    VillainRadio = CreateDefaultSubobject<UAudioComponent>(TEXT("VillainRadio"));
+    VillainRadio->SetAutoActivate(false);
+    VillainRadio->SetupAttachment(RootComponent);
+    VillainRadio->bAllowSpatialization = false;
 }
 void ASSGameMode::UpdateMusicMix()
 {
@@ -257,7 +272,8 @@ bool ASSGameMode::VillainSpeak(ESSVillainCue Cue)
     // Hidden or overlapping story beats wait in order. Chatter is only relevant to the current moment and
     // never enters that queue. Capture the wave now, not when a menu closes after the next wave has begun.
     const bool bFresh = VillainLineSeconds > 0.f && VillainLineShown < VillainMinimumLineSeconds;
-    const bool bWaiting = IsMenuOpen() || bFresh || !VillainPendingCues.IsEmpty();
+    // One voice: nothing new starts while he is still saying the last line, or about to.
+    const bool bWaiting = IsMenuOpen() || bFresh || !VillainPendingCues.IsEmpty() || VillainRadioBusy();
     const int32 Wave = GetGameInstance<USSGameInstance>()->Session.run.wave;
     if (bChatter)
     {
@@ -288,10 +304,105 @@ bool ASSGameMode::ShowVillainLine(ESSVillainCue Cue, int32 Wave)
         Talk->EnsureServers();
     // Chatter never lands on top of a line he has just said, story or not.
     VillainChatterCooldown = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain.ChatterCooldown;
+    // Said without the caption's name ("Sable: ..."): VillainLastLine is the line alone.
+    SpeakVillain(VillainLastLine, false);
     return true;
+}
+void ASSGameMode::SpeakVillain(const FString &Text, bool bReply)
+{
+    LastVoiceText = Text;
+    StopVillainRadio();
+    auto *Talk = NpcTalk();
+    if (!Talk || !Talk->IsVoiceEnabled() || Text.IsEmpty())
+        return;
+    const int32 Ticket = VillainVoiceTicket;
+    bVillainVoiceWaiting = true;
+    VillainVoiceWait = 0.f;
+    VillainVoiceDeadline = SSNpcTalk::VoiceDeadline(Text, bReply);
+    VillainVoiceAskedAt = FPlatformTime::Seconds();
+    // Scripted lines are kept (on disk too) so they play at once from then on; a reply is said once.
+    if (!Talk->Speak(Text, !bReply,
+                     [WeakThis = TWeakObjectPtr<ASSGameMode>(this), Ticket](const SSNpcTalk::FVoiceClip &Clip)
+                     {
+                         ASSGameMode *Mode = WeakThis.Get();
+                         if (!Mode || Mode->VillainVoiceTicket != Ticket)
+                             return; // overtaken, too late or cleared
+                         Mode->bVillainVoiceWaiting = false;
+                         if (Clip.IsValid())
+                             Mode->VillainRadioReady = Clip; // played on the next tick, never from here
+                     }))
+        bVillainVoiceWaiting = false;
+}
+void ASSGameMode::StopVillainRadio()
+{
+    ++VillainVoiceTicket;
+    bVillainVoiceWaiting = false;
+    VillainRadioReady = SSNpcTalk::FVoiceClip();
+    VillainRadioLeft = 0.f;
+    if (VillainRadio && VillainRadio->IsPlaying())
+        VillainRadio->Stop();
+}
+void ASSGameMode::UpdateVillainRadio(float Dt)
+{
+    if (bVillainVoiceWaiting && (VillainVoiceWait += Dt) > VillainVoiceDeadline)
+    {
+        // Late audio is worse than none: this line is the caption's alone.
+        ++VillainVoiceTicket;
+        bVillainVoiceWaiting = false;
+        UE_LOG(LogTemp, Display, TEXT("director voice: too late after %.1f s, caption only"), VillainVoiceWait);
+    }
+    if (VillainRadioReady.IsValid() && VillainRadio)
+    {
+        // The whole line is queued at once, from the game thread: one producer for the wave's queue.
+        auto *Wave = NewObject<USoundWaveProcedural>(this);
+        Wave->SetSampleRate(uint32(VillainRadioReady.SampleRate));
+        Wave->NumChannels = 1;
+        Wave->Duration = VillainRadioReady.Seconds();
+        Wave->SoundGroup = SOUNDGROUP_Voice;
+        Wave->bLooping = false;
+        Wave->QueueAudio(VillainRadioReady.Pcm.GetData(), VillainRadioReady.Pcm.Num());
+        VillainRadioWave = Wave;
+        const int32 Filter = VillainRadioFilter.GetValueOnGameThread();
+        VillainRadio->SetHighPassFilterEnabled(Filter > 0);
+        VillainRadio->SetLowPassFilterEnabled(Filter > 0);
+        VillainRadio->SetHighPassFilterFrequency(Filter >= 2 ? 300.f : 120.f);
+        VillainRadio->SetLowPassFilterFrequency(Filter >= 2 ? 3400.f : 5000.f);
+        VillainRadio->SetSound(Wave);
+        VillainRadio->SetVolumeMultiplier(SSAudio::EffectsGain(this));
+        VillainRadio->Play();
+        VillainRadioLeft = Wave->Duration;
+        // The caption stays up while he is still talking.
+        VillainLineSeconds = FMath::Max(VillainLineSeconds, VillainRadioLeft + .75f);
+        UE_LOG(LogTemp, Display, TEXT("director voice: %.1f s line, first sound %.0f ms after the caption"),
+               VillainRadioLeft, (FPlatformTime::Seconds() - VillainVoiceAskedAt) * 1000.0);
+        VillainRadioReady = SSNpcTalk::FVoiceClip();
+    }
+    // A procedural wave never ends by itself: it plays silence until stopped.
+    if (VillainRadioLeft > 0.f && (VillainRadioLeft -= Dt) <= 0.f)
+    {
+        VillainRadioLeft = 0.f;
+        if (VillainRadio)
+            VillainRadio->Stop();
+    }
+}
+TArray<FString> ASSGameMode::VillainLinesToVoice() const
+{
+    // His first line of a flight first, then what fires often, then the rest. The death line is not voiced yet.
+    const FSSVillainDefinition &Data = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain;
+    const ESSVillainCue Order[] = {ESSVillainCue::RunStart, ESSVillainCue::WaveStart, ESSVillainCue::Launch,
+                                   ESSVillainCue::Hit,      ESSVillainCue::Kill,      ESSVillainCue::Volley,
+                                   ESSVillainCue::LowHull,  ESSVillainCue::Wormhole,  ESSVillainCue::Climax,
+                                   ESSVillainCue::Compound, ESSVillainCue::Retreat,   ESSVillainCue::Finale};
+    TArray<FString> Out;
+    for (const ESSVillainCue Cue : Order)
+        for (const FSSVillainLine &Line : Data.Lines)
+            if (Line.Cue == Cue && !Line.Text.IsEmpty())
+                Out.AddUnique(Line.Text);
+    return Out;
 }
 void ASSGameMode::ClearVillainDialogue()
 {
+    StopVillainRadio();
     VillainLine.Empty();
     VillainLineSeconds = VillainLineShown = VillainChatterCooldown = 0.f;
     VillainPendingCues.Reset();
@@ -352,14 +463,16 @@ void ASSGameMode::UpdateThreatFeedback(float Dt)
     TalkTranscriptSeconds = FMath::Max(0.f, TalkTranscriptSeconds - Dt);
     if (!VillainVoiceOn(this))
         ClearVillainDialogue();
-    else if (!IsMenuOpen())
+    else
+        UpdateVillainRadio(Dt);
+    if (VillainVoiceOn(this) && !IsMenuOpen())
     {
         // Reward and depot panels leave the world live but hide this caption. Only visible time counts as
         // reading time, and no story beat is consumed behind those panels.
         VillainLineSeconds = FMath::Max(0.f, VillainLineSeconds - Dt);
         VillainLineShown += Dt;
         VillainChatterCooldown = FMath::Max(0.f, VillainChatterCooldown - Dt);
-        while (!VillainPendingCues.IsEmpty() &&
+        while (!VillainPendingCues.IsEmpty() && !VillainRadioBusy() &&
                (VillainLineSeconds <= 0.f || VillainLineShown >= VillainMinimumLineSeconds))
         {
             const FVillainPendingCue Pending = VillainPendingCues[0];
@@ -773,8 +886,13 @@ void ASSGameMode::CommitBoardedDeparture()
 void ASSGameMode::BeginDeparture()
 {
     // Leaving the station is combat from here: the station talker is unloaded and the GPU is the game's again.
+    // His voice runs on the processor. Lines made ahead are found on disk; only lines missing there are made now.
     if (auto *Talk = NpcTalk())
+    {
         Talk->SetContext(ESSTalkContext::Flight);
+        if (VillainVoiceOn(this))
+            Talk->Prerender(VillainLinesToVoice());
+    }
     if (!Hub)
         return;
     const bool FromChair = bBoardingFlight;
@@ -2935,6 +3053,12 @@ void ASSGameMode::BeginTalk()
         Announce(Talk->LastError());
         return;
     }
+    if (Target.Name == TEXT("Director"))
+    {
+        // The microphone must not hear him, and his voice wakes now (a few seconds) so the answer can be spoken.
+        StopVillainRadio();
+        Talk->EnsureVoice();
+    }
     TalkingTo = Target;
     NpcName = Target.Name;
     TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
@@ -3070,6 +3194,17 @@ void ASSGameMode::OnNpcReply(const FString &Character, const FString &Text)
         VillainLine = Text;
         VillainLineSeconds = FMath::Clamp(4.f + .07f * Text.Len(), 6.f, 16.f);
         VillainLineShown = 0.f;
+        SpeakVillain(Text, true);
+        // With subtitles off his own caption is hidden; the conversation's line carries his answer, as it does for the
+        // crew, so an answer the voice cannot deliver is never lost.
+        const auto *GI = GetGameInstance<USSGameInstance>();
+        if (GI && !GI->Session.settings.subtitles)
+        {
+            const FString &Shown = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain.DisplayName;
+            NpcName = Shown.IsEmpty() ? Character : Shown;
+            NpcLine = Text;
+            NpcLineSeconds = VillainLineSeconds;
+        }
         return;
     }
     NpcName = Character;
