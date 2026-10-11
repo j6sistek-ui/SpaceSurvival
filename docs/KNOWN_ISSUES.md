@@ -2388,5 +2388,15 @@ finish"). `SpaceSurvival.Flight.DirectionalDodgeCollision` ("the wall is what st
 claude/tripo-rigging-npc-animations-3e5a1c identically with and without the tap-to-talk change. Unknown yet whether
 they come from this branch's Tripo crew / talk commits, from main, or from this machine.
 
+Update 2026-10-11 (full suite after the villain-voice commit 9945645): 102 pass, 14 fail - the three above plus
+eleven Integration suites: AcceleratedTenWaveJourney, ContractArrivalFeedback, DockingAdmission, HeroSlotTransforms,
+ShipPresentationSelection, StationAsteroidCollision, StationChaseCamera, StationDepartureBoundary,
+StationResetCollision, StationResetStaff, StationServiceFeedback. Their messages are about station content: station
+collision boxes with no blocking body, "the two intended visible staff" counted 0, no floor under the walker spawn,
+a hero mount 22.5 instead of 27.9, a walker scale 1.511 instead of 1.5. Not caused by the voice: four of them
+(DockingAdmission, HeroSlotTransforms, StationResetCollision, StationResetStaff) fail the same way at 315cd50, built
+without it, and in the combined test copy. Both worktrees borrow the main checkout's Content through junctions, and
+its L_WayfarerRuntime.umap was saved 2026-10-10 12:27; not investigated further.
+
 Talk follow-ups the owner deferred the same day: a menu option choosing tap or hold for the talk key, and in-game
 key remapping per user preference. Today the key is tap T / R3 to start, tap again to send.
