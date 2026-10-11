@@ -172,6 +172,51 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
     }
     TestTrue(TEXT("a tagged component is someone"), SSNpcTalk::HasTalkTag(TArray<FName>({TEXT("TalkType:Nyxar")})));
     TestFalse(TEXT("scenery is not"), SSNpcTalk::HasTalkTag(TArray<FName>({TEXT("StationRobotStaff")})));
+
+    // The villain's voice (Tools/NpcTalk/director_voice_server.py): raw PCM16 plus X-Sample-Rate.
+    {
+        TArray<uint8> Raw;
+        Raw.SetNumZeroed(96001);
+        const SSNpcTalk::FVoiceClip Clip = SSNpcTalk::VoiceClip(Raw, TEXT("48000"));
+        TestEqual(TEXT("an odd byte is dropped and a quarter second of silence follows the last word"), Clip.Pcm.Num(),
+                  96000 + 24000);
+        TestEqual(TEXT("the clip keeps the server's rate"), Clip.SampleRate, 48000);
+        TestFalse(TEXT("an empty body is no clip"), SSNpcTalk::VoiceClip(TArray<uint8>(), TEXT("48000")).IsValid());
+        TestEqual(TEXT("no rate header means LuxTTS's own 48 kHz"), SSNpcTalk::VoiceClip(Raw, TEXT("")).SampleRate,
+                  48000);
+        TestFalse(TEXT("a nonsense rate is refused"), SSNpcTalk::VoiceClip(Raw, TEXT("96000")).IsValid());
+        TestFalse(TEXT("a zero rate is refused"), SSNpcTalk::VoiceClip(Raw, TEXT("0")).IsValid());
+    }
+    {
+        const FString Args = SSNpcTalk::VoiceArgs(TEXT("C:/a b/server.py"), TEXT("C:/Lux/"), TEXT("M:/v/ref.wav"), .92f,
+                                                  4, TEXT("entity"), 8703, 42);
+        TestTrue(TEXT("every path is quoted and a trailing slash cannot escape its quote"),
+                 Args.StartsWith(TEXT("\"C:/a b/server.py\"")) && Args.Contains(TEXT("--lux-repo \"C:/Lux\" ")));
+        TestTrue(TEXT("speed, threads, treatment, port and parent all travel"),
+                 Args.Contains(TEXT("--speed 0.92")) && Args.Contains(TEXT("--threads 4")) &&
+                     Args.Contains(TEXT("--treatment \"entity\"")) && Args.Contains(TEXT("--port 8703")) &&
+                     Args.Contains(TEXT("--parent-pid 42")));
+        TestTrue(TEXT("a quote in a path is refused, not mangled"),
+                 SSNpcTalk::VoiceArgs(TEXT("C:/a\"b.py"), TEXT("C:/Lux"), TEXT("M:/r.wav"), .92f, 4, TEXT("entity"),
+                                      8703, 42)
+                     .IsEmpty());
+    }
+    // The name the server's --prerender gives a line (md5 of "predator_ref_cut.wav|0.92|entity|Fetch.", Python):
+    // the game must find the lines made ahead of time.
+    TestEqual(TEXT("a line made ahead is found under the server's name for it"),
+              SSNpcTalk::VoiceCacheName(TEXT("M:/anywhere/predator_ref_cut.wav"), .92f, TEXT("entity"), TEXT("Fetch.")),
+              FString(TEXT("abb6b07d574d96cb727ac1df10ad746e.pcm")));
+    TestNotEqual(TEXT("a new speed is a new name"),
+                 SSNpcTalk::VoiceCacheName(TEXT("predator_ref_cut.wav"), .88f, TEXT("entity"), TEXT("Fetch.")),
+                 FString(TEXT("abb6b07d574d96cb727ac1df10ad746e.pcm")));
+    TestTrue(TEXT("a longer line may wait longer for its voice"),
+             SSNpcTalk::VoiceDeadline(TEXT("one two three four five six seven eight nine ten"), false) >
+                 SSNpcTalk::VoiceDeadline(TEXT("Fetch."), false));
+    TestTrue(TEXT("a scripted line gives up within ten seconds"),
+             SSNpcTalk::VoiceDeadline(FString::ChrN(400, TEXT('a')).Replace(TEXT("aaaa"), TEXT("aa ")), false) <= 10.f);
+    TestTrue(TEXT("a reply waits longer than a scripted line"),
+             SSNpcTalk::VoiceDeadline(TEXT("Run to your station."), true) >
+                 SSNpcTalk::VoiceDeadline(TEXT("Run to your station."), false));
     return true;
 }
 

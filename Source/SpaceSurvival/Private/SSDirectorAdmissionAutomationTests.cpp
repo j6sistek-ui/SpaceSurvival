@@ -984,6 +984,13 @@ bool FSSDirectorVillainVoice::RunTest(const FString &)
     TestTrue(TEXT("His line stays up long enough to read"), F.Mode->VillainLineSeconds >= 3.5f);
     TestEqual(TEXT("He does not displace the announcement"), F.Mode->Announcement, Announcement);
     TestEqual(TEXT("He does not displace the pilot"), F.Mode->PilotReaction, Reaction);
+    // His voice (SSNpcTalk) is never on under automation, so caption timing is the whole story in this test; what
+    // would have been spoken is the line alone, never the caption's name.
+    TestFalse(TEXT("No voice under automation"), F.Mode->NpcTalk() && F.Mode->NpcTalk()->IsVoiceEnabled());
+    TestFalse(TEXT("His voice is handed something to say"), F.Mode->LastVoiceText.IsEmpty());
+    TestEqual(TEXT("His voice is handed the line he says"), F.Mode->LastVoiceText, F.Mode->VillainLastLine);
+    TestFalse(TEXT("His voice never says the caption's name"),
+              F.Mode->LastVoiceText.StartsWith(Villain.DisplayName + TEXT(": ")));
     TestFalse(TEXT("Chatter waits out the cooldown after any line"), F.Mode->VillainSpeak(ESSVillainCue::Kill));
     // A story cue that lands while his last line is still being read waits for it, instead of flashing that line
     // off the screen or being lost.
@@ -1006,6 +1013,22 @@ bool FSSDirectorVillainVoice::RunTest(const FString &)
     F.Mode->VillainChatterCooldown = 0.f;
     Villain.ChatterChance = 0.f;
     TestFalse(TEXT("A chatter chance of zero never speaks"), F.Mode->VillainSpeak(ESSVillainCue::Hit));
+    // One voice: while he is still speaking a line, chatter is dropped and a story beat waits for him to finish,
+    // however long the caption has been up.
+    F.Mode->UpdateThreatFeedback(10.f);
+    F.Mode->VillainChatterCooldown = 0.f;
+    Villain.ChatterChance = 1.f;
+    F.Mode->VillainRadioLeft = 4.f;
+    const FString Speaking = F.Mode->VillainLine;
+    TestFalse(TEXT("Chatter is dropped while he is speaking"), F.Mode->VillainSpeak(ESSVillainCue::Hit));
+    TestFalse(TEXT("A story beat waits while he is speaking"), F.Mode->VillainSpeak(ESSVillainCue::WaveStart));
+    F.Mode->UpdateThreatFeedback(2.5f);
+    TestEqual(TEXT("The story beat still waits 2.5 s in, past the caption minimum"), F.Mode->VillainLine, Speaking);
+    F.Mode->UpdateThreatFeedback(2.f);
+    TestTrue(TEXT("The story beat is said once he has finished"), F.Mode->VillainLine != Speaking &&
+                                                                      F.Mode->VillainPendingCues.IsEmpty() &&
+                                                                      F.Mode->VillainRadioLeft == 0.f);
+    Villain.ChatterChance = 0.f;
     Dial->SetWithCurrentPriority(0.f);
     F.Mode->UpdateThreatFeedback(10.f);
     TestFalse(TEXT("The voice dial silences even a story cue"), F.Mode->VillainSpeak(ESSVillainCue::Climax));
