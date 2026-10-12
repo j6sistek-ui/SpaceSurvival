@@ -230,7 +230,10 @@ How it plays:
   transcribed and said again slower until every word is heard (short lines come out rushed otherwise). They play
   the moment they fire, from the first flight, with no server running. A line missing from the cache (new text in
   `DA_Phase1`) is made at departure.
-- **His replies** when the pilot talks back are spoken ~3 s after their caption. The server starts with the game
+- **His replies** when the pilot talks back take about their own length to make; the caption waits for the
+  sound (owner 2026-10-12: words that lead the voice read as a delay). "The Director is answering..." stays up
+  while the line is made, the caption appears as the clip starts, and it appears alone the moment it is known
+  that no voice is coming (none asked for, the voice failed, or the deadline passed). The server starts with the game
   and stays up for the session (owner: no video memory, and the station crew will use it too); it takes ~15 s to
   load alone, ~33 s beside the editor, and about 1.6 GB of RAM. Its own log is `Saved/Logs/DirectorVoice.log`.
 - **One voice:** a story beat waits while he is still speaking; chatter is dropped; a reply cuts a scripted line
@@ -241,8 +244,9 @@ How it plays:
   the treatment is his sound). A separate mute for him is an owner-listed follow-up.
 - A new voice is a new `<Name>.wav` (and `.txt`) in the Voices folder; the Director's needs a fresh prerender.
   Today: `Director.wav` ("predator entity"), `Cyborg.wav` ("bright", picked by ear 2026-10-12, dry), `_Default.wav`.
-- **Crew replies** are spoken at the character's body (3D, full within 3 m, gone by 15 m) once the caption is up;
-  pressing T to talk silences them so the microphone never hears them. Captions stay up while they speak.
+- **Crew replies** are spoken at the character's body (3D, full within 3 m, gone by 15 m); their caption waits for
+  the voice the same way, and shows at once for a character with no voice of their own. Pressing T to talk silences
+  them so the microphone never hears them. Captions stay up while they speak.
 
 ### Until the crew meshes are optimised (2026-10-12)
 
