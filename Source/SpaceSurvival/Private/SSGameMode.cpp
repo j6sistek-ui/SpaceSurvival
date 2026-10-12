@@ -2605,17 +2605,21 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
         const FVector Look =
             (PC ? PC->GetControlRotation().Vector() : Walker->GetActorForwardVector()).GetSafeNormal2D();
         FCollisionQueryParams Sight(SCENE_QUERY_STAT(SSTalkSight), false, Walker);
-        float Nearest = 500.f;
+        // The one the pilot is looking at wins, not merely the nearest in the cone: by the stage, a crew member
+        // off to the side kept taking the key from the dancer straight ahead (owner's test, 2026-10-12).
+        float BestScore = 500.f;
         auto Consider = [&](const USkeletalMeshComponent *Mesh, FSSTalkIdentity Who)
         {
             if (!Who.IsValid())
                 return;
             const FVector At = Mesh->GetComponentLocation();
             const float Distance = FVector::Dist2D(At, From);
-            if (Distance >= Nearest)
+            const float Dot = FVector::DotProduct(Look, (At - From).GetSafeNormal2D());
+            const float Score = Distance / FMath::Max(Dot * Dot, .0625f);
+            if (Distance >= 500.f || Score >= BestScore)
                 return;
             const FVector Head = Mesh->Bounds.Origin + FVector(0.f, 0.f, Mesh->Bounds.BoxExtent.Z * .5f);
-            if (FMath::Abs(Head.Z - Eye.Z) > 220.f || FVector::DotProduct(Look, (At - From).GetSafeNormal2D()) < .25f)
+            if (FMath::Abs(Head.Z - Eye.Z) > 220.f || Dot < .25f)
                 return;
             // A placed crew actor's own capsule is not a wall; the station's walls belong to the hub, so only a hit
             // on some other actor, or on the hub itself, hides them.
@@ -2623,7 +2627,7 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
             if (GetWorld()->LineTraceSingleByChannel(Hit, Eye, Head, ECC_Visibility, Sight) &&
                 !(Hit.GetActor() && Hit.GetActor() == Mesh->GetOwner() && Mesh->GetOwner() != Hub))
                 return;
-            Nearest = Distance;
+            BestScore = Score;
             Best = MoveTemp(Who);
             BestMesh = Mesh;
         };
@@ -2654,11 +2658,16 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
                     Mesh && Mesh->GetSkeletalMeshAsset() && SSNpcTalk::HasTalkTag(Mesh->ComponentTags))
                     Consider(Mesh,
                              SSNpcTalk::IdentityFromTags(Mesh->ComponentTags, Mesh->GetSkeletalMeshAsset()->GetName()));
-        // Placed characters with a profile, such as the dancers PR 69 set on the stages as plain animated meshes.
+        // Placed characters with a profile, such as the dancers PR 69 set on the stages: a plain animated mesh or a
+        // Blueprint actor of their own (the Joy body is one; it was never looked at until 2026-10-12). Scenery,
+        // the hub, the pilot and the ambient crew handled above are skipped.
         if (const auto *Talk = NpcTalk())
-            for (TActorIterator<ASkeletalMeshActor> It(GetWorld()); It; ++It)
+            for (TActorIterator<AActor> It(GetWorld()); It; ++It)
             {
-                const USkeletalMeshComponent *Body = It->GetSkeletalMeshComponent();
+                if (*It == Hub || *It == Walker || It->IsA<AStaticMeshActor>() || It->IsA<ASSOutpostAmbientActor>() ||
+                    It->ActorHasTag(TEXT("OutpostRole:Hologram")))
+                    continue;
+                const auto *Body = It->FindComponentByClass<USkeletalMeshComponent>();
                 if (!Body || !Body->GetSkeletalMeshAsset())
                     continue;
                 FSSTalkIdentity Who;
