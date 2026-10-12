@@ -3055,7 +3055,7 @@ void ASSGameMode::BeginTalk()
     }
     if (Target.Name == TEXT("Director"))
     {
-        // The microphone must not hear him, and his voice wakes now (a few seconds) so the answer can be spoken.
+        // The microphone must not hear him; the voice runs all session, this only brings it back if it died.
         StopVillainRadio();
         Talk->EnsureVoice();
     }

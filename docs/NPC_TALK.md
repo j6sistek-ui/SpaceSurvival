@@ -230,8 +230,9 @@ How it plays:
   transcribed and said again slower until every word is heard (short lines come out rushed otherwise). They play
   the moment they fire, from the first flight, with no server running. A line missing from the cache (new text in
   `DA_Phase1`) is made at departure.
-- **His replies** when the pilot talks back: tapping T at him wakes the server; the reply is spoken ~3 s after its
-  caption (~10 s the first time in a session, while it loads). The server stops a minute after his last line.
+- **His replies** when the pilot talks back are spoken ~3 s after their caption. The server starts with the game
+  and stays up for the session (owner: no video memory, and the station crew will use it too); it takes ~15 s to
+  load alone, ~33 s beside the editor, and about 1.6 GB of RAM. Its own log is `Saved/Logs/DirectorVoice.log`.
 - **One voice:** a story beat waits while he is still speaking; chatter is dropped; a reply cuts a scripted line
   short; tapping T silences him so the microphone never hears him.
 - His replies are capped at one short sentence, two at most (owner: "his lines absolutely can't be long").
