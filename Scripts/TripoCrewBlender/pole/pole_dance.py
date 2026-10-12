@@ -286,7 +286,7 @@ def clip_idle(t):
     pelvis_at((cx + sway, 0.01 * math.sin(2 * w), STAND_Z - 0.012 + 0.01 * math.cos(2 * w)), yaw=-6 + 3 * math.sin(w), roll=-3 * math.sin(w))
     bend("spine_01", pitch=2, roll=2 * math.sin(w)); bend("spine_02", roll=1.5 * math.sin(w)); bend("spine_03", roll=2 * math.sin(w), yaw=4)
     bend("neck_01"); bend("head")
-    want["hand_r"] = on_pole(-40, 1.30 + 0.01 * math.sin(w)); E["elbow_r"].location = (0.24, -0.14, 1.12)   # side hold
+    want["hand_r"] = on_pole(0, 1.30 + 0.01 * math.sin(w)); E["elbow_r"].location = (0.22, -0.10, 1.10)   # side hold
     solve(want); grip_pole(want, "r", 1.44 + 0.01 * math.sin(w))
     want["hand_l"] = (cx + 0.25 + 0.02 * math.sin(w), 0.04, 0.86 + 0.01 * math.sin(w)); E["elbow_l"].location = (cx + 0.5, 0.5, 0.9)
     E["look"].location = (cx - 0.3 + 0.4 * math.sin(w * 0.5), -2.5, 1.55)
@@ -303,9 +303,10 @@ def clip_hipcircle(t):
     bend("spine_03", pitch=-5 * math.cos(w), roll=-4 * math.sin(w), yaw=6); bend("neck_01"); bend("head")
     # Side hold at chest height, elbow hanging low beside her (owner 2026-10-12: the shoulder-high hold with the elbow
     # 40 cm behind her hyperextended the arm while she faced the audience).
-    # The grip is on the pole's front face (azimuth -40: toward the audience) with the elbow guided forward and down, so
-    # the upper arm stays in front of the chest plane (the shoulder check); a level side grab read 48 deg behind it.
-    want["hand_r"] = on_pole(-40, 1.30); E["elbow_r"].location = (0.24, -0.14, 1.12)
+    # The grip is on the pole's body-facing side (owner 2026-10-12: "the arm shouldn't be in front of the pole") with the
+    # elbow guided forward and down, so the upper arm stays in front of the chest plane (the shoulder check: a level
+    # side grab with the elbow behind her read 48 deg) while the forearm stays beside the pole, never across it.
+    want["hand_r"] = on_pole(0, 1.30); E["elbow_r"].location = (0.22, -0.10, 1.10)
     solve(want); grip_pole(want, "r", 1.30)
     want["hand_l"] = PB["pelvis"].head + Vector((0.19, -0.03, -0.02)); E["elbow_l"].location = (cx + 0.6, 0.4, 0.95)
     E["look"].location = (cx - 0.2 + 0.3 * math.sin(w), -2.5, 1.5)
@@ -387,7 +388,7 @@ def clip_kick(t):
     E["knee_l"].location = (cx + 0.6, -0.6, 0.6 + 0.4 * lift); E["knee_r"].location = (cx - 0.15, -0.8, 0.5)
     pelvis_at((cx - 0.05 * lift, 0.0, STAND_Z - 0.03 - 0.03 * lift), yaw=-8, roll=14 * lift)
     bend("spine_01", roll=-6 * lift); bend("spine_02", roll=-5 * lift); bend("spine_03", roll=-6 * lift, yaw=6); bend("neck_01", roll=4 * lift); bend("head")
-    want["hand_r"] = on_pole(-40, 1.30); E["elbow_r"].location = (0.24, -0.14, 1.12)   # side hold, as the hip circle
+    want["hand_r"] = on_pole(0, 1.30); E["elbow_r"].location = (0.22, -0.10, 1.10)   # side hold, as the hip circle
     want["hand_l"] = Vector((cx + 0.26, 0.04, 0.88)).lerp(Vector((cx + 0.55, -0.1, 1.45)), lift); E["elbow_l"].location = (cx + 0.6, 0.5, 1.0)
     E["look"].location = (cx + 0.5 * lift, -2.5, 1.6)
     solve(want); grip_pole(want, "r", 1.30); hand_on_pole("r"); hand_free("l", roll=-30 * lift)
