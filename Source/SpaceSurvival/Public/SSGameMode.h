@@ -235,6 +235,7 @@ private:
     UPROPERTY()
     TObjectPtr<class ASkeletalMeshActor> TalkTestCyborg;
     void SpawnTalkTestCyborg();
+    void DestroyTalkTestCyborg();
     void StopCrewRadio();
     void UpdateCrewRadio(float Dt);
     UPROPERTY()

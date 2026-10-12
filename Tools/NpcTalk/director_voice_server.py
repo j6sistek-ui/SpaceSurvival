@@ -70,17 +70,22 @@ def read_voices(folder):
         settings = {"speed": 0.92, "treatment": "none"}
         txt = os.path.join(folder, name + ".txt")
         if os.path.exists(txt):
-            for line in open(txt, encoding="utf-8"):
-                key, _, value = line.partition("=")
-                key, value = key.strip().lower(), value.strip()
-                if key == "speed":
-                    try:
-                        settings["speed"] = float(value)
-                    except ValueError:
-                        pass
-                elif key == "treatment":
-                    settings["treatment"] = value.lower() or "none"
-        voices[name] = dict(reference=os.path.join(folder, file), **settings)
+            try:
+                # utf-8-sig: a BOM (PowerShell's default) must not become part of the first key.
+                for line in open(txt, encoding="utf-8-sig", errors="replace"):
+                    key, _, value = line.partition("=")
+                    key, value = key.strip().lower(), value.strip()
+                    if key == "speed":
+                        try:
+                            settings["speed"] = float(value)
+                        except ValueError:
+                            pass
+                    elif key == "treatment":
+                        settings["treatment"] = value.lower() or "none"
+            except OSError as error:
+                print("voice: %s unreadable (%s), defaults used" % (txt, error), flush=True)
+        # Keyed case-insensitively, as the game looks names up; the file's own spelling is kept for listing.
+        voices[name.lower()] = dict(name=name, reference=os.path.join(folder, file), **settings)
     return voices
 
 
@@ -276,11 +281,11 @@ def main():
     speak = load_engine(args)
     print("voice: model loaded after %.1f s" % (time.time() - started), flush=True)
     if args.prerender:
-        if args.voice not in voices:
+        if (args.voice or "").lower() not in voices:
             sys.exit("voice: no voice named %r in %s" % (args.voice, args.voices))
-        prerender(args, voices[args.voice], speak)
+        prerender(args, voices[args.voice.lower()], speak)
         return
-    warm = voices.get(args.default) or next(iter(voices.values()))
+    warm = voices.get(args.default.lower()) or next(iter(voices.values()))
     speak(warm, "Ready.")  # first-call costs (librosa, the vocoder, the reference) are paid here, not on a line
     print("voice: ready after %.1f s" % (time.time() - started), flush=True)
 
@@ -306,7 +311,7 @@ def main():
             if self.path == "/health":
                 self.reply(200, b"ok")
             elif self.path == "/voices":
-                self.reply(200, ("\n".join(voices) + "\n").encode("utf-8"))
+                self.reply(200, ("\n".join(v["name"] for v in voices.values()) + "\n").encode("utf-8"))
             else:
                 self.reply(404)
 
@@ -320,7 +325,7 @@ def main():
                 self.reply(400, b"empty line")
                 return
             name = (self.headers.get("X-Voice") or args.default).strip()
-            voice = voices.get(name)
+            voice = voices.get(name.lower())
             if voice is None:
                 self.reply(404, ("no voice named %s" % name).encode("utf-8", "replace"))
                 return

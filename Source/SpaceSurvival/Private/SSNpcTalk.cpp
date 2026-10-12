@@ -341,13 +341,13 @@ void ParseVoiceProfile(const FString &Text, FVoiceProfile &Out)
         Key = Key.TrimStartAndEnd().ToLower();
         Value = Value.TrimStartAndEnd();
         if (Key == TEXT("speed") && Value.IsNumeric())
-            Out.Speed = FCString::Atof(*Value);
+            Out.Speed = FCString::Atod(*Value);
         else if (Key == TEXT("treatment"))
             Out.Treatment = Value.IsEmpty() ? TEXT("none") : Value.ToLower();
     }
 }
 
-FString VoiceCacheName(const FString &Reference, float Speed, const FString &Treatment, const FString &Text)
+FString VoiceCacheName(const FString &Reference, double Speed, const FString &Treatment, const FString &Text)
 {
     const FString Material =
         FString::Printf(TEXT("%s|%.2f|%s|%s"), *FPaths::GetCleanFilename(Reference), Speed, *Treatment, *Text);

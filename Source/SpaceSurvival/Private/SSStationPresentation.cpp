@@ -574,6 +574,7 @@ void TrimCrew(const TArray<TObjectPtr<AActor>> &Actors)
         if (bKeep)
             continue;
         Actor->SetActorHiddenInGame(true);
+        Mesh->SetHiddenInGame(true, true); // the component too, which is what IsVisible() reads
         Actor->SetActorEnableCollision(false);
         Actor->SetActorTickEnabled(false);
         Mesh->SetComponentTickEnabled(false);

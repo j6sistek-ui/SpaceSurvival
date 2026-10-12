@@ -464,13 +464,17 @@ void ASSGameMode::UpdateCrewRadio(float Dt)
             CrewRadio->Stop();
     }
 }
+void ASSGameMode::DestroyTalkTestCyborg()
+{
+    // She goes with the hub: left behind, she would float and animate in space for the whole flight.
+    if (IsValid(TalkTestCyborg))
+        TalkTestCyborg->Destroy();
+    TalkTestCyborg = nullptr;
+}
 void ASSGameMode::SpawnTalkTestCyborg()
 {
-    if (TalkTestCyborg)
-    {
-        TalkTestCyborg->Destroy();
-        TalkTestCyborg = nullptr;
-    }
+    DestroyTalkTestCyborg();
+#if WITH_EDITOR // a test fixture, like the trim: a packaged build never stands her
     if (TalkTestCyborgOn.GetValueOnGameThread() == 0 || !Hub || !Walker || GIsAutomationTesting || FApp::IsUnattended())
         return;
     auto *Body = LoadObject<USkeletalMesh>(
@@ -504,6 +508,7 @@ void ASSGameMode::SpawnTalkTestCyborg()
     Mesh->PlayAnimation(Clip, true);
     UE_LOG(LogTemp, Display, TEXT("talk test: a second Cyborg stands at %s (ss.TalkTestCyborg 0 leaves her out)"),
            *Feet.ToString());
+#endif
 }
 TArray<FString> ASSGameMode::VillainLinesToVoice() const
 {
@@ -666,7 +671,10 @@ void ASSGameMode::ShowHangar()
         Walker = nullptr;
     }
     if (Hub)
+    {
+        DestroyTalkTestCyborg();
         Hub->Destroy();
+    }
     Hub = GetWorld()->SpawnActor<ASSStation>(FVector::ZeroVector, FRotator::ZeroRotator);
     Hub->BuildHub(true);
     Hub->SetBayShip(SelectedShip);
@@ -698,7 +706,10 @@ void ASSGameMode::SpawnFlight(FVector Location, FRotator Rotation, bool Preserve
     }
     if (Hub && !PreserveHub)
     {
-        Hub->Destroy();
+        {
+            DestroyTalkTestCyborg();
+            Hub->Destroy();
+        }
         Hub = nullptr;
     }
     if (Ship)
@@ -972,7 +983,10 @@ void ASSGameMode::EnterStation()
     }
     if (Hub && Hub->IsHome() && !GetGameInstance<USSGameInstance>()->IsFreeFlight())
     {
-        Hub->Destroy();
+        {
+            DestroyTalkTestCyborg();
+            Hub->Destroy();
+        }
         Hub = nullptr;
     }
     if (!Hub)
@@ -1102,7 +1116,10 @@ void ASSGameMode::Tick(float Dt)
             bDepartingStation = bStartNextBlockOnExit = false;
             if (Hub && !GI->IsFreeFlight())
             {
-                Hub->Destroy();
+                {
+                    DestroyTalkTestCyborg();
+                    Hub->Destroy();
+                }
                 Hub = nullptr;
             }
             Director->SetActive(!GI->IsFreeFlight());
@@ -1252,7 +1269,10 @@ void ASSGameMode::Tick(float Dt)
             const FVector Dock = Ship->GetActorLocation() + Ship->GetActorForwardVector() * 18000.f;
             StationTarget = Dock - Arrival.Vector() * 850.f - FVector(0, 0, 220);
             if (Hub)
+            {
+                DestroyTalkTestCyborg();
                 Hub->Destroy();
+            }
             Hub = GetWorld()->SpawnActor<ASSStation>(StationTarget, Arrival);
             Hub->BuildHub(false);
             Hub->ShowBayShip(false);
@@ -2749,8 +2769,11 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
             if (Distance >= 500.f || Score >= BestScore)
                 return;
             const FVector Head = Mesh->Bounds.Origin + FVector(0.f, 0.f, Mesh->Bounds.BoxExtent.Z * .5f);
-            if (FMath::Abs(Head.Z - Eye.Z) > 220.f || Dot < .25f || Mesh->bHiddenInGame || !Mesh->IsVisible())
-                return; // a trimmed (hidden) character cannot be talked to
+            // A trimmed character is hidden at the actor (TrimCrew) or the component; the hub itself never is.
+            const AActor *Owner = Mesh->GetOwner();
+            if (FMath::Abs(Head.Z - Eye.Z) > 220.f || Dot < .25f || Mesh->bHiddenInGame || !Mesh->IsVisible() ||
+                (Owner && Owner != Hub && Owner->IsHidden()))
+                return;
             // A placed crew actor's own capsule is not a wall; the station's walls belong to the hub, so only a hit
             // on some other actor, or on the hub itself, hides them.
             FHitResult Hit;
