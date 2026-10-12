@@ -40,6 +40,11 @@ for prop, value in (("import_mesh", True), ("import_as_skeletal", True), ("impor
     ui.set_editor_property(prop, value)
 ui.get_editor_property("skeletal_mesh_import_data").set_editor_property("import_morph_targets", False)
 ui.get_editor_property("skeletal_mesh_import_data").set_editor_property("convert_scene", True)
+# SS_SKIN_NORMALS=import takes the FBX's own vertex normals (and tangents) instead of recomputing them from the
+# smoothing groups; 2026-10-12 the 45k Cyborg came in faceted with the default while her FBX normals were smooth.
+if os.environ.get("SS_SKIN_NORMALS", "").lower() == "import":
+    ui.get_editor_property("skeletal_mesh_import_data").set_editor_property(
+        "normal_import_method", u.FBXNormalImportMethod.FBXNIM_IMPORT_NORMALS_AND_TANGENTS)
 task = u.AssetImportTask()
 for prop, value in (("filename", FBX), ("destination_path", FOLDER), ("destination_name", "SK_" + WHO),
                     ("automated", True), ("replace_existing", True), ("save", True), ("options", ui)):
