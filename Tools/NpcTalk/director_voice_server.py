@@ -195,13 +195,21 @@ def main():
     ap.add_argument("--cache")
     ap.add_argument("--check", help="whisper-server /inference URL: re-say a prerendered line slower until it is heard")
     args = ap.parse_args()
+    if not args.prerender:
+        # Started hidden by the game, its output would go nowhere: it goes to the project's Saved/Logs instead
+        # (2026-10-12: his replies were silent and nothing said how far the server had got).
+        logs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Saved", "Logs")
+        os.makedirs(logs, exist_ok=True)
+        sys.stdout = sys.stderr = open(os.path.join(logs, "DirectorVoice.log"), "w", encoding="utf-8", buffering=1)
     watch_parent(args.parent_pid)
     for path in (args.lux_repo, args.ref):
         if not os.path.exists(path):
             print("director voice: missing %s" % path, flush=True)
             sys.exit(2)
     started = time.time()
+    print("director voice: loading (threads %d, port %d)" % (args.threads, args.port), flush=True)
     speak = load_voice(args)
+    print("director voice: model loaded after %.1f s" % (time.time() - started), flush=True)
     if args.prerender:
         prerender(args, speak)
         return

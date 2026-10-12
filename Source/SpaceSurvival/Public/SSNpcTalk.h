@@ -228,9 +228,9 @@ public:
     /** The villain's voice (owner 2026-10-10: text is hard to read while flying). LuxTTS on the processor, no video
      *  memory. Optional like the rest: its python, the server script, the LuxTTS checkout and the voice recording
      *  all on disk at start-up, else he stays text-only. His scripted lines are made ahead and kept on disk; the
-     *  server itself only runs while there is something new to say. */
+     *  server runs for the whole session (owner: it touches no video memory, and the station crew will use it). */
     bool IsVoiceEnabled() const;
-    /** Start the voice server unless it runs. Idempotent; it answers a few seconds after the first call. */
+    /** Start the voice server unless it runs. Idempotent; it answers ~15-35 s after a cold start. */
     void EnsureVoice();
     void StopVoice();
     /** Say Text in his voice. Done runs on the game thread with the clip - at once when it was made before (bKeep
@@ -267,12 +267,10 @@ public:
     FString VoiceCacheDirectory;
     UPROPERTY(Config)
     int32 VoicePort = 8703;
-    /** A refused connection this soon after launch means "still loading", and is retried every second. */
+    /** A refused connection this soon after launch means "still loading", and is retried every second. Measured:
+     *  ~14 s alone, ~33 s beside the editor and a running game. */
     UPROPERTY(Config)
-    float VoiceStartupSeconds = 60.f;
-    /** The server is stopped this long after its last line, or after a start nothing used. */
-    UPROPERTY(Config)
-    float VoiceIdleSeconds = 60.f;
+    float VoiceStartupSeconds = 120.f;
     /** His replies are heard mid-flight, so they are capped harder than the crew's. */
     UPROPERTY(Config)
     int32 DirectorReplyTokens = 48;
@@ -318,7 +316,6 @@ private:
     /** Send the next job; one at a time, as the server works one line at a time. */
     void PumpVoice();
     void FinishVoiceJob(int32 Id, const FString &Text, bool bKeep, const SSNpcTalk::FVoiceClip &Clip);
-    void ArmVoiceIdle();
     bool bVoiceInstalled = false, bVoiceReady = false;
     FProcHandle VoiceProc;
     double VoiceStartedAt = 0.0, PrerenderStartedAt = 0.0;
@@ -326,5 +323,5 @@ private:
     TArray<FVoiceJob> VoiceJobs;
     TMap<FString, SSNpcTalk::FVoiceClip> VoiceCache;
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> VoicePending;
-    FTimerHandle VoiceRetryTimer, VoiceIdleTimer;
+    FTimerHandle VoiceRetryTimer;
 };

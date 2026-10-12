@@ -388,6 +388,9 @@ void USSNpcTalkSubsystem::Initialize(FSubsystemCollectionBase &Collection)
                       FPaths::DirectoryExists(VoiceRepo) && FPaths::FileExists(VoiceReference);
     UE_LOG(LogSSNpcTalk, Display, TEXT("director voice %s"),
            bVoiceInstalled ? TEXT("installed") : TEXT("not installed: he stays text-only"));
+    // Up for the whole session (owner 2026-10-12: it touches no video memory, and the station crew will use it
+    // too): it takes ~30 s to load beside the editor, and the first test lost two replies waiting for it.
+    EnsureVoice();
 }
 
 void USSNpcTalkSubsystem::Deinitialize()
@@ -436,10 +439,9 @@ void USSNpcTalkSubsystem::SetContext(ESSTalkContext Context)
     // Owner's split: the station is talk, so the better model loads on arrival; a wave is combat, so launching kills
     // the server and the GPU is the game's again. The flight model comes back when the villain first speaks.
     CurrentContext = Context;
-    // His voice is flight-only, and goes before the talk-pack check: an install with only the voice must still give
-    // the card back at the station.
-    if (Context == ESSTalkContext::Station)
-        StopVoice();
+    // The voice runs in every context; this is where it comes back if it died. Before the talk-pack check: an
+    // install with only the voice still gets it.
+    EnsureVoice();
     if (!IsEnabled())
         return;
     if (Context == ESSTalkContext::Station)
@@ -489,7 +491,6 @@ void USSNpcTalkSubsystem::EnsureVoice()
     VoiceProc = Launch(VoicePython, Args);
     VoiceStartedAt = FPlatformTime::Seconds();
     bVoiceReady = false;
-    ArmVoiceIdle();
     UE_LOG(LogSSNpcTalk, Display, TEXT("director voice %s on %d"),
            VoiceProc.IsValid() ? TEXT("starting") : TEXT("NOT FOUND"), VoicePort);
 }
@@ -505,10 +506,7 @@ void USSNpcTalkSubsystem::StopVoice()
     // Callers waiting on a line drop it by their own deadline; nothing is called back from here.
     VoiceJobs.Reset();
     if (UGameInstance *GI = GetGameInstance())
-    {
         GI->GetTimerManager().ClearTimer(VoiceRetryTimer);
-        GI->GetTimerManager().ClearTimer(VoiceIdleTimer);
-    }
     if (VoiceProc.IsValid())
     {
         if (!FPlatformProcess::IsProcRunning(VoiceProc))
@@ -523,15 +521,6 @@ void USSNpcTalkSubsystem::StopVoice()
         UE_LOG(LogSSNpcTalk, Display, TEXT("director voice stopped"));
     }
     bVoiceReady = false;
-}
-
-void USSNpcTalkSubsystem::ArmVoiceIdle()
-{
-    // About 4 GB of video memory (measured): held only while there is something to say, then given back (owner:
-    // "4 GB of VRAM is a heavy tax"). Re-armed by every new start and every emptied queue.
-    if (UGameInstance *GI = GetGameInstance(); GI && VoiceProc.IsValid())
-        GI->GetTimerManager().SetTimer(VoiceIdleTimer, FTimerDelegate::CreateWeakLambda(this, [this] { StopVoice(); }),
-                                       FMath::Max(5.f, VoiceIdleSeconds), false);
 }
 
 FString USSNpcTalkSubsystem::VoiceCacheFile(const FString &Text) const
@@ -636,15 +625,8 @@ void USSNpcTalkSubsystem::PumpVoice()
         if (Job.Done)
             Job.Done(Kept);
     }
-    if (VoicePending.IsValid())
-        return; // a callback above asked for something new and sent it
-    if (VoiceJobs.IsEmpty())
-    {
-        ArmVoiceIdle();
-        return;
-    }
-    if (UGameInstance *GI = GetGameInstance())
-        GI->GetTimerManager().ClearTimer(VoiceIdleTimer);
+    if (VoicePending.IsValid() || VoiceJobs.IsEmpty())
+        return; // a callback above may have asked for something new and sent it
     const FVoiceJob &Job = VoiceJobs[0];
     const auto Request = FHttpModule::Get().CreateRequest();
     Request->SetURL(FString::Printf(TEXT("http://127.0.0.1:%d/speak"), VoicePort));
