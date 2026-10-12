@@ -226,6 +226,11 @@ private:
     bool bVillainVoiceWaiting = false;
     float VillainVoiceWait = 0.f, VillainVoiceDeadline = 0.f, VillainRadioLeft = 0.f;
     double VillainVoiceAskedAt = 0.0;
+    /** A live reply's caption waits for his voice (owner 2026-10-12: the words landed well before the sound) and
+     *  is shown the moment the clip starts, or alone once the voice is too late or failed. */
+    bool bVillainReplyHeld = false;
+    FString HeldVillainReply;
+    void ShowHeldVillainReply();
     /** He is saying a line, about to (made, or still being made), or the pilot's microphone is open: nothing new
      *  starts, so the microphone never hears him. */
     bool VillainRadioBusy() const
@@ -249,6 +254,10 @@ private:
     int32 CrewVoiceTicket = 0;
     bool bCrewVoiceWaiting = false;
     float CrewVoiceWait = 0.f, CrewVoiceDeadline = 0.f, CrewRadioLeft = 0.f;
+    /** Same for a crew reply: the caption waits for their voice. */
+    bool bCrewReplyHeld = false;
+    FString HeldCrewName, HeldCrewLine;
+    void ShowHeldCrewReply();
     void SpeakCrew(const FString &Character, const FString &Text, const USceneComponent *At);
     /** A second Cyborg, alone, a few metres in front of the walk-in point (owner 2026-10-12: to test voice, talk
      *  and interaction without other variables). ss.TalkTestCyborg 0 leaves her out. */
