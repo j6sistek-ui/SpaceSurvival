@@ -253,8 +253,19 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
                  F.Mode->PreviousPhase == int32(F.Instance->Session.run.phase) &&
                      F.Mode->PreviousWave == F.Instance->Session.run.wave);
         const std::string RunId = F.Instance->Session.run.id;
-        TestEqual(TEXT("Current measured squirrel retains radius and receives its body-height collision fit"),
-                  F.Walker->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight(), 75.f);
+        // Only the measured 138 cm squirrel gets the 150 cm fit; any other walker, the 178 cm squirrel included
+        // (live since 2026-10-12), keeps the shared capsule. Say which one ran rather than assume.
+        const bool MeasuredSquirrel = F.Walker->GetMesh()->GetSkeletalMeshAsset() &&
+                                      F.Walker->GetMesh()->GetSkeletalMeshAsset()->GetPathName() ==
+                                          TEXT("/Game/SpaceSurvival/Licensed/HeroReplacement/Final/"
+                                               "SK_SquirrelHeroReplacement.SK_SquirrelHeroReplacement");
+        AddInfo(FString::Printf(TEXT("COCKPIT_WALKER mesh=%s measuredSquirrel=%d"),
+                                *GetPathNameSafe(F.Walker->GetMesh()->GetSkeletalMeshAsset()), MeasuredSquirrel));
+        TestEqual(TEXT("The measured squirrel receives its body-height collision fit; every other walker keeps the "
+                       "shared one"),
+                  F.Walker->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight(),
+                  MeasuredSquirrel ? 75.f
+                                   : GetDefault<ASSWalker>()->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight());
         TestEqual(TEXT("The measured height correction never reduces the horizontal body clearance"),
                   F.Walker->GetCapsuleComponent()->GetUnscaledCapsuleRadius(), 34.f);
         const FTransform MeshBeforeRefit = F.Walker->GetMesh()->GetComponentTransform();
@@ -297,8 +308,7 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
                  F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves);
         F.Button(EKeys::R, false);
         F.InputFrame();
-        const auto SeatAt = [&](FVector Local)
-        {
+        const auto SeatAt = [&](FVector Local) {
             return F.Ship->GetVisualRig()->CanUsePilotSeatAt(F.Ship->GetActorTransform().TransformPosition(Local), 34.f,
                                                              75.f);
         };
@@ -450,38 +460,19 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
         const FVector StandingBoom = F.Walker->Boom->GetComponentLocation();
         const FVector StandingBoomRelative = F.Walker->Boom->GetRelativeLocation();
         F.Mode->Interact();
-        TestTrue(TEXT("Chair interaction begins a visible sit without destroying or unpossessing the walker"),
-                 F.Walker->IsBoarding() && !F.Walker->IsSeated() && F.Walker->GetMesh()->IsVisible() &&
-                     F.Controller->GetPawn() == F.Walker && !F.Mode->IsDepartingStation() && !F.Mode->IsMenuOpen());
-        TestFalse(TEXT("Repeated chair use cannot restart the transition"), F.Mode->TryBoardShip(F.Walker));
-        TestFalse(TEXT("Mode input cannot change preference after the sit has begun"),
+        TestTrue(TEXT("Chair confirmation takes the pilot off the deck at once: hidden, seated, still possessed"),
+                 F.Walker->IsBoarding() && F.Walker->IsSeated() && !F.Walker->GetMesh()->IsVisible() &&
+                     F.Controller->GetPawn() == F.Walker && !F.Mode->IsDepartingStation() && !F.Mode->IsMenuOpen() &&
+                     F.Walker->GetActorTransform().Equals(Standing, .01f));
+        TestFalse(TEXT("Repeated chair use cannot restart the hand-over"), F.Mode->TryBoardShip(F.Walker));
+        TestFalse(TEXT("Mode input cannot change preference once the chair is confirmed"),
                   F.Mode->HandleCockpitModeInput(true, true));
-        F.Frames(30);
-        TestTrue(TEXT("Half-second sample retains a visible intermediate seated blend"),
-                 F.Walker->IsBoarding() && !F.Walker->IsSeated() && F.Walker->GetMesh()->IsVisible() &&
-                     !F.Walker->GetActorTransform().Equals(Standing, .01f));
-        TestTrue(TEXT("The intermediate sit retains the colliding camera behind the moving hero"),
+        TestTrue(TEXT("The camera stays where the pilot stood"),
                  F.Walker->Boom->bDoCollisionTest &&
                      F.Walker->Boom->GetComponentLocation().Equals(StandingBoom, .01f) &&
                      F.Walker->Camera->GetComponentLocation().Equals(StandingCamera, 2.f));
-        const FTransform BeforePause = F.Walker->GetActorTransform();
-        F.Mode->OpenPanel(ESSPanel::Main);
-        F.Frames(30);
-        TestTrue(TEXT("Pause freezes the visible sit and closing it resumes the same transition"),
-                 F.World->IsPaused() && F.Walker->IsBoarding() && !F.Walker->IsSeated() &&
-                     F.Walker->GetActorTransform().Equals(BeforePause, .01f));
-        F.Mode->ClosePanel();
-        F.Frames(60);
-        if (!TestTrue(TEXT("The complete sit reaches a valid same-rig pilot handoff"),
-                      F.Ship->CanAdoptBoardedPilot(F.Walker)))
-            continue;
-        const FVector SeatedCamera = F.Walker->Camera->GetComponentLocation();
-        const FVector SeatedPelvis = F.Walker->GetMesh()->GetSocketLocation(F.Walker->GetHero().PelvisBone);
-        TestTrue(TEXT("Seated camera stays behind the chair approach instead of collapsing into the hero"),
-                 F.Walker->Boom->bDoCollisionTest && SeatedCamera.Equals(StandingCamera, 2.f) &&
-                     FVector::Distance(SeatedCamera, SeatedPelvis) > 100.f);
-        const FTransform Seated = F.Walker->GetMesh()->GetComponentTransform();
-        const auto *SeatedMesh = F.Walker->GetMesh()->GetSkeletalMeshAsset();
+        TestFalse(TEXT("No seated pose is handed to the ship: nobody takes the seat"),
+                  F.Ship->CanAdoptBoardedPilot(F.Walker));
         FString CommitReason;
         const bool CanCommit = F.Mode->CanCommitDeparture(CommitReason);
         AddInfo(FString::Printf(TEXT("COCKPIT_COMMIT home=%d eligible=%d seated=%d phase=%d previousPhase=%d "
@@ -498,7 +489,7 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
             // This fixture intentionally blocks account storage. Starting Waves must fail safely.
             TestTrue(TEXT("Failed account save restores walking at the original chair approach"),
                      !F.Mode->IsDepartingStation() && !F.Walker->IsBoarding() && F.Controller->GetPawn() == F.Walker &&
-                         F.Walker->GetActorTransform().Equals(Standing, .01f) &&
+                         F.Walker->GetMesh()->IsVisible() && F.Walker->GetActorTransform().Equals(Standing, .01f) &&
                          F.Walker->GetCapsuleComponent()->IsCollisionEnabled() && !F.Instance->Session.run.active);
             TestTrue(TEXT("Failed departure restores the normal walking camera attachment"),
                      F.Walker->Boom->GetRelativeLocation().Equals(StandingBoomRelative, .01f));
@@ -510,10 +501,8 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
         {
             TestTrue(TEXT("Station 1 chair starts the existing takeoff on the same ship"),
                      F.Mode->IsDepartingStation() && F.Controller->GetPawn() == F.Ship && F.Ship->IsTakingOff());
-            TestTrue(TEXT("Same visible hero and exact component pose survive walking-pawn release"),
-                     F.Ship->Pilot->IsVisible() && F.Ship->Pilot->GetSkeletalMeshAsset() == SeatedMesh &&
-                         F.Ship->Pilot->GetComponentTransform().Equals(Seated, .01f));
-            TestTrue(TEXT("Sitting does not restart the run or spend Wave 6 on the pad"),
+            TestFalse(TEXT("No character is shown in the departing ship"), F.Ship->Pilot->IsVisible());
+            TestTrue(TEXT("Confirming at the chair does not restart the run or spend Wave 6 on the pad"),
                      F.Instance->Session.run.id == RunId && F.Instance->Session.run.wave == 5 &&
                          F.Instance->Session.run.phase == SS::Phase::Station);
         }

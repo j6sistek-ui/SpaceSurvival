@@ -1039,7 +1039,7 @@ bool ASSGameMode::TryBoardShip(ASSWalker *Candidate)
 void ASSGameMode::CommitBoardedDeparture()
 {
     FString Reason;
-    if (!CanCommitDeparture(Reason) || !Ship->CanAdoptBoardedPilot(Walker))
+    if (!CanCommitDeparture(Reason))
     {
         bBoardingFlight = false;
         if (Walker)
@@ -1083,9 +1083,10 @@ void ASSGameMode::BeginDeparture()
     if (!Hub)
         return;
     const bool FromChair = bBoardingFlight;
-    // CanAdoptBoardedPilot was checked synchronously before the successful save/launch transaction.
-    if (FromChair)
-        Ship->AdoptBoardedPilot(Walker);
+    // Nobody takes the seat (owner 2026-10-12): the walker is hidden where they confirmed, and the ship's own
+    // pilot figure stays out of sight too, so the flight shows no character at all.
+    if (FromChair && Ship)
+        Ship->SetPilotFigureHidden(true);
     bBoardingFlight = false;
     bDepartingStation = true;
     Director->SetActive(false);
@@ -1262,7 +1263,8 @@ void ASSGameMode::EnterStation()
         Ship->Pilot->SnapshotPose(SeatedPose);
         // Only heroes with an authored exit clip use the seated-pose transition. Other heroes receive
         // control at the same measured exterior endpoint as soon as docking finishes.
-        const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
+        // Nobody sat, so nobody climbs out (owner 2026-10-12); the authored exits wait for the seat to return.
+        const bool ClimbsOut = false;
         const bool ExitStarted = ClimbsOut && Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit,
                                                                      Hub->GetActorRotation(), &SeatedPose);
         ensureMsgf(!ClimbsOut || ExitStarted, TEXT("Required authored disembark assets are unavailable."));

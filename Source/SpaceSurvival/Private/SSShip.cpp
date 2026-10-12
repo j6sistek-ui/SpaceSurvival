@@ -392,7 +392,7 @@ void ASSShip::RefreshFlightPresentation()
         LoadedHull &&
         (LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/ShipRefresh/")) ||
          LoadedHull->GetPathName().StartsWith(TEXT("/Game/SpaceSurvival/Licensed/PlayerShipVisualPass/")));
-    Pilot->SetVisibility(bBoardedPilot || (HullMesh->IsVisible() && !ClosedCockpit));
+    Pilot->SetVisibility(!bPilotFigureHidden && (bBoardedPilot || (HullMesh->IsVisible() && !ClosedCockpit)));
     if (auto *ReadabilityLight = FindComponentByClass<UPointLightComponent>())
         ReadabilityLight->SetVisibility(true);
     RefreshPaint();
@@ -420,6 +420,13 @@ void ASSShip::AdoptBoardedPilot(ASSWalker *Walker)
     Pilot->RefreshBoneTransforms();
     bBoardedPilot = true;
     Pilot->SetVisibility(true);
+}
+
+void ASSShip::SetPilotFigureHidden(bool bOutOfSight)
+{
+    bPilotFigureHidden = bOutOfSight;
+    if (bOutOfSight)
+        Pilot->SetVisibility(false);
 }
 
 void ASSShip::BeginPlay()
@@ -822,6 +829,7 @@ float ASSShip::SoftAssistWeight(float Alignment, float ConeDegrees, float Maximu
 void ASSShip::FinishDocking()
 {
     bBoardedPilot = false;
+    bPilotFigureHidden = false;
     EndWormholeTransit();
     SetActorLocation(DockTarget);
     SetActorRotation(DockRotation);
