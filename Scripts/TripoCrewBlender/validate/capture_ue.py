@@ -21,13 +21,19 @@ import os
 import unreal as u
 
 def game_path(p):
-    return p[p.index("/Game/"):] if p and "/Game/" in p else p     # Git Bash rewrites /Game/... into a Windows path
+    # Git Bash rewrites /Game/... and /Engine/... into Windows paths
+    for root in ("/Game/", "/Engine/"):
+        if p and root in p:
+            return p[p.index(root):]
+    return p
 
 
 MESHES = [game_path(p) for p in os.environ["SS_CAP_MESH"].split(",") if p]   # several = parts of one body (glTF)
 MESH = MESHES[0]
 OUT = os.environ["SS_CAP_OUT"]
 NAME = os.environ.get("SS_CAP_NAME", "cap")
+# SS_CAP_POS=x,y,z puts the body somewhere other than the world origin (the station map has actors standing there)
+POS = u.Vector(*[float(v) for v in os.environ.get("SS_CAP_POS", "0,0,0").split(",")])
 W, H, FOV = 900, 1200, 30.0
 BRACKET = (0.0, 1.0, 2.0)
 
@@ -42,36 +48,46 @@ actors = u.get_editor_subsystem(u.EditorActorSubsystem)
 mesh = u.load_asset(MESH)
 assert mesh, "mesh not found: " + MESH
 
-floor = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, 0), u.Rotator(0, 0, 0))
+floor = actors.spawn_actor_from_class(u.StaticMeshActor, POS, u.Rotator(0, 0, 0))
 floor.static_mesh_component.set_static_mesh(u.load_asset("/Engine/BasicShapes/Plane"))
 floor.set_actor_scale3d(u.Vector(30, 30, 1))
 floor.static_mesh_component.set_material(0, u.load_asset("/Engine/BasicShapes/BasicShapeMaterial"))
 
 
 def light(rot, lux, color=(1, 1, 1)):
-    a = actors.spawn_actor_from_class(u.DirectionalLight, u.Vector(0, 0, 300), u.Rotator(rot[2], rot[0], rot[1]))
+    a = actors.spawn_actor_from_class(u.DirectionalLight, POS + u.Vector(0, 0, 300), u.Rotator(rot[2], rot[0], rot[1]))
     c = a.get_component_by_class(u.DirectionalLightComponent)
     c.set_mobility(u.ComponentMobility.MOVABLE)
     c.set_intensity(lux)
     c.set_light_color(u.LinearColor(*color, 1))
+    if os.environ.get("SS_CAP_SHADOWS", "1") == "0":   # tells shadow acne from shading faults
+        c.set_cast_shadows(False)
     return a
 
 
 light((-40, 35, 0), 6.0)                      # key, front-left high
 light((-20, -140, 0), 2.0, (0.85, 0.9, 1))    # fill, other side
 light((-25, 180, 0), 4.0)                     # rim from behind
-sky = actors.spawn_actor_from_class(u.SkyLight, u.Vector(0, 0, 400), u.Rotator(0, 0, 0))
+sky = actors.spawn_actor_from_class(u.SkyLight, POS + u.Vector(0, 0, 400), u.Rotator(0, 0, 0))
 sc = sky.get_component_by_class(u.SkyLightComponent)
 sc.set_mobility(u.ComponentMobility.MOVABLE)
 sc.set_intensity(0.6)
 
 # Reference pose, Unreal's own skinning: a bad bind pose shows here exactly as it does in game.
-body = actors.spawn_actor_from_class(u.SkeletalMeshActor, u.Vector(0, 0, 0), u.Rotator(0, 0, 0))
+body = actors.spawn_actor_from_class(u.SkeletalMeshActor, POS, u.Rotator(0, 0, 0))
 comp = body.skeletal_mesh_component
 comp.set_skeletal_mesh_asset(mesh)
 comp.set_forced_lod(1)
+# SS_CAP_MATERIAL=<material path> overrides every slot (a plain grey tells mesh faults from texture faults)
+if os.environ.get("SS_CAP_MATERIAL"):
+    override = u.load_asset(game_path(os.environ["SS_CAP_MATERIAL"]))
+    slots = max(comp.get_num_materials(), len(mesh.get_editor_property("materials")))
+    for i in range(slots):
+        comp.set_material(i, override)
+    log("material override %s on %d slots (now %s)" % (override.get_name() if override else None, slots,
+        [comp.get_material(i).get_name() if comp.get_material(i) else None for i in range(slots)]))
 for extra in MESHES[1:]:                                   # the other parts of a split body
-    part = actors.spawn_actor_from_class(u.SkeletalMeshActor, u.Vector(0, 0, 0), u.Rotator(0, 0, 0))
+    part = actors.spawn_actor_from_class(u.SkeletalMeshActor, POS, u.Rotator(0, 0, 0))
     part.skeletal_mesh_component.set_skeletal_mesh_asset(u.load_asset(extra))
 # Shaders, textures and meshes finish compiling/streaming asynchronously; the capture otherwise renders the
 # engine's default grey material.
@@ -79,7 +95,7 @@ u.AutomationLibrary.finish_loading_before_screenshot()
 
 b = mesh.get_bounds()
 top = b.origin.z + b.box_extent.z
-centre = u.Vector(b.origin.x, b.origin.y, top / 2)
+centre = POS + u.Vector(b.origin.x, b.origin.y, top / 2)
 head = comp.get_socket_location("head")
 
 target = u.RenderingLibrary.create_render_target2d(world, W, H, u.TextureRenderTargetFormat.RTF_RGBA8)
