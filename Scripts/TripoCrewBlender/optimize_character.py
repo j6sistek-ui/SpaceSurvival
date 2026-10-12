@@ -120,7 +120,10 @@ def make_copy(high):
     return low
 
 
-def decimate(low, target, symmetry, keep_uvs):
+def decimate(low, target, symmetry):
+    """Collapse decimation carries the UVs itself (each face corner keeps an interpolated UV), so the original
+    textures still fit afterwards. The modifier's Delimit option only exists in Planar mode: measured 2026-10-12 on
+    the Cyborg, Collapse with and without delimit={"UV"} gave identical vertices and identical UVs."""
     before = triangles(low.data)
     ratio = min(1.0, max(0.001, target / max(1, before)))
     mod = low.modifiers.new("Optimize", "DECIMATE")
@@ -129,8 +132,6 @@ def decimate(low, target, symmetry, keep_uvs):
     mod.use_collapse_triangulate = True
     mod.use_symmetry = symmetry
     mod.symmetry_axis = "X"
-    if keep_uvs:
-        mod.delimit = {"UV"}  # never collapse across a UV seam: the original textures stay on
     # First in the stack: it must work on the rest-pose mesh, before the armature deforms it.
     select_only([low], low)
     bpy.ops.object.modifier_move_to_index(modifier=mod.name, index=0)
@@ -329,7 +330,7 @@ def main():
     log("source %s: %d triangles, %d vertex groups, materials %s" % (
         high.name, triangles(high.data), len(high.vertex_groups), [m.name if m else None for m in high.data.materials]))
     low = make_copy(high)
-    before, after = decimate(low, s["tris"], s["symmetry"], keep_uvs=s["no_bake"])
+    before, after = decimate(low, s["tris"], s["symmetry"])
     if s["no_bake"]:
         log("no bake: the copy keeps the original UVs and textures")
     else:
