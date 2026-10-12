@@ -186,7 +186,10 @@ def grip_matrix(side):
     """The diagonal grip: palm toward the pole (+Z into it), the hand's long axis halfway between the forearm's line and
     the horizontal tangent round the pole, so the pole crosses the palm diagonally and the curled fingers close round it."""
     g = PB["hand_" + side].head; d = Vector((g.x, g.y, 0)).normalized()          # outward, from the pole to the hand
-    z = -d
+    # The palm is the hand bone's LOCAL -Z (measured 2026-10-12: the thumb sits at local z=-0.01, the fingers
+    # curl about X toward -Z), so local +Z points OUT of the pole for the palm to face into it. The earlier -d put
+    # the back of the hand on the pole: the owner's "hand upside down, twisted arm".
+    z = d
     fwd = PB["lowerarm_" + side].vector.normalized()
     f = (fwd - z * fwd.dot(z)).normalized()                                       # forearm line in the palm plane
     t = Vector((0, 0, 1)).cross(d); t = t if t.dot(f) >= 0 else -t                # tangent round the pole
@@ -212,7 +215,7 @@ def grip_pole(want, side, z_grip):
     The grip depends on the arm and the arm on the grip, so three passes."""
     for _ in range(3):
         R = limited_grip(side)
-        y, into = R.col[1], R.col[2]              # hand axis, palm normal (into the pole)
+        y, into = R.col[1], -R.col[2]             # hand axis, palm normal (into the pole: local -Z)
         want["hand_" + side] = Vector((0, 0, z_grip)) - into * (POLE_R + PALM_T) - y * PALM_L
         solve(want)
 
