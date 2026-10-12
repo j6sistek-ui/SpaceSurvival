@@ -31,7 +31,9 @@ Decimation keeps the UVs, so the original textures still fit. For a background N
 1. Click the character's **mesh** (not the armature). Shift+D, Enter: a copy. Rename it `<Name>_Low`.
 2. Modifier Properties (wrench) → Add Modifier → Generate → **Decimate**.
    - Collapse. **Ratio** = target ÷ current (124k → 30k is 0.24). Tick **Triangulate**.
-   - Under Delimit tick **UV**, so the collapse never crosses a texture seam.
+   - There is no Delimit option in Collapse mode (it only appears in Planar mode) and none is needed: Collapse
+     carries the UVs itself, so the original textures still fit. Measured 2026-10-12 on the Cyborg: with and
+     without `delimit={'UV'}` the result had identical vertices and identical UVs.
    - Symmetry only if the character really is mirrored; otherwise leave it off.
 3. Drag the Decimate modifier **above the Armature modifier** (it must work on the rest pose).
 4. Modifier dropdown (v) → **Apply**. The copy keeps its vertex groups, so the skin weights survive.
@@ -41,7 +43,7 @@ Look at it in Unreal. If seams smear or the texture looks stretched, do the bake
 
 ## The full way: a bake from the original
 
-Steps 1-4 as above, keeping the UV delimit. **Keep the copy's UVs**: decimation preserves them, Tripo laid them
+Steps 1-4 as above. **Keep the copy's UVs**: decimation preserves them, Tripo laid them
 out properly (every triangle has its own space, no overlaps), and a bake into that layout re-projects the original
 textures onto the lighter mesh, which is exactly what fixes smeared seams. Measured 2026-10-12 on the Cyborg: the
 bake into the original layout filled the whole texture with no holes; a Smart UV Project re-unwrap of the same
