@@ -32,7 +32,8 @@ CLIPS = args[2:] or ALL
 FPS = 30
 POLE_R = 0.025
 WRIST_LIMIT = 45.0   # degrees a gripping hand may turn away from the forearm's line (owner: "twisted arm")
-DIAGONAL = 0.0      # 0: knuckles stacked along the pole (a bar grip round a vertical pole); 1: hand on the forearm's line
+DIAGONAL = 0.5      # 0: knuckles stacked along the pole (a bar grip round a vertical pole); 1: hand on the forearm's line
+                    # (0.5 since 2026-10-12: a bar grip needs a 90 deg wrist, the 45 deg limit then turned the hand away)
 PALM_L = 0.065       # wrist to the middle of the palm along the hand (m)
 PALM_T = 0.022       # palm thickness: the wrist axis sits this far off the pole surface (m)
 TWIST_SHARE = 0.5    # share of the hand's remaining roll the forearm twist bone takes
@@ -185,7 +186,12 @@ def share_twist(side):
 def grip_matrix(side):
     """The diagonal grip: palm toward the pole (+Z into it), the hand's long axis halfway between the forearm's line and
     the horizontal tangent round the pole, so the pole crosses the palm diagonally and the curled fingers close round it."""
-    g = PB["hand_" + side].head; d = Vector((g.x, g.y, 0)).normalized()          # outward, from the pole to the hand
+    hand = PB["hand_" + side]; g = hand.head
+    # The palm normal is radial at the PALM CENTRE (6.5 cm along the hand), not at the wrist: measured 2026-10-12, a
+    # wrist-radial normal put the palm plane tangent at the wrist and the palm centre 6 cm off the pole however
+    # the wrist was placed.
+    pc = g + hand.vector.normalized() * PALM_L
+    d = Vector((pc.x, pc.y, 0)).normalized()                                      # outward, from the pole to the palm
     # The palm is the hand bone's LOCAL -Z (measured 2026-10-12: the thumb sits at local z=-0.01, the fingers
     # curl about X toward -Z), so local +Z points OUT of the pole for the palm to face into it. The earlier -d put
     # the back of the hand on the pole: the owner's "hand upside down, twisted arm".
@@ -216,6 +222,11 @@ def grip_pole(want, side, z_grip):
     for _ in range(3):
         R = limited_grip(side)
         y, into = R.col[1], -R.col[2]             # hand axis, palm normal (into the pole: local -Z)
+        # The palm presses the pole along the HORIZONTAL part of its normal: with the wrist limit the hand tilts, and
+        # a tilted 'into' moved the wrist partly up instead of in (measured 2026-10-12: palm 5.6 cm off the pole).
+        flat = Vector((into.x, into.y, 0))
+        if flat.length > 1e-3:
+            into = flat.normalized()
         want["hand_" + side] = Vector((0, 0, z_grip)) - into * (POLE_R + PALM_T) - y * PALM_L
         solve(want)
 
@@ -275,7 +286,7 @@ def clip_idle(t):
     pelvis_at((cx + sway, 0.01 * math.sin(2 * w), STAND_Z - 0.012 + 0.01 * math.cos(2 * w)), yaw=-6 + 3 * math.sin(w), roll=-3 * math.sin(w))
     bend("spine_01", pitch=2, roll=2 * math.sin(w)); bend("spine_02", roll=1.5 * math.sin(w)); bend("spine_03", roll=2 * math.sin(w), yaw=4)
     bend("neck_01"); bend("head")
-    want["hand_r"] = on_pole(10, 1.44 + 0.01 * math.sin(w)); E["elbow_r"].location = (0.24, 0.40, 1.36)   # side hold
+    want["hand_r"] = on_pole(-40, 1.30 + 0.01 * math.sin(w)); E["elbow_r"].location = (0.24, -0.14, 1.12)   # side hold
     solve(want); grip_pole(want, "r", 1.44 + 0.01 * math.sin(w))
     want["hand_l"] = (cx + 0.25 + 0.02 * math.sin(w), 0.04, 0.86 + 0.01 * math.sin(w)); E["elbow_l"].location = (cx + 0.5, 0.5, 0.9)
     E["look"].location = (cx - 0.3 + 0.4 * math.sin(w * 0.5), -2.5, 1.55)
@@ -290,8 +301,12 @@ def clip_hipcircle(t):
               yaw=-5 + 4 * math.sin(w), pitch=-6 * math.cos(w), roll=-7 * math.sin(w))
     bend("spine_01", pitch=4 * math.cos(w), roll=3 * math.sin(w)); bend("spine_02", pitch=3 * math.cos(w))
     bend("spine_03", pitch=-5 * math.cos(w), roll=-4 * math.sin(w), yaw=6); bend("neck_01"); bend("head")
-    want["hand_r"] = on_pole(10, 1.46); E["elbow_r"].location = (0.24, 0.40, 1.38)   # side hold: elbow back, level
-    solve(want); grip_pole(want, "r", 1.46)
+    # Side hold at chest height, elbow hanging low beside her (owner 2026-10-12: the shoulder-high hold with the elbow
+    # 40 cm behind her hyperextended the arm while she faced the audience).
+    # The grip is on the pole's front face (azimuth -40: toward the audience) with the elbow guided forward and down, so
+    # the upper arm stays in front of the chest plane (the shoulder check); a level side grab read 48 deg behind it.
+    want["hand_r"] = on_pole(-40, 1.30); E["elbow_r"].location = (0.24, -0.14, 1.12)
+    solve(want); grip_pole(want, "r", 1.30)
     want["hand_l"] = PB["pelvis"].head + Vector((0.19, -0.03, -0.02)); E["elbow_l"].location = (cx + 0.6, 0.4, 0.95)
     E["look"].location = (cx - 0.2 + 0.3 * math.sin(w), -2.5, 1.5)
     solve(want); hand_on_pole("r"); hand_free("l", roll=-20)
@@ -372,10 +387,10 @@ def clip_kick(t):
     E["knee_l"].location = (cx + 0.6, -0.6, 0.6 + 0.4 * lift); E["knee_r"].location = (cx - 0.15, -0.8, 0.5)
     pelvis_at((cx - 0.05 * lift, 0.0, STAND_Z - 0.03 - 0.03 * lift), yaw=-8, roll=14 * lift)
     bend("spine_01", roll=-6 * lift); bend("spine_02", roll=-5 * lift); bend("spine_03", roll=-6 * lift, yaw=6); bend("neck_01", roll=4 * lift); bend("head")
-    want["hand_r"] = on_pole(10, 1.46); E["elbow_r"].location = (0.24, 0.40, 1.38)   # side hold, as the hip circle
+    want["hand_r"] = on_pole(-40, 1.30); E["elbow_r"].location = (0.24, -0.14, 1.12)   # side hold, as the hip circle
     want["hand_l"] = Vector((cx + 0.26, 0.04, 0.88)).lerp(Vector((cx + 0.55, -0.1, 1.45)), lift); E["elbow_l"].location = (cx + 0.6, 0.5, 1.0)
     E["look"].location = (cx + 0.5 * lift, -2.5, 1.6)
-    solve(want); grip_pole(want, "r", 1.46); hand_on_pole("r"); hand_free("l", roll=-30 * lift)
+    solve(want); grip_pole(want, "r", 1.30); hand_on_pole("r"); hand_free("l", roll=-30 * lift)
 
 
 MOVES = {"Idle": (clip_idle, 4.0, True), "HipCircle": (clip_hipcircle, 4.0, True), "BodyWave": (clip_bodywave, 3.0, True),
@@ -474,6 +489,17 @@ def check_contact(n):
         verdict = "free hand" if not on else ("PASS" if palm_off <= 0.015 and tip_out <= 0.03 else "FAIL")
         print("POLE| contact %s %s: %s  (%d frames on the pole; palm %+.3f m, fingertips %+.3f m, wrist bend <= %.0f, roll <= %.0f deg)"
               % (CLIP, side, verdict, on, palm_off, tip_out, bend, roll))
+    # Shoulder: how far the upper arm points BEHIND the chest plane (owner 2026-10-12: "facing away from the pole making
+    # her arm hyper extend"). More than 25 deg behind the chest is a stretch no dancer holds.
+    back_local = REST["spine_03"].to_3x3().inverted() @ Vector((0, 1, 0))     # at rest she faces -Y: +Y is behind her
+    for side in ("l", "r"):
+        worst = -90.0
+        for f in range(1, n + 1, 3):
+            sc.frame_set(f)
+            back = (PB["spine_03"].matrix.to_3x3() @ back_local).normalized()
+            arm = PB["upperarm_" + side].vector.normalized()
+            worst = max(worst, math.degrees(math.asin(max(-1.0, min(1.0, arm.dot(back))))))
+        print("POLE| shoulder %s %s: %s  (upper arm at most %.0f deg behind the chest plane)" % (CLIP, side, "PASS" if worst <= 25 else "FAIL", worst))
 
 
 action = author(CLIP)
