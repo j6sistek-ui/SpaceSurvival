@@ -1,0 +1,4 @@
+# The Director: "predator entity" (owner 2026-10-10). Design, recipe and the approved sample:
+# M:/Local AI/DirectorTTS/director_voice_final/README.md
+speed=0.92
+treatment=entity

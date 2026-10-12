@@ -188,18 +188,25 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
         TestFalse(TEXT("a zero rate is refused"), SSNpcTalk::VoiceClip(Raw, TEXT("0")).IsValid());
     }
     {
-        const FString Args = SSNpcTalk::VoiceArgs(TEXT("C:/a b/server.py"), TEXT("C:/Lux/"), TEXT("M:/v/ref.wav"), .92f,
-                                                  4, TEXT("entity"), 8703, 42);
+        const FString Args = SSNpcTalk::VoiceArgs(TEXT("C:/a b/server.py"), TEXT("C:/Lux/"), TEXT("C:/v/Voices/"),
+                                                  TEXT("Director"), 4, 8703, 42);
         TestTrue(TEXT("every path is quoted and a trailing slash cannot escape its quote"),
-                 Args.StartsWith(TEXT("\"C:/a b/server.py\"")) && Args.Contains(TEXT("--lux-repo \"C:/Lux\" ")));
-        TestTrue(TEXT("speed, threads, treatment, port and parent all travel"),
-                 Args.Contains(TEXT("--speed 0.92")) && Args.Contains(TEXT("--threads 4")) &&
-                     Args.Contains(TEXT("--treatment \"entity\"")) && Args.Contains(TEXT("--port 8703")) &&
-                     Args.Contains(TEXT("--parent-pid 42")));
+                 Args.StartsWith(TEXT("\"C:/a b/server.py\"")) && Args.Contains(TEXT("--lux-repo \"C:/Lux\" ")) &&
+                     Args.Contains(TEXT("--voices \"C:/v/Voices\" ")));
+        TestTrue(TEXT("default voice, threads, port and parent all travel"),
+                 Args.Contains(TEXT("--default \"Director\"")) && Args.Contains(TEXT("--threads 4")) &&
+                     Args.Contains(TEXT("--port 8703")) && Args.Contains(TEXT("--parent-pid 42")));
         TestTrue(TEXT("a quote in a path is refused, not mangled"),
-                 SSNpcTalk::VoiceArgs(TEXT("C:/a\"b.py"), TEXT("C:/Lux"), TEXT("M:/r.wav"), .92f, 4, TEXT("entity"),
-                                      8703, 42)
+                 SSNpcTalk::VoiceArgs(TEXT("C:/a\"b.py"), TEXT("C:/Lux"), TEXT("C:/v"), TEXT("Director"), 4, 8703, 42)
                      .IsEmpty());
+        SSNpcTalk::FVoiceProfile Profile;
+        SSNpcTalk::ParseVoiceProfile(TEXT("# the Director\nspeed = 0.92\nTreatment=Entity\nnonsense\n"), Profile);
+        TestEqual(TEXT("a voice profile's speed is read"), Profile.Speed, .92f);
+        TestEqual(TEXT("a voice profile's treatment is read, lower-cased"), Profile.Treatment, FString(TEXT("entity")));
+        SSNpcTalk::FVoiceProfile Bare;
+        SSNpcTalk::ParseVoiceProfile(TEXT(""), Bare);
+        TestTrue(TEXT("no profile text means the server's own defaults"),
+                 Bare.Speed == .92f && Bare.Treatment == TEXT("none"));
     }
     // The name the server's --prerender gives a line (md5 of "predator_ref_cut.wav|0.92|entity|Fetch.", Python):
     // the game must find the lines made ahead of time.

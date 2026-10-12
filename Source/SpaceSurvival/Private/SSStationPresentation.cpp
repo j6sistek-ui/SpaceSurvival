@@ -2,6 +2,12 @@
 #include "SSNPCHeadFillComponent.h"
 #include "SSNpcTalk.h"
 #include "Animation/AnimSequence.h"
+#include "HAL/IConsoleManager.h"
+#include "Misc/App.h"
+#include "SSOutpostSandbox.h"
+#include "HAL/IConsoleManager.h"
+#include "Misc/App.h"
+#include "SSOutpostSandbox.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
@@ -535,5 +541,54 @@ void TagTalkers(AActor *Owner)
             Component->ComponentTags.Add(FName(FString(TEXT("TalkRole:")) + Talker.Role));
             Component->ComponentTags.Add(FName(FString(TEXT("TalkActivity:")) + Talker.Activity));
         }
+}
+
+// Temporary (owner 2026-10-12: "reduce the NPC count around the station until I go through and re-optimise the
+// triangle count. Keep the ones playing pool, the bartender, the ones at the desks, and the dancers").
+static TAutoConsoleVariable<int32> StationCrewTrim(
+    TEXT("ss.StationCrewTrim"), 1,
+    TEXT("1 hides every station character but the pool players, the bartender, the desk crew and the dancers "
+         "until the crew meshes are optimised; 0 shows everyone."));
+
+void TrimCrew(const TArray<TObjectPtr<AActor>> &Actors)
+{
+    if (StationCrewTrim.GetValueOnGameThread() == 0 || GIsAutomationTesting || FApp::IsUnattended())
+        return;
+#if WITH_EDITOR
+    // By the authored labels in L_WayfarerRuntime: the pool match, the bartender, the two desks, the stage.
+    static const TCHAR *Keep[] = {TEXT("Refine/OrbitPool/"), TEXT("Crew/Lounge guest"), TEXT("Crew/Atrium A"),
+                                  TEXT("Crew/Atrium B"),     TEXT("R/Performance/"),    TEXT("HomeHub/Residents/"),
+                                  TEXT("TalkTest/")};
+    int32 Hidden = 0;
+    for (AActor *Actor : Actors)
+    {
+        if (!IsValid(Actor))
+            continue;
+        auto *Mesh = Actor->FindComponentByClass<USkeletalMeshComponent>();
+        if (!Mesh || !Mesh->GetSkeletalMeshAsset())
+            continue;
+        // Machinery, drones and the ship are not crew.
+        const FString MeshName = Mesh->GetSkeletalMeshAsset()->GetName();
+        if (MeshName.StartsWith(TEXT("SK_NaniteSkeletal")) || MeshName.Contains(TEXT("Phoenix")))
+            continue;
+        if (const auto *Ambient = Cast<ASSOutpostAmbientActor>(Actor); Ambient && Ambient->bDrone)
+            continue;
+        const FString Label = Actor->GetActorLabel();
+        bool bKeep = false;
+        for (const TCHAR *Prefix : Keep)
+            bKeep |= Label.StartsWith(Prefix);
+        if (bKeep)
+            continue;
+        Actor->SetActorHiddenInGame(true);
+        Actor->SetActorEnableCollision(false);
+        Actor->SetActorTickEnabled(false);
+        Mesh->SetComponentTickEnabled(false);
+        ++Hidden;
+    }
+    UE_LOG(LogTemp, Display,
+           TEXT("station crew trimmed: %d characters hidden until the meshes are optimised (ss.StationCrewTrim 0 "
+                "shows them)"),
+           Hidden);
+#endif
 }
 } // namespace SSStationPresentation

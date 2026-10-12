@@ -1,6 +1,7 @@
 #include "SSStation.h"
 #include "SSLandingPad.h"
 #include "SSOutpostSandbox.h"
+#include "SSStationPresentation.h"
 #include "SSAudio.h"
 #include "SSGameMode.h"
 #include "Components/AudioComponent.h"
@@ -211,6 +212,7 @@ bool ASSStation::BuildOutpostHub()
     Ambience->RegisterComponent();
     Ambience->Play();
     UpdateOutpostEnvironment();
+    SSStationPresentation::TrimCrew(Actors);
     UE_LOG(LogTemp, Display, TEXT("SS_OUTPOST_READY map=%s actors=%d services=%d terminals=%d home=%d pad=%s"),
            SSOutpostRuntimeMap, Actors.Num(), Services.Num(), OutpostTerminals.Num(), Home,
            *LandingPad->GetActorLocation().ToString());

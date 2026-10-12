@@ -236,6 +236,27 @@ private:
     void StopVillainRadio();
     void UpdateVillainRadio(float Dt);
     TArray<FString> VillainLinesToVoice() const;
+    /** A crew member's spoken reply, played at their body (SSNpcTalk voices). One at a time; the microphone
+     *  stops it. */
+    UPROPERTY()
+    TObjectPtr<class UAudioComponent> CrewRadio;
+    UPROPERTY()
+    TObjectPtr<class USoundWaveProcedural> CrewRadioWave;
+    UPROPERTY()
+    TObjectPtr<class USoundAttenuation> CrewRadioAttenuation;
+    SSNpcTalk::FVoiceClip CrewRadioReady;
+    TWeakObjectPtr<const USceneComponent> CrewRadioAt;
+    int32 CrewVoiceTicket = 0;
+    bool bCrewVoiceWaiting = false;
+    float CrewVoiceWait = 0.f, CrewVoiceDeadline = 0.f, CrewRadioLeft = 0.f;
+    void SpeakCrew(const FString &Character, const FString &Text, const USceneComponent *At);
+    /** A second Cyborg, alone, a few metres in front of the walk-in point (owner 2026-10-12: to test voice, talk
+     *  and interaction without other variables). ss.TalkTestCyborg 0 leaves her out. */
+    UPROPERTY()
+    TObjectPtr<class ASkeletalMeshActor> TalkTestCyborg;
+    void SpawnTalkTestCyborg();
+    void StopCrewRadio();
+    void UpdateCrewRadio(float Dt);
     UPROPERTY()
     TObjectPtr<class UMaterialInstanceDynamic> SpaceMaterial;
     UPROPERTY()
