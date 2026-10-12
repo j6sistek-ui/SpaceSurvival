@@ -341,13 +341,39 @@ void ASSGameMode::SpeakVillain(const FString &Text, bool bReply)
                          Mode->bVillainVoiceWaiting = false;
                          if (Clip.IsValid())
                              Mode->VillainRadioReady = Clip; // played on the next tick, never from here
+                         else
+                             Mode->ShowHeldVillainReply(); // no voice is coming: the caption alone
                      }))
         bVillainVoiceWaiting = false;
+}
+void ASSGameMode::ShowHeldVillainReply()
+{
+    if (!bVillainReplyHeld)
+        return;
+    bVillainReplyHeld = false;
+    TalkStatus.Empty();
+    // His channel, his colour; the story cue machinery is untouched, this only borrows the caption.
+    VillainLine = HeldVillainReply;
+    VillainLineSeconds = FMath::Clamp(4.f + .07f * HeldVillainReply.Len(), 6.f, 16.f);
+    VillainLineShown = 0.f;
+    // With subtitles off his own caption is hidden; the conversation's line carries his answer, as it does for the
+    // crew, so an answer the voice cannot deliver is never lost.
+    const auto *GI = GetGameInstance<USSGameInstance>();
+    if (GI && !GI->Session.settings.subtitles)
+    {
+        const FString &Shown = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain.DisplayName;
+        NpcName = Shown.IsEmpty() ? TEXT("Director") : Shown;
+        NpcLine = HeldVillainReply;
+        NpcLineSeconds = VillainLineSeconds;
+    }
+    HeldVillainReply.Empty();
 }
 void ASSGameMode::StopVillainRadio()
 {
     ++VillainVoiceTicket;
     bVillainVoiceWaiting = false;
+    bVillainReplyHeld = false; // a reply nobody heard yet is superseded by whatever stops him
+    HeldVillainReply.Empty();
     VillainRadioReady = SSNpcTalk::FVoiceClip();
     VillainRadioLeft = 0.f;
     if (VillainRadio && VillainRadio->IsPlaying())
@@ -361,6 +387,7 @@ void ASSGameMode::UpdateVillainRadio(float Dt)
         ++VillainVoiceTicket;
         bVillainVoiceWaiting = false;
         UE_LOG(LogTemp, Display, TEXT("director voice: too late after %.1f s, caption only"), VillainVoiceWait);
+        ShowHeldVillainReply();
     }
     if (VillainRadioReady.IsValid() && VillainRadio)
     {
@@ -382,6 +409,7 @@ void ASSGameMode::UpdateVillainRadio(float Dt)
         VillainRadio->SetVolumeMultiplier(SSAudio::EffectsGain(this));
         VillainRadio->Play();
         VillainRadioLeft = Wave->Duration;
+        ShowHeldVillainReply(); // the words arrive with the sound
         // The caption stays up while he is still talking.
         VillainLineSeconds = FMath::Max(VillainLineSeconds, VillainRadioLeft + .75f);
         UE_LOG(LogTemp, Display, TEXT("director voice: %.1f s line, first sound %.0f ms after the caption"),
@@ -416,13 +444,30 @@ void ASSGameMode::SpeakCrew(const FString &Character, const FString &Text, const
                          Mode->bCrewVoiceWaiting = false;
                          if (Clip.IsValid())
                              Mode->CrewRadioReady = Clip; // played on the next tick, never from here
+                         else
+                             Mode->ShowHeldCrewReply();
                      }))
         bCrewVoiceWaiting = false;
+}
+void ASSGameMode::ShowHeldCrewReply()
+{
+    if (!bCrewReplyHeld)
+        return;
+    bCrewReplyHeld = false;
+    TalkStatus.Empty();
+    NpcName = HeldCrewName;
+    NpcLine = HeldCrewLine;
+    NpcLineSeconds = FMath::Clamp(4.f + .07f * HeldCrewLine.Len(), 6.f, 16.f);
+    HeldCrewName.Empty();
+    HeldCrewLine.Empty();
 }
 void ASSGameMode::StopCrewRadio()
 {
     ++CrewVoiceTicket;
     bCrewVoiceWaiting = false;
+    bCrewReplyHeld = false;
+    HeldCrewName.Empty();
+    HeldCrewLine.Empty();
     CrewRadioReady = SSNpcTalk::FVoiceClip();
     CrewRadioLeft = 0.f;
     if (CrewRadio && CrewRadio->IsPlaying())
@@ -435,6 +480,7 @@ void ASSGameMode::UpdateCrewRadio(float Dt)
         ++CrewVoiceTicket;
         bCrewVoiceWaiting = false;
         UE_LOG(LogTemp, Display, TEXT("npc voice: too late after %.1f s, caption only"), CrewVoiceWait);
+        ShowHeldCrewReply();
     }
     if (CrewRadioReady.IsValid() && CrewRadio)
     {
@@ -452,6 +498,7 @@ void ASSGameMode::UpdateCrewRadio(float Dt)
         CrewRadio->SetVolumeMultiplier(SSAudio::EffectsGain(this));
         CrewRadio->Play();
         CrewRadioLeft = Wave->Duration;
+        ShowHeldCrewReply();
         // The caption stays up while they are still talking.
         NpcLineSeconds = FMath::Max(NpcLineSeconds, CrewRadioLeft + .75f);
         CrewRadioReady = SSNpcTalk::FVoiceClip();
@@ -3064,32 +3111,26 @@ void ASSGameMode::OnNpcTranscript(const FString &Character, const FString &Text)
 
 void ASSGameMode::OnNpcReply(const FString &Character, const FString &Text)
 {
-    TalkStatus.Empty();
+    // The words wait for the sound (owner 2026-10-12: the caption landed well before the voice and read as a
+    // delay). "is answering..." stays up while the line is made; the caption appears as the clip starts, or alone
+    // the moment it is known that no voice is coming - at once when none was asked for.
     TalkingTo = FSSTalkIdentity();
     if (Character == TEXT("Director") && VillainVoiceOn(this))
     {
-        // His channel, his colour; the story cue machinery is untouched, this only borrows the caption.
-        VillainLine = Text;
-        VillainLineSeconds = FMath::Clamp(4.f + .07f * Text.Len(), 6.f, 16.f);
-        VillainLineShown = 0.f;
         SpeakVillain(Text, true);
-        // With subtitles off his own caption is hidden; the conversation's line carries his answer, as it does for the
-        // crew, so an answer the voice cannot deliver is never lost.
-        const auto *GI = GetGameInstance<USSGameInstance>();
-        if (GI && !GI->Session.settings.subtitles)
-        {
-            const FString &Shown = (Tuning ? Tuning.Get() : GetDefault<USSPhase1Data>())->Villain.DisplayName;
-            NpcName = Shown.IsEmpty() ? Character : Shown;
-            NpcLine = Text;
-            NpcLineSeconds = VillainLineSeconds;
-        }
+        HeldVillainReply = Text;
+        bVillainReplyHeld = true;
+        if (!bVillainVoiceWaiting && !VillainRadioReady.IsValid())
+            ShowHeldVillainReply();
         return;
     }
-    NpcName = Character;
-    NpcLine = Text;
-    NpcLineSeconds = FMath::Clamp(4.f + .07f * Text.Len(), 6.f, 16.f);
     // Spoken at their body when they have a voice of their own (owner 2026-10-12: Cyborg first).
     SpeakCrew(Character, Text, EngagedMesh.Get());
+    HeldCrewName = Character;
+    HeldCrewLine = Text;
+    bCrewReplyHeld = true;
+    if (!bCrewVoiceWaiting && !CrewRadioReady.IsValid())
+        ShowHeldCrewReply();
 }
 
 void ASSGameMode::OnNpcFailure(const FString &, const FString &Why)

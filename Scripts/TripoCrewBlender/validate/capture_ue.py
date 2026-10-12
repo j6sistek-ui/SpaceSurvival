@@ -48,10 +48,25 @@ actors = u.get_editor_subsystem(u.EditorActorSubsystem)
 mesh = u.load_asset(MESH)
 assert mesh, "mesh not found: " + MESH
 
-floor = actors.spawn_actor_from_class(u.StaticMeshActor, POS, u.Rotator(0, 0, 0))
-floor.static_mesh_component.set_static_mesh(u.load_asset("/Engine/BasicShapes/Plane"))
-floor.set_actor_scale3d(u.Vector(30, 30, 1))
-floor.static_mesh_component.set_material(0, u.load_asset("/Engine/BasicShapes/BasicShapeMaterial"))
+# SS_CAP_ACTOR=<mesh path>: capture the FIRST placed actor in the open map that carries that skeletal mesh, in place,
+# with the map's own lights and that actor's own materials - what the game shows, not a fresh spawn under sun lights.
+ACTOR_MESH = game_path(os.environ.get("SS_CAP_ACTOR", ""))
+placed = None
+if ACTOR_MESH:
+    for a in actors.get_all_level_actors():
+        comp = a.get_component_by_class(u.SkeletalMeshComponent)
+        if comp and comp.get_skeletal_mesh_asset() and comp.get_skeletal_mesh_asset().get_path_name().startswith(ACTOR_MESH):
+            placed = a
+            log("placed actor %s (%s) at %s, materials %s" % (a.get_actor_label(), a.get_class().get_name(), a.get_actor_location(),
+                [comp.get_material(i).get_name() if comp.get_material(i) else None for i in range(comp.get_num_materials())]))
+            break
+    assert placed, "no placed actor carries " + ACTOR_MESH
+    POS = placed.get_actor_location()
+floor = None if placed else actors.spawn_actor_from_class(u.StaticMeshActor, POS, u.Rotator(0, 0, 0))
+if floor:
+    floor.static_mesh_component.set_static_mesh(u.load_asset("/Engine/BasicShapes/Plane"))
+    floor.set_actor_scale3d(u.Vector(30, 30, 1))
+    floor.static_mesh_component.set_material(0, u.load_asset("/Engine/BasicShapes/BasicShapeMaterial"))
 
 
 def light(rot, lux, color=(1, 1, 1)):
@@ -65,18 +80,24 @@ def light(rot, lux, color=(1, 1, 1)):
     return a
 
 
-light((-40, 35, 0), 6.0)                      # key, front-left high
-light((-20, -140, 0), 2.0, (0.85, 0.9, 1))    # fill, other side
-light((-25, 180, 0), 4.0)                     # rim from behind
-sky = actors.spawn_actor_from_class(u.SkyLight, POS + u.Vector(0, 0, 400), u.Rotator(0, 0, 0))
-sc = sky.get_component_by_class(u.SkyLightComponent)
-sc.set_mobility(u.ComponentMobility.MOVABLE)
-sc.set_intensity(0.6)
+if not placed:
+    light((-40, 35, 0), 6.0)                      # key, front-left high
+    light((-20, -140, 0), 2.0, (0.85, 0.9, 1))    # fill, other side
+    light((-25, 180, 0), 4.0)                     # rim from behind
+    sky = actors.spawn_actor_from_class(u.SkyLight, POS + u.Vector(0, 0, 400), u.Rotator(0, 0, 0))
+    sc = sky.get_component_by_class(u.SkyLightComponent)
+    sc.set_mobility(u.ComponentMobility.MOVABLE)
+    sc.set_intensity(0.6)
 
 # Reference pose, Unreal's own skinning: a bad bind pose shows here exactly as it does in game.
-body = actors.spawn_actor_from_class(u.SkeletalMeshActor, POS, u.Rotator(0, 0, 0))
-comp = body.skeletal_mesh_component
-comp.set_skeletal_mesh_asset(mesh)
+if placed:
+    body = placed
+    comp = placed.get_component_by_class(u.SkeletalMeshComponent)
+    mesh = comp.get_skeletal_mesh_asset()
+else:
+    body = actors.spawn_actor_from_class(u.SkeletalMeshActor, POS, u.Rotator(0, 0, 0))
+    comp = body.skeletal_mesh_component
+    comp.set_skeletal_mesh_asset(mesh)
 comp.set_forced_lod(1)
 # SS_CAP_MATERIAL=<material path> overrides every slot (a plain grey tells mesh faults from texture faults)
 if os.environ.get("SS_CAP_MATERIAL"):
@@ -123,7 +144,7 @@ def expose(bias):
 
 
 def shoot(view, look_at, dist, yaw, pitch=-5.0, fov=FOV):
-    a = math.radians(yaw)
+    a = math.radians(yaw + (body.get_actor_rotation().yaw if placed else 0.0))
     # yaw 0 looks from +Y toward -Y; the Tripo crew face +Y, so yaw 0 is the front.
     loc = u.Vector(look_at.x + math.sin(a) * dist, look_at.y + math.cos(a) * dist,
                    look_at.z - math.sin(math.radians(pitch)) * dist)
