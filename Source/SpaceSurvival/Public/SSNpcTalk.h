@@ -82,13 +82,14 @@ SPACESURVIVAL_API FString VoiceArgs(const FString &Script, const FString &Repo, 
                                     const FString &DefaultVoice, int32 Threads, int32 Port, uint32 ParentPid);
 /** The file a line is kept in: an MD5 of "<reference file>|<speed>|<treatment>|<line>", exactly as the server's
  *  --prerender names it, so lines made ahead of time are found. A new voice, speed or treatment is a new name. */
-SPACESURVIVAL_API FString VoiceCacheName(const FString &Reference, float Speed, const FString &Treatment,
+SPACESURVIVAL_API FString VoiceCacheName(const FString &Reference, double Speed, const FString &Treatment,
                                          const FString &Text);
-/** A character's voice: the recording the server clones, and the settings from the <Name>.txt beside it. */
+/** A character's voice: the recording the server clones, and the settings from the <Name>.txt beside it. Speed is
+ *  a double so "%.2f" rounds exactly as the server's Python does (0.985 is 0.98 to both). */
 struct FVoiceProfile
 {
     FString Reference;
-    float Speed = 0.92f;
+    double Speed = 0.92;
     FString Treatment = TEXT("none");
 };
 /** "speed=0.92" and "treatment=entity" lines, as the server reads them; anything else is ignored. */
@@ -249,8 +250,10 @@ public:
     /** The voice name a character speaks with: their own, else "_Default", else empty. */
     FString VoiceFor(const FString &Character) const
     {
-        if (Voices.Contains(Character))
-            return Character;
+        // The file's own spelling goes to the server, whatever case the character name came in.
+        for (const auto &Voice : Voices)
+            if (Voice.Key.Equals(Character, ESearchCase::IgnoreCase))
+                return Voice.Key;
         return Voices.Contains(TEXT("_Default")) ? FString(TEXT("_Default")) : FString();
     }
     /** Start the voice server unless it runs. Idempotent; it answers ~15-35 s after a cold start. */

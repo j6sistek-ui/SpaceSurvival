@@ -201,18 +201,23 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
                      .IsEmpty());
         SSNpcTalk::FVoiceProfile Profile;
         SSNpcTalk::ParseVoiceProfile(TEXT("# the Director\nspeed = 0.92\nTreatment=Entity\nnonsense\n"), Profile);
-        TestEqual(TEXT("a voice profile's speed is read"), Profile.Speed, .92f);
+        TestEqual(TEXT("a voice profile's speed is read"), Profile.Speed, .92);
         TestEqual(TEXT("a voice profile's treatment is read, lower-cased"), Profile.Treatment, FString(TEXT("entity")));
         SSNpcTalk::FVoiceProfile Bare;
         SSNpcTalk::ParseVoiceProfile(TEXT(""), Bare);
         TestTrue(TEXT("no profile text means the server's own defaults"),
-                 Bare.Speed == .92f && Bare.Treatment == TEXT("none"));
+                 Bare.Speed == .92 && Bare.Treatment == TEXT("none"));
     }
     // The name the server's --prerender gives a line (md5 of "predator_ref_cut.wav|0.92|entity|Fetch.", Python):
     // the game must find the lines made ahead of time.
     TestEqual(TEXT("a line made ahead is found under the server's name for it"),
               SSNpcTalk::VoiceCacheName(TEXT("M:/anywhere/predator_ref_cut.wav"), .92f, TEXT("entity"), TEXT("Fetch.")),
               FString(TEXT("abb6b07d574d96cb727ac1df10ad746e.pcm")));
+    const FString ThreeDecimals =
+        SSNpcTalk::VoiceCacheName(TEXT("Director.wav"), 0.985, TEXT("entity"), TEXT("Fetch."));
+    const FString TwoDecimals = SSNpcTalk::VoiceCacheName(TEXT("Director.wav"), 0.98, TEXT("entity"), TEXT("Fetch."));
+    TestEqual(TEXT("a three-decimal speed rounds the way the server's Python rounds it (0.985 -> 0.98)"), ThreeDecimals,
+              TwoDecimals);
     TestNotEqual(TEXT("a new speed is a new name"),
                  SSNpcTalk::VoiceCacheName(TEXT("predator_ref_cut.wav"), .88f, TEXT("entity"), TEXT("Fetch.")),
                  FString(TEXT("abb6b07d574d96cb727ac1df10ad746e.pcm")));
