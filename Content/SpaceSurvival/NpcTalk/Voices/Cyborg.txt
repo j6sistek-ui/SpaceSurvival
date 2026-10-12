@@ -1,0 +1,4 @@
+# Cyborg: "bright" - loud, cheeky, laughing under the words (owner picked by ear, 2026-10-12). Dry; treatment=chrome
+# adds a faint metallic shimmer for the cybernetics. Candidates kept in M:/Local AI/DirectorTTS/samples_cyborg/.
+speed=0.82
+treatment=none

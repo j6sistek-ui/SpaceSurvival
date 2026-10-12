@@ -209,7 +209,7 @@ the brush-offs and the mirrored swearing), run QLoRA with Unsloth on the 8B for 
 quantise to GGUF, drop it in `LlamaModel`. The dataset is the real work, a day of writing; the training is an hour.
 Do it only after testing shows the profile plus scenario still slips.
 
-## The villain's voice
+## Voices
 
 Owner, 2026-10-10: text is hard to read while flying, so the villain speaks. After five rounds of voices by ear the
 owner chose "predator entity. done. exactly", and on the engine: "it didn't cost us 4 GB of VRAM or a week of
@@ -218,9 +218,9 @@ iterations. That's a win."
 | Piece | What |
 |---|---|
 | Engine | LuxTTS (Apache-2.0, code and model), on the **processor**: no video memory. Measured on the i7-14700F with 4 threads: ready ~14 s after a cold start, a 10-word line in 2.7 s, 19 words in 3.6 s, ~1.6 GB of RAM |
-| Voice | `predator_ref_cut.wav`: a 6.5 s recording designed once from a written description (Qwen3-TTS VoiceDesign, offline), cut at a pause between sentences, cloned live; speed 0.92 (~3.3 words a second) |
-| Treatment | "entity": pitched down 3 semitones, an octave-down double, a faint ghost an octave up, a dark 1.2 s tail. Applied by the server to every line |
-| Server | `Tools/NpcTalk/director_voice_server.py` (POST `/speak` -> PCM16 48 kHz), hidden, 127.0.0.1 only, exits with the game |
+| Voice | one `Content/SpaceSurvival/NpcTalk/Voices/<Name>.wav` per character, 4-7 s cut at a pause between sentences, cloned live; an optional `<Name>.txt` beside it sets `speed=` (pace, ~speed squared) and `treatment=` (entity, chrome, none). The audio profile, next to the text profiles. `_Default.wav` is everyone else's: Windows' own Microsoft David, recorded with System.Speech (owner: "a neutral default so there is something") |
+| Treatment | "entity" (the Director): pitched down 3 semitones, an octave-down double, a faint ghost an octave up, a dark 1.2 s tail. "chrome": a faint metallic comb and shimmer. Applied by the server per voice |
+| Server | `Tools/NpcTalk/director_voice_server.py` (POST `/speak` with `X-Voice: <Name>` -> PCM16 48 kHz; GET `/voices`), hidden, 127.0.0.1 only, exits with the game |
 | Recipe | `M:\Local AI\DirectorTTS\director_voice_final\README.md`: the description, the settings, the approved sample |
 
 How it plays:
@@ -239,8 +239,20 @@ How it plays:
 - With subtitles off he still speaks (owner); without the voice installed nothing changes from the text-only game.
 - Volume follows the Effects slider; `ss.VillainRadioFilter 1|2` adds a radio band for comparison (off by default:
   the treatment is his sound). A separate mute for him is an owner-listed follow-up.
-- A new voice is a new reference recording plus the `Voice*` lines in `DefaultNpcTalk.ini` and a fresh prerender;
-  every other NPC can get one the same way (owner: "now every NPC can get audio").
+- A new voice is a new `<Name>.wav` (and `.txt`) in the Voices folder; the Director's needs a fresh prerender.
+  Today: `Director.wav` ("predator entity"), `Cyborg.wav` ("bright", picked by ear 2026-10-12, dry), `_Default.wav`.
+- **Crew replies** are spoken at the character's body (3D, full within 3 m, gone by 15 m) once the caption is up;
+  pressing T to talk silences them so the microphone never hears them. Captions stay up while they speak.
+
+### Until the crew meshes are optimised (2026-10-12)
+
+The station lagged (owner: "too many NPCs... until I go through and re-optimise the triangle count"), so
+`ss.StationCrewTrim` (default 1) hides every character in the authored map except the pool match, the bartender,
+the two desks and the stage (by label prefix in `SSStationPresentation::TrimCrew`; labels are editor-only, so a
+packaged build keeps everyone). Hidden characters stop animating and cannot be talked to. `ss.StationCrewTrim 0`
+shows them again. Separately, `ss.TalkTestCyborg` (default 1) stands a second Cyborg four metres in front of the
+station walk-in point, alone and off the pole, to test voice, talk and interaction without other variables.
+The real lag found the same day: Voicemod held 5.9 GB of the 16 GB card in the background.
 
 ## Limits and later
 

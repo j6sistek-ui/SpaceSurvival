@@ -20,5 +20,9 @@ void BuildSupplementalStaff(AActor *Owner);
 void BuildAlienCrew(AActor *Owner);
 /** Names, roles and live activities for the deck crew above, as push-to-talk component tags (docs/NPC_TALK.md). */
 void TagTalkers(AActor *Owner);
+/** Owner 2026-10-12: the station lags until the crew meshes are optimised, so every character in the authored map
+ *  but the pool players, the bartender, the desk crew and the dancers is hidden and stops animating. A switch
+ *  (ss.StationCrewTrim 0 shows everyone); labels are an editor-only thing, so a packaged build keeps everyone. */
+void TrimCrew(const TArray<TObjectPtr<AActor>> &Actors);
 void PaceAlienCrew(AActor *Owner);
 } // namespace SSStationPresentation
