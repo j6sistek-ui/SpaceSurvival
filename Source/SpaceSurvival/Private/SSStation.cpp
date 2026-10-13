@@ -617,6 +617,7 @@ void ASSStation::BuildHub(bool bHome)
     // Optional owned characters remain presentation-only and appear whenever their private assets are installed.
     SSStationPresentation::BuildSupplementalStaff(this);
     SSStationPresentation::BuildAlienCrew(this);
+    SSStationPresentation::TagTalkers(this);
     // Dock lights, safety strips and repeated structural ribs unify the compact hub.
     for (int I = -3; I <= 3; ++I)
     {

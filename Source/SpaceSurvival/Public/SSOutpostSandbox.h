@@ -188,6 +188,15 @@ public:
     /** A wardrobe projector owns its newly selected mesh/clip; ambient idle must not overwrite it. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")
     bool bAnimationManagedExternally = false;
+    /** Push-to-talk identity (docs/NPC_TALK.md). Empty TalkName: the mesh name ("SK_Dread" is Dread). TalkRole names
+     *  a scenario file (Pool, Bartender, Guard); TalkActivity is the live detail told to the model ("just scratched
+     *  on the eight ball"). */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    FString TalkName;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    FString TalkRole;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    FString TalkActivity;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")
     float TravelSpeed = 120.f;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")

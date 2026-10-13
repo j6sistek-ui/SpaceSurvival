@@ -1,0 +1,5 @@
+# The default voice for every character without a <Name>.wav of their own (owner 2026-10-12: "a neutral default,
+# robotic like the Windows voice; we fine-tune tones later"). This is Windows' own Microsoft David, recorded with
+# System.Speech and cloned by LuxTTS. Give a character their own file to replace it.
+speed=0.92
+treatment=none
