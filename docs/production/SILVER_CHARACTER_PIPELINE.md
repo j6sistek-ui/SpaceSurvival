@@ -10,6 +10,9 @@ Updated 2026-10-13. This guide identifies recovery sources after the owner-reque
 - Native import source: `.agent/local/ViableEldFinish_20261013/BodyDynamics/Garment_ST_cm_5769183e/Sentinel_ST_Derivative.blend` and adjacent FBX. Keep `Ready_ST_Morph_Curves.json`, export/import helpers and their readback receipts.
 - Final GIF and apartment view remain in the task folder. The dated [motion receipt](../validation/2026-10-13-silver-motion-finish.md) and [voice receipt](../validation/2026-10-13-silver-persona-voice.md) distinguish implemented work from owner/live-audio acceptance.
 
+
+- Current native scalp overlay: `.agent/local/ViableEldFinish_20261013/HairCoverage/Silver_ScalpFoundation.blend` and `G_Silver_ScalpFoundationFull.abc`; Unreal `HairCoverage_v3/G_Silver_ScalpFoundation`, binding and `PA_Silver_HeadCollision`. The original full master/cache remain unchanged; use this overlay alongside them for the current native appearance. `PlatinumHair` and `PlatinumScalpCoverage` share `M_Platinum_Strands`; editing that material changes both, while a component-only material override must be assigned to both. See the [hair repair receipt](../validation/2026-10-13-silver-hair-coverage.md).
+
 ## Retained recovery models
 
 Paths below are relative to `M:/Local AI/Projects/ViableEld_20261012/work/`.
@@ -40,6 +43,8 @@ All task scripts, JSON reports, numerical arrays, raw import/export sources and 
 6. **Treat groom initialization separately from tuning.** A missing `DataFlags_HasData` interpolation assertion is a resource/binding problem, not proof of bad stiffness. A fresh saved-asset/binding load recovered this test; it is not a proven general engine fix. Preserve the failed receipt and verify playback after recovery.
 7. **Inspect captures before changing assets.** In the apartment, the lace initially looked opaque because texture mips had not streamed for the remote capture. A local view/prestream request restored detail without altering the material. Camera-only evidence can mislead about materials and collision.
 8. **Do not generalize a one-pose repair.** The shoulder ARAP study was left unadopted. Equal-arm tests substantially reduced apparent left/right lift asymmetry, showing that choreography contributed to the screenshot difference. Stop when the owner sets the quality/cost boundary; do not trade a tolerable local crease for a broad speculative repair.
+
+9. **Retain scalp coverage independently of loose lengths.** A tip-only strand mask deleted entire right-side/root sections. Restoring all long locks caused instability, so this repair uses short bound prefixes beneath the existing moving groom. Head collision must follow the head bone and cover the measured face envelope, not an undersized neck-owned approximation. Test at normal speed as well as capture-friendly time steps; neither proves all future motions. Copy reflected nested structs before editing them, since direct wrappers can dirty their source objects.
 
 ## Cleanup audit
 
