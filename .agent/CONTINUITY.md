@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-13T12:10Z [TOOL] Silver source hair cache856/856 and14 garment/body control transfer verified;13 new native clips/mesh/BP saved.219-frame native GIF demonstrates remaining face-crossing during deep dip despite tighter hair trial; dynamic placement held pending owner choice, original Wayfarer unchanged. Shoulder scope stopped, Cyan unchanged. Silver separate dancer persona and byte-identical Cyborg voice are authored; no LoRA/live audition. Detailed local receipt .agent/local/ViableEldFinish_20261013; public evidence docs/validation/2026-10-13-silver-motion-finish.md.
+
 This is the workspace briefing. `docs/KNOWN_ISSUES.md` is the sole active issue/acceptance log; `docs/PROJECT_STATE.md` separates source, local builds and published releases. Detailed September 21 evidence is in `docs/validation/2026-09-21-flight-loop-reset.md`. Older continuity entries remain in Git history and the local `Artifacts/ContinuityBeforeResetHandoff.md` snapshot.
 
 [PLANS]

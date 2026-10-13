@@ -1,5 +1,7 @@
 # SpaceSurvival whole-project solution catalog
 
+**SILVER-20261013 — owned Sentinel/ViableEld character finish (WBS8.4/10.3):** reuse the existing character, platinum groom, emerald outfit and owned dance/core clips for private-apartment evaluation. No acquisition or source replacement; local13-clip/morph transfer and Blender cache are verified, native dynamic hair remains unaccepted. Separate Silver persona reuses the existing Cyborg voice reference, without a new LoRA. Cyan assessed unchanged because no ready jiggle controls exist. Next is the bounded placement/hair decision and native voice review, not wider cast adoption. [Dated evidence](../validation/2026-10-13-silver-motion-finish.md).
+
 ### RUNTIME-20261010-NPCTALK - owner-required push-to-talk conversations (local whisper.cpp + llama.cpp)
 
 - **Decision, 2026-10-10:** the owner made open conversation an explicit requirement (the condition earlier entries
