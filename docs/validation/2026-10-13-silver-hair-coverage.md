@@ -35,3 +35,5 @@ Fresh headless-editor readback confirms the saved apartment actor still at(6900,
 The native repair changes only Silver's existing Blueprint plus the three new hair/collision assets. Protected mesh, material, original groom/binding/PhysicsAsset hashes pass. No C++ source, build, cook or release change. Python syntax and repository documentation checks apply; no new C++ build or unrelated test suite is warranted.
 
 The earlier cleanup measurement of3,001,998,411bytes is historical, before these new retained assets and previews. Keep the four original Downloads GLBs (54.2MB). Rejected exports and raw capture frames are disposable once the final GIF and diagnostic samples are verified; preserve the final hair source, master/cache and receipts.
+
+Hair follow-up cleanup removed394 files/496,828,088bytes of rejected exports and encoded raw frames, retaining ten final keyframes, seven normal-speed views, final sources and GIF. Automatic approval review blocked recursive deletion of five task-created editor profiles;1,173,483,876bytes remain. Exact paths are in the local `HairCoverage/ProfileCleanupRetained.json`. No alternate deletion method was attempted.
