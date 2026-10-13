@@ -1,6 +1,6 @@
 # SpaceSurvival whole-project solution catalog
 
-**SILVER-20261013 — owned Sentinel/ViableEld character finish (WBS8.4/10.3):** existing character, platinum groom, emerald outfit and owned clips now support saved private-apartment evaluation. No acquisition or source replacement; local13-clip/morph transfer, Blender cache and native placement/reload are verified. Hair remains dynamic; brief face coverage alone is not a failure. Separate Silver persona reuses Cyborg voice without a new LoRA. Cyan remains unchanged because no ready jiggle controls exist. Next: owner motion and live voice review, not wider cast adoption. [Dated evidence](../validation/2026-10-13-silver-motion-finish.md).
+**SILVER-20261013 — owned Sentinel/ViableEld character finish (WBS8.4/10.3):** existing character, platinum groom, emerald outfit and owned clips now support saved private-apartment evaluation. No acquisition or source replacement; local13-clip/morph transfer, Blender cache and native placement/reload are verified. Hair remains dynamic; brief face coverage alone is not a failure. Separate Silver persona reuses Cyborg voice without a new LoRA. Cyan remains unchanged because no ready jiggle controls exist. Obsolete development snapshots removed51.21 GB; [reusable pipeline lessons and preserved sources](SILVER_CHARACTER_PIPELINE.md). Next: owner motion and live voice review, not wider cast adoption. [Dated evidence](../validation/2026-10-13-silver-motion-finish.md).
 
 ### RUNTIME-20261010-NPCTALK - owner-required push-to-talk conversations (local whisper.cpp + llama.cpp)
 
