@@ -10,13 +10,17 @@ The owner stopped shoulder refinement for now and requested a bounded hair/body-
 - The current dance controls were rebuilt against current weights. The other12 clips retain their previous control bakes. Source secondary-motion maxima are approximately2.25mm breast and1.02mm hip, with the existing3mm arm-raise lift retained. Native motion uses baked morph curves; it is not a new general-purpose runtime soft-body solver.
 - A private Blueprint has the new mesh, groom binding, dance and `TalkName:Silver`, `TalkType:Silver`, `TalkRole:Dancer` tags. The profile/voice receipt is [separate](2026-10-13-silver-persona-voice.md).
 
-## Native hair result: not accepted
+## Native hair result and apartment placement
 
 The native groom uses fitted torso/head/neck capsules and an active Niagara spring simulation. The first activation exposed missing interpolation bulk data and exited the test editor. A fresh offscreen editor/load resolved that initialization failure; the later continuous dance completed without that assertion. This is a verified recovery for the test, not a proven engine bug fix.
 
-The initial loose simulation fell across the face. Increased rest-shape stiffness and head clearance improved idle, but the full dance still brings hair over the face during the deep dip. Three assessment cycles are complete; further tuning is held for owner direction. The native hair is **not collision/appearance accepted**, and dynamic placement was not authorized by the owner's conditional “if it is all good” instruction. The private apartment was inspected read-only; the station map remains unchanged. Owner choice between temporary bound hair and holding placement is pending.
+The initial loose simulation fell across the face. Increased rest-shape stiffness and head clearance improved idle. The full dance brings hair over the face during the deep dip, then clears it again. The owner questioned why temporary coverage was treated as a failure; that was an overly strict criterion. Coverage alone does not establish penetration or sticking. The earlier bound-hair/hold-placement gate is withdrawn, and no fourth hair-tuning pass was performed. All-strand contact and arbitrary future motions remain unverified.
 
-The diagnostic GIF contains219 actual PIE captures over28.55seconds, with active Niagara at every sample and changing body-motion curve values. It is a review of the remaining fault, not an approved final animation. GIF SHA-256: `9b43c78d45c6b08c3c2615a832628adcf2558d2a9e4cab6332aaa70c6ffdb37c`.
+The GIF contains219 actual PIE captures over28.55seconds, with active Niagara at every sample and changing body-motion curve values. It is a review preview, not final owner acceptance. GIF SHA-256: `9b43c78d45c6b08c3c2615a832628adcf2558d2a9e4cab6332aaa70c6ffdb37c`.
+
+Silver is now saved/reloaded in the current Wayfarer private apartment at (6900,4620,-169.5), yaw90, as `HomeHub/Residents/Silver`. Five floor traces verify the open placement area. Native apartment playback advances from0.81s to20.34s with active Niagara; one visible skeletal component has the Silver identity. Separate later capture shows the emerald lace after texture streaming; the early opaque-looking capture used incomplete mip residency. No material or station-light edit was made. The private capture used GameModeBase; original world settings were restored before saving, so this does not prove live dialogue or actual player interaction.
+
+Saved map SHA-256: `8ea81dd36916f13f79d2afe9e4f3cbe3ceea53507de7b06dc01068e993a1c5b4`;9,408 actors total, all9,407 pre-existing actor/component fingerprints unchanged. Reload verifies the actor, looping clip and talk tags with no dirty packages. The pre-placement map is retained privately. Placement receipt: `work/Unreal/Apartment/Placement.json`; native view: `ApartmentSilver.png`. The test editor was closed cleanly. The packaged game is unchanged.
 
 ## Cyan and storage
 

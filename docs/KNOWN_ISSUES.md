@@ -1,6 +1,6 @@
 # Open work and owner review
 
-**RPT-20261013-01 — Silver private-apartment evaluation: OPEN / lead.** Body/clothing motion curves and separate Silver dancer persona/Cyborg-matched voice are authored. Native hair still falls across the face during a deep dip; the diagnostic219-frame GIF retains this failure. Shoulder optimization is stopped at owner direction, Cyan unchanged. Apartment placement is held pending the owner choice of temporary bound hair or further repair. Next: resolve that choice, then verify saved placement/identity and live voice; close only with accepted motion and owner evaluation. [Motion evidence](validation/2026-10-13-silver-motion-finish.md); [profile evidence](validation/2026-10-13-silver-persona-voice.md).
+**RPT-20261013-01 — Silver private-apartment evaluation: OPEN / lead.** Silver is saved/reloaded in the apartment with moving platinum hair, dance/body/clothing curves and her own dancer persona/Cyborg-matched voice. All9,407 existing actor fingerprints are preserved. Temporary hair coverage clears again and is not a defect by itself; the earlier bound-hair/hold-placement gate is withdrawn. Shoulders stopped, Cyan unchanged. Next: owner apartment/motion review and live voice/dialogue/lip-sync check; remaining all-motion collision/performance acceptance is unverified. [Motion evidence](validation/2026-10-13-silver-motion-finish.md); [profile evidence](validation/2026-10-13-silver-persona-voice.md).
 
 ## ▶ Owner decisions and next actions — September 27 (keep at the top until closed)
 
