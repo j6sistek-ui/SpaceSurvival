@@ -1,5 +1,11 @@
 # SpaceSurvival Phase 1 architecture
 
+## Opt-in character body dynamics — October 13
+
+`USSSoftTissueComponent` owns cosmetic, single-player spring state on a character Blueprint. It ticks after its skeletal mesh, samples skin-weighted reference anchors through current bone transforms, and overrides only configured XYZ morph channels. The same imported morph carries both body and garment deltas. Existing pose, facial and arm-lift channels remain owned by their animation. Binding failure leaves the prior animation intact; teardown removes only the component's overrides.
+
+Mass/stiffness/damping/response/limits are Blueprint settings. Anchor topology and centimetre/morph-axis conversion are authored per character; the component cannot be attached indiscriminately to other rigs. It adds no collision or networking system and is currently opt-in on Silver only. [Native evidence and tuning](validation/2026-10-13-silver-runtime-springs.md).
+
 ## Wayfarer station integration — October1
 
 `ASSStation::BuildOutpostHub` streams a tagged runtime copy of the authored Wayfarer Exchange into the existing Survival world for the home hangar and mid-run stations. The apartment remains a nested Level Instance. It adopts the authored physical berth deck through `ASSLandingPad::AdoptDeck`; the real player ship owns boarding geometry, flight, paint and docking. Display-only Phoenix geometry and its stationary cabin proxies are removed from the runtime instance. No authored source actor is deleted on disk.
