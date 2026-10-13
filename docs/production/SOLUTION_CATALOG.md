@@ -1,5 +1,7 @@
 # SpaceSurvival whole-project solution catalog
 
+**SILVER-20261013 — owned Sentinel/ViableEld character finish (WBS8.4/10.3):** Owner accepts visible body motion/appearance after the live Blueprint spring pass. Hair/arm contact remains open; restored previous settings were not approved. Research confirmed collision is enabled and responsive, but registration and solver checks did not clear the defect. A single-guide import failed before evaluation; no repair adopted. The local `HairContact_v1/PA_Silver_BodyContact` remains unassigned diagnostic work. Reuses owned inputs; no acquisition or project dependency added. The reusable spring component needs character-specific anchors and paired morphs; Cyan is not automatically compatible. Next: lead safe interpolation-data/binding rebuild and native contact comparison; voice and broader integration checks remain separate. [Contact evidence](../validation/2026-10-13-silver-hair-contact.md); [runtime evidence](../validation/2026-10-13-silver-runtime-springs.md); [retained sources/lessons](SILVER_CHARACTER_PIPELINE.md).
+
 ### RUNTIME-20261010-NPCTALK - owner-required push-to-talk conversations (local whisper.cpp + llama.cpp)
 
 - **Decision, 2026-10-10:** the owner made open conversation an explicit requirement (the condition earlier entries

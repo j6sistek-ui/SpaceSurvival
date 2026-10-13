@@ -85,8 +85,8 @@ Three layers make the system prompt, in this order:
 
 1. **The profile** (owner's): `Content/SpaceSurvival/NpcTalk/Personas/<Name>.txt`, else `<Type>.txt` (the seven Nyxar
    crew share `Nyxar.txt`), else `_Default.txt`. `{Name}` in the file becomes the character's name. The files there
-   today for everyone but the Director and Dread are **one-line first passes** for the owner to replace (the table
-   below); the owner said they will write the main profiles.
+   are mostly **one-line first passes** for the owner to replace (the table below). Director, Dread and Cyborg have
+   expanded profiles; Silver received a separate first-pass dancer history on 2026-10-13 at the owner's request.
 2. **The scenario** (mine): `Content/SpaceSurvival/NpcTalk/Scenarios/<Role>.txt`, appended when the character holds
    that role. Roles today: Pool, Bartender, Merchant, Desk, Security, Maintenance, Worker, Dancer, Flirt, Performer,
    Lounge, Waitress, CrewTalk, Pacing, Watch, Guard, ServiceBot. A role moves between characters without touching
@@ -108,7 +108,7 @@ with her origin.
 
 Later, when audio is layered in, the owner wants these to fire on proximity without a key press (listed, not built).
 
-### First-pass one-liners (owner replaces each)
+### Character profiles (first passes unless noted)
 
 | Name | Role | Proposal |
 |---|---|---|
@@ -125,7 +125,7 @@ Later, when audio is layered in, the owner wants these to fire on proximity with
 | Tendril | Desk | operations desk, fussy and precise, sure every pilot docks wrong on purpose |
 | Violet | Dancer | bright chatty lounge dancer, in it for the music, rates pilots' dancing |
 | Cyan | Flirt | the adult lounge's star, sultry and in control, matches the pilot's register however far they take it |
-| Silver | Dancer | silver-maned perfectionist, treats a compliment as a verdict to check |
+| Silver | Dancer | expanded 2026-10-13 first pass: adult organic silver-skinned alien, natural legs, platinum hair, green eyes; warm, playful perfectionist with her own station-performance and private-apartment rehearsal history |
 | Elf | Dancer, Lounge | elegant, dry wit, pretends not to care who's watching |
 | Cyborg | Flirt (pole) | chrome and confidence, dares you to keep up |
 | Crystal | Performer | crowned lounge performer, an artist, touchy about being called a dancer |
@@ -134,6 +134,13 @@ Later, when audio is layered in, the owner wants these to fire on proximity with
 | Nyxar (type) | CrewTalk / Pacing / Watch | bioluminescent crew who say "we", curious about outsiders; deck names Vel, Orrin, Sable, Kett, Rue, Pim, Dax |
 | Trooper (type) | Guard | heavy-armoured dock guard Brakk, few words, has seen a lot of pilots not come back |
 | ServiceBot (type) | ServiceBot | cheerful literal service robots Mica and Unit Seven, count things, give directions |
+
+Silver's new Sentinel/ViableEld model is the authorized Silver replacement for the private apartment; the older
+parked Tripo Silver asset is unchanged. Map the new character with `TalkName:Silver`, `TalkType:Silver` and
+`TalkRole:Dancer`, plus an accurate current `TalkActivity`. This gives her a separate persona and voice identity
+from Cyborg. Keep the older Silver inactive under that name: dialogue history is keyed by character name, not
+mesh. The profile uses the shared station model, currently Daredevil-8B in `DefaultNpcTalk.ini`; no separate
+character LoRA is configured. [Profile and voice evidence](validation/2026-10-13-silver-persona-voice.md).
 
 ## Model comparison (2026-10-10, `M:\Local AI\NPCTalk\test\villain_compare.py` and `crew_compare.py`)
 
@@ -243,7 +250,10 @@ How it plays:
 - Volume follows the Effects slider; `ss.VillainRadioFilter 1|2` adds a radio band for comparison (off by default:
   the treatment is his sound). A separate mute for him is an owner-listed follow-up.
 - A new voice is a new `<Name>.wav` (and `.txt`) in the Voices folder; the Director's needs a fresh prerender.
-  Today: `Director.wav` ("predator entity"), `Cyborg.wav` ("bright", picked by ear 2026-10-12, dry), `_Default.wav`.
+  Today: `Director.wav` ("predator entity"), `Cyborg.wav` ("bright", picked by ear 2026-10-12, dry), `Silver.wav`
+  (2026-10-13 exact copy of Cyborg's reference, with her own profile/name), `_Default.wav`. Silver keeps Cyborg's
+  `speed=0.82`, `treatment=none`; Cyborg is unchanged. Restart the talk subsystem and voice sidecar to load a new
+  voice. Silver's file/settings lookup is verified; live dialogue and listening approval remain unverified.
 - **Crew replies** are spoken at the character's body (3D, full within 3 m, gone by 15 m); their caption waits for
   the voice the same way, and shows at once for a character with no voice of their own. Pressing T to talk silences
   them so the microphone never hears them. Captions stay up while they speak.
