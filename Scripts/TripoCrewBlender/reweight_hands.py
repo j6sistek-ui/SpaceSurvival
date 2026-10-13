@@ -1,22 +1,30 @@
-"""Tighten a crew character's hand weights so the palm is the hand's and each finger is its own.
+"""Tighten a crew character's hand weights so each finger bends at its own joints and the palm is the hand's.
 
   blender -b <rig>.blend --python reweight_hands.py -- [--object Cyborg] [--save]
 
 Why (Cyborg, 2026-10-12, owner: "the hand is also a bit compressed"): the bone-heat fit let the forearm twist bone
-reach deep into the palm (43% at the wrist, 24% a fifth of the way to the knuckles, 8% half way) and smeared the
-finger bones across neighbouring fingers (an index vertex: hand 14, index 7/11/2, the rest in other fingers). Rolling
-the wrist or curling the fingers then squeezes the whole hand.
+reach deep into the palm (43% at the wrist, 24% a fifth of the way to the knuckles) and smeared each finger's three
+bones along the whole finger (a proximal index vertex: hand 14, index 7/11/2). Curling a finger then pulls its root
+toward the palm while its tip bones drag its base: the finger shortens instead of bending.
 
-What it does, per side:
-  - palm vertices (within 5 cm of the wrist->middle-knuckle line, from the wrist to a little past the knuckles, not
-    on a finger): the forearm's share (lowerarm + lowerarm_twist, in their existing ratio) falls to nothing over the
-    first 15% of the palm; over the last 20% the nearest finger's first bone rises to half; the hand holds the rest;
-    every other finger group is cleared;
-  - finger vertices (within 1.3 cm of a phalanx, 1.6 cm for the thumb; the nearest phalanx wins): weights only on
-    that finger's three bones and the hand, each phalanx full in its middle, blending to the next over the last
-    quarter and to the previous (or the hand, at the knuckle) over the first quarter; every other group is cleared.
-The per-vertex total of hand, forearm, twist and all finger groups is kept, so nothing else needs normalising.
-Prints the palm and finger profiles before and after.
+What it keeps: WHICH finger (or the palm) a vertex belongs to, as bone heat decided it. The Cyborg's finger bones sit
+1.8 cm apart inside fingers 2 cm thick, so no distance rule can tell the fingers apart - the first two versions tried,
+and tore the fingers wherever the rule gave up (measured 2026-10-12: the worst edges joined a vertex the rule had
+handed to the hand to a neighbour it had skipped). Bone heat diffused through the mesh and knows.
+
+What it changes, per side, for every vertex carrying any of hand, lowerarm, lowerarm_twist or a finger bone:
+  - along each finger the vertex's share of that finger is re-split by where it sits on the chain (the last bone runs
+    on to the fingertip): each bone full in its middle, half-and-half over the last/first quarter at a joint, the
+    root quarter blending into the hand;
+  - a palm share that sits out on a finger (over the first 30% of its first bone) moves to that finger - not for the
+    thumb, whose first bone lies inside the palm;
+  - of the palm share, the forearm's part (lowerarm + twist, in their existing ratio) fades from half at the wrist
+    to nothing a quarter of the way to the knuckles, never rising above what the vertex had; the hand holds the rest;
+  - behind the wrist nothing changes (the arm pass owns the forearm); the change fades in over 1 cm either side.
+Every rule is continuous in position and in the old weights, so no two neighbours ever jump apart. Per-vertex totals
+of the groups involved are kept, so nothing else needs normalising. Prints the palm and finger profiles before and
+after; the stretch gate (scratch stretch_check.py, 99th percentile and worst edge against a known-good clip) is the
+proof, not the profile.
 """
 import argparse
 import sys
@@ -111,77 +119,93 @@ def profile(side, label):
                   "/".join("%2.0f" % (100 * np.mean([weight(v, g) for v in sel])) for g in ["hand_" + side] + chain), 100 * others), flush=True)
 
 
+def chain_split(segs, p, side, f, hand_name):
+    """How finger f's share at p splits along its chain; the last bone runs on past its tail to the fingertip."""
+    best = None
+    for i, (A, ax, L) in enumerate(segs, start=1):
+        t = (p - A).dot(ax)
+        tc = max(0.0, t) if i == len(segs) else max(0.0, min(L, t))
+        dist = ((p - A) - ax * tc).length
+        if best is None or dist < best[0]:
+            best = (dist, i, tc / L)
+    dist, i, u = best
+    prev_share = 0.5 * smooth((0.25 - u) / 0.25)
+    next_share = 0.5 * smooth((u - 0.75) / 0.25) if i < len(segs) else 0.0
+    split = {"%s_%02d_%s" % (f, i, side): 1.0 - prev_share - next_share}
+    split[hand_name if i == 1 else "%s_%02d_%s" % (f, i - 1, side)] = prev_share
+    if next_share > 0:
+        split["%s_%02d_%s" % (f, i + 1, side)] = next_share
+    return split
+
+
 for side in ("r", "l"):
     profile(side, "before")
 
 for side in ("r", "l"):
     hand_name = "hand_" + side
-    finger_groups = ["%s_%02d_%s" % (f, i, side) for f in FINGERS for i in (1, 2, 3)]
-    related = [hand_name, "lowerarm_" + side, "lowerarm_twist_01_" + side] + finger_groups
-    # phalanx segments
-    segs = []
+    fore_names = ("lowerarm_" + side, "lowerarm_twist_01_" + side)
+    chains = {}
     for f in FINGERS:
+        segs = []
         for i in (1, 2, 3):
             name = "%s_%02d_%s" % (f, i, side)
             if name not in arm.data.bones:
-                continue
+                break
             b0 = arm.data.bones[name]
             A = world(b0.head_local)
             d = world(b0.tail_local) - A
-            segs.append((f, i, A, d.normalized(), d.length, 0.016 if f == "thumb" else 0.013))
-    hand = arm.data.bones[hand_name]
-    P0 = world(hand.head_local)
-    knuckles = [world(arm.data.bones["%s_01_%s" % (f, side)].head_local) for f in ("index", "middle", "ring", "pinky") if "%s_01_%s" % (f, side) in arm.data.bones]
+            segs.append((A, d.normalized(), d.length))
+        if segs:
+            chains[f] = segs
+    groups_of = {f: ["%s_%02d_%s" % (f, i, side) for i in range(1, len(segs) + 1)] for f, segs in chains.items()}
+    related = [hand_name, *fore_names] + [n for g in groups_of.values() for n in g]
+    P0 = world(arm.data.bones[hand_name].head_local)
     pax = world(arm.data.bones["middle_01_" + side].head_local) - P0
     Lp = pax.length
     pax.normalize()
-    done_f = done_p = 0
+    done = 0
     for v in me.vertices:
-        p = o.matrix_world @ v.co
-        # nearest phalanx
-        best = None
-        for f, i, A, ax, L, r in segs:
-            t = (p - A).dot(ax)
-            dist = ((p - A) - ax * max(0.0, min(L, t))).length
-            if dist < r and -0.2 * L <= t <= 1.15 * L and (best is None or dist < best[0]):
-                best = (dist, f, i, max(0.0, min(1.0, t / L)))
-        total = sum(weight(v, n) for n in related)
+        old = {n: weight(v, n) for n in related}
+        total = sum(old.values())
         if total <= 1e-4:
             continue
+        p = o.matrix_world @ v.co
+        along = (p - P0).dot(pax)
+        mask = smooth((along + 0.01) / 0.02)  # nothing behind the wrist, all of it 1 cm past it
+        if mask <= 0.0:
+            continue
+        tt = along / Lp
+        m = {f: sum(old[n] for n in groups_of[f]) / total for f in chains}
+        palm_old = sum(old[n] for n in (hand_name, *fore_names))
+        palm = palm_old / total
+        splits = {f: chain_split(segs, p, side, f, hand_name) for f, segs in chains.items()}
+        # a palm share out on a finger belongs to that finger (the thumb's first bone is inside the palm: left alone)
+        fm = {f: m[f] for f in m if f != "thumb"}
+        fsum = sum(fm.values())
+        if palm > 0 and fsum > 1e-6:
+            moved = 0.0
+            for f, mf in fm.items():
+                A, ax, L = chains[f][0]
+                x = palm * (mf / fsum) * smooth(((p - A).dot(ax) / L) / 0.3) * smooth(fsum / 0.15)
+                m[f] += x
+                moved += x
+            palm -= moved
         new = {}
-        if best is not None:
-            _, f, i, t = best
-            prev_share = 0.5 * smooth((0.25 - t) / 0.25)
-            next_share = 0.5 * smooth((t - 0.75) / 0.25) if i < 3 else 0.0
-            own = 1.0 - prev_share - next_share
-            new["%s_%02d_%s" % (f, i, side)] = total * own
-            if i == 1:
-                new[hand_name] = total * prev_share
-            else:
-                new["%s_%02d_%s" % (f, i - 1, side)] = total * prev_share
-            if next_share > 0:
-                new["%s_%02d_%s" % (f, i + 1, side)] = total * next_share
-            done_f += 1
-        else:
-            t = (p - P0).dot(pax)
-            if not (-0.005 <= t <= 1.1 * Lp and ((p - P0) - pax * t).length < 0.05):
-                continue
-            tt = t / Lp
-            fore = 0.5 * smooth((0.15 - tt) / 0.15)
-            wl, wt = weight(v, "lowerarm_" + side), weight(v, "lowerarm_twist_01_" + side)
-            rl = wl / (wl + wt) if wl + wt > 1e-6 else 0.0
-            new["lowerarm_" + side] = total * fore * rl
-            new["lowerarm_twist_01_" + side] = total * fore * (1 - rl)
-            fshare = 0.5 * smooth((tt - 0.8) / 0.2)
-            if fshare > 0 and knuckles:
-                # the nearest finger root
-                near = min(("index", "middle", "ring", "pinky"), key=lambda f: (p - world(arm.data.bones["%s_01_%s" % (f, side)].head_local)).length)
-                new["%s_01_%s" % (near, side)] = total * fshare
-            new[hand_name] = total * (1 - fore - fshare)
-            done_p += 1
+        if palm > 0:
+            wl, wt = old[fore_names[0]], old[fore_names[1]]
+            have = (wl + wt) / palm_old if palm_old > 1e-9 else 0.0
+            fore = min(0.5 * smooth((0.25 - tt) / 0.25), have)
+            rl = wl / (wl + wt) if wl + wt > 1e-9 else 0.0
+            new[fore_names[0]] = palm * fore * rl
+            new[fore_names[1]] = palm * fore * (1 - rl)
+            new[hand_name] = palm * (1 - fore)
+        for f, mf in m.items():
+            for n, s in splits[f].items():
+                new[n] = new.get(n, 0.0) + mf * s
         for n in related:
-            set_weight(v, n, new.get(n, 0.0))
-    print("REWEIGHT| %s hand: %d palm vertices, %d finger vertices rebalanced" % (side, done_p, done_f), flush=True)
+            set_weight(v, n, (1 - mask) * old[n] + mask * total * new.get(n, 0.0))
+        done += 1
+    print("REWEIGHT| %s hand: %d vertices rebalanced" % (side, done), flush=True)
 
 for side in ("r", "l"):
     profile(side, "after ")
