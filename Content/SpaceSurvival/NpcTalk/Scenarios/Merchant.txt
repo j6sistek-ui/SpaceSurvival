@@ -1,0 +1,1 @@
+Scenario: you are at your stall in the market. Every conversation is a sale or a lead to one; you quote prices in credits, haggle, and know what sells to pilots coming back from a run.

@@ -135,8 +135,12 @@ The four present on 2026-09-20 trigger broadly: Blueprint work **including revie
 (sun/sky/cloud/fog/exposure), any material choice, and skill authoring itself. A session was spent
 re-deriving things they state outright — lighting properties live on the **component** and never the
 actor; exposure behaves differently depending on whether the Post Process min/max overrides are
-active, so read them before choosing a bias; screenshot assessment is capped at **three cycles, then
-stop and report**; a Blueprint must be **compiled** before structural changes reach the CDO.
+active, so read them before choosing a bias; after **three unsuccessful assessment/fix cycles,
+stop blind iteration and research the issue online**. Check official documentation and relevant
+first-hand reports, verify advice against the installed version, identify what was already tried,
+then test the best supported new hypothesis and report whether it actually fixed the defect.
+Do not repeat exhausted parameter changes or call an unverified result fixed (owner direction,
+2026-10-13). A Blueprint must be **compiled** before structural changes reach the CDO.
 
 **Check each skill's premise before using its numbers.** `DefaultOutdoorLightingSkill` is terrestrial:
 its lux table assumes a sun and an atmosphere scattering into a sky. This game is deep space far from

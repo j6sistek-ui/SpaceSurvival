@@ -1,0 +1,4 @@
+# Silver: separate dancer identity, temporarily using the owner's existing Cyborg "bright" voice (2026-10-13).
+# Silver.wav is an exact copy of Cyborg.wav. Keep the same dry pace and treatment; Cyborg remains unchanged.
+speed=0.82
+treatment=none

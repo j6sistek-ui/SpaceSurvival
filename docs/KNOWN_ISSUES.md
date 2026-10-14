@@ -1,5 +1,11 @@
 # Open work and owner review
 
+**October14 PR closeout — CPU work only.** PR69 reconciles with current main; station follow-ups move to a focused draft PR. All in-game edits remain held. The old five-path source cook failure is superseded by155 covered paths/zero missing; no cook/release is claimed. [Reconciliation evidence](validation/2026-10-14-pr69-closeout.md). Cyborg/Silver remain closed; older paragraphs do not reopen them.
+
+**RPT-20261014-01 — Cyborg import and deformation: CLOSED FOR NOW by owner, October14.** Owner authorizes merging PR72 and closing both character topics. The adopted six-clip repair and current-module native verification remain the recorded outcome. Broader non-pole shoulder limits are retained as history; no further character work is scheduled unless reopened. Closure is an owner scope decision, not a new all-animation, performance or packaged validation claim. [Pole repair](validation/2026-10-14-cyborg-pole-twist.md); [current verification](validation/2026-10-14-silver-ponytail.md).
+
+**RPT-20261013-01 — Silver private-apartment evaluation: CLOSED FOR NOW by owner, October14.** Fitted pink ponytail with fixed crown/temples and dynamic tail, pink lace and magenta irises are saved and verified after restart. BodyDynamics, mesh and clips are preserved. Owner authorizes PR72 merge and no further work on this topic unless reopened. Existing broader contact, voice, performance and packaged limits remain recorded without a new completion claim. [Evidence](validation/2026-10-14-silver-ponytail.md); [retained sources](production/SILVER_CHARACTER_PIPELINE.md).
+
 **October 10 T-room layout preview:** The existing Phoenix setup now fills two rows of three, with five identical copies and six independent rotating displays. Existing desks/fittings/screens move aside; all8,934 other pre-save actor/component fingerprints and shared asset bytes are unchanged. Saved `b6496c2e`/9,407 actors passes six-bay reload and two ordinary Play views with production saves preserved; task editor closed, RT off. [T layout evidence](validation/2026-10-10-t-ship-rows.md) supersedes the current-map count below. Future ship purchases/stats/records and desk redesign remain separate; other room content, NPCs and services retained. Owner live appearance review is next.
 
 **October 10 room-purpose amendment (owner plan, paraphrase):** Central holds easy-access core wave purchases/services and repair; R/club holds character swapping and future outfits/optional boosts; T is a six-display ship market (Phoenix stats/flight records plus five future unlock placeholders, permanent ownership on future purchase); L holds social/challenges/leaderboards/minigames; the market is an atmospheric entrance, with quick repair at the dock and in Central. [Authoritative room plan](GAME_SCOPE.md#owner-amendment--october-10-2026-station-room-purposes) supersedes conflicting earlier T/room-role holds below. This records design requirements, not implementation of the future mechanics. Preserve owner edits. The saved R stage is ready for owner live review; no further task editor is launched for this documentation checkpoint.
@@ -3574,3 +3580,77 @@ tail-only smoothing capped at 3 mm and three material slots. Original geometry r
 in `SquirrelHero_Rigged`; source imports are preserved. Review `FurPreview_Jump.gif`
 and `SoftFur_Back.png`. [Focused revision evidence](validation/2026-09-24-squirrel-tail-revision.json)
 passes exports/weights/endpoints; native materials, body retarget and gameplay remain open.
+
+## RPT-20261010-01 - Push-to-talk NPC conversations (owner decision, local AI)
+
+Owner, 2026-10-10: "literally having pretend conversations with the AI, responding and they talk back based on what
+you say - that's more worth it"; hold a key, speak, the transcript appears, the character answers in a dialogue box;
+audio out "maybe later"; the villain can be talked back to "after the first time the director speaks" and mirrors the
+pilot's tone; seated crew answer once they have personality profiles, which the owner writes one at a time after
+testing. Built as docs/NPC_TALK.md: T / R3 push-to-talk, local whisper.cpp + llama.cpp sidecars, captions on the HUD,
+personas for Dread, the Director and a default. GAME_SCOPE.md lists "brief NPC conversations" and warns against long
+dialogue trees; this is brief and treeless but it is a new mechanic authorised by the owner, recorded here as such.
+
+Model: the stock 1.5B refused the first swear until the pilot's words were framed as quoted radio traffic; the owner
+then chose an abliterated 4B (Huihui-Qwen3.5-4B-abliterated, Apache base) for the test period and had the stock
+model removed - "I'll decide later if it's a risk for release". That decision is open and gates any release.
+
+Open: the owner's first in-game test (the microphone leg cannot be exercised headless); typed fallback; characters who speak first;
+packaging the sidecars beside the executable (today's paths are M:/Local AI/NPCTalk).
+
+## RPT-20261008-01 — Tripo crew NPCs: rigged, animated, imported; owner decisions open
+
+Owner: lead implementation; status: **20 characters imported and animated, nothing placed in any level (owner:
+import only).** How to add animations and each character's conditions: [TRIPO_CREW_ANIMATION.md](TRIPO_CREW_ANIMATION.md).
+Assets are private licensed content under `/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew`; Blender sources and
+the Elf/Cyborg return package are local in `.agent/local/CharacterAssets/` (not in Git).
+
+Open owner decisions:
+- DECIDED 2026-10-09: Abyss stays, Kraken deleted from the project (44 assets, nothing referenced her). Abyss still
+  needs her arm-tentacle wiring and the waitress retargets before she can work tables (docs/TRIPO_CREW_ANIMATION.md).
+- DECIDED 2026-10-09: the Cyborg was redone. The owner regenerated her (`M:/Local AI/Projects/newCYBORG`, judged
+  better than the local Pixal3D attempt) and asked for that model rigged and animated; it now sits on the previous
+  Cyborg's crew skeleton (landmarks within 1 cm) with bone-heat weights and her own 4K material, with 16 base clips,
+  117 role clips (Dancer, Flirt, Lounge) and six authored pole clips (`A_Cyborg_Pole*`, pole on the actor origin;
+  no owned pack has pole work). Studio sheets sent for the owner's verdict; the arm-spread offset stays unapplied.
+- Silver (PARKED by the owner, 2026-10-08): both thighs are twisted ribbons in every clip. Tripo's original model
+  has clean legs; the damage is already in the Tripo plugin's first Unreal import of `fantasy_elf_3d_model` (bind
+  pose rebuilt on import), which the crew pipeline started from. Not the leg-frame fault: `fix_leg_frames.py` alone
+  does not clear it. Silver is the same Tripo character as the Elf. Captures: `.agent/local/CharacterAssets/
+  Crew_Captures_20261008/`.
+- Dread "takes drinks with guests": no standing drink/toast clip exists in any owned pack (buy one, or author one).
+- Talking mouths: no character has jaw bones or mouth shapes; options were offered, nothing built.
+- Squirrel hero size standardisation: tabled by the owner until after the crew work.
+- Placement on the station (who stands where, lighting, Warden's zero-G mock-up): not authorized; proposals only.
+
+Known limits, recorded rather than fixed: Abyss's tentacle clips carry no visible pelvis bob (the exporter sent it
+100x too small; fixed in `tentacles/export_for_unreal.py`, a re-export and re-import is pending); Silver's hair
+strand down the leg is a mesh defect with the repair (ComfyUI) chat (the old cyborg's chest holes went with the
+old cyborg); the repair chat's native `SK_Fantasy_Elf` still has the thigh-frame fault
+fixed in the crew copy; a faint hair crease at the back of the Elf's shoulder remains in a few clips; seated clips
+need chairs where they play.
+
+Next action (lead): none queued; waiting on the decisions above. Evidence: clip sheets, close-ups, hair GIFs and the
+158-clip deformation review in `.agent/local/CharacterAssets/Crew_Integration_20261008/evidence/`.
+
+## RPT-20261010-02 - Three Flight suites fail on the talk branch (owner: priority 1 after NPC talk)
+
+Found 2026-10-10 while checking tap-to-talk; not chased, by the owner's instruction ("priority number 1 AFTER we
+finish"). `SpaceSurvival.Flight.DirectionalDodgeCollision` ("the wall is what stops the dodge, within 5 cm"),
+`FrameRateTrajectories` (30 Hz position/velocity/heading drift past tolerance at 2-4 s) and `LiveRewardInput`
+(input mode does not request permanent capture for live rewards; menus lose cursor UI mode) fail on
+claude/tripo-rigging-npc-animations-3e5a1c identically with and without the tap-to-talk change. Unknown yet whether
+they come from this branch's Tripo crew / talk commits, from main, or from this machine.
+
+Update 2026-10-11 (full suite after the villain-voice commit 9945645): 102 pass, 14 fail - the three above plus
+eleven Integration suites: AcceleratedTenWaveJourney, ContractArrivalFeedback, DockingAdmission, HeroSlotTransforms,
+ShipPresentationSelection, StationAsteroidCollision, StationChaseCamera, StationDepartureBoundary,
+StationResetCollision, StationResetStaff, StationServiceFeedback. Their messages are about station content: station
+collision boxes with no blocking body, "the two intended visible staff" counted 0, no floor under the walker spawn,
+a hero mount 22.5 instead of 27.9, a walker scale 1.511 instead of 1.5. Not caused by the voice: four of them
+(DockingAdmission, HeroSlotTransforms, StationResetCollision, StationResetStaff) fail the same way at 315cd50, built
+without it, and in the combined test copy. Both worktrees borrow the main checkout's Content through junctions, and
+its L_WayfarerRuntime.umap was saved 2026-10-10 12:27; not investigated further.
+
+Talk follow-ups the owner deferred the same day: a menu option choosing tap or hold for the talk key, and in-game
+key remapping per user preference. Today the key is tap T / R3 to start, tap again to send.
