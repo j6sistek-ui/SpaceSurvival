@@ -131,7 +131,7 @@ for name, words, c, loop, secs, line in ACTIONS:
     a.set_editor_property("name", name)
     a.set_editor_property("keywords", words)
     a.set_editor_property("clip", c)
-    a.set_editor_property("b_loop", loop)
+    a.set_editor_property("loop", loop)  # bLoop in C++; Python drops the b prefix
     if loop:
         a.set_editor_property("loop_seconds", secs)
     a.set_editor_property("line", line)
