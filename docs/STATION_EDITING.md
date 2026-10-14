@@ -112,7 +112,10 @@ are preserved; the caller owns final review and saving.
 bartender slot `Crew/Lounge guest` is Joy since 2026-10-14, owned by
 `Scripts/StationRecipes/JoyBartender/place_joy_bartender.py`: her mesh, clips, four
 player-triggered actions, unprompted chatter and talk identity live on that one
-actor); Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
+actor; `place_joy_soft_tissue.py` adds her `BodyDynamics` component, the same
+`USSSoftTissueComponent` spring Silver uses, bound to the `ST_<Region>_<Axis>`
+morphs `author_soft_tissue.py` exports and `reimport_joy_soft_tissue.py` brings
+into SK_Joy); Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
 security; Crest courier; Warden maintenance; the historical Amethyst wardrobe
 visitor, now hidden/replaced as described above. It checks
 178cm mesh height, floor-level source soles, exact Skeleton identity for every role

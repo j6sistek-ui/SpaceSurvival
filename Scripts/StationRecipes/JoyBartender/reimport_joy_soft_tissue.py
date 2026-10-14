@@ -1,0 +1,92 @@
+"""Reimport SK_Joy from the soft-tissue FBX (author_soft_tissue.py): the same body, skeleton and materials plus the twelve
+ST_<Region>_<Axis> morph targets Silver's BodyDynamics spring component drives. The .uasset is copied aside first.
+
+  set SS_JOY_ST_DIR=<soft_tissue export folder>   (SK_Joy.fbx + SoftTissue.json)
+  set SS_JOY_ST_BACKUP=<folder for the pre-reimport SK_Joy.uasset>
+  UnrealEditor-Cmd.exe <project> -unattended -NullRHI ... -ExecutePythonScript="<abs>/reimport_joy_soft_tissue.py"
+"""
+import json
+import os
+import shutil
+
+import unreal as u
+
+B = "/Game/SpaceSurvival/Licensed/StationAssets/JoyBartender"
+MESH = B + "/Mesh/SK_Joy"
+SKEL = "/Game/SpaceSurvival/Licensed/StationAssets/JoyPurple/Mesh/SK_JoyPurple_Skeleton"
+SRC = os.environ["SS_JOY_ST_DIR"]
+BACKUP = os.environ["SS_JOY_ST_BACKUP"]
+DATA = json.load(open(os.path.join(SRC, "SoftTissue.json")))
+EXPECTED = sorted(DATA["new_keys"]["CC_Base_Body"])
+L = u.EditorAssetLibrary
+TOOLS = u.AssetToolsHelpers.get_asset_tools()
+
+
+def log(s):
+    u.log_warning("JOYST| " + str(s))
+
+
+assert not u.get_editor_subsystem(u.UnrealEditorSubsystem).get_game_world()
+mesh = u.load_asset(MESH)
+assert isinstance(mesh, u.SkeletalMesh), MESH
+skeleton = u.load_asset(SKEL)
+before_materials = [(str(s.material_slot_name), s.material_interface.get_path_name() if s.material_interface else None) for s in mesh.materials]
+before_morphs = sorted(str(n) for n in mesh.get_all_morph_target_names())
+assert not any(n.startswith("ST_") for n in before_morphs), "already carries soft-tissue morphs"
+file = u.SystemLibrary.get_system_path(mesh)
+assert file.endswith(".uasset") and os.path.exists(file), file
+os.makedirs(BACKUP, exist_ok=False)
+shutil.copy2(file, os.path.join(BACKUP, "SK_Joy.uasset"))
+log("backup %s -> %s ; %d materials, %d morphs before" % (file, BACKUP, len(before_materials), len(before_morphs)))
+
+options = u.FbxImportUI()
+for k, v in dict(automated_import_should_detect_type=False, mesh_type_to_import=u.FBXImportType.FBXIT_SKELETAL_MESH, import_as_skeletal=True,
+                 import_mesh=True, import_animations=False, import_materials=False, import_textures=False, create_physics_asset=False,
+                 skeleton=skeleton).items():
+    options.set_editor_property(k, v)
+for k, v in dict(import_uniform_scale=1.0, convert_scene=True, convert_scene_unit=True, force_front_x_axis=False, use_t0_as_ref_pose=False,
+                 preserve_smoothing_groups=True, import_morph_targets=True, normal_import_method=u.FBXNormalImportMethod.FBXNIM_IMPORT_NORMALS).items():
+    options.skeletal_mesh_import_data.set_editor_property(k, v)
+t = u.AssetImportTask()
+for k, v in dict(filename=os.path.join(SRC, "SK_Joy.fbx"), destination_path=B + "/Mesh", destination_name="SK_Joy", automated=True, replace_existing=True, save=False,
+                 options=options, factory=u.FbxFactory()).items():
+    t.set_editor_property(k, v)
+TOOLS.import_asset_tasks([t])
+paths = list(t.imported_object_paths)
+log("imported: %s" % paths)
+mesh = u.load_asset(MESH)
+assert isinstance(mesh, u.SkeletalMesh) and any(p.startswith(MESH) for p in paths), paths
+assert mesh.skeleton.get_path_name() == skeleton.get_path_name(), mesh.skeleton.get_path_name()
+comp = u.SkeletalMeshComponent()
+comp.set_skeletal_mesh_asset(mesh)
+assert comp.get_num_bones() == 101, comp.get_num_bones()
+after_morphs = sorted(str(n) for n in mesh.get_all_morph_target_names())
+st = [n for n in after_morphs if n.startswith("ST_")]
+assert st == EXPECTED, (st, EXPECTED)
+# the reimport path writes the CC tearline / eye-occlusion morph names with underscores where the first import kept
+# spaces ("EO Bulge L" -> "EO_Bulge_L"); nothing drives those morphs, so the spelling change is recorded, not refused
+norm = lambda n: n.replace(" ", "_")  # noqa: E731
+missing = sorted(n for n in before_morphs if norm(n) not in {norm(a) for a in after_morphs})
+assert not missing, missing
+renamed = sorted(n for n in before_morphs if n not in set(after_morphs))
+# the reimport keeps the materials by slot name; put any slot back that came through empty or changed
+slots = list(mesh.materials)
+restored = 0
+for i, s in enumerate(slots):
+    name = str(s.material_slot_name)
+    want = next((m for n, m in before_materials if n == name), None)
+    have = s.material_interface.get_path_name() if s.material_interface else None
+    if want and have != want:
+        s.set_editor_property("material_interface", u.load_asset(want.split(".")[0]))
+        slots[i] = s
+        restored += 1
+if restored:
+    mesh.set_editor_property("materials", slots)
+assert [str(s.material_slot_name) for s in mesh.materials] == [n for n, _ in before_materials], [str(s.material_slot_name) for s in mesh.materials]
+assert all(s.material_interface for s in mesh.materials)
+assert L.save_loaded_asset(mesh, False)
+b = mesh.get_bounds()
+report = {"mesh": mesh.get_path_name(), "bones": comp.get_num_bones(), "height_cm": b.box_extent.z * 2, "morphs_before": len(before_morphs), "morphs_after": len(after_morphs),
+          "soft_tissue_morphs": st, "materials_restored": restored, "renamed_morphs": len(renamed), "backup": BACKUP, "fbx": DATA["fbx"]}
+json.dump(report, open(os.path.join(SRC, "Reimport.json"), "w"), indent=1)
+log("DONE " + json.dumps(report))
