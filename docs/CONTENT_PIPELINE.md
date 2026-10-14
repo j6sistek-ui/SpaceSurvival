@@ -1,5 +1,29 @@
 # Phase 1 content pipeline
 
+## Character import visual checks — October 14
+
+A scene-capture image is not sufficient evidence of a broken Blender import. Cyborg's
+large triangular color patches were reproduced with all 13 imported textures resident
+at 64x64. Source/native texture pixels and UV0 matched, and ordinary 1600x900 player-view
+screenshots loaded detailed textures and cleared the patches without an asset change.
+The final diagnostic temporarily hid other characters to remove occlusion; it was
+not a full-cast performance check. Inspect actual player-view location/resolution
+and `ListTextures` before rebaking.
+
+For an isolated offscreen review, the existing `-SSRenderedViewViewport2` launch flag
+enables `SS.RenderedView.Begin`, `SS.RenderedView.Size` (temporary 1600x900), and
+`SS.RenderedView.End` (verified original-size restoration). Use only in the task-owned
+offscreen Editor. Wait for textures and ordinary `Shot` output to finish before ending
+the session; restoring the viewport first can produce a one-line image. A separate
+scene capture may not request the mip levels needed by its own output resolution.
+Temporary texture prestreaming is useful for diagnosis but must be labelled; it does
+not establish ordinary gameplay behavior. Do not disable global streaming to hide it.
+
+If the texture pixels/UVs match and full-resolution maps still show facets, inspect
+the existing `Scripts/CrewLodBuildSettings.py` normal-import guidance next. Keep shading,
+skinning, material-slot and texture-residency checks separate. Recomputed normals were
+not established as the cause of this Cyborg color-patch defect. [Evidence and limits](validation/2026-10-14-cyborg-arm-repair.md).
+
 ## Wayfarer runtime copy — October1
 
 After building the current Editor, run `Scripts/PrepareWayfarerRuntime.py` with `-RenderOffscreen -ExecutePythonScript=...`. It duplicates `/Game/OutpostSandbox/L_AsteroidOutpost` into `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, retaining the furnished `/Game/BuildingLibrary/Home/L_CrewApartment` instance, and adds stable `OutpostLabel:` actor tags because editor labels are not available in a cooked game. It hashes the original outpost, apartment and flat BuildingSandbox before/after and saves only the runtime duplicate. Do not regenerate `AuthorOutpostSandbox.py` over the owner's composition. The runtime copy and its vendor dependencies remain private local content, not Git source assets.

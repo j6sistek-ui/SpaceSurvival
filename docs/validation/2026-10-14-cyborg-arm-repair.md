@@ -1,6 +1,97 @@
 # Cyborg deformation repair checkpoint
 
-## Latest checkpoint: October 14, 05:14 UTC
+## Latest checkpoint: October 14, 06:34 UTC
+
+**PARTIAL / locally adopted; animation quality remains open.** After accepting the
+chest, the owner explicitly waived the known shoulder issue and authorized replacing
+the station Cyborg. The saved/reloaded Wayfarer map is now `362e7409`, with 9,408
+actors and the other 9,407 actor fingerprints preserved. The replacement uses the
+private Blueprint, the original actor placement and a looping private PoleHipCircle.
+Original mesh, skeleton and original clips remain unchanged. The waiting test fixture
+prefers this Blueprint when installed and falls back to the original character.
+The alias preserves Cyborg's existing persona/voice identity; fresh native config
+readback retains both Cyan aliases as well. Live dialogue/audio was not tested.
+
+The subsequent claim that the character passed visual review was **withdrawn** after
+the owner identified severe jagged color patches. Six-clip playback (82 frames / 560
+finite bounded dynamics samples) proved runtime activity, not acceptable appearance.
+Silver's pink ponytail/outfit work remains untouched and gated.
+
+### Material diagnosis
+
+Native/source exports show identical pixels on 12 texture maps, matching UV0 and
+material assignments. Changing shadows, removing normals or using full-precision
+UVs did not resolve the patches. `ListTextures` showed all 13 Cyborg textures resident
+at 64x64 while the source maps were 512 through 8192 pixels. Temporary full-resolution
+residency removed the jagged color patches and restored the eyes. No source texture,
+UV, material or global streaming setting was changed to obtain that result.
+
+The initial capture camera was separate from the actual player view, whose offscreen
+viewport was only 110 pixels high. The project already contains an opt-in, offscreen
+`SS.RenderedView.Size` diagnostic, which temporarily provides a real 1600x900 player
+viewport and restores its original dimensions. Ordinary player-view screenshots with
+no forced residency now show the body maps loading at full resolution and no large
+triangular color patches. This corrects the capture method; it is not a texture rebake
+or a packaged-play/performance pass. The first full-body shot restored the viewport
+too early and was rejected. Both subsequent near/body shots were occluded by Cyan,
+so their initial acceptance is superseded. The final 06:33 UTC near/body captures are
+unobstructed and visually inspected: the jagged color patches are absent. Other
+characters' 159 skeletal components were temporarily hidden only in the PIE diagnostic
+to remove occlusion. No visibility change was saved. This isolates material appearance;
+it is not representative full-cast performance or continuous gameplay evidence.
+Screenshot completion precedes viewport restoration, which the native log verifies.
+
+Private evidence: `SurfaceImport/{TextureCompare,UVNumericalCompare,ResidencyTrial,
+FullView}.json`, `ResidentLit.png`, `FullViewNear.png`, `FullViewBody.png` under
+`.agent/local/CyborgRepair_20261013`. Existing import guidance in
+`docs/BLENDER_OPTIMIZE_CHARACTER.md`, `Scripts/CrewLodBuildSettings.py` and
+`Scripts/AuthorGripFit.py` was reviewed. Nwiro's live skill-list tool reported disabled;
+native Python/RPC remained available. Epic's
+[texture streaming overview](https://dev.epicgames.com/documentation/en-us/unreal-engine/texture-streaming-overview-for-unreal-engine)
+and [streaming-data guidance](https://dev.epicgames.com/documentation/en-us/unreal-engine/building-texture-streaming-data-in-unreal-engine)
+were checked October 14 against this native behavior.
+
+### Cyan control comparison requested by the owner
+
+Cyan's existing clips were older retargets and did not match the current pole poses.
+They are retained as an initial 63-frame comparison, not the definitive control.
+Six new diagnostic-only retargets use the exact current Cyborg pole clips and Cyan's
+existing native mesh/skeleton. A shared matte material removes texture differences.
+The resulting 36 native closeups cover both characters at 25%, 50% and 75% of each
+clip. No Cyan mesh, weights, materials or existing animation was overwritten.
+
+Observed: Cyan holds rounder shoulders in simpler poses but also develops arm/armpit
+distortion in the strongest pole poses. Cyborg has sharper shoulder pinching. This
+is not evidence that Cyan fixes these animations simply by having a better rig.
+
+- Both rigs have zero sampled local collarbone motion in all six pole clips.
+- Cyan has 101 native bones, two upper-arm and two forearm twist helpers per side,
+  plus elbow helpers. Those twist helpers remain fixed relative to their parents
+  in these retargets, so their existence is not proof of active twist distribution.
+- Cyborg has 61 bones. Its upper-arm twist helpers carry at most 2.67% left / 1.71%
+  right weight on any vertex, versus meaningful arm skin weights on Cyan's helpers.
+- The strongest sampled upper-arm axial twist reaches about 176.5 degrees on Cyborg
+  and 145.4 degrees on Cyan. These are rest-relative sampled swing/twist diagnostics,
+  not anatomical limits or a full continuous-motion maximum.
+
+Different proportions and retarget reference poses produce different hand endpoints;
+the comparison evaluates deformation, not pole-contact equivalence. Mesh hash checks
+pass for original Cyborg, refreshed Cyborg and Cyan. Temporary studio staging was
+discarded unsaved. Private `CyanComparison/Compare.html` provides selectable side-by-side
+images; `ExactCurrent/Capture.json`, `RigAudit.json`, `MotionAudit.json`, `Retarget.json`
+and `Finish.json` retain the data and limits.
+
+**Next, lead-owned:** correct the pole motion/retarget twist and shoulder participation
+before another broad weight-paint trial. Preserve the accepted chest and all rejected
+trial exclusions. The latest owner request reopens diagnosis of the arms; it is not
+acceptance of the current deformation. Silver remains held until Cyborg is verified.
+
+Canonical Editor build for adoption: PASS, 15.65 seconds; module SHA256
+`02e07c222115f7315a028370209aaf7741aa3e515d59e506f026ab17855708e1`.
+Existing toolchain/plugin warnings remain. No new cook, package, release or natural
+player-input/performance acceptance is claimed.
+
+## Historical checkpoint: October 14, 05:14 UTC (superseded above)
 
 **PARTIAL / chest accepted, arms unresolved; no station adoption.** The owner accepted
 the latest chest appearance, then rejected the worsening shoulder/neck trials. The
@@ -138,7 +229,7 @@ retains its atlas and SilverTint, PanelTint and AccentTint material parameters.
 
 API basis: Epic's [AnimationDataController documentation](https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/AnimationDataController?application_version=5.7)
 was checked against installed UE5.8 `IAnimationDataController.h` and existing project
-authoring recipes on October14. Bone-track writes use the supported controller API.
+authoring recipes on October 14. Bone-track writes use the supported controller API.
 
 ## Local artifacts and repeatability
 
