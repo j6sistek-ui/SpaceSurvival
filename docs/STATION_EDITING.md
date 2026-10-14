@@ -108,8 +108,11 @@ first. Do not reapply to an already adopted map: use `IntegrateStationCrew.verif
 and inspect current placements instead. Source meshes, materials and original kits
 are preserved; the caller owns final review and saving.
 
-`Scripts/IntegrateStationCrew.py` contains ten stable-label assignments: Dread as
-bartender; Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
+`Scripts/IntegrateStationCrew.py` contains nine stable-label assignments (the
+bartender slot `Crew/Lounge guest` is Joy since 2026-10-14, owned by
+`Scripts/StationRecipes/JoyBartender/place_joy_bartender.py`: her mesh, clips, four
+player-triggered actions, unprompted chatter and talk identity live on that one
+actor); Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
 security; Crest courier; Warden maintenance; the historical Amethyst wardrobe
 visitor, now hidden/replaced as described above. It checks
 178cm mesh height, floor-level source soles, exact Skeleton identity for every role
