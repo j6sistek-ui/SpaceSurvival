@@ -184,7 +184,6 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
         !Test.TestNotNull(TEXT("Approach retains the flight pawn"), Ship))
         return false;
     Test.TestTrue(TEXT("Player retains control before docking assist"), Fixture.Controller->GetPawn() == Ship);
-    FCollisionObjectQueryParams StaticObjects(ECC_WorldStatic);
     FCollisionQueryParams Query(SCENE_QUERY_STAT(SSJourneyDockApproach), false, Ship);
     FHitResult Hit;
     const FVector Forward = Hub->GetActorForwardVector();
@@ -200,15 +199,19 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
                                       *GetNameSafe(Hit.GetComponent()), *Hit.ImpactPoint.ToString()));
         return false;
     }
-    Test.TestTrue(TEXT("Walker spawn has a physical station floor beneath it"),
-                  Fixture.World->LineTraceSingleByObjectType(
-                      Hit, Hub->WalkSpawn(), Hub->WalkSpawn() - FVector(0, 0, 500), StaticObjects, Query) &&
-                      Hit.GetActor() == Hub);
-    // The pad is where the hero is actually put down now, so it needs the same proof the interior deck
-    // has always had: something solid under the spawn, belonging to the station rather than to nothing.
-    const bool PadFloorHit = Fixture.World->LineTraceSingleByObjectType(
-        Hit, Hub->PadWalkSpawn(), Hub->PadWalkSpawn() - FVector(0, 0, 500), StaticObjects, Query);
     const auto *Pad = Hub->GetLandingPad();
+    if (!Test.TestNotNull(TEXT("The major station has a landing pad"), Pad) ||
+        !Test.TestNotNull(TEXT("The landing pad has its physical deck"), Pad->GetDeck()))
+        return false;
+    const bool WalkFloorHit = Fixture.World->LineTraceSingleByChannel(
+        Hit, Hub->WalkSpawn(), Hub->WalkSpawn() - FVector(0, 0, 500), ECC_Pawn, Query);
+    // The streamed outpost's berth mesh is adopted by the pad adapter but retains its original actor owner.
+    // Both support checks use the walker's blocking channel and verify the actual expected geometry.
+    Test.TestTrue(TEXT("Walker spawn has a physical station floor beneath it"),
+                  WalkFloorHit && !Hit.bStartPenetrating && Hit.ImpactNormal.Z > .55f &&
+                      (Hub->IsUsingOutpost() ? Hit.GetComponent() == Pad->GetDeck() : Hit.GetActor() == Hub));
+    const bool PadFloorHit = Fixture.World->LineTraceSingleByChannel(
+        Hit, Hub->PadWalkSpawn(), Hub->PadWalkSpawn() - FVector(0, 0, 500), ECC_Pawn, Query);
     Test.AddInfo(FString::Printf(
         TEXT("JOURNEY_PAD_FLOOR wave=%d hit=%d actor=%s component=%s point=%s normal=%s spawn=%s "
              "hub=%s pad=%s deck=%s physics=%d origin=%s"),
@@ -217,8 +220,9 @@ bool CheckApproach(FAutomationTestBase &Test, FSSJourneyWorld &Fixture)
         *Hub->GetActorTransform().ToString(), Pad ? *Pad->GetActorTransform().ToString() : TEXT("none"),
         Pad && Pad->GetDeck() ? *Pad->GetDeck()->GetComponentTransform().ToString() : TEXT("none"),
         Pad && Pad->GetDeck() && Pad->GetDeck()->IsPhysicsStateCreated(), *Fixture.World->OriginLocation.ToString()));
-    Test.TestTrue(TEXT("The landing pad has a physical deck beneath where the hero is set down, and it is the pad"),
-                  PadFloorHit && Hit.GetActor() == Pad);
+    Test.TestTrue(TEXT("The landing pad has its exact physical deck beneath where the hero is set down"),
+                  PadFloorHit && !Hit.bStartPenetrating && Hit.ImpactNormal.Z > .55f &&
+                      Hit.GetComponent() == Pad->GetDeck());
     // Fixture places the player in the assist admission band. Natural manual
     // approach/input precision and high-speed flight feel require separate playtests.
     Ship->SetActorLocation(Approach, false, nullptr, ETeleportType::TeleportPhysics);

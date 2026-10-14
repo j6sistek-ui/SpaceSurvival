@@ -1,0 +1,3 @@
+# Historical apartment placement
+
+Import-inert executed recipe pair, retained for provenance. Do not replay. The first attempt168 stopped before mutation on a snapshot API; corrected169 reached only the new material and stopped because the scalar setter returned false although it applied the value. CompleteApartment170 verified the exact inspected partial state and scalar getters, placed seven actors, preserved all9051 existing snapshots and saved. The current map and material are private. Native capture171 and reload175 establish the saved addition; the receipt records the strict whole-world comparison limitation.

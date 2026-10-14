@@ -1,0 +1,315 @@
+{
+  "recorded_at": "2026-10-08T11:40:26.421165+00:00",
+  "scope": "CPU-only central/R preparation; incoming NPC variants/custom behavior outside scope; no Unreal edit or invocation",
+  "native_layout_inspected": false,
+  "current_saved_maps": [
+    {
+      "path": "Content/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime.umap",
+      "present": true,
+      "bytes": 25265473,
+      "sha256": "e3ed61baf81980c2e5d43a428c6b5eaa2b87eec3b1540248ff8042aae5658501"
+    },
+    {
+      "path": "Content/OutpostSandbox/OwnerPreview/L_OwnerPlatformPreview_20261006.umap",
+      "present": true,
+      "bytes": 25399109,
+      "sha256": "e7958758a861d17fe189601b17b486db9ea75086080a8e1b5f17e56cbb7b18db"
+    }
+  ],
+  "historical_live_closeout_hash": "76e3c8c2918bcb90a630852c857ca2f0b64386840cef78c3d19795787a521703",
+  "recipes": [
+    {
+      "path": "Scripts/RefineStationCentralWelcome.py",
+      "present": true,
+      "bytes": 23917,
+      "sha256": "9dc9a945ed881a72bef7b36a6ae9c519f399de49b6d07d26da99be68e206be78"
+    },
+    {
+      "path": "Scripts/RefineStationCentralReception.py",
+      "present": true,
+      "bytes": 23538,
+      "sha256": "14ca02cfb0f9dcb4b7da87c652c0b6ac3cf596e613a9b4f1fcf1fdceb4bf0c51"
+    },
+    {
+      "path": "Scripts/RefineStationCentralInformation.py",
+      "present": true,
+      "bytes": 18674,
+      "sha256": "5a0c063cfbda8d9e867e9eee84fca425e4e5206fc5c563f51bd24272caf4d519"
+    },
+    {
+      "path": "Scripts/RefineStationCustomizationDisplays.py",
+      "present": true,
+      "bytes": 15780,
+      "sha256": "1be08f1a30faefa5da45080bdf8cc7bc56be83a737b9f1d4e4f144596b38b59c"
+    }
+  ],
+  "guide_sources": [
+    {
+      "path": "ContentSource/CentralInformationBoards/01_StationDirectory.png",
+      "present": true,
+      "bytes": 90607,
+      "sha256": "0a8cfee5160271b57be9c6cd4d633110c1fa577f343368c88770c63e65b92e4a"
+    },
+    {
+      "path": "ContentSource/CentralInformationBoards/01_StationDirectory.svg",
+      "present": true,
+      "bytes": 5020,
+      "sha256": "be495618948731012ab993344187529118090e6fecae7fd0664667bc6cd03fbd"
+    },
+    {
+      "path": "ContentSource/CentralInformationBoards/02_FlightGuide.png",
+      "present": true,
+      "bytes": 88892,
+      "sha256": "feddd46a0bbc01abdc937fb4d1fca49b607fb9336ad6e69c77c68b785caf3a1f"
+    },
+    {
+      "path": "ContentSource/CentralInformationBoards/02_FlightGuide.svg",
+      "present": true,
+      "bytes": 4035,
+      "sha256": "db0d03f8ab3bdfe1f3b59a41444e0e93261f507ae0c544fa6ec2e137afc06fe3"
+    },
+    {
+      "path": "ContentSource/CentralInformationBoards/Generate.py",
+      "present": true,
+      "bytes": 7431,
+      "sha256": "43f72689d6f2c7148c09577f7400b6cff442067f7d1536497d77e6d87e75ac6b"
+    },
+    {
+      "path": "ContentSource/CentralInformationBoards/manifest.json",
+      "present": true,
+      "bytes": 1779,
+      "sha256": "3945fb083235aa733db07d2d205cab2da358ee060f53e3fc9cbe49e42964651e"
+    },
+    {
+      "path": "ContentSource/CentralInformationBoards/PROVENANCE.md",
+      "present": true,
+      "bytes": 3221,
+      "sha256": "916487badc2198d6066d0bed4e43cdce01873d496990e1645748a2550b8efb3b"
+    }
+  ],
+  "native_dependencies": [
+    {
+      "asset": "/Game/CyberPunkAssets/Environment01/SM_CyberBench01",
+      "path": "Content/CyberPunkAssets/Environment01/SM_CyberBench01.uasset",
+      "present": true,
+      "bytes": 697014,
+      "sha256": "b65fc7cd0668aafeb502c2e0b82d8aa9bd333f503223064bfe7c8bb778fc71dc"
+    },
+    {
+      "asset": "/Game/CyberPunkAssets/Materials01/M_CyberBench02",
+      "path": "Content/CyberPunkAssets/Materials01/M_CyberBench02.uasset",
+      "present": true,
+      "bytes": 129592,
+      "sha256": "47a3b15a68618beb5d6d850967375c5eaebb6a8b4f89c33ad4e18707f77287b4"
+    },
+    {
+      "asset": "/Game/CyberpunkRestaurant/Meshes/SM_Shrub_With_LODs_01",
+      "path": "Content/CyberpunkRestaurant/Meshes/SM_Shrub_With_LODs_01.uasset",
+      "present": true,
+      "bytes": 179211,
+      "sha256": "10bd7de1b9aad5a16540111a28e91717c8599bc1c44502213e78f0f2869eb1c5"
+    },
+    {
+      "asset": "/Game/Cyberpunk_Room/Material/MI_Laptop",
+      "path": "Content/Cyberpunk_Room/Material/MI_Laptop.uasset",
+      "present": true,
+      "bytes": 131229,
+      "sha256": "5246bea511f0e7fcf9e323905574881981421d21d06f4074cb8caf5826879d91"
+    },
+    {
+      "asset": "/Game/Cyberpunk_Room/Mesh/SM_Laptop",
+      "path": "Content/Cyberpunk_Room/Mesh/SM_Laptop.uasset",
+      "present": true,
+      "bytes": 167870,
+      "sha256": "1a939553224434a2411471412bc900ba0aae87cc71c5c0b050c7c5c376001824"
+    },
+    {
+      "asset": "/Game/Cyberpunk_Room/Mesh/SM_Tablet",
+      "path": "Content/Cyberpunk_Room/Mesh/SM_Tablet.uasset",
+      "present": true,
+      "bytes": 95307,
+      "sha256": "1ae5e078199924930383e5ef3cf6a7a9fb31b452166c5ea42041e6117d1fcdc1"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/Geometry/SM_OutpostCollar",
+      "path": "Content/OutpostSandbox/Geometry/SM_OutpostCollar.uasset",
+      "present": true,
+      "bytes": 107557,
+      "sha256": "a5086cef66058999eb2160f1ab7a043e2324ac6109ea28d6622913ecf41ebb5d"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/Geometry/SM_OutpostHalo",
+      "path": "Content/OutpostSandbox/Geometry/SM_OutpostHalo.uasset",
+      "present": true,
+      "bytes": 105317,
+      "sha256": "efdc86770dcadf6f0bef138a945ef1abecaf2cacf85a7c76197196fef7474fb9"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/Materials/M_OutpostGraphite",
+      "path": "Content/OutpostSandbox/Materials/M_OutpostGraphite.uasset",
+      "present": true,
+      "bytes": 10419,
+      "sha256": "5efaa17a5a82226e5d1c0d38306b286ab415d43c2ad61ba52736b69eef1a8045"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Materials/MI_R_WestBay",
+      "path": "Content/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Materials/MI_R_WestBay.uasset",
+      "present": true,
+      "bytes": 13350,
+      "sha256": "4a6c0df4be92165ee285d4c0a0b6853ee1dbac2a9190b3a47a6b39af509e963b"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Materials/M_R_UprightFive",
+      "path": "Content/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Materials/M_R_UprightFive.uasset",
+      "present": true,
+      "bytes": 23163,
+      "sha256": "de926404b21a8c0e523762dd20b34a4e60a33f9a365ce64c9249ecca8307122c"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R01_MorphClinic",
+      "path": "Content/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R01_MorphClinic.uasset",
+      "present": true,
+      "bytes": 451829,
+      "sha256": "c377ff56b72cc314d0ba676656cc7ce858e266f0364db527d4ad31e92f17c5cc"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R02_HologramDoctor",
+      "path": "Content/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R02_HologramDoctor.uasset",
+      "present": true,
+      "bytes": 477844,
+      "sha256": "f0aed7e8257ea474254ceb9da18d005e7e3d0d03661e555d8c0f79a1322ca722"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R03_ZeroGMassage",
+      "path": "Content/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R03_ZeroGMassage.uasset",
+      "present": true,
+      "bytes": 399452,
+      "sha256": "91a5ebf561c526704495fafedad03decdfceb903306cca6b2ccbe5db422a9673"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R04_VacuumValet",
+      "path": "Content/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R04_VacuumValet.uasset",
+      "present": true,
+      "bytes": 2951678,
+      "sha256": "94aa1068fb2e3ce7809b0a3647b10e45f2ffd0f3bdd11f7ccd58c87dd8fe011e"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R05_FirstContactPhoto",
+      "path": "Content/OutpostSandbox/StationRefinement/CustomizationCampaigns20261008A/Textures/T_R05_FirstContactPhoto.uasset",
+      "present": true,
+      "bytes": 2847805,
+      "sha256": "ca5e239c9e7f99a2311bb3e64336bc320f8d74c052a361e3554415d587d77f88"
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/SocialAtmosphere/Materials/MI_LoungeShrubs_Green",
+      "path": "Content/OutpostSandbox/StationRefinement/SocialAtmosphere/Materials/MI_LoungeShrubs_Green.uasset",
+      "present": true,
+      "bytes": 9243,
+      "sha256": "b512f50cea08262718446eeac6297f4e951e18f271fbed86199b442981cd733b"
+    },
+    {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Materials/Instances/Translucent/MI_DigitalGlass_Window200X250",
+      "path": "Content/P1toP5_Bundle/P4_Genesis_Vol1/Materials/Instances/Translucent/MI_DigitalGlass_Window200X250.uasset",
+      "present": true,
+      "bytes": 19113,
+      "sha256": "7ad4909e369231478e4f564743842c7886e216111e35b9380e95eb40c3b328ba"
+    },
+    {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_WallPanel400X200_V1_SmartStorageUnit",
+      "path": "Content/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_WallPanel400X200_V1_SmartStorageUnit.uasset",
+      "present": true,
+      "bytes": 30642845,
+      "sha256": "5996cb15ace6970271cf807565d2d3a88e7dac0ff120fe7f0d97efe7cc853962"
+    },
+    {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window200X250_V1_Part1",
+      "path": "Content/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window200X250_V1_Part1.uasset",
+      "present": true,
+      "bytes": 11265356,
+      "sha256": "b5e5d2fb49832860daf24028782aa28b67a13e07912c00679a5c43cda793362d"
+    },
+    {
+      "asset": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window200X250_V2_Part2_DigitalWindow",
+      "path": "Content/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window200X250_V2_Part2_DigitalWindow.uasset",
+      "present": true,
+      "bytes": 44338,
+      "sha256": "40e982051a4d37b4cbd1aebcfd32e18137f4aa3c5feddb4029d6af877de9d01f"
+    },
+    {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Blueprints/BP_ISM_PlantBox_V1",
+      "path": "Content/P1toP5_Bundle/P5_FruitSeller/Blueprints/BP_ISM_PlantBox_V1.uasset",
+      "present": true,
+      "bytes": 30754,
+      "sha256": "ebcc792b3d1fbd7b8ce1f4d91cc8609fa558e3a7bca1bff5188ebf6834e55fd6"
+    },
+    {
+      "asset": "/Game/P1toP5_Bundle/P5_FruitSeller/Materials/Instances/Opaque/MI_Plastic04_Black_2",
+      "path": "Content/P1toP5_Bundle/P5_FruitSeller/Materials/Instances/Opaque/MI_Plastic04_Black_2.uasset",
+      "present": true,
+      "bytes": 26942,
+      "sha256": "ed9b1575ada928edf018442417a4ab8ade7f56c470b329ee5ffff91e55314e16"
+    },
+    {
+      "asset": "/Game/SciFiCorridor/Materials/MI_Assets",
+      "path": "Content/SciFiCorridor/Materials/MI_Assets.uasset",
+      "present": true,
+      "bytes": 136339,
+      "sha256": "b4b1afa328eaedb6c10d83a3645012e0fe8601946b3150b44401e33293e80c6c"
+    },
+    {
+      "asset": "/Game/SciFiCorridor/Meshes/SM_Monitor",
+      "path": "Content/SciFiCorridor/Meshes/SM_Monitor.uasset",
+      "present": true,
+      "bytes": 99715,
+      "sha256": "859acd6e6be84e0d82c2158ad5d4bb4c148b54cde8fff3e2897d57e76eb73d8d"
+    },
+    {
+      "asset": "/Game/SciFiCorridor/Meshes/SM_MonitorScreen",
+      "path": "Content/SciFiCorridor/Meshes/SM_MonitorScreen.uasset",
+      "present": true,
+      "bytes": 98307,
+      "sha256": "22f4d5cb7c3cf4490a5fd03390c415fac505f8fad56842388bf3fbdc43c4dca1"
+    }
+  ],
+  "older_comparison_receipts": [
+    {
+      "path": ".agent/local/Outpost/LiveOperationsPIEReview1_CentralWelcomeFinish3/manifest.json",
+      "present": true,
+      "bytes": 13521,
+      "sha256": "8d7a26d565b18a746b4a36bdc8a1939af4b63071c89461dfc1a7d88ebc24f022"
+    },
+    {
+      "path": ".agent/local/Outpost/LiveOperationsPIEReview1_RDisplayFixed48/manifest.json",
+      "present": true,
+      "bytes": 21597,
+      "sha256": "c4b9b158d250d94170740b19adf0decf17d21f67d582b199bedd0b027fe1aace"
+    }
+  ],
+  "cleanup": {
+    "bytes_removed": 13445225796,
+    "files_removed": 192,
+    "directories_removed": 6,
+    "applied_receipt": {
+      "path": ".agent/local/CookCleanup/20261008T113148859Z.json",
+      "present": true,
+      "bytes": 55343,
+      "sha256": "9d03ed45bb710a289772d18a3f5512b0445199aefb95967d9636b231771ad14e"
+    },
+    "protected_receipts": [
+      {
+        "path": ".agent/local/CookCleanup/ProtectedBefore.json",
+        "present": true,
+        "bytes": 1127,
+        "sha256": "b4ceef53b53c13728abb00821368369d1ef275265d9101d013568fccbba12f8a"
+      },
+      {
+        "path": ".agent/local/CookCleanup/ProtectedAfter.json",
+        "present": true,
+        "bytes": 1127,
+        "sha256": "b4ceef53b53c13728abb00821368369d1ef275265d9101d013568fccbba12f8a"
+      }
+    ],
+    "protected_hashes_preserved": true,
+    "removed_paths_absent": true
+  }
+}

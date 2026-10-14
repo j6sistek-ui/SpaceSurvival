@@ -106,6 +106,13 @@ bool FSSScenerySafety::RunTest(const FString &)
     auto *LegacyLook = DuplicateObject<USSSpaceLookData>(Look, GetTransientPackage());
     LegacyLook->AreaRecipes.Reset();
     Fixture.Scenery->ConfigureLook(LegacyLook);
+    TestTrue(TEXT("Scenery starts hidden without a viewer"), Fixture.Scenery->IsHidden());
+    Fixture.Scenery->SetFlightVisible(true);
+    Fixture.Scenery->Tick(0);
+    TestTrue(TEXT("Flight state alone cannot expose unbound scenery"), Fixture.Scenery->IsHidden());
+    Fixture.Scenery->Follow(Fixture.Viewer);
+    Fixture.Scenery->SetFlightVisible(true);
+    TestFalse(TEXT("A valid flight viewer activates scenery"), Fixture.Scenery->IsHidden());
     TInlineComponentArray<UStaticMeshComponent *> Structures;
     Fixture.Scenery->GetComponents(Structures);
     if (!TestTrue(TEXT("Authored scenery actually builds visible geometry"), !Structures.IsEmpty()))
@@ -157,14 +164,6 @@ bool FSSScenerySafety::RunTest(const FString &)
             TestTrue(TEXT("A sweep through a structure actually reports a blocking hit"), Blocked);
         }
     }
-    TestTrue(TEXT("Scenery starts hidden without a viewer"), Fixture.Scenery->IsHidden());
-    Fixture.Scenery->SetFlightVisible(true);
-    Fixture.Scenery->Tick(0);
-    TestTrue(TEXT("Flight state alone cannot expose unbound scenery"), Fixture.Scenery->IsHidden());
-    Fixture.Scenery->Follow(Fixture.Viewer);
-    Fixture.Scenery->Tick(0);
-    TestFalse(TEXT("A valid flight viewer activates scenery"), Fixture.Scenery->IsHidden());
-
     auto RelativeCenters = [&]()
     {
         TArray<FVector> Result;
@@ -286,8 +285,8 @@ bool FSSSceneryRegions::RunTest(const FString &)
     Fixture.Scenery->SetFlightVisible(true);
     Fixture.Scenery->Tick(0);
     TestEqual(TEXT("All neighboring world cells resident"), Fixture.Scenery->GetResidentCellCount(), 27);
-    TestTrue(TEXT("Local clutter exists and shares the 3072 total limit with 2688 far instances"),
-             Fixture.Scenery->GetResidentClutterCount() > 0 && Fixture.Scenery->GetResidentClutterCount() <= 384);
+    TestTrue(TEXT("Regional clutter retains its independent authored budget"),
+             Fixture.Scenery->GetResidentClutterCount() > 0 && Fixture.Scenery->GetResidentClutterCount() <= 768);
     TestEqual(TEXT("Starting authored cell retains its entire eight-part group"),
               Fixture.Scenery->GetResidentLandmarkCount(), 8);
     auto Snapshot = [&](FVector RemoveOffset = FVector::ZeroVector)
@@ -334,8 +333,8 @@ bool FSSSceneryRegions::RunTest(const FString &)
     Fixture.Scenery->Tick(.05f);
     TestEqual(TEXT("Maximum eight complete authored groups remain within 64 landmarks"),
               Fixture.Scenery->GetResidentLandmarkCount(), 64);
-    TestTrue(TEXT("Movement preserves the shared small/middle resident budget"),
-             Fixture.Scenery->GetResidentClutterCount() <= 384);
+    TestTrue(TEXT("Movement preserves the independent small/middle resident budget"),
+             Fixture.Scenery->GetResidentClutterCount() <= 768);
     Fixture.Viewer->SetActorLocation(FVector::ZeroVector);
     Fixture.Scenery->Tick(.05f);
     TestTrue(TEXT("Revisiting regenerates exactly the same transforms, including unloaded neighbors"),
@@ -368,15 +367,11 @@ bool FSSSceneryRegions::RunTest(const FString &)
     Fixture.Scenery->SetRunSeed(101);
     Fixture.Scenery->Tick(0);
     TestTrue(TEXT("Restoring a run identity restores its complete arrangement"), FirstRun == Snapshot(Shift));
-    // Taking the whole shared cap for the far field is exactly the condition the runtime now warns about,
-    // because it silently starved the local clutter once. The warning is the expected observation here, not
-    // an incident, so it is declared rather than left to fail the run.
-    AddExpectedMessage(TEXT("Scenery clutter starved"), ELogVerbosity::Warning,
-                       EAutomationExpectedMessageFlags::Contains, 0);
-    FarCount->Set(3072, FarPriority);
+    const int32 BeforeFarChange = Fixture.Scenery->GetResidentClutterCount();
+    FarCount->Set(8192, FarPriority);
     Fixture.Scenery->Tick(0);
-    TestEqual(TEXT("Full far-field budget leaves no local clutter overspend"),
-              Fixture.Scenery->GetResidentClutterCount(), 0);
+    TestEqual(TEXT("A dense reachable field cannot starve independent regional geometry"),
+              Fixture.Scenery->GetResidentClutterCount(), BeforeFarChange);
     const auto Before = ASSSpaceScenery::SampleAreaStyle(Look, FVector(999999, 55000, -33000));
     const auto After = ASSSpaceScenery::SampleAreaStyle(Look, FVector(1000001, 55000, -33000));
     TestTrue(TEXT("Style blending is continuous across noise-cell seams"),

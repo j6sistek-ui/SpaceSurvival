@@ -1,0 +1,38 @@
+[
+  {
+    "file": "Scripts/StationRecipes/CpuJoy121/ColorJoy114.py",
+    "sha256": "093e2cded8350ce36eb2eea0da4dbb07715864880f9b378ea030c52ed58a4c6b",
+    "executed_source_sha256": "9dea9cdaaa3fda9cc27140064aea80c6b33f48a8fbbebcad3073b38625d23a4a",
+    "only_path_configuration_changed": true
+  },
+  {
+    "file": "Scripts/StationRecipes/CpuJoy121/PreviewJoy115.py",
+    "sha256": "a05d1ee5b9f495e14913a34fe71cb9b38101d365b5ce2e7e6f015393fd0d17c4",
+    "executed_source_sha256": "779f335dfe6fa2b576883378bac1cecd9a0a42790f2dcc72cffbf4b4ebb0d422",
+    "only_path_configuration_changed": true
+  },
+  {
+    "file": "Scripts/StationRecipes/CpuJoy121/AuthorJoy117.py",
+    "sha256": "3d5ce12a1e101078cfb7c898bedb9ffb32ffdeca931251bba0a88baed78bffbd",
+    "executed_source_sha256": "6430a9f5aad63c05adb45fdcfe945983396d01d360e15ca087bb19ffeb4417ab",
+    "only_path_configuration_changed": true
+  },
+  {
+    "file": "Scripts/StationRecipes/CpuJoy121/CompleteJoy121.py",
+    "sha256": "438cb2048b43d6e2ac4b5bb8104e770edfd75fefd8db98772c322cdf19f0c1dd",
+    "executed_source_sha256": "448c03f3e94757027de8bb321d92e18c1bda09de6ff702aee3d4ab4552f722f1",
+    "only_path_configuration_changed": true
+  },
+  {
+    "file": "Scripts/StationRecipes/CpuJoy121/RepairPlanters119.py",
+    "sha256": "a3fc48f969fe8b85f38ba0eac3db3a1d13fba77365293ca9d20f016e0f9b4b4d",
+    "executed_source_sha256": "66e992922970ce6484bc0e5d3518a95e9fed0fd438686fdf330230bf1130ab9d",
+    "only_path_configuration_changed": true
+  },
+  {
+    "file": "Scripts/StationRecipes/CpuJoy121/VerifyJoy124.py",
+    "sha256": "f02a77beee52931b6f2356ee34ca678be9a4ae7bdd6f31915800480445ddf028",
+    "executed_source_sha256": "d194ecbee4c03fb138bff44ea2a91e0eaf574adf0075b378f1eff1f0023d0912",
+    "only_path_configuration_changed": true
+  }
+]

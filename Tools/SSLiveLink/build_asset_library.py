@@ -16,10 +16,27 @@ sys.path.insert(0, str(Path(__file__).parent))
 from ss_live_link import core, library
 
 NAMESPACE = uuid.UUID('dc01c7de-068a-49c6-b6f5-6a47e5f77724')
+IMPORT_DATA = ('objects', 'meshes', 'materials', 'images', 'textures', 'armatures', 'actions',
+               'node_groups', 'collections', 'curves', 'cameras', 'lights')
 
 
 def catalog_id(path):
     return str(uuid.uuid5(NAMESPACE, path))
+
+
+def imported_data():
+    """Record existing IDs so an asset build can release only its own temporary data."""
+    return {name: set(getattr(bpy.data, name)) for name in IMPORT_DATA}
+
+
+def release_imported(before):
+    generated = set()
+    for name in IMPORT_DATA:
+        generated.update(set(getattr(bpy.data, name)) - before[name])
+    if generated:
+        # Explicit IDs include fake-user proxy caches and their material/image graph.
+        # A global orphan purge would also remove unrelated data in a caller's scene.
+        bpy.data.batch_remove(ids=generated)
 
 
 def build(root, output):
@@ -37,7 +54,7 @@ def build(root, output):
     previous = json.loads(previous_file.read_text()).get('entries', {}) if previous_file.exists() else {}
     entries = {}
     catalogs = {'SpaceSurvival'}
-    assets, missing = set(), []
+    rebuilt, missing = 0, []
     digest = hashlib.sha256()
     for name in ('catalog.json', core.SENT):
         file = core.library_dir() / name
@@ -62,29 +79,33 @@ def build(root, output):
         entries[row['asset']] = {'file': 'Assets/' + filename, 'digest': digest_key}
         if previous.get(row['asset']) == entries[row['asset']] and (chunks / filename).is_file():
             continue
-        obj = core.add_part(row['asset'])
-        obj.location = (0, 0, 0)
-        del obj[core.PROP_LINK]  # each placement gets a new link, never the library's ID
-        obj.asset_mark()
-        obj.asset_data.catalog_id = catalog_id(path)
-        obj.asset_data.description = f"{row.get('pack', '')} | Placement preview"
-        for tag in (group, category, row.get('pack', ''), 'Placement preview'):
-            if tag:
-                obj.asset_data.tags.new(tag)
-        thumb = core.library_dir() / row.get('thumb', '')
-        if thumb.is_file():
-            with bpy.context.temp_override(id=obj):
-                bpy.ops.ed.lib_id_load_custom_preview(filepath=str(thumb))
-        assets.add(obj)
-        # One asset per file: refresh only changed parts and load only parts the user places.
-        temp = chunks / (filename + '.pending')
-        bpy.data.libraries.write(str(temp), {obj}, fake_user=True, compress=True)
-        temp.replace(chunks / filename)
+        before = imported_data()
+        try:
+            obj = core.add_part(row['asset'])
+            obj.location = (0, 0, 0)
+            del obj[core.PROP_LINK]  # each placement gets a new link, never the library's ID
+            obj.asset_mark()
+            obj.asset_data.catalog_id = catalog_id(path)
+            obj.asset_data.description = f"{row.get('pack', '')} | Placement preview"
+            for tag in (group, category, row.get('pack', ''), 'Placement preview'):
+                if tag:
+                    obj.asset_data.tags.new(tag)
+            thumb = core.library_dir() / row.get('thumb', '')
+            if thumb.is_file():
+                with bpy.context.temp_override(id=obj):
+                    bpy.ops.ed.lib_id_load_custom_preview(filepath=str(thumb))
+            # One asset per file; release its imported IDs before loading the next mesh.
+            temp = chunks / (filename + '.pending')
+            bpy.data.libraries.write(str(temp), {obj}, fake_user=True, compress=True)
+            temp.replace(chunks / filename)
+            rebuilt += 1
+        finally:
+            release_imported(before)
     lines = ['# Blender Asset Catalog Definition File', 'VERSION 1', '']
     for path in sorted(catalogs):
         lines.append(f'{catalog_id(path)}:{path}:{path.rsplit("/", 1)[-1]}')
     (output / 'blender_assets.cats.txt').write_text('\n'.join(lines) + '\n', encoding='utf-8')
-    result = {'assets': len(entries), 'rebuilt': len(assets), 'entries': entries, 'unavailable_meshes': missing,
+    result = {'assets': len(entries), 'rebuilt': rebuilt, 'entries': entries, 'unavailable_meshes': missing,
               'schema_version': 1, 'catalog_digest': digest.hexdigest()}
     pending_manifest = output / 'build.pending.json'
     pending_manifest.write_text(json.dumps(result, indent=2), encoding='utf-8')

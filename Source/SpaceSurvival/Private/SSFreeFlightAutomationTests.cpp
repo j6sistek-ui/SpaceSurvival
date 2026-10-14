@@ -124,31 +124,45 @@ bool FSSFreeFlightLifecycle::RunTest(const FString &)
     const FVector HomeDock = Home->PadDockPosition();
     const std::string AccountBefore = SS::EncodeAccount(F.Instance->Session.account);
     const std::string RunBefore = SS::EncodeRun(F.Instance->Session.run);
+    APawn *WalkingPawn = F.Controller->GetPawn();
+    ASSShip *ParkedShip = F.Mode->GetPlayerShip();
     F.Mode->OpenPanel(ESSPanel::Launch);
-    const int32 Start = F.Entry(3), Continue = F.Entry(2), Practice = F.Entry(52);
-    if (!TestTrue(TEXT("Home launch offers distinct Start Survival, Continue Survival and Free Flight choices"),
-                  Start != INDEX_NONE && Continue != INDEX_NONE && Practice != INDEX_NONE &&
-                      F.Mode->Entries[Start].Enabled && F.Mode->Entries[Practice].Enabled &&
-                      F.Mode->Entries[Start].Label == TEXT("Start Survival") &&
-                      F.Mode->Entries[Continue].Label == TEXT("Continue Survival") &&
-                      F.Mode->Entries[Practice].Label == TEXT("Free Flight")))
+    if (!TestTrue(TEXT("Home computer reports current departure and directs selection into the cockpit"),
+                  F.Entry(155) == INDEX_NONE && F.Entry(156) == INDEX_NONE &&
+                      F.Mode->PanelDetail.Contains(TEXT("WAVES")) &&
+                      F.Mode->PanelDetail.Contains(TEXT("cockpit chair"))))
         return false;
-    TestFalse(TEXT("Unavailable checkpoint is not offered as a successful Continue"),
-              F.Mode->Entries[Continue].Enabled);
-    // The production Free Flight action has no save calls. Unblock only that
-    // in-memory admission; every other menu read/write remains blocked in this fixture.
+    TestTrue(TEXT("Mode selection has no immediate departure or unavailable checkpoint action"),
+             F.Entry(3) == INDEX_NONE && F.Entry(50) == INDEX_NONE && F.Entry(52) == INDEX_NONE &&
+                 F.Entry(2) == INDEX_NONE);
+    F.Mode->ClosePanel();
+    // This lifecycle fixture sets the existing preference directly; the actual
+    // grounded cockpit input path is covered by PhoenixCockpitDeparture.
+    F.Mode->CycleDepartureMode();
+    TestTrue(TEXT("Selecting Free Flight retains the same walking pawn and parked ship"),
+             F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::FreeFlight && !F.Mode->IsMenuOpen() &&
+                 !F.Mode->IsDepartingStation() && !F.Instance->IsFreeFlight() &&
+                 F.Controller->GetPawn() == WalkingPawn && F.Mode->GetPlayerShip() == ParkedShip && F.Hub() == Home);
+    TestTrue(TEXT("Mode selection does not mutate Survival account or run even while persistence is blocked"),
+             F.Instance->AccountStorageBlocked && SS::EncodeAccount(F.Instance->Session.account) == AccountBefore &&
+                 SS::EncodeRun(F.Instance->Session.run) == RunBefore);
+    // The production Free Flight transaction has no save calls. Invoke that service
+    // directly for this lifecycle fixture; PhoenixCockpitDeparture covers chair admission.
+    // Unblock only in-memory admission; every other menu read/write remains blocked.
     F.Instance->AccountStorageBlocked = false;
-    F.Mode->ActivateEntry(Practice);
+    F.Mode->StartFreeFlight();
     F.Instance->AccountStorageBlocked = true;
     ASSShip *Ship = F.Mode->GetPlayerShip();
     if (!TestNotNull(TEXT("Free Flight uses the actual departure ship"), Ship) ||
-        !TestTrue(TEXT("Actual launch action owns the practice session and the possessed departing pawn"),
+        !TestTrue(TEXT("Actual departure transaction owns the practice session and the possessed departing pawn"),
                   F.Instance->IsFreeFlight() && F.Mode->IsDepartingStation() && F.Controller->GetPawn() == Ship &&
                       Ship->IsTakingOff() && !F.Mode->IsMenuOpen()))
         return false;
     const int32 Wave = F.Instance->Session.run.wave;
     F.Frames(210);
     TestFalse(TEXT("Real takeoff finishes without starting survival waves"), Ship->IsTakingOff());
+    TestFalse(TEXT("Mode input while possessing the flying ship cannot select another departure mode"),
+              F.Mode->HandleCockpitModeInput(true, true));
     TestTrue(TEXT("Zero throttle after launch is an engine-off command"), FMath::IsNearlyZero(Ship->GetThrottle()));
     Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, false, false);
     F.Frames(45);
@@ -219,11 +233,15 @@ bool FSSFreeFlightLifecycle::RunTest(const FString &)
     TestTrue(TEXT("Return action restores the exact prior account and inactive survival snapshot"),
              SS::EncodeAccount(F.Instance->Session.account) == AccountBefore &&
                  SS::EncodeRun(F.Instance->Session.run) == RunBefore);
-    TestTrue(TEXT("Return ends at home with the launch choices available"),
-             F.Mode->InHangar() && F.Mode->Panel == ESSPanel::Launch && F.Entry(52) != INDEX_NONE &&
-                 Cast<ASSWalker>(F.Controller->GetPawn()) != nullptr);
-    AddInfo(TEXT("Actual GameMode/session/ship/Director integration with scripted input and arrival. No GI Init, "
-                 "StartNewRun, disk save, physical navigation, rendering or natural-play acceptance."));
+    TestTrue(TEXT("Return ends walking at home without an automatic launch popup"),
+             F.Mode->InHangar() && !F.Mode->IsMenuOpen() && Cast<ASSWalker>(F.Controller->GetPawn()) != nullptr);
+    F.Mode->OpenPanel(ESSPanel::Launch);
+    TestTrue(TEXT("The home computer remains informational when deliberately opened"),
+             F.Entry(155) == INDEX_NONE && F.Entry(156) == INDEX_NONE && F.Entry(52) == INDEX_NONE);
+    F.Mode->ClosePanel();
+    AddInfo(TEXT("Actual GameMode/session/ship/Director integration with a direct mode preference and departure "
+                 "transaction, scripted input and arrival. No GI Init, StartNewRun, disk save, physical chair "
+                 "navigation, rendering or natural-play acceptance."));
     return true;
 }
 #endif

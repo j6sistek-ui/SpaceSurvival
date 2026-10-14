@@ -75,6 +75,24 @@ bool FSSAsteroidBreakup::RunTest(const FString &)
     TestEqual(TEXT("Every burst retires within one second"), Count(), 0);
     TestNotNull(TEXT("Expired bursts release capacity"),
                 ASSAsteroidBurst::SpawnBurst(World, FVector::ZeroVector, FVector::ZeroVector, 100.f));
+    const FVector LargeCenter(100000, 0, 0), Surface(70000, 0, 0);
+    auto *Large = ASSAsteroidBurst::SpawnBurst(World, LargeCenter, FVector::ZeroVector, 30000.f, Surface);
+    if (TestNotNull(TEXT("Large regional destruction creates a bounded burst"), Large))
+    {
+        TestEqual(TEXT("Large destruction retains the same instance budget"), Large->Chips->GetInstanceCount(), 12);
+        FTransform SurfaceShard, BodyShard;
+        Large->Chips->GetInstanceTransform(0, SurfaceShard, true);
+        Large->Chips->GetInstanceTransform(2, BodyShard, true);
+        const FBoxSphereBounds Bounds = Large->Chips->GetStaticMesh()->GetBounds();
+        TestTrue(TEXT("Close surface hit has actual debris within five metres"),
+                 FVector::Dist(SurfaceShard.TransformPosition(Bounds.Origin), Surface) < 500.);
+        TestTrue(TEXT("Large body retains proportionate silhouette fragments"),
+                 BodyShard.GetScale3D().GetMax() * Bounds.SphereRadius > 3000.);
+        TestTrue(TEXT("Large body spreads debris throughout its former volume"),
+                 FVector::Dist(BodyShard.TransformPosition(Bounds.Origin), LargeCenter) > 10000.);
+        Large->Tick(3.f);
+        TestTrue(TEXT("Large cosmetic fragments also retire promptly"), Large->IsActorBeingDestroyed());
+    }
     World->DestroyWorld(false);
     GEngine->DestroyWorldContext(World);
     return true;

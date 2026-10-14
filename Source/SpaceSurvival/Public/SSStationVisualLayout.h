@@ -18,6 +18,7 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Station Layout")
     bool bFunctionalLayout = false;
     virtual void OnConstruction(const FTransform &Transform) override;
+    virtual void BeginPlay() override;
     void EnforcePresentationOnly();
 };
 

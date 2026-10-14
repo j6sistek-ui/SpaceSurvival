@@ -5,9 +5,6 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
-$package = Join-Path $repoRoot 'Artifacts/Windows'
-$executable = Join-Path $package 'SpaceSurvival.exe'
-$profile = Join-Path $repoRoot 'Artifacts/PackagedReviewUser'
 
 function Assert-NoRedirectedPath([string]$Path) {
     $candidate = [IO.Path]::GetFullPath($Path)
@@ -21,6 +18,30 @@ function Assert-NoRedirectedPath([string]$Path) {
         $parent = [IO.Directory]::GetParent($candidate)
         $candidate = if ($null -ne $parent) { $parent.FullName } else { $null }
     }
+}
+
+function Resolve-ArtifactRoot([string]$RepoRoot) {
+    Assert-NoRedirectedPath $RepoRoot
+    $artifactRoot = [IO.Path]::GetFullPath((Join-Path $RepoRoot 'Artifacts'))
+    if (Test-Path -LiteralPath $artifactRoot) {
+        $item = Get-Item -LiteralPath $artifactRoot -Force
+        if (-not $item.PSIsContainer) { throw "Expected an artifact directory: $artifactRoot" }
+        if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            $targets = @($item.Target)
+            if ($item.LinkType -ne 'Junction' -or $targets.Count -ne 1 -or
+                $targets[0] -notmatch '^[A-Za-z]:[\\/]') {
+                throw "Expected one absolute directory target for the Artifacts junction: $artifactRoot"
+            }
+            # Only the checkout's top-level Artifacts junction is supported. Its physical
+            # target, ancestors, and all package/profile descendants must remain direct.
+            $artifactRoot = [IO.Path]::GetFullPath($targets[0])
+            if (-not (Test-Path -LiteralPath $artifactRoot -PathType Container)) {
+                throw "Artifact junction target is missing: $artifactRoot"
+            }
+        }
+    }
+    Assert-NoRedirectedPath $artifactRoot
+    return $artifactRoot
 }
 
 function Assert-NoRedirectedTree([string]$Path) {
@@ -42,6 +63,11 @@ function Assert-NoRedirectedTree([string]$Path) {
         }
     }
 }
+
+$artifactRoot = Resolve-ArtifactRoot $repoRoot
+$package = Join-Path $artifactRoot 'Windows'
+$executable = Join-Path $package 'SpaceSurvival.exe'
+$profile = Join-Path $artifactRoot 'PackagedReviewUser'
 
 foreach ($path in @($repoRoot, $executable, $profile)) {
     if ($path.Contains('"') -or $path.Contains("`r") -or $path.Contains("`n")) {

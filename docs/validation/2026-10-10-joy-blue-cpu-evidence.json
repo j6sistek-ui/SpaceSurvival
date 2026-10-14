@@ -1,0 +1,2127 @@
+{
+  "date_utc": "2026-10-10T05:19Z",
+  "state": "CPU_CHECKPOINT_NATIVE_VISUAL_REVIEW_PENDING",
+  "renderer": "Unreal NullRHI; Blender Cycles CPU",
+  "gpu_rendering": false,
+  "map_sha256": "52a5ee747fe7a586029c9f2ad85d782972b22c61b60bfbfcc9f7c88387dafdc7",
+  "map_actors_from_saved107": 9051,
+  "world_reloaded": false,
+  "sources": [
+    {
+      "name": "Cyborg_new.blend",
+      "sha256": "5cbc50ebf7281503f917755a3e140901e7af52c876637e3eef4fa4d4ffc0155d"
+    },
+    {
+      "name": "Joy_Purple_HairFitted.blend",
+      "sha256": "ea6f4be979d1381b15899b16cded8059578d8529c9d2deed962fc6f09b5576a6"
+    }
+  ],
+  "blue_blender_sha256": "38a31ab08e9e5362d1c60c88ee24f6d7a32be1ba0bb397f58892ea7643508f9b",
+  "geometry_shape_keys_armature_sha256": "b8425d97025e0fcb2dece841875631f783a077e81f5c894c26ce78148cc7fc5f",
+  "preview": {
+    "file": "images/2026-10-10-joy-blue/Joy-light-blue-preview.png",
+    "sha256": "352ebde5bb7be202ef47a89467df765696ea4c4bdcf1a4b0bdca8412ce4903e2",
+    "width": 768,
+    "height": 960,
+    "kind": "CPU Blender color preview, not Unreal"
+  },
+  "native_blueprint": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/BP_JoyLightBlue_Review.BP_JoyLightBlue_Review",
+  "clip_count": 135,
+  "animated_at_sampled_frames": 133,
+  "static_source_poses": [
+    "A_Joy_LookL",
+    "A_Joy_LookR"
+  ],
+  "clips": [
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_Fidget1.A_Cyborg_Fidget1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Fidget1",
+      "frames": 150,
+      "duration": 5.0333333015441895,
+      "sampled_motion": 20.18701508345736,
+      "source_sampled_motion": 12.739556131286315,
+      "motion_type": "animated",
+      "sha256": "67b6ed3232569277708c7cd737b38628d985646a238f0ba923b30022ad672fa1"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_Fidget2.A_Cyborg_Fidget2",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Fidget2",
+      "frames": 202,
+      "duration": 6.766666889190674,
+      "sampled_motion": 33.04934283067874,
+      "source_sampled_motion": 30.18469111432578,
+      "motion_type": "animated",
+      "sha256": "37547c5405a9ae69fd756363746226c7ff88f12150071851adfd2f44a10111ff"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_Idle.A_Cyborg_Idle",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Idle",
+      "frames": 183,
+      "duration": 6.133333206176758,
+      "sampled_motion": 3.276544129001717,
+      "source_sampled_motion": 2.1596843312191254,
+      "motion_type": "animated",
+      "sha256": "67c005cabf180f2846c1988d9429fd7b5b6c39219a24a0b6af65578bf1d705d2"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_Listen.A_Cyborg_Listen",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Listen",
+      "frames": 744,
+      "duration": 24.83333396911621,
+      "sampled_motion": 17.053799274860168,
+      "source_sampled_motion": 17.088780132220187,
+      "motion_type": "animated",
+      "sha256": "053df4f327129a3c5c309c176a035effe0362f7352420cb5e01381cbb2d32d09"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_LookL.A_Cyborg_LookL",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_LookL",
+      "frames": 1,
+      "duration": 0.03333333507180214,
+      "sampled_motion": 0.0,
+      "source_sampled_motion": 0.0,
+      "motion_type": "static_source_pose",
+      "sha256": "5e6d1dc093e17e7129f57ace67ba75ad7c0b87b885d2d126745d7cf4bba7bc7d"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_LookR.A_Cyborg_LookR",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_LookR",
+      "frames": 1,
+      "duration": 0.03333333507180214,
+      "sampled_motion": 0.0,
+      "source_sampled_motion": 0.0,
+      "motion_type": "static_source_pose",
+      "sha256": "118bf02ef55b80c7edac0657880b06b7dbde20cce24b1262af606ab784728fec"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_Talk.A_Cyborg_Talk",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Talk",
+      "frames": 880,
+      "duration": 29.366666793823242,
+      "sampled_motion": 16.048148876298747,
+      "source_sampled_motion": 12.376233029087807,
+      "motion_type": "animated",
+      "sha256": "ce4c3f7229721f3730b12504e7ced54e320157457aef0128b6da51016f015d89"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_TalkDramatic1.A_Cyborg_TalkDramatic1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_TalkDramatic1",
+      "frames": 170,
+      "duration": 5.666666507720947,
+      "sampled_motion": 40.60630701979924,
+      "source_sampled_motion": 25.86784608277535,
+      "motion_type": "animated",
+      "sha256": "659b30d258fc305f2ecd6909adcce9b9651deb5951ccddba90e9402bc97b4901"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_TalkDramatic2.A_Cyborg_TalkDramatic2",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_TalkDramatic2",
+      "frames": 180,
+      "duration": 6.0,
+      "sampled_motion": 33.639604379473454,
+      "source_sampled_motion": 24.144622543454943,
+      "motion_type": "animated",
+      "sha256": "8c244a78d7b82139c863324d58e19ecb6de95b1d4efe0b7004f5ae5008fa9674"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_TurnL.A_Cyborg_TurnL",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_TurnL",
+      "frames": 20,
+      "duration": 0.6666666865348816,
+      "sampled_motion": 7.007968233344457,
+      "source_sampled_motion": 5.445587587629607,
+      "motion_type": "animated",
+      "sha256": "6c5f99d8cff0ee221bb38d6d9429c2155b187cc9cc5666cd58a1433931b21875"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_TurnR.A_Cyborg_TurnR",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_TurnR",
+      "frames": 20,
+      "duration": 0.6666666865348816,
+      "sampled_motion": 6.903096411960028,
+      "source_sampled_motion": 6.514417184428909,
+      "motion_type": "animated",
+      "sha256": "1924137a3c506580bd24ebae1afb0f318c4ef1793ce85ccb7d995a9d1f21fea5"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_Walk.A_Cyborg_Walk",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Walk",
+      "frames": 36,
+      "duration": 1.2000000476837158,
+      "sampled_motion": 41.042593314306245,
+      "source_sampled_motion": 36.72814604534682,
+      "motion_type": "animated",
+      "sha256": "4c2938adf097af4aa3c4dd3aebb3d7700449decde8e2856247dd860889b0a609"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_WalkCheerful.A_Cyborg_WalkCheerful",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_WalkCheerful",
+      "frames": 35,
+      "duration": 1.2000000476837158,
+      "sampled_motion": 59.86042885676767,
+      "source_sampled_motion": 40.282943373776355,
+      "motion_type": "animated",
+      "sha256": "8f8358864da6a1274d6fca784489a08cfac03bf9f96937a40a7970721e983252"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_WalkLookAround.A_Cyborg_WalkLookAround",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_WalkLookAround",
+      "frames": 357,
+      "duration": 11.933333396911621,
+      "sampled_motion": 42.255945389024106,
+      "source_sampled_motion": 38.87862178274887,
+      "motion_type": "animated",
+      "sha256": "bc02c5f2df3c1a42cc0401572dd0cbeede46ccbb7d614fb4d49a3c8712802685"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_WalkStart.A_Cyborg_WalkStart",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_WalkStart",
+      "frames": 50,
+      "duration": 1.6666666269302368,
+      "sampled_motion": 18.558327219606447,
+      "source_sampled_motion": 16.503733972987895,
+      "motion_type": "animated",
+      "sha256": "c60460b6e085c62060bfad44561cb32ff176d5ae9a7f1119f680a629ceed0f16"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/A_Cyborg_WalkStop.A_Cyborg_WalkStop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_WalkStop",
+      "frames": 47,
+      "duration": 1.5666667222976685,
+      "sampled_motion": 17.498779042350566,
+      "source_sampled_motion": 16.930538757528495,
+      "motion_type": "animated",
+      "sha256": "12e7d9b74b060e26087861a388994e13afb95b840bf4ef4615fbb05f94312461"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type01.A_Cyborg_BarCustomer_Type01",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type01",
+      "frames": 925,
+      "duration": 30.83333396911621,
+      "sampled_motion": 33.28125583502131,
+      "source_sampled_motion": 22.175157802630793,
+      "motion_type": "animated",
+      "sha256": "0bef6e00200671564186d1740ac27b2ae0de39efd2e8865539c549bf9433728b"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type02.A_Cyborg_BarCustomer_Type02",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type02",
+      "frames": 685,
+      "duration": 22.83333396911621,
+      "sampled_motion": 8.341094671762976,
+      "source_sampled_motion": 6.36091081100848,
+      "motion_type": "animated",
+      "sha256": "207e9a279efb5ee83d3ac7dddccf9a2fc1a93ae785148eda21608a7ecfb60b64"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type03.A_Cyborg_BarCustomer_Type03",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type03",
+      "frames": 850,
+      "duration": 28.33333396911621,
+      "sampled_motion": 90.02439900794877,
+      "source_sampled_motion": 59.54618316246092,
+      "motion_type": "animated",
+      "sha256": "9cfd1607e3c594f490b2a27d0ca06a350a75d577b5cda7f68f5c50fe041b3491"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type04.A_Cyborg_BarCustomer_Type04",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type04",
+      "frames": 940,
+      "duration": 31.33333396911621,
+      "sampled_motion": 4.410993197895879,
+      "source_sampled_motion": 5.363118780217642,
+      "motion_type": "animated",
+      "sha256": "48a51b7b23256461cd28c65233ce7dc1ad97d531afd191d9dc53302c2e788a6f"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type05.A_Cyborg_BarCustomer_Type05",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type05",
+      "frames": 910,
+      "duration": 30.33333396911621,
+      "sampled_motion": 2.24018266107268,
+      "source_sampled_motion": 2.0535492861826974,
+      "motion_type": "animated",
+      "sha256": "62d6e2dc99189c017572fe13b041c0d46e97e47b611db2b0067d2a175c1a8f3b"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type06.A_Cyborg_BarCustomer_Type06",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type06",
+      "frames": 915,
+      "duration": 30.5,
+      "sampled_motion": 49.27357693542007,
+      "source_sampled_motion": 32.632743985926616,
+      "motion_type": "animated",
+      "sha256": "85dd913f7feeb3d3505692f3c14a2f72d7e1c9d9422e2da008448e191e515fc8"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type07.A_Cyborg_BarCustomer_Type07",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type07",
+      "frames": 980,
+      "duration": 32.66666793823242,
+      "sampled_motion": 50.33126829931638,
+      "source_sampled_motion": 30.411319760218134,
+      "motion_type": "animated",
+      "sha256": "460f60c3f2ed7d7635f59f7fc2d22a75d057ee0a86b9d2d062886031c61cce73"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type08.A_Cyborg_BarCustomer_Type08",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type08",
+      "frames": 920,
+      "duration": 30.66666603088379,
+      "sampled_motion": 3.1279050312961445,
+      "source_sampled_motion": 3.771007340787267,
+      "motion_type": "animated",
+      "sha256": "5d57d40e9eecf40d3886465e3b60b2bef69a2fe81e555abaf96da92faff8e497"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type09.A_Cyborg_BarCustomer_Type09",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type09",
+      "frames": 925,
+      "duration": 30.83333396911621,
+      "sampled_motion": 30.313185014539627,
+      "source_sampled_motion": 21.638127718210782,
+      "motion_type": "animated",
+      "sha256": "207485028829a21e5e6d4177bb05436b3ab3cae11a1a8c114ecf81fbeb9740af"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type10.A_Cyborg_BarCustomer_Type10",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type10",
+      "frames": 855,
+      "duration": 28.5,
+      "sampled_motion": 11.12487999191633,
+      "source_sampled_motion": 10.071495712807078,
+      "motion_type": "animated",
+      "sha256": "7fe992ce27cab5064cac251b652316e074b903ad2f617bfaa3adebf137d22e52"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type11.A_Cyborg_BarCustomer_Type11",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type11",
+      "frames": 870,
+      "duration": 29.0,
+      "sampled_motion": 12.474427997572889,
+      "source_sampled_motion": 7.725774959997793,
+      "motion_type": "animated",
+      "sha256": "8d3b6cf6bdc89a8e1c9d724436fce746a15c2fe4317a7221c857d0a480943c97"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type12.A_Cyborg_BarCustomer_Type12",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type12",
+      "frames": 930,
+      "duration": 31.0,
+      "sampled_motion": 41.52010121636333,
+      "source_sampled_motion": 25.38420313554944,
+      "motion_type": "animated",
+      "sha256": "135d27a295b8e8cb5f98d242c0b1eaade1fce7e14ac9aaba8af8990aca713c1e"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type13.A_Cyborg_BarCustomer_Type13",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type13",
+      "frames": 1035,
+      "duration": 34.5,
+      "sampled_motion": 11.862615966733511,
+      "source_sampled_motion": 8.11699267155876,
+      "motion_type": "animated",
+      "sha256": "788791d01f57d31f9c9d429195b9c2ab0d704b4bb74f145310ccc2233b394897"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type14.A_Cyborg_BarCustomer_Type14",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type14",
+      "frames": 1080,
+      "duration": 36.0,
+      "sampled_motion": 31.228301395223113,
+      "source_sampled_motion": 20.97826455657929,
+      "motion_type": "animated",
+      "sha256": "8a26a49fb6160e2fba194ddffe21f4281968a155fa8b58941fc3ef14efbff2ae"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type15.A_Cyborg_BarCustomer_Type15",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type15",
+      "frames": 900,
+      "duration": 30.0,
+      "sampled_motion": 6.187999716051962,
+      "source_sampled_motion": 3.7811408576961014,
+      "motion_type": "animated",
+      "sha256": "54515ca6d241ce6decac2b56e20541c52fd16ff715969939c0fff30f93646aad"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type16.A_Cyborg_BarCustomer_Type16",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type16",
+      "frames": 910,
+      "duration": 30.33333396911621,
+      "sampled_motion": 5.829639547174182,
+      "source_sampled_motion": 6.2653806723856,
+      "motion_type": "animated",
+      "sha256": "546fe66c071d5ab306e544c28acc07d267857b7ace796ec3b8e2ca7566d8be34"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type17.A_Cyborg_BarCustomer_Type17",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type17",
+      "frames": 910,
+      "duration": 30.33333396911621,
+      "sampled_motion": 46.514822571189754,
+      "source_sampled_motion": 30.072849201105797,
+      "motion_type": "animated",
+      "sha256": "28aacf0c18683283840b2839591fa3995eacfa6dfb97b7606427997715f4933d"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type18.A_Cyborg_BarCustomer_Type18",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type18",
+      "frames": 922,
+      "duration": 30.733333587646484,
+      "sampled_motion": 37.144502319905996,
+      "source_sampled_motion": 26.77493210401652,
+      "motion_type": "animated",
+      "sha256": "1ff4faf88359bc0dffda0736df584847ee7d1db1bb246ff3fcd399e9479546a4"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type19.A_Cyborg_BarCustomer_Type19",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type19",
+      "frames": 922,
+      "duration": 30.733333587646484,
+      "sampled_motion": 52.44965084296214,
+      "source_sampled_motion": 33.19494269343136,
+      "motion_type": "animated",
+      "sha256": "e03bdb97c6ce4fb6d1bc65203c5cbd8d2471bdf65114b8668a0b8c02646e8dab"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type20.A_Cyborg_BarCustomer_Type20",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type20",
+      "frames": 1020,
+      "duration": 34.0,
+      "sampled_motion": 3.993894466738748,
+      "source_sampled_motion": 3.7802233199524995,
+      "motion_type": "animated",
+      "sha256": "0e2edec1ebdcd4c1ce97ec8d8594b0830aa5d3b27e4e011ef2ad8783c59e8a45"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type21.A_Cyborg_BarCustomer_Type21",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type21",
+      "frames": 1020,
+      "duration": 34.0,
+      "sampled_motion": 39.269600061854874,
+      "source_sampled_motion": 25.64044573191471,
+      "motion_type": "animated",
+      "sha256": "aa6e2487799ca506fa3da92010046142c2a883aa5bfdb3f0dc62cf3d679e8ba9"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type22.A_Cyborg_BarCustomer_Type22",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type22",
+      "frames": 1000,
+      "duration": 33.33333206176758,
+      "sampled_motion": 21.851215848958518,
+      "source_sampled_motion": 17.846749540910775,
+      "motion_type": "animated",
+      "sha256": "3997d5ed0818f9481e962bc515ede47d2e2b21f6c12cfe4329f2eecc8e6ce0a7"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type23.A_Cyborg_BarCustomer_Type23",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type23",
+      "frames": 1000,
+      "duration": 33.33333206176758,
+      "sampled_motion": 3.4146403156655687,
+      "source_sampled_motion": 3.4953847740324964,
+      "motion_type": "animated",
+      "sha256": "302ab5fb0923d141f37818f6e6f360b42b36c3057aea84b2e0cddb19130412de"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type24.A_Cyborg_BarCustomer_Type24",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type24",
+      "frames": 970,
+      "duration": 32.33333206176758,
+      "sampled_motion": 14.473685552738974,
+      "source_sampled_motion": 17.573085797416276,
+      "motion_type": "animated",
+      "sha256": "d995f83e811cbc7d28d48538506056901e2b522debe492bf04553e4b73fc81af"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type25.A_Cyborg_BarCustomer_Type25",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type25",
+      "frames": 970,
+      "duration": 32.33333206176758,
+      "sampled_motion": 41.0137157850014,
+      "source_sampled_motion": 30.00981254017974,
+      "motion_type": "animated",
+      "sha256": "8c9e07b5960e1bc772a20ed39bf4370f94333ed617ce6b07c12609956e755358"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type26.A_Cyborg_BarCustomer_Type26",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type26",
+      "frames": 955,
+      "duration": 31.83333396911621,
+      "sampled_motion": 26.645433149470833,
+      "source_sampled_motion": 18.467598085761864,
+      "motion_type": "animated",
+      "sha256": "aeb1150ca9ab1534c31428af9cfed79f77b384bc585ac68e28a701035f465f7e"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type27.A_Cyborg_BarCustomer_Type27",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type27",
+      "frames": 955,
+      "duration": 31.83333396911621,
+      "sampled_motion": 15.232256005521691,
+      "source_sampled_motion": 15.412001687329708,
+      "motion_type": "animated",
+      "sha256": "df0c849ca069894b1d0893534142b548a30ff8606755fe1997654ef0cbc92ea9"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type28.A_Cyborg_BarCustomer_Type28",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type28",
+      "frames": 990,
+      "duration": 33.0,
+      "sampled_motion": 23.812446947486922,
+      "source_sampled_motion": 22.13171550535257,
+      "motion_type": "animated",
+      "sha256": "fa4a8276ec8d8fc286d0215b73513fa4f67a0a952b0b011ac2a8e8aa8baa7d94"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type29.A_Cyborg_BarCustomer_Type29",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type29",
+      "frames": 990,
+      "duration": 33.0,
+      "sampled_motion": 12.31724880518497,
+      "source_sampled_motion": 13.097484831188787,
+      "motion_type": "animated",
+      "sha256": "d1895f10b1e2052f1323644e93ff36ef4a27dcf7386a5ecd5d390ffa202a5324"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type30.A_Cyborg_BarCustomer_Type30",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type30",
+      "frames": 930,
+      "duration": 31.0,
+      "sampled_motion": 17.965650732290314,
+      "source_sampled_motion": 13.4643535364115,
+      "motion_type": "animated",
+      "sha256": "7723dd1a5653d8ec586751b45d3f1db365e68b4bf212ebe2941ed5c548aa1630"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type31.A_Cyborg_BarCustomer_Type31",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type31",
+      "frames": 930,
+      "duration": 31.0,
+      "sampled_motion": 13.935694134230001,
+      "source_sampled_motion": 10.215245314592446,
+      "motion_type": "animated",
+      "sha256": "dd6d7a5c81934d0332fd073cacc2868bbcfc09d3ff6900a29c8699b5ded615ca"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type32.A_Cyborg_BarCustomer_Type32",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type32",
+      "frames": 950,
+      "duration": 31.66666603088379,
+      "sampled_motion": 4.984687603022856,
+      "source_sampled_motion": 3.9944763987277057,
+      "motion_type": "animated",
+      "sha256": "e125ddc9a8ca9f33918bdf76799dbd8ad1ab93470ab7c58f178654342eafac32"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type33.A_Cyborg_BarCustomer_Type33",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type33",
+      "frames": 950,
+      "duration": 31.66666603088379,
+      "sampled_motion": 6.847447016153438,
+      "source_sampled_motion": 5.513237243091012,
+      "motion_type": "animated",
+      "sha256": "8d4539a023d24aeaf4b8b31c481d108606841b1ee7a6f55575ef9e51ad70cb95"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type34.A_Cyborg_BarCustomer_Type34",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type34",
+      "frames": 980,
+      "duration": 32.66666793823242,
+      "sampled_motion": 4.038771870073603,
+      "source_sampled_motion": 2.3482909742200775,
+      "motion_type": "animated",
+      "sha256": "e7a512a827121c97686a8321be70ac2f1692c220365bc4343e5cdf15c2d427ae"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_BarCustomer_Type35.A_Cyborg_BarCustomer_Type35",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type35",
+      "frames": 980,
+      "duration": 32.66666793823242,
+      "sampled_motion": 20.650509870104344,
+      "source_sampled_motion": 11.381965648270253,
+      "motion_type": "animated",
+      "sha256": "fe65751ed41afdfb597fc7d4cbd075639520f65a570698a26f073857362d7f54"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_ClubDance.A_Cyborg_Dance_ClubDance",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_ClubDance",
+      "frames": 1633,
+      "duration": 54.43333435058594,
+      "sampled_motion": 59.493454994165404,
+      "source_sampled_motion": 34.79741965167998,
+      "motion_type": "animated",
+      "sha256": "941d8551e85b481197db085257ea1c6fe7c4e206fb54bdc13ad484118a6a824b"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_ClubDance2.A_Cyborg_Dance_ClubDance2",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_ClubDance2",
+      "frames": 2630,
+      "duration": 87.66666412353516,
+      "sampled_motion": 87.71988451598249,
+      "source_sampled_motion": 57.648365404330576,
+      "motion_type": "animated",
+      "sha256": "f0a280588f905bedfad360b55d4dc3571f6a48fe22edaf5ad85602db4a67f539"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_FunnyDance.A_Cyborg_Dance_FunnyDance",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_FunnyDance",
+      "frames": 997,
+      "duration": 33.233333587646484,
+      "sampled_motion": 77.54384523915196,
+      "source_sampled_motion": 49.69450908082483,
+      "motion_type": "animated",
+      "sha256": "cc02e22ba264f47b6572557027ee14b086d1d9331a201b297360b07fd5327b71"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_PartyDance.A_Cyborg_Dance_PartyDance",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_PartyDance",
+      "frames": 1105,
+      "duration": 36.83333206176758,
+      "sampled_motion": 72.3513618368309,
+      "source_sampled_motion": 56.00829607627059,
+      "motion_type": "animated",
+      "sha256": "c77715f185a9fb277d9f87a1314a4dc0e3c1010ffd95274adda746c099f05a1f"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_PartyDance3.A_Cyborg_Dance_PartyDance3",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_PartyDance3",
+      "frames": 1275,
+      "duration": 42.5,
+      "sampled_motion": 69.79225648828367,
+      "source_sampled_motion": 44.709290390124934,
+      "motion_type": "animated",
+      "sha256": "197740327eb54cd26e77d786217f722c894ff6dfe1be670f8116ba769d3215ce"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_PJ_Dance.A_Cyborg_Dance_PJ_Dance",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_PJ_Dance",
+      "frames": 2177,
+      "duration": 72.56666564941406,
+      "sampled_motion": 78.87235837202304,
+      "source_sampled_motion": 50.56607151610173,
+      "motion_type": "animated",
+      "sha256": "6777682e4c656a7e072c127212cf01d623f0f3e75fd43abe38a32330090a5b92"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_SimpleDance.A_Cyborg_Dance_SimpleDance",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_SimpleDance",
+      "frames": 1961,
+      "duration": 65.36666870117188,
+      "sampled_motion": 55.0453912434031,
+      "source_sampled_motion": 35.92601937018108,
+      "motion_type": "animated",
+      "sha256": "b5ba08594801f23bf45f20a7a6792b4aedf069aa1981ebc7f6bc2d6910f92207"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_StripDance.A_Cyborg_Dance_StripDance",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance",
+      "frames": 2393,
+      "duration": 79.76667022705078,
+      "sampled_motion": 72.4638445120043,
+      "source_sampled_motion": 48.24978471880735,
+      "motion_type": "animated",
+      "sha256": "5f9b6b832a09b63f00451ca687d056d9cb9c11f1773b9952a490da1946663268"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_StripDance2.A_Cyborg_Dance_StripDance2",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance2",
+      "frames": 1799,
+      "duration": 59.96666717529297,
+      "sampled_motion": 74.26020473531204,
+      "source_sampled_motion": 52.69340690924719,
+      "motion_type": "animated",
+      "sha256": "163df2618a338b9b6b4c0c25c8f1d2a71b61482917b5807e28c68cc11e9bb229"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_StripDance3.A_Cyborg_Dance_StripDance3",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance3",
+      "frames": 2035,
+      "duration": 67.83333587646484,
+      "sampled_motion": 71.38883887964656,
+      "source_sampled_motion": 38.15623329319141,
+      "motion_type": "animated",
+      "sha256": "316738f2067627724d73f18179eb90596594e40b0958acd8c48282df68b9f4d0"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_StripDance4.A_Cyborg_Dance_StripDance4",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance4",
+      "frames": 3166,
+      "duration": 105.53333282470703,
+      "sampled_motion": 96.84671963370965,
+      "source_sampled_motion": 65.92507656774471,
+      "motion_type": "animated",
+      "sha256": "9a1ebe9e9c873ed0b8f44516ad5631c060973bd84b13b4a44265bf043a5c764c"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Dance_StripDance5.A_Cyborg_Dance_StripDance5",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance5",
+      "frames": 1389,
+      "duration": 46.29999923706055,
+      "sampled_motion": 101.76694301549577,
+      "source_sampled_motion": 99.87222805035452,
+      "motion_type": "animated",
+      "sha256": "4fd30b8c70bedb6d7d4455814a62f2c32e2926667139f2f92af1c6bf7ec954d8"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_70sDance_Loop.A_Cyborg_Emote_70sDance_Loop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_70sDance_Loop",
+      "frames": 72,
+      "duration": 2.4000000953674316,
+      "sampled_motion": 71.7792427852675,
+      "source_sampled_motion": 53.517248493970456,
+      "motion_type": "animated",
+      "sha256": "0e5b8dcb1fe07a07e97c40626451c13bc673685d7b1b20c44a15ec417ed1c79f"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_BigClap.A_Cyborg_Emote_BigClap",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_BigClap",
+      "frames": 101,
+      "duration": 3.366666555404663,
+      "sampled_motion": 40.51646589766496,
+      "source_sampled_motion": 36.50548577944064,
+      "motion_type": "animated",
+      "sha256": "b826ef6437d83184cedbccbf685332184e41465f393a1daca30e5aae213d6f0a"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Bravo.A_Cyborg_Emote_Bravo",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Bravo",
+      "frames": 176,
+      "duration": 5.866666793823242,
+      "sampled_motion": 75.51957543107389,
+      "source_sampled_motion": 46.96467782791421,
+      "motion_type": "animated",
+      "sha256": "417d95644687d3b6a32e367ebcc22e3a248fceb860d84b0957d1080bb4f1f4aa"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Bravo_Loop.A_Cyborg_Emote_Bravo_Loop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Bravo_Loop",
+      "frames": 70,
+      "duration": 2.3333332538604736,
+      "sampled_motion": 86.59354423460302,
+      "source_sampled_motion": 66.60912777994311,
+      "motion_type": "animated",
+      "sha256": "dc2ded24e9bddab9dc0aa1d25f860a81bfbef09f1e73e7dd321db416b5fd5fa9"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_CantCatchMe_Loop.A_Cyborg_Emote_CantCatchMe_Loop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_CantCatchMe_Loop",
+      "frames": 75,
+      "duration": 2.5,
+      "sampled_motion": 18.58835600791909,
+      "source_sampled_motion": 13.266026365283729,
+      "motion_type": "animated",
+      "sha256": "6ab50e446c8b77305dab7c1808d37b15d0fd7e25fee6af7bda4212a03a7d19f7"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Celebration.A_Cyborg_Emote_Celebration",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Celebration",
+      "frames": 131,
+      "duration": 4.366666793823242,
+      "sampled_motion": 76.73885702358861,
+      "source_sampled_motion": 54.24112119259111,
+      "motion_type": "animated",
+      "sha256": "1881f6b38e73e51dbcdac77efc4b7f1104c16b60f68ace2cad9c8610f3f6ef14"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_ChillOut_T3.A_Cyborg_Emote_ChillOut_T3",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_ChillOut_T3",
+      "frames": 333,
+      "duration": 11.100000381469727,
+      "sampled_motion": 115.71810868585229,
+      "source_sampled_motion": 104.39066175890298,
+      "motion_type": "animated",
+      "sha256": "2548b0c3520231bfa670cfaa0bafe2b02ca637966eef84017df65de943291053"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Dab.A_Cyborg_Emote_Dab",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dab",
+      "frames": 155,
+      "duration": 5.166666507720947,
+      "sampled_motion": 57.79999726278572,
+      "source_sampled_motion": 55.32399286207064,
+      "motion_type": "animated",
+      "sha256": "c42972423be7b09a5cc05d737da90dc618208dbd788d17dd36649725eb58ca56"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Dance_HulaHoop_T3.A_Cyborg_Emote_Dance_HulaHoop_T3",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dance_HulaHoop_T3",
+      "frames": 241,
+      "duration": 8.033333778381348,
+      "sampled_motion": 32.02976507483117,
+      "source_sampled_motion": 22.303593397092268,
+      "motion_type": "animated",
+      "sha256": "4dfb76b46787bb06c37374731019929559c3166ced46562b46f7c8eab87b779f"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Dance_Robot.A_Cyborg_Emote_Dance_Robot",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dance_Robot",
+      "frames": 355,
+      "duration": 11.833333015441895,
+      "sampled_motion": 42.33933470655796,
+      "source_sampled_motion": 30.826636132806925,
+      "motion_type": "animated",
+      "sha256": "754738bbdd1f4b4322be2506baacbd84b0a4e3bedf4726eb47b39714db449026"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Dance_SingleLadies_Loop.A_Cyborg_Emote_Dance_SingleLadies_Loop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dance_SingleLadies_Loop",
+      "frames": 150,
+      "duration": 5.0,
+      "sampled_motion": 35.83672889329312,
+      "source_sampled_motion": 29.53601217179844,
+      "motion_type": "animated",
+      "sha256": "83e4a68ac393fc1ab1c5b7c9a5b4c30da535ab1b98f420c1b8e4523e2dcd7295"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Dance_SingleLadies_T1.A_Cyborg_Emote_Dance_SingleLadies_T1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dance_SingleLadies_T1",
+      "frames": 250,
+      "duration": 8.333333015441895,
+      "sampled_motion": 53.00090539137844,
+      "source_sampled_motion": 57.64037417975378,
+      "motion_type": "animated",
+      "sha256": "74ffbe22c4255d4cac562c9e6d752edae1865c8d45c26d3d7c751199a2d31462"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_DeepBreath_Loop.A_Cyborg_Emote_DeepBreath_Loop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_DeepBreath_Loop",
+      "frames": 270,
+      "duration": 9.0,
+      "sampled_motion": 1.4163382136603602,
+      "source_sampled_motion": 1.8226329735422864,
+      "motion_type": "animated",
+      "sha256": "24b41cffa2c7c28c99daa735ea4d7da46cacf0faba708419b8868aff26db4123"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_DrumSolo.A_Cyborg_Emote_DrumSolo",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_DrumSolo",
+      "frames": 278,
+      "duration": 9.266666412353516,
+      "sampled_motion": 23.465927878817563,
+      "source_sampled_motion": 23.504582745853316,
+      "motion_type": "animated",
+      "sha256": "a1c9f897bffc616c74b0c2192df5c3977aa8c1bb88b397eacb269848cc23c370"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_EpicRiff_Loop.A_Cyborg_Emote_EpicRiff_Loop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_EpicRiff_Loop",
+      "frames": 43,
+      "duration": 1.4333332777023315,
+      "sampled_motion": 85.73348715674176,
+      "source_sampled_motion": 71.6216473596672,
+      "motion_type": "animated",
+      "sha256": "8a8b06b3793a0179afde59b2e261084c9ed61d6e60a8d006588974c1b82b0fc5"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_FriendlyWave_M1.A_Cyborg_Emote_FriendlyWave_M1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_FriendlyWave_M1",
+      "frames": 123,
+      "duration": 4.099999904632568,
+      "sampled_motion": 62.78218805716739,
+      "source_sampled_motion": 59.75674015047407,
+      "motion_type": "animated",
+      "sha256": "94e7e960f7e0014efb81bfc449c9cd6319a0ec44b0286fcc44147830b199b2a1"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_GiveFlower_M1.A_Cyborg_Emote_GiveFlower_M1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_GiveFlower_M1",
+      "frames": 245,
+      "duration": 8.166666984558105,
+      "sampled_motion": 78.02302357859392,
+      "source_sampled_motion": 66.60404714999157,
+      "motion_type": "animated",
+      "sha256": "29d99b1f3106946c1bc4c27b473b97ee1439de762c39248b09a4e8569665b8a8"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Greeting.A_Cyborg_Emote_Greeting",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Greeting",
+      "frames": 110,
+      "duration": 3.6666667461395264,
+      "sampled_motion": 44.167192698981836,
+      "source_sampled_motion": 34.52434371762372,
+      "motion_type": "animated",
+      "sha256": "b06dd7b0696caac402419f10e59fb29a409b77181c087a271e21f93b72486231"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Guitar.A_Cyborg_Emote_Guitar",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Guitar",
+      "frames": 319,
+      "duration": 10.633333206176758,
+      "sampled_motion": 76.57936706755231,
+      "source_sampled_motion": 56.570256099717696,
+      "motion_type": "animated",
+      "sha256": "ddb58421db8e01c50db9767d2ee83471c94f68cd024386aff92803634072ad6c"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Headphones.A_Cyborg_Emote_Headphones",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Headphones",
+      "frames": 378,
+      "duration": 12.600000381469727,
+      "sampled_motion": 62.420228158035215,
+      "source_sampled_motion": 50.240920787779324,
+      "motion_type": "animated",
+      "sha256": "58e1ce7050e40eddf82427c65c29a2cf9d4b6958cacc8acfcb02f81e60fd8974"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_HooRah.A_Cyborg_Emote_HooRah",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_HooRah",
+      "frames": 140,
+      "duration": 4.666666507720947,
+      "sampled_motion": 76.74394796244205,
+      "source_sampled_motion": 62.89075467132824,
+      "motion_type": "animated",
+      "sha256": "bd1f7df069f9de70212f87ba5dabece05cdc8e3478e576c16d346d670905549a"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_IDK.A_Cyborg_Emote_IDK",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_IDK",
+      "frames": 157,
+      "duration": 5.233333110809326,
+      "sampled_motion": 64.24957283090046,
+      "source_sampled_motion": 62.42282583148473,
+      "motion_type": "animated",
+      "sha256": "0d70d6441183e417aedb31bb0292f57f68ff5032d2f734503c5f6ebf59b9ea01"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Indie.A_Cyborg_Emote_Indie",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Indie",
+      "frames": 188,
+      "duration": 6.266666889190674,
+      "sampled_motion": 93.12762190987593,
+      "source_sampled_motion": 87.87599095757885,
+      "motion_type": "animated",
+      "sha256": "55967de8854660e8e5e75f5b571a58cfb32f09af1e87dd1d999c4411a8b30fc7"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Laugh.A_Cyborg_Emote_Laugh",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Laugh",
+      "frames": 226,
+      "duration": 7.5333333015441895,
+      "sampled_motion": 53.70046490292228,
+      "source_sampled_motion": 41.99551408807369,
+      "motion_type": "animated",
+      "sha256": "d86ddfc7b34fa01c82c749c0f1019153e3bb0fb4a54236c78617dc6b98a8c56a"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Laugh_T1.A_Cyborg_Emote_Laugh_T1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Laugh_T1",
+      "frames": 175,
+      "duration": 5.833333492279053,
+      "sampled_motion": 56.29975866775208,
+      "source_sampled_motion": 42.020453807776796,
+      "motion_type": "animated",
+      "sha256": "75143b6c0f1fd47cc5396c8ebba7550c841be0df3e97d1510e8e5f077ffc7f3c"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Meditate.A_Cyborg_Emote_Meditate",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Meditate",
+      "frames": 222,
+      "duration": 7.400000095367432,
+      "sampled_motion": 114.14789339389347,
+      "source_sampled_motion": 107.45160354340732,
+      "motion_type": "animated",
+      "sha256": "b7e4da35fa1f0b58eff19c42c8130dd0951c8b1e4c65c287af913eb8f61bb066"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_OooLaLa_T3.A_Cyborg_Emote_OooLaLa_T3",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_OooLaLa_T3",
+      "frames": 275,
+      "duration": 9.166666984558105,
+      "sampled_motion": 64.63555470185662,
+      "source_sampled_motion": 47.172527176298416,
+      "motion_type": "animated",
+      "sha256": "5fd2bf0fd03afd1f3501ea30c873b93960b2982e6aa3cd5913c4e239d6b6d774"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_RoShamBo.A_Cyborg_Emote_RoShamBo",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_RoShamBo",
+      "frames": 220,
+      "duration": 7.333333492279053,
+      "sampled_motion": 65.03357467427631,
+      "source_sampled_motion": 52.01563418976765,
+      "motion_type": "animated",
+      "sha256": "2c75a3590c6bd999d78e8896b324e04c48b5ce78795fc46d8f55f0b589e5d2e8"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Sleepy.A_Cyborg_Emote_Sleepy",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Sleepy",
+      "frames": 317,
+      "duration": 10.566666603088379,
+      "sampled_motion": 75.92853315515843,
+      "source_sampled_motion": 71.9155505956012,
+      "motion_type": "animated",
+      "sha256": "376cb759c21e3393f0e463e4eea6c27bff022fdffc7525d34743a5bc4e3c8d80"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Small_Clap_T1.A_Cyborg_Emote_Small_Clap_T1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Small_Clap_T1",
+      "frames": 174,
+      "duration": 5.800000190734863,
+      "sampled_motion": 92.97852229407637,
+      "source_sampled_motion": 64.62116599106382,
+      "motion_type": "animated",
+      "sha256": "75be48bf9d1c63d6cce897d5452a3ee2394b06098e993c9bc5f46417d2c3a28c"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Sneeze.A_Cyborg_Emote_Sneeze",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Sneeze",
+      "frames": 167,
+      "duration": 5.566666603088379,
+      "sampled_motion": 47.002913207751575,
+      "source_sampled_motion": 31.897466356569034,
+      "motion_type": "animated",
+      "sha256": "173dcf373641ba29dfd547aa6ac9fe0faa3360a3611a6e27c4333e1277de4816"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Taunt_Curtsy_T1.A_Cyborg_Emote_Taunt_Curtsy_T1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Taunt_Curtsy_T1",
+      "frames": 180,
+      "duration": 6.0,
+      "sampled_motion": 51.43474921629912,
+      "source_sampled_motion": 39.516132369814976,
+      "motion_type": "animated",
+      "sha256": "7b712286936c9524d9ee741e499fa81d51da0e53f222f5e6abbee3ba27333d55"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Taunt_FootSlide_T1.A_Cyborg_Emote_Taunt_FootSlide_T1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Taunt_FootSlide_T1",
+      "frames": 170,
+      "duration": 5.666666507720947,
+      "sampled_motion": 61.74793134244848,
+      "source_sampled_motion": 60.917868355568984,
+      "motion_type": "animated",
+      "sha256": "fe4007f088a61e1db94efad1fa87ffbf1436a642ac538b131d066d2df53ec2f5"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Taunt_PraiseMe_T1.A_Cyborg_Emote_Taunt_PraiseMe_T1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Taunt_PraiseMe_T1",
+      "frames": 228,
+      "duration": 7.599999904632568,
+      "sampled_motion": 143.7250779897771,
+      "source_sampled_motion": 98.09097201789933,
+      "motion_type": "animated",
+      "sha256": "8f9ff876fed7979a06bccf235add8835a34977af9c4fa6e8308d3ddff0847280"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Taunt_Shhh_T1.A_Cyborg_Emote_Taunt_Shhh_T1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Taunt_Shhh_T1",
+      "frames": 199,
+      "duration": 6.633333206176758,
+      "sampled_motion": 74.88844852925551,
+      "source_sampled_motion": 43.95925959573293,
+      "motion_type": "animated",
+      "sha256": "fc5c04be85a02a977f2bc1d26043b4f997d99c5bbaa628015fc8419e4aa9b4fd"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_Waiting.A_Cyborg_Emote_Waiting",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Waiting",
+      "frames": 317,
+      "duration": 10.566666603088379,
+      "sampled_motion": 68.16065624849496,
+      "source_sampled_motion": 62.029790546936184,
+      "motion_type": "animated",
+      "sha256": "ae011d524748a19e1a342786d15f38609760abed4b00a952de47b56e1d6bf0f1"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_WhoopWhoop.A_Cyborg_Emote_WhoopWhoop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_WhoopWhoop",
+      "frames": 159,
+      "duration": 5.300000190734863,
+      "sampled_motion": 67.1003104107689,
+      "source_sampled_motion": 44.12025203850054,
+      "motion_type": "animated",
+      "sha256": "1ee71edae61ae4fd2ebb6bcd14631b3a89639007bae57f6f7db17675a66973f1"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Emote_WhoopWhoop_Loop.A_Cyborg_Emote_WhoopWhoop_Loop",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_WhoopWhoop_Loop",
+      "frames": 63,
+      "duration": 2.0999999046325684,
+      "sampled_motion": 62.93472546682452,
+      "source_sampled_motion": 58.97308911351132,
+      "motion_type": "animated",
+      "sha256": "32c696e796e450d5dc04ba440ec2a1490ae86b46e745185fa8cc432c8c8e636c"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Gesture_ExcitedHello.A_Cyborg_Gesture_ExcitedHello",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Gesture_ExcitedHello",
+      "frames": 73,
+      "duration": 2.433333396911621,
+      "sampled_motion": 101.4201378775398,
+      "source_sampled_motion": 74.5041208589763,
+      "motion_type": "animated",
+      "sha256": "263b6f392f737cd58abd4388aee77b6bac5df10fac762eb9f0fbb62e7b0b374c"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Gesture_FingerHeart.A_Cyborg_Gesture_FingerHeart",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Gesture_FingerHeart",
+      "frames": 74,
+      "duration": 2.4666666984558105,
+      "sampled_motion": 2.972185853643536,
+      "source_sampled_motion": 2.2846321160921086,
+      "motion_type": "animated",
+      "sha256": "68b575bd363308288d2a270899924e35b35492b33fff2be894896e64f7214747"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Gesture_ThumbsUp.A_Cyborg_Gesture_ThumbsUp",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Gesture_ThumbsUp",
+      "frames": 125,
+      "duration": 4.166666507720947,
+      "sampled_motion": 46.39953995472382,
+      "source_sampled_motion": 33.68700153407737,
+      "motion_type": "animated",
+      "sha256": "ad02955ba0c7668a872edf157aa91003d74e22f157f99a03a8e5fd5770c91337"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Gesture_Yes.A_Cyborg_Gesture_Yes",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Gesture_Yes",
+      "frames": 86,
+      "duration": 2.866666555404663,
+      "sampled_motion": 46.72276047466577,
+      "source_sampled_motion": 31.882553037867304,
+      "motion_type": "animated",
+      "sha256": "d97aa9658d701c652d481459a1ec65223f36157ab51041055dcd0e1fac7e867f"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_PoleBackSlide.A_Cyborg_PoleBackSlide",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleBackSlide",
+      "frames": 180,
+      "duration": 6.0,
+      "sampled_motion": 29.725013463864173,
+      "source_sampled_motion": 30.727941385475887,
+      "motion_type": "animated",
+      "sha256": "6c5afb1899896a9efc75a0cd03471c77515f711273ca503909532ec015c8c2f6"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_PoleBodyWave.A_Cyborg_PoleBodyWave",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleBodyWave",
+      "frames": 90,
+      "duration": 3.0,
+      "sampled_motion": 24.757052719545484,
+      "source_sampled_motion": 23.248068967879888,
+      "motion_type": "animated",
+      "sha256": "dcdc2b26dac1af815dedeab1ed9a5b2f1404487f7d59dff8d938ae234fc1b8fa"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_PoleHipCircle.A_Cyborg_PoleHipCircle",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleHipCircle",
+      "frames": 120,
+      "duration": 4.0,
+      "sampled_motion": 12.141138873972205,
+      "source_sampled_motion": 12.089707649987929,
+      "motion_type": "animated",
+      "sha256": "f69c4566a92278a197db1932171ef80a5a60f1c23430a53254be3c150d693007"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_PoleIdle.A_Cyborg_PoleIdle",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleIdle",
+      "frames": 120,
+      "duration": 4.0,
+      "sampled_motion": 2.7147776294432475,
+      "source_sampled_motion": 3.237837003319896,
+      "motion_type": "animated",
+      "sha256": "2e90c2047d7a44e7307764bfaec033626b7240d60ca0e4d5a07f6c95a4743b08"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_PoleKick.A_Cyborg_PoleKick",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleKick",
+      "frames": 89,
+      "duration": 2.9666666984558105,
+      "sampled_motion": 88.67021557167985,
+      "source_sampled_motion": 80.38545648801167,
+      "motion_type": "animated",
+      "sha256": "9b208f0ac1b3fa5bf6f98961b06361ff7cf56903ede311d56f4c5b7996828a8a"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_PoleSpin.A_Cyborg_PoleSpin",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleSpin",
+      "frames": 149,
+      "duration": 4.9666666984558105,
+      "sampled_motion": 50.37799380428399,
+      "source_sampled_motion": 49.31204954415911,
+      "motion_type": "animated",
+      "sha256": "9ef750ba1c4e18e1015965fa27fc7bb8d918ad9b2e622d2f329ccfbd3e1de2fb"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Ritual_DancingWithTambourine.A_Cyborg_Ritual_DancingWithTambourine",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Ritual_DancingWithTambourine",
+      "frames": 1387,
+      "duration": 46.233333587646484,
+      "sampled_motion": 30.876490337382286,
+      "source_sampled_motion": 26.399816368340325,
+      "motion_type": "animated",
+      "sha256": "e803babe526711d4a62385a6161438ae811392109b550ebfe8bc48a9a15b3ce9"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Ritual_Drummer.A_Cyborg_Ritual_Drummer",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Ritual_Drummer",
+      "frames": 1375,
+      "duration": 45.83333206176758,
+      "sampled_motion": 69.34114846579038,
+      "source_sampled_motion": 52.38208953594862,
+      "motion_type": "animated",
+      "sha256": "97f8e2afb1c87dba4511f334f4c0f2984d08ef4e596c518e4b290f4a343ff00d"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Ritual_Drummer2.A_Cyborg_Ritual_Drummer2",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Ritual_Drummer2",
+      "frames": 1194,
+      "duration": 39.79999923706055,
+      "sampled_motion": 54.32956143686023,
+      "source_sampled_motion": 35.10341482928581,
+      "motion_type": "animated",
+      "sha256": "7cac15fd38795bdbf7eca719d0d5eb5e452f33d0b78898c5b9176bb039eab627"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Ritual_SittingInTrance.A_Cyborg_Ritual_SittingInTrance",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Ritual_SittingInTrance",
+      "frames": 724,
+      "duration": 24.133333206176758,
+      "sampled_motion": 16.846170684182717,
+      "source_sampled_motion": 17.12982626014439,
+      "motion_type": "animated",
+      "sha256": "36171f47d9b8afb59b7135affe3e68ab3ec9098c11e7eee0fcd55ce8e04a5b84"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance1.A_Cyborg_Sensual2_Dance1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance1",
+      "frames": 479,
+      "duration": 15.966666221618652,
+      "sampled_motion": 25.486333768709596,
+      "source_sampled_motion": 24.054055776930806,
+      "motion_type": "animated",
+      "sha256": "f0502b76fdecf7914a4909224376c05bffe9fcb245ad2e185c042815860b8c13"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance10.A_Cyborg_Sensual2_Dance10",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance10",
+      "frames": 247,
+      "duration": 8.233333587646484,
+      "sampled_motion": 29.42854849616926,
+      "source_sampled_motion": 22.38464345066751,
+      "motion_type": "animated",
+      "sha256": "0fc46b849d297cffa3311d9df1eeead77210b5391d36ea675ea74458bae2d5ef"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance2.A_Cyborg_Sensual2_Dance2",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance2",
+      "frames": 462,
+      "duration": 15.399999618530273,
+      "sampled_motion": 26.934866583047437,
+      "source_sampled_motion": 25.786318564346217,
+      "motion_type": "animated",
+      "sha256": "c89bd7cd7666bed4d45ef3baf12b1400e846f28f6674908adbccf74b73df6382"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance3.A_Cyborg_Sensual2_Dance3",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance3",
+      "frames": 603,
+      "duration": 20.100000381469727,
+      "sampled_motion": 95.83656197766683,
+      "source_sampled_motion": 79.0223038701639,
+      "motion_type": "animated",
+      "sha256": "d28023186e33b744e8729f472854b1b34d3f322e59d966862e8240cb19661c38"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance4.A_Cyborg_Sensual2_Dance4",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance4",
+      "frames": 551,
+      "duration": 18.366666793823242,
+      "sampled_motion": 82.2039870696722,
+      "source_sampled_motion": 57.21860580271269,
+      "motion_type": "animated",
+      "sha256": "4cceeb999cb56a769b93976bb510021e4e2f6a8993d76d95a56e5826da8c0ffb"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance5.A_Cyborg_Sensual2_Dance5",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance5",
+      "frames": 413,
+      "duration": 13.766666412353516,
+      "sampled_motion": 94.98852469023919,
+      "source_sampled_motion": 69.51038005156619,
+      "motion_type": "animated",
+      "sha256": "31a37245d753992a6411b9ea3b39445f6a94a108bd8151f192d1c64008e9a410"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance6.A_Cyborg_Sensual2_Dance6",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance6",
+      "frames": 657,
+      "duration": 21.899999618530273,
+      "sampled_motion": 35.62184520356223,
+      "source_sampled_motion": 36.823729703678026,
+      "motion_type": "animated",
+      "sha256": "c531e27d3e3792cc1e544559a17a0a6b72496cb3fc67387400ad065ddae9c24e"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance7.A_Cyborg_Sensual2_Dance7",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance7",
+      "frames": 341,
+      "duration": 11.366666793823242,
+      "sampled_motion": 85.85219104072914,
+      "source_sampled_motion": 61.48022510761305,
+      "motion_type": "animated",
+      "sha256": "f30ec69d2232319b7b5442444cb2654a68bb8ffc81458468dc6bea112b939d4f"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance8.A_Cyborg_Sensual2_Dance8",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance8",
+      "frames": 573,
+      "duration": 19.100000381469727,
+      "sampled_motion": 93.66485375529511,
+      "source_sampled_motion": 90.1178139417422,
+      "motion_type": "animated",
+      "sha256": "21fc7da53828f758527cd4c538862a6809b9aaf3fe0d7f8c94f4992ffed13670"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual2_Dance9.A_Cyborg_Sensual2_Dance9",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance9",
+      "frames": 545,
+      "duration": 18.16666603088379,
+      "sampled_motion": 94.60375310872621,
+      "source_sampled_motion": 64.06748483593852,
+      "motion_type": "animated",
+      "sha256": "88509891acaf427e7e6090eef887430f07a4b46add9e012e01f2d7e6ed97180f"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance1.A_Cyborg_Sensual_Dance1",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance1",
+      "frames": 418,
+      "duration": 13.933333396911621,
+      "sampled_motion": 82.4983580472799,
+      "source_sampled_motion": 58.31578729819567,
+      "motion_type": "animated",
+      "sha256": "085a7fcbd91f6f831426af72b9395d5e13a7d95154145fa8ed4ea98d0ee50a31"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance10.A_Cyborg_Sensual_Dance10",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance10",
+      "frames": 400,
+      "duration": 13.333333015441895,
+      "sampled_motion": 28.302752612482948,
+      "source_sampled_motion": 27.096711864719474,
+      "motion_type": "animated",
+      "sha256": "a691d4c5f6d94df503ce3730ef3b6fc80b0ec4044612f97aa9072a82c7bf22db"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance2.A_Cyborg_Sensual_Dance2",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance2",
+      "frames": 601,
+      "duration": 20.03333282470703,
+      "sampled_motion": 93.12772343575084,
+      "source_sampled_motion": 64.73051971047508,
+      "motion_type": "animated",
+      "sha256": "460751770449a9d67e03faa242dd8974d3e047993b8559d9c1dfd5f0177cadbf"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance3.A_Cyborg_Sensual_Dance3",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance3",
+      "frames": 521,
+      "duration": 17.366666793823242,
+      "sampled_motion": 69.20507900661202,
+      "source_sampled_motion": 47.6688656788988,
+      "motion_type": "animated",
+      "sha256": "8dae71ab345e3925ae5a1acaf27d4fb00ce4b773b28ea77709ccbe1ee9df759b"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance4.A_Cyborg_Sensual_Dance4",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance4",
+      "frames": 1038,
+      "duration": 34.599998474121094,
+      "sampled_motion": 63.60927074441557,
+      "source_sampled_motion": 55.300856672654945,
+      "motion_type": "animated",
+      "sha256": "c897ffde8af805f738e7c6fe5a38937b8ccdbcb684c6bd32682d20751d3d4924"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance5.A_Cyborg_Sensual_Dance5",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance5",
+      "frames": 583,
+      "duration": 19.433332443237305,
+      "sampled_motion": 86.3226692225559,
+      "source_sampled_motion": 62.61225079652132,
+      "motion_type": "animated",
+      "sha256": "28455c024f8f0f9cf74604a3bdaabaa05cdef11bb36a8a124457b4f617ad8154"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance6.A_Cyborg_Sensual_Dance6",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance6",
+      "frames": 326,
+      "duration": 10.866666793823242,
+      "sampled_motion": 92.78782067090458,
+      "source_sampled_motion": 65.06780161228099,
+      "motion_type": "animated",
+      "sha256": "b307e5bfa938c0756e65b346717f68dc219e7d3af0f8bc42c31234bffa2750fc"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance7.A_Cyborg_Sensual_Dance7",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance7",
+      "frames": 817,
+      "duration": 27.233333587646484,
+      "sampled_motion": 82.63733968176237,
+      "source_sampled_motion": 52.58820670807397,
+      "motion_type": "animated",
+      "sha256": "1c4730f3f7c8b7c0354c6616a8852c1c762b24826dc772f184d2b7df16a8508d"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance8.A_Cyborg_Sensual_Dance8",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance8",
+      "frames": 860,
+      "duration": 28.66666603088379,
+      "sampled_motion": 73.14893537536344,
+      "source_sampled_motion": 56.822032076095134,
+      "motion_type": "animated",
+      "sha256": "38f3bea32b9d7a18d2dd360838f7665bb72d45039f7b89db766dfbc97e36e192"
+    },
+    {
+      "source": "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Role/A_Cyborg_Sensual_Dance9.A_Cyborg_Sensual_Dance9",
+      "target": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance9",
+      "frames": 571,
+      "duration": 19.03333282470703,
+      "sampled_motion": 80.32187572932594,
+      "source_sampled_motion": 53.8736136132144,
+      "motion_type": "animated",
+      "sha256": "3d0f762aa070d64a79abee251c147537e56a95702e55ac48bd8c956feb003b15"
+    }
+  ],
+  "native_packages": [
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Materials/MI_JoyBlue_Skin_Arm",
+      "sha256": "02646299e96ae9f6c117e58e6eef9e90ef3c517030b9eb813036cd541ee0b678"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Materials/MI_JoyBlue_Skin_Body",
+      "sha256": "2eb981c5638f5fb8b9b4466b661cdbe78219a2b9ea1b4999981acefd61022fc0"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Materials/MI_JoyBlue_Skin_Head",
+      "sha256": "34155a701e0b5e227d35122bfc85cacc2735dff591708bd2364c3344c8dbe93d"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Materials/MI_JoyBlue_Skin_Leg",
+      "sha256": "7529ed5608ecb75197009287a4653492ad4e5ea5b8c62c01ab86b1604a5abb11"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Mesh/SK_JoyLightBlue",
+      "sha256": "61f626dcc9935a02e4e55c786352e2c68f6be26fa8a65b6779b900945397ba49"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Rig/IK_CyborgSource",
+      "sha256": "f1a0a1486d03c9025c5609a5d4a37bd1a8e9c8574a786c7bb2ce4952ae7a50cb"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Rig/IK_Joy",
+      "sha256": "e7d1f99e202cf672707dd9f9c4be30d1a6598205361299570684b07fd869a921"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Rig/RTG_CyborgToJoy",
+      "sha256": "3b5a7dc0c44f392294a244406d7c7e811d2855019479a88f454ad3a3b0ed5eb6"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Fidget1",
+      "sha256": "67b6ed3232569277708c7cd737b38628d985646a238f0ba923b30022ad672fa1"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Fidget2",
+      "sha256": "37547c5405a9ae69fd756363746226c7ff88f12150071851adfd2f44a10111ff"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Idle",
+      "sha256": "67c005cabf180f2846c1988d9429fd7b5b6c39219a24a0b6af65578bf1d705d2"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Listen",
+      "sha256": "053df4f327129a3c5c309c176a035effe0362f7352420cb5e01381cbb2d32d09"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_LookL",
+      "sha256": "5e6d1dc093e17e7129f57ace67ba75ad7c0b87b885d2d126745d7cf4bba7bc7d"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_LookR",
+      "sha256": "118bf02ef55b80c7edac0657880b06b7dbde20cce24b1262af606ab784728fec"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Talk",
+      "sha256": "ce4c3f7229721f3730b12504e7ced54e320157457aef0128b6da51016f015d89"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_TalkDramatic1",
+      "sha256": "659b30d258fc305f2ecd6909adcce9b9651deb5951ccddba90e9402bc97b4901"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_TalkDramatic2",
+      "sha256": "8c244a78d7b82139c863324d58e19ecb6de95b1d4efe0b7004f5ae5008fa9674"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_TurnL",
+      "sha256": "6c5f99d8cff0ee221bb38d6d9429c2155b187cc9cc5666cd58a1433931b21875"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_TurnR",
+      "sha256": "1924137a3c506580bd24ebae1afb0f318c4ef1793ce85ccb7d995a9d1f21fea5"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Walk",
+      "sha256": "4c2938adf097af4aa3c4dd3aebb3d7700449decde8e2856247dd860889b0a609"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_WalkCheerful",
+      "sha256": "8f8358864da6a1274d6fca784489a08cfac03bf9f96937a40a7970721e983252"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_WalkLookAround",
+      "sha256": "bc02c5f2df3c1a42cc0401572dd0cbeede46ccbb7d614fb4d49a3c8712802685"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_WalkStart",
+      "sha256": "c60460b6e085c62060bfad44561cb32ff176d5ae9a7f1119f680a629ceed0f16"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_WalkStop",
+      "sha256": "12e7d9b74b060e26087861a388994e13afb95b840bf4ef4615fbb05f94312461"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type01",
+      "sha256": "0bef6e00200671564186d1740ac27b2ae0de39efd2e8865539c549bf9433728b"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type02",
+      "sha256": "207e9a279efb5ee83d3ac7dddccf9a2fc1a93ae785148eda21608a7ecfb60b64"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type03",
+      "sha256": "9cfd1607e3c594f490b2a27d0ca06a350a75d577b5cda7f68f5c50fe041b3491"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type04",
+      "sha256": "48a51b7b23256461cd28c65233ce7dc1ad97d531afd191d9dc53302c2e788a6f"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type05",
+      "sha256": "62d6e2dc99189c017572fe13b041c0d46e97e47b611db2b0067d2a175c1a8f3b"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type06",
+      "sha256": "85dd913f7feeb3d3505692f3c14a2f72d7e1c9d9422e2da008448e191e515fc8"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type07",
+      "sha256": "460f60c3f2ed7d7635f59f7fc2d22a75d057ee0a86b9d2d062886031c61cce73"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type08",
+      "sha256": "5d57d40e9eecf40d3886465e3b60b2bef69a2fe81e555abaf96da92faff8e497"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type09",
+      "sha256": "207485028829a21e5e6d4177bb05436b3ab3cae11a1a8c114ecf81fbeb9740af"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type10",
+      "sha256": "7fe992ce27cab5064cac251b652316e074b903ad2f617bfaa3adebf137d22e52"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type11",
+      "sha256": "8d3b6cf6bdc89a8e1c9d724436fce746a15c2fe4317a7221c857d0a480943c97"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type12",
+      "sha256": "135d27a295b8e8cb5f98d242c0b1eaade1fce7e14ac9aaba8af8990aca713c1e"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type13",
+      "sha256": "788791d01f57d31f9c9d429195b9c2ab0d704b4bb74f145310ccc2233b394897"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type14",
+      "sha256": "8a26a49fb6160e2fba194ddffe21f4281968a155fa8b58941fc3ef14efbff2ae"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type15",
+      "sha256": "54515ca6d241ce6decac2b56e20541c52fd16ff715969939c0fff30f93646aad"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type16",
+      "sha256": "546fe66c071d5ab306e544c28acc07d267857b7ace796ec3b8e2ca7566d8be34"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type17",
+      "sha256": "28aacf0c18683283840b2839591fa3995eacfa6dfb97b7606427997715f4933d"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type18",
+      "sha256": "1ff4faf88359bc0dffda0736df584847ee7d1db1bb246ff3fcd399e9479546a4"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type19",
+      "sha256": "e03bdb97c6ce4fb6d1bc65203c5cbd8d2471bdf65114b8668a0b8c02646e8dab"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type20",
+      "sha256": "0e2edec1ebdcd4c1ce97ec8d8594b0830aa5d3b27e4e011ef2ad8783c59e8a45"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type21",
+      "sha256": "aa6e2487799ca506fa3da92010046142c2a883aa5bfdb3f0dc62cf3d679e8ba9"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type22",
+      "sha256": "3997d5ed0818f9481e962bc515ede47d2e2b21f6c12cfe4329f2eecc8e6ce0a7"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type23",
+      "sha256": "302ab5fb0923d141f37818f6e6f360b42b36c3057aea84b2e0cddb19130412de"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type24",
+      "sha256": "d995f83e811cbc7d28d48538506056901e2b522debe492bf04553e4b73fc81af"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type25",
+      "sha256": "8c9e07b5960e1bc772a20ed39bf4370f94333ed617ce6b07c12609956e755358"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type26",
+      "sha256": "aeb1150ca9ab1534c31428af9cfed79f77b384bc585ac68e28a701035f465f7e"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type27",
+      "sha256": "df0c849ca069894b1d0893534142b548a30ff8606755fe1997654ef0cbc92ea9"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type28",
+      "sha256": "fa4a8276ec8d8fc286d0215b73513fa4f67a0a952b0b011ac2a8e8aa8baa7d94"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type29",
+      "sha256": "d1895f10b1e2052f1323644e93ff36ef4a27dcf7386a5ecd5d390ffa202a5324"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type30",
+      "sha256": "7723dd1a5653d8ec586751b45d3f1db365e68b4bf212ebe2941ed5c548aa1630"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type31",
+      "sha256": "dd6d7a5c81934d0332fd073cacc2868bbcfc09d3ff6900a29c8699b5ded615ca"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type32",
+      "sha256": "e125ddc9a8ca9f33918bdf76799dbd8ad1ab93470ab7c58f178654342eafac32"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type33",
+      "sha256": "8d4539a023d24aeaf4b8b31c481d108606841b1ee7a6f55575ef9e51ad70cb95"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type34",
+      "sha256": "e7a512a827121c97686a8321be70ac2f1692c220365bc4343e5cdf15c2d427ae"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_BarCustomer_Type35",
+      "sha256": "fe65751ed41afdfb597fc7d4cbd075639520f65a570698a26f073857362d7f54"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_ClubDance",
+      "sha256": "941d8551e85b481197db085257ea1c6fe7c4e206fb54bdc13ad484118a6a824b"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_ClubDance2",
+      "sha256": "f0a280588f905bedfad360b55d4dc3571f6a48fe22edaf5ad85602db4a67f539"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_FunnyDance",
+      "sha256": "cc02e22ba264f47b6572557027ee14b086d1d9331a201b297360b07fd5327b71"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_PartyDance",
+      "sha256": "c77715f185a9fb277d9f87a1314a4dc0e3c1010ffd95274adda746c099f05a1f"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_PartyDance3",
+      "sha256": "197740327eb54cd26e77d786217f722c894ff6dfe1be670f8116ba769d3215ce"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_PJ_Dance",
+      "sha256": "6777682e4c656a7e072c127212cf01d623f0f3e75fd43abe38a32330090a5b92"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_SimpleDance",
+      "sha256": "b5ba08594801f23bf45f20a7a6792b4aedf069aa1981ebc7f6bc2d6910f92207"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance",
+      "sha256": "5f9b6b832a09b63f00451ca687d056d9cb9c11f1773b9952a490da1946663268"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance2",
+      "sha256": "163df2618a338b9b6b4c0c25c8f1d2a71b61482917b5807e28c68cc11e9bb229"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance3",
+      "sha256": "316738f2067627724d73f18179eb90596594e40b0958acd8c48282df68b9f4d0"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance4",
+      "sha256": "9a1ebe9e9c873ed0b8f44516ad5631c060973bd84b13b4a44265bf043a5c764c"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Dance_StripDance5",
+      "sha256": "4fd30b8c70bedb6d7d4455814a62f2c32e2926667139f2f92af1c6bf7ec954d8"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_70sDance_Loop",
+      "sha256": "0e5b8dcb1fe07a07e97c40626451c13bc673685d7b1b20c44a15ec417ed1c79f"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_BigClap",
+      "sha256": "b826ef6437d83184cedbccbf685332184e41465f393a1daca30e5aae213d6f0a"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Bravo",
+      "sha256": "417d95644687d3b6a32e367ebcc22e3a248fceb860d84b0957d1080bb4f1f4aa"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Bravo_Loop",
+      "sha256": "dc2ded24e9bddab9dc0aa1d25f860a81bfbef09f1e73e7dd321db416b5fd5fa9"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_CantCatchMe_Loop",
+      "sha256": "6ab50e446c8b77305dab7c1808d37b15d0fd7e25fee6af7bda4212a03a7d19f7"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Celebration",
+      "sha256": "1881f6b38e73e51dbcdac77efc4b7f1104c16b60f68ace2cad9c8610f3f6ef14"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_ChillOut_T3",
+      "sha256": "2548b0c3520231bfa670cfaa0bafe2b02ca637966eef84017df65de943291053"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dab",
+      "sha256": "c42972423be7b09a5cc05d737da90dc618208dbd788d17dd36649725eb58ca56"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dance_HulaHoop_T3",
+      "sha256": "4dfb76b46787bb06c37374731019929559c3166ced46562b46f7c8eab87b779f"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dance_Robot",
+      "sha256": "754738bbdd1f4b4322be2506baacbd84b0a4e3bedf4726eb47b39714db449026"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dance_SingleLadies_Loop",
+      "sha256": "83e4a68ac393fc1ab1c5b7c9a5b4c30da535ab1b98f420c1b8e4523e2dcd7295"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Dance_SingleLadies_T1",
+      "sha256": "74ffbe22c4255d4cac562c9e6d752edae1865c8d45c26d3d7c751199a2d31462"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_DeepBreath_Loop",
+      "sha256": "24b41cffa2c7c28c99daa735ea4d7da46cacf0faba708419b8868aff26db4123"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_DrumSolo",
+      "sha256": "a1c9f897bffc616c74b0c2192df5c3977aa8c1bb88b397eacb269848cc23c370"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_EpicRiff_Loop",
+      "sha256": "8a8b06b3793a0179afde59b2e261084c9ed61d6e60a8d006588974c1b82b0fc5"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_FriendlyWave_M1",
+      "sha256": "94e7e960f7e0014efb81bfc449c9cd6319a0ec44b0286fcc44147830b199b2a1"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_GiveFlower_M1",
+      "sha256": "29d99b1f3106946c1bc4c27b473b97ee1439de762c39248b09a4e8569665b8a8"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Greeting",
+      "sha256": "b06dd7b0696caac402419f10e59fb29a409b77181c087a271e21f93b72486231"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Guitar",
+      "sha256": "ddb58421db8e01c50db9767d2ee83471c94f68cd024386aff92803634072ad6c"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Headphones",
+      "sha256": "58e1ce7050e40eddf82427c65c29a2cf9d4b6958cacc8acfcb02f81e60fd8974"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_HooRah",
+      "sha256": "bd1f7df069f9de70212f87ba5dabece05cdc8e3478e576c16d346d670905549a"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_IDK",
+      "sha256": "0d70d6441183e417aedb31bb0292f57f68ff5032d2f734503c5f6ebf59b9ea01"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Indie",
+      "sha256": "55967de8854660e8e5e75f5b571a58cfb32f09af1e87dd1d999c4411a8b30fc7"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Laugh",
+      "sha256": "d86ddfc7b34fa01c82c749c0f1019153e3bb0fb4a54236c78617dc6b98a8c56a"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Laugh_T1",
+      "sha256": "75143b6c0f1fd47cc5396c8ebba7550c841be0df3e97d1510e8e5f077ffc7f3c"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Meditate",
+      "sha256": "b7e4da35fa1f0b58eff19c42c8130dd0951c8b1e4c65c287af913eb8f61bb066"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_OooLaLa_T3",
+      "sha256": "5fd2bf0fd03afd1f3501ea30c873b93960b2982e6aa3cd5913c4e239d6b6d774"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_RoShamBo",
+      "sha256": "2c75a3590c6bd999d78e8896b324e04c48b5ce78795fc46d8f55f0b589e5d2e8"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Sleepy",
+      "sha256": "376cb759c21e3393f0e463e4eea6c27bff022fdffc7525d34743a5bc4e3c8d80"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Small_Clap_T1",
+      "sha256": "75be48bf9d1c63d6cce897d5452a3ee2394b06098e993c9bc5f46417d2c3a28c"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Sneeze",
+      "sha256": "173dcf373641ba29dfd547aa6ac9fe0faa3360a3611a6e27c4333e1277de4816"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Taunt_Curtsy_T1",
+      "sha256": "7b712286936c9524d9ee741e499fa81d51da0e53f222f5e6abbee3ba27333d55"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Taunt_FootSlide_T1",
+      "sha256": "fe4007f088a61e1db94efad1fa87ffbf1436a642ac538b131d066d2df53ec2f5"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Taunt_PraiseMe_T1",
+      "sha256": "8f9ff876fed7979a06bccf235add8835a34977af9c4fa6e8308d3ddff0847280"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Taunt_Shhh_T1",
+      "sha256": "fc5c04be85a02a977f2bc1d26043b4f997d99c5bbaa628015fc8419e4aa9b4fd"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_Waiting",
+      "sha256": "ae011d524748a19e1a342786d15f38609760abed4b00a952de47b56e1d6bf0f1"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_WhoopWhoop",
+      "sha256": "1ee71edae61ae4fd2ebb6bcd14631b3a89639007bae57f6f7db17675a66973f1"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Emote_WhoopWhoop_Loop",
+      "sha256": "32c696e796e450d5dc04ba440ec2a1490ae86b46e745185fa8cc432c8c8e636c"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Gesture_ExcitedHello",
+      "sha256": "263b6f392f737cd58abd4388aee77b6bac5df10fac762eb9f0fbb62e7b0b374c"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Gesture_FingerHeart",
+      "sha256": "68b575bd363308288d2a270899924e35b35492b33fff2be894896e64f7214747"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Gesture_ThumbsUp",
+      "sha256": "ad02955ba0c7668a872edf157aa91003d74e22f157f99a03a8e5fd5770c91337"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Gesture_Yes",
+      "sha256": "d97aa9658d701c652d481459a1ec65223f36157ab51041055dcd0e1fac7e867f"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleBackSlide",
+      "sha256": "6c5afb1899896a9efc75a0cd03471c77515f711273ca503909532ec015c8c2f6"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleBodyWave",
+      "sha256": "dcdc2b26dac1af815dedeab1ed9a5b2f1404487f7d59dff8d938ae234fc1b8fa"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleHipCircle",
+      "sha256": "f69c4566a92278a197db1932171ef80a5a60f1c23430a53254be3c150d693007"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleIdle",
+      "sha256": "2e90c2047d7a44e7307764bfaec033626b7240d60ca0e4d5a07f6c95a4743b08"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleKick",
+      "sha256": "9b208f0ac1b3fa5bf6f98961b06361ff7cf56903ede311d56f4c5b7996828a8a"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_PoleSpin",
+      "sha256": "9ef750ba1c4e18e1015965fa27fc7bb8d918ad9b2e622d2f329ccfbd3e1de2fb"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Ritual_DancingWithTambourine",
+      "sha256": "e803babe526711d4a62385a6161438ae811392109b550ebfe8bc48a9a15b3ce9"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Ritual_Drummer",
+      "sha256": "97f8e2afb1c87dba4511f334f4c0f2984d08ef4e596c518e4b290f4a343ff00d"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Ritual_Drummer2",
+      "sha256": "7cac15fd38795bdbf7eca719d0d5eb5e452f33d0b78898c5b9176bb039eab627"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Ritual_SittingInTrance",
+      "sha256": "36171f47d9b8afb59b7135affe3e68ab3ec9098c11e7eee0fcd55ce8e04a5b84"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance1",
+      "sha256": "f0502b76fdecf7914a4909224376c05bffe9fcb245ad2e185c042815860b8c13"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance10",
+      "sha256": "0fc46b849d297cffa3311d9df1eeead77210b5391d36ea675ea74458bae2d5ef"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance2",
+      "sha256": "c89bd7cd7666bed4d45ef3baf12b1400e846f28f6674908adbccf74b73df6382"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance3",
+      "sha256": "d28023186e33b744e8729f472854b1b34d3f322e59d966862e8240cb19661c38"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance4",
+      "sha256": "4cceeb999cb56a769b93976bb510021e4e2f6a8993d76d95a56e5826da8c0ffb"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance5",
+      "sha256": "31a37245d753992a6411b9ea3b39445f6a94a108bd8151f192d1c64008e9a410"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance6",
+      "sha256": "c531e27d3e3792cc1e544559a17a0a6b72496cb3fc67387400ad065ddae9c24e"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance7",
+      "sha256": "f30ec69d2232319b7b5442444cb2654a68bb8ffc81458468dc6bea112b939d4f"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance8",
+      "sha256": "21fc7da53828f758527cd4c538862a6809b9aaf3fe0d7f8c94f4992ffed13670"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual2_Dance9",
+      "sha256": "88509891acaf427e7e6090eef887430f07a4b46add9e012e01f2d7e6ed97180f"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance1",
+      "sha256": "085a7fcbd91f6f831426af72b9395d5e13a7d95154145fa8ed4ea98d0ee50a31"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance10",
+      "sha256": "a691d4c5f6d94df503ce3730ef3b6fc80b0ec4044612f97aa9072a82c7bf22db"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance2",
+      "sha256": "460751770449a9d67e03faa242dd8974d3e047993b8559d9c1dfd5f0177cadbf"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance3",
+      "sha256": "8dae71ab345e3925ae5a1acaf27d4fb00ce4b773b28ea77709ccbe1ee9df759b"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance4",
+      "sha256": "c897ffde8af805f738e7c6fe5a38937b8ccdbcb684c6bd32682d20751d3d4924"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance5",
+      "sha256": "28455c024f8f0f9cf74604a3bdaabaa05cdef11bb36a8a124457b4f617ad8154"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance6",
+      "sha256": "b307e5bfa938c0756e65b346717f68dc219e7d3af0f8bc42c31234bffa2750fc"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance7",
+      "sha256": "1c4730f3f7c8b7c0354c6616a8852c1c762b24826dc772f184d2b7df16a8508d"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance8",
+      "sha256": "38f3bea32b9d7a18d2dd360838f7665bb72d45039f7b89db766dfbc97e36e192"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Animations/A_Joy_Sensual_Dance9",
+      "sha256": "3d0f762aa070d64a79abee251c147537e56a95702e55ac48bd8c956feb003b15"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Hair/GB_Joy_base",
+      "sha256": "986ac24a835c7dc8bbcf6ec8deafd1a155dd873bfa83ed9c1f5f6c6ab4bdcc0e"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Hair/GB_Joy_streak",
+      "sha256": "4d7cbd8db72a40661d77760353f33ff32bc35b95e6d0b36ad64613e7a155ba3e"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Materials/MI_JoyBlue_HairStreak",
+      "sha256": "04d9be7cf04425a96d8c627f09900a4417101ba942d90a8abf91c0e105a45d56"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/BP_JoyLightBlue_Review",
+      "sha256": "d909737a65be5d8b9903d95d99a183797ec150ef191b69e42c102155a19217bf"
+    }
+  ],
+  "binding_count": 2,
+  "retarget_chain_count": 21,
+  "asset_reload": {
+    "checks": [
+      "147 Joy packages loaded",
+      "Original skeleton and 18 material slots; four light-blue skin overrides",
+      "135 clips retain saved target skeleton, frame counts and durations",
+      "Compiled preview Blueprint retains idle loop and two groom bindings",
+      "Three repaired planter meshes reload with unchanged bounds and material slots"
+    ],
+    "protected_file_count": 350,
+    "dirty_maps": [],
+    "dirty_content": []
+  },
+  "planters": [
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralPlanter.SM_CentralPlanter",
+      "source_sha256": "7fd566e2c020d652f97aa618e784d66ead7ffbbac576f992ad2534f3fc4c2d70",
+      "before_sha256": "eafbd81193ffcb9d54a0cc3e6a9c0d3ef4853963dcf6cdd7c9cdc649e8fecb67",
+      "before_bounds": [
+        1306.2329711914062,
+        0.0,
+        0.0,
+        73.76702880859375,
+        286.9181213378906,
+        32.0
+      ],
+      "materials_before": [
+        "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+      ],
+      "after_bounds": [
+        1306.2329711914062,
+        0.0,
+        0.0,
+        73.76702880859375,
+        286.9181213378906,
+        32.0
+      ],
+      "after_sha256": "7827f676c844e853a74a53dac2c69e18038585ebd0a3dfd160ff1104f3e3c18f",
+      "saved": true,
+      "materials_after": [
+        "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+      ]
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralPlanterSoil.SM_CentralPlanterSoil",
+      "source_sha256": "432fe29430534e482a3dfbc7de67001bc44e3364b25ada2592a714db2d580596",
+      "before_sha256": "2599c6dc97a460c7f8eeeb13fc68808a6d6e9dfbfac4dca696ded33ae1e24bb9",
+      "before_bounds": [
+        1307.2120361328125,
+        0.0,
+        0.0,
+        58.7879638671875,
+        272.33660888671875,
+        2.0
+      ],
+      "materials_before": [
+        "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+      ],
+      "after_bounds": [
+        1307.2120361328125,
+        0.0,
+        0.0,
+        58.7879638671875,
+        272.33660888671875,
+        2.0
+      ],
+      "after_sha256": "c7d5b586bfd236d363e506d36db4d1d4aa2707553247c5856acbd5485acf369d",
+      "saved": true,
+      "materials_after": [
+        "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+      ]
+    },
+    {
+      "asset": "/Game/OutpostSandbox/StationRefinement/CentralFeatures99/SM_CentralPlanterLip.SM_CentralPlanterLip",
+      "source_sha256": "8b25d9607a70782a57c4e3155bd2107e60df3e1a9ee598f2055cb656cc42e446",
+      "before_sha256": "d0cdf7d5ee9b8a791cc3d3efb8bbe9a097c8f45299937ad87887a715cc05b87d",
+      "before_bounds": [
+        1306.2548217773438,
+        0.0,
+        0.0,
+        75.74517822265625,
+        287.3339538574219,
+        2.5
+      ],
+      "materials_before": [
+        "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+      ],
+      "after_bounds": [
+        1306.2548217773438,
+        0.0,
+        0.0,
+        75.74517822265625,
+        287.3339538574219,
+        2.5
+      ],
+      "after_sha256": "053f99e4351c7094a1a03304e37405c3019e996e53b9dfc819c166ed5e37891a",
+      "saved": true,
+      "materials_after": [
+        "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+      ]
+    }
+  ],
+  "other37_central_packages_preserved": true,
+  "recipes": [
+    {
+      "file": "Scripts/StationRecipes/CpuJoy121/ColorJoy114.py",
+      "sha256": "093e2cded8350ce36eb2eea0da4dbb07715864880f9b378ea030c52ed58a4c6b",
+      "executed_source_sha256": "9dea9cdaaa3fda9cc27140064aea80c6b33f48a8fbbebcad3073b38625d23a4a",
+      "only_path_configuration_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/CpuJoy121/PreviewJoy115.py",
+      "sha256": "a05d1ee5b9f495e14913a34fe71cb9b38101d365b5ce2e7e6f015393fd0d17c4",
+      "executed_source_sha256": "779f335dfe6fa2b576883378bac1cecd9a0a42790f2dcc72cffbf4b4ebb0d422",
+      "only_path_configuration_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/CpuJoy121/AuthorJoy117.py",
+      "sha256": "3d5ce12a1e101078cfb7c898bedb9ffb32ffdeca931251bba0a88baed78bffbd",
+      "executed_source_sha256": "6430a9f5aad63c05adb45fdcfe945983396d01d360e15ca087bb19ffeb4417ab",
+      "only_path_configuration_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/CpuJoy121/CompleteJoy121.py",
+      "sha256": "438cb2048b43d6e2ac4b5bb8104e770edfd75fefd8db98772c322cdf19f0c1dd",
+      "executed_source_sha256": "448c03f3e94757027de8bb321d92e18c1bda09de6ff702aee3d4ab4552f722f1",
+      "only_path_configuration_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/CpuJoy121/RepairPlanters119.py",
+      "sha256": "a3fc48f969fe8b85f38ba0eac3db3a1d13fba77365293ca9d20f016e0f9b4b4d",
+      "executed_source_sha256": "66e992922970ce6484bc0e5d3518a95e9fed0fd438686fdf330230bf1130ab9d",
+      "only_path_configuration_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/CpuJoy121/VerifyJoy124.py",
+      "sha256": "f02a77beee52931b6f2356ee34ca678be9a4ae7bdd6f31915800480445ddf028",
+      "executed_source_sha256": "d194ecbee4c03fb138bff44ea2a91e0eaf574adf0075b378f1eff1f0023d0912",
+      "only_path_configuration_changed": true
+    }
+  ],
+  "open": [
+    "Rendered skin and hair shading",
+    "Continuous groom attachment and limb/contact quality",
+    "Final107 world reload",
+    "Central target match, then R",
+    "Representative performance",
+    "Owner acceptance"
+  ]
+}

@@ -1054,6 +1054,21 @@ class SSLINK_OT_refresh_scenes(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class SSLINK_OT_open_wayfarer(bpy.types.Operator):
+    bl_idname = 'ss_link.open_wayfarer'
+    bl_label = 'Open Current Wayfarer'
+    bl_description = 'Open the latest exported runtime station in a new scene; keep existing Blender scenes intact'
+
+    def execute(self, context):
+        from . import wayfarer
+        try:
+            wayfarer.open_snapshot()
+        except Exception as exc:
+            self.report({'ERROR'}, str(exc))
+            return {'CANCELLED'}
+        return {'FINISHED'}
+
+
 class SSLINK_OT_open_scene(bpy.types.Operator):
     bl_idname = 'ss_link.open_scene'
     bl_label = 'Open Scene'
@@ -1240,7 +1255,7 @@ class SSLINK_OT_copy_scene_command(bpy.types.Operator):
         return {'FINISHED'}
 
 
-classes = (SSSceneState, SSLINK_OT_refresh_scenes, SSLINK_OT_open_scene, SSLINK_OT_apply_scene, SSLINK_OT_adopt_parts,
+classes = (SSSceneState, SSLINK_OT_refresh_scenes, SSLINK_OT_open_wayfarer, SSLINK_OT_open_scene, SSLINK_OT_apply_scene, SSLINK_OT_adopt_parts,
            SSLINK_OT_copy_scene_command)
 
 
@@ -1258,6 +1273,11 @@ def unregister():
 
 
 def draw(layout, context):
+    from . import wayfarer
+    layout.operator('ss_link.open_wayfarer', icon='SCENE_DATA')
+    if context.scene.get(wayfarer.SNAPSHOT):
+        core.draw_wrapped(layout, 'Current Wayfarer: use Push Selected, then inspect and save the Unreal level. Locked context stays in Unreal.', context)
+        return
     st = context.scene.ss_scenes
     row = layout.row(align=True)
     row.prop(st, 'scene', text='')

@@ -1,0 +1,217 @@
+{
+  "recorded_at": "2026-10-08T03:05:00Z",
+  "source": "Owner-provided October 7 screenshots; byte-identical copies for authorized GitHub reference handoff.",
+  "implementation_state": "Paused; screenshot editor saved state and exact native actor mapping unconfirmed.",
+  "screenshots": [
+    {
+      "id": "H01",
+      "original_filename": "Screenshot 2026-10-07 225303.png",
+      "file": "225303.png",
+      "width": 903,
+      "height": 773,
+      "bytes": 1488100,
+      "sha256": "a9f1a75da38f1df39a5d12e1fa818095210b9f721ae572c990c5509f65022e61"
+    },
+    {
+      "id": "H02",
+      "original_filename": "Screenshot 2026-10-07 225432.png",
+      "file": "225432.png",
+      "width": 1409,
+      "height": 790,
+      "bytes": 2010187,
+      "sha256": "6c4a4a897e78847f4c839555450e92ee81e20a7fd7670796bbd6a98301f40f25"
+    },
+    {
+      "id": "H03",
+      "original_filename": "Screenshot 2026-10-07 225535.png",
+      "file": "225535.png",
+      "width": 809,
+      "height": 798,
+      "bytes": 1311650,
+      "sha256": "bf0c3a218bc245d2e2413ec24e7f8b43d42d37640b0f4f6ae1d3c187cd7f3667"
+    },
+    {
+      "id": "H04",
+      "original_filename": "Screenshot 2026-10-07 225550.png",
+      "file": "225550.png",
+      "width": 916,
+      "height": 729,
+      "bytes": 1335819,
+      "sha256": "c1eaf256a9fe2a2cf3d68d1ed2f78d9806029810df6c2b01d585375c46436b65"
+    },
+    {
+      "id": "H05",
+      "original_filename": "Screenshot 2026-10-07 225111.png",
+      "file": "225111.png",
+      "width": 2592,
+      "height": 727,
+      "bytes": 3874834,
+      "sha256": "1aa476ad79c2380bef6ba9df95287a5dc8d57dd512f0d258e68cc87a69958d70"
+    },
+    {
+      "id": "H06",
+      "original_filename": "Screenshot 2026-10-07 225124.png",
+      "file": "225124.png",
+      "width": 2276,
+      "height": 802,
+      "bytes": 3431835,
+      "sha256": "17f53a9659811a65efaf522c0939ad9ebb977b86e88022d5913d0f19a3c034b8"
+    },
+    {
+      "id": "H07",
+      "original_filename": "Screenshot 2026-10-07 225127.png",
+      "file": "225127.png",
+      "width": 2473,
+      "height": 812,
+      "bytes": 3754528,
+      "sha256": "10b1995f7b6ae7cd77d07c5af10dc98aebd13f6a9588e9c84e2b74056e68a6f3"
+    },
+    {
+      "id": "H08",
+      "original_filename": "Screenshot 2026-10-07 225131.png",
+      "file": "225131.png",
+      "width": 2411,
+      "height": 820,
+      "bytes": 3620317,
+      "sha256": "41d8dca9849a798446be1291d65f5c38a34c3e79c46564ab72adc4e8104530b6"
+    },
+    {
+      "id": "H09",
+      "original_filename": "Screenshot 2026-10-07 225400.png",
+      "file": "225400.png",
+      "width": 1845,
+      "height": 802,
+      "bytes": 2697937,
+      "sha256": "39472344c35fc98047aebfe26e8b04d21a028b218d82f47a332cbbf5074e4cc2"
+    },
+    {
+      "id": "H10",
+      "original_filename": "Screenshot 2026-10-07 225407.png",
+      "file": "225407.png",
+      "width": 1607,
+      "height": 806,
+      "bytes": 2576983,
+      "sha256": "857c13c93f4290774b94579b894f32059d0998bc3ef1c98348fc03e0f351fdd9"
+    },
+    {
+      "id": "H11",
+      "original_filename": "Screenshot 2026-10-07 225626.png",
+      "file": "225626.png",
+      "width": 2399,
+      "height": 670,
+      "bytes": 3238531,
+      "sha256": "38529fee1e8fcb4fdebfc8c1865f1a6a8f8502b25e84f22492db5bc769a9450d"
+    },
+    {
+      "id": "H12",
+      "original_filename": "Screenshot 2026-10-07 224955.png",
+      "file": "224955.png",
+      "width": 2524,
+      "height": 780,
+      "bytes": 3790350,
+      "sha256": "5cf86e21ee424a149fdd0329d2ffa7457388e4d664561a1a70ea39830015bf7b"
+    }
+  ],
+  "catalog": {
+    "source": ".agent/local/Outpost/HoloAssetCatalog1/index.html",
+    "sha256": "f4601ca7d221070aa3188d4041150ab433c21c972737ffeb838adf6d35842a63",
+    "counts": {
+      "hardware": 71,
+      "parts": 60,
+      "effects": 116
+    },
+    "missing_static_previews": 25,
+    "digital_window_size_variants": [
+      {
+        "id": "P4-Window200X100-V2-Part2-DigitalWindow",
+        "name": "SM_Window200X100_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window200X100_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window200X200-V2-Part2-DigitalWindow",
+        "name": "SM_Window200X200_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window200X200_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window200X250-V2-Part2-DigitalWindow",
+        "name": "SM_Window200X250_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window200X250_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window300X100-V2-Part2-DigitalWindow",
+        "name": "SM_Window300X100_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window300X100_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window300X200-V2-Part2-DigitalWindow",
+        "name": "SM_Window300X200_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window300X200_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window300X250-V2-Part2-DigitalWindow",
+        "name": "SM_Window300X250_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window300X250_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window400X100-V2-Part2-DigitalWindow",
+        "name": "SM_Window400X100_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X100_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window400X200-V2-Part2-DigitalWindow",
+        "name": "SM_Window400X200_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X200_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window400X250-V2-Part2-DigitalWindow",
+        "name": "SM_Window400X250_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X250_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window500X100-V2-Part2-DigitalWindow",
+        "name": "SM_Window500X100_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window500X100_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window500X200-V2-Part2-DigitalWindow",
+        "name": "SM_Window500X200_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window500X200_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window500X250-V2-Part2-DigitalWindow",
+        "name": "SM_Window500X250_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window500X250_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window600X100-V2-Part2-DigitalWindow",
+        "name": "SM_Window600X100_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window600X100_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window600X200-V2-Part2-DigitalWindow",
+        "name": "SM_Window600X200_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window600X200_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      },
+      {
+        "id": "P4-Window600X250-V2-Part2-DigitalWindow",
+        "name": "SM_Window600X250_V2_Part2_DigitalWindow",
+        "asset_path": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window600X250_V2_Part2_DigitalWindow",
+        "local_asset_present": true
+      }
+    ]
+  }
+}

@@ -213,13 +213,21 @@ bool USSGameInstance::EndFreeFlight()
 
 void USSGameInstance::ApplySettings()
 {
+    auto *MotionBlur = IConsoleManager::Get().FindConsoleVariable(TEXT("r.MotionBlurQuality"));
+    // Release only our previous preference so the quality tier can apply without an ownership clash.
+    // Explicit project/console overrides keep their priority and value.
+    if (MotionBlur && (MotionBlur->GetFlags() & ECVF_SetByMask) == ECVF_SetByGameSetting)
+        MotionBlur->Unset(ECVF_SetByGameSetting);
     if (auto *Settings = UGameUserSettings::GetGameUserSettings())
     {
         Settings->SetOverallScalabilityLevel(Session.settings.quality);
+        // Quality tiers tune effects and lighting, not an unexposed render scale.
+        // Keep the requested viewport resolution crisp at every quality level.
+        Settings->SetResolutionScaleValueEx(100.f);
         Settings->SetFrameRateLimit(Session.settings.frameLimit);
         // Graphics changes must not override the startup window/resolution request.
         Settings->ApplyNonResolutionSettings();
     }
-    if (auto *CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("r.MotionBlurQuality")))
-        CVar->Set(Session.settings.motionBlur ? 3 : 0, ECVF_SetByGameSetting);
+    if (MotionBlur && (MotionBlur->GetFlags() & ECVF_SetByMask) <= ECVF_SetByGameSetting)
+        MotionBlur->Set(Session.settings.motionBlur ? 3 : 0, ECVF_SetByGameSetting);
 }

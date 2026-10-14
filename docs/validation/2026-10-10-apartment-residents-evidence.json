@@ -1,0 +1,216 @@
+{
+  "date": "2026-10-10",
+  "map_before": "52a5ee747fe7a586029c9f2ad85d782972b22c61b60bfbfcc9f7c88387dafdc7",
+  "map_after": "7e30f69f57b4c2ecb2600334c39ed18038fda28a90fbffee632660651a80f937",
+  "actors_before": 9051,
+  "actors_after": 9058,
+  "added": [
+    "HomeHub/Residents/Joy",
+    "HomeHub/Residents/Cyborg girl",
+    "HomeHub/Residents/Pole/Shaft",
+    "HomeHub/Residents/Pole/Floor mount",
+    "HomeHub/Residents/Pole/Floor collar",
+    "HomeHub/Residents/Pole/Ceiling mount",
+    "HomeHub/Residents/Pole/Ceiling collar"
+  ],
+  "existing_preserved_before_save": true,
+  "protected_files_preserved_except_authorized_map": 404,
+  "material_sha256": "59c27b360d6e42d0999dc0cf5fc978c59798b808de50da685a079018bf4a96f8",
+  "native_capture": {
+    "run": "LiveOperationsPIEReview1_Apartment171",
+    "success": true,
+    "images": [
+      {
+        "name": "01_Residents",
+        "sha256": "f395607cd6374c542781cdfce18e9e91a73a6c628ba3c0ceb61b7d75aa0532c5",
+        "dimensions": [
+          1280,
+          722
+        ]
+      },
+      {
+        "name": "02_Reverse",
+        "sha256": "ad9b6a24e882182df22ef96bb3da3485b89b2b5cbae3ce755189d7486ff5d64d",
+        "dimensions": [
+          1280,
+          722
+        ]
+      },
+      {
+        "name": "03_Joy",
+        "sha256": "fc0223401d7b6d794efde248b54fec0ede2efd297694883cf9b5c6a0d7f4a7c3",
+        "dimensions": [
+          1280,
+          722
+        ]
+      },
+      {
+        "name": "04_PoleMount",
+        "sha256": "ee9433e45a59a75a75404032627d539b46880ba78957020bb9e1df2b8ab2d416",
+        "dimensions": [
+          1280,
+          722
+        ]
+      }
+    ],
+    "samples": 240,
+    "preservation": {
+      "hud_restored": true,
+      "original_view_target_restored": true,
+      "viewport_unchanged": true,
+      "quality_unchanged": true,
+      "save_files_unchanged": true,
+      "map_bytes_unchanged": true,
+      "dirty_packages_unchanged": true
+    }
+  },
+  "clearance_points": [
+    {
+      "xy": [
+        6850,
+        4710
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "Floor",
+        "position": [
+          6850.0,
+          4710.0,
+          -169.999321699549
+        ]
+      }
+    },
+    {
+      "xy": [
+        6880,
+        4920
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "Floor",
+        "position": [
+          6880.0,
+          4920.0,
+          -169.99915094739714
+        ]
+      }
+    },
+    {
+      "xy": [
+        6790,
+        5160
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "Floor",
+        "position": [
+          6790.0,
+          5160.0,
+          -169.99928230035488
+        ]
+      }
+    },
+    {
+      "xy": [
+        7020,
+        5300
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "Floor",
+        "position": [
+          7020.0,
+          5300.0,
+          -169.99916736651687
+        ]
+      }
+    },
+    {
+      "xy": [
+        7200,
+        5330
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "pipe",
+        "position": [
+          7200.000003634658,
+          5329.999996449687,
+          -168.86983572693498
+        ]
+      }
+    },
+    {
+      "xy": [
+        7380,
+        5120
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "Floor",
+        "position": [
+          7380.0,
+          5120.0,
+          -169.99931355351515
+        ]
+      }
+    },
+    {
+      "xy": [
+        7250,
+        4830
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "Floor",
+        "position": [
+          7250.0,
+          4830.0,
+          -169.99922394714295
+        ]
+      }
+    },
+    {
+      "xy": [
+        7040,
+        4750
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "pipe",
+        "position": [
+          7040.000001474114,
+          4749.999993285576,
+          -168.86948336547357
+        ]
+      }
+    },
+    {
+      "xy": [
+        6850,
+        4620
+      ],
+      "obstruction": null,
+      "floor": {
+        "actor": "Floor",
+        "position": [
+          6850.0,
+          4620.0,
+          -169.99906885179854
+        ]
+      }
+    }
+  ],
+  "saved_residents_reload_pass": true,
+  "strict_world_transform_reload_pass": false,
+  "existing_world_transform_deltas": [
+    "StaticMeshActor_7789",
+    "StaticMeshActor_7790",
+    "StaticMeshActor_7757"
+  ],
+  "ray_tracing": 0,
+  "recipes": {
+    "PlaceApartmentResidents168.py": "cf8596cc2d6a80e50ab2d58eb7762893f8f4665990ca9d0a669052c95b0082f9",
+    "CompleteApartment170.py": "408a4375924686606e9cbb29c0c625c33f9529d68b63593533f35c303948bb97"
+  }
+}

@@ -67,8 +67,15 @@ except RuntimeError:
     pass
 mat.node_tree.nodes.remove(texture)
 native = lib / 'BlenderAssets'
-module('build_asset_library').build(root, native)
+fresh_row = dict(row, asset='/Game/Test/Fresh.Fresh', name='Fresh')
+(lib / 'catalog.json').write_text(json.dumps({'meshes': [row, fresh_row]}))
+builder = module('build_asset_library')
+before_build = builder.imported_data()
+builder.build(root, native)
+assert builder.imported_data() == before_build, 'native build retained imported IDs or removed pre-existing scene data'
+assert first.name in bpy.data.objects and second.name in bpy.data.objects, 'native build removed working placements'
 built = json.loads((native / 'build.json').read_text())
+assert built['assets'] == built['rebuilt'] == 2, 'native build count changed when temporary objects were released'
 assert sl.popout.attach_library().import_method == 'APPEND'
 native_file = native / next(iter(built['entries'].values()))['file']
 with bpy.data.libraries.load(str(native_file), assets_only=True) as (source, target):

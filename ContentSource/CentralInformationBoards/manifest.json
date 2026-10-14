@@ -1,0 +1,48 @@
+{
+  "status": "DETERMINISTIC SOURCE ART; NATIVE ACCEPTANCE RECORDED SEPARATELY",
+  "source_aspect": 1.96,
+  "fonts": {
+    "C:\\Windows\\Fonts\\segoeui.ttf": "8134dbcd09e7b123c9a7f229d49cffbcb01352cc72ea5e1076b65d0dca9f73cd",
+    "C:\\Windows\\Fonts\\segoeuib.ttf": "aeb9e4a6ec5cc59f4d72df8189032d7dbb28f45161cf1552174818b5465dac4e"
+  },
+  "provenance": "PROVENANCE.md",
+  "boards": [
+    {
+      "id": "01_StationDirectory",
+      "svg": "01_StationDirectory.svg",
+      "png": "01_StationDirectory.png",
+      "size": [
+        1960,
+        1000
+      ],
+      "sha256": {
+        "01_StationDirectory.svg": "be495618948731012ab993344187529118090e6fecae7fd0664667bc6cd03fbd",
+        "01_StationDirectory.png": "0a8cfee5160271b57be9c6cd4d633110c1fa577f343368c88770c63e65b92e4a"
+      }
+    },
+    {
+      "id": "02_FlightGuide",
+      "svg": "02_FlightGuide.svg",
+      "png": "02_FlightGuide.png",
+      "size": [
+        1960,
+        1000
+      ],
+      "sha256": {
+        "02_FlightGuide.svg": "db0d03f8ab3bdfe1f3b59a41444e0e93261f507ae0c544fa6ec2e137afc06fe3",
+        "02_FlightGuide.png": "feddd46a0bbc01abdc937fb4d1fca49b607fb9336ad6e69c77c68b785caf3a1f"
+      }
+    }
+  ],
+  "native_assets": {
+    "housing": "/Game/SciFiCorridor/Meshes/SM_Monitor",
+    "screen": "/Game/SciFiCorridor/Meshes/SM_MonitorScreen",
+    "housing_material": "/Game/SciFiCorridor/Materials/MI_Assets",
+    "private_root": "/Game/OutpostSandbox/StationRefinement/CentralInformationBoards20261007"
+  },
+  "limits": [
+    "No directional arrows are universal to both mounted walls.",
+    "Source format and copy do not establish mounted brightness or owner acceptance.",
+    "No Unreal/native calls or private .uasset files are included."
+  ]
+}

@@ -1,9 +1,7 @@
 #include "SSStationPresentation.h"
+#include "SSNPCHeadFillComponent.h"
 #include "SSNpcTalk.h"
 #include "Animation/AnimSequence.h"
-#include "HAL/IConsoleManager.h"
-#include "Misc/App.h"
-#include "SSOutpostSandbox.h"
 #include "HAL/IConsoleManager.h"
 #include "Misc/App.h"
 #include "SSOutpostSandbox.h"
@@ -68,6 +66,8 @@ void BuildStaff(AActor *Owner)
         Staff->PlayAnimation(Idle, true);
         Staff->SetPlayRate(Index == 0 ? .85f : .95f);
         Staff->SetPosition(Index == 0 ? 0.f : Idle->GetPlayLength() * .47f, false);
+        // This component-owned rig faces +Y; retain the shared 45cm forward/15cm up head profile.
+        USSNPCHeadFillComponent::EnrollNPCMeshInFrame(Staff, Staff, FVector(0.f, 45.f, 15.f));
     }
 }
 } // namespace
@@ -136,6 +136,8 @@ void BuildSupplementalStaff(AActor *Owner)
                         Staff->RegisterComponent();
                         Staff->PlayAnimation(Idle, true);
                         Staff->SetPlayRate(Source.Rate);
+                        if (FName(Source.Name) != TEXT("StationCompanionDrone"))
+                            USSNPCHeadFillComponent::EnrollNPCMeshInFrame(Staff, Staff, FVector(0.f, 45.f, 15.f));
                     }
                 }
     }
@@ -294,6 +296,7 @@ void BuildAlienCrew(AActor *Owner)
         Crewman->PlayAnimation(Clip, true);
         Crewman->SetPlayRate(Member.Rate);
         Crewman->SetPosition(Clip->GetPlayLength() * Member.Phase, false);
+        USSNPCHeadFillComponent::EnrollNPCMeshInFrame(Crewman, Crewman, FVector(0.f, 45.f, 15.f));
     }
 }
 

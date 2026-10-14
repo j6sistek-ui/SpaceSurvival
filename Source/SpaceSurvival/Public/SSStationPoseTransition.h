@@ -39,6 +39,20 @@ public:
     void SetExitTime(float Seconds);
     /** Continue a non-additive landing clip on one subtree only. Negative time clears the layer. */
     bool SetLandingTail(UAnimSequence *Clip, FName RootBone, float Seconds);
+    /** Protect only the authored tail surface near a real floor; no plane clears the constraint. */
+    void SetTailFloor(FName RootBone, const TMap<FName, FBox> &Envelopes, const TOptional<FPlane> &ComponentFloor);
+    FName GetFloorTailRoot() const
+    {
+        return FloorTailRoot;
+    }
+    const TMap<FName, FBox> &GetTailFloorEnvelopes() const
+    {
+        return TailFloorEnvelopes;
+    }
+    const TOptional<FPlane> &GetTailFloor() const
+    {
+        return TailFloor;
+    }
     UAnimSequence *GetLandingTailClip() const
     {
         return LandingTailClip;
@@ -72,6 +86,9 @@ protected:
     virtual FAnimInstanceProxy *CreateAnimInstanceProxy() override;
 
 private:
+    FName FloorTailRoot = NAME_None;
+    TMap<FName, FBox> TailFloorEnvelopes;
+    TOptional<FPlane> TailFloor;
     UPROPERTY(Transient)
     TObjectPtr<UAnimSequence> LandingTailClip;
     FName LandingTailRoot = NAME_None;

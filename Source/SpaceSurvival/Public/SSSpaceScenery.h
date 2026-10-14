@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InstanceDataTypes.h"
 #include "SSSpaceScenery.generated.h"
 class UStaticMeshComponent;
 class USSSpaceLookData;
@@ -11,7 +12,7 @@ struct FSSSpaceAreaBlend
     int32 Second = 0;
     float Alpha = 0.f;
 };
-/** World-stable cosmetic regions with a legacy distant-shell fallback. Never hazards or targets. */
+/** World-stable solid regions. Asteroids accept manual weapon hits independently of the Director. */
 UCLASS()
 class SPACESURVIVAL_API ASSSpaceScenery : public AActor
 {
@@ -27,6 +28,7 @@ public:
     void ConfigureLook(USSSpaceLookData *Data);
     /** Persistent run identity varies normal play; explicit recipe previews ignore it. */
     void SetRunSeed(uint32 Seed);
+    bool ApplyWeaponHit(const FHitResult &Hit, float Damage, bool &bDestroyed);
     static FIntVector CellAt(const FVector &LogicalPosition, double CellSize);
     static FSSSpaceAreaBlend SampleAreaStyle(const USSSpaceLookData *Data, const FVector &LogicalPosition,
                                              int32 Preview = -1, int32 Variation = 0);
@@ -47,9 +49,19 @@ public:
     FSSSpaceAreaBlend GetCurrentAreaBlend() const;
 
 private:
+    struct FSceneryRock
+    {
+        UStaticMeshComponent *Part = nullptr;
+        FPrimitiveInstanceId Id;
+        int32 Ordinal = 0;
+        float Health = 0.f;
+        float Radius = 0.f;
+        bool bInstanced = false;
+    };
     struct FCell
     {
         TArray<UStaticMeshComponent *> Parts;
+        TArray<FSceneryRock> Rocks;
         int32 Clutter = 0;
         int32 Landmarks = 0;
     };
@@ -59,6 +71,7 @@ private:
     TArray<TObjectPtr<UStaticMeshComponent>> Structures;
     TArray<FVector> Anchors;
     TMap<FIntVector, FCell> Cells;
+    TMap<FIntVector, TMap<int32, float>> DamageByCell;
     FVector OriginOffset = FVector::ZeroVector;
     FIntVector LastCell = FIntVector(MAX_int32);
     int32 LastPreview = MIN_int32;

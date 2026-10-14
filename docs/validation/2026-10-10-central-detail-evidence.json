@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-10",
+  "before_sha": "7e30f69f57b4c2ecb2600334c39ed18038fda28a90fbffee632660651a80f937",
+  "after_sha": "2a42ccb9f550fc4265d57c1ad5643787375ff5be3236e1cc7cdb4edf0fc493a5",
+  "actors": 9102,
+  "new_kit_members": 44,
+  "plant_transforms": 44,
+  "untouched_existing_snapshots": 9014,
+  "other_protected_files_unchanged": 404,
+  "new_materials": 0,
+  "images": [
+    {
+      "file": "docs/validation/images/central-detail-20261010/01_Arrival.png",
+      "sha256": "5aee8652d401da222dbf99ab667a44119503b2756fa3abb2e9e30bc218f2993e",
+      "dimensions": [
+        1280,
+        722
+      ]
+    },
+    {
+      "file": "docs/validation/images/central-detail-20261010/02_Reverse.png",
+      "sha256": "4bd7a13efbd51640e1326b680a0d8701ff5b0d3dab1ec5cb7ee9396fc33bda3f",
+      "dimensions": [
+        1280,
+        722
+      ]
+    },
+    {
+      "file": "docs/validation/images/central-detail-20261010/04_Waiting.png",
+      "sha256": "cabe1f2a0c6176881a6a89b6f1b5de988d5795bb9488867df3833ba6e4421f99",
+      "dimensions": [
+        1280,
+        722
+      ]
+    }
+  ],
+  "scope_reload": {
+    "saved_scope_count": 95,
+    "deltas": [],
+    "scope_reload_pass": true,
+    "map_sha": "2a42ccb9f550fc4265d57c1ad5643787375ff5be3236e1cc7cdb4edf0fc493a5",
+    "count": 9102,
+    "dirty_maps": [],
+    "dirty_content": [],
+    "rt": 0
+  },
+  "capture_preservation": {
+    "success": false,
+    "capture_complete": true,
+    "hud_restored": true,
+    "original_view_target_restored": true,
+    "viewport_unchanged": true,
+    "quality_unchanged": true,
+    "temporary_pie_camera_destroyed": true,
+    "save_files_unchanged": false,
+    "map_bytes_unchanged": true,
+    "dirty_packages_unchanged": true
+  },
+  "settings_save_preservation": "FAILED - before/after hash differs; cause not established, both gameplay progress saves unchanged. Current settings archived, no save restored or reset.",
+  "recipe_sha": "f26b4c842430c5fa7b964eaea54728c8c3c6fd72731750d062cbe1a3f9a259d2",
+  "target_met": false
+}

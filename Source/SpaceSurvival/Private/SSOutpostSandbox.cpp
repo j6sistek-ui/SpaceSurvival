@@ -1,10 +1,12 @@
 #include "SSOutpostSandbox.h"
+#include "SSNPCHeadFillComponent.h"
 #include "SSStation.h"
 #include "SSGameMode.h"
 #include "SSPhase1Data.h"
 #include "Animation/AnimSequence.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -36,6 +38,14 @@ ASSOutpostSandboxGameMode::ASSOutpostSandboxGameMode()
     DefaultPawnClass = ASSWalker::StaticClass();
     PlayerControllerClass = ASSOutpostSandboxController::StaticClass();
     HUDClass = ASSOutpostSandboxHUD::StaticClass();
+}
+void ASSOutpostSandboxGameMode::BeginPlay()
+{
+    Super::BeginPlay();
+    // The current station is editable directly, but Play must use the full game world.
+    // A streamed station uses SSGameMode; the original sandbox keeps its preview rules.
+    if (UGameplayStatics::GetCurrentLevelName(this, true) == TEXT("L_WayfarerRuntime"))
+        UGameplayStatics::OpenLevel(this, GameplayMap);
 }
 void ASSOutpostSandboxGameMode::HandleStartingNewPlayer_Implementation(APlayerController *NewPlayer)
 {
@@ -148,6 +158,8 @@ FString ASSOutpostTerminal::CycleWardrobe()
     if (FSSHeroDefinition::AssetInstalled(Hero.IdleClipPath))
         if (auto *Idle = LoadObject<UAnimSequence>(nullptr, *Hero.IdleClipPath); CompatibleClip(Mesh, Idle))
             Mesh->PlayAnimation(Idle, true);
+    if (auto *Ambient = Cast<ASSOutpostAmbientActor>(PresentationTarget))
+        Ambient->RefreshReadabilityLighting();
     PreviewIndex = Next;
     return FString::Printf(TEXT("CREW APPEARANCE / %s. Hologram preview only; your equipped character is unchanged."),
                            *Hero.Id.ToString());
@@ -161,6 +173,11 @@ FString ASSOutpostTerminal::Use(APlayerController *User)
     {
         // Real game services use the existing account/run transactions. Sandbox previews stay local.
         const ESSPanel Panel = Game->GetStation()->OutpostPanel(this);
+        if (Panel == ESSPanel::Launch)
+        {
+            Game->OpenPanel(ESSPanel::Launch);
+            return FString();
+        }
         if (Panel != ESSPanel::None)
         {
             Game->OpenPanel(Panel);
@@ -291,8 +308,7 @@ void ASSOutpostSandboxHUD::DrawHUD()
     const float Margin = 32.f * Scale;
     auto Text = [&](const FString &Value, float X, float Y, FLinearColor Colour, float Size)
     { DrawText(Value, Colour, X, Y, GEngine->GetSmallFont(), Size * Scale); };
-    Text(TEXT("WAYFARER / ASTEROID OUTPOST"), Margin, Margin, FLinearColor(.55f, .9f, 1.f), 1.3f);
-    Text(TEXT("DESIGN SANDBOX"), Margin, Margin + 26.f * Scale, FLinearColor(.6f, .7f, .76f), .85f);
+    Text(TEXT("Wayfarer / Design preview"), Margin, Margin, FLinearColor(.6f, .7f, .76f), .95f);
     if (Controller->IsReviewPaused())
     {
         DrawRect(FLinearColor(0.f, .008f, .015f, .72f), 0, 0, Canvas->ClipX, Canvas->ClipY);
@@ -312,15 +328,51 @@ void ASSOutpostSandboxHUD::DrawHUD()
     }
     float NoticeY = Canvas->ClipY - 58.f * Scale - NoticeHeight;
     if (auto *Terminal = Controller->FocusedTerminal())
-        Text(TEXT("E / X  ") + Terminal->DisplayName, Margin,
-             FMath::Min(Canvas->ClipY - 110.f * Scale, NoticeY - 35.f * Scale), FLinearColor(.5f, .95f, 1.f), 1.3f);
+    {
+        // The preview's Information action is not a working purchase. Keep its
+        // access/identity intact while describing what this action really does.
+        FString Action = TEXT("Read station information");
+        switch (Terminal->Action)
+        {
+        case ESSOutpostAction::CycleShipPaint:
+            Action = TEXT("Preview next ship color");
+            break;
+        case ESSOutpostAction::CycleWardrobe:
+            Action = TEXT("Preview next character");
+            break;
+        case ESSOutpostAction::SurvivalBoarding:
+            Action = TEXT("Open flight game");
+            break;
+        case ESSOutpostAction::FreeFlight:
+            Action = TEXT("Open free flight");
+            break;
+        default:
+            if (Terminal->DisplayName.Contains(TEXT("FLIGHT UPGRADES")))
+                Action = TEXT("Read upgrade overview");
+            else if (Terminal->DisplayName.Contains(TEXT("CONTRACT EXCHANGE")))
+                Action = TEXT("Read contract overview");
+            else if (Terminal->DisplayName.Contains(TEXT("SHIP & PARTS")))
+                Action = TEXT("Read ship information");
+            else if (Terminal->DisplayName.Contains(TEXT("PILOT LEADERBOARD")))
+                Action = TEXT("Read pilot information");
+            else if (Terminal->DisplayName.Contains(TEXT("TRADE NETWORK")))
+                Action = TEXT("Read trade information");
+            break;
+        }
+        const FString Prompt = TEXT("E / X   ") + Action;
+        float Width = 0.f, Height = 0.f;
+        GetTextSize(Prompt, Width, Height, GEngine->GetSmallFont(), 1.3f * Scale);
+        const float X = FMath::Max(Margin, (Canvas->ClipX - Width) * .5f);
+        const float Y = FMath::Min(Canvas->ClipY - 74.f * Scale, NoticeY - Height - 22.f * Scale);
+        DrawRect(FLinearColor(.01f, .022f, .032f, .9f), X - 12.f * Scale, Y - 10.f * Scale, Width + 24.f * Scale,
+                 Height + 20.f * Scale);
+        Text(Prompt, X, Y, FLinearColor(.75f, .95f, 1.f), 1.3f);
+    }
     for (const auto &Line : NoticeLines)
     {
         Text(Line.Value, Margin, NoticeY, FLinearColor::White, .95f);
         NoticeY += FMath::Max(float(Line.LineExtent.Y), 14.f * Scale) + 4.f * Scale;
     }
-    Text(TEXT("WASD / LS  MOVE     MOUSE / RS  LOOK     SPACE / A  JUMP     SHIFT / L3  RUN     E / X  USE"), Margin,
-         Canvas->ClipY - 35.f * Scale, FLinearColor(.65f, .74f, .8f), .8f);
 }
 
 ASSOutpostDoor::ASSOutpostDoor()
@@ -432,6 +484,53 @@ ASSOutpostAmbientActor::ASSOutpostAmbientActor()
     DroneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DroneMesh"));
     DroneMesh->SetupAttachment(Body);
     DroneMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    HeadFillLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("NPCHeadFill"));
+    HeadFillLight->SetupAttachment(CharacterMesh);
+    HeadFillLight->SetMobility(EComponentMobility::Movable);
+    HeadFillLight->SetIntensityUnits(ELightUnits::Lumens);
+    HeadFillLight->SetIntensity(HeadFillLumens);
+    HeadFillLight->SetUseInverseSquaredFalloff(true);
+    HeadFillLight->SetAttenuationRadius(HeadFillRadius);
+    HeadFillLight->SetSourceRadius(HeadFillSourceRadius);
+    HeadFillLight->SetLightColor(FLinearColor(1.f, .95f, .9f));
+    HeadFillLight->SetLightingChannels(false, false, true);
+    HeadFillLight->SetSpecularScale(0.f);
+    HeadFillLight->SetIndirectLightingIntensity(0.f);
+    HeadFillLight->SetVolumetricScatteringIntensity(0.f);
+    HeadFillLight->SetAffectReflection(false);
+    HeadFillLight->SetAffectGlobalIllumination(false);
+    HeadFillLight->SetCastShadows(false);
+    HeadFillLight->SetVisibility(false);
+    HeadFillConfiguration = CreateDefaultSubobject<USSNPCHeadFillComponent>(TEXT("NPCHeadFillConfiguration"));
+    HeadFillConfiguration->ReceiverMesh = CharacterMesh;
+    HeadFillConfiguration->HeadFillLight = HeadFillLight;
+}
+void ASSOutpostAmbientActor::OnConstruction(const FTransform &Transform)
+{
+    Super::OnConstruction(Transform);
+    RefreshReadabilityLighting();
+}
+void ASSOutpostAmbientActor::RefreshReadabilityLighting()
+{
+    if (!HeadFillLight || !CharacterMesh || !HeadFillConfiguration)
+        return;
+    if (bHeadFillOwnsChannel)
+    {
+        CharacterMesh->SetLightingChannels(CharacterMesh->LightingChannels.bChannel0,
+                                           CharacterMesh->LightingChannels.bChannel1, bHeadFillPreviousChannel2);
+        bHeadFillOwnsChannel = false;
+    }
+    HeadFillConfiguration->ReceiverMesh = CharacterMesh;
+    HeadFillConfiguration->HeadFillLight = HeadFillLight;
+    HeadFillConfiguration->OffsetFrame = nullptr;
+    HeadFillConfiguration->bEnableHeadFill =
+        bEnableHeadFill && !bDrone && !bAnimationManagedExternally && !ActorHasTag(TEXT("OutpostRole:Hologram"));
+    HeadFillConfiguration->HeadFillSocket = HeadFillSocket;
+    HeadFillConfiguration->HeadFillOffset = HeadFillOffset;
+    HeadFillConfiguration->HeadFillLumens = HeadFillLumens;
+    HeadFillConfiguration->HeadFillRadius = HeadFillRadius;
+    HeadFillConfiguration->HeadFillSourceRadius = HeadFillSourceRadius;
+    HeadFillConfiguration->RefreshReadabilityLighting();
 }
 void ASSOutpostAmbientActor::PlayClip(UAnimSequence *Clip, bool bLoop)
 {
@@ -460,6 +559,7 @@ void ASSOutpostAmbientActor::BeginPlay()
         if (ActiveAnimation && ActiveAnimation->GetPlayLength() > .01f)
             CharacterMesh->SetPosition(FMath::Fmod(FMath::Abs(PhaseOffset), ActiveAnimation->GetPlayLength()), false);
     }
+    RefreshReadabilityLighting();
 }
 void ASSOutpostAmbientActor::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
 {

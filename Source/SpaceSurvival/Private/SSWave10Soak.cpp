@@ -1,6 +1,7 @@
 #include "SSWave10Soak.h"
 #include "SSGameMode.h"
 #include "SSDirectorVillain.h"
+#include "SSDistantAsteroids.h"
 #include "SSPhase1Data.h"
 #include "SSGameInstance.h"
 #include "SSHUD.h"
@@ -54,6 +55,12 @@ CSV_DEFINE_CATEGORY(SpaceSurvivalSoak, true);
 
 namespace
 {
+FVector SequenceLaneAt(double X, double TurnOffset = 0.)
+{
+    // The same fixed field-local lane used by the environment benchmark.
+    return FVector(X, 7000. * FMath::Sin(X / 100000.) + TurnOffset, 4500. * FMath::Sin(X / 150000.));
+}
+
 bool ReadScenario(bool &Station5, bool &Wave1)
 {
     FString Scenario;
@@ -66,7 +73,8 @@ bool ReadScenario(bool &Station5, bool &Wave1)
     Station5 = Scenario == TEXT("Station5");
     Wave1 = Scenario == TEXT("Wave1");
     return Station5 || Wave1 || Scenario == TEXT("Wave10") || Scenario == TEXT("Gallery") ||
-           Scenario == TEXT("MainMenu") || Scenario == TEXT("WormholeReview") || Scenario == TEXT("OutpostReview");
+           Scenario == TEXT("MainMenu") || Scenario == TEXT("WormholeReview") || Scenario == TEXT("OutpostReview") ||
+           Scenario == TEXT("QualityBenchmark") || Scenario == TEXT("TailReview");
 }
 bool IsIsolatedSoak(FString &Root, FString &Token)
 {
@@ -88,6 +96,34 @@ bool IsIsolatedSoak(FString &Root, FString &Token)
         return false;
     FString Scenario;
     FParse::Value(FCommandLine::Get(), TEXT("SSSoakScenario="), Scenario);
+    const bool BenchmarkRequested = FParse::Param(FCommandLine::Get(), TEXT("SSQualityBenchmark"));
+    const bool OfflineSequenceRequested = FParse::Param(FCommandLine::Get(), TEXT("SSOfflineSequence"));
+    if (OfflineSequenceRequested &&
+        (!Wave1 || !FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence")) ||
+         !FParse::Param(FCommandLine::Get(), TEXT("RenderOffscreen")) || BenchmarkRequested ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSUIFlightMenus"))))
+        return false;
+    if (FParse::Param(FCommandLine::Get(), TEXT("SSSoakApartmentWalk")) && Scenario != TEXT("OutpostReview"))
+        return false;
+    if (FParse::Param(FCommandLine::Get(), TEXT("SSSoakBoardingReview")) && Scenario != TEXT("OutpostReview"))
+        return false;
+    if (BenchmarkRequested != (Scenario == TEXT("QualityBenchmark")))
+        return false;
+    if ((BenchmarkRequested || Scenario == TEXT("TailReview")) &&
+        (FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("SSUIFlightMenus"))))
+        return false;
+    if ((BenchmarkRequested && FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"))) ||
+        (Scenario == TEXT("TailReview") && !FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"))))
+        return false;
     if (Scenario == TEXT("OutpostReview") && (!FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals")) ||
                                               FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence")) ||
                                               FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability")) ||
@@ -194,14 +230,20 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     FParse::Value(FCommandLine::Get(), TEXT("SSSoakScenario="), Scenario);
     Soak->Gallery = Scenario == TEXT("Gallery");
     Soak->MainMenu = Scenario == TEXT("MainMenu");
+    if (Soak->MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIFlightMenus")))
+        Soak->SetTickableWhenPaused(true);
     Soak->WormholeReview = Scenario == TEXT("WormholeReview");
     Soak->OutpostReview = Scenario == TEXT("OutpostReview");
+    Soak->ApartmentWalk = Soak->OutpostReview && FParse::Param(FCommandLine::Get(), TEXT("SSSoakApartmentWalk"));
+    Soak->QualityBenchmark = Scenario == TEXT("QualityBenchmark");
+    Soak->TailReview = Scenario == TEXT("TailReview");
     Soak->CaptureVisuals = FParse::Param(FCommandLine::Get(), TEXT("SSSoakVisuals"));
     Soak->DirectorReview = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSDirectorReview"));
     Soak->WeaponReadability = Soak->Wave1 && FParse::Param(FCommandLine::Get(), TEXT("SSWeaponReadability"));
     Soak->CaptureStationExterior = FParse::Param(FCommandLine::Get(), TEXT("SSStationExteriorReview"));
     Soak->CaptureSequence =
         (Soak->Wave1 || Soak->WormholeReview) && FParse::Param(FCommandLine::Get(), TEXT("SSSoakSequence"));
+    Soak->OfflineSequence = FParse::Param(FCommandLine::Get(), TEXT("SSOfflineSequence"));
     Soak->OffscreenVisuals = Soak->CaptureVisuals && FParse::Param(FCommandLine::Get(), TEXT("RenderOffscreen"));
     FParse::Value(FCommandLine::Get(), TEXT("SSSoakWalker="), Soak->RequestedWalkerId);
     if (!Soak->RequestedWalkerId.IsEmpty())
@@ -227,6 +269,8 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
     GI->AccountStorageBlocked = true;
     FCsvProfiler::Get()->EnableCategoryByString(TEXT("SpaceSurvival"));
     FCsvProfiler::Get()->EnableCategoryByString(TEXT("SpaceSurvivalSoak"));
+    if (Soak->QualityBenchmark)
+        FCsvProfiler::Get()->EnableCategoryByString(TEXT("SpaceSurvivalBenchmark"));
     UE_LOG(LogTemp, Display,
            TEXT("ENDGAME_FIXTURE_WAITING_FOR_FOREGROUND: activate this owned game window; capture starts after two "
                 "focused seconds."));
@@ -235,11 +279,143 @@ void ASSWave10Soak::TryStart(ASSGameMode *InMode)
            *Token, FPlatformProcess::GetCurrentProcessId(), Soak->Wave1);
 #endif
 }
+bool ASSWave10Soak::BeginSequenceRoute()
+{
+    auto *GM = Mode.Get();
+    if (!GM || !GM->DistantField)
+    {
+        Stop(TEXT("Wave1 sequence requires its actual field before choosing the starting lane."));
+        return false;
+    }
+    const FTransform FieldTransform = GM->DistantField->GetActorTransform();
+    const FVector Start = FieldTransform.TransformPosition(SequenceLaneAt(50000.));
+    const FVector Target = FieldTransform.TransformPosition(SequenceLaneAt(70000.));
+    const FRotator Heading = (Target - Start).Rotation();
+    SequenceInitialFieldOriginAbsolute = FieldTransform.GetLocation() + FVector(GetWorld()->OriginLocation);
+    GM->SpawnFlight(Start, Heading);
+    ++SequenceSetupPlacements;
+    if (!GM->Ship)
+    {
+        Stop(TEXT("Wave1 sequence did not spawn its real ship."));
+        return false;
+    }
+    FHitResult Hit;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSSequenceStartClearance), false, GM->Ship);
+    if (GM->Ship->SweepFlightHull(Hit, Start, Target, Heading.Quaternion(), Query))
+    {
+        Stop(FString::Printf(TEXT("Wave1 sequence starting hull route is blocked by %s; no collision bypass."),
+                             *GetNameSafe(Hit.GetActor())));
+        return false;
+    }
+    SequenceInitialHullClearance = true;
+    SequenceStartAbsolute = SequenceLastAbsolute = GM->Ship->GetActorLocation() + FVector(GetWorld()->OriginLocation);
+    SequenceLastRotation = GM->Ship->GetActorRotation();
+    SequenceRouteInitialized = true;
+    return true;
+}
+
+bool ASSWave10Soak::TickSequenceRoute(float Dt)
+{
+    auto *GM = Mode.Get();
+    if (!GM || !GM->Ship || !GM->DistantField)
+    {
+        Stop(TEXT("Wave1 sequence lost its ship or actual field lane."));
+        return false;
+    }
+    auto *Ship = GM->Ship.Get();
+    const FVector Absolute = Ship->GetActorLocation() + FVector(GetWorld()->OriginLocation);
+    SequenceTravelCm += FVector::Distance(Absolute, SequenceLastAbsolute);
+    SequenceLastAbsolute = Absolute;
+    SequenceNetTravelCm = FVector::Distance(Absolute, SequenceStartAbsolute);
+    const FTransform FieldTransform = GM->DistantField->GetActorTransform();
+    const FVector Local = FieldTransform.InverseTransformPosition(Ship->GetActorLocation());
+    SequenceForwardProgressCm = Local.X - 50000.;
+    SequenceLaneErrorCm = (Local - SequenceLaneAt(Local.X)).Size();
+    const double Speed = Ship->GetVelocity().Size();
+    const double PreviousSeconds = FlightSeconds - Dt;
+    const double PreBrakeStep = FMath::Max(0., FMath::Min(FlightSeconds, 21.) - FMath::Max(PreviousSeconds, 0.));
+    if (Speed >= 2000.)
+        SequenceFastSeconds += PreBrakeStep;
+    const double StallStep = FMath::Max(0., FMath::Min(FlightSeconds, 21.) - FMath::Max(PreviousSeconds, 5.));
+    SequenceStallSeconds = Speed < 100. && StallStep > 0. ? SequenceStallSeconds + StallStep : 0.;
+    SequenceMaximumStallSeconds = FMath::Max(SequenceMaximumStallSeconds, SequenceStallSeconds);
+    if (SequenceStallSeconds > 2.)
+    {
+        Stop(TEXT("Wave1 sequence stalled below 1m/s for more than two seconds before braking; moving-field review "
+                  "invalid."));
+        return false;
+    }
+    // Use only ordinary flight input after the single checked setup placement.
+    // Smoothly enter and leave an <=8m lateral excursion during the turn stage.
+    const double TurnPhase = FMath::Clamp((FlightSeconds - 7.) / 7., 0., 1.);
+    const double TurnOffset = 800. * FMath::Square(FMath::Sin(PI * TurnPhase));
+    const FVector Target = FieldTransform.TransformPosition(SequenceLaneAt(Local.X + 20000., TurnOffset));
+    const FRotator Current = Ship->GetActorRotation();
+    const FRotator Desired = (Target - Ship->GetActorLocation()).Rotation();
+    const float Step = FMath::Max(Dt, 1.f / 240.f);
+    const float YawRate = FMath::FindDeltaAngleDegrees(SequenceLastRotation.Yaw, Current.Yaw) / Step;
+    const float PitchRate = FMath::FindDeltaAngleDegrees(SequenceLastRotation.Pitch, Current.Pitch) / Step;
+    SequenceLastRotation = Current;
+    const FVector2D Steering(
+        FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Yaw, Desired.Yaw) / 40.f - YawRate * .015f, -.4f, .4f),
+        FMath::Clamp(FMath::FindDeltaAngleDegrees(Current.Pitch, Desired.Pitch) / 40.f - PitchRate * .015f, -.4f, .4f));
+    Ship->SetFlightInput(Steering, FVector2D::ZeroVector, 1.f, FlightSeconds >= 14 && FlightSeconds < 21,
+                         FlightSeconds >= 21 && FlightSeconds < 28);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, SequenceTravelCm, SequenceTravelCm, ECsvCustomStatOp::Set);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, SequenceForwardProgressCm, SequenceForwardProgressCm, ECsvCustomStatOp::Set);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, SequenceLaneErrorCm, SequenceLaneErrorCm, ECsvCustomStatOp::Set);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, SequenceFastSeconds, SequenceFastSeconds, ECsvCustomStatOp::Set);
+    CSV_CUSTOM_STAT(SpaceSurvivalSoak, SequenceStallSeconds, SequenceStallSeconds, ECsvCustomStatOp::Set);
+    return true;
+}
+
+void ASSWave10Soak::AddSequenceRouteResult(const TSharedRef<FJsonObject> &Result) const
+{
+    Result->SetBoolField(TEXT("sequenceFollowsActualFieldLane"), SequenceRouteInitialized);
+    Result->SetBoolField(TEXT("sequenceInitialHullClearance"), SequenceInitialHullClearance);
+    Result->SetNumberField(TEXT("sequenceFixtureSetupPlacements"), SequenceSetupPlacements);
+    Result->SetNumberField(TEXT("sequenceFixtureInFlightPlacements"), 0);
+    Result->SetStringField(TEXT("sequenceStartAbsoluteCm"), SequenceStartAbsolute.ToString());
+    Result->SetStringField(TEXT("sequenceEndAbsoluteCm"), SequenceLastAbsolute.ToString());
+    Result->SetStringField(TEXT("sequenceInitialFieldOriginAbsoluteCm"), SequenceInitialFieldOriginAbsolute.ToString());
+    Result->SetNumberField(TEXT("sequenceStartFieldLocalXcm"), 50000.);
+    Result->SetNumberField(TEXT("sequenceLookaheadCm"), 20000.);
+    Result->SetNumberField(TEXT("sequenceMaximumScriptedTurnOffsetCm"), 800.);
+    Result->SetNumberField(TEXT("sequenceTravelCm"), SequenceTravelCm);
+    Result->SetNumberField(TEXT("sequenceNetTravelCm"), SequenceNetTravelCm);
+    Result->SetNumberField(TEXT("sequenceForwardProgressCm"), SequenceForwardProgressCm);
+    Result->SetNumberField(TEXT("sequenceFastSecondsBeforeBrake"), SequenceFastSeconds);
+    Result->SetNumberField(TEXT("sequenceMaximumPreBrakeStallSeconds"), SequenceMaximumStallSeconds);
+    Result->SetBoolField(TEXT("sequenceMotionPassed"),
+                         SequenceInitialHullClearance && SequenceFastSeconds >= 12. && SequenceTravelCm >= 100000. &&
+                             SequenceNetTravelCm >= 100000. && SequenceForwardProgressCm >= 100000. &&
+                             SequenceMaximumStallSeconds <= 2. && FlightSeconds >= 29.);
+    Result->SetStringField(
+        TEXT("sequenceRouteEvidenceLimits"),
+        TEXT("One initial SpawnFlight on the actual field lane, real compound-hull sweep for the first "
+             "200m, then only SetFlightInput. Placement counts describe this fixture's calls. "
+             "Normal Director, collisions, damage, health and resources remain active; no route "
+             "clearance assistance or later teleport. World-origin changes are included in absolute "
+             "distance measurements. Requires >=12s at >=20m/s before 21s and >=1km travel/net/forward "
+             "progress; >2s below 1m/s between 5s and 21s fails. Scripted visual evidence only, "
+             "not natural gameplay, physical input, audio or performance acceptance."));
+}
+
 void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
 {
 #if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
     if (!CaptureVisuals || VisualNames.Contains(Name) || FScreenshotRequest::IsScreenshotRequested())
         return;
+    // PNG readbacks must leave ordinary viewport frames for temporal history to resolve.
+    // Named Wave1 stage shots share the sequence interval; wormhole timing is unchanged.
+    if (Wave1 && CaptureSequence && LastWave1ScreenshotFrame && GFrameCounter - LastWave1ScreenshotFrame < 8)
+        return;
+    if (Wave1 && !WeaponReadability && FCString::Strcmp(Name, TEXT("Boost")) == 0)
+    {
+        const auto *GI = Mode->GetGameInstance<USSGameInstance>();
+        if (!GI || !GI->Session.run.boosting)
+            return;
+    }
     const FString Path = Root / (FString(Name) + TEXT(".png"));
     if (FPlatformFileManager::Get().GetPlatformFile().IsSymlink(*Path) != ESymlinkResult::NonSymlink ||
         IFileManager::Get().FileExists(*Path))
@@ -251,6 +427,26 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
     Row->SetStringField(TEXT("name"), Name);
     Row->SetNumberField(TEXT("requestStageSeconds"), StageSeconds);
     Row->SetNumberField(TEXT("requestFrame"), double(GFrameCounter));
+    if (Wave1 && !WeaponReadability)
+    {
+        const auto &Run = Mode->GetGameInstance<USSGameInstance>()->Session.run;
+        Row->SetBoolField(TEXT("scriptedBoostRequested"), FlightSeconds >= 14 && FlightSeconds < 21);
+        Row->SetBoolField(TEXT("actualBoosting"), Run.boosting);
+        Row->SetBoolField(TEXT("scriptedBrakeRequested"), FlightSeconds >= 21 && FlightSeconds < 28);
+        Row->SetBoolField(TEXT("actualBraking"), Run.braking);
+        Row->SetNumberField(TEXT("shipSpeedCmPerSecond"), Mode->Ship->GetVelocity().Size());
+        if (SequenceRouteInitialized)
+        {
+            Row->SetStringField(TEXT("shipAbsolutePositionCm"), SequenceLastAbsolute.ToString());
+            Row->SetNumberField(TEXT("sequenceTravelCm"), SequenceTravelCm);
+            Row->SetNumberField(TEXT("sequenceNetTravelCm"), SequenceNetTravelCm);
+            Row->SetNumberField(TEXT("sequenceForwardProgressCm"), SequenceForwardProgressCm);
+            Row->SetNumberField(TEXT("sequenceFastSecondsBeforeBrake"), SequenceFastSeconds);
+            Row->SetNumberField(TEXT("sequenceLaneErrorCm"), SequenceLaneErrorCm);
+            Row->SetNumberField(TEXT("hullHealth"), Run.hull);
+            Row->SetNumberField(TEXT("shield"), Run.shield);
+        }
+    }
     if (FCString::Strcmp(Name, TEXT("CombatImpact")) == 0 && CombatExplosion.IsValid())
     {
         Row->SetStringField(TEXT("combatSourceEnemy"), CombatEnemy);
@@ -285,6 +481,44 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             Rows.Add(MakeShared<FJsonValueObject>(Entry));
         }
         Row->SetArrayField(TEXT("titleRows"), Rows);
+    }
+    if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
+    {
+        const auto *GM = Mode.Get();
+        const auto *GI = GM->GetGameInstance<USSGameInstance>();
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        const auto *HUD = PC ? Cast<ASSHUD>(PC->GetHUD()) : nullptr;
+        int32 Width = 0, Height = 0;
+        PC->GetViewportSize(Width, Height);
+        Row->SetNumberField(TEXT("viewportWidth"), Width);
+        Row->SetNumberField(TEXT("viewportHeight"), Height);
+        Row->SetNumberField(TEXT("uiScale"), GI->Session.settings.uiScale);
+        Row->SetStringField(TEXT("panelTitle"), GM->PanelTitle);
+        Row->SetNumberField(TEXT("selectedEntry"), GM->SelectedEntry);
+        Row->SetBoolField(TEXT("worldPaused"), UGameplayStatics::IsGamePaused(this));
+        Row->SetBoolField(TEXT("actualFlightCamera"), GI->IsFreeFlight() && GM->Ship && PC->GetPawn() == GM->Ship &&
+                                                          PC->GetViewTarget() == GM->Ship);
+        TArray<TSharedPtr<FJsonValue>> Rows;
+        if (HUD)
+            for (int32 Index = 0; Index < HUD->GetMenuBounds().Num(); ++Index)
+            {
+                const auto &Bounds = HUD->GetMenuBounds()[Index];
+                auto Entry = MakeShared<FJsonObject>();
+                Entry->SetNumberField(TEXT("index"), Index);
+                Entry->SetNumberField(TEXT("action"), GM->Entries[Index].Action);
+                Entry->SetStringField(TEXT("label"), GM->Entries[Index].Label);
+                Entry->SetBoolField(TEXT("visible"), Bounds.bIsValid);
+                if (Bounds.bIsValid)
+                {
+                    Entry->SetNumberField(TEXT("minX"), Bounds.Min.X);
+                    Entry->SetNumberField(TEXT("minY"), Bounds.Min.Y);
+                    Entry->SetNumberField(TEXT("maxX"), Bounds.Max.X);
+                    Entry->SetNumberField(TEXT("maxY"), Bounds.Max.Y);
+                    Entry->SetNumberField(TEXT("centerHitIndex"), HUD->MenuIndexAt(Bounds.GetCenter()));
+                }
+                Rows.Add(MakeShared<FJsonValueObject>(Entry));
+            }
+        Row->SetArrayField(TEXT("menuRows"), Rows);
     }
     if (WormholeReview)
     {
@@ -364,6 +598,13 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
             Row->SetNumberField(TEXT("confirmedHitFeedbackSeconds"), GM->PlayerHitFlashSeconds);
             Row->SetStringField(TEXT("muzzle"), GM->Ship->MuzzleWorldPosition().ToString());
             Row->SetStringField(TEXT("target"), GetNameSafe(WeaponReviewTarget.Get()));
+            if (WeaponReviewTarget)
+            {
+                Row->SetNumberField(TEXT("targetHealthBefore"), WeaponTargetHealthBefore);
+                Row->SetNumberField(TEXT("targetHealthAfter"), WeaponTargetHealthAfter);
+                Row->SetBoolField(TEXT("targetDamageConfirmed"), WeaponTargetDamaged);
+                Row->SetBoolField(TEXT("targetDestroyed"), WeaponTargetDestroyed);
+            }
             Row->SetNumberField(TEXT("uncapturedWarmupShots"), WeaponWarmupShots);
             Row->SetNumberField(TEXT("renderingReadyAtSeconds"), WeaponRenderingReadyAt);
             int32 Projectiles = 0, Pulses = 0;
@@ -490,6 +731,14 @@ void ASSWave10Soak::CaptureVisual(const TCHAR *Name, float StageSeconds)
         Row->SetStringField(TEXT("galleryStatus"), Mode->AlienGallery->Status());
     }
     VisualNames.Add(Name);
+    if (Wave1 && CaptureSequence)
+    {
+        const int32 Spacing = LastWave1ScreenshotFrame ? int32(GFrameCounter - LastWave1ScreenshotFrame) : 0;
+        Row->SetNumberField(TEXT("renderFramesSincePreviousScreenshot"), Spacing);
+        if (LastWave1ScreenshotFrame)
+            MinimumWave1ScreenshotSpacing = FMath::Min(MinimumWave1ScreenshotSpacing, Spacing);
+        LastWave1ScreenshotFrame = GFrameCounter;
+    }
     VisualRecords.Add(MakeShared<FJsonValueObject>(Row));
     // Viewport + HUD. Only the two explicitly labeled station review frames use
     // a fixture camera. Fulfilled at frame end; this is the request timestamp.
@@ -661,6 +910,11 @@ void ASSWave10Soak::Stop(const FString &Error)
 #if WITH_DEV_AUTOMATION_TESTS && CSV_PROFILER && !CSV_PROFILER_MINIMAL
     if (Stopping)
         return;
+    if (BoardingReviewStarted && !BoardingReviewComplete)
+    {
+        RestoreBoardingReviewGuards();
+        WriteBoardingReviewResult(Error.IsEmpty() ? TEXT("Boarding review stopped early.") : Error);
+    }
     Failure = Error;
     if (!Error.IsEmpty())
         UE_LOG(LogTemp, Error, TEXT("ENDGAME_FIXTURE_FIRST_FAILURE galleryStage=%d: %s"), GalleryStage, *Error);
@@ -794,7 +1048,8 @@ void ASSWave10Soak::TickWeaponReadability()
     auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
     if (!GI || !IsValid(GM->Ship) || FlightSeconds > 20.)
     {
-        Stop(TEXT("Weapon review did not observe both real shots and confirmed hits within its bounded window."));
+        Stop(TEXT("Weapon review did not observe both real shots and confirmed hits within its bounded window. ") +
+             WeaponLastShotDiagnostic);
         return;
     }
     // Only this explicit isolated review stops the Director/target AI. Damage,
@@ -806,36 +1061,176 @@ void ASSWave10Soak::TickWeaponReadability()
         ++WeaponReviewStage;
         WeaponStageAt = FlightSeconds;
     };
+    auto HitLabel = [](const FHitResult &Hit)
+    {
+        return FString::Printf(TEXT("%s/%s item=%d distance=%.1f startPenetrating=%d"), *GetNameSafe(Hit.GetActor()),
+                               *GetNameSafe(Hit.GetComponent()), Hit.Item, Hit.Distance, Hit.bStartPenetrating);
+    };
     auto SpawnTarget = [&]()
     {
         GM->Director->ResetEncounter();
         GM->PlayerHitFlashSeconds = 0.f;
-        const FVector Eye = GM->Ship->Camera->GetComponentLocation();
-        const FVector Sight = (GM->Ship->CrosshairWorldPoint() - Eye).GetSafeNormal();
-        auto *Target = GetWorld()->SpawnActor<ASSEnemy>(Eye + Sight * 10000.f, (-Sight).Rotation());
-        if (!Target)
+        if (WeaponTargetSearchAt < 0.)
+            WeaponTargetSearchAt = FlightSeconds;
+        auto *Ship = GM->Ship.Get();
+        const FVector Eye = Ship->Camera->GetComponentLocation(), Muzzle = Ship->MuzzleWorldPosition();
+        const FVector Sight = (Ship->CrosshairWorldPoint() - Eye).GetSafeNormal();
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(SSWeaponReviewPlacement), false, Ship);
+        // A target under the reticle must also be visible from the elevated chase camera.
+        // Do not hide or remove scenery: let ordinary powered flight clear a blocked view.
+        for (const float Depth : {10000.f, 8000.f, 6000.f})
         {
-            Stop(TEXT("Could not create the one isolated weapon review target."));
+            const FVector Position = Eye + Sight * Depth;
+            if (FVector::DotProduct(Position - Muzzle, Ship->GetActorForwardVector()) < 1000.f ||
+                FVector::DistSquared(Muzzle, Position) > FMath::Square(GM->Tuning->WeaponRange))
+                continue;
+            FHitResult EyeHit, MuzzleHit, ShotHit;
+            const bool EyeBlocked = GetWorld()->LineTraceSingleByChannel(EyeHit, Eye, Position, ECC_Visibility, Query);
+            const bool MuzzleBlocked =
+                GetWorld()->LineTraceSingleByChannel(MuzzleHit, Muzzle, Position, ECC_Visibility, Query);
+            const bool PositionBlocked = GetWorld()->OverlapBlockingTestByChannel(
+                Position, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(180.f), Query);
+            WeaponLastShotDiagnostic = FString::Printf(
+                TEXT("Target placement depth=%.1f eyeFirst=%s muzzleFirst=%s occupied=%d eye=%s muzzle=%s"), Depth,
+                *HitLabel(EyeHit), *HitLabel(MuzzleHit), PositionBlocked, *Eye.ToString(), *Muzzle.ToString());
+            if (EyeBlocked || MuzzleBlocked || PositionBlocked)
+                continue;
+            auto *Target = GetWorld()->SpawnActor<ASSEnemy>(Position, (-Sight).Rotation());
+            if (!Target)
+            {
+                Stop(TEXT("Could not create the one isolated weapon review target."));
+                return false;
+            }
+            Target->Configure(ESSWorldKind::Pursuer, 180.f, 0.f, 1);
+            Target->SetActorTickEnabled(false);
+            GetWorld()->LineTraceSingleByChannel(EyeHit, Eye, Position, ECC_Visibility, Query);
+            GetWorld()->LineTraceSingleByChannel(MuzzleHit, Muzzle, Position, ECC_Visibility, Query);
+            GetWorld()->LineTraceSingleByChannel(
+                ShotHit, Muzzle, Muzzle + Ship->AimDirection() * GM->Tuning->WeaponRange, ECC_Visibility, Query);
+            if (EyeHit.GetActor() != Target || MuzzleHit.GetActor() != Target || ShotHit.GetActor() != Target)
+            {
+                WeaponLastShotDiagnostic =
+                    FString::Printf(TEXT("Target placement depth=%.1f eyeFirst=%s muzzleFirst=%s shotFirst=%s"), Depth,
+                                    *HitLabel(EyeHit), *HitLabel(MuzzleHit), *HitLabel(ShotHit));
+                Target->Destroy();
+                continue;
+            }
+            WeaponReviewTarget = Target;
+            WeaponTargetHealthBefore = WeaponTargetHealthAfter = Target->GetHealth();
+            WeaponTargetDamaged = WeaponTargetDestroyed = WeaponTargetShotAttempted = false;
+            WeaponTargetPlacementWait = FlightSeconds - WeaponTargetSearchAt;
+            WeaponTargetCameraDepth = Depth;
+            WeaponTargetSearchAt = -1.;
+            return true;
+        }
+        if (FlightSeconds - WeaponTargetSearchAt >= 2.)
+            Stop(TEXT("Weapon review could not place a visible target within 2s of normal flight. ") +
+                 WeaponLastShotDiagnostic);
+        return false;
+    };
+    auto UpdateTargetEvidence = [&]()
+    {
+        if (const auto *Target = WeaponReviewTarget.Get(); Target && WeaponTargetShotAttempted)
+        {
+            const bool WasDamaged = WeaponTargetDamaged;
+            WeaponTargetHealthAfter = Target->GetHealth();
+            WeaponTargetDestroyed = Target->IsActorBeingDestroyed();
+            WeaponTargetDamaged = WeaponTargetHealthAfter < WeaponTargetHealthBefore;
+            if (WeaponTargetDamaged && !WasDamaged)
+                UE_LOG(LogTemp, Display, TEXT("WEAPON_REVIEW_TARGET_DAMAGE %s health=%.2f->%.2f destroyed=%d"),
+                       *Target->GetName(), WeaponTargetHealthBefore, WeaponTargetHealthAfter, WeaponTargetDestroyed);
+            if (!WeaponShotRecords.IsEmpty())
+            {
+                auto Record = WeaponShotRecords.Last()->AsObject();
+                Record->SetNumberField(TEXT("targetHealthAfter"), WeaponTargetHealthAfter);
+                Record->SetBoolField(TEXT("targetDestroyed"), WeaponTargetDestroyed);
+                Record->SetBoolField(TEXT("targetDamageConfirmed"), WeaponTargetDamaged);
+            }
+        }
+        return WeaponTargetDamaged && GM->PlayerHitFlashSeconds > 0.f;
+    };
+    auto FireAtTarget = [&](const TCHAR *Stage)
+    {
+        auto *Target = WeaponReviewTarget.Get();
+        if (!Target || Target->IsActorBeingDestroyed())
+        {
+            Stop(TEXT("Weapon review lost its intended target before firing. ") + WeaponLastShotDiagnostic);
             return false;
         }
-        Target->Configure(ESSWorldKind::Pursuer, 180.f, 0.f, 1);
-        Target->SetActorTickEnabled(false);
-        WeaponReviewTarget = Target;
+        auto *Ship = GM->Ship.Get();
+        const FVector Eye = Ship->Camera->GetComponentLocation(), Muzzle = Ship->MuzzleWorldPosition();
+        const FVector TargetPosition = Target->GetActorLocation();
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(SSWeaponReviewSight), false, Ship);
+        FHitResult EyeHit, MuzzleTargetHit, ShotHit;
+        GetWorld()->LineTraceSingleByChannel(EyeHit, Eye, TargetPosition, ECC_Visibility, Query);
+        GetWorld()->LineTraceSingleByChannel(MuzzleTargetHit, Muzzle, TargetPosition, ECC_Visibility, Query);
+        GetWorld()->LineTraceSingleByChannel(ShotHit, Muzzle, Muzzle + Ship->AimDirection() * GM->Tuning->WeaponRange,
+                                             ECC_Visibility, Query);
+        WeaponTargetHealthBefore = Target->GetHealth();
+        auto Record = MakeShared<FJsonObject>();
+        Record->SetStringField(TEXT("stage"), Stage);
+        Record->SetNumberField(TEXT("stageSeconds"), FlightSeconds);
+        Record->SetNumberField(TEXT("frame"), double(GFrameCounter));
+        Record->SetNumberField(TEXT("completedFlightFrames"), CapturedFrames);
+        Record->SetStringField(TEXT("target"), Target->GetName());
+        Record->SetStringField(TEXT("eye"), Eye.ToString());
+        Record->SetStringField(TEXT("muzzle"), Muzzle.ToString());
+        Record->SetStringField(TEXT("targetPosition"), TargetPosition.ToString());
+        Record->SetNumberField(TEXT("targetHealthBefore"), WeaponTargetHealthBefore);
+        Record->SetNumberField(TEXT("targetPlacementWaitSeconds"), WeaponTargetPlacementWait);
+        Record->SetNumberField(TEXT("targetCameraDepth"), WeaponTargetCameraDepth);
+        Record->SetNumberField(TEXT("muzzleTargetDistance"), FVector::Distance(Muzzle, TargetPosition));
+        Record->SetNumberField(TEXT("weaponRange"), GM->Tuning->WeaponRange);
+        Record->SetStringField(TEXT("eyeFirstHit"), HitLabel(EyeHit));
+        Record->SetStringField(TEXT("muzzleToTargetFirstHit"), HitLabel(MuzzleTargetHit));
+        Record->SetStringField(TEXT("shotRayFirstHit"), HitLabel(ShotHit));
+        Record->SetBoolField(TEXT("isFlying"), GI->Session.IsFlying());
+        Record->SetBoolField(TEXT("isMoored"), Ship->IsMoored());
+        Record->SetBoolField(TEXT("isTakingOff"), Ship->IsTakingOff());
+        Record->SetBoolField(TEXT("wasFiring"), Ship->IsFiring());
+        WeaponShotRecords.Add(MakeShared<FJsonValueObject>(Record));
+        WeaponTargetShotAttempted = true;
+        Ship->Fire();
+        Record->SetBoolField(TEXT("isFiringAfter"), Ship->IsFiring());
+        UpdateTargetEvidence();
+        WeaponLastShotDiagnostic = FString::Printf(
+            TEXT("%s target=%s health=%.2f->%.2f firing=%d eyeFirst=%s muzzleToTargetFirst=%s shotFirst=%s "
+                 "muzzleRange=%.1f/%.1f eye=%s muzzle=%s targetPosition=%s"),
+            Stage, *Target->GetName(), WeaponTargetHealthBefore, WeaponTargetHealthAfter, Ship->IsFiring(),
+            *HitLabel(EyeHit), *HitLabel(MuzzleTargetHit), *HitLabel(ShotHit),
+            FVector::Distance(Muzzle, TargetPosition), GM->Tuning->WeaponRange, *Eye.ToString(), *Muzzle.ToString(),
+            *TargetPosition.ToString());
+        UE_LOG(LogTemp, Display, TEXT("WEAPON_REVIEW_SHOT %s"), *WeaponLastShotDiagnostic);
         return true;
     };
     switch (WeaponReviewStage)
     {
     case -4:
+        if (!WeaponStartupFramesReady)
+        {
+            if (CapturedFrames < 2)
+            {
+                if (FlightSeconds > .5)
+                {
+                    Stop(TEXT("Weapon review still lacks two completed ship/camera frames after 0.5s."));
+                    return;
+                }
+                break;
+            }
+            // Readiness is sampled at frame boundaries; the completing frame may cross the deadline.
+            WeaponStartupFramesReady = true;
+        }
         // Editor asset/shader preparation can outlive a short shot. Exercise the
         // real paths without a screenshot, then wait for preparation to settle.
         // These warmup hits are explicitly excluded from cold-first-shot evidence.
         GI->Session.run.weapon = SS::Weapon::RapidLaser;
         if (SpawnTarget())
         {
-            GM->Ship->Fire();
-            if (GM->PlayerHitFlashSeconds <= 0.f)
+            if (!FireAtTarget(TEXT("RapidWarmup")))
+                return;
+            if (!UpdateTargetEvidence())
             {
-                Stop(TEXT("Rapid warmup did not deal actual damage to its isolated target."));
+                Stop(TEXT("Rapid warmup did not damage its intended target. ") + WeaponLastShotDiagnostic);
                 return;
             }
             ++WeaponWarmupShots;
@@ -846,18 +1241,21 @@ void ASSWave10Soak::TickWeaponReadability()
         if (FlightSeconds - WeaponStageAt >= 1. && SpawnTarget())
         {
             GI->Session.run.weapon = SS::Weapon::HeavyCannon;
-            GM->Ship->Fire();
+            if (!FireAtTarget(TEXT("CannonWarmup")))
+                return;
             ++WeaponWarmupShots;
             Next();
         }
         break;
     case -2:
-        if (GM->PlayerHitFlashSeconds > 0.f)
+        if (UpdateTargetEvidence())
         {
             GM->Director->ResetEncounter();
-            WeaponReviewTarget.Reset();
+            WeaponReviewTarget = nullptr;
             Next();
         }
+        else if (FlightSeconds - WeaponStageAt > 1.5)
+            Stop(TEXT("Cannon warmup did not damage its intended target. ") + WeaponLastShotDiagnostic);
         break;
     case -1:
     {
@@ -895,12 +1293,26 @@ void ASSWave10Soak::TickWeaponReadability()
         }
         break;
     case 2:
-        if (FlightSeconds - WeaponStageAt >= .3 && SpawnTarget())
+        if (FlightSeconds - WeaponStageAt >= .3)
+        {
+            WeaponTargetShotAttempted = false;
             Next();
+        }
         break;
     case 3:
-        GM->Ship->Fire();
-        if (GM->PlayerHitFlashSeconds > 0.f && !FScreenshotRequest::IsScreenshotRequested())
+        if (!WeaponTargetShotAttempted)
+        {
+            if (!SpawnTarget())
+                break;
+            if (!FireAtTarget(TEXT("RapidHit")))
+                return;
+        }
+        if (!UpdateTargetEvidence())
+        {
+            Stop(TEXT("Rapid hit did not damage its intended target. ") + WeaponLastShotDiagnostic);
+            return;
+        }
+        if (!FScreenshotRequest::IsScreenshotRequested())
         {
             CaptureVisual(TEXT("RapidHit"), float(FlightSeconds));
             Next();
@@ -910,7 +1322,7 @@ void ASSWave10Soak::TickWeaponReadability()
         if (FlightSeconds - WeaponStageAt >= 1.)
         {
             GM->Director->ResetEncounter();
-            WeaponReviewTarget.Reset();
+            WeaponReviewTarget = nullptr;
             GI->Session.run.weapon = SS::Weapon::HeavyCannon;
             GM->Ship->Fire();
             Next();
@@ -934,16 +1346,19 @@ void ASSWave10Soak::TickWeaponReadability()
     case 6:
         if (FlightSeconds - WeaponStageAt >= 1. && SpawnTarget())
         {
-            GM->Ship->Fire();
+            if (!FireAtTarget(TEXT("CannonHit")))
+                return;
             Next();
         }
         break;
     case 7:
-        if (GM->PlayerHitFlashSeconds > 0.f && !FScreenshotRequest::IsScreenshotRequested())
+        if (UpdateTargetEvidence() && !FScreenshotRequest::IsScreenshotRequested())
         {
             CaptureVisual(TEXT("CannonHit"), float(FlightSeconds));
             Next();
         }
+        else if (FlightSeconds - WeaponStageAt > 1.5)
+            Stop(TEXT("Cannon hit did not damage its intended target. ") + WeaponLastShotDiagnostic);
         break;
     case 8:
         if (FlightSeconds - WeaponStageAt >= 1.)
@@ -964,15 +1379,50 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
         Stop(TEXT("UI review lost isolated state or exceeded its bounded window."));
         return;
     }
+    const bool FlightMenus = FParse::Param(FCommandLine::Get(), TEXT("SSUIFlightMenus"));
+    if (FlightMenus && !Started)
+    {
+        FlightSeconds += Dt;
+        if (!GI->IsFreeFlight())
+        {
+            GM->bAtTitleScreen = false;
+            // BeginFreeFlight protects unreadable profiles with this same flag. Permit only
+            // its in-memory session clone, then immediately restore the fixture's write block.
+            TGuardValue<bool> AllowPractice(GI->AccountStorageBlocked, false);
+            GM->StartFreeFlight();
+            if (!GI->IsFreeFlight())
+                Stop(TEXT("Flight menu review could not start its isolated Free Flight session."));
+            return;
+        }
+        if (!GM->Ship || PC->GetPawn() != GM->Ship)
+        {
+            Stop(TEXT("Flight menu review did not possess the real ship."));
+            return;
+        }
+        GM->Ship->SetFlightInput(FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f, false, false);
+        if (GM->IsDepartingStation() || GM->Ship->IsTakingOff() || !GI->Session.IsFlying())
+            return;
+        GM->OpenPanel(ESSPanel::Main);
+        if (!UGameplayStatics::IsGamePaused(this) || PC->GetViewTarget() != GM->Ship)
+        {
+            Stop(TEXT("Flight menu review requires the normal paused ship camera."));
+            return;
+        }
+    }
     const FString Run(UTF8_TO_TCHAR(SS::EncodeRun(GI->Session.run).c_str()));
     const FString Account(UTF8_TO_TCHAR(SS::EncodeAccount(GI->Session.account).c_str()));
     if (!Started)
     {
+        float ReviewScale = 1.f;
+        FParse::Value(FCommandLine::Get(), TEXT("SSUIReviewScale="), ReviewScale);
+        GI->Session.settings.uiScale = FMath::Clamp(ReviewScale, .8f, 1.4f);
         MainMenuRunBefore = Run;
         MainMenuAccountBefore = Account;
+        MainMenuSettingsBefore = UTF8_TO_TCHAR(SS::EncodeSettings(GI->Session.settings).c_str());
         Started = true;
     }
-    MainMenuStatePreserved = Run == MainMenuRunBefore && Account == MainMenuAccountBefore;
+    MainMenuStatePreserved = Run == MainMenuRunBefore && Account == MainMenuAccountBefore &&
+                             MainMenuSettingsBefore == UTF8_TO_TCHAR(SS::EncodeSettings(GI->Session.settings).c_str());
     if (!MainMenuStatePreserved)
     {
         Stop(TEXT("UI review changed the actual account or run."));
@@ -982,15 +1432,18 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
     ++CapturedFrames;
     const bool Followup = FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview"));
     const TArray<ESSPanel> Panels =
-        Followup ? TArray<ESSPanel>{ESSPanel::Audio,    ESSPanel::Controls, ESSPanel::Wardrobe,
-                                    ESSPanel::Wardrobe, ESSPanel::Wardrobe, ESSPanel::None}
-                 : TArray<ESSPanel>{ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
-                                    ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
+        FlightMenus ? TArray<ESSPanel>{ESSPanel::Main, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls}
+        : Followup  ? TArray<ESSPanel>{ESSPanel::Audio,    ESSPanel::Controls, ESSPanel::Wardrobe,
+                                       ESSPanel::Wardrobe, ESSPanel::Wardrobe, ESSPanel::None}
+                    : TArray<ESSPanel>{ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
+                                       ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
     const TArray<const TCHAR *> Names =
-        Followup ? TArray<const TCHAR *>{TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
-                                         TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")}
-                 : TArray<const TCHAR *>{TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
-                                         TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
+        FlightMenus ? TArray<const TCHAR *>{TEXT("UIPauseFlight"), TEXT("UIGraphicsFlight"), TEXT("UIAudioFlight"),
+                                            TEXT("UIControlsFlight")}
+        : Followup  ? TArray<const TCHAR *>{TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
+                                            TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")}
+                    : TArray<const TCHAR *>{TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
+                                            TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
     const int32 Index = MainMenuStage / 2;
     if (Index >= Panels.Num())
     {
@@ -1002,7 +1455,7 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
     {
         GM->bAtTitleScreen = false;
         GM->bTitleSettingsNavigation = false;
-        HUD->bReviewFlightHUD = !Followup && Panels[Index] == ESSPanel::None;
+        HUD->bReviewFlightHUD = !Followup && !FlightMenus && Panels[Index] == ESSPanel::None;
         if (Followup && Index == 3)
         {
             // The same index change used by D-pad navigation must reveal the final character.
@@ -1040,6 +1493,13 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
     {
         const auto &Bounds = HUD->GetMenuBounds();
         const bool Wardrobe = GM->Panel == ESSPanel::Wardrobe;
+        int32 ViewWidth = 0, ViewHeight = 0;
+        PC->GetViewportSize(ViewWidth, ViewHeight);
+        if (ViewWidth <= 0 || ViewHeight <= 0)
+        {
+            Stop(TEXT("UI review has no actual viewport dimensions."));
+            return;
+        }
         if (Bounds.Num() != GM->Entries.Num())
         {
             Stop(TEXT("UI frame lost native action bounds."));
@@ -1048,15 +1508,29 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
         int32 Visible = 0;
         for (int32 I = 0; I < Bounds.Num(); ++I)
         {
-            if (Wardrobe && !Bounds[I].bIsValid)
+            const int32 ScrollRow = HUD->ScrollEntries.IndexOfByKey(I);
+            const bool HiddenRow = ScrollRow != INDEX_NONE &&
+                                   (ScrollRow < HUD->ScrollFirst || ScrollRow >= HUD->ScrollFirst + HUD->ScrollVisible);
+            if (HiddenRow && !Bounds[I].bIsValid)
                 continue;
             ++Visible;
-            if (!Bounds[I].bIsValid || Bounds[I].Min.X < 0 || Bounds[I].Min.Y < 0 || Bounds[I].Max.X > 1920 ||
-                Bounds[I].Max.Y > 1080 || HUD->MenuIndexAt(Bounds[I].GetCenter()) != I)
+            if (!Bounds[I].bIsValid || Bounds[I].Min.X < 0 || Bounds[I].Min.Y < 0 || Bounds[I].Max.X > ViewWidth ||
+                Bounds[I].Max.Y > ViewHeight || HUD->MenuIndexAt(Bounds[I].GetCenter()) != I)
             {
                 Stop(TEXT("UI frame has overlapping, offscreen or mismapped action bounds."));
                 return;
             }
+            for (int32 Other = 0; Other < I; ++Other)
+                if (Bounds[Other].bIsValid && Bounds[I].Intersect(Bounds[Other]))
+                {
+                    Stop(TEXT("UI action rectangles overlap."));
+                    return;
+                }
+        }
+        if (!Bounds.IsValidIndex(GM->SelectedEntry) || !Bounds[GM->SelectedEntry].bIsValid)
+        {
+            Stop(TEXT("UI controller focus is outside the visible list."));
+            return;
         }
         if (Wardrobe &&
             (Visible != FMath::Min(HUD->ScrollCount, HUD->ScrollVisible) + 1 || !Bounds[GM->SelectedEntry].bIsValid ||
@@ -1469,7 +1943,7 @@ void ASSWave10Soak::Tick(float Dt)
             FPlatformMisc::RequestExit(false);
             return;
         }
-        if (!OffscreenVisuals && !FApp::HasFocus())
+        if (!OffscreenVisuals && !QualityBenchmark && !FApp::HasFocus())
         {
             FocusSince = 0;
             return;
@@ -1484,20 +1958,38 @@ void ASSWave10Soak::Tick(float Dt)
     }
     auto *GM = Mode.Get();
     auto *GI = GM ? GM->GetGameInstance<USSGameInstance>() : nullptr;
+    const bool ExplicitVisualFixedStep = TailReview || OfflineSequence;
+    const bool InvalidTimeStep =
+        ExplicitVisualFixedStep
+            ? (!FApp::UseFixedTimeStep() || !FMath::IsNearlyEqual(FApp::GetFixedDeltaTime(), 1. / 60., 1.e-8) ||
+               !FMath::IsNearlyEqual(Dt, 1.f / 60.f, 1.e-6f))
+            : FApp::UseFixedTimeStep();
     if (!GI ||
-        FPlatformTime::Seconds() - StartedAt > (OutpostReview ? 300
-                                                : Gallery     ? 240
-                                                : Wave1       ? 90
-                                                : Station5    ? 240
-                                                              : 180) ||
-        !FMath::IsNearlyEqual(GetWorld()->GetWorldSettings()->GetEffectiveTimeDilation(), 1.f) ||
-        FApp::UseFixedTimeStep() || (GEngine && GEngine->bUseFixedFrameRate))
+        FPlatformTime::Seconds() - StartedAt > (OfflineSequence ? 600
+                                                : OutpostReview ? 300
+                                                : Gallery       ? 240
+                                                : TailReview    ? 240
+                                                : Wave1         ? 90
+                                                : Station5      ? 240
+                                                                : 180) ||
+        !FMath::IsNearlyEqual(GetWorld()->GetWorldSettings()->GetEffectiveTimeDilation(), 1.f) || InvalidTimeStep ||
+        (GEngine && GEngine->bUseFixedFrameRate))
     {
         Stop(TEXT("Missing world, timeout, fixed timestep or time dilation invalidates this rendered fixture."));
         return;
     }
     if (!FCsvProfiler::IsCapturing())
         return;
+    if (QualityBenchmark)
+    {
+        TickQualityBenchmark(Dt);
+        return;
+    }
+    if (TailReview)
+    {
+        TickTailReview(Dt);
+        return;
+    }
     if (Gallery)
     {
         TickGallery(Dt);
@@ -1542,7 +2034,13 @@ void ASSWave10Soak::Tick(float Dt)
         S.run.shield = S.Stats().maxShield;
         GM->PreviousPhase = GM->PreviousWave = -1;
         GM->Director->ResetEncounter();
-        GM->SpawnFlight(FVector(0, 0, 7000), FRotator::ZeroRotator);
+        if (Wave1 && CaptureSequence && !WeaponReadability && !DirectorReview)
+        {
+            if (!BeginSequenceRoute())
+                return;
+        }
+        else
+            GM->SpawnFlight(FVector(0, 0, 7000), FRotator::ZeroRotator);
         GM->Announce(Wave1      ? TEXT("WAVE 1 VISUAL FIXTURE / NORMAL STARTER STATS / SCRIPTED INPUT")
                      : Station5 ? TEXT("AUTOMATED STATION 1 CAPTURE / SEEDED BUILD / NOT NATURAL GAMEPLAY")
                                 : TEXT("AUTOMATED ENDGAME CAPTURE / SEEDED BUILD / NOT NATURAL GAMEPLAY"));
@@ -1605,26 +2103,47 @@ void ASSWave10Soak::Tick(float Dt)
             TickWeaponReadability();
             return;
         }
-        const bool Turning = FlightSeconds >= 7 && FlightSeconds < 14;
-        GM->Ship->SetFlightInput(Turning ? FVector2D(.16, .035) : FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f,
-                                 FlightSeconds >= 14 && FlightSeconds < 21, FlightSeconds >= 21 && FlightSeconds < 28);
-        const float Times[] = {5.f, 12.f, 19.f, 25.f};
+        if (SequenceRouteInitialized)
+        {
+            if (!TickSequenceRoute(Dt))
+                return;
+        }
+        else
+        {
+            const bool Turning = FlightSeconds >= 7 && FlightSeconds < 14;
+            GM->Ship->SetFlightInput(Turning ? FVector2D(.16, .035) : FVector2D::ZeroVector, FVector2D::ZeroVector, 1.f,
+                                     FlightSeconds >= 14 && FlightSeconds < 21,
+                                     FlightSeconds >= 21 && FlightSeconds < 28);
+        }
+        const float Times[] = {5.f, 12.f, 15.5f, 25.f};
         const TCHAR *Names[] = {TEXT("Cruise"), TEXT("Turn"), TEXT("Boost"), TEXT("Brake")};
         for (int32 Index = 0; Index < UE_ARRAY_COUNT(Times); ++Index)
             if (FlightSeconds >= Times[Index])
                 CaptureVisual(Names[Index], float(FlightSeconds));
-        if (CaptureSequence && FlightSeconds >= NextSequenceSeconds && !FScreenshotRequest::IsScreenshotRequested())
+        if (CaptureSequence && SequenceIndex < 80 && FlightSeconds >= NextSequenceSeconds &&
+            !FScreenshotRequest::IsScreenshotRequested())
         {
-            const FString Name = FString::Printf(TEXT("Sequence_%03d"), SequenceIndex++);
+            const FString Name = FString::Printf(TEXT("Sequence_%03d"), SequenceIndex);
             CaptureVisual(*Name, float(FlightSeconds));
-            // Actual request timestamps remain in the receipt; no fixed timestep or interpolation.
-            NextSequenceSeconds = FlightSeconds + .25;
+            if (VisualNames.Contains(Name))
+            {
+                ++SequenceIndex;
+                // Actual simulation timestamps remain in the receipt; no interpolated images.
+                NextSequenceSeconds = FlightSeconds + .25;
+            }
         }
         CaptureDirectorReview();
         if (Threats > GM->Director->MaximumActiveThreats)
             Stop(TEXT("Director active threat cap exceeded during Wave 1 visual fixture."));
         else if (FlightSeconds >= 29)
-            Stop(SawFlightWave ? FString() : TEXT("Normal Wave 1 flight was not observed."));
+        {
+            if (SequenceRouteInitialized && (SequenceFastSeconds < 12. || SequenceTravelCm < 100000. ||
+                                             SequenceNetTravelCm < 100000. || SequenceForwardProgressCm < 100000.))
+                Stop(TEXT("Wave1 sequence requires twelve seconds above 20m/s before braking and 1km actual "
+                          "travel, net displacement and forward progress; moving-field review invalid."));
+            else
+                Stop(SawFlightWave ? FString() : TEXT("Normal Wave 1 flight was not observed."));
+        }
         return;
     }
     SawFlightWave |= S.run.wave == (Station5 ? 5 : 9) && S.run.phase == SS::Phase::Flight;
@@ -1955,7 +2474,17 @@ void ASSWave10Soak::WriteResultAndExit()
     if (CaptureVisuals && Failure.IsEmpty())
     {
         TArray<FString> Expected;
-        if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview")))
+        if (TailReview)
+        {
+            for (int32 Index = 0; Index < TailReviewFrames; ++Index)
+                Expected.Add(FString::Printf(TEXT("Tail_%03d"), Index));
+            if (!TailReviewComplete || TailReviewFrames < 45)
+                Failure = TEXT("Tail review did not complete its two jumps and required rendered sequence.");
+        }
+        else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIFlightMenus")))
+            Expected = {TEXT("UIPauseFlight"), TEXT("UIGraphicsFlight"), TEXT("UIAudioFlight"),
+                        TEXT("UIControlsFlight")};
+        else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview")))
             Expected = {TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
                         TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")};
         else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
@@ -1966,8 +2495,12 @@ void ASSWave10Soak::WriteResultAndExit()
         else if (Gallery)
             Expected = {TEXT("GalleryDoorway"), TEXT("GalleryShowcase"), TEXT("GalleryAssets"), TEXT("GalleryReturn")};
         else if (OutpostReview)
+        {
             Expected = {TEXT("OutpostPad"),    TEXT("OutpostServices"), TEXT("OutpostApartment"),
                         TEXT("OutpostFlight"), TEXT("OutpostReturn"),   TEXT("OutpostPitStop")};
+            if (ApartmentWalk)
+                Expected.Append({TEXT("ApartmentWalkIn"), TEXT("ApartmentWalkBack")});
+        }
         else if (WormholeReview)
             Expected = {TEXT("Entrance"), TEXT("Transit"), TEXT("DeepTransit"), TEXT("Exit")};
         else if (Station5)
@@ -2013,10 +2546,13 @@ void ASSWave10Soak::WriteResultAndExit()
     if (Failure.IsEmpty() && OutpostReview && !OutpostReviewComplete)
         Failure = TEXT("Outpost integration did not complete all scene, service, departure and return checks.");
     const FString Csv = CaptureResult.Get();
-    const bool Success =
-        Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() && (AllFramesForeground || OffscreenVisuals);
+    const bool Success = Failure.IsEmpty() && SlotsUntouched && !Csv.IsEmpty() &&
+                         (AllFramesForeground || OffscreenVisuals || QualityBenchmark);
     auto Result = MakeShared<FJsonObject>();
-    Result->SetStringField(TEXT("evidenceType"), FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview"))
+    Result->SetStringField(TEXT("evidenceType"), QualityBenchmark  ? TEXT("ENVIRONMENT_FLIGHT_COST_BENCHMARK")
+                                                 : OfflineSequence ? TEXT("OFFLINE_WAVE1_VISUAL_REVIEW_NOT_PERFORMANCE")
+                                                 : TailReview      ? TEXT("SQUIRREL_JUMP_RENDERED_REVIEW")
+                                                 : FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview"))
                                                      ? TEXT("UI_REFRESH_RENDERED_REVIEW")
                                                  : MainMenu       ? TEXT("TITLE_MENU_RENDERED_REVIEW")
                                                  : Gallery        ? TEXT("ALIEN_GALLERY_SCRIPTED_VISUAL_REVIEW")
@@ -2027,7 +2563,26 @@ void ASSWave10Soak::WriteResultAndExit()
                                                  : Station5 ? TEXT("RENDERED_TRANSITION_FIXTURE_NOT_NATURAL_GAMEPLAY")
                                                             : TEXT("RENDERED_ENDGAME_FIXTURE_NOT_NATURAL_GAMEPLAY"));
     Result->SetBoolField(TEXT("success"), Success);
+    if (QualityBenchmark)
+        AddQualityBenchmarkResult(Result);
+    if (TailReview)
+        AddTailReviewResult(Result);
+    if (ApartmentWalk)
+        AddApartmentWalkResult(Result);
     Result->SetBoolField(TEXT("visualCaptureEnabled"), CaptureVisuals);
+    Result->SetBoolField(TEXT("offlineSequence"), OfflineSequence);
+    if (OfflineSequence)
+    {
+        Result->SetBoolField(TEXT("useFixedTimeStep"), FApp::UseFixedTimeStep());
+        Result->SetNumberField(TEXT("fixedDeltaSeconds"), FApp::GetFixedDeltaTime());
+        Result->SetNumberField(TEXT("effectiveTimeDilation"),
+                               GetWorld()->GetWorldSettings()->GetEffectiveTimeDilation());
+        Result->SetStringField(TEXT("simulationClock"),
+                               TEXT("Explicit offline 60 Hz engine fixed timestep; each fixture tick validates "
+                                    "1/60 second. 29 seconds of simulated flight, independent of wall time. "
+                                    "Normal stats, collision, damage, trajectory and input schedule; no performance "
+                                    "or real-time smoothness evidence."));
+    }
     Result->SetBoolField(TEXT("stationExteriorReview"), CaptureStationExterior);
     Result->SetBoolField(TEXT("weaponReadabilityReview"), WeaponReadability);
     Result->SetBoolField(TEXT("mainMenuReview"), MainMenu);
@@ -2056,10 +2611,23 @@ void ASSWave10Soak::WriteResultAndExit()
                                TEXT("Scripted Ship.SetFlightInput: steering/brake during transit, steering/brake "
                                     "then brake release after exit. No physical input or camera override."));
     }
+    if (Wave1 && CaptureSequence)
+    {
+        Result->SetNumberField(TEXT("sequenceFrames"), SequenceIndex);
+        Result->SetNumberField(TEXT("sequenceMinimumRenderFrames"), 8);
+        Result->SetNumberField(TEXT("sequenceObservedMinimumRenderFrames"),
+                               MinimumWave1ScreenshotSpacing == MAX_int32 ? 0 : MinimumWave1ScreenshotSpacing);
+        Result->SetNumberField(TEXT("sequenceMinimumSeconds"), .25);
+        Result->SetStringField(
+            TEXT("sequenceSpacingCounter"),
+            TEXT("GFrameCounter between screenshot requests; each request is fulfilled at frame end. "
+                 "Includes named Wave1 stage screenshots. Original minimum40 sequence images retained."));
+    }
     Result->SetBoolField(TEXT("uiRefreshReview"), FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")));
     Result->SetBoolField(TEXT("mainMenuStatePreserved"), MainMenuStatePreserved);
     if (WeaponReadability)
     {
+        Result->SetArrayField(TEXT("weaponShotDiagnostics"), WeaponShotRecords);
         Result->SetNumberField(TEXT("weaponUncapturedWarmupShots"), WeaponWarmupShots);
         Result->SetNumberField(TEXT("weaponRenderingReadyAtSeconds"), WeaponRenderingReadyAt);
         Result->SetNumberField(TEXT("weaponWarmupPeakPendingAssets"), WeaponWarmupPeakAssets);
@@ -2082,8 +2650,11 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("noSaveSlotsWritten"), SlotsUntouched);
     Result->SetBoolField(TEXT("allFixtureFramesForeground"), AllFramesForeground);
     Result->SetBoolField(TEXT("offscreenVisualOnly"), OffscreenVisuals);
-    Result->SetBoolField(TEXT("suitableForPerformanceFinding"), !Wave1 && !CaptureVisuals && AllFramesForeground);
-    Result->SetStringField(TEXT("scenario"), MainMenu         ? TEXT("MainMenu")
+    Result->SetBoolField(TEXT("suitableForPerformanceFinding"),
+                         QualityBenchmark ? Success : !Wave1 && !CaptureVisuals && AllFramesForeground);
+    Result->SetStringField(TEXT("scenario"), QualityBenchmark ? TEXT("QualityBenchmark")
+                                             : TailReview     ? TEXT("TailReview")
+                                             : MainMenu       ? TEXT("MainMenu")
                                              : Gallery        ? TEXT("Gallery")
                                              : OutpostReview  ? TEXT("OutpostReview")
                                              : WormholeReview ? TEXT("WormholeReview")
@@ -2124,12 +2695,44 @@ void ASSWave10Soak::WriteResultAndExit()
     Result->SetBoolField(TEXT("sawClimax"), SawClimax);
     Result->SetBoolField(TEXT("sawApproach"), SawApproach);
     Result->SetNumberField(TEXT("fixtureFrames"), CapturedFrames);
+    Result->SetNumberField(TEXT("flightSimulationSeconds"), FlightSeconds);
     Result->SetNumberField(TEXT("climaxSimulationSeconds"), ClimaxSeconds);
     Result->SetNumberField(TEXT("compoundActorPresenceSeconds"), CompoundSeconds);
     Result->SetNumberField(TEXT("approachSimulationSeconds"), ApproachSeconds);
     Result->SetNumberField(TEXT("peakThreats"), PeakThreats);
     Result->SetNumberField(TEXT("wallSeconds"), FPlatformTime::Seconds() - StartedAt);
-    if (OutpostReview)
+    if (Wave1 && CaptureSequence && !WeaponReadability && !DirectorReview)
+        AddSequenceRouteResult(Result);
+    if (QualityBenchmark)
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("Fixed seed, normal starter stats and survival damage; Director disabled and wave phase age held. "
+                 "At least 15 seconds quiet warmup followed by 60 seconds ordinary variable-timestep cruise/turn/boost "
+                 "physics. "
+                 "Scripted SetFlightInput follows the actual field-local lane; ordinary hull collision and damage "
+                 "remain active. "
+                 "Swept-hull preflight and one-second clearance probes are included in CPU cost. No screenshots or "
+                 "health assistance. "
+                 "Environment/flight cost only; no natural combat, physical input, full run or packaged acceptance."));
+    else if (OfflineSequence)
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("OFFLINE_WAVE1_VISUAL_REVIEW_NOT_PERFORMANCE. Fresh isolated profile, normal Wave1 stats, "
+                 "Director, collision, damage and scripted lane-following cruise/turn/boost/brake input. Explicit "
+                 "engine "
+                 "UseFixedTimeStep/FPS60 with every tick checked at 1/60 second and time dilation 1; 29 seconds "
+                 "of simulated flight independent of wall time. Minimum40/maximum80 sequence images, at least "
+                 "eight viewport frames between all screenshot requests, no interpolated images. Screenshot "
+                 "readbacks and fixed simulation time invalidate performance or real-time smoothness claims. "
+                 "No natural gameplay, physical input, audio or complete run acceptance."));
+    else if (TailReview)
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("Fresh isolated home; actual possessed Squirrel Jump/StopJumping and Move, fixed side camera, "
+                 "two jumps including landing into movement, sampled real floor/tail envelope and exact run/account "
+                 "preservation. "
+                 "No physical input, performance or natural gameplay acceptance."));
+    else if (OutpostReview)
         Result->SetStringField(
             TEXT("fixture"),
             TEXT("Fresh isolated home. Scripted walker placements at real service approaches, normal Interact panel "
@@ -2139,6 +2742,20 @@ void ASSWave10Soak::WriteResultAndExit()
                  "panels without selecting any save/purchase action. No physical input, actual apartment traversal, "
                  "landing approach, full run or "
                  "performance claim."));
+    else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIFlightMenus")))
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("Fresh isolated profile; normal StartFreeFlight, takeoff and scripted powered departure. Four "
+                 "actual paused menus over the possessed ship chase camera; exact account/run/settings "
+                 "conservation throughout the paused menu sequence. No purchase, save, physical input, natural "
+                 "flight, audio or performance acceptance."));
+    else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
+        Result->SetStringField(
+            TEXT("fixture"),
+            TEXT("Fresh isolated home; actual Canvas pages, synthetic focus/wardrobe scrolling, rendered hit bounds "
+                 "at the requested viewport and in-memory UI scale. Exact account/run/settings conservation. "
+                 "Optional legacy flight HUD is explicitly synthetic. No purchases, save APIs, physical input, "
+                 "natural gameplay, audio or performance acceptance."));
     else if (MainMenu)
         Result->SetStringField(TEXT("fixture"),
                                TEXT("Fresh inactive startup title, exact imported Figma textures required. "
@@ -2156,7 +2773,10 @@ void ASSWave10Soak::WriteResultAndExit()
             TEXT("Normal fresh Wave1 starter stats, TierI, no utility or durability override. Scripted straight "
                  "powered flight through the normal chase camera; both weapons selected in fixture memory and "
                  "fired through Ship.Fire. One normal-health Pursuer target at a time; target AI and Director "
-                 "paused for this isolated shot review. Hit frames require actual damage feedback. No unlock, "
+                 "paused for this isolated shot review. Target placement checks camera and muzzle visibility, "
+                 "clear volume and actual aim ray at 60/80/100m camera depth, waiting at most 2s in normal flight "
+                 "per placement. All scenery and collision remain active. Hit frames require intended-target "
+                 "health decrease plus actual damage feedback. No unlock, "
                  "physical input, natural combat/balance, audio or performance acceptance."));
     else if (Wave1)
         Result->SetStringField(

@@ -143,6 +143,12 @@ def link_payload(objects):
 
 
 def push(objects, remove=()):
+    from . import wayfarer
+    objects = list(objects)
+    if bpy.context.scene.get(wayfarer.SNAPSHOT):
+        return wayfarer.push(objects, remove)
+    if any(obj.get(wayfarer.OWNER) for obj in objects):
+        raise RuntimeError('Open the matching Wayfarer scene before pushing these placements')
     payload = {'objects': link_payload(objects), 'remove': list(remove)}
     if bpy.context.scene.get('ss_target_map'):
         payload['target_map'] = bpy.context.scene['ss_target_map']
@@ -160,6 +166,9 @@ def signature(row):
 
 
 def pull():
+    from . import wayfarer
+    if bpy.context.scene.get(wayfarer.SNAPSHOT):
+        raise RuntimeError('Export/open a fresh Wayfarer snapshot to include current Unreal edits')
     from . import surfaces
     data = link.call('ss_prefabs.pull_selection()')
     # Every tagged object, a game scene's included: an actor pulled back must move the part that carries its
@@ -284,6 +293,11 @@ class SSLINK_OT_live(bpy.types.Operator):
     def execute(self, context):
         st = context.scene.ss_link
         st.live = not st.live
+        from . import wayfarer
+        if context.scene.get(wayfarer.SNAPSHOT):
+            st.live = False
+            self.report({'ERROR'}, 'Wayfarer uses checked Push Selected; delete actors directly in Unreal')
+            return {'CANCELLED'}
         if st.live:
             try:
                 if not link.connected:

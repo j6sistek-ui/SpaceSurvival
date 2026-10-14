@@ -15,6 +15,10 @@ public class SpaceSurvival : ModuleRules
         // supplies the Windows backend and is enabled in the uproject for that reason alone.
         PrivateDependencyModuleNames.Add("AudioCapture");
         if (Target.bBuildEditor)
+        {
             PrivateDependencyModuleNames.Add("UnrealEd");
+            // Opt-in editor renderer observations use only public Renderer APIs.
+            PrivateDependencyModuleNames.AddRange(new[] { "Renderer", "RenderCore", "RHI" });
+        }
     }
 }

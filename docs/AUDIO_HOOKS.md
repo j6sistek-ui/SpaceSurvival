@@ -1,5 +1,23 @@
 # Phase 1 audio hooks
 
+## October6 combat palette
+
+RPT-20261006-02 replaces the short player Laser, Cannon, Impact and DebrisBreak
+defaults with private `Licensed/Audio/CombatPolish1` derivatives. The preparer mixes
+existing owned PCM into distinct attack/body/tail envelopes; originals are unchanged.
+Durations are 0.115, 0.46, 0.44 and 0.60 seconds respectively, all 48 kHz mono.
+Runtime preloads them before first use, retaining the earlier licensed/generated
+fallbacks and explicit authored cue overrides. Sample peaks, no clipping/DC and native
+role selection are verified; these checks are not listening acceptance.
+
+Rock breakup alone extends spatial falloff to 600 m total range, keeping the existing
+12 one-shot allocation/concurrency cap. Field and regional rock sounds originate at
+the actual struck surface, which matters when a large rock's center is far away.
+Other cues keep the attenuation below. See the [quality receipt](validation/2026-10-06-survival-quality.md)
+for source hashes, audition output and remaining review.
+
+## Earlier hook implementation
+
 Historical September 13 hook implementation: **Unreal build, content import, fresh content validation and both audio automation tests passed.** The final combined suite passed 21/21 tests with no warnings or failures at 2026-09-13 09:29:16 UTC. Native playback and listening acceptance remain unverified. Phase 1 remains **PARTIAL**.
 
 The scope requires spatial threats, distinct warnings, atmospheric environments and an adaptive score. This change wires those existing behaviors to editable cues. It does not establish cinematic quality, mix balance, perceived direction, warning readability or owner acceptance.

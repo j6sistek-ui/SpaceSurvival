@@ -47,12 +47,18 @@ namespace SpaceSurvival.SaveFaults
         public BreakInfo Break { get; private set; }
 
         public ReplacementGate(string repository, string root, string token)
+            : this(repository, root, token, false) { }
+
+        public ReplacementGate(string repository, string root, string token, bool workspaceLocalArtifacts)
         {
             Guid parsed;
             if (!Guid.TryParseExact(token, "N", out parsed)) throw new ArgumentException("Invalid fixture GUID.");
             repository = Path.GetFullPath(repository);
             root = Path.GetFullPath(root);
-            if (!String.Equals(root, Path.Combine(repository, "Artifacts", "SaveLifecycle", token), StringComparison.OrdinalIgnoreCase))
+            string expectedRoot = workspaceLocalArtifacts
+                ? Path.Combine(repository, ".agent", "local", "SaveLifecycle", token)
+                : Path.Combine(repository, "Artifacts", "SaveLifecycle", token);
+            if (!String.Equals(root, expectedRoot, StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("Oplock root is not the exact repository GUID fixture.");
             string target = Path.Combine(root, "User", "Saved", "SaveGames", "SS_Suspend_v1.sav");
             for (string path = target; path != null; path = Path.GetDirectoryName(path))

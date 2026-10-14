@@ -1,0 +1,11 @@
+{
+  "size": [
+    1024,
+    768
+  ],
+  "purpose": "Reception information; no new check-in mechanic",
+  "sha256": {
+    "CheckIn.svg": "3cf38e76e2429ba3b893801b5d1bc32fa95e8f0877280ae72604afa17d357025",
+    "CheckIn.png": "d99e1cc5b4f1cc1c745dc98379946a3d6e211b5592b55bebf18e17bb76efb13b"
+  }
+}

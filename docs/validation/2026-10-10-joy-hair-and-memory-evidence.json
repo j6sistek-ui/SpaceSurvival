@@ -1,0 +1,212 @@
+{
+  "date_utc": "2026-10-10T06:42Z",
+  "state": "NATIVE_HAIR_RELOAD_PASS_RENDERED_MOTION_PENDING",
+  "blender_authoring": {
+    "source_sha256": "38a31ab08e9e5362d1c60c88ee24f6d7a32be1ba0bb397f58892ea7643508f9b",
+    "derivative_sha256": "fed72ed889061c87f5cb9e8258584ef9194414a97ed0efbb4b3b18a4e08d855a",
+    "raw_guides_preserved": true,
+    "removed_evaluated_guides": [
+      10,
+      12,
+      13
+    ],
+    "curve_object": "2.side left 2",
+    "source_guide_count": 23,
+    "retained_evaluated_strands": 1020,
+    "original_evaluated_strands": 1173,
+    "geometry_change": "Non-destructive first modifier removes only three malformed guide bundles. All raw curves remain recoverable.",
+    "gpu_rendering": false,
+    "abc_sha256": "8cf8f49f398afa3381b7d1f467b46d7a71e98f33a8450d0f4e3545d2de3b1725",
+    "abc_bytes": 11136144,
+    "hair_pose_to_rest": [
+      [
+        0.958794891834259,
+        0.11898116022348404,
+        -0.2579841911792755,
+        0.43946170806884766
+      ],
+      [
+        -0.08372753113508224,
+        0.9860870242118835,
+        0.14360706508159637,
+        -0.26664215326309204
+      ],
+      [
+        0.2714812457561493,
+        -0.1160893440246582,
+        0.9554164409637451,
+        0.1344008594751358
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "base_objects": [
+      "4.under",
+      "4.back2",
+      "4.back",
+      "3.top",
+      "2.temple",
+      "2.side right",
+      "2.side left 2",
+      "1.bangs"
+    ]
+  },
+  "blender_reload": {
+    "state": "SAVED_BLENDER_RELOAD_AND_CPU_PREVIEW_PASS",
+    "body_shape_keys_armature_sha256": "b8425d97025e0fcb2dece841875631f783a077e81f5c894c26ce78148cc7fc5f",
+    "all_raw_hair_guides_and_materials_preserved": true,
+    "derivative_sha256": "fed72ed889061c87f5cb9e8258584ef9194414a97ed0efbb4b3b18a4e08d855a",
+    "source_sha256": "38a31ab08e9e5362d1c60c88ee24f6d7a32be1ba0bb397f58892ea7643508f9b",
+    "preview_sha256": "851b926e0ca53c3ce5df5a3f56efd1a528d7af148fdb3fd478ff9390dddbab5c",
+    "gpu_rendering": false
+  },
+  "native_reload": {
+    "state": "NATIVE_HAIR_RELOAD_PASS_RENDERED_MOTION_PENDING",
+    "errors": [],
+    "load_mode": "Fresh rendered editor; saved binding loaded in157, checked after post-load ticks in158, no rebuild or save",
+    "binding_info": [
+      "(RenRootCount=10823,RenLODCount=1,SimRootCount=1082,SimLODCount=1)"
+    ],
+    "groom_counts": [
+      {
+        "group": "Group_0",
+        "curves": 10823,
+        "guides": 1082,
+        "vertices": 703495
+      }
+    ],
+    "binding_groups": 1,
+    "protected_hash_count": 405,
+    "clips_preserved": 135,
+    "native_package_count": 149,
+    "dirty_maps": [],
+    "dirty_content": []
+  },
+  "native_written": [
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Hair/G_JoyHair_base_Clean139.G_JoyHair_base_Clean139",
+      "sha256": "a431608180fa171ccb5207958bf7304c09dc23d195a134f57b23a340c9771408"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/Hair/GB_Joy_base_Clean139.GB_Joy_base_Clean139",
+      "sha256": "be3bac31cd8b16b2286be71abfbd36b8ba4893b038d4e65e1c26f2c969bd7f3a"
+    },
+    {
+      "asset": "/Game/SpaceSurvival/Licensed/StationAssets/JoyLightBlue117/BP_JoyLightBlue_Review.BP_JoyLightBlue_Review",
+      "sha256": "2374c999aa8ad54a279d7b0bea1f8fc9106de413700e793b16fc125fcb6f4425"
+    }
+  ],
+  "unchanged_preexisting_files": 402,
+  "clips_preserved": 135,
+  "total_native_packages": 149,
+  "preview": {
+    "file": "images/2026-10-10-joy-hair/Joy-hair-cleanup.png",
+    "sha256": "851b926e0ca53c3ce5df5a3f56efd1a528d7af148fdb3fd478ff9390dddbab5c",
+    "kind": "Actual Blender Cycles CPU render; not Unreal"
+  },
+  "station_editor_baseline": {
+    "kind": "Editor-open asset/VRAM baseline; not 4K runtime FPS",
+    "map_sha256": "52a5ee747fe7a586029c9f2ad85d782972b22c61b60bfbfcc9f7c88387dafdc7",
+    "actors": 9051,
+    "skeletal_components": 149,
+    "unique_meshes": 36,
+    "single_lod_components": 149,
+    "instanced_lod0_vertices": 2296189,
+    "placed_grooms": 0,
+    "lights": {
+      "light_counts": {
+        "total": 476,
+        "visible_nonzero": 374,
+        "visible_nonzero_shadow": 25
+      },
+      "active_mobility": {
+        "<ComponentMobility.MOVABLE: 2> shadow=True": 25,
+        "<ComponentMobility.MOVABLE: 2> shadow=False": 349
+      },
+      "ray_tracing": 0
+    },
+    "cvars": {
+      "r.RayTracing": 0,
+      "r.Lumen.HardwareRayTracing": 1,
+      "r.HairStrands.Strands": 1,
+      "r.TextureStreaming": 1,
+      "r.Streaming.PoolSize": 1000,
+      "r.ScreenPercentage": 0,
+      "sg.ViewDistanceQuality": 3,
+      "sg.ShadowQuality": 3,
+      "sg.TextureQuality": 3,
+      "sg.EffectsQuality": 3,
+      "sg.GlobalIlluminationQuality": 3,
+      "sg.ReflectionQuality": 3
+    },
+    "system_vram_mib": {
+      "before_launch": 2313,
+      "warm_observed_range": [
+        11099,
+        11146
+      ],
+      "after_first_clean_exit": 2830
+    },
+    "rhi_tracked_mb": 7210.352687836,
+    "fps_measured": false,
+    "quality_changes": false
+  },
+  "recipes": [
+    {
+      "file": "Scripts/StationRecipes/JoyHair139/AuthorHair139.py",
+      "sha256": "d1ce4ac57d7e72753226d692a7e5973a8c3f21b3c3955395e9822382582172d9",
+      "executed_source_sha256": "ba8fa3132bd4cebc19a6113e59008c5affdf17407c6b0a05d2a15f4ae681004c",
+      "only_path_constants_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/JoyHair139/VerifyBlender140.py",
+      "sha256": "93754ce401c0c871f555c832466d5f866a12aa0e45cf182b684a3f2808b4af7a",
+      "executed_source_sha256": "4a8a2034670b52513363eefcd21ee7cfcd412482d828daf557615f5f6eeefaa7",
+      "only_path_constants_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/JoyHair139/ImportHair143.py",
+      "sha256": "7e6af49c400a48d4bf75c8a11e9d28604f253fec9475d44688f2b933089e2550",
+      "executed_source_sha256": "918523a03616b304008725d705d9b7b580dd56f148e37af474374de7b93a74c8",
+      "only_path_constants_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/JoyHair139/CompleteHair153.py",
+      "sha256": "1d505842c3e7565b698829916d4d5d390357b613be908832770f15111be705db",
+      "executed_source_sha256": "1f127db0106c16f068f0bb9c7410f849ed407afc81fb9540e85b0db3039357ae",
+      "only_path_constants_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/JoyHair139/VerifyNative159.py",
+      "sha256": "53c0fc73a65aab11d52221bdf9c739738faf7e6e24ab3a27b8f07f5ea2048ba2",
+      "executed_source_sha256": "9fc06b2186b1fb6c3915850a8bf935877310081c288acd52dd6f5788a1885c6b",
+      "only_path_constants_changed": true
+    },
+    {
+      "file": "Scripts/StationRecipes/JoyHair139/ProfileStation155.py",
+      "sha256": "3e28960fb19adc126ed4e0188a96bc85d9175cce19a1d6c4044cc8d3b5e2f668",
+      "executed_source_sha256": "ae04e19baf5c652100455192a40fbae83bda11d62c063b4b35f42f83326f300a",
+      "only_path_constants_changed": true
+    }
+  ],
+  "limitations": [
+    "Native continuous groom/animation contact review pending",
+    "No FPS or packaged-game VRAM result",
+    "Central fixed target and R unfinished",
+    "Prior five-path cook-coverage CI failure remains held"
+  ],
+  "source_validation": {
+    "python_compile": "PASS six archived recipes",
+    "structural_checks": 42,
+    "repository_documentation": "PASS",
+    "prepared_ready_pr_documentation": "PASS explicit UTF-8",
+    "whitespace": "PASS after trimming three historical recipe EOF blank lines",
+    "cpp_changed": false,
+    "blueprint_compiled": true,
+    "whole_pr_ci": "Prior five-path cook coverage failure remains; no full-green claim"
+  }
+}

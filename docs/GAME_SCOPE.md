@@ -1,6 +1,6 @@
 # SpaceSurvival
 
-**September 22 final control clarification (supersedes earlier stick/camera proposals):** Temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
+**Historical September 22 control proposal — superseded by the later owner-approved arcade preset:** Retained for provenance only; current controls are in [Build and run](BUILD_RUN.md) and the acceptance record in [Known issues](KNOWN_ISSUES.md). The later preset uses left-stick nose steering and bumper tap dash/bank with hold-to-roll. Earlier temporary testing preset: LS X = sideways strafe, LS Y = pitch; LB/RB = manual left/right roll; RS = camera-only free-look; A = fire; X = flight interaction/landing; RT/LT/B = throttle/brake/boost. No controller vertical strafe. Walking unchanged. Released free-look gently returns behind the ship; released roll retains hull attitude. Pause Controls/preset/remapping is explicitly deferred.
 
 ## Owner amendment — September 21, 2026 evening
 
@@ -488,7 +488,11 @@ Can usually be destroyed.
 Can be destroyed with sufficient weapon power.
 
 **Massive asteroids**  
-Function as environmental geometry and must be avoided.
+Function as substantial navigation obstacles, but ordinary asteroid bodies can also be
+destroyed with sustained fire. The owner's October 6, 2026 playtest direction explicitly
+supersedes the earlier avoid-only rule: a reachable asteroid must respond to shooting,
+including rocks in the persistent field. Structural wreckage and station architecture
+are not made destructible by this change.
 
 Destroyed medium asteroids can produce controlled fragmentation.
 
@@ -793,6 +797,22 @@ Stations should feel lived-in with:
 - faction visual flavor
 
 Factions remain mostly flavor for now rather than a reputation/diplomacy system.
+
+## Owner amendment — October 10, 2026: station room purposes
+
+Owner room plan (paraphrase): each room has a clear service category, so its environment can be designed around that purpose.
+
+| Area | Purpose and design requirement |
+| --- | --- |
+| Central hub | All core wave-game purchases and services stay up front and easy to reach, including Hull, Shield, Engine, Thrusters and Weapon upgrades. Ship repair is available here as well as at the dock. |
+| R / club | Character needs: character swapping today; outfits, additional character services and optional temporary game-mode boosts may follow. Temporary boosts belong here rather than taking over the core-service hub. Preserve the performance corner and develop the character/recovery/wellness setting around it. |
+| T / ship market | Six holographic ship displays. The Phoenix display opens that ship's stats and flight records. The other five are clearly identified placeholders for future unlockable ships. Future purchases from those displays grant permanent ship ownership. |
+| L / game room | Social activities, special challenges, leaderboards, minigames and other social features belong here as they become available. |
+| Market entrance / dock | The market primarily provides atmosphere and decoration on arrival. Quick ship repair is available at the dock, with the same repair service also accessible in Central. Other market uses may evolve later. |
+
+This supersedes conflicting earlier room-purpose assignments, including T's operations/hardware role. It is the current design plan, not a claim that six displays, per-ship records, future ship purchases, outfits, boost sales or social systems are already implemented. The five future ships remain placeholders; names, prices and purchase currency are UNCONFIRMED. Permanent ownership must persist at account level when purchasing is implemented. This amendment does not silently change the existing run-credit/XP systems or the locked Phase 1 roster and online deferrals.
+
+Preserve existing owner-created art and placements while reviewing services, signage, routes and lighting against these roles. Central's fixed target-v2 remains unchanged. Current scene/build/evidence and remaining work are recorded in [Project state](PROJECT_STATE.md) and [Known issues](KNOWN_ISSUES.md).
 
 ---
 
@@ -1136,6 +1156,16 @@ Delivery methods include:
 - Acornaut reactions
 
 Avoid long dialogue trees and major campaign dependencies in Phase 1.
+
+## Owner amendment — October 1, 2026: character voices and remembered events
+
+Player heroes, enemies including the Director, and station NPCs should have custom authored, audible dialogue with a consistent voice identity. Short reactions should respond to actual gameplay: danger, damage, kills, rewards, arrival and noteworthy survived encounters. Hero lines must follow the selected character rather than always naming Acornaut.
+
+Station chatter may remember a bounded set of facts from the player's current run. For example, a remark about barely escaping a black hole requires a recorded close encounter with, and survival of, the existing gravity anomaly; a spawned hazard or wave number alone is insufficient. This example does not add a black-hole hazard family. Do not invent a past encounter on resume or replay the same acknowledgement on every approach.
+
+Keep speech occasional and readable through priorities, cooldowns and limited simultaneous playback. Optional subtitles accompany the selected line, but turning subtitles off must not mute voices. Authored recordings and event rules are sufficient; no runtime language model, online service, long dialogue tree or extra gameplay roster is required. The five-wave station cadence and other locked Phase 1 counts remain unchanged.
+
+This is an authorized presentation requirement, not a claim that voice assets or event memory are implemented or accepted. The [implementation gates](../IMPLEMENT.md#character-voice-and-presentation-gate) define verification; [Known issues](KNOWN_ISSUES.md) owns remaining work.
 
 ---
 

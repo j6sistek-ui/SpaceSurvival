@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+<rect width="1024" height="768" fill="#08131f"/>
+<text x="302.53125" y="88" font-family="Segoe UI" font-size="30" font-weight="700" fill="#70dae8">WAYFARER / CREW SERVICES</text>
+<text x="388.484375" y="212" font-family="Segoe UI" font-size="88" font-weight="700" fill="#e6f3fa">CREW</text>
+<text x="262.53125" y="319" font-family="Segoe UI" font-size="88" font-weight="700" fill="#e6f3fa">WARDROBE</text>
+<text x="223.515625" y="495" font-family="Segoe UI" font-size="44" font-weight="700" fill="#e6f3fa">CHOOSE YOUR CHARACTER</text>
+<text x="287.5234375" y="630" font-family="Segoe UI" font-size="48" font-weight="700" fill="#70dae8">INTERACT TO OPEN</text>
+<path d="M90 380H934" stroke="#70dae8" stroke-width="3"/>
+<path d="M90 690H934" stroke="#70dae8" stroke-width="3"/>
+</svg>

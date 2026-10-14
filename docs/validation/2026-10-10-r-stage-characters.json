@@ -1,0 +1,136 @@
+{
+  "utc": "2026-10-10T15:34:20.129502+00:00",
+  "map_sha256": "205078467def6a7a1ad1aa3d090cfb145976b3da8311effe7c15469641bd835a",
+  "actor_count": 9107,
+  "housing": {
+    "matched_housings": 2,
+    "parts_per_housing": 21,
+    "added_parts": 14,
+    "removed_obsolete_parts": 4,
+    "protected_existing_actors": 9061
+  },
+  "joy": {
+    "metallic": 0.75,
+    "roughness": 0.32,
+    "changed_skin_materials": 4,
+    "blue_tint_diffuse_normal_retained": true,
+    "hair_physics": "OPEN"
+  },
+  "cyborg": {
+    "clip": "A_Cyborg_PoleHipCircle",
+    "duration_seconds": 4.0,
+    "looping": true,
+    "restored_existing_rigged_asset": true,
+    "continuous_native_samples": 322,
+    "observed_time_wraps": 8,
+    "wrist_axis_distance_cm": [
+      3.692846120682311,
+      3.705355138639384
+    ],
+    "protected_existing_actors": 9097,
+    "full_alternating_routine": "OPEN"
+  },
+  "stage_lights": [
+    {
+      "path": "/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime.L_WayfarerRuntime:PersistentLevel.RectLight_130",
+      "label": "R/Performance/Lighting/Front key",
+      "position": [
+        3410.0,
+        2770.0,
+        375.0
+      ],
+      "target": [
+        3310.0,
+        2660.0,
+        150.0
+      ],
+      "lumens": 2300.0,
+      "color": [
+        0.8,
+        0.91,
+        1.0
+      ],
+      "radius": 460.0
+    },
+    {
+      "path": "/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime.L_WayfarerRuntime:PersistentLevel.RectLight_131",
+      "label": "R/Performance/Lighting/Cyan rim",
+      "position": [
+        3110.0,
+        2500.0,
+        374.0
+      ],
+      "target": [
+        3270.0,
+        2600.0,
+        150.0
+      ],
+      "lumens": 1400.0,
+      "color": [
+        0.1,
+        0.8,
+        1.0
+      ],
+      "radius": 460.0
+    },
+    {
+      "path": "/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime.L_WayfarerRuntime:PersistentLevel.RectLight_132",
+      "label": "R/Performance/Lighting/Violet rim",
+      "position": [
+        3360.0,
+        2420.0,
+        375.0
+      ],
+      "target": [
+        3280.0,
+        2610.0,
+        150.0
+      ],
+      "lumens": 700.0,
+      "color": [
+        0.55,
+        0.2,
+        1.0
+      ],
+      "radius": 460.0
+    }
+  ],
+  "native_reload": "PASS",
+  "production_saves_unchanged": true,
+  "ray_tracing": 0,
+  "build": "Existing Build55; no C++ change in this content checkpoint; terminal-hint source rebuild/runtime verification remains pending.",
+  "global_lighting": "READ_ONLY_DIAGNOSIS; fixed exposure and dark lower-hemisphere ambient observed; station-wide fixture coverage and visual acceptance OPEN.",
+  "sources": {
+    "Scripts/MatchStationHologramHousings.py": "d0cda9ded87c9466faeb1cd5cfcfd918a2443c6b96502a99e956a6aca3d40803",
+    "Scripts/MetallicJoy216.py": "b2b04b5ac34d84d03fd925078db4e9f53a271c3e635b7ce0a5827dcf770c2e3f",
+    "Scripts/ActivateCyborgPole218.py": "736060d650f660f70fced690f5e9cdd727c214ef948060722b1e33d17322f0f3",
+    "Scripts/LightRPerformance221.py": "4e1e01af6063cf1a09eb70e4c128a717c9b0d550bb6d3db31de1e577967822b4"
+  },
+  "images": {
+    "docs/validation/images/2026-10-10-r-stage/housings-group.png": "22f6c746e27b423d6383415366ae877578b1d55922dfefb7a509bcc005ac843a",
+    "docs/validation/images/2026-10-10-r-stage/housings-side.png": "6e5843f93062186b18fd4c10b78e45ca5d9616f12b95cd37b19e02a0197271ef",
+    "docs/validation/images/2026-10-10-r-stage/joy-stage-before-lighting.png": "3506f92ca7c9353b95848f4b6fee1e3fcd94079fa0b884da2d6567efa8159a1a",
+    "docs/validation/images/2026-10-10-r-stage/r-stage.png": "af1499693b97d50e3d87932bba3bd4ca667741daaf296b01a5a3a693535097e8",
+    "docs/validation/images/2026-10-10-r-stage/joy-blue-metal.png": "7339fc0ccafc53ac861ee94635c6bc97a3eb1c34aea443639acea031d63710ac",
+    "docs/validation/images/2026-10-10-r-stage/cyborg-pole.png": "b6e6dbd22f3f4cf74c3255cd91a2ad97ac84b84fbf0548c151e0b0cff00b302a",
+    "docs/validation/images/2026-10-10-r-stage/cyborg-pole-back.png": "2c7a0d429f9ba1766732959d59038ad6b41433cc2636ae9b81735c3c6b5d6690"
+  },
+  "owner_room_plan": {
+    "date": "2026-10-10",
+    "provenance": "USER",
+    "status": "DESIGN_REQUIREMENTS; future mechanics not implemented by this amendment",
+    "canonical": "docs/GAME_SCOPE.md#owner-amendment--october-10-2026-station-room-purposes",
+    "central": "Core wave purchases/services and repair, easy access",
+    "r": "Character swapping; future outfits and optional temporary boosts",
+    "t": {
+      "holographic_displays": 6,
+      "phoenix": "Stats and ship flight records",
+      "future_unlock_placeholders": 5,
+      "future_purchase_ownership": "Permanent",
+      "currency_prices_names": "UNCONFIRMED"
+    },
+    "l": "Social needs, challenges, leaderboards, minigames",
+    "market": "Atmospheric entrance; quick dock repair also accessible in Central",
+    "owner_live_review": "PENDING"
+  }
+}

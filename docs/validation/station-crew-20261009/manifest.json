@@ -1,0 +1,44 @@
+[
+  {
+    "file": "wardrobe-saved.png",
+    "source": ".agent/local/Outpost/LiveOperationsPIEReview1_WardrobeGuide64/01_WardrobeGuide.png",
+    "state": "CURRENT_SAVED_LIVE_MAP",
+    "sha256": "cc65c7de892be9a4655de1a4cff99e30c300dd7878ee0db3eb58f2bff34609a8"
+  },
+  {
+    "file": "wardrobe-menu-test.png",
+    "source": ".agent/local/StationRefinement/Crew52/WardrobeUI64.png",
+    "state": "UNSAVED_NATIVE_USE_IN_SAVED_MAP",
+    "sha256": "b49a5973eb7f398b778e66f82be49dd093f598d287dd88c387be825e350d1d8a"
+  },
+  {
+    "file": "reception-comparison.png",
+    "source": ".agent/local/Outpost/LiveOperationsPIEReview1_CrewFinal60/01_Reception.png",
+    "state": "OLDER_SAVED_COMPARISON",
+    "sha256": "23854c3a6279dc2fd216e38d844a9e1b8d9c57b07f5fce64028517682fe60fdf"
+  },
+  {
+    "file": "r-consultation-comparison.png",
+    "source": ".agent/local/Outpost/LiveOperationsPIEReview1_CrewFinal60/02_RConsultation.png",
+    "state": "OLDER_SAVED_COMPARISON_OLD_CONSOLE",
+    "sha256": "80e382fd9ac12dab0a93deedf09396322b20051a4b0337a057b5b9beeb554944"
+  },
+  {
+    "file": "merchant-comparison.png",
+    "source": ".agent/local/Outpost/LiveOperationsPIEReview1_HeroTerminal61/02_ProduceMerchant.png",
+    "state": "OLDER_SAVED_COMPARISON",
+    "sha256": "41651b56223a0756fd5e5253746bc402ced0007d8dd81d184f14cf5207327bd2"
+  },
+  {
+    "file": "bartender-comparison.png",
+    "source": ".agent/local/Outpost/LiveOperationsPIEReview1_CrewRooms58/07_Bartender.png",
+    "state": "OLDER_SAVED_COMPARISON",
+    "sha256": "a1003c1f71c3560fe785dcb1e93a1e57c01dbc12f5d786f47f4bae056dc94286"
+  },
+  {
+    "file": "hero-test.png",
+    "source": ".agent/local/Outpost/LiveOperationsPIEReview1_HeroFinal62/02_Hero178.png",
+    "state": "UNSAVED_TEMPORARY_POSSESSED_HERO_IN_SAVED_MAP",
+    "sha256": "575c0071883462b004966b7c8629fbab97742f5ab3c88942f68a6d810e82be81"
+  }
+]
