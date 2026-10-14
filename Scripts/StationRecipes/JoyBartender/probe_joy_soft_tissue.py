@@ -23,7 +23,6 @@ OUT = os.environ["SS_JOY_ST_OUT"]
 W, H = 960, 1080
 FPS = 8
 REGIONS = ("Breast_L", "Breast_R", "Hip_L", "Hip_R")
-LIMITS = (1.6, 1.6, 1.2, 1.2)
 # (phase, seconds, action index or None, view)
 PHASES = [("idle", 5.0, None, "front"), ("dance", 8.0, 2, "front"), ("pour", 5.0, 0, "front"), ("dance_side", 6.0, 2, "side"), ("settle", 5.0, None, "side")]
 DILATION = 0.25  # slow motion: an offscreen PIE renders ~5 frames a second; at 0.25x each is a ~0.05 s game step like a player's machine
@@ -124,6 +123,8 @@ def tick(dt):
             if u.GameplayStatics.is_game_paused(world):
                 u.GameplayStatics.set_game_paused(world, False)
             u.GameplayStatics.set_global_time_dilation(world, DILATION)
+            state["report"]["bar_bottles"] = sorted(a.get_actor_label() for a in u.GameplayStatics.get_all_actors_of_class(world, u.StaticMeshActor) if a.get_actor_label().startswith("Bar/Bottle"))
+            state["report"]["jacket_slot"] = any(str(s.material_slot_name) == "M_jacket" for s in bar.character_mesh.get_skeletal_mesh_asset().materials)
             comps = bar.get_components_by_class(u.SSSoftTissueComponent)
             assert len(comps) == 1, comps
             d = comps[0]
@@ -135,10 +136,22 @@ def tick(dt):
             stand = u.Vector(b.x + f.x * 350, b.y + f.y * 350, b.z + 4)
             pawn.set_actor_location(stand, False, True)
             pc.set_control_rotation(u.MathLibrary.find_look_at_rotation(stand, u.Vector(b.x, b.y, b.z + 40)))
-            state.update(phase="run")
+            state["limits"] = [r.get_editor_property("max_offset_cm") for r in d.get_editor_property("regions")]
+            state["report"]["limits_cm"] = state["limits"]
             for cmd in ("r.TextureStreaming 0", "r.Streaming.FullyLoadUsedTextures 1", "showhud"):
                 u.SystemLibrary.execute_console_command(world, cmd, pc)
-            advance(world, bar)
+            place_capture(pc, pawn, bar, "front")
+            state.update(phase="warm", warm_ok=0, warm_at=now)
+            return
+        if state["phase"] == "warm":
+            # shaders for anything new in view compile on first sight and hold frames at 0.3 s; the component resets
+            # above 0.2 s steps, so the phases start only after thirty consecutive player-sized game steps
+            gdt = u.GameplayStatics.get_world_delta_seconds(world)
+            state["warm_ok"] = state["warm_ok"] + 1 if gdt < 0.06 else 0
+            if state["warm_ok"] >= 30 or now - state["warm_at"] > 180:
+                state["report"]["warm_seconds"] = now - state["warm_at"]
+                state["phase"] = "run"
+                advance(world, bar)
             return
         if state["phase"] == "run":
             if not bar:
@@ -148,7 +161,7 @@ def tick(dt):
             t = u.GameplayStatics.get_time_seconds(world) - state["phase_start"]
             offsets = [[v.x, v.y, v.z] for v in d.get_editor_property("current_offsets_cm")]
             assert len(offsets) == 4 and all(math.isfinite(v) for row in offsets for v in row), offsets
-            for row, limit in zip(offsets, LIMITS):
+            for row, limit in zip(offsets, state["limits"]):
                 assert math.sqrt(sum(v * v for v in row)) <= limit + 1e-3, (row, limit)
             weights = [bar.character_mesh.get_morph_target("ST_%s_%s" % (r, a)) for r in REGIONS for a in "XYZ"]
             assert max(abs(w - v) for w, v in zip(weights, [v for row in offsets for v in row])) < 1e-3, (weights, offsets)
