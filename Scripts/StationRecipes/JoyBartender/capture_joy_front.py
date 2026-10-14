@@ -67,7 +67,9 @@ SHOTS = [("front", 0, 210, 100, 90), ("front_upper", 0, 115, 138, 126), ("three_
          ("back", 180, 170, 100, 100), ("face_a", -25, 30, 170, 169), ("face_b", 25, 30, 170, 169),
          # owner: "before you call anything good make sure the rear end doesn't have that broken effect"; the hem at the
          # sneaker collars; the eyes and the brow ring up close
-         ("rear_close", 160, 75, 100, 98), ("hems_back", 200, 85, 30, 22), ("eyes_close", -8, 20, 170, 170)]
+         ("rear_close", 160, 75, 100, 98), ("hems_back", 200, 85, 30, 22), ("eyes_close", -8, 20, 170, 170),
+         # the brow ring up close, square on and from either side (it sits on her left brow)
+         ("ring_front", 0, 24, 169, 168), ("ring_side_a", -50, 22, 169, 168), ("ring_side_b", 50, 22, 169, 168)]
 if os.environ.get("SS_FRONT_ONLY_FEET"):
     SHOTS = [SHOTS[3]]
 state = {"si": 0, "phase": "set", "at": None, "busy": False, "report": {"shots": [], "errors": [], "spot": list(spot.to_tuple())}, "handle": None}

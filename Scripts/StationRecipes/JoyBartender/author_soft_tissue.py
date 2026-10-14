@@ -26,7 +26,10 @@ Pants + sneakers (owner 2026-10-14, the red Sci-Fi Pants Sneakers p02): fitted t
 (it walks onto her, the pants follow by a smooth displacement field), lowered 6.5 cm overall, the legs sliced level
 2.5 cm under the shoe top so the hems sit inside the sneaker collars; sneakers rigid at true size, her hidden feet
 removed. --gstring builds a G-string on her skin, --piercing a metal ring on her left brow (--ring-transform: the
-owner's own placement from Blender), --eyes the owner's eyeball pick in place of her eyeballs and corneas.
+owner's own placement from Blender, read by ring_placement_from_blend.py), --eyes the owner's eyeball pick in place of
+her eyeballs and corneas.
+Every shape key value is 0 in this recipe and in the saved .blend, as in game: the pack's joy.blend ships a face
+expression, and Blender 5.2 gives a new key the value 1.0 (both made the 2026-10-14 ring placement land 14 mm low).
 The source joy.blend is never written (sha verified before and after). Textures are not re-exported, except the --eyes
 GLB's colour and normal maps.
 """
@@ -53,7 +56,7 @@ ap.add_argument("--fit-body", default="", help="the body the jacket was cut for 
 ap.add_argument("--pants", default="", help="a pants (+ shoes) garment exported from Unreal; replaces Underwear_Bottoms in the export")
 ap.add_argument("--piercing", action="store_true", help="a metal ring through the outer end of her brow")
 ap.add_argument("--gstring", action="store_true", help="a G-string built on her skin replaces the briefs (with --pants)")
-ap.add_argument("--ring-transform", default="", help="JSON with T_local_cm: the owner's brow ring placement (joy_ring_placement.json)")
+ap.add_argument("--ring-transform", default="", help="JSON with M_ring_local_cm: the owner's brow ring placement (joy_ring_placement.json, from ring_placement_from_blend.py)")
 ap.add_argument("--eyes", default="", help="an eyeball GLB that replaces her eyeballs and corneas (owner's pick)")
 ap.add_argument("--save-blend", action="store_true", help="also save the dressed scene as Joy_outfit.blend (textures packed) to open and inspect")
 ap.add_argument("--pants-body", default="", help="the body the pants were cut for (SKM_Manny_500_Simple.fbx); default: beside the pants")
@@ -103,6 +106,26 @@ for o in [body] + [bpy.data.objects[g] for g in garments]:
     assert [m.type for m in o.modifiers] == ["ARMATURE"], (o.name, [m.type for m in o.modifiers])
 keys = body.data.shape_keys
 assert keys and keys.key_blocks[0].name == "Basis" and not any(k.name.startswith("ST_") for k in keys.key_blocks)
+# The pack's joy.blend ships an expression (13 face keys at 0.1-1.0: brows raised, a right-side smirk). Nothing drives
+# her morphs in game, so the game shows the neutral face; every key goes to 0 here so that every evaluation in this
+# recipe and the saved .blend show that same face (2026-10-14: the owner placed the brow ring against the expression).
+# The values are also keyed: a one-frame shape-key action ("Key.00x|..._TempMotion") on the body, eye occlusion and tear
+# line puts them back on every evaluation, so the action is cleared first (in memory; the source is never written).
+shipped_expression = {}
+for o in bpy.data.objects:
+    if o.type == "MESH" and o.data.shape_keys:
+        sk = o.data.shape_keys
+        if sk.animation_data:
+            if sk.animation_data.action:
+                shipped_expression.setdefault(o.name, {})["_action"] = sk.animation_data.action.name
+            sk.animation_data_clear()
+        for kb_ in sk.key_blocks[1:]:
+            if kb_.value != 0.0:
+                shipped_expression.setdefault(o.name, {})[kb_.name] = round(kb_.value, 3)
+                kb_.value = 0.0
+bpy.context.view_layer.update()
+assert not any(kb_.value != 0.0 for o in bpy.data.objects if o.type == "MESH" and o.data.shape_keys
+               for kb_ in o.data.shape_keys.key_blocks[1:]), "a shape key value came back after the update"
 P = np.array([v.co[:] for v in body.data.vertices], dtype=np.float64)  # cm
 x, y, z = P.T
 edges = np.array([e.vertices[:] for e in body.data.edges], dtype=np.int32)
@@ -238,7 +261,7 @@ for region in REGIONS:
     anchors[region] = {"anchors": sorted(rows, key=lambda r: -r["weight"])}
     assert abs(sum(r["weight"] for r in rows) - 1) < 1e-9 and len(rows) >= 2, region
 reference = {b: list(rig.data.bones[b].head_local) for b in REFERENCE_BONES}
-report = {"source": str(SRC), "source_sha256": before, "blender": bpy.app.version_string, "key_cm": KEY_CM, "masks": mask_report, "garments": garment_report,
+report = {"source": str(SRC), "source_sha256": before, "blender": bpy.app.version_string, "key_cm": KEY_CM, "shipped_expression_zeroed": shipped_expression, "masks": mask_report, "garments": garment_report,
           "new_keys": new_keys, "regions": anchors, "reference_bones_blender_cm": reference, "body_keys": len(keys.key_blocks)}
 print("JOY_ST_MASKS", json.dumps({k: {kk: vv for kk, vv in v.items() if kk != "bounds_cm"} for k, v in mask_report.items()}), flush=True)
 print("JOY_ST_ANCHORS", json.dumps({k: [(r["bone"], round(r["weight"], 3)) for r in v["anchors"]] for k, v in anchors.items()}), flush=True)
@@ -1234,38 +1257,47 @@ report["meshes"] = [o.name for o in meshes]
 def add_brow_ring(side="R"):
     """A metal ring through the outer end of her brow (owner 2026-10-14: "eyebrow piercing, metal. like the image").
     The ring takes its skin weights and every expression key that moves the skin under it, so it rides the brow."""
-    eye = np.array(rig.data.bones["CC_Base_%s_Eye" % side].head_local)  # armature cm == body local cm here
-    sgn = 1.0 if side == "L" else -1.0
-    start = eye + np.array([sgn * 2.0, -12.0, 1.9])
-    hit, loc, nrm, fi = body.ray_cast(Vector(start), Vector((0.0, 1.0, 0.0)), distance=30.0)
-    assert hit, "no brow under the ring"
-    S, n = np.array(loc), np.array(nrm)
-    up = np.array([0.0, 0.0, 1.0]) - n * n[2]
-    up /= np.linalg.norm(up)
     R_, r_ = 0.5, 0.09  # ring radius and wire radius, cm
     seg, wseg = 32, 10
-    verts, faces_ = [], []
-    centre = S + n * 0.05
-    for i in range(seg):
-        a = 2 * math.pi * i / seg
-        c = centre + R_ * (math.cos(a) * n + math.sin(a) * up)
-        radial = (c - centre) / R_
+
+    def ring_verts(centre, n, up):
         side_axis = np.cross(n, up)
-        for j in range(wseg):
-            b = 2 * math.pi * j / wseg
-            verts.append(c + r_ * (math.cos(b) * radial + math.sin(b) * side_axis))
+        out = []
+        for i in range(seg):
+            a = 2 * math.pi * i / seg
+            c = centre + R_ * (math.cos(a) * n + math.sin(a) * up)
+            radial = (c - centre) / R_
+            for j in range(wseg):
+                b = 2 * math.pi * j / wseg
+                out.append(c + r_ * (math.cos(b) * radial + math.sin(b) * side_axis))
+        return out
+
+    placed = None
+    if opt.ring_transform:
+        # Owner 2026-10-14: placed by hand in Blender. joy_ring_placement.json holds M_ring_local_cm, the pose (Joy-local
+        # cm) of the canonical ring (centre at the origin, ring plane X-Y), measured from the ring AS THE OWNER SAW IT and
+        # carried to her neutral face by ring_placement_from_blend.py.
+        M_ = np.array(json.loads(Path(opt.ring_transform).read_text())["M_ring_local_cm"])
+        verts = [(M_ @ np.r_[v, 1])[:3] for v in ring_verts(np.zeros(3), np.array([1.0, 0.0, 0.0]), np.array([0.0, 1.0, 0.0]))]
+        S = nearest_body(M_[:3, 3])[0]
+        n = M_[:3, 0] / np.linalg.norm(M_[:3, 0])
+        placed = opt.ring_transform
+    else:
+        eye = np.array(rig.data.bones["CC_Base_%s_Eye" % side].head_local)  # armature cm == body local cm here
+        sgn = 1.0 if side == "L" else -1.0
+        start = eye + np.array([sgn * 2.0, -12.0, 1.9])
+        hit, loc, nrm, fi = body.ray_cast(Vector(start), Vector((0.0, 1.0, 0.0)), distance=30.0)
+        assert hit, "no brow under the ring"
+        S, n = np.array(loc), np.array(nrm)
+        up = np.array([0.0, 0.0, 1.0]) - n * n[2]
+        up /= np.linalg.norm(up)
+        verts = ring_verts(S + n * 0.05, n, up)
+    faces_ = []
     for i in range(seg):
         for j in range(wseg):
             a0, a1 = i * wseg + j, i * wseg + (j + 1) % wseg
             b0, b1 = ((i + 1) % seg) * wseg + j, ((i + 1) % seg) * wseg + (j + 1) % wseg
             faces_.append((a0, b0, b1, a1))
-    placed = None
-    if opt.ring_transform:
-        # owner 2026-10-14: placed by hand in Blender (joy_ring_placement.json, Kabsch from the built ring to theirs)
-        T_ring = np.array(json.loads(Path(opt.ring_transform).read_text())["T_local_cm"])
-        verts = [(T_ring @ np.r_[np.array(v), 1])[:3] for v in verts]
-        S = (T_ring @ np.r_[S, 1])[:3]
-        placed = opt.ring_transform
     me = bpy.data.meshes.new("BrowRing")
     me.from_pydata([tuple(v) for v in verts], [], faces_)
     me.update()
@@ -1296,9 +1328,10 @@ def add_brow_ring(side="R"):
         dv = sum(wi * (np.array(kb.data[vi].co) - P[vi]) for vi, wi in zip(fverts, w))
         if np.linalg.norm(dv) > 0.02:
             k = ob.shape_key_add(name=kb.name, from_mix=False)
+            k.value = 0.0  # Blender 5.2 gives a new key the value 1.0: the ring showed 14 mm off in the saved .blend
             k.data.foreach_set("co", (base_v + dv).astype(np.float32).ravel())
             carried.append(kb.name)
-    return ob, {"side": side, "at_cm": S.tolist(), "normal": n.tolist(), "owner_placement": placed, "bones": {k: round(v / total, 3) for k, v in acc.items()}, "keys_carried": carried}
+    return ob, {"side": side, "at_cm": np.asarray(S).tolist(), "centre_cm": np.mean(verts, axis=0).tolist(), "normal": np.asarray(n).tolist(), "owner_placement": placed, "bones": {k: round(v / total, 3) for k, v in acc.items()}, "keys_carried": carried}
 
 
 if opt.piercing:

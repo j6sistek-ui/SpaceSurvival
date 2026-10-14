@@ -1,30 +1,24 @@
 {
  "source": "M:/Local AI/Projects/JoyBartender_20261014/eyes_whatif/Joy_eyes_whatif.blend",
- "move_mm": [
-  2.1303004235960556,
-  -5.075255199335521,
-  -13.764314353466034
- ],
- "rotation_deg": 2.98210314312095e-05,
- "fit_residual_mm": 7.01418463532477e-05,
- "T_local_cm": [
+ "method": "owner's ring as seen (keys as saved), carried by the weighted rigid motion of the skin within 2.5 cm (sigma 1 cm) from her shipped expression to every key at 0, then fitted to the canonical ring",
+ "M_ring_local_cm": [
   [
-   1.0000000371037892,
-   -4.4626011388440785e-08,
-   3.9593683591522767e-07,
-   0.21296179666461543
+   0.7739575762377531,
+   -0.1098304224168912,
+   -0.6236400792892565,
+   5.1130836137001605
   ],
   [
-   4.462614837171725e-08,
-   1.0000000371038165,
-   -3.3554175893518957e-07,
-   -0.5074682145431527
+   -0.6212330238931939,
+   0.05916169318429719,
+   -0.7813894189737187,
+   -7.238932877783566
   ],
   [
-   -3.9593682155558775e-07,
-   3.3554177604489924e-07,
-   1.0000000371037445,
-   -1.376427449026181
+   0.12271593298631453,
+   0.992188073084581,
+   -0.022441644770471936,
+   170.23543096062605
   ],
   [
    0.0,
@@ -33,5 +27,26 @@
    1.0
   ]
  ],
- "note": "owner's brow ring placement, Blender 2026-10-14; applied by author_soft_tissue.py --ring-transform"
+ "ring_centre_seen_cm": [
+  5.126843971647064,
+  -7.211302017452321,
+  170.2927211770112
+ ],
+ "ring_centre_neutral_cm": [
+  5.1130836137001605,
+  -7.238932877783566,
+  170.23543096062605
+ ],
+ "skin_shift_mm": 0.6507672999567182,
+ "skin_patch_vertices": 288,
+ "skin_fit_residual_mm": {
+  "max": 2.789281737104154,
+  "weighted_mean": 0.510746069272969
+ },
+ "ring_fit_residual_mm": 0.0006637936182807589,
+ "centre_to_skin_mm": {
+  "seen": 0.5909004062414169,
+  "neutral": 0.5814770981669426
+ },
+ "note": "applied by author_soft_tissue.py --ring-transform; replaces the 2026-10-14 T_local_cm, which measured the move in the key-displaced view and put the ring 14 mm low in game"
 }

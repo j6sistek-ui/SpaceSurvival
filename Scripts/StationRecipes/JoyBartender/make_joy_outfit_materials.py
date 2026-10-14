@@ -6,6 +6,8 @@ never edited: these are children in JoyBartender/Materials, created or updated i
   set SS_PANTS_TINT=r,g,b      (linear multiplier on the base colour; the pack's own value is 0.79,0.79,0.79)
   set SS_PANTS_ROUGHNESS=0.45  set SS_PANTS_SPECULAR=0.6   (optional; the pack ships 1.0 and 0.5)
   set SS_EYE_TEXTURES=<author_soft_tissue.py --eyes output folder>   (optional: MI_Joy_EyeOption from its two maps)
+  set SS_FABRIC_SLOT=M_SciFi_P_Pack_02   (optional: her pants' own satin instance on that SK_Joy slot; the sneakers keep
+      MI_Joy_Pants / MI_Joy_Sneakers_L)   SS_FABRIC_ROUGHNESS=1.25  SS_FABRIC_METALLIC=0.15  SS_FABRIC_SPECULAR=0.5
   UnrealEditor-Cmd.exe <project> -unattended -NullRHI ... -ExecutePythonScript="<abs>/make_joy_outfit_materials.py"
 """
 import json
@@ -98,6 +100,57 @@ if os.environ.get("SS_EYE_TEXTURES"):
     assert L.save_loaded_asset(eye, False), eye_path
     report["MI_Joy_EyeOption"] = {"parent": master.get_path_name(), "texture_params": tex_params, "normal_param": normal_param,
                                   "textures": {k: v.get_path_name() for k, v in tex.items()}}
+# Her pants' own fabric (owner 2026-10-14 night: "can her pants be a bit less reflective? no need for hyper shiny").
+# The pack's master reads metallic straight from the ORM map's blue channel, 0.5 over all of the red fabric, with no
+# parameter: a half-metal red with roughness 0.48 x the instance's multiplier is the foil look. A copy of the master in
+# Joy's folder gets a MetallicScale on that channel (the pack's assets stay untouched), and her pants slot gets its own
+# instance of it; the sneakers keep theirs.
+if os.environ.get("SS_FABRIC_SLOT"):
+    MASTER_SRC = "/Game/SciFi_PS_P02_UE5/Materials/SciFi_Base/M_Pants_Sneakers_p02_c3"
+    MASTER = B + "/M_Joy_SciFiPants"
+    if not L.does_asset_exist(MASTER):
+        assert L.duplicate_asset(MASTER_SRC, MASTER), MASTER
+    mat = u.load_asset(MASTER)
+    assert isinstance(mat, u.Material), MASTER
+    if "MetallicScale" not in [str(n) for n in E.get_scalar_parameter_names(mat)]:
+        orm = E.get_material_property_input_node(mat, u.MaterialProperty.MP_METALLIC)
+        assert isinstance(orm, u.MaterialExpressionTextureSample), orm
+        assert str(E.get_material_property_input_node_output_name(mat, u.MaterialProperty.MP_METALLIC)) == "B"
+        mul = E.create_material_expression(mat, u.MaterialExpressionMultiply, -260, 420)
+        par = E.create_material_expression(mat, u.MaterialExpressionScalarParameter, -520, 520)
+        par.set_editor_property("parameter_name", "MetallicScale")
+        par.set_editor_property("default_value", 1.0)
+        assert E.connect_material_expressions(orm, "B", mul, "A")
+        assert E.connect_material_expressions(par, "", mul, "B")
+        assert E.connect_material_property(mul, "", u.MaterialProperty.MP_METALLIC)
+        E.recompile_material(mat)
+    assert L.save_loaded_asset(mat, False), MASTER
+    assert "MetallicScale" in [str(n) for n in E.get_scalar_parameter_names(mat)]
+    pack_inst = u.load_asset(PACK + "/ML_Pants_Sneakers_p02_c3_Inst")
+    fab_path = B + "/MI_Joy_PantsFabric"
+    fab = u.load_asset(fab_path) if L.does_asset_exist(fab_path) else TOOLS.create_asset("MI_Joy_PantsFabric", B, u.MaterialInstanceConstant, u.MaterialInstanceConstantFactoryNew())
+    E.set_material_instance_parent(fab, mat)
+    E.set_material_instance_texture_parameter_value(fab, "Skin_Texture", E.get_material_instance_texture_parameter_value(pack_inst, "Skin_Texture"))
+    E.set_material_instance_vector_parameter_value(fab, "Color", u.LinearColor(TINT[0], TINT[1], TINT[2], 0.0))
+    E.set_material_instance_scalar_parameter_value(fab, "Emissive", E.get_material_instance_scalar_parameter_value(pack_inst, "Emissive"))
+    for k, env, dflt in (("Roughness", "SS_FABRIC_ROUGHNESS", 1.25), ("MetallicScale", "SS_FABRIC_METALLIC", 0.15), ("Specular", "SS_FABRIC_SPECULAR", 0.5)):
+        E.set_material_instance_scalar_parameter_value(fab, k, float(os.environ.get(env, dflt)))
+    E.update_material_instance(fab)
+    assert L.save_loaded_asset(fab, False), fab_path
+    mesh = u.load_asset(B.rsplit("/", 1)[0] + "/Mesh/SK_Joy")
+    slots = list(mesh.materials)
+    before = {str(x.material_slot_name): (x.material_interface.get_name() if x.material_interface else None) for x in slots}
+    hit = 0
+    for i, x in enumerate(slots):
+        if str(x.material_slot_name) == os.environ["SS_FABRIC_SLOT"]:
+            x.set_editor_property("material_interface", fab)
+            slots[i] = x
+            hit += 1
+    assert hit == 1, ("slot", os.environ["SS_FABRIC_SLOT"], list(before))
+    mesh.set_editor_property("materials", slots)
+    assert L.save_loaded_asset(mesh, False)
+    report["MI_Joy_PantsFabric"] = {"parent": MASTER, "slot": os.environ["SS_FABRIC_SLOT"], "slots_before": before,
+                                    "scalars": {str(p): E.get_material_instance_scalar_parameter_value(fab, p) for p in E.get_scalar_parameter_names(fab)}}
 jk = u.load_asset("/Game/Jacket_1/Materials/MI_Jacket")
 report["MI_Jacket"] = {"scalars": {str(p): E.get_material_instance_scalar_parameter_value(jk, p) for p in E.get_scalar_parameter_names(jk)},
                        "textures": {str(p): (E.get_material_instance_texture_parameter_value(jk, p).get_name() if E.get_material_instance_texture_parameter_value(jk, p) else None) for p in E.get_texture_parameter_names(jk)}}
