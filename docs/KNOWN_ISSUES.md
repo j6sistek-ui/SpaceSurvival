@@ -2,6 +2,7 @@
 
 ## Current station follow-up — October14, 2026
 
+[PR73](https://github.com/j6sistek-ui/SpaceSurvival/pull/73) tracks this scope;
 PR69 closes the accumulated source baseline. This section supersedes older station
 next-action paragraphs below; they remain dated evidence. The owner reports a new
 station and requests these four layout priorities. **All in-game work is held.**
@@ -33,6 +34,13 @@ must leave the current performer looping; conversations pause the engaged NPC's
 routine until goodbye. Cyborg/Silver repair is closed for now by owner decision.
 NPC triangle/render optimization is held. No cast repopulation, character repair,
 flight/save work, new mechanics, merge, cook or release is authorized here.
+
+**GitHub issue cleanup, October14:** Closed #1, #2, #7, #28, #29, #31, #33,
+#49, #50, #55 and #56 after checking source/receipts or a withdrawn premise.
+Each original report retains a dated resolution with evidence; 18 unresolved
+issues remain open. Closing design/evaluation references does not close gameplay
+acceptance. PR69 head `5b94a40` has green source/core and documentation CI and is
+ready for review, unmerged. The station remains held.
 
 **October14 PR closeout — CPU work only.** PR69 reconciles with current main; station follow-ups move to a focused draft PR. All in-game edits remain held. The old five-path source cook failure is superseded by155 covered paths/zero missing; no cook/release is claimed. [Reconciliation evidence](validation/2026-10-14-pr69-closeout.md). Cyborg/Silver remain closed; older paragraphs do not reopen them.
 

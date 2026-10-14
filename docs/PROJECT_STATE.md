@@ -1,7 +1,8 @@
 # SpaceSurvival project state
 
-**October14 focused station handoff:** PR69 is the reconciled source baseline;
-the separate station follow-up starts with documentation only and four held layout
+**October14 focused station handoff:** PR69 is ready for review, unmerged, at
+`5b94a40`; final source/core and documentation CI pass. [PR73](https://github.com/j6sistek-ui/SpaceSurvival/pull/73)
+starts with documentation only and four held layout
 priorities in the [canonical queue](KNOWN_ISSUES.md#current-station-follow-up--october14-2026).
 No scene, asset, runtime, settings, save or release changes accompany that handoff.
 The new PR is stacked on PR69 to keep its initial diff small; retarget it to main
