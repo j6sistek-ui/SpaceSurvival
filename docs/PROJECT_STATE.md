@@ -1,5 +1,13 @@
 # SpaceSurvival project state
 
+**October14 focused station handoff:** PR69 merged at `d9b2997` after owner approval;
+its head `5b94a40` passed source/core and documentation CI. [PR73](https://github.com/j6sistek-ui/SpaceSurvival/pull/73)
+starts with documentation only and four held layout
+priorities in the [canonical queue](KNOWN_ISSUES.md#current-station-follow-up--october14-2026).
+No scene, asset, runtime, settings, save or release changes accompany that handoff.
+PR73 now targets main with only the focused documentation diff.
+Current native appearance requires a fresh review after resume.
+
 **October14 PR69 reconciliation:** An isolated CPU Editor build succeeds after preserving current main conversations/characters and prior station/boarding work. The owner checkout/game DLL/native map/content and packaged release are unchanged. Station implementation remains held and moves to a focused draft PR. The old five-path source cook failure is repaired without running a cook. [Exact checks and limits](validation/2026-10-14-pr69-closeout.md).
 
 **October14 owner closure:** Owner authorizes merging PR72 and closes Cyborg and Silver for now. The saved native checkpoint below stands; outstanding broader quality/voice/performance/package limits are historical limits, not active character work. Scoped disposable-file cleanup preserves current assets, sources and recovery evidence.
