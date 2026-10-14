@@ -20,9 +20,11 @@ MESH = "/Game/SpaceSurvival/Licensed/StationAssets/JoyBartender/Mesh/SK_Joy"
 SRC = os.environ["SS_JOY_ST_DIR"]
 REPORT_PATH = os.environ.get("SS_JOY_ST_REPORT", "")
 DATA = json.load(open(os.path.join(SRC, "SoftTissue.json")))
-# Silver's adopted values, unchanged (.agent/local/ViableEldFinish_20261013/RuntimeDynamics/Candidate.json)
-SPRING = {"Breast": dict(mass_kg=.55, stiffness=135., damping_ratio=.3, strength=.9, axis_response=u.Vector(1.5, .8, 1.), max_offset_cm=1.6),
-          "Hip": dict(mass_kg=.9, stiffness=300., damping_ratio=.36, strength=.85, axis_response=u.Vector(1.4, .85, 1.), max_offset_cm=1.2)}
+# Silver's adopted values (.agent/local/ViableEldFinish_20261013/RuntimeDynamics/Candidate.json: 135/.3/.9/1.6 and
+# 300/.36/.85/1.2) made "a bit more sensitive" at the owner's request 2026-10-14: softer spring, lighter damping, more
+# drive, a quarter more travel. The jacket is held clear of the skin by these caps (author_soft_tissue.py MAX_OFFSET_CM).
+SPRING = {"Breast": dict(mass_kg=.55, stiffness=110., damping_ratio=.26, strength=1.15, axis_response=u.Vector(1.5, .8, 1.), max_offset_cm=2.0),
+          "Hip": dict(mass_kg=.9, stiffness=240., damping_ratio=.32, strength=1.1, axis_response=u.Vector(1.4, .85, 1.), max_offset_cm=1.5)}
 COMPONENT = "BodyDynamics"
 
 
@@ -75,11 +77,13 @@ actors = u.get_editor_subsystem(u.EditorActorSubsystem).get_all_level_actors()
 bar = next((a for a in actors if a.get_actor_label() == LABEL), None)
 assert bar and isinstance(bar, u.SSOutpostAmbientActor), bar
 assert bar.character_mesh.get_skeletal_mesh_asset().get_path_name() == mesh.get_path_name(), bar.character_mesh.get_skeletal_mesh_asset().get_path_name()
-assert not bar.get_components_by_class(u.SSSoftTissueComponent), "already has body dynamics"
 mesh_name = bar.character_mesh.get_name()
-comp = None
-how = ""
+existing_comps = bar.get_components_by_class(u.SSSoftTissueComponent)
+comp = existing_comps[0] if existing_comps else None
+how = "updated existing component" if comp else ""
 try:
+    if comp:
+        raise StopIteration
     S = u.get_engine_subsystem(u.SubobjectDataSubsystem)
     F = u.SubobjectDataBlueprintFunctionLibrary
     handles = S.k2_gather_subobject_data_for_instance(bar)
@@ -88,6 +92,8 @@ try:
     S.rename_subobject(h, u.Text(COMPONENT))
     comp = F.get_object(F.get_data(h))
     how = "SubobjectDataSubsystem"
+except StopIteration:
+    pass
 except Exception as e:  # noqa
     log("subobject route failed (%s); adding the component by class" % e)
 if not isinstance(comp, u.SSSoftTissueComponent):
