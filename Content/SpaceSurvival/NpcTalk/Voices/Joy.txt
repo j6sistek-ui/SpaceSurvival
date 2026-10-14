@@ -1,0 +1,5 @@
+# Joy: "velvet" - the warm, friendly one of the three female auditions kept in M:/Local AI/DirectorTTS/samples_cyborg/
+# (bright went to the Cyborg; husky is the other candidate). Picked 2026-10-14 for the owner to dial in later;
+# test lines in both voices were sent that night. Dry, a touch quicker than the Cyborg: she talks a lot.
+speed=0.9
+treatment=none

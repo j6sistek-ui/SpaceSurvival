@@ -950,8 +950,27 @@ void ASSHUD::DrawHUD()
         const float HintX = W * .5f - 200 * Scale, HintY = H - 80 * Scale, HintSize = .9f;
         const float GlyphGap = 6.f * Scale;
         if (Walker)
+        {
             StationAction(InteractionHint, GlyphBeforeHint, HintColor, bTalkHint ? EKeys::T : EKeys::E,
                           bTalkHint ? EKeys::Gamepad_RightThumbstick : EKeys::Gamepad_FaceButton_Top);
+            // Crew actions: a row of keys above the talk hint (owner 2026-10-14: ways to trigger their animations).
+            if (bTalkHint)
+                if (const ASSOutpostAmbientActor *Crew = GM->ActionTarget())
+                {
+                    static const FKey Digits[] = {EKeys::One, EKeys::Two, EKeys::Three, EKeys::Four};
+                    static const FKey Pads[] = {EKeys::Gamepad_DPad_Up, EKeys::Gamepad_DPad_Right,
+                                                EKeys::Gamepad_DPad_Down, EKeys::Gamepad_DPad_Down};
+                    const FLinearColor Cyan(.45f, .9f, 1.f);
+                    const float RowY = HintY - 34.f * Scale;
+                    float X = HintX;
+                    for (int32 I = 0; I < FMath::Min(Crew->Actions.Num(), 4); ++I)
+                    {
+                        const float GlyphW = Glyph(Digits[I], Pads[I], X, RowY, .7f, Cyan);
+                        Text(Crew->Actions[I].Name, X + GlyphW + GlyphGap, RowY, .7f, FLinearColor::White);
+                        X += GlyphW + GlyphGap + MeasureText(Crew->Actions[I].Name, .7f).X + 22.f * Scale;
+                    }
+                }
+        }
         else if (GlyphBeforeHint)
         {
             const float GlyphW =

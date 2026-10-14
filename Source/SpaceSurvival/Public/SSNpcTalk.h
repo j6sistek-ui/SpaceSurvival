@@ -205,7 +205,7 @@ public:
         TEXT("Nyxar, the Director, Wayfarer Exchange, Stellar Phoenix, Dread, Vel, Orrin, Sable, "
              "Kett, Rue, Pim, Dax, Brakk, Mica, Unit Seven, Cyan, Cyborg, Violet, Tribal, Seer, "
              "Tendril, Glyph, Robe, Ember, Crest, Olive, Warden, Abyss, Silver, Elf, Crystal, "
-             "Finhead, Amethyst, synth-ale, Europa gin, Nebula.");
+             "Finhead, Amethyst, Joy, synth-ale, Europa gin, Nebula, cheers, pour, toast.");
     UPROPERTY(Config)
     int32 WhisperPort = 8701;
     UPROPERTY(Config)
