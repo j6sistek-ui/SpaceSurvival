@@ -1,6 +1,11 @@
 """Joy's soft-tissue morphs, and optionally the Fab cyber jacket fitted onto her: the SK_Joy reimport FBX.
 
   blender -b --python author_soft_tissue.py -- <out_dir> [--jacket <SKM_Jacket.fbx exported from Unreal>] [--keep-waistcoat]
+      [--pants <SKM_SciFi_PS_P02_UE5.fbx>] [--gstring] [--piercing] [--ring-transform joy_ring_placement.json]
+      [--eyes <eyeball .glb>] [--save-blend]
+
+  The in-game build of 2026-10-14 (outfit_v24): --jacket jacket_src/SKM_Jacket.fbx --pants pants_src/SKM_SciFi_PS_P02_UE5.fbx
+  --piercing --gstring --ring-transform joy_ring_placement.json --eyes "1.7k large iris...glb" --save-blend
 
 Soft tissue (owner 2026-10-14: "add the same jiggle physics on silvers new character to bartender joy"): the
 ST_<Region>_<Axis> shape keys that Silver's BodyDynamics spring component (USSSoftTissueComponent) drives. Four masked
@@ -17,7 +22,13 @@ length, spine mapped by height), which deforms the jacket to her proportions and
 body's skin weights from the nearest surface point, is pushed 4 mm clear of her skin and bottoms where it sank in, gets
 no ST keys of its own (the tissue moves underneath it, held clear by each region's full travel), and replaces the waistcoat in the export (the painted strap is removed on the Unreal side). The pack's
 material slot name M_jacket is kept so the import can assign the pack's MI_Jacket.
-The source joy.blend is never written (sha verified before and after). Textures are not re-exported.
+Pants + sneakers (owner 2026-10-14, the red Sci-Fi Pants Sneakers p02): fitted through the pack's own SKM_Manny body
+(it walks onto her, the pants follow by a smooth displacement field), lowered 6.5 cm overall, the legs sliced level
+2.5 cm under the shoe top so the hems sit inside the sneaker collars; sneakers rigid at true size, her hidden feet
+removed. --gstring builds a G-string on her skin, --piercing a metal ring on her left brow (--ring-transform: the
+owner's own placement from Blender), --eyes the owner's eyeball pick in place of her eyeballs and corneas.
+The source joy.blend is never written (sha verified before and after). Textures are not re-exported, except the --eyes
+GLB's colour and normal maps.
 """
 import argparse
 import hashlib
@@ -42,6 +53,9 @@ ap.add_argument("--fit-body", default="", help="the body the jacket was cut for 
 ap.add_argument("--pants", default="", help="a pants (+ shoes) garment exported from Unreal; replaces Underwear_Bottoms in the export")
 ap.add_argument("--piercing", action="store_true", help="a metal ring through the outer end of her brow")
 ap.add_argument("--gstring", action="store_true", help="a G-string built on her skin replaces the briefs (with --pants)")
+ap.add_argument("--ring-transform", default="", help="JSON with T_local_cm: the owner's brow ring placement (joy_ring_placement.json)")
+ap.add_argument("--eyes", default="", help="an eyeball GLB that replaces her eyeballs and corneas (owner's pick)")
+ap.add_argument("--save-blend", action="store_true", help="also save the dressed scene as Joy_outfit.blend (textures packed) to open and inspect")
 ap.add_argument("--pants-body", default="", help="the body the pants were cut for (SKM_Manny_500_Simple.fbx); default: beside the pants")
 ap.add_argument("--keep-waistcoat", action="store_true")
 opt = ap.parse_args(sys.argv[sys.argv.index("--") + 1:])
@@ -284,7 +298,7 @@ def cb(name):  # Joy bone rest head/tail, world metres
 # per garment: object name, the height band it must stay inside (Joy local cm), whether it carries the paired ST keys
 # (moves WITH the tissue, like the bottoms) or is held clear of it (the tissue moves underneath, like the jacket)
 SPEC = {"jacket": {"name": "Jacket", "keys": False, "gap_cm": JACKET_GAP_CM, "open": True},
-        "pants": {"name": "Pants", "keys": True, "gap_cm": 0.5, "open": False, "tighten": (0.38, 0.8), "weights": "skin_sided", "lower_cm": 6.5, "cuff_cm": 5.0, "hem_clear_cm": 1.5, "bridge": True, "wrap_iter": 10, "field_transfer_cm": 2.5,
+        "pants": {"name": "Pants", "keys": True, "gap_cm": 0.5, "open": False, "tighten": (0.38, 0.8), "weights": "skin_sided", "lower_cm": 6.5, "hem_into_shoe_cm": 2.5, "bridge": True, "wrap_iter": 10, "field_transfer_cm": 2.5, "layer_k": 0.35,
                   "rigid_slots": ("M_SciFi_S_Pack_02L", "M_SciFi_S_Pack_02R")}}
 # UE5 Manny / MetaHuman bone -> Joy's CC bone, for garments that keep the pack's own skin weights. Joy's thighs touch at
 # rest, so nearest-skin weights gave inner-leg fabric the OTHER leg and it webbed between her legs when they parted
@@ -604,6 +618,7 @@ def fit_garment(kind, path, body_path, under=None):
         rep["opened"] = {"open_cm": OPEN_CM, "vertices": int((shift > 0.05).sum()), "max_shift_cm": float(shift.max())}
 
     delete_faces = set()
+    hem_z = None
     stage("3_before_lower")
     if spec.get("lower_cm"):
         # Owner 2026-10-14: "all i meant was lowering them overall to sit lower on the waistline, without lengthening the
@@ -611,19 +626,18 @@ def fit_garment(kind, path, body_path, under=None):
         # hems stop above the sneakers, and the fabric the raised cuffs now cover is cut away (1 cm overlap).
         soft = ~rigid
         Q[soft, 2] -= spec["lower_cm"]
-        z_hem = float(Q[soft, 2].min())
-        collar = rep.get("shoe_collar_cm", 0.0)
-        lift = max(0.0, collar + spec["hem_clear_cm"] - z_hem)
-        cuff = soft & (Q[:, 2] < z_hem + spec["cuff_cm"])
-        Q[cuff, 2] += lift
-        cuff_top_after = z_hem + spec["cuff_cm"] + lift
+        # Owner 2026-10-14: "shortening overall length so they don't go over shoes", then "some coiling or something
+        # above the shoe": lifting the pack's bunched cuff tore it, and cutting whole faces left a saw-toothed edge and a
+        # band of bare ankle. The legs now end in a level slice of the finished mesh 'hem_into_shoe_cm' under the shoe
+        # top (the collar rim is level within ~1 cm), so the hem sits inside the sneaker collar. Faces wholly 2 cm below
+        # that line leave here; the slice itself is made on the finished object.
+        hem_z = rep.get("shoe_collar_cm", 0.0) - spec["hem_into_shoe_cm"]
         for fi, f in enumerate(faces):
-            if rigid[f].any() or cuff[f].all():
-                continue
-            if (Q[f, 2] < cuff_top_after - 1.0).all():
+            if not rigid[f].any() and (Q[f, 2] < hem_z - 2.0).all():
                 delete_faces.add(fi)
-        rep["lowered"] = {"lower_cm": spec["lower_cm"], "waist_top_after_cm": float(Q[soft, 2].max()), "hem_before_lift_cm": z_hem,
-                          "cuff_lift_cm": lift, "faces_cut": len(delete_faces)}
+        cuff_mask = np.zeros(len(Q), dtype=bool)
+        rep["lowered"] = {"lower_cm": spec["lower_cm"], "waist_top_after_cm": float(Q[soft, 2].max()), "hem_z_cm": hem_z,
+                          "faces_dropped_early": len(delete_faces)}
     stage("4_after_lower")
     if spec.get("low_rise"):
         front_cm, back_cm = spec["low_rise"]
@@ -659,7 +673,22 @@ def fit_garment(kind, path, body_path, under=None):
         delta = (want - off)[:, None] * nrmv * smoothstep5((Q[:, 2] - 12.0) / 6.0)[:, None]
         delta[rigid] = 0.0
         tedges = np.array(sorted({tuple(sorted((f[k], f[(k + 1) % len(f)]))) for f in faces for k in range(len(f))}), dtype=np.int32)
-        for _ in range(12):
+        if spec.get("field_transfer_cm"):
+            # separate panels (belt over waistband) must tighten together or their gap closes and they fight: the pull
+            # is averaged over space (Gaussian, 2 cm) so stacked layers get the same pull
+            from mathutils.kdtree import KDTree
+            kdt = KDTree(len(Q))
+            for i, q in enumerate(Q):
+                kdt.insert(Vector(q), i)
+            kdt.balance()
+            sm = np.zeros_like(delta)
+            for i, q in enumerate(Q):
+                near = kdt.find_range(Vector(q), 5.0)
+                idx = np.array([j for _, j, _ in near])
+                w = np.exp(-(np.array([dd for _, _, dd in near]) / 2.0) ** 2)
+                sm[i] = (delta[idx] * w[:, None]).sum(0) / w.sum()
+            delta = sm
+        for _ in range(0 if spec.get("field_transfer_cm") else 12):
             acc = np.zeros_like(delta)
             cnt = np.zeros(len(delta))
             np.add.at(acc, tedges[:, 0], delta[tedges[:, 1]])
@@ -736,6 +765,61 @@ def fit_garment(kind, path, body_path, under=None):
     # tissue's travel where it hangs, at and below the bust line; above it the panel rests near the skin (owner,
     # reviewing the side view: "didn't need to be so tight ... not make a bulge of space").
     clear = np.full(len(Q), spec["gap_cm"])
+    if spec.get("lower_cm") and "cuff_mask" in dir():
+        clear[cuff_mask] += 0.3  # the lifted cuff sits over the fabric edge it overlaps
+    if spec.get("layer_k"):
+        # Owner, Blender close-up 2026-10-14: red fabric through the black belt. Belt and fabric under it were pushed
+        # to the same 0.5 cm and fought. Each vertex now also keeps layer_k of its height over the body it was cut
+        # for (rest_d), so outer layers stay outer.
+        clear = clear + spec["layer_k"] * np.minimum(rest_d, 5.0)
+        # islands of the garment (panels), and a ray inward from each rest vertex against the other panels
+        parent_ = list(range(len(Q)))
+
+        def find_(a):
+            while parent_[a] != a:
+                parent_[a] = parent_[parent_[a]]
+                a = parent_[a]
+            return a
+
+        for f in faces:
+            for k in range(1, len(f)):
+                ra, rb = find_(f[0]), find_(f[k])
+                if ra != rb:
+                    parent_[rb] = ra
+        island = np.array([find_(i) for i in range(len(Q))])
+        face_island = np.array([island[f[0]] for f in faces])
+        vfaces = [set() for _ in range(len(Q))]
+        for fi, f in enumerate(faces):
+            for v in f:
+                vfaces[v].add(fi)
+        rest_bvh_g = BVHTree.FromPolygons([tuple(q) for q in g_rest.tolist()], [tuple(f) for f in faces], all_triangles=False)
+        # rest normals of the garment, by area-weighted face normals
+        nrm_r = np.zeros_like(g_rest)
+        for f in faces:
+            a_, b_, c_ = g_rest[f[0]], g_rest[f[1]], g_rest[f[2]]
+            fn = np.cross(b_ - a_, c_ - a_)
+            for v in f:
+                nrm_r[v] += fn
+        nrm_r /= np.maximum(np.linalg.norm(nrm_r, axis=1), 1e-12)[:, None]
+        b_rest_c = b_rest  # the fit body at rest (captured before it was posed onto her)
+        body_rest_bvh = BVHTree.FromPolygons([tuple(q) for q in b_rest_c.tolist()], [tuple(f.vertices) for f in bm.data.polygons], all_triangles=False)
+        over = np.zeros(len(Q))
+        for i in range(len(Q)):
+            if rigid[i]:
+                continue
+            # inward = towards the fit body
+            bl, bn, bi, bd = body_rest_bvh.find_nearest(Vector(g_rest[i]))
+            inward = np.array(bl) - g_rest[i]
+            nin = np.linalg.norm(inward)
+            if nin < 1e-6:
+                continue
+            inward /= nin
+            o_ = Vector(g_rest[i] + inward * 0.0002)
+            hit = rest_bvh_g.ray_cast(o_, Vector(inward), 0.012)
+            if hit[0] is not None and face_island[hit[2]] != island[i]:  # other panels only (owner: belt is fine as it is)
+                over[i] = hit[3] * 100.0
+        clear = clear + over
+        rep["layer_over"] = {"vertices_over_another_panel": int((over > 0).sum()), "max_cm": float(over.max())}
     if not spec["keys"]:
         hang = np.clip(0.35 + 0.65 * (140.0 - Q[:, 2]) / 5.0, 0.35, 1.0)
         for i in range(len(Q)):
@@ -802,6 +886,32 @@ def fit_garment(kind, path, body_path, under=None):
                     if 0 > sd_ > -1.5 or 0 <= sd_ < 0.3:
                         Q[i] = np.array(bl) + np.array(bn) * 0.3
                         moved += 1
+    if spec.get("lower_cm") and "island" in dir():
+        # Owner 2026-10-14 (Blender close-up): red fabric through the black belt. Panels whose every vertex lies in the top
+        # 8 cm of the pants are the belt, loops and buckle; each is held 0.3 cm outside the rest of the pants surface.
+        soft_ = ~rigid
+        z_top_now = float(Q[soft_, 2].max())
+        isl_ids = np.unique(island[soft_])
+        belt_isl = [k for k in isl_ids if (Q[island == k, 2] > z_top_now - 8.0).all()]
+        beltv = np.isin(island, belt_isl) & soft_
+        rest_faces = [f for f in faces if not beltv[f].any() and not rigid[f].any()]
+        if beltv.any() and rest_faces:
+            fab_bvh = BVHTree.FromPolygons([tuple(q) for q in Q.tolist()], [tuple(f) for f in rest_faces], all_triangles=False)
+            pushed_b = 0
+            for i in np.flatnonzero(beltv):
+                fl, fn, fi_, fd = fab_bvh.find_nearest(Vector(Q[i]))
+                if fl is None or fd > 2.0:
+                    continue
+                fl, fn = np.array(fl), np.array(fn)
+                # the fabric normal faces out of the body: compare with her skin normal there
+                bl_, bn_, _d, _v, _w = nearest_body(fl)
+                if np.dot(fn, bn_) < 0:
+                    fn = -fn
+                sd_ = float(np.dot(Q[i] - fl, fn))
+                if sd_ < 0.3:
+                    Q[i] = Q[i] + fn * (0.3 - sd_)
+                    pushed_b += 1
+            rep["belt_over_fabric"] = {"panels": len(belt_isl), "vertices": int(beltv.sum()), "pushed": pushed_b}
     stage("7_after_push")
     if spec.get("field_transfer_cm"):
         # Seams: panel edges that touched in the pack's own mesh (within 0.4 cm, posed) are stitched back together, so
@@ -822,7 +932,8 @@ def fit_garment(kind, path, body_path, under=None):
         for k, v in enumerate(border):
             if v in seen or rigid[v]:
                 continue
-            group = [border[j] for _, j, _ in kdb.find_range(Vector(Pb_cm[v]), 0.4) if not rigid[border[j]]]
+            group = [border[j] for _, j, _ in kdb.find_range(Vector(Pb_cm[v]), 0.4)
+                     if not rigid[border[j]] and abs(rest_d[border[j]] - rest_d[v]) < 0.2]  # same layer only
             if len(group) > 1:
                 Q[group] = Q[group].mean(0)
                 seen.update(group)
@@ -873,12 +984,63 @@ def fit_garment(kind, path, body_path, under=None):
         bmesh.ops.delete(bmg, geom=[v for v in bmg.verts if not v.link_faces], context="VERTS")
         bmesh.update_edit_mesh(ob.data)
         bpy.ops.object.mode_set(mode="OBJECT")
+    if hem_z is not None:
+        # the level hem: the fabric (never the shoes) is sliced at hem_z and everything under the slice removed; the
+        # slice interpolates UVs and bone weights on the new edge
+        shoe_mi = {i for i, n in enumerate(slot_names) if n in spec.get("rigid_slots", ())}
+        bpy.context.view_layer.objects.active = ob
+        for o in scene.objects:
+            o.select_set(o is ob)
+        bpy.ops.object.mode_set(mode="EDIT")
+        bmg = bmesh.from_edit_mesh(ob.data)
+        fab_f = [f for f in bmg.faces if f.material_index not in shoe_mi]
+        fab_e = list({e for f in fab_f for e in f.edges})
+        fab_v = list({v for f in fab_f for v in f.verts})
+        bmesh.ops.bisect_plane(bmg, geom=fab_f + fab_e + fab_v, dist=1e-4, plane_co=(0.0, 0.0, hem_z), plane_no=(0.0, 0.0, 1.0), clear_inner=True)
+        bmesh.ops.delete(bmg, geom=[v for v in bmg.verts if not v.link_faces], context="VERTS")
+        bmesh.update_edit_mesh(ob.data)
+        bpy.ops.object.mode_set(mode="OBJECT")
+        # inside the collar the fabric must stay inside the shoe's inner wall: a horizontal ray from the leg's axis
+        # finds the wall at each vertex height, and fabric reaching within 0.25 cm of it is drawn in to that distance
+        Vf = np.array([v.co[:] for v in ob.data.vertices])
+        is_shoe = np.zeros(len(Vf), dtype=bool)
+        is_fab = np.zeros(len(Vf), dtype=bool)
+        shoe_polys = []
+        for pl in ob.data.polygons:
+            if pl.material_index in shoe_mi:
+                is_shoe[list(pl.vertices)] = True
+                shoe_polys.append(tuple(pl.vertices))
+            else:
+                is_fab[list(pl.vertices)] = True
+        sbvh = BVHTree.FromPolygons([tuple(q) for q in Vf.tolist()], shoe_polys, all_triangles=False)
+        shoe_top = float(Vf[is_shoe, 2].max())
+        tucked, deepest = 0, 0.0
+        for sg in (1.0, -1.0):
+            leg = is_fab & (np.sign(Vf[:, 0]) == sg)
+            ring = leg & (Vf[:, 2] < hem_z + 4.0)
+            cx, cy = float(Vf[ring, 0].mean()), float(Vf[ring, 1].mean())
+            for i in np.flatnonzero(leg & (Vf[:, 2] < shoe_top + 0.3)):
+                d = np.array([Vf[i, 0] - cx, Vf[i, 1] - cy])
+                r = float(np.linalg.norm(d))
+                if r < 1e-6:
+                    continue
+                d /= r
+                hit = sbvh.ray_cast(Vector((cx, cy, Vf[i, 2])), Vector((d[0], d[1], 0.0)), 40.0)
+                if hit[0] is None or r <= hit[3] - 0.25:
+                    continue
+                deepest = max(deepest, r - (hit[3] - 0.25))
+                Vf[i, :2] = np.array([cx, cy]) + d * (hit[3] - 0.25)
+                tucked += 1
+        ob.data.vertices.foreach_set("co", Vf.ravel())
+        ob.data.update()
+        rep["hem"] = {"z_cm": hem_z, "shoe_top_cm": shoe_top, "fabric_min_z_cm": float(Vf[is_fab, 2].min()),
+                      "tucked_inside_collar": tucked, "deepest_tuck_cm": deepest}
     for o in new + helpers:
         bpy.data.objects.remove(o, do_unlink=True)
     if stages:
         np.savez(str(OUT / ("stages_%s.npz" % kind)), **stages)
         (OUT / ("stages_%s_faces.json" % kind)).write_text(json.dumps(faces))
-    rep.update(vertices=len(Q), polygons=len(faces), bone_groups=len(ob.vertex_groups), slots=slot_names,
+    rep.update(vertices=len(ob.data.vertices), polygons=len(ob.data.polygons), bone_groups=len(ob.vertex_groups), slots=slot_names,
                sole_depth_cm=float(max(0.0, -Q[:, 2].min())))
     return ob, rep
 
@@ -908,20 +1070,43 @@ def add_gstring():
 
     verts, faces_g = [], []
 
-    def strip(points, normals, half_w, up_dirs):
+    def strip(points, normals, half_w, up_dirs, closed=False):
+        # owner 2026-10-14: the string's edge wobbled. Points from raw hits on her faceted skin are smoothed along the
+        # string (positions and normals), and the width runs across the string (normal x tangent), not straight up.
+        pts = np.array(points, dtype=np.float64)
+        nrm = np.array(normals, dtype=np.float64)
+        n_ = len(pts)
+        for _ in range(8):
+            if closed:
+                pts = 0.5 * pts + 0.25 * (np.roll(pts, 1, 0) + np.roll(pts, -1, 0))
+                nrm = 0.5 * nrm + 0.25 * (np.roll(nrm, 1, 0) + np.roll(nrm, -1, 0))
+            else:
+                pts[1:-1] = 0.5 * pts[1:-1] + 0.25 * (pts[:-2] + pts[2:])
+                nrm[1:-1] = 0.5 * nrm[1:-1] + 0.25 * (nrm[:-2] + nrm[2:])
+        nrm /= np.linalg.norm(nrm, axis=1)[:, None]
         base = len(verts)
-        for pt, n, u_ in zip(points, normals, up_dirs):
-            verts.append(pt + n * 0.15 + u_ * half_w)
-            verts.append(pt + n * 0.15 - u_ * half_w)
-        for k in range(len(points) - 1):
+        for k in range(n_):
+            if closed:
+                t = pts[(k + 1) % n_] - pts[(k - 1) % n_]
+            else:
+                t = pts[min(k + 1, n_ - 1)] - pts[max(k - 1, 0)]
+            across = np.cross(nrm[k], t)
+            across /= max(np.linalg.norm(across), 1e-9)
+            if np.dot(across, up_dirs[k]) < 0:
+                across = -across
+            verts.append(pts[k] + nrm[k] * 0.2 + across * half_w)
+            verts.append(pts[k] + nrm[k] * 0.2 - across * half_w)
+        last = n_ if closed else n_ - 1
+        for k in range(last):
             a = base + 2 * k
-            faces_g.append((a, a + 2, a + 3, a + 1))
+            b = base + 2 * ((k + 1) % n_)
+            faces_g.append((a, b, b + 1, a + 1))
         return base
 
     # waist string: a closed loop, cast inward from outside at each angle
     loop_p, loop_n = [], []
-    for k in range(96):
-        th = 2 * math.pi * k / 96
+    for k in range(192):
+        th = 2 * math.pi * k / 192
         d = np.array([math.sin(th), -math.cos(th), 0.0])
         z = waist_z(th)
         o = np.array([ax[0], ax[1], z]) + d * 40.0
@@ -930,10 +1115,8 @@ def add_gstring():
             continue
         loop_p.append(loc)
         loop_n.append(nrm)
-    loop_p.append(loop_p[0])
-    loop_n.append(loop_n[0])
     up = [np.array([0.0, 0.0, 1.0])] * len(loop_p)
-    strip(loop_p, loop_n, 0.3, up)
+    strip(loop_p, loop_n, 0.3, up, closed=True)
     # front panel: a narrow triangle from the front of the string to the crotch, cast from the front
     rows = 10
     pts_grid = []
@@ -1076,6 +1259,13 @@ def add_brow_ring(side="R"):
             a0, a1 = i * wseg + j, i * wseg + (j + 1) % wseg
             b0, b1 = ((i + 1) % seg) * wseg + j, ((i + 1) % seg) * wseg + (j + 1) % wseg
             faces_.append((a0, b0, b1, a1))
+    placed = None
+    if opt.ring_transform:
+        # owner 2026-10-14: placed by hand in Blender (joy_ring_placement.json, Kabsch from the built ring to theirs)
+        T_ring = np.array(json.loads(Path(opt.ring_transform).read_text())["T_local_cm"])
+        verts = [(T_ring @ np.r_[np.array(v), 1])[:3] for v in verts]
+        S = (T_ring @ np.r_[S, 1])[:3]
+        placed = opt.ring_transform
     me = bpy.data.meshes.new("BrowRing")
     me.from_pydata([tuple(v) for v in verts], [], faces_)
     me.update()
@@ -1108,7 +1298,7 @@ def add_brow_ring(side="R"):
             k = ob.shape_key_add(name=kb.name, from_mix=False)
             k.data.foreach_set("co", (base_v + dv).astype(np.float32).ravel())
             carried.append(kb.name)
-    return ob, {"side": side, "at_cm": S.tolist(), "normal": n.tolist(), "bones": {k: round(v / total, 3) for k, v in acc.items()}, "keys_carried": carried}
+    return ob, {"side": side, "at_cm": S.tolist(), "normal": n.tolist(), "owner_placement": placed, "bones": {k: round(v / total, 3) for k, v in acc.items()}, "keys_carried": carried}
 
 
 if opt.piercing:
@@ -1116,6 +1306,95 @@ if opt.piercing:
     meshes.append(ring)
     report["piercing"] = ring_rep
     print("JOY_PIERCING", json.dumps({k: (v if k != "keys_carried" else len(v)) for k, v in ring_rep.items()}), flush=True)
+
+def add_eye_option(path):
+    """The owner's eyeball pick (2026-10-14, Blender what-if file: '1.7k large iris'): a pair from the GLB, each scaled
+    to her eyeball (sphere fit of her own eye halves), centred in her sockets, weighted wholly to her eye bones, one
+    material slot 'Eye_Option'. Her original eyeballs and corneas leave the export; the GLB's colour and normal maps are
+    written beside the FBX for Unreal."""
+    eo = bpy.data.objects["CC_Base_Eye"]
+    BWi = np.linalg.inv(BODY_W)
+    EW = np.array(eo.matrix_world)
+    EV = np.array([(BWi @ EW @ np.r_[np.array(v.co), 1])[:3] for v in eo.data.vertices])  # Joy local cm
+
+    def fit(Pts):
+        A_ = np.c_[2 * Pts, np.ones(len(Pts))]
+        c_, *_ = np.linalg.lstsq(A_, (Pts ** 2).sum(1), rcond=None)
+        return c_[:3], math.sqrt(c_[3] + (c_[:3] ** 2).sum())
+
+    cL, rL = fit(EV[EV[:, 0] > 0])
+    cR, rR = fit(EV[EV[:, 0] < 0])
+    before_ = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=path)
+    new_ = [o for o in bpy.data.objects if o not in before_]
+    ms = [o for o in new_ if o.type == "MESH"]
+    for o in new_:
+        o.select_set(o in ms)
+    bpy.context.view_layer.objects.active = ms[0]
+    if len(ms) > 1:
+        bpy.ops.object.join()
+    src = bpy.context.view_layer.objects.active
+    src.parent = None
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    G = np.array([v.co[:] for v in src.data.vertices]) * 100.0  # metres -> cm
+    mid = (G.min(0) + G.max(0)) / 2
+    size = float((G.max(0) - G.min(0)).max())
+    out_objs, mat = [], src.data.materials[0]
+    mat.name = "Eye_Option"
+    # textures for Unreal
+    tex = {}
+    for nd in mat.node_tree.nodes:
+        if nd.type == "TEX_IMAGE" and nd.image:
+            to = [l.to_socket.name for l in nd.outputs["Color"].links]
+            kind = "BaseColor" if "Base Color" in to else "Normal" if any(l.to_node.type == "NORMAL_MAP" for l in nd.outputs["Color"].links) else None
+            if kind:
+                pth = OUT / ("T_Joy_EyeOption_%s.png" % kind)
+                img = nd.image
+                img.filepath_raw = str(pth)
+                img.file_format = "PNG"
+                img.save()
+                tex[kind] = str(pth)
+    for side, c_, r_ in (("L", cL, rL), ("R", cR, rR)):
+        V_ = (G - mid) * (2 * r_ / size) + c_
+        me_ = bpy.data.meshes.new("EyeOption_" + side)
+        me_.from_pydata([tuple(v) for v in V_], [], [tuple(f.vertices) for f in src.data.polygons])
+        me_.update()
+        if src.data.uv_layers:
+            uv_ = me_.uv_layers.new(name="UVMap")
+            uv_.data.foreach_set("uv", np.array([d.uv[:] for d in src.data.uv_layers.active.data]).ravel())
+        for f_ in me_.polygons:
+            f_.use_smooth = True
+        me_.materials.append(mat)
+        ob_ = bpy.data.objects.new("EyeOption_" + side, me_)
+        scene.collection.objects.link(ob_)
+        ob_.parent = rig
+        ob_.matrix_parent_inverse = rig.matrix_world.inverted()
+        ob_.matrix_world = body.matrix_world.copy()
+        ob_.vertex_groups.new(name="CC_Base_%s_Eye" % side).add(list(range(len(V_))), 1.0, "REPLACE")
+        ob_.modifiers.new("Armature", "ARMATURE").object = rig
+        out_objs.append(ob_)
+    for o in new_:
+        if o.name in bpy.data.objects:
+            bpy.data.objects.remove(o, do_unlink=True)
+    # her own eye keys that live on no other exported mesh go with the original eyes
+    eye_keys = {k.name for k in eo.data.shape_keys.key_blocks[1:]} if eo.data.shape_keys else set()
+    others = set()
+    for o in meshes:
+        if o is not eo and o.type == "MESH" and o.data.shape_keys:
+            others |= {k.name for k in o.data.shape_keys.key_blocks}
+    if eo in meshes:
+        meshes.remove(eo)
+    return out_objs, {"source": path, "centres_cm": [cL.tolist(), cR.tolist()], "diameter_cm": [2 * rL, 2 * rR],
+                      "triangles_each": sum(len(f.vertices) - 2 for f in out_objs[0].data.polygons), "textures": tex,
+                      "dropped_morphs_expected": sorted(eye_keys - others)}
+
+
+if opt.eyes:
+    eye_objs, eye_rep = add_eye_option(opt.eyes)
+    meshes.extend(eye_objs)
+    report["eyes"] = eye_rep
+    report["dropped_morphs_expected"] = eye_rep["dropped_morphs_expected"]
+    print("JOY_EYES", json.dumps({k: v for k, v in eye_rep.items() if k != "centres_cm"}), flush=True)
 
 if opt.pants and report.get("pants", {}).get("shoe_collar_cm"):
     # her feet below the shoe collar are never seen: they leave the export, so a toe can never show through a shoe
@@ -1183,3 +1462,47 @@ if opt.jacket or opt.pants:
         scene.render.filepath = str(OUT / ("fit_%s.png" % name))
         bpy.ops.render.render(write_still=True)
 print("JOY_ST_EXPORTED", json.dumps({"fbx_bytes": fbx.stat().st_size, "keys": {k: len(v) for k, v in new_keys.items()}, "meshes": report["meshes"]}), flush=True)
+
+if opt.save_blend:
+    # A self-contained file of her as exported, for the owner to open and look at (2026-10-14): the pack textures that
+    # Blender has (her own are packed in joy.blend; the pants' red base colour is the exported c3 texture), simple
+    # stand-ins for the rest, the dropped waistcoat and briefs removed.
+    for o in list(scene.objects):
+        if o.type == "MESH" and o not in meshes:
+            bpy.data.objects.remove(o, do_unlink=True)
+    for o in [o for o in scene.objects if o.type in ("CAMERA", "LIGHT")]:
+        bpy.data.objects.remove(o, do_unlink=True)
+
+    def simple(mat, rgb, rough=0.5, metal=0.0, image=None):
+        mat.use_nodes = True
+        nt = mat.node_tree
+        bsdf = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
+        bsdf.inputs["Base Color"].default_value = (*rgb, 1)
+        bsdf.inputs["Roughness"].default_value = rough
+        bsdf.inputs["Metallic"].default_value = metal
+        if image is not None:
+            tex = nt.nodes.new("ShaderNodeTexImage")
+            tex.image = image
+            nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+        mat.diffuse_color = (*rgb, 1)
+
+    if opt.pants:
+        red = Path(opt.pants).with_name("T_SciFi_Pack_02_PS_c3_Base_color.tga")
+        img = bpy.data.images.load(str(red)) if red.exists() else None
+        for m in fitted["pants"].data.materials:
+            simple(m, (0.45, 0.06, 0.08), 0.45, 0.0, img)
+    if jacket:
+        for m in jacket.data.materials:
+            simple(m, (0.05, 0.04, 0.035), 0.35)
+    if report.get("gstring"):
+        simple(gs.data.materials[0], (0.01, 0.01, 0.012), 0.45)
+    if opt.piercing:
+        simple(ring.data.materials[0], (0.7, 0.7, 0.72), 0.2, 1.0)
+    # the pack FBXes carry texture paths from their makers' machines; those dead references cannot be packed
+    for im in list(bpy.data.images):
+        if im.packed_file is None and im.source == "FILE" and not Path(bpy.path.abspath(im.filepath)).exists():
+            bpy.data.images.remove(im)
+    bpy.ops.file.pack_all()
+    out_blend = OUT / "Joy_outfit.blend"
+    bpy.ops.wm.save_as_mainfile(filepath=str(out_blend), copy=True, compress=True)
+    print("JOY_BLEND_SAVED", str(out_blend), flush=True)

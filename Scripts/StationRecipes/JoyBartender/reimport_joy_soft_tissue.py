@@ -78,7 +78,8 @@ assert st == EXPECTED, (st, EXPECTED)
 norm = lambda n: n.replace(" ", "_")  # noqa: E731
 missing = sorted(n for n in before_morphs if norm(n) not in {norm(a) for a in after_morphs})
 # a dropped garment takes its own keys with it (the waistcoat's EV_gilet_open_*); the face and body must lose nothing
-lost = [n for n in missing if not n.startswith("EV_")]
+expected_gone = {norm(n) for n in DATA.get("dropped_morphs_expected", [])}  # keys of meshes the export replaced
+lost = [n for n in missing if not n.startswith("EV_") and norm(n) not in expected_gone]
 assert not lost, lost
 assert L.save_loaded_asset(mesh, False)  # the old asset is gone: the new one is on disk before any further check can fail
 log("saved after import: slots %s" % [(str(s.material_slot_name), s.material_interface.get_name() if s.material_interface else None) for s in mesh.materials])

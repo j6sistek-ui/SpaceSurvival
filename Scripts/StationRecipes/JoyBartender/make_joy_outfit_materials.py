@@ -5,6 +5,7 @@ never edited: these are children in JoyBartender/Materials, created or updated i
 
   set SS_PANTS_TINT=r,g,b      (linear multiplier on the base colour; the pack's own value is 0.79,0.79,0.79)
   set SS_PANTS_ROUGHNESS=0.45  set SS_PANTS_SPECULAR=0.6   (optional; the pack ships 1.0 and 0.5)
+  set SS_EYE_TEXTURES=<author_soft_tissue.py --eyes output folder>   (optional: MI_Joy_EyeOption from its two maps)
   UnrealEditor-Cmd.exe <project> -unattended -NullRHI ... -ExecutePythonScript="<abs>/make_joy_outfit_materials.py"
 """
 import json
@@ -59,6 +60,44 @@ for k, v in (("Metallic", 0.0), ("Roughness", 0.45), ("Specular", 0.5), ("Lumina
 E.update_material_instance(gsm)
 assert L.save_loaded_asset(gsm, False), gs_path
 report["MI_Joy_GString"] = {"parent": B + "/M_JoyBOpaque"}
+# the owner's eyeball pick (2026-10-14, "1.7k large iris"): its colour map (sRGB) and normal map (glTF is OpenGL, +Y:
+# the green channel is flipped for Unreal) beside her other textures, on her opaque master, wet-glossy
+if os.environ.get("SS_EYE_TEXTURES"):
+    TEX = B.rsplit("/", 1)[0] + "/Textures"
+    tex = {}
+    for kind in ("BaseColor", "Normal"):
+        src = os.path.join(os.environ["SS_EYE_TEXTURES"], "T_Joy_EyeOption_%s.png" % kind)
+        assert os.path.exists(src), src
+        t = u.AssetImportTask()
+        for k, v in dict(filename=src, destination_path=TEX, destination_name="T_Joy_EyeOption_" + kind, automated=True, replace_existing=True, save=False).items():
+            t.set_editor_property(k, v)
+        TOOLS.import_asset_tasks([t])
+        tx = u.load_asset(TEX + "/T_Joy_EyeOption_" + kind)
+        assert isinstance(tx, u.Texture2D), (kind, list(t.imported_object_paths))
+        if kind == "Normal":
+            tx.set_editor_property("compression_settings", u.TextureCompressionSettings.TC_NORMALMAP)
+            tx.set_editor_property("srgb", False)
+            tx.set_editor_property("flip_green_channel", True)
+        else:
+            tx.set_editor_property("srgb", True)
+        assert L.save_loaded_asset(tx, False), kind
+        tex[kind] = tx
+    eye_path = B + "/MI_Joy_EyeOption"
+    eye = u.load_asset(eye_path) if L.does_asset_exist(eye_path) else TOOLS.create_asset("MI_Joy_EyeOption", B, u.MaterialInstanceConstant, u.MaterialInstanceConstantFactoryNew())
+    master = u.load_asset(B + "/M_JoyBOpaque")
+    E.set_material_instance_parent(eye, master)
+    E.set_material_instance_texture_parameter_value(eye, "BaseColor", tex["BaseColor"])
+    tex_params = [str(n) for n in E.get_texture_parameter_names(eye)]
+    normal_param = next((n for n in tex_params if "normal" in n.lower()), None)
+    if normal_param:
+        E.set_material_instance_texture_parameter_value(eye, normal_param, tex["Normal"])
+    E.set_material_instance_vector_parameter_value(eye, "Tint", u.LinearColor(1.0, 1.0, 1.0, 1.0))
+    for k, v in (("Metallic", 0.0), ("Roughness", 0.18), ("Specular", 0.6), ("LuminanceTint", 0.0), ("SuitMix", 0.0)):
+        E.set_material_instance_scalar_parameter_value(eye, k, v)
+    E.update_material_instance(eye)
+    assert L.save_loaded_asset(eye, False), eye_path
+    report["MI_Joy_EyeOption"] = {"parent": master.get_path_name(), "texture_params": tex_params, "normal_param": normal_param,
+                                  "textures": {k: v.get_path_name() for k, v in tex.items()}}
 jk = u.load_asset("/Game/Jacket_1/Materials/MI_Jacket")
 report["MI_Jacket"] = {"scalars": {str(p): E.get_material_instance_scalar_parameter_value(jk, p) for p in E.get_scalar_parameter_names(jk)},
                        "textures": {str(p): (E.get_material_instance_texture_parameter_value(jk, p).get_name() if E.get_material_instance_texture_parameter_value(jk, p) else None) for p in E.get_texture_parameter_names(jk)}}
