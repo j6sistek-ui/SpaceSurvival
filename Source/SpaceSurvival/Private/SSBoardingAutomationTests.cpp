@@ -297,8 +297,7 @@ bool FSSPhoenixCockpitDeparture::RunTest(const FString &)
                  F.Mode->GetSelectedDepartureMode() == ESSDepartureMode::Waves);
         F.Button(EKeys::R, false);
         F.InputFrame();
-        const auto SeatAt = [&](FVector Local)
-        {
+        const auto SeatAt = [&](FVector Local) {
             return F.Ship->GetVisualRig()->CanUsePilotSeatAt(F.Ship->GetActorTransform().TransformPosition(Local), 34.f,
                                                              75.f);
         };

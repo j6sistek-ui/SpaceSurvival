@@ -68,6 +68,7 @@
     "station_recipe_tests": 8,
     "python_syntax": "PASS",
     "format_cpp_header_files": 144,
+    "ci_format_followup": "One clang-format14 lambda-brace difference corrected; final CI pending",
     "documentation": "PASS"
   },
   "native_map_content_and_owner_checkout_modified": false,
