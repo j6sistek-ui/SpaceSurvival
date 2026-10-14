@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-14",
+  "original_pr69_head": "32bb1b1fb237763aa0e70d4b74b92aa958d1ea33",
+  "main_integrated": "fca16fcc8d6330e58283a5c8d08d59fb83bebe04",
+  "resolution": [
+    {
+      "file": ".agent/CONTINUITY.md",
+      "conflicts": 1
+    },
+    {
+      "file": "Source/SpaceSurvival/Private/SSGameMode.cpp",
+      "conflicts": 1
+    },
+    {
+      "file": "Source/SpaceSurvival/Private/SSHUD.cpp",
+      "conflicts": 1
+    },
+    {
+      "file": "Source/SpaceSurvival/Private/SSStationPresentation.cpp",
+      "conflicts": 1
+    },
+    {
+      "file": "SpaceSurvival.uproject",
+      "conflicts": 1
+    },
+    {
+      "file": "docs/ARCHITECTURE.md",
+      "conflicts": 1
+    },
+    {
+      "file": "docs/BUILD_RUN.md",
+      "conflicts": 1
+    },
+    {
+      "file": "docs/CONTENT_PIPELINE.md",
+      "conflicts": 1
+    },
+    {
+      "file": "docs/KNOWN_ISSUES.md",
+      "conflicts": 1
+    },
+    {
+      "file": "docs/PROJECT_STATE.md",
+      "conflicts": 1
+    },
+    {
+      "file": "docs/production/SOLUTION_CATALOG.md",
+      "conflicts": 1
+    }
+  ],
+  "build": {
+    "result": "Succeeded",
+    "seconds": 73.66,
+    "actions": 40,
+    "editor_launched": false,
+    "existing_engine_deprecation_warnings": true,
+    "log_sha256": "4ad0f9431ee3baafd6ca8ab0c32579857379a1ad6c9ed7373daac208acfc21e5"
+  },
+  "checks": {
+    "structural": 45,
+    "cook_coverage": {
+      "roots": 41,
+      "referenced_paths": 155,
+      "missing": 0
+    },
+    "cook_tests": 8,
+    "source_digest_tests": 13,
+    "station_recipe_tests": 8,
+    "python_syntax": "PASS",
+    "format_cpp_header_files": 144,
+    "ci_format_followup": "One clang-format14 lambda-brace difference corrected; final CI pending",
+    "documentation": "PASS"
+  },
+  "native_map_content_and_owner_checkout_modified": false,
+  "cook_release_or_merge_performed": false,
+  "remaining_station_scope_held": true
+}

@@ -13,6 +13,11 @@ class SPACESURVIVAL_API USSCharacterAuthoringLibrary : public UBlueprintFunction
 {
     GENERATED_BODY()
 public:
+    /** Validates and configures only the private Cyborg arm translation retargeting. Never saves assets. */
+    UFUNCTION(BlueprintCallable, Category = "Character Authoring")
+    static FString ConfigureCyborgArmRetargeting(USkeletalMesh *PrivateMesh, USkeleton *SourceSkeleton,
+                                                 bool Apply = false);
+
     /** Creates only the private normalized female skeleton. Never overwrites or saves an asset. */
     UFUNCTION(BlueprintCallable, Category = "Character Authoring")
     static USkeleton *CreateAlienFemaleSkeleton(USkeletalMesh *PrivateMesh);

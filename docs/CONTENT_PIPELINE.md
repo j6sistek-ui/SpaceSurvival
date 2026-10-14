@@ -1,5 +1,46 @@
 # Phase 1 content pipeline
 
+**October14 source closeout:** PR69 adds four existing runtime cook folders for its string-loaded warp frame/effects and cabin material; no vendor Blueprint/demo root is added. Native content stays private and unchanged; no cook/release occurs. [Coverage/build evidence](validation/2026-10-14-pr69-closeout.md). Station changes remain held.
+
+## Fixed crown / moving ponytail — October 14
+
+Silver uses separate groom groups with independent guides; only the tail group simulates. Bake the accepted fit into positions because deferred head attachment replaces component transforms. Rebuild/cache interpolation data before simulation. Save material edits with PIE stopped, assert save success and reload in a fresh process: in-session color previews did not establish saved appearance. The eye tint is restricted by original iris UV regions to preserve silver skin. [Recipe, exact inputs and saved evidence](validation/2026-10-14-silver-ponytail.md).
+
+## Character import visual checks — October 14
+
+A scene-capture image is not sufficient evidence of a broken Blender import. Cyborg's
+large triangular color patches were reproduced with all 13 imported textures resident
+at 64x64. Source/native texture pixels and UV0 matched, and ordinary 1600x900 player-view
+screenshots loaded detailed textures and cleared the patches without an asset change.
+The final diagnostic temporarily hid other characters to remove occlusion; it was
+not a full-cast performance check. Inspect actual player-view location/resolution
+and `ListTextures` before rebaking.
+
+For an isolated offscreen review, the existing `-SSRenderedViewViewport2` launch flag
+enables `SS.RenderedView.Begin`, `SS.RenderedView.Size` (temporary 1600x900), and
+`SS.RenderedView.End` (verified original-size restoration). Use only in the task-owned
+offscreen Editor. Wait for textures and ordinary `Shot` output to finish before ending
+the session; restoring the viewport first can produce a one-line image. A separate
+scene capture may not request the mip levels needed by its own output resolution.
+Temporary texture prestreaming is useful for diagnosis but must be labelled; it does
+not establish ordinary gameplay behavior. Do not disable global streaming to hide it.
+
+If the texture pixels/UVs match and full-resolution maps still show facets, inspect
+the existing `Scripts/CrewLodBuildSettings.py` normal-import guidance next. Keep shading,
+skinning, material-slot and texture-residency checks separate. Recomputed normals were
+not established as the cause of this Cyborg color-patch defect. [Evidence and limits](validation/2026-10-14-cyborg-arm-repair.md).
+
+## Custom pole animation checks — October14
+
+Use the same clip on a known rig before changing mesh weights. Cyborg and Cyan both
+exposed faults in the procedural pole clips. Check every key for rotation jumps and
+loop endpoints; still images can miss alternating IK solutions. Rebuild a stable
+elbow plane, constrain wrist turn, and preserve a palm contact anchor rather than
+forcing a malformed wrist orientation. Keep bone rotation and joint position
+consistent: Skeleton translation retargeting ignores local offset compensation.
+The bounded repair recipe and rejected trials are documented in
+[the pole-twist receipt](validation/2026-10-14-cyborg-pole-twist.md).
+
 **October 10 T-room layout preview:** The existing Phoenix setup now fills two rows of three, with five identical copies and six independent rotating displays. Existing desks/fittings/screens move aside; all8,934 other pre-save actor/component fingerprints and shared asset bytes are unchanged. Saved `b6496c2e`/9,407 actors passes six-bay reload and two ordinary Play views with production saves preserved; task editor closed, RT off. [T layout evidence](validation/2026-10-10-t-ship-rows.md) supersedes the current-map count below. Future ship purchases/stats/records and desk redesign remain separate; other room content, NPCs and services retained. Owner live appearance review is next.
 
 October10 R-stage adoption changes only Joy's four existing blue skin MIs to Metallic0.75/Roughness0.32, retains texture/tint detail, and reuses the canonical rigged Cyborg and existing PoleHipCircle sequence. Original meshes, skeletons, clips and hair identity are preserved. Three local stage lights and matched hologram housings use existing content; no new source kit/import or material parent. [R stage and native evidence](validation/2026-10-10-r-stage-characters.md) records exact recipes/private backups and confirms GitHub is not the native-content backup. Never replay the adopted authoring stages. Hair physics and long alternating choreography remain open.

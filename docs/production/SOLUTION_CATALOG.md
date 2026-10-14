@@ -1,5 +1,25 @@
 # SpaceSurvival whole-project solution catalog
 
+**October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.
+
+**SILVER-PONYTAIL-20261014 — owned DropBear PonytailGroom (WBS8.4/10.3):** Owner-selected on-disk pack, imported and locally adopted for Silver after current Cyborg verification. Fitted two-group derivative fixes crown/fringe/paired temples while only the tail simulates; pink hair/outfit and magenta irises are saved. Five fresh apartment views and a full dance pass scoped review. No acquisition or new runtime plugin; editor-only strand authoring uses installed HairStrandsCore. Owner appearance approval and broader contact/performance/package checks remain open under RPT-20261013-01. [Source, native hashes and evidence](../validation/2026-10-14-silver-ponytail.md).
+
+**CYBORG-20261014 — owner-supplied character refresh (WBS8.4/10.3):**104,000-triangle body/head plus14,998 mapped gorget,61 bones and breast-only springs, locally adopted. October14 native comparison with Cyan isolated defects in custom pole motion; six repaired clips now have stable elbow planes and bounded wrist rotation, with unchanged mesh/weights/materials. No acquisition or new dependency. Next: owner review and remaining non-pole quality under RPT-20261014-01; later current-native verification opened the Silver gate. [Repair](../validation/2026-10-14-cyborg-pole-twist.md); [prior evaluation](../validation/2026-10-14-cyborg-arm-repair.md).
+
+**Historical SILVER-20261013 — owned Sentinel/ViableEld character finish (WBS8.4/10.3):** Owner accepts visible body motion/appearance after the live Blueprint spring pass. Hair/arm contact remains open; restored previous settings were not approved. Research confirmed collision is enabled and responsive, but registration and solver checks did not clear the defect. A single-guide import failed before evaluation; no repair adopted. The local `HairContact_v1/PA_Silver_BodyContact` remains unassigned diagnostic work. Reuses owned inputs; no acquisition or project dependency added. The reusable spring component needs character-specific anchors and paired morphs; Cyan is not automatically compatible. Next: lead safe interpolation-data/binding rebuild and native contact comparison; voice and broader integration checks remain separate. [Contact evidence](../validation/2026-10-13-silver-hair-contact.md); [runtime evidence](../validation/2026-10-13-silver-runtime-springs.md); [retained sources/lessons](SILVER_CHARACTER_PIPELINE.md).
+
+### RUNTIME-20261010-NPCTALK - owner-required push-to-talk conversations (local whisper.cpp + llama.cpp)
+
+- **Decision, 2026-10-10:** the owner made open conversation an explicit requirement (the condition earlier entries
+  set): speak into the microphone, the transcript shows, the NPC or the villain answers in text. One NPC first
+  (Dread), the villain mid-wave after his first line, more crew as the owner writes their profiles.
+- **Acquisition:** whisper.cpp b5454 and llama.cpp b11541 Windows builds (MIT), ggml-small.en.bin (MIT),
+  Qwen2.5-1.5B-Instruct Q4_K_M (Apache 2.0), downloaded with the owner's approval to M:/Local AI/NPCTalk.
+- **Evaluation:** measured on the RTX 5080 with the editor open: transcription ~1 s on CPU, replies 0.1-0.2 s at
+  ~400 tok/s, +1.4 GB VRAM. Integrated as docs/NPC_TALK.md; the in-game microphone leg awaits the owner's own test.
+- **Limits / next check:** no lip sync (crew have no jaw bones); sidecar paths are this machine's until packaging;
+  verify the exact model file's licence before release; voice out (Voicebox / Qwen3-TTS entries) is the later step.
+
 October10 Central188 reuses the installed Genesis electrical trim as wall braces/headers and inner portal frames; existing Nanite planting is resized for directory sightlines. No acquisition/import or vendor edits. [Native result and limitations](../validation/2026-10-10-central-detail.md). Clothing quick-fit evaluation is set aside after visible intersections and missing weights; no character outfit adoption.
 
 October10 JOY-20261009 follow-up: light-blue Joy and canonical rigged Cyborg are now placed in the private apartment beneath Room R with an owner-approved simple polished pole. Existing Genesis nickel parent is reused; no new acquisition. Separate owner-supplied three-piece clothing FBX has textures but no skeleton/weights; fitting preview is separate from native adoption. [Evidence](../validation/2026-10-10-apartment-residents.md).
@@ -674,16 +694,6 @@ game runtime. Existing resource evaluations and future options below remain vali
 - **Whole-project value:** optional source of offline authored clips for existing hero, enemy/Director and NPC presentation (WBS 7.3, 8.4, 8.5, 10.1). Ship accepted recordings, not a runtime model dependency; this adds no dialogue tree or character count.
 - **Next check:** if voice authoring is selected, compare a small recorded/generated sample for identity, pronunciation, emotion and mix; retain source/model revision and verify the applicable model/voice rights before production use. Gameplay event selection, truthful station recall, subtitles and lifecycle remain project work under the October 1 narrative amendment and presentation gate. No installation or quality acceptance is implied.
 
-### RUNTIME-20261010-NPCTALK - owner-required push-to-talk conversations (local whisper.cpp + llama.cpp)
-- **Decision, 2026-10-10:** the owner made open conversation an explicit requirement (the condition earlier entries
-  set): speak into the microphone, the transcript shows, the NPC or the villain answers in text. One NPC first
-  (Dread), the villain mid-wave after his first line, more crew as the owner writes their profiles.
-- **Acquisition:** whisper.cpp b5454 and llama.cpp b11541 Windows builds (MIT), ggml-small.en.bin (MIT),
-  Qwen2.5-1.5B-Instruct Q4_K_M (Apache 2.0), downloaded with the owner's approval to M:/Local AI/NPCTalk.
-- **Evaluation:** measured on the RTX 5080 with the editor open: transcription ~1 s on CPU, replies 0.1-0.2 s at
-  ~400 tok/s, +1.4 GB VRAM. Integrated as docs/NPC_TALK.md; the in-game microphone leg awaits the owner's own test.
-- **Limits / next check:** no lip sync (crew have no jaw bones); sidecar paths are this machine's until packaging;
-  verify the exact model file's licence before release; voice out (Voicebox / Qwen3-TTS entries) is the later step.
 ### Resource update — 2026-09-24 building library
 
 | Stable ID | Acquisition and evaluation | Whole-project use and next check |
