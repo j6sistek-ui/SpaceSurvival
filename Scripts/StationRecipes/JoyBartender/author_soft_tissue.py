@@ -22,6 +22,7 @@ The source joy.blend is never written (sha verified before and after). Textures 
 import argparse
 import hashlib
 import json
+import os
 import math
 import sys
 from pathlib import Path
@@ -37,6 +38,9 @@ SRC_SHA = "8582f2f269e8"
 ap = argparse.ArgumentParser()
 ap.add_argument("out")
 ap.add_argument("--jacket", default="")
+ap.add_argument("--fit-body", default="", help="the body the jacket was cut for (SKM_Female_BodyMesh.fbx); default: beside the jacket")
+ap.add_argument("--pants", default="", help="a pants (+ shoes) garment exported from Unreal; replaces Underwear_Bottoms in the export")
+ap.add_argument("--pants-body", default="", help="the body the pants were cut for (SKM_Manny_500_Simple.fbx); default: beside the pants")
 ap.add_argument("--keep-waistcoat", action="store_true")
 opt = ap.parse_args(sys.argv[sys.argv.index("--") + 1:])
 OUT = Path(opt.out)
@@ -44,6 +48,12 @@ OUT.mkdir(parents=True, exist_ok=False)
 KEY_CM = 1.0  # one morph unit moves the mask centre one centimetre (CentimetresPerMorphUnit = 1)
 REGIONS = ("Breast_L", "Breast_R", "Hip_L", "Hip_R")
 MAX_OFFSET_CM = {"Breast_L": 2.0, "Breast_R": 2.0, "Hip_L": 1.5, "Hip_R": 1.5}  # place_joy_soft_tissue.py's caps
+# owner 2026-10-14: "loosen the front off the chest area a bit, and open slightly, so the breasts are tastefully almost
+# exposed and free to jiggle and be seen": the front panels swing open about the sides of her chest (inner edge out by
+# OPEN_CM through the chest band) and stand LOOSE_CM further off the breasts than the spring travel needs
+OPEN_CM = 4.0
+OPEN_HINGE_CM = 18.0
+LOOSE_CM = 0.0  # 1.5 made a box over the chest (owner, side view 2026-10-14: "not make a bulge of space")
 REFERENCE_BONES = ("CC_Base_Pelvis", "CC_Base_Head", "CC_Base_L_Hand", "CC_Base_R_Hand", "CC_Base_L_Foot", "CC_Base_R_Foot")
 JACKET_GAP_CM = 0.4
 JACKET_SLOT = "M_jacket"
@@ -65,6 +75,9 @@ rig.data.pose_position = "REST"
 body = bpy.data.objects["CC_Base_Body"]
 meshes = [o for o in scene.objects if o.type == "MESH" and not o.hide_render]
 garments = ["waistcoat", "Underwear_Bottoms"]
+if opt.pants:
+    meshes.remove(bpy.data.objects["Underwear_Bottoms"])
+    garments.remove("Underwear_Bottoms")
 if opt.jacket and not opt.keep_waistcoat:
     coat = bpy.data.objects["waistcoat"]
     meshes.remove(coat)
@@ -196,39 +209,114 @@ print("JOY_ST_ANCHORS", json.dumps({k: [(r["bone"], round(r["weight"], 3)) for r
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def fit_jacket(path):
-    """Re-skin the pack's jacket from its MetaHuman-style rig onto Joy. Returns the new jacket object and a report."""
-    rep = {"source": path}
+def import_skinned(path):
     existing = set(bpy.data.objects)
     bpy.ops.import_scene.fbx(filepath=path, ignore_leaf_bones=False, automatic_bone_orientation=False)
     new = [o for o in bpy.data.objects if o not in existing]
-    jarm = next(o for o in new if o.type == "ARMATURE")
-    jm = next(o for o in new if o.type == "MESH")
-    assert jm.vertex_groups and any(m.type == "ARMATURE" for m in jm.modifiers), "the jacket export must be skinned"
+    arm = next(o for o in new if o.type == "ARMATURE")
+    mesh = next(o for o in new if o.type == "MESH")
+    assert mesh.vertex_groups and any(m.type == "ARMATURE" for m in mesh.modifiers), path + " must be skinned"
+    return arm, mesh, new
+
+
+def baked_copy(obj, name):
+    """The object's evaluated (posed) mesh as a new world-space object with an identity transform."""
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    me = bpy.data.meshes.new_from_object(ev, preserve_all_data_layers=True, depsgraph=dg)
+    me.transform(ev.matrix_world)
+    o = bpy.data.objects.new(name, me)
+    scene.collection.objects.link(o)
+    return o
+
+
+def coords(obj, evaluated=False):
+    if evaluated:
+        dg = bpy.context.evaluated_depsgraph_get()
+        ev = obj.evaluated_get(dg)
+        me = ev.to_mesh()
+        W = np.array(ev.matrix_world)
+        out = np.array([(W @ np.r_[np.array(v.co), 1])[:3] for v in me.vertices], dtype=np.float64)
+        ev.to_mesh_clear()
+        return out
+    W = np.array(obj.matrix_world)
+    return np.array([(W @ np.r_[np.array(v.co), 1])[:3] for v in obj.data.vertices], dtype=np.float64)
+
+
+def rot_between(a, b):
+    a = a / np.linalg.norm(a)
+    b = b / np.linalg.norm(b)
+    v = np.cross(a, b)
+    c = float(np.dot(a, b))
+    if np.linalg.norm(v) < 1e-9:
+        return np.eye(3) if c > 0 else -np.eye(3)
+    vx = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    return np.eye(3) + vx + vx @ vx * (1 / (1 + c))
+
+
+def cb(name):  # Joy bone rest head/tail, world metres
+    b = rig.data.bones[name]
+    return (RIG_W @ np.r_[np.array(b.head_local), 1])[:3], (RIG_W @ np.r_[np.array(b.tail_local), 1])[:3]
+
+
+# per garment: object name, the height band it must stay inside (Joy local cm), whether it carries the paired ST keys
+# (moves WITH the tissue, like the bottoms) or is held clear of it (the tissue moves underneath, like the jacket)
+SPEC = {"jacket": {"name": "Jacket", "keys": False, "gap_cm": JACKET_GAP_CM, "open": True},
+        "pants": {"name": "Pants", "keys": True, "gap_cm": 0.3, "open": False, "tighten": (0.45, 0.8), "weights": "source",
+                  "rigid_slots": ("M_SciFi_S_Pack_02L", "M_SciFi_S_Pack_02R")}}
+# UE5 Manny / MetaHuman bone -> Joy's CC bone, for garments that keep the pack's own skin weights. Joy's thighs touch at
+# rest, so nearest-skin weights gave inner-leg fabric the OTHER leg and it webbed between her legs when they parted
+# (front still, 2026-10-14). The pack's weights know which leg every vertex belongs to.
+UE_TO_CC = {"pelvis": "CC_Base_Pelvis", "spine_01": "CC_Base_Waist", "spine_02": "CC_Base_Spine01", "spine_03": "CC_Base_Spine02",
+            "spine_04": "CC_Base_Spine02", "spine_05": "CC_Base_Spine02"}
+for _s, _S in (("l", "L"), ("r", "R")):
+    UE_TO_CC.update({"thigh_" + _s: "CC_Base_%s_Thigh" % _S, "thigh_twist_01_" + _s: "CC_Base_%s_ThighTwist01" % _S,
+                     "thigh_twist_02_" + _s: "CC_Base_%s_ThighTwist02" % _S, "calf_" + _s: "CC_Base_%s_Calf" % _S,
+                     "calf_twist_01_" + _s: "CC_Base_%s_CalfTwist01" % _S, "calf_twist_02_" + _s: "CC_Base_%s_CalfTwist02" % _S,
+                     "foot_" + _s: "CC_Base_%s_Foot" % _S, "ball_" + _s: "CC_Base_%s_ToeBase" % _S})
+NEXT = {"pelvis": "spine_01", "spine_01": "spine_02", "spine_02": "spine_03", "spine_03": "spine_04", "spine_04": "spine_05",
+        "spine_05": "neck_01", "neck_01": "neck_02", "neck_02": "head", "clavicle_l": "upperarm_l", "clavicle_r": "upperarm_r",
+        "upperarm_l": "lowerarm_l", "upperarm_r": "lowerarm_r", "lowerarm_l": "hand_l", "lowerarm_r": "hand_r",
+        "thigh_l": "calf_l", "thigh_r": "calf_r", "calf_l": "foot_l", "calf_r": "foot_r", "foot_l": "ball_l", "foot_r": "ball_r"}
+
+
+def fit_garment(kind, path, body_path, under=None):
+    """Fit a pack garment onto Joy and re-skin it to her rig. Returns the new object and a report.
+
+    Owner 2026-10-14: "jackets parametric so needs to be fit". A pack garment is cut for the pack's own body (the jacket
+    for a female MetaHuman, the pants and sneakers for the UE5 Manny), exported beside it. Garment and body are posed onto
+    Joy's joints by the same bone targets, that body is projected along its normals onto Joy's skin (Shrinkwrap,
+    smoothed), and the garment follows it through a Surface Deform bound to the posed body: every garment vertex keeps
+    its offset from the body it was made for, now on hers. `under` is the layer the garment must stay outside of.
+    """
+    spec = SPEC[kind]
+    rep = {"kind": kind, "source": path, "fit_body": body_path}
+    garm, gm, new = import_skinned(path)
+    barm, bm, new_b = import_skinned(body_path)
+    new += new_b
     bpy.context.view_layer.update()
-    JW = np.array(jarm.matrix_world)
+    GW = np.array(garm.matrix_world)
+    BWm = np.array(barm.matrix_world)
 
-    def jb(name):  # jacket bone rest head/tail, world metres
-        b = jarm.data.bones[name]
-        return (JW @ np.r_[np.array(b.head_local), 1])[:3], (JW @ np.r_[np.array(b.tail_local), 1])[:3]
+    def gb(name):  # the fit body's rest joint (the garment shares it), world metres
+        return (BWm @ np.r_[np.array(barm.data.bones[name].head_local), 1])[:3]
 
-    def cb(name):  # Joy bone rest head/tail, world metres
-        b = rig.data.bones[name]
-        return (RIG_W @ np.r_[np.array(b.head_local), 1])[:3], (RIG_W @ np.r_[np.array(b.tail_local), 1])[:3]
+    # the garment's rig and the body's rig must agree where they share bones, or the body is not the garment's
+    shared = [b.name for b in garm.data.bones if b.name in barm.data.bones]
+    head_gap = max(float(np.linalg.norm((GW @ np.r_[np.array(garm.data.bones[n].head_local), 1])[:3] - gb(n))) for n in shared)
+    rep["rig_head_gap_cm"] = head_gap * 100
+    assert head_gap < 0.01, ("the fit body's skeleton does not match the garment's", head_gap)
+    have = set(barm.data.bones.keys())
 
-    # the torso is mapped by height along the two spine chains (both upright in rest); limbs bone to bone
-    j_chain = ["pelvis", "spine_01", "spine_02", "spine_03", "spine_04", "spine_05", "neck_01", "neck_02", "head"]
+    # the torso is mapped by height along the two spine chains (both upright in rest); limbs joint to joint
+    j_chain = [n for n in ("pelvis", "spine_01", "spine_02", "spine_03", "spine_04", "spine_05", "neck_01", "neck_02", "head") if n in have]
     c_chain = ["CC_Base_Pelvis", "CC_Base_Waist", "CC_Base_Spine01", "CC_Base_Spine02", "CC_Base_NeckTwist01", "CC_Base_NeckTwist02", "CC_Base_Head"]
     c_pts = [cb(n)[0] for n in c_chain] + [cb(c_chain[-1])[1]]
-    j_pts = [jb(n)[0] for n in j_chain] + [jb(j_chain[-1])[1]]
-    j_neck, c_neck = jb("neck_01")[0][2], cb("CC_Base_NeckTwist01")[0][2]
-    j_pel, c_pel = jb("pelvis")[0][2], cb("CC_Base_Pelvis")[0][2]
-    torso_scale = (c_neck - c_pel) / (j_neck - j_pel)
-    width_scale = np.linalg.norm(cb("CC_Base_L_Upperarm")[0] - cb("CC_Base_R_Upperarm")[0]) / np.linalg.norm(jb("upperarm_l")[0] - jb("upperarm_r")[0])
-    rep.update(torso_scale=float(torso_scale), shoulder_width_scale=float(width_scale))
+    j_pel, c_pel = gb("pelvis")[2], cb("CC_Base_Pelvis")[0][2]
+    torso_scale = (cb("CC_Base_NeckTwist01")[0][2] - c_pel) / (gb("neck_01")[2] - j_pel)
+    rep["torso_scale"] = float(torso_scale)
 
     def chain_point(zj):
-        """The point on Joy's spine polyline at the height that the jacket rig's z maps to."""
         zc = c_pel + (zj - j_pel) * torso_scale
         zs = [p[2] for p in c_pts]
         for a, b in zip(range(len(c_pts) - 1), range(1, len(c_pts))):
@@ -237,186 +325,374 @@ def fit_jacket(path):
                 return c_pts[a] + (c_pts[b] - c_pts[a]) * np.clip(t, 0, 1.5)
         return c_pts[-1]
 
-    def jlen(a, b):
-        return float(np.linalg.norm(jb(b)[0] - jb(a)[0]))
+    def joint_target(bone, child, joy_from, joy_to):
+        h, t = cb(joy_from)[0], cb(joy_to)[0]
+        d = t - h
+        scale = float(np.linalg.norm(d) / np.linalg.norm(gb(child) - gb(bone))) if child in have else 1.0
+        return h, d / np.linalg.norm(d), scale
 
-    # CC bone tails stop at the twist helpers, so limb targets are joint to joint; the jacket rig has no wrist or knee
-    # joints, so its forearms keep the upper arm's length ratio and its thighs keep their own length
-    targets = {}  # jacket bone -> (head, unit direction, Y scale) in world metres
+    targets = {}  # rig bone -> (head, unit direction, stretch along the limb) in world metres
     for i, n in enumerate(j_chain):
-        h = jb(n)[0]
-        nxt = jb(j_chain[i + 1])[0] if i + 1 < len(j_chain) else h + np.array([0, 0, 0.10])
+        h = gb(n)
+        nxt = gb(j_chain[i + 1]) if i + 1 < len(j_chain) else h + np.array([0, 0, 0.10])
         th, tt = chain_point(h[2]), chain_point(nxt[2])
         d = tt - th
         L, Lj = np.linalg.norm(d), np.linalg.norm(nxt - h)
         targets[n] = (th, d / L, float(L / Lj) if Lj > 1e-6 else 1.0)
-    ratios = {}
     for side in ("l", "r"):
         S = side.upper()
-        h, t = cb("CC_Base_%s_Clavicle" % S)[0], cb("CC_Base_%s_Upperarm" % S)[0]
-        d = t - h
-        targets["clavicle_" + side] = (h, d / np.linalg.norm(d), float(np.linalg.norm(d) / jlen("clavicle_" + side, "upperarm_" + side)))
-        h, t = cb("CC_Base_%s_Upperarm" % S)[0], cb("CC_Base_%s_Forearm" % S)[0]
-        d = t - h
-        ratios[side] = float(np.linalg.norm(d) / jlen("upperarm_" + side, "lowerarm_" + side))
-        targets["upperarm_" + side] = (h, d / np.linalg.norm(d), ratios[side])
-        h, t = cb("CC_Base_%s_Forearm" % S)[0], cb("CC_Base_%s_Hand" % S)[0]
-        d = t - h
-        targets["lowerarm_" + side] = (h, d / np.linalg.norm(d), ratios[side])
-        h, t = cb("CC_Base_%s_Thigh" % S)[0], cb("CC_Base_%s_Calf" % S)[0]
-        d = t - h
-        targets["thigh_" + side] = (h, d / np.linalg.norm(d), 1.0)
-    rep["arm_length_ratio"] = ratios
+        toe = "CC_Base_%s_ToeBase" % S
+        pairs = [("clavicle", "upperarm", "Clavicle", "Upperarm"), ("upperarm", "lowerarm", "Upperarm", "Forearm"), ("lowerarm", "hand", "Forearm", "Hand"),
+                 ("thigh", "calf", "Thigh", "Calf"), ("calf", "foot", "Calf", "Foot")]
+        if toe in rig.data.bones:
+            pairs.append(("foot", "ball", "Foot", "ToeBase"))
+        for bone, child, jf, jt in pairs:
+            if bone + "_" + side in have:
+                targets[bone + "_" + side] = joint_target(bone + "_" + side, child + "_" + side, "CC_Base_%s_%s" % (S, jf), "CC_Base_%s_%s" % (S, jt))
+    rep["stretch"] = {k: round(v[2], 3) for k, v in targets.items()}
 
-    def rot_between(a, b):
-        a = a / np.linalg.norm(a)
-        b = b / np.linalg.norm(b)
-        v = np.cross(a, b)
-        c = float(np.dot(a, b))
-        if np.linalg.norm(v) < 1e-9:
-            return np.eye(3) if c > 0 else -np.eye(3)
-        vx = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
-        return np.eye(3) + vx + vx @ vx * (1 / (1 + c))
+    def rest_dir(n):
+        if n == "head":
+            return np.array([0.0, 0.0, 1.0])
+        d = gb(NEXT[n]) - gb(n)
+        return d / np.linalg.norm(d)
 
-    # pose the jacket rig onto Joy's joints, parents before children; roll follows the minimal rotation of the rest axis
-    JWinv = np.linalg.inv(JW)
-    order = []
+    # Bones from Unreal rigs run along their local X; Blender's importer gives each a Y axis that is NOT the limb, so a
+    # bone's direction is taken joint to joint. Rotating the bone's Y onto her limbs swung every limb ~90 degrees.
+    def pose_rig(arm):
+        AW = np.array(arm.matrix_world)
+        AWinv = np.linalg.inv(AW)
+        order = []
 
-    def walk(b):
-        order.append(b.name)
-        for c in b.children:
-            walk(c)
+        def walk(bone):
+            order.append(bone.name)
+            for c in bone.children:
+                walk(c)
 
-    for b in jarm.data.bones:
-        if b.parent is None:
-            walk(b)
-    posed = 0
-    for name in order:
-        if name not in targets:
-            continue
-        head, direction, scale_y = targets[name]
-        b = jarm.data.bones[name]
-        rest = np.array(b.matrix_local)  # armature space
-        rest_w = JW @ rest
-        rest_dir = rest_w[:3, 1] / np.linalg.norm(rest_w[:3, 1])
-        R = rot_between(rest_dir, direction)
-        X = R @ (rest_w[:3, 0] / np.linalg.norm(rest_w[:3, 0]))
-        Z = np.cross(X, direction)
-        Z /= np.linalg.norm(Z)
-        X = np.cross(direction, Z)
-        M = np.eye(4)
-        M[:3, 0], M[:3, 1], M[:3, 2], M[:3, 3] = X, direction * scale_y, Z, head
-        pb = jarm.pose.bones[name]
-        pb.matrix = Matrix((JWinv @ M).tolist())
-        bpy.context.view_layer.update()
-        posed += 1
-    rep["bones_posed"] = posed
-    # the deformed shell, world metres -> Joy's local centimetres
-    dg = bpy.context.evaluated_depsgraph_get()
-    ev = jm.evaluated_get(dg)
-    me_ev = ev.to_mesh()
-    EW = np.array(ev.matrix_world)
-    Qw = np.array([(EW @ np.r_[np.array(v.co), 1])[:3] for v in me_ev.vertices], dtype=np.float64)
-    faces = [list(f.vertices) for f in me_ev.polygons]
-    uv_src = me_ev.uv_layers.active
+        for bone in arm.data.bones:
+            if bone.parent is None:
+                walk(bone)
+        count = 0
+        for name in order:
+            if name not in targets or (name != "head" and NEXT.get(name) not in have):
+                continue
+            head, direction, scale_along = targets[name]
+            rest_w = AW @ np.array(arm.data.bones[name].matrix_local)
+            F = rest_w[:3, :3] / np.linalg.norm(rest_w[:3, :3], axis=0)
+            rd = rest_dir(name)
+            M = np.eye(4)
+            M[:3, :3] = rot_between(rd, direction) @ F
+            M[:3, 3] = head
+            # The pack's armature object carries the FBX unit scale (0.01): taking a world matrix into armature space
+            # scales its axes by 100 as well, which skinned the jacket 100x too large (it filled the bar in Play,
+            # 2026-10-14). The axes are re-normalised; the stretch goes on the local axis that runs along the limb.
+            Ma = AWinv @ M
+            Ma[:3, :3] /= np.linalg.norm(Ma[:3, :3], axis=0)
+            Ma[:3, int(np.argmax(np.abs(F.T @ rd)))] *= scale_along
+            arm.pose.bones[name].matrix = Matrix(Ma.tolist())
+            bpy.context.view_layer.update()
+            count += 1
+        return count
+
+    # the garment must sit on its own body at rest
+    g_rest, b_rest = coords(gm, True), coords(bm, True)
+    rest_bvh = BVHTree.FromPolygons([tuple(q) for q in b_rest.tolist()], [tuple(f.vertices) for f in bm.data.polygons], all_triangles=False)
+    rest_d = np.array([rest_bvh.find_nearest(Vector(q))[3] for q in g_rest]) * 100
+    rep["garment_on_its_body_cm"] = {"p50": float(np.percentile(rest_d, 50)), "p95": float(np.percentile(rest_d, 95)), "max": float(rest_d.max())}
+    rep["bones_posed"] = pose_rig(garm)
+    pose_rig(barm)
+    # the posed body projected onto Joy's skin, the posed garment bound to it, then the body takes her shape
+    fit_posed = baked_copy(bm, "FitBodyPosed")
+    g_posed = baked_copy(gm, "GarmentPosed")
+    helpers = [fit_posed, g_posed]
+    target = fit_posed.copy()
+    target.data = fit_posed.data.copy()
+    target.name = "FitBodyOnJoy"
+    scene.collection.objects.link(target)
+    helpers.append(target)
+    sw = target.modifiers.new("Wrap", "SHRINKWRAP")
+    sw.target = body
+    sw.wrap_method = "PROJECT"
+    sw.use_negative_direction = True
+    sw.use_positive_direction = True
+    sw.project_limit = 0.10  # metres along the body's own normals; farther than that is not the same surface
+    sw.wrap_mode = "ON_SURFACE"
+    P0 = coords(fit_posed)
+    D = coords(target, True) - P0
+    hit = np.linalg.norm(D, axis=1) > 1e-6
+    medges = np.array([e.vertices[:] for e in fit_posed.data.edges], dtype=np.int32)
+    for _ in range(6):
+        acc = np.zeros_like(D)
+        cnt = np.zeros(len(D))
+        np.add.at(acc, medges[:, 0], D[medges[:, 1]])
+        np.add.at(acc, medges[:, 1], D[medges[:, 0]])
+        np.add.at(cnt, medges[:, 0], 1)
+        np.add.at(cnt, medges[:, 1], 1)
+        D = 0.5 * D + 0.5 * acc / np.maximum(cnt, 1)[:, None]
+    rep["body_wrap"] = {"vertices": int(len(D)), "projected": int(hit.sum()), "mean_move_cm": float(np.linalg.norm(D, axis=1).mean() * 100),
+                        "max_move_cm": float(np.linalg.norm(D, axis=1).max() * 100)}
+    P_bones = coords(g_posed)  # posed by the bones alone: rigid parts (shoes) keep this shape
+    sd = g_posed.modifiers.new("Follow", "SURFACE_DEFORM")
+    sd.target = fit_posed
+    sd.falloff = 4.0
+    with bpy.context.temp_override(object=g_posed, active_object=g_posed, selected_objects=[g_posed], selected_editable_objects=[g_posed]):
+        bpy.ops.object.surfacedeform_bind(modifier="Follow")
+    bpy.context.view_layer.update()
+    coords(g_posed, True)  # the bind happens on evaluation
+    assert sd.is_bound, "Surface Deform did not bind the garment to its body"
+    fit_posed.data.vertices.foreach_set("co", (P0 + D).astype(np.float32).ravel())
+    fit_posed.data.update()
+    bpy.context.view_layer.update()
+    Qw = coords(g_posed, True)
+    if os.environ.get("SS_FIT_DEBUG"):
+        rep["debug_blend"] = str(OUT / ("fit_debug_%s.blend" % kind))
+        bpy.ops.wm.save_as_mainfile(filepath=rep["debug_blend"], copy=True)
+    me_src = g_posed.data
+    faces = [list(f.vertices) for f in me_src.polygons]
+    mat_index = [f.material_index for f in me_src.polygons]
+    slot_names = [m.name.split(".")[0] if m else "Garment" for m in me_src.materials]
+    # the FBX names materials after their instances; the pack's own slot names (in the export report beside the FBX,
+    # same order) are what the reimport maps materials onto
+    for cand in (Path(path).with_suffix(".json"), Path(path).parent / "Jacket.json"):
+        if cand.exists():
+            info = json.loads(cand.read_text())
+            if Path(path).stem in info.get("mesh", "") and len(info.get("materials", [])) == len(slot_names):
+                slot_names = [m[0] for m in info["materials"]]
+                break
+    uv_src = me_src.uv_layers.active
     uvs = [tuple(d.uv) for d in uv_src.data] if uv_src else None
-    smooth = [f.use_smooth for f in me_ev.polygons]
-    ev.to_mesh_clear()
     BWinv = np.linalg.inv(BODY_W)
     Q = np.array([(BWinv @ np.r_[q, 1])[:3] for q in Qw])  # cm, Joy local
-    rep["bounds_before_cm"] = [Q.min(0).tolist(), Q.max(0).tolist()]
+    rigid = np.zeros(len(Q), dtype=bool)
+    if spec.get("rigid_slots"):
+        # Owner 2026-10-14 circled a crumpled sneaker toe: shoes are rigid, so they follow her foot bones only (no wrap,
+        # no tightening, no push). Each shoe is then scaled about its sole until her foot no longer shows through it.
+        rs = {i for i, n in enumerate(slot_names) if n in spec["rigid_slots"]}
+        on_rigid = np.zeros(len(Q), dtype=bool)
+        on_soft = np.zeros(len(Q), dtype=bool)
+        for f, mi in zip(faces, mat_index):
+            (on_rigid if mi in rs else on_soft)[f] = True
+        rigid = on_rigid & ~on_soft
+        Q[rigid] = np.array([(BWinv @ np.r_[q, 1])[:3] for q in P_bones[rigid]])
+        foot_v = P[(P[:, 2] < 14.0)]
+        shoes = {}
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            sel = rigid & (np.sign(Q[:, 0]) == sign)
+            if not sel.any():
+                continue
+            idx = np.flatnonzero(sel)
+            sfaces = [f for f, mi in zip(faces, mat_index) if mi in rs and all(sel[v] for v in f)]
+            remap = {v: k for k, v in enumerate(idx)}
+            # hung from her ankle joint, the shoe keeps Manny's ankle height above its sole; her ankle is lower, so
+            # the shoe is raised by the difference and its inner sole meets hers, as the pack placed it on Manny
+            lift_cm = (gb("foot_" + side.lower())[2] - cb("CC_Base_%s_Foot" % side)[0][2]) * 100.0
+            Q[idx, 2] += lift_cm
+            fv = foot_v[np.sign(foot_v[:, 0]) == sign]
+            base = np.array([Q[idx, 0].mean(), Q[idx, 1].mean(), Q[idx, 2].min()])
+            collar = Q[idx, 2].max() - 2.0
+            fv = fv[fv[:, 2] < collar]
+            scale, out = 1.0, None
+            for scale in (1.0, 1.03, 1.06, 1.09, 1.12, 1.15):
+                pts = base + (Q[idx] - base) * scale
+                bvh = BVHTree.FromPolygons([tuple(q) for q in pts.tolist()], [tuple(remap[v] for v in f) for f in sfaces], all_triangles=False)
+                out = 0
+                for q in fv:
+                    loc, nrm, fi, d = bvh.find_nearest(Vector(q))
+                    if loc is not None and float(np.dot(q - np.array(loc), np.array(nrm))) > 0.05:
+                        out += 1
+                if out <= 0.01 * max(1, len(fv)):
+                    break
+            Q[idx] = base + (Q[idx] - base) * scale
+            shoes[side] = {"vertices": int(len(idx)), "raised_cm": float(lift_cm), "scale": scale, "foot_vertices_tested": int(len(fv)), "foot_vertices_outside": int(out)}
+        rep["rigid_shoes"] = shoes
 
+    # The fitted shell must sit on HER: inside its height band, no wider than her arms, close to her skin. A fit that
+    # fails these is a math error, not a fitting problem.
+    z_pel = (BWinv @ np.r_[cb("CC_Base_Pelvis")[0], 1])[2]
+    z_head = (BWinv @ np.r_[cb("CC_Base_Head")[0], 1])[2]
+    # shoes put soles under her bare feet: up to 6 cm below her floor, and she is raised by that much in game
+    band = (z_pel - 25, z_head) if kind == "jacket" else (-6.0, z_pel + 20)
+    near = np.array([nearest_body(q)[2] for q in Q])
+    rep["sanity"] = {"z_range_cm": [float(Q[:, 2].min()), float(Q[:, 2].max())], "allowed_z_cm": [float(band[0]), float(band[1])],
+                     "half_width_cm": float(np.abs(Q[:, 0]).max()), "p99_distance_to_body_cm": float(np.percentile(near, 99)), "max_distance_to_body_cm": float(near.max())}
+    assert band[0] <= Q[:, 2].min() and Q[:, 2].max() <= band[1], (kind + " outside its height band", rep["sanity"])
+    assert np.abs(Q[:, 0]).max() < 80, (kind + " wider than her arms", rep["sanity"])
+    assert near.max() < 40, (kind + " far from her skin", rep["sanity"])  # an exploded fit is metres away
+
+    if spec["open"]:
+        # open the front: front panels (y forward of -4 cm, she faces -Y) move outward from the midline, most at the
+        # inner edge, none at the hinge; full through the chest band, a third at the collar top and the hem
+        front_w = smoothstep5(-(Q[:, 1] + 4.0) / 4.0)
+        inner = np.clip((OPEN_HINGE_CM - np.abs(Q[:, 0])) / OPEN_HINGE_CM, 0.0, 1.0)
+        bandw = np.clip(1.0 - np.abs(Q[:, 2] - 135.0) / 30.0, 0.35, 1.0)
+        shift = OPEN_CM * inner * bandw * front_w
+        Q[:, 0] += np.sign(Q[:, 0]) * shift
+        rep["opened"] = {"open_cm": OPEN_CM, "vertices": int((shift > 0.05).sum()), "max_shift_cm": float(shift.max())}
+
+    if spec.get("tighten"):
+        # owner 2026-10-14: "it's very baggy, more form fitting?". The fabric's distance from her skin keeps only
+        # `tighten` of what the pack's cut gave it. The change is smoothed over the garment's own surface, so pockets,
+        # knee pads and seams keep their relief over the tighter fabric; the shoes (below 12-18 cm) are left alone.
+        off = np.zeros(len(Q))
+        nrmv = np.zeros((len(Q), 3))
+        for i in range(len(Q)):
+            loc, nrm, d, verts, w = nearest_body(Q[i])
+            off[i] = float(np.dot(Q[i] - loc, nrm))
+            nrmv[i] = nrm
+        # owner, after the first tightening: "the lower legs are too tight, i think the top is too baggy" - the fabric
+        # keeps `upper` of its room over the hips and thighs and `lower` over the calves, blended through the knee
+        g = spec["gap_cm"]
+        upper, lower = spec["tighten"]
+        z_knee = (np.linalg.inv(BODY_W) @ np.r_[cb("CC_Base_L_Calf")[0], 1])[2]
+        keep = lower + (upper - lower) * smoothstep5((Q[:, 2] - (z_knee - 10.0)) / 20.0)
+        want = np.where(off > g, g + (off - g) * keep, off)
+        delta = (want - off)[:, None] * nrmv * smoothstep5((Q[:, 2] - 12.0) / 6.0)[:, None]
+        delta[rigid] = 0.0
+        tedges = np.array(sorted({tuple(sorted((f[k], f[(k + 1) % len(f)]))) for f in faces for k in range(len(f))}), dtype=np.int32)
+        for _ in range(12):
+            acc = np.zeros_like(delta)
+            cnt = np.zeros(len(delta))
+            np.add.at(acc, tedges[:, 0], delta[tedges[:, 1]])
+            np.add.at(acc, tedges[:, 1], delta[tedges[:, 0]])
+            np.add.at(cnt, tedges[:, 0], 1)
+            np.add.at(cnt, tedges[:, 1], 1)
+            delta = 0.5 * delta + 0.5 * acc / np.maximum(cnt, 1)[:, None]
+        delta[rigid] = 0.0
+        Q = Q + delta
+        rep["tightened"] = {"keep_upper_lower": list(spec["tighten"]), "knee_z_cm": float(z_knee), "offset_p50_before_cm": float(np.percentile(off, 50)), "offset_p95_before_cm": float(np.percentile(off, 95)),
+                            "mean_pull_cm": float(np.linalg.norm(delta, axis=1).mean()), "max_pull_cm": float(np.linalg.norm(delta, axis=1).max())}
+
+    # the pack's own weights, mapped bone to bone (unmapped bones climb to their nearest mapped parent)
+    src_w = None
+    if spec.get("weights") == "source":
+        def mapped(bone_name):
+            b = garm.data.bones.get(bone_name)
+            while b is not None:
+                if b.name in UE_TO_CC and UE_TO_CC[b.name] in rig.data.bones:
+                    return UE_TO_CC[b.name]
+                b = b.parent
+            return None
+        gnames = {g.index: g.name for g in gm.vertex_groups}
+        src_w, unmapped = [], set()
+        for v in gm.data.vertices:
+            acc = {}
+            for g in v.groups:
+                if g.weight <= 0:
+                    continue
+                cc = mapped(gnames[g.group])
+                if cc is None:
+                    unmapped.add(gnames[g.group])
+                    continue
+                acc[cc] = acc.get(cc, 0.0) + g.weight
+            src_w.append(acc)
+        assert len(src_w) == len(Q), (len(src_w), len(Q))
+        rep["source_weights"] = {"unmapped_bones": sorted(unmapped), "vertices_without_weight": int(sum(1 for a in src_w if not a))}
     # skin weights from Joy's body, nearest surface point, inverse-distance over that face's vertices
     body_groups = {gr.index: gr.name for gr in body.vertex_groups if gr.name in bone_names}
     vert_groups = [{body_groups[gg.group]: gg.weight for gg in v.groups if gg.group in body_groups and gg.weight > 0} for v in body.data.vertices]
-    jw = []
-    pen_before = []
+    gw = []
     for i in range(len(Q)):
         loc, nrm, d, verts, w = nearest_body(Q[i])
         acc = {}
         for vi, wi in zip(verts, w):
             for n, ww in vert_groups[vi].items():
                 acc[n] = acc.get(n, 0.0) + wi * ww
+        if src_w is not None and src_w[i]:
+            acc = src_w[i]
         top = sorted(acc.items(), key=lambda kv: -kv[1])[:6]
         s = sum(v for _, v in top)
-        jw.append({n: v / s for n, v in top})
-        pen_before.append(float(np.dot(Q[i] - loc, nrm)))
-    pen_before = np.array(pen_before)
-    rep["penetration_before"] = {"inside_vertices": int((pen_before < 0).sum()), "deepest_cm": float(-pen_before.min()), "within_gap": int((pen_before < JACKET_GAP_CM).sum())}
+        gw.append({n: v / s for n, v in top})
 
-    # push the shell clear of the skin and of the bottoms (whose own surface sits on the skin). Owner 2026-10-14: "her
-    # jiggle physics should move underneath the jacket, not with the jacket" - so the jacket carries no ST keys and is
-    # instead held off the skin by the region's full travel (MAX_OFFSET per region, mask-weighted) plus the base gap
-    clear = np.full(len(Q), JACKET_GAP_CM)
-    for i in range(len(Q)):
-        loc, nrm, d, verts, w = nearest_body(Q[i])
-        clear[i] += sum(MAX_OFFSET_CM[r] * float((masks[r][verts] * w).sum()) for r in REGIONS)
-    rep["clearance_cm"] = {"min": float(clear.min()), "max": float(clear.max()), "vertices_over_tissue": int((clear > JACKET_GAP_CM + 0.05).sum())}
-    bottoms = bpy.data.objects["Underwear_Bottoms"]
-    BQ = np.array([v.co[:] for v in bottoms.data.vertices], dtype=np.float64)
-    bot_bvh = BVHTree.FromPolygons([tuple(p) for p in BQ.tolist()], [tuple(f.vertices) for f in bottoms.data.polygons], all_triangles=False)
+    # clearance. A garment with the paired keys moves with the tissue, so it only clears the skin by its gap. The jacket
+    # does not (owner: "her jiggle physics should move underneath the jacket, not with the jacket"), so it clears the
+    # tissue's travel where it hangs, at and below the bust line; above it the panel rests near the skin (owner,
+    # reviewing the side view: "didn't need to be so tight ... not make a bulge of space").
+    clear = np.full(len(Q), spec["gap_cm"])
+    if not spec["keys"]:
+        hang = np.clip(0.35 + 0.65 * (140.0 - Q[:, 2]) / 5.0, 0.35, 1.0)
+        for i in range(len(Q)):
+            loc, nrm, d, verts, w = nearest_body(Q[i])
+            clear[i] += hang[i] * sum(MAX_OFFSET_CM[r] * float((masks[r][verts] * w).sum()) for r in REGIONS)
+    rep["clearance_cm"] = {"min": float(clear.min()), "max": float(clear.max())}
+    under_bvh = None
+    if under is not None:
+        UQ = np.array([v.co[:] for v in under.data.vertices], dtype=np.float64)
+        under_bvh = BVHTree.FromPolygons([tuple(q) for q in UQ.tolist()], [tuple(f.vertices) for f in under.data.polygons], all_triangles=False)
+    pen0 = np.array([float(np.dot(Q[i] - nearest_body(Q[i])[0], nearest_body(Q[i])[1])) for i in range(len(Q))])
+    rep["penetration_before"] = {"inside_vertices": int((pen0 < 0).sum()), "deepest_cm": float(-pen0.min())}
     moved = 0
     for _ in range(3):
         for i in range(len(Q)):
+            if rigid[i]:
+                continue
             loc, nrm, d, verts, w = nearest_body(Q[i])
-            sd = float(np.dot(Q[i] - loc, nrm))
-            if sd < clear[i]:
+            sd_ = float(np.dot(Q[i] - loc, nrm))
+            if sd_ < clear[i]:
                 Q[i] = loc + nrm * clear[i]
                 moved += 1
-            bl, bn, bi, bd = bot_bvh.find_nearest(Vector(Q[i]))
-            if bl is not None and bd < 2.0:
-                sd = float(np.dot(Q[i] - np.array(bl), np.array(bn)))
-                if 0 > sd > -1.5 or 0 <= sd < clear[i] * 0.75:
-                    Q[i] = np.array(bl) + np.array(bn) * clear[i] * 0.75
-                    moved += 1
-    pen_after = np.array([float(np.dot(Q[i] - nearest_body(Q[i])[0], nearest_body(Q[i])[1])) for i in range(len(Q))])
-    rep["penetration_after"] = {"inside_vertices": int((pen_after < 0).sum()), "deepest_cm": float(-pen_after.min()), "moves": moved}
-    rep["bounds_after_cm"] = [Q.min(0).tolist(), Q.max(0).tolist()]
+            if under_bvh is not None:
+                bl, bn, bi, bd = under_bvh.find_nearest(Vector(Q[i]))
+                if bl is not None and bd < 2.0:
+                    sd_ = float(np.dot(Q[i] - np.array(bl), np.array(bn)))
+                    if 0 > sd_ > -1.5 or 0 <= sd_ < 0.3:
+                        Q[i] = np.array(bl) + np.array(bn) * 0.3
+                        moved += 1
+    pen1 = np.array([float(np.dot(Q[i] - nearest_body(Q[i])[0], nearest_body(Q[i])[1])) for i in range(len(Q))])
+    rep["penetration_after"] = {"inside_vertices": int((pen1 < 0).sum()), "deepest_cm": float(-pen1.min()), "moves": moved}
 
-    # the final jacket object in Joy's convention: scale 0.01, parented to her armature, her bone groups, M_jacket slot
-    me = bpy.data.meshes.new("Jacket")
+    # the final object in Joy's convention: scale 0.01, parented to her armature, her bone groups, the pack's slot names
+    me = bpy.data.meshes.new(spec["name"])
     me.from_pydata([tuple(q) for q in Q.tolist()], [], faces)
     me.update()
     if uvs:
         uv = me.uv_layers.new(name="UVMap")
         for li, t in enumerate(uvs):
             uv.data[li].uv = t
-    for f, s in zip(me.polygons, smooth):
+    for n in slot_names:
+        me.materials.append(bpy.data.materials.get(n) or bpy.data.materials.new(n))
+    for f, mi in zip(me.polygons, mat_index):
+        f.material_index = mi
         f.use_smooth = True
-    bm = bmesh.new()
-    bm.from_mesh(me)
-    for e in bm.edges:
+    bmh = bmesh.new()
+    bmh.from_mesh(me)
+    for e in bmh.edges:
         if len(e.link_faces) == 2 and e.calc_face_angle(0.0) > math.radians(55):
             e.smooth = False
-    bm.to_mesh(me)
-    bm.free()
-    mat = bpy.data.materials.new(JACKET_SLOT)
-    me.materials.append(mat)
-    ob = bpy.data.objects.new("Jacket", me)
+    bmh.to_mesh(me)
+    bmh.free()
+    ob = bpy.data.objects.new(spec["name"], me)
     scene.collection.objects.link(ob)
     ob.parent = rig
     ob.matrix_parent_inverse = rig.matrix_world.inverted()
     ob.matrix_world = body.matrix_world.copy()
-    for n in sorted({n for d in jw for n in d}):
+    for n in sorted({n for d in gw for n in d}):
         ob.vertex_groups.new(name=n)
-    for i, d in enumerate(jw):
+    for i, d in enumerate(gw):
         for n, v in d.items():
             ob.vertex_groups[n].add([i], float(v), "REPLACE")
-    mod = ob.modifiers.new("Armature", "ARMATURE")
-    mod.object = rig
-    # the pack's rig and mesh leave the scene so they are not exported
-    for o in new:
+    ob.modifiers.new("Armature", "ARMATURE").object = rig
+    for o in new + helpers:
         bpy.data.objects.remove(o, do_unlink=True)
-    rep.update(vertices=len(Q), polygons=len(faces), bone_groups=len(ob.vertex_groups))
+    rep.update(vertices=len(Q), polygons=len(faces), bone_groups=len(ob.vertex_groups), slots=slot_names,
+               sole_depth_cm=float(max(0.0, -Q[:, 2].min())))
     return ob, rep
 
 
+fitted = {}
+if opt.pants:
+    pants, prep = fit_garment("pants", opt.pants, opt.pants_body or str(Path(opt.pants).with_name("SKM_Manny_500_Simple.fbx")))
+    meshes.append(pants)
+    new_keys["Pants"], garment_report["Pants"] = garment_keys(pants, np.array([v.co[:] for v in pants.data.vertices], dtype=np.float64))
+    report["pants"] = prep
+    fitted["pants"] = pants
+    print("JOY_PANTS", json.dumps({k: v for k, v in prep.items() if k not in ("stretch",)}), flush=True)
 jacket = None
 if opt.jacket:
-    jacket, jrep = fit_jacket(opt.jacket)
-    meshes.append(jacket)  # no ST keys: the tissue moves underneath it (see fit_jacket's clearance)
+    under = fitted.get("pants") or (bpy.data.objects["Underwear_Bottoms"] if bpy.data.objects["Underwear_Bottoms"] in meshes else None)
+    jacket, jrep = fit_garment("jacket", opt.jacket, opt.fit_body or str(Path(opt.jacket).with_name("SKM_Female_BodyMesh.fbx")), under)
+    meshes.append(jacket)  # no ST keys: the tissue moves underneath it (see fit_garment's clearance)
     report["jacket"] = jrep
-    print("JOY_JACKET", json.dumps({k: v for k, v in jrep.items() if "bounds" not in k}), flush=True)
+    print("JOY_JACKET", json.dumps({k: v for k, v in jrep.items() if k not in ("stretch",)}), flush=True)
 print("JOY_ST_GARMENTS", json.dumps(garment_report), flush=True)
 report["meshes"] = [o.name for o in meshes]
 
@@ -435,7 +711,7 @@ assert hashlib.sha256(SRC.read_bytes()).hexdigest() == before
 report["source_unchanged"] = True
 (OUT / "SoftTissue.json").write_text(json.dumps(report, indent=1))
 # a few workbench views of the dressed body for the geometric check sheet (hair hidden: it is cards)
-if opt.jacket:
+if opt.jacket or opt.pants:
     scene.render.engine = "BLENDER_WORKBENCH"
     scene.display.shading.light = "STUDIO"
     scene.display.shading.color_type = "MATERIAL"
@@ -445,14 +721,19 @@ if opt.jacket:
     scene.collection.objects.link(cam)
     scene.camera = cam
     cam.data.lens = 70
-    for o in meshes:
-        o.hide_render = o.name == "Hair"
-    jacket.data.materials[0].diffuse_color = (0.12, 0.12, 0.14, 1)
+    for o in scene.objects:
+        if o.type == "MESH":
+            o.hide_render = o not in meshes or o.name == "Hair"  # the dropped waistcoat is not rendered either
+    for g in [o for o in (jacket, fitted.get("pants")) if o]:
+        for m in g.data.materials:
+            m.diffuse_color = (0.12, 0.12, 0.14, 1) if g is jacket else (0.45, 0.08, 0.1, 1)
     centre = Vector((0, 0, 1.2))
-    for name, direction in (("front", (0, -1, 0.1)), ("three_quarter", (0.8, -0.7, 0.1)), ("side", (1, 0, 0.05)), ("back", (0, 1, 0.1))):
+    for name, direction, c, dist in (("front", (0, -1, 0.1), centre, 2.6), ("three_quarter", (0.8, -0.7, 0.1), centre, 2.6), ("side", (1, 0, 0.05), centre, 2.6),
+                                     ("back", (0, 1, 0.1), centre, 2.6), ("full_front", (0, -1, 0.05), Vector((0, 0, 0.9)), 4.2), ("full_side", (1, 0, 0.03), Vector((0, 0, 0.9)), 4.2)):
         d = Vector(direction).normalized()
-        cam.location = centre + d * 2.6
-        cam.rotation_euler = (centre - cam.location).to_track_quat("-Z", "Y").to_euler()
+        centre_ = c
+        cam.location = c + d * dist
+        cam.rotation_euler = (centre_ - cam.location).to_track_quat("-Z", "Y").to_euler()
         scene.render.filepath = str(OUT / ("fit_%s.png" % name))
         bpy.ops.render.render(write_still=True)
 print("JOY_ST_EXPORTED", json.dumps({"fbx_bytes": fbx.stat().st_size, "keys": {k: len(v) for k, v in new_keys.items()}, "meshes": report["meshes"]}), flush=True)

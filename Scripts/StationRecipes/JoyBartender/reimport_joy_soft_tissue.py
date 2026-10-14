@@ -114,6 +114,8 @@ if os.environ.get("SS_JOY_SKIN_ORIGINAL"):
     assert L.save_loaded_asset(mi, False)
     skin = {"base_color": orig.get_path_name(), "suit_mix": 0.0}
 b = mesh.get_bounds()
+# her size, not just her bone count: an exploded garment shows here first (the 100x jacket of 2026-10-14 imported fine)
+assert 170 <= b.box_extent.z * 2 <= 195 and b.box_extent.x * 2 <= 200 and b.box_extent.y * 2 <= 200, ("SK_Joy bounds", list(b.box_extent.to_tuple()))
 report = {"mesh": mesh.get_path_name(), "bones": comp.get_num_bones(), "height_cm": b.box_extent.z * 2, "morphs_before": len(before_morphs), "morphs_after": len(after_morphs),
           "soft_tissue_morphs": st, "materials_restored": restored, "renamed_morphs": len(renamed), "dropped_morphs": missing, "backup": BACKUP, "fbx": DATA["fbx"], "slots": [str(s.material_slot_name) for s in mesh.materials], "dropped": DROP, "added": ADD, "skin": skin}
 json.dump(report, open(os.path.join(SRC, "Reimport.json"), "w"), indent=1)

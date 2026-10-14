@@ -8,6 +8,8 @@ SS_JOY_ST_OUT for a GIF the owner can judge motion from. Python cannot spawn a c
   UnrealEditor-Cmd.exe <project> -unattended -RenderOffscreen -stdout -FullStdOutLogOutput \
       -DisablePlugins=UAssetBrowser,NwiroIntegrationKit -ExecutePythonScript="<abs>/probe_joy_soft_tissue.py"
 Nothing is saved to the project.
+The status covers the spring numbers only. It says nothing about how she looks: open the frames before calling it done
+(2026-10-14: a numbers pass shipped with the jacket rendered a hundred times too large).
 """
 import json
 import math
@@ -175,7 +177,7 @@ def tick(dt):
                 state["frames"].append({"file": fname, "phase": name, "view": view, "t": round(t, 3), "offsets_cm": offsets})
             if t >= secs:
                 if state["stage"] == len(PHASES) - 1:
-                    finish("PASS_FINITE_BOUNDED")
+                    finish("NUMBERS_PASS_LOOK_AT_FRAMES")
                     return
                 state["next_frame"] = 0.0
                 advance(world, bar)

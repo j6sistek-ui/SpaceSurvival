@@ -115,7 +115,12 @@ player-triggered actions, unprompted chatter and talk identity live on that one
 actor; `place_joy_soft_tissue.py` adds her `BodyDynamics` component, the same
 `USSSoftTissueComponent` spring Silver uses, bound to the `ST_<Region>_<Axis>`
 morphs `author_soft_tissue.py` exports and `reimport_joy_soft_tissue.py` brings
-into SK_Joy); Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
+into SK_Joy. Her outfit is fitted by the same Blender recipe: `--jacket` (Fab cyber
+jacket, through its own MetaHuman body) and `--pants` (Fab sci-fi pants and
+sneakers, through the pack's Manny), with `make_joy_outfit_materials.py`,
+`remove_joy_waistcoat.py`, `set_joy_mesh_lift.py` (shoe soles) and
+`capture_joy_front.py` (front stills, foot heights); `place_bar_bottles.py` stands
+the MLR bottles on her counter); Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
 security; Crest courier; Warden maintenance; the historical Amethyst wardrobe
 visitor, now hidden/replaced as described above. It checks
 178cm mesh height, floor-level source soles, exact Skeleton identity for every role
