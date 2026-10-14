@@ -63,9 +63,10 @@ def cam(deg, dist, height, look_z):
 
 
 SHOTS = [("front", 0, 210, 100, 90), ("front_upper", 0, 115, 138, 126), ("three_quarter", 35, 210, 100, 90),
-         ("feet_side", 90, 140, 12, 8)]  # floor level, side on: do the soles touch the floor
+         ("feet_side", 90, 140, 12, 8),  # floor level, side on: do the soles touch the floor
+         ("back", 180, 170, 100, 100), ("face_a", -25, 30, 170, 169), ("face_b", 25, 30, 170, 169)]
 if os.environ.get("SS_FRONT_ONLY_FEET"):
-    SHOTS = [SHOTS[-1]]
+    SHOTS = [SHOTS[3]]
 state = {"si": 0, "phase": "set", "at": None, "busy": False, "report": {"shots": [], "errors": [], "spot": list(spot.to_tuple())}, "handle": None}
 
 

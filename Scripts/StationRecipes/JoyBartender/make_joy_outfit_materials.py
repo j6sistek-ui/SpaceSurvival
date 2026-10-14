@@ -37,6 +37,28 @@ for name, parent_path in MAKE.items():
     assert L.save_loaded_asset(mi, False), path
     report[name] = {"parent": parent_path, "Color": list(E.get_material_instance_vector_parameter_value(mi, "Color").to_tuple()),
                     "Roughness": E.get_material_instance_scalar_parameter_value(mi, "Roughness"), "Specular": E.get_material_instance_scalar_parameter_value(mi, "Specular")}
+# the brow ring (owner 2026-10-14: "eyebrow piercing, metal"): her own opaque master, white base, polished steel
+ring_path = B + "/MI_Joy_Piercing"
+ring = u.load_asset(ring_path) if L.does_asset_exist(ring_path) else TOOLS.create_asset("MI_Joy_Piercing", B, u.MaterialInstanceConstant, u.MaterialInstanceConstantFactoryNew())
+E.set_material_instance_parent(ring, u.load_asset(B + "/M_JoyBOpaque"))
+E.set_material_instance_texture_parameter_value(ring, "BaseColor", u.load_asset("/Engine/EngineResources/WhiteSquareTexture"))
+E.set_material_instance_vector_parameter_value(ring, "Tint", u.LinearColor(0.62, 0.62, 0.66, 1.0))
+for k, v in (("Metallic", 1.0), ("Roughness", 0.22), ("Specular", 0.5), ("LuminanceTint", 0.0), ("SuitMix", 0.0)):
+    E.set_material_instance_scalar_parameter_value(ring, k, v)
+E.update_material_instance(ring)
+assert L.save_loaded_asset(ring, False), ring_path
+report["MI_Joy_Piercing"] = {"parent": B + "/M_JoyBOpaque", "scalars": {str(p): E.get_material_instance_scalar_parameter_value(ring, p) for p in E.get_scalar_parameter_names(ring)}}
+# the G-string (owner 2026-10-14): black, a soft satin sheen
+gs_path = B + "/MI_Joy_GString"
+gsm = u.load_asset(gs_path) if L.does_asset_exist(gs_path) else TOOLS.create_asset("MI_Joy_GString", B, u.MaterialInstanceConstant, u.MaterialInstanceConstantFactoryNew())
+E.set_material_instance_parent(gsm, u.load_asset(B + "/M_JoyBOpaque"))
+E.set_material_instance_texture_parameter_value(gsm, "BaseColor", u.load_asset("/Engine/EngineResources/WhiteSquareTexture"))
+E.set_material_instance_vector_parameter_value(gsm, "Tint", u.LinearColor(0.015, 0.015, 0.018, 1.0))
+for k, v in (("Metallic", 0.0), ("Roughness", 0.45), ("Specular", 0.5), ("LuminanceTint", 0.0), ("SuitMix", 0.0)):
+    E.set_material_instance_scalar_parameter_value(gsm, k, v)
+E.update_material_instance(gsm)
+assert L.save_loaded_asset(gsm, False), gs_path
+report["MI_Joy_GString"] = {"parent": B + "/M_JoyBOpaque"}
 jk = u.load_asset("/Game/Jacket_1/Materials/MI_Jacket")
 report["MI_Jacket"] = {"scalars": {str(p): E.get_material_instance_scalar_parameter_value(jk, p) for p in E.get_scalar_parameter_names(jk)},
                        "textures": {str(p): (E.get_material_instance_texture_parameter_value(jk, p).get_name() if E.get_material_instance_texture_parameter_value(jk, p) else None) for p in E.get_texture_parameter_names(jk)}}
