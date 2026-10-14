@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-14T17:26Z [USER] Authorizes merging PR69 only. [TOOL] Merge succeeds atd9b299724257fb4827242d6a03752246af5a6880 with expected head5b94a40 and green CI. PR73 retargeted to main; three-doc diff preserved, draft remains open. This supersedes earlier unmerged/stacked status. Owner checkout and all in-game work remain held; no PR73 merge or editor launch.
+
 - 2026-10-14T17:13Z [TOOL] PR69 head5b94a40 source/core/docs CI pass, mergeable true, ready for review, open/unmerged; concise body links focused draft PR73 (three docs files, no in-game changes). Closed verified issues1/2/7/28/29/31/33/49/50/55/56 with original reports/evidence preserved;18 unresolved issues remain. Owner head3a32fbb and all30 guarded index/source/native-map/save hashes unchanged. Retarget PR73 from PR69 branch to main only after an owner-approved merge. Hold remains active.
 
 - 2026-10-14T17:10Z [USER] Station layout remaining scope transfers out of accumulated PR69; all in-game changes held. Current station queue STN-20261014-01..04 in docs/KNOWN_ISSUES.md supersedes older next-action paragraphs. Preserve newer owner scene/conversations/dancers; Cyborg/Silver closed, NPC optimization held.
