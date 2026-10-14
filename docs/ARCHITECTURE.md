@@ -1,5 +1,9 @@
 # SpaceSurvival Phase 1 architecture
 
+## Silver groom authoring — October 14
+
+`USSGroomAuthoring` lives only in SpaceSurvivalEditor. It exports the private source strand description and creates a bounded new two-group derivative with rebuilt interpolation data. It refuses overwrite and defaults to dry run. Production runtime uses the existing GroomComponent and native solver: head-attached rigid group0, dynamic tail group1. No new runtime component or general asset-writing service. [Native evidence](validation/2026-10-14-silver-ponytail.md).
+
 ## Opt-in character body dynamics — October 13
 
 `USSSoftTissueComponent` owns cosmetic, single-player spring state on a character Blueprint. It ticks after its skeletal mesh, samples skin-weighted reference anchors through current bone transforms, and overrides only configured XYZ morph channels. The same imported morph carries both body and garment deltas. Existing pose, facial and arm-lift channels remain owned by their animation. Binding failure leaves the prior animation intact; teardown removes only the component's overrides.

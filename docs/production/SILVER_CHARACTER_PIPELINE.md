@@ -1,8 +1,12 @@
 # Silver: retained sources and reusable rigging lessons
 
-Updated 2026-10-13. This guide identifies recovery sources after the owner-requested cleanup; it does not declare every animation or collision accepted.
+Updated 2026-10-14. This guide identifies recovery sources after the owner-requested cleanup; it does not declare every animation or collision accepted.
 
-## Start here
+## Current native ponytail and colors
+
+The October14 owner instruction supersedes the long-hair/color hold below. The current apartment BP uses `SilverPonytail_20261014/Separated/G_SilverSeparated_v3`, a fixed crown with paired temples and a dynamic ponytail. Pink hair/lace and magenta eyes are saved and verified after restart. BodyDynamics, mesh and clips remain intact. The earlier Blender master and platinum overlay below are recovery sources; they do not represent this newer native look. [Current receipt and reproduction](../validation/2026-10-14-silver-ponytail.md).
+
+## Earlier retained sources
 
 - Current editable master: `.agent/local/ViableEldFinish_20261013/Blender/Silver_Platinum_Finish.blend`. Seven image datablocks are packed, no linked libraries or Alembic cache dependencies; 17 actions are embedded. Keep its adjacent `blendcache_Silver_Platinum_Finish` directory: the current dance has 856 baked hair frames. The core NPC library is a separate retained source below.
 - Untouched originals: the four GLBs in `C:/Users/j6sis/Downloads/Viable Eld`. Vendor hair/outfit/animation packs remain in their existing locations, outside cleanup scope.

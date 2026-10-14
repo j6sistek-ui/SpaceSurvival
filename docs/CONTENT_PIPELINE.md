@@ -1,5 +1,9 @@
 # Phase 1 content pipeline
 
+## Fixed crown / moving ponytail — October 14
+
+Silver uses separate groom groups with independent guides; only the tail group simulates. Bake the accepted fit into positions because deferred head attachment replaces component transforms. Rebuild/cache interpolation data before simulation. Save material edits with PIE stopped, assert save success and reload in a fresh process: in-session color previews did not establish saved appearance. The eye tint is restricted by original iris UV regions to preserve silver skin. [Recipe, exact inputs and saved evidence](validation/2026-10-14-silver-ponytail.md).
+
 ## Character import visual checks — October 14
 
 A scene-capture image is not sufficient evidence of a broken Blender import. Cyborg's
