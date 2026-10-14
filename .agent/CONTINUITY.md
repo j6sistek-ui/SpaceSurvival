@@ -1,5 +1,8 @@
 # SpaceSurvival continuity
 
+- 2026-10-14T17:10Z [USER] Station layout remaining scope transfers out of accumulated PR69; all in-game changes held. Current station queue STN-20261014-01..04 in docs/KNOWN_ISSUES.md supersedes older next-action paragraphs. Preserve newer owner scene/conversations/dancers; Cyborg/Silver closed, NPC optimization held.
+- 2026-10-14T17:10Z [TOOL] Focused follow-up starts as three documentation files based on reconciled PR69 head5b94a40. Stack on codex/phase1-test-and-audio-followup; retarget main after owner-approved PR69 merge. No native recipe replay, scene edits or editor launch; fresh scene review required after explicit resume.
+
 - 2026-10-14T16:52Z [USER] Make PR69 mergeable, move remaining station scope to a focused new PR, close verified resolved/obsolete issues, then hold all in-game changes.
 - 2026-10-14T16:52Z [TOOL] Isolated PR69/main reconciliation preserves newer conversations/characters and station/boarding work;11 conflict files resolved, four cook folders cover155 strings/zero missing. CPU Editor build succeeds40actions/73.66s;45 structural/8cook/13digest/8recipe/Python/144format/docs pass. Engine deprecation warnings retained. Owner checkout/native assets/saves/game DLL untouched; no editor/cook/release. Publication/fresh CI/new station PR pending.
 
