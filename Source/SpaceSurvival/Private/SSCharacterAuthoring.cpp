@@ -43,8 +43,8 @@ FString USSCharacterAuthoringLibrary::ConfigureCyborgArmRetargeting(USkeletalMes
         Target->GetPathName() != Base + TEXT("Cyborg_Refreshed_Skeleton.Cyborg_Refreshed_Skeleton"))
         return Finish(TEXT("The candidate must use its private skeleton."));
     const FReferenceSkeleton &Source = SourceSkeleton->GetReferenceSkeleton();
-    const FReferenceSkeleton &Reference = Target->GetReferenceSkeleton();
-    if (Source.GetNum() != 61 || Reference.GetNum() != 61)
+    const FReferenceSkeleton &Reference = PrivateMesh->GetRefSkeleton();
+    if (Source.GetNum() != 61 || Reference.GetNum() != 61 || Target->GetReferenceSkeleton().GetNum() != 61)
         return Finish(TEXT("Expected the established 61-bone hierarchy."));
     TArray<int32> ArmBones;
     for (int32 Index = 0; Index < Reference.GetNum(); ++Index)
@@ -69,6 +69,7 @@ FString USSCharacterAuthoringLibrary::ConfigureCyborgArmRetargeting(USkeletalMes
     if (Apply)
     {
         Target->Modify();
+        Target->UpdateReferencePoseFromMesh(PrivateMesh);
         Target->AddCompatibleSkeleton(SourceSkeleton);
         Target->SetUseRetargetModesFromCompatibleSkeleton(false);
         for (int32 Index : ArmBones)

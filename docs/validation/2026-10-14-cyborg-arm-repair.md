@@ -1,4 +1,77 @@
-# Cyborg arm and finger repair checkpoint
+# Cyborg deformation repair checkpoint
+
+## Latest checkpoint: October 14, 05:14 UTC
+
+**PARTIAL / chest accepted, arms unresolved; no station adoption.** The owner accepted
+the latest chest appearance, then rejected the worsening shoulder/neck trials. The
+owner permits dropping an animation if the issue occurs in only one clip. A fresh
+native capture on the unchanged chest candidate covers 36 closeups from 12 clips;
+pinching recurs in PoleIdle, StripDance3 and Sensual2_Dance4/7. The single-clip
+condition is not met, and no animation was removed. New deformation trials are
+rejected, isolated and unadopted. Silver remains untouched until Cyborg passes Unreal.
+
+The 118,998-triangle surface, materials and fitted skeleton remain intact. The latest
+private candidate changes only six breast displacement morphs: their influence was
+centered at Z=1.302 m, below the breast volume; the new center is Z=1.371 m with a
+continuous attachment falloff. Matched upward/downward Blender tests retain a rounder
+shape. Rest vertices, skin weights and skeleton are exactly unchanged by this step.
+The two existing downward shoulder correctives remain; raised-arm corrections are
+not adopted. Native chest capture completed: 163 frames / 1,088 samples, with finite breast
+offsets peaking at 1.5622 cm left and 1.4330 cm right (1.6 cm limit). The owner
+accepts the chest; this does not accept the remaining rig defects.
+
+The new opt-in `SSJointCorrectiveComponent` reads arm direction relative to the chest
+and writes bounded morph weights after mesh evaluation. It never changes bones or
+creates physics regions. It rejects missing or duplicate morphs, missing bones and
+invalid thresholds. Only the private Blueprint uses the two downward correctives.
+An experimental quaternion pose driver was removed from the deliverable after its
+associated surface trials failed visual review.
+
+The retargeting helper now validates the imported mesh reference skeleton and updates
+the private Skeleton reference pose from it. This fixes stale finger translations
+after reimport. Explicit FBX import preserves all eight morphs; the earlier JSON
+reimport dropped morphs and is not the current recipe.
+
+Subsequent private pole derivatives fit palm contact and body clearance, so the earlier
+claim that all body/arm tracks remain unchanged applies only to the finger-only stage.
+BodyWave/BackSlide use one gripping hand and move the body clear of the pole; Spin's
+minimum orbit radius is 32 cm. A suffix filter temporarily reset left-leg tracks in
+two derivatives; that defect was identified and the original leg keys restored.
+Sampled vertex clearances are positive, but these measurements are not visual acceptance
+or a complete collision test. Original six clips remain unchanged.
+
+Rejected local trials include broad surface averaging (worsened breast folds), narrower
+shoulder weights (sharper joint creases), joint relocation and raised volume correctives
+(residual distortions). None was imported. Clay and physics-off tests separate mesh/
+skinning defects from spring behavior. Official Epic Pose Driver and Blender Corrective
+Smooth guidance was consulted; diagnostic success is not a claim those methods fixed it.
+
+Native Editor rebuild after removing the rejected optional driver: **PASS, 5 actions /
+13.67 seconds**, runtime module SHA256
+`db71721d12c3bcda371b060bb1857945707a51d2a25a6de54cd970d413a9252b`.
+This is the canonical authoring checkout build, not a packaged game or isolated
+worktree build. Existing toolchain/plugin dependency warnings remain.
+
+Current source: `.agent/local/CyborgRepair_20261013/RiggedDelivery/Cyborg_CHEST_REVIEW.blend`.
+`Cyborg_FINISH.blend` preserves the previous source; `Cyborg_MARKED_REPAIR.blend` is
+rejected. Recipes and receipts live under the same private task directory, particularly
+`build_chest_candidate.py`, `export_rigged_delivery.py --chest`,
+`import_finish_commandlet.py`, `Finish/Chest`, `Finish/Isolation` and `Finish/Import.json`.
+The owner-folder GIF and Blender file listed below are historical until replaced.
+
+New twist-helper, alternative shoulder weights, clavicle-lift and smoothing trials
+failed visual review and are marked REJECTED under Finish/{ArmTwist,ArmHeat,ArmSwing,
+ArmSleeve,ClavicleLift,AnatomicWeights}. Automatic bone heat also failed to produce
+weights; no failed result was saved as a candidate. None changed native assets.
+The native audit is Finish/ArmScope/Capture.json and Decision.json. PIE ended and the
+temporary studio map was discarded without saving; original production hashes match.
+
+**Next, lead-owned:** preserve the accepted chest and do not adopt the rejected
+trials. The shoulder repair remains unresolved; removing one animation cannot close
+it. A later validated repair or an explicitly agreed reduction of the animation set
+must precede station adoption and Silver work.
+
+## Earlier checkpoint (historical evidence, superseded where noted above)
 
 2026-10-14 UTC. **PARTIAL / review candidate only**, associated with RPT-20261014-01.
 The current in-game Cyborg and original animations are not replaced.
