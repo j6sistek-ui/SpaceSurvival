@@ -24,6 +24,17 @@ the existing `Scripts/CrewLodBuildSettings.py` normal-import guidance next. Keep
 skinning, material-slot and texture-residency checks separate. Recomputed normals were
 not established as the cause of this Cyborg color-patch defect. [Evidence and limits](validation/2026-10-14-cyborg-arm-repair.md).
 
+## Custom pole animation checks — October14
+
+Use the same clip on a known rig before changing mesh weights. Cyborg and Cyan both
+exposed faults in the procedural pole clips. Check every key for rotation jumps and
+loop endpoints; still images can miss alternating IK solutions. Rebuild a stable
+elbow plane, constrain wrist turn, and preserve a palm contact anchor rather than
+forcing a malformed wrist orientation. Keep bone rotation and joint position
+consistent: Skeleton translation retargeting ignores local offset compensation.
+The bounded repair recipe and rejected trials are documented in
+[the pole-twist receipt](validation/2026-10-14-cyborg-pole-twist.md).
+
 ## Wayfarer runtime copy — October1
 
 After building the current Editor, run `Scripts/PrepareWayfarerRuntime.py` with `-RenderOffscreen -ExecutePythonScript=...`. It duplicates `/Game/OutpostSandbox/L_AsteroidOutpost` into `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime`, retaining the furnished `/Game/BuildingLibrary/Home/L_CrewApartment` instance, and adds stable `OutpostLabel:` actor tags because editor labels are not available in a cooked game. It hashes the original outpost, apartment and flat BuildingSandbox before/after and saves only the runtime duplicate. Do not regenerate `AuthorOutpostSandbox.py` over the owner's composition. The runtime copy and its vendor dependencies remain private local content, not Git source assets.

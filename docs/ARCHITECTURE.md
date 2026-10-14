@@ -8,6 +8,8 @@ Mass/stiffness/damping/response/limits are Blueprint settings. Anchor topology a
 
 `USSJointCorrectiveComponent` is a separate opt-in, nonreplicated component. It reads animated upper/lower-arm positions relative to the chest after the skeletal mesh tick and drives authored morphs with clamped smoothstep weights. It validates the bone/morph bindings and threshold, clears its own overrides on teardown, and never writes bone transforms. The private Cyborg candidate uses two downward shoulder correctives; this does not fix or certify raised-arm anatomy. The editor-only Cyborg retargeting helper validates exact private/source paths and compatible reference orientations before synchronizing the private reference pose and arm translation-retarget modes. It never writes the original skeleton or saves packages itself.
 
+The six custom Cyborg pole clips now contain an offline arm-motion correction; no new runtime solver was added. The existing dynamics and pose corrective components remain unchanged. [Native repair evidence](validation/2026-10-14-cyborg-pole-twist.md).
+
 ## Wayfarer station integration — October1
 
 `ASSStation::BuildOutpostHub` streams a tagged runtime copy of the authored Wayfarer Exchange into the existing Survival world for the home hangar and mid-run stations. The apartment remains a nested Level Instance. It adopts the authored physical berth deck through `ASSLandingPad::AdoptDeck`; the real player ship owns boarding geometry, flight, paint and docking. Display-only Phoenix geometry and its stationary cabin proxies are removed from the runtime instance. No authored source actor is deleted on disk.
