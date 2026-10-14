@@ -121,7 +121,7 @@ def textures():
     return tex
 
 
-def master(name, blend):
+def master(name, blend, mask_default):
     mat = TOOLS.create_asset(name, DEST + "/Materials", u.Material, u.MaterialFactoryNew())
     assert mat
     mat.set_editor_property("blend_mode", blend)
@@ -166,9 +166,11 @@ def master(name, blend):
     normal.set_editor_property("sampler_type", u.MaterialSamplerType.SAMPLERTYPE_NORMAL)
     prop(normal, "RGB", u.MaterialProperty.MP_NORMAL)
     # the painted strap: a mask lerps roughness and metallic toward the suit values (SuitMix 0 = no effect)
+    # A Masks sampler must default to a TC_MASKS texture: the engine's white square is sRGB and the mismatch is a
+    # material COMPILE ERROR that drops every instance to the fallback (she rendered pure white, 2026-10-14).
     mask = node(u.MaterialExpressionTextureSampleParameter2D, "SuitMask")
-    mask.set_editor_property("texture", white)
-    mask.set_editor_property("sampler_type", u.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR)
+    mask.set_editor_property("texture", mask_default)
+    mask.set_editor_property("sampler_type", u.MaterialSamplerType.SAMPLERTYPE_MASKS)
     mix = node(u.MaterialExpressionScalarParameter, "SuitMix")
     mix.set_editor_property("default_value", 0.)
     amount = node(u.MaterialExpressionMultiply)
@@ -203,7 +205,9 @@ def master(name, blend):
 
 
 def materials(mesh, tex):
-    parents = {k: master("M_JoyB" + k, v) for k, v in [("Opaque", u.BlendMode.BLEND_OPAQUE), ("Masked", u.BlendMode.BLEND_MASKED), ("Translucent", u.BlendMode.BLEND_TRANSLUCENT)]}
+    masks = [tex[m["name"]] for m in PAINT["masks"].values() if m["name"] in tex]
+    assert masks, "a painted mask texture is needed as the Masks sampler default"
+    parents = {k: master("M_JoyB" + k, v, masks[0]) for k, v in [("Opaque", u.BlendMode.BLEND_OPAQUE), ("Masked", u.BlendMode.BLEND_MASKED), ("Translucent", u.BlendMode.BLEND_TRANSLUCENT)]}
     assigned = {}
     for row in DATA["materials"]:
         name = row["name"]

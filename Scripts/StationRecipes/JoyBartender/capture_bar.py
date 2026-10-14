@@ -24,6 +24,8 @@ lvl = u.get_editor_subsystem(u.LevelEditorSubsystem)
 editor = u.get_editor_subsystem(u.UnrealEditorSubsystem)
 assert not editor.get_game_world(), "fresh process required"
 assert lvl.load_level(MAP)
+# The game travels to its own "Survival" world at play start, so nothing spawned in the editor world survives: the
+# camera is summoned inside the play world (the dev "summon" cheat) once the walker is there.
 
 
 def log(s):
@@ -31,7 +33,7 @@ def log(s):
 
 
 # shots: (name, seconds into play before the shot, action index or None, camera angle in degrees around her, distance)
-SHOTS = [("idle_front", 4.0, None, 0, 320), ("gesture_a", 12.0, None, 25, 300), ("gesture_b", 22.0, None, -25, 300),
+SHOTS = [("player_view", 5.0, None, 0, 0), ("idle_front", 3.0, None, 0, 320), ("gesture_a", 12.0, None, 25, 300), ("gesture_b", 22.0, None, -25, 300),
          ("pour", 2.5, 0, 15, 280), ("cheers", 2.5, 1, 15, 280), ("dance", 4.0, 2, 30, 360), ("story", 3.0, 3, -15, 280), ("wide", 3.0, None, 40, 520)]
 state = {"phase": "wait", "start": time.monotonic(), "si": 0, "busy": False, "frames": 0, "shot_at": None, "report": {"shots": [], "errors": []}}
 
@@ -83,36 +85,65 @@ def tick(dt):
             if now - state["start"] > 120:
                 raise RuntimeError("PIE world missing")
             return
+        # Actors are looked up by label every time: a cached reference went stale between ticks on the first run.
+        def find_bar():
+            return next((a for a in u.GameplayStatics.get_all_actors_of_class(world, u.SSOutpostAmbientActor) if a.get_actor_label() == LABEL), None)
+
+        def find_cam():
+            cams = [c for c in u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor) if c.get_name() not in state.get("old_cams", set())]
+            return cams[0] if cams else None
+
         if state["phase"] == "wait":
             pc = u.GameplayStatics.get_player_controller(world, 0)
-            if not pc:
-                return
-            bars = [a for a in u.GameplayStatics.get_all_actors_of_class(world, u.SSOutpostAmbientActor) if a.get_actor_label() == LABEL]
-            if not bars:
-                raise RuntimeError("bartender actor not found in play")
-            state["bar"] = bars[0]
             pawn = u.GameplayStatics.get_player_pawn(world, 0)
-            if pawn:
-                pawn.set_actor_hidden_in_game(True)
-                b = state["bar"].get_actor_location()
-                pawn.set_actor_location(u.Vector(b.x, b.y, b.z + 3000), False, True)
-            cam = world.spawn_actor_from_class(u.CameraActor, u.Vector(0, 0, 0), u.Rotator(0, 0, 0))
-            cam.get_component_by_class(u.CameraComponent).set_field_of_view(40)
-            state["cam"], state["pc"] = cam, pc
-            pc.set_view_target_with_blend(cam, 0.0, u.ViewTargetBlendFunction.VT_BLEND_LINEAR, 0.0, False)
+            bar = find_bar()
+            if not pc or not pawn or not bar:
+                if now - state["start"] > 150:
+                    raise RuntimeError("in play but missing: pc=%s pawn=%s bar=%s world=%s" % (bool(pc), bool(pawn), bool(bar), world.get_name()))
+                return
+            log("play world %s: bartender found, summoning a camera" % world.get_name())
+            # the walker stands at a stool, 3.5 m in front of her, looking at her: the talk hint and action row appear
+            b = bar.get_actor_location()
+            fwd = bar.get_actor_forward_vector()
+            stand = u.Vector(b.x + fwd.x * 350, b.y + fwd.y * 350, b.z + 4)
+            pawn.set_actor_location(stand, False, True)
+            pc.set_control_rotation(u.MathLibrary.find_look_at_rotation(stand, u.Vector(b.x, b.y, b.z + 40)))
+            state["old_cams"] = {c.get_name() for c in u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor)}
+            u.SystemLibrary.execute_console_command(world, "summon CameraActor", pc)
             for cmd in ("r.TextureStreaming 0", "r.Streaming.FullyLoadUsedTextures 1"):
                 u.SystemLibrary.execute_console_command(world, cmd, pc)
-            state["phase"] = "next"
+            state["pc"] = pc
+            state.update(phase="camera", camera_at=now)
+            return
+        if state["phase"] == "camera":
+            cam = find_cam()
+            if cam:
+                cam.get_component_by_class(u.CameraComponent).set_field_of_view(40)
+                log("camera %s ready" % cam.get_name())
+                state["phase"] = "next"
+            elif now - state["camera_at"] > 10:
+                log("summon gave no camera; shooting from the walker's own view")
+                state["phase"] = "next"
             return
         if state["phase"] == "next":
             if state["si"] >= len(SHOTS):
                 finish()
                 return
+            bar, cam = find_bar(), find_cam()
+            pc = u.GameplayStatics.get_player_controller(world, 0)
+            if not bar or not pc:
+                raise RuntimeError("lost the bartender or the controller in world %s" % world.get_name())
+            state["pc"] = pc
             name, wait, action, deg, dist = SHOTS[state["si"]]
-            loc, rot = camera_for(state["bar"], deg, dist)
-            state["cam"].set_actor_location_and_rotation(loc, rot, False, False)
+            if cam and name != "player_view":
+                loc, rot = camera_for(bar, deg, dist)
+                cam.set_actor_location_and_rotation(loc, rot, False, False)
+                pc.set_view_target_with_blend(cam, 0.0, u.ViewTargetBlendFunction.VT_BLEND_LINEAR, 0.0, False)
+            else:
+                pawn = u.GameplayStatics.get_player_pawn(world, 0)
+                pc.set_view_target_with_blend(pawn, 0.0, u.ViewTargetBlendFunction.VT_BLEND_LINEAR, 0.0, False)
             if action is not None:
-                ok = state["bar"].trigger_action(action)
+                ok = bar.trigger_action(action)
                 log("trigger action %d -> %s" % (action, ok))
             state.update(phase="hold", shot_at=now + wait, frames=0, path=os.path.join(OUT, "Joy_bar_%s.png" % name))
             return
