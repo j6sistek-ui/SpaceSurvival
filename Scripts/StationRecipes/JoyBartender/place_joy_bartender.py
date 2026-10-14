@@ -111,7 +111,9 @@ cm = bar.character_mesh
 cm.set_skeletal_mesh_asset(mesh)
 half = bar.body.get_scaled_capsule_half_height()
 cm.set_editor_property("relative_location", u.Vector(0.0, 0.0, -half))
-cm.set_editor_property("relative_rotation", u.Rotator(0.0, yaw if yaw is not None else before["mesh_rel_rot"][2], 0.0))
+# Joy's FBX came through the same Blender -Y-forward export as the crew, so she faces +Y in asset space like SK_Dread:
+# keep the actor's existing mesh yaw (-90) rather than the light-blue Blueprint's 0, whose actor is turned instead.
+cm.set_editor_property("relative_rotation", u.Rotator(0.0, before["mesh_rel_rot"][2], 0.0))
 cm.set_editor_property("relative_scale3d", u.Vector(1.0, 1.0, 1.0))
 cm.set_animation_mode(u.AnimationMode.ANIMATION_SINGLE_NODE)
 cm.set_editor_property("animation_data", u.SingleAnimationPlayData(anim_to_play=IDLE, saved_looping=True, saved_playing=True, saved_position=0.0, saved_play_rate=1.0))
