@@ -9,7 +9,8 @@ public class SpaceSurvivalEditor : ModuleRules
         PrivateDependencyModuleNames.AddRange(new[]
         {
             "Core", "CoreUObject", "Engine", "SpaceSurvival", "UnrealEd", "Slate", "SlateCore",
-            "InputCore", "ContentBrowser", "ContentBrowserData", "AssetRegistry", "ToolMenus", "Niagara"
+            "InputCore", "ContentBrowser", "ContentBrowserData", "AssetRegistry", "ToolMenus", "Niagara",
+            "HairStrandsCore", "MeshDescription", "Json"
         });
     }
 }

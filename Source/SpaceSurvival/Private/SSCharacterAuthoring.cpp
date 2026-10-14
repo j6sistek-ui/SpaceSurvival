@@ -18,6 +18,73 @@
 #include "UObject/Package.h"
 #endif
 
+FString USSCharacterAuthoringLibrary::ConfigureCyborgArmRetargeting(USkeletalMesh *PrivateMesh,
+                                                                    USkeleton *SourceSkeleton, bool Apply)
+{
+#if WITH_EDITOR
+    const FString Base = TEXT("/Game/SpaceSurvival/Licensed/CyborgRefresh_20261014/");
+    const TSharedRef<FJsonObject> Report = MakeShared<FJsonObject>();
+    Report->SetBoolField(TEXT("success"), false);
+    auto Finish = [&Report](const FString &Error = FString())
+    {
+        if (!Error.IsEmpty())
+            Report->SetStringField(TEXT("error"), Error);
+        FString Json;
+        FJsonSerializer::Serialize(Report, TJsonWriterFactory<>::Create(&Json));
+        return Json;
+    };
+    if (!PrivateMesh || !SourceSkeleton ||
+        PrivateMesh->GetPathName() != Base + TEXT("Cyborg_Refreshed.Cyborg_Refreshed") ||
+        SourceSkeleton->GetPathName() != TEXT("/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Rig/"
+                                              "SK_Cyborg_Skeleton.SK_Cyborg_Skeleton"))
+        return Finish(TEXT("Only the isolated Cyborg candidate and its original animation skeleton are accepted."));
+    USkeleton *Target = PrivateMesh->GetSkeleton();
+    if (!Target || Target == SourceSkeleton ||
+        Target->GetPathName() != Base + TEXT("Cyborg_Refreshed_Skeleton.Cyborg_Refreshed_Skeleton"))
+        return Finish(TEXT("The candidate must use its private skeleton."));
+    const FReferenceSkeleton &Source = SourceSkeleton->GetReferenceSkeleton();
+    const FReferenceSkeleton &Reference = PrivateMesh->GetRefSkeleton();
+    if (Source.GetNum() != 61 || Reference.GetNum() != 61 || Target->GetReferenceSkeleton().GetNum() != 61)
+        return Finish(TEXT("Expected the established 61-bone hierarchy."));
+    TArray<int32> ArmBones;
+    for (int32 Index = 0; Index < Reference.GetNum(); ++Index)
+    {
+        if (Source.GetBoneName(Index) != Reference.GetBoneName(Index) ||
+            Source.GetParentIndex(Index) != Reference.GetParentIndex(Index))
+            return Finish(TEXT("Bone names or parents differ."));
+        const FTransform &A = Source.GetRefBonePose()[Index];
+        const FTransform &B = Reference.GetRefBonePose()[Index];
+        if (A.ContainsNaN() || B.ContainsNaN() || !A.GetRotation().Equals(B.GetRotation(), .001) ||
+            !A.GetScale3D().Equals(B.GetScale3D(), .001))
+            return Finish(TEXT("Reference orientations or scales differ; translation-only retargeting is unsafe."));
+        bool IsArm = false;
+        for (int32 Ancestor = Index; Ancestor != INDEX_NONE; Ancestor = Reference.GetParentIndex(Ancestor))
+            IsArm |= Reference.GetBoneName(Ancestor) == TEXT("upperarm_l") ||
+                     Reference.GetBoneName(Ancestor) == TEXT("upperarm_r");
+        if (IsArm)
+            ArmBones.Add(Index);
+        else if (!A.GetTranslation().Equals(B.GetTranslation(), .01))
+            return Finish(TEXT("Non-arm reference translations must remain unchanged."));
+    }
+    if (Apply)
+    {
+        Target->Modify();
+        Target->UpdateReferencePoseFromMesh(PrivateMesh);
+        Target->AddCompatibleSkeleton(SourceSkeleton);
+        Target->SetUseRetargetModesFromCompatibleSkeleton(false);
+        for (int32 Index : ArmBones)
+            Target->SetBoneTranslationRetargetingMode(Index, EBoneTranslationRetargetingMode::Skeleton, false);
+        Target->MarkPackageDirty();
+    }
+    Report->SetNumberField(TEXT("arm_bones"), ArmBones.Num());
+    Report->SetBoolField(TEXT("applied"), Apply);
+    Report->SetBoolField(TEXT("success"), true);
+    return Finish();
+#else
+    return TEXT("{\"success\":false,\"error\":\"Editor-only authoring operation.\"}");
+#endif
+}
+
 USkeleton *USSCharacterAuthoringLibrary::CreateAlienFemaleSkeleton(USkeletalMesh *PrivateMesh)
 {
 #if WITH_EDITOR

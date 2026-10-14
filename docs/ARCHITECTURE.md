@@ -1,10 +1,18 @@
 # SpaceSurvival Phase 1 architecture
 
+## Silver groom authoring — October 14
+
+`USSGroomAuthoring` lives only in SpaceSurvivalEditor. It exports the private source strand description and creates a bounded new two-group derivative with rebuilt interpolation data. It refuses overwrite and defaults to dry run. Production runtime uses the existing GroomComponent and native solver: head-attached rigid group0, dynamic tail group1. No new runtime component or general asset-writing service. [Native evidence](validation/2026-10-14-silver-ponytail.md).
+
 ## Opt-in character body dynamics — October 13
 
 `USSSoftTissueComponent` owns cosmetic, single-player spring state on a character Blueprint. It ticks after its skeletal mesh, samples skin-weighted reference anchors through current bone transforms, and overrides only configured XYZ morph channels. The same imported morph carries both body and garment deltas. Existing pose, facial and arm-lift channels remain owned by their animation. Binding failure leaves the prior animation intact; teardown removes only the component's overrides.
 
-Mass/stiffness/damping/response/limits are Blueprint settings. Anchor topology and centimetre/morph-axis conversion are authored per character; the component cannot be attached indiscriminately to other rigs. It adds no collision or networking system and is currently opt-in on Silver only. [Native evidence and tuning](validation/2026-10-13-silver-runtime-springs.md).
+Mass/stiffness/damping/response/limits are Blueprint settings. Anchor topology and centimetre/morph-axis conversion are authored per character; the component cannot be attached indiscriminately to other rigs. It adds no collision or networking system. Silver uses it in the apartment; the private Cyborg review Blueprint evaluates exactly two breast regions, with no mechanical rear/hip motion. Cyborg is now locally adopted at the R pole; animation quality remains open. [Silver tuning](validation/2026-10-13-silver-runtime-springs.md); [Cyborg evaluation and remaining defects](validation/2026-10-14-cyborg-arm-repair.md).
+
+`USSJointCorrectiveComponent` is a separate opt-in, nonreplicated component. It reads animated upper/lower-arm positions relative to the chest after the skeletal mesh tick and drives authored morphs with clamped smoothstep weights. It validates the bone/morph bindings and threshold, clears its own overrides on teardown, and never writes bone transforms. The private Cyborg candidate uses two downward shoulder correctives; this does not fix or certify raised-arm anatomy. The editor-only Cyborg retargeting helper validates exact private/source paths and compatible reference orientations before synchronizing the private reference pose and arm translation-retarget modes. It never writes the original skeleton or saves packages itself.
+
+The six custom Cyborg pole clips now contain an offline arm-motion correction; no new runtime solver was added. The existing dynamics and pose corrective components remain unchanged. [Native repair evidence](validation/2026-10-14-cyborg-pole-twist.md).
 
 ## Wayfarer station integration — October1
 

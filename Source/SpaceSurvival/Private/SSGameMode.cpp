@@ -524,8 +524,12 @@ void ASSGameMode::SpawnTalkTestCyborg()
 #if WITH_EDITOR // a test fixture, like the trim: a packaged build never stands her
     if (TalkTestCyborgOn.GetValueOnGameThread() == 0 || !Hub || !Walker || GIsAutomationTesting || FApp::IsUnattended())
         return;
+    auto *CyborgClass = LoadClass<ASkeletalMeshActor>(
+        nullptr, TEXT("/Game/SpaceSurvival/Licensed/CyborgRefresh_20261014/BP_Cyborg_Refresh.BP_Cyborg_Refresh_C"));
     auto *Body = LoadObject<USkeletalMesh>(
-        nullptr, TEXT("/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Rig/SK_Cyborg.SK_Cyborg"));
+        nullptr, CyborgClass
+                     ? TEXT("/Game/SpaceSurvival/Licensed/CyborgRefresh_20261014/Cyborg_Refreshed.Cyborg_Refreshed")
+                     : TEXT("/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/Rig/SK_Cyborg.SK_Cyborg"));
     auto *Clip = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew/Cyborg/"
                                                          "Role/A_Cyborg_Emote_Waiting.A_Cyborg_Emote_Waiting"));
     if (!Body || !Clip)
@@ -541,8 +545,9 @@ void ASSGameMode::SpawnTalkTestCyborg()
         Feet = Hit.ImpactPoint;
     FActorSpawnParameters Spawn;
     Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    TalkTestCyborg = GetWorld()->SpawnActor<ASkeletalMeshActor>(
-        Feet, FRotator(0.f, Hub->GetActorRotation().Yaw + 180.f, 0.f), Spawn);
+    TalkTestCyborg =
+        GetWorld()->SpawnActor<ASkeletalMeshActor>(CyborgClass ? CyborgClass : ASkeletalMeshActor::StaticClass(), Feet,
+                                                   FRotator(0.f, Hub->GetActorRotation().Yaw + 180.f, 0.f), Spawn);
     if (!TalkTestCyborg)
         return;
 #if WITH_EDITOR
