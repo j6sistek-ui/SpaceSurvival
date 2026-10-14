@@ -33,7 +33,7 @@ REPORT = {"created": []}
 STYLE = {
     "FS_waistcoat": {"kind": "Opaque", "LuminanceTint": 1.0, "Tint": (0.95, 0.70, 0.20), "Metallic": 0.85, "Roughness": 0.30},
     "Underwear_Bottoms": {"kind": "Masked", "LuminanceTint": 1.0, "Tint": (0.06, 0.06, 0.07), "Metallic": 0.25, "Roughness": 0.35},
-    "ShortStraight_Transparency": {"kind": "Masked", "LuminanceTint": 1.0, "Tint": (1.0, 0.08, 0.50), "Metallic": 0.0, "Roughness": 0.50},
+    "ShortStraight_Transparency": {"kind": "Masked", "LuminanceTint": 1.0, "Tint": (1.8, 0.12, 0.85), "Metallic": 0.0, "Roughness": 0.45},  # hot pink, over 1 to lift the dark cards
 }
 SUIT = {"SuitRoughness": 0.30, "SuitMetallic": 0.20}
 
