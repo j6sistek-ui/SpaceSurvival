@@ -3,6 +3,9 @@
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
+#include "HAL/FileManager.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 
@@ -229,6 +232,67 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
     TestTrue(TEXT("a reply waits longer than a scripted line"),
              SSNpcTalk::VoiceDeadline(TEXT("Run to your station."), true) >
                  SSNpcTalk::VoiceDeadline(TEXT("Run to your station."), false));
+    // Placed characters (2026-10-15): their Talk* tags win over the mesh name, and the alias applies either way.
+    auto Alias = [](const FString &Name)
+    { return Name == TEXT("Sentinel_MotionFinish") ? FString(TEXT("Silver")) : Name; };
+    const FSSTalkIdentity Tagged = SSNpcTalk::PlacedIdentity(
+        {FName(TEXT("TalkName:Silver"))}, {FName(TEXT("TalkRole:Dancer")), FName(TEXT("TalkActivity:dancing at home"))},
+        TEXT("SK_Sentinel_MotionFinish"), Alias);
+    TestEqual(TEXT("a tagged placed character keeps its tag name"), Tagged.Name, FString(TEXT("Silver")));
+    TestEqual(TEXT("... and its tag role"), Tagged.Role, FString(TEXT("Dancer")));
+    TestEqual(TEXT("an untagged one is named from its mesh, through the alias"),
+              SSNpcTalk::PlacedIdentity({}, {}, TEXT("SK_Sentinel_MotionFinish"), Alias).Name, FString(TEXT("Silver")));
+
+    // How much of the language model goes on the GPU: never into the game's margin, CPU when unknown.
+    const int64 GB = 1ll << 30;
+    TestEqual(TEXT("no room beyond the margin: CPU"),
+              SSNpcTalk::ChooseGpuLayers(2 * GB, 5 * GB, 32, GB + GB / 2, GB / 2), 0);
+    TestEqual(TEXT("free memory unknown: CPU"), SSNpcTalk::ChooseGpuLayers(-1, 5 * GB, 32, 0, 0), 0);
+    TestEqual(TEXT("layer count unknown: CPU"), SSNpcTalk::ChooseGpuLayers(16 * GB, 5 * GB, -1, 0, 0), 0);
+    TestEqual(TEXT("room for the whole model: all layers"), SSNpcTalk::ChooseGpuLayers(16 * GB, 5 * GB, 32, GB, GB / 2),
+              999);
+    const int32 Some = SSNpcTalk::ChooseGpuLayers(4 * GB, 5 * GB, 32, GB + GB / 2, GB / 2);
+    TestTrue(TEXT("a partial fit stays out of the margin"),
+             Some > 0 && Some < 32 && int64(Some) * (5 * GB / 33) <= 4 * GB - (GB + GB / 2) - GB / 2);
+
+    // The layer count read from a GGUF header, past a string and a string array, as llama.cpp writes them.
+    TArray<uint8> Gguf;
+    auto U32 = [&Gguf](uint32 V) { Gguf.Append(reinterpret_cast<const uint8 *>(&V), 4); };
+    auto U64 = [&Gguf](uint64 V) { Gguf.Append(reinterpret_cast<const uint8 *>(&V), 8); };
+    auto Str = [&](const char *S)
+    {
+        U64(uint64(FCStringAnsi::Strlen(S)));
+        Gguf.Append(reinterpret_cast<const uint8 *>(S), FCStringAnsi::Strlen(S));
+    };
+    U32(0x46554747u); // "GGUF"
+    U32(3);
+    U64(0); // tensors
+    U64(3); // key/value pairs
+    Str("general.architecture");
+    U32(8);
+    Str("llama");
+    Str("general.tags");
+    U32(9);
+    U32(8);
+    U64(2);
+    Str("roleplay");
+    Str("uncensored");
+    Str("llama.block_count");
+    U32(4);
+    U32(32);
+    const FString GgufPath = FPaths::Combine(FPaths::AutomationTransientDir(), TEXT("NpcTalkHeader.gguf"));
+    TestTrue(TEXT("test header written"), FFileHelper::SaveArrayToFile(Gguf, *GgufPath));
+    TestEqual(TEXT("block_count read from a GGUF header"), SSNpcTalk::GgufBlockCount(GgufPath), 32);
+    const FString NotGguf = FPaths::Combine(FPaths::AutomationTransientDir(), TEXT("NpcTalkNotAModel.gguf"));
+    FFileHelper::SaveStringToFile(TEXT("not a model"), *NotGguf);
+    TestEqual(TEXT("anything else reads as unknown"), SSNpcTalk::GgufBlockCount(NotGguf), -1);
+    TestEqual(TEXT("a missing file reads as unknown"), SSNpcTalk::GgufBlockCount(GgufPath + TEXT(".missing")), -1);
+    // cut inside the string array: every length runs past the end, which must read as unknown, not assert
+    TArray<uint8> Cut(Gguf.GetData(), Gguf.Num() - 40);
+    FFileHelper::SaveArrayToFile(Cut, *NotGguf);
+    TestEqual(TEXT("a truncated header reads as unknown"), SSNpcTalk::GgufBlockCount(NotGguf), -1);
+    IFileManager::Get().Delete(*GgufPath);
+    IFileManager::Get().Delete(*NotGguf);
     return true;
 }
 

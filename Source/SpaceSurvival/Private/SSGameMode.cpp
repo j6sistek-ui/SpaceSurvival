@@ -3171,23 +3171,30 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
                 const auto *Body = It->FindComponentByClass<USkeletalMeshComponent>();
                 if (!Body || !Body->GetSkeletalMeshAsset())
                     continue;
-                FSSTalkIdentity Who;
-                Who.Name = Who.Type =
-                    Talk->ResolveAlias(SSNpcTalk::CharacterNameFromMesh(Body->GetSkeletalMeshAsset()->GetName()));
-                if (!Talk->HasPersona(Who.Name))
+                // Its Talk* tags when it carries them (Silver's Blueprint does), else the name from its mesh.
+                FSSTalkIdentity Who =
+                    SSNpcTalk::PlacedIdentity(It->Tags, Body->ComponentTags, Body->GetSkeletalMeshAsset()->GetName(),
+                                              [Talk](const FString &Name) { return Talk->ResolveAlias(Name); });
+                if (!Talk->HasPersona(Who.Name) && !Talk->HasPersona(Who.Type))
                     continue;
                 const UAnimationAsset *Clip =
                     Body->GetSingleNodeInstance() ? Body->GetSingleNodeInstance()->GetAnimationAsset() : nullptr;
+                // The tags win; the clip only fills in what they left unsaid.
+                const TCHAR *ClipRole = nullptr, *ClipActivity = nullptr;
                 if (Clip && Clip->GetName().Contains(TEXT("Pole")))
                 {
-                    Who.Role = TEXT("Flirt");
-                    Who.Activity = TEXT("dancing on the pole on the stage");
+                    ClipRole = TEXT("Flirt");
+                    ClipActivity = TEXT("dancing on the pole on the stage");
                 }
                 else if (Clip && Clip->GetName().Contains(TEXT("Dance")))
                 {
-                    Who.Role = TEXT("Dancer");
-                    Who.Activity = TEXT("dancing");
+                    ClipRole = TEXT("Dancer");
+                    ClipActivity = TEXT("dancing");
                 }
+                if (ClipRole && Who.Role.IsEmpty())
+                    Who.Role = ClipRole;
+                if (ClipActivity && Who.Activity.IsEmpty())
+                    Who.Activity = ClipActivity;
                 Consider(Body, Who);
             }
         if (OutMesh)
@@ -3278,6 +3285,14 @@ void ASSGameMode::BeginTalk()
         Announce(Talk->LastError());
         return;
     }
+    // A reply still waiting for its voice is shown now instead of being dropped (2026-10-15: the owner pressed T
+    // during a 6-9 s voice render and the answer never appeared - "why can't I hear you?"). The crew's caption keeps
+    // the name of whoever said it; the Director's goes on his own channel.
+    const bool bShowedHeldCrewLine = bCrewReplyHeld;
+    if (bCrewReplyHeld)
+        ShowHeldCrewReply();
+    if (Target.Name == TEXT("Director") && bVillainReplyHeld)
+        ShowHeldVillainReply();
     // The microphone must not hear whoever was talking; the voice runs all session, this only brings it back if
     // it died.
     StopCrewRadio();
@@ -3285,7 +3300,8 @@ void ASSGameMode::BeginTalk()
         StopVillainRadio();
     Talk->EnsureVoice();
     TalkingTo = Target;
-    NpcName = Target.Name;
+    if (!bShowedHeldCrewLine)
+        NpcName = Target.Name;
     TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
                                  Target.Name == TEXT("Director") ? TEXT("the Director") : *Target.Name);
 }

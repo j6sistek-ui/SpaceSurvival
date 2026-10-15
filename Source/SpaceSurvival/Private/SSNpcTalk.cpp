@@ -14,6 +14,71 @@
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 #include "TimerManager.h"
+#include "HAL/FileManager.h"
+#include "Containers/Ticker.h"
+#if PLATFORM_WINDOWS
+#include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/WindowsHWrapper.h"
+#include <dxgi1_4.h>
+namespace SSNpcTalkWindows
+{
+// Video memory this process may still take on the largest adapter: the DXGI budget minus current use; -1 if unknown.
+static int64 FreeVideoMemory()
+{
+    HMODULE Dxgi = ::GetModuleHandleW(L"dxgi.dll");
+    if (!Dxgi)
+        Dxgi = ::LoadLibraryW(L"dxgi.dll");
+    using FCreateFactory = HRESULT(WINAPI *)(REFIID, void **);
+    const auto Create =
+        Dxgi ? reinterpret_cast<FCreateFactory>(reinterpret_cast<void *>(::GetProcAddress(Dxgi, "CreateDXGIFactory1")))
+             : nullptr;
+    IDXGIFactory1 *Factory = nullptr;
+    if (!Create || FAILED(Create(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(&Factory))) || !Factory)
+        return -1;
+    int64 Free = -1;
+    SIZE_T Largest = 0;
+    IDXGIAdapter1 *Adapter = nullptr;
+    for (UINT Index = 0; Factory->EnumAdapters1(Index, &Adapter) != DXGI_ERROR_NOT_FOUND; ++Index)
+    {
+        DXGI_ADAPTER_DESC1 Desc;
+        IDXGIAdapter3 *Adapter3 = nullptr;
+        if (SUCCEEDED(Adapter->GetDesc1(&Desc)) && !(Desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) &&
+            Desc.DedicatedVideoMemory > Largest &&
+            SUCCEEDED(Adapter->QueryInterface(__uuidof(IDXGIAdapter3), reinterpret_cast<void **>(&Adapter3))))
+        {
+            DXGI_QUERY_VIDEO_MEMORY_INFO Info;
+            if (SUCCEEDED(Adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &Info)))
+            {
+                Largest = Desc.DedicatedVideoMemory;
+                Free = Info.Budget > Info.CurrentUsage ? int64(Info.Budget - Info.CurrentUsage) : 0;
+            }
+            Adapter3->Release();
+        }
+        Adapter->Release();
+    }
+    Factory->Release();
+    return Free;
+}
+// Puts a process in a job that Windows closes, killing what is in it, when this process ends - crash or not.
+static bool KillWithThisProcess(void *Process)
+{
+    static HANDLE Job = []() -> HANDLE
+    {
+        HANDLE New = ::CreateJobObjectW(nullptr, nullptr);
+        JOBOBJECT_EXTENDED_LIMIT_INFORMATION Info = {};
+        Info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        if (New && !::SetInformationJobObject(New, JobObjectExtendedLimitInformation, &Info, sizeof(Info)))
+        {
+            ::CloseHandle(New);
+            New = nullptr;
+        }
+        return New;
+    }();
+    return Job && Process && ::AssignProcessToJobObject(Job, static_cast<HANDLE>(Process));
+}
+} // namespace SSNpcTalkWindows
+#include "Windows/HideWindowsPlatformTypes.h"
+#endif
 
 // How long after launch a refused or 503 answer still means "reading the model off the disk", and how often the
 // question is re-posted meanwhile. The station model is several gigabytes; a cold start is the normal path here.
@@ -296,6 +361,142 @@ bool HasTalkTag(const TArray<FName> &Tags)
     return false;
 }
 
+FSSTalkIdentity PlacedIdentity(const TArray<FName> &ActorTags, const TArray<FName> &ComponentTags,
+                               const FString &MeshName, TFunctionRef<FString(const FString &)> Alias)
+{
+    FSSTalkIdentity Who;
+    if (HasTalkTag(ActorTags) || HasTalkTag(ComponentTags))
+    {
+        TArray<FName> Tags = ActorTags;
+        Tags.Append(ComponentTags); // read in order, so a component tag overrides the actor's
+        Who = IdentityFromTags(Tags, MeshName);
+    }
+    else
+        Who.Name = Who.Type = CharacterNameFromMesh(MeshName);
+    Who.Name = Alias(Who.Name);
+    Who.Type = Alias(Who.Type);
+    return Who;
+}
+
+int32 ChooseGpuLayers(int64 FreeBytes, int64 ModelBytes, int32 Blocks, int64 MarginBytes, int64 FixedBytes)
+{
+    if (FreeBytes < 0 || ModelBytes <= 0 || Blocks <= 0)
+        return 0;
+    const int64 Room = FreeBytes - FMath::Max<int64>(MarginBytes, 0) - FMath::Max<int64>(FixedBytes, 0);
+    if (Room <= 0)
+        return 0;
+    if (Room >= ModelBytes)
+        return 999;
+    const int64 PerLayer = FMath::Max<int64>(ModelBytes / (int64(Blocks) + 1), 1);
+    return int32(FMath::Min<int64>(Room / PerLayer, Blocks));
+}
+
+int32 GgufBlockCount(const FString &Path)
+{
+    TUniquePtr<FArchive> Ar(IFileManager::Get().CreateFileReader(*Path));
+    if (!Ar)
+        return -1;
+    // Every read and skip is checked against the file's size first: the file reader asserts on a seek past the end,
+    // and a truncated or foreign file must read as "unknown", never stop the game.
+    const uint64 Total = uint64(FMath::Max<int64>(Ar->TotalSize(), 0));
+    auto Fits = [&Ar, Total](uint64 Bytes) { return Bytes <= Total && uint64(Ar->Tell()) + Bytes <= Total; };
+    auto Skip = [&Ar, &Fits](uint64 Bytes)
+    {
+        if (!Fits(Bytes))
+            return false;
+        Ar->Seek(Ar->Tell() + int64(Bytes));
+        return true;
+    };
+    uint32 Magic = 0, Version = 0;
+    uint64 Tensors = 0, Pairs = 0;
+    if (!Fits(24))
+        return -1;
+    *Ar << Magic << Version;
+    if (Magic != 0x46554747u || Version < 2) // "GGUF"; version 1 counted in 32 bits
+        return -1;
+    *Ar << Tensors << Pairs;
+    // Bytes per value by GGUF type: uint8 int8 uint16 int16 uint32 int32 float32 bool string array uint64 int64 float64
+    static const uint64 Sizes[] = {1, 1, 2, 2, 4, 4, 4, 1, 0, 0, 8, 8, 8};
+    auto String = [&Ar, &Fits, &Skip](FString *Out) -> bool
+    {
+        uint64 Len = 0;
+        if (!Fits(8))
+            return false;
+        *Ar << Len;
+        if (!Out)
+            return Skip(Len);
+        if (Len > (1u << 16) || !Fits(Len))
+            return false; // a key is a short name
+        TArray<ANSICHAR> Bytes;
+        Bytes.SetNumUninitialized(int32(Len));
+        Ar->Serialize(Bytes.GetData(), int64(Len));
+        const FUTF8ToTCHAR Text(Bytes.GetData(), int32(Len));
+        *Out = FString(Text.Length(), Text.Get());
+        return true;
+    };
+    for (uint64 I = 0; I < Pairs && I < 100000; ++I)
+    {
+        FString Key;
+        uint32 Type = 0;
+        if (!String(&Key) || !Fits(4))
+            return -1;
+        *Ar << Type;
+        if (Type > 12)
+            return -1;
+        if (Key.EndsWith(TEXT(".block_count")))
+        {
+            if ((Type == 4 || Type == 5) && Fits(4))
+            {
+                uint32 Value = 0;
+                *Ar << Value;
+                return int32(FMath::Min<uint32>(Value, MAX_int32));
+            }
+            if ((Type == 10 || Type == 11) && Fits(8))
+            {
+                uint64 Value = 0;
+                *Ar << Value;
+                return int32(FMath::Min<uint64>(Value, MAX_int32));
+            }
+            return -1;
+        }
+        if (Type == 8)
+        {
+            if (!String(nullptr))
+                return -1;
+        }
+        else if (Type == 9)
+        {
+            uint32 Element = 0;
+            uint64 Count = 0;
+            if (!Fits(12))
+                return -1;
+            *Ar << Element << Count;
+            if (Element > 12 || Element == 9)
+                return -1; // nested arrays: in no header this reads
+            if (Element == 8)
+            {
+                for (uint64 K = 0; K < Count; ++K)
+                    if (!String(nullptr))
+                        return -1;
+            }
+            else if (Count > Total / Sizes[Element] || !Skip(Sizes[Element] * Count))
+                return -1;
+        }
+        else if (!Skip(Sizes[Type]))
+            return -1;
+    }
+    return -1;
+}
+
+int64 FreeVideoMemoryBytes()
+{
+#if PLATFORM_WINDOWS
+    return SSNpcTalkWindows::FreeVideoMemory();
+#else
+    return -1;
+#endif
+}
+
 FVoiceClip VoiceClip(const TArray<uint8> &Body, const FString &RateHeader)
 {
     FVoiceClip Clip;
@@ -384,6 +585,57 @@ FProcHandle Launch(const FString &Exe, const FString &Args)
     // flash terminals either.
     return FPlatformProcess::CreateProc(*Exe, *Args, false, true, true, nullptr, 0, *FPaths::GetPath(Exe), nullptr);
 }
+
+// A helper in this job dies with this process, crash or not, so a kept-alive model never outlives the editor.
+bool TieToThisProcess(const FProcHandle &Proc)
+{
+#if PLATFORM_WINDOWS
+    return Proc.IsValid() && SSNpcTalkWindows::KillWithThisProcess(Proc.Get());
+#else
+    return false;
+#endif
+}
+
+// Helpers handed from one Play session's subsystem to the next (editor only).
+struct FParkedServers
+{
+    FProcHandle Whisper, Llama, Voice;
+    bool bWhisperTied = false, bLlamaTied = false, bVoiceReady = false;
+    FString LlamaModel, LlamaKey, VoiceKey;
+    double LlamaStartedAt = 0.0, VoiceStartedAt = 0.0, ParkedAt = 0.0, KeepSeconds = 600.0;
+    FTSTicker::FDelegateHandle Expiry;
+};
+FParkedServers &Parked()
+{
+    static FParkedServers Servers;
+    return Servers;
+}
+void StopParked(FParkedServers &Keep)
+{
+    for (FProcHandle *Proc : {&Keep.Whisper, &Keep.Llama, &Keep.Voice})
+        if (Proc->IsValid())
+        {
+            FPlatformProcess::TerminateProc(*Proc, true);
+            FPlatformProcess::CloseProc(*Proc);
+            *Proc = FProcHandle();
+        }
+}
+// Kept helpers that no new Play picked up in time are stopped: they hold ports and video memory.
+bool ExpireParked(float)
+{
+    FParkedServers &Keep = Parked();
+    if (FPlatformTime::Seconds() - Keep.ParkedAt < Keep.KeepSeconds)
+        return true;
+    StopParked(Keep);
+    Keep.Expiry.Reset();
+    UE_LOG(LogSSNpcTalk, Display, TEXT("npc talk: no Play for %.0f min, the kept helpers are stopped"),
+           Keep.KeepSeconds / 60.0);
+    return false;
+}
+bool KeepAcrossPlay()
+{
+    return GIsEditor && !IsEngineExitRequested();
+}
 } // namespace
 
 void USSNpcTalkSubsystem::Initialize(FSubsystemCollectionBase &Collection)
@@ -416,6 +668,15 @@ void USSNpcTalkSubsystem::Initialize(FSubsystemCollectionBase &Collection)
     }
     bVoiceInstalled = FPaths::FileExists(VoicePython) && FPaths::FileExists(VoiceScriptPath()) &&
                       FPaths::DirectoryExists(VoiceRepo) && !Voices.IsEmpty();
+    // The server reads the voices once, when it starts: a kept one serves only the same set, unchanged on disk.
+    TArray<FString> VoiceParts;
+    for (const auto &Pair : Voices)
+        VoiceParts.Add(FString::Printf(
+            TEXT("%s@%s@%s"), *Pair.Key, *IFileManager::Get().GetTimeStamp(*Pair.Value.Reference).ToString(),
+            *IFileManager::Get().GetTimeStamp(*FPaths::ChangeExtension(Pair.Value.Reference, TEXT("txt"))).ToString()));
+    VoiceParts.Sort();
+    VoiceKey = FString::Printf(TEXT("%s|%d|%d|%s"), *FString::Join(VoiceParts, TEXT(",")), VoiceThreads, VoicePort,
+                               *DefaultVoice);
     TArray<FString> Names;
     Voices.GetKeys(Names);
     UE_LOG(LogSSNpcTalk, Display, TEXT("npc voices %s: %s"),
@@ -423,6 +684,7 @@ void USSNpcTalkSubsystem::Initialize(FSubsystemCollectionBase &Collection)
            *FString::Join(Names, TEXT(", ")));
     // Up for the whole session (owner 2026-10-12: it touches no video memory, and the station crew will use it
     // too): it takes ~30 s to load beside the editor, and the first test lost two replies waiting for it.
+    AdoptParkedServers();
     EnsureVoice();
 }
 
@@ -432,8 +694,132 @@ void USSNpcTalkSubsystem::Deinitialize()
     if (Capture && bStreamOpen)
         Capture->AbortStream();
     Capture.Reset();
-    StopServers();
+    if (KeepAcrossPlay())
+        ParkServers();
+    else
+        StopServers();
     Super::Deinitialize();
+}
+
+void USSNpcTalkSubsystem::ParkServers()
+{
+    FParkedServers &Keep = Parked();
+    // Only a helper that dies with the editor is kept; any other is stopped as before.
+    auto Park = [](FProcHandle &From, FProcHandle &To, bool bTied) -> bool
+    {
+        if (!From.IsValid())
+            return false;
+        if (bTied && !To.IsValid() && FPlatformProcess::IsProcRunning(From))
+        {
+            To = From;
+            From = FProcHandle();
+            return true;
+        }
+        FPlatformProcess::TerminateProc(From, true);
+        FPlatformProcess::CloseProc(From);
+        From = FProcHandle();
+        return false;
+    };
+    const bool bWhisper = Park(WhisperProc, Keep.Whisper, bWhisperTied);
+    if (bWhisper)
+        Keep.bWhisperTied = true;
+    const FString Model = RunningModel, Key = RunningLlamaKey;
+    const bool bLlama = Park(LlamaProc, Keep.Llama, bLlamaTied);
+    if (bLlama)
+    {
+        Keep.bLlamaTied = true;
+        Keep.LlamaModel = Model;
+        Keep.LlamaKey = Key;
+        Keep.LlamaStartedAt = LlamaStartedAt;
+    }
+    RunningModel.Empty();
+    RunningLlamaKey.Empty();
+    // The voice leaves with the editor by itself (--parent-pid); its queue belongs to this session and goes.
+    bool bVoice = false;
+    if (VoiceProc.IsValid() && FPlatformProcess::IsProcRunning(VoiceProc) && !Keep.Voice.IsValid())
+    {
+        Keep.Voice = VoiceProc;
+        Keep.bVoiceReady = bVoiceReady;
+        Keep.VoiceStartedAt = VoiceStartedAt;
+        Keep.VoiceKey = VoiceKey;
+        VoiceProc = FProcHandle();
+        bVoice = true;
+    }
+    StopVoice();
+    Keep.ParkedAt = FPlatformTime::Seconds();
+    Keep.KeepSeconds = FMath::Max(1, KeptHelpersMinutes) * 60.0;
+    if ((bWhisper || bLlama || bVoice) && !Keep.Expiry.IsValid())
+        Keep.Expiry = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateStatic(&ExpireParked), 15.f);
+    UE_LOG(LogSSNpcTalk, Display, TEXT("npc talk: kept running for the next Play: whisper %s, llama %s, voice %s"),
+           bWhisper ? TEXT("yes") : TEXT("no"), bLlama ? TEXT("yes") : TEXT("no"), bVoice ? TEXT("yes") : TEXT("no"));
+}
+
+void USSNpcTalkSubsystem::AdoptParkedServers()
+{
+    FParkedServers &Keep = Parked();
+    if (Keep.Expiry.IsValid())
+    {
+        FTSTicker::GetCoreTicker().RemoveTicker(Keep.Expiry);
+        Keep.Expiry.Reset();
+    }
+    if (Keep.Voice.IsValid() && Keep.VoiceKey != VoiceKey)
+    {
+        UE_LOG(LogSSNpcTalk, Display,
+               TEXT("npc talk: the voices changed since the last Play, the voice server restarts"));
+        FPlatformProcess::TerminateProc(Keep.Voice, true);
+        FPlatformProcess::CloseProc(Keep.Voice);
+        Keep.Voice = FProcHandle();
+    }
+    auto Take = [](FProcHandle &From, FProcHandle &To) -> bool
+    {
+        if (!From.IsValid())
+            return false;
+        const bool bAlive = FPlatformProcess::IsProcRunning(From);
+        if (bAlive)
+            To = From;
+        else
+            FPlatformProcess::CloseProc(From);
+        From = FProcHandle();
+        return bAlive;
+    };
+    const bool bWhisper = Take(Keep.Whisper, WhisperProc);
+    if (bWhisper)
+        bWhisperTied = Keep.bWhisperTied;
+    const bool bLlama = Take(Keep.Llama, LlamaProc);
+    if (bLlama)
+    {
+        bLlamaTied = Keep.bLlamaTied;
+        RunningModel = Keep.LlamaModel;
+        RunningLlamaKey = Keep.LlamaKey;
+        LlamaStartedAt = Keep.LlamaStartedAt;
+    }
+    const bool bVoice = Take(Keep.Voice, VoiceProc);
+    if (bVoice)
+    {
+        bVoiceReady = Keep.bVoiceReady;
+        VoiceStartedAt = Keep.VoiceStartedAt;
+    }
+    if (bWhisper || bLlama || bVoice)
+        UE_LOG(LogSSNpcTalk, Display, TEXT("npc talk: picked up from the last Play: whisper %s, llama %s, voice %s"),
+               bWhisper ? TEXT("yes") : TEXT("no"), bLlama ? TEXT("yes") : TEXT("no"),
+               bVoice ? TEXT("yes") : TEXT("no"));
+}
+
+int32 USSNpcTalkSubsystem::GpuLayersFor(const FString &Model) const
+{
+    if (LlamaGpuLayers >= 0)
+        return LlamaGpuLayers;
+    const int64 Free = SSNpcTalk::FreeVideoMemoryBytes();
+    const int64 Size = IFileManager::Get().FileSize(*Model);
+    const int32 Blocks = SSNpcTalk::GgufBlockCount(Model);
+    const int32 Layers =
+        SSNpcTalk::ChooseGpuLayers(Free, Size, Blocks, int64(LlamaVramMarginMB) << 20, int64(LlamaVramFixedMB) << 20);
+    UE_LOG(LogSSNpcTalk, Display,
+           TEXT("llama: %d of %d layers on the GPU (%.1f GB free to the game's budget, %.1f GB kept for it, model %.1f "
+                "GB)"),
+           Layers >= 999 ? Blocks : Layers, Blocks, Free / 1073741824.0, LlamaVramMarginMB / 1024.0,
+           Size / 1073741824.0);
+    return Layers;
 }
 
 void USSNpcTalkSubsystem::StopServers()
@@ -460,11 +846,13 @@ void USSNpcTalkSubsystem::StopLlama()
     if (LlamaProc.IsValid())
     {
         FPlatformProcess::TerminateProc(LlamaProc, true);
+        FPlatformProcess::WaitForProc(LlamaProc); // its video memory is back before the next launch measures it
         FPlatformProcess::CloseProc(LlamaProc);
         LlamaProc = FProcHandle();
         UE_LOG(LogSSNpcTalk, Display, TEXT("llama-server stopped (%s)"), *FPaths::GetCleanFilename(RunningModel));
     }
     RunningModel.Empty();
+    RunningLlamaKey.Empty();
 }
 
 void USSNpcTalkSubsystem::SetContext(ESSTalkContext Context)
@@ -526,6 +914,7 @@ void USSNpcTalkSubsystem::EnsureVoice()
     }
     // The server leaves by itself when this process does (--parent-pid), so a crash never strands its memory.
     VoiceProc = Launch(VoicePython, Args);
+    TieToThisProcess(VoiceProc);
     VoiceStartedAt = FPlatformTime::Seconds();
     bVoiceReady = false;
     UE_LOG(LogSSNpcTalk, Display, TEXT("npc voices %s on %d"),
@@ -774,22 +1163,31 @@ void USSNpcTalkSubsystem::EnsureServers()
         return;
     if (!WhisperProc.IsValid() || !FPlatformProcess::IsProcRunning(WhisperProc))
     {
+        if (WhisperProc.IsValid())
+            FPlatformProcess::CloseProc(WhisperProc); // it exited by itself
         WhisperProc = Launch(WhisperServerExe, FString::Printf(TEXT("-m %s --host 127.0.0.1 --port %d -t %d"),
                                                                *Quote(WhisperModel), WhisperPort, Threads));
+        bWhisperTied = TieToThisProcess(WhisperProc);
         UE_LOG(LogSSNpcTalk, Display, TEXT("whisper-server %s on %d"),
                WhisperProc.IsValid() ? TEXT("started") : TEXT("NOT FOUND"), WhisperPort);
     }
     const bool Station = CurrentContext == ESSTalkContext::Station && FPaths::FileExists(StationLlamaModel);
     const FString &Model = Station ? StationLlamaModel : LlamaModel;
     const FString &Extra = Station ? StationLlamaExtraArgs : LlamaExtraArgs;
-    if (LlamaProc.IsValid() && FPlatformProcess::IsProcRunning(LlamaProc) && RunningModel != Model)
+    // What the running server was started with: a kept-alive one is reused only for the same model and settings.
+    const FString Key = FString::Printf(TEXT("%s|%d|%d|%s"), *Model, LlamaGpuLayers, Threads, *Extra);
+    if (LlamaProc.IsValid() && FPlatformProcess::IsProcRunning(LlamaProc) && RunningLlamaKey != Key)
         StopLlama();
     if (!LlamaProc.IsValid() || !FPlatformProcess::IsProcRunning(LlamaProc))
     {
+        if (LlamaProc.IsValid())
+            FPlatformProcess::CloseProc(LlamaProc); // it exited by itself
         LlamaProc =
             Launch(LlamaServerExe, FString::Printf(TEXT("-m %s -ngl %d --host 127.0.0.1 --port %d -c 4096 -t %d %s"),
-                                                   *Quote(Model), LlamaGpuLayers, LlamaPort, Threads, *Extra));
+                                                   *Quote(Model), GpuLayersFor(Model), LlamaPort, Threads, *Extra));
+        bLlamaTied = TieToThisProcess(LlamaProc);
         RunningModel = LlamaProc.IsValid() ? Model : FString();
+        RunningLlamaKey = LlamaProc.IsValid() ? Key : FString();
         LlamaStartedAt = FPlatformTime::Seconds();
         UE_LOG(LogSSNpcTalk, Display, TEXT("llama-server %s on %d with %s"),
                LlamaProc.IsValid() ? TEXT("started") : TEXT("NOT FOUND"), LlamaPort, *FPaths::GetCleanFilename(Model));
