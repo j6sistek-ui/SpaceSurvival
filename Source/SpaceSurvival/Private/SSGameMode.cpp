@@ -3288,7 +3288,7 @@ void ASSGameMode::BeginTalk()
     // A reply still waiting for its voice is shown now instead of being dropped (2026-10-15: the owner pressed T
     // during a 6-9 s voice render and the answer never appeared - "why can't I hear you?"). The crew's caption keeps
     // the name of whoever said it; the Director's goes on his own channel.
-    const bool bShowedHeldCrewLine = bCrewReplyHeld;
+    const bool bShowedHeldLine = bCrewReplyHeld || (Target.Name == TEXT("Director") && bVillainReplyHeld);
     if (bCrewReplyHeld)
         ShowHeldCrewReply();
     if (Target.Name == TEXT("Director") && bVillainReplyHeld)
@@ -3300,7 +3300,7 @@ void ASSGameMode::BeginTalk()
         StopVillainRadio();
     Talk->EnsureVoice();
     TalkingTo = Target;
-    if (!bShowedHeldCrewLine)
+    if (!bShowedHeldLine)
         NpcName = Target.Name;
     TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
                                  Target.Name == TEXT("Director") ? TEXT("the Director") : *Target.Name);

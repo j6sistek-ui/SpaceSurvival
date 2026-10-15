@@ -16,6 +16,9 @@
 #include "TimerManager.h"
 #include "HAL/FileManager.h"
 #include "Containers/Ticker.h"
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
 #if PLATFORM_WINDOWS
 #include "Windows/AllowWindowsPlatformTypes.h"
 #include "Windows/WindowsHWrapper.h"
@@ -746,6 +749,24 @@ void USSNpcTalkSubsystem::ParkServers()
         bVoice = true;
     }
     StopVoice();
+#if WITH_EDITOR
+    // A Standalone Game launched from this editor starts its own helpers on the same ports: the kept ones stop first.
+    static const bool bWatchStandalone = []
+    {
+        FEditorDelegates::BeginStandaloneLocalPlay.AddLambda(
+            [](const uint32)
+            {
+                FParkedServers &Parked_ = Parked();
+                if (Parked_.Expiry.IsValid())
+                {
+                    FTSTicker::GetCoreTicker().RemoveTicker(Parked_.Expiry);
+                    Parked_.Expiry.Reset();
+                }
+                StopParked(Parked_);
+            });
+        return true;
+    }();
+#endif
     Keep.ParkedAt = FPlatformTime::Seconds();
     Keep.KeepSeconds = FMath::Max(1, KeptHelpersMinutes) * 60.0;
     if ((bWhisper || bLlama || bVoice) && !Keep.Expiry.IsValid())
@@ -846,7 +867,11 @@ void USSNpcTalkSubsystem::StopLlama()
     if (LlamaProc.IsValid())
     {
         FPlatformProcess::TerminateProc(LlamaProc, true);
-        FPlatformProcess::WaitForProc(LlamaProc); // its video memory is back before the next launch measures it
+        // Auto layers measure free video memory at the next launch: give its memory a moment to come back, never more
+        // than two seconds on the game thread.
+        for (const double Until = FPlatformTime::Seconds() + 2.0;
+             LlamaGpuLayers < 0 && FPlatformProcess::IsProcRunning(LlamaProc) && FPlatformTime::Seconds() < Until;)
+            FPlatformProcess::Sleep(0.01f);
         FPlatformProcess::CloseProc(LlamaProc);
         LlamaProc = FProcHandle();
         UE_LOG(LogSSNpcTalk, Display, TEXT("llama-server stopped (%s)"), *FPaths::GetCleanFilename(RunningModel));
