@@ -3,6 +3,8 @@
 #include "SSOutpostSandbox.h"
 #include "SSBarCrew.generated.h"
 
+class UPoseableMeshComponent;
+
 /** Authored contacts on an existing table/chair; does not create furniture. */
 UCLASS(Blueprintable)
 class SPACESURVIVAL_API ASSBarTable : public AActor
@@ -30,7 +32,21 @@ enum class ESSBarServiceState : uint8
     JoiningTable,
     Seated,
     Drinking,
-    ReturningHome
+    ReturningHome,
+    JoiningBartender,
+    BarBanter
+};
+
+USTRUCT(BlueprintType)
+struct FSSBarBanter
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString Astra;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString Joy;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString AfterToast;
 };
 
 /** Existing NPC interaction route, with explicit service ownership and hand-attached props. */
@@ -88,6 +104,9 @@ public:
     TObjectPtr<USkeletalMeshComponent> Corset;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar")
     TObjectPtr<USkeletalMeshComponent> Shorts;
+    /** Reusable paired-eye rig in head-socket space; independent eye bones remain available for gaze. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Appearance")
+    TObjectPtr<UPoseableMeshComponent> Eyes;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar")
     TObjectPtr<UStaticMeshComponent> Glass;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar")
@@ -101,6 +120,27 @@ public:
     /** Explicit guest entry point for native interaction and review fixtures. */
     UFUNCTION(BlueprintCallable, Category = "Bar")
     bool RequestService(int32 ActionIndex, APawn *Guest);
+    bool HasBarReservation() const
+    {
+        return ReservedBy.IsValid();
+    }
+    /** Reschedule from the current interval after a director or Blueprint changes it. */
+    UFUNCTION(BlueprintCallable, Category = "Bar|Social")
+    void ResetBarBreakTimer();
+    /** Optional ambient break; never runs during a guest order or a conversation. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Social")
+    bool bAmbientBarBreaks = true;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Social")
+    FVector2D BarBreakInterval = FVector2D(180, 420);
+    /** Small shot glass for the staff toast; normal service keeps its existing glass. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Social", meta = (ClampMin = "0.2", ClampMax = "1.0"))
+    float BarShotScale = .55f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Social")
+    TArray<FSSBarBanter> BarBanter;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar|Social")
+    float SecondsUntilBarBreak = 0;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar|Social")
+    bool bBarBreakActive = false;
 
 private:
     TWeakObjectPtr<APawn> ServiceGuest;
@@ -123,4 +163,9 @@ private:
     void ReleaseTable();
     ASSBarTable *FindTable(APawn *Guest) const;
     bool BeginPour(ASSBarCrew *Waitress);
+    bool TickBarBreak(float DeltaSeconds);
+    FTransform BarShotGrip() const;
+    TArray<int32> UnusedBanter;
+    int32 BanterIndex = INDEX_NONE, BanterStep = 0, PreviousBanter = INDEX_NONE;
+    float BanterWait = 0, BarBreakTime = 0;
 };

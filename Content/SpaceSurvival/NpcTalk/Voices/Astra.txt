@@ -1,0 +1,5 @@
+# Astra: original synthetic adult voice designed with local Qwen3-TTS VoiceDesign on 2026-10-15.
+# Warm, bright, playful conversational delivery; no real-person voice imitation.
+# 4.08-second complete reference sentence. LuxTTS supplies runtime speech on the CPU.
+speed=0.88
+treatment=none

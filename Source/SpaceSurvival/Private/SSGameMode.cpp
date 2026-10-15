@@ -1,4 +1,6 @@
 #include "SSGameMode.h"
+#include "SSPhotoMode.h"
+#include "SSBarCrew.h"
 #include "SSAlienGallery.h"
 #include "SSAudio.h"
 #include "SSWave10Soak.h"
@@ -15,6 +17,7 @@
 #include "Engine/TextureCube.h"
 #include "Misc/PackageName.h"
 #include "SSStation.h"
+#include "SSStationSeat.h"
 #include "SSOutpostSandbox.h"
 #include "SSNpcTalk.h"
 #include "SSLandingPad.h"
@@ -359,6 +362,7 @@ void ASSGameMode::ShowHeldVillainReply()
         return;
     bVillainReplyHeld = false;
     TalkStatus.Empty();
+    AppendChatLine(TEXT("Director"), HeldVillainReply);
     // His channel, his colour; the story cue machinery is untouched, this only borrows the caption.
     VillainLine = HeldVillainReply;
     VillainLineSeconds = FMath::Clamp(4.f + .07f * HeldVillainReply.Len(), 6.f, 16.f);
@@ -464,6 +468,7 @@ void ASSGameMode::ShowHeldCrewReply()
     TalkStatus.Empty();
     NpcName = HeldCrewName;
     NpcLine = HeldCrewLine;
+    AppendChatLine(NpcName, NpcLine);
     NpcLineSeconds = FMath::Clamp(4.f + .07f * HeldCrewLine.Len(), 6.f, 16.f);
     HeldCrewName.Empty();
     HeldCrewLine.Empty();
@@ -1630,6 +1635,12 @@ void ASSGameMode::Interact()
     {
         if (Walker->IsDisembarking() || Walker->IsBoarding())
             return;
+        if (Walker->IsResting())
+        {
+            if (!Walker->StandFromSeat())
+                Announce(TEXT("The way out is blocked. Clear the space in front of the seat."));
+            return;
+        }
         if (IsWalkerAtPilotSeat(Walker))
         {
             TryBoardShip(Walker);
@@ -1646,6 +1657,11 @@ void ASSGameMode::Interact()
             OpenPanel(Service);
         else if (auto *Terminal = Hub->OutpostTerminalAt(Walker))
             Announce(Terminal->Use(UGameplayStatics::GetPlayerController(this, 0)));
+        else if (auto *Seat = ASSStationSeat::Find(Walker))
+        {
+            if (!Walker->SitAt(Seat))
+                Announce(TEXT("That seat is unavailable just now."));
+        }
         else
             Announce(Hub->ServiceGuidance(Walker->GetActorLocation()));
         return;
@@ -2187,6 +2203,20 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             SelectedEntry = Enabled;
     }
 }
+bool ASSGameMode::SwitchSettingsTab(int32 Direction)
+{
+    static const ESSPanel Tabs[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls};
+    if (Direction == 0)
+        return false;
+    for (int32 I = 0; I < 4; ++I)
+        if (Panel == Tabs[I])
+        {
+            OpenPanel(Tabs[(I + (Direction > 0 ? 1 : 3)) % 4]);
+            return true;
+        }
+    return false;
+}
+
 bool ASSGameMode::AdjustSetting(int32 Index, int32 Direction)
 {
     auto *GI = GetGameInstance<USSGameInstance>();
@@ -2737,6 +2767,7 @@ ASSPlayerController::ASSPlayerController()
 {
     PrimaryActorTick.bTickEvenWhenPaused = true;
     bShouldPerformFullTickWhenPaused = true;
+    PhotoMode = CreateDefaultSubobject<USSPhotoMode>(TEXT("PhotoMode"));
 }
 void ASSPlayerController::UpdateLastInputDevice()
 {
@@ -2813,6 +2844,18 @@ void ASSPlayerController::PlayerTick(float Dt)
             }
     // main tracks the same thing for its data-asset prompts; both stay current until one system is retired.
     UpdateLastInputDevice();
+    if (PhotoMode->IsActive())
+    {
+        PhotoMode->Update(!GM->bAutomatedSoakInput);
+        SuppressGamepadBoostUntilRelease = true;
+        SuppressGamepadFireUntilRelease = true;
+        return;
+    }
+    if (!GM->bAutomatedSoakInput && !GM->IsMenuOpen() &&
+        (WasInputKeyJustPressed(EKeys::F8) ||
+         (WasInputKeyJustPressed(EKeys::Gamepad_DPad_Up) && !IsInputKeyDown(EKeys::Gamepad_LeftShoulder))) &&
+        PhotoMode->Enter())
+        return;
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {
         // A connected controller is polled even while an offscreen fixture window is not
@@ -2916,6 +2959,10 @@ void ASSPlayerController::PlayerTick(float Dt)
         if (StickStep)
             MenuRepeatSeconds = StickDirection == LastMenuStickDirection ? .13f : .38f;
         LastMenuStickDirection = StickDirection;
+        const int32 TabStep =
+            int32(Pressed(EKeys::Gamepad_RightShoulder)) - int32(Pressed(EKeys::Gamepad_LeftShoulder));
+        if (TabStep != 0 && GM->SwitchSettingsTab(TabStep))
+            return; // This press selects a tab, never a setting or a flight action.
         int32 MenuVertical = 0, MenuHorizontal = 0;
         if (Pressed(EKeys::Up) || Pressed(EKeys::Gamepad_DPad_Up) || (GM->IsTitleMenu() && Pressed(EKeys::W)) ||
             (StickStep && StickDirection == -1))
@@ -3052,7 +3099,8 @@ void ASSPlayerController::PlayerTick(float Dt)
             WalkPawn->Jump();
         if (!Down(EKeys::SpaceBar) && !Down(EKeys::Gamepad_FaceButton_Bottom))
             WalkPawn->StopJumping();
-        if (GM->HandleCockpitModeInput(Pressed(EKeys::R), Pressed(EKeys::Gamepad_DPad_Left)))
+        if (GM->HandleCockpitModeInput(Pressed(EKeys::R),
+                                       (Pressed(EKeys::Gamepad_DPad_Left) && !Down(EKeys::Gamepad_LeftShoulder))))
             return; // A mode press cannot also sit/launch on this frame.
     }
     // Talk: tap T or R3 to start listening, tap again to send (owner, 2026-10-10: R3 is hard to keep holding;
@@ -3060,13 +3108,14 @@ void ASSPlayerController::PlayerTick(float Dt)
     // The game mode decides who is listening: a crew member or the villain.
     if (!MenuInput && GetPawn() && (Pressed(EKeys::T) || Pressed(EKeys::Gamepad_RightThumbstick)))
         GM->TapTalk();
-    // Crew actions (owner 2026-10-14): 1-4 on the keyboard, D-pad up/right/down on a pad, while the talk hint shows.
+    // Crew actions: keyboard 1-4 or LB + D-pad. D-pad Up alone opens photo mode.
     if (!MenuInput && Cast<ASSWalker>(GetPawn()))
     {
         static const FKey Digits[] = {EKeys::One, EKeys::Two, EKeys::Three, EKeys::Four};
-        static const FKey Pads[] = {EKeys::Gamepad_DPad_Up, EKeys::Gamepad_DPad_Right, EKeys::Gamepad_DPad_Down};
+        static const FKey Pads[] = {EKeys::Gamepad_DPad_Up, EKeys::Gamepad_DPad_Right, EKeys::Gamepad_DPad_Down,
+                                    EKeys::Gamepad_DPad_Left};
         for (int32 I = 0; I < 4; ++I)
-            if (Pressed(Digits[I]) || (I < 3 && Pressed(Pads[I])))
+            if (Pressed(Digits[I]) || (Down(EKeys::Gamepad_LeftShoulder) && Pressed(Pads[I])))
                 GM->TriggerNpcAction(I);
     }
     GM->UpdateTalkEngagement(Dt);
@@ -3386,8 +3435,25 @@ void ASSGameMode::SpeakCrewLine(ASSOutpostAmbientActor *Crew, const FString &Lin
         ShowHeldCrewReply();
 }
 
+bool ASSGameMode::CanAmbientCrewSpeak(const ASSOutpostAmbientActor *Crew) const
+{
+    return Crew && Walker && !IsMenuOpen() && !TalkingTo.IsValid() && !EngagedWith.IsValid() && !bCrewVoiceWaiting &&
+           !CrewRadioReady.IsValid() && CrewRadioLeft <= 0.f &&
+           FVector::DistSquared(Walker->GetActorLocation(), Crew->GetActorLocation()) < FMath::Square(1400.f);
+}
+
+bool ASSGameMode::TryAmbientCrewLine(ASSOutpostAmbientActor *Crew, const FString &Line)
+{
+    if (Line.IsEmpty() || !CanAmbientCrewSpeak(Crew))
+        return false;
+    SpeakCrewLine(Crew, Line);
+    return true;
+}
+
 bool ASSGameMode::CrewChatter(ASSOutpostAmbientActor *Crew)
 {
+    if (const auto *Bar = Cast<ASSBarCrew>(Crew); Bar && (Bar->HasBarReservation() || Bar->bBarBreakActive))
+        return false;
     if (!Crew || !Walker || !Crew->CharacterMesh || Crew->Chatter.IsEmpty())
         return false;
     auto *Talk = NpcTalk();
@@ -3493,9 +3559,23 @@ void ASSGameMode::EndTalk()
     Talk->EndListeningAndAsk(TalkingTo);
 }
 
+void ASSGameMode::AppendChatLine(const FString &Speaker, const FString &Text)
+{
+    if (Text.TrimStartAndEnd().IsEmpty())
+        return;
+    FSSChatLine Line;
+    Line.Speaker = Speaker;
+    Line.Text = Text;
+    Line.ShownAt = GetWorld()->GetTimeSeconds();
+    ChatLines.Add(MoveTemp(Line));
+    if (ChatLines.Num() > 12)
+        ChatLines.RemoveAt(0, ChatLines.Num() - 12);
+}
+
 void ASSGameMode::OnNpcTranscript(const FString &Character, const FString &Text)
 {
     TalkTranscript = Text;
+    AppendChatLine(TEXT("You"), Text);
     TalkTranscriptSeconds = 14.f;
     TalkStatus = (Character == TEXT("Director") ? TEXT("The Director") : Character) + TEXT(" is answering...");
     // A spoken request moves her at once; her words come with the model's reply.

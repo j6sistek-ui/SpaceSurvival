@@ -1,8 +1,12 @@
 # Phase 1 content pipeline
 
+## Astra eyes and voice — October 15
+
+The owner-selected WhitePurpleRings pair uses its own UV0/maps and a shared private eye rig; five UV-distinct presets must be swapped as mesh/material pairs. Packed Blender sources stay in the owner library. The native helper refuses unrelated assets or a differing reference rig; original body/skeleton remain untouched. Astra uses an original synthetic adult voice reference, with local CPU runtime cloning; Joy reference is preserved. [Paths and reproduction](production/WAITRESS_BAR_SERVICE.md).
+
 ## Native waitress clothing — October 15
 
-Fit and export clothing only against the original female skeleton; preserve the native body, physics and post-process. V14 retains original UV/material separation and the product's open laced front. Import derived clothing into the private licensed root, assign slots by name and use the original body as Leader Pose. Validate ordinary moving views and fresh reload before accepting a fit. [Exact inputs, colors, reproducibility and limits](production/WAITRESS_BAR_SERVICE.md).
+Fit and export clothing only against the original female skeleton; preserve the native body, physics and post-process. Current V16 retains original UV/material separation and the product's open laced front. Import derived clothing into the private licensed root, assign slots by name and use the original body as Leader Pose. Validate ordinary moving views and fresh reload before accepting a fit. [Exact inputs, colors, reproducibility and limits](production/WAITRESS_BAR_SERVICE.md).
 
 **October14 source closeout:** PR69 adds four existing runtime cook folders for its string-loaded warp frame/effects and cabin material; no vendor Blueprint/demo root is added. Native content stays private and unchanged; no cook/release occurs. [Coverage/build evidence](validation/2026-10-14-pr69-closeout.md). Station changes remain held.
 

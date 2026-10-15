@@ -1,7 +1,9 @@
 #include "SSBarCrew.h"
+#include "SSStationSeat.h"
 #include "Animation/AnimSequence.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/PoseableMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
 #include "Engine/SkeletalMesh.h"
@@ -21,6 +23,25 @@ ASSBarTable::ASSBarTable()
 
 ASSBarCrew::ASSBarCrew()
 {
+    BarBanter = {{TEXT("Do these count as a staff meeting?"), TEXT("Only if we make one very important decision."),
+                  TEXT("Ha! Another meeting tomorrow, then.")},
+                 {TEXT("Someone said I light up the room."), TEXT("They were flirting, Astra."),
+                  TEXT("Oh! I thought the ceiling panels were failing again.")},
+                 {TEXT("To everybody who found their way home."), TEXT("And the ones taking the scenic route."),
+                  TEXT("Ha! The cargo lift is not a scenic route.")},
+                 {TEXT("I tried practicing my mysterious look."), TEXT("You asked three people if it was working."),
+                  TEXT("Well, I needed reliable information!")},
+                 {TEXT("You said this drink had a kick. I watched it very carefully."),
+                  TEXT("And did it behave itself?"), TEXT("Ha! Perfectly. Not a single foot.")},
+                 {TEXT("To the best bartender on this station."), TEXT("You say that every time, Astra."),
+                  TEXT("And I have been right every time!")},
+                 {TEXT("Why do people say break a leg for good luck?"), TEXT("No idea. Let us try cheers instead."),
+                  TEXT("Ha! Much cheaper for the medical bay.")},
+                 {TEXT("I saved you the good glass."), TEXT("They are all the same glass."),
+                  TEXT("Not anymore. That one has a compliment now.")}};
+    Eyes = CreateDefaultSubobject<UPoseableMeshComponent>(TEXT("Eyes"));
+    Eyes->SetupAttachment(CharacterMesh, TEXT("head"));
+    Eyes->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Corset = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Corset"));
     Shorts = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Shorts"));
     for (auto *Part : {Corset.Get(), Shorts.Get()})
@@ -41,6 +62,8 @@ ASSBarCrew::ASSBarCrew()
 
 void ASSBarCrew::ConfigureParts()
 {
+    if (Eyes->GetSkinnedAsset() && CharacterMesh->DoesSocketExist(TEXT("head")))
+        Eyes->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("head"));
     for (auto *Part : {Corset.Get(), Shorts.Get()})
         Part->SetLeaderPoseComponent(CharacterMesh, true);
     Glass->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, GlassHand);
@@ -59,6 +82,7 @@ void ASSBarCrew::BeginPlay()
 {
     Super::BeginPlay();
     Home = GetActorTransform();
+    ResetBarBreakTimer();
     ConfigureParts();
     ServiceClip = IdleAnimation;
 }
@@ -148,6 +172,14 @@ ASSBarTable *ASSBarCrew::FindTable(APawn *Guest) const
     for (TActorIterator<ASSBarTable> It(GetWorld()); It; ++It)
     {
         if (It->Occupant.IsValid() && It->Occupant != this)
+            continue;
+        bool HeroInPlace = false;
+        for (TActorIterator<ASSStationSeat> Seat(GetWorld()); Seat; ++Seat)
+            if (Seat->Occupant.IsValid() &&
+                FVector::DistSquared2D(Seat->GetActorLocation(), It->Seat->GetComponentLocation()) <
+                    FMath::Square(55.f))
+                HeroInPlace = true;
+        if (HeroInPlace)
             continue;
         const float Candidate = FVector::DistSquared2D(Guest->GetActorLocation(), It->GetActorLocation());
         if (Candidate < Distance)
@@ -245,6 +277,8 @@ bool ASSBarCrew::MoveAlongPath(float Dt)
 
 void ASSBarCrew::ReturnHome(const FString &Reason)
 {
+    bBarBreakActive = false;
+    ResetBarBreakTimer();
     if (ServiceState == ESSBarServiceState::Seated && Table.IsValid())
         SetActorTransform(Table->Approach->GetComponentTransform());
     Body->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -269,6 +303,12 @@ void ASSBarCrew::ReturnHome(const FString &Reason)
 bool ASSBarCrew::RequestService(int32 Index, APawn *Guest)
 {
     ServiceNotice.Empty();
+    if (bBarBreakActive && IsValid(Guest) &&
+        FVector::DistSquared(GetActorLocation(), Guest->GetActorLocation()) < FMath::Square(400.f))
+    {
+        ReturnHome(TEXT("One moment, I am coming right over."));
+        return Index == 3;
+    }
     if (bIsBartender || !IsValid(Guest) || Index < 0 || Index > 3 ||
         FVector::DistSquared(GetActorLocation(), Guest->GetActorLocation()) > FMath::Square(400.f))
         return false;
@@ -330,7 +370,8 @@ void ASSBarCrew::Tick(float Dt)
         const bool bVisible = Super::IsActionPlaying() && Position >= Window.X && Position <= Window.Y;
         Glass->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform,
                                  BarAction == 1 ? DrinkHand : GlassHand);
-        Glass->SetRelativeTransform(BarAction == 1 ? DrinkGrip : GlassGrip);
+        const bool bStaffToast = BarAction == 1 && ReservedBy.IsValid() && ReservedBy->bBarBreakActive;
+        Glass->SetRelativeTransform(bStaffToast ? BarShotGrip() : (BarAction == 1 ? DrinkGrip : GlassGrip));
         Bottle->SetVisibility(bVisible && BarAction == 0);
         Glass->SetVisibility(bVisible && (BarAction == 0 || BarAction == 1));
         return;
@@ -339,6 +380,8 @@ void ASSBarCrew::Tick(float Dt)
     if (Dt <= 0)
         return;
     StateTime += Dt;
+    if (TickBarBreak(Dt))
+        return;
     if (ServiceState != ESSBarServiceState::Available && ServiceState != ESSBarServiceState::ReturningHome &&
         (!ServiceGuest.IsValid() ||
          FVector::DistSquared2D(ServiceGuest->GetActorLocation(), GuestOrigin) > FMath::Square(GuestDepartureDistance)))

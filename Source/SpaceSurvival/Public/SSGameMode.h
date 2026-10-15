@@ -52,6 +52,18 @@ struct FSSMenuEntry
     bool Enabled = true;
 };
 
+USTRUCT(BlueprintType)
+struct FSSChatLine
+{
+    GENERATED_BODY()
+    UPROPERTY(BlueprintReadOnly)
+    FString Speaker;
+    UPROPERTY(BlueprintReadOnly)
+    FString Text;
+    UPROPERTY(BlueprintReadOnly)
+    float ShownAt = 0.f;
+};
+
 UCLASS()
 class SPACESURVIVAL_API ASSGameMode : public AGameModeBase
 {
@@ -81,6 +93,7 @@ public:
     /** The villain's transmissions, on his own caption so no announcement, reaction or warning is displaced.
      *  Story cues always speak; Launch, Hit and Kill wait out his chatter cooldown and chance. True if he spoke. */
     bool VillainSpeak(ESSVillainCue Cue);
+    UFUNCTION(BlueprintCallable, Category = "Interaction")
     void Interact();
     /** Push-to-talk (SSNpcTalk): the crew member the walker faces, or the villain once he has spoken this run.
      *  Begin on key down, End on release. */
@@ -116,6 +129,8 @@ public:
     bool CrewChatter(class ASSOutpostAmbientActor *Crew);
     /** Scripted bar handoff uses the same spatial voice and caption channel as player requests. */
     void SpeakCrewLine(class ASSOutpostAmbientActor *Crew, const FString &Line);
+    bool CanAmbientCrewSpeak(const class ASSOutpostAmbientActor *Crew) const;
+    bool TryAmbientCrewLine(class ASSOutpostAmbientActor *Crew, const FString &Line);
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
@@ -124,6 +139,9 @@ public:
     void ActivateEntry(int32 Index, bool FromPointer = false);
     /** Directional controller adjustment. Bounded values never wrap at their limits. */
     bool AdjustSetting(int32 Index, int32 Direction);
+    /** LB/RB selects the adjacent settings tab without changing a setting. */
+    UFUNCTION(BlueprintCallable, Category = "Interface")
+    bool SwitchSettingsTab(int32 Direction);
     void StartNewRun();
     void StartFreeFlight();
     void EndFreeFlight();
@@ -166,6 +184,10 @@ public:
     /** Push-to-talk captions: what the pilot was heard to say, a crew member's answer, and where the loop is. */
     FString NpcName, NpcLine, TalkTranscript, TalkStatus;
     float NpcLineSeconds = 0.f, TalkTranscriptSeconds = 0.f;
+    /** Session-only conversation display; appended when a transcript or audible reply is actually shown. */
+    UPROPERTY(BlueprintReadOnly, Category = "Talk")
+    TArray<FSSChatLine> ChatLines;
+    void AppendChatLine(const FString &Speaker, const FString &Text);
     /** His last word on a run that ended in death, for the results panel. Cleared when the next run starts. */
     FString VillainEpitaph;
     /** Counts down after a player shot connects, so the reticle can flash its hit state. */
@@ -374,6 +396,8 @@ class SPACESURVIVAL_API ASSPlayerController : public APlayerController
     GENERATED_BODY()
 public:
     ASSPlayerController();
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<class USSPhotoMode> PhotoMode;
     virtual void PlayerTick(float DeltaSeconds) override;
     UFUNCTION(Exec)
     void SSReviewExit();

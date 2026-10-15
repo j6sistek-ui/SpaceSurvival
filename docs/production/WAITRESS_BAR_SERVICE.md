@@ -12,14 +12,14 @@ The canonical project is `C:/Users/j6sis/SpaceSurvival`. Licensed source assets 
 | Original skeleton / physics / post-process | `S_PerfectFemaleBody`, `PA_Perfect_Female_Body_01`, `BP_UnrealJiggle` in the same mesh folder |
 | Derived content root | `/Game/SpaceSurvival/Licensed/StationAssets/Waitress_20261015` |
 | Waitress / bartender | `Blueprints/BP_BarWaitress`, `Blueprints/BP_JoyBarService` under that root |
-| Fitted clothing | `Mesh/SK_WaitressOutfit_V14` under that root |
-| Blender source | `.agent/local/Waitress_20261015/Waitress_GarmentFit_V14.blend` |
-| Clothing-only FBX | `.agent/local/Waitress_20261015/Waitress_Garments_V14.fbx` |
+| Fitted clothing | `Mesh/SK_WaitressOutfit_V16` under that root |
+| Blender source | `.agent/local/Waitress_20261015/Waitress_GarmentFit_V16.blend` |
+| Clothing-only FBX | `.agent/local/Waitress_20261015/Waitress_Garments_V16.fbx` |
 | Saved placement | `/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime` |
 
 The original body, face, skeleton, physics asset, post-process and vendor materials are preserved. Both garments share one skeletal mesh on the Corset component; the separate Shorts component is unused. The corset follows the body's final pose through Leader Pose, including the post-process breast movement. It is skinned clothing, not a separate Chaos cloth simulation.
 
-V14 keeps the corset's V9 shape. Its shorts use a body-surface fit, smoothed displacement, transferred normalized skin weights and clearance sampled over six walking poses. The original UVs/material separation and garment details remain. The final walking clearance adjustment is capped at 0.8 cm. Earlier closed-front, elongated-hem and hanging-flap candidates are rejected, not delivery alternatives.
+V16 preserves the corset and original body. It restores the original shorts waistband/hem heights, smooths the horizontal fitting displacement, transfers skin weights again and checks clearance through six rest/walking samples. UVs and separate material slots remain. Native idle/walk/carry views improve, but the shorts still ride up in the seated pose: clothing remains unfinished. V14 is retained for recovery; V17 weights and V18–V20 seated corrective-shape trials were rejected and are not game assets.
 
 ## Change colors and fit
 
@@ -43,4 +43,48 @@ Saved markers: waitress `(3970,-3690,85)`, Joy `(4150,-4140,85)`, table approach
 
 ## Review limits
 
-See [the dated validation receipt](../validation/2026-10-15-waitress-bar-service.md) and [RPT-20261015-01](../KNOWN_ISSUES.md). Native scripted service is separate from physical keys, controller, microphone/audio and owner acceptance. Sitting currently snaps between the approach and seat transforms; dangling shorts ties follow thigh skinning and are not simulated. Custom eye selection/reusable eye rig remains pending the supplied files. No packaged build or release upload is included.
+See [the dated validation receipt](../validation/2026-10-15-waitress-bar-service.md) and [RPT-20261015-01](../KNOWN_ISSUES.md). Native scripted service is separate from physical keys, controller, microphone/audio and owner acceptance. Sitting currently snaps between the approach and seat transforms; dangling shorts ties follow thigh skinning and are not simulated. The selected WhitePurpleRings eyes and reusable rig are saved; automatic eye gaze is not added. No packaged build or release upload is included.
+
+## Astra, eyes and voices
+
+The waitress is now **Astra**: her own adult personality/backstory lives in `Content/SpaceSurvival/NpcTalk/Personas/Astra.txt`. `Personas/Waitress.txt` is the reusable type fallback; `Scenarios/Waitress.txt` supplies the shared job behavior. The existing name-first/type-fallback resolver combines the personal file with the role scenario. These are editable prompt files, not trained LoRA weights.
+
+The owner selected preview `3_WhitePurpleRings.png`. Native `Eyes/SK_Eyes_WhitePurpleRings`, `MI_Eye_WhitePurpleRings` and `S_AstraEyes` live under the private root above. An independent poseable eye pair attaches to the unchanged body's `head` socket; the component masks the original eye material only. Five fitted variants share the reference rig, each retaining its own UV0 and maps. `USSBarEyeAuthoring` only initializes/reuses that bounded private rig and rejects differing names, parents or reference transforms. It does not change the body skeleton.
+
+Reusable Blender library: `C:/Users/j6sis/OneDrive/Documents/Blender/Assets/AstraEyes_20261015/Astra_Eyes_SharedRig.blend`, with packed images, five named presets and matching FBXs. Eye_L/Eye_R are rigidly weighted, available for later gaze animation. Do not swap only the material between eyes whose UVs differ; swap the matching mesh/material pair.
+
+`Voices/Astra.wav` is an original local synthetic adult reference (Qwen3-TTS VoiceDesign, October15); `Astra.txt` selects pace 0.88, no treatment. Joy retains her separate existing velvet reference/pace 0.90. Runtime speech uses the existing CPU LuxTTS sidecar and name-based routing. Thirty-four Astra/Joy scripted lines are prerendered in the configured private cache and pass word-coverage checks. Voice listening and expressive-laughter acceptance still need owner review; transcription does not establish delivery quality.
+
+## Unprompted staff breaks
+
+When idle and the player is nearby, Astra can walk to Joy for a quick shared shot every randomized 3–7 minutes. `BarBreakInterval`, `bAmbientBarBreaks`, `BarBanter` and `BarShotScale` are Blueprint tunables. `ResetBarBreakTimer` reschedules after an interval change. Eight authored exchanges use a shuffle bag: all play before reuse, with no immediate cycle-boundary repeat. This is a finite curated bank, not unlimited generated dialogue.
+
+The routine reserves Joy, waits for the existing speech channel, alternates their own voices, starts both native drink clips together, and returns Astra to service. A small glass scale preserves the grip center. Guest service, menus and active conversations block a new break; guest requests interrupt an active break and send Astra home. Broken routes, missing partners and a 100-second bound release the reservation. No currency, inventory purchase or intoxication effect is added.
+
+## Hero seating and side conversation panel
+
+**E / gamepad Y** toggles Sit/Stand at nearby authored seats. `ASSStationSeat` is separate from cockpit boarding. The current station has 55 markers, 51 enabled; four plant-covered bench contacts are deliberately disabled. Armchairs, sofas, a bench and bar stools have scripted native checks. Other chairs require an authored marker and a compatible hero sit clip; this does not promise every arbitrary static mesh or hero rig works automatically.
+
+The current 178-bone hero uses `HeroSeating_20261015/A_SquirrelSocialSit`, with hands on the lap. Seat pose/actor transitions blend, movement resumes on stand, and all three exit candidates are checked for floor, capsule and NPC clearance. Blocked exits keep the hero safely seated. Occupied NPC/hero contacts are excluded; waitress table reservations also respect hero seating. Head/camera look remains available.
+
+Conversation history is now below the compass/radar in the game's existing frame/font/color style. The last 12 utterances are held for the session; the visible rows scroll upward, wrap long words, and leave the newest lines at the bottom. Captions enter when speech is actually released; menus hide the panel. It hides after 24 seconds without conversation. It is a display panel; existing talk input is unchanged.
+
+Extension evidence is indexed in [the Astra social/UI receipt](../validation/2026-10-15-astra-social-ui.md). Natural input, listening, owner appearance and representative performance remain separate acceptance checks.
+
+## Photo mode and controller shortcuts
+
+Press **D-pad Up / F8** during play to pause and enter photo mode. The camera stays within 40 metres of the pawn's entry position and sweeps a 15 cm sphere against visibility collision. Walls stop travel. The landing-pad-to-bar distance exceeds that radius; nearby market viewpoints remain reachable within the radius. The radius does not move with the camera. Reset returns to the original view, and exit restores the previous view target/pause state without moving or repossessing the pawn.
+
+| Action | Controller | Keyboard/mouse |
+|---|---|---|
+| Move / look | Left / right stick | WASD / mouse |
+| Rise / fall | RB / LB | E / Q |
+| Fast / slow | RT / LT | Shift / Ctrl |
+| Zoom | D-pad Left / Right | Mouse wheel |
+| Save PNG without HUD | A | Enter |
+| Reset / hide controls | X / Y | Home / H |
+| Exit | B / D-pad Up | Esc / F8 |
+
+Files save under the running instance's `Saved/Screenshots/PhotoMode`, with unique timestamped names. The success message requires a nonempty file. The offscreen validation instance uses its isolated user directory; the ordinary owner launch uses its normal Saved location. Source checks do not establish physical-controller acceptance or every resolution/UI scale.
+
+In settings, **LB / RB immediately switches General, Graphics, Audio and Controls**, wrapping at either end without changing a value. D-pad/stick navigation within a tab remains available. During play, **hold LB near a crew member to display the actual action names with UP / RIGHT / DOWN / LEFT labels**; press that direction while holding LB. Keyboard actions remain 1–4. D-pad Up alone is photo mode. Cockpit mode selection remains D-pad Left without LB. The microwave prop alone is rotated -90 degrees about its bounds centre; its door faces the working aisle.

@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-15",
+  "native_saved_reload": {
+    "passed": true,
+    "fresh_process": true,
+    "saved_map": "/Game/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime",
+    "astra_name": "Astra",
+    "role": "Waitress",
+    "tags": [
+      "TalkName:Astra",
+      "TalkType:Waitress",
+      "TalkRole:Waitress"
+    ],
+    "eye": "/Game/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Eyes/SK_Eyes_WhitePurpleRings.SK_Eyes_WhitePurpleRings",
+    "shared_eye_skeleton": "/Game/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Eyes/S_AstraEyes.S_AstraEyes",
+    "eye_variants": 5,
+    "seat_count": 55,
+    "enabled_seats": 51,
+    "break_interval_seconds": [
+      180.0,
+      420.0
+    ],
+    "bank_size": 8,
+    "shot_scale": 0.550000011920929,
+    "original_body": "/Game/Perfect_Female_Body/Mesh/SK_Perfect_Female_Body_01WithoutClothes.SK_Perfect_Female_Body_01WithoutClothes",
+    "physics": "/Game/Perfect_Female_Body/Mesh/PA_Perfect_Female_Body_01.PA_Perfect_Female_Body_01",
+    "postprocess_enabled": true,
+    "joy_name": "Joy",
+    "garment": "/Game/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Mesh/SK_WaitressOutfit_V16.SK_WaitressOutfit_V16",
+    "seated_fit_accepted": false
+  },
+  "microwave": {
+    "passed": true,
+    "label": "Refine/Social/Bar/Oven",
+    "yaw": -90.00000000000001,
+    "location": [
+      4248.2804527282715,
+      -4389.168537139893,
+      102.30899238586426
+    ],
+    "other_actor_transforms_unchanged": 9472,
+    "map_sha256": "edca869d1d52ab288e04ebbbfb78563a92cd81cba8796775e7e07314caf0ec76",
+    "backup_sha256": "ef0d04d74f96b529f0a8d19d87943f3add327cb6a22d86efecc483e2fecd6d88",
+    "front_capture": "ActualMinus9000000.png"
+  },
+  "photo": {
+    "passed": true,
+    "checks": {
+      "world_and_animation_paused": true,
+      "camera_moves_while_paused": true,
+      "png_saved": "SpaceSurvival_20261015_202951_EBDCECB0.png",
+      "png_bytes": 2283226,
+      "bar_wall_blocks_camera": [
+        4050.0,
+        -4469.000017642975,
+        170.0
+      ],
+      "exit_restores_pawn_view_and_unpauses": true,
+      "range_cm": 4000.0,
+      "pad_step_distance_cm": 400.0,
+      "pad_anchor": [
+        -4200.0,
+        0.0,
+        185.0
+      ],
+      "bar_outside_pad_range": true,
+      "market_camera": [
+        -1500.0,
+        -900.0,
+        250.0
+      ],
+      "market_png": "SpaceSurvival_20261015_203238_90E6D3DD.png"
+    }
+  },
+  "social_cycles": 2,
+  "cloth_bone_max_cm": 0.0,
+  "eye_head_max_cm": 0.0,
+  "social_guards": {
+    "passed": true,
+    "checks": {
+      "occupied_crew_seat_rejected": true,
+      "out_of_earshot_no_break": true,
+      "guest_interrupts_break": true,
+      "returns_to_service": true,
+      "glass_hidden": true
+    },
+    "samples": [
+      {
+        "time": 0.3289999999997235,
+        "astra_clip_s": 0.6666673421859741,
+        "joy_clip_s": 0.6666673421859741,
+        "astra_glass_scale": [
+          0.4400000095367432,
+          0.4400000095367432,
+          0.4400000095367432
+        ],
+        "joy_glass_scale": [
+          0.43999990463257393,
+          0.44000006198882075,
+          0.4400000095367369
+        ]
+      },
+      {
+        "time": 2.0,
+        "astra_clip_s": 2.3333349227905273,
+        "joy_clip_s": 2.3333349227905273,
+        "astra_glass_scale": [
+          0.4400000095367432,
+          0.4400000095367432,
+          0.4400000095367432
+        ],
+        "joy_glass_scale": [
+          0.43999990463257393,
+          0.44000006198882075,
+          0.4400000095367369
+        ]
+      },
+      {
+        "time": 4.0,
+        "astra_clip_s": 4.333335876464844,
+        "joy_clip_s": 4.333335876464844,
+        "astra_glass_scale": [
+          0.4400000095367432,
+          0.4400000095367432,
+          0.4400000095367432
+        ],
+        "joy_glass_scale": [
+          0.43999990463257393,
+          0.44000006198882075,
+          0.4400000095367369
+        ]
+      },
+      {
+        "time": 6.0,
+        "astra_clip_s": 6.333340644836426,
+        "joy_clip_s": 6.333340644836426,
+        "astra_glass_scale": [
+          0.4400000095367432,
+          0.4400000095367432,
+          0.4400000095367432
+        ],
+        "joy_glass_scale": [
+          0.43999990463257393,
+          0.44000006198882075,
+          0.4400000095367369
+        ]
+      }
+    ]
+  },
+  "voice_counts": {
+    "Astra": 26,
+    "Joy": 8
+  },
+  "protected_original_files": 193,
+  "physical_input": false,
+  "audible_playback": false,
+  "packaged": false,
+  "shorts_repair": {
+    "saved": true,
+    "mesh": "/Game/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Mesh/SK_WaitressOutfit_V16.SK_WaitressOutfit_V16",
+    "protected_originals": 193,
+    "other_actor_transforms_unchanged": 9472,
+    "identity_preserved": {
+      "name": "Astra",
+      "eye": "/Game/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Eyes/SK_Eyes_WhitePurpleRings.SK_Eyes_WhitePurpleRings",
+      "body": "/Game/Perfect_Female_Body/Mesh/SK_Perfect_Female_Body_01WithoutClothes.SK_Perfect_Female_Body_01WithoutClothes",
+      "physics": "/Game/Perfect_Female_Body/Mesh/PA_Perfect_Female_Body_01.PA_Perfect_Female_Body_01",
+      "tags": [
+        "TalkName:Astra",
+        "TalkType:Waitress",
+        "TalkRole:Waitress"
+      ],
+      "interval": [
+        180.0,
+        420.0
+      ]
+    },
+    "waistband_and_front_hem": "improved in native idle/walk/carry views",
+    "seated_fit": "remaining appearance issue; corrective trials not adopted",
+    "body_corset_uv_preserved": true
+  },
+  "controller_automation": {
+    "suite": "SpaceSurvival.UI.StationControllerShortcuts",
+    "succeeded": 1,
+    "succeededWithWarnings": 0,
+    "failed": 0,
+    "notRun": 0,
+    "physical_input": false
+  },
+  "final_builds": {
+    "canonical": "Build14 / 5.49 seconds",
+    "isolated": "WorktreeBuild7 / 32.88 seconds"
+  },
+  "source_checks": {
+    "structural": 49,
+    "python_compile": true,
+    "content_meshes": 26,
+    "content_wavs": 17,
+    "scoped_format_files": 23,
+    "native_clang_format": "22.1.3",
+    "container_core": "pending CI",
+    "physical_controller": false,
+    "listening_acceptance": false,
+    "seated_clothing_fit": false
+  }
+}

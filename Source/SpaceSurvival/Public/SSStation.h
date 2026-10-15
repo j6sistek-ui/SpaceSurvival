@@ -21,6 +21,7 @@ class UMaterialInterface;
 class ASSStationVisualLayout;
 class ASSLandingPad;
 class ASSOutpostTerminal;
+class ASSStationSeat;
 class ULevelStreamingDynamic;
 class ULightComponentBase;
 class APostProcessVolume;
@@ -214,6 +215,16 @@ public:
     {
         return Disembarking;
     }
+    /** Social seating is independent of cockpit boarding and never initiates departure. */
+    UFUNCTION(BlueprintCallable, Category = "Seating")
+    bool SitAt(ASSStationSeat *Seat);
+    UFUNCTION(BlueprintCallable, Category = "Seating")
+    bool StandFromSeat();
+    UFUNCTION(BlueprintPure, Category = "Seating")
+    bool IsResting() const
+    {
+        return bResting;
+    }
     void Move(FVector2D Direction, FVector2D Look, bool Run, float DeltaSeconds);
     /** Put a hero on this pawn: mesh, lift, yaw, scale, the gait ladder, the readability rig and the
      *  foot rest height. Called once from BeginPlay, and again whenever the station wardrobe changes
@@ -272,6 +283,12 @@ public:
     TObjectPtr<USSPhase1Data> Tuning;
 
 private:
+    TWeakObjectPtr<ASSStationSeat> RestSeat;
+    bool bResting = false;
+    float RestSeconds = 0.f;
+    FTransform RestStart, RestTarget;
+    FVector RestCameraLocation = FVector::ZeroVector;
+    TEnumAsByte<ECollisionEnabled::Type> RestCollision = ECollisionEnabled::QueryAndPhysics;
     TWeakObjectPtr<ASSStation> RecoveryHub;
     int32 OffDeckRescues = 0;
     float UnsupportedSeconds = 0.f;

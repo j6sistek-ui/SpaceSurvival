@@ -1,5 +1,9 @@
 # Push-to-talk conversations (NPC talk)
 
+## Astra profile, voice and staff banter — October 15
+
+Astra has her own `Personas/Astra.txt` and synthetic `Voices/Astra.wav`/settings; Waitress type/role files stay reusable. Joy keeps her distinct existing voice. Their optional nearby bar break alternates the existing voice channel and8 shuffled authored exchanges. The side conversation panel records transcripts and replies when shown, below the radar; it does not change microphone controls or train a LoRA. [Controls, files and limits](production/WAITRESS_BAR_SERVICE.md).
+
 ## Waitress actions — October 15
 
 The authored bar waitress uses the existing talk/action selection: Order a drink, Have a drink with me, Sit with me, and Dismiss. Component tags select her Waitress profile; source service states set truthful current activities and use the existing spatial voice/caption channel. Keep the normal talk pack enabled and leave the title menu before using actions. [Service behavior and current validation limits](production/WAITRESS_BAR_SERVICE.md).
