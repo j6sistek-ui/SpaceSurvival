@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-15T18:33Z [USER] Asks whether jiggle is fully active and the corset stays intact. [TOOL] V14 clothing saved/adopted with original body/rig/physics/post-process preserved. Five native service cases pass439samples with0cm body/corset breast-spine bone discrepancy; post-process breast motion reaches4.15cm relative to base animation. Fresh normal PIE exposed/now fixes hidden waitress in NPC trim and missing persona tags; native GameMode order/sit-dismiss routes pass161samples after closing the title menu. Final ordinary1600x900 captures reviewed. Canonical integrated build23.32sPASS;193 original assets preserved,9415 other actors unchanged before save/4 attached-pose differences on reload. Source PR preparation underway in waitress-service. Eyes, audio/physical input, appearance/performance acceptance and optional room-lighting decision remain open; no release/merge.
+
 - 2026-10-14T16:52Z [USER] Make PR69 mergeable, move remaining station scope to a focused new PR, close verified resolved/obsolete issues, then hold all in-game changes.
 - 2026-10-14T16:52Z [TOOL] Isolated PR69/main reconciliation preserves newer conversations/characters and station/boarding work;11 conflict files resolved, four cook folders cover155 strings/zero missing. CPU Editor build succeeds40actions/73.66s;45 structural/8cook/13digest/8recipe/Python/144format/docs pass. Engine deprecation warnings retained. Owner checkout/native assets/saves/game DLL untouched; no editor/cook/release. Publication/fresh CI/new station PR pending.
 

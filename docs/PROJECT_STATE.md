@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October15 waitress/Joy local integration:** the current Editor module and private Wayfarer map include fitted V14 corset/shorts, preserved native female body physics/post-process, a four-action waitress and corrected Joy pour/cheers prop contacts. The original body and other characters are preserved. This supersedes older no-adoption statements for this scope only. Normal-game filtering is corrected; natural input, voice, performance and owner acceptance remain open under RPT-20261015-01. No packaged release or itch upload changed. [Guide/storage](production/WAITRESS_BAR_SERVICE.md); [validation](validation/2026-10-15-waitress-bar-service.md).
+
 **October14 PR69 reconciliation:** An isolated CPU Editor build succeeds after preserving current main conversations/characters and prior station/boarding work. The owner checkout/game DLL/native map/content and packaged release are unchanged. Station implementation remains held and moves to a focused draft PR. The old five-path source cook failure is repaired without running a cook. [Exact checks and limits](validation/2026-10-14-pr69-closeout.md).
 
 **October14 owner closure:** Owner authorizes merging PR72 and closes Cyborg and Silver for now. The saved native checkpoint below stands; outstanding broader quality/voice/performance/package limits are historical limits, not active character work. Scoped disposable-file cleanup preserves current assets, sources and recovery evidence.

@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "samples": 161,
+  "max_body_cloth_bone_delta_cm": 0.0,
+  "postprocess_enabled": true,
+  "physics": "/Game/Perfect_Female_Body/Mesh/PA_Perfect_Female_Body_01.PA_Perfect_Female_Body_01",
+  "max_postprocess_breast_motion_cm": 3.9891122381148,
+  "physical_input_verified": false,
+  "audio_verified": false,
+  "cases": [
+    {
+      "name": "order",
+      "request_route": "SSGameMode.TriggerNpcAction",
+      "states": [
+        {
+          "time": 0.32799999999997453,
+          "state": "GOING_TO_BAR"
+        },
+        {
+          "time": 11.639999999999873,
+          "state": "WAITING_FOR_BAR"
+        },
+        {
+          "time": 26.96900000000005,
+          "state": "RETURNING_TO_GUEST"
+        },
+        {
+          "time": 39.63999999999987,
+          "state": "SERVING"
+        },
+        {
+          "time": 43.047000000000025,
+          "state": "RETURNING_HOME"
+        },
+        {
+          "time": 44.40599999999995,
+          "state": "AVAILABLE"
+        }
+      ],
+      "passed": true,
+      "notice": "Your drink has been served."
+    },
+    {
+      "name": "seat_dismiss",
+      "request_route": "SSGameMode.TriggerNpcAction",
+      "states": [
+        {
+          "time": 0.32799999999997453,
+          "state": "JOINING_TABLE"
+        },
+        {
+          "time": 1.655999999999949,
+          "state": "SEATED"
+        },
+        {
+          "time": 8.045999999999822,
+          "state": "RETURNING_HOME"
+        },
+        {
+          "time": 10.045999999999822,
+          "state": "AVAILABLE"
+        }
+      ],
+      "passed": true,
+      "notice": "Of course. Call me when you need me."
+    }
+  ]
+}

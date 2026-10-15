@@ -3368,13 +3368,19 @@ void ASSGameMode::TriggerNpcAction(int32 Index)
     if (!Crew || !Crew->TriggerAction(Index))
         return;
     const FSSNpcAction &Action = Crew->Actions[Index];
-    if (Action.Line.IsEmpty())
+    SpeakCrewLine(Crew, Action.Line);
+}
+
+void ASSGameMode::SpeakCrewLine(ASSOutpostAmbientActor *Crew, const FString &Line)
+{
+    if (!IsValid(Crew) || Line.IsEmpty())
         return;
-    // Her line arrives with her voice, the same way a reply does.
-    const FString Who = EngagedWith.IsValid() ? EngagedWith.Name : TalkHint().Name;
-    SpeakCrew(Who, Action.Line, Crew->CharacterMesh);
+    const USkeletalMesh *Body = Crew->CharacterMesh ? Crew->CharacterMesh->GetSkeletalMeshAsset() : nullptr;
+    const FString Who = Crew->TalkName.IsEmpty() ? SSNpcTalk::CharacterNameFromMesh(Body ? Body->GetName() : FString())
+                                                 : Crew->TalkName;
+    SpeakCrew(Who, Line, Crew->CharacterMesh);
     HeldCrewName = Who;
-    HeldCrewLine = Action.Line;
+    HeldCrewLine = Line;
     bCrewReplyHeld = true;
     if (!bCrewVoiceWaiting && !CrewRadioReady.IsValid())
         ShowHeldCrewReply();

@@ -109,13 +109,17 @@ public:
     /** The crew member whose actions the pilot can trigger: the conversation partner, else the talk hint target. */
     class ASSOutpostAmbientActor *ActionTarget() const;
     /** Key 1-4 or a spoken keyword: play that crew member's action and say its line (owner 2026-10-14). */
+    UFUNCTION(BlueprintCallable, Category = "Talk")
     void TriggerNpcAction(int32 Index);
     /** A crew member's unprompted line, spoken if the pilot is in earshot and no conversation or crew line is
      *  under way; returns whether it was. */
     bool CrewChatter(class ASSOutpostAmbientActor *Crew);
+    /** Scripted bar handoff uses the same spatial voice and caption channel as player requests. */
+    void SpeakCrewLine(class ASSOutpostAmbientActor *Crew, const FString &Line);
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
+    UFUNCTION(BlueprintCallable, Category = "Interface")
     void ClosePanel();
     void ActivateEntry(int32 Index, bool FromPointer = false);
     /** Directional controller adjustment. Bounded values never wrap at their limits. */

@@ -1,5 +1,9 @@
 # Push-to-talk conversations (NPC talk)
 
+## Waitress actions — October 15
+
+The authored bar waitress uses the existing talk/action selection: Order a drink, Have a drink with me, Sit with me, and Dismiss. Component tags select her Waitress profile; source service states set truthful current activities and use the existing spatial voice/caption channel. Keep the normal talk pack enabled and leave the title menu before using actions. [Service behavior and current validation limits](production/WAITRESS_BAR_SERVICE.md).
+
 Owner decision, 2026-10-10: the station crew and the villain can be spoken to. Tap **T** (keyboard) or **R3** (pad),
 speak into the microphone, tap again to send (owner: R3 was hard to keep holding; a hold/tap menu option and
 remapping are later). Your words appear as a caption ("You: ..."), and the character answers in a

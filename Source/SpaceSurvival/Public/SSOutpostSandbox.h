@@ -268,11 +268,11 @@ public:
     FString TakeChatterLine();
     /** Plays that action's clip now and returns whether it could. */
     UFUNCTION(BlueprintCallable, Category = "Talk")
-    bool TriggerAction(int32 Index);
+    virtual bool TriggerAction(int32 Index);
     /** The first action one of whose keywords occurs in the text, or -1. */
     UFUNCTION(BlueprintPure, Category = "Talk")
     int32 MatchAction(const FString &SpokenText) const;
-    bool IsActionPlaying() const
+    virtual bool IsActionPlaying() const
     {
         return ActionRemaining > 0.f;
     }

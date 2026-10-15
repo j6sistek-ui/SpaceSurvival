@@ -1,5 +1,9 @@
 # Phase 1 content pipeline
 
+## Native waitress clothing — October 15
+
+Fit and export clothing only against the original female skeleton; preserve the native body, physics and post-process. V14 retains original UV/material separation and the product's open laced front. Import derived clothing into the private licensed root, assign slots by name and use the original body as Leader Pose. Validate ordinary moving views and fresh reload before accepting a fit. [Exact inputs, colors, reproducibility and limits](production/WAITRESS_BAR_SERVICE.md).
+
 **October14 source closeout:** PR69 adds four existing runtime cook folders for its string-loaded warp frame/effects and cabin material; no vendor Blueprint/demo root is added. Native content stays private and unchanged; no cook/release occurs. [Coverage/build evidence](validation/2026-10-14-pr69-closeout.md). Station changes remain held.
 
 ## Fixed crown / moving ponytail — October 14

@@ -1,5 +1,9 @@
 # SpaceSurvival Phase 1 architecture
 
+## Waitress bar service — October 15
+
+`ASSBarCrew` specializes ambient NPC actions while retaining the existing GameMode keyword/action and spatial voice/caption channel. `ASSBarTable` supplies authored seat/drink contacts; private Blueprints own clips, grips and routes. Native body post-process leads clothing skinning. Service state, collision checks and reservation cleanup stay in C++; no new inventory or economy system. Existing ClosePanel and TriggerNpcAction methods are exposed to Blueprint for scripted integration review without adding a second interaction implementation. [Behavior and limits](production/WAITRESS_BAR_SERVICE.md).
+
 ## Silver groom authoring — October 14
 
 `USSGroomAuthoring` lives only in SpaceSurvivalEditor. It exports the private source strand description and creates a bounded new two-group derivative with rebuilt interpolation data. It refuses overwrite and defaults to dry run. Production runtime uses the existing GroomComponent and native solver: head-attached rigid group0, dynamic tail group1. No new runtime component or general asset-writing service. [Native evidence](validation/2026-10-14-silver-ponytail.md).
