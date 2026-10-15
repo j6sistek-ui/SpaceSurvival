@@ -127,6 +127,9 @@ def master(name, blend, mask_default):
     mat.set_editor_property("blend_mode", blend)
     mat.set_editor_property("two_sided", True)
     mat.set_editor_property("used_with_skeletal_mesh", True)
+    # SK_Joy carries morph targets (ST_* soft-tissue springs every tick, CC face keys): without this flag a morphed
+    # section draws the default checker material in Play (2026-10-15; fix_joy_material_usage.py repairs saved masters)
+    mat.set_editor_property("used_with_morph_targets", True)
 
     def node(cls, param=None):
         n = EDIT.create_material_expression(mat, cls)
