@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-15T21:42Z [USER] Approves the shown V16 waistband/front hem ("looks good"). Preserve this fit; seated ride-up remains the next lead repair. PR74 stays draft/unmerged and the other recorded bar acceptance checks remain open.
+
 - 2026-10-15T21:38Z [TOOL] Draft PR74 created/attached against claude/joy-bartender; source head b6b48a1, no merge/package. GitHub source job passes including clang-format14; core/sanitizer and documentation workflows still running at this checkpoint. Fresh V16 reload passes but seated clothing remains lead-owned OPEN. Owned Unreal/Blender and temporary transcription helper are stopped. Current backlog is retained; no additional backlog implementation.
 
 - 2026-10-15T21:34Z [TOOL] Fresh Editor25 reload verifies saved V16 garment and preserved Astra/eye/physics/seat/staff-break settings; editor exited. Seated shorts remain OPEN. Final 49 structural, Python/content and scoped native format checks pass; draft source PR preparation continues.
