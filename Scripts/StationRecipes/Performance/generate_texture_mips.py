@@ -27,7 +27,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # Without settings (run from the editor's Output Log: py "<this file>") it does the station's list beside this file.
 ITEMS = json.load(open(os.environ.get("SS_MIPS_LIST") or os.path.join(HERE, "station_bundle_nomips.json")))
 REPORT = os.environ.get("SS_MIPS_REPORT") or os.path.join(
-    os.path.abspath(u.Paths.project_saved_dir()), "Logs", "generate_texture_mips_%s.json" % ("dry" if DRY else "applied"))
+    u.Paths.convert_relative_path_to_full(u.Paths.project_saved_dir()), "Logs", "generate_texture_mips_%s.json" % ("dry" if DRY else "applied"))
 
 
 def log(s):
