@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October15 Kraken integration:** Owner accepts the current walk and authorizes this character's game adoption. The private Wayfarer map `edeeed76` now has9,416 actors: the previous9,414 plus Kraken and its head-attached black MetaHair162. Saved reload,70seconds of route playback and a separate normal Survival-startup movement check pass the bounded native gate. No runtime C++ change, cook or package/release; original17 animation assets remain preserved and further animation work is deferred. Groom physics remains disabled. Cyborg/Silver stay closed and Abyss is untouched. [Review and exact evidence](validation/2026-10-15-kraken-npc.md).
+
 **October14 PR69 reconciliation:** An isolated CPU Editor build succeeds after preserving current main conversations/characters and prior station/boarding work. The owner checkout/game DLL/native map/content and packaged release are unchanged. Station implementation remains held and moves to a focused draft PR. The old five-path source cook failure is repaired without running a cook. [Exact checks and limits](validation/2026-10-14-pr69-closeout.md).
 
 **October14 owner closure:** Owner authorizes merging PR72 and closes Cyborg and Silver for now. The saved native checkpoint below stands; outstanding broader quality/voice/performance/package limits are historical limits, not active character work. Scoped disposable-file cleanup preserves current assets, sources and recovery evidence.

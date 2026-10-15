@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-15T09:48Z [USER] Kraken walk accepted for now; integrate NPC with fitted hair, defer other animation repair. Supersedes asset-only hold for Kraken only. [TOOL] New private22-package character/groom and two station actors saved/reloaded; map edeeed76/9,416, original9,414 actor identities/labels/transforms preserved.70s/141 samples travel48.39m with no stationary pairs; actual Survival startup adds20s/41 samples13.96m with correct head attachment. Hair simulation disabled;17original Blender action hashes preserved. Source recipe/review PR pending; owner appearance/package/performance remain unverified. Cyborg/Silver stay closed, Abyss untouched. Evidence .agent/local/Kraken_20261015; docs/validation/2026-10-15-kraken-npc.md.
+
 - 2026-10-14T16:52Z [USER] Make PR69 mergeable, move remaining station scope to a focused new PR, close verified resolved/obsolete issues, then hold all in-game changes.
 - 2026-10-14T16:52Z [TOOL] Isolated PR69/main reconciliation preserves newer conversations/characters and station/boarding work;11 conflict files resolved, four cook folders cover155 strings/zero missing. CPU Editor build succeeds40actions/73.66s;45 structural/8cook/13digest/8recipe/Python/144format/docs pass. Engine deprecation warnings retained. Owner checkout/native assets/saves/game DLL untouched; no editor/cook/release. Publication/fresh CI/new station PR pending.
 
