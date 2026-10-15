@@ -1,0 +1,3298 @@
+[
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLargeScreen01_4k_Damaged_Slot1_Normal.TX_GoliathLargeScreen01_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLargeScreen01_4k_Damaged_Slot2_Normal.TX_GoliathLargeScreen01_4k_Damaged_Slot2_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLeftLight01_4k_Damaged_Slot1_Normal.TX_GoliathLeftLight01_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLeftSupport01_4k_Damaged_Slot1_Normal.TX_GoliathLeftSupport01_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMagneticLight01_4k_Damaged_Slot1_Normal.TX_GoliathMagneticLight01_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMediumScreen01_4k_Damaged_Slot1_Normal.TX_GoliathMediumScreen01_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMediumScreen01_4k_Damaged_Slot2_Normal.TX_GoliathMediumScreen01_4k_Damaged_Slot2_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathPowerAlimSocketCables01_4k_Damaged_Slot1_Normal.TX_GoliathPowerAlimSocketCables01_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathPowerSupply01_4k_Damaged_Slot1_Normal.TX_GoliathPowerSupply01_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot1_Normal.TX_GoliathTable02_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot2_Normal.TX_GoliathTable02_4k_Damaged_Slot2_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot3_Normal.TX_GoliathTable02_4k_Damaged_Slot3_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot4_Normal.TX_GoliathTable02_4k_Damaged_Slot4_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot5_Normal.TX_GoliathTable02_4k_Damaged_Slot5_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot6_Normal.TX_GoliathTable02_4k_Damaged_Slot6_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot7_Normal.TX_GoliathTable02_4k_Damaged_Slot7_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot8_Normal.TX_GoliathTable02_4k_Damaged_Slot8_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathWorkPlan01_4k_Damaged_Slot1_Normal.TX_GoliathWorkPlan01_4k_Damaged_Slot1_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathWorkPlan01_4k_Damaged_Slot2_Normal.TX_GoliathWorkPlan01_4k_Damaged_Slot2_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Glass/TX_Glass01_Mirror_4k_Normal.TX_Glass01_Mirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Metal/TX_Metal01_OxydizedSteel_4k_Normal.TX_Metal01_OxydizedSteel_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Metal/TX_Metal07_ParkerizedSteel_4k_Normal.TX_Metal07_ParkerizedSteel_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Dust/TX_Dust01_FingerPrints_4k_Normal.TX_Dust01_FingerPrints_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Glass/TX_Glass01_Mirror_4k_Normal.TX_Glass01_Mirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Glass/TX_Glass02_BlackDirtyMirror_4k_Normal.TX_Glass02_BlackDirtyMirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid01_WasteOil_4k_Normal.TX_Liquid01_WasteOil_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid03_DropsOfWater_4k_Normal.TX_Liquid03_DropsOfWater_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid07_Stains_4k_Normal.TX_Liquid07_Stains_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid08_Stains_4k_Normal.TX_Liquid08_Stains_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal01_OxydizedSteel_4k_Normal.TX_Metal01_OxydizedSteel_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal02_AnodizedAluminium_4k_Normal.TX_Metal02_AnodizedAluminium_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal04_Copper_4k_Normal.TX_Metal04_Copper_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal07_ParkerizedSteel_4k_Normal.TX_Metal07_ParkerizedSteel_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal08_Iron_4k_Normal.TX_Metal08_Iron_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal09_Silver_4k_Normal.TX_Metal09_Silver_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Plastic/TX_Plastic02_4k_Normal.TX_Plastic02_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt01_4k_Normal.TX_Dirt01_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dust/TX_Dust01_FingerPrints_4k_Normal.TX_Dust01_FingerPrints_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass01_Mirror_4k_Normal.TX_Glass01_Mirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass02_BlackDirtyMirror_4k_Normal.TX_Glass02_BlackDirtyMirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass03_BlackDustyMirror_4k_Normal.TX_Glass03_BlackDustyMirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Liquid/TX_Liquid07_Stains_4k_Normal.TX_Liquid07_Stains_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal01_OxydizedSteel_4k_Normal.TX_Metal01_OxydizedSteel_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal02_AnodizedAluminium_4k_Normal.TX_Metal02_AnodizedAluminium_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal09_Silver_4k_Normal.TX_Metal09_Silver_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal10_Nickel_4k_Normal.TX_Metal10_Nickel_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal14_Damaged_4K_Normal.TX_Metal14_Damaged_4K_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Plastic/TX_Plastic01_4k_Normal.TX_Plastic01_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Plastic/TX_Plastic02_4k_Normal.TX_Plastic02_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Normal.T_Dirt01_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dust/T_Dust01_FingerPrints_4k_Normal.T_Dust01_FingerPrints_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass01_Mirror_4k_Normal.T_Glass01_Mirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass02_BlackDirtyMirror_4k_Normal.T_Glass02_BlackDirtyMirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass03_BlackDustyMirror_4k_Normal.T_Glass03_BlackDustyMirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass04_StickyMirror_4k_Normal.T_Glass04_StickyMirror_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass06_DropsOfWater_4k_Normal.T_Glass06_DropsOfWater_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid07_Stains_4k_Normal.T_Liquid07_Stains_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal01_OxydizedSteel_4k_Normal.T_Metal01_OxydizedSteel_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal04_Copper_4k_Normal.T_Metal04_Copper_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal09_Silver_4k_Normal.T_Metal09_Silver_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal14_Damaged_4K_Normal.T_Metal14_Damaged_4K_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal15_FlexibleAluminium_Normal.T_Metal15_FlexibleAluminium_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_Carbon01_4k_Normal.T_Carbon01_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket07_UniversalMask.T_FruitMarket07_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket08_UniversalMask.T_FruitMarket08_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Plastic/T_Plastic02_4k_Normal.T_Plastic02_4k_Normal",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_BC5",
+"kb": 16384,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLargeScreen01_4k_Damaged_Slot1_BaseColor.TX_GoliathLargeScreen01_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLargeScreen01_4k_Damaged_Slot1_Metallic.TX_GoliathLargeScreen01_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLargeScreen01_4k_Damaged_Slot1_Roughness.TX_GoliathLargeScreen01_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLargeScreen01_4k_Damaged_Slot2_BaseColor.TX_GoliathLargeScreen01_4k_Damaged_Slot2_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLargeScreen01_4k_Damaged_Slot2_Metallic.TX_GoliathLargeScreen01_4k_Damaged_Slot2_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLargeScreen01_4k_Damaged_Slot2_Roughness.TX_GoliathLargeScreen01_4k_Damaged_Slot2_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLeftLight01_4k_Damaged_Slot1_BaseColor.TX_GoliathLeftLight01_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLeftLight01_4k_Damaged_Slot1_Metallic.TX_GoliathLeftLight01_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLeftLight01_4k_Damaged_Slot1_Roughness.TX_GoliathLeftLight01_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLeftSupport01_4k_Damaged_Slot1_BaseColor.TX_GoliathLeftSupport01_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLeftSupport01_4k_Damaged_Slot1_Metallic.TX_GoliathLeftSupport01_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathLeftSupport01_4k_Damaged_Slot1_Roughness.TX_GoliathLeftSupport01_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMagneticLight01_4k_Damaged_Slot1_BaseColor.TX_GoliathMagneticLight01_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMagneticLight01_4k_Damaged_Slot1_Metallic.TX_GoliathMagneticLight01_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMagneticLight01_4k_Damaged_Slot1_Roughness.TX_GoliathMagneticLight01_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMediumScreen01_4k_Damaged_Slot1_BaseColor.TX_GoliathMediumScreen01_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMediumScreen01_4k_Damaged_Slot1_Metallic.TX_GoliathMediumScreen01_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMediumScreen01_4k_Damaged_Slot1_Roughness.TX_GoliathMediumScreen01_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMediumScreen01_4k_Damaged_Slot2_BaseColor.TX_GoliathMediumScreen01_4k_Damaged_Slot2_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMediumScreen01_4k_Damaged_Slot2_Metallic.TX_GoliathMediumScreen01_4k_Damaged_Slot2_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathMediumScreen01_4k_Damaged_Slot2_Roughness.TX_GoliathMediumScreen01_4k_Damaged_Slot2_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathPowerAlimSocketCables01_4k_Damaged_Slot1_BaseColor.TX_GoliathPowerAlimSocketCables01_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathPowerAlimSocketCables01_4k_Damaged_Slot1_Metallic.TX_GoliathPowerAlimSocketCables01_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathPowerAlimSocketCables01_4k_Damaged_Slot1_Roughness.TX_GoliathPowerAlimSocketCables01_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathPowerSupply01_4k_Damaged_Slot1_BaseColor.TX_GoliathPowerSupply01_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathPowerSupply01_4k_Damaged_Slot1_Metallic.TX_GoliathPowerSupply01_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathPowerSupply01_4k_Damaged_Slot1_Roughness.TX_GoliathPowerSupply01_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot1_BaseColor.TX_GoliathTable02_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot1_Metallic.TX_GoliathTable02_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot1_Roughness.TX_GoliathTable02_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot2_BaseColor.TX_GoliathTable02_4k_Damaged_Slot2_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot2_Metallic.TX_GoliathTable02_4k_Damaged_Slot2_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot2_Roughness.TX_GoliathTable02_4k_Damaged_Slot2_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot3_Roughness.TX_GoliathTable02_4k_Damaged_Slot3_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot4_Metallic.TX_GoliathTable02_4k_Damaged_Slot4_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot4_Roughness.TX_GoliathTable02_4k_Damaged_Slot4_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot5_BaseColor.TX_GoliathTable02_4k_Damaged_Slot5_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot5_Metallic.TX_GoliathTable02_4k_Damaged_Slot5_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot5_Roughness.TX_GoliathTable02_4k_Damaged_Slot5_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot6_BaseColor.TX_GoliathTable02_4k_Damaged_Slot6_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot6_Metallic.TX_GoliathTable02_4k_Damaged_Slot6_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot7_BaseColor.TX_GoliathTable02_4k_Damaged_Slot7_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot7_Metallic.TX_GoliathTable02_4k_Damaged_Slot7_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot7_Roughness.TX_GoliathTable02_4k_Damaged_Slot7_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot8_BaseColor.TX_GoliathTable02_4k_Damaged_Slot8_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot8_Metallic.TX_GoliathTable02_4k_Damaged_Slot8_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathTable02_4k_Damaged_Slot8_Roughness.TX_GoliathTable02_4k_Damaged_Slot8_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathWorkPlan01_4k_Damaged_Slot1_BaseColor.TX_GoliathWorkPlan01_4k_Damaged_Slot1_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathWorkPlan01_4k_Damaged_Slot1_Metallic.TX_GoliathWorkPlan01_4k_Damaged_Slot1_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathWorkPlan01_4k_Damaged_Slot1_Roughness.TX_GoliathWorkPlan01_4k_Damaged_Slot1_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathWorkPlan01_4k_Damaged_Slot2_BaseColor.TX_GoliathWorkPlan01_4k_Damaged_Slot2_BaseColor",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathWorkPlan01_4k_Damaged_Slot2_Metallic.TX_GoliathWorkPlan01_4k_Damaged_Slot2_Metallic",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Damaged/TX_GoliathWorkPlan01_4k_Damaged_Slot2_Roughness.TX_GoliathWorkPlan01_4k_Damaged_Slot2_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Screen_Library/GoliathWorkPlan01/Various/TX_GoliathWorkPlan01_4k_Center_Mask_Various01_04.TX_GoliathWorkPlan01_4k_Center_Mask_Various01_04",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Screen_Library/GoliathWorkPlan01/Various/TX_GoliathWorkPlan01_4k_Center_Mask_Various01_07.TX_GoliathWorkPlan01_4k_Center_Mask_Various01_07",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Screen_Library/GoliathWorkPlan01/Various/TX_GoliathWorkPlan01_4k_Sides_Mask_Various01_02.TX_GoliathWorkPlan01_4k_Sides_Mask_Various01_02",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Screen_Library/GoliathWorkPlan01/Various/TX_GoliathWorkPlan01_4k_Sides_Mask_Various01_05.TX_GoliathWorkPlan01_4k_Sides_Mask_Various01_05",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Screen_Library/GoliathWorkPlan01/Various/TX_GoliathWorkPlan01_4k_Sides_Mask_Various01_06.TX_GoliathWorkPlan01_4k_Sides_Mask_Various01_06",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/4k/Screen_Library/GoliathWorkPlan01/Various/TX_GoliathWorkPlan01_4k_Sides_Mask_Various01_08.TX_GoliathWorkPlan01_4k_Sides_Mask_Various01_08",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Glass/TX_Glass01_Mirror_4k_Albedo.TX_Glass01_Mirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Glass/TX_Glass01_Mirror_4k_Metalness.TX_Glass01_Mirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Glass/TX_Glass01_Mirror_4k_Roughness.TX_Glass01_Mirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Metal/TX_Metal01_OxydizedSteel_4k_Albedo.TX_Metal01_OxydizedSteel_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Metal/TX_Metal01_OxydizedSteel_4k_Metalness.TX_Metal01_OxydizedSteel_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Metal/TX_Metal01_OxydizedSteel_4k_Roughness.TX_Metal01_OxydizedSteel_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Metal/TX_Metal07_ParkerizedSteel_4k_Albedo.TX_Metal07_ParkerizedSteel_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Metal/TX_Metal07_ParkerizedSteel_4k_Metalness.TX_Metal07_ParkerizedSteel_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Covering_Library/Metal/TX_Metal07_ParkerizedSteel_4k_Roughness.TX_Metal07_ParkerizedSteel_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Dust/TX_Dust01_FingerPrints_4k_Albedo.TX_Dust01_FingerPrints_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Dust/TX_Dust01_FingerPrints_4k_Mask1.TX_Dust01_FingerPrints_4k_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Dust/TX_Dust01_FingerPrints_4k_Mask2.TX_Dust01_FingerPrints_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Dust/TX_Dust01_FingerPrints_4k_Metalness.TX_Dust01_FingerPrints_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Dust/TX_Dust01_FingerPrints_4k_Roughness.TX_Dust01_FingerPrints_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_Charge_V1_UniversalMask.TX_Charge_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_ControlComputer_UniversalMask2.TX_ControlComputer_UniversalMask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_CosmosAdvertisement_V1_UniversalMask7.TX_CosmosAdvertisement_V1_UniversalMask7",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_CosmosAdvertisement_V1_UniversalMask8.TX_CosmosAdvertisement_V1_UniversalMask8",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_CosmosAdvertisement_V1_UniversalMask9.TX_CosmosAdvertisement_V1_UniversalMask9",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_CosmsBottleLabel_V1_UniversalMask.TX_CosmsBottleLabel_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_Curve_V2_UniversalMask.TX_Curve_V2_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_ElectricalCircuit_UniversalMask.TX_ElectricalCircuit_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_Grid_V1_UniversalMask.TX_Grid_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_KeosCorporationAdvertisement_V1_UniversalMask2.TX_KeosCorporationAdvertisement_V1_UniversalMask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_KeosCorporationAdvertisement_V1_UniversalMask4.TX_KeosCorporationAdvertisement_V1_UniversalMask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_KeosCorporationAdvertisement_V1_UniversalMask5.TX_KeosCorporationAdvertisement_V1_UniversalMask5",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_LowCharge_V1_UniversalMask.TX_LowCharge_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_NoSignal_V1_UniversalMask.TX_NoSignal_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_NoSignal_V2_UniversalMask.TX_NoSignal_V2_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_Rec_V1_UniversalMask.TX_Rec_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_RobotScreen_V1_UniversalMask.TX_RobotScreen_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_RobotScreen_V1_UniversalMask5.TX_RobotScreen_V1_UniversalMask5",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_RobotScreen_V2_UniversalMask.TX_RobotScreen_V2_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_RobotScreen_V3_UniversalMask.TX_RobotScreen_V3_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_RobotScreen_V3_UniversalMask2.TX_RobotScreen_V3_UniversalMask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_Spaceman_V1_UniversalMask3.TX_Spaceman_V1_UniversalMask3",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_Spaceman_V1_UniversalMask4.TX_Spaceman_V1_UniversalMask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_Spaceman_V1_UniversalMask6.TX_Spaceman_V1_UniversalMask6",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_Spaceman_V2_UniversalMask2.TX_Spaceman_V2_UniversalMask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_TitaniumIndustryStation_V1_Part2_Mask1.TX_TitaniumIndustryStation_V1_Part2_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Emissive/TX_TitaniumIndustryStation_V1_Part2_Mask2.TX_TitaniumIndustryStation_V1_Part2_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Glass/TX_Glass01_Mirror_4k_Albedo.TX_Glass01_Mirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Glass/TX_Glass01_Mirror_4k_Metalness.TX_Glass01_Mirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Glass/TX_Glass01_Mirror_4k_Roughness.TX_Glass01_Mirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Glass/TX_Glass02_BlackDirtyMirror_4k_Albedo.TX_Glass02_BlackDirtyMirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Glass/TX_Glass02_BlackDirtyMirror_4k_Metalness.TX_Glass02_BlackDirtyMirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Glass/TX_Glass02_BlackDirtyMirror_4k_Roughness.TX_Glass02_BlackDirtyMirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid01_WasteOil_4k_Albedo.TX_Liquid01_WasteOil_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid01_WasteOil_4k_Mask6.TX_Liquid01_WasteOil_4k_Mask6",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid01_WasteOil_4k_Metalness.TX_Liquid01_WasteOil_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid01_WasteOil_4k_Roughness.TX_Liquid01_WasteOil_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid03_DropsOfWater_4k_Albedo.TX_Liquid03_DropsOfWater_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid03_DropsOfWater_4k_Mask1.TX_Liquid03_DropsOfWater_4k_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid03_DropsOfWater_4k_Metalness.TX_Liquid03_DropsOfWater_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid03_DropsOfWater_4k_Roughness.TX_Liquid03_DropsOfWater_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid07_Stains_4k_Albedo.TX_Liquid07_Stains_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid07_Stains_4k_Mask2.TX_Liquid07_Stains_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid07_Stains_4k_Metalness.TX_Liquid07_Stains_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid07_Stains_4k_Roughness.TX_Liquid07_Stains_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid08_Stains_4k_Albedo.TX_Liquid08_Stains_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid08_Stains_4k_Mask1.TX_Liquid08_Stains_4k_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid08_Stains_4k_Metalness.TX_Liquid08_Stains_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Liquid/TX_Liquid08_Stains_4k_Roughness.TX_Liquid08_Stains_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal01_OxydizedSteel_4k_Albedo.TX_Metal01_OxydizedSteel_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal01_OxydizedSteel_4k_Metalness.TX_Metal01_OxydizedSteel_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal01_OxydizedSteel_4k_Roughness.TX_Metal01_OxydizedSteel_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal02_AnodizedAluminium_4k_Albedo.TX_Metal02_AnodizedAluminium_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal02_AnodizedAluminium_4k_Metalness.TX_Metal02_AnodizedAluminium_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal02_AnodizedAluminium_4k_Roughness.TX_Metal02_AnodizedAluminium_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal04_Copper_4k_Albedo.TX_Metal04_Copper_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal04_Copper_4k_Metalness.TX_Metal04_Copper_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal04_Copper_4k_Roughness.TX_Metal04_Copper_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal07_ParkerizedSteel_4k_Albedo.TX_Metal07_ParkerizedSteel_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal07_ParkerizedSteel_4k_Metalness.TX_Metal07_ParkerizedSteel_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal07_ParkerizedSteel_4k_Roughness.TX_Metal07_ParkerizedSteel_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal08_Iron_4k_Albedo.TX_Metal08_Iron_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal08_Iron_4k_Metalness.TX_Metal08_Iron_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal08_Iron_4k_Roughness.TX_Metal08_Iron_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal09_Silver_4k_Albedo.TX_Metal09_Silver_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal09_Silver_4k_Metalness.TX_Metal09_Silver_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Metal/TX_Metal09_Silver_4k_Roughness.TX_Metal09_Silver_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Plastic/TX_Plastic02_4k_Albedo.TX_Plastic02_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Plastic/TX_Plastic02_4k_Metalness.TX_Plastic02_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Covering_Library/Plastic/TX_Plastic02_4k_Roughness.TX_Plastic02_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt01_4k_Albedo.TX_Dirt01_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt01_4k_Mask1.TX_Dirt01_4k_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt01_4k_Mask2.TX_Dirt01_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt01_4k_Mask4.TX_Dirt01_4k_Mask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt01_4k_Mask5.TX_Dirt01_4k_Mask5",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt01_4k_Metalness.TX_Dirt01_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt01_4k_Roughness.TX_Dirt01_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt02_4k_Mask7.TX_Dirt02_4k_Mask7",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dirt/TX_Dirt04_4k_Mask3.TX_Dirt04_4k_Mask3",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dust/TX_Dust01_FingerPrints_4k_Albedo.TX_Dust01_FingerPrints_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dust/TX_Dust01_FingerPrints_4k_Mask2.TX_Dust01_FingerPrints_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dust/TX_Dust01_FingerPrints_4k_Metalness.TX_Dust01_FingerPrints_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Dust/TX_Dust01_FingerPrints_4k_Roughness.TX_Dust01_FingerPrints_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_CosmosAdvertisement_V1_UniversalMask3.TX_CosmosAdvertisement_V1_UniversalMask3",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_CosmosAdvertisement_V1_UniversalMask9.TX_CosmosAdvertisement_V1_UniversalMask9",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_Curve_V1_UniversalMask.TX_Curve_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_Curve_V2_UniversalMask.TX_Curve_V2_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_DigitalPadGlassNumeric_V1_UniversalMask.TX_DigitalPadGlassNumeric_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_DigitalPrintLockUnlock_V1_UniversalMask.TX_DigitalPrintLockUnlock_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_DoorScreen_V1_Mask1.TX_DoorScreen_V1_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_DoorScreen_V1_Mask2.TX_DoorScreen_V1_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_DoorScreen_V1_Mask4.TX_DoorScreen_V1_Mask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_ElectricalCircuit_UniversalMask.TX_ElectricalCircuit_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_EnergyStabilisationUnit1_UniversalMask.TX_EnergyStabilisationUnit1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_KeosCorporationAdvertisement_V1_UniversalMask3.TX_KeosCorporationAdvertisement_V1_UniversalMask3",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_KeosCorporationAdvertisement_V1_UniversalMask4.TX_KeosCorporationAdvertisement_V1_UniversalMask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_KeosCorporationAdvertisement_V1_UniversalMask5.TX_KeosCorporationAdvertisement_V1_UniversalMask5",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_RobotScreen_V1_UniversalMask.TX_RobotScreen_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_RobotScreen_V1_UniversalMask3.TX_RobotScreen_V1_UniversalMask3",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_RobotScreen_V1_UniversalMask5.TX_RobotScreen_V1_UniversalMask5",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_TitaniumIndustryStation_V1_Part2_Mask1.TX_TitaniumIndustryStation_V1_Part2_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_TitaniumIndustryStation_V1_Part2_Mask2.TX_TitaniumIndustryStation_V1_Part2_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Emissive/TX_Warning1_UniversalMask.TX_Warning1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass01_Mirror_4k_Albedo.TX_Glass01_Mirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass01_Mirror_4k_Metalness.TX_Glass01_Mirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass01_Mirror_4k_Roughness.TX_Glass01_Mirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass02_BlackDirtyMirror_4k_Albedo.TX_Glass02_BlackDirtyMirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass02_BlackDirtyMirror_4k_Metalness.TX_Glass02_BlackDirtyMirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass02_BlackDirtyMirror_4k_Roughness.TX_Glass02_BlackDirtyMirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass03_BlackDustyMirror_4k_Albedo.TX_Glass03_BlackDustyMirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass03_BlackDustyMirror_4k_Metalness.TX_Glass03_BlackDustyMirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Glass/TX_Glass03_BlackDustyMirror_4k_Roughness.TX_Glass03_BlackDustyMirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Liquid/TX_Liquid07_Stains_4k_Albedo.TX_Liquid07_Stains_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Liquid/TX_Liquid07_Stains_4k_Mask2.TX_Liquid07_Stains_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Liquid/TX_Liquid07_Stains_4k_Metalness.TX_Liquid07_Stains_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Liquid/TX_Liquid07_Stains_4k_Roughness.TX_Liquid07_Stains_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal01_OxydizedSteel_4k_Albedo.TX_Metal01_OxydizedSteel_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal01_OxydizedSteel_4k_Metalness.TX_Metal01_OxydizedSteel_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal01_OxydizedSteel_4k_Roughness.TX_Metal01_OxydizedSteel_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal02_AnodizedAluminium_4k_Albedo.TX_Metal02_AnodizedAluminium_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal02_AnodizedAluminium_4k_Metalness.TX_Metal02_AnodizedAluminium_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal02_AnodizedAluminium_4k_Roughness.TX_Metal02_AnodizedAluminium_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal09_Silver_4k_Albedo.TX_Metal09_Silver_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal09_Silver_4k_Metalness.TX_Metal09_Silver_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal09_Silver_4k_Roughness.TX_Metal09_Silver_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal10_Nickel_4k_Albedo.TX_Metal10_Nickel_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal10_Nickel_4k_Metalness.TX_Metal10_Nickel_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal10_Nickel_4k_Roughness.TX_Metal10_Nickel_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal14_Damaged_4K_Albedo.TX_Metal14_Damaged_4K_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal14_Damaged_4K_Mask1.TX_Metal14_Damaged_4K_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal14_Damaged_4K_Metalness.TX_Metal14_Damaged_4K_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Metal/TX_Metal14_Damaged_4K_Roughness.TX_Metal14_Damaged_4K_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Mud/TX_Mud02_4k_Mask2.TX_Mud02_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Plastic/TX_Plastic01_4k_Albedo.TX_Plastic01_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Plastic/TX_Plastic01_4k_Metalness.TX_Plastic01_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Plastic/TX_Plastic01_4k_Roughness.TX_Plastic01_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Plastic/TX_Plastic02_4k_Albedo.TX_Plastic02_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Plastic/TX_Plastic02_4k_Metalness.TX_Plastic02_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Plastic/TX_Plastic02_4k_Roughness.TX_Plastic02_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Albedo.T_Dirt01_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Mask1.T_Dirt01_4k_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Mask2.T_Dirt01_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Mask3.T_Dirt01_4k_Mask3",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Mask4.T_Dirt01_4k_Mask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Mask5.T_Dirt01_4k_Mask5",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Metalness.T_Dirt01_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt01_4k_Roughness.T_Dirt01_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt02_4k_Mask2.T_Dirt02_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt02_4k_Mask3.T_Dirt02_4k_Mask3",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt02_4k_Mask4.T_Dirt02_4k_Mask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt02_4k_Mask5.T_Dirt02_4k_Mask5",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt02_4k_Mask7.T_Dirt02_4k_Mask7",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt03_4k_Mask1.T_Dirt03_4k_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt03_4k_Mask2.T_Dirt03_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt03_4k_Mask4.T_Dirt03_4k_Mask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt04_4k_Mask4.T_Dirt04_4k_Mask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dirt/T_Dirt05_4k_Mask4.T_Dirt05_4k_Mask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dust/T_Dust01_FingerPrints_4k_Albedo.T_Dust01_FingerPrints_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dust/T_Dust01_FingerPrints_4k_Mask2.T_Dust01_FingerPrints_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dust/T_Dust01_FingerPrints_4k_Metalness.T_Dust01_FingerPrints_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Dust/T_Dust01_FingerPrints_4k_Roughness.T_Dust01_FingerPrints_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Emissive/T_ControlComputer_UniversalMask.T_ControlComputer_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Emissive/T_ElectricalCircuit_UniversalMask.T_ElectricalCircuit_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Emissive/T_EnergyStabilisationUnit1_UniversalMask.T_EnergyStabilisationUnit1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Emissive/T_FruitMarket01_UniversalMask.T_FruitMarket01_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Emissive/T_Grid_V1_UniversalMask.T_Grid_V1_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Emissive/T_MachineOperatingArea_UniversalMask.T_MachineOperatingArea_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Emissive/T_Unlocked_Mask.T_Unlocked_Mask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Emissive/T_Warning01_UniversalMask.T_Warning01_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass01_Mirror_4k_Albedo.T_Glass01_Mirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass01_Mirror_4k_Metalness.T_Glass01_Mirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass01_Mirror_4k_Roughness.T_Glass01_Mirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass02_BlackDirtyMirror_4k_Albedo.T_Glass02_BlackDirtyMirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass02_BlackDirtyMirror_4k_Metalness.T_Glass02_BlackDirtyMirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass02_BlackDirtyMirror_4k_Roughness.T_Glass02_BlackDirtyMirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass03_BlackDustyMirror_4k_Albedo.T_Glass03_BlackDustyMirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass03_BlackDustyMirror_4k_Metalness.T_Glass03_BlackDustyMirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass03_BlackDustyMirror_4k_Roughness.T_Glass03_BlackDustyMirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass04_StickyMirror_4k_Albedo.T_Glass04_StickyMirror_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass04_StickyMirror_4k_Metalness.T_Glass04_StickyMirror_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass04_StickyMirror_4k_Roughness.T_Glass04_StickyMirror_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass06_DropsOfWater_4k_Albedo.T_Glass06_DropsOfWater_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass06_DropsOfWater_4k_Metalness.T_Glass06_DropsOfWater_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Glass/T_Glass06_DropsOfWater_4k_Roughness.T_Glass06_DropsOfWater_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid02_StickySubstance_4k_Mask2.T_Liquid02_StickySubstance_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid06_DirtFlow_4k_Albedo.T_Liquid06_DirtFlow_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid06_DirtFlow_4k_Mask2.T_Liquid06_DirtFlow_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid06_DirtFlow_4k_Metalness.T_Liquid06_DirtFlow_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid06_DirtFlow_4k_Roughness.T_Liquid06_DirtFlow_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid07_Stains_4k_Albedo.T_Liquid07_Stains_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid07_Stains_4k_Mask2.T_Liquid07_Stains_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid07_Stains_4k_Metalness.T_Liquid07_Stains_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid07_Stains_4k_Roughness.T_Liquid07_Stains_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Liquid/T_Liquid10_DirtFlow_4k_Mask1.T_Liquid10_DirtFlow_4k_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal01_OxydizedSteel_4k_Albedo.T_Metal01_OxydizedSteel_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal01_OxydizedSteel_4k_Metalness.T_Metal01_OxydizedSteel_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal01_OxydizedSteel_4k_Roughness.T_Metal01_OxydizedSteel_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal02_AnodizedAluminium_4k_Roughness.T_Metal02_AnodizedAluminium_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal04_Copper_4k_Albedo.T_Metal04_Copper_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal04_Copper_4k_Metalness.T_Metal04_Copper_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal04_Copper_4k_Roughness.T_Metal04_Copper_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal09_Silver_4k_Albedo.T_Metal09_Silver_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal09_Silver_4k_Metalness.T_Metal09_Silver_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal09_Silver_4k_Roughness.T_Metal09_Silver_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal14_Damaged_4K_Albedo.T_Metal14_Damaged_4K_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal14_Damaged_4K_Mask1.T_Metal14_Damaged_4K_Mask1",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal14_Damaged_4K_Metalness.T_Metal14_Damaged_4K_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal14_Damaged_4K_Roughness.T_Metal14_Damaged_4K_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal15_FlexibleAluminium_Albedo.T_Metal15_FlexibleAluminium_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal15_FlexibleAluminium_Metalness.T_Metal15_FlexibleAluminium_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Metal/T_Metal15_FlexibleAluminium_Roughness.T_Metal15_FlexibleAluminium_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Mud/T_Mud01_4k_Mask3.T_Mud01_4k_Mask3",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Mud/T_Mud01_4k_Mask4.T_Mud01_4k_Mask4",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Mud/T_Mud01_4k_Mask5.T_Mud01_4k_Mask5",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Mud/T_Mud02_4k_Mask2.T_Mud02_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_Carbon01_4k_Mask2.T_Carbon01_4k_Mask2",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_Carbon01_4k_Metalness.T_Carbon01_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_Carbon01_4k_Roughness.T_Carbon01_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket03_UniversalMask.T_FruitMarket03_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket04_UniversalMask.T_FruitMarket04_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket05_UniversalMask.T_FruitMarket05_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket10_UniversalMask.T_FruitMarket10_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket11_UniversalMask.T_FruitMarket11_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket12_UniversalMask.T_FruitMarket12_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket13_UniversalMask.T_FruitMarket13_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket14_UniversalMask.T_FruitMarket14_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket15_UniversalMask.T_FruitMarket15_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket16_UniversalMask.T_FruitMarket16_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket17_UniversalMask.T_FruitMarket17_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket18_UniversalMask.T_FruitMarket18_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket19_UniversalMask.T_FruitMarket19_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_FruitMarket20_UniversalMask.T_FruitMarket20_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_TechnologyPages01_UniversalMask.T_TechnologyPages01_UniversalMask",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Plastic/T_Plastic02_4k_Albedo.T_Plastic02_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Plastic/T_Plastic02_4k_Metalness.T_Plastic02_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Plastic/T_Plastic02_4k_Roughness.T_Plastic02_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Rock/T_RedCanyon13_4k_Albedo.T_RedCanyon13_4k_Albedo",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Rock/T_RedCanyon13_4k_Metalness.T_RedCanyon13_4k_Metalness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Rock/T_RedCanyon13_4k_Roughness.T_RedCanyon13_4k_Roughness",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Rust/T_Rust03_4k_Mask_02.T_Rust03_4k_Mask_02",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Rust/T_Rust03_4k_Mask_04.T_Rust03_4k_Mask_04",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Rust/T_Rust07_4k_Mask_01.T_Rust07_4k_Mask_01",
+"w": 4096,
+"h": 4096,
+"fmt": "PF_DXT1",
+"kb": 8192,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/Useful/TX_Black.TX_Black",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/Useful/TX_MasterMateria01.TX_MasterMateria01",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/Useful/TX_MasterMateria02.TX_MasterMateria02",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/Useful/TX_Normal.TX_Normal",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_WorldNormalMap"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/Useful/TX_White.TX_White",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Useful/TX_Black.TX_Black",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Useful/TX_MasterMaterial01.TX_MasterMaterial01",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P2_StarterPack/Textures/Useful/TX_White.TX_White",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Useful/TX_Black.TX_Black",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Useful/TX_MasterMaterial01.TX_MasterMaterial01",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Useful/TX_MasterMaterial02.TX_MasterMaterial02",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Useful/TX_MasterMaterial03.TX_MasterMaterial03",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Useful/TX_MasterMaterial04.TX_MasterMaterial04",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P3_ComputerStation/Textures/Useful/TX_White.TX_White",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Useful/TX_Black.TX_Black",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Useful/TX_MasterMaterial01.TX_MasterMaterial01",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Useful/TX_MasterMaterial02.TX_MasterMaterial02",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P4_Genesis_Vol1/Textures/Useful/TX_White.TX_White",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_Black.T_Black",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_MasterMaterial01.T_MasterMaterial01",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_MasterMaterial02.T_MasterMaterial02",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_White.T_White",
+"w": 1014,
+"h": 1024,
+"fmt": "PF_B8G8R8A8",
+"kb": 4096,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/2k/Cleaned/TX_GoliathMediumScreen01_2k_Cleaned_Slot2_Roughness.TX_GoliathMediumScreen01_2k_Cleaned_Slot2_Roughness",
+"w": 2048,
+"h": 2048,
+"fmt": "PF_DXT1",
+"kb": 2048,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/2k/Cleaned/TX_GoliathWorkPlan01_2k_Cleaned_Slot1_Roughness.TX_GoliathWorkPlan01_2k_Cleaned_Slot1_Roughness",
+"w": 2048,
+"h": 2048,
+"fmt": "PF_DXT1",
+"kb": 2048,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P1_WorkStation/Textures/2k/Cleaned/TX_GoliathWorkPlan01_2k_Cleaned_Slot2_Roughness.TX_GoliathWorkPlan01_2k_Cleaned_Slot2_Roughness",
+"w": 2048,
+"h": 2048,
+"fmt": "PF_DXT1",
+"kb": 2048,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_ISM.T_ISM",
+"w": 720,
+"h": 720,
+"fmt": "PF_DXT5",
+"kb": 576,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_ISM_Small.T_ISM_Small",
+"w": 720,
+"h": 720,
+"fmt": "PF_DXT5",
+"kb": 576,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_Mech.T_Mech",
+"w": 720,
+"h": 720,
+"fmt": "PF_DXT5",
+"kb": 576,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_Mech_Small.T_Mech_Small",
+"w": 720,
+"h": 720,
+"fmt": "PF_DXT5",
+"kb": 576,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Useful/T_Translation.T_Translation",
+"w": 720,
+"h": 720,
+"fmt": "PF_DXT5",
+"kb": 576,
+"lod": "TEXTUREGROUP_World"
+},
+{
+"object": "/Game/P1toP5_Bundle/P5_FruitSeller/Textures/Other/T_LCDScreen_UniversalMask.T_LCDScreen_UniversalMask",
+"w": 256,
+"h": 256,
+"fmt": "PF_DXT1",
+"kb": 32,
+"lod": "TEXTUREGROUP_World"
+}
+]
