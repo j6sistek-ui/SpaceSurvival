@@ -1,5 +1,7 @@
 # SpaceSurvival whole-project solution catalog
 
+**KRAKEN-XIUXIAN-20261015 — owned Immortal Cultivation MetaHuman outfit (WBS8.4/10.3):** Owner selected the blue/white/gold gown on October15. Acquisition: already downloaded on M: under FabLibrary/Immortal_Cultivation_Oriental_style_women_s_clothing_fully_adapted_to_body_shape-a261e551/metahuman/UE_5.7/oa_xiuxianwearoutfit_v11.mhpkg; no purchase or installation. Evaluation: original 13,373 garment triangles reduced only by omitted shoes/head ornament to 12,657; fitted to Kraken with original UVs/maps/rig retained. V4 uses 6,459 masked and 6,198 sheer triangles, improving native fabric transparency without changing the model. Whole-project value: reuses owned art on the restored walking station NPC. Saved local map uses V4; fresh reload and normal walk pass; owner appearance review remains open, no full-animation cloth or performance acceptance. Next: RPT-20261015-03. [Evidence and storage](../validation/2026-10-15-kraken-gown.md).
+
 **KRAKEN-METAHAIR162-20261015 — owned MetaHair162 strand groom (WBS8.4/10.3):** Owner-supplied `.mhpkg` from the local Fab library, explicitly selected for Kraken in Unreal. Imported/fitted black derivative is adopted on the new Kraken NPC, with head attachment, softened highlights and simulation disabled. Saved reload and native walking verify the scoped use; it is shorter/wider than the reference. No new acquisition or host plugin installation. Whole-project value: reusable owned hair presentation; other characters and broader hair physics remain separate decisions. Next: owner appearance review; packaging/performance remain unverified. [Provenance and evidence](../validation/2026-10-15-kraken-npc.md).
 
 **October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.
@@ -345,7 +347,7 @@ KNOWN_ISSUES owns priority and acceptance.
 ### LIB-20261006-ORBITPOOL — owned lounge pool set and crew
 
 - **Acquisition:** already installed, not purchased or downloaded by this pass.
-  `Downloads/down/MLR_PoolTable_fb187e14.zip` matches all34 installed private
+  `Downloads/down/MLR_PoolTable_fb187e14.zip` matches all 34 installed private
   Rocket packages byte for byte. Native probes resolve the table, separate base,
   cue, rack, triangle and ball to the existing4K material. The source contains
   no pool-playing animation.
