@@ -78,6 +78,18 @@ public:
     TObjectPtr<UAnimSequence> CarryAnimation;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar")
     TObjectPtr<UAnimSequence> ServeAnimation;
+    /** Optional matched pair for a palm-supported tray; normal service remains the fallback. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    TObjectPtr<UAnimSequence> TrayCarryAnimation;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    TObjectPtr<UAnimSequence> TrayServeAnimation;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    FName TrayHand = TEXT("hand_l");
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    FTransform TrayGrip;
+    /** Glass placement in tray space, including its serving scale. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    FTransform TrayGlassPlacement;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar")
     TObjectPtr<UAnimSequence> SeatedAnimation;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar")
@@ -113,6 +125,8 @@ public:
     TObjectPtr<UStaticMeshComponent> Bottle;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar")
     TObjectPtr<UStaticMeshComponent> ServedGlass;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar|Tray")
+    TObjectPtr<UStaticMeshComponent> ServingTray;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar")
     ESSBarServiceState ServiceState = ESSBarServiceState::Available;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar")
@@ -157,7 +171,10 @@ private:
     int32 PathIndex = 0, BarAction = INDEX_NONE;
     float StateTime = 0, BlockedTime = 0, ChatterTime = 8.f;
     bool bDrinkTogether = false;
+    bool bUsingServingTray = false;
     void ConfigureParts();
+    bool CanUseServingTray() const;
+    void BeginCarryingDrink();
     void PlayService(UAnimSequence *Clip, bool bLoop, bool bRestart = false);
     void SetState(ESSBarServiceState State, const FString &Activity);
     bool PlanPath(const FVector &Destination);
