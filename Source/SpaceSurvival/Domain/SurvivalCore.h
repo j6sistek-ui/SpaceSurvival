@@ -202,6 +202,7 @@ struct Settings
     double mouseSensitivity = 1.0, controllerSensitivity = 1.0, uiScale = 1.0;
     bool subtitles = true, cameraShake = true, motionBlur = false;
     bool invertPitch = false, toggleBoost = false, toggleBrake = false;
+    bool diagnosticsOverlay = false;
     int quality = 2, frameLimit = 120;
 };
 

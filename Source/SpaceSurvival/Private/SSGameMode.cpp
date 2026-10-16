@@ -2019,6 +2019,8 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                  16);
         AddEntry(FString::Printf(TEXT("Frame limit: %d FPS"), S.settings.frameLimit), 17);
         AddEntry(FString::Printf(TEXT("Motion blur: %s"), S.settings.motionBlur ? TEXT("On") : TEXT("Off")), 18);
+        AddEntry(FString::Printf(TEXT("Diagnostics: %s"), S.settings.diagnosticsOverlay ? TEXT("On") : TEXT("Off")),
+                 96);
         break;
     case ESSPanel::Audio:
         PanelTitle = TEXT("AUDIO");
@@ -2387,6 +2389,9 @@ bool ASSGameMode::AdjustSetting(int32 Index, int32 Direction)
     case 18:
         Settings.motionBlur = Step > 0;
         break;
+    case 96:
+        Settings.diagnosticsOverlay = Step > 0;
+        break;
     case 24:
         Settings.invertPitch = Step > 0;
         break;
@@ -2583,7 +2588,7 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
         OpenPanel(ESSPanel::History);
         return;
     }
-    if (A >= 13 && A <= 27)
+    if ((A >= 13 && A <= 27) || A == 96)
     {
         switch (A)
         {
@@ -2604,6 +2609,9 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
             break;
         case 18:
             S.settings.motionBlur = !S.settings.motionBlur;
+            break;
+        case 96:
+            S.settings.diagnosticsOverlay = !S.settings.diagnosticsOverlay;
             break;
         case 19:
             S.settings.masterVolume = S.settings.masterVolume >= .99 ? 0 : S.settings.masterVolume + .1;

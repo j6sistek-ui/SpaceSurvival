@@ -646,9 +646,19 @@ void SerializationAndValidation()
     s.settings.uiScale = 1.5;
     s.settings.toggleBoost = true;
     s.settings.cameraShake = false;
+    s.settings.diagnosticsOverlay = true;
     const auto settingsPayload = SS::EncodeSettings(s.settings);
     CHECK(SS::DecodeSettings(settingsPayload, settings, error));
     CHECK(SS::EncodeSettings(settings) == settingsPayload);
+    CHECK(settings.diagnosticsOverlay);
+    const auto legacySettingsPayload = settingsPayload.substr(0, settingsPayload.find_last_of(' '));
+    CHECK(SS::DecodeSettings(legacySettingsPayload, settings, error));
+    CHECK(!settings.diagnosticsOverlay);
+    const auto legacyOutput = SS::EncodeSettings(settings);
+    CHECK(!SS::DecodeSettings(legacySettingsPayload + " 2", settings, error));
+    CHECK(SS::EncodeSettings(settings) == legacyOutput);
+    CHECK(!SS::DecodeSettings(legacySettingsPayload + " 1 extra", settings, error));
+    CHECK(SS::EncodeSettings(settings) == legacyOutput);
 
     const auto unchanged = SS::EncodeRun(decoded);
     CHECK(!SS::DecodeRun("SS RUN 999", decoded, error));

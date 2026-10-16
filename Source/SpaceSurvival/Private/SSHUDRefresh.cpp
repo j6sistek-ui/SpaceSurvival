@@ -370,11 +370,14 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
             }
             Value.TrimStartAndEndInline();
             RefreshText(Label, InnerX + 18.f, Y, RowPixels, UIWhite, LabelW - 18.f);
-            const bool Toggle = Entry.Action == 13 || Entry.Action == 15 || Entry.Action == 18;
+            const bool Toggle = Entry.Action == 13 || Entry.Action == 15 || Entry.Action == 18 || Entry.Action == 96;
             const bool Slider = (Entry.Action >= 19 && Entry.Action <= 23);
             if (Toggle)
             {
-                const bool On = Entry.Action == 13 ? V.subtitles : Entry.Action == 15 ? V.cameraShake : V.motionBlur;
+                const bool On = Entry.Action == 13   ? V.subtitles
+                                : Entry.Action == 15 ? V.cameraShake
+                                : Entry.Action == 96 ? V.diagnosticsOverlay
+                                                     : V.motionBlur;
                 RefreshImage(On ? TEXT("ToggleOn") : TEXT("ToggleOff"), ControlX, Y - 20, 162, 88);
             }
             else if (Slider)

@@ -131,6 +131,17 @@ enum class ESSTalkPhase : uint8
     Thinking
 };
 
+/** Read-only local service status. Contains no prompts, dialogue, paths or server responses. */
+struct FSSTalkDiagnostics
+{
+    ESSTalkPhase Phase = ESSTalkPhase::Idle;
+    bool Installed = false, Enabled = false, LlamaRunning = false, WhisperRunning = false;
+    bool VoiceInstalled = false, VoiceEnabled = false, VoiceRunning = false, VoiceReady = false;
+    bool TalkError = false;
+    int32 VoiceQueue = 0, VoiceRestarts = 0, VoiceFailures = 0;
+    double RequestSeconds = 0;
+};
+
 /** Owns the microphone, the two sidecar servers and one conversation per character. Config/DefaultNpcTalk.ini. */
 UCLASS(Config = NpcTalk)
 class SPACESURVIVAL_API USSNpcTalkSubsystem : public UGameInstanceSubsystem
@@ -146,6 +157,8 @@ public:
         return bInstalled;
     }
     bool IsEnabled() const;
+    /** Does not launch, contact or restart helpers. Call sparingly while diagnostics are visible. */
+    FSSTalkDiagnostics Diagnostics() const;
     /** The station loads the better talker on arrival; launching into a wave kills the server. */
     void SetContext(ESSTalkContext Context);
     ESSTalkPhase Phase() const
@@ -384,7 +397,7 @@ private:
     bool bVoiceInstalled = false, bVoiceReady = false;
     FProcHandle VoiceProc;
     double VoiceStartedAt = 0.0, PrerenderStartedAt = 0.0;
-    int32 VoiceCrashes = 0, NextVoiceJob = 0, InFlightVoiceJob = 0, Prerendered = 0;
+    int32 VoiceCrashes = 0, VoiceFailures = 0, NextVoiceJob = 0, InFlightVoiceJob = 0, Prerendered = 0;
     TArray<FVoiceJob> VoiceJobs;
     TMap<FString, SSNpcTalk::FVoiceClip> VoiceCache;
     TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> VoicePending;

@@ -926,7 +926,7 @@ std::string EncodeSettings(const Settings &s)
     out << s.masterVolume << ' ' << s.musicVolume << ' ' << s.effectsVolume << ' ' << s.mouseSensitivity << ' '
         << s.controllerSensitivity << ' ' << s.uiScale << ' ' << s.subtitles << ' ' << s.cameraShake << ' '
         << s.motionBlur << ' ' << s.invertPitch << ' ' << s.toggleBoost << ' ' << s.toggleBrake << ' ' << s.quality
-        << ' ' << s.frameLimit;
+        << ' ' << s.frameLimit << ' ' << s.diagnosticsOverlay;
     return out.str();
 }
 
@@ -946,6 +946,13 @@ bool DecodeSettings(const std::string &text, Settings &output, std::string &erro
     in >> s.masterVolume >> s.musicVolume >> s.effectsVolume >> s.mouseSensitivity >> s.controllerSensitivity >>
         s.uiScale >> s.subtitles >> s.cameraShake >> s.motionBlur >> s.invertPitch >> s.toggleBoost >> s.toggleBrake >>
         s.quality >> s.frameLimit;
+    // Older settings end after frameLimit. Keep the new display preference off on upgrade.
+    if (!in.fail() && !in.eof())
+    {
+        in >> std::ws;
+        if (!in.eof())
+            in >> s.diagnosticsOverlay;
+    }
     if (!FinishRead(in, error))
         return false;
     if (!Finite(s.masterVolume, 0.0, 1.0) || !Finite(s.musicVolume, 0.0, 1.0) || !Finite(s.effectsVolume, 0.0, 1.0) ||

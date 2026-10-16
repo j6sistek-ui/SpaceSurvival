@@ -88,6 +88,12 @@ bool USSGameInstance::PersistSettings()
     ApplySettings();
     return WriteDomain(SettingsSlot, SS::EncodeSettings(Session.settings));
 }
+
+bool USSGameInstance::SetDiagnosticsEnabled(bool Enabled)
+{
+    Session.settings.diagnosticsOverlay = Enabled;
+    return PersistSettings();
+}
 bool USSGameInstance::HasSuspendedRun() const
 {
     if (AccountStorageBlocked)

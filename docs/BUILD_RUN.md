@@ -1,5 +1,7 @@
 # Build and run
 
+**October16 diagnostics candidate:** Open Settings > Graphics > Diagnostics. Use the existing click/confirm action to toggle, or left/right on its selected row to set Off/On. It is off by default and saved with preferences. The compact left-side gameplay panel hides in menus/photo mode/gallery. It reports frame timing, process memory/CPU and local talk/voice status; running helpers are not proof of readiness. Native physical-input/readability review remains open; this is not yet in the packaged release. [Validation](validation/2026-10-16-runtime-diagnostics.md).
+
 **October16 wardrobe source candidate:** At the wardrobe pad, interact to open
 the side panel. Left/right arrows, D-pad or left stick browse the hologram;
 up/down chooses a button, Enter/A or a click activates it, and Esc/B closes.
