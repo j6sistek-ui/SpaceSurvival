@@ -219,6 +219,7 @@ private:
     friend class ASSHUD; // DrawPrompt reads the glyph sets; main did not build without this.
     friend class ASSWave10Soak;
     friend class FSSAudioFirstState;
+    friend class FSSRestingCrewInteraction;
     friend class FSSTitleMenuNavigation;
     friend class FSSDirectorVillainVoice;
     friend class FSSPhoenixCockpitDeparture;

@@ -243,6 +243,9 @@ public:
     /** Push-to-talk identity (docs/NPC_TALK.md). Empty TalkName: the mesh name ("SK_Dread" is Dread). TalkRole names
      *  a scenario file (Pool, Bartender, Guard); TalkActivity is the live detail told to the model ("just scratched
      *  on the eight ball"). */
+    /** False for unavailable crew, such as the permanently sleeping bar patron. Keeps the idle animation. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    bool bConversationEnabled = true;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
     FString TalkName;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")

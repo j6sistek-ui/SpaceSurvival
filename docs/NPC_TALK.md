@@ -1,5 +1,7 @@
 # Push-to-talk conversations (NPC talk)
 
+Placed ambient crew expose **Conversation Enabled** (default true). Disable it for unavailable characters such as the passed-out bar patron; fresh/cached prompts, actions and speech are suppressed and an existing conversation disengages. Idle animation and identity remain unchanged. Other crew keep conversation enabled. [Saved verification](validation/2026-10-16-resting-patron-interaction.md).
+
 ## Astra profile, voice and staff banter — October 15
 
 Astra has her own `Personas/Astra.txt` and synthetic `Voices/Astra.wav`/settings; Waitress type/role files stay reusable. Joy now has a fresh original synthetic reference reserved for her; her rejected velvet audition remains only as a recovery/listening baseline. Their optional nearby bar break alternates the existing voice channel and8 shuffled authored exchanges. The side conversation panel records transcripts and replies when shown, below the radar; it does not change microphone controls or train a LoRA. [Controls, files and limits](production/WAITRESS_BAR_SERVICE.md).
