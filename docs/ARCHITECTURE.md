@@ -16,6 +16,8 @@ previous view. This does not add character stats, inventory or roster entries.
 
 ## Waitress bar service — October 15
 
+Staff breaks may select `BarShotAnimation` per character; a missing override falls back to the normal drink clip, while an incompatible skeleton prevents the break. The shared ambient action helper retains its compatibility/timing checks without rewriting the normal action array. Normal orders keep their own clip and grip. Private retargeted patron loops use existing ambient actors rather than a new behavior system.
+
 `ASSBarCrew` specializes ambient NPC actions while retaining the existing GameMode keyword/action and spatial voice/caption channel. `ASSBarTable` supplies authored seat/drink contacts; private Blueprints own clips, grips and routes. Native body post-process leads clothing skinning. Service state, collision checks and reservation cleanup stay in C++; no new inventory or economy system. Existing ClosePanel and TriggerNpcAction methods are exposed to Blueprint for scripted integration review without adding a second interaction implementation. [Behavior and limits](production/WAITRESS_BAR_SERVICE.md).
 
 ## Silver groom authoring — October 14

@@ -5,6 +5,18 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/SkeletalMesh.h"
+
+UAnimSequence *ASSBarCrew::BarDrinkClip() const
+{
+    UAnimSequence *Clip = BarShotAnimation;
+    if (!Clip)
+        Clip = bIsBartender ? (Actions.IsValidIndex(1) ? Actions[1].Clip.Get() : nullptr) : DrinkAnimation.Get();
+    return Clip && CharacterMesh && CharacterMesh->GetSkeletalMeshAsset() &&
+                   CharacterMesh->GetSkeletalMeshAsset()->GetSkeleton() == Clip->GetSkeleton()
+               ? Clip
+               : nullptr;
+}
 
 FTransform ASSBarCrew::BarShotGrip() const
 {
@@ -27,6 +39,8 @@ void ASSBarCrew::ResetBarBreakTimer()
 bool ASSBarCrew::TickBarBreak(float Dt)
 {
     auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+    UAnimSequence *DrinkClip = BarDrinkClip();
+    UAnimSequence *BartenderClip = IsValid(Bartender) ? Bartender->BarDrinkClip() : nullptr;
     if (!bBarBreakActive)
     {
         if (!bAmbientBarBreaks || ServiceState != ESSBarServiceState::Available)
@@ -36,7 +50,7 @@ bool ASSBarCrew::TickBarBreak(float Dt)
             return false;
         SecondsUntilBarBreak = 5.f;
         if (!GM || !GM->CanAmbientCrewSpeak(this) || !IsValid(Bartender) || !Bartender->bIsBartender ||
-            Bartender->ReservedBy.IsValid() || Bartender->IsActionPlaying() || !DrinkAnimation ||
+            Bartender->ReservedBy.IsValid() || Bartender->IsActionPlaying() || !DrinkClip || !BartenderClip ||
             !Bartender->Actions.IsValidIndex(1) || !Bartender->Actions[1].Clip || BarBanter.IsEmpty() ||
             !PlanPath(Bartender->GetActorTransform().TransformPosition(PickupOffset)))
             return false;
@@ -57,7 +71,7 @@ bool ASSBarCrew::TickBarBreak(float Dt)
     }
     BarBreakTime += Dt;
     if (!GM || !IsValid(Bartender) || Bartender->ReservedBy != this || !BarBanter.IsValidIndex(BanterIndex) ||
-        BarBreakTime > 100.f)
+        !DrinkClip || !BartenderClip || BarBreakTime > 100.f)
     {
         ReturnHome(TEXT("Back to the tables."));
         return true;
@@ -89,19 +103,18 @@ bool ASSBarCrew::TickBarBreak(float Dt)
     else if (BanterStep == 2 && GM->CanAmbientCrewSpeak(this))
     {
         // Start both existing drink motions in the same frame; keep each character's own hand grip.
-        if (!Bartender->ASSOutpostAmbientActor::TriggerAction(1))
+        if (!Bartender->TriggerActionClip(1, BartenderClip))
             return true;
         Bartender->BarAction = 1;
         Glass->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, DrinkHand);
         Glass->SetRelativeTransform(BarShotGrip());
         Glass->SetVisibility(true);
-        PlayService(DrinkAnimation, false, true);
+        PlayService(DrinkClip, false, true);
         TalkActivity = TEXT("taking a small drink with Joy at the bar");
         BanterStep = 3;
         BanterWait = 0;
     }
-    else if (BanterStep == 3 &&
-             BanterWait >= FMath::Max(DrinkAnimation->GetPlayLength(), Bartender->Actions[1].Clip->GetPlayLength()))
+    else if (BanterStep == 3 && BanterWait >= FMath::Max(DrinkClip->GetPlayLength(), BartenderClip->GetPlayLength()))
     {
         Glass->SetVisibility(false);
         PlayService(IdleAnimation, true);

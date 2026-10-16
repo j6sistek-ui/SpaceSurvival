@@ -622,15 +622,19 @@ void ASSOutpostAmbientActor::PlayClip(UAnimSequence *Clip, bool bLoop)
 }
 bool ASSOutpostAmbientActor::TriggerAction(int32 Index)
 {
+    return TriggerActionClip(Index, nullptr);
+}
+bool ASSOutpostAmbientActor::TriggerActionClip(int32 Index, UAnimSequence *ClipOverride)
+{
     if (!Actions.IsValidIndex(Index) || bDrone || bAnimationManagedExternally)
         return false;
     const FSSNpcAction &Action = Actions[Index];
-    if (!CompatibleClip(CharacterMesh, Action.Clip))
+    UAnimSequence *Clip = ClipOverride ? ClipOverride : Action.Clip.Get();
+    if (!CompatibleClip(CharacterMesh, Clip))
         return false;
     ActiveAnimation = nullptr; // a second "cheers" is a second cheers, even mid-clip
-    PlayClip(Action.Clip, Action.bLoop);
-    ActionRemaining = GestureRemaining =
-        Action.bLoop ? FMath::Max(1.f, Action.LoopSeconds) : Action.Clip->GetPlayLength();
+    PlayClip(Clip, Action.bLoop);
+    ActionRemaining = GestureRemaining = Action.bLoop ? FMath::Max(1.f, Action.LoopSeconds) : Clip->GetPlayLength();
     NextGesture = FMath::Max(0.f, GestureInterval) + FMath::Fmod(FMath::Abs(PhaseOffset), 6.f);
     return true;
 }
