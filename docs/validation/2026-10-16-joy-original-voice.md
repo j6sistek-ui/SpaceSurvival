@@ -13,7 +13,7 @@ Owner request: replace Joy's robotic/standard delivery and reserve distinct voic
 
 Replacing a WAV at the same filename previously left its cache identity unchanged. Optional `cache_revision` now participates in both native lookup and Python prerender naming. Omitted/empty revisions preserve every legacy key, including Astra and the Director.
 
-- `Tests/TestNpcVoiceCache.py`: six CPU checks pass, including actual stale/revised cache read/write, reuse on the next run, unaffected Astra entries and shared UTF-8 golden hashes.
+- `Tests/TestNpcVoiceCache.py`: six CPU checks pass, including actual stale/revised cache read/write, reuse on the next run, unaffected Astra entries and shared UTF-8 golden hashes. The source workflow runs this regression suite without TTS model dependencies.
 - `SpaceSurvival.NpcTalk.Encoding`: one native test passes, zero warnings/failures/skips, using a separate NullRHI/NoSound process and isolated user directory.
 - Isolated WorktreeBuild8 passes (65.09 s); canonical integrated Build15 passes (75.10 s), module SHA-256 `35b7379d28476dcf5a0e75a64171231b6122253fec19fb2369800c4ee81e38c6`. Existing engine API deprecation warnings remain; no build errors.
 - The 49 structural checks, Python compilation, source-format validation (26 meshes/17 WAVs), scoped clang-format22, documentation navigation/counts and whitespace checks pass. This is source/local Editor work; no map, mesh, animation, packaged build or release was changed by this follow-up.
