@@ -173,6 +173,32 @@ bool FSSAudioFirstState::RunTest(const FString &Parameters)
                  Mode->MusicBase->VolumeMultiplier == 0.f && Mode->MusicPressure->VolumeMultiplier == 0.f &&
                      Mode->MusicClimax->VolumeMultiplier == 0.f && Ship->EngineAudio->VolumeMultiplier == 0.f &&
                      StationAudio->VolumeMultiplier == 0.f);
+
+        // Inject ready PCM into the actual playback path; no voice service or audible output is needed.
+        Mode->StopCrewRadio();
+        Mode->CrewRadioReady.SampleRate = 48000;
+        Mode->CrewRadioReady.Pcm.SetNumZeroed(96000); // One second of mono PCM16.
+        Mode->UpdateCrewRadio(.25f);
+        TestEqual(TEXT("New crew speech retains its full duration after the start frame"), Mode->CrewRadioLeft, 1.f);
+        TestFalse(TEXT("Starting crew speech consumes the ready PCM"), Mode->CrewRadioReady.IsValid());
+        Mode->UpdateCrewRadio(.25f);
+        TestEqual(TEXT("The next update subtracts elapsed playback time"), Mode->CrewRadioLeft, .75f);
+        Mode->UpdateCrewRadio(.5f);
+        TestEqual(TEXT("Crew speech remains active before its full duration"), Mode->CrewRadioLeft, .25f);
+        Mode->UpdateCrewRadio(.25f);
+        TestEqual(TEXT("Crew speech expires after its full playback duration"), Mode->CrewRadioLeft, 0.f);
+
+        Mode->CrewRadioReady.SampleRate = 48000;
+        Mode->CrewRadioReady.Pcm.SetNumZeroed(960); // Ten milliseconds, shorter than the start frame.
+        Mode->UpdateCrewRadio(1.f / 60.f);
+        TestTrue(TEXT("A sub-frame clip cannot expire in the update that starts it"),
+                 FMath::IsNearlyEqual(Mode->CrewRadioLeft, .01f));
+        TestFalse(TEXT("A sub-frame clip is consumed only once"), Mode->CrewRadioReady.IsValid());
+        Mode->UpdateCrewRadio(.005f);
+        TestTrue(TEXT("A sub-frame clip retains its remaining playback time"),
+                 FMath::IsNearlyEqual(Mode->CrewRadioLeft, .005f));
+        Mode->UpdateCrewRadio(.01f);
+        TestEqual(TEXT("Elapsed playback clamps the short clip countdown to zero"), Mode->CrewRadioLeft, 0.f);
     }
     AddInfo(TEXT("Component and phase state verified; no rendered audio buffer or listening assertion."));
     return true;

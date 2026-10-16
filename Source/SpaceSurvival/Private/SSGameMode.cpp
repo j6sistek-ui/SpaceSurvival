@@ -514,6 +514,7 @@ void ASSGameMode::UpdateCrewRadio(float Dt)
         // The caption stays up while they are still talking.
         NpcLineSeconds = FMath::Max(NpcLineSeconds, CrewRadioLeft + .75f);
         CrewRadioReady = SSNpcTalk::FVoiceClip();
+        return; // Dt elapsed before Play; start the countdown on the next update.
     }
     // A procedural wave never ends by itself: it plays silence until stopped.
     if (CrewRadioLeft > 0.f && (CrewRadioLeft -= Dt) <= 0.f)

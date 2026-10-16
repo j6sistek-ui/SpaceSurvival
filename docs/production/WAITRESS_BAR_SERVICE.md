@@ -63,6 +63,8 @@ When idle and the player is nearby, Astra can walk to Joy for a quick shared sho
 
 The routine reserves Joy, waits for the existing speech channel, alternates their own voices, starts both native drink clips together, and returns Astra to service. A small glass scale preserves the grip center. Guest service, menus and active conversations block a new break; guest requests interrupt an active break and send Astra home. Broken routes, missing partners and a 100-second bound release the reservation. No currency, inventory purchase or intoxication effect is added.
 
+Crew speech now keeps its full PCM duration on the update that starts playback; countdown begins on later updates. This fixes a start-frame timing error without changing the two-second banter minimum or drink clips. Isolated and canonical builds pass. The first CPU-only native run passed assertions but failed the strict gate on two station-placement fixture warnings; the existing `-SSLegacyStation` isolated retry passes one test with zero warnings/errors in 8.23s. Heard audio and hand/glass contact still require separate verification. [Repair and evidence limits](../validation/2026-10-16-bar-speech-timing.md).
+
 ## Hero seating and side conversation panel
 
 **E / gamepad Y** toggles Sit/Stand at nearby authored seats. `ASSStationSeat` is separate from cockpit boarding. The current station has 55 markers, 51 enabled; four plant-covered bench contacts are deliberately disabled. Armchairs, sofas, a bench and bar stools have scripted native checks. Other chairs require an authored marker and a compatible hero sit clip; this does not promise every arbitrary static mesh or hero rig works automatically.
