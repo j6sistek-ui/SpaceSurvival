@@ -19,6 +19,8 @@ ASSBarTable::ASSBarTable()
     Seat->SetupAttachment(Approach);
     DrinkContact = CreateDefaultSubobject<USceneComponent>(TEXT("DrinkContact"));
     DrinkContact->SetupAttachment(Approach);
+    ServeFrom = CreateDefaultSubobject<USceneComponent>(TEXT("ServeFrom"));
+    ServeFrom->SetupAttachment(Approach);
 }
 
 ASSBarCrew::ASSBarCrew()
@@ -75,6 +77,7 @@ void ASSBarCrew::ConfigureParts()
     ServingTray->SetRelativeTransform(TrayGrip);
     ServingTray->SetVisibility(false);
     bUsingServingTray = false;
+    bUsingTableSetDown = bGlassPickedUp = bGlassReleased = false;
 }
 
 bool ASSBarCrew::CanUseServingTray() const
@@ -98,6 +101,27 @@ void ASSBarCrew::BeginCarryingDrink()
         ServingTray->SetVisibility(true);
     }
     Glass->SetVisibility(true);
+}
+
+bool ASSBarCrew::CanSetDownAtTable() const
+{
+    const auto *Mesh = CharacterMesh->GetSkeletalMeshAsset();
+    return bUsingServingTray && DeliveryTable.IsValid() && DeliveryTable->bHasSetDownPose && TraySetDownAnimation &&
+           Mesh && Mesh->GetSkeleton() == TraySetDownAnimation->GetSkeleton() &&
+           CharacterMesh->DoesSocketExist(DrinkHand) && FMath::IsFinite(TraySetDownWindow.X) &&
+           FMath::IsFinite(TraySetDownWindow.Y) && TraySetDownWindow.X > 0 &&
+           TraySetDownWindow.Y > TraySetDownWindow.X && TraySetDownWindow.Y < TraySetDownAnimation->GetPlayLength();
+}
+
+void ASSBarCrew::PlaceServedGlass()
+{
+    if (!DeliveryTable.IsValid())
+        return;
+    ServedGlass->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+    ServedGlass->SetWorldTransform(DeliveryTable->DrinkContact->GetComponentTransform());
+    ServedGlass->SetWorldScale3D(bUsingServingTray ? TrayGlassPlacement.GetScale3D() : GlassGrip.GetScale3D());
+    ServedGlass->SetVisibility(true);
+    bGlassReleased = true;
 }
 
 void ASSBarCrew::OnConstruction(const FTransform &Transform)
@@ -229,7 +253,7 @@ bool ASSBarCrew::PlanPath(const FVector &Destination)
     for (const auto &Point : ServiceWaypoints)
         Nodes.Add(Home.TransformPosition(Point));
     FCollisionQueryParams Query(SCENE_QUERY_STAT(BarServiceRoute), false, this);
-    if (ServiceGuest.IsValid())
+    if (ServiceGuest.IsValid() && !bUsingTableSetDown)
         Query.AddIgnoredActor(ServiceGuest.Get());
     const FCollisionShape Shape =
         FCollisionShape::MakeCapsule(Body->GetScaledCapsuleRadius(), Body->GetScaledCapsuleHalfHeight() - 6.f);
@@ -281,7 +305,9 @@ bool ASSBarCrew::MoveAlongPath(float Dt)
     if (!Path.IsValidIndex(PathIndex))
         return true;
     const FVector Delta = Path[PathIndex] - GetActorLocation();
-    if (Delta.Size2D() < 10.f)
+    const bool bFinalSetDownApproach =
+        bUsingTableSetDown && ServiceState == ESSBarServiceState::ReturningToGuest && PathIndex == Path.Num() - 1;
+    if (Delta.Size2D() < (bFinalSetDownApproach ? 1.f : 10.f))
         return ++PathIndex >= Path.Num();
     FVector Next = GetActorLocation() + Delta.GetSafeNormal2D() * FMath::Min(Delta.Size2D(), TravelSpeed * Dt);
     FCollisionQueryParams Query(SCENE_QUERY_STAT(BarServiceFloor), false, this);
@@ -442,8 +468,11 @@ void ASSBarCrew::Tick(float Dt)
         {
             Bartender->ReservedBy.Reset();
             BeginCarryingDrink();
+            bUsingTableSetDown = CanSetDownAtTable();
             const FVector GuestPosition = ServiceGuest->GetActorLocation();
-            FVector Destination = GuestPosition + (GetActorLocation() - GuestPosition).GetSafeNormal2D() * 110.f;
+            FVector Destination = bUsingTableSetDown
+                                      ? DeliveryTable->ServeFrom->GetComponentLocation()
+                                      : GuestPosition + (GetActorLocation() - GuestPosition).GetSafeNormal2D() * 110.f;
             Destination.Z = GetActorLocation().Z;
             if (PlanPath(Destination))
                 SetState(ESSBarServiceState::ReturningToGuest, TEXT("carrying the guest's drink back from the bar"));
@@ -454,42 +483,65 @@ void ASSBarCrew::Tick(float Dt)
             Bartender->BeginPour(this);
         break;
     case ESSBarServiceState::ReturningToGuest:
+        if (bUsingTableSetDown && !DeliveryTable.IsValid())
+        {
+            ReturnHome(TEXT("The table is no longer available."));
+            break;
+        }
         if (MoveAlongPath(Dt))
         {
-            SetActorRotation(FRotator(0, (ServiceGuest->GetActorLocation() - GetActorLocation()).Rotation().Yaw, 0));
-            PlayService(bUsingServingTray ? TrayServeAnimation.Get() : ServeAnimation.Get(), false, true);
-            SetState(ESSBarServiceState::Serving, TEXT("offering the guest their drink"));
+            SetActorRotation(FRotator(0,
+                                      bUsingTableSetDown
+                                          ? DeliveryTable->ServeFrom->GetComponentRotation().Yaw
+                                          : (ServiceGuest->GetActorLocation() - GetActorLocation()).Rotation().Yaw,
+                                      0));
+            PlayService(bUsingTableSetDown  ? TraySetDownAnimation.Get()
+                        : bUsingServingTray ? TrayServeAnimation.Get()
+                                            : ServeAnimation.Get(),
+                        false, true);
+            SetState(ESSBarServiceState::Serving, bUsingTableSetDown ? TEXT("setting the drink on the table")
+                                                                     : TEXT("offering the guest their drink"));
             if (auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>())
                 GM->SpeakCrewLine(this, TEXT("Here you are. Enjoy."));
         }
         break;
     case ESSBarServiceState::Serving:
+        if (!DeliveryTable.IsValid())
+        {
+            ReturnHome(TEXT("The table is no longer available."));
+            break;
+        }
         if (!ServiceClip.IsValid())
         {
             ReturnHome(TEXT("The serving animation is unavailable."));
             break;
         }
+        if (bUsingTableSetDown)
+        {
+            const float PoseTime = CharacterMesh->GetPosition();
+            if (!bGlassPickedUp && PoseTime >= TraySetDownWindow.X)
+            {
+                Glass->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, DrinkHand);
+                Glass->SetRelativeTransform(DrinkGrip);
+                bGlassPickedUp = true;
+            }
+            if (!bGlassReleased && PoseTime >= TraySetDownWindow.Y)
+            {
+                PlaceServedGlass();
+                Glass->SetVisibility(false);
+            }
+        }
         if (StateTime >= ServiceClip->GetPlayLength())
         {
-            if (DeliveryTable.IsValid())
-            {
-                ServedGlass->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-                ServedGlass->SetWorldTransform(DeliveryTable->DrinkContact->GetComponentTransform());
-                ServedGlass->SetWorldScale3D(bUsingServingTray ? TrayGlassPlacement.GetScale3D()
-                                                               : GlassGrip.GetScale3D());
-                ServedGlass->SetVisibility(true);
-            }
-            else
-            {
-                ReturnHome(TEXT("The table is no longer available."));
-                break;
-            }
+            if (!bGlassReleased)
+                PlaceServedGlass();
             if (bDrinkTogether)
             {
                 ServingTray->SetVisibility(false);
                 bUsingServingTray = false;
                 Glass->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, DrinkHand);
                 Glass->SetRelativeTransform(DrinkGrip);
+                Glass->SetVisibility(true);
                 PlayService(DrinkAnimation, false, true);
                 SetState(ESSBarServiceState::Drinking, TEXT("sharing a drink with the guest"));
             }
