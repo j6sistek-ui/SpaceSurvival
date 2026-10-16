@@ -2,13 +2,13 @@
 
 **October16 merge readiness:** The four open PRs remain drafts. PR74 targets
 `claude/joy-bartender`, whose current foundation is not in `main` and has no PR;
-PR76 depends on PR74. PR76's four documentation conflicts are reconciled with
-PR74 head `06310d0`, without changing runtime source, native assets or the built
+PR76 depends on PR74. PR76's documentation conflicts are reconciled with
+PR74 head `4bd3648`, without changing runtime source, native assets or the built
 module. PR75 independently targets `main`; PR73 remains the held layout handoff.
 Passing source/documentation CI does not close the remaining native acceptance
 items. No PR has been merged during this audit.
 
-**October16 footwear/drink update:** Local Wayfarer map `fb604de9` supersedes the appearance-only `5fd8e257` and footwear-only `03771603` snapshots below. Joy's two shoes use blue/black private c4 variants; Astra footwear is deferred. Three owned filled-glass derivatives are saved on the counter and existing service components, with 9,479 earlier actor transforms and original grips preserved (9,480 total actors). Same-editor reload and three saved native views pass; a scripted shared-drink order passes 260 samples. Final guard preserves 122 prior non-map files, including the two shoe derivatives and three saves; nine new drink assets are recorded separately. Existing module `0a679b43` and packaged release are unchanged. Appearance, liquid/animation polish, seated fit, native audio and performance remain open. [Receipt](validation/2026-10-16-joy-shoes-and-bar-drinks.md).
+**October16 footwear/drink update:** Earlier Wayfarer snapshot `fb604de9` supersedes the appearance-only `5fd8e257` and footwear-only `03771603` snapshots below. Joy's two shoes use blue/black private c4 variants; Astra footwear is deferred. Three owned filled-glass derivatives are saved on the counter and existing service components, with 9,479 earlier actor transforms and original grips preserved (9,480 total actors). Same-editor reload and three saved native views pass; a scripted shared-drink order passes 260 samples. Final guard preserves 122 prior non-map files, including the two shoe derivatives and three saves; nine new drink assets are recorded separately. Existing module `0a679b43` and packaged release are unchanged. Appearance, liquid/animation polish, seated fit, native audio and performance remain open. [Receipt](validation/2026-10-16-joy-shoes-and-bar-drinks.md). **Later grip correction:** current map `cebb5d83` retains this appearance and assigns Astra a separate drinking clip with twelve corrected right-finger rotations. Reload preserves9480 actor transforms, V16 outfit/body/grips and other actions; saved playback completes407 samples/four views. Mouth alignment, seated fit, audio and other acceptance remain open. [Grip receipt](validation/2026-10-16-astra-glass-grip.md).
 
 **October16 bar appearance candidate:** Owner-authorized darker room colors,
 Astra indigo/violet/gold, Joy plum hair/indigo pants, two pink owned wall panels
