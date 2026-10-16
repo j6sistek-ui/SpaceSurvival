@@ -685,6 +685,7 @@ KNOWN_ISSUES owns priority and acceptance.
 
 ### TOOL-20261006-ADAPTIVE-PATHFINDING — optional station NPC route candidate
 
+- **Refresh, 2026-10-16:** supersedes the October6 disabled/unloaded assessment below. The owner again identifies this owned plugin for bar routing. The canonical project explicitly enables AdaptivePathfindingSystem; its installed descriptor remains2.06/UE5.8.0 and the saved set-down review log records its DLL loading (`Handoff_20261016/ReloadSetDown/Native.log`). Bar crew still use `ASSBarCrew::PlanPath` and authored collision-tested waypoints, without APS calls or a module dependency. Installed APS supplies Recast navigation data, an AI controller/crowd follower and Blueprint path parameters; using it for crew requires deliberate integration and a bounded route comparison. It cannot correct skeletal hand/tray clipping, and no APS route, crowd, performance or free-floating zero-G pass is claimed. No plugin settings were changed. Retain as an evaluated candidate for station circulation (WBS8.4/8.5), after the current bar prop-contact repairs.
 - **Listing evidence,2026-10-06:** the lead reviewed NordVader's
   [Adaptive Pathfinding System 2.06](https://www.fab.com/listings/e57ff036-fb84-4c86-af7d-8c2a75965c73),
   which describes Recast-based curved paths and configurable path settings. The
@@ -1270,3 +1271,5 @@ passes exports/weights/endpoints; native materials, body retarget and gameplay r
 - **October16 pickup follow-up:** six strict saved-scene cases pass on module`a16996cd`, including current-pose orientation on the first visible frame. No new acquisition or native asset edits; full handoff/pour remains lead polish.
 
 - **October16 drink appearance:** separate corrected glass-refraction copy assigned to six saved drink components; original vendor material and native meshes unchanged. The non-refractive trial was visually rejected. Fresh reload/saved service pass; full liquids and prop handoff remain open.
+
+- **October16 table delivery follow-up:** separate V6 set-down fitted to the existing low table and owner tray; rejected head/forearm contact trials retained. Optional source integration passes four native cases plus fresh saved service, preserving original clips/rig/physics. No acquisition or installation. Joy handoff/pour and owner natural play remain open under RPT-20261016-16.
