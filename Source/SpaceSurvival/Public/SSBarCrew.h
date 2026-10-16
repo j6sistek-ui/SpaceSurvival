@@ -18,6 +18,11 @@ public:
     TObjectPtr<USceneComponent> Seat;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar")
     TObjectPtr<USceneComponent> DrinkContact;
+    /** Optional capsule-centre pose fitted with the waitress's table set-down clip. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar")
+    TObjectPtr<USceneComponent> ServeFrom;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar")
+    bool bHasSetDownPose = false;
     TWeakObjectPtr<AActor> Occupant;
 };
 
@@ -83,6 +88,12 @@ public:
     TObjectPtr<UAnimSequence> TrayCarryAnimation;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
     TObjectPtr<UAnimSequence> TrayServeAnimation;
+    /** Optional low-table delivery; requires an authored ServeFrom pose on that table. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    TObjectPtr<UAnimSequence> TraySetDownAnimation;
+    /** Seconds in TraySetDownAnimation when the glass leaves the tray and reaches the table. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    FVector2D TraySetDownWindow = FVector2D(.7f, 2.05f);
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
     FName TrayHand = TEXT("hand_l");
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
@@ -172,8 +183,11 @@ private:
     float StateTime = 0, BlockedTime = 0, ChatterTime = 8.f;
     bool bDrinkTogether = false;
     bool bUsingServingTray = false;
+    bool bUsingTableSetDown = false, bGlassPickedUp = false, bGlassReleased = false;
     void ConfigureParts();
     bool CanUseServingTray() const;
+    bool CanSetDownAtTable() const;
+    void PlaceServedGlass();
     void BeginCarryingDrink();
     void PlayService(UAnimSequence *Clip, bool bLoop, bool bRestart = false);
     void SetState(ESSBarServiceState State, const FString &Activity);
