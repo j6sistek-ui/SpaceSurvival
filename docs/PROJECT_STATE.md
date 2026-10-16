@@ -1,5 +1,29 @@
 # SpaceSurvival project state
 
+**October16 merge readiness:** The four open PRs remain drafts. PR74 targets
+`claude/joy-bartender`, whose current foundation is not in `main` and has no PR;
+PR76 depends on PR74. PR76's four documentation conflicts are reconciled with
+PR74 head `06310d0`, without changing runtime source, native assets or the built
+module. PR75 independently targets `main`; PR73 remains the held layout handoff.
+Passing source/documentation CI does not close the remaining native acceptance
+items. No PR has been merged during this audit.
+
+**October16 footwear/drink update:** Local Wayfarer map `fb604de9` supersedes the appearance-only `5fd8e257` and footwear-only `03771603` snapshots below. Joy's two shoes use blue/black private c4 variants; Astra footwear is deferred. Three owned filled-glass derivatives are saved on the counter and existing service components, with 9,479 earlier actor transforms and original grips preserved (9,480 total actors). Same-editor reload and three saved native views pass; a scripted shared-drink order passes 260 samples. Final guard preserves 122 prior non-map files, including the two shoe derivatives and three saves; nine new drink assets are recorded separately. Existing module `0a679b43` and packaged release are unchanged. Appearance, liquid/animation polish, seated fit, native audio and performance remain open. [Receipt](validation/2026-10-16-joy-shoes-and-bar-drinks.md).
+
+**October16 bar appearance candidate:** Owner-authorized darker room colors,
+Astra indigo/violet/gold, Joy plum hair/indigo pants, two pink owned wall panels
+and two observation bays are saved in local Wayfarer map `5fd8e257`. Fresh reload
+verifies 9,479 actors, all 9,473 original transforms, six additions, 431 material
+assignments and six reduced local lights, with retained window collision and
+character meshes/idle/walk clips. Five saved-scene native views exist; final
+preservation checks 62 guarded files and retains all 61 non-map originals,
+including three project saves. Nearby asteroid terrain blocks the requested
+open starfield; owner appearance, seated fit, service contacts, native audio and
+performance remain open under RPT-20261015-01. Source is unchanged by this pass;
+the existing canonical combined module `0a679b43` also includes PR76 wardrobe
+work. No new build, cook or packaged release. Private content remains local.
+[Evidence and exact module identity](validation/2026-10-16-bar-lounge-art-direction.md).
+
 **October 16 wardrobe candidate:** Source stacked on PR74 separates hologram browsing from equipping and uses the existing pad/material beside a compact Canvas panel. Worktree Build2 passes in 10.51 s; the focused native regression passes 1 test with 0 warnings/errors/skips in 0.482 s. Canonical source is applied with original backups; canonical build passes in 30.94 s, module `0a679b43`. The owner released the GPU hold at 05:09 UTC. Corrected 1600×900 native captures show the pad holograms; scripted browsing, camera/player restoration and temporary-component cleanup pass. Initial harness failures remain recorded. Nyxar's forward orientation is verified with temporary original materials; hologram face readability remains open. Existing hero/roster and squirrel roles are preserved; the wardrobe review preserved the map and three owner-save hashes, with clean packages and no package/release change. Actual pointer clicks, physical controller, biographies and owner appearance/feel acceptance remain open. [Evidence and remaining checks](validation/2026-10-16-wardrobe-hologram.md); active item RPT-20261016-15.
 
 **October 16 bar speech timing:** Newly started crew speech now retains its full PCM duration instead of losing the elapsed start-frame time. The existing audio regression covers subsequent countdown/expiry and a clip shorter than its start frame. Isolated WorktreeBuild9 passes in 182.90s and canonical Build16 in 179.58s (module `29b1a46f`). The first CPU-only NullRHI AudioFirstPlayMix run passed assertions but failed the strict gate on two station-placement fixture warnings; the existing `-SSLegacyStation` isolated retry passes one test with zero warnings/errors in 8.23s. No map, native asset, cached audio, voice/personality profile or package/release change. Native audible mix, shared-shot hand/glass contact and Astra's seated fit remain open under RPT-20261015-01; the owner VRAM hold is preserved. [Evidence and remaining acceptance](validation/2026-10-16-bar-speech-timing.md).

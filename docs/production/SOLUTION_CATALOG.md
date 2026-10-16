@@ -1,5 +1,48 @@
 # SpaceSurvival whole-project solution catalog
 
+## BAR-ART-20261016 — owned Illuminated Wall and Genesis observation windows
+
+- **Acquisition/evidence, October16:** owner identifies the installed Leartes
+  Illuminated Wall and authorizes pink panels and large bar observation windows.
+  Exact local mesh:
+  `/Game/MLR_IlluminatedWall/Unreal/Rocket/MLR_IlluminatedWall/SM_MLR_BPR_Illuminated_Wall_Deco01_a_c1_Nanite`,
+  whose assigned source material is
+  `/Game/Rocket/MLR_IlluminatedWall/MI_MLR_BPR_Illuminated_Wall_Deco01_a_4096`
+  (verified by `PanelInspect.json`, not the mesh folder).
+  Owned Genesis frame/glass pairs are
+  `/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X250_V1_Part1`
+  and `Part2`, plus the corresponding `SM_Window600X250_V1_Part1`/`Part2`.
+  No new purchase, plugin or source-asset replacement.
+- **Evaluation/private integration:** `ArtDirection_20261016/Adopted.json`
+  records saved map `5fd8e257`, two pink panels and two observation bays using
+  the 6 m frame/glass pair, scaled to nominal 7.43 m by 4 m each. Six actors
+  are added and all 9,473 original actor transforms preserved. Thirteen private
+  material instances plus a pants parent supply the room/character colors and
+  431 material-slot assignments; six local lights are reduced. Native candidate
+  previews exist. `FreshReload.json` verifies the same map hash, 9,479 actors,
+  preserved original transforms, assignments/additions/lights, retained window
+  collision and character meshes/idle/walk, and zero dirty packages. Owner
+  appearance acceptance remains open.
+- **October16 footwear/drink extension:** installed SciFi Pants Sneakers c4 blue
+  textures supply two separate Joy derivatives (right shoe shares pants trim);
+  Astra footwear is deferred. Owned `CyberPunkBarAssetSet01/StaticMeshes/SM_Glasses01`,
+  `02` and `03` supply three private filled-glass derivatives, retaining their
+  exterior bounds/pivots and original glass material. Current local map `fb604de9`
+  assigns them to two counter props and three existing service components and
+  adds one cyan glass. Nine private drink assets, no acquisition or plugin.
+  Reusable across bar/table service (WBS8.4/10.3); scripted order passes 260 samples,
+  but static liquid volumes, close contact, final style and performance need
+  further review. [Follow-up evidence](../validation/2026-10-16-joy-shoes-and-bar-drinks.md).
+- **Whole-project use/timing:** reusable owned wall accents and real glass
+  openings for station social spaces (WBS8.2/8.4/10.3), applied to the current
+  bar only. Nearby asteroid terrain blocks the requested open starfield; this
+  does not certify the exterior composition, collision, performance or release.
+  Lead next checks remain under RPT-20261015-01: owner review of room/character
+  colors and window shape, then exterior composition. Costume
+  fit, service contacts, audio and behavior retain their separate open checks.
+  [Current guide](WAITRESS_BAR_SERVICE.md#bar-art-direction--saved-local-candidate-october-16);
+  [saved-scene evidence](../validation/2026-10-16-bar-lounge-art-direction.md).
+
 **WARDROBE-HOLO-20261016 — existing station projection (WBS8.4/10.3):** Reuses
 the owned pad, roster and assigned hologram material with a temporary preview
 component and the existing Canvas UI. No acquisition, installation or new
