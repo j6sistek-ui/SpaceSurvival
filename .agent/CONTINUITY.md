@@ -1,5 +1,9 @@
 # SpaceSurvival continuity
 
+- 2026-10-16T19:34Z [TOOL] Private animation workbench map84b83faa/sequence9ea31d7f uses owned compatible Start/Loop/Loop/End clips;2,807samples/two wraps/pause-resume and fresh reload pass. Original studio/statione3/modulea023 and209protectedfiles unchanged. First camera framing rejected/corrected; World Python-reference unload crash retained, fresh direct-map process succeeds. [CODE] Short guide/evidence prepared for PR74; maintenance prop/contact integration stays open, hero/squirrels/PR73 held. Owner feedback remains pending without checkpoint gate.
+
+- 2026-10-16T19:18Z [TOOL] Supersedes pending publication19:12: draftPR74 head12bc3bb, PR760f5bd7d and PR77d803d4b published after dry-runs; fresh heads/bodies verified, source/docs CI success, mergeable/unmerged. No remote merge or release. Animation teaching example proceeds independently of owner bar/hologram feedback.
+
 - 2026-10-16T19:12Z [TOOL] Optional tray saved/reloaded on mape3cee859, modulea023f6a9: six service/shared/cancel/fallback cases pass2337samples; corrected capture retry passes378. Final206nonmap guard clean; originals and9,483 actor transforms preserved. [CODE] Hologram/audio/tray source/evidence publication to draftPR74 next; owner checks remain pending without gate. No merge/package; hero/squirrels/PR73 held.
 
 - 2026-10-16T19:01Z [CODE] Optional serving-tray component and compatible carry/serve pair built (W74 51.23s; canonical33.92s), modulea023f6a9. [TOOL] Saved/reloaded map e3cee859 preserves9,483 actor transforms and original crew meshes/materials/clips/grips; first streaming-reentry save40e95381 rejected/restored from d3 backup,206nonmap unchanged. Signed-zero reload comparison corrected without native edits. Ordinary order/shared/cancel/fallback review underway; source publication pending. Owner checks remain logged without pause; hero/squirrels/PR73 held, no merge.
