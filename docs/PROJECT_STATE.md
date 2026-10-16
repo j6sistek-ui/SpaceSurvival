@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+October16 resting patron: map`ddc040c1`, combined module`cd9ed533`; only the corner sleeper opts out of conversation, preserving57 crew fields/9,480 transforms. Builds, focused native regression, reload and175-file preservation pass. Natural input/audio and the unchanged packaged release remain separate. [Receipt](validation/2026-10-16-resting-patron-interaction.md).
+
 **October16 bar contact and patron update:** Current local station `5ac00104` and editor module `4c9dc8eb` supersede the snapshots below. Astra/Joy have separate fitted normal-drink and small-shot clips; staff breaks choose the small-shot variant without editing the normal action list. Two existing Nyxar patrons now sway by the arcade or rest in the lounge corner. Saved reload retains9,480 actors, original meshes/materials and9,479 prior transforms (only the corner patron moved). Fresh saved-scene service passes595 samples; two staff cycles pass664 samples with both fitted clips selected. Wrong-skeleton guards and normal-action preservation pass. Pending owner checks are logged in KNOWN_ISSUES and do not pause lead work. Seated garments, audible voice/laughter, full prop polish, exterior view, physical input and performance remain open. [Evidence](validation/2026-10-16-bar-contact-and-patrons.md).
 
 **October16 dependency status:** The four PRs remain drafts and unmerged.
