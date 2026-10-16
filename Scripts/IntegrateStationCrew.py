@@ -30,7 +30,9 @@ ASSIGNMENTS = (
      ('LookL', 'LookR')),
     ('Crew/Market courier', 'Crest', 'Market service circuit', 'Role/Crew_Worker_Idle_Alert',
      ('LookL',)),
-    ('Crew/Lounge guest', 'Dread', 'Bartender', 'Role/BarBartender_Type02', ()),
+    # 'Crew/Lounge guest' (the bartender) is Joy since 2026-10-14, set by
+    # Scripts/StationRecipes/JoyBartender/place_joy_bartender.py: a cc_base skeleton and A_Joy_* clips, which this
+    # script's Tripo-crew preflight (178 cm, exact crew Skeleton) would reject. Dread's assets stay; she is not placed.
     ('Refine/Archive/Conversation guest B', 'Amethyst', 'Wardrobe visitor', 'Listen',
      ('Talk', 'Role/Gesture_Yes')),
 )

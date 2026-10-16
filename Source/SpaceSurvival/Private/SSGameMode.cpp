@@ -1044,7 +1044,7 @@ bool ASSGameMode::TryBoardShip(ASSWalker *Candidate)
 void ASSGameMode::CommitBoardedDeparture()
 {
     FString Reason;
-    if (!CanCommitDeparture(Reason) || !Ship->CanAdoptBoardedPilot(Walker))
+    if (!CanCommitDeparture(Reason))
     {
         bBoardingFlight = false;
         if (Walker)
@@ -1088,9 +1088,10 @@ void ASSGameMode::BeginDeparture()
     if (!Hub)
         return;
     const bool FromChair = bBoardingFlight;
-    // CanAdoptBoardedPilot was checked synchronously before the successful save/launch transaction.
-    if (FromChair)
-        Ship->AdoptBoardedPilot(Walker);
+    // Nobody takes the seat (owner 2026-10-12): the walker is hidden where they confirmed, and the ship's own
+    // pilot figure stays out of sight too, so the flight shows no character at all.
+    if (FromChair && Ship)
+        Ship->SetPilotFigureHidden(true);
     bBoardingFlight = false;
     bDepartingStation = true;
     Director->SetActive(false);
@@ -1267,7 +1268,8 @@ void ASSGameMode::EnterStation()
         Ship->Pilot->SnapshotPose(SeatedPose);
         // Only heroes with an authored exit clip use the seated-pose transition. Other heroes receive
         // control at the same measured exterior endpoint as soon as docking finishes.
-        const bool ClimbsOut = !Walker->GetHero().DisembarkClipPath.IsEmpty();
+        // Nobody sat, so nobody climbs out (owner 2026-10-12); the authored exits wait for the seat to return.
+        const bool ClimbsOut = false;
         const bool ExitStarted = ClimbsOut && Walker->BeginDisembark(Ship->Pilot->GetComponentTransform(), Exit,
                                                                      Hub->GetActorRotation(), &SeatedPose);
         ensureMsgf(!ClimbsOut || ExitStarted, TEXT("Required authored disembark assets are unavailable."));
@@ -3058,6 +3060,15 @@ void ASSPlayerController::PlayerTick(float Dt)
     // The game mode decides who is listening: a crew member or the villain.
     if (!MenuInput && GetPawn() && (Pressed(EKeys::T) || Pressed(EKeys::Gamepad_RightThumbstick)))
         GM->TapTalk();
+    // Crew actions (owner 2026-10-14): 1-4 on the keyboard, D-pad up/right/down on a pad, while the talk hint shows.
+    if (!MenuInput && Cast<ASSWalker>(GetPawn()))
+    {
+        static const FKey Digits[] = {EKeys::One, EKeys::Two, EKeys::Three, EKeys::Four};
+        static const FKey Pads[] = {EKeys::Gamepad_DPad_Up, EKeys::Gamepad_DPad_Right, EKeys::Gamepad_DPad_Down};
+        for (int32 I = 0; I < 4; ++I)
+            if (Pressed(Digits[I]) || (I < 3 && Pressed(Pads[I])))
+                GM->TriggerNpcAction(I);
+    }
     GM->UpdateTalkEngagement(Dt);
     const FKey InteractButton =
         Cast<ASSWalker>(GetPawn()) ? EKeys::Gamepad_FaceButton_Top : EKeys::Gamepad_FaceButton_Left;
@@ -3160,23 +3171,30 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
                 const auto *Body = It->FindComponentByClass<USkeletalMeshComponent>();
                 if (!Body || !Body->GetSkeletalMeshAsset())
                     continue;
-                FSSTalkIdentity Who;
-                Who.Name = Who.Type =
-                    Talk->ResolveAlias(SSNpcTalk::CharacterNameFromMesh(Body->GetSkeletalMeshAsset()->GetName()));
-                if (!Talk->HasPersona(Who.Name))
+                // Its Talk* tags when it carries them (Silver's Blueprint does), else the name from its mesh.
+                FSSTalkIdentity Who =
+                    SSNpcTalk::PlacedIdentity(It->Tags, Body->ComponentTags, Body->GetSkeletalMeshAsset()->GetName(),
+                                              [Talk](const FString &Name) { return Talk->ResolveAlias(Name); });
+                if (!Talk->HasPersona(Who.Name) && !Talk->HasPersona(Who.Type))
                     continue;
                 const UAnimationAsset *Clip =
                     Body->GetSingleNodeInstance() ? Body->GetSingleNodeInstance()->GetAnimationAsset() : nullptr;
+                // The tags win; the clip only fills in what they left unsaid.
+                const TCHAR *ClipRole = nullptr, *ClipActivity = nullptr;
                 if (Clip && Clip->GetName().Contains(TEXT("Pole")))
                 {
-                    Who.Role = TEXT("Flirt");
-                    Who.Activity = TEXT("dancing on the pole on the stage");
+                    ClipRole = TEXT("Flirt");
+                    ClipActivity = TEXT("dancing on the pole on the stage");
                 }
                 else if (Clip && Clip->GetName().Contains(TEXT("Dance")))
                 {
-                    Who.Role = TEXT("Dancer");
-                    Who.Activity = TEXT("dancing");
+                    ClipRole = TEXT("Dancer");
+                    ClipActivity = TEXT("dancing");
                 }
+                if (ClipRole && Who.Role.IsEmpty())
+                    Who.Role = ClipRole;
+                if (ClipActivity && Who.Activity.IsEmpty())
+                    Who.Activity = ClipActivity;
                 Consider(Body, Who);
             }
         if (OutMesh)
@@ -3267,6 +3285,14 @@ void ASSGameMode::BeginTalk()
         Announce(Talk->LastError());
         return;
     }
+    // A reply still waiting for its voice is shown now instead of being dropped (2026-10-15: the owner pressed T
+    // during a 6-9 s voice render and the answer never appeared - "why can't I hear you?"). The crew's caption keeps
+    // the name of whoever said it; the Director's goes on his own channel.
+    const bool bShowedHeldLine = bCrewReplyHeld || (Target.Name == TEXT("Director") && bVillainReplyHeld);
+    if (bCrewReplyHeld)
+        ShowHeldCrewReply();
+    if (Target.Name == TEXT("Director") && bVillainReplyHeld)
+        ShowHeldVillainReply();
     // The microphone must not hear whoever was talking; the voice runs all session, this only brings it back if
     // it died.
     StopCrewRadio();
@@ -3274,7 +3300,8 @@ void ASSGameMode::BeginTalk()
         StopVillainRadio();
     Talk->EnsureVoice();
     TalkingTo = Target;
-    NpcName = Target.Name;
+    if (!bShowedHeldLine)
+        NpcName = Target.Name;
     TalkStatus = FString::Printf(TEXT("Listening... talking to %s, tap T / R3 again to send"),
                                  Target.Name == TEXT("Director") ? TEXT("the Director") : *Target.Name);
 }
@@ -3319,10 +3346,78 @@ FSSTalkIdentity ASSGameMode::TalkHint() const
     const double Now = GetWorld()->GetTimeSeconds();
     if (Now - CachedHintAt > .25)
     {
-        CachedHint = TalkTarget();
+        const USceneComponent *Mesh = nullptr;
+        CachedHint = TalkTarget(&Mesh);
+        CachedHintMesh = Mesh;
         CachedHintAt = Now;
     }
     return CachedHint;
+}
+
+ASSOutpostAmbientActor *ASSGameMode::ActionTarget() const
+{
+    const USceneComponent *Mesh =
+        EngagedWith.IsValid() ? EngagedMesh.Get() : (TalkHint().IsValid() ? CachedHintMesh.Get() : nullptr);
+    auto *Crew = Mesh ? Cast<ASSOutpostAmbientActor>(Mesh->GetOwner()) : nullptr;
+    return Crew && !Crew->Actions.IsEmpty() ? Crew : nullptr;
+}
+
+void ASSGameMode::TriggerNpcAction(int32 Index)
+{
+    ASSOutpostAmbientActor *Crew = ActionTarget();
+    if (!Crew || !Crew->TriggerAction(Index))
+        return;
+    const FSSNpcAction &Action = Crew->Actions[Index];
+    if (Action.Line.IsEmpty())
+        return;
+    // Her line arrives with her voice, the same way a reply does.
+    const FString Who = EngagedWith.IsValid() ? EngagedWith.Name : TalkHint().Name;
+    SpeakCrew(Who, Action.Line, Crew->CharacterMesh);
+    HeldCrewName = Who;
+    HeldCrewLine = Action.Line;
+    bCrewReplyHeld = true;
+    if (!bCrewVoiceWaiting && !CrewRadioReady.IsValid())
+        ShowHeldCrewReply();
+}
+
+bool ASSGameMode::CrewChatter(ASSOutpostAmbientActor *Crew)
+{
+    if (!Crew || !Walker || !Crew->CharacterMesh || Crew->Chatter.IsEmpty())
+        return false;
+    auto *Talk = NpcTalk();
+    if (!Talk || !Talk->IsEnabled())
+        return false;
+    // Within earshot only, and never over a conversation or another crew line.
+    if (FVector::Dist(Walker->GetActorLocation(), Crew->GetActorLocation()) > 1400.f || TalkingTo.IsValid() ||
+        EngagedWith.IsValid() || bCrewVoiceWaiting || CrewRadioReady.IsValid() || CrewRadioLeft > 0.f)
+        return false;
+    const FString Full = Crew->TakeChatterLine();
+    FString Line = Full, ActionName;
+    if (!Full.Split(TEXT("|"), &Line, &ActionName))
+        Line = Full;
+    Line.TrimStartAndEndInline();
+    ActionName.TrimStartAndEndInline();
+    if (Line.IsEmpty())
+        return false;
+    for (int32 I = 0; I < Crew->Actions.Num(); ++I)
+        if (!ActionName.IsEmpty() && Crew->Actions[I].Name == ActionName)
+        {
+            Crew->TriggerAction(I);
+            break;
+        }
+    const USkeletalMesh *Body = Crew->CharacterMesh->GetSkeletalMeshAsset();
+    const FString Who = Talk->ResolveAlias(Crew->TalkName.IsEmpty()
+                                               ? SSNpcTalk::CharacterNameFromMesh(Body ? Body->GetName() : FString())
+                                               : Crew->TalkName);
+    if (Who.IsEmpty())
+        return false;
+    SpeakCrew(Who, Line, Crew->CharacterMesh);
+    HeldCrewName = Who;
+    HeldCrewLine = Line;
+    bCrewReplyHeld = true;
+    if (!bCrewVoiceWaiting && !CrewRadioReady.IsValid())
+        ShowHeldCrewReply();
+    return true;
 }
 
 void ASSGameMode::UpdateTalkEngagement(float Dt)
@@ -3397,6 +3492,10 @@ void ASSGameMode::OnNpcTranscript(const FString &Character, const FString &Text)
     TalkTranscript = Text;
     TalkTranscriptSeconds = 14.f;
     TalkStatus = (Character == TEXT("Director") ? TEXT("The Director") : Character) + TEXT(" is answering...");
+    // A spoken request moves her at once; her words come with the model's reply.
+    if (ASSOutpostAmbientActor *Crew = ActionTarget())
+        if (const int32 Index = Crew->MatchAction(Text); Index >= 0)
+            Crew->TriggerAction(Index);
 }
 
 void ASSGameMode::OnNpcReply(const FString &Character, const FString &Text)

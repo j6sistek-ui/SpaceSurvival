@@ -161,6 +161,30 @@ private:
     void PositionLeaves();
 };
 
+/** One thing a crew member can be asked to do, by a spoken word or a key: a clip, and a line said as it starts
+ *  (owner 2026-10-14: "add ways to interact... to initiate various animations, so they don't just sit idle"). */
+USTRUCT(BlueprintType)
+struct FSSNpcAction
+{
+    GENERATED_BODY()
+    /** Prompt label ("Pour a drink"). */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    FString Name;
+    /** Lower-case words that trigger it from what the pilot said ("pour", "gin", "nebula"). */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    TArray<FString> Keywords;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    TObjectPtr<UAnimSequence> Clip;
+    /** A looping clip holds for LoopSeconds; a one-shot plays once. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    bool bLoop = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    float LoopSeconds = 15.f;
+    /** Said in their own voice as the clip starts ("One Nebula, coming up."). Empty: silent. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    FString Line;
+};
+
 /** Local authored route for crew or drone; capsule sweeps keep walkers from crossing walls. */
 UCLASS(Blueprintable)
 class SPACESURVIVAL_API ASSOutpostAmbientActor : public AActor
@@ -225,6 +249,33 @@ public:
     FString TalkRole;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
     FString TalkActivity;
+    /** What the pilot can ask of them: keys 1-4 (D-pad on a pad) while the talk hint shows, or a keyword in what the
+     *  pilot said. Empty for crew who only idle. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    TArray<FSSNpcAction> Actions;
+    /** Seconds of idle between gestures; the bartender keeps a short one so she is never standing still
+     *  (owner 2026-10-14: "needs to be the life of the room"). */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")
+    float GestureInterval = 9.f;
+    /** Said out loud, unprompted, while the pilot is within earshot and nobody is talking to her (owner 2026-10-14:
+     *  "constantly chatty, audibly"). "line|Action name" also plays that action as the line starts. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    TArray<FString> Chatter;
+    /** Seconds between unprompted lines (the next one lands between this and half again as long). */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    float ChatterInterval = 30.f;
+    /** The next unprompted line in order, with "|Action name" still attached. */
+    FString TakeChatterLine();
+    /** Plays that action's clip now and returns whether it could. */
+    UFUNCTION(BlueprintCallable, Category = "Talk")
+    bool TriggerAction(int32 Index);
+    /** The first action one of whose keywords occurs in the text, or -1. */
+    UFUNCTION(BlueprintPure, Category = "Talk")
+    int32 MatchAction(const FString &SpokenText) const;
+    bool IsActionPlaying() const
+    {
+        return ActionRemaining > 0.f;
+    }
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")
     float TravelSpeed = 120.f;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")
@@ -243,6 +294,8 @@ private:
     FTransform RouteOrigin;
     int32 RouteIndex = 0, GestureIndex = 0;
     float WaitRemaining = 0.f, Elapsed = 0.f, GestureRemaining = 0.f, NextGesture = 6.f, BlockedSeconds = 0.f;
+    float ActionRemaining = 0.f, NextChatter = 12.f;
+    int32 ChatterIndex = 0;
     UPROPERTY()
     TObjectPtr<UAnimSequence> ActiveAnimation;
     void PlayClip(UAnimSequence *Clip, bool bLoop);

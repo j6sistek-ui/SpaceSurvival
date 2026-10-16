@@ -106,6 +106,13 @@ public:
     FSSTalkIdentity TalkTarget(const USceneComponent **OutMesh = nullptr) const;
     /** What the HUD offers: the talk target once the pilot has stood still a couple of seconds, otherwise nobody. */
     FSSTalkIdentity TalkHint() const;
+    /** The crew member whose actions the pilot can trigger: the conversation partner, else the talk hint target. */
+    class ASSOutpostAmbientActor *ActionTarget() const;
+    /** Key 1-4 or a spoken keyword: play that crew member's action and say its line (owner 2026-10-14). */
+    void TriggerNpcAction(int32 Index);
+    /** A crew member's unprompted line, spoken if the pilot is in earshot and no conversation or crew line is
+     *  under way; returns whether it was. */
+    bool CrewChatter(class ASSOutpostAmbientActor *Crew);
     void OpenPanel(ESSPanel Panel);
     /** Approved front-end screen; active-run pause menus retain their existing actions. */
     bool IsTitleMenu() const;
@@ -305,6 +312,7 @@ private:
     FVector SavedSocketOffset = FVector::ZeroVector;
     float WalkerStillSeconds = 0.f;
     mutable FSSTalkIdentity CachedHint;
+    mutable TWeakObjectPtr<const USceneComponent> CachedHintMesh;
     mutable double CachedHintAt = -1.0;
     void Disengage();
     FString NpcDigest(const FSSTalkIdentity &Who) const;

@@ -2185,7 +2185,7 @@ void ASSWave10Soak::Tick(float Dt)
         if (!HeroKnown)
         {
             HeroKnown = true;
-            HeroClimbsOut = !GM->Walker->GetHero().DisembarkClipPath.IsEmpty();
+            HeroClimbsOut = false; // nobody sits, so nobody climbs out (owner 2026-10-12)
             StationHeroId = GM->Walker->GetHero().Id.ToString();
             if (!RequestedWalkerId.IsEmpty() && StationHeroId != RequestedWalkerId)
             {

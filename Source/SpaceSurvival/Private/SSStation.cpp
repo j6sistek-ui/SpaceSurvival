@@ -1516,46 +1516,16 @@ void ASSWalker::SampleExitPose(float Seconds)
     GetMesh()->TickAnimation(0.f, false);
     GetMesh()->RefreshBoneTransforms();
 }
-bool ASSWalker::BeginBoarding(const FTransform &SeatPelvisWorld)
+bool ASSWalker::BeginBoarding(const FTransform &)
 {
-    if (Boarding || Disembarking || !GetCharacterMovement()->IsMovingOnGround() || Hero.PilotClipPath.IsEmpty() ||
-        !GetMesh()->GetSkeletalMeshAsset())
+    // Owner 2026-10-12: nobody takes the seat for now. The seated transition, and the per-body pilot pose it needed,
+    // are gone: confirming at the chair stops the pilot where they stand, hides them, and counts as seated at once, so
+    // the ship takes the departure on the next tick. CancelBoarding puts them back exactly as they were.
+    if (Boarding || Disembarking || !GetCharacterMovement()->IsMovingOnGround() || !GetMesh()->GetSkeletalMeshAsset())
         return false;
-    UAnimSequence *Pose = LoadObject<UAnimSequence>(nullptr, *Hero.PilotClipPath);
-    if (!Pose || Pose->GetSkeleton() != GetMesh()->GetSkeletalMeshAsset()->GetSkeleton() ||
-        GetMesh()->GetBoneIndex(Hero.PelvisBone) == INDEX_NONE)
-        return false;
-    FPoseSnapshot Standing;
-    GetMesh()->SnapshotPose(Standing);
-    if (!Standing.bIsValid)
-        return false;
-    BoardingStart = GetActorTransform();
-    GetMesh()->SetAnimInstanceClass(USSStationPoseTransition::StaticClass());
-    auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance());
-    if (!Transition)
-    {
-        StartStandingAnimation();
-        return false;
-    }
-    Transition->SetAnimationAsset(Pose, false, 1.f);
-    Transition->SetPlaying(false);
-    Transition->SetRootMotionMode(ERootMotionMode::NoRootMotionExtraction);
-    // Evaluate the target before installing the standing snapshot, to locate the real hip.
-    Transition->SetPosition(0.f, false);
-    GetMesh()->TickAnimation(0.f, false);
-    GetMesh()->RefreshBoneTransforms();
-    const FVector Hip = GetMesh()->GetSocketTransform(Hero.PelvisBone, RTS_Component).GetLocation();
-    FTransform TargetMesh(SeatPelvisWorld.GetRotation() * FRotator(0.f, Hero.MeshYaw, 0.f).Quaternion(),
-                          FVector::ZeroVector, GetMesh()->GetComponentScale());
-    TargetMesh.SetLocation(SeatPelvisWorld.GetLocation() - TargetMesh.TransformVector(Hip));
-    BoardingTarget = GetMesh()->GetRelativeTransform().Inverse() * TargetMesh;
-    if (!Transition->SetSourcePose(Standing))
-    {
-        StartStandingAnimation();
-        return false;
-    }
-    BoardingAnimation = Pose;
-    BoardingElapsed = 0.f;
+    BoardingStart = BoardingTarget = GetActorTransform();
+    BoardingAnimation = nullptr;
+    BoardingElapsed = BoardingDuration;
     Boarding = true;
     BoardingCameraRelativeLocation = Boom->GetRelativeLocation();
     LandingTailSeconds = -1.f;
@@ -1563,11 +1533,7 @@ bool ASSWalker::BeginBoarding(const FTransform &SeatPelvisWorld)
     GetCharacterMovement()->DisableMovement();
     ConsumeMovementInputVector();
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    GetMesh()->SetComponentTickEnabled(false);
-    GetMesh()->GlobalAnimRateScale = 0.f;
-    Transition->SetExitTime(0.f);
-    GetMesh()->TickAnimation(0.f, false);
-    GetMesh()->RefreshBoneTransforms();
+    GetMesh()->SetVisibility(false, true);
     return true;
 }
 
@@ -1586,6 +1552,7 @@ void ASSWalker::CancelBoarding()
     ConsumeMovementInputVector();
     GetMesh()->SetComponentTickEnabled(true);
     GetMesh()->GlobalAnimRateScale = 1.f;
+    GetMesh()->SetVisibility(true, true);
     StartStandingAnimation();
 }
 
