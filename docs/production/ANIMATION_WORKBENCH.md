@@ -28,3 +28,26 @@ For a single animation, double-click the animation asset and use its preview pla
 The prepared map, sequence and licensed source clips are local assets. The source PR contains this guide and the [validation receipt](../validation/2026-10-16-animation-workbench.md). Sequencer arranges a staged performance; gameplay service still uses the existing character logic.
 
 UI references checked October 16, 2026: Epic's [animation-track properties](https://dev.epicgames.com/documentation/unreal-engine/cinematic-animation-track-in-unreal-engine?lang=en-US) and [Sequencer shortcuts](https://dev.epicgames.com/documentation/unreal-engine/sequencer-hotkeys-in-unreal-engine?lang=en-US).
+
+## Pick an action next
+
+The smaller local guide is `C:/Users/j6sis/SpaceSurvival/.agent/local/AnimationWorkbench_20261016/ActionGuide/Review.html`. It offers 12 action sets and 38 clips, with copy controls and exact paths. For an **Imported** card: expand it, click **Copy name**, paste into the Content Browser search, then double-click the matching asset and press Play. Use the full path to distinguish duplicate names. **Downloaded FBX** cards still need importing and rig checks; they cannot play in Unreal yet.
+
+| Action | Source pack | What is available |
+| --- | --- | --- |
+| Floating repair | Space Crew | Start / Loop / End; the prepared sequence above uses these |
+| Standing repair | Space Crew | Start / Loop; no matching End found in this scoped set |
+| Terminal | Space Crew | Typing, reading and clicking alternatives |
+| Cargo | Space Crew | Pick up / carry / place; joins and box contact untested |
+| Hand scanner | Space Crew | Full gesture or held loop |
+| Valve | 200+ Interactions | Start / hold / turn / End; downloaded FBX |
+| Lever | 200+ Interactions | Start / Loop / Pull / Pulling / Success **or** Fail / End; downloaded FBX |
+| Button | 200+ Interactions | Middle/top height alternatives; downloaded FBX |
+| Toast | Tavern | Three cheers-and-drink alternatives |
+| Table conversation | Tavern | Talk or laugh body motion; no laugh audio supplied |
+| Bar stool | 250+ Bar | Female Start / seated / End set |
+| Drunk ambience | Drunk Animations | Idle, talk and sleep alternatives |
+
+These use cases are inferred from the clip names. Except for the prepared example, this pass verifies local files and metadata, not playback, seamless joins, prop contact or compatibility with Joy/Astra. The current fitted bar clips stay in place. A lever's Success and Fail are alternatives; do not place both in one performance. A shared bone count alone does not establish a compatible skeleton. The guide does not add gameplay or alter the hero/squirrels.
+
+The guide's structure and paths passed static checks. Its browser visual/copy check remains unverified because the browser tool blocked local-file navigation. [Inventory evidence](../validation/2026-10-16-animation-workbench.md#action-guide-and-interaction-inventory).
