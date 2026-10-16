@@ -4,6 +4,71 @@ Owner direction, October 15, 2026: fit the purchased corset and shorts to the na
 
 ## Current local assets
 
+### Bar art direction — saved local candidate, October 16
+
+The owner supplied four images as the visual reference for bar design,
+materials, colors, uniforms and drinks, then explicitly authorized room colors,
+pink Illuminated Wall panels and large observation windows. Paraphrased direction:
+an intimate, welcoming cosmic lounge, with playful service and a lively mix of patrons.
+
+- Use deep midnight blue, indigo and near-black as the base; violet/magenta neon
+  leads, with smaller cyan accents and restrained warm brass/gold details.
+- Pair dark satin/leather-like fabrics and subtle metallic trim with worn dark
+  metal, polished counter surfaces and clear glass. Keep their roughness distinct
+  so the scene does not read as uniformly glossy plastic.
+- Light faces and hands warmly and clearly; reserve colored glow for edges,
+  signage and drinks. Preserve dark depth and local pools of table light, with
+  reflections that retain surface detail. Apply the direction within the bar;
+  global exposure or station-wide recoloring is not implied.
+- Give drinks different silhouettes: a tall violet/pink cocktail, a cyan martini
+  or highball, an amber drink over ice in a short tumbler, and small dark shots.
+  Use visible liquid, restrained sparkle/bubbles, ice and simple citrus or star
+  garnishes. Keep glass rims and the liquid surface readable when carried or poured.
+- Carry celestial motifs into restrained piping, badges, menus and small signs;
+  keep the atmosphere social through conversation, laughter and service. Large
+  exterior-view windows are now explicitly requested; a clear starfield remains
+  an unresolved composition goal.
+
+Astra and Joy keep their names, identities, accepted voices and existing rigs.
+Venue/staff names and menu text visible in the pictures are reference content,
+not approved renames or a fixed drink menu. Outfit replacement is not inferred
+from the images. Adapt the owned assets as their fit and contact issues are repaired.
+
+Private originals are retained under
+`.agent/local/Waitress_20261015/ArtDirection_20261016/`, with a hash manifest.
+`Adopted.json` records saved local map `5fd8e257`: all 9,473 original actor
+transforms are preserved, with six new actors (two window frames, two glass
+panes and two pink wall panels). The two observation bays reuse owned Genesis
+6 m window parts, scaled to a nominal 7.43 m wide by 4 m high each. Nearby
+asteroid terrain blocks an open starfield view; the windows do not yet achieve
+that requested exterior composition.
+
+Thirteen private material instances, the new `M_Joy_IndigoFabric` parent,
+431 material-slot assignments and six local light-intensity reductions implement
+the darker room, Astra's indigo/violet/gold and Joy's plum hair/indigo pants.
+The pants parent desaturates the original diffuse before tinting; normal,
+roughness, metallic and emissive inputs are retained. These derivatives live
+under `/Game/SpaceSurvival/Licensed/StationAssets/BarArt_20261016/Materials`;
+character geometry, rigs, existing animations and accepted voices are unchanged.
+
+The fresh saved-scene views are `Saved_Lounge.png`, `Saved_Astra.png`,
+`Saved_Joy.png`, `Saved_JoyPants.png` and `Saved_WindowLeft.png`, recorded in
+`SavedCapture.json`. `PantsIndigoFixed.png` remains the earlier correction
+preview. `Review.html` is the local visual-review destination.
+`FreshReload.json` verifies the same map hash, 9,479 actors, all 9,473 original
+transforms, 431 assignments, six added actors and six reduced lights, with zero
+dirty packages. Existing window collision and character meshes/idle/walk clips
+are retained. `FinalPreservation.json` checks 62 guarded files, with all 61
+non-map originals (including three project saves) unchanged; it records 14 new
+material hashes, zero dirty packages and an ended play world. Lead next action
+under RPT-20261015-01: review the darker room,
+character colors and window shape with the owner, then resolve the exterior
+composition. Stills do not validate costume fit in motion,
+animation contacts, voices or performance. Seated shorts, native audio/laughter,
+bar behaviors and the reference drink presentation retain their existing open
+checks; this is not visual acceptance or a packaged release.
+[Saved-scene validation and limits](../validation/2026-10-16-bar-lounge-art-direction.md).
+
 The canonical project is `C:/Users/j6sis/SpaceSurvival`. Licensed source assets and derivatives stay private, outside Git. No new purchase or runtime plugin is required.
 
 | Asset | Location |
@@ -23,9 +88,9 @@ V16 preserves the corset and original body. It restores the original shorts wais
 
 ## Change colors and fit
 
-Open `MI_WaitressCorset` or `MI_WaitressShorts` under the private `Materials` folder. Their inherited material parameters separate the main fabric, laces and trim. Current fabric is dark graphite, laces cyan and trim pale metal. The exact `Roughness_Intensity` parameter is 1.5 and `Normal_Intensity` is 0.65. Do not use the nonexistent `RoughnessIntensity` name.
+Open `MI_Astra_IndigoCorset` or `MI_Astra_IndigoShorts` under the private `BarArt_20261016/Materials` folder for the current saved color candidate. Their inherited parameters separate indigo fabric, violet laces and gold trim; the prior `MI_WaitressCorset` and `MI_WaitressShorts` remain preserved. The exact inherited `Roughness_Intensity` parameter is 1.5 and `Normal_Intensity` is 0.65. Do not use the nonexistent `RoughnessIntensity` name.
 
-The private `MI_WaitressHair` keeps the native hair, with Brightness 1 and Roughness 0.55. Room lighting and exposure were not changed. Camera-only exposure comparisons are diagnostics, not adopted lighting.
+The private `MI_WaitressHair` keeps the native hair, with Brightness 1 and Roughness 0.55. The October16 candidate reduces six local bar lights; earlier camera-only exposure comparisons remain diagnostics, not adopted global exposure changes.
 
 For another fit, edit a copy of the final Blender source. Export only the garments and their unchanged reference armature with animation baking and leaf bones disabled. Import clothing against the existing `S_PerfectFemaleBody`; do not reimport the original body or skeleton. Match material slots by their imported names, compile the Blueprint, save with PIE stopped, then check walking, carrying, serving and sitting in Unreal. The private fitting scripts and pose samples are retained beside the source; they are historical authoring records, not an unattended all-in-one pipeline.
 
@@ -37,7 +102,7 @@ Four actions use the existing action menu/keyword route: order a drink, share a 
 
 Ten authored corridor points are relative to the waitress's home. A visibility graph uses capsule sweeps; each movement step also checks deck support and uses swept movement. Blocked routes/timeouts return a refusal and release reservations. Keep route points clear of the counter and seats. The saved waitress label `Crew/Bar waitress` is explicitly retained by the station's temporary crew-trimming filter. Her component tags identify the Waitress persona/scenario.
 
-Joy retains her current native body, pink bob, clothing and original animations. Only private `_Contact` derivative clips are corrected. Pour uses left-hand glass/right-hand bottle; cheers uses the right-hand glass. Walk root translation is removed from the waitress's derivative while actor movement supplies travel at 95 cm/s. No native rig or original animation is overwritten.
+Joy retains her native body, bob geometry, clothing and original animations; the October16 color candidate changes her hair to plum and pants to indigo. Only private `_Contact` derivative clips are corrected. Pour uses left-hand glass/right-hand bottle; cheers uses the right-hand glass. Walk root translation is removed from the waitress's derivative while actor movement supplies travel at 95 cm/s. No native rig or original animation is overwritten.
 
 Saved markers: waitress `(3970,-3690,85)`, Joy `(4150,-4140,85)`, table approach `(3800,-3630,85)`, seat `(3730,-3645,85)`, drink contact `(3690,-3560,45.5)`. These are local station coordinates, not runtime-origin assumptions.
 

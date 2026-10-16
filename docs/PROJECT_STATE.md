@@ -1,5 +1,19 @@
 # SpaceSurvival project state
 
+**October16 bar appearance candidate:** Owner-authorized darker room colors,
+Astra indigo/violet/gold, Joy plum hair/indigo pants, two pink owned wall panels
+and two observation bays are saved in local Wayfarer map `5fd8e257`. Fresh reload
+verifies 9,479 actors, all 9,473 original transforms, six additions, 431 material
+assignments and six reduced local lights, with retained window collision and
+character meshes/idle/walk clips. Five saved-scene native views exist; final
+preservation checks 62 guarded files and retains all 61 non-map originals,
+including three project saves. Nearby asteroid terrain blocks the requested
+open starfield; owner appearance, seated fit, service contacts, native audio and
+performance remain open under RPT-20261015-01. Source is unchanged by this pass;
+the existing canonical combined module `0a679b43` also includes PR76 wardrobe
+work. No new build, cook or packaged release. Private content remains local.
+[Evidence and exact module identity](validation/2026-10-16-bar-lounge-art-direction.md).
+
 **October 16 bar speech timing:** Newly started crew speech now retains its full PCM duration instead of losing the elapsed start-frame time. The existing audio regression covers subsequent countdown/expiry and a clip shorter than its start frame. Isolated WorktreeBuild9 passes in 182.90s and canonical Build16 in 179.58s (module `29b1a46f`). The first CPU-only NullRHI AudioFirstPlayMix run passed assertions but failed the strict gate on two station-placement fixture warnings; the existing `-SSLegacyStation` isolated retry passes one test with zero warnings/errors in 8.23s. No map, native asset, cached audio, voice/personality profile or package/release change. Native audible mix, shared-shot hand/glass contact and Astra's seated fit remain open under RPT-20261015-01; the owner VRAM hold is preserved. [Evidence and remaining acceptance](validation/2026-10-16-bar-speech-timing.md).
 
 **October16 Joy voice checkpoint:** A new original Joy reference replaces the rejected velvet audition locally; Astra and all other references/settings remain unchanged. Optional cache revision prevents same-filename replacements replaying stale speech while retaining legacy caches. WorktreeBuild8 (65.09 s), canonical Build15 (75.10 s, module35b7379d) and the focused native encoding test pass. Owner accepted the Joy voice selection on October15; expressive laughter and native audible mix remain open in RPT-20261015-01. No map/package/release change. [Listening destination and evidence](validation/2026-10-16-joy-original-voice.md).
