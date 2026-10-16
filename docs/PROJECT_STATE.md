@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October16 foundation review:** Draft PR78 now supplies the missing parent of PR74. Exact d178dd4 builds in 167.87 seconds and passes its isolated dialogue encoding test; current station c3dd6ea9 / module b9a9d71e and 500 guarded native/plugin originals remain unchanged. Broader foundation behavior, owner acceptance and release remain unverified. [Evidence](validation/2026-10-16-joy-foundation-review.md).
+
 **October16 animation quick picks:** A local guide narrows the existing catalog to12 action sets / 38 clips, separating25 imported clips from13 FBXs requiring import/rig checks. Files/metadata verified; new motion/contact quality and browser visual/copy behavior remain unverified. Station c3dd6ea9 / module b9a9d71e unchanged. [Guide](production/ANIMATION_WORKBENCH.md#pick-an-action-next).
 
 **October16 Joy counter posture:** Joy's optional counter-delivery clip now uses 10 degrees less combined authored torso bend while retaining the same hand targets, timing and first8.3seconds of pouring. Saved station`c3dd6ea9`/unchanged module`b9a9d71e` preserves all9,483 actor transforms, original actions/grips and KrakenV12 with all nine materials. Normal/shared candidate service passes6,180samples; the saved ordinary order passes2,483. All225 prior non-map files remain unchanged. Remaining contacts/owner natural play remain open; no package or merge. [Evidence](validation/2026-10-16-bar-hologram-and-tray.md#joy-counter-posture-follow-up).
