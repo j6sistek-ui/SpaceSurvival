@@ -217,3 +217,13 @@ In settings, **LB / RB immediately switches General, Graphics, Audio and Control
 ## Resting corner patron
 
 The permanently sleeping Nyxar keeps the owned lying loop with **Conversation Enabled** false on the placed actor. Joy, Astra and the drunk arcade visitor remain available. Disabling conversation also clears stale hints/actions and rejects chatter; it does not change animation, collision or character identity. [Source, reload and playback evidence](../validation/2026-10-16-resting-patron-interaction.md). Astra's later preserve-volume trial remains rejected; V16 is unchanged and seated fit stays open.
+
+
+## Native recorded staff-shot audio
+
+Two ordinary-Play staff cycles now have a non-silent master recording and complete CPU transcription of all six spoken lines, with no sampled speech during paired drinking. This verifies native output in an isolated review session; listener preference, natural laughter and broader mixing remain open. The first background-muted recording is retained, and the repeat changes only private launch settings. [Evidence and preservation](../validation/2026-10-16-bar-native-audio.md).
+
+
+## Owner hologram and tray
+
+The right counter now has the owner-supplied waitress model as a small adjustable teal projection. Its owned projector is the movable parent, and the supplied metal tray is a separate prop beside it. Astra now uses a separate palm-supported tray carry/serve pair. Her original glass-only clips remain as fallbacks; drinking and staff-shot grips are preserved. Six saved-scene service/cancellation/fallback cases pass, while the full physical glass handoff/pour remains polish work. [Three-step adjustment guide and storage](BAR_HOLOGRAM.md); [saved-scene evidence](../validation/2026-10-16-bar-hologram-and-tray.md).

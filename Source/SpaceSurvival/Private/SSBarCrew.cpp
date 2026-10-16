@@ -52,7 +52,8 @@ ASSBarCrew::ASSBarCrew()
     Glass = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Glass"));
     Bottle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bottle"));
     ServedGlass = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ServedGlass"));
-    for (auto *Prop : {Glass.Get(), Bottle.Get(), ServedGlass.Get()})
+    ServingTray = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ServingTray"));
+    for (auto *Prop : {Glass.Get(), Bottle.Get(), ServedGlass.Get(), ServingTray.Get()})
     {
         Prop->SetupAttachment(CharacterMesh);
         Prop->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -70,6 +71,31 @@ void ASSBarCrew::ConfigureParts()
     Glass->SetRelativeTransform(GlassGrip);
     Bottle->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, BottleHand);
     Bottle->SetRelativeTransform(BottleGrip);
+    ServingTray->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, TrayHand);
+    ServingTray->SetRelativeTransform(TrayGrip);
+    ServingTray->SetVisibility(false);
+    bUsingServingTray = false;
+}
+
+bool ASSBarCrew::CanUseServingTray() const
+{
+    const auto *Mesh = CharacterMesh->GetSkeletalMeshAsset();
+    return !bIsBartender && ServingTray->GetStaticMesh() && Mesh && CharacterMesh->DoesSocketExist(TrayHand) &&
+           TrayCarryAnimation && TrayServeAnimation && Mesh->GetSkeleton() == TrayCarryAnimation->GetSkeleton() &&
+           Mesh->GetSkeleton() == TrayServeAnimation->GetSkeleton();
+}
+
+void ASSBarCrew::BeginCarryingDrink()
+{
+    ConfigureParts();
+    bUsingServingTray = CanUseServingTray();
+    if (bUsingServingTray)
+    {
+        Glass->AttachToComponent(ServingTray, FAttachmentTransformRules::KeepRelativeTransform);
+        Glass->SetRelativeTransform(TrayGlassPlacement);
+        ServingTray->SetVisibility(true);
+    }
+    Glass->SetVisibility(true);
 }
 
 void ASSBarCrew::OnConstruction(const FTransform &Transform)
@@ -269,7 +295,8 @@ bool ASSBarCrew::MoveAlongPath(float Dt)
     else
         BlockedTime = 0;
     SetActorRotation(FMath::RInterpTo(GetActorRotation(), FRotator(0, Delta.Rotation().Yaw, 0), Dt, 5.f));
-    PlayService(Glass->IsVisible() && CarryAnimation ? CarryAnimation.Get() : WalkAnimation.Get(), true);
+    UAnimSequence *CarryClip = bUsingServingTray ? TrayCarryAnimation.Get() : CarryAnimation.Get();
+    PlayService(Glass->IsVisible() && CarryClip ? CarryClip : WalkAnimation.Get(), true);
     if (BlockedTime > 3.f || StateTime > 60.f)
         ReturnHome(TEXT("The route is blocked. Please give me a little room."));
     return false;
@@ -409,7 +436,7 @@ void ASSBarCrew::Tick(float Dt)
         else if (Bartender->ReservedBy == this && !Bartender->IsActionPlaying())
         {
             Bartender->ReservedBy.Reset();
-            Glass->SetVisibility(true);
+            BeginCarryingDrink();
             const FVector GuestPosition = ServiceGuest->GetActorLocation();
             FVector Destination = GuestPosition + (GetActorLocation() - GuestPosition).GetSafeNormal2D() * 110.f;
             Destination.Z = GetActorLocation().Z;
@@ -425,20 +452,26 @@ void ASSBarCrew::Tick(float Dt)
         if (MoveAlongPath(Dt))
         {
             SetActorRotation(FRotator(0, (ServiceGuest->GetActorLocation() - GetActorLocation()).Rotation().Yaw, 0));
-            PlayService(ServeAnimation, false, true);
+            PlayService(bUsingServingTray ? TrayServeAnimation.Get() : ServeAnimation.Get(), false, true);
             SetState(ESSBarServiceState::Serving, TEXT("offering the guest their drink"));
             if (auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>())
                 GM->SpeakCrewLine(this, TEXT("Here you are. Enjoy."));
         }
         break;
     case ESSBarServiceState::Serving:
-        if (StateTime >= ServeAnimation->GetPlayLength())
+        if (!ServiceClip.IsValid())
+        {
+            ReturnHome(TEXT("The serving animation is unavailable."));
+            break;
+        }
+        if (StateTime >= ServiceClip->GetPlayLength())
         {
             if (DeliveryTable.IsValid())
             {
                 ServedGlass->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
                 ServedGlass->SetWorldTransform(DeliveryTable->DrinkContact->GetComponentTransform());
-                ServedGlass->SetWorldScale3D(GlassGrip.GetScale3D());
+                ServedGlass->SetWorldScale3D(bUsingServingTray ? TrayGlassPlacement.GetScale3D()
+                                                               : GlassGrip.GetScale3D());
                 ServedGlass->SetVisibility(true);
             }
             else
@@ -448,6 +481,8 @@ void ASSBarCrew::Tick(float Dt)
             }
             if (bDrinkTogether)
             {
+                ServingTray->SetVisibility(false);
+                bUsingServingTray = false;
                 Glass->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, DrinkHand);
                 Glass->SetRelativeTransform(DrinkGrip);
                 PlayService(DrinkAnimation, false, true);
