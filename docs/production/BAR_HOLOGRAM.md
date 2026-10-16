@@ -10,7 +10,7 @@ The owner's rough waitress model is a separate65cm teal hologram on the right-ha
 
 The folder in the Outliner is **Bar/Owner hologram and tray**. The independent **Bar/Serving tray** actor can be moved separately. Display and tray collision are disabled; they do not add an obstacle to the existing bar service route.
 
-Native review: `C:/Users/j6sis/SpaceSurvival/.agent/local/Waitress_20261015/BarHologram_20261016/Review.html`. Saved tray map`e3cee859` supersedes display-only`d3eb3a23`; combined module`a023f6a9`; local development content only. The owner's pending appearance check stays in KNOWN_ISSUES and does not gate other work.
+Native review: `C:/Users/j6sis/SpaceSurvival/.agent/local/Waitress_20261015/BarHologram_20261016/Review.html`. Saved tray map`e3cee859` supersedes display-only`d3eb3a23`; combined module`a16996cd`; local development content only. The owner's pending appearance check stays in KNOWN_ISSUES and does not gate other work.
 
 ## Inputs and storage
 
@@ -37,6 +37,6 @@ Placement was separately backed up, compared with all9,480 original actor transf
 
 ## Serving tray configuration
 
-Astra exposes **Bar → Tray** settings for a paired carry/serve animation, hand socket, tray grip and glass placement. The **ServingTray** component owns the mesh. These are optional: a missing mesh/socket or incompatible animation pair keeps the original hand-held glass service. The tray is shown while returning with an order and serving, then hidden for drinking, cancellation and returning home. Original carry/serve and drink clips remain assigned as fallbacks.
+Astra exposes **Bar → Tray** settings for a paired carry/serve animation, hand socket, tray grip and glass placement. The **ServingTray** component owns the mesh. These are optional: a missing mesh/socket or incompatible animation pair keeps the original hand-held glass service. The carry pose is selected before pickup, and the waitress mesh evaluates after her service state update so the first visible tray uses the current hand pose. The tray is shown while returning with an order and serving, then hidden for drinking, cancellation and returning home. Original carry/serve and drink clips remain assigned as fallbacks.
 
 The saved fit uses `hand_l`, the owner tray mesh, separate `TrayPose/A_Waitress_TrayCarry_CandidateV2` and `A_Waitress_TrayServe_CandidateV2` clips, grip translation `(15.391144, -0.917641, -1.302555)` in hand space, and glass placement `(0, 0, 0.769705)` at0.8scale in tray space. These clips change left-arm/hand rotations only; original clips and bone translations/scales are preserved. Runtime review is recorded separately from import/save success.

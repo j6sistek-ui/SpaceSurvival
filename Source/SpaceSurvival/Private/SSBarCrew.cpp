@@ -89,6 +89,8 @@ void ASSBarCrew::BeginCarryingDrink()
 {
     ConfigureParts();
     bUsingServingTray = CanUseServingTray();
+    UAnimSequence *CarryClip = bUsingServingTray ? TrayCarryAnimation.Get() : CarryAnimation.Get();
+    PlayService(CarryClip ? CarryClip : WalkAnimation.Get(), true);
     if (bUsingServingTray)
     {
         Glass->AttachToComponent(ServingTray, FAttachmentTransformRules::KeepRelativeTransform);
@@ -111,6 +113,9 @@ void ASSBarCrew::BeginPlay()
     ResetBarBreakTimer();
     ConfigureParts();
     ServiceClip = IdleAnimation;
+    // Evaluate the newly selected service pose before updating hand-attached props.
+    if (!bIsBartender)
+        CharacterMesh->AddTickPrerequisiteActor(this);
 }
 
 void ASSBarCrew::ReleaseTable()
