@@ -3332,8 +3332,8 @@ FSSTalkIdentity ASSGameMode::TalkTarget(const USceneComponent **OutMesh) const
         {
             // A drone has nothing to say; a wardrobe hologram is the pilot's own reflection; someone walking a route
             // is passing through (owner: "the hallway NPC shouldn't trigger it").
-            if (It->bDrone || It->bAnimationManagedExternally || It->RoutePoints.Num() > 1 || !It->CharacterMesh ||
-                !It->CharacterMesh->GetSkeletalMeshAsset())
+            if (!It->bConversationEnabled || It->bDrone || It->bAnimationManagedExternally ||
+                It->RoutePoints.Num() > 1 || !It->CharacterMesh || !It->CharacterMesh->GetSkeletalMeshAsset())
                 continue;
             FSSTalkIdentity Who = SSNpcTalk::IdentityFromTags(It->CharacterMesh->ComponentTags,
                                                               It->CharacterMesh->GetSkeletalMeshAsset()->GetName());
@@ -3455,6 +3455,9 @@ FString ASSGameMode::NpcDigest(const FSSTalkIdentity &Who) const
 
 void ASSGameMode::BeginTalk()
 {
+    if (const auto *Crew = EngagedMesh.IsValid() ? Cast<ASSOutpostAmbientActor>(EngagedMesh->GetOwner()) : nullptr;
+        Crew && !Crew->bConversationEnabled)
+        Disengage();
     auto *Talk = NpcTalk();
     if (!Talk || !Talk->IsEnabled() || IsMenuOpen() || TalkingTo.IsValid())
         return;
@@ -3539,6 +3542,14 @@ FSSTalkIdentity ASSGameMode::TalkHint() const
     // second rather than every frame.
     if (!Walker || WalkerStillSeconds < 2.f)
         return FSSTalkIdentity();
+    if (const auto *Crew =
+            CachedHintMesh.IsValid() ? Cast<ASSOutpostAmbientActor>(CachedHintMesh->GetOwner()) : nullptr;
+        Crew && !Crew->bConversationEnabled)
+    {
+        CachedHint = FSSTalkIdentity();
+        CachedHintMesh.Reset();
+        CachedHintAt = -1.0;
+    }
     const double Now = GetWorld()->GetTimeSeconds();
     if (Now - CachedHintAt > .25)
     {
@@ -3555,7 +3566,7 @@ ASSOutpostAmbientActor *ASSGameMode::ActionTarget() const
     const USceneComponent *Mesh =
         EngagedWith.IsValid() ? EngagedMesh.Get() : (TalkHint().IsValid() ? CachedHintMesh.Get() : nullptr);
     auto *Crew = Mesh ? Cast<ASSOutpostAmbientActor>(Mesh->GetOwner()) : nullptr;
-    return Crew && !Crew->Actions.IsEmpty() ? Crew : nullptr;
+    return Crew && Crew->bConversationEnabled && !Crew->Actions.IsEmpty() ? Crew : nullptr;
 }
 
 void ASSGameMode::TriggerNpcAction(int32 Index)
@@ -3569,7 +3580,7 @@ void ASSGameMode::TriggerNpcAction(int32 Index)
 
 void ASSGameMode::SpeakCrewLine(ASSOutpostAmbientActor *Crew, const FString &Line)
 {
-    if (!IsValid(Crew) || Line.IsEmpty())
+    if (!IsValid(Crew) || !Crew->bConversationEnabled || Line.IsEmpty())
         return;
     const USkeletalMesh *Body = Crew->CharacterMesh ? Crew->CharacterMesh->GetSkeletalMeshAsset() : nullptr;
     const FString Who = Crew->TalkName.IsEmpty() ? SSNpcTalk::CharacterNameFromMesh(Body ? Body->GetName() : FString())
@@ -3584,8 +3595,8 @@ void ASSGameMode::SpeakCrewLine(ASSOutpostAmbientActor *Crew, const FString &Lin
 
 bool ASSGameMode::CanAmbientCrewSpeak(const ASSOutpostAmbientActor *Crew) const
 {
-    return Crew && Walker && !IsMenuOpen() && !TalkingTo.IsValid() && !EngagedWith.IsValid() && !bCrewVoiceWaiting &&
-           !CrewRadioReady.IsValid() && CrewRadioLeft <= 0.f &&
+    return Crew && Crew->bConversationEnabled && Walker && !IsMenuOpen() && !TalkingTo.IsValid() &&
+           !EngagedWith.IsValid() && !bCrewVoiceWaiting && !CrewRadioReady.IsValid() && CrewRadioLeft <= 0.f &&
            FVector::DistSquared(Walker->GetActorLocation(), Crew->GetActorLocation()) < FMath::Square(1400.f);
 }
 
@@ -3601,7 +3612,7 @@ bool ASSGameMode::CrewChatter(ASSOutpostAmbientActor *Crew)
 {
     if (const auto *Bar = Cast<ASSBarCrew>(Crew); Bar && (Bar->HasBarReservation() || Bar->bBarBreakActive))
         return false;
-    if (!Crew || !Walker || !Crew->CharacterMesh || Crew->Chatter.IsEmpty())
+    if (!Crew || !Crew->bConversationEnabled || !Walker || !Crew->CharacterMesh || Crew->Chatter.IsEmpty())
         return false;
     auto *Talk = NpcTalk();
     if (!Talk || !Talk->IsEnabled())
@@ -3645,8 +3656,9 @@ void ASSGameMode::UpdateTalkEngagement(float Dt)
     if (!EngagedWith.IsValid())
         return;
     const USceneComponent *Mesh = EngagedMesh.Get();
+    const auto *Crew = Mesh ? Cast<ASSOutpostAmbientActor>(Mesh->GetOwner()) : nullptr;
     // A few steps away ends it and the camera goes back (owner: "walking a few steps away disengages and goes back").
-    if (!Walker || Walker->IsDisembarking() || !Mesh ||
+    if (!Walker || Walker->IsDisembarking() || !Mesh || (Crew && !Crew->bConversationEnabled) ||
         FVector::Dist2D(Walker->GetActorLocation(), EngageAnchor) > 250.f)
     {
         Disengage();

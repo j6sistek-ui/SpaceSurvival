@@ -212,3 +212,8 @@ Press **D-pad Up / F8** during play to pause and enter photo mode. The camera st
 Files save under the running instance's `Saved/Screenshots/PhotoMode`, with unique timestamped names. The success message requires a nonempty file. The offscreen validation instance uses its isolated user directory; the ordinary owner launch uses its normal Saved location. Source checks do not establish physical-controller acceptance or every resolution/UI scale.
 
 In settings, **LB / RB immediately switches General, Graphics, Audio and Controls**, wrapping at either end without changing a value. D-pad/stick navigation within a tab remains available. During play, **hold LB near a crew member to display the actual action names with UP / RIGHT / DOWN / LEFT labels**; press that direction while holding LB. Keyboard actions remain 1–4. D-pad Up alone is photo mode. Cockpit mode selection remains D-pad Left without LB. The microwave prop alone is rotated -90 degrees about its bounds centre; its door faces the working aisle.
+
+
+## Resting corner patron
+
+The permanently sleeping Nyxar keeps the owned lying loop with **Conversation Enabled** false on the placed actor. Joy, Astra and the drunk arcade visitor remain available. Disabling conversation also clears stale hints/actions and rejects chatter; it does not change animation, collision or character identity. [Source, reload and playback evidence](../validation/2026-10-16-resting-patron-interaction.md). Astra's later preserve-volume trial remains rejected; V16 is unchanged and seated fit stays open.

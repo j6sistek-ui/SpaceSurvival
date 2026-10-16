@@ -1,5 +1,7 @@
 # Push-to-talk conversations (NPC talk)
 
+Placed ambient crew expose **Conversation Enabled** (default true). Disable it for unavailable characters such as the passed-out bar patron; fresh/cached prompts, actions and speech are suppressed and an existing conversation disengages. Idle animation and identity remain unchanged. Other crew keep conversation enabled. [Saved verification](validation/2026-10-16-resting-patron-interaction.md).
+
 ## Optional diagnostics — October 16
 
 Settings > Graphics > Diagnostics adds a sanitized, read-only view of talk phase, local LLM/STT process presence, voice readiness/queue, voice request failures/restarts and whether a talk error is present. Reading it neither starts helpers nor sends requests. Running is not model readiness; counters are session-local and do not represent all engine errors. Paths, endpoints, prompts, transcripts and response bodies are excluded. [Validation and remaining checks](validation/2026-10-16-runtime-diagnostics.md).

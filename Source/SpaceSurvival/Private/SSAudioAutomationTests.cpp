@@ -2,11 +2,13 @@
 #include "SSAudio.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
+#include "SSOutpostSandbox.h"
 #include "SSPhase1Data.h"
 #include "SSShip.h"
 #include "SSStation.h"
 #include "SSWorldActors.h"
 #include "Components/AudioComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
@@ -201,6 +203,52 @@ bool FSSAudioFirstState::RunTest(const FString &Parameters)
         TestEqual(TEXT("Elapsed playback clamps the short clip countdown to zero"), Mode->CrewRadioLeft, 0.f);
     }
     AddInfo(TEXT("Component and phase state verified; no rendered audio buffer or listening assertion."));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSRestingCrewInteraction, "SpaceSurvival.NpcTalk.RestingCrew",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSRestingCrewInteraction::RunTest(const FString &Parameters)
+{
+    FSSAudioWorld Fixture;
+    if (!Fixture.Initialize(*this, 0.0))
+        return false;
+    auto *Mode = Fixture.Mode;
+    Mode->Walker = Fixture.World->SpawnActor<ASSWalker>();
+    auto *Crew = Fixture.World->SpawnActor<ASSOutpostAmbientActor>();
+    if (!TestNotNull(TEXT("Walker exists"), Mode->Walker.Get()) || !TestNotNull(TEXT("Crew exists"), Crew))
+        return false;
+    Mode->Panel = ESSPanel::None;
+    Crew->Actions.SetNum(1);
+    Crew->Chatter.Add(TEXT("A line that must not play while asleep."));
+    TestTrue(TEXT("Existing crew remain conversation-enabled by default"), Crew->bConversationEnabled);
+    TestTrue(TEXT("An available nearby crew member can speak"), Mode->CanAmbientCrewSpeak(Crew));
+    Mode->EngagedWith.Name = TEXT("Resting crew");
+    Mode->EngagedMesh = Crew->CharacterMesh;
+    Mode->EngageAnchor = Mode->Walker->GetActorLocation();
+    TestEqual(TEXT("An available partner still offers its authored actions"), Mode->ActionTarget(), Crew);
+
+    Crew->bConversationEnabled = false;
+    TestNull(TEXT("A cached partner cannot offer actions after becoming unavailable"), Mode->ActionTarget());
+    Mode->CachedHint = Mode->EngagedWith;
+    Mode->CachedHintMesh = Crew->CharacterMesh;
+    Mode->CachedHintAt = Fixture.World->GetTimeSeconds();
+    Mode->WalkerStillSeconds = 3.f;
+    TestFalse(TEXT("The cached talk hint disappears immediately"), Mode->TalkHint().IsValid());
+    TestFalse(TEXT("Unavailable crew cannot start incidental speech"), Mode->CanAmbientCrewSpeak(Crew));
+    TestFalse(TEXT("Unavailable crew reject an ambient line"), Mode->TryAmbientCrewLine(Crew, TEXT("Hello")));
+    TestFalse(TEXT("Unavailable crew cannot chatter"), Mode->CrewChatter(Crew));
+    const int32 LinesBefore = Mode->ChatLines.Num();
+    Mode->SpeakCrewLine(Crew, TEXT("This must not appear."));
+    TestEqual(TEXT("Direct scripted speech cannot add a sleeping patron caption"), Mode->ChatLines.Num(), LinesBefore);
+    TestFalse(TEXT("No voice request was queued"), Mode->bCrewVoiceWaiting || Mode->CrewRadioReady.IsValid());
+    Mode->UpdateTalkEngagement(0.f);
+    TestFalse(TEXT("Becoming unavailable ends an existing conversation"), Mode->IsTalkEngaged());
+    TestFalse(TEXT("The old partner mesh is released"), Mode->EngagedMesh.IsValid());
+
+    Crew->bConversationEnabled = true;
+    TestTrue(TEXT("Availability can be restored without changing the actor"), Mode->CanAmbientCrewSpeak(Crew));
+    AddInfo(TEXT("No talk subsystem, helper process, microphone, save or audible output was started."));
     return true;
 }
 
