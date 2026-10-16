@@ -46,6 +46,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/PlayerCameraManager.h"
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #if WITH_DEV_AUTOMATION_TESTS
@@ -1738,6 +1740,7 @@ void ASSGameMode::RepaintShips()
 }
 void ASSGameMode::ClosePanel()
 {
+    EndWardrobePreview();
     if (bTitleSettingsNavigation &&
         (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics || Panel == ESSPanel::Audio ||
          Panel == ESSPanel::Controls || Panel == ESSPanel::Acknowledgements))
@@ -1765,6 +1768,93 @@ TArray<FSSHeroDefinition> ASSGameMode::WardrobeBodies() const
     auto Bodies = Tuning ? Tuning->InstalledHeroes(ESSHeroSlot::Walker) : TArray<FSSHeroDefinition>();
     Bodies.RemoveAll([](const FSSHeroDefinition &Body) { return Body.Identity == ESSHeroIdentity::Acornaut; });
     return Bodies;
+}
+
+void ASSGameMode::EndWardrobePreview()
+{
+    if (IsValid(WardrobeCamera))
+    {
+        if (auto *PC = UGameplayStatics::GetPlayerController(this, 0); PC && PC->GetViewTarget() == WardrobeCamera)
+            PC->SetViewTarget(WardrobePreviousView.IsValid() ? WardrobePreviousView.Get() : PC->GetPawn());
+        WardrobeCamera->Destroy();
+    }
+    WardrobeCamera = nullptr;
+    WardrobePreviousView.Reset();
+    if (WardrobeTerminal.IsValid())
+        WardrobeTerminal->EndWardrobePreview();
+    WardrobeTerminal.Reset();
+    WardrobePreviewId = NAME_None;
+    WardrobePreviewIndex = INDEX_NONE;
+    bWardrobeProjectionReady = false;
+}
+
+void ASSGameMode::FrameWardrobePreview()
+{
+    auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (!HasWardrobeProjection() || IsValid(WardrobeCamera) || !PC || !PC->PlayerCameraManager)
+        return;
+    FVector Location;
+    FRotator Rotation;
+    PC->GetPlayerViewPoint(Location, Rotation);
+    const FVector Focus = WardrobeTerminal->WardrobePreviewCenter();
+    FVector Direction = (Location - Focus).GetSafeNormal2D();
+    if (Direction.IsNearlyZero())
+        Direction = -PC->GetControlRotation().Vector().GetSafeNormal2D();
+    const FVector Desired = Focus + Direction * 350.f + FVector(0, 0, 25.f);
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(SSWardrobeCamera), true, PC->GetPawn());
+    Query.AddIgnoredActor(WardrobeTerminal.Get());
+    Query.AddIgnoredActor(WardrobeTerminal->PresentationTarget);
+    FHitResult Hit;
+    if (!GetWorld()->SweepSingleByChannel(Hit, Location, Desired, FQuat::Identity, ECC_Visibility,
+                                          FCollisionShape::MakeSphere(15.f), Query))
+        Location = Desired;
+    FActorSpawnParameters Spawn;
+    Spawn.ObjectFlags |= RF_Transient;
+    WardrobeCamera = GetWorld()->SpawnActor<ACameraActor>(Spawn);
+    if (!WardrobeCamera)
+        return;
+    WardrobePreviousView = PC->GetViewTarget();
+    int32 Width = 0, Height = 0;
+    PC->GetViewportSize(Width, Height);
+    const float Aspect = Height > 0 ? float(Width) / Height : 16.f / 9.f;
+    const float FOV = FMath::Clamp(
+        FMath::RadiansToDegrees(2.f * FMath::Atan(FMath::Tan(FMath::DegreesToRadians(20.f)) * Aspect)), 60.f, 110.f);
+    const FVector Right = FRotationMatrix((Focus - Location).Rotation()).GetUnitAxis(EAxis::Y);
+    // The panel occupies the right third. Aim beside the body so it fills the open world area.
+    const FVector Aim =
+        Focus + Right * (FVector::Distance(Location, Focus) * FMath::Tan(FMath::DegreesToRadians(FOV * .5f)) * .30f);
+    WardrobeCamera->SetActorLocationAndRotation(Location, (Aim - Location).Rotation());
+    WardrobeCamera->GetCameraComponent()->SetFieldOfView(FOV);
+    const auto &POV = PC->PlayerCameraManager->GetCameraCacheView();
+    WardrobeCamera->GetCameraComponent()->PostProcessSettings = POV.PostProcessSettings;
+    WardrobeCamera->GetCameraComponent()->PostProcessBlendWeight = POV.PostProcessBlendWeight;
+    PC->SetViewTarget(WardrobeCamera);
+}
+
+void ASSGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    EndWardrobePreview();
+    Super::EndPlay(EndPlayReason);
+}
+
+bool ASSGameMode::HasWardrobeProjection() const
+{
+    return bWardrobeProjectionReady && WardrobeTerminal.IsValid() && IsValid(WardrobeTerminal->PresentationTarget);
+}
+
+bool ASSGameMode::BrowseWardrobe(int32 Direction)
+{
+    if (Panel != ESSPanel::Wardrobe || Direction == 0)
+        return false;
+    const auto Bodies = WardrobeBodies();
+    if (Bodies.IsEmpty())
+        return true;
+    const int32 Current =
+        Bodies.IndexOfByPredicate([this](const FSSHeroDefinition &Body) { return Body.Id == WardrobePreviewId; });
+    const int32 Next = Current == INDEX_NONE ? 0 : (Current + (Direction > 0 ? 1 : Bodies.Num() - 1)) % Bodies.Num();
+    WardrobePreviewId = Bodies[Next].Id;
+    OpenPanel(ESSPanel::Wardrobe);
+    return true;
 }
 
 FName ASSGameMode::WornHeroId() const
@@ -1803,6 +1893,26 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return;
+    if (NewPanel != ESSPanel::Wardrobe)
+        EndWardrobePreview();
+    else if (Panel != ESSPanel::Wardrobe)
+    {
+        EndWardrobePreview();
+        WardrobePreviewId = WornHeroId();
+        const auto *PC = UGameplayStatics::GetPlayerController(this, 0);
+        const APawn *Pawn = PC ? PC->GetPawn() : nullptr;
+        float Closest = MAX_flt;
+        for (TActorIterator<ASSOutpostTerminal> It(GetWorld()); It; ++It)
+            if (It->Action == ESSOutpostAction::CycleWardrobe && It->CanUse(Pawn))
+            {
+                const float Distance = FVector::DistSquared(It->GetActorLocation(), Pawn->GetActorLocation());
+                if (Distance < Closest)
+                {
+                    Closest = Distance;
+                    WardrobeTerminal = *It;
+                }
+            }
+    }
     auto &S = GI->Session;
     const bool SettingsRefresh = NewPanel == Panel && (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics ||
                                                        Panel == ESSPanel::Audio || Panel == ESSPanel::Controls);
@@ -2099,17 +2209,31 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     case ESSPanel::Wardrobe:
     {
         PanelTitle = TEXT("CREW WARDROBE");
-        PanelDetail = TEXT("Who walks the deck. The choice is kept on your account for the rest of the game. "
-                           "The ship keeps its own pilot, so flying is unchanged.");
         const TArray<FSSHeroDefinition> Bodies = WardrobeBodies();
-        const FName Worn = WornHeroId();
-        for (int32 Index = 0; Index < Bodies.Num() && Index < 8; ++Index)
+        WardrobePreviewIndex =
+            Bodies.IndexOfByPredicate([this](const FSSHeroDefinition &Body) { return Body.Id == WardrobePreviewId; });
+        if (WardrobePreviewIndex == INDEX_NONE && !Bodies.IsEmpty())
         {
-            const bool Current = Bodies[Index].Id == Worn;
-            AddEntry(
-                FString::Printf(TEXT("%s%s"), *Bodies[Index].Id.ToString(), Current ? TEXT(" / wearing") : TEXT("")),
-                140 + Index, !Current);
+            WardrobePreviewIndex = 0;
+            WardrobePreviewId = Bodies[0].Id;
         }
+        const bool Available = Bodies.IsValidIndex(WardrobePreviewIndex);
+        bWardrobeProjectionReady =
+            Available && WardrobeTerminal.IsValid() && WardrobeTerminal->PreviewWardrobe(Bodies[WardrobePreviewIndex]);
+        if (WardrobeTerminal.IsValid() && !bWardrobeProjectionReady)
+            WardrobeTerminal->EndWardrobePreview();
+        FrameWardrobePreview();
+        PanelDetail = Available
+                          ? TEXT("Browse without changing your character. Select keeps your choice on this account. "
+                                 "Your ship's pilot stays the same.")
+                          : TEXT("No character bodies are installed for this station.");
+        if (Available && !HasWardrobeProjection())
+            PanelDetail += TEXT("\nProjection unavailable here. Use the wardrobe pad to preview in the world.");
+        AddEntry(TEXT("Previous"), 148, Bodies.Num() > 1);
+        AddEntry(TEXT("Next"), 149, Bodies.Num() > 1);
+        const bool Current = Available && WardrobePreviewId == WornHeroId();
+        AddEntry(Current ? TEXT("Currently wearing") : TEXT("Select character"), 150, Available && !Current);
+        SelectedEntry = 2;
         // -1 is the default the account starts at, so this row is "forget my choice" rather than a body.
         AddEntry(TEXT("Station default"), 139, S.account.hero >= 0);
         break;
@@ -2408,15 +2532,27 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
         OpenPanel(ESSPanel::History);
         return;
     }
-    if (A == 139 || (A >= 140 && A <= 147))
+    if (Panel == ESSPanel::Wardrobe && (A == 148 || A == 149))
+    {
+        BrowseWardrobe(A == 148 ? -1 : 1);
+        return;
+    }
+    if (Panel == ESSPanel::Wardrobe && (A == 139 || A == 150))
     {
         const TArray<FSSHeroDefinition> Bodies = WardrobeBodies();
-        const int32 HeroIndex = A - 140;
-        S.account.hero =
-            A == 139 || !Bodies.IsValidIndex(HeroIndex) ? -1 : static_cast<int>(Bodies[HeroIndex].Identity);
+        const int32 HeroIndex =
+            Bodies.IndexOfByPredicate([this](const FSSHeroDefinition &Body) { return Body.Id == WardrobePreviewId; });
+        if (A == 150 && !Bodies.IsValidIndex(HeroIndex))
+        {
+            OpenPanel(ESSPanel::Wardrobe);
+            Announce(TEXT("That character is no longer available. Choose an installed character."));
+            return;
+        }
+        S.account.hero = A == 139 ? -1 : static_cast<int>(Bodies[HeroIndex].Identity);
         if (!GI->PersistAccount())
             Announce(GI->LastSaveError);
         WearHero();
+        WardrobePreviewId = WornHeroId();
         OpenPanel(ESSPanel::Wardrobe);
         return;
     }
@@ -2977,6 +3113,8 @@ void ASSPlayerController::PlayerTick(float Dt)
             MenuHorizontal = 1;
         if (auto *HUD = Cast<ASSHUD>(GetHUD()); HUD && (MenuVertical || MenuHorizontal))
         {
+            if (MenuHorizontal && GM->BrowseWardrobe(MenuHorizontal))
+                return;
             if (MenuVertical || !GM->AdjustSetting(GM->SelectedEntry, MenuHorizontal))
                 HUD->NavigateMenu(MenuHorizontal, MenuVertical);
         }

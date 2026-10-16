@@ -14,6 +14,7 @@ class UPointLightComponent;
 class USSNPCHeadFillComponent;
 class USkeletalMeshComponent;
 class UStaticMeshComponent;
+struct FSSHeroDefinition;
 
 /** Presentation-map rules; the current station authoring map enters the full game on Play. */
 UCLASS(Blueprintable)
@@ -73,9 +74,20 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Outpost")
     FString Use(APlayerController *User);
     bool CanUse(const APawn *User) const;
+    /** Temporary display only. A failed replacement leaves the previous preview intact. */
+    bool PreviewWardrobe(const FSSHeroDefinition &Hero);
+    void EndWardrobePreview();
+    FVector WardrobePreviewCenter() const;
+
+protected:
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
     int32 PreviewIndex = -1;
+    UPROPERTY(Transient)
+    TObjectPtr<USkeletalMeshComponent> WardrobePreviewMesh;
+    TWeakObjectPtr<USkeletalMeshComponent> WardrobeOriginalMesh;
+    bool bWardrobeOriginalVisible = false;
     FString CyclePaint();
     FString CycleWardrobe();
 };

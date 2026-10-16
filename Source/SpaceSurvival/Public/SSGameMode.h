@@ -73,6 +73,7 @@ public:
     virtual void BeginPlay() override;
     virtual void StartPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void ApplyWorldOffset(const FVector &InOffset, bool bWorldShift) override;
     ASSStation *GetStation() const
     {
@@ -206,6 +207,11 @@ public:
     TObjectPtr<class USSPhase1Data> Tuning;
     /** Every hero this build can actually put on the deck, in roster order. What the wardrobe lists. */
     TArray<FSSHeroDefinition> WardrobeBodies() const;
+    /** Changes the projection only. Equipping requires the separate Select action. */
+    UFUNCTION(BlueprintCallable, Category = "Interface")
+    bool BrowseWardrobe(int32 Direction);
+    bool HasWardrobeProjection() const;
+    int32 WardrobePreviewIndex = INDEX_NONE;
     /** The body the deck should be wearing: the saved choice when it is installed, otherwise whatever
      *  roster order gives. Never returns a hero this build does not carry. */
     FName WornHeroId() const;
@@ -224,6 +230,14 @@ private:
     friend class FSSPhoenixCockpitDeparture;
     bool bAutomatedSoakInput = false;
     bool bTitleSettingsNavigation = false;
+    FName WardrobePreviewId;
+    TWeakObjectPtr<class ASSOutpostTerminal> WardrobeTerminal;
+    TWeakObjectPtr<AActor> WardrobePreviousView;
+    UPROPERTY(Transient)
+    TObjectPtr<class ACameraActor> WardrobeCamera;
+    bool bWardrobeProjectionReady = false;
+    void EndWardrobePreview();
+    void FrameWardrobePreview();
     UPROPERTY()
     TObjectPtr<ASSShip> Ship;
     UPROPERTY()

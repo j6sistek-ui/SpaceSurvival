@@ -1,5 +1,15 @@
 # SpaceSurvival whole-project solution catalog
 
+**WARDROBE-HOLO-20261016 — existing station projection (WBS8.4/10.3):** Reuses
+the owned pad, roster and assigned hologram material with a temporary preview
+component and the existing Canvas UI. No acquisition, installation or new
+runtime dependency. Value: character selection can be evaluated in the station
+without equipping during browsing. Source implementation is under evaluation;
+native framing and scripted browse/cleanup are verified; hologram readability,
+physical input and owner review remain pending in
+RPT-20261016-15. Existing projector props remain optional later art choices,
+not integrated replacements. [Evidence](../validation/2026-10-16-wardrobe-hologram.md).
+
 ## ASTRA-EYES-VOICE-20261015 — supplied custom eyes and local voices
 
 WBS8.4/10.3: owner supplied17 unique eye variants and selected WhitePurpleRings after five native previews. Five presets share one fitted eye rig; the packed Blender library preserves maps/UVs. Acquisition: supplied/downloaded, no purchase. Evaluation: selected pair saved on Astra; later automatic gaze remains unauthored. Original local Astra and new Joy synthetic references reuse CPU LuxTTS, avoiding a new runtime dependency. Owner rejected Joy's earlier velvet audition on October15; her replacement is reserved to her and uses a scoped cache revision. Owner accepted Joy's replacement on October15; laughter and native mix remain open; [current evidence](../validation/2026-10-16-joy-original-voice.md). Whole-project value: reusable eye fitting and separate name/type/role/voice files. Next: RPT-20261015-01 owner listening and in-game appearance review.

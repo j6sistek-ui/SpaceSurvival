@@ -129,40 +129,120 @@ FString ASSOutpostTerminal::CycleWardrobe()
         return TEXT("No installed crew appearances are available.");
     const int32 Next = (PreviewIndex + 1) % Heroes.Num();
     const auto &Hero = Heroes[Next];
-    auto *Asset = LoadObject<USkeletalMesh>(nullptr, *Hero.MeshPath);
-    if (!Asset)
+    if (!PreviewWardrobe(Hero))
         return TEXT("That crew appearance could not be loaded.");
-    // Keep the original projector's sole plane, including capsule-centred actor offsets.
-    FVector MeshOrigin = Mesh->GetRelativeLocation();
-    float SolePlane = MeshOrigin.Z;
-    if (const auto *Previous = Mesh->GetSkeletalMeshAsset())
-    {
-        const auto PreviousBounds = Previous->GetBounds();
-        SolePlane += (PreviousBounds.Origin.Z - PreviousBounds.BoxExtent.Z) * Mesh->GetRelativeScale3D().Z;
-    }
-    if (auto *Ambient = Cast<ASSOutpostAmbientActor>(PresentationTarget))
-        Ambient->bAnimationManagedExternally = true;
-    Mesh->Stop();
-    Mesh->SetSkeletalMesh(Asset);
-    Mesh->EmptyOverrideMaterials();
-    const auto Bounds = Asset->GetBounds();
-    const float Scale = FMath::Clamp(HologramHeight / FMath::Max(1.f, float(Bounds.BoxExtent.Z * 2)), .01f, 10.f);
-    Mesh->SetRelativeScale3D(FVector(Scale));
-    MeshOrigin.Z = SolePlane - (Bounds.Origin.Z - Bounds.BoxExtent.Z) * Scale;
-    Mesh->SetRelativeLocation(MeshOrigin);
-    Mesh->SetRelativeRotation(FRotator(0, Hero.MeshYaw, 0));
-    if (HologramMaterial)
-        for (int32 Slot = 0; Slot < Mesh->GetNumMaterials(); ++Slot)
-            Mesh->SetMaterial(Slot, HologramMaterial);
-    Mesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
-    if (FSSHeroDefinition::AssetInstalled(Hero.IdleClipPath))
-        if (auto *Idle = LoadObject<UAnimSequence>(nullptr, *Hero.IdleClipPath); CompatibleClip(Mesh, Idle))
-            Mesh->PlayAnimation(Idle, true);
-    if (auto *Ambient = Cast<ASSOutpostAmbientActor>(PresentationTarget))
-        Ambient->RefreshReadabilityLighting();
     PreviewIndex = Next;
     return FString::Printf(TEXT("CREW APPEARANCE / %s. Hologram preview only; your equipped character is unchanged."),
                            *Hero.Id.ToString());
+}
+bool ASSOutpostTerminal::PreviewWardrobe(const FSSHeroDefinition &Hero)
+{
+    auto *Original =
+        IsValid(PresentationTarget) ? PresentationTarget->FindComponentByClass<USkeletalMeshComponent>() : nullptr;
+    if (!IsValid(Original) || !GetWorld() || IsActorBeingDestroyed() || !FMath::IsFinite(HologramHeight) ||
+        HologramHeight <= 0.f || !FMath::IsFinite(Hero.MeshYaw) || !FSSHeroDefinition::AssetInstalled(Hero.MeshPath))
+        return false;
+    auto *Asset = LoadObject<USkeletalMesh>(nullptr, *Hero.MeshPath);
+    if (!Asset)
+        return false;
+
+    const FTransform OriginalWorld = Original->GetComponentTransform();
+    double SolePlane = OriginalWorld.GetLocation().Z;
+    if (const auto *OriginalAsset = Original->GetSkeletalMeshAsset())
+    {
+        const auto OriginalBounds = OriginalAsset->GetBounds().TransformBy(OriginalWorld);
+        SolePlane = OriginalBounds.Origin.Z - OriginalBounds.BoxExtent.Z;
+    }
+
+    USceneComponent *Parent = Original->GetAttachParent();
+    FName Socket = Original->GetAttachSocketName();
+    FTransform Relative = Original->GetRelativeTransform();
+    if (Parent)
+    {
+        FRotator Rotation = Relative.Rotator();
+        Rotation.Yaw = Hero.MeshYaw;
+        Relative.SetRotation(Rotation.Quaternion());
+    }
+    else
+    {
+        // A root mesh is itself a stable attachment; retain its authored world facing.
+        Parent = Original;
+        Socket = NAME_None;
+        Relative = FTransform::Identity;
+    }
+    const FTransform ParentWorld = Parent->GetSocketTransform(Socket);
+    if (OriginalWorld.ContainsNaN() || ParentWorld.ContainsNaN() ||
+        ParentWorld.GetScale3D().GetAbsMin() <= UE_SMALL_NUMBER)
+        return false;
+    Relative.SetScale3D(FVector::OneVector);
+    const auto AssetBounds = Asset->GetBounds();
+    const auto UnitBounds = AssetBounds.TransformBy(Relative * ParentWorld);
+    const double UnitHeight = UnitBounds.BoxExtent.Z * 2.;
+    if (!FMath::IsFinite(UnitHeight) || UnitHeight <= UE_SMALL_NUMBER || !FMath::IsFinite(SolePlane))
+        return false;
+    // Fit in world centimetres, including parent/socket scale, without changing the original mesh.
+    Relative.SetScale3D(FVector(HologramHeight / UnitHeight));
+    FTransform PreviewWorld = Relative * ParentWorld;
+    const auto FittedBounds = AssetBounds.TransformBy(PreviewWorld);
+    PreviewWorld.AddToTranslation(FVector(0, 0, SolePlane - (FittedBounds.Origin.Z - FittedBounds.BoxExtent.Z)));
+    Relative = PreviewWorld.GetRelativeTransform(ParentWorld);
+    if (Relative.ContainsNaN())
+        return false;
+
+    auto *Candidate = NewObject<USkeletalMeshComponent>(this, NAME_None, RF_Transient);
+    Candidate->SetupAttachment(Parent, Socket);
+    Candidate->SetRelativeTransform(Relative);
+    Candidate->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Candidate->SetGenerateOverlapEvents(false);
+    Candidate->SetCanEverAffectNavigation(false);
+    Candidate->SetSimulatePhysics(false);
+    Candidate->bDisableClothSimulation = true;
+    Candidate->bSuppressNotifyEventDispatch = true;
+    Candidate->SetDisablePostProcessBlueprint(true);
+    Candidate->SetCastShadow(false);
+    Candidate->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+    Candidate->SetSkeletalMesh(Asset);
+    if (HologramMaterial)
+        for (int32 Slot = 0; Slot < Candidate->GetNumMaterials(); ++Slot)
+            Candidate->SetMaterial(Slot, HologramMaterial);
+    Candidate->RegisterComponent();
+    if (!Candidate->IsRegistered())
+    {
+        Candidate->DestroyComponent();
+        return false;
+    }
+    if (Asset->GetSkeleton() && FSSHeroDefinition::AssetInstalled(Hero.IdleClipPath))
+        if (auto *Idle = LoadObject<UAnimSequence>(nullptr, *Hero.IdleClipPath); CompatibleClip(Candidate, Idle))
+            Candidate->PlayAnimation(Idle, true);
+    Candidate->UpdateBounds();
+
+    // Commit only after the candidate exists. No Stop/Play or material writes touch the placed mesh.
+    EndWardrobePreview();
+    WardrobeOriginalMesh = Original;
+    bWardrobeOriginalVisible = Original->GetVisibleFlag();
+    WardrobePreviewMesh = Candidate;
+    Original->SetVisibility(false);
+    return true;
+}
+void ASSOutpostTerminal::EndWardrobePreview()
+{
+    if (IsValid(WardrobePreviewMesh))
+        WardrobePreviewMesh->DestroyComponent();
+    WardrobePreviewMesh = nullptr;
+    if (auto *Original = WardrobeOriginalMesh.Get())
+        Original->SetVisibility(bWardrobeOriginalVisible);
+    WardrobeOriginalMesh.Reset();
+}
+FVector ASSOutpostTerminal::WardrobePreviewCenter() const
+{
+    if (IsValid(WardrobePreviewMesh))
+        return WardrobePreviewMesh->Bounds.Origin;
+    return IsValid(PresentationTarget) ? PresentationTarget->GetActorLocation() : GetActorLocation();
+}
+void ASSOutpostTerminal::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    EndWardrobePreview();
+    Super::EndPlay(EndPlayReason);
 }
 FString ASSOutpostTerminal::Use(APlayerController *User)
 {
