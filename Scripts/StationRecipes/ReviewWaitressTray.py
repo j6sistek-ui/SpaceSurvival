@@ -56,21 +56,24 @@ def service_check_tick(dt):
         p=astra.get_actor_location();pos=p+astra.get_actor_forward_vector()*240+astra.get_actor_right_vector()*95+u.Vector(0,0,65)
         bcam.set_actor_location_and_rotation(pos,u.MathLibrary.find_look_at_rotation(pos,p+u.Vector(0,0,20)),False,False);bcam.camera_component.set_field_of_view(48.)
         active=state in ['RETURNING_TO_GUEST','SERVING'];expected_tray=active and name in ['order','shared_drink','cancel_carry']
+        if active:
+            clip=astra.character_mesh.get_anim_instance().get_animation_asset()
+            target=(settings['carry'] if state=='RETURNING_TO_GUEST' else settings['serve']) if expected_tray else (astra.carry_animation if state=='RETURNING_TO_GUEST' else astra.serve_animation)
+            assert clip==target,(name,state,'first-frame clip',clip)
         if now-check['state_at']>.15:
             assert astra.serving_tray.is_visible()==expected_tray,(name,state,'tray visibility')
             if active:
                 assert astra.glass.get_attach_parent()==(astra.serving_tray if expected_tray else astra.character_mesh),(name,state,'glass parent')
-                clip=astra.character_mesh.get_anim_instance().get_animation_asset()
-                target=(settings['carry'] if state=='RETURNING_TO_GUEST' else settings['serve']) if expected_tray else (astra.carry_animation if state=='RETURNING_TO_GUEST' else astra.serve_animation)
-                assert clip==target,(name,state,clip)
             if state=='DRINKING':
                 assert astra.glass.get_attach_parent()==astra.character_mesh and str(astra.glass.get_attach_socket_name())==str(astra.drink_hand)
                 assert astra.character_mesh.get_anim_instance().get_animation_asset()==astra.drink_animation
+        tr=astra.serving_tray.get_world_transform();up=tr.rotation.rotate_vector(u.Vector(0,0,1))
+        if expected_tray:
+            assert up.z>.995,(name,state,'tray tilt including pickup',up.z)
+            rec['tray_frames_checked']=rec.get('tray_frames_checked',0)+1
         if now-check['last_sample']>.1:
-            tr=astra.serving_tray.get_world_transform();up=tr.rotation.rotate_vector(u.Vector(0,0,1))
             row={'time':elapsed,'state':state,'tray':astra.serving_tray.is_visible(),'glass':astra.glass.is_visible(),'delivered':astra.served_glass.is_visible(),'tray_up':list(up.to_tuple()),'position':list(p.to_tuple()),'cloth_bone_delta_cm':max((astra.character_mesh.get_socket_location(b)-astra.corset.get_socket_location(b)).length() for b in ['breast_l','breast_r','spine_03'])}
             rec['samples'].append(row);check['last_sample']=now
-            if expected_tray and now-check['state_at']>.3:assert up.z>.995,(name,state,'tray tilt',up.z)
         if active and now-check['state_at']>.8 and state not in rec['shots']:
             rec['shots'].append(state);u.SystemLibrary.execute_console_command(bw,'Shot filename="'+str(D/(name+'_'+state+'.png'))+'" -nosuffix',bp)
         if name=='cancel_carry' and state=='RETURNING_TO_GUEST' and now-check['state_at']>1 and not check['triggered'] and (astra.get_actor_location()-guest.get_actor_location()).length()<390:

@@ -1,5 +1,13 @@
 # SpaceSurvival continuity
 
+- 2026-10-16T20:10Z [TOOL] Tray pickup modulea16996cd passes all6 strict native cases,2338samples/2342tray-frame checks including first pickup; cloth delta0cm. Clean packages and210nonmodule originals preserved, statione3/animation1c9f31b9 unchanged. [CODE] Source/evidence amendment prepared for draftPR74; independent glass-refraction copy under review, originals unchanged. No remote merge or owner checkpoint.
+
+- 2026-10-16T20:05Z [TOOL] First-frame pickup test rejected moduleafdd9759: selecting the carry clip alone left prior hand bones visible. Runtime mesh tick prerequisite fixes order (376samples, minimum tray-up0.9999998). [CODE] Five-line source repair selects carry before showing props and evaluates waitress mesh after actor; worktree23.42s/canonical23.19s builds pass, modulea16996cd. Fresh owned offscreen27948 reviewing six strict cases; statione3/210nonmodule files unchanged. No merge or owner checkpoint.
+
+- 2026-10-16T19:52Z [CODE] Tray pickup now selects its carry clip before showing props; two exact backed-up canonical files adopted, no header/API change. [TOOL] Worktree37.64s/canonical27.38s editor builds pass, moduleafdd9759 supersedesa023; statione3 and210nonmodule originals unchanged. Stricter first-visible-frame native service/fallback review underway in owned offscreen36500; no merge, owner feedback still does not gate work.
+
+- 2026-10-16T19:48Z [TOOL] Workbench orientation correction supersedes map84b83faa with1c9f31b9: named identity rotation/40cm height, upright reload then final saved-camera playback1509samples/2wraps/pause-resume pass; three views inspected.209priorfiles and sequence9ea31d7f unchanged. [CODE] Earlier guide commit09ecd65 published draftPR74 with exact-head source/docs CI pass; correction receipt publication follows. No station/module/hero/crew changes or merge.
+
 - 2026-10-16T19:34Z [TOOL] Private animation workbench map84b83faa/sequence9ea31d7f uses owned compatible Start/Loop/Loop/End clips;2,807samples/two wraps/pause-resume and fresh reload pass. Original studio/statione3/modulea023 and209protectedfiles unchanged. First camera framing rejected/corrected; World Python-reference unload crash retained, fresh direct-map process succeeds. [CODE] Short guide/evidence prepared for PR74; maintenance prop/contact integration stays open, hero/squirrels/PR73 held. Owner feedback remains pending without checkpoint gate.
 
 - 2026-10-16T19:18Z [TOOL] Supersedes pending publication19:12: draftPR74 head12bc3bb, PR760f5bd7d and PR77d803d4b published after dry-runs; fresh heads/bodies verified, source/docs CI success, mergeable/unmerged. No remote merge or release. Animation teaching example proceeds independently of owner bar/hologram feedback.
