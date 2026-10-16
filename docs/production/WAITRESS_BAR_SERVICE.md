@@ -4,9 +4,18 @@ Owner direction, October 15, 2026: fit the purchased corset and shorts to the na
 
 ## Current local assets
 
+### Astra drinking grip — October16 correction
+
+Current local map `cebb5d83` uses `A_Waitress_DrinkStanding_GraspV2` for Astra's
+drink animation and action1. Twelve right-finger rotation tracks now curl toward
+the tumbler; the original clip, arm motion, grip transforms, V16 outfit and
+physics are retained. Saved reload and407 uninterrupted service samples pass.
+Mouth/rim alignment and the other open contact/fit/audio checks remain lead work.
+[Before/after and evidence](../validation/2026-10-16-astra-glass-grip.md).
+
 ### Footwear and filled glassware — October16 follow-up
 
-Current local map `fb604de9` supersedes the earlier bar snapshot below. Joy's
+Footwear/drink snapshot `fb604de9` supersedes the earlier bar snapshot below. Joy's
 blue/black footwear uses `MI_Joy_IndigoSneakers` in slot18 and
 `MI_Joy_IndigoPantsTrimShoes` in slot20; the right shoe shares that trim atlas.
 Slot19 fabric, other character slots, rigs and animations are retained. Astra
