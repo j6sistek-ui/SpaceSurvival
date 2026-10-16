@@ -1,8 +1,6 @@
 # SpaceSurvival continuity
 
-- 2026-10-16T20:10Z [TOOL] Tray pickup modulea16996cd passes all6 strict native cases,2338samples/2342tray-frame checks including first pickup; cloth delta0cm. Clean packages and210nonmodule originals preserved, statione3/animation1c9f31b9 unchanged. [CODE] Source/evidence amendment prepared for draftPR74; independent glass-refraction copy under review, originals unchanged. No remote merge or owner checkpoint.
-
-- 2026-10-16T20:05Z [TOOL] First-frame pickup test rejected moduleafdd9759: selecting the carry clip alone left prior hand bones visible. Runtime mesh tick prerequisite fixes order (376samples, minimum tray-up0.9999998). [CODE] Five-line source repair selects carry before showing props and evaluates waitress mesh after actor; worktree23.42s/canonical23.19s builds pass, modulea16996cd. Fresh owned offscreen27948 reviewing six strict cases; statione3/210nonmodule files unchanged. No merge or owner checkpoint.
+- 2026-10-16T20:32Z [TOOL] Saved glass material follow-up map5b064cb9 supersedese3 for6component slots only: fresh reload9,483transforms unchanged, saved order372samples/3counter views,211nonmap files and originalGLBs preserved; modulea16996cd unchanged, owned editors exited. [CODE] Pickup PR7404de078, PR769782cc2 andPR776dbb70d are published/mergeable/draft/unmerged with exact-head source/docs CI pass. Glass receipt amendment pending; owner feedback remains logged without a checkpoint, hero/squirrel/PR73 held.
 
 - 2026-10-16T19:52Z [CODE] Tray pickup now selects its carry clip before showing props; two exact backed-up canonical files adopted, no header/API change. [TOOL] Worktree37.64s/canonical27.38s editor builds pass, moduleafdd9759 supersedesa023; statione3 and210nonmodule originals unchanged. Stricter first-visible-frame native service/fallback review underway in owned offscreen36500; no merge, owner feedback still does not gate work.
 

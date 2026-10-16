@@ -1278,3 +1278,5 @@ passes exports/weights/endpoints; native materials, body retarget and gameplay r
 - **Timing / next checks:** display available locally now; owner glow/location feedback remains pending. A separate palm-supported tray carry/serve pair is now integrated and passes six native service/cancellation/fallback cases; original crew assets remain intact. Full glass handoff/pour and owner natural-play acceptance remain separate. Track RPT-20261016-16 in KNOWN_ISSUES. [Evidence](../validation/2026-10-16-bar-hologram-and-tray.md).
 
 - **October16 pickup follow-up:** six strict saved-scene cases pass on module`a16996cd`, including current-pose orientation on the first visible frame. No new acquisition or native asset edits; full handoff/pour remains lead polish.
+
+- **October16 drink appearance:** separate corrected glass-refraction copy assigned to six saved drink components; original vendor material and native meshes unchanged. The non-refractive trial was visually rejected. Fresh reload/saved service pass; full liquids and prop handoff remain open.

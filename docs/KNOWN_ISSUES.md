@@ -1,5 +1,7 @@
 # Open work and owner review
 
+**October16 drink-glass follow-up:** Current station `5b064cb9` supersedes `e3cee859` only for six drink material assignments. A separate corrected refraction copy keeps the original assets intact; fresh reload preserves all9,483 actor transforms, saved service passes372 samples and211 prior non-map files remain unchanged. Combined module `a16996cd` and packaged release are unchanged. [Evidence](validation/2026-10-16-bar-hologram-and-tray.md#drink-glass-refraction-follow-up).
+
 **RPT-20261016-03 — Interaction inventory and simple animation sequencing: PARTIAL / lead.** A separate saved studio demonstrates Start → Loop → Loop → End with three compatible owned Space Crew clips. Native playback, internal joins, pause/resume and fresh-map reload pass; a [three-step guide](production/ANIMATION_WORKBENCH.md) opens it. Original studio, station, hero and source clips are preserved. Lead next: reconcile more useful interaction sets and actual prop contacts; this teaching example has no wrench/repair target or gameplay interruption policy. Owner usability feedback does not pause other work. [Evidence](validation/2026-10-16-animation-workbench.md).
 
 **October16 owner bar display and tray:** The65cm adjustable teal hologram is saved on an owned projector. Astra now carries the supplied34cm metal tray using separate fitted clips; her original clips/rig/physics remain. Map`e3cee859` supersedes display-only`d3eb3a23`; combined module`a16996cd`. Reload preserves all9,483 actor transforms and original crew mesh/material/clip/grip fields. Six native service/cancellation/fallback cases pass; owner glow/location and natural-play feedback remain open. [Guide](production/BAR_HOLOGRAM.md), [evidence](validation/2026-10-16-bar-hologram-and-tray.md).
@@ -14,7 +16,7 @@
 
 ## Pending owner in-game validation
 
-Updated 2026-10-16. These checks await James's feedback; they do **not** pause lead implementation or technical validation. Reply with the row label and what looked or felt wrong. The lead records the result here and keeps repairs open until checked again. Use `Play Development Build.cmd` from the canonical checkout; current review identity is editor module `a16996cd`, station map `e3cee859` (local development, not the packaged release).
+Updated 2026-10-16. These checks await James's feedback; they do **not** pause lead implementation or technical validation. Reply with the row label and what looked or felt wrong. The lead records the result here and keeps repairs open until checked again. Use `Play Development Build.cmd` from the canonical checkout; current review identity is editor module `a16996cd`, station map `5b064cb9` (local development, not the packaged release).
 
 | Check | Linked work | What James should try | State / next action |
 | --- | --- | --- | --- |

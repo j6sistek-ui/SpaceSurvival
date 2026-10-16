@@ -10,7 +10,7 @@ The owner's rough waitress model is a separate65cm teal hologram on the right-ha
 
 The folder in the Outliner is **Bar/Owner hologram and tray**. The independent **Bar/Serving tray** actor can be moved separately. Display and tray collision are disabled; they do not add an obstacle to the existing bar service route.
 
-Native review: `C:/Users/j6sis/SpaceSurvival/.agent/local/Waitress_20261015/BarHologram_20261016/Review.html`. Saved tray map`e3cee859` supersedes display-only`d3eb3a23`; combined module`a16996cd`; local development content only. The owner's pending appearance check stays in KNOWN_ISSUES and does not gate other work.
+Native review: `C:/Users/j6sis/SpaceSurvival/.agent/local/Waitress_20261015/BarHologram_20261016/Review.html`. Current map`5b064cb9` retains the display/tray setup and adds six corrected drink-glass assignments; combined module`a16996cd`. Earlier tray map`e3cee859` and display-only`d3eb3a23` remain historical. Local development content only. The owner's pending appearance check stays in KNOWN_ISSUES and does not gate other work.
 
 ## Inputs and storage
 
