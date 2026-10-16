@@ -39,7 +39,8 @@ enum class ESSBarServiceState : uint8
     Drinking,
     ReturningHome,
     JoiningBartender,
-    BarBanter
+    BarBanter,
+    CollectingDrink
 };
 
 USTRUCT(BlueprintType)
@@ -94,6 +95,21 @@ public:
     /** Seconds in TraySetDownAnimation when the glass leaves the tray and reaches the table. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
     FVector2D TraySetDownWindow = FVector2D(.7f, 2.05f);
+    /** Optional counter pickup paired with the bartender's delivery clip. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    TObjectPtr<UAnimSequence> TrayPickupAnimation;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    FVector2D TrayPickupWindow = FVector2D(1.2f, 2.4f);
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
+    float TrayReadySeconds = .4f;
+    /** Bartender-only service override; direct pour actions keep their original clip. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Counter")
+    TObjectPtr<UAnimSequence> CounterDeliveryAnimation;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Counter")
+    float CounterReleaseSeconds = 10.9f;
+    /** Glass origin in the bartender actor's local space. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Counter")
+    FTransform CounterGlassTransform;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
     FName TrayHand = TEXT("hand_l");
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Tray")
@@ -184,11 +200,16 @@ private:
     bool bDrinkTogether = false;
     bool bUsingServingTray = false;
     bool bUsingTableSetDown = false, bGlassPickedUp = false, bGlassReleased = false;
+    bool bUsingCounterPickup = false, bUsingCounterDelivery = false, bCounterGlassReleased = false;
+    bool bCounterPickedUp = false, bCounterPlacedOnTray = false;
     void ConfigureParts();
     bool CanUseServingTray() const;
     bool CanSetDownAtTable() const;
+    bool CanUseCounterPickup() const;
     void PlaceServedGlass();
     void BeginCarryingDrink();
+    void BeginReturnFromBar();
+    void ReleaseBarReservation();
     void PlayService(UAnimSequence *Clip, bool bLoop, bool bRestart = false);
     void SetState(ESSBarServiceState State, const FString &Activity);
     bool PlanPath(const FVector &Destination);

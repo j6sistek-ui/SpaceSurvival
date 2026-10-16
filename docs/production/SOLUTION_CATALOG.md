@@ -1283,3 +1283,5 @@ passes exports/weights/endpoints; native materials, body retarget and gameplay r
 - **October16 drink appearance:** separate corrected glass-refraction copy assigned to six saved drink components; original vendor material and native meshes unchanged. The non-refractive trial was visually rejected. Fresh reload/saved service pass; full liquids and prop handoff remain open.
 
 - **October16 table delivery follow-up:** separate V6 set-down fitted to the existing low table and owner tray; rejected head/forearm contact trials retained. Optional source integration passes four native cases plus fresh saved service, preserving original clips/rig/physics. No acquisition or installation. Joy handoff/pour and owner natural play remain open under RPT-20261016-16.
+
+- **October16 counter pickup follow-up:** separate V6 Joy/Astra derivatives replace the large handoff jump, preserve original actions and pass saved service/cancel/fallback review. Reuses the owned rig, tray and glass; no acquisition/plugin adoption. Fine contact and natural play remain open under RPT-20261016-16.
