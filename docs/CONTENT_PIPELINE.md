@@ -1,5 +1,7 @@
 # Phase 1 content pipeline
 
+**October16 Kraken gown/eye adoption:** Saved V11 combines the fitted gown and selected Purple Mandala eye caps on the existing243-bone rig, preserving the body, garment UVs/weights and34actions. Assign the nine native material slots by name; retain separate front0.9/chest0.75/back0.65 fabric controls and original gold/sheer behavior. Native save and fresh reload preserve9,473 actor transforms and verify all nine slots; five saved-mesh walking views retain the original head-groom attachment. Lower rear-hem patches and shallow cuff contact remain open, so these receipts establish adoption and bounded motion rather than final appearance acceptance. Original sources, V10 recovery and private native content remain local. [Exact V11 artifacts, checks and limits](validation/2026-10-16-kraken-blue-fit-eyes.md).
+
 **October14 source closeout:** PR69 adds four existing runtime cook folders for its string-loaded warp frame/effects and cabin material; no vendor Blueprint/demo root is added. Native content stays private and unchanged; no cook/release occurs. [Coverage/build evidence](validation/2026-10-14-pr69-closeout.md). Station changes remain held.
 
 ## Fixed crown / moving ponytail — October 14
