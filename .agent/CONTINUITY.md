@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-16T01:42Z [USER] Accepts new Joy voice ("yeah thats fine"); keep reference4ea4ddf6 and Astra separately. This closes voice selection only. [TOOL] Four CPU-only laugh experiments use unchanged accepted references; private Laughter_20261016 contains WAVs/comparison and file checks, no cache/native adoption. Laughter quality, native mix and seated shorts remain open; hero/squirrels deferred, Kraken unchanged.
+
 - 2026-10-16T01:27Z [TOOL] Joy voice/cache checkpoint38b96d0 pushed after dry-run to existing draft PR74; fresh remote head/body match, unmerged. Local tracked worktree clean at publication; GitHub source/documentation checks are running. Six dependency-free cache regressions now added to the existing CI source job. No new native asset, owner Blender or release change; listening/native mix remain open.
 
 - 2026-10-16T01:24Z [TOOL] Supersedes01:09 candidate state: original Joy reference4ea4ddf6 adopted locally in canonical/PR74 worktree, nine revision-key clips added and prior audio/cache preserved. All other voice references/settings unchanged; exact-name routes reserve Astra/Joy. Six CPU cache checks,49structural, scoped format, WorktreeBuild8/CanonicalBuild15 and native Encoding1test/0warnings pass. Audition under Waitress_20261015/Voice/JoyOriginal_20261016; file/transcription checks only, browser local-file preview blocked. Listening, laughter/native mix and seated shorts remain OPEN. No map/package/merge or owner Blender change; source/docs PR74 amendment pending.
