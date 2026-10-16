@@ -1,0 +1,38 @@
+# Owner bar hologram and tray — 2026-10-16
+
+The owner supplied two GLBs and requested a small movable hologram of the rough waitress model somewhere in the bar, plus use of the serving tray if one was needed. The earlier service carried a glass directly. The display is separate from Astra; a later guarded source/native pass adds optional tray carrying and serving, as recorded below.
+
+## Saved result
+
+- Imported the owner's48,206-triangle static figure at65cm height, retaining its2K color texture as hologram detail. The unlit translucent material has adjustable teal tint, body opacity/glow, Fresnel rim and moving height scanlines. No skeletal rig or NPC behavior is added to the display.
+- Reused the owned `CyberpunkRestaurant/SM_Hologram_Projector_01` at0.8scale. Its actor **Bar/Waitress hologram/Move this display** is the parent of **Bar/Waitress hologram/Projection**, so moving the projector moves the figure. Original vendor mesh/materials remain unchanged.
+- Imported the owner's1,081-triangle tray at34cm across, with color, metallic/roughness and normal maps. The source4K maps remain intact; native maximum size is2K. A movable **Bar/Serving tray** prop sits beside the projector. This display-only snapshot precedes the tray service adoption below.
+- Display/projector/tray add three decorative actors. All9,480 prior actor transforms, labels and tags remain identical. The new objects have collision disabled. Saved map SHA256:`d3eb3a23b4b5123d96c902f69523ce27f392c457fbf6b22c4f431c7878e0674e`, superseding`ddc040c1` only for these additions.
+- Save → unload to Entry → reload verifies9,483 actors, the hierarchy, mesh assignments, exact new transforms, material parameters and clean packages. A fresh ordinary Play session loads the saved display and its parent relation; `SavedHologram.png` was visually inspected at1600×900. The first wide context capture was only1014×344 and is retained as context, not final framing evidence.
+- The combined editor module remains`cd9ed5339257ba3419d5fd42642dfb9d1c7d3641312279df9421864823db0cf0`; no C++ changes, rebuild, cook or packaged release in this asset pass. Original GLB hashes and exact private/native paths are in [the owner guide](../production/BAR_HOLOGRAM.md).
+
+Private evidence: `.agent/local/Waitress_20261015/BarHologram_20261016/{InputInventory.json,Export.json,Imported.json,ActorsBefore.json,Adopted.json,Reload.json,SavedRuntime.json,SavedHologram.png,Review.html}`. `StationBeforeHologram.umap` preserves the previous scene. Raw native/Blender files, maps and attachments are local, outside the source PR.
+
+## Reproduction and retained failures
+
+The bounded source exporter verifies the two original hashes and refuses an existing output directory. Its separate fresh replay matches mesh sizes/triangle counts and original hashes. The native importer refuses an existing destination and creates only its private assets outside PIE; map placement remains separately guarded.
+
+The first material attempt used the wrong Desaturation pin label and stopped before assignment; the fixed default-input connection completed the private candidate. The first save attempt during PIE was rejected; Play was ended and only the new private material was saved before map adoption. Those failures remain in the raw log. Temporary tray preview API lookups were corrected; no incomplete candidate was assigned to saved crew. Earlier vendor BP_Blinds errors remain unrelated and visible.
+
+## Remaining work
+
+The display's final location/glow/style is owner-tunable and remains in the existing bar-appearance feedback row. The first tray candidate intersected the fingers and remains unadopted. The revised pose and outward grip pass the later service review below; full glass handoff/pour transitions remain lead polish work. Existing Astra standing fit, glasses, clips, body physics, Joy, hero/squirrels and other actors remain unchanged. Broader bar/laughter/seated-garment/exterior and natural-input/performance/package checks remain in KNOWN_ISSUES. Owner review does not pause independent work.
+
+## Optional tray service adoption
+
+`ASSBarCrew` now owns an optional non-colliding ServingTray component, paired tray carry/serve clips, hand grip and tray-space glass placement. A missing mesh/socket or incompatible clip pair falls back to the original glass-only service. Cancellation/home reset hides the tray and restores the normal glass attachment. Shared drinking hides the tray and retains the original right-hand drink clip/grip. No new interaction binding or NPC identity change.
+
+Worktree Editor build passes51.23s; canonical build passes33.92s, module`a023f6a9cc6f1450835774ad550ceab34f82ac2e0f7612f57d6cc3a068ed280c`. Existing engine/third-party deprecation warnings remain. 49 structural checks,13 source-digest tests, Python compilation/content-source checks and scoped clang-format22 pass. No cook, package or performance claim.
+
+Separate native V2 clips preserve original clips, all translations/scales and other bone rotations; only left arm/hand rotations change. V1 finger penetration and the V4 rear-rim/forearm contact were rejected. V5 grip moves the tray centre past the wrist; carry/serve native views were inspected. Saved map`e3cee8593d22a9b41c630f84a4e23a061e567c44f331e9f1a06786214bd2aaa4` supersedes display-only`d3eb3a23`. Unload/reload retains9,483 actor transforms/labels/tags, original Astra/Joy mesh/material/clip/grip fields and all intended tray fields. A signed-zero text difference in the glass rotation was normalized in the comparison; no native value was changed to satisfy it.
+
+Ordinary saved Play completes six cases with2337 samples: order, shared drink, mid-carry cancellation, missing tray clip, wrong-skeleton tray clip and missing tray socket. Each verifies actual states, selected clips, tray visibility, glass attachment, delivery, cleanup and level tray orientation after the state transition settles. One first shared-pickup sample still sees the prior hand pose; pickup/hand-off blending remains polish work, not a claim of perfect contact on every frame. The original glass-only fallback completes service. Original drinking is restored for the shared case. No physical input or audible mix acceptance is inferred. The first review helper repeatedly requested an already-active diagnostic viewport; its rejected requests are retained even though captures were1600×900 and service checks pass. The helper now ends/restarts the viewport correctly; a further normal order passes378 samples and native captures.
+
+The initial tray editor accepted adoption while streaming remained active, then crashed on nested level unload. Its candidate map40e95381 was retained and rejected; the d3 backup was restored with206 non-map files unchanged. A fresh editor waits for loading to settle and asserts the exact9,483-actor baseline before adoption. Subsequent save, separate unload/reload, saved Play and final preservation pass. Earlier vendor BP_Blinds errors remain unrelated.
+
+Final preservation:206 prior non-map native/save/voice/config files unchanged, current map/module hashes above, clean packages, canonical and isolated source pairs identical. Evidence: `BarHologram_20261016/TrayService/Settled/{Adopted.json,Reload.json,ServiceReview/ServiceChecks.json,CaptureRecheck/ServiceChecks.json,FinalPreservation.json}`; recovery/failure evidence is retained in its parent. `Scripts/StationRecipes/ReviewWaitressTray.py` reproduces the six cases in an isolated rendered Play session; private native assets are required. Owner appearance/feel remains in KNOWN_ISSUES, with full handoff/pour, seated garments, laughter and exterior work still lead-owned.
