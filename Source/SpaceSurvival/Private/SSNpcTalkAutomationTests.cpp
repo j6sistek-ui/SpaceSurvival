@@ -206,16 +206,35 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
         SSNpcTalk::ParseVoiceProfile(TEXT("# the Director\nspeed = 0.92\nTreatment=Entity\nnonsense\n"), Profile);
         TestEqual(TEXT("a voice profile's speed is read"), Profile.Speed, .92);
         TestEqual(TEXT("a voice profile's treatment is read, lower-cased"), Profile.Treatment, FString(TEXT("entity")));
+        SSNpcTalk::ParseVoiceProfile(TEXT("Cache_Revision = reference-v2  \n"), Profile);
+        TestEqual(TEXT("a voice cache revision is read and trimmed"), Profile.CacheRevision,
+                  FString(TEXT("reference-v2")));
+        TestEqual(TEXT("a cache revision does not alter the voice's speed"), Profile.Speed, .92);
+        SSNpcTalk::ParseVoiceProfile(TEXT("cache_revision=  \n"), Profile);
+        TestTrue(TEXT("an explicitly empty revision restores legacy cache naming"), Profile.CacheRevision.IsEmpty());
         SSNpcTalk::FVoiceProfile Bare;
         SSNpcTalk::ParseVoiceProfile(TEXT(""), Bare);
         TestTrue(TEXT("no profile text means the server's own defaults"),
-                 Bare.Speed == .92 && Bare.Treatment == TEXT("none"));
+                 Bare.Speed == .92 && Bare.Treatment == TEXT("none") && Bare.CacheRevision.IsEmpty());
     }
     // The name the server's --prerender gives a line (md5 of "predator_ref_cut.wav|0.92|entity|Fetch.", Python):
     // the game must find the lines made ahead of time.
     TestEqual(TEXT("a line made ahead is found under the server's name for it"),
               SSNpcTalk::VoiceCacheName(TEXT("M:/anywhere/predator_ref_cut.wav"), .92f, TEXT("entity"), TEXT("Fetch.")),
               FString(TEXT("abb6b07d574d96cb727ac1df10ad746e.pcm")));
+    TestEqual(TEXT("an explicitly empty revision keeps the legacy filename exactly"),
+              SSNpcTalk::VoiceCacheName(TEXT("predator_ref_cut.wav"), .92, TEXT("entity"), TEXT("Fetch."), TEXT("")),
+              FString(TEXT("abb6b07d574d96cb727ac1df10ad746e.pcm")));
+    const FString JoyLine = TEXT("Only if we make one very important decision.");
+    TestEqual(TEXT("the existing Joy line retains its legacy cache filename"),
+              SSNpcTalk::VoiceCacheName(TEXT("Joy.wav"), .90, TEXT("none"), JoyLine),
+              FString(TEXT("9098a8788d3990c0fdfa04178c4bde80.pcm")));
+    TestEqual(TEXT("Joy's revision matches the Python prerender filename without changing her pace"),
+              SSNpcTalk::VoiceCacheName(TEXT("Joy.wav"), .90, TEXT("none"), JoyLine, TEXT("reference-v2")),
+              FString(TEXT("238e7861397bccd3156c587ef4c16f9a.pcm")));
+    TestEqual(TEXT("UTF-8 dialogue and revisions match Python cache naming"),
+              SSNpcTalk::VoiceCacheName(TEXT("Astra.wav"), .88, TEXT("none"), TEXT("Café."), TEXT("révision-2")),
+              FString(TEXT("99f23596df069069a86f71559a2ec524.pcm")));
     const FString ThreeDecimals =
         SSNpcTalk::VoiceCacheName(TEXT("Director.wav"), 0.985, TEXT("entity"), TEXT("Fetch."));
     const FString TwoDecimals = SSNpcTalk::VoiceCacheName(TEXT("Director.wav"), 0.98, TEXT("entity"), TEXT("Fetch."));

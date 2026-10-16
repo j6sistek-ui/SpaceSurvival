@@ -548,13 +548,18 @@ void ParseVoiceProfile(const FString &Text, FVoiceProfile &Out)
             Out.Speed = FCString::Atod(*Value);
         else if (Key == TEXT("treatment"))
             Out.Treatment = Value.IsEmpty() ? TEXT("none") : Value.ToLower();
+        else if (Key == TEXT("cache_revision"))
+            Out.CacheRevision = Value;
     }
 }
 
-FString VoiceCacheName(const FString &Reference, double Speed, const FString &Treatment, const FString &Text)
+FString VoiceCacheName(const FString &Reference, double Speed, const FString &Treatment, const FString &Text,
+                       const FString &CacheRevision)
 {
-    const FString Material =
+    FString Material =
         FString::Printf(TEXT("%s|%.2f|%s|%s"), *FPaths::GetCleanFilename(Reference), Speed, *Treatment, *Text);
+    if (!CacheRevision.IsEmpty())
+        Material += TEXT("|cache_revision=") + CacheRevision;
     const FTCHARToUTF8 Utf8(*Material);
     FMD5 Md5;
     Md5.Update(reinterpret_cast<const uint8 *>(Utf8.Get()), Utf8.Length());
@@ -976,15 +981,15 @@ void USSNpcTalkSubsystem::StopVoice()
 
 FString USSNpcTalkSubsystem::VoiceCacheFile(const FString &Voice, const FString &Text) const
 {
-    // Named by the voice as well as the words: a new recording, speed or treatment makes every line again.
+    // A replacement recording can opt into a new revision without invalidating other voices' cached lines.
     const FString Dir = VoiceCacheDirectory.IsEmpty()
                             ? FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("NpcTalk"), TEXT("Voices"))
                             : VoiceCacheDirectory;
     const SSNpcTalk::FVoiceProfile *Profile = Voices.Find(Voice);
     if (!Profile)
         return FString();
-    return FPaths::Combine(Dir,
-                           SSNpcTalk::VoiceCacheName(Profile->Reference, Profile->Speed, Profile->Treatment, Text));
+    return FPaths::Combine(Dir, SSNpcTalk::VoiceCacheName(Profile->Reference, Profile->Speed, Profile->Treatment, Text,
+                                                          Profile->CacheRevision));
 }
 
 bool USSNpcTalkSubsystem::FindVoiceClip(const FString &Voice, const FString &Text, SSNpcTalk::FVoiceClip &Out)

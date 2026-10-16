@@ -53,7 +53,9 @@ The owner selected preview `3_WhitePurpleRings.png`. Native `Eyes/SK_Eyes_WhiteP
 
 Reusable Blender library: `C:/Users/j6sis/OneDrive/Documents/Blender/Assets/AstraEyes_20261015/Astra_Eyes_SharedRig.blend`, with packed images, five named presets and matching FBXs. Eye_L/Eye_R are rigidly weighted, available for later gaze animation. Do not swap only the material between eyes whose UVs differ; swap the matching mesh/material pair.
 
-`Voices/Astra.wav` is an original local synthetic adult reference (Qwen3-TTS VoiceDesign, October15); `Astra.txt` selects pace 0.88, no treatment. Joy retains her separate existing velvet reference/pace 0.90. Runtime speech uses the existing CPU LuxTTS sidecar and name-based routing. Thirty-four Astra/Joy scripted lines are prerendered in the configured private cache and pass word-coverage checks. Voice listening and expressive-laughter acceptance still need owner review; transcription does not establish delivery quality.
+`Voices/Astra.wav` is an original local synthetic adult reference (Qwen3-TTS VoiceDesign, October15); `Astra.txt` selects pace 0.88, no treatment. After the owner rejected Joy's robotic delivery, Joy received a fresh original VoiceDesign reference on October15 local time (October16 UTC), reserved for her: pace 0.90, no treatment, cache revision `4ea4ddf6b41e0b12`. Astra and all other references are unchanged. Runtime speech uses existing CPU LuxTTS and exact-name routing; no other character or alias selects Astra/Joy. Nine new Joy clips (greeting and eight replies) pass word-coverage checks; the 26 prior Astra clips and old Joy audio remain preserved. Listening, expressive laughter and native audible mix remain open; transcription does not establish natural delivery.
+
+Listen at `.agent/local/Waitress_20261015/Voice/JoyOriginal_20261016/index.html`: new Joy greeting, same-line old/new comparison, then Astra. `Joy_New_00.wav` also plays independently. Restart the game/talk sidecar after reference/settings changes. [Voice provenance, cache repair and limits](../validation/2026-10-16-joy-original-voice.md).
 
 ## Unprompted staff breaks
 

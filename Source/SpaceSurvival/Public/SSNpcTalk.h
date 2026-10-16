@@ -95,10 +95,10 @@ SPACESURVIVAL_API FVoiceClip VoiceClip(const TArray<uint8> &Body, const FString 
  *  line cannot carry. */
 SPACESURVIVAL_API FString VoiceArgs(const FString &Script, const FString &Repo, const FString &VoicesDir,
                                     const FString &DefaultVoice, int32 Threads, int32 Port, uint32 ParentPid);
-/** The file a line is kept in: an MD5 of "<reference file>|<speed>|<treatment>|<line>", exactly as the server's
- *  --prerender names it, so lines made ahead of time are found. A new voice, speed or treatment is a new name. */
+/** The file a line is kept in, matching the server's --prerender. An empty revision preserves the legacy MD5 of
+ *  "<reference file>|<speed>|<treatment>|<line>". Set a new revision when replacing a recording at the same path. */
 SPACESURVIVAL_API FString VoiceCacheName(const FString &Reference, double Speed, const FString &Treatment,
-                                         const FString &Text);
+                                         const FString &Text, const FString &CacheRevision = FString());
 /** A character's voice: the recording the server clones, and the settings from the <Name>.txt beside it. Speed is
  *  a double so "%.2f" rounds exactly as the server's Python does (0.985 is 0.98 to both). */
 struct FVoiceProfile
@@ -106,8 +106,9 @@ struct FVoiceProfile
     FString Reference;
     double Speed = 0.92;
     FString Treatment = TEXT("none");
+    FString CacheRevision;
 };
-/** "speed=0.92" and "treatment=entity" lines, as the server reads them; anything else is ignored. */
+/** "speed=0.92", "treatment=entity" and optional "cache_revision=...", as the server reads them. */
 SPACESURVIVAL_API void ParseVoiceProfile(const FString &Text, FVoiceProfile &Out);
 /** How long a line may wait for its voice before the caption carries it alone. A scripted line heard seconds after
  *  its caption is worse than none; a reply is what the pilot asked for, so it waits longer. */

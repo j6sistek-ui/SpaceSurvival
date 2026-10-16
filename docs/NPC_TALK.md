@@ -2,7 +2,7 @@
 
 ## Astra profile, voice and staff banter — October 15
 
-Astra has her own `Personas/Astra.txt` and synthetic `Voices/Astra.wav`/settings; Waitress type/role files stay reusable. Joy keeps her distinct existing voice. Their optional nearby bar break alternates the existing voice channel and8 shuffled authored exchanges. The side conversation panel records transcripts and replies when shown, below the radar; it does not change microphone controls or train a LoRA. [Controls, files and limits](production/WAITRESS_BAR_SERVICE.md).
+Astra has her own `Personas/Astra.txt` and synthetic `Voices/Astra.wav`/settings; Waitress type/role files stay reusable. Joy now has a fresh original synthetic reference reserved for her; her rejected velvet audition remains only as a recovery/listening baseline. Their optional nearby bar break alternates the existing voice channel and8 shuffled authored exchanges. The side conversation panel records transcripts and replies when shown, below the radar; it does not change microphone controls or train a LoRA. [Controls, files and limits](production/WAITRESS_BAR_SERVICE.md).
 
 ## Waitress actions — October 15
 
@@ -226,6 +226,8 @@ Do it only after testing shows the profile plus scenario still slips.
 
 ## Voices
 
+Astra and Joy each have a separately designed original adult reference and exclusive exact-name routing in the current cast. [Current Joy revision and listening review](validation/2026-10-16-joy-original-voice.md) supersedes her earlier velvet audition. When replacing any reference at the same path, set `cache_revision` in its adjacent `.txt` to a new version or reference hash and prerender that character's lines again. Native lookup and Python prerender include this revision; an absent/empty value keeps legacy filenames exactly. Restart the talk subsystem and sidecar to load the change. Other voices and caches remain unaffected.
+
 Owner, 2026-10-10: text is hard to read while flying, so the villain speaks. After five rounds of voices by ear the
 owner chose "predator entity. done. exactly", and on the engine: "it didn't cost us 4 GB of VRAM or a week of
 iterations. That's a win."
@@ -233,7 +235,7 @@ iterations. That's a win."
 | Piece | What |
 |---|---|
 | Engine | LuxTTS (Apache-2.0, code and model), on the **processor**: no video memory. Measured on the i7-14700F with 4 threads: ready ~14 s after a cold start, a 10-word line in 2.7 s, 19 words in 3.6 s, ~1.6 GB of RAM |
-| Voice | one `Content/SpaceSurvival/NpcTalk/Voices/<Name>.wav` per character, 4-7 s cut at a pause between sentences, cloned live; an optional `<Name>.txt` beside it sets `speed=` (pace, ~speed squared) and `treatment=` (entity, chrome, none). The audio profile, next to the text profiles. `_Default.wav` is everyone else's: Windows' own Microsoft David, recorded with System.Speech (owner: "a neutral default so there is something") |
+| Voice | one `Content/SpaceSurvival/NpcTalk/Voices/<Name>.wav` per character, 4-7 s cut at a pause between sentences, cloned live; an optional `<Name>.txt` beside it sets `speed=` (pace, ~speed squared) and `treatment=` (entity, chrome, none), plus optional `cache_revision=` for a replacement reference. The audio profile, next to the text profiles. `_Default.wav` is everyone else's: Windows' own Microsoft David, recorded with System.Speech (owner: "a neutral default so there is something") |
 | Treatment | "entity" (the Director): pitched down 3 semitones, an octave-down double, a faint ghost an octave up, a dark 1.2 s tail. "chrome": a faint metallic comb and shimmer. Applied by the server per voice |
 | Server | `Tools/NpcTalk/director_voice_server.py` (POST `/speak` with `X-Voice: <Name>` -> PCM16 48 kHz; GET `/voices`), hidden, 127.0.0.1 only, exits with the game |
 | Recipe | `M:\Local AI\DirectorTTS\director_voice_final\README.md`: the description, the settings, the approved sample |

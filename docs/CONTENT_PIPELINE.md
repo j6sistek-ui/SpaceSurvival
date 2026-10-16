@@ -2,7 +2,7 @@
 
 ## Astra eyes and voice — October 15
 
-The owner-selected WhitePurpleRings pair uses its own UV0/maps and a shared private eye rig; five UV-distinct presets must be swapped as mesh/material pairs. Packed Blender sources stay in the owner library. The native helper refuses unrelated assets or a differing reference rig; original body/skeleton remain untouched. Astra uses an original synthetic adult voice reference, with local CPU runtime cloning; Joy reference is preserved. [Paths and reproduction](production/WAITRESS_BAR_SERVICE.md).
+The owner-selected WhitePurpleRings pair uses its own UV0/maps and a shared private eye rig; five UV-distinct presets must be swapped as mesh/material pairs. Packed Blender sources stay in the owner library. The native helper refuses unrelated assets or a differing reference rig; original body/skeleton remain untouched. Astra uses an original synthetic adult voice reference, with local CPU runtime cloning; Joy now has a separate original reference exclusive to her, with her rejected earlier audio preserved privately for recovery. [Paths and reproduction](production/WAITRESS_BAR_SERVICE.md).
 
 ## Native waitress clothing — October 15
 
