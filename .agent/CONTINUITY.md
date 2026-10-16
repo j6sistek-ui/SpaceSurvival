@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-16T00:50Z [USER] Defer new hero and squirrel changes while owner develops a hero and tests texture plug-ins. [ASSUMPTION] Also defer hero-specific dive/roll implementation to avoid rework; request remains open. Continue independent bar/NPC/UI work, preserve current hero/cast and leave owner Blender session untouched. Supersedes prioritizing backlog RPT-20261016-04..06; Kraken stays where she is.
+
 - 2026-10-16T00:43Z [USER] Supersedes the apartment request: leave Kraken where she currently is; final role/zone deferred until station layout settles. [TOOL] Only read-only placement research occurred; no editor launched or native asset/map changed. Placement helper stopped; keep V7 map7187b5bb/current atrium route. No merge authorization.
 
 - 2026-10-16T00:32Z [USER] Clarifies subtle breast transparency, front rectangle only otherwise, closer opaque underwear/gold; supplies unordered backlog and requests continued unblocked work/concrete validation prompts. [TOOL] V7 saved7187b5bb;860 garment vertices fitted, breast.75/front.5, back/underwear opaque. Fresh Editor35 seven-slot/9473settled-actor reload and173walk samples/four views pass;42prior packages preserved. Backlog RPT-20261016-01..14 recorded, not implemented. Owner fit/role/location, Astra seated repair and other prior acceptance remain open; PR75 amendment, no merge/package.
