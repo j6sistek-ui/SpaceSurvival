@@ -285,6 +285,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")
     float PhaseOffset = 0.f;
 
+protected:
+    /** Use a fitted variant for one action without changing the authored action list. */
+    bool TriggerActionClip(int32 Index, UAnimSequence *ClipOverride);
+
 private:
     // Legacy ownership is restored once before handing the mask to HeadFillConfiguration.
     UPROPERTY()

@@ -4,9 +4,29 @@ Owner direction, October 15, 2026: fit the purchased corset and shorts to the na
 
 ## Current local assets
 
+### Current drinking contacts and patrons — October16
+
+Current local map `5ac00104` uses `A_Waitress_DrinkStanding_RimV4` and
+`A_Joy_CheersStanding_RimV3` for normal drinking. Each adjusts three right-arm
+rotation tracks against the native mouth landmark, retaining the prior finger
+correction, timing, all translations/scales and every other bone track.
+`A_Waitress_StaffShot_V1` and `A_Joy_StaffShot_V1` fit the smaller0.55-scale glass.
+Assign these through each placed actor's optional **Bar Shot Animation** property;
+leave it empty to use the normal drink clip. A wrong-skeleton clip prevents an
+ambient break. The normal action list and guest service clip stay unchanged.
+
+Two existing Nyxar actors use private `BarPatrons_20261016/Anims` derivatives:
+`A_Nyxar_DrunkIdle` on the arcade visitor and `A_Nyxar_Laying` on the corner
+patron. The latter has no route, gestures, actions or ambient chatter so the
+resting loop persists. Their original meshes/materials remain; no new NPC is
+spawned. `A_Nyxar_SleepingAtTheTable` is prepared but not placed. Lead still owns
+nearby interaction/collision review and owner natural-play feedback.
+
+[Current evidence](../validation/2026-10-16-bar-contact-and-patrons.md); the grip-only receipt below is historical.
+
 ### Astra drinking grip — October16 correction
 
-Current local map `cebb5d83` uses `A_Waitress_DrinkStanding_GraspV2` for Astra's
+Earlier grip-only map `cebb5d83` uses `A_Waitress_DrinkStanding_GraspV2` for Astra's
 drink animation and action1. Twelve right-finger rotation tracks now curl toward
 the tumbler; the original clip, arm motion, grip transforms, V16 outfit and
 physics are retained. Saved reload and407 uninterrupted service samples pass.
@@ -137,7 +157,7 @@ Four actions use the existing action menu/keyword route: order a drink, share a 
 
 Ten authored corridor points are relative to the waitress's home. A visibility graph uses capsule sweeps; each movement step also checks deck support and uses swept movement. Blocked routes/timeouts return a refusal and release reservations. Keep route points clear of the counter and seats. The saved waitress label `Crew/Bar waitress` is explicitly retained by the station's temporary crew-trimming filter. Her component tags identify the Waitress persona/scenario.
 
-Joy retains her native body, bob geometry, clothing and original animations; the October16 color candidate changes her hair to plum and pants to indigo. Only private `_Contact` derivative clips are corrected. Pour uses left-hand glass/right-hand bottle; cheers uses the right-hand glass. Walk root translation is removed from the waitress's derivative while actor movement supplies travel at 95 cm/s. No native rig or original animation is overwritten.
+Joy retains her native body, bob geometry, clothing and original animations; the October16 color candidate changes her hair to plum and pants to indigo. Only private fit derivatives are corrected; original vendor clips remain. Pour uses left-hand glass/right-hand bottle; cheers uses the right-hand glass. Walk root translation is removed from the waitress's derivative while actor movement supplies travel at 95 cm/s. No native rig or original animation is overwritten.
 
 Saved markers: waitress `(3970,-3690,85)`, Joy `(4150,-4140,85)`, table approach `(3800,-3630,85)`, seat `(3730,-3645,85)`, drink contact `(3690,-3560,45.5)`. These are local station coordinates, not runtime-origin assumptions.
 

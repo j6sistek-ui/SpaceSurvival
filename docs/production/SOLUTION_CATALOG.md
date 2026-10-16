@@ -1,5 +1,7 @@
 # SpaceSurvival whole-project solution catalog
 
+**BAR-ANIMATIONS-20261016 — owned Interactions, Bar, Tavern and Drunk packs (WBS8.4/10.3):** Already downloaded; the earlier24-file shortlist and205 Interactions source FBXs remain catalog evidence. October16 native evaluation retargets DrunkIdle, Laying and SleepingAtTheTable onto the existing Nyxar skeleton; the first two are saved on existing patrons, while the table clip remains unplaced. Original vendor clips/rigs/materials are retained. Normal-glass and staff-shot contact derivatives are now separate on Astra/Joy. Whole-project value remains reuse for service, ambient patrons and later maintenance interactions. Next: RPT-20261016-02/03 and RPT-20261015-01 interaction, contact, audio and owner review; this does not accept every clip or all intoxication behavior. Private provenance: `.agent/local/Waitress_20261015/{AnimationAudit_20261016,BarFinish_20261016}`. [Native evidence](../validation/2026-10-16-bar-contact-and-patrons.md).
+
 ## BAR-ART-20261016 — owned Illuminated Wall and Genesis observation windows
 
 - **Acquisition/evidence, October16:** owner identifies the installed Leartes

@@ -135,6 +135,9 @@ public:
     /** Small shot glass for the staff toast; normal service keeps its existing glass. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Social", meta = (ClampMin = "0.2", ClampMax = "1.0"))
     float BarShotScale = .55f;
+    /** Optional pose fitted to the smaller staff glass. Guest orders retain their normal drink clip. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Social")
+    TObjectPtr<UAnimSequence> BarShotAnimation;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bar|Social")
     TArray<FSSBarBanter> BarBanter;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bar|Social")
@@ -165,6 +168,7 @@ private:
     bool BeginPour(ASSBarCrew *Waitress);
     bool TickBarBreak(float DeltaSeconds);
     FTransform BarShotGrip() const;
+    UAnimSequence *BarDrinkClip() const;
     TArray<int32> UnusedBanter;
     int32 BanterIndex = INDEX_NONE, BanterStep = 0, PreviousBanter = INDEX_NONE;
     float BanterWait = 0, BarBreakTime = 0;
