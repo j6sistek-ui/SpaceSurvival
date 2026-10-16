@@ -10,7 +10,7 @@ The owner's rough waitress model is a separate65cm teal hologram on the right-ha
 
 The folder in the Outliner is **Bar/Owner hologram and tray**. The independent **Bar/Serving tray** actor can be moved separately. Display and tray collision are disabled; they do not add an obstacle to the existing bar service route.
 
-Native review: `C:/Users/j6sis/SpaceSurvival/.agent/local/Waitress_20261015/BarHologram_20261016/Review.html`. Current map`edea2c60` retains the display/glass setup and adds the matched table set-down; combined module`66c4c005`. Earlier tray map`e3cee859` and display-only`d3eb3a23` remain historical. Local development content only. The owner's pending appearance check stays in KNOWN_ISSUES and does not gate other work.
+Native review: `C:/Users/j6sis/SpaceSurvival/.agent/local/Waitress_20261015/BarHologram_20261016/Review.html`. Current map`6669965d` retains the display/table setup and adds matched counter pickup; combined module`b9a9d71e`. Earlier tray map`e3cee859` and display-only`d3eb3a23` remain historical. Local development content only. The owner's pending appearance check stays in KNOWN_ISSUES and does not gate other work.
 
 ## Inputs and storage
 
@@ -46,3 +46,9 @@ The saved fit uses `hand_l`, the owner tray mesh, separate `TrayPose/A_Waitress_
 The saved waitress uses the separate `SetDown/A_Waitress_SetDown_CandidateV6` clip. **Tray Set Down Window** is0.7s for pickup and2.05s for release. The existing **Crew/Waitress table contact** actor enables **Has Set Down Pose**; its **ServeFrom** child is the capsule-centre pose fitted to the clip, and **DrinkContact** is the glass placement. Keep the pose/contact/clip matched if moving the table. The new approach waypoint keeps her path clear of the guest; character collision stays enabled.
 
 The tray moves to her left while she lowers the glass, clearing the head and keeping the forearm beneath it. Missing or incompatible set-down data retains the earlier offering behavior. Original carry/serve/drink animations remain available. Four native service/cancellation/fallback checks and a fresh saved order pass; exact contact polish and owner natural-play feedback remain open. [Current delivery evidence](../validation/2026-10-16-bar-hologram-and-tray.md#matched-table-delivery-and-tray-clearance).
+
+### Counter pickup
+
+The saved pair uses separate `CounterHandoff/A_joy_CounterCandidateV6` and `A_astra_CounterCandidateV6` clips. Joy exposes **Bar â†’ Counter**: release10.9s, glass transform relative to Joy `(65,-35,22.9)` with yaw-90. Astra exposes **Bar â†’ Tray**: ready0.4s, pickup1.2s and tray placement2.4s; **Pickup Offset** is`(135,-40,0)` relative to Joy. Keep these contact settings, clips and counter layout matched.
+
+Joy's original direct pour action remains unchanged. The reserved order uses its separate delivery clip, then Astra picks the visible counter glass up and places it on her tray. Reservation stays held through pickup; cancellation hides both props and releases it. Missing/incompatible clips or invalid timing use the earlier service. A fresh saved-scene five-case review checks this and the subsequent table delivery. Run `Scripts/StationRecipes/ReviewWaitressCounterPickup.py` only in isolated rendered PIE; optional `SS_COUNTER_REVIEW_OUTPUT` chooses a new output folder. It does not save assets. Finger/grip polish and natural-play acceptance remain separate.
