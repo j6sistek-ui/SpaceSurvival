@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-16T20:48Z [TOOL] Continued bar handoff review on map5b/modulea169: ordinary order369samples completes, but tray-to-coffee-table glass transition jumps215.49cm to45.5cm height. Cause is guest-relative return destination plus end-of-clip table-glass reveal. Current offering clip has no matching set-down.214protectedfiles unchanged, clean packages, owned4344 exited. [CODE] Exact finding/next repair logged under RPT-20261016-16; no native/source behavior change, no owner checkpoint or merge.
+
 - 2026-10-16T20:32Z [TOOL] Saved glass material follow-up map5b064cb9 supersedese3 for6component slots only: fresh reload9,483transforms unchanged, saved order372samples/3counter views,211nonmap files and originalGLBs preserved; modulea16996cd unchanged, owned editors exited. [CODE] Pickup PR7404de078, PR769782cc2 andPR776dbb70d are published/mergeable/draft/unmerged with exact-head source/docs CI pass. Glass receipt amendment pending; owner feedback remains logged without a checkpoint, hero/squirrel/PR73 held.
 
 - 2026-10-16T19:52Z [CODE] Tray pickup now selects its carry clip before showing props; two exact backed-up canonical files adopted, no header/API change. [TOOL] Worktree37.64s/canonical27.38s editor builds pass, moduleafdd9759 supersedesa023; statione3 and210nonmodule originals unchanged. Stricter first-visible-frame native service/fallback review underway in owned offscreen36500; no merge, owner feedback still does not gate work.
