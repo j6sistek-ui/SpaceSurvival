@@ -78,6 +78,7 @@ void ASSBarCrew::ConfigureParts()
     ServingTray->SetVisibility(false);
     bUsingServingTray = false;
     bUsingTableSetDown = bGlassPickedUp = bGlassReleased = false;
+    bUsingCounterPickup = bCounterPickedUp = bCounterPlacedOnTray = false;
 }
 
 bool ASSBarCrew::CanUseServingTray() const
@@ -111,6 +112,52 @@ bool ASSBarCrew::CanSetDownAtTable() const
            CharacterMesh->DoesSocketExist(DrinkHand) && FMath::IsFinite(TraySetDownWindow.X) &&
            FMath::IsFinite(TraySetDownWindow.Y) && TraySetDownWindow.X > 0 &&
            TraySetDownWindow.Y > TraySetDownWindow.X && TraySetDownWindow.Y < TraySetDownAnimation->GetPlayLength();
+}
+
+bool ASSBarCrew::CanUseCounterPickup() const
+{
+    if (!CanUseServingTray() || !IsValid(Bartender) || !Bartender->bIsBartender || !TrayPickupAnimation ||
+        !Bartender->CounterDeliveryAnimation)
+        return false;
+    const auto *Mesh = CharacterMesh->GetSkeletalMeshAsset();
+    const auto *OtherMesh = Bartender->CharacterMesh->GetSkeletalMeshAsset();
+    return Mesh && OtherMesh && Mesh->GetSkeleton() == TrayPickupAnimation->GetSkeleton() &&
+           OtherMesh->GetSkeleton() == Bartender->CounterDeliveryAnimation->GetSkeleton() &&
+           CharacterMesh->DoesSocketExist(DrinkHand) &&
+           Bartender->CharacterMesh->DoesSocketExist(Bartender->GlassHand) && FMath::IsFinite(TrayReadySeconds) &&
+           FMath::IsFinite(TrayPickupWindow.X) && FMath::IsFinite(TrayPickupWindow.Y) && TrayReadySeconds >= 0 &&
+           TrayReadySeconds < TrayPickupWindow.X && TrayPickupWindow.Y > TrayPickupWindow.X &&
+           TrayPickupWindow.Y < TrayPickupAnimation->GetPlayLength() &&
+           FMath::IsFinite(Bartender->CounterReleaseSeconds) && Bartender->CounterReleaseSeconds > 0 &&
+           Bartender->CounterReleaseSeconds < Bartender->CounterDeliveryAnimation->GetPlayLength() &&
+           !Bartender->CounterGlassTransform.ContainsNaN();
+}
+
+void ASSBarCrew::ReleaseBarReservation()
+{
+    if (IsValid(Bartender) && Bartender->ReservedBy == this)
+    {
+        Bartender->ServedGlass->SetVisibility(false);
+        Bartender->bUsingCounterDelivery = false;
+        Bartender->ReservedBy.Reset();
+    }
+}
+
+void ASSBarCrew::BeginReturnFromBar()
+{
+    ReleaseBarReservation();
+    BeginCarryingDrink();
+    bGlassPickedUp = bGlassReleased = false;
+    bUsingTableSetDown = CanSetDownAtTable();
+    const FVector GuestPosition = ServiceGuest->GetActorLocation();
+    FVector Destination = bUsingTableSetDown
+                              ? DeliveryTable->ServeFrom->GetComponentLocation()
+                              : GuestPosition + (GetActorLocation() - GuestPosition).GetSafeNormal2D() * 110.f;
+    Destination.Z = GetActorLocation().Z;
+    if (PlanPath(Destination))
+        SetState(ESSBarServiceState::ReturningToGuest, TEXT("carrying the guest's drink back from the bar"));
+    else
+        ReturnHome(TEXT("I cannot reach your table. Please clear the aisle."));
 }
 
 void ASSBarCrew::PlaceServedGlass()
@@ -152,8 +199,7 @@ void ASSBarCrew::ReleaseTable()
 void ASSBarCrew::EndPlay(const EEndPlayReason::Type Reason)
 {
     ReleaseTable();
-    if (IsValid(Bartender) && Bartender->ReservedBy == this)
-        Bartender->ReservedBy.Reset();
+    ReleaseBarReservation();
     Super::EndPlay(Reason);
 }
 
@@ -211,8 +257,20 @@ bool ASSBarCrew::TriggerAction(int32 Index)
 
 bool ASSBarCrew::BeginPour(ASSBarCrew *Waitress)
 {
-    if (!bIsBartender || ReservedBy.IsValid() || Super::IsActionPlaying() || !Super::TriggerAction(0))
+    if (!bIsBartender || !IsValid(Waitress) || ReservedBy.IsValid() || Super::IsActionPlaying())
         return false;
+    const bool bCounter = Waitress->bUsingCounterPickup && Waitress->CanUseCounterPickup();
+    if (!TriggerActionClip(0, bCounter ? CounterDeliveryAnimation.Get() : nullptr))
+        return false;
+    bUsingCounterDelivery = bCounter;
+    bCounterGlassReleased = false;
+    ServedGlass->SetVisibility(false);
+    if (bCounter)
+    {
+        ServedGlass->SetStaticMesh(Glass->GetStaticMesh());
+        for (int32 I = 0; I < Glass->GetNumMaterials(); ++I)
+            ServedGlass->SetMaterial(I, Glass->GetMaterial(I));
+    }
     ReservedBy = Waitress;
     BarAction = 0;
     if (auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>())
@@ -305,9 +363,10 @@ bool ASSBarCrew::MoveAlongPath(float Dt)
     if (!Path.IsValidIndex(PathIndex))
         return true;
     const FVector Delta = Path[PathIndex] - GetActorLocation();
-    const bool bFinalSetDownApproach =
-        bUsingTableSetDown && ServiceState == ESSBarServiceState::ReturningToGuest && PathIndex == Path.Num() - 1;
-    if (Delta.Size2D() < (bFinalSetDownApproach ? 1.f : 10.f))
+    const bool bContactApproach =
+        PathIndex == Path.Num() - 1 && ((bUsingTableSetDown && ServiceState == ESSBarServiceState::ReturningToGuest) ||
+                                        (bUsingCounterPickup && ServiceState == ESSBarServiceState::GoingToBar));
+    if (Delta.Size2D() < (bContactApproach ? 1.f : 10.f))
         return ++PathIndex >= Path.Num();
     FVector Next = GetActorLocation() + Delta.GetSafeNormal2D() * FMath::Min(Delta.Size2D(), TravelSpeed * Dt);
     FCollisionQueryParams Query(SCENE_QUERY_STAT(BarServiceFloor), false, this);
@@ -341,8 +400,7 @@ void ASSBarCrew::ReturnHome(const FString &Reason)
         SetActorTransform(Table->Approach->GetComponentTransform());
     Body->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     ReleaseTable();
-    if (IsValid(Bartender) && Bartender->ReservedBy == this)
-        Bartender->ReservedBy.Reset();
+    ReleaseBarReservation();
     ServiceGuest.Reset();
     DeliveryTable.Reset();
     Glass->SetVisibility(false);
@@ -414,6 +472,8 @@ bool ASSBarCrew::RequestService(int32 Index, APawn *Guest)
     }
     ServedGlass->SetVisibility(false);
     bDrinkTogether = Index == 1;
+    bUsingCounterPickup = CanUseCounterPickup();
+    bCounterPickedUp = bCounterPlacedOnTray = false;
     SetState(ESSBarServiceState::GoingToBar, TEXT("collecting the guest's drink from Joy"));
     return true;
 }
@@ -431,7 +491,17 @@ void ASSBarCrew::Tick(float Dt)
         const bool bStaffToast = BarAction == 1 && ReservedBy.IsValid() && ReservedBy->bBarBreakActive;
         Glass->SetRelativeTransform(bStaffToast ? BarShotGrip() : (BarAction == 1 ? DrinkGrip : GlassGrip));
         Bottle->SetVisibility(bVisible && BarAction == 0);
-        Glass->SetVisibility(bVisible && (BarAction == 0 || BarAction == 1));
+        if (bUsingCounterDelivery && ReservedBy.IsValid() && !bCounterGlassReleased && Super::IsActionPlaying() &&
+            Position >= CounterReleaseSeconds)
+        {
+            ServedGlass->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+            ServedGlass->SetWorldTransform(CounterGlassTransform * GetActorTransform());
+            ServedGlass->SetWorldScale3D(GlassGrip.GetScale3D());
+            ServedGlass->SetVisibility(true);
+            bCounterGlassReleased = true;
+        }
+        Glass->SetVisibility(bVisible && (BarAction == 0 || BarAction == 1) &&
+                             !(bUsingCounterDelivery && bCounterGlassReleased));
         return;
     }
     AActor::Tick(Dt);
@@ -466,21 +536,44 @@ void ASSBarCrew::Tick(float Dt)
             ReturnHome(TEXT("The bar is busy. Please try again shortly."));
         else if (Bartender->ReservedBy == this && !Bartender->IsActionPlaying())
         {
-            Bartender->ReservedBy.Reset();
-            BeginCarryingDrink();
-            bUsingTableSetDown = CanSetDownAtTable();
-            const FVector GuestPosition = ServiceGuest->GetActorLocation();
-            FVector Destination = bUsingTableSetDown
-                                      ? DeliveryTable->ServeFrom->GetComponentLocation()
-                                      : GuestPosition + (GetActorLocation() - GuestPosition).GetSafeNormal2D() * 110.f;
-            Destination.Z = GetActorLocation().Z;
-            if (PlanPath(Destination))
-                SetState(ESSBarServiceState::ReturningToGuest, TEXT("carrying the guest's drink back from the bar"));
+            if (bUsingCounterPickup && CanUseCounterPickup() && Bartender->ServedGlass->IsVisible())
+            {
+                bUsingServingTray = true;
+                PlayService(TrayPickupAnimation, false, true);
+                SetState(ESSBarServiceState::CollectingDrink, TEXT("collecting the drink from the counter"));
+            }
             else
-                ReturnHome(TEXT("I cannot reach your table. Please clear the aisle."));
+                BeginReturnFromBar();
         }
         else if (StateTime >= 2.5f && !Bartender->ReservedBy.IsValid())
             Bartender->BeginPour(this);
+        break;
+    case ESSBarServiceState::CollectingDrink:
+        if (!IsValid(Bartender) || Bartender->ReservedBy != this || !CanUseCounterPickup())
+        {
+            ReturnHome(TEXT("The bar pickup is no longer available."));
+            break;
+        }
+        {
+            const float Position = CharacterMesh->GetPosition();
+            ServingTray->SetVisibility(Position >= TrayReadySeconds);
+            if (!bCounterPickedUp && Position >= TrayPickupWindow.X)
+            {
+                Glass->AttachToComponent(CharacterMesh, FAttachmentTransformRules::KeepRelativeTransform, DrinkHand);
+                Glass->SetRelativeTransform(DrinkGrip);
+                Glass->SetVisibility(true);
+                Bartender->ServedGlass->SetVisibility(false);
+                bCounterPickedUp = true;
+            }
+            if (!bCounterPlacedOnTray && Position >= TrayPickupWindow.Y)
+            {
+                Glass->AttachToComponent(ServingTray, FAttachmentTransformRules::KeepRelativeTransform);
+                Glass->SetRelativeTransform(TrayGlassPlacement);
+                bCounterPlacedOnTray = true;
+            }
+            if (StateTime >= TrayPickupAnimation->GetPlayLength())
+                BeginReturnFromBar();
+        }
         break;
     case ESSBarServiceState::ReturningToGuest:
         if (bUsingTableSetDown && !DeliveryTable.IsValid())
