@@ -4,6 +4,32 @@ Owner direction, October 15, 2026: fit the purchased corset and shorts to the na
 
 ## Current local assets
 
+### Footwear and filled glassware — October16 follow-up
+
+Current local map `fb604de9` supersedes the earlier bar snapshot below. Joy's
+blue/black footwear uses `MI_Joy_IndigoSneakers` in slot18 and
+`MI_Joy_IndigoPantsTrimShoes` in slot20; the right shoe shares that trim atlas.
+Slot19 fabric, other character slots, rigs and animations are retained. Astra
+footwear is deferred. `JoyShoes_20261016/Saved_Full.png` and `Saved_Shoes.png`
+supersede the old red-shoe pants image for this review.
+
+`CosmicDrinks_20261016/Meshes` contains `SM_CosmicAmberTumbler`,
+`SM_CosmicVioletStem` and `SM_CosmicCyanStem`, derived from owned
+`CyberPunkBarAssetSet01/StaticMeshes/SM_Glasses01`, `02` and `03`.
+They retain exterior bounds/pivots and original glass material. Added liquid,
+three ice cubes in the tumbler and subtle violet/cyan glints use private materials.
+The amber mesh is assigned to Joy's Glass and Astra's Glass/ServedGlass without
+changing grips; counter amber/violet replace two existing meshes and cyan adds
+one actor on the solid counter. Blueprint defaults are unchanged: these are
+placed-instance overrides. There is no fluid simulation, fill-level progression
+or new drink-selection menu.
+
+The saved review now links the shoes and three drink images. Same-editor
+unload/reload and a new play session verify 6 assigned meshes, 9,480 actors and
+9,479 preserved prior actor transforms. One scripted shared-drink request passes
+260 samples; paused inspection stills do not prove continuous hand-to-mouth
+contact or hair quality. [Detailed evidence and limits](../validation/2026-10-16-joy-shoes-and-bar-drinks.md).
+
 ### Bar art direction — saved local candidate, October 16
 
 The owner supplied four images as the visual reference for bar design,

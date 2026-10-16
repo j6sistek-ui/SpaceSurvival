@@ -23,6 +23,16 @@
   preserved original transforms, assignments/additions/lights, retained window
   collision and character meshes/idle/walk, and zero dirty packages. Owner
   appearance acceptance remains open.
+- **October16 footwear/drink extension:** installed SciFi Pants Sneakers c4 blue
+  textures supply two separate Joy derivatives (right shoe shares pants trim);
+  Astra footwear is deferred. Owned `CyberPunkBarAssetSet01/StaticMeshes/SM_Glasses01`,
+  `02` and `03` supply three private filled-glass derivatives, retaining their
+  exterior bounds/pivots and original glass material. Current local map `fb604de9`
+  assigns them to two counter props and three existing service components and
+  adds one cyan glass. Nine private drink assets, no acquisition or plugin.
+  Reusable across bar/table service (WBS8.4/10.3); scripted order passes 260 samples,
+  but static liquid volumes, close contact, final style and performance need
+  further review. [Follow-up evidence](../validation/2026-10-16-joy-shoes-and-bar-drinks.md).
 - **Whole-project use/timing:** reusable owned wall accents and real glass
   openings for station social spaces (WBS8.2/8.4/10.3), applied to the current
   bar only. Nearby asteroid terrain blocks the requested open starfield; this
