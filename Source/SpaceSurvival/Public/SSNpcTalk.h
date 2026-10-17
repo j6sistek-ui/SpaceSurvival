@@ -344,6 +344,7 @@ public:
 
 private:
     friend class FSSNpcTalkHelperIdentityTest;
+    friend class FSSNpcTalkHelperLifetimeTest;
     FString WhisperServerKey() const;
     FString LlamaServerKey(const FString &Model, const FString &Extra) const;
     FString VoiceServerKey() const;

@@ -1,5 +1,13 @@
 # SpaceSurvival continuity
 
+- 2026-10-17T00:38Z [TOOL] Isolated helper-lifetime fixture passes actual handle handoff, stale voice/speech termination, expiry, untied refusal and shutdown using five inert CPU processes;2 tests/0 warnings, owned36264 exits0. Initial const-handle compile error corrected; build2 succeeds5.41s. [CODE] Test-only exact patches preserve canonical diagnostics; module d248/map c3/all227 guarded files unchanged. PR74 publication pending, actual AI/audio health and owner checks remain open; Tripo downloads recheck scheduled, hero/squirrels/PR73 held.
+
+- 2026-10-17T00:36Z [USER] Supersedes Tripo cancellation: animated character downloads are still running; check in ten minutes. [TOOL] Single future check scheduled as thread heartbeat check-tripo-downloads. [CODE] Do not alter existing Cyan/Cyborg choreography; evaluate clips in separate previews once files arrive. Bar work continues meanwhile.
+
+- 2026-10-17T00:33Z [USER] Supersedes new Tripo motion request: owner says nvm after the two pictured downloads prove static helmet/Starwing meshes with no skins or animation channels. No dancer or source asset changed. [CODE] Resume independent bar work; bounded CPU helper-lifetime regression is building in isolated PR74. Astra tray remains Not tested yet; no owner checkpoint.
+
+- 2026-10-17T00:26Z [USER] Astra tray/face check remains Not tested yet; retain pending owner validation without stopping independent bar work. [CODE] Continue bounded helper handoff/lifetime verification from the completed identity fix; no real AI/voice request or owner configuration change planned.
+
 - 2026-10-17T00:15Z [TOOL] Foundation publication verified PR74 7ea32e6 /76 d9f9084 /77 222e68e /78 d178dd4, all draft/mergeable/unmerged with exact-head CI pass. [CODE] PR74 helper reuse repair now built69.90s/89.65s; focused identity test1/0 in both checkouts, no actual helper/mic request. Canonical moduled248d14e supersedesb9; mapc3 and226nonmodule files unchanged,4plugin build outputs rebuilt with sources preserved. Publication amendment pending; live helper restart, bar/audio/clothing/exterior and owner checks remain open without checkpoint. Hero/squirrels/PR73 held, no merge.
 
 - 2026-10-16T23:58Z [TOOL] Draft PR78 exposes existing Joy foundation d178dd4/main, mergeable/unmerged; source/docs CI pass. Separate 167.87s editor build and focused encoding 1 pass / 0 test warnings; two ShipCore startup warnings retained. 227 native / 273 plugin originals unchanged, owned 26148 exited; current map c3 / module b9 unaffected. [CODE] Clean proxy seated trial rejected; V16 preserved. Source/lifecycle/boarding review and owner bar checks remain open; no merge, hero/squirrels/PR73 held.

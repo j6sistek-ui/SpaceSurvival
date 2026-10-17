@@ -16,6 +16,12 @@
 #include "TimerManager.h"
 #include "HAL/FileManager.h"
 #include "Containers/Ticker.h"
+#if WITH_DEV_AUTOMATION_TESTS
+#include "Misc/AutomationTest.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "Misc/ScopeExit.h"
+#endif
 #if WITH_EDITOR
 #include "Editor.h"
 #endif
@@ -1565,3 +1571,139 @@ FString USSNpcTalkSubsystem::BuiltInPersona(const FString &Character) const
              "Earth."),
         *Character);
 }
+
+#if WITH_DEV_AUTOMATION_TESTS && PLATFORM_WINDOWS
+// Exercise the actual handle transfers with short-lived, inert CPU processes. Never initialize a game instance,
+// microphone, model, network listener or voice engine. An interactive editor must not touch the shared parked set.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSNpcTalkHelperLifetimeTest, "SpaceSurvival.NpcTalk.HelperLifetime",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSNpcTalkHelperLifetimeTest::RunTest(const FString &)
+{
+    if (!FApp::IsUnattended() || !FParse::Param(FCommandLine::Get(), TEXT("NullRHI")))
+    {
+        AddError(TEXT("Run HelperLifetime in an unattended NullRHI editor, never an interactive Play session."));
+        return false;
+    }
+    FParkedServers &Keep = Parked();
+    if (Keep.Whisper.IsValid() || Keep.Llama.IsValid() || Keep.Voice.IsValid() || Keep.Expiry.IsValid())
+    {
+        AddError(TEXT("Existing parked helpers detected; the fixture will not take ownership of them."));
+        return false;
+    }
+    const FString Python = FPaths::ConvertRelativePathToFull(
+        FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries/ThirdParty/Python3/Win64/python.exe")));
+    if (!TestTrue(TEXT("Installed engine Python exists"), FPaths::FileExists(Python)))
+        return false;
+    UGameInstance *Instance = NewObject<UGameInstance>();
+    if (!TestNotNull(TEXT("Stock instance owns its timer manager without Init"), Instance->TimerManager))
+        return false;
+    Instance->AddToRoot();
+    TArray<USSNpcTalkSubsystem *> Sessions;
+    TArray<FProcHandle> Observers;
+    const FParkedServers Previous = Keep;
+    ON_SCOPE_EXIT
+    {
+        for (USSNpcTalkSubsystem *Session : Sessions)
+        {
+            Session->StopServers();
+            Session->RemoveFromRoot();
+        }
+        if (Keep.Expiry.IsValid())
+            FTSTicker::GetCoreTicker().RemoveTicker(Keep.Expiry);
+        StopParked(Keep);
+        Keep = Previous;
+        for (FProcHandle &Observer : Observers)
+        {
+            if (FPlatformProcess::IsProcRunning(Observer))
+                FPlatformProcess::TerminateProc(Observer, true);
+            FPlatformProcess::CloseProc(Observer);
+        }
+        Instance->RemoveFromRoot();
+    };
+    auto NewSession = [&]()
+    {
+        USSNpcTalkSubsystem *Session = NewObject<USSNpcTalkSubsystem>(Instance);
+        Session->AddToRoot();
+        Session->VoiceKey = Session->VoiceServerKey();
+        Sessions.Add(Session);
+        return Session;
+    };
+    auto Seed = [&](FProcHandle &Destination)
+    {
+        uint32 Pid = 0;
+        Destination = FPlatformProcess::CreateProc(*Python, TEXT("-I -c \"import time; time.sleep(30)\""), false, true,
+                                                   true, &Pid, 0, nullptr, nullptr);
+        if (!TestTrue(TEXT("Inert helper launched and tied to this test process"), TieToThisProcess(Destination)))
+            return false;
+        FProcHandle Observer = FPlatformProcess::OpenProcess(Pid);
+        if (!TestTrue(TEXT("Independent observation handle opened"), Observer.IsValid()))
+            return false;
+        Observers.Add(Observer);
+        return TestTrue(TEXT("Inert helper is running"), FPlatformProcess::IsProcRunning(Observer));
+    };
+    auto Stopped = [&](int32 Index, const TCHAR *Message)
+    {
+        const double Deadline = FPlatformTime::Seconds() + 2.0;
+        while (FPlatformProcess::IsProcRunning(Observers[Index]) && FPlatformTime::Seconds() < Deadline)
+            FPlatformProcess::Sleep(.01f);
+        return TestFalse(Message, FPlatformProcess::IsProcRunning(Observers[Index]));
+    };
+    USSNpcTalkSubsystem *First = NewSession();
+    if (!Seed(First->WhisperProc) || !Seed(First->LlamaProc) || !Seed(First->VoiceProc))
+        return false;
+    const auto WhisperHandle = First->WhisperProc.Get(), LlamaHandle = First->LlamaProc.Get(),
+               VoiceHandle = First->VoiceProc.Get();
+    First->bWhisperTied = First->bLlamaTied = First->bVoiceReady = true;
+    First->RunningWhisperKey = First->WhisperServerKey();
+    First->RunningModel = TEXT("inert-fixture-model");
+    First->RunningLlamaKey = First->LlamaServerKey(First->RunningModel, TEXT(""));
+    First->ParkServers();
+    TestFalse(TEXT("Old session releases its speech handle"), First->WhisperProc.IsValid());
+    TestFalse(TEXT("Old session releases its dialogue handle"), First->LlamaProc.IsValid());
+    TestFalse(TEXT("Old session releases its voice handle"), First->VoiceProc.IsValid());
+    TestTrue(TEXT("Parked helpers have an expiry"), Keep.Expiry.IsValid());
+
+    USSNpcTalkSubsystem *Second = NewSession();
+    Second->AdoptParkedServers();
+    TestTrue(TEXT("Unchanged speech reuses the same handle"), Second->WhisperProc.Get() == WhisperHandle);
+    TestTrue(TEXT("Unchanged dialogue reuses the same handle"), Second->LlamaProc.Get() == LlamaHandle);
+    TestTrue(TEXT("Unchanged voice reuses the same ready helper"),
+             Second->VoiceProc.Get() == VoiceHandle && Second->bVoiceReady);
+    TestFalse(TEXT("Adoption cancels expiry"), Keep.Expiry.IsValid());
+    for (FProcHandle &Observer : Observers)
+        TestTrue(TEXT("Original helper remains alive after adoption"), FPlatformProcess::IsProcRunning(Observer));
+    Second->ParkServers();
+
+    USSNpcTalkSubsystem *Third = NewSession();
+    ++Third->Threads;
+    ++Third->VoiceThreads;
+    Third->VoiceKey = Third->VoiceServerKey();
+    Third->AdoptParkedServers();
+    TestFalse(TEXT("Changed speech settings cannot adopt stale helper"), Third->WhisperProc.IsValid());
+    TestFalse(TEXT("Changed voice settings cannot adopt stale helper"), Third->VoiceProc.IsValid());
+    Stopped(0, TEXT("Old speech process actually exits"));
+    Stopped(2, TEXT("Old voice process actually exits"));
+    TestTrue(TEXT("Dialogue survives for its existing EnsureServers key check"),
+             Third->LlamaProc.Get() == LlamaHandle && FPlatformProcess::IsProcRunning(Observers[1]));
+    Third->ParkServers();
+    FTSTicker::GetCoreTicker().RemoveTicker(Keep.Expiry);
+    Keep.Expiry.Reset();
+    Keep.KeepSeconds = 0.0;
+    TestFalse(TEXT("Expired parked helpers stop the expiry callback"), ExpireParked(0.f));
+    Stopped(1, TEXT("Expiry stops the parked dialogue process"));
+    TestFalse(TEXT("Expiry clears the parked dialogue handle"), Keep.Llama.IsValid());
+
+    if (!Seed(Third->WhisperProc))
+        return false;
+    Third->bWhisperTied = false;
+    Third->ParkServers();
+    Stopped(3, TEXT("A helper without a lifetime guarantee is not kept"));
+    TestFalse(TEXT("Untied speech is not parked"), Keep.Whisper.IsValid());
+    if (!Seed(Third->VoiceProc))
+        return false;
+    Third->StopServers();
+    Stopped(4, TEXT("Explicit shutdown stops the active voice helper"));
+    TestFalse(TEXT("Explicit shutdown clears active voice handle"), Third->VoiceProc.IsValid());
+    return !HasAnyErrors();
+}
+#endif
