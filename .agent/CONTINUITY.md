@@ -1,5 +1,8 @@
 # SpaceSurvival continuity
 
+- 2026-10-17T03:17Z [TOOL] Maintenance preview V2 corrects temporary-world binding failure; fresh saved bindings and106moving frames pass,16protected files unchanged. [CODE] Separate Manny/ratchet scene only; original station7431/module6566/workbench/crew/hero preserved. PR74 evidence and dependent sync pending; next production-character fitting, no owner checkpoint. Evidence MaintenanceContact_20261017.
+
+
 - 2026-10-17T02:45Z [CODE] Controls instruction repair complete locally: correct LS/dodge guidance and list talk/crew/photo/seating/tab shortcuts, preserving bindings/artwork. [TOOL] Final module6566a257/station7431, native seven-screen capture0228647 passes140% text, save/state guards and226-path/six-clip preservation. First capture timeout/cramped line retained and corrected. [CODE] PR74 publication/dependency sync pending; new Figma page is empty, owner link/physical checks remain open without checkpoint. No merge; hero/squirrel/PR73 held.
 
 
