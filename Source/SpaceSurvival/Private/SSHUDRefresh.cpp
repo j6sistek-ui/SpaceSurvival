@@ -410,7 +410,7 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
         if (Controls)
         {
             const float GuideX = InnerX + RowW + 44.f, GuideW = InnerW - RowW - 44.f;
-            const float GuideH = RefreshText(TEXT("CURRENT FLIGHT PRESET"), GuideX, BodyY, 26, UICyan, GuideW);
+            const float GuideH = RefreshText(TEXT("CURRENT CONTROLS"), GuideX, BodyY, 26, UICyan, GuideW);
             RefreshText(Mode.PanelDetail, GuideX, BodyY + GuideH + 22.f, 20, UIWhite, GuideW);
         }
         else if (!Mode.PanelDetail.IsEmpty())
