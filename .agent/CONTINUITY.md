@@ -1,5 +1,8 @@
 # SpaceSurvival continuity
 
+- 2026-10-17T02:45Z [CODE] Controls instruction repair complete locally: correct LS/dodge guidance and list talk/crew/photo/seating/tab shortcuts, preserving bindings/artwork. [TOOL] Final module6566a257/station7431, native seven-screen capture0228647 passes140% text, save/state guards and226-path/six-clip preservation. First capture timeout/cramped line retained and corrected. [CODE] PR74 publication/dependency sync pending; new Figma page is empty, owner link/physical checks remain open without checkpoint. No merge; hero/squirrel/PR73 held.
+
+
 - 2026-10-17T02:22Z [TOOL] Isolated real-model CPU health/inference passes: Whisper0.572s, LuxTTS37.092s warm, station Daredevil4.150s; Astra/Joy outputs transcribe exactly, dialogue reply2.188s. Private ports18701..3 released, owned33624/40528/40480 stopped,9 source/config/reference hashes unchanged. [CODE] Update PR74 evidence and dependent docs; actual in-game helper startup/reuse, microphone, listening and broader bar checks remain open. No production cache/config/native changes or checkpoint.
 
 - 2026-10-17T02:10Z [TOOL] Tripo four-motion Cyborg preview library saved separately: 300 native Play frames match evaluated poses within0.009cm; five new animations reload on accepted skeleton,50 guarded files unchanged. Handstand height+171.6302cm is verified, but palm/feet/joins remain open. [CODE] Existing routines/Cyan/station7431/module d248 remain unchanged; private Review.html available, no checkpoint. PR74 evidence publication follows, hero/squirrels/PR73 held.

@@ -1548,11 +1548,10 @@ void ASSGameMode::Tick(float Dt)
         const TCHAR *Prompts[] = {
             TEXT("FLIGHT: left stick nose steering. LB/RB dash and bank; hold to roll. Right stick is camera-only "
                  "free-look."),
-            TEXT(
-                "THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. Left stick moves sideways."),
+            TEXT("THROTTLE: right trigger, or W/S to set keyboard power. Zero power coasts. A/D moves sideways."),
             TEXT("BOOST: Shift / B. Separate from normal throttle; release to recharge."),
             TEXT("BRAKE: Space / left trigger. Partial braking builds heat; give it time to cool."),
-            TEXT("DODGE: Q / left bumper with a movement direction. Obstacles still hurt during a dodge."),
+            TEXT("DODGE: Q, or tap LB/RB to dash left/right. Hold a bumper to roll. Obstacles still hurt."),
             TEXT("FIRE: left mouse / A. Aim manually; brackets provide soft targeting assistance."),
             TEXT("PICKUPS: collect shaped rewards. Hull regenerates after damage; shield does not."),
             TEXT("OPTIONAL SIGNALS: approach, then E / X to accept. Passing nearby does not commit you.")};
@@ -1921,11 +1920,14 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         PanelDetail =
             TEXT("FLIGHT: Left stick: nose steering | LB/RB: dash / hold roll | Right stick: free-look.\nMouse: steer "
                  "| A D / R F: lateral / vertical thrust.\n"
-                 "RT: normal throttle. W/S: set keyboard throttle. Zero power coasts.\n"
+                 "RT / W S: throttle. Zero power coasts.\n"
                  "Shift / B: boost | Space / LT: brake | Left click / A: fire | Q: keyboard dodge\n"
                  "E / X: flight interaction / landing.\n"
                  "WALK: WASD / left stick moves and faces travel. Mouse / right stick orbits camera.\n"
-                 "Shift / X: run | Space / A: jump | E / Y: use | Esc / Menu: pause");
+                 "Shift / X: run | Space / A: jump | E / Y: use / sit / stand | Esc / Menu: pause.\n"
+                 "T / R3: tap to talk, tap again to send.\n"
+                 "1-4 / hold LB + D-pad: crew actions.\n"
+                 "F8 / D-pad Up: photo mode | LB/RB: settings tabs.");
         AddEntry(FString::Printf(TEXT("Mouse sensitivity: %.1f"), S.settings.mouseSensitivity), 22);
         AddEntry(FString::Printf(TEXT("Controller sensitivity: %.1f"), S.settings.controllerSensitivity), 23);
         AddEntry(
