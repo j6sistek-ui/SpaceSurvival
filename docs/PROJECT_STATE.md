@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October16 helper lifetime follow-up:** Actual park/adopt/expiry/shutdown paths pass with five inert CPU processes in an isolated editor;2 focused tests pass with0 test warnings after the fixture-only compile correction. No AI model or voice is requested. Canonical module `d248d14e`, station `c3dd6ea9` and all227 guarded native files remain unchanged. Real server health and listening remain open. [Evidence](validation/2026-10-17-npc-helper-reuse.md#process-lifetime-follow-up--october-16-local-time).
+
 **October17 helper reuse:** Current local editor module `d248d14e` supersedes `b9a9d71e`; station `c3dd6ea9` is unchanged. Kept speech/dialogue/voice helpers now invalidate reuse when startup paths, ports or relevant settings change; current voices/settings are preserved. Worktree/canonical builds69.90s/89.65s and focused identity tests1/0 each pass. All226 non-module native files and plugin sources are unchanged; four ShipCore build outputs were rebuilt. This does not establish live helper restart, listening or owner acceptance. [Evidence](validation/2026-10-17-npc-helper-reuse.md).
 
 **October16 foundation review:** Draft PR78 now supplies the missing parent of PR74. Exact d178dd4 builds in 167.87 seconds and passes its isolated dialogue encoding test; current station c3dd6ea9 / module b9a9d71e and 500 guarded native/plugin originals remain unchanged. Broader foundation behavior, owner acceptance and release remain unverified. [Evidence](validation/2026-10-16-joy-foundation-review.md).

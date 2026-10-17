@@ -22,3 +22,15 @@ Private receipts: `.agent/local/HelperReuse_20261017/Verification.json`, `Adopti
 ## Still open
 
 Joy/Astra listening and natural laughter remain separate owner/lead checks. Seated clothing and the exterior composition remain open. Foundation boarding/pilot scope still needs reconciliation before readiness; PR73 and new hero/squirrel work remain held. No merge, package or Phase1 completion claim.
+
+## Process lifetime follow-up — October 16 local time
+
+A separate development-only `SpaceSurvival.NpcTalk.HelperLifetime` test exercises the actual ParkServers, AdoptParkedServers, expiry and shutdown paths with five inert, short-lived Python processes. It requires an unattended NullRHI editor and refuses to touch an existing parked helper set. Each process is tied to the test editor's Windows job, also exits by itself after30seconds, and has an independently opened observation handle. Cleanup stops only fixture-owned processes. The generic game instance is never initialized; no production persistence, microphone, network listener, AI model or TTS engine is started.
+
+The same three live handles survive an unchanged-session handoff. Changing speech threads and voice threads terminates the incompatible speech/voice processes; dialogue remains available for its existing EnsureServers identity check. Expiry terminates the parked dialogue process, an untied helper is refused, and explicit shutdown terminates the active voice process. This establishes OS process lifetime behavior for the fixture, not model startup, network health or audible quality.
+
+The first isolated build failed because Windows IsProcRunning takes a non-const handle reference; the fixture loop was corrected without runtime changes. The next build succeeds in5.41s. The focused Helper suite passes2 tests,0 failures,0 not-run and0 test warnings. The lifetime case takes0.098s; both cases run in owned process36264, which exits0. Two pre-existing ShipCore startup warnings remain outside the passing test result. Installed scoped formatting,49 structure checks,13 digest checks and whitespace validation pass.
+
+Tested isolated module: `3a48ef3a973e78243c75d995062587eb0b66a65b193f4172b7381f2bcd390322`. The new source delta is test-only; the canonical module stays `d248d14e` and station stays `c3dd6ea9`. All227 guarded canonical native files remain unchanged. Two exact backed-up source patches preserve the canonical diagnostics additions. There is no new gameplay build, content import or package in this follow-up. Private evidence remains `HelperReuse_20261017/Lifetime*` (build1 failure, build2 success, report, exit, source patch and guard).
+
+Actual model/server startup and request health, human listening, bar input and appearance remain open. The owner explicitly reports the tray/face check Not tested yet; that is not a pause on independent work.
