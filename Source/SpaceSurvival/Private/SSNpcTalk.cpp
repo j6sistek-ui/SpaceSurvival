@@ -609,7 +609,7 @@ struct FParkedServers
 {
     FProcHandle Whisper, Llama, Voice;
     bool bWhisperTied = false, bLlamaTied = false, bVoiceReady = false;
-    FString LlamaModel, LlamaKey, VoiceKey;
+    FString LlamaModel, LlamaKey, VoiceKey, WhisperKey;
     double LlamaStartedAt = 0.0, VoiceStartedAt = 0.0, ParkedAt = 0.0, KeepSeconds = 600.0;
     FTSTicker::FDelegateHandle Expiry;
 };
@@ -676,15 +676,8 @@ void USSNpcTalkSubsystem::Initialize(FSubsystemCollectionBase &Collection)
     }
     bVoiceInstalled = FPaths::FileExists(VoicePython) && FPaths::FileExists(VoiceScriptPath()) &&
                       FPaths::DirectoryExists(VoiceRepo) && !Voices.IsEmpty();
-    // The server reads the voices once, when it starts: a kept one serves only the same set, unchanged on disk.
-    TArray<FString> VoiceParts;
-    for (const auto &Pair : Voices)
-        VoiceParts.Add(FString::Printf(
-            TEXT("%s@%s@%s"), *Pair.Key, *IFileManager::Get().GetTimeStamp(*Pair.Value.Reference).ToString(),
-            *IFileManager::Get().GetTimeStamp(*FPaths::ChangeExtension(Pair.Value.Reference, TEXT("txt"))).ToString()));
-    VoiceParts.Sort();
-    VoiceKey = FString::Printf(TEXT("%s|%d|%d|%s"), *FString::Join(VoiceParts, TEXT(",")), VoiceThreads, VoicePort,
-                               *DefaultVoice);
+    // A parked server must match both its launch settings and the profiles it read at startup.
+    VoiceKey = VoiceServerKey();
     TArray<FString> Names;
     Voices.GetKeys(Names);
     UE_LOG(LogSSNpcTalk, Display, TEXT("npc voices %s: %s"),
@@ -730,7 +723,11 @@ void USSNpcTalkSubsystem::ParkServers()
     };
     const bool bWhisper = Park(WhisperProc, Keep.Whisper, bWhisperTied);
     if (bWhisper)
+    {
         Keep.bWhisperTied = true;
+        Keep.WhisperKey = RunningWhisperKey;
+    }
+    RunningWhisperKey.Empty();
     const FString Model = RunningModel, Key = RunningLlamaKey;
     const bool bLlama = Park(LlamaProc, Keep.Llama, bLlamaTied);
     if (bLlama)
@@ -788,6 +785,12 @@ void USSNpcTalkSubsystem::AdoptParkedServers()
         FTSTicker::GetCoreTicker().RemoveTicker(Keep.Expiry);
         Keep.Expiry.Reset();
     }
+    if (Keep.Whisper.IsValid() && Keep.WhisperKey != WhisperServerKey())
+    {
+        FPlatformProcess::TerminateProc(Keep.Whisper, true);
+        FPlatformProcess::CloseProc(Keep.Whisper);
+        Keep.Whisper = FProcHandle();
+    }
     if (Keep.Voice.IsValid() && Keep.VoiceKey != VoiceKey)
     {
         UE_LOG(LogSSNpcTalk, Display,
@@ -810,7 +813,10 @@ void USSNpcTalkSubsystem::AdoptParkedServers()
     };
     const bool bWhisper = Take(Keep.Whisper, WhisperProc);
     if (bWhisper)
+    {
         bWhisperTied = Keep.bWhisperTied;
+        RunningWhisperKey = Keep.WhisperKey;
+    }
     const bool bLlama = Take(Keep.Llama, LlamaProc);
     if (bLlama)
     {
@@ -829,6 +835,36 @@ void USSNpcTalkSubsystem::AdoptParkedServers()
         UE_LOG(LogSSNpcTalk, Display, TEXT("npc talk: picked up from the last Play: whisper %s, llama %s, voice %s"),
                bWhisper ? TEXT("yes") : TEXT("no"), bLlama ? TEXT("yes") : TEXT("no"),
                bVoice ? TEXT("yes") : TEXT("no"));
+}
+
+FString USSNpcTalkSubsystem::WhisperServerKey() const
+{
+    return FString::Printf(TEXT("%s|%s|%d|%d"), *WhisperServerExe, *WhisperModel, WhisperPort, Threads);
+}
+
+FString USSNpcTalkSubsystem::LlamaServerKey(const FString &Model, const FString &Extra) const
+{
+    return FString::Printf(TEXT("%s|%s|%d|%d|%d|%d|%d|%s"), *LlamaServerExe, *Model, LlamaPort, LlamaGpuLayers,
+                           LlamaVramMarginMB, LlamaVramFixedMB, Threads, *Extra);
+}
+
+FString USSNpcTalkSubsystem::VoiceServerKey() const
+{
+    TArray<FString> Parts;
+    for (const auto &Pair : Voices)
+    {
+        const SSNpcTalk::FVoiceProfile &Profile = Pair.Value;
+        Parts.Add(FString::Printf(
+            TEXT("%s@%s@%s@%s@%.17g@%s@%s"), *Pair.Key, *Profile.Reference,
+            *IFileManager::Get().GetTimeStamp(*Profile.Reference).ToString(),
+            *IFileManager::Get().GetTimeStamp(*FPaths::ChangeExtension(Profile.Reference, TEXT("txt"))).ToString(),
+            Profile.Speed, *Profile.Treatment, *Profile.CacheRevision));
+    }
+    Parts.Sort();
+    const FString Args =
+        SSNpcTalk::VoiceArgs(VoiceScriptPath(), FPaths::ConvertRelativePathToFull(VoiceRepo), VoicesPath(),
+                             DefaultVoice, VoiceThreads, VoicePort, FPlatformProcess::GetCurrentProcessId());
+    return VoicePython + TEXT("|") + Args + TEXT("|") + FString::Join(Parts, TEXT(","));
 }
 
 int32 USSNpcTalkSubsystem::GpuLayersFor(const FString &Model) const
@@ -857,6 +893,9 @@ void USSNpcTalkSubsystem::StopServers()
             FPlatformProcess::CloseProc(*Proc);
             *Proc = FProcHandle();
         }
+    RunningWhisperKey.Empty();
+    RunningLlamaKey.Empty();
+    RunningModel.Empty();
     StopVoice();
 }
 
@@ -1191,6 +1230,13 @@ void USSNpcTalkSubsystem::EnsureServers()
 {
     if (!IsEnabled())
         return;
+    const FString WhisperKey = WhisperServerKey();
+    if (WhisperProc.IsValid() && FPlatformProcess::IsProcRunning(WhisperProc) && RunningWhisperKey != WhisperKey)
+    {
+        FPlatformProcess::TerminateProc(WhisperProc, true);
+        FPlatformProcess::CloseProc(WhisperProc);
+        WhisperProc = FProcHandle();
+    }
     if (!WhisperProc.IsValid() || !FPlatformProcess::IsProcRunning(WhisperProc))
     {
         if (WhisperProc.IsValid())
@@ -1198,6 +1244,7 @@ void USSNpcTalkSubsystem::EnsureServers()
         WhisperProc = Launch(WhisperServerExe, FString::Printf(TEXT("-m %s --host 127.0.0.1 --port %d -t %d"),
                                                                *Quote(WhisperModel), WhisperPort, Threads));
         bWhisperTied = TieToThisProcess(WhisperProc);
+        RunningWhisperKey = WhisperProc.IsValid() ? WhisperKey : FString();
         UE_LOG(LogSSNpcTalk, Display, TEXT("whisper-server %s on %d"),
                WhisperProc.IsValid() ? TEXT("started") : TEXT("NOT FOUND"), WhisperPort);
     }
@@ -1205,7 +1252,7 @@ void USSNpcTalkSubsystem::EnsureServers()
     const FString &Model = Station ? StationLlamaModel : LlamaModel;
     const FString &Extra = Station ? StationLlamaExtraArgs : LlamaExtraArgs;
     // What the running server was started with: a kept-alive one is reused only for the same model and settings.
-    const FString Key = FString::Printf(TEXT("%s|%d|%d|%s"), *Model, LlamaGpuLayers, Threads, *Extra);
+    const FString Key = LlamaServerKey(Model, Extra);
     if (LlamaProc.IsValid() && FPlatformProcess::IsProcRunning(LlamaProc) && RunningLlamaKey != Key)
         StopLlama();
     if (!LlamaProc.IsValid() || !FPlatformProcess::IsProcRunning(LlamaProc))

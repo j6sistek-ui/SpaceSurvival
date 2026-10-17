@@ -1,11 +1,13 @@
 #include "Misc/AutomationTest.h"
 #include "SSNpcTalk.h"
+#include "Engine/GameInstance.h"
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "HAL/FileManager.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include <type_traits>
 
 #if WITH_DEV_AUTOMATION_TESTS
 
@@ -312,6 +314,81 @@ bool FSSNpcTalkEncodingTest::RunTest(const FString &)
     TestEqual(TEXT("a truncated header reads as unknown"), SSNpcTalk::GgufBlockCount(NotGguf), -1);
     IFileManager::Get().Delete(*GgufPath);
     IFileManager::Get().Delete(*NotGguf);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSNpcTalkHelperIdentityTest, "SpaceSurvival.NpcTalk.HelperIdentity",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSNpcTalkHelperIdentityTest::RunTest(const FString &)
+{
+    // Configuration only: do not initialize the subsystem, start helpers or access the microphone.
+    UGameInstance *Instance = NewObject<UGameInstance>();
+    USSNpcTalkSubsystem *Talk = NewObject<USSNpcTalkSubsystem>(Instance);
+    Talk->VoicePython = TEXT("C:/Test/Python/python.exe");
+    Talk->VoiceRepo = TEXT("C:/Test/VoiceEngine");
+    Talk->VoiceScript = TEXT("C:/Test/voice_server.py");
+    Talk->VoiceDirectory = TEXT("TestVoices/A");
+    Talk->WhisperServerExe = TEXT("C:/Test/whisper-server.exe");
+    Talk->WhisperModel = TEXT("C:/Test/speech.bin");
+    Talk->LlamaServerExe = TEXT("C:/Test/llama-server.exe");
+    const FString Model = TEXT("C:/Test/dialogue.gguf"), Extra = TEXT("--reasoning off");
+    const auto LlamaKey = [&]() { return Talk->LlamaServerKey(Model, Extra); };
+    const auto WhisperKey = [&]() { return Talk->WhisperServerKey(); };
+    const auto VoiceKey = [&]() { return Talk->VoiceServerKey(); };
+    const auto Changed = [&](const TCHAR *Label, auto Field, auto ReadKey)
+    {
+        const auto Before = Talk->*Field;
+        const FString Key = ReadKey();
+        if constexpr (std::is_same_v<std::decay_t<decltype(Before)>, FString>)
+            Talk->*Field += TEXT("-replacement");
+        else
+            ++(Talk->*Field);
+        TestNotEqual(Label, ReadKey(), Key);
+        Talk->*Field = Before;
+        TestEqual(TEXT("restoring identical configuration keeps the reusable identity"), ReadKey(), Key);
+    };
+    Changed(TEXT("speech port invalidates the kept recognizer"), &USSNpcTalkSubsystem::WhisperPort, WhisperKey);
+    Changed(TEXT("speech model invalidates the kept recognizer"), &USSNpcTalkSubsystem::WhisperModel, WhisperKey);
+    Changed(TEXT("speech executable invalidates the kept recognizer"), &USSNpcTalkSubsystem::WhisperServerExe,
+            WhisperKey);
+    Changed(TEXT("speech threads invalidate the kept recognizer"), &USSNpcTalkSubsystem::Threads, WhisperKey);
+    Changed(TEXT("reply port invalidates the kept model"), &USSNpcTalkSubsystem::LlamaPort, LlamaKey);
+    Changed(TEXT("reply executable invalidates the kept model"), &USSNpcTalkSubsystem::LlamaServerExe, LlamaKey);
+    Changed(TEXT("GPU margin change re-evaluates the next launch"), &USSNpcTalkSubsystem::LlamaVramMarginMB, LlamaKey);
+    Changed(TEXT("GPU fixed allowance change re-evaluates the next launch"), &USSNpcTalkSubsystem::LlamaVramFixedMB,
+            LlamaKey);
+    TestNotEqual(TEXT("flight/station model change still invalidates reuse"),
+                 Talk->LlamaServerKey(Model + TEXT(".other"), Extra), LlamaKey());
+    Changed(TEXT("voice folder change invalidates identical-name profiles"), &USSNpcTalkSubsystem::VoiceDirectory,
+            VoiceKey);
+    Changed(TEXT("voice Python change invalidates reuse"), &USSNpcTalkSubsystem::VoicePython, VoiceKey);
+    Changed(TEXT("voice engine change invalidates reuse"), &USSNpcTalkSubsystem::VoiceRepo, VoiceKey);
+    Changed(TEXT("voice script change invalidates reuse"), &USSNpcTalkSubsystem::VoiceScript, VoiceKey);
+    Changed(TEXT("voice port change invalidates reuse"), &USSNpcTalkSubsystem::VoicePort, VoiceKey);
+    SSNpcTalk::FVoiceProfile Joy, Astra;
+    Joy.Reference = TEXT("C:/Test/Voices/Joy.wav");
+    Astra.Reference = TEXT("C:/Test/Voices/Astra.wav");
+    Joy.CacheRevision = TEXT("joy-original-v1");
+    Astra.CacheRevision = TEXT("astra-original-v1");
+    Talk->Voices.Add(TEXT("Joy"), Joy);
+    Talk->Voices.Add(TEXT("Astra"), Astra);
+    const FString Original = VoiceKey();
+    Talk->Voices.Reset();
+    Talk->Voices.Add(TEXT("Astra"), Astra);
+    Talk->Voices.Add(TEXT("Joy"), Joy);
+    TestEqual(TEXT("profile enumeration order does not restart unchanged voices"), VoiceKey(), Original);
+    Talk->Voices[TEXT("Joy")].CacheRevision = TEXT("joy-original-v2");
+    TestNotEqual(TEXT("reference revision invalidates reuse even with identical file timestamps"), VoiceKey(),
+                 Original);
+    Talk->Voices[TEXT("Joy")] = Joy;
+    Talk->Voices[TEXT("Joy")].Speed = 0.85;
+    TestNotEqual(TEXT("loaded speed change invalidates reuse even with identical timestamps"), VoiceKey(), Original);
+    Talk->Voices[TEXT("Joy")] = Joy;
+    Talk->Voices[TEXT("Joy")].Treatment = TEXT("chrome");
+    TestNotEqual(TEXT("loaded treatment change invalidates reuse"), VoiceKey(), Original);
+    Talk->Voices[TEXT("Joy")] = Joy;
+    Talk->Voices[TEXT("Joy")].Reference = TEXT("C:/Test/OtherVoices/Joy.wav");
+    TestNotEqual(TEXT("same-name reference at another path invalidates reuse"), VoiceKey(), Original);
     return true;
 }
 

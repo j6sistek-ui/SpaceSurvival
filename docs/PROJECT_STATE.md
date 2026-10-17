@@ -1,5 +1,7 @@
 # SpaceSurvival project state
 
+**October17 helper reuse:** Current local editor module `d248d14e` supersedes `b9a9d71e`; station `c3dd6ea9` is unchanged. Kept speech/dialogue/voice helpers now invalidate reuse when startup paths, ports or relevant settings change; current voices/settings are preserved. Worktree/canonical builds69.90s/89.65s and focused identity tests1/0 each pass. All226 non-module native files and plugin sources are unchanged; four ShipCore build outputs were rebuilt. This does not establish live helper restart, listening or owner acceptance. [Evidence](validation/2026-10-17-npc-helper-reuse.md).
+
 **October16 foundation review:** Draft PR78 now supplies the missing parent of PR74. Exact d178dd4 builds in 167.87 seconds and passes its isolated dialogue encoding test; current station c3dd6ea9 / module b9a9d71e and 500 guarded native/plugin originals remain unchanged. Broader foundation behavior, owner acceptance and release remain unverified. [Evidence](validation/2026-10-16-joy-foundation-review.md).
 
 **October16 animation quick picks:** A local guide narrows the existing catalog to12 action sets / 38 clips, separating25 imported clips from13 FBXs requiring import/rig checks. Files/metadata verified; new motion/contact quality and browser visual/copy behavior remain unverified. Station c3dd6ea9 / module b9a9d71e unchanged. [Guide](production/ANIMATION_WORKBENCH.md#pick-an-action-next).
