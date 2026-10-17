@@ -1,5 +1,15 @@
 # SpaceSurvival Phase 1 architecture
 
+## Astra social presentation and seating — October 15
+
+`SSBarCrewSocial` owns the optional reserved two-NPC break using the existing spatial speech channel; a finite shuffled bank stays data-driven. `SSStationSeat`/`SSWalkerSeating` provide separate social seating with collision-checked exits and compatible clips. `SSHUDChat` renders bounded session history under the existing radar safe area, without new focus/input capture. Native eye authoring is restricted to five private meshes sharing identical bones. [Guide](production/WAITRESS_BAR_SERVICE.md).
+
+## Waitress bar service — October 15
+
+Staff breaks may select `BarShotAnimation` per character; a missing override falls back to the normal drink clip, while an incompatible skeleton prevents the break. The shared ambient action helper retains its compatibility/timing checks without rewriting the normal action array. Normal orders keep their own clip and grip. Private retargeted patron loops use existing ambient actors rather than a new behavior system.
+
+`ASSBarCrew` specializes ambient NPC actions while retaining the existing GameMode keyword/action and spatial voice/caption channel. `ASSBarTable` supplies authored seat/drink contacts; private Blueprints own clips, grips and routes. Native body post-process leads clothing skinning. Service state, collision checks and reservation cleanup stay in C++; no new inventory or economy system. Existing ClosePanel and TriggerNpcAction methods are exposed to Blueprint for scripted integration review without adding a second interaction implementation. [Behavior and limits](production/WAITRESS_BAR_SERVICE.md).
+
 ## Silver groom authoring — October 14
 
 `USSGroomAuthoring` lives only in SpaceSurvivalEditor. It exports the private source strand description and creates a bounded new two-group derivative with rebuilt interpolation data. It refuses overwrite and defaults to dry run. Production runtime uses the existing GroomComponent and native solver: head-attached rigid group0, dynamic tail group1. No new runtime component or general asset-writing service. [Native evidence](validation/2026-10-14-silver-ponytail.md).
@@ -518,3 +528,7 @@ Only supported mesh, light and Niagara actors/components are accepted. Hidden tr
 Canvas menus keep viewport input ownership (GameOnly; visible cursor unless a live reward captures flight look). No Slate widget owns these menus. Controller left-stick Y navigation has a deadzone and delayed repeat; D-pad/A/B remain. The legacy full-width message bar is replaced by a bounded center message column, clear of the refreshed HUD heading/radar. Remapping remains deferred.
 
 World-cell mix includes the existing area recipes' panel/beam debris and a larger non-rock landmark piece outside the launch cell. These use shared mesh batches and preserved world transforms, independent of Director pressure. Both near-field and regional scenery block simulated PhysicsBody plus Pawn/Visibility. Free Flight and Survival retain unrestricted steering; a Survival-only directed route is a future owner decision, not an implemented constraint.
+
+### Bounded photo mode and tab shortcuts (October 15)
+
+`USSPhotoMode` belongs to `ASSPlayerController`, retains possession and the prior camera/pause state, and advances its temporary camera with real time while the world is paused. A fixed 40 m anchor and swept visibility collision bound travel. Screenshot completion checks the unique PNG file; `SSHUDPhoto` hides all Canvas UI during capture. Context routing gives menu bumpers to settings tabs, gameplay LB plus D-pad to crew actions, and D-pad Up alone to photo mode. The existing raw-controller automation covers tab cycling and photo entry/exit separately from physical-input acceptance.

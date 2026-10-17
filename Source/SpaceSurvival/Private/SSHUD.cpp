@@ -1,4 +1,5 @@
 #include "SSHUD.h"
+#include "SSPhotoMode.h"
 #include "SSNpcTalk.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
@@ -6,6 +7,7 @@
 #include "SSInputGlyphs.h"
 #include "SSShip.h"
 #include "SSStation.h"
+#include "SSStationSeat.h"
 #include "SSOutpostSandbox.h"
 #include "SSWorldActors.h"
 #include "Engine/Canvas.h"
@@ -590,6 +592,13 @@ void ASSHUD::DrawHUD()
     const auto &S = GI->Session;
     Scale = FMath::Clamp(float(Canvas->SizeY) / 1080.f * float(S.settings.uiScale), .65f, 1.6f);
     const float W = Canvas->SizeX, H = Canvas->SizeY, Margin = 30 * Scale;
+    if (const auto *PC = Cast<ASSPlayerController>(GetOwningPlayerController()); PC && PC->PhotoMode->IsActive())
+    {
+        bTitleWasOpen = false;
+        if (PC->PhotoMode->ShowControls())
+            DrawPhotoControls(*PC->PhotoMode);
+        return;
+    }
     if (GM->AlienGallery && GM->AlienGallery->IsActive())
     {
         bTitleWasOpen = false;
@@ -804,10 +813,9 @@ void ASSHUD::DrawHUD()
         Paragraph(GM->PilotReaction, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, CaptionW - 24.f * Scale, .75f,
                   FLinearColor(.9f, .94f, 1.f));
     }
-    // Where the talk captions may start, growing upward: above the villain's caption whenever it is showing, so the
-    // pilot's "You:" line never lands on his answer (owner, 2026-10-10).
-    float TalkStackBottom = H - 300.f * Scale;
-    if (S.settings.subtitles && GM->VillainLineSeconds > 0.f && !MenuOpen)
+    const bool DirectorInChat = !GM->ChatLines.IsEmpty() && GM->ChatLines.Last().Speaker == TEXT("Director") &&
+                                GM->ChatLines.Last().Text == GM->VillainLine;
+    if (S.settings.subtitles && GM->VillainLineSeconds > 0.f && !MenuOpen && !DirectorInChat)
     {
         // The villain's own line, above the pilot's so the two can trade words. Ember on near-black marks it
         // as his; the box grows with a wrapped line, and its bottom edge stays clear of the pilot caption.
@@ -819,40 +827,12 @@ void ASSHUD::DrawHUD()
         DrawRect(FLinearColor(.07f, .012f, .008f, .9f), CaptionX, CaptionY, CaptionW, CaptionH);
         Paragraph(GM->VillainLine, CaptionX + 12.f * Scale, CaptionY + 10.f * Scale, TextW, .75f,
                   FLinearColor(1.f, .56f, .4f));
-        TalkStackBottom = FMath::Min(TalkStackBottom, CaptionY - 8.f * Scale);
     }
-    if (!MenuOpen && (GM->NpcLineSeconds > 0.f || GM->TalkTranscriptSeconds > 0.f || !GM->TalkStatus.IsEmpty()))
-    {
-        // Push-to-talk: the pilot's own words on top, a crew member's answer beneath in the deck's teal. Not
-        // gated by the subtitles setting: the text is the conversation. The villain answers on his own caption.
-        const float CaptionW = FMath::Min(760.f * Scale, W - 2.f * Margin);
-        const float TextW = CaptionW - 24.f * Scale;
-        const float CaptionX = (W - CaptionW) * .5f;
-        float Y = TalkStackBottom;
-        if (GM->NpcLineSeconds > 0.f)
-        {
-            const FString Line = GM->NpcName + TEXT(": ") + GM->NpcLine;
-            const float BoxH = Paragraph(Line, 0.f, 0.f, TextW, .8f, FLinearColor::White, false) + 20.f * Scale;
-            Y -= BoxH;
-            DrawRect(FLinearColor(.01f, .06f, .07f, .92f), CaptionX, Y, CaptionW, BoxH);
-            Paragraph(Line, CaptionX + 12.f * Scale, Y + 10.f * Scale, TextW, .8f, FLinearColor(.55f, .95f, .9f));
-            Y -= 8.f * Scale;
-        }
-        if (GM->TalkTranscriptSeconds > 0.f)
-        {
-            const FString Line = TEXT("You: ") + GM->TalkTranscript;
-            const float BoxH = Paragraph(Line, 0.f, 0.f, TextW, .75f, FLinearColor::White, false) + 20.f * Scale;
-            Y -= BoxH;
-            DrawRect(FLinearColor(.015f, .025f, .04f, .9f), CaptionX, Y, CaptionW, BoxH);
-            Paragraph(Line, CaptionX + 12.f * Scale, Y + 10.f * Scale, TextW, .75f, FLinearColor(.9f, .94f, 1.f));
-            Y -= 8.f * Scale;
-        }
-        if (!GM->TalkStatus.IsEmpty())
-            Text(GM->TalkStatus, CaptionX, Y - 24.f * Scale, .7f, FLinearColor(1.f, .85f, .5f));
-    }
+    if (!MenuOpen)
+        DrawChatPanel(*GM);
     if (!MenuOpen && (!Walker || (!Walker->IsDisembarking() && !Walker->IsBoarding() && !Walker->IsSeated())))
     {
-        FString InteractionHint, HintPrefix, HintSuffix;
+        FString InteractionHint, HintPrefix, HintSuffix, SeatingHint;
         FLinearColor HintColor = FLinearColor::White;
         bool GlyphBeforeHint = false, GlyphInsideHint = false, bTalkHint = false;
         // Match Interact: walking always targets a service; pending rewards take priority only in the ship.
@@ -924,6 +904,16 @@ void ASSHUD::DrawHUD()
                 GlyphBeforeHint = false;
                 InteractionHint = TEXT("Walk forward to the cockpit chair");
             }
+            if (Walker->IsResting())
+                SeatingHint = TEXT("Stand up");
+            else if (InteractionHint.IsEmpty())
+                if (const auto *Seat = ASSStationSeat::Find(Walker))
+                    SeatingHint = TEXT("Sit on ") + Seat->DisplayName;
+            if (!SeatingHint.IsEmpty())
+            {
+                GlyphBeforeHint = true;
+                InteractionHint = SeatingHint;
+            }
             // Talk joins the context hint. A conversation in progress names the partner and wins over everything
             // else; otherwise the nearest person is offered only when no station service is in reach.
             if (GM->IsTalkEngaged())
@@ -953,21 +943,38 @@ void ASSHUD::DrawHUD()
         {
             StationAction(InteractionHint, GlyphBeforeHint, HintColor, bTalkHint ? EKeys::T : EKeys::E,
                           bTalkHint ? EKeys::Gamepad_RightThumbstick : EKeys::Gamepad_FaceButton_Top);
+            if (bTalkHint && !SeatingHint.IsEmpty())
+            {
+                const float KeyW = Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Top, HintX, HintY + 30.f * Scale, .7f,
+                                         FLinearColor::White);
+                Text(SeatingHint, HintX + KeyW + GlyphGap, HintY + 30.f * Scale, .7f, FLinearColor::White);
+            }
             // Crew actions: a row of keys above the talk hint (owner 2026-10-14: ways to trigger their animations).
             if (bTalkHint)
                 if (const ASSOutpostAmbientActor *Crew = GM->ActionTarget())
                 {
-                    static const FKey Digits[] = {EKeys::One, EKeys::Two, EKeys::Three, EKeys::Four};
-                    static const FKey Pads[] = {EKeys::Gamepad_DPad_Up, EKeys::Gamepad_DPad_Right,
-                                                EKeys::Gamepad_DPad_Down, EKeys::Gamepad_DPad_Down};
-                    const FLinearColor Cyan(.45f, .9f, 1.f);
-                    const float RowY = HintY - 34.f * Scale;
-                    float X = HintX;
-                    for (int32 I = 0; I < FMath::Min(Crew->Actions.Num(), 4); ++I)
+                    if (UsingGamepad())
                     {
-                        const float GlyphW = Glyph(Digits[I], Pads[I], X, RowY, .7f, Cyan);
-                        Text(Crew->Actions[I].Name, X + GlyphW + GlyphGap, RowY, .7f, FLinearColor::White);
-                        X += GlyphW + GlyphGap + MeasureText(Crew->Actions[I].Name, .7f).X + 22.f * Scale;
+                        if (GetOwningPlayerController()->IsInputKeyDown(EKeys::Gamepad_LeftShoulder))
+                            DrawInteractionOptions(*Crew);
+                        else
+                            Text(TEXT("Hold LB: interaction options"), HintX, HintY - 34.f * Scale, .7f,
+                                 FLinearColor(.45f, .9f, 1.f));
+                    }
+                    else
+                    {
+                        static const FKey Digits[] = {EKeys::One, EKeys::Two, EKeys::Three, EKeys::Four};
+                        static const FKey Pads[] = {EKeys::Gamepad_DPad_Up, EKeys::Gamepad_DPad_Right,
+                                                    EKeys::Gamepad_DPad_Down, EKeys::Gamepad_DPad_Left};
+                        const FLinearColor Cyan(.45f, .9f, 1.f);
+                        const float RowY = HintY - 34.f * Scale;
+                        float X = HintX;
+                        for (int32 I = 0; I < FMath::Min(Crew->Actions.Num(), 4); ++I)
+                        {
+                            const float GlyphW = Glyph(Digits[I], Pads[I], X, RowY, .7f, Cyan);
+                            Text(Crew->Actions[I].Name, X + GlyphW + GlyphGap, RowY, .7f, FLinearColor::White);
+                            X += GlyphW + GlyphGap + MeasureText(Crew->Actions[I].Name, .7f).X + 22.f * Scale;
+                        }
                     }
                 }
         }

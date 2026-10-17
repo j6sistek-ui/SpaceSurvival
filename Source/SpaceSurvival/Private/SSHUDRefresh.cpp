@@ -233,6 +233,8 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
                             : ViewWidth - 128.f);
     if (Settings)
     {
+        if (UsingGamepad())
+            RefreshText(TEXT("LB / RB: SWITCH TABS"), InnerX, 140.f, 18.f, UIWhite, InnerW);
         const int Actions[] = {5, 10, 11, 12};
         const TCHAR *Names[] = {TEXT("GENERAL"), TEXT("GRAPHICS"), TEXT("AUDIO"), TEXT("CONTROLS")};
         const ESSPanel Panels[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls};
@@ -328,7 +330,7 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
         if (Controls)
         {
             const float GuideX = InnerX + RowW + 44.f, GuideW = InnerW - RowW - 44.f;
-            const float GuideH = RefreshText(TEXT("CURRENT FLIGHT PRESET"), GuideX, BodyY, 26, UICyan, GuideW);
+            const float GuideH = RefreshText(TEXT("CURRENT CONTROLS"), GuideX, BodyY, 26, UICyan, GuideW);
             RefreshText(Mode.PanelDetail, GuideX, BodyY + GuideH + 22.f, 20, UIWhite, GuideW);
         }
         else if (!Mode.PanelDetail.IsEmpty())

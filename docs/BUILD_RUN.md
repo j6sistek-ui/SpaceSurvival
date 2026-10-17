@@ -498,3 +498,7 @@ the gameplay default map or a published package.
 The existing **Play SpaceSurvival - Current** and **Unreal Engine** desktop shortcuts use the repaired checkout at `C:/Users/j6sis/.codex/worktrees/flight-loop-reset/SpaceSurvival`, now `codex/wormhole-playtest`, gameplay source `8ee8260`, rebuilt and ready. Start Survival: the new passage occurs at the end of Wave5 before hostile combat. Ordinary free-flight controls and the harder survival baseline remain intact.
 
 For isolated offscreen visual evidence only, `Scripts/CaptureSpaceLook.ps1 -WormholeReview -Sequence` captures the normal chase camera through a seeded Wave5 entrance/transit/exit, with protected save isolation. It does not publish, package or run a natural five-wave journey. See [the wormhole receipt](validation/2026-09-30-wormhole-transit.md) for exact final build/capture identity.
+
+### Local station review controls (October 15)
+
+D-pad Up/F8 opens photo mode; A/Enter saves a clean PNG under the current instance's `Saved/Screenshots/PhotoMode`; B/Esc exits. Movement, zoom and camera limits appear on screen. Hold LB near a crew member for labeled D-pad interactions; keyboard 1–4 remains available. LB/RB switches settings tabs directly. Hero seating uses E/Y at authored contacts. See [the station guide](production/WAITRESS_BAR_SERVICE.md) for exact controls and the private Astra/eye source paths. These are Editor/source changes, not a new published package.

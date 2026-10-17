@@ -1,3 +1,4 @@
+#include "SSPhotoMode.h"
 #include "Misc/AutomationTest.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
@@ -1250,6 +1251,59 @@ bool FSSTitleMenuNavigation::RunTest(const FString &)
         TestFalse(TEXT("Title fixture never ran production GameMode BeginPlay"), F.Mode->HasActorBegunPlay());
         // Exit Game/Escape are deliberately never activated inside the shared test process.
     }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSStationControllerShortcuts, "SpaceSurvival.UI.StationControllerShortcuts",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSStationControllerShortcuts::RunTest(const FString &)
+{
+    FSSControllerFlightWorld F;
+    if (!F.Initialize(*this) || !F.AttachInertViewport(*this))
+        return false;
+    auto Tap = [&](FKey Key)
+    {
+        F.Button(Key, true);
+        F.Step();
+        F.Button(Key, false);
+        F.Step();
+    };
+    F.Mode->OpenPanel(ESSPanel::Settings);
+    const double ScaleBefore = F.Instance->Session.settings.uiScale;
+    for (ESSPanel Expected : {ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls, ESSPanel::Settings})
+    {
+        Tap(EKeys::Gamepad_RightShoulder);
+        TestTrue(TEXT("RB selects the next tab and wraps"), F.Mode->Panel == Expected);
+        TestTrue(TEXT("New tab focuses a setting"), F.Mode->SelectedEntry >= 4);
+    }
+    Tap(EKeys::Gamepad_LeftShoulder);
+    TestTrue(TEXT("LB wraps General back to Controls"), F.Mode->Panel == ESSPanel::Controls);
+    Tap(EKeys::Gamepad_RightShoulder);
+    TestEqual(TEXT("Bumpers do not alter setting values"), F.Instance->Session.settings.uiScale, ScaleBefore);
+    Tap(EKeys::Gamepad_DPad_Up);
+    TestFalse(TEXT("Menu D-pad never opens photo mode"), F.Controller->PhotoMode->IsActive());
+    F.Mode->OpenPanel(ESSPanel::None);
+    auto *Walker = F.World->SpawnActor<ASSWalker>(FVector(0, 0, 7500), FRotator::ZeroRotator);
+    if (!TestNotNull(TEXT("Spawn isolated walking pawn without a station"), Walker))
+        return false;
+    F.Controller->Possess(Walker);
+    F.Step();
+    AActor *ViewBefore = F.Controller->GetViewTarget();
+    F.Button(EKeys::Gamepad_LeftShoulder, true);
+    F.Step();
+    Tap(EKeys::Gamepad_DPad_Up);
+    TestFalse(TEXT("LB plus D-pad is crew input, never photo mode"), F.Controller->PhotoMode->IsActive());
+    F.Button(EKeys::Gamepad_LeftShoulder, false);
+    F.Step();
+    Tap(EKeys::Gamepad_DPad_Up);
+    TestTrue(TEXT("D-pad Up enters actual photo mode"), F.Controller->PhotoMode->IsActive());
+    TestTrue(TEXT("Photo mode pauses the world"), F.World->IsPaused());
+    Tap(EKeys::Gamepad_FaceButton_Right);
+    TestFalse(TEXT("B exits photo mode without opening a menu"),
+              F.Controller->PhotoMode->IsActive() || F.Mode->IsMenuOpen());
+    TestFalse(TEXT("Photo exit unpauses the world"), F.World->IsPaused());
+    TestTrue(TEXT("Photo exit restores the prior view"), F.Controller->GetViewTarget() == ViewBefore);
+    TestTrue(TEXT("Fixture keeps account storage blocked"), F.Instance->AccountStorageBlocked);
     return true;
 }
 

@@ -46,6 +46,9 @@ private:
     bool DrawRefreshMenu(const class ASSGameMode &Mode);
     void DrawRefreshVitals(const class ASSGameMode &Mode, bool Walking);
     void DrawStationRadar();
+    void DrawChatPanel(const class ASSGameMode &Mode);
+    void DrawPhotoControls(const class USSPhotoMode &Photo);
+    void DrawInteractionOptions(const class ASSOutpostAmbientActor &Crew);
     int32 ScrollFirst = 0, ScrollVisible = 6, ScrollCount = 0;
     int32 ScrollPanel = INDEX_NONE;
     TArray<int32> ScrollEntries;

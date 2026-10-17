@@ -26,6 +26,8 @@ jobs:
         run: python3 Scripts/CheckProject.py
       - name: Exact text and binary source identity rules
         run: python3 Tests/TestSourceDigests.py
+      - name: Voice cache replacement and legacy compatibility
+        run: python3 Tests/TestNpcVoiceCache.py
       - name: Validate actual fresh Git source export
         run: python3 Scripts/TestFreshCheckout.py
       - name: Python syntax
