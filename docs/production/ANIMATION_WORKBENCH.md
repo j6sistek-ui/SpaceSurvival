@@ -51,3 +51,11 @@ The smaller local guide is `C:/Users/j6sis/SpaceSurvival/.agent/local/AnimationW
 These use cases are inferred from the clip names. Except for the prepared example, this pass verifies local files and metadata, not playback, seamless joins, prop contact or compatibility with Joy/Astra. The current fitted bar clips stay in place. A lever's Success and Fail are alternatives; do not place both in one performance. A shared bone count alone does not establish a compatible skeleton. The guide does not add gameplay or alter the hero/squirrels.
 
 The guide's structure and paths passed static checks. Its browser visual/copy check remains unverified because the browser tool blocked local-file navigation. [Inventory evidence](../validation/2026-10-16-animation-workbench.md#action-guide-and-interaction-inventory).
+
+## Tripo dancer candidates
+
+Open `C:/Users/j6sis/SpaceSurvival/.agent/local/TripoDance_20261016/Review.html` to watch four short Cyborg motion candidates. These are normal-speed Unreal previews sampled at12 fps with a temporary neutral material. They do not change her existing routine or Cyan.
+
+In Unreal, open **Content → SpaceSurvival → Licensed → TripoDancePreview_20261016**. Double-click `A_Cyborg_Dance_ShimmyTorso`, `A_Cyborg_Dance_Backbend`, `A_Cyborg_Dance_BackbendTorso` or `A_Cyborg_Dance_HandstandHold_FloorFit`, then press Play. Use `FloorFit` for the handstand; the unadjusted version is retained only as source evidence.
+
+Pick useful portions before joining them. The held-backbend source is mostly upright torso sway; the inverted clip is a handstand hold without an entry or exit. Feet, palms and transitions still need fitting for a finished sequence. The separate Blender library is `.agent/local/TripoDance_20261016/CyborgPreviewV2/Cyborg_Tripo_PreviewLibraryV2.blend`. [Scope and checks](../validation/2026-10-16-tripo-dance-candidates.md).
