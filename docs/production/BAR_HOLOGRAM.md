@@ -1,5 +1,7 @@
 # Bar hologram and serving tray
 
+**October16 serving-contact update:** Current local station `7431ed23` uses Astra's `CounterHandoff/A_astra_CounterCandidateV17`, `ContactFit/A_TraySetDown_GripFitV18` and the V14 flat-palm carry/serve copies. Joy retains her V8 counter-delivery clip. The new pickup/set-down account for runtime arm proportions and fit all five gripping fingers around the tumbler; the supporting palm stays below the tray. Grips, timing, physics and original assets remain unchanged. [Contact evidence](../validation/2026-10-16-astra-serving-arm-contact.md).
+
 The owner's rough waitress model is a separate65cm teal hologram on the right-hand bar counter. It is decorative and does not replace Astra. The supplied34cm metal tray is beside it. Astra now has separate saved tray settings; normal/shared service, cancellation and three configuration fallbacks pass native review.
 
 ## Move or tune the saved display
