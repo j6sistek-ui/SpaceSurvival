@@ -2,11 +2,16 @@
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSHUD.h"
+#include "SSOutpostSandbox.h"
 #include "SSPhase1Data.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Engine/Engine.h"
+#include "Engine/SkeletalMesh.h"
+#include "Animation/SkeletalMeshActor.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 namespace
@@ -170,6 +175,210 @@ bool FSSSettingsRefreshFocus::RunTest(const FString &)
                   Tab == 0 ? 5 : 9 + Tab);
     AddInfo(TEXT("No settings action, persistence API, disk-backed GI initialization or physical input was used; "
                  "this regression exercises the real focus-losing panel rebuild."));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSWardrobePreviewNavigation, "SpaceSurvival.Menu.WardrobePreviewNavigation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSWardrobePreviewNavigation::RunTest(const FString &)
+{
+    FSSMenuWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    // Distinct choices share the tracked Acornaut assets; no licensed pack is needed.
+    // Three entries distinguish forward from backward instead of making both a toggle.
+    FSSHeroDefinition First(ESSHeroIdentity::Acornaut), Second = First, Third = First;
+    First.Identity = ESSHeroIdentity::Squirrel;
+    First.Id = TEXT("WardrobeTestFirst");
+    Second.Identity = ESSHeroIdentity::Nyxar;
+    Second.Id = TEXT("WardrobeTestSecond");
+    Third.Identity = ESSHeroIdentity::Soldier;
+    Third.Id = TEXT("WardrobeTestThird");
+    F.Mode->Tuning->Heroes = {First, Second, Third};
+    const auto Bodies = F.Mode->WardrobeBodies();
+    if (!TestEqual(TEXT("Real installed roster exposes all three test-only choices"), Bodies.Num(), 3))
+        return false;
+    auto &S = F.Instance->Session;
+    S.account.hero = static_cast<int>(First.Identity);
+    const std::string Before = SS::EncodeAccount(S.account);
+    auto Activate = [&](int32 Action)
+    {
+        const int32 Index = F.Entry(Action);
+        if (!TestTrue(TEXT("Expected wardrobe action is available"),
+                      Index != INDEX_NONE && F.Mode->Entries[Index].Enabled))
+            return false;
+        F.Mode->ActivateEntry(Index);
+        return true;
+    };
+
+    F.Mode->OpenPanel(ESSPanel::Wardrobe);
+    TestEqual(TEXT("Opening wardrobe previews the first installed body"), F.Mode->WardrobePreviewIndex, 0);
+    TestEqual(TEXT("Opening wardrobe leaves the worn body alone"), F.Mode->WornHeroId(), First.Id);
+    TestTrue(TEXT("Opening wardrobe does not alter the account"), SS::EncodeAccount(S.account) == Before);
+    TestFalse(TEXT("Zero direction does not browse"), F.Mode->BrowseWardrobe(0));
+    TestTrue(TEXT("Backward navigation is consumed by wardrobe"), F.Mode->BrowseWardrobe(-1));
+    TestEqual(TEXT("Backward from first wraps to last"), F.Mode->WardrobePreviewIndex, 2);
+    if (!Activate(149))
+        return false;
+    TestEqual(TEXT("Next action wraps last to first"), F.Mode->WardrobePreviewIndex, 0);
+    TestTrue(TEXT("Forward navigation is consumed by wardrobe"), F.Mode->BrowseWardrobe(1));
+    TestEqual(TEXT("Forward advances to the second choice"), F.Mode->WardrobePreviewIndex, 1);
+    if (!Activate(148))
+        return false;
+    TestEqual(TEXT("Previous action returns second to first"), F.Mode->WardrobePreviewIndex, 0);
+    F.Mode->BrowseWardrobe(1);
+    TestTrue(TEXT("Browsing both ways never equips a preview"), SS::EncodeAccount(S.account) == Before);
+    if (!Activate(0))
+        return false;
+    TestFalse(TEXT("Cancel closes wardrobe"), F.Mode->IsMenuOpen());
+    TestEqual(TEXT("Cancel clears the preview selection"), F.Mode->WardrobePreviewIndex, INDEX_NONE);
+    TestTrue(TEXT("Cancel preserves the original account"), SS::EncodeAccount(S.account) == Before);
+    TestFalse(TEXT("Browsing outside wardrobe is rejected"), F.Mode->BrowseWardrobe(1));
+
+    F.Mode->OpenPanel(ESSPanel::Wardrobe);
+    F.Mode->BrowseWardrobe(1);
+    auto Expected = S.account;
+    Expected.hero = static_cast<int>(Second.Identity);
+    TestTrue(TEXT("Fixture blocks account storage before explicit selection"), F.Instance->AccountStorageBlocked);
+    if (!Activate(150))
+        return false;
+    TestTrue(TEXT("Only explicit Select changes the account to the previewed identity"),
+             SS::EncodeAccount(S.account) == SS::EncodeAccount(Expected));
+    TestEqual(TEXT("The worn body follows the selected identity rather than roster index"), F.Mode->WornHeroId(),
+              Second.Id);
+    TestEqual(TEXT("Selection retains the equipped preview"), F.Mode->WardrobePreviewIndex, 1);
+    const int32 Select = F.Entry(150);
+    if (!TestTrue(TEXT("Selecting an already worn preview is disabled"),
+                  Select != INDEX_NONE && !F.Mode->Entries[Select].Enabled))
+        return false;
+    F.Mode->ActivateEntry(Select);
+    F.Mode->BrowseWardrobe(1);
+    F.Mode->OpenPanel(ESSPanel::Ship);
+    TestEqual(TEXT("Changing panels clears the preview"), F.Mode->WardrobePreviewIndex, INDEX_NONE);
+    TestFalse(TEXT("Changing panels leaves no wardrobe projection active"), F.Mode->HasWardrobeProjection());
+    TestFalse(TEXT("Another panel cannot browse the wardrobe"), F.Mode->BrowseWardrobe(-1));
+    TestTrue(TEXT("Leaving an unconfirmed preview preserves the equipped account"),
+             SS::EncodeAccount(S.account) == SS::EncodeAccount(Expected));
+
+    F.Mode->OpenPanel(ESSPanel::Wardrobe);
+    if (!Activate(139))
+        return false;
+    Expected.hero = -1;
+    TestTrue(TEXT("Explicit Station default clears only the saved body choice"),
+             SS::EncodeAccount(S.account) == SS::EncodeAccount(Expected));
+    TestEqual(TEXT("Station default resolves through the existing roster"), F.Mode->WornHeroId(), First.Id);
+    F.Mode->ClosePanel();
+    F.Mode->Tuning->Heroes.Empty();
+    F.Mode->OpenPanel(ESSPanel::Wardrobe);
+    TestEqual(TEXT("Empty wardrobe has no preview selection"), F.Mode->WardrobePreviewIndex, INDEX_NONE);
+    TestTrue(TEXT("Empty wardrobe safely consumes forward browsing"), F.Mode->BrowseWardrobe(1));
+    TestTrue(TEXT("Empty wardrobe safely consumes backward browsing"), F.Mode->BrowseWardrobe(-1));
+    for (int32 Action : {148, 149, 150})
+    {
+        const int32 Index = F.Entry(Action);
+        if (!TestTrue(TEXT("Empty wardrobe disables browsing and selection"),
+                      Index != INDEX_NONE && !F.Mode->Entries[Index].Enabled))
+            return false;
+        F.Mode->ActivateEntry(Index);
+    }
+    TestEqual(TEXT("Empty-roster actions never manufacture a preview index"), F.Mode->WardrobePreviewIndex, INDEX_NONE);
+    TestTrue(TEXT("Empty-roster actions preserve the account"),
+             SS::EncodeAccount(S.account) == SS::EncodeAccount(Expected));
+    TestTrue(TEXT("Account storage remains blocked throughout the fixture"), F.Instance->AccountStorageBlocked);
+
+    auto *Terminal = F.World->SpawnActor<ASSOutpostTerminal>();
+    auto *Projection = F.World->SpawnActor<ASkeletalMeshActor>();
+    auto *Asset = LoadObject<USkeletalMesh>(nullptr, *First.MeshPath);
+    if (!TestNotNull(TEXT("Create the actual wardrobe terminal"), Terminal) ||
+        !TestNotNull(TEXT("Create the placed projection actor"), Projection) ||
+        !TestNotNull(TEXT("Load the tracked preview mesh"), Asset))
+        return false;
+    Terminal->SetActorLocation(FVector(320, -180, 40));
+    Terminal->SetActorScale3D(FVector(.75));
+    Terminal->HologramHeight = 185.f;
+    Terminal->PresentationTarget = Projection;
+    Projection->AttachToActor(Terminal, FAttachmentTransformRules::KeepRelativeTransform);
+    auto *Original = Projection->GetSkeletalMeshComponent();
+    Original->SetSkeletalMeshAsset(Asset);
+    Original->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Original->SetRelativeTransform(FTransform(FRotator(0, 27, 0), FVector(32, -16, 60), FVector(1.2)));
+    Original->SetHiddenInGame(false);
+    auto *OriginalMaterial = Original->GetMaterial(0);
+    if (!TestNotNull(TEXT("The original projection has an authored material"), OriginalMaterial))
+        return false;
+    // A distinct transient material exercises isolation without rendering or shader output.
+    Terminal->HologramMaterial = UMaterialInstanceDynamic::Create(OriginalMaterial, Terminal);
+    if (!TestNotNull(TEXT("Create the test-only hologram override"), Terminal->HologramMaterial.Get()))
+        return false;
+    const FTransform OriginalRelative = Original->GetRelativeTransform();
+    const FTransform OriginalWorld = Original->GetComponentTransform();
+    auto CheckOriginal = [&](bool Visible)
+    {
+        TestEqual(TEXT("Preview preserves the placed skeletal mesh"), Original->GetSkeletalMeshAsset(), Asset);
+        TestTrue(TEXT("Preview preserves the authored relative and world transforms"),
+                 Original->GetRelativeTransform().Equals(OriginalRelative) &&
+                     Original->GetComponentTransform().Equals(OriginalWorld));
+        TestEqual(TEXT("Preview preserves the original material"), Original->GetMaterial(0), OriginalMaterial);
+        TestEqual(TEXT("Original visibility is hidden or restored as required"), Original->GetVisibleFlag(), Visible);
+        TestFalse(TEXT("Preview never changes the original hidden-in-game flag"), Original->bHiddenInGame);
+    };
+    auto PreviewComponents = [&]()
+    {
+        TArray<USkeletalMeshComponent *> Components;
+        Terminal->GetComponents(Components);
+        Components.RemoveAll([](const USkeletalMeshComponent *Component)
+                             { return !IsValid(Component) || !Component->IsRegistered(); });
+        return Components;
+    };
+    FSSHeroDefinition Missing = First;
+    Missing.MeshPath = TEXT("/Game/SpaceSurvival/Tests/AbsentWardrobePreview.AbsentWardrobePreview");
+    if (!TestFalse(TEXT("Missing-mesh fixture path is not installed"),
+                   FSSHeroDefinition::AssetInstalled(Missing.MeshPath)))
+        return false;
+    Original->SetVisibility(true);
+    TestFalse(TEXT("A missing mesh cannot begin a preview"), Terminal->PreviewWardrobe(Missing));
+    CheckOriginal(true);
+    TestEqual(TEXT("Failed initial preview adds no component"), PreviewComponents().Num(), 0);
+    for (bool InitiallyVisible : {true, false})
+    {
+        Original->SetVisibility(InitiallyVisible);
+        if (!TestTrue(TEXT("Real terminal creates a temporary wardrobe preview"), Terminal->PreviewWardrobe(First)))
+            return false;
+        auto Components = PreviewComponents();
+        if (!TestEqual(TEXT("Exactly one transient preview component is registered"), Components.Num(), 1))
+            return false;
+        auto *Preview = Components[0];
+        TestTrue(TEXT("Preview component is transient"), Preview->HasAnyFlags(RF_Transient));
+        TestTrue(TEXT("Preview world bounds include the parent's 0.75 scale and fit 185 cm"),
+                 FMath::IsNearlyEqual(Preview->Bounds.BoxExtent.Z * 2., 185., .1));
+        TestTrue(TEXT("Preview center follows the fitted component bounds"),
+                 Terminal->WardrobePreviewCenter().Equals(Preview->Bounds.Origin, .01));
+        TestEqual(TEXT("Only the temporary component receives the hologram material"), Preview->GetMaterial(0),
+                  Terminal->HologramMaterial.Get());
+        CheckOriginal(false);
+        if (!TestTrue(TEXT("Browsing replaces the temporary preview"), Terminal->PreviewWardrobe(Second)))
+            return false;
+        Components = PreviewComponents();
+        if (!TestEqual(TEXT("Repeated preview creates no duplicate component"), Components.Num(), 1))
+            return false;
+        TestTrue(TEXT("Replacement uses a new temporary component"), Components[0] != Preview);
+        auto *Replacement = Components[0];
+        TestFalse(TEXT("Missing replacement fails safely"), Terminal->PreviewWardrobe(Missing));
+        Components = PreviewComponents();
+        TestTrue(TEXT("A failed replacement retains the existing temporary preview"),
+                 Components.Num() == 1 && Components[0] == Replacement);
+        CheckOriginal(false);
+        Terminal->EndWardrobePreview();
+        TestEqual(TEXT("Ending preview destroys the temporary component"), PreviewComponents().Num(), 0);
+        CheckOriginal(InitiallyVisible);
+        Terminal->EndWardrobePreview();
+        TestEqual(TEXT("Repeated preview cleanup is harmless"), PreviewComponents().Num(), 0);
+        CheckOriginal(InitiallyVisible);
+    }
+    TestTrue(TEXT("Terminal preview and cleanup never change the equipped account"),
+             SS::EncodeAccount(S.account) == SS::EncodeAccount(Expected));
+    AddInfo(TEXT("Real roster/menu actions were exercised with tracked assets and an in-memory account. "
+                 "No disk-backed game-instance initialization, settings persistence or owner save access occurred."));
     return true;
 }
 

@@ -1,5 +1,15 @@
 # SpaceSurvival Phase 1 architecture
 
+**October16 wardrobe preview candidate:** `ASSGameMode` owns the transient
+browsed stable character ID and temporary framing camera. Canvas displays the
+installed roster and routes input to browse or the separate existing equip/save
+transaction. `ASSOutpostTerminal` owns a temporary skeletal component using its
+existing projection target/material; original mesh, materials and animation are
+preserved, visibility restored on close/teardown. Horizontal input browses
+without account writes. Panel changes remove temporary objects and restore the
+previous view. This does not add character stats, inventory or roster entries.
+[Verification and limits](validation/2026-10-16-wardrobe-hologram.md).
+
 ## Astra social presentation and seating — October 15
 
 `SSBarCrewSocial` owns the optional reserved two-NPC break using the existing spatial speech channel; a finite shuffled bank stays data-driven. `SSStationSeat`/`SSWalkerSeating` provide separate social seating with collision-checked exits and compatible clips. `SSHUDChat` renders bounded session history under the existing radar safe area, without new focus/input capture. Native eye authoring is restricted to five private meshes sharing identical bones. [Guide](production/WAITRESS_BAR_SERVICE.md).
