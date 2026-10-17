@@ -34,3 +34,19 @@ The first isolated build failed because Windows IsProcRunning takes a non-const 
 Tested isolated module: `3a48ef3a973e78243c75d995062587eb0b66a65b193f4172b7381f2bcd390322`. The new source delta is test-only; the canonical module stays `d248d14e` and station stays `c3dd6ea9`. All227 guarded canonical native files remain unchanged. Two exact backed-up source patches preserve the canonical diagnostics additions. There is no new gameplay build, content import or package in this follow-up. Private evidence remains `HelperReuse_20261017/Lifetime*` (build1 failure, build2 success, report, exit, source patch and guard).
 
 Actual model/server startup and request health, human listening, bar input and appearance remain open. The owner explicitly reports the tray/face check Not tested yet; that is not a pause on independent work.
+
+## Real-model health and inference
+
+On October17 at02:19 UTC (October16 local time), a dry-run-first probe used the installed Whisper small.en, LuxTTS and configured Daredevil-8B station model. Three dedicated localhost ports18701/18702/18703 avoided the game's8701/8702/8703. Speech and dialogue were forced to CPU for isolation; this does not measure the game's automatic GPU allocation or normal-play performance. The actual voice-server source was byte-copied under the private run folder so its fixed log path could not overwrite the production log. Astra/Joy/Director reference/profile copies were unchanged. Offline model-cache flags prevented downloads.
+
+| Helper | Ready after | Verified request |
+| --- | ---: | --- |
+| Whisper small.en | 0.572 s | `/health` and transcription of both generated voice lines |
+| LuxTTS CPU | 37.092 s, including default-voice warmup | `/health`, `/voices`, Astra/Joy `/speak`;48000Hz mono PCM |
+| Daredevil-8B station dialogue | 4.150 s | `/health` and one Astra-persona chat request; nonempty reply with normal stop in2.188s |
+
+Astra's thirteen-word probe generated3.445s of audio in2.360s; Joy's fourteen-word probe generated2.475s in2.000s. Each output has nonzero audio and transcribes to the exact requested words after punctuation/case normalization. This checks speech content for these two lines, not accent, warmth, uniqueness, laughter or overall voice quality. The dialogue request checks model health using the persona only; it does not validate the game's full context, menu grounding or conversation behavior.
+
+The three owned processes33624/40528/40480 stopped, private ports were released, and all nine protected source/config/reference files match their original hashes. No microphone, speaker playback, game invocation, production voice-cache write, configuration edit, new dependency, C++ change or rebuild. Current map7431ed23/moduled248 remain unchanged; the broader226-file bar preservation check also passes. Library/deprecation messages remain in private logs and are not reported as a zero-warning native automation result.
+
+Evidence: `.agent/local/HelperHealth_20261017/Plan.json` and `Run/Result.json`; test audio `Run/Astra_probe.wav` and `Run/Joy_probe.wav`. Actual in-game startup/reuse and physical microphone/listening checks remain open under RPT-20261016-17. This is an additional model-level check, not a substitute for the earlier native identity/lifetime tests or the recorded bar playback.
