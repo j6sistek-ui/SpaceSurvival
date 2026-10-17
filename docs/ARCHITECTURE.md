@@ -1,5 +1,7 @@
 # SpaceSurvival Phase 1 architecture
 
+**October16 runtime diagnostics candidate:** `SS::Settings::diagnosticsOverlay` is an optional trailing settings field, default false for older saves. Existing Graphics action96 owns activation/left-right adjustment and persistence. `USSGameInstance::SetDiagnosticsEnabled` also exposes that preference through normal persistence, with `IsDiagnosticsEnabled` for inspection. `ASSHUD` owns short-lived frame averages and draws through the current refresh fonts/colors; hidden/menu/photo/gallery paths clear its samples. `USSNpcTalkSubsystem::Diagnostics()` supplies a read-only sanitized snapshot without starting helpers or network requests. Runtime `RenderCore`/`RHI` dependencies supply thread/GPU timing. Account/run serialization is unchanged; old executables do not read the appended settings field. [Evidence and limits](validation/2026-10-16-runtime-diagnostics.md).
+
 **October16 wardrobe preview candidate:** `ASSGameMode` owns the transient
 browsed stable character ID and temporary framing camera. Canvas displays the
 installed roster and routes input to browse or the separate existing equip/save
