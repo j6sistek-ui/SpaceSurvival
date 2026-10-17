@@ -59,3 +59,11 @@ Open `C:/Users/j6sis/SpaceSurvival/.agent/local/TripoDance_20261016/Review.html`
 In Unreal, open **Content → SpaceSurvival → Licensed → TripoDancePreview_20261016**. Double-click `A_Cyborg_Dance_ShimmyTorso`, `A_Cyborg_Dance_Backbend`, `A_Cyborg_Dance_BackbendTorso` or `A_Cyborg_Dance_HandstandHold_FloorFit`, then press Play. Use `FloorFit` for the handstand; the unadjusted version is retained only as source evidence.
 
 Pick useful portions before joining them. The held-backbend source is mostly upright torso sway; the inverted clip is a handstand hold without an entry or exit. Feet, palms and transitions still need fitting for a finished sequence. The separate Blender library is `.agent/local/TripoDance_20261016/CyborgPreviewV2/Cyborg_Tripo_PreviewLibraryV2.blend`. [Scope and checks](../validation/2026-10-16-tripo-dance-candidates.md).
+
+## Floating repair with a tool
+
+The second example adds a small ratchet and a repair bolt. Open **Content → SpaceSurvival → Licensed → StationAssets → MaintenancePreview_20261017 → L_MaintenanceContact**, then **LS_FloatingRepairContactV2** and press Play. Use V2; the original failed binding example is retained for diagnosis.
+
+The sequence raises the tool, repeats the repair, then lowers it. A small keyed movement of the floating actor keeps the working end on its target without changing the vendor animation tracks. Duplicate the V2 sequence before trying another timing or repair height; inspect hand/tool contact after each change. The earlier teaching map remains unchanged.
+
+Local frame player: `C:/Users/j6sis/SpaceSurvival/.agent/local/MaintenanceContact_20261017/Review.html`. This is a separate contact preview on Manny. Production-character fitting, station placement, interruption/resume and safe paths remain open under RPT-20261016-14. [Checks and retained failure](../validation/2026-10-17-maintenance-contact-preview.md).
