@@ -19,3 +19,7 @@ Private evidence: `.agent/local/JoyFoundationReview_20261016/Build.log`, `Encodi
 The foundation is broader than Joy's art. It changes talk-helper lifetime/reply handling and automatic GPU budgeting, generic NPC actions/chatter, and boarding/departure to hide the pilot figure and skip authored disembark. It also contains early D-pad bindings superseded by PR74. Review these explicitly against current owner scope before readiness. Historical mipmap/VRAM receipts are retained, not remeasured here. Later accepted voices, tray/contact fixes and controller behavior live in the child stack.
 
 The active entry is RPT-20261016-17 in [KNOWN_ISSUES](../KNOWN_ISSUES.md). Lead owns source/lifecycle/boarding review and scope reconciliation; owner bar appearance/input checks remain separate and do not pause independent work.
+
+## Subsequent helper repair
+
+PR78 itself remains unchanged. PR74 carries the later complete helper identity repair and combined-module build; see [October17 evidence](2026-10-17-npc-helper-reuse.md). It does not authorize the older boarding/pilot changes or establish live audio acceptance.

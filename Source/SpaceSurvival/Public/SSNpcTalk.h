@@ -330,6 +330,10 @@ public:
     int32 DirectorReplyTokens = 48;
 
 private:
+    friend class FSSNpcTalkHelperIdentityTest;
+    FString WhisperServerKey() const;
+    FString LlamaServerKey(const FString &Model, const FString &Extra) const;
+    FString VoiceServerKey() const;
     void StopServers();
     /** In the editor the helpers outlive a Play session (2026-10-15: every Play press cost the voice 16-56 s and the
      *  model 4-11 s to come back); Deinitialize parks them and the next session's Initialize picks them up. */
@@ -348,7 +352,7 @@ private:
     TSet<FString> PersonaNames;
     ESSTalkPhase CurrentPhase = ESSTalkPhase::Idle;
     ESSTalkContext CurrentContext = ESSTalkContext::Flight;
-    FString Error, RunningModel, RunningLlamaKey;
+    FString Error, RunningModel, RunningLlamaKey, RunningWhisperKey;
     bool bWhisperTied = false, bLlamaTied = false;
     double LlamaStartedAt = 0.0, AskedAt = 0.0;
     int32 LlamaRetries = 0;

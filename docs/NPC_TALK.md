@@ -1,5 +1,9 @@
 # Push-to-talk conversations (NPC talk)
 
+## Kept helper settings — October 17
+
+A Play restart can reuse unchanged local helpers. Changing speech/dialogue ports, executables, speech models or GPU allowances now invalidates the affected helper. Voice reuse also checks the Python/script/engine/reference-folder paths and loaded profile speed, treatment and cache revision. Keep using a new `cache_revision` when replacing a reference; it now invalidates the parked voice helper even when file timestamps match. This is startup/restart configuration handling, not a live file watcher. [Validation and limits](validation/2026-10-17-npc-helper-reuse.md).
+
 Placed ambient crew expose **Conversation Enabled** (default true). Disable it for unavailable characters such as the passed-out bar patron; fresh/cached prompts, actions and speech are suppressed and an existing conversation disengages. Idle animation and identity remain unchanged. Other crew keep conversation enabled. [Saved verification](validation/2026-10-16-resting-patron-interaction.md).
 
 ## Astra profile, voice and staff banter — October 15
