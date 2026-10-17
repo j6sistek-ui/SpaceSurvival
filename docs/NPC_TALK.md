@@ -1,5 +1,7 @@
 # Push-to-talk conversations (NPC talk)
 
+**October17 model check:** The current local speech, voice and station-dialogue models pass isolated CPU health/inference checks. Astra/Joy generated test lines transcribe exactly; the voice engine takes about37s to become ready from cold in this probe. Game startup/reuse, microphone use and listening quality remain separate checks. Fresh test recordings are under `.agent/local/HelperHealth_20261017/Run/`; existing voices and production cache are unchanged. [Evidence](validation/2026-10-17-npc-helper-reuse.md#real-model-health-and-inference).
+
 ## Kept helper settings — October 17
 
 A Play restart can reuse unchanged local helpers. Changing speech/dialogue ports, executables, speech models or GPU allowances now invalidates the affected helper. Voice reuse also checks the Python/script/engine/reference-folder paths and loaded profile speed, treatment and cache revision. Keep using a new `cache_revision` when replacing a reference; it now invalidates the parked voice helper even when file timestamps match. This is startup/restart configuration handling, not a live file watcher. [Validation and limits](validation/2026-10-17-npc-helper-reuse.md).
