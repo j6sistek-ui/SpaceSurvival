@@ -1,6 +1,8 @@
 # Open work and owner review
 
-**RPT-20261016-17 — Joy foundation and PR dependency review: PARTIAL / lead.** Draft [PR78](https://github.com/j6sistek-ui/SpaceSurvival/pull/78) now exposes the existing parent of PR74 against main. Exact d178dd4 builds separately; 45 structure / 13 digest checks, one native encoding test and exact-head CI pass. Two plugin startup warning messages remain outside the zero-warning test result. No source, game asset or current module changed. Lead next: review the foundation’s older hidden-pilot/disembark and talk-helper behavior against current scope before readiness. No automatic merge; PR73 and hero/squirrels stay held. [Evidence](validation/2026-10-16-joy-foundation-review.md).
+**October17 helper reuse:** Current local editor module `d248d14e` supersedes `b9a9d71e`; station `c3dd6ea9` is unchanged. Kept speech/dialogue/voice helpers now invalidate reuse when startup paths, ports or relevant settings change; current voices/settings are preserved. Worktree/canonical builds69.90s/89.65s and focused identity tests1/0 each pass. All226 non-module native files and plugin sources are unchanged; four ShipCore build outputs were rebuilt. This does not establish live helper restart, listening or owner acceptance. [Evidence](validation/2026-10-17-npc-helper-reuse.md).
+
+**RPT-20261016-17 — Joy foundation and PR dependency review: PARTIAL / lead.** Draft [PR78](https://github.com/j6sistek-ui/SpaceSurvival/pull/78) now exposes the existing parent of PR74 against main. Exact d178dd4 builds separately; 45 structure / 13 digest checks, one native encoding test and exact-head CI pass. Two plugin startup warning messages remain outside the zero-warning test result. The original foundation validation changed no game state. A subsequent PR74 repair completes helper startup identities; module `d248d14e`, focused tests and builds pass with current voice assets/settings unchanged. Lead next: live restart behavior and older hidden-pilot/disembark scope reconciliation before readiness. [Helper evidence](validation/2026-10-17-npc-helper-reuse.md). No automatic merge; PR73 and hero/squirrels stay held. [Evidence](validation/2026-10-16-joy-foundation-review.md).
 
 **October16 drink-glass follow-up:** Current station `5b064cb9` supersedes `e3cee859` only for six drink material assignments. A separate corrected refraction copy keeps the original assets intact; fresh reload preserves all9,483 actor transforms, saved service passes372 samples and211 prior non-map files remain unchanged. Combined module `a16996cd` and packaged release are unchanged. [Evidence](validation/2026-10-16-bar-hologram-and-tray.md#drink-glass-refraction-follow-up).
 
@@ -18,7 +20,7 @@
 
 ## Pending owner in-game validation
 
-Updated 2026-10-16. These checks await James's feedback; they do **not** pause lead implementation or technical validation. Reply with the row label and what looked or felt wrong. The lead records the result here and keeps repairs open until checked again. Use `Play Development Build.cmd` from the canonical checkout; current review identity is editor module `b9a9d71e`, station map `c3dd6ea9` (local development, not the packaged release).
+Updated 2026-10-17. These checks await James's feedback; they do **not** pause lead implementation or technical validation. Reply with the row label and what looked or felt wrong. The lead records the result here and keeps repairs open until checked again. Use `Play Development Build.cmd` from the canonical checkout; current review identity is editor module `d248d14e`, station map `c3dd6ea9` (local development, not the packaged release).
 
 | Check | Linked work | What James should try | State / next action |
 | --- | --- | --- | --- |
