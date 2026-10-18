@@ -1,4 +1,5 @@
 #include "SSHUD.h"
+#include "SSNpcTalk.h"
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSAlienGallery.h"
@@ -171,7 +172,8 @@ void ASSHUD::StationText(const FString &Value, float X, float Y, float Size, FLi
                          StationFont(Size), Color);
     Canvas->DrawItem(Item);
 }
-void ASSHUD::StationAction(const FString &Value, bool HasUseKey, FLinearColor Color)
+void ASSHUD::StationAction(const FString &Value, bool HasUseKey, FLinearColor Color, const FKey &Key,
+                           const FKey &PadKey)
 {
     if (Value.IsEmpty())
         return;
@@ -182,7 +184,7 @@ void ASSHUD::StationAction(const FString &Value, bool HasUseKey, FLinearColor Co
     const float X = (Canvas->ClipX - Width) * .5f, Y = Canvas->ClipY - Height - 28.f * Scale;
     DrawRect(FLinearColor(.01f, .022f, .032f, .9f), X, Y, Width, Height);
     if (HasUseKey)
-        Glyph(EKeys::E, EKeys::Gamepad_FaceButton_Top, X + Padding, Y + Padding, 1.f, Color);
+        Glyph(Key, PadKey, X + Padding, Y + Padding, 1.f, Color);
     StationText(Value, X + Padding + KeyW, Y + Padding, 1.f, Color);
 }
 bool ASSHUD::UsingGamepad() const
@@ -852,7 +854,7 @@ void ASSHUD::DrawHUD()
     {
         FString InteractionHint, HintPrefix, HintSuffix;
         FLinearColor HintColor = FLinearColor::White;
-        bool GlyphBeforeHint = false, GlyphInsideHint = false;
+        bool GlyphBeforeHint = false, GlyphInsideHint = false, bTalkHint = false;
         // Match Interact: walking always targets a service; pending rewards take priority only in the ship.
         if (Walker)
         {
@@ -922,15 +924,21 @@ void ASSHUD::DrawHUD()
                 GlyphBeforeHint = false;
                 InteractionHint = TEXT("Walk forward to the cockpit chair");
             }
-            FString WalkHelp =
-                TEXT("WASD / left stick: walk | mouse / right stick: camera | Shift / X: run | Space / A: jump | E / "
-                     "Y: use");
+            // Talk joins the context hint. A conversation in progress names the partner and wins over everything
+            // else; otherwise the nearest person is offered only when no station service is in reach.
             if (GM->IsTalkEngaged())
-                WalkHelp += TEXT(" | talking with ") + GM->TalkPartner().Name +
-                            TEXT(": tap T / R3 to speak, walk away to leave");
-            else if (const FSSTalkIdentity Crew = GM->TalkHint(); Crew.IsValid())
-                WalkHelp += TEXT(" | tap T / R3: talk to ") + Crew.Name;
-            Text(WalkHelp, Margin, H - 35 * Scale, .6f);
+            {
+                GlyphBeforeHint = true;
+                bTalkHint = true;
+                InteractionHint = TEXT("Talking with ") + GM->TalkPartner().Name + TEXT(" - walk away to leave");
+            }
+            else if (InteractionHint.IsEmpty())
+                if (const FSSTalkIdentity Crew = GM->TalkHint(); Crew.IsValid())
+                {
+                    GlyphBeforeHint = true;
+                    bTalkHint = true;
+                    InteractionHint = TEXT("Tap to talk to ") + Crew.Name;
+                }
         }
         else if (GM->GetPlayerShip() && S.run.active && S.run.pendingReward)
         {
@@ -942,7 +950,27 @@ void ASSHUD::DrawHUD()
         const float HintX = W * .5f - 200 * Scale, HintY = H - 80 * Scale, HintSize = .9f;
         const float GlyphGap = 6.f * Scale;
         if (Walker)
-            StationAction(InteractionHint, GlyphBeforeHint, HintColor);
+        {
+            StationAction(InteractionHint, GlyphBeforeHint, HintColor, bTalkHint ? EKeys::T : EKeys::E,
+                          bTalkHint ? EKeys::Gamepad_RightThumbstick : EKeys::Gamepad_FaceButton_Top);
+            // Crew actions: a row of keys above the talk hint (owner 2026-10-14: ways to trigger their animations).
+            if (bTalkHint)
+                if (const ASSOutpostAmbientActor *Crew = GM->ActionTarget())
+                {
+                    static const FKey Digits[] = {EKeys::One, EKeys::Two, EKeys::Three, EKeys::Four};
+                    static const FKey Pads[] = {EKeys::Gamepad_DPad_Up, EKeys::Gamepad_DPad_Right,
+                                                EKeys::Gamepad_DPad_Down, EKeys::Gamepad_DPad_Down};
+                    const FLinearColor Cyan(.45f, .9f, 1.f);
+                    const float RowY = HintY - 34.f * Scale;
+                    float X = HintX;
+                    for (int32 I = 0; I < FMath::Min(Crew->Actions.Num(), 4); ++I)
+                    {
+                        const float GlyphW = Glyph(Digits[I], Pads[I], X, RowY, .7f, Cyan);
+                        Text(Crew->Actions[I].Name, X + GlyphW + GlyphGap, RowY, .7f, FLinearColor::White);
+                        X += GlyphW + GlyphGap + MeasureText(Crew->Actions[I].Name, .7f).X + 22.f * Scale;
+                    }
+                }
+        }
         else if (GlyphBeforeHint)
         {
             const float GlyphW =

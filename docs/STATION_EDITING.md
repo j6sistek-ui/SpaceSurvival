@@ -108,8 +108,19 @@ first. Do not reapply to an already adopted map: use `IntegrateStationCrew.verif
 and inspect current placements instead. Source meshes, materials and original kits
 are preserved; the caller owns final review and saving.
 
-`Scripts/IntegrateStationCrew.py` contains ten stable-label assignments: Dread as
-bartender; Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
+`Scripts/IntegrateStationCrew.py` contains nine stable-label assignments (the
+bartender slot `Crew/Lounge guest` is Joy since 2026-10-14, owned by
+`Scripts/StationRecipes/JoyBartender/place_joy_bartender.py`: her mesh, clips, four
+player-triggered actions, unprompted chatter and talk identity live on that one
+actor; `place_joy_soft_tissue.py` adds her `BodyDynamics` component, the same
+`USSSoftTissueComponent` spring Silver uses, bound to the `ST_<Region>_<Axis>`
+morphs `author_soft_tissue.py` exports and `reimport_joy_soft_tissue.py` brings
+into SK_Joy. Her outfit is fitted by the same Blender recipe: `--jacket` (Fab cyber
+jacket, through its own MetaHuman body) and `--pants` (Fab sci-fi pants and
+sneakers, through the pack's Manny), with `make_joy_outfit_materials.py`,
+`remove_joy_waistcoat.py`, `set_joy_mesh_lift.py` (shoe soles) and
+`capture_joy_front.py` (front stills, foot heights); `place_bar_bottles.py` stands
+the MLR bottles on her counter); Robe/Glyph/Tribal as outside merchants; Seer/Tendril reception; Olive
 security; Crest courier; Warden maintenance; the historical Amethyst wardrobe
 visitor, now hidden/replaced as described above. It checks
 178cm mesh height, floor-level source soles, exact Skeleton identity for every role

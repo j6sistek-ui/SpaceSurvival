@@ -540,6 +540,37 @@ void ASSOutpostAmbientActor::PlayClip(UAnimSequence *Clip, bool bLoop)
     CharacterMesh->PlayAnimation(Clip, bLoop);
     ActiveAnimation = Clip;
 }
+bool ASSOutpostAmbientActor::TriggerAction(int32 Index)
+{
+    if (!Actions.IsValidIndex(Index) || bDrone || bAnimationManagedExternally)
+        return false;
+    const FSSNpcAction &Action = Actions[Index];
+    if (!CompatibleClip(CharacterMesh, Action.Clip))
+        return false;
+    ActiveAnimation = nullptr; // a second "cheers" is a second cheers, even mid-clip
+    PlayClip(Action.Clip, Action.bLoop);
+    ActionRemaining = GestureRemaining =
+        Action.bLoop ? FMath::Max(1.f, Action.LoopSeconds) : Action.Clip->GetPlayLength();
+    NextGesture = FMath::Max(0.f, GestureInterval) + FMath::Fmod(FMath::Abs(PhaseOffset), 6.f);
+    return true;
+}
+FString ASSOutpostAmbientActor::TakeChatterLine()
+{
+    if (Chatter.IsEmpty())
+        return FString();
+    if (ChatterIndex == 0)
+        ChatterIndex = FMath::RandRange(0, Chatter.Num() - 1); // not the same opener every visit
+    return Chatter[ChatterIndex++ % Chatter.Num()];
+}
+int32 ASSOutpostAmbientActor::MatchAction(const FString &SpokenText) const
+{
+    const FString Text = SpokenText.ToLower();
+    for (int32 I = 0; I < Actions.Num(); ++I)
+        for (const FString &Word : Actions[I].Keywords)
+            if (!Word.IsEmpty() && Text.Contains(Word.ToLower()))
+                return I;
+    return -1;
+}
 void ASSOutpostAmbientActor::BeginPlay()
 {
     Super::BeginPlay();
@@ -637,6 +668,7 @@ void ASSOutpostAmbientActor::Tick(float Dt)
         return;
     }
     GestureRemaining = FMath::Max(0.f, GestureRemaining - Dt);
+    ActionRemaining = FMath::Max(0.f, ActionRemaining - Dt);
     NextGesture -= Dt;
     if (GestureRemaining <= 0.f && NextGesture <= 0.f && !GestureAnimations.IsEmpty())
     {
@@ -646,8 +678,19 @@ void ASSOutpostAmbientActor::Tick(float Dt)
             PlayClip(Gesture, false);
             GestureRemaining = Gesture->GetPlayLength();
         }
-        NextGesture = 9.f + FMath::Fmod(FMath::Abs(PhaseOffset), 6.f);
+        NextGesture = FMath::Max(0.f, GestureInterval) + FMath::Fmod(FMath::Abs(PhaseOffset), 6.f);
     }
     if (GestureRemaining <= 0.f)
         PlayClip(IdleAnimation, true);
+    // Unprompted talk: the game mode decides whether anyone is in earshot and the channel is free.
+    if (!Chatter.IsEmpty())
+    {
+        NextChatter -= Dt;
+        if (NextChatter <= 0.f)
+        {
+            auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
+            const bool Spoken = GM && GM->CrewChatter(this);
+            NextChatter = Spoken ? FMath::Max(5.f, ChatterInterval) * FMath::FRandRange(1.f, 1.5f) : 4.f;
+        }
+    }
 }

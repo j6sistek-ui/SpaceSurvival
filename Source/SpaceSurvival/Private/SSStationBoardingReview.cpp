@@ -356,8 +356,8 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
                         return Fail(TEXT("Full measured ramp/interior route did not reach the actual chair."));
                     GM->SetActorTickEnabled(false); // Hold automatic handoff only while photographing the real sit.
                     GM->Interact();
-                    if (!Walker->IsBoarding() || Walker->IsSeated() || PC->GetPawn() != Walker)
-                        return Fail(TEXT("Chair Interact did not begin the visible production sit."));
+                    if (!Walker->IsBoarding() || !Walker->IsSeated() || PC->GetPawn() != Walker)
+                        return Fail(TEXT("Chair Interact did not take the pilot off the deck."));
                     BoardingReviewStage = 3;
                 }
             }
@@ -365,25 +365,17 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
     }
     else if (BoardingReviewStage == 3)
     {
-        if (Walker->IsActorTickEnabled())
-            BoardingReviewSitSeconds += Dt;
-        if (Walker->IsSeated())
-            return Fail(TEXT("Variable frame timing skipped the required intermediate sit capture."));
-        if (BoardingReviewSitSeconds >= .45)
+        // Nobody sits (owner 2026-10-12): both seat frames show the chair the moment the pilot confirms.
+        Walker->SetActorTickEnabled(false);
+        if (Frame(TEXT("BoardingSitMid")))
         {
-            Walker->SetActorTickEnabled(false);
-            if (Frame(TEXT("BoardingSitMid")))
-            {
-                Walker->SetActorTickEnabled(BoardingReviewWalkerTick);
-                BoardingReviewStage = 4;
-            }
+            Walker->SetActorTickEnabled(BoardingReviewWalkerTick);
+            BoardingReviewStage = 4;
         }
     }
     else if (BoardingReviewStage == 4 && Walker->IsSeated())
     {
         Walker->SetActorTickEnabled(false);
-        if (!Ship->CanAdoptBoardedPilot(Walker))
-            return Fail(TEXT("The photographed seated hero is not valid for the native pilot handoff."));
         if (Frame(TEXT("BoardingSeated")))
         {
             BoardingReviewSeatedRelative =
@@ -404,21 +396,9 @@ bool ASSWave10Soak::TickBoardingReview(float Dt)
         GI->AccountStorageBlocked = BoardingReviewStorageBlocked;
         if (!BoardingReviewHandoff)
         {
-            if (!Ship->Pilot->GetComponentTransform()
-                     .GetRelativeTransform(Ship->GetActorTransform())
-                     .Equals(BoardingReviewSeatedRelative, .05f))
-                return Fail(TEXT("Native handoff moved or resized the seated hero relative to its chair."));
-            auto *Animation = Ship->Pilot->GetSingleNodeInstance();
-            const auto &Pose = Ship->Pilot->GetComponentSpaceTransforms();
-            if (!Animation || GetPathNameSafe(Animation->GetCurrentAsset()) != BoardingReviewPilotClip ||
-                Pose.Num() != BoardingReviewSeatedBones.Num())
-                return Fail(TEXT("Native handoff changed the hero animation or skeleton."));
-            for (int32 Index = 0; Index < Pose.Num(); ++Index)
-                BoardingReviewPoseErrorCm = FMath::Max(
-                    BoardingReviewPoseErrorCm,
-                    FVector::Distance(Pose[Index].GetLocation(), BoardingReviewSeatedBones[Index].GetLocation()));
-            if (BoardingReviewPoseErrorCm > 1.)
-                return Fail(TEXT("The first native pilot pose differs from the photographed seated pose by over 1cm."));
+            // Nobody takes the seat: the departing ship must show no pilot figure at all.
+            if (Ship->Pilot->IsVisible())
+                return Fail(TEXT("The departing ship shows a pilot figure; nobody takes the seat."));
             BoardingReviewHandoff = true;
         }
         if (!Ship->IsTakingOff())

@@ -77,7 +77,9 @@ private:
     FVector2D MeasureStationText(const FString &Value, float Size) const;
     void StationText(const FString &Value, float X, float Y, float Size = 1.f,
                      FLinearColor Color = FLinearColor::White);
-    void StationAction(const FString &Value, bool HasUseKey, FLinearColor Color);
+    /** Key defaults to use (E / Y); push-to-talk passes T / R3. */
+    void StationAction(const FString &Value, bool HasUseKey, FLinearColor Color, const FKey &Key = EKeys::E,
+                       const FKey &PadKey = EKeys::Gamepad_FaceButton_Top);
     FVector2D MeasureText(const FString &Value, float Size) const;
     void Text(const FString &Value, float X, float Y, float Size = 1.f, FLinearColor Color = FLinearColor::White);
     float Paragraph(const FString &Value, float X, float Y, float Width, float Size, FLinearColor Color,
