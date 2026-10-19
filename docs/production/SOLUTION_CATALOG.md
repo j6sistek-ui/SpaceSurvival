@@ -1,5 +1,60 @@
 # SpaceSurvival whole-project solution catalog
 
+**ANIM-TRIPO-DANCE-20261016 — owner-generated Tripo motions (WBS8.4/10.3):** Acquisition: owner download already present, no purchase, generation or installation. October16 evaluation finds12 actions in a61-bone GLB; four selected motions now have separate Cyborg previews. Native pose/time sampling and saved reload pass. Whole-project value: reusable torso gestures, backbend and inverted hold for character performances. Available now for selecting/trimming; not adopted into station routines. Foot/palm contact, transitions and eventual Cyan retarget remain distinct checks under RPT-20261016-18. Source and accepted assets are preserved. [Guide](ANIMATION_WORKBENCH.md#tripo-dancer-candidates), [evidence](../validation/2026-10-16-tripo-dance-candidates.md).
+
+**ANIM-WORKBENCH-20261016 — owned Space Crew zero-G wrench clips (WBS8.4/10.3):** Acquisition: already installed, no purchase or plugin. October16 evaluation uses compatible Start/Loop/End clips and their Manny mannequin in a private teaching map, with four editable Sequencer sections. Native loops, joins, pause/resume and fresh reload pass; original clips and station content remain unchanged. Whole-project value: a reusable starting point for previewing staged character interactions and the requested maintenance crew. Timing: available now for learning; station integration and tool contact remain later checks under RPT-20261016-03/14. No wrench prop or accepted maintenance gameplay is claimed. [Guide](ANIMATION_WORKBENCH.md), [evidence](../validation/2026-10-16-animation-workbench.md). October16 action-guide follow-up:12 sets / 38 freshly checked clips across existing packs, with25 imported and13 FBX picks;205 interaction downloads verified present. Whole-project use includes terminal/cargo/valve/lever staging; no acquisition, bulk import or gameplay adoption. [Action guide](ANIMATION_WORKBENCH.md#pick-an-action-next). October17 superseding evaluation: a separate saved Manny/ratchet contact preview now uses V2 permanent-world bindings and106native motion frames; the first temporary-binding capture is rejected/retained. A new original3884-triangle ratchet needs no acquisition. Available for studying held-tool contact and staged zero-G repair; production-character fit, station placement and AI remain open under RPT-20261016-14. The October16 teaching map remains unchanged. [Contact guide](ANIMATION_WORKBENCH.md#floating-repair-with-a-tool), [evidence](../validation/2026-10-17-maintenance-contact-preview.md).
+
+**BAR-ANIMATIONS-20261016 — owned Interactions, Bar, Tavern and Drunk packs (WBS8.4/10.3):** Already downloaded; the earlier24-file shortlist and205 Interactions source FBXs remain catalog evidence. October16 native evaluation retargets DrunkIdle, Laying and SleepingAtTheTable onto the existing Nyxar skeleton; the first two are saved on existing patrons, while the table clip remains unplaced. Original vendor clips/rigs/materials are retained. Normal-glass and staff-shot contact derivatives are now separate on Astra/Joy. Whole-project value remains reuse for service, ambient patrons and later maintenance interactions. Next: RPT-20261016-02/03 and RPT-20261015-01 interaction, contact, audio and owner review; this does not accept every clip or all intoxication behavior. Private provenance: `.agent/local/Waitress_20261015/{AnimationAudit_20261016,BarFinish_20261016}`. [Native evidence](../validation/2026-10-16-bar-contact-and-patrons.md).
+
+## BAR-ART-20261016 — owned Illuminated Wall and Genesis observation windows
+
+- **Acquisition/evidence, October16:** owner identifies the installed Leartes
+  Illuminated Wall and authorizes pink panels and large bar observation windows.
+  Exact local mesh:
+  `/Game/MLR_IlluminatedWall/Unreal/Rocket/MLR_IlluminatedWall/SM_MLR_BPR_Illuminated_Wall_Deco01_a_c1_Nanite`,
+  whose assigned source material is
+  `/Game/Rocket/MLR_IlluminatedWall/MI_MLR_BPR_Illuminated_Wall_Deco01_a_4096`
+  (verified by `PanelInspect.json`, not the mesh folder).
+  Owned Genesis frame/glass pairs are
+  `/Game/P1toP5_Bundle/P4_Genesis_Vol1/Meshes/SM_Window400X250_V1_Part1`
+  and `Part2`, plus the corresponding `SM_Window600X250_V1_Part1`/`Part2`.
+  No new purchase, plugin or source-asset replacement.
+- **Evaluation/private integration:** `ArtDirection_20261016/Adopted.json`
+  records saved map `5fd8e257`, two pink panels and two observation bays using
+  the 6 m frame/glass pair, scaled to nominal 7.43 m by 4 m each. Six actors
+  are added and all 9,473 original actor transforms preserved. Thirteen private
+  material instances plus a pants parent supply the room/character colors and
+  431 material-slot assignments; six local lights are reduced. Native candidate
+  previews exist. `FreshReload.json` verifies the same map hash, 9,479 actors,
+  preserved original transforms, assignments/additions/lights, retained window
+  collision and character meshes/idle/walk, and zero dirty packages. Owner
+  appearance acceptance remains open.
+- **October16 footwear/drink extension:** installed SciFi Pants Sneakers c4 blue
+  textures supply two separate Joy derivatives (right shoe shares pants trim);
+  Astra footwear is deferred. Owned `CyberPunkBarAssetSet01/StaticMeshes/SM_Glasses01`,
+  `02` and `03` supply three private filled-glass derivatives, retaining their
+  exterior bounds/pivots and original glass material. Current local map `fb604de9`
+  assigns them to two counter props and three existing service components and
+  adds one cyan glass. Nine private drink assets, no acquisition or plugin.
+  Reusable across bar/table service (WBS8.4/10.3); scripted order passes 260 samples,
+  but static liquid volumes, close contact, final style and performance need
+  further review. [Follow-up evidence](../validation/2026-10-16-joy-shoes-and-bar-drinks.md).
+- **Whole-project use/timing:** reusable owned wall accents and real glass
+  openings for station social spaces (WBS8.2/8.4/10.3), applied to the current
+  bar only. Nearby asteroid terrain blocks the requested open starfield; this
+  does not certify the exterior composition, collision, performance or release.
+  Lead next checks remain under RPT-20261015-01: owner review of room/character
+  colors and window shape, then exterior composition. Costume
+  fit, service contacts, audio and behavior retain their separate open checks.
+  [Current guide](WAITRESS_BAR_SERVICE.md#bar-art-direction--saved-local-candidate-october-16);
+  [saved-scene evidence](../validation/2026-10-16-bar-lounge-art-direction.md).
+
+## ASTRA-EYES-VOICE-20261015 — supplied custom eyes and local voices
+
+WBS8.4/10.3: owner supplied17 unique eye variants and selected WhitePurpleRings after five native previews. Five presets share one fitted eye rig; the packed Blender library preserves maps/UVs. Acquisition: supplied/downloaded, no purchase. Evaluation: selected pair saved on Astra; later automatic gaze remains unauthored. Original local Astra and new Joy synthetic references reuse CPU LuxTTS, avoiding a new runtime dependency. Owner rejected Joy's earlier velvet audition on October15; her replacement is reserved to her and uses a scoped cache revision. Owner accepted Joy's replacement on October15; laughter and native mix remain open; [current evidence](../validation/2026-10-16-joy-original-voice.md). Whole-project value: reusable eye fitting and separate name/type/role/voice files. Next: RPT-20261015-01 owner listening and in-game appearance review.
+
+**WAITRESS-20261015 — owned Perfect Female Body, Premium Lace-Up Corset and Lace Up Fancy Shorts (WBS8.4/10.3):** owner confirmed installed assets and authorized bar service on October15. Private V16 clothing (improved waistband, seated fit still open) reuses the original native skeleton, physics and post-process; current Joy, existing table and owned animation/prop assets provide service contacts. No acquisition or new runtime dependency. Whole-project value: reusable skinned-garment/service component and authored table contacts; character-specific weights/grips still require native review. Local integration is partial; next checks are RPT-20261015-01, with selected custom eyes/shared rig saved and broader appearance/input/audio/performance acceptance pending. [Guide](WAITRESS_BAR_SERVICE.md); [evidence](../validation/2026-10-15-waitress-bar-service.md).
+
 **October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.
 
 **SILVER-PONYTAIL-20261014 — owned DropBear PonytailGroom (WBS8.4/10.3):** Owner-selected on-disk pack, imported and locally adopted for Silver after current Cyborg verification. Fitted two-group derivative fixes crown/fringe/paired temples while only the tail simulates; pink hair/outfit and magenta irises are saved. Five fresh apartment views and a full dance pass scoped review. No acquisition or new runtime plugin; editor-only strand authoring uses installed HairStrandsCore. Owner appearance approval and broader contact/performance/package checks remain open under RPT-20261013-01. [Source, native hashes and evidence](../validation/2026-10-14-silver-ponytail.md).
@@ -632,6 +687,7 @@ KNOWN_ISSUES owns priority and acceptance.
 
 ### TOOL-20261006-ADAPTIVE-PATHFINDING — optional station NPC route candidate
 
+- **Refresh, 2026-10-16:** supersedes the October6 disabled/unloaded assessment below. The owner again identifies this owned plugin for bar routing. The canonical project explicitly enables AdaptivePathfindingSystem; its installed descriptor remains2.06/UE5.8.0 and the saved set-down review log records its DLL loading (`Handoff_20261016/ReloadSetDown/Native.log`). Bar crew still use `ASSBarCrew::PlanPath` and authored collision-tested waypoints, without APS calls or a module dependency. Installed APS supplies Recast navigation data, an AI controller/crowd follower and Blueprint path parameters; using it for crew requires deliberate integration and a bounded route comparison. It cannot correct skeletal hand/tray clipping, and no APS route, crowd, performance or free-floating zero-G pass is claimed. No plugin settings were changed. Retain as an evaluated candidate for station circulation (WBS8.4/8.5), after the current bar prop-contact repairs.
 - **Listing evidence,2026-10-06:** the lead reviewed NordVader's
   [Adaptive Pathfinding System 2.06](https://www.fab.com/listings/e57ff036-fb84-4c86-af7d-8c2a75965c73),
   which describes Recast-based curved paths and configurable path settings. The
@@ -1205,3 +1261,19 @@ passes exports/weights/endpoints; native materials, body retarget and gameplay r
 - **Evaluation:** 3,491 native packages copied with hashes, 1,049 StaticMeshes discovered, 1,006 ULAT entries added with old rows preserved; 43 short-name collisions remain available outside ULAT. Five pack collections expose placeable meshes/Blueprints/maps/material instances. The full apartment is preserved in a private Level Instance with local lighting and an operational entry; its connector and sampled interior route pass native walking. Other example maps are imported, not all loaded, rendered or gameplay-approved.
 - **Private derivatives:** 19 structural collision meshes, the home map and complete-assembly Blueprint. Vendor global scene lighting/cinematics/background are excluded from this placement; native furniture, materials and displays remain. Decorative collision, moving-leaf profiles and local illumination are corrected in the private copy. Original downloads and source maps remain untouched. Local assets are excluded from Git/cooking by this authoring task.
 - **Next checks:** owner layout review and lead-owned natural traversal/performance under RPT-20260924-01. Legacy optional BP_Blinds material warnings and the original apartment's absent cinematic sequence are documented in the [receipt](../validation/2026-09-27-home-library.md); the scene does not require that cinematic. No broad Blueprint compatibility, game integration or laptop library refresh is implied.
+
+
+## E-OWNER-BAR-PROPS-20261016 — waitress display and metal tray
+
+- **Acquisition:** owner supplied two original Tripo GLBs on October16; already available, no purchase/install. Exact filenames/hashes are in [BAR_HOLOGRAM](BAR_HOLOGRAM.md).
+- **Whole-project value / WBS8.5,10.3:** a distinctive small bar advertisement and reusable serving prop support the existing social lounge. The static figure is decorative, not a duplicate NPC or replacement for Astra. The owned CyberpunkRestaurant projector provides the physical display base.
+- **Evaluation:**48,206-triangle65cm figure with2K color detail;1,081-triangle34cm tray with retained4K sources/native2K limit. Saved native projection, parent relation and tray prop reload;9,480 prior transforms remain. Original GLBs and vendor projector assets preserved.
+- **Timing / next checks:** display available locally now; owner glow/location feedback remains pending. A separate palm-supported tray carry/serve pair is now integrated and passes six native service/cancellation/fallback cases; original crew assets remain intact. Full glass handoff/pour and owner natural-play acceptance remain separate. Track RPT-20261016-16 in KNOWN_ISSUES. [Evidence](../validation/2026-10-16-bar-hologram-and-tray.md).
+
+- **October16 pickup follow-up:** six strict saved-scene cases pass on module`a16996cd`, including current-pose orientation on the first visible frame. No new acquisition or native asset edits; full handoff/pour remains lead polish.
+
+- **October16 drink appearance:** separate corrected glass-refraction copy assigned to six saved drink components; original vendor material and native meshes unchanged. The non-refractive trial was visually rejected. Fresh reload/saved service pass; full liquids and prop handoff remain open.
+
+- **October16 table delivery follow-up:** separate V6 set-down fitted to the existing low table and owner tray; rejected head/forearm contact trials retained. Optional source integration passes four native cases plus fresh saved service, preserving original clips/rig/physics. No acquisition or installation. Joy handoff/pour and owner natural play remain open under RPT-20261016-16.
+
+- **October16 counter pickup follow-up:** separate V6 Joy/Astra derivatives replace the large handoff jump, preserve original actions and pass saved service/cancel/fallback review. Reuses the owned rig, tray and glass; no acquisition/plugin adoption. Fine contact and natural play remain open under RPT-20261016-16.

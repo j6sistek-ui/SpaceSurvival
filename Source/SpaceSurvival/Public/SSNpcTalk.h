@@ -95,10 +95,10 @@ SPACESURVIVAL_API FVoiceClip VoiceClip(const TArray<uint8> &Body, const FString 
  *  line cannot carry. */
 SPACESURVIVAL_API FString VoiceArgs(const FString &Script, const FString &Repo, const FString &VoicesDir,
                                     const FString &DefaultVoice, int32 Threads, int32 Port, uint32 ParentPid);
-/** The file a line is kept in: an MD5 of "<reference file>|<speed>|<treatment>|<line>", exactly as the server's
- *  --prerender names it, so lines made ahead of time are found. A new voice, speed or treatment is a new name. */
+/** The file a line is kept in, matching the server's --prerender. An empty revision preserves the legacy MD5 of
+ *  "<reference file>|<speed>|<treatment>|<line>". Set a new revision when replacing a recording at the same path. */
 SPACESURVIVAL_API FString VoiceCacheName(const FString &Reference, double Speed, const FString &Treatment,
-                                         const FString &Text);
+                                         const FString &Text, const FString &CacheRevision = FString());
 /** A character's voice: the recording the server clones, and the settings from the <Name>.txt beside it. Speed is
  *  a double so "%.2f" rounds exactly as the server's Python does (0.985 is 0.98 to both). */
 struct FVoiceProfile
@@ -106,8 +106,9 @@ struct FVoiceProfile
     FString Reference;
     double Speed = 0.92;
     FString Treatment = TEXT("none");
+    FString CacheRevision;
 };
-/** "speed=0.92" and "treatment=entity" lines, as the server reads them; anything else is ignored. */
+/** "speed=0.92", "treatment=entity" and optional "cache_revision=...", as the server reads them. */
 SPACESURVIVAL_API void ParseVoiceProfile(const FString &Text, FVoiceProfile &Out);
 /** How long a line may wait for its voice before the caption carries it alone. A scripted line heard seconds after
  *  its caption is worse than none; a reply is what the pilot asked for, so it waits longer. */
@@ -329,6 +330,11 @@ public:
     int32 DirectorReplyTokens = 48;
 
 private:
+    friend class FSSNpcTalkHelperIdentityTest;
+    friend class FSSNpcTalkHelperLifetimeTest;
+    FString WhisperServerKey() const;
+    FString LlamaServerKey(const FString &Model, const FString &Extra) const;
+    FString VoiceServerKey() const;
     void StopServers();
     /** In the editor the helpers outlive a Play session (2026-10-15: every Play press cost the voice 16-56 s and the
      *  model 4-11 s to come back); Deinitialize parks them and the next session's Initialize picks them up. */
@@ -347,7 +353,7 @@ private:
     TSet<FString> PersonaNames;
     ESSTalkPhase CurrentPhase = ESSTalkPhase::Idle;
     ESSTalkContext CurrentContext = ESSTalkContext::Flight;
-    FString Error, RunningModel, RunningLlamaKey;
+    FString Error, RunningModel, RunningLlamaKey, RunningWhisperKey;
     bool bWhisperTied = false, bLlamaTied = false;
     double LlamaStartedAt = 0.0, AskedAt = 0.0;
     int32 LlamaRetries = 0;

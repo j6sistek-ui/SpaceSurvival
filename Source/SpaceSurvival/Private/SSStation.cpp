@@ -1,4 +1,5 @@
 #include "SSStation.h"
+#include "SSStationSeat.h"
 #include "SSLandingPad.h"
 #include "SSOutpostSandbox.h"
 #include "SSShipPaint.h"
@@ -1070,6 +1071,8 @@ void ASSWalker::BeginPlay()
 
 void ASSWalker::ApplyHero(FName PreferredId)
 {
+    if (bResting && !StandFromSeat())
+        return;
     if (!Tuning)
         return;
     Hero = Tuning->SelectHero(ESSHeroSlot::Walker, PreferredId);
@@ -1521,7 +1524,8 @@ bool ASSWalker::BeginBoarding(const FTransform &)
     // Owner 2026-10-12: nobody takes the seat for now. The seated transition, and the per-body pilot pose it needed,
     // are gone: confirming at the chair stops the pilot where they stand, hides them, and counts as seated at once, so
     // the ship takes the departure on the next tick. CancelBoarding puts them back exactly as they were.
-    if (Boarding || Disembarking || !GetCharacterMovement()->IsMovingOnGround() || !GetMesh()->GetSkeletalMeshAsset())
+    if (bResting || Boarding || Disembarking || !GetCharacterMovement()->IsMovingOnGround() ||
+        !GetMesh()->GetSkeletalMeshAsset())
         return false;
     BoardingStart = BoardingTarget = GetActorTransform();
     BoardingAnimation = nullptr;
@@ -1663,6 +1667,8 @@ void ASSWalker::ApplyWorldOffset(const FVector &InOffset, bool bWorldShift)
     ExitEnd += InOffset;
     BoardingStart.AddToTranslation(InOffset);
     BoardingTarget.AddToTranslation(InOffset);
+    RestStart.AddToTranslation(InOffset);
+    RestTarget.AddToTranslation(InOffset);
     if (LastSupportedLocation.IsSet())
         LastSupportedLocation.GetValue() += InOffset;
 }
@@ -1672,6 +1678,19 @@ void ASSWalker::Tick(float Dt)
     // Before the early returns below: the exit is the other shot the owner looks at, and a dial that
     // only took effect while standing still would be a dial that lies.
     UpdateReadabilityLighting();
+    if (bResting)
+    {
+        RestSeconds += FMath::Max(0.f, Dt);
+        const float T = FMath::Clamp(RestSeconds / .35f, 0.f, 1.f);
+        FTransform Pose;
+        Pose.Blend(RestStart, RestTarget, T * T * (3.f - 2.f * T));
+        SetActorTransform(Pose, false, nullptr, ETeleportType::TeleportPhysics);
+        if (auto *Transition = Cast<USSStationPoseTransition>(GetMesh()->GetAnimInstance()))
+            Transition->SetExitTime(RestSeconds);
+        // Keep the camera boom's pivot in front of the backrest so orbit collision remains useful.
+        Boom->SetWorldLocation(RestStart.TransformPosition(RestCameraLocation));
+        return;
+    }
     if (Boarding)
     {
         if (!FMath::IsFinite(Dt) || Dt <= 0.f)
@@ -1848,6 +1867,8 @@ void ASSWalker::Move(FVector2D Direction, FVector2D Look, bool Run, float Dt)
     View.Pitch = FMath::Clamp(FRotator::NormalizeAxis(View.Pitch) + Look.Y * 70.f * Dt, -55.f, 35.f);
     View.Roll = 0.f;
     Controller->SetControlRotation(View);
+    if (bResting)
+        return;
     const FRotator Yaw(0, View.Yaw, 0);
     // Movement is camera-relative; CharacterMovement turns the body toward actual travel at its
     // configured rotation rate. Orbiting the camera alone does not spin the standing character.

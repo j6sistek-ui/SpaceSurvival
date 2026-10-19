@@ -1,5 +1,7 @@
-# Joy: "velvet" - the warm, friendly one of the three female auditions kept in M:/Local AI/DirectorTTS/samples_cyborg/
-# (bright went to the Cyborg; husky is the other candidate). Picked 2026-10-14 for the owner to dial in later;
-# test lines in both voices were sent that night. Dry, a touch quicker than the Cyborg: she talks a lot.
+# Joy-only original synthetic adult voice designed offline with local Qwen3-TTS VoiceDesign, 2026-10-16.
+# Warm, rounded medium-low register, relaxed conversational delivery; no real-person imitation.
+# Exclusive to Joy in the cast; do not reuse for another character. Owner accepted this voice on October 15, 2026; laughter and native mix remain open.
+# Reference SHA-256: 4ea4ddf6b41e0b1268adfdc8148a1b83115d41a101e0ade63214fd692c90ee69
 speed=0.9
 treatment=none
+cache_revision=4ea4ddf6b41e0b12

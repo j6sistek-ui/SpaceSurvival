@@ -1,0 +1,46 @@
+{
+  "local_only": true,
+  "source_build": "CanonicalBuild3, integrated shared checkout with preserved owner edits",
+  "files": [
+    {
+      "path": "Content/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime.umap",
+      "bytes": 27533464,
+      "sha256": "8dec7d7bce8ab90b5b5297b1ca5e18b710c59d5a7432b8665f46842d465d0f48"
+    },
+    {
+      "path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 5261824,
+      "sha256": "8ddae0f271b7bdb6a18e67934fa26d72b4a07284c040f14150c41252fb6149c1"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Blueprints/BP_BarWaitress.uasset",
+      "bytes": 43204,
+      "sha256": "680c8120df555637fa23012db1f753fa0aed0919b06f3e3f2f8b3d94c02a44fb"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Blueprints/BP_JoyBarService.uasset",
+      "bytes": 48998,
+      "sha256": "2443b080f1351c5222b3a3d20494b68bc537336468886c457451cebca2416a00"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Mesh/SK_WaitressOutfit_V14.uasset",
+      "bytes": 9137467,
+      "sha256": "72e03d4ddead5e5f6f68c01fac25e5d2c8d9a8c6c5855d5c72dc2b7ebd7dc6ec"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Materials/MI_WaitressCorset.uasset",
+      "bytes": 11939,
+      "sha256": "a25884fa91a6b276342a25ddf6154ac12a3bad79f3b66a6809f47d0521904c0d"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Materials/MI_WaitressShorts.uasset",
+      "bytes": 12934,
+      "sha256": "6876dc7f7d59dcca712aa20f56343057f4cfbdc0ec1dfd4bd7b560084d8fc2f8"
+    },
+    {
+      "path": "Content/SpaceSurvival/Licensed/StationAssets/Waitress_20261015/Materials/MI_WaitressHair.uasset",
+      "bytes": 24377,
+      "sha256": "d3ae0fffee96187fbb28e962e58abaaab280bfcdbdac8fe6d468f5cb8e374072"
+    }
+  ]
+}

@@ -243,6 +243,9 @@ public:
     /** Push-to-talk identity (docs/NPC_TALK.md). Empty TalkName: the mesh name ("SK_Dread" is Dread). TalkRole names
      *  a scenario file (Pool, Bartender, Guard); TalkActivity is the live detail told to the model ("just scratched
      *  on the eight ball"). */
+    /** False for unavailable crew, such as the permanently sleeping bar patron. Keeps the idle animation. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
+    bool bConversationEnabled = true;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
     FString TalkName;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Talk")
@@ -268,11 +271,11 @@ public:
     FString TakeChatterLine();
     /** Plays that action's clip now and returns whether it could. */
     UFUNCTION(BlueprintCallable, Category = "Talk")
-    bool TriggerAction(int32 Index);
+    virtual bool TriggerAction(int32 Index);
     /** The first action one of whose keywords occurs in the text, or -1. */
     UFUNCTION(BlueprintPure, Category = "Talk")
     int32 MatchAction(const FString &SpokenText) const;
-    bool IsActionPlaying() const
+    virtual bool IsActionPlaying() const
     {
         return ActionRemaining > 0.f;
     }
@@ -284,6 +287,10 @@ public:
     float BobAmplitude = 12.f;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ambient")
     float PhaseOffset = 0.f;
+
+protected:
+    /** Use a fitted variant for one action without changing the authored action list. */
+    bool TriggerActionClip(int32 Index, UAnimSequence *ClipOverride);
 
 private:
     // Legacy ownership is restored once before handing the mask to HeadFillConfiguration.
