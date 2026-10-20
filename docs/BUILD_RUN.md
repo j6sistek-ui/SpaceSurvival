@@ -1,5 +1,7 @@
 # Build and run
 
+**October20 playable heroes:** Use the canonical development checkout with its rebuilt Editor module and private `PlayableHeroes_20261020` assets. At the wardrobe pad, browse with the existing Previous/Next controls and choose Select to equip white, green, blue or cloth. Station default now resolves white; an explicit saved choice is preserved. This does not update the packaged/itch build. Physical-input/appearance acceptance and live cloth verification remain open; [current native evidence](validation/2026-10-20-playable-heroes.md) records the exact limits. Do not replay the import scripts on these adopted assets.
+
 **October16 wardrobe source candidate:** At the wardrobe pad, interact to open
 the side panel. Left/right arrows, D-pad or left stick browse the hologram;
 up/down chooses a button, Enter/A or a click activates it, and Esc/B closes.

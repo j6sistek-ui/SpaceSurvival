@@ -22,6 +22,13 @@ UAnimSequence *ASSStationSeat::ClipFor(const ASSWalker *Walker) const
         for (const auto &Clip : SeatedAnimations)
             if (Clip && Clip->GetSkeleton() == Mesh->GetSkeleton())
                 return Clip;
+    // The supplied heroes carry a verified seated clip on each of their own skeletons.
+    // Existing furniture can use it without rewriting every placed seat's animation list.
+    if (Mesh && Walker->GetHero().Identity >= ESSHeroIdentity::WhiteHero &&
+        Walker->GetHero().Identity <= ESSHeroIdentity::ClothHero)
+        if (auto *Clip = LoadObject<UAnimSequence>(nullptr, *Walker->GetHero().PilotClipPath);
+            Clip && Clip->GetSkeleton() == Mesh->GetSkeleton())
+            return Clip;
     return nullptr;
 }
 

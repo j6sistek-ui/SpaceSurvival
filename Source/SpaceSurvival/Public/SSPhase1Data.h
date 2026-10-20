@@ -39,16 +39,11 @@ public:
         Encounters = {FSSEncounterDefinition(ESSEncounterKind::SalvageCache),
                       FSSEncounterDefinition(ESSEncounterKind::DistressCombat),
                       FSSEncounterDefinition(ESSEncounterKind::MobileDepot)};
-        // Preference order: the first hero whose assets are installed wins. The squirrel is asked about
-        // first so that importing it is the whole swap, and since September 17 that import has happened:
-        // where this order used to leave the stand-in trooper on the deck and the Acornaut in the seat,
-        // the squirrel now takes both, and the two behind it are what a build without the licensed tree
-        // falls back through. Putting the trooper first would mean the real hero could never be selected
-        // while a stand-in that was only ever temporary sat in front of it.
-        // Squirrel stays first, so a new game with no preference saved still wears it: SelectHero
-        // returns the first installed entry and nothing below it can displace that. The four
-        // selectable bodies sit behind it and are reachable only by asking for one by name.
-        Heroes = {FSSHeroDefinition(ESSHeroIdentity::Squirrel),    FSSHeroDefinition(ESSHeroIdentity::Nyxar),
+        // Installed EX7 is the owner's new default. Keep enum identities stable and preserve saved
+        // explicit choices. A source checkout without these private imports still falls to Squirrel.
+        Heroes = {FSSHeroDefinition(ESSHeroIdentity::WhiteHero),   FSSHeroDefinition(ESSHeroIdentity::GreenHero),
+                  FSSHeroDefinition(ESSHeroIdentity::BlueHero),    FSSHeroDefinition(ESSHeroIdentity::ClothHero),
+                  FSSHeroDefinition(ESSHeroIdentity::Squirrel),    FSSHeroDefinition(ESSHeroIdentity::Nyxar),
                   FSSHeroDefinition(ESSHeroIdentity::AlienFemale), FSSHeroDefinition(ESSHeroIdentity::Soldier),
                   FSSHeroDefinition(ESSHeroIdentity::RobotScout),  FSSHeroDefinition(ESSHeroIdentity::HeavyTrooper),
                   FSSHeroDefinition(ESSHeroIdentity::Trooper),     FSSHeroDefinition(ESSHeroIdentity::Acornaut)};

@@ -85,12 +85,9 @@ bool FSSHeroRoster::RunTest(const FString &)
     auto *Content = NewObject<USSPhase1Data>();
     if (!TestNotNull(TEXT("Construct the actual runtime content defaults"), Content))
         return false;
-    // Eight: the squirrel, the five bodies the station wardrobe can put on the deck, and the two the
-    // roster has always ended with. The count is asserted because a hero silently vanishing from the
-    // roster is exactly the kind of thing the wardrobe would hide - it would just show one fewer row.
-    // It went from seven to eight when the Tripo alien was wired in; changing this number is meant to
-    // be a deliberate act, which is the whole reason it is pinned.
-    if (!TestEqual(TEXT("Eight heroes, in preference order"), Content->Heroes.Num(), 8))
+    // Four owner-supplied heroes precede the eight existing entries. Stable enum values preserve
+    // saved wardrobe choices; private imports being absent must still leave the old fallback usable.
+    if (!TestEqual(TEXT("Twelve heroes, in preference order"), Content->Heroes.Num(), 12))
         return false;
     // The real hero is asked about first, so importing it is the whole swap - and on September 17 that
     // import happened. Nothing below asks whether this machine has the files. Whether a hero is installed
@@ -99,7 +96,19 @@ bool FSSHeroRoster::RunTest(const FString &)
     // pinned either answer would be pinning today's content rather than the rule. The rule - order, and
     // what selection does with a given set of files - is proved below on rosters this test builds itself.
     TestEqual(TEXT("The hero the game is about is asked about first"), AsInt(Content->Heroes[0].Identity),
-              AsInt(ESSHeroIdentity::Squirrel));
+              AsInt(ESSHeroIdentity::WhiteHero));
+    TestEqual(TEXT("Existing squirrel save identity remains stable"), AsInt(ESSHeroIdentity::Squirrel), 2);
+    TestEqual(TEXT("White is appended after existing save identities"), AsInt(ESSHeroIdentity::WhiteHero), 8);
+    for (ESSHeroIdentity NewHero : {ESSHeroIdentity::WhiteHero, ESSHeroIdentity::GreenHero, ESSHeroIdentity::BlueHero,
+                                    ESSHeroIdentity::ClothHero})
+    {
+        const FSSHeroDefinition Added = Content->Hero(NewHero);
+        TestFalse(TEXT("Each imported hero has a distinct selection id"), Added.Id.IsNone());
+        TestEqual(TEXT("Imported heroes retain their verified exterior height"), Added.FitHeight, 185.f);
+        TestFalse(TEXT("Each imported hero names its own seated clip"), Added.PilotClipPath.IsEmpty());
+        TestTrue(TEXT("Imported heroes remain in the private asset family"),
+                 Added.MeshPath.StartsWith(TEXT("/Game/SpaceSurvival/Licensed/PlayableHeroes_20261020/")));
+    }
     TestEqual(TEXT("The stand-in is second from last"), AsInt(Content->Heroes[Content->Heroes.Num() - 2].Identity),
               AsInt(ESSHeroIdentity::Trooper));
     TestEqual(TEXT("The shipped hero is last"), AsInt(Content->Heroes.Last().Identity),
@@ -543,6 +552,14 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
         ExpectedZ = double(0.f * 1.5f) - HalfHeight - WalkingFloorGap() + 2.75f;
         TestEqual(TEXT("The imported hero wears its own mesh"), HeroMesh->GetPathName(), FString(SquirrelMesh));
     }
+    else if (Hero.Identity >= ESSHeroIdentity::WhiteHero && Hero.Identity <= ESSHeroIdentity::ClothHero)
+    {
+        const FSSHeroDefinition Declared(Hero.Identity);
+        ExpectedScale = Declared.RenderedScale(HeroMesh);
+        ExpectedZ = Declared.ScaledSoleOffset(HeroMesh) - HalfHeight - WalkingFloorGap() + 2.75f;
+        TestEqual(TEXT("The imported suit wears its own mesh"), HeroMesh->GetPathName(), Declared.MeshPath);
+        TestEqual(TEXT("The imported suit has a 192cm collision capsule"), HalfHeight, 96.f);
+    }
     else if (!TestTrue(TEXT("A hero this test has no expected numbers for is wearing the walker slot"), false))
         return false;
     AddInfo(FString::Printf(TEXT("HERO_WALKER_MESH z=%.9f expectedZ=%.9f scale=%.9f expectedScale=%.9f half=%.9f"),
@@ -575,6 +592,14 @@ bool FSSHeroSlotTransforms::RunTest(const FString &)
         ExpectedPilotMesh = FString(SquirrelMesh);
         ExpectedPilotClip = FString(SquirrelPilot);
         ExpectedPilotScale = 1.5f;
+    }
+    else if (PilotHero.Identity >= ESSHeroIdentity::WhiteHero && PilotHero.Identity <= ESSHeroIdentity::ClothHero)
+    {
+        const FSSHeroDefinition Declared(PilotHero.Identity);
+        ExpectedMount = Declared.PilotMountOffset;
+        ExpectedPilotMesh = Declared.MeshPath;
+        ExpectedPilotClip = Declared.PilotClipPath;
+        ExpectedPilotScale = Declared.RenderedScale(PilotMesh);
     }
     // The stand-in has never been seated, so reaching this is either a new hero nobody measured a seat
     // for or the seat having stopped asking the roster at all.
