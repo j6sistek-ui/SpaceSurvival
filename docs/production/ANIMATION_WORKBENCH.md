@@ -1,5 +1,27 @@
 # Preview and combine animations
 
+## Lira's preserved animation library
+
+In Unreal, open **Content → SpaceSurvival → Licensed → AnimationLibrary →
+Lira_20261020**. The three `A_Lira_Source_IMG...` clips are saved copies of
+Lira's existing motions: `IMG9447` (19 s), `IMG9451` (19.625 s), and `IMG9452`
+(19.875 s). Double-click one and use Lira's original `SK_Lira` as the preview
+mesh. The latter two contain floating poses useful for the later entertainment
+area. Source IDs are retained so the copies can be traced back exactly.
+
+Duplicate a library clip before trimming it. These still use Lira's skeleton;
+retarget a new derivative for another character and check root travel, limb
+deformation and transitions before adding it to a routine. Disabled root-motion
+extraction does not mean the authored pose has no travel. No recipient character
+or station routine was changed by making these copies.
+
+The library's source-package hashes and native readback are recorded in
+`.agent/local/LiraAnimationLibrary_20261020`. The original three `Lira/Role`
+clips and all Lira mesh/material/rig packages remain intact.
+[Handoff and limitations](../validation/2026-10-20-character-handoff.md).
+
+## Space Crew sequencing example
+
 Start with the prepared example. It uses your owned Space Crew pack and a separate preview mannequin. It does not change the hero, crew or station.
 
 ## First: watch it
