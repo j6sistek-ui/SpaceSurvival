@@ -26,7 +26,7 @@ def main():
  protected.update(pilot['protected'])
  for r in complete['native_packages']:protected[str(file_for(r['asset']))]=r['sha256']
  protected[str(REPO/'Content/SpaceSurvival/Licensed/WayfarerRuntime/L_WayfarerRuntime.umap')]=planters['map_sha256']
- protected.update({'M:/Local AI/Projects/Cyborg_Claude/rig/Cyborg_new.blend':'5cbc50ebf7281503f917755a3e140901e7af52c876637e3eef4fa4d4ffc0155d','M:/Local AI/Projects/JoySkinPreview_20261008/selected_deep_purple/Joy_Purple_HairFitted.blend':'ea6f4be979d1381b15899b16cded8059578d8529c9d2deed962fc6f09b5576a6'})
+ protected.update({str(REPO/'SourceAssets/MigratedProjects/Cyborg_Claude/rig/Cyborg_new.blend'):'5cbc50ebf7281503f917755a3e140901e7af52c876637e3eef4fa4d4ffc0155d',str(REPO/'SourceAssets/MigratedProjects/JoySkinPreview_20261008/selected_deep_purple/Joy_Purple_HairFitted.blend'):'ea6f4be979d1381b15899b16cded8059578d8529c9d2deed962fc6f09b5576a6'})
  for p,digest in protected.items():assert sha(Path(p))==digest,p
  REPORT['protected_before']=protected;checkpoint()
  edit=u.EditorAssetLibrary
