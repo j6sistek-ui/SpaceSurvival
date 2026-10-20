@@ -1,5 +1,7 @@
 # Push-to-talk conversations (NPC talk)
 
+**October20 local storage:** `Config/DefaultNpcTalk.ini` now uses `C:/Users/j6sis/SpaceSurvival/LocalRuntime/NpcTalk` for speech/dialogue, `LocalRuntime/LuxTTS` for voice Python/source, and `LocalRuntime/DirectorVoice/cache` for prerendered lines. The voice server uses the sibling `LocalRuntime/HuggingFace/hub` when present, with offline mode enabled before model imports; standalone installs without this directory retain the usual cache. Model identities, voices, GPU settings and ports are unchanged. Earlier M paths below are historical provenance, not the current launch configuration. [Migration verification](validation/2026-10-20-storage-consolidation.md).
+
 **October17 model check:** The current local speech, voice and station-dialogue models pass isolated CPU health/inference checks. Astra/Joy generated test lines transcribe exactly; the voice engine takes about37s to become ready from cold in this probe. Game startup/reuse, microphone use and listening quality remain separate checks. Fresh test recordings are under `.agent/local/HelperHealth_20261017/Run/`; existing voices and production cache are unchanged. [Evidence](validation/2026-10-17-npc-helper-reuse.md#real-model-health-and-inference).
 
 ## Kept helper settings — October 17

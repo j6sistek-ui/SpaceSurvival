@@ -3,7 +3,7 @@
   python Scripts/InventoryAnimationSources.py [extra_root ...] > Artifacts/AnimationSources.md
 
 Plain Python, reads files only, never writes into a pack. Downloads land in several places on this machine
-(two launcher vault folders on C:, M:/Downlloaded, Fab "add to project" copies, other projects), and the owner
+(launcher vault folders on C:, project SourceAssets, Fab "add to project" copies, other projects), and the owner
 moves packs between drives, so the roots are searched rather than remembered.
 
 A .uasset counts as a clip when its header names both AnimSequence and SequenceLength and is not a montage or
@@ -24,9 +24,7 @@ ROOTS = [
     r"C:\Users\j6sis\Downloads",
     r"C:\Users\j6sis\Documents\Unreal Projects",
     r"C:\Users\j6sis\OneDrive\Documents\Unreal Projects",
-    r"M:\Downlloaded",
-    r"M:\SpaceSurvival",
-    r"M:\Extra Content",
+    r"C:\Users\j6sis\SpaceSurvival\SourceAssets",
 ] + sys.argv[1:]
 PROJECT_CONTENT = r"C:\Users\j6sis\SpaceSurvival\Content"
 SKIP = re.compile(r"(?i)[\\/](Saved|Intermediate|DerivedDataCache|\.git|\.claude|Binaries|Artifacts)[\\/]")

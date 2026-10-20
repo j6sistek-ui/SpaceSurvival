@@ -18,7 +18,7 @@ from pathlib import Path
 
 import bpy
 
-SRC = Path("M:/SpaceSurvival/UserDownloadedAssets_SpaceSurvival/Content/VaultCache/FabLibrary/Joy-c6f24fcb/blender/joy.blend")
+SRC = Path(__file__).resolve().parents[3] / "User downloaded assets/SpaceSurvival/Content/VaultCache/FabLibrary/Joy-c6f24fcb/blender/joy.blend"
 SRC_SHA = "8582f2f269e8"
 argv = sys.argv[sys.argv.index("--") + 1:]
 OUT = Path(argv[0])

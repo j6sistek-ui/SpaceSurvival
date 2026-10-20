@@ -1,5 +1,9 @@
 # Build and run
 
+**October20 storage:** Open `C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject`. Its former M-linked content and Artifacts now live on C. NPC executables/models and voice dependencies are under `LocalRuntime/`, configured in `DefaultNpcTalk.ini`; do not launch an old M checkout. The local package is still the existing package, not a rebuild of today's editor changes. D holds optional cold archives only. [Storage map and verification](validation/2026-10-20-storage-consolidation.md).
+
+For disposable isolated validation profiles, add `-NoAssetRegistryCacheWrite` to the hidden Unreal invocation. The installed engine documents this flag; it prevents redundant discovery-cache writes without turning off asset discovery. Normal editor shader/DDC caches remain enabled.
+
 **October20 playable heroes:** Use the canonical development checkout with its rebuilt Editor module and private `PlayableHeroes_20261020` assets. At the wardrobe pad, browse with the existing Previous/Next controls and choose Select to equip white, green, blue or cloth. Station default now resolves white; an explicit saved choice is preserved. This does not update the packaged/itch build. Physical-input/appearance acceptance and live cloth verification remain open; [current native evidence](validation/2026-10-20-playable-heroes.md) records the exact limits. Do not replay the import scripts on these adopted assets.
 
 **October16 wardrobe source candidate:** At the wardrobe pad, interact to open

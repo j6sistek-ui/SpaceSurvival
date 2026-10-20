@@ -9,7 +9,7 @@ heavy tax") - and clones short reference recordings. A voice is a file in the vo
   <Name>.txt   optional settings: speed=0.92 (pace, ~ speed squared), treatment=entity|chrome|none
                cache_revision=<version or reference hash> when replacing a recording at the same filename
 
-The Director's is "predator entity" (design, recipe and approved sample: M:/Local AI/DirectorTTS/director_voice_final).
+The Director's is "predator entity" (design, recipe and approved sample: LocalRuntime/DirectorVoice).
 
   POST /speak   header X-Voice: <Name> (default: --default), body = the line as UTF-8 text
                 200 -> raw mono PCM16 little-endian, header X-Sample-Rate (48000)
@@ -100,6 +100,12 @@ def load_engine(args):
     """Returns speak(voice, text, pace) -> (pcm16 bytes, rate). Imports here: the parent watch and the argument
     checks run first."""
     os.environ["HF_HUB_OFFLINE"] = "1"  # everything is on disk; never reach for the network from inside the game
+    # A migrated local installation keeps its offline weights beside the game. Standalone installs without
+    # this directory retain their normal Hugging Face cache. Set both before any model-library imports.
+    local_cache = os.path.join(os.path.dirname(os.path.abspath(args.lux_repo)), "HuggingFace")
+    if os.path.isdir(os.path.join(local_cache, "hub")):
+        os.environ["HF_HOME"] = local_cache
+        os.environ["HF_HUB_CACHE"] = os.path.join(local_cache, "hub")
     # The thread budget is the game's ("the game is running beside it"): LuxTTS only hands it to ONNX, so the torch
     # vocoder and numpy would otherwise take every core. Set before the first numpy/torch import.
     for name in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):

@@ -153,6 +153,10 @@ the reference here, not a lux figure. Terrestrial rules apply again only for a s
 - **Never put a window on the owner's screen.** Every Unreal invocation passes `-NullRHI` (no renderer) or
   `-RenderOffscreen` (renderer, no window). Automation uses `-NullRHI`; content authoring and captures need
   a real RHI, so they use `-RenderOffscreen`.
+- **Disposable test profiles use `-NoAssetRegistryCacheWrite`.** The installed5.8 `IAssetRegistry.h`
+  documents this switch. October20 found49.680GiB of repeated registries in isolated `.agent/local`
+  profiles. Keep normal editor shader/DDC caches; do not copy an entire private profile between runs.
+  This does not disable asset discovery or replace native load checks.
 - **Never commit `docs/production/UI_ART_REQUESTS.md`.** The owner keeps an uncommitted local edit there.
 - **A change that affects how the game plays or feels is a conversation, not a task.** Propose it and wait.
   Fixing something that is provably broken is work; changing a dial is a decision.
