@@ -24,6 +24,8 @@ import unreal as u
 MAP = "/Game/SpaceSurvival/Licensed/CharacterStudio/L_CharacterStudio"
 CREW = "/Game/SpaceSurvival/Licensed/StationAssets/TripoCrew"
 HERO178 = "/Game/SpaceSurvival/Licensed/HeroReplacement178"
+PLAYABLE = "/Game/SpaceSurvival/Licensed/PlayableHeroes_20261020"
+PLAYABLE_NAMES = ("EX7", "Green", "Blue", "Cloth")
 NAMES = ["Robe", "Glyph", "Tribal", "Ember", "Crest", "Olive", "Warden", "Dread", "Seer", "Tendril",
          "Abyss", "Violet", "Cyan", "Silver", "Crystal", "Finhead", "Amethyst", "Elf", "Cyborg", "Squirrel178"]
 W, H = 1920, 1080
@@ -47,6 +49,11 @@ def asset(path):
 
 def find(name):
     """Mesh + clips for one character: idle, walk and the first role clip (a dance for the dancers)."""
+    if name in PLAYABLE_NAMES:
+        base = PLAYABLE + "/" + name
+        return asset(base + "/SK_" + name), {
+            key: asset(base + "/A_" + clip) for key, clip in
+            [("idle", "Idle"), ("walk", "Walk"), ("run", "Run"), ("land", "JumpLand"), ("pilot", "Pilot")]}
     if name == "Squirrel178":
         mesh = asset(HERO178 + "/SK_SquirrelHero178_RedStreaks")
         return mesh, {"idle": asset(HERO178 + "/A_Idle"), "walk": asset(HERO178 + "/A_Walk"), "role": asset(HERO178 + "/A_Run")}
@@ -87,12 +94,18 @@ SHOTS = [("idle_front", "idle", 0, .50, .62, 35), ("idle_34", "idle", 40, .50, .
 if ONLY:
     SHOTS = [s for s in SHOTS if s[0] in ONLY]
 
+HERO_SHOTS = [("idle_front", "idle", 0, .50, .62, 35), ("idle_back", "idle", 180, .50, .62, 35),
+              ("walk_34", "walk", 40, .50, .62, 35), ("run_34", "run", 40, .50, .62, 35),
+              ("land_knees", "land", 15, .24, .28, 30, .25), ("pilot_side", "pilot", 80, .50, .62, 35, .4)]
+if ONLY:
+    HERO_SHOTS = [s for s in HERO_SHOTS if s[0] in ONLY]
+
 
 def extra_shots(clips):
     """Shots for the Role clips SS_STUDIO_EXTRA picked: a pole clip from the front at three times plus a 3/4, others two."""
     out = []
     for key in clips:
-        if key in ("idle", "walk", "role") or clips[key] is None:
+        if key in ("idle", "walk", "role", "run", "land", "pilot") or clips[key] is None:
             continue
         short = key.split("_", 2)[-1]
         if "Pole" in key:
@@ -121,6 +134,8 @@ for name in (WHO or NAMES):
     a.set_actor_label("Shot/" + name)
     c = a.skeletal_mesh_component
     c.set_skeletal_mesh_asset(mesh)
+    if name == 'Cloth':
+        c.set_editor_property('wait_for_parallel_cloth_task', True)
     c.set_animation_mode(u.AnimationMode.ANIMATION_SINGLE_NODE)
     if clips["idle"]:
         c.set_editor_property("animation_data", u.SingleAnimationPlayData(anim_to_play=clips["idle"], saved_looping=True,
@@ -128,7 +143,8 @@ for name in (WHO or NAMES):
     a.set_actor_hidden_in_game(True)
     b = mesh.get_bounds()
     chars.append({"name": name, "label": "Shot/" + name, "height": b.origin.z + b.box_extent.z, "clips": clips, "mesh": mesh.get_path_name(),
-                  "clip_paths": {k: v.get_path_name() if v else None for k, v in clips.items()}, "shots": SHOTS + extra_shots(clips)})
+                  "clip_paths": {k: v.get_path_name() if v else None for k, v in clips.items()},
+                  "shots": (HERO_SHOTS if name in PLAYABLE_NAMES else SHOTS) + extra_shots(clips)})
 if POLE:
     # pole_dance.py puts the pole on the clip origin: 2.5 cm radius, chrome (the Warden boot instance is grey, metallic 1)
     pole = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, 130), u.Rotator(0, 0, 0))
@@ -141,7 +157,7 @@ if POLE:
     pole.set_actor_hidden_in_game(True)
 log("%d characters staged, %d shots" % (len(chars), sum(len(c["shots"]) for c in chars)))
 
-report = {"map": MAP, "map_sha256": map_sha, "shots": [], "errors": [], "characters": [
+report = {"map": MAP, "map_sha256": map_sha, "shots": [], "errors": [], "cloth_samples": [], "characters": [
     {k: c[k] for k in ("name", "height", "mesh", "clip_paths")} for c in chars]}
 state = {"phase": "wait", "start": time.monotonic(), "ci": 0, "si": 0, "busy": False, "handle": None, "bias": 0.0,
          "probed": False, "frames": 0, "path": None, "stop_at": None}
@@ -220,7 +236,11 @@ def begin_shot():
     comp = a.skeletal_mesh_component
     frozen = shot[6] if len(shot) > 6 else None
     if frozen is not None:
-        comp.play_animation(clip, True); comp.set_position(frozen * clip.get_play_length(), False); comp.set_play_rate(0.0)
+        if ch["name"] in PLAYABLE_NAMES:
+            assert u.SSPlayableHeroTools.pose_preview(comp, clip, frozen * clip.get_play_length())
+        else:
+            comp.play_animation(clip, True); comp.set_position(frozen * clip.get_play_length(), False)
+        comp.set_play_rate(0.0)
         state["playing"] = None
     elif comp.get_anim_instance() is None or state.get("playing") != (ch["name"], shot[1]):
         comp.play_animation(clip, True); comp.set_play_rate(1.0); state["playing"] = (ch["name"], shot[1])
@@ -296,6 +316,13 @@ def tick(dt):
             # keep probing the empty stage until two readings agree before trusting one.
             for cmd in ("r.TextureStreaming 0", "r.Streaming.FullyLoadUsedTextures 1"):
                 u.SystemLibrary.execute_console_command(world, cmd, pc)
+            if any(ch["name"] in PLAYABLE_NAMES for ch in chars):
+                # Inspection-only settings in the guarded private profile: show the authored pixels
+                # and deformation without a lower-resolution render, depth blur or motion blur.
+                report["inspection_commands"] = ["r.DynamicRes.OperationMode 0", "r.ScreenPercentage 100",
+                    "r.AntiAliasingMethod 2", "r.DepthOfFieldQuality 0", "r.MotionBlurQuality 0"]
+                for cmd in report["inspection_commands"]:
+                    u.SystemLibrary.execute_console_command(world, cmd, pc)
             u.GameplayStatics.set_game_paused(world, False)
             loc, rot, fov = camera_for(("probe", "idle", 0, .50, .62, 35), 178.0)   # the empty stage, standard framing
             state["cam"].set_actor_location_and_rotation(loc, rot, False, False)
@@ -303,6 +330,12 @@ def tick(dt):
             state.update(phase="probe", frames=0, path=os.path.join(OUT, "_probe.png"), probes=[])
             return
         state["frames"] += 1
+        if state["phase"] == "warm" and state["frames"] >= 30 and state["frames"] % 15 == 0:
+            ch = chars[state["ci"]]
+            if ch["name"] == "Cloth":
+                simulation = json.loads(u.SSPlayableHeroTools.read_cloth_simulation(state["pie"][ch["label"]].skeletal_mesh_component))
+                report["cloth_samples"].append({"shot": ch_shots(state["ci"])[state["si"]][0], "frame": state["frames"], "simulation": simulation})
+                assert simulation["success"], simulation
         if state["phase"] in ("warm", "probe") and state["frames"] >= WARM:
             state["phase"] = "probe_capture" if state["phase"] == "probe" else "capture"
             u.SystemLibrary.execute_console_command(world, 'HighResShot %dx%d filename="%s"' % (W, H, state["path"]), state["pc"])
@@ -332,6 +365,11 @@ def tick(dt):
         state["busy"] = False
 
 
+if any(ch["name"] in PLAYABLE_NAMES for ch in chars):
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+    from StationReviewProfile import verify_before_play
+    report["profile_guard"] = verify_before_play()
 u.EditorPythonScripting.set_keep_python_script_alive(True)
 state["handle"] = u.register_slate_post_tick_callback(tick)
 lvl.editor_request_begin_play()

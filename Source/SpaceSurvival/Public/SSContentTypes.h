@@ -513,7 +513,12 @@ enum class ESSHeroIdentity : uint8
     /** Licensed robot on the UE4 mannequin rig, so the MoCap library plays on it untouched. */
     RobotScout,
     /** Licensed trooper on the UE4 mannequin rig, the second body that rig already fits. */
-    HeavyTrooper
+    HeavyTrooper,
+    /** Owner-supplied modular EX7 suit; new station default when its assets are installed. */
+    WhiteHero,
+    GreenHero,
+    BlueHero,
+    ClothHero
 };
 
 /** What moves a hull. Not a cosmetic distinction: a kinematic hull's position is written directly by a
@@ -1213,7 +1218,50 @@ struct FSSHeroDefinition
     FSSHeroDefinition() = default;
     explicit FSSHeroDefinition(ESSHeroIdentity InIdentity) : Identity(InIdentity)
     {
-        if (Identity == ESSHeroIdentity::Trooper)
+        if (Identity == ESSHeroIdentity::WhiteHero || Identity == ESSHeroIdentity::GreenHero ||
+            Identity == ESSHeroIdentity::BlueHero || Identity == ESSHeroIdentity::ClothHero)
+        {
+            const FString Name = Identity == ESSHeroIdentity::WhiteHero   ? TEXT("EX7")
+                                 : Identity == ESSHeroIdentity::GreenHero ? TEXT("Green")
+                                 : Identity == ESSHeroIdentity::BlueHero  ? TEXT("Blue")
+                                                                          : TEXT("Cloth");
+            Id = FName(*(Name + TEXT("Hero")));
+            const FString Base = TEXT("/Game/SpaceSurvival/Licensed/PlayableHeroes_20261020/") + Name + TEXT("/");
+            auto Asset = [&Base](const FString &Object) { return Base + Object + TEXT(".") + Object; };
+            MeshPath = Asset(TEXT("SK_") + Name);
+            WalkClipPath = Asset(TEXT("A_Walk"));
+            IdleClipPath = Asset(TEXT("A_Idle"));
+            JogClipPath = Asset(TEXT("A_Jog"));
+            RunClipPath = Asset(TEXT("A_Run"));
+            PilotClipPath = Asset(TEXT("A_Pilot"));
+            DisembarkClipPath = Asset(TEXT("A_JumpLand"));
+            JumpStartClipPath = Asset(TEXT("A_JumpStart"));
+            JumpAirClipPath = Asset(TEXT("A_JumpAir"));
+            JumpLandClipPath = Asset(TEXT("A_JumpLand"));
+            SoleOffset = 0.f;
+            MeshScale = 1.f;
+            FitHeight = 185.f;
+            MeshYaw = -90.f;
+            WalkHandoffSeconds = 0.f;
+            // Measured planted-foot speeds from the actual retargeted clips at 60Hz.
+            const int32 FitIndex = static_cast<int32>(Identity) - static_cast<int32>(ESSHeroIdentity::WhiteHero);
+            const float Walk[] = {127.6f, 143.4f, 138.9f, 140.2f};
+            const float Jog[] = {344.9f, 394.4f, 376.6f, 385.6f};
+            const float Run[] = {627.3f, 712.9f, 685.3f, 696.4f};
+            const float SeatZ[] = {-12.52298f, -26.71040f, -23.13719f, -24.43992f};
+            WalkSpeed = Walk[FitIndex];
+            JogSpeed = Jog[FitIndex];
+            RunSpeed = Run[FitIndex];
+            PilotMountOffset = FVector(-12.5f, 0.f, SeatZ[FitIndex]);
+            ReadabilityLightScale = 1.f;
+            RootBone = TEXT("root");
+            PelvisBone = TEXT("pelvis");
+            LeftFootBone = TEXT("foot_l");
+            RightFootBone = TEXT("foot_r");
+            LeftHandBone = TEXT("hand_l");
+            RightHandBone = TEXT("hand_r");
+        }
+        else if (Identity == ESSHeroIdentity::Trooper)
         {
             Id = TEXT("Trooper");
             MeshPath = TEXT("/Game/SciFITrooper_Man_03/SkeletalMesh/SK_SciFITrooper_Man_03.SK_SciFITrooper_Man_03");

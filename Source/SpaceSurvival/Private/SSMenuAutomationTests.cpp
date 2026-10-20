@@ -4,6 +4,9 @@
 #include "SSHUD.h"
 #include "SSOutpostSandbox.h"
 #include "SSPhase1Data.h"
+#include "SSStation.h"
+#include "Animation/AnimSequence.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/SkeletalMesh.h"
@@ -490,6 +493,76 @@ bool FSSUpgradeMenuPreview::RunTest(const FString &)
         F.Mode->ActivateEntry(Index);
     }
     TestTrue(TEXT("Maximum-tier clicks conserve the full run state"), SS::EncodeRun(S.run) == Capped);
+    return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSPlayableHeroWardrobe, "SpaceSurvival.Menu.PlayableHeroWardrobe",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSPlayableHeroWardrobe::RunTest(const FString &)
+{
+    FSSMenuWorld F;
+    if (!F.Initialize(*this) || !F.Station(*this))
+        return false;
+    const FSSHeroDefinition White = F.Mode->Tuning->Hero(ESSHeroIdentity::WhiteHero);
+    if (!White.Installed(ESSHeroSlot::Walker))
+    {
+        AddInfo(TEXT("Private hero package absent; roster order is covered by HeroRoster."));
+        return true;
+    }
+    F.Instance->Session.account.hero = -1;
+    TestEqual(TEXT("A fresh account wears white EX7"), F.Mode->WornHeroId(), White.Id);
+    const auto Bodies = F.Mode->WardrobeBodies();
+    F.Mode->OpenPanel(ESSPanel::Wardrobe);
+    for (int32 I = 0; I < Bodies.Num(); ++I)
+    {
+        TestEqual(TEXT("The existing hologram browser reaches every installed body"), F.Mode->WardrobePreviewIndex, I);
+        F.Mode->BrowseWardrobe(1);
+    }
+    auto *Walker = F.World->SpawnActor<ASSWalker>();
+    if (!TestNotNull(TEXT("Spawn actual walking pawn"), Walker))
+        return false;
+    Walker->Tuning = F.Mode->Tuning;
+    const auto RunBefore = SS::EncodeRun(F.Instance->Session.run);
+    for (ESSHeroIdentity Identity : {ESSHeroIdentity::GreenHero, ESSHeroIdentity::BlueHero,
+                                     ESSHeroIdentity::ClothHero, ESSHeroIdentity::WhiteHero})
+    {
+        const int32 Index = Bodies.IndexOfByPredicate([Identity](const auto &Body) { return Body.Identity == Identity; });
+        if (!TestTrue(TEXT("All four supplied heroes are installed together"), Index != INDEX_NONE))
+            continue;
+        // Account persistence is blocked in this fixture; the real entry action still updates its in-memory choice.
+        F.Mode->OpenPanel(ESSPanel::Wardrobe);
+        for (int32 Step = 0; Step < Bodies.Num() && F.Mode->WardrobePreviewIndex != Index; ++Step)
+            F.Mode->BrowseWardrobe(1);
+        TestEqual(TEXT("The hologram browser previews the requested body"), F.Mode->WardrobePreviewIndex, Index);
+        F.Mode->ActivateEntry(F.Entry(150));
+        TestEqual(TEXT("The selection action stores the stable hero identity"), F.Instance->Session.account.hero,
+                  static_cast<int>(Identity));
+        TestEqual(TEXT("The saved preference resolves to the selected hero"), F.Mode->WornHeroId(), Bodies[Index].Id);
+        Walker->ApplyHero(Bodies[Index].Id);
+        TestEqual(TEXT("The actual walking pawn accepts that body"), Walker->GetHero().Identity, Identity);
+        TestEqual(TEXT("The supplied suit has a capsule above its 185cm exterior"),
+                  Walker->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight(), 96.f);
+        auto *Mesh = Walker->GetMesh()->GetSkeletalMeshAsset();
+        TestNotNull(TEXT("The walker has a mesh"), Mesh);
+        if (Mesh)
+        {
+            TestEqual(TEXT("The pawn wears the selected mesh"), Mesh->GetPathName(), Bodies[Index].MeshPath);
+            TestTrue(TEXT("Every assigned material is present"), Walker->GetMesh()->GetNumMaterials() > 0);
+            for (int32 Slot = 0; Slot < Walker->GetMesh()->GetNumMaterials(); ++Slot)
+                TestNotNull(TEXT("Each material slot is bound"), Walker->GetMesh()->GetMaterial(Slot));
+            for (const FString &Path : {Bodies[Index].IdleClipPath, Bodies[Index].WalkClipPath, Bodies[Index].JogClipPath,
+                                       Bodies[Index].RunClipPath, Bodies[Index].JumpStartClipPath,
+                                       Bodies[Index].JumpAirClipPath, Bodies[Index].JumpLandClipPath, Bodies[Index].PilotClipPath})
+            {
+                auto *Clip = LoadObject<UAnimSequence>(nullptr, *Path);
+                if (TestNotNull(TEXT("Each gameplay clip loads"), Clip))
+                    TestTrue(TEXT("Each gameplay clip uses this body's skeleton"), Clip->GetSkeleton() == Mesh->GetSkeleton());
+            }
+        }
+    }
+    F.Mode->ActivateEntry(F.Entry(139));
+    TestEqual(TEXT("Station default forgets the explicit preference"), F.Instance->Session.account.hero, -1);
+    TestEqual(TEXT("Station default returns to white EX7"), F.Mode->WornHeroId(), White.Id);
+    TestTrue(TEXT("Wardrobe changes preserve the active run"), SS::EncodeRun(F.Instance->Session.run) == RunBefore);
     return true;
 }
 #endif

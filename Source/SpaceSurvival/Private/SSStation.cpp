@@ -1098,8 +1098,10 @@ void ASSWalker::ApplyHero(FName PreferredId)
                                                     "SK_SquirrelHeroReplacement.SK_SquirrelHeroReplacement");
     auto *Capsule = GetCapsuleComponent();
     const float OldHalf = Capsule->GetUnscaledCapsuleHalfHeight();
-    const float NewHalf =
-        MeasuredSquirrel ? 75.f : GetDefault<ASSWalker>()->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+    const bool ImportedHero = Hero.Identity >= ESSHeroIdentity::WhiteHero && Hero.Identity <= ESSHeroIdentity::ClothHero;
+    // The supplied 185cm suits need head clearance inside their collision shape as well.
+    const float NewHalf = MeasuredSquirrel ? 75.f : ImportedHero ? 96.f
+        : GetDefault<ASSWalker>()->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
     if (!FMath::IsNearlyEqual(OldHalf, NewHalf))
     {
         const float Scale = Capsule->GetShapeScale();
