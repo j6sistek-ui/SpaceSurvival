@@ -3,10 +3,13 @@
 #include "SSGameMode.h"
 #include "SSGameInstance.h"
 #include "SSPhase1Data.h"
+#include "SSStation.h"
+#include "SSOutpostSandbox.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "AssetCompilingManager.h"
 #include "ClothingAsset.h"
+#include "ClothingSimulationInstance.h"
 #include "ClothingSystemRuntimeTypes.h"
 #include "ChaosCloth/ChaosClothConfig.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -14,6 +17,8 @@
 #include "Engine/Engine.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 #include "Materials/Material.h"
 #include "MaterialShared.h"
 #include "Misc/FileHelper.h"
@@ -47,10 +52,37 @@ bool USSPlayableHeroTools::BeginGameReview(UWorld *World, FName HeroId, bool Sho
     // Even the private review account is read-only. This exercises runtime selection in memory.
     Instance->AccountStorageBlocked = true;
     Instance->Session.account.hero = HeroId.IsNone() ? -1 : static_cast<int>(Hero.Identity);
-    Mode->ShowHangar();
+    auto *Controller = UGameplayStatics::GetPlayerController(World, 0);
+    if (!Controller)
+        return false;
+    if (!Cast<ASSWalker>(Controller->GetPawn()))
+        Mode->ShowHangar();
+    Mode->ClosePanel();
     Mode->WearHero();
-    if (ShowWardrobe) Mode->OpenPanel(ESSPanel::Wardrobe);
-    else Mode->ClosePanel();
+    if (ShowWardrobe)
+    {
+        APawn *Pawn = Controller->GetPawn();
+        if (!Pawn)
+            return false;
+        bool Reachable = false;
+        for (TActorIterator<ASSOutpostTerminal> It(World); It && !Reachable; ++It)
+            if (It->Action == ESSOutpostAction::CycleWardrobe)
+                for (int32 I = 0; I < 8 && !Reachable; ++I)
+                {
+                    const double Angle = I * UE_PI / 4.;
+                    Pawn->SetActorLocation(It->GetActorLocation() +
+                                               FVector(FMath::Cos(Angle) * 140., FMath::Sin(Angle) * 140., 0.),
+                                           false, nullptr, ETeleportType::TeleportPhysics);
+                    Reachable = It->CanUse(Pawn);
+                }
+        if (!Reachable)
+            return false;
+        Mode->OpenPanel(ESSPanel::Wardrobe);
+        if (!Mode->HasWardrobeProjection())
+            return false;
+    }
+    else
+        Mode->ClosePanel();
     return Mode->WornHeroId() == Hero.Id;
 #else
     return false;
@@ -100,10 +132,12 @@ FString USSPlayableHeroTools::InspectMesh(USkeletalMesh *Mesh)
                     ++MissingMaterials;
                     continue;
                 }
-                const auto *Resource = Slot.MaterialInterface->GetMaterial()->GetMaterialResource(GMaxRHIShaderPlatform);
+                const auto *Resource =
+                    Slot.MaterialInterface->GetMaterial()->GetMaterialResource(GMaxRHIShaderPlatform);
                 if (Resource)
                     for (const FString &Error : Resource->GetCompileErrors())
-                        Errors.Add(MakeShared<FJsonValueString>(Slot.MaterialInterface->GetPathName() + TEXT(": ") + Error));
+                        Errors.Add(
+                            MakeShared<FJsonValueString>(Slot.MaterialInterface->GetPathName() + TEXT(": ") + Error));
             }
             Report->SetNumberField(TEXT("triangles"), LOD.GetTotalFaces());
             Report->SetNumberField(TEXT("vertices"), LOD.GetNumVertices());
@@ -112,8 +146,19 @@ FString USSPlayableHeroTools::InspectMesh(USkeletalMesh *Mesh)
             Report->SetNumberField(TEXT("invalid_bone_indices"), InvalidBones);
             Report->SetNumberField(TEXT("maximum_influences"), MaxInfluences);
             Report->SetNumberField(TEXT("missing_materials"), MissingMaterials);
+            TArray<UClothingAssetBase *> Bound;
+            Mesh->GetClothingAssetsInUse(Bound);
+            Report->SetNumberField(TEXT("bound_clothing_assets"), Bound.Num());
+            int32 RenderClothSections = 0, SourceClothSections = 0;
+            for (const auto &Section : LOD.RenderSections)
+                RenderClothSections += Section.HasClothingData();
+            for (const auto &Section : Mesh->GetImportedModel()->LODModels[0].Sections)
+                SourceClothSections += Section.HasClothingData();
+            Report->SetNumberField(TEXT("render_cloth_sections"), RenderClothSections);
+            Report->SetNumberField(TEXT("source_cloth_sections"), SourceClothSections);
             Report->SetArrayField(TEXT("material_compile_errors"), Errors);
-            Report->SetBoolField(TEXT("success"), !BadWeights && !InvalidBones && !MissingMaterials && Errors.IsEmpty());
+            Report->SetBoolField(TEXT("success"),
+                                 !BadWeights && !InvalidBones && !MissingMaterials && Errors.IsEmpty());
         }
     }
     FString Text;
@@ -131,7 +176,8 @@ FString USSPlayableHeroTools::ConfigureCloth(USkeletalMesh *Mesh, const FString 
     Report->SetBoolField(TEXT("success"), false);
     auto Finish = [&Report](const FString &Error = FString())
     {
-        if (!Error.IsEmpty()) Report->SetStringField(TEXT("error"), Error);
+        if (!Error.IsEmpty())
+            Report->SetStringField(TEXT("error"), Error);
         FString Text;
         FJsonSerializer::Serialize(Report, TJsonWriterFactory<>::Create(&Text));
         return Text;
@@ -162,24 +208,31 @@ FString USSPlayableHeroTools::ConfigureCloth(USkeletalMesh *Mesh, const FString 
     const FVector TL = (To(TEXT("hand_l")) - To(TEXT("hand_r"))).GetSafeNormal();
     const FVector SU = FVector::VectorPlaneProject(From(TEXT("head")) - From(TEXT("pelvis")), SL).GetSafeNormal();
     const FVector TU = FVector::VectorPlaneProject(To(TEXT("head")) - To(TEXT("pelvis")), TL).GetSafeNormal();
-    const FVector SF = FVector::VectorPlaneProject(FVector::VectorPlaneProject(From(TEXT("ball_l")) - From(TEXT("foot_l")), SL), SU).GetSafeNormal();
-    const FVector TF = FVector::VectorPlaneProject(FVector::VectorPlaneProject(To(TEXT("ball_l")) - To(TEXT("foot_l")), TL), TU).GetSafeNormal();
+    const FVector SF =
+        FVector::VectorPlaneProject(FVector::VectorPlaneProject(From(TEXT("ball_l")) - From(TEXT("foot_l")), SL), SU)
+            .GetSafeNormal();
+    const FVector TF =
+        FVector::VectorPlaneProject(FVector::VectorPlaneProject(To(TEXT("ball_l")) - To(TEXT("foot_l")), TL), TU)
+            .GetSafeNormal();
     const double Scale = FVector::Distance(To(TEXT("hand_l")), To(TEXT("hand_r"))) /
                          FVector::Distance(From(TEXT("hand_l")), From(TEXT("hand_r")));
     auto Transform = [&](const FVector &P)
     {
         const FVector D = P - From(TEXT("pelvis"));
-        return To(TEXT("pelvis")) + Scale * (TL * FVector::DotProduct(D, SL) + TU * FVector::DotProduct(D, SU) + TF * FVector::DotProduct(D, SF));
+        return To(TEXT("pelvis")) + Scale * (TL * FVector::DotProduct(D, SL) + TU * FVector::DotProduct(D, SU) +
+                                             TF * FVector::DotProduct(D, SF));
     };
     if (FMath::Abs(Scale - 1.) > .01 || SF.IsNearlyZero() || TF.IsNearlyZero())
         return Finish(TEXT("Unexpected source/imported coordinate frame."));
     TArray<TSharedPtr<FJsonValue>> Parts;
-    UPhysicsAsset *Collision = Mesh->GetPhysicsAsset()
-        ? DuplicateObject<UPhysicsAsset>(Mesh->GetPhysicsAsset(), Mesh, TEXT("ClothBodyCollision")) : nullptr;
-    if (!Collision) return Finish(TEXT("The imported body collision asset is required."));
+    UPhysicsAsset *Collision = Mesh->GetPhysicsAsset() ? DuplicateObject<UPhysicsAsset>(Mesh->GetPhysicsAsset(), Mesh,
+                                                                                        TEXT("ClothBodyCollision"))
+                                                       : nullptr;
+    if (!Collision)
+        return Finish(TEXT("The imported body collision asset is required."));
     // Garment-control bones must not become colliders inside the cloth they control.
     Collision->SkeletalBodySetups.RemoveAll([](const auto &Body)
-        { return !Body || Body->BoneName.ToString().StartsWith(TEXT("cloth_")); });
+                                            { return !Body || Body->BoneName.ToString().StartsWith(TEXT("cloth_")); });
     Collision->ConstraintSetup.Empty();
     Collision->UpdateBodySetupIndexMap();
     Collision->UpdateBoundsBodiesArray();
@@ -196,8 +249,8 @@ FString USSPlayableHeroTools::ConfigureCloth(USkeletalMesh *Mesh, const FString 
             return Finish(TEXT("Missing separate cloth section: ") + Slot);
         // Use the supplied clean simulation cage directly. Extracting simulation from the dense
         // render cape fails the engine's degenerate-triangle check and is unnecessary here.
-        auto *Asset = NewObject<UClothingAssetCommon>(Mesh,
-            FName(*(TEXT("CA_") + Part->GetStringField(TEXT("name")))), RF_Transactional);
+        auto *Asset = NewObject<UClothingAssetCommon>(Mesh, FName(*(TEXT("CA_") + Part->GetStringField(TEXT("name")))),
+                                                      RF_Transactional);
         auto *GuidProperty = FindFProperty<FStructProperty>(Asset->GetClass(), TEXT("AssetGuid"));
         if (!GuidProperty || GuidProperty->Struct != TBaseStructure<FGuid>::Get())
             return Finish(TEXT("Clothing asset GUID property is unavailable."));
@@ -218,7 +271,8 @@ FString USSPlayableHeroTools::ConfigureCloth(USkeletalMesh *Mesh, const FString 
         const auto &Distances = Part->GetArrayField(TEXT("max_distance_cm"));
         Physical.Reset(Vertices.Num(), Triangles.Num() * 3);
         Asset->UsedBoneNames.Empty();
-        for (const auto &Info : Ref.GetRefBoneInfo()) Asset->UsedBoneNames.Add(Info.Name);
+        for (const auto &Info : Ref.GetRefBoneInfo())
+            Asset->UsedBoneNames.Add(Info.Name);
         Asset->RefreshBoneMapping(Mesh);
         const int32 Root = Ref.FindBoneIndex(*Part->GetStringField(TEXT("root_bone")));
         FPointWeightMap Mask(Vertices.Num());
@@ -234,16 +288,25 @@ FString USSPlayableHeroTools::ConfigureCloth(USkeletalMesh *Mesh, const FString 
             Physical.BoneData[V].BoneWeights[0] = 1.f;
             Mask.Values[V] = Distances[V]->AsNumber() * Scale;
         }
-        const bool Flip = FVector::DotProduct(FVector::CrossProduct(SL, SU), SF) * FVector::DotProduct(FVector::CrossProduct(TL, TU), TF) < 0.;
+        const bool Flip = FVector::DotProduct(FVector::CrossProduct(SL, SU), SF) *
+                              FVector::DotProduct(FVector::CrossProduct(TL, TU), TF) <
+                          0.;
         for (int32 T = 0; T < Triangles.Num(); ++T)
         {
             const auto &Indices = Triangles[T]->AsArray();
-            const int32 A = Indices[0]->AsNumber(), B = Indices[Flip ? 2 : 1]->AsNumber(), C = Indices[Flip ? 1 : 2]->AsNumber();
-            Physical.Indices[T * 3] = A; Physical.Indices[T * 3 + 1] = B; Physical.Indices[T * 3 + 2] = C;
-            const FVector3f N = FVector3f::CrossProduct(Physical.Vertices[B] - Physical.Vertices[A], Physical.Vertices[C] - Physical.Vertices[A]);
-            Physical.Normals[A] += N; Physical.Normals[B] += N; Physical.Normals[C] += N;
+            const int32 A = Indices[0]->AsNumber(), B = Indices[Flip ? 2 : 1]->AsNumber(),
+                        C = Indices[Flip ? 1 : 2]->AsNumber();
+            Physical.Indices[T * 3] = A;
+            Physical.Indices[T * 3 + 1] = B;
+            Physical.Indices[T * 3 + 2] = C;
+            const FVector3f N = FVector3f::CrossProduct(Physical.Vertices[B] - Physical.Vertices[A],
+                                                        Physical.Vertices[C] - Physical.Vertices[A]);
+            Physical.Normals[A] += N;
+            Physical.Normals[B] += N;
+            Physical.Normals[C] += N;
         }
-        for (auto &Normal : Physical.Normals) Normal.Normalize();
+        for (auto &Normal : Physical.Normals)
+            Normal.Normalize();
         Lod.PointWeightMaps = {Mask};
         Lod.bUseMultipleInfluences = false;
         Lod.SkinningKernelRadius = 30.f;
@@ -266,7 +329,8 @@ FString USSPlayableHeroTools::ConfigureCloth(USkeletalMesh *Mesh, const FString 
         Physical.CalculateTethers(true, true);
         Asset->CalculateReferenceBoneIndex();
         Asset->InvalidateAllCachedData();
-        if (Mesh->GetClothingAssetIndex(Asset) == INDEX_NONE) Mesh->AddClothingAsset(Asset);
+        if (Mesh->GetClothingAssetIndex(Asset) == INDEX_NONE)
+            Mesh->AddClothingAsset(Asset);
         if (!Asset->BindToSkeletalMesh(Mesh, 0, SectionIndex, 0))
             return Finish(TEXT("Could not bind cloth proxy: ") + Slot);
         auto &Model = Mesh->GetImportedModel()->LODModels[0];
@@ -310,13 +374,54 @@ FString USSPlayableHeroTools::ReadClothSimulation(USkeletalMeshComponent *Compon
     bool Finite = true;
     if (Component)
     {
+        Report->SetBoolField(TEXT("component_tick_enabled"), Component->IsComponentTickEnabled());
+        Report->SetBoolField(TEXT("pause_animation"), Component->bPauseAnims);
+        Report->SetBoolField(TEXT("cloth_suspended"), Component->IsClothingSimulationSuspended());
+        Report->SetNumberField(TEXT("global_animation_rate"), Component->GlobalAnimRateScale);
+        if (auto *Node = Component->GetSingleNodeInstance())
+        {
+            Report->SetBoolField(TEXT("animation_playing"), Node->IsPlaying());
+            Report->SetNumberField(TEXT("animation_time"), Node->GetCurrentTime());
+            Report->SetStringField(TEXT("animation_asset"), GetPathNameSafe(Node->GetCurrentAsset()));
+        }
         Report->SetNumberField(TEXT("simulation_instances"), Component->GetClothingSimulationInstances().Num());
         Report->SetBoolField(TEXT("simulation_disabled"), Component->bDisableClothSimulation);
         Report->SetBoolField(TEXT("wait_for_cloth"), Component->bWaitForParallelClothTask);
-        Report->SetBoolField(TEXT("mesh_has_clothing"), Component->GetSkeletalMeshAsset() && Component->GetSkeletalMeshAsset()->HasActiveClothingAssets());
+        Report->SetNumberField(TEXT("predicted_lod"), Component->GetPredictedLODLevel());
+        Report->SetNumberField(TEXT("cloth_blend_weight"), Component->ClothBlendWeight);
+        Report->SetBoolField(TEXT("cloth_tick_enabled"), Component->ClothTickFunction.IsTickFunctionEnabled());
+        Report->SetBoolField(TEXT("cloth_tick_registered"), Component->ClothTickFunction.IsTickFunctionRegistered());
+        int32 Cloths = 0, Fixed = 0, Dynamic = 0, Iterations = 0;
+        double SimulationTime = 0.;
+        for (const auto &Instance : Component->GetClothingSimulationInstances())
+            if (const auto *Simulation = Instance.GetClothingSimulation())
+            {
+                Cloths += Simulation->GetNumCloths();
+                Fixed += Simulation->GetNumKinematicParticles();
+                Dynamic += Simulation->GetNumDynamicParticles();
+                Iterations += Simulation->GetNumIterations();
+                SimulationTime += Simulation->GetSimulationTime();
+            }
+        Report->SetNumberField(TEXT("solver_cloths"), Cloths);
+        Report->SetNumberField(TEXT("solver_fixed_particles"), Fixed);
+        Report->SetNumberField(TEXT("solver_dynamic_particles"), Dynamic);
+        Report->SetNumberField(TEXT("solver_iterations"), Iterations);
+        Report->SetNumberField(TEXT("solver_time_ms"), SimulationTime);
+        Report->SetBoolField(TEXT("mesh_has_clothing"),
+                             Component->GetSkeletalMeshAsset() &&
+                                 Component->GetSkeletalMeshAsset()->HasActiveClothingAssets());
     }
     if (Component)
-        for (const auto &Pair : Component->GetCurrentClothingData_AnyThread())
+    {
+        TMap<int32, FClothSimulData> Data = Component->GetCurrentClothingData_AnyThread();
+        Report->SetNumberField(TEXT("component_cache_entries"), Data.Num());
+        // UE5.8 exposes each simulation's published data separately from the component cache.
+        // The accessor above completes parallel work before reading these solver snapshots.
+        if (Data.IsEmpty() && Component->bWaitForParallelClothTask)
+            for (const auto &Instance : Component->GetClothingSimulationInstances())
+                Instance.AppendSimulationData(Data, Component, nullptr);
+        Report->SetStringField(TEXT("readback"), TEXT("completed simulation snapshots"));
+        for (const auto &Pair : Data)
         {
             FBox Bounds(ForceInit);
             FVector Sum = FVector::ZeroVector;
@@ -337,6 +442,7 @@ FString USSPlayableHeroTools::ReadClothSimulation(USkeletalMeshComponent *Compon
             Part->SetNumberField(TEXT("height_cm"), Bounds.GetSize().Z);
             Parts.Add(MakeShared<FJsonValueObject>(Part));
         }
+    }
     Report->SetArrayField(TEXT("parts"), Parts);
     Report->SetNumberField(TEXT("particles"), Count);
     Report->SetBoolField(TEXT("success"), Finite && Count == 585 && Parts.Num() == 4);

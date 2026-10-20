@@ -5,7 +5,9 @@
 #include "SSOutpostSandbox.h"
 #include "SSPhase1Data.h"
 #include "SSStation.h"
+#include "SSStationSeat.h"
 #include "Animation/AnimSequence.h"
+#include "Animation/AnimSingleNodeInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/Engine.h"
@@ -522,10 +524,11 @@ bool FSSPlayableHeroWardrobe::RunTest(const FString &)
         return false;
     Walker->Tuning = F.Mode->Tuning;
     const auto RunBefore = SS::EncodeRun(F.Instance->Session.run);
-    for (ESSHeroIdentity Identity : {ESSHeroIdentity::GreenHero, ESSHeroIdentity::BlueHero,
-                                     ESSHeroIdentity::ClothHero, ESSHeroIdentity::WhiteHero})
+    for (ESSHeroIdentity Identity : {ESSHeroIdentity::GreenHero, ESSHeroIdentity::BlueHero, ESSHeroIdentity::ClothHero,
+                                     ESSHeroIdentity::WhiteHero})
     {
-        const int32 Index = Bodies.IndexOfByPredicate([Identity](const auto &Body) { return Body.Identity == Identity; });
+        const int32 Index =
+            Bodies.IndexOfByPredicate([Identity](const auto &Body) { return Body.Identity == Identity; });
         if (!TestTrue(TEXT("All four supplied heroes are installed together"), Index != INDEX_NONE))
             continue;
         // Account persistence is blocked in this fixture; the real entry action still updates its in-memory choice.
@@ -538,6 +541,16 @@ bool FSSPlayableHeroWardrobe::RunTest(const FString &)
                   static_cast<int>(Identity));
         TestEqual(TEXT("The saved preference resolves to the selected hero"), F.Mode->WornHeroId(), Bodies[Index].Id);
         Walker->ApplyHero(Bodies[Index].Id);
+        if (auto *Node = Walker->GetMesh()->GetSingleNodeInstance())
+        {
+            Node->SetAnimationAsset(nullptr);
+            Walker->Tick(1.f / 60.f);
+            TestNotNull(TEXT("A cleared first single-node clip recovers without a wardrobe reselect"),
+                        Walker->GetMesh()->GetSingleNodeInstance()->GetCurrentAsset());
+        }
+        auto *Seat = F.World->SpawnActor<ASSStationSeat>();
+        TestNotNull(TEXT("Existing station seats resolve each supplied hero's own seated clip"), Seat->ClipFor(Walker));
+        Seat->Destroy();
         TestEqual(TEXT("The actual walking pawn accepts that body"), Walker->GetHero().Identity, Identity);
         TestEqual(TEXT("The supplied suit has a capsule above its 185cm exterior"),
                   Walker->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight(), 96.f);
@@ -549,13 +562,15 @@ bool FSSPlayableHeroWardrobe::RunTest(const FString &)
             TestTrue(TEXT("Every assigned material is present"), Walker->GetMesh()->GetNumMaterials() > 0);
             for (int32 Slot = 0; Slot < Walker->GetMesh()->GetNumMaterials(); ++Slot)
                 TestNotNull(TEXT("Each material slot is bound"), Walker->GetMesh()->GetMaterial(Slot));
-            for (const FString &Path : {Bodies[Index].IdleClipPath, Bodies[Index].WalkClipPath, Bodies[Index].JogClipPath,
-                                       Bodies[Index].RunClipPath, Bodies[Index].JumpStartClipPath,
-                                       Bodies[Index].JumpAirClipPath, Bodies[Index].JumpLandClipPath, Bodies[Index].PilotClipPath})
+            for (const FString &Path :
+                 {Bodies[Index].IdleClipPath, Bodies[Index].WalkClipPath, Bodies[Index].JogClipPath,
+                  Bodies[Index].RunClipPath, Bodies[Index].JumpStartClipPath, Bodies[Index].JumpAirClipPath,
+                  Bodies[Index].JumpLandClipPath, Bodies[Index].PilotClipPath})
             {
                 auto *Clip = LoadObject<UAnimSequence>(nullptr, *Path);
                 if (TestNotNull(TEXT("Each gameplay clip loads"), Clip))
-                    TestTrue(TEXT("Each gameplay clip uses this body's skeleton"), Clip->GetSkeleton() == Mesh->GetSkeleton());
+                    TestTrue(TEXT("Each gameplay clip uses this body's skeleton"),
+                             Clip->GetSkeleton() == Mesh->GetSkeleton());
             }
         }
     }

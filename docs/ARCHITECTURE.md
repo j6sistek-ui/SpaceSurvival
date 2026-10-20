@@ -1,5 +1,7 @@
 # SpaceSurvival Phase 1 architecture
 
+**October20 playable heroes:** Four appended stable identities retain the eight earlier values. Each new body owns its skeleton/PBR/gameplay clips; the white-first data roster preserves existing explicit account choices. Existing hologram browsing remains a preview until Select. A scoped first-idle recovery handles an empty transient single-node asset after initialization. Editor-only authoring/inspection helpers never authorize runtime asset writes. Cloth binding and live deformation are separate gates; current cloth mappings are missing. [Evidence](validation/2026-10-20-playable-heroes.md).
+
 **October16 wardrobe preview candidate:** `ASSGameMode` owns the transient
 browsed stable character ID and temporary framing camera. Canvas displays the
 installed roster and routes input to browse or the separate existing equip/save

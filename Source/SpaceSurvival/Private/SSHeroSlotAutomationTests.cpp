@@ -99,8 +99,8 @@ bool FSSHeroRoster::RunTest(const FString &)
               AsInt(ESSHeroIdentity::WhiteHero));
     TestEqual(TEXT("Existing squirrel save identity remains stable"), AsInt(ESSHeroIdentity::Squirrel), 2);
     TestEqual(TEXT("White is appended after existing save identities"), AsInt(ESSHeroIdentity::WhiteHero), 8);
-    for (ESSHeroIdentity NewHero : {ESSHeroIdentity::WhiteHero, ESSHeroIdentity::GreenHero,
-                                    ESSHeroIdentity::BlueHero, ESSHeroIdentity::ClothHero})
+    for (ESSHeroIdentity NewHero : {ESSHeroIdentity::WhiteHero, ESSHeroIdentity::GreenHero, ESSHeroIdentity::BlueHero,
+                                    ESSHeroIdentity::ClothHero})
     {
         const FSSHeroDefinition Added = Content->Hero(NewHero);
         TestFalse(TEXT("Each imported hero has a distinct selection id"), Added.Id.IsNone());

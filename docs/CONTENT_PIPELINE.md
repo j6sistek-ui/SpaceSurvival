@@ -1,5 +1,9 @@
 # Phase 1 content pipeline
 
+## Supplied playable heroes — October20
+
+Keep each supplied body on its own skeleton and preserve packed source PBR/UVs. Derive centimeter-native unit-root FBXs before Interchange import, bake additive references into standalone full poses, and measure planted-foot speeds/contact before activating tuning. Four cloth sections use the supplied low resolution simulation cages with body collision; a saved binding is separate from verified live simulation. Never rerun the authoring pipeline on adopted packages or use `AuthorContent.py` to activate a roster. The guarded scripts, source/native receipts and D-drive archive are described in [HeroIntegration](../Scripts/HeroIntegration/README.md); current checks and failures are in the [dated evidence](validation/2026-10-20-playable-heroes.md).
+
 ## Astra eyes and voice — October 15
 
 The owner-selected WhitePurpleRings pair uses its own UV0/maps and a shared private eye rig; five UV-distinct presets must be swapped as mesh/material pairs. Packed Blender sources stay in the owner library. The native helper refuses unrelated assets or a differing reference rig; original body/skeleton remain untouched. Astra uses an original synthetic adult voice reference, with local CPU runtime cloning; Joy now has a separate original reference exclusive to her, with her rejected earlier audio preserved privately for recovery. [Paths and reproduction](production/WAITRESS_BAR_SERVICE.md).

@@ -134,6 +134,8 @@ for name in (WHO or NAMES):
     a.set_actor_label("Shot/" + name)
     c = a.skeletal_mesh_component
     c.set_skeletal_mesh_asset(mesh)
+    if name in PLAYABLE_NAMES:
+        c.set_editor_property('visibility_based_anim_tick_option', u.VisibilityBasedAnimTickOption.ALWAYS_TICK_POSE_AND_REFRESH_BONES)
     if name == 'Cloth':
         c.set_editor_property('wait_for_parallel_cloth_task', True)
     c.set_animation_mode(u.AnimationMode.ANIMATION_SINGLE_NODE)

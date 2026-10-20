@@ -1098,10 +1098,13 @@ void ASSWalker::ApplyHero(FName PreferredId)
                                                     "SK_SquirrelHeroReplacement.SK_SquirrelHeroReplacement");
     auto *Capsule = GetCapsuleComponent();
     const float OldHalf = Capsule->GetUnscaledCapsuleHalfHeight();
-    const bool ImportedHero = Hero.Identity >= ESSHeroIdentity::WhiteHero && Hero.Identity <= ESSHeroIdentity::ClothHero;
+    const bool ImportedHero =
+        Hero.Identity >= ESSHeroIdentity::WhiteHero && Hero.Identity <= ESSHeroIdentity::ClothHero;
     // The supplied 185cm suits need head clearance inside their collision shape as well.
-    const float NewHalf = MeasuredSquirrel ? 75.f : ImportedHero ? 96.f
-        : GetDefault<ASSWalker>()->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+    const float NewHalf = MeasuredSquirrel ? 75.f
+                          : ImportedHero
+                              ? 96.f
+                              : GetDefault<ASSWalker>()->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
     if (!FMath::IsNearlyEqual(OldHalf, NewHalf))
     {
         const float Scale = Capsule->GetShapeScale();
@@ -1391,6 +1394,11 @@ void ASSWalker::UpdateTailFloor()
 }
 void ASSWalker::UpdateHeroAnimation(float Dt)
 {
+    // The first asynchronous mesh initialization can clear the transient single-node asset
+    // after ApplyHero. A later wardrobe selection hid this on the supplied default body.
+    if (Hero.Identity >= ESSHeroIdentity::WhiteHero && Hero.Identity <= ESSHeroIdentity::ClothHero)
+        if (auto *Node = GetMesh()->GetSingleNodeInstance(); Node && !Node->GetCurrentAsset() && IdleAnimation)
+            StartStandingAnimation(false);
     // THE GAIT MAPPING.
     //
     // One rule: play the gait whose own authored travel is nearest the pawn's speed, at a rate of

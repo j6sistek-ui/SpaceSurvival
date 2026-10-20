@@ -1863,7 +1863,7 @@ FName ASSGameMode::WornHeroId() const
         return NAME_None;
     const auto &S = GI->Session;
     // No choice saved is the ordinary case for a new game, and it must stay the ordinary answer:
-    // roster order, which puts the squirrel on the deck.
+    // roster order, which puts the installed white EX7 on the deck.
     if (S.account.hero < 0 || S.account.hero == static_cast<int32>(ESSHeroIdentity::Acornaut))
         return Tuning->SelectHero(ESSHeroSlot::Walker).Id;
     // A saved choice is a request, not a guarantee. SelectHero's preference overload falls through to
@@ -2227,7 +2227,7 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
         FrameWardrobePreview();
         PanelDetail = Available
                           ? TEXT("Browse without changing your character. Select keeps your choice on this account. "
-                                 "Your ship's pilot stays the same.")
+                                 "White EX7 is the station default.")
                           : TEXT("No character bodies are installed for this station.");
         if (Available && !HasWardrobeProjection())
             PanelDetail += TEXT("\nProjection unavailable here. Use the wardrobe pad to preview in the world.");
