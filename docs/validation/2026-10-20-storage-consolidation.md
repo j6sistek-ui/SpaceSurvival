@@ -20,7 +20,7 @@ Logical file sizes, with reparse points excluded rather than counted again:
 
 The initial inventory encountered seven long-path enumeration errors under the C project and locked/long-path files under Temp. Migration and the final C/M/Codex inventory use extended Windows paths; the final inventory has zero enumeration errors. This is not a complete scan of every disk. Only free-space metadata and newly created archive destinations were read on D.
 
-Final snapshot at 18:47 UTC: C project311.118 GiB plus1.264 GiB of this audit's private receipts/rejected trials (excluded consistently from the inventory); `.codex`51.094 GiB; M project397,312 bytes in one locked Fab catalog database. The migrated M character-project and NPC-runtime roots have zero regular files remaining. C grows because the previously external data now physically lives there; this is not a new duplicate of the old M project.
+Final snapshot at 18:47 UTC: C project311.118 GiB plus about1.3 GiB of this audit's private receipts/rejected trials (excluded consistently from the inventory); `.codex`51.094 GiB; M project397,312 bytes in one locked Fab catalog database. The migrated M character-project and NPC-runtime roots have zero regular files remaining. C grows because the previously external data now physically lives there; this is not a new duplicate of the old M project.
 
 Current C project composition: Content113.378 GiB, `.agent`82.087 GiB, Artifacts28.975 GiB, Git22.640 GiB, SourceAssets17.276 GiB and retained raw downloads16.476 GiB. These are logical lengths, excluding junction traversal, not allocated-cluster measurements. Codex still includes28.165 GiB of conversation sessions and17.133 GiB of separate worktrees; those contain user history and local work and were not discarded.
 
