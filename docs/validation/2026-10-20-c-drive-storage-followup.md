@@ -47,8 +47,18 @@ Klein9B, `qwen_3_8b_fp8mixed.safetensors` and `flux2-vae.safetensors` already ex
 
 Private repair backups and regression outputs: `M:/Local AI/Tools/BlenderTextureSetup_20261015/Repair_20261020`; setup instructions updated. Existing Blender sessions need save/restart to load the patched Python module. Owner's full-character generation/review remains pending in RPT-20261020-08. TRELLIS.2 was an unrelated optional-module warning, not the cause of Color2.
 
+## Full character run
+
+Later owner authorization: run the workflow and report settings that actually work. Cloud Blender MCP still returned429, but the installed local9876 bridge successfully read the live restarted5.2.2 scene. The selected Body had SDXL selected with a stale Klein model name; a previous Klein9B server job remained at0/8 for388seconds with near-full VRAM. That exact orphan job was interrupted. No server restart or model download was required.
+
+Preserved the unsaved scene as `Before.blend`, then used a full scene copy. RealVisXL V5 / SDXL, Refine/Restyle,28steps, CFG5, DPM++2M/Karras, denoise0.35, depth ControlNet0.8, fixed seed24015 and four existing cameras produced four successful server jobs (16.183,7.812,8.021,8.191seconds). Reference/IPAdapter/LoRA/PBR decomposition were disabled. Auto resolution targeted approximately1MP per view. The result projected onto the copied mesh and baked to4096x4096 using existing UVs,4samples and no denoiser.
+
+Saved `M:/Local AI/Tools/BlenderTextureSetup_20261015/WorkingTest_20261020/StableGen_WORKING_4K.blend` (SHA256 `7e6c278b90fcbce8c5bb599ed2a3e7926a8912ec886369727c1decfb893b0777`). A fresh Blender process verified packed texture, unchanged original/copied geometry and original material slot names. Original Desktop file was not overwritten. Private `RunReceipt.json`, `Verified.json`, front/back/original renders and `SETTINGS THAT WORKED.txt` record results. Review rendering disabled compositing after its first pass wrote to one disposable guide-output path; source assets and generated views were unaffected.
+
+This supersedes the earlier full-generation-pending state, not appearance acceptance. Render review shows uneven hand/underarm projection and some changed face detail. This is a working color-texture workflow, not finished character art or a complete new PBR set. Klein inference remains unverified. No game assets, build, package or release changed.
+
 ## Open / Check / Still open
 
 - Open: the local StorageReview.html above and the installed Blender Easy Textures/StableGen panels; no new game build is delivered.
-- Check: save/restart Blender, then retry the same Refine/Restyle operation; refresh the model list after choosing FLUX.2 Klein if evaluating it.
-- Still open: full generation and owner appearance acceptance; remaining mixed Downloads/source classification; ordinary cache regrowth; Cloth default/white roster removal, market-stand removal, performance and real cloth physics. These are lead-owned work, not completed by storage maintenance.
+- Check: open the saved working Blender file and compare its result with the preserved original scene; review the recorded working settings.
+- Still open: owner appearance acceptance, hand/underarm projection cleanup and Klein inference; remaining mixed Downloads/source classification; ordinary cache regrowth; Cloth default/white roster removal, market-stand removal, performance and real cloth physics. These are lead-owned work, not completed by storage maintenance.
