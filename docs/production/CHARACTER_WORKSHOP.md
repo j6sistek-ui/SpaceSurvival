@@ -56,7 +56,7 @@ runtime entertainment area.
 1. In Unreal's Content Drawer, open
    `/Game/SpaceSurvival/Licensed/CharacterWorkshop/L_EntertainmentWorkshop`.
 2. Open `Sequences` in that same folder and select a girl's routine. G1_G2 and
-   B1_B2 contain consecutive clips; TW and the two recordings are separate.
+   B1_B2 use the joined routines; TW and the two recordings are separate.
    The pole is a contact-test reference: the aerial routine is not yet fitted to it.
 3. For Blender, open `C:/Users/j6sis/SpaceSurvival/SourceAssets/CharacterWorkshop_20261021/`
    and choose `Jinx_Character_Options.blend`, `Roxie_Character_Options.blend`,
@@ -65,7 +65,7 @@ runtime entertainment area.
 In each Blender file, collections 01 and 02 form the character; toggle 03 for
 the original removable outfit. Hide 03 and show 05 for Parise clothing. Keep 04
 hidden: it retains the complete original clothed parts and would duplicate the
-body. Select the root armature in the Action Editor to use one of seven `A_F3_`
+body. Select the root armature in the Action Editor to use one of nine `A_F3_`
 actions at 25 fps. All image resources are packed. Blender shaders approximate
 the native Unreal materials, with editable skin-match nodes; they are not an
 identical shader conversion. The supplied older Blender body rig remains intact
@@ -92,19 +92,38 @@ The private visual review is `.agent/local/CharacterBatch_20261021/Review.html`.
 
 ## What is verified, and what remains
 
-845 native files match the adoption manifest. Canonical reload tests twelve
+The original845-file adoption plus two new routines now matches the847-file
+current native manifest. Eight sequences and four collision assets supersede
+their original adoption hashes; both historical and current receipts are retained. Canonical reload tests twelve
 variants against all seven clips at three times each. Actual-RHI captures show
 all four characters and changing poses; these are sampled editor views, not
 continuous natural gameplay. Four Blender files reopen with packed images and
-seven actions each. Before replacing 176 existing native files, exact recovery
+nine actions each. Before replacing 176 existing native files, exact recovery
 copies were verified under
 `D:/SpaceSurvival_AssetArchive/CharacterWorkshop_20261021/BeforeAdoption_20261021T123245Z`.
 Active files are on C; D is recovery only.
 
-Lead work remains on pole/grip and floor contacts, pair transitions, full-motion
+Lead work remains on pole/grip and floor contacts, full-motion
 garment/skin/hair quality, workshop walking/collision, and vendor demo/animation
 warnings. Ten hard dependency references are absent in the source collection:
 seven footstep-dust references and three demo Control Rig redirects. Importer
 bind-pose and UDIM warnings remain recorded. Do not mark these resolved from
 finite poses or a successful load. Live dialogue/role binding, packaged testing
 and owner acceptance are also open under RPT-20261021-01.
+
+## October21 motion and collision follow-up
+
+`A_F3_G1_G2_Routine` lasts31.36seconds; `A_F3_B1_B2_Routine` lasts45.60seconds.
+Both preserve every original source key, align the second clip horizontally,
+and insert a12-frame (0.48second) smoothstep bridge at25fps. Vertical aerial
+motion is preserved. Eight character sequences use these two routine assets;
+the other twelve single-clip sequences remain unchanged. Four packed Blender
+files contain the same two additional actions, with all seven originals retained.
+
+These joins remove the abrupt position jump, but are not pole-fitting or foot IK.
+G still needs grip/pole alignment; low soles, garment intersections and continuous
+motion need further review. The [follow-up receipt](../validation/2026-10-21-workshop-fixes.md)
+records fresh reloads, collision probes, retained failures and their limits.
+
+The newly requested rigging, flight controls, thrust physics and landing animations
+for the imported ship are queued under RPT-20261021-02. Import is not flight readiness.
