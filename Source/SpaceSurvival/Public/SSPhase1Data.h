@@ -39,14 +39,14 @@ public:
         Encounters = {FSSEncounterDefinition(ESSEncounterKind::SalvageCache),
                       FSSEncounterDefinition(ESSEncounterKind::DistressCombat),
                       FSSEncounterDefinition(ESSEncounterKind::MobileDepot)};
-        // Installed EX7 is the owner's new default. Keep enum identities stable and preserve saved
-        // explicit choices. A source checkout without these private imports still falls to Squirrel.
-        Heroes = {FSSHeroDefinition(ESSHeroIdentity::WhiteHero),   FSSHeroDefinition(ESSHeroIdentity::GreenHero),
-                  FSSHeroDefinition(ESSHeroIdentity::BlueHero),    FSSHeroDefinition(ESSHeroIdentity::ClothHero),
-                  FSSHeroDefinition(ESSHeroIdentity::Squirrel),    FSSHeroDefinition(ESSHeroIdentity::Nyxar),
-                  FSSHeroDefinition(ESSHeroIdentity::AlienFemale), FSSHeroDefinition(ESSHeroIdentity::Soldier),
-                  FSSHeroDefinition(ESSHeroIdentity::RobotScout),  FSSHeroDefinition(ESSHeroIdentity::HeavyTrooper),
-                  FSSHeroDefinition(ESSHeroIdentity::Trooper),     FSSHeroDefinition(ESSHeroIdentity::Acornaut)};
+        // Cloth is the owner's default. White EX7 stays archived for repair; its enum identity
+        // remains stable. A checkout without these private imports still falls to Squirrel.
+        Heroes = {FSSHeroDefinition(ESSHeroIdentity::ClothHero),    FSSHeroDefinition(ESSHeroIdentity::GreenHero),
+                  FSSHeroDefinition(ESSHeroIdentity::BlueHero),     FSSHeroDefinition(ESSHeroIdentity::Squirrel),
+                  FSSHeroDefinition(ESSHeroIdentity::Nyxar),        FSSHeroDefinition(ESSHeroIdentity::AlienFemale),
+                  FSSHeroDefinition(ESSHeroIdentity::Soldier),      FSSHeroDefinition(ESSHeroIdentity::RobotScout),
+                  FSSHeroDefinition(ESSHeroIdentity::HeavyTrooper), FSSHeroDefinition(ESSHeroIdentity::Trooper),
+                  FSSHeroDefinition(ESSHeroIdentity::Acornaut)};
     }
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Economy")
     FSSEconomyContentTuning Economy;

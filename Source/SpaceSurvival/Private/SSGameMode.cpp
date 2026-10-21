@@ -1863,7 +1863,7 @@ FName ASSGameMode::WornHeroId() const
         return NAME_None;
     const auto &S = GI->Session;
     // No choice saved is the ordinary case for a new game, and it must stay the ordinary answer:
-    // roster order, which puts the installed white EX7 on the deck.
+    // roster order, which puts the installed Cloth hero on the deck.
     if (S.account.hero < 0 || S.account.hero == static_cast<int32>(ESSHeroIdentity::Acornaut))
         return Tuning->SelectHero(ESSHeroSlot::Walker).Id;
     // A saved choice is a request, not a guarantee. SelectHero's preference overload falls through to

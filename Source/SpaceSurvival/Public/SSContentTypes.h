@@ -514,7 +514,7 @@ enum class ESSHeroIdentity : uint8
     RobotScout,
     /** Licensed trooper on the UE4 mannequin rig, the second body that rig already fits. */
     HeavyTrooper,
-    /** Owner-supplied modular EX7 suit; new station default when its assets are installed. */
+    /** Owner-supplied modular EX7 suit; retained identity while removed from the active roster. */
     WhiteHero,
     GreenHero,
     BlueHero,
