@@ -18,7 +18,7 @@ try:
 except Exception as e:  # start-up must never fail the editor over a menu
     unreal.log_warning(f'SSPrefabs: menus not registered ({e})')
 
-for _name in ('ss_send', 'ss_scenes', 'ss_catalog_refresh'):
+for _name in ('ss_send', 'ss_scenes', 'ss_catalog_refresh', 'ss_daylight'):
     try:
         _module = importlib.import_module(_name)
     except ImportError as e:

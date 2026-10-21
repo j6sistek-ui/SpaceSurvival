@@ -1,5 +1,7 @@
 # Build and run
 
+For brighter layout work in the current station, use **SS Prefabs > Daylight editing preview**, then **Restore game lighting** when done. This session-only authoring preview does not alter Play lighting. [Details](STATION_EDITING.md#daylight-editing-preview).
+
 **October20 storage:** Open `C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject`. Its former M-linked content and Artifacts now live on C. NPC executables/models and voice dependencies are under `LocalRuntime/`, configured in `DefaultNpcTalk.ini`; do not launch an old M checkout. The local package is still the existing package, not a rebuild of today's editor changes. D holds optional cold archives only. [Storage map and verification](validation/2026-10-20-storage-consolidation.md).
 
 For disposable isolated validation profiles, add `-NoAssetRegistryCacheWrite` to the hidden Unreal invocation. The installed engine documents this flag; it prevents redundant discovery-cache writes without turning off asset discovery. Normal editor shader/DDC caches remain enabled.
