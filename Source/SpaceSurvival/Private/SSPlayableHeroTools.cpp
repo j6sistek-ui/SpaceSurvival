@@ -11,8 +11,10 @@
 #include "ClothingAsset.h"
 #include "ClothingSimulationInstance.h"
 #include "ClothingSystemRuntimeTypes.h"
+#include "Utils/ClothingMeshUtils.h"
 #include "ChaosCloth/ChaosClothConfig.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "ContentStreaming.h"
 #include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "Engine/SkeletalMesh.h"
@@ -362,6 +364,142 @@ FString USSPlayableHeroTools::ConfigureCloth(USkeletalMesh *Mesh, const FString 
     return Finish();
 #else
     return TEXT("{\"success\":false,\"error\":\"Editor-only clothing conversion.\"}");
+#endif
+}
+
+FString USSPlayableHeroTools::RepairClothMappings(USkeletalMesh *Mesh)
+{
+#if WITH_EDITOR
+    TSharedRef<FJsonObject> Report = MakeShared<FJsonObject>();
+    Report->SetBoolField(TEXT("success"), false);
+    auto Finish = [&Report](const FString &Error = FString())
+    {
+        if (!Error.IsEmpty())
+            Report->SetStringField(TEXT("error"), Error);
+        FString Text;
+        FJsonSerializer::Serialize(Report, TJsonWriterFactory<>::Create(&Text));
+        return Text;
+    };
+    const bool IsReview = Mesh && Mesh->GetPathName().StartsWith(TEXT(
+                                      "/Game/SpaceSurvival/Licensed/PlayableHeroes_20261020/Cloth/PhysicsReview/"));
+    if (!Mesh || !FParse::Param(FCommandLine::Get(), TEXT("SSApplyHeroCloth")) || !IsReview)
+        return Finish(TEXT("Only an explicitly copied cloth-review mesh is supported."));
+    FAssetCompilingManager::Get().FinishAllCompilation();
+    if (!Mesh->GetImportedModel() || Mesh->GetImportedModel()->LODModels.IsEmpty())
+        return Finish(TEXT("Missing imported LOD."));
+    auto &Model = Mesh->GetImportedModel()->LODModels[0];
+    TArray<TSharedPtr<FJsonValue>> Sections;
+    TMap<int32, TArray<FMeshToMeshVertData>> PendingMappings;
+    for (int32 SectionIndex = 0; SectionIndex < Model.Sections.Num(); ++SectionIndex)
+    {
+        const auto &Section = Model.Sections[SectionIndex];
+        if (!Section.ClothingData.AssetGuid.IsValid())
+            continue;
+        UClothingAssetCommon *Asset = nullptr;
+        for (UClothingAssetBase *Candidate : Mesh->GetMeshClothingAssets())
+            if (Candidate && Candidate->GetAssetGuid() == Section.ClothingData.AssetGuid)
+                Asset = Cast<UClothingAssetCommon>(Candidate);
+        if (!Asset || !Asset->LodData.IsValidIndex(Section.ClothingData.AssetLodIndex))
+            return Finish(TEXT("Missing bound simulation asset."));
+        auto &ClothLOD = Asset->LodData[Section.ClothingData.AssetLodIndex];
+        const auto &Physical = ClothLOD.PhysicalMeshData;
+        if (Physical.Vertices.IsEmpty() || Physical.Indices.IsEmpty())
+            return Finish(TEXT("Missing simulation surface."));
+        TArray<FVector3f> Positions, Normals, Tangents;
+        TArray<uint32> Indices;
+        for (const auto &Vertex : Section.SoftVertices)
+        {
+            Positions.Add(Vertex.Position);
+            Normals.Add(Vertex.TangentZ);
+            Tangents.Add(Vertex.TangentX);
+        }
+        int32 Degenerate = 0;
+        for (uint32 T = 0; T < Section.NumTriangles; ++T)
+        {
+            const uint32 Base = Section.BaseIndex + T * 3;
+            if (!Model.IndexBuffer.IsValidIndex(Base + 2))
+                return Finish(TEXT("Invalid render index range."));
+            const uint32 A = Model.IndexBuffer[Base] - Section.BaseVertexIndex;
+            const uint32 B = Model.IndexBuffer[Base + 1] - Section.BaseVertexIndex;
+            const uint32 C = Model.IndexBuffer[Base + 2] - Section.BaseVertexIndex;
+            if (!Positions.IsValidIndex(A) || !Positions.IsValidIndex(B) || !Positions.IsValidIndex(C))
+                return Finish(TEXT("Invalid section-local vertex index."));
+            if (FVector3f::CrossProduct(Positions[B] - Positions[A], Positions[C] - Positions[A]).IsNearlyZero())
+            {
+                ++Degenerate;
+                continue;
+            }
+            Indices.Append({A, B, C});
+        }
+        // Rebuilds discover cloth bindings from the deformer mapping, not from the GUID alone.
+        // Seed the missing mapping before PostEditChange so the normal engine rebuild retains it.
+        ClothingMeshUtils::ClothMeshDesc Target(Positions, Normals, Tangents, Indices);
+        ClothingMeshUtils::ClothMeshDesc Source(Physical.Vertices, Physical.Indices);
+        TArray<FMeshToMeshVertData> Mapping;
+        ClothingMeshUtils::GenerateMeshToMeshVertData(Mapping, Target, Source,
+                                                      Physical.FindWeightMap(EWeightMapTargetCommon::MaxDistance), true,
+                                                      false, ClothLOD.SkinningKernelRadius);
+        TSharedRef<FJsonObject> Row = MakeShared<FJsonObject>();
+        Row->SetStringField(TEXT("asset"), Asset->GetName());
+        Row->SetNumberField(TEXT("vertices"), Positions.Num());
+        Row->SetNumberField(TEXT("filtered_degenerate_triangles"), Degenerate);
+        Row->SetNumberField(TEXT("mapping_count"), Mapping.Num());
+        float MaxProjectionDistance = 0.f, MaxBarycentricMagnitude = 0.f;
+        for (const auto &Vertex : Mapping)
+        {
+            const auto &Bary = Vertex.PositionBaryCoordsAndDist;
+            MaxProjectionDistance = FMath::Max(MaxProjectionDistance, FMath::Abs(Bary.W));
+            MaxBarycentricMagnitude = FMath::Max(
+                MaxBarycentricMagnitude, FMath::Max3(FMath::Abs(Bary.X), FMath::Abs(Bary.Y), FMath::Abs(Bary.Z)));
+        }
+        Row->SetNumberField(TEXT("max_projection_distance_cm"), MaxProjectionDistance);
+        Row->SetNumberField(TEXT("max_barycentric_magnitude"), MaxBarycentricMagnitude);
+        Sections.Add(MakeShared<FJsonValueObject>(Row));
+        Report->SetArrayField(TEXT("sections"), Sections);
+        if (Mapping.Num() != Positions.Num() || Mapping.IsEmpty())
+            return Finish(TEXT("Engine did not generate a complete deformer mapping."));
+        PendingMappings.Add(SectionIndex, MoveTemp(Mapping));
+    }
+    if (Sections.Num() != 4)
+        return Finish(TEXT("Expected four existing cloth sections."));
+    // Validate every section before modifying any of the existing mappings.
+    for (auto &Pair : PendingMappings)
+    {
+        auto &Section = Model.Sections[Pair.Key];
+        Section.ClothMappingDataLODs.SetNum(1);
+        Section.ClothMappingDataLODs[0] = MoveTemp(Pair.Value);
+    }
+    // Cloth mappings are cached with the mesh sections. A cached rebuild can replace
+    // the mappings just seeded above, so force a fresh build of the reviewed mesh.
+    Mesh->InvalidateDeriveDataCacheGUID();
+    Mesh->PostEditChange();
+    FAssetCompilingManager::Get().FinishAllCompilation();
+    Mesh->SetHasActiveClothingAssets(Mesh->ComputeActiveClothingAssets());
+    Report->SetStringField(TEXT("after_rebuild"), InspectMesh(Mesh));
+    int32 ValidSections = 0;
+    for (const auto &Section : Mesh->GetResourceForRendering()->LODRenderData[0].RenderSections)
+        ValidSections += Section.HasClothingData();
+    Report->SetBoolField(TEXT("success"), ValidSections == 4);
+    return Finish();
+#else
+    return TEXT("{\"success\":false,\"error\":\"Editor-only clothing conversion.\"}");
+#endif
+}
+
+FString USSPlayableHeroTools::ReadStreamingBudget()
+{
+#if WITH_EDITOR
+    TSharedRef<FJsonObject> Report = MakeShared<FJsonObject>();
+    auto &Streaming = IStreamingManager::Get().GetRenderAssetStreamingManager();
+    Report->SetNumberField(TEXT("pool_bytes"), Streaming.GetPoolSize());
+    Report->SetNumberField(TEXT("required_bytes"), Streaming.GetRequiredPoolSize());
+    Report->SetNumberField(TEXT("over_budget_bytes"), Streaming.GetMemoryOverBudget());
+    Report->SetNumberField(TEXT("peak_required_bytes"), Streaming.GetMaxEverRequired());
+    FString Text;
+    FJsonSerializer::Serialize(Report, TJsonWriterFactory<>::Create(&Text));
+    return Text;
+#else
+    return TEXT("{}");
 #endif
 }
 

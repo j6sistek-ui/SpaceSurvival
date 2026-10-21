@@ -32,6 +32,12 @@ public:
     /** Read the live Chaos particle buffers on the game thread. No asset changes. */
     UFUNCTION(BlueprintCallable, Category = "Playable Hero Authoring")
     static FString ReadClothSimulation(USkeletalMeshComponent *Component);
+    /** Repair cloth mappings on an explicitly copied review mesh. No implicit save or visual acceptance. */
+    UFUNCTION(BlueprintCallable, Category = "Playable Hero Authoring")
+    static FString RepairClothMappings(USkeletalMesh *Mesh);
+    /** Report the live render-asset streaming budget without changing it. */
+    UFUNCTION(BlueprintCallable, Category = "Playable Hero Authoring")
+    static FString ReadStreamingBudget();
     /** Open the actual hangar/wardrobe in an explicitly isolated offscreen review profile only. */
     UFUNCTION(BlueprintCallable, Category = "Playable Hero Authoring")
     static bool BeginGameReview(UWorld *World, FName HeroId, bool ShowWardrobe = true);

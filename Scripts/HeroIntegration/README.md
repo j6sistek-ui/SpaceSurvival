@@ -28,6 +28,12 @@ are checked, not regenerated. Already-applied assets must not be replayed blindl
 It requires existing mip chains and preserves resolution/compression/materials.
 [Current tests and native receipt](../../docs/validation/2026-10-21-quality-roster.md).
 
+The editor helper `RepairClothMappings` requires `-SSApplyHeroCloth` and refuses
+production meshes; it operates only on explicit `Cloth/PhysicsReview/` copies and
+never saves implicitly. Cache invalidation restores mappings, but the current
+simulation surface produces unacceptable stretching. Keep the restored production
+mesh unchanged until the [visual failure](../../docs/validation/2026-10-21-cloth-mapping-trial.md) is repaired.
+
 ## Historical authoring order
 
 Do not replay the pipeline on an adopted character. Read the receipts and inspect
