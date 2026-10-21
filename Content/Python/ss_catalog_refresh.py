@@ -6,15 +6,21 @@ import time
 import unreal as u
 import ss_prefabs
 
-_state = {'handle': None, 'next_scan': 0.0, 'stamp': None, 'steps': None}
+_state = {'handle': None, 'next_scan': 0.0, 'stamp': None, 'steps': None, 'busy': False}
 
 
 def tick(_delta):
-    marker = ss_prefabs.LIBRARY / 'auto-refresh.enabled'
-    if not marker.exists():
-        _state['steps'] = None
+    # Export/thumbnail work pumps Slate, which can call this callback again
+    # before next(steps) returns. Keep the same iterator alive until it yields.
+    if _state['busy']:
         return
+    _state['busy'] = True
     try:
+        marker = ss_prefabs.LIBRARY / 'auto-refresh.enabled'
+        if not marker.exists():
+            _state['steps'] = None
+            _state['stamp'] = None
+            return
         levels = u.get_editor_subsystem(u.LevelEditorSubsystem)
         if levels is None or levels.is_in_play_in_editor():
             return
@@ -38,6 +44,8 @@ def tick(_delta):
     except Exception as exc:
         _state.update(steps=None, stamp=None, next_scan=time.monotonic() + 60.0)
         u.log_warning(f'SS library auto-refresh paused: {exc}')
+    finally:
+        _state['busy'] = False
 
 
 def register():
