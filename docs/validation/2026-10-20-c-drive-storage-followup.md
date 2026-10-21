@@ -57,8 +57,14 @@ Saved `M:/Local AI/Tools/BlenderTextureSetup_20261015/WorkingTest_20261020/Stabl
 
 This supersedes the earlier full-generation-pending state, not appearance acceptance. Render review shows uneven hand/underarm projection and some changed face detail. This is a working color-texture workflow, not finished character art or a complete new PBR set. Klein inference remains unverified. No game assets, build, package or release changed.
 
+## Owner rejection
+
+October20 evening EDT: the owner rejected the result as too similar to the original and having double eyes. Three fresh native face renders (original, generated, generated with Eyes2 hidden) confirm generated eye shapes remain on the forehead above the actual eye openings; lip detail is displaced as well. The earlier full-body review was insufficient. Successful server execution, unchanged geometry and a packed bake were technical checks, not visual acceptance.
+
+The live viewport was returned to the original Scene without saving or overwriting files. Private OWNER_REJECTED.txt and EyeInspection.json plus the three renders preserve the failure. No new generation was started. The conservative0.35-denoise refinement intentionally retained much of the source appearance and did not produce the desired improvement. A subsequent pass requires a clear appearance target, protection of the existing face/eyes and close-up review before whole-character baking; RPT-20261020-08 remains lead-owned.
+
 ## Open / Check / Still open
 
 - Open: the local StorageReview.html above and the installed Blender Easy Textures/StableGen panels; no new game build is delivered.
-- Check: open the saved working Blender file and compare its result with the preserved original scene; review the recorded working settings.
-- Still open: owner appearance acceptance, hand/underarm projection cleanup and Klein inference; remaining mixed Downloads/source classification; ordinary cache regrowth; Cloth default/white roster removal, market-stand removal, performance and real cloth physics. These are lead-owned work, not completed by storage maintenance.
+- Check: no repeat acceptance request for the rejected result. The original scene is active; clarify the desired appearance before another generation pass.
+- Still open: lead repair of rejected facial projection and hand/underarm issues, intended appearance and Klein inference; remaining mixed Downloads/source classification; ordinary cache regrowth; Cloth default/white roster removal, market-stand removal, performance and real cloth physics. These are lead-owned work, not completed by storage maintenance.
