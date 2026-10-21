@@ -155,3 +155,10 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 /Content/AbductionAnimPack/
 /Content/Attaku/
 /Content/FreeAnimationsPack/
+
+# Owner-licensed character, spacecraft and inactive jetpack source collections.
+/Content/XANDRA/
+/Content/Flight/
+/Content/Sci-Fi_Spaceship/
+/Content/__ExternalActors__/Flight/
+/Content/__ExternalObjects__/Flight/

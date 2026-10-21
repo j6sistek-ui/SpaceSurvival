@@ -96,6 +96,11 @@
 			"Name": "AudioCapture",
 			"Enabled": true,
 			"Comment": "Microphone for push-to-talk NPC conversations (Source/SpaceSurvival/Public/SSNpcTalk.h)."
+		},
+		{
+			"Name": "XRBase",
+			"Enabled": true,
+			"Comment": "Built-in function-library dependency of the imported XANDRA customization Blueprint; no VR platform or controls enabled."
 		}
 	]
 }

@@ -1293,3 +1293,20 @@ passes exports/weights/endpoints; native materials, body retarget and gameplay r
 - **October16 table delivery follow-up:** separate V6 set-down fitted to the existing low table and owner tray; rejected head/forearm contact trials retained. Optional source integration passes four native cases plus fresh saved service, preserving original clips/rig/physics. No acquisition or installation. Joy handoff/pour and owner natural play remain open under RPT-20261016-16.
 
 - **October16 counter pickup follow-up:** separate V6 Joy/Astra derivatives replace the large handoff jump, preserve original actions and pass saved service/cancel/fallback review. Reuses the owned rig, tray and glass; no acquisition/plugin adoption. Fine contact and natural play remain open under RPT-20261016-16.
+
+## E-CHARACTER-WORKSHOP-20261021 — owner-supplied character and motion collection
+
+| Resource ID | Acquisition / source | Whole-project use and evaluation | Timing / next check |
+| --- | --- | --- | --- |
+| E-XANDRA-F3-20261021 | Owned merged Quinn project, Rosie, Satomi and F3/M3 body addon; native Blender addon on D | WBS8.5/10.3: four distinct adult dancers, retained native customization and reusable body/hair options. Twelve private variants and four packed editable blends; eight separate hair GLBs | Adopted locally; complete motion, shader/skin seams, hair and dialogue binding remain open |
+| E-PARISE-CLOTHING-20261021 | Owned Female Clothing GLB from D vault | WBS8.5/10.3: removable, recolorable outfit option. Fitted to F3, weighted to its rig and imported as separate/combined skeletal variants | Static and sampled-pose checks; extreme poses and simulation not accepted |
+| E-OWNER-DANCE-20261021 | Seven owner-supplied adult female GLBs, plus retained merged G alternate | WBS8.5/10.3: seven retarget candidates on all four girls; twenty sequences. G1/G2 and B1/B2 play consecutively | Timing/pose checks pass; floor/pole contact and joins need lead adjustment |
+| E-SHUTTLE-20261021 | Owned Sci-Fi Spaceship project on D | WBS4.1/10.3: reusable supplied ship art; three meshes and native material assembly imported | Open native Overview for the assembled materials; no player-ship replacement or flight tuning |
+| E-JETPACK-20261021 | Owned Flight project on D | Later animation/control reference; five Blueprint assets load with classes available | Imported inactive as explicitly requested; no control, game mode or character activation |
+
+The shared workshop is an owner-authorized authoring room, not an approved entertainment redesign.
+These resources are acquired, not newly purchased or installed. The installed built-in XRBase
+function library is enabled only to satisfy the vendor customization Blueprint dependency;
+no VR platform is enabled. The original downloads remain intact. Native assets stay private
+on C; exact pre-adoption recovery is on D. [Guide](CHARACTER_WORKSHOP.md),
+[receipt](../validation/2026-10-21-character-workshop.md); active work is RPT-20261021-01.
