@@ -504,15 +504,22 @@ bool FSSPlayableHeroWardrobe::RunTest(const FString &)
     FSSMenuWorld F;
     if (!F.Initialize(*this) || !F.Station(*this))
         return false;
-    const FSSHeroDefinition White = F.Mode->Tuning->Hero(ESSHeroIdentity::WhiteHero);
-    if (!White.Installed(ESSHeroSlot::Walker))
+    const FSSHeroDefinition Cloth = F.Mode->Tuning->Hero(ESSHeroIdentity::ClothHero);
+    if (!Cloth.Installed(ESSHeroSlot::Walker))
     {
         AddInfo(TEXT("Private hero package absent; roster order is covered by HeroRoster."));
         return true;
     }
     F.Instance->Session.account.hero = -1;
-    TestEqual(TEXT("A fresh account wears white EX7"), F.Mode->WornHeroId(), White.Id);
+    TestEqual(TEXT("A fresh account wears Cloth"), F.Mode->WornHeroId(), Cloth.Id);
+    F.Instance->Session.account.hero = static_cast<int>(ESSHeroIdentity::WhiteHero);
+    TestEqual(TEXT("A retired white save falls back to Cloth"), F.Mode->WornHeroId(), Cloth.Id);
+    TestEqual(TEXT("Resolving a retired choice does not rewrite the account"), F.Instance->Session.account.hero,
+              static_cast<int>(ESSHeroIdentity::WhiteHero));
+    F.Instance->Session.account.hero = -1;
     const auto Bodies = F.Mode->WardrobeBodies();
+    TestFalse(TEXT("Retired white is absent from the wardrobe"),
+              Bodies.ContainsByPredicate([](const auto &Body) { return Body.Identity == ESSHeroIdentity::WhiteHero; }));
     F.Mode->OpenPanel(ESSPanel::Wardrobe);
     for (int32 I = 0; I < Bodies.Num(); ++I)
     {
@@ -524,12 +531,11 @@ bool FSSPlayableHeroWardrobe::RunTest(const FString &)
         return false;
     Walker->Tuning = F.Mode->Tuning;
     const auto RunBefore = SS::EncodeRun(F.Instance->Session.run);
-    for (ESSHeroIdentity Identity : {ESSHeroIdentity::GreenHero, ESSHeroIdentity::BlueHero, ESSHeroIdentity::ClothHero,
-                                     ESSHeroIdentity::WhiteHero})
+    for (ESSHeroIdentity Identity : {ESSHeroIdentity::GreenHero, ESSHeroIdentity::BlueHero, ESSHeroIdentity::ClothHero})
     {
         const int32 Index =
             Bodies.IndexOfByPredicate([Identity](const auto &Body) { return Body.Identity == Identity; });
-        if (!TestTrue(TEXT("All four supplied heroes are installed together"), Index != INDEX_NONE))
+        if (!TestTrue(TEXT("All three active supplied heroes are installed together"), Index != INDEX_NONE))
             continue;
         // Account persistence is blocked in this fixture; the real entry action still updates its in-memory choice.
         F.Mode->OpenPanel(ESSPanel::Wardrobe);
@@ -576,7 +582,7 @@ bool FSSPlayableHeroWardrobe::RunTest(const FString &)
     }
     F.Mode->ActivateEntry(F.Entry(139));
     TestEqual(TEXT("Station default forgets the explicit preference"), F.Instance->Session.account.hero, -1);
-    TestEqual(TEXT("Station default returns to white EX7"), F.Mode->WornHeroId(), White.Id);
+    TestEqual(TEXT("Station default returns to Cloth"), F.Mode->WornHeroId(), Cloth.Id);
     TestTrue(TEXT("Wardrobe changes preserve the active run"), SS::EncodeRun(F.Instance->Session.run) == RunBefore);
     return true;
 }

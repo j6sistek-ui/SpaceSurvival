@@ -1,19 +1,32 @@
 # Supplied playable heroes
 
-Owner authorization, October20: import the white EX7, green, blue and cloth characters;
-validate materials, animation and weights; make white the station default and retain
-the others in the existing hologram selector. This is asset integration, not a redesign
-of the station, controls, hidden flight-pilot behavior or the owner's Blender models.
+Current owner direction, October21: Cloth is the station default; white EX7 is removed
+from the active roster for Blender repair while its files and identity remain preserved.
+Green/blue and the eight older choices remain available. This supersedes the original
+October20 white-default import direction; do not replay historical activation.
 
 ## Inputs and storage
 
-The four editable deliveries are under `C:/Users/j6sis/Downloads/Hero_EX7_Rigged`.
+The original import read the four editable deliveries from
+`C:/Users/j6sis/Downloads/Hero_EX7_Rigged`; that path is historical after the owner
+storage cleanup. Use the preserved manifest and D recovery archive to locate originals.
 `SourceManifest.json` in `.agent/local/HeroIntegration_20261020` pins their hashes and
 the packed material graphs/images. New native packages belong only to
 `/Game/SpaceSurvival/Licensed/PlayableHeroes_20261020/{EX7,Green,Blue,Cloth}`.
 Originals, failed trials and adopted private packages are archived under
 `D:/SpaceSurvival_AssetArchive/HeroUnreal_20261020`; Git is not the private-art backup.
 No paid generation, texture regeneration or Tripo credits are used by these scripts.
+
+## Current corrective recipes
+
+`RetireWhiteHero.py` plans the exact roster change; `-SSRetireWhiteHero` applies only
+an unchanged plan after backing up the native data asset. Other tuning and saves
+are checked, not regenerated. Already-applied assets must not be replayed blindly.
+
+`EnableKrakenTextureStreaming.py` plans twelve known Kraken textures, then requires
+`-SSEnableKrakenStreaming` to change only NeverStream after hash-verified backups.
+It requires existing mip chains and preserves resolution/compression/materials.
+[Current tests and native receipt](../../docs/validation/2026-10-21-quality-roster.md).
 
 ## Historical authoring order
 
@@ -49,19 +62,20 @@ Use the installed editor through an owned offscreen process, never the owner's e
 
 ## Runtime behavior and validation limits
 
-Existing identity values0–7 stay stable; white/green/blue/cloth append8–11. White comes
-first in the roster. Missing private art still falls back to existing installed content;
+Existing identity values0–7 stay stable; white/green/blue/cloth append8–11. Cloth now comes
+first in the eleven-row roster, and white is omitted until repaired. Missing private art still falls back to existing installed content;
 explicit saved character preferences remain intact. All four suits retain185cm exterior
 height with a192cm collision capsule. Gait rates use measured planted-foot speeds.
 Existing seats can use each new body's own seated clip without editing placed furniture.
 
 The existing Previous/Next/Select hologram interface remains in place. Browsing does
-not equip a body; Select does, and Station default resolves white. Automated checks use
+not equip a body; Select does, and Station default resolves Cloth. A stale white preference falls back to Cloth without
+rewriting the saved account. Automated checks use
 blocked account storage. Full natural play, physical inputs, fine contacts and owner
 appearance acceptance remain separate from shader/skin/pose evidence. No package,
 publication or PR merge is implied by an editor import.
 
-October20 current result: canonical imports/default/selection and actual idle playback
+October20 historical result: canonical imports/default/selection and actual idle playback
 are verified. `GameReviewFinal` records all four actual player bodies and wardrobe
 projections; the offline review is in Downloads/Hero_EX7_Rigged/Unreal_Review_20261020.
 The first EX7 single-node instance lost its clip after initialization; a scoped runtime

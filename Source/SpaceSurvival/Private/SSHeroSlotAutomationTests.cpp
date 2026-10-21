@@ -85,9 +85,9 @@ bool FSSHeroRoster::RunTest(const FString &)
     auto *Content = NewObject<USSPhase1Data>();
     if (!TestNotNull(TEXT("Construct the actual runtime content defaults"), Content))
         return false;
-    // Four owner-supplied heroes precede the eight existing entries. Stable enum values preserve
+    // Three active owner-supplied heroes precede the eight existing entries. Stable enum values preserve
     // saved wardrobe choices; private imports being absent must still leave the old fallback usable.
-    if (!TestEqual(TEXT("Twelve heroes, in preference order"), Content->Heroes.Num(), 12))
+    if (!TestEqual(TEXT("Eleven active heroes, in preference order"), Content->Heroes.Num(), 11))
         return false;
     // The real hero is asked about first, so importing it is the whole swap - and on September 17 that
     // import happened. Nothing below asks whether this machine has the files. Whether a hero is installed
@@ -96,7 +96,7 @@ bool FSSHeroRoster::RunTest(const FString &)
     // pinned either answer would be pinning today's content rather than the rule. The rule - order, and
     // what selection does with a given set of files - is proved below on rosters this test builds itself.
     TestEqual(TEXT("The hero the game is about is asked about first"), AsInt(Content->Heroes[0].Identity),
-              AsInt(ESSHeroIdentity::WhiteHero));
+              AsInt(ESSHeroIdentity::ClothHero));
     TestEqual(TEXT("Existing squirrel save identity remains stable"), AsInt(ESSHeroIdentity::Squirrel), 2);
     TestEqual(TEXT("White is appended after existing save identities"), AsInt(ESSHeroIdentity::WhiteHero), 8);
     for (ESSHeroIdentity NewHero : {ESSHeroIdentity::WhiteHero, ESSHeroIdentity::GreenHero, ESSHeroIdentity::BlueHero,
