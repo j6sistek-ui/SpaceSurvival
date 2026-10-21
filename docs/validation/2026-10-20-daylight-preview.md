@@ -27,6 +27,12 @@ The apartment's existing `BP_Blinds` missing Frame/Rope Material construction er
 
 The earlier isolated TextureAudit4 used a1000MiB streaming pool with local dialogue AI disabled. Required streaming bytes correspond to Market1335.08MiB, Restaurant1327.63MiB, Lounge1819.82MiB and Apartment1399.06MiB. EX7's48 texture resources total886.6MiB resident across those views. These are different accounting categories; resident/non-streaming totals are not additional streaming-pool requirements. No new optimized benchmark is claimed. Cloth default/white retirement, bounded market removal, cloth physics, Silver and Lira remain open.
 
+## Owner navigation-lag follow-up
+
+Owner subsequently reports extreme viewport lag, worse with daylight. Live ordinary-editor logs show the optional Blender-link library refresh repeatedly exporting meshes, failing with `generator already executing` and restarting around1601–1751 of3581 entries. The Slate callback has no busy guard, and its exception handler resets the iterator/stamp for another attempt. This supplies a concrete background-work explanation, but no isolated frame-time attribution to the daylight or exporter.
+
+Only the local auto-refresh marker was renamed to `auto-refresh.paused-for-editing-20261020` in the same PrefabLibrary folder. Existing catalog/proxies and user scene state were retained. Export log activity stopped at01:41:50UTC across follow-up reads; no ShaderCompileWorker processes were present. GPU snapshots were61–68% utilization and about9.1GiB resident of15.9GiB. These are snapshots, not a navigation benchmark. RPT-20261020-13 remains open for owner comparison and a re-entry repair before re-enabling the optional refresh. No new code/build or live-scene mutation occurred in this follow-up.
+
 ## Open / Check / Still open
 
 - Open the canonical `Edit Current Station.cmd`; choose **SS Prefabs > Daylight editing preview**.
