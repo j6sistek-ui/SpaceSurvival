@@ -1,20 +1,24 @@
 # SpaceSurvival project state
 
-**October21 cryo comparison:** Four owner-supplied GLBs receive a shared finish
-in a separate native review scene. The isolated UE 5.8.4 scene now has 19 mesh
-components per chamber, raised transparent console HUDs and a shared breathing
-light loop. It stores 124 assets plus a comparison map, including ten recovery
-assets. Real-renderer/editor-sequence checks exist, and all 125 native files are
-now hash-verified in the owner project. That project was not launched. Native
-game playback passes in the isolated stage: two natural loops, four active
-bounded Niagara systems, matching light phase and fog-state restoration. The
-lead favors D for hero detail and A for resource efficiency; owner selection
-and production performance remain open.
-Source recipes/provenance are tracked, while generated native content
-under `Content/SpaceSurvival/CryoComparison` and D:-stored Blender/GLB revisions
-remain local. The exact review namespace is excluded from cooking. Current
-gameplay maps, C++ binaries and published package are unchanged.
-[Evidence/storage](validation/2026-10-21-cryo-comparison.md);
+**October22 cryo comparison — verified and installed:** All four fitted v4_4
+chambers share generated displays, glass, frost, volumetric fog, Niagara and the
+native four-second interaction. Final review accepted 36 ordinary viewport
+angles and 19 effect frames. C's rear pane clears its tail; D's third rear
+console has the matching display treatment. Fine frost grain and C's original
+front ribs remain documented limits, not hidden corrections.
+
+Guarded adoption installed 201 native files/182,257,046 bytes, seven narrow
+source edits and 11 owned plugin files while preserving 124 previous packages,
+16 donor hashes and 106 source/import hashes. The owner's latest source built
+successfully (134 actions/89.75s); uncooked compatibility smoke also passes. The review
+map is separate; production maps, saves and the published package are unchanged.
+
+D is the strongest hero-detail candidate; A uses the lowest static resources.
+All four remain available for owner comparison. Physical input, packaged FPS,
+load time and resident VRAM are unmeasured. Native content stays private and
+excluded from cook; non-Unreal work remains on D:. PR86 remains unmerged.
+[Current evidence](validation/2026-10-22-cryo-fit-interaction.md),
+[owner build](validation/2026-10-22-cryo-owner-build.json),
 [active review](KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
 **October14 PR69 reconciliation:** An isolated CPU Editor build succeeds after preserving current main conversations/characters and prior station/boarding work. The owner checkout/game DLL/native map/content and packaged release are unchanged. Station implementation remains held and moves to a focused draft PR. The old five-path source cook failure is repaired without running a cook. [Exact checks and limits](validation/2026-10-14-pr69-closeout.md).

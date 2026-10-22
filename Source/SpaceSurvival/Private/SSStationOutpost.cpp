@@ -112,6 +112,9 @@ bool ASSStation::BuildOutpostHub()
             ESSPanel Panel = ESSPanel::None;
             switch (Terminal->Action)
             {
+            case ESSOutpostAction::CryoChill:
+                // A local presentation action, never a station account/service panel.
+                break;
             case ESSOutpostAction::CycleShipPaint:
                 Panel = ESSPanel::Paint;
                 break;

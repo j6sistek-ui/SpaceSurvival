@@ -5,9 +5,27 @@ source chambers receive the same screen artwork, material recipe, glass, frost,
 hologram and native Unreal effects before any quality ranking. This is a separate
 authoring scene; it does not replace a gameplay map or the playable Acornaut.
 
+**Current status: v4_4 visually verified, installed, owner-built and smoke-tested.**
+The owner's rejected v3 side view prompted fitted panes, supported displays and
+full all-angle review. The final 36 angle views and 19 native effect frames are
+accepted with documented frost-grain and source-geometry limits. PR86 remains
+open and unmerged; owner preference and physical input remain untested.
+
+The all-angle pass found a third original service console on D's rear. V4_4
+applies the same backing, glass, transparent HUD and frame to that panel, merged
+into four existing display meshes. It does not add native components or packages.
+
+The newly requested four-second walk-up hypercool action is implemented in the
+[native plugin source](../../Plugins/SSCryoRuntime/README.md), with an existing
+SpaceSurvival terminal action and a separate walking preview mode. Saved native
+bindings exist. The initial plugin and isolated SpaceSurvival Editor
+[builds pass](../../docs/validation/2026-10-22-cryo-interaction-build.json); the revised
+jet lead-in also builds. The final rendered cycles pass. The v3
+receipts below predate this interaction.
+
 Current verification and remaining work belong to
 [RPT-20261021-CRYO](../../docs/KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
-The [dated receipt](../../docs/validation/2026-10-21-cryo-comparison.md) separates
+The [current fit receipt](../../docs/validation/2026-10-22-cryo-fit-interaction.md) separates
 source preparation, saved native content, rendered verification and performance.
 
 ## Inputs and private storage
@@ -35,7 +53,7 @@ generated artwork, manifests and captures live physically on
 paths on C: are junctions into that D: tree. They are not second copies. Do not
 recursively delete or move through the junctions. Original downloads stay intact.
 
-All four variants are now copied into the owner project at the private native
+All four current variants are installed in the owner project at the private native
 destination
 `/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison`. Its content directory
 is ignored by Git; a clone does not recreate these native assets. The exact
@@ -43,12 +61,45 @@ is ignored by Git; a clone does not recreate these native assets. The exact
 broad `/Game/SpaceSurvival` cook root. Removing that exclusion is a separate
 integration decision, with dependency and performance checks. Do not force-add
 the native directory or the owned `NiagaraExamples` pack to Git.
-[Adoption receipt](../../docs/validation/2026-10-21-cryo-adoption.json) verifies
-125 copied files/178,288,150 bytes after the two-material Niagara usage repair,
-16 unchanged donor hashes and 106 preserved source/import hashes. All 125 files
-match the accepted native game run. The owner project itself was not launched.
+[Current adoption receipt](../../docs/validation/2026-10-22-cryo-adoption.json)
+verifies 201 files/182,257,046 bytes: 76 additions, one map replacement and 124
+preserved packages. Seven narrow source edits and 11 owned plugin files were
+installed with exact D: backups; 16 donor and 106 source/import hashes remain
+unchanged. All native files match the accepted stage. The prior
+[v3 receipt](../../docs/validation/2026-10-21-cryo-adoption.json) is historical.
+The latest owner-source build and uncooked compatibility smoke pass; physical
+input and packaged performance remain untested.
 
-## Equal treatment
+## Current fitted geometry and native interaction
+
+All four retain the same 19 component roles, shared art, material/effect recipe
+and original bodies. Glass follows measured posts and caps; C has four connected
+window sectors. Closed seats support the panes, while the chamber HUD follows
+the glass at 2.5 mm. Console glass and transparent HUD sit 8 mm and 10 mm above
+their inset backing, replacing the rejected 4 cm raised slab. Shape-specific
+supports make the added triangle counts differ; equal treatment does not mean
+identical geometry around different source frames.
+
+The native plugin starts two local-space downward Niagara jets, delays frost
+until 0.65 seconds, reaches full frost at 1.25 seconds and restores normal by
+four seconds. A Pawn-only capsule supplies walking collision. Native saved
+references bind every frost surface and the two inner top outlets; Python is
+used to author and observe, while C++ owns gameplay timing and material state.
+[Current runtime evidence](../../docs/validation/2026-10-22-cryo-runtime.json)
+records 408 interaction samples and four cycles ending in 4.002–4.031 seconds,
+plus 1,029 ambient samples across the all-angle review. Every pane restores its
+normal state and each bay's other three chambers remain unchanged.
+
+[Current static metrics](../../docs/validation/2026-10-22-cryo-v4-resources.json)
+record 42,699 / 67,046 / 117,389 / 121,150 triangles and 19 sections per model.
+C's four-sided glass and supporting rails explain its increased geometry.
+The numerical fit audit retains 23 local seating-span flags at source recesses.
+Closed supports bridge them; illuminated native side/oblique views show no
+floating added panes or consoles. Dark top/rear views do not resolve every
+fine contact. Frost retains a granular edge and ramp, and C's original front
+ribs still obscure parts of the character.
+
+## V3 treatment baseline — fit rejected
 
 All chambers are normalized to 320 cm height and grounded. A is rotated to align
 its opening; the other sources already face forward. Fitted glass dimensions and
@@ -90,7 +141,8 @@ with no gameplay dependency or packaged performance claim.
 The hologram is **authored display art animated by an Unreal material**. Its
 temperature, pressure and status copy are presentation values, not live game
 telemetry, an interactive control panel or a new cryogenic gameplay mechanic.
-The chamber parts currently have no collision; the review floor alone blocks.
+The v3 chamber parts had no collision; the current plugin adds a simple walking
+boundary without changing the original mesh collision settings.
 
 ## Pipeline and safeguards
 
@@ -139,9 +191,9 @@ labels native disk size and GPU-memory estimates separately.
 
 ## Archived recipes and execution layout
 
-The Python files here are snapshots of the actual task recipes. Their hashes are
-recorded in [recipe-snapshots.json](recipe-snapshots.json). They are not a
-one-click installer. They expect this private layout after being copied into a
+The Python files include current v4_4 recipes and retained v3 prerequisites/history.
+Their exact roles and hashes are recorded in [recipe-snapshots.json](recipe-snapshots.json).
+They are not a one-click installer. They expect this private layout after being copied into a
 new D: review workspace, alongside the required original inputs and artwork:
 
 ```text
@@ -150,11 +202,16 @@ new D: review workspace, alongside the required original inputs and artwork:
     *.py                         # recipe snapshots copied here
     glb-baseline.json             # inventory receipt
     CryoStage/CryoStage.uproject  # isolated native project and dependency copy
+    cryo-repo/                  # isolated source checkout and private build guards
+    cryo-owner-runtime-source-plan.json # fresh owner-byte patch plan, kept private
     *.json                       # per-step authoring/verification receipts
   outputs/Cryo_Comparison/
     shared/                      # original generated artwork
     assembly.json                # base finish manifest
     assembly_holo_consoles.json   # raised transparent-console manifest
+    assembly_fit_v4_2.json        # fitted contact-audit baseline
+    assembly_fit_v4_3.json        # C rear tail-clearance revision
+    assembly_fit_v4_4.json        # final assembly including D rear console
     <model>/                     # model source maps, components and revisions
 ```
 
@@ -165,6 +222,12 @@ template intentionally omits the task stage's temporary global near-fog preview
 override; the native sequence track is responsible for restoring that value
 after playback, as verified in the native game run. It does not enable plugins or
 change renderer configuration in the owner project.
+
+The interactive revision also needs the owned `Plugins/SSCryoRuntime` source
+built with the installed Unreal toolchain and copied into the stage's Plugins
+directory. Its native classes supply the chamber and walking preview; binaries
+are local build output. `CascadeToNiagaraConverter` is an installed editor-only
+authoring dependency for the jet recipe, not a runtime Python dependency.
 
 Do not execute them from `Scripts/CryoComparison`: `__file__` determines the work
 directory and native stage guard. Original-download and owner Niagara-source
@@ -198,6 +261,35 @@ current stage before reuse; do not run the table blindly in the owner project.
 The accepted native-game receipt supersedes the inactive-Niagara editor capture
 and rejected checkerboard runtime trial. Do not treat either earlier pass as
 proof of the final particles.
+
+The current revision adds these source snapshots. Its separate accepted native
+receipts certify fit and behavior; earlier v3 receipts remain historical.
+
+| Current recipe | Role and execution boundary |
+| --- | --- |
+| `fit_cryo_geometry_v4.py`, `validate_cryo_fit_v4.py`, `render_fit_v4.py` | Separate Blender v4_2 geometry, preservation/contact audit and nine-angle previews; never substitute Blender views for Unreal acceptance |
+| `upgrade_cryo_fit_unreal.py` | Dry-run by default; imports 72 new fitted meshes and updates only the isolated comparison map |
+| `fit_cryo_C_tail_v4_3.py`, `apply_cryo_tail_fit.py` | Derive C rear glass/frost tail clearance without changing topology, then hash-guarded replacement of those two owned stage mesh packages |
+| `diagnose_cryo_C_rear.py` | Read-only reload of C's saved source to verify rear-tail clearance independently of the authoring process |
+| `finish_cryo_D_rear_console_v4_4.py`, `render_cryo_D_rear_console_v4_4.py`, `apply_cryo_rear_console.py` | Same display treatment on D's third service console, source previews and exact four-mesh stage update; no new components or packages |
+| `author_cryo_freeze_fx.py` | Dry-run by default; creates owned frost material and local-space downward Niagara jet using installed editor converter services |
+| `refine_cryo_frost_masked.py` | Guarded stage-only frost depth correction; saves the owned frost master while preserving the remaining packages |
+| `refine_cryo_jet_containment.py` | New shared inward/downward jet and map-only binding update; preserves the prior jet, nozzle origins, materials and four-second timing |
+| `balance_cryo_360_lighting.py`, `bind_cryo_interaction.py` | Guarded map-only rear fill and four native chamber bindings; explicit apply in the isolated stage |
+| `verify_cryo_interaction.py` | Actual-game observer calls the same native controller action as E/X, then observes timers, materials, jets, access and collision; no material setters or manual actor ticks |
+| `verify_cryo_fit_angles.py` | Actual-game nine-angle capture per bay with natural effects/light playback and package/source preservation |
+| `verify_cryo_owner_smoke.py` | Read-only owner-project compatibility observer after adoption/build; verifies installed hashes and one native cycle without physical key input |
+| `measure_cryo_costs.py` | Updated read-only active/recovery accounting against exact fitted manifest and authoring receipts |
+| `build_cryo_evaluation_v4.py` | Creates private HTML/JSON comparison only from explicit matching capture, visual review, metrics and adoption receipts; omitted evidence stays pending |
+| `adopt_cryo_v4.py` | Dry-run default; requires accepted exact native evidence, all 125 old owner hashes, 76 new packages including the exact contained jet, map-only replacement, seven fresh source hashes and 11 verified plugin files; D: backups precede any write |
+
+The adopter needs private source proposals and the verified plugin build/copy
+manifest under `work/cryo-repo/.agent/local/CryoInteraction`. These are not
+portable patches for a different owner checkout. It refuses an existing owner
+plugin folder, changed source, unknown native files or running Unreal/UBT.
+After apply, build the owner's latest source separately; never copy the isolated
+SpaceSurvival DLL into that differently edited checkout. Native binaries, guard
+inputs, owner patch contents and screenshots are intentionally absent from Git.
 
 ## Portable checks
 

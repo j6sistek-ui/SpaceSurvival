@@ -2,27 +2,28 @@
 
 ## RPT-20261021-CRYO — four-way chamber comparison
 
-**Open / owner selection.** The owner requests all four supplied cryogenic
-chambers finished identically before judging quality or runtime load risk, with
-glass, generated readable screens/hologram, native Unreal fog and Niagara. The
-separate comparison namespace has been saved in an isolated UE 5.8.4 project.
-The later transparent-console finish and identical cyan breathing lights have
-real-renderer/editor-playback evidence. All four are copied into the owner
-project with matching hashes. Final native-game verification passes: 66 samples,
-two natural loops, four active bounded Niagara systems, identical light phase
-and fog distance restoration. A rejected checkerboard trial required a material
-usage fix before the final three runtime views passed lead visual review.
-The lead favors D for hero detail and A for lower resource cost; owner selection
-remains open. The owner project itself has not been launched for this review.
-[Evidence and limits](validation/2026-10-21-cryo-comparison.md).
+**Open / owner review — fitted native presentation accepted and installed.**
+The corrected v4_4 review passes 36 ordinary viewport angles and 19 effect
+frames, covering all four chambers, C's side/rear panes and D's rear console.
+All four native four-second cycles restore their materials and stop their jets;
+range, occlusion, repeated-use and native collision-sweep checks pass.
 
-Keep all four variants available locally for owner comparison. Non-Unreal work
-and revisions reside on D:; originals are preserved. Native assets are private
-and explicitly excluded from cooking. The hologram is animated authored art,
-not live telemetry. This request authorizes the separate asset review, without
-reopening unrelated station/character work below. Native appearance/motion checks
-and a bounded resource comparison are recorded; close after the owner's selection.
-No packaged or gameplay performance acceptance follows from an import.
+All 201 native files match the tested stage after guarded adoption. The owner's
+latest source builds successfully; the final owner-project uncooked compatibility
+smoke also passes. PR86 stays unmerged. Physical E/X input and owner preference remain
+untested; the observer invoked the same native controller action.
+
+The 23 numerical seating-span flags remain visible at irregular source recesses.
+Closed supports bridge them, with no floating added panes/consoles in reviewed
+illuminated side views; dark rear/top images do not resolve every fine contact.
+Frost retains fine grain, and C's original front ribs partly obscure the subject.
+D is the strongest hero-detail candidate; A has the lowest static budget.
+
+Keep all four for comparison. Generated display values are authored artwork,
+not telemetry. Production placement, packaged load/FPS and resident VRAM remain
+separate, and the private namespace is excluded from cook. Unrelated station
+and character work remains held. [Evidence and limits](validation/2026-10-22-cryo-fit-interaction.md);
+[v3 history](validation/2026-10-21-cryo-comparison.md). Close after owner review.
 
 **October14 PR closeout — CPU work only.** PR69 reconciles with current main; station follow-ups move to a focused draft PR. All in-game edits remain held. The old five-path source cook failure is superseded by155 covered paths/zero missing; no cook/release is claimed. [Reconciliation evidence](validation/2026-10-14-pr69-closeout.md). Cyborg/Silver remain closed; older paragraphs do not reopen them.
 

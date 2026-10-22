@@ -1,21 +1,27 @@
 # Performance findings
 
-## October21 cryo review: resource comparison, no gameplay benchmark
+## October22 cryo review: static comparison and native verification
 
-The [four-way cryo review](validation/2026-10-21-cryo-comparison.md) retains
-source body topology and resolutions under the same finish/effects. A/C have
-three 4K body maps; B/D have an 8K base color plus two 4K maps. Source triangles
-are 25,491 / 49,838 / 51,101 / 103,888. Compressed download sizes do not establish
-resident texture memory or load time. Shared translucency, overdraw, local fog
-and Niagara add cost to every candidate; mesh count alone cannot rank that cost.
-Final static counts are 32,101 / 56,448 / 57,711 / 110,498 triangles, with 19
-mesh sections each. Model-owned uncooked native files are 18.02 / 30.46 / 20.99 /
-88.04 MiB. Full-mip BC body-texture estimates are 42.67 / 74.67 / 42.67 / 74.67
-MiB, plus 10.67 MiB shared finish textures once; these exclude GPU buffers,
-shaders, overdraw and actual streaming residency. [Method and exact values](validation/2026-10-21-cryo-resources.json).
-Native game playback passes, with D favored for hero detail and A for lower
-resource cost. No cold/warm packaged load time, GPU frame
-distribution or 60 FPS claim is made. The review namespace is excluded from cook.
+The [current cryo review](validation/2026-10-22-cryo-fit-interaction.md) retains
+source body topology and resolutions under the same art/effects. A/C have three
+4K body maps; B/D have an8K base color plus two4K maps. Latest v4_4 static counts
+are42,699 /67,046 /117,389 /121,150 triangles, with19 mesh sections each.
+C's four-sided enclosure adds more glass and supporting rails. Model-owned
+uncooked files are18.27 /30.67 /22.00 /88.26 MiB.
+
+Full-mip BC body-texture estimates remain42.67 /74.67 /42.67 /74.67 MiB, plus10.67
+MiB shared finish art once. They exclude buffers, shaders, overdraw, fog grids
+and actual streaming residency. [Exact values and limitations](validation/2026-10-22-cryo-v4-resources.json)
+identify the measured v4_4 manifest and eight saved authoring receipts. All 217
+protected native packages match that chain. Final native fit/effects review passes;
+this does not establish representative performance.
+
+A has the lowest static budget. D retains the highest original body detail and
+geometry; C now approaches D's geometry with a lower texture tier. Shared
+translucency, volumetric fog and Niagara add view-dependent cost to each.
+Static resources, download size and editor capture timing do not establish
+packaged load time, GPU frame distribution, resident VRAM or60FPS. The review
+namespace is excluded from cooking; the prior v3 fit was owner-rejected.
 
 **October10 current direction:** ray tracing stays OFF. Future budget:4K60 or
 1440p90+ at maximum ray tracing without frame generation; quality/design first.

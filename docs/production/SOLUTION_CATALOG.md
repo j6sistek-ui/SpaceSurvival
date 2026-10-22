@@ -2,27 +2,24 @@
 
 ### CRYO-20261021 — four owner-supplied chamber candidates
 
-- **Acquisition/evidence:** four local generated GLBs supplied by the owner;
-  original filenames, SHA-256 hashes and resource counts are recorded in
-  [source provenance](../../Scripts/CryoComparison/source-provenance.json).
-  No new asset purchase or host-tool installation. Native smoke reuses the
-  existing A07 Niagara Examples pack through a private derivative.
-- **Evaluation:** identical shared finish roles/artwork and fitted glass across
-  all four; final raised transparent console HUDs and matching cyan breathing
-  lights saved in an isolated UE 5.8.4 comparison. Native screenshots and editor
-  sequence-motion samples are followed by an accepted actual-game run: native
-  autoplay, active bounded Niagara, matching light phase and fog restoration.
-  Lead review favors D for hero detail and A for lower resource cost; owner
-  selection remains open. Finished triangle counts span 32,101–110,498 with the same
-  6,610 added triangles each. Two sources have 8K base color; these are resource
-  facts, not measured FPS or a quality ranking.
+- **Acquisition/evidence:** four local generated GLBs, with untouched original
+  hashes in [source provenance](../../Scripts/CryoComparison/source-provenance.json).
+  Shared generated art and a private derivative of the existing A07 Niagara
+  Examples pack; no asset purchase, vendor upload or host-tool installation.
+- **Evaluation:** all four share 19 components across 12 roles, fitted glass,
+  generated displays and the native four-second hypercooling action. Final v4_4
+  passes 36 angle views and 19 effect frames, including C's four-sided enclosure
+  and D's extra rear console. D has the strongest hero detail; A has the lowest
+  static budget. Fitted triangles span 42,699–121,150. Fine frost grain, C's
+  original ribs and numerical seating-span limits remain documented.
 - **Whole-project value:** conditional Acornaut hero/station presentation and
-  environmental storytelling option (WBS 7.1, 8.3, 10.3). Shared screens/frost/
-  hologram art can be reused, without adding cryogenic gameplay or a new roster.
-- **Timing/next check:** authorized four-way review now; integration of a chosen
-  derivative later requires placement, dependency and performance checks. All
-  four stay private/local and excluded from cook. [Pipeline/evidence](../validation/2026-10-21-cryo-comparison.md);
-  [active owner/lead work](../KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
+  environmental storytelling (WBS7.1,8.3,10.3). Art and the native cosmetic cycle
+  are reusable; no occupant rig, progression or roster change is included.
+- **Timing/next check:** all four are privately installed; the latest owner-source
+  build and uncooked compatibility smoke pass. Owner comparison, physical
+  input, production placement and representative packaged performance remain
+  separate. PR86 is unmerged. [Current evidence](../validation/2026-10-22-cryo-fit-interaction.md);
+  [active review](../KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
 **October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.
 

@@ -123,7 +123,8 @@ Content/Sci_Fi_Weapons_VFX_AIO/
 
 # Private outpost derivative assets and locally linked authoring plugins.
 /Content/OutpostSandbox/
-/Plugins/
+/Plugins/*
+!/Plugins/SSCryoRuntime/
 /PluginsSharedLink/
 # Additional owner-provided assets, not redistributed in Git.
 /Content/FreeAnimsMixPack/

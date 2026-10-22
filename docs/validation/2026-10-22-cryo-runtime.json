@@ -1,0 +1,244 @@
+{
+  "schema_version": 2,
+  "status": "V4_4_NATIVE_VERIFIED_ADOPTED_OWNER_BUILT_AND_SMOKE_PASSED",
+  "generated_utc": "2026-10-22T05:30:05.288500+00:00",
+  "revision": "v4_4",
+  "mode": "UNCOOKED_NATIVE_GAME",
+  "engine": "5.8.4-58902052+++UE5+Release-5.8",
+  "map": "/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison",
+  "manifest_sha256": "d78777132681295f4f819c3712136e3aef774bd8716ac6bcf68aef333fd800c1",
+  "capture_kind": "ORDINARY_VIEWPORT_WITH_TSR_HISTORY",
+  "actual_viewport_size": [
+    960,
+    1200
+  ],
+  "fit": {
+    "capture_count": 36,
+    "analysis": {
+      "sample_count": 1029,
+      "wall_span_s": 212.9380000000001,
+      "world_span_s": 213.16349392011762,
+      "natural_loop_wraps": 35,
+      "all_samples_native_sequence_playing": true,
+      "all_four_niagara_active_throughout": true,
+      "light_ranges": [
+        {
+          "actor": "A_InteriorGlow",
+          "observed_min_lm": 5.000000476837158,
+          "observed_max_lm": 11.996990203857422,
+          "expected_min_lm": 5.0,
+          "expected_max_lm": 12.0
+        },
+        {
+          "actor": "A_RimGlow",
+          "observed_min_lm": 4.000000476837158,
+          "observed_max_lm": 9.997420310974121,
+          "expected_min_lm": 4.0,
+          "expected_max_lm": 10.0
+        },
+        {
+          "actor": "B_InteriorGlow",
+          "observed_min_lm": 5.000000476837158,
+          "observed_max_lm": 11.996990203857422,
+          "expected_min_lm": 5.0,
+          "expected_max_lm": 12.0
+        },
+        {
+          "actor": "B_RimGlow",
+          "observed_min_lm": 4.000000476837158,
+          "observed_max_lm": 9.997420310974121,
+          "expected_min_lm": 4.0,
+          "expected_max_lm": 10.0
+        },
+        {
+          "actor": "C_InteriorGlow",
+          "observed_min_lm": 5.000000476837158,
+          "observed_max_lm": 11.996990203857422,
+          "expected_min_lm": 5.0,
+          "expected_max_lm": 12.0
+        },
+        {
+          "actor": "C_RimGlow",
+          "observed_min_lm": 4.000000476837158,
+          "observed_max_lm": 9.997420310974121,
+          "expected_min_lm": 4.0,
+          "expected_max_lm": 10.0
+        },
+        {
+          "actor": "D_InteriorGlow",
+          "observed_min_lm": 5.000000476837158,
+          "observed_max_lm": 11.996990203857422,
+          "expected_min_lm": 5.0,
+          "expected_max_lm": 12.0
+        },
+        {
+          "actor": "D_RimGlow",
+          "observed_min_lm": 4.000000476837158,
+          "observed_max_lm": 9.997420310974121,
+          "expected_min_lm": 4.0,
+          "expected_max_lm": 10.0
+        }
+      ],
+      "local_fog_start_distance_held_at_cm": 10.0,
+      "max_same_role_spread_lm": 0.0,
+      "max_normalized_interior_rim_phase_error": 1.3623918804217539e-07,
+      "four_niagara_active_with_nontrivial_bounds": true
+    },
+    "cvar_restore_cm": [
+      1000,
+      10,
+      1000
+    ]
+  },
+  "interaction": {
+    "capture_count": 19,
+    "sample_count": 408,
+    "cycles": [
+      {
+        "bay": "A",
+        "samples": 99,
+        "end_world_seconds": 4.001887511461973,
+        "maximum_mid_freeze": 1.0,
+        "restored_mid_freeze": 0.0,
+        "jets_stopped": true,
+        "downward_jet_bounds": true,
+        "range_and_occlusion_refused": true,
+        "repeat_use_refused": true,
+        "native_collision_sweeps_blocked": true,
+        "other_bays_unchanged": true
+      },
+      {
+        "bay": "B",
+        "samples": 103,
+        "end_world_seconds": 4.0311049073934555,
+        "maximum_mid_freeze": 1.0,
+        "restored_mid_freeze": 0.0,
+        "jets_stopped": true,
+        "downward_jet_bounds": true,
+        "range_and_occlusion_refused": true,
+        "repeat_use_refused": true,
+        "native_collision_sweeps_blocked": true,
+        "other_bays_unchanged": true
+      },
+      {
+        "bay": "C",
+        "samples": 101,
+        "end_world_seconds": 4.016288582235575,
+        "maximum_mid_freeze": 1.0,
+        "restored_mid_freeze": 0.0,
+        "jets_stopped": true,
+        "downward_jet_bounds": true,
+        "range_and_occlusion_refused": true,
+        "repeat_use_refused": true,
+        "native_collision_sweeps_blocked": true,
+        "other_bays_unchanged": true
+      },
+      {
+        "bay": "D",
+        "samples": 105,
+        "end_world_seconds": 4.028744600713253,
+        "maximum_mid_freeze": 1.0,
+        "restored_mid_freeze": 0.0,
+        "jets_stopped": true,
+        "downward_jet_bounds": true,
+        "range_and_occlusion_refused": true,
+        "repeat_use_refused": true,
+        "native_collision_sweeps_blocked": true,
+        "other_bays_unchanged": true
+      }
+    ],
+    "cvar_restored": true
+  },
+  "native_hashes_unchanged": true,
+  "original_source_hashes_unchanged": true,
+  "protected_native_file_count": 217,
+  "owner_files_match_verified_game": 201,
+  "owner_project_launched": true,
+  "limits": [
+    "Frost keeps a fine granular edge and grain during its ramp in ordinary TSR gameplay frames. Full-frost state covers the windows; restored center is clear.",
+    "C original front ribs remain and obstruct parts of the character from some views; they were not removed from the original mesh.",
+    "23 numerical local seating-span flags remain recorded at irregular source recesses. Closed supports bridge these spans; reviewed illuminated side/oblique views show no floating added panes or consoles.",
+    "Acceptance is this technical/visual review, not owner preference, physical-key validation or packaged performance profiling.",
+    "Uncooked isolated native game; no packaged load-time, frame-time or resident VRAM benchmark.",
+    "The same native controller action was invoked; physical keyboard/controller input remains untested.",
+    "Display values remain animated authored artwork, not live game telemetry.",
+    "Owner uncooked comparison-map smoke passed; production game-mode interaction and physical keys remain untested."
+  ],
+  "raw_receipt_sha256s": {
+    "CryoFitV4Angles_20261022T051925Z_27116.json": "1ab70dd686d66e79e72ea22596199b3a77065c42c67b0dd6936afbee09e591e3",
+    "CryoInteractionRuntime_20261022T051814Z_35888.json": "4fbd861feee9465c77279285ab0541a3d6bb516c55439b61cb11da9691f5d949",
+    "CryoVisualAcceptance_Final.json": "096198afdb242fc7600cea319908b7712b7dd3d121df70b1c5db6d2b30ce1e10"
+  },
+  "visual_review": {
+    "accepted": true,
+    "owner_preference_accepted": false,
+    "observations": [
+      "Frost keeps a fine granular edge and grain during its ramp in ordinary TSR gameplay frames. Full-frost state covers the windows; restored center is clear.",
+      "C original front ribs remain and obstruct parts of the character from some views; they were not removed from the original mesh.",
+      "23 numerical local seating-span flags remain recorded at irregular source recesses. Closed supports bridge these spans; reviewed illuminated side/oblique views show no floating added panes or consoles.",
+      "Acceptance is this technical/visual review, not owner preference, physical-key validation or packaged performance profiling."
+    ],
+    "model_quality": {
+      "A": {
+        "quality": "Clear central character and tail silhouette with the smallest resource budget. Original armor and enclosure detail are softer than D. Final side views show fitted glass and supported screens."
+      },
+      "B": {
+        "quality": "Broad front window and centered character with moderate geometry. Fur and suit detail remain softer despite the 8K color map. Fitted screens stay within the original frame."
+      },
+      "C": {
+        "quality": "Four joined window sectors keep the hero, tail, cyan glow and fog visible around the chamber. The rear pane now clears the tail. Original front ribs still divide the reveal."
+      },
+      "D": {
+        "quality": "Strongest fur, tail and armor separation. Glass and front HUD follow the opening, and all three original bottom consoles now use the matching display treatment. Best hero-detail candidate of these four."
+      }
+    }
+  },
+  "updated_utc": "2026-10-22T05:38:04.919955+00:00",
+  "owner_build": {
+    "status": "SUCCEEDED",
+    "actions": 134,
+    "seconds": 89.75,
+    "log_sha256": "dbb25bfff24e36704c57aac82690712908ff3a41081d809051eed7804ba93d69",
+    "receipt": "D:\\Codex\\CryoComparison_20261021\\work\\CryoOwnerBuildFinal.json",
+    "receipt_sha256": "1bedc1c701d8347c69fd559cd17e17f9e8ea932e26f6a1d4edd64564fe08c884",
+    "source_plan_sha256": "17ebb43fd8b490bbc07f13eb6fa3592e7e6fc36fadda996af78ee8ff6f1144ee",
+    "owner_binaries_after_build": [
+      {
+        "relative_path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+        "bytes": 5749248,
+        "sha256": "da147e089ab80c8208ed2495ab3db2b5accf94838b744c5fd79d6b55c8dfd4f7"
+      },
+      {
+        "relative_path": "Plugins/SSCryoRuntime/Binaries/Win64/UnrealEditor-SSCryoRuntime.dll",
+        "bytes": 330240,
+        "sha256": "3a9a585ec99ef98248a3f0b8c73f0eb3c05e4b5eb20eed155146d9dfe0b04acc"
+      }
+    ]
+  },
+  "owner_compatibility_smoke": {
+    "status": "OWNER_NATIVE_COMPATIBILITY_SMOKE_PASS",
+    "verified_installed_package_count": 217,
+    "verified_cryo_package_count": 201,
+    "game_instance": "/Script/SpaceSurvival.SSGameInstance",
+    "configured_chamber_count": 4,
+    "protected_files_unchanged": true,
+    "fog_restored": true,
+    "first_observed_reset_s": 4.006387498229742,
+    "actual_mid_reached_one": true,
+    "native_jets_active_with_nontrivial_bounds": true,
+    "limits": [
+      "One uncooked owner-project compatibility cycle using the native preview controller action.",
+      "Physical keys, production game-mode interaction, packaged performance and owner visual acceptance are not tested.",
+      "No asset/config/save-game writes or rendering/effect parameter overrides requested."
+    ],
+    "sample_count": 99,
+    "receipt_sha256": "0c931a6db211f55af9e0f6427e2c7a7b85f8b956dc1b3f9b089459ef8e30d216",
+    "log_sha256": "d918e6e677705df0d3b0b043a05fcee3d00405c4d0411932c39e99b0ae9103b7",
+    "exit_code": 0,
+    "startup_diagnostics": [
+      "Existing EditorToolset/ToolsetRegistry Python initialization errors: AgentSkill and PythonTestRunner are unavailable under -game; these precede the observer, whose errors list is empty.",
+      "Chromium usage-statistics registry access error; TEDS widget registration, ShipCore startup and slow Python command warnings.",
+      "The native compatibility assertions pass; this is not a zero-error startup-log claim."
+    ]
+  }
+}

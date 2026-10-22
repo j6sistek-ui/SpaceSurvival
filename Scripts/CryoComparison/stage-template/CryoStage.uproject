@@ -4,12 +4,44 @@
   "Description": "Isolated four-chamber asset comparison authoring",
   "DisableEnginePluginsByDefault": true,
   "Plugins": [
-    { "Name": "PythonScriptPlugin", "Enabled": true },
-    { "Name": "EditorScriptingUtilities", "Enabled": true },
-    { "Name": "Niagara", "Enabled": true },
-    { "Name": "ChaosNiagara", "Enabled": true },
-    { "Name": "ACLPlugin", "Enabled": true },
-    { "Name": "SequencerScripting", "Enabled": true },
-    { "Name": "LevelSequenceEditor", "Enabled": true }
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    },
+    {
+      "Name": "EditorScriptingUtilities",
+      "Enabled": true
+    },
+    {
+      "Name": "Niagara",
+      "Enabled": true
+    },
+    {
+      "Name": "ChaosNiagara",
+      "Enabled": true
+    },
+    {
+      "Name": "ACLPlugin",
+      "Enabled": true
+    },
+    {
+      "Name": "SequencerScripting",
+      "Enabled": true
+    },
+    {
+      "Name": "LevelSequenceEditor",
+      "Enabled": true
+    },
+    {
+      "Name": "SSCryoRuntime",
+      "Enabled": true
+    },
+    {
+      "Name": "CascadeToNiagaraConverter",
+      "Enabled": true,
+      "TargetAllowList": [
+        "Editor"
+      ]
+    }
   ]
 }

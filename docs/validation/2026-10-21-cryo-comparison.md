@@ -1,4 +1,4 @@
-# Four-way cryo comparison — October 21, 2026
+# Historical v3 cryo comparison — October 21, 2026
 
 Scope: finish all four owner-supplied GLBs consistently, retain all four native
 Unreal variants, then compare appearance and runtime load risk. The owner's
@@ -6,7 +6,23 @@ reference images establish glass, icy edges, readable blue screens and cold
 atmosphere; they are visual references, not instructions embedded in a document.
 Native volumetric fog and Niagara are explicitly required.
 
-## Prepared and saved evidence
+**Historical disposition: v3 fit rejected by the owner.** Current source, build,
+fit and interaction state is in the [October22 receipt](2026-10-22-cryo-fit-interaction.md).
+The supplied side view reveals glass, status and HUD surfaces floating away
+from the chamber frame. Correct all four using the same finish recipe and
+inspect the fit from all angles in Unreal before renewing the visual verdict.
+The playback/resource/adoption receipts below describe v3 and remain historical
+evidence; their runtime pass does not establish acceptable frame alignment.
+PR86 remains unmerged. New source snapshots, resource counts, native views and
+adoption hashes are required after the v4 correction.
+
+The owner's added walk-up action requires upper nozzles to inject downward fog,
+all windows to frost, and normal appearance to return after four seconds. The
+[native plugin and terminal bridge build](2026-10-22-cryo-interaction-build.json)
+passes; saved asset bindings, natural runtime cycle/reset and rendered effects
+remain under verification. The v3 no-interaction limitation below is historical.
+
+## V3 prepared and saved evidence
 
 The local `glb-baseline.json` inventories the four untouched downloads. Full
 source hashes and resource counts are preserved in
@@ -14,7 +30,7 @@ source hashes and resource counts are preserved in
 The [pipeline README](../../Scripts/CryoComparison/README.md) records equal
 treatment and the private storage boundary.
 
-The final raised-console assemblies supersede the earlier 13-component finish:
+The v3 raised-console assemblies superseded the earlier 13-component finish:
 all four have 19 components across 12 roles. Each console has dark backing,
 glass raised 4 cm, a transparent generated HUD at 4.25 cm and a narrow frame;
 the native HUD material scans every 5.5 seconds. Original body topology and
@@ -52,7 +68,7 @@ request in this editor capture. Four saved actors and changing interior pixels
 therefore do not establish live Niagara playback. The separate actual-game
 activation, bounds and visible-mist check below closes that specific gap.
 
-## Native game playback and visual review
+## V3 native game playback and superseded visual review
 
 The accepted run `CryoGameRuntime_20261022T031733Z_31568` uses the real renderer
 in an uncooked native game world. [Runtime receipt](2026-10-21-cryo-runtime.json)
@@ -70,14 +86,15 @@ Python startup command, about 2.47 seconds; no material-usage warning remains.
 This establishes native presentation playback, not production-map integration,
 owner-project launch, packaged load time or GPU performance.
 
-Lead visual review favors **D for the hero presentation** and **A for lower
-resource cost**. D preserves the strongest chamber/occupant detail in the native
+The earlier lead visual review favored **D for the hero presentation** and **A
+for lower resource cost**, but the later owner fit rejection supersedes visual
+acceptance. D preserves the strongest chamber/occupant detail in the prior native
 views but also has the highest geometry and uncooked storage cost. A offers the
 lowest geometry count and the lower body-texture tier. B/C remain available for
 owner comparison; no unsupported numeric quality score is assigned. Final owner
-preference remains open.
+preference remains open after v4 correction and all-angle review.
 
-## Static resource comparison
+## V3 static resource comparison
 
 [Sanitized metrics](2026-10-21-cryo-resources.json) come from
 `cryo-costs-final.json` at 2026-10-22T03:15:23Z. All four source hashes still
@@ -103,7 +120,7 @@ they are not an FPS or load-time ranking. C shares A's body-texture tier but has
 more geometry; B shares D's texture tier with fewer triangles. Source body
 resolutions have not been reduced for any model.
 
-## Retained failures and limits
+## V3 retained failures and limits
 
 - The first commandlet-only authoring run lacked `StaticMeshEditorSubsystem`.
   The full offscreen Editor supplied the required subsystem. This is an editor
@@ -127,7 +144,7 @@ resolutions have not been reduced for any model.
   host. Actual native game BeginPlay/EndPlay observation supplied the accepted
   playback/restoration evidence; no successful Simulate run is claimed.
 
-## Storage and release
+## V3 storage and release
 
 Non-Unreal work and revisions are on `D:/Codex/CryoComparison_20261021`. The
 original task paths on C: are junctions, with a hash-verified move receipt.
@@ -148,10 +165,11 @@ project reload. Native game playback was verified in the isolated stage.
 No current gameplay map, playable hero, service, save, C++ module or packaged
 release is changed. The isolated source worktree is
 `codex/cryo-four-way-review`; owner checkout edits remain outside this PR.
-Owner selection and any later production integration remain tracked under
+V4 frame fitting, renewed native verification, owner selection and any later
+production integration remain tracked under
 [RPT-20261021-CRYO](../KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
-## Source checks
+## V3 source checks
 
 The recipe snapshots compile with the existing Python interpreter;
 `Scripts/CheckProject.py` passes all 45 structural checks,
@@ -160,4 +178,5 @@ Docker execution remains unavailable because the local daemon is not running;
 the added container recipe has not been run. No C++ source changes or full game
 rebuild/cook are part of this asset-review check. Native fresh-load rendering is
 separate evidence above. Native game playback and owner-copy identity are also
-verified above; owner selection and production performance remain unconfirmed.
+verified for v3 above. V4 geometry, native fit/playback and adoption are pending;
+owner selection and production performance remain unconfirmed.
