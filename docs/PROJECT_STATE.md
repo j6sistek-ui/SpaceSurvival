@@ -1,5 +1,22 @@
 # SpaceSurvival project state
 
+**October21 cryo comparison:** Four owner-supplied GLBs receive a shared finish
+in a separate native review scene. The isolated UE 5.8.4 scene now has 19 mesh
+components per chamber, raised transparent console HUDs and a shared breathing
+light loop. It stores 124 assets plus a comparison map, including ten recovery
+assets. Real-renderer/editor-sequence checks exist, and all 125 native files are
+now hash-verified in the owner project. That project was not launched. Native
+game playback passes in the isolated stage: two natural loops, four active
+bounded Niagara systems, matching light phase and fog-state restoration. The
+lead favors D for hero detail and A for resource efficiency; owner selection
+and production performance remain open.
+Source recipes/provenance are tracked, while generated native content
+under `Content/SpaceSurvival/CryoComparison` and D:-stored Blender/GLB revisions
+remain local. The exact review namespace is excluded from cooking. Current
+gameplay maps, C++ binaries and published package are unchanged.
+[Evidence/storage](validation/2026-10-21-cryo-comparison.md);
+[active review](KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
+
 **October14 PR69 reconciliation:** An isolated CPU Editor build succeeds after preserving current main conversations/characters and prior station/boarding work. The owner checkout/game DLL/native map/content and packaged release are unchanged. Station implementation remains held and moves to a focused draft PR. The old five-path source cook failure is repaired without running a cook. [Exact checks and limits](validation/2026-10-14-pr69-closeout.md).
 
 **October14 owner closure:** Owner authorizes merging PR72 and closes Cyborg and Silver for now. The saved native checkpoint below stands; outstanding broader quality/voice/performance/package limits are historical limits, not active character work. Scoped disposable-file cleanup preserves current assets, sources and recovery evidence.

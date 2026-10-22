@@ -1,5 +1,29 @@
 # Open work and owner review
 
+## RPT-20261021-CRYO — four-way chamber comparison
+
+**Open / owner selection.** The owner requests all four supplied cryogenic
+chambers finished identically before judging quality or runtime load risk, with
+glass, generated readable screens/hologram, native Unreal fog and Niagara. The
+separate comparison namespace has been saved in an isolated UE 5.8.4 project.
+The later transparent-console finish and identical cyan breathing lights have
+real-renderer/editor-playback evidence. All four are copied into the owner
+project with matching hashes. Final native-game verification passes: 66 samples,
+two natural loops, four active bounded Niagara systems, identical light phase
+and fog distance restoration. A rejected checkerboard trial required a material
+usage fix before the final three runtime views passed lead visual review.
+The lead favors D for hero detail and A for lower resource cost; owner selection
+remains open. The owner project itself has not been launched for this review.
+[Evidence and limits](validation/2026-10-21-cryo-comparison.md).
+
+Keep all four variants available locally for owner comparison. Non-Unreal work
+and revisions reside on D:; originals are preserved. Native assets are private
+and explicitly excluded from cooking. The hologram is animated authored art,
+not live telemetry. This request authorizes the separate asset review, without
+reopening unrelated station/character work below. Native appearance/motion checks
+and a bounded resource comparison are recorded; close after the owner's selection.
+No packaged or gameplay performance acceptance follows from an import.
+
 **October14 PR closeout — CPU work only.** PR69 reconciles with current main; station follow-ups move to a focused draft PR. All in-game edits remain held. The old five-path source cook failure is superseded by155 covered paths/zero missing; no cook/release is claimed. [Reconciliation evidence](validation/2026-10-14-pr69-closeout.md). Cyborg/Silver remain closed; older paragraphs do not reopen them.
 
 **RPT-20261014-01 — Cyborg import and deformation: CLOSED FOR NOW by owner, October14.** Owner authorizes merging PR72 and closing both character topics. The adopted six-clip repair and current-module native verification remain the recorded outcome. Broader non-pole shoulder limits are retained as history; no further character work is scheduled unless reopened. Closure is an owner scope decision, not a new all-animation, performance or packaged validation claim. [Pole repair](validation/2026-10-14-cyborg-pole-twist.md); [current verification](validation/2026-10-14-silver-ponytail.md).

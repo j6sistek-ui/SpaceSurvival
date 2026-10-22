@@ -1,5 +1,16 @@
 # Build and run
 
+**October21 separate cryo review:** the native map is
+`/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison`, with four labeled
+variants and saved comparison cameras. The [bundle guide](../Scripts/CryoComparison/README.md)
+explains the private content/dependencies, D: storage and container/source
+checks. Native authoring uses an isolated UE 5.8.4 offscreen Editor; the final
+review files are now hash-verified in the owner project. Native game-world
+autoplay, active Niagara and fog-state restoration pass in the isolated stage;
+the [receipt](validation/2026-10-21-cryo-comparison.md) records scope and limits.
+The copy was not followed by an owner-project editor launch. This is not a replacement
+launch map or new packaged build; it is explicitly excluded from cooking.
+
 **October 13 Silver body-dynamics build:** `Scripts/Build.ps1 -Target Editor` succeeds; current runtime module DLL hash is `f731b83f`. The saved private Silver Blueprint includes the new `SSSoftTissueComponent`, configured as **BodyDynamics**. Open her existing apartment Blueprint to tune its Regions/Spring settings, save, and start a fresh Play session. Launchers and tool dependencies are unchanged; this does not update the packaged game. [Validation and settings](validation/2026-10-13-silver-runtime-springs.md).
 
 **October 1 station integration:** the current development checkout combines the repaired game with Wayfarer Exchange and its furnished apartment. The editable station and separate building sandbox remain preserved. The Windows package and focused packaged station smoke pass at e6c2a87; itch0.1.22-alpha upload is in progress. [Project State](PROJECT_STATE.md#source-build-and-release) owns the final source, build and published identity. Source presence or a desktop shortcut does not prove an updated itch installation.

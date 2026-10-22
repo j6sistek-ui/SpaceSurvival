@@ -13,6 +13,10 @@ __pycache__/
 .agent/local/
 Build/Windows/FileOpenOrder/
 
+# Private generated cryo review assets and the locally derived Niagara system.
+# Source recipes/provenance are tracked; this is not a native-content backup.
+/Content/SpaceSurvival/CryoComparison/
+
 # Owner-licensed Fab source and local content (never publish raw assets).
 User downloaded assets/
 Content/Asteroid_Library/

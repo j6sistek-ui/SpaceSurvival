@@ -1,0 +1,669 @@
+{
+  "utc": "2026-10-22T03:06:21.176660+00:00",
+  "status": "ADOPTED_NEW_NAMESPACE_AND_NIAGARA_FIX_HASH_VERIFIED",
+  "file_count": 125,
+  "bytes": 178288150,
+  "donor_files_unchanged": 16,
+  "original_and_import_hashes_unchanged": 106,
+  "owner_loaded_in_editor": false,
+  "config_changes": [
+    "Exact CryoComparison NeverCook entry",
+    "Exact local native namespace gitignore entry"
+  ],
+  "files": [
+    {
+      "relative_path": "FX/NS_CryoMist.uasset",
+      "bytes": 973065,
+      "sha256": "9bb2cc86f4e67211f5591abb68eba4c9ee50413e5b5bf32548e10dc320f648c7"
+    },
+    {
+      "relative_path": "Maps/L_CryoComparison.umap",
+      "bytes": 278732,
+      "sha256": "f452975c0e5d70721cea51ca093a856da29e96f321e15200af5c5d614d9d58a7"
+    },
+    {
+      "relative_path": "Materials/M_A_Body.uasset",
+      "bytes": 17925,
+      "sha256": "96bdab751edf51b8aff8634d03bd84c519b5bd5af18ddfa038ac443ebed15cde"
+    },
+    {
+      "relative_path": "Materials/M_B_Body.uasset",
+      "bytes": 18117,
+      "sha256": "02969348c9fe951854f34545688ece2ea77e2bde57c017b98c8a8e7e3b3c62bc"
+    },
+    {
+      "relative_path": "Materials/M_C_Body.uasset",
+      "bytes": 17430,
+      "sha256": "71a01e6b8886a62d96d2bad3138ee53d6fee9bfa35f2e9ec16e48b29074419b6"
+    },
+    {
+      "relative_path": "Materials/M_Console.uasset",
+      "bytes": 19849,
+      "sha256": "916c7d8f0a1c027f457f3bdfebd0a3f89d25348ac79c75af9454c4991695fcdf"
+    },
+    {
+      "relative_path": "Materials/M_ConsoleBacking.uasset",
+      "bytes": 9046,
+      "sha256": "17ceb1d5793a6781782bc888497b2e1efa19ec5374df33e325fd1923aecce778"
+    },
+    {
+      "relative_path": "Materials/M_ConsoleFrame.uasset",
+      "bytes": 8514,
+      "sha256": "23d60c25c9eebc36e865a29991ff63f52006607acb1529caa896a3774b481e5d"
+    },
+    {
+      "relative_path": "Materials/M_ConsoleGlass.uasset",
+      "bytes": 10278,
+      "sha256": "d9b5837420b7040a871d539b41b808a2fed799b64ec177e1ac61eee6ef279c03"
+    },
+    {
+      "relative_path": "Materials/M_ConsoleHUD.uasset",
+      "bytes": 16375,
+      "sha256": "07891451862458d1ff1c9f7113f69442287d7cd6efe8a74143e53ffdf9fd617a"
+    },
+    {
+      "relative_path": "Materials/M_D_Body.uasset",
+      "bytes": 17864,
+      "sha256": "a4c02f52848bb97a07e2777ce170932b556764550e9a2f20306e50827a8468c7"
+    },
+    {
+      "relative_path": "Materials/M_Frost.uasset",
+      "bytes": 13506,
+      "sha256": "3be43d2f803e218fffd3eb574a963de91c7842e0a50747814dd84464b82fbead"
+    },
+    {
+      "relative_path": "Materials/M_Glass.uasset",
+      "bytes": 10669,
+      "sha256": "29c93ab1ecb3e6d91427999da6f5522d251fdec5612f3fbbfe7239dbc38587a6"
+    },
+    {
+      "relative_path": "Materials/M_Holo.uasset",
+      "bytes": 15983,
+      "sha256": "7f052c29f53cd6752ccaad67e4becb62d847705f420c15678b21f751f26d35f0"
+    },
+    {
+      "relative_path": "Materials/M_Housing.uasset",
+      "bytes": 10366,
+      "sha256": "d2929ebd5b290dc521f0e8659f4bdc1362a596eb9aeccb9595eb5680fba6767e"
+    },
+    {
+      "relative_path": "Materials/M_Mist.uasset",
+      "bytes": 13497,
+      "sha256": "e2e93bf777f2ad7e52c08ce5143b936ce69f836078f8121622e8b5039e4e38f3"
+    },
+    {
+      "relative_path": "Materials/M_NiagaraColdMist.uasset",
+      "bytes": 14002,
+      "sha256": "06d09b7a55b05bd6c88afb62571358b789f9c61224abfb4941df930f2b9e6b22"
+    },
+    {
+      "relative_path": "Materials/M_ReviewLabel.uasset",
+      "bytes": 20524,
+      "sha256": "bf2f4f1dca628ee2f777532cf11af088bb6da9e5e58c4df42bed23e41b0ca1d7"
+    },
+    {
+      "relative_path": "Materials/M_StageFloor.uasset",
+      "bytes": 10395,
+      "sha256": "eab8c03f076d4d5baf714669bb5ccbe895b0fc08b60b81b7419cdc794a52f0f9"
+    },
+    {
+      "relative_path": "Materials/M_Status.uasset",
+      "bytes": 20223,
+      "sha256": "ccd2079318bb0ce0c97b1b55b58712b9d27c19008b3e4f9602fa6ed9e7f1f26d"
+    },
+    {
+      "relative_path": "Materials/M_Trim.uasset",
+      "bytes": 9232,
+      "sha256": "9bfc247acf095e93d82cf09ecdf185b62f40761130c4459b390ea9451f26790b"
+    },
+    {
+      "relative_path": "Materials/MI_NiagaraColdMist.uasset",
+      "bytes": 7924,
+      "sha256": "e136ff5788eb78182092e69b3a692d035f3c7ead277c3834261607b6a5534f22"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Body.uasset",
+      "bytes": 788767,
+      "sha256": "ffed3435fedd529e5dc53d81e868af5aca8b20b0cd8dff338d9ad7371a3b31e2"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_1.uasset",
+      "bytes": 17738,
+      "sha256": "666957afcc6120033eee00d2ae6a009bf62c96ed0056fa5ecb9893352c4f8b03"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_1_Backing.uasset",
+      "bytes": 15808,
+      "sha256": "89d454fcb44ca4e896a03115a81dac76573978e26012c8543a77914738dac29e"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_1_Frame.uasset",
+      "bytes": 17233,
+      "sha256": "f3c1f13e07d52b431241a782040b224907b96ce638e4662e35b04ca9e7ec5691"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_1_Glass.uasset",
+      "bytes": 14733,
+      "sha256": "595313c7a03938e5b0467c55985b20c8564a88776b7c49b0c5f6e12516002721"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_1_HUD.uasset",
+      "bytes": 15859,
+      "sha256": "d99f164c44b4a99c0e3ecd84b0f878b0be574fe9e1e90fbdbffad863a2304a33"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_2.uasset",
+      "bytes": 19402,
+      "sha256": "5670824317a2c8eb3ec711e4efedaa51710b7c0cb7c9a32415e84ca880c76cf7"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_2_Backing.uasset",
+      "bytes": 15841,
+      "sha256": "998b59de8cd347191a0bf24b86b6f0454d4d9d385c05e6c3d9d098f1c2051116"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_2_Frame.uasset",
+      "bytes": 17463,
+      "sha256": "b133810ba69188c3c9ee016c3715bc2ed4387421dac1d700a731d2032e7a760b"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_2_Glass.uasset",
+      "bytes": 14714,
+      "sha256": "88151cb7c378f3d89f2770c3d2a03721d79af0df799081274dbed0296516cf68"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Console_2_HUD.uasset",
+      "bytes": 16247,
+      "sha256": "66ec17f0361af6b3c93338d4624bbaa89730e3dc498b420696052dd6d4f01487"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Frost.uasset",
+      "bytes": 68580,
+      "sha256": "9c817d27501e1f47392f6f7574c73ee518a5348b044d901904f022ba99a23ffc"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Glass.uasset",
+      "bytes": 66141,
+      "sha256": "534dfdc81f0123740a0df9f46e3f199a26d016108330801e906568f86e209cc3"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Holo.uasset",
+      "bytes": 38615,
+      "sha256": "3e069ca4ee7aaa66426f35a34eb859017ad7693c7672244e03ae80f798dc2944"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Housing.uasset",
+      "bytes": 19313,
+      "sha256": "4e29e4c0d9276f1fe9e2f6e4843134a087e1cdaad913510930299ad64df62336"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Mist_1.uasset",
+      "bytes": 15246,
+      "sha256": "bb0467621c83ba091408c768fece0160167127541ee4dce8cbcb1fb73f51a75c"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Mist_2.uasset",
+      "bytes": 15237,
+      "sha256": "b9e5ad7bbaa5a06583398cdb42bd7eeb50177b9a2e69195b4700091f4d45f174"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Mist_3.uasset",
+      "bytes": 15242,
+      "sha256": "498f6a3cabb4a6c485cfe538b7857058e162582f014d1cf2ee54d17a09714c7c"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Mist_4.uasset",
+      "bytes": 15223,
+      "sha256": "8144492feaf9d4940400c3c7c11215ae82907448ba9d58f8e75fc246fd796e6d"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Status.uasset",
+      "bytes": 20134,
+      "sha256": "6c680f92ec9b27f8c6c04a04031387f0854808793b193b35fc27c3be562372b0"
+    },
+    {
+      "relative_path": "Meshes/A/SM_A_Trim.uasset",
+      "bytes": 15121,
+      "sha256": "e72ac38fe22d06ddeacc912714e807b94cc802e93f880e2375ef40de4155ee41"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Body.uasset",
+      "bytes": 1789550,
+      "sha256": "8b5816408c676b86cd3939ec45a599c2a7708a2107dda41704606d9feb8a030d"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_1.uasset",
+      "bytes": 18390,
+      "sha256": "63f23eb269d41c24912bbb2611e15093e515673d1bd59a413714a1d05a581b5b"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_1_Backing.uasset",
+      "bytes": 15947,
+      "sha256": "b845ec24c618d03f9c059b7f20dd25da3553b7f89c6f44b274fb60b2ae2ac3b0"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_1_Frame.uasset",
+      "bytes": 17498,
+      "sha256": "a2c60405a7ba1ff88be010d4e3f5eac4dbea4282ad636a267af2c287f4693330"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_1_Glass.uasset",
+      "bytes": 14755,
+      "sha256": "fe39b1fcff5f68d0ea0ef7ea592b146a88410384923ec0f1484f33ed2b37beee"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_1_HUD.uasset",
+      "bytes": 16084,
+      "sha256": "989ca755ea807fcde5185dcaf279923b8fb019225b0d36d87613bd42bd2b3c08"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_2.uasset",
+      "bytes": 19318,
+      "sha256": "2760644a3dd554663a7301dd5c92930bfec984a65eb6dc223b5360640c3602e6"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_2_Backing.uasset",
+      "bytes": 15941,
+      "sha256": "49473a56f9198b941bbcfa1389202995718f6940fd8ffa05899a2126dec9265a"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_2_Frame.uasset",
+      "bytes": 17399,
+      "sha256": "2d15ec05996e16e3780c9263c3c472d48865f1c356883e479965935da83eef19"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_2_Glass.uasset",
+      "bytes": 14716,
+      "sha256": "b3dbc39e79936c0d41412523b0817184a68c68d3bc1afceec674961c9d1e382f"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Console_2_HUD.uasset",
+      "bytes": 16334,
+      "sha256": "1bc5b38d8622a82e8d9305ce8061a3093ea135810d8394d1007611e28aa1439b"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Frost.uasset",
+      "bytes": 67499,
+      "sha256": "2957adf7357ca81a72ee081a64ea322bb401257e62582e1bc048e601f58661cd"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Glass.uasset",
+      "bytes": 65551,
+      "sha256": "1da139bad7c1472a612827e6c8d432d451562810dd9ca891ac53c6eae6d647d6"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Holo.uasset",
+      "bytes": 38412,
+      "sha256": "d6696ec19cdeb86d3f2d5bf5e83df06a12ab959c0628a357f642347db6db0bb4"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Housing.uasset",
+      "bytes": 19314,
+      "sha256": "31ef58838e143446507a3ad160b0695c219f2cb0f395baf08945791479ec2ee1"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Mist_1.uasset",
+      "bytes": 15242,
+      "sha256": "7def6118827a5432bc5c8873f6a6ddf35f7051c69279c5319e01b1a61dffc5eb"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Mist_2.uasset",
+      "bytes": 15241,
+      "sha256": "7383abc93382b10f47055d801ee2b100d2ee6b5c4f2de8c443232b3e7deb1a93"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Mist_3.uasset",
+      "bytes": 15234,
+      "sha256": "d670fc32718aac967786083b34f6e22b6e34ef4470bdcd8a8e6090cae0defdae"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Mist_4.uasset",
+      "bytes": 15232,
+      "sha256": "0455fb464719a440198f032caae3b447cf9f7b0252c0b1b6e1f57fbbba013de1"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Status.uasset",
+      "bytes": 20134,
+      "sha256": "7e892a459d811cfb9da55e728bf46ad4832fe76fe55d691e66c30cce9381a7c3"
+    },
+    {
+      "relative_path": "Meshes/B/SM_B_Trim.uasset",
+      "bytes": 15125,
+      "sha256": "64569d3f9b477b19eb77f452157239ced435ddd5f9704c69ce5f31c5a27549ba"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Body.uasset",
+      "bytes": 2076339,
+      "sha256": "e50c857e0b63246c9c84cf66ee1b04ca1b38bb452e27f8fbc89c1b117b5f7395"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_1.uasset",
+      "bytes": 17753,
+      "sha256": "b0de87445d76bbfab5c67d567ef713c0e6a0b2ddbed3646f4bad1f63084a50a5"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_1_Backing.uasset",
+      "bytes": 15933,
+      "sha256": "1442b7e7901928e4191f61ed6c98f3b2c9b43f7e906874af4c9c2733362401cc"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_1_Frame.uasset",
+      "bytes": 17273,
+      "sha256": "47df7e985fb826af94dff1c84ab3842698b088ff85752d421c86c7ed1d4f35a8"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_1_Glass.uasset",
+      "bytes": 14752,
+      "sha256": "f0ee64e4be0d2f46cd3f5bb2183fe8834a595efb6f009d3c901e48ec4b36ae71"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_1_HUD.uasset",
+      "bytes": 15878,
+      "sha256": "09ed2b16ca6edd1eb120d6a935ff4246203f0d6e778bec3454eb7a27b46aecc3"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_2.uasset",
+      "bytes": 19980,
+      "sha256": "dfeed7a4900a5a89bb909f4f2eafe8d1311ff7369879494c20e8e2f3898ed8b5"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_2_Backing.uasset",
+      "bytes": 15907,
+      "sha256": "44591a1961d59acab74c3dfc09531ee8d773f22704368656ca03cac25e60c58e"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_2_Frame.uasset",
+      "bytes": 17255,
+      "sha256": "9607aebe3b9687af0a7dab9592b087e1fce29aad51225741af9ba8ef4d635782"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_2_Glass.uasset",
+      "bytes": 14732,
+      "sha256": "3f81885dd4532f0b4b347ab618414c202f54c52469d63a72d4a88e04aaba45b4"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Console_2_HUD.uasset",
+      "bytes": 16463,
+      "sha256": "969bdcb329bca78372fca26632c751038a3c51b18a4999fe436775e3487711c7"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Frost.uasset",
+      "bytes": 67232,
+      "sha256": "115a86c988701850ae7986cb3f7cea580a0c2db5b9096a99de5cd0d7957a1f0e"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Glass.uasset",
+      "bytes": 64844,
+      "sha256": "d9e505dbb076a2e91fd861f275e70e2370744155bbe7e6f43896f09abba8a082"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Holo.uasset",
+      "bytes": 38129,
+      "sha256": "1936720d885eb8d4ca5343627fe7f501ef8dba2096c4cbc81260306cf141312d"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Housing.uasset",
+      "bytes": 19334,
+      "sha256": "0d7e98a3f2a5af29d8525466b44a4d3fb40bddf5fd3ab79e32fcffa69047efab"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Mist_1.uasset",
+      "bytes": 15246,
+      "sha256": "2ab0f7d801285705f9a7625743c88ae4d024232659a8506c741b2fd95522ab9c"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Mist_2.uasset",
+      "bytes": 15243,
+      "sha256": "f64e2619b12d284328025653601709cc37a84320259bc7994ec007b01a336f92"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Mist_3.uasset",
+      "bytes": 15232,
+      "sha256": "363d93ea043059d757ddacd7c4b6766440c21321b4f479244e278166bc326520"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Mist_4.uasset",
+      "bytes": 15243,
+      "sha256": "c06686f4e8518db69ae33f9ede3a1bbd2bf3368f97605ef9feb8750d5e93f26d"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Status.uasset",
+      "bytes": 20135,
+      "sha256": "4fe492ae2ea90cdbf413b50d071a3bdb48dbfe6904c290c8cbd4b0872221e477"
+    },
+    {
+      "relative_path": "Meshes/C/SM_C_Trim.uasset",
+      "bytes": 15117,
+      "sha256": "4a712398baa0476036a7a1975aa543a6d6dcd0ef3669a2b908a0f353e046b5ea"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Body.uasset",
+      "bytes": 5130084,
+      "sha256": "42f1b24f741b77ac101d3029af3813cc51e29b6cb3550042cac8b86b8cc82200"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_1.uasset",
+      "bytes": 18443,
+      "sha256": "4f948d960b16efcb73b60bb3c616a53d371dbf5e5f92957a3238cec5e72f4038"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_1_Backing.uasset",
+      "bytes": 15962,
+      "sha256": "a13f245ec371c09185b9d5ac90617d4af819787ecf11697843a0307bb97e925f"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_1_Frame.uasset",
+      "bytes": 17526,
+      "sha256": "661f6be8d9dcbcda3c716d64f9419401155eec9f9ac6fd81ce361b02ec84a995"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_1_Glass.uasset",
+      "bytes": 14723,
+      "sha256": "4ab9fa7295b1949c33f97028b6663b7ba8484b82ca66c360629e214bbbedd9b0"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_1_HUD.uasset",
+      "bytes": 16140,
+      "sha256": "24dbd6f1dca21a3ef8151b56217d1ae291736b6c15c3c4bf043af354b2fdacf5"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_2.uasset",
+      "bytes": 19186,
+      "sha256": "a5f34ea19cf9754c317d4949215fe666526846895944155ba285c6e12d5c9b89"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_2_Backing.uasset",
+      "bytes": 15753,
+      "sha256": "5579108d5213f45033b9c1bbaf184e01eeb4551ce0f815bfa86059e0c17fc797"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_2_Frame.uasset",
+      "bytes": 17213,
+      "sha256": "b111841d650f62fdc65ac1576cffe3b576117b5559fa94e5ed816d002091e660"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_2_Glass.uasset",
+      "bytes": 14699,
+      "sha256": "54bf293cb620639a8154d35b259e8fa6504597c159a906ed44fbe2a1232c46fe"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Console_2_HUD.uasset",
+      "bytes": 16217,
+      "sha256": "0bdeec8e46bf7dd9d8cec8d423683fda7a807b4ef9094f6bee1bfab135f3f170"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Frost.uasset",
+      "bytes": 68087,
+      "sha256": "47246f6cd30bde9a362fc974887f247e84fa6257241ca3255e56db30d4469a3e"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Glass.uasset",
+      "bytes": 65852,
+      "sha256": "61aeacf964e38198524bb43eff5b22bd1273615856c1a732d0d6e08900ab0226"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Holo.uasset",
+      "bytes": 38813,
+      "sha256": "c31dce95de44716085679d41a46587190de631e85c3b5fb5f43f2043bd782f66"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Housing.uasset",
+      "bytes": 19309,
+      "sha256": "73057539e9f6da06e63b4a744ccc21ceafe5aba77b8321eb0071d38887cb2203"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Mist_1.uasset",
+      "bytes": 15244,
+      "sha256": "9cc1202e62bc493f449f59afc645b919772139a24d4ea89f58e660097cc3d749"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Mist_2.uasset",
+      "bytes": 15221,
+      "sha256": "f09a74d1250f86344e01119bac0cd20853f234ca1f29e69c2e18c25bc281804c"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Mist_3.uasset",
+      "bytes": 15219,
+      "sha256": "2b1f8c2c507a4bb02e5c24c13201c43881f054276d1cc2e11303629c10970bb8"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Mist_4.uasset",
+      "bytes": 15226,
+      "sha256": "9f89e38478b2a87a5712e4fd312d9fdd7250fe9d3639bb14e302c0640e25e2b3"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Status.uasset",
+      "bytes": 20130,
+      "sha256": "9a999c2e57ba43040a0112f741d567c56b7337545adb9c61229146980c3e3eb6"
+    },
+    {
+      "relative_path": "Meshes/D/SM_D_Trim.uasset",
+      "bytes": 15126,
+      "sha256": "fc96ae1d11b8b37c8fe8c393f71e547c3b568c0105adad9e80ea34d829faf31e"
+    },
+    {
+      "relative_path": "Sequences/LS_CryoBreathing_Cyan.uasset",
+      "bytes": 40190,
+      "sha256": "34fd41a0306ac7cbb4a52c7c80b5d7e54223e995ee44a25a4faf6320dad7f5f8"
+    },
+    {
+      "relative_path": "Textures/T_A_base_color.uasset",
+      "bytes": 4154999,
+      "sha256": "4f841fe17eb73c11c3763daf8d3de3483b3b575584877709d424fe1f62074001"
+    },
+    {
+      "relative_path": "Textures/T_A_normal.uasset",
+      "bytes": 1307056,
+      "sha256": "4497b8d885e5d4cf0c7c3f715c9bf00fe216807858981992bc2883f5f7d074a3"
+    },
+    {
+      "relative_path": "Textures/T_A_orm.uasset",
+      "bytes": 12207877,
+      "sha256": "ec5a5e68dad916032c164194d74516a413d2d32f907c35f1a217d7826e9539ea"
+    },
+    {
+      "relative_path": "Textures/T_B_base_color.uasset",
+      "bytes": 13213130,
+      "sha256": "1914a0ecc00beb5668db3e3d607d0910339f3cb489d4b1e19e3b782af9a35500"
+    },
+    {
+      "relative_path": "Textures/T_B_normal.uasset",
+      "bytes": 1142379,
+      "sha256": "520757b4694009704399b154918e0049b864ea28fe4781054c78d664819581c7"
+    },
+    {
+      "relative_path": "Textures/T_B_orm.uasset",
+      "bytes": 15356301,
+      "sha256": "45de76fe783bb15ba83be5ffe8643d577c1c74fa8a7049569632b654d7c8bbbb"
+    },
+    {
+      "relative_path": "Textures/T_C_base_color.uasset",
+      "bytes": 4661025,
+      "sha256": "c5f36f9e2b55c741002a35163d679fadcd7d60409c6de464f269eff1c3b37b95"
+    },
+    {
+      "relative_path": "Textures/T_C_normal.uasset",
+      "bytes": 1902417,
+      "sha256": "4b18f863342f146d44ad3653891c5116056ac843b16ceaccff00530218fd28db"
+    },
+    {
+      "relative_path": "Textures/T_C_orm.uasset",
+      "bytes": 12943173,
+      "sha256": "25be7d5217b85ba64449144a50d4444e14af949dc6ccaecec29bfcd391a0c8a4"
+    },
+    {
+      "relative_path": "Textures/T_Cryo_Console.uasset",
+      "bytes": 1849637,
+      "sha256": "a8bf9afb4bf06679185a10b697cb7679dbfd9dbe64624bd404aee02efce98f50"
+    },
+    {
+      "relative_path": "Textures/T_Cryo_ConsoleHolo.uasset",
+      "bytes": 2106120,
+      "sha256": "a8dee70971eae2127d65d41b8fb38e2620b7525570e056d9a1760dd923790072"
+    },
+    {
+      "relative_path": "Textures/T_Cryo_Frost.uasset",
+      "bytes": 2371924,
+      "sha256": "1595ef44f45198fa06898ca09204f02b4a82206a0380c131fc63c4a8ff8671e6"
+    },
+    {
+      "relative_path": "Textures/T_Cryo_Holo.uasset",
+      "bytes": 1432162,
+      "sha256": "861c89e7c8ab5dccdf74a23ed4f0283ab49b0ad3f578d02ef89e90527305566f"
+    },
+    {
+      "relative_path": "Textures/T_Cryo_Mist.uasset",
+      "bytes": 1673220,
+      "sha256": "8013c90d5f7bbb9c3bcdd91c88579f3a6f316012f80c27e21c0c4c5934acff44"
+    },
+    {
+      "relative_path": "Textures/T_Cryo_Status.uasset",
+      "bytes": 2048180,
+      "sha256": "160836babfce8f3578b8716091082c453ff5f785e39b0188ecca1e94c3bc9e80"
+    },
+    {
+      "relative_path": "Textures/T_D_base_color.uasset",
+      "bytes": 48132390,
+      "sha256": "2e66519ee2a4f313044147a09726347fdb608330e3d1d4a9a0fab205c394e30d"
+    },
+    {
+      "relative_path": "Textures/T_D_normal.uasset",
+      "bytes": 30480042,
+      "sha256": "645a9042113dfdafb0e3f95293f523b36b8592f8fba1a3840a5f69a2200b84cc"
+    },
+    {
+      "relative_path": "Textures/T_D_orm.uasset",
+      "bytes": 8134646,
+      "sha256": "59757b9e2687496c266dad98d8f06be72ec81d597dc3ea66ee4c41dcd728e6c2"
+    }
+  ],
+  "destination": "Owner Content/SpaceSurvival/CryoComparison",
+  "backup": "Private D: task work/owner-adoption-before",
+  "owner_text_hashes": {
+    "owner_before": {
+      "DefaultGame.ini": "fae5dd53463faaffebd77888baa665358fef4e0df016ef31354a16901edbdb48",
+      ".gitignore": "6e14159ecb6bea7d89de96bbf884f0b72835ed3032afa142b99d4316a503381f"
+    },
+    "owner_after": {
+      "DefaultGame.ini": "f91feaf890225539d58961d3dceeb7788869aff3dccf00d489dc1897be894eac",
+      ".gitignore": "100708fe56243832437ecf9c0f39969b8cf91c1cc10039507c1c2363e9960ffa"
+    }
+  },
+  "follow_up": {
+    "utc": "2026-10-22T03:15:23.162243+00:00",
+    "reason": "Enable native Niagara sprite shader usage; rejected runtime checkerboard fixed",
+    "changes": [
+      {
+        "relative_path": "Materials/M_NiagaraColdMist.uasset",
+        "before": "8b72a942a02b17b83dffeb174e398d96edcf3e10b0edbe9c9ecb45c95a0b3dd0",
+        "after": "06d09b7a55b05bd6c88afb62571358b789f9c61224abfb4941df930f2b9e6b22"
+      },
+      {
+        "relative_path": "Materials/MI_NiagaraColdMist.uasset",
+        "before": "1b795a261b229e0db67da89bb615d0074d0d5a310ed0a6f5bcdb5a3f732233ab",
+        "after": "e136ff5788eb78182092e69b3a692d035f3c7ead277c3834261607b6a5534f22"
+      }
+    ],
+    "backup": "Private D: task work/owner-adoption-before/niagara-usage"
+  }
+}

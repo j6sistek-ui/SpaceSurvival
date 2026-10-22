@@ -1,0 +1,116 @@
+{
+  "captured_utc": "2026-10-22T03:20:51.909974+00:00",
+  "scope": "Task-specific source snapshots; native runtime/adoption verification still pending. Do not execute from the repository archive directory.",
+  "files": [
+    {
+      "file": "inventory_glbs.py",
+      "bytes": 6360,
+      "sha256": "6a1716d7ec8cd2c65eed358158fcf9a6e407007887ee9eea1b6a3ee73f3e74bc"
+    },
+    {
+      "file": "finish_cryo_blender.py",
+      "bytes": 14093,
+      "sha256": "415374d07b5f90e5c5c889d950d8f320e66425396cf407fb36d5690f2e63f6ad"
+    },
+    {
+      "file": "probe_niagara.py",
+      "bytes": 9969,
+      "sha256": "0e9640637b78243b0c4f0c3add4399cb2cec431c62ad81c40358ea3bd6f43a0d"
+    },
+    {
+      "file": "copy_niagara_dependencies.py",
+      "bytes": 806,
+      "sha256": "3a36bd0f5929fb24d4362affcd093d14c6d048883c78595f72c27a0aecb1b34f"
+    },
+    {
+      "file": "author_cryo_unreal.py",
+      "bytes": 40442,
+      "sha256": "e942b74911438381788aa998014de9e4a1577a95ca631724ec3ddf9b552bf3b4"
+    },
+    {
+      "file": "refine_cryo_native.py",
+      "bytes": 2430,
+      "sha256": "aa0599e978a3a2dfd47820e153aa70aedae655fec6d4cc2e681e47ddf1ed158a"
+    },
+    {
+      "file": "tune_cryo_unreal.py",
+      "bytes": 4488,
+      "sha256": "febf1e0a9e0027a56da39d926686c1a0f32ac56d7086c37723a06d628e233a81"
+    },
+    {
+      "file": "polish_cryo_unreal.py",
+      "bytes": 2791,
+      "sha256": "2300d97cb0946c7d587b6997f7fc4eab0a60e15058e9b7d7a5f0bf2ee79264e1"
+    },
+    {
+      "file": "upgrade_console_geometry.py",
+      "bytes": 19297,
+      "sha256": "8a3d3dbebd6439aea8a41d3f98deae6a5c94e3b9a947d6c886d2281bfb70709c"
+    },
+    {
+      "file": "upgrade_console_unreal.py",
+      "bytes": 4745,
+      "sha256": "f611455b6c1cfaa5705464a24dd919d21538373a58c153526ddf80577cecc878"
+    },
+    {
+      "file": "add_cryo_breathing_lights.py",
+      "bytes": 15679,
+      "sha256": "9ab7fa760e408cab543bd16278195c83b47664d8c0cfebfa83f8e0a495947ed6"
+    },
+    {
+      "file": "add_cryo_fog_preview_track.py",
+      "bytes": 9470,
+      "sha256": "59898441e939998f9e2cee8bcca464c44e7b97c5c9deb027347cd7b24ae596f1"
+    },
+    {
+      "file": "refine_display_sampling.py",
+      "bytes": 1811,
+      "sha256": "e90e345bcf4003c6a2fa523dc418b8e7ba55f20ca3602355b2cc16cd31bd8425"
+    },
+    {
+      "file": "compose_final_receipt.py",
+      "bytes": 2571,
+      "sha256": "6d39c84b541dcf53cf4b3b2a87a14b22dacf2a240509a7f7faf6b8dfea1c142f"
+    },
+    {
+      "file": "verify_cryo_final.py",
+      "bytes": 28855,
+      "sha256": "ce692200d5dc43c28dccb1a07f49c9655385df47f68a2f44f93c10ac22716d51"
+    },
+    {
+      "file": "verify_cryo_runtime.py",
+      "bytes": 19506,
+      "sha256": "083a27093e50260e7203aa22fb6f070db213f765d473d8378a5121ecd78ff516"
+    },
+    {
+      "file": "measure_cryo_costs.py",
+      "bytes": 19666,
+      "sha256": "08efd1b291f2811cb05647ad2f99d0cb7f541b512946dd88c28bd85d8ec16eb8"
+    },
+    {
+      "file": "adopt_cryo_native.py",
+      "bytes": 4117,
+      "sha256": "e5db5766adec06915d76f7352a3d4801296335a3caa3e24b1616eb9600b443b8"
+    },
+    {
+      "file": "fix_cryo_niagara_usage.py",
+      "bytes": 1475,
+      "sha256": "e881a8b04b79d2272dc37d9fb163e119aac99fbfe51c4411dfc93c6c3758aa95"
+    },
+    {
+      "file": "adopt_cryo_usage_fix.py",
+      "bytes": 2136,
+      "sha256": "d34192f8d69b830b0dbaf733919a9ad76bcdf45e98498f08affd73096831073a"
+    },
+    {
+      "file": "verify_cryo_game.py",
+      "bytes": 16239,
+      "sha256": "6a8a7c728dbdd0843021dd67321a2123a2747f008f960944ed9370d7b54c7c4c"
+    },
+    {
+      "file": "finalize_cryo_runtime_receipt.py",
+      "bytes": 2934,
+      "sha256": "10f71a17450e2e11dcdb7229c2fd2212062d921cb1af1e05209b4018b2501e45"
+    }
+  ]
+}

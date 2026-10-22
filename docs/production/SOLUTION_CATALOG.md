@@ -1,5 +1,29 @@
 # SpaceSurvival whole-project solution catalog
 
+### CRYO-20261021 — four owner-supplied chamber candidates
+
+- **Acquisition/evidence:** four local generated GLBs supplied by the owner;
+  original filenames, SHA-256 hashes and resource counts are recorded in
+  [source provenance](../../Scripts/CryoComparison/source-provenance.json).
+  No new asset purchase or host-tool installation. Native smoke reuses the
+  existing A07 Niagara Examples pack through a private derivative.
+- **Evaluation:** identical shared finish roles/artwork and fitted glass across
+  all four; final raised transparent console HUDs and matching cyan breathing
+  lights saved in an isolated UE 5.8.4 comparison. Native screenshots and editor
+  sequence-motion samples are followed by an accepted actual-game run: native
+  autoplay, active bounded Niagara, matching light phase and fog restoration.
+  Lead review favors D for hero detail and A for lower resource cost; owner
+  selection remains open. Finished triangle counts span 32,101–110,498 with the same
+  6,610 added triangles each. Two sources have 8K base color; these are resource
+  facts, not measured FPS or a quality ranking.
+- **Whole-project value:** conditional Acornaut hero/station presentation and
+  environmental storytelling option (WBS 7.1, 8.3, 10.3). Shared screens/frost/
+  hologram art can be reused, without adding cryogenic gameplay or a new roster.
+- **Timing/next check:** authorized four-way review now; integration of a chosen
+  derivative later requires placement, dependency and performance checks. All
+  four stay private/local and excluded from cook. [Pipeline/evidence](../validation/2026-10-21-cryo-comparison.md);
+  [active owner/lead work](../KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
+
 **October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.
 
 **SILVER-PONYTAIL-20261014 — owned DropBear PonytailGroom (WBS8.4/10.3):** Owner-selected on-disk pack, imported and locally adopted for Silver after current Cyborg verification. Fitted two-group derivative fixes crown/fringe/paired temples while only the tail simulates; pink hair/outfit and magenta irises are saved. Five fresh apartment views and a full dance pass scoped review. No acquisition or new runtime plugin; editor-only strand authoring uses installed HairStrandsCore. Owner appearance approval and broader contact/performance/package checks remain open under RPT-20261013-01. [Source, native hashes and evidence](../validation/2026-10-14-silver-ponytail.md).

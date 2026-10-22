@@ -1,0 +1,106 @@
+{
+  "scope": "Generated source images remain in the private D: output folder; this file contains provenance, not images.",
+  "generation_records": [
+    {
+      "name": "portrait",
+      "mode": "built-in imagegen",
+      "prompt": "Use case: ui-mockup. Asset type: production-ready flat screen texture for an Acornaut hero cryogenic chamber in Unreal. Reference image is STYLE REFERENCE ONLY: blue/cyan medical sci-fi displays. Generate ONLY one flat front-facing rectangular portrait display graphic, not a scene, not a physical monitor or frame. 1024x1536 portrait. Nearly black deep navy background, restrained ice-blue and white precision typography, cyan fine lines and diagnostic charts, premium realistic spacecraft industrial design. Large clean readable exact text in sections, in this order: \"ACORNAUT\", \"CRYO SYSTEMS\", \"UNIT 03\", \"SUSPENSION ACTIVE\", \"CORE TEMP\", \"-196 C\", \"PRESSURE\", \"1.3 PSI\", \"COOLANT FLOW\", \"NOMINAL\", \"POWER\", \"100%\", \"SYSTEMS ONLINE\". Include elegant bar meters, simple cooling circuit schematic and a crisp snowflake symbol. Text must be correctly spelled and legible. Balanced spacious layout with small technical linework but no tiny fake text, no gibberish, no unnecessary labels. All content within 8 percent safe margin. Entire canvas flat texture, no perspective, no bevel, no extruded hardware, no bloom outside canvas, no watermark."
+    },
+    {
+      "name": "console",
+      "mode": "built-in imagegen",
+      "prompt": "Use case: ui-mockup. Asset type: flat landscape 3:2 sci-fi touch-screen texture for the lower console of an Acornaut cryogenic chamber game asset. Match the supplied reference's restrained cyan and ice-blue instrumentation. ONLY the flat rectangular graphic, front view, no hardware, no perspective, no frame bevel. Deep black-navy background with crisp cyan thin separators and very legible large typography. Top title exactly \"ACORNAUT / CHAMBER CONTROL\". Three clear spaced modules: left a precise ring-shaped cryo system diagram labelled \"COOLING\", center a clean ECG line labelled \"VITALS STABLE\", right six status bars labelled \"PRESSURE 1.3 PSI\". Lower area a large clean reading \"-196 C\", next to \"SUSPENSION ACTIVE\". Along the bottom three large rectangular controls labelled \"MONITOR\", \"DIAGNOSTICS\", \"LOCKED\". A few tiny purely geometric calibration marks, no tiny generated words. High-end industrial medical UI with confident hierarchy, realistic subtle screen grain, no fake gibberish or extra text, no outside background or watermark. Flat 1536x1024 landscape texture. Keep 5 percent safe margin."
+    },
+    {
+      "name": "holo",
+      "mode": "built-in imagegen",
+      "prompt": "Use case: ui-mockup. Asset type: transparent emissive hologram HUD texture for the glass of an Acornaut cryogenic chamber in a realistic Unreal game. Generate an elegant clean FRONT-FACING flat 1024x1536 portrait graphic with a GENUINELY TRANSPARENT background. Only luminous ice-blue and subtle white linework and text, no black rectangle, no scene, no physical monitor, no perspective. Spacious typography, crisp narrow sci-fi sans-serif, light restrained glow. Exact text in four separated blocks: top small header \"ACORNAUT / CRYO\"; below a beautiful small snowflake hexagon and large \"STASIS ACTIVE\"; center three readable rows \"TEMP -196 C\", \"PRESSURE 1.3 PSI\", \"VITALS STABLE\" with a clean ECG waveform; bottom \"CHAMBER SEALED\" and a small lock icon. Text occupies less than half of the total canvas so the hero behind it remains clearly visible, especially leave the upper right and central right area transparent. Do not generate an animal, human, chamber, outline around entire image, grid backdrop or any extra text. Clean technically precise useful texture, no garbled words, no watermark. Smooth true alpha around text and symbols."
+    },
+    {
+      "name": "frost",
+      "mode": "built-in imagegen",
+      "prompt": "Use case: photorealistic-natural. Asset type: reusable transparent frost overlay texture for a curved cryogenic glass enclosure in a realistic game. Generate ONLY delicate realistic frost crystals on a GENUINELY TRANSPARENT background, 1024x1536 portrait. The frost grows inward from all four OUTER EDGES of the image like fern-shaped crystalline ice dendrites on a frozen window. Dense pale ice-blue/white rim at the outermost 3 percent, fine asymmetric branching ice feathers occupying only the outer 8 to 12 percent. Completely clear transparent central 75 percent, so a hero seen through the glass remains unobstructed. Slightly more frost at the bottom corners, sparse pinprick condensation near the border. Microscopic high-quality natural ice detail with varied scale, subtle translucent crystals, not white blobs or snowflakes pasted on glass. No glass object, no window frame, no dark background, no scene, no letters, no symbols, no glow cloud. Orthographic flat production texture. Preserve large empty transparent center."
+    },
+    {
+      "name": "mist",
+      "mode": "built-in imagegen",
+      "prompt": "Use case: photorealistic-natural. Asset type: one reusable transparent fog particle sprite for a cryogenic chamber in a realistic Unreal game. Generate a single irregular softly swirling puff of very cold vapor, wispy white and faint ice-blue. Square 1024x1024. GENUINELY TRANSPARENT background, including all outermost edges. The vapor occupies the central 65 percent with feathered soft fade to complete transparency on every side. Delicate turbulent curlicues, layered translucent internal detail and negative spaces, understated dense core, never an opaque white blob. No frost, snowflakes, text, objects, border, hard silhouette, ground, directional beam, or black rectangle. Flat texture sprite suitable for a few animated particle cards. Subtle realistic cryogenic mist; not a drawing, not billowing smoke from fire. No extraneous elements."
+    },
+    {
+      "name": "console_holo",
+      "mode": "built-in imagegen edit",
+      "instruction_summary_not_verbatim_prompt": "Replace the opaque dark screen background with genuine alpha transparency; retain clean cyan Acornaut cryogenic diagnostic linework and readable labels, without monitor hardware or perspective. Used as a separate glowing HUD layer over real glass and backing.",
+      "sha256": "a795eb4c6294edeb686749036a32f5aa2aa91268cffe1422e12f39a1fe87ecb2",
+      "alpha_validation": {
+        "minimum": 0,
+        "maximum": 254,
+        "percent_zero": 28.1,
+        "percent_below_32": 68.3
+      },
+      "reference_filename": "T_Cryo_Console.png",
+      "output_filename": "T_Cryo_ConsoleHolo.png"
+    }
+  ],
+  "images": [
+    {
+      "filename": "T_Cryo_Console.png",
+      "bytes": 1615487,
+      "sha256": "a089fbf4b0ccc073e5ffd3a95a0385211e484b7f3c277489785d2a388cf3e532",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "filename": "T_Cryo_ConsoleHolo.png",
+      "bytes": 1869753,
+      "sha256": "a795eb4c6294edeb686749036a32f5aa2aa91268cffe1422e12f39a1fe87ecb2",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "filename": "T_Cryo_Frost.png",
+      "bytes": 2272164,
+      "sha256": "62dec43eac39f69a5f7d9cef77b475aaa83dfb185c7e91badddbe84e84f1d5c1",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "filename": "T_Cryo_Holo.png",
+      "bytes": 1323301,
+      "sha256": "eb5ed55c665495f7d83b118c4e17e1059d036adcf12bcbc3250d116f272bc55c",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "filename": "T_Cryo_Mist.png",
+      "bytes": 1688510,
+      "sha256": "fb8a46ae7560f595a83acd2c93bd1b5e649e995f16d5a73386293c3ac3b0d651",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "filename": "T_Cryo_Status.png",
+      "bytes": 1765236,
+      "sha256": "0405b72efa7f5b3108a99f14e8df7cb1afa6ea07ee4cf942ce26692551da7e9e",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "mode": "RGB"
+    }
+  ]
+}

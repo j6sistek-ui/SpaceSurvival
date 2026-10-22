@@ -1,5 +1,22 @@
 # Performance findings
 
+## October21 cryo review: resource comparison, no gameplay benchmark
+
+The [four-way cryo review](validation/2026-10-21-cryo-comparison.md) retains
+source body topology and resolutions under the same finish/effects. A/C have
+three 4K body maps; B/D have an 8K base color plus two 4K maps. Source triangles
+are 25,491 / 49,838 / 51,101 / 103,888. Compressed download sizes do not establish
+resident texture memory or load time. Shared translucency, overdraw, local fog
+and Niagara add cost to every candidate; mesh count alone cannot rank that cost.
+Final static counts are 32,101 / 56,448 / 57,711 / 110,498 triangles, with 19
+mesh sections each. Model-owned uncooked native files are 18.02 / 30.46 / 20.99 /
+88.04 MiB. Full-mip BC body-texture estimates are 42.67 / 74.67 / 42.67 / 74.67
+MiB, plus 10.67 MiB shared finish textures once; these exclude GPU buffers,
+shaders, overdraw and actual streaming residency. [Method and exact values](validation/2026-10-21-cryo-resources.json).
+Native game playback passes, with D favored for hero detail and A for lower
+resource cost. No cold/warm packaged load time, GPU frame
+distribution or 60 FPS claim is made. The review namespace is excluded from cook.
+
 **October10 current direction:** ray tracing stays OFF. Future budget:4K60 or
 1440p90+ at maximum ray tracing without frame generation; quality/design first.
 No quality reduction or optimization has been applied. Read-only editor baseline:

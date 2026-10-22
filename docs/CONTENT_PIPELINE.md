@@ -1,5 +1,16 @@
 # Phase 1 content pipeline
 
+## Four-way cryo review — October 21
+
+[CryoComparison](../Scripts/CryoComparison/README.md) preserves four original
+GLBs and fits the same glass, readable generated art, frost and effect recipe to
+each. Blender creates transferable source geometry; Unreal owns the live fog,
+Niagara and animated hologram material. Native review content stays in the
+private `/Game/SpaceSurvival/CryoComparison` namespace, ignored by Git and
+excluded from cook. The original body maps/topology are retained; no game map
+or playable character is replaced. Non-Unreal revisions and source outputs stay
+on D:. [Saved evidence and remaining verification](validation/2026-10-21-cryo-comparison.md).
+
 **October14 source closeout:** PR69 adds four existing runtime cook folders for its string-loaded warp frame/effects and cabin material; no vendor Blueprint/demo root is added. Native content stays private and unchanged; no cook/release occurs. [Coverage/build evidence](validation/2026-10-14-pr69-closeout.md). Station changes remain held.
 
 ## Fixed crown / moving ponytail — October 14
