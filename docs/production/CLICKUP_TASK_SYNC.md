@@ -58,3 +58,40 @@ to perform unrelated actions.
 Tracking does not change the source/build/package identity or any acceptance
 result. Repository evidence updates still follow the scoped PR policy; never
 stage unrelated owner changes or automatically merge.
+
+## Owner fields and statuses
+
+On October 22 James added custom fields and a more detailed workflow, and
+explicitly requested correcting inaccurate examples after analyzing every task.
+Use the live field definitions rather than assuming an earlier schema remains current.
+
+- **Playtest Focus:** select the actual primary area of work. Character motion,
+  clothing, authoring tools and repository work should not be forced into an
+  unrelated gameplay category. Add a reusable option when supported and needed.
+- **Reported Test Result:** record a concise factual observation and its limits.
+  Distinguish owner reports, source/native checks, rejected results and not-yet-tested
+  work. Do not manufacture a successful playtest to fill an empty cell.
+- **AI relationship on James:** link the relevant existing AI task(s). This is an
+  association; only create a blocking dependency when a real prerequisite exists.
+- **Scope needed:** a concrete asset choice, design or requirement is still missing.
+  **Not started:** the next action is defined and queued, including remaining work
+  after a partial repair. **In progress:** work is actually active.
+- **On hold:** owner-deferred or later work. **Blocked:** a specific prerequisite
+  prevents the next action. State that prerequisite in the result/description.
+- **Validation needed:** a concrete check awaits evidence. The owner's current
+  ClickUp configuration puts this status in the done category; it is nevertheless
+  still pending, never an acceptance pass.
+- **Done+PR ready to merge:** the scoped implementation and required checks are
+  finished and its specific PR is ready, while merge approval remains separate.
+  **Complete:** the task's actual completion evidence exists.
+
+Preserve owner edits unless James explicitly requests their correction. Keep
+unspecified deadlines blank and AI tasks unassigned. Standard Task is valid when
+a custom task type is unnecessary or unavailable; do not invent an AI account or
+purchase capacity. An API quota or task-type capacity error must stop that write
+path, with unapplied changes retained for later reconciliation. A prepared plan
+is not proof of successful updates; read back every applied field and association.
+
+The October 22 field-enrichment plan and partial readback receipt are private
+under `.agent/local/ClickUpSync_20261022`. Refresh live values before resuming
+so the plan cannot overwrite intervening owner changes.
