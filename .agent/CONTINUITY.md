@@ -1,5 +1,7 @@
 # SpaceSurvival continuity
 
+- 2026-10-22T19:20Z [OUTCOMES] [USER] Owner requests separate James/AI ClickUp lists and continuous autonomous follow-up tracking. [TOOL] Space Survival folder901414645196 contains James901422552575 (28 tasks) and AI901422552579 (59 tasks); all87 task names/actions/keys/statuses/assignments read back, nine prerequisites linked. Four-hour thread heartbeat `keep-spacesurvival-clickup-tasks-current` is ACTIVE; old paused automations unchanged. [CODE] AGENTS and docs/production/CLICKUP_TASK_SYNC.md require in-work updates, preserved owner edits, deduplication and evidence-specific closure; canonical issue log retained. No Unreal/build/package or gameplay acceptance change. Private mapping: ClickUpSync_20261022/TaskMap.json. Scoped documentation PR preparation follows.
+
 - 2026-10-14T16:52Z [USER] Make PR69 mergeable, move remaining station scope to a focused new PR, close verified resolved/obsolete issues, then hold all in-game changes.
 - 2026-10-14T16:52Z [TOOL] Isolated PR69/main reconciliation preserves newer conversations/characters and station/boarding work;11 conflict files resolved, four cook folders cover155 strings/zero missing. CPU Editor build succeeds40actions/73.66s;45 structural/8cook/13digest/8recipe/Python/144format/docs pass. Engine deprecation warnings retained. Owner checkout/native assets/saves/game DLL untouched; no editor/cook/release. Publication/fresh CI/new station PR pending.
 
