@@ -1,5 +1,7 @@
 # Open work and owner review
 
+**October22 task organization:** [James's ClickUp list](https://app.clickup.com/90141794955/v/l/li/901422552575) and [AI's ClickUp list](https://app.clickup.com/90141794955/v/l/li/901422552579) provide separate work views of this log. New follow-ups and validation results are maintained using the [sync procedure](production/CLICKUP_TASK_SYNC.md); no gameplay issue or owner acceptance was closed by importing tasks.
+
 **October14 PR closeout — CPU work only.** PR69 reconciles with current main; station follow-ups move to a focused draft PR. All in-game edits remain held. The old five-path source cook failure is superseded by155 covered paths/zero missing; no cook/release is claimed. [Reconciliation evidence](validation/2026-10-14-pr69-closeout.md). Cyborg/Silver remain closed; older paragraphs do not reopen them.
 
 **RPT-20261014-01 — Cyborg import and deformation: CLOSED FOR NOW by owner, October14.** Owner authorizes merging PR72 and closing both character topics. The adopted six-clip repair and current-module native verification remain the recorded outcome. Broader non-pole shoulder limits are retained as history; no further character work is scheduled unless reopened. Closure is an owner scope decision, not a new all-animation, performance or packaged validation claim. [Pole repair](validation/2026-10-14-cyborg-pole-twist.md); [current verification](validation/2026-10-14-silver-ponytail.md).
