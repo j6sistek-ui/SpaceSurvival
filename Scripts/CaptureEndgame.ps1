@@ -10,7 +10,7 @@ the hidden launched game window before the foreground-only timing fixture starts
 param(
     [switch]$Editor,
     [ValidateSet("Wave10", "Station5")][string]$Scenario = "Wave10",
-    [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
+    [string]$EngineRoot = 'C:/Program Files/Epic Games/UE_5.8',
     [ValidateRange(160, 600)][int]$TimeoutSeconds = 240,
     [ValidateRange(640, 7680)][int]$Width = 2560,
     [ValidateRange(480, 4320)][int]$Height = 1440,

@@ -1,8 +1,10 @@
 #include "SSGameInstance.h"
 #include "SSLocalSave.h"
+#include "SSGraphicsSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameUserSettings.h"
 #include "HAL/IConsoleManager.h"
+#include "Containers/Ticker.h"
 
 namespace
 {
@@ -40,6 +42,14 @@ void USSGameInstance::OnStart()
     // Init runs before GameEngine is initialized, when UE skips scalability.
     // Reapply after startup so the first frame uses our loaded/default quality.
     ApplySettings();
+    // Standalone starts the game before PostEngineInit renderer plugins load.
+    // Apply the saved NVIDIA preference once their first engine tick is available.
+    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateWeakLambda(this,
+                                                                           [this](float)
+                                                                           {
+                                                                               ApplySettings();
+                                                                               return false;
+                                                                           }));
 }
 bool USSGameInstance::ReadDomain(const FString &Slot, std::string &Payload) const
 {
@@ -234,6 +244,7 @@ void USSGameInstance::ApplySettings()
         // Graphics changes must not override the startup window/resolution request.
         Settings->ApplyNonResolutionSettings();
     }
+    SSGraphics::Apply(Session.settings);
     if (MotionBlur && (MotionBlur->GetFlags() & ECVF_SetByMask) <= ECVF_SetByGameSetting)
         MotionBlur->Set(Session.settings.motionBlur ? 3 : 0, ECVF_SetByGameSetting);
 }

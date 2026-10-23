@@ -115,6 +115,8 @@ bool ASSHUD::DrawRefreshMenu(const ASSGameMode &Mode)
 {
     if (!Mode.IsMenuOpen())
         return false;
+    if (Mode.Panel == ESSPanel::Graphics)
+        return DrawGraphicsMenu(Mode);
     auto *GI = GetGameInstance<USSGameInstance>();
     if (!GI)
         return false;
@@ -585,6 +587,62 @@ bool ASSHUD::NavigateMenu(int32 Horizontal, int32 Vertical)
     const auto Enabled = [&](int32 Index) { return GM->Entries.IsValidIndex(Index) && GM->Entries[Index].Enabled; };
     const int32 Current = FMath::Clamp(GM->SelectedEntry, 0, GM->Entries.Num() - 1);
     const bool Settings = IsSettingsPanel(GM->Panel) && GM->Entries.Num() > 4;
+    if (GM->Panel == ESSPanel::Graphics)
+    {
+        if (Current < 4)
+        {
+            if (Horizontal)
+                GM->SelectedEntry = FMath::Clamp(Current + FMath::Sign(Horizontal), 0, 3);
+            else if (Vertical > 0)
+                GM->SelectedEntry = 4 + GM->GraphicsSection;
+            return true;
+        }
+        if (Current <= 6)
+        {
+            if (Horizontal)
+                GM->SelectedEntry = FMath::Clamp(Current + FMath::Sign(Horizontal), 4, 6);
+            else if (Vertical < 0)
+                GM->SelectedEntry = 1;
+            else if (Vertical > 0)
+                for (int32 I = 7; I < GM->Entries.Num(); ++I)
+                    if (Enabled(I))
+                    {
+                        GM->SelectedEntry = I;
+                        break;
+                    }
+            return true;
+        }
+        const auto IsRow = [&](int32 I) { return GM->Entries.IsValidIndex(I) && !GM->Entries[I].Help.IsEmpty(); };
+        int32 First = INDEX_NONE, Last = INDEX_NONE;
+        for (int32 I = 7; I < GM->Entries.Num(); ++I)
+            if (Enabled(I) && IsRow(I))
+            {
+                if (First == INDEX_NONE)
+                    First = I;
+                Last = I;
+            }
+        if (Current == First && Vertical < 0)
+        {
+            GM->SelectedEntry = 4 + GM->GraphicsSection;
+            return true;
+        }
+        if (!IsRow(Current))
+        {
+            if (Vertical < 0 && Last != INDEX_NONE)
+                GM->SelectedEntry = Last;
+            else if (Horizontal)
+            {
+                TArray<int32> Footer;
+                for (int32 Action : {0, 223, 224})
+                    Footer.Add(
+                        GM->Entries.IndexOfByPredicate([Action](const FSSMenuEntry &E) { return E.Action == Action; }));
+                const int32 Position = Footer.IndexOfByKey(Current);
+                if (Position != INDEX_NONE)
+                    GM->SelectedEntry = Footer[FMath::Clamp(Position + FMath::Sign(Horizontal), 0, 2)];
+            }
+            return true;
+        }
+    }
     if (Settings && Current < 4)
     {
         if (Horizontal != 0)

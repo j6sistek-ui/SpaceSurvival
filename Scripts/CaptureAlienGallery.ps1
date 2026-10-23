@@ -4,7 +4,7 @@ No build, package, publication or save operation is performed. Screenshots are n
 #>
 param(
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$')][string]$Label = 'AlienGallery',
-    [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
+    [string]$EngineRoot = 'C:/Program Files/Epic Games/UE_5.8',
     [switch]$Packaged
 )
 Set-StrictMode -Version Latest

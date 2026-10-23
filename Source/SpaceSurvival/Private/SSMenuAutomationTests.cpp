@@ -106,6 +106,7 @@ bool FSSDiagnosticsMenu::RunTest(const FString &)
         return false;
     TestTrue(TEXT("Diagnostics starts disabled"), F.Mode->Entries[Index].Label.Contains(TEXT("Off")));
     F.Instance->Session.settings.diagnosticsOverlay = true;
+    F.Mode->OpenPanel(ESSPanel::Settings);
     F.Mode->OpenPanel(ESSPanel::Graphics);
     Index = F.Entry(96);
     TestTrue(TEXT("Graphics refresh reflects the enabled preference"),
@@ -130,6 +131,37 @@ bool FSSDiagnosticsMenu::RunTest(const FString &)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSGraphicsDraftMenu, "SpaceSurvival.Menu.GraphicsDraftAndNavigation",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSGraphicsDraftMenu::RunTest(const FString &)
+{
+    FSSMenuWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    auto *HUD = F.World->SpawnActor<ASSHUD>();
+    F.Mode->OpenPanel(ESSPanel::Graphics);
+    const auto Saved = SS::EncodeSettings(F.Instance->Session.settings);
+    const auto Account = SS::EncodeAccount(F.Instance->Session.account);
+    TestEqual(TEXT("Graphics starts on first setting"), F.Mode->SelectedEntry, F.Entry(200));
+    HUD->NavigateMenu(0, -1);
+    TestEqual(TEXT("Up reaches active graphics section"), F.Mode->SelectedEntry, F.Entry(220));
+    HUD->NavigateMenu(1, 0);
+    TestEqual(TEXT("Right moves across section row"), F.Mode->SelectedEntry, F.Entry(221));
+    F.Mode->ActivateEntry(F.Entry(221));
+    TestEqual(TEXT("Advanced section opened"), F.Mode->GraphicsSection, 1);
+    F.Mode->ActivateEntry(F.Entry(222));
+    F.Mode->AdjustSetting(F.Entry(16), -1);
+    TestEqual(TEXT("Quality change staged"), F.Mode->GraphicsDraft.quality, F.Instance->Session.settings.quality - 1);
+    TestTrue(TEXT("Staging does not apply or save"), Saved == SS::EncodeSettings(F.Instance->Session.settings));
+    F.Mode->ActivateEntry(F.Entry(223));
+    TestEqual(TEXT("Defaults are staged too"), F.Mode->GraphicsDraft.quality, SS::Settings{}.quality);
+    F.Mode->ClosePanel();
+    TestFalse(TEXT("Back discards pending state"), F.Mode->bGraphicsDraftActive);
+    TestTrue(TEXT("Cancel preserves saved preferences"), Saved == SS::EncodeSettings(F.Instance->Session.settings));
+    TestTrue(TEXT("Graphics never edits account"), Account == SS::EncodeAccount(F.Instance->Session.account));
+    return !HasAnyErrors();
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSSpatialMenuNavigation, "SpaceSurvival.Menu.SpatialNavigation",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSSSpatialMenuNavigation::RunTest(const FString &)
@@ -146,6 +178,8 @@ bool FSSSpatialMenuNavigation::RunTest(const FString &)
     const ESSPanel Panels[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls};
     for (int32 Tab = 0; Tab < UE_ARRAY_COUNT(Panels); ++Tab)
     {
+        if (Panels[Tab] == ESSPanel::Graphics)
+            continue; // Graphics has its own two-row navigation contract below.
         F.Mode->OpenPanel(Panels[Tab]);
         TestEqual(TEXT("Entering settings focuses its first setting"), F.Mode->SelectedEntry, 4);
         HUD->NavigateMenu(0, -1);
@@ -185,7 +219,7 @@ bool FSSSettingsRefreshFocus::RunTest(const FString &)
     if (!F.Initialize(*this))
         return false;
     const ESSPanel Panels[] = {ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls};
-    const int32 Actions[] = {14, 18, 21, 23};
+    const int32 Actions[] = {14, 96, 21, 23};
     for (int32 Case = 0; Case < 4; ++Case)
     {
         F.Mode->OpenPanel(Panels[Case]);

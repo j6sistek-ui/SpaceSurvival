@@ -1,5 +1,11 @@
 # SpaceSurvival asset acknowledgements
 
+## October23 graphics fonts and private NVIDIA SDK
+
+Rajdhani Medium: Copyright2014 Indian Type Foundry. IBM Plex Mono Regular: Copyright2017 IBM Corp., Reserved Font Name Plex. Unmodified fonts and full SIL Open Font License1.1 texts accompany them in `Content/SpaceSurvival/UI/Fonts` (`rajdhani-OFL.txt`, `ibmplexmono-OFL.txt`); the existing UFS font staging rule includes them. Sources: https://github.com/google/fonts/tree/main/ofl/rajdhani and https://github.com/google/fonts/tree/main/ofl/ibmplexmono, retrieved October23,2026.
+
+The owner-downloaded NVIDIA UE5.8 SDK8.9.0 is installed privately and is not committed. Source wrappers compile a native fallback without it. No packaged redistribution or license approval is established by this integration; check the SDK distribution terms before packaging vendor binaries.
+
 ## Approved page 11 UI and Keania One
 
 The September22 extension uses exact owner-supplied KIT PNGs for HUD/settings/pause and common service frames, recorded in `ContentSource/FigmaUIRefresh/provenance.json`. This supersedes the earlier main-menu-only integration boundary below. Figma itself remains unchanged.

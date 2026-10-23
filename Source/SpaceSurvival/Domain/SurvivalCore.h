@@ -204,6 +204,14 @@ struct Settings
     bool invertPitch = false, toggleBoost = false, toggleBrake = false;
     bool diagnosticsOverlay = false;
     int quality = 2, frameLimit = 120;
+    // Stable save values; deliberately independent of vendor SDK enum ordinals.
+    int reconstruction = 0; // Native/TSR, DLSS, DLAA, NIS
+    int dlssQuality = 0;    // Quality, Balanced, Performance, Ultra Performance
+    bool frameGeneration = false;
+    int frameGenerationMode = 0; // Auto/Dynamic, 2x, 3x, 4x, 5x, 6x
+    int reflex = 1;              // Off, On, On + Boost (FG temporarily requires On)
+    bool rayReconstruction = false, sharpening = false, vibrance = false, vsync = false;
+    double sharpness = .2, vibranceIntensity = .5, saturationBoost = 0;
 };
 
 class Session

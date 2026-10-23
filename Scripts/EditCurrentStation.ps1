@@ -1,6 +1,6 @@
 <# Open the station used by the current game in this project's normal editor. #>
 param(
-    [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
+    [string]$EngineRoot = 'C:/Program Files/Epic Games/UE_5.8',
     [switch]$OwnerPlatformPreview,
     [switch]$Offscreen,
     [switch]$DryRun

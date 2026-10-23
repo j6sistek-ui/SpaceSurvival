@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "SSNpcTalk.h"
+#include "SSGraphicsSettings.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerController.h"
 #include "SSContentTypes.h"
@@ -50,6 +51,7 @@ struct FSSMenuEntry
     FString Label;
     int32 Action = 0;
     bool Enabled = true;
+    FString Help;
 };
 
 USTRUCT(BlueprintType)
@@ -140,6 +142,13 @@ public:
     void ActivateEntry(int32 Index, bool FromPointer = false);
     /** Directional controller adjustment. Bounded values never wrap at their limits. */
     bool AdjustSetting(int32 Index, int32 Direction);
+    void BuildGraphicsEntries();
+    bool HandleGraphicsAction(int32 Action, int32 Direction = 0);
+    SS::Settings GraphicsDraft;
+    SSGraphics::FCapabilities GraphicsCapabilities;
+    int32 GraphicsSection = 0;
+    bool bGraphicsDraftActive = false;
+    FString GraphicsFeedback;
     /** LB/RB selects the adjacent settings tab without changing a setting. */
     UFUNCTION(BlueprintCallable, Category = "Interface")
     bool SwitchSettingsTab(int32 Direction);

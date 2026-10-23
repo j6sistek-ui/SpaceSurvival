@@ -1431,19 +1431,23 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
     FlightSeconds += Dt;
     ++CapturedFrames;
     const bool Followup = FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview"));
+    const bool GraphicsOnly = FParse::Param(FCommandLine::Get(), TEXT("SSGraphicsMenuReview"));
     const TArray<ESSPanel> Panels =
-        FlightMenus ? TArray<ESSPanel>{ESSPanel::Main, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls}
-        : Followup  ? TArray<ESSPanel>{ESSPanel::Audio,    ESSPanel::Controls, ESSPanel::Wardrobe,
-                                       ESSPanel::Wardrobe, ESSPanel::Wardrobe, ESSPanel::None}
-                    : TArray<ESSPanel>{ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
-                                       ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
+        GraphicsOnly  ? TArray<ESSPanel>{ESSPanel::Graphics, ESSPanel::Graphics, ESSPanel::Graphics}
+        : FlightMenus ? TArray<ESSPanel>{ESSPanel::Main, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls}
+        : Followup    ? TArray<ESSPanel>{ESSPanel::Audio,    ESSPanel::Controls, ESSPanel::Wardrobe,
+                                         ESSPanel::Wardrobe, ESSPanel::Wardrobe, ESSPanel::None}
+                      : TArray<ESSPanel>{ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
+                                         ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
     const TArray<const TCHAR *> Names =
-        FlightMenus ? TArray<const TCHAR *>{TEXT("UIPauseFlight"), TEXT("UIGraphicsFlight"), TEXT("UIAudioFlight"),
-                                            TEXT("UIControlsFlight")}
-        : Followup  ? TArray<const TCHAR *>{TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
-                                            TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")}
-                    : TArray<const TCHAR *>{TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
-                                            TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
+        GraphicsOnly
+            ? TArray<const TCHAR *>{TEXT("UIGraphicsMain"), TEXT("UIGraphicsAdvanced"), TEXT("UIGraphicsDisplay")}
+        : FlightMenus ? TArray<const TCHAR *>{TEXT("UIPauseFlight"), TEXT("UIGraphicsFlight"), TEXT("UIAudioFlight"),
+                                              TEXT("UIControlsFlight")}
+        : Followup ? TArray<const TCHAR *>{TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
+                                           TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")}
+                   : TArray<const TCHAR *>{TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
+                                           TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
     const int32 Index = MainMenuStage / 2;
     if (Index >= Panels.Num())
     {
@@ -1481,7 +1485,14 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
             }
         }
         else if (Panels[Index] != ESSPanel::None)
+        {
             GM->OpenPanel(Panels[Index]);
+            if (GraphicsOnly)
+            {
+                GM->HandleGraphicsAction(220 + Index);
+                GM->SelectedEntry = 7;
+            }
+        }
         else if (Followup)
             GM->ClosePanel();
         MainMenuStageAt = FlightSeconds;
@@ -2486,6 +2497,8 @@ void ASSWave10Soak::WriteResultAndExit()
             if (!TailReviewComplete || TailReviewFrames < 45)
                 Failure = TEXT("Tail review did not complete its two jumps and required rendered sequence.");
         }
+        else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSGraphicsMenuReview")))
+            Expected = {TEXT("UIGraphicsMain"), TEXT("UIGraphicsAdvanced"), TEXT("UIGraphicsDisplay")};
         else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIFlightMenus")))
             Expected = {TEXT("UIPauseFlight"), TEXT("UIGraphicsFlight"), TEXT("UIAudioFlight"),
                         TEXT("UIControlsFlight")};
