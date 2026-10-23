@@ -2,6 +2,8 @@
 
 **October21 texture/quality pass:** Matched1600x900 Epic route views show active white-to-Cloth replacement reducing required streaming demand by741.9MiB at Market,945.4 at Restaurant and811.9 at Lounge. Twelve Kraken textures now stream existing mip chains; no resolution, compression, material or global quality reduction. Final Lounge still requires1021.2MiB against1000MiB; sampled transient peak1195.4MiB. Asset-level caps, mip policies and missing skeletal LODs are separately inventoried. Local dialogue AI was disabled and views warmed20seconds: this is neither a total-VRAM/FPS benchmark nor a stutter fix. [Counter definitions, measurements and limits](validation/2026-10-21-quality-roster.md).
 
+**October16 opt-in diagnostics candidate:** Graphics > Diagnostics displays averaged FPS/frame time and game/render/GPU milliseconds, normalized process CPU usage, process RAM and DXGI budget headroom. Helper process/voice status updates approximately every 0.75 seconds only while the panel is visible; hidden paths perform no diagnostic driver/process query. GPU timing is not utilization, DXGI headroom is not total free physical VRAM, and PIE includes editor overhead. Native on/off, photo hiding, enlarged-text layout and saved-preference reload pass. No independent overhead benchmark or representative 60 FPS acceptance is inferred. [Receipt](validation/2026-10-16-runtime-diagnostics.md).
+
 **October10 current direction:** ray tracing stays OFF. Future budget:4K60 or
 1440p90+ at maximum ray tracing without frame generation; quality/design first.
 No quality reduction or optimization has been applied. Read-only editor baseline:

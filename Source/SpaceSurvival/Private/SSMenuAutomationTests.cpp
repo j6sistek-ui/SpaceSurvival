@@ -2,6 +2,7 @@
 #include "SSGameInstance.h"
 #include "SSGameMode.h"
 #include "SSHUD.h"
+#include "SSNpcTalk.h"
 #include "SSOutpostSandbox.h"
 #include "SSPhase1Data.h"
 #include "SSStation.h"
@@ -89,6 +90,45 @@ struct FSSMenuWorld
     }
 };
 } // namespace
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSDiagnosticsMenu, "SpaceSurvival.Menu.Diagnostics",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSSDiagnosticsMenu::RunTest(const FString &)
+{
+    FSSMenuWorld F;
+    if (!F.Initialize(*this))
+        return false;
+    const auto SettingsBefore = SS::EncodeSettings(F.Instance->Session.settings);
+    const auto AccountBefore = SS::EncodeAccount(F.Instance->Session.account);
+    F.Mode->OpenPanel(ESSPanel::Graphics);
+    int32 Index = F.Entry(96);
+    if (!TestTrue(TEXT("Graphics menu exposes diagnostics"), Index != INDEX_NONE))
+        return false;
+    TestTrue(TEXT("Diagnostics starts disabled"), F.Mode->Entries[Index].Label.Contains(TEXT("Off")));
+    F.Instance->Session.settings.diagnosticsOverlay = true;
+    F.Mode->OpenPanel(ESSPanel::Graphics);
+    Index = F.Entry(96);
+    TestTrue(TEXT("Graphics refresh reflects the enabled preference"),
+             Index != INDEX_NONE && F.Mode->Entries[Index].Label.Contains(TEXT("On")));
+    F.Instance->Session.settings.diagnosticsOverlay = false;
+    TestTrue(TEXT("Menu inspection preserves all settings"),
+             SettingsBefore == SS::EncodeSettings(F.Instance->Session.settings));
+    TestTrue(TEXT("Menu inspection preserves account"),
+             AccountBefore == SS::EncodeAccount(F.Instance->Session.account));
+
+    // A read of the panel must never warm a model or start a voice/STT helper.
+    auto *Talk = NewObject<USSNpcTalkSubsystem>(F.Instance);
+    for (int32 Read = 0; Read < 3; ++Read)
+    {
+        const auto Status = Talk->Diagnostics();
+        TestFalse(TEXT("Status read does not launch LLM"), Status.LlamaRunning);
+        TestFalse(TEXT("Status read does not launch STT"), Status.WhisperRunning);
+        TestFalse(TEXT("Status read does not launch voice"), Status.VoiceRunning);
+        TestEqual(TEXT("Status read does not enqueue speech"), Status.VoiceQueue, 0);
+        TestTrue(TEXT("Status read leaves conversation idle"), Status.Phase == ESSTalkPhase::Idle);
+    }
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSSSpatialMenuNavigation, "SpaceSurvival.Menu.SpatialNavigation",
                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

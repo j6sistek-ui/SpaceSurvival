@@ -10,7 +10,7 @@ public class SpaceSurvival : ModuleRules
         // not link against it. This line is what makes it reachable from C++.
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Slate", "SlateCore", "Json", "JsonUtilities", "Niagara", "ShipCore", "HTTP", "AudioCaptureCore" });
         PublicIncludePaths.Add(ModuleDirectory);
-        PrivateDependencyModuleNames.Add("PhysicsCore");
+        PrivateDependencyModuleNames.AddRange(new[] { "PhysicsCore", "RenderCore", "RHI" });
         // Push-to-talk NPC conversations (SSNpcTalk): the engine microphone capture. The AudioCapture plugin
         // supplies the Windows backend and is enabled in the uproject for that reason alone.
         PrivateDependencyModuleNames.Add("AudioCapture");
@@ -18,7 +18,7 @@ public class SpaceSurvival : ModuleRules
         {
             PrivateDependencyModuleNames.Add("UnrealEd");
             // Opt-in editor renderer observations use only public Renderer APIs.
-            PrivateDependencyModuleNames.AddRange(new[] { "Renderer", "RenderCore", "RHI" });
+            PrivateDependencyModuleNames.Add("Renderer");
             PrivateDependencyModuleNames.AddRange(new[] { "ClothingSystemRuntimeCommon", "ClothingSystemRuntimeInterface", "ChaosCloth" });
         }
     }

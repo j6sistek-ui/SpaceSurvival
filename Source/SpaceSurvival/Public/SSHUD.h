@@ -47,6 +47,12 @@ private:
     void DrawRefreshVitals(const class ASSGameMode &Mode, bool Walking);
     void DrawStationRadar();
     void DrawChatPanel(const class ASSGameMode &Mode);
+    void DrawDiagnostics(const class USSGameInstance &Instance);
+    void ResetDiagnostics();
+    double DiagnosticStart = 0, DiagnosticLastFrame = 0, DiagnosticGameMs = 0, DiagnosticRenderMs = 0;
+    double DiagnosticGpuMs = 0;
+    int32 DiagnosticFrames = 0, DiagnosticGpuFrames = 0;
+    TArray<FString> DiagnosticLines;
     void DrawPhotoControls(const class USSPhotoMode &Photo);
     void DrawInteractionOptions(const class ASSOutpostAmbientActor &Crew);
     int32 ScrollFirst = 0, ScrollVisible = 6, ScrollCount = 0;
