@@ -1,5 +1,11 @@
 # Character workshop
 
+## October23 three-floor layout
+
+The owner's new direction is saved separately as `/Game/SpaceSurvival/Licensed/EntertainmentObservatory/L_EntertainmentObservatory`: copied crew/performance lounge below, enclosed middle lounge, Spectrum Galaxy panorama above, and a central aerial chamber shared by the upper floors. The original two-level workshop remains intact. Four customized character instances are preserved; Vexa's pink-haired aerial display has gravity/movement disabled only on this map instance. The others remain upstairs. Original body options, hair exports, clips and source Blueprints are unchanged.
+
+Open the new map for layout work; its First Person review mode does not claim the copied wardrobe/services are integrated with the game. The compact editable architecture source is `SourceAssets/EntertainmentObservatory/Modules/Observatory_Modules.blend`. Fresh opposing views and stair movement checks are recorded in [the observatory receipt](../validation/2026-10-23-entertainment-observatory.md). Pole contact, clothing/hair quality and natural-input/owner acceptance remain open. RPT-20261023-02 owns the new layout; RPT-20261021-01 retains character work.
+
 Owner-authorized character and animation workshop, October 21, 2026. This is a
 separate authoring level for the future entertainment area. It does not replace
 the current station, hero, or Lira's restaurant role.
