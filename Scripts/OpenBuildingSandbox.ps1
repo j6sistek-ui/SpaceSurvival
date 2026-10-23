@@ -11,7 +11,7 @@ $sandboxMap = $sandboxData.target_map
 $sandboxMapFile = Join-Path $sandboxRoot ('Content\' + $sandboxMap.Substring(6).Replace('/', '\') + '.umap')
 if (-not (Test-Path -LiteralPath $sandboxMapFile)) { throw "Sandbox map is missing: $sandboxMapFile" }
 if (-not $EngineRoot) {
-    $EngineRoot = @('C:\Program Files\EpicGames2\UE_5.8', 'C:\Program Files\Epic Games\UE_5.8') |
+    $EngineRoot = @('C:\Program Files\Epic Games\UE_5.8', 'C:\Program Files\EpicGames2\UE_5.8') |
         Where-Object { Test-Path -LiteralPath (Join-Path $_ 'Engine\Binaries\Win64\UnrealEditor.exe') } |
         Select-Object -First 1
 }

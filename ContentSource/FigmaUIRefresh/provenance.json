@@ -364,6 +364,17 @@
       "alphaMax": 255,
       "sha256": "c4e784a2ac87d74dec2a61ac652a0c02712ee507b3e7f5c393797dfe3266a2c1",
       "sizeBytes": 11288
+    },
+    {
+      "name": "ToggleDisabled",
+      "nodeId": "99:208",
+      "file": "ToggleDisabled.png",
+      "width": 324,
+      "height": 176,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "sha256": "4422ac38251f9f5930d9db674f997320f10f3ef8e793e68fb0e7e4602a2aa29e",
+      "sizeBytes": 5181
     }
   ],
   "retrievedUtc": "2026-09-22",

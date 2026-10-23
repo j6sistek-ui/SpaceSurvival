@@ -4,7 +4,7 @@ No build, package, publication or save operation is performed. Screenshots are n
 #>
 param(
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$')][string]$Label = 'CombinedLook',
-    [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
+    [string]$EngineRoot = 'C:/Program Files/Epic Games/UE_5.8',
     [switch]$Packaged,
     [switch]$Sequence,
     [switch]$OfflineSequence,
@@ -18,6 +18,7 @@ param(
     [ValidateSet(2048,6144)][int]$DistantCount = 6144,
     [switch]$MainMenu,
     [switch]$UIRefresh,
+    [switch]$GraphicsMenu,
     [switch]$UIFollowup,
     [switch]$UIFlightMenus,
     [ValidateRange(640,7680)][int]$Width = 1920,
@@ -36,6 +37,11 @@ param(
     [ValidateRange(-400,400)][double]$ThrusterHeight = 0,
     [string[]]$ExtraArgs = @()
 )
+if ($GraphicsMenu) {
+    if ($UIFollowup -or $UIFlightMenus) { throw 'Graphics-only review is a separate UI context.' }
+    $UIRefresh = $true
+    $ExtraArgs += '-SSGraphicsMenuReview'
+}
 if ($OfflineSequence -and (-not $Sequence -or $QualityBenchmark -or $TailReview -or $OutpostReview -or $ApartmentWalk -or $WormholeReview -or $DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $UIFlightMenus -or $Packaged -or $ExtraArgs.Count -ne 0)) { throw 'OfflineSequence requires only the editor Wave1 Sequence scenario and accepts no other review modes or extra arguments.' }
 if ($ApartmentWalk -and -not $OutpostReview) { throw 'Apartment walking is an opt-in part of the isolated OutpostReview scenario.' }
 if (($QualityBenchmark -or $TailReview) -and ($OutpostReview -or $WormholeReview -or $DirectorReview -or $WeaponReadability -or $MainMenu -or $UIRefresh -or $UIFollowup -or $UIFlightMenus -or $Sequence)) { throw 'Benchmark and tail review are separate isolated scenarios.' }
@@ -241,6 +247,8 @@ $metadata = [ordered]@{
         'Actual StartFreeFlight, normal takeoff and scripted powered departure followed by four paused Canvas menus over the possessed ship camera. Exact paused account/run/settings conservation; isolated fresh profile and production-save hashes. No physical controller, natural play, balance or FPS acceptance.'
     } elseif ($UIFollowup) {
         'Hidden six-frame changed-UI batch: aligned audio/controls sliders, wardrobe top/end/drag, actual walking HUD with crew/services radar. Synthetic menu navigation and pointer drag; read-only account/run guards. No physical input, natural gameplay or performance acceptance.'
+    } elseif ($GraphicsMenu) {
+        'Three actual graphics pages, rendered native hit bounds and unchanged settings/account/run. No physical input, generated-frame presentation or performance acceptance.'
     } elseif ($UIRefresh) {
         'Hidden seven-screen native UI render with synthetic focus and read-only HUD sample values. Menu centers map to native actions; run/account/settings are preserved. No physical input, natural gameplay, FPS or save-operation acceptance.'
     } elseif ($MainMenu) {
@@ -279,6 +287,12 @@ try {
     Assert-NoReparsePath $fixturePath
     $fixture = Get-Content -LiteralPath $fixturePath -Raw | ConvertFrom-Json
     $metadata.fixture = $fixture
+    if ($GraphicsMenu) {
+        $graphicsLog = Get-Content -LiteralPath (Join-Path $root 'Rendered.log') -Raw
+        if ($graphicsLog -match 'should not be called before PostEngineInit|Ensure condition failed: CVarNIS|LogDLSSBlueprint: Error:|LogNISBlueprint: Error:') {
+            throw 'NVIDIA startup or settings API failed; screenshots alone do not establish a working graphics menu.'
+        }
+    }
     if (-not $fixture.success -or -not $fixture.noSaveSlotsWritten -or
         $fixture.evidenceType -cne $evidenceType -or $fixture.scenario -cne $scenario -or
         $fixture.token -cne $token -or $fixture.processId -ne $process.Id -or (-not $QualityBenchmark -and -not $TailReview -and -not $MainMenu -and -not $WormholeReview -and -not $OutpostReview -and -not $fixture.sawWave1) -or
@@ -301,7 +315,7 @@ try {
     }
     $allNames = @($fixture.visualRequests | ForEach-Object { $_.name })
     $names = @($allNames | Where-Object { $_ -notlike 'Sequence_*' })
-    $expectedNames = if ($OutpostReview) { 'OutpostPad,OutpostServices,OutpostApartment,OutpostFlight,OutpostReturn,OutpostPitStop' } elseif ($WormholeReview) { 'Entrance,Transit,DeepTransit,Exit' } elseif ($UIFlightMenus) { 'UIPauseFlight,UIGraphicsFlight,UIAudioFlight,UIControlsFlight' } elseif ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
+    $expectedNames = if ($GraphicsMenu) { 'UIGraphicsMain,UIGraphicsAdvanced,UIGraphicsDisplay' } elseif ($OutpostReview) { 'OutpostPad,OutpostServices,OutpostApartment,OutpostFlight,OutpostReturn,OutpostPitStop' } elseif ($WormholeReview) { 'Entrance,Transit,DeepTransit,Exit' } elseif ($UIFlightMenus) { 'UIPauseFlight,UIGraphicsFlight,UIAudioFlight,UIControlsFlight' } elseif ($UIFollowup) { 'UIAudioAligned,UIControlsAligned,UIWardrobeTop,UIWardrobeBottom,UIWardrobeDragTop,UIWalking' } elseif ($UIRefresh) { 'UIGeneral,UIGraphics,UIAudio,UIControls,UIPause,UIWardrobe,UIFlight' } elseif ($MainMenu) { 'MainMenuNormal,MainMenuNewGame,MainMenuSettings' } elseif ($WeaponReadability) { 'RapidShot,RapidHit,CannonShot,CannonHit' } elseif ($DirectorReview) { 'Cruise,Turn,Boost,Brake,VillainCloseup' } else { 'Cruise,Turn,Boost,Brake' }
     if ($QualityBenchmark) { $expectedNames = '' }
     if ($ApartmentWalk) { $expectedNames = 'OutpostPad,OutpostServices,ApartmentWalkIn,ApartmentWalkBack,OutpostApartment,OutpostFlight,OutpostReturn,OutpostPitStop' }
     if ($TailReview) {

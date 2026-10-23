@@ -1,6 +1,6 @@
 """Rebuild the squirrel hero's MoCap-derived clips from the purchased pack, from nothing.
 
-    & 'C:\\Program Files\\EpicGames2\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe' `
+    & 'C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe' `
       'C:\\Users\\j6sis\\SpaceSurvival\\SpaceSurvival.uproject' -unattended -stdout `
       -FullStdOutLogOutput -DisablePlugins=UAssetBrowser `
       '-ExecutePythonScript=C:\\Users\\j6sis\\SpaceSurvival\\Scripts\\AuthorHeroMocapRetarget.py'

@@ -1431,19 +1431,23 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
     FlightSeconds += Dt;
     ++CapturedFrames;
     const bool Followup = FParse::Param(FCommandLine::Get(), TEXT("SSUIFollowupReview"));
+    const bool GraphicsOnly = FParse::Param(FCommandLine::Get(), TEXT("SSGraphicsMenuReview"));
     const TArray<ESSPanel> Panels =
-        FlightMenus ? TArray<ESSPanel>{ESSPanel::Main, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls}
-        : Followup  ? TArray<ESSPanel>{ESSPanel::Audio,    ESSPanel::Controls, ESSPanel::Wardrobe,
-                                       ESSPanel::Wardrobe, ESSPanel::Wardrobe, ESSPanel::None}
-                    : TArray<ESSPanel>{ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
-                                       ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
+        GraphicsOnly  ? TArray<ESSPanel>{ESSPanel::Graphics, ESSPanel::Graphics, ESSPanel::Graphics}
+        : FlightMenus ? TArray<ESSPanel>{ESSPanel::Main, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls}
+        : Followup    ? TArray<ESSPanel>{ESSPanel::Audio,    ESSPanel::Controls, ESSPanel::Wardrobe,
+                                         ESSPanel::Wardrobe, ESSPanel::Wardrobe, ESSPanel::None}
+                      : TArray<ESSPanel>{ESSPanel::Settings, ESSPanel::Graphics, ESSPanel::Audio, ESSPanel::Controls,
+                                         ESSPanel::Main,     ESSPanel::Wardrobe, ESSPanel::None};
     const TArray<const TCHAR *> Names =
-        FlightMenus ? TArray<const TCHAR *>{TEXT("UIPauseFlight"), TEXT("UIGraphicsFlight"), TEXT("UIAudioFlight"),
-                                            TEXT("UIControlsFlight")}
-        : Followup  ? TArray<const TCHAR *>{TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
-                                            TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")}
-                    : TArray<const TCHAR *>{TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
-                                            TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
+        GraphicsOnly
+            ? TArray<const TCHAR *>{TEXT("UIGraphicsMain"), TEXT("UIGraphicsAdvanced"), TEXT("UIGraphicsDisplay")}
+        : FlightMenus ? TArray<const TCHAR *>{TEXT("UIPauseFlight"), TEXT("UIGraphicsFlight"), TEXT("UIAudioFlight"),
+                                              TEXT("UIControlsFlight")}
+        : Followup ? TArray<const TCHAR *>{TEXT("UIAudioAligned"),   TEXT("UIControlsAligned"), TEXT("UIWardrobeTop"),
+                                           TEXT("UIWardrobeBottom"), TEXT("UIWardrobeDragTop"), TEXT("UIWalking")}
+                   : TArray<const TCHAR *>{TEXT("UIGeneral"), TEXT("UIGraphics"), TEXT("UIAudio"), TEXT("UIControls"),
+                                           TEXT("UIPause"),   TEXT("UIWardrobe"), TEXT("UIFlight")};
     const int32 Index = MainMenuStage / 2;
     if (Index >= Panels.Num())
     {
@@ -1456,24 +1460,39 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
         GM->bAtTitleScreen = false;
         GM->bTitleSettingsNavigation = false;
         HUD->bReviewFlightHUD = !Followup && !FlightMenus && Panels[Index] == ESSPanel::None;
-        if (Followup && Index == 3)
+        if (Followup && (Index == 3 || Index == 4))
         {
-            // The same index change used by D-pad navigation must reveal the final character.
-            GM->SelectedEntry = GM->Entries.Num() - 2;
-        }
-        else if (Followup && Index == 4)
-        {
-            // Wheel, arrows and dragging change focus only, never the saved character.
-            HUD->ScrollMenu(-100);
-            HUD->ScrollMenu(100);
-            const FVector2D Thumb = HUD->ScrollThumbBounds.GetCenter();
-            HUD->HandleMenuScrollPointer(Thumb, true, true);
-            HUD->HandleMenuScrollPointer(FVector2D(Thumb.X, HUD->ScrollTrackBounds.Min.Y + HUD->ScrollDragOffset),
-                                         false, true);
-            HUD->HandleMenuScrollPointer(Thumb, false, false);
+            // Preserve legacy capture filenames, but exercise the current Next/Previous controls.
+            // Resolve the drawn pointer target; browsing must never equip or write a save.
+            const int32 Direction = Index == 3 ? 1 : -1;
+            const int32 Action = Direction > 0 ? 149 : 148;
+            const int32 Entry =
+                GM->Entries.IndexOfByPredicate([Action](const FSSMenuEntry &Item) { return Item.Action == Action; });
+            const auto &DrawnBounds = HUD->GetMenuBounds();
+            const int32 Count = GM->WardrobeBodies().Num();
+            const int32 Before = GM->WardrobePreviewIndex;
+            if (Count < 2 || Before < 0 || !DrawnBounds.IsValidIndex(Entry) || !DrawnBounds[Entry].bIsValid ||
+                HUD->MenuIndexAt(DrawnBounds[Entry].GetCenter()) != Entry)
+            {
+                Stop(TEXT("Wardrobe review could not resolve a drawn browse control."));
+                return;
+            }
+            GM->ActivateEntry(Entry, true);
+            if (GM->WardrobePreviewIndex != (Before + Direction + Count) % Count)
+            {
+                Stop(TEXT("Wardrobe browse control did not advance the preview."));
+                return;
+            }
         }
         else if (Panels[Index] != ESSPanel::None)
+        {
             GM->OpenPanel(Panels[Index]);
+            if (GraphicsOnly)
+            {
+                GM->HandleGraphicsAction(220 + Index);
+                GM->SelectedEntry = 7;
+            }
+        }
         else if (Followup)
             GM->ClosePanel();
         MainMenuStageAt = FlightSeconds;
@@ -1532,12 +1551,9 @@ void ASSWave10Soak::TickUIRefresh(float Dt)
             Stop(TEXT("UI controller focus is outside the visible list."));
             return;
         }
-        if (Wardrobe &&
-            (Visible != FMath::Min(HUD->ScrollCount, HUD->ScrollVisible) + 1 || !Bounds[GM->SelectedEntry].bIsValid ||
-             (Followup && Index == 3 && HUD->ScrollFirst != HUD->ScrollCount - HUD->ScrollVisible) ||
-             (Followup && Index == 4 && HUD->ScrollFirst != 0)))
+        if (Wardrobe && (Visible != 5 || HUD->ScrollCount != 0 || !HUD->ScrollEntries.IsEmpty()))
         {
-            Stop(TEXT("Wardrobe focus, clipping or pointer scrolling failed."));
+            Stop(TEXT("Wardrobe must expose five visible controls without stale list scrolling."));
             return;
         }
     }
@@ -2481,6 +2497,8 @@ void ASSWave10Soak::WriteResultAndExit()
             if (!TailReviewComplete || TailReviewFrames < 45)
                 Failure = TEXT("Tail review did not complete its two jumps and required rendered sequence.");
         }
+        else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSGraphicsMenuReview")))
+            Expected = {TEXT("UIGraphicsMain"), TEXT("UIGraphicsAdvanced"), TEXT("UIGraphicsDisplay")};
         else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIFlightMenus")))
             Expected = {TEXT("UIPauseFlight"), TEXT("UIGraphicsFlight"), TEXT("UIAudioFlight"),
                         TEXT("UIControlsFlight")};
@@ -2752,7 +2770,7 @@ void ASSWave10Soak::WriteResultAndExit()
     else if (MainMenu && FParse::Param(FCommandLine::Get(), TEXT("SSUIRefreshReview")))
         Result->SetStringField(
             TEXT("fixture"),
-            TEXT("Fresh isolated home; actual Canvas pages, synthetic focus/wardrobe scrolling, rendered hit bounds "
+            TEXT("Fresh isolated home; actual Canvas pages, synthetic focus/wardrobe browsing, rendered hit bounds "
                  "at the requested viewport and in-memory UI scale. Exact account/run/settings conservation. "
                  "Optional legacy flight HUD is explicitly synthetic. No purchases, save APIs, physical input, "
                  "natural gameplay, audio or performance acceptance."));

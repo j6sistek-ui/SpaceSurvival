@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path $PSScriptRoot -Parent
 $project = Join-Path $taskRoot 'SpaceSurvival.uproject'
 $map = '/Game/OutpostSandbox/L_AsteroidOutpost'
-$engine = @('C:\Program Files\EpicGames2\UE_5.8','C:\Program Files\Epic Games\UE_5.8') |
+$engine = @('C:\Program Files\Epic Games\UE_5.8','C:\Program Files\EpicGames2\UE_5.8') |
     Where-Object { Test-Path -LiteralPath (Join-Path $_ 'Engine\Binaries\Win64\UnrealEditor.exe') } |
     Select-Object -First 1
 if (-not $engine) { throw 'Unreal Engine 5.8 is required.' }

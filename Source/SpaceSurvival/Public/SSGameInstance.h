@@ -33,6 +33,14 @@ public:
     bool ResumeRun();
     bool PersistAccount();
     bool PersistSettings();
+    /** Shared preference entry point for native and Blueprint interfaces. Returns save success. */
+    UFUNCTION(BlueprintCallable, Category = "Settings")
+    bool SetDiagnosticsEnabled(bool Enabled);
+    UFUNCTION(BlueprintPure, Category = "Settings")
+    bool IsDiagnosticsEnabled() const
+    {
+        return Session.settings.diagnosticsOverlay;
+    }
     bool PersistDeath();
     bool DiscardSliceRun();
     bool InvalidateSuspend();

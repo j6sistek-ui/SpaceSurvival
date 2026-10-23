@@ -1739,6 +1739,7 @@ void ASSGameMode::RepaintShips()
 }
 void ASSGameMode::ClosePanel()
 {
+    bGraphicsDraftActive = false;
     EndWardrobePreview();
     if (bTitleSettingsNavigation &&
         (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics || Panel == ESSPanel::Audio ||
@@ -1915,6 +1916,18 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
     auto &S = GI->Session;
     const bool SettingsRefresh = NewPanel == Panel && (Panel == ESSPanel::Settings || Panel == ESSPanel::Graphics ||
                                                        Panel == ESSPanel::Audio || Panel == ESSPanel::Controls);
+    if (NewPanel == ESSPanel::Graphics && !bGraphicsDraftActive)
+    {
+        GraphicsCapabilities = SSGraphics::Query();
+        GraphicsDraft = SSGraphics::Resolve(S.settings, GraphicsCapabilities);
+        if (GraphicsCapabilities.Reflex)
+            GraphicsDraft.reflex = S.settings.reflex;
+        bGraphicsDraftActive = true;
+        GraphicsSection = 0;
+        GraphicsFeedback.Empty();
+    }
+    else if (NewPanel != ESSPanel::Graphics)
+        bGraphicsDraftActive = false;
     const int32 SelectedAction =
         SettingsRefresh && Entries.IsValidIndex(SelectedEntry) ? Entries[SelectedEntry].Action : INDEX_NONE;
     if (Ship && Ship->IsMoored() && NewPanel != ESSPanel::Depot)
@@ -2009,15 +2022,7 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
                            "Full source and reuse notes accompany this build in THIRD_PARTY.md.");
         break;
     case ESSPanel::Graphics:
-        PanelTitle = TEXT("GRAPHICS");
-        PanelDetail = TEXT("Simulation and warning readability are preserved at every quality level.");
-        AddEntry(FString::Printf(TEXT("Quality: %s"), S.settings.quality == 0   ? TEXT("Low")
-                                                      : S.settings.quality == 1 ? TEXT("Medium")
-                                                      : S.settings.quality == 2 ? TEXT("High")
-                                                                                : TEXT("Epic")),
-                 16);
-        AddEntry(FString::Printf(TEXT("Frame limit: %d FPS"), S.settings.frameLimit), 17);
-        AddEntry(FString::Printf(TEXT("Motion blur: %s"), S.settings.motionBlur ? TEXT("On") : TEXT("Off")), 18);
+        BuildGraphicsEntries();
         break;
     case ESSPanel::Audio:
         PanelTitle = TEXT("AUDIO");
@@ -2313,6 +2318,8 @@ void ASSGameMode::OpenPanel(ESSPanel NewPanel)
             {TEXT("General"), 5}, {TEXT("Graphics"), 10}, {TEXT("Audio"), 11}, {TEXT("Controls"), 12}};
         Entries.Insert(Tabs, 0);
         SelectedEntry = Tabs.Num();
+        if (Panel == ESSPanel::Graphics)
+            SelectedEntry = Tabs.Num() + 3;
     }
     if (!IsTitleMenu() && (NewPanel != ESSPanel::Launch || !S.AtSliceBoundary()))
         AddEntry(TEXT("Back"), 0);
@@ -2352,6 +2359,11 @@ bool ASSGameMode::AdjustSetting(int32 Index, int32 Direction)
           Panel == ESSPanel::Controls))
         return false;
     auto &Settings = GI->Session.settings;
+    if (Panel == ESSPanel::Graphics)
+    {
+        SelectedEntry = Index;
+        return HandleGraphicsAction(Entries[Index].Action, Direction);
+    }
     const int32 Step = Direction > 0 ? 1 : -1;
     switch (Entries[Index].Action)
     {
@@ -2388,6 +2400,9 @@ bool ASSGameMode::AdjustSetting(int32 Index, int32 Direction)
         break;
     case 18:
         Settings.motionBlur = Step > 0;
+        break;
+    case 96:
+        Settings.diagnosticsOverlay = Step > 0;
         break;
     case 24:
         Settings.invertPitch = Step > 0;
@@ -2426,6 +2441,8 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
     // Mouse activation and keyboard/controller activation refresh the same selected action.
     SelectedEntry = Index;
     const ESSPanel Current = Panel;
+    if (Panel == ESSPanel::Graphics && HandleGraphicsAction(A))
+        return;
     if (A == 52)
     {
         StartFreeFlight();
@@ -2585,7 +2602,7 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
         OpenPanel(ESSPanel::History);
         return;
     }
-    if (A >= 13 && A <= 27)
+    if ((A >= 13 && A <= 27) || A == 96)
     {
         switch (A)
         {
@@ -2606,6 +2623,9 @@ void ASSGameMode::ActivateEntry(int32 Index, bool FromPointer)
             break;
         case 18:
             S.settings.motionBlur = !S.settings.motionBlur;
+            break;
+        case 96:
+            S.settings.diagnosticsOverlay = !S.settings.diagnosticsOverlay;
             break;
         case 19:
             S.settings.masterVolume = S.settings.masterVolume >= .99 ? 0 : S.settings.masterVolume + .1;

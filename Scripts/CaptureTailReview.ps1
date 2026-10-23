@@ -5,7 +5,7 @@ Native metadata measures the actual skin-weighted tail surface against the real 
 #>
 param(
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$')][string]$Label = 'SquirrelJump',
-    [string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8',
+    [string]$EngineRoot = 'C:/Program Files/Epic Games/UE_5.8',
     [ValidateRange(640,3840)][int]$Width = 1280,
     [ValidateRange(480,2160)][int]$Height = 720
 )

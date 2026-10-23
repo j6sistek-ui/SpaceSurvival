@@ -10,15 +10,24 @@ public class SpaceSurvival : ModuleRules
         // not link against it. This line is what makes it reachable from C++.
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Slate", "SlateCore", "Json", "JsonUtilities", "Niagara", "ShipCore", "HTTP", "AudioCaptureCore" });
         PublicIncludePaths.Add(ModuleDirectory);
-        PrivateDependencyModuleNames.Add("PhysicsCore");
+        PrivateDependencyModuleNames.AddRange(new[] { "PhysicsCore", "RenderCore", "RHI" });
         // Push-to-talk NPC conversations (SSNpcTalk): the engine microphone capture. The AudioCapture plugin
         // supplies the Windows backend and is enabled in the uproject for that reason alone.
         PrivateDependencyModuleNames.Add("AudioCapture");
+        // Vendor files stay private. Clones without the SDK retain native rendering and disabled controls.
+        bool Nvidia = Target.Platform == UnrealTargetPlatform.Win64;
+        foreach (string Plugin in new[] { "DLSS", "NIS", "StreamlineCore", "StreamlineDLSSG", "StreamlineReflex", "StreamlineDeepDVC" })
+            Nvidia &= System.IO.Directory.Exists(System.IO.Path.Combine(EngineDirectory, "Plugins/Marketplace", Plugin)) ||
+                      System.IO.Directory.Exists(System.IO.Path.Combine(ModuleDirectory, "../../Plugins", Plugin));
+        PublicDefinitions.Add("SS_WITH_NVIDIA=" + (Nvidia ? "1" : "0"));
+        if (Nvidia)
+            PrivateDependencyModuleNames.AddRange(new[] { "DLSSBlueprint", "NISBlueprint", "StreamlineBlueprint",
+                "StreamlineDLSSGBlueprint", "StreamlineReflexBlueprint", "StreamlineDeepDVCBlueprint" });
         if (Target.bBuildEditor)
         {
             PrivateDependencyModuleNames.Add("UnrealEd");
             // Opt-in editor renderer observations use only public Renderer APIs.
-            PrivateDependencyModuleNames.AddRange(new[] { "Renderer", "RenderCore", "RHI" });
+            PrivateDependencyModuleNames.Add("Renderer");
             PrivateDependencyModuleNames.AddRange(new[] { "ClothingSystemRuntimeCommon", "ClothingSystemRuntimeInterface", "ChaosCloth" });
         }
     }

@@ -578,6 +578,7 @@ void ASSHUD::DrawHUD()
     MenuBounds.Empty();
     if (!Canvas)
     {
+        ResetDiagnostics();
         bTitleWasOpen = false;
         return;
     }
@@ -585,11 +586,18 @@ void ASSHUD::DrawHUD()
     auto *GM = GetWorld()->GetAuthGameMode<ASSGameMode>();
     if (!GI || !GM)
     {
+        ResetDiagnostics();
         bTitleWasOpen = false;
         return;
     }
     BeginRefreshLayout();
     const auto &S = GI->Session;
+    const auto *DiagnosticPC = Cast<ASSPlayerController>(GetOwningPlayerController());
+    const bool DiagnosticVisible = S.settings.diagnosticsOverlay && !GM->IsMenuOpen() && !bReviewFlightHUD &&
+                                   !(DiagnosticPC && DiagnosticPC->PhotoMode->IsActive()) &&
+                                   !(GM->AlienGallery && GM->AlienGallery->IsActive());
+    if (!DiagnosticVisible)
+        ResetDiagnostics();
     Scale = FMath::Clamp(float(Canvas->SizeY) / 1080.f * float(S.settings.uiScale), .65f, 1.6f);
     const float W = Canvas->SizeX, H = Canvas->SizeY, Margin = 30 * Scale;
     if (const auto *PC = Cast<ASSPlayerController>(GetOwningPlayerController()); PC && PC->PhotoMode->IsActive())
@@ -629,6 +637,8 @@ void ASSHUD::DrawHUD()
     if (MenuOpen && !LiveMenu && DrawRefreshMenu(*GM))
         return;
     const auto *Walker = Cast<ASSWalker>(UGameplayStatics::GetPlayerPawn(this, 0));
+    if (DiagnosticVisible)
+        DrawDiagnostics(*GI);
     if (S.run.active || Walker)
     {
         DrawRefreshVitals(*GM, Walker != nullptr);

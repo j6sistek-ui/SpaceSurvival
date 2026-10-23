@@ -94,6 +94,28 @@ static bool KillWithThisProcess(void *Process)
 static constexpr double ColdStartSeconds = 120.0;
 static constexpr float ColdStartRetrySeconds = 2.f;
 
+FSSTalkDiagnostics USSNpcTalkSubsystem::Diagnostics() const
+{
+    FSSTalkDiagnostics Result;
+    Result.Phase = CurrentPhase;
+    Result.Installed = bInstalled;
+    Result.Enabled = IsEnabled();
+    auto Running = [](FProcHandle Handle) { return Handle.IsValid() && FPlatformProcess::IsProcRunning(Handle); };
+    Result.LlamaRunning = Running(LlamaProc);
+    Result.WhisperRunning = Running(WhisperProc);
+    Result.VoiceInstalled = bVoiceInstalled;
+    Result.VoiceEnabled = bVoiceEnabled;
+    Result.VoiceRunning = Running(VoiceProc);
+    Result.VoiceReady = Result.VoiceRunning && bVoiceReady;
+    Result.VoiceQueue = VoiceJobs.Num(); // Includes the in-flight job until FinishVoiceJob removes it.
+    Result.VoiceRestarts = VoiceCrashes;
+    Result.VoiceFailures = VoiceFailures;
+    Result.TalkError = !Error.IsEmpty();
+    if (CurrentPhase == ESSTalkPhase::Thinking && AskedAt > 0)
+        Result.RequestSeconds = FMath::Max(0.0, FPlatformTime::Seconds() - AskedAt);
+    return Result;
+}
+
 DEFINE_LOG_CATEGORY_STATIC(LogSSNpcTalk, Log, All);
 
 namespace SSNpcTalk
@@ -1169,6 +1191,7 @@ void USSNpcTalkSubsystem::PumpVoice()
                 }
                 // Display, never Fail(): a missing voice is not the pilot's problem and must not reach the screen.
                 UE_LOG(LogSSNpcTalk, Display, TEXT("npc voices: no answer, the line stays text"));
+                ++VoiceFailures;
                 FinishVoiceJob(Id, Voice, Text, false, SSNpcTalk::FVoiceClip());
                 return;
             }
@@ -1179,8 +1202,11 @@ void USSNpcTalkSubsystem::PumpVoice()
                        FPlatformTime::Seconds() - VoiceStartedAt);
             }
             if (Response->GetResponseCode() != 200)
+            {
+                ++VoiceFailures;
                 UE_LOG(LogSSNpcTalk, Display, TEXT("npc voices: %d for %s \"%s\""), Response->GetResponseCode(), *Voice,
                        *Text);
+            }
             FinishVoiceJob(
                 Id, Voice, Text, bKeep,
                 Response->GetResponseCode() == 200

@@ -44,9 +44,22 @@ private:
     float RefreshText(const FString &Value, float X, float Y, float Pixels, FLinearColor Color, float Width = 0.f,
                       bool Render = true);
     bool DrawRefreshMenu(const class ASSGameMode &Mode);
+    bool DrawGraphicsMenu(const class ASSGameMode &Mode);
+    UPROPERTY()
+    TObjectPtr<class UFont> GraphicsBodyFont;
+    UPROPERTY()
+    TObjectPtr<class UFont> GraphicsMonoFont;
     void DrawRefreshVitals(const class ASSGameMode &Mode, bool Walking);
     void DrawStationRadar();
     void DrawChatPanel(const class ASSGameMode &Mode);
+    void DrawDiagnostics(const class USSGameInstance &Instance);
+    void ResetDiagnostics();
+    double DiagnosticStart = 0, DiagnosticLastFrame = 0, DiagnosticGameMs = 0, DiagnosticRenderMs = 0;
+    double DiagnosticGpuMs = 0;
+    int32 DiagnosticFrames = 0, DiagnosticGpuFrames = 0;
+    double GraphicsMeasureAt = 0, GraphicsLastFrameAt = 0, GraphicsFPS = 0;
+    int32 GraphicsFrames = 0;
+    TArray<FString> DiagnosticLines;
     void DrawPhotoControls(const class USSPhotoMode &Photo);
     void DrawInteractionOptions(const class ASSOutpostAmbientActor &Crew);
     int32 ScrollFirst = 0, ScrollVisible = 6, ScrollCount = 0;

@@ -1,5 +1,5 @@
 <# Open the rebuilt development game with its own persistent review profile. #>
-param([string]$EngineRoot = 'C:/Program Files/EpicGames2/UE_5.8')
+param([string]$EngineRoot = 'C:/Program Files/Epic Games/UE_5.8')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $editor = Join-Path $EngineRoot 'Engine/Binaries/Win64/UnrealEditor.exe'

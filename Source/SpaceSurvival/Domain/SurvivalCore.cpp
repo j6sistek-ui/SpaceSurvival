@@ -926,7 +926,10 @@ std::string EncodeSettings(const Settings &s)
     out << s.masterVolume << ' ' << s.musicVolume << ' ' << s.effectsVolume << ' ' << s.mouseSensitivity << ' '
         << s.controllerSensitivity << ' ' << s.uiScale << ' ' << s.subtitles << ' ' << s.cameraShake << ' '
         << s.motionBlur << ' ' << s.invertPitch << ' ' << s.toggleBoost << ' ' << s.toggleBrake << ' ' << s.quality
-        << ' ' << s.frameLimit;
+        << ' ' << s.frameLimit << ' ' << s.diagnosticsOverlay << " NVIDIA1 " << s.reconstruction << ' ' << s.dlssQuality
+        << ' ' << s.frameGeneration << ' ' << s.frameGenerationMode << ' ' << s.reflex << ' ' << s.rayReconstruction
+        << ' ' << s.sharpening << ' ' << s.vibrance << ' ' << s.vsync << ' ' << s.sharpness << ' '
+        << s.vibranceIntensity << ' ' << s.saturationBoost;
     return out.str();
 }
 
@@ -946,11 +949,38 @@ bool DecodeSettings(const std::string &text, Settings &output, std::string &erro
     in >> s.masterVolume >> s.musicVolume >> s.effectsVolume >> s.mouseSensitivity >> s.controllerSensitivity >>
         s.uiScale >> s.subtitles >> s.cameraShake >> s.motionBlur >> s.invertPitch >> s.toggleBoost >> s.toggleBrake >>
         s.quality >> s.frameLimit;
+    // Older settings end after frameLimit. Keep the new display preference off on upgrade.
+    if (!in.fail() && !in.eof())
+    {
+        in >> std::ws;
+        if (!in.eof())
+            in >> s.diagnosticsOverlay;
+    }
+    if (!in.fail() && !in.eof())
+    {
+        in >> std::ws;
+        if (!in.eof())
+        {
+            std::string extension;
+            in >> extension;
+            if (extension != "NVIDIA1")
+            {
+                error = "Unknown settings extension";
+                return false;
+            }
+            in >> s.reconstruction >> s.dlssQuality >> s.frameGeneration >> s.frameGenerationMode >> s.reflex >>
+                s.rayReconstruction >> s.sharpening >> s.vibrance >> s.vsync >> s.sharpness >> s.vibranceIntensity >>
+                s.saturationBoost;
+        }
+    }
     if (!FinishRead(in, error))
         return false;
     if (!Finite(s.masterVolume, 0.0, 1.0) || !Finite(s.musicVolume, 0.0, 1.0) || !Finite(s.effectsVolume, 0.0, 1.0) ||
         !Finite(s.mouseSensitivity, 0.1, 5.0) || !Finite(s.controllerSensitivity, 0.1, 5.0) ||
-        !Finite(s.uiScale, 0.75, 2.0) || s.quality < 0 || s.quality > 4 || s.frameLimit < 0 || s.frameLimit > 360)
+        !Finite(s.uiScale, 0.75, 2.0) || s.quality < 0 || s.quality > 4 || s.frameLimit < 0 || s.frameLimit > 360 ||
+        s.reconstruction < 0 || s.reconstruction > 3 || s.dlssQuality < 0 || s.dlssQuality > 3 ||
+        s.frameGenerationMode < 0 || s.frameGenerationMode > 5 || s.reflex < 0 || s.reflex > 2 ||
+        !Finite(s.sharpness, 0., 1.) || !Finite(s.vibranceIntensity, 0., 1.) || !Finite(s.saturationBoost, 0., 1.))
     {
         error = "Settings values violate invariants";
         return false;
