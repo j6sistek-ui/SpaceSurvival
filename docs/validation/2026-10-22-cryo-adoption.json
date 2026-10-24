@@ -1,0 +1,83 @@
+{
+  "utc": "2026-10-22T05:27:28.114522+00:00",
+  "status": "ADOPTED_V4_NATIVE_SOURCE_PLUGIN_HASH_VERIFIED",
+  "revision": "v4_4",
+  "private_receipt_sha256": "24a3d585daad3ac16330d14ab31412a7c368275447707d1d4b008731a25ceb60",
+  "fit_manifest_sha256": "d78777132681295f4f819c3712136e3aef774bd8716ac6bcf68aef333fd800c1",
+  "namespace": "/Game/SpaceSurvival/CryoComparison",
+  "native_file_count": 201,
+  "native_bytes": 182257046,
+  "new_native_packages": 76,
+  "replaced_native_packages": [
+    "Maps/L_CryoComparison.umap"
+  ],
+  "preserved_prior_packages": 124,
+  "owner_files_match_verified_game": 201,
+  "source_changes": [
+    "Source/SpaceSurvival/Public/SSOutpostSandbox.h",
+    "Source/SpaceSurvival/Private/SSOutpostSandbox.cpp",
+    "Source/SpaceSurvival/Private/SSStationOutpost.cpp",
+    "Source/SpaceSurvival/Private/SSHUD.cpp",
+    "Source/SpaceSurvival/SpaceSurvival.Build.cs",
+    "SpaceSurvival.uproject",
+    ".gitignore"
+  ],
+  "owned_plugin_file_count": 11,
+  "donor_files_unchanged": 16,
+  "original_and_import_hashes_unchanged": 106,
+  "isolated_game_dll_copied": false,
+  "backups": "Exact overwritten map/source bytes preserved on D: before apply.",
+  "owner_build": {
+    "status": "SUCCEEDED",
+    "actions": 134,
+    "seconds": 89.75,
+    "log_sha256": "dbb25bfff24e36704c57aac82690712908ff3a41081d809051eed7804ba93d69",
+    "receipt": "D:\\Codex\\CryoComparison_20261021\\work\\CryoOwnerBuildFinal.json",
+    "receipt_sha256": "1bedc1c701d8347c69fd559cd17e17f9e8ea932e26f6a1d4edd64564fe08c884",
+    "source_plan_sha256": "17ebb43fd8b490bbc07f13eb6fa3592e7e6fc36fadda996af78ee8ff6f1144ee",
+    "owner_binaries_after_build": [
+      {
+        "relative_path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+        "bytes": 5749248,
+        "sha256": "da147e089ab80c8208ed2495ab3db2b5accf94838b744c5fd79d6b55c8dfd4f7"
+      },
+      {
+        "relative_path": "Plugins/SSCryoRuntime/Binaries/Win64/UnrealEditor-SSCryoRuntime.dll",
+        "bytes": 330240,
+        "sha256": "3a9a585ec99ef98248a3f0b8c73f0eb3c05e4b5eb20eed155146d9dfe0b04acc"
+      }
+    ]
+  },
+  "owner_project_launched": true,
+  "limits": [
+    "Review namespace remains excluded from cook.",
+    "Owner source build/compatibility result is separate from this adoption.",
+    "No production map, save data, artwork or private vendor content is published."
+  ],
+  "owner_compatibility_smoke": {
+    "status": "OWNER_NATIVE_COMPATIBILITY_SMOKE_PASS",
+    "verified_installed_package_count": 217,
+    "verified_cryo_package_count": 201,
+    "game_instance": "/Script/SpaceSurvival.SSGameInstance",
+    "configured_chamber_count": 4,
+    "protected_files_unchanged": true,
+    "fog_restored": true,
+    "first_observed_reset_s": 4.006387498229742,
+    "actual_mid_reached_one": true,
+    "native_jets_active_with_nontrivial_bounds": true,
+    "limits": [
+      "One uncooked owner-project compatibility cycle using the native preview controller action.",
+      "Physical keys, production game-mode interaction, packaged performance and owner visual acceptance are not tested.",
+      "No asset/config/save-game writes or rendering/effect parameter overrides requested."
+    ],
+    "sample_count": 99,
+    "receipt_sha256": "0c931a6db211f55af9e0f6427e2c7a7b85f8b956dc1b3f9b089459ef8e30d216",
+    "log_sha256": "d918e6e677705df0d3b0b043a05fcee3d00405c4d0411932c39e99b0ae9103b7",
+    "exit_code": 0,
+    "startup_diagnostics": [
+      "Existing EditorToolset/ToolsetRegistry Python initialization errors: AgentSkill and PythonTestRunner are unavailable under -game; these precede the observer, whose errors list is empty.",
+      "Chromium usage-statistics registry access error; TEDS widget registration, ShipCore startup and slow Python command warnings.",
+      "The native compatibility assertions pass; this is not a zero-error startup-log claim."
+    ]
+  }
+}

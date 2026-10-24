@@ -1,5 +1,26 @@
 # Performance findings
 
+## October 24 cryo v6: static budget and steady-effect cost
+
+The [current correction](validation/2026-10-24-cryo-core-idle-v6.md) keeps
+68,407 / 95,143 / 145,724 / 154,211 triangles and 21 mesh components per bay. Original
+body maps remain unchanged: A/C three 4K maps; B/D an 8K base color/two 4K maps.
+Full-mip BC estimates remain 42.67 / 74.67 / 42.67 / 74.67 MiB; shared frost/mist is
+4.000061 MiB once, totaling 238.666931 MiB across all body sets/shared maps.
+
+Active model native storage is 20,058,527 / 33,070,135 / 24,004,156 / 93,632,907 bytes,
+including model meshes/body textures/material. Shared materials/effects are separate.
+The whole stored namespace is 197,146,816 bytes including recovery. These uncooked
+sizes and full-mip estimates are not runtime residency or load measurements.
+
+Eight added steady CPU emitters at 10 particles/s and 0.95 s lifetime imply about 76
+live particles in continuous steady state; this is not a measured cap. They add
+simulation/overdraw work while the stronger four-second burst stays separate.
+Per-pixel glass, C's multiple panes, fog grids, buffers and render targets also
+have costs. Unchanged triangle counts do not prove unchanged GPU frame time.
+A retains the smallest static budget; D leads reviewed hero detail. Physical
+input, representative GPU/VRAM and packaged load/FPS remain unmeasured.
+
 **October10 current direction:** ray tracing stays OFF. Future budget:4K60 or
 1440p90+ at maximum ray tracing without frame generation; quality/design first.
 No quality reduction or optimization has been applied. Read-only editor baseline:

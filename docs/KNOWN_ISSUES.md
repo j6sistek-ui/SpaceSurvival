@@ -1,5 +1,28 @@
 # Open work and owner review
 
+## RPT-20261021-CRYO — four-way chamber comparison
+
+**Open / owner review — v6 core/nozzle polish is installed and lead-reviewed.**
+All four front disks clear their chamber rims; small downward streams remain
+separate from the stronger four-second freeze. Current 48-view/19-effect proof,
+guarded adoption and fresh owner smoke pass. Original files/topology/UVs and
+80 non-Body component exports are preserved; four active Body core/collar regions
+are deliberately changed.
+
+Assess owner preference and close-range presentation: original surface facets,
+fine frost grain, C post/outlet occlusion, dark rear/top contacts and weak central
+glass reflections remain. Neighboring consoles can naturally hide a front-facing
+core from exact side angles. Prior failed startup evidence remains history;
+final bounded readiness does not establish packaged load speed.
+
+Physical E/controller-X input, production placement, packaged load/FPS and
+resident VRAM remain open. Display values are authored, not telemetry. Native,
+art and vendor content stays private/excluded from cook; PR86 remains unmerged.
+[Current evidence](validation/2026-10-24-cryo-core-idle-v6.md),
+[v5 history](validation/2026-10-23-cryo-displays-v5.md). Close after owner review.
+
+
+
 **October14 PR closeout — CPU work only.** PR69 reconciles with current main; station follow-ups move to a focused draft PR. All in-game edits remain held. The old five-path source cook failure is superseded by155 covered paths/zero missing; no cook/release is claimed. [Reconciliation evidence](validation/2026-10-14-pr69-closeout.md). Cyborg/Silver remain closed; older paragraphs do not reopen them.
 
 **RPT-20261014-01 — Cyborg import and deformation: CLOSED FOR NOW by owner, October14.** Owner authorizes merging PR72 and closing both character topics. The adopted six-clip repair and current-module native verification remain the recorded outcome. Broader non-pole shoulder limits are retained as history; no further character work is scheduled unless reopened. Closure is an owner scope decision, not a new all-animation, performance or packaged validation claim. [Pole repair](validation/2026-10-14-cyborg-pole-twist.md); [current verification](validation/2026-10-14-silver-ponytail.md).

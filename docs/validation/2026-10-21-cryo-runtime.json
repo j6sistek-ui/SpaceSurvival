@@ -1,0 +1,145 @@
+{
+  "status": "NATIVE_GAME_AUTOPLAY_LOOP_PHASE_AND_RESTORE_VERIFIED",
+  "started_utc": "2026-10-22T03:17:33.671380+00:00",
+  "finished_utc": "2026-10-22T03:17:51.685735+00:00",
+  "engine": "5.8.4-58902052+++UE5+Release-5.8",
+  "mode": "UNCOOKED_NATIVE_GAME",
+  "map": "/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison",
+  "sequence": "/Game/SpaceSurvival/CryoComparison/Sequences/LS_CryoBreathing_Cyan",
+  "errors": [],
+  "events": [
+    {
+      "event": "GAME_OBSERVER_REGISTERED",
+      "elapsed_s": 2.375
+    },
+    {
+      "event": "NATIVE_MAP_TRAVEL_REQUESTED",
+      "elapsed_s": 2.4219999999913853,
+      "destination": "/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison"
+    },
+    {
+      "event": "NATIVE_BEGINPLAY_AUTOPLAY_OBSERVED",
+      "elapsed_s": 3.389999999999418
+    },
+    {
+      "event": "NATIVE_MAP_TRAVEL_REQUESTED",
+      "elapsed_s": 17.389999999999418,
+      "destination": "/Engine/Maps/Entry"
+    },
+    {
+      "event": "NATIVE_ENDPLAY_AND_ENTRY_RETURN_OBSERVED",
+      "elapsed_s": 17.48399999999674
+    }
+  ],
+  "analysis": {
+    "sample_count": 66,
+    "wall_span_s": 14.0,
+    "world_span_s": 14.12394780665636,
+    "natural_loop_wraps": 2,
+    "all_samples_native_sequence_playing": true,
+    "all_four_niagara_active_throughout": true,
+    "light_ranges": [
+      {
+        "actor": "A_InteriorGlow",
+        "observed_min_lm": 5.000227451324463,
+        "observed_max_lm": 11.994828224182129,
+        "expected_min_lm": 5.0,
+        "expected_max_lm": 12.0
+      },
+      {
+        "actor": "A_RimGlow",
+        "observed_min_lm": 4.000195026397705,
+        "observed_max_lm": 9.995567321777344,
+        "expected_min_lm": 4.0,
+        "expected_max_lm": 10.0
+      },
+      {
+        "actor": "B_InteriorGlow",
+        "observed_min_lm": 5.000227451324463,
+        "observed_max_lm": 11.994828224182129,
+        "expected_min_lm": 5.0,
+        "expected_max_lm": 12.0
+      },
+      {
+        "actor": "B_RimGlow",
+        "observed_min_lm": 4.000195026397705,
+        "observed_max_lm": 9.995567321777344,
+        "expected_min_lm": 4.0,
+        "expected_max_lm": 10.0
+      },
+      {
+        "actor": "C_InteriorGlow",
+        "observed_min_lm": 5.000227451324463,
+        "observed_max_lm": 11.994828224182129,
+        "expected_min_lm": 5.0,
+        "expected_max_lm": 12.0
+      },
+      {
+        "actor": "C_RimGlow",
+        "observed_min_lm": 4.000195026397705,
+        "observed_max_lm": 9.995567321777344,
+        "expected_min_lm": 4.0,
+        "expected_max_lm": 10.0
+      },
+      {
+        "actor": "D_InteriorGlow",
+        "observed_min_lm": 5.000227451324463,
+        "observed_max_lm": 11.994828224182129,
+        "expected_min_lm": 5.0,
+        "expected_max_lm": 12.0
+      },
+      {
+        "actor": "D_RimGlow",
+        "observed_min_lm": 4.000195026397705,
+        "observed_max_lm": 9.995567321777344,
+        "expected_min_lm": 4.0,
+        "expected_max_lm": 10.0
+      }
+    ],
+    "local_fog_start_distance_held_at_cm": 10.0,
+    "max_same_role_spread_lm": 0.0,
+    "max_normalized_interior_rim_phase_error": 9.082612539845769e-08,
+    "four_niagara_active_with_nontrivial_bounds": true
+  },
+  "screenshots": [
+    {
+      "at_elapsed_s": 4.0,
+      "camera": "CAM_D_Meshy_Raccoon",
+      "sha256": "6790b066729f689f7ee52b8072f020b10b7a257610cad1abfa804de471e8a908",
+      "relative_image": "previews/CryoGameRuntime_20261022T031733Z_31568/D_Runtime_t0.png"
+    },
+    {
+      "at_elapsed_s": 8.0,
+      "camera": "CAM_D_Meshy_Raccoon",
+      "sha256": "a128dd87c121675d979f516735cbac667903dd7cd925999d51b22570a11c019a",
+      "relative_image": "previews/CryoGameRuntime_20261022T031733Z_31568/D_Runtime_t1.png"
+    },
+    {
+      "at_elapsed_s": 12.0,
+      "camera": "CAM_AllFour_Comparison",
+      "sha256": "20e83ec52817f2f6a77807309fd492c0c3439e087393a67f8aad0957328a6375",
+      "relative_image": "previews/CryoGameRuntime_20261022T031733Z_31568/AllFour_Runtime.png"
+    }
+  ],
+  "native_cvar_restoration_verified": true,
+  "local_fog_start_distance_before_beginplay_cm": 1000.0,
+  "local_fog_start_distance_after_endplay_cm": 1000.0,
+  "native_hashes_unchanged": true,
+  "original_source_hashes_unchanged": true,
+  "limits": [
+    "Uncooked native game verification, not packaged performance or production-map validation.",
+    "No Python sequence play/seek, light setters, asset saves or config writes.",
+    "Readback of intensity and Niagara active state does not prove visual quality.",
+    "Ninety-second Slate-callback deadline; native hangs require external watchdog."
+  ],
+  "raw_receipt": "evidence/CryoGameRuntime_20261022T031733Z_31568.json",
+  "raw_sha256": "32f7f8d6836be999839bb8e5a5ff0a9fbda9655a584eb1f8c7da2e7df59182f5",
+  "owner_files_match_verified_game": 125,
+  "owner_project_launched": false,
+  "generated_utc": "2026-10-22T03:18:53.344996+00:00",
+  "visual_review": "Lead reviewed D runtime pair and all-four overview: no checkerboard particles; bounded cold mist and cyan illumination remain visible. Owner preference is still unconfirmed.",
+  "prior_rejected_render": "CryoGameRuntime_20261022T031017Z_38784: missing NiagaraSprites material usage; repaired and reverified.",
+  "warning_scope": "Only a startup slow-Python-command warning in accepted native game log; no missing Niagara material usage warning.",
+  "presentation_only": "Detached review cameras used; disposable DefaultPawn hidden only for captures. No light/sequence seek or play setter is used.",
+  "private_images_note": "Relative image names identify private delivered captures; PNG pixels and native assets are not part of this repository."
+}

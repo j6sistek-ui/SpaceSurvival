@@ -1,0 +1,96 @@
+{
+  "utc": "2026-10-22T05:32:20.577563+00:00",
+  "status": "OWNER_LATEST_SOURCE_EDITOR_BUILD_AND_NATIVE_COMPATIBILITY_PASS",
+  "exit_code": 0,
+  "success_log_sha256": "dbb25bfff24e36704c57aac82690712908ff3a41081d809051eed7804ba93d69",
+  "actions": 134,
+  "seconds": 89.75,
+  "command": "Build.bat SpaceSurvivalEditor Win64 Development -Project=C:/Users/j6sis/SpaceSurvival/SpaceSurvival.uproject -WaitMutex -NoHotReloadFromIDE -NoUBA",
+  "source_plan_sha256": "17ebb43fd8b490bbc07f13eb6fa3592e7e6fc36fadda996af78ee8ff6f1144ee",
+  "seven_adopted_source_hashes_still_match": true,
+  "owned_plugin_source_hashes_still_match": true,
+  "owned_plugin_sources": [
+    {
+      "relative_path": "Plugins/SSCryoRuntime/README.md",
+      "sha256": "d05cb70c3a302e6f51537393e00205778add24cf10c716cdf0dd0996dc72445f"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/SSCryoRuntime.uplugin",
+      "sha256": "6c99a2cfaac99a303ca38ece7f3d13bec7eda581e0228d7ef481a739cb3a8332"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/SSCryoRuntime.Build.cs",
+      "sha256": "3381e358acda46daa716e91e0abc77148ec9afbed4dd3427899fe07a8c8b3f56"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Private/SSCryoChamber.cpp",
+      "sha256": "fbe5a87140c3a661125fed9871fcebf4e730c9fbb1f5eb578829c8e897998331"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Private/SSCryoPreview.cpp",
+      "sha256": "67596b60865bf3b736037dfd26e353dd6caa3ad448c4a13e2e0bac43c3e4b59a"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Private/SSCryoRuntime.cpp",
+      "sha256": "54f362861b6002f8d0275bb71c56e677fd08bbac3b69526c26d841f4cd7f6cc7"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Public/SSCryoChamber.h",
+      "sha256": "8a69cad56f9776ac2042b95ba00b43e210c859b0b1e452b85421423d5614777b"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Source/SSCryoRuntime/Public/SSCryoPreview.h",
+      "sha256": "d798bd04654c0eedff44ea50b1d71d8a3b37722e263946f1e69491689863497b"
+    }
+  ],
+  "owner_binaries_after_build": [
+    {
+      "relative_path": "Binaries/Win64/UnrealEditor-SpaceSurvival.dll",
+      "bytes": 5749248,
+      "sha256": "da147e089ab80c8208ed2495ab3db2b5accf94838b744c5fd79d6b55c8dfd4f7"
+    },
+    {
+      "relative_path": "Plugins/SSCryoRuntime/Binaries/Win64/UnrealEditor-SSCryoRuntime.dll",
+      "bytes": 330240,
+      "sha256": "3a9a585ec99ef98248a3f0b8c73f0eb3c05e4b5eb20eed155146d9dfe0b04acc"
+    }
+  ],
+  "isolated_game_dll_copied": false,
+  "warning_scope": [
+    "Installed MSVC14.51 is newer than preferred14.50.",
+    "Installed engine API deprecations.",
+    "Existing CrossEngineBridge Cpp17 and undefined-identifier rule deprecations.",
+    "Existing Tripo3DUEBridge missing Interchange descriptor dependency warning."
+  ],
+  "owner_project_launched": true,
+  "compatibility_smoke": {
+    "status": "OWNER_NATIVE_COMPATIBILITY_SMOKE_PASS",
+    "verified_installed_package_count": 217,
+    "verified_cryo_package_count": 201,
+    "game_instance": "/Script/SpaceSurvival.SSGameInstance",
+    "configured_chamber_count": 4,
+    "protected_files_unchanged": true,
+    "fog_restored": true,
+    "first_observed_reset_s": 4.006387498229742,
+    "actual_mid_reached_one": true,
+    "native_jets_active_with_nontrivial_bounds": true,
+    "limits": [
+      "One uncooked owner-project compatibility cycle using the native preview controller action.",
+      "Physical keys, production game-mode interaction, packaged performance and owner visual acceptance are not tested.",
+      "No asset/config/save-game writes or rendering/effect parameter overrides requested."
+    ],
+    "sample_count": 99,
+    "receipt_sha256": "0c931a6db211f55af9e0f6427e2c7a7b85f8b956dc1b3f9b089459ef8e30d216",
+    "log_sha256": "d918e6e677705df0d3b0b043a05fcee3d00405c4d0411932c39e99b0ae9103b7",
+    "exit_code": 0,
+    "startup_diagnostics": [
+      "Existing EditorToolset/ToolsetRegistry Python initialization errors: AgentSkill and PythonTestRunner are unavailable under -game; these precede the observer, whose errors list is empty.",
+      "Chromium usage-statistics registry access error; TEDS widget registration, ShipCore startup and slow Python command warnings.",
+      "The native compatibility assertions pass; this is not a zero-error startup-log claim."
+    ]
+  },
+  "limits": [
+    "Build and uncooked comparison-map compatibility pass; physical input, packaged performance and production-map behavior remain untested.",
+    "Owner plugin DLL was rebuilt from matching source; the initial copied plugin binary remains recorded separately in adoption provenance."
+  ]
+}
