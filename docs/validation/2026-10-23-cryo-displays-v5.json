@@ -1,0 +1,146 @@
+{
+  "updated_utc": "2026-10-24T00:56:51.003579+00:00",
+  "revision": "v5_4",
+  "status": "V5_4_NATIVE_REVIEWED_ADOPTED_OWNER_SMOKE_PASS_WITH_LIMITS",
+  "native_review": "LEAD_ACCEPTED_WITH_DOCUMENTED_LIMITS",
+  "owner_adoption": "ADOPTED_V5_CONTENT_ONLY_HASH_VERIFIED",
+  "historical_v5_3": {
+    "manifest_sha256": "72190a9f5046a4d92c48cdc2b5f478f470617cfc34774ba6edd7032d8e88da66",
+    "native_review": "REJECTED_B_C_BACKING_AND_D_STATUS_OBSTRUCTION",
+    "owner_adoption": "NOT_APPLIED"
+  },
+  "performance_benchmark": false,
+  "source_geometry": {
+    "status": "PASS_STATIC_GEOMETRY_PENDING_NATIVE_VISUAL_REVIEW",
+    "manifest_sha256": "6c7894f2c8bf329a742947b5f21c03f9cc44f6a3dc003491be2e596965ebe672",
+    "validator_sha256": "98aa4be8292153ebfe79fdc8c220b704bb0baa415f3c9cb73f02ba01c439c693",
+    "author_receipt_sha256": "64abd974109dc903c7570ef235b705259055372586a6e3f865bae0708e191b91",
+    "protected_hash_count": 301,
+    "protected_inputs_unchanged": true,
+    "inputs_unchanged_during_audit": true,
+    "errors": [],
+    "limits": [
+      "No Blender or Unreal process launched; no asset mutated.",
+      "OBJ units interpreted as centimeters per export header.",
+      "Clearance samples and correspondence checks do not prove watertightness or native transparency sorting.",
+      "Flat-normal offset seam visibility requires native visual review.",
+      "No physical-input, animation, owner-acceptance or runtime-performance claim."
+    ],
+    "audit_sha256": "e4618581c6c9d6275bed11d33bbb41d09ee6389ff2e6bfcb875bb45425140734",
+    "projection_sha256": "71ab66a673d8f60574d88bbb8e826dfa956337ebfcafb32d0d2248368cc40a08",
+    "delta_sha256": "a67dd59cb03c0e9d4e2526c763ac6f25c8f851fce0577c6cd27ded0231760db3",
+    "changed_mesh_count": 19,
+    "unchanged_mesh_count": 65
+  },
+  "triangles": {
+    "A": 68407,
+    "B": 95143,
+    "C": 145724,
+    "D": 154211
+  },
+  "components_each": 21,
+  "active_shared_texture_estimate_MiB": 4.000061,
+  "all_four_body_plus_shared_estimate_MiB": 238.666931,
+  "required_capture_counts": {
+    "angles_and_closeups": 53,
+    "freeze": 19,
+    "physical_bottom_consoles": 9
+  },
+  "native_authoring": {
+    "status": "DISPLAY_V5_SAVED_PENDING_VISUAL_REVIEW",
+    "canonical_receipt_sha256": "5341b9979e807d4313df42b92f5c44327eacad00b996be7acdde2290fb355357",
+    "patch_receipt_sha256": "fec5e04888e2e95f9d28991d61710d28849c24e3c3d25af9fbe4c3decfc57e5d",
+    "manifest_sha256": "6c7894f2c8bf329a742947b5f21c03f9cc44f6a3dc003491be2e596965ebe672",
+    "stage_packages": 272,
+    "namespace_packages": 256,
+    "namespace_stored_bytes": 187100078,
+    "new_packages": 55,
+    "changed_existing_packages": [
+      "Content\\SpaceSurvival\\CryoComparison\\Maps\\L_CryoComparison.umap"
+    ],
+    "unchanged_original_bodies": true,
+    "unchanged_freeze_niagara_sequence_packages": true,
+    "errors": []
+  },
+  "native_model_bytes": {
+    "A": 20056939,
+    "B": 33067636,
+    "C": 24001337,
+    "D": 93632034
+  },
+  "native_model_bytes_scope": "Active model meshes, original body textures and body material only; excludes shared effect/material packages. Uncooked disk bytes, not runtime load time.",
+  "native_review_evidence": {
+    "angles_sha256": "32ab5fa0872302a6b48f036b6d8c4fd7555f9e06e8d7e93ea3fbd8e5f4d08285",
+    "interaction_sha256": "503bce8d8b478db0a9f2a85c10086df56a4d01621eb50629549ccafbc6e085f8",
+    "lead_visual_review_sha256": "449d26ba6f06dd2372cd8479c1fe4ebab4a30fe1198948f7ca65d9217b294fed",
+    "ordinary_viewport": [
+      960,
+      1200
+    ],
+    "angle_frames": 53,
+    "bottom_consoles_reviewed": 9,
+    "freeze_frames": 19,
+    "ambient_samples": 1510,
+    "natural_light_loop_wraps": 52,
+    "interaction_samples": 370,
+    "cycle_count": 4,
+    "reset_seconds_range": [
+      4.003,
+      4.039
+    ],
+    "observer_errors": [],
+    "package_and_original_hashes_unchanged": true
+  },
+  "adoption": {
+    "receipt_sha256": "6ed2692aeb697c103eec79c81666fff5950c2c991aa81df892582afbbe3fa865",
+    "status": "ADOPTED_V5_CONTENT_ONLY_HASH_VERIFIED",
+    "files": 256,
+    "bytes": 187100078,
+    "new_packages": 55,
+    "replaced_existing": [
+      "Content/SpaceSurvival/CryoComparison/Maps/L_CryoComparison.umap"
+    ],
+    "owner_source_config_plugin_unchanged": true,
+    "map_backup_on_D": true
+  },
+  "owner_smoke": {
+    "status": "OWNER_NATIVE_COMPATIBILITY_SMOKE_PASS",
+    "stage_proof_sha256": "503bce8d8b478db0a9f2a85c10086df56a4d01621eb50629549ccafbc6e085f8",
+    "verified_installed_package_count": 272,
+    "verified_cryo_package_count": 256,
+    "configured_chamber_count": 4,
+    "first_observed_reset_s": 4.032189603894949,
+    "actual_mid_reached_one": true,
+    "native_jets_active_with_nontrivial_bounds": true,
+    "protected_files_unchanged": true,
+    "fog_restored": true,
+    "errors": [],
+    "receipt_sha256": "2404935727c3cdd4dccd54a474a9adb2d148b43485812bcd3decb597e329d169",
+    "samples": 94,
+    "process_exit_code": 0,
+    "startup_log_limit": "Known EditorToolset/ToolsetRegistry initialization errors reference unavailable unreal.AgentSkill/PythonTestRunner under -game, matching the historical baseline; separate from zero observer errors."
+  },
+  "visual_observations": [
+    "All four use matching real font/vector readouts behind separate screen lenses, with visible breathing/scan modulation and no raster-text breakup.",
+    "The glass HUD is smaller, inset behind the pane and follows its curvature; full frost now naturally obscures it.",
+    "B and C console assemblies fill the measured inner bezels and cover the previous garbled artwork. D status clears its source rail on a supported pad.",
+    "Glass has a visible cold cyan veil and stronger grazing response; the subject remains visible. The black review environment gives limited central reflections.",
+    "All nine bottom consoles were inspected in closeup. Original frame irregularities and some faceted dark seating rims remain visible at extreme close range, particularly A and D.",
+    "C retains four-sided glazing, visible internal fog and contained tail. Original structural posts still obscure parts of the silhouette.",
+    "All four native cycles show downward jets, complete frost and normal restoration. Observed reset times are 4.003-4.039 seconds; repeat/range/visibility guards pass.",
+    "Fine frost grain remains; dark top/rear views do not prove every fine contact. Physical-input feel, packaged load time, resident VRAM and GPU performance are unmeasured."
+  ],
+  "quality_by_candidate": {
+    "A": "Smallest static budget. Clear silhouette and readable fitted screens; source metal/suit details are softer than D. Some close-range seating-rim facets remain.",
+    "B": "Clean refitted screens and curved glass HUD; the original body detail remains softer despite its 8K base texture. Higher texture tier than A/C.",
+    "C": "Best candidate for a view from every side: four continuous glass sectors, cyan-lit fog and contained tail. Original ribs obscure parts of the hero; both consoles now fill the bezels.",
+    "D": "Strongest hero-detail candidate: clearer fur, suit, hoses and chamber trim. Three clean console faces and supported status display. Highest static mesh budget and the 8K texture tier."
+  },
+  "unverified": [
+    "Owner visual preference",
+    "Physical E/controller-X input and feel",
+    "Production-map integration",
+    "Packaged load time, GPU frame time and resident VRAM"
+  ],
+  "runtime_cpp_changed_in_v5": false
+}

@@ -1,24 +1,20 @@
 # SpaceSurvival project state
 
-**October22 cryo comparison — verified and installed:** All four fitted v4_4
-chambers share generated displays, glass, frost, volumetric fog, Niagara and the
-native four-second interaction. Final review accepted 36 ordinary viewport
-angles and 19 effect frames. C's rear pane clears its tail; D's third rear
-console has the matching display treatment. Fine frost grain and C's original
-front ribs remain documented limits, not hidden corrections.
+**October23 cryo display correction — v5.4 installed and reviewed:** all four
+share real font-mesh displays behind glass, a compact inset hologram and revised
+glass shading, retaining original bodies, enclosures and native four-second
+freeze. The lead reviewed 53 ordinary views and 19 freeze frames; all nine bottom
+consoles are covered. Four cycles reset in 4.003–4.039 seconds.
 
-Guarded adoption installed 201 native files/182,257,046 bytes, seven narrow
-source edits and 11 owned plugin files while preserving 124 previous packages,
-16 donor hashes and 106 source/import hashes. The owner's latest source built
-successfully (134 actions/89.75s); uncooked compatibility smoke also passes. The review
-map is separate; production maps, saves and the published package are unchanged.
-
-D is the strongest hero-detail candidate; A uses the lowest static resources.
-All four remain available for owner comparison. Physical input, packaged FPS,
-load time and resident VRAM are unmeasured. Native content stays private and
-excluded from cook; non-Unreal work remains on D:. PR86 remains unmerged.
-[Current evidence](validation/2026-10-22-cryo-fit-interaction.md),
-[owner build](validation/2026-10-22-cryo-owner-build.json),
+Guarded content-only adoption adds 55 packages and replaces the review map;
+256 cryo packages match the tested stage. Fresh owner smoke passes 272 installed
+package identities and a full native cycle, preserving config, saves, source and
+assets. The prior runtime source builds remain historical; v5 changes no C++.
+Owner preference, physical input and packaged performance stay open. Fine frost
+grain, A/D seating facets, C posts, black-environment reflections and dark contact
+visibility remain limits. PR86 is unmerged; non-Unreal work stays on D:.
+[Current evidence](validation/2026-10-23-cryo-displays-v5.md),
+[v4 history](validation/2026-10-22-cryo-fit-interaction.md),
 [active review](KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
 **October14 PR69 reconciliation:** An isolated CPU Editor build succeeds after preserving current main conversations/characters and prior station/boarding work. The owner checkout/game DLL/native map/content and packaged release are unchanged. Station implementation remains held and moves to a focused draft PR. The old five-path source cook failure is repaired without running a cook. [Exact checks and limits](validation/2026-10-14-pr69-closeout.md).

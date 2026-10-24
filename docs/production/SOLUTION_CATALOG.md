@@ -2,23 +2,19 @@
 
 ### CRYO-20261021 — four owner-supplied chamber candidates
 
-- **Acquisition/evidence:** four local generated GLBs, with untouched original
-  hashes in [source provenance](../../Scripts/CryoComparison/source-provenance.json).
-  Shared generated art and a private derivative of the existing A07 Niagara
-  Examples pack; no asset purchase, vendor upload or host-tool installation.
-- **Evaluation:** all four share 19 components across 12 roles, fitted glass,
-  generated displays and the native four-second hypercooling action. Final v4_4
-  passes 36 angle views and 19 effect frames, including C's four-sided enclosure
-  and D's extra rear console. D has the strongest hero detail; A has the lowest
-  static budget. Fitted triangles span 42,699–121,150. Fine frost grain, C's
-  original ribs and numerical seating-span limits remain documented.
-- **Whole-project value:** conditional Acornaut hero/station presentation and
-  environmental storytelling (WBS7.1,8.3,10.3). Art and the native cosmetic cycle
-  are reusable; no occupant rig, progression or roster change is included.
-- **Timing/next check:** all four are privately installed; the latest owner-source
-  build and uncooked compatibility smoke pass. Owner comparison, physical
-  input, production placement and representative packaged performance remain
-  separate. PR86 is unmerged. [Current evidence](../validation/2026-10-22-cryo-fit-interaction.md);
+- **Acquisition:** four preserved local GLBs; generated frost/mist and a private
+  derivative of the owned Niagara Examples pack. No purchase or vendor upload.
+- **Evaluation:** v5.4 shares font-mesh displays, glass and native four-second
+  freeze across all four. Source audit, 53 native views/19 effect frames, guarded
+  owner adoption and fresh owner smoke pass. D leads hero detail, A has the
+  smallest static budget, and C gives the clearest view around all sides.
+- **Whole-project value:** conditional Acornaut hero/station presentation
+  (WBS7.1,8.3,10.3). No occupant rig, roster or progression change.
+- **Next check:** owner choice, physical input, production placement and packaged
+  performance remain open after the current native/adoption checks. Fine frost
+  grain, A/D rim facets, C posts and dark-scene contact/reflection limits are
+  documented. PR86 remains unmerged.
+  [Current evidence](../validation/2026-10-23-cryo-displays-v5.md);
   [active review](../KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
 **October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.

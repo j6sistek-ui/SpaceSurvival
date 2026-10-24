@@ -1,32 +1,23 @@
 # Four-way cryogenic chamber comparison
 
-Owner-requested asset finishing and comparison, dated October 21, 2026. All four
-source chambers receive the same screen artwork, material recipe, glass, frost,
-hologram and native Unreal effects before any quality ranking. This is a separate
-authoring scene; it does not replace a gameplay map or the playable Acornaut.
+**Current revision: v5.4 reviewed in native Unreal and installed locally.**
+All four have the same real font-mesh displays behind glass, compact inset
+hologram, cold glass haze, generated frost/mist and native four-second freeze.
+Original bodies, fitted enclosures, C tail clearance and effects remain protected.
 
-**Current status: v4_4 visually verified, installed, owner-built and smoke-tested.**
-The owner's rejected v3 side view prompted fitted panes, supported displays and
-full all-angle review. The final 36 angle views and 19 native effect frames are
-accepted with documented frost-grain and source-geometry limits. PR86 remains
-open and unmerged; owner preference and physical input remain untested.
+The lead reviewed 53 ordinary viewport views, covering all nine bottom consoles,
+and 19 effect frames. Four native cycles reset in 4.003–4.039 seconds. Content-only
+adoption installs 55 new packages and replaces the comparison map; all 256 cryo
+packages match the tested stage. A fresh owner smoke verifies the 272-package
+closure, full frost/jets/reset and unchanged protected files. Owner preference,
+physical input and packaged performance remain separate; PR86 stays unmerged.
 
-The all-angle pass found a third original service console on D's rear. V4_4
-applies the same backing, glass, transparent HUD and frame to that panel, merged
-into four existing display meshes. It does not add native components or packages.
-
-The newly requested four-second walk-up hypercool action is implemented in the
-[native plugin source](../../Plugins/SSCryoRuntime/README.md), with an existing
-SpaceSurvival terminal action and a separate walking preview mode. Saved native
-bindings exist. The initial plugin and isolated SpaceSurvival Editor
-[builds pass](../../docs/validation/2026-10-22-cryo-interaction-build.json); the revised
-jet lead-in also builds. The final rendered cycles pass. The v3
-receipts below predate this interaction.
-
-Current verification and remaining work belong to
-[RPT-20261021-CRYO](../../docs/KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
-The [current fit receipt](../../docs/validation/2026-10-22-cryo-fit-interaction.md) separates
-source preparation, saved native content, rendered verification and performance.
+D leads for hero detail, A has the smallest static budget and C offers the clearest
+view around all sides. Fine frost grain, some A/D seating-rim facets, C's original
+posts, limited reflections in the black review environment and dark top/rear
+contact visibility remain documented. Earlier raster-screen evidence is history.
+[Current evidence](../../docs/validation/2026-10-23-cryo-displays-v5.md),
+[active review](../../docs/KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
 ## Inputs and private storage
 
@@ -61,18 +52,19 @@ is ignored by Git; a clone does not recreate these native assets. The exact
 broad `/Game/SpaceSurvival` cook root. Removing that exclusion is a separate
 integration decision, with dependency and performance checks. Do not force-add
 the native directory or the owned `NiagaraExamples` pack to Git.
-[Current adoption receipt](../../docs/validation/2026-10-22-cryo-adoption.json)
+[Historical v4 adoption receipt](../../docs/validation/2026-10-22-cryo-adoption.json)
 verifies 201 files/182,257,046 bytes: 76 additions, one map replacement and 124
 preserved packages. Seven narrow source edits and 11 owned plugin files were
 installed with exact D: backups; 16 donor and 106 source/import hashes remain
-unchanged. All native files match the accepted stage. The prior
+unchanged. Those v4 files matched their accepted stage; current v5 adoption adds the
+display packages and replaces only the map. The prior
 [v3 receipt](../../docs/validation/2026-10-21-cryo-adoption.json) is historical.
 The latest owner-source build and uncooked compatibility smoke pass; physical
 input and packaged performance remain untested.
 
-## Current fitted geometry and native interaction
+## Preserved v4 fit and interaction baseline
 
-All four retain the same 19 component roles, shared art, material/effect recipe
+The v4 baseline has the same 19 component roles, shared art, material/effect recipe
 and original bodies. Glass follows measured posts and caps; C has four connected
 window sectors. Closed seats support the panes, while the chamber HUD follows
 the glass at 2.5 mm. Console glass and transparent HUD sit 8 mm and 10 mm above
@@ -85,12 +77,12 @@ until 0.65 seconds, reaches full frost at 1.25 seconds and restores normal by
 four seconds. A Pawn-only capsule supplies walking collision. Native saved
 references bind every frost surface and the two inner top outlets; Python is
 used to author and observe, while C++ owns gameplay timing and material state.
-[Current runtime evidence](../../docs/validation/2026-10-22-cryo-runtime.json)
+[V4 runtime baseline](../../docs/validation/2026-10-22-cryo-runtime.json)
 records 408 interaction samples and four cycles ending in 4.002–4.031 seconds,
 plus 1,029 ambient samples across the all-angle review. Every pane restores its
 normal state and each bay's other three chambers remain unchanged.
 
-[Current static metrics](../../docs/validation/2026-10-22-cryo-v4-resources.json)
+[V4 static metrics](../../docs/validation/2026-10-22-cryo-v4-resources.json)
 record 42,699 / 67,046 / 117,389 / 121,150 triangles and 19 sections per model.
 C's four-sided glass and supporting rails explain its increased geometry.
 The numerical fit audit retains 23 local seating-span flags at source recesses.
@@ -182,16 +174,17 @@ the original image-generation pixels remain preserved as source. Source body
 resolution, collision policy, LOD/Nanite choices and translucency costs must be
 reported separately from any perceived quality ranking.
 
-Status, chamber hologram and console-hologram textures use sharpened mips and
-`NeverStream` in the final review for readable text. That is an explicit shared
-residency choice; the three source body maps retain ordinary streaming settings.
+Historical raster status, chamber hologram and console-hologram textures used
+sharpened mips and `NeverStream` for text. Current v5 uses mesh glyphs and retains
+those image packages only as recovery. The three source body maps retain
+ordinary streaming settings.
 Original opaque-console packages remain as recovery and are excluded from active
 mesh/texture accounting. [Resource receipt](../../docs/validation/2026-10-21-cryo-resources.json)
 labels native disk size and GPU-memory estimates separately.
 
 ## Archived recipes and execution layout
 
-The Python files include current v4_4 recipes and retained v3 prerequisites/history.
+The Python files include current v5 recipes and retained v4/v3 prerequisites/history.
 Their exact roles and hashes are recorded in [recipe-snapshots.json](recipe-snapshots.json).
 They are not a one-click installer. They expect this private layout after being copied into a
 new D: review workspace, alongside the required original inputs and artwork:
@@ -204,6 +197,7 @@ new D: review workspace, alongside the required original inputs and artwork:
     CryoStage/CryoStage.uproject  # isolated native project and dependency copy
     cryo-repo/                  # isolated source checkout and private build guards
     cryo-owner-runtime-source-plan.json # fresh owner-byte patch plan, kept private
+    console-bezel-projection-v5_4.json # private measured source-display planes
     *.json                       # per-step authoring/verification receipts
   outputs/Cryo_Comparison/
     shared/                      # original generated artwork
@@ -211,7 +205,8 @@ new D: review workspace, alongside the required original inputs and artwork:
     assembly_holo_consoles.json   # raised transparent-console manifest
     assembly_fit_v4_2.json        # fitted contact-audit baseline
     assembly_fit_v4_3.json        # C rear tail-clearance revision
-    assembly_fit_v4_4.json        # final assembly including D rear console
+    assembly_fit_v4_4.json        # historical fit including D rear console
+    assembly_displays_v5_4.json   # current vector-display source assembly
     <model>/                     # model source maps, components and revisions
 ```
 
@@ -262,10 +257,10 @@ The accepted native-game receipt supersedes the inactive-Niagara editor capture
 and rejected checkerboard runtime trial. Do not treat either earlier pass as
 proof of the final particles.
 
-The current revision adds these source snapshots. Its separate accepted native
-receipts certify fit and behavior; earlier v3 receipts remain historical.
+The retained v4 revision uses these source snapshots. Its separate native
+receipts describe that earlier fit and behavior; they do not certify v5 visuals.
 
-| Current recipe | Role and execution boundary |
+| Retained v4 recipe | Role and execution boundary |
 | --- | --- |
 | `fit_cryo_geometry_v4.py`, `validate_cryo_fit_v4.py`, `render_fit_v4.py` | Separate Blender v4_2 geometry, preservation/contact audit and nine-angle previews; never substitute Blender views for Unreal acceptance |
 | `upgrade_cryo_fit_unreal.py` | Dry-run by default; imports 72 new fitted meshes and updates only the isolated comparison map |
@@ -290,6 +285,34 @@ plugin folder, changed source, unknown native files or running Unreal/UBT.
 After apply, build the owner's latest source separately; never copy the isolated
 SpaceSurvival DLL into that differently edited checkout. Native binaries, guard
 inputs, owner patch contents and screenshots are intentionally absent from Git.
+
+## Current v5 recipes
+
+The new snapshots require the same D: work/output layout above. No native
+binary, screenshot, font file or private artwork is published with the scripts.
+`build_cryo_displays_v5.py` uses the existing local Bahnschrift font; the recipe
+records its identity without copying the font into Git.
+
+| Recipe | Boundary |
+| --- | --- |
+| `build_cryo_displays_v5.py`, `clean_cryo_vector_caps_v5_3.py` | Ordered Blender derivatives v4.4 → v5.2 → v5.3; older geometry stays preserved |
+| `render_console_bezel_probe_v5_4.py`, `fit_cryo_displays_v5_4.py` | New-only source-display previews/projection measurements, then fitted B/C console stacks and D status support; requires the private projection JSON in `work` |
+| `validate_cryo_displays_v5.py` | Independent read-only geometry/provenance audit; no native acceptance |
+| `apply_cryo_displays_v5.py`, `refine_cryo_displays_v5.py` | Explicit isolated-stage import/refinement, protected native hashes and archived prior receipts |
+| `patch_cryo_displays_v5_4.py` | Dry-run-first bounded stage patch: 18 existing v5 meshes, one new D housing mesh and its map binding; archives and hash-binds the prior apply receipt |
+| `verify_cryo_displays_v5.py`, `verify_cryo_interaction_v5.py` | Native observers: trial/final 53 views and four freeze cycles/19 frames; no gameplay setters |
+| `run_display_v5_owner_smoke.py` | Exact-session wrapper binds the retained read-only owner-smoke observer to the final v5 interaction receipt; invokes the native action without effect setters |
+| `snapshot_cryo_v5.py` | Protected input snapshot for the bounded revision |
+| `adopt_cryo_displays_v5.py` | Dry-run-first content-only owner copy after exact native/visual evidence; refuses unexpected changes |
+| `build_cryo_evaluation_v5.py` | Static cost/report builder with actual native-image dropdowns; separate pending output by default, explicit publish requires exact accepted/adopted/smoke evidence and archives the prior report |
+
+The current source manifest is `assembly_displays_v5_4.json`; its independent
+audit and private bezel-projection hashes are bound in the concise evidence.
+The isolated stage now holds 55 new packages plus the comparison map update
+(256 cryo packages; 272 including donors). Guarded owner adoption and fresh
+uncooked compatibility smoke pass for those exact package identities. Native receipts
+are `CryoDisplayV5Apply.json`, final `CryoDisplayV5Angles_*` and
+`CryoInteractionV5_*`; do not use trial images or a prior manifest as acceptance.
 
 ## Portable checks
 

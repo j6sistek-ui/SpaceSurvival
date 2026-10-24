@@ -1,27 +1,28 @@
 # Performance findings
 
-## October22 cryo review: static comparison and native verification
+## October23 cryo v5.4: reviewed appearance and static resource estimates
 
-The [current cryo review](validation/2026-10-22-cryo-fit-interaction.md) retains
-source body topology and resolutions under the same art/effects. A/C have three
-4K body maps; B/D have an8K base color plus two4K maps. Latest v4_4 static counts
-are42,699 /67,046 /117,389 /121,150 triangles, with19 mesh sections each.
-C's four-sided enclosure adds more glass and supporting rails. Model-owned
-uncooked files are18.27 /30.67 /22.00 /88.26 MiB.
+The [display correction](validation/2026-10-23-cryo-displays-v5.md) replaces
+raster UI with font geometry. Current v5.4 source counts are 68,407 / 95,143 /
+145,724 / 154,211 triangles and 21 components each. Original body maps remain unchanged:
+A/C three 4K maps; B/D 8K base color plus two 4K maps. Full-mip BC body estimates
+remain 42.67 / 74.67 / 42.67 / 74.67 MiB.
 
-Full-mip BC body-texture estimates remain42.67 /74.67 /42.67 /74.67 MiB, plus10.67
-MiB shared finish art once. They exclude buffers, shaders, overdraw, fog grids
-and actual streaming residency. [Exact values and limitations](validation/2026-10-22-cryo-v4-resources.json)
-identify the measured v4_4 manifest and eight saved authoring receipts. All 217
-protected native packages match that chain. Final native fit/effects review passes;
-this does not establish representative performance.
+Only frost/mist remain active shared image inputs: their standard BC3 full-mip
+estimate is 4.000061 MiB once, giving 238.666931 MiB for all four body sets plus
+shared maps. Prior screen images remain stored recovery. These estimates exclude
+buffers, shaders, fog grids, render targets and actual streaming residency.
+Geometry-based lettering adds mesh work; per-pixel translucent specular adds
+view-dependent work. Lower UI texture bytes do not prove faster rendering.
 
-A has the lowest static budget. D retains the highest original body detail and
-geometry; C now approaches D's geometry with a lower texture tier. Shared
-translucency, volumetric fog and Niagara add view-dependent cost to each.
-Static resources, download size and editor capture timing do not establish
-packaged load time, GPU frame distribution, resident VRAM or60FPS. The review
-namespace is excluded from cooking; the prior v3 fit was owner-rejected.
+The active model packages total 19.13 / 31.54 / 22.89 / 89.29 MiB for A/B/C/D,
+including model meshes, body textures and body material. Shared materials/effects
+are separate. The whole stored namespace is 187,100,078 bytes including recovery.
+
+A retains the smallest static budget; D leads the reviewed hero detail. C's
+four glass/frost sectors add transparency work. Native storage, sections and
+capture timings do not establish load time, draw calls, GPU frame time or FPS.
+No packaged benchmark or production integration is claimed.
 
 **October10 current direction:** ray tracing stays OFF. Future budget:4K60 or
 1440p90+ at maximum ray tracing without frame generation; quality/design first.

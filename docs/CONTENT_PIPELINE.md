@@ -1,25 +1,23 @@
 # Phase 1 content pipeline
 
-## Four-way cryo review — October 21
+## Four-way cryo display correction — October 23
 
-[CryoComparison](../Scripts/CryoComparison/README.md) preserves four original
-GLBs and fits the same glass, readable generated art, frost and effect recipe to
-each. Blender creates transferable source geometry; Unreal owns the live fog,
-Niagara and animated hologram material. Native review content stays in the
-private `/Game/SpaceSurvival/CryoComparison` namespace, ignored by Git and
-excluded from cook. The original body maps/topology are retained; no game map
-or playable character is replaced. Non-Unreal revisions and source outputs stay
-on D:. [Current evidence and remaining verification](validation/2026-10-22-cryo-fit-interaction.md).
-The owner rejected v3 glass/status/HUD alignment from the side. Fitted source
-and native bindings exist; v4_3 rear-C tail clearance and full-frost depth are
-verified in the final native inspection. Keep the prior v4_2 numerical contact audit
-bound to its original manifest. A fresh v4_4 contact audit retains the same 23
-seat-clearance flags; a separate tail audit measures the rear-window clearance.
-D's third rear console uses the same display recipe, merged into four existing
-mesh components without new native packages or textures.
-The native plugin owns the four-second cycle; the converter authors native
-Niagara, and Python only observes the native action. Preserve historical
-receipts and every original source asset.
+[CryoComparison](../Scripts/CryoComparison/README.md) retains all four original
+GLBs, fitted enclosures and native freeze. Current v5.4 uses font-mesh/vector UI
+behind separate lenses, a compact curved hologram and revised glass shading.
+Shared generated frost/mist remains active; old display images stay as recovery.
+
+Ordered source derivatives preserve v4.4, clean font caps and fit display stacks
+to the original bezels. The independent audit passes with 301 protected files
+unchanged, 19 changed/65 unchanged component exports. Final native authoring adds
+49 meshes/six materials and replaces only the owned map. Lead review covers
+53 ordinary views and 19 native freeze frames, followed by guarded content-only
+owner adoption and fresh compatibility smoke. Source, visual and runtime claims
+are separate and hash-bound. [Exact evidence](validation/2026-10-23-cryo-displays-v5.md).
+
+Non-Unreal files stay on D:. Native/vendor/image content remains private and
+excluded from cook. Never reinterpret a source audit or historical v4 renderer
+pass as acceptance of the current display/glass revision.
 
 **October14 source closeout:** PR69 adds four existing runtime cook folders for its string-loaded warp frame/effects and cabin material; no vendor Blueprint/demo root is added. Native content stays private and unchanged; no cook/release occurs. [Coverage/build evidence](validation/2026-10-14-pr69-closeout.md). Station changes remain held.
 

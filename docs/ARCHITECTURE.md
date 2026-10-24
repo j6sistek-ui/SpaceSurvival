@@ -24,7 +24,12 @@ asset-only review map uses the plugin's walking preview mode and the same native
 chamber action. Materials, nozzle locations and pane references remain authored
 content. Source/build availability does not establish accepted fit or runtime
 effects; [RPT-20261021-CRYO](KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison)
-owns the pending v4 native verification.
+tracks owner review after bounded v5.4 native verification/adoption. V5 changes authored display meshes
+and materials only: real font silhouettes replace raster glyph alpha, with
+readouts behind lenses and a compact inset hologram. The native interaction
+code, freeze materials, Niagara and sequence remain protected. Earlier v4
+source/runtime receipts remain historical; the current dated v5 receipt binds
+53 views, four freeze cycles and fresh owner compatibility.
 
 ## Silver groom authoring â€” October 14
 

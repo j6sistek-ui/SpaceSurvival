@@ -2,28 +2,25 @@
 
 ## RPT-20261021-CRYO — four-way chamber comparison
 
-**Open / owner review — fitted native presentation accepted and installed.**
-The corrected v4_4 review passes 36 ordinary viewport angles and 19 effect
-frames, covering all four chambers, C's side/rear panes and D's rear console.
-All four native four-second cycles restore their materials and stop their jets;
-range, occlusion, repeated-use and native collision-sweep checks pass.
+**Open / owner review — v5.4 is installed and passes bounded native review.**
+The same font-mesh displays sit behind glass on all four; the inset hologram,
+cold glass response and native four-second freeze preserve original bodies and
+enclosures. Lead review covers 53 ordinary views, all nine bottom consoles and
+19 effect frames. Guarded content adoption and fresh owner smoke pass.
 
-All 201 native files match the tested stage after guarded adoption. The owner's
-latest source builds successfully; the final owner-project uncooked compatibility
-smoke also passes. PR86 stays unmerged. Physical E/X input and owner preference remain
-untested; the observer invoked the same native controller action.
+Still assess owner preference and close-range fit: A/D retain some faceted dark
+seating rims, frost has fine grain, original C posts obscure the hero, the black
+review environment limits central reflections, and dark top/rear views do not
+resolve every contact. Earlier numerical local seat-span flags remain historical
+fit evidence; no watertightness claim is added.
 
-The 23 numerical seating-span flags remain visible at irregular source recesses.
-Closed supports bridge them, with no floating added panes/consoles in reviewed
-illuminated side views; dark rear/top images do not resolve every fine contact.
-Frost retains fine grain, and C's original front ribs partly obscure the subject.
-D is the strongest hero-detail candidate; A has the lowest static budget.
+Physical E/controller-X input, production placement, packaged load/FPS and
+resident VRAM remain unmeasured. Display values are authored presentation, not
+telemetry. Native/vendor/art content remains private and excluded from cook;
+PR86 stays unmerged. [Current evidence](validation/2026-10-23-cryo-displays-v5.md),
+[v4 history](validation/2026-10-22-cryo-fit-interaction.md). Close after owner review.
 
-Keep all four for comparison. Generated display values are authored artwork,
-not telemetry. Production placement, packaged load/FPS and resident VRAM remain
-separate, and the private namespace is excluded from cook. Unrelated station
-and character work remains held. [Evidence and limits](validation/2026-10-22-cryo-fit-interaction.md);
-[v3 history](validation/2026-10-21-cryo-comparison.md). Close after owner review.
+
 
 **October14 PR closeout — CPU work only.** PR69 reconciles with current main; station follow-ups move to a focused draft PR. All in-game edits remain held. The old five-path source cook failure is superseded by155 covered paths/zero missing; no cook/release is claimed. [Reconciliation evidence](validation/2026-10-14-pr69-closeout.md). Cyborg/Silver remain closed; older paragraphs do not reopen them.
 

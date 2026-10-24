@@ -1,20 +1,18 @@
 # Build and run
 
-**October22 separate cryo review:** open
-`/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison`. All four fitted v4_4
-chambers and their native four-second interaction are installed. The walking
-preview uses WASD/mouse or gamepad, with E/controller X to trigger the focused
-chamber. The native controller action is verified; physical input remains untested.
+**October23 cryo display correction:** current v5.4 is installed in the private
+`/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison` review map. Open it,
+Play, approach a chamber and use E/controller X for its four-second freeze.
+Native controller invocation passes; physical keys/controller feel remain untested.
 
-The latest owner-source Editor build succeeds with the installed UE5.8.4
-toolchain; owner-project uncooked compatibility smoke also passes. See the
-[bundle guide](../Scripts/CryoComparison/README.md),
-[current runtime evidence](validation/2026-10-22-cryo-runtime.json) and
-[owner build identity](validation/2026-10-22-cryo-owner-build.json).
-Serialize Unreal and UBT. Rebuild owner source in place; never copy an isolated
-SpaceSurvival DLL over its differently edited checkout. This separate review
-namespace remains excluded from cooking; no packaged or production-map change
-is claimed.
+Content-only adoption and fresh owner compatibility smoke verify 256 cryo/272
+installed packages. No runtime C++ changed in v5; prior owner-source builds
+remain historical. Do not rerun authoring recipes in the owner project or copy
+an isolated game DLL. Recipes use the D: stage, exact hashes and serialized
+Unreal processes. The review namespace remains excluded from cooking.
+[Bundle guide](../Scripts/CryoComparison/README.md),
+[current evidence](validation/2026-10-23-cryo-displays-v5.md),
+[historical owner build](validation/2026-10-22-cryo-owner-build.json).
 
 **October 13 Silver body-dynamics build:** `Scripts/Build.ps1 -Target Editor` succeeds; current runtime module DLL hash is `f731b83f`. The saved private Silver Blueprint includes the new `SSSoftTissueComponent`, configured as **BodyDynamics**. Open her existing apartment Blueprint to tune its Regions/Spring settings, save, and start a fresh Play session. Launchers and tool dependencies are unchanged; this does not update the packaged game. [Validation and settings](validation/2026-10-13-silver-runtime-springs.md).
 
