@@ -1,22 +1,23 @@
 # Four-way cryogenic chamber comparison
 
-**Current revision: v5.4 reviewed in native Unreal and installed locally.**
-All four have the same real font-mesh displays behind glass, compact inset
-hologram, cold glass haze, generated frost/mist and native four-second freeze.
-Original bodies, fitted enclosures, C tail clearance and effects remain protected.
+**Current revision: v6 is reviewed in native Unreal and installed locally.**
+All four use matching readable displays behind glass, frost/fog and native
+four-second freeze. V6 moves each lower blue core and its supported collar clear
+of the chamber rim, and adds two small steady downward nozzle streams per bay.
+Four derived Body meshes change locally; original files, topology/UVs, accepted
+displays/enclosures and the other 80 component exports remain preserved.
 
-The lead reviewed 53 ordinary viewport views, covering all nine bottom consoles,
-and 19 effect frames. Four native cycles reset in 4.003–4.039 seconds. Content-only
-adoption installs 55 new packages and replaces the comparison map; all 256 cryo
-packages match the tested stage. A fresh owner smoke verifies the 272-package
-closure, full frost/jets/reset and unchanged protected files. Owner preference,
-physical input and packaged performance remain separate; PR86 stays unmerged.
+Lead review covers 48 current views and 19 effect frames. Eight steady jets stay
+active through 1,224 samples; four stronger freeze cycles reset in 4.018–4.044 s.
+Guarded adoption adds five packages/map-only replacement. Fresh owner smoke passes
+277 identities/261 cryo packages, the idle jets and a complete freeze/reset.
 
-D leads for hero detail, A has the smallest static budget and C offers the clearest
-view around all sides. Fine frost grain, some A/D seating-rim facets, C's original
-posts, limited reflections in the black review environment and dark top/rear
-contact visibility remain documented. Earlier raster-screen evidence is history.
-[Current evidence](../../docs/validation/2026-10-23-cryo-displays-v5.md),
+D leads hero detail, A has the smallest static budget and C offers four-sided
+viewing. Source faceting, frost grain, C posts/outlet occlusion, dark contacts and
+limited central reflections remain. Exact side views can hide a front-facing
+core behind another part. Owner preference, physical input and packaged performance
+stay separate; PR86 remains unmerged. [Current evidence](../../docs/validation/2026-10-24-cryo-core-idle-v6.md),
+[v5 history](../../docs/validation/2026-10-23-cryo-displays-v5.md),
 [active review](../../docs/KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
 ## Inputs and private storage
@@ -186,6 +187,10 @@ labels native disk size and GPU-memory estimates separately.
 
 The Python files include current v5 recipes and retained v4/v3 prerequisites/history.
 Their exact roles and hashes are recorded in [recipe-snapshots.json](recipe-snapshots.json).
+Snapshot `sha256` and `bytes` describe LF-normalized Git content so they remain
+portable across Windows checkouts. A `private_source` record preserves the raw
+byte count and hash when the tested private recipe used CRLF. Only line endings
+are normalized; tested private files and native evidence remain unchanged.
 They are not a one-click installer. They expect this private layout after being copied into a
 new D: review workspace, alongside the required original inputs and artwork:
 
@@ -286,9 +291,38 @@ After apply, build the owner's latest source separately; never copy the isolated
 SpaceSurvival DLL into that differently edited checkout. Native binaries, guard
 inputs, owner patch contents and screenshots are intentionally absent from Git.
 
-## Current v5 recipes
+## Current v6 recipes
 
-The new snapshots require the same D: work/output layout above. No native
+V6 is the current installed correction to the accepted v5.4 baseline. Four
+Body derivatives move only the local core/collar; topology/UVs and original
+source files stay preserved. The steady effect adds one shared native
+system and eight nozzle actors without changing the larger freeze interaction.
+[Current evidence](../../docs/validation/2026-10-24-cryo-core-idle-v6.md).
+
+| Recipe | Boundary |
+| --- | --- |
+| `snapshot_cryo_v6.py` | New-only baseline of matching owner/stage v5.4 packages and protected inputs |
+| `plan_cryo_cores_v6.py`, `raise_cryo_cores_v6.py`, `audit_cryo_cores_v6.py` | Source clearance plan, separate body derivatives and independent audit; retain private `work/cryo-core-v6-plan.json` and do not regenerate it over accepted evidence |
+| `apply_cryo_core_v6.py`, `add_cryo_idle_jets_v6.py` | Dry-run-first, serialized stage-only core and steady-jet authoring; only owned map changes among existing packages |
+| `compose_cryo_polish_v6.py` | Binds exact core→jet receipts and combined active-mesh identities; no native edits |
+| `verify_cryo_polish_v6.py`, `run_polish_v6_angles.py` |48 current native views; wrapper reviews new core/jet close-ups before established angles |
+| `verify_cryo_interaction_v6.py`, `verify_cryo_owner_smoke_v6.py` | Native action/reset and fresh owner compatibility observers, no effect setters |
+| `adopt_cryo_polish_v6.py` | Default dry run; exact accepted capture/package hashes, process guard, unique D: backups/receipts; only new PolishV6 meshes/FX and map replacement allowed |
+| `build_cryo_evaluation_v6.py` | Separate pending report by default; exact source/native/visual/adoption/smoke gates before explicit canonical publication with prior-report archive |
+
+The source manifest is `assembly_polish_v6.json`; audit/plan hashes are recorded
+in the concise evidence. Native receipts are `CryoPolishV6Baseline.json`,
+`CryoPolishV6Apply.json`, `CryoPolishV6Angles_*` and `CryoInteractionV6_*`.
+Never inherit current visual acceptance from the earlier v5 captures.
+Observers separate bounded natural Niagara startup from continuity sampling and
+the first native action. They do not activate effects or excuse later inactivity;
+that startup interval is not a packaged load-time measurement.
+
+<a id="current-v5-recipes"></a>
+
+## Retained v5 recipes
+
+These retained snapshots require the same D: work/output layout above. No native
 binary, screenshot, font file or private artwork is published with the scripts.
 `build_cryo_displays_v5.py` uses the existing local Bahnschrift font; the recipe
 records its identity without copying the font into Git.
@@ -306,13 +340,13 @@ records its identity without copying the font into Git.
 | `adopt_cryo_displays_v5.py` | Dry-run-first content-only owner copy after exact native/visual evidence; refuses unexpected changes |
 | `build_cryo_evaluation_v5.py` | Static cost/report builder with actual native-image dropdowns; separate pending output by default, explicit publish requires exact accepted/adopted/smoke evidence and archives the prior report |
 
-The current source manifest is `assembly_displays_v5_4.json`; its independent
+The accepted v5 source manifest was `assembly_displays_v5_4.json`; its independent
 audit and private bezel-projection hashes are bound in the concise evidence.
-The isolated stage now holds 55 new packages plus the comparison map update
-(256 cryo packages; 272 including donors). Guarded owner adoption and fresh
-uncooked compatibility smoke pass for those exact package identities. Native receipts
+That v5 checkpoint added 55 packages plus the comparison-map update
+(256 cryo packages; 272 including donors). Its guarded adoption and fresh
+uncooked compatibility smoke passed for those historical identities. Native receipts
 are `CryoDisplayV5Apply.json`, final `CryoDisplayV5Angles_*` and
-`CryoInteractionV5_*`; do not use trial images or a prior manifest as acceptance.
+`CryoInteractionV5_*`; none of these earlier captures certifies the v6 core/jet change.
 
 ## Portable checks
 

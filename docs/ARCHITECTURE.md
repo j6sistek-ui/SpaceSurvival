@@ -24,12 +24,18 @@ asset-only review map uses the plugin's walking preview mode and the same native
 chamber action. Materials, nozzle locations and pane references remain authored
 content. Source/build availability does not establish accepted fit or runtime
 effects; [RPT-20261021-CRYO](KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison)
-tracks owner review after bounded v5.4 native verification/adoption. V5 changes authored display meshes
+tracks owner review after bounded v6 native verification/adoption. V5 changes authored display meshes
 and materials only: real font silhouettes replace raster glyph alpha, with
 readouts behind lenses and a compact inset hologram. The native interaction
 code, freeze materials, Niagara and sequence remain protected. Earlier v4
-source/runtime receipts remain historical; the current dated v5 receipt binds
-53 views, four freeze cycles and fresh owner compatibility.
+source/runtime receipts remain historical; the current dated v6 receipt binds
+48 views, four freeze cycles, steady jets and fresh owner compatibility.
+
+V6 keeps this runtime code intact. Four derived Body meshes shift only local
+core/collar vertices; eight auto-activating Niagara actors supply small steady
+nozzle streams with a shared new system. They continue independently through the
+stronger interaction cycle. Saved references and fresh native observers verify
+all eight after bounded natural startup; no Python activation owns gameplay.
 
 ## Silver groom authoring â€” October 14
 

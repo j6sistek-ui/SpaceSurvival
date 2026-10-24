@@ -1,17 +1,18 @@
 # Build and run
 
-**October23 cryo display correction:** current v5.4 is installed in the private
-`/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison` review map. Open it,
-Play, approach a chamber and use E/controller X for its four-second freeze.
-Native controller invocation passes; physical keys/controller feel remain untested.
+**October 24 cryo v6:** current content is installed at
+`/Game/SpaceSurvival/CryoComparison/Maps/L_CryoComparison`. Open it, Play and compare
+the forward cores and small constant nozzle streams. Approach a chamber and use
+E/controller X for the stronger four-second freeze. Native controller invocation
+passes; physical input/feel remains untested.
 
-Content-only adoption and fresh owner compatibility smoke verify 256 cryo/272
-installed packages. No runtime C++ changed in v5; prior owner-source builds
-remain historical. Do not rerun authoring recipes in the owner project or copy
-an isolated game DLL. Recipes use the D: stage, exact hashes and serialized
-Unreal processes. The review namespace remains excluded from cooking.
+Content-only adoption and fresh owner smoke verify 261 cryo/277 installed packages.
+V6 changes no C++; earlier owner-source builds remain historical. Do not rerun
+adopted recipes or copy an isolated game DLL. Native authoring/captures are
+serialized; the bounded initial Niagara readiness period is not load-time data.
+The review namespace remains excluded from cooking.
 [Bundle guide](../Scripts/CryoComparison/README.md),
-[current evidence](validation/2026-10-23-cryo-displays-v5.md),
+[current evidence](validation/2026-10-24-cryo-core-idle-v6.md),
 [historical owner build](validation/2026-10-22-cryo-owner-build.json).
 
 **October 13 Silver body-dynamics build:** `Scripts/Build.ps1 -Target Editor` succeeds; current runtime module DLL hash is `f731b83f`. The saved private Silver Blueprint includes the new `SSSoftTissueComponent`, configured as **BodyDynamics**. Open her existing apartment Blueprint to tune its Regions/Spring settings, save, and start a fresh Play session. Launchers and tool dependencies are unchanged; this does not update the packaged game. [Validation and settings](validation/2026-10-13-silver-runtime-springs.md).

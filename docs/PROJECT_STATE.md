@@ -1,20 +1,20 @@
 # SpaceSurvival project state
 
-**October23 cryo display correction — v5.4 installed and reviewed:** all four
-share real font-mesh displays behind glass, a compact inset hologram and revised
-glass shading, retaining original bodies, enclosures and native four-second
-freeze. The lead reviewed 53 ordinary views and 19 freeze frames; all nine bottom
-consoles are covered. Four cycles reset in 4.003–4.039 seconds.
+**October 24 cryo v6 — installed and reviewed:** the four lower blue cores sit
+clear of their rims and eight small downward nozzle streams run continuously.
+Four active Body meshes change only around the core/collar; original files,
+topology/UVs, displays/enclosures and the other 80 component exports are preserved.
 
-Guarded content-only adoption adds 55 packages and replaces the review map;
-256 cryo packages match the tested stage. Fresh owner smoke passes 272 installed
-package identities and a full native cycle, preserving config, saves, source and
-assets. The prior runtime source builds remain historical; v5 changes no C++.
-Owner preference, physical input and packaged performance stay open. Fine frost
-grain, A/D seating facets, C posts, black-environment reflections and dark contact
-visibility remain limits. PR86 is unmerged; non-Unreal work stays on D:.
-[Current evidence](validation/2026-10-23-cryo-displays-v5.md),
-[v4 history](validation/2026-10-22-cryo-fit-interaction.md),
+Lead review covers 48 current views/19 freeze frames. Steady jets remain active
+across 1,224 samples; four native freeze cycles reset in 4.018–4.044 seconds.
+Content-only adoption adds five packages and replaces only the comparison map.
+Fresh owner smoke verifies 277 installed identities/261 cryo packages, steady jets,
+full frost/reset and protected-file/fog restoration. No runtime C++ changed.
+Owner preference, physical input, production placement and packaged performance
+remain open. Source facets, frost grain, C post/outlet occlusion, side-view core
+occlusion and dark-scene contact/reflection limits persist. PR86 remains unmerged;
+non-Unreal work stays on D:. [Current evidence](validation/2026-10-24-cryo-core-idle-v6.md),
+[v5 history](validation/2026-10-23-cryo-displays-v5.md),
 [active review](KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
 **October14 PR69 reconciliation:** An isolated CPU Editor build succeeds after preserving current main conversations/characters and prior station/boarding work. The owner checkout/game DLL/native map/content and packaged release are unchanged. Station implementation remains held and moves to a focused draft PR. The old five-path source cook failure is repaired without running a cook. [Exact checks and limits](validation/2026-10-14-pr69-closeout.md).

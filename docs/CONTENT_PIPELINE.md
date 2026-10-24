@@ -1,19 +1,19 @@
 # Phase 1 content pipeline
 
-## Four-way cryo display correction — October 23
+## Four-way cryo core/nozzle polish — October 24
 
-[CryoComparison](../Scripts/CryoComparison/README.md) retains all four original
-GLBs, fitted enclosures and native freeze. Current v5.4 uses font-mesh/vector UI
-behind separate lenses, a compact curved hologram and revised glass shading.
-Shared generated frost/mist remains active; old display images stay as recovery.
+[CryoComparison](../Scripts/CryoComparison/README.md) retains originals and accepted
+v5 display/glass/frost treatment. V6 derives four Body meshes with a local rigid
+core shift and smooth collar transition, preserving topology/UVs and the other 80
+component exports. Independent source audit passes 329 protected files; native OBJ
+normals outside the collar remain exact.
 
-Ordered source derivatives preserve v4.4, clean font caps and fit display stacks
-to the original bezels. The independent audit passes with 301 protected files
-unchanged, 19 changed/65 unchanged component exports. Final native authoring adds
-49 meshes/six materials and replaces only the owned map. Lead review covers
-53 ordinary views and 19 native freeze frames, followed by guarded content-only
-owner adoption and fresh compatibility smoke. Source, visual and runtime claims
-are separate and hash-bound. [Exact evidence](validation/2026-10-23-cryo-displays-v5.md).
+Four new Body packages and one shared idle Niagara system are added; eight nozzle
+actors and core bindings update only the comparison map. The separate four-second
+burst/frost action stays intact. Exact 48-view/19-effect native proof, guarded
+owner adoption and fresh owner smoke pass. Uncooked startup readiness and prior
+failed evidence remain recorded separately. [Current evidence](validation/2026-10-24-cryo-core-idle-v6.md),
+[v5 history](validation/2026-10-23-cryo-displays-v5.md).
 
 Non-Unreal files stay on D:. Native/vendor/image content remains private and
 excluded from cook. Never reinterpret a source audit or historical v4 renderer

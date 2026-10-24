@@ -2,23 +2,24 @@
 
 ## RPT-20261021-CRYO — four-way chamber comparison
 
-**Open / owner review — v5.4 is installed and passes bounded native review.**
-The same font-mesh displays sit behind glass on all four; the inset hologram,
-cold glass response and native four-second freeze preserve original bodies and
-enclosures. Lead review covers 53 ordinary views, all nine bottom consoles and
-19 effect frames. Guarded content adoption and fresh owner smoke pass.
+**Open / owner review — v6 core/nozzle polish is installed and lead-reviewed.**
+All four front disks clear their chamber rims; small downward streams remain
+separate from the stronger four-second freeze. Current 48-view/19-effect proof,
+guarded adoption and fresh owner smoke pass. Original files/topology/UVs and
+80 non-Body component exports are preserved; four active Body core/collar regions
+are deliberately changed.
 
-Still assess owner preference and close-range fit: A/D retain some faceted dark
-seating rims, frost has fine grain, original C posts obscure the hero, the black
-review environment limits central reflections, and dark top/rear views do not
-resolve every contact. Earlier numerical local seat-span flags remain historical
-fit evidence; no watertightness claim is added.
+Assess owner preference and close-range presentation: original surface facets,
+fine frost grain, C post/outlet occlusion, dark rear/top contacts and weak central
+glass reflections remain. Neighboring consoles can naturally hide a front-facing
+core from exact side angles. Prior failed startup evidence remains history;
+final bounded readiness does not establish packaged load speed.
 
 Physical E/controller-X input, production placement, packaged load/FPS and
-resident VRAM remain unmeasured. Display values are authored presentation, not
-telemetry. Native/vendor/art content remains private and excluded from cook;
-PR86 stays unmerged. [Current evidence](validation/2026-10-23-cryo-displays-v5.md),
-[v4 history](validation/2026-10-22-cryo-fit-interaction.md). Close after owner review.
+resident VRAM remain open. Display values are authored, not telemetry. Native,
+art and vendor content stays private/excluded from cook; PR86 remains unmerged.
+[Current evidence](validation/2026-10-24-cryo-core-idle-v6.md),
+[v5 history](validation/2026-10-23-cryo-displays-v5.md). Close after owner review.
 
 
 

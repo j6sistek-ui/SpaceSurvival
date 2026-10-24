@@ -1,7 +1,7 @@
 {
-  "captured_utc": "2026-10-24T00:56:51.003579+00:00",
-  "revision": "v5_4_native_reviewed_adopted",
-  "scope": "Source-only recipes for the accepted-with-limits v5.4 native comparison and owner smoke. Retained v4/v3 prerequisites/history are preserved; native/art/font/vendor binaries and private projection data stay local.",
+  "captured_utc": "2026-10-24T02:57:11.977895+00:00",
+  "revision": "v6_native_reviewed_adopted",
+  "scope": "Source-only v6 core/steady-nozzle recipes, accepted with documented native visual limits and guarded owner adoption/smoke. Retained v5/v4/v3 history remains; native/art/font/vendor data stays private.",
   "retained_v3_recipe_names": [
     "add_cryo_breathing_lights.py",
     "add_cryo_fog_preview_track.py",
@@ -39,16 +39,28 @@
       "scope": "retained_v3_dependency_or_history"
     },
     {
+      "file": "add_cryo_idle_jets_v6.py",
+      "bytes": 20155,
+      "sha256": "7eaf53a9690e196e11465f8a86b7e4290cca17e9bbe2adbf680447384b559973",
+      "scope": "current_v6"
+    },
+    {
       "file": "adopt_cryo_displays_v5.py",
       "bytes": 4504,
       "sha256": "1126be374b30c41e7f88648ae735913dab38a5379fe0ca21257c68100f57ff3d",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
     },
     {
       "file": "adopt_cryo_native.py",
       "bytes": 4117,
       "sha256": "e5db5766adec06915d76f7352a3d4801296335a3caa3e24b1616eb9600b443b8",
       "scope": "retained_v3_dependency_or_history"
+    },
+    {
+      "file": "adopt_cryo_polish_v6.py",
+      "bytes": 8029,
+      "sha256": "24beee34907fb051ad90074432a72242a4bb76275f473abc202a6e8fdf6388a1",
+      "scope": "current_v6"
     },
     {
       "file": "adopt_cryo_usage_fix.py",
@@ -63,22 +75,39 @@
       "scope": "retained_v4_dependency_or_history"
     },
     {
+      "file": "apply_cryo_core_v6.py",
+      "bytes": 8962,
+      "sha256": "b37255fc7540ba9e8170266af5dc28bbe801ea8fedeceeba0a4c4f23048ccde9",
+      "scope": "current_v6"
+    },
+    {
       "file": "apply_cryo_displays_v5.py",
       "bytes": 20263,
       "sha256": "430b60d11195fc13374af1e458e95a61794375039189aa17144107161db6b4ad",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
     },
     {
       "file": "apply_cryo_rear_console.py",
-      "bytes": 8163,
-      "sha256": "8a161bd5ca8c378b8820b79befeaf10da80e878e8ecbaa0773a559f30631d68b",
-      "scope": "retained_v4_dependency_or_history"
+      "bytes": 8044,
+      "sha256": "d147a90ca4aab407beaf546182e71261326344556b27cd61047a9566dbe5c927",
+      "scope": "retained_v4_dependency_or_history",
+      "private_source": {
+        "bytes": 8163,
+        "sha256": "8a161bd5ca8c378b8820b79befeaf10da80e878e8ecbaa0773a559f30631d68b",
+        "line_endings": "CRLF"
+      }
     },
     {
       "file": "apply_cryo_tail_fit.py",
       "bytes": 7929,
       "sha256": "b574c89dba7ebbdd91fdd6dc7f373529509668de8011b98f98a3ed139cddac9f",
       "scope": "retained_v4_dependency_or_history"
+    },
+    {
+      "file": "audit_cryo_cores_v6.py",
+      "bytes": 7784,
+      "sha256": "4bc9e2fa0140b61ba2eb33600818469765864aa3e8ca10970d5400446e778f3f",
+      "scope": "current_v6"
     },
     {
       "file": "author_cryo_freeze_fx.py",
@@ -108,7 +137,7 @@
       "file": "build_cryo_displays_v5.py",
       "bytes": 25592,
       "sha256": "7d442e04c0a5d3bb8129093562c1f1db2a157e8d4ce948c19186973e93a587dc",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
     },
     {
       "file": "build_cryo_evaluation_v4.py",
@@ -120,13 +149,25 @@
       "file": "build_cryo_evaluation_v5.py",
       "bytes": 22123,
       "sha256": "c051634aafc105442ab5d3fdf27cc08187bc6e3943bdcd05eeeb0499a25e57fd",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
+    },
+    {
+      "file": "build_cryo_evaluation_v6.py",
+      "bytes": 25453,
+      "sha256": "c5b4c888abf8869c05a95b99ad4bf2808a5d031dc618bd49cc520c94a28bb821",
+      "scope": "current_v6"
     },
     {
       "file": "clean_cryo_vector_caps_v5_3.py",
       "bytes": 6357,
       "sha256": "589c8fed95ef7616d04e048578239815504c5253ab24c431956efcc7ff1b43ad",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
+    },
+    {
+      "file": "compose_cryo_polish_v6.py",
+      "bytes": 4612,
+      "sha256": "b25603671fb2cf9c895a91bb88c3ad660145f5cf98114b608ae34b2dbd565939",
+      "scope": "current_v6"
     },
     {
       "file": "compose_final_receipt.py",
@@ -174,7 +215,7 @@
       "file": "fit_cryo_displays_v5_4.py",
       "bytes": 11335,
       "sha256": "f851a89450a58bc9d84d45a0e5494cbb77db728d2ea0c2d4ba1f8abc8a90bcef",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
     },
     {
       "file": "fit_cryo_geometry_v4.py",
@@ -204,7 +245,13 @@
       "file": "patch_cryo_displays_v5_4.py",
       "bytes": 15555,
       "sha256": "d96f41ef4b0f71f2a537b1758228038c1edd54b8b2623a20f9c08aac689e7836",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
+    },
+    {
+      "file": "plan_cryo_cores_v6.py",
+      "bytes": 3287,
+      "sha256": "46306e2ba7c4ab83fc61e2875280b240a5d6a8b79e079a45be174103370e7b7b",
+      "scope": "current_v6"
     },
     {
       "file": "polish_cryo_unreal.py",
@@ -219,10 +266,16 @@
       "scope": "retained_v3_dependency_or_history"
     },
     {
+      "file": "raise_cryo_cores_v6.py",
+      "bytes": 10086,
+      "sha256": "cf90b609506b69c0295c05bac93e3c4bea7241e2de3fb082f861f6e845f1b4c4",
+      "scope": "current_v6"
+    },
+    {
       "file": "refine_cryo_displays_v5.py",
       "bytes": 17172,
       "sha256": "4b7a87a5068e7d1e025b82bc1265e1b9f5ac7a0c02a33798cd3e9a38f6358b07",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
     },
     {
       "file": "refine_cryo_frost_masked.py",
@@ -252,7 +305,7 @@
       "file": "render_console_bezel_probe_v5_4.py",
       "bytes": 2627,
       "sha256": "8555ffc5c94642c96a3abc6a98b80acc560bc8381d1117d0ae4c920b65d74bc6",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
     },
     {
       "file": "render_cryo_D_rear_console_v4_4.py",
@@ -270,13 +323,25 @@
       "file": "run_display_v5_owner_smoke.py",
       "bytes": 268,
       "sha256": "1d5857eec17cae63f58fd09a10be0358de5f15920ad2dd87e9b2c0234228d0fc",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
+    },
+    {
+      "file": "run_polish_v6_angles.py",
+      "bytes": 336,
+      "sha256": "620a16676996225dfdc1db8a8025d61d7432f80f699ef9c29c03d1cb31e15359",
+      "scope": "current_v6"
     },
     {
       "file": "snapshot_cryo_v5.py",
       "bytes": 2321,
       "sha256": "2117d87236371d883327af6024043f6d63de80b1b718eccf7a588713cdc96f26",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
+    },
+    {
+      "file": "snapshot_cryo_v6.py",
+      "bytes": 2778,
+      "sha256": "018b1babcaa972701f6f804bfbbcfc870d2127b2472409fa08530d4284df69a2",
+      "scope": "current_v6"
     },
     {
       "file": "tune_cryo_unreal.py",
@@ -306,7 +371,7 @@
       "file": "validate_cryo_displays_v5.py",
       "bytes": 23906,
       "sha256": "98aa4be8292153ebfe79fdc8c220b704bb0baa415f3c9cb73f02ba01c439c693",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
     },
     {
       "file": "validate_cryo_fit_v4.py",
@@ -318,7 +383,7 @@
       "file": "verify_cryo_displays_v5.py",
       "bytes": 30410,
       "sha256": "6e47cf7c08f8a09414239f8926db161dc8f615baa1f8c6249eb2ce2170692a08",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
     },
     {
       "file": "verify_cryo_final.py",
@@ -348,13 +413,46 @@
       "file": "verify_cryo_interaction_v5.py",
       "bytes": 26755,
       "sha256": "b2dcf0474d42921c07ec73421e05654e2beeb31e91328c081d7ccfec83a64c43",
-      "scope": "current_v5"
+      "scope": "retained_v5_dependency_or_history"
+    },
+    {
+      "file": "verify_cryo_interaction_v6.py",
+      "bytes": 27490,
+      "sha256": "62f7cdf99951acbd593a8332d8b7bae55851e280cf5c21fe9463dcb632e5fcc5",
+      "scope": "current_v6",
+      "private_source": {
+        "bytes": 27923,
+        "sha256": "2a9a2e698ffaf1ff9364cce561a48c3d872806c1fe4f7778dc64d686297ac182",
+        "line_endings": "CRLF"
+      }
     },
     {
       "file": "verify_cryo_owner_smoke.py",
       "bytes": 12980,
       "sha256": "1495b82b56028ca0b3135ea98f4ff41342d0e826d91e7a37b5f329ddbda313d4",
       "scope": "retained_v4_dependency_or_history"
+    },
+    {
+      "file": "verify_cryo_owner_smoke_v6.py",
+      "bytes": 14478,
+      "sha256": "d8a8de8f7d30e51cc31f3fac3467d129a49e28e6fe9e5cf10039bbbdc0e44f9d",
+      "scope": "current_v6",
+      "private_source": {
+        "bytes": 14719,
+        "sha256": "0abecb1e90a252842e7fc45804f40f99ff57961b537a8e09edef648797c6ad19",
+        "line_endings": "CRLF"
+      }
+    },
+    {
+      "file": "verify_cryo_polish_v6.py",
+      "bytes": 32228,
+      "sha256": "a93bf86d9a445f0a39f77c8d06592ae99e86828e01dc7b489884467f34a4936f",
+      "scope": "current_v6",
+      "private_source": {
+        "bytes": 32735,
+        "sha256": "0b87693a35cb3f27a452aaadee8d357c8b3f2d17bb7ba076553f5402832bc9b9",
+        "line_endings": "CRLF"
+      }
     },
     {
       "file": "verify_cryo_runtime.py",
@@ -386,7 +484,7 @@
     "render_cryo_D_rear_console_v4_4.py",
     "verify_cryo_owner_smoke.py"
   ],
-  "current_v5_recipes": [
+  "retained_v5_recipe_names": [
     "build_cryo_displays_v5.py",
     "clean_cryo_vector_caps_v5_3.py",
     "apply_cryo_displays_v5.py",
@@ -401,5 +499,21 @@
     "fit_cryo_displays_v5_4.py",
     "patch_cryo_displays_v5_4.py",
     "run_display_v5_owner_smoke.py"
-  ]
+  ],
+  "current_v6_recipes": [
+    "snapshot_cryo_v6.py",
+    "plan_cryo_cores_v6.py",
+    "raise_cryo_cores_v6.py",
+    "audit_cryo_cores_v6.py",
+    "apply_cryo_core_v6.py",
+    "add_cryo_idle_jets_v6.py",
+    "compose_cryo_polish_v6.py",
+    "verify_cryo_polish_v6.py",
+    "run_polish_v6_angles.py",
+    "verify_cryo_interaction_v6.py",
+    "verify_cryo_owner_smoke_v6.py",
+    "adopt_cryo_polish_v6.py",
+    "build_cryo_evaluation_v6.py"
+  ],
+  "hash_policy": "sha256 and bytes describe LF-normalized Git blob content. Where private_source is present, it preserves the byte count and SHA-256 of the tested private source before line-ending normalization; only CRLF-to-LF changes are permitted."
 }

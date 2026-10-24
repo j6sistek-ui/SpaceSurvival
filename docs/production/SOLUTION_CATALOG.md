@@ -4,17 +4,18 @@
 
 - **Acquisition:** four preserved local GLBs; generated frost/mist and a private
   derivative of the owned Niagara Examples pack. No purchase or vendor upload.
-- **Evaluation:** v5.4 shares font-mesh displays, glass and native four-second
-  freeze across all four. Source audit, 53 native views/19 effect frames, guarded
-  owner adoption and fresh owner smoke pass. D leads hero detail, A has the
-  smallest static budget, and C gives the clearest view around all sides.
+- **Evaluation:** v6 moves all four lower cores clear of their rims and adds
+  eight gentle steady nozzle streams, retaining fitted displays/glass and the
+  stronger four-second freeze. Source audit, 48 native views/19 effect frames,
+  guarded adoption and fresh owner smoke pass. D leads hero detail; A has the
+  smallest static budget; C offers four-sided viewing.
 - **Whole-project value:** conditional Acornaut hero/station presentation
   (WBS7.1,8.3,10.3). No occupant rig, roster or progression change.
 - **Next check:** owner choice, physical input, production placement and packaged
   performance remain open after the current native/adoption checks. Fine frost
   grain, A/D rim facets, C posts and dark-scene contact/reflection limits are
   documented. PR86 remains unmerged.
-  [Current evidence](../validation/2026-10-23-cryo-displays-v5.md);
+  [Current evidence](../validation/2026-10-24-cryo-core-idle-v6.md);
   [active review](../KNOWN_ISSUES.md#rpt-20261021-cryo--four-way-chamber-comparison).
 
 **October14 owner disposition:** Cyborg and Silver topics are closed for now and PR72 merge is authorized. Their resource/evaluation records below remain historical evidence; do not resume the listed character follow-ups without a new owner request.
